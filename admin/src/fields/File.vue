@@ -247,10 +247,22 @@
       </div>
     </v-col>
     <v-col cols="12" md="6" v-if="file.path" class="meta">
-      <span class="name">{{ $gettext('name') }}</span>: {{ file.name }}<br/>
-      <span class="name">{{ $gettext('mime') }}</span>: {{ file.mime }}<br/>
-      <span class="name">{{ $gettext('editor') }}</span>: {{ file.editor }}<br/>
-      <span class="name">{{ $gettext('updated') }}</span>: {{ (new Date(file.updated_at)).toLocaleString() }}
+      <v-row>
+        <v-col cols="12" md="3" class="name">{{ $gettext('name') }}:</v-col>
+        <v-col cols="12" md="9">{{ file.name }}</v-col>
+      </v-row>
+      <v-row>
+        <v-col cols="12" md="3" class="name">{{ $gettext('mime') }}:</v-col>
+        <v-col cols="12" md="9">{{ file.mime }}</v-col>
+      </v-row>
+      <v-row>
+        <v-col cols="12" md="3" class="name">{{ $gettext('editor') }}:</v-col>
+        <v-col cols="12" md="9">{{ file.editor }}</v-col>
+      </v-row>
+      <v-row>
+        <v-col cols="12" md="3" class="name">{{ $gettext('updated') }}:</v-col>
+        <v-col cols="12" md="9">{{ (new Date(file.updated_at)).toLocaleString() }}</v-col>
+      </v-row>
     </v-col>
   </v-row>
 
@@ -290,7 +302,7 @@
   }
 
   .meta .name {
-    text-transform: uppercase;
+    text-transform: capitalize;
     font-weight: bold;
   }
 </style>

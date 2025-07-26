@@ -64,11 +64,23 @@
         </div>
       </div>
     </v-col>
-    <v-col cols="12" md="6" v-if="file.path">
-      {{ $gettext('name') }}: {{ file.name }}<br/>
-      {{ $gettext('mime') }}: {{ file.mime }}<br/>
-      {{ $gettext('editor') }}: {{ file.editor }}<br/>
-      {{ $gettext('updated') }}: {{ (new Date(file.updated_at)).toLocaleString() }}
+    <v-col cols="12" md="6" v-if="file.path" class="meta">
+      <v-row>
+        <v-col cols="12" md="3" class="name">{{ $gettext('name') }}:</v-col>
+        <v-col cols="12" md="9">{{ file.name }}</v-col>
+      </v-row>
+      <v-row>
+        <v-col cols="12" md="3" class="name">{{ $gettext('mime') }}:</v-col>
+        <v-col cols="12" md="9">{{ file.mime }}</v-col>
+      </v-row>
+      <v-row>
+        <v-col cols="12" md="3" class="name">{{ $gettext('editor') }}:</v-col>
+        <v-col cols="12" md="9">{{ file.editor }}</v-col>
+      </v-row>
+      <v-row>
+        <v-col cols="12" md="3" class="name">{{ $gettext('updated') }}:</v-col>
+        <v-col cols="12" md="9">{{ (new Date(file.updated_at)).toLocaleString() }}</v-col>
+      </v-row>
     </v-col>
   </v-row>
 
