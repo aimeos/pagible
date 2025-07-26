@@ -75,7 +75,11 @@
   <v-dialog :modelValue="modelValue" max-width="1200" scrollable>
     <v-card prepend-icon="mdi-history">
       <template v-slot:append>
-        <v-icon @click="$emit('update:modelValue', false)">mdi-close</v-icon>
+        <v-btn
+          :title="$gettext('Close')"
+          @click="$emit('update:modelValue', false)"
+          icon="mdi-close"
+        />
       </template>
       <template v-slot:title>
         {{ $gettext('History') }}

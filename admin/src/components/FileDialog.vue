@@ -20,7 +20,12 @@
   <v-dialog :modelValue="modelValue" max-width="1200" scrollable>
     <v-card>
       <template v-slot:append>
-        <v-icon @click="$emit('update:modelValue', false)">mdi-close</v-icon>
+        <v-btn
+          @click="$emit('update:modelValue', false)"
+          :title="$gettext('Close')"
+          icon="mdi-close"
+          variant="flat"
+        />
       </template>
       <template v-slot:title>
         {{ $gettext('Files') }}

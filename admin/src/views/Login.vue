@@ -90,10 +90,15 @@
             v => !!v || $gettext('Field is required')
           ]" autocomplete="current-password">
           <template v-slot:append-inner>
-            <v-icon @click="show = !show" @keydown="[13, 32].includes($event.keyCode) ? show = !show : false">{{ show ? `mdi-eye-off` : `mdi-eye` }}</v-icon>
+            <v-icon
+              @click="show = !show"
+              @keydown="[13, 32].includes($event.keyCode) ? show = !show : false"
+            >{{ show ? `mdi-eye-off` : `mdi-eye` }}</v-icon>
           </template>
         </v-text-field>
-        <v-alert v-show="error" color="error" icon="mdi-alert-octagon" :text="$gettext('Error') + ': ' + error"></v-alert>
+        <v-alert v-show="error" color="error" icon="mdi-alert-octagon">
+          {{ $gettext('Error') + ': ' + error }}
+        </v-alert>
       </v-card-text>
 
       <v-card-actions>

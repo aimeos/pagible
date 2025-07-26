@@ -166,7 +166,12 @@
   <v-dialog :modelValue="modelValue" max-width="1200" scrollable>
     <v-card :loading="loading ? 'primary' : false">
       <template v-slot:append>
-        <v-btn icon="mdi-close" variant="flat" @click="$emit('update:modelValue', false)"></v-btn>
+        <v-btn
+          @click="$emit('update:modelValue', false)"
+          :title="$gettext('Close')"
+          icon="mdi-close"
+          variant="flat"
+        />
       </template>
       <template v-slot:title>
         {{ $gettext('Create image') }}
@@ -197,7 +202,12 @@
           </v-tabs>
           <v-list class="items grid">
             <v-list-item v-for="(item, idx) in items" :key="idx">
-              <v-btn icon="mdi-delete" @click="remove(idx)" class="btn-overlay" :title="$gettext('Remove')"></v-btn>
+              <v-btn
+                @click="remove(idx)"
+                :title="$gettext('Remove')"
+                class="btn-overlay"
+                icon="mdi-delete"
+              />
 
               <div class="item-preview" @click="add(item)">
                 <img :src="url(item.path)">

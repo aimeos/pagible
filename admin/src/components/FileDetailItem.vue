@@ -528,10 +528,15 @@
 
             <div v-if="!readonly" class="floating-toolbar">
               <div class="toolbar-group">
-                <v-btn v-if="cropping" icon="mdi-image-check" class="no-rtl" :title="$gettext('Use cropped image')" @click="crop()" />
+                <v-btn v-if="cropping"
+                  @click="crop()"
+                  :title="$gettext('Use cropped image')"
+                  icon="mdi-image-check"
+                  class="no-rtl"
+                />
                 <v-menu v-else>
                   <template #activator="{ props }">
-                    <v-btn icon="mdi-crop" class="no-rtl" v-bind="props" :title="$gettext('Crop image')" />
+                    <v-btn v-bind="props" icon="mdi-crop" class="no-rtl" :title="$gettext('Crop image')" />
                   </template>
                   <v-list>
                     <v-list-item>
@@ -614,15 +619,18 @@
             {{ $gettext('Descriptions') }}
             <div v-if="!readonly" class="actions">
               <v-btn v-if="Object.values(item.description || {}).find(v => !!v)"
+                @click="translateText(item.description)"
+                :title="$gettext('Translate text')"
                 :loading="translating"
-                  icon="mdi-translate"
-                  variant="flat"
-                  @click="translateText(item.description)" />
+                icon="mdi-translate"
+                variant="flat"
+              />
               <v-btn
+                @click="composeText()"
+                :title="$gettext('Generate description')"
                 :loading="composing"
                 icon="mdi-creation"
                 variant="flat"
-                @click="composeText()"
               />
             </div>
           </v-label>
@@ -633,10 +641,10 @@
           <v-window v-model="tabdesc">
             <v-window-item v-for="entry in locales()" :value="entry.value">
               <v-textarea ref="description"
-                :readonly="readonly"
-                :modelValue="item.description?.[entry.value] || ''"
                 @update:modelValue="item.description[entry.value] = $event; $emit('update:item', item)"
                 :label="$gettext('Description (%{lang})', {lang: entry.value})"
+                :modelValue="item.description?.[entry.value] || ''"
+                :readonly="readonly"
                 variant="underlined"
                 counter="500"
                 rows="2"
@@ -653,15 +661,18 @@
             {{ $gettext('Transcriptions') }}
             <div v-if="!readonly" class="actions">
               <v-btn v-if="Object.values(item.transcription || {}).find(v => !!v)"
+                @click="translateVTT(item.transcription)"
+                :title="$gettext('Translate text')"
                 :loading="translating"
-                  icon="mdi-translate"
-                  variant="flat"
-                  @click="translateVTT(item.transcription)" />
+                icon="mdi-translate"
+                variant="flat"
+              />
               <v-btn
+                @click="transcribe()"
+                :title="$gettext('Transcribe file content')"
                 :loading="transcribing"
                 icon="mdi-creation"
                 variant="flat"
-                @click="transcribe()"
               />
             </div>
           </v-label>
@@ -672,10 +683,10 @@
           <v-window v-model="tabtrans">
             <v-window-item v-for="entry in locales()" :value="entry.value">
               <v-textarea ref="transcription"
-                :readonly="readonly"
-                :modelValue="item.transcription?.[entry.value] || ''"
                 @update:modelValue="item.transcription[entry.value] = $event; $emit('update:item', item)"
                 :label="$gettext('Transcription (%{lang})', {lang: entry.value})"
+                :modelValue="item.transcription?.[entry.value] || ''"
+                :readonly="readonly"
                 variant="underlined"
                 rows="20"
                 auto-grow

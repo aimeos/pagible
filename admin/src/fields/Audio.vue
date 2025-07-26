@@ -14,34 +14,41 @@
 <template>
   <v-row>
     <v-col cols="12" md="6">
-      <div class="files">
+      <div class="files" :class="{readonly: readonly}">
         <div v-if="file.path" class="file" @click="open(file)">
           <v-progress-linear v-if="file.uploading"
             color="primary"
             height="5"
             indeterminate
             rounded
-          ></v-progress-linear>
-          <audio preload="metadata" controls
+          />
+          <audio controls
             :draggable="false"
             :src="url(file.path)"
-          ></audio>
-          <button v-if="!readonly && file.path" @click.stop="remove()" class="btn-overlay" title="Remove audio" type="button">
-            <v-icon icon="mdi-trash-can" role="img"></v-icon>
-          </button>
+          />
+          <v-btn v-if="!readonly && file.path"
+            @click.stop="remove()"
+            :title="$gettext('Remove file')"
+            icon="mdi-trash-can"
+            class="btn-overlay"
+            variant="flat"
+          />
         </div>
         <div v-else-if="!readonly" class="file">
           <v-btn v-if="auth.can('file:view')"
+            @click="vfiles = true"
+            :title="$gettext('Add file')"
             icon="mdi-button-cursor"
             variant="flat"
-            @click="vfiles = true"
           ></v-btn>
           <v-btn
             @click="vurls = true"
+            :title="$gettext('Add file from URL')"
             icon="mdi-link-variant-plus"
             variant="flat"
           ></v-btn>
           <v-btn
+            :title="$gettext('Upload file')"
             icon="mdi-upload"
             variant="flat">
             <v-file-input
@@ -50,7 +57,7 @@
               :accept="config.accept || 'audio/*'"
               :hide-input="true"
               prepend-icon="mdi-upload"
-            ></v-file-input>
+            />
           </v-btn>
         </div>
       </div>

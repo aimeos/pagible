@@ -56,15 +56,15 @@
           <v-list-item v-bind="props" :class="{active: has(group.key)}">{{ group.title || group.key }}</v-list-item>
         </template>
 
-        <v-list-item
-          v-for="(item, idx) in (group.items || [])"
-          @click="toggle(item)"
+        <v-list-item v-for="(item, idx) in (group.items || [])"
           :active="active(item)"
           :key="idx"
-          rounded="lg"
-        >
-          <v-icon v-if="item.icon" :icon="item.icon" class="icon"></v-icon>
-          {{ item.title }}
+          rounded="lg">
+          <v-btn
+            @click="toggle(item)"
+            :prepend-icon="item.icon"
+            variant="text"
+          >{{ item.title }}</v-btn>
         </v-list-item>
 
       </v-list-group>
@@ -83,7 +83,7 @@
     border-top-right-radius: 8px;
   }
 
-  .v-list-item {
+  .v-list-item .v-btn {
     text-transform: capitalize;
   }
 
@@ -92,10 +92,5 @@
     margin-inline-end: 4px;
     font-size: 150%;
     content: "•";
-  }
-
-  .v-list-item .icon {
-    margin-inline-end: 4px;
-    font-size: 100%;
   }
 </style>

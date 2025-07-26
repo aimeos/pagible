@@ -447,10 +447,14 @@
 <template>
   <div class="header">
     <div class="bulk">
-      <v-checkbox-btn v-model="checked" @click.stop="toggle()"></v-checkbox-btn>
+      <v-checkbox-btn v-model="checked" @click.stop="toggle()" />
       <v-menu location="bottom left">
         <template #activator="{ props }">
-          <v-btn append-icon="mdi-menu-down" variant="text" v-bind="props">{{ $gettext('Actions') }}</v-btn>
+          <v-btn v-bind="props"
+            :disabled="!isChecked && this.embed"
+            append-icon="mdi-menu-down"
+            variant="text"
+          >{{ $gettext('Actions') }}</v-btn>
         </template>
         <v-list>
           <v-list-item v-if="isChecked && auth.can('file:publish')">
@@ -475,21 +479,35 @@
     <div class="search">
       <v-text-field
         v-model="term"
+        :label="$gettext('Search for')"
         prepend-inner-icon="mdi-magnify"
         variant="underlined"
-        :label="$gettext('Search for')"
         hide-details
         clearable
       ></v-text-field>
     </div>
 
     <div class="layout">
-      <v-btn v-if="!vgrid" @click="vgrid = true" icon="mdi-view-grid-outline" variant="flat" :title="$gettext('Grid view')"></v-btn>
-      <v-btn v-if="vgrid" @click="vgrid = false" icon="mdi-format-list-bulleted-square" variant="flat" :title="$gettext('List view')"></v-btn>
+      <v-btn v-if="!vgrid"
+        @click="vgrid = true"
+        :title="$gettext('Grid view')"
+        icon="mdi-view-grid-outline"
+        variant="flat"
+      />
+      <v-btn v-if="vgrid"
+        @click="vgrid = false"
+        :title="$gettext('List view')"
+        icon="mdi-format-list-bulleted-square"
+        variant="flat"
+      />
 
-      <v-menu>
+      <v-menu location="bottom right">
         <template #activator="{ props }">
-          <v-btn append-icon="mdi-menu-down" prepend-icon="mdi-sort" variant="text" location="bottom right" v-bind="props">
+          <v-btn v-bind="props"
+            :title="$gettext('Order by')"
+            append-icon="mdi-menu-down"
+            prepend-icon="mdi-sort"
+            variant="text">
             {{ sort?.column === 'ID' ? (sort?.order === 'DESC' ? $gettext('latest') : $gettext('oldest') ) : (sort?.column || '') }}
           </v-btn>
         </template>
@@ -519,11 +537,16 @@
 
   <v-list class="items" :class="{grid: vgrid, list: !vgrid}">
     <v-list-item v-for="(item, idx) in items" :key="idx">
-      <v-checkbox-btn v-model="item._checked" :class="{draft: !item.published}" class="item-check"></v-checkbox-btn>
+      <v-checkbox-btn v-model="item._checked" :class="{draft: !item.published}" class="item-check" />
 
-      <v-menu>
+      <v-menu :location="'bottom ' + (vgrid ? 'right' : 'left')">
         <template v-slot:activator="{ props }">
-          <v-btn class="item-menu" icon="mdi-dots-vertical" variant="text" v-bind="props"></v-btn>
+          <v-btn v-bind="props"
+            :title="$gettext('Actions')"
+            icon="mdi-dots-vertical"
+            class="item-menu"
+            variant="text"
+          />
         </template>
         <v-list>
           <v-list-item v-show="!item.deleted_at && !item.published && auth.can('file:publish')">
@@ -552,7 +575,7 @@
       <div class="item-content" @click="$emit('select', item)" :class="{trashed: item.deleted_at}" :title="title(item)">
         <div class="item-text">
           <div class="item-head">
-            <v-icon v-if="item.publish_at" class="publish-at" icon="mdi-clock-outline"></v-icon>
+            <v-icon v-if="item.publish_at" class="publish-at" icon="mdi-clock-outline" />
             <span class="item-lang" v-if="item.lang">{{ item.lang }}</span>
             <span class="item-title">{{ item.name }}</span>
           </div>
@@ -588,7 +611,12 @@
       multiple
       hidden
     />
-    <v-btn color="primary" icon="mdi-folder-plus" @click="$refs.upload.click()"></v-btn>
+    <v-btn
+      @click="$refs.upload.click()"
+      :title="$gettext('Add files')"
+      icon="mdi-folder-plus"
+      color="primary"
+    />
   </div>
 </template>
 

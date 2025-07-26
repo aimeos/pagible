@@ -45,8 +45,16 @@
   <v-dialog :modelValue="modelValue" max-width="1200" scrollable>
     <v-card>
       <template v-slot:append>
-        <v-btn v-if="!readonly && !error" variant="outlined" @click="$emit('update:element', element)">Save</v-btn>
-        <v-btn variant="flat" icon="mdi-close" @click="$emit('update:modelValue', false)"></v-btn>
+        <v-btn v-if="!readonly && !error"
+          @click="$emit('update:element', element)"
+          variant="outlined"
+        >{{ $gettext('Save') }}</v-btn>
+        <v-btn
+          @click="$emit('update:modelValue', false)"
+          :title="$gettext('Close')"
+          icon="mdi-close"
+          variant="flat"
+        />
       </template>
       <template v-slot:title>
         {{ $gettext('Content Element') }}

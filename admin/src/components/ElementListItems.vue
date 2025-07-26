@@ -411,7 +411,7 @@
 <template>
   <div class="header">
     <div class="bulk">
-      <v-checkbox-btn v-model="checked" @click.stop="toggle()"></v-checkbox-btn>
+      <v-checkbox-btn v-model="checked" @click.stop="toggle()" />
       <v-menu location="bottom left">
         <template #activator="{ props }">
           <v-btn append-icon="mdi-menu-down" variant="text" v-bind="props">{{ $gettext('Actions') }}</v-btn>
@@ -448,9 +448,13 @@
     </div>
 
     <div class="layout">
-      <v-menu>
+      <v-menu location="bottom right">
         <template #activator="{ props }">
-          <v-btn append-icon="mdi-menu-down" prepend-icon="mdi-sort" variant="text" location="bottom right" v-bind="props">
+          <v-btn v-bind="props"
+            :title="$gettext('Order by')"
+            append-icon="mdi-menu-down"
+            prepend-icon="mdi-sort"
+            variant="text">
             {{ sort?.column === 'ID' ? (sort?.order === 'DESC' ? $gettext('latest') : $gettext('oldest') ) : (sort?.column || '') }}
           </v-btn>
         </template>
@@ -477,11 +481,16 @@
 
   <v-list class="items">
     <v-list-item v-for="(item, idx) in items" :key="idx">
-      <v-checkbox-btn v-model="item._checked" :class="{draft: !item.published}" class="item-check"></v-checkbox-btn>
+      <v-checkbox-btn v-model="item._checked" :class="{draft: !item.published}" class="item-check" />
 
       <v-menu>
         <template v-slot:activator="{ props }">
-          <v-btn class="item-menu" icon="mdi-dots-vertical" variant="text" v-bind="props"></v-btn>
+          <v-btn v-bind="props"
+            :title="$gettext('Actions')"
+            icon="mdi-dots-vertical"
+            class="item-menu"
+            variant="flat"
+          />
         </template>
         <v-list>
           <v-list-item v-show="!item.deleted_at && !item.published && this.auth.can('element:publish')">
@@ -502,7 +511,7 @@
       <div class="item-content" @click="$emit('select', item)" :class="{trashed: item.deleted_at}":title="title(item)">
         <div class="item-text">
           <div class="item-head">
-            <v-icon v-if="item.publish_at" class="publish-at" icon="mdi-clock-outline"></v-icon>
+            <v-icon v-if="item.publish_at" class="publish-at" icon="mdi-clock-outline" />
             <span class="item-lang" v-if="item.lang">{{ item.lang }}</span>
             <span class="item-title">{{ item.name }}</span>
           </div>
@@ -532,10 +541,11 @@
 
   <div v-if="!this.embed && this.auth.can('element:add')" class="btn-group">
     <v-btn @click="vschemas = true"
+      :title="$gettext('Add element')"
       icon="mdi-view-grid-plus"
       color="primary"
       variant="flat"
-    ></v-btn>
+    />
   </div>
 
   <Teleport to="body">

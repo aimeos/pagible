@@ -877,8 +877,8 @@
 <template>
   <div class="header">
     <div class="bulk">
-      <v-checkbox-btn v-model="checked" @click.stop="toggle()"></v-checkbox-btn>
-      <v-menu>
+      <v-checkbox-btn v-model="checked" @click.stop="toggle()" />
+      <v-menu location="bottom left">
         <template #activator="{ props }">
           <v-btn append-icon="mdi-menu-down" variant="text" v-bind="props" :disabled="!isChecked">{{ $gettext('Actions') }}</v-btn>
         </template>
@@ -919,17 +919,23 @@
       ></v-text-field>
     </div>
 
-    <v-btn icon="mdi-refresh" variant="flat" @click="reload()"></v-btn>
+    <v-btn
+      @click="reload()"
+      :title="$gettext('Reload page tree')"
+      icon="mdi-refresh"
+      variant="flat"
+    />
   </div>
 
-  <Draggable v-model="items" ref="tree"
+  <Draggable ref="tree"
+    v-model="items"
+    @change="change()"
+    @check:node="updateChecked($event.checked)"
     :defaultOpen="false"
     :disableDrag="!auth.can('page:move')"
     :rtl="$vuetify.locale.isRtl"
     :watermark="false"
     virtualization
-    @change="change()"
-    @check:node="updateChecked($event.checked)"
   >
     <template #default="{ node, stat }">
       <svg v-if="stat.loading" class="spinner" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -937,15 +943,23 @@
         <circle class="spin1 spin2" cx="12" cy="12" r="3"/>
         <circle class="spin1 spin3" cx="20" cy="12" r="3"/>
       </svg>
-      <v-btn v-else :class="{hidden: !node.has}" @click="load(stat, node)" variant="flat"
+      <v-btn v-else
+        @click="load(stat, node)"
+        :class="{hidden: !node.has}"
         :icon="stat.open ? 'mdi-menu-down' : 'mdi-menu-right'"
-      ></v-btn>
+        :title="$gettext('Toggle child nodes')"
+        variant="flat"
+      />
 
-      <v-checkbox-btn v-model="stat.checked" :class="{draft: !node.published}"></v-checkbox-btn>
+      <v-checkbox-btn v-model="stat.checked" :class="{draft: !node.published}" />
 
       <v-menu v-if="node.id">
         <template #activator="{ props }">
-          <v-btn icon="mdi-dots-vertical" variant="text" v-bind="props"></v-btn>
+          <v-btn v-bind="props"
+            :title="$gettext('Actions')"
+            icon="mdi-dots-vertical"
+            variant="text"
+          />
         </template>
         <v-list>
           <v-list-item v-if="!node.deleted_at && !node.published && auth.can('page:publish')">
@@ -1049,7 +1063,7 @@
       >
         <div class="item-text" @click="$emit('select', node)">
           <div class="item-head">
-            <v-icon v-if="node.publish_at" class="publish-at" icon="mdi-clock-outline"></v-icon>
+            <v-icon v-if="node.publish_at" class="publish-at" icon="mdi-clock-outline" />
             <span class="item-lang" v-if="node.lang">{{ node.lang }}</span>
             <span class="item-title">{{ node.name || $gettext('New') }}</span>
           </div>
@@ -1074,11 +1088,13 @@
   </p>
 
   <div v-if="!loading && !items.length && !this.embed && this.auth.can('page:add')" class="btn-group">
-    <v-btn @click="add()"
+    <v-btn
+      @click="add()"
+      :title="$gettext('Add page')"
       icon="mdi-folder-plus"
       color="primary"
       variant="flat"
-    ></v-btn>
+    />
   </div>
 </template>
 

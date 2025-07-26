@@ -150,10 +150,15 @@
         <v-btn v-if="Object.keys(items).length" variant="outlined" @click="add()">
           {{ $gettext('Add file', 'Add files', +multiple) }}
         </v-btn>
-        <v-btn icon="mdi-close" variant="flat" @click="$emit('update:modelValue', false)"></v-btn>
+        <v-btn
+          @click="$emit('update:modelValue', false)"
+          :title="$gettext('Close')"
+          icon="mdi-close"
+          variant="flat"
+        />
       </template>
       <template v-slot:title>
-        {{ $gettext('Add files by URL') }}
+        {{ $gettext('Add files from URL') }}
       </template>
 
       <v-card-text>
@@ -186,7 +191,12 @@
 
         <v-list class="items grid">
           <v-list-item v-for="(item, url) in items" :key="url">
-            <v-btn icon="mdi-delete" @click="remove(url)" class="btn-overlay" :title="$gettext('Remove file')"></v-btn>
+            <v-btn
+              @click="remove(url)"
+              :title="$gettext('Remove file')"
+              class="btn-overlay"
+              icon="mdi-delete"
+            />
 
             <div class="item-preview" @click="$emit('select', item)">
               <img v-if="item.mime?.startsWith('image/')" :src="item.path">

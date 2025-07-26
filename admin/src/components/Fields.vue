@@ -126,19 +126,29 @@
       <div v-if="!readonly && ['markdown', 'plaintext', 'string', 'text'].includes(field.type)" class="actions">
         <v-menu>
           <template #activator="{ props }">
-            <v-btn :loading="translating[code] || false" icon="mdi-translate" variant="flat" v-bind="props" />
+            <v-btn v-bind="props"
+              :title="$gettext('Translate %{code} field', {code: code})"
+              :loading="translating[code]"
+              icon="mdi-translate"
+              variant="flat"
+            />
           </template>
           <v-list>
             <v-list-item v-for="lang in txlocales()" :key="lang.code">
-              <v-btn variant="text" @click="translateText(code, lang.code)" prepend-icon="mdi-arrow-right-thin">{{ lang.name }}</v-btn>
+              <v-btn
+                @click="translateText(code, lang.code)"
+                prepend-icon="mdi-arrow-right-thin"
+                variant="text"
+              >{{ lang.name }}</v-btn>
             </v-list-item>
           </v-list>
         </v-menu>
         <v-btn
-          :loading="composing[code] || false"
+          :title="$gettext('Generate text for %{code} field', {code: code})"
+          :loading="composing[code]"
+          @click="composeText(code)"
           icon="mdi-creation"
           variant="flat"
-          @click="composeText(code)"
         />
       </div>
     </v-label>

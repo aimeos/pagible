@@ -168,7 +168,12 @@
 
         <v-expansion-panel v-for="(el, code) in (item.config || {})" :key="code" :class="{changed: el._changed, error: el._error}" v-show="shown(el)">
           <v-expansion-panel-title expand-icon="mdi-pencil">
-            <v-btn v-if="auth.can('page:save')" icon="mdi-delete" variant="text" @click="remove(code)"></v-btn>
+            <v-btn v-if="auth.can('page:save')"
+              @click="remove(code)"
+              :title="$gettext('Remove content element')"
+              icon="mdi-delete"
+              variant="text"
+            />
             <div class="element-title">{{ title(el) }}</div>
             <div class="element-type">{{ el.type }}</div>
           </v-expansion-panel-title>
@@ -177,11 +182,11 @@
             <Fields ref="field"
               v-model:data="el.data"
               v-model:files="el.files"
+              @error="error(el, $event)"
+              @change="update(el)"
               :readonly="!auth.can('page:save')"
               :fields="fields(el.type)"
               :assets="assets"
-              @error="error(el, $event)"
-              @change="update(el)"
             />
 
           </v-expansion-panel-text>
@@ -190,7 +195,13 @@
       </v-expansion-panels>
 
       <div v-if="available && auth.can('page:save')" class="btn-group">
-        <v-btn icon="mdi-view-grid-plus" color="primary" @click="vschemas = true" variant="flat"></v-btn>
+        <v-btn
+          @click="vschemas = true"
+          :title="$gettext('Add element')"
+          icon="mdi-view-grid-plus"
+          color="primary"
+          variant="flat"
+        />
       </div>
 
     </v-sheet>

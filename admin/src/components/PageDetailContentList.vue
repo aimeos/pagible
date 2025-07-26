@@ -490,10 +490,14 @@
 
     <div class="header">
       <div v-if="auth.can('page:save')" class="bulk">
-        <v-checkbox-btn v-model="checked" @click.stop="toggle()"></v-checkbox-btn>
-        <v-menu location="bottom right">
+        <v-checkbox-btn v-model="checked" @click.stop="toggle()" />
+        <v-menu location="bottom left">
           <template v-slot:activator="{ props }">
-            <v-btn append-icon="mdi-menu-down" variant="text" v-bind="props" :disabled="!isChecked">{{ $gettext('Actions') }}</v-btn>
+            <v-btn v-bind="props"
+              :disabled="!isChecked"
+              append-icon="mdi-menu-down"
+              variant="text"
+            >{{ $gettext('Actions') }}</v-btn>
           </template>
           <v-list>
             <v-list-item v-if="isChecked">
@@ -513,15 +517,15 @@
       </div>
 
       <v-text-field
+        @click:clear="search('')"
+        @input="search($event.target.value)"
+        :label="$gettext('Search for')"
         prepend-inner-icon="mdi-magnify"
         variant="underlined"
-        :label="$gettext('Search for')"
         class="search"
         clearable
         hide-details
-        @input="search($event.target.value)"
-        @click:clear="search('')"
-      ></v-text-field>
+      />
     </div>
 
     <v-expansion-panels class="list" v-model="panel" elevation="0" multiple>
@@ -534,35 +538,39 @@
 
         <v-expansion-panel v-for="(el, idx) in content" :key="idx" v-show="shown(el)" class="content" :class="{changed: el._changed, error: el._error}">
           <v-expansion-panel-title expand-icon="mdi-pencil">
-            <v-checkbox-btn v-if="auth.can('page:save')" v-model="el._checked" @click.stop=""></v-checkbox-btn>
+            <v-checkbox-btn v-if="auth.can('page:save')" v-model="el._checked" @click.stop="" />
 
             <v-menu v-if="auth.can('page:save')">
               <template v-slot:activator="{ props }">
-                <v-btn icon="mdi-dots-vertical" variant="text" v-bind="props"></v-btn>
+                <v-btn v-bind="props"
+                  :title="$gettext('Actions')"
+                  icon="mdi-dots-vertical"
+                  variant="text"
+                />
               </template>
               <v-list>
-                <v-list-item v-if="!el._error && auth.can('page:save')">
+                <v-list-item v-if="!el._error">
                   <v-btn prepend-icon="mdi-content-copy" variant="text" @click="copy(idx)">{{ $gettext('Copy') }}</v-btn>
                 </v-list-item>
-                <v-list-item v-if="!el._error && auth.can('page:save')">
+                <v-list-item v-if="!el._error">
                   <v-btn prepend-icon="mdi-content-cut" variant="text" @click="cut(idx)">{{ $gettext('Cut') }}</v-btn>
                 </v-list-item>
-                <v-list-item v-if="auth.can('page:save')">
+                <v-list-item>
                   <v-btn prepend-icon="mdi-delete" variant="text" @click="remove(idx)">{{ $gettext('Delete') }}</v-btn>
                 </v-list-item>
 
                 <v-divider></v-divider>
 
-                <v-list-item v-if="clipboard.get('page-content') && auth.can('page:save')">
+                <v-list-item v-if="clipboard.get('page-content')">
                   <v-btn prepend-icon="mdi-arrow-up" variant="text" @click="paste(idx)">{{ $gettext('Paste before') }}</v-btn>
                 </v-list-item>
-                <v-list-item v-if="clipboard.get('page-content') && auth.can('page:save')">
+                <v-list-item v-if="clipboard.get('page-content')">
                   <v-btn prepend-icon="mdi-arrow-down" variant="text" @click="paste(idx + 1)">{{ $gettext('Paste after') }}</v-btn>
                 </v-list-item>
-                <v-list-item v-if="auth.can('page:save')">
+                <v-list-item>
                   <v-btn prepend-icon="mdi-arrow-up" variant="text" @click="insert(idx)">{{ $gettext('Insert before') }}</v-btn>
                 </v-list-item>
-                <v-list-item v-if="auth.can('page:save')">
+                <v-list-item>
                   <v-btn prepend-icon="mdi-arrow-down" variant="text" @click="insert(idx + 1)">{{ $gettext('Insert after') }}</v-btn>
                 </v-list-item>
 
@@ -571,19 +579,23 @@
                 <v-list-item v-if="!el._error && el.type !== 'reference' && auth.can('element:add')">
                   <v-btn prepend-icon="mdi-link" variant="text" @click="share(idx)">{{ $gettext('Make shared') }}</v-btn>
                 </v-list-item>
-                <v-list-item v-if="el.type === 'reference' && auth.can('page:save')">
+                <v-list-item v-if="el.type === 'reference'">
                   <v-btn prepend-icon="mdi-link-off" variant="text" @click="unshare(idx)">{{ $gettext('Merge copy') }}</v-btn>
                 </v-list-item>
-                <v-list-item v-if="el.type !== 'reference' && auth.can('page:save')">
+                <v-list-item v-if="el.type !== 'reference'">
                   <v-btn prepend-icon="mdi-swap-horizontal" variant="text" @click="change(idx)">{{ $gettext('Change to') }}</v-btn>
                 </v-list-item>
-                <v-list-item v-if="el.type === 'text' && auth.can('page:save')">
+                <v-list-item v-if="el.type === 'text'">
                   <v-btn prepend-icon="mdi-set-split" variant="text" @click="split(idx)">{{ $gettext('Split') }}</v-btn>
                 </v-list-item>
               </v-list>
             </v-menu>
 
-            <v-icon v-if="el.type === 'reference'" class="icon-shared" icon="mdi-link" :title="$gettext('Shared element')"></v-icon>
+            <v-icon v-if="el.type === 'reference'"
+              :title="$gettext('Shared element')"
+              class="icon-shared"
+              icon="mdi-link"
+            />
 
             <div class="element-title">{{ el.type === 'reference' ? elements[el.refid]?.name : title(el) }}</div>
             <div class="element-type">{{ $pgettext('st', el.type) }}</div>
@@ -614,10 +626,11 @@
 
     <div v-if="auth.can('page:save')" class="btn-group">
       <v-btn @click="vschemas = true"
+        :title="$gettext('Add element')"
         icon="mdi-view-grid-plus"
         color="primary"
         variant="flat"
-      ></v-btn>
+      />
     </div>
   </div>
 

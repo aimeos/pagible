@@ -164,10 +164,30 @@
 <template>
   <div class="page-preview" ref="preview">
     <div v-if="index !== null" class="actions">
-      <v-btn v-if="index !== -1" icon="mdi-pencil" variant="text" @click="edit()"></v-btn>
-      <v-btn v-if="index !== -1" icon="mdi-table-row-plus-before" variant="text" @click="vschemas = true; pos = 0"></v-btn>
-      <v-btn icon="mdi-table-row-plus-after" variant="text" @click="vschemas = true; pos = 1"></v-btn>
-      <v-btn v-if="index !== -1" icon="mdi-trash-can-outline" variant="text" @click="remove()"></v-btn>
+      <v-btn v-if="index !== -1"
+        @click="edit()"
+        :title="$gettext('Edit element')"
+        icon="mdi-pencil"
+        variant="flat"
+      />
+      <v-btn v-if="index !== -1"
+        @click="vschemas = true; pos = 0"
+        :title="$gettext('Add element before')"
+        icon="mdi-table-row-plus-before"
+        variant="text"
+      />
+      <v-btn
+        @click="vschemas = true; pos = 1"
+        :title="$gettext('Add element after')"
+        icon="mdi-table-row-plus-after"
+        variant="text"
+      />
+      <v-btn v-if="index !== -1"
+        @click="remove()"
+        :title="$gettext('Remove element')"
+        icon="mdi-trash-can-outline"
+        variant="text"
+      />
     </div>
     <div v-if="vpreview" class="preview-mode">
       {{ $gettext('Preview mode') }}
@@ -175,8 +195,20 @@
 
     <iframe ref="iframe" :src="url"></iframe>
 
-    <v-btn v-if="!expanded" class="fullscreen" icon="mdi-fullscreen" variant="text" @click="fullscreen()"></v-btn>
-    <v-btn v-if="expanded" class="fullscreen" icon="mdi-fullscreen-exit" variant="text" @click="fullscreen()"></v-btn>
+    <v-btn v-if="!expanded"
+      @click="fullscreen()"
+      :title="$gettext('Fullscreen mode')"
+      icon="mdi-fullscreen"
+      class="fullscreen"
+      variant="text"
+    />
+    <v-btn v-if="expanded"
+      @click="fullscreen()"
+      :title="$gettext('Exit fullscreen mode')"
+      icon="mdi-fullscreen-exit"
+      class="fullscreen"
+      variant="text"
+    />
   </div>
 
   <Teleport to="body">

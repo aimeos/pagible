@@ -260,10 +260,11 @@
 <template>
   <v-app-bar :elevation="0" density="compact">
     <template v-slot:prepend>
-      <v-btn icon="mdi-keyboard-backspace"
+      <v-btn
         @click="closeView()"
-        elevation="0"
-      ></v-btn>
+        :title="$gettext('Back to list view')"
+        icon="mdi-keyboard-backspace"
+      />
     </template>
 
     <v-app-bar-title>
@@ -273,50 +274,53 @@
     </v-app-bar-title>
 
     <template v-slot:append>
-      <v-btn icon="mdi-history" class="no-rtl"
-        :class="{hidden: item.published && !changed && !item.latest}"
+      <v-btn
         @click="vhistory = true"
-        elevation="0"
-      ></v-btn>
+        :class="{hidden: item.published && !changed && !item.latest}"
+        :title="$gettext('View history')"
+        icon="mdi-history"
+        class="no-rtl"
+      />
 
-      <v-btn :class="{error: error}" class="menu-save"
-        :disabled="!changed || error || !auth.can('element:save')"
+      <v-btn
         @click="save()"
-        variant="text">
-        {{ $gettext('Save') }}
-      </v-btn>
+        :class="{error: error}" class="menu-save"
+        :disabled="!changed || error || !auth.can('element:save')"
+        variant="text"
+      >{{ $gettext('Save') }}</v-btn>
 
       <v-menu v-model="pubmenu" :close-on-content-click="false">
         <template #activator="{ props }">
           <v-btn-group class="menu-publish" variant="text">
-            <v-btn :class="{error: error}" class="button"
+            <v-btn
+              @click="publish()"
+              :class="{error: error}" class="button"
               :disabled="item.published && !changed || error || !auth.can('element:publish')"
-              @click="publish()">
-              {{ $gettext('Publish') }}
-            </v-btn>
-            <v-btn :class="{error: error}" class="icon" icon="mdi-menu-down"
+            >{{ $gettext('Publish') }}</v-btn>
+            <v-btn v-bind="props"
+              :class="{error: error}" class="icon"
               :disabled="item.published && !changed || error || !auth.can('element:publish')"
-              v-bind="props"
-            ></v-btn>
+              :title="$gettext('Schedule publishing')"
+              icon="mdi-menu-down"
+            />
           </v-btn-group>
         </template>
         <div class="menu-content">
-          <v-date-picker v-model="publishAt" hide-header show-adjacent-months></v-date-picker>
+          <v-date-picker v-model="publishAt" hide-header show-adjacent-months />
           <v-btn
+            @click="publish(publishAt); pubmenu = false"
             :disabled="!publishAt || error"
             :color="publishAt ? 'primary' : ''"
-            @click="publish(publishAt); pubmenu = false"
-            variant="flat">
-            {{ $gettext('Publish') }}
-          </v-btn>
+            variant="flat"
+          >{{ $gettext('Publish') }}</v-btn>
         </div>
       </v-menu>
 
-      <v-btn @click="drawer.toggle('aside')">
-        <v-icon size="x-large">
-          {{ drawer.aside ? 'mdi-chevron-right' : 'mdi-chevron-left' }}
-        </v-icon>
-      </v-btn>
+      <v-btn
+        @click="drawer.toggle('aside')"
+        :title="$gettext('Toggle side menu')"
+        :icon="drawer.aside ? 'mdi-chevron-right' : 'mdi-chevron-left'"
+      />
     </template>
   </v-app-bar>
 
@@ -331,10 +335,10 @@
 
         <v-window-item value="element">
           <ElementDetailItem
-            :item="item"
-            :assets="assets"
             @update:item="this.$emit('update:item', item); changed = true"
             @error="error = $event"
+            :assets="assets"
+            :item="item"
           />
         </v-window-item>
 
@@ -353,6 +357,8 @@
   <Teleport to="body">
     <HistoryDialog
       v-model="vhistory"
+      @use="use($event)"
+      @revert="use($event); reset()"
       :current="{
         data: {
           lang: item.lang,
@@ -363,8 +369,6 @@
         files: item.files,
       }"
       :load="() => versions(item.id)"
-      @use="use($event)"
-      @revert="use($event); reset()"
     />
   </Teleport>
 </template>

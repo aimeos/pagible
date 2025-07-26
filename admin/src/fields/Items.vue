@@ -60,6 +60,11 @@
       },
 
 
+      toName(type) {
+        return type?.charAt(0)?.toUpperCase() + type?.slice(1)
+      },
+
+
       async validate() {
         const rules = [
           v => (!this.config.max || this.config.max && v.length <= this.config.max) || this.$gettext(`Maximum is %{num} entries`, {num: this.config.max}),
@@ -91,20 +96,25 @@
 
       <v-expansion-panel v-for="(item, idx) in items" :key="idx" class="item">
         <v-expansion-panel-title>
-          <v-btn v-if="!readonly" icon="mdi-trash-can" variant="plain" @click="remove(idx)"></v-btn>
+          <v-btn v-if="!readonly"
+            @click="remove(idx)"
+            :title="$gettext('Remove element')"
+            icon="mdi-trash-can"
+            variant="plain"
+          />
           <div class="element-title">{{ title(item) }}</div>
         </v-expansion-panel-title>
 
         <v-expansion-panel-text>
           <div v-for="(field, code) in (config.item || {})" :key="code" class="field">
             <v-label>{{ field.label || code }}</v-label>
-            <component :is="field.type?.charAt(0)?.toUpperCase() + field.type?.slice(1)"
+            <component :is="toName(field.type)"
               v-model="items[idx][code]"
-              :assets="assets"
-              :config="field"
-              :readonly="readonly"
               @addFile="$emit('addFile', $event)"
               @removeFile="$emit('removeFile', $event)"
+              :readonly="readonly"
+              :assets="assets"
+              :config="field"
             ></component>
           </div>
         </v-expansion-panel-text>
@@ -124,7 +134,11 @@
   </div>
 
   <div class="btn-group">
-    <v-btn v-if="!readonly && (!config.max || config.max && +items.length < +config.max)" icon="mdi-view-grid-plus" @click="add()"></v-btn>
+    <v-btn v-if="!readonly && (!config.max || config.max && +items.length < +config.max)"
+      :title="$gettext('Add element')"
+      icon="mdi-view-grid-plus"
+      @click="add()"
+    />
   </div>
 </template>
 

@@ -65,11 +65,11 @@
 <template>
   <v-app-bar :elevation="0" density="compact">
     <template #prepend>
-      <v-btn @click="drawer.toggle('nav')">
-        <v-icon size="x-large">
-          {{ drawer.nav ? 'mdi-close' : 'mdi-menu' }}
-        </v-icon>
-      </v-btn>
+      <v-btn
+        @click="drawer.toggle('nav')"
+        :title="drawer.nav ? $gettext('Close navigation') : $gettext('Open navigation')"
+        :icon="drawer.nav ? 'mdi-close' : 'mdi-menu'"
+      />
     </template>
 
     <v-app-bar-title>
@@ -79,11 +79,11 @@
     <template #append>
       <User />
 
-      <v-btn @click="drawer.toggle('aside')">
-        <v-icon size="x-large">
-          {{ drawer.aside ? 'mdi-chevron-right' : 'mdi-chevron-left' }}
-        </v-icon>
-      </v-btn>
+      <v-btn
+        @click="drawer.toggle('aside')"
+        :title="$gettext('Toggle side menu')"
+        :icon="drawer.aside ? 'mdi-chevron-right' : 'mdi-chevron-left'"
+      />
     </template>
   </v-app-bar>
 

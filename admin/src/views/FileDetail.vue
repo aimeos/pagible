@@ -210,10 +210,11 @@
 <template>
   <v-app-bar :elevation="0" density="compact">
     <template v-slot:prepend>
-      <v-btn icon="mdi-keyboard-backspace"
+      <v-btn
         @click="closeView()"
-        elevation="0"
-      ></v-btn>
+        :title="$gettext('Return to list view')"
+        icon="mdi-keyboard-backspace"
+      />
     </template>
 
     <v-app-bar-title>
@@ -223,15 +224,19 @@
     </v-app-bar-title>
 
     <template v-slot:append>
-      <v-btn icon="mdi-history" class="no-rtl"
-        :class="{hidden: item.published && !changed && !item.latest}"
+      <v-btn
         @click="vhistory = true"
-        elevation="0"
-      ></v-btn>
+        :title="$gettext('View history')"
+        :class="{hidden: item.published && !changed && !item.latest}"
+        icon="mdi-history"
+        class="no-rtl"
+      />
 
-      <v-btn :class="{error: error}" class="menu-save"
-        :disabled="!changed || error || !auth.can('file:save')"
+      <v-btn
         @click="save()"
+        :class="{error: error}"
+        :disabled="!changed || error || !auth.can('file:save')"
+        class="menu-save"
         variant="text">
         {{ $gettext('Save') }}
       </v-btn>
@@ -239,34 +244,35 @@
       <v-menu v-model="pubmenu" :close-on-content-click="false">
         <template #activator="{ props }">
           <v-btn-group class="menu-publish" variant="text">
-            <v-btn :class="{error: error}" class="button"
+            <v-btn
+              @click="publish()"
+              :class="{error: error}" class="button"
               :disabled="item.published && !changed || error || !auth.can('file:publish')"
-              @click="publish()">
-              {{ $gettext('Publish') }}
-            </v-btn>
-            <v-btn :class="{error: error}" class="icon" icon="mdi-menu-down"
+            >{{ $gettext('Publish') }}</v-btn>
+            <v-btn v-bind="props"
+              :class="{error: error}" class="icon"
               :disabled="item.published && !changed || error || !auth.can('file:publish')"
-              v-bind="props"
-            ></v-btn>
+              :title="$gettext('Schedule publishing')"
+              icon="mdi-menu-down"
+            />
           </v-btn-group>
         </template>
         <div class="menu-content">
-          <v-date-picker v-model="publishAt" hide-header show-adjacent-months></v-date-picker>
+          <v-date-picker v-model="publishAt" hide-header show-adjacent-months />
           <v-btn
-            :disabled="!publishAt || error"
-            :color="publishAt ? 'primary' : ''"
             @click="publish(publishAt); pubmenu = false"
-            variant="flat">
-            {{ $gettext('Publish') }}
-          </v-btn>
+            :color="publishAt ? 'primary' : ''"
+            :disabled="!publishAt || error"
+            variant="flat"
+          >{{ $gettext('Publish') }}</v-btn>
         </div>
       </v-menu>
 
-      <v-btn @click.stop="drawer.toggle('aside')">
-        <v-icon size="x-large">
-          {{ drawer.aside ? 'mdi-chevron-right' : 'mdi-chevron-left' }}
-        </v-icon>
-      </v-btn>
+      <v-btn
+        @click.stop="drawer.toggle('aside')"
+        :title="$gettext('Toggle side menu')"
+        :icon="drawer.aside ? 'mdi-chevron-right' : 'mdi-chevron-left'"
+      />
     </template>
   </v-app-bar>
 
@@ -281,11 +287,11 @@
 
         <v-window-item value="file">
           <FileDetailItem
-            :item="item"
-            :save="{count: savecnt}"
             @update:item="this.$emit('update:item', item); changed = true"
             @update:file="this.file = $event; changed = true"
             @error="error = $event"
+            :save="{count: savecnt}"
+            :item="item"
           />
         </v-window-item>
 

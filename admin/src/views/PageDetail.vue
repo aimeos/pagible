@@ -594,10 +594,11 @@
 <template>
   <v-app-bar :elevation="0" density="compact">
     <template v-slot:prepend>
-      <v-btn icon="mdi-keyboard-backspace"
+      <v-btn
         @click="closeView()"
-        elevation="0"
-      ></v-btn>
+        :title="$gettext('Return to list view')"
+        icon="mdi-keyboard-backspace"
+      />
     </template>
 
     <v-app-bar-title>
@@ -609,59 +610,70 @@
     <template v-slot:append>
       <v-menu>
         <template #activator="{ props }">
-          <v-btn :loading="translating" icon="mdi-translate" elevation="0" v-bind="props" />
+          <v-btn v-bind="props"
+            :title="$gettext('Translate page')"
+            :loading="translating"
+            icon="mdi-translate"
+          />
         </template>
         <v-list>
           <v-list-item v-for="lang in txlocales(item.lang)" :key="lang.code">
-            <v-btn variant="text" @click="translatePage(lang.code)" prepend-icon="mdi-arrow-right-thin">{{ lang.name }}</v-btn>
+            <v-btn
+              @click="translatePage(lang.code)"
+              prepend-icon="mdi-arrow-right-thin"
+              variant="text">
+              {{ lang.name }}
+            </v-btn>
           </v-list-item>
         </v-list>
       </v-menu>
 
-      <v-btn icon="mdi-history" class="no-rtl"
-        :class="{hidden: item.published && !hasChanged && !latest}"
+      <v-btn
         @click="vhistory = true"
-        elevation="0"
+        :class="{hidden: item.published && !hasChanged && !latest}"
+        icon="mdi-history"
+        class="no-rtl"
       ></v-btn>
 
-      <v-btn :class="{error: hasError}" class="menu-save"
-        :disabled="!hasChanged || hasError || !auth.can('page:save')"
+      <v-btn
         @click="save()"
-        variant="text">
-        {{ $gettext('Save') }}
-      </v-btn>
+        :class="{error: hasError}" class="menu-save"
+        :disabled="!hasChanged || hasError || !auth.can('page:save')"
+        variant="text"
+      >{{ $gettext('Save') }}</v-btn>
 
       <v-menu v-model="pubmenu" :close-on-content-click="false">
         <template #activator="{ props }">
           <v-btn-group class="menu-publish" variant="text">
-            <v-btn :class="{error: hasError}" class="button"
+            <v-btn
+              @click="publish()"
+              :class="{error: hasError}" class="button"
               :disabled="item.published && !hasChanged || hasError || !auth.can('page:publish')"
-              @click="publish()">
-              {{ $gettext('Publish') }}
-            </v-btn>
-            <v-btn :class="{error: hasError}" class="icon" icon="mdi-menu-down"
+            >{{ $gettext('Publish') }}</v-btn>
+            <v-btn v-bind="props"
+              :class="{error: hasError}" class="icon"
               :disabled="item.published && !hasChanged || hasError || !auth.can('page:publish')"
-              v-bind="props"
-            ></v-btn>
+              :title="$gettext('Schedule publishing')"
+              icon="mdi-menu-down"
+            />
           </v-btn-group>
         </template>
         <div class="menu-content">
-          <v-date-picker v-model="publishAt" hide-header show-adjacent-months></v-date-picker>
+          <v-date-picker v-model="publishAt" hide-header show-adjacent-months />
           <v-btn
+            @click="publish(publishAt); pubmenu = false"
             :disabled="!publishAt || hasError"
             :color="publishAt ? 'primary' : ''"
-            @click="publish(publishAt); pubmenu = false"
-            variant="flat">
-            {{ $gettext('Publish') }}
-          </v-btn>
+            variant="flat"
+          >{{ $gettext('Publish') }}</v-btn>
         </div>
       </v-menu>
 
-      <v-btn @click.stop="drawer.toggle('aside')">
-        <v-icon size="x-large">
-          {{ drawer.aside ? 'mdi-chevron-right' : 'mdi-chevron-left' }}
-        </v-icon>
-      </v-btn>
+      <v-btn
+        @click.stop="drawer.toggle('aside')"
+        :title="$gettext('Toggle side menu')"
+        :icon="drawer.aside ? 'mdi-chevron-right' : 'mdi-chevron-left'"
+      />
     </template>
   </v-app-bar>
 

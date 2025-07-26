@@ -207,53 +207,60 @@
 <template>
   <VueDraggable v-model="images" :disabled="readonly" @change="change()" draggable=".image" group="images" class="images" animation="500">
 
-    <div v-for="(item, idx) in images" :key="idx" class="image" @click="open(item)">
+    <div v-for="(item, idx) in images" :key="idx" :class="{readonly: readonly}" class="image" @click="open(item)">
       <v-progress-linear v-if="item.uploading"
         color="primary"
         height="5"
         indeterminate
         rounded
-      ></v-progress-linear>
+      />
       <v-img v-if="item.path"
         :srcset="srcset(item.previews)"
         :src="url(item.path)"
         draggable="false"
-      ></v-img>
-      <button v-if="!readonly && item.id" @click.stop="remove(idx)" class="btn-overlay" title="Remove image" type="button">
-        <v-icon icon="mdi-trash-can" role="img"></v-icon>
-      </button>
+      />
+      <v-btn v-if="!readonly && item.id"
+        @click.stop="remove(idx)"
+        :title="$gettext('Remove file')"
+        icon="mdi-trash-can"
+        class="btn-overlay"
+          variant="flat"
+      />
     </div>
-
     <div v-if="!readonly" class="add">
       <div class="icon-group">
         <v-btn v-if="auth.can('file:view')"
+          @click="vfiles = true"
+          :title="$gettext('Add files')"
           icon="mdi-button-cursor"
           variant="flat"
-          @click="vfiles = true"
-        ></v-btn>
+        />
         <v-btn
           @click="vurls = true"
+          :title="$gettext('Add files from URLs')"
           icon="mdi-link-variant-plus"
           variant="flat"
-        ></v-btn>
+        />
       </div>
       <div class="icon-group">
         <v-btn
           @click="vcreate = true"
+          :title="$gettext('Create file')"
           icon="mdi-creation"
           variant="flat"
-        ></v-btn>
+        />
         <v-btn
+          :title="$gettext('Add files')"
           icon="mdi-upload"
-          variant="flat">
-          <v-file-input
+          variant="flat"
+          ><v-file-input
             v-model="selected"
             @update:modelValue="add($event)"
             :accept="config.accept || 'image/*'"
             :hide-input="true"
             prepend-icon="mdi-upload"
             multiple
-          ></v-file-input>
+          />
         </v-btn>
       </div>
     </div>
