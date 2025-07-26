@@ -25,6 +25,7 @@
           :title="$gettext('Close')"
           @click="$emit('update:modelValue', false)"
           icon="mdi-close"
+          variant="flat"
         />
       </template>
       <template v-slot:title>

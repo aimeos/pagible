@@ -44,7 +44,7 @@
 
     data: () => ({
       tab: 'page',
-      aside: '',
+      aside: 'meta',
       asidePage: 'meta',
       changed: {},
       errors: {},

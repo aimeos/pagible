@@ -740,11 +740,11 @@
     transform: translateX(-50%);
     border-radius: 10px;
     position: absolute;
-    z-index: 1000;
     padding: 10px;
     bottom: 30px;
     left: 50%;
     gap: 8px;
+    z-index: 2;
     display: flex;
     flex-wrap: nowrap;
     justify-content: center;

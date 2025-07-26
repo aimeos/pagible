@@ -79,6 +79,7 @@
           :title="$gettext('Close')"
           @click="$emit('update:modelValue', false)"
           icon="mdi-close"
+          variant="flat"
         />
       </template>
       <template v-slot:title>
@@ -89,18 +90,28 @@
 
       <v-card-text>
         <v-timeline side="end" align="start">
-          <v-timeline-item v-if="loading" size="small" dot-color="grey-lighten-1">
+          <v-timeline-item v-if="loading" dot-color="grey-lighten-1" size="small" width="100%">
             <div class="loading">
               {{ $gettext('Loading') }}
-              <svg class="spinner" width="32" height="32" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><circle class="spin1" cx="4" cy="12" r="3"/><circle class="spin1 spin2" cx="12" cy="12" r="3"/><circle class="spin1 spin3" cx="20" cy="12" r="3"/></svg>
+              <svg class="spinner" width="32" height="32" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <circle class="spin1" cx="4" cy="12" r="3"/>
+                <circle class="spin1 spin2" cx="12" cy="12" r="3"/>
+                <circle class="spin1 spin3" cx="20" cy="12" r="3"/>
+              </svg>
             </div>
           </v-timeline-item>
 
-          <v-timeline-item v-if="!loading && !(latest && isModified(latest, current) || versions.length)" size="small" dot-color="grey-lighten-1">
+          <v-timeline-item v-if="!loading && !(latest && isModified(latest, current) || versions.length)"
+            dot-color="grey-lighten-1"
+            width="100%"
+            size="small">
             {{ $gettext('No changes') }}
           </v-timeline-item>
 
-          <v-timeline-item v-if="!loading && latest && isModified(latest, current)" size="small" dot-color="blue">
+          <v-timeline-item v-if="!loading && latest && isModified(latest, current)"
+            dot-color="blue"
+            width="100%"
+            size="small">
 
             <v-card class="elevation-2" @click="show = !show">
               <v-card-title>{{ $gettext('Current') }}</v-card-title>
@@ -118,13 +129,20 @@
 
           </v-timeline-item>
 
-          <v-timeline-item v-for="(version, idx) in versions" :key="idx" size="small"
-            :dot-color="version.published ? 'success' : 'grey-lighten-1'" :class="{publish: version.publish_at}">
+          <v-timeline-item v-for="(version, idx) in versions" :key="idx"
+            :dot-color="version.published ? 'success' : 'grey-lighten-1'"
+            :class="{publish: version.publish_at}"
+            width="100%"
+            size="small">
 
             <v-card class="elevation-2">
               <div @click="version._show = !version._show">
-                <v-card-title>{{ (new Date(version.publish_at || version.created_at)).toLocaleString($vuetify.locale.current) }}</v-card-title>
-                <v-card-subtitle>{{ version.editor }}</v-card-subtitle>
+                <v-card-title>
+                  {{ (new Date(version.publish_at || version.created_at)).toLocaleString($vuetify.locale.current) }}
+                </v-card-title>
+                <v-card-subtitle>
+                  {{ version.editor }}
+                </v-card-subtitle>
                 <v-card-text class="diff" :class="{show: version._show}">
                   <span v-for="part of diff(version.data, current.data)" :class="{added: part.removed, removed: part.added}">
                     {{ part.value || part }}
@@ -146,21 +164,12 @@
 </template>
 
 <style scoped>
-  .v-card {
-    min-width: max(300px, 50vw);
-  }
-
   .v-timeline--vertical {
       grid-template-columns: 0 min-content auto;
   }
 
   .v-timeline-item__opposite {
     display: none;
-  }
-
-  /* todo: Doesn't work when display:content is used */
-  .v-timeline-item__body {
-    justify-self: auto !important;
   }
 
   .v-timeline-item.publish .v-card-title {
@@ -179,7 +188,7 @@
   }
 
   .v-timeline-item .v-card-text.diff span {
-    white-space: pre;
+    white-space: break-spaces;
     display: none;
   }
 

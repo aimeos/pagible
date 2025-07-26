@@ -924,6 +924,7 @@
       :title="$gettext('Reload page tree')"
       icon="mdi-refresh"
       variant="flat"
+      class="no-rtl"
     />
   </div>
 

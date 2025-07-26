@@ -376,7 +376,7 @@ body {
 }
 
 @media (min-width: 768px) {
-  .item-content {
+  .items:not(.grid) .item-content {
     flex-wrap: nowrap;
   }
 }
@@ -385,6 +385,11 @@ body {
   display: flex;
   flex: 1 1 auto;
   flex-direction: column;
+}
+
+.item-head {
+  max-height: 48px;
+  overflow: hidden;
 }
 
 .item-aux {
@@ -417,6 +422,12 @@ body {
   font-weight: bold;
   font-size: 60%;
   padding: 2px 4px;
+}
+
+.readonly,
+input[readonly],
+.ck-editor .ck-read-only {
+  background-color: rgb(var(--v-theme-background)) !important;
 }
 
 .ck-editor {
