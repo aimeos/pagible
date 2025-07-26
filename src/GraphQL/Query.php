@@ -319,24 +319,24 @@ final class Query
                     $builder->where( 'parent_id', $filter['parent_id'] );
                 }
 
+                if( array_key_exists( 'to', $filter ) ) {
+                    $builder->where( 'to', (string) $filter['to'] );
+                }
+
+                if( array_key_exists( 'path', $filter ) ) {
+                    $builder->where( 'path', (string) $filter['path'] );
+                }
+
+                if( array_key_exists( 'domain', $filter ) ) {
+                    $builder->where( 'domain', (string) $filter['domain'] );
+                }
+
                 if( isset( $filter['id'] ) ) {
                     $builder->whereIn( 'id', $filter['id'] );
                 }
 
                 if( isset( $filter['lang'] ) ) {
                     $builder->where( 'lang', (string) $filter['lang'] );
-                }
-
-                if( isset( $filter['to'] ) ) {
-                    $builder->where( 'to', (string) $filter['to'] );
-                }
-
-                if( isset( $filter['path'] ) ) {
-                    $builder->where( 'path', (string) $filter['path'] );
-                }
-
-                if( isset( $filter['domain'] ) ) {
-                    $builder->where( 'domain', (string) $filter['domain'] );
                 }
 
                 if( isset( $filter['tag'] ) ) {
@@ -397,24 +397,24 @@ final class Query
                         $builder->whereIn( 'versionable_id', $filter['id'] );
                     }
 
-                    if( isset( $filter['lang'] ) ) {
-                        $builder->where( 'lang', (string) $filter['lang'] );
-                    }
-
                     if( isset( $filter['editor'] ) ) {
                         $builder->where( 'editor', 'like', $filter['editor'] . '%' );
                     }
 
-                    if( isset( $filter['to'] ) ) {
+                    if( array_key_exists( 'to', $filter ) ) {
                         $builder->where( 'data->to', (string) $filter['to'] );
                     }
 
-                    if( isset( $filter['path'] ) ) {
+                    if( array_key_exists( 'path', $filter ) ) {
                         $builder->where( 'data->path', (string) $filter['path'] );
                     }
 
-                    if( isset( $filter['domain'] ) ) {
+                    if( array_key_exists( 'domain', $filter ) ) {
                         $builder->where( 'data->domain', (string) $filter['domain'] );
+                    }
+
+                    if( isset( $filter['lang'] ) ) {
+                        $builder->where( 'lang', (string) $filter['lang'] );
                     }
 
                     if( isset( $filter['tag'] ) ) {
