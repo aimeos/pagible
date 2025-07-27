@@ -134,6 +134,18 @@
       },
 
 
+      createMarkdown(el) {
+        if(el.type === 'text') {
+          return el.data.text || ''
+        } else if(el.type === 'code') {
+          return `\`\`\`${el.data.lang || ''}\n${el.data.text || ''}\n\`\`\``
+        } else if(el.type === 'heading') {
+          return `${'#'.repeat(Number(el.data.level) || 1)} ${el.data.title || ''}`
+        }
+        return ''
+      },
+
+
       cut(idx) {
         const list = []
 
@@ -179,6 +191,33 @@
       insert(idx) {
         this.index = idx
         this.vschemas = true
+      },
+
+
+      merge() {
+        let idx = 0
+        const entries = []
+
+        for(let i = this.content.length - 1; i >= 0; i--) {
+          if(this.content[i]._checked && ['text', 'code', 'heading'].includes(this.content[i].type)) {
+            entries.push(this.content[i])
+            this.content.splice(i, 1)
+            idx = i
+          }
+        }
+
+        if(entries.length === 0) {
+          return
+        }
+
+        const entry = entries.reverse().reduce((acc, el) => {
+          acc.data.text += this.createMarkdown(el) + '\n\n'
+          return acc
+        }, {id: uid(), group: this.section, type: 'text', data: {text: ''}})
+
+        this.content.splice(idx, 0, entry)
+        this.$emit('update:content', this.content)
+        this.store()
       },
 
 
@@ -511,6 +550,9 @@
             </v-list-item>
             <v-list-item v-if="clipboard.get('page-content')">
               <v-btn prepend-icon="mdi-content-paste" variant="text" @click="paste()">{{ $gettext('Paste') }}</v-btn>
+            </v-list-item>
+            <v-list-item v-if="isChecked">
+              <v-btn prepend-icon="mdi-set-merge" variant="text" @click="merge()">{{ $gettext('Merge') }}</v-btn>
             </v-list-item>
           </v-list>
         </v-menu>
