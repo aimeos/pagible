@@ -1,77 +1,99 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
-"Language: ar\n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
-"&& n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: ar\n"
+"Language-Team: none\n"
+"Last-Translator: Automatically generated\n"
+"MIME-Version: 1.0\n"
+"Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;\n"
+"Project-Id-Version: PACKAGE VERSION\n"
 
 #: src/App.vue:110
 msgid "None"
 msgstr "لا يوجد"
 
-#: src/components/AsideMeta.vue:17
+#: src/components/AsideMeta.vue:19
 msgid "id"
 msgstr "الهوية"
 
-#: src/components/AsideMeta.vue:18 src/components/ElementListItems.vue:471
-#: src/components/FileListItems.vue:506 src/fields/Audio.vue:61
-#: src/fields/File.vue:245 src/fields/Image.vue:103 src/fields/Video.vue:63
-#: src/views/ElementList.vue:119 src/views/FileList.vue:116
-#: src/views/PageList.vue:124
+#: src/components/AsideMeta.vue:23
+#: src/components/FileListItems.vue:525
+#: src/fields/Audio.vue:71
+#: src/fields/File.vue:255
+#: src/fields/Image.vue:114
+#: src/fields/Video.vue:73
+msgid "mime"
+msgstr "التمثيل الصامت"
+
+#: src/components/AsideMeta.vue:27
+#: src/components/ElementListItems.vue:475
+#: src/components/FileListItems.vue:531
+#: src/fields/Audio.vue:75
+#: src/fields/File.vue:259
+#: src/fields/Image.vue:118
+#: src/fields/Video.vue:77
+#: src/views/ElementList.vue:119
+#: src/views/FileList.vue:116
+#: src/views/PageList.vue:220
 msgid "editor"
 msgstr "محرر"
 
-#: src/components/AsideMeta.vue:22
+#: src/components/AsideMeta.vue:31
 msgid "created"
 msgstr "تم إنشاؤها"
 
-#: src/components/AsideMeta.vue:26 src/fields/Audio.vue:62
-#: src/fields/File.vue:246 src/fields/Image.vue:104 src/fields/Video.vue:64
+#: src/components/AsideMeta.vue:35
+#: src/fields/Audio.vue:79
+#: src/fields/File.vue:263
+#: src/fields/Image.vue:122
+#: src/fields/Video.vue:81
 msgid "updated"
 msgstr "محدثة"
 
-#: src/components/AsideMeta.vue:30
+#: src/components/AsideMeta.vue:39
 msgid "deleted"
 msgstr "محذوف"
 
-#: src/components/AsideMeta.vue:45
+#: src/components/AsideMeta.vue:54
 msgid "Meta data"
 msgstr "البيانات الوصفية"
 
 #: src/components/ElementDetailItem.vue:68
 #: src/components/ElementDetailRefs.vue:96
-#: src/components/FileDetailItem.vue:208 src/components/FileDetailRefs.vue:101
+#: src/components/FileDetailItem.vue:508
+#: src/components/FileDetailRefs.vue:101
 #: src/components/FileDetailRefs.vue:123
 msgid "Name"
 msgstr "الاسم"
 
 #: src/components/ElementDetailItem.vue:80
-#: src/components/FileDetailItem.vue:220
+#: src/components/FileDetailItem.vue:520
 #: src/components/PageDetailItemProps.vue:150
 msgid "Language"
 msgstr "اللغة"
 
-#: src/components/ElementDetailRefs.vue:65 src/components/FileDetailRefs.vue:69
+#: src/components/ElementDetailRefs.vue:65
+#: src/components/FileDetailRefs.vue:69
 msgid "yes"
 msgstr "نعم"
 
-#: src/components/ElementDetailRefs.vue:68 src/components/FileDetailRefs.vue:73
+#: src/components/ElementDetailRefs.vue:68
+#: src/components/FileDetailRefs.vue:73
 msgid "no"
 msgstr "لا يوجد"
 
-#: src/components/ElementDetailRefs.vue:89 src/components/Navigation.vue:36
-#: src/components/SchemaDialog.vue:35 src/views/ElementList.vue:76
+#: src/components/ElementDetailRefs.vue:89
+#: src/components/Navigation.vue:36
+#: src/components/SchemaDialog.vue:42
+#: src/views/ElementList.vue:76
 msgid "Shared elements"
 msgstr "العناصر المشتركة"
 
 #: src/components/ElementDetailRefs.vue:94
 #: src/components/ElementDetailRefs.vue:116
-#: src/components/FileDetailRefs.vue:99 src/components/FileDetailRefs.vue:121
+#: src/components/FileDetailRefs.vue:99
+#: src/components/FileDetailRefs.vue:121
 #: src/components/FileDetailRefs.vue:143
 msgid "ID"
 msgstr "بطاقة الهوية"
@@ -82,13 +104,16 @@ msgid "URL"
 msgstr "عنوان URL"
 
 #: src/components/ElementDetailRefs.vue:117
-#: src/components/FileDetailRefs.vue:122 src/components/FileDetailRefs.vue:144
+#: src/components/FileDetailRefs.vue:122
+#: src/components/FileDetailRefs.vue:144
 msgid "Type"
 msgstr "النوع"
 
 #: src/components/ElementDetailRefs.vue:118
-#: src/components/FileDetailRefs.vue:145 src/views/ElementList.vue:105
-#: src/views/FileList.vue:102 src/views/PageList.vue:110
+#: src/components/FileDetailRefs.vue:145
+#: src/views/ElementList.vue:105
+#: src/views/FileList.vue:102
+#: src/views/PageList.vue:190
 msgid "Published"
 msgstr "منشورة"
 
@@ -97,23 +122,44 @@ msgstr "منشورة"
 #: src/components/ElementListItems.vue:157
 #: src/components/ElementListItems.vue:198
 #: src/components/ElementListItems.vue:240
-#: src/components/ElementListItems.vue:277 src/components/FileListItems.vue:61
-#: src/components/FileListItems.vue:122 src/components/FileListItems.vue:166
-#: src/components/FileListItems.vue:207 src/components/FileListItems.vue:249
-#: src/components/FileListItems.vue:286
-#: src/components/PageDetailContentList.vue:218
-#: src/components/PageListItems.vue:67 src/components/PageListItems.vue:101
-#: src/components/PageListItems.vue:168 src/components/PageListItems.vue:211
-#: src/components/PageListItems.vue:288 src/components/PageListItems.vue:351
-#: src/components/PageListItems.vue:416 src/components/PageListItems.vue:470
-#: src/components/PageListItems.vue:566 src/components/PageListItems.vue:607
-#: src/components/PageListItems.vue:649 src/components/PageListItems.vue:711
-#: src/fields/File.vue:55 src/fields/Images.vue:61
-#: src/views/ElementDetail.vue:107 src/views/ElementDetail.vue:156
-#: src/views/ElementDetail.vue:211 src/views/FileDetail.vue:45
-#: src/views/FileDetail.vue:94 src/views/FileDetail.vue:149
-#: src/views/PageDetail.vue:289 src/views/PageDetail.vue:341
-#: src/views/PageDetail.vue:535
+#: src/components/ElementListItems.vue:277
+#: src/components/FileDetailItem.vue:80
+#: src/components/FileDetailItem.vue:226
+#: src/components/FileDetailItem.vue:300
+#: src/components/FileDetailItem.vue:339
+#: src/components/FileDetailItem.vue:374
+#: src/components/FileDetailItem.vue:416
+#: src/components/FileDetailItem.vue:427
+#: src/components/FileListItems.vue:61
+#: src/components/FileListItems.vue:124
+#: src/components/FileListItems.vue:168
+#: src/components/FileListItems.vue:209
+#: src/components/FileListItems.vue:251
+#: src/components/FileListItems.vue:288
+#: src/components/PageDetailContentList.vue:286
+#: src/components/PageListItems.vue:64
+#: src/components/PageListItems.vue:98
+#: src/components/PageListItems.vue:165
+#: src/components/PageListItems.vue:208
+#: src/components/PageListItems.vue:285
+#: src/components/PageListItems.vue:348
+#: src/components/PageListItems.vue:413
+#: src/components/PageListItems.vue:467
+#: src/components/PageListItems.vue:563
+#: src/components/PageListItems.vue:604
+#: src/components/PageListItems.vue:665
+#: src/components/PageListItems.vue:727
+#: src/fields/File.vue:55
+#: src/fields/Images.vue:61
+#: src/views/ElementDetail.vue:107
+#: src/views/ElementDetail.vue:156
+#: src/views/ElementDetail.vue:211
+#: src/views/FileDetail.vue:46
+#: src/views/FileDetail.vue:95
+#: src/views/FileDetail.vue:164
+#: src/views/PageDetail.vue:297
+#: src/views/PageDetail.vue:349
+#: src/views/PageDetail.vue:543
 msgid "Permission denied"
 msgstr "تم رفض الإذن"
 
@@ -141,86 +187,145 @@ msgstr "خطأ في تطهير العنصر المشترك"
 msgid "Error fetching shared elements"
 msgstr "خطأ في جلب العناصر المشتركة"
 
-#: src/components/ElementListItems.vue:417 src/components/FileListItems.vue:446
-#: src/components/PageDetailContentList.vue:411
-#: src/components/PageListItems.vue:866
+#: src/components/ElementListItems.vue:417
+#: src/components/ElementListItems.vue:489
+#: src/components/FileListItems.vue:457
+#: src/components/FileListItems.vue:545
+#: src/components/PageDetailContentList.vue:539
+#: src/components/PageDetailContentList.vue:588
+#: src/components/PageListItems.vue:883
+#: src/components/PageListItems.vue:960
 msgid "Actions"
 msgstr "الإجراءات"
 
 #: src/components/ElementListItems.vue:421
-#: src/components/ElementListItems.vue:488 src/components/FileListItems.vue:450
-#: src/components/FileListItems.vue:523 src/components/PageListItems.vue:870
-#: src/components/PageListItems.vue:932 src/views/ElementDetail.vue:295
-#: src/views/ElementDetail.vue:310 src/views/FileDetail.vue:229
-#: src/views/FileDetail.vue:244 src/views/PageDetail.vue:632
-#: src/views/PageDetail.vue:647
+#: src/components/ElementListItems.vue:497
+#: src/components/FileListItems.vue:461
+#: src/components/FileListItems.vue:553
+#: src/components/PageListItems.vue:887
+#: src/components/PageListItems.vue:967
+#: src/views/ElementDetail.vue:299
+#: src/views/ElementDetail.vue:315
+#: src/views/FileDetail.vue:251
+#: src/views/FileDetail.vue:267
+#: src/views/PageDetail.vue:652
+#: src/views/PageDetail.vue:668
 msgid "Publish"
 msgstr "النشر"
 
 #: src/components/ElementListItems.vue:424
+#: src/components/ElementListItems.vue:544
+#: src/components/PageDetailContentList.vue:671
+#: src/components/PageDetailItemConfig.vue:200
+#: src/components/PageDetailItemMeta.vue:199
+#: src/fields/Items.vue:138
 msgid "Add element"
 msgstr "إضافة عنصر"
 
 #: src/components/ElementListItems.vue:427
-#: src/components/ElementListItems.vue:491 src/components/FileListItems.vue:456
-#: src/components/FileListItems.vue:526 src/components/PageListItems.vue:882
-#: src/components/PageListItems.vue:1010
+#: src/components/ElementListItems.vue:500
+#: src/components/FileListItems.vue:467
+#: src/components/FileListItems.vue:556
+#: src/components/PageListItems.vue:899
+#: src/components/PageListItems.vue:1045
 msgid "Trash"
 msgstr "القمامة"
 
 #: src/components/ElementListItems.vue:430
-#: src/components/ElementListItems.vue:494 src/components/FileListItems.vue:459
-#: src/components/FileListItems.vue:529 src/components/PageListItems.vue:885
-#: src/components/PageListItems.vue:1013
+#: src/components/ElementListItems.vue:503
+#: src/components/FileListItems.vue:470
+#: src/components/FileListItems.vue:559
+#: src/components/PageListItems.vue:902
+#: src/components/PageListItems.vue:1048
 msgid "Restore"
 msgstr "الاستعادة"
 
 #: src/components/ElementListItems.vue:433
-#: src/components/ElementListItems.vue:497 src/components/FileListItems.vue:462
-#: src/components/FileListItems.vue:532 src/components/PageListItems.vue:888
-#: src/components/PageListItems.vue:1016
+#: src/components/ElementListItems.vue:506
+#: src/components/FileListItems.vue:473
+#: src/components/FileListItems.vue:562
+#: src/components/PageListItems.vue:905
+#: src/components/PageListItems.vue:1051
 msgid "Purge"
 msgstr "التطهير"
 
-#: src/components/ElementListItems.vue:444 src/components/FileListItems.vue:473
-#: src/components/PageDetailContentList.vue:433
-#: src/components/PageListItems.vue:897
+#: src/components/ElementListItems.vue:444
+#: src/components/FileListItems.vue:482
+#: src/components/PageDetailContentList.vue:564
+#: src/components/PageListItems.vue:914
 msgid "Search for"
 msgstr "البحث عن"
 
 #: src/components/ElementListItems.vue:454
-#: src/components/ElementListItems.vue:459 src/components/FileListItems.vue:486
-#: src/components/FileListItems.vue:491
+#: src/components/FileListItems.vue:507
+msgid "Sort by"
+msgstr "فرز حسب"
+
+#: src/components/ElementListItems.vue:458
+#: src/components/ElementListItems.vue:463
+#: src/components/FileListItems.vue:511
+#: src/components/FileListItems.vue:516
 msgid "latest"
 msgstr "الأحدث"
 
-#: src/components/ElementListItems.vue:454
-#: src/components/ElementListItems.vue:462 src/components/FileListItems.vue:486
-#: src/components/FileListItems.vue:494
+#: src/components/ElementListItems.vue:458
+#: src/components/ElementListItems.vue:466
+#: src/components/FileListItems.vue:511
+#: src/components/FileListItems.vue:519
 msgid "oldest"
 msgstr "الأقدم"
 
-#: src/components/ElementListItems.vue:465 src/components/FileListItems.vue:497
-#: src/fields/Audio.vue:59 src/fields/File.vue:243 src/fields/Image.vue:101
-#: src/fields/Video.vue:61
+#: src/components/ElementListItems.vue:469
+#: src/components/FileListItems.vue:522
+#: src/fields/Audio.vue:67
+#: src/fields/File.vue:251
+#: src/fields/Image.vue:110
+#: src/fields/Video.vue:69
 msgid "name"
 msgstr "الاسم"
 
-#: src/components/ElementListItems.vue:468
+#: src/components/ElementListItems.vue:472
 msgid "type"
 msgstr "النوع"
 
-#: src/components/ElementListItems.vue:521 src/components/FileListItems.vue:564
-#: src/components/HistoryDialog.vue:90 src/components/PageListItems.vue:1048
+#: src/components/ElementListItems.vue:530
+#: src/components/FileListItems.vue:594
+#: src/components/HistoryDialog.vue:95
+#: src/components/PageListItems.vue:1083
 msgid "Loading"
 msgstr "التحميل"
 
-#: src/components/ElementListItems.vue:525 src/components/FileListItems.vue:569
-#: src/components/PageListItems.vue:1053
+#: src/components/ElementListItems.vue:534
+#: src/components/FileListItems.vue:599
+#: src/components/PageListItems.vue:1088
 msgid "No entries found"
 msgstr "لم يتم العثور على إدخالات"
 
-#: src/components/FieldsDialog.vue:52
+#: src/components/Fields.vue:130
+msgid "Translate %{code} field"
+msgstr "ترجمة الحقل %{code} "
+
+#: src/components/Fields.vue:147
+msgid "Generate text for %{code} field"
+msgstr "إنشاء نص لحقل %{code} "
+
+#: src/components/FieldsDialog.vue:51
+#: src/views/ElementDetail.vue:290
+#: src/views/FileDetail.vue:241
+#: src/views/PageDetail.vue:643
+msgid "Save"
+msgstr "الحفظ"
+
+#: src/components/FieldsDialog.vue:54
+#: src/components/FileAiDialog.vue:171
+#: src/components/FileDialog.vue:25
+#: src/components/FileUrlDialog.vue:155
+#: src/components/HistoryDialog.vue:79
+#: src/components/SchemaDialog.vue:25
+msgid "Close"
+msgstr "إغلاق"
+
+#: src/components/FieldsDialog.vue:60
 msgid "Content Element"
 msgstr "عنصر المحتوى"
 
@@ -228,64 +333,128 @@ msgstr "عنصر المحتوى"
 msgid "Context in JSON format"
 msgstr "السياق بتنسيق JSON"
 
-#: src/components/FileAiDialog.vue:172 src/components/FileAiDialog.vue:191
+#: src/components/FileAiDialog.vue:177
+#: src/components/FileAiDialog.vue:196
 msgid "Create image"
 msgstr "إنشاء صورة"
 
-#: src/components/FileAiDialog.vue:178
+#: src/components/FileAiDialog.vue:183
 msgid "Describe the image"
 msgstr "وصف الصورة"
 
-#: src/components/FileAiDialog.vue:196
+#: src/components/FileAiDialog.vue:201
 msgid "Generated images"
 msgstr "الصور التي تم إنشاؤها"
 
-#: src/components/FileAiDialog.vue:200 src/components/FileAiDialog.vue:215
+#: src/components/FileAiDialog.vue:207
+#: src/components/FileAiDialog.vue:225
 msgid "Remove"
 msgstr "إزالة"
 
-#: src/components/FileAiDialog.vue:211
+#: src/components/FileAiDialog.vue:221
 msgid "Use images of this style"
 msgstr "استخدام صور من هذا النمط"
 
-#: src/components/FileAiDialog.vue:225
+#: src/components/FileAiDialog.vue:235
 msgid "Select similar images"
 msgstr "حدد الصور المتشابهة"
 
-#: src/components/FileDetailItem.vue:231
+#: src/components/FileDetailItem.vue:304
+msgid "Transcription is only available for audio and video files"
+msgstr "يتوفر النسخ للملفات الصوتية وملفات الفيديو فقط"
+
+#: src/components/FileDetailItem.vue:329
+msgid "Error transcribing file"
+msgstr "خطأ في نسخ الملف"
+
+#: src/components/FileDetailItem.vue:433
+msgid "No file selected"
+msgstr "لم يتم تحديد أي ملف"
+
+#: src/components/FileDetailItem.vue:533
+msgid "Use cropped image"
+msgstr "استخدام صورة مقصوصة"
+
+#: src/components/FileDetailItem.vue:539
+msgid "Crop image"
+msgstr "اقتصاص الصورة"
+
+#: src/components/FileDetailItem.vue:543
+msgid "Original ratio"
+msgstr "النسبة الأصلية"
+
+#: src/components/FileDetailItem.vue:546
+msgid "No ratio"
+msgstr "لا توجد نسبة"
+
+#: src/components/FileDetailItem.vue:549
+msgid "Square"
+msgstr "المربع"
+
+#: src/components/FileDetailItem.vue:567
 msgid "Rotate counter-clockwise"
 msgstr "تدوير عكس اتجاه عقارب الساعة"
 
-#: src/components/FileDetailItem.vue:232
+#: src/components/FileDetailItem.vue:568
 msgid "Rotate clockwise"
 msgstr "تدوير في اتجاه عقارب الساعة"
 
-#: src/components/FileDetailItem.vue:235
+#: src/components/FileDetailItem.vue:571
 msgid "Flip horizontally"
 msgstr "اقلب أفقيًا"
 
-#: src/components/FileDetailItem.vue:236
+#: src/components/FileDetailItem.vue:572
 msgid "Flip vertically"
 msgstr "اقلب عمودياً"
 
-#: src/components/FileDetailItem.vue:239
+#: src/components/FileDetailItem.vue:575
 msgid "Reset"
 msgstr "إعادة تعيين"
 
-#: src/components/FileDetailItem.vue:240
+#: src/components/FileDetailItem.vue:576
 msgid "Download"
 msgstr "تنزيل"
 
-#: src/components/FileDetailItem.vue:267
+#: src/components/FileDetailItem.vue:595
+msgid "Use as cover image"
+msgstr "استخدام كصورة غلاف"
+
+#: src/components/FileDetailItem.vue:596
+msgid "Upload cover image"
+msgstr "تحميل صورة الغلاف"
+
+#: src/components/FileDetailItem.vue:619
 msgid "Descriptions"
 msgstr "الأوصاف"
 
-#: src/components/FileDetailItem.vue:292
+#: src/components/FileDetailItem.vue:623
+#: src/components/FileDetailItem.vue:665
+msgid "Translate text"
+msgstr "ترجمة النص"
+
+#: src/components/FileDetailItem.vue:630
+msgid "Generate description"
+msgstr "إنشاء الوصف"
+
+#: src/components/FileDetailItem.vue:645
 msgid "Description (%{lang})"
 msgstr "الوصف (%{lang})"
 
-#: src/components/FileDetailRefs.vue:94 src/components/Navigation.vue:30
-#: src/views/PageList.vue:75
+#: src/components/FileDetailItem.vue:661
+msgid "Transcriptions"
+msgstr "النسخ"
+
+#: src/components/FileDetailItem.vue:672
+msgid "Transcribe file content"
+msgstr "نسخ محتوى الملف"
+
+#: src/components/FileDetailItem.vue:687
+msgid "Transcription (%{lang})"
+msgstr "النسخ (%{lang})"
+
+#: src/components/FileDetailRefs.vue:94
+#: src/components/Navigation.vue:30
+#: src/views/PageList.vue:138
 msgid "Pages"
 msgstr "الصفحات"
 
@@ -297,48 +466,48 @@ msgstr "العناصر"
 msgid "Versions"
 msgstr "الإصدارات"
 
-#: src/components/FileDialog.vue:26 src/components/Navigation.vue:42
+#: src/components/FileDialog.vue:31
+#: src/components/Navigation.vue:42
 msgid "Files"
 msgstr "الملفات"
 
-#: src/components/FileListItems.vue:151
+#: src/components/FileListItems.vue:153
 msgid "Error trashing file"
 msgstr "خطأ في التخلص من الملف المحذوف"
 
-#: src/components/FileListItems.vue:199
+#: src/components/FileListItems.vue:201
 msgid "Error restoring file"
 msgstr "خطأ في استعادة الملف"
 
-#: src/components/FileListItems.vue:241 src/views/FileDetail.vue:79
+#: src/components/FileListItems.vue:243
+#: src/views/FileDetail.vue:80
 msgid "Error publishing file"
 msgstr "خطأ في نشر الملف"
 
-#: src/components/FileListItems.vue:278
+#: src/components/FileListItems.vue:280
 msgid "Error purging file"
 msgstr "خطأ في تطهير الملف"
 
-#: src/components/FileListItems.vue:373
+#: src/components/FileListItems.vue:380
 msgid "Error fetching files"
 msgstr "خطأ في جلب الملفات"
 
-#: src/components/FileListItems.vue:453
+#: src/components/FileListItems.vue:464
+#: src/components/FileListItems.vue:616
+#: src/fields/Images.vue:234
+#: src/fields/Images.vue:253
 msgid "Add files"
 msgstr "إضافة ملفات"
 
-#: src/components/FileListItems.vue:480
+#: src/components/FileListItems.vue:493
 msgid "Grid view"
 msgstr "عرض الشبكة"
 
-#: src/components/FileListItems.vue:481
+#: src/components/FileListItems.vue:499
 msgid "List view"
 msgstr "عرض القائمة"
 
-#: src/components/FileListItems.vue:500 src/fields/Audio.vue:60
-#: src/fields/File.vue:244 src/fields/Image.vue:102 src/fields/Video.vue:62
-msgid "mime"
-msgstr "التمثيل الصامت"
-
-#: src/components/FileListItems.vue:503
+#: src/components/FileListItems.vue:528
 msgid "language"
 msgstr "اللغة"
 
@@ -351,112 +520,141 @@ msgid "The file is not of type \"%{mime}*\""
 msgstr "الملف ليس من النوع \"%{mime}*\""
 
 #: src/components/FileUrlDialog.vue:151
+#: src/fields/Audio.vue:40
+#: src/fields/File.vue:224
+#: src/fields/Image.vue:77
+#: src/fields/Video.vue:42
 msgid "Add file"
 msgstr "إضافة ملف"
 
-#: src/components/FileUrlDialog.vue:156
-msgid "Add files by URL"
-msgstr "إضافة ملفات حسب عنوان URL"
+#: src/components/FileUrlDialog.vue:161
+#: src/fields/Images.vue:240
+msgid "Add files from URLs"
+msgstr "إضافة ملفات من عناوين URL"
 
-#: src/components/FileUrlDialog.vue:167
+#: src/components/FileUrlDialog.vue:172
 msgid "Enter one URL per line"
 msgstr "أدخل عنوان URL واحد لكل سطر"
 
-#: src/components/FileUrlDialog.vue:181
+#: src/components/FileUrlDialog.vue:186
 msgid "Enter URL"
 msgstr "أدخل عنوان URL"
 
-#: src/components/FileUrlDialog.vue:189
+#: src/components/FileUrlDialog.vue:196
+#: src/fields/Audio.vue:31
+#: src/fields/File.vue:215
+#: src/fields/Image.vue:68
+#: src/fields/Images.vue:224
+#: src/fields/Video.vue:32
 msgid "Remove file"
 msgstr "إزالة الملف"
 
-#: src/components/HistoryDialog.vue:81
+#: src/components/HistoryDialog.vue:86
 msgid "History"
 msgstr "التاريخ"
 
-#: src/components/HistoryDialog.vue:96
+#: src/components/HistoryDialog.vue:108
 msgid "No changes"
 msgstr "لا توجد تغييرات"
 
-#: src/components/HistoryDialog.vue:102
+#: src/components/HistoryDialog.vue:117
 msgid "Current"
 msgstr "الحالي"
 
-#: src/components/HistoryDialog.vue:110
+#: src/components/HistoryDialog.vue:125
 msgid "Revert"
 msgstr "الرجوع"
 
-#: src/components/HistoryDialog.vue:132
+#: src/components/HistoryDialog.vue:154
 msgid "Use version"
 msgstr "استخدام الإصدار"
 
-#: src/components/PageDetailContentList.vue:225
-msgid "Element not found"
-msgstr "لم يتم العثور على العنصر"
-
-#: src/components/PageDetailContentList.vue:230
-msgid "Element is already shared"
-msgstr "العنصر مشترك بالفعل"
-
-#: src/components/PageDetailContentList.vue:290
-msgid "Unable to make element shared"
-msgstr "غير قادر على جعل العنصر المشترك"
-
-#: src/components/PageDetailContentList.vue:354
+#: src/components/PageDetailContentList.vue:87
+#: src/components/PageDetailContentList.vue:98
+#: src/components/PageDetailContentList.vue:478
 msgid "Content element not found"
 msgstr "عنصر المحتوى غير موجود"
 
-#: src/components/PageDetailContentList.vue:361
+#: src/components/PageDetailContentList.vue:293
+msgid "Element not found"
+msgstr "لم يتم العثور على العنصر"
+
+#: src/components/PageDetailContentList.vue:298
+msgid "Element is already shared"
+msgstr "العنصر مشترك بالفعل"
+
+#: src/components/PageDetailContentList.vue:358
+msgid "Unable to make element shared"
+msgstr "غير قادر على جعل العنصر المشترك"
+
+#: src/components/PageDetailContentList.vue:377
+msgid "Not available for this content element"
+msgstr "غير متوفر لعنصر المحتوى هذا"
+
+#: src/components/PageDetailContentList.vue:485
 msgid "Element is not shared"
 msgstr "العنصر غير مشترك"
 
-#: src/components/PageDetailContentList.vue:415
-#: src/components/PageDetailContentList.vue:466
+#: src/components/PageDetailContentList.vue:543
+#: src/components/PageDetailContentList.vue:601
 msgid "Delete"
 msgstr "حذف"
 
-#: src/components/PageDetailContentList.vue:418
-#: src/components/PageDetailContentList.vue:460
-#: src/components/PageListItems.vue:950
+#: src/components/PageDetailContentList.vue:546
+#: src/components/PageDetailContentList.vue:595
+#: src/components/PageListItems.vue:985
 msgid "Copy"
 msgstr "نسخ"
 
-#: src/components/PageDetailContentList.vue:421
-#: src/components/PageDetailContentList.vue:463
-#: src/components/PageListItems.vue:947
+#: src/components/PageDetailContentList.vue:549
+#: src/components/PageDetailContentList.vue:598
+#: src/components/PageListItems.vue:982
 msgid "Cut"
 msgstr "قص"
 
-#: src/components/PageDetailContentList.vue:424
-#: src/components/PageListItems.vue:953 src/components/PageListItems.vue:971
+#: src/components/PageDetailContentList.vue:552
+#: src/components/PageListItems.vue:988
+#: src/components/PageListItems.vue:1006
 msgid "Paste"
 msgstr "لصق"
 
-#: src/components/PageDetailContentList.vue:472
+#: src/components/PageDetailContentList.vue:555
+msgid "Merge"
+msgstr "الدمج"
+
+#: src/components/PageDetailContentList.vue:607
 msgid "Paste before"
 msgstr "لصق قبل"
 
-#: src/components/PageDetailContentList.vue:475
+#: src/components/PageDetailContentList.vue:610
 msgid "Paste after"
 msgstr "لصق بعد"
 
-#: src/components/PageDetailContentList.vue:478
+#: src/components/PageDetailContentList.vue:613
 msgid "Insert before"
 msgstr "إدراج قبل"
 
-#: src/components/PageDetailContentList.vue:481
+#: src/components/PageDetailContentList.vue:616
 msgid "Insert after"
 msgstr "إدراج بعد"
 
-#: src/components/PageDetailContentList.vue:487
+#: src/components/PageDetailContentList.vue:622
 msgid "Make shared"
 msgstr "جعل المشاركة"
 
-#: src/components/PageDetailContentList.vue:490
+#: src/components/PageDetailContentList.vue:625
 msgid "Merge copy"
 msgstr "دمج نسخة"
 
-#: src/components/PageDetailContentList.vue:495
+#: src/components/PageDetailContentList.vue:628
+msgid "Change to"
+msgstr "التغيير إلى"
+
+#: src/components/PageDetailContentList.vue:631
+msgid "Split"
+msgstr "انقسام"
+
+#: src/components/PageDetailContentList.vue:637
 msgid "Shared element"
 msgstr "العنصر المشترك"
 
@@ -477,15 +675,21 @@ msgstr "التكوين"
 msgid "The element has already been added"
 msgstr "تمت إضافة العنصر بالفعل"
 
+#: src/components/PageDetailItemConfig.vue:173
+msgid "Remove content element"
+msgstr "إزالة عنصر المحتوى"
+
 #: src/components/PageDetailItemProps.vue:58
 msgid "The path is already in use by another page"
 msgstr "المسار مستخدم بالفعل من قبل صفحة أخرى"
 
 #: src/components/PageDetailItemProps.vue:130
+#: src/views/PageList.vue:209
 msgid "Disabled"
 msgstr "معاق"
 
 #: src/components/PageDetailItemProps.vue:131
+#: src/views/PageList.vue:207
 msgid "Enabled"
 msgstr "ممكّنة"
 
@@ -497,8 +701,10 @@ msgstr "مخفي في التنقل"
 msgid "Status"
 msgstr "الحالة"
 
-#: src/components/PageDetailItemProps.vue:159 src/fields/Table.vue:54
-#: src/views/Login.vue:84 src/views/Login.vue:90
+#: src/components/PageDetailItemProps.vue:159
+#: src/fields/Table.vue:54
+#: src/views/Login.vue:84
+#: src/views/Login.vue:90
 msgid "Field is required"
 msgstr "الحقل مطلوب"
 
@@ -539,6 +745,7 @@ msgid "Page tag"
 msgstr "علامة الصفحة"
 
 #: src/components/PageDetailItemProps.vue:242
+#: src/views/PageList.vue:216
 msgid "No cache"
 msgstr "لا توجد ذاكرة تخزين مؤقت"
 
@@ -585,94 +792,140 @@ msgstr "إعادة توجيه عنوان URL"
 msgid "Double-click to edit"
 msgstr "انقر نقرًا مزدوجًا للتعديل"
 
-#: src/components/PageDetailPreview.vue:173
+#: src/components/PageDetailPreview.vue:169
+msgid "Edit element"
+msgstr "تحرير العنصر"
+
+#: src/components/PageDetailPreview.vue:175
+msgid "Add element before"
+msgstr "إضافة عنصر قبل"
+
+#: src/components/PageDetailPreview.vue:181
+msgid "Add element after"
+msgstr "إضافة عنصر بعد"
+
+#: src/components/PageDetailPreview.vue:187
+#: src/fields/Items.vue:101
+msgid "Remove element"
+msgstr "إزالة العنصر"
+
+#: src/components/PageDetailPreview.vue:193
 msgid "Preview mode"
 msgstr "وضع المعاينة"
 
-#: src/components/PageListItems.vue:93
+#: src/components/PageDetailPreview.vue:200
+msgid "Fullscreen mode"
+msgstr "وضع ملء الشاشة الكاملة"
+
+#: src/components/PageDetailPreview.vue:207
+msgid "Exit fullscreen mode"
+msgstr "الخروج من وضع ملء الشاشة الكاملة"
+
+#: src/components/PageListItems.vue:90
 msgid "Error adding root page"
 msgstr "خطأ في إضافة صفحة الجذر"
 
-#: src/components/PageListItems.vue:135 src/components/PageListItems.vue:460
+#: src/components/PageListItems.vue:132
+#: src/components/PageListItems.vue:457
 msgid "Error moving page"
 msgstr "خطأ في نقل الصفحة"
 
-#: src/components/PageListItems.vue:203
+#: src/components/PageListItems.vue:200
 msgid "Error trashing page"
 msgstr "خطأ في حذف الصفحة المحطمة"
 
-#: src/components/PageListItems.vue:251
+#: src/components/PageListItems.vue:248
 msgid "Error fetching pages"
 msgstr "خطأ في جلب الصفحات"
 
-#: src/components/PageListItems.vue:336
+#: src/components/PageListItems.vue:333
 msgid "Error inserting page"
 msgstr "خطأ في إدراج الصفحة"
 
-#: src/components/PageListItems.vue:392
+#: src/components/PageListItems.vue:389
 msgid "Error restoring page"
 msgstr "خطأ في استعادة الصفحة"
 
-#: src/components/PageListItems.vue:552
+#: src/components/PageListItems.vue:549
 msgid "Error copying page"
 msgstr "خطأ في نسخ الصفحة"
 
-#: src/components/PageListItems.vue:556 src/views/PageDetail.vue:241
+#: src/components/PageListItems.vue:553
+#: src/views/PageDetail.vue:241
 msgid "Error fetching page"
 msgstr "خطأ في جلب الصفحة"
 
-#: src/components/PageListItems.vue:599 src/views/PageDetail.vue:323
+#: src/components/PageListItems.vue:596
+#: src/views/PageDetail.vue:331
 msgid "Error publishing page"
 msgstr "خطأ في نشر الصفحة"
 
-#: src/components/PageListItems.vue:641
+#: src/components/PageListItems.vue:638
 msgid "Error purging page"
 msgstr "صفحة تنقية الأخطاء"
 
-#: src/components/PageListItems.vue:691
+#: src/components/PageListItems.vue:707
 msgid "Error searching pages"
 msgstr "أخطاء في صفحات البحث عن الأخطاء"
 
-#: src/components/PageListItems.vue:739 src/views/PageDetail.vue:427
+#: src/components/PageListItems.vue:755
+#: src/views/PageDetail.vue:435
 msgid "Error saving page"
 msgstr "خطأ في حفظ الصفحة"
 
-#: src/components/PageListItems.vue:873 src/components/PageListItems.vue:938
+#: src/components/PageListItems.vue:890
+#: src/components/PageListItems.vue:973
 msgid "Enable"
 msgstr "التمكين"
 
-#: src/components/PageListItems.vue:876 src/components/PageListItems.vue:935
+#: src/components/PageListItems.vue:893
+#: src/components/PageListItems.vue:970
 msgid "Disable"
 msgstr "تعطيل"
 
-#: src/components/PageListItems.vue:941
+#: src/components/PageListItems.vue:924
+msgid "Reload page tree"
+msgstr "إعادة تحميل شجرة الصفحات"
+
+#: src/components/PageListItems.vue:951
+msgid "Toggle child nodes"
+msgstr "تبديل العقد الفرعية"
+
+#: src/components/PageListItems.vue:976
 msgid "Hide in menu"
 msgstr "إخفاء في القائمة"
 
-#: src/components/PageListItems.vue:957 src/components/PageListItems.vue:975
-#: src/components/PageListItems.vue:993
+#: src/components/PageListItems.vue:992
+#: src/components/PageListItems.vue:1010
+#: src/components/PageListItems.vue:1028
 msgid "Before"
 msgstr "قبل"
 
-#: src/components/PageListItems.vue:962 src/components/PageListItems.vue:980
-#: src/components/PageListItems.vue:998
+#: src/components/PageListItems.vue:997
+#: src/components/PageListItems.vue:1015
+#: src/components/PageListItems.vue:1033
 msgid "Into"
 msgstr "في"
 
-#: src/components/PageListItems.vue:967 src/components/PageListItems.vue:985
-#: src/components/PageListItems.vue:1003
+#: src/components/PageListItems.vue:1002
+#: src/components/PageListItems.vue:1020
+#: src/components/PageListItems.vue:1038
 msgid "After"
 msgstr "بعد"
 
-#: src/components/PageListItems.vue:989
+#: src/components/PageListItems.vue:1024
 msgid "Insert"
 msgstr "إدراج"
 
-#: src/components/PageListItems.vue:1034
+#: src/components/PageListItems.vue:1069
 msgid "New"
 msgstr "جديد"
 
-#: src/components/SchemaDialog.vue:26
+#: src/components/PageListItems.vue:1094
+msgid "Add page"
+msgstr "إضافة صفحة"
+
+#: src/components/SchemaDialog.vue:32
 msgid "Content elements"
 msgstr "عناصر المحتوى"
 
@@ -688,13 +941,39 @@ msgstr "فشل تحميل المستخدم"
 msgid "Logout failed"
 msgstr "فشل تسجيل الخروج"
 
-#: src/components/User.vue:72
+#: src/components/User.vue:53
+msgid "Switch language"
+msgstr "تبديل اللغة"
+
+#: src/components/User.vue:68
+msgid "User menu"
+msgstr "قائمة المستخدم"
+
+#: src/components/User.vue:82
 msgid "Logout"
 msgstr "تسجيل الخروج"
 
-#: src/fields/Autocomplete.vue:140 src/fields/Color.vue:34
-#: src/fields/Date.vue:48 src/fields/Html.vue:42 src/fields/Number.vue:50
-#: src/fields/Select.vue:42 src/fields/Url.vue:62
+#: src/fields/Audio.vue:46
+#: src/fields/File.vue:230
+#: src/fields/Image.vue:83
+#: src/fields/Video.vue:48
+msgid "Add file from URL"
+msgstr "إضافة ملف من URL"
+
+#: src/fields/Audio.vue:51
+#: src/fields/File.vue:235
+#: src/fields/Image.vue:94
+#: src/fields/Video.vue:53
+msgid "Upload file"
+msgstr "تحميل الملف"
+
+#: src/fields/Autocomplete.vue:140
+#: src/fields/Color.vue:34
+#: src/fields/Date.vue:48
+#: src/fields/Html.vue:42
+#: src/fields/Number.vue:50
+#: src/fields/Select.vue:42
+#: src/fields/Url.vue:62
 msgid "Value is required"
 msgstr "القيمة مطلوبة"
 
@@ -706,19 +985,26 @@ msgstr "لا توجد بيانات متاحة"
 msgid "Value must be a hex color code"
 msgstr "يجب أن تكون القيمة رمزاً لونياً سداسي عشرياً"
 
-#: src/fields/Items.vue:65
+#: src/fields/Image.vue:89
+#: src/fields/Images.vue:248
+msgid "Create file"
+msgstr "إنشاء ملف"
+
+#: src/fields/Items.vue:70
 msgid "Maximum is %{num} entries"
 msgstr "الحد الأقصى %{num} الإدخالات"
 
-#: src/fields/Items.vue:66
+#: src/fields/Items.vue:71
 msgid "Minimum is %{num} entries"
 msgstr "الحد الأدنى %{num} الإدخالات"
 
-#: src/fields/Plaintext.vue:49 src/fields/String.vue:54
+#: src/fields/Plaintext.vue:49
+#: src/fields/String.vue:54
 msgid "Minimum length is %{num} characters"
 msgstr "الحد الأدنى للطول هو %{num} حرف "
 
-#: src/fields/Plaintext.vue:50 src/fields/String.vue:55
+#: src/fields/Plaintext.vue:50
+#: src/fields/String.vue:55
 msgid "Maximum length is %{num} characters"
 msgstr "الحد الأقصى للطول هو %{num} حرف"
 
@@ -747,261 +1033,261 @@ msgid "You do not have permission to access %{path}"
 msgstr "ليس لديك إذن للوصول إلى %{path}"
 
 #: src/strings.js:5
-msgctxt "as"
-msgid "type"
-msgstr "النوع"
-
-#: src/strings.js:6
-msgctxt "as"
-msgid "state"
-msgstr "الولاية"
-
-#: src/strings.js:7
-msgctxt "as"
-msgid "valid"
-msgstr "ساري المفعول"
-
-#: src/strings.js:8
-msgctxt "as"
-msgid "changed"
-msgstr "تغيرت"
-
-#: src/strings.js:9
-msgctxt "as"
-msgid "error"
-msgstr "الخطأ"
-
-#: src/strings.js:12
 msgctxt "cs"
 msgid "main"
 msgstr "الرئيسية"
 
-#: src/strings.js:13
+#: src/strings.js:6
 msgctxt "cs"
 msgid "header"
 msgstr "الرأس"
 
-#: src/strings.js:14
+#: src/strings.js:7
 msgctxt "cs"
 msgid "footer"
 msgstr "التذييل"
 
-#: src/strings.js:15
+#: src/strings.js:8
 msgctxt "cs"
 msgid "sidebar"
 msgstr "الشريط الجانبي"
 
-#: src/strings.js:16
+#: src/strings.js:9
 msgctxt "cs"
 msgid "aside"
 msgstr "جانباً"
 
-#: src/strings.js:19
+#: src/strings.js:12
 msgctxt "sg"
 msgid "basic"
 msgstr "الأساسيات"
 
-#: src/strings.js:20
+#: src/strings.js:13
 msgctxt "sg"
 msgid "content"
 msgstr "المحتوى"
 
-#: src/strings.js:21
+#: src/strings.js:14
 msgctxt "sg"
 msgid "media"
 msgstr "وسائل الإعلام"
 
-#: src/strings.js:22
+#: src/strings.js:15
 msgctxt "sg"
 msgid "forms"
 msgstr "النماذج"
 
-#: src/strings.js:25
+#: src/strings.js:18
+msgctxt "as"
+msgid "type"
+msgstr "النوع"
+
+#: src/strings.js:19
+msgctxt "as"
+msgid "state"
+msgstr "الولاية"
+
+#: src/strings.js:22
+msgctxt "st"
+msgid "valid"
+msgstr "ساري المفعول"
+
+#: src/strings.js:23
+msgctxt "st"
+msgid "changed"
+msgstr "تغيرت"
+
+#: src/strings.js:24
+msgctxt "st"
+msgid "error"
+msgstr "الخطأ"
+
+#: src/strings.js:27
 msgctxt "st"
 msgid "reference"
 msgstr "المرجع"
 
-#: src/strings.js:26
+#: src/strings.js:28
 msgctxt "st"
 msgid "heading"
 msgstr "العنوان"
 
-#: src/strings.js:27
+#: src/strings.js:29
 msgctxt "st"
 msgid "text"
 msgstr "النص"
 
-#: src/strings.js:28
+#: src/strings.js:30
 msgctxt "st"
 msgid "image-text"
 msgstr "صورة-نص"
 
-#: src/strings.js:29
+#: src/strings.js:31
 msgctxt "st"
 msgid "slideshow"
 msgstr "عرض الشرائح"
 
-#: src/strings.js:30
+#: src/strings.js:32
 msgctxt "st"
 msgid "code"
 msgstr "الكود"
 
-#: src/strings.js:31
+#: src/strings.js:33
 msgctxt "st"
 msgid "table"
 msgstr "الجدول"
 
-#: src/strings.js:32
+#: src/strings.js:34
 msgctxt "st"
 msgid "html"
 msgstr "html"
 
-#: src/strings.js:33
+#: src/strings.js:35
 msgctxt "st"
 msgid "image"
 msgstr "الصورة"
 
-#: src/strings.js:34
+#: src/strings.js:36
 msgctxt "st"
 msgid "video"
 msgstr "فيديو"
 
-#: src/strings.js:35
+#: src/strings.js:37
 msgctxt "st"
 msgid "audio"
 msgstr "الصوت"
 
-#: src/strings.js:36
+#: src/strings.js:38
 msgctxt "st"
 msgid "file"
 msgstr "الملف"
 
-#: src/strings.js:37
+#: src/strings.js:39
 msgctxt "st"
 msgid "hero"
 msgstr "بطل"
 
-#: src/strings.js:38
+#: src/strings.js:40
 msgctxt "st"
 msgid "cards"
 msgstr "البطاقات"
 
-#: src/strings.js:39
+#: src/strings.js:41
 msgctxt "st"
 msgid "blog"
 msgstr "المدونة"
 
-#: src/strings.js:40
+#: src/strings.js:42
 msgctxt "st"
 msgid "article"
 msgstr "المقال"
 
-#: src/strings.js:41
+#: src/strings.js:43
 msgctxt "st"
 msgid "contact"
 msgstr "الاتصال"
 
-#: src/strings.js:42
+#: src/strings.js:44
 msgctxt "st"
 msgid "meta"
 msgstr "الفوقية"
 
-#: src/strings.js:43
+#: src/strings.js:45
 msgctxt "st"
 msgid "social"
 msgstr "اجتماعي"
 
-#: src/strings.js:44
+#: src/strings.js:46
 msgctxt "st"
 msgid "canonical"
 msgstr "متعارف عليه"
 
-#: src/strings.js:45
+#: src/strings.js:47
 msgctxt "st"
 msgid "theme"
 msgstr "السمة"
 
-#: src/strings.js:48
+#: src/strings.js:50
 msgctxt "fn"
 msgid "button"
 msgstr "الزر"
 
-#: src/strings.js:49
+#: src/strings.js:51
 msgctxt "fn"
 msgid "cards"
 msgstr "البطاقات"
 
-#: src/strings.js:50
+#: src/strings.js:52
 msgctxt "fn"
 msgid "description"
 msgstr "الوصف"
 
-#: src/strings.js:51
+#: src/strings.js:53
 msgctxt "fn"
 msgid "file"
 msgstr "الملف"
 
-#: src/strings.js:52
+#: src/strings.js:54
 msgctxt "fn"
 msgid "files"
 msgstr "الملفات"
 
-#: src/strings.js:53
+#: src/strings.js:55
 msgctxt "fn"
 msgid "header"
 msgstr "الرأس"
 
-#: src/strings.js:54
+#: src/strings.js:56
 msgctxt "fn"
 msgid "keywords"
 msgstr "الكلمات المفتاحية"
 
-#: src/strings.js:55
+#: src/strings.js:57
 msgctxt "fn"
 msgid "lang"
 msgstr "لانج"
 
-#: src/strings.js:56
+#: src/strings.js:58
 msgctxt "fn"
 msgid "level"
 msgstr "المستوى"
 
-#: src/strings.js:57
+#: src/strings.js:59
 msgctxt "fn"
 msgid "limit"
 msgstr "الحد"
 
-#: src/strings.js:58
+#: src/strings.js:60
 msgctxt "fn"
 msgid "main"
 msgstr "الرئيسية"
 
-#: src/strings.js:59
+#: src/strings.js:61
 msgctxt "fn"
 msgid "parent-page"
 msgstr "صفحة الوالدين"
 
-#: src/strings.js:60
+#: src/strings.js:62
 msgctxt "fn"
 msgid "position"
 msgstr "المنصب"
 
-#: src/strings.js:61
+#: src/strings.js:63
 msgctxt "fn"
 msgid "text"
 msgstr "النص"
 
-#: src/strings.js:62
+#: src/strings.js:64
 msgctxt "fn"
 msgid "table"
 msgstr "الجدول"
 
-#: src/strings.js:63
+#: src/strings.js:65
 msgctxt "fn"
 msgid "title"
 msgstr "العنوان"
 
-#: src/strings.js:64
+#: src/strings.js:66
 msgctxt "fn"
 msgid "url"
 msgstr "الرابط"
@@ -1034,89 +1320,141 @@ msgstr "عنصر حفظ الخطأ في حفظ العنصر"
 msgid "Error fetching element versions"
 msgstr "خطأ في جلب إصدارات العناصر"
 
-#: src/views/ElementDetail.vue:271 src/views/ElementDetail.vue:326
+#: src/views/ElementDetail.vue:265
+#: src/views/FileDetail.vue:215
+#: src/views/PageDetail.vue:599
+msgid "Back to list view"
+msgstr "العودة إلى عرض القائمة"
+
+#: src/views/ElementDetail.vue:272
+#: src/views/ElementDetail.vue:330
 msgid "Element"
 msgstr "العنصر"
 
-#: src/views/ElementDetail.vue:286 src/views/FileDetail.vue:220
-#: src/views/PageDetail.vue:623
-msgid "Save"
-msgstr "الحفظ"
+#: src/views/ElementDetail.vue:280
+#: src/views/FileDetail.vue:229
+msgid "View history"
+msgstr "عرض التاريخ"
 
-#: src/views/ElementDetail.vue:327 src/views/FileDetail.vue:261
+#: src/views/ElementDetail.vue:303
+#: src/views/FileDetail.vue:255
+#: src/views/PageDetail.vue:656
+msgid "Schedule publishing"
+msgstr "جدولة النشر"
+
+#: src/views/ElementDetail.vue:321
+#: src/views/ElementList.vue:84
+#: src/views/FileDetail.vue:273
+#: src/views/FileList.vue:81
+#: src/views/PageDetail.vue:674
+#: src/views/PageList.vue:145
+msgid "Toggle side menu"
+msgstr "تبديل القائمة الجانبية"
+
+#: src/views/ElementDetail.vue:331
+#: src/views/FileDetail.vue:283
 msgid "Used by"
 msgstr "مستخدمة من قبل"
 
-#: src/views/ElementList.vue:41 src/views/ElementList.vue:104
-#: src/views/ElementList.vue:113 src/views/ElementList.vue:121
-#: src/views/FileList.vue:40 src/views/FileList.vue:101
-#: src/views/FileList.vue:110 src/views/FileList.vue:118
-#: src/views/PageList.vue:41 src/views/PageList.vue:109
-#: src/views/PageList.vue:118 src/views/PageList.vue:126
+#: src/views/ElementList.vue:41
+#: src/views/ElementList.vue:104
+#: src/views/ElementList.vue:113
+#: src/views/ElementList.vue:121
+#: src/views/FileList.vue:40
+#: src/views/FileList.vue:101
+#: src/views/FileList.vue:110
+#: src/views/FileList.vue:118
+#: src/views/PageList.vue:47
+#: src/views/PageList.vue:189
+#: src/views/PageList.vue:198
+#: src/views/PageList.vue:206
+#: src/views/PageList.vue:215
+#: src/views/PageList.vue:222
 msgid "All"
 msgstr "الكل"
 
-#: src/views/ElementList.vue:102 src/views/FileList.vue:99
-#: src/views/PageList.vue:107
+#: src/views/ElementList.vue:70
+#: src/views/FileList.vue:69
+#: src/views/PageList.vue:133
+msgid "Close navigation"
+msgstr "إغلاق التنقل"
+
+#: src/views/ElementList.vue:70
+#: src/views/FileList.vue:69
+#: src/views/PageList.vue:133
+msgid "Open navigation"
+msgstr "فتح التنقل"
+
+#: src/views/ElementList.vue:102
+#: src/views/FileList.vue:99
+#: src/views/PageList.vue:187
 msgid "publish"
 msgstr "النشر"
 
-#: src/views/ElementList.vue:106 src/views/FileList.vue:103
-#: src/views/PageList.vue:111
+#: src/views/ElementList.vue:106
+#: src/views/FileList.vue:103
+#: src/views/PageList.vue:191
 msgid "Scheduled"
 msgstr "المقرر"
 
-#: src/views/ElementList.vue:107 src/views/FileList.vue:104
-#: src/views/PageList.vue:112
+#: src/views/ElementList.vue:107
+#: src/views/FileList.vue:104
+#: src/views/PageList.vue:192
 msgid "Drafts"
 msgstr "المسودات"
 
-#: src/views/ElementList.vue:111 src/views/FileList.vue:108
-#: src/views/PageList.vue:116
+#: src/views/ElementList.vue:111
+#: src/views/FileList.vue:108
+#: src/views/PageList.vue:196
 msgid "trashed"
 msgstr "محطمة"
 
-#: src/views/ElementList.vue:114 src/views/FileList.vue:111
-#: src/views/PageList.vue:119
+#: src/views/ElementList.vue:114
+#: src/views/FileList.vue:111
+#: src/views/PageList.vue:199
 msgid "Available only"
 msgstr "متاح فقط"
 
-#: src/views/ElementList.vue:115 src/views/FileList.vue:112
-#: src/views/PageList.vue:120
+#: src/views/ElementList.vue:115
+#: src/views/FileList.vue:112
+#: src/views/PageList.vue:200
 msgid "Only trashed"
 msgstr "محطمة فقط"
 
-#: src/views/ElementList.vue:122 src/views/FileList.vue:119
-#: src/views/PageList.vue:127
+#: src/views/ElementList.vue:122
+#: src/views/FileList.vue:119
+#: src/views/PageList.vue:223
 msgid "Edited by me"
 msgstr "تم التعديل بواسطتي"
 
-#: src/views/ElementList.vue:126 src/views/FileList.vue:123
-#: src/views/PageList.vue:131
+#: src/views/ElementList.vue:126
+#: src/views/FileList.vue:123
+#: src/views/PageList.vue:227
 msgid "languages"
 msgstr "اللغات"
 
-#: src/views/FileDetail.vue:71
+#: src/views/FileDetail.vue:72
 msgid "File published successfully"
 msgstr "تم نشر الملف بنجاح"
 
-#: src/views/FileDetail.vue:74
+#: src/views/FileDetail.vue:75
 msgid "File scheduled for publishing at %{date}"
 msgstr "ملف مجدول للنشر في %{date}"
 
-#: src/views/FileDetail.vue:129
+#: src/views/FileDetail.vue:142
 msgid "File saved successfully"
 msgstr "تم حفظ الملف بنجاح"
 
-#: src/views/FileDetail.vue:134
+#: src/views/FileDetail.vue:148
 msgid "Error saving file"
 msgstr "خطأ في حفظ الملف"
 
-#: src/views/FileDetail.vue:186
+#: src/views/FileDetail.vue:202
 msgid "Error fetching file versions"
 msgstr "خطأ في جلب إصدارات الملفات"
 
-#: src/views/FileDetail.vue:205 src/views/FileDetail.vue:260
+#: src/views/FileDetail.vue:222
+#: src/views/FileDetail.vue:282
 msgid "File"
 msgstr "ملف"
 
@@ -1128,7 +1466,8 @@ msgstr "ليس محرر CMS"
 msgid "Access denied"
 msgstr "تم رفض الدخول"
 
-#: src/views/Login.vue:79 src/views/Login.vue:101
+#: src/views/Login.vue:79
+#: src/views/Login.vue:106
 msgid "Login"
 msgstr "تسجيل الدخول"
 
@@ -1144,54 +1483,75 @@ msgstr "عنوان بريد إلكتروني غير صالح"
 msgid "Password"
 msgstr "كلمة المرور"
 
-#: src/views/Login.vue:96
+#: src/views/Login.vue:100
 msgid "Error"
 msgstr "خطأ"
 
-#: src/views/PageDetail.vue:315
+#: src/views/PageDetail.vue:323
 msgid "Page published successfully"
 msgstr "تم نشر الصفحة بنجاح"
 
-#: src/views/PageDetail.vue:318
+#: src/views/PageDetail.vue:326
 msgid "Page scheduled for publishing at %{date}"
 msgstr "الصفحة المقرر نشرها في %{date}"
 
-#: src/views/PageDetail.vue:351
+#: src/views/PageDetail.vue:359
 msgid "There are invalid fields, please resolve the errors first"
 msgstr "هناك حقول غير صالحة، يرجى حل الأخطاء أولاً"
 
-#: src/views/PageDetail.vue:419
+#: src/views/PageDetail.vue:427
 msgid "Page saved successfully"
 msgstr "تم حفظ الصفحة بنجاح"
 
-#: src/views/PageDetail.vue:436
+#: src/views/PageDetail.vue:444
 msgid "No page schema for \"content\" found"
 msgstr "لم يتم العثور على مخطط صفحة \"المحتوى\""
 
-#: src/views/PageDetail.vue:572
+#: src/views/PageDetail.vue:580
 msgid "Error fetching page versions"
 msgstr "خطأ في جلب إصدارات الصفحة"
 
-#: src/views/PageDetail.vue:597 src/views/PageDetail.vue:675
+#: src/views/PageDetail.vue:606
+#: src/views/PageDetail.vue:686
 msgid "Page"
 msgstr "الصفحة"
 
-#: src/views/PageDetail.vue:665
+#: src/views/PageDetail.vue:614
+msgid "Translate page"
+msgstr "ترجمة الصفحة"
+
+#: src/views/PageDetail.vue:690
 msgid "Editor"
 msgstr "محرر"
 
-#: src/views/PageDetail.vue:670
+#: src/views/PageDetail.vue:695
 msgid "Content"
 msgstr "المحتوى"
 
-#: src/views/PageList.vue:100
+#: src/views/PageList.vue:160
+msgid "What kind of page and content should I create?"
+msgstr "ما نوع الصفحة والمحتوى الذي يجب أن أقوم بإنشائه؟"
+
+#: src/views/PageList.vue:180
 msgid "view"
 msgstr "عرض"
 
-#: src/views/PageList.vue:102
+#: src/views/PageList.vue:182
 msgid "Tree"
 msgstr "الشجرة"
 
-#: src/views/PageList.vue:103
+#: src/views/PageList.vue:183
 msgid "List"
 msgstr "القائمة"
+
+#: src/views/PageList.vue:204
+msgid "status"
+msgstr "الحالة"
+
+#: src/views/PageList.vue:208
+msgid "Hidden"
+msgstr "مخفي"
+
+#: src/views/PageList.vue:213
+msgid "cache"
+msgstr "ذاكرة التخزين المؤقت"

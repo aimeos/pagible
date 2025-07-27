@@ -592,8 +592,8 @@
                   @click="removeCover()"
                 />
                 <div v-else class="toolbar-group">
-                  <v-btn icon="mdi-tooltip-image" :loading="covering" :title="$gettext('Use as cover')" @click="addCover()" />
-                  <v-btn icon :loading="covering" :title="$gettext('Upload cover')" @click="$refs.coverInput.click()">
+                  <v-btn icon="mdi-tooltip-image" :loading="covering" :title="$gettext('Use as cover image')" @click="addCover()" />
+                  <v-btn icon :loading="covering" :title="$gettext('Upload cover image')" @click="$refs.coverInput.click()">
                     <v-icon>mdi-image-plus</v-icon>
                     <input ref="coverInput" type="file" class="cover-input" @change="uploadCover($event)" />
                   </v-btn>

@@ -451,7 +451,7 @@
       <v-menu location="bottom right">
         <template #activator="{ props }">
           <v-btn v-bind="props"
-            :title="$gettext('Order by')"
+            :title="$gettext('Sort by')"
             append-icon="mdi-menu-down"
             prepend-icon="mdi-sort"
             variant="text">

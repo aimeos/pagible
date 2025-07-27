@@ -1,76 +1,99 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
-"Language: tr\n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: tr\n"
+"Language-Team: none\n"
+"Last-Translator: Automatically generated\n"
+"MIME-Version: 1.0\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Project-Id-Version: PACKAGE VERSION\n"
 
 #: src/App.vue:110
 msgid "None"
 msgstr "Hiçbiri"
 
-#: src/components/AsideMeta.vue:17
+#: src/components/AsideMeta.vue:19
 msgid "id"
 msgstr "id"
 
-#: src/components/AsideMeta.vue:18 src/components/ElementListItems.vue:471
-#: src/components/FileListItems.vue:506 src/fields/Audio.vue:61
-#: src/fields/File.vue:245 src/fields/Image.vue:103 src/fields/Video.vue:63
-#: src/views/ElementList.vue:119 src/views/FileList.vue:116
-#: src/views/PageList.vue:124
+#: src/components/AsideMeta.vue:23
+#: src/components/FileListItems.vue:525
+#: src/fields/Audio.vue:71
+#: src/fields/File.vue:255
+#: src/fields/Image.vue:114
+#: src/fields/Video.vue:73
+msgid "mime"
+msgstr "MIME"
+
+#: src/components/AsideMeta.vue:27
+#: src/components/ElementListItems.vue:475
+#: src/components/FileListItems.vue:531
+#: src/fields/Audio.vue:75
+#: src/fields/File.vue:259
+#: src/fields/Image.vue:118
+#: src/fields/Video.vue:77
+#: src/views/ElementList.vue:119
+#: src/views/FileList.vue:116
+#: src/views/PageList.vue:220
 msgid "editor"
 msgstr "editör"
 
-#: src/components/AsideMeta.vue:22
+#: src/components/AsideMeta.vue:31
 msgid "created"
 msgstr "yaratıldı"
 
-#: src/components/AsideMeta.vue:26 src/fields/Audio.vue:62
-#: src/fields/File.vue:246 src/fields/Image.vue:104 src/fields/Video.vue:64
+#: src/components/AsideMeta.vue:35
+#: src/fields/Audio.vue:79
+#: src/fields/File.vue:263
+#: src/fields/Image.vue:122
+#: src/fields/Video.vue:81
 msgid "updated"
 msgstr "güncellendi"
 
-#: src/components/AsideMeta.vue:30
+#: src/components/AsideMeta.vue:39
 msgid "deleted"
 msgstr "silindi"
 
-#: src/components/AsideMeta.vue:45
+#: src/components/AsideMeta.vue:54
 msgid "Meta data"
 msgstr "Meta veri"
 
 #: src/components/ElementDetailItem.vue:68
 #: src/components/ElementDetailRefs.vue:96
-#: src/components/FileDetailItem.vue:208 src/components/FileDetailRefs.vue:101
+#: src/components/FileDetailItem.vue:508
+#: src/components/FileDetailRefs.vue:101
 #: src/components/FileDetailRefs.vue:123
 msgid "Name"
 msgstr "İsim"
 
 #: src/components/ElementDetailItem.vue:80
-#: src/components/FileDetailItem.vue:220
+#: src/components/FileDetailItem.vue:520
 #: src/components/PageDetailItemProps.vue:150
 msgid "Language"
 msgstr "Dil"
 
-#: src/components/ElementDetailRefs.vue:65 src/components/FileDetailRefs.vue:69
+#: src/components/ElementDetailRefs.vue:65
+#: src/components/FileDetailRefs.vue:69
 msgid "yes"
 msgstr "Evet."
 
-#: src/components/ElementDetailRefs.vue:68 src/components/FileDetailRefs.vue:73
+#: src/components/ElementDetailRefs.vue:68
+#: src/components/FileDetailRefs.vue:73
 msgid "no"
 msgstr "Hayır"
 
-#: src/components/ElementDetailRefs.vue:89 src/components/Navigation.vue:36
-#: src/components/SchemaDialog.vue:35 src/views/ElementList.vue:76
+#: src/components/ElementDetailRefs.vue:89
+#: src/components/Navigation.vue:36
+#: src/components/SchemaDialog.vue:42
+#: src/views/ElementList.vue:76
 msgid "Shared elements"
 msgstr "Paylaşılan unsurlar"
 
 #: src/components/ElementDetailRefs.vue:94
 #: src/components/ElementDetailRefs.vue:116
-#: src/components/FileDetailRefs.vue:99 src/components/FileDetailRefs.vue:121
+#: src/components/FileDetailRefs.vue:99
+#: src/components/FileDetailRefs.vue:121
 #: src/components/FileDetailRefs.vue:143
 msgid "ID"
 msgstr "KIMLIK"
@@ -81,13 +104,16 @@ msgid "URL"
 msgstr "URL"
 
 #: src/components/ElementDetailRefs.vue:117
-#: src/components/FileDetailRefs.vue:122 src/components/FileDetailRefs.vue:144
+#: src/components/FileDetailRefs.vue:122
+#: src/components/FileDetailRefs.vue:144
 msgid "Type"
 msgstr "Tip"
 
 #: src/components/ElementDetailRefs.vue:118
-#: src/components/FileDetailRefs.vue:145 src/views/ElementList.vue:105
-#: src/views/FileList.vue:102 src/views/PageList.vue:110
+#: src/components/FileDetailRefs.vue:145
+#: src/views/ElementList.vue:105
+#: src/views/FileList.vue:102
+#: src/views/PageList.vue:190
 msgid "Published"
 msgstr "Yayınlandı"
 
@@ -96,23 +122,44 @@ msgstr "Yayınlandı"
 #: src/components/ElementListItems.vue:157
 #: src/components/ElementListItems.vue:198
 #: src/components/ElementListItems.vue:240
-#: src/components/ElementListItems.vue:277 src/components/FileListItems.vue:61
-#: src/components/FileListItems.vue:122 src/components/FileListItems.vue:166
-#: src/components/FileListItems.vue:207 src/components/FileListItems.vue:249
-#: src/components/FileListItems.vue:286
-#: src/components/PageDetailContentList.vue:218
-#: src/components/PageListItems.vue:67 src/components/PageListItems.vue:101
-#: src/components/PageListItems.vue:168 src/components/PageListItems.vue:211
-#: src/components/PageListItems.vue:288 src/components/PageListItems.vue:351
-#: src/components/PageListItems.vue:416 src/components/PageListItems.vue:470
-#: src/components/PageListItems.vue:566 src/components/PageListItems.vue:607
-#: src/components/PageListItems.vue:649 src/components/PageListItems.vue:711
-#: src/fields/File.vue:55 src/fields/Images.vue:61
-#: src/views/ElementDetail.vue:107 src/views/ElementDetail.vue:156
-#: src/views/ElementDetail.vue:211 src/views/FileDetail.vue:45
-#: src/views/FileDetail.vue:94 src/views/FileDetail.vue:149
-#: src/views/PageDetail.vue:289 src/views/PageDetail.vue:341
-#: src/views/PageDetail.vue:535
+#: src/components/ElementListItems.vue:277
+#: src/components/FileDetailItem.vue:80
+#: src/components/FileDetailItem.vue:226
+#: src/components/FileDetailItem.vue:300
+#: src/components/FileDetailItem.vue:339
+#: src/components/FileDetailItem.vue:374
+#: src/components/FileDetailItem.vue:416
+#: src/components/FileDetailItem.vue:427
+#: src/components/FileListItems.vue:61
+#: src/components/FileListItems.vue:124
+#: src/components/FileListItems.vue:168
+#: src/components/FileListItems.vue:209
+#: src/components/FileListItems.vue:251
+#: src/components/FileListItems.vue:288
+#: src/components/PageDetailContentList.vue:286
+#: src/components/PageListItems.vue:64
+#: src/components/PageListItems.vue:98
+#: src/components/PageListItems.vue:165
+#: src/components/PageListItems.vue:208
+#: src/components/PageListItems.vue:285
+#: src/components/PageListItems.vue:348
+#: src/components/PageListItems.vue:413
+#: src/components/PageListItems.vue:467
+#: src/components/PageListItems.vue:563
+#: src/components/PageListItems.vue:604
+#: src/components/PageListItems.vue:665
+#: src/components/PageListItems.vue:727
+#: src/fields/File.vue:55
+#: src/fields/Images.vue:61
+#: src/views/ElementDetail.vue:107
+#: src/views/ElementDetail.vue:156
+#: src/views/ElementDetail.vue:211
+#: src/views/FileDetail.vue:46
+#: src/views/FileDetail.vue:95
+#: src/views/FileDetail.vue:164
+#: src/views/PageDetail.vue:297
+#: src/views/PageDetail.vue:349
+#: src/views/PageDetail.vue:543
 msgid "Permission denied"
 msgstr "İzin reddedildi"
 
@@ -140,86 +187,145 @@ msgstr "Paylaşılan öğe temizlenirken hata oluştu"
 msgid "Error fetching shared elements"
 msgstr "Paylaşılan öğeler getirilirken hata oluştu"
 
-#: src/components/ElementListItems.vue:417 src/components/FileListItems.vue:446
-#: src/components/PageDetailContentList.vue:411
-#: src/components/PageListItems.vue:866
+#: src/components/ElementListItems.vue:417
+#: src/components/ElementListItems.vue:489
+#: src/components/FileListItems.vue:457
+#: src/components/FileListItems.vue:545
+#: src/components/PageDetailContentList.vue:539
+#: src/components/PageDetailContentList.vue:588
+#: src/components/PageListItems.vue:883
+#: src/components/PageListItems.vue:960
 msgid "Actions"
 msgstr "Eylemler"
 
 #: src/components/ElementListItems.vue:421
-#: src/components/ElementListItems.vue:488 src/components/FileListItems.vue:450
-#: src/components/FileListItems.vue:523 src/components/PageListItems.vue:870
-#: src/components/PageListItems.vue:932 src/views/ElementDetail.vue:295
-#: src/views/ElementDetail.vue:310 src/views/FileDetail.vue:229
-#: src/views/FileDetail.vue:244 src/views/PageDetail.vue:632
-#: src/views/PageDetail.vue:647
+#: src/components/ElementListItems.vue:497
+#: src/components/FileListItems.vue:461
+#: src/components/FileListItems.vue:553
+#: src/components/PageListItems.vue:887
+#: src/components/PageListItems.vue:967
+#: src/views/ElementDetail.vue:299
+#: src/views/ElementDetail.vue:315
+#: src/views/FileDetail.vue:251
+#: src/views/FileDetail.vue:267
+#: src/views/PageDetail.vue:652
+#: src/views/PageDetail.vue:668
 msgid "Publish"
 msgstr "Yayınla"
 
 #: src/components/ElementListItems.vue:424
+#: src/components/ElementListItems.vue:544
+#: src/components/PageDetailContentList.vue:671
+#: src/components/PageDetailItemConfig.vue:200
+#: src/components/PageDetailItemMeta.vue:199
+#: src/fields/Items.vue:138
 msgid "Add element"
 msgstr "Öğe ekle"
 
 #: src/components/ElementListItems.vue:427
-#: src/components/ElementListItems.vue:491 src/components/FileListItems.vue:456
-#: src/components/FileListItems.vue:526 src/components/PageListItems.vue:882
-#: src/components/PageListItems.vue:1010
+#: src/components/ElementListItems.vue:500
+#: src/components/FileListItems.vue:467
+#: src/components/FileListItems.vue:556
+#: src/components/PageListItems.vue:899
+#: src/components/PageListItems.vue:1045
 msgid "Trash"
 msgstr "Çöp"
 
 #: src/components/ElementListItems.vue:430
-#: src/components/ElementListItems.vue:494 src/components/FileListItems.vue:459
-#: src/components/FileListItems.vue:529 src/components/PageListItems.vue:885
-#: src/components/PageListItems.vue:1013
+#: src/components/ElementListItems.vue:503
+#: src/components/FileListItems.vue:470
+#: src/components/FileListItems.vue:559
+#: src/components/PageListItems.vue:902
+#: src/components/PageListItems.vue:1048
 msgid "Restore"
 msgstr "Geri Yükleme"
 
 #: src/components/ElementListItems.vue:433
-#: src/components/ElementListItems.vue:497 src/components/FileListItems.vue:462
-#: src/components/FileListItems.vue:532 src/components/PageListItems.vue:888
-#: src/components/PageListItems.vue:1016
+#: src/components/ElementListItems.vue:506
+#: src/components/FileListItems.vue:473
+#: src/components/FileListItems.vue:562
+#: src/components/PageListItems.vue:905
+#: src/components/PageListItems.vue:1051
 msgid "Purge"
 msgstr "Arındırma"
 
-#: src/components/ElementListItems.vue:444 src/components/FileListItems.vue:473
-#: src/components/PageDetailContentList.vue:433
-#: src/components/PageListItems.vue:897
+#: src/components/ElementListItems.vue:444
+#: src/components/FileListItems.vue:482
+#: src/components/PageDetailContentList.vue:564
+#: src/components/PageListItems.vue:914
 msgid "Search for"
 msgstr "Aramak için"
 
 #: src/components/ElementListItems.vue:454
-#: src/components/ElementListItems.vue:459 src/components/FileListItems.vue:486
-#: src/components/FileListItems.vue:491
+#: src/components/FileListItems.vue:507
+msgid "Sort by"
+msgstr "Göre sırala"
+
+#: src/components/ElementListItems.vue:458
+#: src/components/ElementListItems.vue:463
+#: src/components/FileListItems.vue:511
+#: src/components/FileListItems.vue:516
 msgid "latest"
 msgstr "en son"
 
-#: src/components/ElementListItems.vue:454
-#: src/components/ElementListItems.vue:462 src/components/FileListItems.vue:486
-#: src/components/FileListItems.vue:494
+#: src/components/ElementListItems.vue:458
+#: src/components/ElementListItems.vue:466
+#: src/components/FileListItems.vue:511
+#: src/components/FileListItems.vue:519
 msgid "oldest"
 msgstr "en yaşlı"
 
-#: src/components/ElementListItems.vue:465 src/components/FileListItems.vue:497
-#: src/fields/Audio.vue:59 src/fields/File.vue:243 src/fields/Image.vue:101
-#: src/fields/Video.vue:61
+#: src/components/ElementListItems.vue:469
+#: src/components/FileListItems.vue:522
+#: src/fields/Audio.vue:67
+#: src/fields/File.vue:251
+#: src/fields/Image.vue:110
+#: src/fields/Video.vue:69
 msgid "name"
 msgstr "isim"
 
-#: src/components/ElementListItems.vue:468
+#: src/components/ElementListItems.vue:472
 msgid "type"
 msgstr "tip"
 
-#: src/components/ElementListItems.vue:521 src/components/FileListItems.vue:564
-#: src/components/HistoryDialog.vue:90 src/components/PageListItems.vue:1048
+#: src/components/ElementListItems.vue:530
+#: src/components/FileListItems.vue:594
+#: src/components/HistoryDialog.vue:95
+#: src/components/PageListItems.vue:1083
 msgid "Loading"
 msgstr "Yükleniyor"
 
-#: src/components/ElementListItems.vue:525 src/components/FileListItems.vue:569
-#: src/components/PageListItems.vue:1053
+#: src/components/ElementListItems.vue:534
+#: src/components/FileListItems.vue:599
+#: src/components/PageListItems.vue:1088
 msgid "No entries found"
 msgstr "Giriş bulunamadı"
 
-#: src/components/FieldsDialog.vue:52
+#: src/components/Fields.vue:130
+msgid "Translate %{code} field"
+msgstr "%{code} alanını çevir"
+
+#: src/components/Fields.vue:147
+msgid "Generate text for %{code} field"
+msgstr "%{code} alanı için metin oluşturun"
+
+#: src/components/FieldsDialog.vue:51
+#: src/views/ElementDetail.vue:290
+#: src/views/FileDetail.vue:241
+#: src/views/PageDetail.vue:643
+msgid "Save"
+msgstr "Kaydet"
+
+#: src/components/FieldsDialog.vue:54
+#: src/components/FileAiDialog.vue:171
+#: src/components/FileDialog.vue:25
+#: src/components/FileUrlDialog.vue:155
+#: src/components/HistoryDialog.vue:79
+#: src/components/SchemaDialog.vue:25
+msgid "Close"
+msgstr "Kapat"
+
+#: src/components/FieldsDialog.vue:60
 msgid "Content Element"
 msgstr "İçerik Öğesi"
 
@@ -227,64 +333,128 @@ msgstr "İçerik Öğesi"
 msgid "Context in JSON format"
 msgstr "JSON biçiminde bağlam"
 
-#: src/components/FileAiDialog.vue:172 src/components/FileAiDialog.vue:191
+#: src/components/FileAiDialog.vue:177
+#: src/components/FileAiDialog.vue:196
 msgid "Create image"
 msgstr "Görüntü oluşturun"
 
-#: src/components/FileAiDialog.vue:178
+#: src/components/FileAiDialog.vue:183
 msgid "Describe the image"
 msgstr "Görüntüyü tanımlayın"
 
-#: src/components/FileAiDialog.vue:196
+#: src/components/FileAiDialog.vue:201
 msgid "Generated images"
 msgstr "Oluşturulan görüntüler"
 
-#: src/components/FileAiDialog.vue:200 src/components/FileAiDialog.vue:215
+#: src/components/FileAiDialog.vue:207
+#: src/components/FileAiDialog.vue:225
 msgid "Remove"
 msgstr "Kaldırmak"
 
-#: src/components/FileAiDialog.vue:211
+#: src/components/FileAiDialog.vue:221
 msgid "Use images of this style"
 msgstr "Bu stildeki resimleri kullanın"
 
-#: src/components/FileAiDialog.vue:225
+#: src/components/FileAiDialog.vue:235
 msgid "Select similar images"
 msgstr "Benzer resimleri seçin"
 
-#: src/components/FileDetailItem.vue:231
+#: src/components/FileDetailItem.vue:304
+msgid "Transcription is only available for audio and video files"
+msgstr "Transkripsiyon yalnızca ses ve video dosyaları için kullanılabilir"
+
+#: src/components/FileDetailItem.vue:329
+msgid "Error transcribing file"
+msgstr "Dosya yazıya dökülürken hata oluştu"
+
+#: src/components/FileDetailItem.vue:433
+msgid "No file selected"
+msgstr "Seçili dosya yok"
+
+#: src/components/FileDetailItem.vue:533
+msgid "Use cropped image"
+msgstr "Kırpılmış görüntü kullanın"
+
+#: src/components/FileDetailItem.vue:539
+msgid "Crop image"
+msgstr "Görüntüyü kırp"
+
+#: src/components/FileDetailItem.vue:543
+msgid "Original ratio"
+msgstr "Orijinal oran"
+
+#: src/components/FileDetailItem.vue:546
+msgid "No ratio"
+msgstr "Oran yok"
+
+#: src/components/FileDetailItem.vue:549
+msgid "Square"
+msgstr "Kare"
+
+#: src/components/FileDetailItem.vue:567
 msgid "Rotate counter-clockwise"
 msgstr "Saat yönünün tersine döndürün"
 
-#: src/components/FileDetailItem.vue:232
+#: src/components/FileDetailItem.vue:568
 msgid "Rotate clockwise"
 msgstr "Saat yönünde döndürün"
 
-#: src/components/FileDetailItem.vue:235
+#: src/components/FileDetailItem.vue:571
 msgid "Flip horizontally"
 msgstr "Yatay olarak çevirin"
 
-#: src/components/FileDetailItem.vue:236
+#: src/components/FileDetailItem.vue:572
 msgid "Flip vertically"
 msgstr "Dikey olarak çevirin"
 
-#: src/components/FileDetailItem.vue:239
+#: src/components/FileDetailItem.vue:575
 msgid "Reset"
 msgstr "Sıfırla"
 
-#: src/components/FileDetailItem.vue:240
+#: src/components/FileDetailItem.vue:576
 msgid "Download"
 msgstr "İndir"
 
-#: src/components/FileDetailItem.vue:267
+#: src/components/FileDetailItem.vue:595
+msgid "Use as cover image"
+msgstr "Kapak görseli olarak kullanın"
+
+#: src/components/FileDetailItem.vue:596
+msgid "Upload cover image"
+msgstr "Kapak resmi yükleme"
+
+#: src/components/FileDetailItem.vue:619
 msgid "Descriptions"
 msgstr "Açıklamalar"
 
-#: src/components/FileDetailItem.vue:292
+#: src/components/FileDetailItem.vue:623
+#: src/components/FileDetailItem.vue:665
+msgid "Translate text"
+msgstr "Metin çevir"
+
+#: src/components/FileDetailItem.vue:630
+msgid "Generate description"
+msgstr "Açıklama oluştur"
+
+#: src/components/FileDetailItem.vue:645
 msgid "Description (%{lang})"
 msgstr "Açıklama (%{lang})"
 
-#: src/components/FileDetailRefs.vue:94 src/components/Navigation.vue:30
-#: src/views/PageList.vue:75
+#: src/components/FileDetailItem.vue:661
+msgid "Transcriptions"
+msgstr "Transkripsiyonlar"
+
+#: src/components/FileDetailItem.vue:672
+msgid "Transcribe file content"
+msgstr "Dosya içeriğini yazıya dökme"
+
+#: src/components/FileDetailItem.vue:687
+msgid "Transcription (%{lang})"
+msgstr "Transkripsiyon (%{lang})"
+
+#: src/components/FileDetailRefs.vue:94
+#: src/components/Navigation.vue:30
+#: src/views/PageList.vue:138
 msgid "Pages"
 msgstr "Sayfalar"
 
@@ -296,48 +466,48 @@ msgstr "Elementler"
 msgid "Versions"
 msgstr "Versiyonlar"
 
-#: src/components/FileDialog.vue:26 src/components/Navigation.vue:42
+#: src/components/FileDialog.vue:31
+#: src/components/Navigation.vue:42
 msgid "Files"
 msgstr "Dosyalar"
 
-#: src/components/FileListItems.vue:151
+#: src/components/FileListItems.vue:153
 msgid "Error trashing file"
 msgstr "Dosya çöpe atılırken hata oluştu"
 
-#: src/components/FileListItems.vue:199
+#: src/components/FileListItems.vue:201
 msgid "Error restoring file"
 msgstr "Dosya geri yüklenirken hata oluştu"
 
-#: src/components/FileListItems.vue:241 src/views/FileDetail.vue:79
+#: src/components/FileListItems.vue:243
+#: src/views/FileDetail.vue:80
 msgid "Error publishing file"
 msgstr "Dosya yayınlanırken hata oluştu"
 
-#: src/components/FileListItems.vue:278
+#: src/components/FileListItems.vue:280
 msgid "Error purging file"
 msgstr "Dosya temizlenirken hata oluştu"
 
-#: src/components/FileListItems.vue:373
+#: src/components/FileListItems.vue:380
 msgid "Error fetching files"
 msgstr "Dosyaları getirirken hata oluştu"
 
-#: src/components/FileListItems.vue:453
+#: src/components/FileListItems.vue:464
+#: src/components/FileListItems.vue:616
+#: src/fields/Images.vue:234
+#: src/fields/Images.vue:253
 msgid "Add files"
 msgstr "Dosya ekleme"
 
-#: src/components/FileListItems.vue:480
+#: src/components/FileListItems.vue:493
 msgid "Grid view"
 msgstr "Izgara görünümü"
 
-#: src/components/FileListItems.vue:481
+#: src/components/FileListItems.vue:499
 msgid "List view"
 msgstr "Liste görünümü"
 
-#: src/components/FileListItems.vue:500 src/fields/Audio.vue:60
-#: src/fields/File.vue:244 src/fields/Image.vue:102 src/fields/Video.vue:62
-msgid "mime"
-msgstr "MIME"
-
-#: src/components/FileListItems.vue:503
+#: src/components/FileListItems.vue:528
 msgid "language"
 msgstr "DİL"
 
@@ -350,112 +520,141 @@ msgid "The file is not of type \"%{mime}*\""
 msgstr "Dosya \"%{mime}*\" türünde değil"
 
 #: src/components/FileUrlDialog.vue:151
+#: src/fields/Audio.vue:40
+#: src/fields/File.vue:224
+#: src/fields/Image.vue:77
+#: src/fields/Video.vue:42
 msgid "Add file"
 msgstr "Dosya ekle"
 
-#: src/components/FileUrlDialog.vue:156
-msgid "Add files by URL"
-msgstr "URL'ye göre dosya ekleme"
+#: src/components/FileUrlDialog.vue:161
+#: src/fields/Images.vue:240
+msgid "Add files from URLs"
+msgstr "URL'lerden dosya ekleme"
 
-#: src/components/FileUrlDialog.vue:167
+#: src/components/FileUrlDialog.vue:172
 msgid "Enter one URL per line"
 msgstr "Satır başına bir URL girin"
 
-#: src/components/FileUrlDialog.vue:181
+#: src/components/FileUrlDialog.vue:186
 msgid "Enter URL"
 msgstr "URL Girin"
 
-#: src/components/FileUrlDialog.vue:189
+#: src/components/FileUrlDialog.vue:196
+#: src/fields/Audio.vue:31
+#: src/fields/File.vue:215
+#: src/fields/Image.vue:68
+#: src/fields/Images.vue:224
+#: src/fields/Video.vue:32
 msgid "Remove file"
 msgstr "Dosyayı kaldır"
 
-#: src/components/HistoryDialog.vue:81
+#: src/components/HistoryDialog.vue:86
 msgid "History"
 msgstr "Tarih"
 
-#: src/components/HistoryDialog.vue:96
+#: src/components/HistoryDialog.vue:108
 msgid "No changes"
 msgstr "Değişiklik yok"
 
-#: src/components/HistoryDialog.vue:102
+#: src/components/HistoryDialog.vue:117
 msgid "Current"
 msgstr "Güncel"
 
-#: src/components/HistoryDialog.vue:110
+#: src/components/HistoryDialog.vue:125
 msgid "Revert"
 msgstr "Geri Dön"
 
-#: src/components/HistoryDialog.vue:132
+#: src/components/HistoryDialog.vue:154
 msgid "Use version"
 msgstr "Sürüm kullanın"
 
-#: src/components/PageDetailContentList.vue:225
-msgid "Element not found"
-msgstr "Öğe bulunamadı"
-
-#: src/components/PageDetailContentList.vue:230
-msgid "Element is already shared"
-msgstr "Öğe zaten paylaşılıyor"
-
-#: src/components/PageDetailContentList.vue:290
-msgid "Unable to make element shared"
-msgstr "Paylaşılan öğe yapılamıyor"
-
-#: src/components/PageDetailContentList.vue:354
+#: src/components/PageDetailContentList.vue:87
+#: src/components/PageDetailContentList.vue:98
+#: src/components/PageDetailContentList.vue:478
 msgid "Content element not found"
 msgstr "İçerik öğesi bulunamadı"
 
-#: src/components/PageDetailContentList.vue:361
+#: src/components/PageDetailContentList.vue:293
+msgid "Element not found"
+msgstr "Öğe bulunamadı"
+
+#: src/components/PageDetailContentList.vue:298
+msgid "Element is already shared"
+msgstr "Öğe zaten paylaşılıyor"
+
+#: src/components/PageDetailContentList.vue:358
+msgid "Unable to make element shared"
+msgstr "Paylaşılan öğe yapılamıyor"
+
+#: src/components/PageDetailContentList.vue:377
+msgid "Not available for this content element"
+msgstr "Bu içerik öğesi için mevcut değil"
+
+#: src/components/PageDetailContentList.vue:485
 msgid "Element is not shared"
 msgstr "Öğe paylaşılmıyor"
 
-#: src/components/PageDetailContentList.vue:415
-#: src/components/PageDetailContentList.vue:466
+#: src/components/PageDetailContentList.vue:543
+#: src/components/PageDetailContentList.vue:601
 msgid "Delete"
 msgstr "Silme"
 
-#: src/components/PageDetailContentList.vue:418
-#: src/components/PageDetailContentList.vue:460
-#: src/components/PageListItems.vue:950
+#: src/components/PageDetailContentList.vue:546
+#: src/components/PageDetailContentList.vue:595
+#: src/components/PageListItems.vue:985
 msgid "Copy"
 msgstr "Anlaşıldı"
 
-#: src/components/PageDetailContentList.vue:421
-#: src/components/PageDetailContentList.vue:463
-#: src/components/PageListItems.vue:947
+#: src/components/PageDetailContentList.vue:549
+#: src/components/PageDetailContentList.vue:598
+#: src/components/PageListItems.vue:982
 msgid "Cut"
 msgstr "Kesmek"
 
-#: src/components/PageDetailContentList.vue:424
-#: src/components/PageListItems.vue:953 src/components/PageListItems.vue:971
+#: src/components/PageDetailContentList.vue:552
+#: src/components/PageListItems.vue:988
+#: src/components/PageListItems.vue:1006
 msgid "Paste"
 msgstr "Yapıştır"
 
-#: src/components/PageDetailContentList.vue:472
+#: src/components/PageDetailContentList.vue:555
+msgid "Merge"
+msgstr "Birleştirme"
+
+#: src/components/PageDetailContentList.vue:607
 msgid "Paste before"
 msgstr "Önce yapıştırın"
 
-#: src/components/PageDetailContentList.vue:475
+#: src/components/PageDetailContentList.vue:610
 msgid "Paste after"
 msgstr "Sonra yapıştır"
 
-#: src/components/PageDetailContentList.vue:478
+#: src/components/PageDetailContentList.vue:613
 msgid "Insert before"
 msgstr "Önce ekle"
 
-#: src/components/PageDetailContentList.vue:481
+#: src/components/PageDetailContentList.vue:616
 msgid "Insert after"
 msgstr "Sonra ekle"
 
-#: src/components/PageDetailContentList.vue:487
+#: src/components/PageDetailContentList.vue:622
 msgid "Make shared"
 msgstr "Paylaşımlı hale getirin"
 
-#: src/components/PageDetailContentList.vue:490
+#: src/components/PageDetailContentList.vue:625
 msgid "Merge copy"
 msgstr "Birleştirme kopyası"
 
-#: src/components/PageDetailContentList.vue:495
+#: src/components/PageDetailContentList.vue:628
+msgid "Change to"
+msgstr "Değiştir"
+
+#: src/components/PageDetailContentList.vue:631
+msgid "Split"
+msgstr "Bölünmüş"
+
+#: src/components/PageDetailContentList.vue:637
 msgid "Shared element"
 msgstr "Paylaşılan öğe"
 
@@ -476,15 +675,21 @@ msgstr "Konfigürasyon"
 msgid "The element has already been added"
 msgstr "Öğe zaten eklenmiştir"
 
+#: src/components/PageDetailItemConfig.vue:173
+msgid "Remove content element"
+msgstr "İçerik öğesini kaldırın"
+
 #: src/components/PageDetailItemProps.vue:58
 msgid "The path is already in use by another page"
 msgstr "Yol zaten başka bir sayfa tarafından kullanılıyor"
 
 #: src/components/PageDetailItemProps.vue:130
+#: src/views/PageList.vue:209
 msgid "Disabled"
 msgstr "Engelli"
 
 #: src/components/PageDetailItemProps.vue:131
+#: src/views/PageList.vue:207
 msgid "Enabled"
 msgstr "Etkin"
 
@@ -496,8 +701,10 @@ msgstr "Navigasyonda gizli"
 msgid "Status"
 msgstr "Durum"
 
-#: src/components/PageDetailItemProps.vue:159 src/fields/Table.vue:54
-#: src/views/Login.vue:84 src/views/Login.vue:90
+#: src/components/PageDetailItemProps.vue:159
+#: src/fields/Table.vue:54
+#: src/views/Login.vue:84
+#: src/views/Login.vue:90
 msgid "Field is required"
 msgstr "Alan zorunludur"
 
@@ -538,6 +745,7 @@ msgid "Page tag"
 msgstr "Sayfa etiketi"
 
 #: src/components/PageDetailItemProps.vue:242
+#: src/views/PageList.vue:216
 msgid "No cache"
 msgstr "Önbellek yok"
 
@@ -576,94 +784,140 @@ msgstr "Yönlendirme URL'si"
 msgid "Double-click to edit"
 msgstr "Düzenlemek için çift tıklayın"
 
-#: src/components/PageDetailPreview.vue:173
+#: src/components/PageDetailPreview.vue:169
+msgid "Edit element"
+msgstr "Öğeyi düzenle"
+
+#: src/components/PageDetailPreview.vue:175
+msgid "Add element before"
+msgstr "Önce öğe ekle"
+
+#: src/components/PageDetailPreview.vue:181
+msgid "Add element after"
+msgstr "Sonrasına öğe ekle"
+
+#: src/components/PageDetailPreview.vue:187
+#: src/fields/Items.vue:101
+msgid "Remove element"
+msgstr "Öğeyi kaldır"
+
+#: src/components/PageDetailPreview.vue:193
 msgid "Preview mode"
 msgstr "Önizleme modu"
 
-#: src/components/PageListItems.vue:93
+#: src/components/PageDetailPreview.vue:200
+msgid "Fullscreen mode"
+msgstr "Tam ekran modu"
+
+#: src/components/PageDetailPreview.vue:207
+msgid "Exit fullscreen mode"
+msgstr "Tam ekran modundan çıkın"
+
+#: src/components/PageListItems.vue:90
 msgid "Error adding root page"
 msgstr "Kök sayfa eklerken hata oluştu"
 
-#: src/components/PageListItems.vue:135 src/components/PageListItems.vue:460
+#: src/components/PageListItems.vue:132
+#: src/components/PageListItems.vue:457
 msgid "Error moving page"
 msgstr "Sayfa taşınırken hata oluştu"
 
-#: src/components/PageListItems.vue:203
+#: src/components/PageListItems.vue:200
 msgid "Error trashing page"
 msgstr "Sayfa çöpe atılırken hata oluştu"
 
-#: src/components/PageListItems.vue:251
+#: src/components/PageListItems.vue:248
 msgid "Error fetching pages"
 msgstr "Sayfaları getirirken hata oluştu"
 
-#: src/components/PageListItems.vue:336
+#: src/components/PageListItems.vue:333
 msgid "Error inserting page"
 msgstr "Sayfa eklenirken hata oluştu"
 
-#: src/components/PageListItems.vue:392
+#: src/components/PageListItems.vue:389
 msgid "Error restoring page"
 msgstr "Sayfa geri yüklenirken hata oluştu"
 
-#: src/components/PageListItems.vue:552
+#: src/components/PageListItems.vue:549
 msgid "Error copying page"
 msgstr "Sayfa kopyalanırken hata oluştu"
 
-#: src/components/PageListItems.vue:556 src/views/PageDetail.vue:241
+#: src/components/PageListItems.vue:553
+#: src/views/PageDetail.vue:241
 msgid "Error fetching page"
 msgstr "Sayfa getirilirken hata oluştu"
 
-#: src/components/PageListItems.vue:599 src/views/PageDetail.vue:323
+#: src/components/PageListItems.vue:596
+#: src/views/PageDetail.vue:331
 msgid "Error publishing page"
 msgstr "Sayfa yayınlanırken hata oluştu"
 
-#: src/components/PageListItems.vue:641
+#: src/components/PageListItems.vue:638
 msgid "Error purging page"
 msgstr "Hata temizleme sayfası"
 
-#: src/components/PageListItems.vue:691
+#: src/components/PageListItems.vue:707
 msgid "Error searching pages"
 msgstr "Arama sayfalarında hata"
 
-#: src/components/PageListItems.vue:739 src/views/PageDetail.vue:427
+#: src/components/PageListItems.vue:755
+#: src/views/PageDetail.vue:435
 msgid "Error saving page"
 msgstr "Sayfa kaydedilirken hata oluştu"
 
-#: src/components/PageListItems.vue:873 src/components/PageListItems.vue:938
+#: src/components/PageListItems.vue:890
+#: src/components/PageListItems.vue:973
 msgid "Enable"
 msgstr "Etkinleştir"
 
-#: src/components/PageListItems.vue:876 src/components/PageListItems.vue:935
+#: src/components/PageListItems.vue:893
+#: src/components/PageListItems.vue:970
 msgid "Disable"
 msgstr "Devre dışı bırak"
 
-#: src/components/PageListItems.vue:941
+#: src/components/PageListItems.vue:924
+msgid "Reload page tree"
+msgstr "Sayfa ağacını yeniden yükle"
+
+#: src/components/PageListItems.vue:951
+msgid "Toggle child nodes"
+msgstr "Alt düğümleri değiştir"
+
+#: src/components/PageListItems.vue:976
 msgid "Hide in menu"
 msgstr "Menüde gizle"
 
-#: src/components/PageListItems.vue:957 src/components/PageListItems.vue:975
-#: src/components/PageListItems.vue:993
+#: src/components/PageListItems.vue:992
+#: src/components/PageListItems.vue:1010
+#: src/components/PageListItems.vue:1028
 msgid "Before"
 msgstr "Önce"
 
-#: src/components/PageListItems.vue:962 src/components/PageListItems.vue:980
-#: src/components/PageListItems.vue:998
+#: src/components/PageListItems.vue:997
+#: src/components/PageListItems.vue:1015
+#: src/components/PageListItems.vue:1033
 msgid "Into"
 msgstr "İçine"
 
-#: src/components/PageListItems.vue:967 src/components/PageListItems.vue:985
-#: src/components/PageListItems.vue:1003
+#: src/components/PageListItems.vue:1002
+#: src/components/PageListItems.vue:1020
+#: src/components/PageListItems.vue:1038
 msgid "After"
 msgstr "Sonra"
 
-#: src/components/PageListItems.vue:989
+#: src/components/PageListItems.vue:1024
 msgid "Insert"
 msgstr "Ekleme"
 
-#: src/components/PageListItems.vue:1034
+#: src/components/PageListItems.vue:1069
 msgid "New"
 msgstr "Yeni"
 
-#: src/components/SchemaDialog.vue:26
+#: src/components/PageListItems.vue:1094
+msgid "Add page"
+msgstr "Sayfa ekle"
+
+#: src/components/SchemaDialog.vue:32
 msgid "Content elements"
 msgstr "İçerik öğeleri"
 
@@ -679,13 +933,39 @@ msgstr "Kullanıcı yüklenemedi"
 msgid "Logout failed"
 msgstr "Oturum kapatma başarısız"
 
-#: src/components/User.vue:72
+#: src/components/User.vue:53
+msgid "Switch language"
+msgstr "Dil değiştirme"
+
+#: src/components/User.vue:68
+msgid "User menu"
+msgstr "Kullanıcı menüsü"
+
+#: src/components/User.vue:82
 msgid "Logout"
 msgstr "Oturumu Kapat"
 
-#: src/fields/Autocomplete.vue:140 src/fields/Color.vue:34
-#: src/fields/Date.vue:48 src/fields/Html.vue:42 src/fields/Number.vue:50
-#: src/fields/Select.vue:42 src/fields/Url.vue:62
+#: src/fields/Audio.vue:46
+#: src/fields/File.vue:230
+#: src/fields/Image.vue:83
+#: src/fields/Video.vue:48
+msgid "Add file from URL"
+msgstr "URL'den dosya ekleme"
+
+#: src/fields/Audio.vue:51
+#: src/fields/File.vue:235
+#: src/fields/Image.vue:94
+#: src/fields/Video.vue:53
+msgid "Upload file"
+msgstr "Dosya yükle"
+
+#: src/fields/Autocomplete.vue:140
+#: src/fields/Color.vue:34
+#: src/fields/Date.vue:48
+#: src/fields/Html.vue:42
+#: src/fields/Number.vue:50
+#: src/fields/Select.vue:42
+#: src/fields/Url.vue:62
 msgid "Value is required"
 msgstr "Değer gereklidir"
 
@@ -697,19 +977,26 @@ msgstr "Veri mevcut değil"
 msgid "Value must be a hex color code"
 msgstr "Değer bir hex renk kodu olmalıdır"
 
-#: src/fields/Items.vue:65
+#: src/fields/Image.vue:89
+#: src/fields/Images.vue:248
+msgid "Create file"
+msgstr "Dosya oluştur"
+
+#: src/fields/Items.vue:70
 msgid "Maximum is %{num} entries"
 msgstr "Maksimum %{num} girişleri"
 
-#: src/fields/Items.vue:66
+#: src/fields/Items.vue:71
 msgid "Minimum is %{num} entries"
 msgstr "Minimum %{num} girişleri"
 
-#: src/fields/Plaintext.vue:49 src/fields/String.vue:54
+#: src/fields/Plaintext.vue:49
+#: src/fields/String.vue:54
 msgid "Minimum length is %{num} characters"
 msgstr "Minimum uzunluk %{num} karakterdir"
 
-#: src/fields/Plaintext.vue:50 src/fields/String.vue:55
+#: src/fields/Plaintext.vue:50
+#: src/fields/String.vue:55
 msgid "Maximum length is %{num} characters"
 msgstr "Maksimum uzunluk %{num} karakterdir"
 
@@ -738,261 +1025,261 @@ msgid "You do not have permission to access %{path}"
 msgstr "Erişim izniniz yok %{path}"
 
 #: src/strings.js:5
-msgctxt "as"
-msgid "type"
-msgstr "tip"
-
-#: src/strings.js:6
-msgctxt "as"
-msgid "state"
-msgstr "devlet"
-
-#: src/strings.js:7
-msgctxt "as"
-msgid "valid"
-msgstr "geçerli"
-
-#: src/strings.js:8
-msgctxt "as"
-msgid "changed"
-msgstr "değişti"
-
-#: src/strings.js:9
-msgctxt "as"
-msgid "error"
-msgstr "hata"
-
-#: src/strings.js:12
 msgctxt "cs"
 msgid "main"
 msgstr "ana"
 
-#: src/strings.js:13
+#: src/strings.js:6
 msgctxt "cs"
 msgid "header"
 msgstr "başlık"
 
-#: src/strings.js:14
+#: src/strings.js:7
 msgctxt "cs"
 msgid "footer"
 msgstr "altbilgi"
 
-#: src/strings.js:15
+#: src/strings.js:8
 msgctxt "cs"
 msgid "sidebar"
 msgstr "kenar çubuğu"
 
-#: src/strings.js:16
+#: src/strings.js:9
 msgctxt "cs"
 msgid "aside"
 msgstr "bir kenara"
 
-#: src/strings.js:19
+#: src/strings.js:12
 msgctxt "sg"
 msgid "basic"
 msgstr "temel"
 
-#: src/strings.js:20
+#: src/strings.js:13
 msgctxt "sg"
 msgid "content"
 msgstr "İçerik"
 
-#: src/strings.js:21
+#: src/strings.js:14
 msgctxt "sg"
 msgid "media"
 msgstr "medya"
 
-#: src/strings.js:22
+#: src/strings.js:15
 msgctxt "sg"
 msgid "forms"
 msgstr "formlar"
 
-#: src/strings.js:25
+#: src/strings.js:18
+msgctxt "as"
+msgid "type"
+msgstr "tip"
+
+#: src/strings.js:19
+msgctxt "as"
+msgid "state"
+msgstr "devlet"
+
+#: src/strings.js:22
+msgctxt "st"
+msgid "valid"
+msgstr "geçerli"
+
+#: src/strings.js:23
+msgctxt "st"
+msgid "changed"
+msgstr "değişti"
+
+#: src/strings.js:24
+msgctxt "st"
+msgid "error"
+msgstr "hata"
+
+#: src/strings.js:27
 msgctxt "st"
 msgid "reference"
 msgstr "referans"
 
-#: src/strings.js:26
+#: src/strings.js:28
 msgctxt "st"
 msgid "heading"
 msgstr "Başlık"
 
-#: src/strings.js:27
+#: src/strings.js:29
 msgctxt "st"
 msgid "text"
 msgstr "Metin"
 
-#: src/strings.js:28
+#: src/strings.js:30
 msgctxt "st"
 msgid "image-text"
 msgstr "görüntü-metin"
 
-#: src/strings.js:29
+#: src/strings.js:31
 msgctxt "st"
 msgid "slideshow"
 msgstr "slayt gösterisi"
 
-#: src/strings.js:30
+#: src/strings.js:32
 msgctxt "st"
 msgid "code"
 msgstr "kod"
 
-#: src/strings.js:31
+#: src/strings.js:33
 msgctxt "st"
 msgid "table"
 msgstr "masa"
 
-#: src/strings.js:32
+#: src/strings.js:34
 msgctxt "st"
 msgid "html"
 msgstr "html"
 
-#: src/strings.js:33
+#: src/strings.js:35
 msgctxt "st"
 msgid "image"
 msgstr "görüntü"
 
-#: src/strings.js:34
+#: src/strings.js:36
 msgctxt "st"
 msgid "video"
 msgstr "Video"
 
-#: src/strings.js:35
+#: src/strings.js:37
 msgctxt "st"
 msgid "audio"
 msgstr "ses"
 
-#: src/strings.js:36
+#: src/strings.js:38
 msgctxt "st"
 msgid "file"
 msgstr "dosya"
 
-#: src/strings.js:37
+#: src/strings.js:39
 msgctxt "st"
 msgid "hero"
 msgstr "kahraman"
 
-#: src/strings.js:38
+#: src/strings.js:40
 msgctxt "st"
 msgid "cards"
 msgstr "kartlar"
 
-#: src/strings.js:39
+#: src/strings.js:41
 msgctxt "st"
 msgid "blog"
 msgstr "blog"
 
-#: src/strings.js:40
+#: src/strings.js:42
 msgctxt "st"
 msgid "article"
 msgstr "makale"
 
-#: src/strings.js:41
+#: src/strings.js:43
 msgctxt "st"
 msgid "contact"
 msgstr "İletişim"
 
-#: src/strings.js:42
+#: src/strings.js:44
 msgctxt "st"
 msgid "meta"
 msgstr "meta"
 
-#: src/strings.js:43
+#: src/strings.js:45
 msgctxt "st"
 msgid "social"
 msgstr "sosyal"
 
-#: src/strings.js:44
+#: src/strings.js:46
 msgctxt "st"
 msgid "canonical"
 msgstr "kanonik"
 
-#: src/strings.js:45
+#: src/strings.js:47
 msgctxt "st"
 msgid "theme"
 msgstr "tema"
 
-#: src/strings.js:48
+#: src/strings.js:50
 msgctxt "fn"
 msgid "button"
 msgstr "düğme"
 
-#: src/strings.js:49
+#: src/strings.js:51
 msgctxt "fn"
 msgid "cards"
 msgstr "kartlar"
 
-#: src/strings.js:50
+#: src/strings.js:52
 msgctxt "fn"
 msgid "description"
 msgstr "Açıklama"
 
-#: src/strings.js:51
+#: src/strings.js:53
 msgctxt "fn"
 msgid "file"
 msgstr "dosya"
 
-#: src/strings.js:52
+#: src/strings.js:54
 msgctxt "fn"
 msgid "files"
 msgstr "dosyalar"
 
-#: src/strings.js:53
+#: src/strings.js:55
 msgctxt "fn"
 msgid "header"
 msgstr "başlık"
 
-#: src/strings.js:54
+#: src/strings.js:56
 msgctxt "fn"
 msgid "keywords"
 msgstr "anahtar kelimeler"
 
-#: src/strings.js:55
+#: src/strings.js:57
 msgctxt "fn"
 msgid "lang"
 msgstr "lang"
 
-#: src/strings.js:56
+#: src/strings.js:58
 msgctxt "fn"
 msgid "level"
 msgstr "seviye"
 
-#: src/strings.js:57
+#: src/strings.js:59
 msgctxt "fn"
 msgid "limit"
 msgstr "limit"
 
-#: src/strings.js:58
+#: src/strings.js:60
 msgctxt "fn"
 msgid "main"
 msgstr "ana"
 
-#: src/strings.js:59
+#: src/strings.js:61
 msgctxt "fn"
 msgid "parent-page"
 msgstr "ebeveyn sayfası"
 
-#: src/strings.js:60
+#: src/strings.js:62
 msgctxt "fn"
 msgid "position"
 msgstr "pozisyon"
 
-#: src/strings.js:61
+#: src/strings.js:63
 msgctxt "fn"
 msgid "text"
 msgstr "Metin"
 
-#: src/strings.js:62
+#: src/strings.js:64
 msgctxt "fn"
 msgid "table"
 msgstr "masa"
 
-#: src/strings.js:63
+#: src/strings.js:65
 msgctxt "fn"
 msgid "title"
 msgstr "başlık"
 
-#: src/strings.js:64
+#: src/strings.js:66
 msgctxt "fn"
 msgid "url"
 msgstr "url"
@@ -1025,89 +1312,141 @@ msgstr "Eleman kaydedilirken hata oluştu"
 msgid "Error fetching element versions"
 msgstr "Öğe sürümlerini getirirken hata oluştu"
 
-#: src/views/ElementDetail.vue:271 src/views/ElementDetail.vue:326
+#: src/views/ElementDetail.vue:265
+#: src/views/FileDetail.vue:215
+#: src/views/PageDetail.vue:599
+msgid "Back to list view"
+msgstr "Liste görünümüne geri dön"
+
+#: src/views/ElementDetail.vue:272
+#: src/views/ElementDetail.vue:330
 msgid "Element"
 msgstr "Element"
 
-#: src/views/ElementDetail.vue:286 src/views/FileDetail.vue:220
-#: src/views/PageDetail.vue:623
-msgid "Save"
-msgstr "Kaydet"
+#: src/views/ElementDetail.vue:280
+#: src/views/FileDetail.vue:229
+msgid "View history"
+msgstr "Geçmişi görüntüle"
 
-#: src/views/ElementDetail.vue:327 src/views/FileDetail.vue:261
+#: src/views/ElementDetail.vue:303
+#: src/views/FileDetail.vue:255
+#: src/views/PageDetail.vue:656
+msgid "Schedule publishing"
+msgstr "Program yayınlama"
+
+#: src/views/ElementDetail.vue:321
+#: src/views/ElementList.vue:84
+#: src/views/FileDetail.vue:273
+#: src/views/FileList.vue:81
+#: src/views/PageDetail.vue:674
+#: src/views/PageList.vue:145
+msgid "Toggle side menu"
+msgstr "Yan menüyü aç / kapat"
+
+#: src/views/ElementDetail.vue:331
+#: src/views/FileDetail.vue:283
 msgid "Used by"
 msgstr "Tarafından kullanıldı"
 
-#: src/views/ElementList.vue:41 src/views/ElementList.vue:104
-#: src/views/ElementList.vue:113 src/views/ElementList.vue:121
-#: src/views/FileList.vue:40 src/views/FileList.vue:101
-#: src/views/FileList.vue:110 src/views/FileList.vue:118
-#: src/views/PageList.vue:41 src/views/PageList.vue:109
-#: src/views/PageList.vue:118 src/views/PageList.vue:126
+#: src/views/ElementList.vue:41
+#: src/views/ElementList.vue:104
+#: src/views/ElementList.vue:113
+#: src/views/ElementList.vue:121
+#: src/views/FileList.vue:40
+#: src/views/FileList.vue:101
+#: src/views/FileList.vue:110
+#: src/views/FileList.vue:118
+#: src/views/PageList.vue:47
+#: src/views/PageList.vue:189
+#: src/views/PageList.vue:198
+#: src/views/PageList.vue:206
+#: src/views/PageList.vue:215
+#: src/views/PageList.vue:222
 msgid "All"
 msgstr "Tümü"
 
-#: src/views/ElementList.vue:102 src/views/FileList.vue:99
-#: src/views/PageList.vue:107
+#: src/views/ElementList.vue:70
+#: src/views/FileList.vue:69
+#: src/views/PageList.vue:133
+msgid "Close navigation"
+msgstr "Navigasyonu kapat"
+
+#: src/views/ElementList.vue:70
+#: src/views/FileList.vue:69
+#: src/views/PageList.vue:133
+msgid "Open navigation"
+msgstr "Navigasyonu aç"
+
+#: src/views/ElementList.vue:102
+#: src/views/FileList.vue:99
+#: src/views/PageList.vue:187
 msgid "publish"
 msgstr "yayınlamak"
 
-#: src/views/ElementList.vue:106 src/views/FileList.vue:103
-#: src/views/PageList.vue:111
+#: src/views/ElementList.vue:106
+#: src/views/FileList.vue:103
+#: src/views/PageList.vue:191
 msgid "Scheduled"
 msgstr "Planlanmış"
 
-#: src/views/ElementList.vue:107 src/views/FileList.vue:104
-#: src/views/PageList.vue:112
+#: src/views/ElementList.vue:107
+#: src/views/FileList.vue:104
+#: src/views/PageList.vue:192
 msgid "Drafts"
 msgstr "Taslaklar"
 
-#: src/views/ElementList.vue:111 src/views/FileList.vue:108
-#: src/views/PageList.vue:116
+#: src/views/ElementList.vue:111
+#: src/views/FileList.vue:108
+#: src/views/PageList.vue:196
 msgid "trashed"
 msgstr "çöpe atılmış"
 
-#: src/views/ElementList.vue:114 src/views/FileList.vue:111
-#: src/views/PageList.vue:119
+#: src/views/ElementList.vue:114
+#: src/views/FileList.vue:111
+#: src/views/PageList.vue:199
 msgid "Available only"
 msgstr "Sadece mevcut"
 
-#: src/views/ElementList.vue:115 src/views/FileList.vue:112
-#: src/views/PageList.vue:120
+#: src/views/ElementList.vue:115
+#: src/views/FileList.vue:112
+#: src/views/PageList.vue:200
 msgid "Only trashed"
 msgstr "Sadece çöpe atılmış"
 
-#: src/views/ElementList.vue:122 src/views/FileList.vue:119
-#: src/views/PageList.vue:127
+#: src/views/ElementList.vue:122
+#: src/views/FileList.vue:119
+#: src/views/PageList.vue:223
 msgid "Edited by me"
 msgstr "Benim tarafımdan düzenlendi"
 
-#: src/views/ElementList.vue:126 src/views/FileList.vue:123
-#: src/views/PageList.vue:131
+#: src/views/ElementList.vue:126
+#: src/views/FileList.vue:123
+#: src/views/PageList.vue:227
 msgid "languages"
 msgstr "diller"
 
-#: src/views/FileDetail.vue:71
+#: src/views/FileDetail.vue:72
 msgid "File published successfully"
 msgstr "Dosya başarıyla yayınlandı"
 
-#: src/views/FileDetail.vue:74
+#: src/views/FileDetail.vue:75
 msgid "File scheduled for publishing at %{date}"
 msgstr "adresinde yayınlanması planlanan dosya %{date}"
 
-#: src/views/FileDetail.vue:129
+#: src/views/FileDetail.vue:142
 msgid "File saved successfully"
 msgstr "Dosya başarıyla kaydedildi"
 
-#: src/views/FileDetail.vue:134
+#: src/views/FileDetail.vue:148
 msgid "Error saving file"
 msgstr "Dosya kaydedilirken hata oluştu"
 
-#: src/views/FileDetail.vue:186
+#: src/views/FileDetail.vue:202
 msgid "Error fetching file versions"
 msgstr "Dosya sürümleri alınırken hata oluştu"
 
-#: src/views/FileDetail.vue:205 src/views/FileDetail.vue:260
+#: src/views/FileDetail.vue:222
+#: src/views/FileDetail.vue:282
 msgid "File"
 msgstr "Dosya"
 
@@ -1119,7 +1458,8 @@ msgstr "CMS editörü değil"
 msgid "Access denied"
 msgstr "Erişim reddedildi"
 
-#: src/views/Login.vue:79 src/views/Login.vue:101
+#: src/views/Login.vue:79
+#: src/views/Login.vue:106
 msgid "Login"
 msgstr "Giriş"
 
@@ -1135,54 +1475,75 @@ msgstr "Geçersiz e-posta adresi"
 msgid "Password"
 msgstr "Şifre"
 
-#: src/views/Login.vue:96
+#: src/views/Login.vue:100
 msgid "Error"
 msgstr "Hata"
 
-#: src/views/PageDetail.vue:315
+#: src/views/PageDetail.vue:323
 msgid "Page published successfully"
 msgstr "Sayfa başarıyla yayınlandı"
 
-#: src/views/PageDetail.vue:318
+#: src/views/PageDetail.vue:326
 msgid "Page scheduled for publishing at %{date}"
 msgstr "adresinde yayınlanması planlanan sayfa %{date}"
 
-#: src/views/PageDetail.vue:351
+#: src/views/PageDetail.vue:359
 msgid "There are invalid fields, please resolve the errors first"
 msgstr "Geçersiz alanlar var, lütfen önce hataları giderin"
 
-#: src/views/PageDetail.vue:419
+#: src/views/PageDetail.vue:427
 msgid "Page saved successfully"
 msgstr "Sayfa başarıyla kaydedildi"
 
-#: src/views/PageDetail.vue:436
+#: src/views/PageDetail.vue:444
 msgid "No page schema for \"content\" found"
 msgstr "\"content\" için sayfa şeması bulunamadı"
 
-#: src/views/PageDetail.vue:572
+#: src/views/PageDetail.vue:580
 msgid "Error fetching page versions"
 msgstr "Sayfa sürümlerini getirirken hata oluştu"
 
-#: src/views/PageDetail.vue:597 src/views/PageDetail.vue:675
+#: src/views/PageDetail.vue:606
+#: src/views/PageDetail.vue:686
 msgid "Page"
 msgstr "Sayfa"
 
-#: src/views/PageDetail.vue:665
+#: src/views/PageDetail.vue:614
+msgid "Translate page"
+msgstr "Sayfayı çevir"
+
+#: src/views/PageDetail.vue:690
 msgid "Editor"
 msgstr "Editör"
 
-#: src/views/PageDetail.vue:670
+#: src/views/PageDetail.vue:695
 msgid "Content"
 msgstr "İçerik"
 
-#: src/views/PageList.vue:100
+#: src/views/PageList.vue:160
+msgid "What kind of page and content should I create?"
+msgstr "Ne tür bir sayfa ve içerik oluşturmalıyım?"
+
+#: src/views/PageList.vue:180
 msgid "view"
 msgstr "görünüm"
 
-#: src/views/PageList.vue:102
+#: src/views/PageList.vue:182
 msgid "Tree"
 msgstr "Ağaç"
 
-#: src/views/PageList.vue:103
+#: src/views/PageList.vue:183
 msgid "List"
 msgstr "Liste"
+
+#: src/views/PageList.vue:204
+msgid "status"
+msgstr "durum"
+
+#: src/views/PageList.vue:208
+msgid "Hidden"
+msgstr "Gizli"
+
+#: src/views/PageList.vue:213
+msgid "cache"
+msgstr "önbellek"

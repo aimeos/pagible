@@ -1,75 +1,98 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
-"Language: th\n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: th\n"
+"Language-Team: none\n"
+"Last-Translator: Automatically generated\n"
+"MIME-Version: 1.0\n"
+"Project-Id-Version: PACKAGE VERSION\n"
 
 #: src/App.vue:110
 msgid "None"
 msgstr "ไม่มี"
 
-#: src/components/AsideMeta.vue:17
+#: src/components/AsideMeta.vue:19
 msgid "id"
 msgstr "ไอดี"
 
-#: src/components/AsideMeta.vue:18 src/components/ElementListItems.vue:471
-#: src/components/FileListItems.vue:506 src/fields/Audio.vue:61
-#: src/fields/File.vue:245 src/fields/Image.vue:103 src/fields/Video.vue:63
-#: src/views/ElementList.vue:119 src/views/FileList.vue:116
-#: src/views/PageList.vue:124
+#: src/components/AsideMeta.vue:23
+#: src/components/FileListItems.vue:525
+#: src/fields/Audio.vue:71
+#: src/fields/File.vue:255
+#: src/fields/Image.vue:114
+#: src/fields/Video.vue:73
+msgid "mime"
+msgstr "มิม"
+
+#: src/components/AsideMeta.vue:27
+#: src/components/ElementListItems.vue:475
+#: src/components/FileListItems.vue:531
+#: src/fields/Audio.vue:75
+#: src/fields/File.vue:259
+#: src/fields/Image.vue:118
+#: src/fields/Video.vue:77
+#: src/views/ElementList.vue:119
+#: src/views/FileList.vue:116
+#: src/views/PageList.vue:220
 msgid "editor"
 msgstr "บรรณาธิการ"
 
-#: src/components/AsideMeta.vue:22
+#: src/components/AsideMeta.vue:31
 msgid "created"
 msgstr "สร้างขึ้น"
 
-#: src/components/AsideMeta.vue:26 src/fields/Audio.vue:62
-#: src/fields/File.vue:246 src/fields/Image.vue:104 src/fields/Video.vue:64
+#: src/components/AsideMeta.vue:35
+#: src/fields/Audio.vue:79
+#: src/fields/File.vue:263
+#: src/fields/Image.vue:122
+#: src/fields/Video.vue:81
 msgid "updated"
 msgstr "อัปเดต"
 
-#: src/components/AsideMeta.vue:30
+#: src/components/AsideMeta.vue:39
 msgid "deleted"
 msgstr "ถูกลบ"
 
-#: src/components/AsideMeta.vue:45
+#: src/components/AsideMeta.vue:54
 msgid "Meta data"
 msgstr "เมตาดาต้า"
 
 #: src/components/ElementDetailItem.vue:68
 #: src/components/ElementDetailRefs.vue:96
-#: src/components/FileDetailItem.vue:208 src/components/FileDetailRefs.vue:101
+#: src/components/FileDetailItem.vue:508
+#: src/components/FileDetailRefs.vue:101
 #: src/components/FileDetailRefs.vue:123
 msgid "Name"
 msgstr "ชื่อ"
 
 #: src/components/ElementDetailItem.vue:80
-#: src/components/FileDetailItem.vue:220
+#: src/components/FileDetailItem.vue:520
 #: src/components/PageDetailItemProps.vue:150
 msgid "Language"
 msgstr "ภาษา"
 
-#: src/components/ElementDetailRefs.vue:65 src/components/FileDetailRefs.vue:69
+#: src/components/ElementDetailRefs.vue:65
+#: src/components/FileDetailRefs.vue:69
 msgid "yes"
 msgstr "ใช่"
 
-#: src/components/ElementDetailRefs.vue:68 src/components/FileDetailRefs.vue:73
+#: src/components/ElementDetailRefs.vue:68
+#: src/components/FileDetailRefs.vue:73
 msgid "no"
 msgstr "ไม่มี"
 
-#: src/components/ElementDetailRefs.vue:89 src/components/Navigation.vue:36
-#: src/components/SchemaDialog.vue:35 src/views/ElementList.vue:76
+#: src/components/ElementDetailRefs.vue:89
+#: src/components/Navigation.vue:36
+#: src/components/SchemaDialog.vue:42
+#: src/views/ElementList.vue:76
 msgid "Shared elements"
 msgstr "องค์ประกอบที่แชร์ร่วมกัน"
 
 #: src/components/ElementDetailRefs.vue:94
 #: src/components/ElementDetailRefs.vue:116
-#: src/components/FileDetailRefs.vue:99 src/components/FileDetailRefs.vue:121
+#: src/components/FileDetailRefs.vue:99
+#: src/components/FileDetailRefs.vue:121
 #: src/components/FileDetailRefs.vue:143
 msgid "ID"
 msgstr "ID"
@@ -80,13 +103,16 @@ msgid "URL"
 msgstr "URL"
 
 #: src/components/ElementDetailRefs.vue:117
-#: src/components/FileDetailRefs.vue:122 src/components/FileDetailRefs.vue:144
+#: src/components/FileDetailRefs.vue:122
+#: src/components/FileDetailRefs.vue:144
 msgid "Type"
 msgstr "ประเภท"
 
 #: src/components/ElementDetailRefs.vue:118
-#: src/components/FileDetailRefs.vue:145 src/views/ElementList.vue:105
-#: src/views/FileList.vue:102 src/views/PageList.vue:110
+#: src/components/FileDetailRefs.vue:145
+#: src/views/ElementList.vue:105
+#: src/views/FileList.vue:102
+#: src/views/PageList.vue:190
 msgid "Published"
 msgstr "เผยแพร่แล้ว"
 
@@ -95,23 +121,44 @@ msgstr "เผยแพร่แล้ว"
 #: src/components/ElementListItems.vue:157
 #: src/components/ElementListItems.vue:198
 #: src/components/ElementListItems.vue:240
-#: src/components/ElementListItems.vue:277 src/components/FileListItems.vue:61
-#: src/components/FileListItems.vue:122 src/components/FileListItems.vue:166
-#: src/components/FileListItems.vue:207 src/components/FileListItems.vue:249
-#: src/components/FileListItems.vue:286
-#: src/components/PageDetailContentList.vue:218
-#: src/components/PageListItems.vue:67 src/components/PageListItems.vue:101
-#: src/components/PageListItems.vue:168 src/components/PageListItems.vue:211
-#: src/components/PageListItems.vue:288 src/components/PageListItems.vue:351
-#: src/components/PageListItems.vue:416 src/components/PageListItems.vue:470
-#: src/components/PageListItems.vue:566 src/components/PageListItems.vue:607
-#: src/components/PageListItems.vue:649 src/components/PageListItems.vue:711
-#: src/fields/File.vue:55 src/fields/Images.vue:61
-#: src/views/ElementDetail.vue:107 src/views/ElementDetail.vue:156
-#: src/views/ElementDetail.vue:211 src/views/FileDetail.vue:45
-#: src/views/FileDetail.vue:94 src/views/FileDetail.vue:149
-#: src/views/PageDetail.vue:289 src/views/PageDetail.vue:341
-#: src/views/PageDetail.vue:535
+#: src/components/ElementListItems.vue:277
+#: src/components/FileDetailItem.vue:80
+#: src/components/FileDetailItem.vue:226
+#: src/components/FileDetailItem.vue:300
+#: src/components/FileDetailItem.vue:339
+#: src/components/FileDetailItem.vue:374
+#: src/components/FileDetailItem.vue:416
+#: src/components/FileDetailItem.vue:427
+#: src/components/FileListItems.vue:61
+#: src/components/FileListItems.vue:124
+#: src/components/FileListItems.vue:168
+#: src/components/FileListItems.vue:209
+#: src/components/FileListItems.vue:251
+#: src/components/FileListItems.vue:288
+#: src/components/PageDetailContentList.vue:286
+#: src/components/PageListItems.vue:64
+#: src/components/PageListItems.vue:98
+#: src/components/PageListItems.vue:165
+#: src/components/PageListItems.vue:208
+#: src/components/PageListItems.vue:285
+#: src/components/PageListItems.vue:348
+#: src/components/PageListItems.vue:413
+#: src/components/PageListItems.vue:467
+#: src/components/PageListItems.vue:563
+#: src/components/PageListItems.vue:604
+#: src/components/PageListItems.vue:665
+#: src/components/PageListItems.vue:727
+#: src/fields/File.vue:55
+#: src/fields/Images.vue:61
+#: src/views/ElementDetail.vue:107
+#: src/views/ElementDetail.vue:156
+#: src/views/ElementDetail.vue:211
+#: src/views/FileDetail.vue:46
+#: src/views/FileDetail.vue:95
+#: src/views/FileDetail.vue:164
+#: src/views/PageDetail.vue:297
+#: src/views/PageDetail.vue:349
+#: src/views/PageDetail.vue:543
 msgid "Permission denied"
 msgstr "ไม่อนุญาต"
 
@@ -139,86 +186,145 @@ msgstr "เกิดข้อผิดพลาดในการล้างอ
 msgid "Error fetching shared elements"
 msgstr "เกิดข้อผิดพลาดในการดึงองค์ประกอบที่ใช้ร่วมกัน"
 
-#: src/components/ElementListItems.vue:417 src/components/FileListItems.vue:446
-#: src/components/PageDetailContentList.vue:411
-#: src/components/PageListItems.vue:866
+#: src/components/ElementListItems.vue:417
+#: src/components/ElementListItems.vue:489
+#: src/components/FileListItems.vue:457
+#: src/components/FileListItems.vue:545
+#: src/components/PageDetailContentList.vue:539
+#: src/components/PageDetailContentList.vue:588
+#: src/components/PageListItems.vue:883
+#: src/components/PageListItems.vue:960
 msgid "Actions"
 msgstr "การกระทำ"
 
 #: src/components/ElementListItems.vue:421
-#: src/components/ElementListItems.vue:488 src/components/FileListItems.vue:450
-#: src/components/FileListItems.vue:523 src/components/PageListItems.vue:870
-#: src/components/PageListItems.vue:932 src/views/ElementDetail.vue:295
-#: src/views/ElementDetail.vue:310 src/views/FileDetail.vue:229
-#: src/views/FileDetail.vue:244 src/views/PageDetail.vue:632
-#: src/views/PageDetail.vue:647
+#: src/components/ElementListItems.vue:497
+#: src/components/FileListItems.vue:461
+#: src/components/FileListItems.vue:553
+#: src/components/PageListItems.vue:887
+#: src/components/PageListItems.vue:967
+#: src/views/ElementDetail.vue:299
+#: src/views/ElementDetail.vue:315
+#: src/views/FileDetail.vue:251
+#: src/views/FileDetail.vue:267
+#: src/views/PageDetail.vue:652
+#: src/views/PageDetail.vue:668
 msgid "Publish"
 msgstr "เผยแพร่"
 
 #: src/components/ElementListItems.vue:424
+#: src/components/ElementListItems.vue:544
+#: src/components/PageDetailContentList.vue:671
+#: src/components/PageDetailItemConfig.vue:200
+#: src/components/PageDetailItemMeta.vue:199
+#: src/fields/Items.vue:138
 msgid "Add element"
 msgstr "เพิ่มองค์ประกอบ"
 
 #: src/components/ElementListItems.vue:427
-#: src/components/ElementListItems.vue:491 src/components/FileListItems.vue:456
-#: src/components/FileListItems.vue:526 src/components/PageListItems.vue:882
-#: src/components/PageListItems.vue:1010
+#: src/components/ElementListItems.vue:500
+#: src/components/FileListItems.vue:467
+#: src/components/FileListItems.vue:556
+#: src/components/PageListItems.vue:899
+#: src/components/PageListItems.vue:1045
 msgid "Trash"
 msgstr "ขยะ"
 
 #: src/components/ElementListItems.vue:430
-#: src/components/ElementListItems.vue:494 src/components/FileListItems.vue:459
-#: src/components/FileListItems.vue:529 src/components/PageListItems.vue:885
-#: src/components/PageListItems.vue:1013
+#: src/components/ElementListItems.vue:503
+#: src/components/FileListItems.vue:470
+#: src/components/FileListItems.vue:559
+#: src/components/PageListItems.vue:902
+#: src/components/PageListItems.vue:1048
 msgid "Restore"
 msgstr "กู้คืน"
 
 #: src/components/ElementListItems.vue:433
-#: src/components/ElementListItems.vue:497 src/components/FileListItems.vue:462
-#: src/components/FileListItems.vue:532 src/components/PageListItems.vue:888
-#: src/components/PageListItems.vue:1016
+#: src/components/ElementListItems.vue:506
+#: src/components/FileListItems.vue:473
+#: src/components/FileListItems.vue:562
+#: src/components/PageListItems.vue:905
+#: src/components/PageListItems.vue:1051
 msgid "Purge"
 msgstr "ล้างข้อมูล"
 
-#: src/components/ElementListItems.vue:444 src/components/FileListItems.vue:473
-#: src/components/PageDetailContentList.vue:433
-#: src/components/PageListItems.vue:897
+#: src/components/ElementListItems.vue:444
+#: src/components/FileListItems.vue:482
+#: src/components/PageDetailContentList.vue:564
+#: src/components/PageListItems.vue:914
 msgid "Search for"
 msgstr "ค้นหา"
 
 #: src/components/ElementListItems.vue:454
-#: src/components/ElementListItems.vue:459 src/components/FileListItems.vue:486
-#: src/components/FileListItems.vue:491
+#: src/components/FileListItems.vue:507
+msgid "Sort by"
+msgstr "จัดเรียงตาม"
+
+#: src/components/ElementListItems.vue:458
+#: src/components/ElementListItems.vue:463
+#: src/components/FileListItems.vue:511
+#: src/components/FileListItems.vue:516
 msgid "latest"
 msgstr "ล่าสุด"
 
-#: src/components/ElementListItems.vue:454
-#: src/components/ElementListItems.vue:462 src/components/FileListItems.vue:486
-#: src/components/FileListItems.vue:494
+#: src/components/ElementListItems.vue:458
+#: src/components/ElementListItems.vue:466
+#: src/components/FileListItems.vue:511
+#: src/components/FileListItems.vue:519
 msgid "oldest"
 msgstr "เก่าแก่ที่สุด"
 
-#: src/components/ElementListItems.vue:465 src/components/FileListItems.vue:497
-#: src/fields/Audio.vue:59 src/fields/File.vue:243 src/fields/Image.vue:101
-#: src/fields/Video.vue:61
+#: src/components/ElementListItems.vue:469
+#: src/components/FileListItems.vue:522
+#: src/fields/Audio.vue:67
+#: src/fields/File.vue:251
+#: src/fields/Image.vue:110
+#: src/fields/Video.vue:69
 msgid "name"
 msgstr "ชื่อ"
 
-#: src/components/ElementListItems.vue:468
+#: src/components/ElementListItems.vue:472
 msgid "type"
 msgstr "ประเภท"
 
-#: src/components/ElementListItems.vue:521 src/components/FileListItems.vue:564
-#: src/components/HistoryDialog.vue:90 src/components/PageListItems.vue:1048
+#: src/components/ElementListItems.vue:530
+#: src/components/FileListItems.vue:594
+#: src/components/HistoryDialog.vue:95
+#: src/components/PageListItems.vue:1083
 msgid "Loading"
 msgstr "กำลังโหลด"
 
-#: src/components/ElementListItems.vue:525 src/components/FileListItems.vue:569
-#: src/components/PageListItems.vue:1053
+#: src/components/ElementListItems.vue:534
+#: src/components/FileListItems.vue:599
+#: src/components/PageListItems.vue:1088
 msgid "No entries found"
 msgstr "ไม่พบรายการ"
 
-#: src/components/FieldsDialog.vue:52
+#: src/components/Fields.vue:130
+msgid "Translate %{code} field"
+msgstr "แปลภาษาฟิลด์%{code} "
+
+#: src/components/Fields.vue:147
+msgid "Generate text for %{code} field"
+msgstr "สร้างข้อความสำหรับฟิลด์%{code} "
+
+#: src/components/FieldsDialog.vue:51
+#: src/views/ElementDetail.vue:290
+#: src/views/FileDetail.vue:241
+#: src/views/PageDetail.vue:643
+msgid "Save"
+msgstr "บันทึก"
+
+#: src/components/FieldsDialog.vue:54
+#: src/components/FileAiDialog.vue:171
+#: src/components/FileDialog.vue:25
+#: src/components/FileUrlDialog.vue:155
+#: src/components/HistoryDialog.vue:79
+#: src/components/SchemaDialog.vue:25
+msgid "Close"
+msgstr "ปิด"
+
+#: src/components/FieldsDialog.vue:60
 msgid "Content Element"
 msgstr "องค์ประกอบเนื้อหา"
 
@@ -226,64 +332,128 @@ msgstr "องค์ประกอบเนื้อหา"
 msgid "Context in JSON format"
 msgstr "บริบทในรูปแบบ JSON"
 
-#: src/components/FileAiDialog.vue:172 src/components/FileAiDialog.vue:191
+#: src/components/FileAiDialog.vue:177
+#: src/components/FileAiDialog.vue:196
 msgid "Create image"
 msgstr "สร้างภาพ"
 
-#: src/components/FileAiDialog.vue:178
+#: src/components/FileAiDialog.vue:183
 msgid "Describe the image"
 msgstr "อธิบายภาพ"
 
-#: src/components/FileAiDialog.vue:196
+#: src/components/FileAiDialog.vue:201
 msgid "Generated images"
 msgstr "ภาพที่สร้างขึ้น"
 
-#: src/components/FileAiDialog.vue:200 src/components/FileAiDialog.vue:215
+#: src/components/FileAiDialog.vue:207
+#: src/components/FileAiDialog.vue:225
 msgid "Remove"
 msgstr "ลบ"
 
-#: src/components/FileAiDialog.vue:211
+#: src/components/FileAiDialog.vue:221
 msgid "Use images of this style"
 msgstr "ใช้ภาพในสไตล์นี้"
 
-#: src/components/FileAiDialog.vue:225
+#: src/components/FileAiDialog.vue:235
 msgid "Select similar images"
 msgstr "เลือกภาพที่คล้ายกัน"
 
-#: src/components/FileDetailItem.vue:231
+#: src/components/FileDetailItem.vue:304
+msgid "Transcription is only available for audio and video files"
+msgstr "การถอดเสียงมีให้เฉพาะสำหรับไฟล์เสียงและวิดีโอเท่านั้น"
+
+#: src/components/FileDetailItem.vue:329
+msgid "Error transcribing file"
+msgstr "เกิดข้อผิดพลาดในการถอดเสียงไฟล์"
+
+#: src/components/FileDetailItem.vue:433
+msgid "No file selected"
+msgstr "ไม่เลือกไฟล์"
+
+#: src/components/FileDetailItem.vue:533
+msgid "Use cropped image"
+msgstr "ใช้ภาพที่ถูกตัด"
+
+#: src/components/FileDetailItem.vue:539
+msgid "Crop image"
+msgstr "ครอบตัดรูปภาพ"
+
+#: src/components/FileDetailItem.vue:543
+msgid "Original ratio"
+msgstr "อัตราส่วนดั้งเดิม"
+
+#: src/components/FileDetailItem.vue:546
+msgid "No ratio"
+msgstr "ไม่มีอัตราส่วน"
+
+#: src/components/FileDetailItem.vue:549
+msgid "Square"
+msgstr "สี่เหลี่ยม"
+
+#: src/components/FileDetailItem.vue:567
 msgid "Rotate counter-clockwise"
 msgstr "หมุนทวนเข็มนาฬิกา"
 
-#: src/components/FileDetailItem.vue:232
+#: src/components/FileDetailItem.vue:568
 msgid "Rotate clockwise"
 msgstr "หมุนตามเข็มนาฬิกา"
 
-#: src/components/FileDetailItem.vue:235
+#: src/components/FileDetailItem.vue:571
 msgid "Flip horizontally"
 msgstr "พลิกแนวนอน"
 
-#: src/components/FileDetailItem.vue:236
+#: src/components/FileDetailItem.vue:572
 msgid "Flip vertically"
 msgstr "พลิกในแนวตั้ง"
 
-#: src/components/FileDetailItem.vue:239
+#: src/components/FileDetailItem.vue:575
 msgid "Reset"
 msgstr "รีเซ็ต"
 
-#: src/components/FileDetailItem.vue:240
+#: src/components/FileDetailItem.vue:576
 msgid "Download"
 msgstr "ดาวน์โหลด"
 
-#: src/components/FileDetailItem.vue:267
+#: src/components/FileDetailItem.vue:595
+msgid "Use as cover image"
+msgstr "ใช้เป็นภาพปก"
+
+#: src/components/FileDetailItem.vue:596
+msgid "Upload cover image"
+msgstr "อัปโหลดภาพปก"
+
+#: src/components/FileDetailItem.vue:619
 msgid "Descriptions"
 msgstr "คำอธิบาย"
 
-#: src/components/FileDetailItem.vue:292
+#: src/components/FileDetailItem.vue:623
+#: src/components/FileDetailItem.vue:665
+msgid "Translate text"
+msgstr "แปลข้อความ"
+
+#: src/components/FileDetailItem.vue:630
+msgid "Generate description"
+msgstr "สร้างคำอธิบาย"
+
+#: src/components/FileDetailItem.vue:645
 msgid "Description (%{lang})"
 msgstr "คำอธิบาย (%{lang})"
 
-#: src/components/FileDetailRefs.vue:94 src/components/Navigation.vue:30
-#: src/views/PageList.vue:75
+#: src/components/FileDetailItem.vue:661
+msgid "Transcriptions"
+msgstr "การถอดเสียง"
+
+#: src/components/FileDetailItem.vue:672
+msgid "Transcribe file content"
+msgstr "ถอดความเนื้อหาไฟล์"
+
+#: src/components/FileDetailItem.vue:687
+msgid "Transcription (%{lang})"
+msgstr "การถอดเสียง (%{lang})"
+
+#: src/components/FileDetailRefs.vue:94
+#: src/components/Navigation.vue:30
+#: src/views/PageList.vue:138
 msgid "Pages"
 msgstr "หน้า"
 
@@ -295,48 +465,48 @@ msgstr "องค์ประกอบ"
 msgid "Versions"
 msgstr "เวอร์ชัน"
 
-#: src/components/FileDialog.vue:26 src/components/Navigation.vue:42
+#: src/components/FileDialog.vue:31
+#: src/components/Navigation.vue:42
 msgid "Files"
 msgstr "ไฟล์"
 
-#: src/components/FileListItems.vue:151
+#: src/components/FileListItems.vue:153
 msgid "Error trashing file"
 msgstr "ไฟล์การลบข้อผิดพลาด"
 
-#: src/components/FileListItems.vue:199
+#: src/components/FileListItems.vue:201
 msgid "Error restoring file"
 msgstr "เกิดข้อผิดพลาดในการกู้คืนไฟล์"
 
-#: src/components/FileListItems.vue:241 src/views/FileDetail.vue:79
+#: src/components/FileListItems.vue:243
+#: src/views/FileDetail.vue:80
 msgid "Error publishing file"
 msgstr "เกิดข้อผิดพลาดในการเผยแพร่ไฟล์"
 
-#: src/components/FileListItems.vue:278
+#: src/components/FileListItems.vue:280
 msgid "Error purging file"
 msgstr "กำลังล้างไฟล์ข้อผิดพลาด"
 
-#: src/components/FileListItems.vue:373
+#: src/components/FileListItems.vue:380
 msgid "Error fetching files"
 msgstr "เกิดข้อผิดพลาดในการดึงไฟล์"
 
-#: src/components/FileListItems.vue:453
+#: src/components/FileListItems.vue:464
+#: src/components/FileListItems.vue:616
+#: src/fields/Images.vue:234
+#: src/fields/Images.vue:253
 msgid "Add files"
 msgstr "เพิ่มไฟล์"
 
-#: src/components/FileListItems.vue:480
+#: src/components/FileListItems.vue:493
 msgid "Grid view"
 msgstr "มุมมองตาราง"
 
-#: src/components/FileListItems.vue:481
+#: src/components/FileListItems.vue:499
 msgid "List view"
 msgstr "มุมมองรายการ"
 
-#: src/components/FileListItems.vue:500 src/fields/Audio.vue:60
-#: src/fields/File.vue:244 src/fields/Image.vue:102 src/fields/Video.vue:62
-msgid "mime"
-msgstr "มิม"
-
-#: src/components/FileListItems.vue:503
+#: src/components/FileListItems.vue:528
 msgid "language"
 msgstr "ภาษา"
 
@@ -349,112 +519,141 @@ msgid "The file is not of type \"%{mime}*\""
 msgstr "ไฟล์ไม่ใช่ประเภท \"%{mime}*\""
 
 #: src/components/FileUrlDialog.vue:151
+#: src/fields/Audio.vue:40
+#: src/fields/File.vue:224
+#: src/fields/Image.vue:77
+#: src/fields/Video.vue:42
 msgid "Add file"
 msgstr "เพิ่มไฟล์"
 
-#: src/components/FileUrlDialog.vue:156
-msgid "Add files by URL"
-msgstr "เพิ่มไฟล์โดยใช้ URL"
+#: src/components/FileUrlDialog.vue:161
+#: src/fields/Images.vue:240
+msgid "Add files from URLs"
+msgstr "เพิ่มไฟล์จาก URL"
 
-#: src/components/FileUrlDialog.vue:167
+#: src/components/FileUrlDialog.vue:172
 msgid "Enter one URL per line"
 msgstr "กรุณากรอก URL หนึ่งรายการต่อหนึ่งบรรทัด"
 
-#: src/components/FileUrlDialog.vue:181
+#: src/components/FileUrlDialog.vue:186
 msgid "Enter URL"
 msgstr "ป้อน URL"
 
-#: src/components/FileUrlDialog.vue:189
+#: src/components/FileUrlDialog.vue:196
+#: src/fields/Audio.vue:31
+#: src/fields/File.vue:215
+#: src/fields/Image.vue:68
+#: src/fields/Images.vue:224
+#: src/fields/Video.vue:32
 msgid "Remove file"
 msgstr "ลบไฟล์"
 
-#: src/components/HistoryDialog.vue:81
+#: src/components/HistoryDialog.vue:86
 msgid "History"
 msgstr "ประวัติศาสตร์"
 
-#: src/components/HistoryDialog.vue:96
+#: src/components/HistoryDialog.vue:108
 msgid "No changes"
 msgstr "ไม่มีการเปลี่ยนแปลง"
 
-#: src/components/HistoryDialog.vue:102
+#: src/components/HistoryDialog.vue:117
 msgid "Current"
 msgstr "ปัจจุบัน"
 
-#: src/components/HistoryDialog.vue:110
+#: src/components/HistoryDialog.vue:125
 msgid "Revert"
 msgstr "ย้อนกลับ"
 
-#: src/components/HistoryDialog.vue:132
+#: src/components/HistoryDialog.vue:154
 msgid "Use version"
 msgstr "ใช้เวอร์ชัน"
 
-#: src/components/PageDetailContentList.vue:225
-msgid "Element not found"
-msgstr "ไม่พบองค์ประกอบ"
-
-#: src/components/PageDetailContentList.vue:230
-msgid "Element is already shared"
-msgstr "องค์ประกอบถูกแชร์แล้ว"
-
-#: src/components/PageDetailContentList.vue:290
-msgid "Unable to make element shared"
-msgstr "ไม่สามารถทำให้องค์ประกอบเป็นแบบแชร์ได้"
-
-#: src/components/PageDetailContentList.vue:354
+#: src/components/PageDetailContentList.vue:87
+#: src/components/PageDetailContentList.vue:98
+#: src/components/PageDetailContentList.vue:478
 msgid "Content element not found"
 msgstr "ไม่พบองค์ประกอบเนื้อหา"
 
-#: src/components/PageDetailContentList.vue:361
+#: src/components/PageDetailContentList.vue:293
+msgid "Element not found"
+msgstr "ไม่พบองค์ประกอบ"
+
+#: src/components/PageDetailContentList.vue:298
+msgid "Element is already shared"
+msgstr "องค์ประกอบถูกแชร์แล้ว"
+
+#: src/components/PageDetailContentList.vue:358
+msgid "Unable to make element shared"
+msgstr "ไม่สามารถทำให้องค์ประกอบเป็นแบบแชร์ได้"
+
+#: src/components/PageDetailContentList.vue:377
+msgid "Not available for this content element"
+msgstr "ไม่สามารถใช้ได้สำหรับองค์ประกอบเนื้อหา"
+
+#: src/components/PageDetailContentList.vue:485
 msgid "Element is not shared"
 msgstr "องค์ประกอบไม่ได้ถูกแชร์"
 
-#: src/components/PageDetailContentList.vue:415
-#: src/components/PageDetailContentList.vue:466
+#: src/components/PageDetailContentList.vue:543
+#: src/components/PageDetailContentList.vue:601
 msgid "Delete"
 msgstr "ลบ"
 
-#: src/components/PageDetailContentList.vue:418
-#: src/components/PageDetailContentList.vue:460
-#: src/components/PageListItems.vue:950
+#: src/components/PageDetailContentList.vue:546
+#: src/components/PageDetailContentList.vue:595
+#: src/components/PageListItems.vue:985
 msgid "Copy"
 msgstr "คัดลอก"
 
-#: src/components/PageDetailContentList.vue:421
-#: src/components/PageDetailContentList.vue:463
-#: src/components/PageListItems.vue:947
+#: src/components/PageDetailContentList.vue:549
+#: src/components/PageDetailContentList.vue:598
+#: src/components/PageListItems.vue:982
 msgid "Cut"
 msgstr "ตัด"
 
-#: src/components/PageDetailContentList.vue:424
-#: src/components/PageListItems.vue:953 src/components/PageListItems.vue:971
+#: src/components/PageDetailContentList.vue:552
+#: src/components/PageListItems.vue:988
+#: src/components/PageListItems.vue:1006
 msgid "Paste"
 msgstr "วาง"
 
-#: src/components/PageDetailContentList.vue:472
+#: src/components/PageDetailContentList.vue:555
+msgid "Merge"
+msgstr "รวม"
+
+#: src/components/PageDetailContentList.vue:607
 msgid "Paste before"
 msgstr "วางก่อน"
 
-#: src/components/PageDetailContentList.vue:475
+#: src/components/PageDetailContentList.vue:610
 msgid "Paste after"
 msgstr "วางหลังจาก"
 
-#: src/components/PageDetailContentList.vue:478
+#: src/components/PageDetailContentList.vue:613
 msgid "Insert before"
 msgstr "แทรกก่อน"
 
-#: src/components/PageDetailContentList.vue:481
+#: src/components/PageDetailContentList.vue:616
 msgid "Insert after"
 msgstr "แทรกหลังจาก"
 
-#: src/components/PageDetailContentList.vue:487
+#: src/components/PageDetailContentList.vue:622
 msgid "Make shared"
 msgstr "ทำให้เป็นของร่วมกัน"
 
-#: src/components/PageDetailContentList.vue:490
+#: src/components/PageDetailContentList.vue:625
 msgid "Merge copy"
 msgstr "ผสานสำเนา"
 
-#: src/components/PageDetailContentList.vue:495
+#: src/components/PageDetailContentList.vue:628
+msgid "Change to"
+msgstr "เปลี่ยนเป็น"
+
+#: src/components/PageDetailContentList.vue:631
+msgid "Split"
+msgstr "แยก"
+
+#: src/components/PageDetailContentList.vue:637
 msgid "Shared element"
 msgstr "องค์ประกอบที่แชร์ร่วมกัน"
 
@@ -475,15 +674,21 @@ msgstr "การกำหนดค่า"
 msgid "The element has already been added"
 msgstr "องค์ประกอบได้ถูกเพิ่มแล้ว"
 
+#: src/components/PageDetailItemConfig.vue:173
+msgid "Remove content element"
+msgstr "ลบองค์ประกอบเนื้อหา"
+
 #: src/components/PageDetailItemProps.vue:58
 msgid "The path is already in use by another page"
 msgstr "เส้นทางนี้ถูกใช้โดยหน้าอื่นอยู่แล้ว"
 
 #: src/components/PageDetailItemProps.vue:130
+#: src/views/PageList.vue:209
 msgid "Disabled"
 msgstr "ผู้พิการ"
 
 #: src/components/PageDetailItemProps.vue:131
+#: src/views/PageList.vue:207
 msgid "Enabled"
 msgstr "เปิดใช้งานแล้ว"
 
@@ -495,8 +700,10 @@ msgstr "ซ่อนอยู่ในระบบนำทาง"
 msgid "Status"
 msgstr "สถานะ"
 
-#: src/components/PageDetailItemProps.vue:159 src/fields/Table.vue:54
-#: src/views/Login.vue:84 src/views/Login.vue:90
+#: src/components/PageDetailItemProps.vue:159
+#: src/fields/Table.vue:54
+#: src/views/Login.vue:84
+#: src/views/Login.vue:90
 msgid "Field is required"
 msgstr "ฟิลด์เป็นข้อมูลที่จำเป็น"
 
@@ -537,6 +744,7 @@ msgid "Page tag"
 msgstr "แท็กเพจ"
 
 #: src/components/PageDetailItemProps.vue:242
+#: src/views/PageList.vue:216
 msgid "No cache"
 msgstr "ไม่มีแคช"
 
@@ -575,94 +783,140 @@ msgstr "URL ปลายทาง"
 msgid "Double-click to edit"
 msgstr "ดับเบิลคลิกเพื่อแก้ไข"
 
-#: src/components/PageDetailPreview.vue:173
+#: src/components/PageDetailPreview.vue:169
+msgid "Edit element"
+msgstr "แก้ไของค์ประกอบ"
+
+#: src/components/PageDetailPreview.vue:175
+msgid "Add element before"
+msgstr "เพิ่มองค์ประกอบก่อน"
+
+#: src/components/PageDetailPreview.vue:181
+msgid "Add element after"
+msgstr "เพิ่มองค์ประกอบหลังจาก"
+
+#: src/components/PageDetailPreview.vue:187
+#: src/fields/Items.vue:101
+msgid "Remove element"
+msgstr "ลบองค์ประกอบ"
+
+#: src/components/PageDetailPreview.vue:193
 msgid "Preview mode"
 msgstr "โหมดแสดงตัวอย่าง"
 
-#: src/components/PageListItems.vue:93
+#: src/components/PageDetailPreview.vue:200
+msgid "Fullscreen mode"
+msgstr "โหมดเต็มหน้าจอ"
+
+#: src/components/PageDetailPreview.vue:207
+msgid "Exit fullscreen mode"
+msgstr "ออกจากโหมดเต็มหน้าจอ"
+
+#: src/components/PageListItems.vue:90
 msgid "Error adding root page"
 msgstr "เกิดข้อผิดพลาดในการเพิ่มหน้าหลัก"
 
-#: src/components/PageListItems.vue:135 src/components/PageListItems.vue:460
+#: src/components/PageListItems.vue:132
+#: src/components/PageListItems.vue:457
 msgid "Error moving page"
 msgstr "เกิดข้อผิดพลาดในการย้ายหน้า"
 
-#: src/components/PageListItems.vue:203
+#: src/components/PageListItems.vue:200
 msgid "Error trashing page"
 msgstr "หน้าการลบข้อผิดพลาด"
 
-#: src/components/PageListItems.vue:251
+#: src/components/PageListItems.vue:248
 msgid "Error fetching pages"
 msgstr "เกิดข้อผิดพลาดในการดึงหน้าเว็บ"
 
-#: src/components/PageListItems.vue:336
+#: src/components/PageListItems.vue:333
 msgid "Error inserting page"
 msgstr "เกิดข้อผิดพลาดในการแทรกหน้า"
 
-#: src/components/PageListItems.vue:392
+#: src/components/PageListItems.vue:389
 msgid "Error restoring page"
 msgstr "เกิดข้อผิดพลาดในการกู้คืนหน้า"
 
-#: src/components/PageListItems.vue:552
+#: src/components/PageListItems.vue:549
 msgid "Error copying page"
 msgstr "เกิดข้อผิดพลาดในการคัดลอกหน้า"
 
-#: src/components/PageListItems.vue:556 src/views/PageDetail.vue:241
+#: src/components/PageListItems.vue:553
+#: src/views/PageDetail.vue:241
 msgid "Error fetching page"
 msgstr "เกิดข้อผิดพลาดในการดึงหน้า"
 
-#: src/components/PageListItems.vue:599 src/views/PageDetail.vue:323
+#: src/components/PageListItems.vue:596
+#: src/views/PageDetail.vue:331
 msgid "Error publishing page"
 msgstr "เกิดข้อผิดพลาดในการเผยแพร่หน้า"
 
-#: src/components/PageListItems.vue:641
+#: src/components/PageListItems.vue:638
 msgid "Error purging page"
 msgstr "กำลังล้างข้อผิดพลาด"
 
-#: src/components/PageListItems.vue:691
+#: src/components/PageListItems.vue:707
 msgid "Error searching pages"
 msgstr "เกิดข้อผิดพลาดในการค้นหาหน้า"
 
-#: src/components/PageListItems.vue:739 src/views/PageDetail.vue:427
+#: src/components/PageListItems.vue:755
+#: src/views/PageDetail.vue:435
 msgid "Error saving page"
 msgstr "เกิดข้อผิดพลาดในการบันทึกหน้า"
 
-#: src/components/PageListItems.vue:873 src/components/PageListItems.vue:938
+#: src/components/PageListItems.vue:890
+#: src/components/PageListItems.vue:973
 msgid "Enable"
 msgstr "เปิดใช้งาน"
 
-#: src/components/PageListItems.vue:876 src/components/PageListItems.vue:935
+#: src/components/PageListItems.vue:893
+#: src/components/PageListItems.vue:970
 msgid "Disable"
 msgstr "ปิดการใช้งาน"
 
-#: src/components/PageListItems.vue:941
+#: src/components/PageListItems.vue:924
+msgid "Reload page tree"
+msgstr "โหลดหน้าเว็บใหม่"
+
+#: src/components/PageListItems.vue:951
+msgid "Toggle child nodes"
+msgstr "สลับโหนดลูก"
+
+#: src/components/PageListItems.vue:976
 msgid "Hide in menu"
 msgstr "ซ่อนในเมนู"
 
-#: src/components/PageListItems.vue:957 src/components/PageListItems.vue:975
-#: src/components/PageListItems.vue:993
+#: src/components/PageListItems.vue:992
+#: src/components/PageListItems.vue:1010
+#: src/components/PageListItems.vue:1028
 msgid "Before"
 msgstr "ก่อนหน้า"
 
-#: src/components/PageListItems.vue:962 src/components/PageListItems.vue:980
-#: src/components/PageListItems.vue:998
+#: src/components/PageListItems.vue:997
+#: src/components/PageListItems.vue:1015
+#: src/components/PageListItems.vue:1033
 msgid "Into"
 msgstr "เข้าสู่"
 
-#: src/components/PageListItems.vue:967 src/components/PageListItems.vue:985
-#: src/components/PageListItems.vue:1003
+#: src/components/PageListItems.vue:1002
+#: src/components/PageListItems.vue:1020
+#: src/components/PageListItems.vue:1038
 msgid "After"
 msgstr "หลังจาก"
 
-#: src/components/PageListItems.vue:989
+#: src/components/PageListItems.vue:1024
 msgid "Insert"
 msgstr "แทรก"
 
-#: src/components/PageListItems.vue:1034
+#: src/components/PageListItems.vue:1069
 msgid "New"
 msgstr "ใหม่"
 
-#: src/components/SchemaDialog.vue:26
+#: src/components/PageListItems.vue:1094
+msgid "Add page"
+msgstr "เพิ่มหน้า"
+
+#: src/components/SchemaDialog.vue:32
 msgid "Content elements"
 msgstr "องค์ประกอบเนื้อหา"
 
@@ -678,13 +932,39 @@ msgstr "ไม่สามารถโหลดผู้ใช้ได้"
 msgid "Logout failed"
 msgstr "การออกจากระบบล้มเหลว"
 
-#: src/components/User.vue:72
+#: src/components/User.vue:53
+msgid "Switch language"
+msgstr "เปลี่ยนภาษา"
+
+#: src/components/User.vue:68
+msgid "User menu"
+msgstr "เมนูผู้ใช้"
+
+#: src/components/User.vue:82
 msgid "Logout"
 msgstr "ออกจากระบบ"
 
-#: src/fields/Autocomplete.vue:140 src/fields/Color.vue:34
-#: src/fields/Date.vue:48 src/fields/Html.vue:42 src/fields/Number.vue:50
-#: src/fields/Select.vue:42 src/fields/Url.vue:62
+#: src/fields/Audio.vue:46
+#: src/fields/File.vue:230
+#: src/fields/Image.vue:83
+#: src/fields/Video.vue:48
+msgid "Add file from URL"
+msgstr "เพิ่มไฟล์จาก URL"
+
+#: src/fields/Audio.vue:51
+#: src/fields/File.vue:235
+#: src/fields/Image.vue:94
+#: src/fields/Video.vue:53
+msgid "Upload file"
+msgstr "อัปโหลดไฟล์"
+
+#: src/fields/Autocomplete.vue:140
+#: src/fields/Color.vue:34
+#: src/fields/Date.vue:48
+#: src/fields/Html.vue:42
+#: src/fields/Number.vue:50
+#: src/fields/Select.vue:42
+#: src/fields/Url.vue:62
 msgid "Value is required"
 msgstr "จำเป็นต้องมีค่า"
 
@@ -696,19 +976,26 @@ msgstr "ไม่มีข้อมูล"
 msgid "Value must be a hex color code"
 msgstr "ค่าต้องเป็นรหัสสีแบบสิบหก"
 
-#: src/fields/Items.vue:65
+#: src/fields/Image.vue:89
+#: src/fields/Images.vue:248
+msgid "Create file"
+msgstr "สร้างไฟล์"
+
+#: src/fields/Items.vue:70
 msgid "Maximum is %{num} entries"
 msgstr "จำนวนสูงสุดคือ%{num} รายการ"
 
-#: src/fields/Items.vue:66
+#: src/fields/Items.vue:71
 msgid "Minimum is %{num} entries"
 msgstr "ขั้นต่ำคือ%{num} รายการ"
 
-#: src/fields/Plaintext.vue:49 src/fields/String.vue:54
+#: src/fields/Plaintext.vue:49
+#: src/fields/String.vue:54
 msgid "Minimum length is %{num} characters"
 msgstr "ความยาวขั้นต่ำคือ%{num} ตัวอักษร"
 
-#: src/fields/Plaintext.vue:50 src/fields/String.vue:55
+#: src/fields/Plaintext.vue:50
+#: src/fields/String.vue:55
 msgid "Maximum length is %{num} characters"
 msgstr "ความยาวสูงสุดคือ%{num} ตัวอักษร"
 
@@ -737,261 +1024,261 @@ msgid "You do not have permission to access %{path}"
 msgstr "คุณไม่มีสิทธิ์เข้าถึง%{path}"
 
 #: src/strings.js:5
-msgctxt "as"
-msgid "type"
-msgstr "ประเภท"
-
-#: src/strings.js:6
-msgctxt "as"
-msgid "state"
-msgstr "รัฐ"
-
-#: src/strings.js:7
-msgctxt "as"
-msgid "valid"
-msgstr "ถูกต้อง"
-
-#: src/strings.js:8
-msgctxt "as"
-msgid "changed"
-msgstr "เปลี่ยนแปลง"
-
-#: src/strings.js:9
-msgctxt "as"
-msgid "error"
-msgstr "ข้อผิดพลาด"
-
-#: src/strings.js:12
 msgctxt "cs"
 msgid "main"
 msgstr "หลัก"
 
-#: src/strings.js:13
+#: src/strings.js:6
 msgctxt "cs"
 msgid "header"
 msgstr "หัวข้อ"
 
-#: src/strings.js:14
+#: src/strings.js:7
 msgctxt "cs"
 msgid "footer"
 msgstr "ส่วนท้าย"
 
-#: src/strings.js:15
+#: src/strings.js:8
 msgctxt "cs"
 msgid "sidebar"
 msgstr "แถบด้านข้าง"
 
-#: src/strings.js:16
+#: src/strings.js:9
 msgctxt "cs"
 msgid "aside"
 msgstr "นอกเรื่อง"
 
-#: src/strings.js:19
+#: src/strings.js:12
 msgctxt "sg"
 msgid "basic"
 msgstr "พื้นฐาน"
 
-#: src/strings.js:20
+#: src/strings.js:13
 msgctxt "sg"
 msgid "content"
 msgstr "เนื้อหา"
 
-#: src/strings.js:21
+#: src/strings.js:14
 msgctxt "sg"
 msgid "media"
 msgstr "สื่อ"
 
-#: src/strings.js:22
+#: src/strings.js:15
 msgctxt "sg"
 msgid "forms"
 msgstr "แบบฟอร์ม"
 
-#: src/strings.js:25
+#: src/strings.js:18
+msgctxt "as"
+msgid "type"
+msgstr "ประเภท"
+
+#: src/strings.js:19
+msgctxt "as"
+msgid "state"
+msgstr "รัฐ"
+
+#: src/strings.js:22
+msgctxt "st"
+msgid "valid"
+msgstr "ถูกต้อง"
+
+#: src/strings.js:23
+msgctxt "st"
+msgid "changed"
+msgstr "เปลี่ยนแปลง"
+
+#: src/strings.js:24
+msgctxt "st"
+msgid "error"
+msgstr "ข้อผิดพลาด"
+
+#: src/strings.js:27
 msgctxt "st"
 msgid "reference"
 msgstr "อ้างอิง"
 
-#: src/strings.js:26
+#: src/strings.js:28
 msgctxt "st"
 msgid "heading"
 msgstr "หัวข้อ"
 
-#: src/strings.js:27
+#: src/strings.js:29
 msgctxt "st"
 msgid "text"
 msgstr "ข้อความ"
 
-#: src/strings.js:28
+#: src/strings.js:30
 msgctxt "st"
 msgid "image-text"
 msgstr "ภาพข้อความ"
 
-#: src/strings.js:29
+#: src/strings.js:31
 msgctxt "st"
 msgid "slideshow"
 msgstr "สไลด์โชว์"
 
-#: src/strings.js:30
+#: src/strings.js:32
 msgctxt "st"
 msgid "code"
 msgstr "โค้ด"
 
-#: src/strings.js:31
+#: src/strings.js:33
 msgctxt "st"
 msgid "table"
 msgstr "ตาราง"
 
-#: src/strings.js:32
+#: src/strings.js:34
 msgctxt "st"
 msgid "html"
 msgstr "html"
 
-#: src/strings.js:33
+#: src/strings.js:35
 msgctxt "st"
 msgid "image"
 msgstr "รูปภาพ"
 
-#: src/strings.js:34
+#: src/strings.js:36
 msgctxt "st"
 msgid "video"
 msgstr "วิดีโอ"
 
-#: src/strings.js:35
+#: src/strings.js:37
 msgctxt "st"
 msgid "audio"
 msgstr "เสียง"
 
-#: src/strings.js:36
+#: src/strings.js:38
 msgctxt "st"
 msgid "file"
 msgstr "ไฟล์"
 
-#: src/strings.js:37
+#: src/strings.js:39
 msgctxt "st"
 msgid "hero"
 msgstr "ฮีโร่"
 
-#: src/strings.js:38
+#: src/strings.js:40
 msgctxt "st"
 msgid "cards"
 msgstr "การ์ด"
 
-#: src/strings.js:39
+#: src/strings.js:41
 msgctxt "st"
 msgid "blog"
 msgstr "บล็อก"
 
-#: src/strings.js:40
+#: src/strings.js:42
 msgctxt "st"
 msgid "article"
 msgstr "บทความ"
 
-#: src/strings.js:41
+#: src/strings.js:43
 msgctxt "st"
 msgid "contact"
 msgstr "ติดต่อ"
 
-#: src/strings.js:42
+#: src/strings.js:44
 msgctxt "st"
 msgid "meta"
 msgstr "เมตา"
 
-#: src/strings.js:43
+#: src/strings.js:45
 msgctxt "st"
 msgid "social"
 msgstr "สังคม"
 
-#: src/strings.js:44
+#: src/strings.js:46
 msgctxt "st"
 msgid "canonical"
 msgstr "คานอนิก"
 
-#: src/strings.js:45
+#: src/strings.js:47
 msgctxt "st"
 msgid "theme"
 msgstr "ธีม"
 
-#: src/strings.js:48
+#: src/strings.js:50
 msgctxt "fn"
 msgid "button"
 msgstr "ปุ่ม"
 
-#: src/strings.js:49
+#: src/strings.js:51
 msgctxt "fn"
 msgid "cards"
 msgstr "การ์ด"
 
-#: src/strings.js:50
+#: src/strings.js:52
 msgctxt "fn"
 msgid "description"
 msgstr "คำอธิบาย"
 
-#: src/strings.js:51
+#: src/strings.js:53
 msgctxt "fn"
 msgid "file"
 msgstr "ไฟล์"
 
-#: src/strings.js:52
+#: src/strings.js:54
 msgctxt "fn"
 msgid "files"
 msgstr "ไฟล์"
 
-#: src/strings.js:53
+#: src/strings.js:55
 msgctxt "fn"
 msgid "header"
 msgstr "หัวข้อ"
 
-#: src/strings.js:54
+#: src/strings.js:56
 msgctxt "fn"
 msgid "keywords"
 msgstr "คำสำคัญ"
 
-#: src/strings.js:55
+#: src/strings.js:57
 msgctxt "fn"
 msgid "lang"
 msgstr "ภาษา"
 
-#: src/strings.js:56
+#: src/strings.js:58
 msgctxt "fn"
 msgid "level"
 msgstr "ระดับ"
 
-#: src/strings.js:57
+#: src/strings.js:59
 msgctxt "fn"
 msgid "limit"
 msgstr "ขีดจำกัด"
 
-#: src/strings.js:58
+#: src/strings.js:60
 msgctxt "fn"
 msgid "main"
 msgstr "หลัก"
 
-#: src/strings.js:59
+#: src/strings.js:61
 msgctxt "fn"
 msgid "parent-page"
 msgstr "หน้าแม่"
 
-#: src/strings.js:60
+#: src/strings.js:62
 msgctxt "fn"
 msgid "position"
 msgstr "ตำแหน่ง"
 
-#: src/strings.js:61
+#: src/strings.js:63
 msgctxt "fn"
 msgid "text"
 msgstr "ข้อความ"
 
-#: src/strings.js:62
+#: src/strings.js:64
 msgctxt "fn"
 msgid "table"
 msgstr "ตาราง"
 
-#: src/strings.js:63
+#: src/strings.js:65
 msgctxt "fn"
 msgid "title"
 msgstr "ชื่อ"
 
-#: src/strings.js:64
+#: src/strings.js:66
 msgctxt "fn"
 msgid "url"
 msgstr "url"
@@ -1024,89 +1311,141 @@ msgstr "เกิดข้อผิดพลาดในการบันทึ
 msgid "Error fetching element versions"
 msgstr "เกิดข้อผิดพลาดในการดึงเวอร์ชันขององค์ประกอบ"
 
-#: src/views/ElementDetail.vue:271 src/views/ElementDetail.vue:326
+#: src/views/ElementDetail.vue:265
+#: src/views/FileDetail.vue:215
+#: src/views/PageDetail.vue:599
+msgid "Back to list view"
+msgstr "กลับไปยังมุมมองรายการ"
+
+#: src/views/ElementDetail.vue:272
+#: src/views/ElementDetail.vue:330
 msgid "Element"
 msgstr "องค์ประกอบ"
 
-#: src/views/ElementDetail.vue:286 src/views/FileDetail.vue:220
-#: src/views/PageDetail.vue:623
-msgid "Save"
-msgstr "บันทึก"
+#: src/views/ElementDetail.vue:280
+#: src/views/FileDetail.vue:229
+msgid "View history"
+msgstr "ดูประวัติ"
 
-#: src/views/ElementDetail.vue:327 src/views/FileDetail.vue:261
+#: src/views/ElementDetail.vue:303
+#: src/views/FileDetail.vue:255
+#: src/views/PageDetail.vue:656
+msgid "Schedule publishing"
+msgstr "กำหนดการเผยแพร่"
+
+#: src/views/ElementDetail.vue:321
+#: src/views/ElementList.vue:84
+#: src/views/FileDetail.vue:273
+#: src/views/FileList.vue:81
+#: src/views/PageDetail.vue:674
+#: src/views/PageList.vue:145
+msgid "Toggle side menu"
+msgstr "สลับเมนูด้านข้าง"
+
+#: src/views/ElementDetail.vue:331
+#: src/views/FileDetail.vue:283
 msgid "Used by"
 msgstr "ใช้โดย"
 
-#: src/views/ElementList.vue:41 src/views/ElementList.vue:104
-#: src/views/ElementList.vue:113 src/views/ElementList.vue:121
-#: src/views/FileList.vue:40 src/views/FileList.vue:101
-#: src/views/FileList.vue:110 src/views/FileList.vue:118
-#: src/views/PageList.vue:41 src/views/PageList.vue:109
-#: src/views/PageList.vue:118 src/views/PageList.vue:126
+#: src/views/ElementList.vue:41
+#: src/views/ElementList.vue:104
+#: src/views/ElementList.vue:113
+#: src/views/ElementList.vue:121
+#: src/views/FileList.vue:40
+#: src/views/FileList.vue:101
+#: src/views/FileList.vue:110
+#: src/views/FileList.vue:118
+#: src/views/PageList.vue:47
+#: src/views/PageList.vue:189
+#: src/views/PageList.vue:198
+#: src/views/PageList.vue:206
+#: src/views/PageList.vue:215
+#: src/views/PageList.vue:222
 msgid "All"
 msgstr "ทั้งหมด"
 
-#: src/views/ElementList.vue:102 src/views/FileList.vue:99
-#: src/views/PageList.vue:107
+#: src/views/ElementList.vue:70
+#: src/views/FileList.vue:69
+#: src/views/PageList.vue:133
+msgid "Close navigation"
+msgstr "ปิดการนำทาง"
+
+#: src/views/ElementList.vue:70
+#: src/views/FileList.vue:69
+#: src/views/PageList.vue:133
+msgid "Open navigation"
+msgstr "เปิดการนำทาง"
+
+#: src/views/ElementList.vue:102
+#: src/views/FileList.vue:99
+#: src/views/PageList.vue:187
 msgid "publish"
 msgstr "เผยแพร่"
 
-#: src/views/ElementList.vue:106 src/views/FileList.vue:103
-#: src/views/PageList.vue:111
+#: src/views/ElementList.vue:106
+#: src/views/FileList.vue:103
+#: src/views/PageList.vue:191
 msgid "Scheduled"
 msgstr "กำหนดไว้แล้ว"
 
-#: src/views/ElementList.vue:107 src/views/FileList.vue:104
-#: src/views/PageList.vue:112
+#: src/views/ElementList.vue:107
+#: src/views/FileList.vue:104
+#: src/views/PageList.vue:192
 msgid "Drafts"
 msgstr "ร่าง"
 
-#: src/views/ElementList.vue:111 src/views/FileList.vue:108
-#: src/views/PageList.vue:116
+#: src/views/ElementList.vue:111
+#: src/views/FileList.vue:108
+#: src/views/PageList.vue:196
 msgid "trashed"
 msgstr "ถูกทำลาย"
 
-#: src/views/ElementList.vue:114 src/views/FileList.vue:111
-#: src/views/PageList.vue:119
+#: src/views/ElementList.vue:114
+#: src/views/FileList.vue:111
+#: src/views/PageList.vue:199
 msgid "Available only"
 msgstr "มีให้บริการเฉพาะ"
 
-#: src/views/ElementList.vue:115 src/views/FileList.vue:112
-#: src/views/PageList.vue:120
+#: src/views/ElementList.vue:115
+#: src/views/FileList.vue:112
+#: src/views/PageList.vue:200
 msgid "Only trashed"
 msgstr "มีแต่ขยะ"
 
-#: src/views/ElementList.vue:122 src/views/FileList.vue:119
-#: src/views/PageList.vue:127
+#: src/views/ElementList.vue:122
+#: src/views/FileList.vue:119
+#: src/views/PageList.vue:223
 msgid "Edited by me"
 msgstr "แก้ไขโดยฉัน"
 
-#: src/views/ElementList.vue:126 src/views/FileList.vue:123
-#: src/views/PageList.vue:131
+#: src/views/ElementList.vue:126
+#: src/views/FileList.vue:123
+#: src/views/PageList.vue:227
 msgid "languages"
 msgstr "ภาษา"
 
-#: src/views/FileDetail.vue:71
+#: src/views/FileDetail.vue:72
 msgid "File published successfully"
 msgstr "ไฟล์ได้รับการเผยแพร่สำเร็จ"
 
-#: src/views/FileDetail.vue:74
+#: src/views/FileDetail.vue:75
 msgid "File scheduled for publishing at %{date}"
 msgstr "ไฟล์ที่กำหนดให้เผยแพร่เวลา%{date}"
 
-#: src/views/FileDetail.vue:129
+#: src/views/FileDetail.vue:142
 msgid "File saved successfully"
 msgstr "ไฟล์บันทึกสำเร็จ"
 
-#: src/views/FileDetail.vue:134
+#: src/views/FileDetail.vue:148
 msgid "Error saving file"
 msgstr "เกิดข้อผิดพลาดในการบันทึกไฟล์"
 
-#: src/views/FileDetail.vue:186
+#: src/views/FileDetail.vue:202
 msgid "Error fetching file versions"
 msgstr "เกิดข้อผิดพลาดในการดึงเวอร์ชันไฟล์"
 
-#: src/views/FileDetail.vue:205 src/views/FileDetail.vue:260
+#: src/views/FileDetail.vue:222
+#: src/views/FileDetail.vue:282
 msgid "File"
 msgstr "ไฟล์"
 
@@ -1118,7 +1457,8 @@ msgstr "ไม่ใช่ผู้แก้ไข CMS"
 msgid "Access denied"
 msgstr "การเข้าถึงถูกปฏิเสธ"
 
-#: src/views/Login.vue:79 src/views/Login.vue:101
+#: src/views/Login.vue:79
+#: src/views/Login.vue:106
 msgid "Login"
 msgstr "เข้าสู่ระบบ"
 
@@ -1134,54 +1474,75 @@ msgstr "ที่อยู่อีเมลไม่ถูกต้อง"
 msgid "Password"
 msgstr "รหัสผ่าน"
 
-#: src/views/Login.vue:96
+#: src/views/Login.vue:100
 msgid "Error"
 msgstr "ข้อผิดพลาด"
 
-#: src/views/PageDetail.vue:315
+#: src/views/PageDetail.vue:323
 msgid "Page published successfully"
 msgstr "หน้าได้รับการเผยแพร่สำเร็จ"
 
-#: src/views/PageDetail.vue:318
+#: src/views/PageDetail.vue:326
 msgid "Page scheduled for publishing at %{date}"
 msgstr "หน้าถูกกำหนดให้เผยแพร่เวลา%{date}"
 
-#: src/views/PageDetail.vue:351
+#: src/views/PageDetail.vue:359
 msgid "There are invalid fields, please resolve the errors first"
 msgstr "มีฟิลด์ที่ไม่ถูกต้อง กรุณาแก้ไขข้อผิดพลาดก่อน"
 
-#: src/views/PageDetail.vue:419
+#: src/views/PageDetail.vue:427
 msgid "Page saved successfully"
 msgstr "หน้าบันทึกสำเร็จแล้ว"
 
-#: src/views/PageDetail.vue:436
+#: src/views/PageDetail.vue:444
 msgid "No page schema for \"content\" found"
 msgstr "ไม่พบสคีมาหน้าสำหรับ \"เนื้อหา\""
 
-#: src/views/PageDetail.vue:572
+#: src/views/PageDetail.vue:580
 msgid "Error fetching page versions"
 msgstr "เกิดข้อผิดพลาดในการดึงเวอร์ชันของหน้า"
 
-#: src/views/PageDetail.vue:597 src/views/PageDetail.vue:675
+#: src/views/PageDetail.vue:606
+#: src/views/PageDetail.vue:686
 msgid "Page"
 msgstr "หน้า"
 
-#: src/views/PageDetail.vue:665
+#: src/views/PageDetail.vue:614
+msgid "Translate page"
+msgstr "แปลหน้า"
+
+#: src/views/PageDetail.vue:690
 msgid "Editor"
 msgstr "บรรณาธิการ"
 
-#: src/views/PageDetail.vue:670
+#: src/views/PageDetail.vue:695
 msgid "Content"
 msgstr "เนื้อหา"
 
-#: src/views/PageList.vue:100
+#: src/views/PageList.vue:160
+msgid "What kind of page and content should I create?"
+msgstr "ฉันควรสร้างหน้าเว็บและเนื้อหาประเภทใด?"
+
+#: src/views/PageList.vue:180
 msgid "view"
 msgstr "มุมมอง"
 
-#: src/views/PageList.vue:102
+#: src/views/PageList.vue:182
 msgid "Tree"
 msgstr "ต้นไม้"
 
-#: src/views/PageList.vue:103
+#: src/views/PageList.vue:183
 msgid "List"
 msgstr "รายการ"
+
+#: src/views/PageList.vue:204
+msgid "status"
+msgstr "สถานะ"
+
+#: src/views/PageList.vue:208
+msgid "Hidden"
+msgstr "ซ่อนอยู่"
+
+#: src/views/PageList.vue:213
+msgid "cache"
+msgstr "แคช"

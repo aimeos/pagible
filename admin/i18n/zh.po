@@ -1,75 +1,98 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
-"Language: zh\n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: zh\n"
+"Language-Team: none\n"
+"Last-Translator: Automatically generated\n"
+"MIME-Version: 1.0\n"
+"Project-Id-Version: PACKAGE VERSION\n"
 
 #: src/App.vue:110
 msgid "None"
 msgstr "无"
 
-#: src/components/AsideMeta.vue:17
+#: src/components/AsideMeta.vue:19
 msgid "id"
 msgstr "本我"
 
-#: src/components/AsideMeta.vue:18 src/components/ElementListItems.vue:471
-#: src/components/FileListItems.vue:506 src/fields/Audio.vue:61
-#: src/fields/File.vue:245 src/fields/Image.vue:103 src/fields/Video.vue:63
-#: src/views/ElementList.vue:119 src/views/FileList.vue:116
-#: src/views/PageList.vue:124
+#: src/components/AsideMeta.vue:23
+#: src/components/FileListItems.vue:525
+#: src/fields/Audio.vue:71
+#: src/fields/File.vue:255
+#: src/fields/Image.vue:114
+#: src/fields/Video.vue:73
+msgid "mime"
+msgstr "默剧"
+
+#: src/components/AsideMeta.vue:27
+#: src/components/ElementListItems.vue:475
+#: src/components/FileListItems.vue:531
+#: src/fields/Audio.vue:75
+#: src/fields/File.vue:259
+#: src/fields/Image.vue:118
+#: src/fields/Video.vue:77
+#: src/views/ElementList.vue:119
+#: src/views/FileList.vue:116
+#: src/views/PageList.vue:220
 msgid "editor"
 msgstr "编辑"
 
-#: src/components/AsideMeta.vue:22
+#: src/components/AsideMeta.vue:31
 msgid "created"
 msgstr "创建"
 
-#: src/components/AsideMeta.vue:26 src/fields/Audio.vue:62
-#: src/fields/File.vue:246 src/fields/Image.vue:104 src/fields/Video.vue:64
+#: src/components/AsideMeta.vue:35
+#: src/fields/Audio.vue:79
+#: src/fields/File.vue:263
+#: src/fields/Image.vue:122
+#: src/fields/Video.vue:81
 msgid "updated"
 msgstr "最新的"
 
-#: src/components/AsideMeta.vue:30
+#: src/components/AsideMeta.vue:39
 msgid "deleted"
 msgstr "删除"
 
-#: src/components/AsideMeta.vue:45
+#: src/components/AsideMeta.vue:54
 msgid "Meta data"
 msgstr "元数据"
 
 #: src/components/ElementDetailItem.vue:68
 #: src/components/ElementDetailRefs.vue:96
-#: src/components/FileDetailItem.vue:208 src/components/FileDetailRefs.vue:101
+#: src/components/FileDetailItem.vue:508
+#: src/components/FileDetailRefs.vue:101
 #: src/components/FileDetailRefs.vue:123
 msgid "Name"
 msgstr "名称"
 
 #: src/components/ElementDetailItem.vue:80
-#: src/components/FileDetailItem.vue:220
+#: src/components/FileDetailItem.vue:520
 #: src/components/PageDetailItemProps.vue:150
 msgid "Language"
 msgstr "语言"
 
-#: src/components/ElementDetailRefs.vue:65 src/components/FileDetailRefs.vue:69
+#: src/components/ElementDetailRefs.vue:65
+#: src/components/FileDetailRefs.vue:69
 msgid "yes"
 msgstr "是"
 
-#: src/components/ElementDetailRefs.vue:68 src/components/FileDetailRefs.vue:73
+#: src/components/ElementDetailRefs.vue:68
+#: src/components/FileDetailRefs.vue:73
 msgid "no"
 msgstr "没有"
 
-#: src/components/ElementDetailRefs.vue:89 src/components/Navigation.vue:36
-#: src/components/SchemaDialog.vue:35 src/views/ElementList.vue:76
+#: src/components/ElementDetailRefs.vue:89
+#: src/components/Navigation.vue:36
+#: src/components/SchemaDialog.vue:42
+#: src/views/ElementList.vue:76
 msgid "Shared elements"
 msgstr "共享要素"
 
 #: src/components/ElementDetailRefs.vue:94
 #: src/components/ElementDetailRefs.vue:116
-#: src/components/FileDetailRefs.vue:99 src/components/FileDetailRefs.vue:121
+#: src/components/FileDetailRefs.vue:99
+#: src/components/FileDetailRefs.vue:121
 #: src/components/FileDetailRefs.vue:143
 msgid "ID"
 msgstr "身份证"
@@ -80,13 +103,16 @@ msgid "URL"
 msgstr "网址"
 
 #: src/components/ElementDetailRefs.vue:117
-#: src/components/FileDetailRefs.vue:122 src/components/FileDetailRefs.vue:144
+#: src/components/FileDetailRefs.vue:122
+#: src/components/FileDetailRefs.vue:144
 msgid "Type"
 msgstr "类型"
 
 #: src/components/ElementDetailRefs.vue:118
-#: src/components/FileDetailRefs.vue:145 src/views/ElementList.vue:105
-#: src/views/FileList.vue:102 src/views/PageList.vue:110
+#: src/components/FileDetailRefs.vue:145
+#: src/views/ElementList.vue:105
+#: src/views/FileList.vue:102
+#: src/views/PageList.vue:190
 msgid "Published"
 msgstr "已出版"
 
@@ -95,23 +121,44 @@ msgstr "已出版"
 #: src/components/ElementListItems.vue:157
 #: src/components/ElementListItems.vue:198
 #: src/components/ElementListItems.vue:240
-#: src/components/ElementListItems.vue:277 src/components/FileListItems.vue:61
-#: src/components/FileListItems.vue:122 src/components/FileListItems.vue:166
-#: src/components/FileListItems.vue:207 src/components/FileListItems.vue:249
-#: src/components/FileListItems.vue:286
-#: src/components/PageDetailContentList.vue:218
-#: src/components/PageListItems.vue:67 src/components/PageListItems.vue:101
-#: src/components/PageListItems.vue:168 src/components/PageListItems.vue:211
-#: src/components/PageListItems.vue:288 src/components/PageListItems.vue:351
-#: src/components/PageListItems.vue:416 src/components/PageListItems.vue:470
-#: src/components/PageListItems.vue:566 src/components/PageListItems.vue:607
-#: src/components/PageListItems.vue:649 src/components/PageListItems.vue:711
-#: src/fields/File.vue:55 src/fields/Images.vue:61
-#: src/views/ElementDetail.vue:107 src/views/ElementDetail.vue:156
-#: src/views/ElementDetail.vue:211 src/views/FileDetail.vue:45
-#: src/views/FileDetail.vue:94 src/views/FileDetail.vue:149
-#: src/views/PageDetail.vue:289 src/views/PageDetail.vue:341
-#: src/views/PageDetail.vue:535
+#: src/components/ElementListItems.vue:277
+#: src/components/FileDetailItem.vue:80
+#: src/components/FileDetailItem.vue:226
+#: src/components/FileDetailItem.vue:300
+#: src/components/FileDetailItem.vue:339
+#: src/components/FileDetailItem.vue:374
+#: src/components/FileDetailItem.vue:416
+#: src/components/FileDetailItem.vue:427
+#: src/components/FileListItems.vue:61
+#: src/components/FileListItems.vue:124
+#: src/components/FileListItems.vue:168
+#: src/components/FileListItems.vue:209
+#: src/components/FileListItems.vue:251
+#: src/components/FileListItems.vue:288
+#: src/components/PageDetailContentList.vue:286
+#: src/components/PageListItems.vue:64
+#: src/components/PageListItems.vue:98
+#: src/components/PageListItems.vue:165
+#: src/components/PageListItems.vue:208
+#: src/components/PageListItems.vue:285
+#: src/components/PageListItems.vue:348
+#: src/components/PageListItems.vue:413
+#: src/components/PageListItems.vue:467
+#: src/components/PageListItems.vue:563
+#: src/components/PageListItems.vue:604
+#: src/components/PageListItems.vue:665
+#: src/components/PageListItems.vue:727
+#: src/fields/File.vue:55
+#: src/fields/Images.vue:61
+#: src/views/ElementDetail.vue:107
+#: src/views/ElementDetail.vue:156
+#: src/views/ElementDetail.vue:211
+#: src/views/FileDetail.vue:46
+#: src/views/FileDetail.vue:95
+#: src/views/FileDetail.vue:164
+#: src/views/PageDetail.vue:297
+#: src/views/PageDetail.vue:349
+#: src/views/PageDetail.vue:543
 msgid "Permission denied"
 msgstr "拒绝许可"
 
@@ -139,86 +186,145 @@ msgstr "清除共享元素出错"
 msgid "Error fetching shared elements"
 msgstr "获取共享元素时出错"
 
-#: src/components/ElementListItems.vue:417 src/components/FileListItems.vue:446
-#: src/components/PageDetailContentList.vue:411
-#: src/components/PageListItems.vue:866
+#: src/components/ElementListItems.vue:417
+#: src/components/ElementListItems.vue:489
+#: src/components/FileListItems.vue:457
+#: src/components/FileListItems.vue:545
+#: src/components/PageDetailContentList.vue:539
+#: src/components/PageDetailContentList.vue:588
+#: src/components/PageListItems.vue:883
+#: src/components/PageListItems.vue:960
 msgid "Actions"
 msgstr "行动"
 
 #: src/components/ElementListItems.vue:421
-#: src/components/ElementListItems.vue:488 src/components/FileListItems.vue:450
-#: src/components/FileListItems.vue:523 src/components/PageListItems.vue:870
-#: src/components/PageListItems.vue:932 src/views/ElementDetail.vue:295
-#: src/views/ElementDetail.vue:310 src/views/FileDetail.vue:229
-#: src/views/FileDetail.vue:244 src/views/PageDetail.vue:632
-#: src/views/PageDetail.vue:647
+#: src/components/ElementListItems.vue:497
+#: src/components/FileListItems.vue:461
+#: src/components/FileListItems.vue:553
+#: src/components/PageListItems.vue:887
+#: src/components/PageListItems.vue:967
+#: src/views/ElementDetail.vue:299
+#: src/views/ElementDetail.vue:315
+#: src/views/FileDetail.vue:251
+#: src/views/FileDetail.vue:267
+#: src/views/PageDetail.vue:652
+#: src/views/PageDetail.vue:668
 msgid "Publish"
 msgstr "出版"
 
 #: src/components/ElementListItems.vue:424
+#: src/components/ElementListItems.vue:544
+#: src/components/PageDetailContentList.vue:671
+#: src/components/PageDetailItemConfig.vue:200
+#: src/components/PageDetailItemMeta.vue:199
+#: src/fields/Items.vue:138
 msgid "Add element"
 msgstr "添加元素"
 
 #: src/components/ElementListItems.vue:427
-#: src/components/ElementListItems.vue:491 src/components/FileListItems.vue:456
-#: src/components/FileListItems.vue:526 src/components/PageListItems.vue:882
-#: src/components/PageListItems.vue:1010
+#: src/components/ElementListItems.vue:500
+#: src/components/FileListItems.vue:467
+#: src/components/FileListItems.vue:556
+#: src/components/PageListItems.vue:899
+#: src/components/PageListItems.vue:1045
 msgid "Trash"
 msgstr "垃圾"
 
 #: src/components/ElementListItems.vue:430
-#: src/components/ElementListItems.vue:494 src/components/FileListItems.vue:459
-#: src/components/FileListItems.vue:529 src/components/PageListItems.vue:885
-#: src/components/PageListItems.vue:1013
+#: src/components/ElementListItems.vue:503
+#: src/components/FileListItems.vue:470
+#: src/components/FileListItems.vue:559
+#: src/components/PageListItems.vue:902
+#: src/components/PageListItems.vue:1048
 msgid "Restore"
 msgstr "恢复"
 
 #: src/components/ElementListItems.vue:433
-#: src/components/ElementListItems.vue:497 src/components/FileListItems.vue:462
-#: src/components/FileListItems.vue:532 src/components/PageListItems.vue:888
-#: src/components/PageListItems.vue:1016
+#: src/components/ElementListItems.vue:506
+#: src/components/FileListItems.vue:473
+#: src/components/FileListItems.vue:562
+#: src/components/PageListItems.vue:905
+#: src/components/PageListItems.vue:1051
 msgid "Purge"
 msgstr "清除"
 
-#: src/components/ElementListItems.vue:444 src/components/FileListItems.vue:473
-#: src/components/PageDetailContentList.vue:433
-#: src/components/PageListItems.vue:897
+#: src/components/ElementListItems.vue:444
+#: src/components/FileListItems.vue:482
+#: src/components/PageDetailContentList.vue:564
+#: src/components/PageListItems.vue:914
 msgid "Search for"
 msgstr "搜索"
 
 #: src/components/ElementListItems.vue:454
-#: src/components/ElementListItems.vue:459 src/components/FileListItems.vue:486
-#: src/components/FileListItems.vue:491
+#: src/components/FileListItems.vue:507
+msgid "Sort by"
+msgstr "排序方式"
+
+#: src/components/ElementListItems.vue:458
+#: src/components/ElementListItems.vue:463
+#: src/components/FileListItems.vue:511
+#: src/components/FileListItems.vue:516
 msgid "latest"
 msgstr "最新"
 
-#: src/components/ElementListItems.vue:454
-#: src/components/ElementListItems.vue:462 src/components/FileListItems.vue:486
-#: src/components/FileListItems.vue:494
+#: src/components/ElementListItems.vue:458
+#: src/components/ElementListItems.vue:466
+#: src/components/FileListItems.vue:511
+#: src/components/FileListItems.vue:519
 msgid "oldest"
 msgstr "最古老"
 
-#: src/components/ElementListItems.vue:465 src/components/FileListItems.vue:497
-#: src/fields/Audio.vue:59 src/fields/File.vue:243 src/fields/Image.vue:101
-#: src/fields/Video.vue:61
+#: src/components/ElementListItems.vue:469
+#: src/components/FileListItems.vue:522
+#: src/fields/Audio.vue:67
+#: src/fields/File.vue:251
+#: src/fields/Image.vue:110
+#: src/fields/Video.vue:69
 msgid "name"
 msgstr "名字"
 
-#: src/components/ElementListItems.vue:468
+#: src/components/ElementListItems.vue:472
 msgid "type"
 msgstr "类型"
 
-#: src/components/ElementListItems.vue:521 src/components/FileListItems.vue:564
-#: src/components/HistoryDialog.vue:90 src/components/PageListItems.vue:1048
+#: src/components/ElementListItems.vue:530
+#: src/components/FileListItems.vue:594
+#: src/components/HistoryDialog.vue:95
+#: src/components/PageListItems.vue:1083
 msgid "Loading"
 msgstr "加载中"
 
-#: src/components/ElementListItems.vue:525 src/components/FileListItems.vue:569
-#: src/components/PageListItems.vue:1053
+#: src/components/ElementListItems.vue:534
+#: src/components/FileListItems.vue:599
+#: src/components/PageListItems.vue:1088
 msgid "No entries found"
 msgstr "未找到条目"
 
-#: src/components/FieldsDialog.vue:52
+#: src/components/Fields.vue:130
+msgid "Translate %{code} field"
+msgstr "翻译%{code} 字段"
+
+#: src/components/Fields.vue:147
+msgid "Generate text for %{code} field"
+msgstr "为%{code} 字段生成文本"
+
+#: src/components/FieldsDialog.vue:51
+#: src/views/ElementDetail.vue:290
+#: src/views/FileDetail.vue:241
+#: src/views/PageDetail.vue:643
+msgid "Save"
+msgstr "节省"
+
+#: src/components/FieldsDialog.vue:54
+#: src/components/FileAiDialog.vue:171
+#: src/components/FileDialog.vue:25
+#: src/components/FileUrlDialog.vue:155
+#: src/components/HistoryDialog.vue:79
+#: src/components/SchemaDialog.vue:25
+msgid "Close"
+msgstr "关闭"
+
+#: src/components/FieldsDialog.vue:60
 msgid "Content Element"
 msgstr "内容要素"
 
@@ -226,64 +332,128 @@ msgstr "内容要素"
 msgid "Context in JSON format"
 msgstr "JSON 格式的上下文"
 
-#: src/components/FileAiDialog.vue:172 src/components/FileAiDialog.vue:191
+#: src/components/FileAiDialog.vue:177
+#: src/components/FileAiDialog.vue:196
 msgid "Create image"
 msgstr "创建图像"
 
-#: src/components/FileAiDialog.vue:178
+#: src/components/FileAiDialog.vue:183
 msgid "Describe the image"
 msgstr "描述图像"
 
-#: src/components/FileAiDialog.vue:196
+#: src/components/FileAiDialog.vue:201
 msgid "Generated images"
 msgstr "生成图像"
 
-#: src/components/FileAiDialog.vue:200 src/components/FileAiDialog.vue:215
+#: src/components/FileAiDialog.vue:207
+#: src/components/FileAiDialog.vue:225
 msgid "Remove"
 msgstr "移除"
 
-#: src/components/FileAiDialog.vue:211
+#: src/components/FileAiDialog.vue:221
 msgid "Use images of this style"
 msgstr "使用这种风格的图片"
 
-#: src/components/FileAiDialog.vue:225
+#: src/components/FileAiDialog.vue:235
 msgid "Select similar images"
 msgstr "选择类似图片"
 
-#: src/components/FileDetailItem.vue:231
+#: src/components/FileDetailItem.vue:304
+msgid "Transcription is only available for audio and video files"
+msgstr "转录仅适用于音频和视频文件"
+
+#: src/components/FileDetailItem.vue:329
+msgid "Error transcribing file"
+msgstr "誊写文件出错"
+
+#: src/components/FileDetailItem.vue:433
+msgid "No file selected"
+msgstr "未选择文件"
+
+#: src/components/FileDetailItem.vue:533
+msgid "Use cropped image"
+msgstr "使用裁剪过的图像"
+
+#: src/components/FileDetailItem.vue:539
+msgid "Crop image"
+msgstr "裁剪图片"
+
+#: src/components/FileDetailItem.vue:543
+msgid "Original ratio"
+msgstr "原始比率"
+
+#: src/components/FileDetailItem.vue:546
+msgid "No ratio"
+msgstr "无比率"
+
+#: src/components/FileDetailItem.vue:549
+msgid "Square"
+msgstr "方形"
+
+#: src/components/FileDetailItem.vue:567
 msgid "Rotate counter-clockwise"
 msgstr "逆时针旋转"
 
-#: src/components/FileDetailItem.vue:232
+#: src/components/FileDetailItem.vue:568
 msgid "Rotate clockwise"
 msgstr "顺时针旋转"
 
-#: src/components/FileDetailItem.vue:235
+#: src/components/FileDetailItem.vue:571
 msgid "Flip horizontally"
 msgstr "水平翻转"
 
-#: src/components/FileDetailItem.vue:236
+#: src/components/FileDetailItem.vue:572
 msgid "Flip vertically"
 msgstr "垂直翻转"
 
-#: src/components/FileDetailItem.vue:239
+#: src/components/FileDetailItem.vue:575
 msgid "Reset"
 msgstr "重置"
 
-#: src/components/FileDetailItem.vue:240
+#: src/components/FileDetailItem.vue:576
 msgid "Download"
 msgstr "下载"
 
-#: src/components/FileDetailItem.vue:267
+#: src/components/FileDetailItem.vue:595
+msgid "Use as cover image"
+msgstr "用作封面图像"
+
+#: src/components/FileDetailItem.vue:596
+msgid "Upload cover image"
+msgstr "上传封面图片"
+
+#: src/components/FileDetailItem.vue:619
 msgid "Descriptions"
 msgstr "说明"
 
-#: src/components/FileDetailItem.vue:292
+#: src/components/FileDetailItem.vue:623
+#: src/components/FileDetailItem.vue:665
+msgid "Translate text"
+msgstr "翻译文本"
+
+#: src/components/FileDetailItem.vue:630
+msgid "Generate description"
+msgstr "生成说明"
+
+#: src/components/FileDetailItem.vue:645
 msgid "Description (%{lang})"
 msgstr "说明 (%{lang})"
 
-#: src/components/FileDetailRefs.vue:94 src/components/Navigation.vue:30
-#: src/views/PageList.vue:75
+#: src/components/FileDetailItem.vue:661
+msgid "Transcriptions"
+msgstr "转录"
+
+#: src/components/FileDetailItem.vue:672
+msgid "Transcribe file content"
+msgstr "转录文件内容"
+
+#: src/components/FileDetailItem.vue:687
+msgid "Transcription (%{lang})"
+msgstr "转录 (%{lang})"
+
+#: src/components/FileDetailRefs.vue:94
+#: src/components/Navigation.vue:30
+#: src/views/PageList.vue:138
 msgid "Pages"
 msgstr "页面"
 
@@ -295,48 +465,48 @@ msgstr "要素"
 msgid "Versions"
 msgstr "版本"
 
-#: src/components/FileDialog.vue:26 src/components/Navigation.vue:42
+#: src/components/FileDialog.vue:31
+#: src/components/Navigation.vue:42
 msgid "Files"
 msgstr "文件"
 
-#: src/components/FileListItems.vue:151
+#: src/components/FileListItems.vue:153
 msgid "Error trashing file"
 msgstr "删除文件出错"
 
-#: src/components/FileListItems.vue:199
+#: src/components/FileListItems.vue:201
 msgid "Error restoring file"
 msgstr "恢复文件出错"
 
-#: src/components/FileListItems.vue:241 src/views/FileDetail.vue:79
+#: src/components/FileListItems.vue:243
+#: src/views/FileDetail.vue:80
 msgid "Error publishing file"
 msgstr "发布文件出错"
 
-#: src/components/FileListItems.vue:278
+#: src/components/FileListItems.vue:280
 msgid "Error purging file"
 msgstr "清除文件出错"
 
-#: src/components/FileListItems.vue:373
+#: src/components/FileListItems.vue:380
 msgid "Error fetching files"
 msgstr "获取文件时出错"
 
-#: src/components/FileListItems.vue:453
+#: src/components/FileListItems.vue:464
+#: src/components/FileListItems.vue:616
+#: src/fields/Images.vue:234
+#: src/fields/Images.vue:253
 msgid "Add files"
 msgstr "添加文件"
 
-#: src/components/FileListItems.vue:480
+#: src/components/FileListItems.vue:493
 msgid "Grid view"
 msgstr "网格视图"
 
-#: src/components/FileListItems.vue:481
+#: src/components/FileListItems.vue:499
 msgid "List view"
 msgstr "列表视图"
 
-#: src/components/FileListItems.vue:500 src/fields/Audio.vue:60
-#: src/fields/File.vue:244 src/fields/Image.vue:102 src/fields/Video.vue:62
-msgid "mime"
-msgstr "默剧"
-
-#: src/components/FileListItems.vue:503
+#: src/components/FileListItems.vue:528
 msgid "language"
 msgstr "语言"
 
@@ -349,112 +519,141 @@ msgid "The file is not of type \"%{mime}*\""
 msgstr "文件类型不是 \"%{mime}*\""
 
 #: src/components/FileUrlDialog.vue:151
+#: src/fields/Audio.vue:40
+#: src/fields/File.vue:224
+#: src/fields/Image.vue:77
+#: src/fields/Video.vue:42
 msgid "Add file"
 msgstr "添加文件"
 
-#: src/components/FileUrlDialog.vue:156
-msgid "Add files by URL"
-msgstr "通过 URL 添加文件"
+#: src/components/FileUrlDialog.vue:161
+#: src/fields/Images.vue:240
+msgid "Add files from URLs"
+msgstr "从 URL 添加文件"
 
-#: src/components/FileUrlDialog.vue:167
+#: src/components/FileUrlDialog.vue:172
 msgid "Enter one URL per line"
 msgstr "每行输入一个 URL"
 
-#: src/components/FileUrlDialog.vue:181
+#: src/components/FileUrlDialog.vue:186
 msgid "Enter URL"
 msgstr "输入 URL"
 
-#: src/components/FileUrlDialog.vue:189
+#: src/components/FileUrlDialog.vue:196
+#: src/fields/Audio.vue:31
+#: src/fields/File.vue:215
+#: src/fields/Image.vue:68
+#: src/fields/Images.vue:224
+#: src/fields/Video.vue:32
 msgid "Remove file"
 msgstr "删除文件"
 
-#: src/components/HistoryDialog.vue:81
+#: src/components/HistoryDialog.vue:86
 msgid "History"
 msgstr "历史"
 
-#: src/components/HistoryDialog.vue:96
+#: src/components/HistoryDialog.vue:108
 msgid "No changes"
 msgstr "无变化"
 
-#: src/components/HistoryDialog.vue:102
+#: src/components/HistoryDialog.vue:117
 msgid "Current"
 msgstr "当前"
 
-#: src/components/HistoryDialog.vue:110
+#: src/components/HistoryDialog.vue:125
 msgid "Revert"
 msgstr "返回"
 
-#: src/components/HistoryDialog.vue:132
+#: src/components/HistoryDialog.vue:154
 msgid "Use version"
 msgstr "使用版本"
 
-#: src/components/PageDetailContentList.vue:225
-msgid "Element not found"
-msgstr "未找到元素"
-
-#: src/components/PageDetailContentList.vue:230
-msgid "Element is already shared"
-msgstr "元素已共享"
-
-#: src/components/PageDetailContentList.vue:290
-msgid "Unable to make element shared"
-msgstr "无法共享元素"
-
-#: src/components/PageDetailContentList.vue:354
+#: src/components/PageDetailContentList.vue:87
+#: src/components/PageDetailContentList.vue:98
+#: src/components/PageDetailContentList.vue:478
 msgid "Content element not found"
 msgstr "未找到内容元素"
 
-#: src/components/PageDetailContentList.vue:361
+#: src/components/PageDetailContentList.vue:293
+msgid "Element not found"
+msgstr "未找到元素"
+
+#: src/components/PageDetailContentList.vue:298
+msgid "Element is already shared"
+msgstr "元素已共享"
+
+#: src/components/PageDetailContentList.vue:358
+msgid "Unable to make element shared"
+msgstr "无法共享元素"
+
+#: src/components/PageDetailContentList.vue:377
+msgid "Not available for this content element"
+msgstr "此内容元素不可用"
+
+#: src/components/PageDetailContentList.vue:485
 msgid "Element is not shared"
 msgstr "元素不共享"
 
-#: src/components/PageDetailContentList.vue:415
-#: src/components/PageDetailContentList.vue:466
+#: src/components/PageDetailContentList.vue:543
+#: src/components/PageDetailContentList.vue:601
 msgid "Delete"
 msgstr "删除"
 
-#: src/components/PageDetailContentList.vue:418
-#: src/components/PageDetailContentList.vue:460
-#: src/components/PageListItems.vue:950
+#: src/components/PageDetailContentList.vue:546
+#: src/components/PageDetailContentList.vue:595
+#: src/components/PageListItems.vue:985
 msgid "Copy"
 msgstr "复制"
 
-#: src/components/PageDetailContentList.vue:421
-#: src/components/PageDetailContentList.vue:463
-#: src/components/PageListItems.vue:947
+#: src/components/PageDetailContentList.vue:549
+#: src/components/PageDetailContentList.vue:598
+#: src/components/PageListItems.vue:982
 msgid "Cut"
 msgstr "切割"
 
-#: src/components/PageDetailContentList.vue:424
-#: src/components/PageListItems.vue:953 src/components/PageListItems.vue:971
+#: src/components/PageDetailContentList.vue:552
+#: src/components/PageListItems.vue:988
+#: src/components/PageListItems.vue:1006
 msgid "Paste"
 msgstr "粘贴"
 
-#: src/components/PageDetailContentList.vue:472
+#: src/components/PageDetailContentList.vue:555
+msgid "Merge"
+msgstr "合并"
+
+#: src/components/PageDetailContentList.vue:607
 msgid "Paste before"
 msgstr "粘贴前"
 
-#: src/components/PageDetailContentList.vue:475
+#: src/components/PageDetailContentList.vue:610
 msgid "Paste after"
 msgstr "后粘贴"
 
-#: src/components/PageDetailContentList.vue:478
+#: src/components/PageDetailContentList.vue:613
 msgid "Insert before"
 msgstr "插入前"
 
-#: src/components/PageDetailContentList.vue:481
+#: src/components/PageDetailContentList.vue:616
 msgid "Insert after"
 msgstr "后插入"
 
-#: src/components/PageDetailContentList.vue:487
+#: src/components/PageDetailContentList.vue:622
 msgid "Make shared"
 msgstr "使共享"
 
-#: src/components/PageDetailContentList.vue:490
+#: src/components/PageDetailContentList.vue:625
 msgid "Merge copy"
 msgstr "合并副本"
 
-#: src/components/PageDetailContentList.vue:495
+#: src/components/PageDetailContentList.vue:628
+msgid "Change to"
+msgstr "改为"
+
+#: src/components/PageDetailContentList.vue:631
+msgid "Split"
+msgstr "分割"
+
+#: src/components/PageDetailContentList.vue:637
 msgid "Shared element"
 msgstr "共享元素"
 
@@ -475,15 +674,21 @@ msgstr "配置"
 msgid "The element has already been added"
 msgstr "已添加元素"
 
+#: src/components/PageDetailItemConfig.vue:173
+msgid "Remove content element"
+msgstr "删除内容元素"
+
 #: src/components/PageDetailItemProps.vue:58
 msgid "The path is already in use by another page"
 msgstr "该路径已被其他页面使用"
 
 #: src/components/PageDetailItemProps.vue:130
+#: src/views/PageList.vue:209
 msgid "Disabled"
 msgstr "残疾"
 
 #: src/components/PageDetailItemProps.vue:131
+#: src/views/PageList.vue:207
 msgid "Enabled"
 msgstr "已启用"
 
@@ -495,8 +700,10 @@ msgstr "隐藏在导航中"
 msgid "Status"
 msgstr "现状"
 
-#: src/components/PageDetailItemProps.vue:159 src/fields/Table.vue:54
-#: src/views/Login.vue:84 src/views/Login.vue:90
+#: src/components/PageDetailItemProps.vue:159
+#: src/fields/Table.vue:54
+#: src/views/Login.vue:84
+#: src/views/Login.vue:90
 msgid "Field is required"
 msgstr "字段为必填字段"
 
@@ -537,6 +744,7 @@ msgid "Page tag"
 msgstr "页面标签"
 
 #: src/components/PageDetailItemProps.vue:242
+#: src/views/PageList.vue:216
 msgid "No cache"
 msgstr "无缓存"
 
@@ -575,94 +783,140 @@ msgstr "重定向 URL"
 msgid "Double-click to edit"
 msgstr "双击进行编辑"
 
-#: src/components/PageDetailPreview.vue:173
+#: src/components/PageDetailPreview.vue:169
+msgid "Edit element"
+msgstr "编辑元素"
+
+#: src/components/PageDetailPreview.vue:175
+msgid "Add element before"
+msgstr "在"
+
+#: src/components/PageDetailPreview.vue:181
+msgid "Add element after"
+msgstr "在"
+
+#: src/components/PageDetailPreview.vue:187
+#: src/fields/Items.vue:101
+msgid "Remove element"
+msgstr "移除元素"
+
+#: src/components/PageDetailPreview.vue:193
 msgid "Preview mode"
 msgstr "预览模式"
 
-#: src/components/PageListItems.vue:93
+#: src/components/PageDetailPreview.vue:200
+msgid "Fullscreen mode"
+msgstr "全屏模式"
+
+#: src/components/PageDetailPreview.vue:207
+msgid "Exit fullscreen mode"
+msgstr "退出全屏模式"
+
+#: src/components/PageListItems.vue:90
 msgid "Error adding root page"
 msgstr "添加根页面时出错"
 
-#: src/components/PageListItems.vue:135 src/components/PageListItems.vue:460
+#: src/components/PageListItems.vue:132
+#: src/components/PageListItems.vue:457
 msgid "Error moving page"
 msgstr "页面移动错误"
 
-#: src/components/PageListItems.vue:203
+#: src/components/PageListItems.vue:200
 msgid "Error trashing page"
 msgstr "删除页面错误"
 
-#: src/components/PageListItems.vue:251
+#: src/components/PageListItems.vue:248
 msgid "Error fetching pages"
 msgstr "获取网页出错"
 
-#: src/components/PageListItems.vue:336
+#: src/components/PageListItems.vue:333
 msgid "Error inserting page"
 msgstr "插入页面出错"
 
-#: src/components/PageListItems.vue:392
+#: src/components/PageListItems.vue:389
 msgid "Error restoring page"
 msgstr "错误恢复页面"
 
-#: src/components/PageListItems.vue:552
+#: src/components/PageListItems.vue:549
 msgid "Error copying page"
 msgstr "复制页面出错"
 
-#: src/components/PageListItems.vue:556 src/views/PageDetail.vue:241
+#: src/components/PageListItems.vue:553
+#: src/views/PageDetail.vue:241
 msgid "Error fetching page"
 msgstr "获取页面出错"
 
-#: src/components/PageListItems.vue:599 src/views/PageDetail.vue:323
+#: src/components/PageListItems.vue:596
+#: src/views/PageDetail.vue:331
 msgid "Error publishing page"
 msgstr "发布页面出错"
 
-#: src/components/PageListItems.vue:641
+#: src/components/PageListItems.vue:638
 msgid "Error purging page"
 msgstr "错误清除页面"
 
-#: src/components/PageListItems.vue:691
+#: src/components/PageListItems.vue:707
 msgid "Error searching pages"
 msgstr "搜索页面出错"
 
-#: src/components/PageListItems.vue:739 src/views/PageDetail.vue:427
+#: src/components/PageListItems.vue:755
+#: src/views/PageDetail.vue:435
 msgid "Error saving page"
 msgstr "保存页面出错"
 
-#: src/components/PageListItems.vue:873 src/components/PageListItems.vue:938
+#: src/components/PageListItems.vue:890
+#: src/components/PageListItems.vue:973
 msgid "Enable"
 msgstr "启用"
 
-#: src/components/PageListItems.vue:876 src/components/PageListItems.vue:935
+#: src/components/PageListItems.vue:893
+#: src/components/PageListItems.vue:970
 msgid "Disable"
 msgstr "禁用"
 
-#: src/components/PageListItems.vue:941
+#: src/components/PageListItems.vue:924
+msgid "Reload page tree"
+msgstr "重新加载页面树"
+
+#: src/components/PageListItems.vue:951
+msgid "Toggle child nodes"
+msgstr "切换子节点"
+
+#: src/components/PageListItems.vue:976
 msgid "Hide in menu"
 msgstr "隐藏在菜单中"
 
-#: src/components/PageListItems.vue:957 src/components/PageListItems.vue:975
-#: src/components/PageListItems.vue:993
+#: src/components/PageListItems.vue:992
+#: src/components/PageListItems.vue:1010
+#: src/components/PageListItems.vue:1028
 msgid "Before"
 msgstr "之前"
 
-#: src/components/PageListItems.vue:962 src/components/PageListItems.vue:980
-#: src/components/PageListItems.vue:998
+#: src/components/PageListItems.vue:997
+#: src/components/PageListItems.vue:1015
+#: src/components/PageListItems.vue:1033
 msgid "Into"
 msgstr "进入"
 
-#: src/components/PageListItems.vue:967 src/components/PageListItems.vue:985
-#: src/components/PageListItems.vue:1003
+#: src/components/PageListItems.vue:1002
+#: src/components/PageListItems.vue:1020
+#: src/components/PageListItems.vue:1038
 msgid "After"
 msgstr "之后"
 
-#: src/components/PageListItems.vue:989
+#: src/components/PageListItems.vue:1024
 msgid "Insert"
 msgstr "插入"
 
-#: src/components/PageListItems.vue:1034
+#: src/components/PageListItems.vue:1069
 msgid "New"
 msgstr "新"
 
-#: src/components/SchemaDialog.vue:26
+#: src/components/PageListItems.vue:1094
+msgid "Add page"
+msgstr "添加页面"
+
+#: src/components/SchemaDialog.vue:32
 msgid "Content elements"
 msgstr "内容要素"
 
@@ -678,13 +932,39 @@ msgstr "加载用户失败"
 msgid "Logout failed"
 msgstr "注销失败"
 
-#: src/components/User.vue:72
+#: src/components/User.vue:53
+msgid "Switch language"
+msgstr "切换语言"
+
+#: src/components/User.vue:68
+msgid "User menu"
+msgstr "用户菜单"
+
+#: src/components/User.vue:82
 msgid "Logout"
 msgstr "注销"
 
-#: src/fields/Autocomplete.vue:140 src/fields/Color.vue:34
-#: src/fields/Date.vue:48 src/fields/Html.vue:42 src/fields/Number.vue:50
-#: src/fields/Select.vue:42 src/fields/Url.vue:62
+#: src/fields/Audio.vue:46
+#: src/fields/File.vue:230
+#: src/fields/Image.vue:83
+#: src/fields/Video.vue:48
+msgid "Add file from URL"
+msgstr "从 URL 添加文件"
+
+#: src/fields/Audio.vue:51
+#: src/fields/File.vue:235
+#: src/fields/Image.vue:94
+#: src/fields/Video.vue:53
+msgid "Upload file"
+msgstr "上传文件"
+
+#: src/fields/Autocomplete.vue:140
+#: src/fields/Color.vue:34
+#: src/fields/Date.vue:48
+#: src/fields/Html.vue:42
+#: src/fields/Number.vue:50
+#: src/fields/Select.vue:42
+#: src/fields/Url.vue:62
 msgid "Value is required"
 msgstr "需要值"
 
@@ -696,19 +976,26 @@ msgstr "无数据"
 msgid "Value must be a hex color code"
 msgstr "值必须是十六进制颜色代码"
 
-#: src/fields/Items.vue:65
+#: src/fields/Image.vue:89
+#: src/fields/Images.vue:248
+msgid "Create file"
+msgstr "创建文件"
+
+#: src/fields/Items.vue:70
 msgid "Maximum is %{num} entries"
 msgstr "最多为%{num} 条目"
 
-#: src/fields/Items.vue:66
+#: src/fields/Items.vue:71
 msgid "Minimum is %{num} entries"
 msgstr "最低为%{num} 条目"
 
-#: src/fields/Plaintext.vue:49 src/fields/String.vue:54
+#: src/fields/Plaintext.vue:49
+#: src/fields/String.vue:54
 msgid "Minimum length is %{num} characters"
 msgstr "最小长度为%{num} 字符"
 
-#: src/fields/Plaintext.vue:50 src/fields/String.vue:55
+#: src/fields/Plaintext.vue:50
+#: src/fields/String.vue:55
 msgid "Maximum length is %{num} characters"
 msgstr "最大长度为%{num} 字符"
 
@@ -737,261 +1024,261 @@ msgid "You do not have permission to access %{path}"
 msgstr "您没有权限访问%{path}"
 
 #: src/strings.js:5
-msgctxt "as"
-msgid "type"
-msgstr "类型"
-
-#: src/strings.js:6
-msgctxt "as"
-msgid "state"
-msgstr "国"
-
-#: src/strings.js:7
-msgctxt "as"
-msgid "valid"
-msgstr "有效"
-
-#: src/strings.js:8
-msgctxt "as"
-msgid "changed"
-msgstr "变了"
-
-#: src/strings.js:9
-msgctxt "as"
-msgid "error"
-msgstr "错误"
-
-#: src/strings.js:12
 msgctxt "cs"
 msgid "main"
 msgstr "主要"
 
-#: src/strings.js:13
+#: src/strings.js:6
 msgctxt "cs"
 msgid "header"
 msgstr "页眉"
 
-#: src/strings.js:14
+#: src/strings.js:7
 msgctxt "cs"
 msgid "footer"
 msgstr "页脚"
 
-#: src/strings.js:15
+#: src/strings.js:8
 msgctxt "cs"
 msgid "sidebar"
 msgstr "侧栏"
 
-#: src/strings.js:16
+#: src/strings.js:9
 msgctxt "cs"
 msgid "aside"
 msgstr "一旁"
 
-#: src/strings.js:19
+#: src/strings.js:12
 msgctxt "sg"
 msgid "basic"
 msgstr "基本的"
 
-#: src/strings.js:20
+#: src/strings.js:13
 msgctxt "sg"
 msgid "content"
 msgstr "内容"
 
-#: src/strings.js:21
+#: src/strings.js:14
 msgctxt "sg"
 msgid "media"
 msgstr "媒体"
 
-#: src/strings.js:22
+#: src/strings.js:15
 msgctxt "sg"
 msgid "forms"
 msgstr "形式"
 
-#: src/strings.js:25
+#: src/strings.js:18
+msgctxt "as"
+msgid "type"
+msgstr "类型"
+
+#: src/strings.js:19
+msgctxt "as"
+msgid "state"
+msgstr "国"
+
+#: src/strings.js:22
+msgctxt "st"
+msgid "valid"
+msgstr "有效"
+
+#: src/strings.js:23
+msgctxt "st"
+msgid "changed"
+msgstr "变了"
+
+#: src/strings.js:24
+msgctxt "st"
+msgid "error"
+msgstr "错误"
+
+#: src/strings.js:27
 msgctxt "st"
 msgid "reference"
 msgstr "参照"
 
-#: src/strings.js:26
+#: src/strings.js:28
 msgctxt "st"
 msgid "heading"
 msgstr "标题"
 
-#: src/strings.js:27
+#: src/strings.js:29
 msgctxt "st"
 msgid "text"
 msgstr "文本"
 
-#: src/strings.js:28
+#: src/strings.js:30
 msgctxt "st"
 msgid "image-text"
 msgstr "图像文本"
 
-#: src/strings.js:29
+#: src/strings.js:31
 msgctxt "st"
 msgid "slideshow"
 msgstr "幻灯片"
 
-#: src/strings.js:30
+#: src/strings.js:32
 msgctxt "st"
 msgid "code"
 msgstr "代码"
 
-#: src/strings.js:31
+#: src/strings.js:33
 msgctxt "st"
 msgid "table"
 msgstr "桌"
 
-#: src/strings.js:32
+#: src/strings.js:34
 msgctxt "st"
 msgid "html"
 msgstr "网页"
 
-#: src/strings.js:33
+#: src/strings.js:35
 msgctxt "st"
 msgid "image"
 msgstr "图像"
 
-#: src/strings.js:34
+#: src/strings.js:36
 msgctxt "st"
 msgid "video"
 msgstr "视频"
 
-#: src/strings.js:35
+#: src/strings.js:37
 msgctxt "st"
 msgid "audio"
 msgstr "音频"
 
-#: src/strings.js:36
+#: src/strings.js:38
 msgctxt "st"
 msgid "file"
 msgstr "文件"
 
-#: src/strings.js:37
+#: src/strings.js:39
 msgctxt "st"
 msgid "hero"
 msgstr "英雄"
 
-#: src/strings.js:38
+#: src/strings.js:40
 msgctxt "st"
 msgid "cards"
 msgstr "卡片"
 
-#: src/strings.js:39
+#: src/strings.js:41
 msgctxt "st"
 msgid "blog"
 msgstr "博客"
 
-#: src/strings.js:40
+#: src/strings.js:42
 msgctxt "st"
 msgid "article"
 msgstr "条"
 
-#: src/strings.js:41
+#: src/strings.js:43
 msgctxt "st"
 msgid "contact"
 msgstr "联系"
 
-#: src/strings.js:42
+#: src/strings.js:44
 msgctxt "st"
 msgid "meta"
 msgstr "指标"
 
-#: src/strings.js:43
+#: src/strings.js:45
 msgctxt "st"
 msgid "social"
 msgstr "社会"
 
-#: src/strings.js:44
+#: src/strings.js:46
 msgctxt "st"
 msgid "canonical"
 msgstr "典型"
 
-#: src/strings.js:45
+#: src/strings.js:47
 msgctxt "st"
 msgid "theme"
 msgstr "主题"
 
-#: src/strings.js:48
+#: src/strings.js:50
 msgctxt "fn"
 msgid "button"
 msgstr "按钮"
 
-#: src/strings.js:49
+#: src/strings.js:51
 msgctxt "fn"
 msgid "cards"
 msgstr "卡片"
 
-#: src/strings.js:50
+#: src/strings.js:52
 msgctxt "fn"
 msgid "description"
 msgstr "描述"
 
-#: src/strings.js:51
+#: src/strings.js:53
 msgctxt "fn"
 msgid "file"
 msgstr "文件"
 
-#: src/strings.js:52
+#: src/strings.js:54
 msgctxt "fn"
 msgid "files"
 msgstr "文件"
 
-#: src/strings.js:53
+#: src/strings.js:55
 msgctxt "fn"
 msgid "header"
 msgstr "页眉"
 
-#: src/strings.js:54
+#: src/strings.js:56
 msgctxt "fn"
 msgid "keywords"
 msgstr "关键词"
 
-#: src/strings.js:55
+#: src/strings.js:57
 msgctxt "fn"
 msgid "lang"
 msgstr "朗"
 
-#: src/strings.js:56
+#: src/strings.js:58
 msgctxt "fn"
 msgid "level"
 msgstr "夷为平地"
 
-#: src/strings.js:57
+#: src/strings.js:59
 msgctxt "fn"
 msgid "limit"
 msgstr "限额"
 
-#: src/strings.js:58
+#: src/strings.js:60
 msgctxt "fn"
 msgid "main"
 msgstr "主要"
 
-#: src/strings.js:59
+#: src/strings.js:61
 msgctxt "fn"
 msgid "parent-page"
 msgstr "父页面"
 
-#: src/strings.js:60
+#: src/strings.js:62
 msgctxt "fn"
 msgid "position"
 msgstr "位置"
 
-#: src/strings.js:61
+#: src/strings.js:63
 msgctxt "fn"
 msgid "text"
 msgstr "文本"
 
-#: src/strings.js:62
+#: src/strings.js:64
 msgctxt "fn"
 msgid "table"
 msgstr "桌"
 
-#: src/strings.js:63
+#: src/strings.js:65
 msgctxt "fn"
 msgid "title"
 msgstr "标题"
 
-#: src/strings.js:64
+#: src/strings.js:66
 msgctxt "fn"
 msgid "url"
 msgstr "网址"
@@ -1024,89 +1311,141 @@ msgstr "保存元素出错"
 msgid "Error fetching element versions"
 msgstr "获取元素版本时出错"
 
-#: src/views/ElementDetail.vue:271 src/views/ElementDetail.vue:326
+#: src/views/ElementDetail.vue:265
+#: src/views/FileDetail.vue:215
+#: src/views/PageDetail.vue:599
+msgid "Back to list view"
+msgstr "返回列表视图"
+
+#: src/views/ElementDetail.vue:272
+#: src/views/ElementDetail.vue:330
 msgid "Element"
 msgstr "要素"
 
-#: src/views/ElementDetail.vue:286 src/views/FileDetail.vue:220
-#: src/views/PageDetail.vue:623
-msgid "Save"
-msgstr "节省"
+#: src/views/ElementDetail.vue:280
+#: src/views/FileDetail.vue:229
+msgid "View history"
+msgstr "查看历史"
 
-#: src/views/ElementDetail.vue:327 src/views/FileDetail.vue:261
+#: src/views/ElementDetail.vue:303
+#: src/views/FileDetail.vue:255
+#: src/views/PageDetail.vue:656
+msgid "Schedule publishing"
+msgstr "发布时间表"
+
+#: src/views/ElementDetail.vue:321
+#: src/views/ElementList.vue:84
+#: src/views/FileDetail.vue:273
+#: src/views/FileList.vue:81
+#: src/views/PageDetail.vue:674
+#: src/views/PageList.vue:145
+msgid "Toggle side menu"
+msgstr "切换侧边菜单"
+
+#: src/views/ElementDetail.vue:331
+#: src/views/FileDetail.vue:283
 msgid "Used by"
 msgstr "已使用"
 
-#: src/views/ElementList.vue:41 src/views/ElementList.vue:104
-#: src/views/ElementList.vue:113 src/views/ElementList.vue:121
-#: src/views/FileList.vue:40 src/views/FileList.vue:101
-#: src/views/FileList.vue:110 src/views/FileList.vue:118
-#: src/views/PageList.vue:41 src/views/PageList.vue:109
-#: src/views/PageList.vue:118 src/views/PageList.vue:126
+#: src/views/ElementList.vue:41
+#: src/views/ElementList.vue:104
+#: src/views/ElementList.vue:113
+#: src/views/ElementList.vue:121
+#: src/views/FileList.vue:40
+#: src/views/FileList.vue:101
+#: src/views/FileList.vue:110
+#: src/views/FileList.vue:118
+#: src/views/PageList.vue:47
+#: src/views/PageList.vue:189
+#: src/views/PageList.vue:198
+#: src/views/PageList.vue:206
+#: src/views/PageList.vue:215
+#: src/views/PageList.vue:222
 msgid "All"
 msgstr "全部"
 
-#: src/views/ElementList.vue:102 src/views/FileList.vue:99
-#: src/views/PageList.vue:107
+#: src/views/ElementList.vue:70
+#: src/views/FileList.vue:69
+#: src/views/PageList.vue:133
+msgid "Close navigation"
+msgstr "关闭导航"
+
+#: src/views/ElementList.vue:70
+#: src/views/FileList.vue:69
+#: src/views/PageList.vue:133
+msgid "Open navigation"
+msgstr "打开导航"
+
+#: src/views/ElementList.vue:102
+#: src/views/FileList.vue:99
+#: src/views/PageList.vue:187
 msgid "publish"
 msgstr "发布"
 
-#: src/views/ElementList.vue:106 src/views/FileList.vue:103
-#: src/views/PageList.vue:111
+#: src/views/ElementList.vue:106
+#: src/views/FileList.vue:103
+#: src/views/PageList.vue:191
 msgid "Scheduled"
 msgstr "计划"
 
-#: src/views/ElementList.vue:107 src/views/FileList.vue:104
-#: src/views/PageList.vue:112
+#: src/views/ElementList.vue:107
+#: src/views/FileList.vue:104
+#: src/views/PageList.vue:192
 msgid "Drafts"
 msgstr "草稿"
 
-#: src/views/ElementList.vue:111 src/views/FileList.vue:108
-#: src/views/PageList.vue:116
+#: src/views/ElementList.vue:111
+#: src/views/FileList.vue:108
+#: src/views/PageList.vue:196
 msgid "trashed"
 msgstr "被捣毁"
 
-#: src/views/ElementList.vue:114 src/views/FileList.vue:111
-#: src/views/PageList.vue:119
+#: src/views/ElementList.vue:114
+#: src/views/FileList.vue:111
+#: src/views/PageList.vue:199
 msgid "Available only"
 msgstr "仅提供"
 
-#: src/views/ElementList.vue:115 src/views/FileList.vue:112
-#: src/views/PageList.vue:120
+#: src/views/ElementList.vue:115
+#: src/views/FileList.vue:112
+#: src/views/PageList.vue:200
 msgid "Only trashed"
 msgstr "只有垃圾"
 
-#: src/views/ElementList.vue:122 src/views/FileList.vue:119
-#: src/views/PageList.vue:127
+#: src/views/ElementList.vue:122
+#: src/views/FileList.vue:119
+#: src/views/PageList.vue:223
 msgid "Edited by me"
 msgstr "由我编辑"
 
-#: src/views/ElementList.vue:126 src/views/FileList.vue:123
-#: src/views/PageList.vue:131
+#: src/views/ElementList.vue:126
+#: src/views/FileList.vue:123
+#: src/views/PageList.vue:227
 msgid "languages"
 msgstr "语言"
 
-#: src/views/FileDetail.vue:71
+#: src/views/FileDetail.vue:72
 msgid "File published successfully"
 msgstr "文件已成功发布"
 
-#: src/views/FileDetail.vue:74
+#: src/views/FileDetail.vue:75
 msgid "File scheduled for publishing at %{date}"
 msgstr "文件定于%{date}"
 
-#: src/views/FileDetail.vue:129
+#: src/views/FileDetail.vue:142
 msgid "File saved successfully"
 msgstr "文件已成功保存"
 
-#: src/views/FileDetail.vue:134
+#: src/views/FileDetail.vue:148
 msgid "Error saving file"
 msgstr "保存文件出错"
 
-#: src/views/FileDetail.vue:186
+#: src/views/FileDetail.vue:202
 msgid "Error fetching file versions"
 msgstr "获取文件版本时出错"
 
-#: src/views/FileDetail.vue:205 src/views/FileDetail.vue:260
+#: src/views/FileDetail.vue:222
+#: src/views/FileDetail.vue:282
 msgid "File"
 msgstr "文件"
 
@@ -1118,7 +1457,8 @@ msgstr "不是内容管理系统编辑器"
 msgid "Access denied"
 msgstr "拒绝访问"
 
-#: src/views/Login.vue:79 src/views/Login.vue:101
+#: src/views/Login.vue:79
+#: src/views/Login.vue:106
 msgid "Login"
 msgstr "登录"
 
@@ -1134,54 +1474,75 @@ msgstr "无效电子邮件地址"
 msgid "Password"
 msgstr "密码"
 
-#: src/views/Login.vue:96
+#: src/views/Login.vue:100
 msgid "Error"
 msgstr "错误"
 
-#: src/views/PageDetail.vue:315
+#: src/views/PageDetail.vue:323
 msgid "Page published successfully"
 msgstr "页面已成功发布"
 
-#: src/views/PageDetail.vue:318
+#: src/views/PageDetail.vue:326
 msgid "Page scheduled for publishing at %{date}"
 msgstr "计划于%{date}"
 
-#: src/views/PageDetail.vue:351
+#: src/views/PageDetail.vue:359
 msgid "There are invalid fields, please resolve the errors first"
 msgstr "有无效字段，请先解决错误"
 
-#: src/views/PageDetail.vue:419
+#: src/views/PageDetail.vue:427
 msgid "Page saved successfully"
 msgstr "页面保存成功"
 
-#: src/views/PageDetail.vue:436
+#: src/views/PageDetail.vue:444
 msgid "No page schema for \"content\" found"
 msgstr "未找到 \"content \"的页面模式"
 
-#: src/views/PageDetail.vue:572
+#: src/views/PageDetail.vue:580
 msgid "Error fetching page versions"
 msgstr "获取页面版本时出错"
 
-#: src/views/PageDetail.vue:597 src/views/PageDetail.vue:675
+#: src/views/PageDetail.vue:606
+#: src/views/PageDetail.vue:686
 msgid "Page"
 msgstr "页次"
 
-#: src/views/PageDetail.vue:665
+#: src/views/PageDetail.vue:614
+msgid "Translate page"
+msgstr "翻译页面"
+
+#: src/views/PageDetail.vue:690
 msgid "Editor"
 msgstr "编辑"
 
-#: src/views/PageDetail.vue:670
+#: src/views/PageDetail.vue:695
 msgid "Content"
 msgstr "内容"
 
-#: src/views/PageList.vue:100
+#: src/views/PageList.vue:160
+msgid "What kind of page and content should I create?"
+msgstr "我应该创建什么样的页面和内容？"
+
+#: src/views/PageList.vue:180
 msgid "view"
 msgstr "观点"
 
-#: src/views/PageList.vue:102
+#: src/views/PageList.vue:182
 msgid "Tree"
 msgstr "树"
 
-#: src/views/PageList.vue:103
+#: src/views/PageList.vue:183
 msgid "List"
 msgstr "列表"
+
+#: src/views/PageList.vue:204
+msgid "status"
+msgstr "地位"
+
+#: src/views/PageList.vue:208
+msgid "Hidden"
+msgstr "隐藏"
+
+#: src/views/PageList.vue:213
+msgid "cache"
+msgstr "高速缓存"

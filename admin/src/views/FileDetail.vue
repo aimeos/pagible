@@ -212,7 +212,7 @@
     <template v-slot:prepend>
       <v-btn
         @click="closeView()"
-        :title="$gettext('Return to list view')"
+        :title="$gettext('Back to list view')"
         icon="mdi-keyboard-backspace"
       />
     </template>

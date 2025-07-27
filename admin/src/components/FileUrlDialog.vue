@@ -158,7 +158,7 @@
         />
       </template>
       <template v-slot:title>
-        {{ $gettext('Add files from URL') }}
+        {{ $gettext('Add files from URLs') }}
       </template>
 
       <v-card-text>

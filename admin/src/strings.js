@@ -1,13 +1,6 @@
 // only for translation extraction
 
 if($pgettext) {
-    // aside drawer
-    $pgettext('as', 'type')
-    $pgettext('as', 'state')
-    $pgettext('as', 'valid')
-    $pgettext('as', 'changed')
-    $pgettext('as', 'error')
-
     // content sections
     $pgettext('cs', 'main')
     $pgettext('cs', 'header')
@@ -20,6 +13,15 @@ if($pgettext) {
     $pgettext('sg', 'content')
     $pgettext('sg', 'media')
     $pgettext('sg', 'forms')
+
+    // aside drawer
+    $pgettext('as', 'type')
+    $pgettext('as', 'state')
+
+    // element states
+    $pgettext('st', 'valid')
+    $pgettext('st', 'changed')
+    $pgettext('st', 'error')
 
     // schema elements
     $pgettext('st', 'reference')
