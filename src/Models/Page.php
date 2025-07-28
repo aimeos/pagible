@@ -11,11 +11,13 @@ use Aimeos\Cms\Concerns\Tenancy;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Prunable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Collection;
 use Kalnoy\Nestedset\NodeTrait;
@@ -212,14 +214,11 @@ class Page extends Model
     /**
      * Get the page's latest head/meta data.
      *
-     * @return HasOne Eloquent relationship to the latest version of the page
+     * @return MorphOne Eloquent relationship to the latest version of the page
      */
-    public function latest() : HasOne
+    public function latest() : MorphOne
     {
-        return $this->hasOne( Version::class, 'versionable_id' )
-            ->where( 'versionable_type', Page::class )
-            ->orderBy( 'id', 'desc' )
-            ->take( 1 );
+        return $this->morphOne( Version::class, 'versionable' )->latestOfMany();
     }
 
 
@@ -320,25 +319,13 @@ class Page extends Model
     public function subtree() : DescendantsRelation
     {
         // restrict max. depth to three levels for performance reasons
-        $builder = $this->newScopedQuery()
-            ->withDepth()
-            ->whereNotExists( function( \Illuminate\Database\Query\Builder $query ) {
-                $query->select( DB::raw( 1 ) )
-                    ->from( $this->getTable() . ' AS parent' )
-                    ->whereColumn( $this->qualifyColumn( '_lft' ), '>=', 'parent._lft' )
-                    ->whereColumn( $this->qualifyColumn( '_rgt' ), '<=', 'parent._rgt' )
-                    ->where( 'parent.tenant_id', '=', \Aimeos\Cms\Tenancy::value() )
-                    ->where( 'parent.status', '<=', 0 );
-            } )
-            ->groupBy(
-                'id', 'tenant_id', 'related_id', 'lang', 'name', 'title',
-                'path', 'to', 'tag', 'meta', 'config', 'status',
-                'cache', '_lft', '_rgt', 'parent_id', 'editor',
-                'created_at', 'updated_at', 'deleted_at'
-            )
-            ->having( 'depth', '<=', ( $this->depth ?? 0 ) + 3 );
+        $builder = $this->newScopedQuery()->withDepth()->having( 'depth', '<=', ( $this->depth ?? 0 ) + 3 );
 
-        return (new DescendantsRelation( $builder, $this ));
+        if( !\Aimeos\Cms\Permission::can( 'page:view', Auth::user() ) ) {
+            $builder->where( $this->qualifyColumn( 'status' ), '>', 0 );
+        }
+
+        return new DescendantsRelation( $builder, $this );
     }
 
 

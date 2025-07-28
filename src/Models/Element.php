@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Prunable;
@@ -150,14 +151,11 @@ class Element extends Model
     /**
      * Get the page's latest head/meta data.
      *
-     * @return HasOne Eloquent relationship to the latest version of the element
+     * @return MorphOne Eloquent relationship to the latest version of the element
      */
-    public function latest() : HasOne
+    public function latest() : MorphOne
     {
-        return $this->hasOne( Version::class, 'versionable_id' )
-            ->where( 'versionable_type', Element::class )
-            ->orderBy( 'id', 'desc' )
-            ->take( 1 );
+        return $this->morphOne( Version::class, 'versionable' )->latestOfMany();
     }
 
 
