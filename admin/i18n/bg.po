@@ -9,9 +9,21 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Project-Id-Version: PACKAGE VERSION\n"
 
+#: src/App.vue:74
+msgid "Prompt is required for generating text"
+msgstr "За генериране на текст се изисква промпт"
+
+#: src/App.vue:100
+msgid "Error generating text"
+msgstr "Грешка при генериране на текст"
+
 #: src/App.vue:110
 msgid "None"
 msgstr "Няма"
+
+#: src/App.vue:151
+msgid "Error translating texts"
+msgstr "Грешка при превода на текстове"
 
 #: src/components/AsideMeta.vue:19
 msgid "id"
@@ -35,7 +47,7 @@ msgstr "mime"
 #: src/fields/Video.vue:77
 #: src/views/ElementList.vue:119
 #: src/views/FileList.vue:116
-#: src/views/PageList.vue:220
+#: src/views/PageList.vue:219
 msgid "editor"
 msgstr "редактор"
 
@@ -113,7 +125,7 @@ msgstr "Тип"
 #: src/components/FileDetailRefs.vue:145
 #: src/views/ElementList.vue:105
 #: src/views/FileList.vue:102
-#: src/views/PageList.vue:190
+#: src/views/PageList.vue:189
 msgid "Published"
 msgstr "Публикувано на"
 
@@ -226,9 +238,11 @@ msgstr "Добавяне на елемент"
 #: src/components/ElementListItems.vue:500
 #: src/components/FileListItems.vue:467
 #: src/components/FileListItems.vue:556
+#: src/components/PageDetailContentList.vue:543
+#: src/components/PageDetailContentList.vue:601
 #: src/components/PageListItems.vue:899
 #: src/components/PageListItems.vue:1045
-msgid "Trash"
+msgid "Delete"
 msgstr "Отпадъци"
 
 #: src/components/ElementListItems.vue:430
@@ -291,13 +305,13 @@ msgstr "тип"
 #: src/components/ElementListItems.vue:530
 #: src/components/FileListItems.vue:594
 #: src/components/HistoryDialog.vue:95
-#: src/components/PageListItems.vue:1083
+#: src/components/PageListItems.vue:1084
 msgid "Loading"
 msgstr "Зареждане на"
 
 #: src/components/ElementListItems.vue:534
 #: src/components/FileListItems.vue:599
-#: src/components/PageListItems.vue:1088
+#: src/components/PageListItems.vue:1089
 msgid "No entries found"
 msgstr "Не са намерени записи"
 
@@ -359,6 +373,18 @@ msgstr "Използване на изображения от този стил"
 msgid "Select similar images"
 msgstr "Изберете подобни изображения"
 
+#: src/components/FileDetailItem.vue:87
+msgid "No video element found"
+msgstr "Не е намерен видео елемент"
+
+#: src/components/FileDetailItem.vue:132
+msgid "Error saving video cover"
+msgstr "Грешка при записването на видео покритие"
+
+#: src/components/FileDetailItem.vue:258
+msgid "Error removing video cover"
+msgstr "Грешка при премахване на капака на видеото"
+
 #: src/components/FileDetailItem.vue:304
 msgid "Transcription is only available for audio and video files"
 msgstr "Транскрипцията е налична само за аудио и видео файлове."
@@ -370,6 +396,10 @@ msgstr "Грешка при транскрибиране на файла"
 #: src/components/FileDetailItem.vue:433
 msgid "No file selected"
 msgstr "Не е избран файл"
+
+#: src/components/FileDetailItem.vue:467
+msgid "Error uploading video cover"
+msgstr "Грешка при качването на видео покритието"
 
 #: src/components/FileDetailItem.vue:533
 msgid "Use cropped image"
@@ -454,7 +484,7 @@ msgstr "Транскрипция (%{lang})"
 
 #: src/components/FileDetailRefs.vue:94
 #: src/components/Navigation.vue:30
-#: src/views/PageList.vue:138
+#: src/views/PageList.vue:137
 msgid "Pages"
 msgstr "Страници"
 
@@ -595,11 +625,6 @@ msgstr "Не е налично за този елемент от съдържа�
 msgid "Element is not shared"
 msgstr "Елементът не е споделен"
 
-#: src/components/PageDetailContentList.vue:543
-#: src/components/PageDetailContentList.vue:601
-msgid "Delete"
-msgstr "Изтриване на"
-
 #: src/components/PageDetailContentList.vue:546
 #: src/components/PageDetailContentList.vue:595
 #: src/components/PageListItems.vue:985
@@ -684,12 +709,12 @@ msgid "The path is already in use by another page"
 msgstr "Пътят вече се използва от друга страница"
 
 #: src/components/PageDetailItemProps.vue:130
-#: src/views/PageList.vue:209
+#: src/views/PageList.vue:208
 msgid "Disabled"
 msgstr "Инвалиди"
 
 #: src/components/PageDetailItemProps.vue:131
-#: src/views/PageList.vue:207
+#: src/views/PageList.vue:206
 msgid "Enabled"
 msgstr "Разрешено"
 
@@ -745,7 +770,7 @@ msgid "Page tag"
 msgstr "Таг на страницата"
 
 #: src/components/PageDetailItemProps.vue:242
-#: src/views/PageList.vue:216
+#: src/views/PageList.vue:215
 msgid "No cache"
 msgstr "Няма кеш"
 
@@ -884,7 +909,7 @@ msgid "Toggle child nodes"
 msgstr "Превключване на подчинените възли"
 
 #: src/components/PageListItems.vue:976
-msgid "Hide in menu"
+msgid "Hide"
 msgstr "Скриване в менюто"
 
 #: src/components/PageListItems.vue:992
@@ -909,11 +934,11 @@ msgstr "След"
 msgid "Insert"
 msgstr "Вмъкване на"
 
-#: src/components/PageListItems.vue:1069
+#: src/components/PageListItems.vue:1070
 msgid "New"
 msgstr "Нов"
 
-#: src/components/PageListItems.vue:1094
+#: src/components/PageListItems.vue:1095
 msgid "Add page"
 msgstr "Добавяне на страница"
 
@@ -925,23 +950,23 @@ msgstr "Елементи на съдържанието"
 msgid "uncategorized"
 msgstr "Uncategorized"
 
-#: src/components/User.vue:24
+#: src/components/User.vue:23
 msgid "Failed to load user"
 msgstr "Неуспешно зареждане на потребител"
 
-#: src/components/User.vue:34
+#: src/components/User.vue:33
 msgid "Logout failed"
 msgstr "Излизането от системата е неуспешно"
 
-#: src/components/User.vue:53
+#: src/components/User.vue:52
 msgid "Switch language"
 msgstr "Превключване на езика"
 
-#: src/components/User.vue:68
+#: src/components/User.vue:67
 msgid "User menu"
 msgstr "Потребителско меню"
 
-#: src/components/User.vue:82
+#: src/components/User.vue:81
 msgid "Logout"
 msgstr "Излизане от системата"
 
@@ -976,6 +1001,10 @@ msgstr "Няма налични данни"
 #: src/fields/Color.vue:35
 msgid "Value must be a hex color code"
 msgstr "Стойността трябва да бъде шестнадесетичен код на цвета"
+
+#: src/fields/File.vue:95
+msgid "Error uploading file"
+msgstr "Грешка при качване на файл"
 
 #: src/fields/Image.vue:89
 #: src/fields/Images.vue:248
@@ -1339,7 +1368,7 @@ msgstr "Публикуване на график"
 #: src/views/FileDetail.vue:273
 #: src/views/FileList.vue:81
 #: src/views/PageDetail.vue:674
-#: src/views/PageList.vue:145
+#: src/views/PageList.vue:144
 msgid "Toggle side menu"
 msgstr "Превключване на страничното меню"
 
@@ -1357,71 +1386,71 @@ msgstr "Използва се от"
 #: src/views/FileList.vue:110
 #: src/views/FileList.vue:118
 #: src/views/PageList.vue:47
-#: src/views/PageList.vue:189
-#: src/views/PageList.vue:198
-#: src/views/PageList.vue:206
-#: src/views/PageList.vue:215
-#: src/views/PageList.vue:222
+#: src/views/PageList.vue:188
+#: src/views/PageList.vue:197
+#: src/views/PageList.vue:205
+#: src/views/PageList.vue:214
+#: src/views/PageList.vue:221
 msgid "All"
 msgstr "Всички"
 
 #: src/views/ElementList.vue:70
 #: src/views/FileList.vue:69
-#: src/views/PageList.vue:133
+#: src/views/PageList.vue:132
 msgid "Close navigation"
 msgstr "Затвори навигацията"
 
 #: src/views/ElementList.vue:70
 #: src/views/FileList.vue:69
-#: src/views/PageList.vue:133
+#: src/views/PageList.vue:132
 msgid "Open navigation"
 msgstr "Отворена навигация"
 
 #: src/views/ElementList.vue:102
 #: src/views/FileList.vue:99
-#: src/views/PageList.vue:187
+#: src/views/PageList.vue:186
 msgid "publish"
 msgstr "публикувайте"
 
 #: src/views/ElementList.vue:106
 #: src/views/FileList.vue:103
-#: src/views/PageList.vue:191
+#: src/views/PageList.vue:190
 msgid "Scheduled"
 msgstr "Планирано"
 
 #: src/views/ElementList.vue:107
 #: src/views/FileList.vue:104
-#: src/views/PageList.vue:192
+#: src/views/PageList.vue:191
 msgid "Drafts"
 msgstr "Чернови"
 
 #: src/views/ElementList.vue:111
 #: src/views/FileList.vue:108
-#: src/views/PageList.vue:196
+#: src/views/PageList.vue:195
 msgid "trashed"
 msgstr "изхвърлен"
 
 #: src/views/ElementList.vue:114
 #: src/views/FileList.vue:111
-#: src/views/PageList.vue:199
+#: src/views/PageList.vue:198
 msgid "Available only"
 msgstr "Налични само"
 
 #: src/views/ElementList.vue:115
 #: src/views/FileList.vue:112
-#: src/views/PageList.vue:200
+#: src/views/PageList.vue:199
 msgid "Only trashed"
 msgstr "Само изхвърлени"
 
 #: src/views/ElementList.vue:122
 #: src/views/FileList.vue:119
-#: src/views/PageList.vue:223
+#: src/views/PageList.vue:222
 msgid "Edited by me"
 msgstr "Редактирано от мен"
 
 #: src/views/ElementList.vue:126
 #: src/views/FileList.vue:123
-#: src/views/PageList.vue:227
+#: src/views/PageList.vue:226
 msgid "languages"
 msgstr "езици"
 
@@ -1520,30 +1549,34 @@ msgstr "Редактор"
 msgid "Content"
 msgstr "Съдържание"
 
-#: src/views/PageList.vue:160
+#: src/views/PageList.vue:114
+msgid "Error sending request"
+msgstr "Грешка при изпращане на заявка за управление"
+
+#: src/views/PageList.vue:159
 msgid "What kind of page and content should I create?"
 msgstr "Какъв вид страница и съдържание трябва да създам?"
 
-#: src/views/PageList.vue:180
+#: src/views/PageList.vue:179
 msgid "view"
 msgstr "Преглед на"
 
-#: src/views/PageList.vue:182
+#: src/views/PageList.vue:181
 msgid "Tree"
 msgstr "Дърво"
 
-#: src/views/PageList.vue:183
+#: src/views/PageList.vue:182
 msgid "List"
 msgstr "Списък"
 
-#: src/views/PageList.vue:204
+#: src/views/PageList.vue:203
 msgid "status"
 msgstr "статус"
 
-#: src/views/PageList.vue:208
+#: src/views/PageList.vue:207
 msgid "Hidden"
 msgstr "Скрит"
 
-#: src/views/PageList.vue:213
+#: src/views/PageList.vue:212
 msgid "cache"
 msgstr "кеш"

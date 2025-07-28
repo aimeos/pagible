@@ -9,9 +9,21 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 "Project-Id-Version: PACKAGE VERSION\n"
 
+#: src/App.vue:74
+msgid "Prompt is required for generating text"
+msgstr "Raginimas reikalingas tekstui generuoti"
+
+#: src/App.vue:100
+msgid "Error generating text"
+msgstr "Klaida generuojant tekstą"
+
 #: src/App.vue:110
 msgid "None"
 msgstr "Nėra"
+
+#: src/App.vue:151
+msgid "Error translating texts"
+msgstr "Klaida verčiant tekstus"
 
 #: src/components/AsideMeta.vue:19
 msgid "id"
@@ -35,7 +47,7 @@ msgstr "mime"
 #: src/fields/Video.vue:77
 #: src/views/ElementList.vue:119
 #: src/views/FileList.vue:116
-#: src/views/PageList.vue:220
+#: src/views/PageList.vue:219
 msgid "editor"
 msgstr "redaktorius"
 
@@ -113,7 +125,7 @@ msgstr "Tipas"
 #: src/components/FileDetailRefs.vue:145
 #: src/views/ElementList.vue:105
 #: src/views/FileList.vue:102
-#: src/views/PageList.vue:190
+#: src/views/PageList.vue:189
 msgid "Published"
 msgstr "Paskelbta"
 
@@ -226,9 +238,11 @@ msgstr "Pridėti elementą"
 #: src/components/ElementListItems.vue:500
 #: src/components/FileListItems.vue:467
 #: src/components/FileListItems.vue:556
+#: src/components/PageDetailContentList.vue:543
+#: src/components/PageDetailContentList.vue:601
 #: src/components/PageListItems.vue:899
 #: src/components/PageListItems.vue:1045
-msgid "Trash"
+msgid "Delete"
 msgstr "Šiukšliadėžė"
 
 #: src/components/ElementListItems.vue:430
@@ -291,13 +305,13 @@ msgstr "tipas"
 #: src/components/ElementListItems.vue:530
 #: src/components/FileListItems.vue:594
 #: src/components/HistoryDialog.vue:95
-#: src/components/PageListItems.vue:1083
+#: src/components/PageListItems.vue:1084
 msgid "Loading"
 msgstr "Pakrovimas"
 
 #: src/components/ElementListItems.vue:534
 #: src/components/FileListItems.vue:599
-#: src/components/PageListItems.vue:1088
+#: src/components/PageListItems.vue:1089
 msgid "No entries found"
 msgstr "Įrašų nerasta"
 
@@ -359,6 +373,18 @@ msgstr "Naudokite šio stiliaus vaizdus"
 msgid "Select similar images"
 msgstr "Pasirinkite panašius vaizdus"
 
+#: src/components/FileDetailItem.vue:87
+msgid "No video element found"
+msgstr "Nerastas joks vaizdo elementas"
+
+#: src/components/FileDetailItem.vue:132
+msgid "Error saving video cover"
+msgstr "Klaida išsaugant vaizdo įrašo viršelį"
+
+#: src/components/FileDetailItem.vue:258
+msgid "Error removing video cover"
+msgstr "Klaida šalinant vaizdo įrašo dangtelį"
+
 #: src/components/FileDetailItem.vue:304
 msgid "Transcription is only available for audio and video files"
 msgstr "Transkripcija galima tik garso ir vaizdo failams"
@@ -370,6 +396,10 @@ msgstr "Klaida transkribuojant failą"
 #: src/components/FileDetailItem.vue:433
 msgid "No file selected"
 msgstr "Nėra pasirinkto failo"
+
+#: src/components/FileDetailItem.vue:467
+msgid "Error uploading video cover"
+msgstr "Klaida įkeliant vaizdo įrašo viršelį"
 
 #: src/components/FileDetailItem.vue:533
 msgid "Use cropped image"
@@ -454,7 +484,7 @@ msgstr "Transkripcija (%{lang})"
 
 #: src/components/FileDetailRefs.vue:94
 #: src/components/Navigation.vue:30
-#: src/views/PageList.vue:138
+#: src/views/PageList.vue:137
 msgid "Pages"
 msgstr "Puslapiai"
 
@@ -595,11 +625,6 @@ msgstr "Nėra šio turinio elemento"
 msgid "Element is not shared"
 msgstr "Elementu nesidalijama"
 
-#: src/components/PageDetailContentList.vue:543
-#: src/components/PageDetailContentList.vue:601
-msgid "Delete"
-msgstr "Ištrinti"
-
 #: src/components/PageDetailContentList.vue:546
 #: src/components/PageDetailContentList.vue:595
 #: src/components/PageListItems.vue:985
@@ -684,12 +709,12 @@ msgid "The path is already in use by another page"
 msgstr "Kelias jau naudojamas kitame puslapyje"
 
 #: src/components/PageDetailItemProps.vue:130
-#: src/views/PageList.vue:209
+#: src/views/PageList.vue:208
 msgid "Disabled"
 msgstr "Neįgalieji"
 
 #: src/components/PageDetailItemProps.vue:131
-#: src/views/PageList.vue:207
+#: src/views/PageList.vue:206
 msgid "Enabled"
 msgstr "Įjungta"
 
@@ -745,7 +770,7 @@ msgid "Page tag"
 msgstr "Puslapio žyma"
 
 #: src/components/PageDetailItemProps.vue:242
-#: src/views/PageList.vue:216
+#: src/views/PageList.vue:215
 msgid "No cache"
 msgstr "Nėra talpyklos"
 
@@ -886,7 +911,7 @@ msgid "Toggle child nodes"
 msgstr "Perjungti dukterinius mazgus"
 
 #: src/components/PageListItems.vue:976
-msgid "Hide in menu"
+msgid "Hide"
 msgstr "Paslėpti meniu"
 
 #: src/components/PageListItems.vue:992
@@ -911,11 +936,11 @@ msgstr "Po"
 msgid "Insert"
 msgstr "Įdėkite"
 
-#: src/components/PageListItems.vue:1069
+#: src/components/PageListItems.vue:1070
 msgid "New"
 msgstr "Naujas"
 
-#: src/components/PageListItems.vue:1094
+#: src/components/PageListItems.vue:1095
 msgid "Add page"
 msgstr "Pridėti puslapį"
 
@@ -927,23 +952,23 @@ msgstr "Turinio elementai"
 msgid "uncategorized"
 msgstr "neklasifikuojama"
 
-#: src/components/User.vue:24
+#: src/components/User.vue:23
 msgid "Failed to load user"
 msgstr "Nepavyko įkelti naudotojo"
 
-#: src/components/User.vue:34
+#: src/components/User.vue:33
 msgid "Logout failed"
 msgstr "Atsijungti nepavyko"
 
-#: src/components/User.vue:53
+#: src/components/User.vue:52
 msgid "Switch language"
 msgstr "Perjungti kalbą"
 
-#: src/components/User.vue:68
+#: src/components/User.vue:67
 msgid "User menu"
 msgstr "Naudotojo meniu"
 
-#: src/components/User.vue:82
+#: src/components/User.vue:81
 msgid "Logout"
 msgstr "Atsijungimas"
 
@@ -978,6 +1003,10 @@ msgstr "Duomenų nėra"
 #: src/fields/Color.vue:35
 msgid "Value must be a hex color code"
 msgstr "Reikšmė turi būti šešiaženklis spalvos kodas"
+
+#: src/fields/File.vue:95
+msgid "Error uploading file"
+msgstr "Klaida įkeliant failą"
 
 #: src/fields/Image.vue:89
 #: src/fields/Images.vue:248
@@ -1341,7 +1370,7 @@ msgstr "Tvarkaraščio skelbimas"
 #: src/views/FileDetail.vue:273
 #: src/views/FileList.vue:81
 #: src/views/PageDetail.vue:674
-#: src/views/PageList.vue:145
+#: src/views/PageList.vue:144
 msgid "Toggle side menu"
 msgstr "Perjungti šoninį meniu"
 
@@ -1359,71 +1388,71 @@ msgstr "Naudojamas"
 #: src/views/FileList.vue:110
 #: src/views/FileList.vue:118
 #: src/views/PageList.vue:47
-#: src/views/PageList.vue:189
-#: src/views/PageList.vue:198
-#: src/views/PageList.vue:206
-#: src/views/PageList.vue:215
-#: src/views/PageList.vue:222
+#: src/views/PageList.vue:188
+#: src/views/PageList.vue:197
+#: src/views/PageList.vue:205
+#: src/views/PageList.vue:214
+#: src/views/PageList.vue:221
 msgid "All"
 msgstr "Visi"
 
 #: src/views/ElementList.vue:70
 #: src/views/FileList.vue:69
-#: src/views/PageList.vue:133
+#: src/views/PageList.vue:132
 msgid "Close navigation"
 msgstr "Uždaryti navigaciją"
 
 #: src/views/ElementList.vue:70
 #: src/views/FileList.vue:69
-#: src/views/PageList.vue:133
+#: src/views/PageList.vue:132
 msgid "Open navigation"
 msgstr "Atvira navigacija"
 
 #: src/views/ElementList.vue:102
 #: src/views/FileList.vue:99
-#: src/views/PageList.vue:187
+#: src/views/PageList.vue:186
 msgid "publish"
 msgstr "skelbti"
 
 #: src/views/ElementList.vue:106
 #: src/views/FileList.vue:103
-#: src/views/PageList.vue:191
+#: src/views/PageList.vue:190
 msgid "Scheduled"
 msgstr "Suplanuota"
 
 #: src/views/ElementList.vue:107
 #: src/views/FileList.vue:104
-#: src/views/PageList.vue:192
+#: src/views/PageList.vue:191
 msgid "Drafts"
 msgstr "Projektai"
 
 #: src/views/ElementList.vue:111
 #: src/views/FileList.vue:108
-#: src/views/PageList.vue:196
+#: src/views/PageList.vue:195
 msgid "trashed"
 msgstr "išmestas"
 
 #: src/views/ElementList.vue:114
 #: src/views/FileList.vue:111
-#: src/views/PageList.vue:199
+#: src/views/PageList.vue:198
 msgid "Available only"
 msgstr "Galima įsigyti tik"
 
 #: src/views/ElementList.vue:115
 #: src/views/FileList.vue:112
-#: src/views/PageList.vue:200
+#: src/views/PageList.vue:199
 msgid "Only trashed"
 msgstr "Tik išmestas"
 
 #: src/views/ElementList.vue:122
 #: src/views/FileList.vue:119
-#: src/views/PageList.vue:223
+#: src/views/PageList.vue:222
 msgid "Edited by me"
 msgstr "Redagavo aš"
 
 #: src/views/ElementList.vue:126
 #: src/views/FileList.vue:123
-#: src/views/PageList.vue:227
+#: src/views/PageList.vue:226
 msgid "languages"
 msgstr "kalbos"
 
@@ -1522,30 +1551,34 @@ msgstr "Redaktorius"
 msgid "Content"
 msgstr "Turinys"
 
-#: src/views/PageList.vue:160
+#: src/views/PageList.vue:114
+msgid "Error sending request"
+msgstr "Klaida siunčiant valdymo užklausą"
+
+#: src/views/PageList.vue:159
 msgid "What kind of page and content should I create?"
 msgstr "Kokį puslapį ir turinį turėčiau sukurti?"
 
-#: src/views/PageList.vue:180
+#: src/views/PageList.vue:179
 msgid "view"
 msgstr "peržiūrėti"
 
-#: src/views/PageList.vue:182
+#: src/views/PageList.vue:181
 msgid "Tree"
 msgstr "Medis"
 
-#: src/views/PageList.vue:183
+#: src/views/PageList.vue:182
 msgid "List"
 msgstr "Sąrašas"
 
-#: src/views/PageList.vue:204
+#: src/views/PageList.vue:203
 msgid "status"
 msgstr "statusas"
 
-#: src/views/PageList.vue:208
+#: src/views/PageList.vue:207
 msgid "Hidden"
 msgstr "Paslėptas"
 
-#: src/views/PageList.vue:213
+#: src/views/PageList.vue:212
 msgid "cache"
 msgstr "talpykla"

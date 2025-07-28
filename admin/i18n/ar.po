@@ -9,9 +9,21 @@ msgstr ""
 "Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;\n"
 "Project-Id-Version: PACKAGE VERSION\n"
 
+#: src/App.vue:74
+msgid "Prompt is required for generating text"
+msgstr "مطلوب موجه لتوليد النص"
+
+#: src/App.vue:100
+msgid "Error generating text"
+msgstr "خطأ في إنشاء النص المنشئ للخطأ"
+
 #: src/App.vue:110
 msgid "None"
 msgstr "لا يوجد"
+
+#: src/App.vue:151
+msgid "Error translating texts"
+msgstr "خطأ في ترجمة النصوص المترجمة"
 
 #: src/components/AsideMeta.vue:19
 msgid "id"
@@ -35,7 +47,7 @@ msgstr "التمثيل الصامت"
 #: src/fields/Video.vue:77
 #: src/views/ElementList.vue:119
 #: src/views/FileList.vue:116
-#: src/views/PageList.vue:220
+#: src/views/PageList.vue:219
 msgid "editor"
 msgstr "محرر"
 
@@ -113,7 +125,7 @@ msgstr "النوع"
 #: src/components/FileDetailRefs.vue:145
 #: src/views/ElementList.vue:105
 #: src/views/FileList.vue:102
-#: src/views/PageList.vue:190
+#: src/views/PageList.vue:189
 msgid "Published"
 msgstr "منشورة"
 
@@ -226,9 +238,11 @@ msgstr "إضافة عنصر"
 #: src/components/ElementListItems.vue:500
 #: src/components/FileListItems.vue:467
 #: src/components/FileListItems.vue:556
+#: src/components/PageDetailContentList.vue:543
+#: src/components/PageDetailContentList.vue:601
 #: src/components/PageListItems.vue:899
 #: src/components/PageListItems.vue:1045
-msgid "Trash"
+msgid "Delete"
 msgstr "القمامة"
 
 #: src/components/ElementListItems.vue:430
@@ -291,13 +305,13 @@ msgstr "النوع"
 #: src/components/ElementListItems.vue:530
 #: src/components/FileListItems.vue:594
 #: src/components/HistoryDialog.vue:95
-#: src/components/PageListItems.vue:1083
+#: src/components/PageListItems.vue:1084
 msgid "Loading"
 msgstr "التحميل"
 
 #: src/components/ElementListItems.vue:534
 #: src/components/FileListItems.vue:599
-#: src/components/PageListItems.vue:1088
+#: src/components/PageListItems.vue:1089
 msgid "No entries found"
 msgstr "لم يتم العثور على إدخالات"
 
@@ -359,6 +373,18 @@ msgstr "استخدام صور من هذا النمط"
 msgid "Select similar images"
 msgstr "حدد الصور المتشابهة"
 
+#: src/components/FileDetailItem.vue:87
+msgid "No video element found"
+msgstr "لم يتم العثور على عنصر فيديو"
+
+#: src/components/FileDetailItem.vue:132
+msgid "Error saving video cover"
+msgstr "خطأ في حفظ غلاف الفيديو"
+
+#: src/components/FileDetailItem.vue:258
+msgid "Error removing video cover"
+msgstr "خطأ في إزالة غطاء الفيديو"
+
 #: src/components/FileDetailItem.vue:304
 msgid "Transcription is only available for audio and video files"
 msgstr "يتوفر النسخ للملفات الصوتية وملفات الفيديو فقط"
@@ -370,6 +396,10 @@ msgstr "خطأ في نسخ الملف"
 #: src/components/FileDetailItem.vue:433
 msgid "No file selected"
 msgstr "لم يتم تحديد أي ملف"
+
+#: src/components/FileDetailItem.vue:467
+msgid "Error uploading video cover"
+msgstr "خطأ في تحميل غلاف الفيديو"
 
 #: src/components/FileDetailItem.vue:533
 msgid "Use cropped image"
@@ -454,7 +484,7 @@ msgstr "النسخ (%{lang})"
 
 #: src/components/FileDetailRefs.vue:94
 #: src/components/Navigation.vue:30
-#: src/views/PageList.vue:138
+#: src/views/PageList.vue:137
 msgid "Pages"
 msgstr "الصفحات"
 
@@ -595,11 +625,6 @@ msgstr "غير متوفر لعنصر المحتوى هذا"
 msgid "Element is not shared"
 msgstr "العنصر غير مشترك"
 
-#: src/components/PageDetailContentList.vue:543
-#: src/components/PageDetailContentList.vue:601
-msgid "Delete"
-msgstr "حذف"
-
 #: src/components/PageDetailContentList.vue:546
 #: src/components/PageDetailContentList.vue:595
 #: src/components/PageListItems.vue:985
@@ -684,12 +709,12 @@ msgid "The path is already in use by another page"
 msgstr "المسار مستخدم بالفعل من قبل صفحة أخرى"
 
 #: src/components/PageDetailItemProps.vue:130
-#: src/views/PageList.vue:209
+#: src/views/PageList.vue:208
 msgid "Disabled"
 msgstr "معاق"
 
 #: src/components/PageDetailItemProps.vue:131
-#: src/views/PageList.vue:207
+#: src/views/PageList.vue:206
 msgid "Enabled"
 msgstr "ممكّنة"
 
@@ -745,7 +770,7 @@ msgid "Page tag"
 msgstr "علامة الصفحة"
 
 #: src/components/PageDetailItemProps.vue:242
-#: src/views/PageList.vue:216
+#: src/views/PageList.vue:215
 msgid "No cache"
 msgstr "لا توجد ذاكرة تخزين مؤقت"
 
@@ -892,7 +917,7 @@ msgid "Toggle child nodes"
 msgstr "تبديل العقد الفرعية"
 
 #: src/components/PageListItems.vue:976
-msgid "Hide in menu"
+msgid "Hide"
 msgstr "إخفاء في القائمة"
 
 #: src/components/PageListItems.vue:992
@@ -917,11 +942,11 @@ msgstr "بعد"
 msgid "Insert"
 msgstr "إدراج"
 
-#: src/components/PageListItems.vue:1069
+#: src/components/PageListItems.vue:1070
 msgid "New"
 msgstr "جديد"
 
-#: src/components/PageListItems.vue:1094
+#: src/components/PageListItems.vue:1095
 msgid "Add page"
 msgstr "إضافة صفحة"
 
@@ -933,23 +958,23 @@ msgstr "عناصر المحتوى"
 msgid "uncategorized"
 msgstr "غير مصنف"
 
-#: src/components/User.vue:24
+#: src/components/User.vue:23
 msgid "Failed to load user"
 msgstr "فشل تحميل المستخدم"
 
-#: src/components/User.vue:34
+#: src/components/User.vue:33
 msgid "Logout failed"
 msgstr "فشل تسجيل الخروج"
 
-#: src/components/User.vue:53
+#: src/components/User.vue:52
 msgid "Switch language"
 msgstr "تبديل اللغة"
 
-#: src/components/User.vue:68
+#: src/components/User.vue:67
 msgid "User menu"
 msgstr "قائمة المستخدم"
 
-#: src/components/User.vue:82
+#: src/components/User.vue:81
 msgid "Logout"
 msgstr "تسجيل الخروج"
 
@@ -984,6 +1009,10 @@ msgstr "لا توجد بيانات متاحة"
 #: src/fields/Color.vue:35
 msgid "Value must be a hex color code"
 msgstr "يجب أن تكون القيمة رمزاً لونياً سداسي عشرياً"
+
+#: src/fields/File.vue:95
+msgid "Error uploading file"
+msgstr "خطأ في تحميل الملف"
 
 #: src/fields/Image.vue:89
 #: src/fields/Images.vue:248
@@ -1347,7 +1376,7 @@ msgstr "جدولة النشر"
 #: src/views/FileDetail.vue:273
 #: src/views/FileList.vue:81
 #: src/views/PageDetail.vue:674
-#: src/views/PageList.vue:145
+#: src/views/PageList.vue:144
 msgid "Toggle side menu"
 msgstr "تبديل القائمة الجانبية"
 
@@ -1365,71 +1394,71 @@ msgstr "مستخدمة من قبل"
 #: src/views/FileList.vue:110
 #: src/views/FileList.vue:118
 #: src/views/PageList.vue:47
-#: src/views/PageList.vue:189
-#: src/views/PageList.vue:198
-#: src/views/PageList.vue:206
-#: src/views/PageList.vue:215
-#: src/views/PageList.vue:222
+#: src/views/PageList.vue:188
+#: src/views/PageList.vue:197
+#: src/views/PageList.vue:205
+#: src/views/PageList.vue:214
+#: src/views/PageList.vue:221
 msgid "All"
 msgstr "الكل"
 
 #: src/views/ElementList.vue:70
 #: src/views/FileList.vue:69
-#: src/views/PageList.vue:133
+#: src/views/PageList.vue:132
 msgid "Close navigation"
 msgstr "إغلاق التنقل"
 
 #: src/views/ElementList.vue:70
 #: src/views/FileList.vue:69
-#: src/views/PageList.vue:133
+#: src/views/PageList.vue:132
 msgid "Open navigation"
 msgstr "فتح التنقل"
 
 #: src/views/ElementList.vue:102
 #: src/views/FileList.vue:99
-#: src/views/PageList.vue:187
+#: src/views/PageList.vue:186
 msgid "publish"
 msgstr "النشر"
 
 #: src/views/ElementList.vue:106
 #: src/views/FileList.vue:103
-#: src/views/PageList.vue:191
+#: src/views/PageList.vue:190
 msgid "Scheduled"
 msgstr "المقرر"
 
 #: src/views/ElementList.vue:107
 #: src/views/FileList.vue:104
-#: src/views/PageList.vue:192
+#: src/views/PageList.vue:191
 msgid "Drafts"
 msgstr "المسودات"
 
 #: src/views/ElementList.vue:111
 #: src/views/FileList.vue:108
-#: src/views/PageList.vue:196
+#: src/views/PageList.vue:195
 msgid "trashed"
 msgstr "محطمة"
 
 #: src/views/ElementList.vue:114
 #: src/views/FileList.vue:111
-#: src/views/PageList.vue:199
+#: src/views/PageList.vue:198
 msgid "Available only"
 msgstr "متاح فقط"
 
 #: src/views/ElementList.vue:115
 #: src/views/FileList.vue:112
-#: src/views/PageList.vue:200
+#: src/views/PageList.vue:199
 msgid "Only trashed"
 msgstr "محطمة فقط"
 
 #: src/views/ElementList.vue:122
 #: src/views/FileList.vue:119
-#: src/views/PageList.vue:223
+#: src/views/PageList.vue:222
 msgid "Edited by me"
 msgstr "تم التعديل بواسطتي"
 
 #: src/views/ElementList.vue:126
 #: src/views/FileList.vue:123
-#: src/views/PageList.vue:227
+#: src/views/PageList.vue:226
 msgid "languages"
 msgstr "اللغات"
 
@@ -1528,30 +1557,34 @@ msgstr "محرر"
 msgid "Content"
 msgstr "المحتوى"
 
-#: src/views/PageList.vue:160
+#: src/views/PageList.vue:114
+msgid "Error sending request"
+msgstr "خطأ في إرسال طلب إدارة خطأ"
+
+#: src/views/PageList.vue:159
 msgid "What kind of page and content should I create?"
 msgstr "ما نوع الصفحة والمحتوى الذي يجب أن أقوم بإنشائه؟"
 
-#: src/views/PageList.vue:180
+#: src/views/PageList.vue:179
 msgid "view"
 msgstr "عرض"
 
-#: src/views/PageList.vue:182
+#: src/views/PageList.vue:181
 msgid "Tree"
 msgstr "الشجرة"
 
-#: src/views/PageList.vue:183
+#: src/views/PageList.vue:182
 msgid "List"
 msgstr "القائمة"
 
-#: src/views/PageList.vue:204
+#: src/views/PageList.vue:203
 msgid "status"
 msgstr "الحالة"
 
-#: src/views/PageList.vue:208
+#: src/views/PageList.vue:207
 msgid "Hidden"
 msgstr "مخفي"
 
-#: src/views/PageList.vue:213
+#: src/views/PageList.vue:212
 msgid "cache"
 msgstr "ذاكرة التخزين المؤقت"

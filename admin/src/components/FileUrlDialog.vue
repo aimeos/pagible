@@ -63,7 +63,7 @@
 
             Object.assign(item, response.data.addFile, {previews: JSON.parse(response.data.addFile.previews || '{}')})
           }).catch(error => {
-            this.$log('Error adding file:', item, error)
+            this.$log('FileUrlDialog::add(): Error adding file:', item, error)
           }).finally(() => {
             this.loading = false
           }))
@@ -135,7 +135,7 @@
                 : [this.$gettext(`The file is not of type "%{mime}*"`, {mime: this.mime})]
             }
           }).catch(error => {
-            this.$log(`Error fetching ${url}`, error)
+            this.$log(`FileUrlDialog::update(): Error fetching ${url}`, error)
           })
         })
       }

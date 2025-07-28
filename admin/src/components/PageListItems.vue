@@ -896,7 +896,7 @@
           <v-divider></v-divider>
 
           <v-list-item v-if="canTrash && auth.can('page:drop')">
-            <v-btn prepend-icon="mdi-delete" variant="text" @click="drop()">{{ $gettext('Trash') }}</v-btn>
+            <v-btn prepend-icon="mdi-delete" variant="text" @click="drop()">{{ $gettext('Delete') }}</v-btn>
           </v-list-item>
           <v-list-item v-if="isTrashed && auth.can('page:keep')">
             <v-btn prepend-icon="mdi-delete-restore" variant="text" @click="keep()">{{ $gettext('Restore') }}</v-btn>
@@ -973,7 +973,7 @@
             <v-btn prepend-icon="mdi-eye" variant="text" @click="status(stat, 1)">{{ $gettext('Enable') }}</v-btn>
           </v-list-item>
           <v-list-item v-if="node.status !== 2 && auth.can('page:save')">
-            <v-btn prepend-icon="mdi-eye-off-outline" variant="text" @click="status(stat, 2)">{{ $gettext('Hide in menu') }}</v-btn>
+            <v-btn prepend-icon="mdi-eye-off-outline" variant="text" @click="status(stat, 2)">{{ $gettext('Hide') }}</v-btn>
           </v-list-item>
 
           <v-divider></v-divider>
@@ -1042,7 +1042,7 @@
           <v-divider></v-divider>
 
           <v-list-item v-if="!node.deleted_at && auth.can('page:drop')">
-            <v-btn prepend-icon="mdi-delete" variant="text" @click="drop(stat)">{{ $gettext('Trash') }}</v-btn>
+            <v-btn prepend-icon="mdi-delete" variant="text" @click="drop(stat)">{{ $gettext('Delete') }}</v-btn>
           </v-list-item>
           <v-list-item v-if="node.deleted_at && auth.can('page:keep')">
             <v-btn prepend-icon="mdi-delete-restore" variant="text" @click="keep(stat)">{{ $gettext('Restore') }}</v-btn>

@@ -9,9 +9,21 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Project-Id-Version: PACKAGE VERSION\n"
 
+#: src/App.vue:74
+msgid "Prompt is required for generating text"
+msgstr "Il prompt è necessario per generare il testo"
+
+#: src/App.vue:100
+msgid "Error generating text"
+msgstr "Errore nella generazione del testo"
+
 #: src/App.vue:110
 msgid "None"
 msgstr "Nessuno"
+
+#: src/App.vue:151
+msgid "Error translating texts"
+msgstr "Errore nella traduzione dei testi"
 
 #: src/components/AsideMeta.vue:19
 msgid "id"
@@ -35,7 +47,7 @@ msgstr "mimo"
 #: src/fields/Video.vue:77
 #: src/views/ElementList.vue:119
 #: src/views/FileList.vue:116
-#: src/views/PageList.vue:220
+#: src/views/PageList.vue:219
 msgid "editor"
 msgstr "editore"
 
@@ -113,7 +125,7 @@ msgstr "Tipo"
 #: src/components/FileDetailRefs.vue:145
 #: src/views/ElementList.vue:105
 #: src/views/FileList.vue:102
-#: src/views/PageList.vue:190
+#: src/views/PageList.vue:189
 msgid "Published"
 msgstr "Pubblicato"
 
@@ -226,9 +238,11 @@ msgstr "Aggiungi elemento"
 #: src/components/ElementListItems.vue:500
 #: src/components/FileListItems.vue:467
 #: src/components/FileListItems.vue:556
+#: src/components/PageDetailContentList.vue:543
+#: src/components/PageDetailContentList.vue:601
 #: src/components/PageListItems.vue:899
 #: src/components/PageListItems.vue:1045
-msgid "Trash"
+msgid "Delete"
 msgstr "Rifiuti"
 
 #: src/components/ElementListItems.vue:430
@@ -291,13 +305,13 @@ msgstr "tipo"
 #: src/components/ElementListItems.vue:530
 #: src/components/FileListItems.vue:594
 #: src/components/HistoryDialog.vue:95
-#: src/components/PageListItems.vue:1083
+#: src/components/PageListItems.vue:1084
 msgid "Loading"
 msgstr "Caricamento"
 
 #: src/components/ElementListItems.vue:534
 #: src/components/FileListItems.vue:599
-#: src/components/PageListItems.vue:1088
+#: src/components/PageListItems.vue:1089
 msgid "No entries found"
 msgstr "Nessuna voce trovata"
 
@@ -359,6 +373,18 @@ msgstr "Utilizzare immagini di questo stile"
 msgid "Select similar images"
 msgstr "Selezionare immagini simili"
 
+#: src/components/FileDetailItem.vue:87
+msgid "No video element found"
+msgstr "Nessun elemento video trovato"
+
+#: src/components/FileDetailItem.vue:132
+msgid "Error saving video cover"
+msgstr "Errore nel salvataggio della copertina del video"
+
+#: src/components/FileDetailItem.vue:258
+msgid "Error removing video cover"
+msgstr "Errore nella rimozione della copertura video"
+
 #: src/components/FileDetailItem.vue:304
 msgid "Transcription is only available for audio and video files"
 msgstr "La trascrizione è disponibile solo per i file audio e video."
@@ -370,6 +396,10 @@ msgstr "Errore nella trascrizione del file"
 #: src/components/FileDetailItem.vue:433
 msgid "No file selected"
 msgstr "Nessun file selezionato"
+
+#: src/components/FileDetailItem.vue:467
+msgid "Error uploading video cover"
+msgstr "Errore nel caricamento della copertina del video"
 
 #: src/components/FileDetailItem.vue:533
 msgid "Use cropped image"
@@ -454,7 +484,7 @@ msgstr "Trascrizione (%{lang})"
 
 #: src/components/FileDetailRefs.vue:94
 #: src/components/Navigation.vue:30
-#: src/views/PageList.vue:138
+#: src/views/PageList.vue:137
 msgid "Pages"
 msgstr "Pagine"
 
@@ -595,11 +625,6 @@ msgstr "Non disponibile per questo elemento di contenuto"
 msgid "Element is not shared"
 msgstr "L'elemento non è condiviso"
 
-#: src/components/PageDetailContentList.vue:543
-#: src/components/PageDetailContentList.vue:601
-msgid "Delete"
-msgstr "Cancellare"
-
 #: src/components/PageDetailContentList.vue:546
 #: src/components/PageDetailContentList.vue:595
 #: src/components/PageListItems.vue:985
@@ -684,12 +709,12 @@ msgid "The path is already in use by another page"
 msgstr "Il percorso è già utilizzato da un'altra pagina"
 
 #: src/components/PageDetailItemProps.vue:130
-#: src/views/PageList.vue:209
+#: src/views/PageList.vue:208
 msgid "Disabled"
 msgstr "Disabili"
 
 #: src/components/PageDetailItemProps.vue:131
-#: src/views/PageList.vue:207
+#: src/views/PageList.vue:206
 msgid "Enabled"
 msgstr "Abilitato"
 
@@ -745,7 +770,7 @@ msgid "Page tag"
 msgstr "Tag della pagina"
 
 #: src/components/PageDetailItemProps.vue:242
-#: src/views/PageList.vue:216
+#: src/views/PageList.vue:215
 msgid "No cache"
 msgstr "Nessuna cache"
 
@@ -884,7 +909,7 @@ msgid "Toggle child nodes"
 msgstr "Alterna i nodi figlio"
 
 #: src/components/PageListItems.vue:976
-msgid "Hide in menu"
+msgid "Hide"
 msgstr "Nascondi nel menu"
 
 #: src/components/PageListItems.vue:992
@@ -909,11 +934,11 @@ msgstr "Dopo"
 msgid "Insert"
 msgstr "Inserire"
 
-#: src/components/PageListItems.vue:1069
+#: src/components/PageListItems.vue:1070
 msgid "New"
 msgstr "Nuovo"
 
-#: src/components/PageListItems.vue:1094
+#: src/components/PageListItems.vue:1095
 msgid "Add page"
 msgstr "Aggiungi pagina"
 
@@ -925,23 +950,23 @@ msgstr "Elementi di contenuto"
 msgid "uncategorized"
 msgstr "non classificato"
 
-#: src/components/User.vue:24
+#: src/components/User.vue:23
 msgid "Failed to load user"
 msgstr "Impossibile caricare l'utente"
 
-#: src/components/User.vue:34
+#: src/components/User.vue:33
 msgid "Logout failed"
 msgstr "Logout fallito"
 
-#: src/components/User.vue:53
+#: src/components/User.vue:52
 msgid "Switch language"
 msgstr "Cambia lingua"
 
-#: src/components/User.vue:68
+#: src/components/User.vue:67
 msgid "User menu"
 msgstr "Menu utente"
 
-#: src/components/User.vue:82
+#: src/components/User.vue:81
 msgid "Logout"
 msgstr "Disconnessione"
 
@@ -976,6 +1001,10 @@ msgstr "Nessun dato disponibile"
 #: src/fields/Color.vue:35
 msgid "Value must be a hex color code"
 msgstr "Il valore deve essere un codice colore esadecimale"
+
+#: src/fields/File.vue:95
+msgid "Error uploading file"
+msgstr "Errore nel caricamento del file"
 
 #: src/fields/Image.vue:89
 #: src/fields/Images.vue:248
@@ -1339,7 +1368,7 @@ msgstr "Pubblicazione del programma"
 #: src/views/FileDetail.vue:273
 #: src/views/FileList.vue:81
 #: src/views/PageDetail.vue:674
-#: src/views/PageList.vue:145
+#: src/views/PageList.vue:144
 msgid "Toggle side menu"
 msgstr "Alterna il menu laterale"
 
@@ -1357,71 +1386,71 @@ msgstr "Utilizzato da"
 #: src/views/FileList.vue:110
 #: src/views/FileList.vue:118
 #: src/views/PageList.vue:47
-#: src/views/PageList.vue:189
-#: src/views/PageList.vue:198
-#: src/views/PageList.vue:206
-#: src/views/PageList.vue:215
-#: src/views/PageList.vue:222
+#: src/views/PageList.vue:188
+#: src/views/PageList.vue:197
+#: src/views/PageList.vue:205
+#: src/views/PageList.vue:214
+#: src/views/PageList.vue:221
 msgid "All"
 msgstr "Tutti"
 
 #: src/views/ElementList.vue:70
 #: src/views/FileList.vue:69
-#: src/views/PageList.vue:133
+#: src/views/PageList.vue:132
 msgid "Close navigation"
 msgstr "Chiudere la navigazione"
 
 #: src/views/ElementList.vue:70
 #: src/views/FileList.vue:69
-#: src/views/PageList.vue:133
+#: src/views/PageList.vue:132
 msgid "Open navigation"
 msgstr "Aprire la navigazione"
 
 #: src/views/ElementList.vue:102
 #: src/views/FileList.vue:99
-#: src/views/PageList.vue:187
+#: src/views/PageList.vue:186
 msgid "publish"
 msgstr "pubblicare"
 
 #: src/views/ElementList.vue:106
 #: src/views/FileList.vue:103
-#: src/views/PageList.vue:191
+#: src/views/PageList.vue:190
 msgid "Scheduled"
 msgstr "In programma"
 
 #: src/views/ElementList.vue:107
 #: src/views/FileList.vue:104
-#: src/views/PageList.vue:192
+#: src/views/PageList.vue:191
 msgid "Drafts"
 msgstr "Bozze"
 
 #: src/views/ElementList.vue:111
 #: src/views/FileList.vue:108
-#: src/views/PageList.vue:196
+#: src/views/PageList.vue:195
 msgid "trashed"
 msgstr "distrutto"
 
 #: src/views/ElementList.vue:114
 #: src/views/FileList.vue:111
-#: src/views/PageList.vue:199
+#: src/views/PageList.vue:198
 msgid "Available only"
 msgstr "Disponibile solo"
 
 #: src/views/ElementList.vue:115
 #: src/views/FileList.vue:112
-#: src/views/PageList.vue:200
+#: src/views/PageList.vue:199
 msgid "Only trashed"
 msgstr "Solo spazzatura"
 
 #: src/views/ElementList.vue:122
 #: src/views/FileList.vue:119
-#: src/views/PageList.vue:223
+#: src/views/PageList.vue:222
 msgid "Edited by me"
 msgstr "Modificato da me"
 
 #: src/views/ElementList.vue:126
 #: src/views/FileList.vue:123
-#: src/views/PageList.vue:227
+#: src/views/PageList.vue:226
 msgid "languages"
 msgstr "lingue"
 
@@ -1520,30 +1549,34 @@ msgstr "Editore"
 msgid "Content"
 msgstr "Contenuto"
 
-#: src/views/PageList.vue:160
+#: src/views/PageList.vue:114
+msgid "Error sending request"
+msgstr "Errore nell'invio della richiesta di gestione"
+
+#: src/views/PageList.vue:159
 msgid "What kind of page and content should I create?"
 msgstr "Che tipo di pagina e di contenuto devo creare?"
 
-#: src/views/PageList.vue:180
+#: src/views/PageList.vue:179
 msgid "view"
 msgstr "vista"
 
-#: src/views/PageList.vue:182
+#: src/views/PageList.vue:181
 msgid "Tree"
 msgstr "Albero"
 
-#: src/views/PageList.vue:183
+#: src/views/PageList.vue:182
 msgid "List"
 msgstr "Elenco"
 
-#: src/views/PageList.vue:204
+#: src/views/PageList.vue:203
 msgid "status"
 msgstr "stato"
 
-#: src/views/PageList.vue:208
+#: src/views/PageList.vue:207
 msgid "Hidden"
 msgstr "Nascosto"
 
-#: src/views/PageList.vue:213
+#: src/views/PageList.vue:212
 msgid "cache"
 msgstr "cache"

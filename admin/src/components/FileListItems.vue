@@ -464,7 +464,7 @@
             <v-btn prepend-icon="mdi-folder-plus" variant="text" @click="$refs.upload.click()">{{ $gettext('Add files') }}</v-btn>
           </v-list-item>
           <v-list-item v-if="canTrash && auth.can('file:drop')">
-            <v-btn prepend-icon="mdi-delete" variant="text" @click="drop()">{{ $gettext('Trash') }}</v-btn>
+            <v-btn prepend-icon="mdi-delete" variant="text" @click="drop()">{{ $gettext('Delete') }}</v-btn>
           </v-list-item>
           <v-list-item v-if="isTrashed && auth.can('file:keep')">
             <v-btn prepend-icon="mdi-delete-restore" variant="text" @click="keep()">{{ $gettext('Restore') }}</v-btn>
@@ -553,7 +553,7 @@
             <v-btn prepend-icon="mdi-publish" variant="text" @click="publish(item)">{{ $gettext('Publish') }}</v-btn>
           </v-list-item>
           <v-list-item v-if="!item.deleted_at && auth.can('file:drop')">
-            <v-btn prepend-icon="mdi-delete" variant="text" @click="drop(item)">{{ $gettext('Trash') }}</v-btn>
+            <v-btn prepend-icon="mdi-delete" variant="text" @click="drop(item)">{{ $gettext('Delete') }}</v-btn>
           </v-list-item>
           <v-list-item v-if="item.deleted_at && auth.can('file:keep')">
             <v-btn prepend-icon="mdi-delete-restore" variant="text" @click="keep(item)">{{ $gettext('Restore') }}</v-btn>

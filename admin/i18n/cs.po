@@ -9,9 +9,21 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
 "Project-Id-Version: PACKAGE VERSION\n"
 
+#: src/App.vue:74
+msgid "Prompt is required for generating text"
+msgstr "Pro generování textu je vyžadována výzva"
+
+#: src/App.vue:100
+msgid "Error generating text"
+msgstr "Chybné generování textu"
+
 #: src/App.vue:110
 msgid "None"
 msgstr "Žádné"
+
+#: src/App.vue:151
+msgid "Error translating texts"
+msgstr "Chyba při překladu textů"
 
 #: src/components/AsideMeta.vue:19
 msgid "id"
@@ -35,7 +47,7 @@ msgstr "mime"
 #: src/fields/Video.vue:77
 #: src/views/ElementList.vue:119
 #: src/views/FileList.vue:116
-#: src/views/PageList.vue:220
+#: src/views/PageList.vue:219
 msgid "editor"
 msgstr "editor"
 
@@ -113,7 +125,7 @@ msgstr "Typ"
 #: src/components/FileDetailRefs.vue:145
 #: src/views/ElementList.vue:105
 #: src/views/FileList.vue:102
-#: src/views/PageList.vue:190
+#: src/views/PageList.vue:189
 msgid "Published"
 msgstr "Zveřejněno na"
 
@@ -226,9 +238,11 @@ msgstr "Přidat prvek"
 #: src/components/ElementListItems.vue:500
 #: src/components/FileListItems.vue:467
 #: src/components/FileListItems.vue:556
+#: src/components/PageDetailContentList.vue:543
+#: src/components/PageDetailContentList.vue:601
 #: src/components/PageListItems.vue:899
 #: src/components/PageListItems.vue:1045
-msgid "Trash"
+msgid "Delete"
 msgstr "Odpadkový koš"
 
 #: src/components/ElementListItems.vue:430
@@ -291,13 +305,13 @@ msgstr "typ"
 #: src/components/ElementListItems.vue:530
 #: src/components/FileListItems.vue:594
 #: src/components/HistoryDialog.vue:95
-#: src/components/PageListItems.vue:1083
+#: src/components/PageListItems.vue:1084
 msgid "Loading"
 msgstr "Načítání"
 
 #: src/components/ElementListItems.vue:534
 #: src/components/FileListItems.vue:599
-#: src/components/PageListItems.vue:1088
+#: src/components/PageListItems.vue:1089
 msgid "No entries found"
 msgstr "Nebyly nalezeny žádné záznamy"
 
@@ -359,6 +373,18 @@ msgstr "Použití obrázků tohoto stylu"
 msgid "Select similar images"
 msgstr "Vyberte podobné obrázky"
 
+#: src/components/FileDetailItem.vue:87
+msgid "No video element found"
+msgstr "Nebyl nalezen žádný prvek videa"
+
+#: src/components/FileDetailItem.vue:132
+msgid "Error saving video cover"
+msgstr "Chyba při ukládání obálky videa"
+
+#: src/components/FileDetailItem.vue:258
+msgid "Error removing video cover"
+msgstr "Chyba při odstraňování krytu videa"
+
 #: src/components/FileDetailItem.vue:304
 msgid "Transcription is only available for audio and video files"
 msgstr "Přepis je k dispozici pouze pro audio a video soubory."
@@ -370,6 +396,10 @@ msgstr "Chyba při přepisu souboru"
 #: src/components/FileDetailItem.vue:433
 msgid "No file selected"
 msgstr "Není vybrán žádný soubor"
+
+#: src/components/FileDetailItem.vue:467
+msgid "Error uploading video cover"
+msgstr "Chyba při nahrávání obálky videa"
 
 #: src/components/FileDetailItem.vue:533
 msgid "Use cropped image"
@@ -454,7 +484,7 @@ msgstr "Přepis (%{lang})"
 
 #: src/components/FileDetailRefs.vue:94
 #: src/components/Navigation.vue:30
-#: src/views/PageList.vue:138
+#: src/views/PageList.vue:137
 msgid "Pages"
 msgstr "Stránky"
 
@@ -595,11 +625,6 @@ msgstr "Pro tento prvek obsahu není k dispozici"
 msgid "Element is not shared"
 msgstr "Prvek není sdílený"
 
-#: src/components/PageDetailContentList.vue:543
-#: src/components/PageDetailContentList.vue:601
-msgid "Delete"
-msgstr "Odstranit"
-
 #: src/components/PageDetailContentList.vue:546
 #: src/components/PageDetailContentList.vue:595
 #: src/components/PageListItems.vue:985
@@ -684,12 +709,12 @@ msgid "The path is already in use by another page"
 msgstr "Cesta je již použita jinou stránkou"
 
 #: src/components/PageDetailItemProps.vue:130
-#: src/views/PageList.vue:209
+#: src/views/PageList.vue:208
 msgid "Disabled"
 msgstr "Bezbariérový"
 
 #: src/components/PageDetailItemProps.vue:131
-#: src/views/PageList.vue:207
+#: src/views/PageList.vue:206
 msgid "Enabled"
 msgstr "Povoleno"
 
@@ -745,7 +770,7 @@ msgid "Page tag"
 msgstr "Značka stránky"
 
 #: src/components/PageDetailItemProps.vue:242
-#: src/views/PageList.vue:216
+#: src/views/PageList.vue:215
 msgid "No cache"
 msgstr "Žádná mezipaměť"
 
@@ -886,7 +911,7 @@ msgid "Toggle child nodes"
 msgstr "Přepínání podřízených uzlů"
 
 #: src/components/PageListItems.vue:976
-msgid "Hide in menu"
+msgid "Hide"
 msgstr "Skrýt v nabídce"
 
 #: src/components/PageListItems.vue:992
@@ -911,11 +936,11 @@ msgstr "Po"
 msgid "Insert"
 msgstr "Vložte"
 
-#: src/components/PageListItems.vue:1069
+#: src/components/PageListItems.vue:1070
 msgid "New"
 msgstr "Nový"
 
-#: src/components/PageListItems.vue:1094
+#: src/components/PageListItems.vue:1095
 msgid "Add page"
 msgstr "Přidat stránku"
 
@@ -927,23 +952,23 @@ msgstr "Obsahové prvky"
 msgid "uncategorized"
 msgstr "nezařazené"
 
-#: src/components/User.vue:24
+#: src/components/User.vue:23
 msgid "Failed to load user"
 msgstr "Nepodařilo se načíst uživatele"
 
-#: src/components/User.vue:34
+#: src/components/User.vue:33
 msgid "Logout failed"
 msgstr "Odhlášení se nezdařilo"
 
-#: src/components/User.vue:53
+#: src/components/User.vue:52
 msgid "Switch language"
 msgstr "Přepínání jazyka"
 
-#: src/components/User.vue:68
+#: src/components/User.vue:67
 msgid "User menu"
 msgstr "Uživatelské menu"
 
-#: src/components/User.vue:82
+#: src/components/User.vue:81
 msgid "Logout"
 msgstr "Odhlášení"
 
@@ -978,6 +1003,10 @@ msgstr "Nejsou k dispozici žádné údaje"
 #: src/fields/Color.vue:35
 msgid "Value must be a hex color code"
 msgstr "Hodnota musí být hexadecimální kód barvy"
+
+#: src/fields/File.vue:95
+msgid "Error uploading file"
+msgstr "Chyba při nahrávání souboru"
 
 #: src/fields/Image.vue:89
 #: src/fields/Images.vue:248
@@ -1341,7 +1370,7 @@ msgstr "Zveřejnění harmonogramu"
 #: src/views/FileDetail.vue:273
 #: src/views/FileList.vue:81
 #: src/views/PageDetail.vue:674
-#: src/views/PageList.vue:145
+#: src/views/PageList.vue:144
 msgid "Toggle side menu"
 msgstr "Přepínání bočního menu"
 
@@ -1359,71 +1388,71 @@ msgstr "Používá"
 #: src/views/FileList.vue:110
 #: src/views/FileList.vue:118
 #: src/views/PageList.vue:47
-#: src/views/PageList.vue:189
-#: src/views/PageList.vue:198
-#: src/views/PageList.vue:206
-#: src/views/PageList.vue:215
-#: src/views/PageList.vue:222
+#: src/views/PageList.vue:188
+#: src/views/PageList.vue:197
+#: src/views/PageList.vue:205
+#: src/views/PageList.vue:214
+#: src/views/PageList.vue:221
 msgid "All"
 msgstr "Všechny"
 
 #: src/views/ElementList.vue:70
 #: src/views/FileList.vue:69
-#: src/views/PageList.vue:133
+#: src/views/PageList.vue:132
 msgid "Close navigation"
 msgstr "Zavřít navigaci"
 
 #: src/views/ElementList.vue:70
 #: src/views/FileList.vue:69
-#: src/views/PageList.vue:133
+#: src/views/PageList.vue:132
 msgid "Open navigation"
 msgstr "Otevřená navigace"
 
 #: src/views/ElementList.vue:102
 #: src/views/FileList.vue:99
-#: src/views/PageList.vue:187
+#: src/views/PageList.vue:186
 msgid "publish"
 msgstr "zveřejnit"
 
 #: src/views/ElementList.vue:106
 #: src/views/FileList.vue:103
-#: src/views/PageList.vue:191
+#: src/views/PageList.vue:190
 msgid "Scheduled"
 msgstr "Plánované"
 
 #: src/views/ElementList.vue:107
 #: src/views/FileList.vue:104
-#: src/views/PageList.vue:192
+#: src/views/PageList.vue:191
 msgid "Drafts"
 msgstr "Návrhy"
 
 #: src/views/ElementList.vue:111
 #: src/views/FileList.vue:108
-#: src/views/PageList.vue:196
+#: src/views/PageList.vue:195
 msgid "trashed"
 msgstr "zničené"
 
 #: src/views/ElementList.vue:114
 #: src/views/FileList.vue:111
-#: src/views/PageList.vue:199
+#: src/views/PageList.vue:198
 msgid "Available only"
 msgstr "K dispozici pouze"
 
 #: src/views/ElementList.vue:115
 #: src/views/FileList.vue:112
-#: src/views/PageList.vue:200
+#: src/views/PageList.vue:199
 msgid "Only trashed"
 msgstr "Pouze zničené"
 
 #: src/views/ElementList.vue:122
 #: src/views/FileList.vue:119
-#: src/views/PageList.vue:223
+#: src/views/PageList.vue:222
 msgid "Edited by me"
 msgstr "Upraveno mnou"
 
 #: src/views/ElementList.vue:126
 #: src/views/FileList.vue:123
-#: src/views/PageList.vue:227
+#: src/views/PageList.vue:226
 msgid "languages"
 msgstr "jazyky"
 
@@ -1522,30 +1551,34 @@ msgstr "Editor"
 msgid "Content"
 msgstr "Obsah"
 
-#: src/views/PageList.vue:160
+#: src/views/PageList.vue:114
+msgid "Error sending request"
+msgstr "Chyba při odesílání požadavku na správu"
+
+#: src/views/PageList.vue:159
 msgid "What kind of page and content should I create?"
 msgstr "Jaký druh stránky a obsahu mám vytvořit?"
 
-#: src/views/PageList.vue:180
+#: src/views/PageList.vue:179
 msgid "view"
 msgstr "zobrazit"
 
-#: src/views/PageList.vue:182
+#: src/views/PageList.vue:181
 msgid "Tree"
 msgstr "Strom"
 
-#: src/views/PageList.vue:183
+#: src/views/PageList.vue:182
 msgid "List"
 msgstr "Seznam"
 
-#: src/views/PageList.vue:204
+#: src/views/PageList.vue:203
 msgid "status"
 msgstr "stav"
 
-#: src/views/PageList.vue:208
+#: src/views/PageList.vue:207
 msgid "Hidden"
 msgstr "Skryté stránky"
 
-#: src/views/PageList.vue:213
+#: src/views/PageList.vue:212
 msgid "cache"
 msgstr "cache"

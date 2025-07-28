@@ -92,7 +92,7 @@
 
           return this.handle(data, path)
         }).catch(error => {
-          this.messages.add('Error uploading file', 'error')
+          this.messages.add(this.$gettext('Error uploading file'), 'error')
           this.$log(`File::addFile(): Error uploading file`, ev, error)
         }).finally(() => {
           this.selected = null

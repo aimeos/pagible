@@ -115,8 +115,8 @@
             this.sendicon = 'mdi-send'
           }, 3000)
         }).catch(error => {
-          this.messages.add('Error sending manage request', 'error')
-          this.$log(`PageList::send(): Error sending manage request`, error)
+          this.messages.add(this.$gettext('Error sending request'), 'error')
+          this.$log(`PageList::send(): Error sending request`, error)
         }).finally(() => {
           this.sending = false
         })

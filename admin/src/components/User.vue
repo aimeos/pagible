@@ -21,7 +21,7 @@
       this.auth.user().then(user => {
         this.user = user
       }).catch(err => {
-        this.messages.add({message: this.$gettext('Failed to load user'), color: 'error'})
+        this.messages.add(this.$gettext('Failed to load user'), 'error')
       })
     },
 
@@ -31,7 +31,7 @@
           this.user = null
           router.replace('/')
         }).catch(err => {
-          this.messages.add(this.$gettext('Logout failed'))
+          this.messages.add(this.$gettext('Logout failed'), 'error')
         })
       },
 

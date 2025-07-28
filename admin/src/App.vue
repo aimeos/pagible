@@ -71,7 +71,7 @@
         prompt = String(prompt).trim()
 
         if(!prompt) {
-          this.messages.add('Prompt is required for generating text', 'error')
+          this.messages.add(this.$gettext('Prompt is required for generating text'), 'error')
           return Promise.reject(new Error('Prompt is required'))
         }
 
@@ -97,7 +97,7 @@
 
           return result.data?.compose?.replace(/^"(.*)"$/, '$1') || ''
         }).catch(error => {
-          this.messages.add('Error generating text', 'error')
+          this.messages.add(this.$gettext('Error generating text'), 'error')
           this.$log(`App::composeText(): Error generating text`, error)
         })
       },
@@ -148,7 +148,7 @@
 
           return result.data?.translate || []
         }).catch(error => {
-          this.messages.add('Error translating texts', 'error')
+          this.messages.add(this.$gettext('Error translating texts'), 'error')
           this.$log(`App::translateText(): Error translating texts`, error)
         })
       },

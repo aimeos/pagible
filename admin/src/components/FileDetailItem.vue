@@ -84,7 +84,7 @@
         const video = this.$refs.video
 
         if(!video) {
-          return this.messages.add('No video element found', 'error')
+          return this.messages.add(this.$gettext('No video element found'), 'error')
         }
 
         const filename = this.item.path.replace(/\.[A-Za-z0-9]+$/, '.png').split('/').pop()
@@ -129,7 +129,7 @@
               self.item.updated_at = latest.created_at
             }
           }).catch(error => {
-            self.messages.add('Error saving video cover', 'error')
+            self.messages.add(this.$gettext('Error saving video cover'), 'error')
             this.$log(`FileDetailItem::addCover(): Error saving video cover`, error)
           }).finally(() => {
             self.covering = false
@@ -255,7 +255,7 @@
             this.item.updated_at = latest.created_at
           }
         }).catch(error => {
-          this.messages.add('Error removing video cover', 'error')
+          this.messages.add(this.$gettext('Error removing video cover'), 'error')
           this.$log(`FileDetailItem::removeCover(): Error removing video cover`, error)
         }).finally(() => {
           this.covering = false
@@ -464,8 +464,8 @@
             this.item.updated_at = latest.created_at
           }
         }).catch(error => {
-          this.messages.add('Error uploading video cover', 'error')
-          this.$log(`FileDetailItem::removeCover(): Error uploading video cover`, error)
+          this.messages.add(this.$gettext('Error uploading video cover'), 'error')
+          this.$log(`FileDetailItem::uploadCover(): Error uploading video cover`, error)
         }).finally(() => {
           this.covering = false
         })
