@@ -371,8 +371,10 @@ body {
 
 .item-content {
   display: flex;
+  flex-grow: 1;
   flex-wrap: wrap;
   align-items: stretch;
+  word-break: break-word;
   cursor: pointer;
   margin: 0 1%;
   width: 100%;
@@ -405,6 +407,7 @@ body {
 
 .item-text,
 .item-aux {
+  max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
 }
