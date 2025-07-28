@@ -20,6 +20,8 @@
 
     data: () => ({
       chat: '',
+      response: '',
+      short: true,
       sending: false,
       sendicon: 'mdi-send',
       filter: {
@@ -39,6 +41,20 @@
       const auth = useAuthStore()
 
       return { auth, drawer, messages }
+    },
+
+    computed: {
+      message() {
+        if(!this.response) {
+          return this.chat
+        }
+
+        const idx = this.response.indexOf(`\n---\n`)
+
+        return this.short
+          ? this.$pgettext('ai', this.response.slice(0, idx))
+          : this.response.substring(idx > 0 ? idx + 5 : 0)
+      },
     },
 
     methods: {
@@ -66,6 +82,18 @@
       },
 
 
+      same(item1, item2) {
+        if(!item1 || !item2) {
+          return false
+        }
+
+        const keys1 = Object.keys(item1);
+        const keys2 = Object.keys(item2);
+
+        return keys1.length === keys2.length && keys1.every(key => item1[key] === item2[key])
+      },
+
+
       send() {
         const prompt = this.chat.trim()
 
@@ -88,8 +116,9 @@
             throw result
           }
 
-          this.chat = result.data?.manage || ''
           this.sendicon = 'mdi-check'
+          this.response = result.data?.manage || ''
+          this.chat = this.message
 
           const filter = {
             view: 'list',
@@ -102,10 +131,7 @@
           }
 
           // compare current filter to check reload is required
-          const keys1 = Object.keys(filter);
-          const keys2 = Object.keys(this.filter);
-
-          if(keys1.length === keys2.length && keys1.every(key => filter[key] === this.filter[key])) {
+          if(this.same(filter, this.filter)) {
             this.$refs.pagelist.reload()
           } else {
             this.filter = filter
@@ -157,12 +183,14 @@
           :loading="sending"
           :append-icon="sendicon"
           :placeholder="$gettext('What kind of page and content should I create?')"
+          @dblclick="short = !short; chat = message"
           @click:append="sending || send()"
           variant="outlined"
-          rounded="pill"
+          rounded="lg"
           hide-details
           autofocus
           auto-grow
+          clearable
           outlined
           rows="1"
         ></v-textarea>

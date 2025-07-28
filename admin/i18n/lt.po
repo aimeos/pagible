@@ -47,7 +47,7 @@ msgstr "mime"
 #: src/fields/Video.vue:77
 #: src/views/ElementList.vue:119
 #: src/views/FileList.vue:116
-#: src/views/PageList.vue:219
+#: src/views/PageList.vue:241
 msgid "editor"
 msgstr "redaktorius"
 
@@ -125,7 +125,7 @@ msgstr "Tipas"
 #: src/components/FileDetailRefs.vue:145
 #: src/views/ElementList.vue:105
 #: src/views/FileList.vue:102
-#: src/views/PageList.vue:189
+#: src/views/PageList.vue:211
 msgid "Published"
 msgstr "Paskelbta"
 
@@ -484,7 +484,7 @@ msgstr "Transkripcija (%{lang})"
 
 #: src/components/FileDetailRefs.vue:94
 #: src/components/Navigation.vue:30
-#: src/views/PageList.vue:137
+#: src/views/PageList.vue:158
 msgid "Pages"
 msgstr "Puslapiai"
 
@@ -709,12 +709,12 @@ msgid "The path is already in use by another page"
 msgstr "Kelias jau naudojamas kitame puslapyje"
 
 #: src/components/PageDetailItemProps.vue:130
-#: src/views/PageList.vue:208
+#: src/views/PageList.vue:230
 msgid "Disabled"
 msgstr "Neįgalieji"
 
 #: src/components/PageDetailItemProps.vue:131
-#: src/views/PageList.vue:206
+#: src/views/PageList.vue:228
 msgid "Enabled"
 msgstr "Įjungta"
 
@@ -770,7 +770,7 @@ msgid "Page tag"
 msgstr "Puslapio žyma"
 
 #: src/components/PageDetailItemProps.vue:242
-#: src/views/PageList.vue:215
+#: src/views/PageList.vue:237
 msgid "No cache"
 msgstr "Nėra talpyklos"
 
@@ -1315,6 +1315,16 @@ msgctxt "fn"
 msgid "url"
 msgstr "url"
 
+#: src/strings.js:69
+msgctxt "ai"
+msgid "Done"
+msgstr "Atlikta"
+
+#: src/strings.js:70
+msgctxt "ai"
+msgid "Already exists"
+msgstr "Jau yra"
+
 #: src/views/ElementDetail.vue:99
 msgid "Error fetching element"
 msgstr "Klaida renkant elementą"
@@ -1370,7 +1380,7 @@ msgstr "Tvarkaraščio skelbimas"
 #: src/views/FileDetail.vue:273
 #: src/views/FileList.vue:81
 #: src/views/PageDetail.vue:674
-#: src/views/PageList.vue:144
+#: src/views/PageList.vue:165
 msgid "Toggle side menu"
 msgstr "Perjungti šoninį meniu"
 
@@ -1387,72 +1397,72 @@ msgstr "Naudojamas"
 #: src/views/FileList.vue:101
 #: src/views/FileList.vue:110
 #: src/views/FileList.vue:118
-#: src/views/PageList.vue:47
-#: src/views/PageList.vue:188
-#: src/views/PageList.vue:197
-#: src/views/PageList.vue:205
-#: src/views/PageList.vue:214
-#: src/views/PageList.vue:221
+#: src/views/PageList.vue:58
+#: src/views/PageList.vue:210
+#: src/views/PageList.vue:219
+#: src/views/PageList.vue:227
+#: src/views/PageList.vue:236
+#: src/views/PageList.vue:243
 msgid "All"
 msgstr "Visi"
 
 #: src/views/ElementList.vue:70
 #: src/views/FileList.vue:69
-#: src/views/PageList.vue:132
+#: src/views/PageList.vue:153
 msgid "Close navigation"
 msgstr "Uždaryti navigaciją"
 
 #: src/views/ElementList.vue:70
 #: src/views/FileList.vue:69
-#: src/views/PageList.vue:132
+#: src/views/PageList.vue:153
 msgid "Open navigation"
 msgstr "Atvira navigacija"
 
 #: src/views/ElementList.vue:102
 #: src/views/FileList.vue:99
-#: src/views/PageList.vue:186
+#: src/views/PageList.vue:208
 msgid "publish"
 msgstr "skelbti"
 
 #: src/views/ElementList.vue:106
 #: src/views/FileList.vue:103
-#: src/views/PageList.vue:190
+#: src/views/PageList.vue:212
 msgid "Scheduled"
 msgstr "Suplanuota"
 
 #: src/views/ElementList.vue:107
 #: src/views/FileList.vue:104
-#: src/views/PageList.vue:191
+#: src/views/PageList.vue:213
 msgid "Drafts"
 msgstr "Projektai"
 
 #: src/views/ElementList.vue:111
 #: src/views/FileList.vue:108
-#: src/views/PageList.vue:195
+#: src/views/PageList.vue:217
 msgid "trashed"
 msgstr "išmestas"
 
 #: src/views/ElementList.vue:114
 #: src/views/FileList.vue:111
-#: src/views/PageList.vue:198
+#: src/views/PageList.vue:220
 msgid "Available only"
 msgstr "Galima įsigyti tik"
 
 #: src/views/ElementList.vue:115
 #: src/views/FileList.vue:112
-#: src/views/PageList.vue:199
+#: src/views/PageList.vue:221
 msgid "Only trashed"
 msgstr "Tik išmestas"
 
 #: src/views/ElementList.vue:122
 #: src/views/FileList.vue:119
-#: src/views/PageList.vue:222
+#: src/views/PageList.vue:244
 msgid "Edited by me"
 msgstr "Redagavo aš"
 
 #: src/views/ElementList.vue:126
 #: src/views/FileList.vue:123
-#: src/views/PageList.vue:226
+#: src/views/PageList.vue:248
 msgid "languages"
 msgstr "kalbos"
 
@@ -1551,34 +1561,34 @@ msgstr "Redaktorius"
 msgid "Content"
 msgstr "Turinys"
 
-#: src/views/PageList.vue:114
+#: src/views/PageList.vue:135
 msgid "Error sending request"
 msgstr "Klaida siunčiant valdymo užklausą"
 
-#: src/views/PageList.vue:159
+#: src/views/PageList.vue:180
 msgid "What kind of page and content should I create?"
 msgstr "Kokį puslapį ir turinį turėčiau sukurti?"
 
-#: src/views/PageList.vue:179
+#: src/views/PageList.vue:201
 msgid "view"
 msgstr "peržiūrėti"
 
-#: src/views/PageList.vue:181
+#: src/views/PageList.vue:203
 msgid "Tree"
 msgstr "Medis"
 
-#: src/views/PageList.vue:182
+#: src/views/PageList.vue:204
 msgid "List"
 msgstr "Sąrašas"
 
-#: src/views/PageList.vue:203
+#: src/views/PageList.vue:225
 msgid "status"
 msgstr "statusas"
 
-#: src/views/PageList.vue:207
+#: src/views/PageList.vue:229
 msgid "Hidden"
 msgstr "Paslėptas"
 
-#: src/views/PageList.vue:212
+#: src/views/PageList.vue:234
 msgid "cache"
 msgstr "talpykla"

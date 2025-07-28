@@ -34,7 +34,7 @@ class AddPage extends Tool
         }
 
         $page = new Page();
-        $path = trim( Str::slug( $title, '-' ), '-' );
+        $parent = Page::find( $parent_id );
         $editor = Auth::user()?->name ?? request()->ip();
         $elements = [[
             'id' => $this->uid(),
@@ -51,41 +51,76 @@ class AddPage extends Tool
             'lang' => $lang,
             'name' => $name,
             'title' => $title,
-            'path' => $path,
+            'path' => $this->slug( $title ),
+            'domain' => $parent?->latest?->data?->domain,
+            'theme' => $parent?->latest?->data?->theme,
             'content' => $elements,
         ] );
 
         $version = [
             'lang' => $lang,
             'editor' => $editor,
-            'data' => [
-                'lang' => $lang,
-                'name' => $name,
-                'title' => $title,
-                'path' => $path,
-            ],
+            'data' => array_diff_key( $page->toArray(), array_flip( ['content', 'config', 'meta'] ) ),
             'aux' => [
                 'content' => $elements,
             ]
         ];
 
-        DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $parent_id, $page, $version ) {
+        try
+        {
+            DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $parent, $page, $version ) {
 
-            if( $parent_id !== null ) {
-                $page->beforeNode( Page::where( 'parent_id', $parent_id )->orderBy( '_lft', 'asc' )->firstOrFail() );
-            }
+                if( $parent )
+                {
+                    if( $ref = Page::where( 'parent_id', $parent->id )->orderBy( '_lft', 'asc' )->first() ) {
+                        $page->beforeNode( $ref );
+                    } elseif( $parent ) {
+                        $page->appendToNode( $parent );
+                    }
+                }
 
-            $page->save();
-            $page->versions()->create( $version );
+                $page->save();
+                $page->versions()->create( $version );
 
-        }, 3 );
+            }, 3 );
+        }
+        catch( \Illuminate\Database\UniqueConstraintViolationException $e )
+        {
+            return response()->json( $page );
+        }
 
         $this->numcalls++;
         return response()->json( $page );
     }
 
 
-    public function uid(): string
+    /**
+     * Generates a slug from the given title.
+     *
+     * @param string $title The title to generate a slug from
+     * @return string The generated slug
+     */
+    protected function slug( string $title ): string
+    {
+        $slug = preg_replace('/\s+/u', '-', $title);
+        $slug = preg_replace('/-+/', '-', $slug);
+
+        return mb_strtolower( trim( $slug, '-' ) );
+    }
+
+
+    /**
+     * Generates a unique ID for the page content element.
+     *
+     * This ID is a 6-character string that starts with a letter (A-Z, a-z) and is followed by 5 alphanumeric characters.
+     * The first character is chosen from the first 52 characters of the base64 encoding,
+     * while the remaining characters can be any of the 64 base64 characters.
+     * The ID is based on the current time in milliseconds since a fixed epoch (2025-01-01T00:00:00Z),
+     * ensuring that IDs are unique and non-repeating for approximately 70 years.
+     *
+     * @return string A unique 6-character ID for the page content element
+     */
+    protected function uid(): string
     {
         $base64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
         $epoch = strtotime( '2025-01-01T00:00:00Z' ) * 1000;

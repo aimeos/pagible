@@ -46,7 +46,7 @@ msgstr "มิม"
 #: src/fields/Video.vue:77
 #: src/views/ElementList.vue:119
 #: src/views/FileList.vue:116
-#: src/views/PageList.vue:219
+#: src/views/PageList.vue:241
 msgid "editor"
 msgstr "บรรณาธิการ"
 
@@ -124,7 +124,7 @@ msgstr "ประเภท"
 #: src/components/FileDetailRefs.vue:145
 #: src/views/ElementList.vue:105
 #: src/views/FileList.vue:102
-#: src/views/PageList.vue:189
+#: src/views/PageList.vue:211
 msgid "Published"
 msgstr "เผยแพร่แล้ว"
 
@@ -483,7 +483,7 @@ msgstr "การถอดเสียง (%{lang})"
 
 #: src/components/FileDetailRefs.vue:94
 #: src/components/Navigation.vue:30
-#: src/views/PageList.vue:137
+#: src/views/PageList.vue:158
 msgid "Pages"
 msgstr "หน้า"
 
@@ -708,12 +708,12 @@ msgid "The path is already in use by another page"
 msgstr "เส้นทางนี้ถูกใช้โดยหน้าอื่นอยู่แล้ว"
 
 #: src/components/PageDetailItemProps.vue:130
-#: src/views/PageList.vue:208
+#: src/views/PageList.vue:230
 msgid "Disabled"
 msgstr "ผู้พิการ"
 
 #: src/components/PageDetailItemProps.vue:131
-#: src/views/PageList.vue:206
+#: src/views/PageList.vue:228
 msgid "Enabled"
 msgstr "เปิดใช้งานแล้ว"
 
@@ -769,7 +769,7 @@ msgid "Page tag"
 msgstr "แท็กเพจ"
 
 #: src/components/PageDetailItemProps.vue:242
-#: src/views/PageList.vue:215
+#: src/views/PageList.vue:237
 msgid "No cache"
 msgstr "ไม่มีแคช"
 
@@ -1312,6 +1312,16 @@ msgctxt "fn"
 msgid "url"
 msgstr "url"
 
+#: src/strings.js:69
+msgctxt "ai"
+msgid "Done"
+msgstr "เสร็จแล้ว"
+
+#: src/strings.js:70
+msgctxt "ai"
+msgid "Already exists"
+msgstr "มีอยู่แล้ว"
+
 #: src/views/ElementDetail.vue:99
 msgid "Error fetching element"
 msgstr "เกิดข้อผิดพลาดในการดึงองค์ประกอบ"
@@ -1367,7 +1377,7 @@ msgstr "กำหนดการเผยแพร่"
 #: src/views/FileDetail.vue:273
 #: src/views/FileList.vue:81
 #: src/views/PageDetail.vue:674
-#: src/views/PageList.vue:144
+#: src/views/PageList.vue:165
 msgid "Toggle side menu"
 msgstr "สลับเมนูด้านข้าง"
 
@@ -1384,72 +1394,72 @@ msgstr "ใช้โดย"
 #: src/views/FileList.vue:101
 #: src/views/FileList.vue:110
 #: src/views/FileList.vue:118
-#: src/views/PageList.vue:47
-#: src/views/PageList.vue:188
-#: src/views/PageList.vue:197
-#: src/views/PageList.vue:205
-#: src/views/PageList.vue:214
-#: src/views/PageList.vue:221
+#: src/views/PageList.vue:58
+#: src/views/PageList.vue:210
+#: src/views/PageList.vue:219
+#: src/views/PageList.vue:227
+#: src/views/PageList.vue:236
+#: src/views/PageList.vue:243
 msgid "All"
 msgstr "ทั้งหมด"
 
 #: src/views/ElementList.vue:70
 #: src/views/FileList.vue:69
-#: src/views/PageList.vue:132
+#: src/views/PageList.vue:153
 msgid "Close navigation"
 msgstr "ปิดการนำทาง"
 
 #: src/views/ElementList.vue:70
 #: src/views/FileList.vue:69
-#: src/views/PageList.vue:132
+#: src/views/PageList.vue:153
 msgid "Open navigation"
 msgstr "เปิดการนำทาง"
 
 #: src/views/ElementList.vue:102
 #: src/views/FileList.vue:99
-#: src/views/PageList.vue:186
+#: src/views/PageList.vue:208
 msgid "publish"
 msgstr "เผยแพร่"
 
 #: src/views/ElementList.vue:106
 #: src/views/FileList.vue:103
-#: src/views/PageList.vue:190
+#: src/views/PageList.vue:212
 msgid "Scheduled"
 msgstr "กำหนดไว้แล้ว"
 
 #: src/views/ElementList.vue:107
 #: src/views/FileList.vue:104
-#: src/views/PageList.vue:191
+#: src/views/PageList.vue:213
 msgid "Drafts"
 msgstr "ร่าง"
 
 #: src/views/ElementList.vue:111
 #: src/views/FileList.vue:108
-#: src/views/PageList.vue:195
+#: src/views/PageList.vue:217
 msgid "trashed"
 msgstr "ถูกทำลาย"
 
 #: src/views/ElementList.vue:114
 #: src/views/FileList.vue:111
-#: src/views/PageList.vue:198
+#: src/views/PageList.vue:220
 msgid "Available only"
 msgstr "มีให้บริการเฉพาะ"
 
 #: src/views/ElementList.vue:115
 #: src/views/FileList.vue:112
-#: src/views/PageList.vue:199
+#: src/views/PageList.vue:221
 msgid "Only trashed"
 msgstr "มีแต่ขยะ"
 
 #: src/views/ElementList.vue:122
 #: src/views/FileList.vue:119
-#: src/views/PageList.vue:222
+#: src/views/PageList.vue:244
 msgid "Edited by me"
 msgstr "แก้ไขโดยฉัน"
 
 #: src/views/ElementList.vue:126
 #: src/views/FileList.vue:123
-#: src/views/PageList.vue:226
+#: src/views/PageList.vue:248
 msgid "languages"
 msgstr "ภาษา"
 
@@ -1548,34 +1558,34 @@ msgstr "บรรณาธิการ"
 msgid "Content"
 msgstr "เนื้อหา"
 
-#: src/views/PageList.vue:114
+#: src/views/PageList.vue:135
 msgid "Error sending request"
 msgstr "เกิดข้อผิดพลาดในการส่งคำขอจัดการ"
 
-#: src/views/PageList.vue:159
+#: src/views/PageList.vue:180
 msgid "What kind of page and content should I create?"
 msgstr "ฉันควรสร้างหน้าเว็บและเนื้อหาประเภทใด?"
 
-#: src/views/PageList.vue:179
+#: src/views/PageList.vue:201
 msgid "view"
 msgstr "มุมมอง"
 
-#: src/views/PageList.vue:181
+#: src/views/PageList.vue:203
 msgid "Tree"
 msgstr "ต้นไม้"
 
-#: src/views/PageList.vue:182
+#: src/views/PageList.vue:204
 msgid "List"
 msgstr "รายการ"
 
-#: src/views/PageList.vue:203
+#: src/views/PageList.vue:225
 msgid "status"
 msgstr "สถานะ"
 
-#: src/views/PageList.vue:207
+#: src/views/PageList.vue:229
 msgid "Hidden"
 msgstr "ซ่อนอยู่"
 
-#: src/views/PageList.vue:212
+#: src/views/PageList.vue:234
 msgid "cache"
 msgstr "แคช"

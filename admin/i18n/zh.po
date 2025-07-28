@@ -46,7 +46,7 @@ msgstr "默剧"
 #: src/fields/Video.vue:77
 #: src/views/ElementList.vue:119
 #: src/views/FileList.vue:116
-#: src/views/PageList.vue:219
+#: src/views/PageList.vue:241
 msgid "editor"
 msgstr "编辑"
 
@@ -124,7 +124,7 @@ msgstr "类型"
 #: src/components/FileDetailRefs.vue:145
 #: src/views/ElementList.vue:105
 #: src/views/FileList.vue:102
-#: src/views/PageList.vue:189
+#: src/views/PageList.vue:211
 msgid "Published"
 msgstr "已出版"
 
@@ -483,7 +483,7 @@ msgstr "转录 (%{lang})"
 
 #: src/components/FileDetailRefs.vue:94
 #: src/components/Navigation.vue:30
-#: src/views/PageList.vue:137
+#: src/views/PageList.vue:158
 msgid "Pages"
 msgstr "页面"
 
@@ -708,12 +708,12 @@ msgid "The path is already in use by another page"
 msgstr "该路径已被其他页面使用"
 
 #: src/components/PageDetailItemProps.vue:130
-#: src/views/PageList.vue:208
+#: src/views/PageList.vue:230
 msgid "Disabled"
 msgstr "残疾"
 
 #: src/components/PageDetailItemProps.vue:131
-#: src/views/PageList.vue:206
+#: src/views/PageList.vue:228
 msgid "Enabled"
 msgstr "已启用"
 
@@ -769,7 +769,7 @@ msgid "Page tag"
 msgstr "页面标签"
 
 #: src/components/PageDetailItemProps.vue:242
-#: src/views/PageList.vue:215
+#: src/views/PageList.vue:237
 msgid "No cache"
 msgstr "无缓存"
 
@@ -1312,6 +1312,16 @@ msgctxt "fn"
 msgid "url"
 msgstr "网址"
 
+#: src/strings.js:69
+msgctxt "ai"
+msgid "Done"
+msgstr "已完成"
+
+#: src/strings.js:70
+msgctxt "ai"
+msgid "Already exists"
+msgstr "已经存在"
+
 #: src/views/ElementDetail.vue:99
 msgid "Error fetching element"
 msgstr "获取元素时出错"
@@ -1367,7 +1377,7 @@ msgstr "发布时间表"
 #: src/views/FileDetail.vue:273
 #: src/views/FileList.vue:81
 #: src/views/PageDetail.vue:674
-#: src/views/PageList.vue:144
+#: src/views/PageList.vue:165
 msgid "Toggle side menu"
 msgstr "切换侧边菜单"
 
@@ -1384,72 +1394,72 @@ msgstr "已使用"
 #: src/views/FileList.vue:101
 #: src/views/FileList.vue:110
 #: src/views/FileList.vue:118
-#: src/views/PageList.vue:47
-#: src/views/PageList.vue:188
-#: src/views/PageList.vue:197
-#: src/views/PageList.vue:205
-#: src/views/PageList.vue:214
-#: src/views/PageList.vue:221
+#: src/views/PageList.vue:58
+#: src/views/PageList.vue:210
+#: src/views/PageList.vue:219
+#: src/views/PageList.vue:227
+#: src/views/PageList.vue:236
+#: src/views/PageList.vue:243
 msgid "All"
 msgstr "全部"
 
 #: src/views/ElementList.vue:70
 #: src/views/FileList.vue:69
-#: src/views/PageList.vue:132
+#: src/views/PageList.vue:153
 msgid "Close navigation"
 msgstr "关闭导航"
 
 #: src/views/ElementList.vue:70
 #: src/views/FileList.vue:69
-#: src/views/PageList.vue:132
+#: src/views/PageList.vue:153
 msgid "Open navigation"
 msgstr "打开导航"
 
 #: src/views/ElementList.vue:102
 #: src/views/FileList.vue:99
-#: src/views/PageList.vue:186
+#: src/views/PageList.vue:208
 msgid "publish"
 msgstr "发布"
 
 #: src/views/ElementList.vue:106
 #: src/views/FileList.vue:103
-#: src/views/PageList.vue:190
+#: src/views/PageList.vue:212
 msgid "Scheduled"
 msgstr "计划"
 
 #: src/views/ElementList.vue:107
 #: src/views/FileList.vue:104
-#: src/views/PageList.vue:191
+#: src/views/PageList.vue:213
 msgid "Drafts"
 msgstr "草稿"
 
 #: src/views/ElementList.vue:111
 #: src/views/FileList.vue:108
-#: src/views/PageList.vue:195
+#: src/views/PageList.vue:217
 msgid "trashed"
 msgstr "被捣毁"
 
 #: src/views/ElementList.vue:114
 #: src/views/FileList.vue:111
-#: src/views/PageList.vue:198
+#: src/views/PageList.vue:220
 msgid "Available only"
 msgstr "仅提供"
 
 #: src/views/ElementList.vue:115
 #: src/views/FileList.vue:112
-#: src/views/PageList.vue:199
+#: src/views/PageList.vue:221
 msgid "Only trashed"
 msgstr "只有垃圾"
 
 #: src/views/ElementList.vue:122
 #: src/views/FileList.vue:119
-#: src/views/PageList.vue:222
+#: src/views/PageList.vue:244
 msgid "Edited by me"
 msgstr "由我编辑"
 
 #: src/views/ElementList.vue:126
 #: src/views/FileList.vue:123
-#: src/views/PageList.vue:226
+#: src/views/PageList.vue:248
 msgid "languages"
 msgstr "语言"
 
@@ -1548,34 +1558,34 @@ msgstr "编辑"
 msgid "Content"
 msgstr "内容"
 
-#: src/views/PageList.vue:114
+#: src/views/PageList.vue:135
 msgid "Error sending request"
 msgstr "发送管理请求出错"
 
-#: src/views/PageList.vue:159
+#: src/views/PageList.vue:180
 msgid "What kind of page and content should I create?"
 msgstr "我应该创建什么样的页面和内容？"
 
-#: src/views/PageList.vue:179
+#: src/views/PageList.vue:201
 msgid "view"
 msgstr "观点"
 
-#: src/views/PageList.vue:181
+#: src/views/PageList.vue:203
 msgid "Tree"
 msgstr "树"
 
-#: src/views/PageList.vue:182
+#: src/views/PageList.vue:204
 msgid "List"
 msgstr "列表"
 
-#: src/views/PageList.vue:203
+#: src/views/PageList.vue:225
 msgid "status"
 msgstr "地位"
 
-#: src/views/PageList.vue:207
+#: src/views/PageList.vue:229
 msgid "Hidden"
 msgstr "隐藏"
 
-#: src/views/PageList.vue:212
+#: src/views/PageList.vue:234
 msgid "cache"
 msgstr "高速缓存"

@@ -60,8 +60,51 @@ final class Manage
             } )->values()->toArray();
         }
 
-        $response = $prism->withPrompt( $args['prompt'], $files )->asText();
+        $msg = 'Done';
 
-        return $response->text;
+        try
+        {
+            $msg .= "\n---\n" . join( "\n", $this->trace( $prism->withPrompt( $args['prompt'], $files )->asText() ) );
+        }
+        catch( \Exception $e )
+        {
+            switch( get_class( $ex = $e->getPrevious() ?? $e ) )
+            {
+                case 'Illuminate\Database\UniqueConstraintViolationException':
+                    $msg = 'Already exists';
+                default:
+                    $msg = $ex->getMessage();
+            }
+        }
+
+        return $msg . "\n";
+    }
+
+
+    protected function trace( \Prism\Prism\Text\Response $response ) : array
+    {
+        $msgs = [];
+
+        foreach( $response->steps as $step )
+        {
+            if( $step->toolCalls )
+            {
+                foreach( $step->toolCalls as $toolCall )
+                {
+                    $args = $toolCall->arguments();
+
+                    foreach( $args as $key => $value )
+                    {
+                        $args[$key] = is_string( $value ) && mb_strlen( $value ) > 60
+                            ? mb_substr( $value, 0, 60 ) . ' ...'
+                            : $value;
+                    }
+
+                    $msgs[] = $toolCall->name . '(' . ( empty( $args ) ? '' : json_encode( $args, JSON_PRETTY_PRINT ) ) . ')';
+                }
+            }
+        }
+
+        return $msgs;
     }
 }

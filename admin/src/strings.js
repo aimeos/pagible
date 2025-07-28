@@ -64,4 +64,8 @@ if($pgettext) {
     $pgettext('fn', 'table')
     $pgettext('fn', 'title')
     $pgettext('fn', 'url')
+
+    // AI response
+    $pgettext('ai', 'Done')
+    $pgettext('ai', 'Already exists')
 }
