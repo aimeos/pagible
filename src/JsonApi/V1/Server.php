@@ -18,9 +18,7 @@ class Server extends BaseServer
      */
     public function serving(): void
     {
-        if( !\Aimeos\Cms\Permission::can( 'page:view', request()->user() ) ) {
-            \Aimeos\Cms\Models\Page::addGlobalScope( new \Aimeos\Cms\Scopes\Status() );
-        }
+        \Aimeos\Cms\Models\Page::addGlobalScope( new \Aimeos\Cms\Scopes\Status() );
     }
 
 
