@@ -1,5 +1,4 @@
 <script>
-  import router from '../routes'
   import { useGettext } from "vue3-gettext"
   import { useAuthStore, useLanguageStore, useMessageStore } from '../stores'
 
@@ -29,7 +28,7 @@
       logout() {
         this.auth.logout().then(() => {
           this.user = null
-          router.replace('/')
+          this.$router.replace('/')
         }).catch(err => {
           this.messages.add(this.$gettext('Logout failed'), 'error')
         })

@@ -110,15 +110,14 @@
           } else {
             this.filter = filter
           }
-
-          setTimeout(() => {
-            this.sendicon = 'mdi-send'
-          }, 3000)
         }).catch(error => {
           this.messages.add(this.$gettext('Error sending request'), 'error')
           this.$log(`PageList::send(): Error sending request`, error)
         }).finally(() => {
           this.sending = false
+          setTimeout(() => {
+            this.sendicon = 'mdi-send'
+          }, 3000)
         })
       }
     }
@@ -204,9 +203,9 @@
       title: $gettext('status'),
       items: [
         { title: $gettext('All'), icon: 'mdi-playlist-check', value: {'status': null} },
-        { title: $gettext('Enabled'), icon: 'mdi-eye-outline', value: {'status': 1} },
-        { title: $gettext('Hidden'), icon: 'mdi-eye-remove-outline', value: {'status': 2} },
-        { title: $gettext('Disabled'), icon: 'mdi-eye-off-outline', value: {'status': 0} }
+        { title: $gettext('Enabled'), icon: 'mdi-eye', value: {'status': 1} },
+        { title: $gettext('Hidden'), icon: 'mdi-eye-off-outline', value: {'status': 2} },
+        { title: $gettext('Disabled'), icon: 'mdi-eye-off', value: {'status': 0} }
       ]
     }, {
       key: 'cache',

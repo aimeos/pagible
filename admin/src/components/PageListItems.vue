@@ -654,7 +654,7 @@
           const promise = this.filter.view === 'list' ? this.search() : this.fetch()
 
           promise.then(result => {
-            this.items = result.data
+            this.items = result?.data || []
             this.loading = false
           })
       },
@@ -1064,8 +1064,9 @@
       >
         <div class="item-text" @click="$emit('select', node)">
           <div class="item-head">
-            <v-icon v-if="node.publish_at" class="publish-at" icon="mdi-clock-outline" />
             <span class="item-lang" v-if="node.lang">{{ node.lang }}</span>
+            <v-icon v-if="node.publish_at" class="publish-at" icon="mdi-clock-outline" />
+            <v-icon v-if="node.status > 1" class="item-status" icon="mdi-eye-off-outline" />
             <span class="item-title">{{ node.name || $gettext('New') }}</span>
           </div>
           <div v-if="node.title" class="item-subtitle">{{ node.title }}</div>
@@ -1142,10 +1143,6 @@
 
   .status-disabled .item-title {
     text-decoration: line-through;
-  }
-
-  .status-hidden .item-text {
-    color: #808080;
   }
 
   @media (min-width: 600px) {
