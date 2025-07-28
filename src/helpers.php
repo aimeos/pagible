@@ -14,7 +14,7 @@ if( !function_exists( 'cms' ) )
         }
 
         if( $item instanceof \Illuminate\Support\Collection ) {
-            return $item[$prop];
+            return $item->get( $prop );
         }
 
         if( \Aimeos\Cms\Permission::can( 'page:view', auth()->user() ) ) {

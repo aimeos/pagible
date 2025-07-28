@@ -27,26 +27,30 @@
             </ul>
             <ul class="menu">
                 @foreach($page->nav() as $item)
-                    <li>
-                        @if($item->children->count())
-                            <details class="dropdown is-menu">
-                                <summary role>{{ cms($item, 'name') }}</summary>
-                                <ul>
-                                    @foreach($item->children as $subItem)
-                                        <li>
-                                            <a href="{{ cmsroute($subItem) }}" class="{{ !$page->isSelfOrDescendantOf($subItem) ?: 'active' }}">
-                                                {{ cms($subItem, 'name') }}
-                                            </a>
-                                        </li>
-                                    @endforeach
-                                </ul>
-                            </details>
-                        @else
-                            <a href="{{ cmsroute($item) }}" class="{{ !$page->isSelfOrDescendantOf($item) ?: 'active' }} contrast">
-                                {{ cms($item, 'name') }}
-                            </a>
-                        @endif
-                    </li>
+                    @if(cms($item, 'status') <= 1)
+                        <li>
+                            @if($item->children->count())
+                                <details class="dropdown is-menu">
+                                    <summary role>{{ cms($item, 'name') }}</summary>
+                                    <ul class="right">
+                                        @foreach($item->children as $subItem)
+                                            @if(cms($subItem, 'status') <= 1)
+                                                <li>
+                                                    <a href="{{ cmsroute($subItem) }}" class="{{ !$page->isSelfOrDescendantOf($subItem) ?: 'active' }} contrast">
+                                                        {{ cms($subItem, 'name') }}
+                                                    </a>
+                                                </li>
+                                            @endif
+                                        @endforeach
+                                    </ul>
+                                </details>
+                            @else
+                                <a href="{{ cmsroute($item) }}" class="{{ !$page->isSelfOrDescendantOf($item) ?: 'active' }} contrast">
+                                    {{ cms($item, 'name') }}
+                                </a>
+                            @endif
+                        </li>
+                    @endif
                 @endforeach
             </ul>
             <ul class="menu-open show">

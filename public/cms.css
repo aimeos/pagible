@@ -91,6 +91,11 @@ header nav details[open] summary::after {
     transform: rotate(0.5turn) translateX(0);
 }
 
+header nav details.dropdown > summary + ul.right {
+    left: auto;
+    right: 0;
+}
+
 header nav .menu-open,
 header nav .menu-close {
     display: none;
