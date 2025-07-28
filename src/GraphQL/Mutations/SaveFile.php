@@ -22,7 +22,7 @@ final class SaveFile
         $path = $orig->latest?->data?->path ?? $orig->path;
 
         $file = clone $orig;
-        $file->fill( array_merge( (array) $orig->latest?->data ?? [], (array) $args['input'] ?? [] ) );
+        $file->fill( array_replace( (array) $orig->latest?->data ?? [], (array) $args['input'] ?? [] ) );
         $file->previews = $args['input']['previews'] ?? $previews;
         $file->path = $args['input']['path'] ?? $path;
         $file->editor = $editor;
@@ -61,17 +61,9 @@ final class SaveFile
         }
 
         $file->versions()->create( [
-            'lang' => $args['input']['lang'] ?? null,
+            'lang' => $file->lang,
             'editor' => $editor,
-            'data' => [
-                'lang' => $file->lang,
-                'name' => $file->name,
-                'mime' => $file->mime,
-                'path' => $file->path,
-                'previews' => $file->previews,
-                'description' => $file->description,
-                'transcription' => $file->transcription,
-            ],
+            'data' => $file->toArray(),
         ] );
 
         $file->removeVersions();

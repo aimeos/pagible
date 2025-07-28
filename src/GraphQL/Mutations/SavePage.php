@@ -21,18 +21,19 @@ final class SavePage
 
         DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $page, $args ) {
 
-            $data = $args['input'] ?? [];
-            unset( $data['config'], $data['content'], $data['meta'] );
+            $input = (array) $args['input'] ?? [];
+
+            $data = array_diff_key( $input, array_flip( ['meta', 'config', 'content'] ) );
+            $data = array_replace( (array) $page->latest?->data ?? [], $data );
+
+            $aux = array_intersect_key( $input, array_flip( ['meta', 'config', 'content'] ) );
+            $aux = array_replace( (array) $page->latest?->aux ?? [], $aux );
 
             $version = $page->versions()->create([
-                'data' => array_map( fn( $v ) => is_null( $v ) ? (string) $v : $v, $data ),
+                'data' => array_map( fn( $v ) => $v ?? '', $data ),
                 'editor' => Auth::user()?->name ?? request()->ip(),
                 'lang' => $args['input']['lang'] ?? null,
-                'aux' => [
-                    'meta' => $args['input']['meta'] ?? new \stdClass(),
-                    'config' => $args['input']['config'] ?? new \stdClass(),
-                    'content' => $args['input']['content'] ?? [],
-                ]
+                'aux' => $aux
             ]);
 
             $version->elements()->attach( $args['elements'] ?? [] );
