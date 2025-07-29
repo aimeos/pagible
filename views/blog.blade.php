@@ -18,7 +18,7 @@
                         @include('cms::pic', ['file' => $file])
                     @endif
                     <h3>{{ cms($item, 'title') }}</h3>
-                    <p>{{ $article->lead }}</p>
+                    <p>{{ @$article->text }}</p>
                 @else
                     <h3>{{ cms($item, 'title') }}</h3>
                 @endif

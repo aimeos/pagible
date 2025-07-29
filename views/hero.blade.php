@@ -5,7 +5,7 @@
 <h1 class="title">{{ @$data->title }}</h1>
 
 @if(@$data->text)
-    <div class="text">
+    <div class="subtitle">
         @markdown($data->text)
     </div>
 @endif

@@ -99,7 +99,7 @@ final class AddFile
     {
         $url = $args['input']['path'] ?? '';
 
-        if( !str_starts_with( 'http', $url ) ) {
+        if( !str_starts_with( $url, 'http' ) ) {
             throw new Exception( 'Invalid URL' );
         }
 

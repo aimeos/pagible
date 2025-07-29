@@ -127,7 +127,7 @@
                 path: url,
                 mime: response.headers?.get('Content-Type'),
                 size: parseInt(response.headers?.get('Content-Length')),
-                name: (url.split('?')?.shift()?.split('/')?.pop() || url).splice(0, 100)
+                name: (url.split('?')?.shift()?.split('/')?.pop() || url).slice(0, 100)
               }
             } else {
               this.errors = this.multiple

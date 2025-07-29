@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Route;
 });
 
 Route::get('cmsadmin/{path?}', [Controllers\AdminController::class, 'index'])
+    ->middleware(['web'])
     ->where(['path' => '.*'])
     ->name('cms.admin');
 
@@ -17,7 +18,7 @@ Route::match(['GET', 'HEAD', 'OPTIONS'], 'cmsproxy', [Controllers\AdminControlle
     ->name('cms.proxy');
 
 Route::post('cmsapi/contact', [Controllers\ContactController::class, 'send'])
-    ->middleware('throttle:2,1')
+    ->middleware(['web', 'throttle:2,1'])
     ->name('cms.api.contact');
 
 Route::group(config('cms.multidomain') ? ['domain' => '{domain}'] : [], function() {
