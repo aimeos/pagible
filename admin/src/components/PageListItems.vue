@@ -81,11 +81,14 @@
             throw result.errors
           }
 
-          item.id = result.data.addPage.id
-          item.published = true
+          if(!result.data.addPage) {
+            throw new Error('No data in addPage mutation result')
+          }
 
-          this.$refs.tree.add(item)
-          this.$emit('select', item)
+          const page = {...result.data.addPage}
+
+          this.$refs.tree.add(page)
+          this.$emit('select', page)
         }).catch(error => {
           this.messages.add(this.$gettext('Error adding root page'), 'error')
           this.$log(`PageList::add(): Error adding root page`, error)
@@ -143,7 +146,7 @@
       create(attr = {}) {
         return Object.assign({
           path: '_' + Math.floor(Math.random() * 10000),
-          lang: this.languages.current || this.languages.default(),
+          lang: this.$vuetify.locale.current || this.languages.default(),
           status: 0,
           cache: 5
         }, attr)

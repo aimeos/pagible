@@ -138,11 +138,11 @@
             ]"
             :readonly="readonly"
             :modelValue="item.status"
+            :label="$gettext('Status')"
             @update:modelValue="update('status', $event)"
             variant="underlined"
             item-title="val"
             item-value="key"
-            :label="$gettext('Status')"
           ></v-select>
         </v-col>
         <v-col cols="12" md="6">
@@ -150,36 +150,36 @@
             :items="locales()"
             :readonly="readonly"
             :modelValue="item.lang"
+            :label="$gettext('Language')"
             @update:modelValue="update('lang', $event)"
             variant="underlined"
-            :label="$gettext('Language')"
           ></v-select>
         </v-col>
       </v-row>
 
       <v-row>
         <v-col cols="12" md="6">
-          <v-text-field ref="name"
+          <v-text-field ref="title"
             :rules="[
               v => !!v || $gettext('Field is required'),
             ]"
             :readonly="readonly"
-            :modelValue="item.name"
-            @update:modelValue="update('name', $event)"
+            :modelValue="item.title"
+            :label="$gettext('Page title')"
+            @update:modelValue="update('title', $event)"
             @update:focused="setPath($event)"
             variant="underlined"
-            :label="$gettext('Page name')"
-            counter="255"
             maxlength="255"
+            counter="255"
           ></v-text-field>
-          <v-text-field ref="title"
+          <v-text-field ref="name"
             :readonly="readonly"
-            :modelValue="item.title"
-            @update:modelValue="update('title', $event)"
+            :modelValue="item.name"
+            :label="$gettext('Page name')"
+            @update:modelValue="update('name', $event)"
             variant="underlined"
-            :label="$gettext('Page title')"
-            counter="255"
-            maxlength="255"
+            counter="60"
+            maxlength="60"
           ></v-text-field>
         </v-col>
         <v-col cols="12" md="6">
@@ -191,12 +191,12 @@
             :error-messages="messages.path"
             :readonly="readonly"
             :modelValue="item.path"
+            :label="$gettext('URL path')"
             @update:modelValue="updatePath($event); messages.path = null"
             @change="checkPath()"
             variant="underlined"
-            :label="$gettext('URL path')"
-            counter="255"
             maxlength="255"
+            counter="255"
           ></v-text-field>
           <v-text-field ref="domain"
             :rules="[
@@ -204,11 +204,11 @@
             ]"
             :readonly="readonly"
             :modelValue="item.domain"
+            :label="$gettext('Domain')"
             @update:modelValue="update('domain', $event)"
             variant="underlined"
-            :label="$gettext('Domain')"
-            counter="255"
             maxlength="255"
+            counter="255"
           ></v-text-field>
         </v-col>
       </v-row>
@@ -217,19 +217,19 @@
         <v-col cols="12" md="6">
           <v-select ref="theme"
             :readonly="readonly"
-            :items="Object.keys(config.get('themes', {'cms': ''}))"
             :modelValue="item.theme"
+            :label="$gettext('Theme')"
+            :items="Object.keys(config.get('themes', {'cms': ''}))"
             @update:modelValue="update('theme', $event); item.type = ''"
             variant="underlined"
-            :label="$gettext('Theme')"
           ></v-select>
           <v-select ref="type"
             :readonly="readonly"
-            :items="Object.keys(config.get(`themes.${item.theme || 'cms'}.types`, {'page': ''}))"
             :modelValue="item.type"
+            :label="$gettext('Page type')"
+            :items="Object.keys(config.get(`themes.${item.theme || 'cms'}.types`, {'page': ''}))"
             @update:modelValue="update('type', $event)"
             variant="underlined"
-            :label="$gettext('Page type')"
           ></v-select>
         </v-col>
         <v-col cols="12" md="6">
@@ -237,10 +237,10 @@
             v-model="item.tag"
             :readonly="readonly"
             :label="$gettext('Page tag')"
-            variant="underlined"
             @update:modelValue="update()"
-            counter="30"
+            variant="underlined"
             maxlength="30"
+            counter="30"
           ></v-text-field>
           <v-select ref="cache"
             :items="[
@@ -257,9 +257,9 @@
             ]"
             :readonly="readonly"
             :modelValue="item.cache"
+            :label="$gettext('Cache time')"
             @update:modelValue="update('cache', $event)"
             variant="underlined"
-            :label="$gettext('Cache time')"
             item-title="val"
             item-value="key"
           ></v-select>
@@ -274,11 +274,11 @@
             ]"
             :readonly="readonly"
             :modelValue="item.to"
+            :label="$gettext('Redirect URL')"
             @update:modelValue="update('to', $event)"
             variant="underlined"
-            :label="$gettext('Redirect URL')"
-            counter="255"
             maxlength="255"
+            counter="255"
           ></v-text-field>
         </v-col>
       </v-row>

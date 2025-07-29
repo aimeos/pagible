@@ -92,13 +92,13 @@
         this.original = this.input
 
         this.$apollo.mutate({
-          mutation: gql`mutation($prompt: String!, $context: String, $images: [String!]) {
-            imagine(prompt: $prompt, context: $context, images: $images)
+          mutation: gql`mutation($prompt: String!, $context: String, $files: [String!]) {
+            imagine(prompt: $prompt, context: $context, files: $files)
           }`,
           variables: {
             prompt: this.input,
             context: this.context ? $gettext('Context in JSON format') + ":\n" + JSON.stringify(this.context) : '',
-            images: this.similar.map(item => item.path),
+            files: this.similar.map(item => item.path),
           }
         }).then(response => {
           if(response.errors) {

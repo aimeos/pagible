@@ -364,8 +364,7 @@ export const useLanguageStore = defineStore('language', {
       "zh": "中文",
       "zu": "isiZulu"
     },
-    available: useConfigStore().get('locales', ['en']),
-    current: null,
+    available: useConfigStore().get('locales', ['en'])
   }),
 
   actions: {

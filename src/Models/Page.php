@@ -319,7 +319,9 @@ class Page extends Model
     public function subtree() : DescendantsRelation
     {
         // restrict max. depth to three levels for performance reasons
-        $builder = $this->newScopedQuery()->withDepth()->having( 'depth', '<=', ( $this->depth ?? 0 ) + 3 );
+        $builder = $this->newScopedQuery()->withDepth()
+            ->groupBy( $this->qualifyColumn( 'id' ), 'depth' )
+            ->having( 'depth', '<=', ( $this->depth ?? 0 ) + 3 );
 
         if( !\Aimeos\Cms\Permission::can( 'page:view', Auth::user() ) ) {
             $builder->where( $this->qualifyColumn( 'status' ), '>', 0 );

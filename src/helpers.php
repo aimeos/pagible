@@ -7,9 +7,9 @@
 
 if( !function_exists( 'cms' ) )
 {
-    function cms( ?object $item, string $prop, $default = null )
+    function cms( ?object $item, ?string $prop, $default = null )
     {
-        if( is_null( $item ) ) {
+        if( is_null( $item ) || is_null( $prop ) ) {
             return $default;
         }
 

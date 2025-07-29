@@ -57,10 +57,12 @@ class AddPage extends Tool
             'content' => $elements,
         ] );
 
+        $exclude = array_flip( ['content', 'config', 'meta', 'editor', 'relatedid', 'tenant_id'] );
+
         $version = [
             'lang' => $lang,
             'editor' => $editor,
-            'data' => array_diff_key( $page->toArray(), array_flip( ['content', 'config', 'meta'] ) ),
+            'data' => array_diff_key( $page->toArray(), $exclude ),
             'aux' => [
                 'content' => $elements,
             ]
