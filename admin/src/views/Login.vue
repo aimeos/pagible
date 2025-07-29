@@ -23,6 +23,12 @@
     },
 
     created() {
+      const config = window.__APP_CONFIG__ || {}
+
+      // For pre-filled demo login
+      this.creds.email = config.email ?? ''
+      this.creds.password = config.password ?? ''
+
       this.auth.isAuthenticated().then(result => {
         if(!result) {
           throw result
@@ -80,15 +86,28 @@
       </template>
 
       <v-card-text>
-        <v-text-field v-model="creds.email" :label="$gettext('E-Mail')" variant="underlined" validate-on="blur" :rules="[
-          v => !!v || $gettext('Field is required'),
-          v => !!v.match(/.+@.+/) || $gettext('Invalid e-mail address')
-        ]" autocomplete="username" autofocus>
-        </v-text-field>
-        <v-text-field v-model="creds.password" :type="show ? `text` : `password`"
-          :label="$gettext('Password')" variant="underlined" :rules="[
+        <v-text-field
+          v-model="creds.email"
+          :label="$gettext('E-Mail')"
+          :rules="[
+            v => !!v || $gettext('Field is required'),
+            v => !!v.match(/.+@.+/) || $gettext('Invalid e-mail address')
+          ]"
+          autocomplete="username"
+          variant="underlined"
+          validate-on="blur"
+          autofocus
+        />
+        <v-text-field
+          v-model="creds.password"
+          :type="show ? `text` : `password`"
+          :label="$gettext('Password')"
+          :rules="[
             v => !!v || $gettext('Field is required')
-          ]" autocomplete="current-password">
+          ]"
+          autocomplete="current-password"
+          variant="underlined"
+        >
           <template v-slot:append-inner>
             <v-icon
               @click="show = !show"

@@ -13,6 +13,13 @@
 
     <script type="module" crossorigin src="{{ cmsasset('vendor/cms/admin/index.js') }}"></script>
     <link rel="stylesheet" crossorigin href="{{ cmsasset('vendor/cms/admin/index.css') }}">
+
+    <script>
+      window.__APP_CONFIG__ = {
+        email: env('CMS_ADMIN_EMAIL', ''),
+        password: env('CMS_ADMIN_PASSWORD', '')
+      }
+    </script>
   </head>
   <body>
     <div id="app"
