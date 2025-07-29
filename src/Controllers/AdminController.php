@@ -14,7 +14,7 @@ class AdminController extends Controller
 {
     public function index()
     {
-        return view('cms::admin');
+        return view('cms::layouts.admin');
     }
 
 
