@@ -87,7 +87,12 @@
 
 
       updatePath(value) {
-        this.update('path', value?.replace(/[?#%;&=+!"'()\[\]{}*<>|^]+/g, ' ').trim().replace(/[ ]+/g, '-')?.toLowerCase())
+        this.update('path', value
+          ?.replace(/[?&=%#@!$^*()+=\[\]{}|\\\"'<>;:.,_\s]/gu, '-')
+          ?.replace(/-+/g, '-')
+          ?.replace(/^-|-$/g, '')
+          ?.toLowerCase()
+        )
       },
 
 

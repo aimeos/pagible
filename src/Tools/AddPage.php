@@ -102,10 +102,10 @@ class AddPage extends Tool
      */
     protected function slug( string $title ): string
     {
-        $slug = preg_replace('/\s+/u', '-', $title);
-        $slug = preg_replace('/-+/', '-', $slug);
+        $title = preg_replace( '/[?&=%#@!$^*()+=\[\]{}|\\\\\"\'<>;:.,_\s]/u', '-', $title );
+        $title = preg_replace( '/-+/', '-', $title );
 
-        return mb_strtolower( trim( $slug, '-' ) );
+        return mb_strtolower( trim( $title, '-' ) );
     }
 
 
