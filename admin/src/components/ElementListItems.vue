@@ -549,7 +549,7 @@
   </div>
 
   <Teleport to="body">
-    <v-dialog v-model="vschemas" scrollable width="auto">
+    <v-dialog v-model="vschemas" @afterLeave="vschemas = false" scrollable width="auto">
       <SchemaItems type="content" @add="add($event)" />
     </v-dialog>
   </Teleport>

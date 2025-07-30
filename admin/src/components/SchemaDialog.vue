@@ -18,7 +18,7 @@
 </script>
 
 <template>
-  <v-dialog :modelValue="modelValue" max-width="1200" scrollable>
+  <v-dialog :modelValue="modelValue" @afterLeave="$emit('update:modelValue', false)" max-width="1200" scrollable>
     <v-card>
       <template v-slot:append>
         <v-btn

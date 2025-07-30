@@ -144,7 +144,7 @@
 </script>
 
 <template>
-  <v-dialog :modelValue="modelValue" max-width="1200" scrollable>
+  <v-dialog :modelValue="modelValue" @afterLeave="$emit('update:modelValue', false)" max-width="1200" scrollable>
     <v-card :loading="loading ? 'primary' : false">
       <template v-slot:append>
         <v-btn v-if="Object.keys(items).length" variant="outlined" @click="add()">
