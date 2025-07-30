@@ -385,7 +385,6 @@ return [
                     ],
                     'button' => [
                         'type' => 'string',
-                        'min' => 1,
                         'max' => 255,
                     ],
                 ],
@@ -434,6 +433,9 @@ return [
                             data {
                               id
                               title
+                              latest {
+                                data
+                              }
                             }
                           }
                         }',

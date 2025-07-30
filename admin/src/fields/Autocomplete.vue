@@ -26,6 +26,13 @@
     },
 
     methods: {
+      get(item, keys) {
+        return keys.reduce((part, key) => {
+          return typeof part === 'object' && part !== null ? part[key] : part
+        }, item)
+      },
+
+
       graphql(value) {
         if(!this.config?.query) {
           return
@@ -37,7 +44,12 @@
         this.$apollo.query({
           query: gql`${query}`,
         }).then(result => {
-          this.list = this.items(this.toList(result.data))
+          // parse the latest data if available
+          const list = this.toList(result.data).map(item => {
+            return Object.assign({...item}, JSON.parse(item.latest?.data || '{}'))
+          })
+
+          this.list = this.items(list)
           this.loading = false
         }).catch(error => {
           this.$log('Autocomplete::graphql(): Error fetching data', value, error)
@@ -46,19 +58,15 @@
 
 
       items(data) {
-        if(!data) {
-          return []
-        }
+        const flabel = this.config['item-title'].split('/')
+        const fvalue = this.config['item-value'].split('/')
 
-        const flabel = this.config['item-title']
-        const fvalue = this.config['item-value']
-
-        return data.map(item => {
+        return (data || []).map(item => {
           if(typeof item === 'object' && item !== null) {
             if(flabel) {
-              return {label: item[flabel] ?? '', value: item[fvalue] ?? ''}
+              return {label: this.get(item, flabel), value: this.get(item, fvalue)}
             } else {
-              return item[fvalue] ?? ''
+              return this.get(item, fvalue)
             }
           } else {
             return item
@@ -139,10 +147,10 @@
     :rules="[
       v => !config.required || !!v || $gettext('Value is required'),
     ]"
+    :items="list"
     :loading="loading"
     :readonly="readonly"
     :clearable="!readonly"
-    :items="list"
     :no-data-text="config['empty-text'] || $gettext('No data available')"
     :placeholder="config.placeholder || ''"
     :return-object="!!config['item-title']"
@@ -151,6 +159,7 @@
     :modelValue="modelValue"
     @update:modelValue="update($event)"
     @update:search="search($event)"
+    @update:menu="search('')"
     density="comfortable"
     hide-details="auto"
     variant="outlined"
