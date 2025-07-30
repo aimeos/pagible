@@ -24,10 +24,11 @@ final class Imagine
         }
 
         $files = [];
+        $input = $args['prompt'];
         $prompt = join( "\n\n", array_filter( [
             view( 'cms::prompts.imagine' )->render(),
             $args['context'] ?? '',
-            $args['prompt']
+            $input
         ] ) );
 
         $prism = Prism::image()->using( config( 'cms.ai.image', 'openai' ), config( 'cms.ai.image-model', 'dall-e-3' ) );
@@ -62,7 +63,7 @@ final class Imagine
         $prompt = collect( $response->images )
             ->map( fn( $image ) => $image->hasRevisedPrompt() ? $image->revisedPrompt : null )
             ->filter()
-            ->first() ?? $prompt;
+            ->first() ?? $input;
 
         $urls = collect( $response->images )
             ->map( fn( $image ) => $image->hasUrl() ? $image->url : null )
