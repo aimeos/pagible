@@ -108,7 +108,7 @@ class GraphqlPageTest extends TestAbstract
                 lang: "en"
                 name: "Home"
                 title: "Home"
-                path: "/"
+                path: ""
                 tag: "root"
                 to: ""
                 domain: "mydomain.tld"
@@ -240,7 +240,7 @@ class GraphqlPageTest extends TestAbstract
         foreach( $root->children as $page )
         {
             $attr = collect($page->getAttributes())->except(['tenant_id', '_lft', '_rgt'])->all();
-            $expected[] = ['id' => (string) $page->id] + $attr;
+            $expected[] = ['id' => (string) $page->id, 'parent_id' => (string) $page->parent_id] + $attr;
         }
 
         $this->expectsDatabaseQueryCount( 2 );
@@ -405,7 +405,7 @@ class GraphqlPageTest extends TestAbstract
                     'versions' => [
                         [
                             'lang' => $page->lang,
-                            'data' => '{"name":"Home","title":"Home | Laravel CMS","path":"\\/","tag":"root","domain":"mydomain.tld","status":1,"cache":5,"editor":"seeder"}',
+                            'data' => '{"name":"Home","title":"Home | Laravel CMS","path":"","to":"","tag":"root","domain":"mydomain.tld","theme":"","type":"","status":1,"cache":5,"editor":"seeder"}',
                             'aux' => '{"meta":{"type":"meta","data":{"text":"Laravel CMS is outstanding"}},"config":{"test":{"type":"test","data":{"key":"value"}}},"content":[{"type":"heading","text":"Welcome to Laravel CMS"},{"type":"ref","id":"' . $element->id . '"}]}',
                             'editor' => 'seeder'
                         ],
@@ -738,7 +738,7 @@ class GraphqlPageTest extends TestAbstract
         $element = Element::firstOrFail();
         $root = Page::where('tag', 'root')->firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 10 );
+        $this->expectsDatabaseQueryCount( 11 );
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
                 savePage(id: "' . $root->id . '", input: {
@@ -805,7 +805,7 @@ class GraphqlPageTest extends TestAbstract
                     'id' => (string) $root->id,
                     'parent_id' => null,
                     'lang' => 'en',
-                    'path' => '/',
+                    'path' => '',
                     'domain' => 'mydomain.tld',
                     'name' => 'Home',
                     'title' => 'Home | Laravel CMS',
@@ -823,7 +823,7 @@ class GraphqlPageTest extends TestAbstract
                     'updated_at' => (string) $page->updated_at,
                     'latest' => [
                         'lang' => 'de',
-                        'data' => '{"lang":"de","path":"test","domain":"test.com","name":"test","title":"Test page","to":"\\/to\\/page","tag":"test","status":0,"cache":5}',
+                        'data' => '{"name":"test","title":"Test page","path":"test","to":"\\/to\\/page","tag":"test","domain":"test.com","theme":"","type":"","status":0,"cache":5,"editor":"seeder","lang":"de"}',
                         'aux' => '{"meta":{"canonical":"to\\/page"},"config":{"key":"test"},"content":[{"type":"heading","text":"Welcome to Laravel CMS"}]}',
                         'published' => false,
                         'publish_at' => null,
@@ -831,7 +831,7 @@ class GraphqlPageTest extends TestAbstract
 
                     ],
                     'published' => [
-                        'data' => '{"name":"Home","title":"Home | Laravel CMS","path":"\\/","tag":"root","domain":"mydomain.tld","status":1,"cache":5,"editor":"seeder"}',
+                        'data' => '{"name":"Home","title":"Home | Laravel CMS","path":"","to":"","tag":"root","domain":"mydomain.tld","theme":"","type":"","status":1,"cache":5,"editor":"seeder"}',
                         'aux' => '{"meta":{"type":"meta","data":{"text":"Laravel CMS is outstanding"}},"config":{"test":{"type":"test","data":{"key":"value"}}},"content":[{"type":"heading","text":"Welcome to Laravel CMS"},{"type":"ref","id":"' . $element->id . '"}]}',
                     ]
                 ],

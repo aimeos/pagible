@@ -318,14 +318,18 @@ class Page extends Model
      */
     public function subtree() : DescendantsRelation
     {
-        // restrict max. depth to three levels for performance reasons
+        // restrict maximum depth to three levels for performance reasons
         $builder = $this->newScopedQuery()->withDepth()
+            ->whereNotExists( function( \Illuminate\Database\Query\Builder $query ) {
+                $query->select( DB::raw( 1 ) )
+                    ->from( $this->getTable() . ' AS parent' )
+                    ->whereColumn( $this->qualifyColumn( '_lft' ), '>=', 'parent._lft' )
+                    ->whereColumn( $this->qualifyColumn( '_rgt' ), '<=', 'parent._rgt' )
+                    ->where( 'parent.tenant_id', '=', \Aimeos\Cms\Tenancy::value() )
+                    ->where( 'parent.status', 0 );
+            } )
             ->groupBy( $this->qualifyColumn( 'id' ), 'depth' )
             ->having( 'depth', '<=', ( $this->depth ?? 0 ) + 3 );
-
-        if( !\Aimeos\Cms\Permission::can( 'page:view', Auth::user() ) ) {
-            $builder->where( $this->qualifyColumn( 'status' ), '>', 0 );
-        }
 
         return new DescendantsRelation( $builder, $this );
     }

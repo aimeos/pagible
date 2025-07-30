@@ -68,6 +68,6 @@ final class SaveFile
 
         $file->removeVersions();
 
-        return $orig->load( 'latest' );
+        return $orig;
     }
 }

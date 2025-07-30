@@ -229,7 +229,7 @@ class GraphqlElementTest extends TestAbstract
                     'versions' => [
                         [
                             'lang' => $element->lang,
-                            'data' => '{"type":"footer","lang":"en","data":{"text":"Powered by Laravel CMS!"}}',
+                            'data' => '{"lang":"en","type":"footer","name":"Shared footer","data":{"text":"Powered by Laravel CMS!"}}',
                             'files' => [],
                             'editor' => 'seeder'
                         ],

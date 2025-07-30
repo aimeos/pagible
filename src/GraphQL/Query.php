@@ -26,6 +26,7 @@ final class Query
     public function elements( $rootValue, array $args ) : Builder
     {
         $filter = $args['filter'] ?? [];
+        $publish = $args['publish'] ?? null;
         $limit = (int) ( $args['first'] ?? 100 );
 
         $builder = Element::skip( max( ( $args['page'] ?? 1 ) - 1, 0 ) * $limit )
@@ -41,9 +42,9 @@ final class Query
             case 'only': $builder->onlyTrashed(); break;
         }
 
-        $builder->whereHas('latest', function( $builder ) use ( $filter ) {
+        $builder->whereHas('latest', function( $builder ) use ( $filter, $publish ) {
 
-            switch( $args['publish'] ?? null )
+            switch( $publish )
             {
                 case 'PUBLISHED': $builder->where( 'cms_versions.published', true ); break;
                 case 'DRAFT': $builder->where( 'cms_versions.published', false ); break;
@@ -90,6 +91,7 @@ final class Query
     public function files( $rootValue, array $args ) : Builder
     {
         $filter = $args['filter'] ?? [];
+        $publish = $args['publish'] ?? null;
         $limit = (int) ( $args['first'] ?? 100 );
 
         $builder = File::skip( max( ( $args['page'] ?? 1 ) - 1, 0 ) * $limit )
@@ -105,9 +107,9 @@ final class Query
             case 'only': $builder->onlyTrashed(); break;
         }
 
-        $builder->whereHas('latest', function( $builder ) use ( $filter ) {
+        $builder->whereHas('latest', function( $builder ) use ( $filter, $publish ) {
 
-            switch( $args['publish'] ?? null )
+            switch( $publish )
             {
                 case 'PUBLISHED': $builder->where( 'cms_versions.published', true ); break;
                 case 'DRAFT': $builder->where( 'cms_versions.published', false ); break;
@@ -154,6 +156,7 @@ final class Query
     public function pages( $rootValue, array $args ) : \Kalnoy\Nestedset\QueryBuilder
     {
         $filter = $args['filter'] ?? [];
+        $publish = $args['publish'] ?? null;
         $limit = (int) ( $args['first'] ?? 100 );
         $trashed = $args['trashed'] ?? null;
 
@@ -166,18 +169,18 @@ final class Query
             case 'only': $builder->onlyTrashed(); break;
         }
 
-        $builder->whereHas('latest', function( $builder ) use ( $filter, $args ) {
+        if( array_key_exists( 'parent_id', $filter ) ) {
+            $builder->where( 'cms_pages.parent_id', $filter['parent_id'] );
+        }
 
-            switch( $args['publish'] ?? null )
+        $builder->whereHas('latest', function( $builder ) use ( $filter, $publish ) {
+
+            switch( $publish )
             {
                 case 'PUBLISHED': $builder->where( 'cms_versions.published', true ); break;
                 case 'DRAFT': $builder->where( 'cms_versions.published', false ); break;
                 case 'SCHEDULED': $builder->where( 'cms_versions.publish_at', '!=', null )
                     ->where( 'cms_versions.published', false ); break;
-            }
-
-            if( array_key_exists( 'parent_id', $filter ) ) {
-                $builder->where( 'cms_pages.parent_id', $filter['parent_id'] );
             }
 
             if( isset( $filter['id'] ) ) {

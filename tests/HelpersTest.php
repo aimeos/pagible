@@ -12,9 +12,9 @@ class HelpersTest extends TestAbstract
 	{
         $this->seed( CmsSeeder::class );
 
-        $page = Page::where('tag', 'root')->firstOrFail();
+        $page = Page::where('tag', 'blog')->firstOrFail();
 
-		$this->assertEquals( '/', cms( $page, 'path' ) );
+		$this->assertEquals( 'blog', cms( $page, 'path' ) );
 	}
 
 

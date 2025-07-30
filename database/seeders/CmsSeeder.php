@@ -50,7 +50,7 @@ class CmsSeeder extends Seeder
                 'lang' => 'en',
                 'name' => 'Test image',
                 'path' => 'https://picsum.photos/id/0/1500/1000',
-                'previews' => ["1000" => "https://picsum.photos/id/0/1000/666", "500" => "https://picsum.photos/id/0/500/333"],
+                'previews' => ["500" => "https://picsum.photos/id/0/500/333", "1000" => "https://picsum.photos/id/0/1000/666"],
                 'description' => [
                     'en' => 'Test file description',
                 ],
@@ -58,18 +58,20 @@ class CmsSeeder extends Seeder
             ] );
 
             $version = $file->versions()->forceCreate([
+                'lang' => 'en',
                 'data' => [
                     'mime' => 'image/jpeg',
                     'lang' => 'en',
                     'name' => 'Test image',
                     'path' => 'https://picsum.photos/id/0/1500/1000',
-                    'previews' => ["1000" => "https://picsum.photos/id/0/1000/666", "500" => "https://picsum.photos/id/0/500/333"],
+                    'previews' => ["500" => "https://picsum.photos/id/0/500/333", "1000" => "https://picsum.photos/id/0/1000/666"],
                     'description' => [
                         'en' => 'Test file description',
                         'de' => 'Beschreibung der Testdatei',
                     ],
                 ],
                 'publish_at' => '2025-01-01 00:00:00',
+                'published' => false,
                 'editor' => 'seeder',
             ]);
 
@@ -94,8 +96,9 @@ class CmsSeeder extends Seeder
 
             $version = $element->versions()->forceCreate([
                 'lang' => 'en',
-                'data' => ['type' => 'footer', 'lang' => 'en', 'data' => ['text' => 'Powered by Laravel CMS!']],
+                'data' => ['lang' => 'en', 'type' => 'footer', 'name' => 'Shared footer', 'data' => ['text' => 'Powered by Laravel CMS!']],
                 'publish_at' => '2025-01-01 00:00:00',
+                'published' => false,
                 'editor' => 'seeder',
             ]);
 
@@ -114,7 +117,7 @@ class CmsSeeder extends Seeder
             'lang' => 'en',
             'name' => 'Home',
             'title' => 'Home | Laravel CMS',
-            'path' => '/',
+            'path' => '',
             'tag' => 'root',
             'domain' => 'mydomain.tld',
             'status' => 1,
@@ -132,9 +135,12 @@ class CmsSeeder extends Seeder
             'data' => [
                 'name' => 'Home',
                 'title' => 'Home | Laravel CMS',
-                'path' => '/',
+                'path' => '',
+                'to' => '',
                 'tag' => 'root',
                 'domain' => 'mydomain.tld',
+                'theme' => '',
+                'type' => '',
                 'status' => 1,
                 'cache' => 5,
                 'editor' => 'seeder',
@@ -174,6 +180,26 @@ class CmsSeeder extends Seeder
         ]);
         $page->appendToNode( $home )->save();
         $page->elements()->attach( $elementId );
+
+        $page->versions()->forceCreate([
+            'lang' => 'en',
+            'data' => [
+                'name' => 'Blog',
+                'title' => 'Blog | Laravel CMS',
+                'path' => 'blog',
+                'tag' => 'blog',
+                'status' => 1,
+                'editor' => 'seeder',
+            ],
+            'aux' => [
+                'content' => [
+                    ['type' => 'blog', 'data' => ['text' => 'Blog example']],
+                    ['type' => 'ref', 'id' => $elementId]
+                ],
+            ],
+            'published' => true,
+            'editor' => 'seeder',
+        ]);
 
         return $this->addBlogArticle( $page );
     }
@@ -246,6 +272,7 @@ mutation {
         $fileId = $this->file();
 
         $page = Page::forceCreate([
+            'lang' => 'en',
             'name' => 'Dev',
             'title' => 'For Developer | Laravel CMS',
             'path' => 'dev',
@@ -272,6 +299,38 @@ This is content created using [markdown syntax](https://www.markdownguide.org/ba
         $page->elements()->attach( $elementId );
         $page->files()->attach( $fileId );
 
+
+        $page->versions()->forceCreate([
+            'lang' => 'en',
+            'data' => [
+                'name' => 'Dev',
+                'title' => 'For Developer | Laravel CMS',
+                'path' => 'dev',
+                'status' => 1,
+                'editor' => 'seeder',
+            ],
+            'aux' => [
+                'content' => [[
+                    'type' => 'paragraph',
+                    'data' => [
+                        'text' => '# For Developers
+
+This is content created using [markdown syntax](https://www.markdownguide.org/basic-syntax/)'
+                    ]
+                ], [
+                    'type' => 'image-text',
+                    'data' => [
+                        'image' => ['id' => $fileId, 'type' => 'file'],
+                        'text' => 'Test image'
+                    ]
+                ], [
+                    'type' => 'ref', 'id' => $elementId
+                ]]
+            ],
+            'published' => true,
+            'editor' => 'seeder',
+        ]);
+
         return $this;
     }
 
@@ -288,6 +347,19 @@ This is content created using [markdown syntax](https://www.markdownguide.org/ba
         ]);
         $page->appendToNode( $home )->save();
 
+        $version = $page->versions()->forceCreate([
+            'data' => [
+                'name' => 'Disabled',
+                'title' => 'Disabled page | Laravel CMS',
+                'path' => 'disabled',
+                'tag' => 'disabled',
+                'status' => 0,
+                'editor' => 'seeder',
+            ],
+            'published' => true,
+            'editor' => 'seeder',
+        ]);
+
         $child = Page::forceCreate([
             'name' => 'Disabled child',
             'title' => 'Disabled child | Laravel CMS',
@@ -297,6 +369,19 @@ This is content created using [markdown syntax](https://www.markdownguide.org/ba
             'editor' => 'seeder',
         ]);
         $child->appendToNode( $page )->save();
+
+        $version = $page->versions()->forceCreate([
+            'data' => [
+                'name' => 'Disabled child',
+                'title' => 'Disabled child | Laravel CMS',
+                'path' => 'disabled-child',
+                'tag' => 'disabled-child',
+                'status' => 1,
+                'editor' => 'seeder',
+            ],
+            'published' => true,
+            'editor' => 'seeder',
+        ]);
 
         return $this;
     }
