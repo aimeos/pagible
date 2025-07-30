@@ -34,7 +34,7 @@
                                     <summary role>{{ cms($item, 'name') }}</summary>
                                     <ul class="right">
                                         @foreach($item->children as $subItem)
-                                            @if(cms($subItem, 'status') <= 1)
+                                            @if(cms($subItem, 'status') == 1)
                                                 <li>
                                                     <a href="{{ cmsroute($subItem) }}" class="{{ !$page->isSelfOrDescendantOf($subItem) ?: 'active' }} contrast">
                                                         {{ cms($subItem, 'name') }}

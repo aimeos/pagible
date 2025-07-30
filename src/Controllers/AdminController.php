@@ -14,7 +14,8 @@ class AdminController extends Controller
 {
     public function index()
     {
-        return view('cms::layouts.admin');
+        $nonce = base64_encode(random_bytes(16));
+        return view('cms::layouts.admin', compact('nonce'));
     }
 
 

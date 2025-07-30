@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="base-uri 'self'; default-src 'self'; style-src 'unsafe-inline' 'self'; img-src 'self' data: blob:; media-src 'self' data: blob:;">
+    <meta http-equiv="Content-Security-Policy" content="base-uri 'self'; default-src 'self' 'nonce-{{ $nonce }}'; style-src 'unsafe-inline' 'self'; img-src 'self' data: blob:; media-src 'self' data: blob:;">
 		<meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>PagibleAI CMS Admin</title>
@@ -11,10 +11,10 @@
     <script type="module" crossorigin src="{{ cmsasset('vendor/cms/admin/index.js') }}"></script>
     <link rel="stylesheet" crossorigin href="{{ cmsasset('vendor/cms/admin/index.css') }}">
 
-    <script>
+    <script nonce="{{ $nonce }}">
       window.__APP_CONFIG__ = {
-        email: env('CMS_ADMIN_EMAIL', ''),
-        password: env('CMS_ADMIN_PASSWORD', '')
+        email: {!! json_encode(env('CMS_ADMIN_EMAIL', '')) !!},
+        password: {!! json_encode(env('CMS_ADMIN_PASSWORD', '')) !!}
       }
     </script>
   </head>
