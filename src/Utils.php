@@ -2,12 +2,32 @@
 
 namespace Aimeos\Cms;
 
+use Aimeos\Cms\Models\Page;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 
 
 class Utils
 {
+    public static function files( Page $page ) : Collection
+    {
+        $lang = $page->lang;
+
+        return Collection::make( $page->content )
+            ->map( fn( $item ) => $item->files )
+            ->collapse()
+            ->unique()
+            ->map( fn( $id ) => $page->files[$id] ?? null )
+            ->filter()
+            ->pluck( null, 'id' )
+            ->each( fn( $file ) => $file->description = $file->description?->{$lang}
+                ?? $file->description?->{substr( $lang, 0, 2 )}
+                ?? null
+        );
+    }
+
+
     public static function mimetype( string $path ) : string
     {
         if( str_starts_with( $path, 'http') )
