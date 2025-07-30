@@ -7,7 +7,7 @@
         <meta http-equiv="Content-Security-Policy" content="
             base-uri 'self';
             default-src 'self';
-            img-src 'self' data:;
+            img-src 'self' data: blob:;
             media-src 'self' data: blob:;
             style-src 'self' https://hcaptcha.com https://*.hcaptcha.com;
             script-src 'self' https://hcaptcha.com https://*.hcaptcha.com;

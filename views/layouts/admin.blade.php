@@ -3,7 +3,6 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="base-uri 'self'; default-src 'self' 'nonce-{{ $nonce }}'; style-src 'unsafe-inline' 'self'; img-src 'self' data: blob:; media-src 'self' data: blob:;">
 		<meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>PagibleAI CMS Admin</title>
