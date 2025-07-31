@@ -10,6 +10,8 @@
 
     emit: ['update:modelValue', 'use', 'revert'],
 
+    inject: ['url', 'srcset'],
+
     data: () => ({
       list: [],
       latest: null,
@@ -33,6 +35,24 @@
           return [str]
         }
         return []
+      },
+
+
+      filesdiff(map1, map2) {
+        const keys1 = Object.keys(map1)
+        const keys2 = Object.keys(map2)
+
+        const only1 = keys1.filter(key => !keys2.includes(key))
+        const only2 = keys2.filter(key => !keys1.includes(key))
+
+        const diff1 = Object.fromEntries(
+          Object.entries(map1).filter(([key]) => only1.includes(key)).map(([key, value]) => [key, {...value, css: 'added'}])
+        )
+        const diff2 = Object.fromEntries(
+          Object.entries(map2).filter(([key]) => only2.includes(key)).map(([key, value]) => [key, {...value, css: 'removed'}])
+        )
+
+        return {...diff1, ...diff2}
       },
 
 
@@ -113,12 +133,46 @@
             width="100%"
             size="small">
 
-            <v-card class="elevation-2" @click="show = !show">
-              <v-card-title>{{ $gettext('Current') }}</v-card-title>
-              <v-card-text class="diff" :class="{show: show}">
-                <span v-for="part of diff(current.data, latest?.data)" :class="{added: part.added, removed: part.removed}">
-                  {{ part.value || part }}
-                </span>
+            <v-card class="elevation-2">
+              <v-card-title @click="show = !show">{{ $gettext('Current') }}</v-card-title>
+              <v-card-text>
+                <div class="diff" :class="{show: show}" @click="show = !show">
+                  <span v-for="part of diff(latest?.data, current.data)" :class="{added: part.added, removed: part.removed}">
+                    {{ part.value || part }}
+                  </span>
+                </div>
+                <div class="media-list">
+                  <div v-for="file of filesdiff(current.files, latest?.files)" :key="file.id" :class="file.css" class="file">
+                    <v-img v-if="file.mime?.startsWith('image/')"
+                      :srcset="srcset(file.previews)"
+                      :src="url(file.path)"
+                      :alt="file.name"
+                      draggable="false"
+                      loading="lazy"
+                    />
+                    <video v-else-if="file.mime?.startsWith('video/')"
+                      :poster="url(Object.values(file.previews).shift())"
+                      :src="url(file.path)"
+                      crossorigin="anonymous"
+                      draggable="false"
+                      loading="lazy"
+                      controls
+                    />
+                    <div v-else-if="file.mime?.startsWith('audio/')">
+                      <audio
+                        :src="url(file.path)"
+                        crossorigin="anonymous"
+                        draggable="false"
+                        loading="lazy"
+                        controls
+                      />
+                      {{ file.name }}
+                    </div>
+                    <div v-else>
+                      {{ file.name }}
+                    </div>
+                  </div>
+                </div>
               </v-card-text>
               <v-card-actions>
                 <v-btn variant="outlined" @click.stop="$emit('revert', latest)">
@@ -136,19 +190,51 @@
             size="small">
 
             <v-card class="elevation-2">
-              <div @click="version._show = !version._show">
-                <v-card-title>
-                  {{ (new Date(version.publish_at || version.created_at)).toLocaleString($vuetify.locale.current) }}
-                </v-card-title>
-                <v-card-subtitle>
-                  {{ version.editor }}
-                </v-card-subtitle>
-                <v-card-text class="diff" :class="{show: version._show}">
+              <v-card-title @click="version._show = !version._show">
+                {{ (new Date(version.publish_at || version.created_at)).toLocaleString($vuetify.locale.current) }}
+              </v-card-title>
+              <v-card-subtitle @click="version._show = !version._show">
+                {{ version.editor }}
+              </v-card-subtitle>
+              <v-card-text>
+                <div class="diff" :class="{show: version._show}" @click="version._show = !version._show">
                   <span v-for="part of diff(version.data, current.data)" :class="{added: part.removed, removed: part.added}">
                     {{ part.value || part }}
                   </span>
-                </v-card-text>
-              </div>
+                </div>
+                <div class="media-list">
+                  <div v-for="file of filesdiff(version.files, current.files)" :key="file.id" :class="file.css" class="file">
+                    <v-img v-if="file.mime?.startsWith('image/')"
+                      :srcset="srcset(file.previews)"
+                      :src="url(file.path)"
+                      :alt="file.name"
+                      draggable="false"
+                      loading="lazy"
+                    />
+                    <video v-else-if="file.mime?.startsWith('video/')"
+                      :poster="url(Object.values(file.previews).shift())"
+                      :src="url(file.path)"
+                      crossorigin="anonymous"
+                      draggable="false"
+                      loading="lazy"
+                      controls
+                    />
+                    <div v-else-if="file.mime?.startsWith('audio/')">
+                      <audio
+                        :src="url(file.path)"
+                        crossorigin="anonymous"
+                        draggable="false"
+                        loading="lazy"
+                        controls
+                      />
+                      {{ file.name }}
+                    </div>
+                    <div v-else>
+                      {{ file.name }}
+                    </div>
+                  </div>
+                </div>
+              </v-card-text>
               <v-card-actions>
                 <v-btn variant="outlined" @click.stop="$emit('use', version)">
                   {{ $gettext('Use version') }}
@@ -176,33 +262,64 @@
     color: rgb(var(--v-theme-success));
   }
 
-  .v-timeline-item .v-card-text.diff div.divider {
+  .v-timeline-item .v-card-text > .diff div.divider {
     margin: 1em 0 0.5em 0;
     font-weight: bold;
     font-size: 110%;
     display: none;
   }
 
-  .v-timeline-item .v-card-text.diff.show div.divider {
+  .v-timeline-item .v-card-text > .diff.show div.divider {
     display: block;
   }
 
-  .v-timeline-item .v-card-text.diff span {
+  .v-timeline-item .v-card-text > .diff span {
     white-space: break-spaces;
     display: none;
   }
 
-  .v-timeline-item .v-card-text.diff.show span {
+  .v-timeline-item .v-card-text > .diff.show span {
     display: inline;
   }
 
-  .v-timeline-item .v-card-text.diff span.added {
+  .v-timeline-item .v-card-text > .diff span.added {
     background-color: #00ff0030;
     display: inline;
   }
 
-  .v-timeline-item .v-card-text.diff span.removed {
+  .v-timeline-item .v-card-text > .diff span.removed {
     background-color: #ff000030;
     display: inline;
+  }
+
+  .v-timeline-item .media-list {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    display: grid;
+  }
+
+  .v-timeline-item .file {
+    border: 2px solid transparent;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    text-align: center;
+    overflow: hidden;
+    max-height: 150px;
+    display: flex;
+    margin: 4px;
+  }
+
+  .v-timeline-item .file.added {
+    border: 2px dashed rgb(var(--v-theme-success));
+  }
+
+  .v-timeline-item .file.removed {
+    border: 2px dashed rgb(var(--v-theme-error));
+    opacity: 0.66;
+  }
+
+  .v-timeline-item .file video,
+  .v-timeline-item .file audio {
+    width: 100%;
   }
 </style>

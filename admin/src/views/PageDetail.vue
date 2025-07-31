@@ -59,6 +59,15 @@
     }),
 
     computed: {
+      currentAssets() {
+        const fileIds = this.fileIds()
+
+        return Object.fromEntries(
+          Object.entries(this.assets || {}).filter(([key, value]) => fileIds.includes(key))
+        )
+      },
+
+
       hasChanged() {
         return Object.values(this.changed).some(entry => entry)
       },
@@ -228,6 +237,27 @@
       },
 
 
+      fileIds() {
+        const files = []
+
+        for(const entry of (this.item.content || [])) {
+          files.push(...(entry.files || []))
+        }
+
+        for(const key in (this.item.meta || {})) {
+          files.push(...(this.item.meta[key].files || []))
+        }
+
+        for(const key in (this.item.config || {})) {
+          files.push(...(this.item.config[key].files || []))
+        }
+
+        return files.filter((id, idx, self) => {
+          return self.indexOf(id) === idx
+        })
+      },
+
+
       files(entries) {
         const map = {}
 
@@ -332,11 +362,6 @@
             return valid
           }
 
-          const files = []
-          for(const entry of (this.item.content || [])) {
-            files.push(...(entry.files || []))
-          }
-
           const meta = {}
           for(const key in (this.item.meta || {})) {
             meta[key] = {
@@ -344,7 +369,6 @@
               data: this.item.meta[key].data || {},
               files: this.item.meta[key].files || [],
             }
-            files.push(...(this.item.meta[key].files || []))
           }
 
           const config = {}
@@ -354,7 +378,6 @@
               data: this.item.config[key].data || {},
               files: this.item.config[key].files || [],
             }
-            files.push(...(this.item.config[key].files || []))
           }
 
           return this.$apollo.mutate({
@@ -382,9 +405,7 @@
                 content: JSON.stringify(this.clean(this.item.content, 'content'))
               },
               elements: Object.keys(this.elements),
-              files: files.filter((id, idx, self) => {
-                return self.indexOf(id) === idx
-              }),
+              files: this.fileIds(),
             }
           }).then(response => {
             if(response.errors) {
@@ -493,7 +514,7 @@
       use(version) {
         Object.assign(this.item, version.data)
 
-        this.assets = this.files(version.files || [])
+        this.assets = version.files
         this.elements = this.elems(version.elements || [])
         this.item.content = this.obsolete(this.item.content)
 
@@ -543,6 +564,7 @@
 
           return (result.data.page.versions || []).map(v => {
             const item = {...v, data: Object.assign(JSON.parse(v.data || '{}'), JSON.parse(v.aux || '{}'))}
+            item.files = this.files(v.files || [])
             delete item.aux
             return item
           }).reverse() // latest versions first
@@ -725,6 +747,8 @@
           config: clean(item.config, 'config'),
           content: clean(item.content, 'content'),
         },
+        elements: latest?.elements || [],
+        files: currentAssets
       }"
       :load="() => versions(item.id)"
       @use="use($event)"

@@ -107,7 +107,7 @@
         }
 
         this.file = {...item}
-        this.$emit('addFile', item.id)
+        this.$emit('addFile', item)
         this.$emit('update:modelValue', {id: item.id, type: 'file'})
         this.validate()
 

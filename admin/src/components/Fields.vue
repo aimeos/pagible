@@ -29,11 +29,16 @@
     },
 
     methods: {
-      addFile(id) {
-        const ids = Array.isArray(id) ? id : [id]
+      addFile(item) {
+        if(!item?.id) {
+          this.$log(`Fields::addFile(): Invalid item without ID`, item)
+          return
+        }
+
         const files = [...this.files]
 
-        files.push(...ids)
+        files.push(item.id)
+        this.assets[item.id] = item
         this.$emit('update:files', files)
       },
 
@@ -65,15 +70,16 @@
 
 
       removeFile(id) {
-        const ids = Array.isArray(id) ? id : [id]
+        if(!id) {
+          this.$log(`Fields::removeFile(): Invalid ID`, id)
+          return
+        }
+
         const files = [...this.files]
+        const idx = files.findIndex(fileid => fileid === id)
 
-        for(const id of ids) {
-          const idx = files.findIndex(fileid => fileid === id)
-
-          if(idx !== -1) {
-            files.splice(idx, 1)
-          }
+        if(idx !== -1) {
+          files.splice(idx, 1)
         }
 
         this.$emit('update:files', files)
