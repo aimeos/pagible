@@ -96,89 +96,8 @@
         query: gql`query($id: ID!) {
           page(id: $id) {
             id
-            lang
-            path
-            domain
-            name
-            title
-            to
-            tag
-            type
-            theme
-            status
-            cache
-            meta
-            config
-            content
-            editor
-            updated_at
-            deleted_at
-            files {
-              id
-              lang
-              mime
-              name
-              path
-              previews
-              description
-              updated_at
-              editor
-            }
-            elements {
-              id
-              type
-              data
-              editor
-              updated_at
-              files {
-                id
-                lang
-                mime
-                name
-                path
-                previews
-                description
-                updated_at
-                editor
-              }
-            }
             latest {
-              id
-              published
-              data
-              aux
-              editor
-              created_at
-              files {
-                id
-                lang
-                mime
-                name
-                path
-                previews
-                description
-                updated_at
-                editor
-              }
-              elements {
-                id
-                type
-                data
-                name
-                editor
-                updated_at
-                files {
-                  id
-                  lang
-                  mime
-                  name
-                  path
-                  previews
-                  description
-                  updated_at
-                  editor
-                }
-              }
+              ${this.fields()}
             }
           }
         }`,
@@ -190,53 +109,19 @@
           throw result
         }
 
-        const page = result.data.page
-
         this.reset()
-        this.assets = {}
-        this.elements = {}
-        this.latest = page.latest
+        this.latest = result?.data?.page?.latest
 
-        if(this.latest?.aux) {
-          const aux = JSON.parse(this.latest.aux)
-          this.item.content = aux.content ?? []
-          this.item.config = aux.config ?? {}
-          this.item.meta = aux.meta ?? {}
-        } else {
-          this.item.content = JSON.parse(page.content ?? '{}')
-          this.item.config = JSON.parse(page.config ?? '{}')
-          this.item.meta = JSON.parse(page.meta ?? '{}')
-        }
+        Object.assign(this.item, JSON.parse(this.latest?.data || '{}'))
 
-        for(const entry of (this.latest?.elements || page.elements || [])) {
-          this.elements[entry.id] = {
-            ...entry,
-            data: JSON.parse(entry.data || '{}'),
-            files: (entry.files || []).map(file => {
-              return {
-                ...file,
-                previews: JSON.parse(file.previews || '{}'),
-                description: JSON.parse(file.description || '{}')
-              }
-            })
-          }
-        }
+        const aux = JSON.parse(this.latest?.aux || '{}')
+        this.item.content = aux.content ?? []
+        this.item.config = aux.config ?? {}
+        this.item.meta = aux.meta ?? {}
 
-        for(const entry of (this.latest?.files || page.files || [])) {
-          this.assets[entry.id] = {
-            ...entry,
-            previews: JSON.parse(entry.previews || '{}'),
-            description: JSON.parse(entry.description || '{}')
-          }
-        }
-
-        for(const entry of this.item.content) {
-          if(entry.files && Array.isArray(entry.files)) {
-            entry.files = entry.files.filter(id => {
-              return typeof this.assets[id] !== 'undefined'
-            })
-          }
-        }
+        this.assets = this.files(this.latest?.files || [])
+        this.elements = this.elems(this.latest?.elements || [])
+        this.item.content = this.obsolete(this.item.content)
       }).catch(error => {
         this.messages.add(this.$gettext('Error fetching page'), 'error')
         this.$log(`PageDetail::watch(item): Error fetching page`, error)
@@ -285,10 +170,97 @@
       },
 
 
+      elems(entries) {
+        const map = {}
+
+        for(const entry of entries) {
+          map[entry.id] = {
+            ...entry,
+            data: JSON.parse(entry.data || '{}'),
+            files: Object.values(this.files(entry.files || []))
+          }
+        }
+
+        return map
+      },
+
+
+      fields() {
+        return `id
+              aux
+              data
+              published
+              publish_at
+              created_at
+              editor
+              files {
+                id
+                lang
+                mime
+                name
+                path
+                previews
+                description
+                transcription
+                updated_at
+                editor
+              }
+              elements {
+                id
+                type
+                name
+                data
+                editor
+                updated_at
+                files {
+                  id
+                  lang
+                  mime
+                  name
+                  path
+                  previews
+                  description
+                  transcription
+                  updated_at
+                  editor
+                }
+              }`
+      },
+
+
+      files(entries) {
+        const map = {}
+
+        for(const entry of entries) {
+          map[entry.id] = {
+            ...entry,
+            previews: JSON.parse(entry.previews || '{}'),
+            description: JSON.parse(entry.description || '{}'),
+            transcription: JSON.parse(entry.transcription || '{}'),
+          }
+        }
+
+        return map
+      },
+
+
       invalidate() {
         const cache = this.$apollo.provider.defaultClient.cache
         cache.evict({id: 'Page:' + this.item.id})
         cache.gc()
+      },
+
+
+      obsolete(content) {
+        for(const entry of content) {
+          if(entry.files && Array.isArray(entry.files)) {
+            entry.files = entry.files.filter(id => {
+              return typeof this.assets[id] !== 'undefined'
+            })
+          }
+        }
+
+        return content
       },
 
 
@@ -521,6 +493,10 @@
       use(version) {
         Object.assign(this.item, version.data)
 
+        this.assets = this.files(version.files || [])
+        this.elements = this.elems(version.elements || [])
+        this.item.content = this.obsolete(this.item.content)
+
         this.changed['content'] = true
         this.changed['page'] = true
 
@@ -553,13 +529,7 @@
             page(id: $id) {
               id
               versions {
-                id
-                published
-                publish_at
-                data
-                aux
-                editor
-                created_at
+                ${this.fields()}
               }
             }
           }`,
