@@ -1,7 +1,7 @@
 <script>
   import gql from 'graphql-tag'
   import FileListItems from './FileListItems.vue'
-  import { useAppStore } from '../stores'
+  import { useAppStore, useMessageStore } from '../stores'
 
   export default {
     components: {
@@ -18,8 +18,10 @@
     inject: ['url'],
 
     setup() {
+      const messages = useMessageStore()
       const app = useAppStore()
-      return { app }
+
+      return { app, messages }
     },
 
     data() {
@@ -78,7 +80,8 @@
           Object.assign(item, response.data.addFile, {previews: JSON.parse(response.data.addFile.previews || '{}')})
           this.$emit('add', [item])
         }).catch(error => {
-          this.$log(`FileAiDialog::add(): Error adding file for ${item.path}`, error)
+          this.messages.add(this.$gettext(`Error adding file %{path}`, {path: filename}), 'error')
+          this.$log(`FileAiDialog::add(): Error adding file`, error)
         }).finally(() => {
           this.loading = false
         })

@@ -109,6 +109,7 @@
 
             return data
           }).catch(error => {
+            this.messages.add(this.$gettext(`Error adding file %{path}`, {path: file.name}), 'error')
             this.$log(`FileListItems::add(): Error adding file`, ev, error)
           }))
         })

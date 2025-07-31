@@ -1,6 +1,6 @@
 <script>
   import gql from 'graphql-tag'
-  import { useAppStore } from '../stores'
+  import { useAppStore, useMessageStore } from '../stores'
 
   export default {
     props: {
@@ -12,9 +12,10 @@
     emits: ['update:modelValue', 'add'],
 
     setup() {
+      const messages = useMessageStore()
       const app = useAppStore()
 
-      return { app }
+      return { app, messages }
     },
 
     data() {
@@ -63,7 +64,8 @@
 
             Object.assign(item, response.data.addFile, {previews: JSON.parse(response.data.addFile.previews || '{}')})
           }).catch(error => {
-            this.$log('FileUrlDialog::add(): Error adding file:', item, error)
+            this.messages.add(this.$gettext(`Error adding file %{path}`, {path: item.path}), 'error')
+            this.$log('FileUrlDialog::add(): Error adding file', item, error)
           }).finally(() => {
             this.loading = false
           }))
@@ -103,6 +105,13 @@
       update() {
         const urls = this.input.split('\n').map(url => url.trim()).filter(url => url && url.startsWith('http'))
 
+        for(const url of urls) {
+          if(url?.length > 255) {
+            this.errors = [this.$gettext('At least one URL is longer than 255 characters')]
+            return
+          }
+        }
+
         for(const url of Object.keys(this.items)) {
           if(!urls.includes(url)) {
             delete this.items[url]
@@ -135,6 +144,7 @@
                 : [this.$gettext(`The file is not of type "%{mime}*"`, {mime: this.mime})]
             }
           }).catch(error => {
+            this.messages.add(this.$gettext(`Error adding file %{path}`, {path: url}), 'error')
             this.$log(`FileUrlDialog::update(): Error fetching ${url}`, error)
           })
         })
@@ -148,7 +158,7 @@
     <v-card :loading="loading ? 'primary' : false">
       <template v-slot:append>
         <v-btn v-if="Object.keys(items).length" variant="outlined" @click="add()">
-          {{ $gettext('Add file', 'Add files', +multiple) }}
+          {{ multiple ? $gettext('Add files') : $gettext('Add file') }}
         </v-btn>
         <v-btn
           @click="$emit('update:modelValue', false)"
@@ -172,8 +182,8 @@
           :placeholder="$gettext('Enter one URL per line')"
           variant="underlined"
           autofocus
-          clearable
           auto-grow
+          clearable
           rows="3"
         ></v-textarea>
         <v-text-field v-else ref="input"
@@ -185,6 +195,8 @@
           :append-inner-icon="input ? 'mdi-check' : ''"
           :placeholder="$gettext('Enter URL')"
           variant="underlined"
+          maxlength="255"
+          counter="255"
           autofocus
           clearable
         ></v-text-field>

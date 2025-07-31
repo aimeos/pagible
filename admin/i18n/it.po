@@ -9,19 +9,19 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Project-Id-Version: PACKAGE VERSION\n"
 
-#: src/App.vue:74
+#: src/App.vue:78
 msgid "Prompt is required for generating text"
 msgstr "Il prompt è necessario per generare il testo"
 
-#: src/App.vue:100
+#: src/App.vue:104
 msgid "Error generating text"
 msgstr "Errore nella generazione del testo"
 
-#: src/App.vue:110
+#: src/App.vue:129
 msgid "None"
 msgstr "Nessuno"
 
-#: src/App.vue:151
+#: src/App.vue:179
 msgid "Error translating texts"
 msgstr "Errore nella traduzione dei testi"
 
@@ -30,24 +30,24 @@ msgid "id"
 msgstr "id"
 
 #: src/components/AsideMeta.vue:23
-#: src/components/FileListItems.vue:525
+#: src/components/FileListItems.vue:509
 #: src/fields/Audio.vue:71
-#: src/fields/File.vue:255
-#: src/fields/Image.vue:114
+#: src/fields/File.vue:247
+#: src/fields/Image.vue:105
 #: src/fields/Video.vue:73
 msgid "mime"
 msgstr "mimo"
 
 #: src/components/AsideMeta.vue:27
 #: src/components/ElementListItems.vue:475
-#: src/components/FileListItems.vue:531
+#: src/components/FileListItems.vue:515
 #: src/fields/Audio.vue:75
-#: src/fields/File.vue:259
-#: src/fields/Image.vue:118
+#: src/fields/File.vue:251
+#: src/fields/Image.vue:109
 #: src/fields/Video.vue:77
 #: src/views/ElementList.vue:119
 #: src/views/FileList.vue:116
-#: src/views/PageList.vue:241
+#: src/views/PageList.vue:247
 msgid "editor"
 msgstr "editore"
 
@@ -57,8 +57,8 @@ msgstr "creato"
 
 #: src/components/AsideMeta.vue:35
 #: src/fields/Audio.vue:79
-#: src/fields/File.vue:263
-#: src/fields/Image.vue:122
+#: src/fields/File.vue:255
+#: src/fields/Image.vue:113
 #: src/fields/Video.vue:81
 msgid "updated"
 msgstr "aggiornato"
@@ -73,15 +73,15 @@ msgstr "Dati meta"
 
 #: src/components/ElementDetailItem.vue:68
 #: src/components/ElementDetailRefs.vue:96
-#: src/components/FileDetailItem.vue:508
+#: src/components/FileDetailItem.vue:497
 #: src/components/FileDetailRefs.vue:101
 #: src/components/FileDetailRefs.vue:123
 msgid "Name"
 msgstr "Nome"
 
 #: src/components/ElementDetailItem.vue:80
-#: src/components/FileDetailItem.vue:520
-#: src/components/PageDetailItemProps.vue:150
+#: src/components/FileDetailItem.vue:509
+#: src/components/PageDetailItemProps.vue:153
 msgid "Language"
 msgstr "Lingua"
 
@@ -125,7 +125,7 @@ msgstr "Tipo"
 #: src/components/FileDetailRefs.vue:145
 #: src/views/ElementList.vue:105
 #: src/views/FileList.vue:102
-#: src/views/PageList.vue:211
+#: src/views/PageList.vue:217
 msgid "Published"
 msgstr "Pubblicato"
 
@@ -143,24 +143,24 @@ msgstr "Pubblicato"
 #: src/components/FileDetailItem.vue:416
 #: src/components/FileDetailItem.vue:427
 #: src/components/FileListItems.vue:61
-#: src/components/FileListItems.vue:124
-#: src/components/FileListItems.vue:168
-#: src/components/FileListItems.vue:209
-#: src/components/FileListItems.vue:251
-#: src/components/FileListItems.vue:288
+#: src/components/FileListItems.vue:125
+#: src/components/FileListItems.vue:169
+#: src/components/FileListItems.vue:210
+#: src/components/FileListItems.vue:252
+#: src/components/FileListItems.vue:289
 #: src/components/PageDetailContentList.vue:286
 #: src/components/PageListItems.vue:64
-#: src/components/PageListItems.vue:98
-#: src/components/PageListItems.vue:165
-#: src/components/PageListItems.vue:208
-#: src/components/PageListItems.vue:285
-#: src/components/PageListItems.vue:348
-#: src/components/PageListItems.vue:413
-#: src/components/PageListItems.vue:467
-#: src/components/PageListItems.vue:563
-#: src/components/PageListItems.vue:604
-#: src/components/PageListItems.vue:665
-#: src/components/PageListItems.vue:727
+#: src/components/PageListItems.vue:101
+#: src/components/PageListItems.vue:168
+#: src/components/PageListItems.vue:211
+#: src/components/PageListItems.vue:277
+#: src/components/PageListItems.vue:340
+#: src/components/PageListItems.vue:405
+#: src/components/PageListItems.vue:459
+#: src/components/PageListItems.vue:555
+#: src/components/PageListItems.vue:596
+#: src/components/PageListItems.vue:657
+#: src/components/PageListItems.vue:719
 #: src/fields/File.vue:55
 #: src/fields/Images.vue:61
 #: src/views/ElementDetail.vue:107
@@ -169,9 +169,9 @@ msgstr "Pubblicato"
 #: src/views/FileDetail.vue:46
 #: src/views/FileDetail.vue:95
 #: src/views/FileDetail.vue:164
-#: src/views/PageDetail.vue:297
-#: src/views/PageDetail.vue:349
-#: src/views/PageDetail.vue:543
+#: src/views/PageDetail.vue:299
+#: src/views/PageDetail.vue:351
+#: src/views/PageDetail.vue:540
 msgid "Permission denied"
 msgstr "Autorizzazione negata"
 
@@ -201,99 +201,99 @@ msgstr "Errore nel recuperare gli elementi condivisi"
 
 #: src/components/ElementListItems.vue:417
 #: src/components/ElementListItems.vue:489
-#: src/components/FileListItems.vue:457
-#: src/components/FileListItems.vue:545
-#: src/components/PageDetailContentList.vue:539
-#: src/components/PageDetailContentList.vue:588
-#: src/components/PageListItems.vue:883
-#: src/components/PageListItems.vue:960
+#: src/components/FileListItems.vue:441
+#: src/components/FileListItems.vue:529
+#: src/components/PageDetailContentList.vue:526
+#: src/components/PageDetailContentList.vue:575
+#: src/components/PageListItems.vue:875
+#: src/components/PageListItems.vue:953
 msgid "Actions"
 msgstr "Azioni"
 
 #: src/components/ElementListItems.vue:421
 #: src/components/ElementListItems.vue:497
-#: src/components/FileListItems.vue:461
-#: src/components/FileListItems.vue:553
-#: src/components/PageListItems.vue:887
-#: src/components/PageListItems.vue:967
+#: src/components/FileListItems.vue:445
+#: src/components/FileListItems.vue:537
+#: src/components/PageListItems.vue:879
+#: src/components/PageListItems.vue:960
 #: src/views/ElementDetail.vue:299
 #: src/views/ElementDetail.vue:315
 #: src/views/FileDetail.vue:251
 #: src/views/FileDetail.vue:267
-#: src/views/PageDetail.vue:652
-#: src/views/PageDetail.vue:668
+#: src/views/PageDetail.vue:644
+#: src/views/PageDetail.vue:660
 msgid "Publish"
 msgstr "Pubblicare"
 
 #: src/components/ElementListItems.vue:424
 #: src/components/ElementListItems.vue:544
-#: src/components/PageDetailContentList.vue:671
+#: src/components/PageDetailContentList.vue:658
 #: src/components/PageDetailItemConfig.vue:200
 #: src/components/PageDetailItemMeta.vue:199
-#: src/fields/Items.vue:138
+#: src/fields/Items.vue:214
 msgid "Add element"
 msgstr "Aggiungi elemento"
 
 #: src/components/ElementListItems.vue:427
 #: src/components/ElementListItems.vue:500
-#: src/components/FileListItems.vue:467
-#: src/components/FileListItems.vue:556
-#: src/components/PageDetailContentList.vue:543
-#: src/components/PageDetailContentList.vue:601
-#: src/components/PageListItems.vue:899
-#: src/components/PageListItems.vue:1045
+#: src/components/FileListItems.vue:451
+#: src/components/FileListItems.vue:540
+#: src/components/PageDetailContentList.vue:530
+#: src/components/PageDetailContentList.vue:588
+#: src/components/PageListItems.vue:891
+#: src/components/PageListItems.vue:1038
 msgid "Delete"
 msgstr "Rifiuti"
 
 #: src/components/ElementListItems.vue:430
 #: src/components/ElementListItems.vue:503
-#: src/components/FileListItems.vue:470
-#: src/components/FileListItems.vue:559
-#: src/components/PageListItems.vue:902
-#: src/components/PageListItems.vue:1048
+#: src/components/FileListItems.vue:454
+#: src/components/FileListItems.vue:543
+#: src/components/PageListItems.vue:894
+#: src/components/PageListItems.vue:1041
 msgid "Restore"
 msgstr "Ripristino"
 
 #: src/components/ElementListItems.vue:433
 #: src/components/ElementListItems.vue:506
-#: src/components/FileListItems.vue:473
-#: src/components/FileListItems.vue:562
-#: src/components/PageListItems.vue:905
-#: src/components/PageListItems.vue:1051
+#: src/components/FileListItems.vue:457
+#: src/components/FileListItems.vue:546
+#: src/components/PageListItems.vue:897
+#: src/components/PageListItems.vue:1044
 msgid "Purge"
 msgstr "Epurazione"
 
 #: src/components/ElementListItems.vue:444
-#: src/components/FileListItems.vue:482
-#: src/components/PageDetailContentList.vue:564
-#: src/components/PageListItems.vue:914
+#: src/components/FileListItems.vue:466
+#: src/components/PageDetailContentList.vue:551
+#: src/components/PageListItems.vue:906
 msgid "Search for"
 msgstr "Ricerca di"
 
 #: src/components/ElementListItems.vue:454
-#: src/components/FileListItems.vue:507
+#: src/components/FileListItems.vue:491
 msgid "Sort by"
 msgstr "Ordina per"
 
 #: src/components/ElementListItems.vue:458
 #: src/components/ElementListItems.vue:463
-#: src/components/FileListItems.vue:511
-#: src/components/FileListItems.vue:516
+#: src/components/FileListItems.vue:495
+#: src/components/FileListItems.vue:500
 msgid "latest"
 msgstr "ultimo"
 
 #: src/components/ElementListItems.vue:458
 #: src/components/ElementListItems.vue:466
-#: src/components/FileListItems.vue:511
-#: src/components/FileListItems.vue:519
+#: src/components/FileListItems.vue:495
+#: src/components/FileListItems.vue:503
 msgid "oldest"
 msgstr "più antico"
 
 #: src/components/ElementListItems.vue:469
-#: src/components/FileListItems.vue:522
+#: src/components/FileListItems.vue:506
 #: src/fields/Audio.vue:67
-#: src/fields/File.vue:251
-#: src/fields/Image.vue:110
+#: src/fields/File.vue:243
+#: src/fields/Image.vue:101
 #: src/fields/Video.vue:69
 msgid "name"
 msgstr "nome"
@@ -303,38 +303,40 @@ msgid "type"
 msgstr "tipo"
 
 #: src/components/ElementListItems.vue:530
-#: src/components/FileListItems.vue:594
-#: src/components/HistoryDialog.vue:95
-#: src/components/PageListItems.vue:1084
+#: src/components/FileListItems.vue:578
+#: src/components/HistoryDialog.vue:115
+#: src/components/PageListItems.vue:1078
 msgid "Loading"
 msgstr "Caricamento"
 
 #: src/components/ElementListItems.vue:534
-#: src/components/FileListItems.vue:599
-#: src/components/PageListItems.vue:1089
+#: src/components/FileListItems.vue:583
+#: src/components/PageListItems.vue:1083
 msgid "No entries found"
 msgstr "Nessuna voce trovata"
 
-#: src/components/Fields.vue:130
+#: src/components/Fields.vue:135
+#: src/fields/Items.vue:161
 msgid "Translate %{code} field"
 msgstr "Tradurre il campo %{code} "
 
-#: src/components/Fields.vue:147
+#: src/components/Fields.vue:152
+#: src/fields/Items.vue:178
 msgid "Generate text for %{code} field"
 msgstr "Generare il testo per il campo %{code} "
 
 #: src/components/FieldsDialog.vue:51
 #: src/views/ElementDetail.vue:290
 #: src/views/FileDetail.vue:241
-#: src/views/PageDetail.vue:643
+#: src/views/PageDetail.vue:635
 msgid "Save"
 msgstr "Risparmiare"
 
 #: src/components/FieldsDialog.vue:54
-#: src/components/FileAiDialog.vue:171
+#: src/components/FileAiDialog.vue:168
 #: src/components/FileDialog.vue:25
-#: src/components/FileUrlDialog.vue:155
-#: src/components/HistoryDialog.vue:79
+#: src/components/FileUrlDialog.vue:165
+#: src/components/HistoryDialog.vue:99
 #: src/components/SchemaDialog.vue:25
 msgid "Close"
 msgstr "Chiudere"
@@ -343,33 +345,42 @@ msgstr "Chiudere"
 msgid "Content Element"
 msgstr "Elemento di contenuto"
 
-#: src/components/FileAiDialog.vue:100
+#: src/components/FileAiDialog.vue:83
+#: src/components/FileListItems.vue:112
+#: src/components/FileUrlDialog.vue:67
+#: src/components/FileUrlDialog.vue:147
+#: src/fields/File.vue:95
+#: src/fields/Images.vue:113
+msgid "Error adding file %{path}"
+msgstr "Errore nell'aggiunta del file %{path}"
+
+#: src/components/FileAiDialog.vue:105
 msgid "Context in JSON format"
 msgstr "Contesto in formato JSON"
 
-#: src/components/FileAiDialog.vue:177
-#: src/components/FileAiDialog.vue:196
+#: src/components/FileAiDialog.vue:174
+#: src/components/FileAiDialog.vue:193
 msgid "Create image"
 msgstr "Creare l'immagine"
 
-#: src/components/FileAiDialog.vue:183
+#: src/components/FileAiDialog.vue:180
 msgid "Describe the image"
 msgstr "Descrivere l'immagine"
 
-#: src/components/FileAiDialog.vue:201
+#: src/components/FileAiDialog.vue:198
 msgid "Generated images"
 msgstr "Immagini generate"
 
-#: src/components/FileAiDialog.vue:207
-#: src/components/FileAiDialog.vue:225
+#: src/components/FileAiDialog.vue:204
+#: src/components/FileAiDialog.vue:222
 msgid "Remove"
 msgstr "Rimuovere"
 
-#: src/components/FileAiDialog.vue:221
+#: src/components/FileAiDialog.vue:218
 msgid "Use images of this style"
 msgstr "Utilizzare immagini di questo stile"
 
-#: src/components/FileAiDialog.vue:235
+#: src/components/FileAiDialog.vue:232
 msgid "Select similar images"
 msgstr "Selezionare immagini simili"
 
@@ -401,90 +412,90 @@ msgstr "Nessun file selezionato"
 msgid "Error uploading video cover"
 msgstr "Errore nel caricamento della copertina del video"
 
-#: src/components/FileDetailItem.vue:533
+#: src/components/FileDetailItem.vue:522
 msgid "Use cropped image"
 msgstr "Utilizzare l'immagine ritagliata"
 
-#: src/components/FileDetailItem.vue:539
+#: src/components/FileDetailItem.vue:528
 msgid "Crop image"
 msgstr "Ritagliare l'immagine"
 
-#: src/components/FileDetailItem.vue:543
+#: src/components/FileDetailItem.vue:532
 msgid "Original ratio"
 msgstr "Rapporto originale"
 
-#: src/components/FileDetailItem.vue:546
+#: src/components/FileDetailItem.vue:535
 msgid "No ratio"
 msgstr "Nessun rapporto"
 
-#: src/components/FileDetailItem.vue:549
+#: src/components/FileDetailItem.vue:538
 msgid "Square"
 msgstr "Quadrato"
 
-#: src/components/FileDetailItem.vue:567
+#: src/components/FileDetailItem.vue:556
 msgid "Rotate counter-clockwise"
 msgstr "Ruotare in senso antiorario"
 
-#: src/components/FileDetailItem.vue:568
+#: src/components/FileDetailItem.vue:557
 msgid "Rotate clockwise"
 msgstr "Ruotare in senso orario"
 
-#: src/components/FileDetailItem.vue:571
+#: src/components/FileDetailItem.vue:560
 msgid "Flip horizontally"
 msgstr "Capovolgere orizzontalmente"
 
-#: src/components/FileDetailItem.vue:572
+#: src/components/FileDetailItem.vue:561
 msgid "Flip vertically"
 msgstr "Capovolgere verticalmente"
 
-#: src/components/FileDetailItem.vue:575
+#: src/components/FileDetailItem.vue:564
 msgid "Reset"
 msgstr "Reset"
 
-#: src/components/FileDetailItem.vue:576
+#: src/components/FileDetailItem.vue:565
 msgid "Download"
 msgstr "Scaricare"
 
-#: src/components/FileDetailItem.vue:595
+#: src/components/FileDetailItem.vue:584
 msgid "Use as cover image"
 msgstr "Utilizzare come immagine di copertina"
 
-#: src/components/FileDetailItem.vue:596
+#: src/components/FileDetailItem.vue:585
 msgid "Upload cover image"
 msgstr "Caricare l'immagine di copertina"
 
-#: src/components/FileDetailItem.vue:619
+#: src/components/FileDetailItem.vue:608
 msgid "Descriptions"
 msgstr "Descrizioni"
 
-#: src/components/FileDetailItem.vue:623
-#: src/components/FileDetailItem.vue:665
+#: src/components/FileDetailItem.vue:612
+#: src/components/FileDetailItem.vue:654
 msgid "Translate text"
 msgstr "Tradurre il testo"
 
-#: src/components/FileDetailItem.vue:630
+#: src/components/FileDetailItem.vue:619
 msgid "Generate description"
 msgstr "Generare una descrizione"
 
-#: src/components/FileDetailItem.vue:645
+#: src/components/FileDetailItem.vue:634
 msgid "Description (%{lang})"
 msgstr "Descrizione (%{lang})"
 
-#: src/components/FileDetailItem.vue:661
+#: src/components/FileDetailItem.vue:650
 msgid "Transcriptions"
 msgstr "Trascrizioni"
 
-#: src/components/FileDetailItem.vue:672
+#: src/components/FileDetailItem.vue:661
 msgid "Transcribe file content"
 msgstr "Trascrivere il contenuto del file"
 
-#: src/components/FileDetailItem.vue:687
+#: src/components/FileDetailItem.vue:676
 msgid "Transcription (%{lang})"
 msgstr "Trascrizione (%{lang})"
 
 #: src/components/FileDetailRefs.vue:94
 #: src/components/Navigation.vue:30
-#: src/views/PageList.vue:158
+#: src/views/PageList.vue:163
 msgid "Pages"
 msgstr "Pagine"
 
@@ -501,107 +512,112 @@ msgstr "Versioni"
 msgid "Files"
 msgstr "File"
 
-#: src/components/FileListItems.vue:153
+#: src/components/FileListItems.vue:154
 msgid "Error trashing file"
 msgstr "Errore nel cestinare il file"
 
-#: src/components/FileListItems.vue:201
+#: src/components/FileListItems.vue:202
 msgid "Error restoring file"
 msgstr "Errore nel ripristino del file"
 
-#: src/components/FileListItems.vue:243
+#: src/components/FileListItems.vue:244
 #: src/views/FileDetail.vue:80
 msgid "Error publishing file"
 msgstr "Errore nella pubblicazione del file"
 
-#: src/components/FileListItems.vue:280
+#: src/components/FileListItems.vue:281
 msgid "Error purging file"
 msgstr "Errore nell'eliminazione del file"
 
-#: src/components/FileListItems.vue:380
+#: src/components/FileListItems.vue:381
 msgid "Error fetching files"
 msgstr "Errore nel recupero dei file"
 
-#: src/components/FileListItems.vue:464
-#: src/components/FileListItems.vue:616
-#: src/fields/Images.vue:234
-#: src/fields/Images.vue:253
+#: src/components/FileListItems.vue:448
+#: src/components/FileListItems.vue:600
+#: src/components/FileUrlDialog.vue:161
+#: src/fields/Images.vue:218
+#: src/fields/Images.vue:237
 msgid "Add files"
 msgstr "Aggiungi file"
 
-#: src/components/FileListItems.vue:493
+#: src/components/FileListItems.vue:477
 msgid "Grid view"
 msgstr "Vista griglia"
 
-#: src/components/FileListItems.vue:499
+#: src/components/FileListItems.vue:483
 msgid "List view"
 msgstr "Vista elenco"
 
-#: src/components/FileListItems.vue:528
+#: src/components/FileListItems.vue:512
 msgid "language"
 msgstr "lingua"
 
-#: src/components/FileUrlDialog.vue:134
+#: src/components/FileUrlDialog.vue:110
+msgid "At least one URL is longer than 255 characters"
+msgstr "Almeno un URL è più lungo di 255 caratteri"
+
+#: src/components/FileUrlDialog.vue:143
 msgid "At least one file is not of type \"%{mime}*\""
 msgstr "Almeno un file non è di tipo \"%{mime}*\"."
 
-#: src/components/FileUrlDialog.vue:135
+#: src/components/FileUrlDialog.vue:144
 msgid "The file is not of type \"%{mime}*\""
 msgstr "Il file non è di tipo \"%{mime}*\"."
 
-#: src/components/FileUrlDialog.vue:151
+#: src/components/FileUrlDialog.vue:161
 #: src/fields/Audio.vue:40
-#: src/fields/File.vue:224
-#: src/fields/Image.vue:77
+#: src/fields/File.vue:216
+#: src/fields/Image.vue:68
 #: src/fields/Video.vue:42
 msgid "Add file"
 msgstr "Aggiungi file"
 
-#: src/components/FileUrlDialog.vue:161
-#: src/fields/Images.vue:240
+#: src/components/FileUrlDialog.vue:171
+#: src/fields/Images.vue:224
 msgid "Add files from URLs"
 msgstr "Aggiungere file da URL"
 
-#: src/components/FileUrlDialog.vue:172
+#: src/components/FileUrlDialog.vue:182
 msgid "Enter one URL per line"
 msgstr "Inserire un URL per riga"
 
-#: src/components/FileUrlDialog.vue:186
+#: src/components/FileUrlDialog.vue:196
 msgid "Enter URL"
 msgstr "Inserire l'URL"
 
-#: src/components/FileUrlDialog.vue:196
+#: src/components/FileUrlDialog.vue:208
 #: src/fields/Audio.vue:31
-#: src/fields/File.vue:215
-#: src/fields/Image.vue:68
-#: src/fields/Images.vue:224
+#: src/fields/File.vue:207
+#: src/fields/Image.vue:59
+#: src/fields/Images.vue:208
 #: src/fields/Video.vue:32
 msgid "Remove file"
 msgstr "Rimuovere il file"
 
-#: src/components/HistoryDialog.vue:86
+#: src/components/HistoryDialog.vue:106
 msgid "History"
 msgstr "La storia"
 
-#: src/components/HistoryDialog.vue:108
+#: src/components/HistoryDialog.vue:128
 msgid "No changes"
 msgstr "Nessuna modifica"
 
-#: src/components/HistoryDialog.vue:117
+#: src/components/HistoryDialog.vue:137
 msgid "Current"
 msgstr "Attuale"
 
-#: src/components/HistoryDialog.vue:125
+#: src/components/HistoryDialog.vue:179
 msgid "Revert"
 msgstr "Inversione di marcia"
 
-#: src/components/HistoryDialog.vue:154
+#: src/components/HistoryDialog.vue:240
 msgid "Use version"
 msgstr "Utilizzare la versione"
 
 #: src/components/PageDetailContentList.vue:87
 #: src/components/PageDetailContentList.vue:98
-#: src/components/PageDetailContentList.vue:478
+#: src/components/PageDetailContentList.vue:465
 msgid "Content element not found"
 msgstr "Elemento di contenuto non trovato"
 
@@ -621,65 +637,65 @@ msgstr "Impossibile rendere condiviso l'elemento"
 msgid "Not available for this content element"
 msgstr "Non disponibile per questo elemento di contenuto"
 
-#: src/components/PageDetailContentList.vue:485
+#: src/components/PageDetailContentList.vue:472
 msgid "Element is not shared"
 msgstr "L'elemento non è condiviso"
 
-#: src/components/PageDetailContentList.vue:546
-#: src/components/PageDetailContentList.vue:595
-#: src/components/PageListItems.vue:985
+#: src/components/PageDetailContentList.vue:533
+#: src/components/PageDetailContentList.vue:582
+#: src/components/PageListItems.vue:978
 msgid "Copy"
 msgstr "Copia"
 
-#: src/components/PageDetailContentList.vue:549
-#: src/components/PageDetailContentList.vue:598
-#: src/components/PageListItems.vue:982
+#: src/components/PageDetailContentList.vue:536
+#: src/components/PageDetailContentList.vue:585
+#: src/components/PageListItems.vue:975
 msgid "Cut"
 msgstr "Tagliare"
 
-#: src/components/PageDetailContentList.vue:552
-#: src/components/PageListItems.vue:988
-#: src/components/PageListItems.vue:1006
+#: src/components/PageDetailContentList.vue:539
+#: src/components/PageListItems.vue:981
+#: src/components/PageListItems.vue:999
 msgid "Paste"
 msgstr "Incolla"
 
-#: src/components/PageDetailContentList.vue:555
+#: src/components/PageDetailContentList.vue:542
 msgid "Merge"
 msgstr "Unire"
 
-#: src/components/PageDetailContentList.vue:607
+#: src/components/PageDetailContentList.vue:594
 msgid "Paste before"
 msgstr "Incollare prima"
 
-#: src/components/PageDetailContentList.vue:610
+#: src/components/PageDetailContentList.vue:597
 msgid "Paste after"
 msgstr "Incollare dopo"
 
-#: src/components/PageDetailContentList.vue:613
+#: src/components/PageDetailContentList.vue:600
 msgid "Insert before"
 msgstr "Inserire prima"
 
-#: src/components/PageDetailContentList.vue:616
+#: src/components/PageDetailContentList.vue:603
 msgid "Insert after"
 msgstr "Inserire dopo"
 
-#: src/components/PageDetailContentList.vue:622
+#: src/components/PageDetailContentList.vue:609
 msgid "Make shared"
 msgstr "Rendere condivisi"
 
-#: src/components/PageDetailContentList.vue:625
+#: src/components/PageDetailContentList.vue:612
 msgid "Merge copy"
 msgstr "Copia unione"
 
-#: src/components/PageDetailContentList.vue:628
+#: src/components/PageDetailContentList.vue:615
 msgid "Change to"
 msgstr "Passare a"
 
-#: src/components/PageDetailContentList.vue:631
+#: src/components/PageDetailContentList.vue:618
 msgid "Split"
 msgstr "Dividere"
 
-#: src/components/PageDetailContentList.vue:637
+#: src/components/PageDetailContentList.vue:624
 msgid "Shared element"
 msgstr "Elemento condiviso"
 
@@ -708,100 +724,100 @@ msgstr "Rimuovere l'elemento di contenuto"
 msgid "The path is already in use by another page"
 msgstr "Il percorso è già utilizzato da un'altra pagina"
 
-#: src/components/PageDetailItemProps.vue:130
-#: src/views/PageList.vue:230
+#: src/components/PageDetailItemProps.vue:135
+#: src/views/PageList.vue:236
 msgid "Disabled"
 msgstr "Disabili"
 
-#: src/components/PageDetailItemProps.vue:131
-#: src/views/PageList.vue:228
+#: src/components/PageDetailItemProps.vue:136
+#: src/views/PageList.vue:234
 msgid "Enabled"
 msgstr "Abilitato"
 
-#: src/components/PageDetailItemProps.vue:132
+#: src/components/PageDetailItemProps.vue:137
 msgid "Hidden in navigation"
 msgstr "Nascosto nella navigazione"
 
-#: src/components/PageDetailItemProps.vue:140
+#: src/components/PageDetailItemProps.vue:141
 msgid "Status"
 msgstr "Stato"
 
-#: src/components/PageDetailItemProps.vue:159
+#: src/components/PageDetailItemProps.vue:164
 #: src/fields/Table.vue:54
-#: src/views/Login.vue:84
-#: src/views/Login.vue:90
+#: src/views/Login.vue:93
+#: src/views/Login.vue:106
 msgid "Field is required"
 msgstr "Il campo è obbligatorio"
 
-#: src/components/PageDetailItemProps.vue:166
-msgid "Page name"
-msgstr "Nome della pagina"
-
-#: src/components/PageDetailItemProps.vue:175
+#: src/components/PageDetailItemProps.vue:168
 msgid "Page title"
 msgstr "Titolo della pagina"
 
-#: src/components/PageDetailItemProps.vue:183
+#: src/components/PageDetailItemProps.vue:178
+msgid "Page name"
+msgstr "Nome della pagina"
+
+#: src/components/PageDetailItemProps.vue:188
 msgid "Path must not start with a slash (/)"
 msgstr "Il percorso non deve iniziare con una barra (/)."
 
-#: src/components/PageDetailItemProps.vue:192
+#: src/components/PageDetailItemProps.vue:194
 msgid "URL path"
 msgstr "Percorso URL"
 
-#: src/components/PageDetailItemProps.vue:198
+#: src/components/PageDetailItemProps.vue:203
 msgid "Domain name is invalid"
 msgstr "Il nome di dominio non è valido"
 
-#: src/components/PageDetailItemProps.vue:204
+#: src/components/PageDetailItemProps.vue:207
 msgid "Domain"
 msgstr "Dominio"
 
-#: src/components/PageDetailItemProps.vue:219
+#: src/components/PageDetailItemProps.vue:221
 msgid "Theme"
 msgstr "Tema"
 
-#: src/components/PageDetailItemProps.vue:227
+#: src/components/PageDetailItemProps.vue:229
 msgid "Page type"
 msgstr "Tipo di pagina"
 
-#: src/components/PageDetailItemProps.vue:234
+#: src/components/PageDetailItemProps.vue:239
 msgid "Page tag"
 msgstr "Tag della pagina"
 
-#: src/components/PageDetailItemProps.vue:242
-#: src/views/PageList.vue:237
+#: src/components/PageDetailItemProps.vue:247
+#: src/views/PageList.vue:243
 msgid "No cache"
 msgstr "Nessuna cache"
 
-#: src/components/PageDetailItemProps.vue:243
-#: src/components/PageDetailItemProps.vue:244
-#: src/components/PageDetailItemProps.vue:245
-#: src/components/PageDetailItemProps.vue:246
+#: src/components/PageDetailItemProps.vue:248
+#: src/components/PageDetailItemProps.vue:249
+#: src/components/PageDetailItemProps.vue:250
+#: src/components/PageDetailItemProps.vue:251
 msgid "%{num} minute"
 msgid_plural "%{num} minutes"
 msgstr[0] "%{num} minuto"
 msgstr[1] ""
 
-#: src/components/PageDetailItemProps.vue:247
-#: src/components/PageDetailItemProps.vue:248
-#: src/components/PageDetailItemProps.vue:249
-#: src/components/PageDetailItemProps.vue:250
-#: src/components/PageDetailItemProps.vue:251
+#: src/components/PageDetailItemProps.vue:252
+#: src/components/PageDetailItemProps.vue:253
+#: src/components/PageDetailItemProps.vue:254
+#: src/components/PageDetailItemProps.vue:255
+#: src/components/PageDetailItemProps.vue:256
 msgid "%{num} hour"
 msgid_plural "%{num} hours"
 msgstr[0] "%{num} ora"
 msgstr[1] ""
 
-#: src/components/PageDetailItemProps.vue:257
+#: src/components/PageDetailItemProps.vue:260
 msgid "Cache time"
 msgstr "Tempo di cache"
 
-#: src/components/PageDetailItemProps.vue:268
+#: src/components/PageDetailItemProps.vue:273
 msgid "URL is not valid"
 msgstr "L'URL non è valido"
 
-#: src/components/PageDetailItemProps.vue:274
+#: src/components/PageDetailItemProps.vue:277
 msgid "Redirect URL"
 msgstr "URL di reindirizzamento"
 
@@ -822,7 +838,7 @@ msgid "Add element after"
 msgstr "Aggiungere l'elemento dopo"
 
 #: src/components/PageDetailPreview.vue:187
-#: src/fields/Items.vue:101
+#: src/fields/Items.vue:146
 msgid "Remove element"
 msgstr "Rimuovere l'elemento"
 
@@ -838,107 +854,107 @@ msgstr "Modalità a schermo intero"
 msgid "Exit fullscreen mode"
 msgstr "Uscire dalla modalità a schermo intero"
 
-#: src/components/PageListItems.vue:90
+#: src/components/PageListItems.vue:93
 msgid "Error adding root page"
 msgstr "Errore nell'aggiunta della pagina principale"
 
-#: src/components/PageListItems.vue:132
-#: src/components/PageListItems.vue:457
+#: src/components/PageListItems.vue:135
+#: src/components/PageListItems.vue:449
 msgid "Error moving page"
 msgstr "Errore nello spostamento della pagina"
 
-#: src/components/PageListItems.vue:200
+#: src/components/PageListItems.vue:203
 msgid "Error trashing page"
 msgstr "Errore nel cestinare la pagina"
 
-#: src/components/PageListItems.vue:248
+#: src/components/PageListItems.vue:251
 msgid "Error fetching pages"
 msgstr "Errore nel recuperare le pagine"
 
-#: src/components/PageListItems.vue:333
+#: src/components/PageListItems.vue:325
 msgid "Error inserting page"
 msgstr "Errore nell'inserimento della pagina"
 
-#: src/components/PageListItems.vue:389
+#: src/components/PageListItems.vue:381
 msgid "Error restoring page"
 msgstr "Errore nel ripristino della pagina"
 
-#: src/components/PageListItems.vue:549
+#: src/components/PageListItems.vue:541
 msgid "Error copying page"
 msgstr "Errore nella copia della pagina"
 
-#: src/components/PageListItems.vue:553
-#: src/views/PageDetail.vue:241
+#: src/components/PageListItems.vue:545
+#: src/views/PageDetail.vue:135
 msgid "Error fetching page"
 msgstr "Errore nel recuperare la pagina"
 
-#: src/components/PageListItems.vue:596
-#: src/views/PageDetail.vue:331
+#: src/components/PageListItems.vue:588
+#: src/views/PageDetail.vue:333
 msgid "Error publishing page"
 msgstr "Errore nella pubblicazione della pagina"
 
-#: src/components/PageListItems.vue:638
+#: src/components/PageListItems.vue:630
 msgid "Error purging page"
 msgstr "Pagina di epurazione degli errori"
 
-#: src/components/PageListItems.vue:707
+#: src/components/PageListItems.vue:699
 msgid "Error searching pages"
 msgstr "Errore nella ricerca delle pagine"
 
-#: src/components/PageListItems.vue:755
-#: src/views/PageDetail.vue:435
+#: src/components/PageListItems.vue:747
+#: src/views/PageDetail.vue:428
 msgid "Error saving page"
 msgstr "Errore nel salvataggio della pagina"
 
-#: src/components/PageListItems.vue:890
-#: src/components/PageListItems.vue:973
+#: src/components/PageListItems.vue:882
+#: src/components/PageListItems.vue:966
 msgid "Enable"
 msgstr "Abilitazione"
 
-#: src/components/PageListItems.vue:893
-#: src/components/PageListItems.vue:970
+#: src/components/PageListItems.vue:885
+#: src/components/PageListItems.vue:963
 msgid "Disable"
 msgstr "Disattivare"
 
-#: src/components/PageListItems.vue:924
+#: src/components/PageListItems.vue:916
 msgid "Reload page tree"
 msgstr "Ricarica l'albero della pagina"
 
-#: src/components/PageListItems.vue:951
+#: src/components/PageListItems.vue:944
 msgid "Toggle child nodes"
 msgstr "Alterna i nodi figlio"
 
-#: src/components/PageListItems.vue:976
+#: src/components/PageListItems.vue:969
 msgid "Hide"
 msgstr "Nascondi nel menu"
 
-#: src/components/PageListItems.vue:992
-#: src/components/PageListItems.vue:1010
-#: src/components/PageListItems.vue:1028
+#: src/components/PageListItems.vue:985
+#: src/components/PageListItems.vue:1003
+#: src/components/PageListItems.vue:1021
 msgid "Before"
 msgstr "Prima"
 
-#: src/components/PageListItems.vue:997
-#: src/components/PageListItems.vue:1015
-#: src/components/PageListItems.vue:1033
+#: src/components/PageListItems.vue:990
+#: src/components/PageListItems.vue:1008
+#: src/components/PageListItems.vue:1026
 msgid "Into"
 msgstr "Into"
 
-#: src/components/PageListItems.vue:1002
-#: src/components/PageListItems.vue:1020
-#: src/components/PageListItems.vue:1038
+#: src/components/PageListItems.vue:995
+#: src/components/PageListItems.vue:1013
+#: src/components/PageListItems.vue:1031
 msgid "After"
 msgstr "Dopo"
 
-#: src/components/PageListItems.vue:1024
+#: src/components/PageListItems.vue:1017
 msgid "Insert"
 msgstr "Inserire"
 
-#: src/components/PageListItems.vue:1070
+#: src/components/PageListItems.vue:1064
 msgid "New"
 msgstr "Nuovo"
 
-#: src/components/PageListItems.vue:1095
+#: src/components/PageListItems.vue:1089
 msgid "Add page"
 msgstr "Aggiungi pagina"
 
@@ -971,20 +987,20 @@ msgid "Logout"
 msgstr "Disconnessione"
 
 #: src/fields/Audio.vue:46
-#: src/fields/File.vue:230
-#: src/fields/Image.vue:83
+#: src/fields/File.vue:222
+#: src/fields/Image.vue:74
 #: src/fields/Video.vue:48
 msgid "Add file from URL"
 msgstr "Aggiungere un file da un URL"
 
 #: src/fields/Audio.vue:51
-#: src/fields/File.vue:235
-#: src/fields/Image.vue:94
+#: src/fields/File.vue:227
+#: src/fields/Image.vue:85
 #: src/fields/Video.vue:53
 msgid "Upload file"
 msgstr "Caricare il file"
 
-#: src/fields/Autocomplete.vue:140
+#: src/fields/Autocomplete.vue:148
 #: src/fields/Color.vue:34
 #: src/fields/Date.vue:48
 #: src/fields/Html.vue:42
@@ -994,7 +1010,8 @@ msgstr "Caricare il file"
 msgid "Value is required"
 msgstr "Il valore è richiesto"
 
-#: src/fields/Autocomplete.vue:146
+#: src/fields/Autocomplete.vue:154
+#: src/fields/Combobox.vue:18
 msgid "No data available"
 msgstr "Nessun dato disponibile"
 
@@ -1002,20 +1019,16 @@ msgstr "Nessun dato disponibile"
 msgid "Value must be a hex color code"
 msgstr "Il valore deve essere un codice colore esadecimale"
 
-#: src/fields/File.vue:95
-msgid "Error uploading file"
-msgstr "Errore nel caricamento del file"
-
-#: src/fields/Image.vue:89
-#: src/fields/Images.vue:248
+#: src/fields/Image.vue:80
+#: src/fields/Images.vue:232
 msgid "Create file"
 msgstr "Creare un file"
 
-#: src/fields/Items.vue:70
+#: src/fields/Items.vue:115
 msgid "Maximum is %{num} entries"
 msgstr "Il massimo è %{num} voci"
 
-#: src/fields/Items.vue:71
+#: src/fields/Items.vue:116
 msgid "Minimum is %{num} entries"
 msgstr "Il minimo è %{num} voci"
 
@@ -1353,7 +1366,7 @@ msgstr "Errore nel recuperare le versioni degli elementi"
 
 #: src/views/ElementDetail.vue:265
 #: src/views/FileDetail.vue:215
-#: src/views/PageDetail.vue:599
+#: src/views/PageDetail.vue:591
 msgid "Back to list view"
 msgstr "Torna alla visualizzazione dell'elenco"
 
@@ -1369,7 +1382,7 @@ msgstr "Visualizza la storia"
 
 #: src/views/ElementDetail.vue:303
 #: src/views/FileDetail.vue:255
-#: src/views/PageDetail.vue:656
+#: src/views/PageDetail.vue:648
 msgid "Schedule publishing"
 msgstr "Pubblicazione del programma"
 
@@ -1377,8 +1390,8 @@ msgstr "Pubblicazione del programma"
 #: src/views/ElementList.vue:84
 #: src/views/FileDetail.vue:273
 #: src/views/FileList.vue:81
-#: src/views/PageDetail.vue:674
-#: src/views/PageList.vue:165
+#: src/views/PageDetail.vue:666
+#: src/views/PageList.vue:170
 msgid "Toggle side menu"
 msgstr "Alterna il menu laterale"
 
@@ -1395,72 +1408,72 @@ msgstr "Utilizzato da"
 #: src/views/FileList.vue:101
 #: src/views/FileList.vue:110
 #: src/views/FileList.vue:118
-#: src/views/PageList.vue:58
-#: src/views/PageList.vue:210
-#: src/views/PageList.vue:219
-#: src/views/PageList.vue:227
-#: src/views/PageList.vue:236
-#: src/views/PageList.vue:243
+#: src/views/PageList.vue:63
+#: src/views/PageList.vue:216
+#: src/views/PageList.vue:225
+#: src/views/PageList.vue:233
+#: src/views/PageList.vue:242
+#: src/views/PageList.vue:249
 msgid "All"
 msgstr "Tutti"
 
 #: src/views/ElementList.vue:70
 #: src/views/FileList.vue:69
-#: src/views/PageList.vue:153
+#: src/views/PageList.vue:158
 msgid "Close navigation"
 msgstr "Chiudere la navigazione"
 
 #: src/views/ElementList.vue:70
 #: src/views/FileList.vue:69
-#: src/views/PageList.vue:153
+#: src/views/PageList.vue:158
 msgid "Open navigation"
 msgstr "Aprire la navigazione"
 
 #: src/views/ElementList.vue:102
 #: src/views/FileList.vue:99
-#: src/views/PageList.vue:208
+#: src/views/PageList.vue:214
 msgid "publish"
 msgstr "pubblicare"
 
 #: src/views/ElementList.vue:106
 #: src/views/FileList.vue:103
-#: src/views/PageList.vue:212
+#: src/views/PageList.vue:218
 msgid "Scheduled"
 msgstr "In programma"
 
 #: src/views/ElementList.vue:107
 #: src/views/FileList.vue:104
-#: src/views/PageList.vue:213
+#: src/views/PageList.vue:219
 msgid "Drafts"
 msgstr "Bozze"
 
 #: src/views/ElementList.vue:111
 #: src/views/FileList.vue:108
-#: src/views/PageList.vue:217
+#: src/views/PageList.vue:223
 msgid "trashed"
 msgstr "distrutto"
 
 #: src/views/ElementList.vue:114
 #: src/views/FileList.vue:111
-#: src/views/PageList.vue:220
+#: src/views/PageList.vue:226
 msgid "Available only"
 msgstr "Disponibile solo"
 
 #: src/views/ElementList.vue:115
 #: src/views/FileList.vue:112
-#: src/views/PageList.vue:221
+#: src/views/PageList.vue:227
 msgid "Only trashed"
 msgstr "Solo spazzatura"
 
 #: src/views/ElementList.vue:122
 #: src/views/FileList.vue:119
-#: src/views/PageList.vue:244
+#: src/views/PageList.vue:250
 msgid "Edited by me"
 msgstr "Modificato da me"
 
 #: src/views/ElementList.vue:126
 #: src/views/FileList.vue:123
-#: src/views/PageList.vue:248
+#: src/views/PageList.vue:254
 msgid "languages"
 msgstr "lingue"
 
@@ -1489,104 +1502,103 @@ msgstr "Errore nel recuperare le versioni dei file"
 msgid "File"
 msgstr "File"
 
-#: src/views/Login.vue:50
+#: src/views/Login.vue:56
 msgid "Not a CMS editor"
 msgstr "Non è un editor CMS"
 
-#: src/views/Login.vue:66
+#: src/views/Login.vue:72
 msgid "Access denied"
 msgstr "Accesso negato"
 
-#: src/views/Login.vue:79
-#: src/views/Login.vue:106
-msgid "Login"
-msgstr "Accesso"
-
-#: src/views/Login.vue:83
+#: src/views/Login.vue:91
 msgid "E-Mail"
 msgstr "Posta elettronica"
 
-#: src/views/Login.vue:85
+#: src/views/Login.vue:94
 msgid "Invalid e-mail address"
 msgstr "Indirizzo e-mail non valido"
 
-#: src/views/Login.vue:89
+#: src/views/Login.vue:104
 msgid "Password"
 msgstr "Password"
 
-#: src/views/Login.vue:100
+#: src/views/Login.vue:119
 msgid "Error"
 msgstr "Errore"
 
-#: src/views/PageDetail.vue:323
+#: src/views/Login.vue:125
+msgid "Login"
+msgstr "Accesso"
+
+#: src/views/PageDetail.vue:325
 msgid "Page published successfully"
 msgstr "Pagina pubblicata con successo"
 
-#: src/views/PageDetail.vue:326
+#: src/views/PageDetail.vue:328
 msgid "Page scheduled for publishing at %{date}"
 msgstr "Pagina prevista per la pubblicazione a %{date}"
 
-#: src/views/PageDetail.vue:359
+#: src/views/PageDetail.vue:361
 msgid "There are invalid fields, please resolve the errors first"
 msgstr "Ci sono campi non validi, risolvere prima gli errori"
 
-#: src/views/PageDetail.vue:427
+#: src/views/PageDetail.vue:420
 msgid "Page saved successfully"
 msgstr "Pagina salvata con successo"
 
-#: src/views/PageDetail.vue:444
+#: src/views/PageDetail.vue:437
 msgid "No page schema for \"content\" found"
 msgstr "Nessuno schema di pagina per \"content\" trovato"
 
-#: src/views/PageDetail.vue:580
+#: src/views/PageDetail.vue:572
 msgid "Error fetching page versions"
 msgstr "Errore nel recuperare le versioni delle pagine"
 
-#: src/views/PageDetail.vue:606
-#: src/views/PageDetail.vue:686
+#: src/views/PageDetail.vue:598
+#: src/views/PageDetail.vue:678
 msgid "Page"
 msgstr "Pagina"
 
-#: src/views/PageDetail.vue:614
+#: src/views/PageDetail.vue:606
 msgid "Translate page"
 msgstr "Tradurre la pagina"
 
-#: src/views/PageDetail.vue:690
+#: src/views/PageDetail.vue:682
 msgid "Editor"
 msgstr "Editore"
 
-#: src/views/PageDetail.vue:695
+#: src/views/PageDetail.vue:687
 msgid "Content"
 msgstr "Contenuto"
 
-#: src/views/PageList.vue:135
+#: src/views/PageList.vue:140
 msgid "Error sending request"
 msgstr "Errore nell'invio della richiesta di gestione"
 
-#: src/views/PageList.vue:180
+#: src/views/PageList.vue:185
 msgid "What kind of page and content should I create?"
 msgstr "Che tipo di pagina e di contenuto devo creare?"
 
-#: src/views/PageList.vue:201
+#: src/views/PageList.vue:207
 msgid "view"
 msgstr "vista"
 
-#: src/views/PageList.vue:203
+#: src/views/PageList.vue:209
 msgid "Tree"
 msgstr "Albero"
 
-#: src/views/PageList.vue:204
+#: src/views/PageList.vue:210
 msgid "List"
 msgstr "Elenco"
 
-#: src/views/PageList.vue:225
+#: src/views/PageList.vue:231
 msgid "status"
 msgstr "stato"
 
-#: src/views/PageList.vue:229
+#: src/views/PageList.vue:235
 msgid "Hidden"
 msgstr "Nascosto"
 
-#: src/views/PageList.vue:234
+#: src/views/PageList.vue:240
 msgid "cache"
 msgstr "cache"
