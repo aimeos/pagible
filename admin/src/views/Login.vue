@@ -82,7 +82,7 @@
   <v-form class="login" :class="{show: login}" v-model="form" @submit.prevent="cmslogin()">
     <v-card :loading="loading" class="elevation-2" :class="{error: error}">
       <template v-slot:title>
-        {{ $gettext('Login') }}
+        PagibleAI CMS
       </template>
 
       <v-card-text>
@@ -149,6 +149,10 @@
   .login.show .v-card {
     opacity: 1;
     transition: opacity 0.5s;
+  }
+
+  .login .v-card-title {
+    text-align: center;
   }
 
   .login .v-card-actions {

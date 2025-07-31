@@ -257,20 +257,9 @@
       fields() {
         return `id
           parent_id
-          lang
-          path
-          domain
-          name
-          title
-          to
-          tag
-          type
-          theme
-          status
-          cache
-          editor
-          updated_at
+          created_at
           deleted_at
+          editor
           has
           latest {
             id
@@ -1131,7 +1120,6 @@
 
   .tree-node-inner .spinner {
     transform: rotate(90deg);
-    margin-inline-end: 6px;
     padding: 8px;
     height: 48px;
     width: 48px;
