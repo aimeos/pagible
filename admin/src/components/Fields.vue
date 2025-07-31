@@ -86,7 +86,6 @@
 
 
       translateText(code, lang) {
-
         this.translating[code] = true
 
         this.translate([this.data[code]], lang).then(result => {
@@ -185,5 +184,6 @@
     text-transform: capitalize;
     font-weight: bold;
     margin-bottom: 4px;
+    min-height: 48px;
   }
 </style>

@@ -22,8 +22,12 @@
 
     emits: ['update:modelValue', 'error', 'addFile', 'removeFile'],
 
+    inject: ['compose', 'translate', 'txlocales'],
+
     data() {
       return {
+        translating: {},
+        composing: {},
         errors: [],
         items: [],
         panel: [],
@@ -41,6 +45,26 @@
 
       change() {
         this.$emit('update:modelValue', this.items)
+      },
+
+
+      composeText(idx, code) {
+        const context = [
+          'generate for: ' + (this.config.item?.[code]?.label || code),
+          'required output format: ' + this.config.item?.[code]?.type,
+          this.config.item?.[code]?.min ? 'minimum characters: ' + this.config.item?.[code]?.min : null,
+          this.config.item?.[code]?.max ? 'maximum characters: ' + this.config.item?.[code]?.max : null,
+          this.config.item?.[code]?.placeholder ? 'hint text: ' + this.config.item?.[code]?.placeholder : null,
+          'context information as JSON: ' + JSON.stringify(this.items[idx]),
+        ]
+
+        this.composing[idx+code] = true
+
+        this.compose(this.items[idx][code] ?? '', context).then(result => {
+          this.update(idx, code, result)
+        }).finally(() => {
+          this.composing[idx+code] = false
+        })
       },
 
 
@@ -62,6 +86,27 @@
 
       toName(type) {
         return type?.charAt(0)?.toUpperCase() + type?.slice(1)
+      },
+
+
+      translateText(idx, code, lang) {
+        this.translating[idx+code] = true
+
+        this.translate([this.items[idx][code]], lang).then(result => {
+          this.update(idx, code, result[0] || '')
+        }).finally(() => {
+          this.translating[idx+code] = false
+        })
+      },
+
+
+      update(idx, code, value) {
+        if(!this.items[idx]) {
+          this.items[idx] = {}
+        }
+
+        this.items[idx][code] = value
+        this.$emit('update:modelValue', this.items)
       },
 
 
@@ -107,9 +152,40 @@
 
         <v-expansion-panel-text>
           <div v-for="(field, code) in (config.item || {})" :key="code" class="field">
-            <v-label>{{ field.label || code }}</v-label>
+            <v-label>
+              {{ field.label || code }}
+              <div v-if="!readonly && ['markdown', 'plaintext', 'string', 'text'].includes(field.type)" class="actions">
+                <v-menu>
+                  <template #activator="{ props }">
+                    <v-btn v-bind="props"
+                      :title="$gettext('Translate %{code} field', {code: code})"
+                      :loading="translating[idx+code]"
+                      icon="mdi-translate"
+                      variant="flat"
+                    />
+                  </template>
+                  <v-list>
+                    <v-list-item v-for="lang in txlocales()" :key="lang.code">
+                      <v-btn
+                        @click="translateText(idx, code, lang.code)"
+                        prepend-icon="mdi-arrow-right-thin"
+                        variant="text"
+                      >{{ lang.name }}</v-btn>
+                    </v-list-item>
+                  </v-list>
+                </v-menu>
+                <v-btn
+                  :title="$gettext('Generate text for %{code} field', {code: code})"
+                  :loading="composing[idx+code]"
+                  @click="composeText(idx, code)"
+                  icon="mdi-creation"
+                  variant="flat"
+                />
+              </div>
+            </v-label>
             <component :is="toName(field.type)"
-              v-model="items[idx][code]"
+              :modelValue="items[idx]?.[code] || ''"
+              @update:modelValue="update(idx, code, $event)"
               @addFile="$emit('addFile', $event)"
               @removeFile="$emit('removeFile', $event)"
               :readonly="readonly"
@@ -155,9 +231,12 @@
     margin: 24px 0;
   }
 
-  label {
-    font-weight: bold;
+  .v-label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     text-transform: capitalize;
+    font-weight: bold;
     margin-bottom: 4px;
   }
 </style>
