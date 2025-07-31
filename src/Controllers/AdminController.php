@@ -18,11 +18,12 @@ class AdminController extends Controller
         return response()
             ->view('cms::layouts.admin', compact('nonce'))
             ->header('Content-Security-Policy',
-                "base-uri 'self'; " .
-                "default-src 'self' 'nonce-{$nonce}'; " .
-                "style-src 'unsafe-inline' 'self'; " .
-                "media-src 'self' data: blob:;" .
-                "img-src 'self' data: blob:"
+                "base-uri 'self';" .
+                "default-src 'self';" .
+                "style-src 'self' 'unsafe-inline';" .
+                "script-src 'self' 'nonce-{$nonce}';" .
+                "img-src 'self' data: blob: http: https:;" .
+                "media-src 'self' data: blob: http: https:;"
             );
     }
 
