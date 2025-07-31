@@ -38,7 +38,7 @@
       add(item) {
         this.loading = true
 
-        fetch(this.app.urlproxy.replace(':url', encodeURIComponent(item.path)), {
+        fetch(this.app.urlproxy.replace('_url_', encodeURIComponent(item.path)), {
             credentials: 'include',
             method: 'GET'
         }).then(response => {
@@ -80,7 +80,7 @@
           Object.assign(item, response.data.addFile, {previews: JSON.parse(response.data.addFile.previews || '{}')})
           this.$emit('add', [item])
         }).catch(error => {
-          this.messages.add(this.$gettext(`Error adding file %{path}`, {path: filename}), 'error')
+          this.messages.add(this.$gettext(`Error adding file %{path}`, {path: item?.path}), 'error')
           this.$log(`FileAiDialog::add(): Error adding file`, error)
         }).finally(() => {
           this.loading = false
@@ -115,7 +115,7 @@
           this.input = list.shift() || this.input
 
           list.forEach(url => {
-            fetch(this.app.urlproxy.replace(':url', encodeURIComponent(url)), {
+            fetch(this.app.urlproxy.replace('_url_', encodeURIComponent(url)), {
                 credentials: 'include',
                 method: 'HEAD'
             }).then(response => {

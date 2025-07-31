@@ -58,7 +58,7 @@
       url() {
         return this.app.urlpage
           .replace(/:domain/, this.item.domain || '')
-          .replace(/:path/, this.item.path || '')
+          .replace(/_path_/, this.item.path || '')
           .replace(/\/+$/, '')
       }
     },

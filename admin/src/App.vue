@@ -111,7 +111,7 @@
         if(!path) return ''
 
         if(proxy && path.startsWith('http')) {
-          return this.app.urlproxy.replace(/:url/, encodeURIComponent(path))
+          return this.app.urlproxy.replace(/_url_/, encodeURIComponent(path))
         }
 
         if(path.startsWith('http') || path.startsWith('blob:')) {

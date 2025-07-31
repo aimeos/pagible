@@ -123,7 +123,7 @@
             return
           }
 
-          fetch(this.app.urlproxy.replace(':url', encodeURIComponent(url)), {
+          fetch(this.app.urlproxy.replace('_url_', encodeURIComponent(url)), {
               credentials: 'include',
               method: 'HEAD'
           }).then(response => {

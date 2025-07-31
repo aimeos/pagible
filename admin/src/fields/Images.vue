@@ -153,7 +153,7 @@
 
         items.forEach(item => {
           this.images.push(item)
-          this.$emit('addFile', item.id)
+          this.$emit('addFile', item)
         })
 
         this.$emit('update:modelValue', this.images.map(item => ({id: item.id, type: 'file'})))
