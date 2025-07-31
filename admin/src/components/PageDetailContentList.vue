@@ -408,20 +408,7 @@
           }
         }
 
-        // merge consecutive text nodes
-        const elements = list.reduce((acc, el) => {
-          const prev = acc[acc.length - 1]
-
-          if(el.type === 'text' && prev?.type === 'text') {
-            prev.data.text += '\n' + el.data.text // Merge with previous
-          } else {
-            acc.push({...el}) // clone to avoid mutation
-          }
-
-          return acc
-        }, [])
-
-        this.content.splice(idx, 1, ...elements)
+        this.content.splice(idx, 1, ...list)
         this.$emit('error', this.content.some(el => el._error))
         this.$emit('update:content', this.content)
         this.store()
