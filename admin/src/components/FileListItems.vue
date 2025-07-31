@@ -11,7 +11,7 @@
 
     emits: ['select'],
 
-    inject: ['debounce'],
+    inject: ['debounce', 'url', 'srcset'],
 
     data() {
       return {
@@ -383,15 +383,6 @@
       },
 
 
-      srcset(map) {
-        let list = []
-        for(const key in map) {
-          list.push(`${this.url(map[key])} ${key}w`)
-        }
-        return list.join(', ')
-      },
-
-
       title(item) {
         const list = []
 
@@ -407,15 +398,7 @@
         this.items.forEach(el => {
           el._checked = !el._checked
         })
-      },
-
-
-      url(path) {
-        if(path.startsWith('http') || path.startsWith('blob:')) {
-          return path
-        }
-        return this.app.urlfile.replace(/\/+$/g, '') + '/' + path
-      },
+      }
     },
 
     watch: {

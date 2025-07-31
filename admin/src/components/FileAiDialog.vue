@@ -15,6 +15,8 @@
 
     emits: ['update:modelValue', 'add'],
 
+    inject: ['url'],
+
     setup() {
       const app = useAppStore()
       return { app }
@@ -142,14 +144,6 @@
 
       removeSimilar(idx) {
         this.similar.splice(idx, 1)
-      },
-
-
-      url(path) {
-        if(path.startsWith('http') || path.startsWith('blob:')) {
-          return path
-        }
-        return this.app.urlfile.replace(/\/+$/g, '') + '/' + path
       },
 
 

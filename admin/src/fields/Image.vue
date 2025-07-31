@@ -33,15 +33,6 @@
           console.error(error)
           return false
         })
-      },
-
-
-      srcset(map) {
-        let list = []
-        for(const key in map) {
-          list.push(`${this.url(map[key])} ${key}w`)
-        }
-        return list.join(', ')
       }
     }
   }

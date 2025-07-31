@@ -1,7 +1,7 @@
 <script>
   import gql from 'graphql-tag'
   import { computed, markRaw, provide } from 'vue'
-  import { useLanguageStore, useMessageStore } from './stores'
+  import { useAppStore, useLanguageStore, useMessageStore } from './stores'
 
   export default {
     data() {
@@ -19,13 +19,17 @@
         translate: this.translateText,
         txlocales: this.txlangs,
         locales: this.langs,
+        srcset: this.srcs,
+        url: this.fullurl,
       }
     },
 
     setup() {
       const languages = useLanguageStore()
       const messages = useMessageStore()
-      return { languages, messages }
+      const app = useAppStore()
+
+      return { app, languages, messages }
     },
 
     methods: {
@@ -103,6 +107,21 @@
       },
 
 
+      fullurl(path, proxy = false) {
+        if(!path) return ''
+
+        if(proxy && path.startsWith('http')) {
+          return this.app.urlproxy.replace(/:url/, encodeURIComponent(path))
+        }
+
+        if(path.startsWith('http') || path.startsWith('blob:')) {
+          return path
+        }
+
+        return this.app.urlfile.replace(/\/+$/g, '') + '/' + path
+      },
+
+
       langs(none = false) {
         const list = []
 
@@ -115,6 +134,15 @@
         })
 
         return list
+      },
+
+
+      srcs(map) {
+        let list = []
+        for(const key in (map || {})) {
+          list.push(`${this.fullurl(map[key])} ${key}w`)
+        }
+        return list.join(', ')
       },
 
 

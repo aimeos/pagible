@@ -18,7 +18,7 @@
       VueDraggable
     },
 
-    inject: ['openView'],
+    inject: ['openView', 'url', 'srcset'],
 
     props: {
       'modelValue': {type: Array, default: () => []},
@@ -159,23 +159,6 @@
         this.vfiles = false
         this.vurls = false
         this.validate()
-      },
-
-
-      srcset(map) {
-        let list = []
-        for(const key in map) {
-          list.push(`${this.url(map[key])} ${key}w`)
-        }
-        return list.join(', ')
-      },
-
-
-      url(path) {
-        if(path.startsWith('http') || path.startsWith('blob:')) {
-          return path
-        }
-        return this.app.urlfile.replace(/\/+$/g, '') + '/' + path
       },
 
 

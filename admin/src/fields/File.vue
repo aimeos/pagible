@@ -14,7 +14,7 @@
       FileDialog
     },
 
-    inject: ['openView'],
+    inject: ['openView', 'url', 'srcset'],
 
     props: {
       'modelValue': {type: [Object, null], default: () => null},
@@ -151,14 +151,6 @@
         this.$emit('addFile', item.id)
         this.$emit('update:modelValue', {id: item.id, type: 'file'})
         this.validate()
-      },
-
-
-      url(path) {
-        if(path.startsWith('http') || path.startsWith('blob:')) {
-          return path
-        }
-        return this.app.urlfile.replace(/\/+$/g, '') + '/' + path
       },
 
 
