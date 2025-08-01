@@ -48,7 +48,7 @@
 
           return response.blob()
         }).then(blob => {
-          const filename = item.name.replaceAll(' ', '-') + '_' + (new Date()).toISOString().replace(/[^0-9]/g, '') + '.png'
+          const filename = this.slugify(item.name) + '_' + (new Date()).toISOString().replace(/[^0-9]/g, '') + '.png'
 
           return this.$apollo.mutate({
             mutation: gql`mutation($input: FileInput, $file: Upload) {

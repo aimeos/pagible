@@ -10,7 +10,7 @@
 
     emits: ['change', 'error'],
 
-    inject: ['debounce', 'locales'],
+    inject: ['debounce', 'locales', 'slugify'],
 
     data: () => ({
       errors: {},
@@ -87,12 +87,7 @@
 
 
       updatePath(value) {
-        this.update('path', value
-          ?.replace(/[?&=%#@!$^*()+=\[\]{}|\\"'<>;:.,_\s]/gu, '-')
-          ?.replace(/-+/g, '-')
-          ?.replace(/^-|-$/g, '')
-          ?.toLowerCase()
-        )
+        this.update('path', this.slugify(value))
       },
 
 

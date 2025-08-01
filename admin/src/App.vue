@@ -12,15 +12,16 @@
 
     provide() {
       return {
-        debounce: this.debouncer,
+        debounce: this.debounce,
         openView: this.open,
         closeView: this.close,
-        compose: this.composeText,
-        translate: this.translateText,
-        txlocales: this.txlangs,
-        locales: this.langs,
-        srcset: this.srcs,
-        url: this.fullurl,
+        compose: this.compose,
+        translate: this.translate,
+        txlocales: this.txlocales,
+        locales: this.locales,
+        slugify: this.slugify,
+        srcset: this.srcset,
+        url: this.url,
       }
     },
 
@@ -33,7 +34,7 @@
     },
 
     methods: {
-      debouncer(func, delay) {
+      debounce(func, delay) {
         let timer
 
         return function(...args) {
@@ -71,7 +72,7 @@
       },
 
 
-      composeText(prompt, context = [], files = []) {
+      compose(prompt, context = [], files = []) {
         prompt = String(prompt).trim()
 
         if(!prompt) {
@@ -102,27 +103,12 @@
           return result.data?.compose?.replace(/^"(.*)"$/, '$1') || ''
         }).catch(error => {
           this.messages.add(this.$gettext('Error generating text'), 'error')
-          this.$log(`App::composeText(): Error generating text`, error)
+          this.$log(`App::compose(): Error generating text`, error)
         })
       },
 
 
-      fullurl(path, proxy = false) {
-        if(!path) return ''
-
-        if(proxy && path.startsWith('http')) {
-          return this.app.urlproxy.replace(/_url_/, encodeURIComponent(path))
-        }
-
-        if(path.startsWith('http') || path.startsWith('blob:')) {
-          return path
-        }
-
-        return this.app.urlfile.replace(/\/+$/g, '') + '/' + path
-      },
-
-
-      langs(none = false) {
+      locales(none = false) {
         const list = []
 
         if(none) {
@@ -137,16 +123,26 @@
       },
 
 
-      srcs(map) {
+      slugify(text) {
+        if(!text) return ''
+        return text
+          .replace(/[?&=%#@!$^*()+=\[\]{}|\\"'<>;:.,_\s]/gu, '-')
+          .replace(/-+/g, '-')
+          .replace(/^-|-$/g, '')
+          .toLowerCase()
+      },
+
+
+      srcset(map) {
         let list = []
         for(const key in (map || {})) {
-          list.push(`${this.fullurl(map[key])} ${key}w`)
+          list.push(`${this.url(map[key])} ${key}w`)
         }
         return list.join(', ')
       },
 
 
-      translateText(texts, to, from = null, context = null) {
+      translate(texts, to, from = null, context = null) {
         if(!Array.isArray(texts)) {
           texts = [texts].filter(v => !!v)
         }
@@ -177,12 +173,12 @@
           return result.data?.translate || []
         }).catch(error => {
           this.messages.add(this.$gettext('Error translating texts'), 'error')
-          this.$log(`App::translateText(): Error translating texts`, error)
+          this.$log(`App::translate(): Error translating texts`, error)
         })
       },
 
 
-      txlangs(current = null) {
+      txlocales(current = null) {
         const list = []
         const supported = [
           'ar', 'bg', 'cs', 'da', 'de', 'el', 'en', 'en-GB', 'en-US', 'es', 'et', 'fi', 'fr',
@@ -197,6 +193,21 @@
         })
 
         return list
+      },
+
+
+      url(path, proxy = false) {
+        if(!path) return ''
+
+        if(proxy && path.startsWith('http')) {
+          return this.app.urlproxy.replace(/_url_/, encodeURIComponent(path))
+        }
+
+        if(path.startsWith('http') || path.startsWith('blob:')) {
+          return path
+        }
+
+        return this.app.urlfile.replace(/\/+$/g, '') + '/' + path
       }
     }
   }
