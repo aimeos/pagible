@@ -26,12 +26,8 @@ export default defineConfig({
     }
   },
   experimental: {
-    renderBuiltUrl: (filename, { type, hostType }) => {
-      if(type === 'asset' && ['css', 'html'].includes(hostType) === false) {
-        return { runtime: `new URL(${JSON.stringify(filename)}, import.meta.url).href` }
-      } else {
-        return { relative: true }
-      }
+    renderBuiltUrl: () => {
+      return { relative: true }
     },
   },
 })
