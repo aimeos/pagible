@@ -15,7 +15,7 @@
 
     emits: ['update:modelValue', 'add'],
 
-    inject: ['url'],
+    inject: ['slugify', 'url'],
 
     setup() {
       const messages = useMessageStore()
@@ -34,18 +34,23 @@
       }
     },
 
+    unmounted() {
+      this.items.forEach(item => {
+        if(item.path.startsWith('blob:')) {
+          URL.revokeObjectURL(item.path)
+        }
+      })
+
+      this.similar = []
+      this.items = []
+    },
+
+
     methods: {
       add(item) {
         this.loading = true
 
-        fetch(this.app.urlproxy.replace('_url_', encodeURIComponent(item.path)), {
-            credentials: 'include',
-            method: 'GET'
-        }).then(response => {
-          if(!response.ok) {
-            throw new Error(`Failed to fetch ${item.path}`, response)
-          }
-
+        fetch(item.path).then(response => {
           return response.blob()
         }).then(blob => {
           const filename = this.slugify(item.name) + '_' + (new Date()).toISOString().replace(/[^0-9]/g, '') + '.png'
@@ -78,6 +83,7 @@
           }
 
           Object.assign(item, response.data.addFile, {previews: JSON.parse(response.data.addFile.previews || '{}')})
+          // this.$refs.filelist.invalidate()
           this.$emit('add', [item])
         }).catch(error => {
           this.messages.add(this.$gettext(`Error adding file %{path}`, {path: item?.path}), 'error')
@@ -85,6 +91,22 @@
         }).finally(() => {
           this.loading = false
         })
+      },
+
+
+      base64ToBlob(base64, mimeType = 'image/png') {
+        if(!base64) {
+          return null
+        }
+
+        const binary = atob(base64);
+        const byteArray = new Uint8Array(binary.length);
+
+        for(let i = 0; i < binary.length; i++) {
+          byteArray[i] = binary.charCodeAt(i);
+        }
+
+        return new Blob([byteArray], { type: mimeType });
       },
 
 
@@ -114,23 +136,12 @@
           const list = response.data.imagine
           this.input = list.shift() || this.input
 
-          list.forEach(url => {
-            fetch(this.app.urlproxy.replace('_url_', encodeURIComponent(url)), {
-                credentials: 'include',
-                method: 'HEAD'
-            }).then(response => {
-              if(!response.ok) {
-                throw new Error(`Failed to fetch ${url}`, response)
-              }
-
+          list.forEach(base64 => {
               this.items.unshift({
-                path: url,
-                mime: response.headers?.get('Content-Type'),
-                name: name.slice(0, name.lastIndexOf(' ', 100))
+                path: URL.createObjectURL(this.base64ToBlob(base64)),
+                name: name.slice(0, name.length > 100 ? name.lastIndexOf(' ', 100) : 100),
+                mime: 'image/png'
               })
-            }).catch(error => {
-              this.$log(`FileAiDialog::create(): Error fetching ${url}`, error)
-            })
           })
         }).catch(error => {
           this.$log(`FileAiDialog::create(): Error creating files`, error)
@@ -213,7 +224,8 @@
           </v-list>
         </div>
 
-        <div v-if="similar.length">
+        <!-- Not supported by Prism API yet -->
+        <!--div v-if="similar.length">
           <v-tabs>
             <v-tab>{{ $gettext('Use images of this style') }}</v-tab>
           </v-tabs>
@@ -231,7 +243,7 @@
         <v-tabs>
           <v-tab>{{ $gettext('Select similar images') }}</v-tab>
         </v-tabs>
-        <FileListItems :filter="{mime: 'image/'}" @select="use($event)" />
+        <FileListItems ref="filelist" :filter="{mime: 'image/'}" @select="use($event)" /-->
       </v-card-text>
     </v-card>
   </v-dialog>

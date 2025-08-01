@@ -23,7 +23,7 @@ final class Imagine
             throw new Exception( 'Prompt must not be empty' );
         }
 
-        $files = [];
+        $files = collect();
         $input = $args['prompt'];
         $prompt = join( "\n\n", array_filter( [
             view( 'cms::prompts.imagine' )->render(),
@@ -55,21 +55,28 @@ final class Imagine
                     'video' => Video::fromStoragePath( $file->path, $disk ),
                     default => Document::fromStoragePath( $file->path, $disk ),
                 };
-            } )->values()->toArray();
+            } )->values();
         }
 
-        $response = $prism->withPrompt( $prompt, $files )->generate();
+        $response = $prism->withPrompt( $prompt, $files->toArray() )
+            ->whenProvider( 'openai', fn( $request ) => $request
+                ->withProviderOptions( [
+                    'image' => $files->first()?->base64(),
+                    'response_format' => 'b64_json'
+                ] )
+            )
+            ->generate();
 
         $prompt = collect( $response->images )
             ->map( fn( $image ) => $image->hasRevisedPrompt() ? $image->revisedPrompt : null )
             ->filter()
             ->first() ?? $input;
 
-        $urls = collect( $response->images )
-            ->map( fn( $image ) => $image->hasUrl() ? $image->url : null )
+        $images = collect( $response->images )
+            ->map( fn( $image ) => $image->base64 )
             ->filter()
             ->toArray();
 
-        return array_merge( [$prompt], $urls );
+        return array_merge( [$prompt], $images );
     }
 }
