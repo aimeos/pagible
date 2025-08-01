@@ -50,17 +50,17 @@
     },
 
     methods: {
-      add(files) {
+      add(file) {
         if(!this.auth.can('file:add')) {
           this.messages.add(this.$gettext('Permission denied'), 'error')
           return
         }
 
-        if(!files?.length) {
+        if(!file) {
           return
         }
 
-        const path = URL.createObjectURL(files[0])
+        const path = URL.createObjectURL(file)
         this.file = {path: path, uploading: true}
 
         return this.$apollo.mutate({
@@ -76,7 +76,7 @@
             }
           }`,
           variables: {
-            file: files[0]
+            file: file
           },
           context: {
             hasUpload: true
