@@ -31,7 +31,8 @@ final class Imagine
             $input
         ] ) );
 
-        $prism = Prism::image()->using( config( 'cms.ai.image', 'openai' ), config( 'cms.ai.image-model', 'dall-e-3' ) );
+        $model = config( 'cms.ai.image-model', 'dall-e-3' );
+        $prism = Prism::image()->using( config( 'cms.ai.image', 'openai' ), $model );
 
         if( !empty( $ids = $args['files'] ?? null ) )
         {
@@ -61,7 +62,13 @@ final class Imagine
         $response = $prism->withPrompt( $prompt, $files->toArray() )
             ->whenProvider( 'openai', fn( $request ) => $request
                 ->withProviderOptions( [
-                    'image' => $files->first()?->base64()
+                    'image' => $files->first()?->base64(),
+                    'size' => match( $model ) {
+                        'gpt-image-1' => '1536x1024',
+                        'dall-e-3' => '1792x1024',
+                        'dall-e-2' => '1024x1024',
+                        default => 'auto',
+                    }
                 ] )
             )
             ->generate();
