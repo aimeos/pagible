@@ -152,7 +152,8 @@
               })
           })
         }).catch(error => {
-          this.$log(`FileAiDialog::create(): Error creating files`, error)
+          this.messages.add(this.$gettext('Error creating file'), 'error')
+          this.$log(`FileAiDialog::create(): Error creating file`, error)
         }).finally(() => {
           this.loading = false
         })

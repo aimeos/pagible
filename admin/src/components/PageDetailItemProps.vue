@@ -54,7 +54,7 @@
             }
           }
         }).then(result => {
-          if(result?.data?.pages?.data?.length > 0 && result?.data?.pages?.data?.some(page => page.id !== this.item.id)) {
+          if(result?.data?.pages?.data?.length > 0 && result?.data?.pages?.data?.some(page => page.id != this.item.id)) {
             this.messages.path = [this.$gettext('The path is already in use by another page')]
           } else {
             this.messages.path = []
@@ -64,7 +64,7 @@
           return this.messages.path
         }).catch(error => {
           console.error('PageDetailItemProps::checkPath: Error checking path', error)
-        })
+        }) || []
       },
 
 
