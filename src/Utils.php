@@ -15,7 +15,7 @@ class Utils
         $lang = $page->lang;
 
         return Collection::make( $page->content )
-            ->map( fn( $item ) => $item->files )
+            ->map( fn( $item ) => $item->files ?? [] )
             ->collapse()
             ->unique()
             ->map( fn( $id ) => $page->files[$id] ?? null )

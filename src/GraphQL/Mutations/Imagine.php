@@ -61,8 +61,7 @@ final class Imagine
         $response = $prism->withPrompt( $prompt, $files->toArray() )
             ->whenProvider( 'openai', fn( $request ) => $request
                 ->withProviderOptions( [
-                    'image' => $files->first()?->base64(),
-                    'response_format' => 'b64_json'
+                    'image' => $files->first()?->base64()
                 ] )
             )
             ->generate();
@@ -73,7 +72,7 @@ final class Imagine
             ->first() ?? $input;
 
         $images = collect( $response->images )
-            ->map( fn( $image ) => $image->base64 )
+            ->map( fn( $image ) => $image->base64 ?? Image::fromUrl( $image->url )->base64() )
             ->filter()
             ->toArray();
 
