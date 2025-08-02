@@ -39,5 +39,9 @@
         @yield('header')
         @yield('main')
         @yield('footer')
+
+        <div class="copyright">
+            &copy; {{ date('Y') }} {{ config('app.name') }}
+        </div>
     </body>
 </html>
