@@ -17,7 +17,11 @@ final class Transcribe
      */
     public function __invoke( $rootValue, array $args ): string
     {
-        $prism = Prism::audio()->using( config( 'cms.ai.audio', 'openai' ), config( 'cms.ai.audio-model', 'whisper-1' ) );
+        $prism = Prism::audio()->using( config( 'cms.ai.audio', 'openai' ), config( 'cms.ai.audio-model', 'whisper-1' ) )
+            ->withClientOptions( [
+                'timeout' => 60,
+                'connect_timeout' => 10,
+            ] );
 
         if( !( ( $upload = $args['file'] ?? null ) && $upload instanceof UploadedFile && $upload->isValid() ) ) {
             throw new Exception( 'No file uploaded' );

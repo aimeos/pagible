@@ -32,7 +32,11 @@ final class Imagine
         ] ) );
 
         $model = config( 'cms.ai.image-model', 'dall-e-3' );
-        $prism = Prism::image()->using( config( 'cms.ai.image', 'openai' ), $model );
+        $prism = Prism::image()->using( config( 'cms.ai.image', 'openai' ), $model )
+            ->withClientOptions( [
+                'timeout' => 60,
+                'connect_timeout' => 10,
+            ] );
 
         if( !empty( $ids = $args['files'] ?? null ) )
         {

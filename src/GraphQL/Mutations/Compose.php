@@ -26,7 +26,11 @@ final class Compose
 
         $files = [];
         $prism = Prism::text()->using( config( 'cms.ai.text', 'gemini' ), config( 'cms.ai.text-model', 'gemini-2.0-flash' ) )
-            ->withSystemPrompt( view( 'cms::prompts.compose' )->render() . "\n" . ($args['context'] ?? '') );
+            ->withSystemPrompt( view( 'cms::prompts.compose' )->render() . "\n" . ($args['context'] ?? '') )
+            ->withClientOptions( [
+                'timeout' => 60,
+                'connect_timeout' => 10,
+            ] );
 
         if( !empty( $ids = $args['files'] ?? null ) )
         {
