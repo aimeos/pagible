@@ -9,19 +9,19 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: src/App.vue:78
+#: src/App.vue:79
 msgid "Prompt is required for generating text"
 msgstr ""
 
-#: src/App.vue:104
+#: src/App.vue:105
 msgid "Error generating text"
 msgstr ""
 
-#: src/App.vue:129
+#: src/App.vue:115
 msgid "None"
 msgstr ""
 
-#: src/App.vue:179
+#: src/App.vue:175
 msgid "Error translating texts"
 msgstr ""
 
@@ -30,14 +30,14 @@ msgid "id"
 msgstr "ID"
 
 #: src/components/AsideMeta.vue:23 src/components/FileListItems.vue:509
-#: src/fields/Audio.vue:71 src/fields/File.vue:247 src/fields/Image.vue:105
+#: src/fields/Audio.vue:71 src/fields/File.vue:248 src/fields/Image.vue:105
 #: src/fields/Video.vue:73
 msgid "mime"
 msgstr ""
 
 #: src/components/AsideMeta.vue:27 src/components/ElementListItems.vue:475
 #: src/components/FileListItems.vue:515 src/fields/Audio.vue:75
-#: src/fields/File.vue:251 src/fields/Image.vue:109 src/fields/Video.vue:77
+#: src/fields/File.vue:252 src/fields/Image.vue:109 src/fields/Video.vue:77
 #: src/views/ElementList.vue:119 src/views/FileList.vue:116
 #: src/views/PageList.vue:247
 msgid "editor"
@@ -48,7 +48,7 @@ msgid "created"
 msgstr ""
 
 #: src/components/AsideMeta.vue:35 src/fields/Audio.vue:79
-#: src/fields/File.vue:255 src/fields/Image.vue:113 src/fields/Video.vue:81
+#: src/fields/File.vue:256 src/fields/Image.vue:113 src/fields/Video.vue:81
 msgid "updated"
 msgstr ""
 
@@ -69,7 +69,7 @@ msgstr ""
 
 #: src/components/ElementDetailItem.vue:80
 #: src/components/FileDetailItem.vue:509
-#: src/components/PageDetailItemProps.vue:153
+#: src/components/PageDetailItemProps.vue:148
 msgid "Language"
 msgstr ""
 
@@ -128,7 +128,7 @@ msgstr ""
 #: src/components/PageListItems.vue:405 src/components/PageListItems.vue:459
 #: src/components/PageListItems.vue:555 src/components/PageListItems.vue:596
 #: src/components/PageListItems.vue:657 src/components/PageListItems.vue:719
-#: src/fields/File.vue:55 src/fields/Images.vue:61
+#: src/fields/File.vue:56 src/fields/Images.vue:62
 #: src/views/ElementDetail.vue:107 src/views/ElementDetail.vue:156
 #: src/views/ElementDetail.vue:211 src/views/FileDetail.vue:46
 #: src/views/FileDetail.vue:95 src/views/FileDetail.vue:164
@@ -182,9 +182,9 @@ msgstr ""
 
 #: src/components/ElementListItems.vue:424
 #: src/components/ElementListItems.vue:544
-#: src/components/PageDetailContentList.vue:658
-#: src/components/PageDetailItemConfig.vue:200
-#: src/components/PageDetailItemMeta.vue:199 src/fields/Items.vue:214
+#: src/components/PageDetailContentList.vue:660
+#: src/components/PageDetailItemConfig.vue:201
+#: src/components/PageDetailItemMeta.vue:200 src/fields/Items.vue:216
 msgid "Add element"
 msgstr ""
 
@@ -234,7 +234,7 @@ msgid "oldest"
 msgstr ""
 
 #: src/components/ElementListItems.vue:469 src/components/FileListItems.vue:506
-#: src/fields/Audio.vue:67 src/fields/File.vue:243 src/fields/Image.vue:101
+#: src/fields/Audio.vue:67 src/fields/File.vue:244 src/fields/Image.vue:101
 #: src/fields/Video.vue:69
 msgid "name"
 msgstr ""
@@ -253,11 +253,11 @@ msgstr ""
 msgid "No entries found"
 msgstr ""
 
-#: src/components/Fields.vue:135 src/fields/Items.vue:161
+#: src/components/Fields.vue:136 src/fields/Items.vue:162
 msgid "Translate %{code} field"
 msgstr ""
 
-#: src/components/Fields.vue:152 src/fields/Items.vue:178
+#: src/components/Fields.vue:153 src/fields/Items.vue:179
 msgid "Generate text for %{code} field"
 msgstr ""
 
@@ -266,7 +266,7 @@ msgstr ""
 msgid "Save"
 msgstr ""
 
-#: src/components/FieldsDialog.vue:54 src/components/FileAiDialog.vue:168
+#: src/components/FieldsDialog.vue:54 src/components/FileAiDialog.vue:187
 #: src/components/FileDialog.vue:25 src/components/FileUrlDialog.vue:165
 #: src/components/HistoryDialog.vue:99 src/components/SchemaDialog.vue:25
 msgid "Close"
@@ -276,37 +276,37 @@ msgstr ""
 msgid "Content Element"
 msgstr ""
 
-#: src/components/FileAiDialog.vue:83 src/components/FileListItems.vue:112
+#: src/components/FileAiDialog.vue:41
+msgid "Generate a suitable image for"
+msgstr ""
+
+#: src/components/FileAiDialog.vue:97 src/components/FileListItems.vue:112
 #: src/components/FileUrlDialog.vue:67 src/components/FileUrlDialog.vue:147
-#: src/fields/File.vue:95 src/fields/Images.vue:113
+#: src/fields/File.vue:96 src/fields/Images.vue:114
 msgid "Error adding file %{path}"
 msgstr ""
 
-#: src/components/FileAiDialog.vue:105
-msgid "Context in JSON format"
-msgstr ""
-
-#: src/components/FileAiDialog.vue:174 src/components/FileAiDialog.vue:193
+#: src/components/FileAiDialog.vue:193 src/components/FileAiDialog.vue:212
 msgid "Create image"
 msgstr ""
 
-#: src/components/FileAiDialog.vue:180
+#: src/components/FileAiDialog.vue:199
 msgid "Describe the image"
 msgstr ""
 
-#: src/components/FileAiDialog.vue:198
+#: src/components/FileAiDialog.vue:217
 msgid "Generated images"
 msgstr ""
 
-#: src/components/FileAiDialog.vue:204 src/components/FileAiDialog.vue:222
+#: src/components/FileAiDialog.vue:223 src/components/FileAiDialog.vue:242
 msgid "Remove"
 msgstr ""
 
-#: src/components/FileAiDialog.vue:218
+#: src/components/FileAiDialog.vue:238
 msgid "Use images of this style"
 msgstr ""
 
-#: src/components/FileAiDialog.vue:232
+#: src/components/FileAiDialog.vue:252
 msgid "Select similar images"
 msgstr ""
 
@@ -456,8 +456,8 @@ msgid "Error fetching files"
 msgstr ""
 
 #: src/components/FileListItems.vue:448 src/components/FileListItems.vue:600
-#: src/components/FileUrlDialog.vue:161 src/fields/Images.vue:218
-#: src/fields/Images.vue:237
+#: src/components/FileUrlDialog.vue:161 src/fields/Images.vue:219
+#: src/fields/Images.vue:238
 msgid "Add files"
 msgstr ""
 
@@ -486,11 +486,11 @@ msgid "The file is not of type \"%{mime}*\""
 msgstr ""
 
 #: src/components/FileUrlDialog.vue:161 src/fields/Audio.vue:40
-#: src/fields/File.vue:216 src/fields/Image.vue:68 src/fields/Video.vue:42
+#: src/fields/File.vue:217 src/fields/Image.vue:68 src/fields/Video.vue:42
 msgid "Add file"
 msgstr ""
 
-#: src/components/FileUrlDialog.vue:171 src/fields/Images.vue:224
+#: src/components/FileUrlDialog.vue:171 src/fields/Images.vue:225
 msgid "Add files from URLs"
 msgstr ""
 
@@ -503,7 +503,7 @@ msgid "Enter URL"
 msgstr ""
 
 #: src/components/FileUrlDialog.vue:208 src/fields/Audio.vue:31
-#: src/fields/File.vue:207 src/fields/Image.vue:59 src/fields/Images.vue:208
+#: src/fields/File.vue:208 src/fields/Image.vue:59 src/fields/Images.vue:209
 #: src/fields/Video.vue:32
 msgid "Remove file"
 msgstr ""
@@ -636,95 +636,95 @@ msgstr ""
 msgid "The path is already in use by another page"
 msgstr ""
 
-#: src/components/PageDetailItemProps.vue:135 src/views/PageList.vue:236
+#: src/components/PageDetailItemProps.vue:130 src/views/PageList.vue:236
 msgid "Disabled"
 msgstr ""
 
-#: src/components/PageDetailItemProps.vue:136 src/views/PageList.vue:234
+#: src/components/PageDetailItemProps.vue:131 src/views/PageList.vue:234
 msgid "Enabled"
 msgstr ""
 
-#: src/components/PageDetailItemProps.vue:137
+#: src/components/PageDetailItemProps.vue:132
 msgid "Hidden in navigation"
 msgstr ""
 
-#: src/components/PageDetailItemProps.vue:141
+#: src/components/PageDetailItemProps.vue:136
 msgid "Status"
 msgstr ""
 
-#: src/components/PageDetailItemProps.vue:164 src/fields/Table.vue:54
+#: src/components/PageDetailItemProps.vue:159 src/fields/Table.vue:55
 #: src/views/Login.vue:93 src/views/Login.vue:106
 msgid "Field is required"
 msgstr ""
 
-#: src/components/PageDetailItemProps.vue:168
+#: src/components/PageDetailItemProps.vue:163
 msgid "Page title"
 msgstr ""
 
-#: src/components/PageDetailItemProps.vue:178
+#: src/components/PageDetailItemProps.vue:173
 msgid "Page name"
 msgstr ""
 
-#: src/components/PageDetailItemProps.vue:188
+#: src/components/PageDetailItemProps.vue:183
 msgid "Path must not start with a slash (/)"
 msgstr ""
 
-#: src/components/PageDetailItemProps.vue:194
+#: src/components/PageDetailItemProps.vue:189
 msgid "URL path"
 msgstr ""
 
-#: src/components/PageDetailItemProps.vue:203
+#: src/components/PageDetailItemProps.vue:198
 msgid "Domain name is invalid"
 msgstr ""
 
-#: src/components/PageDetailItemProps.vue:207
+#: src/components/PageDetailItemProps.vue:202
 msgid "Domain"
 msgstr ""
 
-#: src/components/PageDetailItemProps.vue:221
+#: src/components/PageDetailItemProps.vue:216
 msgid "Theme"
 msgstr ""
 
-#: src/components/PageDetailItemProps.vue:229
+#: src/components/PageDetailItemProps.vue:224
 msgid "Page type"
 msgstr ""
 
-#: src/components/PageDetailItemProps.vue:239
+#: src/components/PageDetailItemProps.vue:234
 msgid "Page tag"
 msgstr ""
 
-#: src/components/PageDetailItemProps.vue:247 src/views/PageList.vue:243
+#: src/components/PageDetailItemProps.vue:242 src/views/PageList.vue:243
 msgid "No cache"
 msgstr ""
 
-#: src/components/PageDetailItemProps.vue:248
-#: src/components/PageDetailItemProps.vue:249
-#: src/components/PageDetailItemProps.vue:250
-#: src/components/PageDetailItemProps.vue:251
+#: src/components/PageDetailItemProps.vue:243
+#: src/components/PageDetailItemProps.vue:244
+#: src/components/PageDetailItemProps.vue:245
+#: src/components/PageDetailItemProps.vue:246
 msgid "%{num} minute"
 msgid_plural "%{num} minutes"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/components/PageDetailItemProps.vue:252
-#: src/components/PageDetailItemProps.vue:253
-#: src/components/PageDetailItemProps.vue:254
-#: src/components/PageDetailItemProps.vue:255
-#: src/components/PageDetailItemProps.vue:256
+#: src/components/PageDetailItemProps.vue:247
+#: src/components/PageDetailItemProps.vue:248
+#: src/components/PageDetailItemProps.vue:249
+#: src/components/PageDetailItemProps.vue:250
+#: src/components/PageDetailItemProps.vue:251
 msgid "%{num} hour"
 msgid_plural "%{num} hours"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/components/PageDetailItemProps.vue:260
+#: src/components/PageDetailItemProps.vue:255
 msgid "Cache time"
 msgstr ""
 
-#: src/components/PageDetailItemProps.vue:273
+#: src/components/PageDetailItemProps.vue:268
 msgid "URL is not valid"
 msgstr ""
 
-#: src/components/PageDetailItemProps.vue:277
+#: src/components/PageDetailItemProps.vue:272
 msgid "Redirect URL"
 msgstr ""
 
@@ -744,7 +744,7 @@ msgstr ""
 msgid "Add element after"
 msgstr ""
 
-#: src/components/PageDetailPreview.vue:187 src/fields/Items.vue:146
+#: src/components/PageDetailPreview.vue:187 src/fields/Items.vue:147
 msgid "Remove element"
 msgstr ""
 
@@ -883,67 +883,67 @@ msgstr ""
 msgid "Logout"
 msgstr ""
 
-#: src/fields/Audio.vue:46 src/fields/File.vue:222 src/fields/Image.vue:74
+#: src/fields/Audio.vue:46 src/fields/File.vue:223 src/fields/Image.vue:74
 #: src/fields/Video.vue:48
 msgid "Add file from URL"
 msgstr ""
 
-#: src/fields/Audio.vue:51 src/fields/File.vue:227 src/fields/Image.vue:85
+#: src/fields/Audio.vue:51 src/fields/File.vue:228 src/fields/Image.vue:85
 #: src/fields/Video.vue:53
 msgid "Upload file"
 msgstr ""
 
-#: src/fields/Autocomplete.vue:148 src/fields/Color.vue:34
-#: src/fields/Date.vue:48 src/fields/Html.vue:42 src/fields/Number.vue:50
-#: src/fields/Select.vue:42 src/fields/Url.vue:62
+#: src/fields/Autocomplete.vue:149 src/fields/Color.vue:35
+#: src/fields/Date.vue:49 src/fields/Html.vue:43 src/fields/Number.vue:51
+#: src/fields/Select.vue:43 src/fields/Url.vue:64
 msgid "Value is required"
 msgstr ""
 
-#: src/fields/Autocomplete.vue:154 src/fields/Combobox.vue:18
+#: src/fields/Autocomplete.vue:155 src/fields/Combobox.vue:18
 msgid "No data available"
 msgstr ""
 
-#: src/fields/Color.vue:35
+#: src/fields/Color.vue:36
 msgid "Value must be a hex color code"
 msgstr ""
 
-#: src/fields/Image.vue:80 src/fields/Images.vue:232
+#: src/fields/Image.vue:80 src/fields/Images.vue:233
 msgid "Create file"
 msgstr ""
 
-#: src/fields/Items.vue:115
+#: src/fields/Items.vue:116
 msgid "Maximum is %{num} entries"
 msgstr ""
 
-#: src/fields/Items.vue:116
+#: src/fields/Items.vue:117
 msgid "Minimum is %{num} entries"
 msgstr ""
 
-#: src/fields/Plaintext.vue:49 src/fields/String.vue:54
+#: src/fields/Plaintext.vue:50 src/fields/String.vue:55
 msgid "Minimum length is %{num} characters"
 msgstr ""
 
-#: src/fields/Plaintext.vue:50 src/fields/String.vue:55
+#: src/fields/Plaintext.vue:51 src/fields/String.vue:56
 msgid "Maximum length is %{num} characters"
 msgstr ""
 
-#: src/fields/Radio.vue:28
+#: src/fields/Radio.vue:29
 msgid "Selection is required"
 msgstr ""
 
-#: src/fields/Table.vue:55
+#: src/fields/Table.vue:56
 msgid "Minimum are %{num} columns"
 msgstr ""
 
-#: src/fields/Table.vue:56
+#: src/fields/Table.vue:57
 msgid "The number of columns is not the same in all rows"
 msgstr ""
 
-#: src/fields/Url.vue:24
+#: src/fields/Url.vue:26
 msgid "Invalid URL schema configuration"
 msgstr ""
 
-#: src/fields/Url.vue:63
+#: src/fields/Url.vue:65
 msgid "Not a valid URL"
 msgstr ""
 
@@ -1163,8 +1163,8 @@ msgstr ""
 
 #: src/strings.js:57
 msgctxt "fn"
-msgid "lang"
-msgstr "Language"
+msgid "language"
+msgstr ""
 
 #: src/strings.js:58
 msgctxt "fn"
@@ -1211,12 +1211,37 @@ msgctxt "fn"
 msgid "url"
 msgstr "URL"
 
+#: src/strings.js:68
+msgctxt "fn"
+msgid "image"
+msgstr ""
+
 #: src/strings.js:69
+msgctxt "fn"
+msgid "images"
+msgstr ""
+
+#: src/strings.js:70
+msgctxt "fn"
+msgid "introduction"
+msgstr ""
+
+#: src/strings.js:71
+msgctxt "fn"
+msgid "main image"
+msgstr ""
+
+#: src/strings.js:72
+msgctxt "fn"
+msgid "source code"
+msgstr ""
+
+#: src/strings.js:75
 msgctxt "ai"
 msgid "Done"
 msgstr ""
 
-#: src/strings.js:70
+#: src/strings.js:76
 msgctxt "ai"
 msgid "Already exists"
 msgstr ""

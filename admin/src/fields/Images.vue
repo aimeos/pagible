@@ -25,6 +25,7 @@
       'config': {type: Object, default: () => {}},
       'assets': {type: Object, default: () => {}},
       'readonly': {type: Boolean, default: false},
+      'context': {type: Object},
     },
 
     emits: ['update:modelValue', 'error', 'addFile', 'removeFile'],
@@ -255,7 +256,7 @@
   </Teleport>
 
   <Teleport to="body">
-    <FileAiDialog v-model="vcreate" @add="select($event); vcreate = false" />
+    <FileAiDialog v-model="vcreate" @add="select($event); vcreate = false" :context="context" />
   </Teleport>
 
   <Teleport to="body">

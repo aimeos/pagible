@@ -18,5 +18,5 @@
         </svg>
     </button>
 
-    <pre><code class="language-{{ @$data->lang?->value }}" dir="ltr">{{ @$data->text }}</code></pre>
+    <pre><code class="language-{{ @$data->language?->value }}" dir="ltr">{{ @$data->text }}</code></pre>
 </div>

@@ -5,6 +5,7 @@
       'config': {type: Object, default: () => {}},
       'assets': {type: Object, default: () => {}},
       'readonly': {type: Boolean, default: false},
+      'context': {type: Object},
     },
 
     created() {

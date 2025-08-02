@@ -636,6 +636,7 @@
               :fields="fields(elements[el.refid]?.type)"
               :assets="assets"
               :readonly="true"
+              :type="el.type"
             />
             <Fields v-else ref="field"
               v-model:data="el.data"
@@ -643,6 +644,7 @@
               :readonly="!auth.can('page:save')"
               :fields="fields(el.type)"
               :assets="assets"
+              :type="el.type"
               @error="error(el, $event)"
               @change="update(el)"
             />

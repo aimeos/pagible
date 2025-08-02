@@ -18,6 +18,7 @@
       'config': {type: Object, default: () => {}},
       'assets': {type: Object, default: () => {}},
       'readonly': {type: Boolean, default: false},
+      'context': {type: Object},
     },
 
     emits: ['update:modelValue', 'error', 'addFile', 'removeFile'],
@@ -189,6 +190,7 @@
               @addFile="$emit('addFile', $event)"
               @removeFile="$emit('removeFile', $event)"
               :readonly="readonly"
+              :context="context"
               :assets="assets"
               :config="field"
             ></component>

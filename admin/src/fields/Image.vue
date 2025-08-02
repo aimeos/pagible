@@ -121,7 +121,7 @@
   </Teleport>
 
   <Teleport to="body">
-    <FileAiDialog v-model="vcreate" @add="select($event); vcreate = false" />
+    <FileAiDialog v-model="vcreate" @add="select($event); vcreate = false" :context="context" />
   </Teleport>
 
   <Teleport to="body">

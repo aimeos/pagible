@@ -89,6 +89,7 @@
             :fields="fields(item.type)"
             :readonly="readonly"
             :assets="assets"
+            :type="item.type"
             @error="$emit('error', $event)"
             @change="$emit('update:item', item)"
           />

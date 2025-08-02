@@ -34,6 +34,14 @@
       }
     },
 
+    beforeMount() {
+      const data = this.context?.data
+      const text = [data?.title, data?.text, data?.description].filter(Boolean).join("\n")
+      if(text) {
+        this.input = this.$gettext('Generate a suitable image for') + ":\n" + text
+      }
+    },
+
     unmounted() {
       this.items.forEach(item => {
         if(item.path.startsWith('blob:')) {
@@ -124,7 +132,7 @@
           }`,
           variables: {
             prompt: this.input,
-            context: this.context ? $gettext('Context in JSON format') + ":\n" + JSON.stringify(this.context) : '',
+            context: this.context ? "Context in JSON format:\n" + JSON.stringify(this.context) : '',
             files: this.similar.map(item => item.path),
           }
         }).then(response => {

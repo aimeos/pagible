@@ -12,6 +12,7 @@
       'config': {type: Object, default: () => {}},
       'assets': {type: Object, default: () => {}},
       'readonly': {type: Boolean, default: false},
+      'context': {type: Object},
     },
 
     emits: ['update:modelValue', 'error'],

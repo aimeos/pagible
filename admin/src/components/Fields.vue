@@ -9,6 +9,7 @@
       'assets': {type: Object, default: () => {}},
       'readonly': {type: Boolean, default: false},
       'fields': {type: Object, required: true},
+      'type': {type: String, default: ''},
     },
 
     emits: ['change', 'error', 'update:files'],
@@ -160,6 +161,7 @@
     <component ref="field"
       :is="toName(field.type)"
       :key="field.type + '-' + code"
+      :context="{type: type, data: data}"
       :assets="assets"
       :config="field"
       :readonly="readonly"

@@ -237,6 +237,7 @@ return [
                     ],
                     'file' => [
                         'type' => 'image',
+                        'label' => 'image',
                         'required' => true,
                     ],
                     'position' => [
@@ -258,6 +259,7 @@ return [
                     ],
                     'files' => [
                         'type' => 'images',
+                        'label' => 'images',
                         'min' => 2,
                     ],
                 ],
@@ -266,9 +268,8 @@ return [
                 'group' => 'basic',
                 'icon' => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M2.114 8.063V7.9c1.005-.102 1.497-.615 1.497-1.6V4.503c0-1.094.39-1.538 1.354-1.538h.273V2h-.376C3.25 2 2.49 2.759 2.49 4.352v1.524c0 1.094-.376 1.456-1.49 1.456v1.299c1.114 0 1.49.362 1.49 1.456v1.524c0 1.593.759 2.352 2.372 2.352h.376v-.964h-.273c-.964 0-1.354-.444-1.354-1.538V9.663c0-.984-.492-1.497-1.497-1.6M13.886 7.9v.163c-1.005.103-1.497.616-1.497 1.6v1.798c0 1.094-.39 1.538-1.354 1.538h-.273v.964h.376c1.613 0 2.372-.759 2.372-2.352v-1.524c0-1.094.376-1.456 1.49-1.456V7.332c-1.114 0-1.49-.362-1.49-1.456V4.352C13.51 2.759 12.75 2 11.138 2h-.376v.964h.273c.964 0 1.354.444 1.354 1.538V6.3c0 .984.492 1.497 1.497 1.6"/></svg>',
                 'fields' => [
-                    'lang' => [
+                    'language' => [
                         'type' => 'combobox',
-                        'label' => 'Language',
                         'options' => [
                             ['value' => 'css', 'label' => 'CSS'],
                             ['value' => 'graphql', 'label' => 'GraphQL'],
@@ -287,6 +288,7 @@ return [
                     ],
                     'text' => [
                         'type' => 'plaintext',
+                        'label' => 'source code',
                         'min' => 1,
                     ],
                 ],
@@ -309,6 +311,7 @@ return [
                     ],
                     'text' => [
                         'type' => 'table',
+                        'label' => 'table',
                     ],
                 ],
             ],
@@ -318,6 +321,7 @@ return [
                 'fields' => [
                     'text' => [
                         'type' => 'html',
+                        'label' => 'source code',
                         'min' => 1,
                     ],
                 ],
@@ -333,7 +337,7 @@ return [
                     ],
                     'main' => [
                         'type' => 'switch',
-                        'label' => 'Main image',
+                        'label' => 'main image',
                         'default' => false,
                     ],
                 ],
@@ -405,7 +409,7 @@ return [
                             ],
                             'file' => [
                                 'type' => 'image',
-                                'label' => 'Image',
+                                'label' => 'image',
                             ],
                             'text' => [
                                 'type' => 'text',
@@ -455,14 +459,15 @@ return [
                 'group' => 'content',
                 'icon' => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><title>post-outline</title><path d="M19 5V19H5V5H19M21 3H3V21H21V3M17 17H7V16H17V17M17 15H7V14H17V15M17 12H7V7H17V12Z" /></svg>',
                 'fields' => [
-                    'file' => [
-                        'type' => 'image',
-                    ],
                     'text' => [
                         'type' => 'text',
-                        'label' => 'Introduction',
+                        'label' => 'introduction',
                         'min' => 1,
                         'max' => 1000,
+                    ],
+                    'file' => [
+                        'type' => 'image',
+                        'label' => 'image',
                     ],
                 ],
             ],
@@ -478,7 +483,7 @@ return [
         ],
 
         'meta' => [
-            'meta' => [
+            'meta-tags' => [
                 'group' => 'basic',
                 'icon' => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21.35,11.1H12.18V13.83H18.69C18.36,17.64 15.19,19.27 12.19,19.27C8.36,19.27 5,16.25 5,12C5,7.9 8.2,4.73 12.2,4.73C15.29,4.73 17.1,6.7 17.1,6.7L19,4.72C19,4.72 16.56,2 12.1,2C6.42,2 2.03,6.8 2.03,12C2.03,17.05 6.16,22 12.25,22C17.6,22 21.5,18.33 21.5,12.91C21.5,11.76 21.35,11.1 21.35,11.1V11.1Z" /></svg>',
                 'fields' => [
@@ -493,7 +498,7 @@ return [
                     ],
                 ],
             ],
-            'social' => [
+            'social-media' => [
                 'group' => 'basic',
                 'icon' => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2.04C6.5 2.04 2 6.53 2 12.06C2 17.06 5.66 21.21 10.44 21.96V14.96H7.9V12.06H10.44V9.85C10.44 7.34 11.93 5.96 14.22 5.96C15.31 5.96 16.45 6.15 16.45 6.15V8.62H15.19C13.95 8.62 13.56 9.39 13.56 10.18V12.06H16.34L15.89 14.96H13.56V21.96A10 10 0 0 0 22 12.06C22 6.53 17.5 2.04 12 2.04Z" /></svg>',
                 'fields' => [
@@ -508,6 +513,7 @@ return [
                     ],
                     'file' => [
                         'type' => 'image',
+                        'label' => 'image',
                     ],
                 ],
             ],

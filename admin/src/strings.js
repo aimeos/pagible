@@ -54,7 +54,7 @@ if($pgettext) {
     $pgettext('fn', 'files')
     $pgettext('fn', 'header')
     $pgettext('fn', 'keywords')
-    $pgettext('fn', 'lang')
+    $pgettext('fn', 'language')
     $pgettext('fn', 'level')
     $pgettext('fn', 'limit')
     $pgettext('fn', 'main')
@@ -64,6 +64,12 @@ if($pgettext) {
     $pgettext('fn', 'table')
     $pgettext('fn', 'title')
     $pgettext('fn', 'url')
+    // field labels
+    $pgettext('fn', 'image')
+    $pgettext('fn', 'images')
+    $pgettext('fn', 'introduction')
+    $pgettext('fn', 'main image')
+    $pgettext('fn', 'source code')
 
     // AI response
     $pgettext('ai', 'Done')

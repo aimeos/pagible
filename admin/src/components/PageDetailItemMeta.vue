@@ -186,6 +186,7 @@
               :readonly="!auth.can('page:save')"
               :fields="fields(el.type)"
               :assets="assets"
+              :type="el.type"
             />
 
           </v-expansion-panel-text>
