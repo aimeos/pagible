@@ -1120,7 +1120,7 @@
 
   .tree-node-inner .spinner {
     transform: rotate(90deg);
-    padding: 8px;
+    padding: 14px;
     height: 48px;
     width: 48px;
   }

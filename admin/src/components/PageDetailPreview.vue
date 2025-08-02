@@ -117,7 +117,7 @@
             break
           default:
             this.index = msg.data.id ? this.item.content.findIndex(c => c.id === msg.data.id) : null
-            this.section = msg.section || 'main'
+            this.section = msg.data.section || 'main'
         }
       },
 

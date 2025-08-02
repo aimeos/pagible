@@ -39,7 +39,7 @@
 
     methods: {
       checkPath() {
-        return this.$apollo.query({
+        return this.$apollo?.query({
           query: gql`query($filter: PageFilter) {
             pages(filter: $filter) {
               data {
