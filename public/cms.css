@@ -23,7 +23,6 @@
     justify-content: center;
     text-transform: capitalize;
     border: 1px dashed #808080;
-    border-radius: 8px;
     min-height: 48px;
 }
 
@@ -245,6 +244,12 @@ img {
     text-align: center;
 }
 
+footer {
+    background-color: var(--color-background);
+}
+
 .copyright {
+    background-color: var(--color-primary);
+    color: var(--color-light);
     text-align: center;
 }
