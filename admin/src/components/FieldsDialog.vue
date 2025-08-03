@@ -66,8 +66,9 @@
         <Fields
           v-model:data="element.data"
           v-model:files="element.files"
-          :readonly="readonly"
           :fields="fields(element.type)"
+          :readonly="readonly"
+          :type="element.type"
           :assets="assets"
           @error="error = element._error = $event"
         />

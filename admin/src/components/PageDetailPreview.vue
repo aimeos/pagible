@@ -214,6 +214,7 @@
   <Teleport to="body">
     <FieldsDialog v-if="element"
       v-model="vedit"
+      :assets="assets"
       :element="element.type === 'reference' ? elements[element.refid] : element"
       :readonly="!auth.can('page:save') || !!element.refid"
       @update:element="update()"
