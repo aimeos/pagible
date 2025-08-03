@@ -1,8 +1,6 @@
-![Laravell CMS](assets/laravel-cms.svg)
+# PagibleAI CMS - Powerful as Contentful, simple as Wordpress!
 
-# Laravel CMS - Powerful as Contentful, simple as Wordpress!
-
-The easy, flexible and scalable API-first Laravel CMS package:
+The easy, flexible and scalable API-first PagibleAI CMS package:
 
 * Manage structured content like in Contentful
 * Define new content elements in seconds
@@ -35,6 +33,7 @@ You need a working Laravel installation. If you don't have one, you can create i
 
 ```bash
 composer create-project laravel/laravel pagible
+cd pagible
 ```
 
 The application will be available in the `./pagible` sub-directory.
@@ -122,13 +121,9 @@ DEEPL_API_URL="https://api.deepl.com/"
 
 #### AI support
 
-To generate texts/images from prompts, analyze image content, or execute actions based on
-your prompts, you have to configure one of the AI service providers supported by the
+To generate texts/images from prompts, analyze image/video/audio content, or execute actions based
+on your prompts, you have to configure one or more of the AI service providers supported by the
 [Prism](https://github.com/prism-php/prism/blob/main/config/prism.php) package.
-
-The best-known service provider is from [OpenAI](https://openai.com/) which is pre-configured
-in Pagible. The service provider with the best data protection is [Mistral](https://mistral.ai/)
-from France which you should use instead if you are operating within the EU.
 
 All service providers require to sign-up and create an account first. They will provide
 an API key which you need to add to your `.env` file as shown in the
@@ -136,24 +131,25 @@ an API key which you need to add to your `.env` file as shown in the
 
 ```
 OPENAI_API_KEY="..."
-MISTRAL_API_KEY="..."
-DEEPSEEK_API_KEY="..."
+GEMINI_API_KEY="..."
 ```
 
 **Note:** You only need to configure API keys for the AI service providers you are using, not for all!
 
-If you want to use an AI service different to OpenAI or a specific AI model offered by the
-AI service provider, you have to add this configuration:
+For best support and all features, you need Google and OpenAI at the moment. They are also configured
+by default. If you want to use a different provider or model, you need to configure them in your `.env`
+file too:
 
 ```
-CMS_AI_TEXT="openai"
-CMS_AI_TEXT_MODEL="chatgpt-4o-latest"
+CMS_AI_TEXT="gemini"
+CMS_AI_TEXT_MODEL="gemini-2.0-flash"
 
 CMS_AI_IMAGE="openai"
 CMS_AI_IMAGE_MODEL="dall-e-3"
-```
 
-For texts and images, you can use different AI service providers and models.
+CMS_AI_AUDIO="openai"
+CMS_AI_AUDIO_MODEL="whisper-1"
+```
 
 ### Publishing
 
@@ -185,11 +181,11 @@ Using multiple page trees with different domains is possible by adding `CMS_MULT
 
 ### Multi-tenancy
 
-Laravel CMS supports single database multi-tenancy using existing Laravel tenancy packages or code implemented by your own.
+PagibleAI CMS supports single database multi-tenancy using existing Laravel tenancy packages or code implemented by your own.
 
 The [Tenancy for Laravel](https://tenancyforlaravel.com/) package is most often used. How to set up the package is described in the [tenancy quickstart](https://tenancyforlaravel.com/docs/v3/quickstart) and take a look into the [single database tenancy](https://tenancyforlaravel.com/docs/v3/single-database-tenancy) article too.
 
-Afterwards, tell Laravel CMS how the ID of the current tenant can be retrieved. Add this code to the `boot()` method of your `\App\Providers\AppServiceProvider` in the `./app/Providers/AppServiceProvider.php` file:
+Afterwards, tell PagibleAI CMS how the ID of the current tenant can be retrieved. Add this code to the `boot()` method of your `\App\Providers\AppServiceProvider` in the `./app/Providers/AppServiceProvider.php` file:
 
 ```php
 \Aimeos\Cms\Tenancy::$callback = function() {
@@ -199,7 +195,7 @@ Afterwards, tell Laravel CMS how the ID of the current tenant can be retrieved. 
 
 ### Custom authorization
 
-If you want to integrate Laravel CMS into another application, you may want to grant access based ony your own authorization scheme. You can replace the Laravel CMS permission handling by adding your own function. Add this code to the `boot()` method of your `\App\Providers\AppServiceProvider` in the `./app/Providers/AppServiceProvider.php` file:
+If you want to integrate PagibleAI CMS into another application, you may want to grant access based ony your own authorization scheme. You can replace the permission handling by adding your own function. Add this code to the `boot()` method of your `\App\Providers\AppServiceProvider` in the `./app/Providers/AppServiceProvider.php` file:
 
 ```php
 \Aimeos\Cms\Permission::$callback = function( string $action, ?\App\Models\User $user ) : bool {
