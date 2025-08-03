@@ -36,10 +36,7 @@
 
     beforeMount() {
       const data = this.context?.data
-      const text = [data?.title, data?.text, data?.description].filter(Boolean).join("\n")
-      if(text) {
-        this.input = this.$gettext('Generate a suitable image for') + ":\n" + text
-      }
+      this.input = [data?.title, data?.text, data?.description].filter(Boolean).join("\n")
     },
 
     unmounted() {
@@ -56,6 +53,11 @@
 
     methods: {
       add(item) {
+        if(!item.path.startsWith('blob:')) {
+          this.$emit('add', [item])
+          return
+        }
+
         this.loading = true
 
         fetch(item.path).then(response => {
