@@ -58,7 +58,15 @@
 			"@php vendor/bin/testbench package:discover --ansi"
 		],
 		"translate": [
-			"mv admin/i18n/no.po admin/i18n/nb.po; for POFILE in `ls admin/i18n/*.po`; do vendor/bin/potrans deepl --ignore='%\\{[a-z]+\\}' --only --pot=admin/i18n/messages.pot $POFILE; done; mv admin/i18n/nb.po admin/i18n/no.po"
+			"npm run gettext:extract --prefix admin",
+			"mv admin/i18n/no.po admin/i18n/nb.po",
+			"for POFILE in `ls admin/i18n/*.po`; do msgattrib --no-obsolete -o $POFILE $POFILE; done",
+			"for POFILE in `ls admin/i18n/*.po`; do vendor/bin/potrans deepl --ignore='%\\{[a-z]+\\}' --only --pot=admin/i18n/messages.pot $POFILE; done",
+			"mv admin/i18n/nb.po admin/i18n/no.po",
+			"npm run gettext:compile --prefix admin"
+		],
+		"build": [
+			"npm run build --prefix admin"
 		]
 	},
 	"config": {

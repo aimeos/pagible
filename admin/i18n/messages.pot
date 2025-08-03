@@ -326,7 +326,7 @@ msgid "Save"
 msgstr ""
 
 #: src/components/FieldsDialog.vue:54
-#: src/components/FileAiDialog.vue:187
+#: src/components/FileAiDialog.vue:190
 #: src/components/FileDialog.vue:25
 #: src/components/FileUrlDialog.vue:165
 #: src/components/HistoryDialog.vue:99
@@ -338,11 +338,7 @@ msgstr ""
 msgid "Content Element"
 msgstr ""
 
-#: src/components/FileAiDialog.vue:41
-msgid "Generate a suitable image for"
-msgstr ""
-
-#: src/components/FileAiDialog.vue:97
+#: src/components/FileAiDialog.vue:99
 #: src/components/FileListItems.vue:112
 #: src/components/FileUrlDialog.vue:67
 #: src/components/FileUrlDialog.vue:147
@@ -351,29 +347,33 @@ msgstr ""
 msgid "Error adding file %{path}"
 msgstr ""
 
-#: src/components/FileAiDialog.vue:193
-#: src/components/FileAiDialog.vue:212
+#: src/components/FileAiDialog.vue:157
+msgid "Error creating file"
+msgstr ""
+
+#: src/components/FileAiDialog.vue:196
+#: src/components/FileAiDialog.vue:215
 msgid "Create image"
 msgstr ""
 
-#: src/components/FileAiDialog.vue:199
+#: src/components/FileAiDialog.vue:202
 msgid "Describe the image"
 msgstr ""
 
-#: src/components/FileAiDialog.vue:217
+#: src/components/FileAiDialog.vue:220
 msgid "Generated images"
 msgstr ""
 
-#: src/components/FileAiDialog.vue:223
-#: src/components/FileAiDialog.vue:242
+#: src/components/FileAiDialog.vue:226
+#: src/components/FileAiDialog.vue:245
 msgid "Remove"
 msgstr ""
 
-#: src/components/FileAiDialog.vue:238
+#: src/components/FileAiDialog.vue:241
 msgid "Use images of this style"
 msgstr ""
 
-#: src/components/FileAiDialog.vue:252
+#: src/components/FileAiDialog.vue:255
 msgid "Select similar images"
 msgstr ""
 
