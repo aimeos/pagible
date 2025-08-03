@@ -152,7 +152,7 @@ details summary {
     line-height: inherit;
 }
 
-h1, h2, h3 {
+h1, h2 {
     text-align: center;
 }
 
@@ -160,11 +160,6 @@ h1, h2, h3 {
 .type-page .heading h2,
 .type-page .heading h3 {
     margin: 0;
-}
-
-p {
-    font-size: 20px;
-    margin-bottom: 32px;
 }
 
 .type-page .text p:last-of-type {
