@@ -6,7 +6,7 @@
   export default {
     data() {
       return {
-        viewStack: [],
+        viewStack: []
       }
     },
 
@@ -216,14 +216,12 @@
 <template>
   <v-app>
     <transition-group name="slide-stack">
-      <v-layout key="list" class="view" style="z-index: 10">
+      <v-layout ref="baseview" key="list" class="view" style="z-index: 10">
         <router-view />
       </v-layout>
 
-      <v-layout v-for="(view, i) in viewStack" :key="i" class="view" :style="{ zIndex: 10 + i }">
-        <div class="view-scroll">
-          <component :is="view.component" v-bind="view.props" />
-        </div>
+      <v-layout ref="view" v-for="(view, i) in viewStack" :key="i" class="view" :style="{ zIndex: 11 + i }">
+        <component :is="view.component" v-bind="view.props" />
       </v-layout>
     </transition-group>
 
@@ -232,17 +230,21 @@
 </template>
 
 <style>
+  html {
+    position: absolute;
+    overflow: hidden;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    top: 0;
+  }
+
   .view {
     background: rgb(var(--v-theme-background));
     position: absolute !important;
-    inset: 0;
-  }
-
-  .view-scroll {
+    min-height: 100%;
     width: 100%;
-    overflow-y: scroll;
   }
-
 
   /* Slide animation */
   .slide-stack-enter-active,

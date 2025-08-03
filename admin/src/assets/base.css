@@ -103,7 +103,12 @@ body {
 
 .v-sheet.box {
   border-radius: 8px !important;
-  margin: 0 1%;
+  margin: 0 1% 8px;
+}
+
+.v-sheet.scroll {
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
 }
 
 .v-selection-control {

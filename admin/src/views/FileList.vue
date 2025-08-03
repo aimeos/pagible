@@ -88,7 +88,7 @@
 
   <v-main class="file-list">
     <v-container>
-      <v-sheet class="box">
+      <v-sheet class="box scroll">
         <FileListItems @select="open($event)" :filter="filter" />
       </v-sheet>
     </v-container>

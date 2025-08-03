@@ -59,7 +59,7 @@
 
 <template>
   <v-container>
-    <v-sheet class="box">
+    <v-sheet class="box scroll">
       <v-tabs class="subtabs" v-model="tab" align-tabs="center">
         <v-tab value="details"
           :class="{changed: changed.details, error: errors.details}"
@@ -116,5 +116,9 @@
     margin: 0;
     padding-top: 0;
     padding-bottom: 0;
+  }
+
+  .v-sheet.scroll {
+    max-height: calc(100vh - 96px);
   }
 </style>

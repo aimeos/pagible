@@ -82,7 +82,7 @@
 
 <template>
   <v-container>
-    <v-sheet>
+    <v-sheet class="scroll">
       <v-expansion-panels v-model="panel" elevation="0" multiple>
 
         <v-expansion-panel v-if="element.bypages?.length && auth.can('page:view')">

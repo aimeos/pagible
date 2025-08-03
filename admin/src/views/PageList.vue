@@ -196,7 +196,7 @@
         ></v-textarea>
       </v-sheet>
 
-      <v-sheet class="box">
+      <v-sheet class="box scroll">
         <PageListItems ref="pagelist" @select="open($event)" :filter="filter" />
       </v-sheet>
     </v-container>
@@ -260,5 +260,9 @@
 <style scoped>
   .v-main {
     overflow-y: auto;
+  }
+
+  .v-sheet.box.scroll {
+    max-height: calc(100vh - 48px - 96px);
   }
 </style>

@@ -103,7 +103,7 @@
 
 <template>
   <v-container>
-    <v-sheet class="box">
+    <v-sheet class="box scroll">
       <div v-if="Object.keys(sections).length > 1">
         <v-tabs class="subtabs" v-model="tab" align-tabs="center">
           <v-tab v-for="(list, section) in sections" :key="section"
@@ -147,5 +147,9 @@
     margin: 0;
     padding-top: 0;
     padding-bottom: 0;
+  }
+
+  .v-sheet.scroll {
+    max-height: calc(100vh - 96px);
   }
 </style>

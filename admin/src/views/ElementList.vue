@@ -91,7 +91,7 @@
 
   <v-main class="element-list">
     <v-container>
-      <v-sheet class="box">
+      <v-sheet class="box scroll">
         <ElementListItems :filter="filter" @select="open($event)" />
       </v-sheet>
     </v-container>

@@ -486,7 +486,7 @@
 
 <template>
   <v-container>
-    <v-sheet>
+    <v-sheet class="scroll">
       <v-row>
         <v-col cols="12" md="6">
           <v-text-field ref="name"
