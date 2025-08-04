@@ -77,7 +77,7 @@
 
         if(!prompt) {
           this.messages.add(this.$gettext('Prompt is required for generating text'), 'error')
-          return Promise.reject(new Error('Prompt is required'))
+          return Promise.resolve('')
         }
 
         if(!Array.isArray(context)) {

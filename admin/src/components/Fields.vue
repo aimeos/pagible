@@ -46,8 +46,8 @@
 
       composeText(code) {
         const context = [
-          'generate for: ' + (this.fields[code].label || code),
-          'required output format: ' + this.fields[code].type,
+          'generate for field "' + (this.fields[code].label || code) + '"',
+          'required output format is "' + this.fields[code].type + '"',
           this.fields[code].min ? 'minimum characters: ' + this.fields[code].min : null,
           this.fields[code].max ? 'maximum characters: ' + this.fields[code].max : null,
           this.fields[code].placeholder ? 'hint text: ' + this.fields[code].placeholder : null,
@@ -161,7 +161,7 @@
     <component ref="field"
       :is="toName(field.type)"
       :key="field.type + '-' + code"
-      :context="{type: type, data: data}"
+      :context="data"
       :assets="assets"
       :config="field"
       :readonly="readonly"

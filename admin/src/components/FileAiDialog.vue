@@ -34,9 +34,8 @@
       }
     },
 
-    beforeMount() {
-      const data = this.context?.data
-      this.input = [data?.title, data?.text, data?.description].filter(Boolean).join("\n")
+    beforeUpdate() {
+      this.input = [this.context?.title, this.context?.text, this.context?.description].filter(Boolean).join("\n")
     },
 
     unmounted() {
@@ -133,7 +132,7 @@
             imagine(prompt: $prompt, context: $context, files: $files)
           }`,
           variables: {
-            prompt: this.input,
+            prompt: "Create as suitable image for:\n" + this.input,
             context: this.context ? "Context in JSON format:\n" + JSON.stringify(this.context) : '',
             files: this.similar.map(item => item.path),
           }

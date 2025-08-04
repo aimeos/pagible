@@ -51,17 +51,20 @@
 
       composeText(idx, code) {
         const context = [
-          'generate for: ' + (this.config.item?.[code]?.label || code),
-          'required output format: ' + this.config.item?.[code]?.type,
+          'generate for field "' + (this.config.item?.[code]?.label || code) + '"',
+          'required output format is "' + this.config.item?.[code]?.type + '"',
           this.config.item?.[code]?.min ? 'minimum characters: ' + this.config.item?.[code]?.min : null,
           this.config.item?.[code]?.max ? 'maximum characters: ' + this.config.item?.[code]?.max : null,
           this.config.item?.[code]?.placeholder ? 'hint text: ' + this.config.item?.[code]?.placeholder : null,
           'context information as JSON: ' + JSON.stringify(this.items[idx]),
         ]
+        const prompt = this.items[idx][code] || (
+          this.items[idx]['title'] ? 'Write a sentence about "' + this.items[idx]['title'] + '"' : ''
+        )
 
         this.composing[idx+code] = true
 
-        this.compose(this.items[idx][code] ?? '', context).then(result => {
+        this.compose(prompt, context).then(result => {
           this.update(idx, code, result)
         }).finally(() => {
           this.composing[idx+code] = false
@@ -190,7 +193,7 @@
               @addFile="$emit('addFile', $event)"
               @removeFile="$emit('removeFile', $event)"
               :readonly="readonly"
-              :context="context"
+              :context="items[idx]"
               :assets="assets"
               :config="field"
             ></component>
