@@ -76,11 +76,11 @@
       },
 
 
-      title(item) {
-        return Object.values(item || {})
+      title(el) {
+        return (el.title || el.text || Object.values(el || {})
           .map(v => v && typeof v !== 'object' && typeof v !== 'boolean' ? v : null)
           .filter(v => !!v)
-          .join(' - ')
+          .join(' - '))
           .substring(0, 50) || ''
       },
 
@@ -138,7 +138,7 @@
 
 <template>
   <v-expansion-panels class="items" v-model="panel" elevation="0" multiple>
-    <VueDraggable v-model="items" :disabled="readonly" @change="change()" draggable=".item" group="items" animation="500">
+    <VueDraggable v-model="items" :disabled="readonly" @update="change()" draggable=".item" group="items" animation="500">
 
       <v-expansion-panel v-for="(item, idx) in items" :key="idx" class="item">
         <v-expansion-panel-title>
@@ -185,7 +185,7 @@
               </div>
             </v-label>
             <component :is="toName(field.type)"
-              :modelValue="items[idx]?.[code] || ''"
+              :modelValue="items[idx]?.[code]"
               @update:modelValue="update(idx, code, $event)"
               @addFile="$emit('addFile', $event)"
               @removeFile="$emit('removeFile', $event)"
@@ -229,8 +229,12 @@
     display: block;
   }
 
+  .v-expansion-panel-title {
+    padding: 8px 16px;
+  }
+
   .field {
-    margin: 24px 0;
+    margin-bottom: 12px;
   }
 
   .v-label {

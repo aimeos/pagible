@@ -190,7 +190,7 @@
 </script>
 
 <template>
-  <VueDraggable v-model="images" :disabled="readonly" @change="change()" draggable=".image" group="images" class="images" animation="500">
+  <VueDraggable v-model="images" :disabled="readonly" @update="change()" draggable=".image" group="images" class="images" animation="500">
 
     <div v-for="(item, idx) in images" :key="idx" :class="{readonly: readonly}" class="image" @click="open(item)">
       <v-progress-linear v-if="item.uploading"

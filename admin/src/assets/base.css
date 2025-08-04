@@ -87,11 +87,11 @@ body {
 }
 
 .v-row  {
-  margin: 4px 0 !important;
+  margin: 0 -8px !important;
 }
 
 .v-row > div[class*="v-col"] {
-  padding: 0 8px;
+  padding: 0 8px !important;
 }
 
 .v-sheet {
@@ -109,6 +109,10 @@ body {
 .v-sheet.scroll {
   max-height: calc(100vh - 48px);
   overflow-y: auto;
+}
+
+.v-label {
+  min-height: 48px;
 }
 
 .v-selection-control {
