@@ -16,8 +16,14 @@
 
     data() {
       return {
-        open: [0, 1, 2],
+        open: [],
       }
+    },
+
+    created() {
+      this.open = this.content.map((group, index) => {
+        return this.has(group.key) ? index : false
+      }).filter(idx => idx !== false)
     },
 
     methods: {
