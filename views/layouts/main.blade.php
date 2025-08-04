@@ -32,6 +32,7 @@
         <script defer src="{{ cmsasset('vendor/cms/cms.js') }}"></script>
 
         @if(\Aimeos\Cms\Permission::can('page:save', auth()->user()))
+            <link href="{{ cmsasset('vendor/cms/admin.css') }}" rel="stylesheet">
             <script defer src="{{ cmsasset('vendor/cms/admin.js') }}"></script>
         @endif
     </head>
@@ -40,8 +41,8 @@
         @yield('main')
         @yield('footer')
 
-        <div class="copyright">
+        <footer class="copyright">
             &copy; {{ date('Y') }} {{ config('app.name') }}
-        </div>
+        </footer>
     </body>
 </html>

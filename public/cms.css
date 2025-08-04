@@ -16,23 +16,6 @@
     --pico-block-spacing-horizontal: 0;
 }
 
-/* Required by admin panel */
-.placeholder {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-transform: capitalize;
-    border: 1px dashed #808080;
-    min-height: 48px;
-}
-
-/* Required by admin panel */
-.placeholder::before {
-    color: #808080;
-    text-align: center;
-    content: attr(data-section);
-}
-
 body {
     line-height: 1.6;
     color: var(--color-text);
@@ -240,11 +223,10 @@ img {
 }
 
 footer {
-    background-color: var(--color-background);
+    background-color: var(--color-primary);
+    color: var(--color-light);
 }
 
 .copyright {
-    background-color: var(--color-primary);
-    color: var(--color-light);
     text-align: center;
 }
