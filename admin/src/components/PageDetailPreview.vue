@@ -163,7 +163,7 @@
 
 <template>
   <div class="page-preview" ref="preview">
-    <div v-if="index !== null" class="actions">
+    <div v-if="index !== null" class="controls">
       <v-btn v-if="index !== -1"
         @click="edit()"
         :title="$gettext('Edit element')"
@@ -209,24 +209,22 @@
       class="fullscreen"
       variant="text"
     />
-  </div>
 
-  <Teleport to="body">
     <FieldsDialog v-if="element"
       v-model="vedit"
       :assets="assets"
       :element="element.type === 'reference' ? elements[element.refid] : element"
       :readonly="!auth.can('page:save') || !!element.refid"
+      :attach="$refs.preview"
       @update:element="update()"
     />
-  </Teleport>
 
-  <Teleport to="body">
     <SchemaDialog
       v-model="vschemas"
+      :attach="$refs.preview"
       @add="add($event)"
     />
-  </Teleport>
+  </div>
 </template>
 
 <style>
@@ -253,7 +251,7 @@
     opacity: 0.85;
   }
 
-  .page-preview .actions {
+  .page-preview .controls {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -265,7 +263,7 @@
     gap: 10px;
   }
 
-  .page-preview .actions .v-btn {
+  .page-preview .controls .v-btn {
     background: rgb(var(--v-theme-surface-variant));
     color: rgb(var(--v-theme-surface));
     border-radius: 50%;
