@@ -75,7 +75,10 @@ class GraphqlTest extends TestAbstract
         $this->seed( CmsSeeder::class );
 
         $file = File::firstOrFail();
-        Prism::fake( [ImageResponseFake::make()] );
+        $fake = ImageResponseFake::make();
+
+        Prism::fake( [$fake] );
+        $image = \Prism\Prism\ValueObjects\Media\Image::fromUrl( $fake->firstImage()?->url )->base64();
 
         $response = $this->actingAs( $this->user )->graphQL( "
             mutation {
@@ -85,7 +88,7 @@ class GraphqlTest extends TestAbstract
             'data' => [
                 'imagine' => [
                     'Generate content',
-                    'https://example.com/fake-image.png'
+                    $image
                 ]
             ]
         ] );
