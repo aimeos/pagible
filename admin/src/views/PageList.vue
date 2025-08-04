@@ -177,7 +177,7 @@
 
   <v-main class="page-list">
     <v-container>
-      <v-sheet class="box">
+      <v-sheet class="box scroll">
         <v-textarea
           v-model="chat"
           :loading="sending"
@@ -186,6 +186,7 @@
           @dblclick="short = !short; chat = message"
           @click:append="sending || send()"
           variant="outlined"
+          class="prompt"
           rounded="lg"
           hide-details
           autofocus
@@ -194,9 +195,7 @@
           outlined
           rows="1"
         ></v-textarea>
-      </v-sheet>
 
-      <v-sheet class="box scroll">
         <PageListItems ref="pagelist" @select="open($event)" :filter="filter" />
       </v-sheet>
     </v-container>
@@ -262,7 +261,7 @@
     overflow-y: auto;
   }
 
-  .v-sheet.box.scroll {
-    max-height: calc(100vh - 48px - 96px);
+  .prompt {
+    margin-bottom: 16px;
   }
 </style>
