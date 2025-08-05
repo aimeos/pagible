@@ -19,15 +19,16 @@ class AddPage extends Tool
         $this->as( 'create-page' )
             ->for( 'Creates a new page and adds it to the page tree. Returns the added page and its content as JSON object.' )
             ->withStringParameter( 'lang', 'ISO language code from get-locales tool call, e.g "en" or "en-GB".' )
-            ->withStringParameter( 'title', 'SEO optimized page title in the language of the page. Must be unique for each page' )
+            ->withStringParameter( 'title', 'Engaging and SEO optimized page title in the language of the page. Must be unique for each page and not longer than 60 characters.' )
             ->withStringParameter( 'name', 'Short name of the page for menus in the language of the page. Should not be longer than 30 characters.' )
             ->withStringParameter( 'content', 'Page content in the language of the page and in markdown format.' )
+            ->withStringParameter( 'summary', 'Engaging meta description for the page content in the language of the page. Maximum 160 characters and in plaintext format.' )
             ->withNumberParameter( 'parent_id', 'ID of the parent page from the pages tool call the new page will be added below.', false )
             ->using( $this );
     }
 
 
-    public function __invoke( string $lang, string $title, string $name, string $content, ?int $parent_id = null ): string
+    public function __invoke( string $lang, string $title, string $name, string $content, string $summary, ?int $parent_id = null ): string
     {
         if( $this->numcalls > 0 ) {
             return response()->json( ['error' => 'Only one page can be created at a time.'] );
@@ -44,6 +45,16 @@ class AddPage extends Tool
                 'text' => $content,
             ]
         ]];
+        $meta = [
+            'meta-tags' => [
+                'id' => $this->uid(),
+                'type' => 'meta-tags',
+                'group' => 'basic',
+                'data' => [
+                    'description' => $summary,
+                ]
+            ]
+        ];
 
         $page->tenant_id = \Aimeos\Cms\Tenancy::value();
         $page->editor = $editor;
@@ -54,6 +65,7 @@ class AddPage extends Tool
             'path' => $this->slug( $title ),
             'domain' => $parent?->latest?->data?->domain,
             'theme' => $parent?->latest?->data?->theme,
+            'meta' => $meta,
             'content' => $elements,
         ] );
 
@@ -64,6 +76,7 @@ class AddPage extends Tool
             'editor' => $editor,
             'data' => array_diff_key( $page->toArray(), $exclude ),
             'aux' => [
+                'meta' => $meta,
                 'content' => $elements,
             ]
         ];
