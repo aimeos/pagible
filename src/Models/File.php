@@ -157,8 +157,8 @@ class File extends Model
         foreach( $sizes as $size )
         {
             $image = ( clone $file )->scaleDown( $size['width'] ?? null, $size['height'] ?? null );
+            $ptr = $image->encodeByExtension( $ext, quality: 90 )->toFilePointer();
             $path = $dir . '/' . $this->filename( $filename, $ext, $size );
-            $ptr = $image->encodeByExtension( $ext )->toFilePointer();
 
             if( $disk->put( $path, $ptr, 'public' ) ) {
                 $map[$image->width()] = $path;

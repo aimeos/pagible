@@ -42,7 +42,7 @@ if (window.self !== window.top) {
 
             el.addEventListener('dblclick', ev => {
                 ev.stopPropagation();
-                const id = ev.target?.closest('[id]')?.id || null;
+                const id = ev.target?.closest('[id]')?.id || -1; // -1: add element
                 window.parent.postMessage({id: id, section: section}, trustedOrigin || '*');
             });
         });

@@ -1,3 +1,12 @@
+footer .contact {
+    --color-border: var(--color-light);
+    --color-text: var(--color-light);
+}
+
+.contact .title {
+    color: var(--color-text);
+}
+
 .contact form {
     display: flex;
     flex-direction: column;
@@ -25,9 +34,9 @@
 .contact button {
     padding: 15px;
     font-size: 16px;
-    background-color: var(--color-primary);
     color: var(--color-light);
-    border: none;
+    background-color: var(--color-primary);
+    border: 1px solid var(--color-border);
     border-radius: 8px;
 }
 
