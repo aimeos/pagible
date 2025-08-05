@@ -20,12 +20,11 @@
 
     data() {
       return {
-        clip: null,
         menu: {},
         items: [],
         loading: true,
-        checked: false,
-        isChecked: false,
+        checked: null,
+        clip: null,
         term: '',
       }
     },
@@ -48,13 +47,21 @@
       })
     },
 
+    mounted() {
+      this.checked = false // required for isChecked() to work correctly
+    },
+
     computed: {
       canTrash() {
-        return this.isChecked && this.$refs.tree?.statsFlat.some(stat => stat.checked && !stat.data.deleted_at)
+        return this.isChecked && this.$refs.tree?.statsFlat.some(stat => stat._checked && !stat.data.deleted_at)
+      },
+
+      isChecked() {
+        return this.checked || this.$refs.tree?.statsFlat.some(stat => stat._checked)
       },
 
       isTrashed() {
-        return this.isChecked && this.$refs.tree?.statsFlat.some(stat => stat.checked && stat.data.deleted_at)
+        return this.isChecked && this.$refs.tree?.statsFlat.some(stat => stat._checked && stat.data.deleted_at)
       },
     },
 
@@ -170,7 +177,7 @@
         }
 
         const list = (stat ? [stat] : this.$refs.tree.statsFlat.filter(stat => {
-          return stat.checked && stat.data?.id
+          return stat._checked && stat.data?.id
         }))
 
         if(!list.length) {
@@ -342,7 +349,7 @@
         }
 
         const stats = stat ? [stat] : this.$refs.tree.statsFlat.filter(stat => {
-          return stat.checked && stat.data.id && stat.data.deleted_at
+          return stat._checked && stat.data.id && stat.data.deleted_at
         })
         const list = stats.filter(stat => {
           return stats.indexOf(stat.parent) === -1
@@ -557,7 +564,7 @@
         }
 
         const list = stat ? [stat] : this.$refs.tree.statsFlat.filter(stat => {
-          return stat.checked && stat.data.id && !stat.data.published
+          return stat._checked && stat.data.id && !stat.data.published
         })
 
         if(!list.length) {
@@ -598,7 +605,7 @@
         }
 
         const list = stat ? [stat] : this.$refs.tree.statsFlat.filter(stat => {
-          return stat.checked && stat.data.id
+          return stat._checked && stat.data.id
         })
 
         if(!list.length) {
@@ -721,7 +728,7 @@
         }
 
         const list = stat ? [stat] : this.$refs.tree.statsFlat.filter(stat => {
-          return stat.checked && stat.data.id
+          return stat._checked && stat.data.id
         })
 
         list.forEach(stat => {
@@ -780,7 +787,7 @@
 
       toggle() {
         this.$refs.tree.statsFlat.forEach(stat => {
-          stat.checked = !stat.checked
+          stat._checked = !stat._checked
         })
       },
 
@@ -820,15 +827,6 @@
         stat.children?.forEach((stat) => {
           fcn(stat, fcn)
         })
-      },
-
-
-      updateChecked(val) {
-        if(!val) {
-          this.isChecked = this.$refs.tree?.statsFlat.some(stat => stat.checked)
-        } else {
-          this.isChecked = true
-        }
       },
 
 
@@ -923,7 +921,6 @@
   <Draggable ref="tree"
     v-model="items"
     @change="change()"
-    @check:node="updateChecked($event.checked)"
     :defaultOpen="false"
     :disableDrag="!auth.can('page:move')"
     :rtl="$vuetify.locale.isRtl"
@@ -945,7 +942,7 @@
           variant="flat"
         />
 
-        <v-checkbox-btn v-model="stat.checked" :class="{draft: !node.published}" />
+        <v-checkbox-btn v-model="stat._checked" :class="{draft: !node.published}" />
 
         <v-menu v-if="node.id">
           <template #activator="{ props }">
