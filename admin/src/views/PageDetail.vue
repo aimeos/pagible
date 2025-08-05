@@ -5,7 +5,7 @@
   import HistoryDialog from '../components/HistoryDialog.vue'
   import PageDetailItem from '../components/PageDetailItem.vue'
   import PageDetailContent from '../components/PageDetailContent.vue'
-  import PageDetailPreview from '../components/PageDetailPreview.vue'
+  import PageDetailEditor from '../components/PageDetailEditor.vue'
   import { useAuthStore, useDrawerStore, useLanguageStore, useMessageStore, useSchemaStore } from '../stores'
 
 
@@ -16,7 +16,7 @@
       HistoryDialog,
       PageDetailItem,
       PageDetailContent,
-      PageDetailPreview
+      PageDetailEditor
     },
 
     inject: ['closeView', 'compose', 'translate', 'txlocales'],
@@ -701,7 +701,7 @@
         </v-window-item>
 
         <v-window-item value="editor">
-          <PageDetailPreview
+          <PageDetailEditor
             :save="{fcn: save, count: savecnt}"
             :item="item"
             :assets="assets"

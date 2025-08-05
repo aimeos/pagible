@@ -34,6 +34,7 @@
         element: null,
         section: 'main',
         expanded: false,
+        vcontent: false,
         vschemas: false,
         vpreview: false,
         vedit: false,
@@ -108,15 +109,22 @@
 
       message(msg) {
         switch(msg.data) {
-          case null:
+          // unselect element
+          case 0:
             this.index = null
             break
-          case false:
+          // not allowed
+          case -1:
             this.vpreview = true
             setTimeout(() => { this.vpreview = false }, 3000)
             break
+          // not cms content
+          case -2:
+            this.vcontent = true
+            setTimeout(() => { this.vcontent = false }, 3000)
+            break
           default:
-            this.index = msg.data.id ? this.item.content.findIndex(c => c.id === msg.data.id) : null
+            this.index = typeof msg.data === 'object' && msg.data.id ? this.item.content.findIndex(c => c.id === msg.data.id) : null
             this.section = msg.data.section || 'main'
         }
       },
@@ -189,8 +197,12 @@
         variant="text"
       />
     </div>
-    <div v-if="vpreview" class="preview-mode">
+
+    <div v-if="vpreview" class="preview-hint">
       {{ $gettext('Preview mode') }}
+    </div>
+    <div v-if="vcontent" class="preview-hint">
+      {{ $gettext('Not CMS content') }}
     </div>
 
     <iframe ref="iframe" :src="url"></iframe>
@@ -235,12 +247,12 @@
     width: 100%;
   }
 
-  iframe {
+  .page-preview iframe {
     width: 100%;
     height: 100%;
   }
 
-  .v-btn.fullscreen {
+  .page-preview .v-btn.fullscreen {
     background: rgb(var(--v-theme-surface-variant));
     color: rgb(var(--v-theme-surface));
     border-radius: 50%;
@@ -270,7 +282,7 @@
     opacity: 0.85;
   }
 
-  .preview-mode {
+  .page-preview .preview-hint {
     top: 50%;
     left: 50%;
     z-index: 999;
