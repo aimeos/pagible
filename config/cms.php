@@ -490,7 +490,7 @@ return [
                     'description' => [
                         'type' => 'string',
                         'min' => 1,
-                        'max' => 180,
+                        'max' => 160,
                     ],
                     'keywords' => [
                         'type' => 'string',
@@ -505,11 +505,11 @@ return [
                     'title' => [
                         'type' => 'string',
                         'min' => 1,
-                        'max' => 255,
+                        'max' => 60,
                     ],
                     'description' => [
                         'type' => 'string',
-                        'max' => 255,
+                        'max' => 160,
                     ],
                     'file' => [
                         'type' => 'image',

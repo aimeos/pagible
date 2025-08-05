@@ -164,8 +164,8 @@
             @update:modelValue="update('title', $event)"
             @update:focused="setPath($event)"
             variant="underlined"
-            maxlength="255"
-            counter="255"
+            maxlength="60"
+            counter="60"
           ></v-text-field>
           <v-text-field ref="name"
             :readonly="readonly"
@@ -173,8 +173,8 @@
             :label="$gettext('Page name')"
             @update:modelValue="update('name', $event)"
             variant="underlined"
-            counter="60"
-            maxlength="60"
+            counter="30"
+            maxlength="30"
           ></v-text-field>
         </v-col>
         <v-col cols="12" md="6">

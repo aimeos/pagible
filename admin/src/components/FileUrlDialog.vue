@@ -180,7 +180,7 @@
           :error-messages="errors"
           :append-inner-icon="input ? 'mdi-check' : ''"
           :placeholder="$gettext('Enter one URL per line')"
-          variant="underlined"
+          variant="outlined"
           autofocus
           auto-grow
           clearable
@@ -194,7 +194,7 @@
           :error-messages="errors"
           :append-inner-icon="input ? 'mdi-check' : ''"
           :placeholder="$gettext('Enter URL')"
-          variant="underlined"
+          variant="outlined"
           maxlength="255"
           counter="255"
           autofocus

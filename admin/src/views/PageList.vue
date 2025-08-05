@@ -23,7 +23,6 @@
       response: '',
       short: true,
       sending: false,
-      sendicon: 'mdi-send',
       filter: {
         view: 'tree',
         trashed: 'WITHOUT',
@@ -102,7 +101,6 @@
         }
 
         this.sending = true
-          this.sendicon = 'mdi-power-off'
 
         this.$apollo.mutate({
           mutation: gql`mutation($prompt: String!) {
@@ -116,7 +114,6 @@
             throw result
           }
 
-          this.sendicon = 'mdi-check'
           this.response = result.data?.manage || ''
           this.chat = this.message
 
@@ -136,13 +133,14 @@
           } else {
             this.filter = filter
           }
+
+          this.sending = null
         }).catch(error => {
           this.messages.add(this.$gettext('Error sending request'), 'error')
           this.$log(`PageList::send(): Error sending request`, error)
         }).finally(() => {
-          this.sending = false
           setTimeout(() => {
-            this.sendicon = 'mdi-send'
+            this.sending = false
           }, 3000)
         })
       }
@@ -181,10 +179,8 @@
         <v-textarea
           v-model="chat"
           :loading="sending"
-          :append-icon="sendicon"
           :placeholder="$gettext('What kind of page and content should I create?')"
           @dblclick="short = !short; chat = message"
-          @click:append="sending || send()"
           variant="outlined"
           class="prompt"
           rounded="lg"
@@ -194,7 +190,23 @@
           clearable
           outlined
           rows="1"
-        ></v-textarea>
+        >
+          <template #append>
+            <v-icon @click="sending || send()">
+              <svg v-if="sending === false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <path d="M22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2A10,10 0 0,1 22,12M6,13H14L10.5,16.5L11.92,17.92L17.84,12L11.92,6.08L10.5,7.5L14,11H6V13Z" />
+              </svg>
+              <svg v-if="sending === true" class="spinner" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <circle class="spin1" cx="4" cy="12" r="3"/>
+                <circle class="spin1 spin2" cx="12" cy="12" r="3"/>
+                <circle class="spin1 spin3" cx="20" cy="12" r="3"/>
+              </svg>
+              <svg v-if="sending === null" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <path d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z" />
+              </svg>
+            </v-icon>
+          </template>
+        </v-textarea>
 
         <PageListItems ref="pagelist" @select="open($event)" :filter="filter" />
       </v-sheet>

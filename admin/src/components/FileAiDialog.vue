@@ -199,7 +199,7 @@
         <v-textarea
           v-model="input"
           :label="$gettext('Describe the image')"
-          variant="underlined"
+          variant="outlined"
           autofocus
           clearable
         ></v-textarea>
