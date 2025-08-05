@@ -11,6 +11,7 @@ export const useAppStore = defineStore('app', {
     urlproxy: app?.dataset.urlproxy || '/cmsproxy?url=_url_',
     urlpage: app?.dataset.urlpage || '/_path_',
     urlfile: app?.dataset.urlfile || '/storage',
+    multidomain: parseInt(app?.dataset.multidomain) || 0,
   })
 })
 

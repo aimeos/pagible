@@ -193,8 +193,9 @@
             maxlength="255"
             counter="255"
           ></v-text-field>
-          <v-text-field ref="domain"
+          <v-text-field v-if="app.multidomain" ref="domain"
             :rules="[
+              v => !!v || $gettext('Field is required'),
               v => !v || v && /^([0-9a-z]+[.-])*[0-9a-z]+\.[a-z]{2,}$/.test(v) || $gettext('Domain name is invalid'),
             ]"
             :readonly="readonly"

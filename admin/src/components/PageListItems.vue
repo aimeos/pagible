@@ -834,7 +834,7 @@
 
       url(node) {
         return this.app.urlpage
-          .replace(/:domain/, node.domain || '')
+          .replace(/_domain_/, node.domain || '')
           .replace(/_path_/, node.path || '')
           .replace(/\/+$/, '')
       }

@@ -22,10 +22,11 @@
       data-urlgraphql="{{ route('graphql') }}"
       data-urladmin="{{ route('cms.admin', [], false) }}"
       data-urlproxy="{{ route('cms.proxy', ['url' => '_url_']) }}"
-      data-urlpage="{{ route('cms.page', ['path' => '_path_']) }}"
+      data-urlpage="{{ route('cms.page', ['path' => '_path_'] + (config('cms.multidomain') ? ['domain' => '_domain_'] : [])) }}"
       data-urlfile="{{ \Illuminate\Support\Facades\Storage::disk( config( 'cms.disk', 'public' ) )->url( '' ) }}"
       data-config="{{ json_encode( config( 'cms.config', new \stdClass() ) ) }}"
       data-schemas="{{ json_encode( config( 'cms.schemas', new \stdClass() ) ) }}"
+      data-multidomain="{{ (int) config('cms.multidomain', false) }}"
     ></div>
   </body>
 </html>

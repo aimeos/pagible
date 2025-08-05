@@ -57,7 +57,7 @@
     computed: {
       url() {
         return this.app.urlpage
-          .replace(/:domain/, this.item.domain || '')
+          .replace(/_domain_/, this.item.domain || '')
           .replace(/_path_/, this.item.path || '')
           .replace(/\/+$/, '')
       }
