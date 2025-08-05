@@ -1,0 +1,22 @@
+.admin.placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-transform: capitalize;
+    border: 1px dashed #000000;
+    min-height: 48px;
+}
+
+.admin.placeholder.light {
+    border: 1px dashed #FFFFFF;
+}
+
+.admin.placeholder::before {
+    color: #000000;
+    text-align: center;
+    content: attr(data-section);
+}
+
+.admin.placeholder.light::before {
+    color: #FFFFFF;
+}
