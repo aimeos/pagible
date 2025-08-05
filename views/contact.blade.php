@@ -1,9 +1,9 @@
 @pushOnce('css')
-<link type="text/css" rel="stylesheet" href="{{ cmsasset('vendor/cms/contact.css') }}">
+<link type="text/css" rel="stylesheet" href="{{ cmsasset('vendor/cms/theme/contact.css') }}">
 @endPushOnce
 
 @pushOnce('js')
-<script defer src="{{ cmsasset('vendor/cms/contact.js') }}"></script>
+<script defer src="{{ cmsasset('vendor/cms/theme/contact.js') }}"></script>
 @endPushOnce
 
 <h2 class="title">{{ @$data->title }}</h2>

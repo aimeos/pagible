@@ -33,7 +33,7 @@ class CmsServiceProvider extends ServiceProvider
 		$this->loadMigrationsFrom( $basedir . '/database/migrations' );
 		$this->loadJsonTranslationsFrom( $basedir . '/lang' );
 
-		$this->publishes( [$basedir . '/public' => public_path( 'vendor/cms' )], 'public' );
+		$this->publishes( [$basedir . '/public' => public_path( 'vendor/cms/theme' )], 'public' );
 		$this->publishes( [$basedir . '/config/cms.php' => config_path( 'cms.php' )], 'config' );
 		$this->publishes( [$basedir . '/admin/dist' => public_path( 'vendor/cms/admin' )], 'admin' );
 		$this->publishes( [$basedir . '/graphql' => base_path( 'graphql' )], 'admin' );

@@ -1,11 +1,11 @@
 @extends('cms::layouts.main')
 
 @pushOnce('css')
-<link href="{{ cmsasset('vendor/cms/pico.nav.min.css') }}" rel="stylesheet">
+<link href="{{ cmsasset('vendor/cms/theme/pico.nav.min.css') }}" rel="stylesheet">
 @endPushOnce
 
 @pushOnce('css')
-<link href="{{ cmsasset('vendor/cms/pico.dropdown.min.css') }}" rel="stylesheet">
+<link href="{{ cmsasset('vendor/cms/theme/pico.dropdown.min.css') }}" rel="stylesheet">
 @endPushOnce
 
 @section('header')

@@ -21,15 +21,15 @@
             @includeFirst(cmsviews($page, $item), cmsdata($page, $item))
         @endforeach
 
-        <link href="{{ cmsasset('vendor/cms/pico.min.css') }}" rel="stylesheet">
+        <link href="{{ cmsasset('vendor/cms/theme/pico.min.css') }}" rel="stylesheet">
 
         @stack('css')
 
-        <link href="{{ cmsasset('vendor/cms/cms.css') }}" rel="stylesheet">
+        <link href="{{ cmsasset('vendor/cms/theme/cms.css') }}" rel="stylesheet">
 
         @stack('js')
 
-        <script defer src="{{ cmsasset('vendor/cms/cms.js') }}"></script>
+        <script defer src="{{ cmsasset('vendor/cms/theme/cms.js') }}"></script>
 
         @if(\Aimeos\Cms\Permission::can('page:save', auth()->user()))
             <link href="{{ cmsasset('vendor/cms/admin/editor.css') }}" rel="stylesheet">

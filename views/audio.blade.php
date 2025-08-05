@@ -1,6 +1,6 @@
 @once('caption')
 	@push('js')
-		<script defer src="{{ cmsasset('vendor/cms/caption.js') }}"></script>
+		<script defer src="{{ cmsasset('vendor/cms/theme/caption.js') }}"></script>
 	@endpush
 @endonce
 
