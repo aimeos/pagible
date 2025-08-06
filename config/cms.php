@@ -542,22 +542,6 @@ return [
         ],
 
         'config' => [
-            'theme' => [
-                'group' => 'basic',
-                'icon' => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M5,6.41L6.41,5L17,15.59V9H19V19H9V17H15.59L5,6.41Z" /></svg>',
-                'fields' => [
-                    '--color-primary' => ['type' => 'color', 'default' => '#0080f0'],
-                    '--color-secondary' => ['type' => 'color', 'default' => '#00c0f0'],
-                    '--color-accent' => ['type' => 'color', 'default' => '#0060d0'],
-                    '--color-background' => ['type' => 'color', 'default' => '#e8f4fc'],
-                    '--color-light' => ['type' => 'color', 'default' => '#ffffff'],
-                    '--color-dark' => ['type' => 'color', 'default' => '#2b2b2b'],
-                    '--color-text' => ['type' => 'color', 'default' => '#333333'],
-                    '--color-muted' => ['type' => 'color', 'default' => '#d8ecff'],
-                    '--color-border' => ['type' => 'color', 'default' => '#88bcf0'],
-                    '--bs-breadcrumb-divider' => ['type' => 'string', 'default' => '>'],
-                ],
-            ]
         ]
     ],
 ];
