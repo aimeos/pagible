@@ -85,6 +85,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Use package catch-all page route
+    |--------------------------------------------------------------------------
+    |
+    | If enabled, the package will register a catch-all route that will
+    | match all requests and forward them to the CMS. Disable this option
+    | if you need to register own routes before the catch-all route.
+    |
+    */
+    'pageroute' => true,
+
+    /*
+    |--------------------------------------------------------------------------
     | Proxy settings
     |--------------------------------------------------------------------------
     |
