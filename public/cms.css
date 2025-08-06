@@ -12,8 +12,6 @@
     --pico-nav-element-spacing-horizontal: 1rem;
     --pico-nav-link-spacing-vertical: 0.625rem;
     --pico-nav-link-spacing-horizontal: 0.625rem;
-    --pico-block-spacing-vertical: 0;
-    --pico-block-spacing-horizontal: 0;
 }
 
 body {
@@ -21,6 +19,11 @@ body {
     color: var(--color-text);
     background-color: var(--color-light);
     scroll-behavior: smooth;
+}
+
+body.type-page {
+    --pico-block-spacing-vertical: 0;
+    --pico-block-spacing-horizontal: 0;
 }
 
 body.type-page .cms-content .container {

@@ -4,13 +4,8 @@
     }
 }
 
-.article h1 {
-    margin-top: 48px;
-}
-
 .article .cover {
     display: block;
-    margin-bottom: 48px
 }
 
 .article .cover source,
