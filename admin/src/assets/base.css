@@ -412,6 +412,7 @@ body {
   flex: 0 0 auto;
   flex-direction: column;
   align-self: end;
+  text-align: end;
 }
 
 .item-text,
