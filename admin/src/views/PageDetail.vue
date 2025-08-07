@@ -43,8 +43,8 @@
     },
 
     data: () => ({
-      tab: 'page',
-      aside: 'meta',
+      tab: 'editor',
+      aside: '',
       asidePage: 'meta',
       changed: {},
       errors: {},
@@ -672,11 +672,6 @@
   <v-main class="page-details">
     <v-form @submit.prevent>
       <v-tabs fixed-tabs v-model="tab">
-        <v-tab value="page"
-          :class="{changed: changed.page, error: errors.page}"
-          @click="aside = asidePage">
-          {{ $gettext('Page') }}
-        </v-tab>
         <v-tab value="editor"
           @click="aside = ''">
           {{ $gettext('Editor') }}
@@ -686,19 +681,14 @@
           @click="aside = 'count'">
           {{ $gettext('Content') }}
         </v-tab>
+        <v-tab value="page"
+          :class="{changed: changed.page, error: errors.page}"
+          @click="aside = asidePage">
+          {{ $gettext('Page') }}
+        </v-tab>
       </v-tabs>
 
       <v-window v-model="tab">
-
-        <v-window-item value="page">
-          <PageDetailItem ref="page"
-            :item="item"
-            :assets="assets"
-            @update:item="Object.assign(item, $event); changed.page = true"
-            @update:aside="asidePage = $event"
-            @error="errors.page = $event"
-          />
-        </v-window-item>
 
         <v-window-item value="editor">
           <PageDetailEditor
@@ -717,6 +707,16 @@
             :elements="elements"
             @error="errors.content = $event"
             @change="changed.content = true"
+          />
+        </v-window-item>
+
+        <v-window-item value="page">
+          <PageDetailItem ref="page"
+            :item="item"
+            :assets="assets"
+            @update:item="Object.assign(item, $event); changed.page = true"
+            @update:aside="asidePage = $event"
+            @error="errors.page = $event"
           />
         </v-window-item>
 

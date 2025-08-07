@@ -33,6 +33,7 @@
         index: null,
         element: null,
         section: 'main',
+        loading: true,
         expanded: false,
         vcontent: false,
         vschemas: false,
@@ -171,6 +172,14 @@
 
 <template>
   <div class="page-preview" ref="preview">
+    <div v-if="loading" class="controls">
+      <svg class="spinner" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <circle class="spin1" cx="4" cy="12" r="3"/>
+        <circle class="spin1 spin2" cx="12" cy="12" r="3"/>
+        <circle class="spin1 spin3" cx="20" cy="12" r="3"/>
+      </svg>
+    </div>
+
     <div v-if="index !== null" class="controls">
       <v-btn v-if="index !== -1"
         @click="edit()"
@@ -205,7 +214,7 @@
       {{ $gettext('Not CMS content') }}
     </div>
 
-    <iframe ref="iframe" :src="url"></iframe>
+    <iframe ref="iframe" :src="url" @load="loading = false"></iframe>
 
     <v-btn v-if="!expanded"
       @click="fullscreen()"
@@ -273,6 +282,10 @@
     grid-auto-flow: column;
     display: grid;
     gap: 10px;
+  }
+
+  .page-preview .controls .spinner {
+    width: 72px;
   }
 
   .page-preview .controls .v-btn {
