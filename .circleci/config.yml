@@ -77,7 +77,7 @@ jobs:
     docker:
       - image: aimeos/ci-php:8.2
         environment:
-          DB_CONNECTION: mysql
+          DB_CONNECTION: mariadb
           DB_HOST: "127.0.0.1"
           DB_USERNAME: pagible
           DB_PASSWORD: pagible
@@ -145,10 +145,10 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - php82-{{ checksum "composer.json" }}
+            - php84-{{ checksum "composer.json" }}
       - run: composer update -n --prefer-dist
       - save_cache:
-          key: php82-{{ checksum "composer.json" }}
+          key: php84-{{ checksum "composer.json" }}
           paths: [./vendor]
       - run: echo "CREATE DATABASE cms;" > sqlserver.sql; for i in `seq 1 10`; do /opt/mssql-tools/bin/sqlcmd -S 127.0.0.1 -U SA -P 'S3c0r3P4ss' -i sqlserver.sql && exit 0; sleep 3; done
       - run: ./vendor/bin/phpunit
@@ -162,10 +162,10 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - php82-{{ checksum "composer.json" }}
+            - php84-{{ checksum "composer.json" }}
       - run: composer update -n --prefer-dist
       - save_cache:
-          key: php82-{{ checksum "composer.json" }}
+          key: php84-{{ checksum "composer.json" }}
           paths: [./vendor]
       - run: ./vendor/bin/phpunit
 
@@ -199,7 +199,7 @@ jobs:
     docker:
       - image: aimeos/ci-php:8.4
         environment:
-          DB_CONNECTION: mysql
+          DB_CONNECTION: mariadb
           DB_HOST: "127.0.0.1"
           DB_USERNAME: pagible
           DB_PASSWORD: pagible
