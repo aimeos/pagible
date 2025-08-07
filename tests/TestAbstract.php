@@ -27,7 +27,7 @@ abstract class TestAbstract extends \Orchestra\Testbench\TestCase
 	protected function defineEnvironment( $app )
 	{
         $app['config']->set('database.connections.testing', [
-            'driver'   => env('DB_CONNECTION', 'sqlite'),
+            'driver'   => env('DB_DRIVER', 'sqlite'),
             'host'     => env('DB_HOST', ''),
             'port'     => env('DB_PORT', ''),
             'database' => env('DB_DATABASE', ':memory:'),

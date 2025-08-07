@@ -9,7 +9,7 @@ jobs:
     docker:
       - image: aimeos/ci-php:8.2
         environment:
-          DB_CONNECTION: pgsql
+          DB_DRIVER: sqlsrv
           DB_HOST: "127.0.0.1"
           DB_PORT: 1433
           DB_USERNAME: SA
@@ -35,7 +35,7 @@ jobs:
     docker:
       - image: aimeos/ci-php:8.2
         environment:
-          DB_CONNECTION: sqlite
+          DB_DRIVER: sqlite
     steps:
       - checkout
       - restore_cache:
@@ -51,8 +51,9 @@ jobs:
     docker:
       - image: aimeos/ci-php:8.2
         environment:
-          DB_CONNECTION: pgsql
+          DB_DRIVER: pgsql
           DB_HOST: "127.0.0.1"
+          DB_PORT: 5432
           DB_USERNAME: pagible
           DB_PASSWORD: pagible
           DB_DATABASE: cms
@@ -77,16 +78,17 @@ jobs:
     docker:
       - image: aimeos/ci-php:8.2
         environment:
-          DB_CONNECTION: mariadb
+          DB_DRIVER: mariadb
           DB_HOST: "127.0.0.1"
+          DB_PORT: 3306
           DB_USERNAME: pagible
           DB_PASSWORD: pagible
           DB_DATABASE: cms
       - image: mariadb:lts
         environment:
           MARIADB_ROOT_PASSWORD: rootpw
-          MARIADB_USER: aimeos
-          MARIADB_PASSWORD: aimeos
+          MARIADB_USER: pagible
+          MARIADB_PASSWORD: pagible
           MARIADB_DATABASE: cms
     steps:
       - checkout
@@ -104,16 +106,17 @@ jobs:
     docker:
       - image: aimeos/ci-php:8.2
         environment:
-          DB_CONNECTION: mysql
+          DB_DRIVER: mysql
           DB_HOST: "127.0.0.1"
+          DB_PORT: 3306
           DB_USERNAME: pagible
           DB_PASSWORD: pagible
           DB_DATABASE: cms
       - image: mysql:8
         environment:
           MYSQL_ROOT_PASSWORD: rootpw
-          MYSQL_USER: aimeos
-          MYSQL_PASSWORD: aimeos
+          MYSQL_USER: pagible
+          MYSQL_PASSWORD: pagible
           MYSQL_DATABASE: cms
     steps:
       - checkout
@@ -131,7 +134,7 @@ jobs:
     docker:
       - image: aimeos/ci-php:8.4
         environment:
-          DB_CONNECTION: pgsql
+          DB_DRIVER: sqlsrv
           DB_HOST: "127.0.0.1"
           DB_PORT: 1433
           DB_USERNAME: SA
@@ -157,7 +160,7 @@ jobs:
     docker:
       - image: aimeos/ci-php:8.4
         environment:
-          DB_CONNECTION: sqlite
+          DB_DRIVER: sqlite
     steps:
       - checkout
       - restore_cache:
@@ -173,8 +176,9 @@ jobs:
     docker:
       - image: aimeos/ci-php:8.4
         environment:
-          DB_CONNECTION: pgsql
+          DB_DRIVER: pgsql
           DB_HOST: "127.0.0.1"
+          DB_PORT: 5432
           DB_USERNAME: pagible
           DB_PASSWORD: pagible
           DB_DATABASE: cms
@@ -199,16 +203,17 @@ jobs:
     docker:
       - image: aimeos/ci-php:8.4
         environment:
-          DB_CONNECTION: mariadb
+          DB_DRIVER: mariadb
           DB_HOST: "127.0.0.1"
+          DB_PORT: 3306
           DB_USERNAME: pagible
           DB_PASSWORD: pagible
           DB_DATABASE: cms
       - image: mariadb:latest
         environment:
           MARIADB_ROOT_PASSWORD: rootpw
-          MARIADB_USER: aimeos
-          MARIADB_PASSWORD: aimeos
+          MARIADB_USER: pagible
+          MARIADB_PASSWORD: pagible
           MARIADB_DATABASE: cms
     steps:
       - checkout
@@ -226,8 +231,9 @@ jobs:
     docker:
       - image: aimeos/ci-php:8.4
         environment:
-          DB_CONNECTION: mysql
+          DB_DRIVER: mysql
           DB_HOST: "127.0.0.1"
+          DB_PORT: 3306
           DB_USERNAME: pagible
           DB_PASSWORD: pagible
           DB_DATABASE: cms
