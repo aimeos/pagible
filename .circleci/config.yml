@@ -257,7 +257,7 @@ workflows:
       - "php82-sqlite3"
       - "php82-pgsql10"
       - "php82-mariadb10"
-      - "php82-mysql80"
+      - "php82-mysql8"
       - "php84-mssql"
       - "php84-sqlite3"
       - "php84-pgsql"
