@@ -1,0 +1,265 @@
+# PHP CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-php/ for more details
+#
+version: 2.1
+
+jobs:
+  "php82-mssql":
+    docker:
+      - image: aimeos/ci-php:8.2
+        environment:
+          DB_CONNECTION: pgsql
+          DB_HOST: "127.0.0.1"
+          DB_PORT: 1433
+          DB_USERNAME: SA
+          DB_PASSWORD: S3c0r3P4ss
+          DB_DATABASE: cms
+      - image: mcr.microsoft.com/mssql/server:latest
+        environment:
+          SA_PASSWORD: S3c0r3P4ss
+          ACCEPT_EULA: Y
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - php82-{{ checksum "composer.json" }}
+      - run: composer update -n --prefer-dist
+      - save_cache:
+          key: php82-{{ checksum "composer.json" }}
+          paths: [./vendor]
+      - run: echo "CREATE DATABASE cms;" > sqlserver.sql; for i in `seq 1 10`; do /opt/mssql-tools/bin/sqlcmd -S 127.0.0.1 -U SA -P 'S3c0r3P4ss' -i sqlserver.sql && exit 0; sleep 3; done
+      - run: ./vendor/bin/phpunit
+
+  "php82-sqlite3":
+    docker:
+      - image: aimeos/ci-php:8.2
+        environment:
+          DB_CONNECTION: sqlite
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - php82-{{ checksum "composer.json" }}
+      - run: composer update -n --prefer-dist
+      - save_cache:
+          key: php82-{{ checksum "composer.json" }}
+          paths: [./vendor]
+      - run: ./vendor/bin/phpunit
+
+  "php82-pgsql10":
+    docker:
+      - image: aimeos/ci-php:8.2
+        environment:
+          DB_CONNECTION: pgsql
+          DB_HOST: "127.0.0.1"
+          DB_USERNAME: pagible
+          DB_PASSWORD: pagible
+          DB_DATABASE: cms
+      - image: cimg/postgres:10.22
+        environment:
+          POSTGRES_PASSWORD: pagible
+          POSTGRES_USER: pagible
+          POSTGRES_DB: cms
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - php82-{{ checksum "composer.json" }}
+      - run: composer update -n --prefer-dist
+      - save_cache:
+          key: php82-{{ checksum "composer.json" }}
+          paths: [./vendor]
+      - run: for i in `seq 1 10`; do nc -z 127.0.0.1 5432 && echo OK && exit 0; echo -n .; sleep 1; done
+      - run: ./vendor/bin/phpunit
+
+  "php82-mariadb10":
+    docker:
+      - image: aimeos/ci-php:8.2
+        environment:
+          DB_CONNECTION: mysql
+          DB_HOST: "127.0.0.1"
+          DB_USERNAME: pagible
+          DB_PASSWORD: pagible
+          DB_DATABASE: cms
+      - image: mariadb:lts
+        environment:
+          MARIADB_ROOT_PASSWORD: rootpw
+          MARIADB_USER: aimeos
+          MARIADB_PASSWORD: aimeos
+          MARIADB_DATABASE: cms
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - php82-{{ checksum "composer.json" }}
+      - run: composer update -n --prefer-dist
+      - save_cache:
+          key: php82-{{ checksum "composer.json" }}
+          paths: [./vendor]
+      - run: for i in `seq 1 10`; do nc -z 127.0.0.1 3306 && echo OK && exit 0; echo -n .; sleep 1; done
+      - run: ./vendor/bin/phpunit
+
+  "php82-mysql8":
+    docker:
+      - image: aimeos/ci-php:8.2
+        environment:
+          DB_CONNECTION: mysql
+          DB_HOST: "127.0.0.1"
+          DB_USERNAME: pagible
+          DB_PASSWORD: pagible
+          DB_DATABASE: cms
+      - image: mysql:8
+        environment:
+          MYSQL_ROOT_PASSWORD: rootpw
+          MYSQL_USER: aimeos
+          MYSQL_PASSWORD: aimeos
+          MYSQL_DATABASE: cms
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - php82-{{ checksum "composer.json" }}
+      - run: composer update -n --prefer-dist
+      - save_cache:
+          key: php82-{{ checksum "composer.json" }}
+          paths: [./vendor]
+      - run: for i in `seq 1 10`; do nc -z 127.0.0.1 3306 && echo OK && exit 0; echo -n .; sleep 1; done
+      - run: ./vendor/bin/phpunit
+
+  "php84-mssql":
+    docker:
+      - image: aimeos/ci-php:8.4
+        environment:
+          DB_CONNECTION: pgsql
+          DB_HOST: "127.0.0.1"
+          DB_PORT: 1433
+          DB_USERNAME: SA
+          DB_PASSWORD: S3c0r3P4ss
+          DB_DATABASE: cms
+      - image: mcr.microsoft.com/mssql/server:latest
+        environment:
+          SA_PASSWORD: S3c0r3P4ss
+          ACCEPT_EULA: Y
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - php82-{{ checksum "composer.json" }}
+      - run: composer update -n --prefer-dist
+      - save_cache:
+          key: php82-{{ checksum "composer.json" }}
+          paths: [./vendor]
+      - run: echo "CREATE DATABASE cms;" > sqlserver.sql; for i in `seq 1 10`; do /opt/mssql-tools/bin/sqlcmd -S 127.0.0.1 -U SA -P 'S3c0r3P4ss' -i sqlserver.sql && exit 0; sleep 3; done
+      - run: ./vendor/bin/phpunit
+
+  "php84-sqlite3":
+    docker:
+      - image: aimeos/ci-php:8.4
+        environment:
+          DB_CONNECTION: sqlite
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - php82-{{ checksum "composer.json" }}
+      - run: composer update -n --prefer-dist
+      - save_cache:
+          key: php82-{{ checksum "composer.json" }}
+          paths: [./vendor]
+      - run: ./vendor/bin/phpunit
+
+  "php84-pgsql":
+    docker:
+      - image: aimeos/ci-php:8.4
+        environment:
+          DB_CONNECTION: pgsql
+          DB_HOST: "127.0.0.1"
+          DB_USERNAME: pagible
+          DB_PASSWORD: pagible
+          DB_DATABASE: cms
+      - image: postgres:latest
+        environment:
+          POSTGRES_PASSWORD: pagible
+          POSTGRES_USER: pagible
+          POSTGRES_DB: cms
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - php84-{{ checksum "composer.json" }}
+      - run: composer update -n --prefer-dist
+      - save_cache:
+          key: php84-{{ checksum "composer.json" }}
+          paths: [./vendor]
+      - run: for i in `seq 1 10`; do nc -z 127.0.0.1 5432 && echo OK && exit 0; echo -n .; sleep 1; done
+      - run: ./vendor/bin/phpunit
+
+  "php84-mariadb":
+    docker:
+      - image: aimeos/ci-php:8.4
+        environment:
+          DB_CONNECTION: mysql
+          DB_HOST: "127.0.0.1"
+          DB_USERNAME: pagible
+          DB_PASSWORD: pagible
+          DB_DATABASE: cms
+      - image: mariadb:latest
+        environment:
+          MARIADB_ROOT_PASSWORD: rootpw
+          MARIADB_USER: aimeos
+          MARIADB_PASSWORD: aimeos
+          MARIADB_DATABASE: cms
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - php84-{{ checksum "composer.json" }}
+      - run: composer update -n --prefer-dist
+      - save_cache:
+          key: php84-{{ checksum "composer.json" }}
+          paths: [./vendor]
+      - run: for i in `seq 1 10`; do nc -z 127.0.0.1 3306 && echo OK && exit 0; echo -n .; sleep 1; done
+      - run: ./vendor/bin/phpunit
+
+  "php84-mysql":
+    docker:
+      - image: aimeos/ci-php:8.4
+        environment:
+          DB_CONNECTION: mysql
+          DB_HOST: "127.0.0.1"
+          DB_USERNAME: pagible
+          DB_PASSWORD: pagible
+          DB_DATABASE: cms
+      - image: mysql:9
+        environment:
+          MYSQL_ROOT_PASSWORD: rootpw
+          MYSQL_USER: pagible
+          MYSQL_PASSWORD: pagible
+          MYSQL_DATABASE: cms
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - php84-{{ checksum "composer.json" }}
+      - run: composer update -n --prefer-dist
+      - save_cache:
+          key: php84-{{ checksum "composer.json" }}
+          paths: [./vendor]
+      - run: for i in `seq 1 10`; do nc -z 127.0.0.1 3306 && echo OK && exit 0; echo -n .; sleep 1; done
+      - run: ./vendor/bin/phpunit
+
+workflows:
+  version: 2
+  unittest:
+    jobs:
+      - "php82-mssql"
+      - "php82-sqlite3"
+      - "php82-pgsql10"
+      - "php82-mariadb10"
+      - "php82-mysql80"
+      - "php84-mssql"
+      - "php84-sqlite3"
+      - "php84-pgsql"
+      - "php84-mariadb"
+      - "php84-mysql"
