@@ -27,10 +27,7 @@ class Nav extends Model
         'to' => '',
         'name' => '',
         'title' => '',
-        'type' => '',
-        'theme' => '',
         'status' => 0,
-        'cache' => 5,
     ];
 
     /**
@@ -45,10 +42,7 @@ class Nav extends Model
         'to',
         'name',
         'title',
-        'type',
-        'theme',
         'status',
-        'cache',
     ];
 
     /**

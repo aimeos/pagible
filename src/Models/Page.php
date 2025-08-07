@@ -319,17 +319,26 @@ class Page extends Model
     public function subtree() : DescendantsRelation
     {
         // restrict maximum depth to three levels for performance reasons
-        $builder = $this->newScopedQuery()->withDepth()
-            ->whereNotExists( function( \Illuminate\Database\Query\Builder $query ) {
-                $query->select( DB::raw( 1 ) )
+        $builder = $this->newScopedQuery()
+            ->select(
+                'id', 'parent_id', 'lang', 'path', 'domain', 'to', 'name', 'title',
+                'status', 'created_at', 'updated_at', '_lft', '_rgt'
+            )
+            ->withDepth()
+            ->whereNotExists( function( \Illuminate\Database\Query\Builder $builder ) {
+                $builder->select( DB::raw( 1 ) )
                     ->from( $this->getTable() . ' AS parent' )
                     ->whereColumn( $this->qualifyColumn( '_lft' ), '>=', 'parent._lft' )
                     ->whereColumn( $this->qualifyColumn( '_rgt' ), '<=', 'parent._rgt' )
                     ->where( 'parent.tenant_id', '=', \Aimeos\Cms\Tenancy::value() )
                     ->where( 'parent.status', 0 );
             } )
-            ->groupBy( $this->qualifyColumn( 'id' ), 'depth' )
-            ->having( 'depth', '<=', ( $this->depth ?? 0 ) + 3 );
+            ->groupBy(
+                'id', 'tenant_id', 'parent_id', 'lang', 'path', 'domain', 'to', 'name', 'title',
+                'status', 'created_at', 'updated_at', 'deleted_at', '_lft', '_rgt'
+            )
+            ->having( 'depth', '<=', ( $this->depth ?? 0 ) + 3 )
+            ->defaultOrder();
 
         return new DescendantsRelation( $builder, $this );
     }
@@ -343,19 +352,6 @@ class Page extends Model
     public function versions() : MorphMany
     {
         return $this->morphMany( Version::class, 'versionable' );
-    }
-
-
-    /**
-     * Apply default ordering to all queries
-     */
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::addGlobalScope('treeorder', function( Builder $builder ) {
-            $builder->defaultOrder();
-        });
     }
 
 
