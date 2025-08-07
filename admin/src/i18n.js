@@ -7,12 +7,13 @@ const gettext = createGettext({
 });
 
 import(`../i18n/LINGUAS?raw`).then(content => {
-  const langs = content.default.split(' ')
-  const userLang = navigator.language.toLowerCase().replace('_', '-')
-  const baseLang = userLang.slice(0, 2)
-  const locale = langs.includes(userLang) ? userLang : langs.includes(baseLang) ? baseLang : 'en'
+  const supported = content.default.split(' ')
+  const locale = (navigator.languages || [navigator.language])
+    .map(lang => lang?.toLowerCase()?.slice(0, 2))
+    .find(lang => supported.includes(lang))
+    || 'en'
 
-  gettext.available = Object.fromEntries(langs.map(value => [value, value]))
+  gettext.available = Object.fromEntries(supported.map(value => [value, value]))
 
   import(`../i18n/${locale}.json`).then(translations => {
     gettext.translations = translations.default || translations
