@@ -41,7 +41,7 @@ return [
     | page, element and file records.
     |
     */
-    'db' => env( 'DB_CONNECTION', 'mysql' ),
+    'db' => env( 'DB_CONNECTION', 'sqlite' ),
 
     /*
     |--------------------------------------------------------------------------
