@@ -77,12 +77,9 @@ class NavSchema extends Schema
             Str::make( 'path' )->readOnly(),
             Str::make( 'name' )->readOnly(),
             Str::make( 'title' )->readOnly(),
-            Str::make( 'theme' )->readOnly(),
-            Str::make( 'type' )->readOnly(),
             Str::make( 'to' )->readOnly(),
             Str::make( 'domain' )->readOnly(),
             Boolean::make( 'has' )->readOnly(),
-            Number::make( 'cache' )->readOnly(),
             DateTime::make( 'createdAt' )->readOnly(),
             DateTime::make( 'updatedAt' )->readOnly(),
         ];
