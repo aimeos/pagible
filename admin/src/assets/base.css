@@ -350,15 +350,32 @@ body {
 }
 
 .btn-overlay {
-  padding: 12px;
   background: rgb(var(--v-theme-surface-variant)) !important;
   color: rgb(var(--v-theme-surface)) !important;
   position: absolute !important;
   border-radius: 50%;
   width: max-content;
   opacity: 0.66;
+  padding: 12px;
   right: 0;
   top: 0;
+}
+
+.menu-overlay .v-btn {
+  background: rgb(var(--v-theme-surface-variant)) !important;
+  color: rgb(var(--v-theme-surface)) !important;
+  border-radius: 50%;
+  display: block;
+  opacity: 0.66;
+  padding: 12px;
+  margin: 4px 0;
+}
+
+.menu-overlay {
+  position: absolute;
+  width: max-content;
+  right: 0;
+  top: 48px;
 }
 
 .draft {

@@ -39,6 +39,7 @@
 
     data() {
       return {
+        menu: [],
         images: [],
         index: Math.floor(Math.random() * 100000),
         selected: null,
@@ -131,6 +132,11 @@
       },
 
 
+      description(file) {
+        return Object.values(file.description).shift()
+      },
+
+
       open(item) {
         this.openView(FileDetail, {item: item})
       },
@@ -192,7 +198,7 @@
 <template>
   <VueDraggable v-model="images" :disabled="readonly" @update="change()" draggable=".image" group="images" class="images" animation="500">
 
-    <div v-for="(item, idx) in images" :key="idx" :class="{readonly: readonly}" class="image" @click="open(item)">
+    <div v-for="(item, idx) in images" :key="idx" :class="{readonly: readonly}" class="image" @click="open(item)" :title="description(item)">
       <v-progress-linear v-if="item.uploading"
         color="primary"
         height="5"
@@ -204,13 +210,32 @@
         :src="url(item.path)"
         draggable="false"
       />
-      <v-btn v-if="!readonly && item.id"
-        @click.stop="remove(idx)"
-        :title="$gettext('Remove file')"
-        icon="mdi-trash-can"
+
+      <v-btn v-if="item.id && !readonly"
+        @click.stop="menu[idx] = !menu[idx]"
+        :title="$gettext('Open menu')"
+        icon="mdi-dots-vertical"
         class="btn-overlay"
-          variant="flat"
+        variant="flat"
       />
+      <v-menu v-if="menu[idx]">
+        <template v-slot:activator="{ props }">
+          <div class="menu-overlay">
+            <v-btn
+              @click.stop="open(item)"
+              :title="$gettext('Edit file')"
+              icon="mdi-pencil"
+              variant="flat"
+            />
+            <v-btn
+              @click.stop="remove(idx)"
+              :title="$gettext('Remove file')"
+              icon="mdi-trash-can"
+              variant="flat"
+            />
+          </div>
+        </template>
+      </v-menu>
     </div>
     <div v-if="!readonly" class="add">
       <div class="icon-group">
@@ -282,6 +307,10 @@
     height: 180px;
     width: 180px;
     margin: 1px;
+  }
+
+  .images .image {
+    cursor: pointer;
   }
 
   .images .add {

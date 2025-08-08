@@ -33,6 +33,7 @@
         selected: null,
         vfiles: false,
         vurls: false,
+        menu: false,
       }
     },
 
@@ -48,6 +49,12 @@
       if(this.file?.path?.startsWith('blob:')) {
         URL.revokeObjectURL(this.file.path)
       }
+    },
+
+    computed: {
+      description() {
+        return Object.values(this.file.description || {}).shift() || ''
+      },
     },
 
     methods: {
@@ -191,7 +198,7 @@
   <v-row>
     <v-col cols="12" md="6">
       <div class="files" :class="{readonly: readonly}">
-        <div v-if="file.path" class="file" @click="open(file)">
+        <div v-if="file.id" class="file" @click="open(file)" :title="$gettext('Edit file')">
           <v-progress-linear v-if="file.uploading"
             color="primary"
             height="5"
@@ -203,13 +210,32 @@
             <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2M9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5z"/>
           </svg>
           {{ file.name }}
-          <v-btn v-if="!readonly && file.path"
-            @click.stop="remove()"
-            :title="$gettext('Remove file')"
-            icon="mdi-trash-can"
+
+          <v-btn v-if="!readonly"
+            @click.stop="menu = !menu"
+            :title="$gettext('Open menu')"
+            icon="mdi-dots-vertical"
             class="btn-overlay"
             variant="flat"
           />
+          <v-menu v-if="menu">
+            <template v-slot:activator="{ props }">
+              <div class="menu-overlay">
+                <v-btn
+                  @click.stop="open(file)"
+                  :title="$gettext('Edit file')"
+                  icon="mdi-pencil"
+                  variant="flat"
+                />
+                <v-btn
+                  @click.stop="remove()"
+                  :title="$gettext('Remove file')"
+                  icon="mdi-trash-can"
+                  variant="flat"
+                />
+              </div>
+            </template>
+          </v-menu>
         </div>
         <div v-else-if="!readonly" class="file">
           <v-btn v-if="auth.can('file:view')"
@@ -245,6 +271,10 @@
         <v-col cols="12" md="9">{{ file.name }}</v-col>
       </v-row>
       <v-row>
+        <v-col cols="12" md="3" class="name">{{ $gettext('description') }}:</v-col>
+        <v-col cols="12" md="9">{{ description }}</v-col>
+      </v-row>
+      <v-row>
         <v-col cols="12" md="3" class="name">{{ $gettext('mime') }}:</v-col>
         <v-col cols="12" md="9">{{ file.mime }}</v-col>
       </v-row>
@@ -278,6 +308,7 @@
     justify-content: center;
     align-items: center;
     position: relative;
+    cursor: pointer;
     display: flex;
     min-height: 48px;
     max-height: 200px;

@@ -15,26 +15,44 @@
   <v-row>
     <v-col cols="12" md="6">
       <div class="files" :class="{readonly: readonly}">
-        <div v-if="file.path" class="file" @click="open(file)">
+        <div v-if="file.id" class="file" @click="open(file)" :title="$gettext('Edit file')">
           <v-progress-linear v-if="file.uploading"
             color="primary"
             height="5"
             indeterminate
             rounded
           />
-          <video v-if="file.path" ref="video"
-            :draggable="false"
+          <video v-if="file.path"
             :src="url(file.path)"
-            crossorigin="anonymous"
+            :draggable="false"
             controls
           />
-          <v-btn v-if="!readonly && file.path"
-            :title="$gettext('Remove file')"
-            @click.stop="remove()"
-            icon="mdi-trash-can"
+
+          <v-btn v-if="!readonly"
+            @click.stop="menu = !menu"
+            :title="$gettext('Open menu')"
+            icon="mdi-dots-vertical"
             class="btn-overlay"
             variant="flat"
           />
+          <v-menu v-if="menu">
+            <template v-slot:activator="{ props }">
+              <div class="menu-overlay">
+                <v-btn
+                  @click.stop="open(file)"
+                  :title="$gettext('Edit file')"
+                  icon="mdi-pencil"
+                  variant="flat"
+                />
+                <v-btn
+                  @click.stop="remove()"
+                  :title="$gettext('Remove file')"
+                  icon="mdi-trash-can"
+                  variant="flat"
+                />
+              </div>
+            </template>
+          </v-menu>
         </div>
         <div v-else-if="!readonly" class="file">
           <v-btn v-if="auth.can('file:view')"
@@ -68,6 +86,10 @@
       <v-row>
         <v-col cols="12" md="3" class="name">{{ $gettext('name') }}:</v-col>
         <v-col cols="12" md="9">{{ file.name }}</v-col>
+      </v-row>
+      <v-row>
+        <v-col cols="12" md="3" class="name">{{ $gettext('description') }}:</v-col>
+        <v-col cols="12" md="9">{{ description }}</v-col>
       </v-row>
       <v-row>
         <v-col cols="12" md="3" class="name">{{ $gettext('mime') }}:</v-col>
