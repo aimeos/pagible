@@ -143,8 +143,10 @@
   <v-expansion-panels class="items" v-model="panel" elevation="0" multiple>
     <VueDraggable
       v-model="items"
-      :disabled="readonly || panel.length"
       @update="change()"
+      :disabled="readonly || panel.length"
+      :forceFallback="true"
+      fallbackTolerance="10"
       draggable=".item"
       group="items"
       animation="500">
