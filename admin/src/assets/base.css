@@ -103,7 +103,7 @@ body {
 
 .v-sheet.box {
   border-radius: 8px !important;
-  margin: 0 1% 8px;
+  margin: 0 1%;
 }
 
 .v-sheet.scroll {
@@ -218,7 +218,7 @@ body {
   flex-wrap: wrap;
   align-items: flex-end;
   justify-content: space-between;
-  margin-bottom: 8px;
+  margin-bottom: 24px;
 }
 
 .header > * {
@@ -347,6 +347,7 @@ body {
 
 .btn-group {
   padding: 8px 0;
+  margin-bottom: 24px;
 }
 
 .btn-overlay {

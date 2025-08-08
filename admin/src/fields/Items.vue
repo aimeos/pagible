@@ -141,7 +141,13 @@
 
 <template>
   <v-expansion-panels class="items" v-model="panel" elevation="0" multiple>
-    <VueDraggable v-model="items" :disabled="readonly" @update="change()" draggable=".item" group="items" animation="500">
+    <VueDraggable
+      v-model="items"
+      :disabled="readonly || panel.length"
+      @update="change()"
+      draggable=".item"
+      group="items"
+      animation="500">
 
       <v-expansion-panel v-for="(item, idx) in items" :key="idx" class="item">
         <v-expansion-panel-title>

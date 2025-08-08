@@ -115,7 +115,7 @@
           >{{ $pgettext('cs', section) }}</v-tab>
         </v-tabs>
 
-        <v-window v-model="tab">
+        <v-window v-model="tab" :touch="false">
           <v-window-item v-for="(list, section) in sections" :key="section" :value="section">
             <PageDetailContentList ref="content"
               :section="section"
@@ -146,7 +146,6 @@
   .v-sheet {
     margin: 0;
     padding-top: 0;
-    padding-bottom: 0;
   }
 
   .v-sheet.scroll {

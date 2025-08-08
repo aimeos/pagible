@@ -560,14 +560,16 @@
     <v-expansion-panels class="list" v-model="panel" elevation="0" multiple>
       <VueDraggable
         @update:modelValue="$emit('update:content', $event)"
-        :disabled="!auth.can('page:save')"
+        :disabled="panel.length || !auth.can('page:save')"
         :modelValue="content"
+        touchStartThreshold="10"
+        swapThreshold="10"
         draggable=".content"
         group="content">
 
         <v-expansion-panel v-for="(el, idx) in content" :key="idx" v-show="shown(el)" class="content" :class="{changed: el._changed, error: el._error}">
           <v-expansion-panel-title expand-icon="mdi-pencil">
-            <v-checkbox-btn v-if="auth.can('page:save')" v-model="el._checked" @click.stop="" />
+            <v-checkbox-btn v-if="auth.can('page:save')" @click.stop="el._checked = !el._checked" />
 
             <v-menu v-if="auth.can('page:save')">
               <template v-slot:activator="{ props }">

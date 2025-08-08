@@ -331,7 +331,7 @@
         <v-tab value="refs">{{ $gettext('Used by') }}</v-tab>
       </v-tabs>
 
-      <v-window v-model="tab">
+      <v-window v-model="tab" :touch="false">
 
         <v-window-item value="element">
           <ElementDetailItem

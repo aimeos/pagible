@@ -627,7 +627,7 @@
           <v-tabs v-model="tabdesc">
             <v-tab v-for="entry in locales()" :value="entry.value">{{ entry.title }}</v-tab>
           </v-tabs>
-          <v-window v-model="tabdesc">
+          <v-window v-model="tabdesc" :touch="false">
             <v-window-item v-for="entry in locales()" :value="entry.value">
               <v-textarea ref="description"
                 @update:modelValue="item.description[entry.value] = $event; $emit('update:item', item)"
@@ -669,7 +669,7 @@
           <v-tabs v-model="tabtrans">
             <v-tab v-for="entry in locales()" :value="entry.value">{{ entry.title }}</v-tab>
           </v-tabs>
-          <v-window v-model="tabtrans">
+          <v-window v-model="tabtrans" :touch="false">
             <v-window-item v-for="entry in locales()" :value="entry.value">
               <v-textarea ref="transcription"
                 @update:modelValue="item.transcription[entry.value] = $event; $emit('update:item', item)"

@@ -230,11 +230,11 @@
 </template>
 
 <style>
-  html {
+  html, body {
     position: absolute;
     overflow: hidden;
-    bottom: 0;
-    right: 0;
+    height: 100%;
+    width: 100%;
     left: 0;
     top: 0;
   }

@@ -74,10 +74,10 @@
         {{ user.name }}
       </v-list-item>
       <v-list-item>
-        <v-btn
+        <v-btn prepend-icon="mdi-logout"
           @click="logout()"
           variant="text"
-          class="menu"
+          class="menu-item"
         >{{ $gettext('Logout') }}</v-btn>
       </v-list-item>
     </v-list>
@@ -85,4 +85,10 @@
 </template>
 
 <style scoped>
+  .menu-item {
+    width: 100%;
+    padding: 0;
+    text-align: start;
+    text-transform: capitalize
+  }
 </style>

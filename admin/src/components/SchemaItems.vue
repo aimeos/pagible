@@ -81,7 +81,7 @@
   }
 
   .v-btn {
-    width: 10rem;
+    width: 8rem;
   }
 
   .icon {
