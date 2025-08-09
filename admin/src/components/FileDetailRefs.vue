@@ -162,6 +162,10 @@
 </template>
 
 <style scoped>
+  .v-sheet.scroll {
+    max-height: calc(100vh - 96px);
+  }
+
   .v-expansion-panel-title {
     font-weight: bold;
     font-size: 110%;

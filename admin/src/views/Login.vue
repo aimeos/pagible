@@ -141,8 +141,8 @@
   .login .v-card {
     width: 20rem;
     padding: 8px;
-    background-color: #10446b;
-    color: #fff;
+    background-color: rgb(var(--v-theme-primary));
+    color: rgb(var(--v-theme-on-primary));
     opacity: 0;
   }
 

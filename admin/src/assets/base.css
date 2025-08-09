@@ -54,8 +54,9 @@ body {
   color: rgb(var(--v-theme-on-error)) !important;
 }
 
+.v-toolbar__prepend,
 .v-toolbar__append {
-    column-gap: 8px;
+  column-gap: 8px;
 }
 
 .v-app-bar-title {
@@ -102,7 +103,7 @@ body {
   margin: 0;
   padding: 16px;
   background-color: rgb(var(--v-theme-surface));
-  box-shadow: 0px 3px 9px 0px #A8B8C825 !important;
+  box-shadow: 0px 3px 9px 0px rgba(var(--v-theme-on-surface), var(--v-activated-opacity)) !important;
 }
 
 .v-sheet.box {
@@ -180,7 +181,7 @@ body {
 }
 
 .list .v-expansion-panel.v-expansion-panel--active {
-  border: 1px solid #D0D8E0;
+  border: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
 }
 
 .list .v-expansion-panel--active > .v-expansion-panel-title:not(.v-expansion-panel-title--static) {
@@ -276,7 +277,7 @@ body {
 
 .loading .spinner {
   margin-inline-start: 16px;
-  color: #808080;
+  color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
 }
 
 .hidden {
@@ -326,7 +327,7 @@ body {
 }
 
 .draft {
-  background-color: rgb(255, 192, 128) !important;
+  background-color: rgb(var(--v-theme-warning)) !important;
   color: rgb(var(--v-theme-surface-variant)) !important;
   border-radius: 50%;
   opacity: 0.66;
@@ -389,7 +390,7 @@ body {
 .item-aux,
 .item-subtitle {
   font-size: 90%;
-  color: #808080;
+  color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
 }
 
 .item-lang {
@@ -412,9 +413,15 @@ input[readonly],
 }
 
 .ck-editor {
-  --ck-color-toolbar-background: #F8F9FA;
-  --ck-color-base-border: #767676;
+  --ck-color-button-default-hover-background: rgb(var(--v-theme-surface-variant));
+  --ck-color-toolbar-background: rgb(var(--v-theme-background));
+  --ck-color-base-background: rgb(var(--v-theme-background));
+  --ck-color-text: rgb(var(--v-theme-on-surface));
   --ck-border-radius: 4px;
+}
+
+.ck.ck-editor__editable.ck-focused:not(.ck-editor__nested-editable) {
+  border: 1px solid rgba(var(--v-border-color), var(--v-medium-emphasis-opacity)) !important;
 }
 
 .ck-toolbar {
@@ -424,10 +431,6 @@ input[readonly],
 
 .ck-editor__editable_inline {
   min-height: 200px;
-}
-
-.ck.ck-editor__editable.ck-focused:not(.ck-editor__nested-editable) {
-  border: 1px solid #767676 !important;
 }
 
 .ck-content ul,

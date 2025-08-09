@@ -215,15 +215,15 @@
 </template>
 
 <style scoped>
-.v-expansion-panel {
-  border-inline-start: 3px solid transparent;
-}
+  .v-expansion-panel {
+    border-inline-start: 3px solid transparent;
+  }
 
-.v-expansion-panel.changed {
-  border-inline-start: 3px solid rgb(var(--v-theme-warning));
-}
+  .v-expansion-panel.changed {
+    border-inline-start: 3px solid rgb(var(--v-theme-warning));
+  }
 
-.v-expansion-panel.error .v-expansion-panel-title {
-  color: rgb(var(--v-theme-error));
-}
+  .v-expansion-panel.error .v-expansion-panel-title {
+    color: rgb(var(--v-theme-error));
+  }
 </style>

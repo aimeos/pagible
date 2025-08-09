@@ -631,21 +631,21 @@
       <v-btn
         @click="save()"
         :title="$gettext('Save')"
-        :class="{error: hasError}" class="menu-save"
         :disabled="!hasChanged || hasError || !auth.can('page:save')"
         :variant="!hasChanged || hasError || !auth.can('page:save') ? 'plain' : 'flat'"
-        :color="!hasChanged || hasError || !auth.can('page:save') ? '' : 'blue-darken-1'"
+        :class="{active: hasChanged && !hasError && auth.can('page:save'), error: hasError}"
         icon="mdi-database-arrow-down"
+        class="menu-save"
       />
 
       <v-menu v-model="pubmenu" :close-on-content-click="false">
         <template #activator="{ props }">
           <v-btn v-bind="props" icon
             :title="$gettext('Schedule publishing')"
-            :class="{error: hasError}" class="menu-publish"
             :disabled="item.published && !hasChanged || hasError || !auth.can('page:publish')"
             :variant="item.published && !hasChanged || hasError || !auth.can('page:publish') ? 'plain' : 'flat'"
-            :color="item.published && !hasChanged || hasError || !auth.can('page:publish') ? '' : 'blue-darken-2'"
+            :class="{active: (!item.published || hasChanged) && !hasError && auth.can('page:publish'), error: hasError}"
+            class="menu-publishat"
           >
             <v-icon>
               <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
@@ -669,10 +669,10 @@
       <v-btn icon
         @click="publish()"
         :title="$gettext('Publish')"
-        :class="{error: hasError}" class="menu-publish"
         :disabled="item.published && !hasChanged || hasError || !auth.can('page:publish')"
         :variant="item.published && !hasChanged || hasError || !auth.can('page:publish') ? 'plain' : 'flat'"
-        :color="item.published && !hasChanged || hasError || !auth.can('page:publish') ? '' : 'blue-darken-3'"
+        :class="{active: (!item.published || hasChanged) && !hasError && auth.can('page:publish'), error: hasError}"
+        class="menu-publish"
       >
         <v-icon>
           <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
@@ -780,5 +780,20 @@
 <style scoped>
   .v-toolbar-title {
     margin-inline-start: 0;
+  }
+
+  .v-app-bar .v-btn.menu-save.active {
+    background-color: rgba(var(--v-theme-primary), .75);
+    color: rgb(var(--v-theme-on-primary));
+  }
+
+  .v-app-bar .v-btn.menu-publishat.active {
+    background-color: rgba(var(--v-theme-primary), 0.875);
+    color: rgb(var(--v-theme-on-primary));
+  }
+
+  .v-app-bar .v-btn.menu-publish.active {
+    background-color: rgba(var(--v-theme-primary), 1);
+    color: rgb(var(--v-theme-on-primary));
   }
 </style>

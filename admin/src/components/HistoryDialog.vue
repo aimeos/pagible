@@ -113,7 +113,7 @@
           <v-timeline-item v-if="loading" dot-color="grey-lighten-1" size="small" width="100%">
             <div class="loading">
               {{ $gettext('Loading') }}
-              <svg class="spinner" width="32" height="32" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <svg class="spinner" width="32" height="32" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <circle class="spin1" cx="4" cy="12" r="3"/>
                 <circle class="spin1 spin2" cx="12" cy="12" r="3"/>
                 <circle class="spin1 spin3" cx="20" cy="12" r="3"/>

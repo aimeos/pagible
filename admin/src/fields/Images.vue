@@ -301,7 +301,7 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    border: 1px solid #808080;
+    border: 1px solid rgba(var(--v-border-color), var(--v-medium-emphasis-opacity));
     border-radius: 4px;
     position: relative;
     height: 180px;
@@ -314,9 +314,13 @@
   }
 
   .images .add {
-    border: 1px dashed #808080;
+    border: 1px dashed rgba(var(--v-border-color), var(--v-medium-emphasis-opacity));
     flex-flow: column;
     flex-wrap: wrap;
+  }
+
+  .images .add :deep(.v-icon) {
+    --v-medium-emphasis-opacity: 1;
   }
 
   .v-progress-linear {

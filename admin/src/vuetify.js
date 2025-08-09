@@ -18,11 +18,16 @@ const vuetify = createVuetify({
   },
   theme: {
     themes: {
+      defaultTheme: 'system',
       light: {
-        dark: false,
         colors: {
-          primary: '#0068D0',
-          background: '#F8FAFC'
+          background: '#f0f4f8',
+          primary: '#1e88e5',
+          info: '#03c9d7',
+          error: '#f44336',
+          success: '#00c853',
+          warning: '#ffb080',
+          accent: '#ffab91',
         }
       },
     },

@@ -929,7 +929,7 @@
   >
     <template #default="{ node, stat }">
       <div class="actions">
-        <svg v-if="stat.loading" class="spinner" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <svg v-if="stat.loading" class="spinner" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           <circle class="spin1" cx="4" cy="12" r="3"/>
           <circle class="spin1 spin2" cx="12" cy="12" r="3"/>
           <circle class="spin1 spin3" cx="20" cy="12" r="3"/>
@@ -1097,7 +1097,7 @@
   }
 
   .drag-placeholder-wrapper .tree-node-inner {
-    background-color: #fafafa;
+    background-color: rgb(var(--v-theme-background));
   }
 
   .tree-node-inner {

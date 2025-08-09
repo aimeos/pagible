@@ -173,7 +173,7 @@
 <template>
   <div class="page-preview" ref="preview">
     <div v-if="loading" class="controls">
-      <svg class="spinner" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <svg class="spinner" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
         <circle class="spin1" cx="4" cy="12" r="3"/>
         <circle class="spin1 spin2" cx="12" cy="12" r="3"/>
         <circle class="spin1 spin3" cx="20" cy="12" r="3"/>

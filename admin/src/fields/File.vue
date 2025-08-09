@@ -300,7 +300,7 @@
 
 <style>
   .files {
-    border: 1px dashed #767676;
+    border: 1px dashed rgba(var(--v-border-color), var(--v-medium-emphasis-opacity));
     border-radius: 8px;
   }
 

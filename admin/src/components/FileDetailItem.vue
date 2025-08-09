@@ -690,6 +690,10 @@
 </template>
 
 <style scoped>
+  .v-sheet.scroll {
+    max-height: calc(100vh - 96px);
+  }
+
   :deep(.cropper-bg) {
     background-repeat: repeat;
   }

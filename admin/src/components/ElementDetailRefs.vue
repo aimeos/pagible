@@ -144,4 +144,8 @@
     font-weight: bold !important;
     width: 33%
   }
+
+  .v-sheet.scroll {
+    max-height: calc(100vh - 96px);
+  }
 </style>

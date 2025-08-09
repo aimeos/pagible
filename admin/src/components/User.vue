@@ -1,4 +1,5 @@
 <script>
+  import { useTheme } from 'vuetify'
   import { useGettext } from "vue3-gettext"
   import { useAuthStore, useLanguageStore, useMessageStore } from '../stores'
 
@@ -12,8 +13,9 @@
       const messages = useMessageStore()
       const auth = useAuthStore()
       const i18n = useGettext()
+      const theme = useTheme()
 
-      return { auth, i18n, languages, messages }
+      return { auth, i18n, languages, messages, theme }
     },
 
     created() {
@@ -47,6 +49,12 @@
 </script>
 
 <template>
+  <v-btn
+    @click="theme.toggle()"
+    :title="$gettext('Toggle light/dark mode')"
+    :icon="theme.global.current.value.dark ? 'mdi-white-balance-sunny' : 'mdi-weather-night'"
+  />
+
   <v-menu>
     <template #activator="{ props }">
         <v-btn v-bind="props" :title="$gettext('Switch language')" icon="mdi-web" class="icon" />
