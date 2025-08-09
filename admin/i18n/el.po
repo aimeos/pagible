@@ -204,7 +204,7 @@ msgstr "Σφάλμα ανάκτησης κοινόχρηστων στοιχεί�
 #: src/components/FileListItems.vue:441
 #: src/components/FileListItems.vue:529
 #: src/components/PageDetailContentList.vue:526
-#: src/components/PageDetailContentList.vue:575
+#: src/components/PageDetailContentList.vue:577
 #: src/components/PageListItems.vue:873
 #: src/components/PageListItems.vue:950
 msgid "Actions"
@@ -216,21 +216,21 @@ msgstr "Δράσεις"
 #: src/components/FileListItems.vue:537
 #: src/components/PageListItems.vue:877
 #: src/components/PageListItems.vue:957
-#: src/views/ElementDetail.vue:299
-#: src/views/ElementDetail.vue:315
-#: src/views/FileDetail.vue:251
-#: src/views/FileDetail.vue:267
-#: src/views/PageDetail.vue:644
-#: src/views/PageDetail.vue:660
+#: src/views/ElementDetail.vue:319
+#: src/views/ElementDetail.vue:325
+#: src/views/FileDetail.vue:269
+#: src/views/FileDetail.vue:275
+#: src/views/PageDetail.vue:665
+#: src/views/PageDetail.vue:671
 msgid "Publish"
 msgstr "Δημοσίευση"
 
 #: src/components/ElementListItems.vue:424
-#: src/components/ElementListItems.vue:544
-#: src/components/PageDetailContentList.vue:660
+#: src/components/ElementListItems.vue:548
+#: src/components/PageDetailContentList.vue:662
 #: src/components/PageDetailItemConfig.vue:201
 #: src/components/PageDetailItemMeta.vue:200
-#: src/fields/Items.vue:219
+#: src/fields/Items.vue:227
 msgid "Add element"
 msgstr "Προσθήκη στοιχείου"
 
@@ -239,7 +239,7 @@ msgstr "Προσθήκη στοιχείου"
 #: src/components/FileListItems.vue:451
 #: src/components/FileListItems.vue:540
 #: src/components/PageDetailContentList.vue:530
-#: src/components/PageDetailContentList.vue:588
+#: src/components/PageDetailContentList.vue:590
 #: src/components/PageListItems.vue:889
 #: src/components/PageListItems.vue:1035
 msgid "Delete"
@@ -309,26 +309,26 @@ msgstr "τύπος"
 msgid "Loading"
 msgstr "Φόρτωση"
 
-#: src/components/ElementListItems.vue:534
-#: src/components/FileListItems.vue:583
+#: src/components/ElementListItems.vue:538
+#: src/components/FileListItems.vue:587
 #: src/components/PageListItems.vue:1080
 msgid "No entries found"
 msgstr "Δεν βρέθηκαν καταχωρήσεις"
 
 #: src/components/Fields.vue:136
-#: src/fields/Items.vue:165
+#: src/fields/Items.vue:173
 msgid "Translate %{code} field"
 msgstr "Μετάφραση πεδίου %{code} "
 
 #: src/components/Fields.vue:153
-#: src/fields/Items.vue:182
+#: src/fields/Items.vue:190
 msgid "Generate text for %{code} field"
 msgstr "Δημιουργία κειμένου για το πεδίο %{code} "
 
 #: src/components/FieldsDialog.vue:51
-#: src/views/ElementDetail.vue:290
-#: src/views/FileDetail.vue:241
-#: src/views/PageDetail.vue:635
+#: src/views/ElementDetail.vue:287
+#: src/views/FileDetail.vue:237
+#: src/views/PageDetail.vue:633
 msgid "Save"
 msgstr "Αποθήκευση"
 
@@ -534,7 +534,7 @@ msgid "Error fetching files"
 msgstr "Σφάλμα ανάκτησης αρχείων"
 
 #: src/components/FileListItems.vue:448
-#: src/components/FileListItems.vue:600
+#: src/components/FileListItems.vue:604
 #: src/components/FileUrlDialog.vue:161
 #: src/fields/Images.vue:244
 #: src/fields/Images.vue:263
@@ -642,13 +642,13 @@ msgid "Element is not shared"
 msgstr "Το στοιχείο δεν μοιράζεται"
 
 #: src/components/PageDetailContentList.vue:533
-#: src/components/PageDetailContentList.vue:582
+#: src/components/PageDetailContentList.vue:584
 #: src/components/PageListItems.vue:975
 msgid "Copy"
 msgstr "Αντιγραφή"
 
 #: src/components/PageDetailContentList.vue:536
-#: src/components/PageDetailContentList.vue:585
+#: src/components/PageDetailContentList.vue:587
 #: src/components/PageListItems.vue:972
 msgid "Cut"
 msgstr "Κόψτε το"
@@ -663,39 +663,39 @@ msgstr "Επικόλληση"
 msgid "Merge"
 msgstr "Συγχώνευση"
 
-#: src/components/PageDetailContentList.vue:594
+#: src/components/PageDetailContentList.vue:596
 msgid "Paste before"
 msgstr "Επικόλληση πριν"
 
-#: src/components/PageDetailContentList.vue:597
+#: src/components/PageDetailContentList.vue:599
 msgid "Paste after"
 msgstr "Επικόλληση μετά"
 
-#: src/components/PageDetailContentList.vue:600
+#: src/components/PageDetailContentList.vue:602
 msgid "Insert before"
 msgstr "Εισαγωγή πριν"
 
-#: src/components/PageDetailContentList.vue:603
+#: src/components/PageDetailContentList.vue:605
 msgid "Insert after"
 msgstr "Εισαγωγή μετά"
 
-#: src/components/PageDetailContentList.vue:609
+#: src/components/PageDetailContentList.vue:611
 msgid "Make shared"
 msgstr "Κάντε κοινή χρήση"
 
-#: src/components/PageDetailContentList.vue:612
+#: src/components/PageDetailContentList.vue:614
 msgid "Merge copy"
 msgstr "Αντίγραφο συγχώνευσης"
 
-#: src/components/PageDetailContentList.vue:615
+#: src/components/PageDetailContentList.vue:617
 msgid "Change to"
 msgstr "Αλλαγή σε"
 
-#: src/components/PageDetailContentList.vue:618
+#: src/components/PageDetailContentList.vue:620
 msgid "Split"
 msgstr "Split"
 
-#: src/components/PageDetailContentList.vue:624
+#: src/components/PageDetailContentList.vue:626
 msgid "Shared element"
 msgstr "Κοινό στοιχείο"
 
@@ -716,7 +716,7 @@ msgid "Add element after"
 msgstr "Προσθέστε στοιχείο μετά το"
 
 #: src/components/PageDetailEditor.vue:204
-#: src/fields/Items.vue:150
+#: src/fields/Items.vue:158
 msgid "Remove element"
 msgstr "Αφαίρεση στοιχείου"
 
@@ -971,23 +971,27 @@ msgstr "Στοιχεία περιεχομένου"
 msgid "uncategorized"
 msgstr "uncategorized"
 
-#: src/components/User.vue:23
+#: src/components/User.vue:25
 msgid "Failed to load user"
 msgstr "Απέτυχε να φορτώσει τον χρήστη"
 
-#: src/components/User.vue:33
+#: src/components/User.vue:35
 msgid "Logout failed"
 msgstr "Αποτυχία αποσύνδεσης"
 
-#: src/components/User.vue:52
+#: src/components/User.vue:54
+msgid "Toggle light/dark mode"
+msgstr "Εναλλαγή λειτουργίας φωτός/σκότους"
+
+#: src/components/User.vue:60
 msgid "Switch language"
 msgstr "Αλλαγή γλώσσας"
 
-#: src/components/User.vue:67
+#: src/components/User.vue:75
 msgid "User menu"
 msgstr "Μενού χρήστη"
 
-#: src/components/User.vue:81
+#: src/components/User.vue:89
 msgid "Logout"
 msgstr "Αποσύνδεση"
 
@@ -1428,32 +1432,33 @@ msgid "Back to list view"
 msgstr "Επιστροφή στην προβολή λίστας"
 
 #: src/views/ElementDetail.vue:272
-#: src/views/ElementDetail.vue:330
+#: src/views/ElementDetail.vue:349
 msgid "Element"
 msgstr "Στοιχείο"
 
 #: src/views/ElementDetail.vue:280
-#: src/views/FileDetail.vue:229
+#: src/views/FileDetail.vue:230
+#: src/views/PageDetail.vue:626
 msgid "View history"
 msgstr "Προβολή ιστορικού"
 
-#: src/views/ElementDetail.vue:303
-#: src/views/FileDetail.vue:255
-#: src/views/PageDetail.vue:648
+#: src/views/ElementDetail.vue:298
+#: src/views/FileDetail.vue:248
+#: src/views/PageDetail.vue:644
 msgid "Schedule publishing"
 msgstr "Δημοσίευση χρονοδιαγράμματος"
 
-#: src/views/ElementDetail.vue:321
+#: src/views/ElementDetail.vue:340
 #: src/views/ElementList.vue:84
-#: src/views/FileDetail.vue:273
+#: src/views/FileDetail.vue:290
 #: src/views/FileList.vue:81
-#: src/views/PageDetail.vue:666
+#: src/views/PageDetail.vue:686
 #: src/views/PageList.vue:169
 msgid "Toggle side menu"
 msgstr "Εναλλαγή πλευρικού μενού"
 
-#: src/views/ElementDetail.vue:331
-#: src/views/FileDetail.vue:283
+#: src/views/ElementDetail.vue:350
+#: src/views/FileDetail.vue:300
 msgid "Used by"
 msgstr "Χρησιμοποιείται από"
 
@@ -1555,7 +1560,7 @@ msgid "Error fetching file versions"
 msgstr "Σφάλμα ανάκτησης εκδόσεων αρχείων"
 
 #: src/views/FileDetail.vue:222
-#: src/views/FileDetail.vue:282
+#: src/views/FileDetail.vue:299
 msgid "File"
 msgstr "Αρχείο"
 
@@ -1612,7 +1617,7 @@ msgid "Error fetching page versions"
 msgstr "Σφάλμα ανάκτησης εκδόσεων σελίδας"
 
 #: src/views/PageDetail.vue:598
-#: src/views/PageDetail.vue:687
+#: src/views/PageDetail.vue:707
 msgid "Page"
 msgstr "Σελίδα"
 
@@ -1620,11 +1625,11 @@ msgstr "Σελίδα"
 msgid "Translate page"
 msgstr "Μετάφραση σελίδας"
 
-#: src/views/PageDetail.vue:677
+#: src/views/PageDetail.vue:697
 msgid "Editor"
 msgstr "Εκδότης"
 
-#: src/views/PageDetail.vue:682
+#: src/views/PageDetail.vue:702
 msgid "Content"
 msgstr "Περιεχόμενο"
 
