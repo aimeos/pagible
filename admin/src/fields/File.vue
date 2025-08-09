@@ -33,7 +33,6 @@
         selected: null,
         vfiles: false,
         vurls: false,
-        menu: false,
       }
     },
 
@@ -211,32 +210,36 @@
           </svg>
           {{ file.name }}
 
-          <v-btn v-if="!readonly"
-            @click.stop="menu = !menu"
-            :title="$gettext('Open menu')"
-            icon="mdi-dots-vertical"
-            class="btn-overlay"
-            variant="flat"
-          />
-          <v-menu v-if="menu">
+          <v-menu v-if="file.id && !readonly">
             <template v-slot:activator="{ props }">
-              <div class="menu-overlay">
-                <v-btn
-                  @click.stop="open(file)"
-                  :title="$gettext('Edit file')"
-                  icon="mdi-pencil"
-                  variant="flat"
-                />
-                <v-btn
-                  @click.stop="remove()"
-                  :title="$gettext('Remove file')"
-                  icon="mdi-trash-can"
-                  variant="flat"
-                />
-              </div>
+              <v-btn v-bind="props"
+                :title="$gettext('Open menu')"
+                icon="mdi-dots-vertical"
+                class="btn-overlay"
+                variant="flat"
+              />
             </template>
+            <v-list>
+              <v-list-item v-if="auth.can('file:view')">
+                <v-btn
+                  @click="open(file)"
+                  prepend-icon="mdi-pencil"
+                  variant="text">
+                  {{ $gettext('Edit file') }}
+                </v-btn>
+              </v-list-item>
+              <v-list-item>
+                <v-btn
+                  @click="remove()"
+                  prepend-icon="mdi-trash-can"
+                  variant="text">
+                  {{ $gettext('Remove file') }}
+                </v-btn>
+              </v-list-item>
+            </v-list>
           </v-menu>
         </div>
+
         <div v-else-if="!readonly" class="file">
           <v-btn v-if="auth.can('file:view')"
             @click="vfiles = true"

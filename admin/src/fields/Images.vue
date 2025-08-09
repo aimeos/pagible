@@ -39,7 +39,6 @@
 
     data() {
       return {
-        menu: [],
         images: [],
         index: Math.floor(Math.random() * 100000),
         selected: null,
@@ -211,32 +210,36 @@
         draggable="false"
       />
 
-      <v-btn v-if="item.id && !readonly"
-        @click.stop="menu[idx] = !menu[idx]"
-        :title="$gettext('Open menu')"
-        icon="mdi-dots-vertical"
-        class="btn-overlay"
-        variant="flat"
-      />
-      <v-menu v-if="menu[idx]">
+      <v-menu v-if="item.id && !readonly">
         <template v-slot:activator="{ props }">
-          <div class="menu-overlay">
-            <v-btn
-              @click.stop="open(item)"
-              :title="$gettext('Edit file')"
-              icon="mdi-pencil"
-              variant="flat"
-            />
-            <v-btn
-              @click.stop="remove(idx)"
-              :title="$gettext('Remove file')"
-              icon="mdi-trash-can"
-              variant="flat"
-            />
-          </div>
+          <v-btn v-bind="props"
+            :title="$gettext('Open menu')"
+            icon="mdi-dots-vertical"
+            class="btn-overlay"
+            variant="flat"
+          />
         </template>
+        <v-list>
+          <v-list-item v-if="auth.can('file:view')">
+            <v-btn
+              @click="open(item)"
+                  prepend-icon="mdi-pencil"
+                  variant="text">
+              {{ $gettext('Edit file') }}
+            </v-btn>
+          </v-list-item>
+          <v-list-item>
+            <v-btn
+              @click="remove(idx)"
+              prepend-icon="mdi-trash-can"
+              variant="text">
+              {{ $gettext('Remove file') }}
+            </v-btn>
+          </v-list-item>
+        </v-list>
       </v-menu>
     </div>
+
     <div v-if="!readonly" class="add">
       <div class="icon-group">
         <v-btn v-if="auth.can('file:view')"
