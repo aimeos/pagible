@@ -22,7 +22,7 @@ const vuetify = createVuetify({
       light: {
         colors: {
           background: '#f0f4f8',
-          primary: '#1e88e5',
+          primary: '#105090',
           info: '#03c9d7',
           error: '#f44336',
           success: '#00c853',
