@@ -612,14 +612,16 @@
                 :title="$gettext('Translate text')"
                 :loading="translating"
                 icon="mdi-translate"
-                variant="flat"
+                variant="text"
+                elevation="0"
               />
               <v-btn
                 @click="composeText()"
                 :title="$gettext('Generate description')"
                 :loading="composing"
                 icon="mdi-creation"
-                variant="flat"
+                variant="text"
+                elevation="0"
               />
             </div>
           </v-label>
@@ -654,14 +656,16 @@
                 :title="$gettext('Translate text')"
                 :loading="translating"
                 icon="mdi-translate"
-                variant="flat"
+                variant="text"
+                elevation="0"
               />
               <v-btn
                 @click="transcribe()"
                 :title="$gettext('Transcribe file content')"
                 :loading="transcribing"
                 icon="mdi-creation"
-                variant="flat"
+                variant="text"
+                elevation="0"
               />
             </div>
           </v-label>

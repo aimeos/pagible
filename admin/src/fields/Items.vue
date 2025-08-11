@@ -173,7 +173,8 @@
                       :title="$gettext('Translate %{code} field', {code: code})"
                       :loading="translating[idx+code]"
                       icon="mdi-translate"
-                      variant="flat"
+                      variant="text"
+                      elevation="0"
                     />
                   </template>
                   <v-list>
@@ -191,7 +192,8 @@
                   :loading="composing[idx+code]"
                   @click="composeText(idx, code)"
                   icon="mdi-creation"
-                  variant="flat"
+                  variant="text"
+                  elevation="0"
                 />
               </div>
             </v-label>

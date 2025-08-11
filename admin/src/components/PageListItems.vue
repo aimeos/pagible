@@ -913,7 +913,7 @@
       @click="reload()"
       :title="$gettext('Reload page tree')"
       icon="mdi-refresh"
-      variant="flat"
+      variant="text"
       class="no-rtl"
     />
   </div>
@@ -939,7 +939,7 @@
           :class="{hidden: !node.has}"
           :icon="stat.open ? 'mdi-menu-down' : 'mdi-menu-right'"
           :title="$gettext('Toggle child nodes')"
-          variant="flat"
+          variant="text"
         />
 
         <v-checkbox-btn v-model="stat._checked" :class="{draft: !node.published}" />

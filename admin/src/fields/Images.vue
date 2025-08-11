@@ -216,15 +216,17 @@
             :title="$gettext('Open menu')"
             icon="mdi-dots-vertical"
             class="btn-overlay"
-            variant="flat"
+            variant="text"
+            elevation="0"
           />
         </template>
         <v-list>
           <v-list-item v-if="auth.can('file:view')">
             <v-btn
               @click="open(item)"
-                  prepend-icon="mdi-pencil"
-                  variant="text">
+              prepend-icon="mdi-pencil"
+              variant="text"
+              elevation="0">
               {{ $gettext('Edit file') }}
             </v-btn>
           </v-list-item>
@@ -232,7 +234,8 @@
             <v-btn
               @click="remove(idx)"
               prepend-icon="mdi-trash-can"
-              variant="text">
+              variant="text"
+              elevation="0">
               {{ $gettext('Remove file') }}
             </v-btn>
           </v-list-item>
@@ -246,13 +249,15 @@
           @click="vfiles = true"
           :title="$gettext('Add files')"
           icon="mdi-button-cursor"
-          variant="flat"
+          variant="text"
+          elevation="0"
         />
         <v-btn
           @click="vurls = true"
           :title="$gettext('Add files from URLs')"
           icon="mdi-link-variant-plus"
-          variant="flat"
+          variant="text"
+          elevation="0"
         />
       </div>
       <div class="icon-group">
@@ -260,12 +265,14 @@
           @click="vcreate = true"
           :title="$gettext('Create file')"
           icon="mdi-creation"
-          variant="flat"
+          variant="text"
+          elevation="0"
         />
         <v-btn
           :title="$gettext('Add files')"
           icon="mdi-upload"
-          variant="flat"
+          variant="text"
+          elevation="0"
           ><v-file-input
             v-model="selected"
             @update:modelValue="add($event)"

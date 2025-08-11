@@ -185,7 +185,8 @@
         @click="edit()"
         :title="$gettext('Edit element')"
         icon="mdi-pencil"
-        variant="flat"
+        variant="text"
+        elevation="0"
       />
       <v-btn v-if="index !== -1"
         @click="vschemas = true; pos = 0"

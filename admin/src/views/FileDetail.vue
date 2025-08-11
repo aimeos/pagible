@@ -265,7 +265,8 @@
             @click="publish(publishAt); pubmenu = false"
             :disabled="!publishAt || error"
             :color="publishAt ? 'primary' : ''"
-            variant="flat"
+            variant="text"
+            elevation="0"
           >{{ $gettext('Publish') }}</v-btn>
         </div>
       </v-menu>

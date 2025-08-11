@@ -489,7 +489,8 @@
             :title="$gettext('Actions')"
             icon="mdi-dots-vertical"
             class="item-menu"
-            variant="flat"
+            variant="text"
+            elevation="0"
           />
         </template>
         <v-list>

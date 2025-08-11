@@ -476,13 +476,15 @@
         @click="vgrid = true"
         :title="$gettext('Grid view')"
         icon="mdi-view-grid-outline"
-        variant="flat"
+        variant="text"
+        elevation="0"
       />
       <v-btn v-if="vgrid"
         @click="vgrid = false"
         :title="$gettext('List view')"
         icon="mdi-format-list-bulleted-square"
-        variant="flat"
+        variant="text"
+        elevation="0"
       />
 
       <v-menu location="bottom right">
@@ -604,6 +606,7 @@
       :title="$gettext('Add files')"
       icon="mdi-folder-plus"
       color="primary"
+      variant="flat"
     />
   </div>
 </template>

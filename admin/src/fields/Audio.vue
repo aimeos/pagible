@@ -34,7 +34,8 @@
                 :title="$gettext('Open menu')"
                 icon="mdi-dots-vertical"
                 class="btn-overlay"
-                variant="flat"
+                variant="text"
+                elevation="0"
               />
             </template>
             <v-list>
@@ -42,7 +43,8 @@
                 <v-btn
                   @click="open(file)"
                   prepend-icon="mdi-pencil"
-                  variant="text">
+                  variant="text"
+                  elevation="0">
                   {{ $gettext('Edit file') }}
                 </v-btn>
               </v-list-item>
@@ -50,7 +52,8 @@
                 <v-btn
                   @click="remove()"
                   prepend-icon="mdi-trash-can"
-                  variant="text">
+                  variant="text"
+                  elevation="0">
                   {{ $gettext('Remove file') }}
                 </v-btn>
               </v-list-item>
@@ -63,18 +66,21 @@
             @click="vfiles = true"
             :title="$gettext('Add file')"
             icon="mdi-button-cursor"
-            variant="flat"
+            variant="text"
+            elevation="0"
           ></v-btn>
           <v-btn
             @click="vurls = true"
             :title="$gettext('Add file from URL')"
             icon="mdi-link-variant-plus"
-            variant="flat"
+            variant="text"
+            elevation="0"
           ></v-btn>
           <v-btn
             :title="$gettext('Upload file')"
             icon="mdi-upload"
-            variant="flat">
+            variant="text"
+            elevation="0"
             <v-file-input
               v-model="selected"
               @update:modelValue="add($event)"
