@@ -291,6 +291,12 @@
     margin-bottom: 16px;
   }
 
+  .v-input :deep(.v-input__prepend > .v-icon),
+  .v-input :deep(.v-field__clearable > .v-icon),
+  .v-input--dirty :deep(.v-input__append > .v-icon) {
+    opacity: var(--v-high-emphasis-opacity);
+  }
+
   .help {
     color: rgb(var(--v-theme-on-surface));
     background-color: rgb(var(--v-theme-surface-light));
