@@ -209,7 +209,6 @@
           :loading="loading ? 'primary' : false"
           :disabled="!input || loading"
           @click="create()"
-          color="primary"
           variant="outlined"
           class="create">
           {{ $gettext('Create image') }}
