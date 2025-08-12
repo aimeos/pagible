@@ -409,13 +409,13 @@ body {
 .readonly,
 input[readonly],
 .ck-editor .ck-read-only {
-  background-color: rgb(var(--v-theme-background)) !important;
+  background-color: rgb(var(--v-theme-surface)) !important;
 }
 
 .ck-editor {
   --ck-color-button-default-hover-background: rgb(var(--v-theme-surface-variant));
-  --ck-color-toolbar-background: rgb(var(--v-theme-background));
-  --ck-color-base-background: rgb(var(--v-theme-background));
+  --ck-color-toolbar-background: rgb(var(--v-theme-surface));
+  --ck-color-base-background: rgb(var(--v-theme-surface));
   --ck-color-text: rgb(var(--v-theme-on-surface));
   --ck-border-radius: 4px;
 }
