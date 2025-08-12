@@ -30,21 +30,21 @@ msgid "id"
 msgstr "זהות"
 
 #: src/components/AsideMeta.vue:23
-#: src/components/FileListItems.vue:509
-#: src/fields/Audio.vue:95
-#: src/fields/File.vue:278
-#: src/fields/Image.vue:128
-#: src/fields/Video.vue:95
+#: src/components/FileListItems.vue:511
+#: src/fields/Audio.vue:105
+#: src/fields/File.vue:287
+#: src/fields/Image.vue:140
+#: src/fields/Video.vue:105
 msgid "mime"
 msgstr "פנטומימה"
 
 #: src/components/AsideMeta.vue:27
 #: src/components/ElementListItems.vue:475
-#: src/components/FileListItems.vue:515
-#: src/fields/Audio.vue:99
-#: src/fields/File.vue:282
-#: src/fields/Image.vue:132
-#: src/fields/Video.vue:99
+#: src/components/FileListItems.vue:517
+#: src/fields/Audio.vue:109
+#: src/fields/File.vue:291
+#: src/fields/Image.vue:144
+#: src/fields/Video.vue:109
 #: src/views/ElementList.vue:119
 #: src/views/FileList.vue:116
 #: src/views/PageList.vue:272
@@ -56,10 +56,10 @@ msgid "created"
 msgstr "נוצר"
 
 #: src/components/AsideMeta.vue:35
-#: src/fields/Audio.vue:103
-#: src/fields/File.vue:286
-#: src/fields/Image.vue:136
-#: src/fields/Video.vue:103
+#: src/fields/Audio.vue:113
+#: src/fields/File.vue:295
+#: src/fields/Image.vue:148
+#: src/fields/Video.vue:113
 msgid "updated"
 msgstr "עודכן"
 
@@ -97,7 +97,7 @@ msgstr "לא"
 
 #: src/components/ElementDetailRefs.vue:89
 #: src/components/Navigation.vue:36
-#: src/components/SchemaDialog.vue:42
+#: src/components/SchemaDialog.vue:43
 #: src/views/ElementList.vue:76
 msgid "Shared elements"
 msgstr "אלמנטים משותפים"
@@ -161,8 +161,8 @@ msgstr "פורסם"
 #: src/components/PageListItems.vue:603
 #: src/components/PageListItems.vue:664
 #: src/components/PageListItems.vue:726
-#: src/fields/File.vue:63
-#: src/fields/Images.vue:63
+#: src/fields/File.vue:62
+#: src/fields/Images.vue:62
 #: src/views/ElementDetail.vue:107
 #: src/views/ElementDetail.vue:156
 #: src/views/ElementDetail.vue:211
@@ -200,9 +200,9 @@ msgid "Error fetching shared elements"
 msgstr "שגיאה באחזור אלמנטים משותפים"
 
 #: src/components/ElementListItems.vue:417
-#: src/components/ElementListItems.vue:489
+#: src/components/ElementListItems.vue:490
 #: src/components/FileListItems.vue:441
-#: src/components/FileListItems.vue:529
+#: src/components/FileListItems.vue:531
 #: src/components/PageDetailContentList.vue:526
 #: src/components/PageDetailContentList.vue:577
 #: src/components/PageListItems.vue:873
@@ -211,33 +211,33 @@ msgid "Actions"
 msgstr "פעולות"
 
 #: src/components/ElementListItems.vue:421
-#: src/components/ElementListItems.vue:497
+#: src/components/ElementListItems.vue:499
 #: src/components/FileListItems.vue:445
-#: src/components/FileListItems.vue:537
+#: src/components/FileListItems.vue:539
 #: src/components/PageListItems.vue:877
 #: src/components/PageListItems.vue:957
-#: src/views/ElementDetail.vue:319
-#: src/views/ElementDetail.vue:325
-#: src/views/FileDetail.vue:269
-#: src/views/FileDetail.vue:275
-#: src/views/PageDetail.vue:665
-#: src/views/PageDetail.vue:671
+#: src/views/ElementDetail.vue:320
+#: src/views/ElementDetail.vue:326
+#: src/views/FileDetail.vue:270
+#: src/views/FileDetail.vue:276
+#: src/views/PageDetail.vue:666
+#: src/views/PageDetail.vue:672
 msgid "Publish"
 msgstr "פרסם"
 
 #: src/components/ElementListItems.vue:424
-#: src/components/ElementListItems.vue:548
+#: src/components/ElementListItems.vue:551
 #: src/components/PageDetailContentList.vue:662
 #: src/components/PageDetailItemConfig.vue:201
 #: src/components/PageDetailItemMeta.vue:200
-#: src/fields/Items.vue:227
+#: src/fields/Items.vue:229
 msgid "Add element"
 msgstr "הוסף אלמנט"
 
 #: src/components/ElementListItems.vue:427
-#: src/components/ElementListItems.vue:500
+#: src/components/ElementListItems.vue:502
 #: src/components/FileListItems.vue:451
-#: src/components/FileListItems.vue:540
+#: src/components/FileListItems.vue:542
 #: src/components/PageDetailContentList.vue:530
 #: src/components/PageDetailContentList.vue:590
 #: src/components/PageListItems.vue:889
@@ -246,18 +246,18 @@ msgid "Delete"
 msgstr "אשפה"
 
 #: src/components/ElementListItems.vue:430
-#: src/components/ElementListItems.vue:503
+#: src/components/ElementListItems.vue:505
 #: src/components/FileListItems.vue:454
-#: src/components/FileListItems.vue:543
+#: src/components/FileListItems.vue:545
 #: src/components/PageListItems.vue:892
 #: src/components/PageListItems.vue:1038
 msgid "Restore"
 msgstr "שחזור"
 
 #: src/components/ElementListItems.vue:433
-#: src/components/ElementListItems.vue:506
+#: src/components/ElementListItems.vue:508
 #: src/components/FileListItems.vue:457
-#: src/components/FileListItems.vue:546
+#: src/components/FileListItems.vue:548
 #: src/components/PageListItems.vue:895
 #: src/components/PageListItems.vue:1041
 msgid "Purge"
@@ -271,30 +271,30 @@ msgid "Search for"
 msgstr "חפש"
 
 #: src/components/ElementListItems.vue:454
-#: src/components/FileListItems.vue:491
+#: src/components/FileListItems.vue:493
 msgid "Sort by"
 msgstr "מיין לפי"
 
 #: src/components/ElementListItems.vue:458
 #: src/components/ElementListItems.vue:463
-#: src/components/FileListItems.vue:495
-#: src/components/FileListItems.vue:500
+#: src/components/FileListItems.vue:497
+#: src/components/FileListItems.vue:502
 msgid "latest"
 msgstr "אחרון"
 
 #: src/components/ElementListItems.vue:458
 #: src/components/ElementListItems.vue:466
-#: src/components/FileListItems.vue:495
-#: src/components/FileListItems.vue:503
+#: src/components/FileListItems.vue:497
+#: src/components/FileListItems.vue:505
 msgid "oldest"
 msgstr "הכי ישן"
 
 #: src/components/ElementListItems.vue:469
-#: src/components/FileListItems.vue:506
-#: src/fields/Audio.vue:87
-#: src/fields/File.vue:270
-#: src/fields/Image.vue:120
-#: src/fields/Video.vue:87
+#: src/components/FileListItems.vue:508
+#: src/fields/Audio.vue:97
+#: src/fields/File.vue:279
+#: src/fields/Image.vue:132
+#: src/fields/Video.vue:97
 msgid "name"
 msgstr "שם"
 
@@ -302,15 +302,15 @@ msgstr "שם"
 msgid "type"
 msgstr "סוג"
 
-#: src/components/ElementListItems.vue:530
-#: src/components/FileListItems.vue:578
-#: src/components/HistoryDialog.vue:115
+#: src/components/ElementListItems.vue:533
+#: src/components/FileListItems.vue:580
+#: src/components/HistoryDialog.vue:116
 #: src/components/PageListItems.vue:1075
 msgid "Loading"
 msgstr "טעינה"
 
-#: src/components/ElementListItems.vue:538
-#: src/components/FileListItems.vue:587
+#: src/components/ElementListItems.vue:541
+#: src/components/FileListItems.vue:589
 #: src/components/PageListItems.vue:1080
 msgid "No entries found"
 msgstr "לא נמצאו רשומות"
@@ -320,8 +320,8 @@ msgstr "לא נמצאו רשומות"
 msgid "Translate %{code} field"
 msgstr "תרגם את השדה \" %{code} \""
 
-#: src/components/Fields.vue:153
-#: src/fields/Items.vue:190
+#: src/components/Fields.vue:154
+#: src/fields/Items.vue:191
 msgid "Generate text for %{code} field"
 msgstr "הפק טקסט לשדה \" %{code} \""
 
@@ -341,7 +341,7 @@ msgstr "שמור"
 msgid "Close"
 msgstr "סגור"
 
-#: src/components/FieldsDialog.vue:60
+#: src/components/FieldsDialog.vue:61
 msgid "Content Element"
 msgstr "אלמנט תוכן"
 
@@ -349,8 +349,8 @@ msgstr "אלמנט תוכן"
 #: src/components/FileListItems.vue:112
 #: src/components/FileUrlDialog.vue:67
 #: src/components/FileUrlDialog.vue:147
-#: src/fields/File.vue:103
-#: src/fields/Images.vue:115
+#: src/fields/File.vue:102
+#: src/fields/Images.vue:114
 msgid "Error adding file %{path}"
 msgstr "שגיאה בהוספת קובץ %{path}"
 
@@ -358,12 +358,12 @@ msgstr "שגיאה בהוספת קובץ %{path}"
 msgid "Error creating file"
 msgstr "שגיאה ביצירת הקובץ"
 
-#: src/components/FileAiDialog.vue:195
+#: src/components/FileAiDialog.vue:196
 #: src/components/FileAiDialog.vue:214
 msgid "Create image"
 msgstr "צור תמונה"
 
-#: src/components/FileAiDialog.vue:201
+#: src/components/FileAiDialog.vue:202
 msgid "Describe the image"
 msgstr "תאר את התמונה"
 
@@ -373,6 +373,12 @@ msgstr "תמונות שנוצרו"
 
 #: src/components/FileAiDialog.vue:225
 #: src/components/FileAiDialog.vue:244
+#: src/components/FileUrlDialog.vue:209
+#: src/fields/Audio.vue:57
+#: src/fields/File.vue:239
+#: src/fields/Image.vue:84
+#: src/fields/Images.vue:239
+#: src/fields/Video.vue:57
 msgid "Remove"
 msgstr "הסר"
 
@@ -469,27 +475,27 @@ msgid "Descriptions"
 msgstr "תיאורים"
 
 #: src/components/FileDetailItem.vue:612
-#: src/components/FileDetailItem.vue:654
+#: src/components/FileDetailItem.vue:656
 msgid "Translate text"
 msgstr "תרגם טקסט"
 
-#: src/components/FileDetailItem.vue:619
+#: src/components/FileDetailItem.vue:620
 msgid "Generate description"
 msgstr "צור תיאור"
 
-#: src/components/FileDetailItem.vue:634
+#: src/components/FileDetailItem.vue:636
 msgid "Description (%{lang})"
 msgstr "תיאור (%{lang})"
 
-#: src/components/FileDetailItem.vue:650
+#: src/components/FileDetailItem.vue:652
 msgid "Transcriptions"
 msgstr "תמלולים"
 
-#: src/components/FileDetailItem.vue:661
+#: src/components/FileDetailItem.vue:664
 msgid "Transcribe file content"
 msgstr "תמלל את תוכן הקובץ"
 
-#: src/components/FileDetailItem.vue:676
+#: src/components/FileDetailItem.vue:680
 msgid "Transcription (%{lang})"
 msgstr "תמלול (%{lang})"
 
@@ -507,8 +513,9 @@ msgstr "אלמנטים"
 msgid "Versions"
 msgstr "גרסאות"
 
-#: src/components/FileDialog.vue:31
+#: src/components/FileDialog.vue:32
 #: src/components/Navigation.vue:42
+#: src/views/FileList.vue:74
 msgid "Files"
 msgstr "קבצים"
 
@@ -534,10 +541,10 @@ msgid "Error fetching files"
 msgstr "שגיאה בהורדת קבצים"
 
 #: src/components/FileListItems.vue:448
-#: src/components/FileListItems.vue:604
+#: src/components/FileListItems.vue:606
 #: src/components/FileUrlDialog.vue:161
-#: src/fields/Images.vue:244
-#: src/fields/Images.vue:263
+#: src/fields/Images.vue:250
+#: src/fields/Images.vue:272
 msgid "Add files"
 msgstr "הוסף קבצים"
 
@@ -545,11 +552,11 @@ msgstr "הוסף קבצים"
 msgid "Grid view"
 msgstr "תצוגת רשת"
 
-#: src/components/FileListItems.vue:483
+#: src/components/FileListItems.vue:484
 msgid "List view"
 msgstr "תצוגת רשימה"
 
-#: src/components/FileListItems.vue:512
+#: src/components/FileListItems.vue:514
 msgid "language"
 msgstr "שפה"
 
@@ -566,52 +573,43 @@ msgid "The file is not of type \"%{mime}*\""
 msgstr "הקובץ אינו מסוג \"%{mime}*\"."
 
 #: src/components/FileUrlDialog.vue:161
-#: src/fields/Audio.vue:60
-#: src/fields/File.vue:243
-#: src/fields/Image.vue:87
-#: src/fields/Video.vue:60
+#: src/fields/Audio.vue:67
+#: src/fields/File.vue:249
+#: src/fields/Image.vue:94
+#: src/fields/Video.vue:67
 msgid "Add file"
 msgstr "הוסף קובץ"
 
-#: src/components/FileUrlDialog.vue:171
-#: src/fields/Images.vue:250
+#: src/components/FileUrlDialog.vue:172
+#: src/fields/Images.vue:257
 msgid "Add files from URLs"
 msgstr "הוספת קבצים מכתובות URL"
 
-#: src/components/FileUrlDialog.vue:182
+#: src/components/FileUrlDialog.vue:183
 msgid "Enter one URL per line"
 msgstr "הזן כתובת URL אחת בכל שורה"
 
-#: src/components/FileUrlDialog.vue:196
+#: src/components/FileUrlDialog.vue:197
 msgid "Enter URL"
 msgstr "הזן כתובת URL"
 
-#: src/components/FileUrlDialog.vue:208
-#: src/fields/Audio.vue:49
-#: src/fields/File.vue:232
-#: src/fields/Image.vue:76
-#: src/fields/Images.vue:232
-#: src/fields/Video.vue:49
-msgid "Remove file"
-msgstr "הסר קובץ"
-
-#: src/components/HistoryDialog.vue:106
+#: src/components/HistoryDialog.vue:107
 msgid "History"
 msgstr "היסטוריה"
 
-#: src/components/HistoryDialog.vue:128
+#: src/components/HistoryDialog.vue:129
 msgid "No changes"
 msgstr "אין שינויים"
 
-#: src/components/HistoryDialog.vue:137
+#: src/components/HistoryDialog.vue:138
 msgid "Current"
 msgstr "נוכחי"
 
-#: src/components/HistoryDialog.vue:179
+#: src/components/HistoryDialog.vue:180
 msgid "Revert"
 msgstr "החזר"
 
-#: src/components/HistoryDialog.vue:240
+#: src/components/HistoryDialog.vue:241
 msgid "Use version"
 msgstr "השתמש בגרסה"
 
@@ -707,32 +705,32 @@ msgstr "לחץ פעמיים כדי לערוך"
 msgid "Edit element"
 msgstr "ערוך אלמנט"
 
-#: src/components/PageDetailEditor.vue:192
+#: src/components/PageDetailEditor.vue:193
 msgid "Add element before"
 msgstr "הוסף אלמנט לפני"
 
-#: src/components/PageDetailEditor.vue:198
+#: src/components/PageDetailEditor.vue:199
 msgid "Add element after"
 msgstr "הוסף אלמנט אחרי"
 
-#: src/components/PageDetailEditor.vue:204
+#: src/components/PageDetailEditor.vue:205
 #: src/fields/Items.vue:158
 msgid "Remove element"
 msgstr "הסר אלמנט"
 
-#: src/components/PageDetailEditor.vue:211
+#: src/components/PageDetailEditor.vue:212
 msgid "Preview mode"
 msgstr "מצב תצוגה מקדימה"
 
-#: src/components/PageDetailEditor.vue:214
+#: src/components/PageDetailEditor.vue:215
 msgid "Not CMS content"
 msgstr "לא תוכן CMS"
 
-#: src/components/PageDetailEditor.vue:221
+#: src/components/PageDetailEditor.vue:222
 msgid "Fullscreen mode"
 msgstr "מצב מסך מלא"
 
-#: src/components/PageDetailEditor.vue:228
+#: src/components/PageDetailEditor.vue:229
 msgid "Exit fullscreen mode"
 msgstr "צא ממצב מסך מלא"
 
@@ -963,7 +961,7 @@ msgstr "חדש"
 msgid "Add page"
 msgstr "הוסף דף"
 
-#: src/components/SchemaDialog.vue:32
+#: src/components/SchemaDialog.vue:33
 msgid "Content elements"
 msgstr "אלמנטים תוכניים"
 
@@ -996,43 +994,43 @@ msgid "Logout"
 msgstr "התנתק"
 
 #: src/fields/Audio.vue:18
-#: src/fields/Audio.vue:43
-#: src/fields/File.vue:201
-#: src/fields/File.vue:226
+#: src/fields/Audio.vue:48
+#: src/fields/File.vue:200
+#: src/fields/File.vue:230
 #: src/fields/Image.vue:45
-#: src/fields/Image.vue:70
-#: src/fields/Images.vue:226
+#: src/fields/Image.vue:75
+#: src/fields/Images.vue:230
 #: src/fields/Video.vue:18
-#: src/fields/Video.vue:43
-msgid "Edit file"
-msgstr "ערוך קובץ"
+#: src/fields/Video.vue:48
+msgid "Edit"
+msgstr "ערוך"
 
-#: src/fields/Audio.vue:33
+#: src/fields/Audio.vue:34
 #: src/fields/File.vue:216
-#: src/fields/Image.vue:60
+#: src/fields/Image.vue:61
 #: src/fields/Images.vue:216
-#: src/fields/Video.vue:33
+#: src/fields/Video.vue:34
 msgid "Open menu"
 msgstr "פתח תפריט"
 
-#: src/fields/Audio.vue:66
-#: src/fields/File.vue:249
-#: src/fields/Image.vue:93
-#: src/fields/Video.vue:66
+#: src/fields/Audio.vue:74
+#: src/fields/File.vue:256
+#: src/fields/Image.vue:101
+#: src/fields/Video.vue:74
 msgid "Add file from URL"
 msgstr "הוסף קובץ מכתובת URL"
 
-#: src/fields/Audio.vue:71
-#: src/fields/File.vue:254
-#: src/fields/Image.vue:104
-#: src/fields/Video.vue:71
+#: src/fields/Audio.vue:80
+#: src/fields/File.vue:262
+#: src/fields/Image.vue:114
+#: src/fields/Video.vue:80
 msgid "Upload file"
 msgstr "העלה קובץ"
 
-#: src/fields/Audio.vue:91
-#: src/fields/File.vue:274
-#: src/fields/Image.vue:124
-#: src/fields/Video.vue:91
+#: src/fields/Audio.vue:101
+#: src/fields/File.vue:283
+#: src/fields/Image.vue:136
+#: src/fields/Video.vue:101
 msgid "description"
 msgstr "תיאור"
 
@@ -1055,8 +1053,8 @@ msgstr "אין נתונים זמינים"
 msgid "Value must be a hex color code"
 msgstr "הערך חייב להיות קוד צבע הקסדצימלי"
 
-#: src/fields/Image.vue:99
-#: src/fields/Images.vue:258
+#: src/fields/Image.vue:108
+#: src/fields/Images.vue:266
 msgid "Create file"
 msgstr "צור קובץ"
 
@@ -1432,7 +1430,7 @@ msgid "Back to list view"
 msgstr "חזרה לתצוגת רשימה"
 
 #: src/views/ElementDetail.vue:272
-#: src/views/ElementDetail.vue:349
+#: src/views/ElementDetail.vue:350
 msgid "Element"
 msgstr "אלמנט"
 
@@ -1448,17 +1446,17 @@ msgstr "הצג היסטוריה"
 msgid "Schedule publishing"
 msgstr "פרסום לוח זמנים"
 
-#: src/views/ElementDetail.vue:340
+#: src/views/ElementDetail.vue:341
 #: src/views/ElementList.vue:84
-#: src/views/FileDetail.vue:290
+#: src/views/FileDetail.vue:291
 #: src/views/FileList.vue:81
-#: src/views/PageDetail.vue:686
+#: src/views/PageDetail.vue:687
 #: src/views/PageList.vue:169
 msgid "Toggle side menu"
 msgstr "החלף תפריט צד"
 
-#: src/views/ElementDetail.vue:350
-#: src/views/FileDetail.vue:300
+#: src/views/ElementDetail.vue:351
+#: src/views/FileDetail.vue:301
 msgid "Used by"
 msgstr "משמש על ידי"
 
@@ -1560,7 +1558,7 @@ msgid "Error fetching file versions"
 msgstr "שגיאה בהורדת גרסאות הקובץ"
 
 #: src/views/FileDetail.vue:222
-#: src/views/FileDetail.vue:299
+#: src/views/FileDetail.vue:300
 msgid "File"
 msgstr "קובץ"
 
@@ -1617,7 +1615,7 @@ msgid "Error fetching page versions"
 msgstr "שגיאה בהעברת גרסאות הדף"
 
 #: src/views/PageDetail.vue:598
-#: src/views/PageDetail.vue:707
+#: src/views/PageDetail.vue:708
 msgid "Page"
 msgstr "עמוד"
 
@@ -1625,11 +1623,11 @@ msgstr "עמוד"
 msgid "Translate page"
 msgstr "תרגם דף"
 
-#: src/views/PageDetail.vue:697
+#: src/views/PageDetail.vue:698
 msgid "Editor"
 msgstr "עורך"
 
-#: src/views/PageDetail.vue:702
+#: src/views/PageDetail.vue:703
 msgid "Content"
 msgstr "תוכן"
 

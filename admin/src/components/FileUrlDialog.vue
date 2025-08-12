@@ -206,7 +206,7 @@
           <v-list-item v-for="(item, url) in items" :key="url">
             <v-btn
               @click="remove(url)"
-              :title="$gettext('Remove file')"
+              :title="$gettext('Remove')"
               class="btn-overlay"
               icon="mdi-delete"
             />

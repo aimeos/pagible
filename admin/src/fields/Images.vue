@@ -227,7 +227,7 @@
               prepend-icon="mdi-pencil"
               variant="text"
               elevation="0">
-              {{ $gettext('Edit file') }}
+              {{ $gettext('Edit') }}
             </v-btn>
           </v-list-item>
           <v-list-item>
@@ -236,7 +236,7 @@
               prepend-icon="mdi-trash-can"
               variant="text"
               elevation="0">
-              {{ $gettext('Remove file') }}
+              {{ $gettext('Remove') }}
             </v-btn>
           </v-list-item>
         </v-list>

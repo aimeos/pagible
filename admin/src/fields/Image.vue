@@ -42,7 +42,7 @@
   <v-row>
     <v-col cols="12" md="6">
       <div class="files" :class="{readonly: readonly}">
-        <div v-if="file.id" class="file" @click="open(file)" :title="$gettext('Edit file')">
+        <div v-if="file.id" class="file" @click="open(file)" :title="$gettext('Edit')">
           <v-progress-linear v-if="file.uploading"
             color="primary"
             height="5"
@@ -72,7 +72,7 @@
                   prepend-icon="mdi-pencil"
                   variant="text"
                   elevation="0">
-                  {{ $gettext('Edit file') }}
+                  {{ $gettext('Edit') }}
                 </v-btn>
               </v-list-item>
               <v-list-item>
@@ -81,7 +81,7 @@
                   prepend-icon="mdi-trash-can"
                   variant="text"
                   elevation="0">
-                  {{ $gettext('Remove file') }}
+                  {{ $gettext('Remove') }}
                 </v-btn>
               </v-list-item>
             </v-list>
