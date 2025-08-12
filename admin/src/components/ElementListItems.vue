@@ -481,33 +481,35 @@
 
   <v-list class="items">
     <v-list-item v-for="(item, idx) in items" :key="idx">
-      <v-checkbox-btn v-model="item._checked" :class="{draft: !item.published}" class="item-check" />
+      <div class="actions">
+        <v-checkbox-btn v-model="item._checked" :class="{draft: !item.published}" class="item-check" />
 
-      <v-menu>
-        <template v-slot:activator="{ props }">
-          <v-btn v-bind="props"
-            :title="$gettext('Actions')"
-            icon="mdi-dots-vertical"
-            class="item-menu"
-            variant="text"
-            elevation="0"
-          />
-        </template>
-        <v-list>
-          <v-list-item v-show="!item.deleted_at && !item.published && this.auth.can('element:publish')">
-            <v-btn prepend-icon="mdi-publish" variant="text" @click="publish(item)">{{ $gettext('Publish') }}</v-btn>
-          </v-list-item>
-          <v-list-item v-if="!item.deleted_at && this.auth.can('element:drop')">
-            <v-btn prepend-icon="mdi-delete" variant="text" @click="drop(item)">{{ $gettext('Delete') }}</v-btn>
-          </v-list-item>
-          <v-list-item v-if="item.deleted_at && this.auth.can('element:keep')">
-            <v-btn prepend-icon="mdi-delete-restore" variant="text" @click="keep(item)">{{ $gettext('Restore') }}</v-btn>
-          </v-list-item>
-          <v-list-item v-if="this.auth.can('element:purge')">
-            <v-btn prepend-icon="mdi-delete-forever" variant="text" @click="purge(item)">{{ $gettext('Purge') }}</v-btn>
-          </v-list-item>
-        </v-list>
-      </v-menu>
+        <v-menu>
+          <template v-slot:activator="{ props }">
+            <v-btn v-bind="props"
+              :title="$gettext('Actions')"
+              icon="mdi-dots-vertical"
+              class="item-menu"
+              variant="text"
+              elevation="0"
+            />
+          </template>
+          <v-list>
+            <v-list-item v-show="!item.deleted_at && !item.published && this.auth.can('element:publish')">
+              <v-btn prepend-icon="mdi-publish" variant="text" @click="publish(item)">{{ $gettext('Publish') }}</v-btn>
+            </v-list-item>
+            <v-list-item v-if="!item.deleted_at && this.auth.can('element:drop')">
+              <v-btn prepend-icon="mdi-delete" variant="text" @click="drop(item)">{{ $gettext('Delete') }}</v-btn>
+            </v-list-item>
+            <v-list-item v-if="item.deleted_at && this.auth.can('element:keep')">
+              <v-btn prepend-icon="mdi-delete-restore" variant="text" @click="keep(item)">{{ $gettext('Restore') }}</v-btn>
+            </v-list-item>
+            <v-list-item v-if="this.auth.can('element:purge')">
+              <v-btn prepend-icon="mdi-delete-forever" variant="text" @click="purge(item)">{{ $gettext('Purge') }}</v-btn>
+            </v-list-item>
+          </v-list>
+        </v-menu>
+      </div>
 
       <div class="item-content" @click="$emit('select', item)" :class="{trashed: item.deleted_at}":title="title(item)">
         <div class="item-text">
@@ -575,7 +577,29 @@
     align-items: center;
   }
 
+  .items .actions {
+    display: flex;
+    flex-wrap: wrap;
+    max-width: 48px;
+    flex-shrink: 0;
+    margin-inline-end: 8px;
+  }
+
   .items .v-selection-control {
     flex-grow: unset;
+  }
+
+  .items .item-aux {
+    width: 100%;
+  }
+
+  @media (min-width: 360px) {
+    .items .actions {
+      max-width: 33%;
+    }
+
+    .items .item-aux {
+      width: unset;
+    }
   }
 </style>
