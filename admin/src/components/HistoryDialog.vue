@@ -39,17 +39,17 @@
 
 
       filesdiff(map1, map2) {
-        const keys1 = Object.keys(map1)
-        const keys2 = Object.keys(map2)
+        const keys1 = Object.keys(map1 || {})
+        const keys2 = Object.keys(map2 || {})
 
         const only1 = keys1.filter(key => !keys2.includes(key))
         const only2 = keys2.filter(key => !keys1.includes(key))
 
         const diff1 = Object.fromEntries(
-          Object.entries(map1).filter(([key]) => only1.includes(key)).map(([key, value]) => [key, {...value, css: 'added'}])
+          Object.entries(map1 || {}).filter(([key]) => only1.includes(key)).map(([key, value]) => [key, {...value, css: 'added'}])
         )
         const diff2 = Object.fromEntries(
-          Object.entries(map2).filter(([key]) => only2.includes(key)).map(([key, value]) => [key, {...value, css: 'removed'}])
+          Object.entries(map2 || {}).filter(([key]) => only2.includes(key)).map(([key, value]) => [key, {...value, css: 'removed'}])
         )
 
         return {...diff1, ...diff2}

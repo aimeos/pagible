@@ -561,8 +561,8 @@
                 <v-btn icon="mdi-flip-vertical" class="no-rtl" @click="flipY" :title="$gettext('Flip vertically')" />
               </div>
               <div class="toolbar-group">
-                <v-btn icon="mdi-history" class="no-rtl" @click="reset()" :title="$gettext('Reset')" />
                 <v-btn icon="mdi-download" class="no-rtl" @click="download()" :title="$gettext('Download')" />
+                <v-btn icon="mdi-history" class="no-rtl" @click="reset()" :title="$gettext('Reset')" />
               </div>
             </div>
           </div>

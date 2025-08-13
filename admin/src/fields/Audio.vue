@@ -80,7 +80,7 @@
             :title="$gettext('Upload file')"
             icon="mdi-upload"
             variant="text"
-            elevation="0"
+            elevation="0">
             <v-file-input
               v-model="selected"
               @update:modelValue="add($event)"
