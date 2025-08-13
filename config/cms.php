@@ -93,7 +93,7 @@ return [
     | if you need to register own routes before the catch-all route.
     |
     */
-    'pageroute' => true,
+    'pageroute' => env( 'CMS_PAGEROUTE', true ),
 
     /*
     |--------------------------------------------------------------------------
