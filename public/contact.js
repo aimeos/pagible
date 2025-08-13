@@ -1,7 +1,19 @@
 /**
- * Send contact form
+ * Contact form
  */
 document.querySelectorAll('.contact form').forEach(form => {
+
+    /*
+     * HCaptcha dark/light mode
+     */
+    form.querySelectorAll('.hcaptcha').forEach(el => {
+        el.dataset.theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? 'dark' : 'light';
+    });
+
+
+    /*
+     * Submit contact form
+     */
     form.addEventListener('submit', e => {
         e.preventDefault();
 
