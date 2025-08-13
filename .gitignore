@@ -1,6 +1,5 @@
 .phpunit.result.cache
 .potrans
-.circleci
-.env
+.env*
 composer.lock
 vendor/

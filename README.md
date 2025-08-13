@@ -1,4 +1,4 @@
-# PagibleAI CMS - Powerful as Contentful, simple as Wordpress!
+# PagibleAI CMS - Simple as Wordpress, the power of Contentful!
 
 The easy, flexible and scalable API-first PagibleAI CMS package:
 

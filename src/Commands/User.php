@@ -33,18 +33,27 @@ class User extends Command
     public function handle()
     {
         $email = $this->argument( 'email' );
-        $value = $this->option( 'disable' ) ? 0 : 0x7fffffff;
+        $value = $this->option( 'disable' ) ? 0 : 0x7fffffffffffffff;
 
         if( ( $user = \Illuminate\Foundation\Auth\User::where( 'email', $email )->first() ) === null )
         {
             $user = (new \Illuminate\Foundation\Auth\User())->forceFill( [
                 'password' => Hash::make( $this->option( 'password' ) ?: $this->secret( 'Password' ) ),
+                'cmseditor' => $value,
                 'email' => $email,
                 'name' => $email,
             ] );
         }
+        else
+        {
+            $userdata = ['cmseditor' => $value];
 
-        $user->forceFill( ['cmseditor' => $value] )->save();
+            if( $this->input->hasParameterOption( '--password' ) ) {
+                $userdata['password'] = Hash::make( $this->option( 'password' ) ?: $this->secret( 'Password' ) );
+            }
+
+            $user->forceFill( $userdata )->save();
+        }
 
         if( $value ) {
             $this->info( sprintf( '  Enabled [%1$s] as CMS user', $email ) );

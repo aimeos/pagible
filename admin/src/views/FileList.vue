@@ -71,7 +71,7 @@
       />
     </template>
 
-    <v-app-bar-title>Files</v-app-bar-title>
+    <v-app-bar-title>{{ $gettext('Files') }}</v-app-bar-title>
 
     <template #append>
       <User />

@@ -6,7 +6,7 @@
 }
 
 .cards .card-item {
-    background: var(--color-muted);
+    background: var(--pico-primary-focus);
     padding: 30px;
     border-radius: 8px;
     width: 300px;

@@ -1,25 +1,25 @@
 .hero {
-    background: linear-gradient(to right, var(--color-primary), var(--color-secondary));
+    background: linear-gradient(to right, var(--pico-primary), var(--pico-primary-focus));
     text-align: center;
     padding: 100px 0;
 }
 
 .hero h1 {
-    margin-top: 0;
+    color: var(--pico-primary-inverse);
     margin-bottom: 20px;
-    color: var(--color-light);
+    margin-top: 0;
     font-size: 48px;
 }
 
 .hero p {
-    font-size: 18px;
+    color: var(--pico-primary-inverse);
     margin-bottom: 30px;
-    color: var(--color-light);
+    font-size: 18px;
 }
 
 .hero .url {
-    background: var(--color-light);
-    color: var(--color-primary);
+    border: 1px solid var(--pico-primary-inverse);
+    color: var(--pico-primary-inverse);
     display: inline-block;
     padding: 12px 24px;
     border-radius: 8px;
@@ -29,5 +29,6 @@
 }
 
 .hero .url:hover {
-    background: var(--color-background);
+    background-color: var(--pico-primary-inverse);
+    color: var(--pico-primary);
 }

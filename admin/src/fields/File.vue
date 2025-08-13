@@ -50,6 +50,12 @@
       }
     },
 
+    computed: {
+      description() {
+        return Object.values(this.file.description || {}).shift() || ''
+      },
+    },
+
     methods: {
       add(file) {
         if(!this.auth.can('file:add')) {
@@ -191,7 +197,7 @@
   <v-row>
     <v-col cols="12" md="6">
       <div class="files" :class="{readonly: readonly}">
-        <div v-if="file.path" class="file" @click="open(file)">
+        <div v-if="file.id" class="file" @click="open(file)" :title="$gettext('Edit')">
           <v-progress-linear v-if="file.uploading"
             color="primary"
             height="5"
@@ -203,31 +209,60 @@
             <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2M9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5z"/>
           </svg>
           {{ file.name }}
-          <v-btn v-if="!readonly && file.path"
-            @click.stop="remove()"
-            :title="$gettext('Remove file')"
-            icon="mdi-trash-can"
-            class="btn-overlay"
-            variant="flat"
-          />
+
+          <v-menu v-if="file.id && !readonly">
+            <template v-slot:activator="{ props }">
+              <v-btn v-bind="props"
+                :title="$gettext('Open menu')"
+                icon="mdi-dots-vertical"
+                class="btn-overlay"
+                variant="text"
+                elevation="0"
+              />
+            </template>
+            <v-list>
+              <v-list-item v-if="auth.can('file:view')">
+                <v-btn
+                  @click="open(file)"
+                  prepend-icon="mdi-pencil"
+                  variant="text"
+                  elevation="0">
+                  {{ $gettext('Edit') }}
+                </v-btn>
+              </v-list-item>
+              <v-list-item>
+                <v-btn
+                  @click="remove()"
+                  prepend-icon="mdi-trash-can"
+                  variant="text"
+                  elevation="0">
+                  {{ $gettext('Remove') }}
+                </v-btn>
+              </v-list-item>
+            </v-list>
+          </v-menu>
         </div>
+
         <div v-else-if="!readonly" class="file">
           <v-btn v-if="auth.can('file:view')"
             @click="vfiles = true"
             :title="$gettext('Add file')"
             icon="mdi-button-cursor"
-            variant="flat"
+            variant="text"
+            elevation="0"
           />
           <v-btn
             @click="vurls = true"
             :title="$gettext('Add file from URL')"
             icon="mdi-link-variant-plus"
-            variant="flat"
+            variant="text"
+            elevation="0"
           />
           <v-btn
             :title="$gettext('Upload file')"
             icon="mdi-upload"
-            variant="flat">
+            variant="text"
+            elevation="0">
             <v-file-input
               v-model="selected"
               @update:modelValue="add($event)"
@@ -243,6 +278,10 @@
       <v-row>
         <v-col cols="12" md="3" class="name">{{ $gettext('name') }}:</v-col>
         <v-col cols="12" md="9">{{ file.name }}</v-col>
+      </v-row>
+      <v-row>
+        <v-col cols="12" md="3" class="name">{{ $gettext('description') }}:</v-col>
+        <v-col cols="12" md="9">{{ description }}</v-col>
       </v-row>
       <v-row>
         <v-col cols="12" md="3" class="name">{{ $gettext('mime') }}:</v-col>
@@ -270,7 +309,7 @@
 
 <style>
   .files {
-    border: 1px dashed #767676;
+    border: 1px dashed rgba(var(--v-border-color), var(--v-medium-emphasis-opacity));
     border-radius: 8px;
   }
 
@@ -278,6 +317,7 @@
     justify-content: center;
     align-items: center;
     position: relative;
+    cursor: pointer;
     display: flex;
     min-height: 48px;
     max-height: 200px;
@@ -292,6 +332,11 @@
   .files .file .v-progress-linear {
     position: absolute;
     z-index: 1;
+  }
+
+  .meta .v-row {
+    margin-top: 8px !important;
+    margin-bottom: 8px !important;
   }
 
   .meta .name {

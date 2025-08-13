@@ -141,7 +141,15 @@
 
 <template>
   <v-expansion-panels class="items" v-model="panel" elevation="0" multiple>
-    <VueDraggable v-model="items" :disabled="readonly" @update="change()" draggable=".item" group="items" animation="500">
+    <VueDraggable
+      v-model="items"
+      @update="change()"
+      :disabled="readonly || panel.length"
+      :forceFallback="true"
+      fallbackTolerance="10"
+      draggable=".item"
+      group="items"
+      animation="500">
 
       <v-expansion-panel v-for="(item, idx) in items" :key="idx" class="item">
         <v-expansion-panel-title>
@@ -165,7 +173,8 @@
                       :title="$gettext('Translate %{code} field', {code: code})"
                       :loading="translating[idx+code]"
                       icon="mdi-translate"
-                      variant="flat"
+                      variant="text"
+                      elevation="0"
                     />
                   </template>
                   <v-list>
@@ -183,7 +192,8 @@
                   :loading="composing[idx+code]"
                   @click="composeText(idx, code)"
                   icon="mdi-creation"
-                  variant="flat"
+                  variant="text"
+                  elevation="0"
                 />
               </div>
             </v-label>

@@ -131,6 +131,11 @@
       },
 
 
+      description(file) {
+        return Object.values(file.description).shift()
+      },
+
+
       open(item) {
         this.openView(FileDetail, {item: item})
       },
@@ -192,7 +197,7 @@
 <template>
   <VueDraggable v-model="images" :disabled="readonly" @update="change()" draggable=".image" group="images" class="images" animation="500">
 
-    <div v-for="(item, idx) in images" :key="idx" :class="{readonly: readonly}" class="image" @click="open(item)">
+    <div v-for="(item, idx) in images" :key="idx" :class="{readonly: readonly}" class="image" @click="open(item)" :title="description(item)">
       <v-progress-linear v-if="item.uploading"
         color="primary"
         height="5"
@@ -204,27 +209,55 @@
         :src="url(item.path)"
         draggable="false"
       />
-      <v-btn v-if="!readonly && item.id"
-        @click.stop="remove(idx)"
-        :title="$gettext('Remove file')"
-        icon="mdi-trash-can"
-        class="btn-overlay"
-          variant="flat"
-      />
+
+      <v-menu v-if="item.id && !readonly">
+        <template v-slot:activator="{ props }">
+          <v-btn v-bind="props"
+            :title="$gettext('Open menu')"
+            icon="mdi-dots-vertical"
+            class="btn-overlay"
+            variant="text"
+            elevation="0"
+          />
+        </template>
+        <v-list>
+          <v-list-item v-if="auth.can('file:view')">
+            <v-btn
+              @click="open(item)"
+              prepend-icon="mdi-pencil"
+              variant="text"
+              elevation="0">
+              {{ $gettext('Edit') }}
+            </v-btn>
+          </v-list-item>
+          <v-list-item>
+            <v-btn
+              @click="remove(idx)"
+              prepend-icon="mdi-trash-can"
+              variant="text"
+              elevation="0">
+              {{ $gettext('Remove') }}
+            </v-btn>
+          </v-list-item>
+        </v-list>
+      </v-menu>
     </div>
+
     <div v-if="!readonly" class="add">
       <div class="icon-group">
         <v-btn v-if="auth.can('file:view')"
           @click="vfiles = true"
           :title="$gettext('Add files')"
           icon="mdi-button-cursor"
-          variant="flat"
+          variant="text"
+          elevation="0"
         />
         <v-btn
           @click="vurls = true"
           :title="$gettext('Add files from URLs')"
           icon="mdi-link-variant-plus"
-          variant="flat"
+          variant="text"
+          elevation="0"
         />
       </div>
       <div class="icon-group">
@@ -232,12 +265,14 @@
           @click="vcreate = true"
           :title="$gettext('Create file')"
           icon="mdi-creation"
-          variant="flat"
+          variant="text"
+          elevation="0"
         />
         <v-btn
           :title="$gettext('Add files')"
           icon="mdi-upload"
-          variant="flat"
+          variant="text"
+          elevation="0"
           ><v-file-input
             v-model="selected"
             @update:modelValue="add($event)"
@@ -276,7 +311,7 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    border: 1px solid #808080;
+    border: 1px solid rgba(var(--v-border-color), var(--v-medium-emphasis-opacity));
     border-radius: 4px;
     position: relative;
     height: 180px;
@@ -284,10 +319,18 @@
     margin: 1px;
   }
 
+  .images .image {
+    cursor: pointer;
+  }
+
   .images .add {
-    border: 1px dashed #808080;
+    border: 1px dashed rgba(var(--v-border-color), var(--v-medium-emphasis-opacity));
     flex-flow: column;
     flex-wrap: wrap;
+  }
+
+  .images .add :deep(.v-icon) {
+    --v-medium-emphasis-opacity: 1;
   }
 
   .v-progress-linear {

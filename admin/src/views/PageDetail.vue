@@ -43,8 +43,8 @@
     },
 
     data: () => ({
-      tab: 'page',
-      aside: 'meta',
+      tab: 'editor',
+      aside: '',
       asidePage: 'meta',
       changed: {},
       errors: {},
@@ -623,32 +623,37 @@
       <v-btn
         @click="vhistory = true"
         :class="{hidden: item.published && !hasChanged && !latest}"
+        :title="$gettext('View history')"
         icon="mdi-history"
         class="no-rtl"
       ></v-btn>
 
       <v-btn
         @click="save()"
-        :class="{error: hasError}" class="menu-save"
+        :title="$gettext('Save')"
         :disabled="!hasChanged || hasError || !auth.can('page:save')"
-        variant="text"
-      >{{ $gettext('Save') }}</v-btn>
+        :variant="!hasChanged || hasError || !auth.can('page:save') ? 'plain' : 'flat'"
+        :class="{active: hasChanged && !hasError && auth.can('page:save'), error: hasError}"
+        icon="mdi-database-arrow-down"
+        class="menu-save"
+      />
 
       <v-menu v-model="pubmenu" :close-on-content-click="false">
         <template #activator="{ props }">
-          <v-btn-group class="menu-publish" variant="text">
-            <v-btn
-              @click="publish()"
-              :class="{error: hasError}" class="button"
-              :disabled="item.published && !hasChanged || hasError || !auth.can('page:publish')"
-            >{{ $gettext('Publish') }}</v-btn>
-            <v-btn v-bind="props"
-              :class="{error: hasError}" class="icon"
-              :disabled="item.published && !hasChanged || hasError || !auth.can('page:publish')"
-              :title="$gettext('Schedule publishing')"
-              icon="mdi-menu-down"
-            />
-          </v-btn-group>
+          <v-btn v-bind="props" icon
+            :title="$gettext('Schedule publishing')"
+            :disabled="item.published && !hasChanged || hasError || !auth.can('page:publish')"
+            :variant="item.published && !hasChanged || hasError || !auth.can('page:publish') ? 'plain' : 'flat'"
+            :class="{active: (!item.published || hasChanged) && !hasError && auth.can('page:publish'), error: hasError}"
+            class="menu-publishat"
+          >
+            <v-icon>
+              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+                <path d="M2,1V3H16V1H2 M2,10H6V19H12V10H16L9,3L2,10Z" />
+                <path d="M16.7 11.4C16.7 11.4 16.61 11.4 16.7 11.4C13.19 11.49 10.4 14.28 10.4 17.7C10.4 21.21 13.19 24 16.7 24S23 21.21 23 17.7 20.21 11.4 16.7 11.4M16.7 22.2C14.18 22.2 12.2 20.22 12.2 17.7S14.18 13.2 16.7 13.2 21.2 15.18 21.2 17.7 19.22 22.2 16.7 22.2M15.6 13.1V17.6L18.84 19.58L19.56 18.5L16.95 16.97V13.1H15.6Z" />
+              </svg>
+            </v-icon>
+          </v-btn>
         </template>
         <div class="menu-content">
           <v-date-picker v-model="publishAt" hide-header show-adjacent-months />
@@ -656,10 +661,26 @@
             @click="publish(publishAt); pubmenu = false"
             :disabled="!publishAt || hasError"
             :color="publishAt ? 'primary' : ''"
-            variant="flat"
+            variant="text"
+            elevation="0"
           >{{ $gettext('Publish') }}</v-btn>
         </div>
       </v-menu>
+
+      <v-btn icon
+        @click="publish()"
+        :title="$gettext('Publish')"
+        :disabled="item.published && !hasChanged || hasError || !auth.can('page:publish')"
+        :variant="item.published && !hasChanged || hasError || !auth.can('page:publish') ? 'plain' : 'flat'"
+        :class="{active: (!item.published || hasChanged) && !hasError && auth.can('page:publish'), error: hasError}"
+        class="menu-publish"
+      >
+        <v-icon>
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+            <path d="M5,2V4H19V2H5 M5,12H9V21H15V12H19L12,5L5,12Z" />
+          </svg>
+        </v-icon>
+      </v-btn>
 
       <v-btn
         @click.stop="drawer.toggle('aside')"
@@ -672,11 +693,6 @@
   <v-main class="page-details">
     <v-form @submit.prevent>
       <v-tabs fixed-tabs v-model="tab">
-        <v-tab value="page"
-          :class="{changed: changed.page, error: errors.page}"
-          @click="aside = asidePage">
-          {{ $gettext('Page') }}
-        </v-tab>
         <v-tab value="editor"
           @click="aside = ''">
           {{ $gettext('Editor') }}
@@ -686,19 +702,14 @@
           @click="aside = 'count'">
           {{ $gettext('Content') }}
         </v-tab>
+        <v-tab value="page"
+          :class="{changed: changed.page, error: errors.page}"
+          @click="aside = asidePage">
+          {{ $gettext('Page') }}
+        </v-tab>
       </v-tabs>
 
-      <v-window v-model="tab">
-
-        <v-window-item value="page">
-          <PageDetailItem ref="page"
-            :item="item"
-            :assets="assets"
-            @update:item="Object.assign(item, $event); changed.page = true"
-            @update:aside="asidePage = $event"
-            @error="errors.page = $event"
-          />
-        </v-window-item>
+      <v-window v-model="tab" :touch="false">
 
         <v-window-item value="editor">
           <PageDetailEditor
@@ -717,6 +728,16 @@
             :elements="elements"
             @error="errors.content = $event"
             @change="changed.content = true"
+          />
+        </v-window-item>
+
+        <v-window-item value="page">
+          <PageDetailItem ref="page"
+            :item="item"
+            :assets="assets"
+            @update:item="Object.assign(item, $event); changed.page = true"
+            @update:aside="asidePage = $event"
+            @error="errors.page = $event"
           />
         </v-window-item>
 
@@ -760,5 +781,20 @@
 <style scoped>
   .v-toolbar-title {
     margin-inline-start: 0;
+  }
+
+  .v-app-bar .v-btn.menu-save.active {
+    background-color: rgba(var(--v-theme-primary), .75);
+    color: rgb(var(--v-theme-on-primary));
+  }
+
+  .v-app-bar .v-btn.menu-publishat.active {
+    background-color: rgba(var(--v-theme-primary), 0.875);
+    color: rgb(var(--v-theme-on-primary));
+  }
+
+  .v-app-bar .v-btn.menu-publish.active {
+    background-color: rgba(var(--v-theme-primary), 1);
+    color: rgb(var(--v-theme-on-primary));
   }
 </style>

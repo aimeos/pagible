@@ -458,6 +458,19 @@ class Page extends Model
 
 
     /**
+     * Interact with the "related_id" property.
+     *
+     * @return Attribute Eloquent attribute for the "related_id" property
+     */
+    protected function relatedId(): Attribute
+    {
+        return Attribute::make(
+            set: fn($value) => !empty( $value) ? (int) $value : null,
+        );
+    }
+
+
+    /**
      * Interact with the "status" property.
      *
      * @return Attribute Eloquent attribute for the "status" property

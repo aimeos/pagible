@@ -3,14 +3,14 @@
 }
 
 .code-box .code-copy {
-    color: var(--color-light);
+    color: var(--pico-contrast-hover-background);
     background: inherit;
-    padding: 0.75em 1rem;
     position: absolute;
     right: 0;
     top: 0;
     border: none;
     cursor: pointer;
+    padding: 0.8rem;
     opacity: 0.75;
 }
 

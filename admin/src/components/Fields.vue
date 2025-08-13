@@ -56,7 +56,7 @@
 
         this.composing[code] = true
 
-        this.compose(this.data[code] ?? '', context).then(result => {
+        this.compose(this.data[code] || 'Create suitable text based on the context', context).then(result => {
           this.update(code, result)
         }).finally(() => {
           this.composing[code] = false
@@ -136,7 +136,8 @@
               :title="$gettext('Translate %{code} field', {code: code})"
               :loading="translating[code]"
               icon="mdi-translate"
-              variant="flat"
+              variant="text"
+              elevation="0"
             />
           </template>
           <v-list>
@@ -154,7 +155,8 @@
           :loading="composing[code]"
           @click="composeText(code)"
           icon="mdi-creation"
-          variant="flat"
+          variant="text"
+          elevation="0"
         />
       </div>
     </v-label>

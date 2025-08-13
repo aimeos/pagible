@@ -561,8 +561,8 @@
                 <v-btn icon="mdi-flip-vertical" class="no-rtl" @click="flipY" :title="$gettext('Flip vertically')" />
               </div>
               <div class="toolbar-group">
-                <v-btn icon="mdi-history" class="no-rtl" @click="reset()" :title="$gettext('Reset')" />
                 <v-btn icon="mdi-download" class="no-rtl" @click="download()" :title="$gettext('Download')" />
+                <v-btn icon="mdi-history" class="no-rtl" @click="reset()" :title="$gettext('Reset')" />
               </div>
             </div>
           </div>
@@ -612,14 +612,16 @@
                 :title="$gettext('Translate text')"
                 :loading="translating"
                 icon="mdi-translate"
-                variant="flat"
+                variant="text"
+                elevation="0"
               />
               <v-btn
                 @click="composeText()"
                 :title="$gettext('Generate description')"
                 :loading="composing"
                 icon="mdi-creation"
-                variant="flat"
+                variant="text"
+                elevation="0"
               />
             </div>
           </v-label>
@@ -627,7 +629,7 @@
           <v-tabs v-model="tabdesc">
             <v-tab v-for="entry in locales()" :value="entry.value">{{ entry.title }}</v-tab>
           </v-tabs>
-          <v-window v-model="tabdesc">
+          <v-window v-model="tabdesc" :touch="false">
             <v-window-item v-for="entry in locales()" :value="entry.value">
               <v-textarea ref="description"
                 @update:modelValue="item.description[entry.value] = $event; $emit('update:item', item)"
@@ -654,14 +656,16 @@
                 :title="$gettext('Translate text')"
                 :loading="translating"
                 icon="mdi-translate"
-                variant="flat"
+                variant="text"
+                elevation="0"
               />
               <v-btn
                 @click="transcribe()"
                 :title="$gettext('Transcribe file content')"
                 :loading="transcribing"
                 icon="mdi-creation"
-                variant="flat"
+                variant="text"
+                elevation="0"
               />
             </div>
           </v-label>
@@ -669,7 +673,7 @@
           <v-tabs v-model="tabtrans">
             <v-tab v-for="entry in locales()" :value="entry.value">{{ entry.title }}</v-tab>
           </v-tabs>
-          <v-window v-model="tabtrans">
+          <v-window v-model="tabtrans" :touch="false">
             <v-window-item v-for="entry in locales()" :value="entry.value">
               <v-textarea ref="transcription"
                 @update:modelValue="item.transcription[entry.value] = $event; $emit('update:item', item)"
@@ -690,6 +694,10 @@
 </template>
 
 <style scoped>
+  .v-sheet.scroll {
+    max-height: calc(100vh - 96px);
+  }
+
   :deep(.cropper-bg) {
     background-repeat: repeat;
   }

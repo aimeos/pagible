@@ -188,7 +188,8 @@
           @click="$emit('update:modelValue', false)"
           :title="$gettext('Close')"
           icon="mdi-close"
-          variant="flat"
+          variant="text"
+          elevation="0"
         />
       </template>
       <template v-slot:title>
@@ -208,7 +209,6 @@
           :loading="loading ? 'primary' : false"
           :disabled="!input || loading"
           @click="create()"
-          color="primary"
           variant="outlined"
           class="create">
           {{ $gettext('Create image') }}

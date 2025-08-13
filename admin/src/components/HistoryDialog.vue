@@ -39,17 +39,17 @@
 
 
       filesdiff(map1, map2) {
-        const keys1 = Object.keys(map1)
-        const keys2 = Object.keys(map2)
+        const keys1 = Object.keys(map1 || {})
+        const keys2 = Object.keys(map2 || {})
 
         const only1 = keys1.filter(key => !keys2.includes(key))
         const only2 = keys2.filter(key => !keys1.includes(key))
 
         const diff1 = Object.fromEntries(
-          Object.entries(map1).filter(([key]) => only1.includes(key)).map(([key, value]) => [key, {...value, css: 'added'}])
+          Object.entries(map1 || {}).filter(([key]) => only1.includes(key)).map(([key, value]) => [key, {...value, css: 'added'}])
         )
         const diff2 = Object.fromEntries(
-          Object.entries(map2).filter(([key]) => only2.includes(key)).map(([key, value]) => [key, {...value, css: 'removed'}])
+          Object.entries(map2 || {}).filter(([key]) => only2.includes(key)).map(([key, value]) => [key, {...value, css: 'removed'}])
         )
 
         return {...diff1, ...diff2}
@@ -99,7 +99,8 @@
           :title="$gettext('Close')"
           @click="$emit('update:modelValue', false)"
           icon="mdi-close"
-          variant="flat"
+          variant="text"
+          elevation="0"
         />
       </template>
       <template v-slot:title>
@@ -113,7 +114,7 @@
           <v-timeline-item v-if="loading" dot-color="grey-lighten-1" size="small" width="100%">
             <div class="loading">
               {{ $gettext('Loading') }}
-              <svg class="spinner" width="32" height="32" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <svg class="spinner" width="32" height="32" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <circle class="spin1" cx="4" cy="12" r="3"/>
                 <circle class="spin1 spin2" cx="12" cy="12" r="3"/>
                 <circle class="spin1 spin3" cx="20" cy="12" r="3"/>

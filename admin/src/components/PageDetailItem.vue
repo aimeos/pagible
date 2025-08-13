@@ -78,7 +78,7 @@
         </v-tab>
       </v-tabs>
 
-      <v-window v-model="tab">
+      <v-window v-model="tab" :touch="false">
         <v-window-item value="details">
           <PageDetailItemProps ref="props"
             :item="item"
@@ -115,7 +115,6 @@
   .v-sheet {
     margin: 0;
     padding-top: 0;
-    padding-bottom: 0;
   }
 
   .v-sheet.scroll {

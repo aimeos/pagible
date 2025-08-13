@@ -913,7 +913,7 @@
       @click="reload()"
       :title="$gettext('Reload page tree')"
       icon="mdi-refresh"
-      variant="flat"
+      variant="text"
       class="no-rtl"
     />
   </div>
@@ -929,7 +929,7 @@
   >
     <template #default="{ node, stat }">
       <div class="actions">
-        <svg v-if="stat.loading" class="spinner" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <svg v-if="stat.loading" class="spinner" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           <circle class="spin1" cx="4" cy="12" r="3"/>
           <circle class="spin1 spin2" cx="12" cy="12" r="3"/>
           <circle class="spin1 spin3" cx="20" cy="12" r="3"/>
@@ -939,7 +939,7 @@
           :class="{hidden: !node.has}"
           :icon="stat.open ? 'mdi-menu-down' : 'mdi-menu-right'"
           :title="$gettext('Toggle child nodes')"
-          variant="flat"
+          variant="text"
         />
 
         <v-checkbox-btn v-model="stat._checked" :class="{draft: !node.published}" />
@@ -1073,7 +1073,7 @@
 
   <p v-if="loading" class="loading">
     {{ $gettext('Loading') }}
-    <svg class="spinner" width="32" height="32" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><circle class="spin1" cx="4" cy="12" r="3"/><circle class="spin1 spin2" cx="12" cy="12" r="3"/><circle class="spin1 spin3" cx="20" cy="12" r="3"/></svg>
+    <svg class="spinner" width="32" height="32" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><circle class="spin1" cx="4" cy="12" r="3"/><circle class="spin1 spin2" cx="12" cy="12" r="3"/><circle class="spin1 spin3" cx="20" cy="12" r="3"/></svg>
   </p>
 
   <p v-if="!loading && !items.length" class="notfound">
@@ -1097,7 +1097,7 @@
   }
 
   .drag-placeholder-wrapper .tree-node-inner {
-    background-color: #fafafa;
+    background-color: rgb(var(--v-theme-background));
   }
 
   .tree-node-inner {
@@ -1111,8 +1111,10 @@
   .tree-node-inner .actions {
     display: flex;
     flex-wrap: wrap;
-    max-width: 33%;
+    max-width: 48px;
     flex-shrink: 0;
+    justify-content: end;
+    margin-inline-end: 8px;
   }
 
   .tree-node-inner .spinner {
@@ -1122,24 +1124,47 @@
     width: 48px;
   }
 
-  .item-content.cut {
+  .tree-node-inner .item-content {
+    flex-wrap: wrap;
+    flex-direction: column;
+    justify-content: start;
+  }
+
+  .tree-node-inner .item-content.cut {
     opacity: 0.5;
   }
 
-  .item-domain {
+  .tree-node-inner .item-domain {
     color: initial;
     display: block;
   }
 
-  .item-domain,
-  .item-to {
-    white-space: nowrap;
+  .tree-node-inner .item-domain,
+  .tree-node-inner .item-to {
     text-overflow: ellipsis;
     overflow: hidden;
   }
 
-  .status-disabled .item-title {
+  .tree-node-inner .status-disabled .item-title {
     text-decoration: line-through;
+  }
+
+  .tree-node-inner .item-aux {
+    width: 100%;
+  }
+
+  @media (min-width: 360px) {
+    .tree-node-inner .actions {
+      max-width: 33%;
+    }
+
+    .tree-node-inner .item-content {
+      flex-direction: row;
+    }
+
+    .tree-node-inner .item-aux {
+      width: unset;
+    }
   }
 
   @media (min-width: 600px) {

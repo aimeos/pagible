@@ -1,66 +1,56 @@
-footer .contact {
-    --color-border: var(--color-light);
-    --color-text: var(--color-light);
-}
-
-.contact .title {
-    color: var(--color-text);
-}
-
 .contact form {
     display: flex;
     flex-direction: column;
-    gap: 15px;
     max-width: 500px;
     margin: 0 auto;
+    gap: 15px;
 }
 
 .contact input, textarea {
-    padding: 15px;
-    font-size: 16px;
-    border: 1px solid var(--color-border);
+    border: 1px solid var(--pico-primary-border);
     border-radius: 8px;
     resize: vertical;
+    font-size: 16px;
+    padding: 15px;
 }
 
 .contact .errors {
-    color: #e63946;
+    color: var(--pico-form-element-invalid-focus-color);
 }
 
 .contact .error {
-    border-color: #e63946;
-}
-
-.contact .h-captcha {
-    margin: auto;
+    border-color: var(--pico-form-element-invalid-border-color);
 }
 
 .contact button {
-    padding: 15px;
-    font-size: 16px;
-    color: var(--color-light);
-    background-color: var(--color-primary);
-    border: 1px solid var(--color-border);
+    border: 1px solid var(--pico-primary);
+    background-color: var(--pico-primary);
+    color: var(--pico-primary-inverse);
     border-radius: 8px;
+    font-size: 16px;
+    padding: 15px;
 }
 
 .contact button:disabled {
-    background-color: var(--color-muted);
-    color: var(--color-primary);
+    border: 1px solid var(--pico-muted-border-color);
+    background-color: var(--pico-background-color);
+    color: var(--pico-muted-color);
 }
 
 .contact button:focus-visible,
 .contact button:hover {
-    background-color: var(--color-accent);
-    color: var(--color-light);
+    background-color: var(--pico-primary-background);
+    color: var(--pico-primary-inverse);
 }
 
 .contact button:has(.success:not(.hidden)) {
-    background-color: #28a745;
-    color: var(--color-light);
+    background-color: var(--pico-form-element-valid-focus-color);
+    border: 1px solid var(--pico-form-element-valid-focus-color);
+    color: var(--pico-primary-inverse);
 }
 
 .contact button:has(.failure:not(.hidden)) {
-    background-color: #e63946;
-    color: var(--color-light);
+    background-color: var(--pico-form-element-invalid-focus-color);
+    border: 1px solid var(--pico-form-element-invalid-focus-color);
+    color: var(--pico-primary-inverse);
 }

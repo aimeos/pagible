@@ -84,6 +84,7 @@ class File extends Model
      */
     protected $visible = [
         'lang',
+        'name',
         'mime',
         'path',
         'previews',

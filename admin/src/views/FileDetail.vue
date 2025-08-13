@@ -226,47 +226,65 @@
     <template v-slot:append>
       <v-btn
         @click="vhistory = true"
-        :title="$gettext('View history')"
         :class="{hidden: item.published && !changed && !item.latest}"
+        :title="$gettext('View history')"
         icon="mdi-history"
         class="no-rtl"
       />
 
       <v-btn
         @click="save()"
-        :class="{error: error}"
+        :title="$gettext('Save')"
+        :class="{error: error}" class="menu-save"
         :disabled="!changed || error || !auth.can('file:save')"
-        class="menu-save"
-        variant="text">
-        {{ $gettext('Save') }}
-      </v-btn>
+        :variant="!changed || error || !auth.can('file:save') ? 'plain' : 'flat'"
+        :color="!changed || error || !auth.can('file:save') ? '' : 'blue-darken-1'"
+        icon="mdi-database-arrow-down"
+      />
 
       <v-menu v-model="pubmenu" :close-on-content-click="false">
         <template #activator="{ props }">
-          <v-btn-group class="menu-publish" variant="text">
-            <v-btn
-              @click="publish()"
-              :class="{error: error}" class="button"
-              :disabled="item.published && !changed || error || !auth.can('file:publish')"
-            >{{ $gettext('Publish') }}</v-btn>
-            <v-btn v-bind="props"
-              :class="{error: error}" class="icon"
-              :disabled="item.published && !changed || error || !auth.can('file:publish')"
-              :title="$gettext('Schedule publishing')"
-              icon="mdi-menu-down"
-            />
-          </v-btn-group>
+          <v-btn v-bind="props" icon
+            :title="$gettext('Schedule publishing')"
+            :class="{error: error}" class="menu-publish"
+            :disabled="item.published && !changed || error || !auth.can('file:publish')"
+            :variant="item.published && !changed || error || !auth.can('file:publish') ? 'plain' : 'flat'"
+            :color="item.published && !changed || error || !auth.can('file:publish') ? '' : 'blue-darken-2'"
+          >
+            <v-icon>
+              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+                <path d="M2,1V3H16V1H2 M2,10H6V19H12V10H16L9,3L2,10Z" />
+                <path d="M16.7 11.4C16.7 11.4 16.61 11.4 16.7 11.4C13.19 11.49 10.4 14.28 10.4 17.7C10.4 21.21 13.19 24 16.7 24S23 21.21 23 17.7 20.21 11.4 16.7 11.4M16.7 22.2C14.18 22.2 12.2 20.22 12.2 17.7S14.18 13.2 16.7 13.2 21.2 15.18 21.2 17.7 19.22 22.2 16.7 22.2M15.6 13.1V17.6L18.84 19.58L19.56 18.5L16.95 16.97V13.1H15.6Z" />
+              </svg>
+            </v-icon>
+          </v-btn>
         </template>
         <div class="menu-content">
           <v-date-picker v-model="publishAt" hide-header show-adjacent-months />
           <v-btn
             @click="publish(publishAt); pubmenu = false"
-            :color="publishAt ? 'primary' : ''"
             :disabled="!publishAt || error"
-            variant="flat"
+            :color="publishAt ? 'primary' : ''"
+            variant="text"
+            elevation="0"
           >{{ $gettext('Publish') }}</v-btn>
         </div>
       </v-menu>
+
+      <v-btn icon
+        @click="publish()"
+        :title="$gettext('Publish')"
+        :class="{error: error}" class="menu-publish"
+        :disabled="item.published && !changed || error || !auth.can('file:publish')"
+        :variant="item.published && !changed || error || !auth.can('file:publish') ? 'plain' : 'flat'"
+        :color="item.published && !changed || error || !auth.can('file:publish') ? '' : 'blue-darken-2'"
+      >
+        <v-icon>
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+            <path d="M5,2V4H19V2H5 M5,12H9V21H15V12H19L12,5L5,12Z" />
+          </svg>
+        </v-icon>
+      </v-btn>
 
       <v-btn
         @click.stop="drawer.toggle('aside')"
@@ -283,7 +301,7 @@
         <v-tab value="refs">{{ $gettext('Used by') }}</v-tab>
       </v-tabs>
 
-      <v-window v-model="tab">
+      <v-window v-model="tab" :touch="false">
 
         <v-window-item value="file">
           <FileDetailItem

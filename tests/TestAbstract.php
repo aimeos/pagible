@@ -27,12 +27,15 @@ abstract class TestAbstract extends \Orchestra\Testbench\TestCase
 	protected function defineEnvironment( $app )
 	{
         $app['config']->set('database.connections.testing', [
-            'driver'   => 'sqlite',
-            'database' => ':memory:',
-            'prefix'   => 'test_',
+            'driver'   => env('DB_DRIVER', 'sqlite'),
+            'host'     => env('DB_HOST', ''),
+            'port'     => env('DB_PORT', ''),
+            'database' => env('DB_DATABASE', ':memory:'),
+            'username' => env('DB_USERNAME', ''),
+            'password' => env('DB_PASSWORD', ''),
         ]);
 
-        $app['config']->set( 'cms.db', 'testing' );
+        $app['config']->set('cms.db', 'testing');
 
         \Aimeos\Cms\Tenancy::$callback = function() {
             return 'test';
