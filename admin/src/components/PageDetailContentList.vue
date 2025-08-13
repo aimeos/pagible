@@ -664,8 +664,7 @@
         :title="$gettext('Add element')"
         icon="mdi-view-grid-plus"
         color="primary"
-        variant="text"
-        elevation="0"
+        variant="flat"
       />
     </div>
   </div>

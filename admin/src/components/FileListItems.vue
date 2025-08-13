@@ -435,7 +435,7 @@
       <v-menu location="bottom left">
         <template #activator="{ props }">
           <v-btn v-bind="props"
-            :disabled="!isChecked && this.embed"
+            :disabled="!isChecked"
             append-icon="mdi-menu-down"
             variant="text"
           >{{ $gettext('Actions') }}</v-btn>
