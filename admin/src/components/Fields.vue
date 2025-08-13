@@ -56,7 +56,7 @@
 
         this.composing[code] = true
 
-        this.compose(this.data[code] ?? '', context).then(result => {
+        this.compose(this.data[code] || 'Create suitable text based on the context', context).then(result => {
           this.update(code, result)
         }).finally(() => {
           this.composing[code] = false
