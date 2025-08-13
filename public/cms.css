@@ -219,7 +219,7 @@ img {
     text-align: center;
 }
 
-footer *,
+footer,
 .copyright {
     background-color: var(--pico-primary-background);
     color: var(--pico-primary-inverse);
