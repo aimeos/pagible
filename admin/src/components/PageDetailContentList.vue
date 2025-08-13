@@ -154,6 +154,7 @@
             if(this.content[i]._checked) {
               const entry = JSON.parse(JSON.stringify(this.content[i]))
               this.content.splice(i, 1)
+              entry._checked = false
               entry['id'] = null
               list.push(entry)
             }
@@ -161,6 +162,7 @@
         } else {
           const entry = JSON.parse(JSON.stringify(this.content[idx]))
           this.content.splice(idx, 1)
+          entry._checked = false
           entry['id'] = null
           list.push(entry)
         }
@@ -569,7 +571,7 @@
 
         <v-expansion-panel v-for="(el, idx) in content" :key="idx" v-show="shown(el)" class="content" :class="{changed: el._changed, error: el._error}">
           <v-expansion-panel-title expand-icon="mdi-pencil">
-            <v-checkbox-btn v-if="auth.can('page:save')" @click.stop="el._checked = !el._checked" />
+            <v-checkbox-btn v-if="auth.can('page:save')" :model-value="el._checked" @click.stop="el._checked = !el._checked" />
 
             <v-menu v-if="auth.can('page:save')">
               <template v-slot:activator="{ props }">
