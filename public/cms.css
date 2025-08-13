@@ -1,13 +1,4 @@
 :root {
-    --color-primary: #0060a0;
-    --color-secondary: #00c0f0;
-    --color-accent: #0060d0;
-    --color-background: #e8f4fc;
-    --color-light: #ffffff;
-    --color-dark: #2b2b2b;
-    --color-text: #333333;
-    --color-muted: #d8ecff;
-    --color-border: #60a0e0;
     --pico-nav-breadcrumb-divider: '>';
     --pico-nav-element-spacing-horizontal: 1rem;
     --pico-nav-link-spacing-vertical: 0.625rem;
@@ -16,8 +7,6 @@
 
 body {
     line-height: 1.6;
-    color: var(--color-text);
-    background-color: var(--color-light);
     scroll-behavior: smooth;
 }
 
@@ -31,7 +20,7 @@ body.type-page .cms-content .container {
 }
 
 body.type-page .cms-content > :nth-of-type(3n) {
-    background-color: var(--color-background);
+    background-color: var(--pico-background-color);
 }
 
 nav ol:first-of-type, nav ul:first-of-type,
@@ -45,6 +34,11 @@ nav li :where(a,[role=link]) {
 
 header {
     border-bottom: 1px solid #ddd;
+}
+
+header nav ol,
+header nav ul {
+    margin-top: 0;
 }
 
 header nav details summary {
@@ -104,7 +98,7 @@ header nav .menu-close button {
         align-items: start;
         position: absolute;
         overflow-y: scroll;
-        background: var(--color-light);
+        background: var(--pico-color);
         z-index: 1000;
         width: 100%;
         bottom: 0;
@@ -123,7 +117,7 @@ header nav .menu-close button {
     }
 
     header nav .menu > li {
-        border-bottom: 1px solid var(--color-border);
+        border-bottom: 1px solid var(--pico-primary-border);
         width: 100%;
     }
 }
@@ -179,8 +173,8 @@ img {
 }
 
 .video video {
-    max-width: 960px;
     max-height: 540px;
+    max-width: min(960px, 100%);
     border-radius: 8px;
 }
 
@@ -225,9 +219,10 @@ img {
     text-align: center;
 }
 
-footer {
-    background-color: var(--color-primary);
-    color: var(--color-light);
+footer *,
+.copyright {
+    background-color: var(--pico-primary-background);
+    color: var(--pico-primary-inverse);
 }
 
 .copyright {
