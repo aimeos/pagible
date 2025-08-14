@@ -98,11 +98,10 @@ header nav .menu-close button {
         align-items: start;
         position: absolute;
         overflow-y: scroll;
-        background: var(--pico-color);
+        background-color: var(--pico-background-color);
+        min-height: 100%;
         z-index: 1000;
         width: 100%;
-        bottom: 0;
-        right: 0;
         left: 0;
         top: 0;
     }

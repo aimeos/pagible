@@ -17,12 +17,12 @@ const vuetify = createVuetify({
     messages: { ar, bg, cs, da, de, el, en, es, et, fi, fr, he, hu, id, it, ja, ko, lt, lv, no, nl, pl, pt, ro, ru, sk, sl, sv, th, tr, uk, vi, zhHans }
   },
   theme: {
+    defaultTheme: 'system',
     themes: {
-      defaultTheme: 'system',
       light: {
         colors: {
           background: '#f0f4f8',
-          primary: '#105090',
+          primary: '#3070a0',
           info: '#03c9d7',
           error: '#f44336',
           success: '#00c853',
@@ -30,6 +30,17 @@ const vuetify = createVuetify({
           accent: '#ffab91',
         }
       },
+      dark: {
+        colors: {
+          background: '#121212',
+          primary: '#105090',
+          info: '#03c9d7',
+          error: '#cf6679',
+          success: '#03dac6',
+          warning: '#ffb080',
+          accent: '#ffab91',
+        }
+      }
     },
   },
 })
