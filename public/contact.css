@@ -7,7 +7,8 @@
 }
 
 .contact input, textarea {
-    border: 1px solid var(--pico-primary-border);
+    background-color: var(--pico-background-color);
+    border: 1px solid var(--pico-contrast-border);
     border-radius: 8px;
     resize: vertical;
     font-size: 16px;
@@ -23,7 +24,7 @@
 }
 
 .contact button {
-    border: 1px solid var(--pico-primary);
+    border: 1px solid var(--pico-primary-inverse);
     background-color: var(--pico-primary);
     color: var(--pico-primary-inverse);
     border-radius: 8px;

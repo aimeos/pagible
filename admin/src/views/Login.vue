@@ -134,15 +134,17 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    background-color: rgb(var(--v-theme-background));
     height: 100vh;
     width: 100%;
   }
 
   .login .v-card {
-    width: 20rem;
-    padding: 8px;
     background-color: rgb(var(--v-theme-primary));
     color: rgb(var(--v-theme-on-primary));
+    border-radius: 8px;
+    padding: 8px;
+    width: 20rem;
     opacity: 0;
   }
 
