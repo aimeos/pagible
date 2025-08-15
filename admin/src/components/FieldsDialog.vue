@@ -45,7 +45,7 @@
   <v-dialog :modelValue="modelValue" @afterLeave="$emit('update:modelValue', false)" max-width="1200" scrollable>
     <v-card>
       <template v-slot:append>
-        <v-btn v-if="!readonly && !error"
+        <v-btn v-if="!readonly && !error && element._changed"
           @click="$emit('update:element', element)"
           variant="outlined"
         >{{ $gettext('Save') }}</v-btn>
@@ -72,6 +72,7 @@
           :type="element.type"
           :assets="assets"
           @error="error = element._error = $event"
+          @change="element._changed = true"
         />
       </v-card-text>
     </v-card>
