@@ -225,11 +225,12 @@ class Page extends Model
     /**
      * Get the navigation for the page.
      *
+     * @param int $level Starting level for the navigation (default: 0 for root page)
      * @return \Kalnoy\Nestedset\Collection Collection of ancestor pages
      */
-    public function nav() : \Kalnoy\Nestedset\Collection
+    public function nav( $level = 0 ) : \Kalnoy\Nestedset\Collection
     {
-        $root = $this->ancestors->first() ?: $this;
+        $root = $this->ancestors->skip( $level )->first() ?: $this;
         return $root?->subtree?->toTree() ?: new \Kalnoy\Nestedset\Collection();
     }
 
