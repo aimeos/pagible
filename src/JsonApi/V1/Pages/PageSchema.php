@@ -11,7 +11,6 @@ use LaravelJsonApi\Eloquent\Filters\WhereIdIn;
 use LaravelJsonApi\Eloquent\Fields\Relations\HasMany;
 use LaravelJsonApi\Eloquent\Fields\Relations\HasOne;
 use LaravelJsonApi\Eloquent\Fields\ArrayHash;
-use LaravelJsonApi\Eloquent\Fields\ArrayList;
 use LaravelJsonApi\Eloquent\Fields\DateTime;
 use LaravelJsonApi\Eloquent\Fields\Boolean;
 use LaravelJsonApi\Eloquent\Fields\Number;
@@ -119,7 +118,7 @@ class PageSchema extends Schema
                 }
                 return $items;
             } ),
-            ArrayList::make( 'content' )->readOnly()->extractUsing( function( $model, $column, $items ) {
+            ArrayHash::make( 'content' )->readOnly()->extractUsing( function( $model, $column, $items ) {
                 foreach( (array) $items as $key => $item ) {
                     if( isset( $item->files ) ) {
                         $lang = $model->lang;
@@ -161,7 +160,7 @@ class PageSchema extends Schema
                         $item->data->action = app()->call( $item->data->action, ['model' => $model, 'item' => $item] );
                     }
                 }
-                return $items;
+                return collect( $items )->groupBy( 'group' )->all();
             } ),
             HasOne::make( 'parent' )->type( 'navs' )->readOnly()->serializeUsing( function( $relation ) {
                 $relation->withData( function( $resource ) use ( $relation ) {
