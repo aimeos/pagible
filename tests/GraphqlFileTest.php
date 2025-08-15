@@ -332,7 +332,7 @@ class GraphqlFileTest extends TestAbstract
                     'transcription' => json_encode( $file->transcription ),
                     'editor' => 'seeder',
                     'latest' => [
-                        'data' => '{"mime":"image\\/jpeg","lang":"en-GB","path":"https:\\/\\/picsum.photos\\/id\\/0\\/1500\\/1000","previews":' . $previews . ',"description":{"en":"Test file description"},"transcription":{"en":"Test file transcription"}}',
+                        'data' => '{"mime":"image\\/jpeg","lang":"en-GB","name":"test file","path":"https:\\/\\/picsum.photos\\/id\\/0\\/1500\\/1000","previews":' . $previews . ',"description":{"en":"Test file description"},"transcription":{"en":"Test file transcription"}}',
                         'editor' => 'Test editor',
                     ]
                 ],
