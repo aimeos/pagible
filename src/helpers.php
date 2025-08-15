@@ -39,6 +39,15 @@ if( !function_exists( 'cmsasset' ) )
 }
 
 
+if( !function_exists( 'cmsattr' ) )
+{
+    function cmsattr( ?string $name ): string
+    {
+        return $name ? preg_replace('/[^A-Za-z0-9\-\_]+/', '-', $name) : '';
+    }
+}
+
+
 if( !function_exists( 'cmsdata' ) )
 {
     function cmsdata( \Aimeos\Cms\Models\Page $page, object $item ): array
@@ -54,15 +63,6 @@ if( !function_exists( 'cmsdata' ) )
         }
 
         return $data + (array) $item;
-    }
-}
-
-
-if( !function_exists( 'cmsid' ) )
-{
-    function cmsid( ?string $name ): string
-    {
-        return $name ? preg_replace('/[^A-Za-z0-9\-\_]+/', '-', $name) : '';
     }
 }
 

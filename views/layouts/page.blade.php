@@ -27,7 +27,7 @@
             </ul>
             <ul class="menu">
                 @foreach($page->nav() as $item)
-                    @if(cms($item, 'status') <= 1)
+                    @if(cms($item, 'status') == 1)
                         <li>
                             @if($item->children->count())
                                 <details class="dropdown is-menu">
@@ -86,7 +86,7 @@
     <div class="cms-content" data-section="main">
         @foreach($content['main'] ?? [] as $item)
             @if($el = cmsref($page, $item))
-                <div id="{{ cmsid(@$item->id) }}" class="{{ cmsid(@$el->type) }}">
+                <div id="{{ cmsattr(@$item->id) }}" class="{{ cmsattr(@$el->type) }}">
                     <div class="container">
                         @includeFirst(cmsviews($page, $el), cmsdata($page, $el))
                     </div>
@@ -101,7 +101,7 @@
     <footer class="cms-content" data-section="footer">
         @foreach($content['footer'] ?? [] as $item)
             @if($el = cmsref($page, $item))
-                <div id="{{ cmsid(@$item->id) }}" class="{{ cmsid(@$el->type) }}">
+                <div id="{{ cmsattr(@$item->id) }}" class="{{ cmsattr(@$el->type) }}">
                     <div class="container">
                         @includeFirst(cmsviews($page, $el), cmsdata($page, $el))
                     </div>
