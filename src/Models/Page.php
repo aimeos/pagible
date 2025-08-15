@@ -337,7 +337,7 @@ class Page extends Model
                 'id', 'tenant_id', 'parent_id', 'lang', 'path', 'domain', 'to', 'name', 'title',
                 'status', 'created_at', 'updated_at', 'deleted_at', '_lft', '_rgt'
             )
-            ->having( 'depth', '<=', ( $this->depth ?? 0 ) + 3 )
+            ->having( 'depth', '<=', ( $this->depth ?? 0 ) + config( 'cms.navdepth', 2 ) )
             ->defaultOrder();
 
         return new DescendantsRelation( $builder, $this );
