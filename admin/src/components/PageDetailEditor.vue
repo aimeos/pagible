@@ -69,6 +69,7 @@
       add(item) {
         const group = this.section || 'main'
         this.vschemas = false
+        this.index = null
 
         if(item.id) {
           this.elements[item.id] = item
@@ -84,6 +85,7 @@
       edit() {
         this.element = this.item.content[this.index] || null
         this.vedit = this.element ? true : false
+        this.index = null
       },
 
 

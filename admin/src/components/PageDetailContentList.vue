@@ -155,7 +155,6 @@
               const entry = JSON.parse(JSON.stringify(this.content[i]))
               this.content.splice(i, 1)
               entry._checked = false
-              entry['id'] = null
               list.push(entry)
             }
           }
@@ -163,7 +162,6 @@
           const entry = JSON.parse(JSON.stringify(this.content[idx]))
           this.content.splice(idx, 1)
           entry._checked = false
-          entry['id'] = null
           list.push(entry)
         }
 
