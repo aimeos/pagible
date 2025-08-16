@@ -230,8 +230,10 @@ class Page extends Model
      */
     public function nav( $level = 0 ) : \Kalnoy\Nestedset\Collection
     {
-        $root = $this->ancestors->skip( $level )->first() ?: $this;
-        return $root?->subtree?->toTree() ?: new \Kalnoy\Nestedset\Collection();
+        return $this->withDepth()->ancestorsAndSelf( $this->id )
+            ->skip( $level )->first()
+            ?->subtree?->toTree()
+            ?? new \Kalnoy\Nestedset\Collection();
     }
 
 
