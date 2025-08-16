@@ -1,0 +1,22 @@
+:root {
+    --pico-block-spacing-vertical: 0;
+    --pico-block-spacing-horizontal: 0;
+}
+
+.cms-content .container {
+    padding: 60px 10px;
+}
+
+.cms-content > :nth-of-type(3n) {
+    background-color: var(--pico-background-color);
+}
+
+.heading h1,
+.heading h2,
+.heading h3 {
+    margin: 0;
+}
+
+.text p:last-of-type {
+    margin-bottom: 0;
+}

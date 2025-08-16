@@ -1,6 +1,7 @@
 :root {
     --pico-nav-breadcrumb-divider: '>';
     --pico-nav-element-spacing-horizontal: 1rem;
+    --pico-nav-element-spacing-vertical: 0.75rem;
     --pico-nav-link-spacing-vertical: 0.625rem;
     --pico-nav-link-spacing-horizontal: 0.625rem;
 }
@@ -8,19 +9,6 @@
 body {
     line-height: 1.6;
     scroll-behavior: smooth;
-}
-
-body.type-page {
-    --pico-block-spacing-vertical: 0;
-    --pico-block-spacing-horizontal: 0;
-}
-
-body.type-page .cms-content .container {
-    padding: 60px 10px;
-}
-
-body.type-page .cms-content > :nth-of-type(3n) {
-    background-color: var(--pico-background-color);
 }
 
 nav ol:first-of-type, nav ul:first-of-type,
@@ -70,9 +58,14 @@ header nav details[open] summary::after {
     transform: rotate(0.5turn) translateX(0);
 }
 
-header nav details.dropdown > summary + ul.right {
+header nav details.dropdown > summary + ul.align {
     left: auto;
     right: 0;
+}
+
+[dir="rtl"] header nav details.dropdown > summary + ul.align {
+    right: auto;
+    left: 0;
 }
 
 header nav .menu-open,
@@ -133,16 +126,6 @@ details summary {
 
 h1, h2 {
     text-align: center;
-}
-
-.type-page .heading h1,
-.type-page .heading h2,
-.type-page .heading h3 {
-    margin: 0;
-}
-
-.type-page .text p:last-of-type {
-    margin-bottom: 0;
 }
 
 img {

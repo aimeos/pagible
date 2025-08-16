@@ -1,9 +1,5 @@
 @extends('cms::layouts.main')
 
-@pushOnce('css')
-<link href="{{ cmsasset('vendor/cms/theme/layout-page.css') }}" rel="stylesheet">
-@endPushOnce
-
 
 @section('main')
     <div class="cms-content" data-section="main">
