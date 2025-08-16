@@ -75,7 +75,7 @@
 
       setPath(focused) {
         if(!focused && this.item.path?.at(0) === '_') {
-          this.updatePath(this.item.name)
+          this.updatePath(this.item.title)
         }
       },
 
