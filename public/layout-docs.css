@@ -1,0 +1,47 @@
+nav[aria-label="breadcrumb"] {
+    background-color: var(--pico-primary);
+}
+
+nav[aria-label="breadcrumb"] a,
+nav[aria-label="breadcrumb"] li,
+nav[aria-label="breadcrumb"] li::after {
+    color: var(--pico-primary-inverse);
+}
+
+main {
+    display: flex;
+}
+
+main nav.sidebar {
+    width: 320px;
+}
+
+main nav.sidebar details summary::marker,
+main nav.sidebar details summary ::-webkit-details-marker {
+    content: "";
+}
+
+main nav.sidebar .menu {
+    --pico-nav-element-spacing-vertical: 0.35rem;
+    --pico-nav-element-spacing-horizontal: 1rem;
+    background-color: var(--pico-primary);
+    flex-direction: column;
+    align-items: start;
+    width: 100%;
+}
+
+main nav.sidebar .menu .menu li {
+    padding-inline-start: 1.5rem;
+}
+
+main nav.sidebar .menu a {
+    color: var(--pico-primary-inverse);
+}
+
+main nav.sidebar .active {
+    font-weight: bold;
+}
+
+main .content {
+    flex-grow: 1;
+}

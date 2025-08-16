@@ -169,6 +169,8 @@ return [
                             'footer',
                         ],
                     ],
+                    'docs' => [
+                    ],
                     'blog' => [
                     ],
                 ],
