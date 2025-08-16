@@ -1,5 +1,6 @@
 :root {
     --pico-nav-breadcrumb-divider: '>';
+    --pico-block-spacing-vertical: 0;
     --pico-nav-element-spacing-horizontal: 1rem;
     --pico-nav-element-spacing-vertical: 0.75rem;
     --pico-nav-link-spacing-vertical: 0.625rem;

@@ -63,7 +63,7 @@
                                             @foreach($item->children as $subItem)
                                                 @if(cms($subItem, 'status') == 1)
                                                     <li>
-                                                        <a href="{{ cmsroute($subItem) }}" class="{{ !$page->isSelfOrDescendantOf($subItem) ?: 'active' }} contrast">
+                                                        <a href="{{ cmsroute($subItem) }}" class="{{ $page->isSelfOrDescendantOf($subItem) ? 'active' : '' }} contrast">
                                                             {{ cms($subItem, 'name') }}
                                                         </a>
                                                     </li>
@@ -72,7 +72,7 @@
                                         </ul>
                                     </details>
                                 @else
-                                    <a href="{{ cmsroute($item) }}" class="{{ !$page->isSelfOrDescendantOf($item) ?: 'active' }} contrast">
+                                    <a href="{{ cmsroute($item) }}" class="{{ $page->isSelfOrDescendantOf($item) ? 'active' : '' }} contrast">
                                         {{ cms($item, 'name') }}
                                     </a>
                                 @endif
@@ -82,7 +82,7 @@
                 </ul>
                 <ul class="menu-open show">
                     <li>
-                        <button aria-label="Toggle menu">
+                        <button aria-label="{{ __('Toggle menu') }}">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-list" viewBox="0 0 16 16">
                                 <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5"/>
                             </svg>
@@ -92,14 +92,16 @@
             </nav>
         </header>
 
-        @if($page->ancestors->count() > 1)
+        @if($page->ancestors->count() > 2)
             <nav aria-label="breadcrumb">
                 <ul>
-                    @foreach($page->ancestors ?? [] as $item)
+                    @foreach($page->ancestors->skip(1) as $item)
                         @if(cms($item, 'status') == 1)
                             <li>
                                 <a href="{{ cmsroute($item) }}">{{ cms($item, 'name') }}</a>
                             </li>
+                        @else
+                            @break
                         @endif
                     @endforeach
                     <li>{{ cms($page, 'name') }}</li>
