@@ -520,7 +520,7 @@
         <v-menu location="bottom left">
           <template v-slot:activator="{ props }">
             <v-btn v-bind="props"
-              :disabled="!isChecked"
+              :disabled="!isChecked && !clipboard.get('page-content')"
               append-icon="mdi-menu-down"
               variant="text"
             >{{ $gettext('Actions') }}</v-btn>
