@@ -218,15 +218,11 @@ img {
     text-align: center;
 }
 
-footer,
-footer h1,
-footer h2,
-footer h3,
-.copyright {
+footer * {
     background-color: var(--pico-primary-background);
     color: var(--pico-primary-inverse);
 }
 
-.copyright {
+footer.copyright {
     text-align: center;
 }
