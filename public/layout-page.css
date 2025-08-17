@@ -17,6 +17,12 @@
     margin: 0;
 }
 
+.container h1:first-child,
+.container h2:first-child,
+.container h3:first-child {
+    margin-top: 0;
+}
+
 .text p:last-of-type {
     margin-bottom: 0;
 }
