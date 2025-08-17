@@ -38,6 +38,7 @@
         vcontent: false,
         vschemas: false,
         vpreview: false,
+        visible: false,
         vedit: false,
       }
     },
@@ -58,10 +59,12 @@
 
     computed: {
       url() {
-        return this.app.urlpage
-          .replace(/_domain_/, this.item.domain || '')
-          .replace(/_path_/, this.item.path || '')
-          .replace(/\/+$/, '')
+        return this.visible
+          ? this.app.urlpage
+            .replace(/_domain_/, this.item.domain || '')
+            .replace(/_path_/, this.item.path || '')
+            .replace(/\/+$/, '')
+          : null
       }
     },
 
@@ -107,6 +110,11 @@
         }
 
         this.expanded = !this.expanded
+      },
+
+
+      load(isVisible) {
+        this.visible = !!isVisible
       },
 
 
@@ -173,7 +181,7 @@
 </script>
 
 <template>
-  <div class="page-preview" ref="preview">
+  <div class="page-preview" ref="preview" v-observe-visibility="load">
     <div v-if="loading" class="controls">
       <svg class="spinner" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
         <circle class="spin1" cx="4" cy="12" r="3"/>
