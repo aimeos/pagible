@@ -219,6 +219,9 @@ img {
 }
 
 footer,
+footer h1,
+footer h2,
+footer h3,
 .copyright {
     background-color: var(--pico-primary-background);
     color: var(--pico-primary-inverse);
