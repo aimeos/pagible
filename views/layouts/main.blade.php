@@ -110,18 +110,8 @@
         @endif
 
         @yield('main')
+        @yield('footer')
 
-        <footer class="cms-content" data-section="footer">
-            @foreach($content['footer'] ?? [] as $item)
-                @if($el = cmsref($page, $item))
-                    <div id="{{ cmsattr(@$item->id) }}" class="{{ cmsattr(@$el->type) }}">
-                        <div class="container">
-                            @includeFirst(cmsviews($page, $el), cmsdata($page, $el))
-                        </div>
-                    </div>
-                @endif
-            @endforeach
-        </footer>
         <footer class="copyright">
             &copy; {{ date('Y') }} {{ config('app.name') }}
         </footer>

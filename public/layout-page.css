@@ -8,7 +8,7 @@
 }
 
 .cms-content > :nth-of-type(3n) {
-    background-color: var(--pico-background-color);
+    background-color: var(--pico-primary-focus);
 }
 
 .heading h1,
