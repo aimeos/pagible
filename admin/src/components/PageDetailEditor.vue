@@ -72,7 +72,6 @@
       add(item) {
         const group = this.section || 'main'
         this.vschemas = false
-        this.index = null
 
         if(item.id) {
           this.elements[item.id] = item
