@@ -69,13 +69,21 @@ header nav details.dropdown > summary + ul.align {
     left: 0;
 }
 
+header nav .brand {
+    flex-grow: 1;
+}
+
 header nav .menu-open,
-header nav .menu-close {
+header nav .menu-close,
+header nav .sidebar-open,
+header nav .sidebar-close {
     display: none;
 }
 
 header nav .menu-open button,
-header nav .menu-close button {
+header nav .menu-close button,
+header nav .sidebar-open button,
+header nav .sidebar-close button {
     background: none;
     border: none;
     padding: 1rem;
@@ -125,7 +133,7 @@ details summary {
     line-height: inherit;
 }
 
-h1, h2 {
+h1, h2, h3 {
     text-align: center;
 }
 
@@ -139,7 +147,8 @@ img {
 }
 
 .code .container,
-.text .container {
+.text .container,
+.heading .container {
     max-width: 960px !important;
 }
 
@@ -202,7 +211,10 @@ img {
     text-align: center;
 }
 
-footer * {
+footer,
+footer h1,
+footer h2,
+footer h3{
     background-color: var(--pico-primary-background);
     color: var(--pico-primary-inverse);
 }

@@ -13,7 +13,40 @@ main {
 }
 
 main nav.sidebar {
-    width: 320px;
+    transition: left 0.3s ease;
+    position: relative;
+    left: -240px;
+    width: 240px;
+    z-index: 1000;
+    flex-shrink: 1;
+}
+
+main nav.sidebar.show {
+    left: 0;
+}
+
+main .content {
+    flex-grow: 1;
+}
+
+@media screen and (min-width: 992px) {
+    main nav.sidebar {
+        position: static;
+        width: 240px;
+        left: 0;
+    }
+}
+
+
+@media screen and (max-width: 991px) {
+    header nav .sidebar-open.show,
+    header nav .sidebar-close.show {
+        display: block;
+    }
+
+    main .content {
+        margin-inline-start: -240px;
+    }
 }
 
 main nav.sidebar details summary::marker,
@@ -40,8 +73,4 @@ main nav.sidebar .menu a {
 
 main nav.sidebar .active {
     font-weight: bold;
-}
-
-main .content {
-    flex-grow: 1;
 }
