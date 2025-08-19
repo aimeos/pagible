@@ -26,6 +26,8 @@ main nav.sidebar.show {
 }
 
 main .content {
+    width: calc(100% - 240px - 5%);
+    margin: 0 2.5%;
     flex-grow: 1;
 }
 
@@ -45,7 +47,7 @@ main .content {
     }
 
     main .content {
-        margin-inline-start: -240px;
+        margin-inline-start: calc(-240px + 2.5%);
     }
 }
 
@@ -60,7 +62,7 @@ main nav.sidebar .menu {
     background-color: var(--pico-primary);
     flex-direction: column;
     align-items: start;
-    width: 100%;
+    width: 240px;
 }
 
 main nav.sidebar .menu .menu li {

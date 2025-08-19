@@ -3,7 +3,7 @@
 }
 
 .code-box .code-copy {
-    color: var(--pico-contrast-hover-background);
+    color: var(--pico-contrast-inverse);
     background: inherit;
     position: absolute;
     right: 0;
