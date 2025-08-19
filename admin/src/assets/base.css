@@ -413,9 +413,16 @@ input[readonly],
 }
 
 .ck-editor {
-  --ck-color-button-default-hover-background: rgb(var(--v-theme-surface-variant));
+  --ck-powered-by-background: rgb(var(--v-theme-surface-variant));
+  --ck-color-split-button-hover-background: rgb(var(--v-theme-surface-light));
+  --ck-color-button-default-hover-background: rgb(var(--v-theme-surface-light));
   --ck-color-toolbar-background: rgb(var(--v-theme-surface));
   --ck-color-base-background: rgb(var(--v-theme-surface));
+  --ck-color-list-background: rgb(var(--v-theme-surface));
+  --ck-color-list-button-hover-background: rgb(var(--v-theme-surface-light));
+  --ck-color-button-on-hover-background: rgb(var(--v-theme-surface-light));
+  --ck-color-button-on-background: rgb(var(--v-theme-surface-light));
+  --ck-color-button-on-color: rgb(var(--v-theme-on-surface));
   --ck-color-text: rgb(var(--v-theme-on-surface));
   --ck-border-radius: 4px;
 }
