@@ -211,6 +211,11 @@ img {
     text-align: center;
 }
 
+ol ol, ul ul, ol ul, ul ol {
+    margin-bottom: 0;
+    margin-top: 0;
+}
+
 footer,
 footer h1,
 footer h2,
