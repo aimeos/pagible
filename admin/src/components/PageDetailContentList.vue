@@ -53,7 +53,7 @@
 
 
       isChecked() {
-        return this.content.some(el => el._checked)
+        return this.content.filter(el => el._checked).length
       },
     },
 
@@ -538,7 +538,7 @@
             <v-list-item v-if="clipboard.get('page-content')">
               <v-btn prepend-icon="mdi-content-paste" variant="text" @click="paste()">{{ $gettext('Paste') }}</v-btn>
             </v-list-item>
-            <v-list-item v-if="isChecked">
+            <v-list-item v-if="isChecked > 1">
               <v-btn prepend-icon="mdi-set-merge" variant="text" @click="merge()">{{ $gettext('Merge') }}</v-btn>
             </v-list-item>
           </v-list>
@@ -618,6 +618,9 @@
                 </v-list-item>
                 <v-list-item v-if="el.type === 'text'">
                   <v-btn prepend-icon="mdi-set-split" variant="text" @click="split(idx)">{{ $gettext('Split') }}</v-btn>
+                </v-list-item>
+                <v-list-item v-if="el._checked && isChecked > 1">
+                  <v-btn prepend-icon="mdi-set-merge" variant="text" @click="merge()">{{ $gettext('Merge') }}</v-btn>
                 </v-list-item>
               </v-list>
             </v-menu>
