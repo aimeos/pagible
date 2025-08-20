@@ -213,7 +213,7 @@
         const entry = entries.reverse().reduce((acc, el) => {
           acc.data.text += this.createMarkdown(el) + '\n\n'
           return acc
-        }, {id: uid(), group: this.section, type: 'text', data: {text: ''}})
+        }, {id: uid(), group: this.section, type: 'text', data: {text: ''}, _changed: true})
 
         this.content.splice(idx, 0, entry)
         this.$emit('update:content', this.content)
