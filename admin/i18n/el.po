@@ -33,17 +33,17 @@ msgstr "id"
 #: src/components/FileListItems.vue:511
 #: src/fields/Audio.vue:105
 #: src/fields/File.vue:287
-#: src/fields/Image.vue:140
+#: src/fields/Image.vue:139
 #: src/fields/Video.vue:105
 msgid "mime"
 msgstr "mime"
 
 #: src/components/AsideMeta.vue:27
-#: src/components/ElementListItems.vue:475
+#: src/components/ElementListItems.vue:480
 #: src/components/FileListItems.vue:517
 #: src/fields/Audio.vue:109
 #: src/fields/File.vue:291
-#: src/fields/Image.vue:144
+#: src/fields/Image.vue:143
 #: src/fields/Video.vue:109
 #: src/views/ElementList.vue:119
 #: src/views/FileList.vue:116
@@ -58,7 +58,7 @@ msgstr "δημιουργήθηκε"
 #: src/components/AsideMeta.vue:35
 #: src/fields/Audio.vue:113
 #: src/fields/File.vue:295
-#: src/fields/Image.vue:148
+#: src/fields/Image.vue:147
 #: src/fields/Video.vue:113
 msgid "updated"
 msgstr "ενημερωμένο"
@@ -81,7 +81,7 @@ msgstr "Όνομα"
 
 #: src/components/ElementDetailItem.vue:80
 #: src/components/FileDetailItem.vue:509
-#: src/components/PageDetailItemProps.vue:148
+#: src/components/PageDetailItemProps.vue:149
 msgid "Language"
 msgstr "Γλώσσα"
 
@@ -199,8 +199,8 @@ msgstr "Σφάλμα εκκαθάρισης κοινόχρηστου στοιχ�
 msgid "Error fetching shared elements"
 msgstr "Σφάλμα ανάκτησης κοινόχρηστων στοιχείων"
 
-#: src/components/ElementListItems.vue:417
-#: src/components/ElementListItems.vue:490
+#: src/components/ElementListItems.vue:422
+#: src/components/ElementListItems.vue:495
 #: src/components/FileListItems.vue:441
 #: src/components/FileListItems.vue:531
 #: src/components/PageDetailContentList.vue:526
@@ -210,8 +210,8 @@ msgstr "Σφάλμα ανάκτησης κοινόχρηστων στοιχεί�
 msgid "Actions"
 msgstr "Δράσεις"
 
-#: src/components/ElementListItems.vue:421
-#: src/components/ElementListItems.vue:499
+#: src/components/ElementListItems.vue:426
+#: src/components/ElementListItems.vue:504
 #: src/components/FileListItems.vue:445
 #: src/components/FileListItems.vue:539
 #: src/components/PageListItems.vue:877
@@ -225,17 +225,17 @@ msgstr "Δράσεις"
 msgid "Publish"
 msgstr "Δημοσίευση"
 
-#: src/components/ElementListItems.vue:424
-#: src/components/ElementListItems.vue:551
-#: src/components/PageDetailContentList.vue:662
+#: src/components/ElementListItems.vue:429
+#: src/components/ElementListItems.vue:556
+#: src/components/PageDetailContentList.vue:665
 #: src/components/PageDetailItemConfig.vue:201
 #: src/components/PageDetailItemMeta.vue:200
 #: src/fields/Items.vue:229
 msgid "Add element"
 msgstr "Προσθήκη στοιχείου"
 
-#: src/components/ElementListItems.vue:427
-#: src/components/ElementListItems.vue:502
+#: src/components/ElementListItems.vue:432
+#: src/components/ElementListItems.vue:507
 #: src/components/FileListItems.vue:451
 #: src/components/FileListItems.vue:542
 #: src/components/PageDetailContentList.vue:530
@@ -245,8 +245,8 @@ msgstr "Προσθήκη στοιχείου"
 msgid "Delete"
 msgstr "Σκουπίδια"
 
-#: src/components/ElementListItems.vue:430
-#: src/components/ElementListItems.vue:505
+#: src/components/ElementListItems.vue:435
+#: src/components/ElementListItems.vue:510
 #: src/components/FileListItems.vue:454
 #: src/components/FileListItems.vue:545
 #: src/components/PageListItems.vue:892
@@ -254,8 +254,8 @@ msgstr "Σκουπίδια"
 msgid "Restore"
 msgstr "Επαναφορά"
 
-#: src/components/ElementListItems.vue:433
-#: src/components/ElementListItems.vue:508
+#: src/components/ElementListItems.vue:438
+#: src/components/ElementListItems.vue:513
 #: src/components/FileListItems.vue:457
 #: src/components/FileListItems.vue:548
 #: src/components/PageListItems.vue:895
@@ -263,53 +263,55 @@ msgstr "Επαναφορά"
 msgid "Purge"
 msgstr "Εκκαθάριση"
 
-#: src/components/ElementListItems.vue:444
+#: src/components/ElementListItems.vue:449
 #: src/components/FileListItems.vue:466
 #: src/components/PageDetailContentList.vue:551
 #: src/components/PageListItems.vue:904
 msgid "Search for"
 msgstr "Αναζήτηση για"
 
-#: src/components/ElementListItems.vue:454
+#: src/components/ElementListItems.vue:459
 #: src/components/FileListItems.vue:493
 msgid "Sort by"
 msgstr "Ταξινόμηση κατά"
 
-#: src/components/ElementListItems.vue:458
 #: src/components/ElementListItems.vue:463
+#: src/components/ElementListItems.vue:468
 #: src/components/FileListItems.vue:497
 #: src/components/FileListItems.vue:502
 msgid "latest"
 msgstr "τελευταία"
 
-#: src/components/ElementListItems.vue:458
-#: src/components/ElementListItems.vue:466
+#: src/components/ElementListItems.vue:463
+#: src/components/ElementListItems.vue:471
 #: src/components/FileListItems.vue:497
 #: src/components/FileListItems.vue:505
 msgid "oldest"
 msgstr "παλαιότερο"
 
-#: src/components/ElementListItems.vue:469
+#: src/components/ElementListItems.vue:474
 #: src/components/FileListItems.vue:508
 #: src/fields/Audio.vue:97
 #: src/fields/File.vue:279
-#: src/fields/Image.vue:132
+#: src/fields/Image.vue:131
 #: src/fields/Video.vue:97
 msgid "name"
 msgstr "όνομα"
 
-#: src/components/ElementListItems.vue:472
+#: src/components/ElementListItems.vue:477
 msgid "type"
 msgstr "τύπος"
 
-#: src/components/ElementListItems.vue:533
+#: src/components/ElementListItems.vue:538
 #: src/components/FileListItems.vue:580
 #: src/components/HistoryDialog.vue:116
 #: src/components/PageListItems.vue:1075
+#: src/fields/Autocomplete.vue:155
+#: src/fields/Combobox.vue:18
 msgid "Loading"
 msgstr "Φόρτωση"
 
-#: src/components/ElementListItems.vue:541
+#: src/components/ElementListItems.vue:546
 #: src/components/FileListItems.vue:589
 #: src/components/PageListItems.vue:1080
 msgid "No entries found"
@@ -455,12 +457,12 @@ msgid "Flip vertically"
 msgstr "Αναποδογυρίστε κάθετα"
 
 #: src/components/FileDetailItem.vue:564
-msgid "Reset"
-msgstr "Επαναφορά"
-
-#: src/components/FileDetailItem.vue:565
 msgid "Download"
 msgstr "Λήψη"
+
+#: src/components/FileDetailItem.vue:565
+msgid "Reset"
+msgstr "Επαναφορά"
 
 #: src/components/FileDetailItem.vue:584
 msgid "Use as cover image"
@@ -658,6 +660,7 @@ msgid "Paste"
 msgstr "Επικόλληση"
 
 #: src/components/PageDetailContentList.vue:542
+#: src/components/PageDetailContentList.vue:623
 msgid "Merge"
 msgstr "Συγχώνευση"
 
@@ -693,44 +696,44 @@ msgstr "Αλλαγή σε"
 msgid "Split"
 msgstr "Split"
 
-#: src/components/PageDetailContentList.vue:626
+#: src/components/PageDetailContentList.vue:629
 msgid "Shared element"
 msgstr "Κοινό στοιχείο"
 
-#: src/components/PageDetailEditor.vue:52
+#: src/components/PageDetailEditor.vue:53
 msgid "Double-click to edit"
 msgstr "Διπλό κλικ για επεξεργασία"
 
-#: src/components/PageDetailEditor.vue:186
+#: src/components/PageDetailEditor.vue:195
 msgid "Edit element"
 msgstr "Επεξεργασία στοιχείου"
 
-#: src/components/PageDetailEditor.vue:193
+#: src/components/PageDetailEditor.vue:202
 msgid "Add element before"
 msgstr "Προσθέστε στοιχείο πριν από το"
 
-#: src/components/PageDetailEditor.vue:199
+#: src/components/PageDetailEditor.vue:208
 msgid "Add element after"
 msgstr "Προσθέστε στοιχείο μετά το"
 
-#: src/components/PageDetailEditor.vue:205
+#: src/components/PageDetailEditor.vue:214
 #: src/fields/Items.vue:158
 msgid "Remove element"
 msgstr "Αφαίρεση στοιχείου"
 
-#: src/components/PageDetailEditor.vue:212
+#: src/components/PageDetailEditor.vue:221
 msgid "Preview mode"
 msgstr "Λειτουργία προεπισκόπησης"
 
-#: src/components/PageDetailEditor.vue:215
+#: src/components/PageDetailEditor.vue:224
 msgid "Not CMS content"
 msgstr "Όχι περιεχόμενο CMS"
 
-#: src/components/PageDetailEditor.vue:222
+#: src/components/PageDetailEditor.vue:231
 msgid "Fullscreen mode"
 msgstr "Λειτουργία πλήρους οθόνης"
 
-#: src/components/PageDetailEditor.vue:229
+#: src/components/PageDetailEditor.vue:238
 msgid "Exit fullscreen mode"
 msgstr "Έξοδος από τη λειτουργία πλήρους οθόνης"
 
@@ -759,101 +762,101 @@ msgstr "Αφαίρεση στοιχείου περιεχομένου"
 msgid "The path is already in use by another page"
 msgstr "Η διαδρομή χρησιμοποιείται ήδη από άλλη σελίδα"
 
-#: src/components/PageDetailItemProps.vue:130
+#: src/components/PageDetailItemProps.vue:131
 #: src/views/PageList.vue:261
 msgid "Disabled"
 msgstr "Άτομα με ειδικές ανάγκες"
 
-#: src/components/PageDetailItemProps.vue:131
+#: src/components/PageDetailItemProps.vue:132
 #: src/views/PageList.vue:259
 msgid "Enabled"
 msgstr "Ενεργοποιημένο"
 
-#: src/components/PageDetailItemProps.vue:132
+#: src/components/PageDetailItemProps.vue:133
 msgid "Hidden in navigation"
 msgstr "Κρυμμένο στην πλοήγηση"
 
-#: src/components/PageDetailItemProps.vue:136
+#: src/components/PageDetailItemProps.vue:137
 msgid "Status"
 msgstr "Κατάσταση"
 
-#: src/components/PageDetailItemProps.vue:159
-#: src/components/PageDetailItemProps.vue:198
+#: src/components/PageDetailItemProps.vue:160
+#: src/components/PageDetailItemProps.vue:199
 #: src/fields/Table.vue:55
 #: src/views/Login.vue:93
 #: src/views/Login.vue:106
 msgid "Field is required"
 msgstr "Το πεδίο είναι υποχρεωτικό"
 
-#: src/components/PageDetailItemProps.vue:163
+#: src/components/PageDetailItemProps.vue:164
 msgid "Page title"
 msgstr "Τίτλος σελίδας"
 
-#: src/components/PageDetailItemProps.vue:173
+#: src/components/PageDetailItemProps.vue:174
 msgid "Page name"
 msgstr "Όνομα σελίδας"
 
-#: src/components/PageDetailItemProps.vue:183
+#: src/components/PageDetailItemProps.vue:184
 msgid "Path must not start with a slash (/)"
 msgstr "Η διαδρομή δεν πρέπει να αρχίζει με κάθετο (/)"
 
-#: src/components/PageDetailItemProps.vue:189
+#: src/components/PageDetailItemProps.vue:190
 msgid "URL path"
 msgstr "Διαδρομή URL"
 
-#: src/components/PageDetailItemProps.vue:199
+#: src/components/PageDetailItemProps.vue:200
 msgid "Domain name is invalid"
 msgstr "Το όνομα τομέα είναι άκυρο"
 
-#: src/components/PageDetailItemProps.vue:203
+#: src/components/PageDetailItemProps.vue:204
 msgid "Domain"
 msgstr "Τομέας"
 
-#: src/components/PageDetailItemProps.vue:217
+#: src/components/PageDetailItemProps.vue:218
 msgid "Theme"
 msgstr "Θέμα"
 
-#: src/components/PageDetailItemProps.vue:225
+#: src/components/PageDetailItemProps.vue:226
 msgid "Page type"
 msgstr "Τύπος σελίδας"
 
-#: src/components/PageDetailItemProps.vue:235
+#: src/components/PageDetailItemProps.vue:236
 msgid "Page tag"
 msgstr "Ετικέτα σελίδας"
 
-#: src/components/PageDetailItemProps.vue:243
+#: src/components/PageDetailItemProps.vue:244
 #: src/views/PageList.vue:268
 msgid "No cache"
 msgstr "Δεν υπάρχει κρυφή μνήμη"
 
-#: src/components/PageDetailItemProps.vue:244
 #: src/components/PageDetailItemProps.vue:245
 #: src/components/PageDetailItemProps.vue:246
 #: src/components/PageDetailItemProps.vue:247
+#: src/components/PageDetailItemProps.vue:248
 msgid "%{num} minute"
 msgid_plural "%{num} minutes"
 msgstr[0] "%{num} λεπτό"
 msgstr[1] ""
 
-#: src/components/PageDetailItemProps.vue:248
 #: src/components/PageDetailItemProps.vue:249
 #: src/components/PageDetailItemProps.vue:250
 #: src/components/PageDetailItemProps.vue:251
 #: src/components/PageDetailItemProps.vue:252
+#: src/components/PageDetailItemProps.vue:253
 msgid "%{num} hour"
 msgid_plural "%{num} hours"
 msgstr[0] "%{num} ώρα"
 msgstr[1] ""
 
-#: src/components/PageDetailItemProps.vue:256
+#: src/components/PageDetailItemProps.vue:257
 msgid "Cache time"
 msgstr "Χρόνος προσωρινής αποθήκευσης"
 
-#: src/components/PageDetailItemProps.vue:269
+#: src/components/PageDetailItemProps.vue:270
 msgid "URL is not valid"
 msgstr "Η διεύθυνση URL δεν είναι έγκυρη"
 
-#: src/components/PageDetailItemProps.vue:273
+#: src/components/PageDetailItemProps.vue:274
 msgid "Redirect URL"
 msgstr "URL ανακατεύθυνσης"
 
@@ -1029,7 +1032,7 @@ msgstr "Ανέβασμα αρχείου"
 
 #: src/fields/Audio.vue:101
 #: src/fields/File.vue:283
-#: src/fields/Image.vue:136
+#: src/fields/Image.vue:135
 #: src/fields/Video.vue:101
 msgid "description"
 msgstr "περιγραφή"
@@ -1257,13 +1260,13 @@ msgstr "επαφή"
 
 #: src/strings.js:44
 msgctxt "st"
-msgid "meta"
-msgstr "meta"
+msgid "meta-tags"
+msgstr "meta-tags"
 
 #: src/strings.js:45
 msgctxt "st"
-msgid "social"
-msgstr "κοινωνική"
+msgid "social-media"
+msgstr "social-media"
 
 #: src/strings.js:46
 msgctxt "st"

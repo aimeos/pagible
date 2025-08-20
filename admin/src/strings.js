@@ -41,8 +41,8 @@ if($pgettext) {
     $pgettext('st', 'blog')
     $pgettext('st', 'article')
     $pgettext('st', 'contact')
-    $pgettext('st', 'meta')
-    $pgettext('st', 'social')
+    $pgettext('st', 'meta-tags')
+    $pgettext('st', 'social-media')
     $pgettext('st', 'canonical')
     $pgettext('st', 'theme')
 
