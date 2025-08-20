@@ -15,7 +15,7 @@
     :loading="loading"
     :readonly="readonly"
     :clearable="!readonly"
-    :no-data-text="config['empty-text'] || $gettext('No data available')"
+    :no-data-text="!loading ? config['empty-text'] || $gettext('No data available') : $gettext('Loading') + ' ...'"
     :placeholder="config.placeholder || ''"
     :multiple="config.multiple"
     :chips="config.multiple"
