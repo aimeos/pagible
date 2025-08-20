@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Prunable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Collection;
@@ -100,7 +101,6 @@ class Page extends Model
         'type',
         'theme',
         'config',
-        'content',
         'status',
         'cache',
     ];
@@ -261,7 +261,10 @@ class Page extends Model
             $this->files()->sync( $version->files ?? [] );
             $this->elements()->sync( $version->elements ?? [] );
 
-            $this->fill( (array) $version->data + (array) $version->aux );
+            $this->fill( (array) $version->data );
+            $this->content = @$version->aux->content;
+            $this->config = @$version->aux->config;
+            $this->meta = @$version->aux->meta;
             $this->editor = $version->editor;
             $this->save();
 
@@ -270,6 +273,7 @@ class Page extends Model
 
         }, 3 );
 
+        Cache::forget( static::key( $this ) );
         return $this;
     }
 

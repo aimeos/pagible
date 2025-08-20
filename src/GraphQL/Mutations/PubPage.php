@@ -2,7 +2,6 @@
 
 namespace Aimeos\Cms\GraphQL\Mutations;
 
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Auth;
 use Aimeos\Cms\Models\Page;
 
@@ -31,7 +30,6 @@ final class PubPage
                 }
 
                 $item->publish( $latest );
-                Cache::forget( Page::key( $item ) );
             }
         }
 
