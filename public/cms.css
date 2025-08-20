@@ -150,10 +150,13 @@ img {
     display: none;
 }
 
-.code .container,
-.text .container,
-.heading .container {
-    max-width: 960px !important;
+@media screen and (min-width: 992px) {
+    .code .container,
+    .text .container,
+    .image-text .container,
+    .heading .container {
+        max-width: 960px !important;
+    }
 }
 
 .file,
@@ -192,19 +195,28 @@ img {
 
 .image-text .image {
     margin-bottom: 1.5rem;
-    max-width: 25%;
 }
 
-.image-text:nth-of-type(2n) .image.auto,
-.image-text .image.start {
-    margin-inline-end: 2rem;
-    float: inline-start;
+.image-text .text p {
+    display: inline;
 }
 
-.image-text:nth-of-type(2n+1) .image.auto,
-.image-text .image.end {
-    margin-inline-start: 2rem;
-    float: inline-end;
+@media screen and (min-width: 480px) {
+    .image-text .image {
+        width: 240px;
+    }
+
+    .image-text:nth-of-type(2n) .image.auto,
+    .image-text .image.start {
+        margin-inline-end: 2rem;
+        float: inline-start;
+    }
+
+    .image-text:nth-of-type(2n+1) .image.auto,
+    .image-text .image.end {
+        margin-inline-start: 2rem;
+        float: inline-end;
+    }
 }
 
 .table p {

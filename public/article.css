@@ -1,9 +1,3 @@
-@media (min-width: 992px) {
-    body.type-blog .cms-content .container {
-        max-width: 960px !important;
-    }
-}
-
 .article .cover {
     display: block;
 }
