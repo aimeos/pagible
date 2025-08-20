@@ -33,7 +33,7 @@ final class Manage
             ->withSystemPrompt( $system . "\n" . ($args['context'] ?? '') )
             ->withTools( \Aimeos\Cms\Tools::get() )
             ->withToolChoice( ToolChoice::Any )
-            ->withMaxSteps( 5 );
+            ->withMaxSteps( 10 );
 
         if( !empty( $ids = $args['files'] ?? null ) )
         {
