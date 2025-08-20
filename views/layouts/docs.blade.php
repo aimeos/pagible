@@ -9,7 +9,7 @@
     <main>
         <nav class="sidebar">
             <ul class="menu">
-                @foreach($page->nav(2) as $item)
+                @foreach($page->nav(1) as $item)
                     @if(cms($item, 'status') == 1)
                         <li>
                             @if($item->children->count() && $page->isSelfOrDescendantOf($item))
@@ -39,8 +39,6 @@
                                 </a>
                             @endif
                         </li>
-                    @else
-                        @break
                     @endif
                 @endforeach
             </ul>
