@@ -5,7 +5,7 @@
 <meta name="twitter:title" content="{{ @$data->title }}" />
 <meta name="twitter:description" content="{{ @$data->description }}" />
 
-@if(($file = cms($files, @$data->file?->id)) && ($preview = current(array_reverse((array) $file?->previews ?? [])))
+@if(($file = cms($files, @$data->file?->id)) && ($preview = current(array_reverse((array) $file?->previews ?? []))))
     <meta name="twitter:image" content="{{ cmsurl($preview) }}" />
     <meta property="og:image" content="{{ cmsurl($preview) }}" />
     <meta property="og:image:url" content="{{ cmsurl($preview) }}" />
