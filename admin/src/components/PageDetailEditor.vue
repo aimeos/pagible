@@ -137,7 +137,6 @@
             this.index = typeof msg.data === 'object' && msg.data.id ? this.item.content.findIndex(c => c.id === msg.data.id) : null
             this.section = msg.data.section || 'main'
         }
-        console.debug('PageDetailEditor:', msg, this.index, this.item.content)
       },
 
 
