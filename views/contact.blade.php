@@ -1,5 +1,5 @@
 @pushOnce('css')
-<link type="text/css" rel="stylesheet" href="{{ cmsasset('vendor/cms/theme/contact.css') }}">
+<link href="{{ cmsasset('vendor/cms/theme/contact.css') }}" rel="stylesheet">
 @endPushOnce
 
 @pushOnce('js')

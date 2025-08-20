@@ -1,5 +1,5 @@
 @pushOnce('css')
-<link type="text/css" rel="stylesheet" href="{{ cmsasset('vendor/cms/theme/hero.css') }}">
+<link href="{{ cmsasset('vendor/cms/theme/hero.css') }}" rel="stylesheet">
 @endPushOnce
 
 <h1 class="title">{{ @$data->title }}</h1>

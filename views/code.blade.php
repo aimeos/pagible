@@ -1,6 +1,6 @@
 @pushOnce('css')
-<link type="text/css" rel="stylesheet" href="{{ cmsasset('vendor/cms/theme/prism.css') }}">
-<link type="text/css" rel="stylesheet" href="{{ cmsasset('vendor/cms/theme/code.css') }}">
+<link href="{{ cmsasset('vendor/cms/theme/prism.css') }}" rel="stylesheet">
+<link href="{{ cmsasset('vendor/cms/theme/code.css') }}" rel="stylesheet">
 @endPushOnce
 
 @pushOnce('js')

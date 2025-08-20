@@ -1,8 +1,6 @@
-@once('caption')
-	@push('js')
-		<script defer src="{{ cmsasset('vendor/cms/theme/caption.js') }}"></script>
-	@endpush
-@endonce
+@pushOnce('js:caption')
+	<script defer src="{{ cmsasset('vendor/cms/theme/caption.js') }}"></script>
+@endPushOnce
 
 @if($file = cms($files, @$data->file?->id))
 	<audio preload="metadata" controls
