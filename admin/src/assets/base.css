@@ -439,7 +439,7 @@ input[readonly],
   min-height: 200px;
 }
 
-.ck-content ul,
-.ck-content ol {
-  margin-inline-start: 30px;
+.ck-editor * {
+  padding: revert;
+  margin: revert;
 }
