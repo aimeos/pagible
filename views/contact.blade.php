@@ -17,7 +17,6 @@
 
     @if(!app()->environment('local') && config('services.hcaptcha.sitekey'))
         <div class="h-captcha" data-sitekey="{{ config('services.hcaptcha.sitekey') }}"></div>
-        <script src="https://js.hcaptcha.com/1/api.js" async defer></script>
     @endif
 
     <div class="errors"></div>

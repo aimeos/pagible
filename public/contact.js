@@ -4,9 +4,33 @@
 document.querySelectorAll('.contact form').forEach(form => {
 
     /*
-     * HCaptcha dark/light mode
+     * Load hCaptcha script only when the form is visible
      */
-    form.querySelectorAll('.hcaptcha').forEach(el => {
+    let once = true;
+    (new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+            if(entry.isIntersecting) {
+                observer.disconnect(); // only trigger once
+
+                if(once) {
+                    once = false;
+                    new Promise(resolve => {
+                        const script = document.createElement("script");
+                        script.src = "https://js.hcaptcha.com/1/api.js";
+                        script.onload = () => resolve();
+                        script.async = true;
+                        document.body.appendChild(script);
+                    });
+                }
+            }
+        });
+    })).observe(form);
+
+
+    /*
+     * hCaptcha dark/light mode
+     */
+    form.querySelectorAll('.h-captcha').forEach(el => {
         el.dataset.theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? 'dark' : 'light';
     });
 
