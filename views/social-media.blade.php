@@ -9,5 +9,5 @@
     <meta name="twitter:image" content="{{ cmsurl($preview) }}" />
     <meta property="og:image" content="{{ cmsurl($preview) }}" />
     <meta property="og:image:url" content="{{ cmsurl($preview) }}" />
-    <meta property="og:image:width" content="{{ current(array_reverse(array_keys($file->previews ?? []))) }}" />
+    <meta property="og:image:width" content="{{ current(array_reverse(array_keys((array) $file->previews ?? []))) }}" />
 @endif
