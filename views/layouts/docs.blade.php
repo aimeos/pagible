@@ -4,6 +4,14 @@
 <link href="{{ cmsasset('vendor/cms/theme/layout-docs.css') }}" rel="stylesheet">
 @endPushOnce
 
+@pushOnce('css:prism')
+<link href="{{ cmsasset('vendor/cms/theme/prism.css') }}" rel="stylesheet">
+@endPushOnce
+
+@pushOnce('js:prism')
+<script defer src="{{ cmsasset('vendor/cms/theme/prism.js') }}"></script>
+@endPushOnce
+
 
 @section('main')
     <main>

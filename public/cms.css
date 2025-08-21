@@ -129,6 +129,10 @@ header nav .sidebar-close button {
     }
 }
 
+nav[aria-label=breadcrumb] ul li:not(:first-child) {
+    margin-inline-start: 0;
+}
+
 details summary {
     line-height: inherit;
 }
@@ -151,6 +155,7 @@ img {
 }
 
 @media screen and (min-width: 992px) {
+    body.type-blog .container,
     .code .container,
     .text .container,
     .image-text .container,
@@ -197,13 +202,21 @@ img {
     margin-bottom: 1.5rem;
 }
 
+.image-text .text {
+    margin-bottom: var(--pico-typography-spacing-vertical);
+}
+
 .image-text .text p {
-    display: inline;
+    display: inline-block;
 }
 
 @media screen and (min-width: 480px) {
     .image-text .image {
         width: 240px;
+    }
+
+    .image-text .text p {
+        display: inline;
     }
 
     .image-text:nth-of-type(2n) .image.auto,

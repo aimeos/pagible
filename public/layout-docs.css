@@ -4,7 +4,7 @@ nav[aria-label="breadcrumb"] {
 
 nav[aria-label="breadcrumb"] a,
 nav[aria-label="breadcrumb"] li,
-nav[aria-label="breadcrumb"] li::after {
+nav[aria-label="breadcrumb"] ul li:not(:last-child)::after {
     color: var(--pico-primary-inverse);
 }
 
