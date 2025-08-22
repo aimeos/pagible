@@ -1,1 +1,0 @@
-const t={id:"ID",hero:{st:"Hero section"},cards:{st:"List of tiles",fn:"List of tiles"},blog:{st:"Blog list"},article:{st:"Blog article"},meta:{st:"Meta tags"},social:{st:"Social media"},canonical:{st:"Canonical URL"},theme:{st:"Theme configuration"},main:{fn:"Main image"},url:{fn:"URL"}},s={en:t};export{s as default,t as en};
