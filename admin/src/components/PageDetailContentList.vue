@@ -355,7 +355,7 @@
           this.$emit('update:content', this.content)
           this.store()
         }).catch(error => {
-          this.messages.add(this.$gettext('Unable to make element shared'), 'error')
+          this.messages.add(this.$gettext('Unable to make element shared') + ":\n" + error, 'error')
           this.$log(`PageDetailContentList::share(): Error making element shared`, idx, error)
         })
       },

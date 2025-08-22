@@ -137,7 +137,7 @@
 
           this.sending = null
         }).catch(error => {
-          this.messages.add(this.$gettext('Error sending request'), 'error')
+          this.messages.add(this.$gettext('Error sending request') + ":\n" + error, 'error')
           this.$log(`PageList::send(): Error sending request`, error)
         }).finally(() => {
           setTimeout(() => {

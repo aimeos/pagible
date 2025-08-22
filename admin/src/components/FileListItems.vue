@@ -109,7 +109,7 @@
 
             return data
           }).catch(error => {
-            this.messages.add(this.$gettext(`Error adding file %{path}`, {path: file.name}), 'error')
+            this.messages.add(this.$gettext(`Error adding file %{path}`, {path: file.name}) + ":\n" + error, 'error')
             this.$log(`FileListItems::add(): Error adding file`, ev, error)
           }))
         })
@@ -151,7 +151,7 @@
           this.invalidate()
           this.search()
         }).catch(error => {
-          this.messages.add(this.$gettext('Error trashing file'), 'error')
+          this.messages.add(this.$gettext('Error trashing file') + ":\n" + error, 'error')
           this.$log(`FileListItems::drop(): Error trashing file`, item, error)
         })
       },
@@ -199,7 +199,7 @@
           this.invalidate()
           this.search()
         }).catch(error => {
-          this.messages.add(this.$gettext('Error restoring file'), 'error')
+          this.messages.add(this.$gettext('Error restoring file') + ":\n" + error, 'error')
           this.$log(`FileListItems::keep(): Error restoring file`, item, error)
         })
       },
@@ -241,7 +241,7 @@
           this.invalidate()
           this.search()
         }).catch(error => {
-          this.messages.add(this.$gettext('Error publishing file'), 'error')
+          this.messages.add(this.$gettext('Error publishing file') + ":\n" + error, 'error')
           this.$log(`FileListItems::publish(): Error publishing file`, item, error)
         })
       },
@@ -278,7 +278,7 @@
           this.invalidate()
           this.search()
         }).catch(error => {
-          this.messages.add(this.$gettext('Error purging file'), 'error')
+          this.messages.add(this.$gettext('Error purging file') + ":\n" + error, 'error')
           this.$log(`FileListItems::purge(): Error purging file`, item, error)
         })
       },
@@ -378,7 +378,7 @@
 
           return this.items
         }).catch(error => {
-          this.messages.add(this.$gettext('Error fetching files'), 'error')
+          this.messages.add(this.$gettext('Error fetching files') + ":\n" + error, 'error')
           this.$log(`FileListItems::search(): Error fetching files`, error)
         })
       },

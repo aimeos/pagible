@@ -96,7 +96,7 @@
 
         this.item.files = files
       }).catch(error => {
-        this.messages.add(this.$gettext('Error fetching element'), 'error')
+        this.messages.add(this.$gettext('Error fetching element') + ":\n" + error, 'error')
         this.$log(`ElementDetail::watch(item): Error fetching element`, error)
       })
     },
@@ -138,7 +138,7 @@
 
             this.closeView()
           }).catch(error => {
-            this.messages.add(this.$gettext('Error publishing element'), 'error')
+            this.messages.add(this.$gettext('Error publishing element') + ":\n" + error, 'error')
             this.$log(`ElementDetail::publish(): Error publishing element`, at, error)
           })
         })
@@ -193,7 +193,7 @@
 
           return true
         }).catch(error => {
-          this.messages.add(this.$gettext('Error saving element'), 'error')
+          this.messages.add(this.$gettext('Error saving element') + ":\n" + error, 'error')
           this.$log(`ElementDetail::save(): Error saving element`, error)
         })
       },
@@ -249,7 +249,7 @@
             }
           }).reverse() // latest versions first
         }).catch(error => {
-          this.messages.add(this.$gettext('Error fetching element versions'), 'error')
+          this.messages.add(this.$gettext('Error fetching element versions') + ":\n" + error, 'error')
           this.$log(`ElementDetail::versions(): Error fetching element versions`, id, error)
         })
       }

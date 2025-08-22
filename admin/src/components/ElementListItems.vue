@@ -139,7 +139,7 @@
           this.invalidate()
           this.search()
         }).catch(error => {
-          this.messages.add(this.$gettext('Error trashing shared element'), 'error')
+          this.messages.add(this.$gettext('Error trashing shared element') + ":\n" + error, 'error')
           this.$log(`ElementListItems::drop(): Error trashing shared element`, list, error)
         })
       },
@@ -187,7 +187,7 @@
           this.invalidate()
           this.search()
         }).catch(error => {
-          this.messages.add(this.$gettext('Error restoring shared element'), 'error')
+          this.messages.add(this.$gettext('Error restoring shared element') + ":\n" + error, 'error')
           this.$log(`ElementListItems::keep(): Error restoring shared element`, list, error)
         })
       },
@@ -229,7 +229,7 @@
           this.invalidate()
           this.search()
         }).catch(error => {
-          this.messages.add(this.$gettext('Error publishing shared element'), 'error')
+          this.messages.add(this.$gettext('Error publishing shared element') + ":\n" + error, 'error')
           this.$log(`ElementListItems::publish(): Error publishing shared element`, list, error)
         })
       },
@@ -266,7 +266,7 @@
           this.invalidate()
           this.search()
         }).catch(error => {
-          this.messages.add(this.$gettext('Error purging shared element'), 'error')
+          this.messages.add(this.$gettext('Error purging shared element') + ":\n" + error, 'error')
           this.$log(`ElementListItems::purge(): Error purging shared element`, list, error)
         })
       },
@@ -358,7 +358,7 @@
 
           return this.items
         }).catch(error => {
-          this.messages.add(this.$gettext('Error fetching shared elements'), 'error')
+          this.messages.add(this.$gettext('Error fetching shared elements') + ":\n" + error, 'error')
           this.$log(`ElementListItems::search(): Error fetching shared element`, error)
         })
       },

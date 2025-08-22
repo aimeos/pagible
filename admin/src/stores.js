@@ -394,6 +394,7 @@ export const useMessageStore = defineStore('message', {
         this.queue.push({
           text: msg,
           color: type,
+          contentClass: 'text-pre-line',
           timeout: timeout || (type === 'error' ? 10000 : 3000)
         })
       }

@@ -21,8 +21,8 @@
     created() {
       this.auth.user().then(user => {
         this.user = user
-      }).catch(err => {
-        this.messages.add(this.$gettext('Failed to load user'), 'error')
+      }).catch(error => {
+        this.messages.add(this.$gettext('Failed to load user') + ":\n" + error, 'error')
       })
     },
 
@@ -31,8 +31,8 @@
         this.auth.logout().then(() => {
           this.user = null
           this.$router.replace('/')
-        }).catch(err => {
-          this.messages.add(this.$gettext('Logout failed'), 'error')
+        }).catch(error => {
+          this.messages.add(this.$gettext('Logout failed') + ":\n" + error, 'error')
         })
       },
 

@@ -132,7 +132,7 @@
         this.elements = this.elems(this.latest?.elements || [])
         this.item.content = this.obsolete(this.item.content)
       }).catch(error => {
-        this.messages.add(this.$gettext('Error fetching page'), 'error')
+        this.messages.add(this.$gettext('Error fetching page') + ":\n" + error, 'error')
         this.$log(`PageDetail::watch(item): Error fetching page`, error)
       })
     },
@@ -330,7 +330,7 @@
 
             this.closeView()
           }).catch(error => {
-            this.messages.add(this.$gettext('Error publishing page'), 'error')
+            this.messages.add(this.$gettext('Error publishing page') + ":\n" + error, 'error')
             this.$log(`PageDetail::publish(): Error publishing page`, at, error)
           })
         })
@@ -425,7 +425,7 @@
 
             return true
           }).catch(error => {
-            this.messages.add(this.$gettext('Error saving page'), 'error')
+            this.messages.add(this.$gettext('Error saving page') + ":\n" + error, 'error')
             this.$log(`PageDetail::save(): Error saving page`, error)
           })
         })
@@ -569,7 +569,7 @@
             return item
           }).reverse() // latest versions first
         }).catch(error => {
-          this.messages.add(this.$gettext('Error fetching page versions'), 'error')
+          this.messages.add(this.$gettext('Error fetching page versions') + ":\n" + error, 'error')
           this.$log(`PageDetail::versions(): Error fetching page versions`, id, error)
         })
       }

@@ -111,7 +111,7 @@
               URL.revokeObjectURL(path)
             })
           }).catch(error => {
-            this.messages.add(this.$gettext(`Error adding file %{path}`, {path: file.name}), 'error')
+            this.messages.add(this.$gettext(`Error adding file %{path}`, {path: file.name}) + ":\n" + error, 'error')
             this.$log(`Images::addFile(): Error adding file`, ev, error)
           })
 

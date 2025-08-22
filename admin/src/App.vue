@@ -102,7 +102,7 @@
 
           return result.data?.compose?.replace(/^"(.*)"$/, '$1') || ''
         }).catch(error => {
-          this.messages.add(this.$gettext('Error generating text'), 'error')
+          this.messages.add(this.$gettext('Error generating text') + ":\n" + error, 'error')
           this.$log(`App::compose(): Error generating text`, error)
         })
       },
@@ -172,7 +172,7 @@
 
           return result.data?.translate || []
         }).catch(error => {
-          this.messages.add(this.$gettext('Error translating texts'), 'error')
+          this.messages.add(this.$gettext('Error translating texts') + ":\n" + error, 'error')
           this.$log(`App::translate(): Error translating texts`, error)
         })
       },

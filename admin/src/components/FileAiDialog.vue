@@ -95,7 +95,7 @@
           // this.$refs.filelist.invalidate()
           this.$emit('add', [item])
         }).catch(error => {
-          this.messages.add(this.$gettext(`Error adding file %{path}`, {path: item?.path}), 'error')
+          this.messages.add(this.$gettext(`Error adding file %{path}`, {path: item?.path}) + ":\n" + error, 'error')
           this.$log(`FileAiDialog::add(): Error adding file`, error)
         }).finally(() => {
           this.loading = false
@@ -153,7 +153,7 @@
               })
           })
         }).catch(error => {
-          this.messages.add(this.$gettext('Error creating file'), 'error')
+          this.messages.add(this.$gettext('Error creating file') + ":\n" + error, 'error')
           this.$log(`FileAiDialog::create(): Error creating file`, error)
         }).finally(() => {
           this.loading = false

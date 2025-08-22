@@ -129,7 +129,7 @@
               self.item.updated_at = latest.created_at
             }
           }).catch(error => {
-            self.messages.add(this.$gettext('Error saving video cover'), 'error')
+            self.messages.add(this.$gettext('Error saving video cover') + ":\n" + error, 'error')
             this.$log(`FileDetailItem::addCover(): Error saving video cover`, error)
           }).finally(() => {
             self.covering = false
@@ -255,7 +255,7 @@
             this.item.updated_at = latest.created_at
           }
         }).catch(error => {
-          this.messages.add(this.$gettext('Error removing video cover'), 'error')
+          this.messages.add(this.$gettext('Error removing video cover') + ":\n" + error, 'error')
           this.$log(`FileDetailItem::removeCover(): Error removing video cover`, error)
         }).finally(() => {
           this.covering = false
@@ -326,7 +326,7 @@
           const lang = this.desclangs.shift() || this.item.lang || 'en'
           this.update('transcription', Object.assign(this.item.transcription || {}, {[lang]: result.data?.transcribe || ''}))
         }).catch(error => {
-          this.messages.add(this.$gettext('Error transcribing file'), 'error')
+          this.messages.add(this.$gettext('Error transcribing file') + ":\n" + error, 'error')
           this.$log(`FileDetailItem::transcribe(): Error transcribing from media URL`, error)
         }).finally(() => {
           this.transcribing = false
@@ -464,7 +464,7 @@
             this.item.updated_at = latest.created_at
           }
         }).catch(error => {
-          this.messages.add(this.$gettext('Error uploading video cover'), 'error')
+          this.messages.add(this.$gettext('Error uploading video cover') + ":\n" + error, 'error')
           this.$log(`FileDetailItem::uploadCover(): Error uploading video cover`, error)
         }).finally(() => {
           this.covering = false

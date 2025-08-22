@@ -97,7 +97,7 @@
           this.$refs.tree.add(page)
           this.$emit('select', page)
         }).catch(error => {
-          this.messages.add(this.$gettext('Error adding root page'), 'error')
+          this.messages.add(this.$gettext('Error adding root page') + ":\n" + error, 'error')
           this.$log(`PageList::add(): Error adding root page`, error)
         })
       },
@@ -139,7 +139,7 @@
             parent.data.has = true
           }
         }).catch(error => {
-          this.messages.add(this.$gettext('Error moving page'), 'error')
+          this.messages.add(this.$gettext('Error moving page') + ":\n" + error, 'error')
           this.$log(`PageList::change(): Error moving page`, error)
         })
       },
@@ -207,7 +207,7 @@
 
           this.invalidate()
         }).catch(error => {
-          this.messages.add(this.$gettext('Error trashing page'), 'error')
+          this.messages.add(this.$gettext('Error trashing page') + ":\n" + error, 'error')
           this.$log(`PageList::drop(): Error trashing page`, list, error)
         })
       },
@@ -255,7 +255,7 @@
 
           return this.transform(result.data.pages)
         }).catch(error => {
-          this.messages.add(this.$gettext('Error fetching pages'), 'error')
+          this.messages.add(this.$gettext('Error fetching pages') + ":\n" + error, 'error')
           this.$log(`PageList::fetch(): Error fetching page`, parent, page, limit, error)
         })
       },
@@ -329,7 +329,7 @@
 
           this.invalidate()
         }).catch(error => {
-          this.messages.add(this.$gettext('Error inserting page'), 'error')
+          this.messages.add(this.$gettext('Error inserting page') + ":\n" + error, 'error')
           this.$log(`PageList::insert(): Error inserting page`, error)
         })
       },
@@ -385,7 +385,7 @@
 
           this.invalidate()
         }).catch(error => {
-          this.messages.add(this.$gettext('Error restoring page'), 'error')
+          this.messages.add(this.$gettext('Error restoring page') + ":\n" + error, 'error')
           this.$log(`PageList::keep(): Error restoring page`, list, error)
         })
       },
@@ -453,7 +453,7 @@
 
           this.invalidate()
         }).catch(error => {
-          this.messages.add(this.$gettext('Error moving page'), 'error')
+          this.messages.add(this.$gettext('Error moving page') + ":\n" + error, 'error')
           this.$log(`PageList::move(): Error moving page`, stat, idx, error)
         })
 
@@ -545,11 +545,11 @@
             this.$refs.tree.add(item, parent, index)
             this.invalidate()
           }).catch(error => {
-            this.messages.add(this.$gettext('Error copying page'), 'error')
+            this.messages.add(this.$gettext('Error copying page') + ":\n" + error, 'error')
             this.$log(`PageList::paste(): Error copying page`, stat, idx, error)
           })
         }).catch(error => {
-          this.messages.add(this.$gettext('Error fetching page'), 'error')
+          this.messages.add(this.$gettext('Error fetching page') + ":\n" + error, 'error')
           this.$log(`PageList::paste(): Error fetching page`, node.id, error)
         })
 
@@ -592,7 +592,7 @@
 
           this.invalidate()
         }).catch(error => {
-          this.messages.add(this.$gettext('Error publishing page'), 'error')
+          this.messages.add(this.$gettext('Error publishing page') + ":\n" + error, 'error')
           this.$log(`PageList::publish(): Error publishing page`, list, error)
         })
       },
@@ -634,7 +634,7 @@
             }
           }
         }).catch(error => {
-          this.messages.add(this.$gettext('Error purging page'), 'error')
+          this.messages.add(this.$gettext('Error purging page') + ":\n" + error, 'error')
           this.$log(`PageList::purge(): Error purging page`, list, error)
         })
       },
@@ -703,7 +703,7 @@
 
           return this.transform(result.data.pages)
         }).catch(error => {
-          this.messages.add(this.$gettext('Error searching pages'), 'error')
+          this.messages.add(this.$gettext('Error searching pages') + ":\n" + error, 'error')
           this.$log(`PageList::search(): Error searching pages`, page, limit, error)
         })
       },
@@ -751,7 +751,7 @@
 
             stat.data.status = val
           }).catch(error => {
-            this.messages.add(this.$gettext('Error saving page'), 'error')
+            this.messages.add(this.$gettext('Error saving page') + ":\n" + error, 'error')
             this.$log(`PageList::status(): Error saving page`, stat, val, error)
           })
         })

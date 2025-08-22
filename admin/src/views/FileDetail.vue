@@ -77,7 +77,7 @@
 
             this.closeView()
           }).catch(error => {
-            this.messages.add(this.$gettext('Error publishing file'), 'error')
+            this.messages.add(this.$gettext('Error publishing file') + ":\n" + error, 'error')
             this.$log(`FileDetail::publish(): Error publishing file`, at, error)
           })
         })
@@ -145,7 +145,7 @@
           this.savecnt++
           return true
         }).catch(error => {
-          this.messages.add(this.$gettext('Error saving file'), 'error')
+          this.messages.add(this.$gettext('Error saving file') + ":\n" + error, 'error')
           this.$log(`FileDetail::save(): Error saving file`, error)
         })
       },
@@ -199,7 +199,7 @@
             return item
           }).reverse() // latest versions first
         }).catch(error => {
-          this.messages.add(this.$gettext('Error fetching file versions'), 'error')
+          this.messages.add(this.$gettext('Error fetching file versions') + ":\n" + error, 'error')
           this.$log(`FileDetail::versions(): Error fetching file versions`, id, error)
         })
       }
