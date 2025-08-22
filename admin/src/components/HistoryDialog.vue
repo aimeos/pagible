@@ -79,8 +79,8 @@
             this.loading = true
 
             this.load().then(versions => {
-              this.latest = versions.shift()
-              this.list = versions
+              this.list = versions || []
+              this.latest = versions?.shift() || null
             }).finally(() => {
               this.loading = false
             })

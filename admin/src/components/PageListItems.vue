@@ -848,7 +848,7 @@
           const promise = filter.view === 'list' ? this.search() : this.fetch()
 
           promise.then(result => {
-            this.items = result.data
+            this.items = result?.data || []
             this.loading = false
           })
         }

@@ -101,7 +101,7 @@
         })
 
         return Promise.all(list).then(result => {
-          const res = result.reduce((sum, r) => sum + r.length, 0)
+          const res = result.reduce((sum, r) => sum + (r?.length || 0), 0)
           this.$emit('error', !!res)
           return res || true
         });
