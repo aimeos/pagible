@@ -30,7 +30,7 @@
       logout() {
         this.auth.logout().then(() => {
           this.user = null
-          this.$router.replace('/')
+          this.$router.push({ name: "login" })
         }).catch(error => {
           this.messages.add(this.$gettext('Logout failed') + ":\n" + error, 'error')
         })
