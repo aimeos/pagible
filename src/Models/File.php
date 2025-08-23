@@ -514,7 +514,7 @@ class File extends Model
     protected function transcription(): Attribute
     {
         return Attribute::make(
-            set: fn( $value ) => json_encode( $value ?? new \stdClass() )
+            set: fn( $value ) => json_encode( $value ),
         );
     }
 }

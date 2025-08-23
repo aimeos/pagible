@@ -89,78 +89,121 @@ class PageSchema extends Schema
             DateTime::make( 'createdAt' )->readOnly(),
             DateTime::make( 'updatedAt' )->readOnly(),
             ArrayHash::make( 'meta' )->readOnly()->extractUsing( function( $model, $column, $items ) {
-                foreach( (array) $items as $item ) {
-                    if( isset( $item->data?->action ) ) {
-                        $item->data->action = app()->call( $item->data->action, ['model' => $model, 'item' => $item] );
-                    }
+                foreach( (array) $items as $item )
+                {
+                    if( !empty( $item->files ) )
+                    {
+                        $lang = $model->lang;
+                        $lang2 = substr( $lang, 0, 2 );
 
-                    if( isset( $item->files ) ) {
                         $item->files = collect( $item->files )
                             ->map( fn( $id ) => $model->files[$id] ?? null )
                             ->filter()
-                            ->pluck( null, 'id' );
+                            ->pluck( null, 'id' )
+                            ->each( function( $file ) use ( $lang, $lang2 ) {
+                                $file->description = $file->description?->{$lang}
+                                    ?? $file->description?->{$lang2}
+                                    ?? null;
+
+                                $file->transcription = $file->transcription?->{$lang}
+                                    ?? $file->transcription?->{$lang2}
+                                    ?? null;
+                            } );
+                    }
+                    else
+                    {
+                        unset( $item->files );
+                    }
+
+                    if( !empty( $item->data?->action ) ) {
+                        $item->data->action = app()->call( $item->data->action, ['model' => $model, 'item' => $item] );
                     }
                 }
                 return $items;
             } ),
             ArrayHash::make( 'config' )->readOnly()->extractUsing( function( $model, $column, $items ) {
-                foreach( (array) $items as $item ) {
-                    if( isset( $item->data?->action ) ) {
-                        $item->data->action = app()->call( $item->data->action, ['model' => $model, 'item' => $item] );
-                    }
+                foreach( (array) $items as $item )
+                {
+                    if( !empty( $item->files ) )
+                    {
+                        $lang = $model->lang;
+                        $lang2 = substr( $lang, 0, 2 );
 
-                    if( isset( $item->files ) ) {
                         $item->files = collect( $item->files )
                             ->map( fn( $id ) => $model->files[$id] ?? null )
                             ->filter()
-                            ->pluck( null, 'id' );
+                            ->pluck( null, 'id' )
+                            ->each( function( $file ) use ( $lang, $lang2 ) {
+                                $file->description = $file->description?->{$lang}
+                                    ?? $file->description?->{$lang2}
+                                    ?? null;
+
+                                $file->transcription = $file->transcription?->{$lang}
+                                    ?? $file->transcription?->{$lang2}
+                                    ?? null;
+                            } );
+                    }
+                    else
+                    {
+                        unset( $item->files );
+                    }
+
+                    if( !empty( $item->data?->action ) ) {
+                        $item->data->action = app()->call( $item->data->action, ['model' => $model, 'item' => $item] );
                     }
                 }
                 return $items;
             } ),
             ArrayHash::make( 'content' )->readOnly()->extractUsing( function( $model, $column, $items ) {
-                foreach( (array) $items as $key => $item ) {
-                    if( isset( $item->files ) ) {
-                        $lang = $model->lang;
+                $list = [];
+                foreach( (array) $items as $key => $item )
+                {
+                    if( $item->type === 'reference' && $element = @$model->elements[@$item->refid] )
+                    {
+                        $item->type = $element->type;
+                        $item->data = $element->data;
+
+                        if( !$element->files->isEmpty() ) {
+                            $item->files = $element->files;
+                        }
+                        unset( $item->refid );
+                    }
+                    elseif( !empty( $item->files ) )
+                    {
                         $item->files = collect( $item->files )
                             ->map( fn( $id ) => $model->files[$id] ?? null )
                             ->filter()
-                            ->pluck( null, 'id' )
-                            ->each( function( $file ) use ( $lang ) {
-                                $file->description = $file->description?->{$lang}
-                                    ?? $file->description?->{substr( $lang, 0, 2 )}
-                                    ?? null;
-
-                                $file->transcription = $file->transcription?->{$lang}
-                                    ?? $file->transcription?->{substr( $lang, 0, 2 )}
-                                    ?? null;
-                            } );
+                            ->pluck( null, 'id' );
                     }
 
-                    if( $item->type === 'reference' && $element = @$model->elements[@$item->refid] ) {
-                        $item->type = $element->type;
-                        $item->data = $element->data;
+                    if( !empty( $item->files ) )
+                    {
                         $lang = $model->lang;
+                        $lang2 = substr( $lang, 0, 2 );
 
-                        if( !$element->files->isEmpty() ) {
-                            $item->files = $element->files->each( function( $file ) use ( $lang ) {
-                                $file->description = $file->description?->{$lang}
-                                    ?? $file->description?->{substr( $lang, 0, 2 )}
-                                    ?? null;
+                        $item->files->each( function( $file ) use ( $lang, $lang2 ) {
+                            $file->description = $file->description?->{$lang}
+                                ?? $file->description?->{$lang2}
+                                ?? null;
 
-                                $file->transcription = $file->transcription?->{$lang}
-                                    ?? $file->transcription?->{substr( $lang, 0, 2 )}
-                                    ?? null;
-                            } );
-
-                        }
+                            $file->transcription = $file->transcription?->{$lang}
+                                ?? $file->transcription?->{$lang2}
+                                ?? null;
+                        } );
+                    }
+                    else
+                    {
+                        unset( $item->files );
                     }
 
-                    if( isset( $item->data?->action ) ) {
+                    if( !empty( $item->data?->action ) ) {
                         $item->data->action = app()->call( $item->data->action, ['model' => $model, 'item' => $item] );
                     }
+
+                    unset( $item->group );
+                    $list[] = $item;
                 }
-                return collect( $items )->groupBy( 'group' )->all();
+                return $list;
             } ),
             HasOne::make( 'parent' )->type( 'navs' )->readOnly()->serializeUsing( function( $relation ) {
                 $relation->withData( function( $resource ) use ( $relation ) {
