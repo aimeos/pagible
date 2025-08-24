@@ -22,7 +22,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Collection;
 use Kalnoy\Nestedset\NodeTrait;
-use Kalnoy\Nestedset\AncestorsRelation;
 use Kalnoy\Nestedset\DescendantsRelation;
 
 
@@ -100,7 +99,6 @@ class Page extends Model
         'title',
         'type',
         'theme',
-        'config',
         'status',
         'cache',
     ];
