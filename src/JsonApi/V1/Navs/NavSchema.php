@@ -2,6 +2,7 @@
 
 namespace Aimeos\Cms\JsonApi\V1\Navs;
 
+use LaravelJsonApi\Eloquent\Fields\Relations\HasMany;
 use LaravelJsonApi\Eloquent\Fields\DateTime;
 use LaravelJsonApi\Eloquent\Fields\Boolean;
 use LaravelJsonApi\Eloquent\Fields\Number;
@@ -82,6 +83,9 @@ class NavSchema extends Schema
             Boolean::make( 'has' )->readOnly(),
             DateTime::make( 'createdAt' )->readOnly(),
             DateTime::make( 'updatedAt' )->readOnly(),
+            HasMany::make( 'children' )->type( 'navs' )->readOnly()->serializeUsing(
+                static fn($relation) => $relation->withoutLinks()
+            ),
         ];
     }
 }

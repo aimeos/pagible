@@ -22,6 +22,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Collection;
 use Kalnoy\Nestedset\NodeTrait;
+use Kalnoy\Nestedset\AncestorsRelation;
 use Kalnoy\Nestedset\DescendantsRelation;
 
 
@@ -109,6 +110,29 @@ class Page extends Model
      * @var string
      */
     protected $table = 'cms_pages';
+
+
+    /**
+     * Get query ancestors of the node.
+     *
+     * @return  AncestorsRelation
+     */
+    public function ancestors()
+    {
+        $query = $this->newScopedQuery()->setModel(new Nav());
+        return new AncestorsRelation($query, $this);
+    }
+
+
+    /**
+     * Relation to children.
+     *
+     * @return HasMany
+     */
+    public function children()
+    {
+        return $this->hasMany(Nav::class, $this->getParentIdName())->setModel(new Nav());
+    }
 
 
     /**
@@ -247,6 +271,17 @@ class Page extends Model
 
 
     /**
+     * Relation to the parent.
+     *
+     * @return BelongsTo
+     */
+    public function parent()
+    {
+        return $this->belongsTo(Nav::class, $this->getParentIdName())->setModel(new Nav());
+    }
+
+
+    /**
      * Get the prunable model query.
      *
      * @return Builder Eloquent query builder for pruning models
@@ -354,7 +389,8 @@ class Page extends Model
                 'status', 'created_at', 'updated_at', 'deleted_at', '_lft', '_rgt'
             )
             ->having( 'depth', '<=', ( $this->depth ?? 0 ) + config( 'cms.navdepth', 2 ) )
-            ->defaultOrder();
+            ->defaultOrder()
+            ->setModel(new Nav());
 
         return new DescendantsRelation( $builder, $this );
     }

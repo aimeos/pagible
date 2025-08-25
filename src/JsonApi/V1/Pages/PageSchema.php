@@ -205,33 +205,21 @@ class PageSchema extends Schema
                 }
                 return $list;
             } ),
-            HasOne::make( 'parent' )->type( 'navs' )->readOnly()->serializeUsing( function( $relation ) {
-                $relation->withData( function( $resource ) use ( $relation ) {
-                    if( $parent = $resource->{$relation->fieldName()} ) {
-                        return (new Nav())->forceFill( ['id' => $parent->id] + $parent->toArray() );
-                    }
-                } )->withoutLinks();
-            } ),
-            HasMany::make( 'ancestors' )->type( 'navs' )->readOnly()->serializeUsing( function( $relation ) {
-                $relation->withData( fn( $resource ) => $resource->{$relation->fieldName()}->map( function( $item ) {
-                        return (new Nav())->forceFill( ['id' => $item->id] + $item->toArray() );
-                } ) )->withoutLinks();
-            } ),
-            HasMany::make( 'children' )->type( 'navs' )->readOnly()->serializeUsing( function( $relation ) {
-                $relation->withData( fn( $resource ) => $resource->{$relation->fieldName()}->map( function( $item ) {
-                        return (new Nav())->forceFill( ['id' => $item->id] + $item->toArray() );
-                } ) )->withoutLinks();
-            } ),
-            HasMany::make( 'menu' )->type( 'navs' )->readOnly()->serializeUsing( function( $relation ) {
-                $relation->withData( fn( $resource ) => $resource->{$relation->fieldName()}->map( function( $item ) {
-                        return (new Nav())->forceFill( ['id' => $item->id] + $item->toArray() );
-                } ) )->withoutLinks();
-            } ),
-            HasMany::make( 'subtree' )->type( 'navs' )->readOnly()->serializeUsing( function( $relation ) {
-                $relation->withData( fn( $resource ) => $resource->{$relation->fieldName()}->map( function( $item ) {
-                        return (new Nav())->forceFill( ['id' => $item->id] + $item->toArray() );
-                } ) )->withoutLinks();
-            } ),
+            HasOne::make( 'parent' )->type( 'navs' )->readOnly()->serializeUsing(
+                static fn($relation) => $relation->withoutLinks()
+            ),
+            HasMany::make( 'ancestors' )->type( 'navs' )->readOnly()->serializeUsing(
+                static fn($relation) => $relation->withoutLinks()
+            ),
+            HasMany::make( 'children' )->type( 'navs' )->readOnly()->serializeUsing(
+                static fn($relation) => $relation->withoutLinks()
+            ),
+            HasMany::make( 'menu' )->type( 'navs' )->readOnly()->serializeUsing(
+                static fn($relation) => $relation->withoutLinks()
+            ),
+            HasMany::make( 'subtree' )->type( 'navs' )->readOnly()->serializeUsing(
+                static fn($relation) => $relation->withoutLinks()
+            ),
         ];
     }
 

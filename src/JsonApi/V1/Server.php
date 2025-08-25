@@ -18,6 +18,7 @@ class Server extends BaseServer
      */
     public function serving(): void
     {
+        \Aimeos\Cms\Models\Nav::addGlobalScope( new \Aimeos\Cms\Scopes\Status() );
         \Aimeos\Cms\Models\Page::addGlobalScope( new \Aimeos\Cms\Scopes\Status() );
     }
 
