@@ -221,6 +221,17 @@ class Page extends Model
 
 
     /**
+     * Get the menu for the page.
+     *
+     * @return DescendantsRelation Eloquent relationship to the descendants of the page
+     */
+    public function menu() : DescendantsRelation
+    {
+        return ( $this->ancestors->first() ?? $this )?->subtree();
+    }
+
+
+    /**
      * Get the navigation for the page.
      *
      * @param int $level Starting level for the navigation (default: 0 for root page)

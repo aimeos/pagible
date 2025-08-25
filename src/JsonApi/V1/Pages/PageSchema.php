@@ -212,12 +212,17 @@ class PageSchema extends Schema
                     }
                 } )->withoutLinks();
             } ),
+            HasMany::make( 'ancestors' )->type( 'navs' )->readOnly()->serializeUsing( function( $relation ) {
+                $relation->withData( fn( $resource ) => $resource->{$relation->fieldName()}->map( function( $item ) {
+                        return (new Nav())->forceFill( ['id' => $item->id] + $item->toArray() );
+                } ) )->withoutLinks();
+            } ),
             HasMany::make( 'children' )->type( 'navs' )->readOnly()->serializeUsing( function( $relation ) {
                 $relation->withData( fn( $resource ) => $resource->{$relation->fieldName()}->map( function( $item ) {
                         return (new Nav())->forceFill( ['id' => $item->id] + $item->toArray() );
                 } ) )->withoutLinks();
             } ),
-            HasMany::make( 'ancestors' )->type( 'navs' )->readOnly()->serializeUsing( function( $relation ) {
+            HasMany::make( 'menu' )->type( 'navs' )->readOnly()->serializeUsing( function( $relation ) {
                 $relation->withData( fn( $resource ) => $resource->{$relation->fieldName()}->map( function( $item ) {
                         return (new Nav())->forceFill( ['id' => $item->id] + $item->toArray() );
                 } ) )->withoutLinks();
