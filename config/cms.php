@@ -74,6 +74,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | JSON:API settings
+    |--------------------------------------------------------------------------
+    |
+    | The "jsonapi_maxdepth" setting defines the maximum depth of the JSON:API
+    | resource relationships that will be included in the response.
+    | Example: 1 = include=children; 2 = include=children,children.children
+    |
+    */
+    'jsonapi_maxdepth' => env( 'CMS_JSONAPI_MAXDEPTH', 1 ),
+
+    /*
+    |--------------------------------------------------------------------------
     | Multi-domain support
     |--------------------------------------------------------------------------
     |
@@ -91,7 +103,7 @@ return [
     | The maximum depth of the navigation tree menu that will be displayed.
     |
     */
-    'navdepth' => env( 'CMS_NAVDEPTH', 2 ),
+    'menu_maxdepth' => env( 'CMS_MENU_MAXDEPTH', 2 ),
 
     /*
     |--------------------------------------------------------------------------
