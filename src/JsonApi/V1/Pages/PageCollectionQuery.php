@@ -29,9 +29,7 @@ class PageCollectionQuery extends ResourceQuery
             'include' => [
                 'nullable',
                 'string',
-                JsonApiRule::includePaths()->forget(
-                    'children.children',
-                ),
+                JsonApiRule::includePaths(),
             ],
             'page' => [
                 'nullable',
