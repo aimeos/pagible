@@ -3,6 +3,7 @@
   import Fields from './Fields.vue'
   import SchemaDialog from './SchemaDialog.vue'
   import { VueDraggable } from 'vue-draggable-plus'
+  import { toString } from 'mdast-util-to-string'
   import { toMarkdown } from 'mdast-util-to-markdown'
   import { fromMarkdown } from 'mdast-util-from-markdown'
   import { useAuthStore, useClipboardStore, useMessageStore, useSchemaStore, useSideStore } from '../stores'
@@ -388,8 +389,7 @@
               break
             }
             case 'heading': {
-              const text = node.children.map(child => child.value).join('')
-              list.push({id: uid(), type: 'heading', group: this.section, data: {title: text.trim(), level: String(node.depth) }})
+              list.push({id: uid(), type: 'heading', group: this.section, data: {title: toString(node), level: String(node.depth) }})
               break
             }
             case 'table': {
