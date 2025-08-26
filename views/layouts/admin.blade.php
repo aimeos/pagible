@@ -7,15 +7,21 @@
 
     <title>PagibleAI CMS Admin</title>
 
-    <script type="module" crossorigin src="{{ cmsasset('vendor/cms/admin/index.js') }}"></script>
-    <link rel="stylesheet" crossorigin href="{{ cmsasset('vendor/cms/admin/index.css') }}">
+    @if($index = cmsadmin('vendor/cms/admin/.vite/manifest.json'))
+      <script type="module" crossorigin src="{{ asset('vendor/cms/admin/' . ($index['file'] ?? '')) }}"></script>
+      @foreach($index['css'] ?? [] as $file)
+        <link rel="stylesheet" crossorigin href="{{ asset('vendor/cms/admin/' . $file) }}">
+      @endforeach
+    @endif
 
-    <script nonce="{{ $nonce }}">
-      window.__APP_CONFIG__ = {
-        email: {!! json_encode(env('CMS_ADMIN_EMAIL', '')) !!},
-        password: {!! json_encode(env('CMS_ADMIN_PASSWORD', '')) !!}
-      }
-    </script>
+    @if(env('CMS_ADMIN_EMAIL'))
+      <script nonce="{{ $nonce }}">
+        window.__APP_CONFIG__ = {
+          email: {!! json_encode(env('CMS_ADMIN_EMAIL', '')) !!},
+          password: {!! json_encode(env('CMS_ADMIN_PASSWORD', '')) !!}
+        }
+      </script>
+    @endif
   </head>
   <body>
     <div id="app"

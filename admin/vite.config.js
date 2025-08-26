@@ -16,14 +16,7 @@ export default defineConfig({
     }
   },
   build: {
-    rollupOptions: {
-      output: {
-        entryFileNames: '[name].js',
-        assetFileNames: (asset) => {
-          return asset.names.includes('index.css') ? 'index.css' : 'assets/[name]-[hash][extname]'
-        }
-      }
-    }
+    manifest: true,
   },
   experimental: {
     renderBuiltUrl: () => {
