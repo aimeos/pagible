@@ -25,6 +25,10 @@ main nav.sidebar.show {
     left: 0;
 }
 
+main nav.sidebar li {
+    width: 100%;
+}
+
 main .content {
     width: calc(100% - 240px - 5%);
     margin: 0 2.5%;
@@ -62,7 +66,6 @@ main nav.sidebar .menu {
     background-color: var(--pico-primary);
     flex-direction: column;
     align-items: start;
-    width: 240px;
 }
 
 main nav.sidebar .menu .menu li {
