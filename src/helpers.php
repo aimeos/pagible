@@ -30,6 +30,16 @@ if( !function_exists( 'cms' ) )
 }
 
 
+if( !function_exists( 'cmsadmin' ) )
+{
+    function cmsadmin( string $path ): array
+    {
+        $manifest = file_exists( public_path( $path ) ) ? json_decode( file_get_contents( public_path( $path ) ), true ) : [];
+        return $manifest['index.html'] ?? [];
+    }
+}
+
+
 if( !function_exists( 'cmsasset' ) )
 {
     function cmsasset( ?string $path ): string
