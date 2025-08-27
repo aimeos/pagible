@@ -661,7 +661,7 @@
     </v-expansion-panels>
 
     <div v-if="auth.can('page:save')" class="btn-group">
-      <v-btn @click="vschemas = true"
+      <v-btn @click="index = null; vschemas = true"
         :title="$gettext('Add element')"
         icon="mdi-view-grid-plus"
         color="primary"
