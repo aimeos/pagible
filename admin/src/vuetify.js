@@ -37,7 +37,7 @@ const vuetify = createVuetify({
           info: '#03c9d7',
           error: '#cf6679',
           success: '#03dac6',
-          warning: '#ffb080',
+          warning: '#cb6b0b',
           accent: '#ffab91',
         }
       }
