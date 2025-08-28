@@ -28,11 +28,9 @@
 
     methods: {
       logout() {
-        this.auth.logout().then(() => {
+        this.auth.logout().finally(() => {
           this.user = null
           this.$router.push({ name: "login" })
-        }).catch(error => {
-          this.messages.add(this.$gettext('Logout failed') + ":\n" + error, 'error')
         })
       },
 
