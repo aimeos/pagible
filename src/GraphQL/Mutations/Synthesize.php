@@ -13,7 +13,7 @@ use Aimeos\Cms\GraphQL\Exception;
 use Aimeos\Cms\Models\File;
 
 
-final class Manage
+final class Synthesize
 {
     /**
      * @param  null  $rootValue

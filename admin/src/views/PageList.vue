@@ -22,8 +22,8 @@
       chat: '',
       response: '',
       help: false,
-      short: true,
-      sending: false,
+      shortmsg: true,
+      synthesizing: false,
       filter: {
         view: 'tree',
         trashed: 'WITHOUT',
@@ -51,7 +51,7 @@
 
         const idx = this.response.indexOf(`\n---\n`)
 
-        return this.short
+        return this.shortmsg
           ? this.$pgettext('ai', this.response.slice(0, idx))
           : this.response.substring(idx > 0 ? idx + 5 : 0)
       },
@@ -94,18 +94,18 @@
       },
 
 
-      send() {
+      synthesize() {
         const prompt = this.chat.trim()
 
         if(!this.chat) {
           return
         }
 
-        this.sending = true
+        this.synthesizing = true
 
         this.$apollo.mutate({
           mutation: gql`mutation($prompt: String!) {
-            manage(prompt: $prompt)
+            synthesize(prompt: $prompt)
           }`,
           variables: {
             prompt: prompt
@@ -115,7 +115,7 @@
             throw result
           }
 
-          this.response = result.data?.manage || ''
+          this.response = result.data?.synthesize || ''
           this.chat = this.message
 
           const filter = {
@@ -135,13 +135,13 @@
             this.filter = filter
           }
 
-          this.sending = null
+          this.synthesizing = null
         }).catch(error => {
-          this.messages.add(this.$gettext('Error sending request') + ":\n" + error, 'error')
-          this.$log(`PageList::send(): Error sending request`, error)
+          this.messages.add(this.$gettext('Error synthesizing content') + ":\n" + error, 'error')
+          this.$log(`PageDetailContentList::synthesize(): Error synthesizing content`, error)
         }).finally(() => {
           setTimeout(() => {
-            this.sending = false
+            this.synthesizing = false
           }, 3000)
         })
       }
@@ -179,9 +179,9 @@
       <v-sheet class="box scroll">
         <v-textarea
           v-model="chat"
-          :loading="sending"
+          :loading="synthesizing"
           :placeholder="$gettext('Describe the page and content you want to create')"
-          @dblclick="short = !short; chat = message"
+          @dblclick="shortmsg = !shortmsg; chat = message"
           variant="outlined"
           class="prompt"
           rounded="lg"
@@ -200,16 +200,16 @@
             </v-icon>
           </template>
           <template #append>
-            <v-icon @click="sending || send()">
-              <svg v-if="sending === false" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <v-icon @click="synthesizing || synthesize()">
+              <svg v-if="synthesizing === false" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path d="M22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2A10,10 0 0,1 22,12M6,13H14L10.5,16.5L11.92,17.92L17.84,12L11.92,6.08L10.5,7.5L14,11H6V13Z" />
               </svg>
-              <svg v-if="sending === true" class="spinner" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <svg v-if="synthesizing === true" class="spinner" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <circle class="spin1" cx="4" cy="12" r="3"/>
                 <circle class="spin1 spin2" cx="12" cy="12" r="3"/>
                 <circle class="spin1 spin3" cx="20" cy="12" r="3"/>
               </svg>
-              <svg v-if="sending === null" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <svg v-if="synthesizing === null" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z" />
               </svg>
             </v-icon>

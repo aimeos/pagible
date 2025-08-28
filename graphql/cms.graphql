@@ -74,8 +74,8 @@ extend type Mutation {
   "Generate images from prompts and passed file IDs"
   imagine(prompt: String!, context: String, files: [String!]): [String!]
 
-  "Manage the page tree and add new pages from prompts and passed file IDs"
-  manage(prompt: String!, context: String, files: [String!]): String
+  "Synthesize pages and content from prompts and passed file IDs"
+  synthesize(prompt: String!, context: String, files: [String!]): String
 
   "Transcribe uploaded audio file"
   transcribe(file: Upload!): String
