@@ -29,7 +29,10 @@ final class Manage
             . view( 'cms::prompts.compose' )->render() . "\n";
 
         $files = [];
-        $prism = Prism::text()->using( config( 'cms.ai.text', 'gemini' ), config( 'cms.ai.text-model', 'gemini-2.0-flash' ) )
+        $provider = config( 'cms.ai.text' ) ?: 'gemini';
+        $model = config( 'cms.ai.text-model' ) ?: 'gemini-2.5-flash';
+
+        $prism = Prism::text()->using( $provider, $model )
             ->withSystemPrompt( $system . "\n" . ($args['context'] ?? '') )
             ->withTools( \Aimeos\Cms\Tools::get() )
             ->withToolChoice( ToolChoice::Any )

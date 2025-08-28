@@ -31,8 +31,10 @@ final class Imagine
             $input
         ] ) );
 
-        $model = config( 'cms.ai.image-model', 'dall-e-3' );
-        $prism = Prism::image()->using( config( 'cms.ai.image', 'openai' ), $model )
+        $provider = config( 'cms.ai.image' ) ?: 'openai';
+        $model = config( 'cms.ai.image-model' ) ?: 'dall-e-3';
+
+        $prism = Prism::image()->using( $provider, $model )
             ->withClientOptions( [
                 'timeout' => 60,
                 'connect_timeout' => 10,
