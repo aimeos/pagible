@@ -323,7 +323,7 @@
             throw result
           }
 
-          const lang = this.desclangs.shift() || this.item.lang || 'en'
+          const lang = this.desclangs[0] || this.item.lang || 'en'
           this.update('transcription', Object.assign(this.item.transcription || {}, {[lang]: result.data?.transcribe || ''}))
         }).catch(error => {
           this.messages.add(this.$gettext('Error transcribing file') + ":\n" + error, 'error')
