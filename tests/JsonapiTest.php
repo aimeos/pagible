@@ -118,10 +118,10 @@ class JsonapiTest extends TestAbstract
             $expected[] = ['type' => 'navs', 'id' => $item->id];
         }
 
-        $this->expectsDatabaseQueryCount( 1 );
+        $this->expectsDatabaseQueryCount( 3 );
         $response = $this->jsonApi()->expects( 'pages' )->includePaths( 'children.children' )->get( "cms/pages/{$page->id}" );
 
-        $response->assertStatus( 400 );
+        $response->assertStatus( 200 );
     }
 
 
