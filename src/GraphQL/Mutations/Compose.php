@@ -25,7 +25,10 @@ final class Compose
         }
 
         $files = [];
-        $prism = Prism::text()->using( config( 'cms.ai.text', 'gemini' ), config( 'cms.ai.text-model', 'gemini-2.0-flash' ) )
+        $provider = config( 'cms.ai.text' ) ?: 'gemini';
+        $model = config( 'cms.ai.text-model' ) ?: 'gemini-2.5-flash';
+
+        $prism = Prism::text()->using( $provider, $model )
             ->withSystemPrompt( view( 'cms::prompts.compose' )->render() . "\n" . ($args['context'] ?? '') )
             ->withClientOptions( [
                 'timeout' => 60,
