@@ -33,6 +33,8 @@
         @if(\Aimeos\Cms\Permission::can('page:save', auth()->user()))
             <link href="{{ cmsasset('vendor/cms/admin/editor.css') }}" rel="stylesheet">
             <script defer src="{{ cmsasset('vendor/cms/admin/editor.js') }}"></script>
+        @else
+            <script defer src="{{ cmsasset('vendor/cms/theme/stats.js') }}"></script>
         @endif
     </head>
     <body class="theme-{{ cms($page, 'theme') ?: 'cms' }} type-{{ cms($page, 'type') ?: 'page' }}">
