@@ -16,7 +16,7 @@ class ContactRequest extends FormRequest
         ];
 
         if( !app()->environment('local') && config('services.hcaptcha.secret') ) {
-            $rules['h-captcha-response'] = ['required', new Hcaptcha];
+            $rules['h-captcha-response'] = ['required', new \Aimeos\Cms\Rules\Hcaptcha];
         }
 
         return $rules;
