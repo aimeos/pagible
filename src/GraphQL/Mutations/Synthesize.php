@@ -25,7 +25,7 @@ final class Synthesize
             throw new Exception( 'Prompt must not be empty' );
         }
 
-        $system = view( 'cms::prompts.manage' )->render() . "\n"
+        $system = view( 'cms::prompts.synthesize' )->render() . "\n"
             . view( 'cms::prompts.compose' )->render() . "\n";
 
         $files = [];
