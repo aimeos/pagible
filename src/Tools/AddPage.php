@@ -7,6 +7,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Utils;
 
 
 class AddPage extends Tool
@@ -38,7 +39,7 @@ class AddPage extends Tool
         $parent = Page::find( $parent_id );
         $editor = Auth::user()?->name ?? request()->ip();
         $elements = [[
-            'id' => $this->uid(),
+            'id' => Utils::uid(),
             'type' => 'text',
             'group' => 'main',
             'data' => [
@@ -47,7 +48,7 @@ class AddPage extends Tool
         ]];
         $meta = [
             'meta-tags' => [
-                'id' => $this->uid(),
+                'id' => Utils::uid(),
                 'type' => 'meta-tags',
                 'group' => 'basic',
                 'data' => [
@@ -62,7 +63,7 @@ class AddPage extends Tool
             'lang' => $lang,
             'name' => $name,
             'title' => $title,
-            'path' => $this->slug( $title ),
+            'path' => Utils::slugify( $title ),
             'domain' => $parent?->latest?->data?->domain,
             'theme' => $parent?->latest?->data?->theme,
             'meta' => $meta,
@@ -106,51 +107,5 @@ class AddPage extends Tool
 
         $this->numcalls++;
         return response()->json( $page );
-    }
-
-
-    /**
-     * Generates a slug from the given title.
-     *
-     * @param string $title The title to generate a slug from
-     * @return string The generated slug
-     */
-    protected function slug( string $title ): string
-    {
-        $title = preg_replace( '/[?&=%#@!$^*()+=\[\]{}|\\\\\"\'<>;:.,_\s]/u', '-', $title );
-        $title = preg_replace( '/-+/', '-', $title );
-
-        return mb_strtolower( trim( $title, '-' ) );
-    }
-
-
-    /**
-     * Generates a unique ID for the page content element.
-     *
-     * This ID is a 6-character string that starts with a letter (A-Z, a-z) and is followed by 5 alphanumeric characters.
-     * The first character is chosen from the first 52 characters of the base64 encoding,
-     * while the remaining characters can be any of the 64 base64 characters.
-     * The ID is based on the current time in milliseconds since a fixed epoch (2025-01-01T00:00:00Z),
-     * ensuring that IDs are unique and non-repeating for approximately 70 years.
-     *
-     * @return string A unique 6-character ID for the page content element
-     */
-    protected function uid(): string
-    {
-        $base64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
-        $epoch = strtotime( '2025-01-01T00:00:00Z' ) * 1000;
-
-        // IDs will repeat after ~70 years
-        $value = ( ( (int) ( ( microtime( true ) * 1000 - $epoch ) / 256 ) ) << 3 );
-
-        $id = '';
-        for( $i = 0; $i < 6; $i++ )
-        {
-            // First character: only A-Z/a-z (index % 52), others: full 64-character set
-            $index = ($value >> 6 * (5 - $i)) & 63;
-            $id .= $base64[$i === 0 ? $index % 52 : $index];
-        }
-
-        return $id;
     }
 }
