@@ -97,7 +97,7 @@ class GraphqlTest extends TestAbstract
 
     public function testTranscribe()
     {
-        Prism::fake( [new \Prism\Prism\Audio\TextResponse( 'Fake transcription' )] );
+        Prism::fake( [new \Prism\Prism\Audio\TextResponse( '[]' )] );
 
         $response = $this->actingAs( $this->user )->multipartGraphQL( [
             'query' => '
@@ -114,7 +114,7 @@ class GraphqlTest extends TestAbstract
             '0' => UploadedFile::fake()->create('test.mp3', 500, 'audio/mpeg'),
         ] )->assertJson( [
             'data' => [
-                'transcribe' => 'Fake transcription'
+                'transcribe' => "WEBVTT\n"
             ]
         ] );
     }
