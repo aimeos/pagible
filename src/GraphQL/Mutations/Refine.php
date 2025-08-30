@@ -24,8 +24,8 @@ final class Refine
             throw new Error( 'Prompt must not be empty' );
         }
 
-        $provider = config( 'cms.ai.text' ) ?: 'gemini';
-        $model = config( 'cms.ai.text-model' ) ?: 'gemini-2.5-flash';
+        $provider = config( 'cms.ai.struct' ) ?: 'openai';
+        $model = config( 'cms.ai.struct-model' ) ?: 'gpt-5-mini';
 
         $system = view( 'cms::prompts.refine' )->render();
         $type = $args['type'] ?? 'content';
