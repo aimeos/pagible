@@ -4,7 +4,7 @@ namespace Aimeos\Cms\GraphQL\Mutations;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Auth\User;
-use Aimeos\Cms\GraphQL\Exception;
+use GraphQL\Error\Error;
 
 
 final class CmsLogin
@@ -18,7 +18,7 @@ final class CmsLogin
         $guard = Auth::guard();
 
         if( !$guard->attempt( $args ) ) {
-            throw new Exception( 'Invalid credentials' );
+            throw new Error( 'Invalid credentials' );
         }
 
         return $guard->user();

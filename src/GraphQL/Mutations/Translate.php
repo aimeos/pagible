@@ -3,7 +3,7 @@
 namespace Aimeos\Cms\GraphQL\Mutations;
 
 use Illuminate\Support\Facades\Http;
-use Aimeos\Cms\GraphQL\Exception;
+use GraphQL\Error\Error;
 
 
 final class Translate
@@ -15,15 +15,15 @@ final class Translate
     public function __invoke( $rootValue, array $args ): array
     {
         if( empty( $args['texts'] ) ) {
-            throw new Exception( 'Input texts must not be empty' );
+            throw new Error( 'Input texts must not be empty' );
         }
 
         if( empty( $args['to'] ) ) {
-            throw new Exception( 'Target language must not be empty' );
+            throw new Error( 'Target language must not be empty' );
         }
 
         if( empty( $apiKey = config( 'services.deepl.key' ) ) ) {
-            throw new Exception( 'DeepL API key must be configured' );
+            throw new Error( 'DeepL API key must be configured' );
         }
 
         $url = rtrim( config( 'services.deepl.url', 'https://api-free.deepl.com/v2/translate' ), '/' );

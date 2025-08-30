@@ -4,7 +4,7 @@ namespace Aimeos\Cms\GraphQL\Mutations;
 
 use Aimeos\Cms\Utils;
 use Aimeos\Cms\Models\File;
-use Aimeos\Cms\GraphQL\Exception;
+use GraphQL\Error\Error;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
 
@@ -18,7 +18,7 @@ final class AddFile
     public function __invoke( $rootValue, array $args ) : File
     {
         if( empty( $args['input']['path'] ) && empty( $args['file'] ) ) {
-            throw new Exception( 'Either input "path" or "file" argument must be provided' );
+            throw new Error( 'Either input "path" or "file" argument must be provided' );
         }
 
         $editor = Auth::user()?->name ?? request()->ip();
@@ -65,7 +65,7 @@ final class AddFile
         $upload = $args['file'] ?? null;
 
         if( !$upload instanceof UploadedFile || !$upload->isValid() ) {
-            throw new Exception( 'Invalid file upload' );
+            throw new Error( 'Invalid file upload' );
         }
 
         $file->addFile( $upload );
@@ -100,7 +100,7 @@ final class AddFile
         $url = $args['input']['path'] ?? '';
 
         if( !str_starts_with( $url, 'http' ) ) {
-            throw new Exception( 'Invalid URL' );
+            throw new Error( 'Invalid URL' );
         }
 
         $file->path = $url;

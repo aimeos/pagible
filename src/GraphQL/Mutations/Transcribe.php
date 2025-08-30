@@ -3,10 +3,11 @@
 namespace Aimeos\Cms\GraphQL\Mutations;
 
 use Prism\Prism\Prism;
+use Prism\Prism\Exceptions\PrismException;
 use Prism\Prism\ValueObjects\Media\Audio;
 use Illuminate\Http\UploadedFile;
-use Aimeos\Cms\GraphQL\Exception;
 use Aimeos\Cms\Models\File;
+use GraphQL\Error\Error;
 
 
 final class Transcribe
@@ -18,31 +19,38 @@ final class Transcribe
     public function __invoke( $rootValue, array $args ): string
     {
         if( !( ( $upload = $args['file'] ?? null ) && $upload instanceof UploadedFile && $upload->isValid() ) ) {
-            throw new Exception( 'No file uploaded' );
+            throw new Error( 'No file uploaded' );
         }
 
         if( !str_starts_with( $upload->getMimeType(), 'audio/' ) ) {
-            throw new Exception( 'Only audio files' );
+            throw new Error( 'Only audio files' );
         }
 
         $provider = config( 'cms.ai.audio' ) ?: 'openai';
         $model = config( 'cms.ai.audio-model' ) ?: 'whisper-1';
 
-        $prism = Prism::audio()->using( $provider, $model )
-            ->withMaxTokens( config( 'cms.ai.maxtoken', 32768 ) )
-            ->withClientOptions( [
-                'timeout' => 60,
-                'connect_timeout' => 10,
-            ] );
+        try
+        {
+            $prism = Prism::audio()->using( $provider, $model )
+                ->withMaxTokens( config( 'cms.ai.maxtoken', 32768 ) )
+                ->withClientOptions( [
+                    'timeout' => 60,
+                    'connect_timeout' => 10,
+                ] );
 
-        $file = Audio::fromBase64( base64_encode( $upload->getContent() ), $upload->getMimeType() );
+            $file = Audio::fromBase64( base64_encode( $upload->getContent() ), $upload->getMimeType() );
 
-        $response = $prism->withInput( $file )
-            ->withProviderOptions( [
-            'response_format' => 'verbose_json',
-        ] )->asText();
+            $response = $prism->withInput( $file )
+                ->withProviderOptions( [
+                'response_format' => 'verbose_json',
+            ] )->asText();
 
-        return $this->webvtt( $response->additionalContent['segments'] ?? [] );
+            return $this->webvtt( $response->additionalContent['segments'] ?? [] );
+        }
+        catch( PrismException $e )
+        {
+            throw new Error( $e->getMessage(), previous: $e );
+        }
     }
 
 

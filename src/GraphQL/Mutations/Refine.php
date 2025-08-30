@@ -7,8 +7,9 @@ use Prism\Prism\Schema\EnumSchema;
 use Prism\Prism\Schema\ArraySchema;
 use Prism\Prism\Schema\ObjectSchema;
 use Prism\Prism\Schema\StringSchema;
-use Aimeos\Cms\GraphQL\Exception;
+use Prism\Prism\Exceptions\PrismException;
 use Aimeos\Cms\Models\File;
+use GraphQL\Error\Error;
 
 
 final class Refine
@@ -20,7 +21,7 @@ final class Refine
     public function __invoke( $rootValue, array $args ): array
     {
         if( empty( $args['prompt'] ) ) {
-            throw new Exception( 'Prompt must not be empty' );
+            throw new Error( 'Prompt must not be empty' );
         }
 
         $provider = config( 'cms.ai.text' ) ?: 'gemini';
@@ -30,23 +31,30 @@ final class Refine
         $type = $args['type'] ?? 'content';
         $content = $args['content'] ?: [];
 
-        $response = Prism::structured()->using( $provider, $model )
-            ->withMaxTokens( config( 'cms.ai.maxtoken', 32768 ) )
-            ->withSystemPrompt( $system . "\n" . ($args['context'] ?? '') )
-            ->withPrompt( $args['prompt'] . "\n\nContent as JSON:\n" . json_encode( $content ) )
-            ->withProviderOptions( ['use_tool_calling' => true] )
-            ->withSchema( $this->schema( $type ) )
-            ->withClientOptions( [
-                'timeout' => 60,
-                'connect_timeout' => 10,
-            ] )
-            ->asStructured();
+        try
+        {
+            $response = Prism::structured()->using( $provider, $model )
+                ->withMaxTokens( config( 'cms.ai.maxtoken', 32768 ) )
+                ->withSystemPrompt( $system . "\n" . ($args['context'] ?? '') )
+                ->withPrompt( $args['prompt'] . "\n\nContent as JSON:\n" . json_encode( $content ) )
+                ->withProviderOptions( ['use_tool_calling' => true] )
+                ->withSchema( $this->schema( $type ) )
+                ->withClientOptions( [
+                    'timeout' => 60,
+                    'connect_timeout' => 10,
+                ] )
+                ->asStructured();
 
-        if( !$response->structured ) {
-            throw new Exception( 'Invalid content in refine response' );
+            if( !$response->structured ) {
+                throw new Error( 'Invalid content in refine response' );
+            }
+
+            return $this->merge( $content, $response->structured );
         }
-
-        return $this->merge( $content, $response->structured );
+        catch( PrismException $e )
+        {
+            throw new Error( $e->getMessage(), previous: $e );
+        }
     }
 
 

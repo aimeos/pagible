@@ -4,13 +4,14 @@ namespace Aimeos\Cms\GraphQL\Mutations;
 
 use Prism\Prism\Prism;
 use Prism\Prism\Enums\ToolChoice;
+use Prism\Prism\Exceptions\PrismException;
 use Prism\Prism\ValueObjects\Media\Audio;
 use Prism\Prism\ValueObjects\Media\Image;
 use Prism\Prism\ValueObjects\Media\Video;
 use Prism\Prism\ValueObjects\Media\Document;
 use Prism\Prism\ValueObjects\ProviderTool;
-use Aimeos\Cms\GraphQL\Exception;
 use Aimeos\Cms\Models\File;
+use GraphQL\Error\Error;
 
 
 final class Synthesize
@@ -22,7 +23,7 @@ final class Synthesize
     public function __invoke( $rootValue, array $args ): string
     {
         if( empty( $args['prompt'] ) ) {
-            throw new Exception( 'Prompt must not be empty' );
+            throw new Error( 'Prompt must not be empty' );
         }
 
         $system = view( 'cms::prompts.synthesize' )->render() . "\n"
@@ -32,43 +33,46 @@ final class Synthesize
         $provider = config( 'cms.ai.text' ) ?: 'gemini';
         $model = config( 'cms.ai.text-model' ) ?: 'gemini-2.5-flash';
 
-        $prism = Prism::text()->using( $provider, $model )
-            ->withMaxTokens( config( 'cms.ai.maxtoken', 32768 ) )
-            ->withSystemPrompt( $system . "\n" . ($args['context'] ?? '') )
-            ->withTools( \Aimeos\Cms\Tools::get() )
-            ->withToolChoice( ToolChoice::Any )
-            ->withMaxSteps( 10 );
-
-        if( !empty( $ids = $args['files'] ?? null ) )
-        {
-            $files = File::where( 'id', $ids )->get()->map( function( $file ) {
-
-                if( str_starts_with( $file->path, 'http' ) )
-                {
-                    return match( explode( '/', $file->mime )[0] ) {
-                        'image' => Image::fromUrl( $file->path ),
-                        'audio' => Audio::fromUrl( $file->path ),
-                        'video' => Video::fromUrl( $file->path ),
-                        default => Document::fromUrl( $file->path ),
-                    };
-                }
-
-                $disk = config( 'cms.disk', 'public' );
-
-                return match( explode( '/', $file->mime )[0] ) {
-                    'image' => Image::fromStoragePath( $file->path, $disk ),
-                    'audio' => Audio::fromStoragePath( $file->path, $disk ),
-                    'video' => Video::fromStoragePath( $file->path, $disk ),
-                    default => Document::fromStoragePath( $file->path, $disk ),
-                };
-            } )->values()->toArray();
-        }
-
-        $msg = 'Done';
-
         try
         {
+            $prism = Prism::text()->using( $provider, $model )
+                ->withMaxTokens( config( 'cms.ai.maxtoken', 32768 ) )
+                ->withSystemPrompt( $system . "\n" . ($args['context'] ?? '') )
+                ->withTools( \Aimeos\Cms\Tools::get() )
+                ->withToolChoice( ToolChoice::Any )
+                ->withMaxSteps( 10 );
+
+            if( !empty( $ids = $args['files'] ?? null ) )
+            {
+                $files = File::where( 'id', $ids )->get()->map( function( $file ) {
+
+                    if( str_starts_with( $file->path, 'http' ) )
+                    {
+                        return match( explode( '/', $file->mime )[0] ) {
+                            'image' => Image::fromUrl( $file->path ),
+                            'audio' => Audio::fromUrl( $file->path ),
+                            'video' => Video::fromUrl( $file->path ),
+                            default => Document::fromUrl( $file->path ),
+                        };
+                    }
+
+                    $disk = config( 'cms.disk', 'public' );
+
+                    return match( explode( '/', $file->mime )[0] ) {
+                        'image' => Image::fromStoragePath( $file->path, $disk ),
+                        'audio' => Audio::fromStoragePath( $file->path, $disk ),
+                        'video' => Video::fromStoragePath( $file->path, $disk ),
+                        default => Document::fromStoragePath( $file->path, $disk ),
+                    };
+                } )->values()->toArray();
+            }
+
+            $msg = 'Done';
             $msg .= "\n---\n" . join( "\n", $this->trace( $prism->withPrompt( $args['prompt'], $files )->asText() ) );
+        }
+        catch( PrismException $e )
+        {
+            throw new Error( $e->getMessage(), previous: $e );
         }
         catch( \Exception $e )
         {
