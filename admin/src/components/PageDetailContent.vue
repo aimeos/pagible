@@ -151,4 +151,8 @@
   .v-sheet.scroll {
     max-height: calc(100vh - 96px);
   }
+
+  .subtabs {
+    margin-bottom: 16px;
+  }
 </style>

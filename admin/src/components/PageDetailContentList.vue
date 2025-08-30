@@ -1,5 +1,6 @@
 <script>
   import gql from 'graphql-tag'
+  import isEqual from "fast-deep-equal"
   import Fields from './Fields.vue'
   import SchemaDialog from './SchemaDialog.vue'
   import { VueDraggable } from 'vue-draggable-plus'
@@ -27,6 +28,10 @@
     emits: ['error', 'update:content'],
 
     data: () => ({
+      chat: '',
+      response: '',
+      shortmsg: true,
+      refining: false,
       panel: [],
       menu: {},
       index: null,
@@ -252,6 +257,62 @@
       },
 
 
+      refine() {
+        const prompt = this.chat.trim()
+
+        if(!this.chat) {
+          return
+        }
+
+        this.refining = true
+
+        this.$apollo.mutate({
+          mutation: gql`mutation($prompt: String!, $content: JSON!, $type: String, $context: String) {
+            refine(prompt: $prompt, content: $content, type: $type, context: $context)
+          }`,
+          variables: {
+            prompt: prompt,
+            content: JSON.stringify(this.content),
+            type: 'content',
+            context: null
+          }
+        }).then(result => {
+          if(result.errors) {
+            throw result
+          }
+
+          const map = Object.fromEntries(this.content.map(item => [item.id, item]))
+          const content = JSON.parse(result.data?.refine || '[]')
+
+          if(content.length) {
+            content.forEach(item => {
+              if(!item.id) {
+                item.id = uid()
+              }
+
+              item.group = this.section
+
+              if(!isEqual(item, map[item.id] || {})) {
+                item._changed = true
+              }
+            })
+
+            this.$emit('update:content', content)
+          }
+
+          this.refining = null
+          this.chat = ''
+        }).catch(error => {
+          this.messages.add(this.$gettext('Error refining content') + ":\n" + error, 'error')
+          this.$log(`PageDetailContentList::refine(): Error refining content`, error)
+        }).finally(() => {
+          setTimeout(() => {
+            this.refining = false
+          }, 3000)
+        })
+      },
+
+
       remove(idx) {
         this.content.splice(idx, 1)
         this.$emit('error', this.content.some(el => el._error))
@@ -385,11 +446,11 @@
         for(const node of ast.children) {
           switch(node.type) {
             case 'code': {
-              list.push({id: uid(), type: 'code', group: this.section, data: {lang: node.lang || null, text: node.value}})
+              list.push({id: uid(), type: 'code', group: this.section, data: {lang: node.lang || null, text: node.value.trim()}})
               break
             }
             case 'heading': {
-              list.push({id: uid(), type: 'heading', group: this.section, data: {title: toString(node), level: String(node.depth) }})
+              list.push({id: uid(), type: 'heading', group: this.section, data: {title: toString(node).trim(), level: String(node.depth) }})
               break
             }
             case 'table': {
@@ -403,7 +464,7 @@
             }
             default: {
               // Convert unhandled node types back to raw Markdown
-              list.push({id: uid(), type: 'text', group: this.section, data: {text: toMarkdown(node)}})
+              list.push({id: uid(), type: 'text', group: this.section, data: {text: toMarkdown(node).trim()}})
             }
           }
         }
@@ -513,6 +574,38 @@
 
 <template>
   <div v-observe-visibility="store">
+
+    <v-textarea
+      v-model="chat"
+      :loading="refining"
+      :placeholder="$gettext('Describe the task you want to perform')"
+      @dblclick="shortmsg = !shortmsg; chat = message"
+      variant="outlined"
+      class="prompt"
+      rounded="lg"
+      hide-details
+      autofocus
+      auto-grow
+      clearable
+      outlined
+      rows="1"
+    >
+      <template #append>
+        <v-icon @click="refining || refine()">
+          <svg v-if="refining === false" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2A10,10 0 0,1 22,12M6,13H14L10.5,16.5L11.92,17.92L17.84,12L11.92,6.08L10.5,7.5L14,11H6V13Z" />
+          </svg>
+          <svg v-if="refining === true" class="spinner" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <circle class="spin1" cx="4" cy="12" r="3"/>
+            <circle class="spin1 spin2" cx="12" cy="12" r="3"/>
+            <circle class="spin1 spin3" cx="20" cy="12" r="3"/>
+          </svg>
+          <svg v-if="refining === null" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z" />
+          </svg>
+        </v-icon>
+      </template>
+    </v-textarea>
 
     <div class="header">
       <div v-if="auth.can('page:save')" class="bulk">
@@ -682,8 +775,8 @@
 </template>
 
 <style scoped>
-.header {
-  margin-top: 8px;
+.prompt {
+  margin-bottom: 16px;
 }
 
 .bulk {
