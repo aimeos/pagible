@@ -150,6 +150,49 @@ class GraphqlTest extends TestAbstract
     }
 
 
+    public function testSynthesize()
+    {
+        $this->seed( CmsSeeder::class );
+
+        $file = File::firstOrFail();
+        $fake = \Prism\Prism\Testing\TextResponseFake::make()
+            ->withSteps( collect( [
+                new \Prism\Prism\Text\Step(
+                    'text',
+                    \Prism\Prism\Enums\FinishReason::Stop,
+                    [
+                        new \Prism\Prism\ValueObjects\ToolCall( '1', 'summarize', ['text' => str_repeat( 'A', 80 )] ),
+                        new \Prism\Prism\ValueObjects\ToolCall( '2', 'classify', ['category' => 'example'] ),
+                    ],
+                    [],
+                    new \Prism\Prism\ValueObjects\Usage(0, 0),
+                    new \Prism\Prism\ValueObjects\Meta('fake', 'fake'),
+                    [],
+                    []
+                ),
+            ] ) )
+            ->withText('This is the generated response.');
+
+        \Prism\Prism\Prism::fake([$fake]);
+
+        $response = $this->actingAs($this->user)->graphQL('
+            mutation($prompt: String!, $context: String, $files: [String!]) {
+                synthesize(prompt: $prompt, context: $context, files: $files)
+            }
+        ', [
+            'prompt' => 'Refine this content',
+            'context' => 'Testing synthesize mutation',
+            'files'   => [$file->id],
+        ]);
+
+        $json = $response->json();
+
+        $this->assertStringStartsWith("Done\n---\n", $json['data']['synthesize']);
+        $this->assertStringContainsString('summarize', $json['data']['synthesize']);
+        $this->assertStringContainsString('classify', $json['data']['synthesize']);
+    }
+
+
     public function testTranscribe()
     {
         Prism::fake( [new \Prism\Prism\Audio\TextResponse( '[]' )] );
