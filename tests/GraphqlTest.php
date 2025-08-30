@@ -95,6 +95,52 @@ class GraphqlTest extends TestAbstract
     }
 
 
+    public function testRefine()
+    {
+        Prism::fake( [
+            \Prism\Prism\Testing\StructuredResponseFake::make()->withStructured( [ [
+                'id' => 'content-1',
+                'type' => 'text',
+                'data' => [
+                    ['name' => 'title', 'value' => 'Generated title'],
+                    ['name' => 'body', 'value' => 'Generated body content'],
+                ],
+            ] ] )
+        ] );
+
+        $response = $this->actingAs( $this->user )->graphQL( '
+            mutation($prompt: String!, $content: JSON!, $type: String, $context: String) {
+                refine(prompt: $prompt, content: $content, type: $type, context: $context)
+            }
+        ', [
+            'prompt' => 'Refine this content',
+            'context' => 'Testing refine mutation',
+            'type' => 'content',
+            'content' => json_encode( [ [
+                'id' => 'content-1',
+                'type' => 'text',
+                'data' => [
+                    'title' => 'Old title',
+                    'body' => 'Old body'
+                ]
+            ] ] ),
+        ] );
+
+        $response->assertJson( [
+            'data' => [
+                'refine' => json_encode( [ [
+                    'id' => 'content-1',
+                    'type' => 'text',
+                    'data' => [
+                        'title' => 'Generated title',
+                        'body' => 'Generated body content'
+                    ]
+                ] ] )
+            ]
+        ] );
+    }
+
+
     public function testTranscribe()
     {
         Prism::fake( [new \Prism\Prism\Audio\TextResponse( '[]' )] );

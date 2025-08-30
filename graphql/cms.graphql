@@ -74,6 +74,9 @@ extend type Mutation {
   "Generate images from prompts and passed file IDs"
   imagine(prompt: String!, context: String, files: [String!]): [String!]
 
+  "Refine existing page content"
+  refine(prompt: String!, content: JSON!, type: String, context: String): JSON
+
   "Synthesize pages and content from prompts and passed file IDs"
   synthesize(prompt: String!, context: String, files: [String!]): String
 
