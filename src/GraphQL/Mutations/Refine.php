@@ -58,17 +58,14 @@ final class Refine
 
         foreach( $response as $item )
         {
-            $entry = $map->get( $item['id'], [] );
-            $entry->type = $item['type'] ?? ( $entry->type ?? 'text' );
-
-            if( empty( $entry->id ) ) {
-                $entry->id = \Aimeos\Cms\Utils::uid();
-            }
+            $entry = (array) $map->get( $item['id'], [] );
+            $entry['data'] = (array) ( $entry['data'] ?? [] );
+            $entry['type'] = $item['type'] ?? ( $entry['type'] ?? 'text' );
 
             foreach( $item['data'] ?? [] as $data )
             {
                 if( !empty( $data['name'] ) ) {
-                    $entry->data->{$data['name']} = (string) $data['value'] ?? '';
+                    $entry['data'][$data['name']] = (string) ( $data['value'] ?? '' );
                 }
             }
 
@@ -105,14 +102,14 @@ final class Refine
                             name: 'text',
                             description: 'A text of the content element',
                             properties: [
-                                new StringSchema( 'name', 'Name of the existing text element' ),
-                                new StringSchema( 'value', 'Plain heading, paragraph as markdown or code example' ),
+                                new EnumSchema( 'name', 'Name of the text element', options: ['title', 'text'] ),
+                                new StringSchema( 'value', 'Plain title, markdown text or source code text' ),
                             ],
                             requiredFields: ['name', 'value']
                         )
                     )
                 ],
-                requiredFields: ['id', 'type', 'data']
+                requiredFields: ['type', 'data']
             )
         );
     }
