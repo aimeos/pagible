@@ -13,6 +13,8 @@ return [
     |
     */
     'ai' => [
+        'maxtoken' => env( 'CMS_AI_MAXTOKEN' ),       // maxium tokenss per request
+
         'text' => env( 'CMS_AI_TEXT' ),               // gemini
         'text-model' => env( 'CMS_AI_TEXT_MODEL' ),   // gemini-2.5-flash
         'image' => env( 'CMS_AI_IMAGE' ),             // openai

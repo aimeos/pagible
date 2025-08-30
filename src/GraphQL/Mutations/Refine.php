@@ -31,9 +31,15 @@ final class Refine
         $content = $args['content'] ?: [];
 
         $response = Prism::structured()->using( $provider, $model )
+            ->withMaxTokens( config( 'cms.ai.maxtoken', 32768 ) )
             ->withSystemPrompt( $system . "\n" . ($args['context'] ?? '') )
             ->withPrompt( $args['prompt'] . "\n\nContent as JSON:\n" . json_encode( $content ) )
+            ->withProviderOptions( ['use_tool_calling' => true] )
             ->withSchema( $this->schema( $type ) )
+            ->withClientOptions( [
+                'timeout' => 60,
+                'connect_timeout' => 10,
+            ] )
             ->asStructured();
 
         if( !$response->structured ) {

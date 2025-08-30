@@ -29,7 +29,11 @@ final class Compose
         $model = config( 'cms.ai.text-model' ) ?: 'gemini-2.5-flash';
 
         $prism = Prism::text()->using( $provider, $model )
+            ->withMaxTokens( config( 'cms.ai.maxtoken', 32768 ) )
             ->withSystemPrompt( view( 'cms::prompts.compose' )->render() . "\n" . ($args['context'] ?? '') )
+            ->whenProvider( 'gemini', fn( $request ) => $request->withProviderTools( [
+                new ProviderTool( 'google_search' )
+            ] ) )
             ->withClientOptions( [
                 'timeout' => 60,
                 'connect_timeout' => 10,

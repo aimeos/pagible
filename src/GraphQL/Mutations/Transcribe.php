@@ -29,6 +29,7 @@ final class Transcribe
         $model = config( 'cms.ai.audio-model' ) ?: 'whisper-1';
 
         $prism = Prism::audio()->using( $provider, $model )
+            ->withMaxTokens( config( 'cms.ai.maxtoken', 32768 ) )
             ->withClientOptions( [
                 'timeout' => 60,
                 'connect_timeout' => 10,

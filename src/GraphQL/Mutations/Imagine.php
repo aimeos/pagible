@@ -35,6 +35,7 @@ final class Imagine
         $model = config( 'cms.ai.image-model' ) ?: 'dall-e-3';
 
         $prism = Prism::image()->using( $provider, $model )
+            ->withMaxTokens( config( 'cms.ai.maxtoken', 32768 ) )
             ->withClientOptions( [
                 'timeout' => 60,
                 'connect_timeout' => 10,

@@ -33,6 +33,7 @@ final class Synthesize
         $model = config( 'cms.ai.text-model' ) ?: 'gemini-2.5-flash';
 
         $prism = Prism::text()->using( $provider, $model )
+            ->withMaxTokens( config( 'cms.ai.maxtoken', 32768 ) )
             ->withSystemPrompt( $system . "\n" . ($args['context'] ?? '') )
             ->withTools( \Aimeos\Cms\Tools::get() )
             ->withToolChoice( ToolChoice::Any )
