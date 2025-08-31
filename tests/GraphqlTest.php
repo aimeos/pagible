@@ -107,14 +107,16 @@ class GraphqlTest extends TestAbstract
     public function testRefine()
     {
         Prism::fake( [
-            \Prism\Prism\Testing\StructuredResponseFake::make()->withStructured( [ [
-                'id' => 'content-1',
-                'type' => 'text',
-                'data' => [
-                    ['name' => 'title', 'value' => 'Generated title'],
-                    ['name' => 'body', 'value' => 'Generated body content'],
-                ],
-            ] ] )
+            \Prism\Prism\Testing\StructuredResponseFake::make()->withStructured( [
+                'response' => [[
+                    'id' => 'content-1',
+                    'type' => 'text',
+                    'data' => [
+                        ['name' => 'title', 'value' => 'Generated title'],
+                        ['name' => 'body', 'value' => 'Generated body content'],
+                    ]
+                ] ]
+            ] )
         ] );
 
         $response = $this->actingAs( $this->user )->graphQL( '
