@@ -49,7 +49,7 @@ final class Refine
                 throw new Error( 'Invalid content in refine response' );
             }
 
-            return $this->merge( $content, $response->structured );
+            return $this->merge( $content, $response->structured['response'] ?? [] );
         }
         catch( PrismException $e )
         {
@@ -94,37 +94,44 @@ final class Refine
      * Returns the schema for the content elements
      *
      * @param string $type The type of content elements
-     * @return ArraySchema The schema for the content elements
+     * @return ObjectSchema The schema for the content elements
      */
-    protected function schema( string $type ) : ArraySchema
+    protected function schema( string $type ) : ObjectSchema
     {
-        $types = collect( config( "cms.schema.$type", [] ) )->keys()->all();
+        $types = collect( config( "cms.schemas.$type", [] ) )->keys()->all();
 
-        return new ArraySchema(
-            name: 'contents',
-            description: 'List of page content elements',
-            items: new ObjectSchema(
-                name: 'content',
-                description: 'A content element',
-                properties: [
-                    new StringSchema( 'id', 'The ID of the content element', nullable: true ),
-                    new EnumSchema( 'type', 'The type of the content element', options: $types ),
-                    new ArraySchema(
-                        name: 'data',
-                        description: 'List of texts for the content element',
-                        items: new ObjectSchema(
-                            name: 'text',
-                            description: 'A text of the content element',
-                            properties: [
-                                new EnumSchema( 'name', 'Name of the text element', options: ['title', 'text'] ),
-                                new StringSchema( 'value', 'Plain title, markdown text or source code text' ),
-                            ],
-                            requiredFields: ['name', 'value']
-                        )
+        return new ObjectSchema(
+            name: 'response',
+            description: 'The content response',
+            properties: [
+                new ArraySchema(
+                    name: 'contents',
+                    description: 'List of page content elements',
+                    items: new ObjectSchema(
+                        name: 'content',
+                        description: 'A content element',
+                        properties: [
+                            new StringSchema( 'id', 'The ID of the content element', nullable: true ),
+                            new EnumSchema( 'type', 'The type of the content element', options: $types ),
+                            new ArraySchema(
+                                name: 'data',
+                                description: 'List of texts for the content element',
+                                items: new ObjectSchema(
+                                    name: 'text',
+                                    description: 'A text of the content element',
+                                    properties: [
+                                        new EnumSchema( 'name', 'Name of the text element', options: ['title', 'text'] ),
+                                        new StringSchema( 'value', 'Plain title, markdown text or source code text' ),
+                                    ],
+                                    requiredFields: ['name', 'value']
+                                )
+                            )
+                        ],
+                        requiredFields: ['id', 'type', 'data']
                     )
-                ],
-                requiredFields: ['type', 'data']
-            )
+                )
+            ],
+            requiredFields: ['contents']
         );
     }
 }
