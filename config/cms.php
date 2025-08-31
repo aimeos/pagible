@@ -17,8 +17,8 @@ return [
 
         'text' => env( 'CMS_AI_TEXT' ),                 // gemini
         'text-model' => env( 'CMS_AI_TEXT_MODEL' ),     // gemini-2.5-flash
-        'struct' => env( 'CMS_AI_STRUCT' ),             // openai
-        'struct-model' => env( 'CMS_AI_STRUCT_MODEL' ), // gpt-5-mini
+        'struct' => env( 'CMS_AI_STRUCT' ),             // gemini
+        'struct-model' => env( 'CMS_AI_STRUCT_MODEL' ), // gemini-2.5-flash
         'image' => env( 'CMS_AI_IMAGE' ),               // openai
         'image-model' => env( 'CMS_AI_IMAGE_MODEL' ),   // gpt-image-1
         'audio' => env( 'CMS_AI_AUDIO' ),               // openai

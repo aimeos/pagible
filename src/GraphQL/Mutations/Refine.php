@@ -24,8 +24,8 @@ final class Refine
             throw new Error( 'Prompt must not be empty' );
         }
 
-        $provider = config( 'cms.ai.struct' ) ?: 'openai';
-        $model = config( 'cms.ai.struct-model' ) ?: 'gpt-5-mini';
+        $provider = config( 'cms.ai.struct' ) ?: 'gemini';
+        $model = config( 'cms.ai.struct-model' ) ?: 'gemini-2.5-flash';
 
         $system = view( 'cms::prompts.refine' )->render();
         $type = $args['type'] ?? 'content';
@@ -40,7 +40,7 @@ final class Refine
                 ->withProviderOptions( ['use_tool_calling' => true] )
                 ->withSchema( $this->schema( $type ) )
                 ->withClientOptions( [
-                    'timeout' => 60,
+                    'timeout' => 120,
                     'connect_timeout' => 10,
                 ] )
                 ->asStructured();
@@ -49,7 +49,7 @@ final class Refine
                 throw new Error( 'Invalid content in refine response' );
             }
 
-            return $this->merge( $content, $response->structured['response'] ?? [] );
+            return $this->merge( $content, $response->structured['contents'] ?? [] );
         }
         catch( PrismException $e )
         {
