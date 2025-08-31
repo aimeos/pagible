@@ -148,7 +148,7 @@ msgstr "게시됨"
 #: src/components/FileListItems.vue:210
 #: src/components/FileListItems.vue:252
 #: src/components/FileListItems.vue:289
-#: src/components/PageDetailContentList.vue:348
+#: src/components/PageDetailContentList.vue:349
 #: src/components/PageListItems.vue:71
 #: src/components/PageListItems.vue:108
 #: src/components/PageListItems.vue:175
@@ -203,8 +203,8 @@ msgstr "공유 요소 가져오기 오류"
 #: src/components/ElementListItems.vue:495
 #: src/components/FileListItems.vue:441
 #: src/components/FileListItems.vue:531
-#: src/components/PageDetailContentList.vue:621
-#: src/components/PageDetailContentList.vue:672
+#: src/components/PageDetailContentList.vue:635
+#: src/components/PageDetailContentList.vue:686
 #: src/components/PageListItems.vue:873
 #: src/components/PageListItems.vue:950
 msgid "Actions"
@@ -227,7 +227,7 @@ msgstr "게시"
 
 #: src/components/ElementListItems.vue:429
 #: src/components/ElementListItems.vue:556
-#: src/components/PageDetailContentList.vue:760
+#: src/components/PageDetailContentList.vue:774
 #: src/components/PageDetailItemConfig.vue:201
 #: src/components/PageDetailItemMeta.vue:200
 #: src/fields/Items.vue:229
@@ -238,8 +238,8 @@ msgstr "요소 추가"
 #: src/components/ElementListItems.vue:507
 #: src/components/FileListItems.vue:451
 #: src/components/FileListItems.vue:542
-#: src/components/PageDetailContentList.vue:625
-#: src/components/PageDetailContentList.vue:685
+#: src/components/PageDetailContentList.vue:639
+#: src/components/PageDetailContentList.vue:699
 #: src/components/PageListItems.vue:889
 #: src/components/PageListItems.vue:1035
 msgid "Delete"
@@ -265,7 +265,7 @@ msgstr "퍼지"
 
 #: src/components/ElementListItems.vue:449
 #: src/components/FileListItems.vue:466
-#: src/components/PageDetailContentList.vue:646
+#: src/components/PageDetailContentList.vue:660
 #: src/components/PageListItems.vue:904
 msgid "Search for"
 msgstr "검색"
@@ -615,104 +615,112 @@ msgstr "되돌리기"
 msgid "Use version"
 msgstr "사용 버전"
 
-#: src/components/PageDetailContentList.vue:93
-#: src/components/PageDetailContentList.vue:104
-#: src/components/PageDetailContentList.vue:526
+#: src/components/PageDetailContentList.vue:94
+#: src/components/PageDetailContentList.vue:105
+#: src/components/PageDetailContentList.vue:527
 msgid "Content element not found"
 msgstr "콘텐츠 요소를 찾을 수 없습니다."
 
-#: src/components/PageDetailContentList.vue:306
+#: src/components/PageDetailContentList.vue:307
 msgid "Error refining content"
 msgstr "콘텐츠 정제 오류"
 
-#: src/components/PageDetailContentList.vue:355
+#: src/components/PageDetailContentList.vue:356
 msgid "Element not found"
 msgstr "요소를 찾을 수 없음"
 
-#: src/components/PageDetailContentList.vue:360
+#: src/components/PageDetailContentList.vue:361
 msgid "Element is already shared"
 msgstr "요소가 이미 공유되었습니다."
 
-#: src/components/PageDetailContentList.vue:420
+#: src/components/PageDetailContentList.vue:421
 msgid "Unable to make element shared"
 msgstr "요소를 공유할 수 없습니다."
 
-#: src/components/PageDetailContentList.vue:439
+#: src/components/PageDetailContentList.vue:440
 msgid "Not available for this content element"
 msgstr "이 콘텐츠 요소에는 사용할 수 없습니다."
 
-#: src/components/PageDetailContentList.vue:533
+#: src/components/PageDetailContentList.vue:534
 msgid "Element is not shared"
 msgstr "요소가 공유되지 않습니다."
 
-#: src/components/PageDetailContentList.vue:581
+#: src/components/PageDetailContentList.vue:582
 msgid "Describe the task you want to perform"
 msgstr "수행하려는 작업을 설명하세요."
 
-#: src/components/PageDetailContentList.vue:596
+#: src/components/PageDetailContentList.vue:604
 msgid "Refining ..."
 msgstr "정제 ..."
 
-#: src/components/PageDetailContentList.vue:596
+#: src/components/PageDetailContentList.vue:604
 msgid "Refine content based on prompt"
 msgstr "프롬프트에 따라 콘텐츠 구체화"
 
-#: src/components/PageDetailContentList.vue:628
-#: src/components/PageDetailContentList.vue:679
+#: src/components/PageDetailContentList.vue:621
+msgid "AI can add or improve content based on your input"
+msgstr "AI는 사용자의 입력에 따라 콘텐츠를 추가하거나 개선할 수 있습니다."
+
+#: src/components/PageDetailContentList.vue:622
+msgid "It can take a long time depending on the task and content size"
+msgstr "작업 및 콘텐츠 크기에 따라 시간이 오래 걸릴 수 있습니다."
+
+#: src/components/PageDetailContentList.vue:642
+#: src/components/PageDetailContentList.vue:693
 #: src/components/PageListItems.vue:975
 msgid "Copy"
 msgstr "복사"
 
-#: src/components/PageDetailContentList.vue:631
-#: src/components/PageDetailContentList.vue:682
+#: src/components/PageDetailContentList.vue:645
+#: src/components/PageDetailContentList.vue:696
 #: src/components/PageListItems.vue:972
 msgid "Cut"
 msgstr "컷"
 
-#: src/components/PageDetailContentList.vue:634
+#: src/components/PageDetailContentList.vue:648
 #: src/components/PageListItems.vue:978
 #: src/components/PageListItems.vue:996
 msgid "Paste"
 msgstr "붙여넣기"
 
-#: src/components/PageDetailContentList.vue:637
-#: src/components/PageDetailContentList.vue:718
+#: src/components/PageDetailContentList.vue:651
+#: src/components/PageDetailContentList.vue:732
 msgid "Merge"
 msgstr "병합"
 
-#: src/components/PageDetailContentList.vue:691
+#: src/components/PageDetailContentList.vue:705
 msgid "Paste before"
 msgstr "앞에 붙여넣기"
 
-#: src/components/PageDetailContentList.vue:694
+#: src/components/PageDetailContentList.vue:708
 msgid "Paste after"
 msgstr "다음에 붙여넣기"
 
-#: src/components/PageDetailContentList.vue:697
+#: src/components/PageDetailContentList.vue:711
 msgid "Insert before"
 msgstr "앞에 삽입"
 
-#: src/components/PageDetailContentList.vue:700
+#: src/components/PageDetailContentList.vue:714
 msgid "Insert after"
 msgstr "다음에 삽입"
 
-#: src/components/PageDetailContentList.vue:706
+#: src/components/PageDetailContentList.vue:720
 msgid "Make shared"
 msgstr "공유 만들기"
 
-#: src/components/PageDetailContentList.vue:709
+#: src/components/PageDetailContentList.vue:723
 msgid "Merge copy"
 msgstr "복사본 병합"
 
-#: src/components/PageDetailContentList.vue:712
+#: src/components/PageDetailContentList.vue:726
 msgid "Change to"
 msgstr "로 변경"
 
-#: src/components/PageDetailContentList.vue:715
+#: src/components/PageDetailContentList.vue:729
 msgid "Split"
 msgstr "분할"
 
-#: src/components/PageDetailContentList.vue:724
+#: src/components/PageDetailContentList.vue:738
 msgid "Shared element"
 msgstr "공유 요소"
 

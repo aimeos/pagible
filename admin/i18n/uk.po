@@ -148,7 +148,7 @@ msgstr "Опубліковано"
 #: src/components/FileListItems.vue:210
 #: src/components/FileListItems.vue:252
 #: src/components/FileListItems.vue:289
-#: src/components/PageDetailContentList.vue:348
+#: src/components/PageDetailContentList.vue:349
 #: src/components/PageListItems.vue:71
 #: src/components/PageListItems.vue:108
 #: src/components/PageListItems.vue:175
@@ -203,8 +203,8 @@ msgstr "Помилка при отриманні спільних елемент
 #: src/components/ElementListItems.vue:495
 #: src/components/FileListItems.vue:441
 #: src/components/FileListItems.vue:531
-#: src/components/PageDetailContentList.vue:621
-#: src/components/PageDetailContentList.vue:672
+#: src/components/PageDetailContentList.vue:635
+#: src/components/PageDetailContentList.vue:686
 #: src/components/PageListItems.vue:873
 #: src/components/PageListItems.vue:950
 msgid "Actions"
@@ -227,7 +227,7 @@ msgstr "Опублікувати"
 
 #: src/components/ElementListItems.vue:429
 #: src/components/ElementListItems.vue:556
-#: src/components/PageDetailContentList.vue:760
+#: src/components/PageDetailContentList.vue:774
 #: src/components/PageDetailItemConfig.vue:201
 #: src/components/PageDetailItemMeta.vue:200
 #: src/fields/Items.vue:229
@@ -238,8 +238,8 @@ msgstr "Додати елемент"
 #: src/components/ElementListItems.vue:507
 #: src/components/FileListItems.vue:451
 #: src/components/FileListItems.vue:542
-#: src/components/PageDetailContentList.vue:625
-#: src/components/PageDetailContentList.vue:685
+#: src/components/PageDetailContentList.vue:639
+#: src/components/PageDetailContentList.vue:699
 #: src/components/PageListItems.vue:889
 #: src/components/PageListItems.vue:1035
 msgid "Delete"
@@ -265,7 +265,7 @@ msgstr "Чистка."
 
 #: src/components/ElementListItems.vue:449
 #: src/components/FileListItems.vue:466
-#: src/components/PageDetailContentList.vue:646
+#: src/components/PageDetailContentList.vue:660
 #: src/components/PageListItems.vue:904
 msgid "Search for"
 msgstr "Шукайте"
@@ -615,104 +615,112 @@ msgstr "Повернути назад."
 msgid "Use version"
 msgstr "Версія для використання"
 
-#: src/components/PageDetailContentList.vue:93
-#: src/components/PageDetailContentList.vue:104
-#: src/components/PageDetailContentList.vue:526
+#: src/components/PageDetailContentList.vue:94
+#: src/components/PageDetailContentList.vue:105
+#: src/components/PageDetailContentList.vue:527
 msgid "Content element not found"
 msgstr "Елемент вмісту не знайдено"
 
-#: src/components/PageDetailContentList.vue:306
+#: src/components/PageDetailContentList.vue:307
 msgid "Error refining content"
 msgstr "Помилка уточнення вмісту"
 
-#: src/components/PageDetailContentList.vue:355
+#: src/components/PageDetailContentList.vue:356
 msgid "Element not found"
 msgstr "Елемент не знайдено"
 
-#: src/components/PageDetailContentList.vue:360
+#: src/components/PageDetailContentList.vue:361
 msgid "Element is already shared"
 msgstr "Елемент вже є спільним"
 
-#: src/components/PageDetailContentList.vue:420
+#: src/components/PageDetailContentList.vue:421
 msgid "Unable to make element shared"
 msgstr "Не вдалося зробити елемент спільним доступом"
 
-#: src/components/PageDetailContentList.vue:439
+#: src/components/PageDetailContentList.vue:440
 msgid "Not available for this content element"
 msgstr "Недоступно для цього елемента вмісту"
 
-#: src/components/PageDetailContentList.vue:533
+#: src/components/PageDetailContentList.vue:534
 msgid "Element is not shared"
 msgstr "Елемент не є спільним"
 
-#: src/components/PageDetailContentList.vue:581
+#: src/components/PageDetailContentList.vue:582
 msgid "Describe the task you want to perform"
 msgstr "Опишіть завдання, яке ви хочете виконати"
 
-#: src/components/PageDetailContentList.vue:596
+#: src/components/PageDetailContentList.vue:604
 msgid "Refining ..."
 msgstr "Переробка ..."
 
-#: src/components/PageDetailContentList.vue:596
+#: src/components/PageDetailContentList.vue:604
 msgid "Refine content based on prompt"
 msgstr "Вдосконалюйте контент на основі підказки"
 
-#: src/components/PageDetailContentList.vue:628
-#: src/components/PageDetailContentList.vue:679
+#: src/components/PageDetailContentList.vue:621
+msgid "AI can add or improve content based on your input"
+msgstr "ШІ може додавати або покращувати контент на основі ваших даних"
+
+#: src/components/PageDetailContentList.vue:622
+msgid "It can take a long time depending on the task and content size"
+msgstr "Це може зайняти багато часу, залежно від завдання та розміру контенту"
+
+#: src/components/PageDetailContentList.vue:642
+#: src/components/PageDetailContentList.vue:693
 #: src/components/PageListItems.vue:975
 msgid "Copy"
 msgstr "Прийнято."
 
-#: src/components/PageDetailContentList.vue:631
-#: src/components/PageDetailContentList.vue:682
+#: src/components/PageDetailContentList.vue:645
+#: src/components/PageDetailContentList.vue:696
 #: src/components/PageListItems.vue:972
 msgid "Cut"
 msgstr "Знято."
 
-#: src/components/PageDetailContentList.vue:634
+#: src/components/PageDetailContentList.vue:648
 #: src/components/PageListItems.vue:978
 #: src/components/PageListItems.vue:996
 msgid "Paste"
 msgstr "Вставити"
 
-#: src/components/PageDetailContentList.vue:637
-#: src/components/PageDetailContentList.vue:718
+#: src/components/PageDetailContentList.vue:651
+#: src/components/PageDetailContentList.vue:732
 msgid "Merge"
 msgstr "Злиття"
 
-#: src/components/PageDetailContentList.vue:691
+#: src/components/PageDetailContentList.vue:705
 msgid "Paste before"
 msgstr "Вставити перед"
 
-#: src/components/PageDetailContentList.vue:694
+#: src/components/PageDetailContentList.vue:708
 msgid "Paste after"
 msgstr "Вставте після"
 
-#: src/components/PageDetailContentList.vue:697
+#: src/components/PageDetailContentList.vue:711
 msgid "Insert before"
 msgstr "Вставити перед"
 
-#: src/components/PageDetailContentList.vue:700
+#: src/components/PageDetailContentList.vue:714
 msgid "Insert after"
 msgstr "Вставте після"
 
-#: src/components/PageDetailContentList.vue:706
+#: src/components/PageDetailContentList.vue:720
 msgid "Make shared"
 msgstr "Зробити спільний доступ"
 
-#: src/components/PageDetailContentList.vue:709
+#: src/components/PageDetailContentList.vue:723
 msgid "Merge copy"
 msgstr "Об'єднати копію"
 
-#: src/components/PageDetailContentList.vue:712
+#: src/components/PageDetailContentList.vue:726
 msgid "Change to"
 msgstr "Змінити на"
 
-#: src/components/PageDetailContentList.vue:715
+#: src/components/PageDetailContentList.vue:729
 msgid "Split"
 msgstr "Спліт"
 
-#: src/components/PageDetailContentList.vue:724
+#: src/components/PageDetailContentList.vue:738
 msgid "Shared element"
 msgstr "Спільний елемент"
 
