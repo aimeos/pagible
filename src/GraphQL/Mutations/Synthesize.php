@@ -72,7 +72,7 @@ final class Synthesize
         }
         catch( PrismException $e )
         {
-            throw new Error( $e->getMessage(), previous: $e );
+            throw new Error( $e->getMessage() );
         }
         catch( \Exception $e )
         {

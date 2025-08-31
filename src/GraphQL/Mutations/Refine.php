@@ -53,7 +53,7 @@ final class Refine
         }
         catch( PrismException $e )
         {
-            throw new Error( $e->getMessage(), previous: $e );
+            throw new Error( $e->getMessage() );
         }
     }
 
