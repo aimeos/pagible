@@ -40,7 +40,7 @@ final class Refine
                 ->withProviderOptions( ['use_tool_calling' => true] )
                 ->withSchema( $this->schema( $type ) )
                 ->withClientOptions( [
-                    'timeout' => 120,
+                    'timeout' => 180,
                     'connect_timeout' => 10,
                 ] )
                 ->asStructured();

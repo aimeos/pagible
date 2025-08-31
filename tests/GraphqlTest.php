@@ -108,7 +108,7 @@ class GraphqlTest extends TestAbstract
     {
         Prism::fake( [
             \Prism\Prism\Testing\StructuredResponseFake::make()->withStructured( [
-                'response' => [[
+                'contents' => [[
                     'id' => 'content-1',
                     'type' => 'text',
                     'data' => [
