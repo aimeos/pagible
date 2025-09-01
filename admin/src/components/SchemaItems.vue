@@ -81,7 +81,8 @@
   }
 
   .v-btn {
-    width: 8rem;
+    max-width: 12rem;
+    min-width: 8rem !important;
   }
 
   .icon {

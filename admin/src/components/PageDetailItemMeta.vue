@@ -209,7 +209,11 @@
 
   <Teleport to="body">
     <v-dialog v-model="vschemas" @afterLeave="vschemas = false" scrollable width="auto">
-      <SchemaItems type="meta" @add="add($event)" />
+      <v-card>
+        <v-card-text>
+          <SchemaItems type="meta" @add="add($event)" />
+        </v-card-text>
+      </v-card>
     </v-dialog>
   </Teleport>
 </template>
