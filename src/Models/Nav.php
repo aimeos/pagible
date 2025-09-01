@@ -26,6 +26,7 @@ class Nav extends Page
         'name' => '',
         'title' => '',
         'status' => 0,
+        'config' => '{}',
     ];
 
     /**

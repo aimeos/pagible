@@ -3,6 +3,7 @@
 namespace Aimeos\Cms\JsonApi\V1\Navs;
 
 use LaravelJsonApi\Eloquent\Fields\Relations\HasMany;
+use LaravelJsonApi\Eloquent\Fields\ArrayHash;
 use LaravelJsonApi\Eloquent\Fields\DateTime;
 use LaravelJsonApi\Eloquent\Fields\Boolean;
 use LaravelJsonApi\Eloquent\Fields\Number;
@@ -83,6 +84,39 @@ class NavSchema extends Schema
             Boolean::make( 'has' )->readOnly(),
             DateTime::make( 'createdAt' )->readOnly(),
             DateTime::make( 'updatedAt' )->readOnly(),
+            ArrayHash::make( 'config' )->readOnly()->extractUsing( function( $model, $column, $items ) {
+                foreach( (array) $items as $item )
+                {
+                    if( !empty( $item->files ) )
+                    {
+                        $lang = $model->lang;
+                        $lang2 = substr( $lang, 0, 2 );
+
+                        $item->files = collect( $item->files )
+                            ->map( fn( $id ) => $model->files[$id] ?? null )
+                            ->filter()
+                            ->pluck( null, 'id' )
+                            ->each( function( $file ) use ( $lang, $lang2 ) {
+                                $file->description = $file->description?->{$lang}
+                                    ?? $file->description?->{$lang2}
+                                    ?? null;
+
+                                $file->transcription = $file->transcription?->{$lang}
+                                    ?? $file->transcription?->{$lang2}
+                                    ?? null;
+                            } );
+                    }
+                    else
+                    {
+                        unset( $item->files );
+                    }
+
+                    if( !empty( $item->data?->action ) ) {
+                        $item->data->action = app()->call( $item->data->action, ['model' => $model, 'item' => $item] );
+                    }
+                }
+                return $items;
+            } ),
             HasMany::make( 'children' )->type( 'navs' )->readOnly()->serializeUsing(
                 static fn($relation) => $relation->withoutLinks()
             ),
