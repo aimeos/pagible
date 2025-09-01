@@ -200,6 +200,7 @@ body {
   max-height: 48px;
   overflow: hidden;
   text-wrap: nowrap;
+  text-overflow: ellipsis;
 }
 
 .list .v-expansion-panel-title .element-type {

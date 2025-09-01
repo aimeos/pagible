@@ -509,7 +509,7 @@
           .map(v => v && typeof v !== 'object' && typeof v !== 'boolean' ? v : null)
           .filter(v => !!v)
           .join(' - '))
-          .substring(0, 50) || this.$pgettext('st', el.type) || ''
+          .substring(0, 100) || this.$pgettext('st', el.type) || ''
       },
 
 
