@@ -1,5 +1,19 @@
 <script>
-  import { diffJson } from 'diff'
+  import { jsonDiff } from "diff"
+
+
+  const diffCastInput = jsonDiff.castInput;
+  jsonDiff.castInput = function(value, options) {
+    let result = diffCastInput.call(this, value, options);
+
+    // Replace JSON-escaped \n with real newlines
+    if (typeof result === "string") {
+      result = result.replace(/\\n/g, "\n");
+    }
+
+    return result;
+  };
+
 
   export default {
     props: {
@@ -30,7 +44,7 @@
     methods: {
       diff(old, str) {
         if(old && str) {
-          return diffJson(old, str)
+          return jsonDiff.diff(old, str)
         } else if(str) {
           return [str]
         }
@@ -61,7 +75,7 @@
           return false
         }
 
-        return diffJson(v1.data || {}, v2.data || {}).length !== 1
+        return jsonDiff.diff(v1.data || {}, v2.data || {}).length !== 1
       },
 
 
