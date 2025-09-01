@@ -204,6 +204,11 @@
             entries.push(this.content[i])
             this.content.splice(i, 1)
             idx = i
+
+            const pi = this.panel.indexOf(i)
+            if(pi !== -1) {
+              this.panel.splice(pi, 1)
+            }
           }
         }
 
