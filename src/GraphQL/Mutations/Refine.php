@@ -78,7 +78,19 @@ final class Refine
 
             foreach( $item['data'] ?? [] as $data )
             {
-                if( !empty( $data['name'] ) ) {
+                if( empty( $data['name'] ) ) {
+                    continue;
+                }
+
+                $m = [];
+
+                if( $entry['type'] === 'heading' && preg_match( '/^(#+)(.*)$/', (string) $data['value'] ?? '', $m ) )
+                {
+                    $entry['data'][$data['name']] = trim( $m[2] );
+                    $entry['data']['level'] = (string) strlen( $m[1] );
+                }
+                else
+                {
                     $entry['data'][$data['name']] = (string) ( $data['value'] ?? '' );
                 }
             }
