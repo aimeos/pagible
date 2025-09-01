@@ -131,7 +131,7 @@ class Page extends Model
      */
     public function children()
     {
-        return $this->hasMany(Nav::class, $this->getParentIdName())->setModel(new Nav());
+        return $this->hasMany(Nav::class, $this->getParentIdName())->defaultOrder()->setModel(new Nav());
     }
 
 
