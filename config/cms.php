@@ -20,7 +20,7 @@ return [
         'struct' => env( 'CMS_AI_STRUCT' ),             // gemini
         'struct-model' => env( 'CMS_AI_STRUCT_MODEL' ), // gemini-2.5-flash
         'image' => env( 'CMS_AI_IMAGE' ),               // openai
-        'image-model' => env( 'CMS_AI_IMAGE_MODEL' ),   // gpt-image-1
+        'image-model' => env( 'CMS_AI_IMAGE_MODEL' ),   // dall-e-3
         'audio' => env( 'CMS_AI_AUDIO' ),               // openai
         'audio-model' => env( 'CMS_AI_AUDIO_MODEL' ),   // whisper-1
     ],

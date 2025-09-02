@@ -33,7 +33,7 @@ final class Imagine
         ] ) );
 
         $provider = config( 'cms.ai.image' ) ?: 'openai';
-        $model = config( 'cms.ai.image-model' ) ?: 'gpt-image-1';
+        $model = config( 'cms.ai.image-model' ) ?: 'dall-e-3';
 
         try
         {
