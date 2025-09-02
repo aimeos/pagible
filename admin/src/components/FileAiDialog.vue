@@ -62,7 +62,8 @@
         fetch(item.path).then(response => {
           return response.blob()
         }).then(blob => {
-          const filename = this.slugify(item.name) + '_' + (new Date()).toISOString().replace(/[^0-9]/g, '') + '.png'
+          const name = item.name.slice(0, item.name.length > 50 ? item.name.lastIndexOf(' ', 50) : 50) || 'ai-image'
+          const filename = this.slugify(name) + '_' + (new Date()).toISOString().replace(/[^0-9]/g, '') + '.png'
 
           return this.$apollo.mutate({
             mutation: gql`mutation($input: FileInput, $file: Upload) {
