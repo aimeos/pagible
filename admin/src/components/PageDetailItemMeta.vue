@@ -176,7 +176,7 @@
             <div class="element-title">{{ title(el) }}</div>
             <div class="element-type">{{ el.type }}</div>
           </v-expansion-panel-title>
-          <v-expansion-panel-text>
+          <v-expansion-panel-text eager>
 
             <Fields ref="field"
               v-model:data="el.data"

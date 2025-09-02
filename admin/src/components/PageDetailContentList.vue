@@ -574,6 +574,16 @@
           return result.every(r => r)
         });
       }
+    },
+
+    watch: {
+      content: {
+        handler() {
+          this.validate().then(val => {
+            this.$emit('error', !val)
+          })
+        },
+      }
     }
   }
 </script>
@@ -748,7 +758,7 @@
             <div class="element-title">{{ el.type === 'reference' ? elements[el.refid]?.name : title(el) }}</div>
             <div class="element-type">{{ $pgettext('st', el.type) }}</div>
           </v-expansion-panel-title>
-          <v-expansion-panel-text>
+          <v-expansion-panel-text eager>
 
             <Fields v-if="el.type === 'reference'"
               :data="elements[el.refid]?.data || {}"
