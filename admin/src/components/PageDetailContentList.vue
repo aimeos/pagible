@@ -31,7 +31,6 @@
       chat: '',
       response: '',
       help: false,
-      shortmsg: true,
       refining: false,
       panel: [],
       menu: {},
@@ -595,7 +594,6 @@
       v-model="chat"
       :loading="refining"
       :placeholder="$gettext('Describe the task you want to perform')"
-      @dblclick="shortmsg = !shortmsg; chat = message"
       variant="outlined"
       class="prompt"
       rounded="lg"
