@@ -77,6 +77,9 @@ extend type Mutation {
   "Refine existing page content"
   refine(prompt: String!, content: JSON!, type: String, context: String): JSON
 
+  "Get page statistics"
+  statistics(url: String!, days: Int): Stats
+
   "Synthesize pages and content from prompts and passed file IDs"
   synthesize(prompt: String!, context: String, files: [String!]): String
 
@@ -392,10 +395,10 @@ type Element {
   "Date/time value when the content element was deleted or NULL if it's available"
   deleted_at: String
 
-  "List of pages using the file"
+  "List of pages using the content element"
   bypages: [Page!]! @belongsToMany
 
-  "List of versions using the file"
+  "List of versions using the content element"
   byversions: [Version!]! @belongsToMany
 
   "List of files assigned to the content element"
@@ -577,4 +580,57 @@ type Version {
 
   "Date/time value when the versioned data was created"
   created_at: String!
+}
+
+type Stats {
+  "Number of page views by day"
+  pageViews: [StatsNumber!]
+
+  "Number of page visits by day"
+  visits: [StatsNumber!]
+
+  "Average page visit duration in seconds by day"
+  visitDuration: [StatsNumber!]
+
+  "Number of page visits by countries"
+  countries: [StatsNumber!]
+
+  "Number of page visits by referring website"
+  referrers: [StatsNumber!]
+
+  "Performance related values of the page"
+  performance: StatsPerf
+}
+
+type StatsNumber {
+  "Date in ISO format (YYYY-MM-DD), country name or website"
+  key: String!
+
+  "Number of page views or visits"
+  value: Int!
+}
+
+type StatsPerf {
+  "Time to first byte in milliseconds"
+  ttfb: StatsPerfValue
+
+  "First contentful paint in milliseconds"
+  fcp: StatsPerfValue
+
+  "Largest contentful paint in milliseconds"
+  lcp: StatsPerfValue
+
+  "First input delay in milliseconds"
+  fid: StatsPerfValue
+
+  "Cumulative layout shift score"
+  cls: StatsPerfValue
+}
+
+type StatsPerfValue {
+  "Performance value"
+  value: Float
+
+  "Performance category (FAST, AVERAGE, SLOW)"
+  category: String
 }

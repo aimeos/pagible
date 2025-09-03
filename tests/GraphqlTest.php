@@ -5,6 +5,7 @@ namespace Tests;
 use Aimeos\Cms\Models\File;
 use Database\Seeders\CmsSeeder;
 use Illuminate\Http\UploadedFile;
+use Aimeos\AnalyticsBridge\Facades\Analytics;
 use Nuwave\Lighthouse\Testing\MakesGraphQLRequests;
 use Nuwave\Lighthouse\Testing\RefreshesSchemaCache;
 use Prism\Prism\Testing\ImageResponseFake;
@@ -217,5 +218,94 @@ class GraphqlTest extends TestAbstract
                 'transcribe' => "WEBVTT\n"
             ]
         ] );
+    }
+
+
+    public function testStatistics()
+    {
+        $expected = [
+            'pageViews' => [
+                ['key' => '2025-08-01', 'value' => 10],
+                ['key' => '2025-08-02', 'value' => 20],
+            ],
+            'visits' => [
+                ['key' => '2025-08-01', 'value' => 5],
+                ['key' => '2025-08-02', 'value' => 15],
+            ],
+            'visitDuration' => [
+                ['key' => '2025-08-01', 'value' => 60],
+                ['key' => '2025-08-02', 'value' => 90],
+            ],
+            'countries' => [
+                ['key' => 'Germany', 'value' => 12],
+                ['key' => 'USA', 'value' => 8],
+            ],
+            'referrers' => [
+                ['key' => 'google.com', 'value' => 6],
+                ['key' => 'bing.com', 'value' => 3],
+            ],
+            'performance' => [
+                'ttfb' => ['value' => 400, 'category' => 'FAST'],
+                'fcp'  => ['value' => 1800, 'category' => 'FAST'],
+                'lcp'  => ['value' => 2400, 'category' => 'AVERAGE'],
+                'fid'  => ['value' => 20, 'category' => 'FAST'],
+                'cls'  => ['value' => 0.12, 'category' => 'FAST'],
+            ],
+        ];
+
+        // Mock Analytics facade
+        Analytics::shouldReceive('driver->all')
+            ->once()
+            ->with('/test', 30)
+            ->andReturn($expected);
+
+        $response = $this->actingAs($this->user)->graphQL('
+            mutation {
+                statistics(url: "/test", days: 30) {
+                    pageViews { key value }
+                    visits { key value }
+                    visitDuration { key value }
+                    countries { key value }
+                    referrers { key value }
+                    performance {
+                        ttfb { value category }
+                        fcp { value category }
+                        lcp { value category }
+                        fid { value category }
+                        cls { value category }
+                    }
+                }
+            }
+        ');
+
+        $response->assertJson([
+            'data' => [
+                'statistics' => $expected,
+            ],
+        ]);
+    }
+
+
+    public function testStatisticsEmptyUrl()
+    {
+        $this->actingAs($this->user)->graphQL('
+            mutation {
+                statistics(url: "", days: 30) {
+                    pageViews { key value }
+                }
+            }
+        ')->assertGraphQLErrorMessage('URL must be a non-empty string');
+    }
+
+
+    public function testStatisticsInvalidDays()
+    {
+        $this->actingAs($this->user)->graphQL('
+            mutation {
+                statistics(url: "/test", days: 999) {
+                    pageViews { key value }
+                }
+            }
+        ')->assertGraphQLErrorMessage('Number of days must be an integer between 1 and 365');
     }
 }
