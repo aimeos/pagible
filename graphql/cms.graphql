@@ -584,13 +584,13 @@ type Version {
 
 type Stats {
   "Number of page views by day"
-  pageViews: [StatsNumber!]
+  views: [StatsNumber!]
 
   "Number of page visits by day"
   visits: [StatsNumber!]
 
   "Average page visit duration in seconds by day"
-  visitDuration: [StatsNumber!]
+  durations: [StatsNumber!]
 
   "Number of page visits by countries"
   countries: [StatsNumber!]
@@ -607,30 +607,5 @@ type StatsNumber {
   key: String!
 
   "Number of page views or visits"
-  value: Int!
-}
-
-type StatsPerf {
-  "Time to first byte in milliseconds"
-  ttfb: StatsPerfValue
-
-  "First contentful paint in milliseconds"
-  fcp: StatsPerfValue
-
-  "Largest contentful paint in milliseconds"
-  lcp: StatsPerfValue
-
-  "First input delay in milliseconds"
-  fid: StatsPerfValue
-
-  "Cumulative layout shift score"
-  cls: StatsPerfValue
-}
-
-type StatsPerfValue {
-  "Performance value"
   value: Float
-
-  "Performance category (FAST, AVERAGE, SLOW)"
-  category: String
 }
