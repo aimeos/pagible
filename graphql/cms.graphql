@@ -74,6 +74,9 @@ extend type Mutation {
   "Generate images from prompts and passed file IDs"
   imagine(prompt: String!, context: String, files: [String!]): [String!]
 
+  "Get pagespeed statistics"
+  pagespeed(url: String!): [StatsNumber!]
+
   "Refine existing page content"
   refine(prompt: String!, content: JSON!, type: String, context: String): JSON
 
