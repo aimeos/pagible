@@ -147,7 +147,7 @@ msgstr "เผยแพร่แล้ว"
 #: src/components/FileListItems.vue:210
 #: src/components/FileListItems.vue:252
 #: src/components/FileListItems.vue:289
-#: src/components/PageDetailContentList.vue:349
+#: src/components/PageDetailContentList.vue:353
 #: src/components/PageListItems.vue:71
 #: src/components/PageListItems.vue:108
 #: src/components/PageListItems.vue:175
@@ -168,9 +168,9 @@ msgstr "เผยแพร่แล้ว"
 #: src/views/FileDetail.vue:46
 #: src/views/FileDetail.vue:95
 #: src/views/FileDetail.vue:164
-#: src/views/PageDetail.vue:299
-#: src/views/PageDetail.vue:351
-#: src/views/PageDetail.vue:540
+#: src/views/PageDetail.vue:301
+#: src/views/PageDetail.vue:353
+#: src/views/PageDetail.vue:542
 msgid "Permission denied"
 msgstr "ไม่อนุญาต"
 
@@ -202,8 +202,8 @@ msgstr "เกิดข้อผิดพลาดในการดึงอง
 #: src/components/ElementListItems.vue:495
 #: src/components/FileListItems.vue:441
 #: src/components/FileListItems.vue:531
-#: src/components/PageDetailContentList.vue:635
-#: src/components/PageDetailContentList.vue:686
+#: src/components/PageDetailContentList.vue:648
+#: src/components/PageDetailContentList.vue:699
 #: src/components/PageListItems.vue:873
 #: src/components/PageListItems.vue:950
 msgid "Actions"
@@ -219,14 +219,14 @@ msgstr "การกระทำ"
 #: src/views/ElementDetail.vue:326
 #: src/views/FileDetail.vue:270
 #: src/views/FileDetail.vue:276
-#: src/views/PageDetail.vue:666
-#: src/views/PageDetail.vue:672
+#: src/views/PageDetail.vue:668
+#: src/views/PageDetail.vue:674
 msgid "Publish"
 msgstr "เผยแพร่"
 
 #: src/components/ElementListItems.vue:429
 #: src/components/ElementListItems.vue:556
-#: src/components/PageDetailContentList.vue:774
+#: src/components/PageDetailContentList.vue:787
 #: src/components/PageDetailItemConfig.vue:201
 #: src/components/PageDetailItemMeta.vue:200
 #: src/fields/Items.vue:229
@@ -237,8 +237,8 @@ msgstr "เพิ่มองค์ประกอบ"
 #: src/components/ElementListItems.vue:507
 #: src/components/FileListItems.vue:451
 #: src/components/FileListItems.vue:542
-#: src/components/PageDetailContentList.vue:639
-#: src/components/PageDetailContentList.vue:699
+#: src/components/PageDetailContentList.vue:652
+#: src/components/PageDetailContentList.vue:712
 #: src/components/PageListItems.vue:889
 #: src/components/PageListItems.vue:1035
 msgid "Delete"
@@ -264,7 +264,7 @@ msgstr "ล้างข้อมูล"
 
 #: src/components/ElementListItems.vue:449
 #: src/components/FileListItems.vue:466
-#: src/components/PageDetailContentList.vue:660
+#: src/components/PageDetailContentList.vue:673
 #: src/components/PageListItems.vue:904
 msgid "Search for"
 msgstr "ค้นหา"
@@ -303,7 +303,7 @@ msgstr "ประเภท"
 
 #: src/components/ElementListItems.vue:538
 #: src/components/FileListItems.vue:580
-#: src/components/HistoryDialog.vue:116
+#: src/components/HistoryDialog.vue:130
 #: src/components/PageListItems.vue:1075
 #: src/fields/Autocomplete.vue:155
 #: src/fields/Combobox.vue:18
@@ -329,15 +329,15 @@ msgstr "สร้างข้อความสำหรับฟิลด์%{c
 #: src/components/FieldsDialog.vue:51
 #: src/views/ElementDetail.vue:287
 #: src/views/FileDetail.vue:237
-#: src/views/PageDetail.vue:633
+#: src/views/PageDetail.vue:635
 msgid "Save"
 msgstr "บันทึก"
 
 #: src/components/FieldsDialog.vue:54
-#: src/components/FileAiDialog.vue:189
+#: src/components/FileAiDialog.vue:190
 #: src/components/FileDialog.vue:25
 #: src/components/FileUrlDialog.vue:165
-#: src/components/HistoryDialog.vue:99
+#: src/components/HistoryDialog.vue:113
 #: src/components/SchemaDialog.vue:25
 msgid "Close"
 msgstr "ปิด"
@@ -346,7 +346,7 @@ msgstr "ปิด"
 msgid "Content Element"
 msgstr "องค์ประกอบเนื้อหา"
 
-#: src/components/FileAiDialog.vue:98
+#: src/components/FileAiDialog.vue:99
 #: src/components/FileListItems.vue:112
 #: src/components/FileUrlDialog.vue:67
 #: src/components/FileUrlDialog.vue:147
@@ -355,25 +355,25 @@ msgstr "องค์ประกอบเนื้อหา"
 msgid "Error adding file %{path}"
 msgstr "เกิดข้อผิดพลาดในการเพิ่มไฟล์%{path}"
 
-#: src/components/FileAiDialog.vue:156
+#: src/components/FileAiDialog.vue:157
 msgid "Error creating file"
 msgstr "เกิดข้อผิดพลาดในการสร้างไฟล์"
 
-#: src/components/FileAiDialog.vue:196
-#: src/components/FileAiDialog.vue:214
+#: src/components/FileAiDialog.vue:197
+#: src/components/FileAiDialog.vue:215
 msgid "Create image"
 msgstr "สร้างภาพ"
 
-#: src/components/FileAiDialog.vue:202
+#: src/components/FileAiDialog.vue:203
 msgid "Describe the image"
 msgstr "อธิบายภาพ"
 
-#: src/components/FileAiDialog.vue:219
+#: src/components/FileAiDialog.vue:220
 msgid "Generated images"
 msgstr "ภาพที่สร้างขึ้น"
 
-#: src/components/FileAiDialog.vue:225
-#: src/components/FileAiDialog.vue:244
+#: src/components/FileAiDialog.vue:226
+#: src/components/FileAiDialog.vue:245
 #: src/components/FileUrlDialog.vue:209
 #: src/fields/Audio.vue:57
 #: src/fields/File.vue:239
@@ -383,11 +383,11 @@ msgstr "ภาพที่สร้างขึ้น"
 msgid "Remove"
 msgstr "ลบ"
 
-#: src/components/FileAiDialog.vue:240
+#: src/components/FileAiDialog.vue:241
 msgid "Use images of this style"
 msgstr "ใช้ภาพในสไตล์นี้"
 
-#: src/components/FileAiDialog.vue:254
+#: src/components/FileAiDialog.vue:255
 msgid "Select similar images"
 msgstr "เลือกภาพที่คล้ายกัน"
 
@@ -594,132 +594,132 @@ msgstr "กรุณากรอก URL หนึ่งรายการต่�
 msgid "Enter URL"
 msgstr "ป้อน URL"
 
-#: src/components/HistoryDialog.vue:107
+#: src/components/HistoryDialog.vue:121
 msgid "History"
 msgstr "ประวัติศาสตร์"
 
-#: src/components/HistoryDialog.vue:129
+#: src/components/HistoryDialog.vue:143
 msgid "No changes"
 msgstr "ไม่มีการเปลี่ยนแปลง"
 
-#: src/components/HistoryDialog.vue:138
+#: src/components/HistoryDialog.vue:152
 msgid "Current"
 msgstr "ปัจจุบัน"
 
-#: src/components/HistoryDialog.vue:180
+#: src/components/HistoryDialog.vue:194
 msgid "Revert"
 msgstr "ย้อนกลับ"
 
-#: src/components/HistoryDialog.vue:241
+#: src/components/HistoryDialog.vue:255
 msgid "Use version"
 msgstr "ใช้เวอร์ชัน"
 
-#: src/components/PageDetailContentList.vue:94
-#: src/components/PageDetailContentList.vue:105
-#: src/components/PageDetailContentList.vue:527
+#: src/components/PageDetailContentList.vue:93
+#: src/components/PageDetailContentList.vue:104
+#: src/components/PageDetailContentList.vue:531
 msgid "Content element not found"
 msgstr "ไม่พบองค์ประกอบเนื้อหา"
 
-#: src/components/PageDetailContentList.vue:307
+#: src/components/PageDetailContentList.vue:311
 msgid "Error refining content"
 msgstr "ข้อผิดพลาดในการปรับปรุงเนื้อหา"
 
-#: src/components/PageDetailContentList.vue:356
+#: src/components/PageDetailContentList.vue:360
 msgid "Element not found"
 msgstr "ไม่พบองค์ประกอบ"
 
-#: src/components/PageDetailContentList.vue:361
+#: src/components/PageDetailContentList.vue:365
 msgid "Element is already shared"
 msgstr "องค์ประกอบถูกแชร์แล้ว"
 
-#: src/components/PageDetailContentList.vue:421
+#: src/components/PageDetailContentList.vue:425
 msgid "Unable to make element shared"
 msgstr "ไม่สามารถทำให้องค์ประกอบเป็นแบบแชร์ได้"
 
-#: src/components/PageDetailContentList.vue:440
+#: src/components/PageDetailContentList.vue:444
 msgid "Not available for this content element"
 msgstr "ไม่สามารถใช้ได้สำหรับองค์ประกอบเนื้อหา"
 
-#: src/components/PageDetailContentList.vue:534
+#: src/components/PageDetailContentList.vue:538
 msgid "Element is not shared"
 msgstr "องค์ประกอบไม่ได้ถูกแชร์"
 
-#: src/components/PageDetailContentList.vue:582
+#: src/components/PageDetailContentList.vue:596
 msgid "Describe the task you want to perform"
 msgstr "อธิบายงานที่คุณต้องการดำเนินการ"
 
-#: src/components/PageDetailContentList.vue:604
+#: src/components/PageDetailContentList.vue:617
 msgid "Refining ..."
 msgstr "กำลังปรับปรุง ..."
 
-#: src/components/PageDetailContentList.vue:604
+#: src/components/PageDetailContentList.vue:617
 msgid "Refine content based on prompt"
 msgstr "ปรับปรุงเนื้อหาตามคำแนะนำ"
 
-#: src/components/PageDetailContentList.vue:621
+#: src/components/PageDetailContentList.vue:634
 msgid "AI can add or improve content based on your input"
 msgstr "AI สามารถเพิ่มหรือปรับปรุงเนื้อหาตามข้อมูลที่คุณให้"
 
-#: src/components/PageDetailContentList.vue:622
+#: src/components/PageDetailContentList.vue:635
 msgid "It can take a long time depending on the task and content size"
 msgstr "อาจใช้เวลาเป็นเวลานานขึ้นอยู่กับงานและขนาดของเนื้อหา"
 
-#: src/components/PageDetailContentList.vue:642
-#: src/components/PageDetailContentList.vue:693
+#: src/components/PageDetailContentList.vue:655
+#: src/components/PageDetailContentList.vue:706
 #: src/components/PageListItems.vue:975
 msgid "Copy"
 msgstr "คัดลอก"
 
-#: src/components/PageDetailContentList.vue:645
-#: src/components/PageDetailContentList.vue:696
+#: src/components/PageDetailContentList.vue:658
+#: src/components/PageDetailContentList.vue:709
 #: src/components/PageListItems.vue:972
 msgid "Cut"
 msgstr "ตัด"
 
-#: src/components/PageDetailContentList.vue:648
+#: src/components/PageDetailContentList.vue:661
 #: src/components/PageListItems.vue:978
 #: src/components/PageListItems.vue:996
 msgid "Paste"
 msgstr "วาง"
 
-#: src/components/PageDetailContentList.vue:651
-#: src/components/PageDetailContentList.vue:732
+#: src/components/PageDetailContentList.vue:664
+#: src/components/PageDetailContentList.vue:745
 msgid "Merge"
 msgstr "รวม"
 
-#: src/components/PageDetailContentList.vue:705
+#: src/components/PageDetailContentList.vue:718
 msgid "Paste before"
 msgstr "วางก่อน"
 
-#: src/components/PageDetailContentList.vue:708
+#: src/components/PageDetailContentList.vue:721
 msgid "Paste after"
 msgstr "วางหลังจาก"
 
-#: src/components/PageDetailContentList.vue:711
+#: src/components/PageDetailContentList.vue:724
 msgid "Insert before"
 msgstr "แทรกก่อน"
 
-#: src/components/PageDetailContentList.vue:714
+#: src/components/PageDetailContentList.vue:727
 msgid "Insert after"
 msgstr "แทรกหลังจาก"
 
-#: src/components/PageDetailContentList.vue:720
+#: src/components/PageDetailContentList.vue:733
 msgid "Make shared"
 msgstr "ทำให้เป็นของร่วมกัน"
 
-#: src/components/PageDetailContentList.vue:723
+#: src/components/PageDetailContentList.vue:736
 msgid "Merge copy"
 msgstr "ผสานสำเนา"
 
-#: src/components/PageDetailContentList.vue:726
+#: src/components/PageDetailContentList.vue:739
 msgid "Change to"
 msgstr "เปลี่ยนเป็น"
 
-#: src/components/PageDetailContentList.vue:729
+#: src/components/PageDetailContentList.vue:742
 msgid "Split"
 msgstr "แยก"
 
-#: src/components/PageDetailContentList.vue:738
+#: src/components/PageDetailContentList.vue:751
 msgid "Shared element"
 msgstr "องค์ประกอบที่แชร์ร่วมกัน"
 
@@ -883,6 +883,78 @@ msgstr "URL ไม่ถูกต้อง"
 msgid "Redirect URL"
 msgstr "URL ปลายทาง"
 
+#: src/components/PageDetailStatistics.vue:161
+msgid "Page analytics"
+msgstr "การวิเคราะห์หน้าเว็บ"
+
+#: src/components/PageDetailStatistics.vue:167
+msgid "Days"
+msgstr "วัน"
+
+#: src/components/PageDetailStatistics.vue:180
+msgid "Failed to load statistics"
+msgstr "ไม่สามารถโหลดสถิติได้"
+
+#: src/components/PageDetailStatistics.vue:188
+msgid "Performance"
+msgstr "ประสิทธิภาพ"
+
+#: src/components/PageDetailStatistics.vue:192
+msgid "Round trip time"
+msgstr "เวลาเดินทางไปกลับ"
+
+#: src/components/PageDetailStatistics.vue:202
+msgid "Time to first byte"
+msgstr "เวลาที่ใช้ในการรับไบต์แรก"
+
+#: src/components/PageDetailStatistics.vue:212
+msgid "First contentful paint"
+msgstr "เฟรมที่มีเนื้อหาหลักครั้งแรก"
+
+#: src/components/PageDetailStatistics.vue:222
+msgid "Largest contentful paint"
+msgstr "การวาดภาพที่มีเนื้อหาขนาดใหญ่ที่สุด"
+
+#: src/components/PageDetailStatistics.vue:232
+msgid "Interaction to next paint"
+msgstr "การโต้ตอบเพื่อไปยังการวาดถัดไป"
+
+#: src/components/PageDetailStatistics.vue:242
+msgid "Cumulative layout shift"
+msgstr "การเลื่อนเลย์เอาต์สะสม"
+
+#: src/components/PageDetailStatistics.vue:253
+msgid "No real-user performance data available."
+msgstr "ไม่มีข้อมูลประสิทธิภาพจากผู้ใช้จริง"
+
+#: src/components/PageDetailStatistics.vue:264
+msgid "Number of Views & Visits"
+msgstr "จำนวนการดูและจำนวนการเข้าชม"
+
+#: src/components/PageDetailStatistics.vue:296
+msgid "Views"
+msgstr "มุมมอง"
+
+#: src/components/PageDetailStatistics.vue:302
+msgid "Visits"
+msgstr "การเยี่ยมชม"
+
+#: src/components/PageDetailStatistics.vue:313
+msgid "Visit Durations in minutes"
+msgstr "ระยะเวลาการเยี่ยมชมเป็นนาที"
+
+#: src/components/PageDetailStatistics.vue:344
+msgid "Duration"
+msgstr "ระยะเวลา"
+
+#: src/components/PageDetailStatistics.vue:358
+msgid "Top Countries"
+msgstr "ประเทศชั้นนำ"
+
+#: src/components/PageDetailStatistics.vue:383
+msgid "Top Referrers"
+msgstr "ผู้แนะนำสูงสุด"
+
 #: src/components/PageListItems.vue:100
 msgid "Error adding root page"
 msgstr "เกิดข้อผิดพลาดในการเพิ่มหน้าหลัก"
@@ -913,12 +985,12 @@ msgid "Error copying page"
 msgstr "เกิดข้อผิดพลาดในการคัดลอกหน้า"
 
 #: src/components/PageListItems.vue:552
-#: src/views/PageDetail.vue:135
+#: src/views/PageDetail.vue:137
 msgid "Error fetching page"
 msgstr "เกิดข้อผิดพลาดในการดึงหน้า"
 
 #: src/components/PageListItems.vue:595
-#: src/views/PageDetail.vue:333
+#: src/views/PageDetail.vue:335
 msgid "Error publishing page"
 msgstr "เกิดข้อผิดพลาดในการเผยแพร่หน้า"
 
@@ -931,7 +1003,7 @@ msgid "Error searching pages"
 msgstr "เกิดข้อผิดพลาดในการค้นหาหน้า"
 
 #: src/components/PageListItems.vue:754
-#: src/views/PageDetail.vue:428
+#: src/views/PageDetail.vue:430
 msgid "Error saving page"
 msgstr "เกิดข้อผิดพลาดในการบันทึกหน้า"
 
@@ -1447,7 +1519,7 @@ msgstr "เกิดข้อผิดพลาดในการดึงเว
 
 #: src/views/ElementDetail.vue:265
 #: src/views/FileDetail.vue:215
-#: src/views/PageDetail.vue:591
+#: src/views/PageDetail.vue:593
 msgid "Back to list view"
 msgstr "กลับไปยังมุมมองรายการ"
 
@@ -1458,13 +1530,13 @@ msgstr "องค์ประกอบ"
 
 #: src/views/ElementDetail.vue:280
 #: src/views/FileDetail.vue:230
-#: src/views/PageDetail.vue:626
+#: src/views/PageDetail.vue:628
 msgid "View history"
 msgstr "ดูประวัติ"
 
 #: src/views/ElementDetail.vue:298
 #: src/views/FileDetail.vue:248
-#: src/views/PageDetail.vue:644
+#: src/views/PageDetail.vue:646
 msgid "Schedule publishing"
 msgstr "กำหนดการเผยแพร่"
 
@@ -1472,7 +1544,7 @@ msgstr "กำหนดการเผยแพร่"
 #: src/views/ElementList.vue:84
 #: src/views/FileDetail.vue:291
 #: src/views/FileList.vue:81
-#: src/views/PageDetail.vue:687
+#: src/views/PageDetail.vue:689
 #: src/views/PageList.vue:169
 msgid "Toggle side menu"
 msgstr "สลับเมนูด้านข้าง"
@@ -1612,46 +1684,50 @@ msgstr "ข้อผิดพลาด"
 msgid "Login"
 msgstr "เข้าสู่ระบบ"
 
-#: src/views/PageDetail.vue:325
+#: src/views/PageDetail.vue:327
 msgid "Page published successfully"
 msgstr "หน้าได้รับการเผยแพร่สำเร็จ"
 
-#: src/views/PageDetail.vue:328
+#: src/views/PageDetail.vue:330
 msgid "Page scheduled for publishing at %{date}"
 msgstr "หน้าถูกกำหนดให้เผยแพร่เวลา%{date}"
 
-#: src/views/PageDetail.vue:361
+#: src/views/PageDetail.vue:363
 msgid "There are invalid fields, please resolve the errors first"
 msgstr "มีฟิลด์ที่ไม่ถูกต้อง กรุณาแก้ไขข้อผิดพลาดก่อน"
 
-#: src/views/PageDetail.vue:420
+#: src/views/PageDetail.vue:422
 msgid "Page saved successfully"
 msgstr "หน้าบันทึกสำเร็จแล้ว"
 
-#: src/views/PageDetail.vue:437
+#: src/views/PageDetail.vue:439
 msgid "No page schema for \"content\" found"
 msgstr "ไม่พบสคีมาหน้าสำหรับ \"เนื้อหา\""
 
-#: src/views/PageDetail.vue:572
+#: src/views/PageDetail.vue:574
 msgid "Error fetching page versions"
 msgstr "เกิดข้อผิดพลาดในการดึงเวอร์ชันของหน้า"
 
-#: src/views/PageDetail.vue:598
-#: src/views/PageDetail.vue:708
+#: src/views/PageDetail.vue:600
+#: src/views/PageDetail.vue:710
 msgid "Page"
 msgstr "หน้า"
 
-#: src/views/PageDetail.vue:606
+#: src/views/PageDetail.vue:608
 msgid "Translate page"
 msgstr "แปลหน้า"
 
-#: src/views/PageDetail.vue:698
+#: src/views/PageDetail.vue:700
 msgid "Editor"
 msgstr "บรรณาธิการ"
 
-#: src/views/PageDetail.vue:703
+#: src/views/PageDetail.vue:705
 msgid "Content"
 msgstr "เนื้อหา"
+
+#: src/views/PageDetail.vue:714
+msgid "Stats"
+msgstr "สถิติ"
 
 #: src/views/PageList.vue:140
 msgid "Error synthesizing content"

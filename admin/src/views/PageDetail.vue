@@ -4,8 +4,9 @@
   import AsideCount from '../components/AsideCount.vue'
   import HistoryDialog from '../components/HistoryDialog.vue'
   import PageDetailItem from '../components/PageDetailItem.vue'
-  import PageDetailContent from '../components/PageDetailContent.vue'
   import PageDetailEditor from '../components/PageDetailEditor.vue'
+  import PageDetailContent from '../components/PageDetailContent.vue'
+  import PageDetailStatistics from '../components/PageDetailStatistics.vue'
   import { useAuthStore, useDrawerStore, useLanguageStore, useMessageStore, useSchemaStore } from '../stores'
 
 
@@ -15,8 +16,9 @@
       AsideCount,
       HistoryDialog,
       PageDetailItem,
+      PageDetailEditor,
       PageDetailContent,
-      PageDetailEditor
+      PageDetailStatistics
     },
 
     inject: ['closeView', 'compose', 'translate', 'txlocales'],
@@ -707,6 +709,10 @@
           @click="aside = asidePage">
           {{ $gettext('Page') }}
         </v-tab>
+        <v-tab value="stats"
+          @click="aside = ''">
+          {{ $gettext('Stats') }}
+        </v-tab>
       </v-tabs>
 
       <v-window v-model="tab" :touch="false">
@@ -738,6 +744,12 @@
             @update:item="Object.assign(item, $event); changed.page = true"
             @update:aside="asidePage = $event"
             @error="errors.page = $event"
+          />
+        </v-window-item>
+
+        <v-window-item value="stats">
+          <PageDetailStatistics ref="stats"
+            :item="item"
           />
         </v-window-item>
 

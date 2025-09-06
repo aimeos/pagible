@@ -148,7 +148,7 @@ msgstr "Publicat"
 #: src/components/FileListItems.vue:210
 #: src/components/FileListItems.vue:252
 #: src/components/FileListItems.vue:289
-#: src/components/PageDetailContentList.vue:349
+#: src/components/PageDetailContentList.vue:353
 #: src/components/PageListItems.vue:71
 #: src/components/PageListItems.vue:108
 #: src/components/PageListItems.vue:175
@@ -169,9 +169,9 @@ msgstr "Publicat"
 #: src/views/FileDetail.vue:46
 #: src/views/FileDetail.vue:95
 #: src/views/FileDetail.vue:164
-#: src/views/PageDetail.vue:299
-#: src/views/PageDetail.vue:351
-#: src/views/PageDetail.vue:540
+#: src/views/PageDetail.vue:301
+#: src/views/PageDetail.vue:353
+#: src/views/PageDetail.vue:542
 msgid "Permission denied"
 msgstr "Permisiune refuzată"
 
@@ -203,8 +203,8 @@ msgstr "Eroare la preluarea elementelor partajate"
 #: src/components/ElementListItems.vue:495
 #: src/components/FileListItems.vue:441
 #: src/components/FileListItems.vue:531
-#: src/components/PageDetailContentList.vue:635
-#: src/components/PageDetailContentList.vue:686
+#: src/components/PageDetailContentList.vue:648
+#: src/components/PageDetailContentList.vue:699
 #: src/components/PageListItems.vue:873
 #: src/components/PageListItems.vue:950
 msgid "Actions"
@@ -220,14 +220,14 @@ msgstr "Acțiuni"
 #: src/views/ElementDetail.vue:326
 #: src/views/FileDetail.vue:270
 #: src/views/FileDetail.vue:276
-#: src/views/PageDetail.vue:666
-#: src/views/PageDetail.vue:672
+#: src/views/PageDetail.vue:668
+#: src/views/PageDetail.vue:674
 msgid "Publish"
 msgstr "Publicare"
 
 #: src/components/ElementListItems.vue:429
 #: src/components/ElementListItems.vue:556
-#: src/components/PageDetailContentList.vue:774
+#: src/components/PageDetailContentList.vue:787
 #: src/components/PageDetailItemConfig.vue:201
 #: src/components/PageDetailItemMeta.vue:200
 #: src/fields/Items.vue:229
@@ -238,8 +238,8 @@ msgstr "Adăugați un element"
 #: src/components/ElementListItems.vue:507
 #: src/components/FileListItems.vue:451
 #: src/components/FileListItems.vue:542
-#: src/components/PageDetailContentList.vue:639
-#: src/components/PageDetailContentList.vue:699
+#: src/components/PageDetailContentList.vue:652
+#: src/components/PageDetailContentList.vue:712
 #: src/components/PageListItems.vue:889
 #: src/components/PageListItems.vue:1035
 msgid "Delete"
@@ -265,7 +265,7 @@ msgstr "Purjare"
 
 #: src/components/ElementListItems.vue:449
 #: src/components/FileListItems.vue:466
-#: src/components/PageDetailContentList.vue:660
+#: src/components/PageDetailContentList.vue:673
 #: src/components/PageListItems.vue:904
 msgid "Search for"
 msgstr "Căutare pentru"
@@ -304,7 +304,7 @@ msgstr "tip"
 
 #: src/components/ElementListItems.vue:538
 #: src/components/FileListItems.vue:580
-#: src/components/HistoryDialog.vue:116
+#: src/components/HistoryDialog.vue:130
 #: src/components/PageListItems.vue:1075
 #: src/fields/Autocomplete.vue:155
 #: src/fields/Combobox.vue:18
@@ -330,15 +330,15 @@ msgstr "Generarea textului pentru câmpul %{code} "
 #: src/components/FieldsDialog.vue:51
 #: src/views/ElementDetail.vue:287
 #: src/views/FileDetail.vue:237
-#: src/views/PageDetail.vue:633
+#: src/views/PageDetail.vue:635
 msgid "Save"
 msgstr "Salvați"
 
 #: src/components/FieldsDialog.vue:54
-#: src/components/FileAiDialog.vue:189
+#: src/components/FileAiDialog.vue:190
 #: src/components/FileDialog.vue:25
 #: src/components/FileUrlDialog.vue:165
-#: src/components/HistoryDialog.vue:99
+#: src/components/HistoryDialog.vue:113
 #: src/components/SchemaDialog.vue:25
 msgid "Close"
 msgstr "Închidere"
@@ -347,7 +347,7 @@ msgstr "Închidere"
 msgid "Content Element"
 msgstr "Element de conținut"
 
-#: src/components/FileAiDialog.vue:98
+#: src/components/FileAiDialog.vue:99
 #: src/components/FileListItems.vue:112
 #: src/components/FileUrlDialog.vue:67
 #: src/components/FileUrlDialog.vue:147
@@ -356,25 +356,25 @@ msgstr "Element de conținut"
 msgid "Error adding file %{path}"
 msgstr "Eroare la adăugarea fișierului %{path}"
 
-#: src/components/FileAiDialog.vue:156
+#: src/components/FileAiDialog.vue:157
 msgid "Error creating file"
 msgstr "Eroare la crearea fișierului"
 
-#: src/components/FileAiDialog.vue:196
-#: src/components/FileAiDialog.vue:214
+#: src/components/FileAiDialog.vue:197
+#: src/components/FileAiDialog.vue:215
 msgid "Create image"
 msgstr "Crearea imaginii"
 
-#: src/components/FileAiDialog.vue:202
+#: src/components/FileAiDialog.vue:203
 msgid "Describe the image"
 msgstr "Descrieți imaginea"
 
-#: src/components/FileAiDialog.vue:219
+#: src/components/FileAiDialog.vue:220
 msgid "Generated images"
 msgstr "Imagini generate"
 
-#: src/components/FileAiDialog.vue:225
-#: src/components/FileAiDialog.vue:244
+#: src/components/FileAiDialog.vue:226
+#: src/components/FileAiDialog.vue:245
 #: src/components/FileUrlDialog.vue:209
 #: src/fields/Audio.vue:57
 #: src/fields/File.vue:239
@@ -384,11 +384,11 @@ msgstr "Imagini generate"
 msgid "Remove"
 msgstr "Eliminați"
 
-#: src/components/FileAiDialog.vue:240
+#: src/components/FileAiDialog.vue:241
 msgid "Use images of this style"
 msgstr "Utilizați imagini din acest stil"
 
-#: src/components/FileAiDialog.vue:254
+#: src/components/FileAiDialog.vue:255
 msgid "Select similar images"
 msgstr "Selectați imagini similare"
 
@@ -595,132 +595,132 @@ msgstr "Introduceți o adresă URL pe linie"
 msgid "Enter URL"
 msgstr "Introduceți URL"
 
-#: src/components/HistoryDialog.vue:107
+#: src/components/HistoryDialog.vue:121
 msgid "History"
 msgstr "Istoric"
 
-#: src/components/HistoryDialog.vue:129
+#: src/components/HistoryDialog.vue:143
 msgid "No changes"
 msgstr "Nicio modificare"
 
-#: src/components/HistoryDialog.vue:138
+#: src/components/HistoryDialog.vue:152
 msgid "Current"
 msgstr "Curent"
 
-#: src/components/HistoryDialog.vue:180
+#: src/components/HistoryDialog.vue:194
 msgid "Revert"
 msgstr "Revenire"
 
-#: src/components/HistoryDialog.vue:241
+#: src/components/HistoryDialog.vue:255
 msgid "Use version"
 msgstr "Utilizați versiunea"
 
-#: src/components/PageDetailContentList.vue:94
-#: src/components/PageDetailContentList.vue:105
-#: src/components/PageDetailContentList.vue:527
+#: src/components/PageDetailContentList.vue:93
+#: src/components/PageDetailContentList.vue:104
+#: src/components/PageDetailContentList.vue:531
 msgid "Content element not found"
 msgstr "Elementul de conținut nu a fost găsit"
 
-#: src/components/PageDetailContentList.vue:307
+#: src/components/PageDetailContentList.vue:311
 msgid "Error refining content"
 msgstr "Eroare de rafinare a conținutului"
 
-#: src/components/PageDetailContentList.vue:356
+#: src/components/PageDetailContentList.vue:360
 msgid "Element not found"
 msgstr "Elementul nu a fost găsit"
 
-#: src/components/PageDetailContentList.vue:361
+#: src/components/PageDetailContentList.vue:365
 msgid "Element is already shared"
 msgstr "Elementul este deja partajat"
 
-#: src/components/PageDetailContentList.vue:421
+#: src/components/PageDetailContentList.vue:425
 msgid "Unable to make element shared"
 msgstr "Imposibilitatea de a face elementul partajat"
 
-#: src/components/PageDetailContentList.vue:440
+#: src/components/PageDetailContentList.vue:444
 msgid "Not available for this content element"
 msgstr "Nu este disponibil pentru acest element de conținut"
 
-#: src/components/PageDetailContentList.vue:534
+#: src/components/PageDetailContentList.vue:538
 msgid "Element is not shared"
 msgstr "Elementul nu este partajat"
 
-#: src/components/PageDetailContentList.vue:582
+#: src/components/PageDetailContentList.vue:596
 msgid "Describe the task you want to perform"
 msgstr "Descrieți sarcina pe care doriți să o îndepliniți"
 
-#: src/components/PageDetailContentList.vue:604
+#: src/components/PageDetailContentList.vue:617
 msgid "Refining ..."
 msgstr "Rafinare ..."
 
-#: src/components/PageDetailContentList.vue:604
+#: src/components/PageDetailContentList.vue:617
 msgid "Refine content based on prompt"
 msgstr "Rafinarea conținutului pe baza solicitării"
 
-#: src/components/PageDetailContentList.vue:621
+#: src/components/PageDetailContentList.vue:634
 msgid "AI can add or improve content based on your input"
 msgstr "Inteligența artificială poate adăuga sau îmbunătăți conținutul pe baza informațiilor furnizate de dvs."
 
-#: src/components/PageDetailContentList.vue:622
+#: src/components/PageDetailContentList.vue:635
 msgid "It can take a long time depending on the task and content size"
 msgstr "Aceasta poate dura mult timp, în funcție de dimensiunea sarcinii și a conținutului"
 
-#: src/components/PageDetailContentList.vue:642
-#: src/components/PageDetailContentList.vue:693
+#: src/components/PageDetailContentList.vue:655
+#: src/components/PageDetailContentList.vue:706
 #: src/components/PageListItems.vue:975
 msgid "Copy"
 msgstr "Copiați"
 
-#: src/components/PageDetailContentList.vue:645
-#: src/components/PageDetailContentList.vue:696
+#: src/components/PageDetailContentList.vue:658
+#: src/components/PageDetailContentList.vue:709
 #: src/components/PageListItems.vue:972
 msgid "Cut"
 msgstr "Tăiați"
 
-#: src/components/PageDetailContentList.vue:648
+#: src/components/PageDetailContentList.vue:661
 #: src/components/PageListItems.vue:978
 #: src/components/PageListItems.vue:996
 msgid "Paste"
 msgstr "Pastă"
 
-#: src/components/PageDetailContentList.vue:651
-#: src/components/PageDetailContentList.vue:732
+#: src/components/PageDetailContentList.vue:664
+#: src/components/PageDetailContentList.vue:745
 msgid "Merge"
 msgstr "Unire"
 
-#: src/components/PageDetailContentList.vue:705
+#: src/components/PageDetailContentList.vue:718
 msgid "Paste before"
 msgstr "Lipiți înainte"
 
-#: src/components/PageDetailContentList.vue:708
+#: src/components/PageDetailContentList.vue:721
 msgid "Paste after"
 msgstr "Lipiți după"
 
-#: src/components/PageDetailContentList.vue:711
+#: src/components/PageDetailContentList.vue:724
 msgid "Insert before"
 msgstr "Introduceți înainte de"
 
-#: src/components/PageDetailContentList.vue:714
+#: src/components/PageDetailContentList.vue:727
 msgid "Insert after"
 msgstr "Introduceți după"
 
-#: src/components/PageDetailContentList.vue:720
+#: src/components/PageDetailContentList.vue:733
 msgid "Make shared"
 msgstr "Faceți partajate"
 
-#: src/components/PageDetailContentList.vue:723
+#: src/components/PageDetailContentList.vue:736
 msgid "Merge copy"
 msgstr "Copia de îmbinare"
 
-#: src/components/PageDetailContentList.vue:726
+#: src/components/PageDetailContentList.vue:739
 msgid "Change to"
 msgstr "Schimbare la"
 
-#: src/components/PageDetailContentList.vue:729
+#: src/components/PageDetailContentList.vue:742
 msgid "Split"
 msgstr "Despărțit"
 
-#: src/components/PageDetailContentList.vue:738
+#: src/components/PageDetailContentList.vue:751
 msgid "Shared element"
 msgstr "Element partajat"
 
@@ -886,6 +886,78 @@ msgstr "URL-ul nu este valid"
 msgid "Redirect URL"
 msgstr "Redirecționare URL"
 
+#: src/components/PageDetailStatistics.vue:161
+msgid "Page analytics"
+msgstr "Analiză pagină"
+
+#: src/components/PageDetailStatistics.vue:167
+msgid "Days"
+msgstr "Zile"
+
+#: src/components/PageDetailStatistics.vue:180
+msgid "Failed to load statistics"
+msgstr "A eșuat încărcarea statisticilor"
+
+#: src/components/PageDetailStatistics.vue:188
+msgid "Performance"
+msgstr "Performanță"
+
+#: src/components/PageDetailStatistics.vue:192
+msgid "Round trip time"
+msgstr "Durata călătoriei dus-întors"
+
+#: src/components/PageDetailStatistics.vue:202
+msgid "Time to first byte"
+msgstr "Timpul până la primul octet"
+
+#: src/components/PageDetailStatistics.vue:212
+msgid "First contentful paint"
+msgstr "Prima vopsea mulțumitoare"
+
+#: src/components/PageDetailStatistics.vue:222
+msgid "Largest contentful paint"
+msgstr "Cea mai mare vopsea cu conținut"
+
+#: src/components/PageDetailStatistics.vue:232
+msgid "Interaction to next paint"
+msgstr "Interacțiunea cu vopseaua următoare"
+
+#: src/components/PageDetailStatistics.vue:242
+msgid "Cumulative layout shift"
+msgstr "Schimbare cumulată de aspect"
+
+#: src/components/PageDetailStatistics.vue:253
+msgid "No real-user performance data available."
+msgstr "Nu sunt disponibile date de performanță pentru utilizatorii reali."
+
+#: src/components/PageDetailStatistics.vue:264
+msgid "Number of Views & Visits"
+msgstr "Număr de vizualizări și vizite"
+
+#: src/components/PageDetailStatistics.vue:296
+msgid "Views"
+msgstr "Vizualizări"
+
+#: src/components/PageDetailStatistics.vue:302
+msgid "Visits"
+msgstr "Vizite"
+
+#: src/components/PageDetailStatistics.vue:313
+msgid "Visit Durations in minutes"
+msgstr "Durata vizitelor în minute"
+
+#: src/components/PageDetailStatistics.vue:344
+msgid "Duration"
+msgstr "Durată"
+
+#: src/components/PageDetailStatistics.vue:358
+msgid "Top Countries"
+msgstr "Țări de top"
+
+#: src/components/PageDetailStatistics.vue:383
+msgid "Top Referrers"
+msgstr "Referințe de top"
+
 #: src/components/PageListItems.vue:100
 msgid "Error adding root page"
 msgstr "Eroare la adăugarea paginii rădăcină"
@@ -916,12 +988,12 @@ msgid "Error copying page"
 msgstr "Eroare copiere pagină"
 
 #: src/components/PageListItems.vue:552
-#: src/views/PageDetail.vue:135
+#: src/views/PageDetail.vue:137
 msgid "Error fetching page"
 msgstr "Eroare la preluarea paginii"
 
 #: src/components/PageListItems.vue:595
-#: src/views/PageDetail.vue:333
+#: src/views/PageDetail.vue:335
 msgid "Error publishing page"
 msgstr "Eroare la publicarea paginii"
 
@@ -934,7 +1006,7 @@ msgid "Error searching pages"
 msgstr "Eroare în căutarea paginilor"
 
 #: src/components/PageListItems.vue:754
-#: src/views/PageDetail.vue:428
+#: src/views/PageDetail.vue:430
 msgid "Error saving page"
 msgstr "Eroare la salvarea paginii"
 
@@ -1450,7 +1522,7 @@ msgstr "Eroare la preluarea versiunilor elementelor"
 
 #: src/views/ElementDetail.vue:265
 #: src/views/FileDetail.vue:215
-#: src/views/PageDetail.vue:591
+#: src/views/PageDetail.vue:593
 msgid "Back to list view"
 msgstr "Înapoi la vizualizarea listei"
 
@@ -1461,13 +1533,13 @@ msgstr "Element"
 
 #: src/views/ElementDetail.vue:280
 #: src/views/FileDetail.vue:230
-#: src/views/PageDetail.vue:626
+#: src/views/PageDetail.vue:628
 msgid "View history"
 msgstr "Vezi istoricul"
 
 #: src/views/ElementDetail.vue:298
 #: src/views/FileDetail.vue:248
-#: src/views/PageDetail.vue:644
+#: src/views/PageDetail.vue:646
 msgid "Schedule publishing"
 msgstr "Program de publicare"
 
@@ -1475,7 +1547,7 @@ msgstr "Program de publicare"
 #: src/views/ElementList.vue:84
 #: src/views/FileDetail.vue:291
 #: src/views/FileList.vue:81
-#: src/views/PageDetail.vue:687
+#: src/views/PageDetail.vue:689
 #: src/views/PageList.vue:169
 msgid "Toggle side menu"
 msgstr "Comutare meniu lateral"
@@ -1615,46 +1687,50 @@ msgstr "Eroare"
 msgid "Login"
 msgstr "Autentificare"
 
-#: src/views/PageDetail.vue:325
+#: src/views/PageDetail.vue:327
 msgid "Page published successfully"
 msgstr "Pagină publicată cu succes"
 
-#: src/views/PageDetail.vue:328
+#: src/views/PageDetail.vue:330
 msgid "Page scheduled for publishing at %{date}"
 msgstr "Pagina programată pentru publicare la %{date}"
 
-#: src/views/PageDetail.vue:361
+#: src/views/PageDetail.vue:363
 msgid "There are invalid fields, please resolve the errors first"
 msgstr "Există câmpuri invalide, vă rugăm să rezolvați mai întâi erorile"
 
-#: src/views/PageDetail.vue:420
+#: src/views/PageDetail.vue:422
 msgid "Page saved successfully"
 msgstr "Pagină salvată cu succes"
 
-#: src/views/PageDetail.vue:437
+#: src/views/PageDetail.vue:439
 msgid "No page schema for \"content\" found"
 msgstr "Nu s-a găsit nicio schemă de pagină pentru \"content\""
 
-#: src/views/PageDetail.vue:572
+#: src/views/PageDetail.vue:574
 msgid "Error fetching page versions"
 msgstr "Eroare la preluarea versiunilor paginilor"
 
-#: src/views/PageDetail.vue:598
-#: src/views/PageDetail.vue:708
+#: src/views/PageDetail.vue:600
+#: src/views/PageDetail.vue:710
 msgid "Page"
 msgstr "Pagina"
 
-#: src/views/PageDetail.vue:606
+#: src/views/PageDetail.vue:608
 msgid "Translate page"
 msgstr "Traduceți pagina"
 
-#: src/views/PageDetail.vue:698
+#: src/views/PageDetail.vue:700
 msgid "Editor"
 msgstr "Editor"
 
-#: src/views/PageDetail.vue:703
+#: src/views/PageDetail.vue:705
 msgid "Content"
 msgstr "Conținut"
+
+#: src/views/PageDetail.vue:714
+msgid "Stats"
+msgstr "Statistici"
 
 #: src/views/PageList.vue:140
 msgid "Error synthesizing content"
