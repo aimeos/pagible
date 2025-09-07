@@ -265,6 +265,7 @@ class GraphqlTest extends TestAbstract
         $response = $this->actingAs($this->user)->graphQL('
             mutation {
                 metrics(url: "/test", days: 30) {
+                    errors
                     views { key value }
                     visits { key value }
                     durations { key value }

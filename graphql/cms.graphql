@@ -583,6 +583,9 @@ type Version {
 }
 
 type Stats {
+  "List of errors occurred"
+  errors: [String!]
+
   "Number of page views by day"
   views: [StatsNumber!]
 

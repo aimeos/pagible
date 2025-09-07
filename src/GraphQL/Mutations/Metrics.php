@@ -26,8 +26,19 @@ final class Metrics
             throw new Error( 'Number of days must be an integer between 1 and 90' );
         }
 
-        $data = Cache::remember( "stats:$url:$days", 1800, fn() => Analytics::driver()->stats( $url, $days ) );
-        $data['pagespeed'] = Cache::remember( "pagespeed:$url", 43200, fn() => Analytics::pagespeed( $url ) );
+        $data = [];
+
+        try {
+            $data = Cache::remember( "stats:$url:$days", 1800, fn() => Analytics::driver()->stats( $url, $days ) );
+        } catch ( \Throwable $e ) {
+            $data['errors'][] = $e->getMessage();
+        }
+
+        try {
+            $data['pagespeed'] = Cache::remember( "pagespeed:$url", 43200, fn() => Analytics::pagespeed( $url ) );
+        } catch ( \Throwable $e ) {
+            $data['errors'][] = $e->getMessage();
+        }
 
         return $data;
     }

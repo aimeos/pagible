@@ -17,7 +17,7 @@
 
     data: () => ({
       days: 30,
-      error: null,
+      errors: [],
       loading: false,
       pagespeed: null,
       countries: [],
@@ -66,8 +66,8 @@
 
 
       async metrics() {
+        this.errors = [];
         this.loading = true;
-        this.error = null;
 
         try {
           const { data } = await this.$apollo.mutate({
@@ -104,7 +104,7 @@
             return acc;
           }, {});
         } catch (e) {
-          this.error = e.message || String(e);
+          this.errors.push(e.message || String(e));
         } finally {
           this.loading = false;
         }
@@ -151,13 +151,13 @@
         </v-col>
       </v-row>
 
-      <v-alert v-if="error"
-        type="error"
+      <v-alert v-if="errors.length"
+        :title="$gettext('Errors')"
         variant="tonal"
         border="start"
         class="panel"
-        :title="$gettext('Failed to load metrics')">
-        {{ error }}
+        type="error">
+        {{ errors.join("\n") }}
       </v-alert>
 
       <!-- Performance -->
