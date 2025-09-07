@@ -882,75 +882,75 @@ msgstr "URL không hợp lệ"
 msgid "Redirect URL"
 msgstr "Chuyển hướng URL"
 
-#: src/components/PageDetailStatistics.vue:161
-msgid "Page analytics"
-msgstr "Phân tích trang"
+#: src/components/PageDetailMetrics.vue:142
+msgid "Page metrics"
+msgstr "Thống kê trang"
 
-#: src/components/PageDetailStatistics.vue:167
+#: src/components/PageDetailMetrics.vue:148
 msgid "Days"
 msgstr "Ngày"
 
-#: src/components/PageDetailStatistics.vue:180
-msgid "Failed to load statistics"
-msgstr "Không thể tải thống kê"
+#: src/components/PageDetailMetrics.vue:157
+msgid "Errors"
+msgstr "Lỗi"
 
-#: src/components/PageDetailStatistics.vue:188
-msgid "Performance"
-msgstr "Hiệu suất"
+#: src/components/PageDetailMetrics.vue:169
+msgid "Page Speed"
+msgstr "Tốc độ trang"
 
-#: src/components/PageDetailStatistics.vue:192
+#: src/components/PageDetailMetrics.vue:173
 msgid "Round trip time"
 msgstr "Thời gian khứ hồi"
 
-#: src/components/PageDetailStatistics.vue:202
+#: src/components/PageDetailMetrics.vue:183
 msgid "Time to first byte"
 msgstr "Thời gian đến byte đầu tiên"
 
-#: src/components/PageDetailStatistics.vue:212
+#: src/components/PageDetailMetrics.vue:193
 msgid "First contentful paint"
 msgstr "Lần hiển thị nội dung đầu tiên"
 
-#: src/components/PageDetailStatistics.vue:222
+#: src/components/PageDetailMetrics.vue:203
 msgid "Largest contentful paint"
 msgstr "Kích thước nội dung lớn nhất"
 
-#: src/components/PageDetailStatistics.vue:232
+#: src/components/PageDetailMetrics.vue:213
 msgid "Interaction to next paint"
 msgstr "Tương tác với lớp sơn tiếp theo"
 
-#: src/components/PageDetailStatistics.vue:242
+#: src/components/PageDetailMetrics.vue:223
 msgid "Cumulative layout shift"
 msgstr "Sự thay đổi bố cục tích lũy"
 
-#: src/components/PageDetailStatistics.vue:253
-msgid "No real-user performance data available."
-msgstr "Không có dữ liệu hiệu suất thực tế của người dùng."
+#: src/components/PageDetailMetrics.vue:234
+msgid "No real-user page speed data available."
+msgstr "Không có dữ liệu tốc độ trang web của người dùng thực tế."
 
-#: src/components/PageDetailStatistics.vue:264
+#: src/components/PageDetailMetrics.vue:245
 msgid "Number of Views & Visits"
 msgstr "Số lượt xem &amp; lượt truy cập"
 
-#: src/components/PageDetailStatistics.vue:296
+#: src/components/PageDetailMetrics.vue:277
 msgid "Views"
 msgstr "Số lượt xem"
 
-#: src/components/PageDetailStatistics.vue:302
+#: src/components/PageDetailMetrics.vue:283
 msgid "Visits"
 msgstr "Lượt truy cập"
 
-#: src/components/PageDetailStatistics.vue:313
+#: src/components/PageDetailMetrics.vue:294
 msgid "Visit Durations in minutes"
 msgstr "Thời gian lưu trú tính bằng phút"
 
-#: src/components/PageDetailStatistics.vue:344
+#: src/components/PageDetailMetrics.vue:325
 msgid "Duration"
 msgstr "Thời gian"
 
-#: src/components/PageDetailStatistics.vue:358
+#: src/components/PageDetailMetrics.vue:339
 msgid "Top Countries"
 msgstr "Các quốc gia hàng đầu"
 
-#: src/components/PageDetailStatistics.vue:383
+#: src/components/PageDetailMetrics.vue:364
 msgid "Top Referrers"
 msgstr "Những người giới thiệu hàng đầu"
 
@@ -1725,8 +1725,8 @@ msgid "Content"
 msgstr "Nội dung"
 
 #: src/views/PageDetail.vue:714
-msgid "Stats"
-msgstr "Thống kê"
+msgid "Metrics"
+msgstr "Chỉ số"
 
 #: src/views/PageList.vue:140
 msgid "Error synthesizing content"

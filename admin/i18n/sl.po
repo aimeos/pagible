@@ -888,75 +888,75 @@ msgstr "URL ni veljaven"
 msgid "Redirect URL"
 msgstr "Preusmeritev URL"
 
-#: src/components/PageDetailStatistics.vue:161
-msgid "Page analytics"
-msgstr "Analitika strani"
+#: src/components/PageDetailMetrics.vue:142
+msgid "Page metrics"
+msgstr "Metrike strani"
 
-#: src/components/PageDetailStatistics.vue:167
+#: src/components/PageDetailMetrics.vue:148
 msgid "Days"
 msgstr "Dnevi"
 
-#: src/components/PageDetailStatistics.vue:180
-msgid "Failed to load statistics"
-msgstr "Ni uspelo naložiti statistike"
+#: src/components/PageDetailMetrics.vue:157
+msgid "Errors"
+msgstr "Napake"
 
-#: src/components/PageDetailStatistics.vue:188
-msgid "Performance"
-msgstr "Uspešnost"
+#: src/components/PageDetailMetrics.vue:169
+msgid "Page Speed"
+msgstr "Hitrost strani"
 
-#: src/components/PageDetailStatistics.vue:192
+#: src/components/PageDetailMetrics.vue:173
 msgid "Round trip time"
 msgstr "Čas povratnega potovanja"
 
-#: src/components/PageDetailStatistics.vue:202
+#: src/components/PageDetailMetrics.vue:183
 msgid "Time to first byte"
 msgstr "Čas do prvega bajta"
 
-#: src/components/PageDetailStatistics.vue:212
+#: src/components/PageDetailMetrics.vue:193
 msgid "First contentful paint"
 msgstr "Prva vsebinska barva"
 
-#: src/components/PageDetailStatistics.vue:222
+#: src/components/PageDetailMetrics.vue:203
 msgid "Largest contentful paint"
 msgstr "Največja vsebinska barva"
 
-#: src/components/PageDetailStatistics.vue:232
+#: src/components/PageDetailMetrics.vue:213
 msgid "Interaction to next paint"
 msgstr "Interakcija z naslednjo barvo"
 
-#: src/components/PageDetailStatistics.vue:242
+#: src/components/PageDetailMetrics.vue:223
 msgid "Cumulative layout shift"
 msgstr "Kumulativni premik postavitve"
 
-#: src/components/PageDetailStatistics.vue:253
-msgid "No real-user performance data available."
-msgstr "Podatkov o delovanju pri dejanskih uporabnikih ni na voljo."
+#: src/components/PageDetailMetrics.vue:234
+msgid "No real-user page speed data available."
+msgstr "Podatki o hitrosti strani v realnem okolju niso na voljo."
 
-#: src/components/PageDetailStatistics.vue:264
+#: src/components/PageDetailMetrics.vue:245
 msgid "Number of Views & Visits"
 msgstr "Število ogledov in obiskov"
 
-#: src/components/PageDetailStatistics.vue:296
+#: src/components/PageDetailMetrics.vue:277
 msgid "Views"
 msgstr "Pogledi"
 
-#: src/components/PageDetailStatistics.vue:302
+#: src/components/PageDetailMetrics.vue:283
 msgid "Visits"
 msgstr "Obiski"
 
-#: src/components/PageDetailStatistics.vue:313
+#: src/components/PageDetailMetrics.vue:294
 msgid "Visit Durations in minutes"
 msgstr "Trajanje obiska v minutah"
 
-#: src/components/PageDetailStatistics.vue:344
+#: src/components/PageDetailMetrics.vue:325
 msgid "Duration"
 msgstr "Trajanje"
 
-#: src/components/PageDetailStatistics.vue:358
+#: src/components/PageDetailMetrics.vue:339
 msgid "Top Countries"
 msgstr "Vrhunske države"
 
-#: src/components/PageDetailStatistics.vue:383
+#: src/components/PageDetailMetrics.vue:364
 msgid "Top Referrers"
 msgstr "Najboljši referenti"
 
@@ -1731,8 +1731,8 @@ msgid "Content"
 msgstr "Vsebina"
 
 #: src/views/PageDetail.vue:714
-msgid "Stats"
-msgstr "Statistika"
+msgid "Metrics"
+msgstr "Metrike"
 
 #: src/views/PageList.vue:140
 msgid "Error synthesizing content"

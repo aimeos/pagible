@@ -884,75 +884,75 @@ msgstr "URL ei ole kehtiv"
 msgid "Redirect URL"
 msgstr "Ümbersuunamise URL"
 
-#: src/components/PageDetailStatistics.vue:161
-msgid "Page analytics"
-msgstr "Lehekülje analüütika"
+#: src/components/PageDetailMetrics.vue:142
+msgid "Page metrics"
+msgstr "Lehekülje mõõdikud"
 
-#: src/components/PageDetailStatistics.vue:167
+#: src/components/PageDetailMetrics.vue:148
 msgid "Days"
 msgstr "Päevad"
 
-#: src/components/PageDetailStatistics.vue:180
-msgid "Failed to load statistics"
-msgstr "Statistika laadimine ebaõnnestus"
+#: src/components/PageDetailMetrics.vue:157
+msgid "Errors"
+msgstr "Vead"
 
-#: src/components/PageDetailStatistics.vue:188
-msgid "Performance"
-msgstr "Tulemuslikkus"
+#: src/components/PageDetailMetrics.vue:169
+msgid "Page Speed"
+msgstr "Lehekülje kiirus"
 
-#: src/components/PageDetailStatistics.vue:192
+#: src/components/PageDetailMetrics.vue:173
 msgid "Round trip time"
 msgstr "Edasi-tagasi reisi aeg"
 
-#: src/components/PageDetailStatistics.vue:202
+#: src/components/PageDetailMetrics.vue:183
 msgid "Time to first byte"
 msgstr "Aeg esimese baidini"
 
-#: src/components/PageDetailStatistics.vue:212
+#: src/components/PageDetailMetrics.vue:193
 msgid "First contentful paint"
 msgstr "Esimene sisuline värv"
 
-#: src/components/PageDetailStatistics.vue:222
+#: src/components/PageDetailMetrics.vue:203
 msgid "Largest contentful paint"
 msgstr "Suurim sisuline värv"
 
-#: src/components/PageDetailStatistics.vue:232
+#: src/components/PageDetailMetrics.vue:213
 msgid "Interaction to next paint"
 msgstr "Interaktsioon järgmise värviga"
 
-#: src/components/PageDetailStatistics.vue:242
+#: src/components/PageDetailMetrics.vue:223
 msgid "Cumulative layout shift"
 msgstr "Kumulatiivne paigutuse muutus"
 
-#: src/components/PageDetailStatistics.vue:253
-msgid "No real-user performance data available."
-msgstr "Andmed tegeliku kasutaja jõudluse kohta puuduvad."
+#: src/components/PageDetailMetrics.vue:234
+msgid "No real-user page speed data available."
+msgstr "Andmed tegeliku kasutaja lehekülje kiiruse kohta puuduvad."
 
-#: src/components/PageDetailStatistics.vue:264
+#: src/components/PageDetailMetrics.vue:245
 msgid "Number of Views & Visits"
 msgstr "Vaadete ja külastuste arv"
 
-#: src/components/PageDetailStatistics.vue:296
+#: src/components/PageDetailMetrics.vue:277
 msgid "Views"
 msgstr "Vaated"
 
-#: src/components/PageDetailStatistics.vue:302
+#: src/components/PageDetailMetrics.vue:283
 msgid "Visits"
 msgstr "Külastused"
 
-#: src/components/PageDetailStatistics.vue:313
+#: src/components/PageDetailMetrics.vue:294
 msgid "Visit Durations in minutes"
 msgstr "Külastuse kestus minutites"
 
-#: src/components/PageDetailStatistics.vue:344
+#: src/components/PageDetailMetrics.vue:325
 msgid "Duration"
 msgstr "Kestus"
 
-#: src/components/PageDetailStatistics.vue:358
+#: src/components/PageDetailMetrics.vue:339
 msgid "Top Countries"
 msgstr "Parimad riigid"
 
-#: src/components/PageDetailStatistics.vue:383
+#: src/components/PageDetailMetrics.vue:364
 msgid "Top Referrers"
 msgstr "Parimad soovitajad"
 
@@ -1727,8 +1727,8 @@ msgid "Content"
 msgstr "Sisu"
 
 #: src/views/PageDetail.vue:714
-msgid "Stats"
-msgstr "Statistika"
+msgid "Metrics"
+msgstr "Mõõdikud"
 
 #: src/views/PageList.vue:140
 msgid "Error synthesizing content"

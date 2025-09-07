@@ -882,75 +882,75 @@ msgstr "URL이 유효하지 않습니다."
 msgid "Redirect URL"
 msgstr "리디렉션 URL"
 
-#: src/components/PageDetailStatistics.vue:161
-msgid "Page analytics"
-msgstr "페이지 분석"
+#: src/components/PageDetailMetrics.vue:142
+msgid "Page metrics"
+msgstr "페이지 메트릭"
 
-#: src/components/PageDetailStatistics.vue:167
+#: src/components/PageDetailMetrics.vue:148
 msgid "Days"
 msgstr "일수"
 
-#: src/components/PageDetailStatistics.vue:180
-msgid "Failed to load statistics"
-msgstr "통계를 로드하지 못했습니다."
+#: src/components/PageDetailMetrics.vue:157
+msgid "Errors"
+msgstr "오류"
 
-#: src/components/PageDetailStatistics.vue:188
-msgid "Performance"
-msgstr "성능"
+#: src/components/PageDetailMetrics.vue:169
+msgid "Page Speed"
+msgstr "페이지 속도"
 
-#: src/components/PageDetailStatistics.vue:192
+#: src/components/PageDetailMetrics.vue:173
 msgid "Round trip time"
 msgstr "왕복 시간"
 
-#: src/components/PageDetailStatistics.vue:202
+#: src/components/PageDetailMetrics.vue:183
 msgid "Time to first byte"
 msgstr "첫 바이트까지의 시간"
 
-#: src/components/PageDetailStatistics.vue:212
+#: src/components/PageDetailMetrics.vue:193
 msgid "First contentful paint"
 msgstr "첫 번째 만족스러운 페인트"
 
-#: src/components/PageDetailStatistics.vue:222
+#: src/components/PageDetailMetrics.vue:203
 msgid "Largest contentful paint"
 msgstr "가장 큰 콘텐츠가 풍부한 페인트"
 
-#: src/components/PageDetailStatistics.vue:232
+#: src/components/PageDetailMetrics.vue:213
 msgid "Interaction to next paint"
 msgstr "다음 페인트와의 상호작용"
 
-#: src/components/PageDetailStatistics.vue:242
+#: src/components/PageDetailMetrics.vue:223
 msgid "Cumulative layout shift"
 msgstr "누적 레이아웃 이동"
 
-#: src/components/PageDetailStatistics.vue:253
-msgid "No real-user performance data available."
-msgstr "실제 사용자 성능 데이터는 제공되지 않습니다."
+#: src/components/PageDetailMetrics.vue:234
+msgid "No real-user page speed data available."
+msgstr "실제 사용자 페이지 속도 데이터는 제공되지 않습니다."
 
-#: src/components/PageDetailStatistics.vue:264
+#: src/components/PageDetailMetrics.vue:245
 msgid "Number of Views & Visits"
 msgstr "조회수 및 방문 횟수"
 
-#: src/components/PageDetailStatistics.vue:296
+#: src/components/PageDetailMetrics.vue:277
 msgid "Views"
 msgstr "조회수"
 
-#: src/components/PageDetailStatistics.vue:302
+#: src/components/PageDetailMetrics.vue:283
 msgid "Visits"
 msgstr "방문"
 
-#: src/components/PageDetailStatistics.vue:313
+#: src/components/PageDetailMetrics.vue:294
 msgid "Visit Durations in minutes"
 msgstr "방문 시간(분)"
 
-#: src/components/PageDetailStatistics.vue:344
+#: src/components/PageDetailMetrics.vue:325
 msgid "Duration"
 msgstr "기간"
 
-#: src/components/PageDetailStatistics.vue:358
+#: src/components/PageDetailMetrics.vue:339
 msgid "Top Countries"
 msgstr "상위 국가"
 
-#: src/components/PageDetailStatistics.vue:383
+#: src/components/PageDetailMetrics.vue:364
 msgid "Top Referrers"
 msgstr "상위 추천인"
 
@@ -1725,8 +1725,8 @@ msgid "Content"
 msgstr "콘텐츠"
 
 #: src/views/PageDetail.vue:714
-msgid "Stats"
-msgstr "통계"
+msgid "Metrics"
+msgstr "메트릭"
 
 #: src/views/PageList.vue:140
 msgid "Error synthesizing content"

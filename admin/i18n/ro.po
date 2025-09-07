@@ -886,75 +886,75 @@ msgstr "URL-ul nu este valid"
 msgid "Redirect URL"
 msgstr "Redirecționare URL"
 
-#: src/components/PageDetailStatistics.vue:161
-msgid "Page analytics"
-msgstr "Analiză pagină"
+#: src/components/PageDetailMetrics.vue:142
+msgid "Page metrics"
+msgstr "Metrici de pagină"
 
-#: src/components/PageDetailStatistics.vue:167
+#: src/components/PageDetailMetrics.vue:148
 msgid "Days"
 msgstr "Zile"
 
-#: src/components/PageDetailStatistics.vue:180
-msgid "Failed to load statistics"
-msgstr "A eșuat încărcarea statisticilor"
+#: src/components/PageDetailMetrics.vue:157
+msgid "Errors"
+msgstr "Erorile"
 
-#: src/components/PageDetailStatistics.vue:188
-msgid "Performance"
-msgstr "Performanță"
+#: src/components/PageDetailMetrics.vue:169
+msgid "Page Speed"
+msgstr "Viteza paginii"
 
-#: src/components/PageDetailStatistics.vue:192
+#: src/components/PageDetailMetrics.vue:173
 msgid "Round trip time"
 msgstr "Durata călătoriei dus-întors"
 
-#: src/components/PageDetailStatistics.vue:202
+#: src/components/PageDetailMetrics.vue:183
 msgid "Time to first byte"
 msgstr "Timpul până la primul octet"
 
-#: src/components/PageDetailStatistics.vue:212
+#: src/components/PageDetailMetrics.vue:193
 msgid "First contentful paint"
 msgstr "Prima vopsea mulțumitoare"
 
-#: src/components/PageDetailStatistics.vue:222
+#: src/components/PageDetailMetrics.vue:203
 msgid "Largest contentful paint"
 msgstr "Cea mai mare vopsea cu conținut"
 
-#: src/components/PageDetailStatistics.vue:232
+#: src/components/PageDetailMetrics.vue:213
 msgid "Interaction to next paint"
 msgstr "Interacțiunea cu vopseaua următoare"
 
-#: src/components/PageDetailStatistics.vue:242
+#: src/components/PageDetailMetrics.vue:223
 msgid "Cumulative layout shift"
 msgstr "Schimbare cumulată de aspect"
 
-#: src/components/PageDetailStatistics.vue:253
-msgid "No real-user performance data available."
-msgstr "Nu sunt disponibile date de performanță pentru utilizatorii reali."
+#: src/components/PageDetailMetrics.vue:234
+msgid "No real-user page speed data available."
+msgstr "Nu sunt disponibile date privind viteza paginii pentru utilizatorii reali."
 
-#: src/components/PageDetailStatistics.vue:264
+#: src/components/PageDetailMetrics.vue:245
 msgid "Number of Views & Visits"
 msgstr "Număr de vizualizări și vizite"
 
-#: src/components/PageDetailStatistics.vue:296
+#: src/components/PageDetailMetrics.vue:277
 msgid "Views"
 msgstr "Vizualizări"
 
-#: src/components/PageDetailStatistics.vue:302
+#: src/components/PageDetailMetrics.vue:283
 msgid "Visits"
 msgstr "Vizite"
 
-#: src/components/PageDetailStatistics.vue:313
+#: src/components/PageDetailMetrics.vue:294
 msgid "Visit Durations in minutes"
 msgstr "Durata vizitelor în minute"
 
-#: src/components/PageDetailStatistics.vue:344
+#: src/components/PageDetailMetrics.vue:325
 msgid "Duration"
 msgstr "Durată"
 
-#: src/components/PageDetailStatistics.vue:358
+#: src/components/PageDetailMetrics.vue:339
 msgid "Top Countries"
 msgstr "Țări de top"
 
-#: src/components/PageDetailStatistics.vue:383
+#: src/components/PageDetailMetrics.vue:364
 msgid "Top Referrers"
 msgstr "Referințe de top"
 
@@ -1729,8 +1729,8 @@ msgid "Content"
 msgstr "Conținut"
 
 #: src/views/PageDetail.vue:714
-msgid "Stats"
-msgstr "Statistici"
+msgid "Metrics"
+msgstr "Metrici"
 
 #: src/views/PageList.vue:140
 msgid "Error synthesizing content"

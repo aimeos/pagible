@@ -884,75 +884,75 @@ msgstr "URL'en er ikke gyldig"
 msgid "Redirect URL"
 msgstr "Omdiriger URL"
 
-#: src/components/PageDetailStatistics.vue:161
-msgid "Page analytics"
-msgstr "Analyse af sider"
+#: src/components/PageDetailMetrics.vue:142
+msgid "Page metrics"
+msgstr "Metrikker på siden"
 
-#: src/components/PageDetailStatistics.vue:167
+#: src/components/PageDetailMetrics.vue:148
 msgid "Days"
 msgstr "Dage"
 
-#: src/components/PageDetailStatistics.vue:180
-msgid "Failed to load statistics"
-msgstr "Kunne ikke indlæse statistikker"
+#: src/components/PageDetailMetrics.vue:157
+msgid "Errors"
+msgstr "Fejl"
 
-#: src/components/PageDetailStatistics.vue:188
-msgid "Performance"
-msgstr "Præstation"
+#: src/components/PageDetailMetrics.vue:169
+msgid "Page Speed"
+msgstr "Sidens hastighed"
 
-#: src/components/PageDetailStatistics.vue:192
+#: src/components/PageDetailMetrics.vue:173
 msgid "Round trip time"
 msgstr "Tid for returrejse"
 
-#: src/components/PageDetailStatistics.vue:202
+#: src/components/PageDetailMetrics.vue:183
 msgid "Time to first byte"
 msgstr "Tid til første byte"
 
-#: src/components/PageDetailStatistics.vue:212
+#: src/components/PageDetailMetrics.vue:193
 msgid "First contentful paint"
 msgstr "Første indholdsrige maling"
 
-#: src/components/PageDetailStatistics.vue:222
+#: src/components/PageDetailMetrics.vue:203
 msgid "Largest contentful paint"
 msgstr "Største indholdsrige maling"
 
-#: src/components/PageDetailStatistics.vue:232
+#: src/components/PageDetailMetrics.vue:213
 msgid "Interaction to next paint"
 msgstr "Interaktion til næste maling"
 
-#: src/components/PageDetailStatistics.vue:242
+#: src/components/PageDetailMetrics.vue:223
 msgid "Cumulative layout shift"
 msgstr "Kumulativ ændring af layout"
 
-#: src/components/PageDetailStatistics.vue:253
-msgid "No real-user performance data available."
-msgstr "Der findes ingen data om ydeevne for rigtige brugere."
+#: src/components/PageDetailMetrics.vue:234
+msgid "No real-user page speed data available."
+msgstr "Der findes ingen data om sidehastighed for rigtige brugere."
 
-#: src/components/PageDetailStatistics.vue:264
+#: src/components/PageDetailMetrics.vue:245
 msgid "Number of Views & Visits"
 msgstr "Antal visninger og besøg"
 
-#: src/components/PageDetailStatistics.vue:296
+#: src/components/PageDetailMetrics.vue:277
 msgid "Views"
 msgstr "Udsigter"
 
-#: src/components/PageDetailStatistics.vue:302
+#: src/components/PageDetailMetrics.vue:283
 msgid "Visits"
 msgstr "Besøg"
 
-#: src/components/PageDetailStatistics.vue:313
+#: src/components/PageDetailMetrics.vue:294
 msgid "Visit Durations in minutes"
 msgstr "Besøgets varighed i minutter"
 
-#: src/components/PageDetailStatistics.vue:344
+#: src/components/PageDetailMetrics.vue:325
 msgid "Duration"
 msgstr "Varighed"
 
-#: src/components/PageDetailStatistics.vue:358
+#: src/components/PageDetailMetrics.vue:339
 msgid "Top Countries"
 msgstr "De bedste lande"
 
-#: src/components/PageDetailStatistics.vue:383
+#: src/components/PageDetailMetrics.vue:364
 msgid "Top Referrers"
 msgstr "De bedste henvisere"
 
@@ -1727,8 +1727,8 @@ msgid "Content"
 msgstr "Indhold"
 
 #: src/views/PageDetail.vue:714
-msgid "Stats"
-msgstr "Statistik"
+msgid "Metrics"
+msgstr "Metrikker"
 
 #: src/views/PageList.vue:140
 msgid "Error synthesizing content"

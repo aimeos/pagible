@@ -884,75 +884,75 @@ msgstr "URL geçerli değil"
 msgid "Redirect URL"
 msgstr "Yönlendirme URL'si"
 
-#: src/components/PageDetailStatistics.vue:161
-msgid "Page analytics"
-msgstr "Sayfa analizleri"
+#: src/components/PageDetailMetrics.vue:142
+msgid "Page metrics"
+msgstr "Sayfa ölçümleri"
 
-#: src/components/PageDetailStatistics.vue:167
+#: src/components/PageDetailMetrics.vue:148
 msgid "Days"
 msgstr "Günler"
 
-#: src/components/PageDetailStatistics.vue:180
-msgid "Failed to load statistics"
-msgstr "İstatistikler yüklenemedi"
+#: src/components/PageDetailMetrics.vue:157
+msgid "Errors"
+msgstr "Hatalar"
 
-#: src/components/PageDetailStatistics.vue:188
-msgid "Performance"
-msgstr "Performans"
+#: src/components/PageDetailMetrics.vue:169
+msgid "Page Speed"
+msgstr "Sayfa Hızı"
 
-#: src/components/PageDetailStatistics.vue:192
+#: src/components/PageDetailMetrics.vue:173
 msgid "Round trip time"
 msgstr "Gidiş dönüş süresi"
 
-#: src/components/PageDetailStatistics.vue:202
+#: src/components/PageDetailMetrics.vue:183
 msgid "Time to first byte"
 msgstr "İlk bayta kadar geçen süre"
 
-#: src/components/PageDetailStatistics.vue:212
+#: src/components/PageDetailMetrics.vue:193
 msgid "First contentful paint"
 msgstr "İlk içerikli boya"
 
-#: src/components/PageDetailStatistics.vue:222
+#: src/components/PageDetailMetrics.vue:203
 msgid "Largest contentful paint"
 msgstr "En büyük içerikli boya"
 
-#: src/components/PageDetailStatistics.vue:232
+#: src/components/PageDetailMetrics.vue:213
 msgid "Interaction to next paint"
 msgstr "Bir sonraki boyaya etkileşim"
 
-#: src/components/PageDetailStatistics.vue:242
+#: src/components/PageDetailMetrics.vue:223
 msgid "Cumulative layout shift"
 msgstr "Kümülatif yerleşim kayması"
 
-#: src/components/PageDetailStatistics.vue:253
-msgid "No real-user performance data available."
-msgstr "Gerçek kullanıcı performans verisi mevcut değildir."
+#: src/components/PageDetailMetrics.vue:234
+msgid "No real-user page speed data available."
+msgstr "Gerçek kullanıcı sayfa hızı verisi mevcut değildir."
 
-#: src/components/PageDetailStatistics.vue:264
+#: src/components/PageDetailMetrics.vue:245
 msgid "Number of Views & Visits"
 msgstr "Görüntüleme ve Ziyaret Sayısı"
 
-#: src/components/PageDetailStatistics.vue:296
+#: src/components/PageDetailMetrics.vue:277
 msgid "Views"
 msgstr "Görünümler"
 
-#: src/components/PageDetailStatistics.vue:302
+#: src/components/PageDetailMetrics.vue:283
 msgid "Visits"
 msgstr "Ziyaretler"
 
-#: src/components/PageDetailStatistics.vue:313
+#: src/components/PageDetailMetrics.vue:294
 msgid "Visit Durations in minutes"
 msgstr "Dakika cinsinden Ziyaret Süreleri"
 
-#: src/components/PageDetailStatistics.vue:344
+#: src/components/PageDetailMetrics.vue:325
 msgid "Duration"
 msgstr "Süre"
 
-#: src/components/PageDetailStatistics.vue:358
+#: src/components/PageDetailMetrics.vue:339
 msgid "Top Countries"
 msgstr "En İyi Ülkeler"
 
-#: src/components/PageDetailStatistics.vue:383
+#: src/components/PageDetailMetrics.vue:364
 msgid "Top Referrers"
 msgstr "En Çok Yönlendirenler"
 
@@ -1727,8 +1727,8 @@ msgid "Content"
 msgstr "İçerik"
 
 #: src/views/PageDetail.vue:714
-msgid "Stats"
-msgstr "İstatistikler"
+msgid "Metrics"
+msgstr "Metrikler"
 
 #: src/views/PageList.vue:140
 msgid "Error synthesizing content"

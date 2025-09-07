@@ -884,75 +884,75 @@ msgstr "כתובת ה-URL אינה חוקית"
 msgid "Redirect URL"
 msgstr "כתובת URL חלופית"
 
-#: src/components/PageDetailStatistics.vue:161
-msgid "Page analytics"
-msgstr "ניתוח נתוני דף"
+#: src/components/PageDetailMetrics.vue:142
+msgid "Page metrics"
+msgstr "מדדי דף"
 
-#: src/components/PageDetailStatistics.vue:167
+#: src/components/PageDetailMetrics.vue:148
 msgid "Days"
 msgstr "ימים"
 
-#: src/components/PageDetailStatistics.vue:180
-msgid "Failed to load statistics"
-msgstr "לא ניתן לטעון את הנתונים הסטטיסטיים"
+#: src/components/PageDetailMetrics.vue:157
+msgid "Errors"
+msgstr "שגיאות"
 
-#: src/components/PageDetailStatistics.vue:188
-msgid "Performance"
-msgstr "ביצועים"
+#: src/components/PageDetailMetrics.vue:169
+msgid "Page Speed"
+msgstr "מהירות העמוד"
 
-#: src/components/PageDetailStatistics.vue:192
+#: src/components/PageDetailMetrics.vue:173
 msgid "Round trip time"
 msgstr "זמן נסיעה הלוך ושוב"
 
-#: src/components/PageDetailStatistics.vue:202
+#: src/components/PageDetailMetrics.vue:183
 msgid "Time to first byte"
 msgstr "זמן עד לבייט הראשון"
 
-#: src/components/PageDetailStatistics.vue:212
+#: src/components/PageDetailMetrics.vue:193
 msgid "First contentful paint"
 msgstr "צביעה ראשונה עם תוכן"
 
-#: src/components/PageDetailStatistics.vue:222
+#: src/components/PageDetailMetrics.vue:203
 msgid "Largest contentful paint"
 msgstr "תוכן הגדול ביותר"
 
-#: src/components/PageDetailStatistics.vue:232
+#: src/components/PageDetailMetrics.vue:213
 msgid "Interaction to next paint"
 msgstr "אינטראקציה עם הצבע הבא"
 
-#: src/components/PageDetailStatistics.vue:242
+#: src/components/PageDetailMetrics.vue:223
 msgid "Cumulative layout shift"
 msgstr "שינוי פריסה מצטבר"
 
-#: src/components/PageDetailStatistics.vue:253
-msgid "No real-user performance data available."
-msgstr "אין נתוני ביצועים של משתמשים אמיתיים זמינים."
+#: src/components/PageDetailMetrics.vue:234
+msgid "No real-user page speed data available."
+msgstr "אין נתונים זמינים על מהירות העמוד של משתמשים אמיתיים."
 
-#: src/components/PageDetailStatistics.vue:264
+#: src/components/PageDetailMetrics.vue:245
 msgid "Number of Views & Visits"
 msgstr "מספר צפיות וביקורים"
 
-#: src/components/PageDetailStatistics.vue:296
+#: src/components/PageDetailMetrics.vue:277
 msgid "Views"
 msgstr "צפיות"
 
-#: src/components/PageDetailStatistics.vue:302
+#: src/components/PageDetailMetrics.vue:283
 msgid "Visits"
 msgstr "ביקורים"
 
-#: src/components/PageDetailStatistics.vue:313
+#: src/components/PageDetailMetrics.vue:294
 msgid "Visit Durations in minutes"
 msgstr "משך הביקור בדקות"
 
-#: src/components/PageDetailStatistics.vue:344
+#: src/components/PageDetailMetrics.vue:325
 msgid "Duration"
 msgstr "משך"
 
-#: src/components/PageDetailStatistics.vue:358
+#: src/components/PageDetailMetrics.vue:339
 msgid "Top Countries"
 msgstr "המדינות המובילות"
 
-#: src/components/PageDetailStatistics.vue:383
+#: src/components/PageDetailMetrics.vue:364
 msgid "Top Referrers"
 msgstr "המפנים המובילים"
 
@@ -1727,8 +1727,8 @@ msgid "Content"
 msgstr "תוכן"
 
 #: src/views/PageDetail.vue:714
-msgid "Stats"
-msgstr "סטטיסטיקה"
+msgid "Metrics"
+msgstr "מדדים"
 
 #: src/views/PageList.vue:140
 msgid "Error synthesizing content"

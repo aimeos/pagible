@@ -882,75 +882,75 @@ msgstr "URL が無効です。"
 msgid "Redirect URL"
 msgstr "リダイレクトURL"
 
-#: src/components/PageDetailStatistics.vue:161
-msgid "Page analytics"
-msgstr "ページ分析"
+#: src/components/PageDetailMetrics.vue:142
+msgid "Page metrics"
+msgstr "ページ指標"
 
-#: src/components/PageDetailStatistics.vue:167
+#: src/components/PageDetailMetrics.vue:148
 msgid "Days"
 msgstr "日数"
 
-#: src/components/PageDetailStatistics.vue:180
-msgid "Failed to load statistics"
-msgstr "統計情報のロードに失敗しました"
+#: src/components/PageDetailMetrics.vue:157
+msgid "Errors"
+msgstr "エラー"
 
-#: src/components/PageDetailStatistics.vue:188
-msgid "Performance"
-msgstr "パフォーマンス"
+#: src/components/PageDetailMetrics.vue:169
+msgid "Page Speed"
+msgstr "ページ速度"
 
-#: src/components/PageDetailStatistics.vue:192
+#: src/components/PageDetailMetrics.vue:173
 msgid "Round trip time"
 msgstr "往復所要時間"
 
-#: src/components/PageDetailStatistics.vue:202
+#: src/components/PageDetailMetrics.vue:183
 msgid "Time to first byte"
 msgstr "最初のバイトまでの時間"
 
-#: src/components/PageDetailStatistics.vue:212
+#: src/components/PageDetailMetrics.vue:193
 msgid "First contentful paint"
 msgstr "最初の内容豊かなペイント"
 
-#: src/components/PageDetailStatistics.vue:222
+#: src/components/PageDetailMetrics.vue:203
 msgid "Largest contentful paint"
 msgstr "最大のコンテンツペイント"
 
-#: src/components/PageDetailStatistics.vue:232
+#: src/components/PageDetailMetrics.vue:213
 msgid "Interaction to next paint"
 msgstr "次のペイントへの相互作用"
 
-#: src/components/PageDetailStatistics.vue:242
+#: src/components/PageDetailMetrics.vue:223
 msgid "Cumulative layout shift"
 msgstr "累積レイアウトシフト"
 
-#: src/components/PageDetailStatistics.vue:253
-msgid "No real-user performance data available."
-msgstr "実際のユーザーによるパフォーマンスデータはない。"
+#: src/components/PageDetailMetrics.vue:234
+msgid "No real-user page speed data available."
+msgstr "実ユーザーのページ速度データはありません。"
 
-#: src/components/PageDetailStatistics.vue:264
+#: src/components/PageDetailMetrics.vue:245
 msgid "Number of Views & Visits"
 msgstr "再生回数と訪問回数"
 
-#: src/components/PageDetailStatistics.vue:296
+#: src/components/PageDetailMetrics.vue:277
 msgid "Views"
 msgstr "ビュー"
 
-#: src/components/PageDetailStatistics.vue:302
+#: src/components/PageDetailMetrics.vue:283
 msgid "Visits"
 msgstr "訪問"
 
-#: src/components/PageDetailStatistics.vue:313
+#: src/components/PageDetailMetrics.vue:294
 msgid "Visit Durations in minutes"
 msgstr "訪問時間（分"
 
-#: src/components/PageDetailStatistics.vue:344
+#: src/components/PageDetailMetrics.vue:325
 msgid "Duration"
 msgstr "期間"
 
-#: src/components/PageDetailStatistics.vue:358
+#: src/components/PageDetailMetrics.vue:339
 msgid "Top Countries"
 msgstr "トップ"
 
-#: src/components/PageDetailStatistics.vue:383
+#: src/components/PageDetailMetrics.vue:364
 msgid "Top Referrers"
 msgstr "トップ・リファラー"
 
@@ -1725,8 +1725,8 @@ msgid "Content"
 msgstr "内容"
 
 #: src/views/PageDetail.vue:714
-msgid "Stats"
-msgstr "統計"
+msgid "Metrics"
+msgstr "指標"
 
 #: src/views/PageList.vue:140
 msgid "Error synthesizing content"

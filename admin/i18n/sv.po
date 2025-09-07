@@ -884,75 +884,75 @@ msgstr "URL är inte giltig"
 msgid "Redirect URL"
 msgstr "URL för omdirigering"
 
-#: src/components/PageDetailStatistics.vue:161
-msgid "Page analytics"
-msgstr "Analys av sidan"
+#: src/components/PageDetailMetrics.vue:142
+msgid "Page metrics"
+msgstr "Sidans mätvärden"
 
-#: src/components/PageDetailStatistics.vue:167
+#: src/components/PageDetailMetrics.vue:148
 msgid "Days"
 msgstr "Dagar"
 
-#: src/components/PageDetailStatistics.vue:180
-msgid "Failed to load statistics"
-msgstr "Misslyckades med att ladda statistik"
+#: src/components/PageDetailMetrics.vue:157
+msgid "Errors"
+msgstr "Fel"
 
-#: src/components/PageDetailStatistics.vue:188
-msgid "Performance"
-msgstr "Prestanda"
+#: src/components/PageDetailMetrics.vue:169
+msgid "Page Speed"
+msgstr "Sidhastighet"
 
-#: src/components/PageDetailStatistics.vue:192
+#: src/components/PageDetailMetrics.vue:173
 msgid "Round trip time"
 msgstr "Tid för tur- och returresa"
 
-#: src/components/PageDetailStatistics.vue:202
+#: src/components/PageDetailMetrics.vue:183
 msgid "Time to first byte"
 msgstr "Tid till första byte"
 
-#: src/components/PageDetailStatistics.vue:212
+#: src/components/PageDetailMetrics.vue:193
 msgid "First contentful paint"
 msgstr "Första innehållsrika färgen"
 
-#: src/components/PageDetailStatistics.vue:222
+#: src/components/PageDetailMetrics.vue:203
 msgid "Largest contentful paint"
 msgstr "Största innehållsrika färg"
 
-#: src/components/PageDetailStatistics.vue:232
+#: src/components/PageDetailMetrics.vue:213
 msgid "Interaction to next paint"
 msgstr "Interaktion till nästa målning"
 
-#: src/components/PageDetailStatistics.vue:242
+#: src/components/PageDetailMetrics.vue:223
 msgid "Cumulative layout shift"
 msgstr "Kumulativ layoutförskjutning"
 
-#: src/components/PageDetailStatistics.vue:253
-msgid "No real-user performance data available."
-msgstr "Inga uppgifter om prestanda från verkliga användare tillgängliga."
+#: src/components/PageDetailMetrics.vue:234
+msgid "No real-user page speed data available."
+msgstr "Inga uppgifter om sidhastighet för verkliga användare tillgängliga."
 
-#: src/components/PageDetailStatistics.vue:264
+#: src/components/PageDetailMetrics.vue:245
 msgid "Number of Views & Visits"
 msgstr "Antal visningar och besök"
 
-#: src/components/PageDetailStatistics.vue:296
+#: src/components/PageDetailMetrics.vue:277
 msgid "Views"
 msgstr "Utsikt"
 
-#: src/components/PageDetailStatistics.vue:302
+#: src/components/PageDetailMetrics.vue:283
 msgid "Visits"
 msgstr "Besök"
 
-#: src/components/PageDetailStatistics.vue:313
+#: src/components/PageDetailMetrics.vue:294
 msgid "Visit Durations in minutes"
 msgstr "Besökens längd i minuter"
 
-#: src/components/PageDetailStatistics.vue:344
+#: src/components/PageDetailMetrics.vue:325
 msgid "Duration"
 msgstr "Varaktighet"
 
-#: src/components/PageDetailStatistics.vue:358
+#: src/components/PageDetailMetrics.vue:339
 msgid "Top Countries"
 msgstr "De största länderna"
 
-#: src/components/PageDetailStatistics.vue:383
+#: src/components/PageDetailMetrics.vue:364
 msgid "Top Referrers"
 msgstr "Bästa referenser"
 
@@ -1727,8 +1727,8 @@ msgid "Content"
 msgstr "Innehåll"
 
 #: src/views/PageDetail.vue:714
-msgid "Stats"
-msgstr "Statistik"
+msgid "Metrics"
+msgstr "Mätvärden"
 
 #: src/views/PageList.vue:140
 msgid "Error synthesizing content"

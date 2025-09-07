@@ -883,75 +883,75 @@ msgstr "URL tidak valid"
 msgid "Redirect URL"
 msgstr "Alihkan URL"
 
-#: src/components/PageDetailStatistics.vue:161
-msgid "Page analytics"
-msgstr "Analisis halaman"
+#: src/components/PageDetailMetrics.vue:142
+msgid "Page metrics"
+msgstr "Metrik halaman"
 
-#: src/components/PageDetailStatistics.vue:167
+#: src/components/PageDetailMetrics.vue:148
 msgid "Days"
 msgstr "Hari"
 
-#: src/components/PageDetailStatistics.vue:180
-msgid "Failed to load statistics"
-msgstr "Gagal memuat statistik"
+#: src/components/PageDetailMetrics.vue:157
+msgid "Errors"
+msgstr "Kesalahan"
 
-#: src/components/PageDetailStatistics.vue:188
-msgid "Performance"
-msgstr "Kinerja"
+#: src/components/PageDetailMetrics.vue:169
+msgid "Page Speed"
+msgstr "Kecepatan Halaman"
 
-#: src/components/PageDetailStatistics.vue:192
+#: src/components/PageDetailMetrics.vue:173
 msgid "Round trip time"
 msgstr "Waktu pulang pergi"
 
-#: src/components/PageDetailStatistics.vue:202
+#: src/components/PageDetailMetrics.vue:183
 msgid "Time to first byte"
 msgstr "Waktu ke byte pertama"
 
-#: src/components/PageDetailStatistics.vue:212
+#: src/components/PageDetailMetrics.vue:193
 msgid "First contentful paint"
 msgstr "Cat pertama yang memuaskan"
 
-#: src/components/PageDetailStatistics.vue:222
+#: src/components/PageDetailMetrics.vue:203
 msgid "Largest contentful paint"
 msgstr "Cat dengan kandungan terbesar"
 
-#: src/components/PageDetailStatistics.vue:232
+#: src/components/PageDetailMetrics.vue:213
 msgid "Interaction to next paint"
 msgstr "Interaksi ke cat berikutnya"
 
-#: src/components/PageDetailStatistics.vue:242
+#: src/components/PageDetailMetrics.vue:223
 msgid "Cumulative layout shift"
 msgstr "Pergeseran tata letak kumulatif"
 
-#: src/components/PageDetailStatistics.vue:253
-msgid "No real-user performance data available."
-msgstr "Tidak ada data kinerja pengguna nyata yang tersedia."
+#: src/components/PageDetailMetrics.vue:234
+msgid "No real-user page speed data available."
+msgstr "Tidak ada data kecepatan halaman pengguna nyata yang tersedia."
 
-#: src/components/PageDetailStatistics.vue:264
+#: src/components/PageDetailMetrics.vue:245
 msgid "Number of Views & Visits"
 msgstr "Jumlah Tampilan &amp; Kunjungan"
 
-#: src/components/PageDetailStatistics.vue:296
+#: src/components/PageDetailMetrics.vue:277
 msgid "Views"
 msgstr "Tampilan"
 
-#: src/components/PageDetailStatistics.vue:302
+#: src/components/PageDetailMetrics.vue:283
 msgid "Visits"
 msgstr "Kunjungan"
 
-#: src/components/PageDetailStatistics.vue:313
+#: src/components/PageDetailMetrics.vue:294
 msgid "Visit Durations in minutes"
 msgstr "Durasi Kunjungan dalam hitungan menit"
 
-#: src/components/PageDetailStatistics.vue:344
+#: src/components/PageDetailMetrics.vue:325
 msgid "Duration"
 msgstr "Durasi"
 
-#: src/components/PageDetailStatistics.vue:358
+#: src/components/PageDetailMetrics.vue:339
 msgid "Top Countries"
 msgstr "Negara-negara Teratas"
 
-#: src/components/PageDetailStatistics.vue:383
+#: src/components/PageDetailMetrics.vue:364
 msgid "Top Referrers"
 msgstr "Perujuk Teratas"
 
@@ -1726,8 +1726,8 @@ msgid "Content"
 msgstr "Konten"
 
 #: src/views/PageDetail.vue:714
-msgid "Stats"
-msgstr "Statistik"
+msgid "Metrics"
+msgstr "Metrik"
 
 #: src/views/PageList.vue:140
 msgid "Error synthesizing content"

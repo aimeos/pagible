@@ -886,75 +886,75 @@ msgstr "Adresa URL není platná"
 msgid "Redirect URL"
 msgstr "Adresa URL přesměrování"
 
-#: src/components/PageDetailStatistics.vue:161
-msgid "Page analytics"
-msgstr "Analýza stránek"
+#: src/components/PageDetailMetrics.vue:142
+msgid "Page metrics"
+msgstr "Metriky stránek"
 
-#: src/components/PageDetailStatistics.vue:167
+#: src/components/PageDetailMetrics.vue:148
 msgid "Days"
 msgstr "Dny"
 
-#: src/components/PageDetailStatistics.vue:180
-msgid "Failed to load statistics"
-msgstr "Nepodařilo se načíst statistiky"
+#: src/components/PageDetailMetrics.vue:157
+msgid "Errors"
+msgstr "Chyby"
 
-#: src/components/PageDetailStatistics.vue:188
-msgid "Performance"
-msgstr "Výkon"
+#: src/components/PageDetailMetrics.vue:169
+msgid "Page Speed"
+msgstr "Rychlost stránky"
 
-#: src/components/PageDetailStatistics.vue:192
+#: src/components/PageDetailMetrics.vue:173
 msgid "Round trip time"
 msgstr "Doba jízdy tam a zpět"
 
-#: src/components/PageDetailStatistics.vue:202
+#: src/components/PageDetailMetrics.vue:183
 msgid "Time to first byte"
 msgstr "Čas do prvního bajtu"
 
-#: src/components/PageDetailStatistics.vue:212
+#: src/components/PageDetailMetrics.vue:193
 msgid "First contentful paint"
 msgstr "První obsahová barva"
 
-#: src/components/PageDetailStatistics.vue:222
+#: src/components/PageDetailMetrics.vue:203
 msgid "Largest contentful paint"
 msgstr "Největší obsahová barva"
 
-#: src/components/PageDetailStatistics.vue:232
+#: src/components/PageDetailMetrics.vue:213
 msgid "Interaction to next paint"
 msgstr "Interakce na další barvu"
 
-#: src/components/PageDetailStatistics.vue:242
+#: src/components/PageDetailMetrics.vue:223
 msgid "Cumulative layout shift"
 msgstr "Kumulativní posun rozložení"
 
-#: src/components/PageDetailStatistics.vue:253
-msgid "No real-user performance data available."
-msgstr "Nejsou k dispozici žádné údaje o výkonu reálných uživatelů."
+#: src/components/PageDetailMetrics.vue:234
+msgid "No real-user page speed data available."
+msgstr "Nejsou k dispozici žádné údaje o rychlosti stránek v reálném provozu."
 
-#: src/components/PageDetailStatistics.vue:264
+#: src/components/PageDetailMetrics.vue:245
 msgid "Number of Views & Visits"
 msgstr "Počet zobrazení a návštěv"
 
-#: src/components/PageDetailStatistics.vue:296
+#: src/components/PageDetailMetrics.vue:277
 msgid "Views"
 msgstr "Zobrazení"
 
-#: src/components/PageDetailStatistics.vue:302
+#: src/components/PageDetailMetrics.vue:283
 msgid "Visits"
 msgstr "Návštěvy"
 
-#: src/components/PageDetailStatistics.vue:313
+#: src/components/PageDetailMetrics.vue:294
 msgid "Visit Durations in minutes"
 msgstr "Délka návštěvy v minutách"
 
-#: src/components/PageDetailStatistics.vue:344
+#: src/components/PageDetailMetrics.vue:325
 msgid "Duration"
 msgstr "Doba trvání"
 
-#: src/components/PageDetailStatistics.vue:358
+#: src/components/PageDetailMetrics.vue:339
 msgid "Top Countries"
 msgstr "Nejlepší země"
 
-#: src/components/PageDetailStatistics.vue:383
+#: src/components/PageDetailMetrics.vue:364
 msgid "Top Referrers"
 msgstr "Nejčastěji odkazované osoby"
 
@@ -1729,8 +1729,8 @@ msgid "Content"
 msgstr "Obsah"
 
 #: src/views/PageDetail.vue:714
-msgid "Stats"
-msgstr "Statistiky"
+msgid "Metrics"
+msgstr "Metriky"
 
 #: src/views/PageList.vue:140
 msgid "Error synthesizing content"

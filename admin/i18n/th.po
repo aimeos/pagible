@@ -883,75 +883,75 @@ msgstr "URL ไม่ถูกต้อง"
 msgid "Redirect URL"
 msgstr "URL ปลายทาง"
 
-#: src/components/PageDetailStatistics.vue:161
-msgid "Page analytics"
-msgstr "การวิเคราะห์หน้าเว็บ"
+#: src/components/PageDetailMetrics.vue:142
+msgid "Page metrics"
+msgstr "เมตริกหน้า"
 
-#: src/components/PageDetailStatistics.vue:167
+#: src/components/PageDetailMetrics.vue:148
 msgid "Days"
 msgstr "วัน"
 
-#: src/components/PageDetailStatistics.vue:180
-msgid "Failed to load statistics"
-msgstr "ไม่สามารถโหลดสถิติได้"
+#: src/components/PageDetailMetrics.vue:157
+msgid "Errors"
+msgstr "ข้อผิดพลาด"
 
-#: src/components/PageDetailStatistics.vue:188
-msgid "Performance"
-msgstr "ประสิทธิภาพ"
+#: src/components/PageDetailMetrics.vue:169
+msgid "Page Speed"
+msgstr "ความเร็วของหน้าเว็บ"
 
-#: src/components/PageDetailStatistics.vue:192
+#: src/components/PageDetailMetrics.vue:173
 msgid "Round trip time"
 msgstr "เวลาเดินทางไปกลับ"
 
-#: src/components/PageDetailStatistics.vue:202
+#: src/components/PageDetailMetrics.vue:183
 msgid "Time to first byte"
 msgstr "เวลาที่ใช้ในการรับไบต์แรก"
 
-#: src/components/PageDetailStatistics.vue:212
+#: src/components/PageDetailMetrics.vue:193
 msgid "First contentful paint"
 msgstr "เฟรมที่มีเนื้อหาหลักครั้งแรก"
 
-#: src/components/PageDetailStatistics.vue:222
+#: src/components/PageDetailMetrics.vue:203
 msgid "Largest contentful paint"
 msgstr "การวาดภาพที่มีเนื้อหาขนาดใหญ่ที่สุด"
 
-#: src/components/PageDetailStatistics.vue:232
+#: src/components/PageDetailMetrics.vue:213
 msgid "Interaction to next paint"
 msgstr "การโต้ตอบเพื่อไปยังการวาดถัดไป"
 
-#: src/components/PageDetailStatistics.vue:242
+#: src/components/PageDetailMetrics.vue:223
 msgid "Cumulative layout shift"
 msgstr "การเลื่อนเลย์เอาต์สะสม"
 
-#: src/components/PageDetailStatistics.vue:253
-msgid "No real-user performance data available."
-msgstr "ไม่มีข้อมูลประสิทธิภาพจากผู้ใช้จริง"
+#: src/components/PageDetailMetrics.vue:234
+msgid "No real-user page speed data available."
+msgstr "ไม่มีข้อมูลความเร็วหน้าเว็บจากผู้ใช้จริง"
 
-#: src/components/PageDetailStatistics.vue:264
+#: src/components/PageDetailMetrics.vue:245
 msgid "Number of Views & Visits"
 msgstr "จำนวนการดูและจำนวนการเข้าชม"
 
-#: src/components/PageDetailStatistics.vue:296
+#: src/components/PageDetailMetrics.vue:277
 msgid "Views"
 msgstr "มุมมอง"
 
-#: src/components/PageDetailStatistics.vue:302
+#: src/components/PageDetailMetrics.vue:283
 msgid "Visits"
 msgstr "การเยี่ยมชม"
 
-#: src/components/PageDetailStatistics.vue:313
+#: src/components/PageDetailMetrics.vue:294
 msgid "Visit Durations in minutes"
 msgstr "ระยะเวลาการเยี่ยมชมเป็นนาที"
 
-#: src/components/PageDetailStatistics.vue:344
+#: src/components/PageDetailMetrics.vue:325
 msgid "Duration"
 msgstr "ระยะเวลา"
 
-#: src/components/PageDetailStatistics.vue:358
+#: src/components/PageDetailMetrics.vue:339
 msgid "Top Countries"
 msgstr "ประเทศชั้นนำ"
 
-#: src/components/PageDetailStatistics.vue:383
+#: src/components/PageDetailMetrics.vue:364
 msgid "Top Referrers"
 msgstr "ผู้แนะนำสูงสุด"
 
@@ -1726,8 +1726,8 @@ msgid "Content"
 msgstr "เนื้อหา"
 
 #: src/views/PageDetail.vue:714
-msgid "Stats"
-msgstr "สถิติ"
+msgid "Metrics"
+msgstr "เมตริก"
 
 #: src/views/PageList.vue:140
 msgid "Error synthesizing content"

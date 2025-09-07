@@ -884,75 +884,75 @@ msgstr "URL адресът не е валиден"
 msgid "Redirect URL"
 msgstr "Пренасочване на URL"
 
-#: src/components/PageDetailStatistics.vue:161
-msgid "Page analytics"
-msgstr "Анализ на страницата"
+#: src/components/PageDetailMetrics.vue:142
+msgid "Page metrics"
+msgstr "Метрики на страницата"
 
-#: src/components/PageDetailStatistics.vue:167
+#: src/components/PageDetailMetrics.vue:148
 msgid "Days"
 msgstr "Дни"
 
-#: src/components/PageDetailStatistics.vue:180
-msgid "Failed to load statistics"
-msgstr "Неуспешно зареждане на статистика"
+#: src/components/PageDetailMetrics.vue:157
+msgid "Errors"
+msgstr "Грешки"
 
-#: src/components/PageDetailStatistics.vue:188
-msgid "Performance"
-msgstr "Изпълнение"
+#: src/components/PageDetailMetrics.vue:169
+msgid "Page Speed"
+msgstr "Скорост на страницата"
 
-#: src/components/PageDetailStatistics.vue:192
+#: src/components/PageDetailMetrics.vue:173
 msgid "Round trip time"
 msgstr "Време за пътуване в двете посоки"
 
-#: src/components/PageDetailStatistics.vue:202
+#: src/components/PageDetailMetrics.vue:183
 msgid "Time to first byte"
 msgstr "Време до първия байт"
 
-#: src/components/PageDetailStatistics.vue:212
+#: src/components/PageDetailMetrics.vue:193
 msgid "First contentful paint"
 msgstr "Първа съдържателна боя"
 
-#: src/components/PageDetailStatistics.vue:222
+#: src/components/PageDetailMetrics.vue:203
 msgid "Largest contentful paint"
 msgstr "Най-голямата боя със съдържание"
 
-#: src/components/PageDetailStatistics.vue:232
+#: src/components/PageDetailMetrics.vue:213
 msgid "Interaction to next paint"
 msgstr "Взаимодействие към следващата боя"
 
-#: src/components/PageDetailStatistics.vue:242
+#: src/components/PageDetailMetrics.vue:223
 msgid "Cumulative layout shift"
 msgstr "Кумулативна промяна на оформлението"
 
-#: src/components/PageDetailStatistics.vue:253
-msgid "No real-user performance data available."
-msgstr "Няма налични данни за работата на реалните потребители."
+#: src/components/PageDetailMetrics.vue:234
+msgid "No real-user page speed data available."
+msgstr "Няма налични данни за скоростта на страницата при реални потребители."
 
-#: src/components/PageDetailStatistics.vue:264
+#: src/components/PageDetailMetrics.vue:245
 msgid "Number of Views & Visits"
 msgstr "Брой прегледи и посещения"
 
-#: src/components/PageDetailStatistics.vue:296
+#: src/components/PageDetailMetrics.vue:277
 msgid "Views"
 msgstr "Прегледи"
 
-#: src/components/PageDetailStatistics.vue:302
+#: src/components/PageDetailMetrics.vue:283
 msgid "Visits"
 msgstr "Посещения"
 
-#: src/components/PageDetailStatistics.vue:313
+#: src/components/PageDetailMetrics.vue:294
 msgid "Visit Durations in minutes"
 msgstr "Продължителност на посещенията в минути"
 
-#: src/components/PageDetailStatistics.vue:344
+#: src/components/PageDetailMetrics.vue:325
 msgid "Duration"
 msgstr "Продължителност"
 
-#: src/components/PageDetailStatistics.vue:358
+#: src/components/PageDetailMetrics.vue:339
 msgid "Top Countries"
 msgstr "Топ държави"
 
-#: src/components/PageDetailStatistics.vue:383
+#: src/components/PageDetailMetrics.vue:364
 msgid "Top Referrers"
 msgstr "Топ реферати"
 
@@ -1727,8 +1727,8 @@ msgid "Content"
 msgstr "Съдържание"
 
 #: src/views/PageDetail.vue:714
-msgid "Stats"
-msgstr "Статистики"
+msgid "Metrics"
+msgstr "Метрики"
 
 #: src/views/PageList.vue:140
 msgid "Error synthesizing content"

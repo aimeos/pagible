@@ -884,75 +884,75 @@ msgstr "URL-osoite ei ole kelvollinen"
 msgid "Redirect URL"
 msgstr "Ohjaa URL-osoite uudelleen"
 
-#: src/components/PageDetailStatistics.vue:161
-msgid "Page analytics"
-msgstr "Sivun analytiikka"
+#: src/components/PageDetailMetrics.vue:142
+msgid "Page metrics"
+msgstr "Sivun mittarit"
 
-#: src/components/PageDetailStatistics.vue:167
+#: src/components/PageDetailMetrics.vue:148
 msgid "Days"
 msgstr "Päivät"
 
-#: src/components/PageDetailStatistics.vue:180
-msgid "Failed to load statistics"
-msgstr "Tilastojen lataaminen epäonnistui"
+#: src/components/PageDetailMetrics.vue:157
+msgid "Errors"
+msgstr "Virheet"
 
-#: src/components/PageDetailStatistics.vue:188
-msgid "Performance"
-msgstr "Suorituskyky"
+#: src/components/PageDetailMetrics.vue:169
+msgid "Page Speed"
+msgstr "Sivun nopeus"
 
-#: src/components/PageDetailStatistics.vue:192
+#: src/components/PageDetailMetrics.vue:173
 msgid "Round trip time"
 msgstr "Edestakainen matka-aika"
 
-#: src/components/PageDetailStatistics.vue:202
+#: src/components/PageDetailMetrics.vue:183
 msgid "Time to first byte"
 msgstr "Aika ensimmäiseen tavuun"
 
-#: src/components/PageDetailStatistics.vue:212
+#: src/components/PageDetailMetrics.vue:193
 msgid "First contentful paint"
 msgstr "Ensimmäinen sisällöllinen maali"
 
-#: src/components/PageDetailStatistics.vue:222
+#: src/components/PageDetailMetrics.vue:203
 msgid "Largest contentful paint"
 msgstr "Suurin sisältöinen maali"
 
-#: src/components/PageDetailStatistics.vue:232
+#: src/components/PageDetailMetrics.vue:213
 msgid "Interaction to next paint"
 msgstr "Vuorovaikutus seuraavaan maaliin"
 
-#: src/components/PageDetailStatistics.vue:242
+#: src/components/PageDetailMetrics.vue:223
 msgid "Cumulative layout shift"
 msgstr "Kumulatiivinen layout-siirtymä"
 
-#: src/components/PageDetailStatistics.vue:253
-msgid "No real-user performance data available."
-msgstr "Todellisen käyttäjän suorituskykyä koskevia tietoja ei ole saatavilla."
+#: src/components/PageDetailMetrics.vue:234
+msgid "No real-user page speed data available."
+msgstr "Sivunopeustietoja ei ole saatavilla todellisten käyttäjien osalta."
 
-#: src/components/PageDetailStatistics.vue:264
+#: src/components/PageDetailMetrics.vue:245
 msgid "Number of Views & Visits"
 msgstr "Katselujen ja vierailujen määrä"
 
-#: src/components/PageDetailStatistics.vue:296
+#: src/components/PageDetailMetrics.vue:277
 msgid "Views"
 msgstr "Näkymät"
 
-#: src/components/PageDetailStatistics.vue:302
+#: src/components/PageDetailMetrics.vue:283
 msgid "Visits"
 msgstr "Vierailut"
 
-#: src/components/PageDetailStatistics.vue:313
+#: src/components/PageDetailMetrics.vue:294
 msgid "Visit Durations in minutes"
 msgstr "Käynnin kesto minuutteina"
 
-#: src/components/PageDetailStatistics.vue:344
+#: src/components/PageDetailMetrics.vue:325
 msgid "Duration"
 msgstr "Kesto"
 
-#: src/components/PageDetailStatistics.vue:358
+#: src/components/PageDetailMetrics.vue:339
 msgid "Top Countries"
 msgstr "Parhaat maat"
 
-#: src/components/PageDetailStatistics.vue:383
+#: src/components/PageDetailMetrics.vue:364
 msgid "Top Referrers"
 msgstr "Parhaat suosittelijat"
 
@@ -1727,8 +1727,8 @@ msgid "Content"
 msgstr "Sisältö"
 
 #: src/views/PageDetail.vue:714
-msgid "Stats"
-msgstr "Tilastot"
+msgid "Metrics"
+msgstr "Mittarit"
 
 #: src/views/PageList.vue:140
 msgid "Error synthesizing content"

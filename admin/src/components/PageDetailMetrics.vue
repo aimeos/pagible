@@ -139,7 +139,7 @@
 
       <v-row>
         <v-col cols="6" class="title">
-          {{ $gettext('Page analytics') }}
+          {{ $gettext('Page metrics') }}
         </v-col>
         <v-col cols="6" class="select-days">
           <v-select

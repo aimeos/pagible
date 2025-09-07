@@ -886,75 +886,75 @@ msgstr "URL nav derīgs"
 msgid "Redirect URL"
 msgstr "Pārvirzīšanas URL"
 
-#: src/components/PageDetailStatistics.vue:161
-msgid "Page analytics"
-msgstr "Lapas analītika"
+#: src/components/PageDetailMetrics.vue:142
+msgid "Page metrics"
+msgstr "Lapas metrikas"
 
-#: src/components/PageDetailStatistics.vue:167
+#: src/components/PageDetailMetrics.vue:148
 msgid "Days"
 msgstr "Dienas"
 
-#: src/components/PageDetailStatistics.vue:180
-msgid "Failed to load statistics"
-msgstr "Neizdevās ielādēt statistiku"
+#: src/components/PageDetailMetrics.vue:157
+msgid "Errors"
+msgstr "Kļūdas"
 
-#: src/components/PageDetailStatistics.vue:188
-msgid "Performance"
-msgstr "Veiktspēja"
+#: src/components/PageDetailMetrics.vue:169
+msgid "Page Speed"
+msgstr "Lapas ātrums"
 
-#: src/components/PageDetailStatistics.vue:192
+#: src/components/PageDetailMetrics.vue:173
 msgid "Round trip time"
 msgstr "Brauciena turp un atpakaļ laiks"
 
-#: src/components/PageDetailStatistics.vue:202
+#: src/components/PageDetailMetrics.vue:183
 msgid "Time to first byte"
 msgstr "Laiks līdz pirmajam baitam"
 
-#: src/components/PageDetailStatistics.vue:212
+#: src/components/PageDetailMetrics.vue:193
 msgid "First contentful paint"
 msgstr "Pirmā saturīga krāsa"
 
-#: src/components/PageDetailStatistics.vue:222
+#: src/components/PageDetailMetrics.vue:203
 msgid "Largest contentful paint"
 msgstr "Lielākā satura krāsa"
 
-#: src/components/PageDetailStatistics.vue:232
+#: src/components/PageDetailMetrics.vue:213
 msgid "Interaction to next paint"
 msgstr "Mijiedarbība uz nākamo krāsu"
 
-#: src/components/PageDetailStatistics.vue:242
+#: src/components/PageDetailMetrics.vue:223
 msgid "Cumulative layout shift"
 msgstr "Kumulatīvā izkārtojuma maiņa"
 
-#: src/components/PageDetailStatistics.vue:253
-msgid "No real-user performance data available."
-msgstr "Nav pieejami dati par reālo lietotāju veiktspēju."
+#: src/components/PageDetailMetrics.vue:234
+msgid "No real-user page speed data available."
+msgstr "Nav pieejami dati par reālo lietotāju lapu ātrumu."
 
-#: src/components/PageDetailStatistics.vue:264
+#: src/components/PageDetailMetrics.vue:245
 msgid "Number of Views & Visits"
 msgstr "Skatījumu un apmeklējumu skaits"
 
-#: src/components/PageDetailStatistics.vue:296
+#: src/components/PageDetailMetrics.vue:277
 msgid "Views"
 msgstr "Skati"
 
-#: src/components/PageDetailStatistics.vue:302
+#: src/components/PageDetailMetrics.vue:283
 msgid "Visits"
 msgstr "Apmeklējumi"
 
-#: src/components/PageDetailStatistics.vue:313
+#: src/components/PageDetailMetrics.vue:294
 msgid "Visit Durations in minutes"
 msgstr "Apmeklējuma ilgums minūtēs"
 
-#: src/components/PageDetailStatistics.vue:344
+#: src/components/PageDetailMetrics.vue:325
 msgid "Duration"
 msgstr "Ilgums"
 
-#: src/components/PageDetailStatistics.vue:358
+#: src/components/PageDetailMetrics.vue:339
 msgid "Top Countries"
 msgstr "Top valstis"
 
-#: src/components/PageDetailStatistics.vue:383
+#: src/components/PageDetailMetrics.vue:364
 msgid "Top Referrers"
 msgstr "Galvenie ieteikumu sniedzēji"
 
@@ -1729,8 +1729,8 @@ msgid "Content"
 msgstr "Saturs"
 
 #: src/views/PageDetail.vue:714
-msgid "Stats"
-msgstr "Statistika"
+msgid "Metrics"
+msgstr "Metrikas"
 
 #: src/views/PageList.vue:140
 msgid "Error synthesizing content"

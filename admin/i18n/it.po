@@ -884,75 +884,75 @@ msgstr "L'URL non è valido"
 msgid "Redirect URL"
 msgstr "URL di reindirizzamento"
 
-#: src/components/PageDetailStatistics.vue:161
-msgid "Page analytics"
-msgstr "Analisi della pagina"
+#: src/components/PageDetailMetrics.vue:142
+msgid "Page metrics"
+msgstr "Metriche di pagina"
 
-#: src/components/PageDetailStatistics.vue:167
+#: src/components/PageDetailMetrics.vue:148
 msgid "Days"
 msgstr "Giorni"
 
-#: src/components/PageDetailStatistics.vue:180
-msgid "Failed to load statistics"
-msgstr "Impossibile caricare le statistiche"
+#: src/components/PageDetailMetrics.vue:157
+msgid "Errors"
+msgstr "Errori"
 
-#: src/components/PageDetailStatistics.vue:188
-msgid "Performance"
-msgstr "Prestazioni"
+#: src/components/PageDetailMetrics.vue:169
+msgid "Page Speed"
+msgstr "Velocità della pagina"
 
-#: src/components/PageDetailStatistics.vue:192
+#: src/components/PageDetailMetrics.vue:173
 msgid "Round trip time"
 msgstr "Tempo di andata e ritorno"
 
-#: src/components/PageDetailStatistics.vue:202
+#: src/components/PageDetailMetrics.vue:183
 msgid "Time to first byte"
 msgstr "Tempo al primo byte"
 
-#: src/components/PageDetailStatistics.vue:212
+#: src/components/PageDetailMetrics.vue:193
 msgid "First contentful paint"
 msgstr "Prima vernice contenitiva"
 
-#: src/components/PageDetailStatistics.vue:222
+#: src/components/PageDetailMetrics.vue:203
 msgid "Largest contentful paint"
 msgstr "Il più grande contenuto di vernice"
 
-#: src/components/PageDetailStatistics.vue:232
+#: src/components/PageDetailMetrics.vue:213
 msgid "Interaction to next paint"
 msgstr "Interazione con la vernice successiva"
 
-#: src/components/PageDetailStatistics.vue:242
+#: src/components/PageDetailMetrics.vue:223
 msgid "Cumulative layout shift"
 msgstr "Spostamento cumulativo del layout"
 
-#: src/components/PageDetailStatistics.vue:253
-msgid "No real-user performance data available."
-msgstr "Non sono disponibili dati sulle prestazioni reali degli utenti."
+#: src/components/PageDetailMetrics.vue:234
+msgid "No real-user page speed data available."
+msgstr "Non sono disponibili dati sulla velocità delle pagine per gli utenti reali."
 
-#: src/components/PageDetailStatistics.vue:264
+#: src/components/PageDetailMetrics.vue:245
 msgid "Number of Views & Visits"
 msgstr "Numero di visualizzazioni e visite"
 
-#: src/components/PageDetailStatistics.vue:296
+#: src/components/PageDetailMetrics.vue:277
 msgid "Views"
 msgstr "Visualizzazioni"
 
-#: src/components/PageDetailStatistics.vue:302
+#: src/components/PageDetailMetrics.vue:283
 msgid "Visits"
 msgstr "Visite"
 
-#: src/components/PageDetailStatistics.vue:313
+#: src/components/PageDetailMetrics.vue:294
 msgid "Visit Durations in minutes"
 msgstr "Durata della visita in minuti"
 
-#: src/components/PageDetailStatistics.vue:344
+#: src/components/PageDetailMetrics.vue:325
 msgid "Duration"
 msgstr "Durata"
 
-#: src/components/PageDetailStatistics.vue:358
+#: src/components/PageDetailMetrics.vue:339
 msgid "Top Countries"
 msgstr "Paesi Top"
 
-#: src/components/PageDetailStatistics.vue:383
+#: src/components/PageDetailMetrics.vue:364
 msgid "Top Referrers"
 msgstr "I principali referenti"
 
@@ -1727,8 +1727,8 @@ msgid "Content"
 msgstr "Contenuto"
 
 #: src/views/PageDetail.vue:714
-msgid "Stats"
-msgstr "Statistiche"
+msgid "Metrics"
+msgstr "Metriche"
 
 #: src/views/PageList.vue:140
 msgid "Error synthesizing content"
