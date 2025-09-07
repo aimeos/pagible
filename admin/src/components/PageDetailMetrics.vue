@@ -19,7 +19,7 @@
       days: 30,
       error: null,
       loading: false,
-      performance: null,
+      pagespeed: null,
       countries: [],
       referrers: [],
       durations: [],
@@ -43,8 +43,7 @@
     },
 
     mounted() {
-      this.pagespeed();
-      this.statistics();
+      this.metrics();
     },
 
     methods: {
@@ -60,51 +59,26 @@
       },
 
 
-      async pagespeed() {
-        try {
-          const { data } = await this.$apollo.mutate({
-            mutation: gql`mutation ($url: String!) {
-                pagespeed(url: $url) {
-                  key
-                  value
-                }
-              }
-            `,
-            variables: {
-              url: this.url(this.item)
-            },
-          });
-
-          this.performance = (data?.pagespeed || []).reduce((acc, { key, value }) => {
-            acc[key] = value;
-            return acc;
-          }, {});
-        } catch (err) {
-          console.warn("CrUX API error:", err);
-          this.error = err.message || String(err);
-        }
-      },
-
-
       slice(items, page) {
         const start = (page - 1) * 10
         return items.slice(start, start + 10)
       },
 
 
-      async statistics() {
+      async metrics() {
         this.loading = true;
         this.error = null;
 
         try {
           const { data } = await this.$apollo.mutate({
             mutation: gql`mutation ($url: String!, $days: Int) {
-                statistics(url: $url, days: $days) {
+                metrics(url: $url, days: $days) {
                   views { key value }
                   visits { key value }
                   durations { key value }
                   countries { key value }
                   referrers { key value }
+                  pagespeed { key value }
                 }
               }
             `,
@@ -114,7 +88,7 @@
             },
           });
 
-          const stats = data?.statistics || {};
+          const stats = data?.metrics || {};
           const sortByValue = (a,b) => b.value - a.value;
           const sortByDate = (a,b) => a.key > b.key ? 1 : (a.key < b.key ? -1 : 0);
 
@@ -124,6 +98,11 @@
 
           this.countries = (stats.countries || []).sort(sortByValue);
           this.referrers = (stats.referrers || []).sort(sortByValue);
+
+          this.pagespeed = (data?.pagespeed || []).reduce((acc, { key, value }) => {
+            acc[key] = value;
+            return acc;
+          }, {});
         } catch (e) {
           this.error = e.message || String(e);
         } finally {
@@ -167,7 +146,7 @@
             :label="$gettext('Days')"
             variant="underlined"
             hide-details
-            @update:modelValue="statistics"
+            @update:modelValue="metrics"
           />
         </v-col>
       </v-row>
@@ -177,7 +156,7 @@
         variant="tonal"
         border="start"
         class="panel"
-        :title="$gettext('Failed to load statistics')">
+        :title="$gettext('Failed to load metrics')">
         {{ error }}
       </v-alert>
 
@@ -185,15 +164,15 @@
       <v-row>
         <v-col cols="12">
           <v-card class="panel">
-            <v-card-title class="text-subtitle-1">{{ $gettext('Performance') }}</v-card-title>
+            <v-card-title class="text-subtitle-1">{{ $gettext('Page Speed') }}</v-card-title>
             <v-card-text>
-              <v-row v-if="performance">
+              <v-row v-if="pagespeed">
                 <v-col cols="12" lg="2" md="4" sm="6">
                     <div class="text-caption text-medium-emphasis">{{ $gettext('Round trip time') }}</div>
                     <div class="d-flex align-center justify-space-between text-h6"
-                      :class="color(performance?.['round_trip_time'], 200, 500)">
-                      <span v-if="performance?.['round_trip_time']">
-                        {{ performance?.['round_trip_time'] }} ms
+                      :class="color(pagespeed?.['round_trip_time'], 200, 500)">
+                      <span v-if="pagespeed?.['round_trip_time']">
+                        {{ pagespeed?.['round_trip_time'] }} ms
                       </span>
                       <span v-else>—</span>
                     </div>
@@ -201,9 +180,9 @@
                 <v-col cols="12" lg="2" md="4" sm="6">
                     <div class="text-caption text-medium-emphasis">{{ $gettext('Time to first byte') }}</div>
                     <div class="d-flex align-center justify-space-between text-h6"
-                      :class="color(performance?.['time_to_first_byte'], 800, 1800)">
-                      <span v-if="performance?.['time_to_first_byte']">
-                        {{ performance?.['time_to_first_byte'] }} ms
+                      :class="color(pagespeed?.['time_to_first_byte'], 800, 1800)">
+                      <span v-if="pagespeed?.['time_to_first_byte']">
+                        {{ pagespeed?.['time_to_first_byte'] }} ms
                       </span>
                       <span v-else>—</span>
                     </div>
@@ -211,9 +190,9 @@
                 <v-col cols="12" lg="2" md="4" sm="6">
                     <div class="text-caption text-medium-emphasis">{{ $gettext('First contentful paint') }}</div>
                     <div class="d-flex align-center justify-space-between text-h6"
-                      :class="color(performance?.['first_contentful_paint'], 1800, 3000)">
-                      <span v-if="performance?.['first_contentful_paint']">
-                        {{ performance?.['first_contentful_paint'] }} ms
+                      :class="color(pagespeed?.['first_contentful_paint'], 1800, 3000)">
+                      <span v-if="pagespeed?.['first_contentful_paint']">
+                        {{ pagespeed?.['first_contentful_paint'] }} ms
                       </span>
                       <span v-else>—</span>
                     </div>
@@ -221,9 +200,9 @@
                 <v-col cols="12" lg="2" md="4" sm="6">
                     <div class="text-caption text-medium-emphasis">{{ $gettext('Largest contentful paint') }}</div>
                     <div class="d-flex align-center justify-space-between text-h6"
-                      :class="color(performance?.['largest_contentful_paint'], 2500, 4000)">
-                      <span v-if="performance?.['largest_contentful_paint']">
-                        {{ performance?.['largest_contentful_paint'] }} ms
+                      :class="color(pagespeed?.['largest_contentful_paint'], 2500, 4000)">
+                      <span v-if="pagespeed?.['largest_contentful_paint']">
+                        {{ pagespeed?.['largest_contentful_paint'] }} ms
                       </span>
                       <span v-else>—</span>
                     </div>
@@ -231,9 +210,9 @@
                 <v-col cols="12" lg="2" md="4" sm="6">
                     <div class="text-caption text-medium-emphasis">{{ $gettext('Interaction to next paint') }}</div>
                     <div class="d-flex align-center justify-space-between text-h6"
-                      :class="color(performance?.['interaction_to_next_paint'], 200, 500)">
-                      <span v-if="performance?.['interaction_to_next_paint']">
-                        {{ performance?.['interaction_to_next_paint'] }} ms
+                      :class="color(pagespeed?.['interaction_to_next_paint'], 200, 500)">
+                      <span v-if="pagespeed?.['interaction_to_next_paint']">
+                        {{ pagespeed?.['interaction_to_next_paint'] }} ms
                       </span>
                       <span v-else>—</span>
                     </div>
@@ -241,16 +220,16 @@
                 <v-col cols="12" lg="2" md="4" sm="6">
                     <div class="text-caption text-medium-emphasis">{{ $gettext('Cumulative layout shift') }}</div>
                     <div class="d-flex align-center justify-space-between text-h6"
-                      :class="color(performance?.['cumulative_layout_shift'], 0.1, 0.25)">
-                      <span v-if="performance?.['cumulative_layout_shift']">
-                        {{ performance?.['cumulative_layout_shift'] }}
+                      :class="color(pagespeed?.['cumulative_layout_shift'], 0.1, 0.25)">
+                      <span v-if="pagespeed?.['cumulative_layout_shift']">
+                        {{ pagespeed?.['cumulative_layout_shift'] }}
                       </span>
                       <span v-else>—</span>
                     </div>
                 </v-col>
               </v-row>
               <div v-else class="text-caption text-medium-emphasis mt-2">
-                {{ $gettext('No real-user performance data available.') }}
+                {{ $gettext('No real-user page speed data available.') }}
               </div>
             </v-card-text>
           </v-card>
@@ -260,7 +239,7 @@
       <!-- Charts -->
       <v-row>
         <v-col cols="12" md="6">
-          <v-card class="panel">
+          <v-card class="panel chart">
             <v-card-title class="text-subtitle-1">{{ $gettext('Number of Views & Visits') }}</v-card-title>
             <v-card-text>
               <Line
@@ -309,7 +288,7 @@
         </v-col>
 
         <v-col cols="12" md="6">
-          <v-card class="panel">
+          <v-card class="panel chart">
             <v-card-title class="text-subtitle-1">{{ $gettext('Visit Durations in minutes') }}</v-card-title>
             <v-card-text>
               <Line
@@ -469,6 +448,10 @@
 
   .v-theme--dark .panel .warn {
     color: #E0A000;
+  }
+
+  .panel.chart .v-card-text {
+    aspect-ratio: 425 / 200;
   }
 
   .panel .value {

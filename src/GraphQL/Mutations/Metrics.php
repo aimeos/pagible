@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Cache;
 use GraphQL\Error\Error;
 
 
-final class Statistics
+final class Metrics
 {
     /**
      * @param  null  $rootValue
@@ -22,10 +22,13 @@ final class Statistics
             throw new Error( 'URL must be a non-empty string' );
         }
 
-        if( !is_int( $days ) || $days < 1 || $days > 365 ) {
-            throw new Error( 'Number of days must be an integer between 1 and 365' );
+        if( !is_int( $days ) || $days < 1 || $days > 90 ) {
+            throw new Error( 'Number of days must be an integer between 1 and 90' );
         }
 
-        return Cache::remember( "statistics:$url:$days", 1800, fn() => Analytics::all( $url, $days ) );
+        $data = Cache::remember( "stats:$url:$days", 1800, fn() => Analytics::driver()->stats( $url, $days ) );
+        $data['pagespeed'] = Cache::remember( "pagespeed:$url", 43200, fn() => Analytics::pagespeed( $url ) );
+
+        return $data;
     }
 }

@@ -6,7 +6,7 @@
   import PageDetailItem from '../components/PageDetailItem.vue'
   import PageDetailEditor from '../components/PageDetailEditor.vue'
   import PageDetailContent from '../components/PageDetailContent.vue'
-  import PageDetailStatistics from '../components/PageDetailStatistics.vue'
+  import PageDetailMetrics from '../components/PageDetailMetrics.vue'
   import { useAuthStore, useDrawerStore, useLanguageStore, useMessageStore, useSchemaStore } from '../stores'
 
 
@@ -18,7 +18,7 @@
       PageDetailItem,
       PageDetailEditor,
       PageDetailContent,
-      PageDetailStatistics
+      PageDetailMetrics
     },
 
     inject: ['closeView', 'compose', 'translate', 'txlocales'],
@@ -709,9 +709,9 @@
           @click="aside = asidePage">
           {{ $gettext('Page') }}
         </v-tab>
-        <v-tab value="stats"
+        <v-tab value="metrics"
           @click="aside = ''">
-          {{ $gettext('Stats') }}
+          {{ $gettext('Metrics') }}
         </v-tab>
       </v-tabs>
 
@@ -747,8 +747,8 @@
           />
         </v-window-item>
 
-        <v-window-item value="stats">
-          <PageDetailStatistics ref="stats"
+        <v-window-item value="metrics">
+          <PageDetailMetrics ref="metrics"
             :item="item"
           />
         </v-window-item>

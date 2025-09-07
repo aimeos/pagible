@@ -221,10 +221,10 @@ class GraphqlTest extends TestAbstract
     }
 
 
-    public function testStatistics()
+    public function testMetrics()
     {
         $expected = [
-            'pageViews' => [
+            'views' => [
                 ['key' => '2025-08-01', 'value' => 10],
                 ['key' => '2025-08-02', 'value' => 20],
             ],
@@ -232,7 +232,7 @@ class GraphqlTest extends TestAbstract
                 ['key' => '2025-08-01', 'value' => 5],
                 ['key' => '2025-08-02', 'value' => 15],
             ],
-            'visitDuration' => [
+            'durations' => [
                 ['key' => '2025-08-01', 'value' => 60],
                 ['key' => '2025-08-02', 'value' => 90],
             ],
@@ -244,68 +244,65 @@ class GraphqlTest extends TestAbstract
                 ['key' => 'google.com', 'value' => 6],
                 ['key' => 'bing.com', 'value' => 3],
             ],
-            'performance' => [
-                'ttfb' => ['value' => 400, 'category' => 'FAST'],
-                'fcp'  => ['value' => 1800, 'category' => 'FAST'],
-                'lcp'  => ['value' => 2400, 'category' => 'AVERAGE'],
-                'fid'  => ['value' => 20, 'category' => 'FAST'],
-                'cls'  => ['value' => 0.12, 'category' => 'FAST'],
-            ],
+        ];
+
+        $pagespeed = [
+            ['key' => 'time_to_first_byte', 'value' => 250]
         ];
 
         // Mock Analytics facade
-        Analytics::shouldReceive('driver->all')
+        Analytics::shouldReceive('driver->stats')
             ->once()
             ->with('/test', 30)
             ->andReturn($expected);
 
+        Analytics::shouldReceive('pagespeed')
+            ->once()
+            ->with('/test')
+            ->andReturn($pagespeed);
+
+
         $response = $this->actingAs($this->user)->graphQL('
             mutation {
-                statistics(url: "/test", days: 30) {
-                    pageViews { key value }
+                metrics(url: "/test", days: 30) {
+                    views { key value }
                     visits { key value }
-                    visitDuration { key value }
+                    durations { key value }
                     countries { key value }
                     referrers { key value }
-                    performance {
-                        ttfb { value category }
-                        fcp { value category }
-                        lcp { value category }
-                        fid { value category }
-                        cls { value category }
-                    }
+                    pagespeed { key value }
                 }
             }
         ');
 
         $response->assertJson([
             'data' => [
-                'statistics' => $expected,
+                'metrics' => $expected + ['pagespeed' => $pagespeed],
             ],
         ]);
     }
 
 
-    public function testStatisticsEmptyUrl()
+    public function testMetricsEmptyUrl()
     {
         $this->actingAs($this->user)->graphQL('
             mutation {
-                statistics(url: "", days: 30) {
-                    pageViews { key value }
+                metrics(url: "", days: 30) {
+                    views { key value }
                 }
             }
         ')->assertGraphQLErrorMessage('URL must be a non-empty string');
     }
 
 
-    public function testStatisticsInvalidDays()
+    public function testMetricsInvalidDays()
     {
         $this->actingAs($this->user)->graphQL('
             mutation {
-                statistics(url: "/test", days: 999) {
-                    pageViews { key value }
+                metrics(url: "/test", days: 100) {
+                    views { key value }
                 }
             }
-        ')->assertGraphQLErrorMessage('Number of days must be an integer between 1 and 365');
+        ')->assertGraphQLErrorMessage('Number of days must be an integer between 1 and 90');
     }
 }

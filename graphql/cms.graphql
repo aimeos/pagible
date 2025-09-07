@@ -74,14 +74,11 @@ extend type Mutation {
   "Generate images from prompts and passed file IDs"
   imagine(prompt: String!, context: String, files: [String!]): [String!]
 
-  "Get pagespeed statistics"
-  pagespeed(url: String!): [StatsNumber!]
-
   "Refine existing page content"
   refine(prompt: String!, content: JSON!, type: String, context: String): JSON
 
-  "Get page statistics"
-  statistics(url: String!, days: Int): Stats
+  "Get page metrics"
+  metrics(url: String!, days: Int): Stats
 
   "Synthesize pages and content from prompts and passed file IDs"
   synthesize(prompt: String!, context: String, files: [String!]): String
@@ -601,8 +598,8 @@ type Stats {
   "Number of page visits by referring website"
   referrers: [StatsNumber!]
 
-  "Performance related values of the page"
-  performance: StatsPerf
+  "Page Speed related values for the page"
+  pagespeed: [StatsNumber!]
 }
 
 type StatsNumber {
