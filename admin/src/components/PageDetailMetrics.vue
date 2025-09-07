@@ -79,6 +79,7 @@
                   countries { key value }
                   referrers { key value }
                   pagespeed { key value }
+                  errors
                 }
               }
             `,
@@ -99,10 +100,11 @@
           this.countries = (stats.countries || []).sort(sortByValue);
           this.referrers = (stats.referrers || []).sort(sortByValue);
 
-          this.pagespeed = (data?.pagespeed || []).reduce((acc, { key, value }) => {
+          this.pagespeed = (stats?.pagespeed || []).reduce((acc, { key, value }) => {
             acc[key] = value;
             return acc;
           }, {});
+          this.errors = stats.errors || [];
         } catch (e) {
           this.errors.push(e.message || String(e));
         } finally {
