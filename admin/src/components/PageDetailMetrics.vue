@@ -31,12 +31,7 @@
       visits: [],
       views: [],
       colors: {},
-      page: {
-        query: 1,
-        country: 1,
-        referrer: 1,
-        referrerType: 1,
-      },
+      querypage: 1,
     }),
 
     setup() {
@@ -102,30 +97,33 @@
           });
 
           const stats = data?.metrics || {};
+          const dateFormatter = new Intl.DateTimeFormat(this.$vuetify.locale.current, { day: "numeric", month: "numeric" });
+
+          const clean = (item) => { delete item.__typename; return item; }
+
           const sortByValue = (a,b) => b.value - a.value;
           const sortByDate = (a,b) => a.key > b.key ? 1 : (a.key < b.key ? -1 : 0);
-          const formatDate = (item) => {
-            item.key = (new Date(item.key)).toLocaleDateString(
-              this.$vuetify.locale.current,
-              { day: "numeric", month: "numeric" }
-            );
-            return item;
-          }
+
+          const percent = (item) => { item.value = item.value * 100; return item; }
+          const minutes = (item) => { item.value = item.value / 60; return item; }
+
+          const formatValue = (item) => { item.value = this.value(item.value); return item; }
+          const formatDate = (item) => { item.key = dateFormatter.format(new Date(item.key)); return item; }
+
 
           this.views = (stats.views || []).sort(sortByDate).map(formatDate);
           this.visits = (stats.visits || []).sort(sortByDate).map(formatDate);
-          this.durations = (stats.durations || []).sort(sortByDate).map(formatDate);
+          this.durations = (stats.durations || []).sort(sortByDate).map(formatDate).map(minutes);
 
           this.impressions = (stats.impressions || []).sort(sortByDate).map(formatDate);
           this.clicks = (stats.clicks || []).sort(sortByDate).map(formatDate);
-          this.ctrs = (stats.ctrs || []).sort(sortByDate).map(formatDate);
+          this.ctrs = (stats.ctrs || []).sort(sortByDate).map(formatDate).map(percent);
 
-          this.queries = (stats.queries || []).sort((a,b) => b.impressions - a.impressions);
+          this.countries = (stats.countries || []).sort(sortByValue).map(clean).map(formatValue);
+          this.referrers = (stats.referrers || []).sort(sortByValue).map(clean).map(formatValue);
+          this.referrertypes = (stats.referrertypes || []).sort(sortByValue).map(clean).map(formatValue);
 
-          this.countries = (stats.countries || []).sort(sortByValue);
-          this.referrers = (stats.referrers || []).sort(sortByValue);
-          this.referrertypes = (stats.referrertypes || []).sort(sortByValue);
-
+          this.queries = (stats.queries || []).sort((a,b) => b.impressions - a.impressions).map(this.value);
           this.pagespeed = (stats?.pagespeed || []).reduce((acc, { key, value }) => {
             acc[key] = value;
             return acc;
@@ -137,6 +135,11 @@
         } finally {
           this.loading = false;
         }
+      },
+
+
+      percent(v) {
+        return (v > 0 ? '+' : '') + Number(v).toFixed(0);
       },
 
 
@@ -155,6 +158,11 @@
           case v >= 1e3: return (v / 1e3).toFixed(2).toLocaleString() + 'K';
         }
         return v;
+      },
+
+
+      weekly(data, slice = 1) {
+        return data.slice(-7 * slice, data.length - 7 * (slice - 1)).reduce((acc, item) => acc + Number(item.value), 0);
       }
     }
   }
@@ -193,72 +201,84 @@
         <v-progress-circular indeterminate size="32" />
       </div>
 
-      <!-- PageSpeed -->
-      <v-row v-if="pagespeed">
+      <!-- Overview -->
+      <v-row>
         <v-col cols="12">
-          <v-card class="panel">
-            <v-card-title class="text-subtitle-1">{{ $gettext('Page Speed') }}</v-card-title>
+          <v-card class="panel emphasis-bg">
+            <v-card-title>{{ $gettext('Weekly Insights') }}</v-card-title>
             <v-card-text>
               <v-row>
-                <v-col cols="12" lg="2" md="4" sm="6">
-                    <div class="text-caption text-medium-emphasis">{{ $gettext('Round trip time') }}</div>
-                    <div class="d-flex align-center justify-space-between text-h6"
-                      :class="color(pagespeed?.['round_trip_time'], 200, 500)">
-                      <span v-if="pagespeed?.['round_trip_time']">
-                        {{ pagespeed?.['round_trip_time'] }}ms
+                <v-col cols="6" md="4" lg="2">
+                  <div class="text-caption text-medium-emphasis">{{ $gettext('Page Views') }}</div>
+                  <div class="d-flex align-center justify-space-between text-h6">
+                    <div v-if="views.length">
+                      <span class="number">{{ value(weekly(views)) }}</span>
+                      <span class="percent" :class="weekly(views) >= weekly(views, 2) ? 'good' : 'bad'">
+                        {{ percent(weekly(views) * 100 / (weekly(views, 2) || 1) - 100) }}%
                       </span>
-                      <span v-else>—</span>
                     </div>
+                    <div v-else>—</div>
+                  </div>
                 </v-col>
-                <v-col cols="12" lg="2" md="4" sm="6">
-                    <div class="text-caption text-medium-emphasis">{{ $gettext('Time to first byte') }}</div>
-                    <div class="d-flex align-center justify-space-between text-h6"
-                      :class="color(pagespeed?.['time_to_first_byte'], 800, 1800)">
-                      <span v-if="pagespeed?.['time_to_first_byte']">
-                        {{ pagespeed?.['time_to_first_byte'] }}ms
+                <v-col cols="6" md="4" lg="2">
+                  <div class="text-caption text-medium-emphasis">{{ $gettext('Page Visits') }}</div>
+                  <div class="d-flex align-center justify-space-between text-h6">
+                    <div v-if="visits.length">
+                      <span class="number">{{ value(weekly(visits)) }}</span>
+                      <span class="percent" :class="weekly(visits) >= weekly(visits, 2) ? 'good' : 'bad'">
+                        {{ percent(weekly(visits) * 100 / (weekly(visits, 2) || 1) - 100) }}%
                       </span>
-                      <span v-else>—</span>
                     </div>
+                    <div v-else>—</div>
+                  </div>
                 </v-col>
-                <v-col cols="12" lg="2" md="4" sm="6">
-                    <div class="text-caption text-medium-emphasis">{{ $gettext('First contentful paint') }}</div>
-                    <div class="d-flex align-center justify-space-between text-h6"
-                      :class="color(pagespeed?.['first_contentful_paint'], 1800, 3000)">
-                      <span v-if="pagespeed?.['first_contentful_paint']">
-                        {{ pagespeed?.['first_contentful_paint'] }}ms
+                <v-col cols="6" md="4" lg="2">
+                  <div class="text-caption text-medium-emphasis">{{ $gettext('Visit Duration (minutes)') }}</div>
+                  <div class="d-flex align-center justify-space-between text-h6">
+                    <div v-if="durations.length">
+                      <span class="number">{{ Number(weekly(durations) / 7).toFixed(1) }}</span>
+                      <span class="percent" :class="weekly(durations) >= weekly(durations, 2) ? 'good' : 'bad'">
+                        {{ percent(weekly(durations) * 100 / (weekly(durations, 2) || 1) - 100) }}%
                       </span>
-                      <span v-else>—</span>
                     </div>
+                    <div v-else>—</div>
+                  </div>
                 </v-col>
-                <v-col cols="12" lg="2" md="4" sm="6">
-                    <div class="text-caption text-medium-emphasis">{{ $gettext('Largest contentful paint') }}</div>
-                    <div class="d-flex align-center justify-space-between text-h6"
-                      :class="color(pagespeed?.['largest_contentful_paint'], 2500, 4000)">
-                      <span v-if="pagespeed?.['largest_contentful_paint']">
-                        {{ pagespeed?.['largest_contentful_paint'] }}ms
+                <v-col cols="6" md="4" lg="2">
+                  <div class="text-caption text-medium-emphasis">{{ $gettext('Google Impressions') }}</div>
+                  <div class="d-flex align-center justify-space-between text-h6">
+                    <div v-if="impressions.length">
+                      <span class="number">{{ value(weekly(impressions)) }}</span>
+                      <span class="percent" :class="weekly(impressions) >= weekly(impressions, 2) ? 'good' : 'bad'">
+                        {{ percent(weekly(impressions) * 100 / (weekly(impressions, 2) || 1) - 100) }}%
                       </span>
-                      <span v-else>—</span>
                     </div>
+                    <div v-else>—</div>
+                  </div>
                 </v-col>
-                <v-col cols="12" lg="2" md="4" sm="6">
-                    <div class="text-caption text-medium-emphasis">{{ $gettext('Interaction to next paint') }}</div>
-                    <div class="d-flex align-center justify-space-between text-h6"
-                      :class="color(pagespeed?.['interaction_to_next_paint'], 200, 500)">
-                      <span v-if="pagespeed?.['interaction_to_next_paint']">
-                        {{ pagespeed?.['interaction_to_next_paint'] }}ms
+                <v-col cols="6" md="4" lg="2">
+                  <div class="text-caption text-medium-emphasis">{{ $gettext('Google Clicks') }}</div>
+                  <div class="d-flex align-center justify-space-between text-h6">
+                    <div v-if="clicks.length">
+                      <span class="number">{{ value(weekly(clicks)) }}</span>
+                      <span class="percent" :class="weekly(clicks) >= weekly(clicks, 2) ? 'good' : 'bad'">
+                        {{ percent(weekly(clicks) * 100 / (weekly(clicks, 2) || 1) - 100) }}%
                       </span>
-                      <span v-else>—</span>
                     </div>
+                    <div v-else>—</div>
+                  </div>
                 </v-col>
-                <v-col cols="12" lg="2" md="4" sm="6">
-                    <div class="text-caption text-medium-emphasis">{{ $gettext('Cumulative layout shift') }}</div>
-                    <div class="d-flex align-center justify-space-between text-h6"
-                      :class="color(pagespeed?.['cumulative_layout_shift'], 0.1, 0.25)">
-                      <span v-if="pagespeed?.['cumulative_layout_shift']">
-                        {{ pagespeed?.['cumulative_layout_shift'] }}
+                <v-col cols="6" md="4" lg="2">
+                  <div class="text-caption text-medium-emphasis">{{ $gettext('Google Click Percentage') }}</div>
+                  <div class="d-flex align-center justify-space-between text-h6">
+                    <div v-if="ctrs.length">
+                      <span class="number">{{ Number(weekly(ctrs) / 7).toFixed(1) }}%</span>
+                      <span class="percent" :class="weekly(ctrs) >= weekly(ctrs, 2) ? 'good' : 'bad'">
+                        {{ percent(weekly(ctrs) * 100 / (weekly(ctrs, 2) || 1) - 100) }}%
                       </span>
-                      <span v-else>—</span>
                     </div>
+                    <div v-else>—</div>
+                  </div>
                 </v-col>
               </v-row>
             </v-card-text>
@@ -266,11 +286,26 @@
         </v-col>
       </v-row>
 
+      <!-- Summaries -->
+      <v-row>
+        <v-col v-if="referrertypes.length" cols="12" md="6">
+          <v-card class="panel">
+            <v-card-title>{{ $gettext('Referrer Types') }}</v-card-title>
+            <v-card-text>
+              <v-data-table :items="referrertypes" density="comfortable" hide-default-header hover />
+            </v-card-text>
+          </v-card>
+        </v-col>
+
+        <v-col cols="12" md="6">
+        </v-col>
+      </v-row>
+
       <!-- Analytics Charts -->
       <v-row v-if="views.length || visits.length || durations.length">
         <v-col cols="12" md="6">
           <v-card class="panel chart">
-            <v-card-title class="text-subtitle-1">{{ $gettext('Number of Views & Visits') }}</v-card-title>
+            <v-card-title>{{ $gettext('Views & Visits') }}</v-card-title>
             <v-card-text>
               <Line
                 :options="{
@@ -335,7 +370,7 @@
 
         <v-col cols="12" md="6">
           <v-card class="panel chart">
-            <v-card-title class="text-subtitle-1">{{ $gettext('Visit Durations in minutes') }}</v-card-title>
+            <v-card-title>{{ $gettext('Visit Durations (minutes)') }}</v-card-title>
             <v-card-text>
               <Line
                 :options="{
@@ -379,7 +414,7 @@
                     borderColor: '#008000',
                     backgroundColor: '#008000',
                     label: $gettext('Duration'),
-                    data: durations.map(d => ((d.value || 0) / 60 ).toFixed(1)),
+                    data: durations.map(d => d.value),
                     pointRadius: 0,
                     tension: 0.2
                   }]
@@ -391,88 +426,135 @@
       </v-row>
 
       <!-- Top lists -->
-      <v-row v-if="countries.length || referrers.length">
-        <v-col cols="12" md="6">
-          <v-card class="panel top">
-            <v-card-title class="text-subtitle-1">{{ $gettext('Top Countries') }}</v-card-title>
+      <v-row>
+        <v-col v-if="countries.length" cols="12" md="6">
+          <v-card class="panel">
+            <v-card-title>{{ $gettext('Countries') }}</v-card-title>
             <v-card-text>
-              <v-list density="compact">
-                <v-list-item v-for="(c, i) in slice(countries, page.country)" :key="i">
-                  <template #prepend>
-                    <v-avatar size="25" class="mr-2">{{ (page.country - 1) * 10 + i + 1 }}</v-avatar>
-                  </template>
-                  <v-list-item-title class="key">{{ c.key }}</v-list-item-title>
-                  <template #append>
-                    <span class="value">{{ value(c.value) }}</span>
-                  </template>
-                </v-list-item>
-              </v-list>
+              <v-data-table :items="countries" density="comfortable" hide-default-header hover />
             </v-card-text>
-            <v-card-actions class="justify-center">
-              <v-pagination
-                v-model="page.country"
-                :length="countries.length"
-              />
-            </v-card-actions>
           </v-card>
         </v-col>
 
-        <v-col cols="12" md="6">
-          <v-card class="panel top">
-            <v-card-title class="text-subtitle-1">{{ $gettext('Top Referrers') }}</v-card-title>
+        <v-col v-if="referrers.length" cols="12" md="6">
+          <v-card class="panel">
+            <v-card-title>{{ $gettext('Referrers') }}</v-card-title>
             <v-card-text>
-              <v-list density="compact">
-                <v-list-item v-for="(r, i) in slice(referrers, page.referrer)" :key="i">
-                  <template #prepend>
-                    <v-avatar size="25" class="mr-2">{{ (page.referrer - 1) * 10 + i + 1 }}</v-avatar>
-                  </template>
-                  <v-list-item-title>
-                    <a class="key" :href="r.key" target="_blank" dir="ltr">{{ r.key }}</a>
-                  </v-list-item-title>
-                  <template #append>
-                    <span class="value">{{ value(r.value) }}</span>
-                  </template>
-                </v-list-item>
-              </v-list>
+              <v-data-table :items="referrers" density="comfortable" hide-default-header hover />
             </v-card-text>
-            <v-card-actions class="justify-center">
-              <v-pagination
-                v-model="page.referrer"
-                :length="referrers.length"
-              />
-            </v-card-actions>
           </v-card>
         </v-col>
       </v-row>
 
-      <!-- Top lists -->
-      <v-row v-if="referrertypes.length">
-        <v-col cols="12" md="6">
-          <v-card class="panel top">
-            <v-card-title>{{ $gettext('Referrer Types') }}</v-card-title>
+      <!-- PageSpeed -->
+      <v-row v-if="pagespeed">
+        <v-col cols="12">
+          <v-card class="panel emphasis-bg">
+            <v-card-title>{{ $gettext('Page Speed') }}</v-card-title>
             <v-card-text>
-              <v-list density="compact">
-                <v-list-item v-for="(c, i) in slice(referrertypes, page.referrerType)" :key="i">
-                  <template #prepend>
-                    <v-avatar size="25" class="mr-2">{{ (page.referrerType - 1) * 10 + i + 1 }}</v-avatar>
-                  </template>
-                  <v-list-item-title class="key">{{ c.key }}</v-list-item-title>
-                  <template #append>
-                    <span class="value">{{ value(c.value) }}</span>
-                  </template>
-                </v-list-item>
-              </v-list>
+              <v-row>
+                <v-col cols="6" md="4" lg="2">
+                  <div class="text-caption text-medium-emphasis">{{ $gettext('Round trip time') }}</div>
+                  <div class="d-flex align-center justify-space-between text-h6"
+                    :class="color(pagespeed?.['round_trip_time'], 200, 500)">
+                    <span v-if="pagespeed?.['round_trip_time']">
+                      {{ pagespeed?.['round_trip_time'] }}ms
+                    </span>
+                    <span v-else>—</span>
+                  </div>
+                </v-col>
+                <v-col cols="6" md="4" lg="2">
+                  <div class="text-caption text-medium-emphasis">{{ $gettext('Time to first byte') }}</div>
+                  <div class="d-flex align-center justify-space-between text-h6"
+                    :class="color(pagespeed?.['time_to_first_byte'], 800, 1800)">
+                    <span v-if="pagespeed?.['time_to_first_byte']">
+                      {{ pagespeed?.['time_to_first_byte'] }}ms
+                    </span>
+                    <span v-else>—</span>
+                  </div>
+                </v-col>
+                <v-col cols="6" md="4" lg="2">
+                  <div class="text-caption text-medium-emphasis">{{ $gettext('First contentful paint') }}</div>
+                  <div class="d-flex align-center justify-space-between text-h6"
+                    :class="color(pagespeed?.['first_contentful_paint'], 1800, 3000)">
+                    <span v-if="pagespeed?.['first_contentful_paint']">
+                      {{ pagespeed?.['first_contentful_paint'] }}ms
+                    </span>
+                    <span v-else>—</span>
+                  </div>
+                </v-col>
+                <v-col cols="6" md="4" lg="2">
+                  <div class="text-caption text-medium-emphasis">{{ $gettext('Largest contentful paint') }}</div>
+                  <div class="d-flex align-center justify-space-between text-h6"
+                    :class="color(pagespeed?.['largest_contentful_paint'], 2500, 4000)">
+                    <span v-if="pagespeed?.['largest_contentful_paint']">
+                      {{ pagespeed?.['largest_contentful_paint'] }}ms
+                    </span>
+                    <span v-else>—</span>
+                  </div>
+                </v-col>
+                <v-col cols="6" md="4" lg="2">
+                  <div class="text-caption text-medium-emphasis">{{ $gettext('Interaction to next paint') }}</div>
+                  <div class="d-flex align-center justify-space-between text-h6"
+                    :class="color(pagespeed?.['interaction_to_next_paint'], 200, 500)">
+                    <span v-if="pagespeed?.['interaction_to_next_paint']">
+                      {{ pagespeed?.['interaction_to_next_paint'] }}ms
+                    </span>
+                    <span v-else>—</span>
+                  </div>
+                </v-col>
+                <v-col cols="6" md="4" lg="2">
+                  <div class="text-caption text-medium-emphasis">{{ $gettext('Cumulative layout shift') }}</div>
+                  <div class="d-flex align-center justify-space-between text-h6"
+                    :class="color(pagespeed?.['cumulative_layout_shift'], 0.1, 0.25)">
+                    <span v-if="pagespeed?.['cumulative_layout_shift']">
+                      {{ pagespeed?.['cumulative_layout_shift'] }}
+                    </span>
+                    <span v-else>—</span>
+                  </div>
+                </v-col>
+              </v-row>
             </v-card-text>
-            <v-card-actions v-if="referrertypes.length > 10" class="justify-center">
+          </v-card>
+        </v-col>
+      </v-row>
+
+      <!-- GSC queries -->
+      <v-row v-if="queries.length">
+        <v-col cols="12">
+          <v-card class="panel">
+            <v-card-title>{{ $gettext('Google Search: Queries') }}</v-card-title>
+            <v-card-text class="table">
+              <v-row class="header">
+                <v-col cols="12" sm="6" class="key"></v-col>
+                <v-col cols="12" sm="6">
+                  <v-row>
+                    <v-col cols="3">{{ $gettext('Views') }}</v-col>
+                    <v-col cols="3">{{ $gettext('Clicks') }}</v-col>
+                    <v-col cols="3">{{ $gettext('Percent') }}</v-col>
+                    <v-col cols="3">{{ $gettext('Position') }}</v-col>
+                  </v-row>
+                </v-col>
+              </v-row>
+              <v-row v-for="(q, i) in slice(queries, querypage)" :key="i" class="line">
+                <v-col cols="12" sm="6" class="key">{{ q.key }}</v-col>
+                <v-col cols="12" sm="6">
+                  <v-row>
+                    <v-col cols="3">{{ value(q.impressions) }}</v-col>
+                    <v-col cols="3">{{ value(q.clicks) }}</v-col>
+                    <v-col cols="3">{{ Number(q.ctr * 100).toFixed(1) }}</v-col>
+                    <v-col cols="3">{{ Number(q.position).toFixed(1) }}</v-col>
+                  </v-row>
+                </v-col>
+              </v-row>
+            </v-card-text>
+            <v-card-actions v-if="queries.length > 10" class="justify-center">
               <v-pagination
-                v-model="page.referrerType"
-                :length="referrertypes.length"
+                v-model="querypage"
+                :length="Math.ceil(queries.length / 10)"
               />
             </v-card-actions>
           </v-card>
-        </v-col>
-
-        <v-col cols="12" md="6">
         </v-col>
       </v-row>
 
@@ -480,7 +562,7 @@
       <v-row v-if="countries.length || referrers.length">
         <v-col cols="12" md="6">
           <v-card class="panel chart">
-            <v-card-title class="text-subtitle-1">{{ $gettext('Google Search: Number of Impressions & Clicks') }}</v-card-title>
+            <v-card-title>{{ $gettext('Google Search: Impressions & Clicks') }}</v-card-title>
             <v-card-text>
               <Line
                 :options="{
@@ -545,7 +627,7 @@
 
         <v-col cols="12" md="6">
           <v-card class="panel chart">
-            <v-card-title class="text-subtitle-1">{{ $gettext('Google Search: Percentage clicked') }}</v-card-title>
+            <v-card-title>{{ $gettext('Google Search: Percentage clicked') }}</v-card-title>
             <v-card-text>
               <Line
                 :options="{
@@ -589,52 +671,13 @@
                     borderColor: '#008000',
                     backgroundColor: '#008000',
                     label: $gettext('Percentage'),
-                    data: ctrs.map(d => d.value * 100),
+                    data: ctrs.map(d => d.value),
                     pointRadius: 0,
                     tension: 0.2
                   }]
                 }"
               />
             </v-card-text>
-          </v-card>
-        </v-col>
-      </v-row>
-
-      <!-- GSC queries -->
-      <v-row v-if="queries.length">
-        <v-col cols="12">
-          <v-card class="panel top">
-            <v-card-title class="text-subtitle-1">{{ $gettext('Top Queries') }}</v-card-title>
-            <v-card-text class="table">
-              <v-row class="header">
-                <v-col cols="12" sm="6" class="key"></v-col>
-                <v-col cols="12" sm="6">
-                  <v-row>
-                    <v-col cols="3">{{ $gettext('Views') }}</v-col>
-                    <v-col cols="3">{{ $gettext('Clicks') }}</v-col>
-                    <v-col cols="3">{{ $gettext('Percent') }}</v-col>
-                    <v-col cols="3">{{ $gettext('Position') }}</v-col>
-                  </v-row>
-                </v-col>
-              </v-row>
-              <v-row v-for="(q, i) in slice(queries, page.query)" :key="i" class="line">
-                <v-col cols="12" sm="6" class="key">{{ q.key }}</v-col>
-                <v-col cols="12" sm="6">
-                  <v-row>
-                    <v-col cols="3">{{ q.impressions }}</v-col>
-                    <v-col cols="3">{{ q.clicks }}</v-col>
-                    <v-col cols="3">{{ Number(q.ctr * 100).toFixed(1) }}</v-col>
-                    <v-col cols="3">{{ Number(q.position).toFixed(1) }}</v-col>
-                  </v-row>
-                </v-col>
-              </v-row>
-            </v-card-text>
-            <v-card-actions class="justify-center">
-              <v-pagination
-                v-model="page.query"
-                :length="queries.length"
-              />
-            </v-card-actions>
           </v-card>
         </v-col>
       </v-row>
@@ -649,6 +692,11 @@
     position: absolute;
     background: color-mix(in oklab, var(--v-theme-surface), transparent 60%);
     backdrop-filter: blur(2px);
+    z-index: 10;
+  }
+
+  .emphasis-bg {
+    background-color: rgb(var(--v-theme-background));
   }
 
   .title,
@@ -668,12 +716,12 @@
     max-width: 120px;
   }
 
-  .panel {
-    margin-top: 16px !important;
+  .v-card-title {
+    font-size: 1.125rem;
   }
 
-  .panel.top .v-card-text {
-    padding-bottom: 0;
+  .panel {
+    margin-top: 16px !important;
   }
 
   .panel .good {
@@ -702,6 +750,11 @@
 
   .panel.chart .v-card-text {
     aspect-ratio: 3 / 2;
+  }
+
+  .panel .percent {
+    font-size: 80%;
+    margin-inline-start: 12px;
   }
 
   .panel .value {
