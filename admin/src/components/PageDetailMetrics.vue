@@ -23,12 +23,17 @@
       countries: [],
       referrers: [],
       durations: [],
+      impressions: [],
+      queries: [],
+      ctrs: [],
+      clicks: [],
       visits: [],
       views: [],
       colors: {},
       page: {
         country: 1,
         referrer: 1,
+        query: 1,
       },
     }),
 
@@ -79,12 +84,16 @@
                   countries { key value }
                   referrers { key value }
                   pagespeed { key value }
+                  impressions { key value }
+                  clicks { key value }
+                  ctrs { key value }
+                  queries { key impressions clicks ctr position }
                   errors
                 }
               }
             `,
             variables: {
-              url: this.url(this.item),
+              url: 'https://aimeos.org/', // this.url(this.item),
               days: this.days
             },
           });
@@ -104,6 +113,12 @@
           this.visits = (stats.visits || []).sort(sortByDate).map(formatDate);
           this.durations = (stats.durations || []).sort(sortByDate).map(formatDate);
 
+          this.impressions = (stats.impressions || []).sort(sortByDate).map(formatDate);
+          this.clicks = (stats.clicks || []).sort(sortByDate).map(formatDate);
+          this.ctrs = (stats.ctrs || []).sort(sortByDate).map(formatDate);
+
+          this.queries = (stats.queries || []).sort((a,b) => b.impressions - a.impressions);
+
           this.countries = (stats.countries || []).sort(sortByValue);
           this.referrers = (stats.referrers || []).sort(sortByValue);
 
@@ -111,6 +126,7 @@
             acc[key] = value;
             return acc;
           }, {});
+
           this.errors = stats.errors || [];
         } catch (e) {
           this.errors.push(e.message || String(e));
@@ -169,13 +185,17 @@
         {{ errors.join("\n") }}
       </v-alert>
 
-      <!-- Performance -->
-      <v-row>
+      <div v-if="loading" class="loading-overlay d-flex align-center justify-center">
+        <v-progress-circular indeterminate size="32" />
+      </div>
+
+      <!-- PageSpeed -->
+      <v-row v-if="pagespeed">
         <v-col cols="12">
           <v-card class="panel">
             <v-card-title class="text-subtitle-1">{{ $gettext('Page Speed') }}</v-card-title>
             <v-card-text>
-              <v-row v-if="pagespeed">
+              <v-row>
                 <v-col cols="12" lg="2" md="4" sm="6">
                     <div class="text-caption text-medium-emphasis">{{ $gettext('Round trip time') }}</div>
                     <div class="d-flex align-center justify-space-between text-h6"
@@ -237,16 +257,13 @@
                     </div>
                 </v-col>
               </v-row>
-              <div v-else class="text-caption text-medium-emphasis mt-2">
-                {{ $gettext('No real-user page speed data available.') }}
-              </div>
             </v-card-text>
           </v-card>
         </v-col>
       </v-row>
 
-      <!-- Charts -->
-      <v-row>
+      <!-- Analytics Charts -->
+      <v-row v-if="views.length || visits.length || durations.length">
         <v-col cols="12" md="6">
           <v-card class="panel chart">
             <v-card-title class="text-subtitle-1">{{ $gettext('Number of Views & Visits') }}</v-card-title>
@@ -290,17 +307,21 @@
                   labels: views.map(d => d.key),
                   grouped: true,
                   datasets: [{
-                    borderWidth: 1.5,
+                    borderWidth: 2,
                     borderColor: '#0000C0',
                     backgroundColor: '#0000C0',
                     label: $gettext('Views'),
-                    data: views.map(d => d.value)
+                    data: views.map(d => d.value),
+                    pointRadius: 0,
+                    tension: 0.2
                   }, {
-                    borderWidth: 1.5,
+                    borderWidth: 2,
                     borderColor: '#C00000',
                     backgroundColor: '#C00000',
                     label: $gettext('Visits'),
-                    data: visits.map(d => d.value)
+                    data: visits.map(d => d.value),
+                    pointRadius: 0,
+                    tension: 0.2
                   }]
                 }"
               />
@@ -350,11 +371,13 @@
                 :data="{
                   labels: durations.map(d => d.key),
                   datasets: [{
-                    borderWidth: 1.5  ,
+                    borderWidth: 2,
                     borderColor: '#008000',
                     backgroundColor: '#008000',
                     label: $gettext('Duration'),
-                    data: durations.map(d => ((d.value || 0) / 60 ).toFixed(1))
+                    data: durations.map(d => ((d.value || 0) / 60 ).toFixed(1)),
+                    pointRadius: 0,
+                    tension: 0.2
                   }]
                 }"
               />
@@ -364,7 +387,7 @@
       </v-row>
 
       <!-- Top lists -->
-      <v-row>
+      <v-row v-if="countries.length || referrers.length">
         <v-col cols="12" md="6">
           <v-card class="panel top">
             <v-card-title class="text-subtitle-1">{{ $gettext('Top Countries') }}</v-card-title>
@@ -418,9 +441,168 @@
         </v-col>
       </v-row>
 
-      <div v-if="loading" class="loading-overlay d-flex align-center justify-center">
-        <v-progress-circular indeterminate size="32" />
-      </div>
+      <!-- GSC Charts -->
+      <v-row v-if="countries.length || referrers.length">
+        <v-col cols="12" md="6">
+          <v-card class="panel chart">
+            <v-card-title class="text-subtitle-1">{{ $gettext('Google Search: Number of Impressions & Clicks') }}</v-card-title>
+            <v-card-text>
+              <Line
+                :options="{
+                  locale: $vuetify.locale.current,
+                  maintainAspectRatio: false,
+                  responsive: true,
+                  interaction: {
+                      mode: 'index',
+                      intersect: false
+                  },
+                  plugins: {
+                    legend: {
+                      labels: {
+                        color: colors?.['surface-variant']
+                      },
+                      rtl: $vuetify.locale.isRtl
+                    },
+                    tooltip: {
+                      intersect: false,
+                      rtl: $vuetify.locale.isRtl,
+                    }
+                  },
+                  scales: {
+                    x: {
+                      reverse: $vuetify.locale.isRtl,
+                      ticks: { color: colors?.['surface-variant'] },
+                      grid: { color: colors?.['on-surface-variant'] },
+                    },
+                    y: {
+                      beginAtZero: true,
+                      position: $vuetify.locale.isRtl ? 'right' : 'left',
+                      ticks: { color: colors?.['surface-variant'] },
+                      grid: { color: colors?.['on-surface-variant'] },
+                    },
+                  }
+                }"
+                :data="{
+                  labels: impressions.map(d => d.key),
+                  grouped: true,
+                  datasets: [{
+                    borderWidth: 2,
+                    borderColor: '#0000C0',
+                    backgroundColor: '#0000C0',
+                    label: $gettext('Impressions'),
+                    data: impressions.map(d => d.value),
+                    pointRadius: 0,
+                    tension: 0.2
+                  }, {
+                    borderWidth: 2,
+                    borderColor: '#C00000',
+                    backgroundColor: '#C00000',
+                    label: $gettext('Clicks'),
+                    data: clicks.map(d => d.value),
+                    pointRadius: 0,
+                    tension: 0.2
+                  }]
+                }"
+              />
+            </v-card-text>
+          </v-card>
+        </v-col>
+
+        <v-col cols="12" md="6">
+          <v-card class="panel chart">
+            <v-card-title class="text-subtitle-1">{{ $gettext('Google Search: Percentage clicked') }}</v-card-title>
+            <v-card-text>
+              <Line
+                :options="{
+                  locale: $vuetify.locale.current,
+                  maintainAspectRatio: false,
+                  responsive: true,
+                  interaction: {
+                      mode: 'index',
+                      intersect: false
+                  },
+                  plugins: {
+                    legend: {
+                      labels: {
+                        color: colors?.['surface-variant']
+                      },
+                      rtl: $vuetify.locale.isRtl
+                    },
+                    tooltip: {
+                      intersect: false,
+                      rtl: $vuetify.locale.isRtl,
+                    }
+                  },
+                  scales: {
+                    x: {
+                      reverse: $vuetify.locale.isRtl,
+                      ticks: { color: colors?.['surface-variant'] },
+                      grid: { color: colors?.['on-surface-variant'] },
+                    },
+                    y: {
+                      beginAtZero: true,
+                      position: $vuetify.locale.isRtl ? 'right' : 'left',
+                      ticks: { color: colors?.['surface-variant'] },
+                      grid: { color: colors?.['on-surface-variant'] },
+                    }
+                  }
+                }"
+                :data="{
+                  labels: ctrs.map(d => d.key),
+                  datasets: [{
+                    borderWidth: 2,
+                    borderColor: '#008000',
+                    backgroundColor: '#008000',
+                    label: $gettext('Percentage'),
+                    data: ctrs.map(d => d.value * 100),
+                    pointRadius: 0,
+                    tension: 0.2
+                  }]
+                }"
+              />
+            </v-card-text>
+          </v-card>
+        </v-col>
+      </v-row>
+
+      <!-- GSC queries -->
+      <v-row v-if="queries.length">
+        <v-col cols="12">
+          <v-card class="panel top">
+            <v-card-title class="text-subtitle-1">{{ $gettext('Top Queries') }}</v-card-title>
+            <v-card-text class="table">
+              <v-row class="header">
+                <v-col cols="12" sm="6" class="key"></v-col>
+                <v-col cols="12" sm="6">
+                  <v-row>
+                    <v-col cols="3">{{ $gettext('Views') }}</v-col>
+                    <v-col cols="3">{{ $gettext('Clicks') }}</v-col>
+                    <v-col cols="3">{{ $gettext('Percent') }}</v-col>
+                    <v-col cols="3">{{ $gettext('Position') }}</v-col>
+                  </v-row>
+                </v-col>
+              </v-row>
+              <v-row v-for="(q, i) in slice(queries, page.query)" :key="i" class="line">
+                <v-col cols="12" sm="6" class="key">{{ q.key }}</v-col>
+                <v-col cols="12" sm="6">
+                  <v-row>
+                    <v-col cols="3">{{ q.impressions }}</v-col>
+                    <v-col cols="3">{{ q.clicks }}</v-col>
+                    <v-col cols="3">{{ Number(q.ctr * 100).toFixed(1) }}</v-col>
+                    <v-col cols="3">{{ Number(q.position).toFixed(1) }}</v-col>
+                  </v-row>
+                </v-col>
+              </v-row>
+            </v-card-text>
+            <v-card-actions class="justify-center">
+              <v-pagination
+                v-model="page.query"
+                :length="queries.length"
+              />
+            </v-card-actions>
+          </v-card>
+        </v-col>
+      </v-row>
 
     </v-sheet>
   </v-container>
@@ -491,5 +673,24 @@
     margin-inline-start: 8px;
     text-align: end;
     min-width: 3.5rem;
+  }
+
+  .panel .table .header {
+    font-weight: bold;
+  }
+
+  .panel .table .line {
+    border-top: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+
+  .panel .table .line > div[class*="v-col"] {
+    padding-bottom: 2px !important;
+    padding-top: 2px !important;
+  }
+
+  .panel .table .key {
+    font-weight: bold;
   }
 </style>

@@ -40,6 +40,18 @@ final class Metrics
             $data['errors'][] = $e->getMessage();
         }
 
+        try {
+            $data = array_merge( $data, Cache::remember( "search:$url:$days", 43200, fn() => Analytics::search( $url, $days ) ) ?? [] );
+        } catch ( \Throwable $e ) {
+            $data['errors'][] = $e->getMessage();
+        }
+
+        try {
+            $data['queries'] = Cache::remember( "queries:$url:$days", 43200, fn() => Analytics::queries( $url, $days ) );
+        } catch ( \Throwable $e ) {
+            $data['errors'][] = $e->getMessage();
+        }
+
         return $data;
     }
 }

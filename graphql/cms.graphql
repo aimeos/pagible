@@ -603,6 +603,18 @@ type Stats {
 
   "Page Speed related values for the page"
   pagespeed: [StatsNumber!]
+
+  "Number of Google search impressions"
+  impressions: [StatsNumber!]
+
+  "Number of Google search clicks"
+  clicks: [StatsNumber!]
+
+  "Click-throgh rate in Google search results"
+  ctrs: [StatsNumber!]
+
+  "Google search queries with stats"
+  queries: [StatsQuery!]
 }
 
 type StatsNumber {
@@ -611,4 +623,21 @@ type StatsNumber {
 
   "Number of page views or visits"
   value: Float
+}
+
+type StatsQuery {
+  "Query string"
+  key: String!
+
+  "Number of page impressions in Google Search results"
+  impressions: Int
+
+  "Number of page clicks in  Google Search results"
+  clicks: Int
+
+  "Click through rate in  Google Search (between 0 and 1)"
+  ctr: Float
+
+  "Position in Google Search results"
+  position: Float
 }
