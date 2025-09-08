@@ -882,75 +882,75 @@ msgstr "URL が無効です。"
 msgid "Redirect URL"
 msgstr "リダイレクトURL"
 
-#: src/components/PageDetailMetrics.vue:142
+#: src/components/PageDetailMetrics.vue:149
 msgid "Page metrics"
 msgstr "ページ指標"
 
-#: src/components/PageDetailMetrics.vue:148
+#: src/components/PageDetailMetrics.vue:155
 msgid "Days"
 msgstr "日数"
 
-#: src/components/PageDetailMetrics.vue:157
+#: src/components/PageDetailMetrics.vue:164
 msgid "Errors"
 msgstr "エラー"
 
-#: src/components/PageDetailMetrics.vue:169
+#: src/components/PageDetailMetrics.vue:176
 msgid "Page Speed"
 msgstr "ページ速度"
 
-#: src/components/PageDetailMetrics.vue:173
+#: src/components/PageDetailMetrics.vue:180
 msgid "Round trip time"
 msgstr "往復所要時間"
 
-#: src/components/PageDetailMetrics.vue:183
+#: src/components/PageDetailMetrics.vue:190
 msgid "Time to first byte"
 msgstr "最初のバイトまでの時間"
 
-#: src/components/PageDetailMetrics.vue:193
+#: src/components/PageDetailMetrics.vue:200
 msgid "First contentful paint"
 msgstr "最初の内容豊かなペイント"
 
-#: src/components/PageDetailMetrics.vue:203
+#: src/components/PageDetailMetrics.vue:210
 msgid "Largest contentful paint"
 msgstr "最大のコンテンツペイント"
 
-#: src/components/PageDetailMetrics.vue:213
+#: src/components/PageDetailMetrics.vue:220
 msgid "Interaction to next paint"
 msgstr "次のペイントへの相互作用"
 
-#: src/components/PageDetailMetrics.vue:223
+#: src/components/PageDetailMetrics.vue:230
 msgid "Cumulative layout shift"
 msgstr "累積レイアウトシフト"
 
-#: src/components/PageDetailMetrics.vue:234
+#: src/components/PageDetailMetrics.vue:241
 msgid "No real-user page speed data available."
 msgstr "実ユーザーのページ速度データはありません。"
 
-#: src/components/PageDetailMetrics.vue:245
+#: src/components/PageDetailMetrics.vue:252
 msgid "Number of Views & Visits"
 msgstr "再生回数と訪問回数"
 
-#: src/components/PageDetailMetrics.vue:277
+#: src/components/PageDetailMetrics.vue:294
 msgid "Views"
 msgstr "ビュー"
 
-#: src/components/PageDetailMetrics.vue:283
+#: src/components/PageDetailMetrics.vue:300
 msgid "Visits"
 msgstr "訪問"
 
-#: src/components/PageDetailMetrics.vue:294
+#: src/components/PageDetailMetrics.vue:311
 msgid "Visit Durations in minutes"
 msgstr "訪問時間（分"
 
-#: src/components/PageDetailMetrics.vue:325
+#: src/components/PageDetailMetrics.vue:352
 msgid "Duration"
 msgstr "期間"
 
-#: src/components/PageDetailMetrics.vue:339
+#: src/components/PageDetailMetrics.vue:366
 msgid "Top Countries"
 msgstr "トップ"
 
-#: src/components/PageDetailMetrics.vue:364
+#: src/components/PageDetailMetrics.vue:391
 msgid "Top Referrers"
 msgstr "トップ・リファラー"
 

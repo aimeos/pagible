@@ -886,75 +886,75 @@ msgstr "Adres URL jest nieprawidłowy"
 msgid "Redirect URL"
 msgstr "Przekierowanie URL"
 
-#: src/components/PageDetailMetrics.vue:142
+#: src/components/PageDetailMetrics.vue:149
 msgid "Page metrics"
 msgstr "Wskaźniki strony"
 
-#: src/components/PageDetailMetrics.vue:148
+#: src/components/PageDetailMetrics.vue:155
 msgid "Days"
 msgstr "Dni"
 
-#: src/components/PageDetailMetrics.vue:157
+#: src/components/PageDetailMetrics.vue:164
 msgid "Errors"
 msgstr "Błędy"
 
-#: src/components/PageDetailMetrics.vue:169
+#: src/components/PageDetailMetrics.vue:176
 msgid "Page Speed"
 msgstr "Prędkość strony"
 
-#: src/components/PageDetailMetrics.vue:173
+#: src/components/PageDetailMetrics.vue:180
 msgid "Round trip time"
 msgstr "Czas podróży w obie strony"
 
-#: src/components/PageDetailMetrics.vue:183
+#: src/components/PageDetailMetrics.vue:190
 msgid "Time to first byte"
 msgstr "Czas do pierwszego bajtu"
 
-#: src/components/PageDetailMetrics.vue:193
+#: src/components/PageDetailMetrics.vue:200
 msgid "First contentful paint"
 msgstr "Pierwsza treściwa farba"
 
-#: src/components/PageDetailMetrics.vue:203
+#: src/components/PageDetailMetrics.vue:210
 msgid "Largest contentful paint"
 msgstr "Farba o największej zawartości"
 
-#: src/components/PageDetailMetrics.vue:213
+#: src/components/PageDetailMetrics.vue:220
 msgid "Interaction to next paint"
 msgstr "Interakcja do następnej farby"
 
-#: src/components/PageDetailMetrics.vue:223
+#: src/components/PageDetailMetrics.vue:230
 msgid "Cumulative layout shift"
 msgstr "Łączna zmiana układu"
 
-#: src/components/PageDetailMetrics.vue:234
+#: src/components/PageDetailMetrics.vue:241
 msgid "No real-user page speed data available."
 msgstr "Brak dostępnych danych dotyczących szybkości działania strony dla rzeczywistych użytkowników."
 
-#: src/components/PageDetailMetrics.vue:245
+#: src/components/PageDetailMetrics.vue:252
 msgid "Number of Views & Visits"
 msgstr "Liczba wyświetleń i odwiedzin"
 
-#: src/components/PageDetailMetrics.vue:277
+#: src/components/PageDetailMetrics.vue:294
 msgid "Views"
 msgstr "Widoki"
 
-#: src/components/PageDetailMetrics.vue:283
+#: src/components/PageDetailMetrics.vue:300
 msgid "Visits"
 msgstr "Wizyty"
 
-#: src/components/PageDetailMetrics.vue:294
+#: src/components/PageDetailMetrics.vue:311
 msgid "Visit Durations in minutes"
 msgstr "Czas trwania wizyty w minutach"
 
-#: src/components/PageDetailMetrics.vue:325
+#: src/components/PageDetailMetrics.vue:352
 msgid "Duration"
 msgstr "Czas trwania"
 
-#: src/components/PageDetailMetrics.vue:339
+#: src/components/PageDetailMetrics.vue:366
 msgid "Top Countries"
 msgstr "Najważniejsze kraje"
 
-#: src/components/PageDetailMetrics.vue:364
+#: src/components/PageDetailMetrics.vue:391
 msgid "Top Referrers"
 msgstr "Najczęściej polecane osoby"
 

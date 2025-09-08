@@ -33,6 +33,10 @@ body {
   transform: scaleX(-1) !important;
 }
 
+.v-locale--is-rtl .v-pagination .v-btn .mdi.v-icon {
+  transform: unset !important;
+}
+
 .v-snackbar__content {
   text-align: center !important;
 }

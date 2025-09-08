@@ -92,10 +92,17 @@
           const stats = data?.metrics || {};
           const sortByValue = (a,b) => b.value - a.value;
           const sortByDate = (a,b) => a.key > b.key ? 1 : (a.key < b.key ? -1 : 0);
+          const formatDate = (item) => {
+            item.key = (new Date(item.key)).toLocaleDateString(
+              this.$vuetify.locale.current,
+              { day: "numeric", month: "numeric" }
+            );
+            return item;
+          }
 
-          this.views = (stats.views || []).sort(sortByDate);
-          this.visits = (stats.visits || []).sort(sortByDate);
-          this.durations = (stats.durations || []).sort(sortByDate);
+          this.views = (stats.views || []).sort(sortByDate).map(formatDate);
+          this.visits = (stats.visits || []).sort(sortByDate).map(formatDate);
+          this.durations = (stats.durations || []).sort(sortByDate).map(formatDate);
 
           this.countries = (stats.countries || []).sort(sortByValue);
           this.referrers = (stats.referrers || []).sort(sortByValue);
@@ -174,7 +181,7 @@
                     <div class="d-flex align-center justify-space-between text-h6"
                       :class="color(pagespeed?.['round_trip_time'], 200, 500)">
                       <span v-if="pagespeed?.['round_trip_time']">
-                        {{ pagespeed?.['round_trip_time'] }} ms
+                        {{ pagespeed?.['round_trip_time'] }}ms
                       </span>
                       <span v-else>—</span>
                     </div>
@@ -184,7 +191,7 @@
                     <div class="d-flex align-center justify-space-between text-h6"
                       :class="color(pagespeed?.['time_to_first_byte'], 800, 1800)">
                       <span v-if="pagespeed?.['time_to_first_byte']">
-                        {{ pagespeed?.['time_to_first_byte'] }} ms
+                        {{ pagespeed?.['time_to_first_byte'] }}ms
                       </span>
                       <span v-else>—</span>
                     </div>
@@ -194,7 +201,7 @@
                     <div class="d-flex align-center justify-space-between text-h6"
                       :class="color(pagespeed?.['first_contentful_paint'], 1800, 3000)">
                       <span v-if="pagespeed?.['first_contentful_paint']">
-                        {{ pagespeed?.['first_contentful_paint'] }} ms
+                        {{ pagespeed?.['first_contentful_paint'] }}ms
                       </span>
                       <span v-else>—</span>
                     </div>
@@ -204,7 +211,7 @@
                     <div class="d-flex align-center justify-space-between text-h6"
                       :class="color(pagespeed?.['largest_contentful_paint'], 2500, 4000)">
                       <span v-if="pagespeed?.['largest_contentful_paint']">
-                        {{ pagespeed?.['largest_contentful_paint'] }} ms
+                        {{ pagespeed?.['largest_contentful_paint'] }}ms
                       </span>
                       <span v-else>—</span>
                     </div>
@@ -214,7 +221,7 @@
                     <div class="d-flex align-center justify-space-between text-h6"
                       :class="color(pagespeed?.['interaction_to_next_paint'], 200, 500)">
                       <span v-if="pagespeed?.['interaction_to_next_paint']">
-                        {{ pagespeed?.['interaction_to_next_paint'] }} ms
+                        {{ pagespeed?.['interaction_to_next_paint'] }}ms
                       </span>
                       <span v-else>—</span>
                     </div>
@@ -246,22 +253,34 @@
             <v-card-text>
               <Line
                 :options="{
+                  locale: $vuetify.locale.current,
+                  maintainAspectRatio: false,
                   responsive: true,
+                  interaction: {
+                      mode: 'index',
+                      intersect: false
+                  },
                   plugins: {
                     legend: {
                       labels: {
                         color: colors?.['surface-variant']
                       },
                       rtl: $vuetify.locale.isRtl
+                    },
+                    tooltip: {
+                      intersect: false,
+                      rtl: $vuetify.locale.isRtl,
                     }
                   },
                   scales: {
                     x: {
+                      reverse: $vuetify.locale.isRtl,
                       ticks: { color: colors?.['surface-variant'] },
                       grid: { color: colors?.['on-surface-variant'] },
                     },
                     y: {
                       beginAtZero: true,
+                      position: $vuetify.locale.isRtl ? 'right' : 'left',
                       ticks: { color: colors?.['surface-variant'] },
                       grid: { color: colors?.['on-surface-variant'] },
                     },
@@ -295,22 +314,34 @@
             <v-card-text>
               <Line
                 :options="{
+                  locale: $vuetify.locale.current,
+                  maintainAspectRatio: false,
                   responsive: true,
+                  interaction: {
+                      mode: 'index',
+                      intersect: false
+                  },
                   plugins: {
                     legend: {
                       labels: {
                         color: colors?.['surface-variant']
                       },
                       rtl: $vuetify.locale.isRtl
+                    },
+                    tooltip: {
+                      intersect: false,
+                      rtl: $vuetify.locale.isRtl,
                     }
                   },
                   scales: {
                     x: {
+                      reverse: $vuetify.locale.isRtl,
                       ticks: { color: colors?.['surface-variant'] },
                       grid: { color: colors?.['on-surface-variant'] },
                     },
                     y: {
                       beginAtZero: true,
+                      position: $vuetify.locale.isRtl ? 'right' : 'left',
                       ticks: { color: colors?.['surface-variant'] },
                       grid: { color: colors?.['on-surface-variant'] },
                     }
@@ -369,7 +400,7 @@
                     <v-avatar size="25" class="mr-2">{{ (page.referrer - 1) * 10 + i + 1 }}</v-avatar>
                   </template>
                   <v-list-item-title>
-                    <a class="key" :href="r.key" target="_blank">{{ r.key }}</a>
+                    <a class="key" :href="r.key" target="_blank" dir="ltr">{{ r.key }}</a>
                   </v-list-item-title>
                   <template #append>
                     <span class="value">{{ value(r.value) }}</span>
@@ -453,7 +484,7 @@
   }
 
   .panel.chart .v-card-text {
-    aspect-ratio: 425 / 200;
+    aspect-ratio: 3 / 2;
   }
 
   .panel .value {

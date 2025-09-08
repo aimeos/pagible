@@ -886,75 +886,75 @@ msgstr "Adresa URL nie je platná"
 msgid "Redirect URL"
 msgstr "Adresa URL presmerovania"
 
-#: src/components/PageDetailMetrics.vue:142
+#: src/components/PageDetailMetrics.vue:149
 msgid "Page metrics"
 msgstr "Metriky stránky"
 
-#: src/components/PageDetailMetrics.vue:148
+#: src/components/PageDetailMetrics.vue:155
 msgid "Days"
 msgstr "Dni"
 
-#: src/components/PageDetailMetrics.vue:157
+#: src/components/PageDetailMetrics.vue:164
 msgid "Errors"
 msgstr "Chyby"
 
-#: src/components/PageDetailMetrics.vue:169
+#: src/components/PageDetailMetrics.vue:176
 msgid "Page Speed"
 msgstr "Rýchlosť stránky"
 
-#: src/components/PageDetailMetrics.vue:173
+#: src/components/PageDetailMetrics.vue:180
 msgid "Round trip time"
 msgstr "Čas spiatočnej cesty"
 
-#: src/components/PageDetailMetrics.vue:183
+#: src/components/PageDetailMetrics.vue:190
 msgid "Time to first byte"
 msgstr "Čas do prvého bajtu"
 
-#: src/components/PageDetailMetrics.vue:193
+#: src/components/PageDetailMetrics.vue:200
 msgid "First contentful paint"
 msgstr "Prvá obsahová farba"
 
-#: src/components/PageDetailMetrics.vue:203
+#: src/components/PageDetailMetrics.vue:210
 msgid "Largest contentful paint"
 msgstr "Najväčšia obsahová farba"
 
-#: src/components/PageDetailMetrics.vue:213
+#: src/components/PageDetailMetrics.vue:220
 msgid "Interaction to next paint"
 msgstr "Interakcia na ďalšiu farbu"
 
-#: src/components/PageDetailMetrics.vue:223
+#: src/components/PageDetailMetrics.vue:230
 msgid "Cumulative layout shift"
 msgstr "Kumulatívny posun rozloženia"
 
-#: src/components/PageDetailMetrics.vue:234
+#: src/components/PageDetailMetrics.vue:241
 msgid "No real-user page speed data available."
 msgstr "Nie sú k dispozícii žiadne údaje o rýchlosti stránky v reálnom používateľskom prostredí."
 
-#: src/components/PageDetailMetrics.vue:245
+#: src/components/PageDetailMetrics.vue:252
 msgid "Number of Views & Visits"
 msgstr "Počet zobrazení a návštev"
 
-#: src/components/PageDetailMetrics.vue:277
+#: src/components/PageDetailMetrics.vue:294
 msgid "Views"
 msgstr "Zobrazenia"
 
-#: src/components/PageDetailMetrics.vue:283
+#: src/components/PageDetailMetrics.vue:300
 msgid "Visits"
 msgstr "Návštevy"
 
-#: src/components/PageDetailMetrics.vue:294
+#: src/components/PageDetailMetrics.vue:311
 msgid "Visit Durations in minutes"
 msgstr "Trvanie návštevy v minútach"
 
-#: src/components/PageDetailMetrics.vue:325
+#: src/components/PageDetailMetrics.vue:352
 msgid "Duration"
 msgstr "Trvanie"
 
-#: src/components/PageDetailMetrics.vue:339
+#: src/components/PageDetailMetrics.vue:366
 msgid "Top Countries"
 msgstr "Najlepšie krajiny"
 
-#: src/components/PageDetailMetrics.vue:364
+#: src/components/PageDetailMetrics.vue:391
 msgid "Top Referrers"
 msgstr "Najlepší odporúčatelia"
 
