@@ -21,8 +21,9 @@
       loading: false,
       pagespeed: null,
       countries: [],
-      referrers: [],
       durations: [],
+      referrers: [],
+      referrertypes: [],
       impressions: [],
       queries: [],
       ctrs: [],
@@ -31,9 +32,10 @@
       views: [],
       colors: {},
       page: {
+        query: 1,
         country: 1,
         referrer: 1,
-        query: 1,
+        referrerType: 1,
       },
     }),
 
@@ -83,6 +85,7 @@
                   durations { key value }
                   countries { key value }
                   referrers { key value }
+                  referrertypes { key value }
                   pagespeed { key value }
                   impressions { key value }
                   clicks { key value }
@@ -121,6 +124,7 @@
 
           this.countries = (stats.countries || []).sort(sortByValue);
           this.referrers = (stats.referrers || []).sort(sortByValue);
+          this.referrertypes = (stats.referrertypes || []).sort(sortByValue);
 
           this.pagespeed = (stats?.pagespeed || []).reduce((acc, { key, value }) => {
             acc[key] = value;
@@ -438,6 +442,37 @@
               />
             </v-card-actions>
           </v-card>
+        </v-col>
+      </v-row>
+
+      <!-- Top lists -->
+      <v-row v-if="referrertypes.length">
+        <v-col cols="12" md="6">
+          <v-card class="panel top">
+            <v-card-title>{{ $gettext('Referrer Types') }}</v-card-title>
+            <v-card-text>
+              <v-list density="compact">
+                <v-list-item v-for="(c, i) in slice(referrertypes, page.referrerType)" :key="i">
+                  <template #prepend>
+                    <v-avatar size="25" class="mr-2">{{ (page.referrerType - 1) * 10 + i + 1 }}</v-avatar>
+                  </template>
+                  <v-list-item-title class="key">{{ c.key }}</v-list-item-title>
+                  <template #append>
+                    <span class="value">{{ value(c.value) }}</span>
+                  </template>
+                </v-list-item>
+              </v-list>
+            </v-card-text>
+            <v-card-actions v-if="referrertypes.length > 10" class="justify-center">
+              <v-pagination
+                v-model="page.referrerType"
+                :length="referrertypes.length"
+              />
+            </v-card-actions>
+          </v-card>
+        </v-col>
+
+        <v-col cols="12" md="6">
         </v-col>
       </v-row>
 

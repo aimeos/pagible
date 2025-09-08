@@ -601,6 +601,9 @@ type Stats {
   "Number of page visits by referring website"
   referrers: [StatsNumber!]
 
+  "Number of page visits by referrer type"
+  referrertypes: [StatsNumber!]
+
   "Page Speed related values for the page"
   pagespeed: [StatsNumber!]
 
