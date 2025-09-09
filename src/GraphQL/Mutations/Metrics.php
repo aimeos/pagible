@@ -17,6 +17,7 @@ final class Metrics
     {
         $url = $args['url'] ?? '';
         $days = $args['days'] ?? 30;
+        $lang = $args['lang'] ?? 'en';
 
         if( empty( $url ) ) {
             throw new Error( 'URL must be a non-empty string' );
@@ -48,6 +49,12 @@ final class Metrics
 
         try {
             $data['queries'] = Cache::remember( "queries:$url:$days", 43200, fn() => Analytics::queries( $url, $days ) );
+        } catch ( \Throwable $e ) {
+            $data['errors'][] = $e->getMessage();
+        }
+
+        try {
+            $data['indexed'] = Cache::remember( "indexed:$url:$lang", 43200, fn() => Analytics::indexed( $url, $lang ) );
         } catch ( \Throwable $e ) {
             $data['errors'][] = $e->getMessage();
         }

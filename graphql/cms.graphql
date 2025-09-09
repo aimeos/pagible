@@ -77,8 +77,8 @@ extend type Mutation {
   "Refine existing page content"
   refine(prompt: String!, content: JSON!, type: String, context: String): JSON
 
-  "Get page metrics"
-  metrics(url: String!, days: Int): Stats
+  "Get page metrics for the last X days"
+  metrics(url: String!, days: Int, lang: String): Stats
 
   "Synthesize pages and content from prompts and passed file IDs"
   synthesize(prompt: String!, context: String, files: [String!]): String
@@ -618,6 +618,9 @@ type Stats {
 
   "Google search queries with stats"
   queries: [StatsQuery!]
+
+  "Google index status"
+  indexed: String
 }
 
 type StatsNumber {

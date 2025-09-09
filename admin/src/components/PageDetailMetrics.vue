@@ -20,6 +20,7 @@
       errors: [],
       loading: false,
       pagespeed: null,
+      indexed: null,
       countries: [],
       durations: [],
       referrers: [],
@@ -73,8 +74,9 @@
 
         try {
           const { data } = await this.$apollo.mutate({
-            mutation: gql`mutation ($url: String!, $days: Int) {
-                metrics(url: $url, days: $days) {
+            mutation: gql`mutation ($url: String!, $days: Int, $lang: String) {
+                metrics(url: $url, days: $days, lang: $lang) {
+                  indexed
                   views { key value }
                   visits { key value }
                   durations { key value }
@@ -91,8 +93,9 @@
               }
             `,
             variables: {
-              url: 'https://aimeos.org/', // this.url(this.item),
-              days: this.days
+              url: this.url(this.item),
+              lang: this.$vuetify.locale.current,
+              days: this.days,
             },
           });
 
@@ -129,6 +132,7 @@
             return acc;
           }, {});
 
+          this.indexed = stats.indexed || null;
           this.errors = stats.errors || [];
         } catch (e) {
           this.errors.push(e.message || String(e));
@@ -175,6 +179,7 @@
       <v-row>
         <v-col cols="6" class="title">
           {{ $gettext('Page metrics') }}
+          <div class="indexed">{{ indexed ? indexed : $gettext('Unknown Google indexing status') }}</div>
         </v-col>
         <v-col cols="6" class="select-days">
           <v-select
@@ -699,20 +704,19 @@
     background-color: rgb(var(--v-theme-background));
   }
 
-  .title,
-  .select-days {
-    display: flex;
-    justify-content: flex-end;
-    align-self: center;
-  }
-
   .title {
     font-weight: 500;
     font-size: 1.25rem;
     justify-content: flex-start;
   }
 
+  .indexed {
+    font-size: 0.875rem;
+    color: rgba(var(--v-theme-on-background), var(--v-medium-emphasis-opacity))
+  }
+
   .select-days .v-select {
+    margin-inline-start: auto;
     max-width: 120px;
   }
 
