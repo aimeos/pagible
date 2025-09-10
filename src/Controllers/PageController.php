@@ -12,6 +12,7 @@ use Illuminate\Routing\Controller;
 use Aimeos\Cms\Models\Version;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Permission;
+use Aimeos\Cms\Scopes\Status;
 
 
 class PageController extends Controller
@@ -48,9 +49,9 @@ class PageController extends Controller
                 ->header( 'Cache-Control', 'public, max-age=' . ( $this->cache( $html ) * 60 ) );
         }
 
-        $page = Page::where( 'path', $path )
+        $page = Page::withGlobalScope('status', new Status)
             ->where( 'domain', $domain )
-            ->where( 'status', '>', 0 )
+            ->where( 'path', $path )
             ->firstOrFail();
 
         if( $to = $page->to ) {

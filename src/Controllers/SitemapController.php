@@ -3,6 +3,7 @@
 namespace Aimeos\Cms\Controllers;
 
 use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Scopes\Status;
 use Illuminate\Routing\Controller;
 
 
@@ -14,12 +15,17 @@ class SitemapController extends Controller
             echo '<?xml version="1.0" encoding="UTF-8"?>';
             echo '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
 
-            Page::chunkById( 100, function( $pages ) {
-                foreach( $pages as $page ) {
-                    echo '<url>';
-                    echo '<loc>' . route('cms.page', ['path' => $page->path] + (config('cms.multidomain') ? ['domain' => $page->domain] : [])) . '</loc>';
-                    echo '<lastmod>' . optional($page->updated_at)->toAtomString() . '</lastmod>';
-                    echo '</url>';
+            Page::withGlobalScope('status', new Status)->chunkById( 100, function( $pages ) {
+
+                foreach( $pages as $page )
+                {
+                    if( !$page->to )
+                    {
+                        echo '<url>';
+                        echo '<loc>' . route('cms.page', ['path' => $page->path] + (config('cms.multidomain') ? ['domain' => $page->domain] : [])) . '</loc>';
+                        echo '<lastmod>' . optional($page->updated_at)->toAtomString() . '</lastmod>';
+                        echo '</url>';
+                    }
                 }
                 flush();
             });
