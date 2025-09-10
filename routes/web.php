@@ -20,6 +20,10 @@ Route::post('cmsapi/contact', [Controllers\ContactController::class, 'send'])
     ->middleware(['web', 'throttle:2,1'])
     ->name('cms.api.contact');
 
+Route::group(config('cms.multidomain') ? ['domain' => '{domain}'] : [], function() {
+    Route::get('cms-sitemap.xml', [Controllers\SitemapController::class, 'index'])->name('cms.sitemap');
+});
+
 if(config('cms.pageroute', true))
 {
     Route::group(config('cms.multidomain') ? ['domain' => '{domain}'] : [], function() {
