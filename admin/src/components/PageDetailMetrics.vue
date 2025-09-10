@@ -61,6 +61,15 @@
       },
 
 
+      error(msg) {
+        try {
+          return JSON.parse(msg)?.error?.message || msg
+        } catch {
+          return msg
+        }
+      },
+
+
       slice(items, page) {
         const start = (page - 1) * 10
         return items.slice(start, start + 10)
@@ -188,13 +197,12 @@
         </v-col>
       </v-row>
 
-      <v-alert v-if="errors.length"
-        :title="$gettext('Errors')"
+      <v-alert v-for="err in errors"
         variant="tonal"
         border="start"
         class="panel"
         type="error">
-        {{ errors.join("\n") }}
+        {{ error(err) }}
       </v-alert>
 
       <div v-if="loading" class="loading-overlay d-flex align-center justify-center">
