@@ -20,6 +20,7 @@
       errors: [],
       loading: false,
       pagespeed: null,
+      conversions: [],
       countries: [],
       durations: [],
       referrers: [],
@@ -85,6 +86,7 @@
                 metrics(url: $url, days: $days) {
                   views { key value }
                   visits { key value }
+                  conversions { key value }
                   durations { key value }
                   countries { key value }
                   referrers { key value rows { key value } }
@@ -118,6 +120,7 @@
 
           this.views = (stats.views || []).sort(sortByDate).map(formatDate);
           this.visits = (stats.visits || []).sort(sortByDate).map(formatDate);
+          this.conversions = (stats.conversions || []).sort(sortByDate).map(formatDate);
           this.durations = (stats.durations || []).sort(sortByDate).map(formatDate).map(minutes);
 
           this.impressions = (stats.impressions || []).sort(sortByDate).map(formatDate);
@@ -183,7 +186,7 @@
         <v-col cols="6" class="select-days">
           <v-select
             v-model="days"
-            :items="[30, 60, 90]"
+            :items="[30, 60]"
             :label="$gettext('Days')"
             variant="underlined"
             hide-details
@@ -335,18 +338,26 @@
                   grouped: true,
                   datasets: [{
                     borderWidth: 2,
-                    borderColor: '#0000C0',
-                    backgroundColor: '#0000C0',
+                    borderColor: '#C00000',
+                    backgroundColor: '#C00000',
                     label: $gettext('Views'),
                     data: views.map(d => d.value),
                     pointRadius: 0,
                     tension: 0.2
                   }, {
                     borderWidth: 2,
-                    borderColor: '#C00000',
-                    backgroundColor: '#C00000',
+                    borderColor: '#0000C0',
+                    backgroundColor: '#0000C0',
                     label: $gettext('Visits'),
                     data: visits.map(d => d.value),
+                    pointRadius: 0,
+                    tension: 0.2
+                  }, {
+                    borderWidth: 2,
+                    borderColor: '#008000',
+                    backgroundColor: '#008000',
+                    label: $gettext('Conversions'),
+                    data: conversions.map(d => d.value),
                     pointRadius: 0,
                     tension: 0.2
                   }]
@@ -399,8 +410,8 @@
                   labels: durations.map(d => d.key),
                   datasets: [{
                     borderWidth: 2,
-                    borderColor: '#008000',
-                    backgroundColor: '#008000',
+                    borderColor: '#0000C0',
+                    backgroundColor: '#0000C0',
                     label: $gettext('Duration'),
                     data: durations.map(d => d.value),
                     pointRadius: 0,
@@ -628,16 +639,16 @@
                   grouped: true,
                   datasets: [{
                     borderWidth: 2,
-                    borderColor: '#0000C0',
-                    backgroundColor: '#0000C0',
+                    borderColor: '#C00000',
+                    backgroundColor: '#C00000',
                     label: $gettext('Impressions'),
                     data: impressions.map(d => d.value),
                     pointRadius: 0,
                     tension: 0.2
                   }, {
                     borderWidth: 2,
-                    borderColor: '#C00000',
-                    backgroundColor: '#C00000',
+                    borderColor: '#008000',
+                    backgroundColor: '#008000',
                     label: $gettext('Clicks'),
                     data: clicks.map(d => d.value),
                     pointRadius: 0,
@@ -692,8 +703,8 @@
                   labels: ctrs.map(d => d.key),
                   datasets: [{
                     borderWidth: 2,
-                    borderColor: '#008000',
-                    backgroundColor: '#008000',
+                    borderColor: '#0000C0',
+                    backgroundColor: '#0000C0',
                     label: $gettext('Percentage'),
                     data: ctrs.map(d => d.value),
                     pointRadius: 0,

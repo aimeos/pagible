@@ -592,6 +592,9 @@ type Stats {
   "Number of page visits by day"
   visits: [StatsNumber!]
 
+  "Number of conversions on page by day"
+  conversions: [StatsNumber!]
+
   "Average page visit duration in seconds by day"
   durations: [StatsNumber!]
 
