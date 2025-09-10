@@ -888,77 +888,135 @@ msgstr "URL ni veljaven"
 msgid "Redirect URL"
 msgstr "Preusmeritev URL"
 
-#: src/components/PageDetailMetrics.vue:149
+#: src/components/PageDetailMetrics.vue:184
 msgid "Page metrics"
 msgstr "Metrike strani"
 
-#: src/components/PageDetailMetrics.vue:155
+#: src/components/PageDetailMetrics.vue:190
 msgid "Days"
 msgstr "Dnevi"
 
-#: src/components/PageDetailMetrics.vue:164
-msgid "Errors"
-msgstr "Napake"
+#: src/components/PageDetailMetrics.vue:214
+msgid "Weekly Insights"
+msgstr "Tedenski vpogledi"
 
-#: src/components/PageDetailMetrics.vue:176
-msgid "Page Speed"
-msgstr "Hitrost strani"
-
-#: src/components/PageDetailMetrics.vue:180
-msgid "Round trip time"
-msgstr "Čas povratnega potovanja"
-
-#: src/components/PageDetailMetrics.vue:190
-msgid "Time to first byte"
-msgstr "Čas do prvega bajta"
-
-#: src/components/PageDetailMetrics.vue:200
-msgid "First contentful paint"
-msgstr "Prva vsebinska barva"
-
-#: src/components/PageDetailMetrics.vue:210
-msgid "Largest contentful paint"
-msgstr "Največja vsebinska barva"
-
-#: src/components/PageDetailMetrics.vue:220
-msgid "Interaction to next paint"
-msgstr "Interakcija z naslednjo barvo"
+#: src/components/PageDetailMetrics.vue:218
+msgid "Page Views"
+msgstr "Pogledi strani"
 
 #: src/components/PageDetailMetrics.vue:230
-msgid "Cumulative layout shift"
-msgstr "Kumulativni premik postavitve"
+msgid "Page Visits"
+msgstr "Obiski strani"
 
-#: src/components/PageDetailMetrics.vue:241
-msgid "No real-user page speed data available."
-msgstr "Podatki o hitrosti strani v realnem okolju niso na voljo."
+#: src/components/PageDetailMetrics.vue:242
+msgid "Visit Duration (minutes)"
+msgstr "Trajanje obiska (v minutah)"
 
-#: src/components/PageDetailMetrics.vue:252
-msgid "Number of Views & Visits"
-msgstr "Število ogledov in obiskov"
+#: src/components/PageDetailMetrics.vue:254
+msgid "Google Impressions"
+msgstr "Googlovi vtisi"
 
-#: src/components/PageDetailMetrics.vue:294
+#: src/components/PageDetailMetrics.vue:266
+msgid "Google Clicks"
+msgstr "Googlovi kliki"
+
+#: src/components/PageDetailMetrics.vue:278
+msgid "Google Conversion Rate"
+msgstr "Stopnja konverzije v Googlu"
+
+#: src/components/PageDetailMetrics.vue:299
+msgid "Views & Visits"
+msgstr "Pogledi in obiski"
+
+#: src/components/PageDetailMetrics.vue:343
+#: src/components/PageDetailMetrics.vue:567
 msgid "Views"
 msgstr "Pogledi"
 
-#: src/components/PageDetailMetrics.vue:300
+#: src/components/PageDetailMetrics.vue:351
 msgid "Visits"
 msgstr "Obiski"
 
-#: src/components/PageDetailMetrics.vue:311
-msgid "Visit Durations in minutes"
-msgstr "Trajanje obiska v minutah"
+#: src/components/PageDetailMetrics.vue:359
+msgid "Conversions"
+msgstr "Pretvorbe"
 
-#: src/components/PageDetailMetrics.vue:352
+#: src/components/PageDetailMetrics.vue:372
+msgid "Visit Durations (minutes)"
+msgstr "Trajanje obiska (v minutah)"
+
+#: src/components/PageDetailMetrics.vue:415
 msgid "Duration"
 msgstr "Trajanje"
 
-#: src/components/PageDetailMetrics.vue:366
-msgid "Top Countries"
-msgstr "Vrhunske države"
+#: src/components/PageDetailMetrics.vue:431
+msgid "Referrers"
+msgstr "Referrers"
 
-#: src/components/PageDetailMetrics.vue:391
-msgid "Top Referrers"
-msgstr "Najboljši referenti"
+#: src/components/PageDetailMetrics.vue:472
+msgid "Countries"
+msgstr "Države"
+
+#: src/components/PageDetailMetrics.vue:488
+msgid "Page Speed"
+msgstr "Hitrost strani"
+
+#: src/components/PageDetailMetrics.vue:492
+msgid "Round trip time"
+msgstr "Čas povratnega potovanja"
+
+#: src/components/PageDetailMetrics.vue:502
+msgid "Time to first byte"
+msgstr "Čas do prvega bajta"
+
+#: src/components/PageDetailMetrics.vue:512
+msgid "First contentful paint"
+msgstr "Prva vsebinska barva"
+
+#: src/components/PageDetailMetrics.vue:522
+msgid "Largest contentful paint"
+msgstr "Največja vsebinska barva"
+
+#: src/components/PageDetailMetrics.vue:532
+msgid "Interaction to next paint"
+msgstr "Interakcija z naslednjo barvo"
+
+#: src/components/PageDetailMetrics.vue:542
+msgid "Cumulative layout shift"
+msgstr "Kumulativni premik postavitve"
+
+#: src/components/PageDetailMetrics.vue:561
+msgid "Google Search: Queries"
+msgstr "Iskanje v Googlu: Poizvedbe"
+
+#: src/components/PageDetailMetrics.vue:568
+#: src/components/PageDetailMetrics.vue:652
+msgid "Clicks"
+msgstr "Kliki"
+
+#: src/components/PageDetailMetrics.vue:569
+msgid "Percent"
+msgstr "Odstotek"
+
+#: src/components/PageDetailMetrics.vue:570
+msgid "Position"
+msgstr "Položaj"
+
+#: src/components/PageDetailMetrics.vue:600
+msgid "Google Search: Impressions & Clicks"
+msgstr "Iskanje v Googlu: Vtisi in kliki"
+
+#: src/components/PageDetailMetrics.vue:644
+msgid "Impressions"
+msgstr "Vtisi"
+
+#: src/components/PageDetailMetrics.vue:665
+msgid "Google Search: Conversions"
+msgstr "Iskanje v Googlu: Pretvorbe"
+
+#: src/components/PageDetailMetrics.vue:708
+msgid "Percentage"
+msgstr "Odstotek"
 
 #: src/components/PageListItems.vue:100
 msgid "Error adding root page"

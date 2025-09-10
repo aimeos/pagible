@@ -886,77 +886,135 @@ msgstr "URL negalioja"
 msgid "Redirect URL"
 msgstr "Peradresavimo URL"
 
-#: src/components/PageDetailMetrics.vue:149
+#: src/components/PageDetailMetrics.vue:184
 msgid "Page metrics"
 msgstr "Puslapio rodikliai"
 
-#: src/components/PageDetailMetrics.vue:155
+#: src/components/PageDetailMetrics.vue:190
 msgid "Days"
 msgstr "Dienos"
 
-#: src/components/PageDetailMetrics.vue:164
-msgid "Errors"
-msgstr "Klaidos"
+#: src/components/PageDetailMetrics.vue:214
+msgid "Weekly Insights"
+msgstr "Savaitės įžvalgos"
 
-#: src/components/PageDetailMetrics.vue:176
-msgid "Page Speed"
-msgstr "Puslapio greitis"
-
-#: src/components/PageDetailMetrics.vue:180
-msgid "Round trip time"
-msgstr "Kelionės į abi puses laikas"
-
-#: src/components/PageDetailMetrics.vue:190
-msgid "Time to first byte"
-msgstr "Laikas iki pirmojo baito"
-
-#: src/components/PageDetailMetrics.vue:200
-msgid "First contentful paint"
-msgstr "Pirmieji turinys dažai"
-
-#: src/components/PageDetailMetrics.vue:210
-msgid "Largest contentful paint"
-msgstr "Didžiausi turinio dažai"
-
-#: src/components/PageDetailMetrics.vue:220
-msgid "Interaction to next paint"
-msgstr "Sąveika su kitais dažais"
+#: src/components/PageDetailMetrics.vue:218
+msgid "Page Views"
+msgstr "Puslapio peržiūros"
 
 #: src/components/PageDetailMetrics.vue:230
-msgid "Cumulative layout shift"
-msgstr "Kaupiamasis išdėstymo poslinkis"
+msgid "Page Visits"
+msgstr "Puslapių lankymas"
 
-#: src/components/PageDetailMetrics.vue:241
-msgid "No real-user page speed data available."
-msgstr "Duomenų apie realaus naudotojo puslapio greitį nėra."
+#: src/components/PageDetailMetrics.vue:242
+msgid "Visit Duration (minutes)"
+msgstr "Apsilankymo trukmė (minutėmis)"
 
-#: src/components/PageDetailMetrics.vue:252
-msgid "Number of Views & Visits"
-msgstr "Peržiūrų ir apsilankymų skaičius"
+#: src/components/PageDetailMetrics.vue:254
+msgid "Google Impressions"
+msgstr "\"Google\" įspūdžiai"
 
-#: src/components/PageDetailMetrics.vue:294
+#: src/components/PageDetailMetrics.vue:266
+msgid "Google Clicks"
+msgstr "\"Google\" paspaudimai"
+
+#: src/components/PageDetailMetrics.vue:278
+msgid "Google Conversion Rate"
+msgstr "\"Google\" konversijų rodiklis"
+
+#: src/components/PageDetailMetrics.vue:299
+msgid "Views & Visits"
+msgstr "Peržiūros ir apsilankymai"
+
+#: src/components/PageDetailMetrics.vue:343
+#: src/components/PageDetailMetrics.vue:567
 msgid "Views"
 msgstr "Peržiūros"
 
-#: src/components/PageDetailMetrics.vue:300
+#: src/components/PageDetailMetrics.vue:351
 msgid "Visits"
 msgstr "Apsilankymai"
 
-#: src/components/PageDetailMetrics.vue:311
-msgid "Visit Durations in minutes"
-msgstr "Apsilankymo trukmė minutėmis"
+#: src/components/PageDetailMetrics.vue:359
+msgid "Conversions"
+msgstr "Konversijos"
 
-#: src/components/PageDetailMetrics.vue:352
+#: src/components/PageDetailMetrics.vue:372
+msgid "Visit Durations (minutes)"
+msgstr "Apsilankymų trukmė (minutėmis)"
+
+#: src/components/PageDetailMetrics.vue:415
 msgid "Duration"
 msgstr "Trukmė"
 
-#: src/components/PageDetailMetrics.vue:366
-msgid "Top Countries"
-msgstr "Geriausios šalys"
+#: src/components/PageDetailMetrics.vue:431
+msgid "Referrers"
+msgstr "Refereriai"
 
-#: src/components/PageDetailMetrics.vue:391
-msgid "Top Referrers"
-msgstr "Geriausi referentai"
+#: src/components/PageDetailMetrics.vue:472
+msgid "Countries"
+msgstr "Šalys"
+
+#: src/components/PageDetailMetrics.vue:488
+msgid "Page Speed"
+msgstr "Puslapio greitis"
+
+#: src/components/PageDetailMetrics.vue:492
+msgid "Round trip time"
+msgstr "Kelionės į abi puses laikas"
+
+#: src/components/PageDetailMetrics.vue:502
+msgid "Time to first byte"
+msgstr "Laikas iki pirmojo baito"
+
+#: src/components/PageDetailMetrics.vue:512
+msgid "First contentful paint"
+msgstr "Pirmieji turinys dažai"
+
+#: src/components/PageDetailMetrics.vue:522
+msgid "Largest contentful paint"
+msgstr "Didžiausi turinio dažai"
+
+#: src/components/PageDetailMetrics.vue:532
+msgid "Interaction to next paint"
+msgstr "Sąveika su kitais dažais"
+
+#: src/components/PageDetailMetrics.vue:542
+msgid "Cumulative layout shift"
+msgstr "Kaupiamasis išdėstymo poslinkis"
+
+#: src/components/PageDetailMetrics.vue:561
+msgid "Google Search: Queries"
+msgstr "Paieška \"Google\": Užklausos"
+
+#: src/components/PageDetailMetrics.vue:568
+#: src/components/PageDetailMetrics.vue:652
+msgid "Clicks"
+msgstr "Paspaudimai"
+
+#: src/components/PageDetailMetrics.vue:569
+msgid "Percent"
+msgstr "Procentai"
+
+#: src/components/PageDetailMetrics.vue:570
+msgid "Position"
+msgstr "Pozicija"
+
+#: src/components/PageDetailMetrics.vue:600
+msgid "Google Search: Impressions & Clicks"
+msgstr "Paieška \"Google\": Įspūdžiai ir paspaudimai"
+
+#: src/components/PageDetailMetrics.vue:644
+msgid "Impressions"
+msgstr "Įspūdžiai"
+
+#: src/components/PageDetailMetrics.vue:665
+msgid "Google Search: Conversions"
+msgstr "Paieška \"Google\": Konversijos"
+
+#: src/components/PageDetailMetrics.vue:708
+msgid "Percentage"
+msgstr "Procentinė dalis"
 
 #: src/components/PageListItems.vue:100
 msgid "Error adding root page"

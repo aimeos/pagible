@@ -886,77 +886,135 @@ msgstr "Adres URL jest nieprawidłowy"
 msgid "Redirect URL"
 msgstr "Przekierowanie URL"
 
-#: src/components/PageDetailMetrics.vue:149
+#: src/components/PageDetailMetrics.vue:184
 msgid "Page metrics"
 msgstr "Wskaźniki strony"
 
-#: src/components/PageDetailMetrics.vue:155
+#: src/components/PageDetailMetrics.vue:190
 msgid "Days"
 msgstr "Dni"
 
-#: src/components/PageDetailMetrics.vue:164
-msgid "Errors"
-msgstr "Błędy"
+#: src/components/PageDetailMetrics.vue:214
+msgid "Weekly Insights"
+msgstr "Cotygodniowe spostrzeżenia"
 
-#: src/components/PageDetailMetrics.vue:176
-msgid "Page Speed"
-msgstr "Prędkość strony"
-
-#: src/components/PageDetailMetrics.vue:180
-msgid "Round trip time"
-msgstr "Czas podróży w obie strony"
-
-#: src/components/PageDetailMetrics.vue:190
-msgid "Time to first byte"
-msgstr "Czas do pierwszego bajtu"
-
-#: src/components/PageDetailMetrics.vue:200
-msgid "First contentful paint"
-msgstr "Pierwsza treściwa farba"
-
-#: src/components/PageDetailMetrics.vue:210
-msgid "Largest contentful paint"
-msgstr "Farba o największej zawartości"
-
-#: src/components/PageDetailMetrics.vue:220
-msgid "Interaction to next paint"
-msgstr "Interakcja do następnej farby"
+#: src/components/PageDetailMetrics.vue:218
+msgid "Page Views"
+msgstr "Odsłony"
 
 #: src/components/PageDetailMetrics.vue:230
-msgid "Cumulative layout shift"
-msgstr "Łączna zmiana układu"
+msgid "Page Visits"
+msgstr "Odwiedziny stron"
 
-#: src/components/PageDetailMetrics.vue:241
-msgid "No real-user page speed data available."
-msgstr "Brak dostępnych danych dotyczących szybkości działania strony dla rzeczywistych użytkowników."
+#: src/components/PageDetailMetrics.vue:242
+msgid "Visit Duration (minutes)"
+msgstr "Czas trwania wizyty (minuty)"
 
-#: src/components/PageDetailMetrics.vue:252
-msgid "Number of Views & Visits"
-msgstr "Liczba wyświetleń i odwiedzin"
+#: src/components/PageDetailMetrics.vue:254
+msgid "Google Impressions"
+msgstr "Google Impressions"
 
-#: src/components/PageDetailMetrics.vue:294
+#: src/components/PageDetailMetrics.vue:266
+msgid "Google Clicks"
+msgstr "Kliknięcia Google"
+
+#: src/components/PageDetailMetrics.vue:278
+msgid "Google Conversion Rate"
+msgstr "Współczynnik konwersji Google"
+
+#: src/components/PageDetailMetrics.vue:299
+msgid "Views & Visits"
+msgstr "Widoki i wizyty"
+
+#: src/components/PageDetailMetrics.vue:343
+#: src/components/PageDetailMetrics.vue:567
 msgid "Views"
 msgstr "Widoki"
 
-#: src/components/PageDetailMetrics.vue:300
+#: src/components/PageDetailMetrics.vue:351
 msgid "Visits"
 msgstr "Wizyty"
 
-#: src/components/PageDetailMetrics.vue:311
-msgid "Visit Durations in minutes"
-msgstr "Czas trwania wizyty w minutach"
+#: src/components/PageDetailMetrics.vue:359
+msgid "Conversions"
+msgstr "Konwersje"
 
-#: src/components/PageDetailMetrics.vue:352
+#: src/components/PageDetailMetrics.vue:372
+msgid "Visit Durations (minutes)"
+msgstr "Czas trwania wizyty (minuty)"
+
+#: src/components/PageDetailMetrics.vue:415
 msgid "Duration"
 msgstr "Czas trwania"
 
-#: src/components/PageDetailMetrics.vue:366
-msgid "Top Countries"
-msgstr "Najważniejsze kraje"
+#: src/components/PageDetailMetrics.vue:431
+msgid "Referrers"
+msgstr "Polecający"
 
-#: src/components/PageDetailMetrics.vue:391
-msgid "Top Referrers"
-msgstr "Najczęściej polecane osoby"
+#: src/components/PageDetailMetrics.vue:472
+msgid "Countries"
+msgstr "Kraje"
+
+#: src/components/PageDetailMetrics.vue:488
+msgid "Page Speed"
+msgstr "Prędkość strony"
+
+#: src/components/PageDetailMetrics.vue:492
+msgid "Round trip time"
+msgstr "Czas podróży w obie strony"
+
+#: src/components/PageDetailMetrics.vue:502
+msgid "Time to first byte"
+msgstr "Czas do pierwszego bajtu"
+
+#: src/components/PageDetailMetrics.vue:512
+msgid "First contentful paint"
+msgstr "Pierwsza treściwa farba"
+
+#: src/components/PageDetailMetrics.vue:522
+msgid "Largest contentful paint"
+msgstr "Farba o największej zawartości"
+
+#: src/components/PageDetailMetrics.vue:532
+msgid "Interaction to next paint"
+msgstr "Interakcja do następnej farby"
+
+#: src/components/PageDetailMetrics.vue:542
+msgid "Cumulative layout shift"
+msgstr "Łączna zmiana układu"
+
+#: src/components/PageDetailMetrics.vue:561
+msgid "Google Search: Queries"
+msgstr "Wyszukiwarka Google: Zapytania"
+
+#: src/components/PageDetailMetrics.vue:568
+#: src/components/PageDetailMetrics.vue:652
+msgid "Clicks"
+msgstr "Kliknięcia"
+
+#: src/components/PageDetailMetrics.vue:569
+msgid "Percent"
+msgstr "Procent"
+
+#: src/components/PageDetailMetrics.vue:570
+msgid "Position"
+msgstr "Pozycja"
+
+#: src/components/PageDetailMetrics.vue:600
+msgid "Google Search: Impressions & Clicks"
+msgstr "Wyszukiwarka Google: Wyświetlenia i kliknięcia"
+
+#: src/components/PageDetailMetrics.vue:644
+msgid "Impressions"
+msgstr "Wrażenia"
+
+#: src/components/PageDetailMetrics.vue:665
+msgid "Google Search: Conversions"
+msgstr "Wyszukiwarka Google: Konwersje"
+
+#: src/components/PageDetailMetrics.vue:708
+msgid "Percentage"
+msgstr "Procent"
 
 #: src/components/PageListItems.vue:100
 msgid "Error adding root page"

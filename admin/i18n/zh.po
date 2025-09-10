@@ -883,77 +883,135 @@ msgstr "URL 无效"
 msgid "Redirect URL"
 msgstr "重定向 URL"
 
-#: src/components/PageDetailMetrics.vue:149
+#: src/components/PageDetailMetrics.vue:184
 msgid "Page metrics"
 msgstr "页面度量"
 
-#: src/components/PageDetailMetrics.vue:155
+#: src/components/PageDetailMetrics.vue:190
 msgid "Days"
 msgstr "天数"
 
-#: src/components/PageDetailMetrics.vue:164
-msgid "Errors"
-msgstr "错误"
+#: src/components/PageDetailMetrics.vue:214
+msgid "Weekly Insights"
+msgstr "每周透视"
 
-#: src/components/PageDetailMetrics.vue:176
-msgid "Page Speed"
-msgstr "网页速度"
-
-#: src/components/PageDetailMetrics.vue:180
-msgid "Round trip time"
-msgstr "往返时间"
-
-#: src/components/PageDetailMetrics.vue:190
-msgid "Time to first byte"
-msgstr "到第一个字节的时间"
-
-#: src/components/PageDetailMetrics.vue:200
-msgid "First contentful paint"
-msgstr "第一批内容丰富的涂料"
-
-#: src/components/PageDetailMetrics.vue:210
-msgid "Largest contentful paint"
-msgstr "含量最大的涂料"
-
-#: src/components/PageDetailMetrics.vue:220
-msgid "Interaction to next paint"
-msgstr "与下一种涂料的互动"
+#: src/components/PageDetailMetrics.vue:218
+msgid "Page Views"
+msgstr "页面浏览量"
 
 #: src/components/PageDetailMetrics.vue:230
-msgid "Cumulative layout shift"
-msgstr "累计布局变化"
+msgid "Page Visits"
+msgstr "页面访问量"
 
-#: src/components/PageDetailMetrics.vue:241
-msgid "No real-user page speed data available."
-msgstr "无实际用户页面速度数据。"
+#: src/components/PageDetailMetrics.vue:242
+msgid "Visit Duration (minutes)"
+msgstr "访问时间（分钟）"
 
-#: src/components/PageDetailMetrics.vue:252
-msgid "Number of Views & Visits"
-msgstr "浏览量和访问量"
+#: src/components/PageDetailMetrics.vue:254
+msgid "Google Impressions"
+msgstr "谷歌印象"
 
-#: src/components/PageDetailMetrics.vue:294
+#: src/components/PageDetailMetrics.vue:266
+msgid "Google Clicks"
+msgstr "谷歌点击率"
+
+#: src/components/PageDetailMetrics.vue:278
+msgid "Google Conversion Rate"
+msgstr "谷歌转换率"
+
+#: src/components/PageDetailMetrics.vue:299
+msgid "Views & Visits"
+msgstr "浏览和参观"
+
+#: src/components/PageDetailMetrics.vue:343
+#: src/components/PageDetailMetrics.vue:567
 msgid "Views"
 msgstr "意见"
 
-#: src/components/PageDetailMetrics.vue:300
+#: src/components/PageDetailMetrics.vue:351
 msgid "Visits"
 msgstr "参观"
 
-#: src/components/PageDetailMetrics.vue:311
-msgid "Visit Durations in minutes"
-msgstr "访问时间（分钟"
+#: src/components/PageDetailMetrics.vue:359
+msgid "Conversions"
+msgstr "转换"
 
-#: src/components/PageDetailMetrics.vue:352
+#: src/components/PageDetailMetrics.vue:372
+msgid "Visit Durations (minutes)"
+msgstr "访问时长（分钟）"
+
+#: src/components/PageDetailMetrics.vue:415
 msgid "Duration"
 msgstr "持续时间"
 
-#: src/components/PageDetailMetrics.vue:366
-msgid "Top Countries"
-msgstr "热门国家"
+#: src/components/PageDetailMetrics.vue:431
+msgid "Referrers"
+msgstr "推荐人"
 
-#: src/components/PageDetailMetrics.vue:391
-msgid "Top Referrers"
-msgstr "热门推荐人"
+#: src/components/PageDetailMetrics.vue:472
+msgid "Countries"
+msgstr "国家"
+
+#: src/components/PageDetailMetrics.vue:488
+msgid "Page Speed"
+msgstr "网页速度"
+
+#: src/components/PageDetailMetrics.vue:492
+msgid "Round trip time"
+msgstr "往返时间"
+
+#: src/components/PageDetailMetrics.vue:502
+msgid "Time to first byte"
+msgstr "到第一个字节的时间"
+
+#: src/components/PageDetailMetrics.vue:512
+msgid "First contentful paint"
+msgstr "第一批内容丰富的涂料"
+
+#: src/components/PageDetailMetrics.vue:522
+msgid "Largest contentful paint"
+msgstr "含量最大的涂料"
+
+#: src/components/PageDetailMetrics.vue:532
+msgid "Interaction to next paint"
+msgstr "与下一种涂料的互动"
+
+#: src/components/PageDetailMetrics.vue:542
+msgid "Cumulative layout shift"
+msgstr "累计布局变化"
+
+#: src/components/PageDetailMetrics.vue:561
+msgid "Google Search: Queries"
+msgstr "谷歌搜索：查询"
+
+#: src/components/PageDetailMetrics.vue:568
+#: src/components/PageDetailMetrics.vue:652
+msgid "Clicks"
+msgstr "点击次数"
+
+#: src/components/PageDetailMetrics.vue:569
+msgid "Percent"
+msgstr "百分比"
+
+#: src/components/PageDetailMetrics.vue:570
+msgid "Position"
+msgstr "职位"
+
+#: src/components/PageDetailMetrics.vue:600
+msgid "Google Search: Impressions & Clicks"
+msgstr "谷歌搜索：印象与点击"
+
+#: src/components/PageDetailMetrics.vue:644
+msgid "Impressions"
+msgstr "印象"
+
+#: src/components/PageDetailMetrics.vue:665
+msgid "Google Search: Conversions"
+msgstr "谷歌搜索：转化率"
+
+#: src/components/PageDetailMetrics.vue:708
+msgid "Percentage"
+msgstr "百分比"
 
 #: src/components/PageListItems.vue:100
 msgid "Error adding root page"

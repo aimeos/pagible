@@ -884,77 +884,135 @@ msgstr "URL-adressen er ikke gyldig"
 msgid "Redirect URL"
 msgstr "Omdirigere URL"
 
-#: src/components/PageDetailMetrics.vue:149
+#: src/components/PageDetailMetrics.vue:184
 msgid "Page metrics"
 msgstr "Sideberegninger"
 
-#: src/components/PageDetailMetrics.vue:155
+#: src/components/PageDetailMetrics.vue:190
 msgid "Days"
 msgstr "Dager"
 
-#: src/components/PageDetailMetrics.vue:164
-msgid "Errors"
-msgstr "Feil"
+#: src/components/PageDetailMetrics.vue:214
+msgid "Weekly Insights"
+msgstr "Ukentlig innsikt"
 
-#: src/components/PageDetailMetrics.vue:176
-msgid "Page Speed"
-msgstr "Sidehastighet"
-
-#: src/components/PageDetailMetrics.vue:180
-msgid "Round trip time"
-msgstr "Tid tur-retur"
-
-#: src/components/PageDetailMetrics.vue:190
-msgid "Time to first byte"
-msgstr "Tid til første byte"
-
-#: src/components/PageDetailMetrics.vue:200
-msgid "First contentful paint"
-msgstr "Første innholdsrike maling"
-
-#: src/components/PageDetailMetrics.vue:210
-msgid "Largest contentful paint"
-msgstr "Størst innholdsrik maling"
-
-#: src/components/PageDetailMetrics.vue:220
-msgid "Interaction to next paint"
-msgstr "Interaksjon til neste maling"
+#: src/components/PageDetailMetrics.vue:218
+msgid "Page Views"
+msgstr "Sidevisninger"
 
 #: src/components/PageDetailMetrics.vue:230
-msgid "Cumulative layout shift"
-msgstr "Kumulativ layoutforskyvning"
+msgid "Page Visits"
+msgstr "Besøk på siden"
 
-#: src/components/PageDetailMetrics.vue:241
-msgid "No real-user page speed data available."
-msgstr "Ingen data om reell brukerhastighet tilgjengelig."
+#: src/components/PageDetailMetrics.vue:242
+msgid "Visit Duration (minutes)"
+msgstr "Varighet av besøket (minutter)"
 
-#: src/components/PageDetailMetrics.vue:252
-msgid "Number of Views & Visits"
-msgstr "Antall visninger og besøk"
+#: src/components/PageDetailMetrics.vue:254
+msgid "Google Impressions"
+msgstr "Google Inntrykk"
 
-#: src/components/PageDetailMetrics.vue:294
+#: src/components/PageDetailMetrics.vue:266
+msgid "Google Clicks"
+msgstr "Google-klikk"
+
+#: src/components/PageDetailMetrics.vue:278
+msgid "Google Conversion Rate"
+msgstr "Googles konverteringsfrekvens"
+
+#: src/components/PageDetailMetrics.vue:299
+msgid "Views & Visits"
+msgstr "Visninger og besøk"
+
+#: src/components/PageDetailMetrics.vue:343
+#: src/components/PageDetailMetrics.vue:567
 msgid "Views"
 msgstr "Utsikt"
 
-#: src/components/PageDetailMetrics.vue:300
+#: src/components/PageDetailMetrics.vue:351
 msgid "Visits"
 msgstr "Besøk"
 
-#: src/components/PageDetailMetrics.vue:311
-msgid "Visit Durations in minutes"
-msgstr "Besøksvarighet i minutter"
+#: src/components/PageDetailMetrics.vue:359
+msgid "Conversions"
+msgstr "Konvertering"
 
-#: src/components/PageDetailMetrics.vue:352
+#: src/components/PageDetailMetrics.vue:372
+msgid "Visit Durations (minutes)"
+msgstr "Besøkenes varighet (minutter)"
+
+#: src/components/PageDetailMetrics.vue:415
 msgid "Duration"
 msgstr "Varighet"
 
-#: src/components/PageDetailMetrics.vue:366
-msgid "Top Countries"
-msgstr "De beste landene"
+#: src/components/PageDetailMetrics.vue:431
+msgid "Referrers"
+msgstr "Henvisere"
 
-#: src/components/PageDetailMetrics.vue:391
-msgid "Top Referrers"
-msgstr "Topp henvisere"
+#: src/components/PageDetailMetrics.vue:472
+msgid "Countries"
+msgstr "Land"
+
+#: src/components/PageDetailMetrics.vue:488
+msgid "Page Speed"
+msgstr "Sidehastighet"
+
+#: src/components/PageDetailMetrics.vue:492
+msgid "Round trip time"
+msgstr "Tid tur-retur"
+
+#: src/components/PageDetailMetrics.vue:502
+msgid "Time to first byte"
+msgstr "Tid til første byte"
+
+#: src/components/PageDetailMetrics.vue:512
+msgid "First contentful paint"
+msgstr "Første innholdsrike maling"
+
+#: src/components/PageDetailMetrics.vue:522
+msgid "Largest contentful paint"
+msgstr "Størst innholdsrik maling"
+
+#: src/components/PageDetailMetrics.vue:532
+msgid "Interaction to next paint"
+msgstr "Interaksjon til neste maling"
+
+#: src/components/PageDetailMetrics.vue:542
+msgid "Cumulative layout shift"
+msgstr "Kumulativ layoutforskyvning"
+
+#: src/components/PageDetailMetrics.vue:561
+msgid "Google Search: Queries"
+msgstr "Google Søk: Spørsmål"
+
+#: src/components/PageDetailMetrics.vue:568
+#: src/components/PageDetailMetrics.vue:652
+msgid "Clicks"
+msgstr "Klikk"
+
+#: src/components/PageDetailMetrics.vue:569
+msgid "Percent"
+msgstr "Prosent"
+
+#: src/components/PageDetailMetrics.vue:570
+msgid "Position"
+msgstr "Stilling"
+
+#: src/components/PageDetailMetrics.vue:600
+msgid "Google Search: Impressions & Clicks"
+msgstr "Google Søk: Visninger og klikk"
+
+#: src/components/PageDetailMetrics.vue:644
+msgid "Impressions"
+msgstr "Inntrykk"
+
+#: src/components/PageDetailMetrics.vue:665
+msgid "Google Search: Conversions"
+msgstr "Google Søk: Konverteringer"
+
+#: src/components/PageDetailMetrics.vue:708
+msgid "Percentage"
+msgstr "Prosentandel"
 
 #: src/components/PageListItems.vue:100
 msgid "Error adding root page"

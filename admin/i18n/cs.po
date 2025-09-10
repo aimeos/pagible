@@ -886,77 +886,135 @@ msgstr "Adresa URL není platná"
 msgid "Redirect URL"
 msgstr "Adresa URL přesměrování"
 
-#: src/components/PageDetailMetrics.vue:149
+#: src/components/PageDetailMetrics.vue:184
 msgid "Page metrics"
 msgstr "Metriky stránek"
 
-#: src/components/PageDetailMetrics.vue:155
+#: src/components/PageDetailMetrics.vue:190
 msgid "Days"
 msgstr "Dny"
 
-#: src/components/PageDetailMetrics.vue:164
-msgid "Errors"
-msgstr "Chyby"
+#: src/components/PageDetailMetrics.vue:214
+msgid "Weekly Insights"
+msgstr "Týdenní postřehy"
 
-#: src/components/PageDetailMetrics.vue:176
-msgid "Page Speed"
-msgstr "Rychlost stránky"
-
-#: src/components/PageDetailMetrics.vue:180
-msgid "Round trip time"
-msgstr "Doba jízdy tam a zpět"
-
-#: src/components/PageDetailMetrics.vue:190
-msgid "Time to first byte"
-msgstr "Čas do prvního bajtu"
-
-#: src/components/PageDetailMetrics.vue:200
-msgid "First contentful paint"
-msgstr "První obsahová barva"
-
-#: src/components/PageDetailMetrics.vue:210
-msgid "Largest contentful paint"
-msgstr "Největší obsahová barva"
-
-#: src/components/PageDetailMetrics.vue:220
-msgid "Interaction to next paint"
-msgstr "Interakce na další barvu"
+#: src/components/PageDetailMetrics.vue:218
+msgid "Page Views"
+msgstr "Zobrazení stránek"
 
 #: src/components/PageDetailMetrics.vue:230
-msgid "Cumulative layout shift"
-msgstr "Kumulativní posun rozložení"
+msgid "Page Visits"
+msgstr "Návštěvy stránek"
 
-#: src/components/PageDetailMetrics.vue:241
-msgid "No real-user page speed data available."
-msgstr "Nejsou k dispozici žádné údaje o rychlosti stránek v reálném provozu."
+#: src/components/PageDetailMetrics.vue:242
+msgid "Visit Duration (minutes)"
+msgstr "Délka návštěvy (v minutách)"
 
-#: src/components/PageDetailMetrics.vue:252
-msgid "Number of Views & Visits"
-msgstr "Počet zobrazení a návštěv"
+#: src/components/PageDetailMetrics.vue:254
+msgid "Google Impressions"
+msgstr "Dojmy Google"
 
-#: src/components/PageDetailMetrics.vue:294
+#: src/components/PageDetailMetrics.vue:266
+msgid "Google Clicks"
+msgstr "Kliknutí ve službě Google"
+
+#: src/components/PageDetailMetrics.vue:278
+msgid "Google Conversion Rate"
+msgstr "Konverzní poměr Google"
+
+#: src/components/PageDetailMetrics.vue:299
+msgid "Views & Visits"
+msgstr "Pohledy a návštěvy"
+
+#: src/components/PageDetailMetrics.vue:343
+#: src/components/PageDetailMetrics.vue:567
 msgid "Views"
 msgstr "Zobrazení"
 
-#: src/components/PageDetailMetrics.vue:300
+#: src/components/PageDetailMetrics.vue:351
 msgid "Visits"
 msgstr "Návštěvy"
 
-#: src/components/PageDetailMetrics.vue:311
-msgid "Visit Durations in minutes"
-msgstr "Délka návštěvy v minutách"
+#: src/components/PageDetailMetrics.vue:359
+msgid "Conversions"
+msgstr "Převody"
 
-#: src/components/PageDetailMetrics.vue:352
+#: src/components/PageDetailMetrics.vue:372
+msgid "Visit Durations (minutes)"
+msgstr "Délka návštěvy (v minutách)"
+
+#: src/components/PageDetailMetrics.vue:415
 msgid "Duration"
 msgstr "Doba trvání"
 
-#: src/components/PageDetailMetrics.vue:366
-msgid "Top Countries"
-msgstr "Nejlepší země"
+#: src/components/PageDetailMetrics.vue:431
+msgid "Referrers"
+msgstr "Referrers"
 
-#: src/components/PageDetailMetrics.vue:391
-msgid "Top Referrers"
-msgstr "Nejčastěji odkazované osoby"
+#: src/components/PageDetailMetrics.vue:472
+msgid "Countries"
+msgstr "Země"
+
+#: src/components/PageDetailMetrics.vue:488
+msgid "Page Speed"
+msgstr "Rychlost stránky"
+
+#: src/components/PageDetailMetrics.vue:492
+msgid "Round trip time"
+msgstr "Doba jízdy tam a zpět"
+
+#: src/components/PageDetailMetrics.vue:502
+msgid "Time to first byte"
+msgstr "Čas do prvního bajtu"
+
+#: src/components/PageDetailMetrics.vue:512
+msgid "First contentful paint"
+msgstr "První obsahová barva"
+
+#: src/components/PageDetailMetrics.vue:522
+msgid "Largest contentful paint"
+msgstr "Největší obsahová barva"
+
+#: src/components/PageDetailMetrics.vue:532
+msgid "Interaction to next paint"
+msgstr "Interakce na další barvu"
+
+#: src/components/PageDetailMetrics.vue:542
+msgid "Cumulative layout shift"
+msgstr "Kumulativní posun rozložení"
+
+#: src/components/PageDetailMetrics.vue:561
+msgid "Google Search: Queries"
+msgstr "Vyhledávání na Googlu: Dotazy"
+
+#: src/components/PageDetailMetrics.vue:568
+#: src/components/PageDetailMetrics.vue:652
+msgid "Clicks"
+msgstr "Kliknutí na"
+
+#: src/components/PageDetailMetrics.vue:569
+msgid "Percent"
+msgstr "Procenta"
+
+#: src/components/PageDetailMetrics.vue:570
+msgid "Position"
+msgstr "Pozice"
+
+#: src/components/PageDetailMetrics.vue:600
+msgid "Google Search: Impressions & Clicks"
+msgstr "Vyhledávání na Googlu: Zobrazení a kliknutí"
+
+#: src/components/PageDetailMetrics.vue:644
+msgid "Impressions"
+msgstr "Dojmy"
+
+#: src/components/PageDetailMetrics.vue:665
+msgid "Google Search: Conversions"
+msgstr "Vyhledávání na Googlu: Konverze"
+
+#: src/components/PageDetailMetrics.vue:708
+msgid "Percentage"
+msgstr "Procento"
 
 #: src/components/PageListItems.vue:100
 msgid "Error adding root page"

@@ -892,77 +892,135 @@ msgstr "عنوان URL غير صالح"
 msgid "Redirect URL"
 msgstr "إعادة توجيه عنوان URL"
 
-#: src/components/PageDetailMetrics.vue:149
+#: src/components/PageDetailMetrics.vue:184
 msgid "Page metrics"
 msgstr "مقاييس الصفحة"
 
-#: src/components/PageDetailMetrics.vue:155
+#: src/components/PageDetailMetrics.vue:190
 msgid "Days"
 msgstr "الأيام"
 
-#: src/components/PageDetailMetrics.vue:164
-msgid "Errors"
-msgstr "الأخطاء"
+#: src/components/PageDetailMetrics.vue:214
+msgid "Weekly Insights"
+msgstr "رؤى أسبوعية"
 
-#: src/components/PageDetailMetrics.vue:176
-msgid "Page Speed"
-msgstr "سرعة الصفحة"
-
-#: src/components/PageDetailMetrics.vue:180
-msgid "Round trip time"
-msgstr "زمن رحلة الذهاب والعودة"
-
-#: src/components/PageDetailMetrics.vue:190
-msgid "Time to first byte"
-msgstr "وقت البايت الأول"
-
-#: src/components/PageDetailMetrics.vue:200
-msgid "First contentful paint"
-msgstr "طلاء المحتوى الأول"
-
-#: src/components/PageDetailMetrics.vue:210
-msgid "Largest contentful paint"
-msgstr "أكبر طلاء ذو محتوى أكبر"
-
-#: src/components/PageDetailMetrics.vue:220
-msgid "Interaction to next paint"
-msgstr "التفاعل إلى الطلاء التالي"
+#: src/components/PageDetailMetrics.vue:218
+msgid "Page Views"
+msgstr "مشاهدات الصفحة"
 
 #: src/components/PageDetailMetrics.vue:230
-msgid "Cumulative layout shift"
-msgstr "تحول التخطيط التراكمي"
+msgid "Page Visits"
+msgstr "زيارات الصفحة"
 
-#: src/components/PageDetailMetrics.vue:241
-msgid "No real-user page speed data available."
-msgstr "لا تتوفر بيانات سرعة الصفحة للمستخدم الحقيقي."
+#: src/components/PageDetailMetrics.vue:242
+msgid "Visit Duration (minutes)"
+msgstr "مدة الزيارة (بالدقائق)"
 
-#: src/components/PageDetailMetrics.vue:252
-msgid "Number of Views & Visits"
-msgstr "عدد المشاهدات والزيارات"
+#: src/components/PageDetailMetrics.vue:254
+msgid "Google Impressions"
+msgstr "انطباعات جوجل"
 
-#: src/components/PageDetailMetrics.vue:294
+#: src/components/PageDetailMetrics.vue:266
+msgid "Google Clicks"
+msgstr "نقرات جوجل"
+
+#: src/components/PageDetailMetrics.vue:278
+msgid "Google Conversion Rate"
+msgstr "معدل التحويل إلى جوجل"
+
+#: src/components/PageDetailMetrics.vue:299
+msgid "Views & Visits"
+msgstr "المشاهدات والزيارات"
+
+#: src/components/PageDetailMetrics.vue:343
+#: src/components/PageDetailMetrics.vue:567
 msgid "Views"
 msgstr "المشاهدات"
 
-#: src/components/PageDetailMetrics.vue:300
+#: src/components/PageDetailMetrics.vue:351
 msgid "Visits"
 msgstr "الزيارات"
 
-#: src/components/PageDetailMetrics.vue:311
-msgid "Visit Durations in minutes"
-msgstr "مدة الزيارة بالدقائق"
+#: src/components/PageDetailMetrics.vue:359
+msgid "Conversions"
+msgstr "التحويلات"
 
-#: src/components/PageDetailMetrics.vue:352
+#: src/components/PageDetailMetrics.vue:372
+msgid "Visit Durations (minutes)"
+msgstr "مدة الزيارة (بالدقائق)"
+
+#: src/components/PageDetailMetrics.vue:415
 msgid "Duration"
 msgstr "المدة"
 
-#: src/components/PageDetailMetrics.vue:366
-msgid "Top Countries"
-msgstr "أفضل الدول"
+#: src/components/PageDetailMetrics.vue:431
+msgid "Referrers"
+msgstr "المُحيلون"
 
-#: src/components/PageDetailMetrics.vue:391
-msgid "Top Referrers"
-msgstr "كبار المُحيلين"
+#: src/components/PageDetailMetrics.vue:472
+msgid "Countries"
+msgstr "الدول"
+
+#: src/components/PageDetailMetrics.vue:488
+msgid "Page Speed"
+msgstr "سرعة الصفحة"
+
+#: src/components/PageDetailMetrics.vue:492
+msgid "Round trip time"
+msgstr "زمن رحلة الذهاب والعودة"
+
+#: src/components/PageDetailMetrics.vue:502
+msgid "Time to first byte"
+msgstr "وقت البايت الأول"
+
+#: src/components/PageDetailMetrics.vue:512
+msgid "First contentful paint"
+msgstr "طلاء المحتوى الأول"
+
+#: src/components/PageDetailMetrics.vue:522
+msgid "Largest contentful paint"
+msgstr "أكبر طلاء ذو محتوى أكبر"
+
+#: src/components/PageDetailMetrics.vue:532
+msgid "Interaction to next paint"
+msgstr "التفاعل إلى الطلاء التالي"
+
+#: src/components/PageDetailMetrics.vue:542
+msgid "Cumulative layout shift"
+msgstr "تحول التخطيط التراكمي"
+
+#: src/components/PageDetailMetrics.vue:561
+msgid "Google Search: Queries"
+msgstr "بحث جوجل: الاستعلامات"
+
+#: src/components/PageDetailMetrics.vue:568
+#: src/components/PageDetailMetrics.vue:652
+msgid "Clicks"
+msgstr "النقرات"
+
+#: src/components/PageDetailMetrics.vue:569
+msgid "Percent"
+msgstr "النسبة المئوية"
+
+#: src/components/PageDetailMetrics.vue:570
+msgid "Position"
+msgstr "المنصب"
+
+#: src/components/PageDetailMetrics.vue:600
+msgid "Google Search: Impressions & Clicks"
+msgstr "بحث Google: الانطباعات والنقرات"
+
+#: src/components/PageDetailMetrics.vue:644
+msgid "Impressions"
+msgstr "الانطباعات"
+
+#: src/components/PageDetailMetrics.vue:665
+msgid "Google Search: Conversions"
+msgstr "بحث جوجل: التحويلات"
+
+#: src/components/PageDetailMetrics.vue:708
+msgid "Percentage"
+msgstr "النسبة المئوية"
 
 #: src/components/PageListItems.vue:100
 msgid "Error adding root page"

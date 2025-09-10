@@ -884,77 +884,135 @@ msgstr "URL ist nicht gültig"
 msgid "Redirect URL"
 msgstr "Ziel URL"
 
-#: src/components/PageDetailMetrics.vue:149
+#: src/components/PageDetailMetrics.vue:184
 msgid "Page metrics"
 msgstr "Seitenmetriken"
 
-#: src/components/PageDetailMetrics.vue:155
+#: src/components/PageDetailMetrics.vue:190
 msgid "Days"
 msgstr "Tage"
 
-#: src/components/PageDetailMetrics.vue:164
-msgid "Errors"
-msgstr "Fehler"
+#: src/components/PageDetailMetrics.vue:214
+msgid "Weekly Insights"
+msgstr "Wochenrückblick"
 
-#: src/components/PageDetailMetrics.vue:176
-msgid "Page Speed"
-msgstr "Seitengeschwindigkeit"
-
-#: src/components/PageDetailMetrics.vue:180
-msgid "Round trip time"
-msgstr "Zeit bis zur Rückantwort"
-
-#: src/components/PageDetailMetrics.vue:190
-msgid "Time to first byte"
-msgstr "Zeit bis zum ersten Byte"
-
-#: src/components/PageDetailMetrics.vue:200
-msgid "First contentful paint"
-msgstr "Erste inhaltliche Darstellung"
-
-#: src/components/PageDetailMetrics.vue:210
-msgid "Largest contentful paint"
-msgstr "Größte inhaltliche Darstellung"
-
-#: src/components/PageDetailMetrics.vue:220
-msgid "Interaction to next paint"
-msgstr "Darstellung nach Interaktion"
+#: src/components/PageDetailMetrics.vue:218
+msgid "Page Views"
+msgstr "Seitenaufrufe"
 
 #: src/components/PageDetailMetrics.vue:230
-msgid "Cumulative layout shift"
-msgstr "Kumulative Layout-Verschiebung"
+msgid "Page Visits"
+msgstr "Seitenbesuche"
 
-#: src/components/PageDetailMetrics.vue:241
-msgid "No real-user page speed data available."
-msgstr "Keine Daten über die Seitengeschwindigkeit von realen Nutzern verfügbar."
+#: src/components/PageDetailMetrics.vue:242
+msgid "Visit Duration (minutes)"
+msgstr "Besuchsdauer (Minuten)"
 
-#: src/components/PageDetailMetrics.vue:252
-msgid "Number of Views & Visits"
-msgstr "Anzahl der Aufrufe und Besuche"
+#: src/components/PageDetailMetrics.vue:254
+msgid "Google Impressions"
+msgstr "Google Aufrufe"
 
-#: src/components/PageDetailMetrics.vue:294
+#: src/components/PageDetailMetrics.vue:266
+msgid "Google Clicks"
+msgstr "Google Klicks"
+
+#: src/components/PageDetailMetrics.vue:278
+msgid "Google Conversion Rate"
+msgstr "Google Konversionsrate"
+
+#: src/components/PageDetailMetrics.vue:299
+msgid "Views & Visits"
+msgstr "Aufrufe & Besuche"
+
+#: src/components/PageDetailMetrics.vue:343
+#: src/components/PageDetailMetrics.vue:567
 msgid "Views"
 msgstr "Aufrufe"
 
-#: src/components/PageDetailMetrics.vue:300
+#: src/components/PageDetailMetrics.vue:351
 msgid "Visits"
 msgstr "Besuche"
 
-#: src/components/PageDetailMetrics.vue:311
-msgid "Visit Durations in minutes"
-msgstr "Dauer der Besuche in Minuten"
+#: src/components/PageDetailMetrics.vue:359
+msgid "Conversions"
+msgstr "Konversionen"
 
-#: src/components/PageDetailMetrics.vue:352
+#: src/components/PageDetailMetrics.vue:372
+msgid "Visit Durations (minutes)"
+msgstr "Besuchsdauer (Minuten)"
+
+#: src/components/PageDetailMetrics.vue:415
 msgid "Duration"
 msgstr "Dauer"
 
-#: src/components/PageDetailMetrics.vue:366
-msgid "Top Countries"
-msgstr "Top-Länder"
+#: src/components/PageDetailMetrics.vue:431
+msgid "Referrers"
+msgstr "Verweisquellen"
 
-#: src/components/PageDetailMetrics.vue:391
-msgid "Top Referrers"
-msgstr "Top-Quellseiten"
+#: src/components/PageDetailMetrics.vue:472
+msgid "Countries"
+msgstr "Länder"
+
+#: src/components/PageDetailMetrics.vue:488
+msgid "Page Speed"
+msgstr "Seitengeschwindigkeit"
+
+#: src/components/PageDetailMetrics.vue:492
+msgid "Round trip time"
+msgstr "Zeit bis zur Rückantwort"
+
+#: src/components/PageDetailMetrics.vue:502
+msgid "Time to first byte"
+msgstr "Zeit bis zum ersten Byte"
+
+#: src/components/PageDetailMetrics.vue:512
+msgid "First contentful paint"
+msgstr "Erste Darstellung"
+
+#: src/components/PageDetailMetrics.vue:522
+msgid "Largest contentful paint"
+msgstr "Größte Darstellung"
+
+#: src/components/PageDetailMetrics.vue:532
+msgid "Interaction to next paint"
+msgstr "Darstellung nach Interaktion"
+
+#: src/components/PageDetailMetrics.vue:542
+msgid "Cumulative layout shift"
+msgstr "Layout-Verschiebung"
+
+#: src/components/PageDetailMetrics.vue:561
+msgid "Google Search: Queries"
+msgstr "Google Suche: Abfragen"
+
+#: src/components/PageDetailMetrics.vue:568
+#: src/components/PageDetailMetrics.vue:652
+msgid "Clicks"
+msgstr "Klicks"
+
+#: src/components/PageDetailMetrics.vue:569
+msgid "Percent"
+msgstr "Prozentsatz"
+
+#: src/components/PageDetailMetrics.vue:570
+msgid "Position"
+msgstr "Position"
+
+#: src/components/PageDetailMetrics.vue:600
+msgid "Google Search: Impressions & Clicks"
+msgstr "Google Suche: Aufrufe & Klicks"
+
+#: src/components/PageDetailMetrics.vue:644
+msgid "Impressions"
+msgstr "Aufrufe"
+
+#: src/components/PageDetailMetrics.vue:665
+msgid "Google Search: Conversions"
+msgstr "Google Suche: Umsätze"
+
+#: src/components/PageDetailMetrics.vue:708
+msgid "Percentage"
+msgstr "Prozentsatz"
 
 #: src/components/PageListItems.vue:100
 msgid "Error adding root page"

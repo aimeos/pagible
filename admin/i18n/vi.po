@@ -882,77 +882,135 @@ msgstr "URL không hợp lệ"
 msgid "Redirect URL"
 msgstr "Chuyển hướng URL"
 
-#: src/components/PageDetailMetrics.vue:149
+#: src/components/PageDetailMetrics.vue:184
 msgid "Page metrics"
 msgstr "Thống kê trang"
 
-#: src/components/PageDetailMetrics.vue:155
+#: src/components/PageDetailMetrics.vue:190
 msgid "Days"
 msgstr "Ngày"
 
-#: src/components/PageDetailMetrics.vue:164
-msgid "Errors"
-msgstr "Lỗi"
+#: src/components/PageDetailMetrics.vue:214
+msgid "Weekly Insights"
+msgstr "Những thông tin hàng tuần"
 
-#: src/components/PageDetailMetrics.vue:176
-msgid "Page Speed"
-msgstr "Tốc độ trang"
-
-#: src/components/PageDetailMetrics.vue:180
-msgid "Round trip time"
-msgstr "Thời gian khứ hồi"
-
-#: src/components/PageDetailMetrics.vue:190
-msgid "Time to first byte"
-msgstr "Thời gian đến byte đầu tiên"
-
-#: src/components/PageDetailMetrics.vue:200
-msgid "First contentful paint"
-msgstr "Lần hiển thị nội dung đầu tiên"
-
-#: src/components/PageDetailMetrics.vue:210
-msgid "Largest contentful paint"
-msgstr "Kích thước nội dung lớn nhất"
-
-#: src/components/PageDetailMetrics.vue:220
-msgid "Interaction to next paint"
-msgstr "Tương tác với lớp sơn tiếp theo"
+#: src/components/PageDetailMetrics.vue:218
+msgid "Page Views"
+msgstr "Số lượt xem trang"
 
 #: src/components/PageDetailMetrics.vue:230
-msgid "Cumulative layout shift"
-msgstr "Sự thay đổi bố cục tích lũy"
+msgid "Page Visits"
+msgstr "Lượt truy cập trang"
 
-#: src/components/PageDetailMetrics.vue:241
-msgid "No real-user page speed data available."
-msgstr "Không có dữ liệu tốc độ trang web của người dùng thực tế."
+#: src/components/PageDetailMetrics.vue:242
+msgid "Visit Duration (minutes)"
+msgstr "Thời gian tham quan (phút)"
 
-#: src/components/PageDetailMetrics.vue:252
-msgid "Number of Views & Visits"
-msgstr "Số lượt xem &amp; lượt truy cập"
+#: src/components/PageDetailMetrics.vue:254
+msgid "Google Impressions"
+msgstr "Số lượt hiển thị của Google"
 
-#: src/components/PageDetailMetrics.vue:294
+#: src/components/PageDetailMetrics.vue:266
+msgid "Google Clicks"
+msgstr "Nhấp chuột Google"
+
+#: src/components/PageDetailMetrics.vue:278
+msgid "Google Conversion Rate"
+msgstr "Tỷ lệ chuyển đổi của Google"
+
+#: src/components/PageDetailMetrics.vue:299
+msgid "Views & Visits"
+msgstr "Lượt xem &amp; Lượt truy cập"
+
+#: src/components/PageDetailMetrics.vue:343
+#: src/components/PageDetailMetrics.vue:567
 msgid "Views"
 msgstr "Số lượt xem"
 
-#: src/components/PageDetailMetrics.vue:300
+#: src/components/PageDetailMetrics.vue:351
 msgid "Visits"
 msgstr "Lượt truy cập"
 
-#: src/components/PageDetailMetrics.vue:311
-msgid "Visit Durations in minutes"
-msgstr "Thời gian lưu trú tính bằng phút"
+#: src/components/PageDetailMetrics.vue:359
+msgid "Conversions"
+msgstr "Chuyển đổi"
 
-#: src/components/PageDetailMetrics.vue:352
+#: src/components/PageDetailMetrics.vue:372
+msgid "Visit Durations (minutes)"
+msgstr "Thời gian lưu trú (phút)"
+
+#: src/components/PageDetailMetrics.vue:415
 msgid "Duration"
 msgstr "Thời gian"
 
-#: src/components/PageDetailMetrics.vue:366
-msgid "Top Countries"
-msgstr "Các quốc gia hàng đầu"
+#: src/components/PageDetailMetrics.vue:431
+msgid "Referrers"
+msgstr "Người giới thiệu"
 
-#: src/components/PageDetailMetrics.vue:391
-msgid "Top Referrers"
-msgstr "Những người giới thiệu hàng đầu"
+#: src/components/PageDetailMetrics.vue:472
+msgid "Countries"
+msgstr "Các quốc gia"
+
+#: src/components/PageDetailMetrics.vue:488
+msgid "Page Speed"
+msgstr "Tốc độ trang"
+
+#: src/components/PageDetailMetrics.vue:492
+msgid "Round trip time"
+msgstr "Thời gian khứ hồi"
+
+#: src/components/PageDetailMetrics.vue:502
+msgid "Time to first byte"
+msgstr "Thời gian đến byte đầu tiên"
+
+#: src/components/PageDetailMetrics.vue:512
+msgid "First contentful paint"
+msgstr "Lần hiển thị nội dung đầu tiên"
+
+#: src/components/PageDetailMetrics.vue:522
+msgid "Largest contentful paint"
+msgstr "Kích thước nội dung lớn nhất"
+
+#: src/components/PageDetailMetrics.vue:532
+msgid "Interaction to next paint"
+msgstr "Tương tác với lớp sơn tiếp theo"
+
+#: src/components/PageDetailMetrics.vue:542
+msgid "Cumulative layout shift"
+msgstr "Sự thay đổi bố cục tích lũy"
+
+#: src/components/PageDetailMetrics.vue:561
+msgid "Google Search: Queries"
+msgstr "Tìm kiếm Google: Các truy vấn"
+
+#: src/components/PageDetailMetrics.vue:568
+#: src/components/PageDetailMetrics.vue:652
+msgid "Clicks"
+msgstr "Lượt nhấp chuột"
+
+#: src/components/PageDetailMetrics.vue:569
+msgid "Percent"
+msgstr "Phần trăm"
+
+#: src/components/PageDetailMetrics.vue:570
+msgid "Position"
+msgstr "Vị trí"
+
+#: src/components/PageDetailMetrics.vue:600
+msgid "Google Search: Impressions & Clicks"
+msgstr "Tìm kiếm Google: Lượt hiển thị &amp; Lượt nhấp chuột"
+
+#: src/components/PageDetailMetrics.vue:644
+msgid "Impressions"
+msgstr "Ấn tượng"
+
+#: src/components/PageDetailMetrics.vue:665
+msgid "Google Search: Conversions"
+msgstr "Tìm kiếm Google: Chuyển đổi"
+
+#: src/components/PageDetailMetrics.vue:708
+msgid "Percentage"
+msgstr "Tỷ lệ phần trăm"
 
 #: src/components/PageListItems.vue:100
 msgid "Error adding root page"

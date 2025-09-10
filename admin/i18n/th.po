@@ -883,77 +883,135 @@ msgstr "URL ไม่ถูกต้อง"
 msgid "Redirect URL"
 msgstr "URL ปลายทาง"
 
-#: src/components/PageDetailMetrics.vue:149
+#: src/components/PageDetailMetrics.vue:184
 msgid "Page metrics"
 msgstr "เมตริกหน้า"
 
-#: src/components/PageDetailMetrics.vue:155
+#: src/components/PageDetailMetrics.vue:190
 msgid "Days"
 msgstr "วัน"
 
-#: src/components/PageDetailMetrics.vue:164
-msgid "Errors"
-msgstr "ข้อผิดพลาด"
+#: src/components/PageDetailMetrics.vue:214
+msgid "Weekly Insights"
+msgstr "ข้อมูลเชิงลึกประจำสัปดาห์"
 
-#: src/components/PageDetailMetrics.vue:176
-msgid "Page Speed"
-msgstr "ความเร็วของหน้าเว็บ"
-
-#: src/components/PageDetailMetrics.vue:180
-msgid "Round trip time"
-msgstr "เวลาเดินทางไปกลับ"
-
-#: src/components/PageDetailMetrics.vue:190
-msgid "Time to first byte"
-msgstr "เวลาที่ใช้ในการรับไบต์แรก"
-
-#: src/components/PageDetailMetrics.vue:200
-msgid "First contentful paint"
-msgstr "เฟรมที่มีเนื้อหาหลักครั้งแรก"
-
-#: src/components/PageDetailMetrics.vue:210
-msgid "Largest contentful paint"
-msgstr "การวาดภาพที่มีเนื้อหาขนาดใหญ่ที่สุด"
-
-#: src/components/PageDetailMetrics.vue:220
-msgid "Interaction to next paint"
-msgstr "การโต้ตอบเพื่อไปยังการวาดถัดไป"
+#: src/components/PageDetailMetrics.vue:218
+msgid "Page Views"
+msgstr "จำนวนครั้งที่ดูหน้าเว็บ"
 
 #: src/components/PageDetailMetrics.vue:230
-msgid "Cumulative layout shift"
-msgstr "การเลื่อนเลย์เอาต์สะสม"
+msgid "Page Visits"
+msgstr "จำนวนครั้งที่เข้าชมหน้า"
 
-#: src/components/PageDetailMetrics.vue:241
-msgid "No real-user page speed data available."
-msgstr "ไม่มีข้อมูลความเร็วหน้าเว็บจากผู้ใช้จริง"
+#: src/components/PageDetailMetrics.vue:242
+msgid "Visit Duration (minutes)"
+msgstr "ระยะเวลาการเยี่ยมชม (นาที)"
 
-#: src/components/PageDetailMetrics.vue:252
-msgid "Number of Views & Visits"
-msgstr "จำนวนการดูและจำนวนการเข้าชม"
+#: src/components/PageDetailMetrics.vue:254
+msgid "Google Impressions"
+msgstr "การแสดงผลของ Google"
 
-#: src/components/PageDetailMetrics.vue:294
+#: src/components/PageDetailMetrics.vue:266
+msgid "Google Clicks"
+msgstr "การคลิกโฆษณาของ Google"
+
+#: src/components/PageDetailMetrics.vue:278
+msgid "Google Conversion Rate"
+msgstr "อัตราการเปลี่ยนแปลงของ Google"
+
+#: src/components/PageDetailMetrics.vue:299
+msgid "Views & Visits"
+msgstr "มุมมอง &amp; การเข้าชม"
+
+#: src/components/PageDetailMetrics.vue:343
+#: src/components/PageDetailMetrics.vue:567
 msgid "Views"
 msgstr "มุมมอง"
 
-#: src/components/PageDetailMetrics.vue:300
+#: src/components/PageDetailMetrics.vue:351
 msgid "Visits"
 msgstr "การเยี่ยมชม"
 
-#: src/components/PageDetailMetrics.vue:311
-msgid "Visit Durations in minutes"
-msgstr "ระยะเวลาการเยี่ยมชมเป็นนาที"
+#: src/components/PageDetailMetrics.vue:359
+msgid "Conversions"
+msgstr "การแปลง"
 
-#: src/components/PageDetailMetrics.vue:352
+#: src/components/PageDetailMetrics.vue:372
+msgid "Visit Durations (minutes)"
+msgstr "ระยะเวลาการเยี่ยมชม (นาที)"
+
+#: src/components/PageDetailMetrics.vue:415
 msgid "Duration"
 msgstr "ระยะเวลา"
 
-#: src/components/PageDetailMetrics.vue:366
-msgid "Top Countries"
-msgstr "ประเทศชั้นนำ"
+#: src/components/PageDetailMetrics.vue:431
+msgid "Referrers"
+msgstr "ผู้แนะนำ"
 
-#: src/components/PageDetailMetrics.vue:391
-msgid "Top Referrers"
-msgstr "ผู้แนะนำสูงสุด"
+#: src/components/PageDetailMetrics.vue:472
+msgid "Countries"
+msgstr "ประเทศ"
+
+#: src/components/PageDetailMetrics.vue:488
+msgid "Page Speed"
+msgstr "ความเร็วของหน้าเว็บ"
+
+#: src/components/PageDetailMetrics.vue:492
+msgid "Round trip time"
+msgstr "เวลาเดินทางไปกลับ"
+
+#: src/components/PageDetailMetrics.vue:502
+msgid "Time to first byte"
+msgstr "เวลาที่ใช้ในการรับไบต์แรก"
+
+#: src/components/PageDetailMetrics.vue:512
+msgid "First contentful paint"
+msgstr "เฟรมที่มีเนื้อหาหลักครั้งแรก"
+
+#: src/components/PageDetailMetrics.vue:522
+msgid "Largest contentful paint"
+msgstr "การวาดภาพที่มีเนื้อหาขนาดใหญ่ที่สุด"
+
+#: src/components/PageDetailMetrics.vue:532
+msgid "Interaction to next paint"
+msgstr "การโต้ตอบเพื่อไปยังการวาดถัดไป"
+
+#: src/components/PageDetailMetrics.vue:542
+msgid "Cumulative layout shift"
+msgstr "การเลื่อนเลย์เอาต์สะสม"
+
+#: src/components/PageDetailMetrics.vue:561
+msgid "Google Search: Queries"
+msgstr "การค้นหาของ Google: คำถาม"
+
+#: src/components/PageDetailMetrics.vue:568
+#: src/components/PageDetailMetrics.vue:652
+msgid "Clicks"
+msgstr "คลิก"
+
+#: src/components/PageDetailMetrics.vue:569
+msgid "Percent"
+msgstr "เปอร์เซ็นต์"
+
+#: src/components/PageDetailMetrics.vue:570
+msgid "Position"
+msgstr "ตำแหน่ง"
+
+#: src/components/PageDetailMetrics.vue:600
+msgid "Google Search: Impressions & Clicks"
+msgstr "การค้นหาของ Google: การแสดงผลและการคลิก"
+
+#: src/components/PageDetailMetrics.vue:644
+msgid "Impressions"
+msgstr "ความประทับใจ"
+
+#: src/components/PageDetailMetrics.vue:665
+msgid "Google Search: Conversions"
+msgstr "Google Search: การเปลี่ยนแปลง"
+
+#: src/components/PageDetailMetrics.vue:708
+msgid "Percentage"
+msgstr "เปอร์เซ็นต์"
 
 #: src/components/PageListItems.vue:100
 msgid "Error adding root page"

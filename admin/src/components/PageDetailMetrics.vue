@@ -275,7 +275,7 @@
                   </div>
                 </v-col>
                 <v-col cols="6" md="4" lg="2">
-                  <div class="text-caption text-medium-emphasis">{{ $gettext('Google Click Percentage') }}</div>
+                  <div class="text-caption text-medium-emphasis">{{ $gettext('Google Conversion Rate') }}</div>
                   <div class="d-flex align-center justify-space-between text-h6">
                     <div v-if="ctrs.length">
                       <span class="number">{{ Number(weekly(ctrs) / 7).toFixed(1) }}%</span>
@@ -647,8 +647,8 @@
                     tension: 0.2
                   }, {
                     borderWidth: 2,
-                    borderColor: '#008000',
-                    backgroundColor: '#008000',
+                    borderColor: '#0000C0',
+                    backgroundColor: '#0000C0',
                     label: $gettext('Clicks'),
                     data: clicks.map(d => d.value),
                     pointRadius: 0,
@@ -662,7 +662,7 @@
 
         <v-col cols="12" md="6">
           <v-card class="panel chart">
-            <v-card-title>{{ $gettext('Google Search: Percentage clicked') }}</v-card-title>
+            <v-card-title>{{ $gettext('Google Search: Conversions') }}</v-card-title>
             <v-card-text>
               <Line
                 :options="{
@@ -703,8 +703,8 @@
                   labels: ctrs.map(d => d.key),
                   datasets: [{
                     borderWidth: 2,
-                    borderColor: '#0000C0',
-                    backgroundColor: '#0000C0',
+                    borderColor: '#008000',
+                    backgroundColor: '#008000',
                     label: $gettext('Percentage'),
                     data: ctrs.map(d => d.value),
                     pointRadius: 0,
