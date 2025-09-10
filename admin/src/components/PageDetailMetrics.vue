@@ -23,7 +23,6 @@
       countries: [],
       durations: [],
       referrers: [],
-      referrertypes: [],
       impressions: [],
       queries: [],
       ctrs: [],
@@ -88,8 +87,7 @@
                   visits { key value }
                   durations { key value }
                   countries { key value }
-                  referrers { key value }
-                  referrertypes { key value }
+                  referrers { key value rows { key value } }
                   pagespeed { key value }
                   impressions { key value }
                   clicks { key value }
@@ -107,8 +105,6 @@
 
           const stats = data?.metrics || {};
           const dateFormatter = new Intl.DateTimeFormat(this.$vuetify.locale.current, { day: "numeric", month: "numeric" });
-
-          const clean = (item) => { delete item.__typename; return item; }
 
           const sortByValue = (a,b) => b.value - a.value;
           const sortByDate = (a,b) => a.key > b.key ? 1 : (a.key < b.key ? -1 : 0);
@@ -128,9 +124,8 @@
           this.clicks = (stats.clicks || []).sort(sortByDate).map(formatDate);
           this.ctrs = (stats.ctrs || []).sort(sortByDate).map(formatDate).map(percent);
 
-          this.countries = (stats.countries || []).sort(sortByValue).map(clean).map(formatValue);
-          this.referrers = (stats.referrers || []).sort(sortByValue).map(clean).map(formatValue);
-          this.referrertypes = (stats.referrertypes || []).sort(sortByValue).map(clean).map(formatValue);
+          this.countries = (stats.countries || []).sort(sortByValue).map(formatValue);
+          this.referrers = (stats.referrers || []).sort(sortByValue).map(formatValue);
 
           this.queries = (stats.queries || []).sort((a,b) => b.impressions - a.impressions).map(this.value);
           this.pagespeed = stats?.pagespeed?.reduce((acc, { key, value }) => {
@@ -294,21 +289,6 @@
         </v-col>
       </v-row>
 
-      <!-- Summaries -->
-      <v-row>
-        <v-col v-if="referrertypes.length" cols="12" md="6">
-          <v-card class="panel">
-            <v-card-title>{{ $gettext('Referrer Types') }}</v-card-title>
-            <v-card-text>
-              <v-data-table :items="referrertypes" density="comfortable" hide-default-header hover />
-            </v-card-text>
-          </v-card>
-        </v-col>
-
-        <v-col cols="12" md="6">
-        </v-col>
-      </v-row>
-
       <!-- Analytics Charts -->
       <v-row v-if="views.length || visits.length || durations.length">
         <v-col cols="12" md="6">
@@ -435,20 +415,56 @@
 
       <!-- Top lists -->
       <v-row>
-        <v-col v-if="countries.length" cols="12" md="6">
-          <v-card class="panel">
-            <v-card-title>{{ $gettext('Countries') }}</v-card-title>
-            <v-card-text>
-              <v-data-table :items="countries" density="comfortable" hide-default-header hover />
-            </v-card-text>
-          </v-card>
-        </v-col>
-
         <v-col v-if="referrers.length" cols="12" md="6">
           <v-card class="panel">
             <v-card-title>{{ $gettext('Referrers') }}</v-card-title>
             <v-card-text>
-              <v-data-table :items="referrers" density="comfortable" hide-default-header hover />
+              <v-data-table
+                :items="referrers"
+                :headers="[{key: 'data-table-expand', width: 1}, {key: 'key'}, {key: 'value', align: 'end'}]"
+                item-value="key"
+                items-per-page="25"
+                hide-default-header
+                hide-default-footer
+                expand-on-click
+                show-expand>
+                <template v-slot:item.data-table-expand="{ internalItem, isExpanded, toggleExpand }">
+                  <v-icon v-if="internalItem.raw?.rows?.length">
+                    {{ isExpanded(internalItem) ? 'mdi-chevron-up' : 'mdi-chevron-down' }}
+                  </v-icon>
+                </template>
+                <template v-slot:expanded-row="{ columns, item }">
+                  <tr v-if="item.rows.length">
+                    <td :colspan="columns.length" class="py-2">
+                      <v-data-table
+                        :items="item.rows.sort((a, b) => b.value - a.value)"
+                        density="compact"
+                        hide-default-header
+                        hover>
+                        <template v-slot:item="{ item }">
+                          <tr>
+                            <td class="v-data-table-column--align-start">{{ item.key }}</td>
+                            <td class="v-data-table-column--align-end">{{ value(item.value) }}</td>
+                          </tr>
+                        </template>
+                      </v-data-table>
+                    </td>
+                  </tr>
+                </template>
+              </v-data-table>
+            </v-card-text>
+          </v-card>
+        </v-col>
+
+        <v-col v-if="countries.length" cols="12" md="6">
+          <v-card class="panel">
+            <v-card-title>{{ $gettext('Countries') }}</v-card-title>
+            <v-card-text>
+              <v-data-table
+                :items="countries"
+                :headers="[{key: 'key'}, {key: 'value', align: 'end'}]"
+                hide-default-header
+              />
             </v-card-text>
           </v-card>
         </v-col>
