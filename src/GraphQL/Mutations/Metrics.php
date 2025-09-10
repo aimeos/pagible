@@ -30,31 +30,25 @@ final class Metrics
         $data = [];
 
         try {
-            $data = Cache::remember( "stats:$url:$days", 1800, fn() => Analytics::driver()->stats( $url, $days ) );
+            $data = Cache::remember( "stats:$url:$days", 3600, fn() => Analytics::driver()->stats( $url, $days ) );
         } catch ( \Throwable $e ) {
             $data['errors'][] = $e->getMessage();
         }
 
         try {
-            $data['pagespeed'] = Cache::remember( "pagespeed:$url", 43200, fn() => Analytics::pagespeed( $url ) );
+            $data = array_merge( $data, Cache::remember( "search:$url:$days", 3600, fn() => Analytics::search( $url, $days ) ) ?? [] );
         } catch ( \Throwable $e ) {
             $data['errors'][] = $e->getMessage();
         }
 
         try {
-            $data = array_merge( $data, Cache::remember( "search:$url:$days", 43200, fn() => Analytics::search( $url, $days ) ) ?? [] );
+            $data['queries'] = Cache::remember( "queries:$url:$days", 3600, fn() => Analytics::queries( $url, $days ) );
         } catch ( \Throwable $e ) {
             $data['errors'][] = $e->getMessage();
         }
 
         try {
-            $data['queries'] = Cache::remember( "queries:$url:$days", 43200, fn() => Analytics::queries( $url, $days ) );
-        } catch ( \Throwable $e ) {
-            $data['errors'][] = $e->getMessage();
-        }
-
-        try {
-            $data['indexed'] = Cache::remember( "indexed:$url:$lang", 43200, fn() => Analytics::indexed( $url, $lang ) );
+            $data['pagespeed'] = Cache::remember( "pagespeed:$url", 3600, fn() => Analytics::pagespeed( $url ) );
         } catch ( \Throwable $e ) {
             $data['errors'][] = $e->getMessage();
         }

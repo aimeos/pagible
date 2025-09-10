@@ -20,7 +20,6 @@
       errors: [],
       loading: false,
       pagespeed: null,
-      indexed: null,
       countries: [],
       durations: [],
       referrers: [],
@@ -74,9 +73,8 @@
 
         try {
           const { data } = await this.$apollo.mutate({
-            mutation: gql`mutation ($url: String!, $days: Int, $lang: String) {
-                metrics(url: $url, days: $days, lang: $lang) {
-                  indexed
+            mutation: gql`mutation ($url: String!, $days: Int) {
+                metrics(url: $url, days: $days) {
                   views { key value }
                   visits { key value }
                   durations { key value }
@@ -94,8 +92,7 @@
             `,
             variables: {
               url: this.url(this.item),
-              lang: this.$vuetify.locale.current,
-              days: this.days,
+              days: this.days
             },
           });
 
@@ -127,12 +124,11 @@
           this.referrertypes = (stats.referrertypes || []).sort(sortByValue).map(clean).map(formatValue);
 
           this.queries = (stats.queries || []).sort((a,b) => b.impressions - a.impressions).map(this.value);
-          this.pagespeed = (stats?.pagespeed || []).reduce((acc, { key, value }) => {
+          this.pagespeed = stats?.pagespeed?.reduce((acc, { key, value }) => {
             acc[key] = value;
             return acc;
           }, {});
 
-          this.indexed = stats.indexed || null;
           this.errors = stats.errors || [];
         } catch (e) {
           this.errors.push(e.message || String(e));
@@ -179,7 +175,6 @@
       <v-row>
         <v-col cols="6" class="title">
           {{ $gettext('Page metrics') }}
-          <div class="indexed">{{ indexed ? indexed : $gettext('Unknown Google indexing status') }}</div>
         </v-col>
         <v-col cols="6" class="select-days">
           <v-select
@@ -218,8 +213,8 @@
                   <div class="d-flex align-center justify-space-between text-h6">
                     <div v-if="views.length">
                       <span class="number">{{ value(weekly(views)) }}</span>
-                      <span class="percent" :class="weekly(views) >= weekly(views, 2) ? 'good' : 'bad'">
-                        {{ percent(weekly(views) * 100 / (weekly(views, 2) || 1) - 100) }}%
+                      <span v-if="weekly(views, 2)" class="percent" :class="weekly(views) >= weekly(views, 2) ? 'good' : 'bad'">
+                        {{ percent(weekly(views) * 100 / weekly(views, 2) - 100) }}%
                       </span>
                     </div>
                     <div v-else>—</div>
@@ -230,8 +225,8 @@
                   <div class="d-flex align-center justify-space-between text-h6">
                     <div v-if="visits.length">
                       <span class="number">{{ value(weekly(visits)) }}</span>
-                      <span class="percent" :class="weekly(visits) >= weekly(visits, 2) ? 'good' : 'bad'">
-                        {{ percent(weekly(visits) * 100 / (weekly(visits, 2) || 1) - 100) }}%
+                      <span v-if="weekly(visits, 2)" class="percent" :class="weekly(visits) >= weekly(visits, 2) ? 'good' : 'bad'">
+                        {{ percent(weekly(visits) * 100 / weekly(visits, 2) - 100) }}%
                       </span>
                     </div>
                     <div v-else>—</div>
@@ -242,8 +237,8 @@
                   <div class="d-flex align-center justify-space-between text-h6">
                     <div v-if="durations.length">
                       <span class="number">{{ Number(weekly(durations) / 7).toFixed(1) }}</span>
-                      <span class="percent" :class="weekly(durations) >= weekly(durations, 2) ? 'good' : 'bad'">
-                        {{ percent(weekly(durations) * 100 / (weekly(durations, 2) || 1) - 100) }}%
+                      <span v-if="weekly(durations, 2)" class="percent" :class="weekly(durations) >= weekly(durations, 2) ? 'good' : 'bad'">
+                        {{ percent(weekly(durations) * 100 / weekly(durations, 2) - 100) }}%
                       </span>
                     </div>
                     <div v-else>—</div>
@@ -254,8 +249,8 @@
                   <div class="d-flex align-center justify-space-between text-h6">
                     <div v-if="impressions.length">
                       <span class="number">{{ value(weekly(impressions)) }}</span>
-                      <span class="percent" :class="weekly(impressions) >= weekly(impressions, 2) ? 'good' : 'bad'">
-                        {{ percent(weekly(impressions) * 100 / (weekly(impressions, 2) || 1) - 100) }}%
+                      <span v-if="weekly(impressions, 2)" class="percent" :class="weekly(impressions) >= weekly(impressions, 2) ? 'good' : 'bad'">
+                        {{ percent(weekly(impressions) * 100 / weekly(impressions, 2) - 100) }}%
                       </span>
                     </div>
                     <div v-else>—</div>
@@ -266,8 +261,8 @@
                   <div class="d-flex align-center justify-space-between text-h6">
                     <div v-if="clicks.length">
                       <span class="number">{{ value(weekly(clicks)) }}</span>
-                      <span class="percent" :class="weekly(clicks) >= weekly(clicks, 2) ? 'good' : 'bad'">
-                        {{ percent(weekly(clicks) * 100 / (weekly(clicks, 2) || 1) - 100) }}%
+                      <span v-if="weekly(clicks, 2)" class="percent" :class="weekly(clicks) >= weekly(clicks, 2) ? 'good' : 'bad'">
+                        {{ percent(weekly(clicks) * 100 / weekly(clicks, 2) - 100) }}%
                       </span>
                     </div>
                     <div v-else>—</div>
@@ -278,8 +273,8 @@
                   <div class="d-flex align-center justify-space-between text-h6">
                     <div v-if="ctrs.length">
                       <span class="number">{{ Number(weekly(ctrs) / 7).toFixed(1) }}%</span>
-                      <span class="percent" :class="weekly(ctrs) >= weekly(ctrs, 2) ? 'good' : 'bad'">
-                        {{ percent(weekly(ctrs) * 100 / (weekly(ctrs, 2) || 1) - 100) }}%
+                      <span v-if="weekly(ctrs, 2)" class="percent" :class="weekly(ctrs) >= weekly(ctrs, 2) ? 'good' : 'bad'">
+                        {{ percent(weekly(ctrs) * 100 / weekly(ctrs, 2) - 100) }}%
                       </span>
                     </div>
                     <div v-else>—</div>
@@ -704,19 +699,20 @@
     background-color: rgb(var(--v-theme-background));
   }
 
+  .title,
+  .select-days {
+    display: flex;
+    justify-content: flex-end;
+    align-self: center;
+  }
+
   .title {
     font-weight: 500;
     font-size: 1.25rem;
     justify-content: flex-start;
   }
 
-  .indexed {
-    font-size: 0.875rem;
-    color: rgba(var(--v-theme-on-background), var(--v-medium-emphasis-opacity))
-  }
-
   .select-days .v-select {
-    margin-inline-start: auto;
     max-width: 120px;
   }
 

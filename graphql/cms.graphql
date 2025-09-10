@@ -618,9 +618,6 @@ type Stats {
 
   "Google search queries with stats"
   queries: [StatsQuery!]
-
-  "Google index status"
-  indexed: String
 }
 
 type StatsNumber {
