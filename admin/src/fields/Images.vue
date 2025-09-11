@@ -132,7 +132,7 @@
 
 
       description(file) {
-        return Object.values(file.description).shift()
+        return Object.values(file.description || {}).shift()
       },
 
 
