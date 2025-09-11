@@ -279,6 +279,24 @@
       },
 
 
+      hydrate(entry) {
+          const item = entry.latest?.data ? JSON.parse(entry.latest.data) : {...entry}
+
+          return Object.assign(item, {
+            id: entry.id,
+            has: entry.has,
+            parent_id: entry.parent_id,
+            deleted_at: entry.deleted_at,
+            created_at: entry.created_at,
+            updated_at: entry.latest?.created_at || entry.updated_at,
+            editor: entry.latest?.editor || entry.editor,
+            published: entry.latest?.published ?? true,
+            publish_at: entry.latest?.publish_at || null,
+            latest: entry.latest,
+          })
+      },
+
+
       insert(stat, idx = null) {
         if(!this.auth.can('page:add')) {
           this.messages.add(this.$gettext('Permission denied'), 'error')
@@ -540,7 +558,7 @@
             }
 
             const index = idx !== null ? this.$refs.tree.getSiblings(stat).indexOf(stat) + idx : 0
-            const item = result.data.addPage
+            const item = this.hydrate(result.data.addPage)
 
             this.$refs.tree.add(item, parent, index)
             this.invalidate()
@@ -794,20 +812,7 @@
 
       transform(result) {
         const pages = result.data.map(entry => {
-          const item = entry.latest?.data ? JSON.parse(entry.latest.data) : {...entry}
-
-          return Object.assign(item, {
-            id: entry.id,
-            has: entry.has,
-            parent_id: entry.parent_id,
-            deleted_at: entry.deleted_at,
-            created_at: entry.created_at,
-            updated_at: entry.latest?.created_at || entry.updated_at,
-            editor: entry.latest?.editor || entry.editor,
-            published: entry.latest?.published ?? true,
-            publish_at: entry.latest?.publish_at || null,
-            latest: entry.latest,
-          })
+          return this.hydrate(entry)
         })
 
         return {

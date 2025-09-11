@@ -60,7 +60,7 @@ body {
 
 .v-toolbar__prepend,
 .v-toolbar__append {
-  column-gap: 8px;
+  column-gap: 4px;
 }
 
 .v-app-bar-title {
