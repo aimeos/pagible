@@ -2,7 +2,7 @@
 
 namespace Aimeos\Cms\Controllers;
 
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\Nav;
 use Aimeos\Cms\Scopes\Status;
 use Illuminate\Routing\Controller;
 
@@ -15,7 +15,7 @@ class SitemapController extends Controller
             echo '<?xml version="1.0" encoding="UTF-8"?>';
             echo '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
 
-            Page::withGlobalScope('status', new Status)->chunkById( 100, function( $pages ) {
+            Nav::withGlobalScope('status', new Status)->chunkById( 100, function( $pages ) {
 
                 foreach( $pages as $page )
                 {
