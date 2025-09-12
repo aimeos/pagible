@@ -500,14 +500,16 @@
         return this.$apollo.query({
           query: gql`query($id: ID!) {
             page(id: $id) {
-              meta
-              config
-              content
-              files {
+              id
+              latest {
                 id
-              }
-              elements {
-                id
+                aux
+                files {
+                  id
+                }
+                elements {
+                  id
+                }
               }
             }
           }`,
@@ -518,6 +520,9 @@
           if(result.errors) {
             throw result.errors
           }
+
+          const latest = result?.data?.page?.latest
+          const aux = JSON.parse(latest?.aux || '{}')
 
           this.$apollo.mutate({
             mutation: gql`mutation ($input: PageInput!, $parent: ID, $ref: ID, $elements: [ID!], $files: [ID!]) {
@@ -538,15 +543,15 @@
                 cache: node.cache,
                 domain: node.domain,
                 related_id: node.id,
-                meta: result?.data?.page?.meta || '{}',
-                config: result?.data?.page?.config || '{}',
-                content: result?.data?.page?.content || '[]',
+                meta: JSON.stringify(aux?.meta || {}),
+                config: JSON.stringify(aux?.config || {}),
+                content: JSON.stringify(aux?.content || []),
                 path: node.path + '_' + Math.floor(Math.random() * 10000),
               },
               parent: parent ? parent.data.id : null,
               ref: refid,
-              elements: result?.data?.page?.elements.map(el => el.id) || [],
-              files: result?.data?.page?.files.map(file => file.id) || []
+              elements: latest?.elements.map(el => el.id) || [],
+              files: latest?.files.map(file => file.id) || []
             }
           }).then(result => {
             if(result.errors) {
