@@ -220,7 +220,7 @@
                     <div v-if="views.length">
                       <span class="number">{{ value(weekly(views)) }}</span>
                       <span v-if="weekly(views, 2)" class="percent" :class="weekly(views) >= weekly(views, 2) ? 'good' : 'bad'">
-                        {{ percent(weekly(views) * 100 / weekly(views, 2) - 100) }}%
+                        {{ percent(weekly(views) * 100 / (weekly(views, 2) || 1) - 100) }}%
                       </span>
                     </div>
                     <div v-else>—</div>
@@ -232,19 +232,31 @@
                     <div v-if="visits.length">
                       <span class="number">{{ value(weekly(visits)) }}</span>
                       <span v-if="weekly(visits, 2)" class="percent" :class="weekly(visits) >= weekly(visits, 2) ? 'good' : 'bad'">
-                        {{ percent(weekly(visits) * 100 / weekly(visits, 2) - 100) }}%
+                        {{ percent(weekly(visits) * 100 / (weekly(visits, 2) || 1) - 100) }}%
                       </span>
                     </div>
                     <div v-else>—</div>
                   </div>
                 </v-col>
-                <v-col cols="6" md="4" lg="2">
+                <v-col v-if="conversions.reduce((acc, item) => acc + Number(item.value), 0)" cols="6" md="4" lg="2">
+                  <div class="text-caption text-medium-emphasis">{{ $gettext('Conversions') }}</div>
+                  <div class="d-flex align-center justify-space-between text-h6">
+                    <div v-if="conversions.length">
+                      <span class="number">{{ Number(weekly(conversions) / 7).toFixed(1) }}</span>
+                      <span v-if="weekly(conversions, 2)" class="percent" :class="weekly(conversions) >= weekly(conversions, 2) ? 'good' : 'bad'">
+                        {{ percent(weekly(conversions) * 100 / (weekly(conversions, 2) || 1) - 100) }}%
+                      </span>
+                    </div>
+                    <div v-else>—</div>
+                  </div>
+                </v-col>
+                <v-col v-else cols="6" md="4" lg="2">
                   <div class="text-caption text-medium-emphasis">{{ $gettext('Visit Duration (minutes)') }}</div>
                   <div class="d-flex align-center justify-space-between text-h6">
                     <div v-if="durations.length">
                       <span class="number">{{ Number(weekly(durations) / 7).toFixed(1) }}</span>
                       <span v-if="weekly(durations, 2)" class="percent" :class="weekly(durations) >= weekly(durations, 2) ? 'good' : 'bad'">
-                        {{ percent(weekly(durations) * 100 / weekly(durations, 2) - 100) }}%
+                        {{ percent(weekly(durations) * 100 / (weekly(durations, 2) || 1) - 100) }}%
                       </span>
                     </div>
                     <div v-else>—</div>
@@ -256,7 +268,7 @@
                     <div v-if="impressions.length">
                       <span class="number">{{ value(weekly(impressions)) }}</span>
                       <span v-if="weekly(impressions, 2)" class="percent" :class="weekly(impressions) >= weekly(impressions, 2) ? 'good' : 'bad'">
-                        {{ percent(weekly(impressions) * 100 / weekly(impressions, 2) - 100) }}%
+                        {{ percent(weekly(impressions) * 100 / (weekly(impressions, 2) || 1) - 100) }}%
                       </span>
                     </div>
                     <div v-else>—</div>
@@ -268,7 +280,7 @@
                     <div v-if="clicks.length">
                       <span class="number">{{ value(weekly(clicks)) }}</span>
                       <span v-if="weekly(clicks, 2)" class="percent" :class="weekly(clicks) >= weekly(clicks, 2) ? 'good' : 'bad'">
-                        {{ percent(weekly(clicks) * 100 / weekly(clicks, 2) - 100) }}%
+                        {{ percent(weekly(clicks) * 100 / (weekly(clicks, 2) || 1) - 100) }}%
                       </span>
                     </div>
                     <div v-else>—</div>
@@ -280,7 +292,7 @@
                     <div v-if="ctrs.length">
                       <span class="number">{{ Number(weekly(ctrs) / 7).toFixed(1) }}%</span>
                       <span v-if="weekly(ctrs, 2)" class="percent" :class="weekly(ctrs) >= weekly(ctrs, 2) ? 'good' : 'bad'">
-                        {{ percent(weekly(ctrs) * 100 / weekly(ctrs, 2) - 100) }}%
+                        {{ percent(weekly(ctrs) * 100 / (weekly(ctrs, 2) || 1) - 100) }}%
                       </span>
                     </div>
                     <div v-else>—</div>
@@ -293,8 +305,8 @@
       </v-row>
 
       <!-- Analytics Charts -->
-      <v-row v-if="views.length || visits.length || durations.length">
-        <v-col cols="12" md="6">
+      <v-row>
+        <v-col v-if="views.length || visits.length || conversions.length" cols="12" md="6">
           <v-card class="panel chart">
             <v-card-title>{{ $gettext('Views & Visits') }}</v-card-title>
             <v-card-text>
@@ -367,7 +379,7 @@
           </v-card>
         </v-col>
 
-        <v-col cols="12" md="6">
+        <v-col v-if="durations.length" cols="12" md="6">
           <v-card class="panel chart">
             <v-card-title>{{ $gettext('Visit Durations (minutes)') }}</v-card-title>
             <v-card-text>
@@ -482,8 +494,8 @@
       </v-row>
 
       <!-- PageSpeed -->
-      <v-row v-if="pagespeed">
-        <v-col cols="12">
+      <v-row>
+        <v-col v-if="pagespeed" cols="12">
           <v-card class="panel emphasis-bg">
             <v-card-title>{{ $gettext('Page Speed') }}</v-card-title>
             <v-card-text>
@@ -492,7 +504,7 @@
                   <div class="text-caption text-medium-emphasis">{{ $gettext('Round trip time') }}</div>
                   <div class="d-flex align-center justify-space-between text-h6"
                     :class="color(pagespeed?.['round_trip_time'], 200, 500)">
-                    <span v-if="pagespeed?.['round_trip_time']">
+                    <span v-if="typeof pagespeed?.['round_trip_time'] === 'number'">
                       {{ pagespeed?.['round_trip_time'] }}ms
                     </span>
                     <span v-else>—</span>
@@ -502,7 +514,7 @@
                   <div class="text-caption text-medium-emphasis">{{ $gettext('Time to first byte') }}</div>
                   <div class="d-flex align-center justify-space-between text-h6"
                     :class="color(pagespeed?.['time_to_first_byte'], 800, 1800)">
-                    <span v-if="pagespeed?.['time_to_first_byte']">
+                    <span v-if="typeof pagespeed?.['time_to_first_byte'] === 'number'">
                       {{ pagespeed?.['time_to_first_byte'] }}ms
                     </span>
                     <span v-else>—</span>
@@ -512,7 +524,7 @@
                   <div class="text-caption text-medium-emphasis">{{ $gettext('First contentful paint') }}</div>
                   <div class="d-flex align-center justify-space-between text-h6"
                     :class="color(pagespeed?.['first_contentful_paint'], 1800, 3000)">
-                    <span v-if="pagespeed?.['first_contentful_paint']">
+                    <span v-if="typeof pagespeed?.['first_contentful_paint'] === 'number'">
                       {{ pagespeed?.['first_contentful_paint'] }}ms
                     </span>
                     <span v-else>—</span>
@@ -522,7 +534,7 @@
                   <div class="text-caption text-medium-emphasis">{{ $gettext('Largest contentful paint') }}</div>
                   <div class="d-flex align-center justify-space-between text-h6"
                     :class="color(pagespeed?.['largest_contentful_paint'], 2500, 4000)">
-                    <span v-if="pagespeed?.['largest_contentful_paint']">
+                    <span v-if="typeof pagespeed?.['largest_contentful_paint'] === 'number'">
                       {{ pagespeed?.['largest_contentful_paint'] }}ms
                     </span>
                     <span v-else>—</span>
@@ -532,7 +544,7 @@
                   <div class="text-caption text-medium-emphasis">{{ $gettext('Interaction to next paint') }}</div>
                   <div class="d-flex align-center justify-space-between text-h6"
                     :class="color(pagespeed?.['interaction_to_next_paint'], 200, 500)">
-                    <span v-if="pagespeed?.['interaction_to_next_paint']">
+                    <span v-if="typeof pagespeed?.['interaction_to_next_paint'] === 'number'">
                       {{ pagespeed?.['interaction_to_next_paint'] }}ms
                     </span>
                     <span v-else>—</span>
@@ -542,7 +554,7 @@
                   <div class="text-caption text-medium-emphasis">{{ $gettext('Cumulative layout shift') }}</div>
                   <div class="d-flex align-center justify-space-between text-h6"
                     :class="color(pagespeed?.['cumulative_layout_shift'], 0.1, 0.25)">
-                    <span v-if="pagespeed?.['cumulative_layout_shift']">
+                    <span v-if="typeof pagespeed?.['cumulative_layout_shift'] === 'number'">
                       {{ pagespeed?.['cumulative_layout_shift'] }}
                     </span>
                     <span v-else>—</span>
@@ -555,8 +567,8 @@
       </v-row>
 
       <!-- GSC queries -->
-      <v-row v-if="queries.length">
-        <v-col cols="12">
+      <v-row>
+        <v-col v-if="queries.length" cols="12">
           <v-card class="panel">
             <v-card-title>{{ $gettext('Google Search: Queries') }}</v-card-title>
             <v-card-text class="table">
@@ -594,8 +606,8 @@
       </v-row>
 
       <!-- GSC Charts -->
-      <v-row v-if="countries.length || referrers.length">
-        <v-col cols="12" md="6">
+      <v-row>
+        <v-col v-if="impressions.length || clicks.length" cols="12" md="6">
           <v-card class="panel chart">
             <v-card-title>{{ $gettext('Google Search: Impressions & Clicks') }}</v-card-title>
             <v-card-text>
@@ -660,7 +672,7 @@
           </v-card>
         </v-col>
 
-        <v-col cols="12" md="6">
+        <v-col v-if="ctrs.length" cols="12" md="6">
           <v-card class="panel chart">
             <v-card-title>{{ $gettext('Google Search: Conversions') }}</v-card-title>
             <v-card-text>
