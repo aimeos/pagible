@@ -107,6 +107,15 @@
         this.data[code] = value
         this.$emit('change', this.data[code])
       }
+    },
+
+    watch: {
+      type: {
+        immediate: true,
+        handler(val) {
+          this.errors = {}
+        }
+      }
     }
   }
 </script>
@@ -146,7 +155,7 @@
         />
       </div>
     </v-label>
-    <component ref="field"
+    <component
       :is="toName(field.type)"
       :key="field.type + '-' + code"
       :context="data"

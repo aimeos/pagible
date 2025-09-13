@@ -732,7 +732,7 @@
               :readonly="true"
               :type="el.type"
             />
-            <Fields v-else ref="field"
+            <Fields v-else
               v-model:data="el.data"
               v-model:files="el.files"
               :readonly="!auth.can('page:save')"
