@@ -946,7 +946,7 @@
         </svg>
         <v-btn v-else
           @click="load(stat, node)"
-          :class="{hidden: !node.has}"
+          :class="{hidden: !node.has && !stat.children.length}"
           :icon="stat.open ? 'mdi-menu-down' : 'mdi-menu-right'"
           :title="$gettext('Toggle child nodes')"
           variant="text"
