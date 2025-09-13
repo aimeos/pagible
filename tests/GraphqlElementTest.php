@@ -55,16 +55,22 @@ class GraphqlElementTest extends TestAbstract
         $element = Element::firstOrFail();
 
         $attr = collect($element->getAttributes())->except(['tenant_id'])->all();
-        $expected = ['id' => (string) $element->id] + $attr;
+        $expected = ['id' => (string) $element->id] + $attr + [
+            'bypages' => $element->bypages->map( fn($item) => ['id' => $item->id] )->all(),
+            'byversions' => $element->byversions->map( fn($item) => ['id' => $item->id] )->all(),
+            'versions' => [0 => ['published' => false]],
+        ];
 
-        $this->expectsDatabaseQueryCount( 4 );
-        $response = $this->actingAs( $this->user )->graphQL( "{
+        // Decode JSON string to array for order-independent comparison
+        $expected['data'] = json_decode($expected['data'], true);
+
+        $this->expectsDatabaseQueryCount(4);
+        $response = $this->actingAs($this->user)->graphQL("{
             element(id: \"{$element->id}\") {
                 id
                 lang
                 type
                 name
-                lang
                 data
                 editor
                 created_at
@@ -74,31 +80,54 @@ class GraphqlElementTest extends TestAbstract
                     id
                 }
                 byversions {
-                    published
+                    id
                 }
                 versions {
                     published
                 }
             }
-        }" )->assertJson( [
-            'data' => [
-                'element' => $expected,
-            ]
-        ] );
+        }");
+
+        $elementData = $response->json('data.element');
+
+        // Assert scalar fields
+        $this->assertEquals($expected['id'], $elementData['id']);
+        $this->assertEquals($expected['lang'], $elementData['lang']);
+        $this->assertEquals($expected['type'], $elementData['type']);
+        $this->assertEquals($expected['name'], $elementData['name']);
+        $this->assertEquals($expected['editor'], $elementData['editor']);
+        $this->assertEquals($expected['created_at'], $elementData['created_at']);
+        $this->assertEquals($expected['updated_at'], $elementData['updated_at']);
+        $this->assertEquals($expected['deleted_at'], $elementData['deleted_at']);
+
+        // Assert JSON field decoded as array
+        $this->assertEquals($expected['data'], json_decode($elementData['data'], true));
+
+        // Assert bypages and byversions collections (already correct format)
+        $this->assertEquals($expected['bypages'], $elementData['bypages']);
+        $this->assertEquals($expected['byversions'], $elementData['byversions']);
+
+        // Assert versions
+        $this->assertEquals($expected['versions'], $elementData['versions']);
     }
 
 
     public function testElements()
     {
-        $this->seed( CmsSeeder::class );
+        $this->seed(CmsSeeder::class);
 
-        $element = Element::where( 'type', 'footer' )->get()->first();
+        $element = Element::where('type', 'footer')->first();
 
+        // Prepare expected array
         $attr = collect($element->getAttributes())->except(['tenant_id'])->all();
         $expected = [['id' => (string) $element->id] + $attr];
 
-        $this->expectsDatabaseQueryCount( 2 );
-        $response = $this->actingAs( $this->user )->graphQL( '{
+        // Decode JSON string in expected data for order-independent comparison
+        $expected[0]['data'] = json_decode($expected[0]['data'], true);
+
+        $this->expectsDatabaseQueryCount(2);
+
+        $response = $this->actingAs($this->user)->graphQL('{
             elements(filter: {
                 id: ["' . $element->id . '"]
                 lang: "en"
@@ -113,7 +142,6 @@ class GraphqlElementTest extends TestAbstract
                     lang
                     type
                     name
-                    lang
                     data
                     editor
                     created_at
@@ -125,17 +153,31 @@ class GraphqlElementTest extends TestAbstract
                     lastPage
                 }
             }
-        }' )->assertJson( [
-            'data' => [
-                'elements' => [
-                    'data' => $expected,
-                    'paginatorInfo' => [
-                        'currentPage' => 1,
-                        'lastPage' => 1,
-                    ]
-                ],
-            ]
-        ] );
+        }');
+
+        $elementsData = $response->json('data.elements.data');
+
+        // Assert elements
+        $this->assertCount(1, $elementsData);
+        $actual = $elementsData[0];
+
+        // Assert scalar fields
+        $this->assertEquals($expected[0]['id'], $actual['id']);
+        $this->assertEquals($expected[0]['lang'], $actual['lang']);
+        $this->assertEquals($expected[0]['type'], $actual['type']);
+        $this->assertEquals($expected[0]['name'], $actual['name']);
+        $this->assertEquals($expected[0]['editor'], $actual['editor']);
+        $this->assertEquals($expected[0]['created_at'], $actual['created_at']);
+        $this->assertEquals($expected[0]['updated_at'], $actual['updated_at']);
+        $this->assertEquals($expected[0]['deleted_at'], $actual['deleted_at']);
+
+        // Assert JSON field decoded as array
+        $this->assertEquals($expected[0]['data'], json_decode($actual['data'], true));
+
+        // Assert paginator info
+        $paginator = $response->json('data.elements.paginatorInfo');
+        $this->assertEquals(1, $paginator['currentPage']);
+        $this->assertEquals(1, $paginator['lastPage']);
     }
 
 
@@ -203,12 +245,13 @@ class GraphqlElementTest extends TestAbstract
 
     public function testElementVersions()
     {
-        $this->seed( CmsSeeder::class );
+        $this->seed(CmsSeeder::class);
 
         $element = Element::firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 3 );
-        $response = $this->actingAs( $this->user )->graphQL( '{
+        $this->expectsDatabaseQueryCount(3);
+
+        $response = $this->actingAs($this->user)->graphQL('{
             element(id: "' . $element->id . '") {
                 id
                 type
@@ -221,33 +264,42 @@ class GraphqlElementTest extends TestAbstract
                     editor
                 }
             }
-        }' )->assertJson( [
-            'data' => [
-                'element' => [
-                    'id' => $element->id,
-                    'type' => $element->type,
-                    'versions' => [
-                        [
-                            'lang' => $element->lang,
-                            'data' => '{"lang":"en","type":"footer","name":"Shared footer","data":{"text":"Powered by Laravel CMS!"}}',
-                            'files' => [],
-                            'editor' => 'seeder'
-                        ],
-                    ],
-                ],
-            ]
-        ] );
+        }');
+
+        $elementData = $response->json('data.element');
+
+        // Assert scalar fields
+        $this->assertEquals((string)$element->id, $elementData['id']);
+        $this->assertEquals($element->type, $elementData['type']);
+
+        // Assert versions
+        $this->assertCount(1, $elementData['versions']);
+        $version = $elementData['versions'][0];
+
+        $this->assertEquals($element->lang, $version['lang']);
+        $this->assertEquals('seeder', $version['editor']);
+        $this->assertEquals([], $version['files']);
+
+        // Decode JSON field for order-independent comparison
+        $expectedData = [
+            'lang' => 'en',
+            'type' => 'footer',
+            'name' => 'Shared footer',
+            'data' => ['text' => 'Powered by Laravel CMS!'],
+        ];
+        $this->assertEquals($expectedData, json_decode($version['data'], true));
     }
 
 
     public function testAddElement()
     {
-        $this->seed( CmsSeeder::class );
+        $this->seed(CmsSeeder::class);
 
         $file = File::firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 6 );
-        $response = $this->actingAs( $this->user )->graphQL( '
+        $this->expectsDatabaseQueryCount(6);
+
+        $response = $this->actingAs($this->user)->graphQL('
             mutation {
                 addElement(input: {
                     type: "test"
@@ -266,34 +318,37 @@ class GraphqlElementTest extends TestAbstract
                     }
                 }
             }
-        ' );
+        ');
 
-        $response->assertJson( [
-            'data' => [
-                'addElement' => [
-                    'type' => 'test',
-                    'lang' => 'en',
-                    'data' => '{"key":"value"}',
-                    'editor' => 'Test editor',
-                    'bypages' => [],
-                    'latest' => [
-                        'data' => '{"type":"test","lang":"en","data":{"key":"value"}}',
-                    ]
-                ],
-            ]
-        ] );
+        $addElement = $response->json('data.addElement');
+
+        // Assert scalar fields
+        $this->assertEquals('test', $addElement['type']);
+        $this->assertEquals('en', $addElement['lang']);
+        $this->assertEquals('{"key":"value"}', $addElement['data']);
+        $this->assertEquals('Test editor', $addElement['editor']);
+        $this->assertEquals([], $addElement['bypages']);
+
+        // Decode latest->data JSON for order-independent assertion
+        $expectedLatestData = [
+            'type' => 'test',
+            'lang' => 'en',
+            'data' => ['key' => 'value'],
+        ];
+        $this->assertEquals($expectedLatestData, json_decode($addElement['latest']['data'], true));
     }
 
 
     public function testSaveElement()
     {
-        $this->seed( CmsSeeder::class );
+        $this->seed(CmsSeeder::class);
 
         $file = File::firstOrFail();
         $element = Element::firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 6 );
-        $response = $this->actingAs( $this->user )->graphQL( '
+        $this->expectsDatabaseQueryCount(6);
+
+        $response = $this->actingAs($this->user)->graphQL('
             mutation {
                 saveElement(id: "' . $element->id . '", input: {
                     type: "test"
@@ -314,28 +369,31 @@ class GraphqlElementTest extends TestAbstract
                     }
                 }
             }
-        ' );
+        ');
 
-        $element = Element::find( $element->id );
+        $element = Element::find($element->id);
+        $saveElement = $response->json('data.saveElement');
 
-        $response->assertJson( [
-            'data' => [
-                'saveElement' => [
-                    'id' => $element->id,
-                    'type' => 'footer',
-                    'lang' => 'en',
-                    'data' => '{"type":"footer","data":{"text":"Powered by Laravel CMS"}}',
-                    'editor' => 'seeder',
-                    'latest' => [
-                        'lang' => 'de',
-                        'data' => '{"type":"test","lang":"de","data":{"key":"value"}}',
-                        'published' => false,
-                        'publish_at' => null,
-                        'editor' => 'Test editor',
-                    ],
-               ],
-            ]
-        ] );
+        // Assert scalar fields
+        $this->assertEquals($element->id, $saveElement['id']);
+        $this->assertEquals('footer', $saveElement['type']);
+        $this->assertEquals('en', $saveElement['lang']);
+        $this->assertEquals('{"type":"footer","data":{"text":"Powered by Laravel CMS"}}', $saveElement['data']);
+        $this->assertEquals('seeder', $saveElement['editor']);
+
+        // Decode latest->data JSON for order-independent comparison
+        $expectedLatestData = [
+            'type' => 'test',
+            'lang' => 'de',
+            'data' => ['key' => 'value'],
+        ];
+
+        $latest = $saveElement['latest'];
+        $this->assertEquals('de', $latest['lang']);
+        $this->assertEquals(false, $latest['published']);
+        $this->assertNull($latest['publish_at']);
+        $this->assertEquals('Test editor', $latest['editor']);
+        $this->assertEquals($expectedLatestData, json_decode($latest['data'], true));
     }
 
 

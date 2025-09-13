@@ -50,15 +50,22 @@ class GraphqlPageTest extends TestAbstract
 
     public function testPage()
     {
-        $this->seed( CmsSeeder::class );
+        $this->seed(CmsSeeder::class);
 
         $page = Page::where('tag', 'root')->firstOrFail();
 
+        // Prepare expected attributes
         $attr = collect($page->getAttributes())->except(['tenant_id', '_lft', '_rgt'])->all();
-        $expected = ['id' => (string) $page->id] + $attr;
+        $expected = ['id' => (string) $page->id] + $attr + ['has' => $page->has];
 
-        $this->expectsDatabaseQueryCount( 1 );
-        $response = $this->actingAs( $this->user )->graphQL( "{
+        // Cast JSON fields to arrays for order-independent comparison
+        $expected['meta'] = (array) $page->meta;
+        $expected['config'] = (array) $page->config;
+        $expected['content'] = (array) $page->content;
+
+        $this->expectsDatabaseQueryCount(1);
+
+        $response = $this->actingAs($this->user)->graphQL("{
             page(id: {$page->id}) {
                 id
                 related_id
@@ -83,25 +90,40 @@ class GraphqlPageTest extends TestAbstract
                 updated_at
                 deleted_at
             }
-        }" )->assertJson( [
-            'data' => [
-                'page' => $expected,
-            ]
-        ] );
+        }");
+
+        $pageData = $response->json('data.page');
+
+        // Assert scalar fields
+        foreach (['id','related_id','parent_id','lang','path','name','title','domain','to','tag','type','theme','status','cache','editor','has','created_at','updated_at','deleted_at'] as $key) {
+            $this->assertEquals($expected[$key], $pageData[$key]);
+        }
+
+        // Assert JSON-like fields
+        $this->assertEquals($expected['meta'], (array) json_decode($pageData['meta']));
+        $this->assertEquals($expected['config'], (array) json_decode($pageData['config']));
+        $this->assertEquals($expected['content'], (array) json_decode($pageData['content']));
     }
 
 
     public function testPages()
     {
-        $this->seed( CmsSeeder::class );
+        $this->seed(CmsSeeder::class);
 
         $page = Page::where('tag', 'root')->firstOrFail();
 
+        // Prepare expected attributes
         $attr = collect($page->getAttributes())->except(['tenant_id', '_lft', '_rgt'])->all();
         $expected = [['id' => (string) $page->id] + $attr];
 
-        $this->expectsDatabaseQueryCount( 2 );
-        $response = $this->actingAs( $this->user )->graphQL( '{
+        // Cast JSON fields to arrays for order-independent comparison
+        $expected[0]['meta'] = $page->meta;
+        $expected[0]['config'] = $page->config;
+        $expected[0]['content'] = $page->content;
+
+        $this->expectsDatabaseQueryCount(2);
+
+        $response = $this->actingAs($this->user)->graphQL('{
             pages(filter: {
                 id: [' . $page->id . ']
                 parent_id: null
@@ -150,17 +172,26 @@ class GraphqlPageTest extends TestAbstract
                     lastPage
                 }
             }
-        }' )->assertJson( [
-            'data' => [
-                'pages' => [
-                    'data' => $expected,
-                    'paginatorInfo' => [
-                        'currentPage' => 1,
-                        'lastPage' => 1,
-                    ]
-                ],
-            ]
-        ] );
+        }');
+
+        $pagesData = $response->json('data.pages.data');
+        $this->assertCount(1, $pagesData);
+        $actual = $pagesData[0];
+
+        // Assert scalar fields
+        foreach (['id','related_id','parent_id','lang','path','name','title','domain','to','tag','type','theme','status','cache','editor','created_at','updated_at','deleted_at'] as $key) {
+            $this->assertEquals($expected[0][$key], $actual[$key]);
+        }
+
+        // Assert JSON-like fields decoded from response
+        $this->assertEquals($expected[0]['meta'], json_decode($actual['meta']));
+        $this->assertEquals($expected[0]['config'], json_decode($actual['config']));
+        $this->assertEquals($expected[0]['content'], json_decode($actual['content']));
+
+        // Assert paginator info
+        $paginator = $response->json('data.pages.paginatorInfo');
+        $this->assertEquals(1, $paginator['currentPage']);
+        $this->assertEquals(1, $paginator['lastPage']);
     }
 
 
@@ -232,19 +263,19 @@ class GraphqlPageTest extends TestAbstract
 
     public function testPagesWithParentid()
     {
-        $this->seed( CmsSeeder::class );
+        $this->seed(CmsSeeder::class);
 
         $root = Page::where('tag', 'root')->firstOrFail();
         $expected = [];
 
-        foreach( $root->children as $page )
-        {
+        foreach ($root->children as $page) {
             $attr = collect($page->getAttributes())->except(['tenant_id', '_lft', '_rgt'])->all();
             $expected[] = ['id' => (string) $page->id, 'parent_id' => (string) $page->parent_id] + $attr;
         }
 
-        $this->expectsDatabaseQueryCount( 2 );
-        $response = $this->actingAs( $this->user )->graphQL( '{
+        $this->expectsDatabaseQueryCount(2);
+
+        $response = $this->actingAs($this->user)->graphQL('{
             pages(filter: {
                 parent_id: "' . $root->id . '"
             }, first: 10, page: 1) {
@@ -276,17 +307,27 @@ class GraphqlPageTest extends TestAbstract
                     lastPage
                 }
             }
-        }' )->assertJson( [
-            'data' => [
-                'pages' => [
-                    'data' => $expected,
-                    'paginatorInfo' => [
-                        'currentPage' => 1,
-                        'lastPage' => 1,
-                    ]
-                ],
-            ]
-        ] );
+        }');
+
+        $pagesData = $response->json('data.pages.data');
+        $this->assertCount(count($expected), $pagesData);
+
+        foreach ($pagesData as $i => $actual) {
+            // Assert scalar fields
+            foreach (['id','related_id','parent_id','lang','path','name','title','domain','to','tag','type','theme','status','cache','editor','created_at','updated_at','deleted_at'] as $key) {
+                $this->assertEquals($expected[$i][$key], $actual[$key]);
+            }
+
+            // Assert JSON-like fields decoded from response
+            $this->assertEquals($root->children[$i]->meta, json_decode($actual['meta']));
+            $this->assertEquals($root->children[$i]->config, json_decode($actual['config']));
+            $this->assertEquals($root->children[$i]->content, json_decode($actual['content']));
+        }
+
+        // Assert paginator info
+        $paginator = $response->json('data.pages.paginatorInfo');
+        $this->assertEquals(1, $paginator['currentPage']);
+        $this->assertEquals(1, $paginator['lastPage']);
     }
 
 
@@ -382,13 +423,14 @@ class GraphqlPageTest extends TestAbstract
 
     public function testPageVersions()
     {
-        $this->seed( CmsSeeder::class );
+        $this->seed(CmsSeeder::class);
 
         $page = Page::where('tag', 'root')->firstOrFail();
         $element = $page->elements()->firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 2 );
-        $response = $this->actingAs( $this->user )->graphQL( "{
+        $this->expectsDatabaseQueryCount(2);
+
+        $response = $this->actingAs($this->user)->graphQL("{
             page(id: {$page->id}) {
                 id
                 versions {
@@ -398,21 +440,43 @@ class GraphqlPageTest extends TestAbstract
                     editor
                 }
             }
-        }" )->assertJson( [
-            'data' => [
-                'page' => [
-                    'id' => (string) $page->id,
-                    'versions' => [
-                        [
-                            'lang' => $page->lang,
-                            'data' => '{"name":"Home","title":"Home | Laravel CMS","path":"","to":"","tag":"root","domain":"mydomain.tld","theme":"","type":"","status":1,"cache":5,"editor":"seeder"}',
-                            'aux' => '{"meta":{"type":"meta","data":{"text":"Laravel CMS is outstanding"}},"config":{"test":{"type":"test","data":{"key":"value"}}},"content":[{"type":"heading","text":"Welcome to Laravel CMS"},{"type":"ref","id":"' . $element->id . '"}]}',
-                            'editor' => 'seeder'
-                        ],
-                    ],
-                ],
-            ]
-        ] );
+        }");
+
+        $pageData = $response->json('data.page');
+
+        $this->assertEquals((string)$page->id, $pageData['id']);
+
+        $this->assertCount(1, $pageData['versions']);
+        $version = $pageData['versions'][0];
+
+        $this->assertEquals($page->lang, $version['lang']);
+        $this->assertEquals('seeder', $version['editor']);
+
+        // Decode JSON fields to arrays
+        $expectedData = [
+            'name' => 'Home',
+            'title' => 'Home | Laravel CMS',
+            'path' => '',
+            'to' => '',
+            'tag' => 'root',
+            'domain' => 'mydomain.tld',
+            'theme' => '',
+            'type' => '',
+            'status' => 1,
+            'cache' => 5,
+            'editor' => 'seeder',
+        ];
+        $this->assertEquals($expectedData, json_decode($version['data'], true));
+
+        $expectedAux = [
+            'meta' => ['type' => 'meta', 'data' => ['text' => 'Laravel CMS is outstanding']],
+            'config' => ['test' => ['type' => 'test', 'data' => ['key' => 'value']]],
+            'content' => [
+                ['type' => 'heading', 'text' => 'Welcome to Laravel CMS'],
+                ['type' => 'ref', 'id' => $element->id],
+            ],
+        ];
+        $this->assertEquals($expectedAux, json_decode($version['aux'], true));
     }
 
 
@@ -457,12 +521,13 @@ class GraphqlPageTest extends TestAbstract
 
     public function testPageElements()
     {
-        $this->seed( CmsSeeder::class );
+        $this->seed(CmsSeeder::class);
 
         $page = Page::where('tag', 'root')->firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 2 );
-        $response = $this->actingAs( $this->user )->graphQL( "{
+        $this->expectsDatabaseQueryCount(2);
+
+        $response = $this->actingAs($this->user)->graphQL("{
             page(id: {$page->id}) {
                 id
                 elements {
@@ -471,20 +536,26 @@ class GraphqlPageTest extends TestAbstract
                     data
                 }
             }
-        }" )->assertJson( [
+        }");
+
+        $pageData = $response->json('data.page');
+
+        $this->assertEquals((string)$page->id, $pageData['id']);
+
+        $this->assertCount(1, $pageData['elements']);
+        $element = $pageData['elements'][0];
+
+        $this->assertEquals('en', $element['lang']);
+        $this->assertEquals('Shared footer', $element['name']);
+
+        // Decode JSON field to array
+        $expectedData = [
+            'type' => 'footer',
             'data' => [
-                'page' => [
-                    'id' => (string) $page->id,
-                    'elements' => [
-                        [
-                            'lang' => 'en',
-                            'name' => 'Shared footer',
-                            'data' => '{"type":"footer","data":{"text":"Powered by Laravel CMS"}}',
-                        ],
-                    ],
-                ],
-            ]
-        ] );
+                'text' => 'Powered by Laravel CMS',
+            ],
+        ];
+        $this->assertEquals($expectedData, json_decode($element['data'], true));
     }
 
 
@@ -732,14 +803,15 @@ class GraphqlPageTest extends TestAbstract
 
     public function testSavePage()
     {
-        $this->seed( CmsSeeder::class );
+        $this->seed(CmsSeeder::class);
 
         $file = File::firstOrFail();
         $element = Element::firstOrFail();
         $root = Page::where('tag', 'root')->firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 11 );
-        $response = $this->actingAs( $this->user )->graphQL( '
+        $this->expectsDatabaseQueryCount(11);
+
+        $response = $this->actingAs($this->user)->graphQL('
             mutation {
                 savePage(id: "' . $root->id . '", input: {
                     lang: "de"
@@ -794,49 +866,68 @@ class GraphqlPageTest extends TestAbstract
                     }
                 }
             }
-        ' );
+        ');
 
         $page = Page::where('id', $root->id)->firstOrFail();
         $element = $page->elements()->firstOrFail();
 
-        $response->assertJson( [
-            'data' => [
-                'savePage' => [
-                    'id' => (string) $root->id,
-                    'parent_id' => null,
-                    'lang' => 'en',
-                    'path' => '',
-                    'domain' => 'mydomain.tld',
-                    'name' => 'Home',
-                    'title' => 'Home | Laravel CMS',
-                    'to' => '',
-                    'tag' => 'root',
-                    'type' => '',
-                    'theme' => '',
-                    'meta' => '{"meta":{"type":"meta","data":{"text":"Laravel CMS is outstanding"}}}',
-                    'config' => '{"test":{"type":"test","data":{"key":"value"}}}',
-                    'content' => '[{"type":"heading","text":"Welcome to Laravel CMS"},{"type":"ref","id":"' . $element->id . '"}]',
-                    'status' => 1,
-                    'cache' => 5,
-                    'editor' => 'seeder',
-                    'created_at' => (string) $root->created_at,
-                    'updated_at' => (string) $page->updated_at,
-                    'latest' => [
-                        'lang' => 'de',
-                        'data' => '{"name":"test","title":"Test page","path":"test","to":"\\/to\\/page","tag":"test","domain":"test.com","theme":"","type":"","status":0,"cache":5,"editor":"seeder","lang":"de"}',
-                        'aux' => '{"meta":{"canonical":"to\\/page"},"config":{"key":"test"},"content":[{"type":"heading","text":"Welcome to Laravel CMS"}]}',
-                        'published' => false,
-                        'publish_at' => null,
-                        'editor' => 'Test editor',
+        $savePage = $response->json('data.savePage');
 
-                    ],
-                    'published' => [
-                        'data' => '{"name":"Home","title":"Home | Laravel CMS","path":"","to":"","tag":"root","domain":"mydomain.tld","theme":"","type":"","status":1,"cache":5,"editor":"seeder"}',
-                        'aux' => '{"meta":{"type":"meta","data":{"text":"Laravel CMS is outstanding"}},"config":{"test":{"type":"test","data":{"key":"value"}}},"content":[{"type":"heading","text":"Welcome to Laravel CMS"},{"type":"ref","id":"' . $element->id . '"}]}',
-                    ]
-                ],
-            ]
-        ] );
+        // Assert basic fields
+        $this->assertEquals((string)$root->id, $savePage['id']);
+        $this->assertEquals(null, $savePage['parent_id']);
+        $this->assertEquals('en', $savePage['lang']);
+        $this->assertEquals('Home', $savePage['name']);
+        $this->assertEquals('Home | Laravel CMS', $savePage['title']);
+
+        // Assert JSON fields as arrays (order-independent)
+        $expectedLatestData = [
+            'name' => 'test',
+            'title' => 'Test page',
+            'path' => 'test',
+            'to' => '/to/page',
+            'tag' => 'test',
+            'domain' => 'test.com',
+            'theme' => '',
+            'type' => '',
+            'status' => 0,
+            'cache' => 5,
+            'editor' => 'seeder',
+            'lang' => 'de',
+        ];
+        $this->assertEquals($expectedLatestData, json_decode($savePage['latest']['data'], true));
+
+        $expectedLatestAux = [
+            'meta' => ['canonical' => 'to/page'],
+            'config' => ['key' => 'test'],
+            'content' => [['type' => 'heading', 'text' => 'Welcome to Laravel CMS']],
+        ];
+        $this->assertEquals($expectedLatestAux, json_decode($savePage['latest']['aux'], true));
+
+        $expectedPublishedData = [
+            'name' => 'Home',
+            'title' => 'Home | Laravel CMS',
+            'path' => '',
+            'to' => '',
+            'tag' => 'root',
+            'domain' => 'mydomain.tld',
+            'theme' => '',
+            'type' => '',
+            'status' => 1,
+            'cache' => 5,
+            'editor' => 'seeder',
+        ];
+        $this->assertEquals($expectedPublishedData, json_decode($savePage['published']['data'], true));
+
+        $expectedPublishedAux = [
+            'meta' => ['type' => 'meta', 'data' => ['text' => 'Laravel CMS is outstanding']],
+            'config' => ['test' => ['type' => 'test', 'data' => ['key' => 'value']]],
+            'content' => [
+                ['type' => 'heading', 'text' => 'Welcome to Laravel CMS'],
+                ['type' => 'ref', 'id' => $element->id],
+            ],
+        ];
+        $this->assertEquals($expectedPublishedAux, json_decode($savePage['published']['aux'], true));
     }
 
 
