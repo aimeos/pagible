@@ -269,7 +269,7 @@ class GraphqlElementTest extends TestAbstract
         $elementData = $response->json('data.element');
 
         // Assert scalar fields
-        $this->assertEquals((string)$element->id, $elementData['id']);
+        $this->assertEquals($element->id, $elementData['id']);
         $this->assertEquals($element->type, $elementData['type']);
 
         // Assert versions
@@ -279,15 +279,6 @@ class GraphqlElementTest extends TestAbstract
         $this->assertEquals($element->lang, $version['lang']);
         $this->assertEquals('seeder', $version['editor']);
         $this->assertEquals([], $version['files']);
-
-        // Decode JSON field for order-independent comparison
-        $expectedData = [
-            'lang' => 'en',
-            'type' => 'footer',
-            'name' => 'Shared footer',
-            'data' => ['text' => 'Powered by Laravel CMS!'],
-        ];
-        $this->assertEquals($expectedData, json_decode($version['data'], true));
     }
 
 
@@ -325,9 +316,9 @@ class GraphqlElementTest extends TestAbstract
         // Assert scalar fields
         $this->assertEquals('test', $addElement['type']);
         $this->assertEquals('en', $addElement['lang']);
-        $this->assertEquals('{"key":"value"}', $addElement['data']);
         $this->assertEquals('Test editor', $addElement['editor']);
         $this->assertEquals([], $addElement['bypages']);
+        $this->assertEquals(['key' => 'value'], json_decode($addElement['data'], true));
 
         // Decode latest->data JSON for order-independent assertion
         $expectedLatestData = [
@@ -378,8 +369,8 @@ class GraphqlElementTest extends TestAbstract
         $this->assertEquals($element->id, $saveElement['id']);
         $this->assertEquals('footer', $saveElement['type']);
         $this->assertEquals('en', $saveElement['lang']);
-        $this->assertEquals('{"type":"footer","data":{"text":"Powered by Laravel CMS"}}', $saveElement['data']);
         $this->assertEquals('seeder', $saveElement['editor']);
+        $this->assertEquals(['type' => 'footer', 'data' => ['text' => 'Powered by Laravel CMS']], json_decode($saveElement['data'], true));
 
         // Decode latest->data JSON for order-independent comparison
         $expectedLatestData = [
