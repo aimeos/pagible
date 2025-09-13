@@ -54,6 +54,13 @@
       description() {
         return Object.values(this.file.description || {}).shift() || ''
       },
+
+
+      rules() {
+        return [
+          v => !this.config.required || !!v?.path || this.$gettext(`File is required`)
+        ]
+      }
     },
 
     methods: {
@@ -116,7 +123,6 @@
         this.file = {...item}
         this.$emit('addFile', item)
         this.$emit('update:modelValue', {id: item.id, type: 'file'})
-        this.validate()
 
         if(path?.startsWith('blob:')) {
           URL.revokeObjectURL(path)
@@ -142,7 +148,6 @@
 
         this.$emit('update:modelValue', null)
         this.file = {}
-        this.validate()
       },
 
 
@@ -157,15 +162,6 @@
         this.file = {...item}
         this.$emit('addFile', item)
         this.$emit('update:modelValue', {id: item.id, type: 'file'})
-        this.validate()
-      },
-
-
-      async validate() {
-        const result = !this.config.required || this.file.path ? true : false
-
-        this.$emit('error', !result)
-        return await result
       }
     },
 
@@ -175,7 +171,10 @@
           if(!this.file.path && this.modelValue && assets[this.modelValue.id]) {
             this.file = assets[this.modelValue.id]
           }
-          this.validate()
+
+          this.$emit('error', !this.rules.every(rule => {
+            return rule(this.file) === true
+          }))
         }
       },
 
@@ -186,7 +185,10 @@
           if(!this.file.path && data && this.assets[data.id]) {
             this.file = this.assets[data.id]
           }
-          this.validate()
+
+          this.$emit('error', !this.rules.every(rule => {
+            return rule(this.file) === true
+          }))
         }
       }
     }

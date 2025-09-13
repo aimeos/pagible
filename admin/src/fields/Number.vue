@@ -18,19 +18,11 @@
 
     emits: ['update:modelValue', 'error'],
 
-    methods: {
-      update(value) {
-        this.$emit('update:modelValue', value)
-        this.validate()
-      },
-
-
-      async validate() {
-        await this.$nextTick()
-        const errors = await this.$refs.field?.validate()
-
-        this.$emit('error', errors?.length > 0)
-        return !errors?.length
+    computed: {
+      rules() {
+        return [
+          v => !this.config.required || !!v || this.$gettext(`Value is required`)
+        ]
       }
     },
 
@@ -38,7 +30,9 @@
       modelValue: {
         immediate: true,
         handler(val) {
-          this.validate()
+          this.$emit('error', !this.rules.every(rule => {
+            return rule(this.modelValue) === true
+          }))
         }
       }
     }
@@ -46,18 +40,16 @@
 </script>
 
 <template>
-  <v-number-input ref="field"
-    :rules="[
-      v => !config.required || !!v || $gettext(`Value is required`)
-    ]"
+  <v-number-input
+    :rules="rules"
     :readonly="readonly"
     :clearable="!readonly && !config.required"
     :max="config.max"
     :min="config.min"
-    :placeholder="config.placeholder || ''"
     :step="config.step || 1"
+    :placeholder="config.placeholder || ''"
     :modelValue="modelValue || config.default || 0"
-    @update:modelValue="update($event)"
+    @update:modelValue="$emit('update:modelValue', $event)"
     density="comfortable"
     hide-details="auto"
     variant="outlined"

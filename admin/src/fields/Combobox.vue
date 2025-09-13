@@ -7,10 +7,8 @@
 </script>
 
 <template>
-  <v-combobox ref="field"
-    :rules="[
-      v => !config.required || !!v || `Value is required`,
-    ]"
+  <v-combobox
+    :rules="rules"
     :items="list"
     :loading="loading"
     :readonly="readonly"
@@ -20,7 +18,7 @@
     :multiple="config.multiple"
     :chips="config.multiple"
     :modelValue="modelValue"
-    @update:modelValue="update($event)"
+    @update:modelValue="$emit('update:modelValue', $event)"
     @update:search="search($event)"
     @update:menu="search('')"
     density="comfortable"

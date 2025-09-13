@@ -106,20 +106,6 @@
       update(code, value) {
         this.data[code] = value
         this.$emit('change', this.data[code])
-      },
-
-
-      validate() {
-        const list = []
-        this.errors = {}
-
-        this.$refs.field?.forEach(field => {
-          list.push(field.validate())
-        })
-
-        return Promise.all(list).then(result => {
-          return result.every(r => r)
-        });
       }
     }
   }

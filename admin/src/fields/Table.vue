@@ -9,6 +9,17 @@
 
     emits: ['update:modelValue', 'error'],
 
+    computed: {
+      rules() {
+        return [
+            v => !this.config.required || !!v || this.$gettext('Field is required'),
+            v => !this.config.min || +v?.split('\n')[0]?.split(';')?.length >= +this.config.min || this.$gettext(`Minimum are %{num} columns`, {num: this.config.min}),
+            v => !this.config.max || +v?.split('\n')[0]?.split(';')?.length <= +this.config.max || this.$gettext(`Maximum are %{num} columns`, {num: this.config.max}),
+            v => this.check(v) || this.$gettext('The number of columns is not the same in all rows'),
+        ]
+      }
+    },
+
     methods: {
       check(value) {
         let lines = 0
@@ -24,17 +35,7 @@
 
 
       update(value) {
-        this.$emit('update:modelValue', value.replace(/(\r)+/g, '').replace(/^\n+/, '').replace(/\n{2,}$/g, "\n"))
-        this.validate()
-      },
-
-
-      async validate() {
-        await this.$nextTick()
-        const errors = await this.$refs.field?.validate()
-
-        this.$emit('error', errors?.length > 0)
-        return !errors?.length
+        this.$emit('update:modelValue', value?.replace(/(\r)+/g, '')?.replace(/^\n+/, '')?.replace(/\n{2,}$/g, "\n"))
       }
     },
 
@@ -42,7 +43,9 @@
       modelValue: {
         immediate: true,
         handler(val) {
-          this.validate()
+          this.$emit('error', !this.rules.every(rule => {
+            return rule(this.modelValue) === true
+          }))
         }
       }
     }
@@ -50,16 +53,12 @@
 </script>
 
 <template>
-  <v-textarea ref="field"
-    :rules="[
-      v => !config.required || !!v || $gettext('Field is required'),
-      v => !config.min || +v?.split('\n')[0]?.split(';')?.length >= +config.min || $gettext(`Minimum are %{num} columns`, {num: config.min}),
-      v => check(v) || $gettext('The number of columns is not the same in all rows'),
-    ]"
+  <v-textarea
+    :rules="rules"
     :auto-grow="true"
     :readonly="readonly"
-    :placeholder="config.placeholder || `val;val;val\nval;val;val`"
     :modelValue="modelValue"
+    :placeholder="config.placeholder || `val;val;val\nval;val;val`"
     @update:modelValue="update($event)"
     variant="outlined"
     hide-details="auto"

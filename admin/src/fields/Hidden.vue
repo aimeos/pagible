@@ -9,13 +9,8 @@
     },
 
     created() {
-      if(this.modelValue !== this.config?.value)
-      this.$emit('update:modelValue', this.config?.value)
-    },
-
-    methods: {
-      async validate() {
-        return await true
+      if(this.modelValue !== this.config?.value) {
+        this.$emit('update:modelValue', this.config?.value)
       }
     }
   }

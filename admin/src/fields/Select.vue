@@ -10,19 +10,11 @@
 
     emits: ['update:modelValue', 'error'],
 
-    methods: {
-      update(value) {
-        this.$emit('update:modelValue', value)
-        this.validate()
-      },
-
-
-      async validate() {
-        await this.$nextTick()
-        const errors = await this.$refs.field?.validate()
-
-        this.$emit('error', errors?.length > 0)
-        return !errors?.length
+    computed: {
+      rules() {
+        return [
+          v => !this.config.required || !!v || this.$gettext(`Value is required`),
+        ]
       }
     },
 
@@ -30,7 +22,9 @@
       modelValue: {
         immediate: true,
         handler(val) {
-          this.validate()
+          this.$emit('error', !this.rules.every(rule => {
+            return rule(this.modelValue) === true
+          }))
         }
       }
     }
@@ -38,17 +32,15 @@
 </script>
 
 <template>
-  <v-select ref="field"
-    :rules="[
-      v => !config.required || !!v || $gettext(`Value is required`),
-    ]"
+  <v-select
+    :rules="rules"
     :readonly="readonly"
     :items="config.options || []"
     :placeholder="config.placeholder || ''"
     :multiple="config.multiple"
     :chips="config.multiple"
     :modelValue="modelValue"
-    @update:modelValue="update($event)"
+    @update:modelValue="$emit('update:modelValue', $event)"
     density="comfortable"
     hide-details="auto"
     variant="outlined"

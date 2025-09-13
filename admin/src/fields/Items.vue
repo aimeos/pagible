@@ -35,12 +35,20 @@
       }
     },
 
+    computed: {
+      rules() {
+        return [
+          v => (!this.config.max || this.config.max && v.length <= this.config.max) || this.$gettext(`Maximum is %{num} entries`, {num: this.config.max}),
+          v => ((this.config.min ?? 1) && v.length >= (this.config.min ?? 1)) || this.$gettext(`Minimum is %{num} entries`, {num: this.config.min ?? 1}),
+        ]
+      }
+    },
+
     methods: {
       add() {
         this.items.push({})
         this.panel.push(this.items.length - 1)
         this.$emit('update:modelValue', this.items)
-        this.validate()
       },
 
 
@@ -75,7 +83,6 @@
       remove(idx) {
         this.items.splice(idx, 1)
         this.$emit('update:modelValue', this.items)
-        this.validate()
       },
 
 
@@ -111,19 +118,6 @@
 
         this.items[idx][code] = value
         this.$emit('update:modelValue', this.items)
-      },
-
-
-      async validate() {
-        const rules = [
-          v => (!this.config.max || this.config.max && v.length <= this.config.max) || this.$gettext(`Maximum is %{num} entries`, {num: this.config.max}),
-          v => ((this.config.min ?? 1) && v.length >= (this.config.min ?? 1)) || this.$gettext(`Minimum is %{num} entries`, {num: this.config.min ?? 1}),
-        ]
-
-        this.errors = rules.map(rule => rule(this.items)).filter(v => v !== true)
-        this.$emit('error', this.errors.length > 0)
-
-        return await !this.errors.length
       }
     },
 
@@ -132,7 +126,9 @@
         immediate: true,
         handler(val) {
           this.items = val
-          this.validate()
+          this.$emit('error', !this.rules.every(rule => {
+            return rule(this.modelValue) === true
+          }))
         }
       }
     }

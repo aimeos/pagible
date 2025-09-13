@@ -72,6 +72,14 @@
             ui: this.$vuetify.locale.current
           }
         }
+      },
+
+
+      rules() {
+        return [
+          v => !this.config.min || +v?.length >= +this.config.min || this.$gettext(`Minimum length is %{num} characters`, {num: this.config.min}),
+          v => !this.config.max || +v?.length <= +this.config.max || this.$gettext(`Maximum length is %{num} characters`, {num: this.config.max})
+        ]
       }
     },
 
@@ -80,11 +88,17 @@
         if(this.modelValue != value) {
           this.$emit('update:modelValue', value);
         }
-      },
+      }
+    },
 
-
-      async validate() {
-        return await true
+    watch: {
+      modelValue: {
+        immediate: true,
+        handler(val) {
+          this.$emit('error', !this.rules.every(rule => {
+            return rule(this.modelValue) === true
+          }))
+        }
       }
     }
   }
