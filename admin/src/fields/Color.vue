@@ -16,14 +16,23 @@
 
     emits: ['update:modelValue', 'error'],
 
-    methods: {
-      update(value) {
-        this.$emit('update:modelValue', value)
-      },
+    computed: {
+      rules() {
+        return [
+          v => !this.config.required || !!v || this.$gettext(`Value is required`),
+          v => !v || /^#[0-9A-F]{6,8}$/i.test(v) || this.$gettext(`Value must be a hex color code`),
+        ]
+      }
+    },
 
-
-      async validate() {
-        return await true
+    watch: {
+      modelValue: {
+        immediate: true,
+        handler(val) {
+          this.$emit('error', !this.rules.every(rule => {
+            return rule(this.modelValue) === true
+          }))
+        }
       }
     }
   }
@@ -31,13 +40,10 @@
 
 <template>
   <v-color-input
-    :rules="[
-      v => !config.required || !!v || $gettext(`Value is required`),
-      v => !v || /^#[0-9A-F]{6,8}$/i.test(v) || $gettext(`Value must be a hex color code`),
-    ]"
+    :rules="rules"
     :clearable="!readonly"
     :disabled="readonly"
     :modelValue="modelValue"
-    @update:modelValue="update($event)"
+    @update:modelValue="$emit('update:modelValue', $event)"
   ></v-color-input>
 </template>

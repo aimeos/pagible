@@ -26,6 +26,14 @@
       this.rest = this.debounce(this.rest, 500)
     },
 
+    computed: {
+      rules() {
+        return [
+          v => !this.config.required || !!v || this.$gettext('Value is required'),
+        ]
+      }
+    },
+
     methods: {
       get(item, keys) {
         return keys.reduce((part, key) => {
@@ -114,21 +122,6 @@
         }
 
         return result
-      },
-
-
-      update(value) {
-        this.$emit('update:modelValue', value)
-        this.validate()
-      },
-
-
-      async validate() {
-        await this.$nextTick()
-        const errors = await this.$refs.field?.validate()
-
-        this.$emit('error', errors?.length > 0)
-        return !errors?.length
       }
     },
 
@@ -136,7 +129,9 @@
       modelValue: {
         immediate: true,
         handler(val) {
-          this.validate()
+          this.$emit('error', !this.rules.every(rule => {
+            return rule(this.modelValue) === true
+          }))
         }
       }
     }
@@ -144,10 +139,8 @@
 </script>
 
 <template>
-  <v-autocomplete ref="field"
-    :rules="[
-      v => !config.required || !!v || $gettext('Value is required'),
-    ]"
+  <v-autocomplete
+    :rules="rules"
     :items="list"
     :loading="loading"
     :readonly="readonly"
@@ -158,7 +151,7 @@
     :multiple="config.multiple"
     :chips="config.multiple"
     :modelValue="modelValue"
-    @update:modelValue="update($event)"
+    @update:modelValue="$emit('update:modelValue', $event)"
     @update:search="search($event)"
     @update:menu="search('')"
     density="comfortable"

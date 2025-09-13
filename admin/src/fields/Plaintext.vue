@@ -17,19 +17,12 @@
 
     emits: ['update:modelValue', 'error'],
 
-    methods: {
-      update(value) {
-        this.$emit('update:modelValue', value)
-        this.validate()
-      },
-
-
-      async validate() {
-        await this.$nextTick()
-        const errors = await this.$refs.field?.validate()
-
-        this.$emit('error', errors?.length > 0)
-        return !errors?.length
+    computed: {
+      rules() {
+        return [
+          v => !this.config.min || +v?.length >= +this.config.min || this.$gettext(`Minimum length is %{num} characters`, {num: this.config.min}),
+          v => !this.config.max || +v?.length <= +this.config.max || this.$gettext(`Maximum length is %{num} characters`, {num: this.config.max})
+        ]
       }
     },
 
@@ -37,7 +30,9 @@
       modelValue: {
         immediate: true,
         handler(val) {
-          this.validate()
+          this.$emit('error', !this.rules.every(rule => {
+            return rule(this.modelValue) === true
+          }))
         }
       }
     }
@@ -45,17 +40,14 @@
 </script>
 
 <template>
-  <v-textarea ref="field"
-    :rules="[
-      v => !config.min || +v?.length >= +config.min || $gettext(`Minimum length is %{num} characters`, {num: config.min}),
-      v => !config.max || +v?.length <= +config.max || $gettext(`Maximum length is %{num} characters`, {num: config.max}),
-    ]"
+  <v-textarea
+    :rules="rules"
     :class="config.class"
     :readonly="readonly"
     :counter="config.max"
-    :placeholder="config.placeholder || ''"
     :modelValue="modelValue"
-    @update:modelValue="update($event)"
+    :placeholder="config.placeholder || ''"
+    @update:modelValue="$emit('update:modelValue', $event)"
     density="comfortable"
     hide-details="auto"
     variant="outlined"

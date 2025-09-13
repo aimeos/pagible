@@ -96,6 +96,11 @@
           return Promise.resolve(false)
         }
 
+        if(this.error) {
+          this.messages.add(this.$gettext('There are invalid fields, please resolve the errors first'), 'error')
+          return Promise.resolve(false)
+        }
+
         if(!this.changed) {
           return Promise.resolve(true)
         }

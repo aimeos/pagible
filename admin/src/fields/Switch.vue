@@ -8,18 +8,7 @@
       'context': {type: Object},
     },
 
-    emits: ['update:modelValue', 'error'],
-
-    methods: {
-      update(value) {
-        this.$emit('update:modelValue', value)
-      },
-
-
-      async validate() {
-        return await true
-      }
-    }
+    emits: ['update:modelValue', 'error']
   }
 </script>
 
@@ -29,7 +18,7 @@
     :true-value="config.on ?? true"
     :readonly="readonly"
     :modelValue="modelValue"
-    @update:modelValue="update($event)"
+    @update:modelValue="$emit('update:modelValue', $event)"
     hide-details="auto"
     color="primary"
     inset

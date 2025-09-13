@@ -48,6 +48,15 @@
       }
     },
 
+    computed: {
+      rules() {
+        return [
+          v => !this.config.min || +v?.length >= +this.config.min || this.$gettext(`Minimum is %{num} entries`, {num: this.config.min}),
+          v => !this.config.max || +v?.length <= +this.config.max || this.$gettext(`Maximum is %{num} entries`, {num: this.config.max})
+        ]
+      }
+    },
+
     unmounted() {
       this.images.forEach(item => {
         if(item.path?.startsWith('blob:')) {
@@ -148,7 +157,6 @@
 
         this.images.splice(idx, 1)
         this.$emit('update:modelValue', this.images.map(item => ({id: item.id, type: 'file'})))
-        this.validate()
       },
 
 
@@ -165,15 +173,6 @@
         this.$emit('update:modelValue', this.images.map(item => ({id: item.id, type: 'file'})))
         this.vfiles = false
         this.vurls = false
-        this.validate()
-      },
-
-
-      async validate() {
-        const result = this.images.length >= (this.config.min ?? 0) && this.images.length <= (this.config.max ?? 1000)
-
-        this.$emit('error', !result)
-        return await result
       }
     },
 
@@ -188,6 +187,10 @@
               }
             }
           }
+
+          this.$emit('error', !this.rules.every(rule => {
+            return rule(this.modelValue) === true
+          }))
         }
       }
     }

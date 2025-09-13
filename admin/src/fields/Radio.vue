@@ -10,14 +10,22 @@
 
     emits: ['update:modelValue', 'error'],
 
-    methods: {
-      update(value) {
-        this.$emit('update:modelValue', value)
-      },
+    computed: {
+      rules() {
+        return [
+          v => !this.config.required || !!v || this.$gettext(`Selection is required`)
+        ]
+      }
+    },
 
-
-      async validate() {
-        return await true
+    watch: {
+      modelValue: {
+        immediate: true,
+        handler(val) {
+          this.$emit('error', !this.rules.every(rule => {
+            return rule(this.modelValue) === true
+          }))
+        }
       }
     }
   }
@@ -25,12 +33,10 @@
 
 <template>
   <v-radio-group
-    :rules="[
-      v => !config.required || !!v || $gettext(`Selection is required`)
-    ]"
+    :rules="rules"
     :readonly="readonly"
     :modelValue="modelValue"
-    @update:modelValue="update($event)"
+    @update:modelValue="$emit('update:modelValue', $event)"
     hide-details="auto"
   ><v-radio v-for="option in (config.options || [])"
       :label="option.label"

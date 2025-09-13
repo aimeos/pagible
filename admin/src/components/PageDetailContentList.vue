@@ -82,9 +82,8 @@
           this.panel.push(this.content.length - 1)
         }
 
-        this.$emit('update:content', this.content)
         this.vschemas = false
-        this.store()
+        this.$emit('update:content', this.content)
       },
 
 
@@ -105,15 +104,9 @@
           return
         }
 
-        this.content[idx]._error = false
-        this.content[idx].type = item.type
         this.vchange = false
-
-        this.validate().then(val => {
-          this.$emit('update:content', this.content)
-          this.$emit('error', !val)
-          this.store()
-        })
+        this.content[idx].type = item.type
+        this.$emit('update:content', this.content)
       },
 
 
@@ -173,7 +166,6 @@
 
         this.clipboard.set('page-content', list.reverse())
         this.$emit('update:content', this.content)
-        this.store()
       },
 
 
@@ -228,7 +220,6 @@
 
         this.content.splice(idx, 0, entry)
         this.$emit('update:content', this.content)
-        this.store()
       },
 
 
@@ -244,7 +235,6 @@
 
         this.content.splice(idx, 0, ...entries)
         this.$emit('update:content', this.content)
-        this.store()
       },
 
 
@@ -257,8 +247,6 @@
 
         this.$emit('error', this.content.some(el => el._error))
         this.$emit('update:content', this.content)
-        this.checked = false
-        this.store()
       },
 
 
@@ -320,9 +308,7 @@
 
       remove(idx) {
         this.content.splice(idx, 1)
-        this.$emit('error', this.content.some(el => el._error))
         this.$emit('update:content', this.content)
-        this.store()
       },
 
 
@@ -420,7 +406,6 @@
           this.elements[element.id] = element
           this.content[idx] = {id: uid(), group: this.section, type: 'reference', refid: element.id}
           this.$emit('update:content', this.content)
-          this.store()
         }).catch(error => {
           this.messages.add(this.$gettext('Unable to make element shared') + ":\n" + error, 'error')
           this.$log(`PageDetailContentList::share(): Error making element shared`, idx, error)
@@ -475,9 +460,7 @@
         }
 
         this.content.splice(idx, 1, ...list)
-        this.$emit('error', this.content.some(el => el._error))
         this.$emit('update:content', this.content)
-        this.store()
       },
 
 
@@ -548,7 +531,6 @@
         delete this.content[idx].refid
 
         this.$emit('update:content', this.content)
-        this.store()
       },
 
 
@@ -556,31 +538,16 @@
         el._changed = true
         el.group = this.section
 
-        this.$emit('error', this.content.some(el => el._error))
         this.$emit('update:content', this.content)
-        this.store()
-      },
-
-
-      validate() {
-        const list = []
-
-        this.$refs.field?.forEach(field => {
-          list.push(field.validate())
-        })
-
-        return Promise.all(list).then(result => {
-          return result.every(r => r)
-        });
       }
     },
 
     watch: {
       content: {
+        immediate: true,
         handler() {
-          this.validate().then(val => {
-            this.$emit('error', !val)
-          })
+          this.checked = false
+          this.store()
         },
       }
     }
@@ -649,9 +616,6 @@
           </template>
           <v-list>
             <v-list-item v-if="isChecked">
-              <v-btn prepend-icon="mdi-delete" variant="text" @click="purge()">{{ $gettext('Delete') }}</v-btn>
-            </v-list-item>
-            <v-list-item v-if="isChecked">
               <v-btn prepend-icon="mdi-content-copy" variant="text" @click="copy()">{{ $gettext('Copy') }}</v-btn>
             </v-list-item>
             <v-list-item v-if="isChecked">
@@ -662,6 +626,9 @@
             </v-list-item>
             <v-list-item v-if="isChecked > 1">
               <v-btn prepend-icon="mdi-set-merge" variant="text" @click="merge()">{{ $gettext('Merge') }}</v-btn>
+            </v-list-item>
+            <v-list-item v-if="isChecked">
+              <v-btn prepend-icon="mdi-delete" variant="text" @click="purge()">{{ $gettext('Delete') }}</v-btn>
             </v-list-item>
           </v-list>
         </v-menu>

@@ -354,82 +354,80 @@
           return Promise.resolve(false)
         }
 
+        if(this.hasError) {
+          this.messages.add(this.$gettext('There are invalid fields, please resolve the errors first'), 'error')
+          return Promise.resolve(false)
+        }
+
         if(!this.hasChanged) {
           return Promise.resolve(true)
         }
 
-        return this.validate().then(valid => {
-          if(!valid) {
-            this.messages.add(this.$gettext('There are invalid fields, please resolve the errors first'), 'error')
-            return valid
+        const meta = {}
+        for(const key in (this.item.meta || {})) {
+          meta[key] = {
+            type: this.item.meta[key].type || '',
+            data: this.item.meta[key].data || {},
+            files: this.item.meta[key].files || [],
+          }
+        }
+
+        const config = {}
+        for(const key in (this.item.config || {})) {
+          config[key] = {
+            type: this.item.config[key].type || '',
+            data: this.item.config[key].data || {},
+            files: this.item.config[key].files || [],
+          }
+        }
+
+        return this.$apollo.mutate({
+          mutation: gql`mutation ($id: ID!, $input: PageInput!, $elements: [ID!], $files: [ID!]) {
+            savePage(id: $id, input: $input, elements: $elements, files: $files) {
+              id
+            }
+          }`,
+          variables: {
+            id: this.item.id,
+            input: {
+              cache: this.item.cache || 0,
+              domain: this.item.domain || '',
+              lang: this.item.lang || '',
+              name: this.item.name || '',
+              path: this.item.path || '',
+              status: this.item.status || 0,
+              title: this.item.title || '',
+              tag: this.item.tag || '',
+              to: this.item.to || '',
+              type: this.item.type || '',
+              theme: this.item.theme || '',
+              meta: JSON.stringify(this.clean(meta, 'meta')),
+              config: JSON.stringify(this.clean(config, 'config')),
+              content: JSON.stringify(this.clean(this.item.content, 'content'))
+            },
+            elements: Object.keys(this.elements),
+            files: this.fileIds(),
+          }
+        }).then(response => {
+          if(response.errors) {
+            throw response.errors
           }
 
-          const meta = {}
-          for(const key in (this.item.meta || {})) {
-            meta[key] = {
-              type: this.item.meta[key].type || '',
-              data: this.item.meta[key].data || {},
-              files: this.item.meta[key].files || [],
-            }
+          this.item.published = false
+          this.$refs.history?.reset()
+          this.reset()
+
+          if(!quiet) {
+            this.messages.add(this.$gettext('Page saved successfully'), 'success')
           }
 
-          const config = {}
-          for(const key in (this.item.config || {})) {
-            config[key] = {
-              type: this.item.config[key].type || '',
-              data: this.item.config[key].data || {},
-              files: this.item.config[key].files || [],
-            }
-          }
+          this.invalidate()
+          this.savecnt++
 
-          return this.$apollo.mutate({
-            mutation: gql`mutation ($id: ID!, $input: PageInput!, $elements: [ID!], $files: [ID!]) {
-              savePage(id: $id, input: $input, elements: $elements, files: $files) {
-                id
-              }
-            }`,
-            variables: {
-              id: this.item.id,
-              input: {
-                cache: this.item.cache || 0,
-                domain: this.item.domain || '',
-                lang: this.item.lang || '',
-                name: this.item.name || '',
-                path: this.item.path || '',
-                status: this.item.status || 0,
-                title: this.item.title || '',
-                tag: this.item.tag || '',
-                to: this.item.to || '',
-                type: this.item.type || '',
-                theme: this.item.theme || '',
-                meta: JSON.stringify(this.clean(meta, 'meta')),
-                config: JSON.stringify(this.clean(config, 'config')),
-                content: JSON.stringify(this.clean(this.item.content, 'content'))
-              },
-              elements: Object.keys(this.elements),
-              files: this.fileIds(),
-            }
-          }).then(response => {
-            if(response.errors) {
-              throw response.errors
-            }
-
-            this.item.published = false
-            this.$refs.history?.reset()
-            this.reset()
-
-            if(!quiet) {
-              this.messages.add(this.$gettext('Page saved successfully'), 'success')
-            }
-
-            this.invalidate()
-            this.savecnt++
-
-            return true
-          }).catch(error => {
-            this.messages.add(this.$gettext('Error saving page') + ":\n" + error, 'error')
-            this.$log(`PageDetail::save(): Error saving page`, error)
-          })
+          return true
+        }).catch(error => {
+          this.messages.add(this.$gettext('Error saving page') + ":\n" + error, 'error')
+          this.$log(`PageDetail::save(): Error saving page`, error)
         })
       },
 

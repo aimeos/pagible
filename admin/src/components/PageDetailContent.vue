@@ -86,16 +86,6 @@
         }, [])
 
         this.changed[section] = true
-      },
-
-
-      validate() {
-        const refs = Array.isArray(this.$refs.content) ? this.$refs.content : [this.$refs.content]
-        const promises = refs.map(ref => ref?.validate())
-
-        return Promise.all(promises).then(results => {
-          return results.every(result => result)
-        })
       }
     }
   }
@@ -137,7 +127,7 @@
           :assets="assets"
           :content="item.content || []"
           :elements="elements"
-          @error="$emit('error', $event)"
+          @error="error('main', $event)"
           @update:content="item.content = $event; this.$emit('change', 'content')"
         />
       </div>

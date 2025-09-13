@@ -18,6 +18,15 @@
 
     emits: ['update:modelValue', 'error'],
 
+    computed: {
+      rules() {
+        return [
+          v => !this.config.required || !!v || this.$gettext(`Value is required`),
+          v => this.check(v) || this.$gettext(`Not a valid URL`),
+        ]
+      }
+    },
+
     methods: {
       check(v) {
         const allowed = this.config.allowed || ['http', 'https']
@@ -29,20 +38,6 @@
         return v
           ? (new RegExp(`^((${allowed.join('|')}:\/\/)?([^\/\s@:]+(:[^\/\s@:]+)?@)?([0-9a-z]+[.-])*[0-9a-z]+\.[a-z]{2,}(:[0-9]{1,5})?)?(\/.*)?$`)).test(v)
           : true
-      },
-
-      update(value) {
-        this.$emit('update:modelValue', value)
-        this.validate()
-      },
-
-
-      async validate() {
-        await this.$nextTick()
-        const errors = await this.$refs.field?.validate()
-
-        this.$emit('error', errors?.length > 0)
-        return !errors?.length
       }
     },
 
@@ -50,7 +45,9 @@
       modelValue: {
         immediate: true,
         handler(val) {
-          this.validate()
+          this.$emit('error', !this.rules.every(rule => {
+            return rule(this.modelValue) === true
+          }))
         }
       }
     }
@@ -58,15 +55,12 @@
 </script>
 
 <template>
-  <v-text-field ref="field"
-    :placeholder="config.placeholder || ''"
-    :rules="[
-      v => !config.required || !!v || $gettext(`Value is required`),
-      v => check(v) || $gettext(`Not a valid URL`),
-    ]"
+  <v-text-field
+    :rules="rules"
     :readonly="readonly"
     :modelValue="modelValue"
-    @update:modelValue="update($event)"
+    :placeholder="config.placeholder || ''"
+    @update:modelValue="$emit('update:modelValue', $event)"
     density="comfortable"
     hide-details="auto"
     variant="outlined"

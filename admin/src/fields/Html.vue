@@ -10,19 +10,11 @@
 
     emits: ['update:modelValue', 'error'],
 
-    methods: {
-      update(value) {
-        this.$emit('update:modelValue', value)
-        this.validate()
-      },
-
-
-      async validate() {
-        await this.$nextTick()
-        const errors = await this.$refs.field?.validate()
-
-        this.$emit('error', errors?.length > 0)
-        return !errors?.length
+    computed: {
+      rules() {
+        return [
+          v => !!v || this.$gettext(`Value is required`),
+        ]
       }
     },
 
@@ -30,7 +22,9 @@
       modelValue: {
         immediate: true,
         handler(val) {
-          this.validate()
+          this.$emit('error', !this.rules.every(rule => {
+            return rule(this.modelValue) === true
+          }))
         }
       }
     }
@@ -38,14 +32,12 @@
 </script>
 
 <template>
-  <v-textarea ref="field"
-    :rules="[
-      v => !!v || $gettext(`Value is required`),
-    ]"
+  <v-textarea
+    :rules="rules"
     :readonly="readonly"
-    :placeholder="config.placeholder || ''"
     :modelValue="modelValue"
-    @update:modelValue="update($event)"
+    :placeholder="config.placeholder || ''"
+    @update:modelValue="$emit('update:modelValue', $event)"
     density="comfortable"
     hide-details="auto"
     variant="outlined"
