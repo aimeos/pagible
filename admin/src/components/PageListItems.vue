@@ -346,6 +346,7 @@
           }
 
           this.invalidate()
+          this.submenu()
         }).catch(error => {
           this.messages.add(this.$gettext('Error inserting page'), 'error')
           this.$log(`PageList::insert(): Error inserting page`, error)
@@ -470,12 +471,11 @@
           }
 
           this.invalidate()
+          this.submenu()
         }).catch(error => {
           this.messages.add(this.$gettext('Error moving page'), 'error')
           this.$log(`PageList::move(): Error moving page`, stat, idx, error)
         })
-
-        this.show()
       },
 
 
@@ -567,6 +567,7 @@
 
             this.$refs.tree.add(item, parent, index)
             this.invalidate()
+            this.submenu()
           }).catch(error => {
             this.messages.add(this.$gettext('Error copying page'), 'error')
             this.$log(`PageList::paste(): Error copying page`, stat, idx, error)
@@ -575,8 +576,6 @@
           this.messages.add(this.$gettext('Error fetching page'), 'error')
           this.$log(`PageList::paste(): Error fetching page`, node.id, error)
         })
-
-        this.show()
       },
 
 
@@ -732,18 +731,6 @@
       },
 
 
-      show(what = null) {
-        if(what === null) {
-          this.menu = {}
-        } else if(!this.menu[what]) {
-          this.menu = {}
-          this.menu[what] = true
-        } else {
-          this.menu[what] = false
-        }
-      },
-
-
       status(stat, val) {
         if(!this.auth.can('page:save')) {
           this.messages.add(this.$gettext('Permission denied'), 'error')
@@ -778,6 +765,15 @@
             this.$log(`PageList::status(): Error saving page`, stat, val, error)
           })
         })
+      },
+
+
+      submenu(what = null) {
+        if(what) {
+          this.menu[what] = !this.menu[what]
+        } else {
+          this.menu = {}
+        }
       },
 
 
@@ -985,7 +981,7 @@
               <v-btn prepend-icon="mdi-content-copy" variant="text" @click="copy(stat, node)">{{ $gettext('Copy') }}</v-btn>
             </v-list-item>
             <v-list-item v-if="clip && clip.type == 'copy' && !this.embed && auth.can('page:add')">
-              <v-btn prepend-icon="mdi-content-paste" variant="text" @click.stop="show('paste')">{{ $gettext('Paste') }}</v-btn>
+              <v-btn prepend-icon="mdi-content-paste" variant="text" @click.stop="submenu('paste')">{{ $gettext('Paste') }}</v-btn>
             </v-list-item>
             <v-fade-transition v-if="clip && clip.type == 'copy' && menu.paste && !this.embed && auth.can('page:add')">
               <v-list-item>
@@ -1003,7 +999,7 @@
               </v-list-item>
             </v-fade-transition>
             <v-list-item v-if="clip && clip.type == 'cut' && auth.can('page:move')">
-              <v-btn prepend-icon="mdi-content-paste" variant="text" @click.stop="show('move')">{{ $gettext('Paste') }}</v-btn>
+              <v-btn prepend-icon="mdi-content-paste" variant="text" @click.stop="submenu('move')">{{ $gettext('Paste') }}</v-btn>
             </v-list-item>
             <v-fade-transition v-if="clip && clip.type == 'cut' && menu.move && auth.can('page:move')">
               <v-list-item>
@@ -1021,7 +1017,7 @@
               </v-list-item>
             </v-fade-transition>
             <v-list-item v-if="!this.embed && auth.can('page:add')">
-              <v-btn prepend-icon="mdi-content-paste" variant="text" @click.stop="show('insert')">{{ $gettext('Insert') }}</v-btn>
+              <v-btn prepend-icon="mdi-content-paste" variant="text" @click.stop="submenu('insert')">{{ $gettext('Insert') }}</v-btn>
             </v-list-item>
             <v-fade-transition v-if="menu.insert && !this.embed && auth.can('page:add')">
               <v-list-item>
