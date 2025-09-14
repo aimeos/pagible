@@ -32,7 +32,7 @@ msgstr "id"
 #: src/components/AsideMeta.vue:23
 #: src/components/FileListItems.vue:511
 #: src/fields/Audio.vue:105
-#: src/fields/File.vue:287
+#: src/fields/File.vue:289
 #: src/fields/Image.vue:139
 #: src/fields/Video.vue:105
 msgid "mime"
@@ -42,7 +42,7 @@ msgstr "mime"
 #: src/components/ElementListItems.vue:480
 #: src/components/FileListItems.vue:517
 #: src/fields/Audio.vue:109
-#: src/fields/File.vue:291
+#: src/fields/File.vue:293
 #: src/fields/Image.vue:143
 #: src/fields/Video.vue:109
 #: src/views/ElementList.vue:119
@@ -57,7 +57,7 @@ msgstr "gemaakt"
 
 #: src/components/AsideMeta.vue:35
 #: src/fields/Audio.vue:113
-#: src/fields/File.vue:295
+#: src/fields/File.vue:297
 #: src/fields/Image.vue:147
 #: src/fields/Video.vue:113
 msgid "updated"
@@ -148,30 +148,30 @@ msgstr "Gepubliceerd"
 #: src/components/FileListItems.vue:210
 #: src/components/FileListItems.vue:252
 #: src/components/FileListItems.vue:289
-#: src/components/PageDetailContentList.vue:353
+#: src/components/PageDetailContentList.vue:339
 #: src/components/PageListItems.vue:71
 #: src/components/PageListItems.vue:108
 #: src/components/PageListItems.vue:175
 #: src/components/PageListItems.vue:218
-#: src/components/PageListItems.vue:284
-#: src/components/PageListItems.vue:347
-#: src/components/PageListItems.vue:412
-#: src/components/PageListItems.vue:466
-#: src/components/PageListItems.vue:562
-#: src/components/PageListItems.vue:603
-#: src/components/PageListItems.vue:664
-#: src/components/PageListItems.vue:726
-#: src/fields/File.vue:62
-#: src/fields/Images.vue:62
+#: src/components/PageListItems.vue:302
+#: src/components/PageListItems.vue:366
+#: src/components/PageListItems.vue:431
+#: src/components/PageListItems.vue:484
+#: src/components/PageListItems.vue:584
+#: src/components/PageListItems.vue:625
+#: src/components/PageListItems.vue:686
+#: src/components/PageListItems.vue:736
+#: src/fields/File.vue:69
+#: src/fields/Images.vue:71
 #: src/views/ElementDetail.vue:107
 #: src/views/ElementDetail.vue:156
-#: src/views/ElementDetail.vue:211
+#: src/views/ElementDetail.vue:216
 #: src/views/FileDetail.vue:46
 #: src/views/FileDetail.vue:95
-#: src/views/FileDetail.vue:164
+#: src/views/FileDetail.vue:169
 #: src/views/PageDetail.vue:301
 #: src/views/PageDetail.vue:353
-#: src/views/PageDetail.vue:542
+#: src/views/PageDetail.vue:540
 msgid "Permission denied"
 msgstr "Toestemming geweigerd"
 
@@ -203,10 +203,10 @@ msgstr "Fout bij het ophalen van gedeelde elementen"
 #: src/components/ElementListItems.vue:495
 #: src/components/FileListItems.vue:441
 #: src/components/FileListItems.vue:531
-#: src/components/PageDetailContentList.vue:648
-#: src/components/PageDetailContentList.vue:699
-#: src/components/PageListItems.vue:873
-#: src/components/PageListItems.vue:950
+#: src/components/PageDetailContentList.vue:615
+#: src/components/PageDetailContentList.vue:666
+#: src/components/PageListItems.vue:879
+#: src/components/PageListItems.vue:956
 msgid "Actions"
 msgstr "Acties"
 
@@ -214,23 +214,23 @@ msgstr "Acties"
 #: src/components/ElementListItems.vue:504
 #: src/components/FileListItems.vue:445
 #: src/components/FileListItems.vue:539
-#: src/components/PageListItems.vue:877
-#: src/components/PageListItems.vue:957
-#: src/views/ElementDetail.vue:320
-#: src/views/ElementDetail.vue:326
-#: src/views/FileDetail.vue:270
-#: src/views/FileDetail.vue:276
-#: src/views/PageDetail.vue:668
-#: src/views/PageDetail.vue:674
+#: src/components/PageListItems.vue:883
+#: src/components/PageListItems.vue:963
+#: src/views/ElementDetail.vue:325
+#: src/views/ElementDetail.vue:331
+#: src/views/FileDetail.vue:275
+#: src/views/FileDetail.vue:281
+#: src/views/PageDetail.vue:666
+#: src/views/PageDetail.vue:672
 msgid "Publish"
 msgstr "Publiceer"
 
 #: src/components/ElementListItems.vue:429
 #: src/components/ElementListItems.vue:556
-#: src/components/PageDetailContentList.vue:787
+#: src/components/PageDetailContentList.vue:754
 #: src/components/PageDetailItemConfig.vue:201
 #: src/components/PageDetailItemMeta.vue:200
-#: src/fields/Items.vue:229
+#: src/fields/Items.vue:225
 msgid "Add element"
 msgstr "Element toevoegen"
 
@@ -238,10 +238,10 @@ msgstr "Element toevoegen"
 #: src/components/ElementListItems.vue:507
 #: src/components/FileListItems.vue:451
 #: src/components/FileListItems.vue:542
-#: src/components/PageDetailContentList.vue:652
-#: src/components/PageDetailContentList.vue:712
-#: src/components/PageListItems.vue:889
-#: src/components/PageListItems.vue:1035
+#: src/components/PageDetailContentList.vue:631
+#: src/components/PageDetailContentList.vue:679
+#: src/components/PageListItems.vue:895
+#: src/components/PageListItems.vue:1041
 msgid "Delete"
 msgstr "Vuilnis"
 
@@ -249,8 +249,8 @@ msgstr "Vuilnis"
 #: src/components/ElementListItems.vue:510
 #: src/components/FileListItems.vue:454
 #: src/components/FileListItems.vue:545
-#: src/components/PageListItems.vue:892
-#: src/components/PageListItems.vue:1038
+#: src/components/PageListItems.vue:898
+#: src/components/PageListItems.vue:1044
 msgid "Restore"
 msgstr "Herstel"
 
@@ -258,15 +258,15 @@ msgstr "Herstel"
 #: src/components/ElementListItems.vue:513
 #: src/components/FileListItems.vue:457
 #: src/components/FileListItems.vue:548
-#: src/components/PageListItems.vue:895
-#: src/components/PageListItems.vue:1041
+#: src/components/PageListItems.vue:901
+#: src/components/PageListItems.vue:1047
 msgid "Purge"
 msgstr "Zuiveren"
 
 #: src/components/ElementListItems.vue:449
 #: src/components/FileListItems.vue:466
-#: src/components/PageDetailContentList.vue:673
-#: src/components/PageListItems.vue:904
+#: src/components/PageDetailContentList.vue:640
+#: src/components/PageListItems.vue:910
 msgid "Search for"
 msgstr "Zoeken naar"
 
@@ -292,7 +292,7 @@ msgstr "oudste"
 #: src/components/ElementListItems.vue:474
 #: src/components/FileListItems.vue:508
 #: src/fields/Audio.vue:97
-#: src/fields/File.vue:279
+#: src/fields/File.vue:281
 #: src/fields/Image.vue:131
 #: src/fields/Video.vue:97
 msgid "name"
@@ -305,32 +305,32 @@ msgstr "type"
 #: src/components/ElementListItems.vue:538
 #: src/components/FileListItems.vue:580
 #: src/components/HistoryDialog.vue:130
-#: src/components/PageListItems.vue:1075
-#: src/fields/Autocomplete.vue:155
-#: src/fields/Combobox.vue:18
+#: src/components/PageListItems.vue:1081
+#: src/fields/Autocomplete.vue:148
+#: src/fields/Combobox.vue:16
 msgid "Loading"
 msgstr "Laden"
 
 #: src/components/ElementListItems.vue:546
 #: src/components/FileListItems.vue:589
-#: src/components/PageListItems.vue:1080
+#: src/components/PageListItems.vue:1086
 msgid "No entries found"
 msgstr "Geen items gevonden"
 
-#: src/components/Fields.vue:136
-#: src/fields/Items.vue:173
+#: src/components/Fields.vue:131
+#: src/fields/Items.vue:169
 msgid "Translate %{code} field"
 msgstr "Vertaal %{code} veld"
 
-#: src/components/Fields.vue:154
-#: src/fields/Items.vue:191
+#: src/components/Fields.vue:149
+#: src/fields/Items.vue:187
 msgid "Generate text for %{code} field"
 msgstr "Genereer tekst voor %{code} veld"
 
 #: src/components/FieldsDialog.vue:51
-#: src/views/ElementDetail.vue:287
-#: src/views/FileDetail.vue:237
-#: src/views/PageDetail.vue:635
+#: src/views/ElementDetail.vue:292
+#: src/views/FileDetail.vue:242
+#: src/views/PageDetail.vue:633
 msgid "Save"
 msgstr "Sla"
 
@@ -351,8 +351,8 @@ msgstr "Inhoud element"
 #: src/components/FileListItems.vue:112
 #: src/components/FileUrlDialog.vue:67
 #: src/components/FileUrlDialog.vue:147
-#: src/fields/File.vue:102
-#: src/fields/Images.vue:114
+#: src/fields/File.vue:109
+#: src/fields/Images.vue:123
 msgid "Error adding file %{path}"
 msgstr "Fout bij het toevoegen van bestand %{path}"
 
@@ -377,9 +377,9 @@ msgstr "Gegenereerde afbeeldingen"
 #: src/components/FileAiDialog.vue:245
 #: src/components/FileUrlDialog.vue:209
 #: src/fields/Audio.vue:57
-#: src/fields/File.vue:239
+#: src/fields/File.vue:241
 #: src/fields/Image.vue:84
-#: src/fields/Images.vue:239
+#: src/fields/Images.vue:242
 #: src/fields/Video.vue:57
 msgid "Remove"
 msgstr "Verwijder"
@@ -545,8 +545,8 @@ msgstr "Fout bij het ophalen van bestanden"
 #: src/components/FileListItems.vue:448
 #: src/components/FileListItems.vue:606
 #: src/components/FileUrlDialog.vue:161
-#: src/fields/Images.vue:250
-#: src/fields/Images.vue:272
+#: src/fields/Images.vue:253
+#: src/fields/Images.vue:275
 msgid "Add files"
 msgstr "Bestanden toevoegen"
 
@@ -576,14 +576,14 @@ msgstr "Het bestand is niet van het type \"%{mime}*\"."
 
 #: src/components/FileUrlDialog.vue:161
 #: src/fields/Audio.vue:67
-#: src/fields/File.vue:249
+#: src/fields/File.vue:251
 #: src/fields/Image.vue:94
 #: src/fields/Video.vue:67
 msgid "Add file"
 msgstr "Bestand toevoegen"
 
 #: src/components/FileUrlDialog.vue:172
-#: src/fields/Images.vue:257
+#: src/fields/Images.vue:260
 msgid "Add files from URLs"
 msgstr "Bestanden van URL's toevoegen"
 
@@ -615,112 +615,112 @@ msgstr "Terugkeren"
 msgid "Use version"
 msgstr "Versie gebruiken"
 
-#: src/components/PageDetailContentList.vue:93
-#: src/components/PageDetailContentList.vue:104
-#: src/components/PageDetailContentList.vue:531
+#: src/components/PageDetailContentList.vue:92
+#: src/components/PageDetailContentList.vue:103
+#: src/components/PageDetailContentList.vue:514
 msgid "Content element not found"
 msgstr "Inhoudselement niet gevonden"
 
-#: src/components/PageDetailContentList.vue:311
+#: src/components/PageDetailContentList.vue:299
 msgid "Error refining content"
 msgstr "Fout bij het verfijnen van inhoud"
 
-#: src/components/PageDetailContentList.vue:360
+#: src/components/PageDetailContentList.vue:346
 msgid "Element not found"
 msgstr "Element niet gevonden"
 
-#: src/components/PageDetailContentList.vue:365
+#: src/components/PageDetailContentList.vue:351
 msgid "Element is already shared"
 msgstr "Element is al gedeeld"
 
-#: src/components/PageDetailContentList.vue:425
+#: src/components/PageDetailContentList.vue:410
 msgid "Unable to make element shared"
 msgstr "Kan gedeeld element niet maken"
 
-#: src/components/PageDetailContentList.vue:444
+#: src/components/PageDetailContentList.vue:429
 msgid "Not available for this content element"
 msgstr "Niet beschikbaar voor dit inhoudselement"
 
-#: src/components/PageDetailContentList.vue:538
+#: src/components/PageDetailContentList.vue:521
 msgid "Element is not shared"
 msgstr "Element wordt niet gedeeld"
 
-#: src/components/PageDetailContentList.vue:596
+#: src/components/PageDetailContentList.vue:563
 msgid "Describe the task you want to perform"
 msgstr "Beschrijf de taak die je wilt uitvoeren"
 
-#: src/components/PageDetailContentList.vue:617
+#: src/components/PageDetailContentList.vue:584
 msgid "Refining ..."
 msgstr "Verfijnen ..."
 
-#: src/components/PageDetailContentList.vue:617
+#: src/components/PageDetailContentList.vue:584
 msgid "Refine content based on prompt"
 msgstr "Inhoud verfijnen op basis van vraag"
 
-#: src/components/PageDetailContentList.vue:634
+#: src/components/PageDetailContentList.vue:601
 msgid "AI can add or improve content based on your input"
 msgstr "AI kan inhoud toevoegen of verbeteren op basis van jouw input"
 
-#: src/components/PageDetailContentList.vue:635
+#: src/components/PageDetailContentList.vue:602
 msgid "It can take a long time depending on the task and content size"
 msgstr "Het kan lang duren, afhankelijk van de taak en de inhoudsgrootte"
 
-#: src/components/PageDetailContentList.vue:655
-#: src/components/PageDetailContentList.vue:706
-#: src/components/PageListItems.vue:975
+#: src/components/PageDetailContentList.vue:619
+#: src/components/PageDetailContentList.vue:673
+#: src/components/PageListItems.vue:981
 msgid "Copy"
 msgstr "Kopie"
 
-#: src/components/PageDetailContentList.vue:658
-#: src/components/PageDetailContentList.vue:709
-#: src/components/PageListItems.vue:972
+#: src/components/PageDetailContentList.vue:622
+#: src/components/PageDetailContentList.vue:676
+#: src/components/PageListItems.vue:978
 msgid "Cut"
 msgstr "Snijden"
 
-#: src/components/PageDetailContentList.vue:661
-#: src/components/PageListItems.vue:978
-#: src/components/PageListItems.vue:996
+#: src/components/PageDetailContentList.vue:625
+#: src/components/PageListItems.vue:984
+#: src/components/PageListItems.vue:1002
 msgid "Paste"
 msgstr "Plakken"
 
-#: src/components/PageDetailContentList.vue:664
-#: src/components/PageDetailContentList.vue:745
+#: src/components/PageDetailContentList.vue:628
+#: src/components/PageDetailContentList.vue:712
 msgid "Merge"
 msgstr "Samenvoegen"
 
-#: src/components/PageDetailContentList.vue:718
+#: src/components/PageDetailContentList.vue:685
 msgid "Paste before"
 msgstr "Plakken voor"
 
-#: src/components/PageDetailContentList.vue:721
+#: src/components/PageDetailContentList.vue:688
 msgid "Paste after"
 msgstr "Plakken na"
 
-#: src/components/PageDetailContentList.vue:724
+#: src/components/PageDetailContentList.vue:691
 msgid "Insert before"
 msgstr "Invoegen vóór"
 
-#: src/components/PageDetailContentList.vue:727
+#: src/components/PageDetailContentList.vue:694
 msgid "Insert after"
 msgstr "Invoegen na"
 
-#: src/components/PageDetailContentList.vue:733
+#: src/components/PageDetailContentList.vue:700
 msgid "Make shared"
 msgstr "Maak gedeelde"
 
-#: src/components/PageDetailContentList.vue:736
+#: src/components/PageDetailContentList.vue:703
 msgid "Merge copy"
 msgstr "Kopie samenvoegen"
 
-#: src/components/PageDetailContentList.vue:739
+#: src/components/PageDetailContentList.vue:706
 msgid "Change to"
 msgstr "Veranderen in"
 
-#: src/components/PageDetailContentList.vue:742
+#: src/components/PageDetailContentList.vue:709
 msgid "Split"
 msgstr "Gesplitst"
 
-#: src/components/PageDetailContentList.vue:751
+#: src/components/PageDetailContentList.vue:718
 msgid "Shared element"
 msgstr "Gedeeld element"
 
@@ -741,7 +741,7 @@ msgid "Add element after"
 msgstr "Element toevoegen na"
 
 #: src/components/PageDetailEditor.vue:214
-#: src/fields/Items.vue:158
+#: src/fields/Items.vue:154
 msgid "Remove element"
 msgstr "Element verwijderen"
 
@@ -806,7 +806,7 @@ msgstr "Status"
 
 #: src/components/PageDetailItemProps.vue:160
 #: src/components/PageDetailItemProps.vue:199
-#: src/fields/Table.vue:55
+#: src/fields/Table.vue:15
 #: src/views/Login.vue:93
 #: src/views/Login.vue:106
 msgid "Field is required"
@@ -905,112 +905,113 @@ msgid "Page Visits"
 msgstr "Pagina bezoeken"
 
 #: src/components/PageDetailMetrics.vue:242
-msgid "Visit Duration (minutes)"
-msgstr "Duur bezoek (minuten)"
-
-#: src/components/PageDetailMetrics.vue:254
-msgid "Google Impressions"
-msgstr "Google-indrukken"
-
-#: src/components/PageDetailMetrics.vue:266
-msgid "Google Clicks"
-msgstr "Google klikken"
-
-#: src/components/PageDetailMetrics.vue:278
-msgid "Google Conversion Rate"
-msgstr "Google Conversiepercentage"
-
-#: src/components/PageDetailMetrics.vue:299
-msgid "Views & Visits"
-msgstr "Bezoeken"
-
-#: src/components/PageDetailMetrics.vue:343
-#: src/components/PageDetailMetrics.vue:567
-msgid "Views"
-msgstr "Weergaven"
-
-#: src/components/PageDetailMetrics.vue:351
-msgid "Visits"
-msgstr "Bezoek"
-
-#: src/components/PageDetailMetrics.vue:359
+#: src/components/PageDetailMetrics.vue:371
 msgid "Conversions"
 msgstr "Conversies"
 
-#: src/components/PageDetailMetrics.vue:372
+#: src/components/PageDetailMetrics.vue:254
+msgid "Visit Duration (minutes)"
+msgstr "Duur bezoek (minuten)"
+
+#: src/components/PageDetailMetrics.vue:266
+msgid "Google Impressions"
+msgstr "Google-indrukken"
+
+#: src/components/PageDetailMetrics.vue:278
+msgid "Google Clicks"
+msgstr "Google klikken"
+
+#: src/components/PageDetailMetrics.vue:290
+msgid "Google Conversion Rate"
+msgstr "Google Conversiepercentage"
+
+#: src/components/PageDetailMetrics.vue:311
+msgid "Views & Visits"
+msgstr "Bezoeken"
+
+#: src/components/PageDetailMetrics.vue:355
+#: src/components/PageDetailMetrics.vue:579
+msgid "Views"
+msgstr "Weergaven"
+
+#: src/components/PageDetailMetrics.vue:363
+msgid "Visits"
+msgstr "Bezoek"
+
+#: src/components/PageDetailMetrics.vue:384
 msgid "Visit Durations (minutes)"
 msgstr "Bezoekduur (minuten)"
 
-#: src/components/PageDetailMetrics.vue:415
+#: src/components/PageDetailMetrics.vue:427
 msgid "Duration"
 msgstr "Duur"
 
-#: src/components/PageDetailMetrics.vue:431
+#: src/components/PageDetailMetrics.vue:443
 msgid "Referrers"
 msgstr "Verwijzers"
 
-#: src/components/PageDetailMetrics.vue:472
+#: src/components/PageDetailMetrics.vue:484
 msgid "Countries"
 msgstr "Landen"
 
-#: src/components/PageDetailMetrics.vue:488
+#: src/components/PageDetailMetrics.vue:500
 msgid "Page Speed"
 msgstr "Pagina Snelheid"
 
-#: src/components/PageDetailMetrics.vue:492
+#: src/components/PageDetailMetrics.vue:504
 msgid "Round trip time"
 msgstr "Heen- en terugreis"
 
-#: src/components/PageDetailMetrics.vue:502
+#: src/components/PageDetailMetrics.vue:514
 msgid "Time to first byte"
 msgstr "Tijd tot eerste byte"
 
-#: src/components/PageDetailMetrics.vue:512
+#: src/components/PageDetailMetrics.vue:524
 msgid "First contentful paint"
 msgstr "Eerste verf met inhoud"
 
-#: src/components/PageDetailMetrics.vue:522
+#: src/components/PageDetailMetrics.vue:534
 msgid "Largest contentful paint"
 msgstr "Grootste inhoudsvolle verf"
 
-#: src/components/PageDetailMetrics.vue:532
+#: src/components/PageDetailMetrics.vue:544
 msgid "Interaction to next paint"
 msgstr "Interactie naar volgende verf"
 
-#: src/components/PageDetailMetrics.vue:542
+#: src/components/PageDetailMetrics.vue:554
 msgid "Cumulative layout shift"
 msgstr "Cumulatieve verschuiving in lay-out"
 
-#: src/components/PageDetailMetrics.vue:561
+#: src/components/PageDetailMetrics.vue:573
 msgid "Google Search: Queries"
 msgstr "Zoeken met Google: Zoekopdrachten"
 
-#: src/components/PageDetailMetrics.vue:568
-#: src/components/PageDetailMetrics.vue:652
+#: src/components/PageDetailMetrics.vue:580
+#: src/components/PageDetailMetrics.vue:664
 msgid "Clicks"
 msgstr "Klikken"
 
-#: src/components/PageDetailMetrics.vue:569
+#: src/components/PageDetailMetrics.vue:581
 msgid "Percent"
 msgstr "Percentage"
 
-#: src/components/PageDetailMetrics.vue:570
+#: src/components/PageDetailMetrics.vue:582
 msgid "Position"
 msgstr "Positie"
 
-#: src/components/PageDetailMetrics.vue:600
+#: src/components/PageDetailMetrics.vue:612
 msgid "Google Search: Impressions & Clicks"
 msgstr "Google Zoeken: Indrukken &amp; klikken"
 
-#: src/components/PageDetailMetrics.vue:644
+#: src/components/PageDetailMetrics.vue:656
 msgid "Impressions"
 msgstr "Impressies"
 
-#: src/components/PageDetailMetrics.vue:665
+#: src/components/PageDetailMetrics.vue:677
 msgid "Google Search: Conversions"
 msgstr "Google Zoeken: Conversies"
 
-#: src/components/PageDetailMetrics.vue:708
+#: src/components/PageDetailMetrics.vue:720
 msgid "Percentage"
 msgstr "Percentage"
 
@@ -1019,7 +1020,7 @@ msgid "Error adding root page"
 msgstr "Fout bij het toevoegen van rootpagina"
 
 #: src/components/PageListItems.vue:142
-#: src/components/PageListItems.vue:456
+#: src/components/PageListItems.vue:476
 msgid "Error moving page"
 msgstr "Fout bij het verplaatsen van pagina"
 
@@ -1031,90 +1032,90 @@ msgstr "Fout bij het verwijderen van pagina"
 msgid "Error fetching pages"
 msgstr "Fout bij het ophalen van pagina's"
 
-#: src/components/PageListItems.vue:332
+#: src/components/PageListItems.vue:351
 msgid "Error inserting page"
 msgstr "Fout bij het invoegen van pagina"
 
-#: src/components/PageListItems.vue:388
+#: src/components/PageListItems.vue:407
 msgid "Error restoring page"
 msgstr "Fout bij het herstellen van pagina"
 
-#: src/components/PageListItems.vue:548
+#: src/components/PageListItems.vue:572
 msgid "Error copying page"
 msgstr "Fout bij het kopiëren van pagina"
 
-#: src/components/PageListItems.vue:552
+#: src/components/PageListItems.vue:576
 #: src/views/PageDetail.vue:137
 msgid "Error fetching page"
 msgstr "Fout bij het ophalen van pagina"
 
-#: src/components/PageListItems.vue:595
+#: src/components/PageListItems.vue:617
 #: src/views/PageDetail.vue:335
 msgid "Error publishing page"
 msgstr "Fout bij het publiceren van pagina"
 
-#: src/components/PageListItems.vue:637
+#: src/components/PageListItems.vue:659
 msgid "Error purging page"
 msgstr "Foutopruimingspagina"
 
-#: src/components/PageListItems.vue:706
+#: src/components/PageListItems.vue:728
 msgid "Error searching pages"
 msgstr "Fout bij het zoeken naar pagina's"
 
-#: src/components/PageListItems.vue:754
-#: src/views/PageDetail.vue:430
+#: src/components/PageListItems.vue:764
+#: src/views/PageDetail.vue:429
 msgid "Error saving page"
 msgstr "Fout bij het opslaan van pagina"
 
-#: src/components/PageListItems.vue:880
-#: src/components/PageListItems.vue:963
+#: src/components/PageListItems.vue:886
+#: src/components/PageListItems.vue:969
 msgid "Enable"
 msgstr "inschakelen"
 
-#: src/components/PageListItems.vue:883
-#: src/components/PageListItems.vue:960
+#: src/components/PageListItems.vue:889
+#: src/components/PageListItems.vue:966
 msgid "Disable"
 msgstr "uitschakelen"
 
-#: src/components/PageListItems.vue:914
+#: src/components/PageListItems.vue:920
 msgid "Reload page tree"
 msgstr "Pagina boom opnieuw laden"
 
-#: src/components/PageListItems.vue:941
+#: src/components/PageListItems.vue:947
 msgid "Toggle child nodes"
 msgstr "Kindknooppunten schakelen"
 
-#: src/components/PageListItems.vue:966
+#: src/components/PageListItems.vue:972
 msgid "Hide"
 msgstr "Verbergen in menu"
 
-#: src/components/PageListItems.vue:982
-#: src/components/PageListItems.vue:1000
-#: src/components/PageListItems.vue:1018
+#: src/components/PageListItems.vue:988
+#: src/components/PageListItems.vue:1006
+#: src/components/PageListItems.vue:1024
 msgid "Before"
 msgstr "Voor"
 
-#: src/components/PageListItems.vue:987
-#: src/components/PageListItems.vue:1005
-#: src/components/PageListItems.vue:1023
+#: src/components/PageListItems.vue:993
+#: src/components/PageListItems.vue:1011
+#: src/components/PageListItems.vue:1029
 msgid "Into"
 msgstr "Naar"
 
-#: src/components/PageListItems.vue:992
-#: src/components/PageListItems.vue:1010
-#: src/components/PageListItems.vue:1028
+#: src/components/PageListItems.vue:998
+#: src/components/PageListItems.vue:1016
+#: src/components/PageListItems.vue:1034
 msgid "After"
 msgstr "Na"
 
-#: src/components/PageListItems.vue:1014
+#: src/components/PageListItems.vue:1020
 msgid "Insert"
 msgstr "Invoegen"
 
-#: src/components/PageListItems.vue:1061
+#: src/components/PageListItems.vue:1067
 msgid "New"
 msgstr "Nieuw"
 
-#: src/components/PageListItems.vue:1086
+#: src/components/PageListItems.vue:1092
 msgid "Add page"
 msgstr "Pagina toevoegen"
 
@@ -1148,106 +1149,120 @@ msgstr "Afmelden"
 
 #: src/fields/Audio.vue:18
 #: src/fields/Audio.vue:48
-#: src/fields/File.vue:200
-#: src/fields/File.vue:230
+#: src/fields/File.vue:202
+#: src/fields/File.vue:232
 #: src/fields/Image.vue:45
 #: src/fields/Image.vue:75
-#: src/fields/Images.vue:230
+#: src/fields/Images.vue:233
 #: src/fields/Video.vue:18
 #: src/fields/Video.vue:48
 msgid "Edit"
 msgstr "Bewerk"
 
 #: src/fields/Audio.vue:34
-#: src/fields/File.vue:216
+#: src/fields/File.vue:218
 #: src/fields/Image.vue:61
-#: src/fields/Images.vue:216
+#: src/fields/Images.vue:219
 #: src/fields/Video.vue:34
 msgid "Open menu"
 msgstr "Menu openen"
 
 #: src/fields/Audio.vue:74
-#: src/fields/File.vue:256
+#: src/fields/File.vue:258
 #: src/fields/Image.vue:101
 #: src/fields/Video.vue:74
 msgid "Add file from URL"
 msgstr "Bestand toevoegen vanaf URL"
 
 #: src/fields/Audio.vue:80
-#: src/fields/File.vue:262
+#: src/fields/File.vue:264
 #: src/fields/Image.vue:114
 #: src/fields/Video.vue:80
 msgid "Upload file"
 msgstr "Bestand uploaden"
 
 #: src/fields/Audio.vue:101
-#: src/fields/File.vue:283
+#: src/fields/File.vue:285
 #: src/fields/Image.vue:135
 #: src/fields/Video.vue:101
 msgid "description"
 msgstr "beschrijving"
 
-#: src/fields/Autocomplete.vue:149
-#: src/fields/Color.vue:35
-#: src/fields/Date.vue:49
-#: src/fields/Html.vue:43
-#: src/fields/Number.vue:51
-#: src/fields/Select.vue:43
-#: src/fields/Url.vue:64
+#: src/fields/Autocomplete.vue:32
+#: src/fields/Color.vue:22
+#: src/fields/Date.vue:22
+#: src/fields/Html.vue:16
+#: src/fields/Number.vue:24
+#: src/fields/Select.vue:16
+#: src/fields/Url.vue:24
 msgid "Value is required"
 msgstr "Waarde is vereist"
 
-#: src/fields/Autocomplete.vue:155
-#: src/fields/Combobox.vue:18
+#: src/fields/Autocomplete.vue:148
+#: src/fields/Combobox.vue:16
 msgid "No data available"
 msgstr "Geen gegevens beschikbaar"
 
-#: src/fields/Color.vue:36
+#: src/fields/Color.vue:23
 msgid "Value must be a hex color code"
 msgstr "De waarde moet een hexadecimale kleurcode zijn"
 
+#: src/fields/File.vue:61
+msgid "File is required"
+msgstr "Bestand is vereist"
+
 #: src/fields/Image.vue:108
-#: src/fields/Images.vue:266
+#: src/fields/Images.vue:269
 msgid "Create file"
 msgstr "Bestand maken"
 
-#: src/fields/Items.vue:119
-msgid "Maximum is %{num} entries"
-msgstr "Het maximum is %{num} vermeldingen"
-
-#: src/fields/Items.vue:120
+#: src/fields/Images.vue:54
+#: src/fields/Items.vue:42
 msgid "Minimum is %{num} entries"
 msgstr "Minimum is %{num} inzendingen"
 
-#: src/fields/Plaintext.vue:50
-#: src/fields/String.vue:55
+#: src/fields/Images.vue:55
+#: src/fields/Items.vue:41
+msgid "Maximum is %{num} entries"
+msgstr "Het maximum is %{num} vermeldingen"
+
+#: src/fields/Markdown.vue:80
+#: src/fields/Plaintext.vue:23
+#: src/fields/String.vue:23
+#: src/fields/Text.vue:80
 msgid "Minimum length is %{num} characters"
 msgstr "De minimale lengte is %{num} tekens"
 
-#: src/fields/Plaintext.vue:51
-#: src/fields/String.vue:56
+#: src/fields/Markdown.vue:81
+#: src/fields/Plaintext.vue:24
+#: src/fields/String.vue:24
+#: src/fields/Text.vue:81
 msgid "Maximum length is %{num} characters"
 msgstr "De maximale lengte is %{num} tekens"
 
-#: src/fields/Radio.vue:29
+#: src/fields/Radio.vue:16
 msgid "Selection is required"
 msgstr "Selectie is vereist"
 
-#: src/fields/Table.vue:56
+#: src/fields/Table.vue:16
 msgid "Minimum are %{num} columns"
 msgstr "Minimum zijn %{num} kolommen"
 
-#: src/fields/Table.vue:57
+#: src/fields/Table.vue:17
+msgid "Maximum are %{num} columns"
+msgstr "Maximaal zijn %{num} kolommen"
+
+#: src/fields/Table.vue:18
 msgid "The number of columns is not the same in all rows"
 msgstr "Het aantal kolommen is niet hetzelfde in alle rijen"
 
-#: src/fields/Url.vue:26
-msgid "Invalid URL schema configuration"
-msgstr "Ongeldige URL-schemaconfiguratie"
-
-#: src/fields/Url.vue:65
+#: src/fields/Url.vue:25
 msgid "Not a valid URL"
 msgstr "Geen geldige URL"
+
+#: src/fields/Url.vue:35
+msgid "Invalid URL schema configuration"
+msgstr "Ongeldige URL-schemaconfiguratie"
 
 #: src/routes.js:48
 msgid "You do not have permission to access %{path}"
@@ -1564,52 +1579,58 @@ msgstr "Element gepland voor publicatie op %{date}"
 msgid "Error publishing element"
 msgstr "Fout bij het publiceren van element"
 
-#: src/views/ElementDetail.vue:191
+#: src/views/ElementDetail.vue:161
+#: src/views/FileDetail.vue:100
+#: src/views/PageDetail.vue:358
+msgid "There are invalid fields, please resolve the errors first"
+msgstr "Er zijn ongeldige velden, los de fouten eerst op"
+
+#: src/views/ElementDetail.vue:196
 msgid "Element saved successfully"
 msgstr "Element succesvol opgeslagen"
 
-#: src/views/ElementDetail.vue:196
+#: src/views/ElementDetail.vue:201
 msgid "Error saving element"
 msgstr "Fout bij opslaan element"
 
-#: src/views/ElementDetail.vue:252
+#: src/views/ElementDetail.vue:257
 msgid "Error fetching element versions"
 msgstr "Fout bij het ophalen van elementversies"
 
-#: src/views/ElementDetail.vue:265
-#: src/views/FileDetail.vue:215
-#: src/views/PageDetail.vue:593
+#: src/views/ElementDetail.vue:270
+#: src/views/FileDetail.vue:220
+#: src/views/PageDetail.vue:591
 msgid "Back to list view"
 msgstr "Terug naar lijstweergave"
 
-#: src/views/ElementDetail.vue:272
-#: src/views/ElementDetail.vue:350
+#: src/views/ElementDetail.vue:277
+#: src/views/ElementDetail.vue:355
 msgid "Element"
 msgstr "Element"
 
-#: src/views/ElementDetail.vue:280
-#: src/views/FileDetail.vue:230
-#: src/views/PageDetail.vue:628
+#: src/views/ElementDetail.vue:285
+#: src/views/FileDetail.vue:235
+#: src/views/PageDetail.vue:626
 msgid "View history"
 msgstr "Geschiedenis bekijken"
 
-#: src/views/ElementDetail.vue:298
-#: src/views/FileDetail.vue:248
-#: src/views/PageDetail.vue:646
+#: src/views/ElementDetail.vue:303
+#: src/views/FileDetail.vue:253
+#: src/views/PageDetail.vue:644
 msgid "Schedule publishing"
 msgstr "Publicatie plannen"
 
-#: src/views/ElementDetail.vue:341
+#: src/views/ElementDetail.vue:346
 #: src/views/ElementList.vue:84
-#: src/views/FileDetail.vue:291
+#: src/views/FileDetail.vue:296
 #: src/views/FileList.vue:81
-#: src/views/PageDetail.vue:689
+#: src/views/PageDetail.vue:687
 #: src/views/PageList.vue:169
 msgid "Toggle side menu"
 msgstr "Zijmenu schakelen"
 
-#: src/views/ElementDetail.vue:351
-#: src/views/FileDetail.vue:301
+#: src/views/ElementDetail.vue:356
+#: src/views/FileDetail.vue:306
 msgid "Used by"
 msgstr "Gebruikt door"
 
@@ -1698,20 +1719,20 @@ msgstr "Bestand succesvol gepubliceerd"
 msgid "File scheduled for publishing at %{date}"
 msgstr "Bestand gepland voor publicatie op %{date}"
 
-#: src/views/FileDetail.vue:142
+#: src/views/FileDetail.vue:147
 msgid "File saved successfully"
 msgstr "Bestand succesvol opgeslagen"
 
-#: src/views/FileDetail.vue:148
+#: src/views/FileDetail.vue:153
 msgid "Error saving file"
 msgstr "Fout bij opslaan bestand"
 
-#: src/views/FileDetail.vue:202
+#: src/views/FileDetail.vue:207
 msgid "Error fetching file versions"
 msgstr "Fout bij het ophalen van bestandsversies"
 
-#: src/views/FileDetail.vue:222
-#: src/views/FileDetail.vue:300
+#: src/views/FileDetail.vue:227
+#: src/views/FileDetail.vue:305
 msgid "File"
 msgstr "Bestand"
 
@@ -1751,40 +1772,36 @@ msgstr "Pagina succesvol gepubliceerd"
 msgid "Page scheduled for publishing at %{date}"
 msgstr "Pagina gepland voor publicatie op %{date}"
 
-#: src/views/PageDetail.vue:363
-msgid "There are invalid fields, please resolve the errors first"
-msgstr "Er zijn ongeldige velden, los de fouten eerst op"
-
-#: src/views/PageDetail.vue:422
+#: src/views/PageDetail.vue:421
 msgid "Page saved successfully"
 msgstr "Pagina succesvol opgeslagen"
 
-#: src/views/PageDetail.vue:439
+#: src/views/PageDetail.vue:437
 msgid "No page schema for \"content\" found"
 msgstr "Geen paginaschema voor \"content\" gevonden"
 
-#: src/views/PageDetail.vue:574
+#: src/views/PageDetail.vue:572
 msgid "Error fetching page versions"
 msgstr "Fout bij het ophalen van paginaversies"
 
-#: src/views/PageDetail.vue:600
-#: src/views/PageDetail.vue:710
+#: src/views/PageDetail.vue:598
+#: src/views/PageDetail.vue:708
 msgid "Page"
 msgstr "Pagina"
 
-#: src/views/PageDetail.vue:608
+#: src/views/PageDetail.vue:606
 msgid "Translate page"
 msgstr "Pagina vertalen"
 
-#: src/views/PageDetail.vue:700
+#: src/views/PageDetail.vue:698
 msgid "Editor"
 msgstr "Redacteur"
 
-#: src/views/PageDetail.vue:705
+#: src/views/PageDetail.vue:703
 msgid "Content"
 msgstr "Inhoud"
 
-#: src/views/PageDetail.vue:714
+#: src/views/PageDetail.vue:712
 msgid "Metrics"
 msgstr "Metriek"
 

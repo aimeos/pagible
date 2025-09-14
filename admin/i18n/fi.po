@@ -32,7 +32,7 @@ msgstr "id"
 #: src/components/AsideMeta.vue:23
 #: src/components/FileListItems.vue:511
 #: src/fields/Audio.vue:105
-#: src/fields/File.vue:287
+#: src/fields/File.vue:289
 #: src/fields/Image.vue:139
 #: src/fields/Video.vue:105
 msgid "mime"
@@ -42,7 +42,7 @@ msgstr "mime"
 #: src/components/ElementListItems.vue:480
 #: src/components/FileListItems.vue:517
 #: src/fields/Audio.vue:109
-#: src/fields/File.vue:291
+#: src/fields/File.vue:293
 #: src/fields/Image.vue:143
 #: src/fields/Video.vue:109
 #: src/views/ElementList.vue:119
@@ -57,7 +57,7 @@ msgstr "luotu"
 
 #: src/components/AsideMeta.vue:35
 #: src/fields/Audio.vue:113
-#: src/fields/File.vue:295
+#: src/fields/File.vue:297
 #: src/fields/Image.vue:147
 #: src/fields/Video.vue:113
 msgid "updated"
@@ -148,30 +148,30 @@ msgstr "Julkaistu"
 #: src/components/FileListItems.vue:210
 #: src/components/FileListItems.vue:252
 #: src/components/FileListItems.vue:289
-#: src/components/PageDetailContentList.vue:353
+#: src/components/PageDetailContentList.vue:339
 #: src/components/PageListItems.vue:71
 #: src/components/PageListItems.vue:108
 #: src/components/PageListItems.vue:175
 #: src/components/PageListItems.vue:218
-#: src/components/PageListItems.vue:284
-#: src/components/PageListItems.vue:347
-#: src/components/PageListItems.vue:412
-#: src/components/PageListItems.vue:466
-#: src/components/PageListItems.vue:562
-#: src/components/PageListItems.vue:603
-#: src/components/PageListItems.vue:664
-#: src/components/PageListItems.vue:726
-#: src/fields/File.vue:62
-#: src/fields/Images.vue:62
+#: src/components/PageListItems.vue:302
+#: src/components/PageListItems.vue:366
+#: src/components/PageListItems.vue:431
+#: src/components/PageListItems.vue:484
+#: src/components/PageListItems.vue:584
+#: src/components/PageListItems.vue:625
+#: src/components/PageListItems.vue:686
+#: src/components/PageListItems.vue:736
+#: src/fields/File.vue:69
+#: src/fields/Images.vue:71
 #: src/views/ElementDetail.vue:107
 #: src/views/ElementDetail.vue:156
-#: src/views/ElementDetail.vue:211
+#: src/views/ElementDetail.vue:216
 #: src/views/FileDetail.vue:46
 #: src/views/FileDetail.vue:95
-#: src/views/FileDetail.vue:164
+#: src/views/FileDetail.vue:169
 #: src/views/PageDetail.vue:301
 #: src/views/PageDetail.vue:353
-#: src/views/PageDetail.vue:542
+#: src/views/PageDetail.vue:540
 msgid "Permission denied"
 msgstr "Lupa evätty"
 
@@ -203,10 +203,10 @@ msgstr "Virhe jaettujen elementtien noutamisessa"
 #: src/components/ElementListItems.vue:495
 #: src/components/FileListItems.vue:441
 #: src/components/FileListItems.vue:531
-#: src/components/PageDetailContentList.vue:648
-#: src/components/PageDetailContentList.vue:699
-#: src/components/PageListItems.vue:873
-#: src/components/PageListItems.vue:950
+#: src/components/PageDetailContentList.vue:615
+#: src/components/PageDetailContentList.vue:666
+#: src/components/PageListItems.vue:879
+#: src/components/PageListItems.vue:956
 msgid "Actions"
 msgstr "Toimet"
 
@@ -214,23 +214,23 @@ msgstr "Toimet"
 #: src/components/ElementListItems.vue:504
 #: src/components/FileListItems.vue:445
 #: src/components/FileListItems.vue:539
-#: src/components/PageListItems.vue:877
-#: src/components/PageListItems.vue:957
-#: src/views/ElementDetail.vue:320
-#: src/views/ElementDetail.vue:326
-#: src/views/FileDetail.vue:270
-#: src/views/FileDetail.vue:276
-#: src/views/PageDetail.vue:668
-#: src/views/PageDetail.vue:674
+#: src/components/PageListItems.vue:883
+#: src/components/PageListItems.vue:963
+#: src/views/ElementDetail.vue:325
+#: src/views/ElementDetail.vue:331
+#: src/views/FileDetail.vue:275
+#: src/views/FileDetail.vue:281
+#: src/views/PageDetail.vue:666
+#: src/views/PageDetail.vue:672
 msgid "Publish"
 msgstr "Julkaise"
 
 #: src/components/ElementListItems.vue:429
 #: src/components/ElementListItems.vue:556
-#: src/components/PageDetailContentList.vue:787
+#: src/components/PageDetailContentList.vue:754
 #: src/components/PageDetailItemConfig.vue:201
 #: src/components/PageDetailItemMeta.vue:200
-#: src/fields/Items.vue:229
+#: src/fields/Items.vue:225
 msgid "Add element"
 msgstr "Lisää elementti"
 
@@ -238,10 +238,10 @@ msgstr "Lisää elementti"
 #: src/components/ElementListItems.vue:507
 #: src/components/FileListItems.vue:451
 #: src/components/FileListItems.vue:542
-#: src/components/PageDetailContentList.vue:652
-#: src/components/PageDetailContentList.vue:712
-#: src/components/PageListItems.vue:889
-#: src/components/PageListItems.vue:1035
+#: src/components/PageDetailContentList.vue:631
+#: src/components/PageDetailContentList.vue:679
+#: src/components/PageListItems.vue:895
+#: src/components/PageListItems.vue:1041
 msgid "Delete"
 msgstr "Roskat"
 
@@ -249,8 +249,8 @@ msgstr "Roskat"
 #: src/components/ElementListItems.vue:510
 #: src/components/FileListItems.vue:454
 #: src/components/FileListItems.vue:545
-#: src/components/PageListItems.vue:892
-#: src/components/PageListItems.vue:1038
+#: src/components/PageListItems.vue:898
+#: src/components/PageListItems.vue:1044
 msgid "Restore"
 msgstr "Palauta"
 
@@ -258,15 +258,15 @@ msgstr "Palauta"
 #: src/components/ElementListItems.vue:513
 #: src/components/FileListItems.vue:457
 #: src/components/FileListItems.vue:548
-#: src/components/PageListItems.vue:895
-#: src/components/PageListItems.vue:1041
+#: src/components/PageListItems.vue:901
+#: src/components/PageListItems.vue:1047
 msgid "Purge"
 msgstr "Puhdistus"
 
 #: src/components/ElementListItems.vue:449
 #: src/components/FileListItems.vue:466
-#: src/components/PageDetailContentList.vue:673
-#: src/components/PageListItems.vue:904
+#: src/components/PageDetailContentList.vue:640
+#: src/components/PageListItems.vue:910
 msgid "Search for"
 msgstr "Etsi"
 
@@ -292,7 +292,7 @@ msgstr "Vanhin"
 #: src/components/ElementListItems.vue:474
 #: src/components/FileListItems.vue:508
 #: src/fields/Audio.vue:97
-#: src/fields/File.vue:279
+#: src/fields/File.vue:281
 #: src/fields/Image.vue:131
 #: src/fields/Video.vue:97
 msgid "name"
@@ -305,32 +305,32 @@ msgstr "tyyppi"
 #: src/components/ElementListItems.vue:538
 #: src/components/FileListItems.vue:580
 #: src/components/HistoryDialog.vue:130
-#: src/components/PageListItems.vue:1075
-#: src/fields/Autocomplete.vue:155
-#: src/fields/Combobox.vue:18
+#: src/components/PageListItems.vue:1081
+#: src/fields/Autocomplete.vue:148
+#: src/fields/Combobox.vue:16
 msgid "Loading"
 msgstr "Ladataan"
 
 #: src/components/ElementListItems.vue:546
 #: src/components/FileListItems.vue:589
-#: src/components/PageListItems.vue:1080
+#: src/components/PageListItems.vue:1086
 msgid "No entries found"
 msgstr "Merkintöjä ei löytynyt"
 
-#: src/components/Fields.vue:136
-#: src/fields/Items.vue:173
+#: src/components/Fields.vue:131
+#: src/fields/Items.vue:169
 msgid "Translate %{code} field"
 msgstr "Käännä %{code} kenttä"
 
-#: src/components/Fields.vue:154
-#: src/fields/Items.vue:191
+#: src/components/Fields.vue:149
+#: src/fields/Items.vue:187
 msgid "Generate text for %{code} field"
 msgstr "Tekstin luominen %{code} -kenttään"
 
 #: src/components/FieldsDialog.vue:51
-#: src/views/ElementDetail.vue:287
-#: src/views/FileDetail.vue:237
-#: src/views/PageDetail.vue:635
+#: src/views/ElementDetail.vue:292
+#: src/views/FileDetail.vue:242
+#: src/views/PageDetail.vue:633
 msgid "Save"
 msgstr "Tallenna"
 
@@ -351,8 +351,8 @@ msgstr "Sisältöelementti"
 #: src/components/FileListItems.vue:112
 #: src/components/FileUrlDialog.vue:67
 #: src/components/FileUrlDialog.vue:147
-#: src/fields/File.vue:102
-#: src/fields/Images.vue:114
+#: src/fields/File.vue:109
+#: src/fields/Images.vue:123
 msgid "Error adding file %{path}"
 msgstr "Virhe tiedoston lisäämisessä %{path}"
 
@@ -377,9 +377,9 @@ msgstr "Generoidut kuvat"
 #: src/components/FileAiDialog.vue:245
 #: src/components/FileUrlDialog.vue:209
 #: src/fields/Audio.vue:57
-#: src/fields/File.vue:239
+#: src/fields/File.vue:241
 #: src/fields/Image.vue:84
-#: src/fields/Images.vue:239
+#: src/fields/Images.vue:242
 #: src/fields/Video.vue:57
 msgid "Remove"
 msgstr "Poista"
@@ -545,8 +545,8 @@ msgstr "Virhe tiedostojen noutamisessa"
 #: src/components/FileListItems.vue:448
 #: src/components/FileListItems.vue:606
 #: src/components/FileUrlDialog.vue:161
-#: src/fields/Images.vue:250
-#: src/fields/Images.vue:272
+#: src/fields/Images.vue:253
+#: src/fields/Images.vue:275
 msgid "Add files"
 msgstr "Lisää tiedostoja"
 
@@ -576,14 +576,14 @@ msgstr "Tiedosto ei ole tyypiltään \"%{mime}*\""
 
 #: src/components/FileUrlDialog.vue:161
 #: src/fields/Audio.vue:67
-#: src/fields/File.vue:249
+#: src/fields/File.vue:251
 #: src/fields/Image.vue:94
 #: src/fields/Video.vue:67
 msgid "Add file"
 msgstr "Lisää tiedosto"
 
 #: src/components/FileUrlDialog.vue:172
-#: src/fields/Images.vue:257
+#: src/fields/Images.vue:260
 msgid "Add files from URLs"
 msgstr "Lisää tiedostoja URL-osoitteista"
 
@@ -615,112 +615,112 @@ msgstr "Palauta"
 msgid "Use version"
 msgstr "Käytä versiota"
 
-#: src/components/PageDetailContentList.vue:93
-#: src/components/PageDetailContentList.vue:104
-#: src/components/PageDetailContentList.vue:531
+#: src/components/PageDetailContentList.vue:92
+#: src/components/PageDetailContentList.vue:103
+#: src/components/PageDetailContentList.vue:514
 msgid "Content element not found"
 msgstr "Sisältöelementtiä ei löydy"
 
-#: src/components/PageDetailContentList.vue:311
+#: src/components/PageDetailContentList.vue:299
 msgid "Error refining content"
 msgstr "Virhe sisällön tarkentamisessa"
 
-#: src/components/PageDetailContentList.vue:360
+#: src/components/PageDetailContentList.vue:346
 msgid "Element not found"
 msgstr "Elementtiä ei löydy"
 
-#: src/components/PageDetailContentList.vue:365
+#: src/components/PageDetailContentList.vue:351
 msgid "Element is already shared"
 msgstr "Elementti on jo jaettu"
 
-#: src/components/PageDetailContentList.vue:425
+#: src/components/PageDetailContentList.vue:410
 msgid "Unable to make element shared"
 msgstr "Elementtiä ei voida tehdä jaetuksi"
 
-#: src/components/PageDetailContentList.vue:444
+#: src/components/PageDetailContentList.vue:429
 msgid "Not available for this content element"
 msgstr "Ei käytettävissä tälle sisältöelementille"
 
-#: src/components/PageDetailContentList.vue:538
+#: src/components/PageDetailContentList.vue:521
 msgid "Element is not shared"
 msgstr "Elementtiä ei jaeta"
 
-#: src/components/PageDetailContentList.vue:596
+#: src/components/PageDetailContentList.vue:563
 msgid "Describe the task you want to perform"
 msgstr "Kuvaile tehtävä, jonka haluat suorittaa"
 
-#: src/components/PageDetailContentList.vue:617
+#: src/components/PageDetailContentList.vue:584
 msgid "Refining ..."
 msgstr "Jalostus ..."
 
-#: src/components/PageDetailContentList.vue:617
+#: src/components/PageDetailContentList.vue:584
 msgid "Refine content based on prompt"
 msgstr "Tarkenna sisältöä kehotuksen perusteella"
 
-#: src/components/PageDetailContentList.vue:634
+#: src/components/PageDetailContentList.vue:601
 msgid "AI can add or improve content based on your input"
 msgstr "Tekoäly voi lisätä tai parantaa sisältöä antamiesi tietojen perusteella."
 
-#: src/components/PageDetailContentList.vue:635
+#: src/components/PageDetailContentList.vue:602
 msgid "It can take a long time depending on the task and content size"
 msgstr "Se voi kestää kauan riippuen tehtävästä ja sisällön koosta."
 
-#: src/components/PageDetailContentList.vue:655
-#: src/components/PageDetailContentList.vue:706
-#: src/components/PageListItems.vue:975
+#: src/components/PageDetailContentList.vue:619
+#: src/components/PageDetailContentList.vue:673
+#: src/components/PageListItems.vue:981
 msgid "Copy"
 msgstr "Kopioi"
 
-#: src/components/PageDetailContentList.vue:658
-#: src/components/PageDetailContentList.vue:709
-#: src/components/PageListItems.vue:972
+#: src/components/PageDetailContentList.vue:622
+#: src/components/PageDetailContentList.vue:676
+#: src/components/PageListItems.vue:978
 msgid "Cut"
 msgstr "Leikkaa"
 
-#: src/components/PageDetailContentList.vue:661
-#: src/components/PageListItems.vue:978
-#: src/components/PageListItems.vue:996
+#: src/components/PageDetailContentList.vue:625
+#: src/components/PageListItems.vue:984
+#: src/components/PageListItems.vue:1002
 msgid "Paste"
 msgstr "Liitä"
 
-#: src/components/PageDetailContentList.vue:664
-#: src/components/PageDetailContentList.vue:745
+#: src/components/PageDetailContentList.vue:628
+#: src/components/PageDetailContentList.vue:712
 msgid "Merge"
 msgstr "Yhdistä"
 
-#: src/components/PageDetailContentList.vue:718
+#: src/components/PageDetailContentList.vue:685
 msgid "Paste before"
 msgstr "Liitä ennen"
 
-#: src/components/PageDetailContentList.vue:721
+#: src/components/PageDetailContentList.vue:688
 msgid "Paste after"
 msgstr "Liitä jälkeen"
 
-#: src/components/PageDetailContentList.vue:724
+#: src/components/PageDetailContentList.vue:691
 msgid "Insert before"
 msgstr "Lisää ennen"
 
-#: src/components/PageDetailContentList.vue:727
+#: src/components/PageDetailContentList.vue:694
 msgid "Insert after"
 msgstr "Lisää jälkeen"
 
-#: src/components/PageDetailContentList.vue:733
+#: src/components/PageDetailContentList.vue:700
 msgid "Make shared"
 msgstr "Tee jaettu"
 
-#: src/components/PageDetailContentList.vue:736
+#: src/components/PageDetailContentList.vue:703
 msgid "Merge copy"
 msgstr "Yhdistä kopio"
 
-#: src/components/PageDetailContentList.vue:739
+#: src/components/PageDetailContentList.vue:706
 msgid "Change to"
 msgstr "Vaihda"
 
-#: src/components/PageDetailContentList.vue:742
+#: src/components/PageDetailContentList.vue:709
 msgid "Split"
 msgstr "Split"
 
-#: src/components/PageDetailContentList.vue:751
+#: src/components/PageDetailContentList.vue:718
 msgid "Shared element"
 msgstr "Jaettu elementti"
 
@@ -741,7 +741,7 @@ msgid "Add element after"
 msgstr "Lisää elementti"
 
 #: src/components/PageDetailEditor.vue:214
-#: src/fields/Items.vue:158
+#: src/fields/Items.vue:154
 msgid "Remove element"
 msgstr "Poista elementti"
 
@@ -806,7 +806,7 @@ msgstr "Tila"
 
 #: src/components/PageDetailItemProps.vue:160
 #: src/components/PageDetailItemProps.vue:199
-#: src/fields/Table.vue:55
+#: src/fields/Table.vue:15
 #: src/views/Login.vue:93
 #: src/views/Login.vue:106
 msgid "Field is required"
@@ -905,112 +905,113 @@ msgid "Page Visits"
 msgstr "Sivun vierailut"
 
 #: src/components/PageDetailMetrics.vue:242
-msgid "Visit Duration (minutes)"
-msgstr "Käynnin kesto (minuuttia)"
-
-#: src/components/PageDetailMetrics.vue:254
-msgid "Google Impressions"
-msgstr "Google Impressions"
-
-#: src/components/PageDetailMetrics.vue:266
-msgid "Google Clicks"
-msgstr "Google Clicks"
-
-#: src/components/PageDetailMetrics.vue:278
-msgid "Google Conversion Rate"
-msgstr "Googlen muuntokurssi"
-
-#: src/components/PageDetailMetrics.vue:299
-msgid "Views & Visits"
-msgstr "Näkymät &amp; vierailut"
-
-#: src/components/PageDetailMetrics.vue:343
-#: src/components/PageDetailMetrics.vue:567
-msgid "Views"
-msgstr "Näkymät"
-
-#: src/components/PageDetailMetrics.vue:351
-msgid "Visits"
-msgstr "Vierailut"
-
-#: src/components/PageDetailMetrics.vue:359
+#: src/components/PageDetailMetrics.vue:371
 msgid "Conversions"
 msgstr "Konversiot"
 
-#: src/components/PageDetailMetrics.vue:372
+#: src/components/PageDetailMetrics.vue:254
+msgid "Visit Duration (minutes)"
+msgstr "Käynnin kesto (minuuttia)"
+
+#: src/components/PageDetailMetrics.vue:266
+msgid "Google Impressions"
+msgstr "Google Impressions"
+
+#: src/components/PageDetailMetrics.vue:278
+msgid "Google Clicks"
+msgstr "Google Clicks"
+
+#: src/components/PageDetailMetrics.vue:290
+msgid "Google Conversion Rate"
+msgstr "Googlen muuntokurssi"
+
+#: src/components/PageDetailMetrics.vue:311
+msgid "Views & Visits"
+msgstr "Näkymät &amp; vierailut"
+
+#: src/components/PageDetailMetrics.vue:355
+#: src/components/PageDetailMetrics.vue:579
+msgid "Views"
+msgstr "Näkymät"
+
+#: src/components/PageDetailMetrics.vue:363
+msgid "Visits"
+msgstr "Vierailut"
+
+#: src/components/PageDetailMetrics.vue:384
 msgid "Visit Durations (minutes)"
 msgstr "Käyntien kesto (minuuttia)"
 
-#: src/components/PageDetailMetrics.vue:415
+#: src/components/PageDetailMetrics.vue:427
 msgid "Duration"
 msgstr "Kesto"
 
-#: src/components/PageDetailMetrics.vue:431
+#: src/components/PageDetailMetrics.vue:443
 msgid "Referrers"
 msgstr "Viittaajat"
 
-#: src/components/PageDetailMetrics.vue:472
+#: src/components/PageDetailMetrics.vue:484
 msgid "Countries"
 msgstr "Maat"
 
-#: src/components/PageDetailMetrics.vue:488
+#: src/components/PageDetailMetrics.vue:500
 msgid "Page Speed"
 msgstr "Sivun nopeus"
 
-#: src/components/PageDetailMetrics.vue:492
+#: src/components/PageDetailMetrics.vue:504
 msgid "Round trip time"
 msgstr "Edestakainen matka-aika"
 
-#: src/components/PageDetailMetrics.vue:502
+#: src/components/PageDetailMetrics.vue:514
 msgid "Time to first byte"
 msgstr "Aika ensimmäiseen tavuun"
 
-#: src/components/PageDetailMetrics.vue:512
+#: src/components/PageDetailMetrics.vue:524
 msgid "First contentful paint"
 msgstr "Ensimmäinen sisällöllinen maali"
 
-#: src/components/PageDetailMetrics.vue:522
+#: src/components/PageDetailMetrics.vue:534
 msgid "Largest contentful paint"
 msgstr "Suurin sisältöinen maali"
 
-#: src/components/PageDetailMetrics.vue:532
+#: src/components/PageDetailMetrics.vue:544
 msgid "Interaction to next paint"
 msgstr "Vuorovaikutus seuraavaan maaliin"
 
-#: src/components/PageDetailMetrics.vue:542
+#: src/components/PageDetailMetrics.vue:554
 msgid "Cumulative layout shift"
 msgstr "Kumulatiivinen layout-siirtymä"
 
-#: src/components/PageDetailMetrics.vue:561
+#: src/components/PageDetailMetrics.vue:573
 msgid "Google Search: Queries"
 msgstr "Google-haku: Google Google Google: Kyselyt"
 
-#: src/components/PageDetailMetrics.vue:568
-#: src/components/PageDetailMetrics.vue:652
+#: src/components/PageDetailMetrics.vue:580
+#: src/components/PageDetailMetrics.vue:664
 msgid "Clicks"
 msgstr "Klikkaa"
 
-#: src/components/PageDetailMetrics.vue:569
+#: src/components/PageDetailMetrics.vue:581
 msgid "Percent"
 msgstr "Prosenttia"
 
-#: src/components/PageDetailMetrics.vue:570
+#: src/components/PageDetailMetrics.vue:582
 msgid "Position"
 msgstr "Asema"
 
-#: src/components/PageDetailMetrics.vue:600
+#: src/components/PageDetailMetrics.vue:612
 msgid "Google Search: Impressions & Clicks"
 msgstr "Google-haku: Impressions &amp; Clicks"
 
-#: src/components/PageDetailMetrics.vue:644
+#: src/components/PageDetailMetrics.vue:656
 msgid "Impressions"
 msgstr "Vaikutelmat"
 
-#: src/components/PageDetailMetrics.vue:665
+#: src/components/PageDetailMetrics.vue:677
 msgid "Google Search: Conversions"
 msgstr "Google-haku: Conversions"
 
-#: src/components/PageDetailMetrics.vue:708
+#: src/components/PageDetailMetrics.vue:720
 msgid "Percentage"
 msgstr "Prosenttiosuus"
 
@@ -1019,7 +1020,7 @@ msgid "Error adding root page"
 msgstr "Virhe juurisivun lisäämisessä"
 
 #: src/components/PageListItems.vue:142
-#: src/components/PageListItems.vue:456
+#: src/components/PageListItems.vue:476
 msgid "Error moving page"
 msgstr "Virhe siirtää sivun"
 
@@ -1031,90 +1032,90 @@ msgstr "Virhe roskakoriin sivu"
 msgid "Error fetching pages"
 msgstr "Virhe sivujen noutamisessa"
 
-#: src/components/PageListItems.vue:332
+#: src/components/PageListItems.vue:351
 msgid "Error inserting page"
 msgstr "Virhe sivun lisäämisessä"
 
-#: src/components/PageListItems.vue:388
+#: src/components/PageListItems.vue:407
 msgid "Error restoring page"
 msgstr "Virhe palauttaa sivun"
 
-#: src/components/PageListItems.vue:548
+#: src/components/PageListItems.vue:572
 msgid "Error copying page"
 msgstr "Virhe sivun kopioinnissa"
 
-#: src/components/PageListItems.vue:552
+#: src/components/PageListItems.vue:576
 #: src/views/PageDetail.vue:137
 msgid "Error fetching page"
 msgstr "Virhe sivun noutamisessa"
 
-#: src/components/PageListItems.vue:595
+#: src/components/PageListItems.vue:617
 #: src/views/PageDetail.vue:335
 msgid "Error publishing page"
 msgstr "Virhe julkaisusivu"
 
-#: src/components/PageListItems.vue:637
+#: src/components/PageListItems.vue:659
 msgid "Error purging page"
 msgstr "Virheiden puhdistussivu"
 
-#: src/components/PageListItems.vue:706
+#: src/components/PageListItems.vue:728
 msgid "Error searching pages"
 msgstr "Virhe hakusivut"
 
-#: src/components/PageListItems.vue:754
-#: src/views/PageDetail.vue:430
+#: src/components/PageListItems.vue:764
+#: src/views/PageDetail.vue:429
 msgid "Error saving page"
 msgstr "Sivun tallennusvirhe"
 
-#: src/components/PageListItems.vue:880
-#: src/components/PageListItems.vue:963
+#: src/components/PageListItems.vue:886
+#: src/components/PageListItems.vue:969
 msgid "Enable"
 msgstr "Ota käyttöön"
 
-#: src/components/PageListItems.vue:883
-#: src/components/PageListItems.vue:960
+#: src/components/PageListItems.vue:889
+#: src/components/PageListItems.vue:966
 msgid "Disable"
 msgstr "Poista käytöstä"
 
-#: src/components/PageListItems.vue:914
+#: src/components/PageListItems.vue:920
 msgid "Reload page tree"
 msgstr "Lataa sivupuu uudelleen"
 
-#: src/components/PageListItems.vue:941
+#: src/components/PageListItems.vue:947
 msgid "Toggle child nodes"
 msgstr "Vaihda lapsisolmuja"
 
-#: src/components/PageListItems.vue:966
+#: src/components/PageListItems.vue:972
 msgid "Hide"
 msgstr "Piilota valikossa"
 
-#: src/components/PageListItems.vue:982
-#: src/components/PageListItems.vue:1000
-#: src/components/PageListItems.vue:1018
+#: src/components/PageListItems.vue:988
+#: src/components/PageListItems.vue:1006
+#: src/components/PageListItems.vue:1024
 msgid "Before"
 msgstr "Ennen"
 
-#: src/components/PageListItems.vue:987
-#: src/components/PageListItems.vue:1005
-#: src/components/PageListItems.vue:1023
+#: src/components/PageListItems.vue:993
+#: src/components/PageListItems.vue:1011
+#: src/components/PageListItems.vue:1029
 msgid "Into"
 msgstr "Into"
 
-#: src/components/PageListItems.vue:992
-#: src/components/PageListItems.vue:1010
-#: src/components/PageListItems.vue:1028
+#: src/components/PageListItems.vue:998
+#: src/components/PageListItems.vue:1016
+#: src/components/PageListItems.vue:1034
 msgid "After"
 msgstr "Jälkeen"
 
-#: src/components/PageListItems.vue:1014
+#: src/components/PageListItems.vue:1020
 msgid "Insert"
 msgstr "Lisää"
 
-#: src/components/PageListItems.vue:1061
+#: src/components/PageListItems.vue:1067
 msgid "New"
 msgstr "Uusi"
 
-#: src/components/PageListItems.vue:1086
+#: src/components/PageListItems.vue:1092
 msgid "Add page"
 msgstr "Lisää sivu"
 
@@ -1148,106 +1149,120 @@ msgstr "Kirjaudu ulos"
 
 #: src/fields/Audio.vue:18
 #: src/fields/Audio.vue:48
-#: src/fields/File.vue:200
-#: src/fields/File.vue:230
+#: src/fields/File.vue:202
+#: src/fields/File.vue:232
 #: src/fields/Image.vue:45
 #: src/fields/Image.vue:75
-#: src/fields/Images.vue:230
+#: src/fields/Images.vue:233
 #: src/fields/Video.vue:18
 #: src/fields/Video.vue:48
 msgid "Edit"
 msgstr "Muokkaa"
 
 #: src/fields/Audio.vue:34
-#: src/fields/File.vue:216
+#: src/fields/File.vue:218
 #: src/fields/Image.vue:61
-#: src/fields/Images.vue:216
+#: src/fields/Images.vue:219
 #: src/fields/Video.vue:34
 msgid "Open menu"
 msgstr "Avaa valikko"
 
 #: src/fields/Audio.vue:74
-#: src/fields/File.vue:256
+#: src/fields/File.vue:258
 #: src/fields/Image.vue:101
 #: src/fields/Video.vue:74
 msgid "Add file from URL"
 msgstr "Lisää tiedosto URL-osoitteesta"
 
 #: src/fields/Audio.vue:80
-#: src/fields/File.vue:262
+#: src/fields/File.vue:264
 #: src/fields/Image.vue:114
 #: src/fields/Video.vue:80
 msgid "Upload file"
 msgstr "Lataa tiedosto"
 
 #: src/fields/Audio.vue:101
-#: src/fields/File.vue:283
+#: src/fields/File.vue:285
 #: src/fields/Image.vue:135
 #: src/fields/Video.vue:101
 msgid "description"
 msgstr "kuvaus"
 
-#: src/fields/Autocomplete.vue:149
-#: src/fields/Color.vue:35
-#: src/fields/Date.vue:49
-#: src/fields/Html.vue:43
-#: src/fields/Number.vue:51
-#: src/fields/Select.vue:43
-#: src/fields/Url.vue:64
+#: src/fields/Autocomplete.vue:32
+#: src/fields/Color.vue:22
+#: src/fields/Date.vue:22
+#: src/fields/Html.vue:16
+#: src/fields/Number.vue:24
+#: src/fields/Select.vue:16
+#: src/fields/Url.vue:24
 msgid "Value is required"
 msgstr "Arvo vaaditaan"
 
-#: src/fields/Autocomplete.vue:155
-#: src/fields/Combobox.vue:18
+#: src/fields/Autocomplete.vue:148
+#: src/fields/Combobox.vue:16
 msgid "No data available"
 msgstr "Tietoja ei ole saatavilla"
 
-#: src/fields/Color.vue:36
+#: src/fields/Color.vue:23
 msgid "Value must be a hex color code"
 msgstr "Arvon on oltava heksavärikoodi"
 
+#: src/fields/File.vue:61
+msgid "File is required"
+msgstr "Tiedosto tarvitaan"
+
 #: src/fields/Image.vue:108
-#: src/fields/Images.vue:266
+#: src/fields/Images.vue:269
 msgid "Create file"
 msgstr "Luo tiedosto"
 
-#: src/fields/Items.vue:119
-msgid "Maximum is %{num} entries"
-msgstr "Enimmäismäärä on %{num} merkinnät"
-
-#: src/fields/Items.vue:120
+#: src/fields/Images.vue:54
+#: src/fields/Items.vue:42
 msgid "Minimum is %{num} entries"
 msgstr "Vähimmäismäärä on %{num} "
 
-#: src/fields/Plaintext.vue:50
-#: src/fields/String.vue:55
+#: src/fields/Images.vue:55
+#: src/fields/Items.vue:41
+msgid "Maximum is %{num} entries"
+msgstr "Enimmäismäärä on %{num} merkinnät"
+
+#: src/fields/Markdown.vue:80
+#: src/fields/Plaintext.vue:23
+#: src/fields/String.vue:23
+#: src/fields/Text.vue:80
 msgid "Minimum length is %{num} characters"
 msgstr "Vähimmäispituus on %{num} merkkiä"
 
-#: src/fields/Plaintext.vue:51
-#: src/fields/String.vue:56
+#: src/fields/Markdown.vue:81
+#: src/fields/Plaintext.vue:24
+#: src/fields/String.vue:24
+#: src/fields/Text.vue:81
 msgid "Maximum length is %{num} characters"
 msgstr "Enimmäispituus on %{num} merkkiä"
 
-#: src/fields/Radio.vue:29
+#: src/fields/Radio.vue:16
 msgid "Selection is required"
 msgstr "Valinta vaaditaan"
 
-#: src/fields/Table.vue:56
+#: src/fields/Table.vue:16
 msgid "Minimum are %{num} columns"
 msgstr "Vähintään %{num} sarakkeet"
 
-#: src/fields/Table.vue:57
+#: src/fields/Table.vue:17
+msgid "Maximum are %{num} columns"
+msgstr "Enimmäismäärä on %{num} sarakkeet"
+
+#: src/fields/Table.vue:18
 msgid "The number of columns is not the same in all rows"
 msgstr "Sarakkeiden lukumäärä ei ole sama kaikilla riveillä."
 
-#: src/fields/Url.vue:26
-msgid "Invalid URL schema configuration"
-msgstr "Virheellinen URL-skeeman määritys"
-
-#: src/fields/Url.vue:65
+#: src/fields/Url.vue:25
 msgid "Not a valid URL"
 msgstr "Ei kelvollinen URL-osoite"
+
+#: src/fields/Url.vue:35
+msgid "Invalid URL schema configuration"
+msgstr "Virheellinen URL-skeeman määritys"
 
 #: src/routes.js:48
 msgid "You do not have permission to access %{path}"
@@ -1564,52 +1579,58 @@ msgstr "Elementti on tarkoitus julkaista osoitteessa %{date}"
 msgid "Error publishing element"
 msgstr "Virhe julkaisuelementin julkaisemisessa"
 
-#: src/views/ElementDetail.vue:191
+#: src/views/ElementDetail.vue:161
+#: src/views/FileDetail.vue:100
+#: src/views/PageDetail.vue:358
+msgid "There are invalid fields, please resolve the errors first"
+msgstr "Kentät ovat virheellisiä, ratkaise virheet ensin."
+
+#: src/views/ElementDetail.vue:196
 msgid "Element saved successfully"
 msgstr "Elementti tallennettu onnistuneesti"
 
-#: src/views/ElementDetail.vue:196
+#: src/views/ElementDetail.vue:201
 msgid "Error saving element"
 msgstr "Virhe elementin tallentamisessa"
 
-#: src/views/ElementDetail.vue:252
+#: src/views/ElementDetail.vue:257
 msgid "Error fetching element versions"
 msgstr "Virhe elementtiversioiden noutamisessa"
 
-#: src/views/ElementDetail.vue:265
-#: src/views/FileDetail.vue:215
-#: src/views/PageDetail.vue:593
+#: src/views/ElementDetail.vue:270
+#: src/views/FileDetail.vue:220
+#: src/views/PageDetail.vue:591
 msgid "Back to list view"
 msgstr "Takaisin luettelonäkymään"
 
-#: src/views/ElementDetail.vue:272
-#: src/views/ElementDetail.vue:350
+#: src/views/ElementDetail.vue:277
+#: src/views/ElementDetail.vue:355
 msgid "Element"
 msgstr "Elementti"
 
-#: src/views/ElementDetail.vue:280
-#: src/views/FileDetail.vue:230
-#: src/views/PageDetail.vue:628
+#: src/views/ElementDetail.vue:285
+#: src/views/FileDetail.vue:235
+#: src/views/PageDetail.vue:626
 msgid "View history"
 msgstr "Näytä historia"
 
-#: src/views/ElementDetail.vue:298
-#: src/views/FileDetail.vue:248
-#: src/views/PageDetail.vue:646
+#: src/views/ElementDetail.vue:303
+#: src/views/FileDetail.vue:253
+#: src/views/PageDetail.vue:644
 msgid "Schedule publishing"
 msgstr "Aikataulun julkaiseminen"
 
-#: src/views/ElementDetail.vue:341
+#: src/views/ElementDetail.vue:346
 #: src/views/ElementList.vue:84
-#: src/views/FileDetail.vue:291
+#: src/views/FileDetail.vue:296
 #: src/views/FileList.vue:81
-#: src/views/PageDetail.vue:689
+#: src/views/PageDetail.vue:687
 #: src/views/PageList.vue:169
 msgid "Toggle side menu"
 msgstr "Vaihda sivuvalikosta"
 
-#: src/views/ElementDetail.vue:351
-#: src/views/FileDetail.vue:301
+#: src/views/ElementDetail.vue:356
+#: src/views/FileDetail.vue:306
 msgid "Used by"
 msgstr "Käytössä"
 
@@ -1698,20 +1719,20 @@ msgstr "Tiedosto julkaistu onnistuneesti"
 msgid "File scheduled for publishing at %{date}"
 msgstr "Tiedosto on tarkoitus julkaista osoitteessa %{date}"
 
-#: src/views/FileDetail.vue:142
+#: src/views/FileDetail.vue:147
 msgid "File saved successfully"
 msgstr "Tiedosto tallennettu onnistuneesti"
 
-#: src/views/FileDetail.vue:148
+#: src/views/FileDetail.vue:153
 msgid "Error saving file"
 msgstr "Virhe tiedoston tallentamisessa"
 
-#: src/views/FileDetail.vue:202
+#: src/views/FileDetail.vue:207
 msgid "Error fetching file versions"
 msgstr "Virhe tiedostoversioiden noutamisessa"
 
-#: src/views/FileDetail.vue:222
-#: src/views/FileDetail.vue:300
+#: src/views/FileDetail.vue:227
+#: src/views/FileDetail.vue:305
 msgid "File"
 msgstr "Tiedosto"
 
@@ -1751,40 +1772,36 @@ msgstr "Sivu julkaistu onnistuneesti"
 msgid "Page scheduled for publishing at %{date}"
 msgstr "Sivu on tarkoitus julkaista osoitteessa %{date}"
 
-#: src/views/PageDetail.vue:363
-msgid "There are invalid fields, please resolve the errors first"
-msgstr "Kentät ovat virheellisiä, ratkaise virheet ensin."
-
-#: src/views/PageDetail.vue:422
+#: src/views/PageDetail.vue:421
 msgid "Page saved successfully"
 msgstr "Sivu tallennettu onnistuneesti"
 
-#: src/views/PageDetail.vue:439
+#: src/views/PageDetail.vue:437
 msgid "No page schema for \"content\" found"
 msgstr "Sivun skeemaa \"content\" ei löytynyt"
 
-#: src/views/PageDetail.vue:574
+#: src/views/PageDetail.vue:572
 msgid "Error fetching page versions"
 msgstr "Virhe sivuversioiden noutamisessa"
 
-#: src/views/PageDetail.vue:600
-#: src/views/PageDetail.vue:710
+#: src/views/PageDetail.vue:598
+#: src/views/PageDetail.vue:708
 msgid "Page"
 msgstr "Sivu"
 
-#: src/views/PageDetail.vue:608
+#: src/views/PageDetail.vue:606
 msgid "Translate page"
 msgstr "Käännä sivu"
 
-#: src/views/PageDetail.vue:700
+#: src/views/PageDetail.vue:698
 msgid "Editor"
 msgstr "Toimittaja"
 
-#: src/views/PageDetail.vue:705
+#: src/views/PageDetail.vue:703
 msgid "Content"
 msgstr "Sisältö"
 
-#: src/views/PageDetail.vue:714
+#: src/views/PageDetail.vue:712
 msgid "Metrics"
 msgstr "Mittarit"
 
