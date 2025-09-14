@@ -32,18 +32,18 @@ msgstr "id"
 #: src/components/AsideMeta.vue:23
 #: src/components/FileListItems.vue:511
 #: src/fields/Audio.vue:105
-#: src/fields/File.vue:287
-#: src/fields/Image.vue:140
+#: src/fields/File.vue:289
+#: src/fields/Image.vue:139
 #: src/fields/Video.vue:105
 msgid "mime"
 msgstr "mime"
 
 #: src/components/AsideMeta.vue:27
-#: src/components/ElementListItems.vue:475
+#: src/components/ElementListItems.vue:480
 #: src/components/FileListItems.vue:517
 #: src/fields/Audio.vue:109
-#: src/fields/File.vue:291
-#: src/fields/Image.vue:144
+#: src/fields/File.vue:293
+#: src/fields/Image.vue:143
 #: src/fields/Video.vue:109
 #: src/views/ElementList.vue:119
 #: src/views/FileList.vue:116
@@ -57,8 +57,8 @@ msgstr "creat"
 
 #: src/components/AsideMeta.vue:35
 #: src/fields/Audio.vue:113
-#: src/fields/File.vue:295
-#: src/fields/Image.vue:148
+#: src/fields/File.vue:297
+#: src/fields/Image.vue:147
 #: src/fields/Video.vue:113
 msgid "updated"
 msgstr "actualizate"
@@ -81,7 +81,7 @@ msgstr "Nume și prenume"
 
 #: src/components/ElementDetailItem.vue:80
 #: src/components/FileDetailItem.vue:509
-#: src/components/PageDetailItemProps.vue:148
+#: src/components/PageDetailItemProps.vue:149
 msgid "Language"
 msgstr "Limba"
 
@@ -148,30 +148,30 @@ msgstr "Publicat"
 #: src/components/FileListItems.vue:210
 #: src/components/FileListItems.vue:252
 #: src/components/FileListItems.vue:289
-#: src/components/PageDetailContentList.vue:286
+#: src/components/PageDetailContentList.vue:278
 #: src/components/PageListItems.vue:71
 #: src/components/PageListItems.vue:108
 #: src/components/PageListItems.vue:175
 #: src/components/PageListItems.vue:218
-#: src/components/PageListItems.vue:284
-#: src/components/PageListItems.vue:347
-#: src/components/PageListItems.vue:412
-#: src/components/PageListItems.vue:466
-#: src/components/PageListItems.vue:562
-#: src/components/PageListItems.vue:603
-#: src/components/PageListItems.vue:664
-#: src/components/PageListItems.vue:726
-#: src/fields/File.vue:62
-#: src/fields/Images.vue:62
+#: src/components/PageListItems.vue:302
+#: src/components/PageListItems.vue:366
+#: src/components/PageListItems.vue:431
+#: src/components/PageListItems.vue:484
+#: src/components/PageListItems.vue:584
+#: src/components/PageListItems.vue:625
+#: src/components/PageListItems.vue:686
+#: src/components/PageListItems.vue:736
+#: src/fields/File.vue:69
+#: src/fields/Images.vue:71
 #: src/views/ElementDetail.vue:107
 #: src/views/ElementDetail.vue:156
-#: src/views/ElementDetail.vue:211
+#: src/views/ElementDetail.vue:216
 #: src/views/FileDetail.vue:46
 #: src/views/FileDetail.vue:95
-#: src/views/FileDetail.vue:164
+#: src/views/FileDetail.vue:169
 #: src/views/PageDetail.vue:299
 #: src/views/PageDetail.vue:351
-#: src/views/PageDetail.vue:540
+#: src/views/PageDetail.vue:538
 msgid "Permission denied"
 msgstr "Permisiune refuzată"
 
@@ -199,141 +199,143 @@ msgstr "Eroare la purjarea elementului partajat"
 msgid "Error fetching shared elements"
 msgstr "Eroare la preluarea elementelor partajate"
 
-#: src/components/ElementListItems.vue:417
-#: src/components/ElementListItems.vue:490
+#: src/components/ElementListItems.vue:422
+#: src/components/ElementListItems.vue:495
 #: src/components/FileListItems.vue:441
 #: src/components/FileListItems.vue:531
-#: src/components/PageDetailContentList.vue:526
-#: src/components/PageDetailContentList.vue:577
-#: src/components/PageListItems.vue:873
-#: src/components/PageListItems.vue:950
+#: src/components/PageDetailContentList.vue:508
+#: src/components/PageDetailContentList.vue:559
+#: src/components/PageListItems.vue:879
+#: src/components/PageListItems.vue:956
 msgid "Actions"
 msgstr "Acțiuni"
 
-#: src/components/ElementListItems.vue:421
-#: src/components/ElementListItems.vue:499
+#: src/components/ElementListItems.vue:426
+#: src/components/ElementListItems.vue:504
 #: src/components/FileListItems.vue:445
 #: src/components/FileListItems.vue:539
-#: src/components/PageListItems.vue:877
-#: src/components/PageListItems.vue:957
-#: src/views/ElementDetail.vue:320
-#: src/views/ElementDetail.vue:326
-#: src/views/FileDetail.vue:270
-#: src/views/FileDetail.vue:276
-#: src/views/PageDetail.vue:666
-#: src/views/PageDetail.vue:672
+#: src/components/PageListItems.vue:883
+#: src/components/PageListItems.vue:963
+#: src/views/ElementDetail.vue:325
+#: src/views/ElementDetail.vue:331
+#: src/views/FileDetail.vue:275
+#: src/views/FileDetail.vue:281
+#: src/views/PageDetail.vue:664
+#: src/views/PageDetail.vue:670
 msgid "Publish"
 msgstr "Publicare"
 
-#: src/components/ElementListItems.vue:424
-#: src/components/ElementListItems.vue:551
-#: src/components/PageDetailContentList.vue:662
+#: src/components/ElementListItems.vue:429
+#: src/components/ElementListItems.vue:556
+#: src/components/PageDetailContentList.vue:647
 #: src/components/PageDetailItemConfig.vue:201
 #: src/components/PageDetailItemMeta.vue:200
-#: src/fields/Items.vue:229
+#: src/fields/Items.vue:225
 msgid "Add element"
 msgstr "Adăugați un element"
 
-#: src/components/ElementListItems.vue:427
-#: src/components/ElementListItems.vue:502
+#: src/components/ElementListItems.vue:432
+#: src/components/ElementListItems.vue:507
 #: src/components/FileListItems.vue:451
 #: src/components/FileListItems.vue:542
-#: src/components/PageDetailContentList.vue:530
-#: src/components/PageDetailContentList.vue:590
-#: src/components/PageListItems.vue:889
-#: src/components/PageListItems.vue:1035
+#: src/components/PageDetailContentList.vue:524
+#: src/components/PageDetailContentList.vue:572
+#: src/components/PageListItems.vue:895
+#: src/components/PageListItems.vue:1041
 msgid "Delete"
 msgstr "Gunoi"
 
-#: src/components/ElementListItems.vue:430
-#: src/components/ElementListItems.vue:505
+#: src/components/ElementListItems.vue:435
+#: src/components/ElementListItems.vue:510
 #: src/components/FileListItems.vue:454
 #: src/components/FileListItems.vue:545
-#: src/components/PageListItems.vue:892
-#: src/components/PageListItems.vue:1038
+#: src/components/PageListItems.vue:898
+#: src/components/PageListItems.vue:1044
 msgid "Restore"
 msgstr "Restaurare"
 
-#: src/components/ElementListItems.vue:433
-#: src/components/ElementListItems.vue:508
+#: src/components/ElementListItems.vue:438
+#: src/components/ElementListItems.vue:513
 #: src/components/FileListItems.vue:457
 #: src/components/FileListItems.vue:548
-#: src/components/PageListItems.vue:895
-#: src/components/PageListItems.vue:1041
+#: src/components/PageListItems.vue:901
+#: src/components/PageListItems.vue:1047
 msgid "Purge"
 msgstr "Purjare"
 
-#: src/components/ElementListItems.vue:444
+#: src/components/ElementListItems.vue:449
 #: src/components/FileListItems.vue:466
-#: src/components/PageDetailContentList.vue:551
-#: src/components/PageListItems.vue:904
+#: src/components/PageDetailContentList.vue:533
+#: src/components/PageListItems.vue:910
 msgid "Search for"
 msgstr "Căutare pentru"
 
-#: src/components/ElementListItems.vue:454
+#: src/components/ElementListItems.vue:459
 #: src/components/FileListItems.vue:493
 msgid "Sort by"
 msgstr "Sortare după"
 
-#: src/components/ElementListItems.vue:458
 #: src/components/ElementListItems.vue:463
+#: src/components/ElementListItems.vue:468
 #: src/components/FileListItems.vue:497
 #: src/components/FileListItems.vue:502
 msgid "latest"
 msgstr "cele mai recente"
 
-#: src/components/ElementListItems.vue:458
-#: src/components/ElementListItems.vue:466
+#: src/components/ElementListItems.vue:463
+#: src/components/ElementListItems.vue:471
 #: src/components/FileListItems.vue:497
 #: src/components/FileListItems.vue:505
 msgid "oldest"
 msgstr "cea mai veche"
 
-#: src/components/ElementListItems.vue:469
+#: src/components/ElementListItems.vue:474
 #: src/components/FileListItems.vue:508
 #: src/fields/Audio.vue:97
-#: src/fields/File.vue:279
-#: src/fields/Image.vue:132
+#: src/fields/File.vue:281
+#: src/fields/Image.vue:131
 #: src/fields/Video.vue:97
 msgid "name"
 msgstr "nume"
 
-#: src/components/ElementListItems.vue:472
+#: src/components/ElementListItems.vue:477
 msgid "type"
 msgstr "tip"
 
-#: src/components/ElementListItems.vue:533
+#: src/components/ElementListItems.vue:538
 #: src/components/FileListItems.vue:580
 #: src/components/HistoryDialog.vue:116
-#: src/components/PageListItems.vue:1075
+#: src/components/PageListItems.vue:1081
+#: src/fields/Autocomplete.vue:148
+#: src/fields/Combobox.vue:16
 msgid "Loading"
 msgstr "Încărcare"
 
-#: src/components/ElementListItems.vue:541
+#: src/components/ElementListItems.vue:546
 #: src/components/FileListItems.vue:589
-#: src/components/PageListItems.vue:1080
+#: src/components/PageListItems.vue:1086
 msgid "No entries found"
 msgstr "Nu s-au găsit intrări"
 
-#: src/components/Fields.vue:136
-#: src/fields/Items.vue:173
+#: src/components/Fields.vue:131
+#: src/fields/Items.vue:169
 msgid "Translate %{code} field"
 msgstr "Traducere %{code} câmp"
 
-#: src/components/Fields.vue:154
-#: src/fields/Items.vue:191
+#: src/components/Fields.vue:149
+#: src/fields/Items.vue:187
 msgid "Generate text for %{code} field"
 msgstr "Generarea textului pentru câmpul %{code} "
 
 #: src/components/FieldsDialog.vue:51
-#: src/views/ElementDetail.vue:287
-#: src/views/FileDetail.vue:237
-#: src/views/PageDetail.vue:633
+#: src/views/ElementDetail.vue:292
+#: src/views/FileDetail.vue:242
+#: src/views/PageDetail.vue:631
 msgid "Save"
 msgstr "Salvați"
 
 #: src/components/FieldsDialog.vue:54
-#: src/components/FileAiDialog.vue:189
+#: src/components/FileAiDialog.vue:190
 #: src/components/FileDialog.vue:25
 #: src/components/FileUrlDialog.vue:165
 #: src/components/HistoryDialog.vue:99
@@ -345,48 +347,48 @@ msgstr "Închidere"
 msgid "Content Element"
 msgstr "Element de conținut"
 
-#: src/components/FileAiDialog.vue:98
+#: src/components/FileAiDialog.vue:99
 #: src/components/FileListItems.vue:112
 #: src/components/FileUrlDialog.vue:67
 #: src/components/FileUrlDialog.vue:147
-#: src/fields/File.vue:102
-#: src/fields/Images.vue:114
+#: src/fields/File.vue:109
+#: src/fields/Images.vue:123
 msgid "Error adding file %{path}"
 msgstr "Eroare la adăugarea fișierului %{path}"
 
-#: src/components/FileAiDialog.vue:156
+#: src/components/FileAiDialog.vue:157
 msgid "Error creating file"
 msgstr "Eroare la crearea fișierului"
 
-#: src/components/FileAiDialog.vue:196
-#: src/components/FileAiDialog.vue:214
+#: src/components/FileAiDialog.vue:197
+#: src/components/FileAiDialog.vue:215
 msgid "Create image"
 msgstr "Crearea imaginii"
 
-#: src/components/FileAiDialog.vue:202
+#: src/components/FileAiDialog.vue:203
 msgid "Describe the image"
 msgstr "Descrieți imaginea"
 
-#: src/components/FileAiDialog.vue:219
+#: src/components/FileAiDialog.vue:220
 msgid "Generated images"
 msgstr "Imagini generate"
 
-#: src/components/FileAiDialog.vue:225
-#: src/components/FileAiDialog.vue:244
+#: src/components/FileAiDialog.vue:226
+#: src/components/FileAiDialog.vue:245
 #: src/components/FileUrlDialog.vue:209
 #: src/fields/Audio.vue:57
-#: src/fields/File.vue:239
+#: src/fields/File.vue:241
 #: src/fields/Image.vue:84
-#: src/fields/Images.vue:239
+#: src/fields/Images.vue:242
 #: src/fields/Video.vue:57
 msgid "Remove"
 msgstr "Eliminați"
 
-#: src/components/FileAiDialog.vue:240
+#: src/components/FileAiDialog.vue:241
 msgid "Use images of this style"
 msgstr "Utilizați imagini din acest stil"
 
-#: src/components/FileAiDialog.vue:254
+#: src/components/FileAiDialog.vue:255
 msgid "Select similar images"
 msgstr "Selectați imagini similare"
 
@@ -455,12 +457,12 @@ msgid "Flip vertically"
 msgstr "Răsucire verticală"
 
 #: src/components/FileDetailItem.vue:564
-msgid "Reset"
-msgstr "Resetare"
-
-#: src/components/FileDetailItem.vue:565
 msgid "Download"
 msgstr "Descărcare"
+
+#: src/components/FileDetailItem.vue:565
+msgid "Reset"
+msgstr "Resetare"
 
 #: src/components/FileDetailItem.vue:584
 msgid "Use as cover image"
@@ -543,8 +545,8 @@ msgstr "Eroare la preluarea fișierelor"
 #: src/components/FileListItems.vue:448
 #: src/components/FileListItems.vue:606
 #: src/components/FileUrlDialog.vue:161
-#: src/fields/Images.vue:250
-#: src/fields/Images.vue:272
+#: src/fields/Images.vue:253
+#: src/fields/Images.vue:275
 msgid "Add files"
 msgstr "Adăugați fișiere"
 
@@ -574,14 +576,14 @@ msgstr "Fișierul nu este de tip \"%{mime}*\""
 
 #: src/components/FileUrlDialog.vue:161
 #: src/fields/Audio.vue:67
-#: src/fields/File.vue:249
+#: src/fields/File.vue:251
 #: src/fields/Image.vue:94
 #: src/fields/Video.vue:67
 msgid "Add file"
 msgstr "Adăugați fișier"
 
 #: src/components/FileUrlDialog.vue:172
-#: src/fields/Images.vue:257
+#: src/fields/Images.vue:260
 msgid "Add files from URLs"
 msgstr "Adăugați fișiere din URL-uri"
 
@@ -615,122 +617,123 @@ msgstr "Utilizați versiunea"
 
 #: src/components/PageDetailContentList.vue:87
 #: src/components/PageDetailContentList.vue:98
-#: src/components/PageDetailContentList.vue:465
+#: src/components/PageDetailContentList.vue:453
 msgid "Content element not found"
 msgstr "Elementul de conținut nu a fost găsit"
 
-#: src/components/PageDetailContentList.vue:293
+#: src/components/PageDetailContentList.vue:285
 msgid "Element not found"
 msgstr "Elementul nu a fost găsit"
 
-#: src/components/PageDetailContentList.vue:298
+#: src/components/PageDetailContentList.vue:290
 msgid "Element is already shared"
 msgstr "Elementul este deja partajat"
 
-#: src/components/PageDetailContentList.vue:358
+#: src/components/PageDetailContentList.vue:349
 msgid "Unable to make element shared"
 msgstr "Imposibilitatea de a face elementul partajat"
 
-#: src/components/PageDetailContentList.vue:377
+#: src/components/PageDetailContentList.vue:368
 msgid "Not available for this content element"
 msgstr "Nu este disponibil pentru acest element de conținut"
 
-#: src/components/PageDetailContentList.vue:472
+#: src/components/PageDetailContentList.vue:460
 msgid "Element is not shared"
 msgstr "Elementul nu este partajat"
 
-#: src/components/PageDetailContentList.vue:533
-#: src/components/PageDetailContentList.vue:584
-#: src/components/PageListItems.vue:975
+#: src/components/PageDetailContentList.vue:512
+#: src/components/PageDetailContentList.vue:566
+#: src/components/PageListItems.vue:981
 msgid "Copy"
 msgstr "Copiați"
 
-#: src/components/PageDetailContentList.vue:536
-#: src/components/PageDetailContentList.vue:587
-#: src/components/PageListItems.vue:972
+#: src/components/PageDetailContentList.vue:515
+#: src/components/PageDetailContentList.vue:569
+#: src/components/PageListItems.vue:978
 msgid "Cut"
 msgstr "Tăiați"
 
-#: src/components/PageDetailContentList.vue:539
-#: src/components/PageListItems.vue:978
-#: src/components/PageListItems.vue:996
+#: src/components/PageDetailContentList.vue:518
+#: src/components/PageListItems.vue:984
+#: src/components/PageListItems.vue:1002
 msgid "Paste"
 msgstr "Pastă"
 
-#: src/components/PageDetailContentList.vue:542
+#: src/components/PageDetailContentList.vue:521
+#: src/components/PageDetailContentList.vue:605
 msgid "Merge"
 msgstr "Unire"
 
-#: src/components/PageDetailContentList.vue:596
+#: src/components/PageDetailContentList.vue:578
 msgid "Paste before"
 msgstr "Lipiți înainte"
 
-#: src/components/PageDetailContentList.vue:599
+#: src/components/PageDetailContentList.vue:581
 msgid "Paste after"
 msgstr "Lipiți după"
 
-#: src/components/PageDetailContentList.vue:602
+#: src/components/PageDetailContentList.vue:584
 msgid "Insert before"
 msgstr "Introduceți înainte de"
 
-#: src/components/PageDetailContentList.vue:605
+#: src/components/PageDetailContentList.vue:587
 msgid "Insert after"
 msgstr "Introduceți după"
 
-#: src/components/PageDetailContentList.vue:611
+#: src/components/PageDetailContentList.vue:593
 msgid "Make shared"
 msgstr "Faceți partajate"
 
-#: src/components/PageDetailContentList.vue:614
+#: src/components/PageDetailContentList.vue:596
 msgid "Merge copy"
 msgstr "Copia de îmbinare"
 
-#: src/components/PageDetailContentList.vue:617
+#: src/components/PageDetailContentList.vue:599
 msgid "Change to"
 msgstr "Schimbare la"
 
-#: src/components/PageDetailContentList.vue:620
+#: src/components/PageDetailContentList.vue:602
 msgid "Split"
 msgstr "Despărțit"
 
-#: src/components/PageDetailContentList.vue:626
+#: src/components/PageDetailContentList.vue:611
 msgid "Shared element"
 msgstr "Element partajat"
 
-#: src/components/PageDetailEditor.vue:52
+#: src/components/PageDetailEditor.vue:53
 msgid "Double-click to edit"
 msgstr "Faceți dublu clic pentru a edita"
 
-#: src/components/PageDetailEditor.vue:186
+#: src/components/PageDetailEditor.vue:195
 msgid "Edit element"
 msgstr "Editare element"
 
-#: src/components/PageDetailEditor.vue:193
+#: src/components/PageDetailEditor.vue:202
 msgid "Add element before"
 msgstr "Adăugați elementul înainte de"
 
-#: src/components/PageDetailEditor.vue:199
+#: src/components/PageDetailEditor.vue:208
 msgid "Add element after"
 msgstr "Adăugați elementul după"
 
-#: src/components/PageDetailEditor.vue:205
-#: src/fields/Items.vue:158
+#: src/components/PageDetailEditor.vue:214
+#: src/fields/Items.vue:154
 msgid "Remove element"
 msgstr "Îndepărtați elementul"
 
-#: src/components/PageDetailEditor.vue:212
+#: src/components/PageDetailEditor.vue:221
 msgid "Preview mode"
 msgstr "Modul previzualizare"
 
-#: src/components/PageDetailEditor.vue:215
+#: src/components/PageDetailEditor.vue:224
 msgid "Not CMS content"
 msgstr "Nu este conținut CMS"
 
-#: src/components/PageDetailEditor.vue:222
+#: src/components/PageDetailEditor.vue:231
 msgid "Fullscreen mode"
 msgstr "Mod fullscreen"
 
-#: src/components/PageDetailEditor.vue:229
+#: src/components/PageDetailEditor.vue:238
 msgid "Exit fullscreen mode"
 msgstr "Ieșiți din modul fullscreen"
 
@@ -759,103 +762,103 @@ msgstr "Eliminați elementul de conținut"
 msgid "The path is already in use by another page"
 msgstr "Calea este deja utilizată de o altă pagină"
 
-#: src/components/PageDetailItemProps.vue:130
+#: src/components/PageDetailItemProps.vue:131
 #: src/views/PageList.vue:261
 msgid "Disabled"
 msgstr "Dezactivat"
 
-#: src/components/PageDetailItemProps.vue:131
+#: src/components/PageDetailItemProps.vue:132
 #: src/views/PageList.vue:259
 msgid "Enabled"
 msgstr "Activat"
 
-#: src/components/PageDetailItemProps.vue:132
+#: src/components/PageDetailItemProps.vue:133
 msgid "Hidden in navigation"
 msgstr "Ascuns în navigare"
 
-#: src/components/PageDetailItemProps.vue:136
+#: src/components/PageDetailItemProps.vue:137
 msgid "Status"
 msgstr "Statut"
 
-#: src/components/PageDetailItemProps.vue:159
-#: src/components/PageDetailItemProps.vue:198
-#: src/fields/Table.vue:55
+#: src/components/PageDetailItemProps.vue:160
+#: src/components/PageDetailItemProps.vue:199
+#: src/fields/Table.vue:15
 #: src/views/Login.vue:93
 #: src/views/Login.vue:106
 msgid "Field is required"
 msgstr "Câmpul este obligatoriu"
 
-#: src/components/PageDetailItemProps.vue:163
+#: src/components/PageDetailItemProps.vue:164
 msgid "Page title"
 msgstr "Titlul paginii"
 
-#: src/components/PageDetailItemProps.vue:173
+#: src/components/PageDetailItemProps.vue:174
 msgid "Page name"
 msgstr "Numele paginii"
 
-#: src/components/PageDetailItemProps.vue:183
+#: src/components/PageDetailItemProps.vue:184
 msgid "Path must not start with a slash (/)"
 msgstr "Calea nu trebuie să înceapă cu o bară oblică (/)"
 
-#: src/components/PageDetailItemProps.vue:189
+#: src/components/PageDetailItemProps.vue:190
 msgid "URL path"
 msgstr "Calea URL"
 
-#: src/components/PageDetailItemProps.vue:199
+#: src/components/PageDetailItemProps.vue:200
 msgid "Domain name is invalid"
 msgstr "Numele de domeniu este invalid"
 
-#: src/components/PageDetailItemProps.vue:203
+#: src/components/PageDetailItemProps.vue:204
 msgid "Domain"
 msgstr "Domeniu"
 
-#: src/components/PageDetailItemProps.vue:217
+#: src/components/PageDetailItemProps.vue:218
 msgid "Theme"
 msgstr "Tema"
 
-#: src/components/PageDetailItemProps.vue:225
+#: src/components/PageDetailItemProps.vue:226
 msgid "Page type"
 msgstr "Tipul paginii"
 
-#: src/components/PageDetailItemProps.vue:235
+#: src/components/PageDetailItemProps.vue:236
 msgid "Page tag"
 msgstr "Etichetă de pagină"
 
-#: src/components/PageDetailItemProps.vue:243
+#: src/components/PageDetailItemProps.vue:244
 #: src/views/PageList.vue:268
 msgid "No cache"
 msgstr "Fără cache"
 
-#: src/components/PageDetailItemProps.vue:244
 #: src/components/PageDetailItemProps.vue:245
 #: src/components/PageDetailItemProps.vue:246
 #: src/components/PageDetailItemProps.vue:247
+#: src/components/PageDetailItemProps.vue:248
 msgid "%{num} minute"
 msgid_plural "%{num} minutes"
 msgstr[0] "%{num} minut"
 msgstr[1] ""
 msgstr[2] ""
 
-#: src/components/PageDetailItemProps.vue:248
 #: src/components/PageDetailItemProps.vue:249
 #: src/components/PageDetailItemProps.vue:250
 #: src/components/PageDetailItemProps.vue:251
 #: src/components/PageDetailItemProps.vue:252
+#: src/components/PageDetailItemProps.vue:253
 msgid "%{num} hour"
 msgid_plural "%{num} hours"
 msgstr[0] "%{num} oră"
 msgstr[1] ""
 msgstr[2] ""
 
-#: src/components/PageDetailItemProps.vue:256
+#: src/components/PageDetailItemProps.vue:257
 msgid "Cache time"
 msgstr "Timp de cache"
 
-#: src/components/PageDetailItemProps.vue:269
+#: src/components/PageDetailItemProps.vue:270
 msgid "URL is not valid"
 msgstr "URL-ul nu este valid"
 
-#: src/components/PageDetailItemProps.vue:273
+#: src/components/PageDetailItemProps.vue:274
 msgid "Redirect URL"
 msgstr "Redirecționare URL"
 
@@ -864,7 +867,7 @@ msgid "Error adding root page"
 msgstr "Eroare la adăugarea paginii rădăcină"
 
 #: src/components/PageListItems.vue:142
-#: src/components/PageListItems.vue:456
+#: src/components/PageListItems.vue:476
 msgid "Error moving page"
 msgstr "Eroare la mutarea paginii"
 
@@ -876,90 +879,90 @@ msgstr "Eroare de eliminare a paginii"
 msgid "Error fetching pages"
 msgstr "Eroare la preluarea paginilor"
 
-#: src/components/PageListItems.vue:332
+#: src/components/PageListItems.vue:351
 msgid "Error inserting page"
 msgstr "Eroare la inserarea paginii"
 
-#: src/components/PageListItems.vue:388
+#: src/components/PageListItems.vue:407
 msgid "Error restoring page"
 msgstr "Eroare la restaurarea paginii"
 
-#: src/components/PageListItems.vue:548
+#: src/components/PageListItems.vue:572
 msgid "Error copying page"
 msgstr "Eroare copiere pagină"
 
-#: src/components/PageListItems.vue:552
+#: src/components/PageListItems.vue:576
 #: src/views/PageDetail.vue:135
 msgid "Error fetching page"
 msgstr "Eroare la preluarea paginii"
 
-#: src/components/PageListItems.vue:595
+#: src/components/PageListItems.vue:617
 #: src/views/PageDetail.vue:333
 msgid "Error publishing page"
 msgstr "Eroare la publicarea paginii"
 
-#: src/components/PageListItems.vue:637
+#: src/components/PageListItems.vue:659
 msgid "Error purging page"
 msgstr "Pagina de curățare a erorilor"
 
-#: src/components/PageListItems.vue:706
+#: src/components/PageListItems.vue:728
 msgid "Error searching pages"
 msgstr "Eroare în căutarea paginilor"
 
-#: src/components/PageListItems.vue:754
-#: src/views/PageDetail.vue:428
+#: src/components/PageListItems.vue:764
+#: src/views/PageDetail.vue:427
 msgid "Error saving page"
 msgstr "Eroare la salvarea paginii"
 
-#: src/components/PageListItems.vue:880
-#: src/components/PageListItems.vue:963
+#: src/components/PageListItems.vue:886
+#: src/components/PageListItems.vue:969
 msgid "Enable"
 msgstr "Activare"
 
-#: src/components/PageListItems.vue:883
-#: src/components/PageListItems.vue:960
+#: src/components/PageListItems.vue:889
+#: src/components/PageListItems.vue:966
 msgid "Disable"
 msgstr "Dezactivare"
 
-#: src/components/PageListItems.vue:914
+#: src/components/PageListItems.vue:920
 msgid "Reload page tree"
 msgstr "Reîncărcarea arborelui paginii"
 
-#: src/components/PageListItems.vue:941
+#: src/components/PageListItems.vue:947
 msgid "Toggle child nodes"
 msgstr "Comutare noduri copil"
 
-#: src/components/PageListItems.vue:966
+#: src/components/PageListItems.vue:972
 msgid "Hide"
 msgstr "Ascundeți în meniu"
 
-#: src/components/PageListItems.vue:982
-#: src/components/PageListItems.vue:1000
-#: src/components/PageListItems.vue:1018
+#: src/components/PageListItems.vue:988
+#: src/components/PageListItems.vue:1006
+#: src/components/PageListItems.vue:1024
 msgid "Before"
 msgstr "Înainte de"
 
-#: src/components/PageListItems.vue:987
-#: src/components/PageListItems.vue:1005
-#: src/components/PageListItems.vue:1023
+#: src/components/PageListItems.vue:993
+#: src/components/PageListItems.vue:1011
+#: src/components/PageListItems.vue:1029
 msgid "Into"
 msgstr "În"
 
-#: src/components/PageListItems.vue:992
-#: src/components/PageListItems.vue:1010
-#: src/components/PageListItems.vue:1028
+#: src/components/PageListItems.vue:998
+#: src/components/PageListItems.vue:1016
+#: src/components/PageListItems.vue:1034
 msgid "After"
 msgstr "După"
 
-#: src/components/PageListItems.vue:1014
+#: src/components/PageListItems.vue:1020
 msgid "Insert"
 msgstr "Introduceți"
 
-#: src/components/PageListItems.vue:1061
+#: src/components/PageListItems.vue:1067
 msgid "New"
 msgstr "Nou"
 
-#: src/components/PageListItems.vue:1086
+#: src/components/PageListItems.vue:1092
 msgid "Add page"
 msgstr "Adaugă pagina"
 
@@ -975,128 +978,138 @@ msgstr "fără categorie"
 msgid "Failed to load user"
 msgstr "A eșuat încărcarea utilizatorului"
 
-#: src/components/User.vue:35
-msgid "Logout failed"
-msgstr "Logout eșuat"
-
-#: src/components/User.vue:54
+#: src/components/User.vue:52
 msgid "Toggle light/dark mode"
 msgstr "Comutarea modului lumină/întuneric"
 
-#: src/components/User.vue:60
+#: src/components/User.vue:58
 msgid "Switch language"
 msgstr "Schimbă limba"
 
-#: src/components/User.vue:75
+#: src/components/User.vue:73
 msgid "User menu"
 msgstr "Meniu utilizator"
 
-#: src/components/User.vue:89
+#: src/components/User.vue:87
 msgid "Logout"
 msgstr "Ieșire"
 
 #: src/fields/Audio.vue:18
 #: src/fields/Audio.vue:48
-#: src/fields/File.vue:200
-#: src/fields/File.vue:230
+#: src/fields/File.vue:202
+#: src/fields/File.vue:232
 #: src/fields/Image.vue:45
 #: src/fields/Image.vue:75
-#: src/fields/Images.vue:230
+#: src/fields/Images.vue:233
 #: src/fields/Video.vue:18
 #: src/fields/Video.vue:48
 msgid "Edit"
 msgstr "Editare"
 
 #: src/fields/Audio.vue:34
-#: src/fields/File.vue:216
+#: src/fields/File.vue:218
 #: src/fields/Image.vue:61
-#: src/fields/Images.vue:216
+#: src/fields/Images.vue:219
 #: src/fields/Video.vue:34
 msgid "Open menu"
 msgstr "Deschideți meniul"
 
 #: src/fields/Audio.vue:74
-#: src/fields/File.vue:256
+#: src/fields/File.vue:258
 #: src/fields/Image.vue:101
 #: src/fields/Video.vue:74
 msgid "Add file from URL"
 msgstr "Adăugați fișier de la URL"
 
 #: src/fields/Audio.vue:80
-#: src/fields/File.vue:262
+#: src/fields/File.vue:264
 #: src/fields/Image.vue:114
 #: src/fields/Video.vue:80
 msgid "Upload file"
 msgstr "Încărcați fișierul"
 
 #: src/fields/Audio.vue:101
-#: src/fields/File.vue:283
-#: src/fields/Image.vue:136
+#: src/fields/File.vue:285
+#: src/fields/Image.vue:135
 #: src/fields/Video.vue:101
 msgid "description"
 msgstr "descriere"
 
-#: src/fields/Autocomplete.vue:149
-#: src/fields/Color.vue:35
-#: src/fields/Date.vue:49
-#: src/fields/Html.vue:43
-#: src/fields/Number.vue:51
-#: src/fields/Select.vue:43
-#: src/fields/Url.vue:64
+#: src/fields/Autocomplete.vue:32
+#: src/fields/Color.vue:22
+#: src/fields/Date.vue:22
+#: src/fields/Html.vue:16
+#: src/fields/Number.vue:24
+#: src/fields/Select.vue:16
+#: src/fields/Url.vue:24
 msgid "Value is required"
 msgstr "Valoarea este necesară"
 
-#: src/fields/Autocomplete.vue:155
-#: src/fields/Combobox.vue:18
+#: src/fields/Autocomplete.vue:148
+#: src/fields/Combobox.vue:16
 msgid "No data available"
 msgstr "Nu există date disponibile"
 
-#: src/fields/Color.vue:36
+#: src/fields/Color.vue:23
 msgid "Value must be a hex color code"
 msgstr "Valoarea trebuie să fie un cod hexazecimal de culoare"
 
+#: src/fields/File.vue:61
+msgid "File is required"
+msgstr "Fișierul este necesar"
+
 #: src/fields/Image.vue:108
-#: src/fields/Images.vue:266
+#: src/fields/Images.vue:269
 msgid "Create file"
 msgstr "Crearea fișierului"
 
-#: src/fields/Items.vue:119
-msgid "Maximum is %{num} entries"
-msgstr "Maximul este %{num} intrări"
-
-#: src/fields/Items.vue:120
+#: src/fields/Images.vue:54
+#: src/fields/Items.vue:42
 msgid "Minimum is %{num} entries"
 msgstr "Minimum este %{num} intrări"
 
-#: src/fields/Plaintext.vue:50
-#: src/fields/String.vue:55
+#: src/fields/Images.vue:55
+#: src/fields/Items.vue:41
+msgid "Maximum is %{num} entries"
+msgstr "Maximul este %{num} intrări"
+
+#: src/fields/Markdown.vue:80
+#: src/fields/Plaintext.vue:23
+#: src/fields/String.vue:23
+#: src/fields/Text.vue:80
 msgid "Minimum length is %{num} characters"
 msgstr "Lungimea minimă este de %{num} caractere"
 
-#: src/fields/Plaintext.vue:51
-#: src/fields/String.vue:56
+#: src/fields/Markdown.vue:81
+#: src/fields/Plaintext.vue:24
+#: src/fields/String.vue:24
+#: src/fields/Text.vue:81
 msgid "Maximum length is %{num} characters"
 msgstr "Lungimea maximă este de %{num} caractere"
 
-#: src/fields/Radio.vue:29
+#: src/fields/Radio.vue:16
 msgid "Selection is required"
 msgstr "Selecția este necesară"
 
-#: src/fields/Table.vue:56
+#: src/fields/Table.vue:16
 msgid "Minimum are %{num} columns"
 msgstr "Minimum sunt %{num} coloane"
 
-#: src/fields/Table.vue:57
+#: src/fields/Table.vue:17
+msgid "Maximum are %{num} columns"
+msgstr "Maximum sunt %{num} coloane"
+
+#: src/fields/Table.vue:18
 msgid "The number of columns is not the same in all rows"
 msgstr "Numărul de coloane nu este același în toate rândurile"
 
-#: src/fields/Url.vue:26
-msgid "Invalid URL schema configuration"
-msgstr "Configurație invalidă a schemei URL"
-
-#: src/fields/Url.vue:65
+#: src/fields/Url.vue:25
 msgid "Not a valid URL"
 msgstr "Nu este o adresă URL validă"
+
+#: src/fields/Url.vue:35
+msgid "Invalid URL schema configuration"
+msgstr "Configurație invalidă a schemei URL"
 
 #: src/routes.js:48
 msgid "You do not have permission to access %{path}"
@@ -1413,52 +1426,58 @@ msgstr "Element programat pentru publicare la %{date}"
 msgid "Error publishing element"
 msgstr "Eroare la publicarea elementului"
 
-#: src/views/ElementDetail.vue:191
+#: src/views/ElementDetail.vue:161
+#: src/views/FileDetail.vue:100
+#: src/views/PageDetail.vue:356
+msgid "There are invalid fields, please resolve the errors first"
+msgstr "Există câmpuri invalide, vă rugăm să rezolvați mai întâi erorile"
+
+#: src/views/ElementDetail.vue:196
 msgid "Element saved successfully"
 msgstr "Element salvat cu succes"
 
-#: src/views/ElementDetail.vue:196
+#: src/views/ElementDetail.vue:201
 msgid "Error saving element"
 msgstr "Eroare la salvarea elementului"
 
-#: src/views/ElementDetail.vue:252
+#: src/views/ElementDetail.vue:257
 msgid "Error fetching element versions"
 msgstr "Eroare la preluarea versiunilor elementelor"
 
-#: src/views/ElementDetail.vue:265
-#: src/views/FileDetail.vue:215
-#: src/views/PageDetail.vue:591
+#: src/views/ElementDetail.vue:270
+#: src/views/FileDetail.vue:220
+#: src/views/PageDetail.vue:589
 msgid "Back to list view"
 msgstr "Înapoi la vizualizarea listei"
 
-#: src/views/ElementDetail.vue:272
-#: src/views/ElementDetail.vue:350
+#: src/views/ElementDetail.vue:277
+#: src/views/ElementDetail.vue:355
 msgid "Element"
 msgstr "Element"
 
-#: src/views/ElementDetail.vue:280
-#: src/views/FileDetail.vue:230
-#: src/views/PageDetail.vue:626
+#: src/views/ElementDetail.vue:285
+#: src/views/FileDetail.vue:235
+#: src/views/PageDetail.vue:624
 msgid "View history"
 msgstr "Vezi istoricul"
 
-#: src/views/ElementDetail.vue:298
-#: src/views/FileDetail.vue:248
-#: src/views/PageDetail.vue:644
+#: src/views/ElementDetail.vue:303
+#: src/views/FileDetail.vue:253
+#: src/views/PageDetail.vue:642
 msgid "Schedule publishing"
 msgstr "Program de publicare"
 
-#: src/views/ElementDetail.vue:341
+#: src/views/ElementDetail.vue:346
 #: src/views/ElementList.vue:84
-#: src/views/FileDetail.vue:291
+#: src/views/FileDetail.vue:296
 #: src/views/FileList.vue:81
-#: src/views/PageDetail.vue:687
+#: src/views/PageDetail.vue:685
 #: src/views/PageList.vue:169
 msgid "Toggle side menu"
 msgstr "Comutare meniu lateral"
 
-#: src/views/ElementDetail.vue:351
-#: src/views/FileDetail.vue:301
+#: src/views/ElementDetail.vue:356
+#: src/views/FileDetail.vue:306
 msgid "Used by"
 msgstr "Folosit de"
 
@@ -1547,20 +1566,20 @@ msgstr "Fișier publicat cu succes"
 msgid "File scheduled for publishing at %{date}"
 msgstr "Fișier programat pentru publicare la %{date}"
 
-#: src/views/FileDetail.vue:142
+#: src/views/FileDetail.vue:147
 msgid "File saved successfully"
 msgstr "Fișier salvat cu succes"
 
-#: src/views/FileDetail.vue:148
+#: src/views/FileDetail.vue:153
 msgid "Error saving file"
 msgstr "Eroare la salvarea fișierului"
 
-#: src/views/FileDetail.vue:202
+#: src/views/FileDetail.vue:207
 msgid "Error fetching file versions"
 msgstr "Eroare la preluarea versiunilor fișierelor"
 
-#: src/views/FileDetail.vue:222
-#: src/views/FileDetail.vue:300
+#: src/views/FileDetail.vue:227
+#: src/views/FileDetail.vue:305
 msgid "File"
 msgstr "Fișier"
 
@@ -1600,36 +1619,32 @@ msgstr "Pagină publicată cu succes"
 msgid "Page scheduled for publishing at %{date}"
 msgstr "Pagina programată pentru publicare la %{date}"
 
-#: src/views/PageDetail.vue:361
-msgid "There are invalid fields, please resolve the errors first"
-msgstr "Există câmpuri invalide, vă rugăm să rezolvați mai întâi erorile"
-
-#: src/views/PageDetail.vue:420
+#: src/views/PageDetail.vue:419
 msgid "Page saved successfully"
 msgstr "Pagină salvată cu succes"
 
-#: src/views/PageDetail.vue:437
+#: src/views/PageDetail.vue:435
 msgid "No page schema for \"content\" found"
 msgstr "Nu s-a găsit nicio schemă de pagină pentru \"content\""
 
-#: src/views/PageDetail.vue:572
+#: src/views/PageDetail.vue:570
 msgid "Error fetching page versions"
 msgstr "Eroare la preluarea versiunilor paginilor"
 
-#: src/views/PageDetail.vue:598
-#: src/views/PageDetail.vue:708
+#: src/views/PageDetail.vue:596
+#: src/views/PageDetail.vue:706
 msgid "Page"
 msgstr "Pagina"
 
-#: src/views/PageDetail.vue:606
+#: src/views/PageDetail.vue:604
 msgid "Translate page"
 msgstr "Traduceți pagina"
 
-#: src/views/PageDetail.vue:698
+#: src/views/PageDetail.vue:696
 msgid "Editor"
 msgstr "Editor"
 
-#: src/views/PageDetail.vue:703
+#: src/views/PageDetail.vue:701
 msgid "Content"
 msgstr "Conținut"
 
