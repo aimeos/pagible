@@ -46,7 +46,7 @@ abstract class TestAbstract extends \Orchestra\Testbench\TestCase
 	protected function getPackageProviders( $app )
 	{
 		return [
-			'Aimeos\Cms\CmsServiceProvider',
+			'Aimeos\Cms\ServiceProvider',
 			'Kalnoy\Nestedset\NestedSetServiceProvider',
 		];
 	}

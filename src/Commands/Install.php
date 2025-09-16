@@ -45,7 +45,7 @@ Made with <fg=green>love</> by the Pagible CMS community. Be a part of it!
         $result = 0;
 
         $this->comment( '  Publishing CMS files ...' );
-        $result += $this->call( 'vendor:publish', ['--provider' => 'Aimeos\Cms\CmsServiceProvider'] );
+        $result += $this->call( 'vendor:publish', ['--provider' => 'Aimeos\Cms\ServiceProvider'] );
 
         $this->comment( '  Publishing Analytics Bridge files ...' );
         $result += $this->call( 'vendor:publish', ['--provider' => 'Aimeos\AnalyticsBridge\ServiceProvider'] );
