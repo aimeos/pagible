@@ -570,6 +570,19 @@ return [
         ],
 
         'config' => [
+            'logo' => [
+                'group' => 'basic',
+                'icon' => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><title>image</title><path d="M8.5,13.5L11,16.5L14.5,12L19,18H5M21,19V5C21,3.89 20.1,3 19,3H5A2,2 0 0,0 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19Z" /></svg>',
+                'fields' => [
+                    'file' => [
+                        'type' => 'image',
+                        'required' => true,
+                    ],
+                    'icon' => [
+                        'type' => 'image',
+                    ]
+                ]
+            ],
             'theme' => [
                 'group' => 'basic',
                 'icon' => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M5,6.41L6.41,5L17,15.59V9H19V19H9V17H15.59L5,6.41Z" /></svg>',

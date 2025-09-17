@@ -21,6 +21,10 @@
             @includeFirst(cmsviews($page, $item), cmsdata($page, $item))
         @endforeach
 
+        @if($fileId = @cms($page->ancestors?->first() ?? $page, 'config.logo.data.icon.id'))
+            <link rel="icon" type="{{ cmsfile($page, $fileId)?->mime }}" href="{{ cmsurl(cmsfile($page, $fileId)?->path) }}">
+        @endif
+
         <link href="{{ cmsasset('vendor/cms/theme/pico.min.css') }}" rel="stylesheet">
         <link href="{{ cmsasset('vendor/cms/theme/pico.nav.min.css') }}" rel="stylesheet">
         <link href="{{ cmsasset('vendor/cms/theme/pico.dropdown.min.css') }}" rel="stylesheet">
@@ -57,7 +61,11 @@
                     </li>
                     <li class="brand">
                         <a href="{{ cmsroute($page->ancestors?->first() ?? $page) }}" class="contrast">
-                            <strong>{{ config('app.name') }}</strong>
+                            @if($fileId = @cms($page->ancestors?->first() ?? $page, 'config.logo.data.file.id'))
+                                <img src="{{ cmsurl(cmsfile($page, $fileId)?->path) }}" alt="{{ config('app.name') }}">
+                            @else
+                                <strong>{{ config('app.name') }}</strong>
+                            @endif
                         </a>
                     </li>
                     <li class="menu-close">

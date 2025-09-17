@@ -71,6 +71,14 @@ header nav details.dropdown > summary + ul.align {
 
 header nav .brand {
     flex-grow: 1;
+    padding: 0;
+}
+
+header nav .brand a,
+header nav .brand img {
+    height: 60px;
+    padding: 0;
+    margin: 0;
 }
 
 header nav .menu-open,
