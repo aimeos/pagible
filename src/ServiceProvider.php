@@ -7,12 +7,12 @@
 
 namespace Aimeos\Cms;
 
-use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\ServiceProvider as Provider;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Route;
 
 
-class ServiceProvider extends ServiceProvider
+class ServiceProvider extends Provider
 {
 	/**
 	 * Indicates if loading of the provider is deferred.
