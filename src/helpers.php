@@ -88,6 +88,15 @@ if( !function_exists( 'cmsdata' ) )
 }
 
 
+if( !function_exists( 'cmsfile' ) )
+{
+    function cmsfile( \Aimeos\Cms\Models\Page $page, string $fileId ): object
+    {
+        return cms( cms( $page, 'files' ), $fileId );
+    }
+}
+
+
 if( !function_exists( 'cmsref' ) )
 {
     function cmsref( \Aimeos\Cms\Models\Page $page, object $item ): object
