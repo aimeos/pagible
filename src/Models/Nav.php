@@ -43,4 +43,15 @@ class Nav extends Page
         'title',
         'status',
     ];
+
+
+    /**
+     * Returns the name of the used morph class.
+     *
+     * @return string Class name
+     */
+    public function getMorphClass()
+    {
+        return Page::class;
+    }
 }
