@@ -21,9 +21,12 @@
             @includeFirst(cmsviews($page, $item), cmsdata($page, $item))
         @endforeach
 
-        @if($fileId = @cms($page->ancestors?->first() ?? $page, 'config.logo.data.icon.id'))
-            <link rel="icon" type="{{ cmsfile($page, $fileId)?->mime }}" href="{{ cmsurl(cmsfile($page, $fileId)?->path) }}">
-        @endif
+        @foreach($page->ancestors ? (clone $page->ancestors)->push($page)->reverse() : [$page] as $navItem)
+            @if($fileId = @cms($navItem, 'config.icon.data.file.id'))
+                <link rel="icon" type="{{ cmsfile($navItem, $fileId)?->mime }}" href="{{ cmsurl(cmsfile($navItem, $fileId)?->path) }}">
+                @break
+            @endif
+        @endforeach
 
         <link href="{{ cmsasset('vendor/cms/theme/pico.min.css') }}" rel="stylesheet">
         <link href="{{ cmsasset('vendor/cms/theme/pico.nav.min.css') }}" rel="stylesheet">
@@ -61,11 +64,14 @@
                     </li>
                     <li class="brand">
                         <a href="{{ cmsroute($page->ancestors?->first() ?? $page) }}" class="contrast">
-                            @if($fileId = @cms($page->ancestors?->first() ?? $page, 'config.logo.data.file.id'))
-                                <img src="{{ cmsurl(cmsfile($page, $fileId)?->path) }}" alt="{{ config('app.name') }}">
-                            @else
-                                <strong>{{ config('app.name') }}</strong>
-                            @endif
+                            @forelse($page->ancestors ? (clone $page->ancestors)->push($page)->reverse() : [$page] as $navItem)
+                                @if($fileId = @cms($navItem, 'config.logo.data.file.id'))
+                                    <img src="{{ cmsurl(cmsfile($navItem, $fileId)?->path) }}" alt="{{ config('app.name') }}">
+                                    @break
+                                @endif
+                            @empty
+                                {{ config('app.name') }}
+                            @endforelse
                         </a>
                     </li>
                     <li class="menu-close">
