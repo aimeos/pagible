@@ -421,6 +421,9 @@ return [
                         'type' => 'string',
                         'min' => 1,
                     ],
+                    'subtitle' => [
+                        'type' => 'string',
+                    ],
                     'text' => [
                         'type' => 'markdown',
                     ],
@@ -429,7 +432,10 @@ return [
                     ],
                     'button' => [
                         'type' => 'string',
-                        'max' => 255,
+                    ],
+                    'file' => [
+                        'type' => 'image',
+                        'label' => 'image',
                     ],
                 ],
             ],
