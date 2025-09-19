@@ -1,6 +1,6 @@
 <picture class="{{ @$class }}" itemscope itemprop="image" itemtype="http://schema.org/ImageObject">
 	<meta itemprop="representativeOfPage" content="{{ @$main ? 'true' : 'false' }}">
-    @if($preview = current(array_reverse((array) $file?->previews ?? [])))
+    @if($preview = current(array_reverse((array) $file?->previews ?? [])) ?: $file?->path )
         <img itemprop="contentUrl" loading="{{ @$main ? 'eager' : 'lazy' }}"
             srcset="{{ cmssrcset($file?->previews) }}"
             src="{{ cmsurl($preview) }}"
