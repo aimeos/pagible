@@ -5,9 +5,9 @@
 <meta name="twitter:title" content="{{ @$data->title }}" />
 <meta name="twitter:description" content="{{ @$data->description }}" />
 
-@if(($file = cms($files, @$data->file?->id)) && ($preview = current(array_reverse((array) $file?->previews ?? []))))
+@if(($file = cms($files, @$data->file?->id)) && ($preview = current(array_reverse((array) $file?->previews ?? [])) ?: $file->path))
     <meta name="twitter:image" content="{{ cmsurl($preview) }}" />
     <meta property="og:image" content="{{ cmsurl($preview) }}" />
     <meta property="og:image:url" content="{{ cmsurl($preview) }}" />
-    <meta property="og:image:width" content="{{ current(array_reverse(array_keys((array) $file->previews ?? []))) }}" />
+    <meta property="og:image:width" content="{{ current(array_reverse(array_keys((array) $file->previews ?? [])) ?: $file->path) }}" />
 @endif
