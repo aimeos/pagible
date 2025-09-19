@@ -9,6 +9,7 @@ $uri = urldecode(
 $mime = match(pathinfo($uri, PATHINFO_EXTENSION)) {
     'js' => 'application/javascript',
     'css' => 'text/css',
+    'svg' => 'image/svg+xml',
     default => null
 };
 
