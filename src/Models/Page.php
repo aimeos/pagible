@@ -142,7 +142,7 @@ class Page extends Model
      */
     public function elements() : BelongsToMany
     {
-        return $this->belongsToMany( Element::class, 'cms_page_element' );
+        return $this->belongsToMany( Element::class, 'cms_page_element', 'page_id' );
     }
 
 
@@ -153,7 +153,7 @@ class Page extends Model
      */
     public function files() : BelongsToMany
     {
-        return $this->belongsToMany( File::class, 'cms_page_file' );
+        return $this->belongsToMany( File::class, 'cms_page_file', 'page_id' );
     }
 
 
