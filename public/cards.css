@@ -1,20 +1,32 @@
 .cards .card-list {
-    display: flex;
-    gap: 30px;
-    flex-wrap: wrap;
-    justify-content: center;
+    display: grid;
+    grid-template-columns: 1fr;
+}
+
+@media screen and (min-width: 768px) {
+    .cards .card-list {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media screen and (min-width: 992px) {
+    .cards .card-list {
+        grid-template-columns: 1fr 1fr 1fr;
+    }
+}
+
+.cards div.card-item:nth-of-type(2n+1) {
+    background-color: var(--pico-muted-color);
+    border: 1px solid var(--pico-muted-border-color);
 }
 
 .cards .card-item {
-    background: var(--pico-primary-focus);
-    padding: 30px;
-    border-radius: 8px;
-    width: 300px;
+    padding: 2rem;
 }
 
 .cards .title {
-    margin: 15px 0;
-    font-size: 22px;
+    --pico-font-size: 150%;
+    margin: 1rem 0;
 }
 
 .cards .text {
