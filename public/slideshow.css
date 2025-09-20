@@ -1,3 +1,23 @@
+.slideshow {
+    background: var(--pico-background-color);
+}
+
+.swiffy-slider {
+	padding: 3rem;
+    background:
+        radial-gradient(
+            circle at 90% -50%,
+            var(--pico-primary-background) 0,
+            transparent 100%
+        ),
+        radial-gradient(
+            circle at 10% 150%,
+            var(--pico-secondary-background) 0,
+            transparent 100%
+        );
+}
+
+
 /* Swiffy slider 1.2.0 (modified) https://github.com/dynamicweb/swiffy-slider/ (MIT license) */
 
 .swiffy-slider {
@@ -19,7 +39,7 @@
 	--swiffy-slider-indicator-outside-size: 1.5rem;
 	--swiffy-slider-animation-duration: .75s;
 	--swiffy-slider-animation-delay: 0s;
-	--swiffy-slider-animation-timing: ease-in-out
+	--swiffy-slider-animation-timing: ease-in-out;
 }
 
 .swiffy-slider,.swiffy-slider::after,.swiffy-slider::before {
