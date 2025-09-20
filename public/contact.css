@@ -1,18 +1,44 @@
 .contact form {
     display: flex;
     flex-direction: column;
-    max-width: 500px;
-    margin: 0 auto;
-    gap: 15px;
+}
+
+.contact .row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+}
+
+.contact .col {
+    margin-bottom: 1rem;
+}
+
+@media screen and (min-width: 768px) {
+    .contact .row {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+.contact label {
+    color: var(--pico-contrast-hover);
+    display: inline-block;
+    margin: 0.5rem 0;
 }
 
 .contact input, textarea {
-    background-color: var(--pico-background-color);
+    background-color: var(--pico-contrast-hover-background);
     border: 1px solid var(--pico-contrast-border);
-    border-radius: 8px;
+    color: var(--pico-contrast);
     resize: vertical;
-    font-size: 16px;
-    padding: 15px;
+    font-size: 1rem;
+    display: block;
+    padding: 1rem;
+    width: 100%;
+}
+
+.contact input::-webkit-input-placeholder,
+.contact textarea::-webkit-input-placeholder {
+    color: var(--pico-contrast-underline);
 }
 
 .contact .errors {
@@ -24,24 +50,15 @@
 }
 
 .contact button {
-    border: 1px solid var(--pico-primary-inverse);
-    background-color: var(--pico-primary);
-    color: var(--pico-primary-inverse);
-    border-radius: 8px;
-    font-size: 16px;
-    padding: 15px;
+    display: inline-block;
+    margin-inline-end: auto;
+    margin-inline-start: auto;
 }
 
 .contact button:disabled {
     border: 1px solid var(--pico-muted-border-color);
     background-color: var(--pico-background-color);
     color: var(--pico-muted-color);
-}
-
-.contact button:focus-visible,
-.contact button:hover {
-    background-color: var(--pico-primary-background);
-    color: var(--pico-primary-inverse);
 }
 
 .contact button:has(.success:not(.hidden)) {

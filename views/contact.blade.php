@@ -11,9 +11,20 @@
 <form action="{{ route('cms.api.contact') }}" method="POST">
     @csrf
 
-    <input type="text" name="name" placeholder="{{ __('Your name') }}" required />
-    <input type="email" name="email" placeholder="{{ __('Your e-mail address') }}" required />
-    <textarea name="message" placeholder="{{ __('Your message') }}" required rows="6"></textarea>
+    <div class="row">
+        <div class="col">
+            <label for="name">{{ __('Name') }}</label>
+            <input id="name" type="text" name="name" placeholder="{{ __('Your name') }}" required />
+        </div>
+        <div class="col">
+            <label for="email">{{ __('E-Mail') }}</label>
+            <input id="email" type="email" name="email" placeholder="{{ __('Your e-mail address') }}" required />
+        </div>
+    </div>
+    <div class="col">
+        <label for="message">{{ __('Message') }}</label>
+        <textarea id="message" name="message" placeholder="{{ __('Your message') }}" required rows="6"></textarea>
+    </div>
 
     @if(!app()->environment('local') && config('services.hcaptcha.sitekey'))
         <div class="h-captcha" data-sitekey="{{ config('services.hcaptcha.sitekey') }}"></div>
