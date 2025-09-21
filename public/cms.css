@@ -1,28 +1,117 @@
-:root {
+:root, :root:not([data-theme=dark]) {
     --pico-nav-breadcrumb-divider: '>';
     --pico-block-spacing-vertical: 0;
     --pico-nav-element-spacing-horizontal: 1rem;
     --pico-nav-element-spacing-vertical: 0.75rem;
     --pico-nav-link-spacing-vertical: 0.625rem;
     --pico-nav-link-spacing-horizontal: 0.625rem;
+    --pico-color: #FFFFFFD0;
+    --pico-background-color: #080040;
+    --pico-text-selection-color: #0098e840;
+    --pico-muted-color: #00000040;
+    --pico-muted-border-color: #FFFFFF20;
+    --pico-muted-hover-color: #00000020;
+    --pico-muted-hover-border-color: #FFFFFF40;
+    --pico-primary: #0868d0;
+    --pico-primary-background: #0868d080;
+    --pico-primary-underline: var(--pico-primary);
+    --pico-primary-hover: #1080ff;
+    --pico-primary-hover-background: #1080ff80;
+    --pico-primary-hover-border: var(--pico-primary-hover-background);
+    --pico-primary-hover-underline: var(--pico-primary-hover);
+    --pico-primary-focus: var(--pico-text-selection-color);
+    --pico-primary-inverse: var(--pico-color);
+    --pico-secondary: #b008c8;
+    --pico-secondary-background: #b008c880;
+    --pico-secondary-border: var(--pico-secondary-background);
+    --pico-secondary-underline: var(--pico-secondary);
+    --pico-secondary-hover: #e010ff;
+    --pico-secondary-hover-background: #e010ff80;
+    --pico-secondary-hover-border: var(--pico-secondary-hover-background);
+    --pico-secondary-hover-underline: var(--pico-secondary-hover);
+    --pico-secondary-focus: var(--pico-text-selection-color);
+    --pico-secondary-inverse: var(--pico-color);
+    --pico-contrast: var(--pico-color);
+    --pico-contrast-hover: #FFFFFF;
+    --pico-contrast-border: var(--pico-muted-border-color);
+    --pico-contrast-background: var(--pico-background-color);
+    --pico-contrast-underline: #FFFFFF80;
+    --pico-contrast-hover-background: var(--pico-muted-color);
+    --pico-contrast-hover-border: var(--pico-contrast-hover-background);
+    --pico-contrast-hover-underline: var(--pico-color);
+    --pico-contrast-focus: var(--pico-text-selection-color);
+    --pico-contrast-inverse: #000000;
+    --pico-h1-color: var(--pico-contrast-hover);
+    --pico-h2-color: var(--pico-contrast-hover);
+    --pico-h3-color: var(--pico-contrast-hover);
+    --pico-h4-color: var(--pico-contrast-hover);
+    --pico-h5-color: var(--pico-contrast-hover);
+    --pico-h6-color: var(--pico-contrast-hover);
+    --pico-box-shadow: 0.0145rem 0.029rem 0.174rem rgba(129, 145, 181, 0.01698), 0.0335rem 0.067rem 0.402rem rgba(129, 145, 181, 0.024), 0.0625rem 0.125rem 0.75rem rgba(129, 145, 181, 0.03), 0.1125rem 0.225rem 1.35rem rgba(129, 145, 181, 0.036), 0.2085rem 0.417rem 2.502rem rgba(129, 145, 181, 0.04302), 0.5rem 1rem 6rem rgba(129, 145, 181, 0.06), 0 0 0 0.0625rem rgba(129, 145, 181, 0.015);
+    --pico-dropdown-background-color: var(--pico-contrast-background);
+    --pico-dropdown-border-color: var(--pico-contrast-border);
+    --pico-dropdown-hover-background-color: var(--pico-muted-color);
+    --pico-dropdown-box-shadow: var(--pico-box-shadow);
+    --pico-dropdown-color: var(--pico-contrast);
+    --pico-border-radius: 0;
+}
+
+* {
+  scrollbar-color: var(--pico-primary-background) var(--pico-background-color);
 }
 
 body {
     line-height: 1.6;
     scroll-behavior: smooth;
+    font-family: "Helvetica Neue", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, Arial, sans-serif;
+    background-color: var(--pico-background-color);
+    color: var(--pico-color);
+    background-image:
+        radial-gradient(
+            circle at 100% 40rem,
+            var(--pico-primary-background) 0,
+            transparent 70vw
+        ),
+        radial-gradient(
+            circle at 0 60rem,
+            var(--pico-secondary-background) 0,
+            transparent 60vw
+        ),
+        radial-gradient(
+            circle at 100% 150rem,
+            var(--pico-secondary-background) 0,
+            transparent 40rem
+        ),
+        radial-gradient(
+            circle at 0 170rem,
+            var(--pico-primary-background) 0,
+            transparent 40rem
+        ),
+        radial-gradient(
+            circle at 100% 260rem,
+            var(--pico-primary-background) 0,
+            transparent 40rem
+        ),
+        radial-gradient(
+            circle at 0 280rem,
+            var(--pico-secondary-background) 0,
+            transparent 40rem
+        );
 }
 
 nav ol:first-of-type, nav ul:first-of-type,
 nav ol:last-of-type, nav ul:last-of-type {
-    margin: 0 !important;
+    margin: 0;
 }
 
 nav li :where(a,[role=link]) {
     text-decoration: none;
 }
 
-header {
-    border-bottom: 1px solid #ddd;
+body > header {
+    max-width: 1200px;
+    padding: 1rem 0;
+    margin: auto;
 }
 
 header nav ol,
@@ -92,9 +181,34 @@ header nav .menu-open button,
 header nav .menu-close button,
 header nav .sidebar-open button,
 header nav .sidebar-close button {
+    color: var(--pico-color);
     background: none;
     border: none;
-    padding: 1rem;
+    padding: 0.75rem;
+}
+
+header nav a {
+    display: inline-block;
+    text-decoration: none;
+    color: var(--pico-color);
+    padding: 0.25rem 0.5rem;
+}
+
+@media screen and (min-width: 992px) {
+    header nav a {
+        padding: 0.5rem 1.25rem;
+    }
+}
+
+header nav > ul > li:last-of-type a {
+    background-color: var(--pico-muted-color);
+    border: 1px solid var(--pico-muted-border-color);
+    border-radius: 2rem;
+}
+
+header nav > ul > li:last-of-type:hover a {
+    background-color: var(--pico-muted-hover-color);
+    border: 1px solid var(--pico-muted-hover-border-color);
 }
 
 @media (max-width: 768px) {
@@ -126,50 +240,94 @@ header nav .sidebar-close button {
     }
 
     header nav .menu > li {
-        border-bottom: 1px solid var(--pico-primary-border);
+        padding: 0.75rem 2rem;
         width: 100%;
     }
 }
 
-@media (min-width: 1280px) {
-    .container {
-        max-width: 1200px !important;
-    }
+nav[aria-label="breadcrumb"] {
+    border: 1px solid var(--pico-muted-border-color);
+    background-color: var(--pico-muted-color);
+}
+
+nav[aria-label="breadcrumb"] a,
+nav[aria-label="breadcrumb"] li,
+nav[aria-label="breadcrumb"] li::after {
+    color: var(--pico-color) !important;
 }
 
 nav[aria-label=breadcrumb] ul li:not(:first-child) {
     margin-inline-start: 0;
 }
 
+nav[aria-label="breadcrumb"] > ul {
+    max-width: 1200px;
+    margin: auto;
+    width: 100%;
+}
+
+nav[aria-label="breadcrumb"] {
+    margin-bottom: 0;
+}
+
+.container {
+    max-width: 1200px !important;
+}
+
 details summary {
     line-height: inherit;
 }
 
-h1, h2 {
-    text-align: center;
+h1, h2, h3 {
+    font-weight: normal;
 }
 
-p {
-    overflow: auto;
+h1 {
+    --pico-font-size: 300%;
+}
+
+h2 {
+    --pico-font-size: 250%;
+}
+
+h3 {
+    --pico-font-size: 200%;
 }
 
 img {
     max-width: 100%;
-    border-radius: 8px;
+}
+
+.btn {
+    display: inline-block;
+    text-decoration: none;
+    vertical-align: sub;
+    padding: 0.75rem 1.5rem;
+    margin: 0.5rem 0;
+    font-size: 100%;
+    border: none;
+    border-radius: 2rem;
+    color: var(--pico-contrast);
+    background-image: linear-gradient(90deg, var(--pico-primary), var(--pico-secondary));
+}
+
+.btn::after {
+    mask: url('data:image/svg+xml;utf8,<svg width="24" height="24" viewBox="0 0 20 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M10 1.875C8.39303 1.875 6.82214 2.35152 5.486 3.24431C4.14985 4.1371 3.10844 5.40605 2.49348 6.8907C1.87852 8.37535 1.71762 10.009 2.03112 11.5851C2.34463 13.1612 3.11846 14.6089 4.25476 15.7452C5.39106 16.8815 6.8388 17.6554 8.4149 17.9689C9.99099 18.2824 11.6247 18.1215 13.1093 17.5065C14.594 16.8916 15.8629 15.8502 16.7557 14.514C17.6485 13.1779 18.125 11.607 18.125 10C18.1227 7.84581 17.266 5.78051 15.7427 4.25727C14.2195 2.73403 12.1542 1.87727 10 1.875ZM10 16.875C8.64026 16.875 7.31105 16.4718 6.18046 15.7164C5.04987 14.9609 4.16868 13.8872 3.64833 12.6309C3.12798 11.3747 2.99183 9.99237 3.2571 8.65875C3.52238 7.32513 4.17716 6.10013 5.13864 5.13864C6.10013 4.17716 7.32514 3.52237 8.65876 3.2571C9.99238 2.99183 11.3747 3.12798 12.631 3.64833C13.8872 4.16868 14.9609 5.04987 15.7164 6.18045C16.4718 7.31104 16.875 8.64025 16.875 10C16.8729 11.8227 16.1479 13.5702 14.8591 14.8591C13.5702 16.1479 11.8227 16.8729 10 16.875ZM13.5672 9.55781C13.6253 9.61586 13.6714 9.68479 13.7029 9.76066C13.7343 9.83654 13.7505 9.91787 13.7505 10C13.7505 10.0821 13.7343 10.1635 13.7029 10.2393C13.6714 10.3152 13.6253 10.3841 13.5672 10.4422L11.0672 12.9422C10.9499 13.0595 10.7909 13.1253 10.625 13.1253C10.4592 13.1253 10.3001 13.0595 10.1828 12.9422C10.0655 12.8249 9.99966 12.6659 9.99966 12.5C9.99966 12.3341 10.0655 12.1751 10.1828 12.0578L11.6164 10.625H6.875C6.70924 10.625 6.55027 10.5592 6.43306 10.4419C6.31585 10.3247 6.25 10.1658 6.25 10C6.25 9.83424 6.31585 9.67527 6.43306 9.55806C6.55027 9.44085 6.70924 9.375 6.875 9.375H11.6164L10.1828 7.94219C10.0655 7.82491 9.99966 7.66585 9.99966 7.5C9.99966 7.33415 10.0655 7.17509 10.1828 7.05781C10.3001 6.94054 10.4592 6.87465 10.625 6.87465C10.7909 6.87465 10.9499 6.94054 11.0672 7.05781L13.5672 9.55781Z"/></svg>') no-repeat center / contain;
+    background-color: var(--pico-contrast);
+    margin-inline-start: 0.5rem;
+    display: inline-block;
+    height: 1.15rem;
+    width: 1.15rem;
+    content: '';
+}
+
+.btn:hover,
+.btn:hover::after {
+    color: var(--pico-contrast-hover);
 }
 
 .hidden {
     display: none;
-}
-
-@media screen and (min-width: 992px) {
-    body.type-blog .container,
-    .code .container,
-    .text .container,
-    .image-text .container,
-    .heading .container {
-        max-width: 960px !important;
-    }
 }
 
 .file,
@@ -206,36 +364,19 @@ img {
 
 .image-text .image {
     margin-bottom: 1.5rem;
+    max-width: 25%;
 }
 
-.image-text .text {
-    margin-bottom: var(--pico-typography-spacing-vertical);
+.image-text:nth-of-type(2n) .image.auto,
+.image-text .image.start {
+    margin-inline-end: 2rem;
+    float: inline-start;
 }
 
-.image-text .text p {
-    display: inline-block;
-}
-
-@media screen and (min-width: 480px) {
-    .image-text .image {
-        width: 240px;
-    }
-
-    .image-text .text p {
-        display: inline;
-    }
-
-    .image-text:nth-of-type(2n) .image.auto,
-    .image-text .image.start {
-        margin-inline-end: 2rem;
-        float: inline-start;
-    }
-
-    .image-text:nth-of-type(2n+1) .image.auto,
-    .image-text .image.end {
-        margin-inline-start: 2rem;
-        float: inline-end;
-    }
+.image-text:nth-of-type(2n+1) .image.auto,
+.image-text .image.end {
+    margin-inline-start: 2rem;
+    float: inline-end;
 }
 
 .table p {
@@ -246,18 +387,6 @@ img {
     text-align: center;
 }
 
-ol ol, ul ul, ol ul, ul ol {
-    margin-bottom: 0;
-    margin-top: 0;
-}
-
-footer,
-footer h1,
-footer h2,
-footer h3{
-    background-color: var(--pico-primary-background);
-    color: var(--pico-primary-inverse);
-}
 
 footer.copyright {
     text-align: center;

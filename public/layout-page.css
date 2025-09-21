@@ -4,11 +4,7 @@
 }
 
 .cms-content .container {
-    padding: 60px 10px;
-}
-
-.cms-content > :nth-of-type(3n) {
-    background-color: var(--pico-primary-focus);
+    padding: 2rem 1rem;
 }
 
 .heading h1,
