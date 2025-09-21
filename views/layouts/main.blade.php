@@ -142,9 +142,5 @@
         @yield('main')
 
         @yield('footer')
-
-        <footer class="copyright">
-            &copy; {{ date('Y') }} {{ config('app.name') }}
-        </footer>
     </body>
 </html>

@@ -28,4 +28,7 @@
             @endif
         @endforeach
     </footer>
+    <footer class="copyright">
+        &copy; {{ date('Y') }} {{ config('app.name') }}
+    </footer>
 @endsection
