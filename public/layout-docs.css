@@ -1,22 +1,13 @@
-nav[aria-label="breadcrumb"] {
-    background-color: var(--pico-primary);
-}
-
-nav[aria-label="breadcrumb"] a,
-nav[aria-label="breadcrumb"] li,
-nav[aria-label="breadcrumb"] ul li:not(:last-child)::after {
-    color: var(--pico-primary-inverse);
-}
-
 main {
     display: flex;
 }
 
 main nav.sidebar {
+    background: var(--pico-background-color);
     transition: left 0.3s ease;
     position: relative;
-    left: -240px;
-    width: 240px;
+    left: -300px;
+    width: 300px;
     z-index: 1000;
     flex-shrink: 1;
 }
@@ -25,20 +16,15 @@ main nav.sidebar.show {
     left: 0;
 }
 
-main nav.sidebar li {
-    width: 100%;
-}
-
 main .content {
-    width: calc(100% - 240px - 5%);
-    margin: 0 2.5%;
     flex-grow: 1;
+    margin: 0 2.5%;
 }
 
 @media screen and (min-width: 992px) {
     main nav.sidebar {
         position: static;
-        width: 240px;
+        width: 300px;
         left: 0;
     }
 }
@@ -51,31 +37,71 @@ main .content {
     }
 
     main .content {
-        margin-inline-start: calc(-240px + 2.5%);
+        margin-inline-start: calc(-300px + 2.5%);
     }
-}
-
-main nav.sidebar details summary::marker,
-main nav.sidebar details summary ::-webkit-details-marker {
-    content: "";
 }
 
 main nav.sidebar .menu {
     --pico-nav-element-spacing-vertical: 0.35rem;
     --pico-nav-element-spacing-horizontal: 1rem;
-    background-color: var(--pico-primary);
     flex-direction: column;
     align-items: start;
+    width: 100%;
+}
+
+main nav.sidebar > .menu {
+    border-inline-end: 1px solid var(--pico-muted-border-color);
+    background-color: var(--pico-muted-color);
+    background-image:
+        radial-gradient(
+            circle at calc(100% + 10rem) 10rem,
+            var(--pico-primary-background) 0,
+            transparent 20rem
+        );
+    padding: 1rem 0;
+}
+
+main nav.sidebar li {
+    width: 100%;
 }
 
 main nav.sidebar .menu .menu li {
     padding-inline-start: 1.5rem;
 }
 
-main nav.sidebar .menu a {
-    color: var(--pico-primary-inverse);
-}
-
 main nav.sidebar .active {
     font-weight: bold;
+}
+
+main nav.sidebar a {
+    color: var(--pico-contrast);
+}
+
+main nav.sidebar summary a {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+main nav.sidebar details.is-menu[open] > summary a {
+    color: var(--pico-contrast-hover);
+}
+
+main nav.sidebar details.is-menu[open] > summary svg {
+    transform: rotate(90deg);
+}
+
+[dir="rtl"] main nav.sidebar svg {
+    transform:scaleX(-1);
+}
+
+main nav.sidebar .menu-item {
+    padding: var(--pico-nav-element-spacing-vertical) 0;
+    justify-content: space-between;
+    display: flex;
+}
+
+main nav.sidebar details summary::marker,
+main nav.sidebar details summary ::-webkit-details-marker {
+    content: "";
 }
