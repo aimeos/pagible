@@ -72,7 +72,16 @@ class ServiceProvider extends Provider
 	 */
 	protected function loadBladeDirectives()
 	{
-		Blade::directive('markdown', function( $expression ) {
+		Blade::directive( 'localDate', function( $expression ) {
+			return "<?php
+				\$__args = [$expression];
+				echo \\Carbon\\Carbon::parse(\$__args[0] ?? 'now')
+					->locale(app()->getLocale())
+					->isoFormat(\$__args[1] ?? 'D MMMM');
+			?>";
+		} );
+
+		Blade::directive( 'markdown', function( $expression ) {
 			return "<?php
 				echo (new \League\CommonMark\GithubFlavoredMarkdownConverter([
 					'html_input' => 'escape',
@@ -80,6 +89,6 @@ class ServiceProvider extends Provider
 					'max_nesting_level' => 25
 				]))->convert($expression ?? '');
 			?>";
-		});
+		} );
 	}
 }
