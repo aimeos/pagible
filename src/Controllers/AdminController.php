@@ -23,7 +23,8 @@ class AdminController extends Controller
                 "style-src 'self' 'unsafe-inline';" .
                 "script-src 'self' 'nonce-{$nonce}';" .
                 "img-src 'self' data: blob: http: https:;" .
-                "media-src 'self' data: blob: http: https:;"
+                "media-src 'self' data: blob: http: https:;" .
+                "frame-src: *;"
             );
     }
 

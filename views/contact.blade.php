@@ -27,7 +27,7 @@
     </div>
 
     @if(!app()->environment('local') && config('services.hcaptcha.sitekey'))
-        <div class="h-captcha" data-sitekey="{{ config('services.hcaptcha.sitekey') }}"></div>
+        <div class="h-captcha" data-sitekey="{{ config('services.hcaptcha.sitekey') }}" data-theme="dark"></div>
     @endif
 
     <div class="errors"></div>

@@ -1,5 +1,19 @@
 @extends('cms::layouts.main')
 
+@pushOnce('css')
+<link href="{{ cmsasset('vendor/cms/theme/layout-blog.css') }}" rel="stylesheet">
+@endPushOnce
+
+@once('prism')
+    @pushOnce('css')
+    <link href="{{ cmsasset('vendor/cms/theme/prism.css') }}" rel="stylesheet">
+    @endPushOnce
+
+    @pushOnce('js')
+    <script defer src="{{ cmsasset('vendor/cms/theme/prism.js') }}"></script>
+    @endPushOnce
+@endOnce
+
 
 @section('main')
     <div class="cms-content" data-section="main">
