@@ -1,6 +1,6 @@
 .cms-content {
     max-width: 960px;
-    padding: 2rem 5%;
+    padding: 0 5%;
 }
 
 @media screen and (min-width: 1056px) {

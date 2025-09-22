@@ -127,7 +127,6 @@ nav li :where(a,[role=link]) {
 
 body > header {
     max-width: 1200px;
-    padding: 1rem 0;
     margin: auto;
 }
 
@@ -177,11 +176,12 @@ header nav details.dropdown > summary + ul.align {
 
 header nav .brand {
     flex-grow: 1;
-    padding: 0;
 }
 
 header nav .brand a,
 header nav .brand img {
+    display: flex;
+    align-items: center;
     max-width: unset;
     height: 60px;
     padding: 0;
