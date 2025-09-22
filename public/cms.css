@@ -12,8 +12,13 @@
     --pico-muted-border-color: #FFFFFF20;
     --pico-muted-hover-color: #00000020;
     --pico-muted-hover-border-color: #FFFFFF40;
+    --pico-highlight-color: #FFFFFF20;
+    --pico-highlight-border-color: #FFFFFF40;
+    --pico-highlight-hover-color: #FFFFFF60;
+    --pico-highlight-hover-border-color: #FFFFFF80;
     --pico-primary: #0868d0;
     --pico-primary-background: #0868d080;
+    --pico-primary-border: var(--pico-primary-background);
     --pico-primary-underline: var(--pico-primary);
     --pico-primary-hover: #1080ff;
     --pico-primary-hover-background: #1080ff80;
@@ -35,12 +40,12 @@
     --pico-contrast-hover: #FFFFFF;
     --pico-contrast-border: var(--pico-muted-border-color);
     --pico-contrast-background: var(--pico-background-color);
-    --pico-contrast-underline: #FFFFFF80;
+    --pico-contrast-underline: var(--pico-contrast);
     --pico-contrast-hover-background: var(--pico-muted-color);
     --pico-contrast-hover-border: var(--pico-contrast-hover-background);
     --pico-contrast-hover-underline: var(--pico-color);
     --pico-contrast-focus: var(--pico-text-selection-color);
-    --pico-contrast-inverse: #000000;
+    --pico-contrast-inverse: var(--pico-background-color);
     --pico-h1-color: var(--pico-contrast-hover);
     --pico-h2-color: var(--pico-contrast-hover);
     --pico-h3-color: var(--pico-contrast-hover);
@@ -165,6 +170,7 @@ header nav .brand {
 
 header nav .brand a,
 header nav .brand img {
+    max-width: unset;
     height: 60px;
     padding: 0;
     margin: 0;
@@ -194,24 +200,19 @@ header nav a {
     padding: 0.25rem 0.5rem;
 }
 
-@media screen and (min-width: 992px) {
-    header nav a {
-        padding: 0.5rem 1.25rem;
-    }
-}
-
 header nav > ul > li:last-of-type a {
-    background-color: var(--pico-muted-color);
-    border: 1px solid var(--pico-muted-border-color);
+    background-color: var(--pico-highlight-color);
+    border: 1px solid var(--pico-highlight-border-color);
     border-radius: 2rem;
+    text-wrap: nowrap;
 }
 
 header nav > ul > li:last-of-type:hover a {
-    background-color: var(--pico-muted-hover-color);
-    border: 1px solid var(--pico-muted-hover-border-color);
+    background-color: var(--pico-highlight-hover-color);
+    border: 1px solid var(--pico-highlight-hover-border-color);
 }
 
-@media (max-width: 768px) {
+@media (max-width: 991px) {
     header nav .menu-open.show,
     header nav .menu-close.show {
         display: block;
@@ -219,15 +220,12 @@ header nav > ul > li:last-of-type:hover a {
 
     header nav.small {
         display: block;
-        align-items: start;
+        overflow-y: auto;
         position: absolute;
-        overflow-y: scroll;
         background-color: var(--pico-background-color);
         min-height: 100%;
         z-index: 1000;
         width: 100%;
-        left: 0;
-        top: 0;
     }
 
     header nav .menu {
@@ -239,7 +237,11 @@ header nav > ul > li:last-of-type:hover a {
         display: flex;
     }
 
-    header nav .menu > li {
+    header nav .menu ul {
+        display: block;
+    }
+
+    header nav .menu li {
         padding: 0.75rem 2rem;
         width: 100%;
     }
@@ -385,6 +387,54 @@ img {
 
 .table caption {
     text-align: center;
+}
+
+
+/* Code */
+
+pre[class*="language-"] {
+    background-color: var(--pico-background-color);
+    position: relative;
+    padding: 2rem 5%;
+    background:
+        radial-gradient(
+            circle at 90% -50%,
+            var(--pico-primary-background) 0,
+            transparent 66%
+        ),
+        radial-gradient(
+            circle at 10% 150%,
+            var(--pico-secondary-background) 0,
+            transparent 66%
+        );
+}
+
+pre[class*=language-] code {
+    background-color: var(--pico-muted-color);
+    color: var(--pico-color);
+    margin: 0;
+}
+
+@media screen and (min-width: 768px) {
+    pre[class*="language-"] {
+        background:
+            radial-gradient(
+                circle at 90% -50%,
+                var(--pico-primary-background) 0,
+                transparent 66%
+            ),
+            radial-gradient(
+                circle at 10% 150%,
+                var(--pico-secondary-background) 0,
+                transparent 66%
+            ),
+            url('code-background.svg') no-repeat -10% calc(100% + 2.5rem) / 20% auto,
+            url('code-background.svg') no-repeat 110% calc(100% + 2.5rem) / 20% auto;
+    }
+
+    pre[class*="language-"] .copy {
+        margin: 0.33rem;
+    }
 }
 
 
