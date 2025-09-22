@@ -2,19 +2,21 @@
     background: var(--pico-background-color);
 }
 
-.swiffy-slider {
-	padding: 5%;
-    background:
-        radial-gradient(
-            circle at 90% -50%,
-            var(--pico-primary-background) 0,
-            transparent 100%
-        ),
-        radial-gradient(
-            circle at 10% 150%,
-            var(--pico-secondary-background) 0,
-            transparent 100%
-        );
+@media screen and (min-width: 576px) {
+	.swiffy-slider {
+		padding: 5%;
+		background:
+			radial-gradient(
+				circle at 90% -50%,
+				var(--pico-primary-background) 0,
+				transparent 100%
+			),
+			radial-gradient(
+				circle at 10% 150%,
+				var(--pico-secondary-background) 0,
+				transparent 100%
+			);
+	}
 }
 
 

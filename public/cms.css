@@ -12,10 +12,10 @@
     --pico-muted-border-color: #FFFFFF20;
     --pico-muted-hover-color: #00000020;
     --pico-muted-hover-border-color: #FFFFFF40;
-    --pico-highlight-color: #FFFFFF40;
-    --pico-highlight-border-color: #FFFFFF60;
-    --pico-highlight-hover-color: #FFFFFF60;
-    --pico-highlight-hover-border-color: #FFFFFF80;
+    --pico-highlight-color: #FFFFFF20;
+    --pico-highlight-border-color: #FFFFFF40;
+    --pico-highlight-hover-color: #FFFFFF40;
+    --pico-highlight-hover-border-color: #FFFFFF60;
     --pico-primary: #0868d0;
     --pico-primary-background: #0868d080;
     --pico-primary-border: var(--pico-primary-background);
@@ -127,6 +127,7 @@ nav li :where(a,[role=link]) {
 
 body > header {
     max-width: 1200px;
+    padding: 1rem 0;
     margin: auto;
 }
 
@@ -176,12 +177,11 @@ header nav details.dropdown > summary + ul.align {
 
 header nav .brand {
     flex-grow: 1;
+    padding: 0;
 }
 
 header nav .brand a,
 header nav .brand img {
-    display: flex;
-    align-items: center;
     max-width: unset;
     height: 60px;
     padding: 0;
@@ -227,7 +227,7 @@ header nav > ul > li:last-of-type:hover a {
 @media (max-width: 991px) {
     header nav .menu-open.show,
     header nav .menu-close.show {
-        display: block;
+        display: flex;
     }
 
     header nav.small {
@@ -317,7 +317,7 @@ img {
     text-decoration: none;
     vertical-align: sub;
     padding: 0.75rem 1.5rem;
-    margin: 1rem;
+    margin: 0.5rem 0;
     font-size: 100%;
     border: none;
     border-radius: 2rem;
@@ -358,6 +358,25 @@ img {
 
 .video video {
     max-width: 100%;
+}
+
+@media screen and (min-width: 576px) {
+	.image picture,
+    .video video {
+        display: block;
+		padding: 5%;
+		background:
+			radial-gradient(
+				circle at 90% -50%,
+				var(--pico-primary-background) 0,
+				transparent 100%
+			),
+			radial-gradient(
+				circle at 10% 150%,
+				var(--pico-secondary-background) 0,
+				transparent 100%
+			);
+	}
 }
 
 .caption:not(:empty) {
@@ -423,6 +442,7 @@ pre code[class*=language-] {
     background-color: var(--pico-muted-color) !important;
     color: var(--pico-color) !important;
     margin: 0 !important;
+    overflow-x: auto;
 }
 
 @media screen and (min-width: 768px) {
