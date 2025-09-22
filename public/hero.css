@@ -7,18 +7,18 @@
     align-items: center;
 }
 
-.hero .content {
+.hero .first {
     text-align: center;
     max-width: 800px;
     margin: auto;
 }
 
-.hero .image {
+.hero .second {
     display: none;
 }
 
-.hero .content:has(+ .image),
-.hero .content:has(+ .image) h1 {
+.hero .first:has(+ .second),
+.hero .first:has(+ .second) h1 {
     text-align: start;
     margin: initial;
 }
@@ -49,26 +49,26 @@
 }
 
 @media screen and (min-width: 576px) {
-    .hero .content:has(+ .image) {
+    .hero .first:has(+ .second) {
         width: 66%;
         margin-inline-end: 2rem;
     }
 
-    .hero .image {
+    .hero .second {
         width: 33%;
         display: block;
         margin-inline-start: 2rem;
     }
 
-    .hero .image img {
+    .hero .second img {
         max-height: 100%;
         max-width: unset;
     }
 }
 
 @media screen and (min-width: 768px) {
-    .hero .content:has(+ .image),
-    .hero .image {
+    .hero .first:has(+ .second),
+    .hero .second {
         width: 50%;
     }
 }

@@ -2,7 +2,7 @@
 <link href="{{ cmsasset('vendor/cms/theme/hero.css') }}" rel="stylesheet">
 @endPushOnce
 
-<div class="content">
+<div class="first">
     @if(@$data->subtitle)
         <div class="subtitle">
             {{ $data->subtitle }}
@@ -23,7 +23,7 @@
 </div>
 
 @if($file = cms($files, @$data->file?->id))
-    <div class="image">
+    <div class="second">
         @include('cms::pic', ['file' => $file, 'main' => true, 'sizes' => '50vw'])
     </div>
 @endif
