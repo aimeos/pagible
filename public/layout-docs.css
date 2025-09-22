@@ -6,7 +6,6 @@ main {
 main .content {
     margin: 0 2.5%;
     overflow: auto;
-    width: 100%;
 }
 
 main nav.sidebar {
@@ -17,13 +16,13 @@ main nav.sidebar {
     position: absolute;
     z-index: 1000;
     height: 100%;
-    left: -15rem;
-    width: 15rem;
+    left: -20rem;
+    width: 20rem;
 }
 
 [dir="rtl"] main nav.sidebar {
     transition: right 0.3s ease;
-    right: -15rem;
+    right: -20rem;
     left: 0;
 }
 
@@ -51,7 +50,7 @@ main nav.sidebar.show {
         position: relative;
         background: none;
         height: unset;
-        width: 15rem;
+        width: 20rem;
         left: 0;
     }
 
@@ -113,6 +112,7 @@ main nav.sidebar details.is-menu[open] > summary svg {
 main nav.sidebar .menu-item {
     padding: var(--pico-nav-element-spacing-vertical) 0;
     justify-content: space-between;
+    align-items: center;
     display: flex;
 }
 

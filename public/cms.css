@@ -12,8 +12,8 @@
     --pico-muted-border-color: #FFFFFF20;
     --pico-muted-hover-color: #00000020;
     --pico-muted-hover-border-color: #FFFFFF40;
-    --pico-highlight-color: #FFFFFF20;
-    --pico-highlight-border-color: #FFFFFF40;
+    --pico-highlight-color: #FFFFFF40;
+    --pico-highlight-border-color: #FFFFFF60;
     --pico-highlight-hover-color: #FFFFFF60;
     --pico-highlight-hover-border-color: #FFFFFF80;
     --pico-primary: #0868d0;
@@ -36,7 +36,7 @@
     --pico-secondary-hover-underline: var(--pico-secondary-hover);
     --pico-secondary-focus: var(--pico-text-selection-color);
     --pico-secondary-inverse: var(--pico-color);
-    --pico-contrast: var(--pico-color);
+    --pico-contrast: #FFFFFFE8;
     --pico-contrast-hover: #FFFFFF;
     --pico-contrast-border: var(--pico-muted-border-color);
     --pico-contrast-background: var(--pico-background-color);
@@ -58,6 +58,8 @@
     --pico-dropdown-hover-background-color: var(--pico-muted-color);
     --pico-dropdown-box-shadow: var(--pico-box-shadow);
     --pico-dropdown-color: var(--pico-contrast);
+    --pico-code-background-color: var(--pico-highlight-color);
+    --pico-code-color: var(--pico-contrast);
     --pico-border-radius: 0;
 }
 
@@ -104,6 +106,16 @@ body {
         );
 }
 
+:where(a:not([role=button])), [role=link] {
+    --pico-color: var(--pico-contrast);
+    --pico-underline: var(--pico-contrast);
+}
+
+:where(a:not([role=button]:hover)), [role=link]:hover {
+    --pico-color: var(--pico-contrast-hover);
+    --pico-underline: var(--pico-contrast-hover);
+}
+
 nav ol:first-of-type, nav ul:first-of-type,
 nav ol:last-of-type, nav ul:last-of-type {
     margin: 0;
@@ -115,7 +127,6 @@ nav li :where(a,[role=link]) {
 
 body > header {
     max-width: 1200px;
-    padding: 1rem 0;
     margin: auto;
 }
 
@@ -165,11 +176,12 @@ header nav details.dropdown > summary + ul.align {
 
 header nav .brand {
     flex-grow: 1;
-    padding: 0;
 }
 
 header nav .brand a,
 header nav .brand img {
+    display: flex;
+    align-items: center;
     max-width: unset;
     height: 60px;
     padding: 0;
@@ -390,12 +402,10 @@ img {
 }
 
 
-/* Code */
-
-pre[class*="language-"] {
-    background-color: var(--pico-background-color);
-    position: relative;
-    padding: 2rem 5%;
+pre:has(code[class*="language-"]) {
+    background-color: var(--pico-background-color) !important;
+    position: relative !important;
+    padding: 2rem 5% !important;
     background:
         radial-gradient(
             circle at 90% -50%,
@@ -406,17 +416,17 @@ pre[class*="language-"] {
             circle at 10% 150%,
             var(--pico-secondary-background) 0,
             transparent 66%
-        );
+        ) !important;
 }
 
-pre[class*=language-] code {
-    background-color: var(--pico-muted-color);
-    color: var(--pico-color);
-    margin: 0;
+pre code[class*=language-] {
+    background-color: var(--pico-muted-color) !important;
+    color: var(--pico-color) !important;
+    margin: 0 !important;
 }
 
 @media screen and (min-width: 768px) {
-    pre[class*="language-"] {
+    pre:has(code[class*="language-"]) {
         background:
             radial-gradient(
                 circle at 90% -50%,
@@ -429,11 +439,8 @@ pre[class*=language-] code {
                 transparent 66%
             ),
             url('code-background.svg') no-repeat -10% calc(100% + 2.5rem) / 20% auto,
-            url('code-background.svg') no-repeat 110% calc(100% + 2.5rem) / 20% auto;
-    }
-
-    pre[class*="language-"] .copy {
-        margin: 0.33rem;
+            url('code-background.svg') no-repeat 110% calc(100% + 2.5rem) / 20% auto
+            !important;
     }
 }
 

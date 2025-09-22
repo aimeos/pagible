@@ -1,1 +1,1 @@
-<pre class="language-{{ @$data->language?->value }}"><code dir="ltr">{{ @$data->text }}</code></pre>
+<pre><code class="language-{{ @$data->language?->value }}" dir="ltr">{{ @$data->text }}</code></pre>
