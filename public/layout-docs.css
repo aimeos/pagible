@@ -9,7 +9,7 @@ main .content {
 
 main h1,
 main .container {
-    --pico-spacing: min(5%, 2rem);
+    padding: 0 min(5%, 2rem);
 }
 
 main nav.sidebar {

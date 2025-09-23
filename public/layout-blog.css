@@ -4,5 +4,5 @@
 }
 
 .cms-content .container {
-    --pico-spacing: min(5%, 2rem);
+    padding: 0 min(5%, 2rem);
 }

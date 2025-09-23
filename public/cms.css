@@ -266,6 +266,7 @@ nav[aria-label="breadcrumb"] {
 }
 
 nav[aria-label="breadcrumb"] > ul {
+    text-align: center;
     max-width: 1200px;
     margin: auto;
     width: 100%;
@@ -283,6 +284,7 @@ nav[aria-label=breadcrumb] ul li:not(:first-child) {
 
 nav[aria-label=breadcrumb] ul li:not(:last-child)::after {
     color: var(--pico-color);
+    width: auto;
 }
 
 .container {

@@ -45,6 +45,10 @@
     border-color: var(--pico-form-element-invalid-border-color);
 }
 
+.contact .h-captcha {
+    text-align: center;
+}
+
 .contact button {
     display: block;
     margin-inline-end: auto;
