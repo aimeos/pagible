@@ -3,19 +3,15 @@
     flex-direction: column;
 }
 
-.contact .row {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 2rem;
-}
-
 .contact .col {
     margin-bottom: 1rem;
+    width: 100%;
 }
 
 @media screen and (min-width: 768px) {
     .contact .row {
-        grid-template-columns: 1fr 1fr;
+        display: flex;
+        gap: 2rem;
     }
 }
 
@@ -49,9 +45,8 @@
     border-color: var(--pico-form-element-invalid-border-color);
 }
 
-.contact button,
-.contact .h-captcha {
-    display: inline-block;
+.contact button {
+    display: block;
     margin-inline-end: auto;
     margin-inline-start: auto;
 }
