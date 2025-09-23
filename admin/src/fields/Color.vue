@@ -43,7 +43,7 @@
     :rules="rules"
     :clearable="!readonly"
     :disabled="readonly"
-    :modelValue="modelValue"
+    :modelValue="modelValue ?? config.default ?? ''"
     @update:modelValue="$emit('update:modelValue', $event)"
   ></v-color-input>
 </template>
