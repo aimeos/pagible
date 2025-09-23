@@ -107,7 +107,7 @@
           return this.handle(data, path)
         }).catch(error => {
           this.messages.add(this.$gettext(`Error adding file %{path}`, {path: file.name}) + ":\n" + error, 'error')
-          this.$log(`File::addFile(): Error adding file`, ev, error)
+          this.$log(`File::addFile(): Error adding file`, file, error)
         }).finally(() => {
           this.selected = null
         })
