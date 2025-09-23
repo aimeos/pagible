@@ -578,7 +578,7 @@ return [
         'config' => [
             'logo' => [
                 'group' => 'basic',
-                'icon' => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><title>image</title><path d="M8.5,13.5L11,16.5L14.5,12L19,18H5M21,19V5C21,3.89 20.1,3 19,3H5A2,2 0 0,0 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19Z" /></svg>',
+                'icon' => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.5,13.5L11,16.5L14.5,12L19,18H5M21,19V5C21,3.89 20.1,3 19,3H5A2,2 0 0,0 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19Z" /></svg>',
                 'fields' => [
                     'file' => [
                         'type' => 'image',
@@ -588,7 +588,7 @@ return [
             ],
             'icon' => [
                 'group' => 'basic',
-                'icon' => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><title>image-filter-hdr</title><path d="M14,6L10.25,11L13.1,14.8L11.5,16C9.81,13.75 7,10 7,10L1,18H23L14,6Z" /></svg>',
+                'icon' => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14,6L10.25,11L13.1,14.8L11.5,16C9.81,13.75 7,10 7,10L1,18H23L14,6Z" /></svg>',
                 'fields' => [
                     'file' => [
                         'type' => 'image',
@@ -598,17 +598,23 @@ return [
             ],
             'theme' => [
                 'group' => 'basic',
-                'icon' => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M5,6.41L6.41,5L17,15.59V9H19V19H9V17H15.59L5,6.41Z" /></svg>',
+                'icon' => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19,19L12,11V19H5L12,11V5H19M19,3H5A2,2 0 0,0 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5A2,2 0 0,0 19,3Z" /></svg>',
                 'fields' => [
-                    '--color-primary' => ['type' => 'color', 'default' => '#0080f0'],
-                    '--color-secondary' => ['type' => 'color', 'default' => '#00c0f0'],
-                    '--color-accent' => ['type' => 'color', 'default' => '#0060d0'],
-                    '--color-background' => ['type' => 'color', 'default' => '#e8f4fc'],
-                    '--color-light' => ['type' => 'color', 'default' => '#ffffff'],
-                    '--color-dark' => ['type' => 'color', 'default' => '#2b2b2b'],
-                    '--color-text' => ['type' => 'color', 'default' => '#333333'],
-                    '--color-muted' => ['type' => 'color', 'default' => '#d8ecff'],
-                    '--color-border' => ['type' => 'color', 'default' => '#88bcf0'],
+                    '--pico-font-family-sans-serif' => ['type' => 'string', 'default' => '"Helvetica Neue", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, Arial, sans-serif'],
+                    '--pico-color' => ['type' => 'color', 'default' => '#FFFFFFD0'],
+                    '--pico-background-color' => ['type' => 'color', 'default' => '#080040'],
+                    '--pico-text-selection-color' => ['type' => 'color', 'default' => '#0098e840'],
+                    '--pico-primary' => ['type' => 'color', 'default' => '#0868d0'],
+                    '--pico-primary-background' => ['type' => 'color', 'default' => '#0868d080'],
+                    '--pico-primary-hover' => ['type' => 'color', 'default' => '#1080ff'],
+                    '--pico-primary-hover-background' => ['type' => 'color', 'default' => '#1080ff80'],
+                    '--pico-secondary' => ['type' => 'color', 'default' => '#b008c8'],
+                    '--pico-secondary-background' => ['type' => 'color', 'default' => '#b008c880'],
+                    '--pico-secondary-hover' => ['type' => 'color', 'default' => '#e010ff'],
+                    '--pico-secondary-hover-background' => ['type' => 'color', 'default' => '#e010ff80'],
+                    '--pico-contrast' => ['type' => 'color', 'default' => '#FFFFFFE8'],
+                    '--pico-contrast-hover' => ['type' => 'color', 'default' => '#FFFFFF'],
+                    '--pico-border-radius' => ['type' => 'string', 'default' => '0'],
                     '--pico-nav-breadcrumb-divider' => ['type' => 'string', 'default' => '>'],
                 ],
             ]
