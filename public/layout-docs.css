@@ -4,8 +4,12 @@ main {
 }
 
 main .content {
-    padding: 0 5%;
     overflow: auto;
+}
+
+main h1,
+main .container {
+    --pico-spacing: min(5%, 2rem);
 }
 
 main nav.sidebar {
