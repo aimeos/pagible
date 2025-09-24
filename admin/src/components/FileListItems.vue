@@ -631,6 +631,8 @@
   }
 
   .items.list .item-preview .v-img {
+    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAIAQMAAAD+wSzIAAAABlBMVEX////Ly8vsgL9iAAAADklEQVQI12P4AIX8EAgALgAD/aNpbtEAAAAASUVORK5CYII=);
+    background-repeat: repeat;
     margin-inline-start: 8px;
     margin-inline-end: 16px;
     cursor: pointer;
