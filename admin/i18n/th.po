@@ -1544,8 +1544,8 @@ msgstr "บทนำ"
 
 #: src/strings.js:71
 msgctxt "fn"
-msgid "main image"
-msgstr "ภาพหลัก"
+msgid "load immediately"
+msgstr "โหลดทันที"
 
 #: src/strings.js:72
 msgctxt "fn"

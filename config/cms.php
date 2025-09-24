@@ -363,7 +363,7 @@ return [
                     ],
                     'main' => [
                         'type' => 'switch',
-                        'label' => 'main image',
+                        'label' => 'load immediately',
                         'default' => false,
                     ],
                 ],
@@ -379,6 +379,11 @@ return [
                         'type' => 'images',
                         'label' => 'images',
                         'min' => 2,
+                    ],
+                    'main' => [
+                        'type' => 'switch',
+                        'label' => 'load immediately',
+                        'default' => false,
                     ],
                 ],
             ],

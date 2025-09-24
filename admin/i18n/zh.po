@@ -1544,8 +1544,8 @@ msgstr "导言"
 
 #: src/strings.js:71
 msgctxt "fn"
-msgid "main image"
-msgstr "主图像"
+msgid "load immediately"
+msgstr "立即加载"
 
 #: src/strings.js:72
 msgctxt "fn"

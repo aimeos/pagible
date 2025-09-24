@@ -1553,8 +1553,8 @@ msgstr "مقدمة"
 
 #: src/strings.js:71
 msgctxt "fn"
-msgid "main image"
-msgstr "الصورة الرئيسية"
+msgid "load immediately"
+msgstr "التحميل فوراً"
 
 #: src/strings.js:72
 msgctxt "fn"

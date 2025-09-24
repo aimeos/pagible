@@ -1414,7 +1414,7 @@ msgstr ""
 
 #: src/strings.js:71
 msgctxt "fn"
-msgid "main image"
+msgid "load immediately"
 msgstr ""
 
 #: src/strings.js:72

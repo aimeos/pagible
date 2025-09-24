@@ -1543,8 +1543,8 @@ msgstr "소개"
 
 #: src/strings.js:71
 msgctxt "fn"
-msgid "main image"
-msgstr "메인 이미지"
+msgid "load immediately"
+msgstr "즉시 로드"
 
 #: src/strings.js:72
 msgctxt "fn"

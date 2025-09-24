@@ -13,9 +13,9 @@
 	data-slider-nav-autoplay-interval="4000">
 
 	<div class="slider-container">
-		@foreach($data->files ?? [] as $item)
+		@foreach($data->files ?? [] as $idx => $item)
 			@if($file = cms($files, @$item->id))
-				@include('cms::pic', ['file' => $file, 'sizes' => '(max-width: 1180px) 100vw, 1180px'])
+				@include('cms::pic', ['file' => $file, 'main' => ($idx == 0 ? @$data->main : false), 'sizes' => '(max-width: 1180px) 100vw, 1180px'])
 			@else
 				<!-- no image file -->
 			@endif

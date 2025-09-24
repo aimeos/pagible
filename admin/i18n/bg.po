@@ -1545,8 +1545,8 @@ msgstr "Въведение"
 
 #: src/strings.js:71
 msgctxt "fn"
-msgid "main image"
-msgstr "основно изображение"
+msgid "load immediately"
+msgstr "незабавно зареждане"
 
 #: src/strings.js:72
 msgctxt "fn"

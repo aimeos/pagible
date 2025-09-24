@@ -1545,8 +1545,8 @@ msgstr "Einführung"
 
 #: src/strings.js:71
 msgctxt "fn"
-msgid "main image"
-msgstr "Hauptbild"
+msgid "load immediately"
+msgstr "sofort laden"
 
 #: src/strings.js:72
 msgctxt "fn"

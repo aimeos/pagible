@@ -1544,8 +1544,8 @@ msgstr "pengantar"
 
 #: src/strings.js:71
 msgctxt "fn"
-msgid "main image"
-msgstr "gambar utama"
+msgid "load immediately"
+msgstr "muat segera"
 
 #: src/strings.js:72
 msgctxt "fn"

@@ -1543,8 +1543,8 @@ msgstr "Giới thiệu"
 
 #: src/strings.js:71
 msgctxt "fn"
-msgid "main image"
-msgstr "hình ảnh chính"
+msgid "load immediately"
+msgstr "Tải ngay lập tức"
 
 #: src/strings.js:72
 msgctxt "fn"

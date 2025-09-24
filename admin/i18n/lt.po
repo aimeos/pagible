@@ -1547,8 +1547,8 @@ msgstr "įvadas"
 
 #: src/strings.js:71
 msgctxt "fn"
-msgid "main image"
-msgstr "pagrindinis vaizdas"
+msgid "load immediately"
+msgstr "nedelsiant įkelti"
 
 #: src/strings.js:72
 msgctxt "fn"

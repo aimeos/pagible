@@ -1545,8 +1545,8 @@ msgstr "bevezetés"
 
 #: src/strings.js:71
 msgctxt "fn"
-msgid "main image"
-msgstr "fő kép"
+msgid "load immediately"
+msgstr "azonnal betölteni"
 
 #: src/strings.js:72
 msgctxt "fn"

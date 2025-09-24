@@ -1545,8 +1545,8 @@ msgstr "sissejuhatus"
 
 #: src/strings.js:71
 msgctxt "fn"
-msgid "main image"
-msgstr "põhipilt"
+msgid "load immediately"
+msgstr "koormus kohe"
 
 #: src/strings.js:72
 msgctxt "fn"

@@ -68,7 +68,7 @@ if($pgettext) {
     $pgettext('fn', 'image')
     $pgettext('fn', 'images')
     $pgettext('fn', 'introduction')
-    $pgettext('fn', 'main image')
+    $pgettext('fn', 'load immediately')
     $pgettext('fn', 'source code')
 
     // AI response

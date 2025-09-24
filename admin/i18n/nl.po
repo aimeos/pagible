@@ -1545,8 +1545,8 @@ msgstr "inleiding"
 
 #: src/strings.js:71
 msgctxt "fn"
-msgid "main image"
-msgstr "belangrijkst beeld"
+msgid "load immediately"
+msgstr "onmiddellijk laden"
 
 #: src/strings.js:72
 msgctxt "fn"

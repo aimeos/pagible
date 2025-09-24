@@ -1545,8 +1545,8 @@ msgstr "מבוא"
 
 #: src/strings.js:71
 msgctxt "fn"
-msgid "main image"
-msgstr "תמונה ראשית"
+msgid "load immediately"
+msgstr "טען מיד"
 
 #: src/strings.js:72
 msgctxt "fn"

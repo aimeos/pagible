@@ -1549,8 +1549,8 @@ msgstr "uvod"
 
 #: src/strings.js:71
 msgctxt "fn"
-msgid "main image"
-msgstr "glavna slika"
+msgid "load immediately"
+msgstr "takojšnje nalaganje"
 
 #: src/strings.js:72
 msgctxt "fn"

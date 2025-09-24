@@ -1545,8 +1545,8 @@ msgstr "johdanto"
 
 #: src/strings.js:71
 msgctxt "fn"
-msgid "main image"
-msgstr "pääkuva"
+msgid "load immediately"
+msgstr "lataa heti"
 
 #: src/strings.js:72
 msgctxt "fn"
