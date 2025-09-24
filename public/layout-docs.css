@@ -18,7 +18,7 @@ main nav.sidebar {
     border-inline-end: 1px solid var(--pico-muted-hover-border-color);
     transition: left 0.3s ease;
     position: absolute;
-    z-index: 1000;
+    z-index: 990;
     height: 100%;
     left: -20rem;
     width: 20rem;

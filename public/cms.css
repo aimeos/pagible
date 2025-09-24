@@ -137,7 +137,7 @@ header nav ul {
     margin-top: 0;
 }
 
-header nav li {
+header nav > ul:not(.menu) > li {
     padding: 0;
 }
 
