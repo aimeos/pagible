@@ -22,7 +22,7 @@
 .blog img {
     display: block;
     aspect-ratio: 5 / 3;
-    object-fit: contain;
+    object-fit: cover;
     width: 100%;
 }
 

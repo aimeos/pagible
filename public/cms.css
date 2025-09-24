@@ -17,22 +17,22 @@
     --pico-highlight-border-color: #FFFFFF40;
     --pico-highlight-hover-color: #FFFFFF40;
     --pico-highlight-hover-border-color: #FFFFFF60;
-    --pico-primary: #0868d0;
-    --pico-primary-background: #0868d080;
+    --pico-primary: #0868D0;
+    --pico-primary-background: #0868D080;
     --pico-primary-border: var(--pico-primary-background);
     --pico-primary-underline: var(--pico-primary);
-    --pico-primary-hover: #1080ff;
-    --pico-primary-hover-background: #1080ff80;
+    --pico-primary-hover: #1080FF;
+    --pico-primary-hover-background: #1080FF80;
     --pico-primary-hover-border: var(--pico-primary-hover-background);
     --pico-primary-hover-underline: var(--pico-primary-hover);
     --pico-primary-focus: var(--pico-text-selection-color);
     --pico-primary-inverse: var(--pico-color);
-    --pico-secondary: #b008c8;
-    --pico-secondary-background: #b008c880;
+    --pico-secondary: #B008C8;
+    --pico-secondary-background: #B008C880;
     --pico-secondary-border: var(--pico-secondary-background);
     --pico-secondary-underline: var(--pico-secondary);
-    --pico-secondary-hover: #e010ff;
-    --pico-secondary-hover-background: #e010ff80;
+    --pico-secondary-hover: #E010FF;
+    --pico-secondary-hover-background: #E010FF80;
     --pico-secondary-hover-border: var(--pico-secondary-hover-background);
     --pico-secondary-hover-underline: var(--pico-secondary-hover);
     --pico-secondary-focus: var(--pico-text-selection-color);
@@ -107,7 +107,8 @@ body {
         );
 }
 
-:where(a:not([role=button])), [role=link] {
+:where(a:not([role=button])), [role=link],
+:where(a:not([role=button]):visited), [role=link]:visited {
     --pico-color: var(--pico-contrast);
     --pico-underline: var(--pico-contrast);
 }
@@ -134,6 +135,10 @@ body > header {
 header nav ol,
 header nav ul {
     margin-top: 0;
+}
+
+header nav li {
+    padding: 0;
 }
 
 header nav details summary {
