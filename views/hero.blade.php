@@ -12,9 +12,7 @@
     <h1 class="title">{{ @$data->title }}</h1>
 
     @if(@$data->text)
-        <p class="text">
-            @markdown($data->text)
-        </p>
+        @markdown($data->text)
     @endif
 
     @if(@$data->url)

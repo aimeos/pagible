@@ -49,6 +49,11 @@
     text-align: center;
 }
 
+.contact .h-captcha iframe {
+    margin-bottom: 0.5rem;
+    max-width: 100%;
+}
+
 .contact button {
     display: block;
     margin-inline-end: auto;

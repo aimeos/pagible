@@ -124,6 +124,7 @@ nav ol:last-of-type, nav ul:last-of-type {
 }
 
 nav li :where(a,[role=link]) {
+    color: var(--pico-color);
     text-decoration: none;
 }
 
@@ -138,7 +139,7 @@ header nav ul {
 }
 
 header nav > ul:not(.menu) > li {
-    padding: 0;
+    padding: var(--pico-nav-element-spacing-vertical) 0;
 }
 
 header nav details summary {
@@ -215,7 +216,8 @@ header nav a {
     display: inline-block;
     text-decoration: none;
     color: var(--pico-color);
-    padding: 0.25rem 0.5rem;
+    padding: 0.25rem 1rem;
+    margin-inline-start: -1rem;
 }
 
 header nav > ul > li:last-of-type a {
@@ -262,6 +264,12 @@ header nav > ul > li:last-of-type:hover a {
     header nav .menu li {
         padding: 0.75rem 2rem;
         width: 100%;
+    }
+}
+
+@media (max-width: 991px) {
+    body > header > nav {
+        padding: 0 1rem;
     }
 }
 
@@ -432,6 +440,9 @@ img {
     text-align: center;
 }
 
+p code {
+    overflow-wrap: anywhere;
+}
 
 pre:has(code[class*="language-"]) {
     background-color: var(--pico-background-color) !important;
