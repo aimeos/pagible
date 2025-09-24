@@ -1,7 +1,7 @@
 <script>
   export default {
     props: {
-      'modelValue': {type: String, default: ''},
+      'modelValue': {type: String},
       'config': {type: Object, default: () => {}},
       'readonly': {type: Boolean, default: false},
       'context': {type: Object},
@@ -44,7 +44,7 @@
         immediate: true,
         handler(val) {
           this.$emit('error', !this.rules.every(rule => {
-            return rule(this.modelValue) === true
+            return rule(val ?? this.config.default ?? '') === true
           }))
         }
       }
@@ -57,7 +57,7 @@
     :rules="rules"
     :auto-grow="true"
     :readonly="readonly"
-    :modelValue="modelValue"
+    :modelValue="modelValue ?? config.default ?? ''"
     :placeholder="config.placeholder || `val;val;val\nval;val;val`"
     @update:modelValue="update($event)"
     variant="outlined"

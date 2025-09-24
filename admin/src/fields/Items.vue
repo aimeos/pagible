@@ -14,7 +14,7 @@
     },
 
     props: {
-      'modelValue': {type: Array, default: () => []},
+      'modelValue': {type: Array},
       'config': {type: Object, default: () => {}},
       'assets': {type: Object, default: () => {}},
       'readonly': {type: Boolean, default: false},
@@ -127,7 +127,7 @@
         handler(val) {
           this.items = val
           this.$emit('error', !this.rules.every(rule => {
-            return rule(this.modelValue) === true
+            return rule(val ?? this.config.default ?? []) === true
           }))
         }
       }
@@ -194,7 +194,7 @@
               </div>
             </v-label>
             <component :is="toName(field.type)"
-              :modelValue="items[idx]?.[code]"
+              :modelValue="items[idx]?.[code] ?? config.default ?? []"
               @update:modelValue="update(idx, code, $event)"
               @addFile="$emit('addFile', $event)"
               @removeFile="$emit('removeFile', $event)"

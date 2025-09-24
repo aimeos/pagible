@@ -9,7 +9,7 @@
    */
    export default {
     props: {
-      'modelValue': {type: Number, default: 0},
+      'modelValue': {type: Number},
       'config': {type: Object, default: () => {}},
       'assets': {type: Object, default: () => {}},
       'readonly': {type: Boolean, default: false},
@@ -31,7 +31,7 @@
         immediate: true,
         handler(val) {
           this.$emit('error', !this.rules.every(rule => {
-            return rule(this.modelValue) === true
+            return rule(val ?? this.config.default ?? 0) === true
           }))
         }
       }

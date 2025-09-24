@@ -8,7 +8,7 @@
    */
    export default {
     props: {
-      'modelValue': {type: String, default: ''},
+      'modelValue': {type: String},
       'config': {type: Object, default: () => {}},
       'assets': {type: Object, default: () => {}},
       'readonly': {type: Boolean, default: false},
@@ -31,7 +31,7 @@
         immediate: true,
         handler(val) {
           this.$emit('error', !this.rules.every(rule => {
-            return rule(this.modelValue) === true
+            return rule(val ?? this.config.default ?? '') === true
           }))
         }
       }
@@ -45,8 +45,8 @@
     :class="config.class"
     :readonly="readonly"
     :counter="config.max"
-    :modelValue="modelValue"
     :placeholder="config.placeholder || ''"
+    :modelValue="modelValue ?? config.default ?? ''"
     @update:modelValue="$emit('update:modelValue', $event)"
     density="comfortable"
     hide-details="auto"

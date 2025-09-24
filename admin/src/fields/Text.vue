@@ -41,7 +41,7 @@
     },
 
     props: {
-      'modelValue': {type: String, default: ''},
+      'modelValue': {type: String},
       'config': {type: Object, default: () => {}},
       'assets': {type: Object, default: () => {}},
       'readonly': {type: Boolean, default: false},
@@ -96,7 +96,7 @@
         immediate: true,
         handler(val) {
           this.$emit('error', !this.rules.every(rule => {
-            return rule(this.modelValue) === true
+            return rule(val ?? this.config.default ?? '') === true
           }))
         }
       }
@@ -110,7 +110,7 @@
       :config="ckconfig"
       :editor="editor"
       :disabled="readonly"
-      :modelValue="modelValue"
+      :modelValue="modelValue ?? config.default ?? ''"
       @update:modelValue="update($event)"
     ></ckeditor>
   </div>

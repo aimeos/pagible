@@ -1,7 +1,7 @@
 <script>
   export default {
     props: {
-      'modelValue': {type: Number, default: 0},
+      'modelValue': {type: Number},
       'config': {type: Object, default: () => {}},
       'assets': {type: Object, default: () => {}},
       'readonly': {type: Boolean, default: false},
@@ -19,7 +19,7 @@
     :max="config.max ?? 100"
     :min="config.min ?? 0"
     :readonly="readonly"
-    :modelValue="modelValue"
+    :modelValue="modelValue ?? config.default ?? 0"
     @update:modelValue="$emit('update:modelValue', $event)"
     hide-details="auto"
   >

@@ -3,7 +3,7 @@
 
   export default {
     props: {
-      'modelValue': {type: [Object, String, Number, Boolean, null], default: null},
+      'modelValue': {type: [Object, String, Number, Boolean, null]},
       'config': {type: Object, default: () => {}},
       'assets': {type: Object, default: () => {}},
       'readonly': {type: Boolean, default: false},
@@ -130,7 +130,7 @@
         immediate: true,
         handler(val) {
           this.$emit('error', !this.rules.every(rule => {
-            return rule(this.modelValue) === true
+            return rule(val ?? this.config.default ?? null) === true
           }))
         }
       }
@@ -150,7 +150,7 @@
     :return-object="!!config['item-title']"
     :multiple="config.multiple"
     :chips="config.multiple"
-    :modelValue="modelValue"
+    :modelValue="modelValue ?? config.default ?? null"
     @update:modelValue="$emit('update:modelValue', $event)"
     @update:search="search($event)"
     @update:menu="search('')"
