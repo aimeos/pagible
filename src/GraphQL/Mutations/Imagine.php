@@ -69,10 +69,9 @@ final class Imagine
                 } )->values();
             }
 
-            $response = $prism->withPrompt( $prompt, $files->toArray() )
+            $prism->withProviderOptions( ['image' => $files->first()?->resource()] )
                 ->whenProvider( 'openai', fn( $request ) => $request
                     ->withProviderOptions( [
-                        'image' => $files->first()?->base64(),
                         'size' => match( $model ) {
                             'gpt-image-1' => '1536x1024',
                             'dall-e-3' => '1792x1024',
@@ -80,8 +79,9 @@ final class Imagine
                             default => 'auto',
                         }
                     ] )
-                )
-                ->generate();
+                );
+
+            $response = $prism->withPrompt( $prompt, $files->toArray() )->generate();
 
             $prompt = collect( $response->images )
                 ->map( fn( $image ) => $image->hasRevisedPrompt() ? $image->revisedPrompt : null )

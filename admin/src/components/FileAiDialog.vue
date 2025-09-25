@@ -235,8 +235,8 @@
           </v-list>
         </div>
 
-        <!-- Not supported by Prism API yet -->
-        <!--div v-if="similar.length">
+        <!-- At least one image is used by all providers -->
+        <div v-if="similar.length">
           <v-tabs>
             <v-tab>{{ $gettext('Use images of this style') }}</v-tab>
           </v-tabs>
@@ -254,7 +254,7 @@
         <v-tabs>
           <v-tab>{{ $gettext('Select similar images') }}</v-tab>
         </v-tabs>
-        <FileListItems ref="filelist" :filter="{mime: 'image/'}" @select="use($event)" /-->
+        <FileListItems ref="filelist" :filter="{mime: 'image/'}" @select="use($event)" />
       </v-card-text>
     </v-card>
   </v-dialog>
