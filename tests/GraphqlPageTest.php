@@ -56,7 +56,12 @@ class GraphqlPageTest extends TestAbstract
 
         // Prepare expected attributes
         $attr = collect($page->getAttributes())->except(['tenant_id', '_lft', '_rgt'])->all();
-        $expected = ['id' => (string) $page->id] + $attr + ['has' => $page->has];
+        $expected = [
+            'id' => (string) $page->id,
+            'has' => $page->has,
+            'created_at' => (string) $page->getAttribute( 'created_at' ),
+            'updated_at' => (string) $page->getAttribute( 'updated_at' ),
+        ] + $attr;
 
         // Cast JSON fields to arrays for order-independent comparison
         $expected['meta'] = (array) $page->meta;
@@ -110,11 +115,16 @@ class GraphqlPageTest extends TestAbstract
     {
         $this->seed(CmsSeeder::class);
 
+        $expected = [];
         $page = Page::where('tag', 'root')->firstOrFail();
 
         // Prepare expected attributes
         $attr = collect($page->getAttributes())->except(['tenant_id', '_lft', '_rgt'])->all();
-        $expected = [['id' => (string) $page->id] + $attr];
+        $expected[] = [
+            'id' => (string) $page->id,
+            'created_at' => (string) $page->getAttribute( 'created_at' ),
+            'updated_at' => (string) $page->getAttribute( 'updated_at' ),
+        ] + $attr;
 
         // Cast JSON fields to arrays for order-independent comparison
         $expected[0]['meta'] = $page->meta;
@@ -270,7 +280,12 @@ class GraphqlPageTest extends TestAbstract
 
         foreach ($root->children as $page) {
             $attr = collect($page->getAttributes())->except(['tenant_id', '_lft', '_rgt'])->all();
-            $expected[] = ['id' => (string) $page->id, 'parent_id' => (string) $page->parent_id] + $attr;
+            $expected[] = [
+                'id' => (string) $page->id,
+                'parent_id' => (string) $page->parent_id,
+                'created_at' => (string) $page->getAttribute( 'created_at' ),
+                'updated_at' => (string) $page->getAttribute( 'updated_at' ),
+            ] + $attr;
         }
 
         $this->expectsDatabaseQueryCount(2);
@@ -616,7 +631,12 @@ class GraphqlPageTest extends TestAbstract
         $page = Page::where('tag', 'test')->where('lang', 'en')->firstOrFail();
 
         $attr = collect($page->getAttributes())->except(['tenant_id', '_lft', '_rgt'])->all();
-        $expected = ['id' => (string) $page->id, 'parent_id' => null] + $attr;
+        $expected = [
+            'id' => (string) $page->id,
+            'parent_id' => null,
+            'created_at' => (string) $page->getAttribute( 'created_at' ),
+            'updated_at' => (string) $page->getAttribute( 'updated_at' ),
+        ] + $attr;
 
         $response->assertJson( [
             'data' => [

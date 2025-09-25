@@ -55,12 +55,15 @@ class GraphqlFileTest extends TestAbstract
 
         // Prepare expected array
         $attr = collect($file->getAttributes())->except(['tenant_id'])->all();
-        $expected = ['id' => (string) $file->id] + $attr + [
+        $expected = [
+            'id' => (string) $file->id,
             'byelements' => $file->byelements->map( fn($item) => ['id' => $item->id] )->all(),
             'bypages' => $file->bypages->map( fn($item) => ['id' => $item->id] )->all(),
             'byversions' => [['published' => true]],
             'versions' => [['published' => false]],
-        ];
+            'created_at' => (string) $file->getAttribute( 'created_at' ),
+            'updated_at' => (string) $file->getAttribute( 'updated_at' ),
+        ] + $attr;
 
         // Decode JSON attributes for order-independent comparison
         $expected['previews'] = json_decode($expected['previews'], true);
@@ -122,11 +125,16 @@ class GraphqlFileTest extends TestAbstract
     {
         $this->seed(CmsSeeder::class);
 
+        $expected = [];
         $file = File::where('lang', 'en')->first();
 
         // Prepare expected array
         $attr = collect($file->getAttributes())->except(['tenant_id'])->all();
-        $expected = [['id' => (string) $file->id] + $attr];
+        $expected[] = [
+            'id' => (string) $file->id,
+            'created_at' => (string) $file->getAttribute( 'created_at' ),
+            'updated_at' => (string) $file->getAttribute( 'updated_at' ),
+        ] + $attr;
 
         // Decode JSON attributes for order-independent comparison
         $expected[0]['previews'] = json_decode($expected[0]['previews'], true);

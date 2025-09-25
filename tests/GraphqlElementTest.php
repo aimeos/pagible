@@ -55,11 +55,14 @@ class GraphqlElementTest extends TestAbstract
         $element = Element::firstOrFail();
 
         $attr = collect($element->getAttributes())->except(['tenant_id'])->all();
-        $expected = ['id' => (string) $element->id] + $attr + [
+        $expected = [
+            'id' => (string) $element->id,
             'bypages' => $element->bypages->map( fn($item) => ['id' => $item->id] )->all(),
             'byversions' => $element->byversions->map( fn($item) => ['id' => $item->id] )->all(),
             'versions' => [0 => ['published' => false]],
-        ];
+            'created_at' => (string) $element->getAttribute( 'created_at' ),
+            'updated_at' => (string) $element->getAttribute( 'updated_at' ),
+        ] + $attr;
 
         // Decode JSON string to array for order-independent comparison
         $expected['data'] = json_decode($expected['data'], true);
@@ -116,11 +119,16 @@ class GraphqlElementTest extends TestAbstract
     {
         $this->seed(CmsSeeder::class);
 
+        $expected = [];
         $element = Element::where('type', 'footer')->first();
 
         // Prepare expected array
         $attr = collect($element->getAttributes())->except(['tenant_id'])->all();
-        $expected = [['id' => (string) $element->id] + $attr];
+        $expected[] = [
+            'id' => (string) $element->id,
+            'created_at' => (string) $element->getAttribute( 'created_at' ),
+            'updated_at' => (string) $element->getAttribute( 'updated_at' ),
+        ] + $attr;
 
         // Decode JSON string in expected data for order-independent comparison
         $expected[0]['data'] = json_decode($expected[0]['data'], true);
