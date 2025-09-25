@@ -82,6 +82,9 @@ class Page extends Model
         'meta' => 'object',
         'config' => 'object',
         'content' => 'object', // for object access in templates
+        'created_at' => 'datetime:Y-m-d H:i:s',
+        'updated_at' => 'datetime:Y-m-d H:i:s',
+        'deleted_at' => 'datetime:Y-m-d H:i:s',
     ];
 
     /**

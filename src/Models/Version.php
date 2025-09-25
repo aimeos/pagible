@@ -48,6 +48,7 @@ class Version extends Model
     protected $casts = [
         'data' => 'object',
         'aux' => 'object',
+        'created_at' => 'datetime:Y-m-d H:i:s',
     ];
 
     /**

@@ -55,6 +55,9 @@ class Element extends Model
     protected $casts = [
         'data' => 'object',
         'name' => 'string',
+        'created_at' => 'datetime:Y-m-d H:i:s',
+        'updated_at' => 'datetime:Y-m-d H:i:s',
+        'deleted_at' => 'datetime:Y-m-d H:i:s',
     ];
 
     /**
