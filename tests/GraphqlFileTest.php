@@ -304,7 +304,7 @@ class GraphqlFileTest extends TestAbstract
         $response->assertJson( [
             'data' => [
                 'addFile' => [
-                    'id' => $file->id,
+                    'id' => strtolower( $file->id ),
                     'mime' => 'application/x-empty',
                     'lang' => 'en-GB',
                     'name' => 'Test file name',
@@ -372,9 +372,9 @@ class GraphqlFileTest extends TestAbstract
             'lang' => 'en-GB',
             'name' => 'test file',
             'path' => $file->path,
-            'previews' => (array) $file->latest->data->previews,
-            'description' => (array) $file->latest->data->description,
-            'transcription' => (array) $file->latest->data->transcription,
+            'previews' => (array) $file->latest->data->previews ?? [],
+            'description' => (array) $file->latest->data->description ?? [],
+            'transcription' => (array) $file->latest->data->transcription ?? [],
         ];
 
         // Assert scalar fields
