@@ -38,19 +38,3 @@
     --pico-font-size: 150%;
     margin: 1rem 0;
 }
-
-.cards picture {
-    width: 2rem;
-    display: flex;
-    margin: initial;
-    aspect-ratio: 1 / 1;
-    background-size: cover;
-    background-position: center;
-    background-image: linear-gradient(90deg, var(--pico-primary), var(--pico-secondary));
-    clip-path: polygon(6.7% 25%, 50% 0%, 93.3% 25%, 93.3% 75%, 50% 100%, 6.7% 75%);
-}
-
-.cards picture img {
-    margin: auto;
-    width: 66%;
-}
