@@ -9,10 +9,10 @@
             default-src 'self';
             img-src 'self' data: blob:;
             media-src 'self' data: blob:;
-            style-src 'self' https://hcaptcha.com https://*.hcaptcha.com;
-            script-src 'self' https://hcaptcha.com https://*.hcaptcha.com;
             frame-src 'self' https://hcaptcha.com https://*.hcaptcha.com;
-            connect-src 'self' https://hcaptcha.com https://*.hcaptcha.com
+            connect-src 'self' https://hcaptcha.com https://*.hcaptcha.com;
+            style-src 'self' 'nonce-{{ csrf_token() }}' https://hcaptcha.com https://*.hcaptcha.com;
+            script-src 'self' 'nonce-{{ csrf_token() }}' https://hcaptcha.com https://*.hcaptcha.com;
         ">
 
         <title>{{ cms($page, 'title') }}</title>
@@ -34,15 +34,13 @@
         <link href="{{ cmsasset('vendor/cms/theme/cms.css') }}" rel="stylesheet">
         @stack('css')
 
-        <script defer src="{{ cmsasset('vendor/cms/theme/cms.js') }}"></script>
-        @stack('js')
-
-        @if(\Aimeos\Cms\Permission::can('page:save', auth()->user()))
-            <link href="{{ cmsasset('vendor/cms/admin/editor.css') }}" rel="stylesheet">
-            <script defer src="{{ cmsasset('vendor/cms/admin/editor.js') }}"></script>
-        @else
-            <script defer src="{{ cmsasset('vendor/cms/theme/stats.js') }}"></script>
-        @endif
+        @foreach($page->ancestors ? (clone $page->ancestors)->push($page) : [$page] as $navItem)
+            @if($text = @cms($navItem, 'config.styles.data.text'))
+                <style nonce="{{ csrf_token() }}">
+                    {{ $text }}
+                </style>
+            @endif
+        @endforeach
     </head>
     <body class="theme-{{ cms($page, 'theme') ?: 'cms' }} type-{{ cms($page, 'type') ?: 'page' }}">
         <header>
@@ -140,7 +138,25 @@
         @endif
 
         @yield('main')
-
         @yield('footer')
+
+
+        <script src="{{ cmsasset('vendor/cms/theme/cms.js') }}"></script>
+        @stack('js')
+
+        @foreach($page->ancestors ? (clone $page->ancestors)->push($page) : [$page] as $navItem)
+            @if($text = @cms($navItem, 'config.javascript.data.text'))
+                <script nonce="{{ csrf_token() }}">
+                    {{ $text }}
+                </script>
+            @endif
+        @endforeach
+
+        @if(\Aimeos\Cms\Permission::can('page:save', auth()->user()))
+            <link href="{{ cmsasset('vendor/cms/admin/editor.css') }}" rel="stylesheet">
+            <script defer src="{{ cmsasset('vendor/cms/admin/editor.js') }}"></script>
+        @else
+            <script defer src="{{ cmsasset('vendor/cms/theme/stats.js') }}"></script>
+        @endif
     </body>
 </html>
