@@ -18,12 +18,17 @@ msgstr ""
 msgid "Error translating texts"
 msgstr ""
 
+#: src/components/AsideList.vue:72
+#: src/components/FileDetailItem.vue:585
+msgid "Reset"
+msgstr ""
+
 #: src/components/AsideMeta.vue:19
 msgid "id"
 msgstr ""
 
 #: src/components/AsideMeta.vue:23
-#: src/components/FileListItems.vue:511
+#: src/components/FileListItems.vue:518
 #: src/fields/Audio.vue:105
 #: src/fields/File.vue:289
 #: src/fields/Image.vue:139
@@ -33,7 +38,7 @@ msgstr ""
 
 #: src/components/AsideMeta.vue:27
 #: src/components/ElementListItems.vue:480
-#: src/components/FileListItems.vue:517
+#: src/components/FileListItems.vue:524
 #: src/fields/Audio.vue:109
 #: src/fields/File.vue:293
 #: src/fields/Image.vue:143
@@ -66,25 +71,25 @@ msgstr ""
 
 #: src/components/ElementDetailItem.vue:68
 #: src/components/ElementDetailRefs.vue:96
-#: src/components/FileDetailItem.vue:497
-#: src/components/FileDetailRefs.vue:101
-#: src/components/FileDetailRefs.vue:123
+#: src/components/FileDetailItem.vue:517
+#: src/components/FileDetailRefs.vue:116
+#: src/components/FileDetailRefs.vue:138
 msgid "Name"
 msgstr ""
 
 #: src/components/ElementDetailItem.vue:80
-#: src/components/FileDetailItem.vue:509
+#: src/components/FileDetailItem.vue:529
 #: src/components/PageDetailItemProps.vue:149
 msgid "Language"
 msgstr ""
 
 #: src/components/ElementDetailRefs.vue:65
-#: src/components/FileDetailRefs.vue:69
+#: src/components/FileDetailRefs.vue:84
 msgid "yes"
 msgstr ""
 
 #: src/components/ElementDetailRefs.vue:68
-#: src/components/FileDetailRefs.vue:73
+#: src/components/FileDetailRefs.vue:88
 msgid "no"
 msgstr ""
 
@@ -97,25 +102,25 @@ msgstr ""
 
 #: src/components/ElementDetailRefs.vue:94
 #: src/components/ElementDetailRefs.vue:116
-#: src/components/FileDetailRefs.vue:99
-#: src/components/FileDetailRefs.vue:121
-#: src/components/FileDetailRefs.vue:143
+#: src/components/FileDetailRefs.vue:114
+#: src/components/FileDetailRefs.vue:136
+#: src/components/FileDetailRefs.vue:158
 msgid "ID"
 msgstr ""
 
 #: src/components/ElementDetailRefs.vue:95
-#: src/components/FileDetailRefs.vue:100
+#: src/components/FileDetailRefs.vue:115
 msgid "URL"
 msgstr ""
 
 #: src/components/ElementDetailRefs.vue:117
-#: src/components/FileDetailRefs.vue:122
-#: src/components/FileDetailRefs.vue:144
+#: src/components/FileDetailRefs.vue:137
+#: src/components/FileDetailRefs.vue:159
 msgid "Type"
 msgstr ""
 
 #: src/components/ElementDetailRefs.vue:118
-#: src/components/FileDetailRefs.vue:145
+#: src/components/FileDetailRefs.vue:160
 #: src/views/ElementList.vue:105
 #: src/views/FileList.vue:102
 #: src/views/PageList.vue:244
@@ -128,19 +133,19 @@ msgstr ""
 #: src/components/ElementListItems.vue:198
 #: src/components/ElementListItems.vue:240
 #: src/components/ElementListItems.vue:277
-#: src/components/FileDetailItem.vue:80
-#: src/components/FileDetailItem.vue:226
-#: src/components/FileDetailItem.vue:300
-#: src/components/FileDetailItem.vue:339
-#: src/components/FileDetailItem.vue:374
-#: src/components/FileDetailItem.vue:416
-#: src/components/FileDetailItem.vue:427
-#: src/components/FileListItems.vue:61
-#: src/components/FileListItems.vue:125
-#: src/components/FileListItems.vue:169
-#: src/components/FileListItems.vue:210
-#: src/components/FileListItems.vue:252
-#: src/components/FileListItems.vue:289
+#: src/components/FileDetailItem.vue:81
+#: src/components/FileDetailItem.vue:246
+#: src/components/FileDetailItem.vue:320
+#: src/components/FileDetailItem.vue:359
+#: src/components/FileDetailItem.vue:394
+#: src/components/FileDetailItem.vue:436
+#: src/components/FileDetailItem.vue:447
+#: src/components/FileListItems.vue:67
+#: src/components/FileListItems.vue:131
+#: src/components/FileListItems.vue:175
+#: src/components/FileListItems.vue:216
+#: src/components/FileListItems.vue:258
+#: src/components/FileListItems.vue:295
 #: src/components/PageDetailContentList.vue:339
 #: src/components/PageListItems.vue:71
 #: src/components/PageListItems.vue:108
@@ -194,8 +199,8 @@ msgstr ""
 
 #: src/components/ElementListItems.vue:422
 #: src/components/ElementListItems.vue:495
-#: src/components/FileListItems.vue:441
-#: src/components/FileListItems.vue:531
+#: src/components/FileListItems.vue:449
+#: src/components/FileListItems.vue:541
 #: src/components/PageDetailContentList.vue:615
 #: src/components/PageDetailContentList.vue:666
 #: src/components/PageListItems.vue:879
@@ -205,8 +210,8 @@ msgstr ""
 
 #: src/components/ElementListItems.vue:426
 #: src/components/ElementListItems.vue:504
-#: src/components/FileListItems.vue:445
-#: src/components/FileListItems.vue:539
+#: src/components/FileListItems.vue:456
+#: src/components/FileListItems.vue:549
 #: src/components/PageListItems.vue:883
 #: src/components/PageListItems.vue:963
 #: src/views/ElementDetail.vue:325
@@ -229,8 +234,8 @@ msgstr ""
 
 #: src/components/ElementListItems.vue:432
 #: src/components/ElementListItems.vue:507
-#: src/components/FileListItems.vue:451
-#: src/components/FileListItems.vue:542
+#: src/components/FileListItems.vue:459
+#: src/components/FileListItems.vue:552
 #: src/components/PageDetailContentList.vue:631
 #: src/components/PageDetailContentList.vue:679
 #: src/components/PageListItems.vue:895
@@ -240,8 +245,8 @@ msgstr ""
 
 #: src/components/ElementListItems.vue:435
 #: src/components/ElementListItems.vue:510
-#: src/components/FileListItems.vue:454
-#: src/components/FileListItems.vue:545
+#: src/components/FileListItems.vue:462
+#: src/components/FileListItems.vue:555
 #: src/components/PageListItems.vue:898
 #: src/components/PageListItems.vue:1044
 msgid "Restore"
@@ -249,41 +254,41 @@ msgstr ""
 
 #: src/components/ElementListItems.vue:438
 #: src/components/ElementListItems.vue:513
-#: src/components/FileListItems.vue:457
-#: src/components/FileListItems.vue:548
+#: src/components/FileListItems.vue:465
+#: src/components/FileListItems.vue:558
 #: src/components/PageListItems.vue:901
 #: src/components/PageListItems.vue:1047
 msgid "Purge"
 msgstr ""
 
 #: src/components/ElementListItems.vue:449
-#: src/components/FileListItems.vue:466
+#: src/components/FileListItems.vue:474
 #: src/components/PageDetailContentList.vue:640
 #: src/components/PageListItems.vue:910
 msgid "Search for"
 msgstr ""
 
 #: src/components/ElementListItems.vue:459
-#: src/components/FileListItems.vue:493
+#: src/components/FileListItems.vue:501
 msgid "Sort by"
 msgstr ""
 
 #: src/components/ElementListItems.vue:463
 #: src/components/ElementListItems.vue:468
-#: src/components/FileListItems.vue:497
-#: src/components/FileListItems.vue:502
+#: src/components/FileListItems.vue:59
+#: src/components/FileListItems.vue:509
 msgid "latest"
 msgstr ""
 
 #: src/components/ElementListItems.vue:463
 #: src/components/ElementListItems.vue:471
-#: src/components/FileListItems.vue:497
-#: src/components/FileListItems.vue:505
+#: src/components/FileListItems.vue:59
+#: src/components/FileListItems.vue:512
 msgid "oldest"
 msgstr ""
 
 #: src/components/ElementListItems.vue:474
-#: src/components/FileListItems.vue:508
+#: src/components/FileListItems.vue:515
 #: src/fields/Audio.vue:97
 #: src/fields/File.vue:281
 #: src/fields/Image.vue:131
@@ -296,7 +301,7 @@ msgid "type"
 msgstr ""
 
 #: src/components/ElementListItems.vue:538
-#: src/components/FileListItems.vue:580
+#: src/components/FileListItems.vue:613
 #: src/components/HistoryDialog.vue:130
 #: src/components/PageListItems.vue:1081
 #: src/fields/Autocomplete.vue:148
@@ -305,7 +310,7 @@ msgid "Loading"
 msgstr ""
 
 #: src/components/ElementListItems.vue:546
-#: src/components/FileListItems.vue:589
+#: src/components/FileListItems.vue:622
 #: src/components/PageListItems.vue:1086
 msgid "No entries found"
 msgstr ""
@@ -341,7 +346,7 @@ msgid "Content Element"
 msgstr ""
 
 #: src/components/FileAiDialog.vue:99
-#: src/components/FileListItems.vue:112
+#: src/components/FileListItems.vue:118
 #: src/components/FileUrlDialog.vue:67
 #: src/components/FileUrlDialog.vue:147
 #: src/fields/File.vue:109
@@ -385,126 +390,122 @@ msgstr ""
 msgid "Select similar images"
 msgstr ""
 
-#: src/components/FileDetailItem.vue:87
+#: src/components/FileDetailItem.vue:88
 msgid "No video element found"
 msgstr ""
 
-#: src/components/FileDetailItem.vue:132
+#: src/components/FileDetailItem.vue:133
 msgid "Error saving video cover"
 msgstr ""
 
-#: src/components/FileDetailItem.vue:258
+#: src/components/FileDetailItem.vue:278
 msgid "Error removing video cover"
 msgstr ""
 
-#: src/components/FileDetailItem.vue:304
+#: src/components/FileDetailItem.vue:324
 msgid "Transcription is only available for audio and video files"
 msgstr ""
 
-#: src/components/FileDetailItem.vue:329
+#: src/components/FileDetailItem.vue:349
 msgid "Error transcribing file"
 msgstr ""
 
-#: src/components/FileDetailItem.vue:433
+#: src/components/FileDetailItem.vue:453
 msgid "No file selected"
 msgstr ""
 
-#: src/components/FileDetailItem.vue:467
+#: src/components/FileDetailItem.vue:487
 msgid "Error uploading video cover"
 msgstr ""
 
-#: src/components/FileDetailItem.vue:522
+#: src/components/FileDetailItem.vue:542
 msgid "Use cropped image"
 msgstr ""
 
-#: src/components/FileDetailItem.vue:528
+#: src/components/FileDetailItem.vue:548
 msgid "Crop image"
 msgstr ""
 
-#: src/components/FileDetailItem.vue:532
+#: src/components/FileDetailItem.vue:552
 msgid "Original ratio"
 msgstr ""
 
-#: src/components/FileDetailItem.vue:535
+#: src/components/FileDetailItem.vue:555
 msgid "No ratio"
 msgstr ""
 
-#: src/components/FileDetailItem.vue:538
+#: src/components/FileDetailItem.vue:558
 msgid "Square"
 msgstr ""
 
-#: src/components/FileDetailItem.vue:556
+#: src/components/FileDetailItem.vue:576
 msgid "Rotate counter-clockwise"
 msgstr ""
 
-#: src/components/FileDetailItem.vue:557
+#: src/components/FileDetailItem.vue:577
 msgid "Rotate clockwise"
 msgstr ""
 
-#: src/components/FileDetailItem.vue:560
+#: src/components/FileDetailItem.vue:580
 msgid "Flip horizontally"
 msgstr ""
 
-#: src/components/FileDetailItem.vue:561
+#: src/components/FileDetailItem.vue:581
 msgid "Flip vertically"
 msgstr ""
 
-#: src/components/FileDetailItem.vue:564
+#: src/components/FileDetailItem.vue:584
 msgid "Download"
 msgstr ""
 
-#: src/components/FileDetailItem.vue:565
-msgid "Reset"
-msgstr ""
-
-#: src/components/FileDetailItem.vue:584
+#: src/components/FileDetailItem.vue:604
 msgid "Use as cover image"
 msgstr ""
 
-#: src/components/FileDetailItem.vue:585
+#: src/components/FileDetailItem.vue:605
 msgid "Upload cover image"
 msgstr ""
 
-#: src/components/FileDetailItem.vue:608
+#: src/components/FileDetailItem.vue:628
 msgid "Descriptions"
 msgstr ""
 
-#: src/components/FileDetailItem.vue:612
-#: src/components/FileDetailItem.vue:656
+#: src/components/FileDetailItem.vue:632
+#: src/components/FileDetailItem.vue:676
 msgid "Translate text"
 msgstr ""
 
-#: src/components/FileDetailItem.vue:620
+#: src/components/FileDetailItem.vue:640
 msgid "Generate description"
 msgstr ""
 
-#: src/components/FileDetailItem.vue:636
+#: src/components/FileDetailItem.vue:656
 msgid "Description (%{lang})"
 msgstr ""
 
-#: src/components/FileDetailItem.vue:652
+#: src/components/FileDetailItem.vue:672
 msgid "Transcriptions"
 msgstr ""
 
-#: src/components/FileDetailItem.vue:664
+#: src/components/FileDetailItem.vue:684
 msgid "Transcribe file content"
 msgstr ""
 
-#: src/components/FileDetailItem.vue:680
+#: src/components/FileDetailItem.vue:700
 msgid "Transcription (%{lang})"
 msgstr ""
 
-#: src/components/FileDetailRefs.vue:94
+#: src/components/FileDetailRefs.vue:109
 #: src/components/Navigation.vue:30
 #: src/views/PageList.vue:162
 msgid "Pages"
 msgstr ""
 
-#: src/components/FileDetailRefs.vue:116
+#: src/components/FileDetailRefs.vue:131
 msgid "Elements"
 msgstr ""
 
-#: src/components/FileDetailRefs.vue:138
+#: src/components/FileDetailRefs.vue:153
 msgid "Versions"
 msgstr ""
 
@@ -514,44 +515,49 @@ msgstr ""
 msgid "Files"
 msgstr ""
 
-#: src/components/FileListItems.vue:154
+#: src/components/FileListItems.vue:60
+#: src/components/FileListItems.vue:527
+msgid "usage"
+msgstr ""
+
+#: src/components/FileListItems.vue:160
 msgid "Error trashing file"
 msgstr ""
 
-#: src/components/FileListItems.vue:202
+#: src/components/FileListItems.vue:208
 msgid "Error restoring file"
 msgstr ""
 
-#: src/components/FileListItems.vue:244
+#: src/components/FileListItems.vue:250
 #: src/views/FileDetail.vue:80
 msgid "Error publishing file"
 msgstr ""
 
-#: src/components/FileListItems.vue:281
+#: src/components/FileListItems.vue:287
 msgid "Error purging file"
 msgstr ""
 
-#: src/components/FileListItems.vue:381
+#: src/components/FileListItems.vue:389
 msgid "Error fetching files"
 msgstr ""
 
-#: src/components/FileListItems.vue:448
-#: src/components/FileListItems.vue:606
+#: src/components/FileListItems.vue:453
+#: src/components/FileListItems.vue:639
 #: src/components/FileUrlDialog.vue:161
 #: src/fields/Images.vue:253
 #: src/fields/Images.vue:275
 msgid "Add files"
 msgstr ""
 
-#: src/components/FileListItems.vue:477
+#: src/components/FileListItems.vue:485
 msgid "Grid view"
 msgstr ""
 
-#: src/components/FileListItems.vue:484
+#: src/components/FileListItems.vue:492
 msgid "List view"
 msgstr ""
 
-#: src/components/FileListItems.vue:514
+#: src/components/FileListItems.vue:521
 msgid "language"
 msgstr ""
 
@@ -1436,122 +1442,132 @@ msgctxt "st"
 msgid "theme"
 msgstr ""
 
-#: src/strings.js:50
-msgctxt "fn"
-msgid "button"
+#: src/strings.js:48
+msgctxt "st"
+msgid "styles"
 msgstr ""
 
-#: src/strings.js:51
-msgctxt "fn"
-msgid "cards"
+#: src/strings.js:49
+msgctxt "st"
+msgid "javascript"
 msgstr ""
 
 #: src/strings.js:52
 msgctxt "fn"
-msgid "description"
+msgid "button"
 msgstr ""
 
 #: src/strings.js:53
 msgctxt "fn"
-msgid "file"
+msgid "cards"
 msgstr ""
 
 #: src/strings.js:54
 msgctxt "fn"
-msgid "files"
+msgid "description"
 msgstr ""
 
 #: src/strings.js:55
 msgctxt "fn"
-msgid "header"
+msgid "file"
 msgstr ""
 
 #: src/strings.js:56
 msgctxt "fn"
-msgid "keywords"
+msgid "files"
 msgstr ""
 
 #: src/strings.js:57
 msgctxt "fn"
-msgid "language"
+msgid "header"
 msgstr ""
 
 #: src/strings.js:58
 msgctxt "fn"
-msgid "level"
+msgid "keywords"
 msgstr ""
 
 #: src/strings.js:59
 msgctxt "fn"
-msgid "limit"
+msgid "language"
 msgstr ""
 
 #: src/strings.js:60
 msgctxt "fn"
-msgid "main"
+msgid "level"
 msgstr ""
 
 #: src/strings.js:61
 msgctxt "fn"
-msgid "parent-page"
+msgid "limit"
 msgstr ""
 
 #: src/strings.js:62
 msgctxt "fn"
-msgid "position"
+msgid "main"
 msgstr ""
 
 #: src/strings.js:63
 msgctxt "fn"
-msgid "text"
+msgid "parent-page"
 msgstr ""
 
 #: src/strings.js:64
 msgctxt "fn"
-msgid "table"
+msgid "position"
 msgstr ""
 
 #: src/strings.js:65
 msgctxt "fn"
-msgid "title"
+msgid "text"
 msgstr ""
 
 #: src/strings.js:66
 msgctxt "fn"
-msgid "url"
+msgid "table"
+msgstr ""
+
+#: src/strings.js:67
+msgctxt "fn"
+msgid "title"
 msgstr ""
 
 #: src/strings.js:68
 msgctxt "fn"
-msgid "image"
-msgstr ""
-
-#: src/strings.js:69
-msgctxt "fn"
-msgid "images"
+msgid "url"
 msgstr ""
 
 #: src/strings.js:70
 msgctxt "fn"
-msgid "introduction"
+msgid "image"
 msgstr ""
 
 #: src/strings.js:71
 msgctxt "fn"
-msgid "load immediately"
+msgid "images"
 msgstr ""
 
 #: src/strings.js:72
 msgctxt "fn"
+msgid "introduction"
+msgstr ""
+
+#: src/strings.js:73
+msgctxt "fn"
+msgid "load immediately"
+msgstr ""
+
+#: src/strings.js:74
+msgctxt "fn"
 msgid "source code"
 msgstr ""
 
-#: src/strings.js:75
+#: src/strings.js:77
 msgctxt "ai"
 msgid "Done"
 msgstr ""
 
-#: src/strings.js:76
+#: src/strings.js:78
 msgctxt "ai"
 msgid "Already exists"
 msgstr ""

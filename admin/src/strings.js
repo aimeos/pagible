@@ -45,6 +45,8 @@ if($pgettext) {
     $pgettext('st', 'social-media')
     $pgettext('st', 'canonical')
     $pgettext('st', 'theme')
+    $pgettext('st', 'styles')
+    $pgettext('st', 'javascript')
 
     // field names
     $pgettext('fn', 'button')
