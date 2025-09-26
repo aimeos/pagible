@@ -443,17 +443,17 @@
       <v-menu location="bottom left">
         <template #activator="{ props }">
           <v-btn v-bind="props"
-            :disabled="!isChecked"
+            :disabled="!isChecked && (embed || !auth.can('file:add'))"
             append-icon="mdi-menu-down"
             variant="text"
           >{{ $gettext('Actions') }}</v-btn>
         </template>
         <v-list>
+          <v-list-item v-if="!embed && auth.can('file:add')">
+            <v-btn prepend-icon="mdi-folder-plus" variant="text" @click="$refs.upload.click()">{{ $gettext('Add files') }}</v-btn>
+          </v-list-item>
           <v-list-item v-if="isChecked && auth.can('file:publish')">
             <v-btn prepend-icon="mdi-publish" variant="text" @click="publish()">{{ $gettext('Publish') }}</v-btn>
-          </v-list-item>
-          <v-list-item v-if="!this.embed && auth.can('file:add')">
-            <v-btn prepend-icon="mdi-folder-plus" variant="text" @click="$refs.upload.click()">{{ $gettext('Add files') }}</v-btn>
           </v-list-item>
           <v-list-item v-if="canTrash && auth.can('file:drop')">
             <v-btn prepend-icon="mdi-delete" variant="text" @click="drop()">{{ $gettext('Delete') }}</v-btn>
@@ -565,11 +565,30 @@
       </div>
 
       <div class="item-preview" @click="$emit('select', item)" :title="title(item)">
-        <v-img v-if="item.previews"
+        <v-img v-if="item.mime?.startsWith('image/')"
           :src="url(item.path)"
           :srcset="srcset(item.previews)"
-          :alt="item.name"
+          :title="item.name"
         ></v-img>
+
+        <v-img v-else-if="item.mime?.startsWith('video/') && Object.values(item.previews).length"
+          :src="url(Object.values(item.previews)[0] ?? '')"
+          :srcset="srcset(item.previews)"
+          :title="item.name"
+        ></v-img>
+
+        <svg v-else-if="item.mime?.startsWith('video/') && !Object.values(item.previews).length" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+          <path d="M10,15L15.19,12L10,9V15M21.56,7.17C21.69,7.64 21.78,8.27 21.84,9.07C21.91,9.87 21.94,10.56 21.94,11.16L22,12C22,14.19 21.84,15.8 21.56,16.83C21.31,17.73 20.73,18.31 19.83,18.56C19.36,18.69 18.5,18.78 17.18,18.84C15.88,18.91 14.69,18.94 13.59,18.94L12,19C7.81,19 5.2,18.84 4.17,18.56C3.27,18.31 2.69,17.73 2.44,16.83C2.31,16.36 2.22,15.73 2.16,14.93C2.09,14.13 2.06,13.44 2.06,12.84L2,12C2,9.81 2.16,8.2 2.44,7.17C2.69,6.27 3.27,5.69 4.17,5.44C4.64,5.31 5.5,5.22 6.82,5.16C8.12,5.09 9.31,5.06 10.41,5.06L12,5C16.19,5 18.8,5.16 19.83,5.44C20.73,5.69 21.31,6.27 21.56,7.17Z" />
+        </svg>
+
+        <svg v-else-if="item.mime?.startsWith('audio/')" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M21,3V15.5A3.5,3.5 0 0,1 17.5,19A3.5,3.5 0 0,1 14,15.5A3.5,3.5 0 0,1 17.5,12C18.04,12 18.55,12.12 19,12.34V6.47L9,8.6V17.5A3.5,3.5 0 0,1 5.5,21A3.5,3.5 0 0,1 2,17.5A3.5,3.5 0 0,1 5.5,14C6.04,14 6.55,14.12 7,14.34V6L21,3Z" />
+        </svg>
+
+        <svg v-else width="24" height="24" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+          <path d="M7.05 11.885c0 1.415-.548 2.206-1.524 2.206C4.548 14.09 4 13.3 4 11.885c0-1.412.548-2.203 1.526-2.203.976 0 1.524.79 1.524 2.203m-1.524-1.612c-.542 0-.832.563-.832 1.612q0 .133.006.252l1.559-1.143c-.126-.474-.375-.72-.733-.72zm-.732 2.508c.126.472.372.718.732.718.54 0 .83-.563.83-1.614q0-.129-.006-.25zm6.061.624V14h-3v-.595h1.181V10.5h-.05l-1.136.747v-.688l1.19-.786h.69v3.633z"/>
+          <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2M9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5z"/>
+        </svg>
       </div>
 
       <div class="item-content" @click="$emit('select', item)" :class="{trashed: item.deleted_at}" :title="title(item)">
@@ -653,14 +672,26 @@
     color: rgb(var(--v-theme-error));
   }
 
+  .items.list .item-preview {
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    display: flex;
+    margin: 0 8px;
+    height: 48px;
+    min-width: 72px;
+    max-width: 72px;
+  }
+
+  .items.list .item-preview svg {
+    max-height: 100%;
+  }
+
   .items.list .item-preview .v-img {
     background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAIAQMAAAD+wSzIAAAABlBMVEX////Ly8vsgL9iAAAADklEQVQI12P4AIX8EAgALgAD/aNpbtEAAAAASUVORK5CYII=);
     background-repeat: repeat;
-    margin-inline-start: 8px;
-    margin-inline-end: 16px;
-    cursor: pointer;
     height: 48px;
-    width: 72px
+    width: 72px;
   }
 
   .items.list .item-aux {
