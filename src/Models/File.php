@@ -144,15 +144,21 @@ class File extends Model
         $manager = ImageManager::withDriver( '\\Intervention\\Image\\Drivers\\' . $driver . '\Driver' );
         $ext = $manager->driver()->supports( 'image/webp' ) ? 'webp' : 'jpg';
 
-        if( !$manager->driver()->supports( $this->mime ) ) {
-            return $this;
-        }
-
         if( is_string( $resource ) && str_starts_with( $resource, 'http' ) ) {
             $resource = Http::withOptions( ['stream' => true] )->get( $resource )->getBody()->detach();
         }
 
-        $filename = $resource instanceof UploadedFile ? $resource->getClientOriginalName() : (string) $this->name;
+        if( $resource instanceof UploadedFile ) {
+            $filename = $resource->getClientOriginalName();
+            $mime = $resource->getClientMimeType();
+        } else {
+            $filename = $this->name;
+            $mime = $this->mime;
+        }
+
+        if( !$manager->driver()->supports( $mime ) ) {
+            return $this;
+        }
 
         $file = $manager->read( $resource );
 
