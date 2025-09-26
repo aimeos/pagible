@@ -54,7 +54,7 @@ extend type Query {
     @find
 
   "Get available files"
-  files(filter: FileFilter, sort: _ @orderBy(columns: ["id", "name", "mime", "lang", "editor"]), publish: Publish): [File!]
+  files(filter: FileFilter, sort: _ @orderBy(columns: ["id", "name", "mime", "lang", "editor", "byversions_count"]), publish: Publish): [File!]
     @paginate(builder: "\\Aimeos\\Cms\\GraphQL\\Query@files", defaultCount: 100)
     @canModel(ability: "view", model: "\\Aimeos\\Cms\\Models\\File")
     @orderBy(column: "id", direction: DESC)
@@ -496,6 +496,9 @@ type File {
 
   "List of versions using the file"
   byversions: [Version!]! @belongsToMany
+
+  "Number of versions referencing the file"
+  byversions_count: Int!
 
   "Latest version of the file"
   latest: Version @hasOne

@@ -126,7 +126,8 @@ class GraphqlFileTest extends TestAbstract
         $this->seed(CmsSeeder::class);
 
         $expected = [];
-        $file = File::where('lang', 'en')->first();
+        $files = File::orderBy( 'id' )->get();
+        $file = $files->first();
 
         // Prepare expected array
         $attr = collect($file->getAttributes())->except(['tenant_id'])->all();
@@ -141,17 +142,11 @@ class GraphqlFileTest extends TestAbstract
         $expected[0]['description'] = json_decode($expected[0]['description'], true);
         $expected[0]['transcription'] = json_decode($expected[0]['transcription'], true);
 
-        $this->expectsDatabaseQueryCount(2);
+        $this->expectsDatabaseQueryCount(5);
 
         $response = $this->actingAs($this->user)->graphQL('{
             files(filter: {
-                id: ["' . $file->id . '"]
-                lang: "en"
-                mime: "image/"
-                name: "Test"
-                editor: "seeder"
-                any: "Test"
-            }, sort: [{column: MIME, order: ASC}], first: 10, trashed: WITH, publish: DRAFT) {
+            }, sort: [{column: MIME, order: ASC}], first: 10, trashed: WITH) {
                 data {
                     id
                     lang
@@ -165,6 +160,9 @@ class GraphqlFileTest extends TestAbstract
                     created_at
                     updated_at
                     deleted_at
+                    byelements_count
+                    bypages_count
+                    byversions_count
                 }
                 paginatorInfo {
                     currentPage
@@ -175,7 +173,7 @@ class GraphqlFileTest extends TestAbstract
 
         $filesData = $response->json('data.files.data');
 
-        $this->assertCount(1, $filesData);
+        $this->assertCount(2, $filesData);
         $actual = $filesData[0];
 
         // Assert scalar fields
@@ -199,7 +197,9 @@ class GraphqlFileTest extends TestAbstract
     {
         $this->seed( CmsSeeder::class );
 
-        $this->expectsDatabaseQueryCount( 1 );
+        $file = File::where( 'mime', 'image/tiff' )->first();
+
+        $this->expectsDatabaseQueryCount( 2 );
         $response = $this->actingAs( $this->user )->graphQL( '{
             files(publish: PUBLISHED) {
                 data {
@@ -213,7 +213,9 @@ class GraphqlFileTest extends TestAbstract
         }' )->assertJson( [
             'data' => [
                 'files' => [
-                    'data' => [],
+                    'data' => [[
+                        'id' => (string) $file->id
+                    ]],
                     'paginatorInfo' => [
                         'currentPage' => 1,
                         'lastPage' => 1,

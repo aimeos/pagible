@@ -53,6 +53,12 @@
       isTrashed() {
         return this.items.some(item => item._checked && item.deleted_at)
       },
+
+      order() {
+        return this.sort?.column === 'ID'
+          ? (this.sort?.order === 'DESC' ? this.$gettext('latest') : this.$gettext('oldest') )
+          : (this.sort?.column === 'BYVERSIONS_COUNT' ? this.$gettext('usage') : this.sort?.column || '')
+      }
     },
 
     methods: {
@@ -328,6 +334,7 @@
                     editor
                     created_at
                   }
+                  byversions_count
                 }
                 paginatorInfo {
                   lastPage
@@ -371,6 +378,7 @@
               published: entry.latest?.published ?? true,
               publish_at: entry.latest?.publish_at || null,
               latest: entry.latest,
+              usage: entry.byversions_count,
             })
           })
           this.checked = false
@@ -493,9 +501,8 @@
             :title="$gettext('Sort by')"
             append-icon="mdi-menu-down"
             prepend-icon="mdi-sort"
-            variant="text">
-            {{ sort?.column === 'ID' ? (sort?.order === 'DESC' ? $gettext('latest') : $gettext('oldest') ) : (sort?.column || '') }}
-          </v-btn>
+            variant="text"
+          >{{ order }}</v-btn>
         </template>
         <v-list>
           <v-list-item>
@@ -515,6 +522,9 @@
           </v-list-item>
           <v-list-item>
             <v-btn variant="text" @click="sort = {column: 'EDITOR', order: 'ASC'}">{{ $gettext('editor') }}</v-btn>
+          </v-list-item>
+          <v-list-item>
+            <v-btn variant="text" @click="sort = {column: 'BYVERSIONS_COUNT', order: 'ASC'}">{{ $gettext('usage') }}</v-btn>
           </v-list-item>
         </v-list>
       </v-menu>
@@ -549,6 +559,10 @@
           </v-list-item>
         </v-list>
       </v-menu>
+
+      <div class="item-usage" :class="{notused: !item.usage}" @click="$emit('select', item)" :title="title(item)">
+        {{ item.usage }}
+      </div>
 
       <div class="item-preview" @click="$emit('select', item)" :title="title(item)">
         <v-img v-if="item.previews"
@@ -630,19 +644,31 @@
     flex-grow: unset;
   }
 
+  .items.list .item-usage {
+    text-align: center;
+    width: 2rem;
+  }
+
+  .items.list .item-usage.notused {
+    color: rgb(var(--v-theme-error));
+  }
+
   .items.list .item-preview .v-img {
     background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAIAQMAAAD+wSzIAAAABlBMVEX////Ly8vsgL9iAAAADklEQVQI12P4AIX8EAgALgAD/aNpbtEAAAAASUVORK5CYII=);
     background-repeat: repeat;
     margin-inline-start: 8px;
     margin-inline-end: 16px;
     cursor: pointer;
-    display: none;
     height: 48px;
     width: 72px
   }
 
-  @media (min-width: 500px) {
-    .items.list .item-preview .v-img {
+  .items.list .item-aux {
+      display: none;
+  }
+
+  @media (min-width: 480px) {
+    .items.list .item-aux {
       display: block;
     }
   }

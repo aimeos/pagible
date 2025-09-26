@@ -32,10 +32,6 @@ final class Query
         $builder = Element::skip( max( ( $args['page'] ?? 1 ) - 1, 0 ) * $limit )
             ->take( min( max( $limit, 1 ), 100 ) );
 
-        foreach( $args['sort'] ?? [] as $sort ) {
-            $builder->orderBy( $sort['column'] ?? 'id', $sort['order'] ?? 'ASC' );
-        }
-
         switch( $args['trashed'] ?? null ) {
             case 'without': $builder->withoutTrashed(); break;
             case 'with': $builder->withTrashed(); break;
@@ -94,12 +90,8 @@ final class Query
         $publish = $args['publish'] ?? null;
         $limit = (int) ( $args['first'] ?? 100 );
 
-        $builder = File::skip( max( ( $args['page'] ?? 1 ) - 1, 0 ) * $limit )
+        $builder = File::withCount( 'byversions' )->skip( max( ( $args['page'] ?? 1 ) - 1, 0 ) * $limit )
             ->take( min( max( $limit, 1 ), 100 ) );
-
-        foreach( $args['sort'] ?? [] as $sort ) {
-            $builder->orderBy( $sort['column'] ?? 'id', $sort['order'] ?? 'ASC' );
-        }
 
         switch( $args['trashed'] ?? null ) {
             case 'without': $builder->withoutTrashed(); break;

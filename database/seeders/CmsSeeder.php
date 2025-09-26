@@ -76,6 +76,32 @@ class CmsSeeder extends Seeder
             ]);
 
             $this->file = $file->id;
+
+            $file2 = File::forceCreate( [
+                'mime' => 'image/tiff',
+                'lang' => 'en',
+                'name' => 'Test file',
+                'path' => 'https://picsum.photos/id/0/1500/1000',
+                'description' => [
+                    'en' => 'Test TIFF file description',
+                ],
+                'editor' => 'seeder',
+            ] );
+
+            $version = $file2->versions()->forceCreate([
+                'lang' => 'en',
+                'data' => [
+                    'mime' => 'image/tiff',
+                    'lang' => 'en',
+                    'name' => 'Test file',
+                    'path' => 'https://picsum.photos/id/0/200/200',
+                    'description' => [
+                        'en' => 'Test TIFF file description',
+                    ],
+                ],
+                'published' => true,
+                'editor' => 'seeder',
+            ]);
         }
 
         return $this->file;
