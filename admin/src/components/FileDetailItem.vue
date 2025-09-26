@@ -26,6 +26,7 @@
         tabtrans: null,
         tabdesc: null,
         cropper: null,
+        cropLabel: null,
         scaleX: 1,
         scaleY: 1,
       }
@@ -142,6 +143,17 @@
         this.cropper.setAspectRatio(ratio)
         this.cropper.setDragMode('crop')
         this.cropping = true
+
+        this.$nextTick(() => {
+          const cropBox = this.cropper.cropper.querySelector(".cropper-crop-box");
+
+          if (cropBox && !this.cropLabel) {
+            const label = document.createElement("div");
+            label.className = "crop-label";
+            cropBox.appendChild(label);
+            this.cropLabel = label;
+          }
+        });
       },
 
 
@@ -203,6 +215,8 @@
             this.cropper = null
           }
 
+          const self = this
+
           this.cropper = new Cropper(this.$refs.image, {
             aspectRatio: NaN,
             background: true,
@@ -213,9 +227,15 @@
             zoomable: false,
             zoomOnWheel: false,
             zoomOnTouch: false,
+            touchDragZoom: false,
             checkCrossOrigin: false,
             checkOrientation: false,
             viewMode: 1,
+            crop(event) {
+              if (!self.cropLabel) return;
+              const { width, height } = event.detail;
+              self.cropLabel.textContent = `${Math.round(width)} × ${Math.round(height)}`;
+            },
           })
         }
       },
@@ -515,7 +535,7 @@
           <div v-if="item.mime?.startsWith('image/')" ref="editorContainer" class="editor-container">
             <img ref="image" :src="url(item.path, true)" class="element" crossorigin="anonymous" />
 
-            <div v-if="!readonly" class="floating-toolbar">
+            <div v-if="!readonly" class="toolbar">
               <div class="toolbar-group">
                 <v-btn v-if="cropping"
                   @click="crop()"
@@ -574,7 +594,7 @@
               controls
             ></video>
 
-            <div v-if="!readonly" class="floating-toolbar">
+            <div v-if="!readonly" class="toolbar">
               <div class="toolbar-group">
                 <img v-if="Object.values(item.previews).length" class="video-preview"
                   :src="url(Object.values(item.previews).shift())"
@@ -705,7 +725,6 @@
   .preview {
     display: flex;
     justify-content: center;
-    max-height: 600px;
   }
 
   .preview .element {
@@ -720,32 +739,30 @@
 
   .editor-container {
     width: 100%;
-    max-height: 600px;
-    text-align: center;
-    overflow: hidden;
-    position: relative;
   }
 
-  .editor-container img {
-    max-width: none !important;
-    max-height: none !important;
-    transform-origin: center center;
-  }
-
-  .floating-toolbar {
-    background-color: rgba(33, 33, 33, 0.5);
-    transform: translateX(-50%);
-    border-radius: 10px;
+  :deep(.crop-label) {
     position: absolute;
-    padding: 10px;
-    bottom: 30px;
+    top: calc(50% + 16px);
     left: 50%;
+    color: #fff;
+    font-size: 12px;
+    padding: 12px 6px;
+    border-radius: 4px;
+    white-space: nowrap;
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.6);
+  }
+
+  .toolbar {
     gap: 8px;
-    z-index: 2;
+    width: 100%;
     display: flex;
+    padding: 10px;
     flex-wrap: nowrap;
     justify-content: center;
-    width: max-content;
+    background-color: rgb(var(--v-theme-background));
   }
 
   .toolbar-group {
@@ -780,7 +797,7 @@
   }
 
   @media (max-width: 480px) {
-    .floating-toolbar {
+    .toolbar {
       width: auto;
     }
 
