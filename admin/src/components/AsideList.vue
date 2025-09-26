@@ -16,14 +16,22 @@
 
     data() {
       return {
+        initial: null,
         open: [],
       }
     },
 
     created() {
+      this.initial = {...this.filter}
       this.open = this.content.map((group, index) => {
         return this.has(group.key) ? index : false
       }).filter(idx => idx !== false)
+    },
+
+    computed: {
+      disabled() {
+        return JSON.stringify(this.filter) === JSON.stringify(this.initial)
+      }
     },
 
     methods: {
@@ -56,6 +64,13 @@
 <template>
   <v-navigation-drawer v-model="drawer.aside" mobile-breakpoint="md" location="end">
 
+    <v-btn class="reset"
+      :disabled="disabled"
+      @click="$emit('update:filter', initial)"
+      prepend-icon="mdi-close-circle-outline"
+      variant="text"
+    >{{ $gettext('Reset') }}</v-btn>
+
     <v-list v-model:opened="open">
       <v-list-group v-for="(group, index) in content" :key="index" :value="index">
         <template v-slot:activator="{ props }">
@@ -87,6 +102,11 @@
   .v-locale--is-rtl .v-navigation-drawer {
     border-top-left-radius: 0;
     border-top-right-radius: 8px;
+  }
+
+  .v-btn.reset {
+    text-align: center;
+    width: 100%;
   }
 
   .v-list-item .v-btn {
