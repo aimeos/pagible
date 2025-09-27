@@ -171,4 +171,9 @@
     height: 180px;
     width: 270px;
   }
+
+  .v-file-input {
+    width: 48px;
+    height: 48px;
+  }
 </style>

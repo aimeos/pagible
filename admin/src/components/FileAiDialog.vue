@@ -133,7 +133,7 @@
             imagine(prompt: $prompt, context: $context, files: $files)
           }`,
           variables: {
-            prompt: "Create as suitable image for:\n" + this.input,
+            prompt: this.input || 'Create a suitable image based on the context',
             context: this.context ? "Context in JSON format:\n" + JSON.stringify(this.context) : '',
             files: this.similar.map(item => item.path),
           }

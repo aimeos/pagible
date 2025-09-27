@@ -125,9 +125,10 @@
       modelValue: {
         immediate: true,
         handler(val) {
-          this.items = val
+          this.items = Array.isArray(val) ? val : this.config.default ?? []
+
           this.$emit('error', !this.rules.every(rule => {
-            return rule(val ?? this.config.default ?? []) === true
+            return rule(this.items) === true
           }))
         }
       }
