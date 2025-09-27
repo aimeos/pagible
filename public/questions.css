@@ -1,16 +1,10 @@
-
-.questions h3 {
-    --pico-font-size: 150%;
-    margin: 0;
-}
-
 .questions details {
     background-color: var(--pico-highlight-color);
     margin-bottom: 1rem;
     padding: 1rem;
 }
 
-details summary {
+.questions summary {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -22,13 +16,28 @@ details summary {
     display: none;
 }
 
-details summary svg {
+.questions h3 {
+    --pico-font-size: 120%;
+    margin: 0;
+}
+
+.questions details summary svg {
+    margin-inline-start: 0.5rem;
     transition: transform 0.3s;
     min-width: 1.5rem;
 }
 
-details[open] summary svg {
+.questions details[open] summary svg {
     transform: rotate(180deg);
+}
+
+.questions details > *:not(summary) {
+    transition: opacity 1s ease;
+    opacity: 0;
+}
+
+.questions details[open] > *:not(summary) {
+    opacity: 1;
 }
 
 @media screen and (min-width: 768px) {

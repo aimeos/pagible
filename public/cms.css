@@ -313,19 +313,25 @@ h1, h2, h3, h4 {
 }
 
 h1 {
-    --pico-font-size: 250%;
+    --pico-typography-spacing-vertical: 3rem;
+    --pico-font-size: 300%;
+    text-align: center;
 }
 
 h2 {
-    --pico-font-size: 200%;
+    --pico-typography-spacing-vertical: 2.25rem;
+    --pico-font-size: 225%;
+    text-align: center;
 }
 
 h3 {
-    --pico-font-size: 150%;
+    --pico-typography-spacing-vertical: 1.75rem;
+    --pico-font-size: 175%;
 }
 
 h4 {
-    --pico-font-size: 125%;
+    --pico-typography-spacing-vertical: 1.33rem;
+    --pico-font-size: 133%;
 }
 
 img {
