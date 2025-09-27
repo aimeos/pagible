@@ -1,6 +1,43 @@
+
+.questions h3 {
+    --pico-font-size: 150%;
+    margin: 0;
+}
+
+.questions details {
+    background-color: var(--pico-highlight-color);
+    margin-bottom: 1rem;
+    padding: 1rem;
+}
+
+details summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  list-style: none;
+}
+
+.questions summary::-webkit-details-marker {
+    display: none;
+}
+
+details summary svg {
+    transition: transform 0.3s;
+    min-width: 1.5rem;
+}
+
+details[open] summary svg {
+    transform: rotate(180deg);
+}
+
 @media screen and (min-width: 768px) {
-    .faqs {
+    .questions .faqs {
         column-count: 2;
-        column-gap: 2rem;
+        column-gap: 1rem;
+    }
+
+    .questions details {
+        break-inside: avoid;
     }
 }
