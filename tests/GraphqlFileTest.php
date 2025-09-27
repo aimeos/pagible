@@ -142,7 +142,7 @@ class GraphqlFileTest extends TestAbstract
         $expected[0]['description'] = json_decode($expected[0]['description'], true);
         $expected[0]['transcription'] = json_decode($expected[0]['transcription'], true);
 
-        $this->expectsDatabaseQueryCount(5);
+        $this->expectsDatabaseQueryCount(2);
 
         $response = $this->actingAs($this->user)->graphQL('{
             files(filter: {
@@ -160,8 +160,6 @@ class GraphqlFileTest extends TestAbstract
                     created_at
                     updated_at
                     deleted_at
-                    byelements_count
-                    bypages_count
                     byversions_count
                 }
                 paginatorInfo {
