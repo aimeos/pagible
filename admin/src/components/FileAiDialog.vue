@@ -135,7 +135,7 @@
           variables: {
             prompt: this.input || 'Create a suitable image based on the context',
             context: this.context ? "Context in JSON format:\n" + JSON.stringify(this.context) : '',
-            files: this.similar.map(item => item.path),
+            files: this.similar.map(item => item.id),
           }
         }).then(response => {
           if(response.errors) {
