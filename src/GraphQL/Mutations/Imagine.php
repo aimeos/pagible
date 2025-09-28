@@ -51,10 +51,10 @@ final class Imagine
                     if( str_starts_with( $file->path, 'http' ) )
                     {
                         return match( explode( '/', $file->mime )[0] ) {
-                            'image' => Image::fromUrl( $file->path ),
-                            'audio' => Audio::fromUrl( $file->path ),
-                            'video' => Video::fromUrl( $file->path ),
-                            default => Document::fromUrl( $file->path ),
+                            'image' => Image::fromUrl( $file->path, $file->mime ),
+                            'audio' => Audio::fromUrl( $file->path, $file->mime ),
+                            'video' => Video::fromUrl( $file->path, $file->mime ),
+                            default => Document::fromUrl( $file->path, $file->mime ),
                         };
                     }
 
@@ -69,17 +69,18 @@ final class Imagine
                 } )->values();
             }
 
-            $prism->withProviderOptions( ['image' => $files->first()?->resource()] )
-                ->whenProvider( 'openai', fn( $request ) => $request
-                    ->withProviderOptions( [
-                        'size' => match( $model ) {
-                            'gpt-image-1' => '1536x1024',
-                            'dall-e-3' => '1792x1024',
-                            'dall-e-2' => '1024x1024',
-                            default => 'auto',
-                        }
-                    ] )
-                );
+            $prism->whenProvider( 'openai', fn( $request ) => $request->withProviderOptions( [
+                'image' => $files->first()?->resource(),
+                'size' => match( $model ) {
+                    'gpt-image-1' => '1536x1024',
+                    'dall-e-3' => '1792x1024',
+                    'dall-e-2' => '1024x1024',
+                    default => 'auto',
+                }
+            ] ) )->whenProvider( 'gemini', fn( $request ) => $request->withProviderOptions( [
+                'image' => $files->first()?->resource(),
+                'image_mime_type' => $files->first()?->mimeType(),
+            ] ) );
 
             $response = $prism->withPrompt( $prompt, $files->toArray() )->generate();
 
