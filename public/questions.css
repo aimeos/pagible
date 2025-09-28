@@ -1,5 +1,5 @@
 .questions details {
-    background-color: var(--pico-highlight-color);
+    background-color: var(--pico-contrast-background);
     margin-bottom: 1rem;
     padding: 1rem;
 }

@@ -16,13 +16,13 @@
 }
 
 .contact label {
-    color: var(--pico-contrast-hover);
+    color: var(--pico-muted-color);
     display: inline-block;
     margin: 0.5rem 0;
 }
 
 .contact input, textarea {
-    background-color: var(--pico-contrast-hover-background);
+    background-color: var(--pico-contrast-background);
     border: 1px solid var(--pico-contrast-border);
     color: var(--pico-contrast);
     resize: vertical;
@@ -34,7 +34,7 @@
 
 .contact input::-webkit-input-placeholder,
 .contact textarea::-webkit-input-placeholder {
-    color: var(--pico-contrast-underline);
+    color: var(--pico-muted-color);
 }
 
 .contact .errors {
@@ -63,7 +63,7 @@
 .contact button:disabled {
     border: 1px solid var(--pico-muted-border-color);
     background-color: var(--pico-background-color);
-    color: var(--pico-muted-color);
+    color: var(--pico-muted-background-color);
 }
 
 .contact button:has(.success:not(.hidden)) {

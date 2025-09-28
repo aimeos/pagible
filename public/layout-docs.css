@@ -15,7 +15,7 @@ main .container {
 main nav.sidebar {
     background: var(--pico-background-color);
     background-image: radial-gradient(circle at calc(100% + 10rem) 10rem, var(--pico-primary-background) 0, transparent 20rem);
-    border-inline-end: 1px solid var(--pico-muted-hover-border-color);
+    border-inline-end: 1px solid var(--pico-constrast-border);
     transition: left 0.3s ease;
     position: absolute;
     z-index: 990;
