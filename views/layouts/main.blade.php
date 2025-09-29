@@ -37,7 +37,7 @@
         @foreach($page->ancestors ? (clone $page->ancestors)->push($page) : [$page] as $navItem)
             @if($text = @cms($navItem, 'config.styles.data.text'))
                 <style nonce="{{ csrf_token() }}">
-                    {{ $text }}
+                    {!! $text !!}
                 </style>
             @endif
         @endforeach
@@ -147,7 +147,7 @@
         @foreach($page->ancestors ? (clone $page->ancestors)->push($page) : [$page] as $navItem)
             @if($text = @cms($navItem, 'config.javascript.data.text'))
                 <script nonce="{{ csrf_token() }}">
-                    {{ $text }}
+                    {!! $text !!}
                 </script>
             @endif
         @endforeach
