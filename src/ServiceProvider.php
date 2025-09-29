@@ -83,11 +83,7 @@ class ServiceProvider extends Provider
 
 		Blade::directive( 'markdown', function( $expression ) {
 			return "<?php
-				echo (new \League\CommonMark\GithubFlavoredMarkdownConverter([
-					'html_input' => 'escape',
-					'allow_unsafe_links' => false,
-					'max_nesting_level' => 25
-				]))->convert($expression ?? '');
+				echo (new \League\CommonMark\GithubFlavoredMarkdownConverter())->convert($expression ?? '');
 			?>";
 		} );
 	}

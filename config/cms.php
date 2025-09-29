@@ -335,7 +335,7 @@ return [
                             ['value' => 'row+col', 'label' => 'First row and column'],
                         ],
                     ],
-                    'text' => [
+                    'table' => [
                         'type' => 'table',
                         'label' => 'table',
                     ],

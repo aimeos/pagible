@@ -1,5 +1,5 @@
 <table class="table">
-	@foreach(\League\Csv\Reader::createFromString( @$data->text ?? '' )->setDelimiter( ';' )->getRecords() as $rowidx => $row)
+	@foreach(@$data->table ?? [] as $rowidx => $row)
 		<tr>
 			@foreach((array) $row as $colidx => $col)
 				@if($rowidx === 0 && @$data->header === 'row'
