@@ -433,8 +433,18 @@ img {
     float: inline-end;
 }
 
+.table th {
+    color: var(--pico-contrast-hover);
+    vertical-align: bottom;
+    text-align: center;
+}
+
 .table p {
     margin-bottom: 0;
+}
+
+.table td > *:first-child {
+    margin-top: 0;
 }
 
 .table caption {
