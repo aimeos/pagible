@@ -12,6 +12,10 @@
     inject: ['debounce'],
 
     created() {
+      if(!this.modelValue.length) {
+        return this.$emit('update:modelValue', this.config.default ?? [['']])
+      }
+
       this.validated = this.debounce(this.validate, 500)
     },
 
@@ -67,12 +71,7 @@
     watch: {
       modelValue: {
         deep: true,
-        immediate: true,
         handler(val) {
-          if(!val.length) {
-            return this.$emit('update:modelValue', this.config.default ?? [['']])
-          }
-
           this.validated ? this.validated(val) : this.validate(val);
         }
       }
@@ -158,6 +157,7 @@
   }
 
   .v-textarea {
+    margin-top: 0;
     height: 100%;
   }
 </style>
