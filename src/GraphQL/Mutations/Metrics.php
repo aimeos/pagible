@@ -32,27 +32,34 @@ final class Metrics
         try {
             $data = Cache::remember( "stats:$url:$days", 3600, fn() => Analytics::driver()->stats( $url, $days ) );
         } catch ( \Throwable $e ) {
-            $data['errors'][] = $e->getMessage();
+            $data['errors'][] = $e->getMessage() . "\n" . $this->path( $e );
         }
 
         try {
             $data = array_merge( $data, Cache::remember( "search:$url:$days", 3600, fn() => Analytics::search( $url, $days ) ) ?? [] );
         } catch ( \Throwable $e ) {
-            $data['errors'][] = $e->getMessage();
+            $data['errors'][] = $e->getMessage() . "\n" . $this->path( $e );
         }
 
         try {
             $data['queries'] = Cache::remember( "queries:$url:$days", 3600, fn() => Analytics::queries( $url, $days ) );
         } catch ( \Throwable $e ) {
-            $data['errors'][] = $e->getMessage();
+            $data['errors'][] = $e->getMessage() . "\n" . $this->path( $e );
         }
 
         try {
             $data['pagespeed'] = Cache::remember( "pagespeed:$url", 3600, fn() => Analytics::pagespeed( $url ) );
         } catch ( \Throwable $e ) {
-            $data['errors'][] = $e->getMessage();
+            $data['errors'][] = $e->getMessage() . "\n" . $this->path( $e );
         }
 
         return $data;
+    }
+
+
+    protected function path( \Exception $e ) : string
+    {
+        $parts = array_slice( explode( DIRECTORY_SEPARATOR, $e->getFile() ), -5 );
+        return join( DIRECTORY_SEPARATOR, $parts ) . ':' . $e->getLine();
     }
 }
