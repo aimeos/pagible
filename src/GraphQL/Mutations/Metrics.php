@@ -57,7 +57,7 @@ final class Metrics
     }
 
 
-    protected function path( \Exception $e ) : string
+    protected function path( \Throwable $e ) : string
     {
         $parts = array_slice( explode( DIRECTORY_SEPARATOR, $e->getFile() ), -5 );
         return join( DIRECTORY_SEPARATOR, $parts ) . ':' . $e->getLine();
