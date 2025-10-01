@@ -5,6 +5,8 @@
 .hero .container {
     display: flex;
     align-items: center;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
 }
 
 .hero .first {
