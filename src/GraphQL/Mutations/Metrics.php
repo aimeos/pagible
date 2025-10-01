@@ -71,6 +71,10 @@ final class Metrics
             $msg = $data;
         }
 
+        if( is_array( $msg ) && isset( $msg['error'] ) ) {
+            $msg = $msg['error'];
+        }
+
         if( is_array( $msg ) && isset( $msg['message'] ) ) {
             $msg = $msg['message'];
         }
