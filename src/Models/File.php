@@ -267,9 +267,9 @@ class File extends Model
         DB::connection( $this->getConnectionName() )->transaction( function() use ( $version ) {
 
             $this->fill( (array) $version->data );
-            $this->previews = (array) $version->data->previews ?? [];
-            $this->path = $version->data->path;
-            $this->mime = $version->data->mime;
+            $this->previews = (array) $version->data?->previews ?? [];
+            $this->path = $version->data?->path;
+            $this->mime = $version->data?->mime;
             $this->editor = $version->editor;
             $this->save();
 
@@ -380,7 +380,7 @@ class File extends Model
 
         foreach( $versions->slice( $num ) as $version )
         {
-            if( $version->data->path ) {
+            if( $version->data?->path ) {
                 $paths[$version->data->path] = true;
             }
         }
@@ -390,13 +390,13 @@ class File extends Model
 
         foreach( $toDelete as $version )
         {
-            if( isset( $paths[$version->data->path] ) ) {
+            if( !$version->data?->path || isset( $paths[$version->data?->path] ) ) {
                 continue;
             }
 
             $disk->delete( $version->data->path );
 
-            foreach( $version->data['previews'] as $path ) {
+            foreach( $version->data?->previews ?? [] as $path ) {
                 $disk->delete( $path );
             }
         }
@@ -479,11 +479,11 @@ class File extends Model
             ->chunk( 100, function( $versions ) use ( $store ) {
                 foreach( $versions as $version )
                 {
-                    foreach( $version->data->previews ?? [] as $path ) {
+                    foreach( $version->data?->previews ?? [] as $path ) {
                         $store->delete( $path );
                     }
 
-                    if( $version->data->path ?? null ) {
+                    if( $version->data?->path ) {
                         $store->delete( $version->data->path );
                     }
                 }
