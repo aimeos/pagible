@@ -67,7 +67,7 @@ final class Metrics
         $line = join( DIRECTORY_SEPARATOR, $parts ) . ':' . $e->getLine();
         $msg = $e->getMessage();
 
-        if( $data = json_decode( $msg ) ) {
+        if( $data = json_decode( $msg, true ) ) {
             $msg = $data;
         }
 
@@ -75,6 +75,6 @@ final class Metrics
             $msg = $msg['message'];
         }
 
-        return $msg . ' in ' . $line;
+        return json_encode( $msg ) . ' in ' . $line;
     }
 }
