@@ -1,3 +1,7 @@
+/**
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
 document.addEventListener('DOMContentLoaded', () => {
 
     const nav = document.querySelector("header nav");

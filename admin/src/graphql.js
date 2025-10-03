@@ -1,3 +1,7 @@
+/**
+ * @license LGPL, https://opensource.org/license/lgpl-3-0
+ */
+
 import { onError } from "@apollo/client/link/error"
 import { BatchHttpLink } from "apollo-link-batch-http"
 import { createApolloProvider } from '@vue/apollo-option'

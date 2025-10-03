@@ -1,3 +1,7 @@
+/**
+ * @license LGPL, https://opensource.org/license/lgpl-3-0
+ */
+
 import gettext from './i18n'
 import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'

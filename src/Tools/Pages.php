@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * @license LGPL, https://opensource.org/license/lgpl-3-0
+ */
+
+
 namespace Aimeos\Cms\Tools;
 
 use Prism\Prism\Tool;

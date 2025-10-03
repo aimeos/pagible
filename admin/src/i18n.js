@@ -1,3 +1,7 @@
+/**
+ * @license LGPL, https://opensource.org/license/lgpl-3-0
+ */
+
 import { createGettext } from "vue3-gettext";
 
 const gettext = createGettext({

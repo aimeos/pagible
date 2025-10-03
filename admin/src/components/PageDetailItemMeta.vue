@@ -1,3 +1,7 @@
+/**
+ * @license LGPL, https://opensource.org/license/lgpl-3-0
+ */
+
 <script>
   import Fields from './Fields.vue'
   import SchemaItems from './SchemaItems.vue'

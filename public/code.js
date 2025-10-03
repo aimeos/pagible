@@ -1,4 +1,9 @@
 /**
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+
+/**
  * Copy code
  */
 document.querySelectorAll('.code-box .code-copy').forEach(button => {

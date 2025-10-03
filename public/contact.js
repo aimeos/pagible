@@ -1,4 +1,9 @@
 /**
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+
+/**
  * Contact form
  */
 document.querySelectorAll('.contact form').forEach(form => {

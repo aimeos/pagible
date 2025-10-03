@@ -1,3 +1,7 @@
+/**
+ * @license LGPL, https://opensource.org/license/lgpl-3-0
+ */
+
 import gql from 'graphql-tag'
 import { defineStore } from 'pinia'
 import { apolloClient } from './graphql'

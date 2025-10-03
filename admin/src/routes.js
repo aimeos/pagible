@@ -1,3 +1,7 @@
+/**
+ * @license LGPL, https://opensource.org/license/lgpl-3-0
+ */
+
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore, useMessageStore } from './stores'
 

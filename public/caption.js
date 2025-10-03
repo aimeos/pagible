@@ -1,4 +1,9 @@
 /**
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+
+/**
  * Add subtitles to audio/video
  */
 document.addEventListener('DOMContentLoaded', () => {

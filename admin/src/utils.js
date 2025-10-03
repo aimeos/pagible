@@ -1,4 +1,9 @@
 /**
+ * @license LGPL, https://opensource.org/license/lgpl-3-0
+ */
+
+
+/**
  * Generates a unique content ID based on the current date and time.
  *
  * @returns String Unique content ID

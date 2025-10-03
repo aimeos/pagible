@@ -1,3 +1,7 @@
+/**
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
 .blog .blog-items {
     display: flex;
     flex-direction: column;

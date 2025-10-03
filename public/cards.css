@@ -1,3 +1,7 @@
+/**
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
 .cards .card-list {
     display: grid;
     grid-template-columns: 1fr;

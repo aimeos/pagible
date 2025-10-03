@@ -1,4 +1,9 @@
 /**
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+
+/**
  * Dynamically load blog
  */
 document.addEventListener('DOMContentLoaded', () => {

@@ -1,3 +1,7 @@
+/**
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
 :root, :root:not([data-theme=dark]) {
     --pico-font-family-sans-serif:  "Helvetica Neue", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, Arial, sans-serif;
     --pico-nav-breadcrumb-divider: '>';

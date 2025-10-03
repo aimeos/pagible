@@ -1,3 +1,7 @@
+/**
+ * @license LGPL, https://opensource.org/license/lgpl-3-0
+ */
+
 <script>
   import { useTheme } from 'vuetify'
   import { useGettext } from "vue3-gettext"

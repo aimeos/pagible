@@ -1,3 +1,7 @@
+/**
+ * @license LGPL, https://opensource.org/license/lgpl-3-0
+ */
+
 <script>
   import { ClassicEditor, Markdown, Essentials, PasteFromOffice, Fullscreen, Clipboard, FindAndReplace, RemoveFormat, Paragraph, Bold, Italic, Strikethrough, Code, AutoLink, Link } from 'ckeditor5';
   import { Ckeditor } from '@ckeditor/ckeditor5-vue';

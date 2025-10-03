@@ -1,3 +1,7 @@
+/**
+ * @license LGPL, https://opensource.org/license/lgpl-3-0
+ */
+
 import { createPinia } from 'pinia'
 import { createApp, defineAsyncComponent } from 'vue'
 import VueObserveVisibility from 'vue3-observe-visibility'

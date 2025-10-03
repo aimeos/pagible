@@ -1,3 +1,8 @@
+/**
+ * @license LGPL, https://opensource.org/license/lgpl-3-0
+ */
+
+
 // only for translation extraction
 
 if($pgettext) {
