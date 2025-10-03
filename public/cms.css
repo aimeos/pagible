@@ -55,7 +55,7 @@
     --pico-dropdown-hover-background-color: var(--pico-background-color);
     --pico-dropdown-box-shadow: var(--pico-box-shadow);
     --pico-code-background-color: var(--pico-contrast-background);
-    --pico-code-color: var(--pico-contrast);
+    --pico-code-color: var(--pico-contrast-hover);
     --pico-border-radius: 0;
 }
 
@@ -479,10 +479,15 @@ p code {
     overflow-wrap: anywhere;
 }
 
+pre code[class*=language-] {
+    background-color: var(--pico-muted-background-color);
+    overflow-x: auto;
+}
+
 pre:has(code[class*="language-"]) {
-    background-color: var(--pico-background-color) !important;
-    position: relative !important;
-    padding: 2rem 5% !important;
+    background-color: var(--pico-background-color);
+    position: relative;
+    padding: 2rem 5%;
     background:
         radial-gradient(
             circle at 90% -50%,
@@ -493,14 +498,7 @@ pre:has(code[class*="language-"]) {
             circle at 10% 150%,
             var(--pico-secondary-background) 0,
             transparent 66%
-        ) !important;
-}
-
-pre code[class*=language-] {
-    background-color: var(--pico-muted-background-color) !important;
-    color: var(--pico-color) !important;
-    margin: 0 !important;
-    overflow-x: auto;
+        );
 }
 
 @media screen and (min-width: 768px) {
@@ -517,8 +515,7 @@ pre code[class*=language-] {
                 transparent 66%
             ),
             url('code-background.svg') no-repeat -10% calc(100% + 2.5rem) / 20% auto,
-            url('code-background.svg') no-repeat 110% calc(100% + 2.5rem) / 20% auto
-            !important;
+            url('code-background.svg') no-repeat 110% calc(100% + 2.5rem) / 20% auto;
     }
 }
 
