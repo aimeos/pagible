@@ -492,7 +492,7 @@ class GraphqlPageTest extends TestAbstract
             'meta' => ['type' => 'meta', 'data' => ['text' => 'Laravel CMS is outstanding']],
             'config' => ['test' => ['type' => 'test', 'data' => ['key' => 'value']]],
             'content' => [
-                ['type' => 'heading', 'text' => 'Welcome to Laravel CMS'],
+                ['type' => 'heading', 'data' => ['title' => 'Welcome to Laravel CMS']],
                 ['type' => 'ref', 'id' => strtolower( $element->id )],
             ],
         ];
@@ -848,7 +848,7 @@ class GraphqlPageTest extends TestAbstract
                     tag: "test"
                     meta: "{\"canonical\":\"to\/page\"}"
                     config: "{\"key\":\"test\"}"
-                    content: "[{\"type\":\"heading\",\"text\":\"Welcome to Laravel CMS\"}]"
+                    content: "[{\"type\":\"heading\",\"data\":{\"title\":\"Welcome to Laravel CMS\"}}]"
                     status: 0
                     cache: 5
                 }, elements: ["' . $element->id . '"], files: ["' . $file->id . '"]) {
@@ -925,7 +925,7 @@ class GraphqlPageTest extends TestAbstract
         $expectedLatestAux = [
             'meta' => ['canonical' => 'to/page'],
             'config' => ['key' => 'test'],
-            'content' => [['type' => 'heading', 'text' => 'Welcome to Laravel CMS']],
+            'content' => [['type' => 'heading', 'data' => ['title' => 'Welcome to Laravel CMS']]],
         ];
         $this->assertEquals($expectedLatestAux, json_decode($savePage['latest']['aux'], true));
 
@@ -948,7 +948,7 @@ class GraphqlPageTest extends TestAbstract
             'meta' => ['type' => 'meta', 'data' => ['text' => 'Laravel CMS is outstanding']],
             'config' => ['test' => ['type' => 'test', 'data' => ['key' => 'value']]],
             'content' => [
-                ['type' => 'heading', 'text' => 'Welcome to Laravel CMS'],
+                ['type' => 'heading', 'data' => ['title' => 'Welcome to Laravel CMS']],
                 ['type' => 'ref', 'id' => strtolower( $element->id )],
             ],
         ];

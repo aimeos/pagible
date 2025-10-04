@@ -157,7 +157,7 @@ class CmsSeeder extends Seeder
             'meta' => ['meta' => ['type' => 'meta', 'data' => ['text' => 'Laravel CMS is outstanding']]],
             'config' => ['test' => ['type' => 'test', 'data' => ['key' => 'value']]],
             'content' => [
-                ['type' => 'heading', 'data' => ['text' => 'Welcome to Laravel CMS']],
+                ['type' => 'heading', 'data' => ['title' => 'Welcome to Laravel CMS']],
                 ['type' => 'ref', 'id' => $elementId]
             ],
         ]);
@@ -180,7 +180,7 @@ class CmsSeeder extends Seeder
                 'meta' => ['type' => 'meta', 'data' => ['text' => 'Laravel CMS is outstanding']],
                 'config' => ['test' => ['type' => 'test', 'data' => ['key' => 'value']]],
                 'content' => [
-                    ['type' => 'heading', 'data' => ['text' => 'Welcome to Laravel CMS']],
+                    ['type' => 'heading', 'data' => ['title' => 'Welcome to Laravel CMS']],
                     ['type' => 'ref', 'id' => $elementId]
                 ],
             ],
@@ -251,9 +251,9 @@ class CmsSeeder extends Seeder
                     'text' => 'Laravel CMS is lightweight, lighting fast, easy to use, fully customizable and scalable from one-pagers to millions of pages',
                 ]
             ],
-            ['type' => 'heading', 'data' => ['level' => 2, 'text' => 'Rethink content management!']],
+            ['type' => 'heading', 'data' => ['level' => 2, 'title' => 'Rethink content management!']],
             ['type' => 'paragraph', 'data' => ['text' => 'Laravel CMS is exceptional in every way. Headless and API-first!']],
-            ['type' => 'heading', 'data' => ['level' => 2, 'text' => 'API first!']],
+            ['type' => 'heading', 'data' => ['level' => 2, 'title' => 'API first!']],
             ['type' => 'paragraph', 'data' => [
                 'text' => 'Use GraphQL for editing everything after login:
 
