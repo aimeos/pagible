@@ -226,7 +226,7 @@ class Page extends Model
     {
         Content::where( 'page_id', $this->id )->delete();
 
-        if( $this->status < 1 ) {
+        if( !$this->id || $this->status < 1 ) {
             return;
         }
 
@@ -241,23 +241,28 @@ class Page extends Model
                 continue;
             }
 
-            foreach( (array) $el->data ?? [] as $name => $value )
+            foreach( (array) ( $el->data ?? [] ) as $name => $value )
             {
                 if( isset( $fields[$name] )
-                    && $fields[$name]['searchable'] ?? true
-                    && in_array( @$fields[$name]['type'], ['markdown', 'plaintext', 'string', 'text'] )
+                    && ( $fields[$name]['searchable'] ?? true )
+                    && in_array( $fields[$name]['type'], ['markdown', 'plaintext', 'string', 'text'] )
                 ) {
                     $content .= $value . "\n";
                 }
             }
 
-            Content::create( [
-                'tenant_id' => \Aimeos\Cms\Tenancy::value(),
-                'page_id' => $this->id,
-                'lang' => $this->lang,
-                'path' => $this->domain . '/' . $this->path . '#' . @$el->id,
-                'content' => $content
-            ] );
+            if( $content = trim( $content ) )
+            {
+                Content::create( [
+                    'tenant_id' => \Aimeos\Cms\Tenancy::value(),
+                    'page_id' => $this->id,
+                    'lang' => $this->lang ?? '',
+                    'domain' => $this->domain ?? '',
+                    'path' => $this->path . '#' . @$el->id,
+                    'title' => $this->title,
+                    'content' => $content
+                ] );
+            }
         }
     }
 

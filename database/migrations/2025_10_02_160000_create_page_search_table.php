@@ -19,16 +19,22 @@ return new class extends Migration
     public function up()
     {
         Schema::connection(config('cms.db', 'sqlite'))->create('cms_page_search', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
+
             $table->foreignId('page_id')->constrained('cms_pages')->cascadeOnUpdate()->cascadeOnDelete();
             $table->string('tenant_id', 250);
             $table->string('lang', 5);
+            $table->string('domain');
             $table->string('path');
+            $table->string('title');
             $table->text('content');
 
-            $table->unique(['tenant_id', 'lang', 'path']);
+            $table->unique(['tenant_id', 'lang', 'domain', 'path']);
 
             if(in_array(Schema::getConnection()->getDriverName(), ['mysql'])) {
+                $table->fullText(['title', 'content']);
                 $table->fullText('content');
+                $table->fullText('title');
             }
         });
     }

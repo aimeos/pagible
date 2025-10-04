@@ -9,6 +9,7 @@ namespace Aimeos\Cms\Models;
 
 use Aimeos\Cms\Concerns\Tenancy;
 use Illuminate\Database\Eloquent\Model;
+use Laravel\Scout\Attributes\SearchUsingFullText;
 use Laravel\Scout\Searchable;
 
 
@@ -28,7 +29,10 @@ class Content extends Model
      */
     protected $attributes = [
         'page_id' => 0,
+        'domain' => '',
         'path' => '',
+        'lang' => '',
+        'title' => '',
         'content' => '',
     ];
 
@@ -39,7 +43,10 @@ class Content extends Model
      */
     protected $fillable = [
         'page_id',
+        'domain',
         'path',
+        'lang',
+        'title',
         'content',
     ];
 
@@ -98,11 +105,11 @@ class Content extends Model
      *
      * @return array<string, mixed>
      */
-    #[SearchUsingPrefix(['lang', 'path'])]
-    #[SearchUsingFullText(['content'])]
+    #[SearchUsingFullText(['title', 'content'])]
     public function toSearchableArray(): array
     {
         return [
+            'title' => $this->title,
             'content' => $this->content
         ];
     }

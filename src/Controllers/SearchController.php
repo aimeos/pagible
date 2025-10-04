@@ -24,9 +24,9 @@ class SearchController extends Controller
      */
     public function index( Request $request, string $domain = '' )
     {
-        $content = Content::withTenancy()->search( $request->search )
-            ->where( 'lang', 'like', @$request->locale . '%' )
-            ->where( 'path', 'like', $domain . '/%' )
+        $content = Content::search( $request->search )
+            ->where( 'lang', $request->locale ?? app()->getLocale() )
+            ->where( 'domain', $domain )
             ->get();
 
         return response()->json( $content );
