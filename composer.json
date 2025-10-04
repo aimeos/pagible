@@ -19,7 +19,8 @@
 		"symfony/uid": "^7.0",
 		"doctrine/dbal": "^4.2",
 		"prism-php/prism": "~0.89",
-		"aimeos/laravel-analytics-bridge": "~1.0"
+		"aimeos/laravel-analytics-bridge": "~1.0",
+		"laravel/scout": "^10.19"
 	},
 	"require-dev": {
 		"orchestra/testbench": "^9.0||^10.0",

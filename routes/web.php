@@ -6,6 +6,8 @@
 
 
 use Aimeos\Cms\Controllers;
+use Aimeos\Cms\Models\Content;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 \LaravelJsonApi\Laravel\Facades\JsonApiRoute::server('cms')->prefix('cms')->resources(function ($server) {
@@ -26,6 +28,7 @@ Route::post('cmsapi/contact', [Controllers\ContactController::class, 'send'])
     ->name('cms.api.contact');
 
 Route::group(config('cms.multidomain') ? ['domain' => '{domain}'] : [], function() {
+    Route::get('cmsapi/search', [Controllers\SearchController::class, 'index'])->name('cms.search');
     Route::get('cms-sitemap.xml', [Controllers\SitemapController::class, 'index'])->name('cms.sitemap');
 });
 

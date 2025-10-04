@@ -50,6 +50,9 @@ Made with <fg=green>love</> by the Pagible CMS community. Be a part of it!
         $this->comment( '  Publishing Analytics Bridge files ...' );
         $result += $this->call( 'vendor:publish', ['--provider' => 'Aimeos\AnalyticsBridge\ServiceProvider'] );
 
+        $this->comment( '  Publishing Laravel Scout files ...' );
+        $result += $this->call( 'vendor:publish', ['--provider' => 'Laravel\Scout\ScoutServiceProvider'] );
+
         $this->comment( '  Publishing JSON:API configuration ...' );
         $result += $this->call( 'vendor:publish', ['--provider' => 'LaravelJsonApi\Laravel\ServiceProvider'] );
 

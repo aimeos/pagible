@@ -157,7 +157,7 @@ class CmsSeeder extends Seeder
             'meta' => ['meta' => ['type' => 'meta', 'data' => ['text' => 'Laravel CMS is outstanding']]],
             'config' => ['test' => ['type' => 'test', 'data' => ['key' => 'value']]],
             'content' => [
-                ['type' => 'heading', 'text' => 'Welcome to Laravel CMS'],
+                ['type' => 'heading', 'data' => ['text' => 'Welcome to Laravel CMS']],
                 ['type' => 'ref', 'id' => $elementId]
             ],
         ]);
@@ -180,7 +180,7 @@ class CmsSeeder extends Seeder
                 'meta' => ['type' => 'meta', 'data' => ['text' => 'Laravel CMS is outstanding']],
                 'config' => ['test' => ['type' => 'test', 'data' => ['key' => 'value']]],
                 'content' => [
-                    ['type' => 'heading', 'text' => 'Welcome to Laravel CMS'],
+                    ['type' => 'heading', 'data' => ['text' => 'Welcome to Laravel CMS']],
                     ['type' => 'ref', 'id' => $elementId]
                 ],
             ],

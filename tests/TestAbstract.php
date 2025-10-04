@@ -41,6 +41,21 @@ abstract class TestAbstract extends \Orchestra\Testbench\TestCase
         ]);
 
         $app['config']->set('cms.db', 'testing');
+        $app['config']->set('scout.driver', 'collection');
+
+        $app['config']->set('cms.schemas.content.heading', [
+            'group' => 'basic',
+            'fields' => [
+                'title' => [
+                    'type' => 'string',
+                    'min' => 1,
+                ],
+                'level' => [
+                    'type' => 'select',
+                    'required' => true,
+                ],
+            ],
+        ]);
 
         \Aimeos\Cms\Tenancy::$callback = function() {
             return 'test';

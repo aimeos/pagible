@@ -33,6 +33,7 @@ class PageController extends Controller
      * is always up-to-date. Proxy servers are allowed to cache pages with GET parameters
      * nevertheless because using the same parameters must always return the same content.
      *
+     * @param Request $request The current HTTP request instance
      * @param string $path Page URL segment
      * @param string $domain Requested domain
      * @return Response|RedirectResponse Response of the controller action

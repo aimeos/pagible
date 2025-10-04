@@ -220,6 +220,49 @@ class Page extends Model
 
 
     /**
+     * Updated the search index for the page.
+     */
+    public function index()
+    {
+        Content::where( 'page_id', $this->id )->delete();
+
+        if( $this->status < 1 ) {
+            return;
+        }
+
+        $config = config( 'cms.schemas.content', [] );
+
+        foreach( (array) $this->content as $el )
+        {
+            $content = '';
+            $fields = (array) ( $config[@$el->type]['fields'] ?? [] );
+
+            if( empty( $fields ) ) {
+                continue;
+            }
+
+            foreach( (array) $el->data ?? [] as $name => $value )
+            {
+                if( isset( $fields[$name] )
+                    && $fields[$name]['searchable'] ?? true
+                    && in_array( @$fields[$name]['type'], ['markdown', 'plaintext', 'string', 'text'] )
+                ) {
+                    $content .= $value . "\n";
+                }
+            }
+
+            Content::create( [
+                'tenant_id' => \Aimeos\Cms\Tenancy::value(),
+                'page_id' => $this->id,
+                'lang' => $this->lang,
+                'path' => $this->domain . '/' . $this->path . '#' . @$el->id,
+                'content' => $content
+            ] );
+        }
+    }
+
+
+    /**
      * Returns the cache key for the page.
      *
      * @param Page|string $page Page object or URL path
@@ -317,6 +360,8 @@ class Page extends Model
 
             $version->published = true;
             $version->save();
+
+            $this->index();
 
         }, 3 );
 

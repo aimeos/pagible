@@ -1033,7 +1033,7 @@ class GraphqlPageTest extends TestAbstract
 
         $page = Page::where('tag', 'root')->firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 10 );
+        $this->expectsDatabaseQueryCount( 12 );
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
                 pubPage(id: ["' . $page->id . '"]) {
