@@ -32,7 +32,6 @@ return new class extends Migration
             $table->unique(['tenant_id', 'lang', 'domain', 'path']);
 
             if(in_array(Schema::getConnection()->getDriverName(), ['mysql'])) {
-                $table->fullText(['title', 'content']);
                 $table->fullText('content');
                 $table->fullText('title');
             }
