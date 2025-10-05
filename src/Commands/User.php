@@ -7,6 +7,7 @@
 
 namespace Aimeos\Cms\Commands;
 
+use Illuminate\Foundation\Auth\User as BaseUser;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Console\Command;
 
@@ -35,14 +36,14 @@ class User extends Command
         $email = $this->argument( 'email' );
         $value = $this->option( 'disable' ) ? 0 : 0x7fffffffffffffff;
 
-        if( ( $user = \Illuminate\Foundation\Auth\User::where( 'email', $email )->first() ) === null )
+        if( ( $user = BaseUser::where( 'email', $email )->first() ) === null )
         {
-            $user = (new \Illuminate\Foundation\Auth\User())->forceFill( [
+            $user = (new BaseUser())->forceFill( [
                 'password' => Hash::make( $this->option( 'password' ) ?: $this->secret( 'Password' ) ),
                 'cmseditor' => $value,
                 'email' => $email,
                 'name' => $email,
-            ] );
+            ] )->save();
         }
         else
         {
