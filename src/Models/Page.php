@@ -231,6 +231,7 @@ class Page extends Model
         }
 
         $config = config( 'cms.schemas.content', [] );
+        $md = new \League\CommonMark\CommonMarkConverter();
 
         foreach( (array) $this->content as $el )
         {
@@ -259,8 +260,8 @@ class Page extends Model
                     'lang' => $this->lang ?? '',
                     'domain' => $this->domain ?? '',
                     'path' => $this->path . '#' . @$el->id,
-                    'title' => $this->title,
-                    'content' => $content
+                    'title' => strip_tags( $md->convert( $this->title ) ),
+                    'content' => strip_tags( $md->convert( $content ) )
                 ] );
             }
         }
