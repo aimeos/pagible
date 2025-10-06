@@ -43,6 +43,7 @@ if (window.self !== window.top) {
             el.addEventListener('dblclick', ev => {
                 ev.stopPropagation();
                 const id = ev.target?.closest('[id]')?.id || -1; // -1: add element
+                console.debug('cms edit', ev, ev.target?.closest('[id]'), id, section);
                 window.parent.postMessage({id: id, section: section}, trustedOrigin || '*');
             });
         });
