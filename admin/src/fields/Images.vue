@@ -213,7 +213,7 @@
         draggable="false"
       />
 
-      <v-menu v-if="item.id && !readonly">
+      <v-menu v-if="item.id && !readonly" location="center">
         <template v-slot:activator="{ props }">
           <v-btn v-bind="props"
             :title="$gettext('Open menu')"

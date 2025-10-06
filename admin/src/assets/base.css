@@ -133,20 +133,8 @@ body {
   --v-selection-control-size: 48px !important;
 }
 
-.v-btn.v-btn--density-default:not(.v-btn--stacked) {
-  height: 48px;
-}
-
-.v-btn--size-default {
-  min-width: unset !important;
-}
-
 .v-list {
   margin: 0 4px;
-}
-
-.v-list .v-btn.subitem {
-  margin-inline-start: 24px;
 }
 
 .v-list-group {
@@ -220,8 +208,17 @@ body {
   padding: 0 8px;
 }
 
-.v-btn.menu {
+.v-menu .v-btn {
+  justify-content: start;
   width: 100%;
+}
+
+.v-btn.v-btn--density-default:not(.v-btn--stacked) {
+  height: 48px;
+}
+
+.v-btn--size-default {
+  min-width: unset !important;
 }
 
 .header {

@@ -543,7 +543,7 @@
                   icon="mdi-image-check"
                   class="no-rtl"
                 />
-                <v-menu v-else>
+                <v-menu v-else location="center">
                   <template #activator="{ props }">
                     <v-btn v-bind="props" icon="mdi-crop" class="no-rtl" :title="$gettext('Crop image')" />
                   </template>
