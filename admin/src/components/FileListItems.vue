@@ -444,7 +444,7 @@
   <div class="header">
     <div class="bulk">
       <v-checkbox-btn v-model="checked" @click.stop="toggle()" />
-      <v-menu location="bottom left">
+      <v-menu>
         <template #activator="{ props }">
           <v-btn v-bind="props"
             :disabled="!isChecked && (embed || !auth.can('file:add'))"
@@ -499,7 +499,7 @@
         elevation="0"
       />
 
-      <v-menu location="bottom right">
+      <v-menu>
         <template #activator="{ props }">
           <v-btn v-bind="props"
             :title="$gettext('Sort by')"
@@ -539,7 +539,7 @@
     <v-list-item v-for="(item, idx) in items" :key="idx">
       <v-checkbox-btn v-model="item._checked" :class="{draft: !item.published}" class="item-check" />
 
-      <v-menu :location="'bottom ' + (vgrid ? 'right' : 'left')">
+      <v-menu location="center">
         <template v-slot:activator="{ props }">
           <v-btn v-bind="props"
             :title="$gettext('Actions')"

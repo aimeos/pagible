@@ -129,7 +129,7 @@
     <v-label v-if="field.type !== 'hidden'">
       {{ $pgettext('fn', field.label || code).replace(/-|_/g, ' ') }}
       <div v-if="!readonly && ['markdown', 'plaintext', 'string', 'text'].includes(field.type)" class="actions">
-        <v-menu>
+        <v-menu location="center">
           <template #activator="{ props }">
             <v-btn v-bind="props"
               :title="$gettext('Translate %{code} field', {code: code})"
