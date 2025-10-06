@@ -416,17 +416,17 @@
         <template #activator="{ props }">
           <v-btn
             v-bind="props"
-            :disabled="!isChecked"
+            :disabled="!isChecked && (embed || !auth.can('element:add'))"
             append-icon="mdi-menu-down"
             variant="text"
           >{{ $gettext('Actions') }}</v-btn>
         </template>
         <v-list>
+          <v-list-item v-if="!embed && auth.can('element:add')">
+            <v-btn prepend-icon="mdi-folder-plus" variant="text" @click="vschemas = true">{{ $gettext('Add element') }}</v-btn>
+          </v-list-item>
           <v-list-item v-show="isChecked && auth.can('element:publish')">
             <v-btn prepend-icon="mdi-publish" variant="text" @click="publish()">{{ $gettext('Publish') }}</v-btn>
-          </v-list-item>
-          <v-list-item v-if="!this.embed && auth.can('element:add')">
-            <v-btn prepend-icon="mdi-folder-plus" variant="text" @click="vschemas = true">{{ $gettext('Add element') }}</v-btn>
           </v-list-item>
           <v-list-item v-show="canTrash && auth.can('element:drop')">
             <v-btn prepend-icon="mdi-delete" variant="text" @click="drop()">{{ $gettext('Delete') }}</v-btn>
