@@ -649,8 +649,21 @@
 </template>
 
 <style scoped>
-  .layoout .v-list-item {
+  .layout .v-list-item {
     text-transform: uppercase;
+  }
+
+  .items .item-usage {
+    text-align: center;
+  }
+
+  .items .item-usage.notused {
+    color: rgb(var(--v-theme-error));
+  }
+
+  .items .item-preview .v-img {
+    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAIAQMAAAD+wSzIAAAABlBMVEX////Ly8vsgL9iAAAADklEQVQI12P4AIX8EAgALgAD/aNpbtEAAAAASUVORK5CYII=);
+    background-repeat: repeat;
   }
 
   .items.list .v-list-item {
@@ -668,12 +681,7 @@
   }
 
   .items.list .item-usage {
-    text-align: center;
     width: 2rem;
-  }
-
-  .items.list .item-usage.notused {
-    color: rgb(var(--v-theme-error));
   }
 
   .items.list .item-preview {
@@ -692,8 +700,6 @@
   }
 
   .items.list .item-preview .v-img {
-    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAIAQMAAAD+wSzIAAAABlBMVEX////Ly8vsgL9iAAAADklEQVQI12P4AIX8EAgALgAD/aNpbtEAAAAASUVORK5CYII=);
-    background-repeat: repeat;
     height: 48px;
     width: 72px;
   }
