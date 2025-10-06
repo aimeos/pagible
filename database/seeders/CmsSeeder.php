@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Seeder;
 use Aimeos\Cms\Models\Version;
 use Aimeos\Cms\Models\Element;
+use Aimeos\Cms\Models\Content;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
 
@@ -189,6 +190,15 @@ class CmsSeeder extends Seeder
         ]);
         $page->elements()->attach( $elementId );
 
+        Content::forceCreate([
+            'page_id' => $page->id,
+            'domain' => 'mydomain.tld',
+            'path' => '',
+            'lang' => 'en',
+            'title' => 'Home | Laravel CMS',
+            'content' => 'Welcome to Laravel CMS',
+        ]);
+
         return $page;
     }
 
@@ -230,6 +240,15 @@ class CmsSeeder extends Seeder
             ],
             'published' => true,
             'editor' => 'seeder',
+        ]);
+
+        Content::forceCreate([
+            'page_id' => $page->id,
+            'domain' => 'mydomain.tld',
+            'path' => 'blog',
+            'lang' => 'en',
+            'title' => 'Blog | Laravel CMS',
+            'content' => 'Blog example',
         ]);
 
         return $this->addBlogArticle( $page );
@@ -274,6 +293,7 @@ mutation {
             'title' => 'Welcome to Laravel CMS | Laravel CMS',
             'path' => 'welcome-to-laravelcms',
             'tag' => 'article',
+            'lang' => 'en',
             'status' => 1,
             'editor' => 'seeder'
         ];
@@ -292,6 +312,15 @@ mutation {
             'editor' => 'seeder',
         ]);
         $version->files()->attach( $fileId );
+
+        Content::forceCreate([
+            'page_id' => $page->id,
+            'domain' => 'mydomain.tld',
+            'path' => 'welcome-to-laravelcms',
+            'lang' => 'en',
+            'title' => 'Welcome to Laravel CMS | Laravel CMS',
+            'content' => 'Welcome to Laravel CMS A new light-weight Laravel CMS is here!',
+        ]);
 
         return $this;
     }
