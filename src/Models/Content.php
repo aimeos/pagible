@@ -28,7 +28,8 @@ class Content extends Model
      * @var array
      */
     protected $attributes = [
-        'page_id' => 0,
+        'tenant_id' => '',
+        'page_id' => null,
         'domain' => '',
         'path' => '',
         'lang' => '',
@@ -71,24 +72,6 @@ class Content extends Model
     public function getConnectionName() : string
     {
         return config( 'cms.db', 'sqlite' );
-    }
-
-
-    /**
-     * Get the value used to index the model.
-     */
-    public function getScoutKey(): mixed
-    {
-        return $this->path;
-    }
-
-
-    /**
-     * Get the key name used to index the model.
-     */
-    public function getScoutKeyName(): mixed
-    {
-        return 'path';
     }
 
 

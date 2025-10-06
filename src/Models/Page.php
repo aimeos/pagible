@@ -255,7 +255,6 @@ class Page extends Model
             if( $content = trim( $content ) )
             {
                 Content::create( [
-                    'tenant_id' => \Aimeos\Cms\Tenancy::value(),
                     'page_id' => $this->id,
                     'lang' => $this->lang ?? '',
                     'domain' => $this->domain ?? '',
