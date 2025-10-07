@@ -32,9 +32,8 @@ return new class extends Migration
 
             $table->unique(['tenant_id', 'lang', 'domain', 'path']);
 
-            if(in_array(Schema::getConnection()->getDriverName(), ['mysql'])) {
+            if(in_array(Schema::getConnection()->getDriverName(), ['mariadb', 'mysql'])) {
                 $table->fullText('content');
-                $table->fullText('title');
             }
         });
     }

@@ -88,11 +88,10 @@ class Content extends Model
      *
      * @return array<string, mixed>
      */
-    #[SearchUsingFullText(['title', 'content'])]
+    #[SearchUsingFullText(['content'])]
     public function toSearchableArray(): array
     {
         return [
-            'title' => $this->title,
             'content' => $this->content
         ];
     }
