@@ -20,6 +20,8 @@ return new class extends Migration
     {
         Schema::connection(config('cms.db', 'sqlite'))->create('cms_page_search', function (Blueprint $table) {
             $table->engine = 'InnoDB';
+            $table->charset('utf8mb4');
+            $table->collation('utf8mb4_bin');
 
             $table->bigIncrements('id');
             $table->foreignId('page_id')->constrained('cms_pages')->cascadeOnUpdate()->cascadeOnDelete();
