@@ -10,11 +10,22 @@ namespace Tests;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Element;
+use Aimeos\Cms\Models\Content;
 use Database\Seeders\CmsSeeder;
 
 
 class CommandTest extends TestAbstract
 {
+    public function testIndex(): void
+    {
+        $this->seed( CmsSeeder::class );
+
+        $this->artisan('cms:index')->assertExitCode( 0 );
+
+        $this->assertEquals( 2, Content::get()->count() );
+    }
+
+
     public function testPublish(): void
     {
         $this->seed( CmsSeeder::class );

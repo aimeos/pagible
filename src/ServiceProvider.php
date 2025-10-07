@@ -42,6 +42,7 @@ class ServiceProvider extends Provider
 		if( $this->app->runningInConsole() )
 		{
 			$this->commands( [
+				\Aimeos\Cms\Commands\Index::class,
 				\Aimeos\Cms\Commands\Install::class,
 				\Aimeos\Cms\Commands\Publish::class,
 				\Aimeos\Cms\Commands\Serve::class,
