@@ -20,14 +20,14 @@
 }
 
 .contact label {
-    color: var(--pico-muted-color);
+    color: var(--pico-contrast-hover);
     display: inline-block;
     margin: 0.5rem 0;
 }
 
 .contact input, textarea {
-    background-color: var(--pico-contrast-background);
-    border: 1px solid var(--pico-contrast-border);
+    border: 1px solid var(--pico-muted-border-color);
+    background-color: var(--pico-muted-color);
     color: var(--pico-contrast);
     resize: vertical;
     font-size: 1rem;

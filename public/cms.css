@@ -58,6 +58,7 @@
     --pico-dropdown-background-color: var(--pico-background-color);
     --pico-dropdown-hover-background-color: var(--pico-background-color);
     --pico-dropdown-box-shadow: var(--pico-box-shadow);
+    --pico-modal-overlay-background-color: var(--pico-muted-color);
     --pico-code-background-color: var(--pico-contrast-background);
     --pico-code-color: var(--pico-contrast-hover);
     --pico-border-radius: 0;
@@ -112,7 +113,7 @@ body {
     --pico-underline: var(--pico-contrast);
 }
 
-:where(a:not([role=button]:hover)), [role=link]:hover {
+:where(a:not([role=button]):hover), [role=link]:hover {
     --pico-color: var(--pico-contrast-hover);
     --pico-underline: var(--pico-contrast-hover);
 }
@@ -218,18 +219,6 @@ header nav a {
     margin-inline-start: -1rem;
 }
 
-header nav > ul > li:last-of-type a {
-    background-color: var(--pico-contrast-background);
-    border: 1px solid var(--pico-contrast-border);
-    border-radius: 2rem;
-    text-wrap: nowrap;
-}
-
-header nav > ul > li:last-of-type:hover a {
-    background-color: var(--pico-contrast-hover-background);
-    border: 1px solid var(--pico-contrast-hover-border);
-}
-
 @media (max-width: 991px) {
     header nav .menu-open.show,
     header nav .menu-close.show {
@@ -297,6 +286,79 @@ nav[aria-label=breadcrumb] ul li:not(:last-child)::after {
     color: var(--pico-color);
     width: auto;
 }
+
+
+dialog article {
+    background-color: var(--pico-background-color);
+    height: calc(100vh - 2rem);
+    padding: 1rem;
+}
+
+dialog form {
+    display: flex;
+    margin-bottom: 1rem;
+}
+
+dialog input,
+dialog button {
+    background-color: var(--pico-background-color);
+    color: var(--pico-contrast);
+    appearance: none;
+    box-shadow: none;
+    border: none;
+    padding: 0.5rem;
+}
+
+dialog input {
+    border: 1px solid var(--pico-muted-border-color);
+    background-color: var(--pico-muted-color);
+    font-size: 1rem;
+    display: block;
+    width: 100%;
+    margin: 0 1px;
+    outline: none;
+}
+
+dialog input:focus-visible {
+    border: 1px solid var(--pico-muted-hover-border-color);
+}
+
+dialog.search .result-item {
+    padding: .5rem 0;
+}
+
+dialog.search .result-item a {
+    border-inline-start: 1px solid var(--pico-highlight-border-color);
+    color: var(--pico-color);
+    text-decoration: none;
+    cursor: pointer;
+    display: block;
+    padding: 0.5rem;
+    padding-inline-start: 1rem;
+}
+
+dialog.search .result-item a[role="heading"] {
+    border-bottom: 1px solid var(--pico-highlight-border-color);
+    background-color: var(--pico-highlight-color);
+    padding-inline-start: 0.5rem;
+    font-weight: bold;
+}
+
+dialog.search .result-item a:hover {
+    --pico-color: var(--pico-contrast);
+    background-color: var(--pico-highlight-color);
+    color: var(--pico-contrast);
+}
+
+dialog.search .result-item a[role="heading"]:hover {
+    background-color: var(--pico-highlight-hover-color);
+}
+
+dialog.search .result-item a b {
+    background-color: var(--pico-highlight-hover-color);
+    padding: 0.1rem 0.25rem;
+}
+
 
 .container {
     max-width: 1200px !important;
