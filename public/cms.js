@@ -125,6 +125,10 @@ const search_debounce = (fn, delay = 300) => {
 const search_format = (text, term) => {
     const words = term.split(" ").filter(v => v.length > 2).map(v => v.replace(/[.*+?^${}()|[\]\\]/g, ''));
 
+    if(!words.length) {
+        return text;
+    }
+
     const regex = new RegExp(`(${words.join("|")})`, "i");
     const match = text.match(regex);
 
@@ -142,6 +146,10 @@ const search_page = search_debounce((ev) => {
     const value = ev.target?.value;
     const form = ev.target?.closest('form');
 
+    if(!value || !form) {
+        return;
+    }
+
     fetch(form?.getAttribute('action')?.replace(/_term_/, encodeURIComponent(value)), {
         method: 'GET',
         headers: {
@@ -154,6 +162,7 @@ const search_page = search_debounce((ev) => {
         return response.json();
     }).then(result => {
         const results = ev.target?.closest('article')?.querySelector('.results');
+        results.innerHTML = '';
 
         if(!results) {
             return;
@@ -164,8 +173,6 @@ const search_page = search_debounce((ev) => {
             acc[item.title].push(item);
             return acc;
         }, {});
-
-        results.innerHTML = '';
 
         for(let name in grouped) {
             const container = document.createElement('div');

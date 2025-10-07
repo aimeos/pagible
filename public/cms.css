@@ -58,7 +58,7 @@
     --pico-dropdown-background-color: var(--pico-background-color);
     --pico-dropdown-hover-background-color: var(--pico-background-color);
     --pico-dropdown-box-shadow: var(--pico-box-shadow);
-    --pico-modal-overlay-background-color: var(--pico-muted-color);
+    --pico-modal-overlay-background-color: var(--pico-muted-background-color);
     --pico-code-background-color: var(--pico-contrast-background);
     --pico-code-color: var(--pico-contrast-hover);
     --pico-border-radius: 0;
@@ -288,15 +288,19 @@ nav[aria-label=breadcrumb] ul li:not(:last-child)::after {
 }
 
 
-dialog article {
+dialog > article {
     background-color: var(--pico-background-color);
     height: calc(100vh - 2rem);
-    padding: 1rem;
+    overflow: unset;
+}
+
+dialog header {
+    background-color: var(--pico-contrast-background);
 }
 
 dialog form {
     display: flex;
-    margin-bottom: 1rem;
+    padding: 1rem;
 }
 
 dialog input,
@@ -310,8 +314,8 @@ dialog button {
 }
 
 dialog input {
-    border: 1px solid var(--pico-muted-border-color);
-    background-color: var(--pico-muted-color);
+    border: 1px solid var(--pico-contrast-border);
+    background-color: var(--pico-contrast-background);
     font-size: 1rem;
     display: block;
     width: 100%;
@@ -320,7 +324,17 @@ dialog input {
 }
 
 dialog input:focus-visible {
-    border: 1px solid var(--pico-muted-hover-border-color);
+    border: 1px solid var(--pico-contrast-hover-border);
+}
+
+dialog input::-webkit-input-placeholder {
+    color: var(--pico-muted-color);
+}
+
+dialog.search .results {
+    height: calc(100% - 4.25rem);
+    overflow-y: auto;
+    padding: 1rem;
 }
 
 dialog.search .result-item {
@@ -328,7 +342,7 @@ dialog.search .result-item {
 }
 
 dialog.search .result-item a {
-    border-inline-start: 1px solid var(--pico-highlight-border-color);
+    border-inline-start: 1px solid var(--pico-contrast-border);
     color: var(--pico-color);
     text-decoration: none;
     cursor: pointer;
@@ -338,24 +352,24 @@ dialog.search .result-item a {
 }
 
 dialog.search .result-item a[role="heading"] {
-    border-bottom: 1px solid var(--pico-highlight-border-color);
-    background-color: var(--pico-highlight-color);
+    border-bottom: 1px solid var(--pico-contrast-border);
+    background-color: var(--pico-contrast-background);
     padding-inline-start: 0.5rem;
     font-weight: bold;
 }
 
 dialog.search .result-item a:hover {
     --pico-color: var(--pico-contrast);
-    background-color: var(--pico-highlight-color);
+    background-color: var(--pico-contrast-background);
     color: var(--pico-contrast);
 }
 
 dialog.search .result-item a[role="heading"]:hover {
-    background-color: var(--pico-highlight-hover-color);
+    background-color: var(--pico-contrast-hover-border);
 }
 
 dialog.search .result-item a b {
-    background-color: var(--pico-highlight-hover-color);
+    background-color: var(--pico-contrast-background);
     padding: 0.1rem 0.25rem;
 }
 

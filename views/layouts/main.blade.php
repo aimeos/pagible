@@ -46,14 +46,16 @@
     <body class="theme-{{ cms($page, 'theme') ?: 'cms' }} type-{{ cms($page, 'type') ?: 'page' }}">
         <dialog id="modal-search" class="search">
             <article>
-                <form action="{{ route('cms.search', ['search' => '_term_']) }}">
-                    <input id="modal-search-input" placeholder="{{ __('Search website') }}">
-                    <button type="reset" aria-label="{{ __('Close') }}">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
-                            <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
-                        </svg>
-                    </button>
-                </form>
+                <header>
+                    <form action="{{ route('cms.search', ['search' => '_term_']) }}">
+                        <input id="modal-search-input" placeholder="{{ __('Search website') }}">
+                        <button type="reset" aria-label="{{ __('Close') }}">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+                                <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
+                            </svg>
+                        </button>
+                    </form>
+                </header>
                 <div class="results">
                 </div>
             </article>
