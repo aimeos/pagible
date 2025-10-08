@@ -146,7 +146,7 @@ const search_page = search_debounce((ev) => {
     const value = ev.target?.value;
     const form = ev.target?.closest('form');
 
-    if(!value || !form) {
+    if(!form || !value || value.length < 3) {
         return;
     }
 

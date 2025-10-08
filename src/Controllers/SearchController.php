@@ -23,6 +23,10 @@ class SearchController extends Controller
      */
     public function index( Request $request, string $domain = '' )
     {
+        if( strlen( (string) $request->search ) < 3 ) {
+            return response()->json( [] );
+        }
+
         $content = Content::search( $request->search )
             ->where( 'lang', $request->locale ?? app()->getLocale() )
             ->where( 'domain', $domain )
