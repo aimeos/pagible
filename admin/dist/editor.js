@@ -28,18 +28,6 @@ if (window.self !== window.top) {
         document.querySelectorAll('.cms-content').forEach(el => {
             const section = el.dataset.section || 'main'
 
-            if(!el.children.length) {
-                const match = getComputedStyle(el)?.backgroundColor?.match(/\d+/g)
-                const a = parseFloat(match[3] ?? 1)
-
-                const r = (1 - a) * 255 + a * parseInt(match[0] ?? 0, 10)
-                const g = (1 - a) * 255 + a * parseInt(match[1] ?? 0, 10)
-                const b = (1 - a) * 255 + a * parseInt(match[2] ?? 0, 10)
-                const lum = (0.299 * r + 0.587 * g + 0.114 * b) / 255
-
-                el.classList.add('admin', 'placeholder', lum > 0.5 ? 'dark' : 'light')
-            }
-
             el.addEventListener('dblclick', ev => {
                 ev.stopPropagation();
                 const id = ev.target?.closest('[id]')?.id || -1; // -1: add element
