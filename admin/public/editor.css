@@ -3,20 +3,16 @@
     align-items: center;
     justify-content: center;
     text-transform: capitalize;
-    border: 1px dashed #000000;
+    border: 1px dashed #808080;
     min-height: 48px;
-}
-
-.admin.placeholder.light {
-    border: 1px dashed #FFFFFF;
 }
 
 .admin.placeholder::before {
     color: #000000;
-    text-align: center;
+    background-color: #808080;
+    padding: 0.25rem 0.5rem;
     content: attr(data-section);
-}
-
-.admin.placeholder.light::before {
-    color: #FFFFFF;
+    text-align: center;
+    border-radius: 1rem;
+    min-width: 5rem;
 }
