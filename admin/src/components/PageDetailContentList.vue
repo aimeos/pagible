@@ -234,6 +234,7 @@
 
         const entries = (this.clipboard.get('page-content') || []).map(el => {
           el.group = this.section
+          el.id = uid()
           return el
         })
 
@@ -541,6 +542,10 @@
       update(el) {
         el._changed = true
         el.group = this.section
+
+        if(!el.id) {
+          el.id = uid()
+        }
 
         this.$emit('update:content', this.content)
       }
