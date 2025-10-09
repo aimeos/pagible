@@ -57,7 +57,7 @@
     data() {
       return {
         editor: ClassicEditor,
-        visible: true,
+        visible: false,
       }
     },
 
@@ -88,6 +88,11 @@
     },
 
     methods: {
+      show(isVisible) {
+        this.visible = isVisible
+      },
+
+
       update(value) {
         if(this.modelValue != value) {
           this.$emit('update:modelValue', value);
@@ -109,14 +114,16 @@
 </script>
 
 <template>
-  <div v-if="visible">
-    <ckeditor
-      :config="ckconfig"
-      :editor="editor"
-      :disabled="readonly"
-      :modelValue="modelValue ?? config.default ?? ''"
-      @update:modelValue="update($event)"
-    ></ckeditor>
+  <div v-observe-visibility="show">
+    <div v-if="visible">
+      <ckeditor
+        :config="ckconfig"
+        :editor="editor"
+        :disabled="readonly"
+        :modelValue="modelValue ?? config.default ?? ''"
+        @update:modelValue="update($event)"
+      ></ckeditor>
+    </div>
   </div>
 </template>
 
