@@ -202,6 +202,10 @@
             this.update(item, (item) => {
               item.data.deleted_at = (new Date).toISOString().replace(/T/, ' ').substring(0, 19)
               item.check = false
+
+              if(this.filter.trashed === 'WITHOUT') {
+                this.$refs.tree.remove(item)
+              }
             })
           }
 
