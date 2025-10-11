@@ -3,165 +3,260 @@
  */
 
 <script>
+  import { vDraggable } from 'vue-draggable-plus'
+
   export default {
+    directives: { draggable: vDraggable },
+
     props: {
-      'modelValue': {type: Array, default: () => []},
-      'config': {type: Object, default: () => {}},
-      'readonly': {type: Boolean, default: false},
-      'context': {type: Object},
+      modelValue: { type: Array, default: () => [] },
+      config: { type: Object, default: () => ({}) },
+      readonly: { type: Boolean, default: false },
+      context: { type: Object },
     },
 
     emits: ['update:modelValue', 'error'],
 
     inject: ['debounce'],
 
+    data() {
+      return {
+        columns: this.header(),
+        table: this.modelValue,
+        validated: null,
+        updated: null,
+      }
+    },
+
     created() {
-      if(!this.modelValue.length) {
+      if (!this.table.length) {
         return this.$emit('update:modelValue', this.config.default ?? [['']])
       }
 
       this.validated = this.debounce(this.validate, 500)
+      this.updated = this.debounce(this.update, 500)
     },
 
     computed: {
+      cols() {
+        return this.columns.filter(c => !!c)
+      },
+
+
       rules() {
         return [
-            v => !this.config.min || +v?.length >= +this.config.min || this.$gettext(`Minimum are %{num} columns`, {num: this.config.min}),
-            v => !this.config.max || +v?.length <= +this.config.max || this.$gettext(`Maximum are %{num} columns`, {num: this.config.max}),
+          v => !this.config.min || +v?.length >= +this.config.min || this.$gettext(`Minimum are %{num} columns`, { num: this.config.min }),
+          v => !this.config.max || +v?.length <= +this.config.max || this.$gettext(`Maximum are %{num} columns`, { num: this.config.max }),
         ]
-      }
+      },
     },
 
     methods: {
-      addCol(idx) {
-        for(let row of this.modelValue) {
-          row.splice(idx, 0, '')
-        }
-
-        this.$emit('update:modelValue', this.modelValue)
+      addCol(index) {
+        this.columns.splice(index + 1, 0, true)
+        this.table.forEach(row => row.splice(index, 0, ''))
+        this.$emit('update:modelValue', this.table)
       },
 
 
-      addRow(idx) {
-        this.modelValue.splice(idx, 0, new Array((this.modelValue[0] ?? []).length).fill(''))
-        this.$emit('update:modelValue', this.modelValue)
+      addRow(index) {
+        this.table.splice(index, 0, this.cols.map(() => ''))
+        this.$emit('update:modelValue', this.table)
       },
 
 
-      rmCol(idx) {
-        for(let row of this.modelValue) {
-          row.splice(idx, 1)
-        }
+      header() {
+        const cols = (this.modelValue[0] || []).map((_, i) => true)
 
-        this.$emit('update:modelValue', this.modelValue)
+        cols.unshift(null)
+        cols.push(null)
+
+        return cols
       },
 
 
-      rmRow(idx) {
-        this.modelValue.splice(idx, 1)
-        this.$emit('update:modelValue', this.modelValue)
+      move(ev) {
+        if(ev.oldIndex === ev.newIndex) return
+
+        this.table.forEach(row => {
+          row.splice(ev.newIndex - 1, 0, row.splice(ev.oldIndex - 1, 1)[0])
+        })
+
+        this.$emit('update:modelValue', this.table)
+      },
+
+
+      rmCol(index) {
+        if (this.cols.length <= 1) return
+
+        this.columns.splice(index, 1)
+        this.table.forEach(row => row.splice(index, 1))
+
+        this.$emit('update:modelValue', this.table)
+      },
+
+
+      rmRow(index) {
+        if (this.table.length <= 1) return
+
+        this.table.splice(index, 1)
+        this.$emit('update:modelValue', this.table)
+      },
+
+
+      update() {
+        this.$emit('update:modelValue', this.table)
       },
 
 
       validate(val) {
-        this.$emit('error', !this.rules.every(rule => {
-          return rule(val) === true
-        }))
-
-        this.$emit('update:modelValue', val)
-      }
+        this.$emit('error', !this.rules.every(rule => rule(val) === true))
+      },
     },
 
     watch: {
       modelValue: {
-        deep: true,
         handler(val) {
-          this.validated ? this.validated(val) : this.validate(val);
-        }
-      }
-    }
+          this.table = val
+          this.validated ? this.validated(val) : this.validate(val)
+          this.columns = this.header()
+        },
+      },
+    },
   }
 </script>
 
 <template>
-  <v-table>
-    <tbody>
-      <tr>
-        <td></td>
-        <td v-for="(col, idx) in modelValue[0] || []">
-          <div class="buttons">
-            <v-btn icon="mdi-plus" @click="addCol(idx)" variant="flat"></v-btn>
-            <v-btn icon="mdi-minus" @click="rmCol(idx)" variant="flat"></v-btn>
-            <div></div>
-          </div>
-        </td>
-        <td>
-          <v-btn icon="mdi-plus" @click="addCol((modelValue[0] || []).length)" variant="flat"></v-btn>
-        </td>
-      </tr>
-      <tr v-for="(row, i) in modelValue">
-        <td>
-          <v-btn icon="mdi-plus" @click="addRow(i)" variant="flat"></v-btn>
-        </td>
-        <td v-for="(col, j) in row">
-          <v-textarea
-            v-model="modelValue[i][j]"
-            :placeholder="config.placeholder || ''"
-            :readonly="readonly"
-            :auto-grow="true"
-            rows="1"
-            variant="plain"
-            hide-details="auto"
-            density="comfortable"
-          ></v-textarea>
-        </td>
-        <td>
-          <v-btn icon="mdi-minus" @click="rmRow(i)" variant="flat"></v-btn>
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <v-btn icon="mdi-plus" @click="addRow((modelValue[0] || []).length)" variant="flat"></v-btn>
-        </td>
-        <td :colspan="(modelValue[0] || []).length"></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </v-table>
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr v-draggable="[columns, { animation: 300, handle: '.col-handle', onUpdate: move }]" class="col-header">
+          <td></td>
+
+          <td v-for="(col, idx) in cols" :key="idx">
+            <v-btn variant="text" class="col-handle cursor-move">
+              <svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 0 24 24">
+                <path d="M3,15V13H5V15H3M3,11V9H5V11H3M7,15V13H9V15H7M7,11V9H9V11H7M11,15V13H13V15H11M11,11V9H13V11H11M15,15V13H17V15H15M15,11V9H17V11H15M19,15V13H21V15H19M19,11V9H21V11H19Z" />
+              </svg>
+            </v-btn>
+
+            <v-menu location="center">
+              <template #activator="{ props }">
+                <v-btn v-bind="props" :title="$gettext('Actions')" icon="mdi-dots-vertical" variant="text" />
+              </template>
+              <v-list>
+                <v-list-item>
+                  <v-btn prepend-icon="mdi-table-column-plus-before" variant="text" @click="addCol(idx)">{{ $gettext('Insert before') }}</v-btn>
+                </v-list-item>
+                <v-list-item>
+                  <v-btn prepend-icon="mdi-table-column-plus-after" variant="text" @click="addCol(idx+1)">{{ $gettext('Insert after') }}</v-btn>
+                </v-list-item>
+                <v-list-item v-if="cols.length > 1">
+                  <v-btn prepend-icon="mdi-delete" variant="text" @click="rmCol(idx)">{{ $gettext('Delete') }}</v-btn>
+                </v-list-item>
+              </v-list>
+            </v-menu>
+          </td>
+
+          <td></td>
+        </tr>
+      </thead>
+
+      <tbody v-draggable="[table, { animation: 300, handle: '.row-handle' }]">
+        <tr v-for="(row, rowidx) in table" :key="rowidx">
+          <td>
+            <v-btn icon="mdi-drag-horizontal" variant="text" class="row-handle cursor-move">
+              <svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 0 24 24">
+                <path d="M9,3H11V5H9V3M13,3H15V5H13V3M9,7H11V9H9V7M13,7H15V9H13V7M9,11H11V13H9V11M13,11H15V13H13V11M9,15H11V17H9V15M13,15H15V17H13V15M9,19H11V21H9V19M13,19H15V21H13V19Z" />
+              </svg>
+            </v-btn>
+          </td>
+
+          <td v-for="(col, colidx) in cols" :key="colidx">
+            <v-textarea
+              v-model="table[rowidx][colidx]"
+              @input="updated()"
+              variant="plain"
+              rows="1"
+              auto-grow
+              hide-details
+            />
+          </td>
+
+          <td>
+            <v-menu location="center">
+              <template #activator="{ props }">
+                <v-btn v-bind="props"
+                  :title="$gettext('Actions')"
+                  icon="mdi-dots-vertical"
+                  variant="text"
+                />
+              </template>
+              <v-list>
+                <v-list-item>
+                  <v-btn prepend-icon="mdi-table-row-plus-before" variant="text" @click="addRow(rowidx)">{{ $gettext('Insert before') }}</v-btn>
+                </v-list-item>
+                <v-list-item>
+                  <v-btn prepend-icon="mdi-table-row-plus-after" variant="text" @click="addRow(rowidx+1)">{{ $gettext('Insert after') }}</v-btn>
+                </v-list-item>
+                <v-list-item v-if="table.length > 1">
+                  <v-btn prepend-icon="mdi-delete" variant="text" @click="rmRow(rowidx)">{{ $gettext('Delete') }}</v-btn>
+                </v-list-item>
+              </v-list>
+            </v-menu>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </template>
 
 <style scoped>
-  .v-table .v-table__wrapper > table > tbody > tr > td {
-    border: none;
+  .table-wrapper {
+    overflow-x: auto;
   }
 
-  .v-table td:first-child,
-  .v-table td:last-child {
+  table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+
+  thead tr,
+  tbody tr {
+    border-bottom: 1px solid rgba(var(--v-border-color), var(--v-medium-emphasis-opacity));
+  }
+
+  td:not(:last-child) {
+    border-inline-end: 1px solid rgba(var(--v-border-color), var(--v-medium-emphasis-opacity));
+  }
+
+  td {
+    word-break: break-word;
     vertical-align: top;
-    width: 48px;
+    text-align: center;
+    min-width: 100px;
   }
 
-  .v-table .v-table__wrapper > table > tbody > tr:not(:first-child):not(:last-child) > td:not(:first-child):not(:last-child) {
-    border: thin solid rgba(var(--v-border-color), var(--v-border-opacity)) !important;
+  td:first-of-type,
+  td:last-of-type {
+    min-width: 50px;
+    width: 50px;
   }
 
-  .v-table .v-table__wrapper > table > tbody > :where(tr:first-child, tr:last-child) > td,
-  .v-table .v-table__wrapper > table > tbody > tr > :where(td:first-child, td:last-child) {
-    padding: 0;
-  }
-
-  .v-table .buttons {
-    display: flex;
-    justify-content: space-between;
-  }
-
-  .v-table tr td:first-child .buttons {
-    flex-direction: column;
-    height: 100%;
+  .cursor-move {
+    cursor: move;
   }
 
   .v-textarea {
-    margin-top: 0;
     height: 100%;
+  }
+
+  .v-textarea :deep(.v-field__input) {
+    --v-field-input-padding-bottom: 4px;
+    --v-field-input-padding-top: 12px;
+    --v-field-padding-start: 8px;
+    --v-field-padding-end: 8px;
+    -webkit-mask-image: none;
+    mask-image: none;
   }
 </style>
