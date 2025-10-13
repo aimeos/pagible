@@ -84,7 +84,7 @@ extend type Mutation {
   synthesize(prompt: String!, context: String, files: [String!]): String
 
   "Transcribe uploaded audio file"
-  transcribe(file: Upload!): String
+  transcribe(file: Upload!): JSON
 
   "Translate texts"
   translate(texts: [String!]!, to: String!, from: String, context: String): [String!]!

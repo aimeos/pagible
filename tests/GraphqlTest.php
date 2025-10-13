@@ -220,7 +220,7 @@ class GraphqlTest extends TestAbstract
             '0' => UploadedFile::fake()->create('test.mp3', 500, 'audio/mpeg'),
         ] )->assertJson( [
             'data' => [
-                'transcribe' => "WEBVTT\n"
+                'transcribe' => '[]'
             ]
         ] );
     }
