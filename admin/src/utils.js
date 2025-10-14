@@ -27,36 +27,3 @@ const uid = (function () {
 })()
 
 export { uid }
-
-
-
-/**
- * Extracts the audio from an URL and converts it to a MP3 file (mono).
- *
- * @param {string} url - URL of the media file.
- * @returns {Promise} - Promise with MP3 blob
- */
-export async function url2audio(url) {
-  const context = new AudioContext()
-
-  const response = await fetch(url)
-  const arrayBuffer = await response.arrayBuffer()
-  const audioBuffer = await context.decodeAudioData(arrayBuffer)
-  const channels = []
-
-  for (let i = 0; i < audioBuffer.numberOfChannels; i++) {
-    channels.push(audioBuffer.getChannelData(i))
-  }
-
-  const worker = new Worker(new URL('./worker.js', import.meta.url), { type: 'module' })
-
-  return new Promise((resolve) => {
-    worker.onmessage = (e) => resolve(e.data)
-    worker.postMessage({
-        channels, // audioBuffer itself isn't transferable
-        length: audioBuffer.length,
-        sampleRate: audioBuffer.sampleRate
-      }, channels.map(c => c.buffer) // Transfer with zero-copy
-    )
-  })
-}

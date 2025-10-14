@@ -5,6 +5,7 @@
 <script>
   import gql from 'graphql-tag'
   import { computed, markRaw, provide } from 'vue'
+  import { url2audio, transcription } from './audio'
   import { useAppStore, useLanguageStore, useMessageStore } from './stores'
 
   export default {
@@ -20,6 +21,7 @@
         openView: this.open,
         closeView: this.close,
         compose: this.compose,
+        transcribe: this.transcribe,
         translate: this.translate,
         txlocales: this.txlocales,
         locales: this.locales,
@@ -143,6 +145,32 @@
           list.push(`${this.url(map[key])} ${key}w`)
         }
         return list.join(', ')
+      },
+
+
+      transcribe(path) {
+        return url2audio(this.url(path, true)).then(blob => {
+          return this.$apollo.mutate({
+            mutation: gql`mutation($file: Upload!) {
+              transcribe(file: $file)
+            }`,
+            variables: {
+              file: new File([blob], 'audio.mp3', { type: 'audio/mpeg' })
+            },
+            context: {
+              hasUpload: true,
+            }
+          })
+        }).then(result => {
+          if(result.errors) {
+            throw result
+          }
+
+          return transcription(JSON.parse(result.data?.transcribe || '[]'))
+        }).catch(error => {
+          this.messages.add(this.$gettext('Error transcribing file') + ":\n" + error, 'error')
+          this.$log(`App::transcribe(): Error transcribing from media URL`, error)
+        })
       },
 
 

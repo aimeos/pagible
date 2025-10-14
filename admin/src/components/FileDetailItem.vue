@@ -6,7 +6,6 @@
   import gql from 'graphql-tag'
   import Cropper from 'cropperjs'
   import 'cropperjs/dist/cropper.css'
-  import { url2audio } from '../utils'
   import { useAppStore, useAuthStore, useLanguageStore, useMessageStore, useSideStore } from '../stores'
 
 
@@ -18,7 +17,7 @@
 
     emits: ['update:item', 'update:file', 'error'],
 
-    inject: ['compose', 'locales', 'translate', 'txlocales', 'url'],
+    inject: ['compose', 'locales', 'transcribe', 'translate', 'txlocales', 'url'],
 
     data() {
       return {
@@ -319,7 +318,7 @@
       },
 
 
-      transcribe() {
+      transcribeFile() {
         if(this.readonly) {
           return this.messages.add(this.$gettext('Permission denied'), 'error')
         }
@@ -330,28 +329,9 @@
 
         this.transcribing = true
 
-        url2audio(this.url(this.item.path, true)).then(blob => {
-          return this.$apollo.mutate({
-            mutation: gql`mutation($file: Upload!) {
-              transcribe(file: $file)
-            }`,
-            variables: {
-              file: new File([blob], 'audio.mp3', { type: 'audio/mpeg' })
-            },
-            context: {
-              hasUpload: true,
-            }
-          })
-        }).then(result => {
-          if(result.errors) {
-            throw result
-          }
-
+        this.transcribe(this.item.path).then(transcription => {
           const lang = this.desclangs[0] || this.item.lang || 'en'
-          this.update('transcription', Object.assign(this.item.transcription || {}, {[lang]: result.data?.transcribe || ''}))
-        }).catch(error => {
-          this.messages.add(this.$gettext('Error transcribing file') + ":\n" + error, 'error')
-          this.$log(`FileDetailItem::transcribe(): Error transcribing from media URL`, error)
+          this.update('transcription', Object.assign(this.item.transcription || {}, {[lang]: transcription.asText()}))
         }).finally(() => {
           this.transcribing = false
         })
@@ -684,7 +664,7 @@
                 elevation="0"
               />
               <v-btn
-                @click="transcribe()"
+                @click="transcribeFile()"
                 :title="$gettext('Transcribe file content')"
                 :loading="transcribing"
                 icon="mdi-creation"
@@ -705,7 +685,7 @@
                 :modelValue="item.transcription?.[entry.value] || ''"
                 :readonly="readonly"
                 variant="underlined"
-                rows="20"
+                rows="10"
                 auto-grow
                 clearable
               ></v-textarea>
