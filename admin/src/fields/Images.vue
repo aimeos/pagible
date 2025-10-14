@@ -224,7 +224,6 @@
             icon="mdi-dots-vertical"
             class="btn-overlay"
             variant="text"
-            elevation="0"
           />
         </template>
         <v-list>
@@ -232,8 +231,7 @@
             <v-btn
               @click="open(item)"
               prepend-icon="mdi-pencil"
-              variant="text"
-              elevation="0">
+              variant="text">
               {{ $gettext('Edit') }}
             </v-btn>
           </v-list-item>
@@ -241,8 +239,7 @@
             <v-btn
               @click="remove(idx)"
               prepend-icon="mdi-trash-can"
-              variant="text"
-              elevation="0">
+              variant="text">
               {{ $gettext('Remove') }}
             </v-btn>
           </v-list-item>
@@ -257,14 +254,12 @@
           :title="$gettext('Add files')"
           icon="mdi-button-cursor"
           variant="text"
-          elevation="0"
         />
         <v-btn
           @click="vurls = true"
           :title="$gettext('Add files from URLs')"
           icon="mdi-link-variant-plus"
           variant="text"
-          elevation="0"
         />
       </div>
       <div class="icon-group">
@@ -273,13 +268,11 @@
           :title="$gettext('Create file')"
           icon="mdi-creation"
           variant="text"
-          elevation="0"
         />
         <v-btn
           :title="$gettext('Add files')"
           icon="mdi-upload"
           variant="text"
-          elevation="0"
           ><v-file-input
             v-model="selected"
             @update:modelValue="add($event)"

@@ -136,7 +136,6 @@
               :loading="translating[code]"
               icon="mdi-translate"
               variant="text"
-              elevation="0"
             />
           </template>
           <v-list>
@@ -155,7 +154,6 @@
           @click="composeText(code)"
           icon="mdi-creation"
           variant="text"
-          elevation="0"
         />
       </div>
     </v-label>

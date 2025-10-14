@@ -194,7 +194,6 @@
           :title="$gettext('Close')"
           icon="mdi-close"
           variant="text"
-          elevation="0"
         />
       </template>
       <template v-slot:title>

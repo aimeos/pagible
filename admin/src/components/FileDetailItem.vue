@@ -617,7 +617,6 @@
                 :loading="translating"
                 icon="mdi-translate"
                 variant="text"
-                elevation="0"
               />
               <v-btn
                 @click="composeText()"
@@ -625,7 +624,6 @@
                 :loading="composing"
                 icon="mdi-creation"
                 variant="text"
-                elevation="0"
               />
             </div>
           </v-label>
@@ -661,7 +659,6 @@
                 :loading="translating"
                 icon="mdi-translate"
                 variant="text"
-                elevation="0"
               />
               <v-btn
                 @click="transcribeFile()"
@@ -669,7 +666,6 @@
                 :loading="transcribing"
                 icon="mdi-creation"
                 variant="text"
-                elevation="0"
               />
             </div>
           </v-label>

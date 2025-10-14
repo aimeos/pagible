@@ -500,7 +500,6 @@
               icon="mdi-dots-vertical"
               class="item-menu"
               variant="text"
-              elevation="0"
             />
           </template>
           <v-list>
