@@ -126,7 +126,7 @@
 
 <template>
   <div v-for="(field, code) in fields" :key="code" class="item" :class="{error: errors[code]}">
-    <v-label v-if="field.type !== 'hidden'">
+    <div v-if="field.type !== 'hidden'" class="label">
       {{ $pgettext('fn', field.label || code).replace(/-|_/g, ' ') }}
       <div v-if="!readonly && ['markdown', 'plaintext', 'string', 'text'].includes(field.type)" class="actions">
         <v-menu location="center">
@@ -156,7 +156,7 @@
           variant="text"
         />
       </div>
-    </v-label>
+    </div>
     <component
       :is="toName(field.type)"
       :key="field.type + '-' + code"
@@ -184,7 +184,7 @@
     border-inline-start: 3px solid rgb(var(--v-theme-error));
   }
 
-  .v-label {
+  .label {
     display: flex;
     align-items: center;
     justify-content: space-between;

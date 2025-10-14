@@ -608,7 +608,7 @@
       </v-row>
       <v-row>
         <v-col cols="12" class="description">
-          <v-label>
+          <div class="label">
             {{ $gettext('Descriptions') }}
             <div v-if="!readonly" class="actions">
               <v-btn v-if="Object.values(item.description || {}).find(v => !!v)"
@@ -626,7 +626,7 @@
                 variant="text"
               />
             </div>
-          </v-label>
+          </div>
 
           <v-tabs v-model="tabdesc">
             <v-tab v-for="entry in locales()" :value="entry.value">{{ entry.title }}</v-tab>
@@ -650,7 +650,7 @@
       </v-row>
       <v-row v-if="item.mime?.startsWith('audio/') || item.mime?.startsWith('video/')">
         <v-col cols="12" class="transcription">
-          <v-label>
+          <div class="label">
             {{ $gettext('Transcriptions') }}
             <div v-if="!readonly" class="actions">
               <v-btn v-if="Object.values(item.transcription || {}).find(v => !!v)"
@@ -668,7 +668,7 @@
                 variant="text"
               />
             </div>
-          </v-label>
+          </div>
 
           <v-tabs v-model="tabtrans">
             <v-tab v-for="entry in locales()" :value="entry.value">{{ entry.title }}</v-tab>
@@ -760,8 +760,8 @@
     display: none;
   }
 
-  .description .v-label,
-  .transcription .v-label {
+  .description .label,
+  .transcription .label {
     display: flex;
     align-items: center;
     justify-content: space-between;

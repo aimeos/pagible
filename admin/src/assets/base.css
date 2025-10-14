@@ -121,10 +121,6 @@ body {
   overflow-y: auto;
 }
 
-.v-label {
-  min-height: 48px;
-}
-
 .v-selection-control {
   flex-grow: unset !important;
 }
@@ -326,6 +322,11 @@ body {
   width: max-content;
   right: 0;
   top: 48px;
+}
+
+.label {
+  opacity: var(--v-medium-emphasis-opacity);
+  min-height: 48px;
 }
 
 .draft {
