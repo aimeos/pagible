@@ -160,7 +160,7 @@
 
         <v-expansion-panel-text>
           <div v-for="(field, code) in (config.item || {})" :key="code" class="field">
-            <v-label>
+            <div class="label">
               {{ field.label || code }}
               <div v-if="!readonly && ['markdown', 'plaintext', 'string', 'text'].includes(field.type)" class="actions">
                 <v-menu>
@@ -192,7 +192,7 @@
                   elevation="0"
                 />
               </div>
-            </v-label>
+            </div>
             <component :is="toName(field.type)"
               :modelValue="items[idx]?.[code]"
               @update:modelValue="update(idx, code, $event)"
@@ -246,7 +246,7 @@
     margin-bottom: 12px;
   }
 
-  .v-label {
+  .label {
     display: flex;
     align-items: center;
     justify-content: space-between;
