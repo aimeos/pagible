@@ -197,7 +197,7 @@
               </div>
             </div>
             <component :is="toName(field.type)"
-              :modelValue="items[idx]?.[code] ?? config.default ?? []"
+              :modelValue="items[idx]?.[code]"
               @update:modelValue="update(idx, code, $event)"
               @addFile="$emit('addFile', $event)"
               @removeFile="$emit('removeFile', $event)"
