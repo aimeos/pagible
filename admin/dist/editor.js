@@ -28,6 +28,10 @@ if (window.self !== window.top) {
         document.querySelectorAll('.cms-content').forEach(el => {
             const section = el.dataset.section || 'main'
 
+            if(!el.children.length) {
+                el.classList.add('admin', 'placeholder')
+            }
+
             el.addEventListener('dblclick', ev => {
                 ev.stopPropagation();
                 const id = ev.target?.closest('[id]')?.id || -1; // -1: add element
