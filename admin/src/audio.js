@@ -18,7 +18,7 @@ export function recording() {
 
       audioContext = new AudioContext()
 
-      await audioContext.audioWorklet.addModule(new URL('./recorder.js', import.meta.url))
+      await audioContext.audioWorklet.addModule('/recorder.js')
 
       node = new AudioWorkletNode(audioContext, 'recorder-processor')
 
