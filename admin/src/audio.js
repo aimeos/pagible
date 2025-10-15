@@ -1,18 +1,97 @@
 /**
- * Extracts the audio from an URL and converts it to a MP3 file (mono).
+ * Provides audio recording functionality using the MediaRecorder API.
  *
- * @param {string} url - URL of the media file.
+ * @returns Recording object with start() and stop() methods
+ */
+export function recording() {
+  let audioContext
+  let source
+  let node
+  let active = false
+  const chunks = []
+
+
+  return {
+    async start() {
+      if (active) return
+      active = true
+
+      audioContext = new AudioContext()
+
+      await audioContext.audioWorklet.addModule(new URL('./recorder.js', import.meta.url))
+
+      node = new AudioWorkletNode(audioContext, 'recorder-processor')
+
+      node.port.onmessage = (e) => {
+        chunks.push(new Float32Array(e.data))
+      }
+
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+
+      source = audioContext.createMediaStreamSource(stream)
+      source.connect(node)
+      node.connect(audioContext.destination) // optional, can be omitted if you don't want monitoring
+
+      return this
+    },
+
+
+    async stop() {
+      if (!active || !node || !source) return
+      active = false
+
+      source.disconnect()
+      node.disconnect()
+      await audioContext.close()
+
+      const length = chunks.reduce((a, c) => a + c.length, 0)
+      const buffer = new Float32Array(length)
+      let offset = 0
+
+      for (const chunk of chunks) {
+        buffer.set(chunk, offset)
+        offset += chunk.length
+      }
+
+      const context = new AudioContext()
+      const audioBuffer = context.createBuffer(
+        1, // number of channels
+        buffer.length,
+        44100
+      )
+
+      audioBuffer.getChannelData(0).set(buffer)
+
+      return audioBuffer
+    }
+  }
+}
+
+
+/**
+ * Converts the audio data to a MP3 file (mono).
+ *
+ * @param {*} input - URL, Blob, ArrayBuffer, or AudioBuffer
  * @returns {Promise} - Promise with MP3 blob
  */
-export async function url2audio(url) {
+export async function toMp3(input) {
   const context = new AudioContext()
-
-  const response = await fetch(url)
-  const arrayBuffer = await response.arrayBuffer()
-  const audioBuffer = await context.decodeAudioData(arrayBuffer)
   const channels = []
+  let audioBuffer
 
-  for (let i = 0; i < audioBuffer.numberOfChannels; i++) {
+  if(input instanceof AudioBuffer) {
+    audioBuffer = input
+  } else if(input instanceof ArrayBuffer) {
+    audioBuffer = await context.decodeAudioData(input)
+  } else if(typeof input === 'string' || input instanceof URL) {
+    audioBuffer = await context.decodeAudioData(await (await fetch(input)).arrayBuffer())
+  } else if(input instanceof Blob) {
+    audioBuffer = await context.decodeAudioData(await input.arrayBuffer())
+  } else {
+    throw new Error('toMp3(): Unsupported input type. Expected URL, Blob, ArrayBuffer, or AudioBuffer.')
+  }
+
+  for(let i = 0; i < audioBuffer.numberOfChannels; i++) {
     channels.push(audioBuffer.getChannelData(i))
   }
 
@@ -30,6 +109,12 @@ export async function url2audio(url) {
 }
 
 
+/**
+ * Transcribes a list of audio segments into text.
+ *
+ * @param {*} list List of sements with { start, end, text } structure
+ * @returns Transcription object with asText() and asVTT() methods
+ */
 export function transcription(list = []) {
   return {
     asText(sep = "\n") {
@@ -56,7 +141,7 @@ export function transcription(list = []) {
         };
 
         return `${i + 1}\n${formatTime(start)} --> ${formatTime(end)}\n${text}\n`;
-    }).join('\n');
+      }).join('\n');
     },
   };
 }

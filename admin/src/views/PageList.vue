@@ -10,6 +10,7 @@
   import Navigation from '../components/Navigation.vue'
   import PageListItems from '../components/PageListItems.vue'
   import { useAuthStore, useDrawerStore, useMessageStore } from '../stores'
+  import { recording } from '../audio'
 
   export default {
     components: {
@@ -20,14 +21,16 @@
       User
     },
 
-    inject: ['locales', 'openView'],
+    inject: ['locales', 'transcribe', 'openView'],
 
     data: () => ({
       chat: '',
       response: '',
+      audio: null,
       help: false,
       shortmsg: true,
       synthesizing: false,
+      dictating: false,
       filter: {
         view: 'tree',
         trashed: 'WITHOUT',
@@ -83,6 +86,26 @@
 
       open(item) {
         this.openView(PageDetail, {item: item})
+      },
+
+
+      record() {
+        if(!this.audio) {
+          return this.audio = recording().start()
+        }
+
+        this.audio.then(rec => {
+          this.dictating = true
+          this.audio = null
+
+          rec.stop().then(buffer => {
+            this.transcribe(buffer).then(transcription => {
+              this.chat = transcription.asText()
+            }).finally(() => {
+              this.dictating = false
+            })
+          })
+        })
       },
 
 
@@ -197,28 +220,45 @@
           rows="1"
         >
           <template #prepend>
-            <v-icon @click="help = !help">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M15.07,11.25L14.17,12.17C13.45,12.89 13,13.5 13,15H11V14.5C11,13.39 11.45,12.39 12.17,11.67L13.41,10.41C13.78,10.05 14,9.55 14,9C14,7.89 13.1,7 12,7A2,2 0 0,0 10,9H8A4,4 0 0,1 12,5A4,4 0 0,1 16,9C16,9.88 15.64,10.67 15.07,11.25M13,19H11V17H13M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12C22,6.47 17.5,2 12,2Z" />
+            <v-btn @click="help = !help"
+              :title="help ? $gettext('Hide help') : $gettext('Show help')"
+              variant="text"
+              icon>
+              <svg fill="currentColor" width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M11,18H13V16H11V18M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,6A4,4 0 0,0 8,10H10A2,2 0 0,1 12,8A2,2 0 0,1 14,10C14,12 11,11.75 11,15H13C13,12.75 16,12.5 16,10A4,4 0 0,0 12,6Z" />
               </svg>
-            </v-icon>
+            </v-btn>
           </template>
           <template #append>
-            <v-icon @click="synthesizing || synthesize()"
+            <v-btn v-if="chat"
+              @click="synthesizing || synthesize()"
               @keydown.enter="synthesizing || synthesize()"
-              :title="synthesizing ? $gettext('Generating ...') : $gettext('Generate page based on prompt')">
-              <svg v-if="synthesizing === false" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              :title="synthesizing ? $gettext('Generating ...') : $gettext('Generate page based on prompt')"
+              :loading="synthesizing"
+              variant="text"
+              icon>
+              <svg v-if="synthesizing === false" fill="currentColor" width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path d="M22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2A10,10 0 0,1 22,12M6,13H14L10.5,16.5L11.92,17.92L17.84,12L11.92,6.08L10.5,7.5L14,11H6V13Z" />
               </svg>
-              <svg v-if="synthesizing === true" class="spinner" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <circle class="spin1" cx="4" cy="12" r="3"/>
-                <circle class="spin1 spin2" cx="12" cy="12" r="3"/>
-                <circle class="spin1 spin3" cx="20" cy="12" r="3"/>
-              </svg>
-              <svg v-if="synthesizing === null" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <svg v-if="synthesizing === null" fill="currentColor" width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z" />
               </svg>
-            </v-icon>
+            </v-btn>
+
+            <v-btn v-else
+              @click="record()"
+              :title="$gettext('Dictate')"
+              :class="{dictating: audio}"
+              :loading="dictating"
+              variant="text"
+              icon>
+              <svg v-if="audio" fill="currentColor" width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M17.3,11C17.3,14 14.76,16.1 12,16.1C9.24,16.1 6.7,14 6.7,11H5C5,14.41 7.72,17.23 11,17.72V21H13V17.72C16.28,17.23 19,14.41 19,11M10.8,4.9C10.8,4.24 11.34,3.7 12,3.7C12.66,3.7 13.2,4.24 13.2,4.9L13.19,11.1C13.19,11.76 12.66,12.3 12,12.3C11.34,12.3 10.8,11.76 10.8,11.1M12,14A3,3 0 0,0 15,11V5A3,3 0 0,0 12,2A3,3 0 0,0 9,5V11A3,3 0 0,0 12,14Z" />
+              </svg>
+              <svg v-else fill="currentColor" width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12,2A3,3 0 0,1 15,5V11A3,3 0 0,1 12,14A3,3 0 0,1 9,11V5A3,3 0 0,1 12,2M19,11C19,14.53 16.39,17.44 13,17.93V21H11V17.93C7.61,17.44 5,14.53 5,11H7A5,5 0 0,0 12,16A5,5 0 0,0 17,11H19Z" />
+              </svg>
+            </v-btn>
           </template>
         </v-textarea>
         <div v-if="help" class="help">
@@ -297,10 +337,9 @@
     margin-bottom: 16px;
   }
 
-  .v-input :deep(.v-input__prepend > .v-icon),
-  .v-input :deep(.v-field__clearable > .v-icon),
-  .v-input--dirty :deep(.v-input__append > .v-icon) {
-    opacity: var(--v-high-emphasis-opacity);
+  .v-input--horizontal :deep(.v-input__prepend),
+  .v-input--horizontal :deep(.v-input__append) {
+    margin: 0;
   }
 
   .help {

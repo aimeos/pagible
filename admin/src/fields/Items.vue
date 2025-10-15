@@ -10,6 +10,7 @@
    * - `required`: boolean, if true, the field is required
    */
   import gql from 'graphql-tag'
+  import { recording } from '../audio'
   import { VueDraggable } from 'vue-draggable-plus'
 
   export default {
@@ -27,15 +28,17 @@
 
     emits: ['update:modelValue', 'error', 'addFile', 'removeFile'],
 
-    inject: ['compose', 'translate', 'txlocales'],
+    inject: ['compose', 'translate', 'transcribe', 'txlocales'],
 
     data() {
       return {
         translating: {},
+        dictating: {},
         composing: {},
         errors: [],
         items: [],
         panel: [],
+        audio: {},
       }
     },
 
@@ -80,6 +83,30 @@
           this.update(idx, code, result)
         }).finally(() => {
           this.composing[idx+code] = false
+        })
+      },
+
+
+      record(idx, code) {
+        if(this.readonly) {
+          return this.messages.add(this.$gettext('Permission denied'), 'error')
+        }
+
+        if(!this.audio[idx+code]) {
+          return this.audio[idx+code] = recording().start()
+        }
+
+        this.audio[idx+code].then(rec => {
+          this.dictating[idx+code] = true
+          this.audio[idx+code] = null
+
+          rec.stop().then(buffer => {
+            this.transcribe(buffer).then(transcription => {
+              this.update(idx, code, transcription.asText())
+            }).finally(() => {
+              this.dictating[idx+code] = false
+            })
+          })
         })
       },
 
@@ -192,6 +219,14 @@
                   :loading="composing[idx+code]"
                   @click="composeText(idx, code)"
                   icon="mdi-creation"
+                  variant="text"
+                />
+                <v-btn
+                  @click="record(idx, code)"
+                  :class="{dictating: audio[idx+code]}"
+                  :icon="audio[idx+code] ? 'mdi-microphone-outline' : 'mdi-microphone'"
+                  :title="$gettext('Dictate')"
+                  :loading="dictating[idx+code]"
                   variant="text"
                 />
               </div>

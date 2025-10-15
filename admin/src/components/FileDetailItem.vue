@@ -6,6 +6,7 @@
   import gql from 'graphql-tag'
   import Cropper from 'cropperjs'
   import 'cropperjs/dist/cropper.css'
+  import { recording } from '../audio'
   import { useAppStore, useAuthStore, useLanguageStore, useMessageStore, useSideStore } from '../stores'
 
 
@@ -23,13 +24,15 @@
       return {
         transcribing: false,
         translating: false,
+        dictating: false,
         composing: false,
         cropping: false,
         covering: false,
         tabtrans: null,
         tabdesc: null,
-        cropper: null,
         cropLabel: null,
+        cropper: null,
+        audio: null,
         scaleX: 1,
         scaleY: 1,
       }
@@ -241,6 +244,31 @@
             },
           })
         }
+      },
+
+
+      record() {
+        if(this.readonly) {
+          return this.messages.add(this.$gettext('Permission denied'), 'error')
+        }
+
+        if(!this.audio) {
+          return this.audio = recording().start()
+        }
+
+        this.audio.then(rec => {
+          this.dictating = true
+          this.audio = null
+
+          rec.stop().then(buffer => {
+            this.transcribe(buffer).then(transcription => {
+              const lang = this.desclangs[0] || this.item.lang || 'en'
+              this.update('description', Object.assign(this.item.description || {}, {[lang]: transcription.asText()}))
+            }).finally(() => {
+              this.dictating = false
+            })
+          })
+        })
       },
 
 
@@ -623,6 +651,14 @@
                 :title="$gettext('Generate description')"
                 :loading="composing"
                 icon="mdi-creation"
+                variant="text"
+              />
+              <v-btn
+                @click="record()"
+                :class="{dictating: audio}"
+                :icon="audio ? 'mdi-microphone-outline' : 'mdi-microphone'"
+                :title="$gettext('Dictate')"
+                :loading="dictating"
                 variant="text"
               />
             </div>

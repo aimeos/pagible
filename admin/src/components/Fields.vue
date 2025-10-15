@@ -4,6 +4,7 @@
 
 <script>
   import gql from 'graphql-tag'
+  import { recording } from '../audio'
   import { useMessageStore } from '../stores'
 
   export default {
@@ -18,13 +19,15 @@
 
     emits: ['change', 'error', 'update:files'],
 
-    inject: ['compose', 'translate', 'txlocales'],
+    inject: ['compose', 'translate', 'transcribe', 'txlocales'],
 
     data() {
       return {
         translating: {},
+        dictating: {},
         composing: {},
         errors: {},
+        audio: {},
       }
     },
 
@@ -71,6 +74,30 @@
       error(code, value) {
         this.errors[code] = value
         this.$emit('error', Object.values(this.errors).includes(true))
+      },
+
+
+      record(code) {
+        if(this.readonly) {
+          return this.messages.add(this.$gettext('Permission denied'), 'error')
+        }
+
+        if(!this.audio[code]) {
+          return this.audio[code] = recording().start()
+        }
+
+        this.audio[code].then(rec => {
+          this.dictating[code] = true
+          this.audio[code] = null
+
+          rec.stop().then(buffer => {
+            this.transcribe(buffer).then(transcription => {
+              this.update(code, transcription.asText())
+            }).finally(() => {
+              this.dictating[code] = false
+            })
+          })
+        })
       },
 
 
@@ -153,6 +180,14 @@
           :loading="composing[code]"
           @click="composeText(code)"
           icon="mdi-creation"
+          variant="text"
+        />
+        <v-btn
+          @click="record(code)"
+          :class="{dictating: audio[code]}"
+          :icon="audio[code] ? 'mdi-microphone-outline' : 'mdi-microphone'"
+          :title="$gettext('Dictate')"
+          :loading="dictating[code]"
           variant="text"
         />
       </div>

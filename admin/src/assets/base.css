@@ -329,6 +329,11 @@ body {
   min-height: 48px;
 }
 
+.dictating {
+  background-color: rgb(var(--v-theme-primary)) !important;
+  color: rgb(var(--v-theme-on-primary)) !important;
+}
+
 .draft {
   background-color: rgb(var(--v-theme-warning)) !important;
   color: rgb(var(--v-theme-surface-variant)) !important;

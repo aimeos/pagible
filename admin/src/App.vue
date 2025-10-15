@@ -4,8 +4,8 @@
 
 <script>
   import gql from 'graphql-tag'
+  import { toMp3, transcription } from './audio'
   import { computed, markRaw, provide } from 'vue'
-  import { url2audio, transcription } from './audio'
   import { useAppStore, useLanguageStore, useMessageStore } from './stores'
 
   export default {
@@ -148,8 +148,8 @@
       },
 
 
-      transcribe(path) {
-        return url2audio(this.url(path, true)).then(blob => {
+      transcribe(input) {
+        return toMp3(this.url(input, true)).then(blob => {
           return this.$apollo.mutate({
             mutation: gql`mutation($file: Upload!) {
               transcribe(file: $file)
@@ -230,6 +230,10 @@
 
       url(path, proxy = false) {
         if(!path) return ''
+
+        if(typeof path !== 'string') {
+          return path
+        }
 
         if(proxy && path.startsWith('http')) {
           return this.app.urlproxy.replace(/_url_/, encodeURIComponent(path))

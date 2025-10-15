@@ -1,7 +1,3 @@
-/**
- * @license LGPL, https://opensource.org/license/lgpl-3-0
- */
-
 <script>
   import PageDetailContentList from './PageDetailContentList.vue'
   import { useConfigStore } from '../stores'
