@@ -6,6 +6,7 @@
   import gql from 'graphql-tag'
   import FileListItems from './FileListItems.vue'
   import { useAppStore, useMessageStore } from '../stores'
+  import { recording } from '../audio'
 
   export default {
     components: {
@@ -19,7 +20,7 @@
 
     emits: ['update:modelValue', 'add'],
 
-    inject: ['slugify', 'url'],
+    inject: ['slugify', 'transcribe', 'url'],
 
     setup() {
       const messages = useMessageStore()
@@ -30,16 +31,18 @@
 
     data() {
       return {
-        input: '',
+        audio: null,
+        chat: '',
         items: [],
         errors: [],
         similar: [],
         loading: false,
+        dictating: false,
       }
     },
 
     beforeUpdate() {
-      this.input = [this.context?.title, this.context?.text, this.context?.description].filter(Boolean).join("\n")
+      this.chat = [this.context?.title, this.context?.text, this.context?.description].filter(Boolean).join("\n")
     },
 
     unmounted() {
@@ -125,19 +128,19 @@
 
 
       create() {
-        if(!this.input || this.loading) {
+        if(!this.chat || this.loading) {
           return
         }
 
         this.loading = true
-        this.original = this.input
+        this.original = this.chat
 
         this.$apollo.mutate({
           mutation: gql`mutation($prompt: String!, $context: String, $files: [String!]) {
             imagine(prompt: $prompt, context: $context, files: $files)
           }`,
           variables: {
-            prompt: this.input || 'Create a suitable image based on the context',
+            prompt: this.chat || 'Create a suitable image based on the context',
             context: this.context ? "Context in JSON format:\n" + JSON.stringify(this.context) : '',
             files: this.similar.map(item => item.id),
           }
@@ -146,9 +149,9 @@
             throw response.errors
           }
 
-          const name = this.input
+          const name = this.chat
           const list = response.data.imagine
-          this.input = list.shift() || this.input
+          this.chat = list.shift() || this.chat
 
           list.forEach(base64 => {
               this.items.unshift({
@@ -162,6 +165,26 @@
           this.$log(`FileAiDialog::create(): Error creating file`, error)
         }).finally(() => {
           this.loading = false
+        })
+      },
+
+
+      record() {
+        if(!this.audio) {
+          return this.audio = recording().start()
+        }
+
+        this.audio.then(rec => {
+          this.dictating = true
+          this.audio = null
+
+          rec.stop().then(buffer => {
+            this.transcribe(buffer).then(transcription => {
+              this.chat = transcription.asText()
+            }).finally(() => {
+              this.dictating = false
+            })
+          })
         })
       },
 
@@ -190,6 +213,14 @@
     <v-card :loading="loading ? 'primary' : false">
       <template v-slot:append>
         <v-btn
+          @click="record()"
+          :class="{dictating: audio}"
+          :icon="audio ? 'mdi-microphone-outline' : 'mdi-microphone'"
+          :title="$gettext('Dictate')"
+          :loading="dictating"
+          variant="text"
+        />
+        <v-btn
           @click="$emit('update:modelValue', false)"
           :title="$gettext('Close')"
           icon="mdi-close"
@@ -202,7 +233,7 @@
 
       <v-card-text>
         <v-textarea
-          v-model="input"
+          v-model="chat"
           :label="$gettext('Describe the image')"
           variant="underlined"
           autofocus
@@ -211,7 +242,7 @@
 
         <v-btn
           :loading="loading ? 'primary' : false"
-          :disabled="!input || loading"
+          :disabled="!chat || loading"
           @click="create()"
           variant="outlined"
           class="create">
