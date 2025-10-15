@@ -26,7 +26,7 @@ class AdminController extends Controller
                 "base-uri 'self';" .
                 "default-src 'self' data: blob:;" .
                 "style-src 'self' 'unsafe-inline';" .
-                "script-src 'self' 'nonce-{$nonce}';" .
+                "script-src 'self' 'nonce-{$nonce}' blob:;" .
                 "img-src 'self' data: blob: http: https:;" .
                 "media-src 'self' data: blob: http: https:;" .
                 "frame-src 'self' http: https:;" .
