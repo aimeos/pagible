@@ -16,9 +16,19 @@ export function recording() {
       if (active) return
       active = true
 
-      audioContext = new AudioContext()
+      const blob = new Blob([`
+        class RecorderProcessor extends AudioWorkletProcessor {
+          process(inputs) {
+            const input = inputs[0]
+            if (input && input[0]) this.port.postMessage(input[0])
+            return true
+          }
+        }
+        registerProcessor('recorder-processor', RecorderProcessor)
+      `], {type: 'application/javascript'})
 
-      await audioContext.audioWorklet.addModule('./recorder.js')
+      audioContext = new AudioContext()
+      await audioContext.audioWorklet.addModule(URL.createObjectURL(blob))
 
       node = new AudioWorkletNode(audioContext, 'recorder-processor')
 

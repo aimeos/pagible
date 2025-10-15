@@ -29,7 +29,8 @@ class AdminController extends Controller
                 "script-src 'self' 'nonce-{$nonce}';" .
                 "img-src 'self' data: blob: http: https:;" .
                 "media-src 'self' data: blob: http: https:;" .
-                "frame-src 'self' http: https:;"
+                "frame-src 'self' http: https:;" .
+                "worker-src 'self' blob:;"
             );
     }
 
