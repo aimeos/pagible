@@ -130,8 +130,8 @@ an API key which you need to add to your `.env` file as shown in the
 [Prism configuration](https://github.com/prism-php/prism/blob/main/config/prism.php) file, e.g.:
 
 ```
-OPENAI_API_KEY="..."
 GEMINI_API_KEY="..."
+OPENAI_API_KEY="..."
 ```
 
 **Note:** You only need to configure API keys for the AI service providers you are using, not for all!
@@ -142,10 +142,13 @@ file too:
 
 ```
 CMS_AI_TEXT="gemini"
-CMS_AI_TEXT_MODEL="gemini-2.0-flash"
+CMS_AI_TEXT_MODEL="gemini-2.5-flash"
 
-CMS_AI_IMAGE="openai"
-CMS_AI_IMAGE_MODEL="dall-e-3"
+CMS_AI_STRUCT="gemini"
+CMS_AI_STRUCT_MODEL="gemini-2.5-flash"
+
+CMS_AI_IMAGE="gemini"
+CMS_AI_IMAGE_MODEL="gemini-2.5-flash-image-preview"
 
 CMS_AI_AUDIO="openai"
 CMS_AI_AUDIO_MODEL="whisper-1"
