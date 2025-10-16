@@ -40,7 +40,6 @@ export function recording() {
 
       source = audioContext.createMediaStreamSource(stream)
       source.connect(node)
-      node.connect(audioContext.destination) // optional, can be omitted if you don't want monitoring
 
       return this
     },
