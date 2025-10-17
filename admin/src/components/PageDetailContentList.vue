@@ -309,10 +309,6 @@
 
           if(content.length) {
             content.forEach(item => {
-              if(!item.id) {
-                item.id = uid()
-              }
-
               item.group = this.section
 
               if(!isEqual(item, map[item.id] || {})) {

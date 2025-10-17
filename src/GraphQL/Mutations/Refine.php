@@ -13,8 +13,9 @@ use Prism\Prism\Schema\ArraySchema;
 use Prism\Prism\Schema\ObjectSchema;
 use Prism\Prism\Schema\StringSchema;
 use Prism\Prism\Exceptions\PrismException;
-use Aimeos\Cms\Models\File;
 use GraphQL\Error\Error;
+use Aimeos\Cms\Models\File;
+use Aimeos\Cms\Utils;
 
 
 final class Refine
@@ -80,6 +81,10 @@ final class Refine
             $entry = (array) $map->pull( $item['id'], [] );
             $entry['data'] = (array) ( $entry['data'] ?? [] );
             $entry['type'] = $item['type'] ?? ( $entry['type'] ?? 'text' );
+
+            if( !isset( $entry['id'] ) ) {
+                $entry['id'] = Utils::uid();
+            }
 
             foreach( $item['data'] ?? [] as $data )
             {
