@@ -77,7 +77,7 @@ final class Refine
 
         foreach( $response as $item )
         {
-            $entry = (array) $map->get( $item['id'], [] );
+            $entry = (array) $map->pull( $item['id'], [] );
             $entry['data'] = (array) ( $entry['data'] ?? [] );
             $entry['type'] = $item['type'] ?? ( $entry['type'] ?? 'text' );
 
