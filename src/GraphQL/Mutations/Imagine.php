@@ -75,28 +75,23 @@ final class Imagine
             }
 
             $prism->whenProvider( 'openai', fn( $request ) => $request->withProviderOptions( [
-                'image' => $files->first()?->resource(),
                 'size' => match( $model ) {
                     'gpt-image-1' => '1536x1024',
                     'dall-e-3' => '1792x1024',
                     'dall-e-2' => '1024x1024',
                     default => 'auto',
                 }
-            ] ) )->whenProvider( 'gemini', fn( $request ) => $request->withProviderOptions( [
-                'image' => $files->first()?->resource(),
-                'image_mime_type' => $files->first()?->mimeType(),
             ] ) );
 
             $response = $prism->withPrompt( $prompt, $files->toArray() )->generate();
 
             $prompt = collect( $response->images )
-                ->map( fn( $image ) => $image->hasRevisedPrompt() ? $image->revisedPrompt : null )
+                ->map( fn( $image ) => $image->revisedPrompt )
                 ->filter()
                 ->first() ?? $input;
 
             $images = collect( $response->images )
-                ->map( fn( $image ) => $image->base64 ?? Image::fromUrl( $image->url )->base64() )
-                ->filter()
+                ->map( fn( $image ) => $image->base64() )
                 ->toArray();
 
             return array_merge( [$prompt], $images );
