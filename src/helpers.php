@@ -90,7 +90,7 @@ if( !function_exists( 'cmsdata' ) )
 
 if( !function_exists( 'cmsfile' ) )
 {
-    function cmsfile( \Aimeos\Cms\Models\Page $page, string $fileId ): object
+    function cmsfile( \Aimeos\Cms\Models\Page $page, string $fileId ): ?object
     {
         return cms( cms( $page, 'files' ), $fileId );
     }
