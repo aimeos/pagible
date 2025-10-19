@@ -28,7 +28,16 @@ export const useAuthStore = defineStore('auth', {
 
   actions: {
     can(action) {
-      return this.me?.permission && this.me.permission[action] || false
+      if(!Array.isArray(action)) {
+        action = [action]
+      }
+
+      for(const act of action) {
+        if(this.me?.permission?.[act]) {
+          return true
+        }
+      }
+      return false
     },
 
 
