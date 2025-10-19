@@ -116,9 +116,10 @@ body {
 }
 
 .v-sheet.scroll {
+  --v-scrollbar-offset: 16px !important;
   max-height: calc(100vh - 48px);
+  overflow-y: auto !important;
   padding-bottom: 56px;
-  overflow-y: auto;
 }
 
 .v-selection-control {
