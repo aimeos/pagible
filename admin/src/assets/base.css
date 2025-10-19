@@ -205,7 +205,18 @@ body {
   padding: 0 8px;
 }
 
-.v-menu .v-btn {
+.v-menu .v-card,
+.v-dialog.menu .v-card {
+  max-height: 90vh;
+}
+
+@media (min-height: 440px) {
+  .v-dialog.menu .v-card {
+    min-height: 400px;
+  }
+}
+
+.v-list .v-btn {
   justify-content: start;
   width: 100%;
 }

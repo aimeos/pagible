@@ -42,7 +42,7 @@
       help: false,
       refining: false,
       panel: [],
-      menu: {},
+      menu: [],
       index: null,
       checked: false,
       vchange: false,
@@ -707,75 +707,73 @@
           <v-expansion-panel-title expand-icon="mdi-pencil">
             <v-checkbox-btn v-if="auth.can('page:save')" :model-value="el._checked" @click.stop="el._checked = !el._checked" />
 
-            <v-menu v-if="auth.can('page:save')" location="center">
-              <template v-slot:activator="{ props }">
-                <v-btn v-bind="props"
+            <component :is="$vuetify.display.xs ? 'v-dialog' : 'v-menu'"
+              v-model="menu[idx]"
+              transition="scale-transition"
+              location="center"
+              max-width="300">
+
+              <template #activator="{ props }">
+                <v-btn
+                  v-bind="props"
                   :title="$gettext('Actions')"
                   icon="mdi-dots-vertical"
                   variant="text"
                 />
               </template>
-              <v-list>
-                <v-list-item v-if="!el._error">
-                  <v-btn prepend-icon="mdi-content-copy" variant="text" @click="copy(idx)">{{ $gettext('Copy') }}</v-btn>
-                </v-list-item>
-                <v-list-item v-if="!el._error">
-                  <v-btn prepend-icon="mdi-content-cut" variant="text" @click="cut(idx)">{{ $gettext('Cut') }}</v-btn>
-                </v-list-item>
-                <v-list-item>
-                  <v-btn prepend-icon="mdi-delete" variant="text" @click="remove(idx)">{{ $gettext('Delete') }}</v-btn>
-                </v-list-item>
 
-                <v-list-item>
-                  <v-btn prepend-icon="mdi-arrow-right" variant="text">{{ $gettext('Insert') }}</v-btn>
-                  <template v-slot:append>
-                    <v-icon icon="mdi-menu-right"></v-icon>
-                  </template>
-                  <v-menu activator="parent" open-on-hover submenu>
-                    <v-list>
-                      <v-list-item v-if="clipboard.get('page-content')">
-                        <v-btn prepend-icon="mdi-arrow-up" variant="text" @click="paste(idx)">{{ $gettext('Paste before') }}</v-btn>
-                      </v-list-item>
-                      <v-list-item v-if="clipboard.get('page-content')">
-                        <v-btn prepend-icon="mdi-arrow-down" variant="text" @click="paste(idx + 1)">{{ $gettext('Paste after') }}</v-btn>
-                      </v-list-item>
-                      <v-list-item>
-                        <v-btn prepend-icon="mdi-arrow-up" variant="text" @click="insert(idx)">{{ $gettext('Insert before') }}</v-btn>
-                      </v-list-item>
-                      <v-list-item>
-                        <v-btn prepend-icon="mdi-arrow-down" variant="text" @click="insert(idx + 1)">{{ $gettext('Insert after') }}</v-btn>
-                      </v-list-item>
-                    </v-list>
-                  </v-menu>
-                </v-list-item>
+              <v-card>
+                <v-toolbar density="compact">
+                  <v-toolbar-title>{{ $gettext('Actions') }}</v-toolbar-title>
+                  <v-btn icon="mdi-close" @click="menu[idx] = false" />
+                </v-toolbar>
 
-                <v-list-item>
-                  <v-btn prepend-icon="mdi-lightning-bolt" variant="text">{{ $gettext('Advanced') }}</v-btn>
-                  <template v-slot:append>
-                    <v-icon icon="mdi-menu-right"></v-icon>
-                  </template>
-                  <v-menu activator="parent" open-on-hover submenu>
-                    <v-list>
-                      <v-list-item v-if="!el._error && el.type !== 'reference' && auth.can('element:add')">
-                        <v-btn prepend-icon="mdi-link" variant="text" @click="share(idx)">{{ $gettext('Make shared') }}</v-btn>
-                      </v-list-item>
-                      <v-list-item v-if="el.type === 'reference'">
-                        <v-btn prepend-icon="mdi-link-off" variant="text" @click="unshare(idx)">{{ $gettext('Merge copy') }}</v-btn>
-                      </v-list-item>
-                      <v-list-item v-if="el.type !== 'reference'">
-                        <v-btn prepend-icon="mdi-swap-horizontal" variant="text" @click="change(idx)">{{ $gettext('Change to') }}</v-btn>
-                      </v-list-item>
-                      <v-list-item v-if="el.type === 'text'">
-                        <v-btn prepend-icon="mdi-set-split" variant="text" @click="split(idx)">{{ $gettext('Split') }}</v-btn>
-                      </v-list-item>
-                      <v-list-item v-if="el._checked && isChecked > 1">
-                        <v-btn prepend-icon="mdi-set-merge" variant="text" @click="merge()">{{ $gettext('Merge') }}</v-btn>
-                      </v-list-item>
-                    </v-list>
-                  </v-menu>
-                </v-list-item>
-              </v-list>
-            </v-menu>
+                <v-list @click="menu[idx] = false">
+                  <v-list-item v-if="!el._error">
+                    <v-btn prepend-icon="mdi-content-copy" variant="text" @click="copy(idx)">{{ $gettext('Copy') }}</v-btn>
+                  </v-list-item>
+                  <v-list-item v-if="!el._error">
+                    <v-btn prepend-icon="mdi-content-cut" variant="text" @click="cut(idx)">{{ $gettext('Cut') }}</v-btn>
+                  </v-list-item>
+                  <v-list-item>
+                    <v-btn prepend-icon="mdi-delete" variant="text" @click="remove(idx)">{{ $gettext('Delete') }}</v-btn>
+                  </v-list-item>
+
+                  <v-divider></v-divider>
+
+                  <v-list-item v-if="menu[idx] && clipboard.get('page-content')">
+                    <v-btn prepend-icon="mdi-arrow-up" variant="text" @click="paste(idx)">{{ $gettext('Paste before') }}</v-btn>
+                  </v-list-item>
+                  <v-list-item v-if="menu[idx] && clipboard.get('page-content')">
+                    <v-btn prepend-icon="mdi-arrow-down" variant="text" @click="paste(idx + 1)">{{ $gettext('Paste after') }}</v-btn>
+                  </v-list-item>
+                  <v-list-item>
+                    <v-btn prepend-icon="mdi-arrow-up" variant="text" @click="insert(idx)">{{ $gettext('Insert before') }}</v-btn>
+                  </v-list-item>
+                  <v-list-item>
+                    <v-btn prepend-icon="mdi-arrow-down" variant="text" @click="insert(idx + 1)">{{ $gettext('Insert after') }}</v-btn>
+                  </v-list-item>
+
+                  <v-divider></v-divider>
+
+                  <v-list-item v-if="!el._error && el.type !== 'reference' && auth.can('element:add')">
+                    <v-btn prepend-icon="mdi-link" variant="text" @click="share(idx)">{{ $gettext('Make shared') }}</v-btn>
+                  </v-list-item>
+                  <v-list-item v-if="el.type === 'reference'">
+                    <v-btn prepend-icon="mdi-link-off" variant="text" @click="unshare(idx)">{{ $gettext('Merge copy') }}</v-btn>
+                  </v-list-item>
+                  <v-list-item v-if="el.type !== 'reference'">
+                    <v-btn prepend-icon="mdi-swap-horizontal" variant="text" @click="change(idx)">{{ $gettext('Change to') }}</v-btn>
+                  </v-list-item>
+                  <v-list-item v-if="el.type === 'text'">
+                    <v-btn prepend-icon="mdi-set-split" variant="text" @click="split(idx)">{{ $gettext('Split') }}</v-btn>
+                  </v-list-item>
+                  <v-list-item v-if="el._checked && isChecked > 1">
+                    <v-btn prepend-icon="mdi-set-merge" variant="text" @click="merge()">{{ $gettext('Merge') }}</v-btn>
+                  </v-list-item>
+                </v-list>
+                </v-card>
+            </component>
 
             <v-icon v-if="el.type === 'reference'"
               :title="$gettext('Shared element')"
