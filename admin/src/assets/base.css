@@ -216,7 +216,7 @@ body {
   }
 }
 
-.v-list .v-btn {
+.v-list .v-btn:not(.v-btn--icon) {
   justify-content: start;
   width: 100%;
 }
