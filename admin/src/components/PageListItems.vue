@@ -1027,7 +1027,7 @@
               <v-list-group v-if="!this.embed && auth.can('page:add')">
                 <template v-slot:activator="{ props }">
                   <v-list-item v-bind="props" @click.stop>
-                    <v-btn prepend-icon="mdi-content-paste" variant="text">{{ $gettext('Insert  ') }}</v-btn>
+                    <v-btn prepend-icon="mdi-content-paste" variant="text">{{ $gettext('Insert') }}</v-btn>
                   </v-list-item>
                 </template>
                 <v-list-item>

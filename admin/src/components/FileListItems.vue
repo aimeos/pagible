@@ -20,6 +20,7 @@
     data() {
       return {
         items: [],
+        menu: [],
         term: '',
         sort: {column: 'ID', order: 'DESC'},
         page: 1,
@@ -537,7 +538,12 @@
     <v-list-item v-for="(item, idx) in items" :key="idx">
       <v-checkbox-btn v-model="item._checked" :class="{draft: !item.published}" class="item-check" />
 
-      <v-menu location="center">
+      <component :is="$vuetify.display.xs ? 'v-dialog' : 'v-menu'"
+        v-model="menu[idx]"
+        transition="scale-transition"
+        location="center"
+        max-width="300">
+
         <template v-slot:activator="{ props }">
           <v-btn v-bind="props"
             :title="$gettext('Actions')"
@@ -546,21 +552,28 @@
             variant="text"
           />
         </template>
-        <v-list>
-          <v-list-item v-show="!item.deleted_at && !item.published && auth.can('file:publish')">
-            <v-btn prepend-icon="mdi-publish" variant="text" @click="publish(item)">{{ $gettext('Publish') }}</v-btn>
-          </v-list-item>
-          <v-list-item v-if="!item.deleted_at && auth.can('file:drop')">
-            <v-btn prepend-icon="mdi-delete" variant="text" @click="drop(item)">{{ $gettext('Delete') }}</v-btn>
-          </v-list-item>
-          <v-list-item v-if="item.deleted_at && auth.can('file:keep')">
-            <v-btn prepend-icon="mdi-delete-restore" variant="text" @click="keep(item)">{{ $gettext('Restore') }}</v-btn>
-          </v-list-item>
-          <v-list-item v-if="auth.can('file:purge')">
-            <v-btn prepend-icon="mdi-delete-forever" variant="text" @click="purge(item)">{{ $gettext('Purge') }}</v-btn>
-          </v-list-item>
-        </v-list>
-      </v-menu>
+        <v-card>
+          <v-toolbar density="compact">
+            <v-toolbar-title>{{ $gettext('Actions') }}</v-toolbar-title>
+            <v-btn icon="mdi-close" @click="menu[idx] = false" />
+          </v-toolbar>
+
+          <v-list @click="menu[idx] = false">
+            <v-list-item v-show="!item.deleted_at && !item.published && auth.can('file:publish')">
+              <v-btn prepend-icon="mdi-publish" variant="text" @click="publish(item)">{{ $gettext('Publish') }}</v-btn>
+            </v-list-item>
+            <v-list-item v-if="!item.deleted_at && auth.can('file:drop')">
+              <v-btn prepend-icon="mdi-delete" variant="text" @click="drop(item)">{{ $gettext('Delete') }}</v-btn>
+            </v-list-item>
+            <v-list-item v-if="item.deleted_at && auth.can('file:keep')">
+              <v-btn prepend-icon="mdi-delete-restore" variant="text" @click="keep(item)">{{ $gettext('Restore') }}</v-btn>
+            </v-list-item>
+            <v-list-item v-if="auth.can('file:purge')">
+              <v-btn prepend-icon="mdi-delete-forever" variant="text" @click="purge(item)">{{ $gettext('Purge') }}</v-btn>
+            </v-list-item>
+          </v-list>
+        </v-card>
+      </component>
 
       <div class="item-usage" :class="{notused: !item.usage}" @click="$emit('select', item)" :title="title(item)">
         {{ item.usage }}
