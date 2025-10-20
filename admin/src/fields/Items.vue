@@ -172,15 +172,22 @@
     <VueDraggable
       v-model="items"
       @update="change()"
-      :disabled="readonly || panel.length"
+      :disabled="readonly"
       :forceFallback="true"
       fallbackTolerance="10"
       draggable=".item"
+      handle=".handle"
       group="items"
       animation="500">
 
       <v-expansion-panel v-for="(item, idx) in items" :key="idx" class="item">
         <v-expansion-panel-title>
+          <v-btn v-if="!readonly"
+            :title="$gettext('Move element')"
+            icon="mdi-drag-vertical"
+            variant="plain"
+            class="handle"
+          />
           <v-btn v-if="!readonly"
             @click="remove(idx)"
             :title="$gettext('Remove element')"

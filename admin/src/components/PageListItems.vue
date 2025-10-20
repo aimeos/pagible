@@ -924,7 +924,7 @@
     v-model="items"
     @change="change()"
     :defaultOpen="false"
-    :disableDrag="!auth.can('page:move')"
+    :disableDrag="$vuetify.display.smAndDown || !auth.can('page:move')"
     :rtl="$vuetify.locale.isRtl"
     :watermark="false"
     virtualization
