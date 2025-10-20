@@ -35,6 +35,7 @@
         audio: null,
         scaleX: 1,
         scaleY: 1,
+        menu: {},
       }
     },
 
@@ -555,34 +556,52 @@
                   icon="mdi-image-check"
                   class="no-rtl"
                 />
-                <v-menu v-else location="center">
+                <component v-else :is="$vuetify.display.xs ? 'v-dialog' : 'v-menu'"
+                  v-model="menu['crop']"
+                  transition="scale-transition"
+                  location="end center"
+                  max-width="300">
+
                   <template #activator="{ props }">
-                    <v-btn v-bind="props" icon="mdi-crop" class="no-rtl" :title="$gettext('Crop image')" />
+                    <v-btn
+                      v-bind="props"
+                      :title="$gettext('Crop image')"
+                      icon="mdi-crop"
+                      class="no-rtl"
+                    />
                   </template>
-                  <v-list>
-                    <v-list-item>
-                      <v-btn prepend-icon="mdi-crop" class="no-rtl" variant="text" @click="aspect(ratio)">{{ $gettext('Original ratio') }}</v-btn>
-                    </v-list-item>
-                    <v-list-item>
-                      <v-btn prepend-icon="mdi-crop" class="no-rtl" variant="text" @click="aspect(NaN)">{{ $gettext('No ratio') }}</v-btn>
-                    </v-list-item>
-                    <v-list-item>
-                      <v-btn prepend-icon="mdi-crop" class="no-rtl" variant="text" @click="aspect(1)">{{ $gettext('Square') }}</v-btn>
-                    </v-list-item>
-                    <v-list-item>
-                      <v-btn prepend-icon="mdi-crop" class="no-rtl" variant="text" @click="aspect(3/2)">3:2</v-btn>
-                    </v-list-item>
-                    <v-list-item>
-                      <v-btn prepend-icon="mdi-crop" class="no-rtl" variant="text" @click="aspect(4/3)">4:3</v-btn>
-                    </v-list-item>
-                    <v-list-item>
-                      <v-btn prepend-icon="mdi-crop" class="no-rtl" variant="text" @click="aspect(5/3)">5:3</v-btn>
-                    </v-list-item>
-                    <v-list-item>
-                      <v-btn prepend-icon="mdi-crop" class="no-rtl" variant="text" @click="aspect(16/9)">16:9</v-btn>
-                    </v-list-item>
-                  </v-list>
-                </v-menu>
+
+                  <v-card>
+                    <v-toolbar density="compact">
+                      <v-toolbar-title>{{ $gettext('Crop image') }}</v-toolbar-title>
+                      <v-btn icon="mdi-close" @click="menu['crop'] = false" />
+                    </v-toolbar>
+
+                    <v-list @click="menu['crop'] = false">
+                      <v-list-item>
+                        <v-btn prepend-icon="mdi-crop" class="no-rtl" variant="text" @click="aspect(ratio)">{{ $gettext('Original ratio') }}</v-btn>
+                      </v-list-item>
+                      <v-list-item>
+                        <v-btn prepend-icon="mdi-crop" class="no-rtl" variant="text" @click="aspect(NaN)">{{ $gettext('No ratio') }}</v-btn>
+                      </v-list-item>
+                      <v-list-item>
+                        <v-btn prepend-icon="mdi-crop" class="no-rtl" variant="text" @click="aspect(1)">{{ $gettext('Square') }}</v-btn>
+                      </v-list-item>
+                      <v-list-item>
+                        <v-btn prepend-icon="mdi-crop" class="no-rtl" variant="text" @click="aspect(3/2)">3:2</v-btn>
+                      </v-list-item>
+                      <v-list-item>
+                        <v-btn prepend-icon="mdi-crop" class="no-rtl" variant="text" @click="aspect(4/3)">4:3</v-btn>
+                      </v-list-item>
+                      <v-list-item>
+                        <v-btn prepend-icon="mdi-crop" class="no-rtl" variant="text" @click="aspect(5/3)">5:3</v-btn>
+                      </v-list-item>
+                      <v-list-item>
+                        <v-btn prepend-icon="mdi-crop" class="no-rtl" variant="text" @click="aspect(16/9)">16:9</v-btn>
+                      </v-list-item>
+                    </v-list>
+                  </v-card>
+                </component>
               </div>
               <div class="toolbar-group">
                 <v-btn icon="mdi-rotate-left" class="no-rtl" @click="rotate(-90)" :title="$gettext('Rotate counter-clockwise')" />
