@@ -700,7 +700,7 @@
     <v-expansion-panels class="list" v-model="panel" elevation="0" multiple>
       <VueDraggable
         @update:modelValue="$emit('update:content', $event)"
-        :disabled="panel.length || !auth.can('page:save')"
+        :disabled="$vuetify.display.smAndDown || !auth.can('page:save')"
         :modelValue="content"
         :forceFallback="true"
         fallbackTolerance="10"
