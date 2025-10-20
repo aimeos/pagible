@@ -12,6 +12,7 @@
   import gql from 'graphql-tag'
   import { recording } from '../audio'
   import { VueDraggable } from 'vue-draggable-plus'
+  import { useClipboardStore } from '../stores'
 
   export default {
     components: {
@@ -37,9 +38,15 @@
         composing: {},
         errors: [],
         items: [],
+        menu: [],
         panel: [],
         audio: {},
       }
+    },
+
+    setup() {
+      const clipboard = useClipboardStore()
+      return { clipboard}
     },
 
     computed: {
@@ -84,6 +91,35 @@
         }).finally(() => {
           this.composing[idx+code] = false
         })
+      },
+
+
+      copy(idx) {
+        this.clipboard.set('items-content', JSON.parse(JSON.stringify(this.items[idx])))
+      },
+
+
+      cut(idx) {
+        this.clipboard.set('items-content', JSON.parse(JSON.stringify(this.items[idx])))
+        this.items.splice(idx, 1)
+        this.$emit('update:modelValue', this.items)
+      },
+
+
+      insert(idx) {
+        this.items.splice(idx, 0, {})
+        this.panel.push(idx)
+        this.$emit('update:modelValue', this.items)
+      },
+
+
+      paste(idx = null) {
+        if(idx === null) {
+          idx = this.items.length
+        }
+
+        this.items.splice(idx, 0, this.clipboard.get('items-content'))
+        this.$emit('update:modelValue', this.items)
       },
 
 
@@ -172,28 +208,66 @@
     <VueDraggable
       v-model="items"
       @update="change()"
-      :disabled="readonly"
+      :disabled="readonly || $vuetify.display.smAndDown"
       :forceFallback="true"
       fallbackTolerance="10"
       draggable=".item"
-      handle=".handle"
       group="items"
       animation="500">
 
       <v-expansion-panel v-for="(item, idx) in items" :key="idx" class="item">
         <v-expansion-panel-title>
-          <v-btn v-if="!readonly"
-            :title="$gettext('Move element')"
-            icon="mdi-drag-vertical"
-            variant="plain"
-            class="handle"
-          />
-          <v-btn v-if="!readonly"
-            @click="remove(idx)"
-            :title="$gettext('Remove element')"
-            icon="mdi-trash-can"
-            variant="plain"
-          />
+          <component :is="$vuetify.display.xs ? 'v-dialog' : 'v-menu'"
+            v-if="!readonly"
+            v-model="menu[idx]"
+            transition="scale-transition"
+            location="end center"
+            max-width="300">
+
+            <template #activator="{ props }">
+              <v-btn
+                v-bind="props"
+                :title="$gettext('Actions')"
+                icon="mdi-dots-vertical"
+                variant="text"
+              />
+            </template>
+
+            <v-card>
+              <v-toolbar density="compact">
+                <v-toolbar-title>{{ $gettext('Actions') }}</v-toolbar-title>
+                <v-btn icon="mdi-close" @click="menu[idx] = false" />
+              </v-toolbar>
+
+              <v-list @click="menu[idx] = false">
+                <v-list-item>
+                  <v-btn prepend-icon="mdi-content-copy" variant="text" @click="copy(idx)">{{ $gettext('Copy') }}</v-btn>
+                </v-list-item>
+                <v-list-item>
+                  <v-btn prepend-icon="mdi-content-cut" variant="text" @click="cut(idx)">{{ $gettext('Cut') }}</v-btn>
+                </v-list-item>
+                <v-list-item>
+                  <v-btn prepend-icon="mdi-delete" variant="text" @click="remove(idx)">{{ $gettext('Delete') }}</v-btn>
+                </v-list-item>
+
+                <v-divider></v-divider>
+
+                <v-list-item v-if="menu[idx] && clipboard.get('items-content')">
+                  <v-btn prepend-icon="mdi-arrow-up" variant="text" @click="paste(idx)">{{ $gettext('Paste before') }}</v-btn>
+                </v-list-item>
+                <v-list-item v-if="menu[idx] && clipboard.get('items-content')">
+                  <v-btn prepend-icon="mdi-arrow-down" variant="text" @click="paste(idx + 1)">{{ $gettext('Paste after') }}</v-btn>
+                </v-list-item>
+                <v-list-item>
+                  <v-btn prepend-icon="mdi-arrow-up" variant="text" @click="insert(idx)">{{ $gettext('Insert before') }}</v-btn>
+                </v-list-item>
+                <v-list-item>
+                  <v-btn prepend-icon="mdi-arrow-down" variant="text" @click="insert(idx + 1)">{{ $gettext('Insert after') }}</v-btn>
+                </v-list-item>
+              </v-list>
+            </v-card>
+          </component>
+
           <div class="element-title">{{ title(item) }}</div>
         </v-expansion-panel-title>
 
@@ -205,7 +279,7 @@
                 <v-menu>
                   <template #activator="{ props }">
                     <v-btn v-bind="props"
-                      :title="$gettext('Translate %{code} field', {code: code})"
+                      :title="$gettext('Translate')"
                       :loading="translating[idx+code]"
                       icon="mdi-translate"
                       variant="text"
@@ -222,7 +296,7 @@
                   </v-list>
                 </v-menu>
                 <v-btn
-                  :title="$gettext('Generate text for %{code} field', {code: code})"
+                  :title="$gettext('Generate text')"
                   :loading="composing[idx+code]"
                   @click="composeText(idx, code)"
                   icon="mdi-creation"
