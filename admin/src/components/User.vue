@@ -9,7 +9,8 @@
 
   export default {
     data: () => ({
-      user: null
+      user: null,
+      menu: {},
     }),
 
     setup() {
@@ -57,19 +58,37 @@
     :icon="theme.global.current.value.dark ? 'mdi-white-balance-sunny' : 'mdi-weather-night'"
   />
 
-  <v-menu>
+  <component :is="$vuetify.display.xs ? 'v-dialog' : 'v-menu'"
+    v-model="menu['lang']"
+    transition="scale-transition"
+    location="end center"
+    max-width="300">
+
     <template #activator="{ props }">
-        <v-btn v-bind="props" :title="$gettext('Switch language')" icon="mdi-web" class="icon" />
+      <v-btn
+        v-bind="props"
+        :title="$gettext('Switch language')"
+        icon="mdi-web"
+        variant="text"
+      />
     </template>
-    <v-list>
-      <v-list-item v-for="(_, code) in i18n.available" :key="code">
-        <v-btn
-          @click="change(code)"
-          variant="text"
-        >{{ languages.translate(code) }} ({{ code }})</v-btn>
-      </v-list-item>
-    </v-list>
-  </v-menu>
+
+    <v-card>
+      <v-toolbar density="compact">
+        <v-toolbar-title>{{ $gettext('Switch language') }}</v-toolbar-title>
+        <v-btn icon="mdi-close" @click="menu['lang'] = false" />
+      </v-toolbar>
+
+      <v-list @click="menu['lang'] = false">
+        <v-list-item v-for="(_, code) in i18n.available" :key="code">
+          <v-btn
+            @click="change(code)"
+            variant="text"
+          >{{ languages.translate(code) }} ({{ code }})</v-btn>
+        </v-list-item>
+      </v-list>
+    </v-card>
+  </component>
 
   <v-menu v-if="user">
     <template #activator="{ props }">

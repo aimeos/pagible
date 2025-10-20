@@ -28,6 +28,7 @@
         composing: {},
         errors: {},
         audio: {},
+        menu: {},
       }
     },
 
@@ -156,27 +157,42 @@
     <div v-if="field.type !== 'hidden'" class="label">
       {{ $pgettext('fn', field.label || code).replace(/-|_/g, ' ') }}
       <div v-if="!readonly && ['markdown', 'plaintext', 'string', 'text'].includes(field.type)" class="actions">
-        <v-menu location="center">
+        <component :is="$vuetify.display.xs ? 'v-dialog' : 'v-menu'"
+          v-if="!readonly"
+          v-model="menu[code]"
+          transition="scale-transition"
+          location="end center"
+          max-width="300">
+
           <template #activator="{ props }">
-            <v-btn v-bind="props"
-              :title="$gettext('Translate %{code} field', {code: code})"
+            <v-btn
+              v-bind="props"
+              :title="$gettext('Translate')"
               :loading="translating[code]"
               icon="mdi-translate"
               variant="text"
             />
           </template>
-          <v-list>
-            <v-list-item v-for="lang in txlocales()" :key="lang.code">
-              <v-btn
-                @click="translateText(code, lang.code)"
-                prepend-icon="mdi-arrow-right-thin"
-                variant="text"
-              >{{ lang.name }}</v-btn>
-            </v-list-item>
-          </v-list>
-        </v-menu>
+
+          <v-card>
+            <v-toolbar density="compact">
+              <v-toolbar-title>{{ $gettext('Translate') }}</v-toolbar-title>
+              <v-btn icon="mdi-close" @click="menu[code] = false" />
+            </v-toolbar>
+
+            <v-list @click="menu[code] = false">
+              <v-list-item v-for="lang in txlocales()" :key="lang.code">
+                <v-btn
+                  @click="translateText(code, lang.code)"
+                  prepend-icon="mdi-arrow-right-thin"
+                  variant="text"
+                >{{ lang.name }}</v-btn>
+              </v-list-item>
+            </v-list>
+          </v-card>
+        </component>
         <v-btn
-          :title="$gettext('Generate text for %{code} field', {code: code})"
+          :title="$gettext('Generate text')"
           :loading="composing[code]"
           @click="composeText(code)"
           icon="mdi-creation"
