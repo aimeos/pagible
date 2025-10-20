@@ -708,13 +708,13 @@
         group="content">
 
         <v-expansion-panel v-for="(el, idx) in content" :key="idx" v-show="shown(el)" class="content" :class="{changed: el._changed, error: el._error}">
-          <v-expansion-panel-title expand-icon="mdi-pencil">
+          <v-expansion-panel-title>
             <v-checkbox-btn v-if="auth.can('page:save')" :model-value="el._checked" @click.stop="el._checked = !el._checked" />
 
             <component :is="$vuetify.display.xs ? 'v-dialog' : 'v-menu'"
               v-model="menu[idx]"
               transition="scale-transition"
-              location="center"
+              location="end center"
               max-width="300">
 
               <template #activator="{ props }">
