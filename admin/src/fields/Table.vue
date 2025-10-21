@@ -25,6 +25,7 @@
         table: this.modelValue,
         validated: null,
         updated: null,
+        menu: {},
       }
     },
 
@@ -134,28 +135,47 @@
           <td></td>
 
           <td v-for="(col, idx) in cols" :key="idx">
-            <v-btn variant="text" class="col-handle cursor-move">
-              <svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 0 24 24">
+            <v-btn variant="text" class="col-handle cursor-move" icon>
+              <svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M3,15V13H5V15H3M3,11V9H5V11H3M7,15V13H9V15H7M7,11V9H9V11H7M11,15V13H13V15H11M11,11V9H13V11H11M15,15V13H17V15H15M15,11V9H17V11H15M19,15V13H21V15H19M19,11V9H21V11H19Z" />
               </svg>
             </v-btn>
 
-            <v-menu location="center">
+            <component :is="$vuetify.display.xs ? 'v-dialog' : 'v-menu'"
+              v-if="!readonly"
+              v-model="menu['col-' + idx]"
+              transition="scale-transition"
+              location="start center"
+              max-width="300">
+
               <template #activator="{ props }">
-                <v-btn v-bind="props" :title="$gettext('Actions')" icon="mdi-dots-vertical" variant="text" />
+                <v-btn
+                  v-bind="props"
+                  :title="$gettext('Actions')"
+                  icon="mdi-dots-vertical"
+                  variant="text"
+                />
               </template>
-              <v-list>
-                <v-list-item>
-                  <v-btn prepend-icon="mdi-table-column-plus-before" variant="text" @click="addCol(idx)">{{ $gettext('Insert before') }}</v-btn>
-                </v-list-item>
-                <v-list-item>
-                  <v-btn prepend-icon="mdi-table-column-plus-after" variant="text" @click="addCol(idx+1)">{{ $gettext('Insert after') }}</v-btn>
-                </v-list-item>
-                <v-list-item v-if="cols.length > 1">
-                  <v-btn prepend-icon="mdi-delete" variant="text" @click="rmCol(idx)">{{ $gettext('Delete') }}</v-btn>
-                </v-list-item>
-              </v-list>
-            </v-menu>
+
+              <v-card>
+                <v-toolbar density="compact">
+                  <v-toolbar-title>{{ $gettext('Actions') }}</v-toolbar-title>
+                  <v-btn icon="mdi-close" @click="menu['col-' + idx] = false" />
+                </v-toolbar>
+
+                <v-list @click="menu['col-' + idx] = false">
+                  <v-list-item>
+                    <v-btn prepend-icon="mdi-table-column-plus-before" variant="text" @click="addCol(idx)">{{ $gettext('Insert before') }}</v-btn>
+                  </v-list-item>
+                  <v-list-item>
+                    <v-btn prepend-icon="mdi-table-column-plus-after" variant="text" @click="addCol(idx+1)">{{ $gettext('Insert after') }}</v-btn>
+                  </v-list-item>
+                  <v-list-item v-if="cols.length > 1">
+                    <v-btn prepend-icon="mdi-delete" variant="text" @click="rmCol(idx)">{{ $gettext('Delete') }}</v-btn>
+                  </v-list-item>
+                </v-list>
+              </v-card>
+            </component>
           </td>
 
           <td></td>
@@ -166,7 +186,7 @@
         <tr v-for="(row, rowidx) in table" :key="rowidx">
           <td>
             <v-btn icon="mdi-drag-horizontal" variant="text" class="row-handle cursor-move">
-              <svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 0 24 24">
+              <svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M9,3H11V5H9V3M13,3H15V5H13V3M9,7H11V9H9V7M13,7H15V9H13V7M9,11H11V13H9V11M13,11H15V13H13V11M9,15H11V17H9V15M13,15H15V17H13V15M9,19H11V21H9V19M13,19H15V21H13V19Z" />
               </svg>
             </v-btn>
@@ -184,26 +204,41 @@
           </td>
 
           <td>
-            <v-menu location="center">
+            <component :is="$vuetify.display.xs ? 'v-dialog' : 'v-menu'"
+              v-if="!readonly"
+              v-model="menu['row-' + rowidx]"
+              transition="scale-transition"
+              location="start center"
+              max-width="300">
+
               <template #activator="{ props }">
-                <v-btn v-bind="props"
+                <v-btn
+                  v-bind="props"
                   :title="$gettext('Actions')"
                   icon="mdi-dots-vertical"
                   variant="text"
                 />
               </template>
-              <v-list>
-                <v-list-item>
-                  <v-btn prepend-icon="mdi-table-row-plus-before" variant="text" @click="addRow(rowidx)">{{ $gettext('Insert before') }}</v-btn>
-                </v-list-item>
-                <v-list-item>
-                  <v-btn prepend-icon="mdi-table-row-plus-after" variant="text" @click="addRow(rowidx+1)">{{ $gettext('Insert after') }}</v-btn>
-                </v-list-item>
-                <v-list-item v-if="table.length > 1">
-                  <v-btn prepend-icon="mdi-delete" variant="text" @click="rmRow(rowidx)">{{ $gettext('Delete') }}</v-btn>
-                </v-list-item>
-              </v-list>
-            </v-menu>
+
+              <v-card>
+                <v-toolbar density="compact">
+                  <v-toolbar-title>{{ $gettext('Actions') }}</v-toolbar-title>
+                  <v-btn icon="mdi-close" @click="menu['row-' + rowidx] = false" />
+                </v-toolbar>
+
+                <v-list @click="menu['row-' + rowidx] = false">
+                  <v-list-item>
+                    <v-btn prepend-icon="mdi-table-row-plus-before" variant="text" @click="addRow(rowidx)">{{ $gettext('Insert before') }}</v-btn>
+                  </v-list-item>
+                  <v-list-item>
+                    <v-btn prepend-icon="mdi-table-row-plus-after" variant="text" @click="addRow(rowidx+1)">{{ $gettext('Insert after') }}</v-btn>
+                  </v-list-item>
+                  <v-list-item v-if="table.length > 1">
+                    <v-btn prepend-icon="mdi-delete" variant="text" @click="rmRow(rowidx)">{{ $gettext('Delete') }}</v-btn>
+                  </v-list-item>
+                </v-list>
+              </v-card>
+            </component>
           </td>
         </tr>
       </tbody>
