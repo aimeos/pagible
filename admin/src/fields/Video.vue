@@ -32,7 +32,7 @@
             controls
           />
 
-          <v-menu v-if="file.id && !readonly" location="center">
+          <v-menu v-if="file.id && !readonly" location="start">
             <template v-slot:activator="{ props }">
               <v-btn v-bind="props"
                 :title="$gettext('Open menu')"

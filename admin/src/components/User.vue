@@ -61,7 +61,7 @@
   <component :is="$vuetify.display.xs ? 'v-dialog' : 'v-menu'"
     v-model="menu['lang']"
     transition="scale-transition"
-    location="end center"
+    location="bottom"
     max-width="300">
 
     <template #activator="{ props }">
