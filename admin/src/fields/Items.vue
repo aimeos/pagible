@@ -276,25 +276,39 @@
             <div class="label">
               {{ field.label || code }}
               <div v-if="!readonly && ['markdown', 'plaintext', 'string', 'text'].includes(field.type)" class="actions">
-                <v-menu>
+                <component :is="$vuetify.display.xs ? 'v-dialog' : 'v-menu'"
+                  v-model="menu[idx+code]"
+                  transition="scale-transition"
+                  location="end center"
+                  max-width="300">
+
                   <template #activator="{ props }">
-                    <v-btn v-bind="props"
+                    <v-btn
+                      v-bind="props"
                       :title="$gettext('Translate')"
                       :loading="translating[idx+code]"
                       icon="mdi-translate"
                       variant="text"
                     />
                   </template>
-                  <v-list>
-                    <v-list-item v-for="lang in txlocales()" :key="lang.code">
-                      <v-btn
-                        @click="translateText(idx, code, lang.code)"
-                        prepend-icon="mdi-arrow-right-thin"
-                        variant="text"
-                      >{{ lang.name }}</v-btn>
-                    </v-list-item>
-                  </v-list>
-                </v-menu>
+
+                  <v-card>
+                    <v-toolbar density="compact">
+                      <v-toolbar-title>{{ $gettext('Translate') }}</v-toolbar-title>
+                      <v-btn icon="mdi-close" @click="menu[idx+code] = false" />
+                    </v-toolbar>
+
+                    <v-list @click="menu[idx+code] = false">
+                      <v-list-item v-for="lang in txlocales()" :key="lang.code">
+                        <v-btn
+                          @click="translateText(code, lang.code)"
+                          prepend-icon="mdi-arrow-right-thin"
+                          variant="text"
+                        >{{ lang.name }}</v-btn>
+                      </v-list-item>
+                    </v-list>
+                  </v-card>
+                </component>
                 <v-btn
                   :title="$gettext('Generate text')"
                   :loading="composing[idx+code]"
