@@ -541,7 +541,7 @@
       <component :is="$vuetify.display.xs ? 'v-dialog' : 'v-menu'"
         v-model="menu[idx]"
         transition="scale-transition"
-        location="end center"
+        :location="vgrid ? 'start' : 'end center'"
         max-width="300">
 
         <template v-slot:activator="{ props }">
