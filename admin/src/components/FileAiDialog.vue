@@ -16,11 +16,12 @@
     props: {
       'modelValue': {type: Boolean, required: true},
       'context': {type: [Object, null], default: null},
+      'files': {type: Array, default: () => []},
     },
 
     emits: ['update:modelValue', 'add'],
 
-    inject: ['slugify', 'transcribe', 'url'],
+    inject: ['transcribe', 'url'],
 
     setup() {
       const messages = useMessageStore()
@@ -43,6 +44,7 @@
 
     beforeUpdate() {
       this.chat = [this.context?.title, this.context?.text, this.context?.description].filter(Boolean).join("\n")
+      this.similar = this.files || []
     },
 
     unmounted() {
@@ -69,8 +71,7 @@
         fetch(item.path).then(response => {
           return response.blob()
         }).then(blob => {
-          const name = item.name.slice(0, item.name.length > 50 ? item.name.lastIndexOf(' ', 50) : 50) || 'ai-image'
-          const filename = this.slugify(name) + '_' + (new Date()).toISOString().replace(/[^0-9]/g, '') + '.png'
+          const filename = 'ai-image_' + (new Date()).toISOString().replace(/[^0-9]/g, '') + '.png'
 
           return this.$apollo.mutate({
             mutation: gql`mutation($input: FileInput, $file: Upload) {
@@ -100,7 +101,7 @@
           }
 
           Object.assign(item, response.data.addFile, {previews: JSON.parse(response.data.addFile.previews || '{}')})
-          // this.$refs.filelist.invalidate()
+          this.$refs.filelist.invalidate()
           this.$emit('add', [item])
         }).catch(error => {
           this.messages.add(this.$gettext(`Error adding file %{path}`, {path: item?.path}) + ":\n" + error, 'error')
@@ -140,7 +141,7 @@
             imagine(prompt: $prompt, context: $context, files: $files)
           }`,
           variables: {
-            prompt: this.chat || 'Create a suitable image based on the context',
+            prompt: this.chat || this.$gettext('Create a suitable image based on the context'),
             context: this.context ? "Context in JSON format:\n" + JSON.stringify(this.context) : '',
             files: this.similar.map(item => item.id),
           }
@@ -156,7 +157,7 @@
           list.forEach(base64 => {
               this.items.unshift({
                 path: URL.createObjectURL(this.base64ToBlob(base64)),
-                name: name.slice(0, name.length > 100 ? name.lastIndexOf(' ', 100) : 100),
+                name: name.slice(0, name.length > 250 ? name.lastIndexOf(' ', 250) : 250),
                 mime: 'image/png'
               })
           })
@@ -228,30 +229,30 @@
         />
       </template>
       <template v-slot:title>
-        {{ $gettext('Create image') }}
+        {{ $gettext('Create or alter image') }}
       </template>
 
       <v-card-text>
         <v-textarea
           v-model="chat"
-          :label="$gettext('Describe the image')"
+          :label="similar.length ? $gettext('Describe the scene changes') : $gettext('Describe the image')"
           variant="underlined"
           autofocus
           clearable
         ></v-textarea>
 
         <v-btn
-          :loading="loading ? 'primary' : false"
-          :disabled="!chat || loading"
+          :loading="loading"
+          :disabled="!chat"
           @click="create()"
           variant="outlined"
           class="create">
-          {{ $gettext('Create image') }}
+          {{ $gettext('New image') }}
         </v-btn>
 
         <div v-if="items.length">
           <v-tabs>
-            <v-tab>{{ $gettext('Generated images') }}</v-tab>
+            <v-tab>{{ $gettext('Current images') }}</v-tab>
           </v-tabs>
           <v-list class="items grid">
             <v-list-item v-for="(item, idx) in items" :key="idx">
@@ -269,10 +270,9 @@
           </v-list>
         </div>
 
-        <!-- At least one image is used by all providers -->
         <div v-if="similar.length">
           <v-tabs>
-            <v-tab>{{ $gettext('Use images of this style') }}</v-tab>
+            <v-tab>{{ $gettext('Images used') }}</v-tab>
           </v-tabs>
           <v-list class="items grid">
             <v-list-item v-for="(item, idx) in similar" :key="idx">
@@ -286,7 +286,7 @@
         </div>
 
         <v-tabs>
-          <v-tab>{{ $gettext('Select similar images') }}</v-tab>
+          <v-tab>{{ $gettext('Select images') }}</v-tab>
         </v-tabs>
         <FileListItems ref="filelist" :filter="{mime: 'image/'}" @select="use($event)" />
       </v-card-text>

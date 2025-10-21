@@ -6,11 +6,16 @@
   import gql from 'graphql-tag'
   import Cropper from 'cropperjs'
   import 'cropperjs/dist/cropper.css'
-  import { recording } from '../audio'
+  import FileAiDialog from './FileAiDialog.vue'
   import { useAppStore, useAuthStore, useLanguageStore, useMessageStore, useSideStore } from '../stores'
+  import { recording } from '../audio'
 
 
   export default {
+    components: {
+      FileAiDialog
+    },
+
     props: {
       'item': {type: Object, required: true},
       'save': {type: Object, required: true},
@@ -22,6 +27,7 @@
 
     data() {
       return {
+        vedit: false,
         transcribing: false,
         translating: false,
         dictating: false,
@@ -503,6 +509,19 @@
           this.covering = false
         })
       },
+
+
+      use(items) {
+        if(!items?.length) {
+          return
+        }
+
+        this.vedit = false
+        this.item.path = items[0].path
+        this.item.mime = items[0].mime
+
+        this.cropper.replace(this.url(this.item.path, true));
+      },
     },
 
     watch: {
@@ -602,6 +621,8 @@
                     </v-list>
                   </v-card>
                 </component>
+
+                <v-btn icon="mdi-image-edit" class="no-rtl" @click="vedit = true" :title="$gettext('Edit image')" />
               </div>
               <div class="toolbar-group">
                 <v-btn icon="mdi-rotate-left" class="no-rtl" @click="rotate(-90)" :title="$gettext('Rotate counter-clockwise')" />
@@ -746,6 +767,12 @@
       </v-row>
     </v-sheet>
   </v-container>
+
+
+  <Teleport to="body">
+    <FileAiDialog v-model="vedit" :files="[item]" @add="use($event)" />
+  </Teleport>
+
 </template>
 
 <style scoped>
