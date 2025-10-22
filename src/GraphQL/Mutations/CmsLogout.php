@@ -22,7 +22,12 @@ final class CmsLogout
         $guard = Auth::guard();
         $user = $guard->user();
 
-        $guard->logout();
+        try {
+            $guard->logout();
+        } catch( \Exception $e ) {
+            // No error if logout fails
+        }
+
         return $user;
     }
 }
