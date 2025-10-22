@@ -213,7 +213,6 @@
           class="prompt"
           rounded="lg"
           hide-details
-          autofocus
           auto-grow
           clearable
           outlined
