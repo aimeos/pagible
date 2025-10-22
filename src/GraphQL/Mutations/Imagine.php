@@ -37,8 +37,8 @@ final class Imagine
             $input
         ] ) );
 
-        $provider = config( 'cms.ai.image' ) ?: 'openai';
-        $model = config( 'cms.ai.image-model' ) ?: 'dall-e-3';
+        $provider = config( 'cms.ai.image' ) ?: 'gemini';
+        $model = config( 'cms.ai.image-model' ) ?: 'gemini-2.5-flash-image-preview';
 
         try
         {
