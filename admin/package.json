@@ -46,7 +46,6 @@
     "vue-router": "^4.5",
     "vue3-gettext": "^4.0.0-alpha.8",
     "vue3-observe-visibility": "^1.0.3",
-    "vuedraggable": "^4.1.0",
     "vuetify": "^3.8"
   },
   "devDependencies": {
