@@ -21,7 +21,7 @@
 
     emits: ['update:modelValue', 'add'],
 
-    inject: ['transcribe', 'url'],
+    inject: ['base64ToBlob', 'transcribe', 'url'],
 
     setup() {
       const messages = useMessageStore()
@@ -109,22 +109,6 @@
         }).finally(() => {
           this.loading = false
         })
-      },
-
-
-      base64ToBlob(base64, mimeType = 'image/png') {
-        if(!base64) {
-          return null
-        }
-
-        const binary = atob(base64);
-        const byteArray = new Uint8Array(binary.length);
-
-        for(let i = 0; i < binary.length; i++) {
-          byteArray[i] = binary.charCodeAt(i);
-        }
-
-        return new Blob([byteArray], { type: mimeType });
       },
 
 
