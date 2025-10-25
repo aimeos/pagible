@@ -30,7 +30,9 @@
       changed: false,
       error: false,
       publishAt: null,
+      publishing: false,
       pubmenu: false,
+      saving: false,
       vhistory: false,
       tab: 'element',
     }),
@@ -112,6 +114,8 @@
           return
         }
 
+        this.publishing = true
+
         this.save(true).then(valid => {
           if(!valid) {
             return
@@ -144,6 +148,8 @@
           }).catch(error => {
             this.messages.add(this.$gettext('Error publishing element') + ":\n" + error, 'error')
             this.$log(`ElementDetail::publish(): Error publishing element`, at, error)
+          }).finally(() => {
+            this.publishing = false
           })
         })
       },
@@ -169,6 +175,8 @@
         if(!this.changed) {
           return Promise.resolve(true)
         }
+
+        this.saving = true
 
         return this.$apollo.mutate({
           mutation: gql`mutation ($id: ID!, $input: ElementInput!, $files: [ID!]) {
@@ -204,6 +212,8 @@
         }).catch(error => {
           this.messages.add(this.$gettext('Error saving element') + ":\n" + error, 'error')
           this.$log(`ElementDetail::save(): Error saving element`, error)
+        }).finally(() => {
+          this.saving = false
         })
       },
 
@@ -293,6 +303,7 @@
 
       <v-btn
         @click="save()"
+        :loading="saving"
         :title="$gettext('Save')"
         :class="{error: error}" class="menu-save"
         :disabled="!changed || error || !auth.can('element:save')"
@@ -304,6 +315,7 @@
       <v-menu v-model="pubmenu" :close-on-content-click="false">
         <template #activator="{ props }">
           <v-btn v-bind="props" icon
+            :loading="publishing"
             :title="$gettext('Schedule publishing')"
             :class="{error: error}" class="menu-publish"
             :disabled="item.published && !changed || error || !auth.can('element:publish')"
@@ -331,6 +343,7 @@
 
       <v-btn icon
         @click="publish()"
+        :loading="publishing"
         :title="$gettext('Publish')"
         :class="{error: error}" class="menu-publish"
         :disabled="item.published && !changed || error || !auth.can('element:publish')"

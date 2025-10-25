@@ -59,8 +59,10 @@
       latest: null,
       pubmenu: null,
       publishAt: null,
+      publishing: false,
       translating: false,
       vhistory: false,
+      saving: false,
       savecnt: 0,
     }),
 
@@ -306,6 +308,8 @@
           return
         }
 
+        this.publishing = true
+
         this.save(true).then(valid => {
           if(!valid) {
             return
@@ -339,6 +343,8 @@
             this.messages.add(this.$gettext('Error publishing page') + ":\n" + error, 'error')
             this.$log(`PageDetail::publish(): Error publishing page`, at, error)
           })
+        }).finally(() => {
+          this.publishing = false
         })
       },
 
@@ -384,6 +390,8 @@
             files: this.item.config[key].files || [],
           }
         }
+
+        this.saving = true
 
         return this.$apollo.mutate({
           mutation: gql`mutation ($id: ID!, $input: PageInput!, $elements: [ID!], $files: [ID!]) {
@@ -432,6 +440,8 @@
         }).catch(error => {
           this.messages.add(this.$gettext('Error saving page') + ":\n" + error, 'error')
           this.$log(`PageDetail::save(): Error saving page`, error)
+        }).finally(() => {
+          this.saving = false
         })
       },
 
@@ -634,6 +644,7 @@
 
       <v-btn
         @click="save()"
+        :loading="saving"
         :title="$gettext('Save')"
         :disabled="!hasChanged || hasError || !auth.can('page:save')"
         :variant="!hasChanged || hasError || !auth.can('page:save') ? 'plain' : 'flat'"
@@ -645,6 +656,7 @@
       <v-menu v-model="pubmenu" :close-on-content-click="false">
         <template #activator="{ props }">
           <v-btn v-bind="props" icon
+            :loading="publishing"
             :title="$gettext('Schedule publishing')"
             :disabled="item.published && !hasChanged || hasError || !auth.can('page:publish')"
             :variant="item.published && !hasChanged || hasError || !auth.can('page:publish') ? 'plain' : 'flat'"
@@ -672,6 +684,7 @@
 
       <v-btn icon
         @click="publish()"
+        :loading="publishing"
         :title="$gettext('Publish')"
         :disabled="item.published && !hasChanged || hasError || !auth.can('page:publish')"
         :variant="item.published && !hasChanged || hasError || !auth.can('page:publish') ? 'plain' : 'flat'"

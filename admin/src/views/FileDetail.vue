@@ -30,7 +30,9 @@
       error: false,
       changed: false,
       publishAt: null,
+      publishing: false,
       pubmenu: false,
+      saving: false,
       vhistory: false,
       tab: 'file',
       savecnt: 0,
@@ -50,6 +52,8 @@
           this.messages.add(this.$gettext('Permission denied'), 'error')
           return
         }
+
+        this.publishing = true
 
         this.save(true).then(valid => {
           if(!valid) {
@@ -83,6 +87,8 @@
           }).catch(error => {
             this.messages.add(this.$gettext('Error publishing file') + ":\n" + error, 'error')
             this.$log(`FileDetail::publish(): Error publishing file`, at, error)
+          }).finally(() => {
+            this.publishing = false
           })
         })
       },
@@ -108,6 +114,8 @@
         if(!this.changed) {
           return Promise.resolve(true)
         }
+
+        this.saving = true
 
         return this.$apollo.mutate({
           mutation: gql`mutation ($id: ID!, $input: FileInput!, $file: Upload) {
@@ -156,6 +164,8 @@
         }).catch(error => {
           this.messages.add(this.$gettext('Error saving file') + ":\n" + error, 'error')
           this.$log(`FileDetail::save(): Error saving file`, error)
+        }).finally(() => {
+          this.saving = false
         })
       },
 
@@ -243,6 +253,7 @@
 
       <v-btn
         @click="save()"
+        :loading="saving"
         :title="$gettext('Save')"
         :class="{error: error}" class="menu-save"
         :disabled="!changed || error || !auth.can('file:save')"
@@ -254,6 +265,7 @@
       <v-menu v-model="pubmenu" :close-on-content-click="false">
         <template #activator="{ props }">
           <v-btn v-bind="props" icon
+            :loading="publishing"
             :title="$gettext('Schedule publishing')"
             :class="{error: error}" class="menu-publish"
             :disabled="item.published && !changed || error || !auth.can('file:publish')"
@@ -281,6 +293,7 @@
 
       <v-btn icon
         @click="publish()"
+        :loading="publishing"
         :title="$gettext('Publish')"
         :class="{error: error}" class="menu-publish"
         :disabled="item.published && !changed || error || !auth.can('file:publish')"
