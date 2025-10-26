@@ -35,7 +35,6 @@
       saving: false,
       vhistory: false,
       tab: 'file',
-      savecnt: 0,
     }),
 
     setup() {
@@ -159,7 +158,6 @@
             this.messages.add(this.$gettext('File saved successfully'), 'success')
           }
 
-          this.savecnt++
           return true
         }).catch(error => {
           this.messages.add(this.$gettext('Error saving file') + ":\n" + error, 'error')
@@ -174,7 +172,6 @@
         Object.assign(this.item, version.data)
         this.vhistory = false
         this.changed = true
-        this.savecnt++
       },
 
 
@@ -326,10 +323,9 @@
 
         <v-window-item value="file">
           <FileDetailItem
-            @update:item="this.$emit('update:item', item); changed = true"
-            @update:file="this.file = $event; changed = true"
+            @update:item="$emit('update:item', item); changed = true"
+            @update:file="file = $event; changed = true"
             @error="error = $event"
-            :save="{count: savecnt}"
             :item="item"
           />
         </v-window-item>

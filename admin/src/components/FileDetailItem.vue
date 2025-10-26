@@ -18,7 +18,6 @@
 
     props: {
       'item': {type: Object, required: true},
-      'save': {type: Object, required: true},
     },
 
     emits: ['update:item', 'update:file', 'error'],
@@ -39,6 +38,7 @@
         cropLabel: null,
         cropper: null,
         audio: null,
+        images: [],
         scaleX: 1,
         scaleY: 1,
         menu: {},
@@ -56,13 +56,17 @@
     },
 
     mounted() {
-      this.init()
+      this.cropper = this.init()
     },
 
     beforeUnmount() {
       if(this.cropper) {
         this.cropper.destroy()
       }
+
+      this.images.forEach(img => {
+        URL.revokeObjectURL(img.url)
+      })
     },
 
     computed: {
@@ -321,9 +325,34 @@
       },
 
 
+      replace(blob, idx = null) {
+        let file = null
+
+        if(blob) {
+          const image = URL.createObjectURL(blob)
+
+          this.cropper.replace(image)
+
+          if(idx !== null) {
+            this.images.unshift(...this.images.splice(idx, 1))
+          } else {
+            this.images.unshift({blob: blob, url: image})
+          }
+
+          this.images.splice(10).forEach(img => {
+            URL.revokeObjectURL(img.url)
+          })
+
+          file = new File([blob], this.item.path.split('/').pop(), {type: 'image/png'})
+        }
+
+        this.$emit('update:file', file)
+        this.reset()
+      },
+
+
       reset() {
         this.cropping = false
-        this.$emit('update:file', null)
         this.cropper.reset()
         this.cropper.clear()
         this.scaleX = 1
@@ -451,13 +480,16 @@
 
 
       updateFile() {
-        if(this.readonly) {
-          return this.messages.add(this.$gettext('Permission denied'), 'error')
-        }
+        if(!this.readonly) {
+          this.cropper.getCroppedCanvas().toBlob(blob => {
+            this.images.unshift({blob: blob, url: URL.createObjectURL(blob)})
+            this.images.splice(10).forEach(img => {
+              URL.revokeObjectURL(img.url)
+            })
 
-        this.cropper.getCroppedCanvas().toBlob(blob => {
-          this.$emit('update:file', blob)
-        })
+            this.$emit('update:file', new File([blob], this.item.path.split('/').pop(), {type: 'image/png'}))
+          })
+        }
       },
 
 
@@ -520,13 +552,15 @@
         this.item.path = items[0].path
         this.item.mime = items[0].mime
 
-        this.cropper.replace(this.url(this.item.path, true));
+        this.cropper.replace(this.url(this.item.path, true))
+        this.$emit('update:file', null)
+        this.reset()
       },
     },
 
     watch: {
-      'save.count': function() {
-        if(this.save.count > 0) {
+      item: function(item, old) {
+        if(item.path !== old.path) {
           this.$nextTick(() => {
             this.init()
           })
@@ -634,7 +668,39 @@
               </div>
               <div class="toolbar-group">
                 <v-btn icon="mdi-download" class="no-rtl" @click="download()" :title="$gettext('Download')" />
-                <v-btn icon="mdi-history" class="no-rtl" @click="reset()" :title="$gettext('Reset')" />
+
+                <component :is="$vuetify.display.xs ? 'v-dialog' : 'v-menu'"
+                  v-model="menu['undo']"
+                  transition="scale-transition"
+                  location="end center"
+                  max-width="300">
+
+                  <template #activator="{ props }">
+                    <v-btn
+                      v-bind="props"
+                      :disabled="!images.length"
+                      :title="$gettext('Undo')"
+                      icon="mdi-history"
+                      class="no-rtl"
+                    />
+                  </template>
+
+                  <v-card>
+                    <v-toolbar density="compact">
+                      <v-toolbar-title>{{ $gettext('Undo') }}</v-toolbar-title>
+                      <v-btn icon="mdi-close" @click="menu['undo'] = false" />
+                    </v-toolbar>
+
+                    <v-list @click="menu['undo'] = false">
+                      <v-list-item v-for="(img, idx) in images.slice(1)" :key="idx">
+                        <v-img :src="img.url" @click="replace(img.blob, idx+1)" />
+                      </v-list-item>
+                      <v-list-item>
+                        <v-img :src="url(item.path)" @click="use([item])" />
+                      </v-list-item>
+                    </v-list>
+                  </v-card>
+                </component>
               </div>
             </div>
           </div>
