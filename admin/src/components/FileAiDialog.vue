@@ -68,7 +68,7 @@
 
         this.loading = true
 
-        fetch(item.path).then(response => {
+        fetch(this.url(item.path, true)).then(response => {
           return response.blob()
         }).then(blob => {
           const filename = 'ai-image_' + (new Date()).toISOString().replace(/[^0-9]/g, '') + '.png'
