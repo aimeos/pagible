@@ -2,10 +2,6 @@
  * @license MIT, https://opensource.org/license/MIT
  */
 
-.slideshow {
-    background: var(--pico-background-color);
-}
-
 @media screen and (min-width: 576px) {
 	.swiffy-slider {
 		padding: 5%;
