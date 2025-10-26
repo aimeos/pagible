@@ -44,7 +44,6 @@ final class SaveFile
 
         try
         {
-            $file->previews = [];
             $preview = $args['preview'] ?? null;
 
             if( $preview instanceof UploadedFile && $preview->isValid() && str_starts_with( $preview->getClientMimeType(), 'image/' ) ) {
@@ -55,8 +54,6 @@ final class SaveFile
                 $file->addPreviews( $file->path );
             } elseif( $preview === false ) {
                 $file->previews = [];
-            } else {
-                $file->previews = $orig->previews;
             }
         }
         catch( \Throwable $t )
