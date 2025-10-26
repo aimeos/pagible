@@ -147,8 +147,8 @@
               self.item.updated_at = latest.created_at
             }
           }).catch(error => {
-            self.messages.add(this.$gettext('Error saving video cover') + ":\n" + error, 'error')
-            this.$log(`FileDetailItem::addCover(): Error saving video cover`, error)
+            self.messages.add(self.$gettext('Error saving video cover') + ":\n" + error, 'error')
+            self.$log(`FileDetailItem::addCover(): Error saving video cover`, error)
           }).finally(() => {
             self.covering = false
           })
