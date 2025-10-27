@@ -27,12 +27,8 @@
     data() {
       return {
         vedit: false,
-        transcribing: false,
-        translating: false,
-        dictating: false,
-        composing: false,
         cropping: false,
-        covering: false,
+        loading: {},
         tabtrans: null,
         tabdesc: null,
         cropLabel: null,
@@ -116,7 +112,7 @@
         canvas.toBlob(function(blob) {
           const file = new File([blob], filename, {type: 'image/png'})
 
-          self.covering = true
+          self.loading.cover = true
 
           self.$apollo.mutate({
             mutation: gql`mutation($id: ID!, $preview: Upload) {
@@ -150,7 +146,7 @@
             self.messages.add(self.$gettext('Error saving video cover') + ":\n" + error, 'error')
             self.$log(`FileDetailItem::addCover(): Error saving video cover`, error)
           }).finally(() => {
-            self.covering = false
+            self.loading.cover = false
           })
         }, 'image/png', 1)
       },
@@ -178,12 +174,12 @@
         const lang = this.desclangs.shift() || this.item.lang || 'en'
         const prompt = `Summarize the content of the file in a few words in plain text format for a title tag in the language with the ISO code "${lang}":`
 
-        this.composing = true
+        this.loading.compose = true
 
         this.compose(prompt, null, [this.item.id]).then(result => {
           this.update('description', Object.assign(this.item.description || {}, {[lang]: result}))
         }).finally(() => {
-          this.composing = false
+          this.loading.compose = false
         })
       },
 
@@ -268,7 +264,7 @@
         }
 
         this.audio.then(rec => {
-          this.dictating = true
+          this.loading.dictate = true
           this.audio = null
 
           rec.stop().then(buffer => {
@@ -276,7 +272,7 @@
               const lang = this.desclangs[0] || this.item.lang || 'en'
               this.update('description', Object.assign(this.item.description || {}, {[lang]: transcription.asText()}))
             }).finally(() => {
-              this.dictating = false
+              this.loading.dictate = false
             })
           })
         })
@@ -288,7 +284,7 @@
           return this.messages.add(this.$gettext('Permission denied'), 'error')
         }
 
-        this.covering = true
+        this.loading.cover = true
         this.item.previews = {}
 
         this.$apollo.mutate({
@@ -320,7 +316,7 @@
           this.messages.add(this.$gettext('Error removing video cover') + ":\n" + error, 'error')
           this.$log(`FileDetailItem::removeCover(): Error removing video cover`, error)
         }).finally(() => {
-          this.covering = false
+          this.loading.cover = false
         })
       },
 
@@ -391,13 +387,13 @@
           return this.messages.add(this.$gettext('Transcription is only available for audio and video files'), 'error')
         }
 
-        this.transcribing = true
+        this.loading.transcribe = true
 
         this.transcribe(this.item.path).then(transcription => {
           const lang = this.desclangs[0] || this.item.lang || 'en'
           this.update('transcription', Object.assign(this.item.transcription || {}, {[lang]: transcription.asText()}))
         }).finally(() => {
-          this.transcribing = false
+          this.loading.transcribe = false
         })
       },
 
@@ -417,7 +413,7 @@
           return text ? true : false
         })
 
-        this.translating = true
+        this.loading.translate = true
 
         this.txlocales(lang).map(lang => lang.code).forEach(lang => {
           promises.push(this.translate(text, lang).then(result => {
@@ -431,7 +427,7 @@
 
         return Promise.all(promises).then(() => {
           this.$emit('update:item', this.item)
-          this.translating = false
+          this.loading.translate = false
           return map
         })
       },
@@ -504,7 +500,7 @@
           return this.messages.add(this.$gettext('No file selected'), 'error')
         }
 
-        this.covering = true
+        this.loading.cover = true
 
         this.$apollo.mutate({
           mutation: gql`mutation($id: ID!, $preview: Upload) {
@@ -538,7 +534,7 @@
           this.messages.add(this.$gettext('Error uploading video cover') + ":\n" + error, 'error')
           this.$log(`FileDetailItem::uploadCover(): Error uploading video cover`, error)
         }).finally(() => {
-          this.covering = false
+          this.loading.cover = false
         })
       },
 
@@ -719,8 +715,16 @@
                   @click="removeCover()"
                 />
                 <div v-else class="toolbar-group">
-                  <v-btn icon="mdi-tooltip-image" :loading="covering" :title="$gettext('Use as cover image')" @click="addCover()" />
-                  <v-btn icon :loading="covering" :title="$gettext('Upload cover image')" @click="$refs.coverInput.click()">
+                  <v-btn
+                    icon="mdi-tooltip-image"
+                    :loading="loading.cover"
+                    :title="$gettext('Use as cover image')"
+                    @click="addCover()"
+                  />
+                  <v-btn icon
+                    :loading="loading.cover"
+                    :title="$gettext('Upload cover image')"
+                    @click="$refs.coverInput.click()">
                     <v-icon>mdi-image-plus</v-icon>
                     <input ref="coverInput" type="file" class="cover-input" @change="uploadCover($event)" />
                   </v-btn>
@@ -748,14 +752,14 @@
               <v-btn v-if="Object.values(item.description || {}).find(v => !!v)"
                 @click="translateText(item.description)"
                 :title="$gettext('Translate text')"
-                :loading="translating"
+                :loading="loading.translate"
                 icon="mdi-translate"
                 variant="text"
               />
               <v-btn
                 @click="composeText()"
                 :title="$gettext('Generate description')"
-                :loading="composing"
+                :loading="loading.compose"
                 icon="mdi-creation"
                 variant="text"
               />
@@ -764,7 +768,7 @@
                 :class="{dictating: audio}"
                 :icon="audio ? 'mdi-microphone-outline' : 'mdi-microphone'"
                 :title="$gettext('Dictate')"
-                :loading="dictating"
+                :loading="loading.dictate"
                 variant="text"
               />
             </div>
@@ -798,14 +802,14 @@
               <v-btn v-if="Object.values(item.transcription || {}).find(v => !!v)"
                 @click="translateVTT(item.transcription)"
                 :title="$gettext('Translate text')"
-                :loading="translating"
+                :loading="loading.translate"
                 icon="mdi-translate"
                 variant="text"
               />
               <v-btn
                 @click="transcribeFile()"
                 :title="$gettext('Transcribe file content')"
-                :loading="transcribing"
+                :loading="loading.transcribe"
                 icon="mdi-creation"
                 variant="text"
               />
