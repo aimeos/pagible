@@ -7,7 +7,7 @@
 
 namespace Aimeos\Cms\GraphQL\Mutations;
 
-use Prism\Prism\Prism;
+use Prism\Prism\Facades\Prism;
 use Prism\Prism\Schema\EnumSchema;
 use Prism\Prism\Schema\ArraySchema;
 use Prism\Prism\Schema\ObjectSchema;

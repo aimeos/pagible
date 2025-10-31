@@ -7,7 +7,7 @@
 
 namespace Aimeos\Cms\GraphQL\Mutations;
 
-use Prism\Prism\Prism;
+use Prism\Prism\Facades\Prism;
 use Prism\Prism\ValueObjects\Media\Audio;
 use Prism\Prism\ValueObjects\Media\Image;
 use Prism\Prism\ValueObjects\Media\Video;
