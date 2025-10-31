@@ -148,7 +148,7 @@ CMS_AI_STRUCT="gemini"
 CMS_AI_STRUCT_MODEL="gemini-2.5-flash"
 
 CMS_AI_IMAGE="gemini"
-CMS_AI_IMAGE_MODEL="gemini-2.5-flash-image-preview"
+CMS_AI_IMAGE_MODEL="gemini-2.5-flash-image"
 
 CMS_AI_AUDIO="openai"
 CMS_AI_AUDIO_MODEL="whisper-1"

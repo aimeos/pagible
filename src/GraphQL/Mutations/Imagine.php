@@ -38,7 +38,7 @@ final class Imagine
         ] ) );
 
         $provider = config( 'cms.ai.image' ) ?: 'gemini';
-        $model = config( 'cms.ai.image-model' ) ?: 'gemini-2.5-flash-image-preview';
+        $model = config( 'cms.ai.image-model' ) ?: 'gemini-2.5-flash-image';
 
         try
         {

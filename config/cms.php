@@ -13,14 +13,14 @@ return [
     |
     */
     'ai' => [
-        'maxtoken' => env( 'CMS_AI_MAXTOKEN' ), // maxium tokenss per request
+        'maxtoken' => env( 'CMS_AI_MAXTOKEN' ), // maximum tokens per request
 
         'text' => env( 'CMS_AI_TEXT' ),                 // gemini
         'text-model' => env( 'CMS_AI_TEXT_MODEL' ),     // gemini-2.5-flash
         'struct' => env( 'CMS_AI_STRUCT' ),             // gemini
         'struct-model' => env( 'CMS_AI_STRUCT_MODEL' ), // gemini-2.5-flash
-        'image' => env( 'CMS_AI_IMAGE' ),               // openai
-        'image-model' => env( 'CMS_AI_IMAGE_MODEL' ),   // dall-e-3
+        'image' => env( 'CMS_AI_IMAGE' ),               // gemini
+        'image-model' => env( 'CMS_AI_IMAGE_MODEL' ),   // gemini-2.5-flash-image
         'audio' => env( 'CMS_AI_AUDIO' ),               // openai
         'audio-model' => env( 'CMS_AI_AUDIO_MODEL' ),   // whisper-1
     ],
