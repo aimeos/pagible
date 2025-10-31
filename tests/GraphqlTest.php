@@ -15,7 +15,7 @@ use Nuwave\Lighthouse\Testing\MakesGraphQLRequests;
 use Nuwave\Lighthouse\Testing\RefreshesSchemaCache;
 use Prism\Prism\Testing\ImageResponseFake;
 use Prism\Prism\Testing\TextResponseFake;
-use Prism\Prism\Prism;
+use Prism\Prism\Facades\Prism;
 
 
 class GraphqlTest extends TestAbstract
@@ -181,7 +181,7 @@ class GraphqlTest extends TestAbstract
             ] ) )
             ->withText('This is the generated response.');
 
-        \Prism\Prism\Prism::fake([$fake]);
+        Prism::fake([$fake]);
 
         $response = $this->actingAs($this->user)->graphQL('
             mutation($prompt: String!, $context: String, $files: [String!]) {
