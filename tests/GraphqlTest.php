@@ -9,6 +9,7 @@ namespace Tests;
 
 use Aimeos\Cms\Models\File;
 use Aimeos\Prisma\Prisma;
+use Aimeos\Prisma\Responses\FileResponse;
 use Database\Seeders\CmsSeeder;
 use Illuminate\Http\UploadedFile;
 use Aimeos\AnalyticsBridge\Facades\Analytics;
@@ -57,6 +58,34 @@ class GraphqlTest extends TestAbstract
     }
 
 
+    public function testBackground()
+    {
+        $this->seed( CmsSeeder::class );
+
+        $image = file_get_contents( __DIR__ . '/assets/image.png' );
+        Prisma::fake( [FileResponse::fromBinary( $image, 'image/png' )] );
+
+        $response = $this->actingAs( $this->user )->multipartGraphQL( [
+            'query' => '
+                mutation($file: Upload!) {
+                    background(file: $file)
+                }
+            ',
+            'variables' => [
+                'file' => null,
+            ],
+        ], [
+            '0' => ['variables.file'],
+        ], [
+            '0' => UploadedFile::fake()->createWithContent('test.png', $image),
+        ] )->assertJson( [
+            'data' => [
+                'background' => base64_encode( $image )
+            ]
+        ] );
+    }
+
+
     public function testCompose()
     {
         $this->seed( CmsSeeder::class );
@@ -84,7 +113,7 @@ class GraphqlTest extends TestAbstract
         $file = File::firstOrFail();
         $image = base64_encode( file_get_contents( __DIR__ . '/assets/image.png' ) );
 
-        Prisma::fake( [\Aimeos\Prisma\Responses\FileResponse::fromBase64( $image, 'image/png' )] );
+        Prisma::fake( [FileResponse::fromBase64( $image, 'image/png' )] );
 
         $response = $this->actingAs( $this->user )->graphQL( "
             mutation {

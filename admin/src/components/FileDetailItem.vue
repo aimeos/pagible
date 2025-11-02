@@ -22,7 +22,7 @@
 
     emits: ['update:item', 'update:file', 'error'],
 
-    inject: ['compose', 'locales', 'transcribe', 'translate', 'txlocales', 'url'],
+    inject: ['base64ToBlob', 'compose', 'locales', 'transcribe', 'translate', 'txlocales', 'url'],
 
     data() {
       return {
@@ -167,6 +167,43 @@
             this.cropLabel = label;
           }
         });
+      },
+
+
+      background() {
+        if(this.readonly) {
+          return this.messages.add(this.$gettext('Permission denied'), 'error')
+        }
+
+        const self = this
+
+        this.cropper.getCroppedCanvas().toBlob(function(blob) {
+          self.loading.background = true
+
+          self.$apollo.mutate({
+            mutation: gql`mutation($file: Upload!, $prompt: String) {
+              background(file: $file, prompt: $prompt)
+            }`,
+            variables: {
+              file: new File([blob], 'image.png', {type: 'image/png'}),
+              prompt: null,
+            },
+            context: {
+              hasUpload: true
+            }
+          }).then(response => {
+            if(response.errors) {
+              throw response.errors
+            }
+
+            self.replace(self.base64ToBlob(response.data?.background))
+          }).catch(error => {
+            self.messages.add(self.$gettext('Error replacing background') + ":\n" + error, 'error')
+            self.$log('FileDetailItem::background(): Error replacing background', error)
+          }).finally(() => {
+            self.loading.background = false
+          })
+        })
       },
 
 
@@ -653,6 +690,15 @@
                 </component>
 
                 <v-btn icon="mdi-image-edit" class="no-rtl" @click="vedit = true" :title="$gettext('Edit image')" />
+              </div>
+              <div class="toolbar-group">
+                <v-btn
+                  @click="background()"
+                  :title="$gettext('Remove background')"
+                  :loading="loading.background"
+                  icon="mdi-image-filter-black-white"
+                  class="no-rtl"
+                />
               </div>
               <div class="toolbar-group">
                 <v-btn icon="mdi-rotate-left" class="no-rtl" @click="rotate(-90)" :title="$gettext('Rotate counter-clockwise')" />
