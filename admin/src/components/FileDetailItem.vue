@@ -576,6 +576,44 @@
       },
 
 
+      upscale(factor) {
+        if(this.readonly) {
+          return this.messages.add(this.$gettext('Permission denied'), 'error')
+        }
+
+        const self = this
+
+        this.cropper.getCroppedCanvas().toBlob(function(blob) {
+          self.loading.upscale = true
+
+          self.$apollo.mutate({
+            mutation: gql`mutation($file: Upload!, $width: Int!, $height: Int!) {
+              upscale(file: $file, width: $width, height: $height)
+            }`,
+            variables: {
+              file: new File([blob], 'image.png', {type: 'image/png'}),
+              width: self.width * factor,
+              height: self.height * factor,
+            },
+            context: {
+              hasUpload: true
+            }
+          }).then(response => {
+            if(response.errors) {
+              throw response.errors
+            }
+
+            self.replace(self.base64ToBlob(response.data?.upscale))
+          }).catch(error => {
+            self.messages.add(self.$gettext('Error upscaling image') + ":\n" + error, 'error')
+            self.$log('FileDetailItem::upscale(): Error upscaling image', error)
+          }).finally(() => {
+            self.loading.upscale = false
+          })
+        })
+      },
+
+
       use(items) {
         if(!items?.length) {
           return
@@ -699,6 +737,54 @@
                   icon="mdi-image-filter-black-white"
                   class="no-rtl"
                 />
+
+                <component :is="$vuetify.display.xs ? 'v-dialog' : 'v-menu'"
+                  v-model="menu['upscale']"
+                  transition="scale-transition"
+                  location="end center"
+                  max-width="300">
+
+                  <template #activator="{ props }">
+                    <v-btn
+                      v-bind="props"
+                      :loading="loading.upscale"
+                      :disabled="width >= 4096 && height >= 4096"
+                      :title="$gettext('Upscale image')"
+                      icon="mdi-magnify-expand"
+                      class="no-rtl"
+                    />
+                  </template>
+
+                  <v-card>
+                    <v-toolbar density="compact">
+                      <v-toolbar-title>{{ $gettext('Upscale image') }}</v-toolbar-title>
+                      <v-btn icon="mdi-close" @click="menu['upscale'] = false" />
+                    </v-toolbar>
+
+                    <v-list @click="menu['upscale'] = false">
+                      <v-list-item v-if="width * 16 <= 4096 && height * 16 <= 4096">
+                        <v-btn prepend-icon="mdi-magnify-expand" class="no-rtl" variant="text" @click="upscale(16)">
+                          {{ $gettext('Scale %{factor}', { factor: '16x' }) }}
+                        </v-btn>
+                      </v-list-item>
+                      <v-list-item v-if="width * 8 <= 4096 && height * 8 <= 4096">
+                        <v-btn prepend-icon="mdi-magnify-expand" class="no-rtl" variant="text" @click="upscale(8)">
+                          {{ $gettext('Scale %{factor}', { factor: '8x' }) }}
+                        </v-btn>
+                      </v-list-item>
+                      <v-list-item v-if="width * 4 <= 4096 && height * 4 <= 4096">
+                        <v-btn prepend-icon="mdi-magnify-expand" class="no-rtl" variant="text" @click="upscale(4)">
+                          {{ $gettext('Scale %{factor}', { factor: '4x' }) }}
+                        </v-btn>
+                      </v-list-item>
+                      <v-list-item v-if="width * 2 <= 4096 && height * 2 <= 4096">
+                        <v-btn prepend-icon="mdi-magnify-expand" class="no-rtl" variant="text" @click="upscale(2)">
+                          {{ $gettext('Scale %{factor}', { factor: '2x' }) }}
+                        </v-btn>
+                      </v-list-item>
+                    </v-list>
+                  </v-card>
+                </component>
               </div>
               <div class="toolbar-group">
                 <v-btn icon="mdi-rotate-left" class="no-rtl" @click="rotate(-90)" :title="$gettext('Rotate counter-clockwise')" />

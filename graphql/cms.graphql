@@ -77,6 +77,9 @@ extend type Mutation {
   "Remove image background or replace by prompt instructions, returns a base64 encoded image"
   background(file: Upload!, prompt: String): String
 
+  "Upscale image, returns a base64 encoded image"
+  upscale(file: Upload!, width: Int!, height: Int!): String
+
   "Refine existing page content"
   refine(prompt: String!, content: JSON!, type: String, context: String): JSON
 
