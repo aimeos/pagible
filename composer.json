@@ -18,6 +18,7 @@
 		"league/commonmark": "^2.6",
 		"mll-lab/graphql-php-scalars": "^6.4",
 		"nuwave/lighthouse": "^6.54",
+		"aimeos/prisma": "dev-master",
 		"prism-php/prism": "0.97",
 		"symfony/uid": "^7.0"
 	},

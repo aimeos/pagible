@@ -8,6 +8,7 @@
 namespace Tests;
 
 use Aimeos\Cms\Models\File;
+use Aimeos\Prisma\Prisma;
 use Database\Seeders\CmsSeeder;
 use Illuminate\Http\UploadedFile;
 use Aimeos\AnalyticsBridge\Facades\Analytics;
@@ -83,17 +84,7 @@ class GraphqlTest extends TestAbstract
         $file = File::firstOrFail();
         $image = base64_encode( file_get_contents( __DIR__ . '/assets/image.png' ) );
 
-        Prism::fake( [new \Prism\Prism\Images\Response(
-            images: [
-                new \Prism\Prism\ValueObjects\GeneratedImage(
-                    revisedPrompt: null,
-                    base64: $image,
-                ),
-            ],
-            usage: new \Prism\Prism\ValueObjects\Usage(0, 0),
-            meta: new \Prism\Prism\ValueObjects\Meta('fake', 'fake'),
-            additionalContent: [],
-        )] );
+        Prisma::fake( [\Aimeos\Prisma\Responses\FileResponse::fromBase64( $image, 'image/png' )] );
 
         $response = $this->actingAs( $this->user )->graphQL( "
             mutation {
@@ -101,10 +92,7 @@ class GraphqlTest extends TestAbstract
             }
         " )->assertJson( [
             'data' => [
-                'imagine' => [
-                    'Generate content',
-                    $image
-                ]
+                'imagine' => $image
             ]
         ] );
     }

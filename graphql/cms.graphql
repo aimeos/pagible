@@ -72,7 +72,7 @@ extend type Mutation {
   compose(prompt: String!, context: String, files: [String!]): String
 
   "Generate images from prompts and passed file IDs"
-  imagine(prompt: String!, context: String, files: [String!]): [String!]
+  imagine(prompt: String!, context: String, files: [String!]): String
 
   "Refine existing page content"
   refine(prompt: String!, content: JSON!, type: String, context: String): JSON

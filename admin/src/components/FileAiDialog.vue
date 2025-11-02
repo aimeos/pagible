@@ -135,16 +135,15 @@
           }
 
           const name = this.chat
-          const list = response.data.imagine
-          this.chat = list.shift() || this.chat
 
-          list.forEach(base64 => {
+
+          if(response.data.imagine) {
               this.items.unshift({
-                path: URL.createObjectURL(this.base64ToBlob(base64)),
+                path: URL.createObjectURL(this.base64ToBlob(response.data.imagine)),
                 name: name.slice(0, name.length > 250 ? name.lastIndexOf(' ', 250) : 250),
                 mime: 'image/png'
               })
-          })
+          }
         }).catch(error => {
           this.messages.add(this.$gettext('Error creating file') + ":\n" + error, 'error')
           this.$log(`FileAiDialog::create(): Error creating file`, error)
