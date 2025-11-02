@@ -38,6 +38,9 @@
         scaleX: 1,
         scaleY: 1,
         menu: {},
+        width: 0,
+        height: 0,
+        toUncrop: { top: 0, right: 0, bottom: 0, left: 0 },
       }
     },
 
@@ -259,35 +262,41 @@
 
 
       init() {
-        if(!this.readonly && this.item.mime?.startsWith('image/')) {
-          if(this.cropper) {
-            this.cropper.destroy()
-            this.cropper = null
-          }
-
-          const self = this
-
-          this.cropper = new Cropper(this.$refs.image, {
-            aspectRatio: NaN,
-            background: true,
-            responsive: true,
-            dragMode: 'none',
-            movable: false,
-            autoCrop: false,
-            zoomable: false,
-            zoomOnWheel: false,
-            zoomOnTouch: false,
-            touchDragZoom: false,
-            checkCrossOrigin: false,
-            checkOrientation: false,
-            viewMode: 1,
-            crop(event) {
-              if (!self.cropLabel) return;
-              const { width, height } = event.detail;
-              self.cropLabel.textContent = `${Math.round(width)} × ${Math.round(height)}`;
-            },
-          })
+        if(this.readonly || !this.item.mime?.startsWith('image/')) {
+          return null
         }
+
+        if(this.cropper) {
+          this.cropper.destroy()
+        }
+
+        const self = this
+
+        return new Cropper(this.$refs.image, {
+          aspectRatio: NaN,
+          background: true,
+          dragMode: 'none',
+          movable: false,
+          autoCrop: false,
+          zoomable: false,
+          responsive: false,
+          zoomOnWheel: false,
+          zoomOnTouch: false,
+          touchDragZoom: false,
+          checkCrossOrigin: false,
+          checkOrientation: false,
+          viewMode: 1,
+          crop(event) {
+            if (!self.cropLabel) return;
+            const { width, height } = event.detail;
+            self.cropLabel.textContent = `${Math.round(width)} × ${Math.round(height)}`;
+          },
+          ready() {
+            const imageData = this.cropper.getImageData()
+            self.height = imageData.naturalHeight
+            self.width = imageData.naturalWidth
+          }
+        })
       },
 
 
@@ -506,6 +515,46 @@
       },
 
 
+      uncrop(top, right, bottom, left) {
+        if(this.readonly) {
+          return this.messages.add(this.$gettext('Permission denied'), 'error')
+        }
+
+        const self = this
+
+        this.cropper.getCroppedCanvas().toBlob(function(blob) {
+          self.loading.uncrop = true
+
+          self.$apollo.mutate({
+            mutation: gql`mutation($file: Upload!, $top: Int!, $right: Int!, $bottom: Int, $left: Int) {
+              uncrop(file: $file, top: $top, right: $right, bottom: $bottom, left: $left)
+            }`,
+            variables: {
+              file: new File([blob], 'image.png', {type: 'image/png'}),
+              top: top,
+              right: right,
+              bottom: bottom,
+              left: left
+            },
+            context: {
+              hasUpload: true
+            }
+          }).then(response => {
+            if(response.errors) {
+              throw response.errors
+            }
+
+            self.replace(self.base64ToBlob(response.data?.uncrop))
+          }).catch(error => {
+            self.messages.add(self.$gettext('Error uncropping image') + ":\n" + error, 'error')
+            self.$log('FileDetailItem::uncrop(): Error uncropping image', error)
+          }).finally(() => {
+            self.loading.uncrop = false
+          })
+        })
+      },
+
+
       update(what, value) {
         this.item[what] = value
         this.$emit('update:item', this.item)
@@ -677,7 +726,7 @@
                 <v-btn v-if="cropping"
                   @click="crop()"
                   :title="$gettext('Use cropped image')"
-                  icon="mdi-image-check"
+                  icon="mdi-check"
                   class="no-rtl"
                 />
                 <component v-else :is="$vuetify.display.xs ? 'v-dialog' : 'v-menu'"
@@ -727,6 +776,87 @@
                   </v-card>
                 </component>
 
+                <v-dialog
+                  v-model="menu['uncrop']"
+                  transition="scale-transition"
+                  location="end center"
+                  max-width="300">
+
+                  <template #activator="{ props }">
+                    <v-btn
+                      v-bind="props"
+                      :loading="loading.uncrop"
+                      :title="$gettext('Expand image')"
+                      icon="mdi-arrow-expand-all"
+                      class="no-rtl"
+                    />
+                  </template>
+
+                  <v-card class="uncrop">
+                    <v-toolbar density="compact">
+                      <v-toolbar-title>{{ $gettext('Expand image') }}</v-toolbar-title>
+                      <v-btn icon="mdi-close" @click="menu['uncrop'] = false" />
+                    </v-toolbar>
+
+                    <v-card-text>
+                      <v-row class="single">
+                        <v-col cols="6">
+                          <v-number-input
+                            v-model="toUncrop.top"
+                            variant="outlined"
+                            controlVariant="hidden"
+                            :label="$gettext('Top')"
+                            :max="2000"
+                            :min="0"
+                          />
+                        </v-col>
+                      </v-row>
+                      <v-row>
+                        <v-col cols="6">
+                          <v-number-input
+                            v-model="toUncrop.left"
+                            variant="outlined"
+                            controlVariant="hidden"
+                            :label="$gettext('Left')"
+                            :max="2000"
+                            :min="0"
+                          />
+                        </v-col>
+                        <v-col cols="6">
+                          <v-number-input
+                            v-model="toUncrop.right"
+                            variant="outlined"
+                            controlVariant="hidden"
+                            :label="$gettext('Right')"
+                            :max="2000"
+                            :min="0"
+                          />
+                        </v-col>
+                      </v-row>
+                      <v-row class="single">
+                        <v-col cols="6">
+                          <v-number-input
+                            v-model="toUncrop.bottom"
+                            variant="outlined"
+                            controlVariant="hidden"
+                            :label="$gettext('Bottom')"
+                            :max="2000"
+                            :min="0"
+                          />
+                        </v-col>
+                      </v-row>
+                    </v-card-text>
+
+                    <v-card-actions>
+                      <v-btn
+                        variant="outlined"
+                        @click="uncrop(toUncrop.top, toUncrop.right, toUncrop.bottom, toUncrop.left); menu['uncrop'] = false"
+                      >{{ $gettext('Expand image') }}</v-btn>
+                    </v-card-actions>
+                  </v-card>
+                </v-dialog>
+              </div>
+              <div class="toolbar-group">
                 <v-btn icon="mdi-image-edit" class="no-rtl" @click="vedit = true" :title="$gettext('Edit image')" />
               </div>
               <div class="toolbar-group">
@@ -1060,15 +1190,12 @@
     margin-top: 16px;
   }
 
-  @media (max-width: 480px) {
-    .toolbar {
-      width: auto;
-    }
+  .uncrop .single,
+  .v-card.uncrop .v-card-actions {
+    justify-content: center;
+  }
 
-    .toolbar-group {
-      flex-direction: column;
-      justify-content: center;
-      gap: 4px;
-    }
+  .uncrop .v-number-input :deep(.v-field__input) {
+    text-align: center;
   }
 </style>

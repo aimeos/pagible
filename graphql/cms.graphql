@@ -77,6 +77,9 @@ extend type Mutation {
   "Remove image background or replace by prompt instructions, returns a base64 encoded image"
   background(file: Upload!, prompt: String): String
 
+  "Extend/outpaint image, returns a base64 encoded image"
+  uncrop(file: Upload!, top: Int!, right: Int, bottom: Int, left: Int): String
+
   "Upscale image, returns a base64 encoded image"
   upscale(file: Upload!, width: Int!, height: Int!): String
 

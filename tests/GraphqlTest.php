@@ -243,6 +243,34 @@ class GraphqlTest extends TestAbstract
     }
 
 
+    public function testUncrop()
+    {
+        $this->seed( CmsSeeder::class );
+
+        $image = file_get_contents( __DIR__ . '/assets/image.png' );
+        Prisma::fake( [FileResponse::fromBinary( $image, 'image/png' )] );
+
+        $response = $this->actingAs( $this->user )->multipartGraphQL( [
+            'query' => '
+                mutation($file: Upload!) {
+                    uncrop(file: $file, top: 100, right: 100, bottom: 100, left: 100)
+                }
+            ',
+            'variables' => [
+                'file' => null,
+            ],
+        ], [
+            '0' => ['variables.file'],
+        ], [
+            '0' => UploadedFile::fake()->createWithContent('test.png', $image),
+        ] )->assertJson( [
+            'data' => [
+                'uncrop' => base64_encode( $image )
+            ]
+        ] );
+    }
+
+
     public function testUpscale()
     {
         $this->seed( CmsSeeder::class );
