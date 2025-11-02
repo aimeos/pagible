@@ -224,6 +224,26 @@
       },
 
 
+      createMask() {
+          const canvas = document.createElement('canvas')
+          const context = canvas.getContext('2d')
+
+          const data = this.cropper.getImageData()
+          const crop = this.cropper.getData()
+
+          canvas.width = data.naturalWidth
+          canvas.height = data.naturalHeight
+
+          context.fillStyle = 'black';
+          context.fillRect(0, 0, canvas.width, canvas.height);
+
+          context.fillStyle = 'white';
+          context.fillRect(crop.x, crop.y, crop.width, crop.height);
+
+          return canvas
+      },
+
+
       crop() {
         this.cropping = false
         this.cropper.setDragMode('none')
@@ -243,6 +263,60 @@
           link.click()
 
           URL.revokeObjectURL(url)
+        })
+      },
+
+
+      erase() {
+        if(this.readonly) {
+          return this.messages.add(this.$gettext('Permission denied'), 'error')
+        }
+
+        let image
+        const self = this
+
+        this.cropper.setDragMode('none')
+
+        if(!self.images[0]?.blob) {
+          image = fetch(self.url(self.item.path, true)).then(response => {
+            if(!response.ok) {
+              throw new Error('Network error: ' + response.statusText)
+            }
+            return response.blob()
+          })
+        } else {
+          image = Promise.resolve(self.images[0]?.blob)
+        }
+
+        image.then(blob => {
+          self.createMask().toBlob(function(mask) {
+            self.loading.erase = true
+
+            self.$apollo.mutate({
+              mutation: gql`mutation($file: Upload!, $mask: Upload!) {
+                erase(file: $file, mask: $mask)
+              }`,
+              variables: {
+                file: new File([blob], 'image', {type: self.item.mime}),
+                mask: new File([mask], 'mask', {type: 'image/png'}),
+              },
+              context: {
+                hasUpload: true
+              }
+            }).then(response => {
+              if(response.errors) {
+                throw response.errors
+              }
+
+              self.replace(self.base64ToBlob(response.data?.erase))
+            }).catch(error => {
+              self.messages.add(self.$gettext('Error erasing image part') + ":\n" + error, 'error')
+              self.$log('FileDetailItem::erase(): Error erasing image part', error)
+            }).finally(() => {
+              self.loading.erase = false
+              self.loading.mask = false
+            })
+          })
         })
       },
 
@@ -297,6 +371,24 @@
             self.width = imageData.naturalWidth
           }
         })
+      },
+
+
+      mask() {
+        this.cropper.setAspectRatio(NaN)
+        this.cropper.setDragMode('crop')
+        this.loading.mask = true
+
+        this.$nextTick(() => {
+          const cropBox = this.cropper.cropper.querySelector(".cropper-crop-box");
+
+          if (cropBox && !this.cropLabel) {
+            const label = document.createElement("div");
+            label.className = "crop-label";
+            cropBox.appendChild(label);
+            this.cropLabel = label;
+          }
+        });
       },
 
 
@@ -858,6 +950,15 @@
               </div>
               <div class="toolbar-group">
                 <v-btn icon="mdi-image-edit" class="no-rtl" @click="vedit = true" :title="$gettext('Edit image')" />
+
+                <v-btn v-if="loading.mask"
+                  @click="erase()"
+                  :loading="loading.erase"
+                  :title="$gettext('Erase area')"
+                  icon="mdi-check"
+                  class="no-rtl"
+                />
+                <v-btn v-else icon="mdi-eraser" class="no-rtl" @click="mask()" :title="$gettext('Erase area')" />
               </div>
               <div class="toolbar-group">
                 <v-btn
@@ -1162,6 +1263,18 @@
   .toolbar-group {
     display: flex;
     gap: 8px;
+  }
+
+  @media (max-width: 768px) {
+    .toolbar {
+      width: auto;
+    }
+
+    .toolbar-group {
+      flex-direction: column;
+      justify-content: center;
+      gap: 4px;
+    }
   }
 
   img.video-preview {

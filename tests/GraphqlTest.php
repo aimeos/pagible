@@ -106,6 +106,37 @@ class GraphqlTest extends TestAbstract
     }
 
 
+    public function testErase()
+    {
+        $this->seed( CmsSeeder::class );
+
+        $image = file_get_contents( __DIR__ . '/assets/image.png' );
+        Prisma::fake( [FileResponse::fromBinary( $image, 'image/png' )] );
+
+        $response = $this->actingAs( $this->user )->multipartGraphQL( [
+            'query' => '
+                mutation($file: Upload!, $mask: Upload!) {
+                    erase(file: $file, mask: $mask)
+                }
+            ',
+            'variables' => [
+                'file' => null,
+                'mask' => null,
+            ],
+        ], [
+            '0' => ['variables.file'],
+            '1' => ['variables.mask'],
+        ], [
+            '0' => UploadedFile::fake()->createWithContent('test.png', $image),
+            '1' => UploadedFile::fake()->createWithContent('test.png', $image),
+        ] )->assertJson( [
+            'data' => [
+                'erase' => base64_encode( $image )
+            ]
+        ] );
+    }
+
+
     public function testImagine()
     {
         $this->seed( CmsSeeder::class );
