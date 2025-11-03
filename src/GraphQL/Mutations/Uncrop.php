@@ -31,14 +31,21 @@ final class Uncrop
         $provider = config( 'cms.ai.uncrop' ) ?: 'clipdrop';
         $config = config( 'prism.providers.' . $provider, [] );
 
-        $file = Image::fromBinary( $upload->getContent(), $upload->getClientMimeType() );
+        try
+        {
+            $file = Image::fromBinary( $upload->getContent(), $upload->getClientMimeType() );
 
-        $response = Prisma::image()
-            ->using( $provider, $config )
-            ->model( config( 'cms.ai.uncrop-model' ) )
-            ->withClientOptions( ['timeout' => 60, 'connect_timeout' => 10] )
-            ->uncrop( $args['top'] ?? 0, $args['right'] ?? 0, $args['bottom'] ?? 0, $args['left'] ?? 0);
+            $response = Prisma::image()
+                ->using( $provider, $config )
+                ->model( config( 'cms.ai.uncrop-model' ) )
+                ->withClientOptions( ['timeout' => 60, 'connect_timeout' => 10] )
+                ->uncrop( $file, $args['top'] ?? 0, $args['right'] ?? 0, $args['bottom'] ?? 0, $args['left'] ?? 0 );
 
-        return $response->base64();
+            return $response->base64();
+        }
+        catch( PrismaException $e )
+        {
+            throw new Error( $e->getMessage(), null, null, null, null, $e );
+        }
     }
 }

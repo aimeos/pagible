@@ -36,15 +36,22 @@ final class Erase
         $provider = config( 'cms.ai.erase' ) ?: 'clipdrop';
         $config = config( 'prism.providers.' . $provider, [] );
 
-        $file = Image::fromBinary( $upload->getContent(), $upload->getClientMimeType() );
-        $mask = Image::fromBinary( $filemask->getContent(), $filemask->getClientMimeType() );
+        try
+        {
+            $file = Image::fromBinary( $upload->getContent(), $upload->getClientMimeType() );
+            $mask = Image::fromBinary( $filemask->getContent(), $filemask->getClientMimeType() );
 
-        $response = Prisma::image()
-            ->using( $provider, $config )
-            ->model( config( 'cms.ai.erase-model' ) )
-            ->withClientOptions( ['timeout' => 60, 'connect_timeout' => 10] )
-            ->erase( $file, $mask );
+            $response = Prisma::image()
+                ->using( $provider, $config )
+                ->model( config( 'cms.ai.erase-model' ) )
+                ->withClientOptions( ['timeout' => 60, 'connect_timeout' => 10] )
+                ->erase( $file, $mask );
 
-        return $response->base64();
+            return $response->base64();
+        }
+        catch( PrismaException $e )
+        {
+            throw new Error( $e->getMessage(), null, null, null, null, $e );
+        }
     }
 }

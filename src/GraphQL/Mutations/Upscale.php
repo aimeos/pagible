@@ -31,14 +31,21 @@ final class Upscale
         $provider = config( 'cms.ai.upscale' ) ?: 'clipdrop';
         $config = config( 'prism.providers.' . $provider, [] );
 
-        $file = Image::fromBinary( $upload->getContent(), $upload->getClientMimeType() );
+        try
+        {
+            $file = Image::fromBinary( $upload->getContent(), $upload->getClientMimeType() );
 
-        $response = Prisma::image()
-            ->using( $provider, $config )
-            ->model( config( 'cms.ai.upscale-model' ) )
-            ->withClientOptions( ['timeout' => 60, 'connect_timeout' => 10] )
-            ->upscale( $file, $args['width'] ?? 2000, $args['height'] ?? 2000 );
+            $response = Prisma::image()
+                ->using( $provider, $config )
+                ->model( config( 'cms.ai.upscale-model' ) )
+                ->withClientOptions( ['timeout' => 60, 'connect_timeout' => 10] )
+                ->upscale( $file, $args['width'] ?? 2000, $args['height'] ?? 2000 );
 
-        return $response->base64();
+            return $response->base64();
+        }
+        catch( PrismaException $e )
+        {
+            throw new Error( $e->getMessage(), null, null, null, null, $e );
+        }
     }
 }
