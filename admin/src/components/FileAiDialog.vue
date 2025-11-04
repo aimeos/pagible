@@ -36,7 +36,7 @@
         chat: '',
         items: [],
         errors: [],
-        similar: [],
+        used: [],
         loading: false,
         dictating: false,
       }
@@ -44,7 +44,7 @@
 
     beforeUpdate() {
       this.chat = [this.context?.title, this.context?.text, this.context?.description].filter(Boolean).join("\n")
-      this.similar = this.files || []
+      this.used = this.files || []
     },
 
     unmounted() {
@@ -54,7 +54,7 @@
         }
       })
 
-      this.similar = []
+      this.used = []
       this.items = []
     },
 
@@ -125,22 +125,19 @@
             imagine(prompt: $prompt, context: $context, files: $files)
           }`,
           variables: {
-            prompt: this.chat || this.$gettext('Create a suitable image based on the context'),
+            prompt: this.chat,
             context: this.context ? "Context in JSON format:\n" + JSON.stringify(this.context) : '',
-            files: this.similar.map(item => item.id),
+            files: this.used.map(item => item.id),
           }
         }).then(response => {
           if(response.errors) {
             throw response.errors
           }
 
-          const name = this.chat
-
-
           if(response.data.imagine) {
               this.items.unshift({
                 path: URL.createObjectURL(this.base64ToBlob(response.data.imagine)),
-                name: name.slice(0, name.length > 250 ? name.lastIndexOf(' ', 250) : 250),
+                name: this.chat.slice(0, this.chat.length > 250 ? this.chat.lastIndexOf(' ', 250) : 250),
                 mime: 'image/png'
               })
           }
@@ -178,14 +175,14 @@
       },
 
 
-      removeSimilar(idx) {
-        this.similar.splice(idx, 1)
+      removeUsed(idx) {
+        this.used.splice(idx, 1)
       },
 
 
       use(item) {
-        if(!this.similar.find(entry => entry.path === item.path)) {
-          this.similar.push(item)
+        if(!this.used.find(entry => entry.path === item.path)) {
+          this.used.push(item)
         }
       }
     }
@@ -212,13 +209,13 @@
         />
       </template>
       <template v-slot:title>
-        {{ $gettext('Create or alter image') }}
+        {{ $gettext('Create image') }}
       </template>
 
       <v-card-text>
         <v-textarea
           v-model="chat"
-          :label="similar.length ? $gettext('Describe the scene changes') : $gettext('Describe the image')"
+          :label="$gettext('Describe the image content')"
           variant="underlined"
           autofocus
           clearable
@@ -253,13 +250,13 @@
           </v-list>
         </div>
 
-        <div v-if="similar.length">
+        <div v-if="used.length">
           <v-tabs>
             <v-tab>{{ $gettext('Images used') }}</v-tab>
           </v-tabs>
           <v-list class="items grid">
-            <v-list-item v-for="(item, idx) in similar" :key="idx">
-              <v-btn icon="mdi-delete" @click="removeSimilar(idx)" class="btn-overlay" :title="$gettext('Remove')"></v-btn>
+            <v-list-item v-for="(item, idx) in used" :key="idx">
+              <v-btn icon="mdi-delete" @click="removeUsed(idx)" class="btn-overlay" :title="$gettext('Remove')"></v-btn>
 
               <div class="item-preview">
                 <img :src="url(item.path)">
