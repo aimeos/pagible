@@ -60,8 +60,6 @@ class GraphqlTest extends TestAbstract
 
     public function testBackground()
     {
-        $this->seed( CmsSeeder::class );
-
         $image = file_get_contents( __DIR__ . '/assets/image.png' );
         Prisma::fake( [FileResponse::fromBinary( $image, 'image/png' )] );
 
@@ -108,8 +106,6 @@ class GraphqlTest extends TestAbstract
 
     public function testErase()
     {
-        $this->seed( CmsSeeder::class );
-
         $image = file_get_contents( __DIR__ . '/assets/image.png' );
         Prisma::fake( [FileResponse::fromBinary( $image, 'image/png' )] );
 
@@ -153,6 +149,36 @@ class GraphqlTest extends TestAbstract
         " )->assertJson( [
             'data' => [
                 'imagine' => $image
+            ]
+        ] );
+    }
+
+
+    public function testInpaint()
+    {
+        $image = file_get_contents( __DIR__ . '/assets/image.png' );
+        Prisma::fake( [FileResponse::fromBinary( $image, 'image/png' )] );
+
+        $response = $this->actingAs( $this->user )->multipartGraphQL( [
+            'query' => '
+                mutation($file: Upload!, $prompt: String!, $mask: Upload) {
+                    inpaint(file: $file, prompt: $prompt, mask: $mask)
+                }
+            ',
+            'variables' => [
+                'file' => null,
+                'prompt' => 'Test prompt',
+                'mask' => null,
+            ],
+        ], [
+            '0' => ['variables.file'],
+            '1' => ['variables.mask'],
+        ], [
+            '0' => UploadedFile::fake()->createWithContent('test.png', $image),
+            '1' => UploadedFile::fake()->createWithContent('test.png', $image),
+        ] )->assertJson( [
+            'data' => [
+                'inpaint' => base64_encode( $image )
             ]
         ] );
     }

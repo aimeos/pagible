@@ -80,6 +80,9 @@ extend type Mutation {
   "Remove the part of the image covered by the mask (black: keep, white: erase), returns a base64 encoded image"
   erase(file: Upload!, mask: Upload!): String
 
+  "Edit an image using a prompt and an optional mask, returns a base64 encoded image"
+  inpaint(file: Upload!, prompt: String!, mask: Upload): String
+
   "Extend/outpaint image, returns a base64 encoded image"
   uncrop(file: Upload!, top: Int!, right: Int, bottom: Int, left: Int): String
 

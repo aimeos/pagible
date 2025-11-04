@@ -43,6 +43,7 @@ abstract class TestAbstract extends \Orchestra\Testbench\TestCase
         $app['config']->set('cms.db', 'testing');
         $app['config']->set('scout.driver', 'collection');
         $app['config']->set('prism.providers.clipdrop', ['api_key' => 'test']);
+        $app['config']->set('prism.providers.stabilityai', ['api_key' => 'test']);
 
         $app['config']->set('cms.schemas.content.heading', [
             'group' => 'basic',
