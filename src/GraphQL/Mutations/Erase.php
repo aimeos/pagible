@@ -45,6 +45,7 @@ final class Erase
                 ->using( $provider, $config )
                 ->model( config( 'cms.ai.erase-model' ) )
                 ->withClientOptions( ['timeout' => 60, 'connect_timeout' => 10] )
+                ->ensure( 'erase' )
                 ->erase( $file, $mask );
 
             return $response->base64();

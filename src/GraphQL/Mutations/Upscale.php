@@ -39,6 +39,7 @@ final class Upscale
                 ->using( $provider, $config )
                 ->model( config( 'cms.ai.upscale-model' ) )
                 ->withClientOptions( ['timeout' => 60, 'connect_timeout' => 10] )
+                ->ensure( 'upscale' )
                 ->upscale( $file, $args['width'] ?? 2000, $args['height'] ?? 2000 );
 
             return $response->base64();

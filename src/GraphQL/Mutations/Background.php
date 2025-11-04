@@ -40,7 +40,9 @@ final class Background
                 ->withClientOptions( ['timeout' => 60, 'connect_timeout' => 10] );
 
             $file = Image::fromBinary( $upload->getContent(), $upload->getClientMimeType() );
-            $response = $prompt ? $prisma->background( $file, $prompt ) : $prisma->clear( $file );
+            $response = $prompt
+                ? $prisma->ensure( 'background' )->background( $file, $prompt )
+                : $prisma->ensure( 'clear' )->clear( $file );
 
             return $response->base64();
         }

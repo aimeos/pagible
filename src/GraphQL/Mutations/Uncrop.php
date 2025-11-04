@@ -39,6 +39,7 @@ final class Uncrop
                 ->using( $provider, $config )
                 ->model( config( 'cms.ai.uncrop-model' ) )
                 ->withClientOptions( ['timeout' => 60, 'connect_timeout' => 10] )
+                ->ensure( 'uncrop' )
                 ->uncrop( $file, $args['top'] ?? 0, $args['right'] ?? 0, $args['bottom'] ?? 0, $args['left'] ?? 0 );
 
             return $response->base64();

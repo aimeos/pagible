@@ -33,16 +33,15 @@ final class Imagine
         ] ) );
 
         $provider = config( 'cms.ai.image' ) ?: 'gemini';
+        $config = config( 'prism.providers.' . $provider, [] );
         $model = config( 'cms.ai.image-model' ) ?: 'gemini-2.5-flash-image';
 
         try
         {
-            $prisma = Prisma::image()->using( $provider, config( 'prism.providers.' . $provider, [] ) )
+            $prisma = Prisma::image()
+                ->using( $provider, $config )
                 ->withSystemPrompt( $sysPrompt )
-                ->withClientOptions( [
-                    'connect_timeout' => 10,
-                    'timeout' => 60,
-                ] );
+                ->withClientOptions( ['timeout' => 60, 'connect_timeout' => 10] );
 
             if( !empty( $ids = $args['files'] ?? null ) )
             {

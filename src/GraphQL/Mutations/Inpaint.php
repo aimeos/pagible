@@ -45,6 +45,7 @@ final class Inpaint
                 ->using( $provider, $config )
                 ->model( config( 'cms.ai.inpaint-model' ) )
                 ->withClientOptions( ['timeout' => 60, 'connect_timeout' => 10] )
+                ->ensure( 'inpaint' )
                 ->inpaint( $file, $args['prompt'], $mask );
 
             return $response->base64();
