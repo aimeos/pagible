@@ -67,7 +67,7 @@ final class Imagine
         }
         catch( PrismaException $e )
         {
-            throw new Error( $e->getMessage(), null, null, null, null, $e );
+            throw new Error( $e->getMessage(), null, null, null, null, null, $e->getTrace() );
         }
     }
 }
