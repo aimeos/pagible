@@ -31,6 +31,7 @@
         last: 1,
         limit: 100,
         vschemas: false,
+        actions: false,
         checked: false,
         loading: true,
         trash: false,
@@ -417,33 +418,52 @@
   <div class="header">
     <div class="bulk">
       <v-checkbox-btn v-model="checked" @click.stop="toggle()" />
-      <v-menu>
-        <template #activator="{ props }">
-          <v-btn
-            v-bind="props"
-            :disabled="!isChecked && (embed || !auth.can('element:add'))"
-            append-icon="mdi-menu-down"
+
+      <component :is="$vuetify.display.xs ? 'v-dialog' : 'v-menu'"
+        v-model="actions"
+        transition="scale-transition"
+        location="end center"
+        max-width="300">
+
+        <template v-slot:activator="{ props }">
+          <v-btn v-bind="props"
+            :disabled="!isChecked || embed || !auth.can('element:add')"
+            :title="$gettext('Actions')"
+            icon="mdi-dots-vertical"
             variant="text"
-          >{{ $gettext('Actions') }}</v-btn>
+          />
         </template>
-        <v-list>
-          <v-list-item v-if="!embed && auth.can('element:add')">
-            <v-btn prepend-icon="mdi-folder-plus" variant="text" @click="vschemas = true">{{ $gettext('Add element') }}</v-btn>
-          </v-list-item>
-          <v-list-item v-show="isChecked && auth.can('element:publish')">
-            <v-btn prepend-icon="mdi-publish" variant="text" @click="publish()">{{ $gettext('Publish') }}</v-btn>
-          </v-list-item>
-          <v-list-item v-show="canTrash && auth.can('element:drop')">
-            <v-btn prepend-icon="mdi-delete" variant="text" @click="drop()">{{ $gettext('Delete') }}</v-btn>
-          </v-list-item>
-          <v-list-item v-show="isTrashed && auth.can('element:keep')">
-            <v-btn prepend-icon="mdi-delete-restore" variant="text" @click="keep()">{{ $gettext('Restore') }}</v-btn>
-          </v-list-item>
-          <v-list-item v-show="isChecked && auth.can('element:purge')">
-            <v-btn prepend-icon="mdi-delete-forever" variant="text" @click="purge()">{{ $gettext('Purge') }}</v-btn>
-          </v-list-item>
-        </v-list>
-      </v-menu>
+        <v-card>
+          <v-toolbar density="compact">
+            <v-toolbar-title>{{ $gettext('Actions') }}</v-toolbar-title>
+            <v-btn icon="mdi-close" @click="actions = false" />
+          </v-toolbar>
+
+          <v-list @click="actions = false">
+            <v-list-item v-show="isChecked && auth.can('element:publish')">
+              <v-btn prepend-icon="mdi-publish" variant="text" @click="publish()">{{ $gettext('Publish') }}</v-btn>
+            </v-list-item>
+            <v-list-item v-show="canTrash && auth.can('element:drop')">
+              <v-btn prepend-icon="mdi-delete" variant="text" @click="drop()">{{ $gettext('Delete') }}</v-btn>
+            </v-list-item>
+            <v-list-item v-show="isTrashed && auth.can('element:keep')">
+              <v-btn prepend-icon="mdi-delete-restore" variant="text" @click="keep()">{{ $gettext('Restore') }}</v-btn>
+            </v-list-item>
+            <v-list-item v-show="isChecked && auth.can('element:purge')">
+              <v-btn prepend-icon="mdi-delete-forever" variant="text" @click="purge()">{{ $gettext('Purge') }}</v-btn>
+            </v-list-item>
+          </v-list>
+        </v-card>
+      </component>
+
+      <v-btn v-if="!this.embed && this.auth.can('element:add')"
+        @click="vschemas = true"
+        :title="$gettext('Add element')"
+        :disabled="loading"
+        icon="mdi-plus"
+        color="primary"
+        variant="tonal"
+      />
     </div>
 
     <div class="search">
@@ -504,7 +524,6 @@
             <v-btn v-bind="props"
               :title="$gettext('Actions')"
               icon="mdi-dots-vertical"
-              class="item-menu"
               variant="text"
             />
           </template>
@@ -568,11 +587,13 @@
   ></v-pagination>
 
   <div v-if="!this.embed && this.auth.can('element:add')" class="btn-group">
-    <v-btn @click="vschemas = true"
+    <v-btn
+      @click="vschemas = true"
       :title="$gettext('Add element')"
-      icon="mdi-view-grid-plus"
+      :disabled="loading"
+      icon="mdi-plus"
       color="primary"
-      variant="flat"
+      variant="tonal"
     />
   </div>
 
@@ -590,6 +611,10 @@
 <style scoped>
   .layoout .v-list-item {
     text-transform: uppercase;
+  }
+
+  .items {
+    margin: 0;
   }
 
   .items .v-list-item {

@@ -350,7 +350,11 @@ body {
   background-color: rgb(var(--v-theme-warning)) !important;
   color: rgb(var(--v-theme-surface-variant)) !important;
   border-radius: 50%;
-  opacity: 0.66;
+  opacity: 0.4;
+}
+
+.draft .v-selection-control__input > .v-icon {
+  opacity: 1;
 }
 
 .publish-at {
