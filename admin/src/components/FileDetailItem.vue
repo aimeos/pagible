@@ -173,7 +173,7 @@
       },
 
 
-      background() {
+      isolate() {
         if(this.readonly) {
           return this.messages.add(this.$gettext('Permission denied'), 'error')
         }
@@ -181,15 +181,14 @@
         const self = this
 
         this.cropper.getCroppedCanvas().toBlob(function(blob) {
-          self.loading.background = true
+          self.loading.isolate = true
 
           self.$apollo.mutate({
-            mutation: gql`mutation($file: Upload!, $prompt: String) {
-              background(file: $file, prompt: $prompt)
+            mutation: gql`mutation($file: Upload!) {
+              isolate(file: $file)
             }`,
             variables: {
               file: new File([blob], 'image.png', {type: 'image/png'}),
-              prompt: null,
             },
             context: {
               hasUpload: true
@@ -199,12 +198,12 @@
               throw response.errors
             }
 
-            self.replace(self.base64ToBlob(response.data?.background))
+            self.replace(self.base64ToBlob(response.data?.isolate))
           }).catch(error => {
-            self.messages.add(self.$gettext('Error replacing background') + ":\n" + error, 'error')
-            self.$log('FileDetailItem::background(): Error replacing background', error)
+            self.messages.add(self.$gettext('Error isolating image foreground') + ":\n" + error, 'error')
+            self.$log('FileDetailItem::isolate(): Error isolating image foreground', error)
           }).finally(() => {
-            self.loading.background = false
+            self.loading.isolate = false
           })
         })
       },
@@ -868,6 +867,32 @@
                   </v-card>
                 </component>
 
+                <v-btn
+                  @click="erase()"
+                  :disabled="!selected"
+                  :loading="loading.erase"
+                  :title="$gettext('Erase area')"
+                  icon="mdi-eraser"
+                  class="no-rtl"
+                />
+              </div>
+              <div class="toolbar-group">
+                <v-btn
+                  @click="vedit = true"
+                  :title="$gettext('Edit image')"
+                  icon="mdi-image-edit"
+                  class="no-rtl"
+                />
+
+                <v-btn
+                  @click="isolate()"
+                  :title="$gettext('Remove background')"
+                  :loading="loading.isolate"
+                  icon="mdi-image-filter-black-white"
+                  class="no-rtl"
+                />
+              </div>
+              <div class="toolbar-group">
                 <v-dialog
                   v-model="menu['uncrop']"
                   transition="scale-transition"
@@ -947,27 +972,6 @@
                     </v-card-actions>
                   </v-card>
                 </v-dialog>
-              </div>
-              <div class="toolbar-group">
-                <v-btn icon="mdi-image-edit" class="no-rtl" @click="vedit = true" :title="$gettext('Edit image')" />
-
-                <v-btn v-if="loading.mask"
-                  @click="erase()"
-                  :loading="loading.erase"
-                  :title="$gettext('Erase area')"
-                  icon="mdi-check"
-                  class="no-rtl"
-                />
-                <v-btn v-else icon="mdi-eraser" class="no-rtl" @click="mask()" :title="$gettext('Erase area')" />
-              </div>
-              <div class="toolbar-group">
-                <v-btn
-                  @click="background()"
-                  :title="$gettext('Remove background')"
-                  :loading="loading.background"
-                  icon="mdi-image-filter-black-white"
-                  class="no-rtl"
-                />
 
                 <component :is="$vuetify.display.xs ? 'v-dialog' : 'v-menu'"
                   v-model="menu['upscale']"

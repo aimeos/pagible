@@ -14,7 +14,7 @@ use Illuminate\Http\UploadedFile;
 use GraphQL\Error\Error;
 
 
-final class Background
+final class Isolate
 {
     /**
      * @param  null  $rootValue
@@ -22,27 +22,25 @@ final class Background
      */
     public function __invoke( $rootValue, array $args ): string
     {
-        $upload = $args['file'] ?? null;
-        $prompt = $args['prompt'] ?? null;
+        $upload = $args['file'];
 
         if( !$upload instanceof UploadedFile || !$upload->isValid() ) {
             throw new Error( 'Invalid file upload' );
         }
 
-        $provider = config( 'cms.ai.background' ) ?: 'clipdrop';
+        $provider = config( 'cms.ai.isolate' ) ?: 'clipdrop';
         $config = config( 'prism.providers.' . $provider, [] );
 
         try
         {
-            $prisma = Prisma::image()
-                ->using( $provider, $config )
-                ->model( config( 'cms.ai.background-model' ) )
-                ->withClientOptions( ['timeout' => 60, 'connect_timeout' => 10] );
-
             $file = Image::fromBinary( $upload->getContent(), $upload->getClientMimeType() );
-            $response = $prompt
-                ? $prisma->ensure( 'background' )->background( $file, $prompt )
-                : $prisma->ensure( 'clear' )->clear( $file );
+
+            $response = Prisma::image()
+                ->using( $provider, $config )
+                ->model( config( 'cms.ai.isolate-model' ) )
+                ->withClientOptions( ['timeout' => 60, 'connect_timeout' => 10] )
+                ->ensure( 'isolate' )
+                ->isolate( $file );
 
             return $response->base64();
         }

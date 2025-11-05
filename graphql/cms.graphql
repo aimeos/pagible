@@ -74,8 +74,8 @@ extend type Mutation {
   "Generate images from prompts and passed file IDs, returns a base64 encoded image"
   imagine(prompt: String!, context: String, files: [String!]): String
 
-  "Remove image background or replace by prompt instructions, returns a base64 encoded image"
-  background(file: Upload!, prompt: String): String
+  "Remove image background, returns a base64 encoded image"
+  isolate(file: Upload!): String
 
   "Remove the part of the image covered by the mask (black: keep, white: erase), returns a base64 encoded image"
   erase(file: Upload!, mask: Upload!): String
