@@ -27,7 +27,7 @@
     data() {
       return {
         vedit: false,
-        cropping: false,
+        selected: false,
         loading: {},
         tabtrans: null,
         tabdesc: null,
@@ -35,8 +35,6 @@
         cropper: null,
         audio: null,
         images: [],
-        scaleX: 1,
-        scaleY: 1,
         menu: {},
         width: 0,
         height: 0,
@@ -158,7 +156,6 @@
       aspect(ratio) {
         this.cropper.setAspectRatio(ratio)
         this.cropper.setDragMode('crop')
-        this.cropping = true
 
         this.$nextTick(() => {
           const cropBox = this.cropper.cropper.querySelector(".cropper-crop-box");
@@ -173,39 +170,10 @@
       },
 
 
-      isolate() {
-        if(this.readonly) {
-          return this.messages.add(this.$gettext('Permission denied'), 'error')
-        }
-
-        const self = this
-
-        this.cropper.getCroppedCanvas().toBlob(function(blob) {
-          self.loading.isolate = true
-
-          self.$apollo.mutate({
-            mutation: gql`mutation($file: Upload!) {
-              isolate(file: $file)
-            }`,
-            variables: {
-              file: new File([blob], 'image.png', {type: 'image/png'}),
-            },
-            context: {
-              hasUpload: true
-            }
-          }).then(response => {
-            if(response.errors) {
-              throw response.errors
-            }
-
-            self.replace(self.base64ToBlob(response.data?.isolate))
-          }).catch(error => {
-            self.messages.add(self.$gettext('Error isolating image foreground') + ":\n" + error, 'error')
-            self.$log('FileDetailItem::isolate(): Error isolating image foreground', error)
-          }).finally(() => {
-            self.loading.isolate = false
-          })
-        })
+      clear() {
+        this.cropper.setDragMode('none')
+        this.cropper.clear()
+        this.selected = false
       },
 
 
@@ -244,11 +212,9 @@
 
 
       crop() {
-        this.cropping = false
+        this.updateFile()
+        this.selected = false
         this.cropper.setDragMode('none')
-        this.cropper.getCroppedCanvas().toBlob(blob => {
-          this.$emit('update:file', blob)
-        })
       },
 
 
@@ -321,15 +287,13 @@
 
 
       flipX() {
-        this.scaleX = -this.scaleX
-        this.cropper.scaleX(this.scaleX)
+        this.cropper.scaleX(-1)
         this.updateFile()
       },
 
 
       flipY() {
-        this.scaleY = -this.scaleY
-        this.cropper.scaleY(this.scaleY)
+        this.cropper.scaleY(-1)
         this.updateFile()
       },
 
@@ -360,15 +324,53 @@
           checkOrientation: false,
           viewMode: 1,
           crop(event) {
-            if (!self.cropLabel) return;
-            const { width, height } = event.detail;
-            self.cropLabel.textContent = `${Math.round(width)} × ${Math.round(height)}`;
+            if (!self.cropLabel) return
+
+            const { width, height } = event.detail
+            self.cropLabel.textContent = `${Math.round(width)} × ${Math.round(height)}`
+            self.selected = true
           },
           ready() {
             const imageData = this.cropper.getImageData()
             self.height = imageData.naturalHeight
             self.width = imageData.naturalWidth
           }
+        })
+      },
+
+
+      isolate() {
+        if(this.readonly) {
+          return this.messages.add(this.$gettext('Permission denied'), 'error')
+        }
+
+        const self = this
+
+        this.cropper.getCroppedCanvas().toBlob(function(blob) {
+          self.loading.isolate = true
+
+          self.$apollo.mutate({
+            mutation: gql`mutation($file: Upload!) {
+              isolate(file: $file)
+            }`,
+            variables: {
+              file: new File([blob], 'image.png', {type: 'image/png'}),
+            },
+            context: {
+              hasUpload: true
+            }
+          }).then(response => {
+            if(response.errors) {
+              throw response.errors
+            }
+
+            self.replace(self.base64ToBlob(response.data?.isolate))
+          }).catch(error => {
+            self.messages.add(self.$gettext('Error isolating image foreground') + ":\n" + error, 'error')
+            self.$log('FileDetailItem::isolate(): Error isolating image foreground', error)
+          }).finally(() => {
+            self.loading.isolate = false
+          })
         })
       },
 
@@ -485,11 +487,9 @@
 
 
       reset() {
-        this.cropping = false
+        this.selected = false
         this.cropper.reset()
         this.cropper.clear()
-        this.scaleX = 1
-        this.scaleY = 1
       },
 
 
@@ -655,11 +655,14 @@
       updateFile() {
         if(!this.readonly) {
           this.cropper.getCroppedCanvas().toBlob(blob => {
-            this.images.unshift({blob: blob, url: URL.createObjectURL(blob)})
+            const url = URL.createObjectURL(blob)
+
+            this.images.unshift({blob: blob, url: url})
             this.images.splice(10).forEach(img => {
               URL.revokeObjectURL(img.url)
             })
 
+            this.cropper.replace(url)
             this.$emit('update:file', new File([blob], this.item.path.split('/').pop(), {type: 'image/png'}))
           })
         }
@@ -814,14 +817,14 @@
 
             <div v-if="!readonly" class="toolbar">
               <div class="toolbar-group">
-                <v-btn v-if="cropping"
-                  @click="crop()"
-                  :title="$gettext('Use cropped image')"
-                  icon="mdi-check"
+                <v-btn v-if="selected"
+                  @click="clear()"
+                  :title="$gettext('Cancel')"
+                  icon="mdi-close"
                   class="no-rtl"
                 />
                 <component v-else :is="$vuetify.display.xs ? 'v-dialog' : 'v-menu'"
-                  v-model="menu['crop']"
+                  v-model="menu['select']"
                   transition="scale-transition"
                   location="end center"
                   max-width="300">
@@ -829,49 +832,58 @@
                   <template #activator="{ props }">
                     <v-btn
                       v-bind="props"
-                      :title="$gettext('Crop image')"
-                      icon="mdi-crop"
+                      :title="$gettext('Select area')"
+                      icon="mdi-crop-free"
                       class="no-rtl"
                     />
                   </template>
 
                   <v-card>
                     <v-toolbar density="compact">
-                      <v-toolbar-title>{{ $gettext('Crop image') }}</v-toolbar-title>
-                      <v-btn icon="mdi-close" @click="menu['crop'] = false" />
+                      <v-toolbar-title>{{ $gettext('Select area') }}</v-toolbar-title>
+                      <v-btn icon="mdi-close" @click="menu['select'] = false" />
                     </v-toolbar>
 
-                    <v-list @click="menu['crop'] = false">
+                    <v-list @click="menu['select'] = false">
                       <v-list-item>
-                        <v-btn prepend-icon="mdi-crop" class="no-rtl" variant="text" @click="aspect(ratio)">{{ $gettext('Original ratio') }}</v-btn>
+                        <v-btn prepend-icon="mdi-crop-free" class="no-rtl" variant="text" @click="aspect(ratio)">{{ $gettext('Original ratio') }}</v-btn>
                       </v-list-item>
                       <v-list-item>
-                        <v-btn prepend-icon="mdi-crop" class="no-rtl" variant="text" @click="aspect(NaN)">{{ $gettext('No ratio') }}</v-btn>
+                        <v-btn prepend-icon="mdi-crop-free" class="no-rtl" variant="text" @click="aspect(NaN)">{{ $gettext('No ratio') }}</v-btn>
                       </v-list-item>
                       <v-list-item>
-                        <v-btn prepend-icon="mdi-crop" class="no-rtl" variant="text" @click="aspect(1)">{{ $gettext('Square') }}</v-btn>
+                        <v-btn prepend-icon="mdi-crop-free" class="no-rtl" variant="text" @click="aspect(1)">{{ $gettext('Square') }}</v-btn>
                       </v-list-item>
                       <v-list-item>
-                        <v-btn prepend-icon="mdi-crop" class="no-rtl" variant="text" @click="aspect(3/2)">3:2</v-btn>
+                        <v-btn prepend-icon="mdi-crop-free" class="no-rtl" variant="text" @click="aspect(3/2)">3:2</v-btn>
                       </v-list-item>
                       <v-list-item>
-                        <v-btn prepend-icon="mdi-crop" class="no-rtl" variant="text" @click="aspect(4/3)">4:3</v-btn>
+                        <v-btn prepend-icon="mdi-crop-free" class="no-rtl" variant="text" @click="aspect(4/3)">4:3</v-btn>
                       </v-list-item>
                       <v-list-item>
-                        <v-btn prepend-icon="mdi-crop" class="no-rtl" variant="text" @click="aspect(5/3)">5:3</v-btn>
+                        <v-btn prepend-icon="mdi-crop-free" class="no-rtl" variant="text" @click="aspect(5/3)">5:3</v-btn>
                       </v-list-item>
                       <v-list-item>
-                        <v-btn prepend-icon="mdi-crop" class="no-rtl" variant="text" @click="aspect(16/9)">16:9</v-btn>
+                        <v-btn prepend-icon="mdi-crop-free" class="no-rtl" variant="text" @click="aspect(16/9)">16:9</v-btn>
                       </v-list-item>
                     </v-list>
                   </v-card>
                 </component>
+              </div>
+              <div class="toolbar-group">
+                <v-btn
+                  @click="crop()"
+                  :disabled="!selected"
+                  :title="$gettext('Crop selected area')"
+                  icon="mdi-crop"
+                  class="no-rtl"
+                />
 
                 <v-btn
                   @click="erase()"
                   :disabled="!selected"
                   :loading="loading.erase"
-                  :title="$gettext('Erase area')"
+                  :title="$gettext('Erase selected area')"
                   icon="mdi-eraser"
                   class="no-rtl"
                 />
