@@ -551,7 +551,7 @@
         </component>
       </div>
 
-      <div class="item-content" @click="$emit('select', item)" :class="{trashed: item.deleted_at}":title="title(item)">
+      <a href="#" class="item-content" @click="$emit('select', item)" :class="{trashed: item.deleted_at}":title="title(item)">
         <div class="item-text">
           <div class="item-head">
             <span class="item-lang" v-if="item.lang">{{ item.lang }}</span>
@@ -565,7 +565,7 @@
           <div class="item-editor">{{ item.editor }}</div>
           <div class="item-modified item-subtitle">{{ (new Date(item.updated_at)).toLocaleString() }}</div>
         </div>
-      </div>
+      </a>
     </v-list-item>
   </v-list>
 

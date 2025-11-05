@@ -635,7 +635,7 @@
         </svg>
       </div>
 
-      <div class="item-content" @click="$emit('select', item)" :class="{trashed: item.deleted_at}" :title="title(item)">
+      <a href="#" class="item-content" @click="$emit('select', item)" :class="{trashed: item.deleted_at}" :title="title(item)">
         <div class="item-text">
           <div class="item-head">
             <span class="item-lang" v-if="item.lang">{{ item.lang }}</span>
@@ -649,7 +649,7 @@
           <div class="item-editor">{{ item.editor }}</div>
           <div class="item-modified item-subtitle">{{ (new Date(item.updated_at)).toLocaleString() }}</div>
         </div>
-      </div>
+      </a>
     </v-list-item>
   </v-list>
 
@@ -773,10 +773,6 @@
 
   .items.grid .v-list-item .item-check,
   .items.grid .v-list-item .item-menu {
-    background: rgb(var(--v-theme-surface-variant));
-    color: rgb(var(--v-theme-surface));
-    opacity: 0.66;
-    border-radius: 50%;
     position: absolute;
     display: block;
     z-index: 2;
@@ -788,6 +784,10 @@
   }
 
   .items.grid .v-list-item .item-menu {
+    background: rgb(var(--v-theme-surface-variant));
+    color: rgb(var(--v-theme-surface));
+    border-radius: 50%;
+    opacity: 0.6;
     right: 0;
   }
 
@@ -807,6 +807,7 @@
 
   .items.grid .item-content {
     flex-direction: column;
+    margin-top: 16px;
   }
 
   .items.grid .item-aux {

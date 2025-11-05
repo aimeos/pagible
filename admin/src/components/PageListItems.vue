@@ -1094,7 +1094,7 @@
         }"
         :title="title(node)"
       >
-        <div class="item-text" @click="$emit('select', node)">
+        <a href="#" class="item-text" @click="$emit('select', node)">
           <div class="item-head">
             <span class="item-lang" v-if="node.lang">{{ node.lang }}</span>
             <v-icon v-if="node.publish_at" class="publish-at" icon="mdi-clock-outline" />
@@ -1102,7 +1102,7 @@
             <span class="item-title">{{ node.name || $gettext('New') }}</span>
           </div>
           <div v-if="node.title" class="item-subtitle">{{ node.title }}</div>
-        </div>
+        </a>
         <a class="item-aux" :href="url(node)" target="_blank" draggable="false">
           <div class="item-domain">{{ node.domain }}</div>
           <span class="item-path item-subtitle">{{ url(node) }}</span>
@@ -1154,6 +1154,10 @@
     user-select: none;
   }
 
+  .tree-node-inner:focus-within {
+    background-color: rgb(var(--v-theme-surface-light));
+  }
+
   .tree-node-inner .actions {
     display: flex;
     flex-wrap: wrap;
@@ -1178,6 +1182,15 @@
 
   .tree-node-inner .item-content.cut {
     opacity: 0.5;
+  }
+
+  .tree-node-inner .item-text {
+    color: rgba(var(--v-theme-on-surface), var(--v-high-emphasis-opacity));
+    outline: none;
+  }
+
+  .tree-node-inner .item-text:not(:focus) {
+    text-decoration: none;
   }
 
   .tree-node-inner .item-domain {
