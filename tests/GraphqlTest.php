@@ -58,7 +58,7 @@ class GraphqlTest extends TestAbstract
     }
 
 
-    public function testBackground()
+    public function testIsolate()
     {
         $image = file_get_contents( __DIR__ . '/assets/image.png' );
         Prisma::fake( [FileResponse::fromBinary( $image, 'image/png' )] );
@@ -66,7 +66,7 @@ class GraphqlTest extends TestAbstract
         $response = $this->actingAs( $this->user )->multipartGraphQL( [
             'query' => '
                 mutation($file: Upload!) {
-                    background(file: $file)
+                    isolate(file: $file)
                 }
             ',
             'variables' => [
@@ -78,7 +78,7 @@ class GraphqlTest extends TestAbstract
             '0' => UploadedFile::fake()->createWithContent('test.png', $image),
         ] )->assertJson( [
             'data' => [
-                'background' => base64_encode( $image )
+                'isolate' => base64_encode( $image )
             ]
         ] );
     }
@@ -161,14 +161,14 @@ class GraphqlTest extends TestAbstract
 
         $response = $this->actingAs( $this->user )->multipartGraphQL( [
             'query' => '
-                mutation($file: Upload!, $prompt: String!, $mask: Upload) {
-                    inpaint(file: $file, prompt: $prompt, mask: $mask)
+                mutation($file: Upload!, $mask: Upload!, $prompt: String!) {
+                    inpaint(file: $file, mask: $mask, prompt: $prompt)
                 }
             ',
             'variables' => [
                 'file' => null,
-                'prompt' => 'Test prompt',
                 'mask' => null,
+                'prompt' => 'Test prompt',
             ],
         ], [
             '0' => ['variables.file'],
