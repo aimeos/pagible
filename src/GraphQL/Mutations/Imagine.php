@@ -37,7 +37,7 @@ final class Imagine
                 ->using( $provider, $config )
                 ->model( $model )
                 ->ensure( 'imagine' )
-                ->imagine( $args['prompt'], $this->files(), $options )
+                ->imagine( $args['prompt'], $this->files( $args['files'] ?? [] ), $options )
                 ->base64();
         }
         catch( PrismaException $e )
