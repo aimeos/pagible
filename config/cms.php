@@ -42,6 +42,11 @@ return [
             'model' => env( 'CMS_AI_ISOLATE_MODEL' ),
             'api_key' => env( 'CMS_AI_ISOLATE_APIKEY' ),
         ],
+        'repaint' => [ // Change image based on prompt
+            'provider' => env( 'CMS_AI_REPAINT', 'gemini' ),
+            'model' => env( 'CMS_AI_REPAINT_MODEL', 'gemini-2.5-flash-image' ),
+            'api_key' => env( 'CMS_AI_REPAINT_APIKEY' ),
+        ],
         'uncrop' => [ // Extend images
             'provider' => env( 'CMS_AI_UNCROP', 'clipdrop' ),
             'model' => env( 'CMS_AI_UNCROP_MODEL' ),

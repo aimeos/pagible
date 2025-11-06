@@ -354,7 +354,7 @@
 
         this.currentImageBlob().then(blob => {
           self.createMask().toBlob(function(mask) {
-            self.loading.inpaint = true
+            self.loading.paint = true
 
             self.$apollo.mutate({
               mutation: gql`mutation($file: Upload!, $mask: Upload!, $prompt: String!) {
@@ -378,7 +378,7 @@
               self.messages.add(self.$gettext('Error editing image part') + ":\n" + error, 'error')
               self.$log('FileDetailItem::inpaint(): Error editing image part', error)
             }).finally(() => {
-              self.loading.inpaint = false
+              self.loading.paint = false
               self.loading.mask = false
             })
           })
@@ -503,6 +503,49 @@
           this.$log(`FileDetailItem::removeCover(): Error removing video cover`, error)
         }).finally(() => {
           this.loading.cover = false
+        })
+      },
+
+
+      repaint() {
+        if(this.readonly) {
+          return this.messages.add(this.$gettext('Permission denied'), 'error')
+        }
+
+        if(!this.edittext?.trim()) {
+          return
+        }
+
+        const self = this
+        this.clear()
+
+        this.currentImageBlob().then(blob => {
+          self.loading.paint = true
+
+          self.$apollo.mutate({
+            mutation: gql`mutation($file: Upload!, $prompt: String!) {
+              repaint(file: $file, prompt: $prompt)
+            }`,
+            variables: {
+              file: new File([blob], 'image', {type: self.item.mime}),
+              prompt: self.edittext
+            },
+            context: {
+              hasUpload: true
+            }
+          }).then(response => {
+            if(response.errors) {
+              throw response.errors
+            }
+
+            self.replace(self.base64ToBlob(response.data?.repaint))
+          }).catch(error => {
+            self.messages.add(self.$gettext('Error editing image') + ":\n" + error, 'error')
+            self.$log('FileDetailItem::repaint(): Error editing image', error)
+          }).finally(() => {
+            self.loading.paint = false
+            self.loading.mask = false
+          })
         })
       },
 
@@ -937,15 +980,14 @@
               </div>
               <div class="toolbar-group">
                 <v-dialog
-                  v-model="menu['inpaint']"
+                  v-model="menu['paint']"
                   transition="scale-transition"
                   max-width="600">
 
                   <template #activator="{ props }">
                     <v-btn
                       v-bind="props"
-                      :disabled="!selected"
-                      :loading="loading.inpaint"
+                      :loading="loading.paint"
                       :title="$gettext('Edit image')"
                       icon="mdi-image-edit"
                       class="no-rtl"
@@ -955,7 +997,7 @@
                   <v-card>
                     <v-toolbar density="compact">
                       <v-toolbar-title>{{ $gettext('Edit image') }}</v-toolbar-title>
-                      <v-btn icon="mdi-close" @click="menu['inpaint'] = false" />
+                      <v-btn icon="mdi-close" @click="menu['paint'] = false" />
                     </v-toolbar>
 
                     <v-card-text>
@@ -973,7 +1015,7 @@
                       <v-btn
                         variant="outlined"
                         :disabled="!edittext"
-                        @click="inpaint(); menu['inpaint'] = false"
+                        @click="selected ? inpaint() : repaint(); menu['paint'] = false"
                       >{{ $gettext('Edit image') }}</v-btn>
                     </v-card-actions>
                   </v-card>

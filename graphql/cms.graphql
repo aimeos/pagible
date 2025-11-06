@@ -83,11 +83,14 @@ extend type Mutation {
   "Remove image background, returns a base64 encoded image"
   isolate(file: Upload!): String
 
-  "Refine existing page content"
-  refine(prompt: String!, content: JSON!, type: String, context: String): JSON
-
   "Get page metrics for the last X days"
   metrics(url: String!, days: Int, lang: String): Stats
+
+  "Edit an image using a prompt, returns a base64 encoded image"
+  repaint(file: Upload!, prompt: String!): String
+
+  "Refine existing page content"
+  refine(prompt: String!, content: JSON!, type: String, context: String): JSON
 
   "Synthesize pages and content from prompts and passed file IDs"
   synthesize(prompt: String!, context: String, files: [String!]): String
