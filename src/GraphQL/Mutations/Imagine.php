@@ -26,9 +26,9 @@ final class Imagine
             throw new Error( 'Prompt must not be empty' );
         }
 
-        $provider = config( 'cms.ai.image.provider' );
-        $config = config( 'cms.ai.image', [] );
-        $model = config( 'cms.ai.image.model' );
+        $provider = config( 'cms.ai.imagine.provider' );
+        $config = config( 'cms.ai.imagine', [] );
+        $model = config( 'cms.ai.imagine.model' );
         $options = ['size' => ['1536x1024', '1792x1024', '1024x1024']];
 
         try
@@ -36,8 +36,8 @@ final class Imagine
             return Prisma::image()
                 ->using( $provider, $config )
                 ->model( $model )
-                ->ensure( 'image' )
-                ->image( $args['prompt'], $this->files(), $options )
+                ->ensure( 'imagine' )
+                ->imagine( $args['prompt'], $this->files(), $options )
                 ->base64();
         }
         catch( PrismaException $e )

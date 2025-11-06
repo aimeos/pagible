@@ -27,10 +27,10 @@ return [
             'model' => env( 'CMS_AI_ERASE_MODEL' ),
             'api_key' => env( 'CMS_AI_ERASE_APIKEY' ),
         ],
-        'image' => [ // Generate images from text prompts
-            'provider' => env( 'CMS_AI_IMAGE', 'gemini' ),
-            'model' => env( 'CMS_AI_IMAGE_MODEL', 'gemini-2.5-flash-image' ),
-            'api_key' => env( 'CMS_AI_IMAGE_APIKEY' ),
+        'imagine' => [ // Generate images from text prompts
+            'provider' => env( 'CMS_AI_IMAGINE', 'gemini' ),
+            'model' => env( 'CMS_AI_IMAGINE_MODEL', 'gemini-2.5-flash-image' ),
+            'api_key' => env( 'CMS_AI_IMAGINE_APIKEY' ),
         ],
         'isolate' => [ // Remove background from images
             'provider' => env( 'CMS_AI_ISOLATE', 'clipdrop' ),
