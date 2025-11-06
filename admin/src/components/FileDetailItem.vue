@@ -31,6 +31,7 @@
         loading: {},
         tabtrans: null,
         tabdesc: null,
+        edittext: null,
         cropLabel: null,
         cropper: null,
         audio: null,
@@ -213,8 +214,21 @@
 
       crop() {
         this.updateFile()
-        this.selected = false
-        this.cropper.setDragMode('none')
+        this.clear()
+      },
+
+
+      currentImageBlob() {
+        if(this.images[0]?.blob) {
+          return Promise.resolve(this.images[0]?.blob)
+        }
+
+        return fetch(this.url(this.item.path, true)).then(response => {
+          if(!response.ok) {
+            throw new Error('Network error: ' + response.statusText)
+          }
+          return response.blob()
+        })
       },
 
 
@@ -237,23 +251,10 @@
           return this.messages.add(this.$gettext('Permission denied'), 'error')
         }
 
-        let image
         const self = this
+        this.clear()
 
-        this.cropper.setDragMode('none')
-
-        if(!self.images[0]?.blob) {
-          image = fetch(self.url(self.item.path, true)).then(response => {
-            if(!response.ok) {
-              throw new Error('Network error: ' + response.statusText)
-            }
-            return response.blob()
-          })
-        } else {
-          image = Promise.resolve(self.images[0]?.blob)
-        }
-
-        image.then(blob => {
+        this.currentImageBlob().then(blob => {
           self.createMask().toBlob(function(mask) {
             self.loading.erase = true
 
@@ -335,6 +336,52 @@
             self.height = imageData.naturalHeight
             self.width = imageData.naturalWidth
           }
+        })
+      },
+
+
+      inpaint() {
+        if(this.readonly) {
+          return this.messages.add(this.$gettext('Permission denied'), 'error')
+        }
+
+        if(!this.edittext?.trim()) {
+          return
+        }
+
+        const self = this
+        this.clear()
+
+        this.currentImageBlob().then(blob => {
+          self.createMask().toBlob(function(mask) {
+            self.loading.inpaint = true
+
+            self.$apollo.mutate({
+              mutation: gql`mutation($file: Upload!, $mask: Upload!, $prompt: String!) {
+                inpaint(file: $file, mask: $mask, prompt: $prompt)
+              }`,
+              variables: {
+                file: new File([blob], 'image', {type: self.item.mime}),
+                mask: new File([mask], 'mask', {type: 'image/png'}),
+                prompt: self.edittext
+              },
+              context: {
+                hasUpload: true
+              }
+            }).then(response => {
+              if(response.errors) {
+                throw response.errors
+              }
+
+              self.replace(self.base64ToBlob(response.data?.inpaint))
+            }).catch(error => {
+              self.messages.add(self.$gettext('Error editing image part') + ":\n" + error, 'error')
+              self.$log('FileDetailItem::inpaint(): Error editing image part', error)
+            }).finally(() => {
+              self.loading.inpaint = false
+              self.loading.mask = false
+            })
+          })
         })
       },
 
@@ -889,12 +936,48 @@
                 />
               </div>
               <div class="toolbar-group">
-                <v-btn
-                  @click="vedit = true"
-                  :title="$gettext('Edit image')"
-                  icon="mdi-image-edit"
-                  class="no-rtl"
-                />
+                <v-dialog
+                  v-model="menu['inpaint']"
+                  transition="scale-transition"
+                  max-width="600">
+
+                  <template #activator="{ props }">
+                    <v-btn
+                      v-bind="props"
+                      :disabled="!selected"
+                      :loading="loading.inpaint"
+                      :title="$gettext('Edit image')"
+                      icon="mdi-image-edit"
+                      class="no-rtl"
+                    />
+                  </template>
+
+                  <v-card>
+                    <v-toolbar density="compact">
+                      <v-toolbar-title>{{ $gettext('Edit image') }}</v-toolbar-title>
+                      <v-btn icon="mdi-close" @click="menu['inpaint'] = false" />
+                    </v-toolbar>
+
+                    <v-card-text>
+                      <v-textarea
+                        v-model="edittext"
+                        :label="$gettext('Describe the changes')"
+                        variant="underlined"
+                        autofocus
+                        clearable
+                        auto-grow
+                      ></v-textarea>
+                    </v-card-text>
+
+                    <v-card-actions>
+                      <v-btn
+                        variant="outlined"
+                        :disabled="!edittext"
+                        @click="inpaint(); menu['inpaint'] = false"
+                      >{{ $gettext('Edit image') }}</v-btn>
+                    </v-card-actions>
+                  </v-card>
+                </v-dialog>
 
                 <v-btn
                   @click="isolate()"
@@ -908,7 +991,6 @@
                 <v-dialog
                   v-model="menu['uncrop']"
                   transition="scale-transition"
-                  location="end center"
                   max-width="300">
 
                   <template #activator="{ props }">
@@ -1227,6 +1309,11 @@
 <style scoped>
   .v-sheet.scroll {
     max-height: calc(100vh - 96px);
+  }
+
+  .v-dialog .v-btn {
+    display: block;
+    margin: auto;
   }
 
   :deep(.cropper-bg) {

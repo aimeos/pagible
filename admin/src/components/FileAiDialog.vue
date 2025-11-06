@@ -113,7 +113,7 @@
 
 
       create() {
-        if(!this.chat || this.loading) {
+        if(!this.chat?.trim() || this.loading) {
           return
         }
 
