@@ -32,6 +32,11 @@ return [
             'model' => env( 'CMS_AI_IMAGINE_MODEL', 'gemini-2.5-flash-image' ),
             'api_key' => env( 'CMS_AI_IMAGINE_APIKEY' ),
         ],
+        'inpaint' => [ // Change selected parts of images based on prompt
+            'provider' => env( 'CMS_AI_INPAINT' ),
+            'model' => env( 'CMS_AI_INPAINT_MODEL' ),
+            'api_key' => env( 'CMS_AI_INPAINT_APIKEY' ),
+        ],
         'isolate' => [ // Remove background from images
             'provider' => env( 'CMS_AI_ISOLATE', 'clipdrop' ),
             'model' => env( 'CMS_AI_ISOLATE_MODEL' ),

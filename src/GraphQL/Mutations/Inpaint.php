@@ -23,32 +23,31 @@ final class Inpaint
     public function __invoke( $rootValue, array $args ): string
     {
         $upload = $args['file'];
-        $filemask = $args['mask'];
+        $upmask = $args['mask'];
 
         if( !$upload instanceof UploadedFile || !$upload->isValid() ) {
             throw new Error( 'Invalid file upload' );
         }
 
-        if( $filemask && !( $filemask instanceof UploadedFile && $filemask->isValid() ) ) {
+        if( !$upmask instanceof UploadedFile || !$upmask->isValid() ) {
             throw new Error( 'Invalid mask upload' );
         }
 
-        $provider = config( 'cms.ai.inpaint' ) ?: 'stabilityai';
-        $config = config( 'prism.providers.' . $provider, [] );
+        $provider = config( 'cms.ai.inpaint.provider' );
+        $config = config( 'cms.ai.inpaint', [] );
+        $model = config( 'cms.ai.inpaint.model' );
 
         try
         {
             $file = Image::fromBinary( $upload->getContent(), $upload->getClientMimeType() );
-            $mask = $filemask ? Image::fromBinary( $filemask->getContent(), $filemask->getClientMimeType() ) : null;
+            $mask = Image::fromBinary( $upmask->getContent(), $upmask->getClientMimeType() );
 
-            $response = Prisma::image()
+            return Prisma::image()
                 ->using( $provider, $config )
-                ->model( config( 'cms.ai.inpaint-model' ) )
-                ->withClientOptions( ['timeout' => 60, 'connect_timeout' => 10] )
+                ->model( $model )
                 ->ensure( 'inpaint' )
-                ->inpaint( $file, $args['prompt'], $mask );
-
-            return $response->base64();
+                ->inpaint( $file, $mask, $args['prompt'] )
+                ->base64();
         }
         catch( PrismaException $e )
         {

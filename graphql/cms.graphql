@@ -71,23 +71,17 @@ extend type Mutation {
   "Generate texts from prompts and passed file IDs"
   compose(prompt: String!, context: String, files: [String!]): String
 
-  "Generate images from prompts and passed file IDs, returns a base64 encoded image"
-  imagine(prompt: String!, context: String, files: [String!]): String
-
-  "Remove image background, returns a base64 encoded image"
-  isolate(file: Upload!): String
-
   "Remove the part of the image covered by the mask (black: keep, white: erase), returns a base64 encoded image"
   erase(file: Upload!, mask: Upload!): String
 
-  "Edit an image using a prompt and an optional mask, returns a base64 encoded image"
-  inpaint(file: Upload!, prompt: String!, mask: Upload): String
+  "Generate images from prompts and passed file IDs, returns a base64 encoded image"
+  imagine(prompt: String!, context: String, files: [String!]): String
 
-  "Extend/outpaint image, returns a base64 encoded image"
-  uncrop(file: Upload!, top: Int!, right: Int, bottom: Int, left: Int): String
+  "Edit an image using a mask image and a prompt, returns a base64 encoded image"
+  inpaint(file: Upload!, mask: Upload!, prompt: String!): String
 
-  "Upscale image, returns a base64 encoded image"
-  upscale(file: Upload!, width: Int!, height: Int!): String
+  "Remove image background, returns a base64 encoded image"
+  isolate(file: Upload!): String
 
   "Refine existing page content"
   refine(prompt: String!, content: JSON!, type: String, context: String): JSON
@@ -103,6 +97,12 @@ extend type Mutation {
 
   "Translate texts"
   translate(texts: [String!]!, to: String!, from: String, context: String): [String!]!
+
+  "Extend/outpaint image, returns a base64 encoded image"
+  uncrop(file: Upload!, top: Int!, right: Int, bottom: Int, left: Int): String
+
+  "Upscale image, returns a base64 encoded image"
+  upscale(file: Upload!, width: Int!, height: Int!): String
 
 
   "Add a new page below the page referenced by 'parent' and before the page referenced by 'ref' (or append if NULL)"
