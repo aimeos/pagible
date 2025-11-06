@@ -28,21 +28,20 @@ final class Uncrop
             throw new Error( 'Invalid file upload' );
         }
 
-        $provider = config( 'cms.ai.uncrop' ) ?: 'clipdrop';
-        $config = config( 'prism.providers.' . $provider, [] );
+        $provider = config( 'cms.ai.uncrop.provider' );
+        $config = config( 'cms.ai.uncrop', [] );
+        $model = config( 'cms.ai.uncrop-model' );
 
         try
         {
             $file = Image::fromBinary( $upload->getContent(), $upload->getClientMimeType() );
 
-            $response = Prisma::image()
+            return Prisma::image()
                 ->using( $provider, $config )
-                ->model( config( 'cms.ai.uncrop-model' ) )
-                ->withClientOptions( ['timeout' => 60, 'connect_timeout' => 10] )
+                ->model( $model )
                 ->ensure( 'uncrop' )
-                ->uncrop( $file, $args['top'] ?? 0, $args['right'] ?? 0, $args['bottom'] ?? 0, $args['left'] ?? 0 );
-
-            return $response->base64();
+                ->uncrop( $file, $args['top'] ?? 0, $args['right'] ?? 0, $args['bottom'] ?? 0, $args['left'] ?? 0 )
+                ->base64();
         }
         catch( PrismaException $e )
         {

@@ -28,21 +28,20 @@ final class Isolate
             throw new Error( 'Invalid file upload' );
         }
 
-        $provider = config( 'cms.ai.isolate' ) ?: 'clipdrop';
-        $config = config( 'prism.providers.' . $provider, [] );
+        $provider = config( 'cms.ai.isolate.provider' );
+        $config = config( 'cms.ai.isolate', [] );
+        $model = config( 'cms.ai.isolate.model' );
 
         try
         {
             $file = Image::fromBinary( $upload->getContent(), $upload->getClientMimeType() );
 
-            $response = Prisma::image()
+            return Prisma::image()
                 ->using( $provider, $config )
-                ->model( config( 'cms.ai.isolate-model' ) )
-                ->withClientOptions( ['timeout' => 60, 'connect_timeout' => 10] )
+                ->model( $model )
                 ->ensure( 'isolate' )
-                ->isolate( $file );
-
-            return $response->base64();
+                ->isolate( $file )
+                ->base64();
         }
         catch( PrismaException $e )
         {

@@ -33,22 +33,21 @@ final class Erase
             throw new Error( 'Invalid mask upload' );
         }
 
-        $provider = config( 'cms.ai.erase' ) ?: 'clipdrop';
-        $config = config( 'prism.providers.' . $provider, [] );
+        $provider = config( 'cms.ai.erase.provider' );
+        $config = config( 'cms.ai.erase', [] );
+        $model = config( 'cms.ai.erase.model' );
 
         try
         {
             $file = Image::fromBinary( $upload->getContent(), $upload->getClientMimeType() );
             $mask = Image::fromBinary( $filemask->getContent(), $filemask->getClientMimeType() );
 
-            $response = Prisma::image()
+            return Prisma::image()
                 ->using( $provider, $config )
-                ->model( config( 'cms.ai.erase-model' ) )
-                ->withClientOptions( ['timeout' => 60, 'connect_timeout' => 10] )
+                ->model( $model )
                 ->ensure( 'erase' )
-                ->erase( $file, $mask );
-
-            return $response->base64();
+                ->erase( $file, $mask )
+                ->base64();
         }
         catch( PrismaException $e )
         {

@@ -19,10 +19,34 @@ return [
         'text-model' => env( 'CMS_AI_TEXT_MODEL' ),     // gemini-2.5-flash
         'struct' => env( 'CMS_AI_STRUCT' ),             // gemini
         'struct-model' => env( 'CMS_AI_STRUCT_MODEL' ), // gemini-2.5-flash
-        'image' => env( 'CMS_AI_IMAGE' ),               // gemini
-        'image-model' => env( 'CMS_AI_IMAGE_MODEL' ),   // gemini-2.5-flash-image
         'audio' => env( 'CMS_AI_AUDIO' ),               // openai
         'audio-model' => env( 'CMS_AI_AUDIO_MODEL' ),   // whisper-1
+
+        'erase' => [ // Remove selected parts of images
+            'provider' => env( 'CMS_AI_ERASE', 'clipdrop' ),
+            'model' => env( 'CMS_AI_ERASE_MODEL' ),
+            'api_key' => env( 'CMS_AI_ERASE_APIKEY' ),
+        ],
+        'image' => [ // Generate images from text prompts
+            'provider' => env( 'CMS_AI_IMAGE', 'gemini' ),
+            'model' => env( 'CMS_AI_IMAGE_MODEL', 'gemini-2.5-flash-image' ),
+            'api_key' => env( 'CMS_AI_IMAGE_APIKEY' ),
+        ],
+        'isolate' => [ // Remove background from images
+            'provider' => env( 'CMS_AI_ISOLATE', 'clipdrop' ),
+            'model' => env( 'CMS_AI_ISOLATE_MODEL' ),
+            'api_key' => env( 'CMS_AI_ISOLATE_APIKEY' ),
+        ],
+        'uncrop' => [ // Extend images
+            'provider' => env( 'CMS_AI_UNCROP', 'clipdrop' ),
+            'model' => env( 'CMS_AI_UNCROP_MODEL' ),
+            'api_key' => env( 'CMS_AI_UNCROP_APIKEY' ),
+        ],
+        'upscale' => [ // Upscale images
+            'provider' => env( 'CMS_AI_UPSCALE', 'clipdrop' ),
+            'model' => env( 'CMS_AI_UPSCALE_MODEL' ),
+            'api_key' => env( 'CMS_AI_UPSCALE_APIKEY' ),
+        ],
     ],
 
     /*
