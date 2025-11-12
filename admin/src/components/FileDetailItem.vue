@@ -413,8 +413,8 @@
 
             self.replace(self.base64ToBlob(response.data?.isolate))
           }).catch(error => {
-            self.messages.add(self.$gettext('Error isolating image foreground') + ":\n" + error, 'error')
-            self.$log('FileDetailItem::isolate(): Error isolating image foreground', error)
+            self.messages.add(self.$gettext('Error removing background') + ":\n" + error, 'error')
+            self.$log('FileDetailItem::isolate(): Error removing background', error)
           }).finally(() => {
             self.loading.isolate = false
           })
