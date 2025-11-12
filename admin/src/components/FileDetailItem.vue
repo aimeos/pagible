@@ -820,13 +820,12 @@
           self.loading.upscale = true
 
           self.$apollo.mutate({
-            mutation: gql`mutation($file: Upload!, $width: Int!, $height: Int!) {
-              upscale(file: $file, width: $width, height: $height)
+            mutation: gql`mutation($file: Upload!, $factor: Int!) {
+              upscale(file: $file, factor: $factor)
             }`,
             variables: {
               file: new File([blob], 'image.png', {type: 'image/png'}),
-              width: self.width * factor,
-              height: self.height * factor,
+              factor: factor
             },
             context: {
               hasUpload: true

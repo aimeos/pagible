@@ -105,7 +105,7 @@ extend type Mutation {
   uncrop(file: Upload!, top: Int!, right: Int, bottom: Int, left: Int): String
 
   "Upscale image, returns a base64 encoded image"
-  upscale(file: Upload!, width: Int!, height: Int!): String
+  upscale(file: Upload!, factor: Int!): String
 
 
   "Add a new page below the page referenced by 'parent' and before the page referenced by 'ref' (or append if NULL)"

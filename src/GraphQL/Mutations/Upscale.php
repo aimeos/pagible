@@ -40,7 +40,7 @@ final class Upscale
                 ->using( $provider, $config )
                 ->model( $model )
                 ->ensure( 'upscale' )
-                ->upscale( $file, $args['width'] ?? 2000, $args['height'] ?? 2000 )
+                ->upscale( $file, $args['factor'] )
                 ->base64();
         }
         catch( PrismaException $e )
