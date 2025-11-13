@@ -180,6 +180,7 @@
         this.cropper.setDragMode('none')
         this.cropper.clear()
         this.selected = false
+        this.cropLabel = null
       },
 
 
