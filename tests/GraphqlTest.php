@@ -338,7 +338,7 @@ class GraphqlTest extends TestAbstract
         $response = $this->actingAs( $this->user )->multipartGraphQL( [
             'query' => '
                 mutation($file: Upload!) {
-                    upscale(file: $file, width: 1000, height: 1000)
+                    upscale(file: $file, factor: 2)
                 }
             ',
             'variables' => [
