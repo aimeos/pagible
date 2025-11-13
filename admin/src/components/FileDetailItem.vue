@@ -39,7 +39,12 @@
         menu: {},
         width: 0,
         height: 0,
-        toUncrop: { top: 0, right: 0, bottom: 0, left: 0 },
+        extend: {
+          top: 0,
+          right: 0,
+          bottom: 0,
+          left: 0
+        },
       }
     },
 
@@ -161,7 +166,7 @@
         this.$nextTick(() => {
           const cropBox = this.cropper.cropper.querySelector(".cropper-crop-box");
 
-          if (cropBox && !this.cropLabel) {
+          if(cropBox && !this.cropLabel) {
             const label = document.createElement("div");
             label.className = "crop-label";
             cropBox.appendChild(label);
@@ -675,9 +680,13 @@
       },
 
 
-      uncrop(top, right, bottom, left) {
+      uncrop() {
         if(this.readonly) {
           return this.messages.add(this.$gettext('Permission denied'), 'error')
+        }
+
+        if(!this.extend.top && !this.extend.right && !this.extend.bottom && !this.extend.left) {
+          return
         }
 
         const self = this
@@ -691,10 +700,10 @@
             }`,
             variables: {
               file: new File([blob], 'image.png', {type: 'image/png'}),
-              top: top,
-              right: right,
-              bottom: bottom,
-              left: left
+              top: self.extend.top ?? 0,
+              right: self.extend.right ?? 0,
+              bottom: self.extend.bottom ?? 0,
+              left: self.extend.left ?? 0
             },
             context: {
               hasUpload: true
@@ -1033,7 +1042,7 @@
                       <v-row class="single">
                         <v-col cols="6">
                           <v-number-input
-                            v-model="toUncrop.top"
+                            v-model="extend.top"
                             variant="outlined"
                             controlVariant="hidden"
                             :label="$gettext('Top')"
@@ -1045,7 +1054,7 @@
                       <v-row>
                         <v-col cols="6">
                           <v-number-input
-                            v-model="toUncrop.left"
+                            v-model="extend.left"
                             variant="outlined"
                             controlVariant="hidden"
                             :label="$gettext('Left')"
@@ -1055,7 +1064,7 @@
                         </v-col>
                         <v-col cols="6">
                           <v-number-input
-                            v-model="toUncrop.right"
+                            v-model="extend.right"
                             variant="outlined"
                             controlVariant="hidden"
                             :label="$gettext('Right')"
@@ -1067,7 +1076,7 @@
                       <v-row class="single">
                         <v-col cols="6">
                           <v-number-input
-                            v-model="toUncrop.bottom"
+                            v-model="extend.bottom"
                             variant="outlined"
                             controlVariant="hidden"
                             :label="$gettext('Bottom')"
@@ -1081,7 +1090,7 @@
                     <v-card-actions>
                       <v-btn
                         variant="outlined"
-                        @click="uncrop(toUncrop.top, toUncrop.right, toUncrop.bottom, toUncrop.left); menu['uncrop'] = false"
+                        @click="uncrop(extend.top, extend.right, extend.bottom, extend.left); menu['uncrop'] = false"
                       >{{ $gettext('Expand image') }}</v-btn>
                     </v-card-actions>
                   </v-card>
