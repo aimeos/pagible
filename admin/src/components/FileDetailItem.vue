@@ -192,43 +192,9 @@
       },
 
 
-      createMask() {
-          const canvas = document.createElement('canvas')
-          const context = canvas.getContext('2d')
-
-          const data = this.cropper.getImageData()
-          const crop = this.cropper.getData()
-
-          canvas.width = data.naturalWidth
-          canvas.height = data.naturalHeight
-
-          context.fillStyle = 'black';
-          context.fillRect(0, 0, canvas.width, canvas.height);
-
-          context.fillStyle = 'white';
-          context.fillRect(crop.x, crop.y, crop.width, crop.height);
-
-          return canvas
-      },
-
-
       crop() {
         this.updateFile()
         this.clear()
-      },
-
-
-      currentImageBlob() {
-        if(this.images[0]?.blob) {
-          return Promise.resolve(this.images[0]?.blob)
-        }
-
-        return fetch(this.url(this.item.path, true)).then(response => {
-          if(!response.ok) {
-            throw new Error('Network error: ' + response.statusText)
-          }
-          return response.blob()
-        })
       },
 
 
@@ -252,10 +218,9 @@
         }
 
         const self = this
-        this.clear()
 
-        this.currentImageBlob().then(blob => {
-          self.createMask().toBlob(function(mask) {
+        this.image().then(blob => {
+          self.mask().toBlob(function(mask) {
             self.loading.erase = true
 
             self.$apollo.mutate({
@@ -280,7 +245,7 @@
               self.$log('FileDetailItem::erase(): Error erasing image part', error)
             }).finally(() => {
               self.loading.erase = false
-              self.loading.mask = false
+              self.clear()
             })
           })
         })
@@ -296,6 +261,20 @@
       flipY() {
         this.cropper.scaleY(-1)
         this.updateFile()
+      },
+
+
+      image() {
+        if(this.images[0]?.blob) {
+          return Promise.resolve(this.images[0]?.blob)
+        }
+
+        return fetch(this.url(this.item.path, true)).then(response => {
+          if(!response.ok) {
+            throw new Error('Network error: ' + response.statusText)
+          }
+          return response.blob()
+        })
       },
 
 
@@ -350,10 +329,9 @@
         }
 
         const self = this
-        this.clear()
 
-        this.currentImageBlob().then(blob => {
-          self.createMask().toBlob(function(mask) {
+        this.image().then(blob => {
+          self.mask().toBlob(function(mask) {
             self.loading.paint = true
 
             self.$apollo.mutate({
@@ -379,7 +357,7 @@
               self.$log('FileDetailItem::inpaint(): Error editing image part', error)
             }).finally(() => {
               self.loading.paint = false
-              self.loading.mask = false
+              self.clear()
             })
           })
         })
@@ -423,20 +401,22 @@
 
 
       mask() {
-        this.cropper.setAspectRatio(NaN)
-        this.cropper.setDragMode('crop')
-        this.loading.mask = true
+        const canvas = document.createElement('canvas')
+        const context = canvas.getContext('2d')
 
-        this.$nextTick(() => {
-          const cropBox = this.cropper.cropper.querySelector(".cropper-crop-box");
+        const data = this.cropper.getImageData()
+        const crop = this.cropper.getData()
 
-          if (cropBox && !this.cropLabel) {
-            const label = document.createElement("div");
-            label.className = "crop-label";
-            cropBox.appendChild(label);
-            this.cropLabel = label;
-          }
-        });
+        canvas.width = data.naturalWidth
+        canvas.height = data.naturalHeight
+
+        context.fillStyle = 'black';
+        context.fillRect(0, 0, canvas.width, canvas.height);
+
+        context.fillStyle = 'white';
+        context.fillRect(crop.x, crop.y, crop.width, crop.height);
+
+        return canvas
       },
 
 
@@ -517,9 +497,8 @@
         }
 
         const self = this
-        this.clear()
 
-        this.currentImageBlob().then(blob => {
+        this.image().then(blob => {
           self.loading.paint = true
 
           self.$apollo.mutate({
@@ -544,7 +523,7 @@
             self.$log('FileDetailItem::repaint(): Error editing image', error)
           }).finally(() => {
             self.loading.paint = false
-            self.loading.mask = false
+            self.clear()
           })
         })
       },
