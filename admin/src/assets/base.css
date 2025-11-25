@@ -29,6 +29,14 @@ body {
   direction: ltr !important;
 }
 
+.v-theme--light {
+  --v-theme-surface-light: 238, 242, 246 !important;
+}
+
+.v-theme--dark {
+  --v-theme-surface-light: 50, 58, 66 !important;
+}
+
 .v-locale--is-rtl .v-btn:not(.no-rtl) .mdi.v-icon {
   transform: scaleX(-1) !important;
 }
@@ -235,6 +243,15 @@ body {
 
 .v-btn--size-default {
   min-width: unset !important;
+}
+
+.v-theme--dark .v-btn--variant-tonal .v-btn__underlay {
+  opacity: calc(var(--v-activated-opacity) * 3) !important;
+}
+
+.v-btn--variant-tonal .v-btn__content {
+  color: rgb(var(--v-theme-on-surface)) !important;
+  opacity: var(--v-medium-emphasis-opacity);
 }
 
 .header {
