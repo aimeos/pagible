@@ -77,25 +77,25 @@ jobs:
       - run: for i in `seq 1 10`; do nc -z 127.0.0.1 3306 && echo OK && exit 0; echo -n .; sleep 1; done
       - run: ./vendor/bin/phpunit
 
-  "php84-sqlite3":
+  "php85-sqlite3":
     docker:
-      - image: aimeos/ci-php:8.4
+      - image: aimeos/ci-php:8.5
         environment:
           DB_DRIVER: sqlite
     steps:
       - checkout
       - restore_cache:
           keys:
-            - php84-{{ checksum "composer.json" }}
+            - php85-{{ checksum "composer.json" }}
       - run: composer update -n --prefer-dist
       - save_cache:
-          key: php84-{{ checksum "composer.json" }}
+          key: php85-{{ checksum "composer.json" }}
           paths: [./vendor]
       - run: ./vendor/bin/phpunit
 
-  "php84-mariadb":
+  "php85-mariadb":
     docker:
-      - image: aimeos/ci-php:8.4
+      - image: aimeos/ci-php:8.5
         environment:
           DB_DRIVER: mariadb
           DB_HOST: "127.0.0.1"
@@ -113,17 +113,17 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - php84-{{ checksum "composer.json" }}
+            - php85-{{ checksum "composer.json" }}
       - run: composer update -n --prefer-dist
       - save_cache:
-          key: php84-{{ checksum "composer.json" }}
+          key: php85-{{ checksum "composer.json" }}
           paths: [./vendor]
       - run: for i in `seq 1 10`; do nc -z 127.0.0.1 3306 && echo OK && exit 0; echo -n .; sleep 1; done
       - run: ./vendor/bin/phpunit
 
-  "php84-mysql":
+  "php85-mysql":
     docker:
-      - image: aimeos/ci-php:8.4
+      - image: aimeos/ci-php:8.5
         environment:
           DB_DRIVER: mysql
           DB_HOST: "127.0.0.1"
@@ -141,10 +141,10 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - php84-{{ checksum "composer.json" }}
+            - php85-{{ checksum "composer.json" }}
       - run: composer update -n --prefer-dist
       - save_cache:
-          key: php84-{{ checksum "composer.json" }}
+          key: php85-{{ checksum "composer.json" }}
           paths: [./vendor]
       - run: for i in `seq 1 10`; do nc -z 127.0.0.1 3306 && echo OK && exit 0; echo -n .; sleep 1; done
       - run: ./vendor/bin/phpunit
@@ -156,6 +156,6 @@ workflows:
       - "php82-sqlite3"
       - "php82-mariadb10"
       - "php82-mysql8"
-      - "php84-sqlite3"
-      - "php84-mariadb"
-      - "php84-mysql"
+      - "php85-sqlite3"
+      - "php85-mariadb"
+      - "php85-mysql"
