@@ -41,7 +41,7 @@
         <div class="col">
             <button type="submit" class="btn">
                 <span class="send">{{ __('Send message') }}</span>
-                <span class="sending hidden"aria-busy="true">{{ __('Message will be sent') }}</span>
+                <span class="sending hidden" aria-busy="true">{{ __('Message will be sent') }}</span>
                 <span class="success hidden">{{ __('Successfully sent') }}</span>
                 <span class="failure hidden">{{ __('Error sending e-mail') }}</span>
             </button>
