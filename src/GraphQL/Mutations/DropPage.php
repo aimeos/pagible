@@ -10,6 +10,8 @@ namespace Aimeos\Cms\GraphQL\Mutations;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Auth;
 use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Permission;
+use GraphQL\Error\Error;
 
 
 final class DropPage
@@ -20,6 +22,10 @@ final class DropPage
      */
     public function __invoke( $rootValue, array $args ) : array
     {
+        if( !Permission::can( 'page:drop', Auth::user() ) ) {
+            throw new Error( 'Insufficient permissions' );
+        }
+
         $items = Page::withTrashed()->whereIn( 'id', $args['id'] )->get();
         $editor = Auth::user()?->name ?? request()->ip();
 

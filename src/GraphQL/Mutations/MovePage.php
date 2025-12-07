@@ -10,6 +10,8 @@ namespace Aimeos\Cms\GraphQL\Mutations;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Permission;
+use GraphQL\Error\Error;
 
 
 final class MovePage
@@ -20,6 +22,10 @@ final class MovePage
      */
     public function __invoke( $rootValue, array $args ) : Page
     {
+        if( !Permission::can( 'page:move', Auth::user() ) ) {
+            throw new Error( 'Insufficient permissions' );
+        }
+
         $page = Page::withTrashed()->findOrFail( $args['id'] );
         $page->editor = Auth::user()?->name ?? request()->ip();
 

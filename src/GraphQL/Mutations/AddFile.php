@@ -7,11 +7,12 @@
 
 namespace Aimeos\Cms\GraphQL\Mutations;
 
-use Aimeos\Cms\Utils;
-use Aimeos\Cms\Models\File;
-use GraphQL\Error\Error;
-use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\UploadedFile;
+use Aimeos\Cms\Models\File;
+use Aimeos\Cms\Permission;
+use Aimeos\Cms\Utils;
+use GraphQL\Error\Error;
 
 
 final class AddFile
@@ -22,6 +23,10 @@ final class AddFile
      */
     public function __invoke( $rootValue, array $args ) : File
     {
+        if( !Permission::can( 'file:add', Auth::user() ) ) {
+            throw new Error( 'Insufficient permissions' );
+        }
+
         if( empty( $args['input']['path'] ) && empty( $args['file'] ) ) {
             throw new Error( 'Either input "path" or "file" argument must be provided' );
         }

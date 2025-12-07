@@ -7,11 +7,12 @@
 
 namespace Aimeos\Cms\GraphQL\Mutations;
 
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Aimeos\Cms\Models\Version;
 use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Permission;
+use GraphQL\Error\Error;
 
 
 final class SavePage
@@ -22,9 +23,17 @@ final class SavePage
      */
     public function __invoke( $rootValue, array $args ) : Page
     {
+        if( !Permission::can( 'page:save', Auth::user() ) ) {
+            throw new Error( 'Insufficient permissions' );
+        }
+
         $page = Page::withTrashed()->findOrFail( $args['id'] );
 
         DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $page, $args ) {
+
+            if( !Permission::can( 'config:page', Auth::user() ) ) {
+                unset( $args['input']['config'] );
+            }
 
             $input = (array) $args['input'] ?? [];
 

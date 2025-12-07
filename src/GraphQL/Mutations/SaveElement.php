@@ -9,8 +9,9 @@ namespace Aimeos\Cms\GraphQL\Mutations;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Aimeos\Cms\Models\Version;
 use Aimeos\Cms\Models\Element;
+use Aimeos\Cms\Permission;
+use GraphQL\Error\Error;
 
 
 final class SaveElement
@@ -21,6 +22,10 @@ final class SaveElement
      */
     public function __invoke( $rootValue, array $args ) : Element
     {
+        if( !Permission::can( 'element:save', Auth::user() ) ) {
+            throw new Error( 'Insufficient permissions' );
+        }
+
         $element = Element::withTrashed()->findOrFail( $args['id'] );
 
         DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $element, $args ) {

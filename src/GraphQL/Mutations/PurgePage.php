@@ -7,9 +7,12 @@
 
 namespace Aimeos\Cms\GraphQL\Mutations;
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Permission;
+use GraphQL\Error\Error;
 
 
 final class PurgePage
@@ -20,6 +23,10 @@ final class PurgePage
      */
     public function __invoke( $rootValue, array $args ) : array
     {
+        if( !Permission::can( 'page:purge', Auth::user() ) ) {
+            throw new Error( 'Insufficient permissions' );
+        }
+
         $items = Page::withTrashed()->whereIn( 'id', $args['id'] )->get();
 
         foreach( $items as $item )

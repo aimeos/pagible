@@ -10,6 +10,8 @@ namespace Aimeos\Cms\GraphQL\Mutations;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Aimeos\Cms\Models\Element;
+use Aimeos\Cms\Permission;
+use GraphQL\Error\Error;
 
 
 final class AddElement
@@ -20,6 +22,10 @@ final class AddElement
      */
     public function __invoke( $rootValue, array $args ) : Element
     {
+        if( !Permission::can( 'element:add', Auth::user() ) ) {
+            throw new Error( 'Insufficient permissions' );
+        }
+
         $element = new Element();
 
         DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $element, $args ) {

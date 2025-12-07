@@ -7,10 +7,12 @@
 
 namespace Aimeos\Cms\GraphQL\Mutations;
 
-use Aimeos\Cms\Utils;
-use Aimeos\Cms\Models\File;
-use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\UploadedFile;
+use Aimeos\Cms\Models\File;
+use Aimeos\Cms\Permission;
+use Aimeos\Cms\Utils;
+use GraphQL\Error\Error;
 
 
 final class SaveFile
@@ -21,6 +23,10 @@ final class SaveFile
      */
     public function __invoke( $rootValue, array $args ) : File
     {
+        if( !Permission::can( 'file:save', Auth::user() ) ) {
+            throw new Error( 'Insufficient permissions' );
+        }
+
         $editor = Auth::user()?->name ?? request()->ip();
         $orig = File::withTrashed()->findOrFail( $args['id'] );
         $previews = $orig->latest?->data?->previews ?? $orig->previews;
