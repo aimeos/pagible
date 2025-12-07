@@ -172,7 +172,7 @@
 
         <v-expansion-panel v-for="(el, code) in (item.config || {})" :key="code" :class="{changed: el._changed, error: el._error}" v-show="shown(el)">
           <v-expansion-panel-title expand-icon="mdi-pencil">
-            <v-btn v-if="auth.can('page:save')"
+            <v-btn v-if="auth.can('page:save') && auth.can('config:page')"
               @click="remove(code)"
               :title="$gettext('Remove content element')"
               icon="mdi-delete"
@@ -188,7 +188,7 @@
               v-model:files="el.files"
               @error="error(el, $event)"
               @change="update(el)"
-              :readonly="!auth.can('page:save')"
+              :readonly="!auth.can('page:save') || !auth.can('config:page')"
               :fields="fields(el.type)"
               :assets="assets"
               :type="el.type"
@@ -199,7 +199,7 @@
 
       </v-expansion-panels>
 
-      <div v-if="available && auth.can('page:save')" class="btn-group">
+      <div v-if="available && auth.can('page:save') && auth.can('config:page')" class="btn-group">
         <v-btn
           @click="vschemas = true"
           :title="$gettext('Add element')"
