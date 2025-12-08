@@ -26,6 +26,10 @@ final class AddElement
             throw new Error( 'Insufficient permissions' );
         }
 
+        if( @$args['input']['type'] === 'html' && @$args['input']['data']->text ) {
+            $args['input']['data']->text = \Aimeos\Cms\Utils::html( (string) $args['input']['data']->text );
+        }
+
         $element = new Element();
 
         DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $element, $args ) {

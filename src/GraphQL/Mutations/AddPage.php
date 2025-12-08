@@ -30,10 +30,7 @@ final class AddPage
 
         DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $page, $args ) {
 
-            if( !Permission::can( 'config:page', Auth::user() ) ) {
-                unset( $args['input']['config'] );
-            }
-
+            $args['input'] = $this->sanitize( $args['input'] ?? [] );
             $editor = Auth::user()?->name ?? request()->ip();
 
             $page->fill( $args['input'] ?? [] );
@@ -72,5 +69,22 @@ final class AddPage
         }, 3 );
 
         return $page;
+    }
+
+
+    protected function sanitize( array $input ) : array
+    {
+        if( !Permission::can( 'config:page', Auth::user() ) ) {
+            unset( $input['config'] );
+        }
+
+        foreach( $input['content'] ?? [] as &$content )
+        {
+            if( @$content->type === 'html' && @$content->data->text ) {
+                $content->data->text = \Aimeos\Cms\Utils::html( (string) $content->data->text );
+            }
+        }
+
+        return $input;
     }
 }

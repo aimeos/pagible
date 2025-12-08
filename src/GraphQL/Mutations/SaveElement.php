@@ -26,6 +26,10 @@ final class SaveElement
             throw new Error( 'Insufficient permissions' );
         }
 
+        if( @$args['input']['type'] === 'html' && @$args['input']['data']->text ) {
+            $args['input']['data']->text = \Aimeos\Cms\Utils::html( (string) $args['input']['data']->text );
+        }
+
         $element = Element::withTrashed()->findOrFail( $args['id'] );
 
         DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $element, $args ) {

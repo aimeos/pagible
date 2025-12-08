@@ -19,6 +19,22 @@ class Utils
 
 
     /**
+     * Sanitizes the given HTML text to ensure it is safe for output.
+     *
+     * @param string|null $text The HTML text to sanitize
+     * @return string The sanitized HTML text
+     */
+    public static function html( ?string $text ) : string
+    {
+        $config = \HTMLPurifier_Config::createDefault();
+        $config->set( 'Attr.AllowedFrameTargets', ['_blank', '_self'] );
+
+        $purifier = new \HTMLPurifier( $config );
+        return $purifier->purify( (string) $text );
+    }
+
+
+    /**
      * Returns a collection of files associated with the given page.
      *
      * @param Page $page The page object containing content and files

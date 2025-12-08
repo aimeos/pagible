@@ -31,11 +31,7 @@ final class SavePage
 
         DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $page, $args ) {
 
-            if( !Permission::can( 'config:page', Auth::user() ) ) {
-                unset( $args['input']['config'] );
-            }
-
-            $input = (array) $args['input'] ?? [];
+            $input = $this->sanitize( $args['input'] ?? [] );
 
             $data = array_diff_key( $input, array_flip( ['meta', 'config', 'content'] ) );
             $data = array_replace( (array) $page->latest?->data ?? [], $data );
@@ -58,5 +54,22 @@ final class SavePage
         }, 3 );
 
         return $page;
+    }
+
+
+    protected function sanitize( array $input ) : array
+    {
+        if( !Permission::can( 'config:page', Auth::user() ) ) {
+            unset( $input['config'] );
+        }
+
+        foreach( $input['content'] ?? [] as &$content )
+        {
+            if( @$content->type === 'html' && @$content->data->text ) {
+                $content->data->text = \Aimeos\Cms\Utils::html( (string) $content->data->text );
+            }
+        }
+
+        return $input;
     }
 }
