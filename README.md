@@ -25,7 +25,7 @@ It can be installed into any existing Laravel application.
 * [Clean up](#clean-up)
 * [Multi-domain](#multi-domain)
 * [Multi-tenancy](#multi-tenancy)
-* [Custom authorization](#custom-authorization)
+* [Security](#security)
 
 ## Installation
 
@@ -195,3 +195,10 @@ Afterwards, tell PagibleAI CMS how the ID of the current tenant can be retrieved
     return tenancy()->initialized ? tenant()->getTenantKey() : '';
 };
 ```
+
+## Security
+
+If you find a security related issue, please contact `security at aimeos.org`.
+
+Special thanks to:
+- Lwin Min Oo
