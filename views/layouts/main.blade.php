@@ -7,7 +7,7 @@
         <meta http-equiv="Content-Security-Policy" content="
             base-uri 'self';
             default-src 'self';
-            frame-src 'self' {{ config('cms.csp.frame-src') }}
+            frame-src 'self' {{ config('cms.csp.frame-src') }};
             connect-src 'self' {{ config('cms.csp.connect-src') }};
             img-src 'self' data: blob: {{ config('cms.csp.media-src') }};
             media-src 'self' data: blob: {{ config('cms.csp.media-src') }};
