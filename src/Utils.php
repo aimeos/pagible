@@ -28,6 +28,7 @@ class Utils
     {
         $config = \HTMLPurifier_Config::createDefault();
         $config->set( 'Attr.AllowedFrameTargets', ['_blank', '_self'] );
+        $config->set( 'Cache.SerializerPath', sys_get_temp_dir() . '/pagible_htmlpurifier' );
 
         $purifier = new \HTMLPurifier( $config );
         return $purifier->purify( (string) $text );
