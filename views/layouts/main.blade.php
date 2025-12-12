@@ -7,8 +7,8 @@
         <meta http-equiv="Content-Security-Policy" content="
             base-uri 'self';
             default-src 'self';
-            img-src 'self' data: blob:;
-            media-src 'self' data: blob:;
+            img-src 'self' data: blob: {{ config('cms.csp.media-src') }};
+            media-src 'self' data: blob: {{ config('cms.csp.media-src') }};
             frame-src 'self' https://hcaptcha.com https://*.hcaptcha.com;
             connect-src 'self' https://hcaptcha.com https://*.hcaptcha.com;
             style-src 'self' 'nonce-{{ csrf_token() }}' https://hcaptcha.com https://*.hcaptcha.com;

@@ -19,7 +19,9 @@ class AdminController extends Controller
 {
     public function index()
     {
+        $media = config( 'cms.csp.media-src' );
         $nonce = base64_encode(random_bytes(16));
+
         return response()
             ->view('cms::layouts.admin', compact('nonce'))
             ->header('Content-Security-Policy',
@@ -27,8 +29,8 @@ class AdminController extends Controller
                 "default-src 'self' data: blob:;" .
                 "style-src 'self' 'unsafe-inline';" .
                 "script-src 'self' 'nonce-{$nonce}' blob:;" .
-                "img-src 'self' data: blob: http: https:;" .
-                "media-src 'self' data: blob: http: https:;" .
+                "img-src 'self' data: blob: http: https: " . $media . ";" .
+                "media-src 'self' data: blob: http: https: " . $media . ";" .
                 "frame-src 'self' http: https:;" .
                 "worker-src 'self' blob:;"
             );
