@@ -27,15 +27,8 @@ class Utils
     public static function html( ?string $text ) : string
     {
         $config = \HTMLPurifier_Config::createDefault();
-
         $config->set( 'Attr.AllowedFrameTargets', ['_blank', '_self'] );
         $config->set( 'Cache.SerializerPath', sys_get_temp_dir() );
-        $config->set( 'HTML.SafeEmbed', true );
-        $config->set( 'HTML.SafeObject', true) ;
-        $config->set( 'Output.FlashCompat', true) ;
-        $config->set( 'URI.AllowedSchemes', ['http' => true, 'https' => true, 'data' => true] );
-        $config->set( 'HTML.Allowed', 'svg,svg *[fill|stroke|stroke-width|viewBox|xmlns|width|height|x|y|d|cx|cy|r|points|transform],path,rect,circle,ellipse,line,polyline,polygon,g,text,tspan' );
-        $config->set( 'CSS.AllowedProperties', ['fill', 'stroke', 'stroke-width', 'font-size', 'font-family', 'opacity', 'transform'] );
 
         return ( new \HTMLPurifier( $config ) )->purify( (string) $text );
     }
