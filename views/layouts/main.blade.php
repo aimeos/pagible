@@ -7,12 +7,12 @@
         <meta http-equiv="Content-Security-Policy" content="
             base-uri 'self';
             default-src 'self';
+            frame-src 'self' {{ config('cms.csp.frame-src') }}
+            connect-src 'self' {{ config('cms.csp.connect-src') }};
             img-src 'self' data: blob: {{ config('cms.csp.media-src') }};
             media-src 'self' data: blob: {{ config('cms.csp.media-src') }};
-            frame-src 'self' https://hcaptcha.com https://*.hcaptcha.com;
-            connect-src 'self' https://hcaptcha.com https://*.hcaptcha.com;
-            style-src 'self' 'nonce-{{ csrf_token() }}' https://hcaptcha.com https://*.hcaptcha.com;
-            script-src 'self' 'nonce-{{ csrf_token() }}' https://hcaptcha.com https://*.hcaptcha.com;
+            style-src 'self' 'nonce-{{ csrf_token() }}' {{ config('cms.csp.style-src') }};
+            script-src 'self' 'nonce-{{ csrf_token() }}' {{ config('cms.csp.script-src') }};
         ">
 
         <title>{{ cms($page, 'title') }}</title>
