@@ -29,8 +29,9 @@ class AdminController extends Controller
                 "default-src 'self' data: blob:;" .
                 "style-src 'self' 'unsafe-inline';" .
                 "script-src 'self' 'nonce-{$nonce}' blob:;" .
-                "img-src 'self' data: blob: http: https: " . $media . ";" .
                 "media-src 'self' data: blob: http: https: " . $media . ";" .
+                "img-src 'self' data: blob: http: https: " . $media . ";" .
+                "connect-src 'self' http: https: " . $media . ";" .
                 "frame-src 'self' http: https:;" .
                 "worker-src 'self' blob:;"
             );
