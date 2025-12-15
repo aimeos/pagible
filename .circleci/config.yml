@@ -31,7 +31,7 @@ jobs:
           DB_USERNAME: pagible
           DB_PASSWORD: pagible
           DB_DATABASE: cms
-      - image: mariadb:lts
+      - image: mariadb
         environment:
           MARIADB_ROOT_PASSWORD: rootpw
           MARIADB_USER: pagible
