@@ -203,4 +203,16 @@ const search_page = search_debounce((ev) => {
     });
 });
 
+const search_select = (ev) => {
+    ev.preventDefault();
+
+    const results = ev.target?.closest('article')?.querySelector('.result-item a');
+
+    if(results?.[0]?.href) {
+        window.location.href = results[0].href;
+    }
+};
+
+document.querySelector('#modal-search header form')?.addEventListener('submit', search_select);
+
 document.getElementById('modal-search-input')?.addEventListener('input', search_page);

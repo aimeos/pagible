@@ -75,9 +75,8 @@ return [
     | Content Security Policy (CSP)
     |--------------------------------------------------------------------------
     |
-    | Define additional Content Security Policy (CSP) directives for media
-    | files that are allowed to be loaded in the frontend and the CMS admin
-    | interface.
+    | Define additional Content Security Policy (CSP) directives.
+    | The default settings already allow loading from the same origin.
     */
     'csp' => [
         'media-src' => env( 'CMS_CSP_MEDIA_SRC' ),
