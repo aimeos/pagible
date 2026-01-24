@@ -139,7 +139,6 @@ class GraphqlElementTest extends TestAbstract
         $expected[0]['data'] = json_decode($expected[0]['data'], true);
 
         $this->expectsDatabaseQueryCount(2);
-\Illuminate\Support\Facades\DB::enableQueryLog();
 
         $response = $this->actingAs($this->user)->graphQL('{
             elements(filter: {
@@ -167,8 +166,6 @@ class GraphqlElementTest extends TestAbstract
                 }
             }
         }');
-print_r(\Illuminate\Support\Facades\DB::getQueryLog());
-\Illuminate\Support\Facades\DB::disableQueryLog();
 
         $elementsData = $response->json('data.elements.data');
 
