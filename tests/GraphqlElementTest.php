@@ -147,8 +147,7 @@ class GraphqlElementTest extends TestAbstract
                 type: "footer"
                 name: "Shared"
                 editor: "seeder"
-                data: "Powered by Laravel"
-                any: "Laravel"
+                any: "footer"
             }, sort: [{column: TYPE, order: ASC}], first: 10, trashed: WITH, publish: DRAFT) {
                 data {
                     id
