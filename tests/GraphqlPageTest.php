@@ -153,11 +153,8 @@ class GraphqlPageTest extends TestAbstract
                 theme: ""
                 cache: 5
                 status: 1
-                meta: "Laravel"
-                config: "value"
-                content: "Welcome"
                 editor: "seed"
-                any: "Laravel"
+                any: "Home"
             }, first: 10, page: 1, trashed: WITH, publish: PUBLISHED) {
                 data {
                     id

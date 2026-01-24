@@ -232,18 +232,6 @@ final class Query
                 $builder->where( 'data->title', 'like', $filter['title'] . '%' );
             }
 
-            if( isset( $filter['meta'] ) ) {
-                $builder->where( 'aux->meta', 'like', '%' . $filter['meta'] . '%' );
-            }
-
-            if( isset( $filter['config'] ) ) {
-                $builder->where( 'aux->config', 'like', '%' . $filter['config'] . '%' );
-            }
-
-            if( isset( $filter['content'] ) ) {
-                $builder->where( 'aux->content', 'like', '%' . $filter['content'] . '%' );
-            }
-
             if( isset( $filter['any'] ) ) {
                 $builder->whereAny( ['aux->domain', 'aux->path', 'aux->to', 'aux->tag', 'aux->theme', 'aux->type', 'data->name', 'data->title'], 'like', '%' . $filter['any'] . '%' );
             }
