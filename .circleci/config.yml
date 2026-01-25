@@ -21,6 +21,33 @@ jobs:
           paths: [./vendor]
       - run: ./vendor/bin/phpunit
 
+  "php82-pgsql10":
+    docker:
+      - image: aimeos/ci-php:8.2
+        environment:
+          DB_DRIVER: pgsql
+          DB_HOST: "127.0.0.1"
+          DB_PORT: 5432
+          DB_USERNAME: pagible
+          DB_PASSWORD: pagible
+          DB_DATABASE: cms
+      - image: cimg/postgres:10.22
+        environment:
+          POSTGRES_PASSWORD: pagible
+          POSTGRES_USER: pagible
+          POSTGRES_DB: cms
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - php82-{{ checksum "composer.json" }}
+      - run: composer update -n --prefer-dist
+      - save_cache:
+          key: php82-{{ checksum "composer.json" }}
+          paths: [./vendor]
+      - run: for i in `seq 1 10`; do nc -z 127.0.0.1 5432 && echo OK && exit 0; echo -n .; sleep 1; done
+      - run: ./vendor/bin/phpunit
+
   "php82-mariadb12":
     docker:
       - image: aimeos/ci-php:8.2
@@ -154,6 +181,7 @@ workflows:
   unittest:
     jobs:
       - "php82-sqlite3"
+      - "php82-pgsql10"
       - "php82-mariadb12"
       - "php82-mysql8"
       - "php85-sqlite3"
