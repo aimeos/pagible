@@ -138,12 +138,12 @@ return new class extends Migration
         });
 
         $schema->table('cms_page_element', function (Blueprint $table) {
-            $table->renameColumn('page_uuid', 'page_id');
+            $table->renameColumn('page_uuid', 'page_id')->change();
             $table->foreignUuid('page_id')->references('id')->on('cms_pages')->onDelete('cascade')->onUpdate('cascade');
         });
 
         $schema->table('cms_page_file', function (Blueprint $table) {
-            $table->renameColumn('page_uuid', 'page_id');
+            $table->renameColumn('page_uuid', 'page_id')->change();
             $table->foreignUuid('page_id')->references('id')->on('cms_pages')->onDelete('cascade')->onUpdate('cascade');
         });
 
