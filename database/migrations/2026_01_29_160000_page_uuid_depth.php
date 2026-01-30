@@ -137,22 +137,33 @@ return new class extends Migration
             $table->uuid('id')->primary()->change();
         });
 
-        $schema->table('cms_page_element', function (Blueprint $table) {
-            $table->renameColumn('page_uuid', 'page_id')->change();
-            $table->foreignUuid('page_id')->references('id')->on('cms_pages')->onDelete('cascade')->onUpdate('cascade');
-        });
-
-        $schema->table('cms_page_file', function (Blueprint $table) {
-            $table->renameColumn('page_uuid', 'page_id')->change();
-            $table->foreignUuid('page_id')->references('id')->on('cms_pages')->onDelete('cascade')->onUpdate('cascade');
-        });
-
         $schema->table('cms_page_search', function (Blueprint $table) {
             $table->renameColumn('uuid', 'id');
             $table->uuid('id')->primary()->change();
+        });
 
+        $schema->table('cms_page_element', function (Blueprint $table) {
             $table->renameColumn('page_uuid', 'page_id');
-            $table->foreignUuid('page_id')->references('id')->on('cms_pages')->onDelete('cascade')->onUpdate('cascade')->collation('utf8mb4_unicode_ci');
+        });
+
+        $schema->table('cms_page_element', function (Blueprint $table) {
+            $table->foreign('page_id')->references('id')->on('cms_pages')->cascadeOnDelete()->cascadeOnUpdate();
+        });
+
+        $schema->table('cms_page_file', function (Blueprint $table) {
+            $table->renameColumn('page_uuid', 'page_id');
+        });
+
+        $schema->table('cms_page_file', function (Blueprint $table) {
+            $table->foreign('page_id')->references('id')->on('cms_pages')->cascadeOnDelete()->cascadeOnUpdate();
+        });
+
+        $schema->table('cms_page_search', function (Blueprint $table) {
+            $table->foreign('page_id')->references('id')->on('cms_pages')->cascadeOnDelete()->cascadeOnUpdate();
+        });
+
+        $schema->table('cms_page_search', function (Blueprint $table) {
+            $table->foreign('page_id')->references('id')->on('cms_pages')->cascadeOnDelete()->cascadeOnUpdate();
         });
     }
 };
