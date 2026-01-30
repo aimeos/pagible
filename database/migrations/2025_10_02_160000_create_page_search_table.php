@@ -24,7 +24,7 @@ return new class extends Migration
             $table->collation('utf8mb4_bin');
 
             $table->bigIncrements('id');
-            $table->foreignId('page_id')->constrained('cms_pages')->cascadeOnUpdate()->cascadeOnDelete();
+            $table->foreignUuid('page_id')->constrained('cms_pages')->cascadeOnUpdate()->cascadeOnDelete();
             $table->string('tenant_id', 250);
             $table->string('lang', 5);
             $table->string('domain');

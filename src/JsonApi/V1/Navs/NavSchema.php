@@ -78,7 +78,7 @@ class NavSchema extends Schema
     public function fields(): array
     {
         return [
-            ID::make(),
+            ID::make()->uuid(),
             Str::make( 'parent_id' )->readOnly(),
             Str::make( 'lang' )->readOnly(),
             Str::make( 'path' )->readOnly(),

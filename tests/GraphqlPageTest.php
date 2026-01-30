@@ -76,7 +76,7 @@ class GraphqlPageTest extends TestAbstract
         $this->expectsDatabaseQueryCount(1);
 
         $response = $this->actingAs($this->user)->graphQL("{
-            page(id: {$page->id}) {
+            page(id: \"{$page->id}\") {
                 id
                 related_id
                 parent_id
@@ -140,7 +140,7 @@ class GraphqlPageTest extends TestAbstract
 
         $response = $this->actingAs($this->user)->graphQL('{
             pages(filter: {
-                id: [' . $page->id . ']
+                id: ["' . $page->id . '"]
                 parent_id: null
                 lang: "en"
                 name: "Home"
@@ -356,7 +356,7 @@ class GraphqlPageTest extends TestAbstract
 
         $this->expectsDatabaseQueryCount( 3 );
         $response = $this->actingAs( $this->user )->graphQL( "{
-            page(id: {$page->id}) {
+            page(id: \"{$page->id}\") {
                 id
                 parent {
                     id
@@ -385,7 +385,7 @@ class GraphqlPageTest extends TestAbstract
 
         $this->expectsDatabaseQueryCount( 2 );
         $response = $this->actingAs( $this->user )->graphQL( "{
-            page(id: {$page->id}) {
+            page(id: \"{$page->id}\") {
                 id
                 children(first: 3) {
                     data {
@@ -418,7 +418,7 @@ class GraphqlPageTest extends TestAbstract
 
         $this->expectsDatabaseQueryCount( 2 );
         $response = $this->actingAs( $this->user )->graphQL( "{
-            page(id: {$page->id}) {
+            page(id: \"{$page->id}\") {
                 id
                 ancestors {
                     tag
@@ -448,7 +448,7 @@ class GraphqlPageTest extends TestAbstract
         $this->expectsDatabaseQueryCount(2);
 
         $response = $this->actingAs($this->user)->graphQL("{
-            page(id: {$page->id}) {
+            page(id: \"{$page->id}\") {
                 id
                 versions {
                     lang
@@ -505,7 +505,7 @@ class GraphqlPageTest extends TestAbstract
 
         $this->expectsDatabaseQueryCount( 5 );
         $response = $this->actingAs( $this->user )->graphQL( "{
-            page(id: {$page->id}) {
+            page(id: \"{$page->id}\") {
                 id
                 ancestors {
                     id
@@ -545,7 +545,7 @@ class GraphqlPageTest extends TestAbstract
         $this->expectsDatabaseQueryCount(2);
 
         $response = $this->actingAs($this->user)->graphQL("{
-            page(id: {$page->id}) {
+            page(id: \"{$page->id}\") {
                 id
                 elements {
                     lang
@@ -632,7 +632,7 @@ class GraphqlPageTest extends TestAbstract
 
         $page = Page::where('tag', 'test')->where('lang', 'en')->firstOrFail();
 
-        $attr = collect($page->getAttributes())->except(['tenant_id', '_lft', '_rgt'])->all();
+        $attr = collect($page->getAttributes())->except(['tenant_id', '_lft', '_rgt', 'depth'])->all();
         $expected = [
             'id' => (string) $page->id,
             'parent_id' => null,
@@ -654,7 +654,7 @@ class GraphqlPageTest extends TestAbstract
 
         $root = Page::where('tag', 'root')->firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 7 );
+        $this->expectsDatabaseQueryCount( 8 );
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
                 addPage(input: {
@@ -694,7 +694,7 @@ class GraphqlPageTest extends TestAbstract
         $root = Page::where('tag', 'root')->firstOrFail();
         $ref = Page::where('tag', 'blog')->firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 7 );
+        $this->expectsDatabaseQueryCount( 8 );
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
                 addPage(input: {
@@ -735,7 +735,7 @@ class GraphqlPageTest extends TestAbstract
 
         $blog = Page::where('tag', 'blog')->firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 7 );
+        $this->expectsDatabaseQueryCount( 8 );
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
                 movePage(id: "' . $blog->id . '") {
@@ -767,7 +767,7 @@ class GraphqlPageTest extends TestAbstract
         $root = Page::where('tag', 'root')->firstOrFail();
         $article = Page::where('tag', 'article')->firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 9 );
+        $this->expectsDatabaseQueryCount( 10 );
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
                 movePage(id: "' . $article->id . '", parent: "' . $root->id . '") {
@@ -798,7 +798,7 @@ class GraphqlPageTest extends TestAbstract
         $blog = Page::where('tag', 'blog')->firstOrFail();
         $article = Page::where('tag', 'article')->firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 9 );
+        $this->expectsDatabaseQueryCount( 10 );
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
                 movePage(id: "' . $article->id . '", parent: "' . $root->id . '", ref: "' . $blog->id . '") {

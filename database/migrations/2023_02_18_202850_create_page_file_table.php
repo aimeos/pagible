@@ -19,7 +19,7 @@ return new class extends Migration
     public function up()
     {
         Schema::connection(config('cms.db', 'sqlite'))->create('cms_page_file', function (Blueprint $table) {
-            $table->foreignId('page_id')->constrained('cms_pages')->cascadeOnUpdate()->cascadeOnDelete();
+            $table->foreignUuid('page_id')->constrained('cms_pages')->cascadeOnUpdate()->cascadeOnDelete();
             $table->foreignUuid('file_id')->constrained('cms_files')->cascadeOnUpdate()->cascadeOnDelete();
 
             $table->unique(['page_id', 'file_id']);

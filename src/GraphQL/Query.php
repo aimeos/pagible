@@ -26,7 +26,7 @@ final class Query
      *
      * @param  null  $rootValue
      * @param  array  $args
-     * @return \Kalnoy\Nestedset\QueryBuilder
+     * @return \Aimeos\Nestedset\QueryBuilder
      */
     public function elements( $rootValue, array $args ) : Builder
     {
@@ -87,7 +87,7 @@ final class Query
      *
      * @param  null  $rootValue
      * @param  array  $args
-     * @return \Kalnoy\Nestedset\QueryBuilder
+     * @return \Aimeos\Nestedset\QueryBuilder
      */
     public function files( $rootValue, array $args ) : Builder
     {
@@ -148,9 +148,9 @@ final class Query
      *
      * @param  null  $rootValue
      * @param  array  $args
-     * @return \Kalnoy\Nestedset\QueryBuilder
+     * @return \Aimeos\Nestedset\QueryBuilder
      */
-    public function pages( $rootValue, array $args ) : \Kalnoy\Nestedset\QueryBuilder
+    public function pages( $rootValue, array $args ) : \Aimeos\Nestedset\QueryBuilder
     {
         $filter = $args['filter'] ?? [];
         $publish = $args['publish'] ?? null;

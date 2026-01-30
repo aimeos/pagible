@@ -73,7 +73,7 @@ abstract class TestAbstract extends \Orchestra\Testbench\TestCase
 	{
 		return [
 			'Aimeos\Cms\ServiceProvider',
-			'Kalnoy\Nestedset\NestedSetServiceProvider',
+			'Aimeos\Nestedset\NestedSetServiceProvider',
 		];
 	}
 }

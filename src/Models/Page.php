@@ -8,7 +8,11 @@
 namespace Aimeos\Cms\Models;
 
 use Aimeos\Cms\Concerns\Tenancy;
+use Aimeos\Nestedset\NodeTrait;
+use Aimeos\Nestedset\AncestorsRelation;
+use Aimeos\Nestedset\DescendantsRelation;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
@@ -21,9 +25,6 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Collection;
-use Kalnoy\Nestedset\NodeTrait;
-use Kalnoy\Nestedset\AncestorsRelation;
-use Kalnoy\Nestedset\DescendantsRelation;
 
 
 /**
@@ -31,9 +32,10 @@ use Kalnoy\Nestedset\DescendantsRelation;
  */
 class Page extends Model
 {
+    use HasUuids;
+    use NodeTrait;
     use SoftDeletes;
     use Prunable;
-    use NodeTrait;
     use Tenancy;
 
 
@@ -310,14 +312,14 @@ class Page extends Model
      * Get the navigation for the page.
      *
      * @param int $level Starting level for the navigation (default: 0 for root page)
-     * @return \Kalnoy\Nestedset\Collection Collection of ancestor pages
+     * @return \Aimeos\Nestedset\Collection Collection of ancestor pages
      */
-    public function nav( $level = 0 ) : \Kalnoy\Nestedset\Collection
+    public function nav( $level = 0 ) : \Aimeos\Nestedset\Collection
     {
-        return $this->withDepth()->ancestorsAndSelf( $this->id )
+        return $this->ancestorsAndSelf( $this->id )
             ->skip( $level )->first()
             ?->subtree?->toTree()
-            ?? new \Kalnoy\Nestedset\Collection();
+            ?? new \Aimeos\Nestedset\Collection();
     }
 
 
@@ -424,11 +426,7 @@ class Page extends Model
     {
         // restrict maximum depth to three levels for performance reasons
         $builder = $this->newScopedQuery()
-            ->select(
-                'id', 'parent_id', 'lang', 'path', 'domain', 'to', 'name', 'title',
-                'status', 'created_at', 'updated_at', '_lft', '_rgt'
-            )
-            ->withDepth()
+            ->where( 'depth', '<=', ( $this->depth ?? 0 ) + config( 'cms.navdepth', 2 ) )
             ->whereNotExists( function( \Illuminate\Database\Query\Builder $builder ) {
                 $builder->select( DB::raw( 1 ) )
                     ->from( $this->getTable() . ' AS parent' )
@@ -437,11 +435,6 @@ class Page extends Model
                     ->where( 'parent.tenant_id', '=', \Aimeos\Cms\Tenancy::value() )
                     ->where( 'parent.status', 0 );
             } )
-            ->groupBy(
-                'id', 'tenant_id', 'parent_id', 'lang', 'path', 'domain', 'to', 'name', 'title',
-                'status', 'created_at', 'updated_at', 'deleted_at', '_lft', '_rgt'
-            )
-            ->having( 'depth', '<=', ( $this->depth ?? 0 ) + config( 'cms.navdepth', 2 ) )
             ->defaultOrder()
             ->setModel(new Nav());
 
