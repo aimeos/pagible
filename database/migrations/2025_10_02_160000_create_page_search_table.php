@@ -19,7 +19,7 @@ return new class extends Migration
     public function up()
     {
         Schema::connection(config('cms.db', 'sqlite'))->create('cms_page_search', function (Blueprint $table) {
-            $table->bigIncrements('id');
+            $table->uuid('id');
             $table->foreignUuid('page_id')->constrained('cms_pages')->cascadeOnUpdate()->cascadeOnDelete();
             $table->string('tenant_id', 250);
             $table->string('lang', 5);
