@@ -20,11 +20,13 @@ return new class extends Migration
      */
     public function up()
     {
-        if( !in_array( Schema::getColumnType('cms_pages', 'id'), ['varchar', 'guid', 'uuid'] ) ) {
+        $schema = Schema::connection(config('cms.db', 'sqlite'));
+
+        if( !in_array( $schema->getColumnType('cms_pages', 'id'), ['varchar', 'guid', 'uuid'] ) ) {
             $this->uuid();
         }
 
-        Schema::table('cms_pages', function (Blueprint $table) {
+        $schema->table('cms_pages', function (Blueprint $table) {
             $table->nestedSetDepth(); // update table schema
         });
 
@@ -44,22 +46,25 @@ return new class extends Migration
 
     protected function uuid()
     {
+        $schema = Schema::connection(config('cms.db', 'sqlite'));
+
         // Add UUID columns
 
-        Schema::table('cms_pages', function (Blueprint $table) {
+        $schema->table('cms_pages', function (Blueprint $table) {
             $table->uuid('uuid')->nullable()->after('id');
         });
 
-        Schema::table('cms_page_element', function (Blueprint $table) {
+        $schema->table('cms_page_element', function (Blueprint $table) {
             $table->uuid('page_uuid')->nullable()->after('page_id');
         });
 
-        Schema::table('cms_page_file', function (Blueprint $table) {
+        $schema->table('cms_page_file', function (Blueprint $table) {
             $table->uuid('page_uuid')->nullable()->after('page_id');
         });
 
-        Schema::table('cms_page_search', function (Blueprint $table) {
+        $schema->table('cms_page_search', function (Blueprint $table) {
             $table->uuid('page_uuid')->nullable()->after('page_id');
+            $table->uuid('uuid')->nullable()->after('id');
         });
 
         // Add UUID values
@@ -71,6 +76,17 @@ return new class extends Migration
                 foreach ($pages as $page) {
                     DB::table('cms_pages')
                         ->where('id', $page->id)
+                        ->update(['uuid' => (string) Str::uuid()]);
+                }
+            });
+
+        DB::table('cms_page_search')
+            ->whereNull('uuid')
+            ->orderBy('id')
+            ->chunkById(500, function ($models) {
+                foreach ($models as $model) {
+                    DB::table('cms_page_search')
+                        ->where('id', $model->id)
                         ->update(['uuid' => (string) Str::uuid()]);
                 }
             });
@@ -94,49 +110,54 @@ return new class extends Migration
 
         // Remove old primary / foreign keys
 
-        Schema::table('cms_page_element', function (Blueprint $table) {
+        $schema->table('cms_page_element', function (Blueprint $table) {
             $table->dropForeign(['page_id']);
             $table->dropColumn('page_id');
         });
 
-        Schema::table('cms_page_file', function (Blueprint $table) {
+        $schema->table('cms_page_file', function (Blueprint $table) {
             $table->dropForeign(['page_id']);
             $table->dropColumn('page_id');
         });
 
-        Schema::table('cms_page_search', function (Blueprint $table) {
+        $schema->table('cms_page_search', function (Blueprint $table) {
             $table->dropForeign(['page_id']);
             $table->dropColumn('page_id');
+            $table->dropPrimary();
+            $table->dropColumn('id');
         });
 
-        Schema::table('cms_pages', function (Blueprint $table) {
+        $schema->table('cms_pages', function (Blueprint $table) {
             $table->dropPrimary();
             $table->dropColumn('id');
         });
 
         // Promote UUIDs to primary / foreign keys
 
-        Schema::table('cms_pages', function (Blueprint $table) {
+        $schema->table('cms_pages', function (Blueprint $table) {
             $table->renameColumn('uuid', 'id');
             $table->uuid('id')->primary()->change();
         });
 
-        Schema::table('cms_page_element', function (Blueprint $table) {
+        $schema->table('cms_page_element', function (Blueprint $table) {
             $table->renameColumn('page_uuid', 'page_id');
             $table->uuid('page_id')->change();
             $table->foreignUuid('page_id')->references('id')->on('cms_pages')->onDelete('cascade')->onUpdate('cascade');
         });
 
-        Schema::table('cms_page_file', function (Blueprint $table) {
+        $schema->table('cms_page_file', function (Blueprint $table) {
             $table->renameColumn('page_uuid', 'page_id');
             $table->uuid('page_id')->change();
             $table->foreignUuid('page_id')->references('id')->on('cms_pages')->onDelete('cascade')->onUpdate('cascade');
         });
 
-        Schema::table('cms_page_search', function (Blueprint $table) {
+        $schema->table('cms_page_search', function (Blueprint $table) {
+            $table->renameColumn('uuid', 'id');
+            $table->uuid('id')->primary()->change();
+
             $table->renameColumn('page_uuid', 'page_id');
             $table->uuid('page_id')->change();
-            $table->foreignUuid('page_id')->references('id')->on('cms_pages')->onDelete('cascade')->onUpdate('cascade');
+            $table->foreignUuid('page_id')->references('id')->on('cms_pages')->onDelete('cascade')->onUpdate('cascade')->collation('utf8mb4_unicode_ci');
         });
     }
 };
