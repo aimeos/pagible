@@ -123,12 +123,10 @@ return new class extends Migration
         $schema->table('cms_page_search', function (Blueprint $table) {
             $table->dropForeign(['page_id']);
             $table->dropColumn('page_id');
-            $table->dropPrimary();
             $table->dropColumn('id');
         });
 
         $schema->table('cms_pages', function (Blueprint $table) {
-            $table->dropPrimary();
             $table->dropColumn('id');
         });
 
