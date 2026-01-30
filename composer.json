@@ -9,16 +9,16 @@
 	"minimum-stability": "dev",
 	"require": {
 		"aimeos/laravel-analytics-bridge": "~1.0",
+		"aimeos/laravel-nestedset": "dev-master",
+		"aimeos/prisma": "dev-master",
 		"ezyang/htmlpurifier": "^4.18",
 		"intervention/image": "^3.11",
-		"kalnoy/nestedset": "^6.0",
 		"laravel-json-api/laravel": "^5.1",
 		"laravel/framework": "^11.0||^12.0",
 		"laravel/scout": "^10.20",
 		"league/commonmark": "^2.6",
 		"mll-lab/graphql-php-scalars": "^6.4",
 		"nuwave/lighthouse": "^6.54",
-		"aimeos/prisma": "dev-master",
 		"prism-php/prism": "0.97",
 		"symfony/uid": "^7.0"
 	},

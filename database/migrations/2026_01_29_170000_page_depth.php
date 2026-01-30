@@ -8,6 +8,8 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 return new class extends Migration
 {
@@ -18,12 +20,13 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::connection(config('cms.db', 'sqlite'))->create('cms_page_file', function (Blueprint $table) {
-            $table->foreignUuid('page_id')->constrained('cms_pages')->cascadeOnUpdate()->cascadeOnDelete();
-            $table->foreignUuid('file_id')->constrained('cms_files')->cascadeOnUpdate()->cascadeOnDelete();
+        $schema = Schema::connection(config('cms.db', 'sqlite'));
 
-            $table->unique(['page_id', 'file_id']);
+        $schema->table('cms_pages', function (Blueprint $table) {
+            $table->nestedSetDepth(); // update table schema
         });
+
+        \Aimeos\Cms\Models\Page::fixTree(); // update existing data
     }
 
     /**
@@ -33,6 +36,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::connection(config('cms.db', 'sqlite'))->dropIfExists('cms_page_file');
+        // removed by previous migration
     }
 };
