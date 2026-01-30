@@ -159,7 +159,7 @@ return new class extends Migration
         });
 
         $schema->table('cms_page_search', function (Blueprint $table) {
-            $table->foreign('page_id')->references('id')->on('cms_pages')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->renameColumn('page_uuid', 'page_id');
         });
 
         $schema->table('cms_page_search', function (Blueprint $table) {
