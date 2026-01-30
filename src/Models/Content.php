@@ -9,6 +9,7 @@ namespace Aimeos\Cms\Models;
 
 use Aimeos\Cms\Concerns\Tenancy;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Laravel\Scout\Attributes\SearchUsingFullText;
 use Laravel\Scout\Searchable;
 
@@ -18,6 +19,7 @@ use Laravel\Scout\Searchable;
  */
 class Content extends Model
 {
+    use HasUuids;
     use Searchable;
     use Tenancy;
 
