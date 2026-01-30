@@ -22,7 +22,7 @@ return new class extends Migration
     {
         $schema = Schema::connection(config('cms.db', 'sqlite'));
 
-        if( in_array( $schema->getColumnType('cms_page_search', 'id'), ['varchar', 'guid', 'uuid'] ) ) {
+        if( in_array( $schema->getColumnType('cms_page_search', 'id'), ['varchar', 'char', 'guid', 'uuid'] ) ) {
             return;
         }
 
