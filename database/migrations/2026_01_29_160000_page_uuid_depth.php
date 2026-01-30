@@ -103,9 +103,9 @@ return new class extends Migration
             ->join('cms_pages', 'cms_page_search.page_id', '=', 'cms_pages.id')
             ->update(['cms_page_search.page_uuid' => DB::raw('cms_pages.uuid')]);
 
-        DB::table('cms_page_versions')
-            ->join('cms_pages', 'cms_page_versions.versionable_id', '=', 'cms_pages.id')
-            ->update(['cms_page_versions.versionable_id' => DB::raw('cms_pages.uuid')]);
+        DB::table('cms_versions')
+            ->join('cms_pages', 'cms_versions.versionable_id', '=', 'cms_pages.id')
+            ->update(['cms_versions.versionable_id' => DB::raw('cms_pages.uuid')]);
 
 
         // Remove old primary / foreign keys
