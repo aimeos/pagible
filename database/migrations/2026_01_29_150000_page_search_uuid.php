@@ -28,7 +28,7 @@ return new class extends Migration
 
         Schema::connection( config( 'cms.db', 'sqlite' ) )->create( 'cms_page_search_new', function ( Blueprint $table ) {
             $table->uuid( 'id' );
-            $table->foreignUuid( 'page_id' )->constrained( 'cms_pages' )->cascadeOnUpdate()->cascadeOnDelete();
+            $table->bigInteger( 'page_id' ); // will be changed and constrainted later
             $table->string( 'tenant_id', 250 );
             $table->string( 'lang', 5 );
             $table->string( 'domain' );

@@ -80,7 +80,6 @@ return new class extends Migration
         });
 
         $schema->table('cms_page_search', function (Blueprint $table) {
-            $table->dropForeign(['page_id']);
             $table->dropColumn('page_id');
         });
 
@@ -117,7 +116,7 @@ return new class extends Migration
         });
 
         $schema->table('cms_page_search', function (Blueprint $table) {
-            $table->foreign('page_id')->references('id')->on('cms_pages')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->foreign('page_id')->references('id')->on('cms_pages')->cascadeOnDelete()->cascadeOnUpdate()->collation('utf8mb4_unicode_ci');
         });
     }
 
@@ -183,8 +182,16 @@ return new class extends Migration
             })->toArray()
         );
 
-        DB::table('cms_pages_new')->update([
-            'parent_id' => DB::raw('(SELECT id FROM cms_pages_new WHERE cms_pages_new.oid = cms_pages_new.parent_id)')
-        ]);
+        DB::table('cms_pages_new as c')
+            ->join('cms_pages_new as p', 'p.oid', '=', 'c.parent_id')
+            ->select('c.id as child_id', 'p.id as parent_id')
+            ->orderBy('c.id')
+            ->chunk(100, function ($rows) {
+                foreach ($rows as $row) {
+                    DB::table('cms_pages_new')
+                        ->where('id', $row->child_id)
+                        ->update(['parent_id' => $row->parent_id]);
+                }
+            });
     }
 };
