@@ -58,11 +58,18 @@ return new class extends Migration
             'page_uuid' => DB::raw('(SELECT id FROM cms_pages_new WHERE cms_pages_new.oid = cms_page_search.page_id)')
         ]);
 
-        DB::table('cms_versions')->whereIn('versionable_id', function ($query) {
-            $query->select('id')->from('cms_pages_new');
-        })->update([
-            'versionable_id' => DB::raw('(SELECT id FROM cms_pages_new WHERE cms_pages_new.oid = cms_versions.versionable_id)')
-        ]);
+        DB::table('cms_pages_new as p')
+            ->join('cms_versions as v', 'p.oid', '=', 'v.versionable_id')
+            ->where('v.versionable_type', 'Aimeos\\Cms\\Models\\Page')
+            ->select('v.id as version_id', 'p.id as page_id')
+            ->orderBy('v.id')
+            ->chunk(100, function ($rows) {
+                foreach ($rows as $row) {
+                    DB::table('cms_versions')
+                        ->where('id', $row->version_id)
+                        ->update(['versionable_id' => $row->page_id]);
+                }
+            });
 
 
         // Remove old primary / foreign keys
