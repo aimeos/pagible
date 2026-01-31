@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::table('cms_files', function (Blueprint $table) {
             if(!Schema::hasColumn('cms_files', 'transcription')) {
-                $table->json('transcription');
+                $table->json('transcription')->default('{}');
             }
         });
     }

@@ -26,37 +26,32 @@ return new class extends Migration
             return;
         }
 
-        // Add UUID columns
+        Schema::connection( config( 'cms.db', 'sqlite' ) )->create( 'cms_page_search_new', function ( Blueprint $table ) {
+            $table->uuid( 'id' );
+            $table->foreignUuid( 'page_id' )->constrained( 'cms_pages' )->cascadeOnUpdate()->cascadeOnDelete();
+            $table->string( 'tenant_id', 250 );
+            $table->string( 'lang', 5 );
+            $table->string( 'domain' );
+            $table->string( 'path' );
+            $table->string( 'title' );
+            $table->text( 'content' );
 
-        $schema->table('cms_page_search', function (Blueprint $table) {
-            $table->uuid('uuid')->nullable()->after('id');
-        });
+            $table->unique( [ 'tenant_id', 'lang', 'domain', 'path' ] );
 
-        // Add UUID values
+            if ( in_array( Schema::getConnection()->getDriverName(), [ 'mariadb', 'mysql' ] ) ) {
+                $table->fullText( 'content' );
+            }
+        } );
 
-        DB::table('cms_page_search')
-            ->whereNull('uuid')
-            ->orderBy('id')
-            ->chunkById(500, function ($models) {
-                foreach ($models as $model) {
-                    DB::table('cms_page_search')
-                        ->where('id', $model->id)
-                        ->update(['uuid' => (string) Str::uuid()]);
-                }
-            });
+        DB::table('cms_page_search_new')->insert(
+            DB::table('cms_page_search')->get()->map(function ($row) {
+                $row->id = Str::uuid()->toString();
+                return (array) $row;
+            })->toArray()
+        );
 
-        // Remove old primary key
-
-        $schema->table('cms_page_search', function (Blueprint $table) {
-            $table->dropColumn('id');
-        });
-
-        // Promote UUIDs to primary key
-
-        $schema->table('cms_page_search', function (Blueprint $table) {
-            $table->renameColumn('uuid', 'id');
-            $table->uuid('id')->primary()->change();
-        });
+        $schema->dropIfExists('cms_page_search');
+        $schema->rename('cms_page_search_new', 'cms_page_search');
     }
 
     /**
