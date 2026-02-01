@@ -9,6 +9,7 @@ namespace Aimeos\Cms\GraphQL\Mutations;
 
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Permission;
 use GraphQL\Error\Error;
@@ -26,17 +27,20 @@ final class DropPage
             throw new Error( 'Insufficient permissions' );
         }
 
-        $items = Page::withTrashed()->whereIn( 'id', $args['id'] )->get();
-        $editor = Auth::user()?->name ?? request()->ip();
+        return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $args ) {
 
-        foreach( $items as $item )
-        {
-            $item->editor = $editor;
-            $item->delete();
+            $items = Page::withTrashed()->whereIn( 'id', $args['id'] )->get();
+            $editor = Auth::user()?->name ?? request()->ip();
 
-            Cache::forget( Page::key( $item ) );
-        }
+            foreach( $items as $item )
+            {
+                $item->editor = $editor;
 
-        return $items->all();
+                $item->delete();
+                Cache::forget( Page::key( $item ) );
+            }
+
+            return $items->all();
+        }, 3 );
     }
 }

@@ -27,14 +27,20 @@ final class PurgePage
             throw new Error( 'Insufficient permissions' );
         }
 
-        $items = Page::withTrashed()->whereIn( 'id', $args['id'] )->get();
+        return Cache::lock( 'cms_pages_' . \Aimeos\Cms\Tenancy::value(), 30 )->get( function() use ( $args ) {
 
-        foreach( $items as $item )
-        {
-            DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( fn() => $item->forceDelete(), 3 );
-            Cache::forget( Page::key( $item ) );
-        }
+            $items = Page::withTrashed()->whereIn( 'id', $args['id'] )->get();
 
-        return $items->all();
+            return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $items ) {
+
+                foreach( $items as $item )
+                {
+                    $item->forceDelete();
+                    Cache::forget( Page::key( $item ) );
+                }
+
+                return $items->all();
+            }, 3 );
+        } );
     }
 }
