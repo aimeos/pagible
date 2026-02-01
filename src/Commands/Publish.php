@@ -8,6 +8,7 @@
 namespace Aimeos\Cms\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
 use Aimeos\Cms\Models\Version;
 
 
@@ -35,19 +36,19 @@ class Publish extends Command
 
                 foreach( $versions as $version )
                 {
+                    $id = $version->versionable_id;
+                    $type = $version->versionable_type;
+
                     try
                     {
-                        $id = $version->versionable_id;
-                        $type = $version->versionable_type;
-
-                        app( $type )::findOrFail( $id )->publish( $version );
+                        DB::connection( config( 'cms.db', 'sqlite' ) )
+                            ->transaction( fn() => app( $type )::findOrFail( $id )->publish( $version ) );
                     }
                     catch( \Exception $e )
                     {
                         $this->error( "Failed to publish ID {$id} of {$type}: " . $e->getMessage() );
                     }
                 }
-
             } );
     }
 }
