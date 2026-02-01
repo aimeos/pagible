@@ -202,7 +202,7 @@ jobs:
       - run: for i in `seq 1 10`; do nc -z 127.0.0.1 3306 && echo OK && exit 0; echo -n .; sleep 1; done
       - run: ./vendor/bin/phpunit
 
-  "php82-pgsql":
+  "php85-pgsql":
     docker:
       - image: aimeos/ci-php:8.5
         environment:
@@ -229,7 +229,7 @@ jobs:
       - run: for i in `seq 1 10`; do nc -z 127.0.0.1 5432 && echo OK && exit 0; echo -n .; sleep 1; done
       - run: ./vendor/bin/phpunit
 
-  "php82-mssql":
+  "php85-mssql":
     docker:
       - image: aimeos/ci-php:8.5
         environment:
@@ -260,12 +260,12 @@ workflows:
   unittest:
     jobs:
 #      - "php82-sqlite3"
-#      - "php82-mariadb10"
-#      - "php82-mysql8"
-#      - "php82-pgsql14"
+      - "php82-mariadb10"
+      - "php82-mysql8"
+      - "php82-pgsql14"
       - "php82-mssql17"
 #      - "php85-sqlite"
 #      - "php85-mariadb"
 #      - "php85-mysql"
-#      - "php82-pgsql"
-#      - "php82-mssql"
+#      - "php85-pgsql"
+      - "php85-mssql"
