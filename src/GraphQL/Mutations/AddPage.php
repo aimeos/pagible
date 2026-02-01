@@ -28,24 +28,23 @@ final class AddPage
         }
 
         return Cache::lock( 'cms_pages_' . \Aimeos\Cms\Tenancy::value(), 30 )->get( function() use ( $args ) {
+            return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $args ) {
 
-            $page = new Page();
+                $page = new Page();
 
-            $args['input'] = $this->sanitize( $args['input'] ?? [] );
-            $editor = Auth::user()?->name ?? request()->ip();
+                $args['input'] = $this->sanitize( $args['input'] ?? [] );
+                $editor = Auth::user()?->name ?? request()->ip();
 
-            $page->fill( $args['input'] ?? [] );
-            $page->tenant_id = \Aimeos\Cms\Tenancy::value();
-            $page->editor = $editor;
+                $page->fill( $args['input'] ?? [] );
+                $page->tenant_id = \Aimeos\Cms\Tenancy::value();
+                $page->editor = $editor;
 
-            if( isset( $args['ref'] ) ) {
-                $page->beforeNode( Page::withTrashed()->findOrFail( $args['ref'] ) );
-            }
-            elseif( isset( $args['parent'] ) ) {
-                $page->appendToNode( Page::withTrashed()->findOrFail( $args['parent'] ) );
-            }
-
-            return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $args, $page, $editor ) {
+                if( isset( $args['ref'] ) ) {
+                    $page->beforeNode( Page::withTrashed()->findOrFail( $args['ref'] ) );
+                }
+                elseif( isset( $args['parent'] ) ) {
+                    $page->appendToNode( Page::withTrashed()->findOrFail( $args['parent'] ) );
+                }
 
                 $page->save();
                 $page->files()->attach( $args['files'] ?? [] );

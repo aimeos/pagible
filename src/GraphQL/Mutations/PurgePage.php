@@ -28,10 +28,9 @@ final class PurgePage
         }
 
         return Cache::lock( 'cms_pages_' . \Aimeos\Cms\Tenancy::value(), 30 )->get( function() use ( $args ) {
+            return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $args ) {
 
-            $items = Page::withTrashed()->whereIn( 'id', $args['id'] )->get();
-
-            return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $items ) {
+                $items = Page::withTrashed()->whereIn( 'id', $args['id'] )->get();
 
                 foreach( $items as $item )
                 {

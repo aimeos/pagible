@@ -28,23 +28,25 @@ final class MovePage
         }
 
         return Cache::lock( 'cms_pages_' . \Aimeos\Cms\Tenancy::value(), 30 )->get( function() use ( $args ) {
+            return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $args ) {
 
-            $page = Page::withTrashed()->findOrFail( $args['id'] );
-            $page->editor = Auth::user()?->name ?? request()->ip();
+                $page = Page::withTrashed()->findOrFail( $args['id'] );
+                $page->editor = Auth::user()?->name ?? request()->ip();
 
-            if( isset( $args['ref'] ) ) {
-                $page->beforeNode( Page::withTrashed()->findOrFail( $args['ref'] ) );
-            }
-            elseif( isset( $args['parent'] ) ) {
-                $page->appendToNode( Page::withTrashed()->findOrFail( $args['parent'] ) );
-            }
-            else {
-                $page->makeRoot();
-            }
+                if( isset( $args['ref'] ) ) {
+                    $page->beforeNode( Page::withTrashed()->findOrFail( $args['ref'] ) );
+                }
+                elseif( isset( $args['parent'] ) ) {
+                    $page->appendToNode( Page::withTrashed()->findOrFail( $args['parent'] ) );
+                }
+                else {
+                    $page->makeRoot();
+                }
 
-            DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( fn() => $page->save() );
+                $page->save();
 
-            return $page;
-        }, 3 );
+                return $page;
+            }, 3 );
+        } );
     }
 }
