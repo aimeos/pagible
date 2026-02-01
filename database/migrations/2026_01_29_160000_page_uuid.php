@@ -21,6 +21,7 @@ return new class extends Migration
     public function up()
     {
         $schema = Schema::connection(config('cms.db', 'sqlite'));
+echo $schema->getColumnType('cms_pages', 'id').PHP_EOL;
 
         if( in_array( $schema->getColumnType('cms_pages', 'id'), ['varchar', 'char', 'guid', 'uuid'] ) ) {
             return;
@@ -95,6 +96,7 @@ return new class extends Migration
 
         $schema->dropIfExists('cms_pages');
         $schema->dropColumns('cms_pages_new', 'oid');
+        $schema->dropColumns('cms_pages_new', 'opid');
         $schema->rename('cms_pages_new', 'cms_pages');
 
 
@@ -143,6 +145,7 @@ return new class extends Migration
         Schema::connection(config('cms.db', 'sqlite'))->create('cms_pages_new', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->bigInteger('oid');
+            $table->bigInteger('opid');
             $table->string('tenant_id', 250);
             $table->string('name');
             $table->string('path');
@@ -184,13 +187,14 @@ return new class extends Migration
         DB::table('cms_pages_new')->insert(
             DB::table('cms_pages')->get()->map(function ($row) {
                 $row->oid = $row->id;
+                $row->opid = $row->parent_id;
                 $row->id = Str::uuid()->toString();
                 return (array) $row;
             })->toArray()
         );
 
         DB::table('cms_pages_new as c')
-            ->join('cms_pages_new as p', 'p.oid', '=', 'c.parent_id')
+            ->join('cms_pages_new as p', 'p.oid', '=', 'c.opid')
             ->select('c.id as child_id', 'p.id as parent_id')
             ->orderBy('c.id')
             ->chunk(100, function ($rows) {

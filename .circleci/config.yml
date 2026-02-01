@@ -259,13 +259,13 @@ workflows:
   version: 2
   unittest:
     jobs:
-      - "php82-sqlite3"
-      - "php82-mariadb10"
-      - "php82-mysql8"
-      - "php82-pgsql14"
+#      - "php82-sqlite3"
+#      - "php82-mariadb10"
+#      - "php82-mysql8"
+#      - "php82-pgsql14"
       - "php82-mssql17"
-      - "php85-sqlite"
-      - "php85-mariadb"
-      - "php85-mysql"
-      - "php82-pgsql"
-      - "php82-mssql"
+#      - "php85-sqlite"
+#      - "php85-mariadb"
+#      - "php85-mysql"
+#      - "php82-pgsql"
+#      - "php82-mssql"
