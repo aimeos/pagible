@@ -124,7 +124,7 @@ class Page extends Model
      */
     public function ancestors()
     {
-        $query = $this->newScopedQuery()->setModel(new Nav());
+        $query = $this->newScopedQuery()->setModel(new Nav())->defaultOrder();
         return new AncestorsRelation($query, $this);
     }
 
