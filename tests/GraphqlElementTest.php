@@ -57,24 +57,18 @@ class GraphqlElementTest extends TestAbstract
     {
         $this->seed( CmsSeeder::class );
 
-        $element = Element::firstOrFail();
+        $element = Element::where( 'type', 'footer' )->firstOrFail();
 
-        $attr = collect($element->getAttributes())->except(['tenant_id'])->all();
-        $expected = [
-            'id' => (string) $element->id,
-            'bypages' => $element->bypages->map( fn($item) => ['id' => $item->id] )->all(),
-            'byversions' => $element->byversions->map( fn($item) => ['id' => $item->id] )->all(),
-            'versions' => [0 => ['published' => false]],
-            'created_at' => (string) $element->getAttribute( 'created_at' ),
-            'updated_at' => (string) $element->getAttribute( 'updated_at' ),
-        ] + $attr;
-
-        // Decode JSON string to array for order-independent comparison
-        $expected['data'] = json_decode($expected['data'], true);
+        $expected = collect($element->getAttributes())->except(['tenant_id'])->all() + [
+            'bypages' => $element->bypages->map( fn( $item ) => ['id' => $item->id] )->all(),
+            'byversions' => $element->byversions->map( fn( $item ) => ['published' => $item->published] )->all(),
+            'versions' => $element->versions->map( fn( $item ) => ['published' => $item->published] )->all(),
+        ];
 
         $this->expectsDatabaseQueryCount(4);
-        $response = $this->actingAs($this->user)->graphQL("{
-            element(id: \"{$element->id}\") {
+
+        $response = $this->actingAs($this->user)->graphQL('{
+            element(id: "' . $element->id . '") {
                 id
                 lang
                 type
@@ -94,29 +88,11 @@ class GraphqlElementTest extends TestAbstract
                     published
                 }
             }
-        }");
+        }');
 
         $elementData = $response->json('data.element');
 
-        // Assert scalar fields
-        $this->assertEquals($expected['id'], $elementData['id']);
-        $this->assertEquals($expected['lang'], $elementData['lang']);
-        $this->assertEquals($expected['type'], $elementData['type']);
-        $this->assertEquals($expected['name'], $elementData['name']);
-        $this->assertEquals($expected['editor'], $elementData['editor']);
-        $this->assertEquals($expected['created_at'], $elementData['created_at']);
-        $this->assertEquals($expected['updated_at'], $elementData['updated_at']);
-        $this->assertEquals($expected['deleted_at'], $elementData['deleted_at']);
-
-        // Assert JSON field decoded as array
-        $this->assertEquals($expected['data'], json_decode($elementData['data'], true));
-
-        // Assert bypages and byversions collections (already correct format)
-        $this->assertEquals($expected['bypages'], $elementData['bypages']);
-        $this->assertEquals($expected['byversions'], $elementData['byversions']);
-
-        // Assert versions
-        $this->assertEquals($expected['versions'], $elementData['versions']);
+        $this->assertEquals($expected, $elementData);
     }
 
 
@@ -259,7 +235,7 @@ class GraphqlElementTest extends TestAbstract
     {
         $this->seed(CmsSeeder::class);
 
-        $element = Element::firstOrFail();
+        $element = Element::where( 'type', 'footer' )->firstOrFail();
 
         $this->expectsDatabaseQueryCount(3);
 
@@ -298,7 +274,8 @@ class GraphqlElementTest extends TestAbstract
     {
         $this->seed(CmsSeeder::class);
 
-        $file = File::firstOrFail();
+        $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
+        $element = Element::where( 'type', 'footer' )->firstOrFail();
 
         $this->expectsDatabaseQueryCount(6);
 
@@ -346,8 +323,8 @@ class GraphqlElementTest extends TestAbstract
     {
         $this->seed(CmsSeeder::class);
 
-        $file = File::firstOrFail();
-        $element = Element::firstOrFail();
+        $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
+        $element = Element::where( 'type', 'footer' )->firstOrFail();
 
         $this->expectsDatabaseQueryCount(6);
 
@@ -404,7 +381,7 @@ class GraphqlElementTest extends TestAbstract
     {
         $this->seed( CmsSeeder::class );
 
-        $element = Element::firstOrFail();
+        $element = Element::where( 'type', 'footer' )->firstOrFail();
 
         $this->expectsDatabaseQueryCount( 3 );
         $response = $this->actingAs( $this->user )->graphQL( '
@@ -433,7 +410,7 @@ class GraphqlElementTest extends TestAbstract
     {
         $this->seed( CmsSeeder::class );
 
-        $element = Element::firstOrFail();
+        $element = Element::where( 'type', 'footer' )->firstOrFail();
         $element->delete();
 
         $this->expectsDatabaseQueryCount( 3 );
@@ -463,7 +440,7 @@ class GraphqlElementTest extends TestAbstract
     {
         $this->seed( CmsSeeder::class );
 
-        $element = Element::firstOrFail();
+        $element = Element::where( 'type', 'footer' )->firstOrFail();
 
         $this->expectsDatabaseQueryCount( 7 );
         $response = $this->actingAs( $this->user )->graphQL( '
@@ -474,7 +451,7 @@ class GraphqlElementTest extends TestAbstract
             }
         ' );
 
-        $element = Element::where( 'id', $element->id )->firstOrFail();
+        $element = Element::findOrFail( $element->id );
 
         $response->assertJson( [
             'data' => [
@@ -490,7 +467,7 @@ class GraphqlElementTest extends TestAbstract
     {
         $this->seed( CmsSeeder::class );
 
-        $element = Element::firstOrFail();
+        $element = Element::where( 'type', 'footer' )->firstOrFail();
 
         $this->expectsDatabaseQueryCount( 4 );
         $response = $this->actingAs( $this->user )->graphQL( '
@@ -501,7 +478,7 @@ class GraphqlElementTest extends TestAbstract
             }
         ' );
 
-        $element = Element::where( 'id', $element->id )->firstOrFail();
+        $element = Element::findOrFail( $element->id );
 
         $response->assertJson( [
             'data' => [
@@ -517,7 +494,7 @@ class GraphqlElementTest extends TestAbstract
     {
         $this->seed( CmsSeeder::class );
 
-        $element = Element::firstOrFail();
+        $element = Element::where( 'type', 'footer' )->firstOrFail();
 
         $this->expectsDatabaseQueryCount( 3 );
         $response = $this->actingAs( $this->user )->graphQL( '

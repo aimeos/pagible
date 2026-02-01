@@ -580,8 +580,8 @@ class GraphqlPageTest extends TestAbstract
     {
         $this->seed( CmsSeeder::class );
 
-        $file = File::firstOrFail();
-        $element = Element::firstOrFail();
+        $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
+        $element = Element::where( 'type', 'footer' )->firstOrFail();
 
         $this->expectsDatabaseQueryCount( 9 );
         $response = $this->actingAs( $this->user )->graphQL( '
@@ -827,8 +827,8 @@ class GraphqlPageTest extends TestAbstract
     {
         $this->seed(CmsSeeder::class);
 
-        $file = File::firstOrFail();
-        $element = Element::firstOrFail();
+        $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
+        $element = Element::where( 'type', 'footer' )->firstOrFail();
         $root = Page::where('tag', 'root')->firstOrFail();
 
         $this->expectsDatabaseQueryCount(11);
@@ -890,7 +890,7 @@ class GraphqlPageTest extends TestAbstract
             }
         ');
 
-        $page = Page::where('id', $root->id)->firstOrFail();
+        $page = Page::findOrFail( $root->id );
         $element = $page->elements()->firstOrFail();
 
         $savePage = $response->json('data.savePage');
@@ -970,7 +970,7 @@ class GraphqlPageTest extends TestAbstract
             }
         ' );
 
-        $page = Page::withTrashed()->where('id', $root->id)->firstOrFail();
+        $page = Page::withTrashed()->findOrFail( $root->id );
 
         $response->assertJson( [
             'data' => [
@@ -1006,7 +1006,7 @@ class GraphqlPageTest extends TestAbstract
             }
         ' );
 
-        $page = Page::where('id', $root->id)->firstOrFail();
+        $page = Page::findOrFail( $root->id );
 
         $response->assertJson( [
             'data' => [
@@ -1039,7 +1039,7 @@ class GraphqlPageTest extends TestAbstract
             }
         ' );
 
-        $page = Page::where('id', $page->id)->firstOrFail();
+        $page = Page::findOrFail( $page->id );
 
         $response->assertJson( [
             'data' => [
@@ -1066,7 +1066,7 @@ class GraphqlPageTest extends TestAbstract
             }
         ' );
 
-        $page = Page::where('id', $page->id)->firstOrFail();
+        $page = Page::findOrFail( $page->id );
 
         $response->assertJson( [
             'data' => [
