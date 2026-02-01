@@ -8,6 +8,7 @@
 namespace Aimeos\Cms\GraphQL\Mutations;
 
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Permission;
 use GraphQL\Error\Error;
@@ -25,12 +26,15 @@ final class PurgeFile
             throw new Error( 'Insufficient permissions' );
         }
 
-        $items = File::withTrashed()->whereIn( 'id', $args['id'] )->get();
+        return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $args ) {
 
-        foreach( $items as $item ) {
-            $item->purge();
-        }
+            $items = File::withTrashed()->whereIn( 'id', $args['id'] )->get();
 
-        return $items->all();
+            foreach( $items as $item ) {
+                $item->purge();
+            }
+
+            return $items->all();
+        }, 3 );
     }
 }

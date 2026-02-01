@@ -8,6 +8,7 @@
 namespace Aimeos\Cms\GraphQL\Mutations;
 
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Permission;
 use GraphQL\Error\Error;
@@ -25,25 +26,28 @@ final class PubElement
             throw new Error( 'Insufficient permissions' );
         }
 
-        $items = Element::withTrashed()->whereIn( 'id', $args['id'] )->get();
-        $editor = Auth::user()?->name ?? request()->ip();
+        return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $args ) {
 
-        foreach( $items as $item )
-        {
-            if( $latest = $item->latest )
+            $items = Element::withTrashed()->whereIn( 'id', $args['id'] )->get();
+            $editor = Auth::user()?->name ?? request()->ip();
+
+            foreach( $items as $item )
             {
-                if( $args['at'] ?? null )
+                if( $latest = $item->latest )
                 {
-                    $latest->publish_at = $args['at'];
-                    $latest->editor = $editor;
-                    $latest->save();
-                    continue;
+                    if( $args['at'] ?? null )
+                    {
+                        $latest->publish_at = $args['at'];
+                        $latest->editor = $editor;
+                        $latest->save();
+                        continue;
+                    }
+
+                    $item->publish( $latest );
                 }
-
-                $item->publish( $latest );
             }
-        }
 
-        return $items->all();
+            return $items->all();
+        }, 3 );
     }
 }

@@ -8,6 +8,7 @@
 namespace Aimeos\Cms\GraphQL\Mutations;
 
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\UploadedFile;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Permission;
@@ -31,35 +32,38 @@ final class AddFile
             throw new Error( 'Either input "path" or "file" argument must be provided' );
         }
 
-        $editor = Auth::user()?->name ?? request()->ip();
+        return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $args ) {
 
-        $file = new File();
-        $file->fill( $args['input'] ?? [] );
-        $file->editor = $editor;
+            $editor = Auth::user()?->name ?? request()->ip();
 
-        if( isset( $args['file'] ) ) {
-            $this->addUpload( $file, $args );
-        } else {
-            $this->addUrl( $file, $args );
-        }
+            $file = new File();
+            $file->fill( $args['input'] ?? [] );
+            $file->editor = $editor;
 
-        $file->save();
+            if( isset( $args['file'] ) ) {
+                $this->addUpload( $file, $args );
+            } else {
+                $this->addUrl( $file, $args );
+            }
 
-        $file->versions()->create( [
-            'lang' => $args['input']['lang'] ?? null,
-            'editor' => $editor,
-            'data' => [
-                'lang' => $file->lang,
-                'name' => $file->name,
-                'mime' => $file->mime,
-                'path' => $file->path,
-                'previews' => $file->previews,
-                'description' => $file->description,
-                'transcription' => $file->transcription,
-            ],
-        ] );
+            $file->save();
 
-        return $file;
+            $file->versions()->create( [
+                'lang' => $args['input']['lang'] ?? null,
+                'editor' => $editor,
+                'data' => [
+                    'lang' => $file->lang,
+                    'name' => $file->name,
+                    'mime' => $file->mime,
+                    'path' => $file->path,
+                    'previews' => $file->previews,
+                    'description' => $file->description,
+                    'transcription' => $file->transcription,
+                ],
+            ] );
+
+            return $file;
+        }, 3 );
     }
 
 

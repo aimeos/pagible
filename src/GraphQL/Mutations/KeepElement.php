@@ -8,6 +8,7 @@
 namespace Aimeos\Cms\GraphQL\Mutations;
 
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Permission;
 use GraphQL\Error\Error;
@@ -25,15 +26,18 @@ final class KeepElement
             throw new Error( 'Insufficient permissions' );
         }
 
-        $items = Element::withTrashed()->whereIn( 'id', $args['id'] )->get();
-        $editor = Auth::user()?->name ?? request()->ip();
+        return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $args ) {
 
-        foreach( $items as $item )
-        {
-            $item->editor = $editor;
-            $item->restore();
-        }
+            $items = Element::withTrashed()->whereIn( 'id', $args['id'] )->get();
+            $editor = Auth::user()?->name ?? request()->ip();
 
-        return $items->all();
+            foreach( $items as $item )
+            {
+                $item->editor = $editor;
+                $item->restore();
+            }
+
+            return $items->all();
+        }, 3 );
     }
 }

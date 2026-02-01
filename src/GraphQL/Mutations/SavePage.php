@@ -27,10 +27,9 @@ final class SavePage
             throw new Error( 'Insufficient permissions' );
         }
 
-        $page = Page::withTrashed()->findOrFail( $args['id'] );
+        return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $args ) {
 
-        DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $page, $args ) {
-
+            $page = Page::withTrashed()->findOrFail( $args['id'] );
             $input = $this->sanitize( $args['input'] ?? [] );
 
             $data = array_diff_key( $input, array_flip( ['meta', 'config', 'content'] ) );
@@ -51,9 +50,8 @@ final class SavePage
 
             $page->removeVersions();
 
-        }, 3 );
-
-        return $page;
+            return $page;
+        } );
     }
 
 
