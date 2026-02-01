@@ -8,6 +8,7 @@
 namespace Aimeos\Cms\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
 use Aimeos\Cms\Models\Page;
 
 
@@ -34,7 +35,7 @@ class Index extends Command
             foreach( $pages as $page )
             {
                 try {
-                    $page->index();
+                    DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( fn() => $page->index() );
                 } catch( \Exception $e ) {
                     $this->error( "Failed to index page ID {$page->id}: " . $e->getMessage() );
                 }

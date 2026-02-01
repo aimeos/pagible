@@ -20,7 +20,6 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Http\UploadedFile;
 use Intervention\Image\ImageManager;
 
@@ -267,19 +266,15 @@ class File extends Model
         $path = $this->path;
         $previews = $this->previews;
 
-        DB::connection( $this->getConnectionName() )->transaction( function() use ( $version ) {
+        $this->fill( (array) $version->data );
+        $this->previews = (array) $version->data?->previews ?? [];
+        $this->path = $version->data?->path;
+        $this->mime = $version->data?->mime;
+        $this->editor = $version->editor;
+        $this->save();
 
-            $this->fill( (array) $version->data );
-            $this->previews = (array) $version->data?->previews ?? [];
-            $this->path = $version->data?->path;
-            $this->mime = $version->data?->mime;
-            $this->editor = $version->editor;
-            $this->save();
-
-            $version->published = true;
-            $version->save();
-
-        }, 3 );
+        $version->published = true;
+        $version->save();
 
         $num = Version::where( 'versionable_id', $this->id )
             ->where( 'versionable_type', File::class )

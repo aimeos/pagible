@@ -18,7 +18,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Prunable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Collection;
 
 
@@ -170,19 +169,15 @@ class Element extends Model
      */
     public function publish( Version $version ) : self
     {
-        DB::connection( $this->getConnectionName() )->transaction( function() use ( $version ) {
+        $this->files()->sync( $version->files ?? [] );
 
-            $this->files()->sync( $version->files ?? [] );
+        $this->fill( (array) $version->data );
+        $this->editor = $version->editor;
+        $this->lang = $version->lang;
+        $this->save();
 
-            $this->fill( (array) $version->data );
-            $this->editor = $version->editor;
-            $this->lang = $version->lang;
-            $this->save();
-
-            $version->published = true;
-            $version->save();
-
-        }, 3 );
+        $version->published = true;
+        $version->save();
 
         return $this;
     }

@@ -353,26 +353,22 @@ class Page extends Model
      */
     public function publish( Version $version ) : self
     {
-        DB::connection( $this->getConnectionName() )->transaction( function() use ( $version ) {
+        $this->files()->sync( $version->files ?? [] );
+        $this->elements()->sync( $version->elements ?? [] );
 
-            $this->files()->sync( $version->files ?? [] );
-            $this->elements()->sync( $version->elements ?? [] );
+        $this->fill( (array) $version->data );
+        $this->content = @$version->aux->content;
+        $this->config = @$version->aux->config;
+        $this->meta = @$version->aux->meta;
+        $this->editor = $version->editor;
+        $this->save();
 
-            $this->fill( (array) $version->data );
-            $this->content = @$version->aux->content;
-            $this->config = @$version->aux->config;
-            $this->meta = @$version->aux->meta;
-            $this->editor = $version->editor;
-            $this->save();
+        $version->published = true;
+        $version->save();
 
-            $version->published = true;
-            $version->save();
-
-            $this->index();
-
-        }, 3 );
-
+        $this->index();
         Cache::forget( static::key( $this ) );
+
         return $this;
     }
 
