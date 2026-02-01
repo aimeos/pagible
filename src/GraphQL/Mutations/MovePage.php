@@ -8,6 +8,7 @@
 namespace Aimeos\Cms\GraphQL\Mutations;
 
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Permission;
@@ -26,22 +27,24 @@ final class MovePage
             throw new Error( 'Insufficient permissions' );
         }
 
-        $page = Page::withTrashed()->findOrFail( $args['id'] );
-        $page->editor = Auth::user()?->name ?? request()->ip();
+        return Cache::lock( 'cms_pages_' . \Aimeos\Cms\Tenancy::value(), 30 )->get( function() use ( $args ) {
 
-        if( isset( $args['ref'] ) ) {
-            $page->beforeNode( Page::withTrashed()->findOrFail( $args['ref'] ) );
-        }
-        elseif( isset( $args['parent'] ) ) {
-            $page->appendToNode( Page::withTrashed()->findOrFail( $args['parent'] ) );
-        }
-        else {
-            DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( fn() => $page->saveAsRoot(), 3 );
+            $page = Page::withTrashed()->findOrFail( $args['id'] );
+            $page->editor = Auth::user()?->name ?? request()->ip();
+
+            if( isset( $args['ref'] ) ) {
+                $page->beforeNode( Page::withTrashed()->findOrFail( $args['ref'] ) );
+            }
+            elseif( isset( $args['parent'] ) ) {
+                $page->appendToNode( Page::withTrashed()->findOrFail( $args['parent'] ) );
+            }
+            else {
+                $page->makeRoot();
+            }
+
+            DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( fn() => $page->save() );
+
             return $page;
-        }
-
-        DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( fn() => $page->save(), 3 );
-
-        return $page;
+        }, 3 );
     }
 }
