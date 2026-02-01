@@ -59,11 +59,12 @@ class GraphqlElementTest extends TestAbstract
 
         $element = Element::where( 'type', 'footer' )->firstOrFail();
 
-        $expected = collect($element->getAttributes())->except(['tenant_id'])->all() + [
+        $expected = [
+            'data' => $element->data,
             'bypages' => $element->bypages->map( fn( $item ) => ['id' => $item->id] )->all(),
             'byversions' => $element->byversions->map( fn( $item ) => ['published' => $item->published] )->all(),
             'versions' => $element->versions->map( fn( $item ) => ['published' => $item->published] )->all(),
-        ];
+        ] + collect($element->getAttributes())->except(['tenant_id'])->all();
 
         $this->expectsDatabaseQueryCount(4);
 
@@ -91,6 +92,7 @@ class GraphqlElementTest extends TestAbstract
         }');
 
         $elementData = $response->json('data.element');
+        $elementData['data'] = json_decode( $elementData['data'] );
 
         $this->assertEquals($expected, $elementData);
     }
@@ -100,19 +102,11 @@ class GraphqlElementTest extends TestAbstract
     {
         $this->seed(CmsSeeder::class);
 
-        $expected = [];
         $element = Element::where('type', 'footer')->first();
 
-        // Prepare expected array
-        $attr = collect($element->getAttributes())->except(['tenant_id'])->all();
-        $expected[] = [
-            'id' => (string) $element->id,
-            'created_at' => (string) $element->getAttribute( 'created_at' ),
-            'updated_at' => (string) $element->getAttribute( 'updated_at' ),
-        ] + $attr;
-
-        // Decode JSON string in expected data for order-independent comparison
-        $expected[0]['data'] = json_decode($expected[0]['data'], true);
+        $expected = [
+            'data' => $element->data,
+        ] + collect($element->getAttributes())->except(['tenant_id'])->all();
 
         $this->expectsDatabaseQueryCount(2);
 
@@ -144,23 +138,11 @@ class GraphqlElementTest extends TestAbstract
         }');
 
         $elementsData = $response->json('data.elements.data');
+        $elementsData[0]['data'] = json_decode( $elementsData[0]['data'] );
 
         // Assert elements
         $this->assertCount(1, $elementsData);
-        $actual = $elementsData[0];
-
-        // Assert scalar fields
-        $this->assertEquals($expected[0]['id'], $actual['id']);
-        $this->assertEquals($expected[0]['lang'], $actual['lang']);
-        $this->assertEquals($expected[0]['type'], $actual['type']);
-        $this->assertEquals($expected[0]['name'], $actual['name']);
-        $this->assertEquals($expected[0]['editor'], $actual['editor']);
-        $this->assertEquals($expected[0]['created_at'], $actual['created_at']);
-        $this->assertEquals($expected[0]['updated_at'], $actual['updated_at']);
-        $this->assertEquals($expected[0]['deleted_at'], $actual['deleted_at']);
-
-        // Assert JSON field decoded as array
-        $this->assertEquals($expected[0]['data'], json_decode($actual['data'], true));
+        $this->assertEquals($expected, $elementsData[0]);
 
         // Assert paginator info
         $paginator = $response->json('data.elements.paginatorInfo');

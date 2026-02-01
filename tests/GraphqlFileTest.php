@@ -58,12 +58,15 @@ class GraphqlFileTest extends TestAbstract
 
         $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
 
-        $expected = collect($file->getAttributes())->except(['tenant_id'])->all() + [
+        $expected = [
+            'previews' => (array) $file->previews,
+            'description' => (array) $file->description,
+            'transcription' => (array) $file->transcription,
             'byelements' => $file->byelements->map( fn( $item ) => ['id' => $item->id] )->all(),
             'bypages' => $file->bypages->map( fn( $item ) => ['id' => $item->id] )->all(),
             'byversions' => $file->byversions->map( fn( $item ) => ['published' => $item->published] )->all(),
             'versions' => $file->versions->map( fn( $item ) => ['published' => $item->published] )->all(),
-        ];
+        ] + collect($file->getAttributes())->except(['tenant_id'])->all();
 
         $this->expectsDatabaseQueryCount(5);
 
@@ -97,6 +100,9 @@ class GraphqlFileTest extends TestAbstract
         }");
 
         $fileData = $response->json('data.file');
+        $fileData['previews'] = json_decode( $fileData['previews'], true );
+        $fileData['description'] = json_decode( $fileData['description'], true );
+        $fileData['transcription'] = json_decode( $fileData['transcription'], true );
 
         $this->assertEquals($expected, $fileData);
     }
@@ -107,9 +113,12 @@ class GraphqlFileTest extends TestAbstract
         $this->seed(CmsSeeder::class);
 
         $expected = File::orderBy( 'mime' )->get()->map( function( $file ) {
-            return collect($file->getAttributes())->except(['tenant_id'])->all() + [
+            return [
+                'previews' => (array) $file->previews,
+                'description' => (array) $file->description,
+                'transcription' => (array) $file->transcription,
                 'byversions_count' => $file->byversions()->count(),
-            ];
+            ] + collect($file->getAttributes())->except(['tenant_id'])->all();
         } )->all();
 
         $this->expectsDatabaseQueryCount(2);
@@ -140,6 +149,12 @@ class GraphqlFileTest extends TestAbstract
         }');
 
         $filesData = $response->json('data.files.data');
+        $filesData[0]['previews'] = json_decode( $filesData[0]['previews'], true );
+        $filesData[0]['description'] = json_decode( $filesData[0]['description'], true );
+        $filesData[0]['transcription'] = json_decode( $filesData[0]['transcription'], true );
+        $filesData[1]['previews'] = json_decode( $filesData[1]['previews'], true );
+        $filesData[1]['description'] = json_decode( $filesData[1]['description'], true );
+        $filesData[1]['transcription'] = json_decode( $filesData[1]['transcription'], true );
 
         $this->assertCount(2, $filesData);
         $this->assertEquals($expected, $filesData);
