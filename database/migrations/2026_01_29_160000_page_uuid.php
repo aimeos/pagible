@@ -21,9 +21,8 @@ return new class extends Migration
     public function up()
     {
         $schema = Schema::connection(config('cms.db', 'sqlite'));
-echo $schema->getColumnType('cms_pages', 'id').PHP_EOL;
 
-        if( in_array( $schema->getColumnType('cms_pages', 'id'), ['varchar', 'char', 'guid', 'uuid'] ) ) {
+        if( in_array( $schema->getColumnType('cms_pages', 'id'), ['varchar', 'char', 'uniqueidentifier', 'uuid'] ) ) {
             return;
         }
 
