@@ -9,6 +9,7 @@ namespace Aimeos\Cms\Models;
 
 use Aimeos\Cms\Concerns\Tenancy;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Laravel\Scout\Attributes\SearchUsingFullText;
 use Laravel\Scout\Searchable;
@@ -96,5 +97,18 @@ class Content extends Model
         return [
             'content' => $this->content
         ];
+    }
+
+
+    /**
+     * Interact with the "id" property.
+     *
+     * @return Attribute Eloquent attribute for the "id" property
+     */
+    protected function id(): Attribute
+    {
+        return Attribute::make(
+            get: fn( $value ) => strtolower( $value ?? '' )
+        );
     }
 }

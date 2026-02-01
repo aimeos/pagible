@@ -309,7 +309,7 @@ class GraphqlFileTest extends TestAbstract
         $response->assertJson( [
             'data' => [
                 'addFile' => [
-                    'id' => strtolower( $file->id ),
+                    'id' => $file->id,
                     'mime' => 'application/x-empty',
                     'lang' => 'en-GB',
                     'name' => 'Test file name',
