@@ -68,6 +68,13 @@ class File extends Model
     ];
 
     /**
+     * The date format for all model datetime attributes.
+     *
+     * @var string
+     */
+    protected $dateFormat = 'Y-m-d H:i:s';
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var array
