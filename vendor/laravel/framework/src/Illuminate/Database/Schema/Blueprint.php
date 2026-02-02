@@ -1189,7 +1189,7 @@ class Blueprint
     public function dateTime($column, $precision = null)
     {
         $precision ??= $this->defaultTimePrecision();
-
+echo __METHOD__.PHP_EOL;
         return $this->addColumn('dateTime', $column, compact('precision'));
     }
 
@@ -1245,7 +1245,7 @@ class Blueprint
     public function timestamp($column, $precision = null)
     {
         $precision ??= $this->defaultTimePrecision();
-
+echo __METHOD__.PHP_EOL;
         return $this->addColumn('timestamp', $column, compact('precision'));
     }
 
