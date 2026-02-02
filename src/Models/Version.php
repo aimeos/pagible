@@ -140,4 +140,35 @@ class Version extends Model
     {
         return $this->morphTo();
     }
+
+
+    /**
+     * Returns the list of changed attributes.
+     * Required to return the correct boolean value if the "published" property
+     * is stored as integer in the database.
+     *
+     * @return array<string, mixed> List of changed attributes
+     */
+    public function getDirty()
+    {
+        $dirty = [];
+
+        foreach( $this->getAttributes() as $key => $value )
+        {
+            if( $key === 'published' )
+            {
+                if( (bool)$value !== (bool)$this->original[$key] ) {
+                    $dirty[$key] = $value;
+                }
+
+                continue;
+            }
+
+            if( !$this->originalIsEquivalent( $key ) ) {
+                $dirty[$key] = $value;
+            }
+        }
+
+        return $dirty;
+    }
 }
