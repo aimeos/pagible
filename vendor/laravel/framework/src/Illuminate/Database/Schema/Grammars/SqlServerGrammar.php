@@ -833,7 +833,7 @@ class SqlServerGrammar extends Grammar
         if ($column->useCurrent) {
             $column->default(new Expression('CURRENT_TIMESTAMP'));
         }
-
+var_dump( $column->precision);
         return !is_null($column->precision) ? "datetime2($column->precision)" : 'datetime';
     }
 
