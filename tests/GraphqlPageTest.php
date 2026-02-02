@@ -7,6 +7,9 @@
 
 namespace Tests;
 
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
 use Nuwave\Lighthouse\Testing\MakesGraphQLRequests;
 use Nuwave\Lighthouse\Testing\RefreshesSchemaCache;
 use Database\Seeders\CmsSeeder;
@@ -51,6 +54,41 @@ class GraphqlPageTest extends TestAbstract
             'password' => 'secret',
             'cmseditor' => 0x7fffffff
         ]);
+    }
+
+
+    public function testDumpCreateTableSql()
+    {
+        $queries = [];
+
+        // Listen to all queries
+        DB::listen(function ($query) use (&$queries) {
+            $queries[] = ['sql' => $query->sql, 'bindings' => $query->bindings];
+        });
+
+        Schema::connection(config('cms.db', 'sqlite'))->create('cms_elements2', function (Blueprint $table) {
+            $table->uuid('id');
+            $table->string('tenant_id');
+            $table->string('type', 50);
+            $table->string('lang', 5)->nullable();
+            $table->string('name');
+            $table->json('data');
+            $table->string('editor');
+            $table->timestamps();
+            $table->softDeletes();
+
+            $table->primary('id');
+            $table->index(['type', 'tenant_id']);
+            $table->index(['lang', 'tenant_id']);
+            $table->index(['name', 'tenant_id']);
+            $table->index(['editor', 'tenant_id']);
+            $table->index('deleted_at');
+        });
+
+        // Dump captured queries
+        foreach ($queries as $q) {
+            dump($q['sql'], $q['bindings']);
+        }
     }
 
 
