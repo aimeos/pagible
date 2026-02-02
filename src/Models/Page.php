@@ -126,8 +126,7 @@ class Page extends Model
      */
     public function ancestors() : AncestorsRelation
     {
-        $query = $this->newScopedQuery()->setModel(new Nav());
-        return new AncestorsRelation($query, $this);
+        return new AncestorsRelation( $this->newScopedQuery()->setModel( new Nav() )->defaultOrder(), $this );
     }
 
 
@@ -138,7 +137,7 @@ class Page extends Model
      */
     public function children() : HasMany
     {
-        return $this->hasMany(Page::class, $this->getParentIdName())->setModel(new Nav())->defaultOrder();
+        return $this->hasMany( Page::class, $this->getParentIdName() )->setModel( new Nav() )->defaultOrder();
     }
 
 
