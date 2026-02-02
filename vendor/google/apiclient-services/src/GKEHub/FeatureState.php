@@ -37,6 +37,8 @@ class FeatureState extends \Google\Model
   protected $servicemeshDataType = '';
   protected $stateType = State::class;
   protected $stateDataType = '';
+  protected $workloadidentityType = WorkloadIdentityState::class;
+  protected $workloadidentityDataType = '';
 
   /**
    * Appdevexperience specific state.
@@ -181,6 +183,22 @@ class FeatureState extends \Google\Model
   public function getState()
   {
     return $this->state;
+  }
+  /**
+   * Workload Identity state
+   *
+   * @param WorkloadIdentityState $workloadidentity
+   */
+  public function setWorkloadidentity(WorkloadIdentityState $workloadidentity)
+  {
+    $this->workloadidentity = $workloadidentity;
+  }
+  /**
+   * @return WorkloadIdentityState
+   */
+  public function getWorkloadidentity()
+  {
+    return $this->workloadidentity;
   }
 }
 

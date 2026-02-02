@@ -33,11 +33,11 @@ class ProjectsLocationsAdaptiveMtDatasetsAdaptiveMtFilesAdaptiveMtSentences exte
    * Lists all AdaptiveMtSentences under a given file/dataset. (adaptiveMtSentence
    * s.listProjectsLocationsAdaptiveMtDatasetsAdaptiveMtFilesAdaptiveMtSentences)
    *
-   * @param string $parent Required. The resource name of the project from which
-   * to list the Adaptive MT files. The following format lists all sentences under
-   * a file. `projects/{project}/locations/{location}/adaptiveMtDatasets/{dataset}
-   * /adaptiveMtFiles/{file}` The following format lists all sentences within a
-   * dataset.
+   * @param string $parent Required. The resource name of the Adaptive MT file
+   * from which to list the sentences. The following format lists all sentences
+   * under a file. `projects/{project}/locations/{location}/adaptiveMtDatasets/{da
+   * taset}/adaptiveMtFiles/{file}` The following format lists all sentences
+   * within a dataset.
    * `projects/{project}/locations/{location}/adaptiveMtDatasets/{dataset}`
    * @param array $optParams Optional parameters.
    *

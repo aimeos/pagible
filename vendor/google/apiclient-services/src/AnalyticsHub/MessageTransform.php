@@ -40,7 +40,9 @@ class MessageTransform extends \Google\Model
   protected $javascriptUdfDataType = '';
 
   /**
-   * Optional. AI Inference.
+   * Optional. AI Inference. Specifies the Vertex AI endpoint that inference
+   * requests built from the Pub/Sub message data and provided parameters will
+   * be sent to.
    *
    * @param AIInference $aiInference
    */

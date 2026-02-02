@@ -1009,10 +1009,10 @@ class QueryBuilder extends Builder
         /** @var Model|NodeTrait $model */
         foreach ($dictionary[$parentId] as $model) {
             $lft = $cut;
-
+            $depth = $parent ? $parent->getDepth() + 1 : 0;
             $cut = self::reorderNodes($dictionary, $updated, $model, $cut + 1);
 
-            if ($model->rawNode($lft, $cut, $parentId, $parent?->getDepth() + 1)->isDirty()) {
+            if ($model->rawNode($lft, $cut, $parentId, $depth)->isDirty()) {
                 $updated[] = $model;
             }
 

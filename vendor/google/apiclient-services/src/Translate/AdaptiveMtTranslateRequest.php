@@ -27,8 +27,9 @@ class AdaptiveMtTranslateRequest extends \Google\Collection
    */
   public $content;
   /**
-   * Required. The resource name for the dataset to use for adaptive MT.
-   * `projects/{project}/locations/{location-id}/adaptiveMtDatasets/{dataset}`
+   * Required. The resource name for the dataset to use for adaptive MT
+   * translation. `projects/{project}/locations/{location-
+   * id}/adaptiveMtDatasets/{dataset}`
    *
    * @var string
    */
@@ -55,8 +56,9 @@ class AdaptiveMtTranslateRequest extends \Google\Collection
     return $this->content;
   }
   /**
-   * Required. The resource name for the dataset to use for adaptive MT.
-   * `projects/{project}/locations/{location-id}/adaptiveMtDatasets/{dataset}`
+   * Required. The resource name for the dataset to use for adaptive MT
+   * translation. `projects/{project}/locations/{location-
+   * id}/adaptiveMtDatasets/{dataset}`
    *
    * @param string $dataset
    */

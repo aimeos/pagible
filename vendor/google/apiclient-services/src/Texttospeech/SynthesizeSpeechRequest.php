@@ -29,7 +29,7 @@ class SynthesizeSpeechRequest extends \Google\Model
   protected $voiceDataType = '';
 
   /**
-   * Advanced voice options.
+   * Optional. Advanced voice options.
    *
    * @param AdvancedVoiceOptions $advancedVoiceOptions
    */

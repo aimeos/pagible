@@ -21,14 +21,14 @@ class Projects extends \Google\Collection
 {
   protected $collection_key = 'projectIds';
   /**
-   * Optional. The GCP Project IDs. Format: projects/{project}
+   * Optional. The project IDs. Format: {project}
    *
    * @var string[]
    */
   public $projectIds;
 
   /**
-   * Optional. The GCP Project IDs. Format: projects/{project}
+   * Optional. The project IDs. Format: {project}
    *
    * @param string[] $projectIds
    */

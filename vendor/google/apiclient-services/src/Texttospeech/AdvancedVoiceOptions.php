@@ -20,6 +20,13 @@ namespace Google\Service\Texttospeech;
 class AdvancedVoiceOptions extends \Google\Model
 {
   /**
+   * Optional. If true, textnorm will be applied to text input. This feature is
+   * enabled by default. Only applies for Gemini TTS.
+   *
+   * @var bool
+   */
+  public $enableTextnorm;
+  /**
    * Only for Journey voices. If false, the synthesis is context aware and has a
    * higher latency.
    *
@@ -35,6 +42,23 @@ class AdvancedVoiceOptions extends \Google\Model
    */
   public $relaxSafetyFilters;
 
+  /**
+   * Optional. If true, textnorm will be applied to text input. This feature is
+   * enabled by default. Only applies for Gemini TTS.
+   *
+   * @param bool $enableTextnorm
+   */
+  public function setEnableTextnorm($enableTextnorm)
+  {
+    $this->enableTextnorm = $enableTextnorm;
+  }
+  /**
+   * @return bool
+   */
+  public function getEnableTextnorm()
+  {
+    return $this->enableTextnorm;
+  }
   /**
    * Only for Journey voices. If false, the synthesis is context aware and has a
    * higher latency.

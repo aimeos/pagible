@@ -56,12 +56,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/aimeos/laravel-nestedset.git",
-                "reference": "f9fcd527b564831ba2dd178dabd25eec5bfa1041"
+                "reference": "1caee9a9c50e86f480b9b0375b7dda629d0e1d28"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aimeos/laravel-nestedset/zipball/f9fcd527b564831ba2dd178dabd25eec5bfa1041",
-                "reference": "f9fcd527b564831ba2dd178dabd25eec5bfa1041",
+                "url": "https://api.github.com/repos/aimeos/laravel-nestedset/zipball/1caee9a9c50e86f480b9b0375b7dda629d0e1d28",
+                "reference": "1caee9a9c50e86f480b9b0375b7dda629d0e1d28",
                 "shasum": ""
             },
             "require": {
@@ -74,7 +74,7 @@
                 "phpunit/phpunit": "^10.5",
                 "ramsey/uuid": "^4.7"
             },
-            "time": "2026-01-31T11:02:34+00:00",
+            "time": "2026-02-01T16:03:23+00:00",
             "default-branch": true,
             "type": "library",
             "extra": {
@@ -167,17 +167,17 @@
         },
         {
             "name": "brick/math",
-            "version": "0.14.2",
-            "version_normalized": "0.14.2.0",
+            "version": "0.14.4",
+            "version_normalized": "0.14.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/brick/math.git",
-                "reference": "55c950aa71a2cabc1d8f2bec1f8a7020bd244aa2"
+                "reference": "a8b53e6cc4d3a336543f042a4dfa0e3f2f2356a4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/brick/math/zipball/55c950aa71a2cabc1d8f2bec1f8a7020bd244aa2",
-                "reference": "55c950aa71a2cabc1d8f2bec1f8a7020bd244aa2",
+                "url": "https://api.github.com/repos/brick/math/zipball/a8b53e6cc4d3a336543f042a4dfa0e3f2f2356a4",
+                "reference": "a8b53e6cc4d3a336543f042a4dfa0e3f2f2356a4",
                 "shasum": ""
             },
             "require": {
@@ -188,7 +188,7 @@
                 "phpstan/phpstan": "2.1.22",
                 "phpunit/phpunit": "^11.5"
             },
-            "time": "2026-01-30T14:03:11+00:00",
+            "time": "2026-02-02T16:57:31+00:00",
             "type": "library",
             "installation-source": "dist",
             "autoload": {
@@ -218,7 +218,7 @@
             ],
             "support": {
                 "issues": "https://github.com/brick/math/issues",
-                "source": "https://github.com/brick/math/tree/0.14.2"
+                "source": "https://github.com/brick/math/tree/0.14.4"
             },
             "funding": [
                 {
@@ -1468,17 +1468,17 @@
         },
         {
             "name": "google/apiclient-services",
-            "version": "v0.430.0",
-            "version_normalized": "0.430.0.0",
+            "version": "v0.431.0",
+            "version_normalized": "0.431.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/googleapis/google-api-php-client-services.git",
-                "reference": "b936a8bb717af0367c6ebd45d3dcb69642fce340"
+                "reference": "0a3b9c8feb2ed473eb4e47214edd3211e8c29045"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/googleapis/google-api-php-client-services/zipball/b936a8bb717af0367c6ebd45d3dcb69642fce340",
-                "reference": "b936a8bb717af0367c6ebd45d3dcb69642fce340",
+                "url": "https://api.github.com/repos/googleapis/google-api-php-client-services/zipball/0a3b9c8feb2ed473eb4e47214edd3211e8c29045",
+                "reference": "0a3b9c8feb2ed473eb4e47214edd3211e8c29045",
                 "shasum": ""
             },
             "require": {
@@ -1487,7 +1487,7 @@
             "require-dev": {
                 "phpunit/phpunit": "^9.6"
             },
-            "time": "2026-01-26T00:56:27+00:00",
+            "time": "2026-02-02T01:06:19+00:00",
             "type": "library",
             "installation-source": "dist",
             "autoload": {
@@ -1509,7 +1509,7 @@
             ],
             "support": {
                 "issues": "https://github.com/googleapis/google-api-php-client-services/issues",
-                "source": "https://github.com/googleapis/google-api-php-client-services/tree/v0.430.0"
+                "source": "https://github.com/googleapis/google-api-php-client-services/tree/v0.431.0"
             },
             "install-path": "../google/apiclient-services"
         },
@@ -6771,17 +6771,17 @@
         },
         {
             "name": "phpunit/php-file-iterator",
-            "version": "6.0.0",
-            "version_normalized": "6.0.0.0",
+            "version": "6.0.1",
+            "version_normalized": "6.0.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/php-file-iterator.git",
-                "reference": "961bc913d42fe24a257bfff826a5068079ac7782"
+                "reference": "3d1cd096ef6bea4bf2762ba586e35dbd317cbfd5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/php-file-iterator/zipball/961bc913d42fe24a257bfff826a5068079ac7782",
-                "reference": "961bc913d42fe24a257bfff826a5068079ac7782",
+                "url": "https://api.github.com/repos/sebastianbergmann/php-file-iterator/zipball/3d1cd096ef6bea4bf2762ba586e35dbd317cbfd5",
+                "reference": "3d1cd096ef6bea4bf2762ba586e35dbd317cbfd5",
                 "shasum": ""
             },
             "require": {
@@ -6790,7 +6790,7 @@
             "require-dev": {
                 "phpunit/phpunit": "^12.0"
             },
-            "time": "2025-02-07T04:58:37+00:00",
+            "time": "2026-02-02T14:04:18+00:00",
             "type": "library",
             "extra": {
                 "branch-alias": {
@@ -6823,12 +6823,24 @@
             "support": {
                 "issues": "https://github.com/sebastianbergmann/php-file-iterator/issues",
                 "security": "https://github.com/sebastianbergmann/php-file-iterator/security/policy",
-                "source": "https://github.com/sebastianbergmann/php-file-iterator/tree/6.0.0"
+                "source": "https://github.com/sebastianbergmann/php-file-iterator/tree/6.0.1"
             },
             "funding": [
                 {
                     "url": "https://github.com/sebastianbergmann",
                     "type": "github"
+                },
+                {
+                    "url": "https://liberapay.com/sebastianbergmann",
+                    "type": "liberapay"
+                },
+                {
+                    "url": "https://thanks.dev/u/gh/sebastianbergmann",
+                    "type": "thanks_dev"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/phpunit/php-file-iterator",
+                    "type": "tidelift"
                 }
             ],
             "install-path": "../phpunit/php-file-iterator"

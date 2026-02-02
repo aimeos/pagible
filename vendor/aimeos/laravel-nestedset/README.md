@@ -180,18 +180,12 @@ crucial to use transactions and locking to protect against corrupt data structur
 To guard against concurrent tree updates, use:
 
 ```php
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
 
-DB::transaction(function () {
-    $lock = Cache::lock('my_shared_lock_key', 10); // 10 seconds
-
-    if (!$lock->get()) {
-        throw \RuntimeException('Acquiring lock failed');
-    }
-
-    MyModel::find($id)->appendToNode($parent)->save();
-    $lock->release();
-});
+Cache::lock('my_shared_lock_key', 30)->get( // max 30 seconds
+    fn() => DB::transaction(fn() => MyModel::find($id)->appendToNode($parent)->save()
+);
 ```
 
 ### Relationships

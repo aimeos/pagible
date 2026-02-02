@@ -21,14 +21,15 @@ class ConfigManagementGitConfig extends \Google\Model
 {
   /**
    * Optional. The Google Cloud Service Account Email used for auth when
-   * secret_type is gcpServiceAccount.
+   * secret_type is `gcpserviceaccount`.
    *
    * @var string
    */
   public $gcpServiceAccountEmail;
   /**
    * Optional. URL for the HTTPS proxy to be used when communicating with the
-   * Git repo.
+   * Git repo. Only specify when secret_type is `cookiefile`, `token`, or
+   * `none`.
    *
    * @var string
    */
@@ -42,8 +43,8 @@ class ConfigManagementGitConfig extends \Google\Model
   public $policyDir;
   /**
    * Required. Type of secret configured for access to the Git repo. Must be one
-   * of ssh, cookiefile, gcenode, token, gcpserviceaccount, githubapp or none.
-   * The validation of this is case-sensitive.
+   * of `ssh`, `cookiefile`, `gcenode`, `token`, `gcpserviceaccount`,
+   * `githubapp` or `none`. The validation of this is case-sensitive.
    *
    * @var string
    */
@@ -75,7 +76,7 @@ class ConfigManagementGitConfig extends \Google\Model
 
   /**
    * Optional. The Google Cloud Service Account Email used for auth when
-   * secret_type is gcpServiceAccount.
+   * secret_type is `gcpserviceaccount`.
    *
    * @param string $gcpServiceAccountEmail
    */
@@ -92,7 +93,8 @@ class ConfigManagementGitConfig extends \Google\Model
   }
   /**
    * Optional. URL for the HTTPS proxy to be used when communicating with the
-   * Git repo.
+   * Git repo. Only specify when secret_type is `cookiefile`, `token`, or
+   * `none`.
    *
    * @param string $httpsProxy
    */
@@ -126,8 +128,8 @@ class ConfigManagementGitConfig extends \Google\Model
   }
   /**
    * Required. Type of secret configured for access to the Git repo. Must be one
-   * of ssh, cookiefile, gcenode, token, gcpserviceaccount, githubapp or none.
-   * The validation of this is case-sensitive.
+   * of `ssh`, `cookiefile`, `gcenode`, `token`, `gcpserviceaccount`,
+   * `githubapp` or `none`. The validation of this is case-sensitive.
    *
    * @param string $secretType
    */

@@ -67,7 +67,7 @@ class ProjectsLocationsAdaptiveMtDatasetsAdaptiveMtFiles extends \Google\Service
    * Lists all AdaptiveMtFiles associated to an AdaptiveMtDataset.
    * (adaptiveMtFiles.listProjectsLocationsAdaptiveMtDatasetsAdaptiveMtFiles)
    *
-   * @param string $parent Required. The resource name of the project from which
+   * @param string $parent Required. The resource name of the dataset from which
    * to list the Adaptive MT files.
    * `projects/{project}/locations/{location}/adaptiveMtDatasets/{dataset}`
    * @param array $optParams Optional parameters.

@@ -59,6 +59,8 @@ class AccessApprovalSettings extends \Google\Collection
    * @var bool
    */
   public $ancestorHasActiveKeyVersion;
+  protected $ancestorsEnrolledServicesType = EnrolledService::class;
+  protected $ancestorsEnrolledServicesDataType = 'array';
   protected $approvalPolicyType = CustomerApprovalApprovalPolicy::class;
   protected $approvalPolicyDataType = '';
   protected $effectiveApprovalPolicyType = CustomerApprovalApprovalPolicy::class;
@@ -184,6 +186,23 @@ class AccessApprovalSettings extends \Google\Collection
   public function getAncestorHasActiveKeyVersion()
   {
     return $this->ancestorHasActiveKeyVersion;
+  }
+  /**
+   * Output only. Field to differentiate ancestor enrolled services from locally
+   * enrolled services.
+   *
+   * @param EnrolledService[] $ancestorsEnrolledServices
+   */
+  public function setAncestorsEnrolledServices($ancestorsEnrolledServices)
+  {
+    $this->ancestorsEnrolledServices = $ancestorsEnrolledServices;
+  }
+  /**
+   * @return EnrolledService[]
+   */
+  public function getAncestorsEnrolledServices()
+  {
+    return $this->ancestorsEnrolledServices;
   }
   /**
    * Optional. Policy configuration for Access Approval that sets the operating

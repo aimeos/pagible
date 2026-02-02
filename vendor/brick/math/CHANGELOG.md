@@ -2,6 +2,34 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.14.4](https://github.com/brick/math/releases/tag/0.14.4) - 2026-02-02
+
+🗑️ **Deprecations**
+
+- Passing a negative modulus to `BigInteger::mod()` is deprecated to align with Euclidean modulo semantics; it will throw `NegativeNumberException` in 0.15
+- Method `BigDecimal::stripTrailingZeros()` is deprecated, use `strippedOfTrailingZeros()` instead
+
+✨ **New features**
+
+- `BigInteger::modPow()` now accepts negative bases
+- New method: `BigDecimal::strippedOfTrailingZeros()` (replaces `stripTrailingZeros()`)
+
+👌 **Improvements**
+
+- `clamp()` methods are now marked as `@pure`
+
+## [0.14.3](https://github.com/brick/math/releases/tag/0.14.3) - 2026-02-01
+
+✨ **New features**
+
+- New method: `BigInteger::lcm()`
+- New method: `BigInteger::lcmAll()`
+- New method: `BigRational::toRepeatingDecimalString()`
+
+🐛 **Bug fixes**
+
+- `BigInteger::gcdAll()` / `gcdMultiple()` could return a negative result when used with a single negative number
+
 ## [0.14.2](https://github.com/brick/math/releases/tag/0.14.2) - 2026-01-30
 
 🗑️ **Deprecations**

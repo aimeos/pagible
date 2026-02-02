@@ -322,7 +322,7 @@ final readonly class BigDecimal extends BigNumber
             }
         }
 
-        return $this->dividedBy($that, $scale)->stripTrailingZeros();
+        return $this->dividedBy($that, $scale)->strippedOfTrailingZeros();
     }
 
     /**
@@ -337,6 +337,8 @@ final readonly class BigDecimal extends BigNumber
      *
      * @throws MathException            If min/max are not convertible to a BigDecimal.
      * @throws InvalidArgumentException If min is greater than max.
+     *
+     * @pure
      */
     public function clamp(BigNumber|int|float|string $min, BigNumber|int|float|string $max): BigDecimal
     {
@@ -568,9 +570,24 @@ final readonly class BigDecimal extends BigNumber
     /**
      * Returns a copy of this BigDecimal with any trailing zeros removed from the fractional part.
      *
-     * @pure
+     * @deprecated Use strippedOfTrailingZeros() instead.
      */
     public function stripTrailingZeros(): BigDecimal
+    {
+        trigger_error(
+            'BigDecimal::stripTrailingZeros() is deprecated, use strippedOfTrailingZeros() instead.',
+            E_USER_DEPRECATED,
+        );
+
+        return $this->strippedOfTrailingZeros();
+    }
+
+    /**
+     * Returns a copy of this BigDecimal with any trailing zeros removed from the fractional part.
+     *
+     * @pure
+     */
+    public function strippedOfTrailingZeros(): BigDecimal
     {
         if ($this->scale === 0) {
             return $this;

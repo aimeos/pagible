@@ -26,25 +26,33 @@ class ConfigManagementContainerOverride extends \Google\Model
    */
   public $containerName;
   /**
-   * Optional. The cpu limit of the container.
+   * Optional. The cpu limit of the container. Use the following CPU resource
+   * units: https://kubernetes.io/docs/concepts/configuration/manage-resources-
+   * containers/#meaning-of-cpu.
    *
    * @var string
    */
   public $cpuLimit;
   /**
-   * Optional. The cpu request of the container.
+   * Optional. The cpu request of the container. Use the following CPU resource
+   * units: https://kubernetes.io/docs/concepts/configuration/manage-resources-
+   * containers/#meaning-of-cpu.
    *
    * @var string
    */
   public $cpuRequest;
   /**
-   * Optional. The memory limit of the container.
+   * Optional. The memory limit of the container. Use the following memory
+   * resource units: https://kubernetes.io/docs/concepts/configuration/manage-
+   * resources-containers/#meaning-of-memory.
    *
    * @var string
    */
   public $memoryLimit;
   /**
-   * Optional. The memory request of the container.
+   * Optional. The memory request of the container. Use the following memory
+   * resource units: https://kubernetes.io/docs/concepts/configuration/manage-
+   * resources-containers/#meaning-of-memory.
    *
    * @var string
    */
@@ -67,7 +75,9 @@ class ConfigManagementContainerOverride extends \Google\Model
     return $this->containerName;
   }
   /**
-   * Optional. The cpu limit of the container.
+   * Optional. The cpu limit of the container. Use the following CPU resource
+   * units: https://kubernetes.io/docs/concepts/configuration/manage-resources-
+   * containers/#meaning-of-cpu.
    *
    * @param string $cpuLimit
    */
@@ -83,7 +93,9 @@ class ConfigManagementContainerOverride extends \Google\Model
     return $this->cpuLimit;
   }
   /**
-   * Optional. The cpu request of the container.
+   * Optional. The cpu request of the container. Use the following CPU resource
+   * units: https://kubernetes.io/docs/concepts/configuration/manage-resources-
+   * containers/#meaning-of-cpu.
    *
    * @param string $cpuRequest
    */
@@ -99,7 +111,9 @@ class ConfigManagementContainerOverride extends \Google\Model
     return $this->cpuRequest;
   }
   /**
-   * Optional. The memory limit of the container.
+   * Optional. The memory limit of the container. Use the following memory
+   * resource units: https://kubernetes.io/docs/concepts/configuration/manage-
+   * resources-containers/#meaning-of-memory.
    *
    * @param string $memoryLimit
    */
@@ -115,7 +129,9 @@ class ConfigManagementContainerOverride extends \Google\Model
     return $this->memoryLimit;
   }
   /**
-   * Optional. The memory request of the container.
+   * Optional. The memory request of the container. Use the following memory
+   * resource units: https://kubernetes.io/docs/concepts/configuration/manage-
+   * resources-containers/#meaning-of-memory.
    *
    * @param string $memoryRequest
    */
