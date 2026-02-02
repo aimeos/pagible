@@ -366,7 +366,6 @@ class Page extends Model
         $this->save();
 
         $version->published = true;
-var_dump($version);
         $version->save();
 
         $this->index();
