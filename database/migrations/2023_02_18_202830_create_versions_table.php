@@ -31,7 +31,6 @@ return new class extends Migration
             $table->string('editor');
             $table->timestamp('created_at');
 
-            $table->primary('id');
             $table->index(['versionable_id', 'versionable_type', 'created_at', 'tenant_id'], 'idx_versions_id_type_created_tenantid');
             $table->index(['publish_at', 'published']);
         });

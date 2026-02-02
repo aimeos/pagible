@@ -32,7 +32,6 @@ return new class extends Migration
             $table->softDeletes();
             $table->timestamps();
 
-            $table->primary('id');
             $table->index(['mime', 'tenant_id']);
             $table->index(['lang', 'tenant_id']);
             $table->index(['name', 'tenant_id']);
