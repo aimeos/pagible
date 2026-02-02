@@ -38,7 +38,7 @@ return new class extends Migration
             $table->json('content');
             $table->string('editor');
             $table->softDeletes();
-            $table->timestamps(0);
+            $table->timestamps();
             $table->nestedSet('id', 'uuid');
 
             $table->unique(['path', 'domain', 'tenant_id']);
