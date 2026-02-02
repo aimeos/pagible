@@ -67,22 +67,8 @@ class GraphqlPageTest extends TestAbstract
         });
 
         Schema::connection(config('cms.db', 'sqlite'))->create('cms_elements2', function (Blueprint $table) {
-            $table->uuid('id');
-            $table->string('tenant_id');
-            $table->string('type', 50);
-            $table->string('lang', 5)->nullable();
-            $table->string('name');
-            $table->json('data');
-            $table->string('editor');
-            $table->timestamps();
-            $table->softDeletes();
-
-            $table->primary('id');
-            $table->index(['type', 'tenant_id']);
-            $table->index(['lang', 'tenant_id']);
-            $table->index(['name', 'tenant_id']);
-            $table->index(['editor', 'tenant_id']);
-            $table->index('deleted_at');
+            $table->uuid('id')->primary();
+            $table->timestamps(0);
         });
 
         // Dump captured queries
