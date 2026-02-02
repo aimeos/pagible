@@ -30,7 +30,7 @@ return new class extends Migration
             $table->json('transcription');
             $table->string('editor');
             $table->softDeletes();
-            $table->timestamps();
+            $table->timestamps(0);
 
             $table->primary('id');
             $table->index(['mime', 'tenant_id']);

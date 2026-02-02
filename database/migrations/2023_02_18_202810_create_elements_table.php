@@ -26,7 +26,7 @@ return new class extends Migration
             $table->string('name');
             $table->json('data');
             $table->string('editor');
-            $table->timestamps();
+            $table->timestamps(0);
             $table->softDeletes();
 
             $table->primary('id');
