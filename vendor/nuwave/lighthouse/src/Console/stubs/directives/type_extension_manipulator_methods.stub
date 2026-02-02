@@ -1,0 +1,7 @@
+    /**
+     * Apply manipulations from a type extension node.
+     */
+    public function manipulateTypeExtension(DocumentAST &$documentAST, TypeExtensionNode &$typeExtension): void
+    {
+        // TODO implement the type extension manipulator
+    }

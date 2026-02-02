@@ -1,0 +1,46 @@
+name: Tests
+
+on:
+  push:
+    branches: [ master, develop ]
+  pull_request:
+    branches: [ master, develop ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: true
+      matrix:
+        php: [7.4, '8.0', 8.1, 8.2, 8.3, 8.4]
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: ${{ matrix.php }}
+        extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, gd
+        tools: composer:v2
+        coverage: none
+        ini-values: error_reporting=E_ALL
+
+    - name: Install dependencies
+      uses: nick-fields/retry@v3
+      with:
+        timeout_minutes: 5
+        max_attempts: 5
+        command: composer install --no-suggest --prefer-dist -n -o
+
+    - name: Execute tests
+      run: vendor/bin/phpunit
+
+    - name: Execute coding standards
+      run: composer run test-cs
+
+    - name: Execute mess detector
+      run: composer run test-md

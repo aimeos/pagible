@@ -1,0 +1,244 @@
+<?php
+/*
+ * Copyright 2014 Google Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ */
+
+namespace Google\Service\Dialogflow;
+
+class GoogleCloudDialogflowCxV3ResponseMessage extends \Google\Model
+{
+  public const RESPONSE_TYPE_RESPONSE_TYPE_UNSPECIFIED = 'RESPONSE_TYPE_UNSPECIFIED';
+  public const RESPONSE_TYPE_ENTRY_PROMPT = 'ENTRY_PROMPT';
+  public const RESPONSE_TYPE_PARAMETER_PROMPT = 'PARAMETER_PROMPT';
+  public const RESPONSE_TYPE_HANDLER_PROMPT = 'HANDLER_PROMPT';
+  /**
+   * @var string
+   */
+  public $channel;
+  protected $conversationSuccessType = GoogleCloudDialogflowCxV3ResponseMessageConversationSuccess::class;
+  protected $conversationSuccessDataType = '';
+  protected $endInteractionType = GoogleCloudDialogflowCxV3ResponseMessageEndInteraction::class;
+  protected $endInteractionDataType = '';
+  protected $knowledgeInfoCardType = GoogleCloudDialogflowCxV3ResponseMessageKnowledgeInfoCard::class;
+  protected $knowledgeInfoCardDataType = '';
+  protected $liveAgentHandoffType = GoogleCloudDialogflowCxV3ResponseMessageLiveAgentHandoff::class;
+  protected $liveAgentHandoffDataType = '';
+  protected $mixedAudioType = GoogleCloudDialogflowCxV3ResponseMessageMixedAudio::class;
+  protected $mixedAudioDataType = '';
+  protected $outputAudioTextType = GoogleCloudDialogflowCxV3ResponseMessageOutputAudioText::class;
+  protected $outputAudioTextDataType = '';
+  /**
+   * @var array[]
+   */
+  public $payload;
+  protected $playAudioType = GoogleCloudDialogflowCxV3ResponseMessagePlayAudio::class;
+  protected $playAudioDataType = '';
+  /**
+   * @var string
+   */
+  public $responseType;
+  protected $telephonyTransferCallType = GoogleCloudDialogflowCxV3ResponseMessageTelephonyTransferCall::class;
+  protected $telephonyTransferCallDataType = '';
+  protected $textType = GoogleCloudDialogflowCxV3ResponseMessageText::class;
+  protected $textDataType = '';
+  protected $toolCallType = GoogleCloudDialogflowCxV3ToolCall::class;
+  protected $toolCallDataType = '';
+
+  /**
+   * @param string $channel
+   */
+  public function setChannel($channel)
+  {
+    $this->channel = $channel;
+  }
+  /**
+   * @return string
+   */
+  public function getChannel()
+  {
+    return $this->channel;
+  }
+  /**
+   * @param GoogleCloudDialogflowCxV3ResponseMessageConversationSuccess $conversationSuccess
+   */
+  public function setConversationSuccess(GoogleCloudDialogflowCxV3ResponseMessageConversationSuccess $conversationSuccess)
+  {
+    $this->conversationSuccess = $conversationSuccess;
+  }
+  /**
+   * @return GoogleCloudDialogflowCxV3ResponseMessageConversationSuccess
+   */
+  public function getConversationSuccess()
+  {
+    return $this->conversationSuccess;
+  }
+  /**
+   * @param GoogleCloudDialogflowCxV3ResponseMessageEndInteraction $endInteraction
+   */
+  public function setEndInteraction(GoogleCloudDialogflowCxV3ResponseMessageEndInteraction $endInteraction)
+  {
+    $this->endInteraction = $endInteraction;
+  }
+  /**
+   * @return GoogleCloudDialogflowCxV3ResponseMessageEndInteraction
+   */
+  public function getEndInteraction()
+  {
+    return $this->endInteraction;
+  }
+  /**
+   * @param GoogleCloudDialogflowCxV3ResponseMessageKnowledgeInfoCard $knowledgeInfoCard
+   */
+  public function setKnowledgeInfoCard(GoogleCloudDialogflowCxV3ResponseMessageKnowledgeInfoCard $knowledgeInfoCard)
+  {
+    $this->knowledgeInfoCard = $knowledgeInfoCard;
+  }
+  /**
+   * @return GoogleCloudDialogflowCxV3ResponseMessageKnowledgeInfoCard
+   */
+  public function getKnowledgeInfoCard()
+  {
+    return $this->knowledgeInfoCard;
+  }
+  /**
+   * @param GoogleCloudDialogflowCxV3ResponseMessageLiveAgentHandoff $liveAgentHandoff
+   */
+  public function setLiveAgentHandoff(GoogleCloudDialogflowCxV3ResponseMessageLiveAgentHandoff $liveAgentHandoff)
+  {
+    $this->liveAgentHandoff = $liveAgentHandoff;
+  }
+  /**
+   * @return GoogleCloudDialogflowCxV3ResponseMessageLiveAgentHandoff
+   */
+  public function getLiveAgentHandoff()
+  {
+    return $this->liveAgentHandoff;
+  }
+  /**
+   * @param GoogleCloudDialogflowCxV3ResponseMessageMixedAudio $mixedAudio
+   */
+  public function setMixedAudio(GoogleCloudDialogflowCxV3ResponseMessageMixedAudio $mixedAudio)
+  {
+    $this->mixedAudio = $mixedAudio;
+  }
+  /**
+   * @return GoogleCloudDialogflowCxV3ResponseMessageMixedAudio
+   */
+  public function getMixedAudio()
+  {
+    return $this->mixedAudio;
+  }
+  /**
+   * @param GoogleCloudDialogflowCxV3ResponseMessageOutputAudioText $outputAudioText
+   */
+  public function setOutputAudioText(GoogleCloudDialogflowCxV3ResponseMessageOutputAudioText $outputAudioText)
+  {
+    $this->outputAudioText = $outputAudioText;
+  }
+  /**
+   * @return GoogleCloudDialogflowCxV3ResponseMessageOutputAudioText
+   */
+  public function getOutputAudioText()
+  {
+    return $this->outputAudioText;
+  }
+  /**
+   * @param array[] $payload
+   */
+  public function setPayload($payload)
+  {
+    $this->payload = $payload;
+  }
+  /**
+   * @return array[]
+   */
+  public function getPayload()
+  {
+    return $this->payload;
+  }
+  /**
+   * @param GoogleCloudDialogflowCxV3ResponseMessagePlayAudio $playAudio
+   */
+  public function setPlayAudio(GoogleCloudDialogflowCxV3ResponseMessagePlayAudio $playAudio)
+  {
+    $this->playAudio = $playAudio;
+  }
+  /**
+   * @return GoogleCloudDialogflowCxV3ResponseMessagePlayAudio
+   */
+  public function getPlayAudio()
+  {
+    return $this->playAudio;
+  }
+  /**
+   * @param self::RESPONSE_TYPE_* $responseType
+   */
+  public function setResponseType($responseType)
+  {
+    $this->responseType = $responseType;
+  }
+  /**
+   * @return self::RESPONSE_TYPE_*
+   */
+  public function getResponseType()
+  {
+    return $this->responseType;
+  }
+  /**
+   * @param GoogleCloudDialogflowCxV3ResponseMessageTelephonyTransferCall $telephonyTransferCall
+   */
+  public function setTelephonyTransferCall(GoogleCloudDialogflowCxV3ResponseMessageTelephonyTransferCall $telephonyTransferCall)
+  {
+    $this->telephonyTransferCall = $telephonyTransferCall;
+  }
+  /**
+   * @return GoogleCloudDialogflowCxV3ResponseMessageTelephonyTransferCall
+   */
+  public function getTelephonyTransferCall()
+  {
+    return $this->telephonyTransferCall;
+  }
+  /**
+   * @param GoogleCloudDialogflowCxV3ResponseMessageText $text
+   */
+  public function setText(GoogleCloudDialogflowCxV3ResponseMessageText $text)
+  {
+    $this->text = $text;
+  }
+  /**
+   * @return GoogleCloudDialogflowCxV3ResponseMessageText
+   */
+  public function getText()
+  {
+    return $this->text;
+  }
+  /**
+   * @param GoogleCloudDialogflowCxV3ToolCall $toolCall
+   */
+  public function setToolCall(GoogleCloudDialogflowCxV3ToolCall $toolCall)
+  {
+    $this->toolCall = $toolCall;
+  }
+  /**
+   * @return GoogleCloudDialogflowCxV3ToolCall
+   */
+  public function getToolCall()
+  {
+    return $this->toolCall;
+  }
+}
+
+// Adding a class alias for backwards compatibility with the previous class name.
+class_alias(GoogleCloudDialogflowCxV3ResponseMessage::class, 'Google_Service_Dialogflow_GoogleCloudDialogflowCxV3ResponseMessage');

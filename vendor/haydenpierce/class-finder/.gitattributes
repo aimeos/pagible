@@ -1,0 +1,7 @@
+/ci/ export-ignore
+/docs/ export-ignore
+/test/ export-ignore
+/.gitignore export-ignore
+/.gitlab-ci.yml export-ignore
+/composer.lock export-ignore
+/phpunit.xml export-ignore

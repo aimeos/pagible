@@ -1,0 +1,50 @@
+{
+  "name": "om/potrans",
+  "description": "Command line tool for translate Gettext with Google Translator API or DeepL API",
+  "keywords": [
+    "potrans",
+    "gettext",
+    "gettext-library",
+    "google",
+    "translator",
+    "translations",
+    "translation",
+    "translate",
+    "deepl",
+    "i18n"
+  ],
+  "license": [
+    "MIT"
+  ],
+  "authors": [
+    {
+      "name": "Roman Ožana",
+      "email": "roman@ozana.cz",
+      "homepage": "https://ozana.cz"
+    }
+  ],
+  "bin": [
+    "bin/potrans"
+  ],
+  "require": {
+    "gettext/gettext": "^5.7",
+    "google/cloud-translate": "^2.1",
+    "symfony/console": "^7.0 || ^8.0",
+    "symfony/cache": "^7.0 || ^8.0",
+    "deeplcom/deepl-php": "^1.16",
+    "vlucas/phpdotenv": "^5.6"
+  },
+  "require-dev": {
+    "nette/tester": "^2.5"
+  },
+  "autoload": {
+    "psr-4": {
+      "potrans\\": "src/"
+    }
+  },
+  "config": {
+    "allow-plugins": {
+      "php-http/discovery": true
+    }
+  }
+}

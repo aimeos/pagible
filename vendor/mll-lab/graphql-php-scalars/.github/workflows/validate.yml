@@ -1,0 +1,107 @@
+# https://help.github.com/en/categories/automating-your-workflow-with-github-actions
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+
+name: "Validate"
+
+jobs:
+  composer-validate:
+    name: "Validate composer dependencies"
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@master
+
+      - name: "Install PHP with extensions"
+        uses: shivammathur/setup-php@v2
+        with:
+          coverage: none
+          extensions: mbstring
+          php-version: 8.1
+
+      - name: "Validate composer.json and composer.lock"
+        run: composer validate --strict
+
+  static-code-analysis:
+    name: "Static Code Analysis"
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v4
+
+      - name: "Install PHP with extensions"
+        uses: shivammathur/setup-php@v2
+        with:
+          coverage: none
+          php-version: 8.0
+
+      - name: "Install dependencies with composer"
+        run: composer install --no-interaction --no-progress
+
+      - name: "Run static analysis with phpstan"
+        run: vendor/bin/phpstan
+
+  tests:
+    name: Test for PHP ${{ matrix.php-version }} (${{ matrix.dependencies }})
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        php-version:
+          - "8.0"
+          - "8.1"
+          - "8.2"
+          - "8.3"
+          - "8.4"
+        dependencies:
+          - "prefer-lowest"
+          - "prefer-stable"
+
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v4
+
+      - name: "Install PHP with extensions"
+        uses: shivammathur/setup-php@v2
+        with:
+          coverage: none
+          php-version: ${{ matrix.php-version }}
+
+      - name: "Install dependencies with composer"
+        run: composer update --${{ matrix.dependencies }} --no-interaction --no-progress
+
+      - name: "Run unit tests with phpunit"
+        run: vendor/bin/phpunit
+
+  code-coverage:
+    name: "Code Coverage"
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v4
+
+      - name: "Install PHP with extensions"
+        uses: shivammathur/setup-php@v2
+        with:
+          coverage: pcov
+          php-version: 8.1
+
+      - name: "Install dependencies with composer"
+        run: composer install --no-interaction --no-progress
+
+      - name: "Collect code coverage"
+        run: vendor/bin/phpunit --coverage-clover=coverage.xml
+
+      - name: "Send code coverage report to codecov.io"
+        uses: codecov/codecov-action@v2

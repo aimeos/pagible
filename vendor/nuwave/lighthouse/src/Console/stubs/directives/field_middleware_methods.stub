@@ -1,0 +1,9 @@
+    /**
+     * Wrap around the final field resolver.
+     *
+     * @param  \Nuwave\Lighthouse\Schema\Values\FieldValue  $fieldValue
+     */
+    public function handleField(FieldValue $fieldValue): void
+    {
+        // TODO implement the field middleware
+    }

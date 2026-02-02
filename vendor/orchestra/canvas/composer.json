@@ -1,0 +1,98 @@
+{
+    "$schema": "https://getcomposer.org/schema.json",
+    "name": "orchestra/canvas",
+    "description": "Code Generators for Laravel Applications and Packages",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Taylor Otwell",
+            "email": "taylor@laravel.com"
+        },
+        {
+            "name": "Mior Muhammad Zaki",
+            "email": "crynobone@gmail.com"
+        }
+    ],
+    "bin": [
+        "canvas"
+    ],
+    "autoload": {
+        "psr-4": {
+            "Orchestra\\Canvas\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Orchestra\\Canvas\\Tests\\": "tests/",
+            "Illuminate\\Tests\\Integration\\Generators\\": "workbench/tests/"
+        }
+    },
+    "require": {
+        "php": "^8.2",
+        "composer-runtime-api": "^2.2",
+        "composer/semver": "^3.0",
+        "illuminate/console": "^12.40.0",
+        "illuminate/database": "^12.40.0",
+        "illuminate/filesystem": "^12.40.0",
+        "illuminate/support": "^12.40.0",
+        "orchestra/canvas-core": "^10.1.2",
+        "orchestra/sidekick": "^1.2.7",
+        "orchestra/testbench-core": "^10.8.0",
+        "symfony/polyfill-php83": "^1.33",
+        "symfony/yaml": "^7.2.0"
+    },
+    "require-dev": {
+        "laravel/framework": "^12.40.0",
+        "laravel/pint": "^1.24",
+        "mockery/mockery": "^1.6.12",
+        "phpstan/phpstan": "^2.1.14",
+        "phpunit/phpunit": "^11.5.18|^12.0",
+        "spatie/laravel-ray": "^1.42.0"
+    },
+    "conflict": {
+        "laravel/framework": "<12.40.0|>=13.0.0"
+    },
+    "config": {
+        "audit": {
+            "block-insecure": false
+        },
+        "preferred-install": {
+            "laravel/framework": "source",
+            "*": "auto"
+        },
+        "sort-packages": true
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Orchestra\\Canvas\\LaravelServiceProvider"
+            ]
+        }
+    },
+    "scripts": {
+        "post-autoload-dump": [
+            "@clear",
+            "@prepare"
+        ],
+        "clear": "@php vendor/bin/testbench package:purge-skeleton --ansi",
+        "prepare": "@php vendor/bin/testbench package:discover --ansi",
+        "lint": [
+            "@php vendor/bin/pint --ansi --parallel",
+            "@php vendor/bin/phpstan analyse --verbose"
+        ],
+        "test": [
+            "@composer dump-autoload",
+            "@php vendor/bin/phpunit --no-coverage --no-configuration --bootstrap vendor/autoload.php --color ./tests ./workbench/tests"
+        ],
+        "sync": "@php bin/sync",
+        "ci": [
+            "@composer audit",
+            "@prepare",
+            "@lint",
+            "@test"
+        ]
+    },
+    "prefer-stable": true,
+    "minimum-stability": "dev"
+}

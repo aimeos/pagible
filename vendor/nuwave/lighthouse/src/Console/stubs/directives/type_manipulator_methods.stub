@@ -1,0 +1,7 @@
+    /**
+     * Apply manipulations from a type definition node.
+     */
+    public function manipulateTypeDefinition(DocumentAST &$documentAST, TypeDefinitionNode &$typeDefinition): void
+    {
+        // TODO implement the type manipulator
+    }

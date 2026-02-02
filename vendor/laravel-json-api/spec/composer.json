@@ -1,0 +1,62 @@
+{
+    "name": "laravel-json-api/spec",
+    "description": "Validate JSON documents for compliance with the JSON:API specification.",
+    "keywords": [
+        "jsonapi.org",
+        "json-api",
+        "jsonapi",
+        "laravel"
+    ],
+    "homepage": "https://github.com/laravel-json-api/spec",
+    "support": {
+        "issues": "https://github.com/laravel-json-api/spec/issues"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Cloud Creativity Ltd",
+            "email": "info@cloudcreativity.co.uk"
+        },
+        {
+            "name": "Christopher Gammie",
+            "email": "contact@gammie.co.uk"
+        }
+    ],
+    "require": {
+        "php": "^8.2",
+        "ext-json": "*",
+        "illuminate/contracts": "^11.0|^12.0",
+        "illuminate/pipeline": "^11.0|^12.0",
+        "illuminate/support": "^11.0|^12.0",
+        "laravel-json-api/core": "^4.3.2|^5.2"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^9.0|^10.0",
+        "phpunit/phpunit": "^10.5|^11.5.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "LaravelJsonApi\\Spec\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "LaravelJsonApi\\Spec\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-develop": "3.x-dev"
+        },
+        "laravel": {
+            "providers": [
+                "LaravelJsonApi\\Spec\\ServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "config": {
+        "sort-packages": true
+    }
+}

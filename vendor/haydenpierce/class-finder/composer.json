@@ -1,0 +1,27 @@
+{
+    "name": "haydenpierce/class-finder",
+    "description" : "A library that can provide of a list of classes in a given namespace",
+    "type": "library",
+    "license": "MIT",
+    "version": "0.5.3",
+    "authors": [
+        {
+            "name": "Hayden Pierce",
+            "email": "hayden@haydenpierce.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.3",
+        "ext-json": "*"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "~9.0",
+        "mikey179/vfsstream": "^1.6"
+    },
+    "autoload": {
+        "psr-4": {
+            "HaydenPierce\\ClassFinder\\": "src/",
+            "HaydenPierce\\ClassFinder\\UnitTest\\": "test/unit"
+        }
+    }
+}

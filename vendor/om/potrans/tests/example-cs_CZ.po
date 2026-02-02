@@ -1,0 +1,43 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: POEditor.com\n"
+"Project-Id-Version: Example code\n"
+"Language: cs\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#. Please don't change the name of the application
+#: /app/modules/views
+msgid "Example application"
+msgstr ""
+
+#: /app/modules/views
+msgid "Login successful!\n"
+"Welcome back %s!"
+msgstr ""
+
+#: /app/modules/views
+msgid "Make sure you've entered the correct username and password"
+msgstr ""
+
+#: /app/modules/views
+msgid "I forgot my password"
+msgstr ""
+
+#: /app/modules/views
+msgid "Username"
+msgstr ""
+
+#: /app/modules/views
+msgid "Terms and conditions"
+msgstr ""
+
+#: /app/modules/views
+msgid "Password"
+msgstr ""
+
+#: /app/modules/views
+msgid "Do not translate $number$ or $recipient$"
+msgstr ""
