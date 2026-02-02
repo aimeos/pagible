@@ -258,7 +258,7 @@ type Page {
   parent: Page
 
   "Relation to the children of the current page"
-  children: [Page!]! @paginate
+  children: [Page!]! @hasMany(type: PAGINATOR)
 
   "Relation to the ancestors of the current page up to the root page"
   ancestors: [Page!]!

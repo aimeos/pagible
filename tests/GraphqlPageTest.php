@@ -42,6 +42,7 @@ class GraphqlPageTest extends TestAbstract
     protected function setUp(): void
     {
         parent::setUp();
+
         $this->bootRefreshesSchemaCache();
 
         $this->user = \App\Models\User::create([
@@ -383,13 +384,18 @@ class GraphqlPageTest extends TestAbstract
 
         $page = Page::where('tag', 'blog')->firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 2 );
-        $response = $this->actingAs( $this->user )->graphQL( "{
+        $this->expectsDatabaseQueryCount( 3 );
+
+        $this->actingAs( $this->user )->graphQL( "{
             page(id: \"{$page->id}\") {
                 id
                 children(first: 3) {
                     data {
-                        tag
+                        path
+                    }
+                    paginatorInfo {
+                        currentPage
+                        lastPage
                     }
                 }
             }
@@ -399,10 +405,12 @@ class GraphqlPageTest extends TestAbstract
                     'id' => (string) $page->id,
                     'children' => [
                         'data' => [
-                            ['tag' => 'root'],
-                            ['tag' => 'blog'],
-                            ['tag' => 'article'],
+                            ['path' => 'welcome-to-laravelcms'],
                         ],
+                        'paginatorInfo' => [
+                            'currentPage' => 1,
+                            'lastPage' => 1,
+                        ]
                     ]
                 ],
             ]
@@ -503,7 +511,7 @@ class GraphqlPageTest extends TestAbstract
 
         $page = Page::where('tag', 'disabled')->firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 5 );
+        $this->expectsDatabaseQueryCount( 6 );
         $response = $this->actingAs( $this->user )->graphQL( "{
             page(id: \"{$page->id}\") {
                 id
