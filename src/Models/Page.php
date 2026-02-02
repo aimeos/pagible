@@ -9,7 +9,9 @@ namespace Aimeos\Cms\Models;
 
 use Aimeos\Cms\Concerns\Tenancy;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -120,9 +122,9 @@ class Page extends Model
      *
      * @return  AncestorsRelation
      */
-    public function ancestors()
+    public function ancestors() : AncestorsRelation
     {
-        $query = $this->newScopedQuery()->setModel(new Nav());
+        $query = $this->newScopedQuery()->setModel(new Nav())->defaultOrder();
         return new AncestorsRelation($query, $this);
     }
 
@@ -132,9 +134,9 @@ class Page extends Model
      *
      * @return HasMany
      */
-    public function children()
+    public function children() : HasMany
     {
-        return $this->hasMany(Nav::class, $this->getParentIdName())->defaultOrder()->setModel(new Nav());
+        return $this->hasMany(Page::class, $this->getParentIdName())->setModel(new Nav())->defaultOrder();
     }
 
 
@@ -326,7 +328,7 @@ class Page extends Model
      *
      * @return BelongsTo
      */
-    public function parent()
+    public function parent() : BelongsTo
     {
         return $this->belongsTo(Nav::class, $this->getParentIdName())->setModel(new Nav());
     }
