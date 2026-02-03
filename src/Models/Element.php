@@ -247,6 +247,22 @@ class Element extends Model
 
 
     /**
+     * The "booted" method of the model.
+     *
+     * @return void
+     */
+    protected static function booted(): void
+    {
+        static::creating( function( $model ) {
+            $now = now()->startOfSecond();
+
+            $model->created_at = $now;
+            $model->updated_at = $now;
+        } );
+    }
+
+
+    /**
      * Interact with the "data" property.
      *
      * @return Attribute Eloquent attribute for the "data" property
