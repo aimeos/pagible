@@ -68,8 +68,6 @@ class GraphqlPageTest extends TestAbstract
         $expected = [
             'id' => (string) $page->id,
             'has' => $page->has,
-            'created_at' => (string) $page->getAttribute( 'created_at' ),
-            'updated_at' => (string) $page->getAttribute( 'updated_at' ),
         ] + $attr;
 
         // Cast JSON fields to arrays for order-independent comparison
@@ -131,8 +129,6 @@ class GraphqlPageTest extends TestAbstract
         $attr = collect($page->getAttributes())->except(['tenant_id', '_lft', '_rgt'])->all();
         $expected[] = [
             'id' => (string) $page->id,
-            'created_at' => (string) $page->getAttribute( 'created_at' ),
-            'updated_at' => (string) $page->getAttribute( 'updated_at' ),
         ] + $attr;
 
         // Cast JSON fields to arrays for order-independent comparison
@@ -289,8 +285,6 @@ class GraphqlPageTest extends TestAbstract
             $expected[] = [
                 'id' => (string) $page->id,
                 'parent_id' => (string) $page->parent_id,
-                'created_at' => (string) $page->getAttribute( 'created_at' ),
-                'updated_at' => (string) $page->getAttribute( 'updated_at' ),
             ] + $attr;
         }
 
@@ -647,8 +641,8 @@ class GraphqlPageTest extends TestAbstract
         $expected = [
             'id' => (string) $page->id,
             'parent_id' => null,
-            'created_at' => (string) $page->getAttribute( 'created_at' ),
-            'updated_at' => (string) $page->getAttribute( 'updated_at' ),
+            'status' => 0,
+            'cache' => 0,
         ] + $attr;
 
         $response->assertJson( [
