@@ -209,7 +209,7 @@ class GraphqlFileTest extends TestAbstract
 
         $this->expectsDatabaseQueryCount( 2 );
         $response = $this->actingAs( $this->user )->graphQL( '{
-            files(publish: SCHEDULED) {
+            files(publish: SCHEDULED, sort: [{column: ID, order: ASC}]) {
                 data {
                     id
                 }
@@ -370,8 +370,8 @@ class GraphqlFileTest extends TestAbstract
         $this->assertEquals((array) $file->transcription, json_decode($saveFile['transcription'], true));
 
         // Assert latest->data as array
-        $this->assertEquals($expectedLatestData, json_decode($saveFile['latest']['data'], true));
-        $this->assertEquals('Test editor', $saveFile['latest']['editor']);
+        $this->assertEquals($expectedLatestData, json_decode($saveFile['latest']['data'] ?? null, true));
+        $this->assertEquals('Test editor', $saveFile['latest']['editor'] ?? null);
     }
 
 
