@@ -49,9 +49,6 @@ final readonly class TestStubCreated implements Event
         return $this->className;
     }
 
-    /**
-     * @return non-empty-string
-     */
     public function asString(): string
     {
         return sprintf(

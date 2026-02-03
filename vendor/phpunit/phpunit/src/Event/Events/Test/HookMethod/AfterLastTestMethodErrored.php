@@ -15,7 +15,6 @@ use PHPUnit\Event\Code;
 use PHPUnit\Event\Code\Throwable;
 use PHPUnit\Event\Event;
 use PHPUnit\Event\Telemetry;
-use PHPUnit\Framework\TestCase;
 
 /**
  * @immutable
@@ -27,14 +26,14 @@ final readonly class AfterLastTestMethodErrored implements Event
     private Telemetry\Info $telemetryInfo;
 
     /**
-     * @var class-string<TestCase>
+     * @var class-string
      */
     private string $testClassName;
     private Code\ClassMethod $calledMethod;
     private Throwable $throwable;
 
     /**
-     * @param class-string<TestCase> $testClassName
+     * @param class-string $testClassName
      */
     public function __construct(Telemetry\Info $telemetryInfo, string $testClassName, Code\ClassMethod $calledMethod, Throwable $throwable)
     {
@@ -50,7 +49,7 @@ final readonly class AfterLastTestMethodErrored implements Event
     }
 
     /**
-     * @return class-string<TestCase>
+     * @return class-string
      */
     public function testClassName(): string
     {
@@ -67,14 +66,11 @@ final readonly class AfterLastTestMethodErrored implements Event
         return $this->throwable;
     }
 
-    /**
-     * @return non-empty-string
-     */
     public function asString(): string
     {
         $message = $this->throwable->message();
 
-        if ($message !== '') {
+        if (!empty($message)) {
             $message = PHP_EOL . $message;
         }
 

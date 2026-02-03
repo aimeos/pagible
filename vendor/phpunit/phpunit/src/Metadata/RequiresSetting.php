@@ -27,7 +27,7 @@ final readonly class RequiresSetting extends Metadata
     private string $value;
 
     /**
-     * @param int<0, 1>        $level
+     * @param 0|1              $level
      * @param non-empty-string $setting
      * @param non-empty-string $value
      */

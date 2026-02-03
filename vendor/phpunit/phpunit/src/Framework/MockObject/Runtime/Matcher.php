@@ -29,10 +29,6 @@ use PHPUnit\Util\ThrowableToStringMapper;
 final class Matcher
 {
     private readonly InvocationOrder $invocationRule;
-
-    /**
-     * @var ?non-empty-string
-     */
     private ?string $afterMatchBuilderId    = null;
     private ?MethodName $methodNameRule     = null;
     private ?ParametersRule $parametersRule = null;
@@ -78,9 +74,6 @@ final class Matcher
         $this->stub = $stub;
     }
 
-    /**
-     * @param non-empty-string $id
-     */
     public function setAfterMatchBuilderId(string $id): void
     {
         $this->afterMatchBuilderId = $id;
@@ -104,7 +97,7 @@ final class Matcher
                 ->__phpunit_getInvocationHandler()
                 ->lookupMatcher($this->afterMatchBuilderId);
 
-            if ($matcher === null) {
+            if (!$matcher) {
                 throw new MatchBuilderNotFoundException($this->afterMatchBuilderId);
             }
         }
@@ -125,7 +118,7 @@ final class Matcher
             );
         }
 
-        if ($this->stub !== null) {
+        if ($this->stub) {
             return $this->stub->invoke($invocation);
         }
 
@@ -145,7 +138,7 @@ final class Matcher
                 ->__phpunit_getInvocationHandler()
                 ->lookupMatcher($this->afterMatchBuilderId);
 
-            if ($matcher === null) {
+            if (!$matcher) {
                 throw new MatchBuilderNotFoundException($this->afterMatchBuilderId);
             }
 

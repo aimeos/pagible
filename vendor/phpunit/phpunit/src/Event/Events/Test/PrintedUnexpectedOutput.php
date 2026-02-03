@@ -50,9 +50,6 @@ final readonly class PrintedUnexpectedOutput implements Event
         return $this->output;
     }
 
-    /**
-     * @return non-empty-string
-     */
     public function asString(): string
     {
         return sprintf(

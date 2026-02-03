@@ -14,15 +14,11 @@ use function assert;
 use function count;
 use IteratorAggregate;
 use RecursiveIteratorIterator;
-use SebastianBergmann\CodeCoverage\Data\ProcessedClassType;
-use SebastianBergmann\CodeCoverage\Data\ProcessedFunctionType;
-use SebastianBergmann\CodeCoverage\Data\ProcessedTraitType;
-use SebastianBergmann\CodeCoverage\StaticAnalysis\LinesOfCode;
 
 /**
- * @template-implements IteratorAggregate<int, AbstractNode>
- *
  * @internal This class is not covered by the backward compatibility promise for phpunit/php-code-coverage
+ *
+ * @phpstan-import-type LinesOfCodeType from \SebastianBergmann\CodeCoverage\StaticAnalysis\FileAnalyser
  */
 final class Directory extends AbstractNode implements IteratorAggregate
 {
@@ -39,23 +35,15 @@ final class Directory extends AbstractNode implements IteratorAggregate
     /**
      * @var list<File>
      */
-    private array $files = [];
+    private array $files      = [];
+    private ?array $classes   = null;
+    private ?array $traits    = null;
+    private ?array $functions = null;
 
     /**
-     * @var ?array<string, ProcessedClassType>
+     * @var null|LinesOfCodeType
      */
-    private ?array $classes = null;
-
-    /**
-     * @var ?array<string, ProcessedTraitType>
-     */
-    private ?array $traits = null;
-
-    /**
-     * @var ?array<string, ProcessedFunctionType>
-     */
-    private ?array $functions          = null;
-    private ?LinesOfCode $linesOfCode  = null;
+    private ?array $linesOfCode        = null;
     private int $numFiles              = -1;
     private int $numExecutableLines    = -1;
     private int $numExecutedLines      = -1;
@@ -85,9 +73,6 @@ final class Directory extends AbstractNode implements IteratorAggregate
         return $this->numFiles;
     }
 
-    /**
-     * @return RecursiveIteratorIterator<Iterator<AbstractNode>>
-     */
     public function getIterator(): RecursiveIteratorIterator
     {
         return new RecursiveIteratorIterator(
@@ -117,33 +102,21 @@ final class Directory extends AbstractNode implements IteratorAggregate
         $this->numExecutedLines   = -1;
     }
 
-    /**
-     * @return list<Directory>
-     */
     public function directories(): array
     {
         return $this->directories;
     }
 
-    /**
-     * @return list<File>
-     */
     public function files(): array
     {
         return $this->files;
     }
 
-    /**
-     * @return list<Directory|File>
-     */
     public function children(): array
     {
         return $this->children;
     }
 
-    /**
-     * @return array<string, ProcessedClassType>
-     */
     public function classes(): array
     {
         if ($this->classes === null) {
@@ -160,9 +133,6 @@ final class Directory extends AbstractNode implements IteratorAggregate
         return $this->classes;
     }
 
-    /**
-     * @return array<string, ProcessedTraitType>
-     */
     public function traits(): array
     {
         if ($this->traits === null) {
@@ -179,9 +149,6 @@ final class Directory extends AbstractNode implements IteratorAggregate
         return $this->traits;
     }
 
-    /**
-     * @return array<string, ProcessedFunctionType>
-     */
     public function functions(): array
     {
         if ($this->functions === null) {
@@ -198,22 +165,25 @@ final class Directory extends AbstractNode implements IteratorAggregate
         return $this->functions;
     }
 
-    public function linesOfCode(): LinesOfCode
+    /**
+     * @return LinesOfCodeType
+     */
+    public function linesOfCode(): array
     {
         if ($this->linesOfCode === null) {
-            $linesOfCode           = 0;
-            $commentLinesOfCode    = 0;
-            $nonCommentLinesOfCode = 0;
+            $this->linesOfCode = [
+                'linesOfCode'           => 0,
+                'commentLinesOfCode'    => 0,
+                'nonCommentLinesOfCode' => 0,
+            ];
 
             foreach ($this->children as $child) {
                 $childLinesOfCode = $child->linesOfCode();
 
-                $linesOfCode           += $childLinesOfCode->linesOfCode();
-                $commentLinesOfCode    += $childLinesOfCode->commentLinesOfCode();
-                $nonCommentLinesOfCode += $childLinesOfCode->nonCommentLinesOfCode();
+                $this->linesOfCode['linesOfCode']           += $childLinesOfCode['linesOfCode'];
+                $this->linesOfCode['commentLinesOfCode']    += $childLinesOfCode['commentLinesOfCode'];
+                $this->linesOfCode['nonCommentLinesOfCode'] += $childLinesOfCode['nonCommentLinesOfCode'];
             }
-
-            $this->linesOfCode = new LinesOfCode($linesOfCode, $commentLinesOfCode, $nonCommentLinesOfCode);
         }
 
         return $this->linesOfCode;

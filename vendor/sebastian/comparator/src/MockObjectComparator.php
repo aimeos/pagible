@@ -15,9 +15,7 @@ use function str_starts_with;
 use PHPUnit\Framework\MockObject\Stub;
 
 /**
- * @no-named-arguments Parameter names are not covered by the backward compatibility promise for sebastian/comparator
- *
- * @internal This class is not covered by the backward compatibility promise for sebastian/comparator
+ * Compares PHPUnit\Framework\MockObject\MockObject instances for equality.
  */
 final class MockObjectComparator extends ObjectComparator
 {

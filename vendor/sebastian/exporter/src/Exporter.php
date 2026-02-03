@@ -92,7 +92,7 @@ final readonly class Exporter
             $maxLengthForStrings = $this->maxLengthForStrings;
         }
 
-        if ($processed === null) {
+        if (!$processed) {
             $processed = new RecursionContext;
         }
 
@@ -197,7 +197,7 @@ final readonly class Exporter
             // private   $propertyName => "\0ClassName\0propertyName"
             // protected $propertyName => "\0*\0propertyName"
             // public    $propertyName => "propertyName"
-            if (preg_match('/\0.+\0(.+)/', (string) $key, $matches) === 1) {
+            if (preg_match('/\0.+\0(.+)/', (string) $key, $matches)) {
                 $key = $matches[1];
             }
 
@@ -262,7 +262,7 @@ final readonly class Exporter
             }
 
             if (is_array($value)) {
-                assert(isset($data[$key]) && (is_array($data[$key]) || is_object($data[$key])));
+                assert(is_array($data[$key]) || is_object($data[$key]));
 
                 if ($processed->contains($data[$key]) !== false) {
                     $result[] = '*RECURSION*';
@@ -302,7 +302,6 @@ final readonly class Exporter
         if (is_resource($value)) {
             return sprintf(
                 'resource(%d) of type (%s)',
-                /** @phpstan-ignore cast.useless */
                 (int) $value,
                 get_resource_type($value),
             );
@@ -331,7 +330,7 @@ final readonly class Exporter
             return $this->exportString($value);
         }
 
-        if ($processed === null) {
+        if (!$processed) {
             $processed = new RecursionContext;
         }
 
@@ -366,7 +365,7 @@ final readonly class Exporter
     private function exportString(string $value): string
     {
         // Match for most non-printable chars somewhat taking multibyte chars into account
-        if (preg_match('/[^\x09-\x0d\x1b\x20-\xff]/', $value) === 1) {
+        if (preg_match('/[^\x09-\x0d\x1b\x20-\xff]/', $value)) {
             return 'Binary String: 0x' . bin2hex($value);
         }
 

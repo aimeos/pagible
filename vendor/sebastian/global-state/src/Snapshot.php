@@ -96,11 +96,7 @@ final class Snapshot
 
     public function __construct(?ExcludeList $excludeList = null, bool $includeGlobalVariables = true, bool $includeStaticProperties = true, bool $includeConstants = true, bool $includeFunctions = true, bool $includeClasses = true, bool $includeInterfaces = true, bool $includeTraits = true, bool $includeIniSettings = true, bool $includeIncludedFiles = true)
     {
-        if ($excludeList === null) {
-            $excludeList = new ExcludeList;
-        }
-
-        $this->excludeList = $excludeList;
+        $this->excludeList = $excludeList ?: new ExcludeList;
 
         if ($includeConstants) {
             $this->snapshotConstants();
@@ -132,7 +128,6 @@ final class Snapshot
 
             assert($iniSettings !== false);
 
-            /* @phpstan-ignore assign.propertyType */
             $this->iniSettings = $iniSettings;
         }
 
@@ -295,11 +290,10 @@ final class Snapshot
         foreach (array_keys($GLOBALS) as $key) {
             if ($key !== 'GLOBALS' &&
                 !in_array($key, $superGlobalArrays, true) &&
-                !$this->excludeList->isGlobalVariableExcluded($key) &&
-                $this->canBeSerialized($GLOBALS[$key])
-            ) {
-                /* @phpstan-ignore assign.propertyType */
-                $this->globalVariables[$key] = $this->copyWithSerialize($GLOBALS[$key]);
+                $this->canBeSerialized($GLOBALS[$key]) &&
+                !$this->excludeList->isGlobalVariableExcluded($key)) {
+                /* @noinspection UnserializeExploitsInspection */
+                $this->globalVariables[$key] = unserialize(serialize($GLOBALS[$key]));
             }
         }
     }
@@ -310,8 +304,8 @@ final class Snapshot
 
         if (isset($GLOBALS[$superGlobalArray]) && is_array($GLOBALS[$superGlobalArray])) {
             foreach ($GLOBALS[$superGlobalArray] as $key => $value) {
-                /* @phpstan-ignore assign.propertyType */
-                $this->superGlobalVariables[$superGlobalArray][$key] = $this->copyWithSerialize($value);
+                /* @noinspection UnserializeExploitsInspection */
+                $this->superGlobalVariables[$superGlobalArray][$key] = unserialize(serialize($value));
             }
         }
     }
@@ -337,12 +331,13 @@ final class Snapshot
                     $value = $property->getValue();
 
                     if ($this->canBeSerialized($value)) {
-                        $snapshot[$name] = $this->copyWithSerialize($value);
+                        /* @noinspection UnserializeExploitsInspection */
+                        $snapshot[$name] = unserialize(serialize($value));
                     }
                 }
             }
 
-            if ($snapshot !== []) {
+            if (!empty($snapshot)) {
                 $this->staticProperties[$className] = $snapshot;
             }
         }
@@ -359,16 +354,6 @@ final class Snapshot
             '_FILES',
             '_REQUEST',
         ];
-    }
-
-    private function copyWithSerialize(mixed $variable): mixed
-    {
-        if (is_scalar($variable) || $variable === null) {
-            return $variable;
-        }
-
-        /* @noinspection UnserializeExploitsInspection */
-        return unserialize(serialize($variable));
     }
 
     private function canBeSerialized(mixed $variable): bool
@@ -411,8 +396,7 @@ final class Snapshot
     {
         $result = [];
 
-        /* @phpstan-ignore argument.type */
-        if ($processed->contains($variable) !== false) {
+        if ($processed->contains($variable)) {
             return $result;
         }
 

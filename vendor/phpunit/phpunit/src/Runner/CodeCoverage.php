@@ -9,16 +9,13 @@
  */
 namespace PHPUnit\Runner;
 
-use function assert;
 use function file_put_contents;
 use function sprintf;
-use function sys_get_temp_dir;
 use PHPUnit\Event\Facade as EventFacade;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\TextUI\Configuration\CodeCoverageFilterRegistry;
 use PHPUnit\TextUI\Configuration\Configuration;
 use PHPUnit\TextUI\Output\Printer;
-use PHPUnit\Util\Filesystem;
 use SebastianBergmann\CodeCoverage\Driver\Driver;
 use SebastianBergmann\CodeCoverage\Driver\Selector;
 use SebastianBergmann\CodeCoverage\Exception as CodeCoverageException;
@@ -29,14 +26,10 @@ use SebastianBergmann\CodeCoverage\Report\Crap4j as Crap4jReport;
 use SebastianBergmann\CodeCoverage\Report\Html\Colors;
 use SebastianBergmann\CodeCoverage\Report\Html\CustomCssFile;
 use SebastianBergmann\CodeCoverage\Report\Html\Facade as HtmlReport;
-use SebastianBergmann\CodeCoverage\Report\OpenClover as OpenCloverReport;
 use SebastianBergmann\CodeCoverage\Report\PHP as PhpReport;
 use SebastianBergmann\CodeCoverage\Report\Text as TextReport;
 use SebastianBergmann\CodeCoverage\Report\Thresholds;
 use SebastianBergmann\CodeCoverage\Report\Xml\Facade as XmlReport;
-use SebastianBergmann\CodeCoverage\StaticAnalysis\CacheWarmer;
-use SebastianBergmann\CodeCoverage\Test\Target\TargetCollection;
-use SebastianBergmann\CodeCoverage\Test\Target\ValidationFailure;
 use SebastianBergmann\CodeCoverage\Test\TestSize\TestSize;
 use SebastianBergmann\CodeCoverage\Test\TestStatus\TestStatus;
 use SebastianBergmann\Comparator\Comparator;
@@ -72,32 +65,22 @@ final class CodeCoverage
         return self::$instance;
     }
 
-    public function init(Configuration $configuration, CodeCoverageFilterRegistry $codeCoverageFilterRegistry, bool $extensionRequiresCodeCoverageCollection): CodeCoverageInitializationStatus
+    public function init(Configuration $configuration, CodeCoverageFilterRegistry $codeCoverageFilterRegistry, bool $extensionRequiresCodeCoverageCollection): void
     {
         $codeCoverageFilterRegistry->init($configuration);
 
         if (!$configuration->hasCoverageReport() && !$extensionRequiresCodeCoverageCollection) {
-            return CodeCoverageInitializationStatus::NOT_REQUESTED;
+            return;
         }
 
         $this->activate($codeCoverageFilterRegistry->get(), $configuration->pathCoverage());
 
         if (!$this->isActive()) {
-            return CodeCoverageInitializationStatus::FAILED;
+            return;
         }
 
         if ($configuration->hasCoverageCacheDirectory()) {
-            $coverageCacheDirectory = $configuration->coverageCacheDirectory();
-        } else {
-            $candidate = sys_get_temp_dir() . '/phpunit-code-coverage-cache';
-
-            if (Filesystem::createDirectory($candidate)) {
-                $coverageCacheDirectory = $candidate;
-            }
-        }
-
-        if (isset($coverageCacheDirectory)) {
-            $this->codeCoverage()->cacheStaticAnalysis($coverageCacheDirectory);
+            $this->codeCoverage()->cacheStaticAnalysis($configuration->coverageCacheDirectory());
         }
 
         $this->codeCoverage()->excludeSubclassesOfThisClassFromUnintentionallyCoveredCodeCheck(Comparator::class);
@@ -137,25 +120,6 @@ final class CodeCoverage
 
             $this->deactivate();
         }
-
-        if (isset($coverageCacheDirectory) && $configuration->includeUncoveredFiles()) {
-            EventFacade::emitter()->testRunnerStartedStaticAnalysisForCodeCoverage();
-
-            /** @phpstan-ignore new.internalClass,method.internalClass */
-            $statistics = (new CacheWarmer)->warmCache(
-                $coverageCacheDirectory,
-                !$configuration->disableCodeCoverageIgnore(),
-                $configuration->ignoreDeprecatedCodeUnitsFromCodeCoverage(),
-                $codeCoverageFilterRegistry->get(),
-            );
-
-            EventFacade::emitter()->testRunnerFinishedStaticAnalysisForCodeCoverage(
-                $statistics['cacheHits'],
-                $statistics['cacheMisses'],
-            );
-        }
-
-        return CodeCoverageInitializationStatus::SUCCEEDED;
     }
 
     /**
@@ -203,19 +167,19 @@ final class CodeCoverage
         );
 
         $this->collecting = true;
-
-        $this->timer()->start();
     }
 
-    public function stop(bool $append, null|false|TargetCollection $covers = null, ?TargetCollection $uses = null): void
+    /**
+     * @param array<string,list<int>>|false $linesToBeCovered
+     * @param array<string,list<int>>       $linesToBeUsed
+     */
+    public function stop(bool $append, array|false $linesToBeCovered = [], array $linesToBeUsed = []): void
     {
         if (!$this->collecting) {
             return;
         }
 
-        $time             = $this->timer()->stop()->asSeconds();
-        $status           = TestStatus::unknown();
-        $this->collecting = false;
+        $status = TestStatus::unknown();
 
         if ($this->test !== null) {
             if ($this->test->status()->isSuccess()) {
@@ -225,39 +189,11 @@ final class CodeCoverage
             }
         }
 
-        if ($covers instanceof TargetCollection) {
-            $result = $this->codeCoverage->validate($covers);
+        /* @noinspection UnusedFunctionResultInspection */
+        $this->codeCoverage->stop($append, $status, $linesToBeCovered, $linesToBeUsed);
 
-            if ($result->isFailure()) {
-                assert($result instanceof ValidationFailure);
-
-                EventFacade::emitter()->testTriggeredPhpunitWarning(
-                    $this->test->valueObjectForEvents(),
-                    $result->message(),
-                );
-
-                $append = false;
-            }
-        }
-
-        if ($uses instanceof TargetCollection) {
-            $result = $this->codeCoverage->validate($uses);
-
-            if ($result->isFailure()) {
-                assert($result instanceof ValidationFailure);
-
-                EventFacade::emitter()->testTriggeredPhpunitWarning(
-                    $this->test->valueObjectForEvents(),
-                    $result->message(),
-                );
-
-                $append = false;
-            }
-        }
-
-        $this->codeCoverage->stop($append, $status, $covers, $uses, $time);
-
-        $this->test = null;
+        $this->test       = null;
+        $this->collecting = false;
     }
 
     public function deactivate(): void
@@ -294,21 +230,6 @@ final class CodeCoverage
             try {
                 $writer = new CloverReport;
                 $writer->process($this->codeCoverage(), $configuration->coverageClover(), 'Clover Coverage');
-
-                $this->codeCoverageGenerationSucceeded($printer);
-
-                unset($writer);
-            } catch (CodeCoverageException $e) {
-                $this->codeCoverageGenerationFailed($printer, $e);
-            }
-        }
-
-        if ($configuration->hasCoverageOpenClover()) {
-            $this->codeCoverageGenerationStart($printer, 'OpenClover XML');
-
-            try {
-                $writer = new OpenCloverReport;
-                $writer->process($this->codeCoverage(), $configuration->coverageOpenClover(), 'OpenClover Coverage');
 
                 $this->codeCoverageGenerationSucceeded($printer);
 
@@ -409,7 +330,7 @@ final class CodeCoverage
             $this->codeCoverageGenerationStart($printer, 'PHPUnit XML');
 
             try {
-                $writer = new XmlReport(Version::id(), $configuration->coverageXmlIncludeSource());
+                $writer = new XmlReport(Version::id());
                 $writer->process($this->codeCoverage(), $configuration->coverageXml());
 
                 $this->codeCoverageGenerationSucceeded($printer);

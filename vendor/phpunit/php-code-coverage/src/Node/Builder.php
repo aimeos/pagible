@@ -17,7 +17,6 @@ use function dirname;
 use function explode;
 use function implode;
 use function is_file;
-use function sha1_file;
 use function str_ends_with;
 use function str_replace;
 use function str_starts_with;
@@ -29,11 +28,11 @@ use SebastianBergmann\CodeCoverage\StaticAnalysis\FileAnalyser;
 /**
  * @internal This class is not covered by the backward compatibility promise for phpunit/php-code-coverage
  *
- * @phpstan-import-type TestType from CodeCoverage
+ * @phpstan-import-type TestType from \SebastianBergmann\CodeCoverage\CodeCoverage
  */
-final readonly class Builder
+final class Builder
 {
-    private FileAnalyser $analyser;
+    private readonly FileAnalyser $analyser;
 
     public function __construct(FileAnalyser $analyser)
     {
@@ -71,20 +70,17 @@ final readonly class Builder
                 $filename = $root->pathAsString() . DIRECTORY_SEPARATOR . $key;
 
                 if (is_file($filename)) {
-                    $analysisResult = $this->analyser->analyse($filename);
-
                     $root->addFile(
                         new File(
                             $key,
                             $root,
-                            sha1_file($filename),
                             $value['lineCoverage'],
                             $value['functionCoverage'],
                             $tests,
-                            $analysisResult->classes(),
-                            $analysisResult->traits(),
-                            $analysisResult->functions(),
-                            $analysisResult->linesOfCode(),
+                            $this->analyser->classesIn($filename),
+                            $this->analyser->traitsIn($filename),
+                            $this->analyser->functionsIn($filename),
+                            $this->analyser->linesOfCodeFor($filename),
                         ),
                     );
                 }
@@ -142,9 +138,6 @@ final readonly class Builder
     {
         $result = [];
 
-        $lineCoverage     = $data->lineCoverage();
-        $functionCoverage = $data->functionCoverage();
-
         foreach ($data->coveredFiles() as $originalPath) {
             $path    = explode(DIRECTORY_SEPARATOR, $originalPath);
             $pointer = &$result;
@@ -161,8 +154,8 @@ final readonly class Builder
             }
 
             $pointer = [
-                'lineCoverage'     => $lineCoverage[$originalPath] ?? [],
-                'functionCoverage' => $functionCoverage[$originalPath] ?? [],
+                'lineCoverage'     => $data->lineCoverage()[$originalPath] ?? [],
+                'functionCoverage' => $data->functionCoverage()[$originalPath] ?? [],
             ];
         }
 
@@ -208,14 +201,12 @@ final readonly class Builder
      */
     private function reducePaths(ProcessedCodeCoverageData $coverage): string
     {
-        $coveredFiles = $coverage->coveredFiles();
-
-        if ($coveredFiles === []) {
+        if (empty($coverage->coveredFiles())) {
             return '.';
         }
 
         $commonPath = '';
-        $paths      = $coveredFiles;
+        $paths      = $coverage->coveredFiles();
 
         if (count($paths) === 1) {
             $commonPath = dirname($paths[0]) . DIRECTORY_SEPARATOR;
@@ -232,10 +223,9 @@ final readonly class Builder
                 $paths[$i] = substr($paths[$i], 7);
                 $paths[$i] = str_replace('/', DIRECTORY_SEPARATOR, $paths[$i]);
             }
-
             $paths[$i] = explode(DIRECTORY_SEPARATOR, $paths[$i]);
 
-            if ($paths[$i][0] === '') {
+            if (empty($paths[$i][0])) {
                 $paths[$i][0] = DIRECTORY_SEPARATOR;
             }
         }
@@ -267,7 +257,7 @@ final readonly class Builder
             }
         }
 
-        $original = $coveredFiles;
+        $original = $coverage->coveredFiles();
         $max      = count($original);
 
         for ($i = 0; $i < $max; $i++) {

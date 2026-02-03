@@ -9,6 +9,7 @@
  */
 namespace PHPUnit\Event\Code;
 
+use function assert;
 use function is_numeric;
 use PHPUnit\Event\TestData\DataFromDataProvider;
 use PHPUnit\Event\TestData\DataFromTestDependency;
@@ -26,23 +27,20 @@ use PHPUnit\Util\Test as TestUtil;
  */
 final readonly class TestMethodBuilder
 {
-    public static function fromTestCase(TestCase $testCase, bool $useTestCaseForTestDox = true): TestMethod
+    public static function fromTestCase(TestCase $testCase): TestMethod
     {
         $methodName = $testCase->name();
-        $location   = Reflection::sourceLocationFor($testCase::class, $methodName);
 
-        if ($useTestCaseForTestDox) {
-            $testDox = TestDoxBuilder::fromTestCase($testCase);
-        } else {
-            $testDox = TestDoxBuilder::fromClassNameAndMethodName($testCase::class, $testCase->name());
-        }
+        assert(!empty($methodName));
+
+        $location = Reflection::sourceLocationFor($testCase::class, $methodName);
 
         return new TestMethod(
             $testCase::class,
             $methodName,
             $location['file'],
             $location['line'],
-            $testDox,
+            TestDoxBuilder::fromTestCase($testCase),
             MetadataRegistry::parser()->forClassAndMethod($testCase::class, $methodName),
             self::dataFor($testCase),
         );

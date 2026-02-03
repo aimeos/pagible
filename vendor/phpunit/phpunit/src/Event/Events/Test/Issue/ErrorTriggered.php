@@ -96,14 +96,11 @@ final readonly class ErrorTriggered implements Event
         return $this->suppressed;
     }
 
-    /**
-     * @return non-empty-string
-     */
     public function asString(): string
     {
         $message = $this->message;
 
-        if ($message !== '') {
+        if (!empty($message)) {
             $message = PHP_EOL . $message;
         }
 

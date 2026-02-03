@@ -12,7 +12,6 @@ namespace PHPUnit\Event\Test;
 use function sprintf;
 use PHPUnit\Event\Event;
 use PHPUnit\Event\Telemetry;
-use SebastianBergmann\Comparator\Comparator;
 
 /**
  * @immutable
@@ -24,12 +23,12 @@ final readonly class ComparatorRegistered implements Event
     private Telemetry\Info $telemetryInfo;
 
     /**
-     * @var class-string<Comparator>
+     * @var class-string
      */
     private string $className;
 
     /**
-     * @param class-string<Comparator> $className
+     * @param class-string $className
      */
     public function __construct(Telemetry\Info $telemetryInfo, string $className)
     {
@@ -43,16 +42,13 @@ final readonly class ComparatorRegistered implements Event
     }
 
     /**
-     * @return class-string<Comparator>
+     * @return class-string
      */
     public function className(): string
     {
         return $this->className;
     }
 
-    /**
-     * @return non-empty-string
-     */
     public function asString(): string
     {
         return sprintf(

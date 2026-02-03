@@ -33,8 +33,15 @@ use PHPUnit\Util\Filesystem;
  */
 final class DefaultResultCache implements ResultCache
 {
-    private const int VERSION                          = 2;
-    private const string DEFAULT_RESULT_CACHE_FILENAME = '.phpunit.result.cache';
+    /**
+     * @var int
+     */
+    private const VERSION = 2;
+
+    /**
+     * @var string
+     */
+    private const DEFAULT_RESULT_CACHE_FILENAME = '.phpunit.result.cache';
     private readonly string $cacheFilename;
 
     /**

@@ -44,4 +44,14 @@ final readonly class UsesTrait extends Metadata
     {
         return $this->traitName;
     }
+
+    /**
+     * @return trait-string
+     *
+     * @internal This method is not covered by the backward compatibility promise for PHPUnit
+     */
+    public function asStringForCodeUnitMapper(): string
+    {
+        return $this->traitName;
+    }
 }

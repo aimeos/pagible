@@ -9,41 +9,50 @@
  */
 namespace SebastianBergmann\CodeCoverage\Report\Xml;
 
-use XMLWriter;
+use DOMElement;
 
 /**
  * @internal This class is not covered by the backward compatibility promise for phpunit/php-code-coverage
  */
-final readonly class Method
+final class Method
 {
-    private XMLWriter $xmlWriter;
+    private readonly DOMElement $contextNode;
 
-    public function __construct(
-        XMLWriter $xmlWriter,
-        string $name,
-        string $signature,
-        string $start,
-        ?string $end,
-        string $executable,
-        string $executed,
-        string $coverage,
-        string $crap
-    ) {
-        $this->xmlWriter = $xmlWriter;
+    public function __construct(DOMElement $context, string $name)
+    {
+        $this->contextNode = $context;
 
-        $this->xmlWriter->writeAttribute('name', $name);
-        $this->xmlWriter->writeAttribute('signature', $signature);
+        $this->setName($name);
+    }
 
-        $this->xmlWriter->writeAttribute('start', $start);
+    public function setSignature(string $signature): void
+    {
+        $this->contextNode->setAttribute('signature', $signature);
+    }
+
+    public function setLines(string $start, ?string $end = null): void
+    {
+        $this->contextNode->setAttribute('start', $start);
 
         if ($end !== null) {
-            $this->xmlWriter->writeAttribute('end', $end);
+            $this->contextNode->setAttribute('end', $end);
         }
+    }
 
-        $this->xmlWriter->writeAttribute('crap', $crap);
+    public function setTotals(string $executable, string $executed, string $coverage): void
+    {
+        $this->contextNode->setAttribute('executable', $executable);
+        $this->contextNode->setAttribute('executed', $executed);
+        $this->contextNode->setAttribute('coverage', $coverage);
+    }
 
-        $this->xmlWriter->writeAttribute('executable', $executable);
-        $this->xmlWriter->writeAttribute('executed', $executed);
-        $this->xmlWriter->writeAttribute('coverage', $coverage);
+    public function setCrap(string $crap): void
+    {
+        $this->contextNode->setAttribute('crap', $crap);
+    }
+
+    private function setName(string $name): void
+    {
+        $this->contextNode->setAttribute('name', $name);
     }
 }

@@ -20,11 +20,8 @@ abstract class ScopedNodeTestBase extends \PHPUnit\Framework\TestCase
 
         $schema->dropIfExists($table);
 
-        Capsule::disableQueryLog();
-
         $schema->create($table, function (\Illuminate\Database\Schema\Blueprint $table) {
-            $testClass = get_called_class();
-            (new $testClass('dummy'))->createTable($table);
+            static::createTable($table);
         });
 
         Capsule::enableQueryLog();
@@ -45,7 +42,7 @@ abstract class ScopedNodeTestBase extends \PHPUnit\Framework\TestCase
 
     public function tearDown(): void
     {
-        Capsule::table(static::getTableName())->truncate();
+        Capsule::table(static::getTableName())->delete();
     }
 
     protected function assertOtherScopeNotAffected()

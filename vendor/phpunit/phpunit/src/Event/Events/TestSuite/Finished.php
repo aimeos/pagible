@@ -39,9 +39,6 @@ final readonly class Finished implements Event
         return $this->testSuite;
     }
 
-    /**
-     * @return non-empty-string
-     */
     public function asString(): string
     {
         return sprintf(

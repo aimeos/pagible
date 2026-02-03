@@ -64,9 +64,6 @@ final readonly class ExtensionBootstrapped implements Event
         return $this->parameters;
     }
 
-    /**
-     * @return non-empty-string
-     */
     public function asString(): string
     {
         return sprintf(

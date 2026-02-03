@@ -88,6 +88,6 @@ final class Filter
 
     public function isEmpty(): bool
     {
-        return $this->files === [];
+        return empty($this->files);
     }
 }

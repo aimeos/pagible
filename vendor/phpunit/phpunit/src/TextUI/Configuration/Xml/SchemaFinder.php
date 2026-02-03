@@ -38,7 +38,7 @@ final readonly class SchemaFinder
 
             $version = $file->getBasename('.xsd');
 
-            assert($version !== '');
+            assert(!empty($version));
 
             $result[] = $version;
         }

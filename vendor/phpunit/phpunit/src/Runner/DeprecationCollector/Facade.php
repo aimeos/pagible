@@ -25,6 +25,10 @@ final class Facade
     private static null|Collector|InIsolationCollector $collector = null;
     private static bool $inIsolation                              = false;
 
+    /**
+     * @throws EventFacadeIsSealedException
+     * @throws UnknownSubscriberTypeException
+     */
     public static function init(): void
     {
         self::collector();
@@ -38,6 +42,9 @@ final class Facade
     }
 
     /**
+     * @throws EventFacadeIsSealedException
+     * @throws UnknownSubscriberTypeException
+     *
      * @return list<non-empty-string>
      */
     public static function deprecations(): array
@@ -46,6 +53,9 @@ final class Facade
     }
 
     /**
+     * @throws EventFacadeIsSealedException
+     * @throws UnknownSubscriberTypeException
+     *
      * @return list<non-empty-string>
      */
     public static function filteredDeprecations(): array

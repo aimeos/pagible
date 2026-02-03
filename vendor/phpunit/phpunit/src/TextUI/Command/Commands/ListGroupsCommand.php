@@ -15,7 +15,7 @@ use function ksort;
 use function sprintf;
 use function str_starts_with;
 use PHPUnit\Framework\TestCase;
-use PHPUnit\Runner\Phpt\TestCase as PhptTestCase;
+use PHPUnit\Runner\PhptTestCase;
 
 /**
  * @no-named-arguments Parameter names are not covered by the backward compatibility promise for PHPUnit
@@ -44,12 +44,16 @@ final readonly class ListGroupsCommand implements Command
 
         foreach ($this->tests as $test) {
             if ($test instanceof PhptTestCase) {
-                $_groups = ['default'];
-            } else {
-                $_groups = $test->groups();
+                if (!isset($groups['default'])) {
+                    $groups['default'] = 1;
+                } else {
+                    $groups['default']++;
+                }
+
+                continue;
             }
 
-            foreach ($_groups as $group) {
+            foreach ($test->groups() as $group) {
                 if (!isset($groups[$group])) {
                     $groups[$group] = 1;
                 } else {

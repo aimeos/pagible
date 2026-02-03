@@ -9,8 +9,10 @@
  */
 namespace PHPUnit\Runner\DeprecationCollector;
 
+use PHPUnit\Event\EventFacadeIsSealedException;
 use PHPUnit\Event\Facade;
 use PHPUnit\Event\Test\DeprecationTriggered;
+use PHPUnit\Event\UnknownSubscriberTypeException;
 use PHPUnit\TestRunner\IssueFilter;
 
 /**
@@ -32,6 +34,10 @@ final class Collector
      */
     private array $filteredDeprecations = [];
 
+    /**
+     * @throws EventFacadeIsSealedException
+     * @throws UnknownSubscriberTypeException
+     */
     public function __construct(Facade $facade, IssueFilter $issueFilter)
     {
         $facade->registerSubscribers(

@@ -50,9 +50,6 @@ final readonly class TestStubForIntersectionOfInterfacesCreated implements Event
         return $this->interfaces;
     }
 
-    /**
-     * @return non-empty-string
-     */
     public function asString(): string
     {
         return sprintf(

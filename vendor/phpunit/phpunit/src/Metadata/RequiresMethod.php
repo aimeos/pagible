@@ -27,7 +27,7 @@ final readonly class RequiresMethod extends Metadata
     private string $methodName;
 
     /**
-     * @param int<0, 1>        $level
+     * @param 0|1              $level
      * @param class-string     $className
      * @param non-empty-string $methodName
      */

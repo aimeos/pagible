@@ -23,15 +23,13 @@ final readonly class DataProvider
      * @var non-empty-string
      */
     private string $methodName;
-    private bool $validateArgumentCount;
 
     /**
      * @param non-empty-string $methodName
      */
-    public function __construct(string $methodName, bool $validateArgumentCount = true)
+    public function __construct(string $methodName)
     {
-        $this->methodName            = $methodName;
-        $this->validateArgumentCount = $validateArgumentCount;
+        $this->methodName = $methodName;
     }
 
     /**
@@ -40,10 +38,5 @@ final readonly class DataProvider
     public function methodName(): string
     {
         return $this->methodName;
-    }
-
-    public function validateArgumentCount(): bool
-    {
-        return $this->validateArgumentCount;
     }
 }

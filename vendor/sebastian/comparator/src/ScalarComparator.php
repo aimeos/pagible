@@ -9,7 +9,6 @@
  */
 namespace SebastianBergmann\Comparator;
 
-use function assert;
 use function is_bool;
 use function is_object;
 use function is_scalar;
@@ -22,14 +21,12 @@ use function substr;
 use SebastianBergmann\Exporter\Exporter;
 
 /**
- * @no-named-arguments Parameter names are not covered by the backward compatibility promise for sebastian/comparator
- *
- * @internal This class is not covered by the backward compatibility promise for sebastian/comparator
+ * Compares scalar or NULL values for equality.
  */
 class ScalarComparator extends Comparator
 {
-    private const int OVERLONG_THRESHOLD = 40;
-    private const int KEEP_CONTEXT_CHARS = 25;
+    private const OVERLONG_THRESHOLD = 40;
+    private const KEEP_CONTEXT_CHARS = 25;
 
     public function accepts(mixed $expected, mixed $actual): bool
     {
@@ -77,7 +74,6 @@ class ScalarComparator extends Comparator
             );
         }
 
-        /** @phpstan-ignore notEqual.notAllowed */
         if ($expectedToCompare != $actualToCompare) {
             throw new ComparisonFailure(
                 $expected,
@@ -112,12 +108,10 @@ class ScalarComparator extends Comparator
     private static function findCommonPrefix(string $string1, string $string2): string
     {
         for ($i = 0; $i < strlen($string1); $i++) {
-            if (!isset($string2[$i]) || $string1[$i] !== $string2[$i]) {
+            if (!isset($string2[$i]) || $string1[$i] != $string2[$i]) {
                 break;
             }
         }
-
-        assert(isset($i));
 
         return substr($string1, 0, $i);
     }
@@ -146,14 +140,14 @@ class ScalarComparator extends Comparator
         $lastCharIndex1 = strlen($string1) - 1;
         $lastCharIndex2 = strlen($string2) - 1;
 
-        if ($string1[$lastCharIndex1] !== $string2[$lastCharIndex2]) {
+        if ($string1[$lastCharIndex1] != $string2[$lastCharIndex2]) {
             return '';
         }
 
         while (
             $lastCharIndex1 > 0 &&
             $lastCharIndex2 > 0 &&
-            $string1[$lastCharIndex1] === $string2[$lastCharIndex2]
+            $string1[$lastCharIndex1] == $string2[$lastCharIndex2]
         ) {
             $lastCharIndex1--;
             $lastCharIndex2--;

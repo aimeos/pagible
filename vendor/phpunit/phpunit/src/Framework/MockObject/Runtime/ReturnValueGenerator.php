@@ -9,6 +9,7 @@
  */
 namespace PHPUnit\Framework\MockObject;
 
+use function array_keys;
 use function array_map;
 use function explode;
 use function in_array;
@@ -46,9 +47,9 @@ final class ReturnValueGenerator
             $types = explode('|', $returnType);
             $union = true;
 
-            foreach ($types as $key => $type) {
-                if (str_starts_with($type, '(') && str_ends_with($type, ')')) {
-                    $types[$key] = substr($type, 1, -1);
+            foreach (array_keys($types) as $key) {
+                if (str_starts_with($types[$key], '(') && str_ends_with($types[$key], ')')) {
+                    $types[$key] = substr($types[$key], 1, -1);
                 }
             }
         } elseif (str_contains($returnType, '&')) {
@@ -217,7 +218,7 @@ final class ReturnValueGenerator
     private function testDoubleFor(string $type, string $className, string $methodName): Stub
     {
         try {
-            return (new Generator)->testDouble($type, false, [], [], '', false);
+            return (new Generator)->testDouble($type, false, false, [], [], '', false);
             // @codeCoverageIgnoreStart
         } catch (Throwable $t) {
             throw new RuntimeException(

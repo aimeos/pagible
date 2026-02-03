@@ -55,7 +55,7 @@ final readonly class FileCollection implements Countable, IteratorAggregate
 
     public function notEmpty(): bool
     {
-        return $this->files !== [];
+        return !empty($this->files);
     }
 
     public function getIterator(): FileCollectionIterator

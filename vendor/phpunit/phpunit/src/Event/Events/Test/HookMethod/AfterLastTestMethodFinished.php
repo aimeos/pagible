@@ -14,7 +14,6 @@ use function sprintf;
 use PHPUnit\Event\Code;
 use PHPUnit\Event\Event;
 use PHPUnit\Event\Telemetry;
-use PHPUnit\Framework\TestCase;
 
 /**
  * @immutable
@@ -26,7 +25,7 @@ final readonly class AfterLastTestMethodFinished implements Event
     private Telemetry\Info $telemetryInfo;
 
     /**
-     * @var class-string<TestCase>
+     * @var class-string
      */
     private string $testClassName;
 
@@ -36,7 +35,7 @@ final readonly class AfterLastTestMethodFinished implements Event
     private array $calledMethods;
 
     /**
-     * @param class-string<TestCase> $testClassName
+     * @param class-string $testClassName
      */
     public function __construct(Telemetry\Info $telemetryInfo, string $testClassName, Code\ClassMethod ...$calledMethods)
     {
@@ -51,7 +50,7 @@ final readonly class AfterLastTestMethodFinished implements Event
     }
 
     /**
-     * @return class-string<TestCase>
+     * @return class-string
      */
     public function testClassName(): string
     {
@@ -66,9 +65,6 @@ final readonly class AfterLastTestMethodFinished implements Event
         return $this->calledMethods;
     }
 
-    /**
-     * @return non-empty-string
-     */
     public function asString(): string
     {
         $buffer = 'After Last Test Method Finished:';

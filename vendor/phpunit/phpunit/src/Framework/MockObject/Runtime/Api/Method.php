@@ -9,9 +9,10 @@
  */
 namespace PHPUnit\Framework\MockObject;
 
-use PHPUnit\Framework\Constraint\Constraint;
+use function call_user_func_array;
+use function func_get_args;
+use PHPUnit\Framework\MockObject\Builder\InvocationMocker;
 use PHPUnit\Framework\MockObject\Rule\AnyInvokedCount;
-use PHPUnit\Framework\MockObject\Runtime\PropertyHook;
 
 /**
  * @no-named-arguments Parameter names are not covered by the backward compatibility promise for PHPUnit
@@ -22,11 +23,13 @@ trait Method
 {
     abstract public function __phpunit_getInvocationHandler(): InvocationHandler;
 
-    public function method(Constraint|PropertyHook|string $constraint): InvocationStubber
+    public function method(): InvocationMocker
     {
-        return $this
-            ->__phpunit_getInvocationHandler()
-            ->expects(new AnyInvokedCount)
-            ->method($constraint);
+        $expects = $this->__phpunit_getInvocationHandler()->expects(new AnyInvokedCount);
+
+        return call_user_func_array(
+            [$expects, 'method'],
+            func_get_args(),
+        );
     }
 }

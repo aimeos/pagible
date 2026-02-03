@@ -31,9 +31,6 @@ final readonly class ChildProcessStarted implements Event
         return $this->telemetryInfo;
     }
 
-    /**
-     * @return non-empty-string
-     */
     public function asString(): string
     {
         return 'Child Process Started';

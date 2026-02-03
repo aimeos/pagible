@@ -20,8 +20,6 @@ abstract class NodeTestBase extends \PHPUnit\Framework\TestCase
 
         $schema->dropIfExists($table);
 
-        Capsule::disableQueryLog();
-
         $schema->create($table, function (\Illuminate\Database\Schema\Blueprint $table) {
             static::createTable($table);
         });
@@ -44,7 +42,7 @@ abstract class NodeTestBase extends \PHPUnit\Framework\TestCase
 
     public function tearDown(): void
     {
-        Capsule::table(static::getTableName())->truncate();
+        Capsule::table(static::getTableName())->delete();
     }
 
     protected function assertNodeReceivesValidValues($node)
@@ -201,28 +199,112 @@ abstract class NodeTestBase extends \PHPUnit\Framework\TestCase
         $this->assertTreeNotBroken();
     }
 
-    public function testCategoryMovesDown()
+    public function testCategoryMoveLevelUp()
     {
-        $node = $this->findCategory('apple');
-        $target = $this->findCategory('mobile');
-
-        $target->appendNode($node);
-
-        $this->assertTrue($node->hasMoved());
-        $this->assertNodeReceivesValidValues($node);
-        $this->assertTreeNotBroken();
-    }
-
-    public function testCategoryMovesUp()
-    {
-        $node = $this->findCategory('samsung');
+        $node = $this->findCategory('galaxy');
         $target = $this->findCategory('notebooks');
 
+        $this->assertEquals(1, $target->getDepth());
+        $this->assertEquals(3, $node->getDepth());
+
+        $target->appendNode($node);
+
+        $this->assertTrue($node->hasMoved());
+        $this->assertNodeReceivesValidValues($node);
+        $this->assertTreeNotBroken();
+
+        $this->assertEquals(1, $target->getDepth());
+        $this->assertEquals(2, $node->getDepth());
+    }
+
+    public function testCategoryMoveLevelSame()
+    {
+        $node = $this->findCategory('apple');
+        $target = $this->findCategory('notebooks');
+
+        $this->assertEquals(1, $target->getDepth());
+        $this->assertEquals(2, $node->getDepth());
+
         $target->appendNode($node);
 
         $this->assertTrue($node->hasMoved());
         $this->assertTreeNotBroken();
         $this->assertNodeReceivesValidValues($node);
+
+        $this->assertEquals(1, $target->getDepth());
+        $this->assertEquals(2, $node->getDepth());
+    }
+
+    public function testCategoryMoveLevelDown()
+    {
+        $node = $this->findCategory('apple');
+        $target = $this->findCategory('samsung');
+
+        $this->assertEquals(2, $target->getDepth());
+        $this->assertEquals(2, $node->getDepth());
+
+        $target->appendNode($node);
+
+        $this->assertTrue($node->hasMoved());
+        $this->assertTreeNotBroken();
+        $this->assertNodeReceivesValidValues($node);
+
+        $this->assertEquals(2, $target->getDepth());
+        $this->assertEquals(3, $node->getDepth());
+    }
+
+    public function testCategoryMoveBeforeUp()
+    {
+        $node = $this->findCategory('galaxy');
+        $target = $this->findCategory('apple');
+
+        $this->assertEquals(2, $target->getDepth());
+        $this->assertEquals(3, $node->getDepth());
+
+        $node->insertBeforeNode($target);
+
+        $this->assertTrue($node->hasMoved());
+        $this->assertTreeNotBroken();
+        $this->assertNodeReceivesValidValues($node);
+
+        $this->assertEquals(2, $target->getDepth());
+        $this->assertEquals(2, $node->getDepth());
+    }
+
+    public function testCategoryMoveBeforeSame()
+    {
+        $node = $this->findCategory('apple');
+        $target = $this->findCategory('samsung');
+
+        $this->assertEquals(2, $target->getDepth());
+        $this->assertEquals(2, $node->getDepth());
+
+        $node->insertBeforeNode($target);
+
+        $this->assertTrue($node->hasMoved());
+        $this->assertTreeNotBroken();
+        $this->assertNodeReceivesValidValues($node);
+
+        $this->assertEquals(2, $target->getDepth());
+        $this->assertEquals(2, $node->getDepth());
+    }
+
+    public function testCategoryMoveBeforeDown()
+    {
+        $node = $this->findCategory('apple');
+        $target = $this->findCategory('galaxy');
+
+        $this->assertEquals(3, $target->getDepth());
+        $this->assertEquals(2, $node->getDepth());
+
+        $node->insertBeforeNode($target);
+
+        $this->assertTrue($node->hasMoved());
+        $this->assertTreeNotBroken();
+        $this->assertNodeReceivesValidValues($node);
+
+        $this->assertEquals(3, $target->getDepth());
+        $this->assertEquals(3, $node->getDepth());
     }
 
     public function testFailsToInsertIntoChild()

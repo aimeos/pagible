@@ -21,7 +21,6 @@ final class Selector
      * @throws PcovNotAvailableException
      * @throws XdebugNotAvailableException
      * @throws XdebugNotEnabledException
-     * @throws XdebugVersionNotSupportedException
      */
     public function forLineCoverage(Filter $filter): Driver
     {
@@ -32,7 +31,11 @@ final class Selector
         }
 
         if ($runtime->hasXdebug()) {
-            return new XdebugDriver($filter);
+            $driver = new XdebugDriver($filter);
+
+            $driver->enableDeadCodeDetection();
+
+            return $driver;
         }
 
         throw new NoCodeCoverageDriverAvailableException;
@@ -42,13 +45,13 @@ final class Selector
      * @throws NoCodeCoverageDriverWithPathCoverageSupportAvailableException
      * @throws XdebugNotAvailableException
      * @throws XdebugNotEnabledException
-     * @throws XdebugVersionNotSupportedException
      */
     public function forLineAndPathCoverage(Filter $filter): Driver
     {
         if ((new Runtime)->hasXdebug()) {
             $driver = new XdebugDriver($filter);
 
+            $driver->enableDeadCodeDetection();
             $driver->enableBranchAndPathCoverage();
 
             return $driver;

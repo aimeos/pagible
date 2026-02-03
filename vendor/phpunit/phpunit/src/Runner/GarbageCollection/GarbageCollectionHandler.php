@@ -12,7 +12,9 @@ namespace PHPUnit\Runner\GarbageCollection;
 use function gc_collect_cycles;
 use function gc_disable;
 use function gc_enable;
+use PHPUnit\Event\EventFacadeIsSealedException;
 use PHPUnit\Event\Facade;
+use PHPUnit\Event\UnknownSubscriberTypeException;
 
 /**
  * @no-named-arguments Parameter names are not covered by the backward compatibility promise for PHPUnit
@@ -25,6 +27,10 @@ final class GarbageCollectionHandler
     private readonly int $threshold;
     private int $tests = 0;
 
+    /**
+     * @throws EventFacadeIsSealedException
+     * @throws UnknownSubscriberTypeException
+     */
     public function __construct(Facade $facade, int $threshold)
     {
         $this->facade    = $facade;
@@ -68,6 +74,10 @@ final class GarbageCollectionHandler
         }
     }
 
+    /**
+     * @throws EventFacadeIsSealedException
+     * @throws UnknownSubscriberTypeException
+     */
     private function registerSubscribers(): void
     {
         $this->facade->registerSubscribers(

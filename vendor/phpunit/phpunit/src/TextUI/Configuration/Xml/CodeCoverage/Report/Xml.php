@@ -21,21 +21,14 @@ use PHPUnit\TextUI\Configuration\Directory;
 final readonly class Xml
 {
     private Directory $target;
-    private bool $includeSource;
 
-    public function __construct(Directory $target, bool $includeSource)
+    public function __construct(Directory $target)
     {
-        $this->target        = $target;
-        $this->includeSource = $includeSource;
+        $this->target = $target;
     }
 
     public function target(): Directory
     {
         return $this->target;
-    }
-
-    public function includeSource(): bool
-    {
-        return $this->includeSource;
     }
 }

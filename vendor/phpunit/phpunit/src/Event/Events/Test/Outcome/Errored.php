@@ -50,14 +50,11 @@ final readonly class Errored implements Event
         return $this->throwable;
     }
 
-    /**
-     * @return non-empty-string
-     */
     public function asString(): string
     {
         $message = trim($this->throwable->message());
 
-        if ($message !== '') {
+        if (!empty($message)) {
             $message = PHP_EOL . $message;
         }
 

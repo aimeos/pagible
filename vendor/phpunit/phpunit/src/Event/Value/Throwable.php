@@ -47,7 +47,7 @@ final readonly class Throwable
     {
         $buffer = $this->description();
 
-        if ($this->stackTrace() !== '') {
+        if (!empty($this->stackTrace())) {
             $buffer .= PHP_EOL . $this->stackTrace();
         }
 

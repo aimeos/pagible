@@ -11,6 +11,7 @@ namespace SebastianBergmann\Diff;
 
 use function array_reverse;
 use function count;
+use function max;
 use SplFixedArray;
 
 final class TimeEfficientLongestCommonSubsequenceCalculator implements LongestCommonSubsequenceCalculator

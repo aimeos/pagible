@@ -48,6 +48,7 @@ final class Counter
             assert($nodes !== null);
 
             return $this->countInAbstractSyntaxTree($linesOfCode, $nodes);
+
             // @codeCoverageIgnoreStart
         } catch (Error $error) {
             throw new RuntimeException(

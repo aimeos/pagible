@@ -37,7 +37,7 @@ use PHPUnit\Metadata\Api\Requirements;
 use PHPUnit\Metadata\MetadataCollection;
 use PHPUnit\Runner\Exception as RunnerException;
 use PHPUnit\Runner\Filter\Factory;
-use PHPUnit\Runner\Phpt\TestCase as PhptTestCase;
+use PHPUnit\Runner\PhptTestCase;
 use PHPUnit\Runner\TestSuiteLoader;
 use PHPUnit\TestRunner\TestResult\Facade as TestResultFacade;
 use PHPUnit\Util\Filter;
@@ -106,18 +106,6 @@ class TestSuite implements IteratorAggregate, Reorderable, Test
                 continue;
             }
 
-            if ((new HookMethods)->isHookMethod($method)) {
-                Event\Facade::emitter()->testRunnerTriggeredPhpunitWarning(
-                    sprintf(
-                        'Method %s::%s() cannot be used both as a hook method and as a test method',
-                        $class->getName(),
-                        $method->getName(),
-                    ),
-                );
-
-                continue;
-            }
-
             $testSuite->addTestMethod($class, $method, $groups);
         }
 
@@ -157,6 +145,12 @@ class TestSuite implements IteratorAggregate, Reorderable, Test
         }
 
         assert($test instanceof TestCase || $test instanceof PhptTestCase);
+
+        $class = new ReflectionClass($test);
+
+        if ($class->isAbstract()) {
+            return;
+        }
 
         $this->tests[] = $test;
 
@@ -323,6 +317,7 @@ class TestSuite implements IteratorAggregate, Reorderable, Test
     }
 
     /**
+     * @throws CodeCoverageException
      * @throws Event\RuntimeException
      * @throws Exception
      * @throws InvalidArgumentException
@@ -447,10 +442,8 @@ class TestSuite implements IteratorAggregate, Reorderable, Test
             }
 
             foreach ($this->tests as $test) {
-                if (!$test instanceof Reorderable) {
-                    // @codeCoverageIgnoreStart
+                if (!($test instanceof Reorderable)) {
                     continue;
-                    // @codeCoverageIgnoreEnd
                 }
 
                 $this->providedTests = ExecutionOrderDependency::mergeUnique($this->providedTests, $test->provides());
@@ -469,10 +462,8 @@ class TestSuite implements IteratorAggregate, Reorderable, Test
             $this->requiredTests = [];
 
             foreach ($this->tests as $test) {
-                if (!$test instanceof Reorderable) {
-                    // @codeCoverageIgnoreStart
+                if (!($test instanceof Reorderable)) {
                     continue;
-                    // @codeCoverageIgnoreEnd
                 }
 
                 $this->requiredTests = ExecutionOrderDependency::mergeUnique(
@@ -511,26 +502,11 @@ class TestSuite implements IteratorAggregate, Reorderable, Test
         $className  = $class->getName();
         $methodName = $method->getName();
 
+        assert(!empty($methodName));
+
         try {
             $test = (new TestBuilder)->build($class, $methodName, $groups);
         } catch (InvalidDataProviderException $e) {
-            if ($e->getProviderLabel() === null) {
-                $message = sprintf(
-                    "The data provider specified for %s::%s is invalid\n%s",
-                    $className,
-                    $methodName,
-                    $this->exceptionToString($e),
-                );
-            } else {
-                $message = sprintf(
-                    "The data provider %s specified for %s::%s is invalid\n%s",
-                    $e->getProviderLabel(),
-                    $className,
-                    $methodName,
-                    $this->exceptionToString($e),
-                );
-            }
-
             Event\Facade::emitter()->testTriggeredPhpunitError(
                 new TestMethod(
                     $className,
@@ -544,7 +520,12 @@ class TestSuite implements IteratorAggregate, Reorderable, Test
                     MetadataCollection::fromArray([]),
                     Event\TestData\TestDataCollection::fromArray([]),
                 ),
-                $message,
+                sprintf(
+                    "The data provider specified for %s::%s is invalid\n%s",
+                    $className,
+                    $methodName,
+                    $this->throwableToString($e),
+                ),
             );
 
             return;
@@ -596,18 +577,27 @@ class TestSuite implements IteratorAggregate, Reorderable, Test
     /**
      * @throws Exception
      */
-    private function exceptionToString(InvalidDataProviderException $e): string
+    private function throwableToString(Throwable $t): string
     {
-        $message = $e->getMessage();
+        $message = $t->getMessage();
 
-        if (trim($message) === '') {
+        if (empty(trim($message))) {
             $message = '<no message>';
         }
 
+        if ($t instanceof InvalidDataProviderException) {
+            return sprintf(
+                "%s\n%s",
+                $message,
+                Filter::stackTraceFromThrowableAsString($t),
+            );
+        }
+
         return sprintf(
-            "%s\n%s",
+            "%s: %s\n%s",
+            $t::class,
             $message,
-            Filter::stackTraceFromThrowableAsString($e),
+            Filter::stackTraceFromThrowableAsString($t),
         );
     }
 
@@ -668,25 +658,17 @@ class TestSuite implements IteratorAggregate, Reorderable, Test
             }
 
             if (isset($t)) {
-                if ($t instanceof AssertionFailedError) {
-                    $emitter->beforeFirstTestMethodFailed(
-                        $this->name,
-                        $calledMethod,
-                        Event\Code\ThrowableBuilder::from($t),
-                    );
-                } else {
-                    $emitter->beforeFirstTestMethodErrored(
-                        $this->name,
-                        $calledMethod,
-                        Event\Code\ThrowableBuilder::from($t),
-                    );
-                }
+                $emitter->beforeFirstTestMethodErrored(
+                    $this->name,
+                    $calledMethod,
+                    Event\Code\ThrowableBuilder::from($t),
+                );
 
                 $result = false;
             }
         }
 
-        if ($calledMethods !== []) {
+        if (!empty($calledMethods)) {
             $emitter->beforeFirstTestMethodFinished(
                 $this->name,
                 ...$calledMethods,
@@ -732,23 +714,15 @@ class TestSuite implements IteratorAggregate, Reorderable, Test
             $calledMethods[] = $calledMethod;
 
             if (isset($t)) {
-                if ($t instanceof AssertionFailedError) {
-                    $emitter->afterLastTestMethodFailed(
-                        $this->name,
-                        $calledMethod,
-                        Event\Code\ThrowableBuilder::from($t),
-                    );
-                } else {
-                    $emitter->afterLastTestMethodErrored(
-                        $this->name,
-                        $calledMethod,
-                        Event\Code\ThrowableBuilder::from($t),
-                    );
-                }
+                $emitter->afterLastTestMethodErrored(
+                    $this->name,
+                    $calledMethod,
+                    Event\Code\ThrowableBuilder::from($t),
+                );
             }
         }
 
-        if ($calledMethods !== []) {
+        if (!empty($calledMethods)) {
             $emitter->afterLastTestMethodFinished(
                 $this->name,
                 ...$calledMethods,

@@ -10,7 +10,9 @@
 namespace PHPUnit\TestRunner\TestResult;
 
 use function str_contains;
+use PHPUnit\Event\EventFacadeIsSealedException;
 use PHPUnit\Event\Facade as EventFacade;
+use PHPUnit\Event\UnknownSubscriberTypeException;
 use PHPUnit\Runner\DeprecationCollector\Facade as DeprecationCollectorFacade;
 use PHPUnit\TestRunner\IssueFilter;
 use PHPUnit\TextUI\Configuration\Configuration;
@@ -25,16 +27,28 @@ final class Facade
 {
     private static ?Collector $collector = null;
 
+    /**
+     * @throws EventFacadeIsSealedException
+     * @throws UnknownSubscriberTypeException
+     */
     public static function init(): void
     {
         self::collector();
     }
 
+    /**
+     * @throws EventFacadeIsSealedException
+     * @throws UnknownSubscriberTypeException
+     */
     public static function result(): TestResult
     {
         return self::collector()->result();
     }
 
+    /**
+     * @throws EventFacadeIsSealedException
+     * @throws UnknownSubscriberTypeException
+     */
     public static function shouldStop(): bool
     {
         $configuration = ConfigurationRegistry::get();
@@ -75,6 +89,10 @@ final class Facade
         return false;
     }
 
+    /**
+     * @throws EventFacadeIsSealedException
+     * @throws UnknownSubscriberTypeException
+     */
     private static function collector(): Collector
     {
         if (self::$collector === null) {

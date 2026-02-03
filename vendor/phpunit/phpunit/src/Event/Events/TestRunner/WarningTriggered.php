@@ -21,15 +21,8 @@ use PHPUnit\Event\Telemetry;
 final readonly class WarningTriggered implements Event
 {
     private Telemetry\Info $telemetryInfo;
-
-    /**
-     * @var non-empty-string
-     */
     private string $message;
 
-    /**
-     * @param non-empty-string $message
-     */
     public function __construct(Telemetry\Info $telemetryInfo, string $message)
     {
         $this->telemetryInfo = $telemetryInfo;
@@ -41,17 +34,11 @@ final readonly class WarningTriggered implements Event
         return $this->telemetryInfo;
     }
 
-    /**
-     * @return non-empty-string
-     */
     public function message(): string
     {
         return $this->message;
     }
 
-    /**
-     * @return non-empty-string
-     */
     public function asString(): string
     {
         return sprintf(

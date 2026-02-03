@@ -9,36 +9,24 @@
  */
 namespace SebastianBergmann\CodeCoverage\StaticAnalysis;
 
-use function file_get_contents;
 use SebastianBergmann\CodeCoverage\Filter;
 
-/**
- * @internal This class is not covered by the backward compatibility promise for phpunit/php-code-coverage
- */
-final readonly class CacheWarmer
+final class CacheWarmer
 {
-    /**
-     * @return array{cacheHits: non-negative-int, cacheMisses: non-negative-int}
-     */
-    public function warmCache(string $cacheDirectory, bool $useAnnotationsForIgnoringCode, bool $ignoreDeprecatedCode, Filter $filter): array
+    public function warmCache(string $cacheDirectory, bool $useAnnotationsForIgnoringCode, bool $ignoreDeprecatedCode, Filter $filter): void
     {
-        $analyser = new CachingSourceAnalyser(
+        $analyser = new CachingFileAnalyser(
             $cacheDirectory,
-            new ParsingSourceAnalyser,
+            new ParsingFileAnalyser(
+                $useAnnotationsForIgnoringCode,
+                $ignoreDeprecatedCode,
+            ),
+            $useAnnotationsForIgnoringCode,
+            $ignoreDeprecatedCode,
         );
 
         foreach ($filter->files() as $file) {
-            $analyser->analyse(
-                $file,
-                file_get_contents($file),
-                $useAnnotationsForIgnoringCode,
-                $ignoreDeprecatedCode,
-            );
+            $analyser->process($file);
         }
-
-        return [
-            'cacheHits'   => $analyser->cacheHits(),
-            'cacheMisses' => $analyser->cacheMisses(),
-        ];
     }
 }

@@ -12,8 +12,6 @@ namespace PHPUnit\Framework;
 use function array_filter;
 use function array_map;
 use function array_values;
-use function assert;
-use function count;
 use function explode;
 use function in_array;
 use function str_contains;
@@ -87,7 +85,7 @@ final class ExecutionOrderDependency implements Stringable
     public static function mergeUnique(array $existing, array $additional): array
     {
         $existingTargets = array_map(
-            static fn (ExecutionOrderDependency $dependency) => $dependency->getTarget(),
+            static fn ($dependency) => $dependency->getTarget(),
             $existing,
         );
 
@@ -123,7 +121,7 @@ final class ExecutionOrderDependency implements Stringable
 
         $diff         = [];
         $rightTargets = array_map(
-            static fn (ExecutionOrderDependency $dependency) => $dependency->getTarget(),
+            static fn ($dependency) => $dependency->getTarget(),
             $right,
         );
 
@@ -148,11 +146,10 @@ final class ExecutionOrderDependency implements Stringable
         }
 
         if (str_contains($classOrCallableName, '::')) {
-            assert(count(explode('::', $classOrCallableName)) === 2);
             [$this->className, $this->methodName] = explode('::', $classOrCallableName);
         } else {
             $this->className  = $classOrCallableName;
-            $this->methodName = $methodName !== null && $methodName !== '' ? $methodName : 'class';
+            $this->methodName = !empty($methodName) ? $methodName : 'class';
         }
     }
 
@@ -161,9 +158,6 @@ final class ExecutionOrderDependency implements Stringable
         return $this->getTarget();
     }
 
-    /**
-     * @phpstan-assert-if-true non-empty-string $this->getTarget()
-     */
     public function isValid(): bool
     {
         // Invalid dependencies can be declared and are skipped by the runner

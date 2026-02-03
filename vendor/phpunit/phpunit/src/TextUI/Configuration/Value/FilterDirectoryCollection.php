@@ -55,7 +55,7 @@ final readonly class FilterDirectoryCollection implements Countable, IteratorAgg
 
     public function notEmpty(): bool
     {
-        return $this->directories !== [];
+        return !empty($this->directories);
     }
 
     public function getIterator(): FilterDirectoryCollectionIterator

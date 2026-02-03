@@ -45,9 +45,6 @@ final readonly class ChildProcessFinished implements Event
         return $this->stderr;
     }
 
-    /**
-     * @return non-empty-string
-     */
     public function asString(): string
     {
         return 'Child Process Finished';

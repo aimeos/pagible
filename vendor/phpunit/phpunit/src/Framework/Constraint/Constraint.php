@@ -19,7 +19,6 @@ use function strpos;
 use function strtolower;
 use function substr;
 use Countable;
-use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\SelfDescribing;
 use PHPUnit\Util\Exporter;
@@ -31,20 +30,6 @@ use SebastianBergmann\Comparator\ComparisonFailure;
  */
 abstract class Constraint implements Countable, SelfDescribing
 {
-    /**
-     * @template A
-     *
-     * @param A $actual
-     *
-     * @return A
-     */
-    final public function __invoke(mixed $actual): mixed
-    {
-        Assert::assertThat($actual, $this);
-
-        return $actual;
-    }
-
     /**
      * Evaluates the constraint for parameter $other.
      *
@@ -109,11 +94,11 @@ abstract class Constraint implements Countable, SelfDescribing
 
         $additionalFailureDescription = $this->additionalFailureDescription($other);
 
-        if ($additionalFailureDescription !== '') {
+        if ($additionalFailureDescription) {
             $failureDescription .= "\n" . $additionalFailureDescription;
         }
 
-        if ($description !== '') {
+        if (!empty($description)) {
             $failureDescription = $description . "\n" . $failureDescription;
         }
 

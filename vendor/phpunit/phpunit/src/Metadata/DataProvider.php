@@ -25,20 +25,18 @@ final readonly class DataProvider extends Metadata
      * @var non-empty-string
      */
     private string $methodName;
-    private bool $validateArgumentCount;
 
     /**
-     * @param int<0, 1>        $level
+     * @param 0|1              $level
      * @param class-string     $className
      * @param non-empty-string $methodName
      */
-    protected function __construct(int $level, string $className, string $methodName, bool $validateArgumentCount)
+    protected function __construct(int $level, string $className, string $methodName)
     {
         parent::__construct($level);
 
-        $this->className             = $className;
-        $this->methodName            = $methodName;
-        $this->validateArgumentCount = $validateArgumentCount;
+        $this->className  = $className;
+        $this->methodName = $methodName;
     }
 
     public function isDataProvider(): true
@@ -60,10 +58,5 @@ final readonly class DataProvider extends Metadata
     public function methodName(): string
     {
         return $this->methodName;
-    }
-
-    public function validateArgumentCount(): bool
-    {
-        return $this->validateArgumentCount;
     }
 }

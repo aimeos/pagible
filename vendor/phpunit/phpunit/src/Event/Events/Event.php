@@ -16,8 +16,5 @@ interface Event
 {
     public function telemetryInfo(): Telemetry\Info;
 
-    /**
-     * @return non-empty-string
-     */
     public function asString(): string;
 }

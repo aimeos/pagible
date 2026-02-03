@@ -48,14 +48,11 @@ final readonly class Skipped implements Event
         return $this->message;
     }
 
-    /**
-     * @return non-empty-string
-     */
     public function asString(): string
     {
         $message = $this->message;
 
-        if ($message !== '') {
+        if (!empty($message)) {
             $message = PHP_EOL . $message;
         }
 

@@ -40,9 +40,6 @@ final readonly class Started implements Event
         return $this->runtime;
     }
 
-    /**
-     * @return non-empty-string
-     */
     public function asString(): string
     {
         return sprintf(

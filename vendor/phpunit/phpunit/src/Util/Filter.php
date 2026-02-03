@@ -12,7 +12,6 @@ namespace PHPUnit\Util;
 use function array_unshift;
 use function defined;
 use function in_array;
-use function is_array;
 use function is_file;
 use function realpath;
 use function sprintf;
@@ -42,7 +41,7 @@ final readonly class Filter
             $file       = $t->getFile();
             $line       = $t->getLine();
         } else {
-            if ($unwrap && $t->getPrevious() !== null) {
+            if ($unwrap && $t->getPrevious()) {
                 $t = $t->getPrevious();
             }
 
@@ -64,7 +63,7 @@ final readonly class Filter
     /**
      * @param list<array{file: string, line: ?int, class?: class-string, function?: string, type: string}> $frames
      */
-    private static function stackTraceAsString(array $frames): string
+    public static function stackTraceAsString(array $frames): string
     {
         $buffer      = '';
         $prefix      = defined('__PHPUNIT_PHAR_ROOT__') ? __PHPUNIT_PHAR_ROOT__ : false;
@@ -112,9 +111,7 @@ final readonly class Filter
 
     private static function fileIsExcluded(string $file, ExcludeList $excludeList): bool
     {
-        return (!isset($GLOBALS['__PHPUNIT_ISOLATION_EXCLUDE_LIST']) ||
-                !is_array($GLOBALS['__PHPUNIT_ISOLATION_EXCLUDE_LIST']) ||
-                $GLOBALS['__PHPUNIT_ISOLATION_EXCLUDE_LIST'] === [] ||
+        return (empty($GLOBALS['__PHPUNIT_ISOLATION_EXCLUDE_LIST']) ||
                 !in_array($file, $GLOBALS['__PHPUNIT_ISOLATION_EXCLUDE_LIST'], true)) &&
                 !$excludeList->isExcluded($file);
     }

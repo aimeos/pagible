@@ -35,17 +35,37 @@ use PHPUnit\Runner\ResultCache\ResultCacheId;
  */
 final class TestSuiteSorter
 {
-    public const int ORDER_DEFAULT       = 0;
-    public const int ORDER_RANDOMIZED    = 1;
-    public const int ORDER_REVERSED      = 2;
-    public const int ORDER_DEFECTS_FIRST = 3;
-    public const int ORDER_DURATION      = 4;
-    public const int ORDER_SIZE          = 5;
+    /**
+     * @var int
+     */
+    public const ORDER_DEFAULT = 0;
 
     /**
-     * @var non-empty-array<non-empty-string, positive-int>
+     * @var int
      */
-    private const array SIZE_SORT_WEIGHT = [
+    public const ORDER_RANDOMIZED = 1;
+
+    /**
+     * @var int
+     */
+    public const ORDER_REVERSED = 2;
+
+    /**
+     * @var int
+     */
+    public const ORDER_DEFECTS_FIRST = 3;
+
+    /**
+     * @var int
+     */
+    public const ORDER_DURATION = 4;
+
+    /**
+     * @var int
+     */
+    public const ORDER_SIZE = 5;
+
+    private const SIZE_SORT_WEIGHT = [
         'small'   => 1,
         'medium'  => 2,
         'large'   => 3,
@@ -108,7 +128,7 @@ final class TestSuiteSorter
 
     private function sort(TestSuite $suite, int $order, bool $resolveDependencies, int $orderDefects): void
     {
-        if ($suite->tests() === []) {
+        if (empty($suite->tests())) {
             return;
         }
 
@@ -186,7 +206,7 @@ final class TestSuiteSorter
     {
         usort(
             $tests,
-            fn (Test $left, Test $right) => $this->cmpDefectPriorityAndTime($left, $right),
+            fn ($left, $right) => $this->cmpDefectPriorityAndTime($left, $right),
         );
 
         return $tests;
@@ -201,7 +221,7 @@ final class TestSuiteSorter
     {
         usort(
             $tests,
-            fn (Test $left, Test $right) => $this->cmpDuration($left, $right),
+            fn ($left, $right) => $this->cmpDuration($left, $right),
         );
 
         return $tests;
@@ -216,7 +236,7 @@ final class TestSuiteSorter
     {
         usort(
             $tests,
-            fn (Test $left, Test $right) => $this->cmpSize($left, $right),
+            fn ($left, $right) => $this->cmpSize($left, $right),
         );
 
         return $tests;
@@ -237,12 +257,12 @@ final class TestSuiteSorter
         $priorityA = $this->defectSortOrder[$a->sortId()] ?? 0;
         $priorityB = $this->defectSortOrder[$b->sortId()] ?? 0;
 
-        if (($priorityB <=> $priorityA) > 0) {
+        if ($priorityB <=> $priorityA) {
             // Sort defect weight descending
             return $priorityB <=> $priorityA;
         }
 
-        if ($priorityA > 0 || $priorityB > 0) {
+        if ($priorityA || $priorityB) {
             return $this->cmpDuration($a, $b);
         }
 
@@ -288,9 +308,9 @@ final class TestSuiteSorter
      * 3. If the test has dependencies but none left to do: mark done, start again from the top
      * 4. When we reach the end add any leftover tests to the end. These will be marked 'skipped' during execution.
      *
-     * @param array<TestCase> $tests
+     * @param array<DataProviderTestSuite|TestCase> $tests
      *
-     * @return array<TestCase>
+     * @return array<DataProviderTestSuite|TestCase>
      */
     private function resolveDependencies(array $tests): array
     {
@@ -306,7 +326,7 @@ final class TestSuiteSorter
             } else {
                 $i++;
             }
-        } while ($tests !== [] && ($i < count($tests)));
+        } while (!empty($tests) && ($i < count($tests)));
 
         return array_merge($newTestOrder, $tests);
     }

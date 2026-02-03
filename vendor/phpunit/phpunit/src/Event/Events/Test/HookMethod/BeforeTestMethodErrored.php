@@ -24,14 +24,21 @@ use PHPUnit\Event\Telemetry;
 final readonly class BeforeTestMethodErrored implements Event
 {
     private Telemetry\Info $telemetryInfo;
-    private Code\TestMethod $test;
+
+    /**
+     * @var class-string
+     */
+    private string $testClassName;
     private Code\ClassMethod $calledMethod;
     private Throwable $throwable;
 
-    public function __construct(Telemetry\Info $telemetryInfo, Code\TestMethod $test, Code\ClassMethod $calledMethod, Throwable $throwable)
+    /**
+     * @param class-string $testClassName
+     */
+    public function __construct(Telemetry\Info $telemetryInfo, string $testClassName, Code\ClassMethod $calledMethod, Throwable $throwable)
     {
         $this->telemetryInfo = $telemetryInfo;
-        $this->test          = $test;
+        $this->testClassName = $testClassName;
         $this->calledMethod  = $calledMethod;
         $this->throwable     = $throwable;
     }
@@ -41,19 +48,12 @@ final readonly class BeforeTestMethodErrored implements Event
         return $this->telemetryInfo;
     }
 
-    public function test(): Code\TestMethod
-    {
-        return $this->test;
-    }
-
     /**
      * @return class-string
-     *
-     * @deprecated https://github.com/sebastianbergmann/phpunit/issues/6140
      */
     public function testClassName(): string
     {
-        return $this->test->className();
+        return $this->testClassName;
     }
 
     public function calledMethod(): Code\ClassMethod
@@ -66,14 +66,11 @@ final readonly class BeforeTestMethodErrored implements Event
         return $this->throwable;
     }
 
-    /**
-     * @return non-empty-string
-     */
     public function asString(): string
     {
         $message = $this->throwable->message();
 
-        if ($message !== '') {
+        if (!empty($message)) {
             $message = PHP_EOL . $message;
         }
 

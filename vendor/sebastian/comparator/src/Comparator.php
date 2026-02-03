@@ -9,9 +9,6 @@
  */
 namespace SebastianBergmann\Comparator;
 
-/**
- * @no-named-arguments Parameter names are not covered by the backward compatibility promise for sebastian/comparator
- */
 abstract class Comparator
 {
     private Factory $factory;

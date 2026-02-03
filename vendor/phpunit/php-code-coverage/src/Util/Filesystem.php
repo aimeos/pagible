@@ -15,7 +15,7 @@ use function is_dir;
 use function mkdir;
 use function sprintf;
 use function str_contains;
-use SebastianBergmann\CodeCoverage\WriteOperationFailedException;
+use SebastianBergmann\CodeCoverage\Driver\WriteOperationFailedException;
 
 /**
  * @internal This class is not covered by the backward compatibility promise for phpunit/php-code-coverage

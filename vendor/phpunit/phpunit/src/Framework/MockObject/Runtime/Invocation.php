@@ -11,11 +11,13 @@ namespace PHPUnit\Framework\MockObject;
 
 use function array_map;
 use function implode;
+use function is_object;
 use function sprintf;
 use function str_starts_with;
 use function strtolower;
 use function substr;
 use PHPUnit\Framework\SelfDescribing;
+use PHPUnit\Util\Cloner;
 use PHPUnit\Util\Exporter;
 
 /**
@@ -41,6 +43,7 @@ final readonly class Invocation implements SelfDescribing
     private array $parameters;
     private string $returnType;
     private bool $isReturnTypeNullable;
+    private bool $proxiedCall;
     private MockObjectInternal|StubInternal $object;
 
     /**
@@ -48,12 +51,12 @@ final readonly class Invocation implements SelfDescribing
      * @param non-empty-string $methodName
      * @param array<mixed>     $parameters
      */
-    public function __construct(string $className, string $methodName, array $parameters, string $returnType, MockObjectInternal|StubInternal $object)
+    public function __construct(string $className, string $methodName, array $parameters, string $returnType, MockObjectInternal|StubInternal $object, bool $cloneObjects = false, bool $proxiedCall = false)
     {
-        $this->className  = $className;
-        $this->methodName = $methodName;
-        $this->parameters = $parameters;
-        $this->object     = $object;
+        $this->className   = $className;
+        $this->methodName  = $methodName;
+        $this->object      = $object;
+        $this->proxiedCall = $proxiedCall;
 
         if (strtolower($methodName) === '__tostring') {
             $returnType = 'string';
@@ -67,6 +70,20 @@ final readonly class Invocation implements SelfDescribing
         }
 
         $this->returnType = $returnType;
+
+        if (!$cloneObjects) {
+            $this->parameters = $parameters;
+
+            return;
+        }
+
+        foreach ($parameters as $key => $value) {
+            if (is_object($value)) {
+                $parameters[$key] = Cloner::clone($value);
+            }
+        }
+
+        $this->parameters = $parameters;
     }
 
     /**
@@ -105,7 +122,7 @@ final readonly class Invocation implements SelfDescribing
             );
         }
 
-        if ($this->isReturnTypeNullable) {
+        if ($this->isReturnTypeNullable || $this->proxiedCall) {
             return null;
         }
 
@@ -130,7 +147,7 @@ final readonly class Invocation implements SelfDescribing
                     $this->parameters,
                 ),
             ),
-            $this->returnType !== '' ? sprintf(': %s', $this->returnType) : '',
+            $this->returnType ? sprintf(': %s', $this->returnType) : '',
         );
     }
 

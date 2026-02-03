@@ -10,7 +10,6 @@
 namespace PHPUnit\Util;
 
 use const PHP_OS_FAMILY;
-use function assert;
 use function class_exists;
 use function defined;
 use function dirname;
@@ -27,6 +26,8 @@ use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 use SebastianBergmann\CliParser\Parser as CliParser;
 use SebastianBergmann\CodeCoverage\CodeCoverage;
+use SebastianBergmann\CodeUnit\CodeUnit;
+use SebastianBergmann\CodeUnitReverseLookup\Wizard;
 use SebastianBergmann\Comparator\Comparator;
 use SebastianBergmann\Complexity\Calculator;
 use SebastianBergmann\Diff\Diff;
@@ -52,9 +53,9 @@ use TheSeer\Tokenizer\Tokenizer;
 final class ExcludeList
 {
     /**
-     * @var non-empty-array<class-string, positive-int>
+     * @var array<string,int>
      */
-    private const array EXCLUDED_CLASS_NAMES = [
+    private const EXCLUDED_CLASS_NAMES = [
         // composer
         ClassLoader::class => 1,
 
@@ -90,6 +91,12 @@ final class ExcludeList
 
         // sebastian/cli-parser
         CliParser::class => 1,
+
+        // sebastian/code-unit
+        CodeUnit::class => 1,
+
+        // sebastian/code-unit-reverse-lookup
+        Wizard::class => 1,
 
         // sebastian/comparator
         Comparator::class => 1,
@@ -152,11 +159,7 @@ final class ExcludeList
             throw new InvalidDirectoryException($directory);
         }
 
-        $directory = realpath($directory);
-
-        assert($directory !== false);
-
-        self::$directories[] = $directory;
+        self::$directories[] = realpath($directory);
     }
 
     public function __construct(?bool $enabled = null)

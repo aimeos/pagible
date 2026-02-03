@@ -41,7 +41,7 @@ final class ConsecutiveCalls implements Stub
      */
     public function invoke(Invocation $invocation): mixed
     {
-        if ($this->stack === []) {
+        if (empty($this->stack)) {
             throw new NoMoreReturnValuesConfiguredException(
                 $invocation,
                 $this->numberOfConfiguredReturnValues,

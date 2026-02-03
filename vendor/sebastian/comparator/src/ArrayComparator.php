@@ -19,9 +19,9 @@ use function trim;
 use SebastianBergmann\Exporter\Exporter;
 
 /**
- * @no-named-arguments Parameter names are not covered by the backward compatibility promise for sebastian/comparator
- *
- * @internal This class is not covered by the backward compatibility promise for sebastian/comparator
+ * Arrays are equal if they contain the same key-value pairs.
+ * The order of the keys does not matter.
+ * The types of key-value pairs do not matter.
  */
 class ArrayComparator extends Comparator
 {
@@ -31,10 +31,6 @@ class ArrayComparator extends Comparator
     }
 
     /**
-     * Arrays are equal if they contain the same key-value pairs.
-     * The order of the keys does not matter.
-     * The types of key-value pairs do not matter.
-     *
      * @param array<mixed> $processed
      *
      * @throws ComparisonFailure
@@ -91,13 +87,13 @@ class ArrayComparator extends Comparator
                 $expectedAsString .= sprintf(
                     "    %s => %s\n",
                     $exporter->export($key),
-                    $e->getExpectedAsString() !== '' ? $this->indent($e->getExpectedAsString()) : $exporter->shortenedExport($e->getExpected()),
+                    $e->getExpectedAsString() ? $this->indent($e->getExpectedAsString()) : $exporter->shortenedExport($e->getExpected()),
                 );
 
                 $actualAsString .= sprintf(
                     "    %s => %s\n",
                     $exporter->export($key),
-                    $e->getActualAsString() !== '' ? $this->indent($e->getActualAsString()) : $exporter->shortenedExport($e->getActual()),
+                    $e->getActualAsString() ? $this->indent($e->getActualAsString()) : $exporter->shortenedExport($e->getActual()),
                 );
 
                 $equal = false;

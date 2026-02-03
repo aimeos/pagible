@@ -37,9 +37,6 @@ final readonly class Configured implements Event
         return $this->configuration;
     }
 
-    /**
-     * @return non-empty-string
-     */
     public function asString(): string
     {
         return 'Test Runner Configured';

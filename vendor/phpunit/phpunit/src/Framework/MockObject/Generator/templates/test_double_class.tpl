@@ -1,5 +1,5 @@
 declare(strict_types=1);
 
-{class_declaration}
+{prologue}{class_declaration}
 {
-{use_statements}{property_hooks}{methods}}
+{use_statements}{property_hooks}{methods}}{epilogue}

@@ -34,7 +34,7 @@ final class IntersectionType extends Type
         $this->ensureOnlyValidTypes(...$types);
         $this->ensureNoDuplicateTypes(...$types);
 
-        assert($types !== []);
+        assert(!empty($types));
 
         $this->types = $types;
     }

@@ -9,30 +9,18 @@
  */
 namespace SebastianBergmann\CliParser;
 
-use function implode;
 use function sprintf;
 use RuntimeException;
 
 final class UnknownOptionException extends RuntimeException implements Exception
 {
-    /**
-     * @param array<string> $similarOptions
-     */
-    public function __construct(string $option, array $similarOptions)
+    public function __construct(string $option)
     {
-        $message = sprintf(
-            'Unknown option "%s"',
-            $option,
-        );
-
-        if ($similarOptions !== []) {
-            $message = sprintf(
-                'Unknown option "%s". Most similar options are %s',
+        parent::__construct(
+            sprintf(
+                'Unknown option "%s"',
                 $option,
-                implode(', ', $similarOptions),
-            );
-        }
-
-        parent::__construct($message);
+            ),
+        );
     }
 }

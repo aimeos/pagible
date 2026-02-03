@@ -9,22 +9,17 @@
  */
 namespace SebastianBergmann\CliParser;
 
-use function implode;
 use function sprintf;
 use RuntimeException;
 
 final class AmbiguousOptionException extends RuntimeException implements Exception
 {
-    /**
-     * @param array<string> $candiates
-     */
-    public function __construct(string $option, array $candiates)
+    public function __construct(string $option)
     {
         parent::__construct(
             sprintf(
-                'Option "%s" is ambiguous. Similar options are: %s',
+                'Option "%s" is ambiguous',
                 $option,
-                implode(', ', $candiates),
             ),
         );
     }

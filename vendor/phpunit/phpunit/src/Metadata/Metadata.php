@@ -19,11 +19,11 @@ use PHPUnit\Runner\Extension\Extension;
  */
 abstract readonly class Metadata
 {
-    private const int CLASS_LEVEL  = 0;
-    private const int METHOD_LEVEL = 1;
+    private const CLASS_LEVEL  = 0;
+    private const METHOD_LEVEL = 1;
 
     /**
-     * @var int<0, 1>
+     * @var 0|1
      */
     private int $level;
 
@@ -35,16 +35,6 @@ abstract readonly class Metadata
     public static function afterClass(int $priority): AfterClass
     {
         return new AfterClass(self::METHOD_LEVEL, $priority);
-    }
-
-    public static function allowMockObjectsWithoutExpectationsOnClass(): AllowMockObjectsWithoutExpectations
-    {
-        return new AllowMockObjectsWithoutExpectations(self::CLASS_LEVEL);
-    }
-
-    public static function allowMockObjectsWithoutExpectationsOnMethod(): AllowMockObjectsWithoutExpectations
-    {
-        return new AllowMockObjectsWithoutExpectations(self::METHOD_LEVEL);
     }
 
     public static function backupGlobalsOnClass(bool $enabled): BackupGlobals
@@ -78,35 +68,11 @@ abstract readonly class Metadata
     }
 
     /**
-     * @param non-empty-string $namespace
-     */
-    public static function coversNamespace(string $namespace): CoversNamespace
-    {
-        return new CoversNamespace(self::CLASS_LEVEL, $namespace);
-    }
-
-    /**
      * @param class-string $className
      */
     public static function coversClass(string $className): CoversClass
     {
         return new CoversClass(self::CLASS_LEVEL, $className);
-    }
-
-    /**
-     * @param class-string $className
-     */
-    public static function coversClassesThatExtendClass(string $className): CoversClassesThatExtendClass
-    {
-        return new CoversClassesThatExtendClass(self::CLASS_LEVEL, $className);
-    }
-
-    /**
-     * @param class-string $interfaceName
-     */
-    public static function coversClassesThatImplementInterface(string $interfaceName): CoversClassesThatImplementInterface
-    {
-        return new CoversClassesThatImplementInterface(self::CLASS_LEVEL, $interfaceName);
     }
 
     /**
@@ -134,6 +100,30 @@ abstract readonly class Metadata
         return new CoversFunction(self::CLASS_LEVEL, $functionName);
     }
 
+    /**
+     * @param non-empty-string $target
+     */
+    public static function coversOnClass(string $target): Covers
+    {
+        return new Covers(self::CLASS_LEVEL, $target);
+    }
+
+    /**
+     * @param non-empty-string $target
+     */
+    public static function coversOnMethod(string $target): Covers
+    {
+        return new Covers(self::METHOD_LEVEL, $target);
+    }
+
+    /**
+     * @param class-string $className
+     */
+    public static function coversDefaultClass(string $className): CoversDefaultClass
+    {
+        return new CoversDefaultClass(self::CLASS_LEVEL, $className);
+    }
+
     public static function coversNothingOnClass(): CoversNothing
     {
         return new CoversNothing(self::CLASS_LEVEL);
@@ -148,9 +138,9 @@ abstract readonly class Metadata
      * @param class-string     $className
      * @param non-empty-string $methodName
      */
-    public static function dataProvider(string $className, string $methodName, bool $validateArgumentCount): DataProvider
+    public static function dataProvider(string $className, string $methodName): DataProvider
     {
-        return new DataProvider(self::METHOD_LEVEL, $className, $methodName, $validateArgumentCount);
+        return new DataProvider(self::METHOD_LEVEL, $className, $methodName);
     }
 
     /**
@@ -235,20 +225,14 @@ abstract readonly class Metadata
         return new Group(self::METHOD_LEVEL, $groupName);
     }
 
-    /**
-     * @param null|non-empty-string $messagePattern
-     */
-    public static function ignoreDeprecationsOnClass(?string $messagePattern = null): IgnoreDeprecations
+    public static function ignoreDeprecationsOnClass(): IgnoreDeprecations
     {
-        return new IgnoreDeprecations(self::CLASS_LEVEL, $messagePattern);
+        return new IgnoreDeprecations(self::CLASS_LEVEL);
     }
 
-    /**
-     * @param null|non-empty-string $messagePattern
-     */
-    public static function ignoreDeprecationsOnMethod(?string $messagePattern = null): IgnoreDeprecations
+    public static function ignoreDeprecationsOnMethod(): IgnoreDeprecations
     {
-        return new IgnoreDeprecations(self::METHOD_LEVEL, $messagePattern);
+        return new IgnoreDeprecations(self::METHOD_LEVEL);
     }
 
     /**
@@ -405,26 +389,6 @@ abstract readonly class Metadata
         return new RequiresPhpunitExtension(self::METHOD_LEVEL, $extensionClass);
     }
 
-    public static function requiresEnvironmentVariableOnClass(string $environmentVariableName, null|string $value): RequiresEnvironmentVariable
-    {
-        return new RequiresEnvironmentVariable(self::CLASS_LEVEL, $environmentVariableName, $value);
-    }
-
-    public static function requiresEnvironmentVariableOnMethod(string $environmentVariableName, null|string $value): RequiresEnvironmentVariable
-    {
-        return new RequiresEnvironmentVariable(self::METHOD_LEVEL, $environmentVariableName, $value);
-    }
-
-    public static function withEnvironmentVariableOnClass(string $environmentVariableName, null|string $value): WithEnvironmentVariable
-    {
-        return new WithEnvironmentVariable(self::CLASS_LEVEL, $environmentVariableName, $value);
-    }
-
-    public static function withEnvironmentVariableOnMethod(string $environmentVariableName, null|string $value): WithEnvironmentVariable
-    {
-        return new WithEnvironmentVariable(self::METHOD_LEVEL, $environmentVariableName, $value);
-    }
-
     /**
      * @param non-empty-string $setting
      * @param non-empty-string $value
@@ -480,15 +444,6 @@ abstract readonly class Metadata
     }
 
     /**
-     * @param class-string     $className
-     * @param non-empty-string $methodName
-     */
-    public static function testDoxFormatter(string $className, string $methodName): TestDoxFormatter
-    {
-        return new TestDoxFormatter(self::METHOD_LEVEL, $className, $methodName);
-    }
-
-    /**
      * @param ?non-empty-string $name
      */
     public static function testWith(mixed $data, ?string $name = null): TestWith
@@ -497,35 +452,11 @@ abstract readonly class Metadata
     }
 
     /**
-     * @param non-empty-string $namespace
-     */
-    public static function usesNamespace(string $namespace): UsesNamespace
-    {
-        return new UsesNamespace(self::CLASS_LEVEL, $namespace);
-    }
-
-    /**
      * @param class-string $className
      */
     public static function usesClass(string $className): UsesClass
     {
         return new UsesClass(self::CLASS_LEVEL, $className);
-    }
-
-    /**
-     * @param class-string $className
-     */
-    public static function usesClassesThatExtendClass(string $className): UsesClassesThatExtendClass
-    {
-        return new UsesClassesThatExtendClass(self::CLASS_LEVEL, $className);
-    }
-
-    /**
-     * @param class-string $interfaceName
-     */
-    public static function usesClassesThatImplementInterface(string $interfaceName): UsesClassesThatImplementInterface
-    {
-        return new UsesClassesThatImplementInterface(self::CLASS_LEVEL, $interfaceName);
     }
 
     /**
@@ -553,21 +484,37 @@ abstract readonly class Metadata
         return new UsesMethod(self::CLASS_LEVEL, $className, $methodName);
     }
 
+    /**
+     * @param non-empty-string $target
+     */
+    public static function usesOnClass(string $target): Uses
+    {
+        return new Uses(self::CLASS_LEVEL, $target);
+    }
+
+    /**
+     * @param non-empty-string $target
+     */
+    public static function usesOnMethod(string $target): Uses
+    {
+        return new Uses(self::METHOD_LEVEL, $target);
+    }
+
+    /**
+     * @param class-string $className
+     */
+    public static function usesDefaultClass(string $className): UsesDefaultClass
+    {
+        return new UsesDefaultClass(self::CLASS_LEVEL, $className);
+    }
+
     public static function withoutErrorHandler(): WithoutErrorHandler
     {
         return new WithoutErrorHandler(self::METHOD_LEVEL);
     }
 
     /**
-     * @param null|non-empty-string $messagePattern
-     */
-    public static function ignorePhpunitWarnings(?string $messagePattern): IgnorePhpunitWarnings
-    {
-        return new IgnorePhpunitWarnings(self::METHOD_LEVEL, $messagePattern);
-    }
-
-    /**
-     * @param int<0, 1> $level
+     * @param 0|1 $level
      */
     protected function __construct(int $level)
     {
@@ -596,14 +543,6 @@ abstract readonly class Metadata
      * @phpstan-assert-if-true AfterClass $this
      */
     public function isAfterClass(): bool
-    {
-        return false;
-    }
-
-    /**
-     * @phpstan-assert-if-true AllowMockObjectsWithoutExpectations $this
-     */
-    public function isAllowMockObjectsWithoutExpectations(): bool
     {
         return false;
     }
@@ -641,9 +580,9 @@ abstract readonly class Metadata
     }
 
     /**
-     * @phpstan-assert-if-true CoversNamespace $this
+     * @phpstan-assert-if-true Covers $this
      */
-    public function isCoversNamespace(): bool
+    public function isCovers(): bool
     {
         return false;
     }
@@ -657,17 +596,9 @@ abstract readonly class Metadata
     }
 
     /**
-     * @phpstan-assert-if-true CoversClassesThatExtendClass $this
+     * @phpstan-assert-if-true CoversDefaultClass $this
      */
-    public function isCoversClassesThatExtendClass(): bool
-    {
-        return false;
-    }
-
-    /**
-     * @phpstan-assert-if-true CoversClassesThatImplementInterface $this
-     */
-    public function isCoversClassesThatImplementInterface(): bool
+    public function isCoversDefaultClass(): bool
     {
         return false;
     }
@@ -907,22 +838,6 @@ abstract readonly class Metadata
     }
 
     /**
-     * @phpstan-assert-if-true RequiresEnvironmentVariable $this
-     */
-    public function isRequiresEnvironmentVariable(): bool
-    {
-        return false;
-    }
-
-    /**
-     * @phpstan-assert-if-true WithEnvironmentVariable $this
-     */
-    public function isWithEnvironmentVariable(): bool
-    {
-        return false;
-    }
-
-    /**
      * @phpstan-assert-if-true RequiresSetting $this
      */
     public function isRequiresSetting(): bool
@@ -939,14 +854,6 @@ abstract readonly class Metadata
     }
 
     /**
-     * @phpstan-assert-if-true TestDoxFormatter $this
-     */
-    public function isTestDoxFormatter(): bool
-    {
-        return false;
-    }
-
-    /**
      * @phpstan-assert-if-true TestWith $this
      */
     public function isTestWith(): bool
@@ -955,9 +862,9 @@ abstract readonly class Metadata
     }
 
     /**
-     * @phpstan-assert-if-true UsesNamespace $this
+     * @phpstan-assert-if-true Uses $this
      */
-    public function isUsesNamespace(): bool
+    public function isUses(): bool
     {
         return false;
     }
@@ -971,17 +878,9 @@ abstract readonly class Metadata
     }
 
     /**
-     * @phpstan-assert-if-true UsesClassesThatExtendClass $this
+     * @phpstan-assert-if-true UsesDefaultClass $this
      */
-    public function isUsesClassesThatExtendClass(): bool
-    {
-        return false;
-    }
-
-    /**
-     * @phpstan-assert-if-true UsesClassesThatImplementInterface $this
-     */
-    public function isUsesClassesThatImplementInterface(): bool
+    public function isUsesDefaultClass(): bool
     {
         return false;
     }
@@ -1014,14 +913,6 @@ abstract readonly class Metadata
      * @phpstan-assert-if-true WithoutErrorHandler $this
      */
     public function isWithoutErrorHandler(): bool
-    {
-        return false;
-    }
-
-    /**
-     * @phpstan-assert-if-true IgnorePhpunitWarnings $this
-     */
-    public function isIgnorePhpunitWarnings(): bool
     {
         return false;
     }
