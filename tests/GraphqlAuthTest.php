@@ -56,8 +56,6 @@ class GraphqlAuthTest extends TestAbstract
         $attr = collect($user->getAttributes())->except(['cmseditor', 'password', 'secret', 'remember_token'])->all();
         $expected = [
             'id' => (string) $user->id,
-            'created_at' => (string) $user->getAttribute( 'created_at' ),
-            'updated_at' => (string) $user->getAttribute( 'updated_at' ),
         ] + $attr;
 
         $this->expectsDatabaseQueryCount( 1 );
@@ -88,8 +86,6 @@ class GraphqlAuthTest extends TestAbstract
         $attr = collect($user->getAttributes())->except(['cmseditor', 'password', 'secret', 'remember_token'])->all();
         $expected = [
             'id' => (string) $user->id,
-            'created_at' => (string) $user->getAttribute( 'created_at' ),
-            'updated_at' => (string) $user->getAttribute( 'updated_at' ),
         ] + $attr;
 
         $this->expectsDatabaseQueryCount( 0 );
@@ -120,8 +116,6 @@ class GraphqlAuthTest extends TestAbstract
         $attr = collect($user->getAttributes())->except(['cmseditor', 'password', 'secret', 'remember_token'])->all();
         $expected = [
             'id' => (string) $user->id,
-            'created_at' => (string) $user->getAttribute( 'created_at' ),
-            'updated_at' => (string) $user->getAttribute( 'updated_at' ),
         ] + $attr;
 
         $this->expectsDatabaseQueryCount( 0 );

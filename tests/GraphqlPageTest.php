@@ -64,16 +64,14 @@ class GraphqlPageTest extends TestAbstract
         $page = Page::where('tag', 'root')->firstOrFail();
 
         // Prepare expected attributes
-        $attr = collect($page->getAttributes())->except(['tenant_id', '_lft', '_rgt'])->all();
+        $attr = collect($page->getAttributes())->except(['tenant_id', '_lft', '_rgt', 'depth'])->all();
         $expected = [
             'id' => (string) $page->id,
             'has' => $page->has,
+            'meta' => (array) $page->meta,
+            'config' => (array) $page->config,
+            'content' => (array) $page->content,
         ] + $attr;
-
-        // Cast JSON fields to arrays for order-independent comparison
-        $expected['meta'] = (array) $page->meta;
-        $expected['config'] = (array) $page->config;
-        $expected['content'] = (array) $page->content;
 
         $this->expectsDatabaseQueryCount(1);
 
@@ -105,16 +103,11 @@ class GraphqlPageTest extends TestAbstract
         }");
 
         $pageData = $response->json('data.page');
+        $pageData['meta'] = (array) json_decode($pageData['meta']);
+        $pageData['config'] = (array) json_decode($pageData['config']);
+        $pageData['content'] = (array) json_decode($pageData['content']);
 
-        // Assert scalar fields
-        foreach (['id','related_id','parent_id','lang','path','name','title','domain','to','tag','type','theme','status','cache','editor','has','created_at','updated_at','deleted_at'] as $key) {
-            $this->assertEquals($expected[$key], $pageData[$key]);
-        }
-
-        // Assert JSON-like fields
-        $this->assertEquals($expected['meta'], (array) json_decode($pageData['meta']));
-        $this->assertEquals($expected['config'], (array) json_decode($pageData['config']));
-        $this->assertEquals($expected['content'], (array) json_decode($pageData['content']));
+        $this->assertEquals($expected, $pageData);
     }
 
 
@@ -126,15 +119,13 @@ class GraphqlPageTest extends TestAbstract
         $page = Page::where('tag', 'root')->firstOrFail();
 
         // Prepare expected attributes
-        $attr = collect($page->getAttributes())->except(['tenant_id', '_lft', '_rgt'])->all();
+        $attr = collect($page->getAttributes())->except(['tenant_id', '_lft', '_rgt', 'depth'])->all();
         $expected[] = [
             'id' => (string) $page->id,
+            'meta' => (array) $page->meta,
+            'config' => (array) $page->config,
+            'content' => (array) $page->content,
         ] + $attr;
-
-        // Cast JSON fields to arrays for order-independent comparison
-        $expected[0]['meta'] = $page->meta;
-        $expected[0]['config'] = $page->config;
-        $expected[0]['content'] = $page->content;
 
         $this->expectsDatabaseQueryCount(2);
 
@@ -188,17 +179,12 @@ class GraphqlPageTest extends TestAbstract
 
         $pagesData = $response->json('data.pages.data');
         $this->assertCount(1, $pagesData);
-        $actual = $pagesData[0];
 
-        // Assert scalar fields
-        foreach (['id','related_id','parent_id','lang','path','name','title','domain','to','tag','type','theme','status','cache','editor','created_at','updated_at','deleted_at'] as $key) {
-            $this->assertEquals($expected[0][$key], $actual[$key]);
-        }
+        $pagesData[0]['meta'] = (array) json_decode($pagesData[0]['meta']);
+        $pagesData[0]['config'] = (array) json_decode($pagesData[0]['config']);
+        $pagesData[0]['content'] = (array) json_decode($pagesData[0]['content']);
 
-        // Assert JSON-like fields decoded from response
-        $this->assertEquals($expected[0]['meta'], json_decode($actual['meta']));
-        $this->assertEquals($expected[0]['config'], json_decode($actual['config']));
-        $this->assertEquals($expected[0]['content'], json_decode($actual['content']));
+        $this->assertEquals($expected, $pagesData);
 
         // Assert paginator info
         $paginator = $response->json('data.pages.paginatorInfo');
@@ -281,11 +267,10 @@ class GraphqlPageTest extends TestAbstract
         $expected = [];
 
         foreach ($root->children as $page) {
-            $attr = collect($page->getAttributes())->except(['tenant_id', '_lft', '_rgt'])->all();
             $expected[] = [
                 'id' => (string) $page->id,
                 'parent_id' => (string) $page->parent_id,
-            ] + $attr;
+            ] + collect($page->getAttributes())->except(['tenant_id', '_lft', '_rgt', 'depth'])->all();
         }
 
         $this->expectsDatabaseQueryCount(2);
