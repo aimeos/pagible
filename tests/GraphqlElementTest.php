@@ -353,11 +353,11 @@ class GraphqlElementTest extends TestAbstract
         ];
 
         $latest = $saveElement['latest'];
-        $this->assertEquals('de', $latest['lang']);
-        $this->assertEquals(false, $latest['published']);
-        $this->assertNull($latest['publish_at']);
-        $this->assertEquals('Test editor', $latest['editor']);
-        $this->assertEquals($expectedLatestData, json_decode($latest['data'] ?? null, true));
+        $this->assertNull($saveElement['latest']['publish_at'] ?? null);
+        $this->assertEquals('de', $saveElement['latest']['lang'] ?? null);
+        $this->assertEquals(false, $saveElement['latest']['published'] ?? null);
+        $this->assertEquals('Test editor', $saveElement['latest']['editor'] ?? null);
+        $this->assertEquals($expectedLatestData, json_decode($saveElement['latest']['data'] ?? null, true));
     }
 
 
