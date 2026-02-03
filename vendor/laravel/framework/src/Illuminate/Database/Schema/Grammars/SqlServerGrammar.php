@@ -830,11 +830,10 @@ class SqlServerGrammar extends Grammar
      */
     protected function typeTimestamp(Fluent $column)
     {
-echo __METHOD__.PHP_EOL;
         if ($column->useCurrent) {
             $column->default(new Expression('CURRENT_TIMESTAMP'));
         }
-var_dump( $column->precision);
+
         return !is_null($column->precision) ? "datetime2($column->precision)" : 'datetime';
     }
 
