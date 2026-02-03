@@ -98,17 +98,4 @@ class Content extends Model
             'content' => $this->content
         ];
     }
-
-
-    /**
-     * Interact with the "id" property.
-     *
-     * @return Attribute Eloquent attribute for the "id" property
-     */
-    protected function id(): Attribute
-    {
-        return Attribute::make(
-            get: fn( $value ) => strtolower( $value ?? '' )
-        );
-    }
 }
