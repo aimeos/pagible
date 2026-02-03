@@ -40,7 +40,7 @@ trait MatchesIds
      */
     public function uuid(): static
     {
-        return $this->matchAs('[\da-f]{8}-[\da-f]{4}-[\da-f]{4}-[\da-f]{4}-[\da-f]{12}');
+        return $this->matchAs('[\da-fA-F]{8}-[\da-fA-F]{4}-[\da-fA-F]{4}-[\da-fA-F]{4}-[\da-fA-F]{12}');
     }
 
     /**
