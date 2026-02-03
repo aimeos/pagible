@@ -57,27 +57,6 @@ class GraphqlPageTest extends TestAbstract
     }
 
 
-    public function testDumpCreateTableSql()
-    {
-        $queries = [];
-
-        // Listen to all queries
-        DB::listen(function ($query) use (&$queries) {
-            $queries[] = ['sql' => $query->sql, 'bindings' => $query->bindings];
-        });
-
-        Schema::connection(config('cms.db', 'sqlite'))->create('cms_elements2', function (Blueprint $table) {
-            $table->uuid('id')->primary();
-            $table->timestamps(0);
-        });
-
-        // Dump captured queries
-        foreach ($queries as $q) {
-            dump($q['sql'], $q['bindings']);
-        }
-    }
-
-
     public function testPage()
     {
         $this->seed(CmsSeeder::class);

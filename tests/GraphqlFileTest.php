@@ -59,6 +59,7 @@ class GraphqlFileTest extends TestAbstract
         $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
 
         $expected = [
+            'id' => $file->id,
             'previews' => (array) $file->previews,
             'description' => (array) $file->description,
             'transcription' => (array) $file->transcription,
@@ -114,6 +115,7 @@ class GraphqlFileTest extends TestAbstract
 
         $expected = File::orderBy( 'mime' )->get()->map( function( $file ) {
             return [
+                'id' => $file->id,
                 'previews' => (array) $file->previews,
                 'description' => (array) $file->description,
                 'transcription' => (array) $file->transcription,

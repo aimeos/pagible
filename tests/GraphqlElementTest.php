@@ -60,6 +60,7 @@ class GraphqlElementTest extends TestAbstract
         $element = Element::where( 'type', 'footer' )->firstOrFail();
 
         $expected = [
+            'id' => $element->id,
             'data' => $element->data,
             'bypages' => $element->bypages->map( fn( $item ) => ['id' => $item->id] )->all(),
             'byversions' => $element->byversions->map( fn( $item ) => ['published' => $item->published] )->all(),
@@ -105,6 +106,7 @@ class GraphqlElementTest extends TestAbstract
         $element = Element::where('type', 'footer')->first();
 
         $expected = [
+            'id' => $element->id,
             'data' => $element->data,
         ] + collect($element->getAttributes())->except(['tenant_id'])->all();
 
