@@ -299,7 +299,7 @@ class GraphqlElementTest extends TestAbstract
             'lang' => 'en',
             'data' => ['key' => 'value'],
         ];
-        $this->assertEquals($expectedLatestData, json_decode($addElement['latest']['data'], true));
+        $this->assertEquals($expectedLatestData, json_decode($addElement['latest']['data'] ?? null, true));
     }
 
 
@@ -357,7 +357,7 @@ class GraphqlElementTest extends TestAbstract
         $this->assertEquals(false, $latest['published']);
         $this->assertNull($latest['publish_at']);
         $this->assertEquals('Test editor', $latest['editor']);
-        $this->assertEquals($expectedLatestData, json_decode($latest['data'], true));
+        $this->assertEquals($expectedLatestData, json_decode($latest['data'] ?? null, true));
     }
 
 
@@ -383,7 +383,7 @@ class GraphqlElementTest extends TestAbstract
             'data' => [
                 'dropElement' => [[
                     'id' => $element->id,
-                    'deleted_at' => $element->deleted_at,
+                    'deleted_at' => (string) $element->deleted_at,
                 ]],
             ]
         ] );
