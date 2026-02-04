@@ -209,7 +209,7 @@ class GraphqlFileTest extends TestAbstract
 
         $this->expectsDatabaseQueryCount( 2 );
         $response = $this->actingAs( $this->user )->graphQL( '{
-            files(publish: SCHEDULED, sort: [{column: ID, order: ASC}]) {
+            files(publish: SCHEDULED) {
                 data {
                     id
                 }
