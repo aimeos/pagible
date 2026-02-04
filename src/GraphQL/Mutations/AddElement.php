@@ -32,13 +32,12 @@ final class AddElement
 
         return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $args ) {
 
-            $element = new Element();
-
             $editor = Auth::user()?->name ?? request()->ip();
 
+            $element = new Element();
             $element->fill( $args['input'] ?? [] );
-            $element->tenant_id = \Aimeos\Cms\Tenancy::value();
             $element->data = $args['input']['data'] ?? [];
+            $element->tenant_id = \Aimeos\Cms\Tenancy::value();
             $element->editor = $editor;
             $element->save();
 

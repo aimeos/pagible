@@ -53,7 +53,6 @@
     49 => 'Aimeos\\Cms\\ServiceProvider',
     50 => 'Aimeos\\Cms\\ServiceProvider',
     51 => 'Aimeos\\Nestedset\\NestedSetServiceProvider',
-    52 => 'Nuwave\\Lighthouse\\LighthouseServiceProvider',
   ),
   'eager' => 
   array (
@@ -92,7 +91,6 @@
     32 => 'Aimeos\\Cms\\ServiceProvider',
     33 => 'Aimeos\\Cms\\ServiceProvider',
     34 => 'Aimeos\\Nestedset\\NestedSetServiceProvider',
-    35 => 'Nuwave\\Lighthouse\\LighthouseServiceProvider',
   ),
   'deferred' => 
   array (

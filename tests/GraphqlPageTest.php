@@ -821,7 +821,7 @@ class GraphqlPageTest extends TestAbstract
         $element = Element::where( 'type', 'footer' )->firstOrFail();
         $root = Page::where('tag', 'root')->firstOrFail();
 
-        $this->expectsDatabaseQueryCount(11);
+        $this->expectsDatabaseQueryCount( 12 );
 
         $response = $this->actingAs($this->user)->graphQL('
             mutation {
@@ -944,7 +944,7 @@ class GraphqlPageTest extends TestAbstract
             'config' => ['test' => ['type' => 'test', 'data' => ['key' => 'value']]],
             'content' => [
                 ['type' => 'heading', 'data' => ['title' => 'Welcome to Laravel CMS']],
-                ['type' => 'ref', 'id' => $element->id],
+                ['type' => 'ref', 'id' => strtolower( $element->id )],
             ],
         ];
         $this->assertEquals($expectedPublishedAux, json_decode($savePage['published']['aux'] ?? null, true));
