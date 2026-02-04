@@ -19,6 +19,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Prunable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Collection;
 
 
@@ -116,6 +117,17 @@ class Element extends Model
 
 
     /**
+     * Get the current timestamp in seconds precision.
+     *
+     * @return \Illuminate\Support\Carbon Current timestamp
+     */
+    public function freshTimestamp()
+    {
+        return Date::now()->startOfSecond(); // SQL Server workaround
+    }
+
+
+    /**
      * Enforce JSON columns to return object.
      *
      * @param string $key Attribute name
@@ -187,12 +199,11 @@ class Element extends Model
     /**
      * Get the element's published version.
      *
-     * @return HasOne Eloquent relationship to the last published version of the element
+     * @return MorphOne Eloquent relationship to the last published version of the element
      */
-    public function published() : HasOne
+    public function published() : MorphOne
     {
-        return $this->hasOne( Version::class, 'versionable_id' )
-            ->where( 'versionable_type', Element::class )
+        return $this->morphOne( Version::class, 'versionable' )
             ->where( 'published', true )
             ->latestOfMany( 'created_at' );
     }
@@ -221,7 +232,7 @@ class Element extends Model
         // MySQL doesn't support offsets for DELETE
         $ids = Version::where( 'versionable_id', $this->id )
             ->where( 'versionable_type', Element::class )
-            ->orderBy( 'id', 'desc' )
+            ->orderBy( 'created_at', 'desc' )
             ->skip( $num )
             ->take( 10 )
             ->pluck( 'id' );
@@ -241,7 +252,7 @@ class Element extends Model
      */
     public function versions() : MorphMany
     {
-        return $this->morphMany( Version::class, 'versionable' )->orderBy( 'id', 'desc' );
+        return $this->morphMany( Version::class, 'versionable' )->orderBy( 'created_at', 'desc' );
     }
 
 

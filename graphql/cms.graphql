@@ -269,14 +269,14 @@ type Page {
   "List of files assigned to the page"
   files: [File!]! @belongsToMany
 
-  "List of versions for the page meta data"
-  versions: [Version!]! @morphMany
-
   "Latest version of the page meta data"
-  latest: Version @hasOne
+  latest: Version @morphOne
 
   "Published version of the page meta data"
-  published: Version @hasOne
+  published: Version @morphOne
+
+  "List of versions for the page meta data"
+  versions: [Version!]! @morphMany
 }
 
 input PageFilter {
@@ -422,14 +422,14 @@ type Element {
   "List of files assigned to the content element"
   files: [File!]! @belongsToMany
 
-  "List of versioned data for the content element"
-  versions: [Version!]! @morphMany
-
   "Latest version of the content element"
-  latest: Version @hasOne
+  latest: Version @morphOne
 
   "Published version of the content element"
-  published: Version @hasOne
+  published: Version @morphOne
+
+  "List of versioned data for the content element"
+  versions: [Version!]! @morphMany
 }
 
 input ElementFilter {
@@ -519,7 +519,10 @@ type File {
   byversions_count: Int!
 
   "Latest version of the file"
-  latest: Version @hasOne
+  latest: Version @morphOne
+
+  "Published version of the content element"
+  published: Version @morphOne
 
   "List of versioned data for the file"
   versions: [Version!]! @morphMany

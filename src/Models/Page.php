@@ -24,6 +24,7 @@ use Illuminate\Database\Eloquent\Prunable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Collection;
@@ -160,6 +161,17 @@ class Page extends Model
     public function files() : BelongsToMany
     {
         return $this->belongsToMany( File::class, 'cms_page_file', 'page_id' );
+    }
+
+
+    /**
+     * Get the current timestamp in seconds precision.
+     *
+     * @return \Illuminate\Support\Carbon Current timestamp
+     */
+    public function freshTimestamp()
+    {
+        return Date::now()->startOfSecond(); // SQL Server workaround
     }
 
 
@@ -377,12 +389,11 @@ class Page extends Model
     /**
      * Get the page's published head/meta data.
      *
-     * @return HasOne Eloquent relationship to the last published version of the page
+     * @return MorphOne Eloquent relationship to the last published version of the page
      */
-    public function published() : HasOne
+    public function published() : MorphOne
     {
-        return $this->hasOne( Version::class, 'versionable_id' )
-            ->where( 'versionable_type', Page::class )
+        return $this->morphOne( Version::class, 'versionable' )
             ->where( 'published', true )
             ->latestOfMany( 'created_at' );
     }
@@ -400,7 +411,7 @@ class Page extends Model
         // MySQL doesn't support offsets for DELETE
         $ids = Version::where( 'versionable_id', $this->id )
             ->where( 'versionable_type', Page::class )
-            ->orderBy( 'id', 'desc' )
+            ->orderBy( 'created_at', 'desc' )
             ->skip( $num )
             ->take( 10 )
             ->pluck( 'id' );
@@ -445,7 +456,7 @@ class Page extends Model
      */
     public function versions() : MorphMany
     {
-        return $this->morphMany( Version::class, 'versionable' )->orderBy( 'id', 'desc' );
+        return $this->morphMany( Version::class, 'versionable' )->orderBy( 'created_at', 'desc' );
     }
 
 
