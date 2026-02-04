@@ -51,7 +51,7 @@ final class AddElement
 
             $version->files()->attach( $args['files'] ?? [] );
 
-            return $element->refresh();
+            return $element->unsetRelations();
         }, 3 );
     }
 }
