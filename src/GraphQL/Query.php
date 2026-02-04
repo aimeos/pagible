@@ -104,7 +104,7 @@ final class Query
             case 'only': $builder->onlyTrashed(); break;
         }
 
-        $builder->whereHas('latest', function( $builder ) use ( $filter, $publish ) {
+        $builder->whereHas( 'latest', function( $builder ) use ( $filter, $publish ) {
 
             switch( $publish )
             {

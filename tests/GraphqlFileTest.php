@@ -205,7 +205,9 @@ class GraphqlFileTest extends TestAbstract
     {
         $this->seed( CmsSeeder::class );
 
-        $file = File::where( 'lang', 'en' )->get()->first();
+        $file = File::whereHas( 'latest', function( $builder ) {
+            $builder->where( 'cms_versions.publish_at', '!=', null )->where( 'cms_versions.published', false );
+        } )->firstOrFail();
 
         $this->expectsDatabaseQueryCount( 2 );
         $response = $this->actingAs( $this->user )->graphQL( '{
