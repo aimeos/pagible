@@ -872,6 +872,14 @@ class GraphqlPageTest extends TestAbstract
                         publish_at
                         editor
                     }
+                    versions {
+                        lang
+                        data
+                        aux
+                        published
+                        publish_at
+                        editor
+                    }
                     published {
                         data
                         aux

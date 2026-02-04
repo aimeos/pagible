@@ -283,6 +283,9 @@ class GraphqlElementTest extends TestAbstract
                     latest {
                         data
                     }
+                    versions {
+                        data
+                    }
                 }
             }
         ');
@@ -336,6 +339,13 @@ class GraphqlElementTest extends TestAbstract
                     data
                     editor
                     latest {
+                        lang
+                        data
+                        published
+                        publish_at
+                        editor
+                    }
+                    versions {
                         lang
                         data
                         published
