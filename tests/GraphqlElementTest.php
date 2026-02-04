@@ -289,8 +289,6 @@ class GraphqlElementTest extends TestAbstract
 
         $result = $response->json('data.addElement');
         $element = Element::findOrFail( $result['id'] );
-print_r( $element->latest );
-print_r( $element->versions );
 
         $response->assertJson( [
             'data' => [
@@ -348,8 +346,10 @@ print_r( $element->versions );
             }
         ');
 
-        $element = Element::find($element->id);
+        $element = Element::findOrFail($element->id);
         $saveElement = $response->json('data.saveElement');
+print_r( $element->latest );
+print_r( $element->versions );
 
         // Assert scalar fields
         $this->assertEquals($element->id, $saveElement['id']);

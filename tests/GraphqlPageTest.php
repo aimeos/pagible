@@ -892,6 +892,9 @@ class GraphqlPageTest extends TestAbstract
         $element = $page->elements()->firstOrFail();
 
         $savePage = $response->json('data.savePage');
+print_r( $savePage );
+print_r( $element->latest );
+print_r( $element->versions );
 
         // Assert basic fields
         $this->assertEquals((string)$root->id, $savePage['id']);
