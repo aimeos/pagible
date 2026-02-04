@@ -261,7 +261,7 @@ class GraphqlElementTest extends TestAbstract
         $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
         $element = Element::where( 'type', 'footer' )->firstOrFail();
 
-        $this->expectsDatabaseQueryCount(6);
+        $this->expectsDatabaseQueryCount( 7 );
 
         $response = $this->actingAs($this->user)->graphQL('
             mutation {
@@ -270,10 +270,13 @@ class GraphqlElementTest extends TestAbstract
                     lang: "en"
                     data: "{\\"key\\":\\"value\\"}"
                 }, files: ["' . $file->id . '"]) {
+                    id
                     type
                     lang
                     data
                     editor
+                    created_at
+                    updated_at
                     bypages {
                         id
                     }
@@ -284,22 +287,30 @@ class GraphqlElementTest extends TestAbstract
             }
         ');
 
-        $addElement = $response->json('data.addElement');
+        $result = $response->json('data.addElement');
+        $element = Element::findOrFail( $result['id'] );
 
-        // Assert scalar fields
-        $this->assertEquals('test', $addElement['type']);
-        $this->assertEquals('en', $addElement['lang']);
-        $this->assertEquals('Test editor', $addElement['editor']);
-        $this->assertEquals([], $addElement['bypages']);
-        $this->assertEquals(['key' => 'value'], json_decode($addElement['data'], true));
-
-        // Decode latest->data JSON for order-independent assertion
-        $expectedLatestData = [
-            'type' => 'test',
-            'lang' => 'en',
-            'data' => ['key' => 'value'],
-        ];
-        $this->assertEquals($expectedLatestData, json_decode($addElement['latest']['data'] ?? null, true));
+        $response->assertJson( [
+            'data' => [
+                'addElement' => [
+                    'id' => strtolower( $element->id ),
+                    'type' => 'test',
+                    'lang' => 'en',
+                    'data' => json_encode( $element->data ),
+                    'editor' => 'Test editor',
+                    'created_at' => (string) $element->created_at,
+                    'updated_at' => (string) $element->updated_at,
+                    'bypages' => [],
+                    'latest' => [
+                        'data' => json_encode( [
+                            'type' => 'test',
+                            'lang' => 'en',
+                            'data' => ['key' => 'value'],
+                        ] ),
+                    ],
+                ]
+            ]
+        ] );
     }
 
 

@@ -274,14 +274,13 @@ class GraphqlFileTest extends TestAbstract
             '1' => UploadedFile::fake()->image('test-preview-1.jpg', 20),
         ] );
 
-        $result = json_decode( $response->getContent() );
-        $id = $result?->data?->addFile?->id;
-        $file = File::findOrFail( $id );
+        $result = $response->json('data.addFile');
+        $file = File::findOrFail( $result['id'] );
 
         $response->assertJson( [
             'data' => [
                 'addFile' => [
-                    'id' => $file->id,
+                    'id' => strtolower( $file->id ),
                     'mime' => 'application/x-empty',
                     'lang' => 'en-GB',
                     'name' => 'Test file name',

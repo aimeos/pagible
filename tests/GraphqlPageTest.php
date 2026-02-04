@@ -480,7 +480,7 @@ class GraphqlPageTest extends TestAbstract
             'config' => ['test' => ['type' => 'test', 'data' => ['key' => 'value']]],
             'content' => [
                 ['type' => 'heading', 'data' => ['title' => 'Welcome to Laravel CMS']],
-                ['type' => 'ref', 'id' => $element->id],
+                ['type' => 'ref', 'id' => strtolower( $element->id )],
             ],
         ];
         $this->assertEquals($expectedAux, json_decode($version['aux'], true));
@@ -624,7 +624,7 @@ class GraphqlPageTest extends TestAbstract
 
         $attr = collect($page->getAttributes())->except(['tenant_id', '_lft', '_rgt', 'depth'])->all();
         $expected = [
-            'id' => (string) $page->id,
+            'id' => strtolower( $page->id ),
             'parent_id' => null,
             'status' => 0,
             'cache' => 0,
@@ -671,7 +671,7 @@ class GraphqlPageTest extends TestAbstract
 
         $response->assertJson( [
             'data' => [
-                'addPage' => ['id' => (string) $page->id, 'parent_id' => $root->id],
+                'addPage' => ['id' => strtolower( $page->id ), 'parent_id' => $root->id],
             ]
         ] );
     }
@@ -711,7 +711,7 @@ class GraphqlPageTest extends TestAbstract
 
         $response->assertJson( [
             'data' => [
-                'addPage' => ['id' => (string) $page->id, 'parent_id' => $root->id],
+                'addPage' => ['id' => strtolower( $page->id ), 'parent_id' => $root->id],
             ]
         ] );
         $this->assertEquals( 2, $page->_lft );
