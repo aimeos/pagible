@@ -30,9 +30,9 @@ final class AddElement
             $args['input']['data']->text = \Aimeos\Cms\Utils::html( (string) $args['input']['data']->text );
         }
 
-        $element = new Element();
+        return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $args ) {
 
-        DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $element, $args ) {
+            $element = new Element();
 
             $editor = Auth::user()?->name ?? request()->ip();
 
@@ -52,8 +52,7 @@ final class AddElement
 
             $version->files()->attach( $args['files'] ?? [] );
 
+            return $element->refresh();
         }, 3 );
-
-        return $element;
     }
 }
