@@ -37,6 +37,6 @@ class CommandTest extends TestAbstract
         $this->assertEquals( (object) [
             'en' => 'Test file description',
             'de' => 'Beschreibung der Testdatei',
-        ], File::where( 'lang', 'en' )->firstOrFail()?->description );
+        ], File::where( 'mime', 'image/jpeg' )->firstOrFail()?->description );
     }
 }

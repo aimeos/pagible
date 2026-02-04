@@ -289,6 +289,8 @@ class GraphqlElementTest extends TestAbstract
 
         $result = $response->json('data.addElement');
         $element = Element::findOrFail( $result['id'] );
+print_r( $element->latest );
+print_r( $element->versions );
 
         $response->assertJson( [
             'data' => [
