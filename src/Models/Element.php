@@ -158,7 +158,10 @@ class Element extends Model
      */
     public function getFilesAttribute() : Collection
     {
-        $files = $this->relationLoaded( 'files' ) ? $this->getRelation( 'files' ) : $this->load( 'files' )->getRelation( 'files' );
+        $files = $this->relationLoaded( 'files' )
+            ? $this->getRelation( 'files' )
+            : $this->load( 'files' )->getRelation( 'files' );
+
         return $files->pluck( null, 'id' );
     }
 
@@ -170,7 +173,9 @@ class Element extends Model
      */
     public function latest() : MorphOne
     {
-        return $this->morphOne( Version::class, 'versionable' )->latestOfMany( 'created_at' );
+        return $this->morphOne( Version::class, 'versionable' )
+            ->orderByDesc( 'id' )
+            ->limit( 1 );
     }
 
 
@@ -205,7 +210,8 @@ class Element extends Model
     {
         return $this->morphOne( Version::class, 'versionable' )
             ->where( 'published', true )
-            ->latestOfMany( 'created_at' );
+            ->orderByDesc( 'id' )
+            ->limit( 1 );
     }
 
 
