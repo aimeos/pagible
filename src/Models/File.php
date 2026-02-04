@@ -251,7 +251,19 @@ class File extends Model
      */
     public function latest() : MorphOne
     {
-        return $this->morphOne( Version::class, 'versionable' )->latest( 'id' );
+        return $this->morphOne( Version::class, 'versionable' )->latestOfMany( 'created_at' );
+    }
+
+
+    /**
+     * Get the prunable model query.
+     *
+     * @return Builder Eloquent query builder instance for pruning
+     */
+    public function prunable() : Builder
+    {
+        return static::withoutTenancy()->where( 'deleted_at', '<=', now()->subDays( config( 'cms.prune', 30 ) ) )
+            ->doesntHave( 'versions' )->doesntHave( 'pages' )->doesntHave( 'elements' );
     }
 
 
@@ -296,14 +308,16 @@ class File extends Model
 
 
     /**
-     * Get the prunable model query.
+     * Get the element's published head/meta data.
      *
-     * @return Builder Eloquent query builder instance for pruning
+     * @return HasOne Eloquent relationship to the last published version of the element
      */
-    public function prunable() : Builder
+    public function published() : HasOne
     {
-        return static::withoutTenancy()->where( 'deleted_at', '<=', now()->subDays( config( 'cms.prune', 30 ) ) )
-            ->doesntHave( 'versions' )->doesntHave( 'pages' )->doesntHave( 'elements' );
+        return $this->hasOne( Version::class, 'versionable_id' )
+            ->where( 'versionable_type', File::class )
+            ->where( 'published', true )
+            ->latestOfMany( 'created_at' );
     }
 
 

@@ -294,7 +294,7 @@ class Page extends Model
      */
     public function latest() : MorphOne
     {
-        return $this->morphOne( Version::class, 'versionable' )->latest( 'id' );
+        return $this->morphOne( Version::class, 'versionable' )->latestOfMany( 'created_at' );
     }
 
 
@@ -384,8 +384,7 @@ class Page extends Model
         return $this->hasOne( Version::class, 'versionable_id' )
             ->where( 'versionable_type', Page::class )
             ->where( 'published', true )
-            ->orderBy( 'id', 'desc' )
-            ->take( 1 );
+            ->latestOfMany( 'created_at' );
     }
 
 
