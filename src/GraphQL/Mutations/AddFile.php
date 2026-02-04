@@ -62,7 +62,7 @@ final class AddFile
                 ],
             ] );
 
-            return $file;
+            return $file->unsetRelations();
         }, 3 );
     }
 
