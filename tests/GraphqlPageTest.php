@@ -895,6 +895,7 @@ print_r(\Illuminate\Support\Facades\DB::getQueryLog());
 
         $savePage = $response->json('data.savePage');
 print_r($savePage['latest']);
+print_r($page->latest->getAttributes());
 
         // Assert basic fields
         $this->assertEquals((string)$root->id, $savePage['id']);

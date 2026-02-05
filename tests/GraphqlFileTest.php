@@ -346,6 +346,7 @@ print_r(\Illuminate\Support\Facades\DB::getQueryLog());
         $file = File::findOrFail($file->id);
         $saveFile = $response->json('data.saveFile');
 print_r($saveFile['latest']);
+print_r($file->latest->getAttributes());
 
         $this->assertEquals($file->id, $saveFile['id']);
 
