@@ -416,7 +416,6 @@ class Page extends Model
             ->offset( $num )
             ->limit( 10 )
             ->pluck( 'id' );
-print_r( $ids );
 
         if( !$ids->isEmpty() ) {
             Version::whereIn( 'id', $ids )->forceDelete();
