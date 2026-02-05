@@ -480,7 +480,7 @@ class GraphqlPageTest extends TestAbstract
             'config' => ['test' => ['type' => 'test', 'data' => ['key' => 'value']]],
             'content' => [
                 ['type' => 'heading', 'data' => ['title' => 'Welcome to Laravel CMS']],
-                ['type' => 'ref', 'id' => strtolower( $element->id )],
+                ['type' => 'ref', 'id' => $element->id ],
             ],
         ];
         $this->assertEquals($expectedAux, json_decode($version['aux'], true));
@@ -573,7 +573,7 @@ class GraphqlPageTest extends TestAbstract
         $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
         $element = Element::where( 'type', 'footer' )->firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 9 );
+        $this->expectsDatabaseQueryCount( 10 );
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
                 addPage(input: {
@@ -624,7 +624,7 @@ class GraphqlPageTest extends TestAbstract
 
         $attr = collect($page->getAttributes())->except(['tenant_id', '_lft', '_rgt', 'depth'])->all();
         $expected = [
-            'id' => strtolower( $page->id ),
+            'id' => $page->id,
             'parent_id' => null,
             'status' => 0,
             'cache' => 0,
@@ -644,7 +644,7 @@ class GraphqlPageTest extends TestAbstract
 
         $root = Page::where('tag', 'root')->firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 8 );
+        $this->expectsDatabaseQueryCount( 10 );
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
                 addPage(input: {
@@ -671,7 +671,7 @@ class GraphqlPageTest extends TestAbstract
 
         $response->assertJson( [
             'data' => [
-                'addPage' => ['id' => strtolower( $page->id ), 'parent_id' => $root->id],
+                'addPage' => ['id' => $page->id, 'parent_id' => $root->id],
             ]
         ] );
     }
@@ -684,7 +684,7 @@ class GraphqlPageTest extends TestAbstract
         $root = Page::where('tag', 'root')->firstOrFail();
         $ref = Page::where('tag', 'blog')->firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 8 );
+        $this->expectsDatabaseQueryCount( 10 );
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
                 addPage(input: {
@@ -711,7 +711,7 @@ class GraphqlPageTest extends TestAbstract
 
         $response->assertJson( [
             'data' => [
-                'addPage' => ['id' => strtolower( $page->id ), 'parent_id' => $root->id],
+                'addPage' => ['id' => $page->id, 'parent_id' => $root->id],
             ]
         ] );
         $this->assertEquals( 2, $page->_lft );
@@ -944,7 +944,7 @@ class GraphqlPageTest extends TestAbstract
             'config' => ['test' => ['type' => 'test', 'data' => ['key' => 'value']]],
             'content' => [
                 ['type' => 'heading', 'data' => ['title' => 'Welcome to Laravel CMS']],
-                ['type' => 'ref', 'id' => strtolower( $element->id )],
+                ['type' => 'ref', 'id' => $element->id],
             ],
         ];
         $this->assertEquals($expectedPublishedAux, json_decode($savePage['published']['aux'] ?? null, true));
