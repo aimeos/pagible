@@ -81,7 +81,7 @@ class CmsSeeder extends Seeder
                 'editor' => 'seeder',
             ]);
 
-            $this->file = $file->id;
+            $this->file = $file->refresh()->id;
 
             $file2 = File::forceCreate( [
                 'mime' => 'image/tiff',
@@ -134,7 +134,7 @@ class CmsSeeder extends Seeder
                 'editor' => 'seeder',
             ]);
 
-            $this->element = $element->id;
+            $this->element = $element->refresh()->id;
         }
 
         return $this->element;
