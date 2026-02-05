@@ -29,7 +29,7 @@ return new class extends Migration
             $table->json('data');
             $table->json('aux');
             $table->string('editor');
-            $table->timestamp('created_at');
+            $table->timestamp('created_at', 6);
 
             $table->index(['versionable_id', 'versionable_type', 'created_at', 'tenant_id'], 'idx_versions_id_type_created_tenantid');
             $table->index(['publish_at', 'published']);
