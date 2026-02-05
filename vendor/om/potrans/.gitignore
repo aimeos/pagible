@@ -1,6 +1,0 @@
-.env
-.potrans
-vendor
-tests/*.mo
-composer.lock
-credentials.json

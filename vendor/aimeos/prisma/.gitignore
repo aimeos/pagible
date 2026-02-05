@@ -1,5 +1,0 @@
-.env
-.phpunit.result.cache
-composer.lock
-/tests/Integration/results/
-/vendor
