@@ -305,7 +305,7 @@ class GraphqlFileTest extends TestAbstract
 
         $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 7 );
+        $this->expectsDatabaseQueryCount( 8 );
 
         $response = $this->actingAs($this->user)->multipartGraphQL([
             'query' => '
