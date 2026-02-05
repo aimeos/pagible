@@ -397,6 +397,7 @@ class File extends Model
             ->get();
 
         if( $versions->count() <= $num ) {
+echo __METHOD__ . ": No versions to remove.";
             return $this;
         }
 
