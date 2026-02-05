@@ -48,7 +48,7 @@ final class SavePage
             $version->elements()->attach( $args['elements'] ?? [] );
             $version->files()->attach( $args['files'] ?? [] );
 
-            return $page->removeVersions()->unsetRelations();
+            return $page->removeVersions()->fresh();
         } );
     }
 
