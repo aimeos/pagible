@@ -263,7 +263,7 @@ class File extends Model
      */
     public function latest() : MorphOne
     {
-        return $this->morphOne( Version::class, 'versionable' )->latestOfMany();
+        return $this->morphOne( Version::class, 'versionable' )->ofMany( ['created_at' => 'max'] );
     }
 
 
@@ -397,7 +397,6 @@ class File extends Model
             ->get();
 
         if( $versions->count() <= $num ) {
-echo __METHOD__ . ": No versions to remove.";
             return $this;
         }
 
