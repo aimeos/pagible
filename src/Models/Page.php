@@ -413,9 +413,10 @@ class Page extends Model
         $ids = Version::where( 'versionable_id', $this->id )
             ->where( 'versionable_type', Page::class )
             ->orderByDesc( 'id' )
-            ->skip( $num )
-            ->take( 10 )
+            ->offset( $num )
+            ->limit( 10 )
             ->pluck( 'id' );
+print_r( $ids );
 
         if( !$ids->isEmpty() ) {
             Version::whereIn( 'id', $ids )->forceDelete();
