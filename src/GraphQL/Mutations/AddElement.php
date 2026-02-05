@@ -43,8 +43,11 @@ final class AddElement
 
             $element->files()->attach( $args['files'] ?? [] );
 
+            $data = $args['input'] ?? [];
+            ksort( $data );
+
             $version = $element->versions()->create( [
-                'data' => array_map( fn( $v ) => is_null( $v ) ? (string) $v : $v, $args['input'] ?? [] ),
+                'data' => array_map( fn( $v ) => is_null( $v ) ? (string) $v : $v, $data ),
                 'lang' => $args['input']['lang'] ?? null,
                 'editor' => $editor,
             ] );

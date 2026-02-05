@@ -303,9 +303,9 @@ class GraphqlElementTest extends TestAbstract
                     'bypages' => [],
                     'latest' => [
                         'data' => json_encode( [
-                            'type' => 'test',
-                            'lang' => 'en',
                             'data' => ['key' => 'value'],
+                            'lang' => 'en',
+                            'type' => 'test',
                         ] ),
                     ],
                 ]
