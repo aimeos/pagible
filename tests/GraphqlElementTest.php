@@ -263,6 +263,7 @@ class GraphqlElementTest extends TestAbstract
 
         $this->expectsDatabaseQueryCount( 8 );
 
+\Illuminate\Support\Facades\DB::enableQueryLog();
         $response = $this->actingAs($this->user)->graphQL('
             mutation {
                 addElement(input: {
@@ -286,6 +287,7 @@ class GraphqlElementTest extends TestAbstract
                 }
             }
         ');
+print_r(\Illuminate\Support\Facades\DB::getQueryLog());
 
         $result = $response->json('data.addElement');
         $element = Element::findOrFail( $result['id'] );

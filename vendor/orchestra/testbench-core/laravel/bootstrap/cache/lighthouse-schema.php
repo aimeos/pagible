@@ -4048,6 +4048,90 @@
           'name' => 
           array (
             'kind' => 'Name',
+            'value' => 'latest',
+          ),
+          'arguments' => 
+          array (
+          ),
+          'type' => 
+          array (
+            'kind' => 'NamedType',
+            'name' => 
+            array (
+              'kind' => 'Name',
+              'value' => 'Version',
+            ),
+          ),
+          'directives' => 
+          array (
+            0 => 
+            array (
+              'kind' => 'Directive',
+              'name' => 
+              array (
+                'kind' => 'Name',
+                'value' => 'morphOne',
+              ),
+              'arguments' => 
+              array (
+              ),
+            ),
+          ),
+          'description' => 
+          array (
+            'kind' => 'StringValue',
+            'value' => 'Latest version of the page meta data',
+            'block' => false,
+          ),
+        ),
+        27 => 
+        array (
+          'kind' => 'FieldDefinition',
+          'name' => 
+          array (
+            'kind' => 'Name',
+            'value' => 'published',
+          ),
+          'arguments' => 
+          array (
+          ),
+          'type' => 
+          array (
+            'kind' => 'NamedType',
+            'name' => 
+            array (
+              'kind' => 'Name',
+              'value' => 'Version',
+            ),
+          ),
+          'directives' => 
+          array (
+            0 => 
+            array (
+              'kind' => 'Directive',
+              'name' => 
+              array (
+                'kind' => 'Name',
+                'value' => 'morphOne',
+              ),
+              'arguments' => 
+              array (
+              ),
+            ),
+          ),
+          'description' => 
+          array (
+            'kind' => 'StringValue',
+            'value' => 'Published version of the page meta data',
+            'block' => false,
+          ),
+        ),
+        28 => 
+        array (
+          'kind' => 'FieldDefinition',
+          'name' => 
+          array (
+            'kind' => 'Name',
             'value' => 'versions',
           ),
           'arguments' => 
@@ -4093,90 +4177,6 @@
           array (
             'kind' => 'StringValue',
             'value' => 'List of versions for the page meta data',
-            'block' => false,
-          ),
-        ),
-        27 => 
-        array (
-          'kind' => 'FieldDefinition',
-          'name' => 
-          array (
-            'kind' => 'Name',
-            'value' => 'latest',
-          ),
-          'arguments' => 
-          array (
-          ),
-          'type' => 
-          array (
-            'kind' => 'NamedType',
-            'name' => 
-            array (
-              'kind' => 'Name',
-              'value' => 'Version',
-            ),
-          ),
-          'directives' => 
-          array (
-            0 => 
-            array (
-              'kind' => 'Directive',
-              'name' => 
-              array (
-                'kind' => 'Name',
-                'value' => 'hasOne',
-              ),
-              'arguments' => 
-              array (
-              ),
-            ),
-          ),
-          'description' => 
-          array (
-            'kind' => 'StringValue',
-            'value' => 'Latest version of the page meta data',
-            'block' => false,
-          ),
-        ),
-        28 => 
-        array (
-          'kind' => 'FieldDefinition',
-          'name' => 
-          array (
-            'kind' => 'Name',
-            'value' => 'published',
-          ),
-          'arguments' => 
-          array (
-          ),
-          'type' => 
-          array (
-            'kind' => 'NamedType',
-            'name' => 
-            array (
-              'kind' => 'Name',
-              'value' => 'Version',
-            ),
-          ),
-          'directives' => 
-          array (
-            0 => 
-            array (
-              'kind' => 'Directive',
-              'name' => 
-              array (
-                'kind' => 'Name',
-                'value' => 'hasOne',
-              ),
-              'arguments' => 
-              array (
-              ),
-            ),
-          ),
-          'description' => 
-          array (
-            'kind' => 'StringValue',
-            'value' => 'Published version of the page meta data',
             'block' => false,
           ),
         ),
@@ -5804,6 +5804,90 @@
           'name' => 
           array (
             'kind' => 'Name',
+            'value' => 'latest',
+          ),
+          'arguments' => 
+          array (
+          ),
+          'type' => 
+          array (
+            'kind' => 'NamedType',
+            'name' => 
+            array (
+              'kind' => 'Name',
+              'value' => 'Version',
+            ),
+          ),
+          'directives' => 
+          array (
+            0 => 
+            array (
+              'kind' => 'Directive',
+              'name' => 
+              array (
+                'kind' => 'Name',
+                'value' => 'morphOne',
+              ),
+              'arguments' => 
+              array (
+              ),
+            ),
+          ),
+          'description' => 
+          array (
+            'kind' => 'StringValue',
+            'value' => 'Latest version of the content element',
+            'block' => false,
+          ),
+        ),
+        13 => 
+        array (
+          'kind' => 'FieldDefinition',
+          'name' => 
+          array (
+            'kind' => 'Name',
+            'value' => 'published',
+          ),
+          'arguments' => 
+          array (
+          ),
+          'type' => 
+          array (
+            'kind' => 'NamedType',
+            'name' => 
+            array (
+              'kind' => 'Name',
+              'value' => 'Version',
+            ),
+          ),
+          'directives' => 
+          array (
+            0 => 
+            array (
+              'kind' => 'Directive',
+              'name' => 
+              array (
+                'kind' => 'Name',
+                'value' => 'morphOne',
+              ),
+              'arguments' => 
+              array (
+              ),
+            ),
+          ),
+          'description' => 
+          array (
+            'kind' => 'StringValue',
+            'value' => 'Published version of the content element',
+            'block' => false,
+          ),
+        ),
+        14 => 
+        array (
+          'kind' => 'FieldDefinition',
+          'name' => 
+          array (
+            'kind' => 'Name',
             'value' => 'versions',
           ),
           'arguments' => 
@@ -5849,90 +5933,6 @@
           array (
             'kind' => 'StringValue',
             'value' => 'List of versioned data for the content element',
-            'block' => false,
-          ),
-        ),
-        13 => 
-        array (
-          'kind' => 'FieldDefinition',
-          'name' => 
-          array (
-            'kind' => 'Name',
-            'value' => 'latest',
-          ),
-          'arguments' => 
-          array (
-          ),
-          'type' => 
-          array (
-            'kind' => 'NamedType',
-            'name' => 
-            array (
-              'kind' => 'Name',
-              'value' => 'Version',
-            ),
-          ),
-          'directives' => 
-          array (
-            0 => 
-            array (
-              'kind' => 'Directive',
-              'name' => 
-              array (
-                'kind' => 'Name',
-                'value' => 'hasOne',
-              ),
-              'arguments' => 
-              array (
-              ),
-            ),
-          ),
-          'description' => 
-          array (
-            'kind' => 'StringValue',
-            'value' => 'Latest version of the content element',
-            'block' => false,
-          ),
-        ),
-        14 => 
-        array (
-          'kind' => 'FieldDefinition',
-          'name' => 
-          array (
-            'kind' => 'Name',
-            'value' => 'published',
-          ),
-          'arguments' => 
-          array (
-          ),
-          'type' => 
-          array (
-            'kind' => 'NamedType',
-            'name' => 
-            array (
-              'kind' => 'Name',
-              'value' => 'Version',
-            ),
-          ),
-          'directives' => 
-          array (
-            0 => 
-            array (
-              'kind' => 'Directive',
-              'name' => 
-              array (
-                'kind' => 'Name',
-                'value' => 'hasOne',
-              ),
-              'arguments' => 
-              array (
-              ),
-            ),
-          ),
-          'description' => 
-          array (
-            'kind' => 'StringValue',
-            'value' => 'Published version of the content element',
             'block' => false,
           ),
         ),
@@ -6905,7 +6905,7 @@
               'name' => 
               array (
                 'kind' => 'Name',
-                'value' => 'hasOne',
+                'value' => 'morphOne',
               ),
               'arguments' => 
               array (
@@ -6920,6 +6920,48 @@
           ),
         ),
         17 => 
+        array (
+          'kind' => 'FieldDefinition',
+          'name' => 
+          array (
+            'kind' => 'Name',
+            'value' => 'published',
+          ),
+          'arguments' => 
+          array (
+          ),
+          'type' => 
+          array (
+            'kind' => 'NamedType',
+            'name' => 
+            array (
+              'kind' => 'Name',
+              'value' => 'Version',
+            ),
+          ),
+          'directives' => 
+          array (
+            0 => 
+            array (
+              'kind' => 'Directive',
+              'name' => 
+              array (
+                'kind' => 'Name',
+                'value' => 'morphOne',
+              ),
+              'arguments' => 
+              array (
+              ),
+            ),
+          ),
+          'description' => 
+          array (
+            'kind' => 'StringValue',
+            'value' => 'Published version of the content element',
+            'block' => false,
+          ),
+        ),
+        18 => 
         array (
           'kind' => 'FieldDefinition',
           'name' => 
@@ -16618,5 +16660,5 @@
   'schemaExtensions' => 
   array (
   ),
-  'hash' => 'fbea80316c48d57ba3f728e7a496e0a6046cc82f8627d9cfaf02adaa9262668d',
+  'hash' => '3c8a20ed25ef208baac1e33d4b7c2660f041b7516c629c409e17f4ad13399661',
 );
