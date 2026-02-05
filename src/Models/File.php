@@ -328,8 +328,8 @@ class File extends Model
     {
         return $this->morphOne( Version::class, 'versionable' )
             ->ofMany( ['id' => 'max'], function( $query ) {
-                $query->where('published', true);
-            });
+                $query->where( (new Version)->qualifyColumn( 'published' ), true );
+            } );
     }
 
 
