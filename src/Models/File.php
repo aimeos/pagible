@@ -251,7 +251,19 @@ class File extends Model
      */
     public function latest() : MorphOne
     {
-        return $this->morphOne( Version::class, 'versionable' )->latestOfMany();
+        return $this->morphOne( Version::class, 'versionable' )->ofMany( ['created_at' => 'max', 'id' => 'max'] );
+    }
+
+
+    /**
+     * Get the prunable model query.
+     *
+     * @return Builder Eloquent query builder instance for pruning
+     */
+    public function prunable() : Builder
+    {
+        return static::withoutTenancy()->where( 'deleted_at', '<=', now()->subDays( config( 'cms.prune', 30 ) ) )
+            ->doesntHave( 'versions' )->doesntHave( 'pages' )->doesntHave( 'elements' );
     }
 
 
@@ -296,14 +308,16 @@ class File extends Model
 
 
     /**
-     * Get the prunable model query.
+     * Get the element's published head/meta data.
      *
-     * @return Builder Eloquent query builder instance for pruning
+     * @return MorphOne Eloquent relationship to the last published version of the element
      */
-    public function prunable() : Builder
+    public function published() : MorphOne
     {
-        return static::withoutTenancy()->where( 'deleted_at', '<=', now()->subDays( config( 'cms.prune', 30 ) ) )
-            ->doesntHave( 'versions' )->doesntHave( 'pages' )->doesntHave( 'elements' );
+        return $this->morphOne( Version::class, 'versionable' )
+            ->ofMany( ['created_at' => 'max', 'id' => 'max'], function( $query ) {
+                $query->where( (new Version)->qualifyColumn( 'published' ), true );
+            } );
     }
 
 
@@ -414,7 +428,7 @@ class File extends Model
      */
     public function versions() : MorphMany
     {
-        return $this->morphMany( Version::class, 'versionable' );
+        return $this->morphMany( Version::class, 'versionable' )->orderByDesc( 'created_at' )->orderByDesc( 'id' );
     }
 
 
