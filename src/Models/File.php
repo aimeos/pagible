@@ -366,8 +366,8 @@ class File extends Model
 
         $versions = Version::where( 'versionable_id', $this->id )
             ->where( 'versionable_type', File::class )
-            ->orderBy( 'id', 'desc' )
-            ->take( $num + 10 ) // keep $num versions, delete up to 10 older versions
+            ->orderByDesc( 'created_at' )
+            ->limit( $num + 10 ) // keep $num versions, delete up to 10 older versions
             ->get();
 
         if( $versions->count() <= $num ) {

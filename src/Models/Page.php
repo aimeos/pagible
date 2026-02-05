@@ -401,9 +401,9 @@ class Page extends Model
         // MySQL doesn't support offsets for DELETE
         $ids = Version::where( 'versionable_id', $this->id )
             ->where( 'versionable_type', Page::class )
-            ->orderBy( 'id', 'desc' )
-            ->skip( $num )
-            ->take( 10 )
+            ->orderByDesc( 'created_at' )
+            ->offset( $num )
+            ->limit( 10 )
             ->pluck( 'id' );
 
         if( !$ids->isEmpty() ) {
