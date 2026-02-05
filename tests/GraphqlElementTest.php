@@ -350,6 +350,7 @@ print_r(\Illuminate\Support\Facades\DB::getQueryLog());
 
         $element = Element::findOrFail($element->id);
         $saveElement = $response->json('data.saveElement');
+print_r($element->versions->map(fn($v) => $v->getAttributes())->all());
 
         // Assert scalar fields
         $this->assertEquals($element->id, $saveElement['id']);
