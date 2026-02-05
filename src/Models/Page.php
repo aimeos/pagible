@@ -306,9 +306,7 @@ class Page extends Model
      */
     public function latest() : MorphOne
     {
-        return $this->morphOne( Version::class, 'versionable' )
-            ->orderByDesc( 'id' )
-            ->limit( 1 );
+        return $this->morphOne( Version::class, 'versionable' )->latestOfMany();
     }
 
 
@@ -396,9 +394,9 @@ class Page extends Model
     public function published() : MorphOne
     {
         return $this->morphOne( Version::class, 'versionable' )
-            ->where( 'published', true )
-            ->orderByDesc( 'id' )
-            ->limit( 1 );
+            ->ofMany( ['id' => 'max'], function( $query ) {
+                $query->where('published', true);
+            });
     }
 
 
@@ -414,7 +412,7 @@ class Page extends Model
         // MySQL doesn't support offsets for DELETE
         $ids = Version::where( 'versionable_id', $this->id )
             ->where( 'versionable_type', Page::class )
-            ->orderBy( 'created_at', 'desc' )
+            ->orderByDesc( 'id' )
             ->skip( $num )
             ->take( 10 )
             ->pluck( 'id' );

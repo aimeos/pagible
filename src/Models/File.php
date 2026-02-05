@@ -263,9 +263,7 @@ class File extends Model
      */
     public function latest() : MorphOne
     {
-        return $this->morphOne( Version::class, 'versionable' )
-            ->orderByDesc( 'id' )
-            ->limit( 1 );
+        return $this->morphOne( Version::class, 'versionable' )->latestOfMany();
     }
 
 
@@ -329,9 +327,9 @@ class File extends Model
     public function published() : MorphOne
     {
         return $this->morphOne( Version::class, 'versionable' )
-            ->where( 'published', true )
-            ->orderByDesc( 'id' )
-            ->limit( 1 );
+            ->ofMany( ['id' => 'max'], function( $query ) {
+                $query->where('published', true);
+            });
     }
 
 
@@ -394,7 +392,7 @@ class File extends Model
 
         $versions = Version::where( 'versionable_id', $this->id )
             ->where( 'versionable_type', File::class )
-            ->orderBy( 'created_at', 'desc' )
+            ->orderByDesc( 'id' )
             ->take( $num + 10 ) // keep $num versions, delete up to 10 older versions
             ->get();
 
