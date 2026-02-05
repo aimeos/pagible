@@ -263,7 +263,7 @@ class File extends Model
      */
     public function latest() : MorphOne
     {
-        return $this->morphOne( Version::class, 'versionable' )->latestOfMany( ['id', 'created_at'] );
+        return $this->morphOne( Version::class, 'versionable' )->latestOfMany();
     }
 
 
