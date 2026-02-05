@@ -267,7 +267,7 @@ class File extends Model
         $previews = $this->previews;
 
         $this->fill( (array) $version->data );
-        $this->previews = (array) $version->data?->previews ?? [];
+        $this->previews = (array) $version->data?->previews;
         $this->path = $version->data?->path;
         $this->mime = $version->data?->mime;
         $this->editor = $version->editor;

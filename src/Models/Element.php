@@ -8,6 +8,7 @@
 namespace Aimeos\Cms\Models;
 
 use Aimeos\Cms\Concerns\Tenancy;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -145,7 +146,10 @@ class Element extends Model
      */
     public function getFilesAttribute() : Collection
     {
-        $files = $this->relationLoaded( 'files' ) ? $this->getRelation( 'files' ) : $this->load( 'files' )->getRelation( 'files' );
+        $files = $this->relationLoaded( 'files' )
+            ? $this->getRelation( 'files' )
+            : $this->load( 'files' )->getRelation( 'files' );
+
         return $files->pluck( null, 'id' );
     }
 

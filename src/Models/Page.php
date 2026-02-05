@@ -458,7 +458,7 @@ class Page extends Model
     protected function cache(): Attribute
     {
         return Attribute::make(
-            set: fn($value) => $value === null ? 5 : (int) $value,
+            set: fn( $value ) => $value === null ? 5 : (int) $value,
         );
     }
 
@@ -471,7 +471,7 @@ class Page extends Model
     protected function config(): Attribute
     {
         return Attribute::make(
-            set: fn($value) => json_encode( $value ?? new \stdClass() ),
+            set: fn( $value ) => json_encode( $value ?? new \stdClass() ),
         );
     }
 
@@ -484,7 +484,7 @@ class Page extends Model
     protected function content(): Attribute
     {
         return Attribute::make(
-            set: fn($value) => json_encode( $value ?? [] ),
+            set: fn( $value ) => json_encode( $value ?? [] ),
         );
     }
 
@@ -497,7 +497,7 @@ class Page extends Model
     protected function domain(): Attribute
     {
         return Attribute::make(
-            set: fn($value) => (string) $value,
+            set: fn( $value ) => (string) $value,
         );
     }
 
@@ -510,7 +510,7 @@ class Page extends Model
     protected function name(): Attribute
     {
         return Attribute::make(
-            set: fn($value) => (string) $value,
+            set: fn( $value ) => (string) $value,
         );
     }
 
@@ -523,7 +523,7 @@ class Page extends Model
     protected function meta(): Attribute
     {
         return Attribute::make(
-            set: fn($value) => json_encode( $value ?? new \stdClass() ),
+            set: fn( $value ) => json_encode( $value ?? new \stdClass() ),
         );
     }
 
@@ -536,7 +536,7 @@ class Page extends Model
     protected function path(): Attribute
     {
         return Attribute::make(
-            set: fn($value) => (string) $value,
+            set: fn( $value ) => (string) $value,
         );
     }
 
@@ -560,7 +560,7 @@ class Page extends Model
     protected function relatedId(): Attribute
     {
         return Attribute::make(
-            set: fn($value) => !empty( $value) ? (int) $value : null,
+            set: fn( $value ) => !empty( $value) ? (int) $value : null,
         );
     }
 
@@ -573,7 +573,7 @@ class Page extends Model
     protected function status(): Attribute
     {
         return Attribute::make(
-            set: fn($value) => (int) $value,
+            set: fn( $value ) => (int) $value,
         );
     }
 
@@ -586,7 +586,7 @@ class Page extends Model
     protected function tag(): Attribute
     {
         return Attribute::make(
-            set: fn($value) => (string) $value,
+            set: fn( $value ) => (string) $value,
         );
     }
 
@@ -599,7 +599,7 @@ class Page extends Model
     protected function theme(): Attribute
     {
         return Attribute::make(
-            set: fn($value) => (string) $value,
+            set: fn( $value ) => (string) $value,
         );
     }
 
@@ -612,7 +612,7 @@ class Page extends Model
     protected function to(): Attribute
     {
         return Attribute::make(
-            set: fn($value) => (string) $value,
+            set: fn( $value ) => (string) $value,
         );
     }
 
@@ -625,7 +625,7 @@ class Page extends Model
     protected function type(): Attribute
     {
         return Attribute::make(
-            set: fn($value) => (string) $value,
+            set: fn( $value ) => (string) $value,
         );
     }
 }
