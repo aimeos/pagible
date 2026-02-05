@@ -322,6 +322,7 @@ class GraphqlElementTest extends TestAbstract
         $element = Element::where( 'type', 'footer' )->firstOrFail();
 
         $this->expectsDatabaseQueryCount( 6 );
+\Illuminate\Support\Facades\DB::enableQueryLog();
 
         $response = $this->actingAs($this->user)->graphQL('
             mutation {
@@ -345,10 +346,10 @@ class GraphqlElementTest extends TestAbstract
                 }
             }
         ');
+print_r(\Illuminate\Support\Facades\DB::getQueryLog());
 
         $element = Element::findOrFail($element->id);
         $saveElement = $response->json('data.saveElement');
-print_r($element->latest->getAttributes());
 
         // Assert scalar fields
         $this->assertEquals($element->id, $saveElement['id']);
