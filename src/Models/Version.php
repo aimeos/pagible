@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Collection;
 
 
@@ -88,6 +89,17 @@ class Version extends Model
     public function files() : BelongsToMany
     {
         return $this->belongsToMany( File::class, 'cms_version_file' );
+    }
+
+
+    /**
+     * Get a fresh timestamp for the model.
+     *
+     * @return \Illuminate\Support\Carbon
+     */
+    public function freshTimestamp()
+    {
+        return Date::now();
     }
 
 

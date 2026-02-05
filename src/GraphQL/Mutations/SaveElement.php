@@ -42,7 +42,7 @@ final class SaveElement
 
             $version->files()->attach( $args['files'] ?? [] );
 
-            return $element->unsetRelations();
+            return $element->removeVersions()->unsetRelations();
         }, 3 );
     }
 }
