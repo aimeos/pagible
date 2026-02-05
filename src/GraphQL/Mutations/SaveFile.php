@@ -79,7 +79,7 @@ final class SaveFile
 
             $file->removeVersions();
 
-            return $orig->fresh();
+            return $orig->unsetRelations();
         }, 3 );
     }
 }
