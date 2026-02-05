@@ -322,7 +322,6 @@ class GraphqlElementTest extends TestAbstract
         $element = Element::where( 'type', 'footer' )->firstOrFail();
 
         $this->expectsDatabaseQueryCount( 6 );
-\Illuminate\Support\Facades\DB::enableQueryLog();
 
         $response = $this->actingAs($this->user)->graphQL('
             mutation {
@@ -346,11 +345,9 @@ class GraphqlElementTest extends TestAbstract
                 }
             }
         ');
-print_r(\Illuminate\Support\Facades\DB::getQueryLog());
 
         $element = Element::findOrFail($element->id);
         $saveElement = $response->json('data.saveElement');
-print_r($element->versions->map(fn($v) => $v->getAttributes())->all());
 
         // Assert scalar fields
         $this->assertEquals($element->id, $saveElement['id']);
@@ -367,7 +364,6 @@ print_r($element->versions->map(fn($v) => $v->getAttributes())->all());
         ];
 
         $latest = $saveElement['latest'];
-print_r($latest);
         $this->assertNull($saveElement['latest']['publish_at'] ?? null);
         $this->assertEquals('de', $saveElement['latest']['lang'] ?? null);
         $this->assertEquals(false, $saveElement['latest']['published'] ?? null);
