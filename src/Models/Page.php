@@ -457,7 +457,7 @@ class Page extends Model
      */
     public function versions() : MorphMany
     {
-        return $this->morphMany( Version::class, 'versionable' )->orderBy( 'created_at', 'desc' );
+        return $this->morphMany( Version::class, 'versionable' )->orderByDesc( 'id' );
     }
 
 
