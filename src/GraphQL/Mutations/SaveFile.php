@@ -28,27 +28,28 @@ final class SaveFile
             throw new Error( 'Insufficient permissions' );
         }
 
-        return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $args ) {
+        $file = File::withTrashed()->findOrFail( $args['id'] );
+
+        DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $args, $file ) {
 
             $editor = Auth::user()?->name ?? request()->ip();
-            $orig = File::withTrashed()->findOrFail( $args['id'] );
-            $previews = $orig->latest?->data?->previews ?? $orig->previews;
-            $path = $orig->latest?->data?->path ?? $orig->path;
+            $previews = $file->latest?->data?->previews ?? $file->previews;
+            $path = $file->latest?->data?->path ?? $file->path;
 
-            $file = clone $orig;
-            $file->fill( array_replace( (array) $orig->latest?->data ?? [], (array) $args['input'] ?? [] ) );
-            $file->previews = $args['input']['previews'] ?? $previews;
-            $file->path = $args['input']['path'] ?? $path;
-            $file->editor = $editor;
+            $copy = clone $file;
+            $copy->fill( array_replace( (array) $file->latest?->data ?? [], (array) $args['input'] ?? [] ) );
+            $copy->previews = $args['input']['previews'] ?? $previews;
+            $copy->path = $args['input']['path'] ?? $path;
+            $copy->editor = $editor;
 
             $upload = $args['file'] ?? null;
 
             if( $upload instanceof UploadedFile && $upload->isValid() ) {
-                $file->addFile( $upload );
+                $copy->addFile( $upload );
             }
 
-            if( $file->path !== $path ) {
-                $file->mime = Utils::mimetype( $file->path );
+            if( $copy->path !== $path ) {
+                $copy->mime = Utils::mimetype( $copy->path );
             }
 
             try
@@ -56,30 +57,32 @@ final class SaveFile
                 $preview = $args['preview'] ?? null;
 
                 if( $preview instanceof UploadedFile && $preview->isValid() && str_starts_with( $preview->getClientMimeType(), 'image/' ) ) {
-                    $file->addPreviews( $preview );
+                    $copy->addPreviews( $preview );
                 } elseif( $upload instanceof UploadedFile && $upload->isValid() && str_starts_with( $upload->getClientMimeType(), 'image/' ) ) {
-                    $file->addPreviews( $upload );
-                } elseif( $file->path !== $path && str_starts_with( $file->path, 'http' ) ) {
-                    $file->addPreviews( $file->path );
+                    $copy->addPreviews( $upload );
+                } elseif( $copy->path !== $path && str_starts_with( $copy->path, 'http' ) ) {
+                    $copy->addPreviews( $copy->path );
                 } elseif( $preview === false ) {
-                    $file->previews = [];
+                    $copy->previews = [];
                 }
             }
             catch( \Throwable $t )
             {
-                $file->removePreviews();
+                $copy->removePreviews();
                 throw $t;
             }
 
-            $file->versions()->create( [
-                'lang' => $file->lang,
+            $copy->versions()->create( [
+                'lang' => $copy->lang,
                 'editor' => $editor,
-                'data' => $file->toArray(),
+                'data' => $copy->toArray(),
             ] );
-
-            $file->removeVersions();
-
-            return $orig->fresh();
         }, 3 );
+
+        DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $file ) {
+            $file->removeVersions();
+        }, 3 );
+
+        return $file;
     }
 }

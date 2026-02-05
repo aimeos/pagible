@@ -30,9 +30,9 @@ final class SaveElement
             $args['input']['data']->text = \Aimeos\Cms\Utils::html( (string) $args['input']['data']->text );
         }
 
-        return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $args ) {
+        $element = Element::withTrashed()->findOrFail( $args['id'] );
 
-            $element = Element::withTrashed()->findOrFail( $args['id'] );
+        DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $args, $element ) {
 
             $version = $element->versions()->create( [
                 'data' => array_map( fn( $v ) => $v ?? '', $args['input'] ?? [] ),
@@ -41,8 +41,12 @@ final class SaveElement
             ] );
 
             $version->files()->attach( $args['files'] ?? [] );
-
-            return $element->removeVersions()->fresh();
         }, 3 );
+
+        DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $element ) {
+            $element->removeVersions();
+        }, 3 );
+
+        return $element;
     }
 }
