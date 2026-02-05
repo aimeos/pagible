@@ -348,6 +348,7 @@ class GraphqlElementTest extends TestAbstract
 
         $element = Element::findOrFail($element->id);
         $saveElement = $response->json('data.saveElement');
+print_r($element->latest->getAttributes());
 
         // Assert scalar fields
         $this->assertEquals($element->id, $saveElement['id']);
@@ -364,6 +365,7 @@ class GraphqlElementTest extends TestAbstract
         ];
 
         $latest = $saveElement['latest'];
+print_r($latest);
         $this->assertNull($saveElement['latest']['publish_at'] ?? null);
         $this->assertEquals('de', $saveElement['latest']['lang'] ?? null);
         $this->assertEquals(false, $saveElement['latest']['published'] ?? null);
