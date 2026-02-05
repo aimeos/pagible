@@ -77,8 +77,6 @@ final class SaveFile
                 'data' => $file->toArray(),
             ] );
 
-            $file->removeVersions();
-
             return $orig->unsetRelations();
         }, 3 );
     }
