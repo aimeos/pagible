@@ -823,6 +823,7 @@ class GraphqlPageTest extends TestAbstract
 
         $this->expectsDatabaseQueryCount( 12 );
 
+\Illuminate\Support\Facades\DB::enableQueryLog();
         $response = $this->actingAs($this->user)->graphQL('
             mutation {
                 savePage(id: "' . $root->id . '", input: {
@@ -887,6 +888,7 @@ class GraphqlPageTest extends TestAbstract
                 }
             }
         ');
+print_r(\Illuminate\Support\Facades\DB::getQueryLog());
 
         $page = Page::findOrFail( $root->id );
         $element = $page->elements()->firstOrFail();

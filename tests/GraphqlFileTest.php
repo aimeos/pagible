@@ -307,6 +307,7 @@ class GraphqlFileTest extends TestAbstract
 
         $this->expectsDatabaseQueryCount(7);
 
+\Illuminate\Support\Facades\DB::enableQueryLog();
         $response = $this->actingAs($this->user)->multipartGraphQL([
             'query' => '
                 mutation($preview: Upload) {
@@ -340,6 +341,7 @@ class GraphqlFileTest extends TestAbstract
         ], [
             '0' => UploadedFile::fake()->image('test-preview-1.jpg', 200),
         ]);
+print_r(\Illuminate\Support\Facades\DB::getQueryLog());
 
         $file = File::findOrFail($file->id);
         $saveFile = $response->json('data.saveFile');

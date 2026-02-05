@@ -325,6 +325,7 @@ print_r(\Illuminate\Support\Facades\DB::getQueryLog());
 
         $this->expectsDatabaseQueryCount( 6 );
 
+\Illuminate\Support\Facades\DB::enableQueryLog();
         $response = $this->actingAs($this->user)->graphQL('
             mutation {
                 saveElement(id: "' . $element->id . '", input: {
@@ -347,6 +348,7 @@ print_r(\Illuminate\Support\Facades\DB::getQueryLog());
                 }
             }
         ');
+print_r(\Illuminate\Support\Facades\DB::getQueryLog());
 
         $element = Element::findOrFail($element->id);
         $saveElement = $response->json('data.saveElement');
