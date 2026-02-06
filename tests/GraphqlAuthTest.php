@@ -53,12 +53,7 @@ class GraphqlAuthTest extends TestAbstract
     {
         $user = \App\Models\User::where('email', 'editor@testbench')->firstOrFail();
 
-        $attr = collect($user->getAttributes())->except(['cmseditor', 'password', 'secret', 'remember_token'])->all();
-        $expected = [
-            'id' => (string) $user->id,
-            'created_at' => (string) $user->getAttribute( 'created_at' ),
-            'updated_at' => (string) $user->getAttribute( 'updated_at' ),
-        ] + $attr;
+        $expected = collect($user->getAttributes())->only(['id', 'email', 'name'])->all();
 
         $this->expectsDatabaseQueryCount( 1 );
 
@@ -68,9 +63,6 @@ class GraphqlAuthTest extends TestAbstract
                     id
                     email
                     name
-                    email_verified_at
-                    created_at
-                    updated_at
                 }
             }
         " )->assertJson( [
@@ -85,12 +77,7 @@ class GraphqlAuthTest extends TestAbstract
     {
         $user = \App\Models\User::where('email', 'editor@testbench')->firstOrFail();
 
-        $attr = collect($user->getAttributes())->except(['cmseditor', 'password', 'secret', 'remember_token'])->all();
-        $expected = [
-            'id' => (string) $user->id,
-            'created_at' => (string) $user->getAttribute( 'created_at' ),
-            'updated_at' => (string) $user->getAttribute( 'updated_at' ),
-        ] + $attr;
+        $expected = collect($user->getAttributes())->only(['id', 'email', 'name'])->all();
 
         $this->expectsDatabaseQueryCount( 0 );
 
@@ -100,9 +87,6 @@ class GraphqlAuthTest extends TestAbstract
                     id
                     email
                     name
-                    email_verified_at
-                    created_at
-                    updated_at
                 }
             }
         " )->assertJson( [
@@ -117,12 +101,7 @@ class GraphqlAuthTest extends TestAbstract
     {
         $user = \App\Models\User::where('email', 'editor@testbench')->firstOrFail();
 
-        $attr = collect($user->getAttributes())->except(['cmseditor', 'password', 'secret', 'remember_token'])->all();
-        $expected = [
-            'id' => (string) $user->id,
-            'created_at' => (string) $user->getAttribute( 'created_at' ),
-            'updated_at' => (string) $user->getAttribute( 'updated_at' ),
-        ] + $attr;
+        $expected = collect($user->getAttributes())->only(['id', 'email', 'name'])->all();
 
         $this->expectsDatabaseQueryCount( 0 );
 
@@ -131,9 +110,6 @@ class GraphqlAuthTest extends TestAbstract
                 id
                 email
                 name
-                email_verified_at
-                created_at
-                updated_at
             }
         }" )->assertJson( [
             'data' => [

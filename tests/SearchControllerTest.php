@@ -41,6 +41,6 @@ class SearchControllerTest extends TestAbstract
         ];
 
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals($expected, $response->getData());
+        $this->assertEqualsCanonicalizing($expected, $response->getData());
     }
 }

@@ -20,6 +20,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Date;
 use Illuminate\Http\UploadedFile;
 use Intervention\Image\ImageManager;
 
@@ -217,6 +218,17 @@ class File extends Model
     {
         return $this->belongsToMany( Version::class, 'cms_version_file' )
             ->select('id', 'versionable_id', 'versionable_type', 'published', 'publish_at' );
+    }
+
+
+    /**
+     * Get the current timestamp in seconds precision.
+     *
+     * @return \Illuminate\Support\Carbon Current timestamp
+     */
+    public function freshTimestamp()
+    {
+        return Date::now()->startOfSecond(); // SQL Server workaround
     }
 
 

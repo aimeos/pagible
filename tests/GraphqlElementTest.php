@@ -57,24 +57,20 @@ class GraphqlElementTest extends TestAbstract
     {
         $this->seed( CmsSeeder::class );
 
-        $element = Element::firstOrFail();
+        $element = Element::where( 'type', 'footer' )->firstOrFail();
 
-        $attr = collect($element->getAttributes())->except(['tenant_id'])->all();
         $expected = [
-            'id' => (string) $element->id,
-            'bypages' => $element->bypages->map( fn($item) => ['id' => $item->id] )->all(),
-            'byversions' => $element->byversions->map( fn($item) => ['id' => $item->id] )->all(),
-            'versions' => [0 => ['published' => false]],
-            'created_at' => (string) $element->getAttribute( 'created_at' ),
-            'updated_at' => (string) $element->getAttribute( 'updated_at' ),
-        ] + $attr;
-
-        // Decode JSON string to array for order-independent comparison
-        $expected['data'] = json_decode($expected['data'], true);
+            'id' => $element->id,
+            'data' => $element->data,
+            'bypages' => $element->bypages->map( fn( $item ) => ['id' => $item->id] )->all(),
+            'byversions' => $element->byversions->map( fn( $item ) => ['published' => $item->published] )->all(),
+            'versions' => $element->versions->map( fn( $item ) => ['published' => $item->published] )->all(),
+        ] + collect($element->getAttributes())->except(['tenant_id'])->all();
 
         $this->expectsDatabaseQueryCount(4);
-        $response = $this->actingAs($this->user)->graphQL("{
-            element(id: \"{$element->id}\") {
+
+        $response = $this->actingAs($this->user)->graphQL('{
+            element(id: "' . $element->id . '") {
                 id
                 lang
                 type
@@ -94,29 +90,12 @@ class GraphqlElementTest extends TestAbstract
                     published
                 }
             }
-        }");
+        }');
 
         $elementData = $response->json('data.element');
+        $elementData['data'] = json_decode( $elementData['data'] );
 
-        // Assert scalar fields
-        $this->assertEquals($expected['id'], $elementData['id']);
-        $this->assertEquals($expected['lang'], $elementData['lang']);
-        $this->assertEquals($expected['type'], $elementData['type']);
-        $this->assertEquals($expected['name'], $elementData['name']);
-        $this->assertEquals($expected['editor'], $elementData['editor']);
-        $this->assertEquals($expected['created_at'], $elementData['created_at']);
-        $this->assertEquals($expected['updated_at'], $elementData['updated_at']);
-        $this->assertEquals($expected['deleted_at'], $elementData['deleted_at']);
-
-        // Assert JSON field decoded as array
-        $this->assertEquals($expected['data'], json_decode($elementData['data'], true));
-
-        // Assert bypages and byversions collections (already correct format)
-        $this->assertEquals($expected['bypages'], $elementData['bypages']);
-        $this->assertEquals($expected['byversions'], $elementData['byversions']);
-
-        // Assert versions
-        $this->assertEquals($expected['versions'], $elementData['versions']);
+        $this->assertEquals($expected, $elementData);
     }
 
 
@@ -124,19 +103,12 @@ class GraphqlElementTest extends TestAbstract
     {
         $this->seed(CmsSeeder::class);
 
-        $expected = [];
         $element = Element::where('type', 'footer')->first();
 
-        // Prepare expected array
-        $attr = collect($element->getAttributes())->except(['tenant_id'])->all();
-        $expected[] = [
-            'id' => (string) $element->id,
-            'created_at' => (string) $element->getAttribute( 'created_at' ),
-            'updated_at' => (string) $element->getAttribute( 'updated_at' ),
-        ] + $attr;
-
-        // Decode JSON string in expected data for order-independent comparison
-        $expected[0]['data'] = json_decode($expected[0]['data'], true);
+        $expected = [
+            'id' => $element->id,
+            'data' => $element->data,
+        ] + collect($element->getAttributes())->except(['tenant_id'])->all();
 
         $this->expectsDatabaseQueryCount(2);
 
@@ -168,23 +140,11 @@ class GraphqlElementTest extends TestAbstract
         }');
 
         $elementsData = $response->json('data.elements.data');
+        $elementsData[0]['data'] = json_decode( $elementsData[0]['data'] );
 
         // Assert elements
         $this->assertCount(1, $elementsData);
-        $actual = $elementsData[0];
-
-        // Assert scalar fields
-        $this->assertEquals($expected[0]['id'], $actual['id']);
-        $this->assertEquals($expected[0]['lang'], $actual['lang']);
-        $this->assertEquals($expected[0]['type'], $actual['type']);
-        $this->assertEquals($expected[0]['name'], $actual['name']);
-        $this->assertEquals($expected[0]['editor'], $actual['editor']);
-        $this->assertEquals($expected[0]['created_at'], $actual['created_at']);
-        $this->assertEquals($expected[0]['updated_at'], $actual['updated_at']);
-        $this->assertEquals($expected[0]['deleted_at'], $actual['deleted_at']);
-
-        // Assert JSON field decoded as array
-        $this->assertEquals($expected[0]['data'], json_decode($actual['data'], true));
+        $this->assertEquals($expected, $elementsData[0]);
 
         // Assert paginator info
         $paginator = $response->json('data.elements.paginatorInfo');
@@ -259,7 +219,7 @@ class GraphqlElementTest extends TestAbstract
     {
         $this->seed(CmsSeeder::class);
 
-        $element = Element::firstOrFail();
+        $element = Element::where( 'type', 'footer' )->firstOrFail();
 
         $this->expectsDatabaseQueryCount(3);
 
@@ -298,9 +258,10 @@ class GraphqlElementTest extends TestAbstract
     {
         $this->seed(CmsSeeder::class);
 
-        $file = File::firstOrFail();
+        $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
+        $element = Element::where( 'type', 'footer' )->firstOrFail();
 
-        $this->expectsDatabaseQueryCount(6);
+        $this->expectsDatabaseQueryCount( 8 );
 
         $response = $this->actingAs($this->user)->graphQL('
             mutation {
@@ -309,10 +270,13 @@ class GraphqlElementTest extends TestAbstract
                     lang: "en"
                     data: "{\\"key\\":\\"value\\"}"
                 }, files: ["' . $file->id . '"]) {
+                    id
                     type
                     lang
                     data
                     editor
+                    created_at
+                    updated_at
                     bypages {
                         id
                     }
@@ -323,22 +287,30 @@ class GraphqlElementTest extends TestAbstract
             }
         ');
 
-        $addElement = $response->json('data.addElement');
+        $result = $response->json('data.addElement');
+        $element = Element::findOrFail( $result['id'] );
 
-        // Assert scalar fields
-        $this->assertEquals('test', $addElement['type']);
-        $this->assertEquals('en', $addElement['lang']);
-        $this->assertEquals('Test editor', $addElement['editor']);
-        $this->assertEquals([], $addElement['bypages']);
-        $this->assertEquals(['key' => 'value'], json_decode($addElement['data'], true));
-
-        // Decode latest->data JSON for order-independent assertion
-        $expectedLatestData = [
-            'type' => 'test',
-            'lang' => 'en',
-            'data' => ['key' => 'value'],
-        ];
-        $this->assertEquals($expectedLatestData, json_decode($addElement['latest']['data'], true));
+        $response->assertJson( [
+            'data' => [
+                'addElement' => [
+                    'id' => $element->id,
+                    'type' => 'test',
+                    'lang' => 'en',
+                    'data' => json_encode( $element->data ),
+                    'editor' => 'Test editor',
+                    'created_at' => (string) $element->created_at,
+                    'updated_at' => (string) $element->updated_at,
+                    'bypages' => [],
+                    'latest' => [
+                        'data' => json_encode( [
+                            'data' => ['key' => 'value'],
+                            'lang' => 'en',
+                            'type' => 'test',
+                        ] ),
+                    ],
+                ]
+            ]
+        ] );
     }
 
 
@@ -346,10 +318,10 @@ class GraphqlElementTest extends TestAbstract
     {
         $this->seed(CmsSeeder::class);
 
-        $file = File::firstOrFail();
-        $element = Element::firstOrFail();
+        $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
+        $element = Element::where( 'type', 'footer' )->firstOrFail();
 
-        $this->expectsDatabaseQueryCount(6);
+        $this->expectsDatabaseQueryCount( 6 );
 
         $response = $this->actingAs($this->user)->graphQL('
             mutation {
@@ -374,7 +346,7 @@ class GraphqlElementTest extends TestAbstract
             }
         ');
 
-        $element = Element::find($element->id);
+        $element = Element::findOrFail($element->id);
         $saveElement = $response->json('data.saveElement');
 
         // Assert scalar fields
@@ -392,11 +364,11 @@ class GraphqlElementTest extends TestAbstract
         ];
 
         $latest = $saveElement['latest'];
-        $this->assertEquals('de', $latest['lang']);
-        $this->assertEquals(false, $latest['published']);
-        $this->assertNull($latest['publish_at']);
-        $this->assertEquals('Test editor', $latest['editor']);
-        $this->assertEquals($expectedLatestData, json_decode($latest['data'], true));
+        $this->assertNull($saveElement['latest']['publish_at'] ?? null);
+        $this->assertEquals('de', $saveElement['latest']['lang'] ?? null);
+        $this->assertEquals(false, $saveElement['latest']['published'] ?? null);
+        $this->assertEquals('Test editor', $saveElement['latest']['editor'] ?? null);
+        $this->assertEquals($expectedLatestData, json_decode($saveElement['latest']['data'] ?? null, true));
     }
 
 
@@ -404,7 +376,7 @@ class GraphqlElementTest extends TestAbstract
     {
         $this->seed( CmsSeeder::class );
 
-        $element = Element::firstOrFail();
+        $element = Element::where( 'type', 'footer' )->firstOrFail();
 
         $this->expectsDatabaseQueryCount( 3 );
         $response = $this->actingAs( $this->user )->graphQL( '
@@ -422,7 +394,7 @@ class GraphqlElementTest extends TestAbstract
             'data' => [
                 'dropElement' => [[
                     'id' => $element->id,
-                    'deleted_at' => $element->deleted_at,
+                    'deleted_at' => (string) $element->deleted_at,
                 ]],
             ]
         ] );
@@ -433,7 +405,7 @@ class GraphqlElementTest extends TestAbstract
     {
         $this->seed( CmsSeeder::class );
 
-        $element = Element::firstOrFail();
+        $element = Element::where( 'type', 'footer' )->firstOrFail();
         $element->delete();
 
         $this->expectsDatabaseQueryCount( 3 );
@@ -463,7 +435,7 @@ class GraphqlElementTest extends TestAbstract
     {
         $this->seed( CmsSeeder::class );
 
-        $element = Element::firstOrFail();
+        $element = Element::where( 'type', 'footer' )->firstOrFail();
 
         $this->expectsDatabaseQueryCount( 7 );
         $response = $this->actingAs( $this->user )->graphQL( '
@@ -474,7 +446,7 @@ class GraphqlElementTest extends TestAbstract
             }
         ' );
 
-        $element = Element::where( 'id', $element->id )->firstOrFail();
+        $element = Element::findOrFail( $element->id );
 
         $response->assertJson( [
             'data' => [
@@ -490,7 +462,7 @@ class GraphqlElementTest extends TestAbstract
     {
         $this->seed( CmsSeeder::class );
 
-        $element = Element::firstOrFail();
+        $element = Element::where( 'type', 'footer' )->firstOrFail();
 
         $this->expectsDatabaseQueryCount( 4 );
         $response = $this->actingAs( $this->user )->graphQL( '
@@ -501,7 +473,7 @@ class GraphqlElementTest extends TestAbstract
             }
         ' );
 
-        $element = Element::where( 'id', $element->id )->firstOrFail();
+        $element = Element::findOrFail( $element->id );
 
         $response->assertJson( [
             'data' => [
@@ -517,7 +489,7 @@ class GraphqlElementTest extends TestAbstract
     {
         $this->seed( CmsSeeder::class );
 
-        $element = Element::firstOrFail();
+        $element = Element::where( 'type', 'footer' )->firstOrFail();
 
         $this->expectsDatabaseQueryCount( 3 );
         $response = $this->actingAs( $this->user )->graphQL( '

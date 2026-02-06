@@ -48,9 +48,7 @@ final class SavePage
             $version->elements()->attach( $args['elements'] ?? [] );
             $version->files()->attach( $args['files'] ?? [] );
 
-            $page->removeVersions();
-
-            return $page;
+            return $page->removeVersions();
         } );
     }
 
