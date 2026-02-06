@@ -24,6 +24,7 @@ use Illuminate\Database\Eloquent\Prunable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Collection;
@@ -160,6 +161,17 @@ class Page extends Model
     public function files() : BelongsToMany
     {
         return $this->belongsToMany( File::class, 'cms_page_file', 'page_id' );
+    }
+
+
+    /**
+     * Get the current timestamp in seconds precision.
+     *
+     * @return \Illuminate\Support\Carbon Current timestamp
+     */
+    public function freshTimestamp()
+    {
+        return Date::now()->startOfSecond(); // SQL Server workaround
     }
 
 

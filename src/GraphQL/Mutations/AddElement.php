@@ -30,30 +30,31 @@ final class AddElement
             $args['input']['data']->text = \Aimeos\Cms\Utils::html( (string) $args['input']['data']->text );
         }
 
-        $element = new Element();
-
-        DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $element, $args ) {
+        return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $args ) {
 
             $editor = Auth::user()?->name ?? request()->ip();
 
+            $element = new Element();
             $element->fill( $args['input'] ?? [] );
-            $element->tenant_id = \Aimeos\Cms\Tenancy::value();
             $element->data = $args['input']['data'] ?? [];
+            $element->tenant_id = \Aimeos\Cms\Tenancy::value();
             $element->editor = $editor;
             $element->save();
 
             $element->files()->attach( $args['files'] ?? [] );
 
+            $data = $args['input'] ?? [];
+            ksort( $data );
+
             $version = $element->versions()->create( [
-                'data' => array_map( fn( $v ) => is_null( $v ) ? (string) $v : $v, $args['input'] ?? [] ),
+                'data' => array_map( fn( $v ) => is_null( $v ) ? (string) $v : $v, $data ),
                 'lang' => $args['input']['lang'] ?? null,
                 'editor' => $editor,
             ] );
 
             $version->files()->attach( $args['files'] ?? [] );
 
+            return $element->refresh();
         }, 3 );
-
-        return $element;
     }
 }

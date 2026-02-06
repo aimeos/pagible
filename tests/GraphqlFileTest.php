@@ -56,24 +56,18 @@ class GraphqlFileTest extends TestAbstract
     {
         $this->seed(CmsSeeder::class);
 
-        $file = File::firstOrFail();
+        $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
 
-        // Prepare expected array
-        $attr = collect($file->getAttributes())->except(['tenant_id'])->all();
         $expected = [
-            'id' => (string) $file->id,
-            'byelements' => $file->byelements->map( fn($item) => ['id' => $item->id] )->all(),
-            'bypages' => $file->bypages->map( fn($item) => ['id' => $item->id] )->all(),
-            'byversions' => [['published' => true]],
-            'versions' => [['published' => false]],
-            'created_at' => (string) $file->getAttribute( 'created_at' ),
-            'updated_at' => (string) $file->getAttribute( 'updated_at' ),
-        ] + $attr;
-
-        // Decode JSON attributes for order-independent comparison
-        $expected['previews'] = json_decode($expected['previews'], true);
-        $expected['description'] = json_decode($expected['description'], true);
-        $expected['transcription'] = json_decode($expected['transcription'], true);
+            'id' => $file->id,
+            'previews' => (array) $file->previews,
+            'description' => (array) $file->description,
+            'transcription' => (array) $file->transcription,
+            'byelements' => $file->byelements->map( fn( $item ) => ['id' => $item->id] )->all(),
+            'bypages' => $file->bypages->map( fn( $item ) => ['id' => $item->id] )->all(),
+            'byversions' => $file->byversions->map( fn( $item ) => ['published' => $item->published] )->all(),
+            'versions' => $file->versions->map( fn( $item ) => ['published' => $item->published] )->all(),
+        ] + collect($file->getAttributes())->except(['tenant_id'])->all();
 
         $this->expectsDatabaseQueryCount(5);
 
@@ -107,22 +101,11 @@ class GraphqlFileTest extends TestAbstract
         }");
 
         $fileData = $response->json('data.file');
+        $fileData['previews'] = json_decode( $fileData['previews'], true );
+        $fileData['description'] = json_decode( $fileData['description'], true );
+        $fileData['transcription'] = json_decode( $fileData['transcription'], true );
 
-        // Assert scalar fields
-        foreach (['id', 'lang', 'mime', 'name', 'path', 'editor', 'created_at', 'updated_at', 'deleted_at'] as $key) {
-            $this->assertEquals($expected[$key], $fileData[$key]);
-        }
-
-        // Assert JSON fields decoded as arrays
-        $this->assertEquals($expected['previews'], json_decode($fileData['previews'], true));
-        $this->assertEquals($expected['description'], json_decode($fileData['description'], true));
-        $this->assertEquals($expected['transcription'], json_decode($fileData['transcription'], true));
-
-        // Assert collections
-        $this->assertEquals($expected['byelements'], $fileData['byelements']);
-        $this->assertEquals($expected['bypages'], $fileData['bypages']);
-        $this->assertEquals($expected['byversions'], $fileData['byversions']);
-        $this->assertEquals($expected['versions'], $fileData['versions']);
+        $this->assertEquals($expected, $fileData);
     }
 
 
@@ -130,22 +113,15 @@ class GraphqlFileTest extends TestAbstract
     {
         $this->seed(CmsSeeder::class);
 
-        $expected = [];
-        $files = File::orderBy( 'id' )->get();
-        $file = $files->first();
-
-        // Prepare expected array
-        $attr = collect($file->getAttributes())->except(['tenant_id'])->all();
-        $expected[] = [
-            'id' => (string) $file->id,
-            'created_at' => (string) $file->getAttribute( 'created_at' ),
-            'updated_at' => (string) $file->getAttribute( 'updated_at' ),
-        ] + $attr;
-
-        // Decode JSON attributes for order-independent comparison
-        $expected[0]['previews'] = json_decode($expected[0]['previews'], true);
-        $expected[0]['description'] = json_decode($expected[0]['description'], true);
-        $expected[0]['transcription'] = json_decode($expected[0]['transcription'], true);
+        $expected = File::orderBy( 'mime' )->get()->map( function( $file ) {
+            return [
+                'id' => $file->id,
+                'previews' => (array) $file->previews,
+                'description' => (array) $file->description,
+                'transcription' => (array) $file->transcription,
+                'byversions_count' => $file->byversions()->count(),
+            ] + collect($file->getAttributes())->except(['tenant_id'])->all();
+        } )->all();
 
         $this->expectsDatabaseQueryCount(2);
 
@@ -175,19 +151,15 @@ class GraphqlFileTest extends TestAbstract
         }');
 
         $filesData = $response->json('data.files.data');
+        $filesData[0]['previews'] = json_decode( $filesData[0]['previews'], true );
+        $filesData[0]['description'] = json_decode( $filesData[0]['description'], true );
+        $filesData[0]['transcription'] = json_decode( $filesData[0]['transcription'], true );
+        $filesData[1]['previews'] = json_decode( $filesData[1]['previews'], true );
+        $filesData[1]['description'] = json_decode( $filesData[1]['description'], true );
+        $filesData[1]['transcription'] = json_decode( $filesData[1]['transcription'], true );
 
         $this->assertCount(2, $filesData);
-        $actual = $filesData[0];
-
-        // Assert scalar fields
-        foreach (['id', 'lang', 'mime', 'name', 'path', 'editor', 'created_at', 'updated_at', 'deleted_at'] as $key) {
-            $this->assertEquals($expected[0][$key], $actual[$key]);
-        }
-
-        // Assert JSON fields decoded as arrays
-        $this->assertEquals($expected[0]['previews'], json_decode($actual['previews'], true));
-        $this->assertEquals($expected[0]['description'], json_decode($actual['description'], true));
-        $this->assertEquals($expected[0]['transcription'], json_decode($actual['transcription'], true));
+        $this->assertEquals($expected, $filesData);
 
         // Assert paginator info
         $paginator = $response->json('data.files.paginatorInfo');
@@ -233,7 +205,9 @@ class GraphqlFileTest extends TestAbstract
     {
         $this->seed( CmsSeeder::class );
 
-        $file = File::where( 'lang', 'en' )->get()->first();
+        $file = File::whereHas( 'latest', function( $builder ) {
+            $builder->where( 'cms_versions.publish_at', '!=', null )->where( 'cms_versions.published', false );
+        } )->firstOrFail();
 
         $this->expectsDatabaseQueryCount( 2 );
         $response = $this->actingAs( $this->user )->graphQL( '{
@@ -266,7 +240,7 @@ class GraphqlFileTest extends TestAbstract
     {
         $this->seed( CmsSeeder::class );
 
-        $this->expectsDatabaseQueryCount( 3 );
+        $this->expectsDatabaseQueryCount( 4 );
         $response = $this->actingAs( $this->user )->multipartGraphQL( [
             'query' => '
                 mutation($file: Upload!, $preview: Upload) {
@@ -302,14 +276,13 @@ class GraphqlFileTest extends TestAbstract
             '1' => UploadedFile::fake()->image('test-preview-1.jpg', 20),
         ] );
 
-        $result = json_decode( $response->getContent() );
-        $id = $result?->data?->addFile?->id;
-        $file = File::findOrFail( $id );
+        $result = $response->json('data.addFile');
+        $file = File::findOrFail( $result['id'] );
 
         $response->assertJson( [
             'data' => [
                 'addFile' => [
-                    'id' => strtolower( $file->id ),
+                    'id' => $file->id,
                     'mime' => 'application/x-empty',
                     'lang' => 'en-GB',
                     'name' => 'Test file name',
@@ -330,7 +303,7 @@ class GraphqlFileTest extends TestAbstract
     {
         $this->seed(CmsSeeder::class);
 
-        $file = File::firstOrFail();
+        $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
 
         $this->expectsDatabaseQueryCount(7);
 
@@ -371,15 +344,17 @@ class GraphqlFileTest extends TestAbstract
         $file = File::findOrFail($file->id);
         $saveFile = $response->json('data.saveFile');
 
+        $this->assertEquals($file->id, $saveFile['id']);
+
         // Cast nested objects to arrays
         $expectedLatestData = [
             'mime' => 'image/jpeg',
             'lang' => 'en-GB',
             'name' => 'test file',
             'path' => $file->path,
-            'previews' => (array) $file->latest->data->previews ?? [],
-            'description' => (array) $file->latest->data->description ?? [],
-            'transcription' => (array) $file->latest->data->transcription ?? [],
+            'previews' => (array) ( $file->latest?->data?->previews ?? [] ),
+            'description' => (array) ( $file->latest?->data?->description ?? [] ),
+            'transcription' => (array) ( $file->latest?->data?->transcription ?? [] ),
         ];
 
         // Assert scalar fields
@@ -396,8 +371,8 @@ class GraphqlFileTest extends TestAbstract
         $this->assertEquals((array) $file->transcription, json_decode($saveFile['transcription'], true));
 
         // Assert latest->data as array
-        $this->assertEquals($expectedLatestData, json_decode($saveFile['latest']['data'], true));
-        $this->assertEquals('Test editor', $saveFile['latest']['editor']);
+        $this->assertEquals($expectedLatestData, json_decode($saveFile['latest']['data'] ?? null, true));
+        $this->assertEquals('Test editor', $saveFile['latest']['editor'] ?? null);
     }
 
 
@@ -405,9 +380,10 @@ class GraphqlFileTest extends TestAbstract
     {
         $this->seed( CmsSeeder::class );
 
-        $file = File::firstOrFail();
+        $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
 
         $this->expectsDatabaseQueryCount( 3 );
+
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
                 dropFile(id: ["' . $file->id . '"]) {
@@ -423,7 +399,7 @@ class GraphqlFileTest extends TestAbstract
             'data' => [
                 'dropFile' => [[
                     'id' => $file->id,
-                    'deleted_at' => $file->deleted_at,
+                    'deleted_at' => (string) $file->deleted_at,
                 ]],
             ]
         ] );
@@ -434,7 +410,7 @@ class GraphqlFileTest extends TestAbstract
     {
         $this->seed( CmsSeeder::class );
 
-        $file = File::firstOrFail();
+        $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
         $file->delete();
 
         $this->expectsDatabaseQueryCount( 3 );
@@ -464,7 +440,7 @@ class GraphqlFileTest extends TestAbstract
     {
         $this->seed( CmsSeeder::class );
 
-        $file = File::firstOrFail();
+        $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
 
         $this->expectsDatabaseQueryCount( 6 );
         $response = $this->actingAs( $this->user )->graphQL( '
@@ -475,7 +451,7 @@ class GraphqlFileTest extends TestAbstract
             }
         ' );
 
-        $file = File::where( 'id', $file->id )->firstOrFail();
+        $file = File::findOrFail( $file->id );
 
         $response->assertJson( [
             'data' => [
@@ -491,7 +467,7 @@ class GraphqlFileTest extends TestAbstract
     {
         $this->seed( CmsSeeder::class );
 
-        $file = File::firstOrFail();
+        $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
 
         $this->expectsDatabaseQueryCount( 4 );
         $response = $this->actingAs( $this->user )->graphQL( '
@@ -502,7 +478,7 @@ class GraphqlFileTest extends TestAbstract
             }
         ' );
 
-        $file = File::where( 'id', $file->id )->firstOrFail();
+        $file = File::findOrFail( $file->id );
 
         $response->assertJson( [
             'data' => [
@@ -518,7 +494,7 @@ class GraphqlFileTest extends TestAbstract
     {
         $this->seed( CmsSeeder::class );
 
-        $file = File::firstOrFail();
+        $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
 
         $this->expectsDatabaseQueryCount( 5 );
         $response = $this->actingAs( $this->user )->graphQL( '

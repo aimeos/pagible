@@ -61,18 +61,14 @@ class GraphqlPageTest extends TestAbstract
         $page = Page::where('tag', 'root')->firstOrFail();
 
         // Prepare expected attributes
-        $attr = collect($page->getAttributes())->except(['tenant_id', '_lft', '_rgt'])->all();
+        $attr = collect($page->getAttributes())->except(['tenant_id', '_lft', '_rgt', 'depth'])->all();
         $expected = [
             'id' => (string) $page->id,
             'has' => $page->has,
-            'created_at' => (string) $page->getAttribute( 'created_at' ),
-            'updated_at' => (string) $page->getAttribute( 'updated_at' ),
+            'meta' => (array) $page->meta,
+            'config' => (array) $page->config,
+            'content' => (array) $page->content,
         ] + $attr;
-
-        // Cast JSON fields to arrays for order-independent comparison
-        $expected['meta'] = (array) $page->meta;
-        $expected['config'] = (array) $page->config;
-        $expected['content'] = (array) $page->content;
 
         $this->expectsDatabaseQueryCount(1);
 
@@ -104,16 +100,11 @@ class GraphqlPageTest extends TestAbstract
         }");
 
         $pageData = $response->json('data.page');
+        $pageData['meta'] = (array) json_decode($pageData['meta']);
+        $pageData['config'] = (array) json_decode($pageData['config']);
+        $pageData['content'] = (array) json_decode($pageData['content']);
 
-        // Assert scalar fields
-        foreach (['id','related_id','parent_id','lang','path','name','title','domain','to','tag','type','theme','status','cache','editor','has','created_at','updated_at','deleted_at'] as $key) {
-            $this->assertEquals($expected[$key], $pageData[$key]);
-        }
-
-        // Assert JSON-like fields
-        $this->assertEquals($expected['meta'], (array) json_decode($pageData['meta']));
-        $this->assertEquals($expected['config'], (array) json_decode($pageData['config']));
-        $this->assertEquals($expected['content'], (array) json_decode($pageData['content']));
+        $this->assertEquals($expected, $pageData);
     }
 
 
@@ -125,17 +116,13 @@ class GraphqlPageTest extends TestAbstract
         $page = Page::where('tag', 'root')->firstOrFail();
 
         // Prepare expected attributes
-        $attr = collect($page->getAttributes())->except(['tenant_id', '_lft', '_rgt'])->all();
+        $attr = collect($page->getAttributes())->except(['tenant_id', '_lft', '_rgt', 'depth'])->all();
         $expected[] = [
             'id' => (string) $page->id,
-            'created_at' => (string) $page->getAttribute( 'created_at' ),
-            'updated_at' => (string) $page->getAttribute( 'updated_at' ),
+            'meta' => (array) $page->meta,
+            'config' => (array) $page->config,
+            'content' => (array) $page->content,
         ] + $attr;
-
-        // Cast JSON fields to arrays for order-independent comparison
-        $expected[0]['meta'] = $page->meta;
-        $expected[0]['config'] = $page->config;
-        $expected[0]['content'] = $page->content;
 
         $this->expectsDatabaseQueryCount(2);
 
@@ -189,17 +176,12 @@ class GraphqlPageTest extends TestAbstract
 
         $pagesData = $response->json('data.pages.data');
         $this->assertCount(1, $pagesData);
-        $actual = $pagesData[0];
 
-        // Assert scalar fields
-        foreach (['id','related_id','parent_id','lang','path','name','title','domain','to','tag','type','theme','status','cache','editor','created_at','updated_at','deleted_at'] as $key) {
-            $this->assertEquals($expected[0][$key], $actual[$key]);
-        }
+        $pagesData[0]['meta'] = (array) json_decode($pagesData[0]['meta']);
+        $pagesData[0]['config'] = (array) json_decode($pagesData[0]['config']);
+        $pagesData[0]['content'] = (array) json_decode($pagesData[0]['content']);
 
-        // Assert JSON-like fields decoded from response
-        $this->assertEquals($expected[0]['meta'], json_decode($actual['meta']));
-        $this->assertEquals($expected[0]['config'], json_decode($actual['config']));
-        $this->assertEquals($expected[0]['content'], json_decode($actual['content']));
+        $this->assertEquals($expected, $pagesData);
 
         // Assert paginator info
         $paginator = $response->json('data.pages.paginatorInfo');
@@ -282,13 +264,10 @@ class GraphqlPageTest extends TestAbstract
         $expected = [];
 
         foreach ($root->children as $page) {
-            $attr = collect($page->getAttributes())->except(['tenant_id', '_lft', '_rgt'])->all();
             $expected[] = [
                 'id' => (string) $page->id,
                 'parent_id' => (string) $page->parent_id,
-                'created_at' => (string) $page->getAttribute( 'created_at' ),
-                'updated_at' => (string) $page->getAttribute( 'updated_at' ),
-            ] + $attr;
+            ] + collect($page->getAttributes())->except(['tenant_id', '_lft', '_rgt', 'depth'])->all();
         }
 
         $this->expectsDatabaseQueryCount(2);
@@ -498,7 +477,7 @@ class GraphqlPageTest extends TestAbstract
             'config' => ['test' => ['type' => 'test', 'data' => ['key' => 'value']]],
             'content' => [
                 ['type' => 'heading', 'data' => ['title' => 'Welcome to Laravel CMS']],
-                ['type' => 'ref', 'id' => strtolower( $element->id )],
+                ['type' => 'ref', 'id' => $element->id ],
             ],
         ];
         $this->assertEquals($expectedAux, json_decode($version['aux'], true));
@@ -588,10 +567,10 @@ class GraphqlPageTest extends TestAbstract
     {
         $this->seed( CmsSeeder::class );
 
-        $file = File::firstOrFail();
-        $element = Element::firstOrFail();
+        $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
+        $element = Element::where( 'type', 'footer' )->firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 9 );
+        $this->expectsDatabaseQueryCount( 10 );
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
                 addPage(input: {
@@ -642,10 +621,10 @@ class GraphqlPageTest extends TestAbstract
 
         $attr = collect($page->getAttributes())->except(['tenant_id', '_lft', '_rgt', 'depth'])->all();
         $expected = [
-            'id' => (string) $page->id,
+            'id' => $page->id,
             'parent_id' => null,
-            'created_at' => (string) $page->getAttribute( 'created_at' ),
-            'updated_at' => (string) $page->getAttribute( 'updated_at' ),
+            'status' => 0,
+            'cache' => 0,
         ] + $attr;
 
         $response->assertJson( [
@@ -662,7 +641,7 @@ class GraphqlPageTest extends TestAbstract
 
         $root = Page::where('tag', 'root')->firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 8 );
+        $this->expectsDatabaseQueryCount( 10 );
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
                 addPage(input: {
@@ -689,7 +668,7 @@ class GraphqlPageTest extends TestAbstract
 
         $response->assertJson( [
             'data' => [
-                'addPage' => ['id' => (string) $page->id, 'parent_id' => $root->id],
+                'addPage' => ['id' => $page->id, 'parent_id' => $root->id],
             ]
         ] );
     }
@@ -702,7 +681,7 @@ class GraphqlPageTest extends TestAbstract
         $root = Page::where('tag', 'root')->firstOrFail();
         $ref = Page::where('tag', 'blog')->firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 8 );
+        $this->expectsDatabaseQueryCount( 10 );
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
                 addPage(input: {
@@ -729,7 +708,7 @@ class GraphqlPageTest extends TestAbstract
 
         $response->assertJson( [
             'data' => [
-                'addPage' => ['id' => (string) $page->id, 'parent_id' => $root->id],
+                'addPage' => ['id' => $page->id, 'parent_id' => $root->id],
             ]
         ] );
         $this->assertEquals( 2, $page->_lft );
@@ -835,11 +814,11 @@ class GraphqlPageTest extends TestAbstract
     {
         $this->seed(CmsSeeder::class);
 
-        $file = File::firstOrFail();
-        $element = Element::firstOrFail();
+        $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
+        $element = Element::where( 'type', 'footer' )->firstOrFail();
         $root = Page::where('tag', 'root')->firstOrFail();
 
-        $this->expectsDatabaseQueryCount(11);
+        $this->expectsDatabaseQueryCount( 12 );
 
         $response = $this->actingAs($this->user)->graphQL('
             mutation {
@@ -890,6 +869,14 @@ class GraphqlPageTest extends TestAbstract
                         publish_at
                         editor
                     }
+                    versions {
+                        lang
+                        data
+                        aux
+                        published
+                        publish_at
+                        editor
+                    }
                     published {
                         data
                         aux
@@ -898,7 +885,7 @@ class GraphqlPageTest extends TestAbstract
             }
         ');
 
-        $page = Page::where('id', $root->id)->firstOrFail();
+        $page = Page::findOrFail( $root->id );
         $element = $page->elements()->firstOrFail();
 
         $savePage = $response->json('data.savePage');
@@ -925,14 +912,14 @@ class GraphqlPageTest extends TestAbstract
             'editor' => 'seeder',
             'lang' => 'de',
         ];
-        $this->assertEquals($expectedLatestData, json_decode($savePage['latest']['data'], true));
+        $this->assertEquals($expectedLatestData, json_decode($savePage['latest']['data'] ?? null, true));
 
         $expectedLatestAux = [
             'meta' => ['canonical' => 'to/page'],
             'config' => ['key' => 'test'],
             'content' => [['type' => 'heading', 'data' => ['title' => 'Welcome to Laravel CMS']]],
         ];
-        $this->assertEquals($expectedLatestAux, json_decode($savePage['latest']['aux'], true));
+        $this->assertEquals($expectedLatestAux, json_decode($savePage['latest']['aux'] ?? null, true));
 
         $expectedPublishedData = [
             'name' => 'Home',
@@ -947,17 +934,17 @@ class GraphqlPageTest extends TestAbstract
             'cache' => 5,
             'editor' => 'seeder',
         ];
-        $this->assertEquals($expectedPublishedData, json_decode($savePage['published']['data'], true));
+        $this->assertEquals($expectedPublishedData, json_decode($savePage['published']['data'] ?? null, true));
 
         $expectedPublishedAux = [
             'meta' => ['type' => 'meta', 'data' => ['text' => 'Laravel CMS is outstanding']],
             'config' => ['test' => ['type' => 'test', 'data' => ['key' => 'value']]],
             'content' => [
                 ['type' => 'heading', 'data' => ['title' => 'Welcome to Laravel CMS']],
-                ['type' => 'ref', 'id' => strtolower( $element->id )],
+                ['type' => 'ref', 'id' => $element->id],
             ],
         ];
-        $this->assertEquals($expectedPublishedAux, json_decode($savePage['published']['aux'], true));
+        $this->assertEquals($expectedPublishedAux, json_decode($savePage['published']['aux'] ?? null, true));
     }
 
 
@@ -978,7 +965,7 @@ class GraphqlPageTest extends TestAbstract
             }
         ' );
 
-        $page = Page::withTrashed()->where('id', $root->id)->firstOrFail();
+        $page = Page::withTrashed()->findOrFail( $root->id );
 
         $response->assertJson( [
             'data' => [
@@ -1014,7 +1001,7 @@ class GraphqlPageTest extends TestAbstract
             }
         ' );
 
-        $page = Page::where('id', $root->id)->firstOrFail();
+        $page = Page::findOrFail( $root->id );
 
         $response->assertJson( [
             'data' => [
@@ -1048,7 +1035,7 @@ class GraphqlPageTest extends TestAbstract
             }
         ' );
 
-        $page = Page::where('id', $page->id)->firstOrFail();
+        $page = Page::findOrFail( $page->id );
 
         $response->assertJson( [
             'data' => [
@@ -1075,7 +1062,7 @@ class GraphqlPageTest extends TestAbstract
             }
         ' );
 
-        $page = Page::where('id', $page->id)->firstOrFail();
+        $page = Page::findOrFail( $page->id );
 
         $response->assertJson( [
             'data' => [

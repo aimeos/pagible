@@ -104,6 +104,32 @@ jobs:
       - run: for i in `seq 1 10`; do nc -z 127.0.0.1 5432 && echo OK && exit 0; echo -n .; sleep 1; done
       - run: ./vendor/bin/phpunit
 
+  "php82-mssql17":
+    docker:
+      - image: aimeos/ci-php:8.2
+        environment:
+          DB_DRIVER: sqlsrv
+          DB_HOST: "127.0.0.1"
+          DB_PORT: 1433
+          DB_USERNAME: SA
+          DB_PASSWORD: S3c0r3P4ss
+          DB_DATABASE: cms
+      - image: mcr.microsoft.com/mssql/server:2017-latest
+        environment:
+          SA_PASSWORD: S3c0r3P4ss
+          ACCEPT_EULA: Y
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - php82-{{ checksum "composer.json" }}
+      - run: composer update -n --prefer-dist
+      - save_cache:
+          key: php82-{{ checksum "composer.json" }}
+          paths: [./vendor]
+      - run: echo "CREATE DATABASE cms;" > sqlserver.sql; for i in `seq 1 10`; do /opt/mssql-tools/bin/sqlcmd -S 127.0.0.1 -U SA -P 'S3c0r3P4ss' -i sqlserver.sql && exit 0; sleep 3; done
+      - run: ./vendor/bin/phpunit
+
   "php85-sqlite":
     docker:
       - image: aimeos/ci-php:8.5
@@ -211,6 +237,7 @@ workflows:
       - "php82-mariadb10"
       - "php82-mysql8"
       - "php82-pgsql14"
+      - "php82-mssql17"
       - "php85-sqlite"
       - "php85-mariadb"
       - "php85-mysql"
