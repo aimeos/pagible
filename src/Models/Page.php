@@ -294,7 +294,7 @@ class Page extends Model
      */
     public function latest() : MorphOne
     {
-        return $this->morphOne( Version::class, 'versionable' )->latestOfMany();
+        return $this->morphOne( Version::class, 'versionable' )->ofMany( ['created_at' => 'max', 'id' => 'max'] );
     }
 
 
@@ -377,15 +377,14 @@ class Page extends Model
     /**
      * Get the page's published head/meta data.
      *
-     * @return HasOne Eloquent relationship to the last published version of the page
+     * @return MorphOne Eloquent relationship to the last published version of the page
      */
-    public function published() : HasOne
+    public function published() : MorphOne
     {
-        return $this->hasOne( Version::class, 'versionable_id' )
-            ->where( 'versionable_type', Page::class )
-            ->where( 'published', true )
-            ->orderBy( 'id', 'desc' )
-            ->take( 1 );
+        return $this->morphOne( Version::class, 'versionable' )
+            ->ofMany( ['created_at' => 'max', 'id' => 'max'], function( $query ) {
+                $query->where( (new Version)->qualifyColumn( 'published' ), true );
+            } );
     }
 
 
@@ -446,7 +445,7 @@ class Page extends Model
      */
     public function versions() : MorphMany
     {
-        return $this->morphMany( Version::class, 'versionable' );
+        return $this->morphMany( Version::class, 'versionable' )->orderByDesc( 'created_at' )->orderByDesc( 'id' );
     }
 
 

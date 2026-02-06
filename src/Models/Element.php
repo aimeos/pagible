@@ -161,7 +161,7 @@ class Element extends Model
      */
     public function latest() : MorphOne
     {
-        return $this->morphOne( Version::class, 'versionable' )->latestOfMany();
+        return $this->morphOne( Version::class, 'versionable' )->ofMany( ['created_at' => 'max', 'id' => 'max'] );
     }
 
 
@@ -190,15 +190,14 @@ class Element extends Model
     /**
      * Get the element's published version.
      *
-     * @return HasOne Eloquent relationship to the last published version of the element
+     * @return MorphOne Eloquent relationship to the last published version of the element
      */
-    public function published() : HasOne
+    public function published() : MorphOne
     {
-        return $this->hasOne( Version::class, 'versionable_id' )
-            ->where( 'versionable_type', Element::class )
-            ->where( 'published', true )
-            ->orderBy( 'id', 'desc' )
-            ->take( 1 );
+        return $this->morphOne( Version::class, 'versionable' )
+            ->ofMany( ['created_at' => 'max', 'id' => 'max'], function( $query ) {
+                $query->where( (new Version)->qualifyColumn( 'published' ), true );
+            } );
     }
 
 
@@ -245,7 +244,7 @@ class Element extends Model
      */
     public function versions() : MorphMany
     {
-        return $this->morphMany( Version::class, 'versionable' );
+        return $this->morphMany( Version::class, 'versionable' )->orderByDesc( 'created_at' )->orderByDesc( 'id' );
     }
 
 
