@@ -287,6 +287,7 @@ class GraphqlElementTest extends TestAbstract
             }
         ');
 print_r(\Illuminate\Support\Facades\DB::getQueryLog());
+print_r(\Illuminate\Support\Facades\DB::table('cms_versions')->get()->all());
 
         $result = $response->json('data.addElement');
         $element = Element::findOrFail( $result['id'] );
