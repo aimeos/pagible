@@ -21,6 +21,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 
 
 /**
@@ -174,6 +175,17 @@ class Element extends Model
     public function latest() : MorphOne
     {
         return $this->morphOne( Version::class, 'versionable' )->ofMany( ['created_at' => 'max', 'id' => 'max'] );
+    }
+
+
+    /**
+     * Generate a new unique key for the model.
+     *
+     * @return string
+     */
+    public function newUniqueId()
+    {
+        return strtoupper( (string) Str::uuid7() );
     }
 
 

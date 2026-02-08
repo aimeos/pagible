@@ -62,7 +62,7 @@ final class AddFile
                 ],
             ] );
 
-            return $file->refresh();
+            return $file;
         }, 3 );
     }
 

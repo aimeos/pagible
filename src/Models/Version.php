@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 
 
 /**
@@ -142,6 +143,17 @@ class Version extends Model
     public function getUpdatedAtColumn()
     {
         return null;
+    }
+
+
+    /**
+     * Generate a new unique key for the model.
+     *
+     * @return string
+     */
+    public function newUniqueId()
+    {
+        return strtoupper( (string) Str::uuid7() );
     }
 
 

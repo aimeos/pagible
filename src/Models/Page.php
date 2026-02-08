@@ -28,6 +28,7 @@ use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 
 
 /**
@@ -333,6 +334,17 @@ class Page extends Model
             ->skip( $level )->first()
             ?->subtree?->toTree()
             ?? new \Aimeos\Nestedset\Collection();
+    }
+
+
+    /**
+     * Generate a new unique key for the model.
+     *
+     * @return string
+     */
+    public function newUniqueId()
+    {
+        return strtoupper( (string) Str::uuid7() );
     }
 
 

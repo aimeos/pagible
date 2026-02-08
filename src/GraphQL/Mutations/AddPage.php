@@ -68,7 +68,7 @@ final class AddPage
                 $version->elements()->attach( $args['elements'] ?? [] );
                 $version->files()->attach( $args['files'] ?? [] );
 
-                return $page->refresh();
+                return $page;
             }, 3 );
         } );
     }

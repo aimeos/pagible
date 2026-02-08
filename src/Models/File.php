@@ -21,6 +21,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Date;
+use Illuminate\Support\Str;
 use Illuminate\Http\UploadedFile;
 use Intervention\Image\ImageManager;
 
@@ -264,6 +265,17 @@ class File extends Model
     public function latest() : MorphOne
     {
         return $this->morphOne( Version::class, 'versionable' )->ofMany( ['created_at' => 'max', 'id' => 'max'] );
+    }
+
+
+    /**
+     * Generate a new unique key for the model.
+     *
+     * @return string
+     */
+    public function newUniqueId()
+    {
+        return strtoupper( (string) Str::uuid7() );
     }
 
 

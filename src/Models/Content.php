@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Laravel\Scout\Attributes\SearchUsingFullText;
 use Laravel\Scout\Searchable;
+use Illuminate\Support\Str;
 
 
 /**
@@ -74,6 +75,17 @@ class Content extends Model
     public function getConnectionName() : string
     {
         return config( 'cms.db', 'sqlite' );
+    }
+
+
+    /**
+     * Generate a new unique key for the model.
+     *
+     * @return string
+     */
+    public function newUniqueId()
+    {
+        return strtoupper( (string) Str::uuid7() );
     }
 
 

@@ -240,7 +240,7 @@ class GraphqlFileTest extends TestAbstract
     {
         $this->seed( CmsSeeder::class );
 
-        $this->expectsDatabaseQueryCount( 4 );
+        $this->expectsDatabaseQueryCount( 3 );
         $response = $this->actingAs( $this->user )->multipartGraphQL( [
             'query' => '
                 mutation($file: Upload!, $preview: Upload) {
