@@ -35,11 +35,9 @@ final class MovePage
 
                 if( isset( $args['ref'] ) ) {
                     $page->beforeNode( Page::withTrashed()->findOrFail( $args['ref'] ) );
-                }
-                elseif( isset( $args['parent'] ) ) {
+                } elseif( isset( $args['parent'] ) ) {
                     $page->appendToNode( Page::withTrashed()->findOrFail( $args['parent'] ) );
-                }
-                else {
+                } else {
                     $page->makeRoot();
                 }
 
