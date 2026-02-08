@@ -8,6 +8,7 @@
 namespace Aimeos\Cms\Models;
 
 use Aimeos\Cms\Concerns\Tenancy;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
