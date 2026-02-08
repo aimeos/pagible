@@ -9,7 +9,7 @@
 	"minimum-stability": "dev",
 	"require": {
 		"aimeos/laravel-analytics-bridge": "~1.0",
-		"aimeos/laravel-nestedset": "dev-master",
+		"aimeos/laravel-nestedset": "~7.0",
 		"aimeos/prisma": "dev-master",
 		"ezyang/htmlpurifier": "^4.18",
 		"intervention/image": "^3.11",
