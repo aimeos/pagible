@@ -259,7 +259,6 @@ class GraphqlElementTest extends TestAbstract
         $this->seed(CmsSeeder::class);
 
         $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
-        $element = Element::where( 'type', 'footer' )->firstOrFail();
 
         $this->expectsDatabaseQueryCount( 7 );
 

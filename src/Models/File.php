@@ -504,6 +504,20 @@ class File extends Model
 
 
     /**
+     * Interact with the "id" property.
+     *
+     * @return Attribute Eloquent attribute for the "id" property
+     */
+    protected function id(): Attribute
+    {
+        return Attribute::make(
+            get: fn( $value ) => strtoupper( $value ),
+            set: fn( $value ) => strtoupper( $value ),
+        );
+    }
+
+
+    /**
      * Prepare the model for pruning.
      */
     protected function pruning() : void
