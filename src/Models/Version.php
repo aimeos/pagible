@@ -54,6 +54,8 @@ class Version extends Model
         'created_at' => 'datetime:Y-m-d H:i:s.u',
     ];
 
+    protected $dateFormat = 'Y-m-d H:i:s.u';
+
     /**
      * The attributes that are mass assignable.
      *
