@@ -20,12 +20,6 @@ class GraphqlElementTest extends TestAbstract
     use MakesGraphQLRequests;
     use RefreshesSchemaCache;
 
-    public function refreshDatabase()
-    {
-\Illuminate\Support\Facades\DB::enableQueryLog();
-        parent::refreshDatabase();
-print_r(\Illuminate\Support\Facades\DB::getQueryLog());
-    }
 
 	protected function defineEnvironment( $app )
 	{
