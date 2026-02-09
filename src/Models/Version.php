@@ -49,8 +49,12 @@ class Version extends Model
     protected $casts = [
         'data' => 'object',
         'aux' => 'object',
-        'created_at' => 'datetime:Y-m-d H:i:s',
     ];
+
+    /**
+     * The date format with milliseconds used by created_at.
+     */
+    protected $dateFormat = 'Y-m-d H:i:s.v';
 
     /**
      * The attributes that are mass assignable.
