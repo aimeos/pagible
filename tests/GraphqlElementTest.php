@@ -223,6 +223,7 @@ class GraphqlElementTest extends TestAbstract
 
         $this->expectsDatabaseQueryCount(3);
 
+\Illuminate\Support\Facades\DB::enableQueryLog();
         $response = $this->actingAs($this->user)->graphQL('{
             element(id: "' . $element->id . '") {
                 id
@@ -237,6 +238,8 @@ class GraphqlElementTest extends TestAbstract
                 }
             }
         }');
+print_r(\Illuminate\Support\Facades\DB::getQueryLog());
+print_r(\Illuminate\Support\Facades\DB::table('cms_versions')->get()->all());
 
         $elementData = $response->json('data.element');
 
@@ -262,7 +265,6 @@ class GraphqlElementTest extends TestAbstract
 
         $this->expectsDatabaseQueryCount( 7 );
 
-\Illuminate\Support\Facades\DB::enableQueryLog();
         $response = $this->actingAs($this->user)->graphQL('
             mutation {
                 addElement(input: {
@@ -286,8 +288,6 @@ class GraphqlElementTest extends TestAbstract
                 }
             }
         ');
-print_r(\Illuminate\Support\Facades\DB::getQueryLog());
-print_r(\Illuminate\Support\Facades\DB::table('cms_versions')->get()->all());
 
         $result = $response->json('data.addElement');
         $element = Element::findOrFail( $result['id'] );
