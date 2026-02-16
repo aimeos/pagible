@@ -47,6 +47,7 @@ abstract class TestAbstract extends \Orchestra\Testbench\TestCase
         $app['config']->set('cms.ai.isolate', ['provider' => 'clipdrop', 'api_key' => 'test']);
         $app['config']->set('cms.ai.uncrop', ['provider' => 'clipdrop', 'api_key' => 'test']);
         $app['config']->set('cms.ai.upscale', ['provider' => 'clipdrop', 'api_key' => 'test']);
+        $app['config']->set('cms.ai.transcribe', ['provider' => 'openai', 'api_key' => 'test']);
         $app['config']->set('scout.driver', 'collection');
 
         $app['config']->set('cms.schemas.content.heading', [

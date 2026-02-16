@@ -7,11 +7,10 @@
 
 namespace Aimeos\Cms\GraphQL\Mutations;
 
-use Prism\Prism\Facades\Prism;
-use Prism\Prism\Exceptions\PrismException;
-use Prism\Prism\ValueObjects\Media\Audio;
+use Aimeos\Prisma\Prisma;
+use Aimeos\Prisma\Files\Audio;
+use Aimeos\Prisma\Exceptions\PrismaException;
 use Illuminate\Http\UploadedFile;
-use Aimeos\Cms\Models\File;
 use GraphQL\Error\Error;
 
 
@@ -23,42 +22,36 @@ final class Transcribe
      */
     public function __invoke( $rootValue, array $args ): array
     {
-        if( !( ( $upload = $args['file'] ?? null ) && $upload instanceof UploadedFile && $upload->isValid() ) ) {
-            throw new Error( 'No file uploaded' );
+        $upload = $args['file'];
+
+        if( !$upload instanceof UploadedFile || !$upload->isValid() ) {
+            throw new Error( 'Invalid file upload' );
         }
 
-        if( !str_starts_with( $upload->getMimeType(), 'audio/' ) ) {
-            throw new Error( 'Only audio files' );
-        }
-
-        $provider = config( 'cms.ai.audio' ) ?: 'openai';
-        $model = config( 'cms.ai.audio-model' ) ?: 'whisper-1';
+        $provider = config( 'cms.ai.transcribe.provider' );
+        $config = config( 'cms.ai.transcribe', [] );
+        $model = config( 'cms.ai.transcribe.model' );
 
         try
         {
-            $prism = Prism::audio()->using( $provider, $model )
-                ->withMaxTokens( config( 'cms.ai.maxtoken', 32768 ) )
-                ->withClientOptions( [
-                    'timeout' => 60,
-                    'connect_timeout' => 10,
-                ] );
+            $file = Audio::fromBinary( $upload->getContent(), $upload->getClientMimeType() );
 
-            $file = Audio::fromBase64( base64_encode( $upload->getContent() ), $upload->getMimeType() );
+            $data = Prisma::audio()
+                ->using( $provider, $config )
+                ->model( $model )
+                ->ensure( 'transcribe' )
+                ->transcribe( $file, null, $config )
+                ->structured();
 
-            $response = $prism->withInput( $file )
-                ->withProviderOptions( [
-                'response_format' => 'verbose_json',
-            ] )->asText();
-
-            return array_map( fn( $segment ) => [
-                'start' => $this->time( $segment['start'] ),
-                'end' => $this->time( $segment['end'] ),
-                'text' => $segment['text'],
-            ], $response->additionalContent['segments'] ?? [] );
+            return array_map( fn( $entry ) => [
+                'start' => $this->time( $entry['start'] ),
+                'end' => $this->time( $entry['end'] ),
+                'text' => $entry['text'],
+            ], $data );
         }
-        catch( PrismException $e )
+        catch( PrismaException $e )
         {
-            throw new Error( $e->getMessage() );
+            throw new Error( $e->getMessage(), null, null, null, null, null, $e->getTrace() );
         }
     }
 
@@ -71,20 +64,5 @@ final class Transcribe
         $millis = ( $seconds - floor( $seconds ) ) * 1000;
 
         return sprintf( "%02d:%02d:%02d.%03d", $hours, $minutes, $secs, $millis );
-    }
-
-
-    protected function webvtt( array $segments ) : string
-    {
-        $lines = ['WEBVTT', ''];
-
-        foreach( $segments as $segment )
-        {
-            $lines[] = $this->time( $segment['start'] ) . ' --> ' . $this->time( $segment['end'] );
-            $lines[] = trim( $segment['text'] );
-            $lines[] = "";
-        }
-
-        return implode( "\n", $lines );
     }
 }

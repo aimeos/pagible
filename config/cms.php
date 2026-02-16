@@ -19,8 +19,6 @@ return [
         'text-model' => env( 'CMS_AI_TEXT_MODEL' ),     // gemini-2.5-flash
         'struct' => env( 'CMS_AI_STRUCT' ),             // gemini
         'struct-model' => env( 'CMS_AI_STRUCT_MODEL' ), // gemini-2.5-flash
-        'audio' => env( 'CMS_AI_AUDIO' ),               // openai
-        'audio-model' => env( 'CMS_AI_AUDIO_MODEL' ),   // whisper-1
 
         'erase' => [ // Remove selected parts of images
             'provider' => env( 'CMS_AI_ERASE', 'clipdrop' ),
@@ -56,6 +54,11 @@ return [
             'provider' => env( 'CMS_AI_UPSCALE', 'clipdrop' ),
             'model' => env( 'CMS_AI_UPSCALE_MODEL' ),
             'api_key' => env( 'CMS_AI_UPSCALE_APIKEY' ),
+        ],
+        'transcribe' => [ // Transcribe audio
+            'provider' => env( 'CMS_AI_TRANSCRIBE', 'openai' ),
+            'model' => env( 'CMS_AI_TRANSCRIBE_MODEL', 'whisper-1' ),
+            'api_key' => env( 'CMS_AI_TRANSCRIBE_APIKEY' ),
         ],
     ],
 

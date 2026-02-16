@@ -10,6 +10,7 @@ namespace Tests;
 use Aimeos\Cms\Models\File;
 use Aimeos\Prisma\Prisma;
 use Aimeos\Prisma\Responses\FileResponse;
+use Aimeos\Prisma\Responses\TextResponse;
 use Database\Seeders\CmsSeeder;
 use Illuminate\Http\UploadedFile;
 use Aimeos\AnalyticsBridge\Facades\Analytics;
@@ -278,6 +279,7 @@ class GraphqlTest extends TestAbstract
     public function testTranscribe()
     {
         Prism::fake( [new \Prism\Prism\Audio\TextResponse( '[]' )] );
+        Prisma::fake( [TextResponse::fromText( 'test transcription' )] );
 
         $response = $this->actingAs( $this->user )->multipartGraphQL( [
             'query' => '
