@@ -40,7 +40,7 @@ final class Repaint
                 ->using( $provider, $config )
                 ->model( $model )
                 ->ensure( 'repaint' )
-                ->repaint( $file, $args['prompt'] )
+                ->repaint( $file, $args['prompt'], $config )
                 ->base64();
         }
         catch( PrismaException $e )

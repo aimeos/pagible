@@ -40,7 +40,7 @@ final class Isolate
                 ->using( $provider, $config )
                 ->model( $model )
                 ->ensure( 'isolate' )
-                ->isolate( $file )
+                ->isolate( $file, $config )
                 ->base64();
         }
         catch( PrismaException $e )

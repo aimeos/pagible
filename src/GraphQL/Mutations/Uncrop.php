@@ -30,7 +30,7 @@ final class Uncrop
 
         $provider = config( 'cms.ai.uncrop.provider' );
         $config = config( 'cms.ai.uncrop', [] );
-        $model = config( 'cms.ai.uncrop-model' );
+        $model = config( 'cms.ai.uncrop.model' );
 
         try
         {

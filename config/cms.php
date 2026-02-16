@@ -31,8 +31,8 @@ return [
             'api_key' => env( 'CMS_AI_IMAGINE_APIKEY' ),
         ],
         'inpaint' => [ // Change selected parts of images based on prompt
-            'provider' => env( 'CMS_AI_INPAINT' ),
-            'model' => env( 'CMS_AI_INPAINT_MODEL' ),
+            'provider' => env( 'CMS_AI_INPAINT', 'gemini' ),
+            'model' => env( 'CMS_AI_INPAINT_MODEL', 'gemini-2.5-flash-image' ),
             'api_key' => env( 'CMS_AI_INPAINT_APIKEY' ),
         ],
         'isolate' => [ // Remove background from images

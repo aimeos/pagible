@@ -46,7 +46,7 @@ final class Erase
                 ->using( $provider, $config )
                 ->model( $model )
                 ->ensure( 'erase' )
-                ->erase( $file, $mask )
+                ->erase( $file, $mask, $config )
                 ->base64();
         }
         catch( PrismaException $e )

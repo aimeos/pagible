@@ -46,7 +46,7 @@ final class Inpaint
                 ->using( $provider, $config )
                 ->model( $model )
                 ->ensure( 'inpaint' )
-                ->inpaint( $file, $mask, $args['prompt'] )
+                ->inpaint( $file, $mask, $args['prompt'], $config )
                 ->base64();
         }
         catch( PrismaException $e )
