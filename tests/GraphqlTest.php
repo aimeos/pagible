@@ -114,7 +114,6 @@ class GraphqlTest extends TestAbstract
 
         $file = File::firstOrFail();
         $image = base64_encode( file_get_contents( __DIR__ . '/assets/image.png' ) );
-
         Prisma::fake( [FileResponse::fromBase64( $image, 'image/png' )] );
 
         $response = $this->actingAs( $this->user )->graphQL( "
@@ -278,8 +277,11 @@ class GraphqlTest extends TestAbstract
 
     public function testTranscribe()
     {
-        Prism::fake( [new \Prism\Prism\Audio\TextResponse( '[]' )] );
-        Prisma::fake( [TextResponse::fromText( 'test transcription' )] );
+        Prisma::fake( [
+            TextResponse::fromText( 'test transcription' )->withStructured( [
+                ['start' => 0, 'end' => 1, 'text' => 'test transcription'],
+            ] )
+        ] );
 
         $response = $this->actingAs( $this->user )->multipartGraphQL( [
             'query' => '
@@ -296,7 +298,7 @@ class GraphqlTest extends TestAbstract
             '0' => UploadedFile::fake()->create('test.mp3', 500, 'audio/mpeg'),
         ] )->assertJson( [
             'data' => [
-                'transcribe' => '[]'
+                'transcribe' => '[{"start":"00:00:00.000","end":"00:00:01.000","text":"test transcription"}]'
             ]
         ] );
     }
