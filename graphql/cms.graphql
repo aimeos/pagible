@@ -71,6 +71,9 @@ extend type Mutation {
   "Generate texts from prompts and passed file IDs"
   compose(prompt: String!, context: String, files: [String!]): String
 
+  "Summarize the content of the file passed by its file ID"
+  describe(file: String!, lang: String): String
+
   "Remove the part of the image covered by the mask (black: keep, white: erase), returns a base64 encoded image"
   erase(file: Upload!, mask: Upload!): String
 

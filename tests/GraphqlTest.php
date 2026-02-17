@@ -79,6 +79,26 @@ class GraphqlTest extends TestAbstract
     }
 
 
+    public function testDescribe()
+    {
+        $this->seed( CmsSeeder::class );
+
+        $file = File::firstOrFail();
+        $expected = 'Description of the file content.';
+        Prisma::fake( [TextResponse::fromText( $expected )] );
+
+        $response = $this->actingAs( $this->user )->graphQL( '
+            mutation {
+                describe(file: "' . $file->id . '", lang: "en")
+            }
+        ' )->assertJson( [
+            'data' => [
+                'describe' => $expected
+            ]
+        ] );
+    }
+
+
     public function testErase()
     {
         $image = file_get_contents( __DIR__ . '/assets/image.png' );
