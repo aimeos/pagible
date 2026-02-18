@@ -35,8 +35,8 @@ final class Synthesize
             . view( 'cms::prompts.compose' )->render() . "\n";
 
         $files = [];
-        $provider = config( 'cms.ai.text' ) ?: 'gemini';
-        $model = config( 'cms.ai.text-model' ) ?: 'gemini-2.5-flash';
+        $provider = config( 'cms.ai.write.provider' );
+        $model = config( 'cms.ai.write.model' );
 
         try
         {

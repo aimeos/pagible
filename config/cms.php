@@ -4,21 +4,32 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Prism AI providers
+    | AI providers
     |--------------------------------------------------------------------------
     |
-    | Use the Prism AI providers defined in ./config/prism.php to
-    | generate content for pages and elements. The default provider is
-    | OpenAI, but you can use any other provider that is supported by Prism.
+    | Use the AI providers defined in ./config/prism.php to generate content
+    | for pages and elements. You can use any other provider that is supported
+    | by Prism/Prisma.
     |
     */
     'ai' => [
         'maxtoken' => env( 'CMS_AI_MAXTOKEN' ), // maximum tokens per request
 
-        'text' => env( 'CMS_AI_TEXT' ),                 // gemini
-        'text-model' => env( 'CMS_AI_TEXT_MODEL' ),     // gemini-2.5-flash
-        'struct' => env( 'CMS_AI_STRUCT' ),             // gemini
-        'struct-model' => env( 'CMS_AI_STRUCT_MODEL' ), // gemini-2.5-flash
+        'write' => [ // Generate text content based on prompts
+            'provider' => env( 'CMS_AI_WRITE', 'gemini' ),
+            'model' => env( 'CMS_AI_WRITE_MODEL', 'gemini-2.5-flash' ),
+            'api_key' => env( 'CMS_AI_WRITE_APIKEY' ),
+        ],
+        'structure' => [ // Return content in a defined structure
+            'provider' => env( 'CMS_AI_STRUCTURE', 'gemini' ),
+            'model' => env( 'CMS_AI_STRUCTURE_MODEL', 'gemini-2.5-flash' ),
+            'api_key' => env( 'CMS_AI_STRUCTURE_APIKEY' ),
+        ],
+        'describe' => [ // Generate summary of file content
+            'provider' => env( 'CMS_AI_DESCRIBE', 'gemini' ),
+            'model' => env( 'CMS_AI_DESCRIBE_MODEL', 'gemini-2.5-flash' ),
+            'api_key' => env( 'CMS_AI_DESCRIBE_APIKEY' ),
+        ],
 
         'erase' => [ // Remove selected parts of images
             'provider' => env( 'CMS_AI_ERASE', 'clipdrop' ),
@@ -55,6 +66,7 @@ return [
             'model' => env( 'CMS_AI_UPSCALE_MODEL' ),
             'api_key' => env( 'CMS_AI_UPSCALE_APIKEY' ),
         ],
+
         'transcribe' => [ // Transcribe audio
             'provider' => env( 'CMS_AI_TRANSCRIBE', 'openai' ),
             'model' => env( 'CMS_AI_TRANSCRIBE_MODEL', 'whisper-1' ),
