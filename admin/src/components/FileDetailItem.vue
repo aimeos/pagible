@@ -22,7 +22,7 @@
 
     emits: ['update:item', 'update:file', 'error'],
 
-    inject: ['base64ToBlob', 'compose', 'locales', 'transcribe', 'translate', 'txlocales', 'url'],
+    inject: ['base64ToBlob', 'locales', 'transcribe', 'translate', 'txlocales', 'url'],
 
     data() {
       return {
@@ -184,23 +184,40 @@
       },
 
 
-      composeText() {
-        const lang = this.desclangs.shift() || this.item.lang || 'en'
-        const prompt = `Summarize the content of the file in a few words in plain text format for a title tag in the language with the ISO code "${lang}":`
-
-        this.loading.compose = true
-
-        this.compose(prompt, null, [this.item.id]).then(result => {
-          this.update('description', Object.assign(this.item.description || {}, {[lang]: result}))
-        }).finally(() => {
-          this.loading.compose = false
-        })
-      },
-
-
       crop() {
         this.updateFile()
         this.clear()
+      },
+
+
+      describe() {
+        const lang = this.desclangs[0] || this.item.lang || 'en'
+
+        this.loading.describe = true
+
+        this.$apollo.mutate({
+          mutation: gql`mutation($file: String!, $lang: String!) {
+            describe(file: $file, lang: $lang)
+          }`,
+          variables: {
+            file: this.item.id,
+            lang: lang
+          },
+          context: {
+            hasUpload: true
+          }
+        }).then(response => {
+          if(response.errors) {
+            throw response.errors
+          }
+
+          this.update('description', Object.assign(this.item.description || {}, {[lang]: response.data?.describe}))
+        }).catch(error => {
+          this.messages.add(this.$gettext('Error describing file') + ":\n" + error, 'error')
+          this.$log('FileDetailItem::describe(): Error describing file', error)
+        }).finally(() => {
+          this.loading.describe = false
+        })
       },
 
 
@@ -1238,9 +1255,9 @@
                 variant="text"
               />
               <v-btn
-                @click="composeText()"
+                @click="describe()"
                 :title="$gettext('Generate description')"
-                :loading="loading.compose"
+                :loading="loading.describe"
                 icon="mdi-creation"
                 variant="text"
               />
