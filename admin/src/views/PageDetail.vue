@@ -581,7 +581,7 @@
             item.files = this.files(v.files || [])
             delete item.aux
             return item
-          }).reverse() // latest versions first
+          })
         }).catch(error => {
           this.messages.add(this.$gettext('Error fetching page versions') + ":\n" + error, 'error')
           this.$log(`PageDetail::versions(): Error fetching page versions`, id, error)

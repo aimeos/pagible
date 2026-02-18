@@ -266,7 +266,7 @@
               data: JSON.parse(v.data || '{}'),
               files: v.files.map(file => file.id),
             }
-          }).reverse() // latest versions first
+          })
         }).catch(error => {
           this.messages.add(this.$gettext('Error fetching element versions') + ":\n" + error, 'error')
           this.$log(`ElementDetail::versions(): Error fetching element versions`, id, error)

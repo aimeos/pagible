@@ -213,7 +213,7 @@
             const item = {...v, data: JSON.parse(v.data || '{}')}
             keys.forEach(key => item[key] ??= {})
             return item
-          }).reverse() // latest versions first
+          })
         }).catch(error => {
           this.messages.add(this.$gettext('Error fetching file versions') + ":\n" + error, 'error')
           this.$log(`FileDetail::versions(): Error fetching file versions`, id, error)
