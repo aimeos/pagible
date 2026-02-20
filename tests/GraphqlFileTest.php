@@ -67,6 +67,8 @@ class GraphqlFileTest extends TestAbstract
             'bypages' => $file->bypages->map( fn( $item ) => ['id' => $item->id] )->all(),
             'byversions' => $file->byversions->map( fn( $item ) => ['published' => $item->published] )->all(),
             'versions' => $file->versions->map( fn( $item ) => ['published' => $item->published] )->all(),
+            'created_at' => (string) $file->created_at,
+            'updated_at' => (string) $file->updated_at,
         ] + collect($file->getAttributes())->except(['tenant_id'])->all();
 
         $this->expectsDatabaseQueryCount(5);
@@ -120,6 +122,8 @@ class GraphqlFileTest extends TestAbstract
                 'description' => (array) $file->description,
                 'transcription' => (array) $file->transcription,
                 'byversions_count' => $file->byversions()->count(),
+                'created_at' => (string) $file->created_at,
+                'updated_at' => (string) $file->updated_at,
             ] + collect($file->getAttributes())->except(['tenant_id'])->all();
         } )->all();
 

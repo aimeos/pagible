@@ -68,6 +68,8 @@ class GraphqlPageTest extends TestAbstract
             'meta' => (array) $page->meta,
             'config' => (array) $page->config,
             'content' => (array) $page->content,
+            'created_at' => (string) $page->created_at,
+            'updated_at' => (string) $page->updated_at,
         ] + $attr;
 
         $this->expectsDatabaseQueryCount(1);
@@ -122,6 +124,8 @@ class GraphqlPageTest extends TestAbstract
             'meta' => (array) $page->meta,
             'config' => (array) $page->config,
             'content' => (array) $page->content,
+            'created_at' => (string) $page->created_at,
+            'updated_at' => (string) $page->updated_at,
         ] + $attr;
 
         $this->expectsDatabaseQueryCount(2);
@@ -267,6 +271,8 @@ class GraphqlPageTest extends TestAbstract
             $expected[] = [
                 'id' => (string) $page->id,
                 'parent_id' => (string) $page->parent_id,
+                'created_at' => (string) $page->created_at,
+                'updated_at' => (string) $page->updated_at,
             ] + collect($page->getAttributes())->except(['tenant_id', '_lft', '_rgt', 'depth'])->all();
         }
 
@@ -625,6 +631,8 @@ class GraphqlPageTest extends TestAbstract
             'parent_id' => null,
             'status' => 0,
             'cache' => 0,
+            'created_at' => (string) $page->created_at,
+            'updated_at' => (string) $page->updated_at,
         ] + $attr;
 
         $response->assertJson( [
