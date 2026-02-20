@@ -94,8 +94,7 @@ return new class extends Migration
         // Delete old pages table and rename new one
 
         $schema->dropIfExists('cms_pages');
-        $schema->dropColumns('cms_pages_new', 'oid');
-        $schema->dropColumns('cms_pages_new', 'opid');
+        $schema->dropColumns('cms_pages_new', ['oid', 'opid', 'orid']);
         $schema->rename('cms_pages_new', 'cms_pages');
 
 
@@ -145,6 +144,7 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->bigInteger('oid');
             $table->bigInteger('opid');
+            $table->integer('orid')->nullable();
             $table->string('tenant_id', 250);
             $table->string('name');
             $table->string('path');
@@ -157,7 +157,7 @@ return new class extends Migration
             $table->string('theme', 30);
             $table->smallInteger('cache');
             $table->smallInteger('status');
-            $table->integer('related_id')->nullable();
+            $table->uuid('related_id')->nullable();
             $table->json('meta');
             $table->json('config');
             $table->json('content');
@@ -187,6 +187,7 @@ return new class extends Migration
             DB::table('cms_pages')->get()->map(function ($row) {
                 $row->oid = $row->id;
                 $row->opid = $row->parent_id;
+                $row->orid = $row->related_id;
                 $row->id = Str::uuid()->toString();
                 return (array) $row;
             })->toArray()
@@ -201,6 +202,18 @@ return new class extends Migration
                     DB::table('cms_pages_new')
                         ->where('id', $row->child_id)
                         ->update(['parent_id' => $row->parent_id]);
+                }
+            });
+
+        DB::table('cms_pages_new')
+            ->select('id', 'orid')
+            ->whereNotNull('orid')
+            ->orderBy('id')
+            ->chunk(100, function ($rows) {
+                foreach ($rows as $row) {
+                    DB::table('cms_pages_new')
+                        ->where('orid', $row->orid)
+                        ->update(['related_id' => $row->id]);
                 }
             });
     }

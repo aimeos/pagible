@@ -32,7 +32,7 @@ return new class extends Migration
             $table->string('theme', 30);
             $table->smallInteger('cache');
             $table->smallInteger('status');
-            $table->integer('related_id')->nullable();
+            $table->uuid('related_id')->nullable();
             $table->json('meta');
             $table->json('config');
             $table->json('content');
