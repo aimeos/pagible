@@ -625,6 +625,8 @@ class GraphqlPageTest extends TestAbstract
             'parent_id' => null,
             'status' => 0,
             'cache' => 0,
+            'created_at' => (string) $page->created_at,
+            'updated_at' => (string) $page->updated_at,
         ] + $attr;
 
         $response->assertJson( [
