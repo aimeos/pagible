@@ -93,6 +93,11 @@ class Page extends Model
     ];
 
     /**
+     * The date format for timestamps.
+     */
+    protected $dateFormat = 'Y-m-d H:i:s';
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var array
