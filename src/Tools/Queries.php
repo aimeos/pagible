@@ -8,7 +8,10 @@
 namespace Aimeos\Cms\Tools;
 
 use Prism\Prism\Tool;
+use Illuminate\Support\Facades\Auth;
+use Aimeos\AnalyticsBridge\Facades\Analytics;
 use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Permission;
 
 
 class Queries extends Tool
@@ -24,6 +27,10 @@ class Queries extends Tool
 
     public function __invoke( string $url ): string
     {
+        if( !Permission::can( 'page:view', Auth::user() ) ) {
+            throw new Error( 'Insufficient permissions' );
+        }
+
         $queries = Analytics::queries( $url );
 
         foreach( $queries as &$entry )

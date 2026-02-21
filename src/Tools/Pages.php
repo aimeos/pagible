@@ -8,7 +8,9 @@
 namespace Aimeos\Cms\Tools;
 
 use Prism\Prism\Tool;
+use Illuminate\Support\Facades\Auth;
 use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Permission;
 
 
 class Pages extends Tool
@@ -25,10 +27,14 @@ class Pages extends Tool
 
     public function __invoke( string $term, string $lang ): string
     {
+        if( !Permission::can( 'page:view', Auth::user() ) ) {
+            throw new Error( 'Insufficient permissions' );
+        }
+
         $result = Page::withoutTrashed()
             ->where( function( $builder ) use ( $lang, $term ) {
                 $builder->whereAny( ['content', 'meta', 'name', 'path', 'title'], 'like', '%' . $term . '%' )
-                ->where( 'lang', $lang );
+                    ->where( 'lang', $lang );
             } )
             ->orWhereHas('latest', function( $builder ) use ( $lang, $term  ) {
                 $builder->whereAny( ['aux->content', 'aux->meta', 'data->name', 'data->path', 'data->title'], 'like', '%' . $term . '%' )

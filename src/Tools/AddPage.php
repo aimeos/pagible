@@ -10,8 +10,10 @@ namespace Aimeos\Cms\Tools;
 use Prism\Prism\Tool;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Permission;
 use Aimeos\Cms\Utils;
 
 
@@ -36,6 +38,10 @@ class AddPage extends Tool
 
     public function __invoke( string $lang, string $name, string $title, string $summary, string $content, ?int $parent_id = null ): string
     {
+        if( !Permission::can( 'page:add', Auth::user() ) ) {
+            throw new Error( 'Insufficient permissions' );
+        }
+
         if( $this->numcalls > 0 ) {
             return response()->json( ['error' => 'Only one page can be created at a time.'] );
         }
