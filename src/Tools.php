@@ -7,6 +7,8 @@
 
 namespace Aimeos\Cms;
 
+use Prism\Prism\Facades\Tool;
+
 
 class Tools
 {
@@ -18,9 +20,9 @@ class Tools
     public static function get(): array
     {
         return [
-            new Tools\Pages(),
-            new Tools\Locales(),
-            new Tools\AddPage(),
+            Tool::make( Tools\SearchPages::class ),
+            Tool::make( Tools\GetLocales::class ),
+            Tool::make( Tools\AddPage::class ),
         ];
     }
 }

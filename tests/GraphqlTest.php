@@ -267,8 +267,10 @@ class GraphqlTest extends TestAbstract
                         new \Prism\Prism\ValueObjects\ToolCall( '2', 'classify', ['category' => 'example'] ),
                     ],
                     [],
+                    [],
                     new \Prism\Prism\ValueObjects\Usage(0, 0),
                     new \Prism\Prism\ValueObjects\Meta('fake', 'fake'),
+                    [],
                     [],
                     []
                 ),

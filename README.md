@@ -196,6 +196,17 @@ Afterwards, tell PagibleAI CMS how the ID of the current tenant can be retrieved
 };
 ```
 
+### MCP API
+
+PagibleAI CMS offers tools within the Laravel MCP API that LLMs can use to interact with the CMS. To make them available, you have to add this line to your `./routes/ai.php` route file:
+
+```php
+Mcp::oauthRoutes();
+Mcp::web('/mcp/cms', \Aimeos\Cms\Mcp\CmsServer::class)->middleware('auth:api');
+```
+
+**Note:** You need to set up Laravel Passport for [MCP OAuth authentication](https://laravel.com/docs/master/mcp#authentication) too!
+
 ## Security
 
 If you find a security related issue, please contact `security at aimeos.org`.

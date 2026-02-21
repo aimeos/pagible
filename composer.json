@@ -15,11 +15,12 @@
 		"intervention/image": "^3.11",
 		"laravel-json-api/laravel": "^5.1",
 		"laravel/framework": "^11.0||^12.0",
+		"laravel/mcp": "~0.5",
 		"laravel/scout": "^10.20",
 		"league/commonmark": "^2.6",
 		"mll-lab/graphql-php-scalars": "^6.4",
 		"nuwave/lighthouse": "^6.54",
-		"prism-php/prism": "0.97",
+		"prism-php/prism": "0.99.19",
 		"symfony/uid": "^7.0"
 	},
 	"require-dev": {
