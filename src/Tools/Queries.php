@@ -20,17 +20,19 @@ class Queries extends Tool
     {
         $this->as( 'google-queries' )
             ->for( 'Returns the queries entered by users, including impressions, clicks, click-through rates (ctr), and position in Google search results to analyse and optimize the page specified by the URL for SEO.' )
-            ->withStringParameter( 'url', 'The URL of the page to get the user queries for, e.g., "https://example.com/blog".' )
+            ->withStringParameter( 'domain', 'The domain of the page to get the user queries for, e.g., "example.com".' )
+            ->withStringParameter( 'path', 'The relative path of the page to get the user queries for, e.g., "blog/laravel-cms".' )
             ->using( $this );
     }
 
 
-    public function __invoke( string $url ): string
+    public function __invoke( string $domain, string $path ): string
     {
         if( !Permission::can( 'page:view', Auth::user() ) ) {
             throw new Error( 'Insufficient permissions' );
         }
 
+        $url = 'https://' . $domain . '/' . ltrim( $path, '/' );
         $queries = Analytics::queries( $url );
 
         foreach( $queries as &$entry )
