@@ -81,14 +81,14 @@ msgstr "メタデータ"
 
 #: src/components/ElementDetailItem.vue:72
 #: src/components/ElementDetailRefs.vue:100
-#: src/components/FileDetailItem.vue:887
+#: src/components/FileDetailItem.vue:892
 #: src/components/FileDetailRefs.vue:120
 #: src/components/FileDetailRefs.vue:142
 msgid "Name"
 msgstr "名称"
 
 #: src/components/ElementDetailItem.vue:84
-#: src/components/FileDetailItem.vue:899
+#: src/components/FileDetailItem.vue:904
 #: src/components/PageDetailItemProps.vue:153
 msgid "Language"
 msgstr "言語"
@@ -144,19 +144,19 @@ msgstr "出版"
 #: src/components/ElementListItems.vue:246
 #: src/components/ElementListItems.vue:283
 #: src/components/Fields.vue:83
-#: src/components/FileDetailItem.vue:96
-#: src/components/FileDetailItem.vue:251
-#: src/components/FileDetailItem.vue:345
-#: src/components/FileDetailItem.vue:391
-#: src/components/FileDetailItem.vue:445
-#: src/components/FileDetailItem.vue:470
-#: src/components/FileDetailItem.vue:512
-#: src/components/FileDetailItem.vue:610
-#: src/components/FileDetailItem.vue:630
-#: src/components/FileDetailItem.vue:665
-#: src/components/FileDetailItem.vue:701
-#: src/components/FileDetailItem.vue:764
-#: src/components/FileDetailItem.vue:814
+#: src/components/FileDetailItem.vue:101
+#: src/components/FileDetailItem.vue:240
+#: src/components/FileDetailItem.vue:347
+#: src/components/FileDetailItem.vue:392
+#: src/components/FileDetailItem.vue:448
+#: src/components/FileDetailItem.vue:473
+#: src/components/FileDetailItem.vue:515
+#: src/components/FileDetailItem.vue:612
+#: src/components/FileDetailItem.vue:632
+#: src/components/FileDetailItem.vue:667
+#: src/components/FileDetailItem.vue:703
+#: src/components/FileDetailItem.vue:770
+#: src/components/FileDetailItem.vue:820
 #: src/components/FileListItems.vue:73
 #: src/components/FileListItems.vue:137
 #: src/components/FileListItems.vue:181
@@ -185,9 +185,9 @@ msgstr "出版"
 #: src/views/FileDetail.vue:51
 #: src/views/FileDetail.vue:104
 #: src/views/FileDetail.vue:180
-#: src/views/PageDetail.vue:307
-#: src/views/PageDetail.vue:363
-#: src/views/PageDetail.vue:554
+#: src/views/PageDetail.vue:303
+#: src/views/PageDetail.vue:359
+#: src/views/PageDetail.vue:550
 msgid "Permission denied"
 msgstr "許可が下りない"
 
@@ -249,8 +249,8 @@ msgstr "行動"
 #: src/views/ElementDetail.vue:347
 #: src/views/FileDetail.vue:287
 #: src/views/FileDetail.vue:294
-#: src/views/PageDetail.vue:681
-#: src/views/PageDetail.vue:688
+#: src/views/PageDetail.vue:677
+#: src/views/PageDetail.vue:684
 msgid "Publish"
 msgstr "出版"
 
@@ -363,7 +363,7 @@ msgstr "テキストの生成"
 
 #: src/components/Fields.vue:205
 #: src/components/FileAiDialog.vue:200
-#: src/components/FileDetailItem.vue:1273
+#: src/components/FileDetailItem.vue:1268
 #: src/components/PageDetailContentList.vue:631
 #: src/fields/Items.vue:323
 #: src/views/PageList.vue:249
@@ -373,7 +373,7 @@ msgstr "ディクテーション"
 #: src/components/FieldsDialog.vue:55
 #: src/views/ElementDetail.vue:307
 #: src/views/FileDetail.vue:254
-#: src/views/PageDetail.vue:648
+#: src/views/PageDetail.vue:644
 msgid "Save"
 msgstr "セーブ"
 
@@ -438,128 +438,132 @@ msgstr "使用画像"
 msgid "Select images"
 msgstr "画像を選択"
 
-#: src/components/FileDetailItem.vue:103
+#: src/components/FileDetailItem.vue:108
 msgid "No video element found"
 msgstr "ビデオ要素が見つかりません"
 
-#: src/components/FileDetailItem.vue:148
+#: src/components/FileDetailItem.vue:153
 msgid "Error saving video cover"
 msgstr "ビデオカバーの保存エラー"
 
-#: src/components/FileDetailItem.vue:279
+#: src/components/FileDetailItem.vue:216
+msgid "Error describing file"
+msgstr "ファイルの説明エラー"
+
+#: src/components/FileDetailItem.vue:267
 msgid "Error erasing image part"
 msgstr "画像部分消去エラー"
 
-#: src/components/FileDetailItem.vue:378
+#: src/components/FileDetailItem.vue:379
 msgid "Error editing image part"
 msgstr "画像部分の編集エラー"
 
-#: src/components/FileDetailItem.vue:416
+#: src/components/FileDetailItem.vue:417
 msgid "Error removing background"
 msgstr "背景の削除エラー"
 
-#: src/components/FileDetailItem.vue:502
+#: src/components/FileDetailItem.vue:505
 msgid "Error removing video cover"
 msgstr "ビデオカバーの取り外しエラー"
 
-#: src/components/FileDetailItem.vue:543
+#: src/components/FileDetailItem.vue:545
 msgid "Error editing image"
 msgstr "画像編集エラー"
 
-#: src/components/FileDetailItem.vue:614
+#: src/components/FileDetailItem.vue:616
 msgid "Transcription is only available for audio and video files"
 msgstr "トランスクリプションはオーディオファイルとビデオファイルのみご利用いただけます。"
 
-#: src/components/FileDetailItem.vue:730
+#: src/components/FileDetailItem.vue:736
 msgid "Error uncropping image"
 msgstr "画像の切り抜きエラー"
 
-#: src/components/FileDetailItem.vue:770
+#: src/components/FileDetailItem.vue:776
 msgid "No file selected"
 msgstr "ファイルが選択されていない"
 
-#: src/components/FileDetailItem.vue:804
+#: src/components/FileDetailItem.vue:810
 msgid "Error uploading video cover"
 msgstr "ビデオカバーのアップロードエラー"
 
-#: src/components/FileDetailItem.vue:841
+#: src/components/FileDetailItem.vue:846
 msgid "Error upscaling image"
 msgstr "アップスケール画像のエラー"
 
-#: src/components/FileDetailItem.vue:912
+#: src/components/FileDetailItem.vue:916
 msgid "Cancel"
 msgstr "キャンセル"
 
-#: src/components/FileDetailItem.vue:925
-#: src/components/FileDetailItem.vue:933
+#: src/components/FileDetailItem.vue:929
+#: src/components/FileDetailItem.vue:937
 msgid "Select area"
 msgstr "エリアを選択"
 
-#: src/components/FileDetailItem.vue:939
+#: src/components/FileDetailItem.vue:943
 msgid "Original ratio"
 msgstr "オリジナル比率"
 
-#: src/components/FileDetailItem.vue:942
+#: src/components/FileDetailItem.vue:946
 msgid "No ratio"
 msgstr "比率なし"
 
-#: src/components/FileDetailItem.vue:945
+#: src/components/FileDetailItem.vue:949
 msgid "Square"
 msgstr "正方形"
 
-#: src/components/FileDetailItem.vue:967
+#: src/components/FileDetailItem.vue:970
 msgid "Crop selected area"
 msgstr "作物選択面積"
 
-#: src/components/FileDetailItem.vue:976
+#: src/components/FileDetailItem.vue:979
 msgid "Erase selected area"
 msgstr "選択領域の消去"
 
-#: src/components/FileDetailItem.vue:991
-#: src/components/FileDetailItem.vue:999
-#: src/components/FileDetailItem.vue:1019
+#: src/components/FileDetailItem.vue:993
+#: src/components/FileDetailItem.vue:1001
+#: src/components/FileDetailItem.vue:1021
 msgid "Edit image"
 msgstr "画像を編集する"
 
-#: src/components/FileDetailItem.vue:1006
+#: src/components/FileDetailItem.vue:1008
 msgid "Describe the changes"
 msgstr "変化について説明する"
 
-#: src/components/FileDetailItem.vue:1026
+#: src/components/FileDetailItem.vue:1028
 msgid "Remove background"
 msgstr "背景を取り除く"
 
-#: src/components/FileDetailItem.vue:1042
-#: src/components/FileDetailItem.vue:1050
-#: src/components/FileDetailItem.vue:1107
+#: src/components/FileDetailItem.vue:1043
+#: src/components/FileDetailItem.vue:1051
+#: src/components/FileDetailItem.vue:1108
 msgid "Expand image"
 msgstr "イメージを拡大する"
 
-#: src/components/FileDetailItem.vue:1061
+#: src/components/FileDetailItem.vue:1062
 msgid "Top"
 msgstr "トップ"
 
-#: src/components/FileDetailItem.vue:1073
+#: src/components/FileDetailItem.vue:1074
 msgid "Left"
 msgstr "左"
 
-#: src/components/FileDetailItem.vue:1083
+#: src/components/FileDetailItem.vue:1084
 msgid "Right"
 msgstr "右"
 
-#: src/components/FileDetailItem.vue:1095
+#: src/components/FileDetailItem.vue:1096
 msgid "Bottom"
 msgstr "ボトム"
 
-#: src/components/FileDetailItem.vue:1123
-#: src/components/FileDetailItem.vue:1131
+#: src/components/FileDetailItem.vue:1124
+#: src/components/FileDetailItem.vue:1132
 msgid "Upscale image"
 msgstr "高級なイメージ"
 
-#: src/components/FileDetailItem.vue:1138
-#: src/components/FileDetailItem.vue:1143
-#: src/components/FileDetailItem.vue:1148
-#: src/components/FileDetailItem.vue:1153
+#: src/components/FileDetailItem.vue:1139
+#: src/components/FileDetailItem.vue:1144
+#: src/components/FileDetailItem.vue:1149
+#: src/components/FileDetailItem.vue:1154
 msgid "Scale %{factor}"
 msgstr "スケール%{factor}"
 
@@ -571,57 +575,57 @@ msgstr "反時計回りに回転"
 msgid "Rotate clockwise"
 msgstr "時計回りに回転させる"
 
-#: src/components/FileDetailItem.vue:1165
+#: src/components/FileDetailItem.vue:1164
 msgid "Flip horizontally"
 msgstr "水平フリップ"
 
-#: src/components/FileDetailItem.vue:1166
+#: src/components/FileDetailItem.vue:1165
 msgid "Flip vertically"
 msgstr "垂直に反転"
 
-#: src/components/FileDetailItem.vue:1169
+#: src/components/FileDetailItem.vue:1167
 msgid "Download"
 msgstr "ダウンロード"
 
-#: src/components/FileDetailItem.vue:1181
-#: src/components/FileDetailItem.vue:1189
+#: src/components/FileDetailItem.vue:1179
+#: src/components/FileDetailItem.vue:1187
 msgid "Undo"
 msgstr "元に戻す"
 
-#: src/components/FileDetailItem.vue:1224
+#: src/components/FileDetailItem.vue:1220
 msgid "Use as cover image"
 msgstr "カバー画像として使用"
 
-#: src/components/FileDetailItem.vue:1229
+#: src/components/FileDetailItem.vue:1225
 msgid "Upload cover image"
 msgstr "カバー画像のアップロード"
 
-#: src/components/FileDetailItem.vue:1253
+#: src/components/FileDetailItem.vue:1248
 msgid "Descriptions"
 msgstr "内容"
 
-#: src/components/FileDetailItem.vue:1257
-#: src/components/FileDetailItem.vue:1307
+#: src/components/FileDetailItem.vue:1252
+#: src/components/FileDetailItem.vue:1302
 msgid "Translate text"
 msgstr "テキストを翻訳する"
 
-#: src/components/FileDetailItem.vue:1264
+#: src/components/FileDetailItem.vue:1259
 msgid "Generate description"
 msgstr "説明文の作成"
 
-#: src/components/FileDetailItem.vue:1287
+#: src/components/FileDetailItem.vue:1282
 msgid "Description (%{lang})"
 msgstr "説明 (%{lang})"
 
-#: src/components/FileDetailItem.vue:1303
+#: src/components/FileDetailItem.vue:1298
 msgid "Transcriptions"
 msgstr "トランスクリプション"
 
-#: src/components/FileDetailItem.vue:1314
+#: src/components/FileDetailItem.vue:1309
 msgid "Transcribe file content"
 msgstr "ファイルの内容を書き写す"
 
-#: src/components/FileDetailItem.vue:1329
+#: src/components/FileDetailItem.vue:1324
 msgid "Transcription (%{lang})"
 msgstr "テープ起こし (%{lang})"
 
@@ -1195,7 +1199,7 @@ msgid "Error fetching page"
 msgstr "ページ取得エラー"
 
 #: src/components/PageListItems.vue:623
-#: src/views/PageDetail.vue:343
+#: src/views/PageDetail.vue:339
 msgid "Error publishing page"
 msgstr "ページ公開エラー"
 
@@ -1208,7 +1212,7 @@ msgid "Error searching pages"
 msgstr "エラー検索ページ"
 
 #: src/components/PageListItems.vue:770
-#: src/views/PageDetail.vue:441
+#: src/views/PageDetail.vue:437
 msgid "Error saving page"
 msgstr "ページ保存エラー"
 
@@ -1653,65 +1657,70 @@ msgstr "メイン"
 
 #: src/strings.js:68
 msgctxt "fn"
+msgid "order"
+msgstr "順序"
+
+#: src/strings.js:69
+msgctxt "fn"
 msgid "parent-page"
 msgstr "親ページ"
 
-#: src/strings.js:69
+#: src/strings.js:70
 msgctxt "fn"
 msgid "position"
 msgstr "位置"
 
-#: src/strings.js:70
+#: src/strings.js:71
 msgctxt "fn"
 msgid "text"
 msgstr "テキスト"
 
-#: src/strings.js:71
+#: src/strings.js:72
 msgctxt "fn"
 msgid "table"
 msgstr "テーブル"
 
-#: src/strings.js:72
+#: src/strings.js:73
 msgctxt "fn"
 msgid "title"
 msgstr "タイトル"
 
-#: src/strings.js:73
+#: src/strings.js:74
 msgctxt "fn"
 msgid "url"
 msgstr "url"
 
-#: src/strings.js:75
+#: src/strings.js:76
 msgctxt "fn"
 msgid "image"
 msgstr "イメージ"
 
-#: src/strings.js:76
+#: src/strings.js:77
 msgctxt "fn"
 msgid "images"
 msgstr "イメージ"
 
-#: src/strings.js:77
+#: src/strings.js:78
 msgctxt "fn"
 msgid "introduction"
 msgstr "イントロダクション"
 
-#: src/strings.js:78
+#: src/strings.js:79
 msgctxt "fn"
 msgid "load immediately"
 msgstr "即時ロード"
 
-#: src/strings.js:79
+#: src/strings.js:80
 msgctxt "fn"
 msgid "source code"
 msgstr "ソースコード"
 
-#: src/strings.js:82
+#: src/strings.js:83
 msgctxt "ai"
 msgid "Done"
 msgstr "完了"
 
-#: src/strings.js:83
+#: src/strings.js:84
 msgctxt "ai"
 msgid "Already exists"
 msgstr "すでに存在する"
@@ -1734,7 +1743,7 @@ msgstr "エラー・パブリッシング・エレメント"
 
 #: src/views/ElementDetail.vue:171
 #: src/views/FileDetail.vue:109
-#: src/views/PageDetail.vue:368
+#: src/views/PageDetail.vue:364
 msgid "There are invalid fields, please resolve the errors first"
 msgstr "無効なフィールドがあります。"
 
@@ -1752,7 +1761,7 @@ msgstr "要素バージョンの取得エラー"
 
 #: src/views/ElementDetail.vue:284
 #: src/views/FileDetail.vue:231
-#: src/views/PageDetail.vue:605
+#: src/views/PageDetail.vue:601
 msgid "Back to list view"
 msgstr "リスト表示に戻る"
 
@@ -1763,13 +1772,13 @@ msgstr "エレメント"
 
 #: src/views/ElementDetail.vue:299
 #: src/views/FileDetail.vue:246
-#: src/views/PageDetail.vue:640
+#: src/views/PageDetail.vue:636
 msgid "View history"
 msgstr "履歴を見る"
 
 #: src/views/ElementDetail.vue:319
 #: src/views/FileDetail.vue:266
-#: src/views/PageDetail.vue:660
+#: src/views/PageDetail.vue:656
 msgid "Schedule publishing"
 msgstr "スケジュール公開"
 
@@ -1777,7 +1786,7 @@ msgstr "スケジュール公開"
 #: src/views/ElementList.vue:88
 #: src/views/FileDetail.vue:309
 #: src/views/FileList.vue:85
-#: src/views/PageDetail.vue:703
+#: src/views/PageDetail.vue:699
 #: src/views/PageList.vue:196
 msgid "Toggle side menu"
 msgstr "サイドメニューの切り替え"
@@ -1917,44 +1926,44 @@ msgstr "エラー"
 msgid "Login"
 msgstr "ログイン"
 
-#: src/views/PageDetail.vue:335
+#: src/views/PageDetail.vue:331
 msgid "Page published successfully"
 msgstr "ページ公開成功"
 
-#: src/views/PageDetail.vue:338
+#: src/views/PageDetail.vue:334
 msgid "Page scheduled for publishing at %{date}"
 msgstr "掲載予定ページ%{date}"
 
-#: src/views/PageDetail.vue:433
+#: src/views/PageDetail.vue:429
 msgid "Page saved successfully"
 msgstr "ページが正常に保存された"
 
-#: src/views/PageDetail.vue:451
+#: src/views/PageDetail.vue:447
 msgid "No page schema for \"content\" found"
 msgstr "content \"のページスキーマが見つかりません。"
 
-#: src/views/PageDetail.vue:586
+#: src/views/PageDetail.vue:582
 msgid "Error fetching page versions"
 msgstr "ページバージョンの取得エラー"
 
-#: src/views/PageDetail.vue:612
-#: src/views/PageDetail.vue:724
+#: src/views/PageDetail.vue:608
+#: src/views/PageDetail.vue:720
 msgid "Page"
 msgstr "ページ"
 
-#: src/views/PageDetail.vue:620
+#: src/views/PageDetail.vue:616
 msgid "Translate page"
 msgstr "ページを翻訳する"
 
-#: src/views/PageDetail.vue:714
+#: src/views/PageDetail.vue:710
 msgid "Editor"
 msgstr "エディター"
 
-#: src/views/PageDetail.vue:719
+#: src/views/PageDetail.vue:715
 msgid "Content"
 msgstr "内容"
 
-#: src/views/PageDetail.vue:728
+#: src/views/PageDetail.vue:724
 msgid "Metrics"
 msgstr "指標"
 

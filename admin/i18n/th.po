@@ -80,14 +80,14 @@ msgstr "เมตาดาต้า"
 
 #: src/components/ElementDetailItem.vue:72
 #: src/components/ElementDetailRefs.vue:100
-#: src/components/FileDetailItem.vue:887
+#: src/components/FileDetailItem.vue:892
 #: src/components/FileDetailRefs.vue:120
 #: src/components/FileDetailRefs.vue:142
 msgid "Name"
 msgstr "ชื่อ"
 
 #: src/components/ElementDetailItem.vue:84
-#: src/components/FileDetailItem.vue:899
+#: src/components/FileDetailItem.vue:904
 #: src/components/PageDetailItemProps.vue:153
 msgid "Language"
 msgstr "ภาษา"
@@ -143,19 +143,19 @@ msgstr "เผยแพร่แล้ว"
 #: src/components/ElementListItems.vue:246
 #: src/components/ElementListItems.vue:283
 #: src/components/Fields.vue:83
-#: src/components/FileDetailItem.vue:96
-#: src/components/FileDetailItem.vue:251
-#: src/components/FileDetailItem.vue:345
-#: src/components/FileDetailItem.vue:391
-#: src/components/FileDetailItem.vue:445
-#: src/components/FileDetailItem.vue:470
-#: src/components/FileDetailItem.vue:512
-#: src/components/FileDetailItem.vue:610
-#: src/components/FileDetailItem.vue:630
-#: src/components/FileDetailItem.vue:665
-#: src/components/FileDetailItem.vue:701
-#: src/components/FileDetailItem.vue:764
-#: src/components/FileDetailItem.vue:814
+#: src/components/FileDetailItem.vue:101
+#: src/components/FileDetailItem.vue:240
+#: src/components/FileDetailItem.vue:347
+#: src/components/FileDetailItem.vue:392
+#: src/components/FileDetailItem.vue:448
+#: src/components/FileDetailItem.vue:473
+#: src/components/FileDetailItem.vue:515
+#: src/components/FileDetailItem.vue:612
+#: src/components/FileDetailItem.vue:632
+#: src/components/FileDetailItem.vue:667
+#: src/components/FileDetailItem.vue:703
+#: src/components/FileDetailItem.vue:770
+#: src/components/FileDetailItem.vue:820
 #: src/components/FileListItems.vue:73
 #: src/components/FileListItems.vue:137
 #: src/components/FileListItems.vue:181
@@ -184,9 +184,9 @@ msgstr "เผยแพร่แล้ว"
 #: src/views/FileDetail.vue:51
 #: src/views/FileDetail.vue:104
 #: src/views/FileDetail.vue:180
-#: src/views/PageDetail.vue:307
-#: src/views/PageDetail.vue:363
-#: src/views/PageDetail.vue:554
+#: src/views/PageDetail.vue:303
+#: src/views/PageDetail.vue:359
+#: src/views/PageDetail.vue:550
 msgid "Permission denied"
 msgstr "ไม่อนุญาต"
 
@@ -248,8 +248,8 @@ msgstr "การกระทำ"
 #: src/views/ElementDetail.vue:347
 #: src/views/FileDetail.vue:287
 #: src/views/FileDetail.vue:294
-#: src/views/PageDetail.vue:681
-#: src/views/PageDetail.vue:688
+#: src/views/PageDetail.vue:677
+#: src/views/PageDetail.vue:684
 msgid "Publish"
 msgstr "เผยแพร่"
 
@@ -362,7 +362,7 @@ msgstr "สร้างข้อความ"
 
 #: src/components/Fields.vue:205
 #: src/components/FileAiDialog.vue:200
-#: src/components/FileDetailItem.vue:1273
+#: src/components/FileDetailItem.vue:1268
 #: src/components/PageDetailContentList.vue:631
 #: src/fields/Items.vue:323
 #: src/views/PageList.vue:249
@@ -372,7 +372,7 @@ msgstr "การออกคำสั่ง"
 #: src/components/FieldsDialog.vue:55
 #: src/views/ElementDetail.vue:307
 #: src/views/FileDetail.vue:254
-#: src/views/PageDetail.vue:648
+#: src/views/PageDetail.vue:644
 msgid "Save"
 msgstr "บันทึก"
 
@@ -437,128 +437,132 @@ msgstr "รูปภาพที่ใช้"
 msgid "Select images"
 msgstr "เลือกภาพ"
 
-#: src/components/FileDetailItem.vue:103
+#: src/components/FileDetailItem.vue:108
 msgid "No video element found"
 msgstr "ไม่พบองค์ประกอบวิดีโอ"
 
-#: src/components/FileDetailItem.vue:148
+#: src/components/FileDetailItem.vue:153
 msgid "Error saving video cover"
 msgstr "เกิดข้อผิดพลาดในการบันทึกปกวิดีโอ"
 
-#: src/components/FileDetailItem.vue:279
+#: src/components/FileDetailItem.vue:216
+msgid "Error describing file"
+msgstr "เกิดข้อผิดพลาดในการอธิบายไฟล์"
+
+#: src/components/FileDetailItem.vue:267
 msgid "Error erasing image part"
 msgstr "เกิดข้อผิดพลาดในการลบส่วนของภาพ"
 
-#: src/components/FileDetailItem.vue:378
+#: src/components/FileDetailItem.vue:379
 msgid "Error editing image part"
 msgstr "เกิดข้อผิดพลาดในการแก้ไขส่วนของภาพ"
 
-#: src/components/FileDetailItem.vue:416
+#: src/components/FileDetailItem.vue:417
 msgid "Error removing background"
 msgstr "เกิดข้อผิดพลาดในการลบพื้นหลัง"
 
-#: src/components/FileDetailItem.vue:502
+#: src/components/FileDetailItem.vue:505
 msgid "Error removing video cover"
 msgstr "เกิดข้อผิดพลาดในการลบปกวิดีโอ"
 
-#: src/components/FileDetailItem.vue:543
+#: src/components/FileDetailItem.vue:545
 msgid "Error editing image"
 msgstr "เกิดข้อผิดพลาดในการแก้ไขรูปภาพ"
 
-#: src/components/FileDetailItem.vue:614
+#: src/components/FileDetailItem.vue:616
 msgid "Transcription is only available for audio and video files"
 msgstr "การถอดเสียงมีให้เฉพาะสำหรับไฟล์เสียงและวิดีโอเท่านั้น"
 
-#: src/components/FileDetailItem.vue:730
+#: src/components/FileDetailItem.vue:736
 msgid "Error uncropping image"
 msgstr "เกิดข้อผิดพลาดในการตัดภาพ"
 
-#: src/components/FileDetailItem.vue:770
+#: src/components/FileDetailItem.vue:776
 msgid "No file selected"
 msgstr "ไม่เลือกไฟล์"
 
-#: src/components/FileDetailItem.vue:804
+#: src/components/FileDetailItem.vue:810
 msgid "Error uploading video cover"
 msgstr "เกิดข้อผิดพลาดในการอัปโหลดภาพปกวิดีโอ"
 
-#: src/components/FileDetailItem.vue:841
+#: src/components/FileDetailItem.vue:846
 msgid "Error upscaling image"
 msgstr "เกิดข้อผิดพลาดในการขยายภาพ"
 
-#: src/components/FileDetailItem.vue:912
+#: src/components/FileDetailItem.vue:916
 msgid "Cancel"
 msgstr "ยกเลิก"
 
-#: src/components/FileDetailItem.vue:925
-#: src/components/FileDetailItem.vue:933
+#: src/components/FileDetailItem.vue:929
+#: src/components/FileDetailItem.vue:937
 msgid "Select area"
 msgstr "เลือกพื้นที่"
 
-#: src/components/FileDetailItem.vue:939
+#: src/components/FileDetailItem.vue:943
 msgid "Original ratio"
 msgstr "อัตราส่วนดั้งเดิม"
 
-#: src/components/FileDetailItem.vue:942
+#: src/components/FileDetailItem.vue:946
 msgid "No ratio"
 msgstr "ไม่มีอัตราส่วน"
 
-#: src/components/FileDetailItem.vue:945
+#: src/components/FileDetailItem.vue:949
 msgid "Square"
 msgstr "สี่เหลี่ยม"
 
-#: src/components/FileDetailItem.vue:967
+#: src/components/FileDetailItem.vue:970
 msgid "Crop selected area"
 msgstr "ครอบตัดพื้นที่ที่เลือก"
 
-#: src/components/FileDetailItem.vue:976
+#: src/components/FileDetailItem.vue:979
 msgid "Erase selected area"
 msgstr "ลบพื้นที่ที่เลือก"
 
-#: src/components/FileDetailItem.vue:991
-#: src/components/FileDetailItem.vue:999
-#: src/components/FileDetailItem.vue:1019
+#: src/components/FileDetailItem.vue:993
+#: src/components/FileDetailItem.vue:1001
+#: src/components/FileDetailItem.vue:1021
 msgid "Edit image"
 msgstr "แก้ไขรูปภาพ"
 
-#: src/components/FileDetailItem.vue:1006
+#: src/components/FileDetailItem.vue:1008
 msgid "Describe the changes"
 msgstr "อธิบายการเปลี่ยนแปลง"
 
-#: src/components/FileDetailItem.vue:1026
+#: src/components/FileDetailItem.vue:1028
 msgid "Remove background"
 msgstr "ลบพื้นหลัง"
 
-#: src/components/FileDetailItem.vue:1042
-#: src/components/FileDetailItem.vue:1050
-#: src/components/FileDetailItem.vue:1107
+#: src/components/FileDetailItem.vue:1043
+#: src/components/FileDetailItem.vue:1051
+#: src/components/FileDetailItem.vue:1108
 msgid "Expand image"
 msgstr "ขยายภาพ"
 
-#: src/components/FileDetailItem.vue:1061
+#: src/components/FileDetailItem.vue:1062
 msgid "Top"
 msgstr "ด้านบน"
 
-#: src/components/FileDetailItem.vue:1073
+#: src/components/FileDetailItem.vue:1074
 msgid "Left"
 msgstr "ซ้าย"
 
-#: src/components/FileDetailItem.vue:1083
+#: src/components/FileDetailItem.vue:1084
 msgid "Right"
 msgstr "ถูกต้อง"
 
-#: src/components/FileDetailItem.vue:1095
+#: src/components/FileDetailItem.vue:1096
 msgid "Bottom"
 msgstr "ด้านล่าง"
 
-#: src/components/FileDetailItem.vue:1123
-#: src/components/FileDetailItem.vue:1131
+#: src/components/FileDetailItem.vue:1124
+#: src/components/FileDetailItem.vue:1132
 msgid "Upscale image"
 msgstr "ภาพลักษณ์หรูหรา"
 
-#: src/components/FileDetailItem.vue:1138
-#: src/components/FileDetailItem.vue:1143
-#: src/components/FileDetailItem.vue:1148
-#: src/components/FileDetailItem.vue:1153
+#: src/components/FileDetailItem.vue:1139
+#: src/components/FileDetailItem.vue:1144
+#: src/components/FileDetailItem.vue:1149
+#: src/components/FileDetailItem.vue:1154
 msgid "Scale %{factor}"
 msgstr "มาตราส่วน%{factor}"
 
@@ -570,57 +574,57 @@ msgstr "หมุนทวนเข็มนาฬิกา"
 msgid "Rotate clockwise"
 msgstr "หมุนตามเข็มนาฬิกา"
 
-#: src/components/FileDetailItem.vue:1165
+#: src/components/FileDetailItem.vue:1164
 msgid "Flip horizontally"
 msgstr "พลิกแนวนอน"
 
-#: src/components/FileDetailItem.vue:1166
+#: src/components/FileDetailItem.vue:1165
 msgid "Flip vertically"
 msgstr "พลิกในแนวตั้ง"
 
-#: src/components/FileDetailItem.vue:1169
+#: src/components/FileDetailItem.vue:1167
 msgid "Download"
 msgstr "ดาวน์โหลด"
 
-#: src/components/FileDetailItem.vue:1181
-#: src/components/FileDetailItem.vue:1189
+#: src/components/FileDetailItem.vue:1179
+#: src/components/FileDetailItem.vue:1187
 msgid "Undo"
 msgstr "ยกเลิก"
 
-#: src/components/FileDetailItem.vue:1224
+#: src/components/FileDetailItem.vue:1220
 msgid "Use as cover image"
 msgstr "ใช้เป็นภาพปก"
 
-#: src/components/FileDetailItem.vue:1229
+#: src/components/FileDetailItem.vue:1225
 msgid "Upload cover image"
 msgstr "อัปโหลดภาพปก"
 
-#: src/components/FileDetailItem.vue:1253
+#: src/components/FileDetailItem.vue:1248
 msgid "Descriptions"
 msgstr "คำอธิบาย"
 
-#: src/components/FileDetailItem.vue:1257
-#: src/components/FileDetailItem.vue:1307
+#: src/components/FileDetailItem.vue:1252
+#: src/components/FileDetailItem.vue:1302
 msgid "Translate text"
 msgstr "แปลข้อความ"
 
-#: src/components/FileDetailItem.vue:1264
+#: src/components/FileDetailItem.vue:1259
 msgid "Generate description"
 msgstr "สร้างคำอธิบาย"
 
-#: src/components/FileDetailItem.vue:1287
+#: src/components/FileDetailItem.vue:1282
 msgid "Description (%{lang})"
 msgstr "คำอธิบาย (%{lang})"
 
-#: src/components/FileDetailItem.vue:1303
+#: src/components/FileDetailItem.vue:1298
 msgid "Transcriptions"
 msgstr "การถอดเสียง"
 
-#: src/components/FileDetailItem.vue:1314
+#: src/components/FileDetailItem.vue:1309
 msgid "Transcribe file content"
 msgstr "ถอดความเนื้อหาไฟล์"
 
-#: src/components/FileDetailItem.vue:1329
+#: src/components/FileDetailItem.vue:1324
 msgid "Transcription (%{lang})"
 msgstr "การถอดเสียง (%{lang})"
 
@@ -1196,7 +1200,7 @@ msgid "Error fetching page"
 msgstr "เกิดข้อผิดพลาดในการดึงหน้า"
 
 #: src/components/PageListItems.vue:623
-#: src/views/PageDetail.vue:343
+#: src/views/PageDetail.vue:339
 msgid "Error publishing page"
 msgstr "เกิดข้อผิดพลาดในการเผยแพร่หน้า"
 
@@ -1209,7 +1213,7 @@ msgid "Error searching pages"
 msgstr "เกิดข้อผิดพลาดในการค้นหาหน้า"
 
 #: src/components/PageListItems.vue:770
-#: src/views/PageDetail.vue:441
+#: src/views/PageDetail.vue:437
 msgid "Error saving page"
 msgstr "เกิดข้อผิดพลาดในการบันทึกหน้า"
 
@@ -1654,65 +1658,70 @@ msgstr "หลัก"
 
 #: src/strings.js:68
 msgctxt "fn"
+msgid "order"
+msgstr "คำสั่ง"
+
+#: src/strings.js:69
+msgctxt "fn"
 msgid "parent-page"
 msgstr "หน้าแม่"
 
-#: src/strings.js:69
+#: src/strings.js:70
 msgctxt "fn"
 msgid "position"
 msgstr "ตำแหน่ง"
 
-#: src/strings.js:70
+#: src/strings.js:71
 msgctxt "fn"
 msgid "text"
 msgstr "ข้อความ"
 
-#: src/strings.js:71
+#: src/strings.js:72
 msgctxt "fn"
 msgid "table"
 msgstr "ตาราง"
 
-#: src/strings.js:72
+#: src/strings.js:73
 msgctxt "fn"
 msgid "title"
 msgstr "ชื่อ"
 
-#: src/strings.js:73
+#: src/strings.js:74
 msgctxt "fn"
 msgid "url"
 msgstr "url"
 
-#: src/strings.js:75
+#: src/strings.js:76
 msgctxt "fn"
 msgid "image"
 msgstr "รูปภาพ"
 
-#: src/strings.js:76
+#: src/strings.js:77
 msgctxt "fn"
 msgid "images"
 msgstr "รูปภาพ"
 
-#: src/strings.js:77
+#: src/strings.js:78
 msgctxt "fn"
 msgid "introduction"
 msgstr "บทนำ"
 
-#: src/strings.js:78
+#: src/strings.js:79
 msgctxt "fn"
 msgid "load immediately"
 msgstr "โหลดทันที"
 
-#: src/strings.js:79
+#: src/strings.js:80
 msgctxt "fn"
 msgid "source code"
 msgstr "ซอร์สโค้ด"
 
-#: src/strings.js:82
+#: src/strings.js:83
 msgctxt "ai"
 msgid "Done"
 msgstr "เสร็จแล้ว"
 
-#: src/strings.js:83
+#: src/strings.js:84
 msgctxt "ai"
 msgid "Already exists"
 msgstr "มีอยู่แล้ว"
@@ -1735,7 +1744,7 @@ msgstr "เกิดข้อผิดพลาดในการเผยแพ
 
 #: src/views/ElementDetail.vue:171
 #: src/views/FileDetail.vue:109
-#: src/views/PageDetail.vue:368
+#: src/views/PageDetail.vue:364
 msgid "There are invalid fields, please resolve the errors first"
 msgstr "มีฟิลด์ที่ไม่ถูกต้อง กรุณาแก้ไขข้อผิดพลาดก่อน"
 
@@ -1753,7 +1762,7 @@ msgstr "เกิดข้อผิดพลาดในการดึงเว
 
 #: src/views/ElementDetail.vue:284
 #: src/views/FileDetail.vue:231
-#: src/views/PageDetail.vue:605
+#: src/views/PageDetail.vue:601
 msgid "Back to list view"
 msgstr "กลับไปยังมุมมองรายการ"
 
@@ -1764,13 +1773,13 @@ msgstr "องค์ประกอบ"
 
 #: src/views/ElementDetail.vue:299
 #: src/views/FileDetail.vue:246
-#: src/views/PageDetail.vue:640
+#: src/views/PageDetail.vue:636
 msgid "View history"
 msgstr "ดูประวัติ"
 
 #: src/views/ElementDetail.vue:319
 #: src/views/FileDetail.vue:266
-#: src/views/PageDetail.vue:660
+#: src/views/PageDetail.vue:656
 msgid "Schedule publishing"
 msgstr "กำหนดการเผยแพร่"
 
@@ -1778,7 +1787,7 @@ msgstr "กำหนดการเผยแพร่"
 #: src/views/ElementList.vue:88
 #: src/views/FileDetail.vue:309
 #: src/views/FileList.vue:85
-#: src/views/PageDetail.vue:703
+#: src/views/PageDetail.vue:699
 #: src/views/PageList.vue:196
 msgid "Toggle side menu"
 msgstr "สลับเมนูด้านข้าง"
@@ -1918,44 +1927,44 @@ msgstr "ข้อผิดพลาด"
 msgid "Login"
 msgstr "เข้าสู่ระบบ"
 
-#: src/views/PageDetail.vue:335
+#: src/views/PageDetail.vue:331
 msgid "Page published successfully"
 msgstr "หน้าได้รับการเผยแพร่สำเร็จ"
 
-#: src/views/PageDetail.vue:338
+#: src/views/PageDetail.vue:334
 msgid "Page scheduled for publishing at %{date}"
 msgstr "หน้าถูกกำหนดให้เผยแพร่เวลา%{date}"
 
-#: src/views/PageDetail.vue:433
+#: src/views/PageDetail.vue:429
 msgid "Page saved successfully"
 msgstr "หน้าบันทึกสำเร็จแล้ว"
 
-#: src/views/PageDetail.vue:451
+#: src/views/PageDetail.vue:447
 msgid "No page schema for \"content\" found"
 msgstr "ไม่พบสคีมาหน้าสำหรับ \"เนื้อหา\""
 
-#: src/views/PageDetail.vue:586
+#: src/views/PageDetail.vue:582
 msgid "Error fetching page versions"
 msgstr "เกิดข้อผิดพลาดในการดึงเวอร์ชันของหน้า"
 
-#: src/views/PageDetail.vue:612
-#: src/views/PageDetail.vue:724
+#: src/views/PageDetail.vue:608
+#: src/views/PageDetail.vue:720
 msgid "Page"
 msgstr "หน้า"
 
-#: src/views/PageDetail.vue:620
+#: src/views/PageDetail.vue:616
 msgid "Translate page"
 msgstr "แปลหน้า"
 
-#: src/views/PageDetail.vue:714
+#: src/views/PageDetail.vue:710
 msgid "Editor"
 msgstr "บรรณาธิการ"
 
-#: src/views/PageDetail.vue:719
+#: src/views/PageDetail.vue:715
 msgid "Content"
 msgstr "เนื้อหา"
 
-#: src/views/PageDetail.vue:728
+#: src/views/PageDetail.vue:724
 msgid "Metrics"
 msgstr "เมตริก"
 
