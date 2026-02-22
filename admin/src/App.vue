@@ -6,7 +6,7 @@
   import gql from 'graphql-tag'
   import { toMp3, transcription } from './audio'
   import { computed, markRaw, provide } from 'vue'
-  import { useAppStore, useLanguageStore, useMessageStore } from './stores'
+  import { useAppStore, useAuthStore, useLanguageStore, useMessageStore } from './stores'
 
   export default {
     data() {
@@ -35,9 +35,10 @@
     setup() {
       const languages = useLanguageStore()
       const messages = useMessageStore()
+      const auth = useAuthStore()
       const app = useAppStore()
 
-      return { app, languages, messages }
+      return { app, auth, languages, messages }
     },
 
     methods: {
@@ -96,6 +97,10 @@
 
 
       write(prompt, context = [], files = []) {
+        if(!this.auth.can('text:write')) {
+          return this.messages.add(this.$gettext('Permission denied'), 'error')
+        }
+
         prompt = String(prompt).trim()
 
         if(!prompt) {
@@ -166,6 +171,11 @@
 
 
       transcribe(input) {
+        if(!this.auth.can('audio:transcribe')) {
+          this.messages.add(this.$gettext('Permission denied'), 'error')
+          return
+        }
+
         return toMp3(this.url(input, true)).then(blob => {
           return this.$apollo.mutate({
             mutation: gql`mutation($file: Upload!) {
@@ -192,6 +202,11 @@
 
 
       translate(texts, to, from = null, context = null) {
+        if(!this.auth.can('text:translate')) {
+          this.messages.add(this.$gettext('Permission denied'), 'error')
+          return
+        }
+
         if(!Array.isArray(texts)) {
           texts = [texts].filter(v => !!v)
         }

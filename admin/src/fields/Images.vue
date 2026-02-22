@@ -263,7 +263,7 @@
         />
       </div>
       <div class="icon-group">
-        <v-btn
+        <v-btn v-if="auth.can('image:imagine')"
           @click="vcreate = true"
           :title="$gettext('Create file')"
           icon="mdi-creation"

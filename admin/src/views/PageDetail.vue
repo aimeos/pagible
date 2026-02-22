@@ -443,6 +443,11 @@
 
 
       translatePage(lang) {
+        if(!this.auth.can('text:translate')) {
+          this.messages.add(this.$gettext('Permission denied'), 'error')
+          return
+        }
+
         if(!this.schemas.content) {
           this.messages.add(this.$gettext('No page schema for "content" found'), 'error')
           return
@@ -610,7 +615,7 @@
     </v-app-bar-title>
 
     <template v-slot:append>
-      <v-menu>
+      <v-menu v-if="auth.can('text:translate')">
         <template #activator="{ props }">
           <v-btn v-bind="props"
             :title="$gettext('Translate page')"
@@ -719,7 +724,7 @@
           @click="aside = asidePage">
           {{ $gettext('Page') }}
         </v-tab>
-        <v-tab value="metrics"
+        <v-tab v-if="auth.can('page:metrics')" value="metrics"
           @click="aside = ''">
           {{ $gettext('Metrics') }}
         </v-tab>
@@ -757,7 +762,7 @@
           />
         </v-window-item>
 
-        <v-window-item value="metrics">
+        <v-window-item v-if="auth.can('page:metrics')" value="metrics">
           <PageDetailMetrics ref="metrics"
             :item="item"
           />

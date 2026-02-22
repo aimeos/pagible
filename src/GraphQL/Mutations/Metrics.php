@@ -7,8 +7,10 @@
 
 namespace Aimeos\Cms\GraphQL\Mutations;
 
+use Aimeos\Cms\Permission;
 use Aimeos\AnalyticsBridge\Facades\Analytics;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Auth;
 use GraphQL\Error\Error;
 
 
@@ -20,6 +22,10 @@ final class Metrics
      */
     public function __invoke( $rootValue, array $args ): array
     {
+        if( !Permission::can( 'page:metrics', Auth::user() ) ) {
+            throw new Error( 'Insufficient permissions' );
+        }
+
         $url = $args['url'] ?? '';
         $days = $args['days'] ?? 30;
         $lang = $args['lang'] ?? 'en';

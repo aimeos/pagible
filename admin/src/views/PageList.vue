@@ -122,6 +122,11 @@
 
 
       synthesize() {
+        if(!this.auth.can('page:synthesize')) {
+          this.messages.add(this.$gettext('Permission denied'), 'error')
+          return
+        }
+
         const prompt = this.chat.trim()
 
         if(!this.chat) {
@@ -204,7 +209,7 @@
   <v-main class="page-list">
     <v-container>
       <v-sheet class="box scroll">
-        <v-textarea
+        <v-textarea v-if="auth.can('page:synthesize')"
           v-model="chat"
           :loading="synthesizing"
           :placeholder="$gettext('Describe the page and content you want to create')"
@@ -244,7 +249,7 @@
               </svg>
             </v-btn>
 
-            <v-btn v-else
+            <v-btn v-else-if="auth.can('audio:transcribe')"
               @click="record()"
               :title="$gettext('Dictate')"
               :class="{dictating: audio}"

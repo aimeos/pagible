@@ -7,9 +7,11 @@
 
 namespace Aimeos\Cms\GraphQL\Mutations;
 
+use Aimeos\Cms\Models\File;
+use Aimeos\Cms\Permission;
 use Aimeos\Prisma\Prisma;
 use Aimeos\Prisma\Exceptions\PrismaException;
-use Aimeos\Cms\Models\File;
+use Illuminate\Support\Facades\Auth;
 use GraphQL\Error\Error;
 
 
@@ -21,6 +23,10 @@ final class Describe
      */
     public function __invoke( $rootValue, array $args ): string
     {
+        if( !Permission::can( 'file:describe', Auth::user() ) ) {
+            throw new Error( 'Insufficient permissions' );
+        }
+
         if( empty( $id = $args['file'] ) ) {
             throw new Error( 'File ID is required' );
         }

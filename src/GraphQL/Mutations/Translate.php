@@ -7,6 +7,8 @@
 
 namespace Aimeos\Cms\GraphQL\Mutations;
 
+use Aimeos\Cms\Permission;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use GraphQL\Error\Error;
 
@@ -19,6 +21,10 @@ final class Translate
      */
     public function __invoke( $rootValue, array $args ): array
     {
+        if( !Permission::can( 'text:translate', Auth::user() ) ) {
+            throw new Error( 'Insufficient permissions' );
+        }
+
         if( empty( $args['texts'] ) ) {
             throw new Error( 'Input texts must not be empty' );
         }

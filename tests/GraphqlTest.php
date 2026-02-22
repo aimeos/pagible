@@ -54,7 +54,7 @@ class GraphqlTest extends TestAbstract
             'name' => 'Test editor',
             'email' => 'editor@testbench',
             'password' => 'secret',
-            'cmseditor' => 0x7fffffff
+            'cmseditor' => 0x7fffffffffffffff
         ]);
     }
 

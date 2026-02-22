@@ -236,7 +236,7 @@
 
 
       erase() {
-        if(this.readonly) {
+        if(this.readonly || !this.auth.can('image:erase')) {
           return this.messages.add(this.$gettext('Permission denied'), 'error')
         }
 
@@ -343,7 +343,7 @@
 
 
       inpaint() {
-        if(this.readonly) {
+        if(this.readonly || !this.auth.can('image:inpaint')) {
           return this.messages.add(this.$gettext('Permission denied'), 'error')
         }
 
@@ -388,7 +388,7 @@
 
 
       isolate() {
-        if(this.readonly) {
+        if(this.readonly || !this.auth.can('image:isolate')) {
           return this.messages.add(this.$gettext('Permission denied'), 'error')
         }
 
@@ -511,7 +511,7 @@
 
 
       repaint() {
-        if(this.readonly) {
+        if(this.readonly || !this.auth.can('image:repaint')) {
           return this.messages.add(this.$gettext('Permission denied'), 'error')
         }
 
@@ -628,6 +628,11 @@
 
 
       translateText(map) {
+        if(!this.auth.can('text:translate')) {
+          this.messages.add(this.$gettext('Permission denied'), 'error')
+          return
+        }
+
         if(this.readonly) {
           return this.messages.add(this.$gettext('Permission denied'), 'error')
         }
@@ -663,7 +668,7 @@
 
 
       translateVTT(map) {
-        if(this.readonly) {
+        if(this.readonly || !this.auth.can('text:translate')) {
           return this.messages.add(this.$gettext('Permission denied'), 'error')
         }
 
@@ -699,7 +704,7 @@
 
 
       uncrop() {
-        if(this.readonly) {
+        if(this.readonly || !this.auth.can('image:uncrop')) {
           return this.messages.add(this.$gettext('Permission denied'), 'error')
         }
 
@@ -816,7 +821,7 @@
 
 
       upscale(factor) {
-        if(this.readonly) {
+        if(this.readonly || !this.auth.can('image:upscale')) {
           return this.messages.add(this.$gettext('Permission denied'), 'error')
         }
 
@@ -972,7 +977,7 @@
                 class="no-rtl"
               />
 
-              <v-btn
+              <v-btn v-if="auth.can('image:erase')"
                 @click="erase()"
                 :disabled="!selected"
                 :loading="loading.erase"
@@ -981,7 +986,7 @@
                 class="no-rtl"
               />
 
-              <v-dialog
+              <v-dialog v-if="selected && auth.can('image:inpaint') || !selected && auth.can('image:repaint')"
                 v-model="menu['paint']"
                 transition="scale-transition"
                 max-width="600">
@@ -1023,7 +1028,7 @@
                 </v-card>
               </v-dialog>
 
-              <v-btn
+              <v-btn v-if="auth.can('image:isolate')"
                 @click="isolate()"
                 :title="$gettext('Remove background')"
                 :loading="loading.isolate"
@@ -1031,7 +1036,7 @@
                 class="no-rtl"
               />
 
-              <v-dialog
+              <v-dialog v-if="auth.can('image:uncrop')"
                 v-model="menu['uncrop']"
                 transition="scale-transition"
                 max-width="300">
@@ -1110,7 +1115,8 @@
                 </v-card>
               </v-dialog>
 
-              <component :is="$vuetify.display.xs ? 'v-dialog' : 'v-menu'"
+              <component v-if="auth.can('image:upscale')"
+                :is="$vuetify.display.xs ? 'v-dialog' : 'v-menu'"
                 v-model="menu['upscale']"
                 transition="scale-transition"
                 location="end center"
@@ -1247,21 +1253,21 @@
           <div class="label">
             {{ $gettext('Descriptions') }}
             <div v-if="!readonly" class="actions">
-              <v-btn v-if="Object.values(item.description || {}).find(v => !!v)"
+              <v-btn v-if="auth.can('text:translate') && Object.values(item.description || {}).find(v => !!v)"
                 @click="translateText(item.description)"
                 :title="$gettext('Translate text')"
                 :loading="loading.translate"
                 icon="mdi-translate"
                 variant="text"
               />
-              <v-btn
+              <v-btn v-if="auth.can('file:describe')"
                 @click="describe()"
                 :title="$gettext('Generate description')"
                 :loading="loading.describe"
                 icon="mdi-creation"
                 variant="text"
               />
-              <v-btn
+              <v-btn v-if="auth.can('audio:transcribe')"
                 @click="record()"
                 :class="{dictating: audio}"
                 :icon="audio ? 'mdi-microphone-outline' : 'mdi-microphone'"
@@ -1297,14 +1303,14 @@
           <div class="label">
             {{ $gettext('Transcriptions') }}
             <div v-if="!readonly" class="actions">
-              <v-btn v-if="Object.values(item.transcription || {}).find(v => !!v)"
+              <v-btn v-if="auth.can('text:translate') && Object.values(item.transcription || {}).find(v => !!v)"
                 @click="translateVTT(item.transcription)"
                 :title="$gettext('Translate text')"
                 :loading="loading.translate"
                 icon="mdi-translate"
                 variant="text"
               />
-              <v-btn
+              <v-btn v-if="auth.can('audio:transcribe')"
                 @click="transcribeFile()"
                 :title="$gettext('Transcribe file content')"
                 :loading="loading.transcribe"
