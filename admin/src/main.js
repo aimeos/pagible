@@ -31,8 +31,8 @@ for(const path in fields) {
 
 app.use(logger)
   .use(pinia)
-  .use(router)
   .use(i18n)
+  .use(router)
   .use(vuetify)
   .use(apollo)
   .use(VueObserveVisibility)
