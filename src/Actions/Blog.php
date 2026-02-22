@@ -16,13 +16,15 @@ class Blog
 {
     public function __invoke( Request $request, Page $page, object $item )
     {
-        $pid = @$item->data?->{'parent-page'}?->value ?: $page->id;
         $sort = @$item->data?->order ?: '-id';
-
         $order = $sort[0] === '-' ? substr( $sort, 1 ) : $sort;
         $dir = $sort[0] === '-' ? 'desc' : 'asc';
 
-        $builder = Page::where( 'parent_id', $pid )->orderBy( $order, $dir );
+        $builder = Page::where( 'type', 'blog' )->orderBy( $order, $dir );
+
+        if( $pid = @$item->data?->{'parent-page'}?->value ) {
+            $builder->where( 'parent_id', $pid );
+        }
 
         if( \Aimeos\Cms\Permission::can( 'page:view', $request->user() ) ) {
             $builder->whereHas('latest', function( $builder ) {

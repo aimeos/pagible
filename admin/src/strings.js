@@ -65,6 +65,7 @@ if($pgettext) {
     $pgettext('fn', 'level')
     $pgettext('fn', 'limit')
     $pgettext('fn', 'main')
+    $pgettext('fn', 'order')
     $pgettext('fn', 'parent-page')
     $pgettext('fn', 'position')
     $pgettext('fn', 'text')
