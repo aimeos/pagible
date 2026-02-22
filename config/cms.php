@@ -534,6 +534,14 @@ return [
                         'item-title' => 'title',
                         'item-value' => 'id',
                     ],
+                    'order' => [
+                        'type' => 'select',
+                        'options' => [
+                            ['value' => '_lft', 'label' => 'Position'],
+                            ['value' => '-created_at', 'label' => 'Latest'],
+                            ['value' => 'created_at', 'label' => 'Oldest'],
+                        ],
+                    ],
                     'limit' => [
                         'type' => 'number',
                         'min' => 1,
