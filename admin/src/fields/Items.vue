@@ -29,7 +29,7 @@
 
     emits: ['update:modelValue', 'error', 'addFile', 'removeFile'],
 
-    inject: ['compose', 'translate', 'transcribe', 'txlocales'],
+    inject: ['write', 'translate', 'transcribe', 'txlocales'],
 
     data() {
       return {
@@ -71,7 +71,7 @@
       },
 
 
-      composeText(idx, code) {
+      writeText(idx, code) {
         const context = [
           'generate for field "' + (this.config.item?.[code]?.label || code) + '"',
           'required output format is "' + this.config.item?.[code]?.type + '"',
@@ -86,7 +86,7 @@
 
         this.composing[idx+code] = true
 
-        this.compose(prompt, context).then(result => {
+        this.write(prompt, context).then(result => {
           this.update(idx, code, result)
         }).finally(() => {
           this.composing[idx+code] = false
@@ -312,7 +312,7 @@
                 <v-btn
                   :title="$gettext('Generate text')"
                   :loading="composing[idx+code]"
-                  @click="composeText(idx, code)"
+                  @click="writeText(idx, code)"
                   icon="mdi-creation"
                   variant="text"
                 />

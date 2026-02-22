@@ -68,9 +68,6 @@ extend type Mutation {
   "Log out authenticated user"
   cmsLogout: User @guard
 
-  "Generate texts from prompts and passed file IDs"
-  compose(prompt: String!, context: String, files: [String!]): String
-
   "Summarize the content of the file passed by its file ID"
   describe(file: String!, lang: String): String
 
@@ -109,6 +106,9 @@ extend type Mutation {
 
   "Upscale image, returns a base64 encoded image"
   upscale(file: Upload!, factor: Int!): String
+
+  "Generate texts from prompts and passed file IDs"
+  write(prompt: String!, context: String, files: [String!]): String
 
 
   "Add a new page below the page referenced by 'parent' and before the page referenced by 'ref' (or append if NULL)"

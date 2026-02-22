@@ -21,7 +21,7 @@
         debounce: this.debounce,
         openView: this.open,
         closeView: this.close,
-        compose: this.compose,
+        write: this.write,
         transcribe: this.transcribe,
         translate: this.translate,
         txlocales: this.txlocales,
@@ -95,7 +95,7 @@
       },
 
 
-      compose(prompt, context = [], files = []) {
+      write(prompt, context = [], files = []) {
         prompt = String(prompt).trim()
 
         if(!prompt) {
@@ -111,7 +111,7 @@
 
         return this.$apollo.mutate({
           mutation: gql`mutation($prompt: String!, $context: String, $files: [String!]) {
-            compose(prompt: $prompt, context: $context, files: $files)
+            write(prompt: $prompt, context: $context, files: $files)
           }`,
           variables: {
             prompt: prompt,
@@ -123,10 +123,10 @@
             throw result
           }
 
-          return result.data?.compose?.replace(/^"(.*)"$/, '$1') || ''
+          return result.data?.write?.replace(/^"(.*)"$/, '$1') || ''
         }).catch(error => {
           this.messages.add(this.$gettext('Error generating text') + ":\n" + error, 'error')
-          this.$log(`App::compose(): Error generating text`, error)
+          this.$log(`App::write(): Error generating text`, error)
         })
       },
 

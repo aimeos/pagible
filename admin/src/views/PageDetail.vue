@@ -25,7 +25,7 @@
       PageDetailMetrics
     },
 
-    inject: ['closeView', 'compose', 'translate', 'txlocales'],
+    inject: ['closeView', 'write', 'translate', 'txlocales'],
 
     props: {
       'item': {type: Object, required: true}
@@ -33,7 +33,7 @@
 
     provide() {
       return { // re-provide custom methods
-        compose: this.composeText,
+        write: this.writeText,
         translate: this.translateText
       }
     },
@@ -103,7 +103,7 @@
     },
 
     created() {
-      this.$options._compose = this.compose
+      this.$options._write = this.write
 
       if(!this.item?.id || !this.auth.can('page:view')) {
         return
@@ -171,11 +171,7 @@
       },
 
 
-      composeText(prompt, context = [], files = []) {
-        if(!this.$options._compose) {
-          return Promise.reject(new Error('Compose method is not available in PageDetail component'))
-        }
-
+      writeText(prompt, context = [], files = []) {
         if(!Array.isArray(context)) {
           context = [context]
         }
@@ -183,7 +179,7 @@
         context.push('page content as JSON: ' + JSON.stringify(this.item.content))
         context.push('required output language: ' + (this.item.lang || 'en'))
 
-        return this.$options._compose(prompt, context, files)
+        return this.$options._write(prompt, context, files)
       },
 
 
