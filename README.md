@@ -2,6 +2,7 @@
 
 The easy, flexible and scalable API-first PagibleAI CMS package:
 
+* AI generates/enhances drafts and images for you
 * Manage structured content like in Contentful
 * Define new content elements in seconds
 * Assign shared content to multiple pages
@@ -25,6 +26,7 @@ It can be installed into any existing Laravel application.
 * [Clean up](#clean-up)
 * [Multi-domain](#multi-domain)
 * [Multi-tenancy](#multi-tenancy)
+* [MCP API](#mcp-api)
 * [Security](#security)
 
 ## Installation
@@ -101,57 +103,58 @@ find the **secret** that is required too in your `.env` file as:
 HCAPTCHA_SECRET="..."
 ```
 
-#### DeepL translation
-
-For enabling translation of content to the supported languages by DeepL,
-[create an account](https://www.deepl.com/en/signup) at the DeepL web site first.
-
-In the DeepL dashboard, go to [API Keys & Limits](https://www.deepl.com/en/your-account/keys)
-and create a new API key. Copy the key and add it to your `.env` file as:
-
-```
-DEEPL_API_KEY="..."
-```
-
-If you signed up for a PRO account, also set the DeepL API URL to:
-
-```
-DEEPL_API_URL="https://api.deepl.com/"
-```
-
 #### AI support
 
 To generate texts/images from prompts, analyze image/video/audio content, or execute actions based
 on your prompts, you have to configure one or more of the AI service providers supported by the
-[Prism](https://github.com/prism-php/prism/blob/main/config/prism.php) package.
+[Prism](https://github.com/prism-php/prism/blob/main/config/prism.php) and
+[Prisma](https://php-prisma.org/#supported-providers) packages.
+
+**Note:** You only need to configure API keys for the AI service providers you are using, not for all!
 
 All service providers require to sign-up and create an account first. They will provide
-an API key which you need to add to your `.env` file as shown in the
-[Prism configuration](https://github.com/prism-php/prism/blob/main/config/prism.php) file, e.g.:
+an API key which you need to add to your `.env` file or as environment variable, e.g.:
 
 ```
 GEMINI_API_KEY="..."
 OPENAI_API_KEY="..."
+CLIPDROP_API_KEY="..."
+DEEPL_API_KEY="..."
+
+# Text translation
+CMS_AI_TRANSLATE_API_KEY="${DEEPL_API_KEY}"
+# For DeepL Pro accounts
+# CMS_AI_TRANSLATE_URL="https://api.deepl.com/"
+
+# Analyze content and generate text/images
+CMS_AI_WRITE_API_KEY="${GEMINI_API_KEY}"
+CMS_AI_STRUCTURE_API_KEY="${GEMINI_API_KEY}"
+CMS_AI_DESCRIBE_API_KEY="${GEMINI_API_KEY}"
+CMS_AI_IMAGINE_API_KEY="${GEMINI_API_KEY}"
+CMS_AI_INPAINT_API_KEY="${GEMINI_API_KEY}"
+CMS_AI_REPAINT_API_KEY="${GEMINI_API_KEY}"
+
+# Image manipulation
+CMS_AI_ERASE_API_KEY="${CLIPDROP_API_KEY}"
+CMS_AI_ISOLATE_API_KEY="${CLIPDROP_API_KEY}"
+CMS_AI_UNCROP_API_KEY="${CLIPDROP_API_KEY}"
+CMS_AI_UPSCALE_API_KEY="${CLIPDROP_API_KEY}"
+
+# Audio transcription
+CMS_AI_TRANSCRIBE_API_KEY="${OPENAI_API_KEY}"
 ```
 
-**Note:** You only need to configure API keys for the AI service providers you are using, not for all!
+For best results and all features, you need Google, OpenAI, Clipdrop, and DeepL at the moment and they are also configured by default. If you want to use a different provider or model, you can to configure them in your `.env` file too. Please have a look into the [./config/cms.php](https://github.com/aimeos/pagible/blob/master/config/cms.php) for the used environment variables.
 
-For best support and all features, you need Google and OpenAI at the moment. They are also configured
-by default. If you want to use a different provider or model, you need to configure them in your `.env`
-file too:
+**Note:** You can also configure the base URLs for each provider using the `url` key in each provider configuration, e.g.:
 
-```
-CMS_AI_TEXT="gemini"
-CMS_AI_TEXT_MODEL="gemini-2.5-flash"
-
-CMS_AI_STRUCT="gemini"
-CMS_AI_STRUCT_MODEL="gemini-2.5-flash"
-
-CMS_AI_IMAGE="gemini"
-CMS_AI_IMAGE_MODEL="gemini-2.5-flash-image"
-
-CMS_AI_AUDIO="openai"
-CMS_AI_AUDIO_MODEL="whisper-1"
+```php
+    'transcribe' => [ // Transcribe audio
+        'provider' => env( 'CMS_AI_TRANSCRIBE', 'openai' ),
+        'model' => env( 'CMS_AI_TRANSCRIBE_MODEL', 'whisper-1' ),
+        'api_key' => env( 'CMS_AI_TRANSCRIBE_API_KEY' ),
+        'url' => 'https://openai-api.compatible-provider.com'
+    ],
 ```
 
 ### Publishing

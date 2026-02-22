@@ -27,11 +27,11 @@ final class Translate
             throw new Error( 'Target language must not be empty' );
         }
 
-        if( empty( $apiKey = config( 'services.deepl.key' ) ) ) {
+        if( empty( $apiKey = config( 'cms.ai.translate.api_key' ) ) ) {
             throw new Error( 'DeepL API key must be configured' );
         }
 
-        $url = rtrim( config( 'services.deepl.url', 'https://api-free.deepl.com/v2/translate' ), '/' );
+        $url = rtrim( config( 'cms.ai.translate.url', 'https://api-free.deepl.com/v2/translate' ), '/' );
         $payload = [
             'ignore_tags' => ['x'],
             'tag_handling' => 'xml',
