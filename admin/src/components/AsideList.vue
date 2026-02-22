@@ -113,6 +113,10 @@
     width: 100%;
   }
 
+  :deep(.v-list-group__items) {
+    --v-list-indent: 0px;
+  }
+
   .v-list-item .v-btn {
     text-transform: capitalize;
   }

@@ -99,6 +99,10 @@
     border-top-right-radius: 8px;
   }
 
+  :deep(.v-list-group__items) {
+    --v-list-indent: 0px;
+  }
+
   :deep(.v-list-item--active > .v-list-item__overlay) {
     opacity: 0;
   }

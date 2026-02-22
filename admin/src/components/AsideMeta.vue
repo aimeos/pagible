@@ -78,6 +78,10 @@
     border-top-right-radius: 8px;
   }
 
+  :deep(.v-list-group__items) {
+    --v-list-indent: 0px;
+  }
+
   .v-list-item {
     margin-bottom: 4px;
   }
