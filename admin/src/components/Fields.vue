@@ -19,7 +19,7 @@
 
     emits: ['change', 'error', 'update:files'],
 
-    inject: ['compose', 'translate', 'transcribe', 'txlocales'],
+    inject: ['write', 'translate', 'transcribe', 'txlocales'],
 
     data() {
       return {
@@ -52,7 +52,7 @@
       },
 
 
-      composeText(code) {
+      writeText(code) {
         const context = [
           'generate for field "' + (this.fields[code].label || code) + '"',
           'required output format is "' + this.fields[code].type + '"',
@@ -64,7 +64,7 @@
 
         this.composing[code] = true
 
-        this.compose(this.data[code] || 'Create a suitable text based on the context', context).then(result => {
+        this.write(this.data[code] || 'Create a suitable text based on the context', context).then(result => {
           this.update(code, result)
         }).finally(() => {
           this.composing[code] = false
@@ -194,7 +194,7 @@
         <v-btn
           :title="$gettext('Generate text')"
           :loading="composing[code]"
-          @click="composeText(code)"
+          @click="writeText(code)"
           icon="mdi-creation"
           variant="text"
         />

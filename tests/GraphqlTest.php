@@ -59,26 +59,6 @@ class GraphqlTest extends TestAbstract
     }
 
 
-    public function testCompose()
-    {
-        $this->seed( CmsSeeder::class );
-
-        $file = File::firstOrFail();
-        $expected = 'Generated content based on the prompt.';
-        Prism::fake( [TextResponseFake::make()->withText( $expected )] );
-
-        $response = $this->actingAs( $this->user )->graphQL( "
-            mutation {
-                compose(prompt: \"Generate content\", context: \"This is a test context.\", files: [\"" . $file->id . "\"])
-            }
-        " )->assertJson( [
-            'data' => [
-                'compose' => $expected
-            ]
-        ] );
-    }
-
-
     public function testDescribe()
     {
         $this->seed( CmsSeeder::class );
@@ -377,6 +357,26 @@ class GraphqlTest extends TestAbstract
         ] )->assertJson( [
             'data' => [
                 'upscale' => base64_encode( $image )
+            ]
+        ] );
+    }
+
+
+    public function testWrite()
+    {
+        $this->seed( CmsSeeder::class );
+
+        $file = File::firstOrFail();
+        $expected = 'Generated content based on the prompt.';
+        Prism::fake( [TextResponseFake::make()->withText( $expected )] );
+
+        $response = $this->actingAs( $this->user )->graphQL( "
+            mutation {
+                write(prompt: \"Generate content\", context: \"This is a test context.\", files: [\"" . $file->id . "\"])
+            }
+        " )->assertJson( [
+            'data' => [
+                'write' => $expected
             ]
         ] );
     }
