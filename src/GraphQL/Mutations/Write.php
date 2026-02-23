@@ -49,7 +49,7 @@ final class Write
 
             if( !empty( $ids = $args['files'] ?? null ) )
             {
-                $files = File::where( 'id', $ids )->get()->map( function( $file ) {
+                $files = File::whereIn( 'id', $ids )->get()->map( function( $file ) {
 
                     if( str_starts_with( $file->path, 'http' ) )
                     {

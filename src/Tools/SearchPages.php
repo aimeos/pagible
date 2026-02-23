@@ -34,7 +34,7 @@ class SearchPages extends Tool
     public function handle( Request $request )
     {
         if( !Permission::can( 'page:view', $request->user() ) ) {
-            throw new Error( 'Insufficient permissions' );
+            throw new \Exception( 'Insufficient permissions' );
         }
 
         $validated = $request->validate([

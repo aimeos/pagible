@@ -49,7 +49,7 @@ final class Synthesize
 
             if( !empty( $ids = $args['files'] ?? null ) )
             {
-                $files = File::where( 'id', $ids )->get()->map( function( $file ) {
+                $files = File::whereIn( 'id', $ids )->get()->map( function( $file ) {
 
                     if( str_starts_with( $file->path, 'http' ) )
                     {
@@ -81,13 +81,11 @@ final class Synthesize
         }
         catch( \Exception $e )
         {
-            switch( get_class( $ex = $e->getPrevious() ?? $e ) )
+            $msg = match( get_class( $ex = $e->getPrevious() ?? $e ) )
             {
-                case 'Illuminate\Database\UniqueConstraintViolationException':
-                    $msg = 'Already exists';
-                default:
-                    $msg = $ex->getMessage();
-            }
+                'Illuminate\Database\UniqueConstraintViolationException' => 'Already exists',
+                default => $ex->getMessage(),
+            };
         }
 
         return $msg . "\n";
