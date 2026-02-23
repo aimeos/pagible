@@ -62,6 +62,8 @@ export function recording() {
         offset += chunk.length
       }
 
+      if(!buffer.length) return null
+
       const context = new AudioContext()
       const audioBuffer = context.createBuffer(
         1, // number of channels

@@ -98,7 +98,7 @@
           this.dictating = true
           this.audio = null
 
-          rec.stop().then(buffer => {
+          rec.stop()?.then(buffer => {
             this.transcribe(buffer).then(transcription => {
               this.chat = transcription.asText()
             }).finally(() => {

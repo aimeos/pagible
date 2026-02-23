@@ -456,7 +456,7 @@
           this.loading.dictate = true
           this.audio = null
 
-          rec.stop().then(buffer => {
+          rec.stop()?.then(buffer => {
             this.transcribe(buffer).then(transcription => {
               const lang = this.desclangs[0] || this.item.lang || 'en'
               this.update('description', Object.assign(this.item.description || {}, {[lang]: transcription.asText()}))

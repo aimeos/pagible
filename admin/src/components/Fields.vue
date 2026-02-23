@@ -91,7 +91,7 @@
           this.dictating[code] = true
           this.audio[code] = null
 
-          rec.stop().then(buffer => {
+          rec.stop()?.then(buffer => {
             this.transcribe(buffer).then(transcription => {
               this.update(code, transcription.asText())
             }).finally(() => {
