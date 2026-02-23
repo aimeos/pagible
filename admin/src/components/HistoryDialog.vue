@@ -22,11 +22,12 @@
   export default {
     props: {
       'modelValue': {type: Boolean, required: true},
+      'readonly': {type: Boolean, required: false},
       'current': {type: Object, required: true},
       'load': {type: Function, required: true},
     },
 
-    emit: ['update:modelValue', 'use', 'revert'],
+    emits: ['update:modelValue', 'use', 'revert'],
 
     inject: ['url', 'srcset'],
 
@@ -193,7 +194,7 @@
                 </div>
               </v-card-text>
               <v-card-actions>
-                <v-btn variant="outlined" @click.stop="$emit('revert', latest)">
+                <v-btn v-if="!readonly" variant="outlined" @click.stop="$emit('revert', latest)">
                   {{ $gettext('Revert') }}
                 </v-btn>
               </v-card-actions>
@@ -254,7 +255,7 @@
                 </div>
               </v-card-text>
               <v-card-actions>
-                <v-btn variant="outlined" @click.stop="$emit('use', version)">
+                <v-btn v-if="!readonly" variant="outlined" @click.stop="$emit('use', version)">
                   {{ $gettext('Use version') }}
                 </v-btn>
               </v-card-actions>

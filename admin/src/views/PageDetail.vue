@@ -778,6 +778,7 @@
   <Teleport to="body">
     <HistoryDialog ref="history"
       v-model="vhistory"
+      :readonly="!auth.can('page:save')"
       :current="{
         data: {
           cache: item.cache,
@@ -799,8 +800,8 @@
         files: currentAssets
       }"
       :load="() => versions(item.id)"
-      @use="use($event)"
       @revert="use($event); reset()"
+      @use="use($event)"
     />
   </Teleport>
 </template>

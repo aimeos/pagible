@@ -12,7 +12,7 @@
   import gql from 'graphql-tag'
   import { recording } from '../audio'
   import { VueDraggable } from 'vue-draggable-plus'
-  import { useAuthStore, useClipboardStore } from '../stores'
+  import { useAuthStore, useClipboardStore, useMessageStore } from '../stores'
 
   export default {
     components: {
@@ -46,9 +46,10 @@
 
     setup() {
       const clipboard = useClipboardStore()
+      const messages = useMessageStore()
       const auth = useAuthStore()
 
-      return { auth, clipboard }
+      return { auth, clipboard, messages }
     },
 
     computed: {
@@ -304,7 +305,7 @@
                     <v-list @click="menu[idx+code] = false">
                       <v-list-item v-for="lang in txlocales()" :key="lang.code">
                         <v-btn
-                          @click="translateText(code, lang.code)"
+                          @click="translateText(idx, code, lang.code)"
                           prepend-icon="mdi-arrow-right-thin"
                           variant="text"
                         >{{ lang.name }}</v-btn>
