@@ -85,10 +85,10 @@ class Permission
         }
 
         if( $action === '*' ) {
-            return $user && $user->cmseditor > 0;
+            return $user?->cmseditor > 0;
         }
 
-        return $user && isset( self::$can[$action] ) && self::$can[$action] & $user->cmseditor;
+        return (bool) ( ( self::$can[$action] ?? 0 ) & (int) $user?->cmseditor );
     }
 
 
