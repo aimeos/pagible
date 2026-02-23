@@ -281,6 +281,11 @@
 
 
       refine() {
+        if(!this.auth.can('page:refine')) {
+          this.messages.add(this.$gettext('Permission denied'), 'error')
+          return
+        }
+
         const prompt = this.chat.trim()
 
         if(!this.chat) {
@@ -587,7 +592,7 @@
 <template>
   <div v-observe-visibility="store">
 
-    <v-textarea
+    <v-textarea v-if="auth.can('page:refine')"
       v-model="chat"
       :loading="refining"
       :placeholder="$gettext('Describe the task you want to perform')"
@@ -626,7 +631,7 @@
           </svg>
         </v-btn>
 
-        <v-btn v-else
+        <v-btn v-else-if="auth.can('audio:transcribe')"
           @click="record()"
           :title="$gettext('Dictate')"
           :class="{dictating: audio}"

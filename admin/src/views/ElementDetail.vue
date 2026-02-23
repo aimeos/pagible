@@ -398,8 +398,7 @@
   <Teleport to="body">
     <HistoryDialog
       v-model="vhistory"
-      @use="use($event)"
-      @revert="use($event); reset()"
+      :readonly="!auth.can('element:save')"
       :current="{
         data: {
           lang: item.lang,
@@ -410,6 +409,8 @@
         files: item.files,
       }"
       :load="() => versions(item.id)"
+      @revert="use($event); reset()"
+      @use="use($event)"
     />
   </Teleport>
 </template>

@@ -54,7 +54,9 @@
         this.$refs.iframe?.contentWindow?.postMessage('init', '*')
       })
 
-      this.messages.add(this.$gettext('Double-click to edit'), 'info')
+      if(this.auth.can('page:save')) {
+        this.messages.add(this.$gettext('Double-click to edit'), 'info')
+      }
     },
 
     beforeUnmount() {

@@ -7,10 +7,12 @@
 
 namespace Aimeos\Cms\GraphQL\Mutations;
 
+use Aimeos\Cms\Models\File;
+use Aimeos\Cms\Permission;
 use Aimeos\Prisma\Prisma;
 use Aimeos\Prisma\Files\Image;
 use Aimeos\Prisma\Exceptions\PrismaException;
-use Aimeos\Cms\Models\File;
+use Illuminate\Support\Facades\Auth;
 use GraphQL\Error\Error;
 
 
@@ -22,6 +24,10 @@ final class Imagine
      */
     public function __invoke( $rootValue, array $args ) : string
     {
+        if( !Permission::can( 'image:imagine', Auth::user() ) ) {
+            throw new Error( 'Insufficient permissions' );
+        }
+
         if( empty( $args['prompt'] ) ) {
             throw new Error( 'Prompt must not be empty' );
         }

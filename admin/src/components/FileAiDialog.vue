@@ -5,7 +5,7 @@
 <script>
   import gql from 'graphql-tag'
   import FileListItems from './FileListItems.vue'
-  import { useAppStore, useMessageStore } from '../stores'
+  import { useAppStore, useAuthStore, useMessageStore } from '../stores'
   import { recording } from '../audio'
 
   export default {
@@ -25,9 +25,10 @@
 
     setup() {
       const messages = useMessageStore()
+      const auth = useAuthStore()
       const app = useAppStore()
 
-      return { app, messages }
+      return { app, auth, messages }
     },
 
     data() {
@@ -113,6 +114,11 @@
 
 
       create() {
+        if(!this.auth.can('image:imagine')) {
+          this.messages.add(this.$gettext('Permission denied'), 'error')
+          return
+        }
+
         if(!this.chat?.trim() || this.loading) {
           return
         }
@@ -193,7 +199,7 @@
   <v-dialog :modelValue="modelValue" @afterLeave="$emit('update:modelValue', false)" max-width="1200" scrollable>
     <v-card :loading="loading ? 'primary' : false">
       <template v-slot:append>
-        <v-btn
+        <v-btn v-if="auth.can('audio:transcribe')"
           @click="record()"
           :class="{dictating: audio}"
           :icon="audio ? 'mdi-microphone-outline' : 'mdi-microphone'"

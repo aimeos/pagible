@@ -7,15 +7,17 @@
 
 namespace Aimeos\Cms\GraphQL\Mutations;
 
+use Aimeos\Cms\Utils;
+use Aimeos\Cms\Permission;
+use Aimeos\Cms\Models\File;
 use Prism\Prism\Facades\Prism;
 use Prism\Prism\Schema\EnumSchema;
 use Prism\Prism\Schema\ArraySchema;
 use Prism\Prism\Schema\ObjectSchema;
 use Prism\Prism\Schema\StringSchema;
 use Prism\Prism\Exceptions\PrismException;
+use Illuminate\Support\Facades\Auth;
 use GraphQL\Error\Error;
-use Aimeos\Cms\Models\File;
-use Aimeos\Cms\Utils;
 
 
 final class Refine
@@ -26,6 +28,10 @@ final class Refine
      */
     public function __invoke( $rootValue, array $args ): array
     {
+        if( !Permission::can( 'page:refine', Auth::user() ) ) {
+            throw new Error( 'Insufficient permissions' );
+        }
+
         if( empty( $args['prompt'] ) ) {
             throw new Error( 'Prompt must not be empty' );
         }

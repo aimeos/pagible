@@ -7,9 +7,11 @@
 
 namespace Aimeos\Cms\GraphQL\Mutations;
 
+use Aimeos\Cms\Permission;
 use Aimeos\Prisma\Prisma;
 use Aimeos\Prisma\Files\Audio;
 use Aimeos\Prisma\Exceptions\PrismaException;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\UploadedFile;
 use GraphQL\Error\Error;
 
@@ -22,6 +24,10 @@ final class Transcribe
      */
     public function __invoke( $rootValue, array $args ): array
     {
+        if( !Permission::can( 'audio:transcribe', Auth::user() ) ) {
+            throw new Error( 'Insufficient permissions' );
+        }
+
         $upload = $args['file'];
 
         if( !$upload instanceof UploadedFile || !$upload->isValid() ) {
