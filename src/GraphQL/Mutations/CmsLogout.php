@@ -8,7 +8,7 @@
 namespace Aimeos\Cms\GraphQL\Mutations;
 
 use Illuminate\Support\Facades\Auth;
-use App\Models\User;
+use Illuminate\Contracts\Auth\Authenticatable;
 
 
 final class CmsLogout
@@ -17,7 +17,7 @@ final class CmsLogout
      * @param  null  $rootValue
      * @param  array<string, mixed>  $args
      */
-    public function __invoke( $rootValue, array $args ): ?User
+    public function __invoke( $rootValue, array $args ): ?Authenticatable
     {
         $guard = Auth::guard();
         $user = $guard->user();

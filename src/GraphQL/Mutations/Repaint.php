@@ -46,7 +46,7 @@ final class Repaint
                 ->using( $provider, $config )
                 ->model( $model )
                 ->ensure( 'repaint' )
-                ->repaint( $file, $args['prompt'], $config )
+                ->repaint( $file, $args['prompt'], $config ) // @phpstan-ignore-line method.notFound
                 ->base64();
         }
         catch( PrismaException $e )

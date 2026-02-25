@@ -21,6 +21,7 @@ final class Transcribe
     /**
      * @param null $rootValue
      * @param array<string, mixed> $args
+     * @return array<int, mixed>
      */
     public function __invoke( $rootValue, array $args ): array
     {
@@ -46,7 +47,7 @@ final class Transcribe
                 ->using( $provider, $config )
                 ->model( $model )
                 ->ensure( 'transcribe' )
-                ->transcribe( $file, null, $config )
+                ->transcribe( $file, null, $config ) // @phpstan-ignore-line method.notFound
                 ->structured();
 
             return array_map( fn( $entry ) => [
@@ -62,6 +63,12 @@ final class Transcribe
     }
 
 
+    /**
+     * Formats the given time in seconds to a string in the format "HH:MM:SS.mmm"
+     *
+     * @param float $seconds Time in seconds
+     * @return string Formatted time string
+     */
     protected function time( float $seconds ) : string
     {
         $hours = floor( $seconds / 3600 );

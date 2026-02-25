@@ -7,6 +7,8 @@
 
 namespace Aimeos\Cms\Controllers;
 
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Response;
 use Illuminate\View\View;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
@@ -61,13 +63,13 @@ class PageController extends Controller
             ->firstOrFail();
 
         if( $to = $page->to ) {
-            return str_starts_with( $to, 'http' ) ? redirect()->away( $to ) : redirect( $to );
+            return str_starts_with( $to, 'http' ) ? redirect()->away( $to ) : redirect()->to( $to );
         }
 
         App::setLocale( $page->lang );
         Paginator::useBootstrap(); // Use Bootstrap CSS classes for pagination links
 
-        $content = collect( $page->content ?? [] )->groupBy( 'group' );
+        $content = collect( (array) ($page->content ?? []) )->groupBy( 'group' );
         $theme = cms( $page, 'theme' ) ?: 'cms';
         $type = cms( $page, 'type' ) ?: 'page';
 
@@ -78,7 +80,7 @@ class PageController extends Controller
             $cache->put( $key, $html . '<!--:' . $page->cache, now()->addMinutes( (int) $page->cache ) );
         }
 
-        $response = response( $html, 200 )->header( 'Content-Type', 'text/html' );
+        $response = ( new Response( $html, 200 ) )->header( 'Content-Type', 'text/html' );
 
         if( $request->isMethod( 'GET' ) ) {
             $response->header( 'Cache-Control', 'public, max-age=' . ( $page->cache * 60 ) );
@@ -131,24 +133,24 @@ class PageController extends Controller
             ? Page::where( 'id', $version->versionable_id )->firstOrFail()
             : Page::where( 'domain', $domain )->where( 'path', $path )->firstOrFail();
 
-        if( $to = $version?->data?->to ?? $page->to ) {
-            return str_starts_with( $to, 'http' ) ? redirect()->away( $to ) : redirect( $to );
+        if( $to = $version?->data->to ?? $page->to ) {
+            return str_starts_with( $to, 'http' ) ? redirect()->away( $to ) : redirect()->to( $to );
         }
 
         $page->cache = 0; // don't cache sub-parts in preview requests
 
-        App::setLocale( $version?->data?->lang ?? $page->lang );
+        App::setLocale( $version?->data->lang ?? $page->lang );
         Paginator::useBootstrap();
 
         $theme = cms( $page, 'theme' ) ?: 'cms';
         $type = cms( $page, 'type' ) ?: 'page';
 
-        $content = collect( $version->aux?->content ?? $page->content ?? [] )->groupBy( 'group' );
+        $content = collect( (array) ($version->aux->content ?? $page->content ?? []) )->groupBy( 'group' );
 
         $views = [$theme . '::layouts.' . $type, 'cms::layouts.page'];
         $html = view()->first( $views, ['page' => $page, 'content' => $content] )->render();
 
-        return response( $html, 200 )
+        return ( new Response( $html, 200 ) )
             ->header( 'Content-Type', 'text/html' )
             ->header( 'Cache-Control', 'private, max-age=0' );
     }

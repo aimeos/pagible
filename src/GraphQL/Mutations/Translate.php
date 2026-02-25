@@ -18,6 +18,7 @@ final class Translate
     /**
      * @param  null  $rootValue
      * @param  array<string, mixed>  $args
+     * @return array<int, mixed>
      */
     public function __invoke( $rootValue, array $args ): array
     {
@@ -54,6 +55,6 @@ final class Translate
             'Content-Type' => 'application/json'
         ])->post( $url, $payload )->throw();
 
-        return collect( $response->json( 'translations' ) )->pluck( 'text' )->toArray();
+        return collect( (array) $response->json( 'translations', [] ) )->pluck( 'text' )->toArray();
     }
 }

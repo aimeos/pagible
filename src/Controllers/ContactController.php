@@ -15,7 +15,7 @@ use Illuminate\Routing\Controller;
 
 class ContactController extends Controller
 {
-    public function send( ContactRequest $request )
+    public function send( ContactRequest $request ): \Illuminate\Http\JsonResponse
     {
         Mail::to(config('mail.from.address'))->send(
             new ContactMail( $request->validated() )

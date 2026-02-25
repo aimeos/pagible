@@ -8,6 +8,7 @@
 namespace Aimeos\Cms;
 
 use \App\Models\User;
+use \Illuminate\Contracts\Auth\Authenticatable;
 
 
 /**
@@ -17,6 +18,8 @@ class Permission
 {
     /**
      * Action permissions
+     *
+     * @var array<string, int>
      */
     private static $can = [
         'page:view'        => 0b00000000_00000000_00000000_00000001,
@@ -74,31 +77,33 @@ class Permission
     /**
      * Checks if the user has the permission for the requested action.
      *
-     * @param string action Name of the requested action, e.g. "page:view"
-     * @param \App\Models\User|null $user Laravel user object
+     * @param string $action Name of the requested action, e.g. "page:view"
+     * @param Authenticatable|null $user Laravel user object
      * @return bool TRUE of the user is allowed to perform the action, FALSE if not
      */
-    public static function can( string $action, ?User $user ) : bool
+    public static function can( string $action, ?Authenticatable $user ) : bool
     {
         if( $closure = self::$callback ) {
             return $closure( $action, $user );
         }
 
+        $cmseditor = (int) $user?->cmseditor; // @phpstan-ignore-line property.notFound
+
         if( $action === '*' ) {
-            return $user?->cmseditor > 0;
+            return $cmseditor > 0;
         }
 
-        return (bool) ( ( self::$can[$action] ?? 0 ) & (int) $user?->cmseditor );
+        return (bool) ( ( self::$can[$action] ?? 0 ) & $cmseditor );
     }
 
 
     /**
      * Returns the available actions and their permissions.
      *
-     * @param \App\Models\User|null $user Laravel user object
-     * @return array List of actions as keys and booleans as values indicating if the user has permission for the action
+     * @param Authenticatable|null $user Laravel user object
+     * @return array<string, bool> List of actions as keys and booleans as values indicating if the user has permission for the action
      */
-    public static function get( ?User $user ) : array
+    public static function get( ?Authenticatable $user ) : array
     {
         $map = [];
 

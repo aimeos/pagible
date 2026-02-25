@@ -52,7 +52,7 @@ final class Erase
                 ->using( $provider, $config )
                 ->model( $model )
                 ->ensure( 'erase' )
-                ->erase( $file, $mask, $config )
+                ->erase( $file, $mask, $config ) // @phpstan-ignore-line method.notFound
                 ->base64();
         }
         catch( PrismaException $e )

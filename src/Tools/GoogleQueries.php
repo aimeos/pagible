@@ -30,7 +30,7 @@ class GoogleQueries extends Tool
     /**
      * Handle the tool request.
      */
-    public function handle( Request $request )
+    public function handle( Request $request ): \Laravel\Mcp\ResponseFactory
     {
         if( !Permission::can( 'page:view', $request->user() ) ) {
             throw new \Exception( 'Insufficient permissions' );
@@ -45,7 +45,7 @@ class GoogleQueries extends Tool
         ] );
 
         $url = 'https://' . $validated['domain'] . '/' . trim( $validated['path'], '/' );
-        $queries = Analytics::queries( $url );
+        $queries = Analytics::queries( $url ) ?? [];
 
         foreach( $queries as &$entry )
         {

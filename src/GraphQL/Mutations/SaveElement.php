@@ -18,7 +18,7 @@ final class SaveElement
 {
     /**
      * @param  null  $rootValue
-     * @param  array  $args
+     * @param  array<string, mixed>  $args
      */
     public function __invoke( $rootValue, array $args ) : Element
     {
@@ -32,11 +32,12 @@ final class SaveElement
 
         return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $args ) {
 
+            /** @var Element $element */
             $element = Element::withTrashed()->findOrFail( $args['id'] );
 
             $version = $element->versions()->create( [
                 'data' => array_map( fn( $v ) => $v ?? '', $args['input'] ?? [] ),
-                'editor' => Auth::user()?->name ?? request()->ip(),
+                'editor' => Auth::user()->name ?? request()->ip(),
                 'lang' => $args['input']['lang'] ?? null,
             ] );
 

@@ -8,7 +8,7 @@
 $publicPath = getcwd();
 
 $uri = urldecode(
-    parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) ?? ''
+    (string) (parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) ?? '')
 );
 
 $mime = match(pathinfo($uri, PATHINFO_EXTENSION)) {
@@ -22,7 +22,7 @@ $mime = match(pathinfo($uri, PATHINFO_EXTENSION)) {
 // built-in PHP web server. This provides a convenient way to test a Laravel
 // application without having installed a "real" web server software here.
 if (($path = realpath($publicPath.$uri)) && is_file($path)) {
-    header("Content-type: ". $mime ?: mime_content_type($publicPath.$uri));
+    header("Content-type: " . ($mime ?: mime_content_type($publicPath.$uri)));
     header('Access-Control-Allow-Origin: *');
     readfile($publicPath.$uri);
     return;

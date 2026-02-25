@@ -15,7 +15,7 @@ class Tools
     /**
      * Returns the available tools.
      *
-     * @return array List of tool objects
+     * @return array<int, mixed>
      */
     public static function get(): array
     {

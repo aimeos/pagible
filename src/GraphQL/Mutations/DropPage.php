@@ -19,7 +19,8 @@ final class DropPage
 {
     /**
      * @param  null  $rootValue
-     * @param  array  $args
+     * @param  array<string, mixed>  $args
+     * @return array<int, mixed>
      */
     public function __invoke( $rootValue, array $args ) : array
     {
@@ -30,10 +31,11 @@ final class DropPage
         return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $args ) {
 
             $items = Page::withTrashed()->whereIn( 'id', $args['id'] )->get();
-            $editor = Auth::user()?->name ?? request()->ip();
+            $editor = Auth::user()->name ?? request()->ip();
 
             foreach( $items as $item )
             {
+                /** @var Page $item */
                 $item->editor = $editor;
 
                 $item->delete();

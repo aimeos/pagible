@@ -26,7 +26,8 @@
 	"require-dev": {
 		"orchestra/testbench": "^9.0||^10.0",
 		"laravel-json-api/testing": "^3.1",
-		"om/potrans": "^1.0.1"
+		"om/potrans": "^1.0.1",
+		"larastan/larastan": "^3.9"
 	},
 	"autoload": {
 		"psr-4": {

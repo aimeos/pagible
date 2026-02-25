@@ -37,8 +37,9 @@ final class Describe
 
         try
         {
-            $lang = $args['lang'] ?? null;
+            /** @var File $file */
             $file = File::findOrFail( $id );
+            $lang = $args['lang'] ?? null;
             $type = current( explode( '/', $file->mime ) );
             $class = '\\Aimeos\\Prisma\\Files\\' . ucfirst( $type );
 
@@ -46,7 +47,7 @@ final class Describe
                 throw new Error( 'Unsupported file type' );
             }
 
-            if( !str_starts_with( $file->path, 'http' ) ) {
+            if( !str_starts_with( (string) $file->path, 'http' ) ) {
                 $doc = $class::fromStoragePath( $file->path, config( 'cms.disk', 'public' ), $file->mime );
             } else {
                 $doc = $class::fromUrl( $file->path, $file->mime );
@@ -56,7 +57,7 @@ final class Describe
                 ->using( $provider, $config )
                 ->model( $model )
                 ->ensure( 'describe' )
-                ->describe( $doc, $lang, $config )
+                ->describe( $doc, $lang, $config ) // @phpstan-ignore-line method.notFound
                 ->text();
         }
         catch( PrismaException $e )

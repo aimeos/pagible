@@ -25,10 +25,8 @@ class GetLocales extends Tool
 {
     /**
      * Handle the tool request.
-     *
-     * @return Response Response object with the list of available ISO language codes
      */
-    public function handle()
+    public function handle(): \Laravel\Mcp\ResponseFactory
     {
         return Response::structured( config( 'cms.config.locales', [] ) );
     }

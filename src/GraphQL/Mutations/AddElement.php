@@ -18,7 +18,7 @@ final class AddElement
 {
     /**
      * @param  null  $rootValue
-     * @param  array  $args
+     * @param  array<string, mixed>  $args
      */
     public function __invoke( $rootValue, array $args ) : Element
     {
@@ -32,7 +32,7 @@ final class AddElement
 
         return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $args ) {
 
-            $editor = Auth::user()?->name ?? request()->ip();
+            $editor = Auth::user()->name ?? request()->ip();
 
             $element = new Element();
             $element->fill( $args['input'] ?? [] );

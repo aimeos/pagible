@@ -20,7 +20,7 @@ final class SaveFile
 {
     /**
      * @param  null  $rootValue
-     * @param  array  $args
+     * @param  array<string, mixed>  $args
      */
     public function __invoke( $rootValue, array $args ) : File
     {
@@ -30,13 +30,14 @@ final class SaveFile
 
         return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $args ) {
 
-            $editor = Auth::user()?->name ?? request()->ip();
+            /** @var File $orig */
             $orig = File::withTrashed()->findOrFail( $args['id'] );
-            $previews = $orig->latest?->data?->previews ?? $orig->previews;
-            $path = $orig->latest?->data?->path ?? $orig->path;
+            $previews = $orig->latest?->data->previews ?? $orig->previews;
+            $path = $orig->latest?->data->path ?? $orig->path;
+            $editor = Auth::user()->name ?? request()->ip();
 
             $file = clone $orig;
-            $file->fill( array_replace( (array) $orig->latest?->data ?? [], (array) $args['input'] ?? [] ) );
+            $file->fill( array_replace( (array) $orig->latest?->data, (array) $args['input'] ) );
             $file->previews = $args['input']['previews'] ?? $previews;
             $file->path = $args['input']['path'] ?? $path;
             $file->editor = $editor;

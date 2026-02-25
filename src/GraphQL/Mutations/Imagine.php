@@ -43,16 +43,20 @@ final class Imagine
                 ->using( $provider, $config )
                 ->model( $model )
                 ->ensure( 'imagine' )
-                ->imagine( $args['prompt'], $this->files( $args['files'] ?? [] ), $options )
+                ->imagine( $args['prompt'], $this->files( $args['files'] ?? [] ), $options ) // @phpstan-ignore-line method.notFound
                 ->base64();
         }
         catch( PrismaException $e )
         {
-            throw new Error( $e->getMessage(), null, null, null, null, null, $e->getTrace() );
+            throw new Error( $e->getMessage(), null, null, null, null, $e );
         }
     }
 
 
+    /**
+     * @param array<mixed> $ids
+     * @return array<mixed>
+     */
     protected function files( array $ids ) : array
     {
         if( empty( $ids ) ) {
@@ -67,11 +71,11 @@ final class Imagine
                 return null;
             }
 
-            if( str_starts_with( $file->path, 'http' ) ) {
-                return Image::fromUrl( $file->path, $file->mime );
+            if( str_starts_with( (string) $file->path, 'http' ) ) {
+                return Image::fromUrl( (string) $file->path, $file->mime );
             }
 
-            return Image::fromStoragePath( $file->path, $disk );
+            return Image::fromStoragePath( (string) $file->path, $disk );
 
         } )->filter()->values()->toArray();
     }

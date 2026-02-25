@@ -46,7 +46,7 @@ final class Upscale
                 ->using( $provider, $config )
                 ->model( $model )
                 ->ensure( 'upscale' )
-                ->upscale( $file, $args['factor'], $config )
+                ->upscale( $file, $args['factor'], $config ) // @phpstan-ignore-line method.notFound
                 ->base64();
         }
         catch( PrismaException $e )

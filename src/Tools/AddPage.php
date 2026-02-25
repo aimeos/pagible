@@ -32,7 +32,7 @@ class AddPage extends Tool
     /**
      * Handle the tool request.
      */
-    public function handle( Request $request )
+    public function handle( Request $request ): \Laravel\Mcp\ResponseFactory
     {
         if( !Permission::can( 'page:view', $request->user() ) ) {
             throw new \Exception( 'Insufficient permissions' );
@@ -59,8 +59,11 @@ class AddPage extends Tool
 
         $page = new Page();
         $pid = $request->get( 'parent_id' );
+
+        /** @var Page|null $parent */
         $parent = $pid ? Page::find( $pid ) : null;
-        $editor = $request->user()?->name ?? $request->ip();
+        $editor = (string) $request->user()?->name; // @phpstan-ignore-line property.notFound
+
         $elements = [[
             'id' => Utils::uid(),
             'type' => 'text',

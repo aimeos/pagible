@@ -28,7 +28,7 @@ class Publish extends Command
     /**
      * Execute command
      */
-    public function handle()
+    public function handle(): void
     {
         Version::where( 'publish_at', '<=', now() )
             ->where( 'published', false )

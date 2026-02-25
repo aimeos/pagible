@@ -25,6 +25,18 @@ use Illuminate\Support\Collection;
 
 /**
  * Element model
+ *
+ * @property string $id
+ * @property string $tenant_id
+ * @property string $type
+ * @property string|null $lang
+ * @property string $name
+ * @property \stdClass $data
+ * @property string $editor
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @method static \Illuminate\Database\Eloquent\Builder<static> withoutTenancy()
  */
 class Element extends Model
 {
@@ -37,7 +49,7 @@ class Element extends Model
     /**
      * The model's default values for attributes.
      *
-     * @var array
+     * @var array<string, mixed>
      */
     protected $attributes = [
         'tenant_id' => '',
@@ -51,7 +63,7 @@ class Element extends Model
     /**
      * The automatic casts for the attributes.
      *
-     * @var array
+     * @var array<string, string>
      */
     protected $casts = [
         'data' => 'object',
@@ -64,7 +76,7 @@ class Element extends Model
     /**
      * The attributes that are mass assignable.
      *
-     * @var array
+     * @var list<string>
      */
     protected $fillable = [
         'data',
@@ -84,7 +96,7 @@ class Element extends Model
     /**
      * Get the pages the element is referenced by.
      *
-     * @return BelongsToMany Eloquent relationship to the pages
+     * @return BelongsToMany<Page, $this> Eloquent relationship to the pages
      */
     public function bypages() : BelongsToMany
     {
@@ -96,7 +108,7 @@ class Element extends Model
     /**
      * Get the versions the element is referenced by.
      *
-     * @return BelongsToMany Eloquent relationship to the versions referencing the element
+     * @return BelongsToMany<Version, $this> Eloquent relationship to the versions referencing the element
      */
     public function byversions() : BelongsToMany
     {
@@ -108,7 +120,7 @@ class Element extends Model
     /**
      * Get the files referencedd by the element.
      *
-     * @return BelongsToMany Eloquent relationship to the files
+     * @return BelongsToMany<File, $this> Eloquent relationship to the files
      */
     public function files() : BelongsToMany
     {
@@ -154,7 +166,7 @@ class Element extends Model
     /**
      * Maps the files by ID automatically.
      *
-     * @return Collection List files with ID as keys and file models as values
+     * @return Collection<string, File> List files with ID as keys and file models as values
      */
     public function getFilesAttribute() : Collection
     {
@@ -169,7 +181,7 @@ class Element extends Model
     /**
      * Get the page's latest head/meta data.
      *
-     * @return MorphOne Eloquent relationship to the latest version of the element
+     * @return MorphOne<Version, $this> Eloquent relationship to the latest version of the element
      */
     public function latest() : MorphOne
     {
@@ -202,7 +214,7 @@ class Element extends Model
     /**
      * Get the element's published version.
      *
-     * @return MorphOne Eloquent relationship to the last published version of the element
+     * @return MorphOne<Version, $this> Eloquent relationship to the last published version of the element
      */
     public function published() : MorphOne
     {
@@ -216,7 +228,7 @@ class Element extends Model
     /**
      * Get the prunable model query.
      *
-     * @return Builder Eloquent query builder instance for pruning
+     * @return Builder<static> Eloquent query builder instance for pruning
      */
     public function prunable() : Builder
     {
@@ -252,7 +264,7 @@ class Element extends Model
     /**
      * Get all of the element's versions.
      *
-     * @return MorphMany Eloquent relationship to the versions of the element
+     * @return MorphMany<Version, $this> Eloquent relationship to the versions of the element
      */
     public function versions() : MorphMany
     {
@@ -263,7 +275,7 @@ class Element extends Model
     /**
      * Interact with the "data" property.
      *
-     * @return Attribute Eloquent attribute for the "data" property
+     * @return Attribute<mixed, mixed> Eloquent attribute for the "data" property
      */
     protected function data(): Attribute
     {

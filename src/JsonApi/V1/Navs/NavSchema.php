@@ -22,6 +22,8 @@ class NavSchema extends Schema
 {
     /**
      * Default page value if no pagination was sent by the client.
+     *
+     * @var array<string, mixed>|null
      */
     protected ?array $defaultPagination = ['number' => 1];
 
@@ -73,7 +75,7 @@ class NavSchema extends Schema
     /**
      * Get the resource fields.
      *
-     * @return array
+     * @return array<int, mixed>
      */
     public function fields(): array
     {
@@ -97,17 +99,17 @@ class NavSchema extends Schema
                         $lang = $model->lang;
                         $lang2 = substr( $lang, 0, 2 );
 
-                        $item->files = collect( $item->files )
+                        $item->files = collect( (array) $item->files )
                             ->map( fn( $id ) => $model->files[$id] ?? null )
                             ->filter()
                             ->pluck( null, 'id' )
                             ->each( function( $file ) use ( $lang, $lang2 ) {
-                                $file->description = $file->description?->{$lang}
-                                    ?? $file->description?->{$lang2}
+                                $file->description = $file->description->{$lang}
+                                    ?? $file->description->{$lang2}
                                     ?? null;
 
-                                $file->transcription = $file->transcription?->{$lang}
-                                    ?? $file->transcription?->{$lang2}
+                                $file->transcription = $file->transcription->{$lang}
+                                    ?? $file->transcription->{$lang2}
                                     ?? null;
                             } );
                     }
@@ -116,7 +118,7 @@ class NavSchema extends Schema
                         unset( $item->files );
                     }
 
-                    if( !empty( $item->data?->action ) ) {
+                    if( !empty( $item->data->action ) ) {
                         $item->data->action = app()->call( $item->data->action, ['model' => $model, 'item' => $item] );
                     }
                 }

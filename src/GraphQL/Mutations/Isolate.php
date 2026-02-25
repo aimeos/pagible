@@ -46,7 +46,7 @@ final class Isolate
                 ->using( $provider, $config )
                 ->model( $model )
                 ->ensure( 'isolate' )
-                ->isolate( $file, $config )
+                ->isolate( $file, $config ) // @phpstan-ignore-line method.notFound
                 ->base64();
         }
         catch( PrismaException $e )

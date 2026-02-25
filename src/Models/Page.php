@@ -32,6 +32,34 @@ use Illuminate\Support\Collection;
 
 /**
  * Page model
+ *
+ * @property string $id
+ * @property string|null $related_id
+ * @property string $tenant_id
+ * @property string $tag
+ * @property string $lang
+ * @property string $path
+ * @property string $domain
+ * @property string $to
+ * @property string $name
+ * @property string $title
+ * @property string $type
+ * @property string $theme
+ * @property \stdClass $meta
+ * @property \stdClass $config
+ * @property \stdClass $content
+ * @property int $status
+ * @property int $cache
+ * @property string $editor
+ * @property int $_lft
+ * @property int $_rgt
+ * @property int $depth
+ * @property string|null $parent_id
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property \Aimeos\Nestedset\Collection<int, Nav>|null $subtree
+ * @method static \Illuminate\Database\Eloquent\Builder<static> withoutTenancy()
  */
 class Page extends Model
 {
@@ -45,7 +73,7 @@ class Page extends Model
     /**
      * The model's default values for attributes.
      *
-     * @var array
+     * @var array<string, mixed>
      */
     protected $attributes = [
         'related_id' => null,
@@ -70,7 +98,7 @@ class Page extends Model
     /**
      * The automatic casts for the attributes.
      *
-     * @var array
+     * @var array<string, string>
      */
     protected $casts = [
         'tag' => 'string',
@@ -95,7 +123,7 @@ class Page extends Model
     /**
      * The attributes that are mass assignable.
      *
-     * @var array
+     * @var list<string>
      */
     protected $fillable = [
         'related_id',
@@ -134,18 +162,18 @@ class Page extends Model
     /**
      * Relation to children.
      *
-     * @return HasMany
+     * @return HasMany<Nav, $this>
      */
     public function children() : HasMany
     {
-        return $this->hasMany( Page::class, $this->getParentIdName() )->setModel( new Nav() )->defaultOrder();
+        return $this->hasMany( Nav::class, $this->getParentIdName() )->setModel( new Nav() )->defaultOrder();
     }
 
 
     /**
      * Get the shared element for the page.
      *
-     * @return BelongsToMany Eloquent relationship to the elements attached to the page
+     * @return BelongsToMany<Element, $this> Eloquent relationship to the elements attached to the page
      */
     public function elements() : BelongsToMany
     {
@@ -156,7 +184,7 @@ class Page extends Model
     /**
      * Get all files referenced by the versioned data.
      *
-     * @return BelongsToMany Eloquent relationship to the files
+     * @return BelongsToMany<File, $this> Eloquent relationship to the files
      */
     public function files() : BelongsToMany
     {
@@ -202,7 +230,7 @@ class Page extends Model
     /**
      * Maps the elements by ID automatically.
      *
-     * @return Collection List elements with ID as keys and element models as values
+     * @return Collection<string, Element> List elements with ID as keys and element models as values
      */
     public function getElementsAttribute() : Collection
     {
@@ -214,7 +242,7 @@ class Page extends Model
     /**
      * Maps the files by ID automatically.
      *
-     * @return Collection List files with ID as keys and file models as values
+     * @return Collection<string, File> List files with ID as keys and file models as values
      */
     public function getFilesAttribute() : Collection
     {
@@ -237,7 +265,7 @@ class Page extends Model
     /**
      * Updated the search index for the page.
      */
-    public function index()
+    public function index(): void
     {
         Content::where( 'page_id', $this->id )->delete();
 
@@ -302,7 +330,7 @@ class Page extends Model
     /**
      * Get the page's latest head/meta data.
      *
-     * @return MorphOne Eloquent relationship to the latest version of the page
+     * @return MorphOne<Version, $this> Eloquent relationship to the latest version of the page
      */
     public function latest() : MorphOne
     {
@@ -317,7 +345,7 @@ class Page extends Model
      */
     public function menu() : DescendantsRelation
     {
-        return ( $this->ancestors->first() ?? $this )?->subtree();
+        return ( $this->ancestors->first() ?? $this )->subtree();
     }
 
 
@@ -329,7 +357,7 @@ class Page extends Model
      */
     public function nav( $level = 0 ) : \Aimeos\Nestedset\Collection
     {
-        return $this->ancestorsAndSelf( $this->id )
+        return $this->ancestorsAndSelf( $this->id ) // @phpstan-ignore-line property.notFound
             ->skip( $level )->first()
             ?->subtree?->toTree()
             ?? new \Aimeos\Nestedset\Collection();
@@ -339,7 +367,7 @@ class Page extends Model
     /**
      * Relation to the parent.
      *
-     * @return BelongsTo
+     * @return BelongsTo<Nav, $this>
      */
     public function parent() : BelongsTo
     {
@@ -350,7 +378,7 @@ class Page extends Model
     /**
      * Get the prunable model query.
      *
-     * @return Builder Eloquent query builder for pruning models
+     * @return Builder<static> Eloquent query builder for pruning models
      */
     public function prunable() : Builder
     {
@@ -370,9 +398,9 @@ class Page extends Model
         $this->elements()->sync( $version->elements ?? [] );
 
         $this->fill( (array) $version->data );
-        $this->content = @$version->aux->content;
-        $this->config = @$version->aux->config;
-        $this->meta = @$version->aux->meta;
+        $this->content = $version->aux->content ?? [];
+        $this->config = $version->aux->config ?? new \stdClass();
+        $this->meta = $version->aux->meta ?? new \stdClass();
         $this->editor = $version->editor;
         $this->save();
 
@@ -389,7 +417,7 @@ class Page extends Model
     /**
      * Get the page's published head/meta data.
      *
-     * @return MorphOne Eloquent relationship to the last published version of the page
+     * @return MorphOne<Version, $this> Eloquent relationship to the last published version of the page
      */
     public function published() : MorphOne
     {
@@ -453,7 +481,7 @@ class Page extends Model
     /**
      * Get all of the page's versions.
      *
-     * @return MorphMany Eloquent relationship to the versions of the page
+     * @return MorphMany<Version, $this> Eloquent relationship to the versions of the page
      */
     public function versions() : MorphMany
     {
@@ -464,7 +492,7 @@ class Page extends Model
     /**
      * Interact with the "cache" property.
      *
-     * @return Attribute Eloquent attribute for the "cache" property
+     * @return Attribute<mixed, mixed> Eloquent attribute for the "cache" property
      */
     protected function cache(): Attribute
     {
@@ -477,7 +505,7 @@ class Page extends Model
     /**
      * Interact with the "config" property.
      *
-     * @return Attribute Eloquent attribute for the "config" property
+     * @return Attribute<mixed, mixed> Eloquent attribute for the "config" property
      */
     protected function config(): Attribute
     {
@@ -490,7 +518,7 @@ class Page extends Model
     /**
      * Interact with the "content" property.
      *
-     * @return Attribute Eloquent attribute for the "content" property
+     * @return Attribute<mixed, mixed> Eloquent attribute for the "content" property
      */
     protected function content(): Attribute
     {
@@ -503,7 +531,7 @@ class Page extends Model
     /**
      * Interact with the "domain" property.
      *
-     * @return Attribute Eloquent attribute for the "domain" property
+     * @return Attribute<mixed, mixed> Eloquent attribute for the "domain" property
      */
     protected function domain(): Attribute
     {
@@ -516,7 +544,7 @@ class Page extends Model
     /**
      * Interact with the "name" property.
      *
-     * @return Attribute Eloquent attribute for the "name" property
+     * @return Attribute<mixed, mixed> Eloquent attribute for the "name" property
      */
     protected function name(): Attribute
     {
@@ -529,7 +557,7 @@ class Page extends Model
     /**
      * Interact with the "meta" property.
      *
-     * @return Attribute Eloquent attribute for the "meta" property
+     * @return Attribute<mixed, mixed> Eloquent attribute for the "meta" property
      */
     protected function meta(): Attribute
     {
@@ -542,7 +570,7 @@ class Page extends Model
     /**
      * Interact with the "path" property.
      *
-     * @return Attribute Eloquent attribute for the "path" property
+     * @return Attribute<mixed, mixed> Eloquent attribute for the "path" property
      */
     protected function path(): Attribute
     {
@@ -566,7 +594,7 @@ class Page extends Model
     /**
      * Interact with the "related_id" property.
      *
-     * @return Attribute Eloquent attribute for the "related_id" property
+     * @return Attribute<mixed, mixed> Eloquent attribute for the "related_id" property
      */
     protected function relatedId(): Attribute
     {
@@ -579,7 +607,7 @@ class Page extends Model
     /**
      * Interact with the "status" property.
      *
-     * @return Attribute Eloquent attribute for the "status" property
+     * @return Attribute<mixed, mixed> Eloquent attribute for the "status" property
      */
     protected function status(): Attribute
     {
@@ -592,7 +620,7 @@ class Page extends Model
     /**
      * Interact with the "tag" property.
      *
-     * @return Attribute Eloquent attribute for the "tag" property
+     * @return Attribute<mixed, mixed> Eloquent attribute for the "tag" property
      */
     protected function tag(): Attribute
     {
@@ -605,7 +633,7 @@ class Page extends Model
     /**
      * Interact with the "theme" property.
      *
-     * @return Attribute Eloquent attribute for the "theme" property
+     * @return Attribute<mixed, mixed> Eloquent attribute for the "theme" property
      */
     protected function theme(): Attribute
     {
@@ -618,7 +646,7 @@ class Page extends Model
     /**
      * Interact with the "to" property.
      *
-     * @return Attribute Eloquent attribute for the "to" property
+     * @return Attribute<mixed, mixed> Eloquent attribute for the "to" property
      */
     protected function to(): Attribute
     {
@@ -631,7 +659,7 @@ class Page extends Model
     /**
      * Interact with the "type" property.
      *
-     * @return Attribute Eloquent attribute for the "type" property
+     * @return Attribute<mixed, mixed> Eloquent attribute for the "type" property
      */
     protected function type(): Attribute
     {

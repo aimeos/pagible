@@ -52,7 +52,7 @@ final class Inpaint
                 ->using( $provider, $config )
                 ->model( $model )
                 ->ensure( 'inpaint' )
-                ->inpaint( $file, $mask, $args['prompt'], $config )
+                ->inpaint( $file, $mask, $args['prompt'], $config ) // @phpstan-ignore-line method.notFound
                 ->base64();
         }
         catch( PrismaException $e )

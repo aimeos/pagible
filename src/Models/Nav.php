@@ -16,7 +16,7 @@ class Nav extends Page
     /**
      * The model's default values for attributes.
      *
-     * @var array
+     * @var array<string, mixed>
      */
     protected $attributes = [
         'lang' => '',
@@ -32,7 +32,7 @@ class Nav extends Page
     /**
      * The attributes that are mass assignable.
      *
-     * @var array
+     * @var list<string>
      */
     protected $fillable = [
         'lang',

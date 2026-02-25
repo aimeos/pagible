@@ -19,7 +19,7 @@ final class MovePage
 {
     /**
      * @param  null  $rootValue
-     * @param  array  $args
+     * @param  array<string, mixed>  $args
      */
     public function __invoke( $rootValue, array $args ) : Page
     {
@@ -30,13 +30,18 @@ final class MovePage
         return Cache::lock( 'cms_pages_' . \Aimeos\Cms\Tenancy::value(), 30 )->get( function() use ( $args ) {
             return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $args ) {
 
+                /** @var Page $page */
                 $page = Page::withTrashed()->findOrFail( $args['id'] );
-                $page->editor = Auth::user()?->name ?? request()->ip();
+                $page->editor = Auth::user()->name ?? request()->ip();
 
                 if( isset( $args['ref'] ) ) {
-                    $page->beforeNode( Page::withTrashed()->findOrFail( $args['ref'] ) );
+                    /** @var Page $ref */
+                    $ref = Page::withTrashed()->findOrFail( $args['ref'] );
+                    $page->beforeNode( $ref );
                 } elseif( isset( $args['parent'] ) ) {
-                    $page->appendToNode( Page::withTrashed()->findOrFail( $args['parent'] ) );
+                    /** @var Page $parent */
+                    $parent = Page::withTrashed()->findOrFail( $args['parent'] );
+                    $page->appendToNode( $parent );
                 } else {
                     $page->makeRoot();
                 }

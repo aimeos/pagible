@@ -19,6 +19,7 @@ final class Metrics
     /**
      * @param  null  $rootValue
      * @param  array<string, mixed>  $args
+     * @return array<int, mixed>
      */
     public function __invoke( $rootValue, array $args ): array
     {
@@ -39,7 +40,7 @@ final class Metrics
         }
 
         try {
-            $data = (array) Cache::remember( "stats:$url:$days", 3600, fn() => Analytics::driver()->stats( $url, $days ) ) ?? [];
+            $data = (array) Cache::remember( "stats:$url:$days", 3600, fn() => Analytics::driver()->stats( $url, $days ) );
         } catch ( \Throwable $e ) {
             $data['errors'][] = $this->error( $e );
         }

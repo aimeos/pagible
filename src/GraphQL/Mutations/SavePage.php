@@ -19,7 +19,7 @@ final class SavePage
 {
     /**
      * @param  null  $rootValue
-     * @param  array  $args
+     * @param  array<string, mixed>  $args
      */
     public function __invoke( $rootValue, array $args ) : Page
     {
@@ -29,18 +29,19 @@ final class SavePage
 
         return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $args ) {
 
+            /** @var Page $page */
             $page = Page::withTrashed()->findOrFail( $args['id'] );
             $input = $this->sanitize( $args['input'] ?? [] );
 
             $data = array_diff_key( $input, array_flip( ['meta', 'config', 'content'] ) );
-            $data = array_replace( (array) $page->latest?->data ?? [], $data );
+            $data = array_replace( (array) $page->latest?->data, $data );
 
             $aux = array_intersect_key( $input, array_flip( ['meta', 'config', 'content'] ) );
-            $aux = array_replace( (array) $page->latest?->aux ?? [], $aux );
+            $aux = array_replace( (array) $page->latest?->aux, $aux );
 
             $version = $page->versions()->create([
                 'data' => array_map( fn( $v ) => $v ?? '', $data ),
-                'editor' => Auth::user()?->name ?? request()->ip(),
+                'editor' => Auth::user()->name ?? request()->ip(),
                 'lang' => $args['input']['lang'] ?? null,
                 'aux' => $aux
             ]);
@@ -53,6 +54,12 @@ final class SavePage
     }
 
 
+    /**
+     * Sanitizes the input data based on user permissions and content type
+     *
+     * @param array<string, mixed> $input
+     * @return array<string, mixed>
+     */
     protected function sanitize( array $input ) : array
     {
         if( !Permission::can( 'config:page', Auth::user() ) ) {

@@ -25,6 +25,7 @@ final class Refine
     /**
      * @param  null  $rootValue
      * @param  array<string, mixed>  $args
+     * @return array<int, mixed>
      */
     public function __invoke( $rootValue, array $args ): array
     {
@@ -39,6 +40,7 @@ final class Refine
         $provider = config( 'cms.ai.structure.provider' );
         $model = config( 'cms.ai.structure.model' );
 
+        /** @phpstan-ignore argument.type */
         $system = view( 'cms::prompts.refine' )->render();
         $type = $args['type'] ?? 'content';
         $content = $args['content'] ?: [];
@@ -73,9 +75,9 @@ final class Refine
     /**
      * Merges the existing content with the response from the AI
      *
-     * @param array $content Existing content elements
-     * @param array $response AI response with updated text content
-     * @return array Updated content elements
+     * @param array<mixed> $content Existing content elements
+     * @param array<mixed> $response AI response with updated text content
+     * @return array<mixed> Updated content elements
      */
     protected function merge( array $content, array $response ) : array
     {
@@ -100,14 +102,14 @@ final class Refine
 
                 $m = [];
 
-                if( $entry['type'] === 'heading' && preg_match( '/^(#+)(.*)$/', (string) $data['value'] ?? '', $m ) )
+                if( $entry['type'] === 'heading' && preg_match( '/^(#+)(.*)$/', (string) @$data['value'], $m ) )
                 {
                     $entry['data'][$data['name']] = trim( $m[2] );
                     $entry['data']['level'] = (string) strlen( $m[1] );
                 }
                 else
                 {
-                    $entry['data'][$data['name']] = (string) ( $data['value'] ?? '' );
+                    $entry['data'][$data['name']] = (string) @$data['value'];
                 }
             }
 
@@ -126,7 +128,7 @@ final class Refine
      */
     protected function schema( string $type ) : ObjectSchema
     {
-        $types = collect( config( "cms.schemas.$type", [] ) )->keys()->all();
+        $types = collect( (array) config( "cms.schemas.$type", [] ) )->keys()->all();
 
         return new ObjectSchema(
             name: 'response',

@@ -31,7 +31,7 @@ class Serve extends ServeCommand
     /**
      * Get the full server command.
      *
-     * @return array
+     * @return array<int, string>
      */
     protected function serverCommand()
     {
@@ -51,7 +51,7 @@ class Serve extends ServeCommand
     /**
      * Get the console command options.
      *
-     * @return array
+     * @return array<int, array<int, mixed>>
      */
     protected function getOptions()
     {

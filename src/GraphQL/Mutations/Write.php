@@ -42,9 +42,12 @@ final class Write
 
         try
         {
+            /** @phpstan-ignore argument.type */
+            $system = view( 'cms::prompts.compose' )->render() . "\n" . ( $args['context'] ?? '' );
+
             $prism = Prism::text()->using( $provider, $model )
                 ->withMaxTokens( config( 'cms.ai.maxtoken', 32768 ) )
-                ->withSystemPrompt( view( 'cms::prompts.compose' )->render() . "\n" . ($args['context'] ?? '') )
+                ->withSystemPrompt( $system )
                 ->whenProvider( 'gemini', fn( $request ) => $request->withProviderTools( [
                     new ProviderTool( 'google_search' )
                 ] ) )
@@ -57,23 +60,23 @@ final class Write
             {
                 $files = File::whereIn( 'id', $ids )->get()->map( function( $file ) {
 
-                    if( str_starts_with( $file->path, 'http' ) )
+                    if( str_starts_with( (string) $file->path, 'http' ) )
                     {
                         return match( explode( '/', $file->mime )[0] ) {
-                            'image' => Image::fromUrl( $file->path ),
-                            'audio' => Audio::fromUrl( $file->path ),
-                            'video' => Video::fromUrl( $file->path ),
-                            default => Document::fromUrl( $file->path ),
+                            'image' => Image::fromUrl( (string) $file->path ),
+                            'audio' => Audio::fromUrl( (string) $file->path ),
+                            'video' => Video::fromUrl( (string) $file->path ),
+                            default => Document::fromUrl( (string) $file->path ),
                         };
                     }
 
                     $disk = config( 'cms.disk', 'public' );
 
                     return match( explode( '/', $file->mime )[0] ) {
-                        'image' => Image::fromStoragePath( $file->path, $disk ),
-                        'audio' => Audio::fromStoragePath( $file->path, $disk ),
-                        'video' => Video::fromStoragePath( $file->path, $disk ),
-                        default => Document::fromStoragePath( $file->path, $disk ),
+                        'image' => Image::fromStoragePath( (string) $file->path, $disk ),
+                        'audio' => Audio::fromStoragePath( (string) $file->path, $disk ),
+                        'video' => Video::fromStoragePath( (string) $file->path, $disk ),
+                        default => Document::fromStoragePath( (string) $file->path, $disk ),
                     };
                 } )->values()->toArray();
             }

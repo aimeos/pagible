@@ -21,10 +21,10 @@ class Status implements Scope
     /**
      * Applys additional restrictions to the query builder.
      *
-     * @param \Illuminate\Database\Eloquent\Builder $builder Query builder
+     * @param \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model> $builder Query builder
      * @param \Illuminate\Database\Eloquent\Model $model Eloquent model
      */
-    public function apply( Builder $builder, Model $model )
+    public function apply( Builder $builder, Model $model ): void
     {
         if( !\Aimeos\Cms\Permission::can( 'page:view', Auth::user() ) ) {
             $builder->where( $model->qualifyColumn( 'status' ), '>', 0 );
@@ -35,12 +35,11 @@ class Status implements Scope
     /**
      * Adds additional macros to the query builder.
      *
-     * @param \Illuminate\Database\Eloquent\Builder $builder Query builder
+     * @param \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model> $builder Query builder
      */
-    public function extend( Builder $builder )
+    public function extend( Builder $builder ): void
     {
-        $builder->macro( 'withoutStatus', function( Builder $builder ) {
-            return $builder->withoutGlobalScope( $this );
-        });
+        $scope = $this;
+        $builder->macro( 'withoutStatus', fn( Builder $builder ) => $builder->withoutGlobalScope( $scope ));
     }
 }

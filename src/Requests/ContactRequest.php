@@ -12,6 +12,7 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class ContactRequest extends FormRequest
 {
+    /** @return array<string, mixed> */
     public function rules(): array
     {
         $rules = [

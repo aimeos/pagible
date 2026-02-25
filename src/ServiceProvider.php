@@ -23,7 +23,7 @@ class ServiceProvider extends Provider
 	/**
 	 * Bootstrap the application events.
 	 */
-	public function boot()
+	public function boot(): void
 	{
 		$basedir = dirname( __DIR__ );
 
@@ -71,7 +71,7 @@ class ServiceProvider extends Provider
 	/**
 	 * Register Blade directives
 	 */
-	protected function loadBladeDirectives()
+	protected function loadBladeDirectives(): void
 	{
 		Blade::directive( 'localDate', function( $expression ) {
 			return "<?php

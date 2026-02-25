@@ -27,6 +27,21 @@ use Intervention\Image\ImageManager;
 
 /**
  * File model
+ *
+ * @property string $id
+ * @property string $tenant_id
+ * @property string $mime
+ * @property string|null $lang
+ * @property string $name
+ * @property string|null $path
+ * @property mixed $previews
+ * @property \stdClass $description
+ * @property \stdClass $transcription
+ * @property string $editor
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @method static \Illuminate\Database\Eloquent\Builder<static> withoutTenancy()
  */
 class File extends Model
 {
@@ -39,7 +54,7 @@ class File extends Model
     /**
      * The model's default values for attributes.
      *
-     * @var array
+     * @var array<string, mixed>
      */
     protected $attributes = [
         'tenant_id' => '',
@@ -56,7 +71,7 @@ class File extends Model
     /**
      * The automatic casts for the attributes.
      *
-     * @var array
+     * @var array<string, string>
      */
     protected $casts = [
         'name' => 'string',
@@ -71,7 +86,7 @@ class File extends Model
     /**
      * The attributes that are mass assignable.
      *
-     * @var array
+     * @var list<string>
      */
     protected $fillable = [
         'transcription',
@@ -83,7 +98,7 @@ class File extends Model
     /**
      * The attributes that are return by toArray()
      *
-     * @var array
+     * @var list<string>
      */
     protected $visible = [
         'lang',
@@ -188,7 +203,7 @@ class File extends Model
     /**
      * Get all (shared) content elements referencing the file.
      *
-     * @return BelongsToMany Eloquent relationship to the element referencing the file
+     * @return BelongsToMany<Element, $this> Eloquent relationship to the element referencing the file
      */
     public function byelements() : BelongsToMany
     {
@@ -200,7 +215,7 @@ class File extends Model
     /**
      * Get all pages referencing the file.
      *
-     * @return BelongsToMany Eloquent relationship to the pages referencing the file
+     * @return BelongsToMany<Page, $this> Eloquent relationship to the pages referencing the file
      */
     public function bypages() : BelongsToMany
     {
@@ -212,7 +227,7 @@ class File extends Model
     /**
      * Get all versions referencing the file.
      *
-     * @return BelongsToMany Eloquent relationship to the versions referencing the file
+     * @return BelongsToMany<Version, $this> Eloquent relationship to the versions referencing the file
      */
     public function byversions() : BelongsToMany
     {
@@ -259,7 +274,7 @@ class File extends Model
     /**
      * Get the page's latest head/meta data.
      *
-     * @return MorphOne Eloquent relationship to the latest version of the file
+     * @return MorphOne<Version, $this> Eloquent relationship to the latest version of the file
      */
     public function latest() : MorphOne
     {
@@ -270,7 +285,7 @@ class File extends Model
     /**
      * Get the prunable model query.
      *
-     * @return Builder Eloquent query builder instance for pruning
+     * @return Builder<static> Eloquent query builder instance for pruning
      */
     public function prunable() : Builder
     {
@@ -308,9 +323,12 @@ class File extends Model
         if( $num === 0 )
         {
             $disk = Storage::disk( config( 'cms.disk', 'public' ) );
-            $disk->delete( $path );
 
-            foreach( $previews as $filepath ) {
+            if( $path ) {
+                $disk->delete( $path );
+            }
+
+            foreach( (array) $previews as $filepath ) {
                 $disk->delete( $filepath );
             }
         }
@@ -322,7 +340,7 @@ class File extends Model
     /**
      * Get the element's published head/meta data.
      *
-     * @return MorphOne Eloquent relationship to the last published version of the element
+     * @return MorphOne<Version, $this> Eloquent relationship to the last published version of the element
      */
     public function published() : MorphOne
     {
@@ -370,7 +388,7 @@ class File extends Model
     {
         $disk = Storage::disk( config( 'cms.disk', 'public' ) );
 
-        foreach( $this->previews as $path )
+        foreach( (array) $this->previews as $path )
         {
             $disk->delete( $path );
             unset( $this->previews[$path] );
@@ -414,13 +432,13 @@ class File extends Model
 
         foreach( $toDelete as $version )
         {
-            if( !$version->data?->path || isset( $paths[$version->data?->path] ) ) {
+            if( !$version->data?->path || isset( $paths[$version->data->path] ) ) {
                 continue;
             }
 
-            $disk->delete( $version->data->path );
+            $disk->delete( (string) $version->data->path );
 
-            foreach( $version->data?->previews ?? [] as $path ) {
+            foreach( (array) ($version->data->previews ?? []) as $path ) {
                 $disk->delete( $path );
             }
         }
@@ -436,7 +454,7 @@ class File extends Model
     /**
      * Get all of the files's versions.
      *
-     * @return MorphMany Eloquent relationship to the versions of the file
+     * @return MorphMany<Version, $this> Eloquent relationship to the versions of the file
      */
     public function versions() : MorphMany
     {
@@ -447,7 +465,7 @@ class File extends Model
     /**
      * Interact with the "name" property.
      *
-     * @return Attribute Eloquent attribute for the "name" property
+     * @return Attribute<mixed, mixed> Eloquent attribute for the "name" property
      */
     protected function name(): Attribute
     {
@@ -460,7 +478,7 @@ class File extends Model
     /**
      * Interact with the "description" property.
      *
-     * @return Attribute Eloquent attribute for the "description" property
+     * @return Attribute<mixed, mixed> Eloquent attribute for the "description" property
      */
     protected function description(): Attribute
     {
@@ -475,7 +493,7 @@ class File extends Model
      *
      * @param string $filename Name of the file
      * @param string|null $ext File extension to use, if not given, the original file extension is used
-     * @param array $size Image width and height, if used
+     * @param array<string, mixed> $size Image width and height, if used
      * @return string New file name
      */
     protected function filename( string $filename, ?string $ext = null, array $size = [] ) : string
@@ -503,7 +521,7 @@ class File extends Model
             ->chunk( 100, function( $versions ) use ( $store ) {
                 foreach( $versions as $version )
                 {
-                    foreach( $version->data?->previews ?? [] as $path ) {
+                    foreach( $version->data->previews ?? [] as $path ) {
                         $store->delete( $path );
                     }
 
@@ -517,7 +535,7 @@ class File extends Model
             ->where( 'versionable_type', File::class )
             ->delete();
 
-        foreach( $this->previews as $path ) {
+        foreach( (array) $this->previews as $path ) {
             $store->delete( $path );
         }
 
@@ -530,7 +548,7 @@ class File extends Model
     /**
      * Interact with the tag property.
      *
-     * @return Attribute Eloquent attribute for the "tag" property
+     * @return Attribute<mixed, mixed> Eloquent attribute for the "tag" property
      */
     protected function tag(): Attribute
     {
@@ -543,7 +561,7 @@ class File extends Model
     /**
      * Interact with the "transcription" property.
      *
-     * @return Attribute Eloquent attribute for the "transcription" property
+     * @return Attribute<mixed, mixed> Eloquent attribute for the "transcription" property
      */
     protected function transcription(): Attribute
     {

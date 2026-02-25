@@ -10,11 +10,12 @@ namespace Aimeos\Cms\Controllers;
 use Aimeos\Cms\Models\Nav;
 use Aimeos\Cms\Scopes\Status;
 use Illuminate\Routing\Controller;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 
 class SitemapController extends Controller
 {
-    public function index()
+    public function index() : StreamedResponse
     {
         return response()->stream( function() {
             echo '<?xml version="1.0" encoding="UTF-8"?>';
@@ -24,6 +25,7 @@ class SitemapController extends Controller
 
                 foreach( $pages as $page )
                 {
+                    /** @var Nav $page */
                     if( !$page->to )
                     {
                         echo '<url>';

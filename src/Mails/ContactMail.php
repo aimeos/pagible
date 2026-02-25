@@ -16,9 +16,13 @@ class ContactMail extends Mailable
 {
     use Queueable, SerializesModels;
 
+    /** @var array<string, mixed> */
     public array $data;
 
 
+    /**
+     * @param array<string, mixed> $data
+     */
     public function __construct(array $data)
     {
         $this->data = $data;
@@ -29,6 +33,7 @@ class ContactMail extends Mailable
     {
         return $this
             ->subject( 'Contact mail from ' . config( 'app.name' ) )
+            /** @phpstan-ignore argument.type */
             ->markdown( 'cms::mails.contact' );
     }
 }

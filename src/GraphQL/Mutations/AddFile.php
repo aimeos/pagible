@@ -20,7 +20,7 @@ final class AddFile
 {
     /**
      * @param  null  $rootValue
-     * @param  array  $args
+     * @param  array<string, mixed>  $args
      */
     public function __invoke( $rootValue, array $args ) : File
     {
@@ -34,7 +34,7 @@ final class AddFile
 
         return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $args ) {
 
-            $editor = Auth::user()?->name ?? request()->ip();
+            $editor = Auth::user()->name ?? request()->ip();
 
             $file = new File();
             $file->fill( $args['input'] ?? [] );
@@ -71,7 +71,7 @@ final class AddFile
      * Adds the uploaded file to the file model.
      *
      * @param  File $file File model instance
-     * @param  array $args Arguments containing the file upload
+     * @param  array<string, mixed> $args Arguments containing the file upload
      * @return File The updated file model instance
      */
     protected function addUpload( File $file, array $args ) : File
@@ -83,7 +83,7 @@ final class AddFile
         }
 
         $file->addFile( $upload );
-        $file->mime = Utils::mimetype( $file->path );
+        $file->mime = Utils::mimetype( (string) $file->path );
         $file->name = $file->name ?: pathinfo( $upload->getClientOriginalName(), PATHINFO_BASENAME );
 
         try
@@ -106,7 +106,7 @@ final class AddFile
      * Adds a file from a URL to the file model.
      *
      * @param  File $file File model instance
-     * @param  array $args Arguments containing the URL
+     * @param  array<string, mixed> $args Arguments containing the URL
      * @return File The updated file model instance
      */
     protected function addUrl( File $file, array $args ) : File

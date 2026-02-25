@@ -25,8 +25,8 @@ final class Query
      * Custom query builder for elements to search items by ID (optional).
      *
      * @param  null  $rootValue
-     * @param  array  $args
-     * @return \Aimeos\Nestedset\QueryBuilder
+     * @param  array<string, mixed>  $args
+     * @return \Illuminate\Database\Eloquent\Builder<\Aimeos\Cms\Models\Element>
      */
     public function elements( $rootValue, array $args ) : Builder
     {
@@ -86,8 +86,8 @@ final class Query
      * Custom query builder for files to search for.
      *
      * @param  null  $rootValue
-     * @param  array  $args
-     * @return \Aimeos\Nestedset\QueryBuilder
+     * @param  array<string, mixed>  $args
+     * @return \Illuminate\Database\Eloquent\Builder<\Aimeos\Cms\Models\File>
      */
     public function files( $rootValue, array $args ) : Builder
     {
@@ -147,8 +147,8 @@ final class Query
      * Custom query builder for pages to get pages by parent ID.
      *
      * @param  null  $rootValue
-     * @param  array  $args
-     * @return \Aimeos\Nestedset\QueryBuilder
+     * @param  array<string, mixed>  $args
+     * @return \Aimeos\Nestedset\QueryBuilder<\Aimeos\Cms\Models\Page>
      */
     public function pages( $rootValue, array $args ) : \Aimeos\Nestedset\QueryBuilder
     {

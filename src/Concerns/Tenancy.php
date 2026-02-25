@@ -34,6 +34,7 @@ trait Tenancy
         static::addGlobalScope( new \Aimeos\Cms\Scopes\Tenancy() );
 
         static::creating( function( Model $model ) {
+            /** @phpstan-ignore method.notFound */
             $model->setAttribute( $model->getTenantColumn(), \Aimeos\Cms\Tenancy::value() );
         } );
     }

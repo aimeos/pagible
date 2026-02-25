@@ -37,8 +37,8 @@ final class Synthesize
             throw new Error( 'Prompt must not be empty' );
         }
 
-        $system = view( 'cms::prompts.synthesize' )->render() . "\n"
-            . view( 'cms::prompts.compose' )->render() . "\n";
+        /** @phpstan-ignore-next-line argument.type */
+        $system = view( 'cms::prompts.synthesize' )->render() . "\n" . view( 'cms::prompts.compose' )->render() . "\n";
 
         $files = [];
         $provider = config( 'cms.ai.write.provider' );
@@ -57,23 +57,23 @@ final class Synthesize
             {
                 $files = File::whereIn( 'id', $ids )->get()->map( function( $file ) {
 
-                    if( str_starts_with( $file->path, 'http' ) )
+                    if( str_starts_with( (string) $file->path, 'http' ) )
                     {
                         return match( explode( '/', $file->mime )[0] ) {
-                            'image' => Image::fromUrl( $file->path ),
-                            'audio' => Audio::fromUrl( $file->path ),
-                            'video' => Video::fromUrl( $file->path ),
-                            default => Document::fromUrl( $file->path ),
+                            'image' => Image::fromUrl( (string) $file->path ),
+                            'audio' => Audio::fromUrl( (string) $file->path ),
+                            'video' => Video::fromUrl( (string) $file->path ),
+                            default => Document::fromUrl( (string) $file->path ),
                         };
                     }
 
                     $disk = config( 'cms.disk', 'public' );
 
                     return match( explode( '/', $file->mime )[0] ) {
-                        'image' => Image::fromStoragePath( $file->path, $disk ),
-                        'audio' => Audio::fromStoragePath( $file->path, $disk ),
-                        'video' => Video::fromStoragePath( $file->path, $disk ),
-                        default => Document::fromStoragePath( $file->path, $disk ),
+                        'image' => Image::fromStoragePath( (string) $file->path, $disk ),
+                        'audio' => Audio::fromStoragePath( (string) $file->path, $disk ),
+                        'video' => Video::fromStoragePath( (string) $file->path, $disk ),
+                        default => Document::fromStoragePath( (string) $file->path, $disk ),
                     };
                 } )->values()->toArray();
             }
@@ -98,6 +98,12 @@ final class Synthesize
     }
 
 
+    /**
+     * Returns a list of tool calls made during the execution of the Prism response for debugging purposes.
+     *
+     * @param \Prism\Prism\Text\Response $response
+     * @return list<string>
+     */
     protected function trace( \Prism\Prism\Text\Response $response ) : array
     {
         $msgs = [];

@@ -31,7 +31,7 @@ class SearchPages extends Tool
     /**
      * Handle the tool request.
      */
-    public function handle( Request $request )
+    public function handle( Request $request ): \Laravel\Mcp\ResponseFactory
     {
         if( !Permission::can( 'page:view', $request->user() ) ) {
             throw new \Exception( 'Insufficient permissions' );
@@ -59,7 +59,10 @@ class SearchPages extends Tool
             } )
             ->take( 10 )
             ->get()
-            ->map( fn( $item ) => $item->toArray() + ['url' => route( 'cms.page', ['path' => $item->path] )] );
+            ->map( function( $item ) {
+                /** @var Page $item */
+                return $item->toArray() + ['url' => route( 'cms.page', ['path' => $item->path] )];
+            } );
 
         return Response::structured( $result->all() );
     }

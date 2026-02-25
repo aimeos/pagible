@@ -19,7 +19,7 @@ final class AddPage
 {
     /**
      * @param  null  $rootValue
-     * @param  array  $args
+     * @param  array<string, mixed>  $args
      */
     public function __invoke( $rootValue, array $args ) : Page
     {
@@ -33,17 +33,21 @@ final class AddPage
                 $page = new Page();
 
                 $args['input'] = $this->sanitize( $args['input'] ?? [] );
-                $editor = Auth::user()?->name ?? request()->ip();
+                $editor = Auth::user()->name ?? request()->ip();
 
-                $page->fill( $args['input'] ?? [] );
+                $page->fill( $args['input'] );
                 $page->tenant_id = \Aimeos\Cms\Tenancy::value();
                 $page->editor = $editor;
 
                 if( isset( $args['ref'] ) ) {
-                    $page->beforeNode( Page::withTrashed()->findOrFail( $args['ref'] ) );
+                    /** @var Page $ref */
+                    $ref = Page::withTrashed()->findOrFail( $args['ref'] );
+                    $page->beforeNode( $ref );
                 }
                 elseif( isset( $args['parent'] ) ) {
-                    $page->appendToNode( Page::withTrashed()->findOrFail( $args['parent'] ) );
+                    /** @var Page $parent */
+                    $parent = Page::withTrashed()->findOrFail( $args['parent'] );
+                    $page->appendToNode( $parent );
                 }
 
                 $page->save();
@@ -51,7 +55,7 @@ final class AddPage
                 $page->elements()->attach( $args['elements'] ?? [] );
 
 
-                $data = $args['input'] ?? [];
+                $data = $args['input'];
                 unset( $data['config'], $data['content'], $data['meta'] );
 
                 $version = $page->versions()->create( [
@@ -74,6 +78,12 @@ final class AddPage
     }
 
 
+    /**
+     * Sanitizes the input data by removing unauthorized fields and escaping HTML content
+     *
+     * @param array<string, mixed> $input
+     * @return array<string, mixed>
+     */
     protected function sanitize( array $input ) : array
     {
         if( !Permission::can( 'config:page', Auth::user() ) ) {

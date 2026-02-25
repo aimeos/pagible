@@ -20,11 +20,12 @@ class Tenancy implements Scope
     /**
      * Applys additional restrictions to the query builder.
      *
-     * @param \Illuminate\Database\Eloquent\Builder $builder Query builder
+     * @param \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model> $builder Query builder
      * @param \Illuminate\Database\Eloquent\Model $model Eloquent model
      */
-    public function apply( Builder $builder, Model $model )
+    public function apply( Builder $builder, Model $model ): void
     {
+        /** @phpstan-ignore method.notFound */
         $builder->where( $model->qualifyColumn( $model->getTenantColumn() ), \Aimeos\Cms\Tenancy::value() );
     }
 
@@ -32,12 +33,11 @@ class Tenancy implements Scope
     /**
      * Adds additional macros to the query builder.
      *
-     * @param \Illuminate\Database\Eloquent\Builder $builder Query builder
+     * @param \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model> $builder Query builder
      */
-    public function extend( Builder $builder )
+    public function extend( Builder $builder ): void
     {
-        $builder->macro( 'withoutTenancy', function( Builder $builder ) {
-            return $builder->withoutGlobalScope( $this );
-        });
+        $scope = $this;
+        $builder->macro( 'withoutTenancy', fn( Builder $builder ) => $builder->withoutGlobalScope( $scope ));
     }
 }

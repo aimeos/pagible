@@ -31,9 +31,10 @@ class User extends Command
     /**
      * Execute command
      */
-    public function handle()
+    public function handle(): void
     {
-        $email = $this->argument( 'email' );
+        // @phpstan-ignore-next-line cast.string
+        $email = (string) $this->argument( 'email' );
         $value = $this->option( 'disable' ) ? 0 : 0x7fffffffffffffff;
 
         if( ( $user = BaseUser::where( 'email', $email )->first() ) === null )

@@ -19,15 +19,17 @@ class SearchController extends Controller
      *
      * @param Request $request The current HTTP request instance
      * @param string $domain Requested domain
-     * @return Response Response of the controller action
+     * @return \Illuminate\Http\JsonResponse Response of the controller action
      */
     public function index( Request $request, string $domain = '' )
     {
-        if( strlen( (string) $request->search ) < 3 ) {
+        $query = (string) $request->get( 'search' );
+
+        if( strlen( $query ) < 3 ) {
             return response()->json( [] );
         }
 
-        $content = Content::search( $request->search )
+        $content = Content::search( $query )
             ->where( 'lang', $request->locale ?? app()->getLocale() )
             ->where( 'domain', $domain )
             ->get()

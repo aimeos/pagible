@@ -46,7 +46,7 @@ final class Uncrop
                 ->using( $provider, $config )
                 ->model( $model )
                 ->ensure( 'uncrop' )
-                ->uncrop( $file, $args['top'] ?? 0, $args['right'] ?? 0, $args['bottom'] ?? 0, $args['left'] ?? 0 )
+                ->uncrop( $file, $args['top'] ?? 0, $args['right'] ?? 0, $args['bottom'] ?? 0, $args['left'] ?? 0 ) // @phpstan-ignore-line method.notFound
                 ->base64();
         }
         catch( PrismaException $e )

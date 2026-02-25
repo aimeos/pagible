@@ -28,13 +28,14 @@ class Index extends Command
     /**
      * Execute command
      */
-    public function handle()
+    public function handle(): void
     {
         Page::where( 'status', '>', 0 )->chunk( 100, function( $pages ) {
 
             foreach( $pages as $page )
             {
                 try {
+                    /** @var Page $page */
                     DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( fn() => $page->index() );
                 } catch( \Exception $e ) {
                     $this->error( "Failed to index page ID {$page->id}: " . $e->getMessage() );

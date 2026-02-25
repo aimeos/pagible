@@ -12,7 +12,7 @@ use Illuminate\Console\Command;
 
 class Install extends Command
 {
-	private static $template = '<fg=blue>
+	private static string $template = '<fg=blue>
     ____              _ __    __     ___    ____   ________  ________
    / __ \____ _____ _(_) /_  / /__  /   |  /  _/  / ____/  |/  / ___/
   / /_/ / __ `/ __ `/ / __ \/ / _ \/ /| |  / /   / /   / /|_/ /\__ \
@@ -40,7 +40,7 @@ Made with <fg=green>love</> by the Pagible CMS community. Be a part of it!
     /**
      * Execute command
      */
-    public function handle()
+    public function handle(): void
     {
         $result = 0;
 
@@ -113,9 +113,10 @@ Made with <fg=green>love</> by the Pagible CMS community. Be a part of it!
      */
     protected function db() : int
     {
-        $path = env('DB_DATABASE', database_path( 'database.sqlite' ) );
+        $name = config( 'cms.db', 'sqlite' );
+        $path = (string) config( "database.connections.{$name}.database", database_path( 'database.sqlite' ) );
 
-        if( config( 'cms.db', 'sqlite' ) && !file_exists( $path ) )
+        if( $name && !file_exists( $path ) )
         {
             if( touch( $path ) === true ) {
                 $this->line( sprintf( '  Created database [%1$s]' . PHP_EOL, $path ) );
@@ -143,6 +144,11 @@ Made with <fg=green>love</> by the Pagible CMS community. Be a part of it!
         $filename = 'bootstrap/app.php';
         $content = file_get_contents( base_path( $filename ) );
 
+        if( $content === false ) {
+            $this->error( "  File [$filename] not found!" );
+            return 1;
+        }
+
         $search = "->withExceptions(function (Exceptions \$exceptions) {\n";
 
         $string = '
@@ -153,10 +159,11 @@ Made with <fg=green>love</> by the Pagible CMS community. Be a part of it!
             \LaravelJsonApi\Exceptions\ExceptionParser::renderer(),
         );';
 
-        if( strpos( $content, '\LaravelJsonApi\Exceptions\ExceptionParser' ) === false && ++$done )
+        if( strpos( $content, '\LaravelJsonApi\Exceptions\ExceptionParser' ) === false )
         {
             $content = str_replace( $search, $search . $string, $content );
             $this->line( sprintf( '  Added JSON:API exception handler to [%1$s]' . PHP_EOL, $filename ) );
+            $done++;
         }
 
         if( $done ) {
@@ -180,12 +187,18 @@ Made with <fg=green>love</> by the Pagible CMS community. Be a part of it!
         $filename = 'config/jsonapi.php';
         $content = file_get_contents( base_path( $filename ) );
 
+        if( $content === false ) {
+            $this->error( "  File [$filename] not found!" );
+            return 1;
+        }
+
         $string = "
         'cms' => \Aimeos\Cms\JsonApi\V1\Server::class,
         ";
 
-        if( strpos( $content, '\Aimeos\Cms\JsonApi\V1\Server::class' ) === false && ++$done )
+        if( strpos( $content, '\Aimeos\Cms\JsonApi\V1\Server::class' ) === false )
         {
+            $done++;
             $content = str_replace( "'servers' => [", "'servers' => [" . $string, $content );
             $this->line( sprintf( '  Added CMS JSON:API server to [%1$s]' . PHP_EOL, $filename ) );
         }
@@ -211,40 +224,50 @@ Made with <fg=green>love</> by the Pagible CMS community. Be a part of it!
         $filename = 'config/lighthouse.php';
         $content = file_get_contents( base_path( $filename ) );
 
+        if( $content === false ) {
+            $this->error( "  File [$filename] not found!" );
+            return 1;
+        }
+
         $string = ", 'Aimeos\\\\Cms\\\\Models'";
 
-        if( strpos( $content, $string ) === false && ++$done )
+        if( strpos( $content, $string ) === false )
         {
             $content = str_replace( "'App\\\\Models'", "'App\\\\Models'" . $string, $content );
             $this->line( sprintf( '  Added CMS models directory to [%1$s]' . PHP_EOL, $filename ) );
+            $done++;
         }
 
         $string = ", 'Aimeos\\\\Cms\\\\GraphQL\\\\Mutations'";
 
-        if( strpos( $content, $string ) === false && ++$done )
+        if( strpos( $content, $string ) === false )
         {
             $content = str_replace( " 'App\\\\GraphQL\\\\Mutations'", " ['App\\\\GraphQL\\\\Mutations'" . $string . "]", $content );
             $this->line( sprintf( '  Added CMS mutations directory to [%1$s]' . PHP_EOL, $filename ) );
+            $done++;
         }
 
-        if( strpos( $content, $string ) === false && ++$done )
+        if( strpos( $content, $string ) === false )
         {
             $content = str_replace( "['App\\\\GraphQL\\\\Mutations'", "['App\\\\GraphQL\\\\Mutations'" . $string, $content );
             $this->line( sprintf( '  Added CMS mutations directory to [%1$s]' . PHP_EOL, $filename ) );
+            $done++;
         }
 
         $string = ", 'Aimeos\\\\Cms\\\\GraphQL\\\\Queries'";
 
-        if( strpos( $content, $string ) === false && ++$done )
+        if( strpos( $content, $string ) === false )
         {
             $content = str_replace( " 'App\\\\GraphQL\\\\Queries'", " ['App\\\\GraphQL\\\\Queries'" . $string . "]", $content );
             $this->line( sprintf( '  Added CMS queries directory to [%1$s]' . PHP_EOL, $filename ) );
+            $done++;
         }
 
-        if( strpos( $content, $string ) === false && ++$done )
+        if( strpos( $content, $string ) === false )
         {
             $content = str_replace( "['App\\\\GraphQL\\\\Queries'", "['App\\\\GraphQL\\\\Queries'" . $string, $content );
             $this->line( sprintf( '  Added CMS queries directory to [%1$s]' . PHP_EOL, $filename ) );
+            $done++;
         }
 
         $string = "
@@ -253,10 +276,11 @@ Made with <fg=green>love</> by the Pagible CMS community. Be a part of it!
             \Illuminate\Session\Middleware\StartSession::class,
         ";
 
-        if( strpos( $content, '\Illuminate\Session\Middleware\StartSession::class' ) === false && ++$done )
+        if( strpos( $content, '\Illuminate\Session\Middleware\StartSession::class' ) === false )
         {
             $content = str_replace( "'middleware' => [", "'middleware' => [" . $string, $content );
             $this->line( sprintf( '  Added EncryptCookies/AddQueuedCookiesToResponse/StartSession middlewares to [%1$s]' . PHP_EOL, $filename ) );
+            $done++;
         }
 
         if( $done ) {
@@ -278,6 +302,11 @@ Made with <fg=green>love</> by the Pagible CMS community. Be a part of it!
     {
         $filename = 'graphql/schema.graphql';
         $content = file_get_contents( base_path( $filename ) );
+
+        if( $content === false ) {
+            $this->error( "  File [$filename] not found!" );
+            return 1;
+        }
 
         $string = '#import cms.graphql';
 
@@ -306,19 +335,12 @@ Made with <fg=green>love</> by the Pagible CMS community. Be a part of it!
         $filename = 'config/services.php';
         $content = file_get_contents( base_path( $filename ) );
 
-
-        if( strpos( $content, 'deepl' ) === false && ( $pos = strrpos( $content, '],' ) ) !== false && ++$done )
-        {
-            $content = substr_replace( $content, "
-
-    'deepl' => [
-        'key' => env('DEEPL_API_KEY'),
-        'url' => env('DEEPL_API_URL', 'https://api-free.deepl.com/v2/translate'),
-    ],", $pos + 2, 0 );
-            $this->line( sprintf( '  Added DeepL configuration to [%1$s]' . PHP_EOL, $filename ) );
+        if( $content === false ) {
+            $this->error( "  File [$filename] not found!" );
+            return 1;
         }
 
-        if( strpos( $content, 'hcaptcha' ) === false && ( $pos = strrpos( $content, '],' ) ) !== false && ++$done )
+        if( strpos( $content, 'hcaptcha' ) === false && ( $pos = strrpos( $content, '],' ) ) !== false )
         {
             $content = substr_replace( $content, "
 
@@ -327,6 +349,7 @@ Made with <fg=green>love</> by the Pagible CMS community. Be a part of it!
         'secret' => env('HCAPTCHA_SECRET'),
     ],", $pos + 2, 0 );
             $this->line( sprintf( '  Added HCaptcha configuration to [%1$s]' . PHP_EOL, $filename ) );
+            $done++;
         }
 
         if( $done ) {
