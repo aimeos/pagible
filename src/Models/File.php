@@ -148,7 +148,7 @@ class File extends Model
         $ext = $manager->driver()->supports( 'image/webp' ) ? 'webp' : 'jpg';
 
         if( is_string( $resource ) && str_starts_with( $resource, 'http' ) ) {
-            $resource = Http::withOptions( ['stream' => true] )->get( $resource )->getBody()->detach();
+            $resource = Http::withOptions( ['stream' => true] )->get( $resource )->toPsrResponse()->getBody()->detach();
         }
 
         if( $resource instanceof UploadedFile ) {
@@ -275,7 +275,7 @@ class File extends Model
     public function prunable() : Builder
     {
         return static::withoutTenancy()->where( 'deleted_at', '<=', now()->subDays( config( 'cms.prune', 30 ) ) )
-            ->doesntHave( 'versions' )->doesntHave( 'pages' )->doesntHave( 'elements' );
+            ->doesntHave( 'versions' )->doesntHave( 'bypages' )->doesntHave( 'byelements' );
     }
 
 
