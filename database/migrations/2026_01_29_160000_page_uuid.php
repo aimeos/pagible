@@ -143,7 +143,7 @@ return new class extends Migration
         Schema::connection(config('cms.db', 'sqlite'))->create('cms_pages_new', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->bigInteger('oid');
-            $table->bigInteger('opid');
+            $table->bigInteger('opid')->nullable();
             $table->integer('orid')->nullable();
             $table->string('tenant_id', 250);
             $table->string('name');
