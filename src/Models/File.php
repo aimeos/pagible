@@ -418,12 +418,12 @@ class File extends Model
             return $this;
         }
 
-        $paths = [$this->path => true];
+        $paths = [(string) $this->path => true];
 
         foreach( $versions->slice( $num ) as $version )
         {
             if( $version->data?->path ) {
-                $paths[$version->data->path] = true;
+                $paths[(string) $version->data->path] = true;
             }
         }
 
@@ -432,7 +432,7 @@ class File extends Model
 
         foreach( $toDelete as $version )
         {
-            if( !$version->data?->path || isset( $paths[$version->data->path] ) ) {
+            if( !$version->data?->path || isset( $paths[(string) $version->data->path] ) ) {
                 continue;
             }
 

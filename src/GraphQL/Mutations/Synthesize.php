@@ -38,7 +38,7 @@ final class Synthesize
         }
 
         /** @phpstan-ignore-next-line argument.type */
-        $system = view( 'cms::prompts.synthesize' )->render() . "\n" . view( 'cms::prompts.compose' )->render() . "\n";
+        $system = view( 'cms::prompts.synthesize' )->render() . "\n" . view( 'cms::prompts.write' )->render() . "\n";
 
         $files = [];
         $provider = config( 'cms.ai.write.provider' );

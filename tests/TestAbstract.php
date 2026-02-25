@@ -42,7 +42,7 @@ abstract class TestAbstract extends \Orchestra\Testbench\TestCase
 
         $app['config']->set('cms.db', 'testing');
         $app['config']->set('cms.ai.write', ['provider' => 'gemini', 'model' => 'test', 'api_key' => 'test']);
-        $app['config']->set('cms.ai.structure', ['provider' => 'gemini', 'model' => 'test', 'api_key' => 'test']);
+        $app['config']->set('cms.ai.refine', ['provider' => 'gemini', 'model' => 'test', 'api_key' => 'test']);
         $app['config']->set('cms.ai.describe', ['provider' => 'gemini', 'api_key' => 'test']);
         $app['config']->set('cms.ai.erase', ['provider' => 'clipdrop', 'api_key' => 'test']);
         $app['config']->set('cms.ai.imagine', ['provider' => 'clipdrop', 'api_key' => 'test']);
