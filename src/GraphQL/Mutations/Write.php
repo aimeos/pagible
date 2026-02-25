@@ -42,8 +42,8 @@ final class Write
 
         try
         {
-            /** @phpstan-ignore argument.type */
-            $system = view( 'cms::prompts.compose' )->render() . "\n" . ( $args['context'] ?? '' );
+            /** @phpstan-ignore-next-line argument.type */
+            $system = view( 'cms::prompts.write' )->render() . "\n" . ( $args['context'] ?? '' );
 
             $prism = Prism::text()->using( $provider, $model )
                 ->withMaxTokens( config( 'cms.ai.maxtoken', 32768 ) )

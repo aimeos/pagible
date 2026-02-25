@@ -20,10 +20,10 @@ return [
             'model' => env( 'CMS_AI_WRITE_MODEL', 'gemini-2.5-flash' ),
             'api_key' => env( 'CMS_AI_WRITE_API_KEY' ),
         ],
-        'structure' => [ // Return content in a defined structure
-            'provider' => env( 'CMS_AI_STRUCTURE', 'gemini' ),
-            'model' => env( 'CMS_AI_STRUCTURE_MODEL', 'gemini-2.5-flash' ),
-            'api_key' => env( 'CMS_AI_STRUCTURE_API_KEY' ),
+        'refine' => [ // Return content in a defined structure
+            'provider' => env( 'CMS_AI_REFINE', 'gemini' ),
+            'model' => env( 'CMS_AI_REFINE_MODEL', 'gemini-2.5-flash' ),
+            'api_key' => env( 'CMS_AI_REFINE_API_KEY' ),
         ],
         'describe' => [ // Generate summary of file content
             'provider' => env( 'CMS_AI_DESCRIBE', 'gemini' ),

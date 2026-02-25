@@ -37,10 +37,10 @@ final class Refine
             throw new Error( 'Prompt must not be empty' );
         }
 
-        $provider = config( 'cms.ai.structure.provider' );
-        $model = config( 'cms.ai.structure.model' );
+        $provider = config( 'cms.ai.refine.provider' );
+        $model = config( 'cms.ai.refine.model' );
 
-        /** @phpstan-ignore argument.type */
+        /** @phpstan-ignore-next-line argument.type */
         $system = view( 'cms::prompts.refine' )->render();
         $type = $args['type'] ?? 'content';
         $content = $args['content'] ?: [];
