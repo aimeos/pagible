@@ -463,16 +463,20 @@ class Page extends Model
         // restrict maximum depth to three levels for performance reasons
         $builder = $this->newScopedQuery()
             ->where( 'depth', '<=', ( $this->depth ?? 0 ) + config( 'cms.navdepth', 2 ) )
-            ->whereNotExists( function( \Illuminate\Database\Query\Builder $builder ) {
-                $builder->select( DB::raw( 1 ) )
-                    ->from( $this->getTable() . ' AS parent' )
-                    ->whereColumn( $this->qualifyColumn( '_lft' ), '>=', 'parent._lft' )
-                    ->whereColumn( $this->qualifyColumn( '_rgt' ), '<=', 'parent._rgt' )
-                    ->where( 'parent.tenant_id', '=', \Aimeos\Cms\Tenancy::value() )
-                    ->where( 'parent.status', 0 );
-            } )
             ->defaultOrder()
             ->setModel(new Nav());
+
+        if( !\Aimeos\Cms\Permission::can( 'page:view', Auth::user() ) )
+        {
+            $builder->whereNotExists( function( \Illuminate\Database\Query\Builder $builder ) {
+                    $builder->select( DB::raw( 1 ) )
+                        ->from( $this->getTable() . ' AS parent' )
+                        ->whereColumn( $this->qualifyColumn( '_lft' ), '>=', 'parent._lft' )
+                        ->whereColumn( $this->qualifyColumn( '_rgt' ), '<=', 'parent._rgt' )
+                        ->where( 'parent.tenant_id', '=', \Aimeos\Cms\Tenancy::value() )
+                        ->where( 'parent.status', 0 );
+                } );
+        }
 
         return new DescendantsRelation( $builder, $this );
     }
