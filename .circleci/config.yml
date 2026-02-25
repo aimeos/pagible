@@ -229,6 +229,20 @@ jobs:
       - run: for i in `seq 1 10`; do nc -z 127.0.0.1 5432 && echo OK && exit 0; echo -n .; sleep 1; done
       - run: ./vendor/bin/phpunit
 
+  "php85-phpstan":
+    docker:
+      - image: aimeos/ci-php:8.5
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - php85-{{ checksum "composer.json" }}
+      - run: composer update -n --prefer-dist
+      - save_cache:
+          key: php85-{{ checksum "composer.json" }}
+          paths: [./vendor]
+      - run: ./vendor/bin/phpstan --no-progress
+
 workflows:
   version: 2
   unittest:
@@ -242,3 +256,4 @@ workflows:
       - "php85-mariadb"
       - "php85-mysql"
       - "php85-pgsql"
+      - "php85-phpstan"
