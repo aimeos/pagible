@@ -19,12 +19,20 @@ return new class extends Migration
     public function up()
     {
         Schema::connection(config('cms.db', 'sqlite'))->create('cms_page_search', function (Blueprint $table) {
+            $collation = match( Schema::getConnection()->getDriverName() ) {
+                'mysql' => 'utf8mb4_bin',
+                'mariadb' => 'utf8mb4_bin',
+                'sqlite' => 'BINARY',
+                'sqlsrv' => 'Latin1_General_100_CS_AS_SC_UTF8',
+                default => null,
+            };
+
             $table->uuid('id')->primary();
             $table->foreignUuid('page_id')->constrained('cms_pages')->cascadeOnUpdate()->cascadeOnDelete();
             $table->string('tenant_id', 250);
             $table->string('lang', 5);
             $table->string('domain');
-            $table->string('path');
+            $table->string( 'path' )->collation( $collation );
             $table->string('title');
             $table->text('content');
 

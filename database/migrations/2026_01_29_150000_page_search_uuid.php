@@ -27,12 +27,20 @@ return new class extends Migration
         }
 
         Schema::connection( config( 'cms.db', 'sqlite' ) )->create( 'cms_page_search_new', function ( Blueprint $table ) {
-            $table->uuid( 'id' );
+            $collation = match( Schema::getConnection()->getDriverName() ) {
+                'mysql' => 'utf8mb4_bin',
+                'mariadb' => 'utf8mb4_bin',
+                'sqlite' => 'BINARY',
+                'sqlsrv' => 'Latin1_General_100_CS_AS_SC_UTF8',
+                default => null,
+            };
+
+            $table->uuid('id')->primary();
             $table->bigInteger( 'page_id' ); // will be changed and constrainted later
             $table->string( 'tenant_id', 250 );
             $table->string( 'lang', 5 );
             $table->string( 'domain' );
-            $table->string( 'path' );
+            $table->string( 'path' )->collation( $collation );
             $table->string( 'title' );
             $table->text( 'content' );
 

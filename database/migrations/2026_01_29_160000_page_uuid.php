@@ -189,6 +189,9 @@ return new class extends Migration
                 $row->opid = $row->parent_id;
                 $row->orid = $row->related_id;
                 $row->id = Str::uuid()->toString();
+
+                unset( $row->parent_id, $row->related_id );
+
                 return (array) $row;
             })->toArray()
         );
