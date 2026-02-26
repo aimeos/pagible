@@ -24,7 +24,9 @@ return new class extends Migration
             return;
         }
 
-        DB::statement("
+        $name = config('cms.db', 'sqlite');
+
+        DB::connection($name)->statement("
             CREATE OR REPLACE FUNCTION uuid_max(uuid, uuid)
             RETURNS uuid AS $$
             BEGIN
@@ -33,7 +35,7 @@ return new class extends Migration
             $$ LANGUAGE plpgsql IMMUTABLE STRICT;
         ");
 
-        DB::statement("
+        DB::connection($name)->statement("
             CREATE OR REPLACE FUNCTION uuid_min(uuid, uuid)
             RETURNS uuid AS $$
             BEGIN
@@ -42,7 +44,7 @@ return new class extends Migration
             $$ LANGUAGE plpgsql IMMUTABLE STRICT;
         ");
 
-        DB::statement("
+        DB::connection($name)->statement("
             CREATE OR REPLACE AGGREGATE max(uuid) (
                 SFUNC = uuid_max,
                 STYPE = uuid,
@@ -52,7 +54,7 @@ return new class extends Migration
             );
         ");
 
-        DB::statement("
+        DB::connection($name)->statement("
             CREATE OR REPLACE AGGREGATE min(uuid) (
                 SFUNC = uuid_min,
                 STYPE = uuid,
@@ -75,9 +77,11 @@ return new class extends Migration
             return;
         }
 
-        DB::statement("DROP AGGREGATE IF EXISTS max(uuid);");
-        DB::statement("DROP AGGREGATE IF EXISTS min(uuid);");
-        DB::statement("DROP AGGREGATE IF EXISTS uuid_max(uuid, uuid);");
-        DB::statement("DROP AGGREGATE IF EXISTS uuid_min(uuid, uuid);");
+        $name = config('cms.db', 'sqlite');
+
+        DB::connection($name)->statement("DROP AGGREGATE IF EXISTS max(uuid);");
+        DB::connection($name)->statement("DROP AGGREGATE IF EXISTS min(uuid);");
+        DB::connection($name)->statement("DROP AGGREGATE IF EXISTS uuid_max(uuid, uuid);");
+        DB::connection($name)->statement("DROP AGGREGATE IF EXISTS uuid_min(uuid, uuid);");
     }
 };

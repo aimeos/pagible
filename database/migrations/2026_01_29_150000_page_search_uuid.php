@@ -20,13 +20,14 @@ return new class extends Migration
      */
     public function up()
     {
-        $schema = Schema::connection(config('cms.db', 'sqlite'));
+        $name = config('cms.db', 'sqlite');
+        $schema = Schema::connection($name);
 
         if( in_array( $schema->getColumnType('cms_page_search', 'id'), ['varchar', 'char', 'uniqueidentifier', 'uuid'] ) ) {
             return;
         }
 
-        Schema::connection( config( 'cms.db', 'sqlite' ) )->create( 'cms_page_search_new', function ( Blueprint $table ) {
+        $schema->create( 'cms_page_search_new', function ( Blueprint $table ) {
             $collation = match( Schema::getConnection()->getDriverName() ) {
                 'mysql' => 'utf8mb4_bin',
                 'mariadb' => 'utf8mb4_bin',
@@ -51,8 +52,8 @@ return new class extends Migration
             }
         } );
 
-        DB::table('cms_page_search_new')->insert(
-            DB::table('cms_page_search')->get()->map(function ($row) {
+        DB::connection($name)->table('cms_page_search_new')->insert(
+            DB::connection($name)->table('cms_page_search')->get()->map(function ($row) {
                 $row->id = Str::uuid()->toString();
                 return (array) $row;
             })->toArray()

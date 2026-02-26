@@ -20,7 +20,8 @@ return new class extends Migration
      */
     public function up()
     {
-        $schema = Schema::connection(config('cms.db', 'sqlite'));
+        $name = config('cms.db', 'sqlite');
+        $schema = Schema::connection($name);
 
         if( in_array( $schema->getColumnType('cms_pages', 'id'), ['varchar', 'char', 'uniqueidentifier', 'uuid'] ) ) {
             return;
@@ -46,26 +47,26 @@ return new class extends Migration
 
         // Add UUID values
 
-        DB::table('cms_page_element')->update([
+        DB::connection($name)->table('cms_page_element')->update([
             'page_uuid' => DB::raw('(SELECT id FROM cms_pages_new WHERE cms_pages_new.oid = cms_page_element.page_id)')
         ]);
 
-        DB::table('cms_page_file')->update([
+        DB::connection($name)->table('cms_page_file')->update([
             'page_uuid' => DB::raw('(SELECT id FROM cms_pages_new WHERE cms_pages_new.oid = cms_page_file.page_id)')
         ]);
 
-        DB::table('cms_page_search')->update([
+        DB::connection($name)->table('cms_page_search')->update([
             'page_uuid' => DB::raw('(SELECT id FROM cms_pages_new WHERE cms_pages_new.oid = cms_page_search.page_id)')
         ]);
 
-        DB::table('cms_pages_new as p')
+        DB::connection($name)->table('cms_pages_new as p')
             ->join('cms_versions as v', 'p.oid', '=', 'v.versionable_id')
             ->where('v.versionable_type', 'Aimeos\\Cms\\Models\\Page')
             ->select('v.id as version_id', 'p.id as page_id')
             ->orderBy('v.id')
-            ->chunk(100, function ($rows) {
+            ->chunk(100, function ($rows) use ($name) {
                 foreach ($rows as $row) {
-                    DB::table('cms_versions')
+                    DB::connection($name)->table('cms_versions')
                         ->where('id', $row->version_id)
                         ->update(['versionable_id' => $row->page_id]);
                 }
@@ -140,7 +141,8 @@ return new class extends Migration
 
     protected function copyPagesTable()
     {
-        Schema::connection(config('cms.db', 'sqlite'))->create('cms_pages_new', function (Blueprint $table) {
+        $name = config('cms.db', 'sqlite');
+        Schema::connection($name)->create('cms_pages_new', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->bigInteger('oid');
             $table->bigInteger('opid')->nullable();
@@ -183,8 +185,8 @@ return new class extends Migration
             $table->index(['deleted_at']);
         });
 
-        DB::table('cms_pages_new')->insert(
-            DB::table('cms_pages')->get()->map(function ($row) {
+        DB::connection($name)->table('cms_pages_new')->insert(
+            DB::connection($name)->table('cms_pages')->get()->map(function ($row) {
                 $row->oid = $row->id;
                 $row->opid = $row->parent_id;
                 $row->orid = $row->related_id;
@@ -196,25 +198,25 @@ return new class extends Migration
             })->toArray()
         );
 
-        DB::table('cms_pages_new as c')
+        DB::connection($name)->table('cms_pages_new as c')
             ->join('cms_pages_new as p', 'p.oid', '=', 'c.opid')
             ->select('c.id as child_id', 'p.id as parent_id')
             ->orderBy('c.id')
-            ->chunk(100, function ($rows) {
+            ->chunk(100, function ($rows) use ($name) {
                 foreach ($rows as $row) {
-                    DB::table('cms_pages_new')
+                    DB::connection($name)->table('cms_pages_new')
                         ->where('id', $row->child_id)
                         ->update(['parent_id' => $row->parent_id]);
                 }
             });
 
-        DB::table('cms_pages_new')
+        DB::connection($name)->table('cms_pages_new')
             ->select('id', 'orid')
             ->whereNotNull('orid')
             ->orderBy('id')
-            ->chunk(100, function ($rows) {
+            ->chunk(100, function ($rows) use ($name) {
                 foreach ($rows as $row) {
-                    DB::table('cms_pages_new')
+                    DB::connection($name)->table('cms_pages_new')
                         ->where('orid', $row->orid)
                         ->update(['related_id' => $row->id]);
                 }

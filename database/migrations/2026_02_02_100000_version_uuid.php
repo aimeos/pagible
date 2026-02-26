@@ -19,7 +19,8 @@ return new class extends Migration
      */
     public function up()
     {
-        $schema = Schema::connection(config('cms.db', 'sqlite'));
+        $name = config('cms.db', 'sqlite');
+        $schema = Schema::connection($name);
 
         if( in_array( $schema->getColumnType('cms_versions', 'versionable_id'), ['varchar', 'char', 'uniqueidentifier', 'uuid'] ) ) {
             return;
@@ -29,8 +30,8 @@ return new class extends Migration
             $table->uuid('versionable_uuid')->nullable()->after('versionable_id');
         });
 
-        DB::table('cms_versions')->update(['versionable_uuid' => DB::raw('cms_versions.versionable_id')]);
-        DB::table('cms_versions')->update(['data->related_id' => null]);
+        DB::connection($name)->table('cms_versions')->update(['versionable_uuid' => DB::raw('cms_versions.versionable_id')]);
+        DB::connection($name)->table('cms_versions')->update(['data->related_id' => null]);
 
         $schema->dropColumns('cms_versions', 'versionable_id');
 
