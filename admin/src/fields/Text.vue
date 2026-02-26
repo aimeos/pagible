@@ -70,7 +70,7 @@
         return {
           licenseKey: 'GPL',
           plugins: [ Markdown, Essentials, PasteFromOffice, Fullscreen, Clipboard, FindAndReplace, RemoveFormat, Paragraph, Bold, Italic, Strikethrough, Code, AutoLink, Link ],
-          toolbar: [ 'undo', 'redo', 'removeFormat', '|', 'bold', 'italic', 'strikethrough', 'code', 'link', '|', 'fullscreen' ],
+          toolbar: [ 'undo', 'redo', 'removeFormat', '|', 'bold', 'italic', 'strikethrough', 'link', 'code', '|', 'fullscreen' ],
           translations: [ar, bg, cs, da, de, el, es, et, fi, fr, he, hu, id, it, ja, ko, lt, lv, no, nl, pl, pt, ro, ru, sk, sl, sv, th, tr, uk, vi, zh],
           language: {
             ui: this.$vuetify.locale.current

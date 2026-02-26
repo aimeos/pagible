@@ -53,6 +53,7 @@
     "@rushstack/eslint-patch": "^1.11",
     "@vitejs/plugin-vue": "^5.2",
     "@vue/eslint-config-prettier": "^10.2.0",
+    "cypress": "^15.10.0",
     "eslint": "^10.0",
     "eslint-plugin-vue": "^10.0",
     "prettier": "^3.5",
