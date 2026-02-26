@@ -23,7 +23,7 @@ return new class extends Migration
                 'mysql' => 'utf8mb4_bin',
                 'mariadb' => 'utf8mb4_bin',
                 'sqlite' => 'BINARY',
-                'sqlsrv' => 'Latin1_General_100_CS_AS_SC_UTF8',
+                'sqlsrv' => 'Latin1_General_100_BIN2',
                 default => null,
             };
 
