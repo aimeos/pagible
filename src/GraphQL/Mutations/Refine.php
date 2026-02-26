@@ -38,6 +38,7 @@ final class Refine
         }
 
         $provider = config( 'cms.ai.refine.provider' );
+        $config = config( 'cms.ai.refine', [] );
         $model = config( 'cms.ai.refine.model' );
 
         /** @phpstan-ignore-next-line argument.type */
@@ -47,7 +48,7 @@ final class Refine
 
         try
         {
-            $response = Prism::structured()->using( $provider, $model )
+            $response = Prism::structured()->using( $provider, $model, $config )
                 ->withMaxTokens( config( 'cms.ai.maxtoken', 32768 ) )
                 ->withSystemPrompt( $system . "\n" . ($args['context'] ?? '') )
                 ->withPrompt( $args['prompt'] . "\n\nContent as JSON:\n" . json_encode( $content ) )

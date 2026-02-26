@@ -42,11 +42,12 @@ final class Synthesize
 
         $files = [];
         $provider = config( 'cms.ai.write.provider' );
+        $config = config( 'cms.ai.write', [] );
         $model = config( 'cms.ai.write.model' );
 
         try
         {
-            $prism = Prism::text()->using( $provider, $model )
+            $prism = Prism::text()->using( $provider, $model, $config )
                 ->withMaxTokens( config( 'cms.ai.maxtoken', 32768 ) )
                 ->withSystemPrompt( $system . "\n" . ($args['context'] ?? '') )
                 ->withTools( \Aimeos\Cms\Tools::get() )

@@ -38,6 +38,7 @@ final class Write
 
         $files = [];
         $provider = config( 'cms.ai.write.provider' );
+        $config = config( 'cms.ai.write', [] );
         $model = config( 'cms.ai.write.model' );
 
         try
@@ -45,7 +46,7 @@ final class Write
             /** @phpstan-ignore-next-line argument.type */
             $system = view( 'cms::prompts.write' )->render() . "\n" . ( $args['context'] ?? '' );
 
-            $prism = Prism::text()->using( $provider, $model )
+            $prism = Prism::text()->using( $provider, $model, $config )
                 ->withMaxTokens( config( 'cms.ai.maxtoken', 32768 ) )
                 ->withSystemPrompt( $system )
                 ->whenProvider( 'gemini', fn( $request ) => $request->withProviderTools( [
