@@ -30,6 +30,7 @@ return new class extends Migration
         });
 
         DB::table('cms_versions')->update(['versionable_uuid' => DB::raw('cms_versions.versionable_id')]);
+        DB::table('cms_versions')->update(['data->related_id' => null]);
 
         $schema->dropColumns('cms_versions', 'versionable_id');
 
