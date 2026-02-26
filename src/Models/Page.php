@@ -603,7 +603,7 @@ class Page extends Model
     protected function relatedId(): Attribute
     {
         return Attribute::make(
-            set: fn( $value ) => !empty( $value) ? (int) $value : null,
+            set: fn( $value ) => !empty( $value) ? (string) $value : null,
         );
     }
 
