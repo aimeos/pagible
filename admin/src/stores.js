@@ -122,6 +122,7 @@ export const useAuthStore = defineStore('auth', {
         return response.data.cmsLogout || false
       }).finally(() => {
         this.me = null
+        return apolloClient.clearStore()
       });
     },
 
