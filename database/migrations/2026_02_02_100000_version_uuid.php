@@ -28,7 +28,9 @@ return new class extends Migration
         });
 
         DB::connection($name)->table('cms_versions')->update(['versionable_uuid' => DB::raw('cms_versions.versionable_id')]);
+DB::enableQueryLog();
         DB::connection($name)->table('cms_versions')->update(['data->related_id' => null]);
+print_r(DB::getQueryLog());
 
         $schema->dropColumns('cms_versions', 'versionable_id');
 
