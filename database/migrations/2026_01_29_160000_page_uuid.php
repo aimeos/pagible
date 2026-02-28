@@ -23,6 +23,10 @@ return new class extends Migration
         $name = config('cms.db', 'sqlite');
         $schema = Schema::connection($name);
 
+        if( in_array( $schema->getColumnType('cms_pages', 'id'), ['varchar', 'char', 'uniqueidentifier', 'uuid'] ) ) {
+            return;
+        }
+
         $this->copyPagesTable();
 
 
@@ -55,16 +59,26 @@ return new class extends Migration
             'page_uuid' => DB::raw('(SELECT id FROM cms_pages_new WHERE cms_pages_new.oid = cms_page_search.page_id)')
         ]);
 
-        DB::connection($name)->table('cms_pages_new as p')
-            ->join('cms_versions as v', 'p.oid', '=', 'v.versionable_id')
-            ->where('v.versionable_type', 'Aimeos\\Cms\\Models\\Page')
-            ->select('v.id as version_id', 'p.id as page_id')
-            ->orderBy('v.id')
-            ->chunk(100, function ($rows) use ($name) {
-                foreach ($rows as $row) {
-                    DB::connection($name)->table('cms_versions')
-                        ->where('id', $row->version_id)
-                        ->update(['versionable_id' => $row->page_id]);
+        DB::connection($name)->table('cms_versions')
+            ->where('versionable_type', 'Aimeos\Cms\Models\Page')
+            ->orderBy('id')
+            ->chunk(100, function ($versions) use ($name) {
+                $versionableIds = $versions->pluck('versionable_id')->unique()->map(fn($id) => (int) $id)->all();
+
+                $mapping = DB::connection($name)
+                    ->table('cms_pages_new')
+                    ->select('id', 'oid')
+                    ->whereIn('oid', $versionableIds)
+                    ->pluck('id', 'oid');
+
+                foreach ($versions as $version)
+                {
+                    if ($newId = $mapping->get($version->versionable_id))
+                    {
+                        DB::connection($name)->table('cms_versions')
+                            ->where('id', $version->id)
+                            ->update(['versionable_id' => (string) $newId]);
+                    }
                 }
             });
 

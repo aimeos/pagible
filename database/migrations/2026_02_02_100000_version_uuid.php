@@ -24,6 +24,7 @@ return new class extends Migration
 
         $schema->table('cms_versions', function (Blueprint $table) {
             $table->uuid('versionable_uuid')->nullable()->after('versionable_id');
+            $table->dropIndex('idx_versions_id_type_created_tenantid');
         });
 
         DB::connection($name)->table('cms_versions')->update(['versionable_uuid' => DB::raw('cms_versions.versionable_id')]);
@@ -33,6 +34,7 @@ return new class extends Migration
 
         $schema->table('cms_versions', function (Blueprint $table) {
             $table->renameColumn('versionable_uuid', 'versionable_id');
+            $table->index(['versionable_id', 'versionable_type', 'created_at', 'tenant_id'], 'idx_versions_id_type_created_tenantid');
         });
     }
 
