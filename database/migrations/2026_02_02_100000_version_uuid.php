@@ -22,10 +22,6 @@ return new class extends Migration
         $name = config('cms.db', 'sqlite');
         $schema = Schema::connection($name);
 
-        if( in_array( $schema->getColumnType('cms_versions', 'versionable_id'), ['varchar', 'char', 'uniqueidentifier', 'uuid'] ) ) {
-            return;
-        }
-
         $schema->table('cms_versions', function (Blueprint $table) {
             $table->uuid('versionable_uuid')->nullable()->after('versionable_id');
         });

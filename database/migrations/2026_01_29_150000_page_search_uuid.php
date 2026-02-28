@@ -23,10 +23,6 @@ return new class extends Migration
         $name = config('cms.db', 'sqlite');
         $schema = Schema::connection($name);
 
-        if( in_array( $schema->getColumnType('cms_page_search', 'id'), ['varchar', 'char', 'uniqueidentifier', 'uuid'] ) ) {
-            return;
-        }
-
         $schema->create( 'cms_page_search_new', function ( Blueprint $table ) {
             $collation = match( Schema::getConnection()->getDriverName() ) {
                 'mysql' => 'utf8mb4_bin',

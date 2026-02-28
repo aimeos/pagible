@@ -23,10 +23,6 @@ return new class extends Migration
         $name = config('cms.db', 'sqlite');
         $schema = Schema::connection($name);
 
-        if( in_array( $schema->getColumnType('cms_pages', 'id'), ['varchar', 'char', 'uniqueidentifier', 'uuid'] ) ) {
-            return;
-        }
-
         $this->copyPagesTable();
 
 
