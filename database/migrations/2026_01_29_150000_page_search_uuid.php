@@ -52,12 +52,16 @@ return new class extends Migration
             }
         } );
 
-        DB::connection($name)->table('cms_page_search_new')->insert(
-            DB::connection($name)->table('cms_page_search')->get()->map(function ($row) {
-                $row->id = Str::uuid()->toString();
-                return (array) $row;
-            })->toArray()
-        );
+        DB::connection($name)->table('cms_page_search')
+            ->orderBy('id')
+            ->chunk(100, function ($rows) use ($name) {
+                DB::connection($name)->table('cms_page_search_new')->insert(
+                    $rows->map(function ($row) {
+                        $row->id = Str::uuid()->toString();
+                        return (array) $row;
+                    })->toArray()
+                );
+            });
 
         $schema->dropIfExists('cms_page_search');
         $schema->rename('cms_page_search_new', 'cms_page_search');

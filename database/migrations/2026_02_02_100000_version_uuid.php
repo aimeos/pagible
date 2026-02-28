@@ -22,21 +22,18 @@ return new class extends Migration
         $name = config('cms.db', 'sqlite');
         $schema = Schema::connection($name);
 
-        if( in_array( $schema->getColumnType('cms_versions', 'versionable_id'), ['varchar', 'char', 'uniqueidentifier', 'uuid'] ) ) {
-            return;
-        }
-
         $schema->table('cms_versions', function (Blueprint $table) {
             $table->uuid('versionable_uuid')->nullable()->after('versionable_id');
+            $table->dropIndex('idx_versions_id_type_created_tenantid');
         });
 
         DB::connection($name)->table('cms_versions')->update(['versionable_uuid' => DB::raw('cms_versions.versionable_id')]);
-        DB::connection($name)->table('cms_versions')->update(['data->related_id' => null]);
 
         $schema->dropColumns('cms_versions', 'versionable_id');
 
         $schema->table('cms_versions', function (Blueprint $table) {
             $table->renameColumn('versionable_uuid', 'versionable_id');
+            $table->index(['versionable_id', 'versionable_type', 'created_at', 'tenant_id'], 'idx_versions_id_type_created_tenantid');
         });
     }
 
