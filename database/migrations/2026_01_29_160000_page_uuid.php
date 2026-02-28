@@ -23,7 +23,11 @@ return new class extends Migration
         $name = config('cms.db', 'sqlite');
         $schema = Schema::connection($name);
 
-        $this->copyPagesTable();
+        if( in_array( $schema->getColumnType('cms_pages', 'id'), ['varchar', 'char', 'uniqueidentifier', 'uuid'] ) ) {
+            return;
+        }
+
+        $this->copyPages($name);
 
 
         // Add UUID columns
@@ -55,18 +59,7 @@ return new class extends Migration
             'page_uuid' => DB::raw('(SELECT id FROM cms_pages_new WHERE cms_pages_new.oid = cms_page_search.page_id)')
         ]);
 
-        DB::connection($name)->table('cms_pages_new as p')
-            ->join('cms_versions as v', 'p.oid', '=', 'v.versionable_id')
-            ->where('v.versionable_type', 'Aimeos\\Cms\\Models\\Page')
-            ->select('v.id as version_id', 'p.id as page_id')
-            ->orderBy('v.id')
-            ->chunk(100, function ($rows) use ($name) {
-                foreach ($rows as $row) {
-                    DB::connection($name)->table('cms_versions')
-                        ->where('id', $row->version_id)
-                        ->update(['versionable_id' => $row->page_id]);
-                }
-            });
+        $this->updateVersions($name);
 
 
         // Remove old primary / foreign keys
@@ -135,9 +128,8 @@ return new class extends Migration
     }
 
 
-    protected function copyPagesTable()
+    protected function copyPages(string $name)
     {
-        $name = config('cms.db', 'sqlite');
         Schema::connection($name)->create('cms_pages_new', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->bigInteger('oid');
@@ -215,6 +207,43 @@ return new class extends Migration
                     DB::connection($name)->table('cms_pages_new')
                         ->where('orid', $row->orid)
                         ->update(['related_id' => $row->id]);
+                }
+            });
+    }
+
+
+    protected function updateVersions(string $name)
+    {
+        DB::connection($name)->table('cms_versions')
+            ->select('id', 'versionable_id', 'data')
+            ->where('versionable_type', 'Aimeos\Cms\Models\Page')
+            ->orderBy('id')
+            ->chunk(100, function ($versions) use ($name) {
+                $versions = $versions->map(function($version) {
+                    $version->data = json_decode($version->data);
+                    return $version;
+                });
+                $versionableIds = $versions->pluck('versionable_id')->map(fn($id) => (int) $id);
+                $relatedIds = $versions->pluck('data.related_id')->filter()->map(fn($id) => (int) $id);
+
+                $mapping = DB::connection($name)
+                    ->table('cms_pages_new')
+                    ->select('id', 'oid')
+                    ->whereIn('oid', $versionableIds->merge($relatedIds)->unique()->all())
+                    ->pluck('id', 'oid');
+
+                foreach ($versions as $version)
+                {
+                    if ($newId = $mapping->get($version->versionable_id))
+                    {
+                        if($relid = $version->data->related_id ?? null) {
+                            $version->data->related_id = $mapping->get((int) $relid);
+                        }
+
+                        DB::connection($name)->table('cms_versions')
+                            ->where('id', $version->id)
+                            ->update(['versionable_id' => (string) $newId, 'data' => json_encode($version->data)]);
+                    }
                 }
             });
     }
