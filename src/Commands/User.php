@@ -8,6 +8,7 @@
 namespace Aimeos\Cms\Commands;
 
 use Aimeos\Cms\Permission;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Foundation\Auth\User as BaseUser;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Console\Command;
@@ -57,11 +58,11 @@ class User extends Command
         }
 
         if( $this->option( 'add' ) ) {
-            $user = Permission::add( $this->permissions( $this->option( 'add' ) ), $user );
+            $user = Permission::add( $this->permissions( $this->option( 'add' ) ), $user ); // @phpstan-ignore-line argument.type
         }
 
         if( $this->option( 'remove' ) ) {
-            $user = Permission::del( $this->permissions( $this->option( 'remove' ) ), $user );
+            $user = Permission::del( $this->permissions( $this->option( 'remove' ) ), $user ); // @phpstan-ignore-line argument.type
         }
 
         if( $this->option( 'disable' ) ) {
@@ -69,7 +70,7 @@ class User extends Command
         }
 
         if( $this->input->hasParameterOption( '--password' ) ) {
-            $user->password = Hash::make( $this->option( 'password' ) ?: $this->secret( 'Password' ) );
+            $user->password = Hash::make( $this->option( 'password' ) ?: $this->secret( 'Password' ) ); // @phpstan-ignore-line property.notFound
         }
 
         $user->save();
@@ -102,9 +103,9 @@ class User extends Command
     /**
      * Lists the permissions of the given user.
      *
-     * @param BaseUser|null $user Laravel user object or NULL if the user was not found
+     * @param Authenticatable|null $user Laravel user object or NULL if the user was not found
      */
-    protected function list( ?BaseUser $user ) : void
+    protected function list( ?Authenticatable $user ) : void
     {
         if( !$user ) {
             $this->error( 'User not found!' );
@@ -132,8 +133,8 @@ class User extends Command
     /**
      * Returns the actions for the given names or patterns.
      *
-     * @param array|string $action Name(s) or pattern(s) of the requested action(s), e.g. "page:view", "page:*" or "*:view"
-     * @return array List of action names
+     * @param array<string>|string $action Name(s) or pattern(s) of the requested action(s), e.g. "page:view", "page:*" or "*:view"
+     * @return array<string> List of action names
      */
     protected function permissions( array|string $action ) : array
     {

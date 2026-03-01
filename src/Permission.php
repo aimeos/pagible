@@ -87,7 +87,7 @@ class Permission
     /**
      * Adds the permission for the requested action to the user.
      *
-     * @param array|string $action Name(s) of the requested action(s), e.g. "page:view"
+     * @param array<string>|string $action Name(s) of the requested action(s), e.g. "page:view"
      * @param Authenticatable $user Laravel user object
      * @return Authenticatable Updated Laravel user object with the new permission
      */
@@ -97,7 +97,7 @@ class Permission
             return $closure( $action, $user );
         }
 
-        $user->cmseditor ??= 0;
+        $user->cmseditor ??= 0; // @phpstan-ignore-line property.notFound
 
         foreach( (array) $action as $name ) {
             $user->cmseditor |= self::$can[$name] ?? 0;
@@ -144,7 +144,7 @@ class Permission
     /**
      * Removes the permission for the requested action from the user.
      *
-     * @param array|string $action Name(s) of the requested action(s), e.g. "page:view"
+     * @param array<string>|string $action Name(s) of the requested action(s), e.g. "page:view"
      * @param Authenticatable $user Laravel user object
      * @return Authenticatable Updated Laravel user object with the removed permission
      */
@@ -154,7 +154,7 @@ class Permission
             return $closure( $action, $user );
         }
 
-        $user->cmseditor ??= 0;
+        $user->cmseditor ??= 0; // @phpstan-ignore-line property.notFound
 
         foreach( (array) $action as $name ) {
             $user->cmseditor &= ~( self::$can[$name] ?? 0 );
