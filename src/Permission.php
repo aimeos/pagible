@@ -73,6 +73,50 @@ class Permission
      */
     public static ?\Closure $callback = null;
 
+    /**
+     * Anonymous callback which adds permissions.
+     */
+    public static ?\Closure $addCallback = null;
+
+    /**
+     * Anonymous callback which removes permissions.
+     */
+    public static ?\Closure $delCallback = null;
+
+
+    /**
+     * Adds the permission for the requested action to the user.
+     *
+     * @param array<string>|string $action Name(s) of the requested action(s), e.g. "page:view"
+     * @param Authenticatable $user Laravel user object
+     * @return Authenticatable Updated Laravel user object with the new permission
+     */
+    public static function add( array|string $action, Authenticatable $user ) : Authenticatable
+    {
+        if( $closure = self::$addCallback ) {
+            return $closure( $action, $user );
+        }
+
+        $user->cmseditor ??= 0; // @phpstan-ignore-line property.notFound
+
+        foreach( (array) $action as $name ) {
+            $user->cmseditor |= self::$can[$name] ?? 0;
+        }
+
+        return $user;
+    }
+
+
+    /**
+     * Returns the list of all available actions.
+     *
+     * @return array<int, string> List of action names
+     */
+    public static function all(): array
+    {
+        return array_keys( self::$can );
+    }
+
 
     /**
      * Checks if the user has the permission for the requested action.
@@ -87,13 +131,36 @@ class Permission
             return $closure( $action, $user );
         }
 
-        $cmseditor = (int) $user?->cmseditor; // @phpstan-ignore-line property.notFound
+        $cmseditor = $user->cmseditor ?? 0;
 
         if( $action === '*' ) {
             return $cmseditor > 0;
         }
 
         return (bool) ( ( self::$can[$action] ?? 0 ) & $cmseditor );
+    }
+
+
+    /**
+     * Removes the permission for the requested action from the user.
+     *
+     * @param array<string>|string $action Name(s) of the requested action(s), e.g. "page:view"
+     * @param Authenticatable $user Laravel user object
+     * @return Authenticatable Updated Laravel user object with the removed permission
+     */
+    public static function del( array|string $action, Authenticatable $user ) : Authenticatable
+    {
+        if( $closure = self::$delCallback ) {
+            return $closure( $action, $user );
+        }
+
+        $user->cmseditor ??= 0; // @phpstan-ignore-line property.notFound
+
+        foreach( (array) $action as $name ) {
+            $user->cmseditor &= ~( self::$can[$name] ?? 0 );
+        }
+
+        return $user;
     }
 
 
