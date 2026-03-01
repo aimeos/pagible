@@ -70,6 +70,12 @@ class CommandTest extends TestAbstract
         $this->artisan('cms:user', ['-a' => '*:view', 'email' => 'test@example.com'])->assertExitCode( 0 );
         $this->assertEquals( 0b00000000_00000000_00000000_00000000_00000000_00000001_00000001_00000001, User::where('email', 'test@example.com')->get()->first()?->cmseditor );
 
+        $this->artisan('cms:user', ['-a' => ['*:view', '*:publish'], 'email' => 'test@example.com'])->assertExitCode( 0 );
+        $this->assertEquals( 0b00000000_00000000_00000000_00000000_00000000_01000001_01000001_01000001, User::where('email', 'test@example.com')->get()->first()?->cmseditor );
+
+        $this->artisan('cms:user', ['-r' => ['*:view', '*:publish'], 'email' => 'test@example.com'])->assertExitCode( 0 );
+        $this->assertEquals( 0, User::where('email', 'test@example.com')->get()->first()?->cmseditor );
+
         $this->artisan('cms:user', ['-r' => '*:view', 'email' => 'test@example.com'])->assertExitCode( 0 );
         $this->assertEquals( 0, User::where('email', 'test@example.com')->get()->first()?->cmseditor );
 
