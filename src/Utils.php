@@ -59,6 +59,67 @@ class Utils
 
 
     /**
+     * Validates an URL, allowing relative paths and absolute http(s) URLs.
+     *
+     * Rejects protocol-relative URLs (//evil.com), non-http schemes (javascript:, data:),
+     * and paths containing control characters.
+     *
+     * @param string|null $url The URL to validate
+     * @param bool $strict Whether to apply strict validation rules
+     * @return bool True if the URL is valid, false otherwise
+     */
+    public static function isValidUrl( ?string $url, bool $strict = true ) : bool
+    {
+        if( empty( $url ) ) {
+            return true;
+        }
+
+        if( strlen( $url ) > 2048 ) {
+            return false;
+        }
+
+        if( ( $parsed = parse_url( $url ) ) === false ) {
+            return false;
+        }
+
+        // Reject whitespace and control characters in the raw URL
+        if( preg_match( '/[\x00-\x20\x7F]/', $url ) ) {
+            return false;
+        }
+
+        // Reject protocol-relative URLs (//evil.com)
+        if( str_starts_with( $url, '//' ) ) {
+            return false;
+        }
+
+        // Reject paths with directory traversal
+        if( !empty( $parsed['path'] ) && str_contains( $parsed['path'], '..' ) ) {
+            return false;
+        }
+
+        // Relative and absolute paths (no scheme) are valid
+        if( !$strict && empty( $parsed['scheme'] ) && empty( $parsed['host'] ) ) {
+            return true;
+        }
+
+        if( empty( $parsed['scheme'] ) || !in_array( $parsed['scheme'], ['http', 'https'] ) ) {
+            return false;
+        }
+
+        // For http/https URLs, always validate the host
+        if( empty( $parsed['host'] ) || !filter_var( $parsed['host'], FILTER_VALIDATE_DOMAIN, FILTER_FLAG_HOSTNAME ) ) {
+            return false;
+        }
+
+        // Strict: DNS lookup and reject private/reserved IPs
+        return collect( @dns_get_record( $parsed['host'], DNS_A + DNS_AAAA ) ?: [] )
+            ->map( fn( $r ) => $r['ip'] ?? $r['ipv6'] ?? null )
+            ->filter( fn( $ip ) => $ip && filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE ) )
+            ->first() !== null;
+    }
+
+
+    /**
      * Determines the MIME type of a file located at the given path or URL.
      *
      * @param string $path The file path or URL
@@ -69,7 +130,7 @@ class Utils
     {
         if( str_starts_with( $path, 'http') )
         {
-            if( !filter_var( $path, FILTER_VALIDATE_URL ) ) {
+            if( !self::isValidUrl( $path ) ) {
                 throw new \RuntimeException( 'Invalid URL' );
             }
 
