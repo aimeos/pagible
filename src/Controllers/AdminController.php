@@ -11,7 +11,6 @@ use Illuminate\Http\Client\Response as ClientResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
@@ -48,12 +47,6 @@ class AdminController extends Controller
      */
     public function proxy(Request $request): SymfonyResponse
     {
-        $url = (string) $request->query('url');
-
-        if (!$this->isValidUrl($url)) {
-            abort(400, 'Invalid or missing URL');
-        }
-
         $method = strtoupper($request->method());
 
         if ($method === 'OPTIONS') {
@@ -64,7 +57,13 @@ class AdminController extends Controller
             abort(405, "Unsupported HTTP method: $method");
         }
 
+        $url = (string) $request->query('url');
         $range = $request->header('Range') ?: null;
+
+        if (!\Aimeos\Cms\Utils::isValidUrl($url)) {
+            abort(400, 'Invalid or missing URL');
+        }
+
         $response = $this->fetch($url, $method, $range);
         $headers = $this->buildHeaders($response, $range);
 
@@ -128,15 +127,6 @@ class AdminController extends Controller
      */
     protected function fetch(string $url, string $method, ?string $range): ClientResponse
     {
-        $host = parse_url($url, PHP_URL_HOST);
-
-        if (!$host || !($ip = $this->ip($host))) {
-            abort(400, 'Invalid or inaccessible host');
-        }
-
-        $scheme = parse_url($url, PHP_URL_SCHEME);
-        $path = parse_url($url, PHP_URL_PATH) ?? '/';
-        $query = parse_url($url, PHP_URL_QUERY);
         $headers = [
             'User-Agent' => 'Pagible-Proxy/1.0',
             'Accept-Encoding' => 'identity',
@@ -153,58 +143,6 @@ class AdminController extends Controller
                 'verify' => true
             ])
             ->send($method, $url);
-    }
-
-
-    /**
-     * Resolve the IP address of the given host, caching the result.
-     *
-     * @param string $host
-     * @return string|null
-     */
-    protected function ip(string $host): ?string
-    {
-        return Cache::remember("cmsproxy:$host", 60, function () use ($host) {
-            return collect(dns_get_record($host, DNS_A + DNS_AAAA) ?: [])
-                ->map(fn($r) => $r['ip'] ?? $r['ipv6'] ?? null)
-                ->filter(fn($ip) =>
-                    $ip && filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)
-                )->first();
-        });
-    }
-
-
-    /**
-     * Validate the given URL.
-     *
-     * @param string|null $url
-     * @return bool
-     */
-    protected function isValidUrl(?string $url): bool
-    {
-        if (!$url || strlen($url) > 2048) {
-            return false;
-        }
-
-        if (!filter_var($url, FILTER_VALIDATE_URL)) {
-            return false;
-        }
-
-        $parsed = parse_url($url);
-
-        if (!in_array($parsed['scheme'] ?? '', ['http', 'https'])) {
-            return false;
-        }
-
-        if (empty($parsed['host']) || !filter_var($parsed['host'], FILTER_VALIDATE_DOMAIN, FILTER_FLAG_HOSTNAME)) {
-            return false;
-        }
-
-        if (!empty($parsed['path']) && preg_match('/(\.\.|[\x00-\x1F\x7F])/', $parsed['path'])) {
-            return false;
-        }
-
-        return true;
     }
 
 

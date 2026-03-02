@@ -62,6 +62,10 @@ final class SavePage
      */
     protected function sanitize( array $input ) : array
     {
+        if( !\Aimeos\Cms\Utils::isValidUrl( $input['to'] ?? null, false ) ) {
+            throw new Error( 'Invalid URL in "to" field' );
+        }
+
         if( !Permission::can( 'config:page', Auth::user() ) ) {
             unset( $input['config'] );
         }

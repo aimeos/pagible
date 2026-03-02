@@ -152,7 +152,7 @@ class File extends Model
      * @param UploadedFile|string $resource File upload or URL to the file
      * @return self The current instance for method chaining
      */
-    public function addPreviews( $resource ) : self
+    public function addPreviews( UploadedFile|string $resource ) : self
     {
         $sizes = config( 'cms.image.preview-sizes', [[]] );
         $disk = Storage::disk( config( 'cms.disk', 'public' ) );
@@ -162,7 +162,7 @@ class File extends Model
         $manager = ImageManager::withDriver( '\\Intervention\\Image\\Drivers\\' . $driver . '\Driver' );
         $ext = $manager->driver()->supports( 'image/webp' ) ? 'webp' : 'jpg';
 
-        if( is_string( $resource ) && str_starts_with( $resource, 'http' ) ) {
+        if( is_string( $resource ) && \Aimeos\Cms\Utils::isValidUrl( $resource ) ) {
             $resource = Http::withOptions( ['stream' => true] )->get( $resource )->toPsrResponse()->getBody()->detach();
         }
 
