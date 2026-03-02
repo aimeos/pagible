@@ -58,7 +58,7 @@
       <v-card>
         <v-btn v-for="item in groups[name]" :key="item.type" @click="add(item)" variant="text" stacked>
           <template v-slot:prepend>
-            <span class="icon" v-html="item.icon"></span>
+            <span class="icon" v-safe-svg="item.icon"></span>
           </template>
           {{ $pgettext('st', item.label || item.type) }}
         </v-btn>

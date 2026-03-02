@@ -5,6 +5,7 @@
 import { createPinia } from 'pinia'
 import { createApp, defineAsyncComponent } from 'vue'
 import VueObserveVisibility from 'vue3-observe-visibility'
+import DOMPurify from 'dompurify'
 import apollo from './graphql'
 
 import '@mdi/font/css/materialdesignicons.css'
@@ -20,6 +21,13 @@ import App from './App.vue'
 
 const app = createApp(App)
 const pinia = createPinia()
+
+
+app.directive('safe-svg', (el, binding) => {
+  el.innerHTML = DOMPurify.sanitize(binding.value, {
+    USE_PROFILES: { svg: true, svgFilters: true }
+  })
+})
 
 
 const fields = import.meta.glob("@/fields/*.vue")
