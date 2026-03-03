@@ -243,6 +243,24 @@ jobs:
           paths: [./vendor]
       - run: ./vendor/bin/phpstan --no-progress
 
+  "admin-unit":
+    docker:
+      - image: cypress/browsers:latest
+    working_directory: ~/project/admin
+    steps:
+      - checkout:
+          path: ~/project
+      - restore_cache:
+          keys:
+            - admin-{{ checksum "package-lock.json" }}
+      - run: npm ci
+      - save_cache:
+          key: admin-{{ checksum "package-lock.json" }}
+          paths:
+            - ./node_modules
+            - ~/.cache/Cypress
+      - run: npm run test:unit
+
 workflows:
   version: 2
   unittest:
@@ -257,3 +275,4 @@ workflows:
       - "php85-mysql"
       - "php85-pgsql"
       - "php85-phpstan"
+      - "admin-unit"
