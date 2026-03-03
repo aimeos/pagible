@@ -97,7 +97,7 @@ class Utils
             return false;
         }
 
-        // Relative and absolute paths (no scheme) are valid
+        // Relative and absolute paths (no scheme/host) are valid
         if( !$strict && empty( $parsed['scheme'] ) && empty( $parsed['host'] ) ) {
             return true;
         }

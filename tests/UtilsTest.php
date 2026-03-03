@@ -132,4 +132,89 @@ class UtilsTest extends TestAbstract
         // .invalid TLD is guaranteed by RFC 2606 to never resolve
         $this->assertFalse( Utils::isValidUrl( 'https://nonexistent.invalid', true ) );
     }
+
+
+    public function testHtmlStripsScript()
+    {
+        $result = Utils::html( '<p>Hello</p><script>alert(1)</script>' );
+
+        $this->assertStringContainsString( '<p>Hello</p>', $result );
+        $this->assertStringNotContainsString( '<script>', $result );
+    }
+
+
+    public function testHtmlStripsJavascriptHref()
+    {
+        $result = Utils::html( '<a href="javascript:void(0)">Link</a>' );
+
+        $this->assertStringNotContainsString( 'javascript:', $result );
+    }
+
+
+    public function testHtmlPreservesAllowedTags()
+    {
+        $result = Utils::html( '<strong>Bold</strong> and <em>italic</em>' );
+
+        $this->assertStringContainsString( '<strong>Bold</strong>', $result );
+        $this->assertStringContainsString( '<em>italic</em>', $result );
+    }
+
+
+    public function testHtmlAllowsTargetBlank()
+    {
+        $result = Utils::html( '<a href="https://example.com" target="_blank">Link</a>' );
+
+        $this->assertStringContainsString( 'target="_blank"', $result );
+    }
+
+
+    public function testHtmlNull()
+    {
+        $this->assertSame( '', Utils::html( null ) );
+    }
+
+
+    public function testSlugify()
+    {
+        $this->assertEquals( 'hello-world', Utils::slugify( 'Hello World' ) );
+        $this->assertEquals( 'hello-world', Utils::slugify( 'HELLO WORLD' ) );
+    }
+
+
+    public function testSlugifySpecialChars()
+    {
+        $this->assertEquals( 'foo-bar', Utils::slugify( 'foo?bar' ) );
+        $this->assertEquals( 'foo-bar', Utils::slugify( 'foo_bar' ) );
+        $this->assertEquals( 'foo-bar', Utils::slugify( 'foo..bar' ) );
+    }
+
+
+    public function testSlugifyTrimsHyphens()
+    {
+        $this->assertEquals( 'test', Utils::slugify( '-test-' ) );
+        $this->assertEquals( 'hello-world', Utils::slugify( '--Hello World--' ) );
+    }
+
+
+    public function testSlugifyUnicode()
+    {
+        $this->assertEquals( 'ällö', Utils::slugify( 'Ällö' ) );
+    }
+
+
+    public function testUidFormat()
+    {
+        $id = Utils::uid();
+
+        $this->assertEquals( 6, strlen( $id ) );
+        $this->assertMatchesRegularExpression( '/^[A-Za-z][A-Za-z0-9\-_]{5}$/', $id );
+    }
+
+
+    public function testUidUnique()
+    {
+        $ids = array_map( fn() => Utils::uid(), range( 1, 100 ) );
+
+        $this->assertCount( 100, array_unique( $ids ) );
+    }
 }

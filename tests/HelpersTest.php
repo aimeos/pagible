@@ -42,4 +42,50 @@ class HelpersTest extends TestAbstract
 		$this->assertEquals( 'http://example.com/not/exists.jpg', cmsurl( 'http://example.com/not/exists.jpg' ) );
 		$this->assertEquals( 'https://example.com/not/exists.jpg', cmsurl( 'https://example.com/not/exists.jpg' ) );
 	}
+
+
+	public function testCmsattr()
+	{
+		$this->assertEquals( 'Hello-World', cmsattr( 'Hello World' ) );
+		$this->assertEquals( 'foo-bar', cmsattr( 'foo@bar' ) );
+		$this->assertEquals( 'test123', cmsattr( 'test123' ) );
+		$this->assertEquals( 'my-attr', cmsattr( 'my-attr' ) );
+		$this->assertEquals( '', cmsattr( null ) );
+	}
+
+
+	public function testCmsviews()
+	{
+		$page = new \Aimeos\Cms\Models\Page();
+		$item = (object) ['type' => 'heading'];
+
+		$views = cmsviews( $page, $item );
+
+		$this->assertCount( 3, $views );
+		$this->assertEquals( 'heading', $views[0] );
+		$this->assertEquals( 'cms::heading', $views[1] );
+		$this->assertEquals( 'cms::invalid', $views[2] );
+	}
+
+
+	public function testCmsviewsWithTheme()
+	{
+		$page = new \Aimeos\Cms\Models\Page();
+		$page->theme = 'mytheme';
+		$item = (object) ['type' => 'card'];
+
+		$views = cmsviews( $page, $item );
+
+		$this->assertEquals( 'card', $views[0] );
+		$this->assertEquals( 'mytheme::card', $views[1] );
+		$this->assertEquals( 'cms::invalid', $views[2] );
+	}
+
+
+	public function testCmsviewsNoType()
+	{
+		$page = new \Aimeos\Cms\Models\Page();
+
+		$this->assertEquals( ['cms::invalid'], cmsviews( $page, (object) [] ) );
+	}
 }
