@@ -264,7 +264,7 @@ jobs:
     docker:
       - image: cypress/browsers:latest
     working_directory: ~/project/admin
-    parallelism: 4
+    parallelism: 3
     steps:
       - checkout:
           path: ~/project
@@ -277,8 +277,15 @@ jobs:
           paths:
             - ./.npm
             - ~/.cache/Cypress
-      - run: npx cypress run --component \
-              --spec $(circleci tests glob 'tests/**/*.cy.{js,ts}' | circleci tests split --split-by=timings | tr '\n' ',')
+      - run:
+          name: Run component tests
+          command: |
+            case $CIRCLE_NODE_INDEX in
+              0) SPECS="tests/fields/**/*.cy.{js,ts}" ;;
+              1) SPECS="tests/components/**/*.cy.{js,ts}" ;;
+              2) SPECS="tests/*.cy.{js,ts},tests/js/**/*.cy.{js,ts},tests/views/**/*.cy.{js,ts}" ;;
+            esac
+            npx cypress run --component --spec "$SPECS"
 
   "admin-e2e":
     docker:
