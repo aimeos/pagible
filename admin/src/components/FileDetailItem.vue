@@ -99,6 +99,16 @@ export default {
   },
 
   methods: {
+    painted() {
+      this.selected ? this.inpaint() : this.repaint()
+      this.menu['paint'] = false
+    },
+
+    uncropped() {
+      this.uncrop(this.extend.top, this.extend.right, this.extend.bottom, this.extend.left)
+      this.menu['uncrop'] = false
+    },
+
     addCover() {
       if (this.readonly) {
         return this.messages.add(this.$gettext('Permission denied'), 'error')
@@ -1150,15 +1160,9 @@ export default {
                   </v-card-text>
 
                   <v-card-actions>
-                    <v-btn
-                      variant="outlined"
-                      :disabled="!edittext"
-                      @click="
-                        selected ? inpaint() : repaint()
-                        menu['paint'] = false
-                      "
-                      >{{ $gettext('Edit image') }}</v-btn
-                    >
+                    <v-btn variant="outlined" :disabled="!edittext" @click="painted">{{
+                      $gettext('Edit image')
+                    }}</v-btn>
                   </v-card-actions>
                 </v-card>
               </v-dialog>
@@ -1244,14 +1248,9 @@ export default {
                   </v-card-text>
 
                   <v-card-actions>
-                    <v-btn
-                      variant="outlined"
-                      @click="
-                        uncrop(extend.top, extend.right, extend.bottom, extend.left)
-                        menu['uncrop'] = false
-                      "
-                      >{{ $gettext('Expand image') }}</v-btn
-                    >
+                    <v-btn variant="outlined" @click="uncropped">{{
+                      $gettext('Expand image')
+                    }}</v-btn>
                   </v-card-actions>
                 </v-card>
               </v-dialog>

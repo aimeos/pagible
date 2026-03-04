@@ -110,6 +110,16 @@ export default {
   },
 
   methods: {
+    published() {
+      this.publish(this.publishAt)
+      this.pubmenu = false
+    },
+
+    revertVersion(event) {
+      this.use(event)
+      this.reset()
+    },
+
     publish(at = null) {
       if (!this.auth.can('element:publish')) {
         this.messages.add(this.$gettext('Permission denied'), 'error')
@@ -371,10 +381,7 @@ export default {
         <div class="menu-content">
           <v-date-picker v-model="publishAt" hide-header show-adjacent-months />
           <v-btn
-            @click="
-              publish(publishAt)
-              pubmenu = false
-            "
+            @click="published"
             :disabled="!publishAt || error"
             :color="publishAt ? 'primary' : ''"
             variant="text"
@@ -460,10 +467,7 @@ export default {
         files: item.files
       }"
       :load="() => versions(item.id)"
-      @revert="
-        use($event)
-        reset()
-      "
+      @revert="revertVersion"
       @use="use($event)"
     />
   </Teleport>

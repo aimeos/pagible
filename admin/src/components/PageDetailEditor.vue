@@ -73,6 +73,16 @@ export default {
   },
 
   methods: {
+    addBefore() {
+      this.vschemas = true
+      this.pos = 0
+    },
+
+    addAfter() {
+      this.vschemas = true
+      this.pos = 1
+    },
+
     add(item) {
       const group = this.section || 'main'
       this.vschemas = false
@@ -209,19 +219,13 @@ export default {
       />
       <v-btn
         v-if="index !== -1"
-        @click="
-          vschemas = true
-          pos = 0
-        "
+        @click="addBefore"
         :title="$gettext('Add element before')"
         icon="mdi-table-row-plus-before"
         variant="text"
       />
       <v-btn
-        @click="
-          vschemas = true
-          pos = 1
-        "
+        @click="addAfter"
         :title="$gettext('Add element after')"
         icon="mdi-table-row-plus-after"
         variant="text"

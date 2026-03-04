@@ -187,6 +187,16 @@ export default {
   },
 
   methods: {
+    published() {
+      this.publish(this.publishAt)
+      this.pubmenu = false
+    },
+
+    revertVersion(event) {
+      this.use(event)
+      this.reset()
+    },
+
     clean(data, type) {
       if (data && type) {
         data = JSON.parse(JSON.stringify(data)) // deep copy
@@ -743,10 +753,7 @@ export default {
         <div class="menu-content">
           <v-date-picker v-model="publishAt" hide-header show-adjacent-months />
           <v-btn
-            @click="
-              publish(publishAt)
-              pubmenu = false
-            "
+            @click="published"
             :disabled="!publishAt || hasError"
             :color="publishAt ? 'primary' : ''"
             variant="text"
@@ -884,10 +891,7 @@ export default {
         files: currentAssets
       }"
       :load="() => versions(item.id)"
-      @revert="
-        use($event)
-        reset()
-      "
+      @revert="revertVersion"
       @use="use($event)"
     />
   </Teleport>

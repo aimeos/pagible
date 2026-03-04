@@ -76,6 +76,11 @@ export default {
   },
 
   methods: {
+    openSchemas() {
+      this.index = null
+      this.vschemas = true
+    },
+
     add(item, idx) {
       let entry = { id: uid(), group: this.section }
 
@@ -956,10 +961,7 @@ export default {
 
     <div v-if="auth.can('page:save')" class="btn-group">
       <v-btn
-        @click="
-          index = null
-          vschemas = true
-        "
+        @click="openSchemas"
         :title="$gettext('Add element')"
         icon="mdi-view-grid-plus"
         color="primary"

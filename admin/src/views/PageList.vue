@@ -63,6 +63,11 @@ export default {
   },
 
   methods: {
+    toggleChat() {
+      this.shortmsg = !this.shortmsg
+      this.chat = this.message
+    },
+
     languages() {
       const list = [
         {
@@ -218,10 +223,7 @@ export default {
           v-model="chat"
           :loading="synthesizing"
           :placeholder="$gettext('Describe the page and content you want to create')"
-          @dblclick="
-            shortmsg = !shortmsg
-            chat = message
-          "
+          @dblclick="toggleChat"
           variant="outlined"
           class="prompt"
           rounded="lg"
