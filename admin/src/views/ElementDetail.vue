@@ -110,23 +110,14 @@ export default {
   },
 
   methods: {
-    itemUpdated() {
-      this.$emit('update:item', this.item)
-      this.changed = true
-    },
 
     errorUpdated(event) {
       this.error = event
     },
 
-    published() {
-      this.publish(this.publishAt)
-      this.pubmenu = false
-    },
-
-    revertVersion(event) {
-      this.use(event)
-      this.reset()
+    itemUpdated() {
+      this.$emit('update:item', this.item)
+      this.changed = true
     },
 
     publish(at = null) {
@@ -186,9 +177,19 @@ export default {
       })
     },
 
+    published() {
+      this.publish(this.publishAt)
+      this.pubmenu = false
+    },
+
     reset() {
       this.changed = false
       this.error = false
+    },
+
+    revertVersion(event) {
+      this.use(event)
+      this.reset()
     },
 
     save(quiet = false) {

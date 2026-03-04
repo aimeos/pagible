@@ -33,18 +33,19 @@ export default {
   },
 
   methods: {
-    logout() {
-      this.auth.logout().finally(() => {
-        this.user = null
-        this.$router.push({ name: 'login' })
-      })
-    },
 
     change(code) {
       import(`../../i18n/${code}.json`).then((translations) => {
         this.i18n.translations = translations.default || translations
         this.$vuetify.locale.current = code
         this.i18n.current = code
+      })
+    },
+
+    logout() {
+      this.auth.logout().finally(() => {
+        this.user = null
+        this.$router.push({ name: 'login' })
       })
     }
   }

@@ -60,6 +60,7 @@ export default {
   },
 
   methods: {
+
     color(value, good, bad) {
       if (value === undefined || value === null) {
         return ''
@@ -77,11 +78,6 @@ export default {
       } catch {
         return msg
       }
-    },
-
-    slice(items, page) {
-      const start = (page - 1) * 10
-      return items.slice(start, start + 10)
     },
 
     async metrics() {
@@ -211,6 +207,11 @@ export default {
 
     percent(v) {
       return (v > 0 ? '+' : '') + Number(v).toFixed(0)
+    },
+
+    slice(items, page) {
+      const start = (page - 1) * 10
+      return items.slice(start, start + 10)
     },
 
     url(node) {

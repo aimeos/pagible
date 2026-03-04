@@ -73,15 +73,6 @@ export default {
   },
 
   methods: {
-    addBefore() {
-      this.vschemas = true
-      this.pos = 0
-    },
-
-    addAfter() {
-      this.vschemas = true
-      this.pos = 1
-    },
 
     add(item) {
       const group = this.section || 'main'
@@ -95,6 +86,16 @@ export default {
         this.element = { id: uid(), group: group, type: item.type, data: {} }
         this.vedit = true
       }
+    },
+
+    addAfter() {
+      this.vschemas = true
+      this.pos = 1
+    },
+
+    addBefore() {
+      this.vschemas = true
+      this.pos = 0
     },
 
     edit() {

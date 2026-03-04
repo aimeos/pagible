@@ -65,6 +65,7 @@ export default {
   },
 
   methods: {
+
     add() {
       this.items.push({})
       this.panel.push(this.items.length - 1)
@@ -73,38 +74,6 @@ export default {
 
     change() {
       this.$emit('update:modelValue', this.items)
-    },
-
-    writeText(idx, code) {
-      const context = [
-        'generate for field "' + (this.config.item?.[code]?.label || code) + '"',
-        'required output format is "' + this.config.item?.[code]?.type + '"',
-        this.config.item?.[code]?.min
-          ? 'minimum characters: ' + this.config.item?.[code]?.min
-          : null,
-        this.config.item?.[code]?.max
-          ? 'maximum characters: ' + this.config.item?.[code]?.max
-          : null,
-        this.config.item?.[code]?.placeholder
-          ? 'hint text: ' + this.config.item?.[code]?.placeholder
-          : null,
-        'context information as JSON: ' + JSON.stringify(this.items[idx])
-      ]
-      const prompt =
-        this.items[idx][code] ||
-        (this.items[idx]['title']
-          ? 'Write a sentence about "' + this.items[idx]['title'] + '"'
-          : '')
-
-      this.composing[idx + code] = true
-
-      this.write(prompt, context)
-        .then((result) => {
-          this.update(idx, code, result)
-        })
-        .finally(() => {
-          this.composing[idx + code] = false
-        })
     },
 
     copy(idx) {
@@ -198,6 +167,38 @@ export default {
 
       this.items[idx][code] = value
       this.$emit('update:modelValue', this.items)
+    },
+
+    writeText(idx, code) {
+      const context = [
+        'generate for field "' + (this.config.item?.[code]?.label || code) + '"',
+        'required output format is "' + this.config.item?.[code]?.type + '"',
+        this.config.item?.[code]?.min
+          ? 'minimum characters: ' + this.config.item?.[code]?.min
+          : null,
+        this.config.item?.[code]?.max
+          ? 'maximum characters: ' + this.config.item?.[code]?.max
+          : null,
+        this.config.item?.[code]?.placeholder
+          ? 'hint text: ' + this.config.item?.[code]?.placeholder
+          : null,
+        'context information as JSON: ' + JSON.stringify(this.items[idx])
+      ]
+      const prompt =
+        this.items[idx][code] ||
+        (this.items[idx]['title']
+          ? 'Write a sentence about "' + this.items[idx]['title'] + '"'
+          : '')
+
+      this.composing[idx + code] = true
+
+      this.write(prompt, context)
+        .then((result) => {
+          this.update(idx, code, result)
+        })
+        .finally(() => {
+          this.composing[idx + code] = false
+        })
     }
   },
 

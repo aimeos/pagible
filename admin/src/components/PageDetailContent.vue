@@ -60,19 +60,20 @@ export default {
   },
 
   methods: {
+
     contentUpdated(section, event) {
       this.update(section, event)
-      this.$emit('change', 'content')
-    },
-
-    mainContentUpdated(event) {
-      this.item.content = event
       this.$emit('change', 'content')
     },
 
     error(what, value) {
       this.errors[what] = value
       this.$emit('error', Object.values(this.errors).includes(true))
+    },
+
+    mainContentUpdated(event) {
+      this.item.content = event
+      this.$emit('change', 'content')
     },
 
     reset() {

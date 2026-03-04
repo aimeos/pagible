@@ -38,6 +38,7 @@ export default {
   },
 
   methods: {
+
     addFile(item) {
       if (!item?.id) {
         this.$log(`Fields::addFile(): Invalid item without ID`, item)
@@ -49,27 +50,6 @@ export default {
       files.push(item.id)
       this.assets[item.id] = item
       this.$emit('update:files', files)
-    },
-
-    writeText(code) {
-      const context = [
-        'generate for field "' + (this.fields[code].label || code) + '"',
-        'required output format is "' + this.fields[code].type + '"',
-        this.fields[code].min ? 'minimum characters: ' + this.fields[code].min : null,
-        this.fields[code].max ? 'maximum characters: ' + this.fields[code].max : null,
-        this.fields[code].placeholder ? 'hint text: ' + this.fields[code].placeholder : null,
-        'context information as JSON: ' + JSON.stringify(this.data)
-      ]
-
-      this.composing[code] = true
-
-      this.write(this.data[code] || 'Create a suitable text based on the context', context)
-        .then((result) => {
-          this.update(code, result)
-        })
-        .finally(() => {
-          this.composing[code] = false
-        })
     },
 
     error(code, value) {
@@ -137,6 +117,27 @@ export default {
     update(code, value) {
       this.data[code] = value
       this.$emit('change', this.data[code])
+    },
+
+    writeText(code) {
+      const context = [
+        'generate for field "' + (this.fields[code].label || code) + '"',
+        'required output format is "' + this.fields[code].type + '"',
+        this.fields[code].min ? 'minimum characters: ' + this.fields[code].min : null,
+        this.fields[code].max ? 'maximum characters: ' + this.fields[code].max : null,
+        this.fields[code].placeholder ? 'hint text: ' + this.fields[code].placeholder : null,
+        'context information as JSON: ' + JSON.stringify(this.data)
+      ]
+
+      this.composing[code] = true
+
+      this.write(this.data[code] || 'Create a suitable text based on the context', context)
+        .then((result) => {
+          this.update(code, result)
+        })
+        .finally(() => {
+          this.composing[code] = false
+        })
     }
   },
 

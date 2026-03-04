@@ -99,25 +99,6 @@ export default {
   },
 
   methods: {
-    descriptionUpdated(lang, event) {
-      this.item.description[lang] = event
-      this.$emit('update:item', this.item)
-    },
-
-    transcriptionUpdated(lang, event) {
-      this.item.transcription[lang] = event
-      this.$emit('update:item', this.item)
-    },
-
-    painted() {
-      this.selected ? this.inpaint() : this.repaint()
-      this.menu['paint'] = false
-    },
-
-    uncropped() {
-      this.uncrop(this.extend.top, this.extend.right, this.extend.bottom, this.extend.left)
-      this.menu['uncrop'] = false
-    },
 
     addCover() {
       if (this.readonly) {
@@ -259,6 +240,11 @@ export default {
         .finally(() => {
           this.loading.describe = false
         })
+    },
+
+    descriptionUpdated(lang, event) {
+      this.item.description[lang] = event
+      this.$emit('update:item', this.item)
     },
 
     download() {
@@ -492,6 +478,11 @@ export default {
       return canvas
     },
 
+    painted() {
+      this.selected ? this.inpaint() : this.repaint()
+      this.menu['paint'] = false
+    },
+
     record() {
       if (this.readonly) {
         return this.messages.add(this.$gettext('Permission denied'), 'error')
@@ -694,6 +685,11 @@ export default {
         })
     },
 
+    transcriptionUpdated(lang, event) {
+      this.item.transcription[lang] = event
+      this.$emit('update:item', this.item)
+    },
+
     translateText(map) {
       if (!this.auth.can('text:translate')) {
         this.messages.add(this.$gettext('Permission denied'), 'error')
@@ -829,6 +825,11 @@ export default {
             self.loading.uncrop = false
           })
       })
+    },
+
+    uncropped() {
+      this.uncrop(this.extend.top, this.extend.right, this.extend.bottom, this.extend.left)
+      this.menu['uncrop'] = false
     },
 
     update(what, value) {

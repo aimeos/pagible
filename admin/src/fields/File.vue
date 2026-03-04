@@ -61,6 +61,7 @@ export default {
   },
 
   methods: {
+
     add(file) {
       if (!this.auth.can('file:add')) {
         this.messages.add(this.$gettext('Permission denied'), 'error')
@@ -119,6 +120,16 @@ export default {
         })
     },
 
+    addFromDialog(event) {
+      this.handle(event)
+      this.vfiles = false
+    },
+
+    addFromUrl(event) {
+      this.select(event)
+      this.vurls = false
+    },
+
     handle(item, path) {
       if (!item?.id) {
         this.$log(`File::handle(): Invalid item without ID`, item)
@@ -151,16 +162,6 @@ export default {
 
       this.$emit('update:modelValue', null)
       this.file = {}
-    },
-
-    addFromDialog(event) {
-      this.handle(event)
-      this.vfiles = false
-    },
-
-    addFromUrl(event) {
-      this.select(event)
-      this.vurls = false
     },
 
     select(items) {

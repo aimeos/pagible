@@ -72,6 +72,7 @@ export default {
   },
 
   methods: {
+
     add(files) {
       if (!this.auth.can('file:add')) {
         this.messages.add(this.$gettext('Permission denied'), 'error')
@@ -151,6 +152,11 @@ export default {
       this.selected = null
     },
 
+    addFromAi(event) {
+      this.select(event)
+      this.vcreate = false
+    },
+
     change() {
       this.$emit(
         'update:modelValue',
@@ -176,11 +182,6 @@ export default {
         'update:modelValue',
         this.images.map((item) => ({ id: item.id, type: 'file' }))
       )
-    },
-
-    addFromAi(event) {
-      this.select(event)
-      this.vcreate = false
     },
 
     select(items) {

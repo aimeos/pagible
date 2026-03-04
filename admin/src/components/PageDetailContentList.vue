@@ -76,10 +76,6 @@ export default {
   },
 
   methods: {
-    openSchemas() {
-      this.index = null
-      this.vschemas = true
-    },
 
     add(item, idx) {
       let entry = { id: uid(), group: this.section }
@@ -237,6 +233,11 @@ export default {
 
       this.content.splice(idx, 0, entry)
       this.$emit('update:content', this.content)
+    },
+
+    openSchemas() {
+      this.index = null
+      this.vschemas = true
     },
 
     paste(idx = null) {

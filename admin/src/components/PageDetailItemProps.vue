@@ -46,10 +46,6 @@ export default {
   },
 
   methods: {
-    themeUpdated(event) {
-      this.update('theme', event)
-      this.item.type = ''
-    },
 
     checkPath() {
       return (
@@ -98,6 +94,11 @@ export default {
       if (!focused && this.item.path?.at(0) === '_') {
         this.updatePath(this.item.title)
       }
+    },
+
+    themeUpdated(event) {
+      this.update('theme', event)
+      this.item.type = ''
     },
 
     update(what, value) {

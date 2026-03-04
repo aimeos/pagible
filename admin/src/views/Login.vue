@@ -46,15 +46,6 @@ export default {
   },
 
   methods: {
-    toggleShow() {
-      this.show = !this.show
-    },
-
-    toggle(event) {
-      if ([13, 32].includes(event.keyCode)) {
-        this.toggleShow()
-      }
-    },
 
     cmslogin() {
       if (!this.creds.email || !this.creds.password) {
@@ -93,6 +84,16 @@ export default {
       }
 
       return url || '/'
+    },
+
+    toggle(event) {
+      if ([13, 32].includes(event.keyCode)) {
+        this.toggleShow()
+      }
+    },
+
+    toggleShow() {
+      this.show = !this.show
     }
   }
 }

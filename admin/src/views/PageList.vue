@@ -63,10 +63,6 @@ export default {
   },
 
   methods: {
-    toggleChat() {
-      this.shortmsg = !this.shortmsg
-      this.chat = this.message
-    },
 
     languages() {
       const list = [
@@ -185,6 +181,11 @@ export default {
             this.synthesizing = false
           }, 3000)
         })
+    },
+
+    toggleChat() {
+      this.shortmsg = !this.shortmsg
+      this.chat = this.message
     }
   }
 }

@@ -187,20 +187,6 @@ export default {
   },
 
   methods: {
-    pageUpdated(event) {
-      Object.assign(this.item, event)
-      this.changed.page = true
-    },
-
-    published() {
-      this.publish(this.publishAt)
-      this.pubmenu = false
-    },
-
-    revertVersion(event) {
-      this.use(event)
-      this.reset()
-    },
 
     clean(data, type) {
       if (data && type) {
@@ -224,17 +210,6 @@ export default {
       }
 
       return data
-    },
-
-    writeText(prompt, context = [], files = []) {
-      if (!Array.isArray(context)) {
-        context = [context]
-      }
-
-      context.push('page content as JSON: ' + JSON.stringify(this.item.content))
-      context.push('required output language: ' + (this.item.lang || 'en'))
-
-      return this.$options._write(prompt, context, files)
     },
 
     elems(entries) {
@@ -346,6 +321,11 @@ export default {
       return content
     },
 
+    pageUpdated(event) {
+      Object.assign(this.item, event)
+      this.changed.page = true
+    },
+
     publish(at = null) {
       if (!this.auth.can('page:publish')) {
         this.messages.add(this.$gettext('Permission denied'), 'error')
@@ -404,12 +384,22 @@ export default {
         })
     },
 
+    published() {
+      this.publish(this.publishAt)
+      this.pubmenu = false
+    },
+
     reset() {
       this.$refs.page?.reset()
       this.$refs.content?.reset()
 
       this.changed = {}
       this.errors = {}
+    },
+
+    revertVersion(event) {
+      this.use(event)
+      this.reset()
     },
 
     save(quiet = false) {
@@ -659,6 +649,17 @@ export default {
           this.messages.add(this.$gettext('Error fetching page versions') + ':\n' + error, 'error')
           this.$log(`PageDetail::versions(): Error fetching page versions`, id, error)
         })
+    },
+
+    writeText(prompt, context = [], files = []) {
+      if (!Array.isArray(context)) {
+        context = [context]
+      }
+
+      context.push('page content as JSON: ' + JSON.stringify(this.item.content))
+      context.push('required output language: ' + (this.item.lang || 'en'))
+
+      return this.$options._write(prompt, context, files)
     }
   },
 

@@ -40,6 +40,7 @@ export default {
   },
 
   methods: {
+
     base64ToBlob(base64, mimeType = 'image/png') {
       if (!base64) {
         return null
@@ -53,6 +54,10 @@ export default {
       }
 
       return new Blob([byteArray], { type: mimeType })
+    },
+
+    close() {
+      this.viewStack.pop()
     },
 
     debounce(func, delay) {
@@ -74,66 +79,6 @@ export default {
       }
     },
 
-    open(component, props = {}) {
-      if (!component) {
-        console.error('Component is not defined')
-        return
-      }
-
-      this.viewStack.push({
-        component: markRaw(component),
-        props: props || {}
-      })
-    },
-
-    close() {
-      this.viewStack.pop()
-    },
-
-    write(prompt, context = [], files = []) {
-      if (!this.auth.can('text:write')) {
-        return this.messages.add(this.$gettext('Permission denied'), 'error')
-      }
-
-      prompt = String(prompt).trim()
-
-      if (!prompt) {
-        this.messages.add(this.$gettext('Prompt is required for generating text'), 'error')
-        return Promise.resolve('')
-      }
-
-      if (!Array.isArray(context)) {
-        context = [context]
-      }
-
-      context.push('Only return the requested data without any additional information')
-
-      return this.$apollo
-        .mutate({
-          mutation: gql`
-            mutation ($prompt: String!, $context: String, $files: [String!]) {
-              write(prompt: $prompt, context: $context, files: $files)
-            }
-          `,
-          variables: {
-            prompt: prompt,
-            context: context.filter((v) => !!v).join('\n'),
-            files: files.filter((v) => !!v)
-          }
-        })
-        .then((result) => {
-          if (result.errors) {
-            throw result
-          }
-
-          return result.data?.write?.replace(/^"(.*)"$/, '$1') || ''
-        })
-        .catch((error) => {
-          this.messages.add(this.$gettext('Error generating text') + ':\n' + error, 'error')
-          this.$log(`App::write(): Error generating text`, error)
-        })
-    },
-
     locales(none = false) {
       const list = []
 
@@ -149,6 +94,18 @@ export default {
       })
 
       return list
+    },
+
+    open(component, props = {}) {
+      if (!component) {
+        console.error('Component is not defined')
+        return
+      }
+
+      this.viewStack.push({
+        component: markRaw(component),
+        props: props || {}
+      })
     },
 
     slugify(text) {
@@ -319,6 +276,50 @@ export default {
       }
 
       return this.app.urlfile.replace(/\/+$/g, '') + '/' + path
+    },
+
+    write(prompt, context = [], files = []) {
+      if (!this.auth.can('text:write')) {
+        return this.messages.add(this.$gettext('Permission denied'), 'error')
+      }
+
+      prompt = String(prompt).trim()
+
+      if (!prompt) {
+        this.messages.add(this.$gettext('Prompt is required for generating text'), 'error')
+        return Promise.resolve('')
+      }
+
+      if (!Array.isArray(context)) {
+        context = [context]
+      }
+
+      context.push('Only return the requested data without any additional information')
+
+      return this.$apollo
+        .mutate({
+          mutation: gql`
+            mutation ($prompt: String!, $context: String, $files: [String!]) {
+              write(prompt: $prompt, context: $context, files: $files)
+            }
+          `,
+          variables: {
+            prompt: prompt,
+            context: context.filter((v) => !!v).join('\n'),
+            files: files.filter((v) => !!v)
+          }
+        })
+        .then((result) => {
+          if (result.errors) {
+            throw result
+          }
+
+          return result.data?.write?.replace(/^"(.*)"$/, '$1') || ''
+        })
+        .catch((error) => {
+          this.messages.add(this.$gettext('Error generating text') + ':\n' + error, 'error')
+          this.$log(`App::write(): Error generating text`, error)
+        })
     }
   }
 }
