@@ -261,6 +261,29 @@ jobs:
             - ~/.cache/Cypress
       - run: npm run test:unit
 
+  "admin-e2e":
+    docker:
+      - image: cypress/browsers:latest
+    working_directory: ~/project/admin
+    parallelism: 4
+    steps:
+      - checkout:
+          path: ~/project
+      - restore_cache:
+          keys:
+            - admin-{{ checksum "package-lock.json" }}
+      - run: npm ci
+      - save_cache:
+          key: admin-{{ checksum "package-lock.json" }}
+          paths:
+            - ./.npm
+            - ~/.cache/Cypress
+      - run: npm run build
+      - run: npx start-server-and-test preview http://localhost:4173 \
+          "npx cypress run --spec $(circleci tests glob 'cypress/e2e/**/*.cy.{js,ts}' | circleci tests split --split-by=timings | tr '\n' ',')"
+      - store_artifacts:
+          path: cypress
+
 workflows:
   version: 2
   unittest:
@@ -276,3 +299,4 @@ workflows:
       - "php85-pgsql"
       - "php85-phpstan"
       - "admin-unit"
+      - "admin-e2e"
