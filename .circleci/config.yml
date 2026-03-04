@@ -243,9 +243,9 @@ jobs:
           paths: [./vendor]
       - run: ./vendor/bin/phpstan --no-progress
 
-  "admin-unit":
+  "admin-lint":
     docker:
-      - image: cypress/browsers:latest
+      - image: cimg/node:lts
     working_directory: ~/project/admin
     steps:
       - checkout:
@@ -253,13 +253,39 @@ jobs:
       - restore_cache:
           keys:
             - admin-{{ checksum "package-lock.json" }}
-      - run: npm ci
+      - run: npm ci --cache ~/.npm
       - save_cache:
           key: admin-{{ checksum "package-lock.json" }}
           paths:
-            - ./node_modules
+            - ./.npm
+      - run: npx eslint
+
+  "admin-unit":
+    docker:
+      - image: cypress/browsers:latest
+    working_directory: ~/project/admin
+    parallelism: 3
+    steps:
+      - checkout:
+          path: ~/project
+      - restore_cache:
+          keys:
+            - admin-{{ checksum "package-lock.json" }}
+      - run: npm ci --cache ~/.npm
+      - save_cache:
+          key: admin-{{ checksum "package-lock.json" }}
+          paths:
+            - ./.npm
             - ~/.cache/Cypress
-      - run: npm run test:unit
+      - run:
+          name: Run component tests
+          command: |
+            case $CIRCLE_NODE_INDEX in
+              0) SPECS="tests/fields/**/*.cy.{js,ts}" ;;
+              1) SPECS="tests/components/**/*.cy.{js,ts}" ;;
+              2) SPECS="tests/*.cy.{js,ts},tests/js/**/*.cy.{js,ts},tests/views/**/*.cy.{js,ts}" ;;
+            esac
+            npx cypress run --component --spec "$SPECS"
 
   "admin-e2e":
     docker:
@@ -272,7 +298,7 @@ jobs:
       - restore_cache:
           keys:
             - admin-{{ checksum "package-lock.json" }}
-      - run: npm ci
+      - run: npm ci --cache ~/.npm
       - save_cache:
           key: admin-{{ checksum "package-lock.json" }}
           paths:
@@ -298,5 +324,6 @@ workflows:
       - "php85-mysql"
       - "php85-pgsql"
       - "php85-phpstan"
+      - "admin-lint"
       - "admin-unit"
       - "admin-e2e"

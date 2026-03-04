@@ -1,13 +1,14 @@
 {
   "name": "admin",
-  "version": "0.0.0",
+  "version": "0.9.0",
   "private": true,
   "type": "module",
-  "description": "Laravel CMS admin",
+  "description": "PagibleAI CMS admin backend",
   "keywords": [
     "laravel",
     "cms",
-    "vue"
+    "vue",
+    "vuetify"
   ],
   "scripts": {
     "dev": "vite",
@@ -17,7 +18,7 @@
     "test:e2e:dev": "start-server-and-test 'vite dev --port 4173' http://localhost:4173 'cypress open --e2e'",
     "test:unit": "cypress run --component",
     "test:unit:dev": "cypress open --component",
-    "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore",
+    "lint": "eslint --fix",
     "format": "prettier --write src/",
     "gettext:extract": "vue-gettext-extract",
     "gettext:compile": "vue-gettext-compile"
@@ -51,8 +52,7 @@
   },
   "devDependencies": {
     "@mdi/font": "^7.4",
-    "@rushstack/eslint-patch": "^1.11",
-    "@vitejs/plugin-vue": "^5.2",
+"@vitejs/plugin-vue": "^5.2",
     "@vue/eslint-config-prettier": "^10.2.0",
     "cypress": "^15.10.0",
     "eslint": "^10.0",

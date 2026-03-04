@@ -15,7 +15,7 @@
   export default {
     components: {
       PageListItems,
-      PageDetail,
+      PageDetail, // eslint-disable-line vue/no-unused-components -- used programmatically via openView()
       Navigation,
       AsideList,
       User

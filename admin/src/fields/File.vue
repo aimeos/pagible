@@ -5,16 +5,14 @@
 <script>
   import gql from 'graphql-tag'
   import { useAppStore, useAuthStore, useMessageStore } from '../stores'
-  import FileListItems from '../components/FileListItems.vue'
   import FileUrlDialog from '../components/FileUrlDialog.vue'
   import FileDialog from '../components/FileDialog.vue'
   import FileDetail from '../views/FileDetail.vue'
 
   export default {
     components: {
-      FileListItems,
       FileUrlDialog,
-      FileDetail,
+      FileDetail, // eslint-disable-line vue/no-unused-components -- used programmatically via openView()
       FileDialog
     },
 

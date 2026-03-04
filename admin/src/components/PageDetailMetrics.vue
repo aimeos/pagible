@@ -12,7 +12,7 @@
 
   export default {
     components: {
-      Line
+      LineChart: Line
     },
 
     props: {
@@ -199,7 +199,7 @@
         </v-col>
       </v-row>
 
-      <v-alert v-for="err in errors"
+      <v-alert v-for="(err, idx) in errors" :key="idx"
         variant="tonal"
         border="start"
         class="panel"
@@ -314,7 +314,7 @@
           <v-card class="panel chart">
             <v-card-title>{{ $gettext('Views & Visits') }}</v-card-title>
             <v-card-text>
-              <Line
+              <LineChart
                 :options="{
                   locale: $vuetify.locale.current,
                   maintainAspectRatio: false,
@@ -387,7 +387,7 @@
           <v-card class="panel chart">
             <v-card-title>{{ $gettext('Visit Durations (minutes)') }}</v-card-title>
             <v-card-text>
-              <Line
+              <LineChart
                 :options="{
                   locale: $vuetify.locale.current,
                   maintainAspectRatio: false,
@@ -455,7 +455,7 @@
                 hide-default-footer
                 expand-on-click
                 show-expand>
-                <template v-slot:item.data-table-expand="{ internalItem, isExpanded, toggleExpand }">
+                <template #[`item.data-table-expand`]="{ internalItem, isExpanded }">
                   <v-icon v-if="internalItem.raw?.rows?.length">
                     {{ isExpanded(internalItem) ? 'mdi-chevron-up' : 'mdi-chevron-down' }}
                   </v-icon>
@@ -615,7 +615,7 @@
           <v-card class="panel chart">
             <v-card-title>{{ $gettext('Google Search: Impressions & Clicks') }}</v-card-title>
             <v-card-text>
-              <Line
+              <LineChart
                 :options="{
                   locale: $vuetify.locale.current,
                   maintainAspectRatio: false,
@@ -680,7 +680,7 @@
           <v-card class="panel chart">
             <v-card-title>{{ $gettext('Google Search: Conversions') }}</v-card-title>
             <v-card-text>
-              <Line
+              <LineChart
                 :options="{
                   locale: $vuetify.locale.current,
                   maintainAspectRatio: false,
