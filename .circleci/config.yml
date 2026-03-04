@@ -265,6 +265,7 @@ jobs:
     docker:
       - image: cypress/browsers:latest
     working_directory: ~/project/admin
+    parallelism: 4
     steps:
       - checkout:
           path: ~/project
@@ -275,9 +276,15 @@ jobs:
       - save_cache:
           key: admin-{{ checksum "package-lock.json" }}
           paths:
-            - ./node_modules
+            - ./.npm
             - ~/.cache/Cypress
-      - run: npm run test:e2e
+      - run: npm run build
+      - run: npx start-server-and-test preview http://localhost:4173 \
+          "npx cypress run --parallel --ci-build-id $CIRCLE_WORKFLOW_ID --spec $(circleci tests glob 'cypress/e2e/**/*.cy.{js,ts}' | circleci tests split --split-by=timings | tr '\n' ',')"
+      - store_artifacts:
+          path: cypress/screenshots
+      - store_artifacts:
+          path: cypress/videos
 
 workflows:
   version: 2
