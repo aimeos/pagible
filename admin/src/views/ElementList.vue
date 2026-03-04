@@ -1,69 +1,68 @@
-/**
- * @license LGPL, https://opensource.org/license/lgpl-3-0
- */
+/** @license LGPL, https://opensource.org/license/lgpl-3-0 */
 
 <script>
-  import gql from 'graphql-tag'
-  import User from '../components/User.vue'
-  import AsideList from '../components/AsideList.vue'
-  import Navigation from '../components/Navigation.vue'
-  import ElementDetail from '../views/ElementDetail.vue'
-  import ElementListItems from '../components/ElementListItems.vue'
-  import { useAuthStore, useDrawerStore } from '../stores'
+import gql from 'graphql-tag'
+import User from '../components/User.vue'
+import AsideList from '../components/AsideList.vue'
+import Navigation from '../components/Navigation.vue'
+import ElementDetail from '../views/ElementDetail.vue'
+import ElementListItems from '../components/ElementListItems.vue'
+import { useAuthStore, useDrawerStore } from '../stores'
 
-  export default {
-    components: {
-      ElementListItems,
-      ElementDetail, // eslint-disable-line vue/no-unused-components -- used programmatically via openView()
-      Navigation,
-      AsideList,
-      User
-    },
+export default {
+  components: {
+    ElementListItems,
+    ElementDetail, // eslint-disable-line vue/no-unused-components -- used programmatically via openView()
+    Navigation,
+    AsideList,
+    User
+  },
 
-    inject: ['locales', 'openView'],
+  inject: ['locales', 'openView'],
 
-    data: () => ({
-      aside: null,
-      filter: {
-        trashed: 'WITHOUT',
-        publish: null,
-        editor: null,
-        lang: null,
-      },
-    }),
+  data: () => ({
+    aside: null,
+    filter: {
+      trashed: 'WITHOUT',
+      publish: null,
+      editor: null,
+      lang: null
+    }
+  }),
 
-    setup() {
-      const drawer = useDrawerStore()
-      const auth = useAuthStore()
+  setup() {
+    const drawer = useDrawerStore()
+    const auth = useAuthStore()
 
-      return { auth, drawer }
-    },
+    return { auth, drawer }
+  },
 
-    methods: {
-      languages() {
-        const list = [{
+  methods: {
+    languages() {
+      const list = [
+        {
           title: this.$gettext('All'),
           icon: 'mdi-playlist-check',
-          value: {lang: null}
-        }]
-
-        for(const entry of this.locales()) {
-          list.push({
-            title: entry.title,
-            icon: 'mdi-translate',
-            value: {lang: entry.value} }
-          )
+          value: { lang: null }
         }
+      ]
 
-        return list
-      },
-
-
-      open(item) {
-        this.openView(ElementDetail, {item: item})
+      for (const entry of this.locales()) {
+        list.push({
+          title: entry.title,
+          icon: 'mdi-translate',
+          value: { lang: entry.value }
+        })
       }
+
+      return list
+    },
+
+    open(item) {
+      this.openView(ElementDetail, { item: item })
     }
   }
+}
 </script>
 
 <template>
@@ -101,40 +100,59 @@
     </v-container>
   </v-main>
 
-  <AsideList v-model:filter="filter" :content="[{
-      key: 'publish',
-      title: $gettext('publish'),
-      items: [
-        { title: $gettext('All'), icon: 'mdi-playlist-check', value: {'publish': null} },
-        { title: $gettext('Published'), icon: 'mdi-publish', value: {'publish': 'PUBLISHED'} },
-        { title: $gettext('Scheduled'), icon: 'mdi-clock-outline', value: {'publish': 'SCHEDULED'} },
-        { title: $gettext('Drafts'), icon: 'mdi-pencil', value: {'publish': 'DRAFT'} }
-      ]
-    }, {
-      key: 'trashed',
-      title: $gettext('trashed'),
-      items: [
-        { title: $gettext('All'), icon: 'mdi-playlist-check', value: {'trashed': 'WITH'} },
-        { title: $gettext('Available only'), icon: 'mdi-delete-off', value: {'trashed': 'WITHOUT'} },
-        { title: $gettext('Only trashed'), icon: 'mdi-delete', value: {'trashed': 'ONLY'} }
-      ]
-    }, {
-      key: 'editor',
-      title: $gettext('editor'),
-      items: [
-        { title: $gettext('All'), icon: 'mdi-playlist-check', value: {'editor': null} },
-        { title: $gettext('Edited by me'), icon: 'mdi-account', value: {'editor': this.auth.me?.email} },
-      ]
-    }, {
-      key: 'lang',
-      title: $gettext('languages'),
-      items: languages()
-    }]"
+  <AsideList
+    v-model:filter="filter"
+    :content="[
+      {
+        key: 'publish',
+        title: $gettext('publish'),
+        items: [
+          { title: $gettext('All'), icon: 'mdi-playlist-check', value: { publish: null } },
+          { title: $gettext('Published'), icon: 'mdi-publish', value: { publish: 'PUBLISHED' } },
+          {
+            title: $gettext('Scheduled'),
+            icon: 'mdi-clock-outline',
+            value: { publish: 'SCHEDULED' }
+          },
+          { title: $gettext('Drafts'), icon: 'mdi-pencil', value: { publish: 'DRAFT' } }
+        ]
+      },
+      {
+        key: 'trashed',
+        title: $gettext('trashed'),
+        items: [
+          { title: $gettext('All'), icon: 'mdi-playlist-check', value: { trashed: 'WITH' } },
+          {
+            title: $gettext('Available only'),
+            icon: 'mdi-delete-off',
+            value: { trashed: 'WITHOUT' }
+          },
+          { title: $gettext('Only trashed'), icon: 'mdi-delete', value: { trashed: 'ONLY' } }
+        ]
+      },
+      {
+        key: 'editor',
+        title: $gettext('editor'),
+        items: [
+          { title: $gettext('All'), icon: 'mdi-playlist-check', value: { editor: null } },
+          {
+            title: $gettext('Edited by me'),
+            icon: 'mdi-account',
+            value: { editor: this.auth.me?.email }
+          }
+        ]
+      },
+      {
+        key: 'lang',
+        title: $gettext('languages'),
+        items: languages()
+      }
+    ]"
   />
 </template>
 
 <style scoped>
-  .v-main {
-    overflow-y: auto;
-  }
+.v-main {
+  overflow-y: auto;
+}
 </style>

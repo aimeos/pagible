@@ -1,58 +1,63 @@
-/**
- * @license LGPL, https://opensource.org/license/lgpl-3-0
- */
+/** @license LGPL, https://opensource.org/license/lgpl-3-0 */
 
 <script>
-  import Fields from './Fields.vue'
-  import { useSchemaStore } from '../stores'
+import Fields from './Fields.vue'
+import { useSchemaStore } from '../stores'
 
-  export default {
-    components: {
-      Fields,
-    },
+export default {
+  components: {
+    Fields
+  },
 
-    props: {
-      'modelValue': {type: Boolean, required: true},
-      'readonly': {type: Boolean, default: false},
-      'element': {type: Object, required: true},
-      'assets': {type: Object, default: () => ({})},
-      'type': {type: String, default: 'content'},
-    },
+  props: {
+    modelValue: { type: Boolean, required: true },
+    readonly: { type: Boolean, default: false },
+    element: { type: Object, required: true },
+    assets: { type: Object, default: () => ({}) },
+    type: { type: String, default: 'content' }
+  },
 
-    emits: ['update:modelValue', 'update:element'],
+  emits: ['update:modelValue', 'update:element'],
 
-    setup() {
-      const schemas = useSchemaStore()
-      return { schemas }
-    },
+  setup() {
+    const schemas = useSchemaStore()
+    return { schemas }
+  },
 
-    data() {
-      return {
-        error: false,
-      }
-    },
-
-    methods: {
-      fields(type) {
-        if(!this.schemas[this.type] || !this.schemas[this.type][type]?.fields) {
-          console.warn(`No definition of fields for "${type}" (${this.type}) schemas`)
-          return []
-        }
-
-        return this.schemas.content[type]?.fields
-      }
+  data() {
+    return {
+      error: false
     }
+  },
+
+  methods: {
+    fields(type) {
+      if (!this.schemas[this.type] || !this.schemas[this.type][type]?.fields) {
+        console.warn(`No definition of fields for "${type}" (${this.type}) schemas`)
+        return []
+      }
+
+      return this.schemas.content[type]?.fields
+    }
+  }
 }
 </script>
 
 <template>
-  <v-dialog :modelValue="modelValue" @afterLeave="$emit('update:modelValue', false)" max-width="1200" scrollable>
+  <v-dialog
+    :modelValue="modelValue"
+    @afterLeave="$emit('update:modelValue', false)"
+    max-width="1200"
+    scrollable
+  >
     <v-card>
       <template v-slot:append>
-        <v-btn v-if="!readonly && !error && element._changed"
+        <v-btn
+          v-if="!readonly && !error && element._changed"
           @click="$emit('update:element', element)"
           variant="outlined"
-        >{{ $gettext('Save') }}</v-btn>
+          >{{ $gettext('Save') }}</v-btn
+        >
         <v-btn
           @click="$emit('update:modelValue', false)"
           :title="$gettext('Close')"
@@ -82,5 +87,4 @@
   </v-dialog>
 </template>
 
-<style scoped>
-</style>
+<style scoped></style>

@@ -10,13 +10,14 @@ export function recording() {
   let active = false
   const chunks = []
 
-
   return {
     async start() {
       if (active) return
       active = true
 
-      const blob = new Blob([`
+      const blob = new Blob(
+        [
+          `
         class RecorderProcessor extends AudioWorkletProcessor {
           process(inputs) {
             const input = inputs[0]
@@ -25,7 +26,10 @@ export function recording() {
           }
         }
         registerProcessor('recorder-processor', RecorderProcessor)
-      `], {type: 'application/javascript'})
+      `
+        ],
+        { type: 'application/javascript' }
+      )
 
       audioContext = new AudioContext()
       await audioContext.audioWorklet.addModule(URL.createObjectURL(blob))
@@ -44,7 +48,6 @@ export function recording() {
       return this
     },
 
-
     async stop() {
       if (!active || !node || !source) return
       active = false
@@ -62,7 +65,7 @@ export function recording() {
         offset += chunk.length
       }
 
-      if(!buffer.length) return null
+      if (!buffer.length) return null
 
       const context = new AudioContext()
       const audioBuffer = context.createBuffer(
@@ -78,7 +81,6 @@ export function recording() {
   }
 }
 
-
 /**
  * Converts the audio data to a MP3 file (mono).
  *
@@ -90,19 +92,21 @@ export async function toMp3(input) {
   const channels = []
   let audioBuffer
 
-  if(input instanceof AudioBuffer) {
+  if (input instanceof AudioBuffer) {
     audioBuffer = input
-  } else if(input instanceof ArrayBuffer) {
+  } else if (input instanceof ArrayBuffer) {
     audioBuffer = await context.decodeAudioData(input)
-  } else if(typeof input === 'string' || input instanceof URL) {
+  } else if (typeof input === 'string' || input instanceof URL) {
     audioBuffer = await context.decodeAudioData(await (await fetch(input)).arrayBuffer())
-  } else if(input instanceof Blob) {
+  } else if (input instanceof Blob) {
     audioBuffer = await context.decodeAudioData(await input.arrayBuffer())
   } else {
-    throw new Error('toMp3(): Unsupported input type. Expected URL, Blob, ArrayBuffer, or AudioBuffer.')
+    throw new Error(
+      'toMp3(): Unsupported input type. Expected URL, Blob, ArrayBuffer, or AudioBuffer.'
+    )
   }
 
-  for(let i = 0; i < audioBuffer.numberOfChannels; i++) {
+  for (let i = 0; i < audioBuffer.numberOfChannels; i++) {
     channels.push(audioBuffer.getChannelData(i))
   }
 
@@ -110,15 +114,16 @@ export async function toMp3(input) {
 
   return new Promise((resolve) => {
     worker.onmessage = (e) => resolve(e.data)
-    worker.postMessage({
+    worker.postMessage(
+      {
         channels, // audioBuffer itself isn't transferable
         length: audioBuffer.length,
         sampleRate: audioBuffer.sampleRate
-      }, channels.map(c => c.buffer) // Transfer with zero-copy
+      },
+      channels.map((c) => c.buffer) // Transfer with zero-copy
     )
   })
 }
-
 
 /**
  * Transcribes a list of audio segments into text.
@@ -128,8 +133,8 @@ export async function toMp3(input) {
  */
 export function transcription(list = []) {
   return {
-    asText(sep = "\n") {
-      return list.map(e => e.text ?? '').join(sep);
+    asText(sep = '\n') {
+      return list.map((e) => e.text ?? '').join(sep)
     },
 
     /**
@@ -137,22 +142,27 @@ export function transcription(list = []) {
      * Expects list items to have { start, end, text } structure
      */
     asVTT() {
-      return 'WEBVTT\n\n' + list.map((item, i) => {
-        const { start = 0, end = 0, text = '' } = item;
+      return (
+        'WEBVTT\n\n' +
+        list
+          .map((item, i) => {
+            const { start = 0, end = 0, text = '' } = item
 
-        const formatTime = (s) => {
-            const ms = Math.floor((s % 1) * 1000);
-            const totalSeconds = Math.floor(s);
+            const formatTime = (s) => {
+              const ms = Math.floor((s % 1) * 1000)
+              const totalSeconds = Math.floor(s)
 
-            const hours = String(Math.floor(totalSeconds / 3600)).padStart(2, '0');
-            const minutes = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, '0');
-            const seconds = String(totalSeconds % 60).padStart(2, '0');
+              const hours = String(Math.floor(totalSeconds / 3600)).padStart(2, '0')
+              const minutes = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, '0')
+              const seconds = String(totalSeconds % 60).padStart(2, '0')
 
-            return `${hours}:${minutes}:${seconds}.${String(ms).padStart(3, '0')}`;
-        };
+              return `${hours}:${minutes}:${seconds}.${String(ms).padStart(3, '0')}`
+            }
 
-        return `${i + 1}\n${formatTime(start)} --> ${formatTime(end)}\n${text}\n`;
-      }).join('\n');
-    },
-  };
+            return `${i + 1}\n${formatTime(start)} --> ${formatTime(end)}\n${text}\n`
+          })
+          .join('\n')
+      )
+    }
+  }
 }

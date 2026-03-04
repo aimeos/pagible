@@ -6,19 +6,86 @@ import gettext from './i18n'
 import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
 import { createVuetify } from 'vuetify'
-import { ar, bg, cs, da, de, el, en, es, et, fi, fr, he, hu, id, it, ja, ko, lt, lv, no, nl, pl, pt, ro, ru, sk, sl, sv, th, tr, uk, vi, zhHans } from 'vuetify/locale'
-
+import {
+  ar,
+  bg,
+  cs,
+  da,
+  de,
+  el,
+  en,
+  es,
+  et,
+  fi,
+  fr,
+  he,
+  hu,
+  id,
+  it,
+  ja,
+  ko,
+  lt,
+  lv,
+  no,
+  nl,
+  pl,
+  pt,
+  ro,
+  ru,
+  sk,
+  sl,
+  sv,
+  th,
+  tr,
+  uk,
+  vi,
+  zhHans
+} from 'vuetify/locale'
 
 const vuetify = createVuetify({
   components,
   directives,
   icons: {
-    defaultSet: 'mdi',
+    defaultSet: 'mdi'
   },
   locale: {
     locale: gettext.current,
     fallback: 'en',
-    messages: { ar, bg, cs, da, de, el, en, es, et, fi, fr, he, hu, id, it, ja, ko, lt, lv, no, nl, pl, pt, ro, ru, sk, sl, sv, th, tr, uk, vi, zhHans }
+    messages: {
+      ar,
+      bg,
+      cs,
+      da,
+      de,
+      el,
+      en,
+      es,
+      et,
+      fi,
+      fr,
+      he,
+      hu,
+      id,
+      it,
+      ja,
+      ko,
+      lt,
+      lv,
+      no,
+      nl,
+      pl,
+      pt,
+      ro,
+      ru,
+      sk,
+      sl,
+      sv,
+      th,
+      tr,
+      uk,
+      vi,
+      zhHans
+    }
   },
   theme: {
     defaultTheme: 'system',
@@ -32,7 +99,7 @@ const vuetify = createVuetify({
           error: '#f44038',
           success: '#00a070',
           warning: '#ffb080',
-          accent: '#ffa890',
+          accent: '#ffa890'
         }
       },
       dark: {
@@ -44,11 +111,11 @@ const vuetify = createVuetify({
           error: '#d06878',
           success: '#008040',
           warning: '#e0a080',
-          accent: '#ffa890',
+          accent: '#ffa890'
         }
       }
-    },
-  },
+    }
+  }
 })
 
 export default vuetify

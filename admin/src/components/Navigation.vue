@@ -1,28 +1,26 @@
-/**
- * @license LGPL, https://opensource.org/license/lgpl-3-0
- */
+/** @license LGPL, https://opensource.org/license/lgpl-3-0 */
 
 <script>
-  import { useDisplay } from 'vuetify'
-  import { useAuthStore, useDrawerStore } from '../stores'
+import { useDisplay } from 'vuetify'
+import { useAuthStore, useDrawerStore } from '../stores'
 
-  export default {
-    setup() {
-      const { mobile } = useDisplay()
-      const drawer = useDrawerStore()
-      const auth = useAuthStore()
+export default {
+  setup() {
+    const { mobile } = useDisplay()
+    const drawer = useDrawerStore()
+    const auth = useAuthStore()
 
-      return { auth, drawer, mobile }
-    },
+    return { auth, drawer, mobile }
+  },
 
-    methods: {
-      toggle() {
-        if(this.mobile) {
-          this.drawer.nav = !this.drawer.nav
-        }
+  methods: {
+    toggle() {
+      if (this.mobile) {
+        this.drawer.nav = !this.drawer.nav
       }
-    },
+    }
   }
+}
 </script>
 
 <template>
@@ -51,35 +49,35 @@
 </template>
 
 <style scoped>
-  .v-navigation-drawer {
-    border-top-right-radius: 8px;
-  }
+.v-navigation-drawer {
+  border-top-right-radius: 8px;
+}
 
-  .v-locale--is-rtl .v-navigation-drawer {
-    border-top-right-radius: 0;
-    border-top-left-radius: 8px;
-  }
+.v-locale--is-rtl .v-navigation-drawer {
+  border-top-right-radius: 0;
+  border-top-left-radius: 8px;
+}
 
-  :deep(.v-list-item__content) {
-    align-items: center;
-    display: flex;
-  }
+:deep(.v-list-item__content) {
+  align-items: center;
+  display: flex;
+}
 
-  a.router-link,
-  a.router-link:focus,
-  a.router-link:visited {
-    color: rgb(var(--v-theme-on-surface-light));
-    display: block;
-    width: 100%;
-    padding: 8px;
-  }
+a.router-link,
+a.router-link:focus,
+a.router-link:visited {
+  color: rgb(var(--v-theme-on-surface-light));
+  display: block;
+  width: 100%;
+  padding: 8px;
+}
 
-  .v-list-item:has(.router-link-active),
-  .v-list-item:has(.router-link-active) a {
-    background-color: rgb(var(--v-theme-surface-light));
-  }
+.v-list-item:has(.router-link-active),
+.v-list-item:has(.router-link-active) a {
+  background-color: rgb(var(--v-theme-surface-light));
+}
 
-  .v-list-item .icon {
-    font-size: 100%;
-  }
+.v-list-item .icon {
+  font-size: 100%;
+}
 </style>

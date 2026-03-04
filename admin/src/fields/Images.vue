@@ -1,109 +1,118 @@
-/**
- * @license LGPL, https://opensource.org/license/lgpl-3-0
- */
+/** @license LGPL, https://opensource.org/license/lgpl-3-0 */
 
 <script>
-  import gql from 'graphql-tag'
-  import { VueDraggable } from 'vue-draggable-plus'
-  import { useAppStore, useAuthStore } from '../stores'
-  import FileAiDialog from '../components/FileAiDialog.vue'
-  import FileUrlDialog from '../components/FileUrlDialog.vue'
-  import FileDialog from '../components/FileDialog.vue'
-  import FileDetail from '../views/FileDetail.vue'
+import gql from 'graphql-tag'
+import { VueDraggable } from 'vue-draggable-plus'
+import { useAppStore, useAuthStore } from '../stores'
+import FileAiDialog from '../components/FileAiDialog.vue'
+import FileUrlDialog from '../components/FileUrlDialog.vue'
+import FileDialog from '../components/FileDialog.vue'
+import FileDetail from '../views/FileDetail.vue'
 
-  export default {
-    components: {
-      FileDetail, // eslint-disable-line vue/no-unused-components -- used programmatically via openView()
-      FileDialog,
-      FileAiDialog,
-      FileUrlDialog,
-      VueDraggable
-    },
+export default {
+  components: {
+    FileDetail, // eslint-disable-line vue/no-unused-components -- used programmatically via openView()
+    FileDialog,
+    FileAiDialog,
+    FileUrlDialog,
+    VueDraggable
+  },
 
-    inject: ['openView', 'url', 'srcset'],
+  inject: ['openView', 'url', 'srcset'],
 
-    props: {
-      'modelValue': {type: Array, default: () => []},
-      'config': {type: Object, default: () => {}},
-      'assets': {type: Object, default: () => {}},
-      'readonly': {type: Boolean, default: false},
-      'context': {type: Object},
-    },
+  props: {
+    modelValue: { type: Array, default: () => [] },
+    config: { type: Object, default: () => {} },
+    assets: { type: Object, default: () => {} },
+    readonly: { type: Boolean, default: false },
+    context: { type: Object }
+  },
 
-    emits: ['update:modelValue', 'error', 'addFile', 'removeFile'],
+  emits: ['update:modelValue', 'error', 'addFile', 'removeFile'],
 
-    setup() {
-      const auth = useAuthStore()
-      const app = useAppStore()
+  setup() {
+    const auth = useAuthStore()
+    const app = useAppStore()
 
-      return { app, auth }
-    },
+    return { app, auth }
+  },
 
-    data() {
-      return {
-        images: [],
-        index: Math.floor(Math.random() * 100000),
-        selected: null,
-        vcreate: false,
-        vfiles: false,
-        vurls: false,
+  data() {
+    return {
+      images: [],
+      index: Math.floor(Math.random() * 100000),
+      selected: null,
+      vcreate: false,
+      vfiles: false,
+      vurls: false
+    }
+  },
+
+  computed: {
+    rules() {
+      return [
+        (v) =>
+          !this.config.min ||
+          +v?.length >= +this.config.min ||
+          this.$gettext(`Minimum is %{num} entries`, { num: this.config.min }),
+        (v) =>
+          !this.config.max ||
+          +v?.length <= +this.config.max ||
+          this.$gettext(`Maximum is %{num} entries`, { num: this.config.max })
+      ]
+    }
+  },
+
+  unmounted() {
+    this.images.forEach((item) => {
+      if (item.path?.startsWith('blob:')) {
+        URL.revokeObjectURL(item.path)
       }
-    },
+    })
+  },
 
-    computed: {
-      rules() {
-        return [
-          v => !this.config.min || +v?.length >= +this.config.min || this.$gettext(`Minimum is %{num} entries`, {num: this.config.min}),
-          v => !this.config.max || +v?.length <= +this.config.max || this.$gettext(`Maximum is %{num} entries`, {num: this.config.max})
-        ]
+  methods: {
+
+    add(files) {
+      if (!this.auth.can('file:add')) {
+        this.messages.add(this.$gettext('Permission denied'), 'error')
+        return
       }
-    },
 
-    unmounted() {
-      this.images.forEach(item => {
-        if(item.path?.startsWith('blob:')) {
-          URL.revokeObjectURL(item.path)
-        }
-      })
-    },
+      const promises = []
 
-    methods: {
-      add(files) {
-        if(!this.auth.can('file:add')) {
-          this.messages.add(this.$gettext('Permission denied'), 'error')
-          return
-        }
+      if (!files?.length) {
+        return
+      }
 
-        const promises = []
+      Array.from(files).forEach((file) => {
+        const path = URL.createObjectURL(file)
+        const idx = this.images.length
 
-        if(!files?.length) {
-          return
-        }
+        this.images[idx] = { path: path, uploading: true }
 
-        Array.from(files).forEach(file => {
-          const path = URL.createObjectURL(file)
-          const idx = this.images.length
-
-          this.images[idx] = {path: path, uploading: true}
-
-          const promise = this.$apollo.mutate({
-            mutation: gql`mutation($file: Upload!) {
-              addFile(file: $file) {
-                id
-                mime
-                name
-                path
-                previews
+        const promise = this.$apollo
+          .mutate({
+            mutation: gql`
+              mutation ($file: Upload!) {
+                addFile(file: $file) {
+                  id
+                  mime
+                  name
+                  path
+                  previews
+                }
               }
-            }`,
+            `,
             variables: {
               file: file
             },
             context: {
               hasUpload: true
             }
-          }).then(response => {
-            if(response.errors) {
+          })
+          .then((response) => {
+            if (response.errors) {
               throw response.errors
             }
 
@@ -121,95 +130,124 @@
               this.$emit('addFile', data)
               URL.revokeObjectURL(path)
             })
-          }).catch(error => {
-            this.messages.add(this.$gettext(`Error adding file %{path}`, {path: file.name}) + ":\n" + error, 'error')
+          })
+          .catch((error) => {
+            this.messages.add(
+              this.$gettext(`Error adding file %{path}`, { path: file.name }) + ':\n' + error,
+              'error'
+            )
             this.$log(`Images::addFile(): Error adding file`, ev, error)
           })
 
-          promises.push(promise)
-        })
+        promises.push(promise)
+      })
 
-        Promise.all(promises).then(() => {
-          this.$emit('update:modelValue', this.images.map(item => ({id: item.id, type: 'file'})))
-        })
+      Promise.all(promises).then(() => {
+        this.$emit(
+          'update:modelValue',
+          this.images.map((item) => ({ id: item.id, type: 'file' }))
+        )
+      })
 
-        this.selected = null
-      },
-
-
-      change() {
-        this.$emit('update:modelValue', this.images.map(item => ({id: item.id, type: 'file'})))
-      },
-
-
-      description(file) {
-        return Object.values(file.description || {}).shift()
-      },
-
-
-      open(item) {
-        this.openView(FileDetail, {item: item})
-      },
-
-
-      remove(idx) {
-        if(this.images[idx]?.id) {
-          this.$emit('removeFile', this.images[idx].id)
-        }
-
-        this.images.splice(idx, 1)
-        this.$emit('update:modelValue', this.images.map(item => ({id: item.id, type: 'file'})))
-      },
-
-
-      select(items) {
-        if(!Array.isArray(items)) {
-          items = [items]
-        }
-
-        items.forEach(item => {
-          this.images.push(item)
-          this.$emit('addFile', item)
-        })
-
-        this.$emit('update:modelValue', this.images.map(item => ({id: item.id, type: 'file'})))
-        this.vfiles = false
-        this.vurls = false
-      }
+      this.selected = null
     },
 
-    watch: {
-      modelValue: {
-        immediate: true,
-        handler(list) {
-          if(!this.images.length) {
-            for(const entry of (list || [])) {
-              if(this.assets[entry.id]) {
-                this.images.push(this.assets[entry.id])
-              }
+    addFromAi(event) {
+      this.select(event)
+      this.vcreate = false
+    },
+
+    change() {
+      this.$emit(
+        'update:modelValue',
+        this.images.map((item) => ({ id: item.id, type: 'file' }))
+      )
+    },
+
+    description(file) {
+      return Object.values(file.description || {}).shift()
+    },
+
+    open(item) {
+      this.openView(FileDetail, { item: item })
+    },
+
+    remove(idx) {
+      if (this.images[idx]?.id) {
+        this.$emit('removeFile', this.images[idx].id)
+      }
+
+      this.images.splice(idx, 1)
+      this.$emit(
+        'update:modelValue',
+        this.images.map((item) => ({ id: item.id, type: 'file' }))
+      )
+    },
+
+    select(items) {
+      if (!Array.isArray(items)) {
+        items = [items]
+      }
+
+      items.forEach((item) => {
+        this.images.push(item)
+        this.$emit('addFile', item)
+      })
+
+      this.$emit(
+        'update:modelValue',
+        this.images.map((item) => ({ id: item.id, type: 'file' }))
+      )
+      this.vfiles = false
+      this.vurls = false
+    }
+  },
+
+  watch: {
+    modelValue: {
+      immediate: true,
+      handler(list) {
+        if (!this.images.length) {
+          for (const entry of list || []) {
+            if (this.assets[entry.id]) {
+              this.images.push(this.assets[entry.id])
             }
           }
-
-          this.$emit('error', !this.rules.every(rule => {
-            return rule(this.modelValue) === true
-          }))
         }
+
+        this.$emit(
+          'error',
+          !this.rules.every((rule) => {
+            return rule(this.modelValue) === true
+          })
+        )
       }
     }
   }
+}
 </script>
 
 <template>
-  <VueDraggable v-model="images" :disabled="readonly" @update="change()" draggable=".image" group="images" class="images" animation="500">
-
-    <div v-for="(item, idx) in images" :key="idx" :class="{readonly: readonly}" class="image" @click="open(item)" :title="description(item)">
-      <v-progress-linear v-if="item.uploading"
-        color="primary"
-        height="5"
-        indeterminate
-        rounded
-      />
-      <v-img v-if="item.path"
+  <VueDraggable
+    v-model="images"
+    :disabled="readonly"
+    @update="change()"
+    draggable=".image"
+    group="images"
+    class="images"
+    animation="500"
+  >
+    <div
+      v-for="(item, idx) in images"
+      :key="idx"
+      :class="{ readonly: readonly }"
+      class="image"
+      @click="open(item)"
+      :title="description(item)"
+    >
+      <v-progress-linear v-if="item.uploading" color="primary" height="5" indeterminate rounded />
+      <v-img
+        v-if="item.path"
         :srcset="srcset(item.previews)"
         :src="url(item.path)"
         draggable="false"
@@ -217,7 +255,8 @@
 
       <v-menu v-if="item.id && !readonly" location="start">
         <template v-slot:activator="{ props }">
-          <v-btn v-bind="props"
+          <v-btn
+            v-bind="props"
             :title="$gettext('Open menu')"
             icon="mdi-dots-vertical"
             class="btn-overlay"
@@ -226,18 +265,12 @@
         </template>
         <v-list>
           <v-list-item v-if="auth.can('file:view')">
-            <v-btn
-              @click="open(item)"
-              prepend-icon="mdi-pencil"
-              variant="text">
+            <v-btn @click="open(item)" prepend-icon="mdi-pencil" variant="text">
               {{ $gettext('Edit') }}
             </v-btn>
           </v-list-item>
           <v-list-item>
-            <v-btn
-              @click="remove(idx)"
-              prepend-icon="mdi-trash-can"
-              variant="text">
+            <v-btn @click="remove(idx)" prepend-icon="mdi-trash-can" variant="text">
               {{ $gettext('Remove') }}
             </v-btn>
           </v-list-item>
@@ -247,7 +280,8 @@
 
     <div v-if="!readonly" class="add">
       <div class="icon-group">
-        <v-btn v-if="auth.can('file:view')"
+        <v-btn
+          v-if="auth.can('file:view')"
           @click="vfiles = true"
           :title="$gettext('Add files')"
           icon="mdi-button-cursor"
@@ -261,16 +295,14 @@
         />
       </div>
       <div class="icon-group">
-        <v-btn v-if="auth.can('image:imagine')"
+        <v-btn
+          v-if="auth.can('image:imagine')"
           @click="vcreate = true"
           :title="$gettext('Create file')"
           icon="mdi-creation"
           variant="text"
         />
-        <v-btn
-          :title="$gettext('Add files')"
-          icon="mdi-upload"
-          variant="text"
+        <v-btn :title="$gettext('Add files')" icon="mdi-upload" variant="text"
           ><v-file-input
             v-model="selected"
             @update:modelValue="add($event)"
@@ -285,11 +317,11 @@
   </VueDraggable>
 
   <Teleport to="body">
-    <FileDialog v-model="vfiles" @add="select($event)" :filter="{mime: 'image/'}" grid />
+    <FileDialog v-model="vfiles" @add="select($event)" :filter="{ mime: 'image/' }" grid />
   </Teleport>
 
   <Teleport to="body">
-    <FileAiDialog v-model="vcreate" @add="select($event); vcreate = false" :context="context" />
+    <FileAiDialog v-model="vcreate" @add="addFromAi" :context="context" />
   </Teleport>
 
   <Teleport to="body">
@@ -298,43 +330,43 @@
 </template>
 
 <style scoped>
-  .images {
-    display: flex;
-    justify-content: start;
-    flex-wrap: wrap;
-  }
+.images {
+  display: flex;
+  justify-content: start;
+  flex-wrap: wrap;
+}
 
-  .images .add,
-  .images .image {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    border: 1px solid rgba(var(--v-border-color), var(--v-medium-emphasis-opacity));
-    border-radius: 4px;
-    position: relative;
-    height: 180px;
-    width: 180px;
-    margin: 1px;
-  }
+.images .add,
+.images .image {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(var(--v-border-color), var(--v-medium-emphasis-opacity));
+  border-radius: 4px;
+  position: relative;
+  height: 180px;
+  width: 180px;
+  margin: 1px;
+}
 
-  .images .image {
-    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAQMAAAAlPW0iAAAAA3NCSVQICAjb4U/gAAAABlBMVEXMzMz////TjRV2AAAACXBIWXMAAArrAAAK6wGCiw1aAAAAHHRFWHRTb2Z0d2FyZQBBZG9iZSBGaXJld29ya3MgQ1M26LyyjAAAABFJREFUCJlj+M/AgBVhF/0PAH6/D/HkDxOGAAAAAElFTkSuQmCC);
-    background-repeat: repeat;
-    cursor: pointer;
-  }
+.images .image {
+  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAQMAAAAlPW0iAAAAA3NCSVQICAjb4U/gAAAABlBMVEXMzMz////TjRV2AAAACXBIWXMAAArrAAAK6wGCiw1aAAAAHHRFWHRTb2Z0d2FyZQBBZG9iZSBGaXJld29ya3MgQ1M26LyyjAAAABFJREFUCJlj+M/AgBVhF/0PAH6/D/HkDxOGAAAAAElFTkSuQmCC);
+  background-repeat: repeat;
+  cursor: pointer;
+}
 
-  .images .add {
-    border: 1px dashed rgba(var(--v-border-color), var(--v-medium-emphasis-opacity));
-    flex-flow: column;
-    flex-wrap: wrap;
-  }
+.images .add {
+  border: 1px dashed rgba(var(--v-border-color), var(--v-medium-emphasis-opacity));
+  flex-flow: column;
+  flex-wrap: wrap;
+}
 
-  .images .add :deep(.v-icon) {
-    --v-medium-emphasis-opacity: 1;
-  }
+.images .add :deep(.v-icon) {
+  --v-medium-emphasis-opacity: 1;
+}
 
-  .v-progress-linear {
-    position: absolute;
-    z-index: 1;
-  }
+.v-progress-linear {
+  position: absolute;
+  z-index: 1;
+}
 </style>

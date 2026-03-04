@@ -1,27 +1,30 @@
-/**
- * @license LGPL, https://opensource.org/license/lgpl-3-0
- */
+/** @license LGPL, https://opensource.org/license/lgpl-3-0 */
 
 <script>
-  import FileListItems from './FileListItems.vue'
+import FileListItems from './FileListItems.vue'
 
-  export default {
-    components: {
-      FileListItems
-    },
+export default {
+  components: {
+    FileListItems
+  },
 
-    props: {
-      'modelValue': {type: Boolean, required: true},
-      'filter': {type: Object, default: () => ({})},
-      'grid': {type: Boolean, default: false},
-    },
+  props: {
+    modelValue: { type: Boolean, required: true },
+    filter: { type: Object, default: () => ({}) },
+    grid: { type: Boolean, default: false }
+  },
 
-    emits: ['update:modelValue', 'add']
-  }
+  emits: ['update:modelValue', 'add']
+}
 </script>
 
 <template>
-  <v-dialog :modelValue="modelValue" @afterLeave="$emit('update:modelValue', false)" max-width="1200" scrollable>
+  <v-dialog
+    :modelValue="modelValue"
+    @afterLeave="$emit('update:modelValue', false)"
+    max-width="1200"
+    scrollable
+  >
     <v-card>
       <template v-slot:append>
         <v-btn
@@ -44,5 +47,4 @@
   </v-dialog>
 </template>
 
-<style scoped>
-</style>
+<style scoped></style>

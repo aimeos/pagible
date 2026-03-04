@@ -1,13 +1,11 @@
-/**
- * @license LGPL, https://opensource.org/license/lgpl-3-0
- */
+/** @license LGPL, https://opensource.org/license/lgpl-3-0 */
 
 <script>
-  import Autocomplete from './Autocomplete.vue'
+import Autocomplete from './Autocomplete.vue'
 
-  export default {
-    extends: Autocomplete,
-  }
+export default {
+  extends: Autocomplete
+}
 </script>
 
 <template>
@@ -17,7 +15,11 @@
     :loading="loading"
     :readonly="readonly"
     :clearable="!readonly"
-    :no-data-text="!loading ? config['empty-text'] || $gettext('No data available') : $gettext('Loading') + ' ...'"
+    :no-data-text="
+      !loading
+        ? config['empty-text'] || $gettext('No data available')
+        : $gettext('Loading') + ' ...'
+    "
     :placeholder="config.placeholder || ''"
     :multiple="config.multiple"
     :chips="config.multiple"

@@ -1,28 +1,31 @@
-/**
- * @license LGPL, https://opensource.org/license/lgpl-3-0
- */
+/** @license LGPL, https://opensource.org/license/lgpl-3-0 */
 
 <script>
-  import ElementListItems from './ElementListItems.vue'
-  import SchemaItems from './SchemaItems.vue'
+import ElementListItems from './ElementListItems.vue'
+import SchemaItems from './SchemaItems.vue'
 
-  export default {
-    components: {
-      ElementListItems,
-      SchemaItems,
-    },
+export default {
+  components: {
+    ElementListItems,
+    SchemaItems
+  },
 
-    props: {
-      'modelValue': {type: Boolean, required: true},
-      'elements': {type: Boolean, default: true},
-    },
+  props: {
+    modelValue: { type: Boolean, required: true },
+    elements: { type: Boolean, default: true }
+  },
 
-    emits: ['update:modelValue', 'add']
-  }
+  emits: ['update:modelValue', 'add']
+}
 </script>
 
 <template>
-  <v-dialog :modelValue="modelValue" @afterLeave="$emit('update:modelValue', false)" max-width="1200" scrollable>
+  <v-dialog
+    :modelValue="modelValue"
+    @afterLeave="$emit('update:modelValue', false)"
+    max-width="1200"
+    scrollable
+  >
     <v-card>
       <template v-slot:append>
         <v-btn
@@ -53,8 +56,8 @@
 </template>
 
 <style scoped>
-  .v-tabs {
-    background-color: rgb(var(--v-theme-background));
-    margin-bottom: 8px;
-  }
+.v-tabs {
+  background-color: rgb(var(--v-theme-background));
+  margin-bottom: 8px;
+}
 </style>

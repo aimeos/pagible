@@ -1,114 +1,114 @@
-/**
- * @license LGPL, https://opensource.org/license/lgpl-3-0
- */
+/** @license LGPL, https://opensource.org/license/lgpl-3-0 */
 
 <script>
-  import gql from 'graphql-tag'
-  import { useAuthStore } from '../stores'
-  import PageDetail from '../views/PageDetail.vue'
-  import ElementDetail from '../views/ElementDetail.vue'
+import gql from 'graphql-tag'
+import { useAuthStore } from '../stores'
+import PageDetail from '../views/PageDetail.vue'
+import ElementDetail from '../views/ElementDetail.vue'
 
+export default {
+  props: {
+    item: { type: Object, required: true }
+  },
 
-  export default {
-    props: {
-      'item': {type: Object, required: true}
+  emits: [],
+
+  inject: ['openView'],
+
+  data: () => ({
+    panel: [0, 1, 2],
+    versions: {},
+    file: {}
+  }),
+
+  setup() {
+    const auth = useAuthStore()
+    return { auth }
+  },
+
+  methods: {
+    openElement(item) {
+      this.openView(ElementDetail, { item: { ...item } })
     },
 
-    emits: [],
+    openPage(item) {
+      this.openView(PageDetail, { item: { ...item } })
+    }
+  },
 
-    inject: ['openView'],
+  watch: {
+    item: {
+      immediate: true,
+      handler(item) {
+        if (!item.id || !this.auth.can('file:view')) {
+          return
+        }
 
-    data: () => ({
-      panel: [0, 1, 2],
-      versions: {},
-      file: {}
-    }),
-
-    setup() {
-      const auth = useAuthStore()
-      return { auth }
-    },
-
-    methods: {
-      openElement(item) {
-        this.openView(ElementDetail, {item: {...item}})
-      },
-
-
-      openPage(item) {
-        this.openView(PageDetail, {item: {...item}})
-      }
-    },
-
-    watch: {
-      item: {
-        immediate: true,
-        handler(item) {
-          if(!item.id || !this.auth.can('file:view')) {
-            return
-          }
-
-          this.$apollo.query({
-            query: gql`query ($id: ID!) {
-              file(id: $id) {
-                id
-                bypages {
+        this.$apollo
+          .query({
+            query: gql`
+              query ($id: ID!) {
+                file(id: $id) {
                   id
-                  path
-                  name
-                }
-                byelements {
-                  id
-                  type
-                  name
-                }
-                byversions {
-                  id
-                  versionable_id
-                  versionable_type
-                  published
-                  publish_at
+                  bypages {
+                    id
+                    path
+                    name
+                  }
+                  byelements {
+                    id
+                    type
+                    name
+                  }
+                  byversions {
+                    id
+                    versionable_id
+                    versionable_type
+                    published
+                    publish_at
+                  }
                 }
               }
-            }`,
+            `,
             variables: {
-              id: item.id,
+              id: item.id
             }
-          }).then(result => {
-            if(result.errors) {
+          })
+          .then((result) => {
+            if (result.errors) {
               throw result.errors
             }
 
             this.file = result.data?.file || {}
-            this.versions = (result.data?.file?.byversions || []).map(item => {
-              return {
-                id: item.versionable_id,
-                type: item.versionable_type.split('\\').at(-1),
-                published: item.published
-                  ? this.$gettext('yes')
-                  : (
-                    item.publish_at
-                    ? (new Date(item.publish_at)).toLocaleDateString()
-                    : this.$gettext('no')
-                  ),
-              }
-            }).filter(item => {
-              return this.auth.can(item.type.toLowerCase() + ':view')
-            })
-          }).catch(error => {
+            this.versions = (result.data?.file?.byversions || [])
+              .map((item) => {
+                return {
+                  id: item.versionable_id,
+                  type: item.versionable_type.split('\\').at(-1),
+                  published: item.published
+                    ? this.$gettext('yes')
+                    : item.publish_at
+                      ? new Date(item.publish_at).toLocaleDateString()
+                      : this.$gettext('no')
+                }
+              })
+              .filter((item) => {
+                return this.auth.can(item.type.toLowerCase() + ':view')
+              })
+          })
+          .catch((error) => {
             this.$log(`FileDetailRef::watch(item): Error fetching file`, item, error)
           })
-        }
       }
     }
   }
+}
 </script>
 
 <template>
   <v-container>
     <v-sheet class="scroll">
       <v-expansion-panels v-model="panel" elevation="0" multiple>
-
         <v-expansion-panel v-if="file.bypages?.length && auth.can('page:view')">
           <v-expansion-panel-title>{{ $gettext('Pages') }}</v-expansion-panel-title>
           <v-expansion-panel-text>
@@ -174,29 +174,28 @@
             </v-table>
           </v-expansion-panel-text>
         </v-expansion-panel>
-
       </v-expansion-panels>
     </v-sheet>
   </v-container>
 </template>
 
 <style scoped>
-  .v-sheet.scroll {
-    max-height: calc(100vh - 96px);
-  }
+.v-sheet.scroll {
+  max-height: calc(100vh - 96px);
+}
 
-  .v-expansion-panel-title {
-    font-weight: bold;
-    font-size: 110%;
-  }
+.v-expansion-panel-title {
+  font-weight: bold;
+  font-size: 110%;
+}
 
-  .v-table.pages tbody tr,
-  .v-table.elements tbody tr {
-    cursor: pointer;
-  }
+.v-table.pages tbody tr,
+.v-table.elements tbody tr {
+  cursor: pointer;
+}
 
-  thead th {
-    font-weight: bold !important;
-    width: 33%
-  }
+thead th {
+  font-weight: bold !important;
+  width: 33%;
+}
 </style>

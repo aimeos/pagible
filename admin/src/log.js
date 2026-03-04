@@ -2,7 +2,6 @@
  * @license LGPL, https://opensource.org/license/lgpl-3-0
  */
 
-
 /**
  * Logging plugin for the application
  */

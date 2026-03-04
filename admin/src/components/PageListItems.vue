@@ -1,244 +1,263 @@
-/**
- * @license LGPL, https://opensource.org/license/lgpl-3-0
- */
+/** @license LGPL, https://opensource.org/license/lgpl-3-0 */
 
 <script>
-  import gql from 'graphql-tag'
-  import { Draggable } from '@he-tree/vue'
-  import { dragContext } from '@he-tree/vue'
-  import { useAppStore, useAuthStore, useLanguageStore, useMessageStore } from '../stores'
+import gql from 'graphql-tag'
+import { Draggable } from '@he-tree/vue'
+import { dragContext } from '@he-tree/vue'
+import { useAppStore, useAuthStore, useLanguageStore, useMessageStore } from '../stores'
 
-  export default {
-    components: {
-      Draggable
+export default {
+  components: {
+    Draggable
+  },
+
+  props: {
+    embed: { type: Boolean, default: false },
+    filter: { type: Object, default: () => ({}) }
+  },
+
+  emits: ['select'],
+
+  inject: ['debounce'],
+
+  data() {
+    return {
+      menu: {},
+      items: [],
+      actions: false,
+      loading: true,
+      checked: null,
+      clip: null,
+      term: ''
+    }
+  },
+
+  setup() {
+    const languages = useLanguageStore()
+    const messages = useMessageStore()
+    const auth = useAuthStore()
+    const app = useAppStore()
+
+    return { app, auth, languages, messages }
+  },
+
+  created() {
+    this.searchd = this.debounce(this.search, 500)
+
+    this.fetch().then((result) => {
+      this.items = result.data
+      this.loading = false
+    })
+  },
+
+  mounted() {
+    this.checked = false // required for isChecked() to work correctly
+  },
+
+  computed: {
+    canTrash() {
+      return (
+        this.isChecked &&
+        this.$refs.tree?.statsFlat.some((stat) => stat._checked && !stat.data.deleted_at)
+      )
     },
 
-    props: {
-      'embed': {type: Boolean, default: false},
-      'filter': {type: Object, default: () => ({})},
+    isChecked() {
+      return this.checked || this.$refs.tree?.statsFlat.some((stat) => stat._checked)
     },
 
-    emits: ['select'],
+    isTrashed() {
+      return (
+        this.isChecked &&
+        this.$refs.tree?.statsFlat.some((stat) => stat._checked && stat.data.deleted_at)
+      )
+    }
+  },
 
-    inject: ['debounce'],
-
-    data() {
-      return {
-        menu: {},
-        items: [],
-        actions: false,
-        loading: true,
-        checked: null,
-        clip: null,
-        term: '',
+  methods: {
+    add() {
+      if (this.embed || !this.auth.can('page:add')) {
+        this.messages.add(this.$gettext('Permission denied'), 'error')
+        return
       }
-    },
 
-    setup() {
-      const languages = useLanguageStore()
-      const messages = useMessageStore()
-      const auth = useAuthStore()
-      const app = useAppStore()
+      const item = this.create()
 
-      return { app, auth, languages, messages }
-    },
-
-    created() {
-      this.searchd = this.debounce(this.search, 500)
-
-      this.fetch().then(result => {
-        this.items = result.data
-        this.loading = false
-      })
-    },
-
-    mounted() {
-      this.checked = false // required for isChecked() to work correctly
-    },
-
-    computed: {
-      canTrash() {
-        return this.isChecked && this.$refs.tree?.statsFlat.some(stat => stat._checked && !stat.data.deleted_at)
-      },
-
-      isChecked() {
-        return this.checked || this.$refs.tree?.statsFlat.some(stat => stat._checked)
-      },
-
-      isTrashed() {
-        return this.isChecked && this.$refs.tree?.statsFlat.some(stat => stat._checked && stat.data.deleted_at)
-      },
-    },
-
-    methods: {
-      add() {
-        if(this.embed || !this.auth.can('page:add')) {
-          this.messages.add(this.$gettext('Permission denied'), 'error')
-          return
-        }
-
-        const item = this.create()
-
-        this.$apollo.mutate({
-          mutation: gql`mutation ($input: PageInput!) {
-            addPage(input: $input) {
-              id
+      this.$apollo
+        .mutate({
+          mutation: gql`
+            mutation ($input: PageInput!) {
+              addPage(input: $input) {
+                id
+              }
             }
-          }`,
+          `,
           variables: {
             input: item
           }
-        }).then(result => {
-          if(result.errors) {
+        })
+        .then((result) => {
+          if (result.errors) {
             throw result.errors
           }
 
-          if(!result.data.addPage) {
+          if (!result.data.addPage) {
             throw new Error('No data in addPage mutation result')
           }
 
-          const page = {...result.data.addPage}
+          const page = { ...result.data.addPage }
 
           this.$refs.tree.add(page)
           this.$emit('select', page)
-        }).catch(error => {
-          this.messages.add(this.$gettext('Error adding root page') + ":\n" + error, 'error')
+        })
+        .catch((error) => {
+          this.messages.add(this.$gettext('Error adding root page') + ':\n' + error, 'error')
           this.$log(`PageList::add(): Error adding root page`, error)
         })
-      },
+    },
 
+    change() {
+      if (!this.auth.can('page:move')) {
+        this.messages.add(this.$gettext('Permission denied'), 'error')
+        return
+      }
 
-      change() {
-        if(!this.auth.can('page:move')) {
-          this.messages.add(this.$gettext('Permission denied'), 'error')
-          return
-        }
+      const parent = dragContext.targetInfo.parent
+      const siblings = dragContext.targetInfo.siblings
+      const ref = siblings[dragContext.targetInfo.indexBeforeDrop + 1] || null
 
-        const parent = dragContext.targetInfo.parent
-        const siblings = dragContext.targetInfo.siblings
-        const ref = siblings[dragContext.targetInfo.indexBeforeDrop+1] || null
-
-        this.$apollo.mutate({
-          mutation: gql`mutation ($id: ID!, $parent: ID, $ref: ID) {
-            movePage(id: $id, parent: $parent, ref: $ref) {
-              id
+      this.$apollo
+        .mutate({
+          mutation: gql`
+            mutation ($id: ID!, $parent: ID, $ref: ID) {
+              movePage(id: $id, parent: $parent, ref: $ref) {
+                id
+              }
             }
-          }`,
+          `,
           variables: {
             id: dragContext.startInfo.dragNode.data.id,
             parent: parent ? parent.data.id : null,
             ref: ref ? ref.data.id : null
           }
-        }).then(result => {
-          if(result.errors) {
+        })
+        .then((result) => {
+          if (result.errors) {
             throw result.errors
           }
 
           const srcparent = dragContext.startInfo.parent
 
-          if(srcparent?.data && !srcparent?.children.length) {
+          if (srcparent?.data && !srcparent?.children.length) {
             srcparent.data.has = false
           }
 
-          if(parent) {
+          if (parent) {
             parent.data.has = true
           }
-        }).catch(error => {
-          this.messages.add(this.$gettext('Error moving page') + ":\n" + error, 'error')
+        })
+        .catch((error) => {
+          this.messages.add(this.$gettext('Error moving page') + ':\n' + error, 'error')
           this.$log(`PageList::change(): Error moving page`, error)
         })
-      },
+    },
 
+    copy(stat, node) {
+      this.clip = { type: 'copy', node: node, stat: stat }
+    },
 
-      copy(stat, node) {
-        this.clip = {type: 'copy', node: node, stat: stat}
-      },
-
-
-      create(attr = {}) {
-        return Object.assign({
+    create(attr = {}) {
+      return Object.assign(
+        {
           path: '_' + Math.floor(Math.random() * 10000),
           lang: this.$vuetify.locale.current || this.languages.default(),
           status: 0,
           cache: 5
-        }, attr)
-      },
+        },
+        attr
+      )
+    },
 
+    cut(stat, node) {
+      this.$refs.tree.statsFlat.forEach((stat) => {
+        delete stat.cut
+      })
+      stat.cut = true
 
-      cut(stat, node) {
-        this.$refs.tree.statsFlat.forEach(stat => {
-          delete stat.cut
-        })
-        stat.cut = true
+      this.clip = { type: 'cut', node: node, stat: stat }
+    },
 
-        this.clip = {type: 'cut', node: node, stat: stat}
-      },
+    drop(stat) {
+      if (!this.auth.can('page:drop')) {
+        this.messages.add(this.$gettext('Permission denied'), 'error')
+        return
+      }
 
+      const list = stat
+        ? [stat]
+        : this.$refs.tree.statsFlat.filter((stat) => {
+            return stat._checked && stat.data?.id
+          })
 
-      drop(stat) {
-        if(!this.auth.can('page:drop')) {
-          this.messages.add(this.$gettext('Permission denied'), 'error')
-          return
-        }
+      if (!list.length) {
+        return
+      }
 
-        const list = (stat ? [stat] : this.$refs.tree.statsFlat.filter(stat => {
-          return stat._checked && stat.data?.id
-        }))
-
-        if(!list.length) {
-          return
-        }
-
-        this.$apollo.mutate({
-          mutation: gql`mutation ($id: [ID!]!) {
-            dropPage(id: $id) {
-              id
+      this.$apollo
+        .mutate({
+          mutation: gql`
+            mutation ($id: [ID!]!) {
+              dropPage(id: $id) {
+                id
+              }
             }
-          }`,
+          `,
           variables: {
-            id: list.map(item => item.data.id)
+            id: list.map((item) => item.data.id)
           }
-        }).then(result => {
-          if(result.errors) {
+        })
+        .then((result) => {
+          if (result.errors) {
             throw result.errors
           }
 
-          for(const item of list) {
+          for (const item of list) {
             this.update(item, (item) => {
-              item.data.deleted_at = (new Date).toISOString().replace(/T/, ' ').substring(0, 19)
+              item.data.deleted_at = new Date().toISOString().replace(/T/, ' ').substring(0, 19)
               item.check = false
 
-              if(this.filter.trashed === 'WITHOUT') {
+              if (this.filter.trashed === 'WITHOUT') {
                 this.$refs.tree.remove(item)
               }
             })
           }
 
           this.invalidate()
-        }).catch(error => {
-          this.messages.add(this.$gettext('Error trashing page') + ":\n" + error, 'error')
+        })
+        .catch((error) => {
+          this.messages.add(this.$gettext('Error trashing page') + ':\n' + error, 'error')
           this.$log(`PageList::drop(): Error trashing page`, list, error)
         })
-      },
+    },
 
+    fetch(parent = null, page = 1, limit = 100) {
+      if (!this.auth.can('page:view')) {
+        this.messages.add(this.$gettext('Permission denied'), 'error')
+        return Promise.resolve([])
+      }
 
-      fetch(parent = null, page = 1, limit = 100) {
-        if(!this.auth.can('page:view')) {
-          this.messages.add(this.$gettext('Permission denied'), 'error')
-          return Promise.resolve([])
-        }
+      const publish = this.filter.publish || null
+      const trashed = this.filter.trashed || 'WITHOUT'
+      const filter = { ...this.filter }
 
-        const publish = this.filter.publish || null
-        const trashed = this.filter.trashed || 'WITHOUT'
-        const filter = {...this.filter}
+      delete filter.trashed
+      delete filter.publish
+      delete filter.view
 
-        delete filter.trashed
-        delete filter.publish
-        delete filter.view
+      filter.parent_id = parent
 
-        filter.parent_id = parent
-
-        return this.$apollo.query({
+      return this.$apollo
+        .query({
           query: gql`query($filter: PageFilter, $limit: Int!, $page: Int!, $trashed: Trashed, $publish: Publish) {
             pages(filter: $filter, first: $limit, page: $page, trashed: $trashed, publish: $publish) {
               data {
@@ -257,21 +276,22 @@
             trashed: trashed,
             publish: publish
           }
-        }).then(result => {
-          if(result.errors) {
+        })
+        .then((result) => {
+          if (result.errors) {
             throw result.errors
           }
 
           return this.transform(result.data.pages)
-        }).catch(error => {
-          this.messages.add(this.$gettext('Error fetching pages') + ":\n" + error, 'error')
+        })
+        .catch((error) => {
+          this.messages.add(this.$gettext('Error fetching pages') + ':\n' + error, 'error')
           this.$log(`PageList::fetch(): Error fetching page`, parent, page, limit, error)
         })
-      },
+    },
 
-
-      fields() {
-        return `id
+    fields() {
+      return `id
           parent_id
           created_at
           deleted_at
@@ -285,125 +305,138 @@
             editor
             created_at
           }`
-      },
+    },
 
+    hydrate(entry) {
+      const item = entry.latest?.data ? JSON.parse(entry.latest.data) : { ...entry }
 
-      hydrate(entry) {
-          const item = entry.latest?.data ? JSON.parse(entry.latest.data) : {...entry}
+      return Object.assign(item, {
+        id: entry.id,
+        has: entry.has,
+        parent_id: entry.parent_id,
+        deleted_at: entry.deleted_at,
+        created_at: entry.created_at,
+        updated_at: entry.latest?.created_at || entry.updated_at,
+        editor: entry.latest?.editor || entry.editor,
+        published: entry.latest?.published ?? true,
+        publish_at: entry.latest?.publish_at || null,
+        latest: entry.latest
+      })
+    },
 
-          return Object.assign(item, {
-            id: entry.id,
-            has: entry.has,
-            parent_id: entry.parent_id,
-            deleted_at: entry.deleted_at,
-            created_at: entry.created_at,
-            updated_at: entry.latest?.created_at || entry.updated_at,
-            editor: entry.latest?.editor || entry.editor,
-            published: entry.latest?.published ?? true,
-            publish_at: entry.latest?.publish_at || null,
-            latest: entry.latest,
-          })
-      },
+    insert(stat, idx = null) {
+      if (!this.auth.can('page:add')) {
+        this.messages.add(this.$gettext('Permission denied'), 'error')
+        return
+      }
 
+      const siblings = this.$refs.tree.getSiblings(stat)
+      const parent = idx !== null ? stat.parent : stat
+      const pos = siblings.indexOf(stat)
+      const node = this.create()
+      let refid = null
 
-      insert(stat, idx = null) {
-        if(!this.auth.can('page:add')) {
-          this.messages.add(this.$gettext('Permission denied'), 'error')
-          return
-        }
+      if (idx === null && !stat.open) {
+        this.load(stat, stat.data)
+      }
 
-        const siblings = this.$refs.tree.getSiblings(stat)
-        const parent = idx !== null ? stat.parent : stat
-        const pos = siblings.indexOf(stat)
-        const node = this.create()
-        let refid = null
+      switch (idx) {
+        case 0:
+          refid = stat.data.id
+          break
+        case null:
+          refid = stat.children && stat.children[0] ? stat.children[0].data.id : null
+          break
+        case 1:
+          refid = siblings[pos + 1] ? siblings[pos + 1].data.id : null
+          break
+      }
 
-        if(idx === null && !stat.open) {
-          this.load(stat, stat.data)
-        }
-
-        switch(idx) {
-          case 0: refid = stat.data.id; break
-          case null: refid = stat.children && stat.children[0] ? stat.children[0].data.id : null; break
-          case 1: refid = siblings[pos + 1] ? siblings[pos + 1].data.id : null; break
-        }
-
-        this.$apollo.mutate({
-          mutation: gql`mutation ($input: PageInput!, $parent: ID, $ref: ID) {
-            addPage(input: $input, parent: $parent, ref: $ref) {
-              id
+      this.$apollo
+        .mutate({
+          mutation: gql`
+            mutation ($input: PageInput!, $parent: ID, $ref: ID) {
+              addPage(input: $input, parent: $parent, ref: $ref) {
+                id
+              }
             }
-          }`,
+          `,
           variables: {
             input: node,
             parent: parent ? parent.data.id : null,
             ref: refid
           }
-        }).then(result => {
-          if(result.errors) {
+        })
+        .then((result) => {
+          if (result.errors) {
             throw result.errors
           }
 
           node.id = result.data.addPage.id
 
-          if(idx !== null || stat.open) {
+          if (idx !== null || stat.open) {
             this.$refs.tree.add(node, parent, idx !== null ? pos + idx : 0)
           }
 
-          if(parent) {
+          if (parent) {
             parent.data.has = true
           }
 
           this.invalidate()
-        }).catch(error => {
-          this.messages.add(this.$gettext('Error inserting page') + ":\n" + error, 'error')
+        })
+        .catch((error) => {
+          this.messages.add(this.$gettext('Error inserting page') + ':\n' + error, 'error')
           this.$log(`PageList::insert(): Error inserting page`, error)
         })
-      },
+    },
 
+    invalidate() {
+      const cache = this.$apollo.provider.defaultClient.cache
+      cache.evict({ id: 'ROOT_QUERY', fieldName: 'pages' })
+      cache.gc()
+    },
 
-      invalidate() {
-        const cache = this.$apollo.provider.defaultClient.cache
-        cache.evict({id: 'ROOT_QUERY', fieldName: 'pages'})
-        cache.gc()
-      },
+    keep(stat) {
+      if (!this.auth.can('page:keep')) {
+        this.messages.add(this.$gettext('Permission denied'), 'error')
+        return
+      }
 
+      const stats = stat
+        ? [stat]
+        : this.$refs.tree.statsFlat.filter((stat) => {
+            return stat._checked && stat.data.id && stat.data.deleted_at
+          })
+      const list = stats.filter((stat) => {
+        return stats.indexOf(stat.parent) === -1
+      })
+      const deleted_at = stat.data.deleted_at || null
 
-      keep(stat) {
-        if(!this.auth.can('page:keep')) {
-          this.messages.add(this.$gettext('Permission denied'), 'error')
-          return
-        }
+      if (!list.length) {
+        return
+      }
 
-        const stats = stat ? [stat] : this.$refs.tree.statsFlat.filter(stat => {
-          return stat._checked && stat.data.id && stat.data.deleted_at
-        })
-        const list = stats.filter(stat => {
-          return stats.indexOf(stat.parent) === -1
-        })
-        const deleted_at = stat.data.deleted_at || null
-
-        if(!list.length) {
-          return
-        }
-
-        this.$apollo.mutate({
-          mutation: gql`mutation ($id: [ID!]!) {
-            keepPage(id: $id) {
-              id
+      this.$apollo
+        .mutate({
+          mutation: gql`
+            mutation ($id: [ID!]!) {
+              keepPage(id: $id) {
+                id
+              }
             }
-          }`,
+          `,
           variables: {
-            id: list.map(item => item.data.id)
+            id: list.map((item) => item.data.id)
           }
-        }).then(result => {
-          if(result.errors) {
+        })
+        .then((result) => {
+          if (result.errors) {
             throw result.errors
           }
 
-          for(const item of list) {
+          for (const item of list) {
             this.update(item, (item) => {
-              if(deleted_at >= item.data.deleted_at) {
+              if (deleted_at >= item.data.deleted_at) {
                 item.data.deleted_at = null
                 item.check = false
               }
@@ -411,301 +444,342 @@
           }
 
           this.invalidate()
-        }).catch(error => {
-          this.messages.add(this.$gettext('Error restoring page') + ":\n" + error, 'error')
+        })
+        .catch((error) => {
+          this.messages.add(this.$gettext('Error restoring page') + ':\n' + error, 'error')
           this.$log(`PageList::keep(): Error restoring page`, list, error)
         })
-      },
+    },
 
+    load(stat, node) {
+      if (!stat.open && !node.children) {
+        stat.loading = true
 
-      load(stat, node) {
-        if(!stat.open && !node.children) {
-          stat.loading = true
-
-          this.fetch(node.id, stat.page ? stat.page + 1 : 1).then(result => {
+        this.fetch(node.id, stat.page ? stat.page + 1 : 1)
+          .then((result) => {
             this.$refs.tree.addMulti(result.data, stat, 0)
             stat.page = result.currentPage || 1
-          }).finally(() => {
+          })
+          .finally(() => {
             stat.loading = false
           })
-        }
+      }
 
-        stat.open = !stat.open
-      },
+      stat.open = !stat.open
+    },
 
+    move(stat, idx = null) {
+      if (!this.auth.can('page:move')) {
+        this.messages.add(this.$gettext('Permission denied'), 'error')
+        return
+      }
 
-      move(stat, idx = null) {
-        if(!this.auth.can('page:move')) {
-          this.messages.add(this.$gettext('Permission denied'), 'error')
-          return
-        }
+      const siblings = this.$refs.tree.getSiblings(stat)
+      const parent = idx !== null ? stat.parent : stat
+      const pos = siblings.indexOf(stat)
+      let refid = null
 
-        const siblings = this.$refs.tree.getSiblings(stat)
-        const parent = idx !== null ? stat.parent : stat
-        const pos = siblings.indexOf(stat)
-        let refid = null
+      switch (idx) {
+        case 0:
+          refid = stat.data.id
+          break
+        case null:
+          refid = stat.children && stat.children[0] ? stat.children[0].data.id : null
+          break
+        case 1:
+          refid = siblings[pos + 1] ? siblings[pos + 1].data.id : null
+          break
+      }
 
-        switch(idx) {
-          case 0: refid = stat.data.id; break
-          case null: refid = stat.children && stat.children[0] ? stat.children[0].data.id : null; break
-          case 1: refid = siblings[pos + 1] ? siblings[pos + 1].data.id : null; break
-        }
-
-        this.$apollo.mutate({
-          mutation: gql`mutation ($id: ID!, $parent: ID, $ref: ID) {
-            movePage(id: $id, parent: $parent, ref: $ref) {
-              id
+      this.$apollo
+        .mutate({
+          mutation: gql`
+            mutation ($id: ID!, $parent: ID, $ref: ID) {
+              movePage(id: $id, parent: $parent, ref: $ref) {
+                id
+              }
             }
-          }`,
+          `,
           variables: {
             id: this.clip.node.id,
             parent: parent ? parent.data.id : null,
             ref: refid
           }
-        }).then(result => {
-          if(result.errors) {
+        })
+        .then((result) => {
+          if (result.errors) {
             throw result.errors
           }
 
-          const index = idx !== null ? (pos < this.$refs.tree.getSiblings(stat).indexOf(this.clip.stat) ? pos + idx : pos) : 0
+          const index =
+            idx !== null
+              ? pos < this.$refs.tree.getSiblings(stat).indexOf(this.clip.stat)
+                ? pos + idx
+                : pos
+              : 0
 
           this.$refs.tree.move(this.clip.stat, parent, index)
 
-          if(parent) {
-            if(!this.clip.stat.children?.length) {
+          if (parent) {
+            if (!this.clip.stat.children?.length) {
               stat.parent.data.has = false
             }
             parent.data.has = true
           }
 
           this.invalidate()
-        }).catch(error => {
-          this.messages.add(this.$gettext('Error moving page') + ":\n" + error, 'error')
+        })
+        .catch((error) => {
+          this.messages.add(this.$gettext('Error moving page') + ':\n' + error, 'error')
           this.$log(`PageList::move(): Error moving page`, stat, idx, error)
         })
-      },
+    },
 
+    paste(stat, idx = null) {
+      if (!this.auth.can('page:add')) {
+        this.messages.add(this.$gettext('Permission denied'), 'error')
+        return
+      }
 
-      paste(stat, idx = null) {
-        if(!this.auth.can('page:add')) {
-          this.messages.add(this.$gettext('Permission denied'), 'error')
-          return
-        }
+      const siblings = this.$refs.tree.getSiblings(stat)
+      const parent = idx !== null ? stat.parent : stat
+      const pos = siblings.indexOf(stat)
+      const node = { ...this.clip.node }
+      let refid = null
 
-        const siblings = this.$refs.tree.getSiblings(stat)
-        const parent = idx !== null ? stat.parent : stat
-        const pos = siblings.indexOf(stat)
-        const node = {...this.clip.node}
-        let refid = null
+      switch (idx) {
+        case 0:
+          refid = stat.data.id
+          break
+        case null:
+          refid = stat.children && stat.children[0] ? stat.children[0].data.id : null
+          break
+        case 1:
+          refid = siblings[pos + 1] ? siblings[pos + 1].data.id : null
+          break
+      }
 
-        switch(idx) {
-          case 0: refid = stat.data.id; break
-          case null: refid = stat.children && stat.children[0] ? stat.children[0].data.id : null; break
-          case 1: refid = siblings[pos + 1] ? siblings[pos + 1].data.id : null; break
-        }
-
-        return this.$apollo.query({
-          query: gql`query($id: ID!) {
-            page(id: $id) {
-              id
-              latest {
+      return this.$apollo
+        .query({
+          query: gql`
+            query ($id: ID!) {
+              page(id: $id) {
                 id
-                aux
-                files {
+                latest {
                   id
-                }
-                elements {
-                  id
+                  aux
+                  files {
+                    id
+                  }
+                  elements {
+                    id
+                  }
                 }
               }
             }
-          }`,
+          `,
           variables: {
-            id:  node.id
+            id: node.id
           }
-        }).then(result => {
-          if(result.errors) {
+        })
+        .then((result) => {
+          if (result.errors) {
             throw result.errors
           }
 
           const latest = result?.data?.page?.latest
           const aux = JSON.parse(latest?.aux || '{}')
 
-          this.$apollo.mutate({
-            mutation: gql`mutation ($input: PageInput!, $parent: ID, $ref: ID, $elements: [ID!], $files: [ID!]) {
+          this.$apollo
+            .mutate({
+              mutation: gql`mutation ($input: PageInput!, $parent: ID, $ref: ID, $elements: [ID!], $files: [ID!]) {
               addPage(input: $input, parent: $parent, ref: $ref, elements: $elements, files: $files) {
                 ${this.fields()}
               }
             }`,
-            variables: {
-              input: {
-                status: 0,
-                to: node.to,
-                tag: node.tag,
-                type: node.type,
-                theme: node.theme,
-                lang: node.lang,
-                name: node.name,
-                title: node.title,
-                cache: node.cache,
-                domain: node.domain,
-                related_id: node.id,
-                meta: JSON.stringify(aux?.meta || {}),
-                config: JSON.stringify(aux?.config || {}),
-                content: JSON.stringify(aux?.content || []),
-                path: node.path + '_' + Math.floor(Math.random() * 10000),
-              },
-              parent: parent ? parent.data.id : null,
-              ref: refid,
-              elements: latest?.elements.map(el => el.id) || [],
-              files: latest?.files.map(file => file.id) || []
-            }
-          }).then(result => {
-            if(result.errors) {
-              throw result.errors
-            }
+              variables: {
+                input: {
+                  status: 0,
+                  to: node.to,
+                  tag: node.tag,
+                  type: node.type,
+                  theme: node.theme,
+                  lang: node.lang,
+                  name: node.name,
+                  title: node.title,
+                  cache: node.cache,
+                  domain: node.domain,
+                  related_id: node.id,
+                  meta: JSON.stringify(aux?.meta || {}),
+                  config: JSON.stringify(aux?.config || {}),
+                  content: JSON.stringify(aux?.content || []),
+                  path: node.path + '_' + Math.floor(Math.random() * 10000)
+                },
+                parent: parent ? parent.data.id : null,
+                ref: refid,
+                elements: latest?.elements.map((el) => el.id) || [],
+                files: latest?.files.map((file) => file.id) || []
+              }
+            })
+            .then((result) => {
+              if (result.errors) {
+                throw result.errors
+              }
 
-            if(!result.data.addPage) {
-              throw new Error('No page data returned')
-            }
+              if (!result.data.addPage) {
+                throw new Error('No page data returned')
+              }
 
-            const index = idx !== null ? this.$refs.tree.getSiblings(stat).indexOf(stat) + idx : 0
-            const item = this.hydrate(result.data.addPage)
+              const index = idx !== null ? this.$refs.tree.getSiblings(stat).indexOf(stat) + idx : 0
+              const item = this.hydrate(result.data.addPage)
 
-            this.$refs.tree.add(item, parent, index)
-            this.invalidate()
-          }).catch(error => {
-            this.messages.add(this.$gettext('Error copying page') + ":\n" + error, 'error')
-            this.$log(`PageList::paste(): Error copying page`, stat, idx, error)
-          })
-        }).catch(error => {
-          this.messages.add(this.$gettext('Error fetching page') + ":\n" + error, 'error')
+              this.$refs.tree.add(item, parent, index)
+              this.invalidate()
+            })
+            .catch((error) => {
+              this.messages.add(this.$gettext('Error copying page') + ':\n' + error, 'error')
+              this.$log(`PageList::paste(): Error copying page`, stat, idx, error)
+            })
+        })
+        .catch((error) => {
+          this.messages.add(this.$gettext('Error fetching page') + ':\n' + error, 'error')
           this.$log(`PageList::paste(): Error fetching page`, node.id, error)
         })
-      },
+    },
 
+    publish(stat) {
+      if (!this.auth.can('page:publish')) {
+        this.messages.add(this.$gettext('Permission denied'), 'error')
+        return
+      }
 
-      publish(stat) {
-        if(!this.auth.can('page:publish')) {
-          this.messages.add(this.$gettext('Permission denied'), 'error')
-          return
-        }
+      const list = stat
+        ? [stat]
+        : this.$refs.tree.statsFlat.filter((stat) => {
+            return stat._checked && stat.data.id && !stat.data.published
+          })
 
-        const list = stat ? [stat] : this.$refs.tree.statsFlat.filter(stat => {
-          return stat._checked && stat.data.id && !stat.data.published
-        })
+      if (!list.length) {
+        return
+      }
 
-        if(!list.length) {
-          return
-        }
-
-        this.$apollo.mutate({
-          mutation: gql`mutation ($id: [ID!]!) {
-            pubPage(id: $id) {
-              id
+      this.$apollo
+        .mutate({
+          mutation: gql`
+            mutation ($id: [ID!]!) {
+              pubPage(id: $id) {
+                id
+              }
             }
-          }`,
+          `,
           variables: {
-            id: list.map(item => item.data.id)
+            id: list.map((item) => item.data.id)
           }
-        }).then(result => {
-          if(result.errors) {
+        })
+        .then((result) => {
+          if (result.errors) {
             throw result.errors
           }
 
-          for(const item of list) {
+          for (const item of list) {
             item.data.published = true
             item.check = false
           }
 
           this.invalidate()
-        }).catch(error => {
-          this.messages.add(this.$gettext('Error publishing page') + ":\n" + error, 'error')
+        })
+        .catch((error) => {
+          this.messages.add(this.$gettext('Error publishing page') + ':\n' + error, 'error')
           this.$log(`PageList::publish(): Error publishing page`, list, error)
         })
-      },
+    },
 
+    purge(stat) {
+      if (!this.auth.can('page:purge')) {
+        this.messages.add(this.$gettext('Permission denied'), 'error')
+        return
+      }
 
-      purge(stat) {
-        if(!this.auth.can('page:purge')) {
-          this.messages.add(this.$gettext('Permission denied'), 'error')
-          return
-        }
+      const list = stat
+        ? [stat]
+        : this.$refs.tree.statsFlat.filter((stat) => {
+            return stat._checked && stat.data.id
+          })
 
-        const list = stat ? [stat] : this.$refs.tree.statsFlat.filter(stat => {
-          return stat._checked && stat.data.id
-        })
+      if (!list.length) {
+        return
+      }
 
-        if(!list.length) {
-          return
-        }
-
-        this.$apollo.mutate({
-          mutation: gql`mutation ($id: [ID!]!) {
-            purgePage(id: $id) {
-              id
+      this.$apollo
+        .mutate({
+          mutation: gql`
+            mutation ($id: [ID!]!) {
+              purgePage(id: $id) {
+                id
+              }
             }
-          }`,
+          `,
           variables: {
-            id: list.map(item => item.data.id).reverse()
+            id: list.map((item) => item.data.id).reverse()
           }
-        }).then(result => {
-          if(result.errors) {
+        })
+        .then((result) => {
+          if (result.errors) {
             throw result.errors
           }
 
-          for(const item of list) {
+          for (const item of list) {
             this.$refs.tree.remove(item)
 
-            if(item.parent && !item.parent.children?.length) {
+            if (item.parent && !item.parent.children?.length) {
               item.parent.data.has = false
             }
           }
-        }).catch(error => {
-          this.messages.add(this.$gettext('Error purging page') + ":\n" + error, 'error')
+        })
+        .catch((error) => {
+          this.messages.add(this.$gettext('Error purging page') + ':\n' + error, 'error')
           this.$log(`PageList::purge(): Error purging page`, list, error)
         })
-      },
+    },
 
+    reload(cache = true) {
+      this.items = []
+      this.loading = true
 
-      reload(cache = true) {
-          this.items = []
-          this.loading = true
+      if (cache) {
+        const cache = this.$apollo.provider.defaultClient.cache
+        cache.evict({ id: 'ROOT_QUERY', fieldName: 'pages' })
+        cache.gc()
+      }
 
-          if(cache) {
-            const cache = this.$apollo.provider.defaultClient.cache
-            cache.evict({id: 'ROOT_QUERY', fieldName: 'pages'})
-            cache.gc()
-          }
+      const promise = this.filter.view === 'list' ? this.search() : this.fetch()
 
-          const promise = this.filter.view === 'list' ? this.search() : this.fetch()
+      promise.then((result) => {
+        this.items = result?.data || []
+        this.loading = false
+      })
+    },
 
-          promise.then(result => {
-            this.items = result?.data || []
-            this.loading = false
-          })
-      },
+    search(page = 1, limit = 100) {
+      if (!this.auth.can('page:view')) {
+        this.messages.add(this.$gettext('Permission denied'), 'error')
+        return Promise.resolve([])
+      }
 
+      const publish = this.filter.publish || null
+      const trashed = this.filter.trashed || 'WITHOUT'
+      const filter = { ...this.filter }
 
-      search(page = 1, limit = 100) {
-        if(!this.auth.can('page:view')) {
-          this.messages.add(this.$gettext('Permission denied'), 'error')
-          return Promise.resolve([])
-        }
+      delete filter.trashed
+      delete filter.publish
+      delete filter.view
 
-        const publish = this.filter.publish || null
-        const trashed = this.filter.trashed || 'WITHOUT'
-        const filter = {...this.filter}
+      if (this.term) {
+        filter.any = this.term
+      }
 
-        delete filter.trashed
-        delete filter.publish
-        delete filter.view
-
-        if(this.term) {
-          filter.any = this.term
-        }
-
-        return this.$apollo.query({
+      return this.$apollo
+        .query({
           query: gql`query($filter: PageFilter, $limit: Int!, $page: Int!, $trashed: Trashed, $publish: Publish) {
             pages(filter: $filter, first: $limit, page: $page, trashed: $trashed, publish: $publish) {
               data {
@@ -724,147 +798,149 @@
             trashed: trashed,
             publish: publish
           }
-        }).then(result => {
-          if(result.errors) {
+        })
+        .then((result) => {
+          if (result.errors) {
             throw result.errors
           }
 
           return this.transform(result.data.pages)
-        }).catch(error => {
-          this.messages.add(this.$gettext('Error searching pages') + ":\n" + error, 'error')
+        })
+        .catch((error) => {
+          this.messages.add(this.$gettext('Error searching pages') + ':\n' + error, 'error')
           this.$log(`PageList::search(): Error searching pages`, page, limit, error)
         })
-      },
+    },
 
+    status(stat, val) {
+      if (!this.auth.can('page:save')) {
+        this.messages.add(this.$gettext('Permission denied'), 'error')
+        return
+      }
 
-      status(stat, val) {
-        if(!this.auth.can('page:save')) {
-          this.messages.add(this.$gettext('Permission denied'), 'error')
-          return
-        }
+      const list = stat
+        ? [stat]
+        : this.$refs.tree.statsFlat.filter((stat) => {
+            return stat._checked && stat.data.id
+          })
 
-        const list = stat ? [stat] : this.$refs.tree.statsFlat.filter(stat => {
-          return stat._checked && stat.data.id
-        })
-
-        list.forEach(stat => {
-          this.$apollo.mutate({
-            mutation: gql`mutation ($id: ID!, $input: PageInput!) {
-              savePage(id: $id, input: $input) {
-                id
+      list.forEach((stat) => {
+        this.$apollo
+          .mutate({
+            mutation: gql`
+              mutation ($id: ID!, $input: PageInput!) {
+                savePage(id: $id, input: $input) {
+                  id
+                }
               }
-            }`,
+            `,
             variables: {
               id: stat.data.id,
               input: {
                 status: val
               }
             }
-          }).then(result => {
-            if(result.errors) {
+          })
+          .then((result) => {
+            if (result.errors) {
               throw result.errors
             }
 
             stat.data.status = val
-          }).catch(error => {
-            this.messages.add(this.$gettext('Error saving page') + ":\n" + error, 'error')
+          })
+          .catch((error) => {
+            this.messages.add(this.$gettext('Error saving page') + ':\n' + error, 'error')
             this.$log(`PageList::status(): Error saving page`, stat, val, error)
           })
-        })
-      },
+      })
+    },
 
+    title(item) {
+      const list = []
 
-      title(item) {
-        const list = []
+      if (item.publish_at) {
+        list.push('Publish at: ' + new Date(item.publish_at).toLocaleDateString())
+      }
 
-        if(item.publish_at) {
-          list.push('Publish at: ' + (new Date(item.publish_at)).toLocaleDateString())
-        }
+      if (item.theme) {
+        list.push('Theme: ' + item.theme)
+      }
 
-        if(item.theme) {
-          list.push('Theme: ' + item.theme)
-        }
+      if (item.type) {
+        list.push('Page type: ' + item.type)
+      }
 
-        if(item.type) {
-          list.push('Page type: ' + item.type)
-        }
+      if (item.tag) {
+        list.push('Tag: ' + item.tag)
+      }
 
-        if(item.tag) {
-          list.push('Tag: ' + item.tag)
-        }
+      if (item.cache) {
+        list.push('Cache: ' + item.cache + ' min')
+      }
 
-        if(item.cache) {
-          list.push('Cache: ' + item.cache + ' min')
-        }
+      return list.join('\n')
+    },
 
-        return list.join("\n")
-      },
+    toggle() {
+      this.$refs.tree.statsFlat.forEach((stat) => {
+        stat._checked = !stat._checked
+      })
+    },
 
+    transform(result) {
+      const pages = result.data.map((entry) => {
+        return this.hydrate(entry)
+      })
 
-      toggle() {
-        this.$refs.tree.statsFlat.forEach(stat => {
-          stat._checked = !stat._checked
-        })
-      },
-
-
-      transform(result) {
-        const pages = result.data.map(entry => {
-          return this.hydrate(entry)
-        })
-
-        return {
-          data: pages,
-          currentPage: result.paginatorInfo.currentPage,
-          lastPage: result.paginatorInfo.lastPage
-        }
-      },
-
-
-      update(stat, fcn) {
-        if(typeof fcn !== 'function') {
-          throw new Error('Second paramter must be a function')
-        }
-
-        fcn(stat)
-        stat.children?.forEach((stat) => {
-          fcn(stat, fcn)
-        })
-      },
-
-
-      url(node) {
-        return this.app.urlpage
-          .replace(/_domain_/, node.domain || '')
-          .replace(/_path_/, node.path || '')
-          .replace(/\/+$/, '')
+      return {
+        data: pages,
+        currentPage: result.paginatorInfo.currentPage,
+        lastPage: result.paginatorInfo.lastPage
       }
     },
 
-    watch: {
-      filter: {
-        deep: true,
-        handler(filter) {
-          this.items = []
-          this.loading = true
+    update(stat, fcn) {
+      if (typeof fcn !== 'function') {
+        throw new Error('Second paramter must be a function')
+      }
 
-          const promise = filter.view === 'list' ? this.search() : this.fetch()
+      fcn(stat)
+      stat.children?.forEach((stat) => {
+        fcn(stat, fcn)
+      })
+    },
 
-          promise.then(result => {
-            this.items = result?.data || []
-            this.loading = false
-          })
-        }
-      },
+    url(node) {
+      return this.app.urlpage
+        .replace(/_domain_/, node.domain || '')
+        .replace(/_path_/, node.path || '')
+        .replace(/\/+$/, '')
+    }
+  },
 
+  watch: {
+    filter: {
+      deep: true,
+      handler(filter) {
+        this.items = []
+        this.loading = true
 
-      term: {
-        handler() {
-          this.reload(false)
-        }
+        const promise = filter.view === 'list' ? this.search() : this.fetch()
+
+        promise.then((result) => {
+          this.items = result?.data || []
+          this.loading = false
+        })
+      }
+    },
+
+    term: {
+      handler() {
+        this.reload(false)
       }
     }
   }
+}
 </script>
 
 <template>
@@ -872,14 +948,16 @@
     <div class="bulk">
       <v-checkbox-btn v-model="checked" @click.stop="toggle()" />
 
-      <component :is="$vuetify.display.xs ? 'v-dialog' : 'v-menu'"
+      <component
+        :is="$vuetify.display.xs ? 'v-dialog' : 'v-menu'"
         v-model="actions"
         transition="scale-transition"
         location="end center"
-        max-width="300">
-
+        max-width="300"
+      >
         <template v-slot:activator="{ props }">
-          <v-btn v-bind="props"
+          <v-btn
+            v-bind="props"
             :disabled="!isChecked || embed || !auth.can('page:add')"
             :title="$gettext('Actions')"
             icon="mdi-dots-vertical"
@@ -894,31 +972,44 @@
 
           <v-list @click="actions = false">
             <v-list-item v-if="isChecked && auth.can('page:publish')">
-              <v-btn prepend-icon="mdi-publish" variant="text" @click="publish()">{{ $gettext('Publish') }}</v-btn>
+              <v-btn prepend-icon="mdi-publish" variant="text" @click="publish()">{{
+                $gettext('Publish')
+              }}</v-btn>
             </v-list-item>
             <v-list-item v-if="isChecked && auth.can('page:save')">
-              <v-btn prepend-icon="mdi-eye" variant="text" @click="status(null, 1)">{{ $gettext('Enable') }}</v-btn>
+              <v-btn prepend-icon="mdi-eye" variant="text" @click="status(null, 1)">{{
+                $gettext('Enable')
+              }}</v-btn>
             </v-list-item>
             <v-list-item v-if="isChecked && auth.can('page:save')">
-              <v-btn prepend-icon="mdi-eye-off" variant="text" @click="status(null, 0)">{{ $gettext('Disable') }}</v-btn>
+              <v-btn prepend-icon="mdi-eye-off" variant="text" @click="status(null, 0)">{{
+                $gettext('Disable')
+              }}</v-btn>
             </v-list-item>
 
             <v-divider></v-divider>
 
             <v-list-item v-if="canTrash && auth.can('page:drop')">
-              <v-btn prepend-icon="mdi-delete" variant="text" @click="drop()">{{ $gettext('Delete') }}</v-btn>
+              <v-btn prepend-icon="mdi-delete" variant="text" @click="drop()">{{
+                $gettext('Delete')
+              }}</v-btn>
             </v-list-item>
             <v-list-item v-if="isTrashed && auth.can('page:keep')">
-              <v-btn prepend-icon="mdi-delete-restore" variant="text" @click="keep()">{{ $gettext('Restore') }}</v-btn>
+              <v-btn prepend-icon="mdi-delete-restore" variant="text" @click="keep()">{{
+                $gettext('Restore')
+              }}</v-btn>
             </v-list-item>
             <v-list-item v-if="isChecked && auth.can('page:purge')">
-              <v-btn prepend-icon="mdi-delete-forever" variant="text" @click="purge()">{{ $gettext('Purge') }}</v-btn>
+              <v-btn prepend-icon="mdi-delete-forever" variant="text" @click="purge()">{{
+                $gettext('Purge')
+              }}</v-btn>
             </v-list-item>
           </v-list>
         </v-card>
       </component>
 
-      <v-btn v-if="!this.embed && this.auth.can('page:add')"
+      <v-btn
+        v-if="!this.embed && this.auth.can('page:add')"
         @click="add()"
         :disabled="loading"
         :title="$gettext('Add page')"
@@ -948,7 +1039,8 @@
     />
   </div>
 
-  <Draggable ref="tree"
+  <Draggable
+    ref="tree"
     v-model="items"
     @change="change()"
     :defaultOpen="false"
@@ -959,27 +1051,35 @@
   >
     <template #default="{ node, stat }">
       <div class="actions">
-        <svg v-if="stat.loading" class="spinner" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <circle class="spin1" cx="4" cy="12" r="3"/>
-          <circle class="spin1 spin2" cx="12" cy="12" r="3"/>
-          <circle class="spin1 spin3" cx="20" cy="12" r="3"/>
+        <svg
+          v-if="stat.loading"
+          class="spinner"
+          fill="currentColor"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <circle class="spin1" cx="4" cy="12" r="3" />
+          <circle class="spin1 spin2" cx="12" cy="12" r="3" />
+          <circle class="spin1 spin3" cx="20" cy="12" r="3" />
         </svg>
-        <v-btn v-else
+        <v-btn
+          v-else
           @click="load(stat, node)"
-          :class="{hidden: !node.has && !stat.children.length}"
+          :class="{ hidden: !node.has && !stat.children.length }"
           :icon="stat.open ? 'mdi-menu-down' : 'mdi-menu-right'"
           :title="$gettext('Toggle child nodes')"
           variant="text"
         />
 
-        <v-checkbox-btn v-model="stat._checked" :class="{draft: !node.published}" />
+        <v-checkbox-btn v-model="stat._checked" :class="{ draft: !node.published }" />
 
-        <component :is="$vuetify.display.xs ? 'v-dialog' : 'v-menu'"
+        <component
+          :is="$vuetify.display.xs ? 'v-dialog' : 'v-menu'"
           v-model="menu[node.id]"
           transition="scale-transition"
           location="end center"
-          max-width="300">
-
+          max-width="300"
+        >
           <template #activator="{ props }">
             <v-btn
               v-bind="props"
@@ -997,100 +1097,143 @@
 
             <v-list @click="menu[node.id] = false">
               <v-list-item v-if="!node.deleted_at && !node.published && auth.can('page:publish')">
-                <v-btn prepend-icon="mdi-publish" variant="text" @click="publish(stat)">{{ $gettext('Publish') }}</v-btn>
+                <v-btn prepend-icon="mdi-publish" variant="text" @click="publish(stat)">{{
+                  $gettext('Publish')
+                }}</v-btn>
               </v-list-item>
               <v-list-item v-if="node.status !== 0 && auth.can('page:save')">
-                <v-btn prepend-icon="mdi-eye-off" variant="text" @click="status(stat, 0)">{{ $gettext('Disable') }}</v-btn>
+                <v-btn prepend-icon="mdi-eye-off" variant="text" @click="status(stat, 0)">{{
+                  $gettext('Disable')
+                }}</v-btn>
               </v-list-item>
               <v-list-item v-if="node.status !== 1 && auth.can('page:save')">
-                <v-btn prepend-icon="mdi-eye" variant="text" @click="status(stat, 1)">{{ $gettext('Enable') }}</v-btn>
+                <v-btn prepend-icon="mdi-eye" variant="text" @click="status(stat, 1)">{{
+                  $gettext('Enable')
+                }}</v-btn>
               </v-list-item>
               <v-list-item v-if="node.status !== 2 && auth.can('page:save')">
-                <v-btn prepend-icon="mdi-eye-off-outline" variant="text" @click="status(stat, 2)">{{ $gettext('Hide') }}</v-btn>
+                <v-btn prepend-icon="mdi-eye-off-outline" variant="text" @click="status(stat, 2)">{{
+                  $gettext('Hide')
+                }}</v-btn>
               </v-list-item>
 
               <v-divider></v-divider>
 
               <v-list-item v-if="auth.can('page:move')">
-                <v-btn prepend-icon="mdi-content-cut" variant="text" @click="cut(stat, node)">{{ $gettext('Cut') }}</v-btn>
+                <v-btn prepend-icon="mdi-content-cut" variant="text" @click="cut(stat, node)">{{
+                  $gettext('Cut')
+                }}</v-btn>
               </v-list-item>
               <v-list-item v-if="!embed && auth.can('page:add')">
-                <v-btn prepend-icon="mdi-content-copy" variant="text" @click="copy(stat, node)">{{ $gettext('Copy') }}</v-btn>
+                <v-btn prepend-icon="mdi-content-copy" variant="text" @click="copy(stat, node)">{{
+                  $gettext('Copy')
+                }}</v-btn>
               </v-list-item>
 
               <v-list-group v-if="clip?.type == 'copy' && !this.embed && auth.can('page:add')">
                 <template v-slot:activator="{ props }">
                   <v-list-item v-bind="props" @click.stop>
-                    <v-btn prepend-icon="mdi-content-paste" variant="text">{{ $gettext('Paste') }}</v-btn>
+                    <v-btn prepend-icon="mdi-content-paste" variant="text">{{
+                      $gettext('Paste')
+                    }}</v-btn>
                   </v-list-item>
                 </template>
                 <v-list-item>
-                  <v-btn prepend-icon="mdi-arrow-up" variant="text" @click="paste(stat, 0)">{{ $gettext('Before') }}</v-btn>
+                  <v-btn prepend-icon="mdi-arrow-up" variant="text" @click="paste(stat, 0)">{{
+                    $gettext('Before')
+                  }}</v-btn>
                 </v-list-item>
                 <v-list-item>
-                  <v-btn prepend-icon="mdi-arrow-right" variant="text" @click="paste(stat)">{{ $gettext('Into') }}</v-btn>
+                  <v-btn prepend-icon="mdi-arrow-right" variant="text" @click="paste(stat)">{{
+                    $gettext('Into')
+                  }}</v-btn>
                 </v-list-item>
                 <v-list-item>
-                  <v-btn prepend-icon="mdi-arrow-down" variant="text" @click="paste(stat, 1)">{{ $gettext('After') }}</v-btn>
+                  <v-btn prepend-icon="mdi-arrow-down" variant="text" @click="paste(stat, 1)">{{
+                    $gettext('After')
+                  }}</v-btn>
                 </v-list-item>
               </v-list-group>
 
               <v-list-group v-if="clip?.type == 'cut' && !this.embed && auth.can('page:move')">
                 <template v-slot:activator="{ props }">
                   <v-list-item v-bind="props" @click.stop>
-                    <v-btn prepend-icon="mdi-content-paste" variant="text">{{ $gettext('Paste') }}</v-btn>
+                    <v-btn prepend-icon="mdi-content-paste" variant="text">{{
+                      $gettext('Paste')
+                    }}</v-btn>
                   </v-list-item>
                 </template>
                 <v-list-item>
-                  <v-btn prepend-icon="mdi-arrow-up" variant="text" @click="move(stat, 0)">{{ $gettext('Before') }}</v-btn>
+                  <v-btn prepend-icon="mdi-arrow-up" variant="text" @click="move(stat, 0)">{{
+                    $gettext('Before')
+                  }}</v-btn>
                 </v-list-item>
                 <v-list-item>
-                  <v-btn prepend-icon="mdi-arrow-right" variant="text" @click="move(stat)">{{ $gettext('Into') }}</v-btn>
+                  <v-btn prepend-icon="mdi-arrow-right" variant="text" @click="move(stat)">{{
+                    $gettext('Into')
+                  }}</v-btn>
                 </v-list-item>
                 <v-list-item>
-                  <v-btn prepend-icon="mdi-arrow-down" variant="text" @click="move(stat, 1)">{{ $gettext('After') }}</v-btn>
+                  <v-btn prepend-icon="mdi-arrow-down" variant="text" @click="move(stat, 1)">{{
+                    $gettext('After')
+                  }}</v-btn>
                 </v-list-item>
               </v-list-group>
 
               <v-list-group v-if="!this.embed && auth.can('page:add')">
                 <template v-slot:activator="{ props }">
                   <v-list-item v-bind="props" @click.stop>
-                    <v-btn prepend-icon="mdi-content-paste" variant="text">{{ $gettext('Insert') }}</v-btn>
+                    <v-btn prepend-icon="mdi-content-paste" variant="text">{{
+                      $gettext('Insert')
+                    }}</v-btn>
                   </v-list-item>
                 </template>
                 <v-list-item>
-                  <v-btn prepend-icon="mdi-arrow-up" variant="text" @click="insert(stat, 0)">{{ $gettext('Before') }}</v-btn>
+                  <v-btn prepend-icon="mdi-arrow-up" variant="text" @click="insert(stat, 0)">{{
+                    $gettext('Before')
+                  }}</v-btn>
                 </v-list-item>
                 <v-list-item>
-                  <v-btn prepend-icon="mdi-arrow-right" variant="text" @click="insert(stat)">{{ $gettext('Into') }}</v-btn>
+                  <v-btn prepend-icon="mdi-arrow-right" variant="text" @click="insert(stat)">{{
+                    $gettext('Into')
+                  }}</v-btn>
                 </v-list-item>
                 <v-list-item>
-                  <v-btn prepend-icon="mdi-arrow-down" variant="text" @click="insert(stat, 1)">{{ $gettext('After') }}</v-btn>
+                  <v-btn prepend-icon="mdi-arrow-down" variant="text" @click="insert(stat, 1)">{{
+                    $gettext('After')
+                  }}</v-btn>
                 </v-list-item>
               </v-list-group>
 
               <v-divider></v-divider>
 
               <v-list-item v-if="!node.deleted_at && auth.can('page:drop')">
-                <v-btn prepend-icon="mdi-delete" variant="text" @click="drop(stat)">{{ $gettext('Delete') }}</v-btn>
+                <v-btn prepend-icon="mdi-delete" variant="text" @click="drop(stat)">{{
+                  $gettext('Delete')
+                }}</v-btn>
               </v-list-item>
               <v-list-item v-if="node.deleted_at && auth.can('page:keep')">
-                <v-btn prepend-icon="mdi-delete-restore" variant="text" @click="keep(stat)">{{ $gettext('Restore') }}</v-btn>
+                <v-btn prepend-icon="mdi-delete-restore" variant="text" @click="keep(stat)">{{
+                  $gettext('Restore')
+                }}</v-btn>
               </v-list-item>
               <v-list-item v-if="auth.can('page:purge')">
-                <v-btn prepend-icon="mdi-delete-forever" variant="text" @click="purge(stat)">{{ $gettext('Purge') }}</v-btn>
+                <v-btn prepend-icon="mdi-delete-forever" variant="text" @click="purge(stat)">{{
+                  $gettext('Purge')
+                }}</v-btn>
               </v-list-item>
             </v-list>
           </v-card>
         </component>
       </div>
-      <div class="item-content"
+      <div
+        class="item-content"
         :class="{
           'status-hidden': node.status == 2,
           'status-enabled': node.status == 1,
           'status-disabled': !node.status,
-          'trashed': node.deleted_at,
-          'cut': stat.cut,
+          trashed: node.deleted_at,
+          cut: stat.cut
         }"
         :title="title(node)"
       >
@@ -1114,10 +1257,17 @@
 
   <p v-if="loading" class="loading">
     {{ $gettext('Loading') }}
-    <svg class="spinner" width="32" height="32" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-      <circle class="spin1" cx="4" cy="12" r="3"/>
-      <circle class="spin1 spin2" cx="12" cy="12" r="3"/>
-      <circle class="spin1 spin3" cx="20" cy="12" r="3"/>
+    <svg
+      class="spinner"
+      width="32"
+      height="32"
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <circle class="spin1" cx="4" cy="12" r="3" />
+      <circle class="spin1 spin2" cx="12" cy="12" r="3" />
+      <circle class="spin1 spin3" cx="20" cy="12" r="3" />
     </svg>
   </p>
 
@@ -1138,97 +1288,97 @@
 </template>
 
 <style>
-  .drag-placeholder {
-    height: 48px;
-  }
+.drag-placeholder {
+  height: 48px;
+}
 
-  .drag-placeholder-wrapper .tree-node-inner {
-    background-color: rgb(var(--v-theme-background));
-  }
+.drag-placeholder-wrapper .tree-node-inner {
+  background-color: rgb(var(--v-theme-background));
+}
 
-  .tree-node-inner {
-    border-bottom: 1px solid rgba(var(--v-border-color), 0.38);
-    align-items: start;
-    display: flex;
-    padding: 4px 0;
-    user-select: none;
-  }
+.tree-node-inner {
+  border-bottom: 1px solid rgba(var(--v-border-color), 0.38);
+  align-items: start;
+  display: flex;
+  padding: 4px 0;
+  user-select: none;
+}
 
-  .tree-node-inner:focus-within {
-    background-color: rgb(var(--v-theme-surface-light));
-  }
+.tree-node-inner:focus-within {
+  background-color: rgb(var(--v-theme-surface-light));
+}
 
+.tree-node-inner .actions {
+  display: flex;
+  flex-wrap: wrap;
+  max-width: 48px;
+  flex-shrink: 0;
+  justify-content: end;
+  margin-inline-end: 8px;
+}
+
+.tree-node-inner .spinner {
+  transform: rotate(90deg);
+  padding: 14px;
+  height: 48px;
+  width: 48px;
+}
+
+.tree-node-inner .item-content {
+  flex-wrap: wrap;
+  flex-direction: column;
+  justify-content: start;
+}
+
+.tree-node-inner .item-content.cut {
+  opacity: 0.5;
+}
+
+.tree-node-inner .item-text {
+  color: rgba(var(--v-theme-on-surface), var(--v-high-emphasis-opacity));
+  outline: none;
+}
+
+.tree-node-inner .item-text:not(:focus) {
+  text-decoration: none;
+}
+
+.tree-node-inner .item-domain {
+  color: initial;
+  display: block;
+}
+
+.tree-node-inner .item-domain,
+.tree-node-inner .item-to {
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.tree-node-inner .status-disabled .item-title {
+  text-decoration: line-through;
+}
+
+.tree-node-inner .item-aux {
+  width: 100%;
+}
+
+@media (min-width: 360px) {
   .tree-node-inner .actions {
-    display: flex;
-    flex-wrap: wrap;
-    max-width: 48px;
-    flex-shrink: 0;
-    justify-content: end;
-    margin-inline-end: 8px;
-  }
-
-  .tree-node-inner .spinner {
-    transform: rotate(90deg);
-    padding: 14px;
-    height: 48px;
-    width: 48px;
+    max-width: 33%;
   }
 
   .tree-node-inner .item-content {
-    flex-wrap: wrap;
-    flex-direction: column;
-    justify-content: start;
-  }
-
-  .tree-node-inner .item-content.cut {
-    opacity: 0.5;
-  }
-
-  .tree-node-inner .item-text {
-    color: rgba(var(--v-theme-on-surface), var(--v-high-emphasis-opacity));
-    outline: none;
-  }
-
-  .tree-node-inner .item-text:not(:focus) {
-    text-decoration: none;
-  }
-
-  .tree-node-inner .item-domain {
-    color: initial;
-    display: block;
-  }
-
-  .tree-node-inner .item-domain,
-  .tree-node-inner .item-to {
-    text-overflow: ellipsis;
-    overflow: hidden;
-  }
-
-  .tree-node-inner .status-disabled .item-title {
-    text-decoration: line-through;
+    flex-direction: row;
   }
 
   .tree-node-inner .item-aux {
-    width: 100%;
+    width: unset;
   }
+}
 
-  @media (min-width: 360px) {
-    .tree-node-inner .actions {
-      max-width: 33%;
-    }
-
-    .tree-node-inner .item-content {
-      flex-direction: row;
-    }
-
-    .tree-node-inner .item-aux {
-      width: unset;
-    }
+@media (min-width: 600px) {
+  .tree-node-inner {
+    padding: 4px 0;
   }
-
-  @media (min-width: 600px) {
-    .tree-node-inner {
-      padding: 4px 0;
-    }
-  }
+}
 </style>

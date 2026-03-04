@@ -1,40 +1,36 @@
-/**
- * @license LGPL, https://opensource.org/license/lgpl-3-0
- */
+/** @license LGPL, https://opensource.org/license/lgpl-3-0 */
 
 <script>
-  import gql from 'graphql-tag'
-  import File from './File.vue'
+import gql from 'graphql-tag'
+import File from './File.vue'
 
-  export default {
-    extends: File,
+export default {
+  extends: File,
 
-    setup() {
-      return { ...File.setup() }
-    }
+  setup() {
+    return { ...File.setup() }
   }
+}
 </script>
 
 <template>
   <v-row>
     <v-col cols="12" md="6">
-      <div class="files" :class="{readonly: readonly}">
+      <div class="files" :class="{ readonly: readonly }">
         <div v-if="file.id" class="file" @click="open(file)" :title="$gettext('Edit')">
-          <v-progress-linear v-if="file.uploading"
+          <v-progress-linear
+            v-if="file.uploading"
             color="primary"
             height="5"
             indeterminate
             rounded
           />
-          <audio v-if="file.path"
-            :src="url(file.path)"
-            :draggable="false"
-            controls
-          />
+          <audio v-if="file.path" :src="url(file.path)" :draggable="false" controls />
 
           <v-menu v-if="file.id && !readonly" location="start">
             <template v-slot:activator="{ props }">
-              <v-btn v-bind="props"
+              <v-btn
+                v-bind="props"
                 :title="$gettext('Open menu')"
                 icon="mdi-dots-vertical"
                 class="btn-overlay"
@@ -43,18 +39,12 @@
             </template>
             <v-list>
               <v-list-item v-if="auth.can('file:view')">
-                <v-btn
-                  @click="open(file)"
-                  prepend-icon="mdi-pencil"
-                  variant="text">
+                <v-btn @click="open(file)" prepend-icon="mdi-pencil" variant="text">
                   {{ $gettext('Edit') }}
                 </v-btn>
               </v-list-item>
               <v-list-item>
-                <v-btn
-                  @click="remove()"
-                  prepend-icon="mdi-trash-can"
-                  variant="text">
+                <v-btn @click="remove()" prepend-icon="mdi-trash-can" variant="text">
                   {{ $gettext('Remove') }}
                 </v-btn>
               </v-list-item>
@@ -63,7 +53,8 @@
         </div>
 
         <div v-else-if="!readonly" class="file">
-          <v-btn v-if="auth.can('file:view')"
+          <v-btn
+            v-if="auth.can('file:view')"
             @click="vfiles = true"
             :title="$gettext('Add file')"
             icon="mdi-button-cursor"
@@ -75,10 +66,7 @@
             icon="mdi-link-variant-plus"
             variant="text"
           ></v-btn>
-          <v-btn
-            :title="$gettext('Upload file')"
-            icon="mdi-upload"
-            variant="text">
+          <v-btn :title="$gettext('Upload file')" icon="mdi-upload" variant="text">
             <v-file-input
               v-model="selected"
               @update:modelValue="add($event)"
@@ -109,19 +97,18 @@
       </v-row>
       <v-row>
         <v-col cols="12" md="3" class="name">{{ $gettext('updated') }}:</v-col>
-        <v-col cols="12" md="9">{{ (new Date(file.updated_at)).toLocaleString() }}</v-col>
+        <v-col cols="12" md="9">{{ new Date(file.updated_at).toLocaleString() }}</v-col>
       </v-row>
     </v-col>
   </v-row>
 
   <Teleport to="body">
-    <FileDialog v-model="vfiles" @add="handle($event); vfiles = false" :filter="{mime: 'audio/'}" />
+    <FileDialog v-model="vfiles" @add="addFromDialog" :filter="{ mime: 'audio/' }" />
   </Teleport>
 
   <Teleport to="body">
-    <FileUrlDialog v-model="vurls" @add="select($event); vurls = false" mime="audio/" />
+    <FileUrlDialog v-model="vurls" @add="addFromUrl" mime="audio/" />
   </Teleport>
 </template>
 
-<style scoped>
-</style>
+<style scoped></style>
