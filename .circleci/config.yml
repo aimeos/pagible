@@ -278,7 +278,7 @@ jobs:
             - ./.npm
             - ~/.cache/Cypress
       - run: npx cypress run --component \
-              --spec $(circleci tests glob 'src/**/*.cy.{js,ts,jsx,tsx}' | circleci tests split --split-by=timings | tr '\n' ',')
+              --spec $(circleci tests glob 'tests/**/*.cy.{js,ts}' | circleci tests split --split-by=timings | tr '\n' ',')
 
   "admin-e2e":
     docker:
