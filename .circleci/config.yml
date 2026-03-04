@@ -261,6 +261,24 @@ jobs:
             - ~/.cache/Cypress
       - run: npm run test:unit
 
+  "admin-e2e":
+    docker:
+      - image: cypress/browsers:latest
+    working_directory: ~/project/admin
+    steps:
+      - checkout:
+          path: ~/project
+      - restore_cache:
+          keys:
+            - admin-{{ checksum "package-lock.json" }}
+      - run: npm ci
+      - save_cache:
+          key: admin-{{ checksum "package-lock.json" }}
+          paths:
+            - ./node_modules
+            - ~/.cache/Cypress
+      - run: npm run test:e2e
+
 workflows:
   version: 2
   unittest:
@@ -276,3 +294,4 @@ workflows:
       - "php85-pgsql"
       - "php85-phpstan"
       - "admin-unit"
+      - "admin-e2e"
