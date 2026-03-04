@@ -1,46 +1,53 @@
-/**
- * @license LGPL, https://opensource.org/license/lgpl-3-0
- */
+/** @license LGPL, https://opensource.org/license/lgpl-3-0 */
 
 <script>
-  /**
-   * Configuration:
-   * - `max`: int, maximum number of characters allowed in the input field
-   * - `min`: int, minimum number of characters required in the input field
-   * - `placeholder`: string, placeholder text for the input field
-   * - `class`: string, CSS class to apply to the input field
-   */
-   export default {
-    props: {
-      'modelValue': {type: String},
-      'config': {type: Object, default: () => {}},
-      'assets': {type: Object, default: () => {}},
-      'readonly': {type: Boolean, default: false},
-      'context': {type: Object},
-    },
+/**
+ * Configuration:
+ * - `max`: int, maximum number of characters allowed in the input field
+ * - `min`: int, minimum number of characters required in the input field
+ * - `placeholder`: string, placeholder text for the input field
+ * - `class`: string, CSS class to apply to the input field
+ */
+export default {
+  props: {
+    modelValue: { type: String },
+    config: { type: Object, default: () => {} },
+    assets: { type: Object, default: () => {} },
+    readonly: { type: Boolean, default: false },
+    context: { type: Object }
+  },
 
-    emits: ['update:modelValue', 'error'],
+  emits: ['update:modelValue', 'error'],
 
-    computed: {
-      rules() {
-        return [
-          v => !this.config.min || +v?.length >= +this.config.min || this.$gettext(`Minimum length is %{num} characters`, {num: this.config.min}),
-          v => !this.config.max || +v?.length <= +this.config.max || this.$gettext(`Maximum length is %{num} characters`, {num: this.config.max})
-        ]
-      }
-    },
+  computed: {
+    rules() {
+      return [
+        (v) =>
+          !this.config.min ||
+          +v?.length >= +this.config.min ||
+          this.$gettext(`Minimum length is %{num} characters`, { num: this.config.min }),
+        (v) =>
+          !this.config.max ||
+          +v?.length <= +this.config.max ||
+          this.$gettext(`Maximum length is %{num} characters`, { num: this.config.max })
+      ]
+    }
+  },
 
-    watch: {
-      modelValue: {
-        immediate: true,
-        handler(val) {
-          this.$emit('error', !this.rules.every(rule => {
+  watch: {
+    modelValue: {
+      immediate: true,
+      handler(val) {
+        this.$emit(
+          'error',
+          !this.rules.every((rule) => {
             return rule(val ?? this.config.default ?? '') === true
-          }))
-        }
+          })
+        )
       }
     }
   }
+}
 </script>
 
 <template>

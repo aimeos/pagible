@@ -2,32 +2,32 @@
  * @license LGPL, https://opensource.org/license/lgpl-3-0
  */
 
-import { onError } from "@apollo/client/link/error"
-import { BatchHttpLink } from "apollo-link-batch-http"
+import { onError } from '@apollo/client/link/error'
+import { BatchHttpLink } from 'apollo-link-batch-http'
 import { createApolloProvider } from '@vue/apollo-option'
 import { ApolloClient, ApolloLink, InMemoryCache } from '@apollo/client/core'
 import createUploadLink from 'apollo-upload-client/createUploadLink.mjs'
 import router from './routes'
 
-
 const node = document.querySelector('#app')
 
 const errorLink = onError(({ errors }) => {
-  if(!errors) return
+  if (!errors) return
 
-  for(const err of errors) {
-    if(err.message === "This action is unauthorized."
-      || err.extensions?.code === "UNAUTHENTICATED"
-      || err.extensions?.http?.status === 401
+  for (const err of errors) {
+    if (
+      err.message === 'This action is unauthorized.' ||
+      err.extensions?.code === 'UNAUTHENTICATED' ||
+      err.extensions?.http?.status === 401
     ) {
-      router.push({ name: "login" })
+      router.push({ name: 'login' })
       break
     }
   }
 })
 
 const httpLink = ApolloLink.split(
-  operation => operation.getContext().hasUpload,
+  (operation) => operation.getContext().hasUpload,
   createUploadLink({
     uri: node?.dataset?.urlgraphql || '/graphql',
     credentials: 'include'
@@ -40,8 +40,11 @@ const httpLink = ApolloLink.split(
   })
 )
 
-const apolloClient = new ApolloClient({cache: new InMemoryCache(), link: ApolloLink.from([errorLink, httpLink])})
-const apollo = createApolloProvider({defaultClient: apolloClient})
+const apolloClient = new ApolloClient({
+  cache: new InMemoryCache(),
+  link: ApolloLink.from([errorLink, httpLink])
+})
+const apollo = createApolloProvider({ defaultClient: apolloClient })
 
 export default apollo
 export { apolloClient }

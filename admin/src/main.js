@@ -18,10 +18,8 @@ import router from './routes'
 import vuetify from './vuetify'
 import App from './App.vue'
 
-
 const app = createApp(App)
 const pinia = createPinia()
-
 
 app.directive('safe-svg', (el, binding) => {
   el.innerHTML = DOMPurify.sanitize(binding.value, {
@@ -29,15 +27,14 @@ app.directive('safe-svg', (el, binding) => {
   })
 })
 
-
-const fields = import.meta.glob("@/fields/*.vue")
-for(const path in fields) {
-  const name = path.split("/").at(-1).split(".")[0]
+const fields = import.meta.glob('@/fields/*.vue')
+for (const path in fields) {
+  const name = path.split('/').at(-1).split('.')[0]
   app.component(name, defineAsyncComponent(fields[path]))
 }
 
-
-app.use(logger)
+app
+  .use(logger)
   .use(pinia)
   .use(i18n)
   .use(router)

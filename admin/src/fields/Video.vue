@@ -1,40 +1,36 @@
-/**
- * @license LGPL, https://opensource.org/license/lgpl-3-0
- */
+/** @license LGPL, https://opensource.org/license/lgpl-3-0 */
 
 <script>
-  import gql from 'graphql-tag'
-  import { default as FileComp } from './File.vue'
+import gql from 'graphql-tag'
+import { default as FileComp } from './File.vue'
 
-  export default {
-    extends: FileComp,
+export default {
+  extends: FileComp,
 
-    setup() {
-      return { ...FileComp.setup() }
-    }
+  setup() {
+    return { ...FileComp.setup() }
   }
+}
 </script>
 
 <template>
   <v-row>
     <v-col cols="12" md="6">
-      <div class="files" :class="{readonly: readonly}">
+      <div class="files" :class="{ readonly: readonly }">
         <div v-if="file.id" class="file" @click="open(file)" :title="$gettext('Edit')">
-          <v-progress-linear v-if="file.uploading"
+          <v-progress-linear
+            v-if="file.uploading"
             color="primary"
             height="5"
             indeterminate
             rounded
           />
-          <video v-if="file.path"
-            :src="url(file.path)"
-            :draggable="false"
-            controls
-          />
+          <video v-if="file.path" :src="url(file.path)" :draggable="false" controls />
 
           <v-menu v-if="file.id && !readonly" location="start">
             <template v-slot:activator="{ props }">
-              <v-btn v-bind="props"
+              <v-btn
+                v-bind="props"
                 :title="$gettext('Open menu')"
                 icon="mdi-dots-vertical"
                 class="btn-overlay"
@@ -43,18 +39,12 @@
             </template>
             <v-list>
               <v-list-item v-if="auth.can('file:view')">
-                <v-btn
-                  @click="open(file)"
-                  prepend-icon="mdi-pencil"
-                  variant="text">
+                <v-btn @click="open(file)" prepend-icon="mdi-pencil" variant="text">
                   {{ $gettext('Edit') }}
                 </v-btn>
               </v-list-item>
               <v-list-item>
-                <v-btn
-                  @click="remove()"
-                  prepend-icon="mdi-trash-can"
-                  variant="text">
+                <v-btn @click="remove()" prepend-icon="mdi-trash-can" variant="text">
                   {{ $gettext('Remove') }}
                 </v-btn>
               </v-list-item>
@@ -63,7 +53,8 @@
         </div>
 
         <div v-else-if="!readonly" class="file">
-          <v-btn v-if="auth.can('file:view')"
+          <v-btn
+            v-if="auth.can('file:view')"
             @click="vfiles = true"
             :title="$gettext('Add file')"
             icon="mdi-button-cursor"
@@ -75,10 +66,7 @@
             icon="mdi-link-variant-plus"
             variant="text"
           />
-          <v-btn
-            :title="$gettext('Upload file')"
-            icon="mdi-upload"
-            variant="text">
+          <v-btn :title="$gettext('Upload file')" icon="mdi-upload" variant="text">
             <v-file-input
               v-model="selected"
               @update:modelValue="add($event)"
@@ -109,23 +97,37 @@
       </v-row>
       <v-row>
         <v-col cols="12" md="3" class="name">{{ $gettext('updated') }}:</v-col>
-        <v-col cols="12" md="9">{{ (new Date(file.updated_at)).toLocaleString() }}</v-col>
+        <v-col cols="12" md="9">{{ new Date(file.updated_at).toLocaleString() }}</v-col>
       </v-row>
     </v-col>
   </v-row>
 
   <Teleport to="body">
-    <FileDialog v-model="vfiles" @add="handle($event); vfiles = false" :filter="{mime: 'video/'}" />
+    <FileDialog
+      v-model="vfiles"
+      @add="
+        handle($event)
+        vfiles = false
+      "
+      :filter="{ mime: 'video/' }"
+    />
   </Teleport>
 
   <Teleport to="body">
-    <FileUrlDialog v-model="vurls" @add="select($event); vurls = false" mime="video/" />
+    <FileUrlDialog
+      v-model="vurls"
+      @add="
+        select($event)
+        vurls = false
+      "
+      mime="video/"
+    />
   </Teleport>
 </template>
 
 <style scoped>
-  .files video {
-    max-width: 100%;
-    max-height: 200px;
-  }
+.files video {
+  max-width: 100%;
+  max-height: 200px;
+}
 </style>

@@ -1,132 +1,144 @@
-/**
- * @license LGPL, https://opensource.org/license/lgpl-3-0
- */
+/** @license LGPL, https://opensource.org/license/lgpl-3-0 */
 
 <script>
-  import gql from 'graphql-tag'
-  import AsideMeta from '../components/AsideMeta.vue'
-  import HistoryDialog from '../components/HistoryDialog.vue'
-  import FileDetailRefs from '../components/FileDetailRefs.vue'
-  import FileDetailItem from '../components/FileDetailItem.vue'
-  import { useAuthStore, useDrawerStore, useMessageStore } from '../stores'
+import gql from 'graphql-tag'
+import AsideMeta from '../components/AsideMeta.vue'
+import HistoryDialog from '../components/HistoryDialog.vue'
+import FileDetailRefs from '../components/FileDetailRefs.vue'
+import FileDetailItem from '../components/FileDetailItem.vue'
+import { useAuthStore, useDrawerStore, useMessageStore } from '../stores'
 
+export default {
+  components: {
+    AsideMeta,
+    HistoryDialog,
+    FileDetailItem,
+    FileDetailRefs
+  },
 
-  export default {
-    components: {
-      AsideMeta,
-      HistoryDialog,
-      FileDetailItem,
-      FileDetailRefs
-    },
+  inject: ['closeView'],
 
-    inject: ['closeView'],
+  props: {
+    item: { type: Object, required: true }
+  },
 
-    props: {
-      'item': {type: Object, required: true}
-    },
+  data: () => ({
+    file: null,
+    error: false,
+    changed: false,
+    publishAt: null,
+    publishing: false,
+    pubmenu: false,
+    saving: false,
+    vhistory: false,
+    tab: 'file'
+  }),
 
-    data: () => ({
-      file: null,
-      error: false,
-      changed: false,
-      publishAt: null,
-      publishing: false,
-      pubmenu: false,
-      saving: false,
-      vhistory: false,
-      tab: 'file',
-    }),
+  setup() {
+    const messages = useMessageStore()
+    const drawer = useDrawerStore()
+    const auth = useAuthStore()
 
-    setup() {
-      const messages = useMessageStore()
-      const drawer = useDrawerStore()
-      const auth = useAuthStore()
+    return { auth, drawer, messages }
+  },
 
-      return { auth, drawer, messages }
-    },
+  methods: {
+    publish(at = null) {
+      if (!this.auth.can('file:publish')) {
+        this.messages.add(this.$gettext('Permission denied'), 'error')
+        return
+      }
 
-    methods: {
-      publish(at = null) {
-        if(!this.auth.can('file:publish')) {
-          this.messages.add(this.$gettext('Permission denied'), 'error')
+      this.publishing = true
+
+      this.save(true).then((valid) => {
+        if (!valid) {
           return
         }
 
-        this.publishing = true
-
-        this.save(true).then(valid => {
-          if(!valid) {
-            return
-          }
-
-          this.$apollo.mutate({
-            mutation: gql`mutation ($id: [ID!]!, $at: DateTime) {
-              pubFile(id: $id, at: $at) {
-                id
+        this.$apollo
+          .mutate({
+            mutation: gql`
+              mutation ($id: [ID!]!, $at: DateTime) {
+                pubFile(id: $id, at: $at) {
+                  id
+                }
               }
-            }`,
+            `,
             variables: {
               id: [this.item.id],
               at: at?.toISOString()?.substring(0, 19)?.replace('T', ' ')
             }
-          }).then(response => {
-            if(response.errors) {
+          })
+          .then((response) => {
+            if (response.errors) {
               throw response.errors
             }
 
-            if(!at) {
+            if (!at) {
               this.item.published = true
               this.messages.add(this.$gettext('File published successfully'), 'success')
             } else {
               this.item.publish_at = at
-              this.messages.add(this.$gettext('File scheduled for publishing at %{date}', {date: at.toLocaleDateString()}), 'info')
+              this.messages.add(
+                this.$gettext('File scheduled for publishing at %{date}', {
+                  date: at.toLocaleDateString()
+                }),
+                'info'
+              )
             }
 
             this.closeView()
-          }).catch(error => {
-            this.messages.add(this.$gettext('Error publishing file') + ":\n" + error, 'error')
+          })
+          .catch((error) => {
+            this.messages.add(this.$gettext('Error publishing file') + ':\n' + error, 'error')
             this.$log(`FileDetail::publish(): Error publishing file`, at, error)
-          }).finally(() => {
+          })
+          .finally(() => {
             this.publishing = false
           })
-        })
-      },
+      })
+    },
 
+    reset() {
+      this.changed = false
+      this.error = false
+    },
 
-      reset() {
-        this.changed = false
-        this.error = false
-      },
+    save(quiet = false) {
+      if (!this.auth.can('file:save')) {
+        this.messages.add(this.$gettext('Permission denied'), 'error')
+        return Promise.resolve(false)
+      }
 
+      if (this.error) {
+        this.messages.add(
+          this.$gettext('There are invalid fields, please resolve the errors first'),
+          'error'
+        )
+        return Promise.resolve(false)
+      }
 
-      save(quiet = false) {
-        if(!this.auth.can('file:save')) {
-          this.messages.add(this.$gettext('Permission denied'), 'error')
-          return Promise.resolve(false)
-        }
+      if (!this.changed) {
+        return Promise.resolve(true)
+      }
 
-        if(this.error) {
-          this.messages.add(this.$gettext('There are invalid fields, please resolve the errors first'), 'error')
-          return Promise.resolve(false)
-        }
+      this.saving = true
 
-        if(!this.changed) {
-          return Promise.resolve(true)
-        }
-
-        this.saving = true
-
-        return this.$apollo.mutate({
-          mutation: gql`mutation ($id: ID!, $input: FileInput!, $file: Upload) {
-            saveFile(id: $id, input: $input, file: $file) {
-              id
-              latest {
+      return this.$apollo
+        .mutate({
+          mutation: gql`
+            mutation ($id: ID!, $input: FileInput!, $file: Upload) {
+              saveFile(id: $id, input: $input, file: $file) {
                 id
-                data
-                created_at
+                latest {
+                  id
+                  data
+                  created_at
+                }
               }
             }
-          }`,
+          `,
           variables: {
             id: this.item.id,
             input: {
@@ -135,15 +147,16 @@
               previews: JSON.stringify(this.item.previews || {}),
               path: this.item.path,
               name: this.item.name,
-              lang: this.item.lang,
+              lang: this.item.lang
             },
             file: this.file
           },
           context: {
             hasUpload: true
           }
-        }).then(result => {
-          if(result.errors) {
+        })
+        .then((result) => {
+          if (result.errors) {
             throw result.errors
           }
 
@@ -154,73 +167,78 @@
           this.item.published = false
           this.reset()
 
-          if(!quiet) {
+          if (!quiet) {
             this.messages.add(this.$gettext('File saved successfully'), 'success')
           }
 
           return true
-        }).catch(error => {
-          this.messages.add(this.$gettext('Error saving file') + ":\n" + error, 'error')
+        })
+        .catch((error) => {
+          this.messages.add(this.$gettext('Error saving file') + ':\n' + error, 'error')
           this.$log(`FileDetail::save(): Error saving file`, error)
-        }).finally(() => {
+        })
+        .finally(() => {
           this.saving = false
         })
-      },
+    },
 
+    use(version) {
+      Object.assign(this.item, version.data)
+      this.vhistory = false
+      this.changed = true
+    },
 
-      use(version) {
-        Object.assign(this.item, version.data)
-        this.vhistory = false
-        this.changed = true
-      },
+    versions(id) {
+      if (!this.auth.can('file:view')) {
+        this.messages.add(this.$gettext('Permission denied'), 'error')
+        return Promise.resolve([])
+      }
 
+      if (!id) {
+        return Promise.resolve([])
+      }
 
-      versions(id) {
-        if(!this.auth.can('file:view')) {
-          this.messages.add(this.$gettext('Permission denied'), 'error')
-          return Promise.resolve([])
-        }
-
-        if(!id) {
-          return Promise.resolve([])
-        }
-
-        return this.$apollo.query({
-          query: gql`query($id: ID!) {
-            file(id: $id) {
-              id
-              versions {
+      return this.$apollo
+        .query({
+          query: gql`
+            query ($id: ID!) {
+              file(id: $id) {
                 id
-                published
-                publish_at
-                data
-                editor
-                created_at
+                versions {
+                  id
+                  published
+                  publish_at
+                  data
+                  editor
+                  created_at
+                }
               }
             }
-          }`,
+          `,
           variables: {
             id: id
           }
-        }).then(result => {
-          if(result.errors || !result.data.file) {
+        })
+        .then((result) => {
+          if (result.errors || !result.data.file) {
             throw result
           }
 
           const keys = ['previews', 'description', 'transcription']
 
-          return (result.data.file.versions || []).map(v => {
-            const item = {...v, data: JSON.parse(v.data || '{}')}
-            keys.forEach(key => item[key] ??= {})
+          return (result.data.file.versions || []).map((v) => {
+            const item = { ...v, data: JSON.parse(v.data || '{}') }
+            keys.forEach((key) => (item[key] ??= {}))
             return item
           })
-        }).catch(error => {
-          this.messages.add(this.$gettext('Error fetching file versions') + ":\n" + error, 'error')
+        })
+        .catch((error) => {
+          this.messages.add(this.$gettext('Error fetching file versions') + ':\n' + error, 'error')
           this.$log(`FileDetail::versions(): Error fetching file versions`, id, error)
         })
-      }
     }
   }
+}
 </script>
 
 <template>
@@ -234,15 +252,13 @@
     </template>
 
     <v-app-bar-title>
-      <div class="app-title">
-        {{ $gettext('File') }}: {{ item.name }}
-      </div>
+      <div class="app-title">{{ $gettext('File') }}: {{ item.name }}</div>
     </v-app-bar-title>
 
     <template v-slot:append>
       <v-btn
         @click="vhistory = true"
-        :class="{hidden: item.published && !changed && !item.latest}"
+        :class="{ hidden: item.published && !changed && !item.latest }"
         :title="$gettext('View history')"
         icon="mdi-history"
         class="no-rtl"
@@ -252,7 +268,8 @@
         @click="save()"
         :loading="saving"
         :title="$gettext('Save')"
-        :class="{error: error}" class="menu-save"
+        :class="{ error: error }"
+        class="menu-save"
         :disabled="!changed || error || !auth.can('file:save')"
         :variant="!changed || error || !auth.can('file:save') ? 'plain' : 'flat'"
         :color="!changed || error || !auth.can('file:save') ? '' : 'blue-darken-1'"
@@ -261,18 +278,29 @@
 
       <v-menu v-model="pubmenu" :close-on-content-click="false">
         <template #activator="{ props }">
-          <v-btn v-bind="props" icon
+          <v-btn
+            v-bind="props"
+            icon
             :loading="publishing"
             :title="$gettext('Schedule publishing')"
-            :class="{error: error}" class="menu-publish"
-            :disabled="item.published && !changed || error || !auth.can('file:publish')"
-            :variant="item.published && !changed || error || !auth.can('file:publish') ? 'plain' : 'flat'"
-            :color="item.published && !changed || error || !auth.can('file:publish') ? '' : 'blue-darken-2'"
+            :class="{ error: error }"
+            class="menu-publish"
+            :disabled="(item.published && !changed) || error || !auth.can('file:publish')"
+            :variant="
+              (item.published && !changed) || error || !auth.can('file:publish') ? 'plain' : 'flat'
+            "
+            :color="
+              (item.published && !changed) || error || !auth.can('file:publish')
+                ? ''
+                : 'blue-darken-2'
+            "
           >
             <v-icon>
               <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
                 <path d="M2,1V3H16V1H2 M2,10H6V19H12V10H16L9,3L2,10Z" />
-                <path d="M16.7 11.4C16.7 11.4 16.61 11.4 16.7 11.4C13.19 11.49 10.4 14.28 10.4 17.7C10.4 21.21 13.19 24 16.7 24S23 21.21 23 17.7 20.21 11.4 16.7 11.4M16.7 22.2C14.18 22.2 12.2 20.22 12.2 17.7S14.18 13.2 16.7 13.2 21.2 15.18 21.2 17.7 19.22 22.2 16.7 22.2M15.6 13.1V17.6L18.84 19.58L19.56 18.5L16.95 16.97V13.1H15.6Z" />
+                <path
+                  d="M16.7 11.4C16.7 11.4 16.61 11.4 16.7 11.4C13.19 11.49 10.4 14.28 10.4 17.7C10.4 21.21 13.19 24 16.7 24S23 21.21 23 17.7 20.21 11.4 16.7 11.4M16.7 22.2C14.18 22.2 12.2 20.22 12.2 17.7S14.18 13.2 16.7 13.2 21.2 15.18 21.2 17.7 19.22 22.2 16.7 22.2M15.6 13.1V17.6L18.84 19.58L19.56 18.5L16.95 16.97V13.1H15.6Z"
+                />
               </svg>
             </v-icon>
           </v-btn>
@@ -280,22 +308,32 @@
         <div class="menu-content">
           <v-date-picker v-model="publishAt" hide-header show-adjacent-months />
           <v-btn
-            @click="publish(publishAt); pubmenu = false"
+            @click="
+              publish(publishAt)
+              pubmenu = false
+            "
             :disabled="!publishAt || error"
             :color="publishAt ? 'primary' : ''"
             variant="text"
-          >{{ $gettext('Publish') }}</v-btn>
+            >{{ $gettext('Publish') }}</v-btn
+          >
         </div>
       </v-menu>
 
-      <v-btn icon
+      <v-btn
+        icon
         @click="publish()"
         :loading="publishing"
         :title="$gettext('Publish')"
-        :class="{error: error}" class="menu-publish"
-        :disabled="item.published && !changed || error || !auth.can('file:publish')"
-        :variant="item.published && !changed || error || !auth.can('file:publish') ? 'plain' : 'flat'"
-        :color="item.published && !changed || error || !auth.can('file:publish') ? '' : 'blue-darken-2'"
+        :class="{ error: error }"
+        class="menu-publish"
+        :disabled="(item.published && !changed) || error || !auth.can('file:publish')"
+        :variant="
+          (item.published && !changed) || error || !auth.can('file:publish') ? 'plain' : 'flat'
+        "
+        :color="
+          (item.published && !changed) || error || !auth.can('file:publish') ? '' : 'blue-darken-2'
+        "
       >
         <v-icon>
           <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
@@ -315,27 +353,31 @@
   <v-main class="file-details">
     <v-form @submit.prevent>
       <v-tabs fixed-tabs v-model="tab">
-        <v-tab value="file" :class="{changed: changed, error: error}">{{ $gettext('File') }}</v-tab>
+        <v-tab value="file" :class="{ changed: changed, error: error }">{{
+          $gettext('File')
+        }}</v-tab>
         <v-tab value="refs">{{ $gettext('Used by') }}</v-tab>
       </v-tabs>
 
       <v-window v-model="tab" :touch="false">
-
         <v-window-item value="file">
           <FileDetailItem
-            @update:item="$emit('update:item', item); changed = true"
-            @update:file="file = $event; changed = true"
+            @update:item="
+              $emit('update:item', item)
+              changed = true
+            "
+            @update:file="
+              file = $event
+              changed = true
+            "
             @error="error = $event"
             :item="item"
           />
         </v-window-item>
 
         <v-window-item value="refs">
-          <FileDetailRefs
-            :item="item"
-          />
+          <FileDetailRefs :item="item" />
         </v-window-item>
-
       </v-window>
     </v-form>
   </v-main>
@@ -354,18 +396,21 @@
           path: item.path,
           previews: item.previews,
           description: item.description,
-          transcription: item.transcription,
-        },
+          transcription: item.transcription
+        }
       }"
       :load="() => versions(item.id)"
-      @revert="use($event); reset()"
+      @revert="
+        use($event)
+        reset()
+      "
       @use="use($event)"
     />
   </Teleport>
 </template>
 
 <style scoped>
-  .v-toolbar-title {
-    margin-inline-start: 0;
-  }
+.v-toolbar-title {
+  margin-inline-start: 0;
+}
 </style>

@@ -1,94 +1,91 @@
 <script>
-  import PageDetailContentList from './PageDetailContentList.vue'
-  import { useConfigStore } from '../stores'
+import PageDetailContentList from './PageDetailContentList.vue'
+import { useConfigStore } from '../stores'
 
-  export default {
-    components: {
-      PageDetailContentList
+export default {
+  components: {
+    PageDetailContentList
+  },
+
+  props: {
+    item: { type: Object, required: true },
+    assets: { type: Object, required: true },
+    elements: { type: Object, required: true }
+  },
+
+  emits: ['change', 'error'],
+
+  data: () => ({
+    changed: {},
+    errors: {},
+    tab: 'default'
+  }),
+
+  setup() {
+    const config = useConfigStore()
+    return { config }
+  },
+
+  computed: {
+    names() {
+      const type = this.item.type || 'page'
+      const theme = this.item.theme || 'cms'
+
+      return this.config.get(`themes.${theme}.types.${type}.sections`, ['main'])
     },
 
-    props: {
-      'item': {type: Object, required: true},
-      'assets': {type: Object, required: true},
-      'elements': {type: Object, required: true}
-    },
+    sections() {
+      if (this.names.length <= 1) {
+        return {}
+      }
 
-    emits: ['change', 'error'],
+      const sections = {}
 
-    data: () => ({
-      changed: {},
-      errors: {},
-      tab: 'default',
-    }),
+      for (const name of this.names) {
+        sections[name] = []
+      }
 
-    setup() {
-      const config = useConfigStore()
-      return { config }
-    },
+      for (const item of this.item.content || []) {
+        const name = item.group || 'main'
 
-    computed: {
-      names() {
-        const type = this.item.type || 'page'
-        const theme = this.item.theme || 'cms'
-
-        return this.config.get(`themes.${theme}.types.${type}.sections`, ['main'])
-      },
-
-
-      sections() {
-        if(this.names.length <= 1) {
-          return {}
-        }
-
-        const sections = {}
-
-        for(const name of this.names) {
+        if (!sections[name]) {
           sections[name] = []
         }
 
-        for(const item of (this.item.content || [])) {
-          const name = item.group || 'main'
-
-          if(!sections[name]) {
-            sections[name] = []
-          }
-
-          sections[name].push(item)
-        }
-
-        return sections
+        sections[name].push(item)
       }
+
+      return sections
+    }
+  },
+
+  methods: {
+    error(what, value) {
+      this.errors[what] = value
+      this.$emit('error', Object.values(this.errors).includes(true))
     },
 
-    methods: {
-      error(what, value) {
-        this.errors[what] = value
-        this.$emit('error', Object.values(this.errors).includes(true))
-      },
+    reset() {
+      this.changed = {}
+      this.errors = {}
 
+      Array.isArray(this.$refs.content)
+        ? this.$refs.content.forEach((ref) => ref.reset())
+        : this.$refs.content?.reset()
+    },
 
-      reset() {
-        this.changed = {}
-        this.errors = {}
+    update(section, list) {
+      const sections = this.sections
+      sections[section] = list
 
-        Array.isArray(this.$refs.content)
-          ? this.$refs.content.forEach(ref => ref.reset())
-          : this.$refs.content?.reset()
-      },
+      this.item.content = Object.values(sections).reduce((acc, entries) => {
+        return acc.concat(entries)
+      }, [])
 
-
-      update(section, list) {
-        const sections = this.sections
-        sections[section] = list
-
-        this.item.content = Object.values(sections).reduce((acc, entries) => {
-          return acc.concat(entries)
-        }, [])
-
-        this.changed[section] = true
-      }
+      this.changed[section] = true
     }
   }
+}
 </script>
 
 <template>
@@ -96,25 +93,32 @@
     <v-sheet class="box scroll">
       <div v-if="Object.keys(sections).length > 1">
         <v-tabs class="subtabs" v-model="tab" align-tabs="center">
-          <v-tab v-for="(list, section) in sections" :key="section"
+          <v-tab
+            v-for="(list, section) in sections"
+            :key="section"
             :class="{
               changed: changed[section],
               error: errors[section]
             }"
             :value="section"
-          >{{ $pgettext('cs', section) }}</v-tab>
+            >{{ $pgettext('cs', section) }}</v-tab
+          >
         </v-tabs>
 
         <v-window v-model="tab" :touch="false">
           <v-window-item v-for="(list, section) in sections" :key="section" :value="section">
-            <PageDetailContentList ref="content"
+            <PageDetailContentList
+              ref="content"
               :section="section"
               :item="item"
               :assets="assets"
               :content="list"
               :elements="elements"
               @error="error(section, $event)"
-              @update:content="update(section, $event); this.$emit('change', 'content')"
+              @update:content="
+                update(section, $event)
+                this.$emit('change', 'content')
+              "
             />
           </v-window-item>
         </v-window>
@@ -122,13 +126,17 @@
       <div v-else>
         <div class="subtabs"></div>
 
-        <PageDetailContentList ref="content"
+        <PageDetailContentList
+          ref="content"
           :item="item"
           :assets="assets"
           :content="item.content || []"
           :elements="elements"
           @error="error('main', $event)"
-          @update:content="item.content = $event; this.$emit('change', 'content')"
+          @update:content="
+            item.content = $event
+            this.$emit('change', 'content')
+          "
         />
       </div>
     </v-sheet>
@@ -136,16 +144,16 @@
 </template>
 
 <style scoped>
-  .v-sheet {
-    margin: 0;
-    padding-top: 0;
-  }
+.v-sheet {
+  margin: 0;
+  padding-top: 0;
+}
 
-  .v-sheet.scroll {
-    max-height: calc(100vh - 96px);
-  }
+.v-sheet.scroll {
+  max-height: calc(100vh - 96px);
+}
 
-  .subtabs {
-    margin-bottom: 16px;
-  }
+.subtabs {
+  margin-bottom: 16px;
+}
 </style>

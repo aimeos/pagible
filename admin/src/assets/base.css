@@ -4,28 +4,37 @@
 
 input:-webkit-autofill,
 input:-webkit-autofill:focus {
-  transition: background-color 0s 600000s, color 0s 600000s !important;
+  transition:
+    background-color 0s 600000s,
+    color 0s 600000s !important;
 }
 
-.spin1{animation:spinner_a1 1s linear infinite}
-.spin2{animation-delay:-0.75s}
-.spin3{animation-delay:-0.5s}
+.spin1 {
+  animation: spinner_a1 1s linear infinite;
+}
+.spin2 {
+  animation-delay: -0.75s;
+}
+.spin3 {
+  animation-delay: -0.5s;
+}
 @keyframes spinner_a1 {
-  90%,100% {
-    r: 3px
+  90%,
+  100% {
+    r: 3px;
   }
   50% {
-    r: 0.25px
+    r: 0.25px;
   }
 }
-
 
 body {
   --cms-primary: 64, 112, 160;
   --cms-primary-dark: 16, 64, 112;
 }
 
-.ltr, .ltr .v-field {
+.ltr,
+.ltr .v-field {
   direction: ltr !important;
 }
 
@@ -81,7 +90,7 @@ body {
 
 .v-tab.changed:before,
 .v-tab.error:before {
-  content: "•";
+  content: '•';
   font-size: 200%;
   margin-inline-end: 4px;
 }
@@ -103,11 +112,11 @@ body {
   padding: 0 !important;
 }
 
-.v-row  {
+.v-row {
   margin: 0 -8px !important;
 }
 
-.v-row > div[class*="v-col"] {
+.v-row > div[class*='v-col'] {
   padding: 0 8px !important;
 }
 
