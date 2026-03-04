@@ -110,6 +110,15 @@ export default {
   },
 
   methods: {
+    itemUpdated() {
+      this.$emit('update:item', this.item)
+      this.changed = true
+    },
+
+    errorUpdated(event) {
+      this.error = event
+    },
+
     published() {
       this.publish(this.publishAt)
       this.pubmenu = false
@@ -434,11 +443,8 @@ export default {
       <v-window v-model="tab" :touch="false">
         <v-window-item value="element">
           <ElementDetailItem
-            @update:item="
-              this.$emit('update:item', item)
-              changed = true
-            "
-            @error="error = $event"
+            @update:item="itemUpdated"
+            @error="errorUpdated"
             :assets="assets"
             :item="item"
           />

@@ -46,6 +46,16 @@ export default {
   },
 
   methods: {
+    toggleShow() {
+      this.show = !this.show
+    },
+
+    toggle(event) {
+      if ([13, 32].includes(event.keyCode)) {
+        this.toggleShow()
+      }
+    },
+
     cmslogin() {
       if (!this.creds.email || !this.creds.password) {
         return false
@@ -116,8 +126,8 @@ export default {
         >
           <template v-slot:append-inner>
             <v-icon
-              @click="show = !show"
-              @keydown="[13, 32].includes($event.keyCode) ? (show = !show) : false"
+              @click="toggleShow"
+              @keydown="toggle"
               >{{ show ? `mdi-eye-off` : `mdi-eye` }}</v-icon
             >
           </template>

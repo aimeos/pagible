@@ -60,6 +60,16 @@ export default {
   },
 
   methods: {
+    contentUpdated(section, event) {
+      this.update(section, event)
+      this.$emit('change', 'content')
+    },
+
+    mainContentUpdated(event) {
+      this.item.content = event
+      this.$emit('change', 'content')
+    },
+
     error(what, value) {
       this.errors[what] = value
       this.$emit('error', Object.values(this.errors).includes(true))
@@ -115,10 +125,7 @@ export default {
               :content="list"
               :elements="elements"
               @error="error(section, $event)"
-              @update:content="
-                update(section, $event)
-                this.$emit('change', 'content')
-              "
+              @update:content="contentUpdated(section, $event)"
             />
           </v-window-item>
         </v-window>
@@ -133,10 +140,7 @@ export default {
           :content="item.content || []"
           :elements="elements"
           @error="error('main', $event)"
-          @update:content="
-            item.content = $event
-            this.$emit('change', 'content')
-          "
+          @update:content="mainContentUpdated"
         />
       </div>
     </v-sheet>

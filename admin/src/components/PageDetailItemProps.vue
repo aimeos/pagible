@@ -46,6 +46,11 @@ export default {
   },
 
   methods: {
+    themeUpdated(event) {
+      this.update('theme', event)
+      this.item.type = ''
+    },
+
     checkPath() {
       return (
         this.$apollo
@@ -238,10 +243,7 @@ export default {
             :modelValue="item.theme"
             :label="$gettext('Theme')"
             :items="Object.keys(config.get('themes', { cms: '' }))"
-            @update:modelValue="
-              update('theme', $event)
-              item.type = ''
-            "
+            @update:modelValue="themeUpdated"
             variant="underlined"
           ></v-select>
           <v-select

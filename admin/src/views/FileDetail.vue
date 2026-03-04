@@ -43,6 +43,20 @@ export default {
   },
 
   methods: {
+    itemUpdated() {
+      this.$emit('update:item', this.item)
+      this.changed = true
+    },
+
+    fileUpdated(event) {
+      this.file = event
+      this.changed = true
+    },
+
+    errorUpdated(event) {
+      this.error = event
+    },
+
     published() {
       this.publish(this.publishAt)
       this.pubmenu = false
@@ -369,15 +383,9 @@ export default {
       <v-window v-model="tab" :touch="false">
         <v-window-item value="file">
           <FileDetailItem
-            @update:item="
-              $emit('update:item', item)
-              changed = true
-            "
-            @update:file="
-              file = $event
-              changed = true
-            "
-            @error="error = $event"
+            @update:item="itemUpdated"
+            @update:file="fileUpdated"
+            @error="errorUpdated"
             :item="item"
           />
         </v-window-item>

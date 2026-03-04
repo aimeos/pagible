@@ -99,6 +99,16 @@ export default {
   },
 
   methods: {
+    descriptionUpdated(lang, event) {
+      this.item.description[lang] = event
+      this.$emit('update:item', this.item)
+    },
+
+    transcriptionUpdated(lang, event) {
+      this.item.transcription[lang] = event
+      this.$emit('update:item', this.item)
+    },
+
     painted() {
       this.selected ? this.inpaint() : this.repaint()
       this.menu['paint'] = false
@@ -1502,10 +1512,7 @@ export default {
             <v-window-item v-for="entry in locales()" :key="entry.value" :value="entry.value">
               <v-textarea
                 ref="description"
-                @update:modelValue="
-                  item.description[entry.value] = $event
-                  $emit('update:item', item)
-                "
+                @update:modelValue="descriptionUpdated(entry.value, $event)"
                 :label="$gettext('Description (%{lang})', { lang: entry.value })"
                 :modelValue="item.description?.[entry.value] || ''"
                 :readonly="readonly"
@@ -1555,10 +1562,7 @@ export default {
             <v-window-item v-for="entry in locales()" :key="entry.value" :value="entry.value">
               <v-textarea
                 ref="transcription"
-                @update:modelValue="
-                  item.transcription[entry.value] = $event
-                  $emit('update:item', item)
-                "
+                @update:modelValue="transcriptionUpdated(entry.value, $event)"
                 :label="$gettext('Transcription (%{lang})', { lang: entry.value })"
                 :modelValue="item.transcription?.[entry.value] || ''"
                 :readonly="readonly"

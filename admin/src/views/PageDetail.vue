@@ -187,6 +187,11 @@ export default {
   },
 
   methods: {
+    pageUpdated(event) {
+      Object.assign(this.item, event)
+      this.changed.page = true
+    },
+
     published() {
       this.publish(this.publishAt)
       this.pubmenu = false
@@ -846,10 +851,7 @@ export default {
             ref="page"
             :item="item"
             :assets="assets"
-            @update:item="
-              Object.assign(item, $event)
-              changed.page = true
-            "
+            @update:item="pageUpdated"
             @update:aside="asidePage = $event"
             @error="errors.page = $event"
           />
