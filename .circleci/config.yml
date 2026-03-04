@@ -243,9 +243,9 @@ jobs:
           paths: [./vendor]
       - run: ./vendor/bin/phpstan --no-progress
 
-  "admin-unit":
+  "admin-lint":
     docker:
-      - image: cypress/browsers:latest
+      - image: cimg/node:lts
     working_directory: ~/project/admin
     steps:
       - checkout:
@@ -253,13 +253,32 @@ jobs:
       - restore_cache:
           keys:
             - admin-{{ checksum "package-lock.json" }}
-      - run: npm ci
+      - run: npm ci --cache ~/.npm
       - save_cache:
           key: admin-{{ checksum "package-lock.json" }}
           paths:
-            - ./node_modules
+            - ./.npm
+      - run: npx eslint
+
+  "admin-unit":
+    docker:
+      - image: cypress/browsers:latest
+    working_directory: ~/project/admin
+    parallelism: 4
+    steps:
+      - checkout:
+          path: ~/project
+      - restore_cache:
+          keys:
+            - admin-{{ checksum "package-lock.json" }}
+      - run: npm ci --cache ~/.npm
+      - save_cache:
+          key: admin-{{ checksum "package-lock.json" }}
+          paths:
+            - ./.npm
             - ~/.cache/Cypress
-      - run: npm run test:unit
+      - run: npx cypress run --component \
+              --spec $(circleci tests glob 'src/**/*.cy.{js,ts,jsx,tsx}' | circleci tests split --split-by=timings | tr '\n' ',')
 
   "admin-e2e":
     docker:
@@ -272,7 +291,7 @@ jobs:
       - restore_cache:
           keys:
             - admin-{{ checksum "package-lock.json" }}
-      - run: npm ci
+      - run: npm ci --cache ~/.npm
       - save_cache:
           key: admin-{{ checksum "package-lock.json" }}
           paths:
@@ -298,5 +317,6 @@ workflows:
       - "php85-mysql"
       - "php85-pgsql"
       - "php85-phpstan"
+      - "admin-lint"
       - "admin-unit"
       - "admin-e2e"

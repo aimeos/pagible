@@ -7,18 +7,16 @@
   import { VueDraggable } from 'vue-draggable-plus'
   import { useAppStore, useAuthStore } from '../stores'
   import FileAiDialog from '../components/FileAiDialog.vue'
-  import FileListItems from '../components/FileListItems.vue'
   import FileUrlDialog from '../components/FileUrlDialog.vue'
   import FileDialog from '../components/FileDialog.vue'
   import FileDetail from '../views/FileDetail.vue'
 
   export default {
     components: {
-      FileDetail,
+      FileDetail, // eslint-disable-line vue/no-unused-components -- used programmatically via openView()
       FileDialog,
       FileAiDialog,
       FileUrlDialog,
-      FileListItems,
       VueDraggable
     },
 

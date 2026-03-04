@@ -14,7 +14,7 @@
   export default {
     components: {
       FileListItems,
-      FileDetail,
+      FileDetail, // eslint-disable-line vue/no-unused-components -- used programmatically via openView()
       Navigation,
       AsideList,
       User

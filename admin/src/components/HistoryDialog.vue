@@ -156,7 +156,7 @@
               <v-card-title @click="show = !show">{{ $gettext('Current') }}</v-card-title>
               <v-card-text>
                 <div class="diff" :class="{show: show}" @click="show = !show">
-                  <span v-for="part of diff(latest?.data, current.data)" :class="{added: part.added, removed: part.removed}">
+                  <span v-for="(part, idx) of diff(latest?.data, current.data)" :key="idx" :class="{added: part.added, removed: part.removed}">
                     {{ part.value || part }}
                   </span>
                 </div>
@@ -217,7 +217,7 @@
               </v-card-subtitle>
               <v-card-text>
                 <div class="diff" :class="{show: version._show}" @click="version._show = !version._show">
-                  <span v-for="part of diff(version.data, current.data)" :class="{added: part.removed, removed: part.added}">
+                  <span v-for="(part, idx) of diff(version.data, current.data)" :key="idx" :class="{added: part.removed, removed: part.added}">
                     {{ part.value || part }}
                   </span>
                 </div>

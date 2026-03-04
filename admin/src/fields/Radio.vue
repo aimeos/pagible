@@ -42,7 +42,7 @@
     :modelValue="modelValue ?? config.default ?? ''"
     @update:modelValue="$emit('update:modelValue', $event)"
     hide-details="auto"
-  ><v-radio v-for="option in (config.options || [])"
+  ><v-radio v-for="(option, idx) in (config.options || [])" :key="idx"
       :label="option.label"
       :value="option.value">
     </v-radio>

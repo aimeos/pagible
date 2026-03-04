@@ -1279,10 +1279,10 @@
           </div>
 
           <v-tabs v-model="tabdesc">
-            <v-tab v-for="entry in locales()" :value="entry.value">{{ entry.title }}</v-tab>
+            <v-tab v-for="entry in locales()" :key="entry.value" :value="entry.value">{{ entry.title }}</v-tab>
           </v-tabs>
           <v-window v-model="tabdesc" :touch="false">
-            <v-window-item v-for="entry in locales()" :value="entry.value">
+            <v-window-item v-for="entry in locales()" :key="entry.value" :value="entry.value">
               <v-textarea ref="description"
                 @update:modelValue="item.description[entry.value] = $event; $emit('update:item', item)"
                 :label="$gettext('Description (%{lang})', {lang: entry.value})"
@@ -1321,10 +1321,10 @@
           </div>
 
           <v-tabs v-model="tabtrans">
-            <v-tab v-for="entry in locales()" :value="entry.value">{{ entry.title }}</v-tab>
+            <v-tab v-for="entry in locales()" :key="entry.value" :value="entry.value">{{ entry.title }}</v-tab>
           </v-tabs>
           <v-window v-model="tabtrans" :touch="false">
-            <v-window-item v-for="entry in locales()" :value="entry.value">
+            <v-window-item v-for="entry in locales()" :key="entry.value" :value="entry.value">
               <v-textarea ref="transcription"
                 @update:modelValue="item.transcription[entry.value] = $event; $emit('update:item', item)"
                 :label="$gettext('Transcription (%{lang})', {lang: entry.value})"
