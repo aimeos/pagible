@@ -153,6 +153,16 @@ export default {
       this.file = {}
     },
 
+    addFromDialog(event) {
+      this.handle(event)
+      this.vfiles = false
+    },
+
+    addFromUrl(event) {
+      this.select(event)
+      this.vurls = false
+    },
+
     select(items) {
       if (!Array.isArray(items) || !items.length) {
         this.$log(`File::select(): Items must be a non-empty array`, items)
@@ -308,23 +318,11 @@ export default {
   </v-row>
 
   <Teleport to="body">
-    <FileDialog
-      v-model="vfiles"
-      @add="
-        handle($event)
-        vfiles = false
-      "
-    />
+    <FileDialog v-model="vfiles" @add="addFromDialog" />
   </Teleport>
 
   <Teleport to="body">
-    <FileUrlDialog
-      v-model="vurls"
-      @add="
-        select($event)
-        vurls = false
-      "
-    />
+    <FileUrlDialog v-model="vurls" @add="addFromUrl" />
   </Teleport>
 </template>
 

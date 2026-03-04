@@ -103,25 +103,11 @@ export default {
   </v-row>
 
   <Teleport to="body">
-    <FileDialog
-      v-model="vfiles"
-      @add="
-        handle($event)
-        vfiles = false
-      "
-      :filter="{ mime: 'video/' }"
-    />
+    <FileDialog v-model="vfiles" @add="addFromDialog" :filter="{ mime: 'video/' }" />
   </Teleport>
 
   <Teleport to="body">
-    <FileUrlDialog
-      v-model="vurls"
-      @add="
-        select($event)
-        vurls = false
-      "
-      mime="video/"
-    />
+    <FileUrlDialog v-model="vurls" @add="addFromUrl" mime="video/" />
   </Teleport>
 </template>
 

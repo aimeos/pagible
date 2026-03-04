@@ -178,6 +178,11 @@ export default {
       )
     },
 
+    addFromAi(event) {
+      this.select(event)
+      this.vcreate = false
+    },
+
     select(items) {
       if (!Array.isArray(items)) {
         items = [items]
@@ -315,14 +320,7 @@ export default {
   </Teleport>
 
   <Teleport to="body">
-    <FileAiDialog
-      v-model="vcreate"
-      @add="
-        select($event)
-        vcreate = false
-      "
-      :context="context"
-    />
+    <FileAiDialog v-model="vcreate" @add="addFromAi" :context="context" />
   </Teleport>
 
   <Teleport to="body">

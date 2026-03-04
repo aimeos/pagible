@@ -23,6 +23,11 @@ export default {
   },
 
   methods: {
+    addFromAi(event) {
+      this.select(event)
+      this.vcreate = false
+    },
+
     handle(data, path) {
       return new Promise((resolve, reject) => {
         const image = new Image()
@@ -144,36 +149,15 @@ export default {
   </v-row>
 
   <Teleport to="body">
-    <FileDialog
-      v-model="vfiles"
-      @add="
-        handle($event)
-        vfiles = false
-      "
-      :filter="{ mime: 'image/' }"
-      grid
-    />
+    <FileDialog v-model="vfiles" @add="addFromDialog" :filter="{ mime: 'image/' }" grid />
   </Teleport>
 
   <Teleport to="body">
-    <FileAiDialog
-      v-model="vcreate"
-      @add="
-        select($event)
-        vcreate = false
-      "
-      :context="context"
-    />
+    <FileAiDialog v-model="vcreate" @add="addFromAi" :context="context" />
   </Teleport>
 
   <Teleport to="body">
-    <FileUrlDialog
-      v-model="vurls"
-      @add="
-        select($event)
-        vurls = false
-      "
-    />
+    <FileUrlDialog v-model="vurls" @add="addFromUrl" />
   </Teleport>
 </template>
 
