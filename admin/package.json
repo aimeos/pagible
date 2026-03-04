@@ -30,7 +30,7 @@
     "apollo-link-batch-http": "^1.2",
     "apollo-upload-client": "^18.0.1",
     "chart.js": "^4.5.0",
-    "ckeditor5": "^45.0.0",
+    "ckeditor5": "^47.6.0",
     "cropperjs": "^1.5.13",
     "diff": "^8.0",
     "dompurify": "^3.3.1",
