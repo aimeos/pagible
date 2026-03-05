@@ -39,7 +39,7 @@
     "mdast-util-to-markdown": "^2.1.2",
     "micromark": "^4.0.2",
     "node": "^25.8.0",
-    "npm": "^11.6.0",
+    "npm": "^11.11.0",
     "pinia": "^3.0",
     "sass": "^1.86",
     "vite-plugin-vuetify": "^2.1",
