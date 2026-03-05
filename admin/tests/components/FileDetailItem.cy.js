@@ -3,6 +3,9 @@ import { useAuthStore } from '../../src/stores'
 
 const stubs = {
   FileAiDialog: { template: '<div class="ai-dialog-stub" />' },
+  FileDetailItemImage: { template: '<div class="image-stub" />' },
+  FileDetailItemVideo: { template: '<div class="video-stub" />' },
+  FileDetailItemAudio: { template: '<div class="audio-stub" />' },
 }
 
 const item = {
@@ -21,7 +24,7 @@ const item = {
 function mountDetail(props = {}, perms = {}) {
   return cy.mount(FileDetailItem, {
     props: {
-      item: { ...item },
+      item: { ...item, ...props.item },
       ...props,
     },
     global: {
@@ -57,9 +60,27 @@ describe('FileDetailItem', () => {
     cy.get('.v-select').should('exist')
   })
 
-  it('shows image preview for image mime types', () => {
+  it('renders image sub-component for image mime types', () => {
     mountDetail()
-    cy.get('.v-img, img').should('exist')
+    cy.get('.image-stub').should('exist')
+  })
+
+  it('renders video sub-component for video mime types', () => {
+    mountDetail({ item: { mime: 'video/mp4' } })
+    cy.get('.video-stub').should('exist')
+  })
+
+  it('renders audio sub-component for audio mime types', () => {
+    mountDetail({ item: { mime: 'audio/mpeg' } })
+    cy.get('.audio-stub').should('exist')
+  })
+
+  it('renders fallback SVG for unknown mime types', () => {
+    mountDetail({ item: { mime: 'application/pdf' } })
+    cy.get('svg').should('exist')
+    cy.get('.image-stub').should('not.exist')
+    cy.get('.video-stub').should('not.exist')
+    cy.get('.audio-stub').should('not.exist')
   })
 
   it('makes name field readonly without file:save permission', () => {
@@ -70,5 +91,20 @@ describe('FileDetailItem', () => {
   it('makes name field editable with file:save permission', () => {
     mountDetail({}, { 'file:save': true })
     cy.get('input').first().should('not.have.attr', 'readonly')
+  })
+
+  it('shows transcription section for audio files', () => {
+    mountDetail({ item: { mime: 'audio/mpeg' } })
+    cy.contains('Transcriptions').should('exist')
+  })
+
+  it('shows transcription section for video files', () => {
+    mountDetail({ item: { mime: 'video/mp4' } })
+    cy.contains('Transcriptions').should('exist')
+  })
+
+  it('hides transcription section for image files', () => {
+    mountDetail()
+    cy.contains('Transcriptions').should('not.exist')
   })
 })
