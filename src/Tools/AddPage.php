@@ -21,7 +21,7 @@ use Laravel\Mcp\Response;
 use Laravel\Mcp\Request;
 
 
-#[Name('create-page')]
+#[Name('add-page')]
 #[Title('Create a new page within the page tree')]
 #[Description('Creates a new page and adds it to the page tree. Returns the added page and its content as JSON object.')]
 class AddPage extends Tool
