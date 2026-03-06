@@ -382,6 +382,57 @@ class GraphqlTest extends TestAbstract
     }
 
 
+    public function testTranslate()
+    {
+        $texts = ['Hello', 'World'];
+        $expected = ['Hallo', 'Welt'];
+
+        $response = TextResponse::fromText( $expected[0] )->add( $expected[1] );
+        Prisma::fake( [$response] );
+
+        $this->actingAs( $this->user )->graphQL( '
+            mutation($texts: [String!]!, $to: String!, $from: String, $context: String) {
+                translate(texts: $texts, to: $to, from: $from, context: $context)
+            }
+        ', [
+            'texts' => $texts,
+            'to' => 'de',
+            'from' => 'en',
+            'context' => 'General translation',
+        ] )->assertJson( [
+            'data' => [
+                'translate' => $expected
+            ]
+        ] );
+    }
+
+
+    public function testTranslateEmptyTexts()
+    {
+        $this->actingAs( $this->user )->graphQL( '
+            mutation($texts: [String!]!, $to: String!) {
+                translate(texts: $texts, to: $to)
+            }
+        ', [
+            'texts' => [],
+            'to' => 'de',
+        ] )->assertGraphQLErrorMessage( 'Input texts must not be empty' );
+    }
+
+
+    public function testTranslateEmptyTo()
+    {
+        $this->actingAs( $this->user )->graphQL( '
+            mutation($texts: [String!]!, $to: String!) {
+                translate(texts: $texts, to: $to)
+            }
+        ', [
+            'texts' => ['Hello'],
+            'to' => '',
+        ] )->assertGraphQLErrorMessage( 'Target language must not be empty' );
+    }
+
+
     public function testMetrics()
     {
         $expected = [
