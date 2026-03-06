@@ -8,8 +8,9 @@
 namespace Aimeos\Cms\GraphQL\Mutations;
 
 use Aimeos\Cms\Permission;
+use Aimeos\Prisma\Prisma;
+use Aimeos\Prisma\Exceptions\PrismaException;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Http;
 use GraphQL\Error\Error;
 
 
@@ -26,35 +27,37 @@ final class Translate
             throw new Error( 'Insufficient permissions' );
         }
 
-        if( empty( $args['texts'] ) ) {
+        if( empty( $texts = $args['texts'] ) ) {
             throw new Error( 'Input texts must not be empty' );
         }
 
-        if( empty( $args['to'] ) ) {
+        if( empty( $to = $args['to'] ) ) {
             throw new Error( 'Target language must not be empty' );
         }
 
-        if( empty( $apiKey = config( 'cms.ai.translate.api_key' ) ) ) {
-            throw new Error( 'DeepL API key must be configured' );
-        }
+        $provider = config( 'cms.ai.translate.provider' );
+        $config = config( 'cms.ai.translate', [] );
+        $model = config( 'cms.ai.translate.model' );
 
-        $url = rtrim( config( 'cms.ai.translate.url', 'https://api-free.deepl.com/v2/translate' ), '/' );
-        $payload = [
+        $config += [
             'ignore_tags' => ['x'],
             'tag_handling' => 'xml',
             'preserve_formatting' => true,
             'model_type' => 'prefer_quality_optimized',
-            'target_lang' => strtoupper( $args['to'] ),
-            'source_lang' => strtoupper( $args['from'] ?? '' ),
-            'context' => $args['context'] ?? '',
-            'text' => $args['texts'],
         ];
 
-        $response = Http::withHeaders([
-            'Authorization' => 'DeepL-Auth-Key ' . $apiKey,
-            'Content-Type' => 'application/json'
-        ])->post( $url, $payload )->throw();
-
-        return collect( (array) $response->json( 'translations', [] ) )->pluck( 'text' )->toArray();
+        try
+        {
+            return Prisma::type( 'text' )
+                ->using( $provider, $config )
+                ->model( $model )
+                ->ensure( 'translate' )
+                ->translate( $texts, $to, $args['from'] ?? null, $args['context'] ?? null, $config ) // @phpstan-ignore-line method.notFound
+                ->texts();
+        }
+        catch( PrismaException $e )
+        {
+            throw new Error( $e->getMessage(), null, null, null, null, $e );
+        }
     }
 }

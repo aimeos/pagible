@@ -8,6 +8,7 @@
 namespace Aimeos\Cms\Tools;
 
 use Aimeos\Cms\Permission;
+use Aimeos\Prisma\Prisma;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Attributes\Description;
@@ -20,7 +21,9 @@ use Laravel\Mcp\Request;
 
 #[Name('translate-content')]
 #[Title('Translate text content')]
-#[Description('Translates one or more texts from one language to another using DeepL. Returns the translated texts as a JSON array in the same order as the input.')]
+#[Description('Translates one or more texts from one language to another.
+Formatting and parts that should not be translated must be removed and added again afterwards.
+Returns the translated texts as a JSON array in the same order as the input.')]
 class TranslateContent extends Tool
 {
     /**
@@ -43,37 +46,21 @@ class TranslateContent extends Tool
             'to.required' => 'You must specify the target language code, e.g., "de" or "fr".',
         ] );
 
-        $apiKey = config( 'cms.ai.translate.api_key' );
+        $provider = config( 'cms.ai.translate.provider' );
+        $config = config( 'cms.ai.translate', [] );
+        $model = config( 'cms.ai.translate.model' );
 
-        if( empty( $apiKey ) ) {
-            return Response::structured( ['error' => 'Translation API key is not configured.'] );
-        }
+        $texts = $validated['texts'];
+        $to = $validated['to'];
+        $from = $validated['from'] ?? null;
+        $context = $validated['context'] ?? null;
 
-        $url = rtrim( config( 'cms.ai.translate.url', 'https://api-free.deepl.com/v2/translate' ), '/' );
-
-        $payload = [
-            'ignore_tags' => ['x'],
-            'tag_handling' => 'xml',
-            'preserve_formatting' => true,
-            'model_type' => 'prefer_quality_optimized',
-            'target_lang' => strtoupper( $validated['to'] ),
-            'text' => $validated['texts'],
-        ];
-
-        if( !empty( $validated['from'] ) ) {
-            $payload['source_lang'] = strtoupper( $validated['from'] );
-        }
-
-        if( !empty( $validated['context'] ) ) {
-            $payload['context'] = $validated['context'];
-        }
-
-        $response = Http::withHeaders([
-            'Authorization' => 'DeepL-Auth-Key ' . $apiKey,
-            'Content-Type' => 'application/json'
-        ])->post( $url, $payload )->throw();
-
-        $translations = collect( (array) $response->json( 'translations', [] ) )->pluck( 'text' )->toArray();
+        $translations =  Prisma::text()
+            ->using( $provider, $config )
+            ->model( $model )
+            ->ensure( 'translate' )
+            ->translate( $texts, $to, $from, $context, $config ) // @phpstan-ignore-line method.notFound
+            ->texts();
 
         return Response::structured( ['translations' => $translations] );
     }
