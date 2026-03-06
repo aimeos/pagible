@@ -22,7 +22,6 @@ use Laravel\Mcp\Request;
 
 
 #[IsReadOnly]
-#[IsOpenWorld]
 #[Name('search-pages')]
 #[Title('Search for pages by keyword')]
 #[Description('Searches the page tree for pages containing a keyword. Returns up to 10 matching pages as JSON array.')]
@@ -57,7 +56,7 @@ class SearchPages extends Tool
                 $builder->whereAny( ['aux->content', 'aux->meta', 'data->name', 'data->path', 'data->title'], 'like', '%' . $term . '%' )
                     ->where( 'lang', $lang );
             } )
-            ->take( 10 )
+            ->take( 25 )
             ->get()
             ->map( function( $item ) {
                 /** @var Page $item */
