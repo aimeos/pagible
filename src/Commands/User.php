@@ -57,12 +57,12 @@ class User extends Command
             $user = Permission::add( $this->permissions( '*' ), $user );
         }
 
-        if( $this->option( 'add' ) ) {
-            $user = Permission::add( $this->permissions( $this->option( 'add' ) ), $user ); // @phpstan-ignore-line argument.type
+        if( $perms = $this->option( 'add' ) ) {
+            $user = Permission::add( $this->permissions( $perms ), $user ); // @phpstan-ignore-line argument.type
         }
 
-        if( $this->option( 'remove' ) ) {
-            $user = Permission::del( $this->permissions( $this->option( 'remove' ) ), $user ); // @phpstan-ignore-line argument.type
+        if( $perms = $this->option( 'remove' ) ) {
+            $user = Permission::del( $this->permissions( $perms ), $user ); // @phpstan-ignore-line argument.type
         }
 
         if( $this->option( 'disable' ) ) {

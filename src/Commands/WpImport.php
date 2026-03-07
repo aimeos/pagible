@@ -185,7 +185,8 @@ class WpImport extends Command
      *
      * @param array<string, mixed> $pageData
      * @param array<int|string, mixed> $contentElements
-     * @param array<string> $fileIds
+     * @param Page $blogPage
+     * @return Page The created article page
      */
     protected function createArticlePage( array $pageData, array $contentElements, Page $blogPage ): Page
     {
@@ -808,7 +809,8 @@ class WpImport extends Command
                 && isset( $prev['data']['text'] ) && isset( $el['data']['text'] ) )
             {
                 $sep = $el['type'] === 'text' ? "\n\n" : '';
-                $merged[array_key_last( $merged )]['data']['text'] .= $sep . $el['data']['text'];
+                $key = array_key_last( $merged ) ?? 0;
+                $merged[$key]['data']['text'] .= $sep . $el['data']['text'];
             }
             else
             {
@@ -1371,6 +1373,7 @@ class WpImport extends Command
             $searchPos = $matchPos + strlen( $m[0][0] );
             $depth = 1;
             $closeEnd = null;
+            $contentEnd = $searchPos;
             $contentStart = $searchPos;
 
             while( $depth > 0 && preg_match( '/<!--\s*(\/)?wp:' . preg_quote( $type, '/' ) . '(?:\s+\{[^}]*\})?\s*(\/)?-->/i', $html, $cm, PREG_OFFSET_CAPTURE, $searchPos ) )
