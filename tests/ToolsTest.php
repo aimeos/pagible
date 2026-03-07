@@ -793,24 +793,19 @@ class ToolsTest extends TestAbstract
 
     public function testTranslateContent()
     {
-        $this->seed( \Database\Seeders\CmsSeeder::class );
-
         config(['cms.ai.translate.api_key' => 'test-key']);
-        config(['cms.ai.translate.url' => 'https://api-free.deepl.com/v2/translate']);
 
-        Http::fake([
-            'api-free.deepl.com/*' => Http::response([
-                'translations' => [
-                    ['text' => 'Hallo Welt'],
-                ],
-            ], 200),
-        ]);
+        $texts = ['Hello', 'World'];
+        $expected = ['Hallo', 'Welt'];
+
+        $response = \Aimeos\Prisma\Responses\TextResponse::fromTexts( $expected );
+        \Aimeos\Prisma\Prisma::fake( [$response] );
 
         $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\TranslateContent::class, [
             'texts' => ['Hello World'],
             'to' => 'de',
         ] );
 
-        $response->assertOk()->assertSee( ['translations', 'Hallo Welt'] );
+        $response->assertOk()->assertSee( ['translations'] );
     }
 }

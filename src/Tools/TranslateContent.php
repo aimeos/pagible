@@ -50,11 +50,16 @@ class TranslateContent extends Tool
         $config = config( 'cms.ai.translate', [] );
         $model = config( 'cms.ai.translate.model' );
 
+        $texts = $validated['texts'];
+        $to = $validated['to'];
+        $from = $validated['from'] ?? null;
+        $context = $validated['context'] ?? null;
+
         $translations =  Prisma::text()
             ->using( $provider, $config )
             ->model( $model )
             ->ensure( 'translate' )
-            ->translate( $texts, $to, $args['from'] ?? null, $args['context'] ?? null, $config ) // @phpstan-ignore-line method.notFound
+            ->translate( $texts, $to, $from, $context, $config ) // @phpstan-ignore-line method.notFound
             ->texts();
 
         return Response::structured( ['translations' => $translations] );
