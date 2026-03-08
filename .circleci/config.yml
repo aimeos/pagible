@@ -114,6 +114,7 @@ jobs:
           DB_USERNAME: SA
           DB_PASSWORD: S3c0r3P4ss
           DB_DATABASE: cms
+          SCOUT_DRIVER: collection
       - image: mcr.microsoft.com/mssql/server:2017-latest
         environment:
           SA_PASSWORD: S3c0r3P4ss

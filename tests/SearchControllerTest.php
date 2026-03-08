@@ -15,6 +15,8 @@ class SearchControllerTest extends TestAbstract
 {
     use DatabaseTruncation;
 
+    protected $connectionsToTransact = [];
+
 
     public function testIndex()
     {
