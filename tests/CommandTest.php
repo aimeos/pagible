@@ -44,8 +44,6 @@ class CommandTest extends TestAbstract
 
     public function testUser(): void
     {
-        $this->seed( CmsSeeder::class );
-
         $this->artisan('cms:user', ['-p' => 'test', 'email' => 'test@example.com'])->assertExitCode( 0 );
         $this->assertEquals( 0, User::where('email', 'test@example.com')->get()->first()?->cmseditor );
 

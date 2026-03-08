@@ -242,8 +242,6 @@ class GraphqlFileTest extends TestAbstract
 
     public function testAddFile()
     {
-        $this->seed( CmsSeeder::class );
-
         $this->expectsDatabaseQueryCount( 4 );
         $response = $this->actingAs( $this->user )->multipartGraphQL( [
             'query' => '
