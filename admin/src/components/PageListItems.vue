@@ -1248,7 +1248,7 @@ export default {
         </a>
         <a class="item-aux" :href="url(node)" target="_blank" draggable="false">
           <div class="item-domain">{{ node.domain }}</div>
-          <span class="item-path item-subtitle">{{ url(node) }}</span>
+          <span class="item-path item-subtitle">{{ '/' + node.path }}</span>
           <span v-if="node.to" class="item-to item-subtitle"> ➔ {{ node.to }}</span>
         </a>
       </div>
@@ -1359,6 +1359,7 @@ export default {
 }
 
 .tree-node-inner .item-aux {
+  text-align: end;
   width: 100%;
 }
 

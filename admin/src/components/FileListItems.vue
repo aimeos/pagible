@@ -922,7 +922,7 @@ export default {
 }
 
 .items.grid .item-aux {
-  text-align: start;
+  text-align: end;
   width: 100%;
 }
 </style>

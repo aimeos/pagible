@@ -733,6 +733,7 @@ export default {
 }
 
 .items .item-aux {
+  text-align: end;
   width: 100%;
 }
 
