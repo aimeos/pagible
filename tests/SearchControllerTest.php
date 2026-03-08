@@ -7,11 +7,15 @@
 
 namespace Tests;
 
+use Illuminate\Foundation\Testing\DatabaseTruncation;
 use Illuminate\Http\Request;
 
 
 class SearchControllerTest extends TestAbstract
 {
+    use DatabaseTruncation;
+
+
     public function testIndex()
     {
         $this->seed( \Database\Seeders\CmsSeeder::class );
