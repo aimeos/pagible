@@ -62,7 +62,7 @@ return new class extends Migration
                 try {
                     $db->statement('CREATE FULLTEXT INDEX ON cms_index(content) KEY INDEX pk_cms_index ON cms_index_catalog');
                 } catch( \Exception $e ) {
-                    $this->command->warn('SQL Server fulltext search not supported, skipping fulltext index');
+                    echo "SQL Server fulltext search not supported, skipping fulltext index\n";
                 }
             }
         }
@@ -86,7 +86,7 @@ return new class extends Migration
             try {
                 $db->statement('DROP FULLTEXT INDEX ON cms_index');
             } catch( \Exception $e ) {
-                $this->command->warn('SQL Server fulltext search not supported, skip dropping fulltext index');
+                echo "SQL Server fulltext search not supported, skip dropping fulltext index\n";
             }
 
             $db->statement('DROP FULLTEXT CATALOG cms_index_catalog');
