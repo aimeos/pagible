@@ -39,7 +39,7 @@ return new class extends Migration
             $schema->create('cms_index', function (Blueprint $table) use ($driver) {
 
                 if( $driver === 'sqlsrv' ) {
-                    $table->id()->index('pk_cms_index');
+                    $table->id()->primary('pk_cms_index');
                 }
 
                 $table->uuid('page_id');
