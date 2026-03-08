@@ -29,6 +29,6 @@ class Index extends Command
      */
     public function handle(): void
     {
-        Page::where( 'status', '>', 0 )->searchable();
+        Page::where( 'status', '>', 0 )->searchable(); // @phpstan-ignore method.notFound
     }
 }

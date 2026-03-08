@@ -268,6 +268,8 @@ class Page extends Model
 
     /**
      * Returns the searchable data for the page.
+     *
+     * @return array<int, array<string, string>>
      */
     public function toSearchableArray(): array
     {
@@ -281,7 +283,7 @@ class Page extends Model
         $content = '';
         $config = config( 'cms.schemas.content', [] );
 
-        foreach( collect( $this->content )->merge( $this->elements ) as $el )
+        foreach( collect( (array) $this->content )->merge( $this->elements ) as $el )
         {
             $fields = (array) ( $config[@$el->type]['fields'] ?? [] );
 

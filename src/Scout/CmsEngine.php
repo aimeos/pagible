@@ -14,7 +14,7 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
      * Create a search index.
      *
      * @param  string  $name
-     * @param  array  $options
+     * @param  array<string, mixed>  $options
      * @return mixed
      */
     public function createIndex( $name, array $options = [] )
@@ -35,13 +35,13 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
     /**
      * Remove the given model from the index.
      *
-     * @param  \Illuminate\Database\Eloquent\Collection  $models
+     * @param  \Illuminate\Database\Eloquent\Collection<int, \Aimeos\Cms\Models\Page>  $models
      * @return void
      */
     public function delete( $models )
     {
-        $models->first()->getConnection()->table( 'cms_index' )
-            ->whereIn( 'page_id', $models->map->getScoutKey()->all() )
+        $models->first()?->getConnection()?->table( 'cms_index' )
+            ->whereIn( 'page_id', $models->map( fn( $m ) => $m->getScoutKey() )->all() )
             ->delete();
     }
 
@@ -75,10 +75,10 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
     /**
      * Map the given results to instances of the given model via a lazy collection.
      *
-     * @param  \Laravel\Scout\Builder  $builder
+     * @param  \Laravel\Scout\Builder<\Illuminate\Database\Eloquent\Model>  $builder
      * @param  mixed  $results
      * @param  \Illuminate\Database\Eloquent\Model  $model
-     * @return \Illuminate\Support\LazyCollection
+     * @return \Illuminate\Support\LazyCollection<int, \Illuminate\Database\Eloquent\Model>
      */
     public function lazyMap( Builder $builder, $results, $model )
     {
@@ -89,10 +89,10 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
     /**
      * Map the given results to instances of the given model.
      *
-     * @param  \Laravel\Scout\Builder  $builder
+     * @param  \Laravel\Scout\Builder<\Illuminate\Database\Eloquent\Model>  $builder
      * @param  mixed  $results
      * @param  \Illuminate\Database\Eloquent\Model  $model
-     * @return \Illuminate\Database\Eloquent\Collection
+     * @return \Illuminate\Database\Eloquent\Collection<int, \Illuminate\Database\Eloquent\Model>
      */
     public function map( Builder $builder, $results, $model )
     {
@@ -104,21 +104,23 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
      * Pluck and return the primary keys of the given results.
      *
      * @param  mixed  $results
-     * @return \Illuminate\Support\Collection
+     * @return \Illuminate\Support\Collection<int, mixed>
      */
     public function mapIds( $results )
     {
-        return collect( $results['results']?->modelKeys() );
+        /** @var list<mixed> $keys */
+        $keys = $results['results']?->modelKeys() ?? [];
+        return new \Illuminate\Support\Collection( $keys );
     }
 
 
     /**
      * Paginate the given search on the engine.
      *
-     * @param  \Laravel\Scout\Builder  $builder
+     * @param  \Laravel\Scout\Builder<\Illuminate\Database\Eloquent\Model>  $builder
      * @param  int  $perPage
      * @param  int  $page
-     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator<int, \Illuminate\Database\Eloquent\Model>
      */
     public function paginate( Builder $builder, $perPage, $page )
     {
@@ -129,10 +131,11 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
     /**
      * Paginate the given search on the engine using simple pagination.
      *
-     * @param  \Laravel\Scout\Builder  $builder
+     * @param  \Laravel\Scout\Builder<\Illuminate\Database\Eloquent\Model>  $builder
      * @param  int  $perPage
+     * @param  string  $pageName
      * @param  int  $page
-     * @return \Illuminate\Contracts\Pagination\Paginator
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator<int, \Illuminate\Database\Eloquent\Model>
      */
     public function paginateUsingDatabase( Builder $builder, $perPage, $pageName, $page )
     {
@@ -143,7 +146,7 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
     /**
      * Perform the given search on the engine.
      *
-     * @param  \Laravel\Scout\Builder  $builder
+     * @param  \Laravel\Scout\Builder<\Illuminate\Database\Eloquent\Model>  $builder
      * @return mixed
      */
     public function search( Builder $builder )
@@ -160,11 +163,11 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
     /**
      * Paginate the given query into a simple paginator.
      *
-     * @param  \Laravel\Scout\Builder  $builder
+     * @param  \Laravel\Scout\Builder<\Illuminate\Database\Eloquent\Model>  $builder
      * @param  int  $perPage
      * @param  string  $pageName
      * @param  int|null  $page
-     * @return \Illuminate\Contracts\Pagination\Paginator
+     * @return \Illuminate\Contracts\Pagination\Paginator<int, \Illuminate\Database\Eloquent\Model>
      */
     public function simplePaginateUsingDatabase( Builder $builder, $perPage, $pageName, $page )
     {
@@ -175,20 +178,22 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
     /**
      * Update the given model in the index.
      *
-     * @param  \Illuminate\Database\Eloquent\Collection  $models
+     * @param  \Illuminate\Database\Eloquent\Collection<int, \Aimeos\Cms\Models\Page>  $models
      * @return void
      */
     public function update( $models )
     {
         $tenant = \Aimeos\Cms\Tenancy::value();
-        $db = $models->first()->getConnection();
+        /** @var \Illuminate\Database\Connection $db */
+        $db = $models->first()?->getConnection();
 
         $db->table( 'cms_index' )
-            ->whereIn( 'page_id', $models->map->getScoutKey()->all() )
+            ->whereIn( 'page_id', $models->map( fn( $m ) => $m->getScoutKey() )->all() )
             ->delete();
 
         $rows = [];
 
+        /** @var \Aimeos\Cms\Models\Page $model */
         foreach( $models as $model )
         {
             if( !$model->shouldBeSearchable() ) {
@@ -211,14 +216,14 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
     /**
      * Build the search query for the given Scout builder.
      *
-     * @param  \Laravel\Scout\Builder  $builder
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @param  \Laravel\Scout\Builder<\Illuminate\Database\Eloquent\Model>  $builder
+     * @return \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>
      */
     protected function buildSearchQuery( Builder $builder )
     {
         return $this->initializeSearchQuery( $builder )
             ->when( !is_null( $builder->callback ), function( $query ) use ( $builder ) {
-                call_user_func( $builder->callback, $query, $builder, $builder->query );
+                call_user_func( $builder->callback, $query, $builder, $builder->query ); // @phpstan-ignore argument.type
             })
             ->when( !$builder->callback && !empty( $builder->wheres ), function ( $query ) use ( $builder ) {
                 foreach( $builder->wheres as $field => $value ) {
@@ -236,7 +241,7 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
                 }
             })
             ->when( !is_null( $builder->queryCallback ), function( $query ) use ( $builder ) {
-                call_user_func( $builder->queryCallback, $query );
+                call_user_func( $builder->queryCallback, $query ); // @phpstan-ignore argument.type
             })
             ->when( !empty( $builder->orders ), function ( $query ) use ( $builder ) {
                 $query->reorder();
@@ -251,8 +256,8 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
     /**
      * Initialize the search query by joining with the cms_index table.
      *
-     * @param  \Laravel\Scout\Builder  $builder
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @param  \Laravel\Scout\Builder<\Illuminate\Database\Eloquent\Model>  $builder
+     * @return \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>
      */
     protected function initializeSearchQuery( Builder $builder )
     {
@@ -392,14 +397,14 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
      *
      * @param  string  $search
      * @param  string|null  $regex Characters to strip
-     * @return array
+     * @return list<string>
      */
     protected function words( string $search, ?string $regex = null ): array
     {
-        $words = preg_split( '/\s+/', trim( $search ), -1, PREG_SPLIT_NO_EMPTY );
+        $words = preg_split( '/\s+/', trim( $search ), -1, PREG_SPLIT_NO_EMPTY ) ?: [];
 
         if( $regex ) {
-            $words = array_map( fn( $w ) => preg_replace( $regex, '', $w ), $words );
+            $words = array_map( fn( $w ) => (string) preg_replace( $regex, '', $w ), $words );
             $words = array_filter( $words, fn( $w ) => $w !== '' );
         }
 

@@ -74,7 +74,7 @@ final class Query
             }
 
             if( isset( $filter['any'] ) ) {
-                $builder->whereAny( ['data->name', 'data->type'], 'like', '%' . $filter['any'] . '%' );
+                $builder->whereAny( ['data->name'], 'like', '%' . $filter['any'] . '%' );
             }
         });
 
@@ -233,7 +233,7 @@ final class Query
             }
 
             if( isset( $filter['any'] ) ) {
-                $builder->whereAny( ['aux->domain', 'aux->path', 'aux->to', 'aux->tag', 'aux->theme', 'aux->type', 'data->name', 'data->title'], 'like', '%' . $filter['any'] . '%' );
+                $builder->whereAny( ['aux->path', 'aux->to', 'aux->tag', 'data->name', 'data->title'], 'like', '%' . $filter['any'] . '%' );
             }
 
         } );
