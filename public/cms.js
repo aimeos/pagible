@@ -44,7 +44,9 @@ function PagibleSearch() {
             const words = term
                 .split(" ")
                 .filter(v => v.length > 2)
-                .map(v => v.replace(/[.*+?^${}()|[\]\\]/g, ''));
+                .map(v => v.replace(/[.*+?^$<>{}()|[\]\\]/g, ''));
+
+            text = text.replace(/[.*+?^$<>{}()|[\]\\]/g, '');
 
             if (!words.length) {
                 return text;
@@ -88,7 +90,7 @@ function PagibleSearch() {
 
 
         select(ev) {
-            const result = ev.target?.closest('article')?.querySelector('.result-item a');
+            const result = ev.target?.closest('article')?.querySelector('a.result-item');
 
             if (result?.href) {
                 modal?.close();
@@ -104,42 +106,26 @@ function PagibleSearch() {
 
             results.innerHTML = '';
 
-            const grouped = data.reduce((acc, item) => {
-                acc[item.title] = acc[item.title] || [];
-                acc[item.title].push(item);
-                return acc;
-            }, {});
+            for (const item of data) {
+                const container = document.createElement('a');
+                const title = document.createElement('span');
+                const content = document.createElement('span');
 
-            for (const name in grouped) {
-                const container = document.createElement('div');
-                const title = document.createElement('a');
-                const first = grouped[name][0];
-
-                title.role = 'heading';
-                title.textContent = name;
-                title.href = window.location.protocol + '//' + (first?.domain || window.location.host) + '/' + first?.path;
-                title.addEventListener('click', () => {
+                container.classList.add('result-item');
+                container.href = window.location.protocol + '//' + (item.domain || window.location.host) + '/' + item.path;
+                container.addEventListener('click', () => {
                     try {
-                        if (new URL(title.href).pathname === window.location.pathname) modal?.close();
+                        if (new URL(container.href).pathname === window.location.pathname) modal?.close();
                     } catch(e) {}
                 });
 
-                container.classList.add('result-item');
+                title.classList.add('result-title');
+                title.textContent = item.title;
                 container.appendChild(title);
 
-                for(const item of grouped[name]) {
-                    const content = document.createElement('a');
-
-                    content.href = window.location.protocol + '//' + (item.domain || window.location.host) + '/' + item.path;
-                    content.innerHTML = this.format(item.content, value);
-                    content.role = 'button';
-                    content.addEventListener('click', () => {
-                        try {
-                            if (new URL(content.href).pathname === window.location.pathname) modal?.close();
-                        } catch(e) {}
-                    });
-                    container.appendChild(content);
-                }
+                content.classList.add('result-content');
+                content.innerHTML = this.format(item.content, value);
+                container.appendChild(content);
 
                 results.appendChild(container);
             }

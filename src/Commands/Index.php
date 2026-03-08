@@ -8,7 +8,6 @@
 namespace Aimeos\Cms\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
 use Aimeos\Cms\Models\Page;
 
 
@@ -22,7 +21,7 @@ class Index extends Command
     /**
      * Command description
      */
-    protected $description = 'Updates the page index';
+    protected $description = 'Updates the search index';
 
 
     /**
@@ -30,18 +29,6 @@ class Index extends Command
      */
     public function handle(): void
     {
-        Page::where( 'status', '>', 0 )->chunk( 100, function( $pages ) {
-
-            foreach( $pages as $page )
-            {
-                try {
-                    /** @var Page $page */
-                    DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( fn() => $page->index() );
-                } catch( \Exception $e ) {
-                    $this->error( "Failed to index page ID {$page->id}: " . $e->getMessage() );
-                }
-            }
-
-        } );
+        Page::where( 'status', '>', 0 )->searchable(); // @phpstan-ignore method.notFound
     }
 }

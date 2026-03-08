@@ -54,6 +54,10 @@ class ServiceProvider extends Provider
         \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::skipWhen( function( $request ) {
             return $request->is( trim( config( 'lighthouse.route.uri' ), '/' ) );
         } );
+
+		app(\Laravel\Scout\EngineManager::class)->extend('cms', function () {
+			return new \Aimeos\Cms\Scout\CmsEngine();
+		});
 	}
 
 

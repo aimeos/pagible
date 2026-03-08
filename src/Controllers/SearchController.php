@@ -7,7 +7,7 @@
 
 namespace Aimeos\Cms\Controllers;
 
-use Aimeos\Cms\Models\Content;
+use Aimeos\Cms\Models\Page;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 
@@ -29,16 +29,16 @@ class SearchController extends Controller
             return response()->json( [] );
         }
 
-        $content = Content::search( $query )
+        $content = Page::search( $query )
             ->where( 'lang', $request->locale ?? app()->getLocale() )
             ->where( 'domain', $domain )
             ->get()
             ->map( fn( $item ) => [
-                'domain' => $item->domain,
-                'path' => $item->path,
-                'lang' => $item->lang,
-                'title' => $item->title,
-                'content' => $item->content,
+                'domain' => $item->domain ?? '',
+                'path' => $item->path ?? '',
+                'lang' => $item->lang ?? '',
+                'title' => $item->title ?? '',
+                'content' => $item->meta->{'meta-tags'}->data->description ?? '',
             ] );
 
         return response()->json( $content );

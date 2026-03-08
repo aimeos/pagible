@@ -7,14 +7,21 @@
 
 namespace Tests;
 
+use Illuminate\Foundation\Testing\DatabaseTruncation;
 use Illuminate\Http\Request;
 
 
 class SearchControllerTest extends TestAbstract
 {
+    use DatabaseTruncation;
+
+    protected $connectionsToTransact = [];
+
+
     public function testIndex()
     {
         $this->seed( \Database\Seeders\CmsSeeder::class );
+        sleep( 5 ); // wait for SQL Server async fulltext index population
 
         $request = Request::create('/cmsapi/search', 'GET', [
             'search' => 'welcome',
@@ -26,17 +33,11 @@ class SearchControllerTest extends TestAbstract
 
         $expected = [
             (object) [
-                'domain' => 'mydomain.tld',
-                'path' => 'welcome-to-laravelcms',
-                'lang' => 'en',
-                'title' => 'Welcome to Laravel CMS | Laravel CMS',
-                'content' => 'Welcome to Laravel CMS A new light-weight Laravel CMS is here!',
-            ], (object) [
+                'content' => '',
                 'domain' => 'mydomain.tld',
                 'path' => '',
                 'lang' => 'en',
                 'title' => 'Home | Laravel CMS',
-                'content' => 'Welcome to Laravel CMS',
             ]
         ];
 

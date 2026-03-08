@@ -337,11 +337,7 @@ dialog.search .results {
     padding: 1rem;
 }
 
-dialog.search .result-item {
-    padding: .5rem 0;
-}
-
-dialog.search .result-item a {
+dialog.search a.result-item {
     border-inline-start: 1px solid var(--pico-contrast-border);
     color: var(--pico-color);
     text-decoration: none;
@@ -349,26 +345,28 @@ dialog.search .result-item a {
     display: block;
     padding: 0.5rem;
     padding-inline-start: 1rem;
+    margin-bottom: 0.5rem;
 }
 
-dialog.search .result-item a[role="heading"] {
-    border-bottom: 1px solid var(--pico-contrast-border);
-    background-color: var(--pico-contrast-background);
-    padding-inline-start: 0.5rem;
-    font-weight: bold;
-}
-
-dialog.search .result-item a:hover {
+dialog.search a.result-item:hover {
     --pico-color: var(--pico-contrast);
     background-color: var(--pico-contrast-background);
     color: var(--pico-contrast);
 }
 
-dialog.search .result-item a[role="heading"]:hover {
-    background-color: var(--pico-contrast-hover-border);
+dialog.search .result-title {
+    border-bottom: 1px solid var(--pico-contrast-border);
+    display: block;
+    font-weight: bold;
+    padding-bottom: 0.25rem;
+    margin-bottom: 0.25rem;
 }
 
-dialog.search .result-item a b {
+dialog.search .result-content {
+    display: block;
+}
+
+dialog.search .result-content b {
     background-color: var(--pico-contrast-background);
     padding: 0.1rem 0.25rem;
 }

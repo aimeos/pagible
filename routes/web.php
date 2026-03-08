@@ -6,7 +6,6 @@
 
 
 use Aimeos\Cms\Controllers;
-use Aimeos\Cms\Models\Content;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 

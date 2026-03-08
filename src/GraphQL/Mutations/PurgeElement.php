@@ -30,7 +30,10 @@ final class PurgeElement
         return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $args ) {
 
             $items = Element::withTrashed()->whereIn( 'id', $args['id'] )->get();
-            Element::whereIn( 'id', $items->pluck( 'id' ) )->forceDelete();
+
+            foreach( $items as $item ) {
+                $item->forceDelete();
+            }
 
             return $items->all();
         }, 3 );

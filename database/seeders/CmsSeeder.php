@@ -11,7 +11,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Seeder;
 use Aimeos\Cms\Models\Version;
 use Aimeos\Cms\Models\Element;
-use Aimeos\Cms\Models\Content;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
 
@@ -33,17 +32,22 @@ class CmsSeeder extends Seeder
             return 'demo';
         };
 
+        DB::connection( config( 'cms.db', 'sqlite' ) )->table( 'cms_index' )->where( 'tenant_id', 'demo' )->delete();
         File::where('tenant_id', 'demo')->forceDelete();
         Version::where('tenant_id', 'demo')->forceDelete();
         Element::where('tenant_id', 'demo')->forceDelete();
         Page::where('tenant_id', 'demo')->forceDelete();
 
-        $home = $this->home();
+        Page::withoutSyncingToSearch( function() {
+            $home = $this->home();
 
-        $this->addBlog( $home )
-            ->addDev( $home )
-            ->addHidden( $home )
-            ->addDisabled( $home );
+            $this->addBlog( $home )
+                ->addDev( $home )
+                ->addHidden( $home )
+                ->addDisabled( $home );
+        } );
+
+        Page::query()->searchable();
     }
 
 
@@ -190,15 +194,6 @@ class CmsSeeder extends Seeder
         ]);
         $page->elements()->attach( $elementId );
 
-        Content::forceCreate([
-            'page_id' => $page->id,
-            'domain' => 'mydomain.tld',
-            'path' => '',
-            'lang' => 'en',
-            'title' => 'Home | Laravel CMS',
-            'content' => 'Welcome to Laravel CMS',
-        ]);
-
         return $page;
     }
 
@@ -240,15 +235,6 @@ class CmsSeeder extends Seeder
             ],
             'published' => true,
             'editor' => 'seeder',
-        ]);
-
-        Content::forceCreate([
-            'page_id' => $page->id,
-            'domain' => 'mydomain.tld',
-            'path' => 'blog',
-            'lang' => 'en',
-            'title' => 'Blog | Laravel CMS',
-            'content' => 'Blog example',
         ]);
 
         return $this->addBlogArticle( $page );
@@ -312,15 +298,6 @@ mutation {
             'editor' => 'seeder',
         ]);
         $version->files()->attach( $fileId );
-
-        Content::forceCreate([
-            'page_id' => $page->id,
-            'domain' => 'mydomain.tld',
-            'path' => 'welcome-to-laravelcms',
-            'lang' => 'en',
-            'title' => 'Welcome to Laravel CMS | Laravel CMS',
-            'content' => 'Welcome to Laravel CMS A new light-weight Laravel CMS is here!',
-        ]);
 
         return $this;
     }

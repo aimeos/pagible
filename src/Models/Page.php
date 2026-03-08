@@ -28,6 +28,7 @@ use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Collection;
+use Laravel\Scout\Searchable;
 
 
 /**
@@ -68,6 +69,9 @@ class Page extends Model
     use SoftDeletes;
     use Prunable;
     use Tenancy;
+    use Searchable {
+        NodeTrait::usesSoftDelete insteadof Searchable;
+    }
 
 
     /**
@@ -263,22 +267,24 @@ class Page extends Model
 
 
     /**
-     * Updated the search index for the page.
+     * Returns the searchable data for the page.
+     *
+     * @return array<int, array<string, string>>
      */
-    public function index(): void
+    public function toSearchableArray(): array
     {
-        Content::where( 'page_id', $this->id )->delete();
+        $attrs = ['path', 'to', 'tag', 'name', 'title', 'meta', 'content', 'deleted_at'];
 
-        if( !$this->id || $this->status < 1 ) {
-            return;
+        // bulk index + changed content check for performance reasons
+        if( !empty( $this->getChanges() ) && !$this->wasChanged( $attrs ) ) {
+            return [];
         }
 
+        $content = '';
         $config = config( 'cms.schemas.content', [] );
-        $md = new \League\CommonMark\CommonMarkConverter();
 
-        foreach( (array) $this->content as $el )
+        foreach( collect( (array) $this->content )->merge( $this->elements ) as $el )
         {
-            $content = '';
             $fields = (array) ( $config[@$el->type]['fields'] ?? [] );
 
             if( empty( $fields ) ) {
@@ -287,26 +293,28 @@ class Page extends Model
 
             foreach( (array) ( $el->data ?? [] ) as $name => $value )
             {
-                if( isset( $fields[$name] )
+                if( is_string( $value ) && isset( $fields[$name] )
                     && ( $fields[$name]['searchable'] ?? true )
                     && in_array( $fields[$name]['type'], ['markdown', 'plaintext', 'string', 'text'] )
                 ) {
                     $content .= $value . "\n";
                 }
             }
-
-            if( $content = trim( $content ) )
-            {
-                Content::create( [
-                    'page_id' => $this->id,
-                    'lang' => $this->lang ?? '',
-                    'domain' => $this->domain ?? '',
-                    'path' => $this->path . '#' . @$el->id,
-                    'title' => strip_tags( $md->convert( $this->title ) ),
-                    'content' => strip_tags( $md->convert( $content ) )
-                ] );
-            }
         }
+
+        $content = trim( $this->path . "\n"
+            . $this->to . "\n"
+            . $this->tag . "\n"
+            . $this->name . "\n"
+            . $this->title . "\n"
+            . ( $this->meta->{'meta-tags'}->data->description ?? '' ) . "\n"
+            . $content );
+
+        if( empty( $content ) ) {
+            return [];
+        }
+
+        return [['content' => $content]];
     }
 
 
@@ -407,7 +415,6 @@ class Page extends Model
         $version->published = true;
         $version->save();
 
-        $this->index();
         Cache::forget( static::key( $this ) );
 
         return $this;
@@ -425,6 +432,17 @@ class Page extends Model
             ->ofMany( ['created_at' => 'max', 'id' => 'max'], function( $query ) {
                 $query->where( (new Version)->qualifyColumn( 'published' ), true );
             } );
+    }
+
+
+    /**
+     * Determine if the page should be searchable.
+     *
+     * @return bool TRUE if the page should be searchable, FALSE if not
+     */
+    public function shouldBeSearchable() : bool
+    {
+        return $this->status > 0 && !$this->trashed();
     }
 
 

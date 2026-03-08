@@ -114,7 +114,7 @@ jobs:
           DB_USERNAME: SA
           DB_PASSWORD: S3c0r3P4ss
           DB_DATABASE: cms
-      - image: mcr.microsoft.com/mssql/server:2017-latest
+      - image: aimeos/ci-mssql-fts:2017
         environment:
           SA_PASSWORD: S3c0r3P4ss
           ACCEPT_EULA: Y
