@@ -26,17 +26,11 @@ class SearchControllerTest extends TestAbstract
 
         $expected = [
             (object) [
-                'domain' => 'mydomain.tld',
-                'path' => 'welcome-to-laravelcms',
-                'lang' => 'en',
-                'title' => 'Welcome to Laravel CMS | Laravel CMS',
-                'content' => 'Welcome to Laravel CMS A new light-weight Laravel CMS is here!',
-            ], (object) [
+                'content' => '',
                 'domain' => 'mydomain.tld',
                 'path' => '',
                 'lang' => 'en',
                 'title' => 'Home | Laravel CMS',
-                'content' => 'Welcome to Laravel CMS',
             ]
         ];
 

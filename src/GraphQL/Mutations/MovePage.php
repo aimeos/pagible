@@ -46,7 +46,7 @@ final class MovePage
                     $page->makeRoot();
                 }
 
-                $page->save();
+                Page::withoutSyncingToSearch( fn() => $page->save() );
 
                 return $page;
             }, 3 );

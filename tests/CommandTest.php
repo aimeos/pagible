@@ -10,9 +10,9 @@ namespace Tests;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Element;
-use Aimeos\Cms\Models\Content;
 use Database\Seeders\CmsSeeder;
 use Illuminate\Foundation\Auth\User;
+use Illuminate\Support\Facades\DB;
 
 
 class CommandTest extends TestAbstract
@@ -23,7 +23,7 @@ class CommandTest extends TestAbstract
 
         $this->artisan('cms:index')->assertExitCode( 0 );
 
-        $this->assertEquals( 2, Content::get()->count() );
+        $this->assertEquals( 7, DB::connection( config( 'cms.db', 'sqlite' ) )->table( 'cms_index' )->count() );
     }
 
 
