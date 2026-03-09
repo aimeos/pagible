@@ -272,7 +272,7 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
 
         $sub = $builder->model->getConnection()->table( 'cms_index' );
 
-        match ($driver) {
+        match( $driver)  {
             'mysql', 'mariadb' => $this->searchMySQL( $sub, $builder->query ),
             'pgsql' => $this->searchPostgreSQL( $sub, $builder->query ),
             'sqlsrv' => $this->searchSQLServer( $sub, $builder->query ),
@@ -285,6 +285,27 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
         });
 
         return $query;
+    }
+
+
+    /**
+     * LIKE-based search fallback for other databases.
+     *
+     * @param  \Illuminate\Database\Query\Builder  $sub
+     * @param  string  $search
+     * @return void
+     */
+    protected function searchLike( $sub, string $search )
+    {
+        if( !( $words = $this->words( $search ) ) ) {
+            return;
+        }
+
+        $sub->select( 'page_id' );
+
+        foreach( $words as $word ) {
+            $sub->where( 'content', 'like', '%' . $word . '%' );
+        }
     }
 
 
@@ -331,27 +352,6 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
 
 
     /**
-     * Fulltext prefix search for SQL Server using CONTAINS.
-     *
-     * @param  \Illuminate\Database\Query\Builder  $sub
-     * @param  string  $search
-     * @return void
-     */
-    protected function searchSQLServer( $sub, string $search )
-    {
-        if( !( $words = $this->words( $search, '/["\'()]/' ) ) ) {
-            return;
-        }
-
-        $terms = implode( ' AND ', array_map( fn( $w ) => '"' . $w . '*"', $words ) );
-        $select = 'page_id, (SELECT [RANK] FROM CONTAINSTABLE(cms_index, content, ?) WHERE [KEY] = cms_index.id) AS relevance';
-
-        $sub->selectRaw( $select, [$terms] )
-            ->whereRaw( 'CONTAINS(content, ?)', [$terms] );
-    }
-
-
-    /**
      * Fulltext prefix search for SQLite using FTS5.
      *
      * @param  \Illuminate\Database\Query\Builder  $sub
@@ -372,23 +372,23 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
 
 
     /**
-     * LIKE-based search fallback for other databases.
+     * Fulltext prefix search for SQL Server using CONTAINS.
      *
      * @param  \Illuminate\Database\Query\Builder  $sub
      * @param  string  $search
      * @return void
      */
-    protected function searchLike( $sub, string $search )
+    protected function searchSQLServer( $sub, string $search )
     {
-        if( !( $words = $this->words( $search ) ) ) {
+        if( !( $words = $this->words( $search, '/["\'()]/' ) ) ) {
             return;
         }
 
-        $sub->select( 'page_id' );
+        $terms = implode( ' AND ', array_map( fn( $w ) => '"' . $w . '*"', $words ) );
+        $select = 'page_id, (SELECT [RANK] FROM CONTAINSTABLE(cms_index, content, ?) WHERE [KEY] = cms_index.id) AS relevance';
 
-        foreach( $words as $word ) {
-            $sub->where( 'content', 'like', '%' . $word . '%' );
-        }
+        $sub->selectRaw( $select, [$terms] )
+            ->whereRaw( 'CONTAINS(content, ?)', [$terms] );
     }
 
 

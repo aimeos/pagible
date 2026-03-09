@@ -57,12 +57,8 @@ return new class extends Migration
 
             if( $driver === 'sqlsrv' )
             {
-                try {
-                    $db->statement('CREATE FULLTEXT CATALOG cms_index_catalog AS DEFAULT');
-                    $db->statement('CREATE FULLTEXT INDEX ON cms_index(content) KEY INDEX pk_cms_index ON cms_index_catalog');
-                } catch( \Exception $e ) {
-                    echo "SQL Server fulltext search not supported, skipping fulltext index\n";
-                }
+                $db->statement('CREATE FULLTEXT CATALOG cms_index_catalog AS DEFAULT');
+                $db->statement('CREATE FULLTEXT INDEX ON cms_index(content) KEY INDEX pk_cms_index ON cms_index_catalog');
             }
         }
     }
@@ -82,12 +78,8 @@ return new class extends Migration
 
         if( $driver === 'sqlsrv' )
         {
-            try {
-                $db->statement('DROP FULLTEXT INDEX ON cms_index');
-                $db->statement('DROP FULLTEXT CATALOG cms_index_catalog');
-            } catch( \Exception $e ) {
-                echo "SQL Server fulltext search not supported, skip dropping fulltext index\n";
-            }
+            $db->statement('DROP FULLTEXT INDEX ON cms_index');
+            $db->statement('DROP FULLTEXT CATALOG cms_index_catalog');
         }
 
         $db->statement('DROP TABLE IF EXISTS cms_index');
