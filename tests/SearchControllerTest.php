@@ -21,6 +21,7 @@ class SearchControllerTest extends TestAbstract
     public function testIndex()
     {
         $this->seed( \Database\Seeders\CmsSeeder::class );
+        sleep( 1 ); // wait for SQL Server async fulltext index population
 
         $request = Request::create('/cmsapi/search', 'GET', [
             'search' => 'welcome',
