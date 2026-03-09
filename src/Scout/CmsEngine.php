@@ -385,10 +385,10 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
         }
 
         $terms = implode( ' AND ', array_map( fn( $w ) => '"' . $w . '*"', $words ) );
-        $select = 'page_id, (SELECT [RANK] FROM CONTAINSTABLE(cms_index, content, ?) WHERE [KEY] = cms_index.id) AS relevance';
 
-        $sub->selectRaw( $select, [$terms] )
-            ->whereRaw( 'CONTAINS(content, ?)', [$terms] );
+        $sub->selectRaw( 'cms_index.page_id, ct.[RANK] AS relevance' )
+            ->join( $sub->raw( 'CONTAINSTABLE(cms_index, content, ?) AS ct' ), 'cms_index.id', '=', 'ct.[KEY]' )
+            ->addBinding( [$terms], 'join' );
     }
 
 
