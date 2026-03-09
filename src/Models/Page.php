@@ -406,9 +406,9 @@ class Page extends Model
         $this->elements()->sync( $version->elements ?? [] );
 
         $this->fill( (array) $version->data );
-        $this->content = $version->aux->content ?? [];
-        $this->config = $version->aux->config ?? new \stdClass();
-        $this->meta = $version->aux->meta ?? new \stdClass();
+        $this->content = $version->data->content ?? [];
+        $this->config = $version->data->config ?? new \stdClass();
+        $this->meta = $version->data->meta ?? new \stdClass();
         $this->editor = $version->editor;
         $this->save();
 

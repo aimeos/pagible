@@ -58,7 +58,6 @@ class UpdatePage extends Tool
 
             // Build data from latest version, then overlay changes
             $data = (array) ( $page->latest->data ?? [] );
-            $aux = (array) ( $page->latest->aux ?? [] );
 
             if( isset( $validated['name'] ) ) {
                 $data['name'] = $validated['name'];
@@ -71,7 +70,7 @@ class UpdatePage extends Tool
 
             if( isset( $validated['content'] ) )
             {
-                $content = $aux['content'] ?? [];
+                $content = $data['content'] ?? [];
 
                 // Find first text element or create one
                 $found = false;
@@ -102,12 +101,12 @@ class UpdatePage extends Tool
                     ];
                 }
 
-                $aux['content'] = $content;
+                $data['content'] = $content;
             }
 
             if( isset( $validated['summary'] ) )
             {
-                $meta = $aux['meta'] ?? [];
+                $meta = $data['meta'] ?? [];
 
                 if( is_object( $meta ) ) {
                     $meta = (array) $meta;
@@ -122,14 +121,13 @@ class UpdatePage extends Tool
                     ]
                 ];
 
-                $aux['meta'] = $meta;
+                $data['meta'] = $meta;
             }
 
             $version = $page->versions()->create([
                 'data' => array_map( fn( $v ) => $v ?? '', $data ),
                 'editor' => $editor,
                 'lang' => $validated['lang'] ?? $page->latest?->lang,
-                'aux' => $aux,
             ] );
 
             $page->removeVersions();

@@ -65,7 +65,6 @@ class GetPageHistory extends Tool
                     'publish_at' => $version->publish_at,
                     'created_at' => $version->created_at?->format( 'Y-m-d H:i:s' ),
                     'data' => $version->data ?? [],
-                    'aux' => $version->aux ?? [],
                 ];
             } );
 

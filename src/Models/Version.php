@@ -24,7 +24,6 @@ use Illuminate\Support\Collection;
  * @property string $tenant_id
  * @property string|null $lang
  * @property \stdClass|null $data
- * @property \stdClass|null $aux
  * @property string|null $publish_at
  * @property bool $published
  * @property string $editor
@@ -48,7 +47,6 @@ class Version extends Model
         'tenant_id' => '',
         'lang' => null,
         'data' => '{}',
-        'aux' => '{}',
         'publish_at' => null,
         'published' => false,
         'editor' => '',
@@ -61,7 +59,6 @@ class Version extends Model
      */
     protected $casts = [
         'data' => 'object',
-        'aux' => 'object',
     ];
 
     /**
@@ -79,7 +76,6 @@ class Version extends Model
         'editor',
         'lang',
         'data',
-        'aux',
     ];
 
     /**
