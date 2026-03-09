@@ -145,7 +145,7 @@ class PageController extends Controller
         $theme = cms( $page, 'theme' ) ?: 'cms';
         $type = cms( $page, 'type' ) ?: 'page';
 
-        $content = collect( (array) ($version->aux->content ?? $page->content ?? []) )->groupBy( 'group' );
+        $content = collect( (array) ($version->data->content ?? $page->content ?? []) )->groupBy( 'group' );
 
         $views = [$theme . '::layouts.' . $type, 'cms::layouts.page'];
         $html = view()->first( $views, ['page' => $page, 'content' => $content] )->render();

@@ -446,7 +446,6 @@ class GraphqlPageTest extends TestAbstract
                 versions {
                     lang
                     data
-                    aux
                     editor
                 }
             }
@@ -475,10 +474,6 @@ class GraphqlPageTest extends TestAbstract
             'status' => 1,
             'cache' => 5,
             'editor' => 'seeder',
-        ];
-        $this->assertEquals($expectedData, json_decode($version['data'], true));
-
-        $expectedAux = [
             'meta' => ['type' => 'meta', 'data' => ['text' => 'Laravel CMS is outstanding']],
             'config' => ['test' => ['type' => 'test', 'data' => ['key' => 'value']]],
             'content' => [
@@ -486,7 +481,7 @@ class GraphqlPageTest extends TestAbstract
                 ['type' => 'ref', 'id' => $element->id ],
             ],
         ];
-        $this->assertEquals($expectedAux, json_decode($version['aux'], true));
+        $this->assertEquals($expectedData, json_decode($version['data'], true));
     }
 
 
@@ -872,7 +867,6 @@ class GraphqlPageTest extends TestAbstract
                     latest {
                         lang
                         data
-                        aux
                         published
                         publish_at
                         editor
@@ -880,14 +874,12 @@ class GraphqlPageTest extends TestAbstract
                     versions {
                         lang
                         data
-                        aux
                         published
                         publish_at
                         editor
                     }
                     published {
                         data
-                        aux
                     }
                 }
             }
@@ -920,14 +912,10 @@ class GraphqlPageTest extends TestAbstract
             'editor' => 'seeder',
             'lang' => 'de',
         ];
+        $expectedLatestData['meta'] = ['canonical' => 'to/page'];
+        $expectedLatestData['config'] = ['key' => 'test'];
+        $expectedLatestData['content'] = [['type' => 'heading', 'data' => ['title' => 'Welcome to Laravel CMS']]];
         $this->assertEquals($expectedLatestData, json_decode($savePage['latest']['data'] ?? null, true));
-
-        $expectedLatestAux = [
-            'meta' => ['canonical' => 'to/page'],
-            'config' => ['key' => 'test'],
-            'content' => [['type' => 'heading', 'data' => ['title' => 'Welcome to Laravel CMS']]],
-        ];
-        $this->assertEquals($expectedLatestAux, json_decode($savePage['latest']['aux'] ?? null, true));
 
         $expectedPublishedData = [
             'name' => 'Home',
@@ -941,10 +929,6 @@ class GraphqlPageTest extends TestAbstract
             'status' => 1,
             'cache' => 5,
             'editor' => 'seeder',
-        ];
-        $this->assertEquals($expectedPublishedData, json_decode($savePage['published']['data'] ?? null, true));
-
-        $expectedPublishedAux = [
             'meta' => ['type' => 'meta', 'data' => ['text' => 'Laravel CMS is outstanding']],
             'config' => ['test' => ['type' => 'test', 'data' => ['key' => 'value']]],
             'content' => [
@@ -952,7 +936,7 @@ class GraphqlPageTest extends TestAbstract
                 ['type' => 'ref', 'id' => $element->id],
             ],
         ];
-        $this->assertEquals($expectedPublishedAux, json_decode($savePage['published']['aux'] ?? null, true));
+        $this->assertEquals($expectedPublishedData, json_decode($savePage['published']['data'] ?? null, true));
     }
 
 

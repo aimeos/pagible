@@ -55,7 +55,7 @@ class RefineContent extends Tool
             return Response::structured( ['error' => 'Page not found.'] );
         }
 
-        $content = (array) ( $page->latest?->aux->content ?? $page->content ?? [] );
+        $content = (array) ( $page->latest?->data->content ?? $page->content ?? [] );
 
         $provider = config( 'cms.ai.refine.provider' );
         $config = config( 'cms.ai.refine', [] );

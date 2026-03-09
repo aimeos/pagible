@@ -180,8 +180,6 @@ class CmsSeeder extends Seeder
                 'status' => 1,
                 'cache' => 5,
                 'editor' => 'seeder',
-            ],
-            'aux' => [
                 'meta' => ['type' => 'meta', 'data' => ['text' => 'Laravel CMS is outstanding']],
                 'config' => ['test' => ['type' => 'test', 'data' => ['key' => 'value']]],
                 'content' => [
@@ -226,8 +224,6 @@ class CmsSeeder extends Seeder
                 'tag' => 'blog',
                 'status' => 1,
                 'editor' => 'seeder',
-            ],
-            'aux' => [
                 'content' => [
                     ['type' => 'blog', 'data' => ['text' => 'Blog example']],
                     ['type' => 'ref', 'id' => $elementId]
@@ -281,19 +277,17 @@ mutation {
             'tag' => 'article',
             'lang' => 'en',
             'status' => 1,
-            'editor' => 'seeder'
+            'editor' => 'seeder',
+            'content' => $content,
         ];
 
-        $page = Page::forceCreate($data + ['content' => $content]);
+        $page = Page::forceCreate($data);
         $page->appendToNode( $blog )->save();
         $page->elements()->attach( $elementId );
         $page->files()->attach( $fileId );
 
         $version = $page->versions()->forceCreate([
             'data' => $data,
-            'aux' => [
-                'content' => $content,
-            ],
             'published' => true,
             'editor' => 'seeder',
         ]);
@@ -345,8 +339,6 @@ This is content created using [markdown syntax](https://www.markdownguide.org/ba
                 'path' => 'dev',
                 'status' => 1,
                 'editor' => 'seeder',
-            ],
-            'aux' => [
                 'content' => [[
                     'type' => 'paragraph',
                     'data' => [
@@ -362,7 +354,7 @@ This is content created using [markdown syntax](https://www.markdownguide.org/ba
                     ]
                 ], [
                     'type' => 'ref', 'id' => $elementId
-                ]]
+                ]],
             ],
             'published' => true,
             'editor' => 'seeder',

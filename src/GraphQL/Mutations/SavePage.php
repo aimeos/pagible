@@ -33,17 +33,12 @@ final class SavePage
             $page = Page::withTrashed()->findOrFail( $args['id'] );
             $input = $this->sanitize( $args['input'] ?? [] );
 
-            $data = array_diff_key( $input, array_flip( ['meta', 'config', 'content'] ) );
-            $data = array_replace( (array) $page->latest?->data, $data );
-
-            $aux = array_intersect_key( $input, array_flip( ['meta', 'config', 'content'] ) );
-            $aux = array_replace( (array) $page->latest?->aux, $aux );
+            $data = array_replace( (array) $page->latest?->data, $input );
 
             $version = $page->versions()->create([
                 'data' => array_map( fn( $v ) => $v ?? '', $data ),
                 'editor' => Auth::user()->name ?? request()->ip(),
                 'lang' => $args['input']['lang'] ?? null,
-                'aux' => $aux
             ]);
 
             $version->elements()->attach( $args['elements'] ?? [] );
