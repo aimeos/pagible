@@ -57,7 +57,7 @@ return new class extends Migration
 
             if( $driver === 'sqlsrv' )
             {
-                $db->statement('CREATE FULLTEXT CATALOG cms_index_catalog AS DEFAULT');
+                $db->statement("IF NOT EXISTS (SELECT 1 FROM sys.fulltext_catalogs WHERE name = 'cms_index_catalog') CREATE FULLTEXT CATALOG cms_index_catalog AS DEFAULT");
                 $db->statement('CREATE FULLTEXT INDEX ON cms_index(content) KEY INDEX pk_cms_index ON cms_index_catalog');
             }
         }
@@ -78,8 +78,8 @@ return new class extends Migration
 
         if( $driver === 'sqlsrv' )
         {
-            $db->statement('DROP FULLTEXT INDEX ON cms_index');
-            $db->statement('DROP FULLTEXT CATALOG cms_index_catalog');
+            $db->statement("IF EXISTS (SELECT 1 FROM sys.fulltext_indexes WHERE object_id = OBJECT_ID('cms_index')) DROP FULLTEXT INDEX ON cms_index");
+            $db->statement("IF EXISTS (SELECT 1 FROM sys.fulltext_catalogs WHERE name = 'cms_index_catalog') DROP FULLTEXT CATALOG cms_index_catalog");
         }
 
         $db->statement('DROP TABLE IF EXISTS cms_index');
