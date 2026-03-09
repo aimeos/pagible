@@ -567,7 +567,7 @@ export default {
                 id
                 latest {
                   id
-                  data
+                  aux
                   files {
                     id
                   }
@@ -588,7 +588,7 @@ export default {
           }
 
           const latest = result?.data?.page?.latest
-          const data = JSON.parse(latest?.data || '{}')
+          const aux = JSON.parse(latest?.aux || '{}')
 
           this.$apollo
             .mutate({
@@ -610,9 +610,9 @@ export default {
                   cache: node.cache,
                   domain: node.domain,
                   related_id: node.id,
-                  meta: JSON.stringify(data?.meta || {}),
-                  config: JSON.stringify(data?.config || {}),
-                  content: JSON.stringify(data?.content || []),
+                  meta: JSON.stringify(aux?.meta || {}),
+                  config: JSON.stringify(aux?.config || {}),
+                  content: JSON.stringify(aux?.content || []),
                   path: node.path + '_' + Math.floor(Math.random() * 10000)
                 },
                 parent: parent ? parent.data.id : null,

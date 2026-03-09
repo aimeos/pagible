@@ -27,6 +27,7 @@ return new class extends Migration
             $table->datetime('publish_at')->nullable();
             $table->string('lang', 5)->nullable();
             $table->json('data');
+            $table->json('aux');
             $table->string('editor');
             $table->timestamp('created_at', 3);
 

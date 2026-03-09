@@ -233,7 +233,7 @@ final class Query
             }
 
             if( isset( $filter['any'] ) ) {
-                $builder->whereAny( ['data->path', 'data->to', 'data->tag', 'data->name', 'data->title'], 'like', '%' . $filter['any'] . '%' );
+                $builder->whereAny( ['aux->path', 'aux->to', 'aux->tag', 'data->name', 'data->title'], 'like', '%' . $filter['any'] . '%' );
             }
 
         } );

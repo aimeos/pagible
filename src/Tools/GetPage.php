@@ -60,6 +60,9 @@ class GetPage extends Tool
         if( $latest = $page->latest ) {
             $data['latest_version'] = array_merge(
                 (array) $latest->data,
+                ['meta' => $latest->aux->meta ?? null],
+                ['content' => $latest->aux->content ?? null],
+                ['config' => $latest->aux->config ?? null],
                 ['published' => $latest->published],
                 ['publish_at' => $latest->publish_at],
                 ['editor' => $latest->editor],

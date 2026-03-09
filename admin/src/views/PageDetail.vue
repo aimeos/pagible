@@ -171,6 +171,11 @@ export default {
 
         Object.assign(this.item, JSON.parse(this.latest?.data || '{}'))
 
+        const aux = JSON.parse(this.latest?.aux || '{}')
+        this.item.content = aux.content ?? []
+        this.item.config = aux.config ?? {}
+        this.item.meta = aux.meta ?? {}
+
         this.assets = this.files(this.latest?.files || [])
         this.elements = this.elems(this.latest?.elements || [])
         this.item.content = this.obsolete(this.item.content)
@@ -223,6 +228,7 @@ export default {
 
     fields() {
       return `id
+              aux
               data
               published
               publish_at
@@ -632,9 +638,10 @@ export default {
           return (result.data.page.versions || []).map((v) => {
             const item = {
               ...v,
-              data: JSON.parse(v.data || '{}')
+              data: Object.assign(JSON.parse(v.data || '{}'), JSON.parse(v.aux || '{}'))
             }
             item.files = this.files(v.files || [])
+            delete item.aux
             return item
           })
         })

@@ -29,6 +29,7 @@ if( !function_exists( 'cms' ) )
         }
         else if( \Aimeos\Cms\Permission::can( 'page:view', \Illuminate\Support\Facades\Auth::user() ) ) {
             $val = @$item->latest?->data?->{$first} // @phpstan-ignore-line property.notFound
+                ?? @$item->latest?->aux?->{$first} // @phpstan-ignore-line property.notFound
                 ?? @$item->latest?->{$first} // @phpstan-ignore-line property.notFound
                 ?? @$item->{$first};
         }

@@ -209,7 +209,7 @@ class WpImport extends Command
         $version = $page->versions()->forceCreate( [
             'lang' => $this->lang,
             'data' => $pageData,
-            'content' => $contentElements,
+            'aux' => ['content' => $contentElements],
             'editor' => $this->editor,
         ] );
 
@@ -387,8 +387,10 @@ class WpImport extends Command
                 'status' => 1,
                 'editor' => $this->editor,
             ],
-            'content' => [
-                ['id' => Utils::uid(), 'type' => $this->type, 'group' => 'main', 'data' => ['title' => $blogName]],
+            'aux' => [
+                'content' => [
+                    ['id' => Utils::uid(), 'type' => $this->type, 'group' => 'main', 'data' => ['title' => $blogName]],
+                ],
             ],
             'editor' => $this->editor,
         ] );

@@ -56,14 +56,17 @@ final class AddPage
 
 
                 $data = $args['input'];
-                $data['meta'] ??= new \stdClass();
-                $data['config'] ??= new \stdClass();
-                $data['content'] ??= [];
+                unset( $data['config'], $data['content'], $data['meta'] );
 
                 $version = $page->versions()->create( [
                     'data' => array_map( fn( $v ) => is_null( $v ) ? (string) $v : $v, $data ),
                     'lang' => $args['input']['lang'] ?? null,
                     'editor' => $editor,
+                    'aux' => [
+                        'meta' => $args['input']['meta'] ?? new \stdClass(),
+                        'config' => $args['input']['config'] ?? new \stdClass(),
+                        'content' => $args['input']['content'] ?? [],
+                    ]
                 ] );
 
                 $version->elements()->attach( $args['elements'] ?? [] );

@@ -53,7 +53,7 @@ class SearchPages extends Tool
                     ->where( 'lang', $lang );
             } )
             ->orWhereHas('latest', function( $builder ) use ( $lang, $term  ) {
-                $builder->whereAny( ['data->content', 'data->meta', 'data->name', 'data->path', 'data->title'], 'like', '%' . $term . '%' )
+                $builder->whereAny( ['aux->content', 'aux->meta', 'data->name', 'data->path', 'data->title'], 'like', '%' . $term . '%' )
                     ->where( 'lang', $lang );
             } )
             ->take( 25 )

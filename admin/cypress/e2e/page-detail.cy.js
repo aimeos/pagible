@@ -71,6 +71,14 @@ function makePage(overrides = {}) {
 function makePageDetail(overrides = {}) {
   return Object.assign({
     id: '10',
+    aux: JSON.stringify({
+      content: [
+        { id: 'c1', type: 'heading', group: 'main', data: { title: 'Welcome' }, files: [] },
+        { id: 'c2', type: 'text', group: 'main', data: { text: 'Hello world' }, files: [] },
+      ],
+      meta: {},
+      config: {},
+    }),
     data: JSON.stringify({
       name: 'Home',
       title: 'Home Page',
@@ -83,12 +91,6 @@ function makePageDetail(overrides = {}) {
       type: '',
       theme: '',
       cache: 5,
-      content: [
-        { id: 'c1', type: 'heading', group: 'main', data: { title: 'Welcome' }, files: [] },
-        { id: 'c2', type: 'text', group: 'main', data: { text: 'Hello world' }, files: [] },
-      ],
-      meta: {},
-      config: {},
     }),
     published: true,
     publish_at: null,

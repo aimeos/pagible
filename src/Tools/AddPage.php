@@ -96,12 +96,16 @@ class AddPage extends Tool
             'content' => $elements,
         ] );
 
-        $exclude = array_flip( ['editor', 'relatedid', 'tenant_id'] );
+        $exclude = array_flip( ['content', 'config', 'meta', 'editor', 'relatedid', 'tenant_id'] );
 
         $version = [
             'lang' => $validated['lang'],
             'editor' => $editor,
             'data' => array_diff_key( $page->toArray(), $exclude ),
+            'aux' => [
+                'meta' => $meta,
+                'content' => $elements,
+            ]
         ];
 
         Cache::lock( 'cms_pages_' . \Aimeos\Cms\Tenancy::value(), 30 )->get( function() use ( $parent, $page, $version ) {
