@@ -28,11 +28,13 @@ class SearchController extends Controller
             'size' => 'integer|between:5,100',
         ] );
 
-        $content = Page::search( $vals['search'] )
+        /** @var \Illuminate\Pagination\LengthAwarePaginator<int, \Aimeos\Cms\Models\Page> $paginator */
+        $paginator = Page::search( $vals['search'] )
             ->where( 'domain', $domain )
             ->where( 'lang', $request->locale ?? app()->getLocale() )
-            ->paginate( $vals['size'] ?? 25 )
-            ->through( fn( $item ) => [
+            ->paginate( $vals['size'] ?? 25 );
+
+        $content = $paginator->through( fn( $item ) => [
                 'domain' => $item->domain ?? '',
                 'path' => $item->path ?? '',
                 'lang' => $item->lang ?? '',
