@@ -66,12 +66,13 @@ class UpdateFile extends Tool
             $clone->path = $latestData['path'] ?? $file->path;
             $clone->editor = $editor;
 
-            $clone->versions()->create( [
+            $version = $clone->versions()->create( [
                 'lang' => $validated['lang'] ?? $file->latest->lang ?? $file->lang,
                 'editor' => $editor,
                 'data' => $clone->toArray(),
             ] );
 
+            $file->forceFill( ['latest_id' => $version->id] )->saveQuietly();
             $file->removeVersions();
 
             return Response::structured( [

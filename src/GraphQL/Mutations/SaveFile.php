@@ -72,11 +72,13 @@ final class SaveFile
                 throw $t;
             }
 
-            $file->versions()->create( [
+            $version = $file->versions()->create( [
                 'lang' => $file->lang,
                 'editor' => $editor,
                 'data' => $file->toArray(),
             ] );
+
+            $orig->forceFill( ['latest_id' => $version->id] )->saveQuietly();
 
             $file->removeVersions();
 

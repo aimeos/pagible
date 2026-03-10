@@ -67,11 +67,13 @@ class AddElement extends Tool
             ];
             ksort( $data );
 
-            $element->versions()->create( [
+            $version = $element->versions()->create( [
                 'data' => array_map( fn( $v ) => is_null( $v ) ? (string) $v : $v, $data ),
                 'lang' => $validated['lang'] ?? null,
                 'editor' => $editor,
             ] );
+
+            $element->forceFill( ['latest_id' => $version->id] )->saveQuietly();
 
             return Response::structured( $element->refresh()->toArray() );
         }, 3 );

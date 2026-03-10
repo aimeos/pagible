@@ -67,7 +67,7 @@ class GraphqlElementTest extends TestAbstract
             'versions' => $element->versions->map( fn( $item ) => ['published' => $item->published] )->all(),
             'created_at' => (string) $element->created_at,
             'updated_at' => (string) $element->updated_at,
-        ] + collect($element->getAttributes())->except(['tenant_id'])->all();
+        ] + collect($element->getAttributes())->except(['tenant_id', 'latest_id'])->all();
 
         $this->expectsDatabaseQueryCount(4);
 
@@ -112,7 +112,7 @@ class GraphqlElementTest extends TestAbstract
             'data' => $element->data,
             'created_at' => (string) $element->created_at,
             'updated_at' => (string) $element->updated_at,
-        ] + collect($element->getAttributes())->except(['tenant_id'])->all();
+        ] + collect($element->getAttributes())->except(['tenant_id', 'latest_id'])->all();
 
         $this->expectsDatabaseQueryCount(2);
 
@@ -265,7 +265,7 @@ class GraphqlElementTest extends TestAbstract
         $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
         $element = Element::where( 'type', 'footer' )->firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 8 );
+        $this->expectsDatabaseQueryCount( 9 );
 
         $response = $this->actingAs($this->user)->graphQL('
             mutation {
@@ -325,7 +325,7 @@ class GraphqlElementTest extends TestAbstract
         $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
         $element = Element::where( 'type', 'footer' )->firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 6 );
+        $this->expectsDatabaseQueryCount( 7 );
 
         $response = $this->actingAs($this->user)->graphQL('
             mutation {

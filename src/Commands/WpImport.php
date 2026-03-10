@@ -217,6 +217,7 @@ class WpImport extends Command
             $version->files()->attach( $fileIds );
         }
 
+        $page->forceFill( ['latest_id' => $version->id] )->saveQuietly();
         $page->publish( $version );
     }
 
@@ -240,6 +241,7 @@ class WpImport extends Command
             'editor' => $this->editor,
         ] );
 
+        $file->forceFill( ['latest_id' => $version->id] )->saveQuietly();
         $file->publish( $version );
 
         return $file->id;
@@ -395,6 +397,7 @@ class WpImport extends Command
             'editor' => $this->editor,
         ] );
 
+        $page->forceFill( ['latest_id' => $version->id] )->saveQuietly();
         $page->publish( $version );
 
         $this->info( "Created blog page: {$blogName} (/{$blogPath})" );

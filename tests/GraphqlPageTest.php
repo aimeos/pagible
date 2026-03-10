@@ -61,7 +61,7 @@ class GraphqlPageTest extends TestAbstract
         $page = Page::where('tag', 'root')->firstOrFail();
 
         // Prepare expected attributes
-        $attr = collect($page->getAttributes())->except(['tenant_id', '_lft', '_rgt', 'depth'])->all();
+        $attr = collect($page->getAttributes())->except(['tenant_id', 'latest_id', '_lft', '_rgt', 'depth'])->all();
         $expected = [
             'id' => (string) $page->id,
             'has' => $page->has,
@@ -118,7 +118,7 @@ class GraphqlPageTest extends TestAbstract
         $page = Page::where('tag', 'root')->firstOrFail();
 
         // Prepare expected attributes
-        $attr = collect($page->getAttributes())->except(['tenant_id', '_lft', '_rgt', 'depth'])->all();
+        $attr = collect($page->getAttributes())->except(['tenant_id', 'latest_id', '_lft', '_rgt', 'depth'])->all();
         $expected[] = [
             'id' => (string) $page->id,
             'meta' => (array) $page->meta,
@@ -273,7 +273,7 @@ class GraphqlPageTest extends TestAbstract
                 'parent_id' => (string) $page->parent_id,
                 'created_at' => (string) $page->created_at,
                 'updated_at' => (string) $page->updated_at,
-            ] + collect($page->getAttributes())->except(['tenant_id', '_lft', '_rgt', 'depth'])->all();
+            ] + collect($page->getAttributes())->except(['tenant_id', 'latest_id', '_lft', '_rgt', 'depth'])->all();
         }
 
         $this->expectsDatabaseQueryCount(2);
@@ -576,7 +576,7 @@ class GraphqlPageTest extends TestAbstract
         $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
         $element = Element::where( 'type', 'footer' )->firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 11 );
+        $this->expectsDatabaseQueryCount( 12 );
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
                 addPage(input: {
@@ -625,7 +625,7 @@ class GraphqlPageTest extends TestAbstract
 
         $page = Page::where('tag', 'test')->where('lang', 'en')->firstOrFail();
 
-        $attr = collect($page->getAttributes())->except(['tenant_id', '_lft', '_rgt', 'depth'])->all();
+        $attr = collect($page->getAttributes())->except(['tenant_id', 'latest_id', '_lft', '_rgt', 'depth'])->all();
         $expected = [
             'id' => $page->id,
             'parent_id' => null,
@@ -649,7 +649,7 @@ class GraphqlPageTest extends TestAbstract
 
         $root = Page::where('tag', 'root')->firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 11 );
+        $this->expectsDatabaseQueryCount( 12 );
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
                 addPage(input: {
@@ -689,7 +689,7 @@ class GraphqlPageTest extends TestAbstract
         $root = Page::where('tag', 'root')->firstOrFail();
         $ref = Page::where('tag', 'blog')->firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 11 );
+        $this->expectsDatabaseQueryCount( 12 );
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
                 addPage(input: {
@@ -826,7 +826,7 @@ class GraphqlPageTest extends TestAbstract
         $element = Element::where( 'type', 'footer' )->firstOrFail();
         $root = Page::where('tag', 'root')->firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 12 );
+        $this->expectsDatabaseQueryCount( 13 );
 
         $response = $this->actingAs($this->user)->graphQL('
             mutation {

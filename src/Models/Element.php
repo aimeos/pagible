@@ -177,13 +177,13 @@ class Element extends Model
 
 
     /**
-     * Get the page's latest head/meta data.
+     * Get the element's latest version.
      *
-     * @return MorphOne<Version, $this> Eloquent relationship to the latest version of the element
+     * @return BelongsTo<Version, $this> Eloquent relationship to the latest version of the element
      */
-    public function latest() : MorphOne
+    public function latest() : BelongsTo
     {
-        return $this->morphOne( Version::class, 'versionable' )->ofMany( ['created_at' => 'max', 'id' => 'max'] );
+        return $this->belongsTo( Version::class, 'latest_id' );
     }
 
 

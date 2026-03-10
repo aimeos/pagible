@@ -43,6 +43,8 @@ final class SaveElement
 
             $version->files()->attach( $args['files'] ?? [] );
 
+            $element->forceFill( ['latest_id' => $version->id] )->saveQuietly();
+
             return $element->removeVersions();
         }, 3 );
     }

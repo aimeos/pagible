@@ -64,12 +64,13 @@ class UpdateElement extends Tool
                 $input['data'] = $validated['data'];
             }
 
-            $element->versions()->create( [
+            $version = $element->versions()->create( [
                 'data' => array_map( fn( $v ) => $v ?? '', $input ),
                 'editor' => $editor,
                 'lang' => $validated['lang'] ?? $element->latest?->lang,
             ] );
 
+            $element->forceFill( ['latest_id' => $version->id] )->saveQuietly();
             $element->removeVersions();
 
             return Response::structured( $element->refresh()->toArray() );

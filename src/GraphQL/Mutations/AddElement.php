@@ -54,6 +54,8 @@ final class AddElement
 
             $version->files()->attach( $args['files'] ?? [] );
 
+            $element->forceFill( ['latest_id' => $version->id] )->saveQuietly();
+
             return $element->refresh();
         }, 3 );
     }

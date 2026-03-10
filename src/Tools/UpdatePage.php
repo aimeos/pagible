@@ -132,6 +132,7 @@ class UpdatePage extends Tool
                 'aux' => $aux,
             ] );
 
+            $page->forceFill( ['latest_id' => $version->id] )->saveQuietly();
             $page->removeVersions();
 
             return Response::structured( $page->refresh()->toArray() + ['url' => route( 'cms.page', ['path' => $page->path] )] );

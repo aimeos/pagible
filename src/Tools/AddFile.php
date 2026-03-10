@@ -77,7 +77,7 @@ class AddFile extends Tool
 
             $file->save();
 
-            $file->versions()->create( [
+            $version = $file->versions()->create( [
                 'lang' => $validated['lang'] ?? null,
                 'editor' => $editor,
                 'data' => [
@@ -90,6 +90,8 @@ class AddFile extends Tool
                     'transcription' => $file->transcription,
                 ],
             ] );
+
+            $file->forceFill( ['latest_id' => $version->id] )->saveQuietly();
 
             return Response::structured( $file->refresh()->toArray() );
         }, 3 );
