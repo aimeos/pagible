@@ -371,6 +371,26 @@ dialog.search .result-content b {
     padding: 0.1rem 0.25rem;
 }
 
+dialog.search .load-more {
+    background-color: var(--pico-contrast-background);
+    color: var(--pico-contrast);
+    border: 1px solid var(--pico-contrast-border);
+    cursor: pointer;
+    display: block;
+    font-size: 1rem;
+    margin: 1rem auto;
+    padding: 0.5rem 1.5rem;
+}
+
+dialog.search .load-more:hover {
+    background-color: var(--pico-contrast-hover-background);
+}
+
+dialog.search .load-more:disabled {
+    opacity: 0.5;
+    cursor: wait;
+}
+
 
 .container {
     max-width: 1200px !important;

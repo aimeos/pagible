@@ -8,6 +8,7 @@
  */
 function PagibleSearch() {
     let modal = null;
+    let nextPageUrl = null;
 
     return {
         debounce(fn, delay = 300) {
@@ -80,7 +81,11 @@ function PagibleSearch() {
                 return response.json();
             }).then(result => {
                 const results = ev.target?.closest('article')?.querySelector('.results');
-                if (results) this.update(results, result, value);
+                if (results) {
+                    nextPageUrl = result.next_page_url;
+                    this.update(results, result.data, value);
+                    this.loadmore(results, value);
+                }
             }).catch(error => {
                 console.error('Error searching pages', error);
             });
@@ -101,10 +106,14 @@ function PagibleSearch() {
         },
 
 
-        update(results, data, value) {
+        update(results, data, value, append = false) {
             if (!results) return;
 
-            results.innerHTML = '';
+            if (!append) {
+                results.innerHTML = '';
+            } else {
+                results.querySelector('.load-more')?.remove();
+            }
 
             for (const item of data) {
                 const container = document.createElement('a');
@@ -129,6 +138,35 @@ function PagibleSearch() {
 
                 results.appendChild(container);
             }
+        },
+
+
+        loadmore(results, value) {
+            if (!results || !nextPageUrl) return;
+
+            const btn = document.createElement('button');
+            btn.classList.add('load-more');
+            btn.textContent = 'Load more';
+            btn.addEventListener('click', () => {
+                btn.disabled = true;
+
+                fetch(nextPageUrl, {
+                    method: 'GET',
+                    headers: { 'Accept': 'application/json' },
+                }).then(response => {
+                    if (!response.ok) throw response;
+                    return response.json();
+                }).then(result => {
+                    nextPageUrl = result.next_page_url;
+                    this.update(results, result.data, value, true);
+                    this.loadmore(results, value);
+                }).catch(error => {
+                    btn.disabled = false;
+                    console.error('Error loading more results', error);
+                });
+            });
+
+            results.appendChild(btn);
         }
     };
 };
