@@ -26,22 +26,25 @@ class SearchControllerTest extends TestAbstract
         $request = Request::create('/cmsapi/search', 'GET', [
             'search' => 'welcome',
             'locale' => 'en',
+            'size' => 10,
         ]);
 
         $controller = new \Aimeos\Cms\Controllers\SearchController();
         $response = $controller->index($request, 'mydomain.tld');
 
-        $expected = [
-            (object) [
-                'content' => '',
-                'domain' => 'mydomain.tld',
-                'path' => '',
-                'lang' => 'en',
-                'title' => 'Home | Laravel CMS',
-            ]
-        ];
+        $data = $response->getData();
 
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEqualsCanonicalizing($expected, $response->getData());
+        $this->assertObjectHasProperty('data', $data);
+        $this->assertObjectHasProperty('current_page', $data);
+        $this->assertObjectHasProperty('last_page', $data);
+        $this->assertEquals(1, $data->current_page);
+        $this->assertIsArray($data->data);
+        $this->assertNotEmpty($data->data);
+
+        $item = $data->data[0];
+        $this->assertEquals('mydomain.tld', $item->domain);
+        $this->assertEquals('en', $item->lang);
+        $this->assertEquals('Home | Laravel CMS', $item->title);
     }
 }
