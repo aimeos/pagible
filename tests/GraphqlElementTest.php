@@ -121,7 +121,6 @@ class GraphqlElementTest extends TestAbstract
                 id: ["' . $element->id . '"]
                 lang: "en"
                 type: "footer"
-                name: "Shared"
                 editor: "seeder"
             }, sort: [{column: TYPE, order: ASC}], first: 10, trashed: WITH, publish: DRAFT) {
                 data {

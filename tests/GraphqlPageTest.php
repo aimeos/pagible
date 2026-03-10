@@ -135,12 +135,10 @@ class GraphqlPageTest extends TestAbstract
                 id: ["' . $page->id . '"]
                 parent_id: null
                 lang: "en"
-                name: "Home"
-                title: "Home"
-                path: ""
                 tag: "root"
-                to: ""
                 domain: "mydomain.tld"
+                path: ""
+                to: ""
                 type: ""
                 theme: ""
                 cache: 5

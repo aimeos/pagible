@@ -199,7 +199,7 @@ final class Query
         }
 
         if( array_key_exists( 'path', $filter ) ) {
-            $builder->where( 'cms_versions.data->path', (string) $filter['path'] );
+            $builder->where( 'cms_versions.data->path', 'like', $filter['path'] . '%' );
         }
 
         if( array_key_exists( 'domain', $filter ) ) {
@@ -216,14 +216,6 @@ final class Query
 
         if( array_key_exists( 'type', $filter ) ) {
             $builder->where( 'cms_versions.data->type', (string) $filter['type'] );
-        }
-
-        if( array_key_exists( 'name', $filter ) ) {
-            $builder->where( 'cms_versions.data->name', 'like', $filter['name'] . '%' );
-        }
-
-        if( array_key_exists( 'title', $filter ) ) {
-            $builder->where( 'cms_versions.data->title', 'like', $filter['title'] . '%' );
         }
 
         if( isset( $filter['any'] ) ) {
