@@ -23,17 +23,18 @@ class SearchController extends Controller
      */
     public function index( Request $request, string $domain = '' )
     {
-        $query = (string) $request->get( 'search' );
+        $vals = $request->validate( [
+            'search' => 'required|string|min:3',
+            'size' => 'integer|between:5,100',
+        ] );
 
-        if( strlen( $query ) < 3 ) {
-            return response()->json( [] );
-        }
-
-        $content = Page::search( $query )
-            ->where( 'lang', $request->locale ?? app()->getLocale() )
+        /** @var \Illuminate\Pagination\LengthAwarePaginator<int, \Aimeos\Cms\Models\Page> $paginator */
+        $paginator = Page::search( $vals['search'] )
             ->where( 'domain', $domain )
-            ->get()
-            ->map( fn( $item ) => [
+            ->where( 'lang', $request->locale ?? app()->getLocale() )
+            ->paginate( $vals['size'] ?? 25 );
+
+        $content = $paginator->through( fn( $item ) => [
                 'domain' => $item->domain ?? '',
                 'path' => $item->path ?? '',
                 'lang' => $item->lang ?? '',
