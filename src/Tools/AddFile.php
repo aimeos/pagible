@@ -11,6 +11,7 @@ use Aimeos\Cms\Permission;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Utils;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Attributes\Name;
@@ -75,9 +76,12 @@ class AddFile extends Tool
                 throw $t;
             }
 
+            $versionId = Str::uuid7();
+            $file->latest_id = $versionId;
             $file->save();
 
-            $version = $file->versions()->create( [
+            $file->versions()->forceCreate( [
+                'id' => $versionId,
                 'lang' => $validated['lang'] ?? null,
                 'editor' => $editor,
                 'data' => [
@@ -90,8 +94,6 @@ class AddFile extends Tool
                     'transcription' => $file->transcription,
                 ],
             ] );
-
-            $file->forceFill( ['latest_id' => $version->id] )->saveQuietly();
 
             return Response::structured( $file->refresh()->toArray() );
         }, 3 );

@@ -11,6 +11,7 @@ use Aimeos\Cms\Utils;
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\Models\Page;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Attributes\Name;
@@ -125,14 +126,17 @@ class UpdatePage extends Tool
                 $aux['meta'] = $meta;
             }
 
-            $version = $page->versions()->create([
+            $versionId = Str::uuid7();
+
+            $version = $page->versions()->forceCreate([
+                'id' => $versionId,
                 'data' => array_map( fn( $v ) => $v ?? '', $data ),
                 'editor' => $editor,
                 'lang' => $validated['lang'] ?? $page->latest?->lang,
                 'aux' => $aux,
             ] );
 
-            $page->forceFill( ['latest_id' => $version->id] )->saveQuietly();
+            $page->forceFill( ['latest_id' => $versionId] )->save();
             $page->removeVersions();
 
             return Response::structured( $page->refresh()->toArray() + ['url' => route( 'cms.page', ['path' => $page->path] )] );

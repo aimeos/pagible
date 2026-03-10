@@ -33,6 +33,7 @@ use Illuminate\Support\Collection;
  * @property string $editor
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property string|null $latest_id
  * @property \Illuminate\Support\Carbon|null $deleted_at
  * @method static \Illuminate\Database\Eloquent\Builder<static> withoutTenancy()
  */

@@ -9,6 +9,7 @@ namespace Aimeos\Cms\GraphQL\Mutations;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Aimeos\Cms\Models\Version;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Permission;
@@ -39,7 +40,10 @@ final class SavePage
             $aux = array_intersect_key( $input, array_flip( ['meta', 'config', 'content'] ) );
             $aux = array_replace( (array) $page->latest?->aux, $aux );
 
-            $version = $page->versions()->create([
+            $versionId = Str::uuid7();
+
+            $version = $page->versions()->forceCreate([
+                'id' => $versionId,
                 'data' => array_map( fn( $v ) => $v ?? '', $data ),
                 'editor' => Auth::user()->name ?? request()->ip(),
                 'lang' => $args['input']['lang'] ?? null,
@@ -50,8 +54,7 @@ final class SavePage
             $version->elements()->attach( $args['elements'] ?? [] );
             $version->files()->attach( $args['files'] ?? [] );
 
-            $page->forceFill( ['latest_id' => $version->id] )->saveQuietly();
-            $page->setRelation( 'latest', $version );
+            $page->forceFill( ['latest_id' => $versionId] )->save();
 
             return $page->removeVersions();
         } );

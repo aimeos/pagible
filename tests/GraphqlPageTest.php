@@ -128,7 +128,7 @@ class GraphqlPageTest extends TestAbstract
             'updated_at' => (string) $page->updated_at,
         ] + $attr;
 
-        $this->expectsDatabaseQueryCount(2);
+        $this->expectsDatabaseQueryCount(3);
 
         $response = $this->actingAs($this->user)->graphQL('{
             pages(filter: {
@@ -576,7 +576,7 @@ class GraphqlPageTest extends TestAbstract
         $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
         $element = Element::where( 'type', 'footer' )->firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 12 );
+        $this->expectsDatabaseQueryCount( 11 );
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
                 addPage(input: {
@@ -649,7 +649,7 @@ class GraphqlPageTest extends TestAbstract
 
         $root = Page::where('tag', 'root')->firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 12 );
+        $this->expectsDatabaseQueryCount( 11 );
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
                 addPage(input: {
@@ -689,7 +689,7 @@ class GraphqlPageTest extends TestAbstract
         $root = Page::where('tag', 'root')->firstOrFail();
         $ref = Page::where('tag', 'blog')->firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 12 );
+        $this->expectsDatabaseQueryCount( 11 );
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
                 addPage(input: {
@@ -826,7 +826,7 @@ class GraphqlPageTest extends TestAbstract
         $element = Element::where( 'type', 'footer' )->firstOrFail();
         $root = Page::where('tag', 'root')->firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 14 );
+        $this->expectsDatabaseQueryCount( 18 );
 
         $response = $this->actingAs($this->user)->graphQL('
             mutation {
@@ -998,7 +998,7 @@ class GraphqlPageTest extends TestAbstract
         $root = Page::where('tag', 'root')->firstOrFail();
         $root->delete();
 
-        $this->expectsDatabaseQueryCount( 10 );
+        $this->expectsDatabaseQueryCount( 12 );
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
                 keepPage(id: ["' . $root->id . '"]) {

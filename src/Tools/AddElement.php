@@ -10,6 +10,7 @@ namespace Aimeos\Cms\Tools;
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\Models\Element;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Attributes\Name;
@@ -48,7 +49,10 @@ class AddElement extends Tool
 
             $editor = (string) $request->user()?->name; // @phpstan-ignore-line property.notFound
 
+            $versionId = Str::uuid7();
+
             $element = new Element();
+            $element->latest_id = $versionId;
             $element->fill( [
                 'type' => $validated['type'],
                 'name' => $validated['name'],
@@ -67,13 +71,12 @@ class AddElement extends Tool
             ];
             ksort( $data );
 
-            $version = $element->versions()->create( [
+            $element->versions()->forceCreate( [
+                'id' => $versionId,
                 'data' => array_map( fn( $v ) => is_null( $v ) ? (string) $v : $v, $data ),
                 'lang' => $validated['lang'] ?? null,
                 'editor' => $editor,
             ] );
-
-            $element->forceFill( ['latest_id' => $version->id] )->saveQuietly();
 
             return Response::structured( $element->refresh()->toArray() );
         }, 3 );

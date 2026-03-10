@@ -31,6 +31,7 @@ return new class extends Migration
             $db->statement("CREATE VIRTUAL TABLE cms_index USING fts5(
                 page_id UNINDEXED,
                 tenant_id UNINDEXED,
+                latest UNINDEXED,
                 content
             )");
         }
@@ -44,6 +45,7 @@ return new class extends Migration
 
                 $table->uuid('page_id');
                 $table->string('tenant_id', 250);
+                $table->boolean('latest')->default(false);
                 $table->text('content');
 
                 $table->index(['tenant_id']);

@@ -237,15 +237,9 @@ final class Query
             $builder->where( 'cms_versions.data->title', 'like', $filter['title'] . '%' );
         }
 
-        if( isset( $filter['any'] ) )
-        {
-            $builder->whereAny( [
-                'cms_versions.data->path',
-                'cms_versions.data->to',
-                'cms_versions.data->tag',
-                'cms_versions.data->name',
-                'cms_versions.data->title'
-            ], 'like', '%' . $filter['any'] . '%' );
+        if( isset( $filter['any'] ) ) {
+            $ids = Page::search( $filter['any'] )->where( 'latest', true )->take( 1000 )->keys();
+            $builder->whereIn( 'cms_pages.id', $ids->all() );
         }
 
         return $builder;

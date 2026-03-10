@@ -30,8 +30,10 @@ class SearchController extends Controller
         }
 
         $content = Page::search( $query )
-            ->where( 'lang', $request->locale ?? app()->getLocale() )
             ->where( 'domain', $domain )
+            ->where( 'lang', $request->locale ?? app()->getLocale() )
+            ->where( 'latest', false )
+            ->take( 25 )
             ->get()
             ->map( fn( $item ) => [
                 'domain' => $item->domain ?? '',

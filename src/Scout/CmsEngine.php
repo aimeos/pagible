@@ -151,7 +151,7 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
      */
     public function search( Builder $builder )
     {
-        $models = $this->buildSearchQuery($builder)->get();
+        $models = $this->buildSearchQuery( $builder )->get();
 
         return [
             'results' => $models,
@@ -249,6 +249,9 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
                 foreach( $builder->orders as $order ) {
                     $query->orderBy( $order['column'], $order['direction'] );
                 }
+            })
+            ->when( !is_null( $builder->limit ), function ( $query ) use ( $builder ) {
+                $query->limit( $builder->limit );
             });
     }
 
@@ -301,7 +304,7 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
             return;
         }
 
-        $sub->select( 'page_id' );
+        $sub->select( 'page_id', 'latest' );
 
         foreach( $words as $word ) {
             $sub->where( 'content', 'like', '%' . $word . '%' );
@@ -323,7 +326,7 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
         }
 
         $terms = implode( ' ', array_map( fn( $w ) => '+' . $w . '*', $words ) );
-        $select = 'page_id, MATCH(content) AGAINST(? IN BOOLEAN MODE) AS relevance';
+        $select = 'page_id, latest, MATCH(content) AGAINST(? IN BOOLEAN MODE) AS relevance';
 
         $sub->selectRaw( $select, [$terms] )
             ->whereRaw( 'MATCH(content) AGAINST(? IN BOOLEAN MODE)', [$terms] );
@@ -344,7 +347,7 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
         }
 
         $terms = implode( ' & ', array_map( fn( $w ) => $w . ':*', $words ) );
-        $select = "page_id, ts_rank(to_tsvector('simple', coalesce(content, '')), to_tsquery('simple', ?)) AS relevance";
+        $select = "page_id, latest, ts_rank(to_tsvector('simple', coalesce(content, '')), to_tsquery('simple', ?)) AS relevance";
 
         $sub->selectRaw( $select, [$terms] )
             ->whereRaw( "to_tsvector('simple', coalesce(content, '')) @@ to_tsquery('simple', ?)", [$terms] );
@@ -366,7 +369,7 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
 
         $terms = implode( ' AND ', array_map( fn( $w ) => '"' . $w . '" *', $words ) );
 
-        $sub->selectRaw( 'page_id, -rank AS relevance' )
+        $sub->selectRaw( 'page_id, latest, -rank AS relevance' )
             ->whereRaw( 'cms_index MATCH ?', [$terms] );
     }
 
@@ -386,7 +389,7 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
 
         $terms = implode( ' AND ', array_map( fn( $w ) => '"' . $w . '*"', $words ) );
 
-        $sub->selectRaw( 'cms_index.page_id, ct.[RANK] AS relevance' )
+        $sub->selectRaw( 'cms_index.page_id, cms_index.latest, ct.[RANK] AS relevance' )
             ->join( $sub->raw( 'CONTAINSTABLE(cms_index, content, ?) AS ct' ), $sub->raw( 'cms_index.id' ), '=', $sub->raw( 'ct.[KEY]' ) )
             ->addBinding( [$terms], 'join' );
     }
