@@ -119,7 +119,9 @@ class AddPage extends Tool
 
                 $page->save();
                 $page->refresh();
-                $page->versions()->create( $version );
+
+                $version = $page->versions()->create( $version );
+                $page->forceFill( ['latest_id' => $version->id] )->saveQuietly();
 
             }, 3 );
         } );

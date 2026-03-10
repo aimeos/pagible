@@ -69,7 +69,7 @@ class GraphqlFileTest extends TestAbstract
             'versions' => $file->versions->map( fn( $item ) => ['published' => $item->published] )->all(),
             'created_at' => (string) $file->created_at,
             'updated_at' => (string) $file->updated_at,
-        ] + collect($file->getAttributes())->except(['tenant_id'])->all();
+        ] + collect($file->getAttributes())->except(['tenant_id', 'latest_id'])->all();
 
         $this->expectsDatabaseQueryCount(5);
 
@@ -124,7 +124,7 @@ class GraphqlFileTest extends TestAbstract
                 'byversions_count' => $file->byversions()->count(),
                 'created_at' => (string) $file->created_at,
                 'updated_at' => (string) $file->updated_at,
-            ] + collect($file->getAttributes())->except(['tenant_id'])->all();
+            ] + collect($file->getAttributes())->except(['tenant_id', 'latest_id'])->all();
         } )->all();
 
         $this->expectsDatabaseQueryCount(2);
@@ -155,6 +155,8 @@ class GraphqlFileTest extends TestAbstract
         }');
 
         $filesData = $response->json('data.files.data');
+        $this->assertCount(2, $filesData);
+
         $filesData[0]['previews'] = json_decode( $filesData[0]['previews'], true );
         $filesData[0]['description'] = json_decode( $filesData[0]['description'], true );
         $filesData[0]['transcription'] = json_decode( $filesData[0]['transcription'], true );
@@ -162,7 +164,6 @@ class GraphqlFileTest extends TestAbstract
         $filesData[1]['description'] = json_decode( $filesData[1]['description'], true );
         $filesData[1]['transcription'] = json_decode( $filesData[1]['transcription'], true );
 
-        $this->assertCount(2, $filesData);
         $this->assertEquals($expected, $filesData);
 
         // Assert paginator info
@@ -242,7 +243,7 @@ class GraphqlFileTest extends TestAbstract
 
     public function testAddFile()
     {
-        $this->expectsDatabaseQueryCount( 4 );
+        $this->expectsDatabaseQueryCount( 5 );
         $response = $this->actingAs( $this->user )->multipartGraphQL( [
             'query' => '
                 mutation($file: Upload!, $preview: Upload) {
@@ -307,7 +308,7 @@ class GraphqlFileTest extends TestAbstract
 
         $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
 
-        $this->expectsDatabaseQueryCount(7);
+        $this->expectsDatabaseQueryCount( 9 );
 
         $response = $this->actingAs($this->user)->multipartGraphQL([
             'query' => '

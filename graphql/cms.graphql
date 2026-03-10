@@ -273,7 +273,7 @@ type Page {
   files: [File!]! @belongsToMany
 
   "Latest version of the page meta data"
-  latest: Version @morphOne
+  latest: Version @belongsTo
 
   "Published version of the page meta data"
   published: Version @morphOne
@@ -426,7 +426,7 @@ type Element {
   files: [File!]! @belongsToMany
 
   "Latest version of the content element"
-  latest: Version @morphOne
+  latest: Version @belongsTo
 
   "Published version of the content element"
   published: Version @morphOne
@@ -522,7 +522,7 @@ type File {
   byversions_count: Int!
 
   "Latest version of the file"
-  latest: Version @morphOne
+  latest: Version @belongsTo
 
   "Published version of the content element"
   published: Version @morphOne

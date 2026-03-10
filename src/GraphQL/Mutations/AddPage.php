@@ -72,6 +72,8 @@ final class AddPage
                 $version->elements()->attach( $args['elements'] ?? [] );
                 $version->files()->attach( $args['files'] ?? [] );
 
+                $page->forceFill( ['latest_id' => $version->id] )->saveQuietly();
+
                 return $page->refresh();
             }, 3 );
         } );

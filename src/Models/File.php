@@ -12,6 +12,7 @@ use Aimeos\Cms\Concerns\Tenancy;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -272,13 +273,13 @@ class File extends Model
 
 
     /**
-     * Get the page's latest head/meta data.
+     * Get the file's latest version.
      *
-     * @return MorphOne<Version, $this> Eloquent relationship to the latest version of the file
+     * @return BelongsTo<Version, $this> Eloquent relationship to the latest version of the file
      */
-    public function latest() : MorphOne
+    public function latest() : BelongsTo
     {
-        return $this->morphOne( Version::class, 'versionable' )->ofMany( ['created_at' => 'max', 'id' => 'max'] );
+        return $this->belongsTo( Version::class, 'latest_id' );
     }
 
 

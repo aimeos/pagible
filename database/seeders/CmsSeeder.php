@@ -85,6 +85,7 @@ class CmsSeeder extends Seeder
                 'editor' => 'seeder',
             ]);
 
+            $file->forceFill( ['latest_id' => $version->id] )->saveQuietly();
             $this->file = $file->refresh()->id;
 
             $file2 = File::forceCreate( [
@@ -112,6 +113,8 @@ class CmsSeeder extends Seeder
                 'published' => true,
                 'editor' => 'seeder',
             ]);
+
+            $file2->forceFill( ['latest_id' => $version->id] )->saveQuietly();
         }
 
         return $this->file;
@@ -138,6 +141,7 @@ class CmsSeeder extends Seeder
                 'editor' => 'seeder',
             ]);
 
+            $element->forceFill( ['latest_id' => $version->id] )->saveQuietly();
             $this->element = $element->refresh()->id;
         }
 
@@ -166,7 +170,7 @@ class CmsSeeder extends Seeder
                 ['type' => 'ref', 'id' => $elementId]
             ],
         ]);
-        $page->versions()->forceCreate([
+        $version = $page->versions()->forceCreate([
             'lang' => 'en',
             'data' => [
                 'name' => 'Home',
@@ -192,6 +196,7 @@ class CmsSeeder extends Seeder
             'published' => true,
             'editor' => 'seeder',
         ]);
+        $page->forceFill( ['latest_id' => $version->id] )->saveQuietly();
         $page->elements()->attach( $elementId );
 
         return $page;
@@ -217,7 +222,7 @@ class CmsSeeder extends Seeder
         $page->appendToNode( $home )->save();
         $page->elements()->attach( $elementId );
 
-        $page->versions()->forceCreate([
+        $version = $page->versions()->forceCreate([
             'lang' => 'en',
             'data' => [
                 'name' => 'Blog',
@@ -236,6 +241,7 @@ class CmsSeeder extends Seeder
             'published' => true,
             'editor' => 'seeder',
         ]);
+        $page->forceFill( ['latest_id' => $version->id] )->saveQuietly();
 
         return $this->addBlogArticle( $page );
     }
@@ -298,6 +304,7 @@ mutation {
             'editor' => 'seeder',
         ]);
         $version->files()->attach( $fileId );
+        $page->forceFill( ['latest_id' => $version->id] )->saveQuietly();
 
         return $this;
     }
@@ -337,7 +344,7 @@ This is content created using [markdown syntax](https://www.markdownguide.org/ba
         $page->files()->attach( $fileId );
 
 
-        $page->versions()->forceCreate([
+        $version = $page->versions()->forceCreate([
             'lang' => 'en',
             'data' => [
                 'name' => 'Dev',
@@ -367,6 +374,7 @@ This is content created using [markdown syntax](https://www.markdownguide.org/ba
             'published' => true,
             'editor' => 'seeder',
         ]);
+        $page->forceFill( ['latest_id' => $version->id] )->saveQuietly();
 
         return $this;
     }
@@ -396,6 +404,7 @@ This is content created using [markdown syntax](https://www.markdownguide.org/ba
             'published' => true,
             'editor' => 'seeder',
         ]);
+        $page->forceFill( ['latest_id' => $version->id] )->saveQuietly();
 
         $child = Page::forceCreate([
             'name' => 'Disabled child',
@@ -407,7 +416,7 @@ This is content created using [markdown syntax](https://www.markdownguide.org/ba
         ]);
         $child->appendToNode( $page )->save();
 
-        $version = $page->versions()->forceCreate([
+        $version = $child->versions()->forceCreate([
             'data' => [
                 'name' => 'Disabled child',
                 'title' => 'Disabled child | Laravel CMS',
@@ -419,6 +428,7 @@ This is content created using [markdown syntax](https://www.markdownguide.org/ba
             'published' => true,
             'editor' => 'seeder',
         ]);
+        $child->forceFill( ['latest_id' => $version->id] )->saveQuietly();
 
         return $this;
     }
@@ -449,6 +459,7 @@ This is content created using [markdown syntax](https://www.markdownguide.org/ba
             'published' => false,
             'editor' => 'seeder',
         ]);
+        $page->forceFill( ['latest_id' => $version->id] )->saveQuietly();
 
         return $this;
     }

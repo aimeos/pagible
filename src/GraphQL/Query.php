@@ -43,40 +43,40 @@ final class Query
             case 'only': $builder->onlyTrashed(); break;
         }
 
-        $builder->whereHas('latest', function( $builder ) use ( $filter, $publish ) {
+        $builder->select( 'cms_elements.*' )
+            ->join( 'cms_versions', 'cms_elements.latest_id', '=', 'cms_versions.id' );
 
-            switch( $publish )
-            {
-                case 'PUBLISHED': $builder->where( 'cms_versions.published', true ); break;
-                case 'DRAFT': $builder->where( 'cms_versions.published', false ); break;
-                case 'SCHEDULED': $builder->where( 'cms_versions.publish_at', '!=', null )
-                    ->where( 'cms_versions.published', false ); break;
-            }
+        switch( $publish )
+        {
+            case 'PUBLISHED': $builder->where( 'cms_versions.published', true ); break;
+            case 'DRAFT': $builder->where( 'cms_versions.published', false ); break;
+            case 'SCHEDULED': $builder->where( 'cms_versions.publish_at', '!=', null )
+                ->where( 'cms_versions.published', false ); break;
+        }
 
-            if( isset( $filter['id'] ) ) {
-                $builder->whereIn( 'cms_versions.versionable_id', $filter['id'] );
-            }
+        if( isset( $filter['id'] ) ) {
+            $builder->whereIn( 'cms_elements.id', $filter['id'] );
+        }
 
-            if( isset( $filter['lang'] ) ) {
-                $builder->where( 'cms_versions.lang', $filter['lang'] );
-            }
+        if( isset( $filter['lang'] ) ) {
+            $builder->where( 'cms_versions.lang', $filter['lang'] );
+        }
 
-            if( isset( $filter['editor'] ) ) {
-                $builder->where( 'cms_versions.editor', 'like', $filter['editor'] . '%' );
-            }
+        if( isset( $filter['editor'] ) ) {
+            $builder->where( 'cms_versions.editor', 'like', $filter['editor'] . '%' );
+        }
 
-            if( isset( $filter['type'] ) ) {
-                $builder->where( 'data->type', (string) $filter['type'] );
-            }
+        if( isset( $filter['type'] ) ) {
+            $builder->where( 'cms_versions.data->type', (string) $filter['type'] );
+        }
 
-            if( array_key_exists( 'name', $filter ) ) {
-                $builder->where( 'data->name', 'like', $filter['name'] . '%' );
-            }
+        if( array_key_exists( 'name', $filter ) ) {
+            $builder->where( 'cms_versions.data->name', 'like', $filter['name'] . '%' );
+        }
 
-            if( isset( $filter['any'] ) ) {
-                $builder->whereAny( ['data->name'], 'like', '%' . $filter['any'] . '%' );
-            }
-        });
+        if( isset( $filter['any'] ) ) {
+            $builder->whereAny( ['cms_versions.data->name'], 'like', '%' . $filter['any'] . '%' );
+        }
 
         return $builder;
     }
@@ -104,40 +104,44 @@ final class Query
             case 'only': $builder->onlyTrashed(); break;
         }
 
-        $builder->whereHas( 'latest', function( $builder ) use ( $filter, $publish ) {
+        $builder->join( 'cms_versions', 'cms_files.latest_id', '=', 'cms_versions.id' );
 
-            switch( $publish )
-            {
-                case 'PUBLISHED': $builder->where( 'cms_versions.published', true ); break;
-                case 'DRAFT': $builder->where( 'cms_versions.published', false ); break;
-                case 'SCHEDULED': $builder->where( 'cms_versions.publish_at', '!=', null )
-                    ->where( 'cms_versions.published', false ); break;
-            }
+        switch( $publish )
+        {
+            case 'PUBLISHED': $builder->where( 'cms_versions.published', true ); break;
+            case 'DRAFT': $builder->where( 'cms_versions.published', false ); break;
+            case 'SCHEDULED': $builder->where( 'cms_versions.publish_at', '!=', null )
+                ->where( 'cms_versions.published', false ); break;
+        }
 
-            if( isset( $filter['id'] ) ) {
-                $builder->whereIn( 'cms_versions.versionable_id', $filter['id'] );
-            }
+        if( isset( $filter['id'] ) ) {
+            $builder->whereIn( 'cms_files.id', $filter['id'] );
+        }
 
-            if( isset( $filter['lang'] ) ) {
-                $builder->where( 'cms_versions.lang', $filter['lang'] );
-            }
+        if( isset( $filter['lang'] ) ) {
+            $builder->where( 'cms_versions.lang', $filter['lang'] );
+        }
 
-            if( isset( $filter['editor'] ) ) {
-                $builder->where( 'cms_versions.editor', 'like', $filter['editor'] . '%' );
-            }
+        if( isset( $filter['editor'] ) ) {
+            $builder->where( 'cms_versions.editor', 'like', $filter['editor'] . '%' );
+        }
 
-            if( isset( $filter['mime'] ) ) {
-                $builder->where( 'data->mime', 'like', $filter['mime'] . '%' );
-            }
+        if( isset( $filter['mime'] ) ) {
+            $builder->where( 'cms_versions.data->mime', 'like', $filter['mime'] . '%' );
+        }
 
-            if( array_key_exists( 'name', $filter ) ) {
-                $builder->where( 'data->name', 'like', $filter['name'] . '%' );
-            }
+        if( array_key_exists( 'name', $filter ) ) {
+            $builder->where( 'cms_versions.data->name', 'like', $filter['name'] . '%' );
+        }
 
-            if( isset( $filter['any'] ) ) {
-                $builder->whereAny( ['data->name', 'data->description', 'data->transcription'], 'like', '%' . $filter['any'] . '%' );
-            }
-        });
+        if( isset( $filter['any'] ) )
+        {
+            $builder->whereAny( [
+                'cms_versions.data->name',
+                'cms_versions.data->description',
+                'cms_versions.data->transcription'
+            ], 'like', '%' . $filter['any'] . '%' );
+        }
 
         return $builder;
     }
@@ -170,73 +174,79 @@ final class Query
             $builder->where( 'cms_pages.parent_id', $filter['parent_id'] );
         }
 
-        $builder->whereHas('latest', function( $builder ) use ( $filter, $publish ) {
+        $builder->select( 'cms_pages.*' )
+            ->join( 'cms_versions', 'cms_pages.latest_id', '=', 'cms_versions.id' );
 
-            switch( $publish )
-            {
-                case 'PUBLISHED': $builder->where( 'cms_versions.published', true ); break;
-                case 'DRAFT': $builder->where( 'cms_versions.published', false ); break;
-                case 'SCHEDULED': $builder->where( 'cms_versions.publish_at', '!=', null )
-                    ->where( 'cms_versions.published', false ); break;
-            }
+        switch( $publish )
+        {
+            case 'PUBLISHED': $builder->where( 'cms_versions.published', true ); break;
+            case 'DRAFT': $builder->where( 'cms_versions.published', false ); break;
+            case 'SCHEDULED': $builder->where( 'cms_versions.publish_at', '!=', null )
+                ->where( 'cms_versions.published', false ); break;
+        }
 
-            if( isset( $filter['id'] ) ) {
-                $builder->whereIn( 'cms_versions.versionable_id', $filter['id'] );
-            }
+        if( isset( $filter['id'] ) ) {
+            $builder->whereIn( 'cms_pages.id', $filter['id'] );
+        }
 
-            if( isset( $filter['lang'] ) ) {
-                $builder->where( 'cms_versions.lang', (string) $filter['lang'] );
-            }
+        if( isset( $filter['lang'] ) ) {
+            $builder->where( 'cms_versions.lang', (string) $filter['lang'] );
+        }
 
-            if( isset( $filter['editor'] ) ) {
-                $builder->where( 'cms_versions.editor', 'like', $filter['editor'] . '%' );
-            }
+        if( isset( $filter['editor'] ) ) {
+            $builder->where( 'cms_versions.editor', 'like', $filter['editor'] . '%' );
+        }
 
-            if( isset( $filter['status'] ) ) {
-                $builder->where( 'data->status', (int) $filter['status'] );
-            }
+        if( isset( $filter['status'] ) ) {
+            $builder->where( 'cms_versions.data->status', (int) $filter['status'] );
+        }
 
-            if( isset( $filter['cache'] ) ) {
-                $builder->where( 'data->cache', (int) $filter['cache'] );
-            }
+        if( isset( $filter['cache'] ) ) {
+            $builder->where( 'cms_versions.data->cache', (int) $filter['cache'] );
+        }
 
-            if( array_key_exists( 'to', $filter ) ) {
-                $builder->where( 'data->to', (string) $filter['to'] );
-            }
+        if( array_key_exists( 'to', $filter ) ) {
+            $builder->where( 'cms_versions.data->to', (string) $filter['to'] );
+        }
 
-            if( array_key_exists( 'path', $filter ) ) {
-                $builder->where( 'data->path', (string) $filter['path'] );
-            }
+        if( array_key_exists( 'path', $filter ) ) {
+            $builder->where( 'cms_versions.data->path', (string) $filter['path'] );
+        }
 
-            if( array_key_exists( 'domain', $filter ) ) {
-                $builder->where( 'data->domain', (string) $filter['domain'] );
-            }
+        if( array_key_exists( 'domain', $filter ) ) {
+            $builder->where( 'cms_versions.data->domain', (string) $filter['domain'] );
+        }
 
-            if( array_key_exists( 'tag', $filter ) ) {
-                $builder->where( 'data->tag', (string) $filter['tag'] );
-            }
+        if( array_key_exists( 'tag', $filter ) ) {
+            $builder->where( 'cms_versions.data->tag', (string) $filter['tag'] );
+        }
 
-            if( array_key_exists( 'theme', $filter ) ) {
-                $builder->where( 'data->theme', (string) $filter['theme'] );
-            }
+        if( array_key_exists( 'theme', $filter ) ) {
+            $builder->where( 'cms_versions.data->theme', (string) $filter['theme'] );
+        }
 
-            if( array_key_exists( 'type', $filter ) ) {
-                $builder->where( 'data->type', (string) $filter['type'] );
-            }
+        if( array_key_exists( 'type', $filter ) ) {
+            $builder->where( 'cms_versions.data->type', (string) $filter['type'] );
+        }
 
-            if( array_key_exists( 'name', $filter ) ) {
-                $builder->where( 'data->name', 'like', $filter['name'] . '%' );
-            }
+        if( array_key_exists( 'name', $filter ) ) {
+            $builder->where( 'cms_versions.data->name', 'like', $filter['name'] . '%' );
+        }
 
-            if( array_key_exists( 'title', $filter ) ) {
-                $builder->where( 'data->title', 'like', $filter['title'] . '%' );
-            }
+        if( array_key_exists( 'title', $filter ) ) {
+            $builder->where( 'cms_versions.data->title', 'like', $filter['title'] . '%' );
+        }
 
-            if( isset( $filter['any'] ) ) {
-                $builder->whereAny( ['aux->path', 'aux->to', 'aux->tag', 'data->name', 'data->title'], 'like', '%' . $filter['any'] . '%' );
-            }
-
-        } );
+        if( isset( $filter['any'] ) )
+        {
+            $builder->whereAny( [
+                'cms_versions.data->path',
+                'cms_versions.data->to',
+                'cms_versions.data->tag',
+                'cms_versions.data->name',
+                'cms_versions.data->title'
+            ], 'like', '%' . $filter['any'] . '%' );
+        }
 
         return $builder;
     }

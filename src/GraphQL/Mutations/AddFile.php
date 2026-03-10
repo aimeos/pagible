@@ -48,7 +48,7 @@ final class AddFile
 
             $file->save();
 
-            $file->versions()->create( [
+            $version = $file->versions()->create( [
                 'lang' => $args['input']['lang'] ?? null,
                 'editor' => $editor,
                 'data' => [
@@ -61,6 +61,8 @@ final class AddFile
                     'transcription' => $file->transcription,
                 ],
             ] );
+
+            $file->forceFill( ['latest_id' => $version->id] )->saveQuietly();
 
             return $file->refresh();
         }, 3 );

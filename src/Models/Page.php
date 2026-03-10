@@ -18,7 +18,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Prunable;
 use Illuminate\Database\Eloquent\Builder;
@@ -338,11 +337,11 @@ class Page extends Model
     /**
      * Get the page's latest head/meta data.
      *
-     * @return MorphOne<Version, $this> Eloquent relationship to the latest version of the page
+     * @return BelongsTo<Version, $this> Eloquent relationship to the latest version of the page
      */
-    public function latest() : MorphOne
+    public function latest() : BelongsTo
     {
-        return $this->morphOne( Version::class, 'versionable' )->ofMany( ['created_at' => 'max', 'id' => 'max'] );
+        return $this->belongsTo( Version::class, 'latest_id' );
     }
 
 
