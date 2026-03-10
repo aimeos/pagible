@@ -50,6 +50,7 @@ final class SavePage
             $version->files()->attach( $args['files'] ?? [] );
 
             $page->forceFill( ['latest_id' => $version->id] )->saveQuietly();
+            $page->setRelation( 'latest', $version );
 
             return $page->removeVersions();
         } );
