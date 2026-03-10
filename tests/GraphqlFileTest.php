@@ -243,7 +243,7 @@ class GraphqlFileTest extends TestAbstract
 
     public function testAddFile()
     {
-        $this->expectsDatabaseQueryCount( 4 );
+        $this->expectsDatabaseQueryCount( 8 );
         $response = $this->actingAs( $this->user )->multipartGraphQL( [
             'query' => '
                 mutation($file: Upload!, $preview: Upload) {
@@ -308,7 +308,7 @@ class GraphqlFileTest extends TestAbstract
 
         $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 9 );
+        $this->expectsDatabaseQueryCount( 11 );
 
         $response = $this->actingAs($this->user)->multipartGraphQL([
             'query' => '
@@ -385,7 +385,7 @@ class GraphqlFileTest extends TestAbstract
 
         $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 3 );
+        $this->expectsDatabaseQueryCount( 4 );
 
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
@@ -416,7 +416,7 @@ class GraphqlFileTest extends TestAbstract
         $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
         $file->delete();
 
-        $this->expectsDatabaseQueryCount( 3 );
+        $this->expectsDatabaseQueryCount( 8 );
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
                 keepFile(id: ["' . $file->id . '"]) {
@@ -445,7 +445,7 @@ class GraphqlFileTest extends TestAbstract
 
         $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 6 );
+        $this->expectsDatabaseQueryCount( 8 );
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
                 pubFile(id: ["' . $file->id . '"]) {
@@ -499,7 +499,7 @@ class GraphqlFileTest extends TestAbstract
 
         $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 5 );
+        $this->expectsDatabaseQueryCount( 7 );
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
                 purgeFile(id: ["' . $file->id . '"]) {

@@ -35,14 +35,19 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
     /**
      * Remove the given model from the index.
      *
-     * @param  \Illuminate\Database\Eloquent\Collection<int, \Aimeos\Cms\Models\Page>  $models
+     * @param  \Illuminate\Database\Eloquent\Collection<int, \Illuminate\Database\Eloquent\Model>  $models
      * @return void
      */
     public function delete( $models )
     {
-        $models->first()?->getConnection()?->table( 'cms_index' )
-            ->whereIn( 'page_id', $models->map( fn( $m ) => $m->getScoutKey() )->all() )
-            ->delete();
+        $db = $models->first()?->getConnection()?->table( 'cms_index' );
+
+        foreach( $models->groupBy( fn( $m ) => get_class( $m ) ) as $type => $group )
+        {
+            $db->whereIn( 'indexable_id', $group->map( fn( $m ) => $m->getScoutKey() )->all() )
+                ->where( 'indexable_type', $type )
+                ->delete();
+        }
     }
 
 
@@ -67,6 +72,7 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
     public function flush( $model )
     {
         $model->getConnection()->table( 'cms_index' )
+            ->where( 'indexable_type', get_class( $model ) )
             ->where( 'tenant_id', \Aimeos\Cms\Tenancy::value() )
             ->delete();
     }
@@ -178,7 +184,7 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
     /**
      * Update the given model in the index.
      *
-     * @param  \Illuminate\Database\Eloquent\Collection<int, \Aimeos\Cms\Models\Page>  $models
+     * @param  \Illuminate\Database\Eloquent\Collection<int, \Illuminate\Database\Eloquent\Model>  $models
      * @return void
      */
     public function update( $models )
@@ -187,28 +193,31 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
         /** @var \Illuminate\Database\Connection $db */
         $db = $models->first()?->getConnection();
 
-        $db->table( 'cms_index' )
-            ->whereIn( 'page_id', $models->map( fn( $m ) => $m->getScoutKey() )->all() )
-            ->delete();
-
-        $rows = [];
-
-        /** @var \Aimeos\Cms\Models\Page $model */
-        foreach( $models as $model )
+        foreach( $models->groupBy( fn( $m ) => get_class( $m ) ) as $type => $group )
         {
-            if( !$model->shouldBeSearchable() ) {
-                continue;
+            $db->table( 'cms_index' )
+                ->whereIn( 'indexable_id', $group->map( fn( $m ) => $m->getScoutKey() )->all() )
+                ->where( 'indexable_type', $type )
+                ->delete();
+
+            $rows = [];
+
+            foreach( $group as $model )
+            {
+                if( !$model->shouldBeSearchable() ) {
+                    continue;
+                }
+
+                $common = ['indexable_id' => $model->getScoutKey(), 'indexable_type' => $type, 'tenant_id' => $tenant];
+
+                foreach( $model->toSearchableArray() as $row ) {
+                    $rows[] = $row + $common;
+                }
             }
 
-            $common = ['page_id' => $model->getScoutKey(), 'tenant_id' => $tenant];
-
-            foreach( $model->toSearchableArray() as $row ) {
-                $rows[] = $row + $common;
+            if( !empty( $rows ) ) {
+                $db->table( 'cms_index' )->insert( $rows );
             }
-        }
-
-        if( !empty( $rows ) ) {
-            $db->table( 'cms_index' )->insert( $rows );
         }
     }
 
@@ -283,8 +292,10 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
             default => $this->searchLike( $sub, $builder->query ),
         };
 
+        $sub->where( 'indexable_type', get_class( $builder->model ) );
+
         $query->joinSub( $sub, 'index', function( $join ) use ( $modelTable ) {
-            $join->on( 'index.page_id', '=', "{$modelTable}.id" );
+            $join->on( 'index.indexable_id', '=', "{$modelTable}.id" );
         });
 
         return $query;
@@ -304,7 +315,7 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
             return;
         }
 
-        $sub->select( 'page_id', 'latest' );
+        $sub->select( 'indexable_id', 'latest' );
 
         foreach( $words as $word ) {
             $sub->where( 'content', 'like', '%' . $word . '%' );
@@ -326,7 +337,7 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
         }
 
         $terms = implode( ' ', array_map( fn( $w ) => '+' . $w . '*', $words ) );
-        $select = 'page_id, latest, MATCH(content) AGAINST(? IN BOOLEAN MODE) AS relevance';
+        $select = 'indexable_id, latest, MATCH(content) AGAINST(? IN BOOLEAN MODE) AS relevance';
 
         $sub->selectRaw( $select, [$terms] )
             ->whereRaw( 'MATCH(content) AGAINST(? IN BOOLEAN MODE)', [$terms] );
@@ -347,7 +358,7 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
         }
 
         $terms = implode( ' & ', array_map( fn( $w ) => $w . ':*', $words ) );
-        $select = "page_id, latest, ts_rank(to_tsvector('simple', coalesce(content, '')), to_tsquery('simple', ?)) AS relevance";
+        $select = "indexable_id, latest, ts_rank(to_tsvector('simple', coalesce(content, '')), to_tsquery('simple', ?)) AS relevance";
 
         $sub->selectRaw( $select, [$terms] )
             ->whereRaw( "to_tsvector('simple', coalesce(content, '')) @@ to_tsquery('simple', ?)", [$terms] );
@@ -369,7 +380,7 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
 
         $terms = implode( ' AND ', array_map( fn( $w ) => '"' . $w . '" *', $words ) );
 
-        $sub->selectRaw( 'page_id, latest, -rank AS relevance' )
+        $sub->selectRaw( 'indexable_id, latest, -rank AS relevance' )
             ->whereRaw( 'cms_index MATCH ?', [$terms] );
     }
 
@@ -389,7 +400,7 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
 
         $terms = implode( ' AND ', array_map( fn( $w ) => '"' . $w . '*"', $words ) );
 
-        $sub->selectRaw( 'cms_index.page_id, cms_index.latest, ct.[RANK] AS relevance' )
+        $sub->selectRaw( 'cms_index.indexable_id, cms_index.latest, ct.[RANK] AS relevance' )
             ->join( $sub->raw( 'CONTAINSTABLE(cms_index, content, ?) AS ct' ), $sub->raw( 'cms_index.id' ), '=', $sub->raw( 'ct.[KEY]' ) )
             ->addBinding( [$terms], 'join' );
     }

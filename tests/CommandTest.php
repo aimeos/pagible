@@ -23,7 +23,7 @@ class CommandTest extends TestAbstract
 
         $this->artisan('cms:index')->assertExitCode( 0 );
 
-        $this->assertEquals( 12, DB::connection( config( 'cms.db', 'sqlite' ) )->table( 'cms_index' )->count() );
+        $this->assertEquals( 18, DB::connection( config( 'cms.db', 'sqlite' ) )->table( 'cms_index' )->count() );
     }
 
 

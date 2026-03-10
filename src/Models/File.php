@@ -24,6 +24,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Http\UploadedFile;
 use Intervention\Image\ImageManager;
+use Laravel\Scout\Searchable;
 
 
 /**
@@ -49,6 +50,7 @@ class File extends Model
 {
     use HasUuids;
     use SoftDeletes;
+    use Searchable;
     use Prunable;
     use Tenancy;
 
@@ -350,6 +352,47 @@ class File extends Model
             ->ofMany( ['created_at' => 'max', 'id' => 'max'], function( $query ) {
                 $query->where( (new Version)->qualifyColumn( 'published' ), true );
             } );
+    }
+
+
+    /**
+     * Returns the searchable data for the file.
+     *
+     * @return array<int, array<string, string>>
+     */
+    public function toSearchableArray(): array
+    {
+        $attrs = ['name', 'mime', 'description', 'transcription', 'deleted_at', 'latest_id'];
+
+        if( !empty( $this->getChanges() ) && !$this->wasChanged( $attrs ) ) {
+            return [];
+        }
+
+        $rows = [];
+
+        if( $version = $this->latest )
+        {
+            $content = trim( @$version->data->name . "\n"
+                . implode( "\n", (array) ( $version->data->description ?? [] ) ) . "\n"
+                . implode( "\n", (array) ( $version->data->transcription ?? [] ) ) );
+
+            if( !empty( $content ) ) {
+                $rows[] = ['latest' => true, 'content' => $content];
+            }
+        }
+
+        if( !$this->trashed() )
+        {
+            $content = trim( $this->name . "\n"
+                . implode( "\n", (array) $this->description ) . "\n"
+                . implode( "\n", (array) $this->transcription ) );
+
+            if( !empty( $content ) ) {
+                $rows[] = ['latest' => false, 'content' => $content];
+            }
+        }
+
+        return $rows;
     }
 
 

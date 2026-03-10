@@ -390,7 +390,7 @@ class Page extends Model
      */
     public function shouldBeSearchable() : bool
     {
-        return $this->status > 0 && !$this->trashed();
+        return $this->status > 0;
     }
 
 
@@ -480,16 +480,19 @@ class Page extends Model
             }
         }
 
-        $content = trim( $this->path . "\n"
-            . $this->to . "\n"
-            . $this->tag . "\n"
-            . $this->name . "\n"
-            . $this->title . "\n"
-            . ( $this->meta->{'meta-tags'}->data->description ?? '' ) . "\n"
-            . $this->toSearchContent( collect( (array) $this->content )->merge( $this->elements ), $config ) );
+        if( !$this->trashed() )
+        {
+            $content = trim( $this->path . "\n"
+                . $this->to . "\n"
+                . $this->tag . "\n"
+                . $this->name . "\n"
+                . $this->title . "\n"
+                . ( $this->meta->{'meta-tags'}->data->description ?? '' ) . "\n"
+                . $this->toSearchContent( collect( (array) $this->content )->merge( $this->elements ), $config ) );
 
-        if( !empty( $content ) ) {
-            $rows[] = ['latest' => false, 'content' => $content];
+            if( !empty( $content ) ) {
+                $rows[] = ['latest' => false, 'content' => $content];
+            }
         }
 
         return $rows;
