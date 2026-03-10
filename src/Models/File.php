@@ -358,7 +358,7 @@ class File extends Model
     /**
      * Returns the searchable data for the file.
      *
-     * @return array<int, array<string, string>>
+     * @return list<array<string, bool|string>>
      */
     public function toSearchableArray(): array
     {
@@ -372,9 +372,10 @@ class File extends Model
 
         if( $version = $this->latest )
         {
-            $content = trim( @$version->data->name . "\n"
-                . implode( "\n", (array) ( $version->data->description ?? [] ) ) . "\n"
-                . implode( "\n", (array) ( $version->data->transcription ?? [] ) ) );
+            $data = $version->data ?? new \stdClass();
+            $content = trim( ( $data->name ?? '' ) . "\n"
+                . implode( "\n", (array) ( $data->description ?? [] ) ) . "\n"
+                . implode( "\n", (array) ( $data->transcription ?? [] ) ) );
 
             if( !empty( $content ) ) {
                 $rows[] = ['latest' => true, 'content' => $content];

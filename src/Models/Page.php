@@ -451,7 +451,7 @@ class Page extends Model
     /**
      * Returns the searchable data for the page.
      *
-     * @return array<int, array<string, string>>
+     * @return list<array<string, bool|string>>
      */
     public function toSearchableArray(): array
     {
@@ -467,13 +467,18 @@ class Page extends Model
 
         if( $version = $this->latest )
         {
-            $content = trim( @$version->data->path . "\n"
-                . @$version->data->to . "\n"
-                . @$version->data->tag . "\n"
-                . @$version->data->name . "\n"
-                . @$version->data->title . "\n"
+            $data = $version->data ?? new \stdClass();
+
+            /** @var list<\stdClass> $vcontent */
+            $vcontent = $version->aux->content ?? [];
+
+            $content = trim( ( $data->path ?? '' ) . "\n"
+                . ( $data->to ?? '' ) . "\n"
+                . ( $data->tag ?? '' ) . "\n"
+                . ( $data->name ?? '' ) . "\n"
+                . ( $data->title ?? '' ) . "\n"
                 . ( $version->aux->meta->{'meta-tags'}->data->description ?? '' ) . "\n"
-                . $this->toSearchContent( collect( $version->aux->content ?? [] )->merge( $version->elements ), $config ) );
+                . $this->toSearchContent( collect( $vcontent )->merge( $version->elements ), $config ) );
 
             if( !empty( $content ) ) {
                 $rows[] = ['latest' => true, 'content' => $content];
@@ -681,7 +686,7 @@ class Page extends Model
      * Builds searchable content string from content elements.
      *
      * @param array<string, mixed> $config Content type schemas
-     * @param Collection $contents Content elements to extract text from
+     * @param Collection<int, mixed> $contents Content elements to extract text from
      * @return string Searchable text
      */
     protected function toSearchContent( Collection $contents, array $config ) : string

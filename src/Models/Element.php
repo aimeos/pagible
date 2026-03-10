@@ -230,7 +230,7 @@ class Element extends Model
     /**
      * Returns the searchable data for the element.
      *
-     * @return array<int, array<string, string>>
+     * @return list<array<string, bool|string>>
      */
     public function toSearchableArray(): array
     {
@@ -245,7 +245,8 @@ class Element extends Model
 
         if( $version = $this->latest )
         {
-            $content = trim( @$version->data->name . "\n" . $this->toSearchContent( $version->data, $config ) );
+            $data = $version->data ?? new \stdClass();
+            $content = trim( ( $data->name ?? '' ) . "\n" . $this->toSearchContent( $data, $config ) );
 
             if( !empty( $content ) ) {
                 $rows[] = ['latest' => true, 'content' => $content];

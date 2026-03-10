@@ -48,7 +48,7 @@ final class SaveElement
             $version->refresh(); // SQL Server UUID character case workaround
             $version->files()->attach( $args['files'] ?? [] );
 
-            $element->forceFill( ['latest_id' => $versionId] )->save();
+            $element->forceFill( ['latest_id' => $version->id] )->save();
 
             return $element->removeVersions();
         }, 3 );

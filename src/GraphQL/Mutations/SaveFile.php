@@ -84,7 +84,7 @@ final class SaveFile
 
             $version->refresh(); // SQL Server UUID character case workaround
 
-            $orig->forceFill( ['latest_id' => $versionId] )->save();
+            $orig->forceFill( ['latest_id' => $version->id] )->save();
 
             $file->removeVersions();
 

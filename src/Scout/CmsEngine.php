@@ -35,17 +35,25 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
     /**
      * Remove the given model from the index.
      *
-     * @param  \Illuminate\Database\Eloquent\Collection<int, \Illuminate\Database\Eloquent\Model>  $models
+     * @param  \Illuminate\Database\Eloquent\Collection<int, \Aimeos\Cms\Models\Element|\Aimeos\Cms\Models\File|\Aimeos\Cms\Models\Page>  $models
      * @return void
      */
     public function delete( $models )
     {
-        $db = $models->first()?->getConnection()?->table( 'cms_index' );
+        $tenant = \Aimeos\Cms\Tenancy::value();
 
         foreach( $models->groupBy( fn( $m ) => get_class( $m ) ) as $type => $group )
         {
-            $db->whereIn( 'indexable_id', $group->map( fn( $m ) => $m->getScoutKey() )->all() )
+            $db = $group->first()?->getConnection();
+
+            if( !$db ) {
+                continue;
+            }
+
+            $db->table( 'cms_index' )
+                ->whereIn( 'indexable_id', $group->map( fn( $m ) => $m->getScoutKey() )->all() )
                 ->where( 'indexable_type', $type )
+                ->where( 'tenant_id', $tenant )
                 ->delete();
         }
     }
@@ -184,20 +192,25 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
     /**
      * Update the given model in the index.
      *
-     * @param  \Illuminate\Database\Eloquent\Collection<int, \Illuminate\Database\Eloquent\Model>  $models
+     * @param  \Illuminate\Database\Eloquent\Collection<int, \Aimeos\Cms\Models\Element|\Aimeos\Cms\Models\File|\Aimeos\Cms\Models\Page>  $models
      * @return void
      */
     public function update( $models )
     {
         $tenant = \Aimeos\Cms\Tenancy::value();
-        /** @var \Illuminate\Database\Connection $db */
-        $db = $models->first()?->getConnection();
 
         foreach( $models->groupBy( fn( $m ) => get_class( $m ) ) as $type => $group )
         {
+            $db = $group->first()?->getConnection();
+
+            if( !$db ) {
+                continue;
+            }
+
             $db->table( 'cms_index' )
                 ->whereIn( 'indexable_id', $group->map( fn( $m ) => $m->getScoutKey() )->all() )
                 ->where( 'indexable_type', $type )
+                ->where( 'tenant_id', $tenant )
                 ->delete();
 
             $rows = [];
@@ -260,7 +273,7 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
                 }
             })
             ->when( !is_null( $builder->limit ), function ( $query ) use ( $builder ) {
-                $query->limit( $builder->limit );
+                $query->limit( (int) $builder->limit );
             });
     }
 
