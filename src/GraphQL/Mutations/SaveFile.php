@@ -10,6 +10,7 @@ namespace Aimeos\Cms\GraphQL\Mutations;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Str;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\Utils;
@@ -72,7 +73,10 @@ final class SaveFile
                 throw $t;
             }
 
-            $version = $file->versions()->create( [
+            $versionId = Str::uuid7();
+
+            $version = $file->versions()->forceCreate( [
+                'id' => $versionId,
                 'lang' => $file->lang,
                 'editor' => $editor,
                 'data' => $file->toArray(),
@@ -80,8 +84,7 @@ final class SaveFile
 
             $version->refresh(); // SQL Server UUID character case workaround
 
-            $orig->forceFill( ['latest_id' => $version->id] )->saveQuietly();
-            $orig->setRelation( 'latest', $version );
+            $orig->forceFill( ['latest_id' => $version->id] )->save();
 
             $file->removeVersions();
 

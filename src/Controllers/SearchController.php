@@ -32,6 +32,7 @@ class SearchController extends Controller
         $paginator = Page::search( $vals['search'] )
             ->where( 'domain', $domain )
             ->where( 'lang', $request->locale ?? app()->getLocale() )
+            ->where( 'latest', false )
             ->paginate( $vals['size'] ?? 25 );
 
         $content = $paginator->through( fn( $item ) => [

@@ -10,6 +10,7 @@ namespace Aimeos\Cms\Tools;
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\Models\File;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Attributes\Name;
@@ -66,13 +67,16 @@ class UpdateFile extends Tool
             $clone->path = $latestData['path'] ?? $file->path;
             $clone->editor = $editor;
 
-            $version = $clone->versions()->create( [
+            $versionId = Str::uuid7();
+
+            $version = $clone->versions()->forceCreate( [
+                'id' => $versionId,
                 'lang' => $validated['lang'] ?? $file->latest->lang ?? $file->lang,
                 'editor' => $editor,
                 'data' => $clone->toArray(),
             ] );
 
-            $file->forceFill( ['latest_id' => $version->id] )->saveQuietly();
+            $file->forceFill( ['latest_id' => $versionId] )->save();
             $file->removeVersions();
 
             return Response::structured( [

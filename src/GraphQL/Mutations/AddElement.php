@@ -9,6 +9,7 @@ namespace Aimeos\Cms\GraphQL\Mutations;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Permission;
 use GraphQL\Error\Error;
@@ -34,7 +35,10 @@ final class AddElement
 
             $editor = Auth::user()->name ?? request()->ip();
 
+            $versionId = Str::uuid7();
+
             $element = new Element();
+            $element->latest_id = $versionId;
             $element->fill( $args['input'] ?? [] );
             $element->data = $args['input']['data'] ?? [];
             $element->tenant_id = \Aimeos\Cms\Tenancy::value();
@@ -46,15 +50,14 @@ final class AddElement
             $data = $args['input'] ?? [];
             ksort( $data );
 
-            $version = $element->versions()->create( [
+            $version = $element->versions()->forceCreate( [
+                'id' => $versionId,
                 'data' => array_map( fn( $v ) => is_null( $v ) ? (string) $v : $v, $data ),
                 'lang' => $args['input']['lang'] ?? null,
                 'editor' => $editor,
             ] );
 
             $version->files()->attach( $args['files'] ?? [] );
-
-            $element->forceFill( ['latest_id' => $version->id] )->saveQuietly();
 
             return $element->refresh();
         }, 3 );

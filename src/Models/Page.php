@@ -55,6 +55,7 @@ use Laravel\Scout\Searchable;
  * @property int $_rgt
  * @property int $depth
  * @property string|null $parent_id
+ * @property string|null $latest_id
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property \Illuminate\Support\Carbon|null $deleted_at
@@ -266,58 +267,6 @@ class Page extends Model
 
 
     /**
-     * Returns the searchable data for the page.
-     *
-     * @return array<int, array<string, string>>
-     */
-    public function toSearchableArray(): array
-    {
-        $attrs = ['path', 'to', 'tag', 'name', 'title', 'meta', 'content', 'deleted_at'];
-
-        // bulk index + changed content check for performance reasons
-        if( !empty( $this->getChanges() ) && !$this->wasChanged( $attrs ) ) {
-            return [];
-        }
-
-        $content = '';
-        $config = config( 'cms.schemas.content', [] );
-
-        foreach( collect( (array) $this->content )->merge( $this->elements ) as $el )
-        {
-            $fields = (array) ( $config[@$el->type]['fields'] ?? [] );
-
-            if( empty( $fields ) ) {
-                continue;
-            }
-
-            foreach( (array) ( $el->data ?? [] ) as $name => $value )
-            {
-                if( is_string( $value ) && isset( $fields[$name] )
-                    && ( $fields[$name]['searchable'] ?? true )
-                    && in_array( $fields[$name]['type'], ['markdown', 'plaintext', 'string', 'text'] )
-                ) {
-                    $content .= $value . "\n";
-                }
-            }
-        }
-
-        $content = trim( $this->path . "\n"
-            . $this->to . "\n"
-            . $this->tag . "\n"
-            . $this->name . "\n"
-            . $this->title . "\n"
-            . ( $this->meta->{'meta-tags'}->data->description ?? '' ) . "\n"
-            . $content );
-
-        if( empty( $content ) ) {
-            return [];
-        }
-
-        return [['content' => $content]];
-    }
-
-
-    /**
      * Returns the cache key for the page.
      *
      * @param Page|string $page Page object or URL path
@@ -441,7 +390,7 @@ class Page extends Model
      */
     public function shouldBeSearchable() : bool
     {
-        return $this->status > 0 && !$this->trashed();
+        return $this->status > 0;
     }
 
 
@@ -496,6 +445,62 @@ class Page extends Model
         }
 
         return new DescendantsRelation( $builder, $this );
+    }
+
+
+    /**
+     * Returns the searchable data for the page.
+     *
+     * @return list<array<string, bool|string>>
+     */
+    public function toSearchableArray(): array
+    {
+        $attrs = ['path', 'to', 'tag', 'name', 'title', 'meta', 'content', 'deleted_at', 'latest_id'];
+
+        // bulk index + changed content check for performance reasons
+        if( !empty( $this->getChanges() ) && !$this->wasChanged( $attrs ) ) {
+            return [];
+        }
+
+        $rows = [];
+        $config = config( 'cms.schemas.content', [] );
+
+        if( $version = $this->latest )
+        {
+            $data = $version->data ?? new \stdClass();
+
+            /** @var list<\stdClass> $vcontent */
+            $vcontent = $version->aux->content ?? [];
+
+            $content = trim( ( $data->path ?? '' ) . "\n"
+                . ( $data->to ?? '' ) . "\n"
+                . ( $data->tag ?? '' ) . "\n"
+                . ( $data->name ?? '' ) . "\n"
+                . ( $data->title ?? '' ) . "\n"
+                . ( $version->aux->meta->{'meta-tags'}->data->description ?? '' ) . "\n"
+                . $this->toSearchContent( collect( $vcontent )->merge( $version->elements ), $config ) );
+
+            if( !empty( $content ) ) {
+                $rows[] = ['latest' => true, 'content' => $content];
+            }
+        }
+
+        if( !$this->trashed() )
+        {
+            $content = trim( $this->path . "\n"
+                . $this->to . "\n"
+                . $this->tag . "\n"
+                . $this->name . "\n"
+                . $this->title . "\n"
+                . ( $this->meta->{'meta-tags'}->data->description ?? '' ) . "\n"
+                . $this->toSearchContent( collect( (array) $this->content )->merge( $this->elements ), $config ) );
+
+            if( !empty( $content ) ) {
+                $rows[] = ['latest' => false, 'content' => $content];
+            }
+        }
+
+        return $rows;
     }
 
 
@@ -674,6 +679,40 @@ class Page extends Model
         return Attribute::make(
             set: fn( $value ) => (string) $value,
         );
+    }
+
+
+    /**
+     * Builds searchable content string from content elements.
+     *
+     * @param array<string, mixed> $config Content type schemas
+     * @param Collection<int, mixed> $contents Content elements to extract text from
+     * @return string Searchable text
+     */
+    protected function toSearchContent( Collection $contents, array $config ) : string
+    {
+        $content = '';
+
+        foreach( $contents as $el )
+        {
+            $fields = (array) ( $config[@$el->type]['fields'] ?? [] );
+
+            if( empty( $fields ) ) {
+                continue;
+            }
+
+            foreach( (array) ( $el->data ?? [] ) as $name => $value )
+            {
+                if( is_string( $value ) && isset( $fields[$name] )
+                    && ( $fields[$name]['searchable'] ?? true )
+                    && in_array( $fields[$name]['type'], ['markdown', 'plaintext', 'string', 'text'] )
+                ) {
+                    $content .= $value . "\n";
+                }
+            }
+        }
+
+        return $content;
     }
 
 

@@ -8,6 +8,8 @@
 namespace Aimeos\Cms\Commands;
 
 use Illuminate\Console\Command;
+use Aimeos\Cms\Models\Element;
+use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
 
 
@@ -29,6 +31,8 @@ class Index extends Command
      */
     public function handle(): void
     {
-        Page::where( 'status', '>', 0 )->searchable(); // @phpstan-ignore method.notFound
+        Page::withTrashed()->where( 'status', '>', 0 )->chunk( 100, fn( $items ) => $items->searchable() ); // @phpstan-ignore method.notFound
+        Element::withTrashed()->chunk( 100, fn( $items ) => $items->searchable() ); // @phpstan-ignore method.notFound
+        File::withTrashed()->chunk( 100, fn( $items ) => $items->searchable() ); // @phpstan-ignore method.notFound
     }
 }

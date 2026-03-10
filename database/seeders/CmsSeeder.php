@@ -39,15 +39,21 @@ class CmsSeeder extends Seeder
         Page::where('tenant_id', 'demo')->forceDelete();
 
         Page::withoutSyncingToSearch( function() {
-            $home = $this->home();
+            Element::withoutSyncingToSearch( function() {
+                File::withoutSyncingToSearch( function() {
+                    $home = $this->home();
 
-            $this->addBlog( $home )
-                ->addDev( $home )
-                ->addHidden( $home )
-                ->addDisabled( $home );
+                    $this->addBlog( $home )
+                        ->addDev( $home )
+                        ->addHidden( $home )
+                        ->addDisabled( $home );
+                } );
+            } );
         } );
 
         Page::query()->searchable();
+        Element::query()->searchable();
+        File::query()->searchable();
     }
 
 

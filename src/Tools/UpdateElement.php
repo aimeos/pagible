@@ -10,6 +10,7 @@ namespace Aimeos\Cms\Tools;
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\Models\Element;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Attributes\Name;
@@ -64,13 +65,16 @@ class UpdateElement extends Tool
                 $input['data'] = $validated['data'];
             }
 
-            $version = $element->versions()->create( [
+            $versionId = Str::uuid7();
+
+            $version = $element->versions()->forceCreate( [
+                'id' => $versionId,
                 'data' => array_map( fn( $v ) => $v ?? '', $input ),
                 'editor' => $editor,
                 'lang' => $validated['lang'] ?? $element->latest?->lang,
             ] );
 
-            $element->forceFill( ['latest_id' => $version->id] )->saveQuietly();
+            $element->forceFill( ['latest_id' => $versionId] )->save();
             $element->removeVersions();
 
             return Response::structured( $element->refresh()->toArray() );

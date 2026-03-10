@@ -70,12 +70,9 @@ final class Query
             $builder->where( 'cms_versions.data->type', (string) $filter['type'] );
         }
 
-        if( array_key_exists( 'name', $filter ) ) {
-            $builder->where( 'cms_versions.data->name', 'like', $filter['name'] . '%' );
-        }
-
         if( isset( $filter['any'] ) ) {
-            $builder->whereAny( ['cms_versions.data->name'], 'like', '%' . $filter['any'] . '%' );
+            $ids = Element::search( $filter['any'] )->where( 'latest', true )->take( 1000 )->keys();
+            $builder->whereIn( 'cms_elements.id', $ids->all() );
         }
 
         return $builder;
@@ -130,17 +127,9 @@ final class Query
             $builder->where( 'cms_versions.data->mime', 'like', $filter['mime'] . '%' );
         }
 
-        if( array_key_exists( 'name', $filter ) ) {
-            $builder->where( 'cms_versions.data->name', 'like', $filter['name'] . '%' );
-        }
-
-        if( isset( $filter['any'] ) )
-        {
-            $builder->whereAny( [
-                'cms_versions.data->name',
-                'cms_versions.data->description',
-                'cms_versions.data->transcription'
-            ], 'like', '%' . $filter['any'] . '%' );
+        if( isset( $filter['any'] ) ) {
+            $ids = File::search( $filter['any'] )->where( 'latest', true )->take( 1000 )->keys();
+            $builder->whereIn( 'cms_files.id', $ids->all() );
         }
 
         return $builder;
@@ -210,7 +199,7 @@ final class Query
         }
 
         if( array_key_exists( 'path', $filter ) ) {
-            $builder->where( 'cms_versions.data->path', (string) $filter['path'] );
+            $builder->where( 'cms_versions.data->path', 'like', $filter['path'] . '%' );
         }
 
         if( array_key_exists( 'domain', $filter ) ) {
@@ -229,23 +218,9 @@ final class Query
             $builder->where( 'cms_versions.data->type', (string) $filter['type'] );
         }
 
-        if( array_key_exists( 'name', $filter ) ) {
-            $builder->where( 'cms_versions.data->name', 'like', $filter['name'] . '%' );
-        }
-
-        if( array_key_exists( 'title', $filter ) ) {
-            $builder->where( 'cms_versions.data->title', 'like', $filter['title'] . '%' );
-        }
-
-        if( isset( $filter['any'] ) )
-        {
-            $builder->whereAny( [
-                'cms_versions.data->path',
-                'cms_versions.data->to',
-                'cms_versions.data->tag',
-                'cms_versions.data->name',
-                'cms_versions.data->title'
-            ], 'like', '%' . $filter['any'] . '%' );
+        if( isset( $filter['any'] ) ) {
+            $ids = Page::search( $filter['any'] )->where( 'latest', true )->take( 1000 )->keys();
+            $builder->whereIn( 'cms_pages.id', $ids->all() );
         }
 
         return $builder;

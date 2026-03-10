@@ -21,6 +21,8 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Collection;
+use Laravel\Scout\Searchable;
+
 /**
  * Element model
  *
@@ -33,6 +35,7 @@ use Illuminate\Support\Collection;
  * @property string $editor
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property string|null $latest_id
  * @property \Illuminate\Support\Carbon|null $deleted_at
  * @method static \Illuminate\Database\Eloquent\Builder<static> withoutTenancy()
  */
@@ -40,6 +43,7 @@ class Element extends Model
 {
     use HasUuids;
     use SoftDeletes;
+    use Searchable;
     use Prunable;
     use Tenancy;
 
@@ -224,6 +228,45 @@ class Element extends Model
 
 
     /**
+     * Returns the searchable data for the element.
+     *
+     * @return list<array<string, bool|string>>
+     */
+    public function toSearchableArray(): array
+    {
+        $attrs = ['name', 'type', 'data', 'deleted_at', 'latest_id'];
+
+        if( !empty( $this->getChanges() ) && !$this->wasChanged( $attrs ) ) {
+            return [];
+        }
+
+        $rows = [];
+        $config = config( 'cms.schemas.content', [] );
+
+        if( $version = $this->latest )
+        {
+            $data = $version->data ?? new \stdClass();
+            $content = trim( ( $data->name ?? '' ) . "\n" . $this->toSearchContent( $data, $config ) );
+
+            if( !empty( $content ) ) {
+                $rows[] = ['latest' => true, 'content' => $content];
+            }
+        }
+
+        if( !$this->trashed() )
+        {
+            $content = trim( $this->name . "\n" . $this->toSearchContent( $this->data, $config ) );
+
+            if( !empty( $content ) ) {
+                $rows[] = ['latest' => false, 'content' => $content];
+            }
+        }
+
+        return $rows;
+    }
+
+
+    /**
      * Get the prunable model query.
      *
      * @return Builder<static> Eloquent query builder instance for pruning
@@ -291,5 +334,31 @@ class Element extends Model
         Version::where( 'versionable_id', $this->id )
             ->where( 'versionable_type', Element::class )
             ->delete();
+    }
+
+
+    /**
+     * Extract searchable text from element data.
+     *
+     * @param \stdClass $data Element data object
+     * @param array<string, mixed> $config Content schema config
+     * @return string Searchable text
+     */
+    protected function toSearchContent( \stdClass $data, array $config ) : string
+    {
+        $content = '';
+        $fields = (array) ( $config[@$data->type]['fields'] ?? [] );
+
+        foreach( (array) ( $data->data ?? [] ) as $name => $value )
+        {
+            if( is_string( $value ) && isset( $fields[$name] )
+                && ( $fields[$name]['searchable'] ?? true )
+                && in_array( $fields[$name]['type'], ['markdown', 'plaintext', 'string', 'text'] )
+            ) {
+                $content .= $value . "\n";
+            }
+        }
+
+        return $content;
     }
 }

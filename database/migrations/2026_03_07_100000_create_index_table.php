@@ -29,8 +29,10 @@ return new class extends Migration
         if( $driver === 'sqlite' )
         {
             $db->statement("CREATE VIRTUAL TABLE cms_index USING fts5(
-                page_id UNINDEXED,
+                indexable_id UNINDEXED,
+                indexable_type UNINDEXED,
                 tenant_id UNINDEXED,
+                latest UNINDEXED,
                 content
             )");
         }
@@ -42,12 +44,13 @@ return new class extends Migration
                     $table->id()->primary('pk_cms_index');
                 }
 
-                $table->uuid('page_id');
-                $table->string('tenant_id', 250);
+                $table->uuid('indexable_id');
+                $table->string('indexable_type', 50);
+                $table->string('tenant_id');
+                $table->boolean('latest')->default(false);
                 $table->text('content');
 
-                $table->index(['tenant_id']);
-                $table->foreign('page_id')->references('id')->on('cms_pages')->onDelete('cascade');
+                $table->index(['indexable_id', 'indexable_type', 'latest', 'tenant_id']);
 
                 if( in_array($driver, ['mariadb', 'mysql']) ) {
                     $table->fullText('content');

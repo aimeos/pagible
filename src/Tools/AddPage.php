@@ -12,6 +12,7 @@ use Aimeos\Cms\Permission;
 use Aimeos\Cms\Models\Page;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Str;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Attributes\Name;
@@ -98,7 +99,10 @@ class AddPage extends Tool
 
         $exclude = array_flip( ['content', 'config', 'meta', 'editor', 'relatedid', 'tenant_id'] );
 
-        $version = [
+        $versionId = Str::uuid7();
+
+        $versionData = [
+            'id' => $versionId,
             'lang' => $validated['lang'],
             'editor' => $editor,
             'data' => array_diff_key( $page->toArray(), $exclude ),
@@ -108,8 +112,10 @@ class AddPage extends Tool
             ]
         ];
 
-        Cache::lock( 'cms_pages_' . \Aimeos\Cms\Tenancy::value(), 30 )->get( function() use ( $parent, $page, $version ) {
-            DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $parent, $page, $version ) {
+        Cache::lock( 'cms_pages_' . \Aimeos\Cms\Tenancy::value(), 30 )->get( function() use ( $parent, $page, $versionId, $versionData ) {
+            DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $parent, $page, $versionId, $versionData ) {
+
+                $page->latest_id = $versionId;
 
                 if( $parent && ( $ref = Page::where( 'parent_id', $parent->id )->orderBy( '_lft', 'asc' )->first() ) ) {
                     $page->beforeNode( $ref );
@@ -118,10 +124,8 @@ class AddPage extends Tool
                 }
 
                 $page->save();
-                $page->refresh();
 
-                $version = $page->versions()->create( $version );
-                $page->forceFill( ['latest_id' => $version->id] )->saveQuietly();
+                $page->versions()->forceCreate( $versionData );
 
             }, 3 );
         } );

@@ -10,6 +10,7 @@ namespace Aimeos\Cms\GraphQL\Mutations;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Permission;
 use GraphQL\Error\Error;
@@ -50,15 +51,17 @@ final class AddPage
                     $page->appendToNode( $parent );
                 }
 
+                $versionId = Str::uuid7();
+                $page->latest_id = $versionId;
                 $page->save();
                 $page->files()->attach( $args['files'] ?? [] );
                 $page->elements()->attach( $args['elements'] ?? [] );
 
-
                 $data = $args['input'];
                 unset( $data['config'], $data['content'], $data['meta'] );
 
-                $version = $page->versions()->create( [
+                $version = $page->versions()->forceCreate( [
+                    'id' => $versionId,
                     'data' => array_map( fn( $v ) => is_null( $v ) ? (string) $v : $v, $data ),
                     'lang' => $args['input']['lang'] ?? null,
                     'editor' => $editor,
@@ -71,8 +74,6 @@ final class AddPage
 
                 $version->elements()->attach( $args['elements'] ?? [] );
                 $version->files()->attach( $args['files'] ?? [] );
-
-                $page->forceFill( ['latest_id' => $version->id] )->saveQuietly();
 
                 return $page->refresh();
             }, 3 );

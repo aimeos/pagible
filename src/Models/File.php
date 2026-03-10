@@ -24,6 +24,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Http\UploadedFile;
 use Intervention\Image\ImageManager;
+use Laravel\Scout\Searchable;
 
 
 /**
@@ -41,6 +42,7 @@ use Intervention\Image\ImageManager;
  * @property string $editor
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property string|null $latest_id
  * @property \Illuminate\Support\Carbon|null $deleted_at
  * @method static \Illuminate\Database\Eloquent\Builder<static> withoutTenancy()
  */
@@ -48,6 +50,7 @@ class File extends Model
 {
     use HasUuids;
     use SoftDeletes;
+    use Searchable;
     use Prunable;
     use Tenancy;
 
@@ -349,6 +352,48 @@ class File extends Model
             ->ofMany( ['created_at' => 'max', 'id' => 'max'], function( $query ) {
                 $query->where( (new Version)->qualifyColumn( 'published' ), true );
             } );
+    }
+
+
+    /**
+     * Returns the searchable data for the file.
+     *
+     * @return list<array<string, bool|string>>
+     */
+    public function toSearchableArray(): array
+    {
+        $attrs = ['name', 'mime', 'description', 'transcription', 'deleted_at', 'latest_id'];
+
+        if( !empty( $this->getChanges() ) && !$this->wasChanged( $attrs ) ) {
+            return [];
+        }
+
+        $rows = [];
+
+        if( $version = $this->latest )
+        {
+            $data = $version->data ?? new \stdClass();
+            $content = trim( ( $data->name ?? '' ) . "\n"
+                . implode( "\n", (array) ( $data->description ?? [] ) ) . "\n"
+                . implode( "\n", (array) ( $data->transcription ?? [] ) ) );
+
+            if( !empty( $content ) ) {
+                $rows[] = ['latest' => true, 'content' => $content];
+            }
+        }
+
+        if( !$this->trashed() )
+        {
+            $content = trim( $this->name . "\n"
+                . implode( "\n", (array) $this->description ) . "\n"
+                . implode( "\n", (array) $this->transcription ) );
+
+            if( !empty( $content ) ) {
+                $rows[] = ['latest' => false, 'content' => $content];
+            }
+        }
+
+        return $rows;
     }
 
 

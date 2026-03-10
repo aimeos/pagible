@@ -48,7 +48,7 @@ class GraphqlElementTest extends TestAbstract
             'name' => 'Test editor',
             'email' => 'editor@testbench',
             'password' => 'secret',
-            'cmseditor' => 0x7fffffff
+            'cmseditor' => PHP_INT_MAX
         ]);
     }
 
@@ -121,9 +121,7 @@ class GraphqlElementTest extends TestAbstract
                 id: ["' . $element->id . '"]
                 lang: "en"
                 type: "footer"
-                name: "Shared"
                 editor: "seeder"
-                any: "footer"
             }, sort: [{column: TYPE, order: ASC}], first: 10, trashed: WITH, publish: DRAFT) {
                 data {
                     id
@@ -265,7 +263,7 @@ class GraphqlElementTest extends TestAbstract
         $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
         $element = Element::where( 'type', 'footer' )->firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 9 );
+        $this->expectsDatabaseQueryCount( 11 );
 
         $response = $this->actingAs($this->user)->graphQL('
             mutation {
@@ -325,7 +323,7 @@ class GraphqlElementTest extends TestAbstract
         $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
         $element = Element::where( 'type', 'footer' )->firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 8 );
+        $this->expectsDatabaseQueryCount( 11 );
 
         $response = $this->actingAs($this->user)->graphQL('
             mutation {
@@ -382,7 +380,7 @@ class GraphqlElementTest extends TestAbstract
 
         $element = Element::where( 'type', 'footer' )->firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 3 );
+        $this->expectsDatabaseQueryCount( 4 );
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
                 dropElement(id: ["' . $element->id . '"]) {
@@ -412,7 +410,7 @@ class GraphqlElementTest extends TestAbstract
         $element = Element::where( 'type', 'footer' )->firstOrFail();
         $element->delete();
 
-        $this->expectsDatabaseQueryCount( 3 );
+        $this->expectsDatabaseQueryCount( 8 );
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
                 keepElement(id: ["' . $element->id . '"]) {
@@ -441,7 +439,7 @@ class GraphqlElementTest extends TestAbstract
 
         $element = Element::where( 'type', 'footer' )->firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 7 );
+        $this->expectsDatabaseQueryCount( 9 );
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
                 pubElement(id: ["' . $element->id . '"]) {
@@ -495,7 +493,7 @@ class GraphqlElementTest extends TestAbstract
 
         $element = Element::where( 'type', 'footer' )->firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 3 );
+        $this->expectsDatabaseQueryCount( 5 );
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
                 purgeElement(id: "' . $element->id . '") {

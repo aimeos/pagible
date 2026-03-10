@@ -10,6 +10,7 @@ namespace Aimeos\Cms\GraphQL\Mutations;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Str;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\Utils;
@@ -46,9 +47,12 @@ final class AddFile
                 $this->addUrl( $file, $args );
             }
 
+            $versionId = Str::uuid7();
+            $file->latest_id = $versionId;
             $file->save();
 
-            $version = $file->versions()->create( [
+            $version = $file->versions()->forceCreate( [
+                'id' => $versionId,
                 'lang' => $args['input']['lang'] ?? null,
                 'editor' => $editor,
                 'data' => [
@@ -61,8 +65,6 @@ final class AddFile
                     'transcription' => $file->transcription,
                 ],
             ] );
-
-            $file->forceFill( ['latest_id' => $version->id] )->saveQuietly();
 
             return $file->refresh();
         }, 3 );

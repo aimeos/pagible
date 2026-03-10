@@ -49,7 +49,7 @@ class GraphqlPageTest extends TestAbstract
             'name' => 'Test editor',
             'email' => 'editor@testbench',
             'password' => 'secret',
-            'cmseditor' => 0x7fffffff
+            'cmseditor' => PHP_INT_MAX
         ]);
     }
 
@@ -135,18 +135,15 @@ class GraphqlPageTest extends TestAbstract
                 id: ["' . $page->id . '"]
                 parent_id: null
                 lang: "en"
-                name: "Home"
-                title: "Home"
-                path: ""
                 tag: "root"
-                to: ""
                 domain: "mydomain.tld"
+                path: ""
+                to: ""
                 type: ""
                 theme: ""
                 cache: 5
                 status: 1
                 editor: "seed"
-                any: "Home"
             }, first: 10, page: 1, trashed: WITH, publish: PUBLISHED) {
                 data {
                     id
@@ -576,7 +573,7 @@ class GraphqlPageTest extends TestAbstract
         $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
         $element = Element::where( 'type', 'footer' )->firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 12 );
+        $this->expectsDatabaseQueryCount( 11 );
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
                 addPage(input: {
@@ -649,7 +646,7 @@ class GraphqlPageTest extends TestAbstract
 
         $root = Page::where('tag', 'root')->firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 12 );
+        $this->expectsDatabaseQueryCount( 11 );
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
                 addPage(input: {
@@ -689,7 +686,7 @@ class GraphqlPageTest extends TestAbstract
         $root = Page::where('tag', 'root')->firstOrFail();
         $ref = Page::where('tag', 'blog')->firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 12 );
+        $this->expectsDatabaseQueryCount( 11 );
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
                 addPage(input: {
@@ -826,7 +823,7 @@ class GraphqlPageTest extends TestAbstract
         $element = Element::where( 'type', 'footer' )->firstOrFail();
         $root = Page::where('tag', 'root')->firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 14 );
+        $this->expectsDatabaseQueryCount( 18 );
 
         $response = $this->actingAs($this->user)->graphQL('
             mutation {
@@ -998,7 +995,7 @@ class GraphqlPageTest extends TestAbstract
         $root = Page::where('tag', 'root')->firstOrFail();
         $root->delete();
 
-        $this->expectsDatabaseQueryCount( 10 );
+        $this->expectsDatabaseQueryCount( 12 );
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
                 keepPage(id: ["' . $root->id . '"]) {

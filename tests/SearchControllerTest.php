@@ -18,6 +18,13 @@ class SearchControllerTest extends TestAbstract
     protected $connectionsToTransact = [];
 
 
+    public function beginDatabaseTransaction()
+    {
+        // Prevent RefreshDatabase from wrapping tests in a transaction
+        // MySQL/MariaDB/SQL Server FULLTEXT indexes can't see uncommitted data
+    }
+
+
     public function testIndex()
     {
         $this->seed( \Database\Seeders\CmsSeeder::class );
