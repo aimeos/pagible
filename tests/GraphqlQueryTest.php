@@ -67,6 +67,7 @@ class GraphqlQueryTest extends TestAbstract
     public function testPages()
     {
         $this->seed( CmsSeeder::class );
+        sleep( 3 );
 
         $page = Page::where( 'tag', 'root' )->firstOrFail();
 
@@ -93,6 +94,7 @@ class GraphqlQueryTest extends TestAbstract
     public function testElements()
     {
         $this->seed( CmsSeeder::class );
+        sleep( 3 );
 
         $element = Element::where( 'type', 'footer' )->firstOrFail();
 
@@ -119,6 +121,7 @@ class GraphqlQueryTest extends TestAbstract
     public function testFiles()
     {
         $this->seed( CmsSeeder::class );
+        sleep( 3 );
 
         $response = $this->actingAs( $this->user )->graphQL( '{
             files(filter: {
