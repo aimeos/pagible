@@ -46,6 +46,7 @@ final class SavePage
                 'aux' => $aux
             ]);
 
+            $version->refresh(); // SQL Server UUID character case workaround
             $version->elements()->attach( $args['elements'] ?? [] );
             $version->files()->attach( $args['files'] ?? [] );
 

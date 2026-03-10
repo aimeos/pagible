@@ -78,6 +78,8 @@ final class SaveFile
                 'data' => $file->toArray(),
             ] );
 
+            $version->refresh(); // SQL Server UUID character case workaround
+
             $orig->forceFill( ['latest_id' => $version->id] )->saveQuietly();
             $orig->setRelation( 'latest', $version );
 

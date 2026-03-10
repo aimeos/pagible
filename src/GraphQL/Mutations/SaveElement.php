@@ -41,6 +41,7 @@ final class SaveElement
                 'lang' => $args['input']['lang'] ?? null,
             ] );
 
+            $version->refresh(); // SQL Server UUID character case workaround
             $version->files()->attach( $args['files'] ?? [] );
 
             $element->forceFill( ['latest_id' => $version->id] )->saveQuietly();
