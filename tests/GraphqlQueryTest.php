@@ -25,6 +25,13 @@ class GraphqlQueryTest extends TestAbstract
     protected $connectionsToTruncate = ['testing'];
 
 
+    public function beginDatabaseTransaction()
+    {
+        // Prevent RefreshDatabase from wrapping tests in a transaction
+        // MySQL/MariaDB/SQL Server FULLTEXT indexes can't see uncommitted data
+    }
+
+
 	protected function defineEnvironment( $app )
 	{
         parent::defineEnvironment( $app );
