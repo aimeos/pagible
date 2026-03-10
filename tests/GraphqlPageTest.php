@@ -49,7 +49,7 @@ class GraphqlPageTest extends TestAbstract
             'name' => 'Test editor',
             'email' => 'editor@testbench',
             'password' => 'secret',
-            'cmseditor' => 0x7fffffff
+            'cmseditor' => PHP_INT_MAX
         ]);
     }
 
@@ -128,7 +128,7 @@ class GraphqlPageTest extends TestAbstract
             'updated_at' => (string) $page->updated_at,
         ] + $attr;
 
-        $this->expectsDatabaseQueryCount(3);
+        $this->expectsDatabaseQueryCount(2);
 
         $response = $this->actingAs($this->user)->graphQL('{
             pages(filter: {
@@ -146,7 +146,6 @@ class GraphqlPageTest extends TestAbstract
                 cache: 5
                 status: 1
                 editor: "seed"
-                any: "Home"
             }, first: 10, page: 1, trashed: WITH, publish: PUBLISHED) {
                 data {
                     id

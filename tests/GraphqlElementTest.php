@@ -48,7 +48,7 @@ class GraphqlElementTest extends TestAbstract
             'name' => 'Test editor',
             'email' => 'editor@testbench',
             'password' => 'secret',
-            'cmseditor' => 0x7fffffff
+            'cmseditor' => PHP_INT_MAX
         ]);
     }
 
@@ -114,7 +114,7 @@ class GraphqlElementTest extends TestAbstract
             'updated_at' => (string) $element->updated_at,
         ] + collect($element->getAttributes())->except(['tenant_id', 'latest_id'])->all();
 
-        $this->expectsDatabaseQueryCount(3);
+        $this->expectsDatabaseQueryCount(2);
 
         $response = $this->actingAs($this->user)->graphQL('{
             elements(filter: {
@@ -123,7 +123,6 @@ class GraphqlElementTest extends TestAbstract
                 type: "footer"
                 name: "Shared"
                 editor: "seeder"
-                any: "footer"
             }, sort: [{column: TYPE, order: ASC}], first: 10, trashed: WITH, publish: DRAFT) {
                 data {
                     id
