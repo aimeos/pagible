@@ -62,9 +62,9 @@ class Demo extends Command
         }
 
         $this->info( 'Indexing ...' );
-        Page::query()->chunk( 1000, fn( $pages ) => $pages->searchable() ); // @phpstan-ignore method.notFound
-        Element::query()->chunk( 1000, fn( $elements ) => $elements->searchable() ); // @phpstan-ignore method.notFound
-        File::query()->chunk( 1000, fn( $files ) => $files->searchable() ); // @phpstan-ignore method.notFound
+        Page::makeAllSearchable();
+        Element::makeAllSearchable();
+        File::makeAllSearchable();
 
         $this->info( 'Done!' );
 

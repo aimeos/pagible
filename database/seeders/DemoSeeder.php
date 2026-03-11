@@ -29,7 +29,6 @@ class DemoSeeder
     private \Faker\Generator $faker;
     private string $editor;
     private string $domain;
-    private string $fileId;
     private string $elementId;
 
 
@@ -49,7 +48,6 @@ class DemoSeeder
         Page::withoutSyncingToSearch( function() use ( $lang ) {
             Element::withoutSyncingToSearch( function() use ( $lang ) {
                 File::withoutSyncingToSearch( function() use ( $lang ) {
-                    $this->fileId = $this->createFile( $lang );
                     $this->elementId = $this->createElement( $lang );
                     $root = $this->createRoot( $lang );
                     $this->createTree( $root, $lang );
@@ -60,14 +58,16 @@ class DemoSeeder
 
 
     /**
-     * Create a shared image file for the language
+     * Create an image file and publish it
      */
     protected function createFile( string $lang ): string
     {
+        $name = trim( preg_replace( '/[^\p{L}\p{N} ]/u', '', $this->faker->realTextBetween( 10, 30 ) ) );
+
         $file = File::forceCreate( [
             'mime' => 'image/png',
             'lang' => $lang,
-            'name' => $this->faker->realTextBetween( 10, 30 ),
+            'name' => $name,
             'path' => 'https://placehold.co/1500x1000',
             'previews' => ['500' => 'https://placehold.co/500x333', '1000' => 'https://placehold.co/1000x666'],
             'editor' => $this->editor,
@@ -78,7 +78,7 @@ class DemoSeeder
             'data' => [
                 'mime' => 'image/png',
                 'lang' => $lang,
-                'name' => $file->name,
+                'name' => $name,
                 'path' => 'https://placehold.co/1500x1000',
                 'previews' => ['500' => 'https://placehold.co/500x333', '1000' => 'https://placehold.co/1000x666'],
             ],
@@ -102,9 +102,9 @@ class DemoSeeder
 
         $element = Element::forceCreate( [
             'lang' => $lang,
-            'type' => 'footer',
+            'type' => 'text',
             'name' => "Footer ({$lang})",
-            'data' => ['type' => 'footer', 'data' => ['text' => $text]],
+            'data' => ['type' => 'text', 'data' => ['text' => $text]],
             'editor' => $this->editor,
         ] );
 
@@ -112,7 +112,7 @@ class DemoSeeder
             'lang' => $lang,
             'data' => [
                 'lang' => $lang,
-                'type' => 'footer',
+                'type' => 'text',
                 'name' => "Footer ({$lang})",
                 'data' => ['text' => $text],
             ],
@@ -132,9 +132,11 @@ class DemoSeeder
      */
     protected function createRoot( string $lang ): Page
     {
+        $fileId = $this->createFile( $lang );
+
         $content = [
             ['id' => Utils::uid(), 'type' => 'heading', 'group' => 'main', 'data' => ['title' => $this->faker->realTextBetween( 20, 80 )]],
-            ['id' => Utils::uid(), 'type' => 'image', 'group' => 'main', 'data' => ['file' => ['id' => $this->fileId, 'type' => 'file']]],
+            ['id' => Utils::uid(), 'type' => 'image', 'group' => 'main', 'data' => ['file' => ['id' => $fileId, 'type' => 'file']]],
             ['id' => Utils::uid(), 'type' => 'text', 'group' => 'main', 'data' => ['text' => $this->faker->realTextBetween( 200, 500 )]],
             ['type' => 'ref', 'id' => $this->elementId, 'group' => 'footer'],
         ];
@@ -161,7 +163,7 @@ class DemoSeeder
             'editor' => $this->editor,
         ] );
 
-        $version->files()->attach( $this->fileId );
+        $version->files()->attach( $fileId );
         $page->forceFill( ['latest_id' => $version->id] )->saveQuietly();
         $page->elements()->attach( $this->elementId );
         $page->publish( $version );
@@ -203,25 +205,29 @@ class DemoSeeder
     protected function createPage( Page $parent, string $lang, int $level, int $index ): Page
     {
         $name = match( $level ) {
-            1 => $this->faker->realTextBetween( 5, 15 ),
-            2 => $this->faker->realTextBetween( 10, 25 ),
-            default => $this->faker->realTextBetween( 15, 40 ),
+            1 => trim( preg_replace( '/[^\p{L}\p{N} ]/u', '', $this->faker->realTextBetween( 5, 15 ) ) ),
+            2 => trim( preg_replace( '/[^\p{L}\p{N} ]/u', '', $this->faker->realTextBetween( 10, 25 ) ) ),
+            default => trim( preg_replace( '/[^\p{L}\p{N} ]/u', '', $this->faker->realTextBetween( 15, 40 ) ) ),
         };
         $path = Utils::slugify( $name ) . '-' . $index;
 
+        $fileId = $this->createFile( $lang );
+
         $content = [
             ['id' => Utils::uid(), 'type' => 'heading', 'group' => 'main', 'data' => ['title' => $this->faker->realTextBetween( 20, 80 )]],
-            ['id' => Utils::uid(), 'type' => 'image', 'group' => 'main', 'data' => ['file' => ['id' => $this->fileId, 'type' => 'file']]],
+            ['id' => Utils::uid(), 'type' => 'image', 'group' => 'main', 'data' => ['file' => ['id' => $fileId, 'type' => 'file']]],
             ['id' => Utils::uid(), 'type' => 'text', 'group' => 'main', 'data' => ['text' => $this->faker->realTextBetween( 200, 500 )]],
             ['id' => Utils::uid(), 'type' => 'text', 'group' => 'main', 'data' => ['text' => $this->faker->realTextBetween( 200, 500 )]],
             ['id' => Utils::uid(), 'type' => 'text', 'group' => 'main', 'data' => ['text' => $this->faker->realTextBetween( 200, 500 )]],
             ['type' => 'ref', 'id' => $this->elementId, 'group' => 'footer'],
         ];
 
+        $title = trim( preg_replace( '/[^\p{L}\p{N} ]/u', '', $this->faker->realTextBetween( 20, 60 ) ) );
+
         $data = [
             'lang' => $lang,
             'name' => $name,
-            'title' => $name,
+            'title' => $title,
             'path' => $path,
             'status' => 1,
             'editor' => $this->editor,
@@ -239,7 +245,7 @@ class DemoSeeder
             'editor' => $this->editor,
         ] );
 
-        $version->files()->attach( $this->fileId );
+        $version->files()->attach( $fileId );
         $page->forceFill( ['latest_id' => $version->id] )->saveQuietly();
         $page->publish( $version );
 
