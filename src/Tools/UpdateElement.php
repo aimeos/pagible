@@ -44,7 +44,7 @@ class UpdateElement extends Tool
         ] );
 
         /** @var Element|null $element */
-        $element = Element::withTrashed()->find( $validated['id'] );
+        $element = Element::withTrashed()->with( 'latest' )->find( $validated['id'] );
 
         if( !$element ) {
             return Response::structured( ['error' => 'Element not found.'] );

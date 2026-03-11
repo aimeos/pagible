@@ -29,7 +29,7 @@ final class PubPage
 
         return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $args ) {
 
-            $items = Page::whereIn( 'id', $args['id'] )->get();
+            $items = Page::with( 'latest.files', 'latest.elements' )->whereIn( 'id', $args['id'] )->get();
             $editor = Auth::user()->name ?? request()->ip();
 
             foreach( $items as $item )

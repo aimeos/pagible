@@ -47,7 +47,7 @@ class UpdatePage extends Tool
         ] );
 
         /** @var Page|null $page */
-        $page = Page::withTrashed()->find( $validated['id'] );
+        $page = Page::withTrashed()->with( 'latest' )->find( $validated['id'] );
 
         if( !$page ) {
             return Response::structured( ['error' => 'Page not found.'] );

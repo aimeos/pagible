@@ -44,7 +44,7 @@ class PublishElement extends Tool
 
             $ids = (array) $validated['id'];
 
-            $items = Element::whereIn( 'id', $ids )->get();
+            $items = Element::with( 'latest.files' )->whereIn( 'id', $ids )->get();
             $editor = (string) $request->user()?->name; // @phpstan-ignore-line property.notFound
             $published = [];
             $skipped = [];
