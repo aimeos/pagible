@@ -66,7 +66,7 @@ final class AddFile
                 ],
             ] );
 
-            return $file;
+            return $file->setRelation( 'latest', $version );
         }, 3 );
     }
 

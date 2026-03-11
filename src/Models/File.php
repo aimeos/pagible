@@ -295,7 +295,7 @@ class File extends Model
     public function newUniqueId()
     {
         // workaround for SQL Server and Lighthouse when UUIDs are mixed case
-        return (string) ( $this->getConnection()->getDriverName() === 'sqlserv' ? strtoupper( Str::uuid7() ) : Str::uuid7() );
+        return (string) ( $this->getConnection()->getDriverName() === 'sqlsrv' ? strtoupper( Str::uuid7() ) : Str::uuid7() );
     }
 
 

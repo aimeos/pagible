@@ -47,6 +47,7 @@ final class SaveElement
             $version->files()->attach( $args['files'] ?? [] );
             $element->forceFill( ['latest_id' => $version->id] )->save();
 
+            $element->setRelation( 'latest', $version );
             return $element->removeVersions();
         }, 3 );
     }
