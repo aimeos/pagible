@@ -153,7 +153,9 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
      */
     public function paginateUsingDatabase( Builder $builder, $perPage, $pageName, $page )
     {
-        return $this->buildSearchQuery( $builder )->paginate( $perPage, ['*'], $pageName, $page );
+        $query = $this->buildSearchQuery( $builder );
+        $columns = $query->getQuery()->columns ?: ['*'];
+        return $query->paginate( $perPage, $columns, $pageName, $page );
     }
 
 
@@ -185,7 +187,9 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
      */
     public function simplePaginateUsingDatabase( Builder $builder, $perPage, $pageName, $page )
     {
-        return $this->buildSearchQuery( $builder )->simplePaginate( $perPage, ['*'], $pageName, $page );
+        $query = $this->buildSearchQuery( $builder );
+        $columns = $query->getQuery()->columns ?: ['*'];
+        return $query->simplePaginate( $perPage, $columns, $pageName, $page );
     }
 
 
