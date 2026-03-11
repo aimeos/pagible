@@ -58,7 +58,7 @@ final class AddElement
 
             $version->files()->attach( $args['files'] ?? [] );
 
-            return $element;
+            return $element->setRelation( 'latest', $version );
         }, 3 );
     }
 }

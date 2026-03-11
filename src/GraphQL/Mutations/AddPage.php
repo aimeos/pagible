@@ -75,7 +75,7 @@ final class AddPage
                 $version->elements()->attach( $args['elements'] ?? [] );
                 $version->files()->attach( $args['files'] ?? [] );
 
-                return $page;
+                return $page->setRelation( 'latest', $version );
             }, 3 );
         } );
     }

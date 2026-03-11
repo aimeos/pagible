@@ -84,7 +84,7 @@ final class SaveFile
             $orig->forceFill( ['latest_id' => $version->id] )->save();
             $file->removeVersions();
 
-            return $orig;
+            return $orig->setRelation( 'latest', $version );
         }, 3 );
     }
 }
