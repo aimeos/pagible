@@ -44,7 +44,7 @@ class UpdateFile extends Tool
         ] );
 
         /** @var File|null $file */
-        $file = File::withTrashed()->find( $validated['id'] );
+        $file = File::withTrashed()->with( 'latest' )->find( $validated['id'] );
 
         if( !$file ) {
             return Response::structured( ['error' => 'File not found.'] );

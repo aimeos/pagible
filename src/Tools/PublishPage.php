@@ -44,7 +44,7 @@ class PublishPage extends Tool
 
             $ids = (array) $validated['id'];
 
-            $items = Page::whereIn( 'id', $ids )->get();
+            $items = Page::with( 'latest.files', 'latest.elements' )->whereIn( 'id', $ids )->get();
             $editor = (string) $request->user()?->name; // @phpstan-ignore-line property.notFound
             $published = [];
             $skipped = [];

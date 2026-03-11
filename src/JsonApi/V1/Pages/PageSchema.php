@@ -262,6 +262,8 @@ class PageSchema extends Schema
      */
     public function indexQuery( ?Request $request, Builder $query ): Builder
     {
+        $query = $query->with( ['files', 'elements.files'] );
+
         if( $request && ( $filter = $request->get( 'filter' ) ) ) {
             return $query;
         }

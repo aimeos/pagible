@@ -32,7 +32,7 @@ final class SaveFile
         return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $args ) {
 
             /** @var File $orig */
-            $orig = File::withTrashed()->findOrFail( $args['id'] );
+            $orig = File::withTrashed()->with( 'latest' )->findOrFail( $args['id'] );
             $previews = $orig->latest?->data->previews ?? $orig->previews;
             $path = $orig->latest?->data->path ?? $orig->path;
             $editor = Auth::user()->name ?? request()->ip();

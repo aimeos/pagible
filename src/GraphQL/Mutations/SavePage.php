@@ -30,7 +30,7 @@ final class SavePage
         return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $args ) {
 
             /** @var Page $page */
-            $page = Page::withTrashed()->findOrFail( $args['id'] );
+            $page = Page::withTrashed()->with( 'latest' )->findOrFail( $args['id'] );
             $input = $this->sanitize( $args['input'] ?? [] );
             $versionId = ( new Version )->newUniqueId();
 

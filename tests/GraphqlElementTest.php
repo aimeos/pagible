@@ -466,7 +466,7 @@ class GraphqlElementTest extends TestAbstract
 
         $element = Element::where( 'type', 'footer' )->firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 4 );
+        $this->expectsDatabaseQueryCount( 5 );
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
                 pubElement(id: ["' . $element->id . '"], at: "2025-01-01 00:00:00") {

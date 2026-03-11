@@ -29,7 +29,7 @@ final class PubFile
 
         return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $args ) {
 
-            $items = File::whereIn( 'id', $args['id'] )->get();
+            $items = File::with( 'latest' )->whereIn( 'id', $args['id'] )->get();
             $editor = Auth::user()->name ?? request()->ip();
 
             foreach( $items as $item )
