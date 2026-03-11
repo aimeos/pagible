@@ -10,13 +10,13 @@ namespace Aimeos\Cms\Tools;
 use Aimeos\Cms\Utils;
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\Version;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Str;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Attributes\Description;
-use Laravel\Mcp\Server\Attributes\Name;
 use Laravel\Mcp\Server\Attributes\Title;
+use Laravel\Mcp\Server\Attributes\Name;
 use Laravel\Mcp\Server\Tool;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\Request;
@@ -64,6 +64,7 @@ class AddPage extends Tool
         /** @var Page|null $parent */
         $parent = $pid ? Page::find( $pid ) : null;
         $editor = (string) $request->user()?->name; // @phpstan-ignore-line property.notFound
+        $versionId = ( new Version )->newUniqueId();
 
         $elements = [[
             'id' => Utils::uid(),
@@ -95,13 +96,12 @@ class AddPage extends Tool
             'theme' => $parent?->latest?->data?->theme,
             'meta' => $meta,
             'content' => $elements,
+            'latest_id' => $versionId,
         ] );
 
         $exclude = array_flip( ['content', 'config', 'meta', 'editor', 'relatedid', 'tenant_id'] );
 
-        $versionId = Str::uuid7();
-
-        $versionData = [
+        $vdata = [
             'id' => $versionId,
             'lang' => $validated['lang'],
             'editor' => $editor,
@@ -112,10 +112,8 @@ class AddPage extends Tool
             ]
         ];
 
-        Cache::lock( 'cms_pages_' . \Aimeos\Cms\Tenancy::value(), 30 )->get( function() use ( $parent, $page, $versionId, $versionData ) {
-            DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $parent, $page, $versionId, $versionData ) {
-
-                $page->latest_id = $versionId;
+        Cache::lock( 'cms_pages_' . \Aimeos\Cms\Tenancy::value(), 30 )->get( function() use ( $parent, $page, $vdata ) {
+            DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $parent, $page, $vdata ) {
 
                 if( $parent && ( $ref = Page::where( 'parent_id', $parent->id )->orderBy( '_lft', 'asc' )->first() ) ) {
                     $page->beforeNode( $ref );
@@ -124,8 +122,7 @@ class AddPage extends Tool
                 }
 
                 $page->save();
-
-                $page->versions()->forceCreate( $versionData );
+                $page->versions()->forceCreate( $vdata );
 
             }, 3 );
         } );

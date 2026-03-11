@@ -243,7 +243,7 @@ class GraphqlFileTest extends TestAbstract
 
     public function testAddFile()
     {
-        $this->expectsDatabaseQueryCount( 8 );
+        $this->expectsDatabaseQueryCount( 6 );
         $response = $this->actingAs( $this->user )->multipartGraphQL( [
             'query' => '
                 mutation($file: Upload!, $preview: Upload) {
@@ -308,7 +308,7 @@ class GraphqlFileTest extends TestAbstract
 
         $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 11 );
+        $this->expectsDatabaseQueryCount( 10 );
 
         $response = $this->actingAs($this->user)->multipartGraphQL([
             'query' => '

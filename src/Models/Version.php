@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 
 
 /**
@@ -133,51 +134,6 @@ class Version extends Model
 
 
     /**
-     * Maps the elements by ID automatically.
-     *
-     * @return Collection<string, Element> List elements with ID as keys and element models as values
-     */
-    public function getElementsAttribute() : Collection
-    {
-        $this->relationLoaded( 'elements' ) ?: $this->load( 'elements' );
-        return $this->getRelation( 'elements' )->pluck( null, 'id' );
-    }
-
-
-    /**
-     * Maps the files by ID automatically.
-     *
-     * @return Collection<string, File> List files with ID as keys and file models as values
-     */
-    public function getFilesAttribute() : Collection
-    {
-        $this->relationLoaded( 'files' ) ?: $this->load( 'files' );
-        return $this->getRelation( 'files' )->pluck( null, 'id' );
-    }
-
-
-    /**
-     * Disables using the updated_at column.
-     * Versions are never updated, each one is created as a new entry.
-     */
-    public function getUpdatedAtColumn()
-    {
-        return null;
-    }
-
-
-    /**
-     * Get the parent versionable model (page, file or element).
-     *
-     * @return MorphTo<Model, $this>
-     */
-    public function versionable() : MorphTo
-    {
-        return $this->morphTo();
-    }
-
-
-    /**
      * Returns the list of changed attributes.
      * Required to return the correct boolean value if the "published" property
      * is stored as integer in the database.
@@ -205,5 +161,62 @@ class Version extends Model
         }
 
         return $dirty;
+    }
+
+
+    /**
+     * Maps the elements by ID automatically.
+     *
+     * @return Collection<string, Element> List elements with ID as keys and element models as values
+     */
+    public function getElementsAttribute() : Collection
+    {
+        $this->relationLoaded( 'elements' ) ?: $this->load( 'elements' );
+        return $this->getRelation( 'elements' )->pluck( null, 'id' );
+    }
+
+
+    /**
+     * Maps the files by ID automatically.
+     *
+     * @return Collection<string, File> List files with ID as keys and file models as values
+     */
+    public function getFilesAttribute() : Collection
+    {
+        $this->relationLoaded( 'files' ) ?: $this->load( 'files' );
+        return $this->getRelation( 'files' )->pluck( null, 'id' );
+    }
+
+
+    /**
+     * Generate a new unique key for the model.
+     *
+     * @return string
+     */
+    public function newUniqueId()
+    {
+        // workaround for SQL Server and Lighthouse when UUIDs are mixed case
+        return (string) ( $this->getConnection()->getDriverName() === 'sqlsrv' ? strtoupper( Str::uuid7() ) : Str::uuid7() );
+    }
+
+
+    /**
+     * Disables using the updated_at column.
+     * Versions are never updated, each one is created as a new entry.
+     */
+    public function getUpdatedAtColumn()
+    {
+        return null;
+    }
+
+
+    /**
+     * Get the parent versionable model (page, file or element).
+     *
+     * @return MorphTo<Model, $this>
+     */
+    public function versionable() : MorphTo
+    {
+        return $this->morphTo();
     }
 }

@@ -22,6 +22,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Date;
+use Illuminate\Support\Str;
 use Illuminate\Http\UploadedFile;
 use Intervention\Image\ImageManager;
 use Laravel\Scout\Searchable;
@@ -287,6 +288,18 @@ class File extends Model
 
 
     /**
+     * Generate a new unique key for the model.
+     *
+     * @return string
+     */
+    public function newUniqueId()
+    {
+        // workaround for SQL Server and Lighthouse when UUIDs are mixed case
+        return (string) ( $this->getConnection()->getDriverName() === 'sqlsrv' ? strtoupper( Str::uuid7() ) : Str::uuid7() );
+    }
+
+
+    /**
      * Get the prunable model query.
      *
      * @return Builder<static> Eloquent query builder instance for pruning
@@ -352,48 +365,6 @@ class File extends Model
             ->ofMany( ['created_at' => 'max', 'id' => 'max'], function( $query ) {
                 $query->where( (new Version)->qualifyColumn( 'published' ), true );
             } );
-    }
-
-
-    /**
-     * Returns the searchable data for the file.
-     *
-     * @return list<array<string, bool|string>>
-     */
-    public function toSearchableArray(): array
-    {
-        $attrs = ['name', 'mime', 'description', 'transcription', 'deleted_at', 'latest_id'];
-
-        if( !empty( $this->getChanges() ) && !$this->wasChanged( $attrs ) ) {
-            return [];
-        }
-
-        $rows = [];
-
-        if( $version = $this->latest )
-        {
-            $data = $version->data ?? new \stdClass();
-            $content = trim( ( $data->name ?? '' ) . "\n"
-                . implode( "\n", (array) ( $data->description ?? [] ) ) . "\n"
-                . implode( "\n", (array) ( $data->transcription ?? [] ) ) );
-
-            if( !empty( $content ) ) {
-                $rows[] = ['latest' => true, 'content' => $content];
-            }
-        }
-
-        if( !$this->trashed() )
-        {
-            $content = trim( $this->name . "\n"
-                . implode( "\n", (array) $this->description ) . "\n"
-                . implode( "\n", (array) $this->transcription ) );
-
-            if( !empty( $content ) ) {
-                $rows[] = ['latest' => false, 'content' => $content];
-            }
-        }
-
-        return $rows;
     }
 
 
@@ -494,6 +465,48 @@ class File extends Model
             ->forceDelete();
 
         return $this;
+    }
+
+
+    /**
+     * Returns the searchable data for the file.
+     *
+     * @return list<array<string, bool|string>>
+     */
+    public function toSearchableArray(): array
+    {
+        $attrs = ['name', 'mime', 'description', 'transcription', 'deleted_at', 'latest_id'];
+
+        if( !empty( $this->getChanges() ) && !$this->wasChanged( $attrs ) ) {
+            return [];
+        }
+
+        $rows = [];
+
+        if( $version = $this->latest )
+        {
+            $data = $version->data ?? new \stdClass();
+            $content = trim( ( $data->name ?? '' ) . "\n"
+                . implode( "\n", (array) ( $data->description ?? [] ) ) . "\n"
+                . implode( "\n", (array) ( $data->transcription ?? [] ) ) );
+
+            if( !empty( $content ) ) {
+                $rows[] = ['latest' => true, 'content' => $content];
+            }
+        }
+
+        if( !$this->trashed() )
+        {
+            $content = trim( $this->name . "\n"
+                . implode( "\n", (array) $this->description ) . "\n"
+                . implode( "\n", (array) $this->transcription ) );
+
+            if( !empty( $content ) ) {
+                $rows[] = ['latest' => false, 'content' => $content];
+            }
+        }
+
+        return $rows;
     }
 
 

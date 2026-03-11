@@ -9,15 +9,15 @@ namespace Aimeos\Cms\Tools;
 
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\Models\Element;
+use Aimeos\Cms\Models\Version;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Attributes\Description;
-use Laravel\Mcp\Server\Attributes\Name;
 use Laravel\Mcp\Server\Attributes\Title;
+use Laravel\Mcp\Server\Attributes\Name;
 use Laravel\Mcp\Server\Tool;
-use Laravel\Mcp\Response;
 use Laravel\Mcp\Request;
+use Laravel\Mcp\Response;
 
 
 #[Name('add-element')]
@@ -48,11 +48,9 @@ class AddElement extends Tool
         return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $validated, $request ) {
 
             $editor = (string) $request->user()?->name; // @phpstan-ignore-line property.notFound
-
-            $versionId = Str::uuid7();
+            $versionId = ( new Version )->newUniqueId();
 
             $element = new Element();
-            $element->latest_id = $versionId;
             $element->fill( [
                 'type' => $validated['type'],
                 'name' => $validated['name'],
@@ -60,6 +58,7 @@ class AddElement extends Tool
                 'data' => $validated['data'],
             ] );
             $element->tenant_id = \Aimeos\Cms\Tenancy::value();
+            $element->latest_id = $versionId;
             $element->editor = $editor;
             $element->save();
 
@@ -78,7 +77,7 @@ class AddElement extends Tool
                 'editor' => $editor,
             ] );
 
-            return Response::structured( $element->refresh()->toArray() );
+            return Response::structured( $element->toArray() );
         }, 3 );
     }
 

@@ -9,12 +9,12 @@ namespace Aimeos\Cms\Tools;
 
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\Models\Element;
+use Aimeos\Cms\Models\Version;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Attributes\Description;
-use Laravel\Mcp\Server\Attributes\Name;
 use Laravel\Mcp\Server\Attributes\Title;
+use Laravel\Mcp\Server\Attributes\Name;
 use Laravel\Mcp\Server\Tool;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\Request;
@@ -53,6 +53,7 @@ class UpdateElement extends Tool
         return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $element, $validated, $request ) {
 
             $editor = (string) $request->user()?->name; // @phpstan-ignore-line property.notFound
+            $versionId = ( new Version )->newUniqueId();
 
             // Build input from latest version, then overlay changes
             $input = (array) ( $element->latest->data ?? [] );
@@ -65,8 +66,6 @@ class UpdateElement extends Tool
                 $input['data'] = $validated['data'];
             }
 
-            $versionId = Str::uuid7();
-
             $version = $element->versions()->forceCreate( [
                 'id' => $versionId,
                 'data' => array_map( fn( $v ) => $v ?? '', $input ),
@@ -77,7 +76,15 @@ class UpdateElement extends Tool
             $element->forceFill( ['latest_id' => $versionId] )->save();
             $element->removeVersions();
 
-            return Response::structured( $element->refresh()->toArray() );
+            return Response::structured( [
+                'id' => $element->id,
+                'type' => $input['type'] ?? '',
+                'name' => $input['name'] ?? '',
+                'lang' => $validated['lang'] ?? null,
+                'data' => $input['data'] ?? new \stdClass(),
+                'created_at' => (string) $element->created_at,
+                'updated_at' => (string) $element->updated_at,
+            ] );
         }, 3 );
     }
 

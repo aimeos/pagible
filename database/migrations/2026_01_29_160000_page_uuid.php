@@ -178,7 +178,7 @@ return new class extends Migration
                 $row->oid = $row->id;
                 $row->opid = $row->parent_id;
                 $row->orid = $row->related_id;
-                $row->id = Str::uuid()->toString();
+                $row->id = Str::uuid7()->toString();
 
                 unset( $row->parent_id, $row->related_id );
 

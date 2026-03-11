@@ -7,14 +7,14 @@
 
 namespace Aimeos\Cms\GraphQL\Mutations;
 
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Str;
 use Aimeos\Cms\Models\File;
+use Aimeos\Cms\Models\Version;
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\Utils;
 use GraphQL\Error\Error;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 
 final class AddFile
@@ -36,6 +36,7 @@ final class AddFile
         return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $args ) {
 
             $editor = Auth::user()->name ?? request()->ip();
+            $versionId = ( new Version )->newUniqueId();
 
             $file = new File();
             $file->fill( $args['input'] ?? [] );
@@ -47,7 +48,6 @@ final class AddFile
                 $this->addUrl( $file, $args );
             }
 
-            $versionId = Str::uuid7();
             $file->latest_id = $versionId;
             $file->save();
 
@@ -66,7 +66,7 @@ final class AddFile
                 ],
             ] );
 
-            return $file->refresh();
+            return $file->setRelation( 'latest', $version );
         }, 3 );
     }
 

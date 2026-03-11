@@ -9,12 +9,12 @@ namespace Aimeos\Cms\Tools;
 
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\Models\File;
+use Aimeos\Cms\Models\Version;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Attributes\Description;
-use Laravel\Mcp\Server\Attributes\Name;
 use Laravel\Mcp\Server\Attributes\Title;
+use Laravel\Mcp\Server\Attributes\Name;
 use Laravel\Mcp\Server\Tool;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\Request;
@@ -53,6 +53,7 @@ class UpdateFile extends Tool
         return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $file, $validated, $request ) {
 
             $editor = (string) $request->user()?->name; // @phpstan-ignore-line property.notFound
+            $versionId = ( new Version )->newUniqueId();
 
             // Clone file to build version data without saving to the model directly
             $clone = clone $file;
@@ -66,8 +67,6 @@ class UpdateFile extends Tool
             $clone->previews = $latestData['previews'] ?? $file->previews;
             $clone->path = $latestData['path'] ?? $file->path;
             $clone->editor = $editor;
-
-            $versionId = Str::uuid7();
 
             $version = $clone->versions()->forceCreate( [
                 'id' => $versionId,
@@ -87,6 +86,8 @@ class UpdateFile extends Tool
                 'path' => $clone->path,
                 'previews' => $clone->previews,
                 'description' => $clone->description,
+                'created_at' => (string) $file->created_at,
+                'updated_at' => (string) $file->updated_at,
             ] );
         }, 3 );
     }

@@ -10,12 +10,12 @@ namespace Aimeos\Cms\Tools;
 use Aimeos\Cms\Utils;
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\Models\Page;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
+use Aimeos\Cms\Models\Version;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
+use Illuminate\Support\Facades\DB;
 use Laravel\Mcp\Server\Attributes\Description;
-use Laravel\Mcp\Server\Attributes\Name;
 use Laravel\Mcp\Server\Attributes\Title;
+use Laravel\Mcp\Server\Attributes\Name;
 use Laravel\Mcp\Server\Tool;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\Request;
@@ -56,6 +56,7 @@ class UpdatePage extends Tool
         return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $page, $validated, $request ) {
 
             $editor = (string) $request->user()?->name; // @phpstan-ignore-line property.notFound
+            $versionId = ( new Version )->newUniqueId();
 
             // Build data from latest version, then overlay changes
             $data = (array) ( $page->latest->data ?? [] );
@@ -126,8 +127,6 @@ class UpdatePage extends Tool
                 $aux['meta'] = $meta;
             }
 
-            $versionId = Str::uuid7();
-
             $version = $page->versions()->forceCreate([
                 'id' => $versionId,
                 'data' => array_map( fn( $v ) => $v ?? '', $data ),
@@ -139,7 +138,26 @@ class UpdatePage extends Tool
             $page->forceFill( ['latest_id' => $versionId] )->save();
             $page->removeVersions();
 
-            return Response::structured( $page->refresh()->toArray() + ['url' => route( 'cms.page', ['path' => $page->path] )] );
+            return Response::structured( [
+                'id' => $page->id,
+                'tag' => $data['tag'] ?? '',
+                'lang' => $data['lang'] ?? '',
+                'path' => $data['path'] ?? '',
+                'domain' => $data['domain'] ?? '',
+                'to' => $data['to'] ?? '',
+                'name' => $data['name'] ?? '',
+                'title' => $data['title'] ?? '',
+                'type' => $data['type'] ?? '',
+                'theme' => $data['theme'] ?? '',
+                'meta' => $aux['meta'] ?? new \stdClass(),
+                'config' => $aux['config'] ?? new \stdClass(),
+                'content' => $aux['content'] ?? [],
+                'status' => $page->status,
+                'cache' => $page->cache,
+                'created_at' => (string) $page->created_at,
+                'updated_at' => (string) $page->updated_at,
+                'url' => route( 'cms.page', ['path' => $data['path'] ?? ''] ),
+            ] );
         }, 3 );
     }
 
