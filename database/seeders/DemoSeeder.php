@@ -67,7 +67,7 @@ class DemoSeeder
         $file = File::forceCreate( [
             'mime' => 'image/png',
             'lang' => $lang,
-            'name' => $this->faker->sentence( 3 ),
+            'name' => $this->faker->realTextBetween( 10, 30 ),
             'path' => 'https://placehold.co/1500x1000',
             'previews' => ['500' => 'https://placehold.co/500x333', '1000' => 'https://placehold.co/1000x666'],
             'editor' => $this->editor,
@@ -133,10 +133,10 @@ class DemoSeeder
     protected function createRoot( string $lang ): Page
     {
         $content = [
-            ['id' => Utils::uid(), 'type' => 'heading', 'group' => 'main', 'data' => ['title' => $this->faker->sentence()]],
-            ['id' => Utils::uid(), 'type' => 'image', 'group' => 'main', 'data' => ['image' => ['id' => $this->fileId, 'type' => 'file'], 'title' => $this->faker->sentence()]],
-            ['id' => Utils::uid(), 'type' => 'paragraph', 'group' => 'main', 'data' => ['text' => $this->faker->paragraphs( 3, true )]],
-            ['type' => 'ref', 'id' => $this->elementId],
+            ['id' => Utils::uid(), 'type' => 'heading', 'group' => 'main', 'data' => ['title' => $this->faker->realTextBetween( 20, 80 )]],
+            ['id' => Utils::uid(), 'type' => 'image', 'group' => 'main', 'data' => ['file' => ['id' => $this->fileId, 'type' => 'file']]],
+            ['id' => Utils::uid(), 'type' => 'text', 'group' => 'main', 'data' => ['text' => $this->faker->realTextBetween( 200, 500 )]],
+            ['type' => 'ref', 'id' => $this->elementId, 'group' => 'footer'],
         ];
 
         $data = [
@@ -177,19 +177,17 @@ class DemoSeeder
     {
         for( $i = 0; $i < 10; $i++ )
         {
-            $level1 = $this->createPage( $root, $lang, $i );
-            echo '.';
+            $level1 = $this->createPage( $root, $lang, 1, $i );
 
             for( $j = 0; $j < 10; $j++ )
             {
-                $level2 = $this->createPage( $level1, $lang, $i * 10 + $j );
+                $level2 = $this->createPage( $level1, $lang, 2, $i * 10 + $j );
                 echo '.';
 
                 DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $level2, $lang, $i, $j ) {
                     for( $k = 0; $k < 100; $k++ )
                     {
-                        $this->createPage( $level2, $lang, $i * 1000 + $j * 100 + $k );
-                        echo '.';
+                        $this->createPage( $level2, $lang, 3, $i * 1000 + $j * 100 + $k );
                     }
                 } );
             }
@@ -202,18 +200,22 @@ class DemoSeeder
     /**
      * Create a single page with content, version, and publish it
      */
-    protected function createPage( Page $parent, string $lang, int $index ): Page
+    protected function createPage( Page $parent, string $lang, int $level, int $index ): Page
     {
-        $name = rtrim( $this->faker->sentence( 3 ), '.' );
+        $name = match( $level ) {
+            1 => $this->faker->realTextBetween( 5, 15 ),
+            2 => $this->faker->realTextBetween( 10, 25 ),
+            default => $this->faker->realTextBetween( 15, 40 ),
+        };
         $path = Utils::slugify( $name ) . '-' . $index;
 
         $content = [
-            ['id' => Utils::uid(), 'type' => 'heading', 'group' => 'main', 'data' => ['title' => $this->faker->sentence()]],
-            ['id' => Utils::uid(), 'type' => 'image', 'group' => 'main', 'data' => ['image' => ['id' => $this->fileId, 'type' => 'file'], 'title' => $this->faker->sentence()]],
-            ['id' => Utils::uid(), 'type' => 'paragraph', 'group' => 'main', 'data' => ['text' => $this->faker->paragraphs( 3, true )]],
-            ['id' => Utils::uid(), 'type' => 'paragraph', 'group' => 'main', 'data' => ['text' => $this->faker->paragraphs( 3, true )]],
-            ['id' => Utils::uid(), 'type' => 'paragraph', 'group' => 'main', 'data' => ['text' => $this->faker->paragraphs( 3, true )]],
-            ['type' => 'ref', 'id' => $this->elementId],
+            ['id' => Utils::uid(), 'type' => 'heading', 'group' => 'main', 'data' => ['title' => $this->faker->realTextBetween( 20, 80 )]],
+            ['id' => Utils::uid(), 'type' => 'image', 'group' => 'main', 'data' => ['file' => ['id' => $this->fileId, 'type' => 'file']]],
+            ['id' => Utils::uid(), 'type' => 'text', 'group' => 'main', 'data' => ['text' => $this->faker->realTextBetween( 200, 500 )]],
+            ['id' => Utils::uid(), 'type' => 'text', 'group' => 'main', 'data' => ['text' => $this->faker->realTextBetween( 200, 500 )]],
+            ['id' => Utils::uid(), 'type' => 'text', 'group' => 'main', 'data' => ['text' => $this->faker->realTextBetween( 200, 500 )]],
+            ['type' => 'ref', 'id' => $this->elementId, 'group' => 'footer'],
         ];
 
         $data = [
