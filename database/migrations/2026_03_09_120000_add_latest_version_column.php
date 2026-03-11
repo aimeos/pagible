@@ -23,15 +23,15 @@ return new class extends Migration
         $name = config('cms.db', 'sqlite');
 
         Schema::connection($name)->table('cms_pages', function (Blueprint $table) {
-            $table->uuid('latest_id')->nullable();
+            $table->uuid('latest_id')->nullable()->index();
         });
 
         Schema::connection($name)->table('cms_elements', function (Blueprint $table) {
-            $table->uuid('latest_id')->nullable();
+            $table->uuid('latest_id')->nullable()->index();
         });
 
         Schema::connection($name)->table('cms_files', function (Blueprint $table) {
-            $table->uuid('latest_id')->nullable();
+            $table->uuid('latest_id')->nullable()->index();
         });
 
         $db = DB::connection($name);
