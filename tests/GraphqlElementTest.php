@@ -263,7 +263,7 @@ class GraphqlElementTest extends TestAbstract
         $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
         $element = Element::where( 'type', 'footer' )->firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 11 );
+        $this->expectsDatabaseQueryCount( 9 );
 
         $response = $this->actingAs($this->user)->graphQL('
             mutation {
@@ -323,7 +323,7 @@ class GraphqlElementTest extends TestAbstract
         $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
         $element = Element::where( 'type', 'footer' )->firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 11 );
+        $this->expectsDatabaseQueryCount( 10 );
 
         $response = $this->actingAs($this->user)->graphQL('
             mutation {

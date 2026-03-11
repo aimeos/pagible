@@ -7,12 +7,12 @@
 
 namespace Aimeos\Cms\GraphQL\Mutations;
 
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 use Aimeos\Cms\Models\Element;
+use Aimeos\Cms\Models\Version;
 use Aimeos\Cms\Permission;
 use GraphQL\Error\Error;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 
 final class AddElement
@@ -34,8 +34,7 @@ final class AddElement
         return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $args ) {
 
             $editor = Auth::user()->name ?? request()->ip();
-
-            $versionId = Str::uuid7();
+            $versionId = ( new Version )->newUniqueId();
 
             $element = new Element();
             $element->latest_id = $versionId;
@@ -59,7 +58,7 @@ final class AddElement
 
             $version->files()->attach( $args['files'] ?? [] );
 
-            return $element->refresh();
+            return $element;
         }, 3 );
     }
 }

@@ -21,6 +21,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 use Laravel\Scout\Searchable;
 
 /**
@@ -192,6 +193,18 @@ class Element extends Model
 
 
     /**
+     * Generate a new unique key for the model.
+     *
+     * @return string
+     */
+    public function newUniqueId()
+    {
+        // workaround for SQL Server and Lighthouse when UUIDs are mixed case
+        return (string) ( $this->getConnection()->getDriverName() === 'sqlserv' ? strtoupper( Str::uuid7() ) : Str::uuid7() );
+    }
+
+
+    /**
      * Publish the given version of the element.
      *
      * @param Version $version Version to publish
@@ -224,6 +237,42 @@ class Element extends Model
             ->ofMany( ['created_at' => 'max', 'id' => 'max'], function( $query ) {
                 $query->where( (new Version)->qualifyColumn( 'published' ), true );
             } );
+    }
+
+
+    /**
+     * Get the prunable model query.
+     *
+     * @return Builder<static> Eloquent query builder instance for pruning
+     */
+    public function prunable() : Builder
+    {
+        return static::withoutTenancy()->where( 'deleted_at', '<=', now()->subDays( config( 'cms.prune', 30 ) ) );
+    }
+
+
+    /**
+     * Removes all versions of the element except the latest versions.
+     *
+     * @return self The current instance for method chaining
+     */
+    public function removeVersions() : self
+    {
+        $num = config( 'cms.versions', 10 );
+
+        // MySQL doesn't support offsets for DELETE
+        $ids = Version::where( 'versionable_id', $this->id )
+            ->where( 'versionable_type', Element::class )
+            ->orderByDesc( 'created_at' )
+            ->offset( $num )
+            ->limit( 10 )
+            ->pluck( 'id' );
+
+        if( !$ids->isEmpty() ) {
+            Version::whereIn( 'id', $ids )->forceDelete();
+        }
+
+        return $this;
     }
 
 
@@ -263,42 +312,6 @@ class Element extends Model
         }
 
         return $rows;
-    }
-
-
-    /**
-     * Get the prunable model query.
-     *
-     * @return Builder<static> Eloquent query builder instance for pruning
-     */
-    public function prunable() : Builder
-    {
-        return static::withoutTenancy()->where( 'deleted_at', '<=', now()->subDays( config( 'cms.prune', 30 ) ) );
-    }
-
-
-    /**
-     * Removes all versions of the element except the latest versions.
-     *
-     * @return self The current instance for method chaining
-     */
-    public function removeVersions() : self
-    {
-        $num = config( 'cms.versions', 10 );
-
-        // MySQL doesn't support offsets for DELETE
-        $ids = Version::where( 'versionable_id', $this->id )
-            ->where( 'versionable_type', Element::class )
-            ->orderByDesc( 'created_at' )
-            ->offset( $num )
-            ->limit( 10 )
-            ->pluck( 'id' );
-
-        if( !$ids->isEmpty() ) {
-            Version::whereIn( 'id', $ids )->forceDelete();
-        }
-
-        return $this;
     }
 
 

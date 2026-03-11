@@ -73,7 +73,7 @@ class MovePage extends Tool
 
                 $page->save();
 
-                return Response::structured( $page->refresh()->toArray() + ['url' => route( 'cms.page', ['path' => $page->path] )] );
+                return Response::structured( $page->toArray() + ['url' => route( 'cms.page', ['path' => $page->path] )] );
             }, 3 );
         } );
     }

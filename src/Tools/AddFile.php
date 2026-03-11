@@ -7,15 +7,15 @@
 
 namespace Aimeos\Cms\Tools;
 
+use Aimeos\Cms\Utils;
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\Models\File;
-use Aimeos\Cms\Utils;
+use Aimeos\Cms\Models\Version;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Attributes\Description;
-use Laravel\Mcp\Server\Attributes\Name;
 use Laravel\Mcp\Server\Attributes\Title;
+use Laravel\Mcp\Server\Attributes\Name;
 use Laravel\Mcp\Server\Tool;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\Request;
@@ -53,6 +53,7 @@ class AddFile extends Tool
         return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $url, $validated, $request ) {
 
             $editor = (string) $request->user()?->name; // @phpstan-ignore-line property.notFound
+            $versionId = ( new Version )->newUniqueId();
 
             $file = new File();
             $file->fill( array_intersect_key( $validated, array_flip( ['name', 'lang'] ) ) );
@@ -65,6 +66,7 @@ class AddFile extends Tool
             $file->path = $url;
             $file->mime = Utils::mimetype( $url );
             $file->name = $file->name ?: substr( $url, 0, 255 );
+            $file->latest_id = $versionId;
             $file->editor = $editor;
 
             try {
@@ -76,8 +78,6 @@ class AddFile extends Tool
                 throw $t;
             }
 
-            $versionId = Str::uuid7();
-            $file->latest_id = $versionId;
             $file->save();
 
             $file->versions()->forceCreate( [
@@ -95,7 +95,7 @@ class AddFile extends Tool
                 ],
             ] );
 
-            return Response::structured( $file->refresh()->toArray() );
+            return Response::structured( $file->toArray() );
         }, 3 );
     }
 

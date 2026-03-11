@@ -7,13 +7,13 @@
 
 namespace Aimeos\Cms\GraphQL\Mutations;
 
+use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\Version;
+use Aimeos\Cms\Permission;
+use GraphQL\Error\Error;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
-use Aimeos\Cms\Models\Page;
-use Aimeos\Cms\Permission;
-use GraphQL\Error\Error;
 
 
 final class AddPage
@@ -31,11 +31,11 @@ final class AddPage
         return Cache::lock( 'cms_pages_' . \Aimeos\Cms\Tenancy::value(), 30 )->get( function() use ( $args ) {
             return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $args ) {
 
-                $page = new Page();
-
                 $args['input'] = $this->sanitize( $args['input'] ?? [] );
                 $editor = Auth::user()->name ?? request()->ip();
+                $versionId = ( new Version )->newUniqueId();
 
+                $page = new Page();
                 $page->fill( $args['input'] );
                 $page->tenant_id = \Aimeos\Cms\Tenancy::value();
                 $page->editor = $editor;
@@ -51,9 +51,9 @@ final class AddPage
                     $page->appendToNode( $parent );
                 }
 
-                $versionId = Str::uuid7();
                 $page->latest_id = $versionId;
                 $page->save();
+
                 $page->files()->attach( $args['files'] ?? [] );
                 $page->elements()->attach( $args['elements'] ?? [] );
 
@@ -75,7 +75,7 @@ final class AddPage
                 $version->elements()->attach( $args['elements'] ?? [] );
                 $version->files()->attach( $args['files'] ?? [] );
 
-                return $page->refresh();
+                return $page;
             }, 3 );
         } );
     }

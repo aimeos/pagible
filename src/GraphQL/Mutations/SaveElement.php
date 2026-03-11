@@ -7,12 +7,12 @@
 
 namespace Aimeos\Cms\GraphQL\Mutations;
 
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 use Aimeos\Cms\Models\Element;
+use Aimeos\Cms\Models\Version;
 use Aimeos\Cms\Permission;
 use GraphQL\Error\Error;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 
 final class SaveElement
@@ -35,8 +35,7 @@ final class SaveElement
 
             /** @var Element $element */
             $element = Element::withTrashed()->findOrFail( $args['id'] );
-
-            $versionId = Str::uuid7();
+            $versionId = ( new Version )->newUniqueId();
 
             $version = $element->versions()->forceCreate( [
                 'id' => $versionId,
@@ -45,9 +44,7 @@ final class SaveElement
                 'lang' => $args['input']['lang'] ?? null,
             ] );
 
-            $version->refresh(); // SQL Server UUID character case workaround
             $version->files()->attach( $args['files'] ?? [] );
-
             $element->forceFill( ['latest_id' => $version->id] )->save();
 
             return $element->removeVersions();

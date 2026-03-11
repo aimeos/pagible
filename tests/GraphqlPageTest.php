@@ -573,7 +573,7 @@ class GraphqlPageTest extends TestAbstract
         $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
         $element = Element::where( 'type', 'footer' )->firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 11 );
+        $this->expectsDatabaseQueryCount( 10 );
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
                 addPage(input: {
@@ -646,7 +646,7 @@ class GraphqlPageTest extends TestAbstract
 
         $root = Page::where('tag', 'root')->firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 11 );
+        $this->expectsDatabaseQueryCount( 9 );
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
                 addPage(input: {
@@ -686,7 +686,7 @@ class GraphqlPageTest extends TestAbstract
         $root = Page::where('tag', 'root')->firstOrFail();
         $ref = Page::where('tag', 'blog')->firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 11 );
+        $this->expectsDatabaseQueryCount( 9 );
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
                 addPage(input: {
@@ -823,7 +823,7 @@ class GraphqlPageTest extends TestAbstract
         $element = Element::where( 'type', 'footer' )->firstOrFail();
         $root = Page::where('tag', 'root')->firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 18 );
+        $this->expectsDatabaseQueryCount( 17 );
 
         $response = $this->actingAs($this->user)->graphQL('
             mutation {
