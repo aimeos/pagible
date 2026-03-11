@@ -48,6 +48,7 @@ class ServiceProvider extends Provider
 				\Aimeos\Cms\Commands\Serve::class,
 				\Aimeos\Cms\Commands\User::class,
 				\Aimeos\Cms\Commands\WpImport::class,
+				\Aimeos\Cms\Commands\Demo::class,
 			] );
 		}
 
