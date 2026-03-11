@@ -53,6 +53,7 @@ final class SavePage
 
             $page->forceFill( ['latest_id' => $version->id] )->save();
 
+            $page->setRelation( 'latest', $version );
             return $page->removeVersions();
         } );
     }
