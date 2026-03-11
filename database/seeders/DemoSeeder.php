@@ -135,7 +135,7 @@ class DemoSeeder
         $fileId = $this->createFile( $lang );
 
         $content = [
-            ['id' => Utils::uid(), 'type' => 'heading', 'group' => 'main', 'data' => ['title' => $this->faker->realTextBetween( 20, 80 )]],
+            ['id' => Utils::uid(), 'type' => 'heading', 'group' => 'main', 'data' => ['title' => $this->faker->realTextBetween( 20, 80 ), 'level' => 1]],
             ['id' => Utils::uid(), 'type' => 'image', 'group' => 'main', 'data' => ['file' => ['id' => $fileId, 'type' => 'file']]],
             ['id' => Utils::uid(), 'type' => 'text', 'group' => 'main', 'data' => ['text' => $this->faker->realTextBetween( 200, 500 )]],
             ['type' => 'ref', 'id' => $this->elementId, 'group' => 'footer'],
@@ -214,7 +214,7 @@ class DemoSeeder
         $fileId = $this->createFile( $lang );
 
         $content = [
-            ['id' => Utils::uid(), 'type' => 'heading', 'group' => 'main', 'data' => ['title' => $this->faker->realTextBetween( 20, 80 )]],
+            ['id' => Utils::uid(), 'type' => 'heading', 'group' => 'main', 'data' => ['title' => $this->faker->realTextBetween( 20, 80 ), 'level' => 1]],
             ['id' => Utils::uid(), 'type' => 'image', 'group' => 'main', 'data' => ['file' => ['id' => $fileId, 'type' => 'file']]],
             ['id' => Utils::uid(), 'type' => 'text', 'group' => 'main', 'data' => ['text' => $this->faker->realTextBetween( 200, 500 )]],
             ['id' => Utils::uid(), 'type' => 'text', 'group' => 'main', 'data' => ['text' => $this->faker->realTextBetween( 200, 500 )]],
