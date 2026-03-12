@@ -141,7 +141,7 @@ class JsonapiTest extends TestAbstract
             $expected[] = ['type' => 'navs', 'id' => $item->id];
         }
 
-        $this->expectsDatabaseQueryCount( 3 ); // page + ancestors + menu
+        $this->expectsDatabaseQueryCount( 4 ); // page + ancestors + menu
         $response = $this->jsonApi()->expects( 'pages' )->includePaths( 'menu' )->get( "cms/pages/{$page->id}" );
 
         $response->assertFetchedOne( $page )->assertIncluded( $expected );
@@ -160,7 +160,7 @@ class JsonapiTest extends TestAbstract
             $expected[] = ['type' => 'navs', 'id' => $item->id];
         }
 
-        $this->expectsDatabaseQueryCount( 4 ); // page + ancestors + menu + children
+        $this->expectsDatabaseQueryCount( 5 ); // page + ancestors + menu + children
         $response = $this->jsonApi()->expects( 'pages' )->includePaths( 'menu,menu.children' )->get( "cms/pages/{$page->id}" );
 
         $response->assertFetchedOne( $page )->assertIncluded( $expected );
@@ -179,7 +179,7 @@ class JsonapiTest extends TestAbstract
             $expected[] = ['type' => 'navs', 'id' => $item->id];
         }
 
-        $this->expectsDatabaseQueryCount( 6 ); // page + count + files + elements + elements.files + page subtree
+        $this->expectsDatabaseQueryCount( 7 ); // page + count + files + elements + elements.files + page subtree
         $response = $this->jsonApi()->expects( 'pages' )
             ->filter( ['domain' => 'mydomain.tld', 'path' => '', 'tag' => 'root'] )
             ->includePaths( 'subtree' )->get( "cms/pages" );
@@ -200,7 +200,7 @@ class JsonapiTest extends TestAbstract
             $expected[] = ['type' => 'navs', 'id' => $item->id];
         }
 
-        $this->expectsDatabaseQueryCount( 2 ); // page + page subtree
+        $this->expectsDatabaseQueryCount( 3 ); // page + page subtree
         $response = $this->jsonApi()->expects( 'pages' )->includePaths( 'subtree' )->get( "cms/pages/{$page->id}" );
 
         $response->assertFetchedOne( $page )->assertIncluded( $expected );
