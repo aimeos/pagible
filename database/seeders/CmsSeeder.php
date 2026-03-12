@@ -173,7 +173,7 @@ class CmsSeeder extends Seeder
             'config' => ['test' => ['type' => 'test', 'data' => ['key' => 'value']]],
             'content' => [
                 ['type' => 'heading', 'data' => ['title' => 'Welcome to Laravel CMS']],
-                ['type' => 'ref', 'id' => $elementId]
+                ['type' => 'reference', 'refid' => $elementId]
             ],
         ]);
         $version = $page->versions()->forceCreate([
@@ -196,13 +196,14 @@ class CmsSeeder extends Seeder
                 'config' => ['test' => ['type' => 'test', 'data' => ['key' => 'value']]],
                 'content' => [
                     ['type' => 'heading', 'data' => ['title' => 'Welcome to Laravel CMS']],
-                    ['type' => 'ref', 'id' => $elementId]
+                    ['type' => 'reference', 'refid' => $elementId]
                 ],
             ],
             'published' => true,
             'editor' => 'seeder',
         ]);
         $page->forceFill( ['latest_id' => $version->id] )->saveQuietly();
+        $version->elements()->attach( $elementId );
         $page->elements()->attach( $elementId );
 
         return $page;
@@ -222,11 +223,10 @@ class CmsSeeder extends Seeder
             'editor' => 'seeder',
             'content' => [
                 ['type' => 'blog', 'data' => ['text' => 'Blog example']],
-                ['type' => 'ref', 'id' => $elementId]
+                ['type' => 'reference', 'refid' => $elementId]
             ],
         ]);
         $page->appendToNode( $home )->save();
-        $page->elements()->attach( $elementId );
 
         $version = $page->versions()->forceCreate([
             'lang' => 'en',
@@ -241,13 +241,15 @@ class CmsSeeder extends Seeder
             'aux' => [
                 'content' => [
                     ['type' => 'blog', 'data' => ['text' => 'Blog example']],
-                    ['type' => 'ref', 'id' => $elementId]
+                    ['type' => 'reference', 'refid' => $elementId]
                 ],
             ],
             'published' => true,
             'editor' => 'seeder',
         ]);
         $page->forceFill( ['latest_id' => $version->id] )->saveQuietly();
+        $version->elements()->attach( $elementId );
+        $page->elements()->attach( $elementId );
 
         return $this->addBlogArticle( $page );
     }
@@ -283,7 +285,7 @@ mutation {
 }
 ```'            ],
             ],
-            ['type' => 'ref', 'id' => $elementId],
+            ['type' => 'reference', 'refid' => $elementId],
         ];
 
         $data = [
@@ -298,8 +300,6 @@ mutation {
 
         $page = Page::forceCreate($data + ['content' => $content]);
         $page->appendToNode( $blog )->save();
-        $page->elements()->attach( $elementId );
-        $page->files()->attach( $fileId );
 
         $version = $page->versions()->forceCreate([
             'data' => $data,
@@ -310,7 +310,10 @@ mutation {
             'editor' => 'seeder',
         ]);
         $version->files()->attach( $fileId );
+        $version->elements()->attach( $elementId );
         $page->forceFill( ['latest_id' => $version->id] )->saveQuietly();
+        $page->elements()->attach( $elementId );
+        $page->files()->attach( $fileId );
 
         return $this;
     }
@@ -342,13 +345,10 @@ This is content created using [markdown syntax](https://www.markdownguide.org/ba
                     'text' => 'Test image'
                 ]
             ], [
-                'type' => 'ref', 'id' => $elementId
+                'type' => 'reference', 'refid' => $elementId
             ]]
         ]);
         $page->appendToNode( $home )->save();
-        $page->elements()->attach( $elementId );
-        $page->files()->attach( $fileId );
-
 
         $version = $page->versions()->forceCreate([
             'lang' => 'en',
@@ -374,13 +374,16 @@ This is content created using [markdown syntax](https://www.markdownguide.org/ba
                         'text' => 'Test image'
                     ]
                 ], [
-                    'type' => 'ref', 'id' => $elementId
+                    'type' => 'reference', 'refid' => $elementId
                 ]]
             ],
             'published' => true,
             'editor' => 'seeder',
         ]);
         $page->forceFill( ['latest_id' => $version->id] )->saveQuietly();
+        $version->elements()->attach( $elementId );
+        $page->elements()->attach( $elementId );
+        $page->files()->attach( $fileId );
 
         return $this;
     }
