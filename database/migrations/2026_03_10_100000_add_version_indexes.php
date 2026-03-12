@@ -41,7 +41,6 @@ return new class extends Migration
                 ADD COLUMN data_theme VARCHAR(30) GENERATED ALWAYS AS (JSON_UNQUOTE(JSON_EXTRACT(data, \'$.theme\'))) VIRTUAL,
                 ADD COLUMN data_status SMALLINT GENERATED ALWAYS AS (JSON_EXTRACT(data, \'$.status\')) VIRTUAL,
                 ADD COLUMN data_cache SMALLINT GENERATED ALWAYS AS (JSON_EXTRACT(data, \'$.cache\')) VIRTUAL,
-                ADD COLUMN data_to VARCHAR(255) GENERATED ALWAYS AS (JSON_UNQUOTE(JSON_EXTRACT(data, \'$.to\'))) VIRTUAL,
                 ADD COLUMN data_mime VARCHAR(100) GENERATED ALWAYS AS (JSON_UNQUOTE(JSON_EXTRACT(data, \'$.mime\'))) VIRTUAL
             ');
 
@@ -53,9 +52,10 @@ return new class extends Migration
                 $table->index('data_theme');
                 $table->index('data_status');
                 $table->index('data_cache');
-                $table->index('data_to');
                 $table->index('data_mime');
             });
+
+            $db->statement('CREATE INDEX idx_versions_tenant_type_domain_path ON cms_versions (tenant_id, versionable_type, data_domain(200), data_path(255))');
         }
         elseif( $driver === 'pgsql' )
         {
@@ -66,8 +66,8 @@ return new class extends Migration
             $db->statement("CREATE INDEX idx_versions_data_theme ON cms_versions ((data->>'theme'))");
             $db->statement("CREATE INDEX idx_versions_data_status ON cms_versions (((data->>'status')::smallint))");
             $db->statement("CREATE INDEX idx_versions_data_cache ON cms_versions (((data->>'cache')::smallint))");
-            $db->statement("CREATE INDEX idx_versions_data_to ON cms_versions ((data->>'to'))");
             $db->statement("CREATE INDEX idx_versions_data_mime ON cms_versions ((data->>'mime'))");
+            $db->statement("CREATE INDEX idx_versions_tenant_type_domain_path ON cms_versions (tenant_id, versionable_type, (data->>'domain'), (data->>'path'))");
         }
         elseif( $driver === 'sqlsrv' )
         {
@@ -78,7 +78,6 @@ return new class extends Migration
             $db->statement("ALTER TABLE cms_versions ADD data_theme AS CAST(JSON_VALUE(data, '$.theme') AS VARCHAR(30))");
             $db->statement("ALTER TABLE cms_versions ADD data_status AS CAST(JSON_VALUE(data, '$.status') AS SMALLINT)");
             $db->statement("ALTER TABLE cms_versions ADD data_cache AS CAST(JSON_VALUE(data, '$.cache') AS SMALLINT)");
-            $db->statement("ALTER TABLE cms_versions ADD data_to AS CAST(JSON_VALUE(data, '$.to') AS VARCHAR(255))");
             $db->statement("ALTER TABLE cms_versions ADD data_mime AS CAST(JSON_VALUE(data, '$.mime') AS VARCHAR(100))");
 
             $db->statement('CREATE INDEX idx_versions_data_type ON cms_versions (data_type)');
@@ -88,8 +87,8 @@ return new class extends Migration
             $db->statement('CREATE INDEX idx_versions_data_theme ON cms_versions (data_theme)');
             $db->statement('CREATE INDEX idx_versions_data_status ON cms_versions (data_status)');
             $db->statement('CREATE INDEX idx_versions_data_cache ON cms_versions (data_cache)');
-            $db->statement('CREATE INDEX idx_versions_data_to ON cms_versions (data_to)');
             $db->statement('CREATE INDEX idx_versions_data_mime ON cms_versions (data_mime)');
+            $db->statement('CREATE INDEX idx_versions_tenant_type_domain_path ON cms_versions (tenant_id, versionable_type, data_domain, data_path)');
         }
 
         // Drop unused indexes from cms_pages
@@ -153,6 +152,8 @@ return new class extends Migration
         // Drop JSON path indexes and generated columns
         if( in_array($driver, ['mysql', 'mariadb']) )
         {
+            $db->statement('DROP INDEX idx_versions_tenant_type_domain_path ON cms_versions');
+
             $schema->table('cms_versions', function (Blueprint $table) {
                 $table->dropIndex(['data_type']);
                 $table->dropIndex(['data_path']);
@@ -161,13 +162,13 @@ return new class extends Migration
                 $table->dropIndex(['data_theme']);
                 $table->dropIndex(['data_status']);
                 $table->dropIndex(['data_cache']);
-                $table->dropIndex(['data_to']);
                 $table->dropIndex(['data_mime']);
                 $table->dropColumn(['data_type', 'data_path', 'data_domain', 'data_tag', 'data_theme', 'data_status', 'data_cache', 'data_to', 'data_mime']);
             });
         }
         elseif( $driver === 'pgsql' )
         {
+            $db->statement('DROP INDEX IF EXISTS idx_versions_tenant_type_domain_path');
             $db->statement('DROP INDEX IF EXISTS idx_versions_data_type');
             $db->statement('DROP INDEX IF EXISTS idx_versions_data_path');
             $db->statement('DROP INDEX IF EXISTS idx_versions_data_domain');
@@ -175,11 +176,11 @@ return new class extends Migration
             $db->statement('DROP INDEX IF EXISTS idx_versions_data_theme');
             $db->statement('DROP INDEX IF EXISTS idx_versions_data_status');
             $db->statement('DROP INDEX IF EXISTS idx_versions_data_cache');
-            $db->statement('DROP INDEX IF EXISTS idx_versions_data_to');
             $db->statement('DROP INDEX IF EXISTS idx_versions_data_mime');
         }
         elseif( $driver === 'sqlsrv' )
         {
+            $db->statement('DROP INDEX IF EXISTS idx_versions_tenant_type_domain_path ON cms_versions');
             $db->statement('DROP INDEX IF EXISTS idx_versions_data_type ON cms_versions');
             $db->statement('DROP INDEX IF EXISTS idx_versions_data_path ON cms_versions');
             $db->statement('DROP INDEX IF EXISTS idx_versions_data_domain ON cms_versions');
@@ -187,7 +188,6 @@ return new class extends Migration
             $db->statement('DROP INDEX IF EXISTS idx_versions_data_theme ON cms_versions');
             $db->statement('DROP INDEX IF EXISTS idx_versions_data_status ON cms_versions');
             $db->statement('DROP INDEX IF EXISTS idx_versions_data_cache ON cms_versions');
-            $db->statement('DROP INDEX IF EXISTS idx_versions_data_to ON cms_versions');
             $db->statement('DROP INDEX IF EXISTS idx_versions_data_mime ON cms_versions');
 
             $db->statement('ALTER TABLE cms_versions DROP COLUMN IF EXISTS data_type');
@@ -197,7 +197,6 @@ return new class extends Migration
             $db->statement('ALTER TABLE cms_versions DROP COLUMN IF EXISTS data_theme');
             $db->statement('ALTER TABLE cms_versions DROP COLUMN IF EXISTS data_status');
             $db->statement('ALTER TABLE cms_versions DROP COLUMN IF EXISTS data_cache');
-            $db->statement('ALTER TABLE cms_versions DROP COLUMN IF EXISTS data_to');
             $db->statement('ALTER TABLE cms_versions DROP COLUMN IF EXISTS data_mime');
         }
 
