@@ -27,7 +27,7 @@ class Status implements Scope
     public function apply( Builder $builder, Model $model ): void
     {
         if( !\Aimeos\Cms\Permission::can( 'page:view', Auth::user() ) ) {
-            $builder->where( $model->qualifyColumn( 'status' ), '>', 0 );
+            $builder->whereIn( $model->qualifyColumn( 'status' ), [1, 2] );
         }
     }
 
