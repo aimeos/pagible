@@ -66,7 +66,7 @@ class JsonapiTest extends TestAbstract
 
         $page = \Aimeos\Cms\Models\Page::where('tag', 'root')->firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 1 );
+        $this->expectsDatabaseQueryCount( 3 ); // page + elements + elements.files
         $response = $this->jsonApi()->expects( 'pages' )->get( "cms/pages/{$page->id}" );
 
         $response->assertFetchedOne( $page );
@@ -85,7 +85,7 @@ class JsonapiTest extends TestAbstract
             $expected[] = ['type' => 'navs', 'id' => $item->id];
         }
 
-        $this->expectsDatabaseQueryCount( 2 ); // page + ancestors
+        $this->expectsDatabaseQueryCount( 4 ); // page + ancestors + elements + elements.files
         $response = $this->jsonApi()->expects( 'pages' )->includePaths( 'ancestors' )->get( "cms/pages/{$page->id}" );
 
         $response->assertFetchedOne( $page )->assertIncluded( $expected );
@@ -104,7 +104,7 @@ class JsonapiTest extends TestAbstract
             $expected[] = ['type' => 'navs', 'id' => $item->id];
         }
 
-        $this->expectsDatabaseQueryCount( 2 ); // page + child pages
+        $this->expectsDatabaseQueryCount( 4 ); // page + child pages + elements + elements.files
         $response = $this->jsonApi()->expects( 'pages' )->includePaths( 'children' )->get( "cms/pages/{$page->id}" );
 
         $response->assertFetchedOne( $page )->assertIncluded( $expected );
@@ -123,7 +123,7 @@ class JsonapiTest extends TestAbstract
             $expected[] = ['type' => 'navs', 'id' => $item->id];
         }
 
-        $this->expectsDatabaseQueryCount( 3 );
+        $this->expectsDatabaseQueryCount( 5 ); // page + children + children.children + elements + elements.files
         $response = $this->jsonApi()->expects( 'pages' )->includePaths( 'children.children' )->get( "cms/pages/{$page->id}" );
 
         $response->assertStatus( 200 );
@@ -141,7 +141,7 @@ class JsonapiTest extends TestAbstract
             $expected[] = ['type' => 'navs', 'id' => $item->id];
         }
 
-        $this->expectsDatabaseQueryCount( 4 ); // page + ancestors + menu
+        $this->expectsDatabaseQueryCount( 6 ); // page + ancestors + disabled + menu + elements + elements.files
         $response = $this->jsonApi()->expects( 'pages' )->includePaths( 'menu' )->get( "cms/pages/{$page->id}" );
 
         $response->assertFetchedOne( $page )->assertIncluded( $expected );
@@ -160,7 +160,7 @@ class JsonapiTest extends TestAbstract
             $expected[] = ['type' => 'navs', 'id' => $item->id];
         }
 
-        $this->expectsDatabaseQueryCount( 5 ); // page + ancestors + menu + children
+        $this->expectsDatabaseQueryCount( 7 ); // page + ancestors + disabled + menu + children + elements + elements.files
         $response = $this->jsonApi()->expects( 'pages' )->includePaths( 'menu,menu.children' )->get( "cms/pages/{$page->id}" );
 
         $response->assertFetchedOne( $page )->assertIncluded( $expected );
@@ -179,7 +179,7 @@ class JsonapiTest extends TestAbstract
             $expected[] = ['type' => 'navs', 'id' => $item->id];
         }
 
-        $this->expectsDatabaseQueryCount( 7 ); // page + count + files + elements + elements.files + page subtree
+        $this->expectsDatabaseQueryCount( 7 ); // page + count + files + elements + elements.files + disabled + page subtree
         $response = $this->jsonApi()->expects( 'pages' )
             ->filter( ['domain' => 'mydomain.tld', 'path' => '', 'tag' => 'root'] )
             ->includePaths( 'subtree' )->get( "cms/pages" );
@@ -200,7 +200,7 @@ class JsonapiTest extends TestAbstract
             $expected[] = ['type' => 'navs', 'id' => $item->id];
         }
 
-        $this->expectsDatabaseQueryCount( 3 ); // page + page subtree
+        $this->expectsDatabaseQueryCount( 5 ); // page + disabled + page subtree + elements + elements.files
         $response = $this->jsonApi()->expects( 'pages' )->includePaths( 'subtree' )->get( "cms/pages/{$page->id}" );
 
         $response->assertFetchedOne( $page )->assertIncluded( $expected );
@@ -215,7 +215,7 @@ class JsonapiTest extends TestAbstract
         $page = \Aimeos\Cms\Models\Page::where('tag', 'article')->firstOrFail();
         $expected = $page->parent;
 
-        $this->expectsDatabaseQueryCount( 2 ); // page + parent page
+        $this->expectsDatabaseQueryCount( 4 ); // page + parent page + elements + elements.files
         $response = $this->jsonApi()->expects( 'pages' )->includePaths( 'parent' )->get( "cms/pages/{$page->id}" );
 
         $response->assertFetchedOne( $page )->assertIsIncluded( 'navs', $expected );

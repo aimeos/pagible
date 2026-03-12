@@ -152,7 +152,7 @@ class DemoSeeder
             ['id' => Utils::uid(), 'type' => 'heading', 'group' => 'main', 'data' => ['title' => $this->faker->sentence()]],
             ['id' => Utils::uid(), 'type' => 'image', 'group' => 'main', 'data' => ['image' => ['id' => $this->fileId, 'type' => 'file'], 'title' => $this->faker->sentence()]],
             ['id' => Utils::uid(), 'type' => 'paragraph', 'group' => 'main', 'data' => ['text' => $this->faker->paragraphs( 3, true )]],
-            ['type' => 'ref', 'id' => $this->elementId],
+            ['type' => 'reference', 'refid' => $this->elementId],
         ];
 
         $meta = $this->metaDescription();
@@ -180,8 +180,8 @@ class DemoSeeder
         ] );
 
         $version->files()->attach( $this->fileId );
+        $version->elements()->attach( $this->elementId );
         $page->forceFill( ['latest_id' => $version->id] )->saveQuietly();
-        $page->elements()->attach( $this->elementId );
         $page->publish( $version );
 
         return $page;
@@ -231,7 +231,7 @@ class DemoSeeder
             ['id' => Utils::uid(), 'type' => 'paragraph', 'group' => 'main', 'data' => ['text' => $this->faker->paragraphs( 3, true )]],
             ['id' => Utils::uid(), 'type' => 'paragraph', 'group' => 'main', 'data' => ['text' => $this->faker->paragraphs( 3, true )]],
             ['id' => Utils::uid(), 'type' => 'paragraph', 'group' => 'main', 'data' => ['text' => $this->faker->paragraphs( 3, true )]],
-            ['type' => 'ref', 'id' => $this->elementId],
+            ['type' => 'reference', 'refid' => $this->elementId],
         ];
 
         $meta = $this->metaDescription();
@@ -247,7 +247,6 @@ class DemoSeeder
 
         $page = Page::forceCreate( $data + ['content' => $content, 'meta' => $meta] );
         $page->appendToNode( $parent )->save();
-        $page->elements()->attach( $this->elementId );
 
         $version = $page->versions()->forceCreate( [
             'lang' => $lang,
@@ -258,6 +257,7 @@ class DemoSeeder
         ] );
 
         $version->files()->attach( $this->fileId );
+        $version->elements()->attach( $this->elementId );
         $page->forceFill( ['latest_id' => $version->id] )->saveQuietly();
         $page->publish( $version );
 
