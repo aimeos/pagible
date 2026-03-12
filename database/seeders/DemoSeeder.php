@@ -128,6 +128,22 @@ class DemoSeeder
 
 
     /**
+     * Generate a meta-tags structure with a realistic description
+     */
+    protected function metaDescription(): array
+    {
+        return [
+            'meta-tags' => [
+                'id' => Utils::uid(),
+                'type' => 'meta-tags',
+                'group' => 'basic',
+                'data' => ['description' => $this->faker->realText( 160 )],
+            ],
+        ];
+    }
+
+
+    /**
      * Create the root page for a language
      */
     protected function createRoot( string $lang ): Page
@@ -138,6 +154,8 @@ class DemoSeeder
             ['id' => Utils::uid(), 'type' => 'paragraph', 'group' => 'main', 'data' => ['text' => $this->faker->paragraphs( 3, true )]],
             ['type' => 'ref', 'id' => $this->elementId],
         ];
+
+        $meta = $this->metaDescription();
 
         $data = [
             'lang' => $lang,
@@ -150,13 +168,13 @@ class DemoSeeder
             'editor' => $this->editor,
         ];
 
-        $page = Page::forceCreate( $data + ['content' => $content] );
+        $page = Page::forceCreate( $data + ['content' => $content, 'meta' => $meta] );
         $page->makeRoot();
 
         $version = $page->versions()->forceCreate( [
             'lang' => $lang,
             'data' => $data,
-            'aux' => ['content' => $content],
+            'aux' => ['content' => $content, 'meta' => $meta],
             'published' => false,
             'editor' => $this->editor,
         ] );
@@ -216,6 +234,8 @@ class DemoSeeder
             ['type' => 'ref', 'id' => $this->elementId],
         ];
 
+        $meta = $this->metaDescription();
+
         $data = [
             'lang' => $lang,
             'name' => $name,
@@ -225,14 +245,14 @@ class DemoSeeder
             'editor' => $this->editor,
         ];
 
-        $page = Page::forceCreate( $data + ['content' => $content] );
+        $page = Page::forceCreate( $data + ['content' => $content, 'meta' => $meta] );
         $page->appendToNode( $parent )->save();
         $page->elements()->attach( $this->elementId );
 
         $version = $page->versions()->forceCreate( [
             'lang' => $lang,
             'data' => $data,
-            'aux' => ['content' => $content],
+            'aux' => ['content' => $content, 'meta' => $meta],
             'published' => false,
             'editor' => $this->editor,
         ] );
