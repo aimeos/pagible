@@ -21,7 +21,9 @@ class SitemapController extends Controller
             echo '<?xml version="1.0" encoding="UTF-8"?>';
             echo '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
 
-            Nav::withGlobalScope('status', new Status)->chunkById( 100, function( $pages ) {
+            Nav::withGlobalScope('status', new Status)
+                ->select( 'id', 'path', 'domain', 'to', 'updated_at' )
+                ->chunkById( 100, function( $pages ) {
 
                 foreach( $pages as $page )
                 {

@@ -160,7 +160,12 @@ class Page extends Model
      */
     public function ancestors() : AncestorsRelation
     {
-        return new AncestorsRelation( $this->newScopedQuery()->setModel( new Nav() )->defaultOrder(), $this );
+        $builder = $this->newScopedQuery()
+            ->select( 'id', 'parent_id', '_lft', '_rgt', 'depth', 'name', 'title', 'tag', 'path', 'domain', 'lang', 'to', 'status', 'config' )
+            ->setModel( new Nav() )
+            ->defaultOrder();
+
+        return new AncestorsRelation( $builder, $this );
     }
 
 
@@ -171,7 +176,10 @@ class Page extends Model
      */
     public function children() : HasMany
     {
-        return $this->hasMany( Nav::class, $this->getParentIdName() )->setModel( new Nav() )->defaultOrder();
+        return $this->hasMany( Nav::class, $this->getParentIdName() )
+            ->select( 'id', 'parent_id', '_lft', '_rgt', 'depth', 'name', 'title', 'tag', 'path', 'domain', 'lang', 'to', 'status', 'config' )
+            ->setModel( new Nav() )
+            ->defaultOrder();
     }
 
 
@@ -314,7 +322,7 @@ class Page extends Model
      */
     public function nav( $level = 0 ) : \Aimeos\Nestedset\Collection
     {
-        return $this->defaultOrder()->ancestorsAndSelf( $this->id ) // @phpstan-ignore-line property.notFound
+        return ( clone $this->ancestors )->push( $this ) // @phpstan-ignore-line property.notFound
             ->skip( $level )->first()
             ?->subtree?->toTree()
             ?? new \Aimeos\Nestedset\Collection();
@@ -340,7 +348,9 @@ class Page extends Model
      */
     public function parent() : BelongsTo
     {
-        return $this->belongsTo( Nav::class, $this->getParentIdName() )->setModel( new Nav() );
+        return $this->belongsTo( Nav::class, $this->getParentIdName() )
+            ->select( 'id', 'parent_id', '_lft', '_rgt', 'depth', 'name', 'title', 'tag', 'path', 'domain', 'lang', 'to', 'status', 'config' )
+            ->setModel( new Nav() );
     }
 
 
@@ -440,8 +450,11 @@ class Page extends Model
     public function subtree() : DescendantsRelation
     {
         // restrict maximum depth to three levels for performance reasons
+        $maxDepth = ( $this->depth ?? 0 ) + config( 'cms.navdepth', 2 );
+
         $builder = $this->newScopedQuery()
-            ->where( 'depth', '<=', ( $this->depth ?? 0 ) + config( 'cms.navdepth', 2 ) )
+            ->select( 'id', 'parent_id', '_lft', '_rgt', 'depth', 'name', 'title', 'tag', 'path', 'domain', 'lang', 'to', 'status', 'config' )
+            ->whereIn( 'depth', range( 0, $maxDepth ) )
             ->defaultOrder()
             ->setModel(new Nav());
 
@@ -455,6 +468,10 @@ class Page extends Model
                         ->where( 'parent.tenant_id', '=', \Aimeos\Cms\Tenancy::value() )
                         ->where( 'parent.status', 0 );
                 } );
+        }
+        else
+        {
+            $builder->with( 'latest' );
         }
 
         return new DescendantsRelation( $builder, $this );

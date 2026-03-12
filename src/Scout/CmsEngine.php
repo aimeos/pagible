@@ -153,7 +153,10 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
      */
     public function paginateUsingDatabase( Builder $builder, $perPage, $pageName, $page )
     {
-        return $this->buildSearchQuery( $builder )->paginate( $perPage, ['*'], $pageName, $page );
+        $query = $this->buildSearchQuery( $builder );
+        /** @var array<int, string> $columns */
+        $columns = $query->getQuery()->columns ?: ['*'];
+        return $query->paginate( $perPage, $columns, $pageName, $page );
     }
 
 
@@ -185,7 +188,10 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
      */
     public function simplePaginateUsingDatabase( Builder $builder, $perPage, $pageName, $page )
     {
-        return $this->buildSearchQuery( $builder )->simplePaginate( $perPage, ['*'], $pageName, $page );
+        $query = $this->buildSearchQuery( $builder );
+        /** @var array<int, string> $columns */
+        $columns = $query->getQuery()->columns ?: ['*'];
+        return $query->simplePaginate( $perPage, $columns, $pageName, $page );
     }
 
 
@@ -245,7 +251,9 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
     {
         return $this->initializeSearchQuery( $builder )
             ->when( !is_null( $builder->callback ), function( $query ) use ( $builder ) {
-                call_user_func( $builder->callback, $query, $builder, $builder->query ); // @phpstan-ignore argument.type
+                /** @var callable $cb */
+                $cb = $builder->callback;
+                call_user_func( $cb, $query, $builder, $builder->query );
             })
             ->when( !$builder->callback && !empty( $builder->wheres ), function ( $query ) use ( $builder ) {
                 foreach( $builder->wheres as $field => $value ) {
@@ -263,7 +271,9 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
                 }
             })
             ->when( !is_null( $builder->queryCallback ), function( $query ) use ( $builder ) {
-                call_user_func( $builder->queryCallback, $query ); // @phpstan-ignore argument.type
+                /** @var callable $cb */
+                $cb = $builder->queryCallback;
+                call_user_func( $cb, $query );
             })
             ->when( !empty( $builder->orders ), function ( $query ) use ( $builder ) {
                 $query->reorder();

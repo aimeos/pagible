@@ -262,9 +262,10 @@ class GraphqlPageTest extends TestAbstract
         $this->seed(CmsSeeder::class);
 
         $root = Page::where('tag', 'root')->firstOrFail();
+        $pages = Page::where('parent_id', $root->id)->defaultOrder()->get();
         $expected = [];
 
-        foreach ($root->children as $page) {
+        foreach ($pages as $page) {
             $expected[] = [
                 'id' => (string) $page->id,
                 'parent_id' => (string) $page->parent_id,
@@ -319,9 +320,9 @@ class GraphqlPageTest extends TestAbstract
             }
 
             // Assert JSON-like fields decoded from response
-            $this->assertEquals($root->children[$i]->meta, json_decode($actual['meta']));
-            $this->assertEquals($root->children[$i]->config, json_decode($actual['config']));
-            $this->assertEquals($root->children[$i]->content, json_decode($actual['content']));
+            $this->assertEquals($pages[$i]->meta, json_decode($actual['meta']));
+            $this->assertEquals($pages[$i]->config, json_decode($actual['config']));
+            $this->assertEquals($pages[$i]->content, json_decode($actual['content']));
         }
 
         // Assert paginator info
