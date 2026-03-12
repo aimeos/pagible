@@ -154,7 +154,7 @@ class DemoSeeder
             ['id' => Utils::uid(), 'type' => 'heading', 'group' => 'main', 'data' => ['title' => $this->faker->realTextBetween( 20, 80 ), 'level' => 1]],
             ['id' => Utils::uid(), 'type' => 'image', 'group' => 'main', 'data' => ['file' => ['id' => $fileId, 'type' => 'file']]],
             ['id' => Utils::uid(), 'type' => 'text', 'group' => 'main', 'data' => ['text' => $this->faker->realTextBetween( 200, 500 )]],
-            ['type' => 'reference', 'refid' => $this->elementId],
+            ['type' => 'reference', 'refid' => $this->elementId, 'group' => 'footer'],
         ];
 
         $meta = $this->metaDescription();
@@ -237,7 +237,7 @@ class DemoSeeder
             ['id' => Utils::uid(), 'type' => 'text', 'group' => 'main', 'data' => ['text' => $this->faker->realTextBetween( 200, 500 )]],
             ['id' => Utils::uid(), 'type' => 'text', 'group' => 'main', 'data' => ['text' => $this->faker->realTextBetween( 200, 500 )]],
             ['id' => Utils::uid(), 'type' => 'text', 'group' => 'main', 'data' => ['text' => $this->faker->realTextBetween( 200, 500 )]],
-            ['type' => 'reference', 'refid' => $this->elementId],
+            ['type' => 'reference', 'refid' => $this->elementId, 'group' => 'footer'],
         ];
 
         $title = trim( preg_replace( '/[^\p{L}\p{N} ]/u', '', $this->faker->realTextBetween( 20, 60 ) ) );
