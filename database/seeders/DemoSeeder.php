@@ -154,7 +154,7 @@ class DemoSeeder
             ['id' => Utils::uid(), 'type' => 'heading', 'group' => 'main', 'data' => ['title' => $this->faker->realTextBetween( 20, 80 ), 'level' => 1]],
             ['id' => Utils::uid(), 'type' => 'image', 'group' => 'main', 'data' => ['file' => ['id' => $fileId, 'type' => 'file']]],
             ['id' => Utils::uid(), 'type' => 'text', 'group' => 'main', 'data' => ['text' => $this->faker->realTextBetween( 200, 500 )]],
-            ['type' => 'ref', 'id' => $this->elementId, 'group' => 'footer'],
+            ['type' => 'reference', 'refid' => $this->elementId],
         ];
 
         $meta = $this->metaDescription();
@@ -182,8 +182,8 @@ class DemoSeeder
         ] );
 
         $version->files()->attach( $fileId );
+        $version->elements()->attach( $this->elementId );
         $page->forceFill( ['latest_id' => $version->id] )->saveQuietly();
-        $page->elements()->attach( $this->elementId );
         $page->publish( $version );
 
         return $page;
@@ -237,7 +237,7 @@ class DemoSeeder
             ['id' => Utils::uid(), 'type' => 'text', 'group' => 'main', 'data' => ['text' => $this->faker->realTextBetween( 200, 500 )]],
             ['id' => Utils::uid(), 'type' => 'text', 'group' => 'main', 'data' => ['text' => $this->faker->realTextBetween( 200, 500 )]],
             ['id' => Utils::uid(), 'type' => 'text', 'group' => 'main', 'data' => ['text' => $this->faker->realTextBetween( 200, 500 )]],
-            ['type' => 'ref', 'id' => $this->elementId, 'group' => 'footer'],
+            ['type' => 'reference', 'refid' => $this->elementId],
         ];
 
         $title = trim( preg_replace( '/[^\p{L}\p{N} ]/u', '', $this->faker->realTextBetween( 20, 60 ) ) );
@@ -254,7 +254,6 @@ class DemoSeeder
 
         $page = Page::forceCreate( $data + ['content' => $content, 'meta' => $meta] );
         $page->appendToNode( $parent )->save();
-        $page->elements()->attach( $this->elementId );
 
         $version = $page->versions()->forceCreate( [
             'lang' => $lang,
@@ -265,6 +264,7 @@ class DemoSeeder
         ] );
 
         $version->files()->attach( $fileId );
+        $version->elements()->attach( $this->elementId );
         $page->forceFill( ['latest_id' => $version->id] )->saveQuietly();
         $page->publish( $version );
 

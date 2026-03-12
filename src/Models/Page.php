@@ -460,14 +460,16 @@ class Page extends Model
 
         if( !\Aimeos\Cms\Permission::can( 'page:view', Auth::user() ) )
         {
-            $builder->whereNotExists( function( \Illuminate\Database\Query\Builder $builder ) {
-                    $builder->select( DB::raw( 1 ) )
-                        ->from( $this->getTable() . ' AS parent' )
-                        ->whereColumn( $this->qualifyColumn( '_lft' ), '>=', 'parent._lft' )
-                        ->whereColumn( $this->qualifyColumn( '_rgt' ), '<=', 'parent._rgt' )
-                        ->where( 'parent.tenant_id', '=', \Aimeos\Cms\Tenancy::value() )
-                        ->where( 'parent.status', 0 );
-                } );
+            $disabled = DB::table( $this->getTable() )
+                ->select( '_lft', '_rgt' )
+                ->where( 'tenant_id', '=', \Aimeos\Cms\Tenancy::value() )
+                ->where( 'status', 0 )
+                ->whereNull( 'deleted_at' )
+                ->get();
+
+            foreach( $disabled as $node ) {
+                $builder->whereNotBetween( $this->qualifyColumn( '_lft' ), [$node->_lft, $node->_rgt] );
+            }
         }
         else
         {

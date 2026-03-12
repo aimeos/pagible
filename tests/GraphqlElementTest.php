@@ -63,7 +63,7 @@ class GraphqlElementTest extends TestAbstract
             'id' => $element->id,
             'data' => $element->data,
             'bypages' => $element->bypages->map( fn( $item ) => ['id' => $item->id] )->all(),
-            'byversions' => $element->byversions->map( fn( $item ) => ['published' => $item->published] )->all(),
+            'byversions' => $element->byversions->map( fn( $item ) => ['id' => $item->id] )->all(),
             'versions' => $element->versions->map( fn( $item ) => ['published' => $item->published] )->all(),
             'created_at' => (string) $element->created_at,
             'updated_at' => (string) $element->updated_at,
