@@ -401,7 +401,7 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
             return;
         }
 
-        $terms = implode( ' AND ', array_map( fn( $w ) => '"' . $w . '" *', $words ) );
+        $terms = implode( ' AND ', array_map( fn( $w ) => '"' . $w . '"*', $words ) );
 
         $sub->selectRaw( 'indexable_id, latest, -rank AS relevance' )
             ->whereRaw( 'cms_index MATCH ?', [$terms] );

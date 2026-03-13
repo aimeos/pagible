@@ -43,8 +43,14 @@ class Demo extends Command
             return 1;
         }
 
-        $this->setupTenant();
+        if( $tenant = $this->option( 'tenant' ) )
+        {
+            \Aimeos\Cms\Tenancy::$callback = function() use ( $tenant ) {
+                return $tenant;
+            };
+        }
 
+        $seeder = new DemoSeeder();
         $langs = (array) $this->option( 'lang' ) ?: ['en'];
         $domain = (string) ($this->option( 'domain' ) ?: ''); // @phpstan-ignore cast.string
         $editor = (string) $this->option( 'editor' ); // @phpstan-ignore cast.string
@@ -52,30 +58,16 @@ class Demo extends Command
         foreach( $langs as $lang )
         {
             $this->info( "Creating demo data for language: {$lang}" );
-            ( new DemoSeeder() )->run( (string) $lang, $domain, $editor );
+            $seeder->run( (string) $lang, $domain, $editor );
         }
 
-        $this->info( 'Indexing for search...' );
-        Page::query()->chunk( 1000, fn( $pages ) => $pages->searchable() ); // @phpstan-ignore method.notFound
-        Element::query()->chunk( 1000, fn( $elements ) => $elements->searchable() ); // @phpstan-ignore method.notFound
-        File::query()->chunk( 1000, fn( $files ) => $files->searchable() ); // @phpstan-ignore method.notFound
+        $this->info( 'Indexing ...' );
+        Page::makeAllSearchable();
+        Element::makeAllSearchable();
+        File::makeAllSearchable();
 
         $this->info( 'Done!' );
 
         return 0;
-    }
-
-
-    /**
-     * Set up tenant if provided
-     */
-    protected function setupTenant(): void
-    {
-        if( $tenant = $this->option( 'tenant' ) )
-        {
-            \Aimeos\Cms\Tenancy::$callback = function() use ( $tenant ) {
-                return $tenant;
-            };
-        }
     }
 }
