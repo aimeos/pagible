@@ -481,7 +481,7 @@ class GraphqlPageTest extends TestAbstract
             'config' => ['test' => ['type' => 'test', 'data' => ['key' => 'value']]],
             'content' => [
                 ['type' => 'heading', 'data' => ['title' => 'Welcome to Laravel CMS']],
-                ['type' => 'reference', 'refid' => $element->id ],
+                ['type' => 'reference', 'refid' => $element->id, 'group' => 'footer'],
             ],
         ];
         $this->assertEquals($expectedAux, json_decode($version['aux'], true));
@@ -947,7 +947,7 @@ class GraphqlPageTest extends TestAbstract
             'config' => ['test' => ['type' => 'test', 'data' => ['key' => 'value']]],
             'content' => [
                 ['type' => 'heading', 'data' => ['title' => 'Welcome to Laravel CMS']],
-                ['type' => 'reference', 'refid' => $element->id],
+                ['type' => 'reference', 'refid' => $element->id, 'group' => 'footer'],
             ],
         ];
         $this->assertEquals($expectedPublishedAux, json_decode($savePage['published']['aux'] ?? null, true));
