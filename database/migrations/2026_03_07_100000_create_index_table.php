@@ -64,6 +64,8 @@ return new class extends Migration
                 $db->statement('CREATE FULLTEXT INDEX ON cms_index(content) KEY INDEX pk_cms_index ON cms_index_catalog');
             }
         }
+
+        $schema->dropIfExists('cms_page_search');
     }
 
 
