@@ -1,4 +1,4 @@
-@pushOnce('css')
+@pushOnce('js')
 <link href="{{ cmsasset('vendor/cms/theme/questions.css') }}" rel="stylesheet">
 @endPushOnce
 

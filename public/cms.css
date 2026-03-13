@@ -156,7 +156,7 @@ header nav details summary::-webkit-details-marker {
 header nav details summary::after {
     display: block;
     float: right;
-    width: 1rem;
+    width: 1.5rem;
     height: calc(1rem * var(--pico-line-height, 1.5));
     transform: rotate(0) translateX(.2rem);
     background-image: var(--pico-icon-chevron);
@@ -192,6 +192,13 @@ header nav .brand img {
     height: 60px;
     padding: 0;
     margin: 0;
+}
+
+header nav .menu {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    max-width: 100%;
 }
 
 header nav .menu-open,

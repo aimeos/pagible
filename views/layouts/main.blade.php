@@ -19,6 +19,10 @@
 
         <title>{{ cms($page, 'title') }}</title>
 
+        @unless(collect(cms($page, 'meta', []))->contains('type', 'canonical'))
+            <link rel="canonical" href="{{ cmsroute($page) }}" />
+        @endunless
+
         @foreach(cms($page, 'meta', []) as $item)
             @includeFirst(cmsviews($page, $item), cmsdata($page, $item))
         @endforeach
@@ -30,10 +34,7 @@
             @endif
         @endforeach
 
-        <link href="{{ cmsasset('vendor/cms/theme/pico.min.css') }}" rel="stylesheet">
-        <link href="{{ cmsasset('vendor/cms/theme/pico.nav.min.css') }}" rel="stylesheet">
-        <link href="{{ cmsasset('vendor/cms/theme/pico.modal.min.css') }}" rel="stylesheet">
-        <link href="{{ cmsasset('vendor/cms/theme/pico.dropdown.min.css') }}" rel="stylesheet">
+        <link href="{{ cmsasset('vendor/cms/theme/pico.css') }}" rel="stylesheet">
         <link href="{{ cmsasset('vendor/cms/theme/cms.css') }}" rel="stylesheet">
         @stack('css')
 
@@ -163,11 +164,13 @@
             </nav>
         @endif
 
-        @yield('main')
+        <main>
+            @yield('main')
+        </main>
         @yield('footer')
 
 
-        <script src="{{ cmsasset('vendor/cms/theme/cms.js') }}"></script>
+        <script defer src="{{ cmsasset('vendor/cms/theme/cms.js') }}"></script>
         @stack('js')
 
         @foreach($page->ancestors ? (clone $page->ancestors)->push($page) : [$page] as $navItem)

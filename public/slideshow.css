@@ -83,6 +83,16 @@
 	display: block;
 }
 
+.slider-container picture {
+	display: block;
+}
+
+.slider-container img {
+	width: 100%;
+	height: auto;
+	object-fit: cover;
+}
+
 .slider-item-ratio .slider-container>* {
 	display: flex;
 	align-items: center;
