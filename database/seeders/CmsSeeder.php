@@ -173,7 +173,7 @@ class CmsSeeder extends Seeder
             'config' => ['test' => ['type' => 'test', 'data' => ['key' => 'value']]],
             'content' => [
                 ['type' => 'heading', 'data' => ['title' => 'Welcome to Laravel CMS']],
-                ['type' => 'reference', 'refid' => $elementId]
+                ['type' => 'reference', 'refid' => $elementId, 'group' => 'footer']
             ],
         ]);
         $version = $page->versions()->forceCreate([
@@ -196,7 +196,7 @@ class CmsSeeder extends Seeder
                 'config' => ['test' => ['type' => 'test', 'data' => ['key' => 'value']]],
                 'content' => [
                     ['type' => 'heading', 'data' => ['title' => 'Welcome to Laravel CMS']],
-                    ['type' => 'reference', 'refid' => $elementId]
+                    ['type' => 'reference', 'refid' => $elementId, 'group' => 'footer']
                 ],
             ],
             'published' => true,
@@ -223,7 +223,7 @@ class CmsSeeder extends Seeder
             'editor' => 'seeder',
             'content' => [
                 ['type' => 'blog', 'data' => ['text' => 'Blog example']],
-                ['type' => 'reference', 'refid' => $elementId]
+                ['type' => 'reference', 'refid' => $elementId, 'group' => 'footer']
             ],
         ]);
         $page->appendToNode( $home )->save();
@@ -241,7 +241,7 @@ class CmsSeeder extends Seeder
             'aux' => [
                 'content' => [
                     ['type' => 'blog', 'data' => ['text' => 'Blog example']],
-                    ['type' => 'reference', 'refid' => $elementId]
+                    ['type' => 'reference', 'refid' => $elementId, 'group' => 'footer']
                 ],
             ],
             'published' => true,
@@ -285,7 +285,7 @@ mutation {
 }
 ```'            ],
             ],
-            ['type' => 'reference', 'refid' => $elementId],
+            ['type' => 'reference', 'refid' => $elementId, 'group' => 'footer'],
         ];
 
         $data = [
@@ -345,7 +345,7 @@ This is content created using [markdown syntax](https://www.markdownguide.org/ba
                     'text' => 'Test image'
                 ]
             ], [
-                'type' => 'reference', 'refid' => $elementId
+                'type' => 'reference', 'refid' => $elementId, 'group' => 'footer'
             ]]
         ]);
         $page->appendToNode( $home )->save();
@@ -374,7 +374,7 @@ This is content created using [markdown syntax](https://www.markdownguide.org/ba
                         'text' => 'Test image'
                     ]
                 ], [
-                    'type' => 'reference', 'refid' => $elementId
+                    'type' => 'reference', 'refid' => $elementId, 'group' => 'footer'
                 ]]
             ],
             'published' => true,
