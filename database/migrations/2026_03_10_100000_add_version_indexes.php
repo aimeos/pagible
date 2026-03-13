@@ -93,12 +93,22 @@ return new class extends Migration
 
         // Drop unused indexes from cms_pages
         $schema->table('cms_pages', function (Blueprint $table) {
-            $table->dropIndex(['theme', 'tenant_id']);
-            $table->dropIndex(['cache', 'tenant_id']);
-            $table->dropIndex(['to', 'tenant_id']);
-            $table->dropIndex(['editor', 'tenant_id']);
-            $table->dropIndex(['name', 'tenant_id']);
-            $table->dropIndex(['related_id', 'tenant_id']);
+            $indexes = Schema::getIndexes('cms_pages');
+            $names = array_column($indexes, 'name');
+
+            !in_array('cms_pages_new_theme_tenant_id_index', $names) ?: $table->dropIndex('cms_pages_new_theme_tenant_id_index');
+            !in_array('cms_pages_new_cache_tenant_id_index', $names) ?: $table->dropIndex('cms_pages_new_cache_tenant_id_index');
+            !in_array('cms_pages_new_to_tenant_id_index', $names) ?: $table->dropIndex('cms_pages_new_to_tenant_id_index');
+            !in_array('cms_pages_new_editor_tenant_id_index', $names) ?: $table->dropIndex('cms_pages_new_editor_tenant_id_index');
+            !in_array('cms_pages_new_name_tenant_id_index', $names) ?: $table->dropIndex('cms_pages_new_name_tenant_id_index');
+            !in_array('cms_pages_new_related_id_tenant_id_index', $names) ?: $table->dropIndex('cms_pages_new_related_id_tenant_id_index');
+
+            !in_array('cms_pages_theme_tenant_id_index', $names) ?: $table->dropIndex('cms_pages_theme_tenant_id_index');
+            !in_array('cms_pages_cache_tenant_id_index', $names) ?: $table->dropIndex('cms_pages_cache_tenant_id_index');
+            !in_array('cms_pages_to_tenant_id_index', $names) ?: $table->dropIndex('cms_pages_to_tenant_id_index');
+            !in_array('cms_pages_editor_tenant_id_index', $names) ?: $table->dropIndex('cms_pages_editor_tenant_id_index');
+            !in_array('cms_pages_name_tenant_id_index', $names) ?: $table->dropIndex('cms_pages_name_tenant_id_index');
+            !in_array('cms_pages_related_id_tenant_id_index', $names) ?: $table->dropIndex('cms_pages_related_id_tenant_id_index');
         });
 
         // Drop unused indexes from cms_elements
