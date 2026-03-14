@@ -44,22 +44,11 @@ function PagibleSearch() {
         format(text, term) {
             const words = term
                 .split(" ")
-                .filter(v => v.length > 2)
-                .map(v => v.replace(/[.*+?^$<>{}()|[\]\\]/g, ''));
-
-            text = text.replace(/[.*+?^$<>{}()|[\]\\]/g, '');
+                .filter(v => v.length > 2);
 
             if (!words.length) {
                 return text;
             }
-
-            const regex = new RegExp(`(${words.join("|")})`, "i");
-            const match = text.match(regex);
-
-            const start = match?.index > 30 ? text.indexOf(' ', match.index - 30) : 0;
-            const end = text.indexOf(' ', Math.min(start + 110, text.length));
-
-            text = text.substring(Math.max(start, 0), end > 0 ? end : text.length);
 
             return text.replace(new RegExp(`(${words.join("|")})`, "gi"), '<b>$1</b>');
         },
