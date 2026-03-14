@@ -46,6 +46,17 @@ class Nav extends Page
 
 
     /**
+     * Returns the text content of the page.
+     *
+     * @return string Text content
+     */
+    public function __toString() : string
+    {
+        return trim( ( $this->name ?? '' ) . "\n" . ( $this->title ?? '' ) );
+    }
+
+
+    /**
      * Returns the name of the used morph class.
      *
      * @return string Class name
