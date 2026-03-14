@@ -13,6 +13,10 @@ use Aimeos\Cms\Models\Element;
 use Database\Seeders\CmsSeeder;
 use Illuminate\Foundation\Auth\User;
 use Illuminate\Support\Facades\DB;
+use Aimeos\Prisma\Prisma;
+use Aimeos\Prisma\Responses\TextResponse;
+use Prism\Prism\Facades\Prism;
+use Prism\Prism\Testing\TextResponseFake;
 
 
 class CommandTest extends TestAbstract
@@ -39,6 +43,38 @@ class CommandTest extends TestAbstract
             'en' => 'Test file description',
             'de' => 'Beschreibung der Testdatei',
         ], File::where( 'mime', 'image/jpeg' )->firstOrFail()?->description );
+    }
+
+
+    public function testDescription(): void
+    {
+        $this->seed( CmsSeeder::class );
+
+        Prism::fake( [
+            TextResponseFake::make()->withText( 'Generated meta description' ),
+            TextResponseFake::make()->withText( 'Generated meta description' ),
+            TextResponseFake::make()->withText( 'Generated meta description' ),
+            TextResponseFake::make()->withText( 'Generated meta description' ),
+            TextResponseFake::make()->withText( 'Generated meta description' ),
+            TextResponseFake::make()->withText( 'Generated meta description' ),
+        ] );
+
+        File::forceCreate( [
+            'mime' => 'image/png',
+            'name' => 'No description',
+            'path' => 'https://picsum.photos/id/1/100/100',
+            'editor' => 'test',
+        ] );
+
+        Prisma::fake( [TextResponse::fromText( 'Generated file description' )] );
+
+        $this->artisan( 'cms:description' )->assertExitCode( 0 );
+
+        $page = Page::where( 'path', '' )->firstOrFail();
+        $this->assertEquals( 'Generated meta description', $page->meta->{'meta-tags'}->data->description ?? '' );
+
+        $file = File::where( 'name', 'No description' )->firstOrFail();
+        $this->assertEquals( 'Generated file description', $file->description->en ?? '' );
     }
 
 
