@@ -102,7 +102,7 @@ class Description extends Command
         $model = config( 'cms.ai.describe.model' );
         $config = config( 'cms.ai.describe', [] );
 
-        File::where( 'description', '{}' )
+        File::whereRaw( "CAST(description AS CHAR(2)) = '{}'" )
             ->where( function( $query ) {
                 $query->where( 'mime', 'like', 'audio/%' )
                     ->orWhere( 'mime', 'like', 'image/%' )
