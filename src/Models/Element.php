@@ -97,6 +97,31 @@ class Element extends Model
 
 
     /**
+     * Returns the text content of the element.
+     *
+     * @return string Text content
+     */
+    public function __toString() : string
+    {
+        $content = ( $this->name ?? '' ) . "\n";
+        $config = config( 'cms.schemas.content', [] );
+        $fields = (array) ( $config[@$this->data->type]['fields'] ?? [] );
+
+        foreach( (array) ( $this->data->data ?? [] ) as $name => $value )
+        {
+            if( is_string( $value ) && isset( $fields[$name] )
+                && ( $fields[$name]['searchable'] ?? true )
+                && in_array( $fields[$name]['type'], ['markdown', 'plaintext', 'string', 'text'] )
+            ) {
+                $content .= $value . "\n";
+            }
+        }
+
+        return trim( $content );
+    }
+
+
+    /**
      * Get the pages the element is referenced by.
      *
      * @return BelongsToMany<Page, $this> Eloquent relationship to the pages
@@ -290,12 +315,10 @@ class Element extends Model
         }
 
         $rows = [];
-        $config = config( 'cms.schemas.content', [] );
 
         if( $version = $this->latest )
         {
-            $data = $version->data ?? new \stdClass();
-            $content = trim( ( $data->name ?? '' ) . "\n" . $this->toSearchContent( $data, $config ) );
+            $content = (string) $version;
 
             if( !empty( $content ) ) {
                 $rows[] = ['latest' => true, 'content' => $content];
@@ -304,7 +327,7 @@ class Element extends Model
 
         if( !$this->trashed() )
         {
-            $content = trim( $this->name . "\n" . $this->toSearchContent( $this->data, $config ) );
+            $content = (string) $this;
 
             if( !empty( $content ) ) {
                 $rows[] = ['latest' => false, 'content' => $content];
@@ -347,31 +370,5 @@ class Element extends Model
         Version::where( 'versionable_id', $this->id )
             ->where( 'versionable_type', Element::class )
             ->delete();
-    }
-
-
-    /**
-     * Extract searchable text from element data.
-     *
-     * @param \stdClass $data Element data object
-     * @param array<string, mixed> $config Content schema config
-     * @return string Searchable text
-     */
-    protected function toSearchContent( \stdClass $data, array $config ) : string
-    {
-        $content = '';
-        $fields = (array) ( $config[@$data->type]['fields'] ?? [] );
-
-        foreach( (array) ( $data->data ?? [] ) as $name => $value )
-        {
-            if( is_string( $value ) && isset( $fields[$name] )
-                && ( $fields[$name]['searchable'] ?? true )
-                && in_array( $fields[$name]['type'], ['markdown', 'plaintext', 'string', 'text'] )
-            ) {
-                $content .= $value . "\n";
-            }
-        }
-
-        return $content;
     }
 }

@@ -124,6 +124,27 @@ class File extends Model
 
 
     /**
+     * Returns the text content of the file.
+     *
+     * @return string Text content
+     */
+    public function __toString() : string
+    {
+        $content = ( $this->name ?? '' ) . "\n";
+
+        foreach( (array) $this->description as $lang => $value ) {
+            $content .= $lang . ":\n" . $value . "\n";
+        }
+
+        foreach( (array) $this->transcription as $lang => $value ) {
+            $content .= $lang . ":\n" . $value . "\n";
+        }
+
+        return trim( $content );
+    }
+
+
+    /**
      * Adds the uploaded file to the storage and returns the path to it
      *
      * @param UploadedFile $upload File upload
@@ -485,10 +506,7 @@ class File extends Model
 
         if( $version = $this->latest )
         {
-            $data = $version->data ?? new \stdClass();
-            $content = trim( ( $data->name ?? '' ) . "\n"
-                . implode( "\n", (array) ( $data->description ?? [] ) ) . "\n"
-                . implode( "\n", (array) ( $data->transcription ?? [] ) ) );
+            $content = (string) $version;
 
             if( !empty( $content ) ) {
                 $rows[] = ['latest' => true, 'content' => $content];
@@ -497,9 +515,7 @@ class File extends Model
 
         if( !$this->trashed() )
         {
-            $content = trim( $this->name . "\n"
-                . implode( "\n", (array) $this->description ) . "\n"
-                . implode( "\n", (array) $this->transcription ) );
+            $content = (string) $this;
 
             if( !empty( $content ) ) {
                 $rows[] = ['latest' => false, 'content' => $content];

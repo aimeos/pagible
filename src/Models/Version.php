@@ -92,6 +92,57 @@ class Version extends Model
 
 
     /**
+     * Returns the text content of the version.
+     *
+     * @return string Text content
+     */
+    public function __toString() : string
+    {
+        $data = $this->data ?? new \stdClass();
+        $content = ( $data->tag ?? '' ) . "\n"
+            . ( $data->name ?? '' ) . "\n"
+            . ( $data->title ?? '' ) . "\n"
+            . ( $this->aux->meta->{'meta-tags'}->data->description ?? '' ) . "\n";
+
+        foreach( (array) ( $data->description ?? [] ) as $lang => $value ) {
+            $content .= $lang . ":\n" . $value . "\n";
+        }
+
+        foreach( (array) ( $data->transcription ?? [] ) as $lang => $value ) {
+            $content .= $lang . ":\n" . $value . "\n";
+        }
+
+        $config = config( 'cms.schemas.content', [] );
+        $items = collect( (array) ( $this->aux->content ?? [] ) );
+
+        if( $items->isNotEmpty() ) {
+            $items = $items->merge( $this->elements );
+        }
+
+        foreach( $items->push( $data ) as $el )
+        {
+            $fields = (array) ( $config[@$el->type]['fields'] ?? [] );
+
+            if( empty( $fields ) ) {
+                continue;
+            }
+
+            foreach( (array) ( $el->data ?? [] ) as $name => $value )
+            {
+                if( is_string( $value ) && isset( $fields[$name] )
+                    && ( $fields[$name]['searchable'] ?? true )
+                    && in_array( $fields[$name]['type'], ['markdown', 'plaintext', 'string', 'text'] )
+                ) {
+                    $content .= $value . "\n";
+                }
+            }
+        }
+
+        return trim( $content );
+    }
+
+
+    /**
      * Get the shared element attached to the version.
      *
      * @return BelongsToMany<Element, $this>
