@@ -1,5 +1,5 @@
 @pushOnce('js')
-<link href="{{ cmsasset('vendor/cms/theme/article.css') }}" rel="stylesheet">
+<link rel="preload" href="{{ cmsasset('vendor/cms/theme/article.css') }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
 @endPushOnce
 
 <h1 class="title">{{ cms($page, 'title') }}</h1>
