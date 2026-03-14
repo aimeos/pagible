@@ -66,6 +66,8 @@ return new class extends Migration
         }
 
         $schema->dropIfExists('cms_page_search');
+
+        Artisan::call('cms:index');
     }
 
 

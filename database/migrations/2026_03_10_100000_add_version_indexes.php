@@ -55,19 +55,19 @@ return new class extends Migration
                 $table->index('data_mime');
             });
 
-            $db->statement('CREATE INDEX idx_versions_tenant_type_domain_path ON cms_versions (tenant_id, versionable_type, data_domain(200), data_path(255))');
+            $db->statement('CREATE INDEX cms_versions_tenant_id_versionable_type_data_domain_data_path_index ON cms_versions (tenant_id, versionable_type, data_domain(200), data_path(255))');
         }
         elseif( $driver === 'pgsql' )
         {
-            $db->statement("CREATE INDEX idx_versions_data_type ON cms_versions ((data->>'type'))");
-            $db->statement("CREATE INDEX idx_versions_data_path ON cms_versions ((data->>'path'))");
-            $db->statement("CREATE INDEX idx_versions_data_domain ON cms_versions ((data->>'domain'))");
-            $db->statement("CREATE INDEX idx_versions_data_tag ON cms_versions ((data->>'tag'))");
-            $db->statement("CREATE INDEX idx_versions_data_theme ON cms_versions ((data->>'theme'))");
-            $db->statement("CREATE INDEX idx_versions_data_status ON cms_versions (((data->>'status')::smallint))");
-            $db->statement("CREATE INDEX idx_versions_data_cache ON cms_versions (((data->>'cache')::smallint))");
-            $db->statement("CREATE INDEX idx_versions_data_mime ON cms_versions ((data->>'mime'))");
-            $db->statement("CREATE INDEX idx_versions_tenant_type_domain_path ON cms_versions (tenant_id, versionable_type, (data->>'domain'), (data->>'path'))");
+            $db->statement("CREATE INDEX cms_versions_data_type_index ON cms_versions ((data->>'type'))");
+            $db->statement("CREATE INDEX cms_versions_data_path_index ON cms_versions ((data->>'path'))");
+            $db->statement("CREATE INDEX cms_versions_data_domain_index ON cms_versions ((data->>'domain'))");
+            $db->statement("CREATE INDEX cms_versions_data_tag_index ON cms_versions ((data->>'tag'))");
+            $db->statement("CREATE INDEX cms_versions_data_theme_index ON cms_versions ((data->>'theme'))");
+            $db->statement("CREATE INDEX cms_versions_data_status_index ON cms_versions (((data->>'status')::smallint))");
+            $db->statement("CREATE INDEX cms_versions_data_cache_index ON cms_versions (((data->>'cache')::smallint))");
+            $db->statement("CREATE INDEX cms_versions_data_mime_index ON cms_versions ((data->>'mime'))");
+            $db->statement("CREATE INDEX cms_versions_tenant_id_versionable_type_data_domain_data_path_index ON cms_versions (tenant_id, versionable_type, (data->>'domain'), (data->>'path'))");
         }
         elseif( $driver === 'sqlsrv' )
         {
@@ -80,15 +80,15 @@ return new class extends Migration
             $db->statement("ALTER TABLE cms_versions ADD data_cache AS CAST(JSON_VALUE(data, '$.cache') AS SMALLINT)");
             $db->statement("ALTER TABLE cms_versions ADD data_mime AS CAST(JSON_VALUE(data, '$.mime') AS VARCHAR(100))");
 
-            $db->statement('CREATE INDEX idx_versions_data_type ON cms_versions (data_type)');
-            $db->statement('CREATE INDEX idx_versions_data_path ON cms_versions (data_path)');
-            $db->statement('CREATE INDEX idx_versions_data_domain ON cms_versions (data_domain)');
-            $db->statement('CREATE INDEX idx_versions_data_tag ON cms_versions (data_tag)');
-            $db->statement('CREATE INDEX idx_versions_data_theme ON cms_versions (data_theme)');
-            $db->statement('CREATE INDEX idx_versions_data_status ON cms_versions (data_status)');
-            $db->statement('CREATE INDEX idx_versions_data_cache ON cms_versions (data_cache)');
-            $db->statement('CREATE INDEX idx_versions_data_mime ON cms_versions (data_mime)');
-            $db->statement('CREATE INDEX idx_versions_tenant_type_domain_path ON cms_versions (tenant_id, versionable_type, data_domain, data_path)');
+            $db->statement('CREATE INDEX cms_versions_data_type_index ON cms_versions (data_type)');
+            $db->statement('CREATE INDEX cms_versions_data_path_index ON cms_versions (data_path)');
+            $db->statement('CREATE INDEX cms_versions_data_domain_index ON cms_versions (data_domain)');
+            $db->statement('CREATE INDEX cms_versions_data_tag_index ON cms_versions (data_tag)');
+            $db->statement('CREATE INDEX cms_versions_data_theme_index ON cms_versions (data_theme)');
+            $db->statement('CREATE INDEX cms_versions_data_status_index ON cms_versions (data_status)');
+            $db->statement('CREATE INDEX cms_versions_data_cache_index ON cms_versions (data_cache)');
+            $db->statement('CREATE INDEX cms_versions_data_mime_index ON cms_versions (data_mime)');
+            $db->statement('CREATE INDEX cms_versions_tenant_id_versionable_type_data_domain_data_path_index ON cms_versions (tenant_id, versionable_type, data_domain, data_path)');
         }
 
         // Drop unused indexes from cms_pages
@@ -109,6 +109,61 @@ return new class extends Migration
             !in_array('cms_pages_editor_tenant_id_index', $names) ?: $table->dropIndex('cms_pages_editor_tenant_id_index');
             !in_array('cms_pages_name_tenant_id_index', $names) ?: $table->dropIndex('cms_pages_name_tenant_id_index');
             !in_array('cms_pages_related_id_tenant_id_index', $names) ?: $table->dropIndex('cms_pages_related_id_tenant_id_index');
+
+            if( in_array('cms_pages_new_path_domain_tenant_id_unique', $names) ) {
+                $table->dropUnique('cms_pages_new_path_domain_tenant_id_unique');
+                $table->unique(['path', 'domain', 'tenant_id']);
+            }
+
+            if( in_array('cms_pages_new__lft__rgt_parent_id_index', $names) ) {
+                $table->dropIndex('cms_pages_new__lft__rgt_parent_id_index');
+                $table->index(['_lft', '_rgt', 'parent_id', 'tenant_id']);
+            }
+
+            if( in_array('cms_pages_new__lft__rgt_tenant_id_status_index', $names) ) {
+                $table->dropIndex('cms_pages_new__lft__rgt_tenant_id_status_index');
+                $table->index(['_lft', '_rgt', 'tenant_id', 'status']);
+            }
+
+            if( in_array('cms_pages_new_tag_lang_tenant_id_status_index', $names) ) {
+                $table->dropIndex('cms_pages_new_tag_lang_tenant_id_status_index');
+                $table->index(['tag', 'lang', 'tenant_id', 'status']);
+            }
+
+            if( in_array('cms_pages_new_lang_tenant_id_status_index', $names) ) {
+                $table->dropIndex('cms_pages_new_lang_tenant_id_status_index');
+                $table->index(['lang', 'tenant_id', 'status']);
+            }
+
+            if( in_array('cms_pages_new_parent_id_tenant_id_index', $names) ) {
+                $table->dropIndex('cms_pages_new_parent_id_tenant_id_index');
+                $table->index(['parent_id', 'tenant_id']);
+            }
+
+            if( in_array('cms_pages_new_domain_tenant_id_index', $names) ) {
+                $table->dropIndex('cms_pages_new_domain_tenant_id_index');
+                $table->index(['domain', 'tenant_id']);
+            }
+
+            if( in_array('cms_pages_new_title_tenant_id_index', $names) ) {
+                $table->dropIndex('cms_pages_new_title_tenant_id_index');
+                $table->index(['title', 'tenant_id']);
+            }
+
+            if( in_array('cms_pages_new_type_tenant_id_index', $names) ) {
+                $table->dropIndex('cms_pages_new_type_tenant_id_index');
+                $table->index(['type', 'tenant_id']);
+            }
+
+            if( in_array('cms_pages_new_deleted_at_index', $names) ) {
+                $table->dropIndex('cms_pages_new_deleted_at_index');
+                $table->index(['deleted_at']);
+            }
+
+            if( in_array('cms_pages_new_parent_id_index', $names) ) {
+                $table->dropIndex('cms_pages_new_parent_id_index');
+                $table->index(['parent_id']);
+            }
         });
 
         // Drop unused indexes from cms_elements
@@ -162,7 +217,7 @@ return new class extends Migration
         // Drop JSON path indexes and generated columns
         if( in_array($driver, ['mysql', 'mariadb']) )
         {
-            $db->statement('DROP INDEX idx_versions_tenant_type_domain_path ON cms_versions');
+            $db->statement('DROP INDEX cms_versions_tenant_id_versionable_type_data_domain_data_path_index ON cms_versions');
 
             $schema->table('cms_versions', function (Blueprint $table) {
                 $table->dropIndex(['data_type']);
@@ -178,27 +233,27 @@ return new class extends Migration
         }
         elseif( $driver === 'pgsql' )
         {
-            $db->statement('DROP INDEX IF EXISTS idx_versions_tenant_type_domain_path');
-            $db->statement('DROP INDEX IF EXISTS idx_versions_data_type');
-            $db->statement('DROP INDEX IF EXISTS idx_versions_data_path');
-            $db->statement('DROP INDEX IF EXISTS idx_versions_data_domain');
-            $db->statement('DROP INDEX IF EXISTS idx_versions_data_tag');
-            $db->statement('DROP INDEX IF EXISTS idx_versions_data_theme');
-            $db->statement('DROP INDEX IF EXISTS idx_versions_data_status');
-            $db->statement('DROP INDEX IF EXISTS idx_versions_data_cache');
-            $db->statement('DROP INDEX IF EXISTS idx_versions_data_mime');
+            $db->statement('DROP INDEX IF EXISTS cms_versions_tenant_id_versionable_type_data_domain_data_path_index');
+            $db->statement('DROP INDEX IF EXISTS cms_versions_data_type_index');
+            $db->statement('DROP INDEX IF EXISTS cms_versions_data_path_index');
+            $db->statement('DROP INDEX IF EXISTS cms_versions_data_domain_index');
+            $db->statement('DROP INDEX IF EXISTS cms_versions_data_tag_index');
+            $db->statement('DROP INDEX IF EXISTS cms_versions_data_theme_index');
+            $db->statement('DROP INDEX IF EXISTS cms_versions_data_status_index');
+            $db->statement('DROP INDEX IF EXISTS cms_versions_data_cache_index');
+            $db->statement('DROP INDEX IF EXISTS cms_versions_data_mime_index');
         }
         elseif( $driver === 'sqlsrv' )
         {
-            $db->statement('DROP INDEX IF EXISTS idx_versions_tenant_type_domain_path ON cms_versions');
-            $db->statement('DROP INDEX IF EXISTS idx_versions_data_type ON cms_versions');
-            $db->statement('DROP INDEX IF EXISTS idx_versions_data_path ON cms_versions');
-            $db->statement('DROP INDEX IF EXISTS idx_versions_data_domain ON cms_versions');
-            $db->statement('DROP INDEX IF EXISTS idx_versions_data_tag ON cms_versions');
-            $db->statement('DROP INDEX IF EXISTS idx_versions_data_theme ON cms_versions');
-            $db->statement('DROP INDEX IF EXISTS idx_versions_data_status ON cms_versions');
-            $db->statement('DROP INDEX IF EXISTS idx_versions_data_cache ON cms_versions');
-            $db->statement('DROP INDEX IF EXISTS idx_versions_data_mime ON cms_versions');
+            $db->statement('DROP INDEX IF EXISTS cms_versions_tenant_id_versionable_type_data_domain_data_path_index ON cms_versions');
+            $db->statement('DROP INDEX IF EXISTS cms_versions_data_type_index ON cms_versions');
+            $db->statement('DROP INDEX IF EXISTS cms_versions_data_path_index ON cms_versions');
+            $db->statement('DROP INDEX IF EXISTS cms_versions_data_domain_index ON cms_versions');
+            $db->statement('DROP INDEX IF EXISTS cms_versions_data_tag_index ON cms_versions');
+            $db->statement('DROP INDEX IF EXISTS cms_versions_data_theme_index ON cms_versions');
+            $db->statement('DROP INDEX IF EXISTS cms_versions_data_status_index ON cms_versions');
+            $db->statement('DROP INDEX IF EXISTS cms_versions_data_cache_index ON cms_versions');
+            $db->statement('DROP INDEX IF EXISTS cms_versions_data_mime_index ON cms_versions');
 
             $db->statement('ALTER TABLE cms_versions DROP COLUMN IF EXISTS data_type');
             $db->statement('ALTER TABLE cms_versions DROP COLUMN IF EXISTS data_path');
