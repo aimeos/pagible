@@ -53,6 +53,7 @@ class Description extends Command
 
             foreach( $pages as $page )
             {
+                /** @var Page $page */
                 if( !empty( $page->meta->{'meta-tags'}->data->description ?? '' ) ) {
                     continue;
                 }
@@ -72,7 +73,7 @@ class Description extends Command
                         ->withClientOptions( ['timeout' => 30, 'connect_timeout' => 10] )
                         ->asText();
 
-                    $meta = json_decode( json_encode( $page->meta ), true );
+                    $meta = json_decode( (string) json_encode( $page->meta ), true );
                     $meta['meta-tags'] = $meta['meta-tags'] ?? [
                         'id' => Utils::uid(),
                         'type' => 'meta-tags',
