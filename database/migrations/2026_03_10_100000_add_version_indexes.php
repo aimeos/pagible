@@ -55,7 +55,7 @@ return new class extends Migration
                 $table->index('data_mime');
             });
 
-            $db->statement('CREATE INDEX cms_versions_tenant_id_versionable_type_data_domain_data_path_index ON cms_versions (tenant_id, versionable_type, data_domain(200), data_path(255))');
+            $db->statement('CREATE INDEX cms_versions_tenantid_versionabletype_datadomain_datapath_index ON cms_versions (tenant_id, versionable_type, data_domain(200), data_path(255))');
         }
         elseif( $driver === 'pgsql' )
         {
@@ -67,7 +67,7 @@ return new class extends Migration
             $db->statement("CREATE INDEX cms_versions_data_status_index ON cms_versions (((data->>'status')::smallint))");
             $db->statement("CREATE INDEX cms_versions_data_cache_index ON cms_versions (((data->>'cache')::smallint))");
             $db->statement("CREATE INDEX cms_versions_data_mime_index ON cms_versions ((data->>'mime'))");
-            $db->statement("CREATE INDEX cms_versions_tenant_id_versionable_type_data_domain_data_path_index ON cms_versions (tenant_id, versionable_type, (data->>'domain'), (data->>'path'))");
+            $db->statement("CREATE INDEX cms_versions_tenantid_versionabletype_datadomain_datapath_index ON cms_versions (tenant_id, versionable_type, (data->>'domain'), (data->>'path'))");
         }
         elseif( $driver === 'sqlsrv' )
         {
@@ -88,7 +88,7 @@ return new class extends Migration
             $db->statement('CREATE INDEX cms_versions_data_status_index ON cms_versions (data_status)');
             $db->statement('CREATE INDEX cms_versions_data_cache_index ON cms_versions (data_cache)');
             $db->statement('CREATE INDEX cms_versions_data_mime_index ON cms_versions (data_mime)');
-            $db->statement('CREATE INDEX cms_versions_tenant_id_versionable_type_data_domain_data_path_index ON cms_versions (tenant_id, versionable_type, data_domain, data_path)');
+            $db->statement('CREATE INDEX cms_versions_tenantid_versionabletype_datadomain_datapath_index ON cms_versions (tenant_id, versionable_type, data_domain, data_path)');
         }
 
         // Drop unused indexes from cms_pages
@@ -217,7 +217,7 @@ return new class extends Migration
         // Drop JSON path indexes and generated columns
         if( in_array($driver, ['mysql', 'mariadb']) )
         {
-            $db->statement('DROP INDEX cms_versions_tenant_id_versionable_type_data_domain_data_path_index ON cms_versions');
+            $db->statement('DROP INDEX cms_versions_tenantid_versionabletype_datadomain_datapath_index ON cms_versions');
 
             $schema->table('cms_versions', function (Blueprint $table) {
                 $table->dropIndex(['data_type']);
@@ -233,7 +233,7 @@ return new class extends Migration
         }
         elseif( $driver === 'pgsql' )
         {
-            $db->statement('DROP INDEX IF EXISTS cms_versions_tenant_id_versionable_type_data_domain_data_path_index');
+            $db->statement('DROP INDEX IF EXISTS cms_versions_tenantid_versionabletype_datadomain_datapath_index');
             $db->statement('DROP INDEX IF EXISTS cms_versions_data_type_index');
             $db->statement('DROP INDEX IF EXISTS cms_versions_data_path_index');
             $db->statement('DROP INDEX IF EXISTS cms_versions_data_domain_index');
@@ -245,7 +245,7 @@ return new class extends Migration
         }
         elseif( $driver === 'sqlsrv' )
         {
-            $db->statement('DROP INDEX IF EXISTS cms_versions_tenant_id_versionable_type_data_domain_data_path_index ON cms_versions');
+            $db->statement('DROP INDEX IF EXISTS cms_versions_tenantid_versionabletype_datadomain_datapath_index ON cms_versions');
             $db->statement('DROP INDEX IF EXISTS cms_versions_data_type_index ON cms_versions');
             $db->statement('DROP INDEX IF EXISTS cms_versions_data_path_index ON cms_versions');
             $db->statement('DROP INDEX IF EXISTS cms_versions_data_domain_index ON cms_versions');
