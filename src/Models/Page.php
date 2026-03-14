@@ -154,6 +154,43 @@ class Page extends Model
 
 
     /**
+     * Returns the text content of the page.
+     *
+     * @return string Text content
+     */
+    public function __toString() : string
+    {
+        $content = ( $this->tag ?? '' ) . "\n"
+            . ( $this->name ?? '' ) . "\n"
+            . ( $this->title ?? '' ) . "\n"
+            . ( $this->meta->{'meta-tags'}->data->description ?? '' ) . "\n";
+
+        $config = config( 'cms.schemas.content', [] );
+
+        foreach( collect( (array) $this->content )->merge( $this->elements ) as $el )
+        {
+            $fields = (array) ( $config[@$el->type]['fields'] ?? [] );
+
+            if( empty( $fields ) ) {
+                continue;
+            }
+
+            foreach( (array) ( $el->data ?? [] ) as $name => $value )
+            {
+                if( is_string( $value ) && isset( $fields[$name] )
+                    && ( $fields[$name]['searchable'] ?? true )
+                    && in_array( $fields[$name]['type'], ['markdown', 'plaintext', 'string', 'text'] )
+                ) {
+                    $content .= $value . "\n";
+                }
+            }
+        }
+
+        return trim( $content );
+    }
+
+
+    /**
      * Get query ancestors of the node.
      *
      * @return  AncestorsRelation
@@ -495,22 +532,14 @@ class Page extends Model
         }
 
         $rows = [];
-        $config = config( 'cms.schemas.content', [] );
 
         if( $version = $this->latest )
         {
             $data = $version->data ?? new \stdClass();
 
-            /** @var list<\stdClass> $vcontent */
-            $vcontent = $version->aux->content ?? [];
-
             $content = trim( ( $data->path ?? '' ) . "\n"
                 . ( $data->to ?? '' ) . "\n"
-                . ( $data->tag ?? '' ) . "\n"
-                . ( $data->name ?? '' ) . "\n"
-                . ( $data->title ?? '' ) . "\n"
-                . ( $version->aux->meta->{'meta-tags'}->data->description ?? '' ) . "\n"
-                . $this->toSearchContent( collect( $vcontent )->merge( $version->elements ), $config ) );
+                . (string) $version );
 
             if( !empty( $content ) ) {
                 $rows[] = ['latest' => true, 'content' => $content];
@@ -521,11 +550,7 @@ class Page extends Model
         {
             $content = trim( $this->path . "\n"
                 . $this->to . "\n"
-                . $this->tag . "\n"
-                . $this->name . "\n"
-                . $this->title . "\n"
-                . ( $this->meta->{'meta-tags'}->data->description ?? '' ) . "\n"
-                . $this->toSearchContent( collect( (array) $this->content )->merge( $this->elements ), $config ) );
+                . (string) $this );
 
             if( !empty( $content ) ) {
                 $rows[] = ['latest' => false, 'content' => $content];
@@ -711,40 +736,6 @@ class Page extends Model
         return Attribute::make(
             set: fn( $value ) => (string) $value,
         );
-    }
-
-
-    /**
-     * Builds searchable content string from content elements.
-     *
-     * @param array<string, mixed> $config Content type schemas
-     * @param Collection<int, mixed> $contents Content elements to extract text from
-     * @return string Searchable text
-     */
-    protected function toSearchContent( Collection $contents, array $config ) : string
-    {
-        $content = '';
-
-        foreach( $contents as $el )
-        {
-            $fields = (array) ( $config[@$el->type]['fields'] ?? [] );
-
-            if( empty( $fields ) ) {
-                continue;
-            }
-
-            foreach( (array) ( $el->data ?? [] ) as $name => $value )
-            {
-                if( is_string( $value ) && isset( $fields[$name] )
-                    && ( $fields[$name]['searchable'] ?? true )
-                    && in_array( $fields[$name]['type'], ['markdown', 'plaintext', 'string', 'text'] )
-                ) {
-                    $content .= $value . "\n";
-                }
-            }
-        }
-
-        return $content;
     }
 
 
