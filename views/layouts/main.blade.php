@@ -81,7 +81,7 @@
                         </button>
                     </li>
                     <li class="brand">
-                        <a href="{{ cmsroute($page->ancestors?->first() ?? $page) }}" class="contrast" aria-label="{{ config('app.name') }}">
+                        <a href="{{ cmsroute($page->ancestors?->first() ?? $page) }}" class="contrast" title="{{ config('app.name') }}" aria-label="{{ config('app.name') }}">
                             @forelse($page->ancestors ? (clone $page->ancestors)->push($page)->reverse() : [$page] as $navItem)
                                 @if($fileId = @cms($navItem, 'config.logo.data.file.id'))
                                     <img src="{{ cmsurl(cmsfile($navItem, $fileId)?->path) }}" alt="{{ config('app.name') }}">

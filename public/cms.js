@@ -3,6 +3,11 @@
  */
 
 
+document.querySelectorAll('link[rel="preload"][as="style"]').forEach(el => {
+    el.rel = 'stylesheet';
+});
+
+
 /**
  * Page search
  */

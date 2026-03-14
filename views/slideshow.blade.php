@@ -1,5 +1,5 @@
 @pushOnce('js')
-<link rel="preload" href="{{ cmsasset('vendor/cms/theme/slideshow.css') }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<link rel="preload" href="{{ cmsasset('vendor/cms/theme/slideshow.css') }}" as="style">
 <script defer src="{{ cmsasset('vendor/cms/theme/slideshow.js') }}"></script>
 @endPushOnce
 
