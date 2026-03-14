@@ -319,7 +319,7 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
 
         $query->joinSub( $sub, 'index', function( $join ) use ( $modelTable ) {
             $join->on( 'index.indexable_id', '=', "{$modelTable}.id" );
-        });
+        })->orderByDesc( 'relevance' );
 
         return $query;
     }
@@ -338,7 +338,7 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
             return;
         }
 
-        $sub->select( 'indexable_id', 'latest' );
+        $sub->selectRaw( 'indexable_id, latest, 1 AS relevance' );
 
         foreach( $words as $word ) {
             $sub->where( 'content', 'like', '%' . $word . '%' );
@@ -360,9 +360,22 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
         }
 
         $terms = implode( ' ', array_map( fn( $w ) => '+' . $w . '*', $words ) );
-        $select = 'indexable_id, latest, MATCH(content) AGAINST(? IN BOOLEAN MODE) AS relevance';
 
-        $sub->selectRaw( $select, [$terms] )
+        $posExprs = [];
+        $posBindings = [];
+
+        foreach( $words as $w ) {
+            $posExprs[] = 'IF(LOCATE(LOWER(?), LOWER(content)) > 0, LOCATE(LOWER(?), LOWER(content)) - 1, CHAR_LENGTH(content))';
+            $posBindings[] = $w;
+            $posBindings[] = $w;
+        }
+
+        $minPos = count( $posExprs ) === 1 ? $posExprs[0] : 'LEAST(' . implode( ', ', $posExprs ) . ')';
+        $len = 'GREATEST(CHAR_LENGTH(content), 1)';
+        $boost = "(1 + 0.2 * (1 - LOG(1 + ({$minPos})) / LOG(1 + {$len})))";
+        $select = "indexable_id, latest, MATCH(content) AGAINST(? IN BOOLEAN MODE) * {$boost} AS relevance";
+
+        $sub->selectRaw( $select, array_merge( [$terms], $posBindings ) )
             ->whereRaw( 'MATCH(content) AGAINST(? IN BOOLEAN MODE)', [$terms] );
     }
 
@@ -381,9 +394,22 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
         }
 
         $terms = implode( ' & ', array_map( fn( $w ) => $w . ':*', $words ) );
-        $select = "indexable_id, latest, ts_rank(to_tsvector('simple', coalesce(content, '')), to_tsquery('simple', ?)) AS relevance";
 
-        $sub->selectRaw( $select, [$terms] )
+        $posExprs = [];
+        $posBindings = [];
+
+        foreach( $words as $w ) {
+            $posExprs[] = 'CASE WHEN POSITION(LOWER(?) IN LOWER(content)) > 0 THEN POSITION(LOWER(?) IN LOWER(content)) - 1 ELSE LENGTH(content) END';
+            $posBindings[] = $w;
+            $posBindings[] = $w;
+        }
+
+        $minPos = count( $posExprs ) === 1 ? $posExprs[0] : 'LEAST(' . implode( ', ', $posExprs ) . ')';
+        $len = 'GREATEST(LENGTH(content), 1)';
+        $boost = "(1 + 0.2 * (1 - LN(1 + ({$minPos})) / LN(1 + {$len})))";
+        $select = "indexable_id, latest, ts_rank(to_tsvector('simple', coalesce(content, '')), to_tsquery('simple', ?)) * {$boost} AS relevance";
+
+        $sub->selectRaw( $select, array_merge( [$terms], $posBindings ) )
             ->whereRaw( "to_tsvector('simple', coalesce(content, '')) @@ to_tsquery('simple', ?)", [$terms] );
     }
 
@@ -403,7 +429,20 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
 
         $terms = implode( ' AND ', array_map( fn( $w ) => '"' . $w . '"*', $words ) );
 
-        $sub->selectRaw( 'indexable_id, latest, -rank AS relevance' )
+        $posExprs = [];
+        $posBindings = [];
+
+        foreach( $words as $w ) {
+            $posExprs[] = 'CASE WHEN INSTR(LOWER(content), LOWER(?)) > 0 THEN INSTR(LOWER(content), LOWER(?)) - 1 ELSE LENGTH(content) END';
+            $posBindings[] = $w;
+            $posBindings[] = $w;
+        }
+
+        $minPos = count( $posExprs ) === 1 ? $posExprs[0] : 'MIN(' . implode( ', ', $posExprs ) . ')';
+        $len = 'MAX(LENGTH(content), 1)';
+        $boost = "(1 + 0.2 * (1 - LOG(1 + ({$minPos})) / LOG(1 + {$len})))";
+
+        $sub->selectRaw( "indexable_id, latest, -rank * {$boost} AS relevance", $posBindings )
             ->whereRaw( 'cms_index MATCH ?', [$terms] );
     }
 
@@ -423,7 +462,20 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
 
         $terms = implode( ' AND ', array_map( fn( $w ) => '"' . $w . '*"', $words ) );
 
-        $sub->selectRaw( 'cms_index.indexable_id, cms_index.latest, ct.[RANK] AS relevance' )
+        $posExprs = [];
+        $posBindings = [];
+
+        foreach( $words as $w ) {
+            $posExprs[] = 'CASE WHEN CHARINDEX(LOWER(?), LOWER(cms_index.content)) > 0 THEN CHARINDEX(LOWER(?), LOWER(cms_index.content)) - 1 ELSE LEN(cms_index.content) END';
+            $posBindings[] = $w;
+            $posBindings[] = $w;
+        }
+
+        $minPos = count( $posExprs ) === 1 ? $posExprs[0] : 'LEAST(' . implode( ', ', $posExprs ) . ')';
+        $len = 'GREATEST(LEN(cms_index.content), 1)';
+        $boost = "(1 + 0.2 * (1 - LOG(1 + ({$minPos})) / LOG(1 + {$len})))";
+
+        $sub->selectRaw( "cms_index.indexable_id, cms_index.latest, ct.[RANK] * {$boost} AS relevance", $posBindings )
             ->join( $sub->raw( 'CONTAINSTABLE(cms_index, content, ?) AS ct' ), $sub->raw( 'cms_index.id' ), '=', $sub->raw( 'ct.[KEY]' ) )
             ->addBinding( [$terms], 'join' );
     }
