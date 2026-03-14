@@ -471,8 +471,16 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
             $posBindings[] = $w;
         }
 
-        $minPos = count( $posExprs ) === 1 ? $posExprs[0] : 'LEAST(' . implode( ', ', $posExprs ) . ')';
-        $len = 'GREATEST(LEN(cms_index.content), 1)';
+        if( count( $posExprs ) === 1 ) {
+            $minPos = $posExprs[0];
+        } else {
+            $minPos = $posExprs[0];
+            for( $i = 1; $i < count( $posExprs ); $i++ ) {
+                $minPos = "CASE WHEN ({$minPos}) < ({$posExprs[$i]}) THEN ({$minPos}) ELSE ({$posExprs[$i]}) END";
+            }
+        }
+
+        $len = 'CASE WHEN LEN(cms_index.content) > 1 THEN LEN(cms_index.content) ELSE 1 END';
         $boost = "(1 + 0.2 * (1 - LOG(1 + ({$minPos})) / LOG(1 + {$len})))";
 
         $sub->selectRaw( "cms_index.indexable_id, cms_index.latest, ct.[RANK] * {$boost} AS relevance", $posBindings )
