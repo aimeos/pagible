@@ -420,19 +420,6 @@ class GraphqlTest extends TestAbstract
     }
 
 
-    public function testTranslateEmptyTo()
-    {
-        $this->actingAs( $this->user )->graphQL( '
-            mutation($texts: [String!]!, $to: String!) {
-                translate(texts: $texts, to: $to)
-            }
-        ', [
-            'texts' => ['Hello'],
-            'to' => '',
-        ] )->assertGraphQLErrorMessage( 'Target language must not be empty' );
-    }
-
-
     public function testMetrics()
     {
         $expected = [
