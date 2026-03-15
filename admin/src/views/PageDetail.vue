@@ -875,6 +875,7 @@ export default {
       :readonly="!auth.can('page:save')"
       :current="{
         data: {
+          related_id: item.related_id,
           cache: item.cache,
           domain: item.domain,
           lang: item.lang,
