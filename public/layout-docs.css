@@ -22,7 +22,7 @@ main nav.sidebar {
     border-inline-end: 1px solid var(--pico-constrast-border);
     transition: left 0.3s ease;
     position: absolute;
-    z-index: 990;
+    z-index: 95;
     height: 100%;
     left: -20rem;
     width: 20rem;

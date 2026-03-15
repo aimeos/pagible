@@ -171,6 +171,10 @@ header nav details[open] summary::after {
     transform: rotate(0.5turn) translateX(0);
 }
 
+header nav details.dropdown > summary + ul {
+    width: auto;
+}
+
 header nav details.dropdown > summary + ul.align {
     left: auto;
     right: 0;
@@ -238,7 +242,7 @@ header nav a {
         position: absolute;
         background-color: var(--pico-background-color);
         min-height: 100%;
-        z-index: 1000;
+        z-index: 100;
         width: 100%;
     }
 
