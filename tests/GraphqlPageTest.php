@@ -143,7 +143,7 @@ class GraphqlPageTest extends TestAbstract
                 theme: ""
                 cache: 5
                 status: 1
-                editor: "seed"
+                editor: "seeder"
             }, first: 10, page: 1, trashed: WITH, publish: PUBLISHED) {
                 data {
                     id

@@ -63,7 +63,7 @@ final class Query
         }
 
         if( isset( $filter['editor'] ) ) {
-            $builder->where( 'cms_versions.editor', 'like', $filter['editor'] . '%' );
+            $builder->where( 'cms_versions.editor', (string) $filter['editor'] );
         }
 
         if( isset( $filter['type'] ) ) {
@@ -120,7 +120,7 @@ final class Query
         }
 
         if( isset( $filter['editor'] ) ) {
-            $builder->where( 'cms_versions.editor', 'like', $filter['editor'] . '%' );
+            $builder->where( 'cms_versions.editor', (string) $filter['editor'] );
         }
 
         if( isset( $filter['mime'] ) ) {
@@ -183,7 +183,7 @@ final class Query
         }
 
         if( isset( $filter['editor'] ) ) {
-            $builder->where( 'cms_versions.editor', 'like', $filter['editor'] . '%' );
+            $builder->where( 'cms_versions.editor', (string) $filter['editor'] );
         }
 
         if( isset( $filter['status'] ) ) {
@@ -199,7 +199,7 @@ final class Query
         }
 
         if( array_key_exists( 'path', $filter ) ) {
-            $builder->where( 'cms_versions.data->path', 'like', $filter['path'] . '%' );
+            $builder->where( 'cms_versions.data->path', (string) $filter['path'] );
         }
 
         if( array_key_exists( 'domain', $filter ) ) {
