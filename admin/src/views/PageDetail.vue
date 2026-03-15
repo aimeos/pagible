@@ -463,6 +463,7 @@ export default {
               to: this.item.to || '',
               type: this.item.type || '',
               theme: this.item.theme || '',
+              related_id: this.item.related_id || null,
               meta: JSON.stringify(this.clean(meta, 'meta')),
               config: JSON.stringify(this.clean(config, 'config')),
               content: JSON.stringify(this.clean(this.item.content, 'content'))
