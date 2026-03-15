@@ -206,6 +206,7 @@ function PagibleModals(modal) {
         open(modal) {
             if (!modal) return;
 
+            this.init(modal);
             document.documentElement.classList.add(this.isOpenClass, this.openingClass);
 
             setTimeout(() => {
@@ -213,7 +214,6 @@ function PagibleModals(modal) {
                 this.visible = true;
             }, 300);
 
-            this.init(modal);
             modal.showModal();
         },
 
