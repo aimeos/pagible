@@ -68,7 +68,7 @@ class Description extends Command
                 {
                     $response = Prism::text()
                         ->using( $provider, $model, $config )
-                        ->withSystemPrompt( 'You are an SEO expert. Generate a concise and engaging meta description of max. 160 characters for the given page content. Return only the meta description text, nothing else.' )
+                        ->withSystemPrompt( 'You are an SEO expert. Generate a concise meta description of max. 160 characters for the given page content. Return only the meta description text, nothing else.' )
                         ->withPrompt( "Page title: {$page->title}\n\nPage content:\n{$text}" )
                         ->withClientOptions( ['timeout' => 30, 'connect_timeout' => 10] )
                         ->asText();
@@ -88,6 +88,8 @@ class Description extends Command
                 {
                     $this->error( $page->title . ': ' . $e->getMessage() );
                 }
+
+                unset( $page );
             }
         } );
     }
@@ -106,8 +108,8 @@ class Description extends Command
         File::whereRaw( "CAST(description AS CHAR(2)) = '{}'" )
             ->where( function( $query ) {
                 $query->where( 'mime', 'like', 'audio/%' )
-                    ->orWhere( 'mime', 'like', 'image/%' )
-                    ->orWhere( 'mime', 'like', 'video/%' );
+                    ->orWhere( 'mime', 'like', 'video/%' )
+                    ->orWhereIn( 'mime', ['image/jpeg', 'image/png', 'image/webp'] );
             } )
             ->chunk( 100, function( $files ) use ( $provider, $model, $config, $lang ) {
 
@@ -138,6 +140,8 @@ class Description extends Command
                     {
                         $this->error( $file->name . ': ' . $e->getMessage() );
                     }
+
+                    unset( $file, $doc );
                 }
             }
         );
