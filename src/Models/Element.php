@@ -321,7 +321,7 @@ class Element extends Model
             $content = (string) $version;
 
             if( !empty( $content ) ) {
-                $rows[] = ['latest' => true, 'content' => $content];
+                $rows[] = ['latest' => true, 'content' => mb_strtolower( $content )];
             }
         }
 
@@ -330,7 +330,7 @@ class Element extends Model
             $content = (string) $this;
 
             if( !empty( $content ) ) {
-                $rows[] = ['latest' => false, 'content' => $content];
+                $rows[] = ['latest' => false, 'content' => mb_strtolower( $content )];
             }
         }
 

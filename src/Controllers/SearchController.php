@@ -33,7 +33,7 @@ class SearchController extends Controller
             ->where( 'domain', $domain )
             ->where( 'lang', $request->locale ?? app()->getLocale() )
             ->where( 'latest', false )
-            ->query( fn( $q ) => $q->select( ['id', 'domain', 'path', 'lang', 'title', 'meta'] ) )
+            ->query( fn( $q ) => $q->select( ['id', 'domain', 'path', 'lang', 'title', 'meta', 'relevance'] ) )
             ->paginate( $vals['size'] ?? 25 )
             ->appends( $request->query() );
 
@@ -43,6 +43,7 @@ class SearchController extends Controller
                 'lang' => $item->lang ?? '',
                 'title' => $item->title ?? '',
                 'content' => $item->meta->{'meta-tags'}->data->description ?? '',
+                'relevance' => $item->relevance ?? 0,
             ] );
 
         return response()->json( $content );
