@@ -35,6 +35,7 @@ final class SavePage
             $versionId = ( new Version )->newUniqueId();
 
             $data = array_diff_key( $input, array_flip( ['meta', 'config', 'content'] ) );
+            array_walk( $data, fn( &$v, $k ) => $v = !in_array( $k, ['related_id'] ) ? ( $v ?? '' ) : $v );
             $data = array_replace( (array) $page->latest?->data, $data );
 
             $aux = array_intersect_key( $input, array_flip( ['meta', 'config', 'content'] ) );
@@ -42,7 +43,7 @@ final class SavePage
 
             $version = $page->versions()->forceCreate([
                 'id' => $versionId,
-                'data' => array_map( fn( $v ) => $v ?? '', $data ),
+                'data' => $data,
                 'editor' => Auth::user()->name ?? request()->ip(),
                 'lang' => $args['input']['lang'] ?? null,
                 'aux' => $aux
