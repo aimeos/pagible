@@ -314,7 +314,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 requestAnimationFrame(() => {
                     const rect = ul.getBoundingClientRect();
 
-                    if (rect.right > window.innerWidth) {
+                    if (rect.right > document.documentElement.clientWidth) {
                         ul.style.right = '0';
                     }
 
