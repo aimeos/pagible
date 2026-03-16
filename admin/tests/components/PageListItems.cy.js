@@ -83,4 +83,14 @@ describe('PageListItems', () => {
     mountList({}, { 'page:view': true })
     cy.contains('No entries found').should('exist')
   })
+
+  it('hides sort dropdown in tree view (default)', () => {
+    mountList({ filter: { view: 'tree' } }, { 'page:view': true })
+    cy.get('button[title="Sort by"]').should('not.exist')
+  })
+
+  it('shows sort dropdown in list view', () => {
+    mountList({ filter: { view: 'list' } }, { 'page:view': true })
+    cy.get('button[title="Sort by"]').should('exist')
+  })
 })

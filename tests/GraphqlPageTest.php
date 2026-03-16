@@ -257,6 +257,27 @@ class GraphqlPageTest extends TestAbstract
     }
 
 
+    public function testPagesSort()
+    {
+        $this->seed(CmsSeeder::class);
+
+        $pages = Page::orderBy('id', 'desc')->take(2)->get();
+
+        $response = $this->actingAs($this->user)->graphQL('{
+            pages(sort: [{column: ID, order: DESC}], first: 2, page: 1) {
+                data {
+                    id
+                }
+            }
+        }');
+
+        $pagesData = $response->json('data.pages.data');
+        $this->assertCount(2, $pagesData);
+        $this->assertEquals((string) $pages[0]->id, $pagesData[0]['id']);
+        $this->assertEquals((string) $pages[1]->id, $pagesData[1]['id']);
+    }
+
+
     public function testPagesWithParentid()
     {
         $this->seed(CmsSeeder::class);

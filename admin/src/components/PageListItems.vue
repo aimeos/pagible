@@ -28,6 +28,7 @@ export default {
       loading: true,
       checked: null,
       clip: null,
+      sort: { column: 'LFT', order: 'ASC' },
       term: ''
     }
   },
@@ -258,17 +259,31 @@ export default {
 
       return this.$apollo
         .query({
-          query: gql`query($filter: PageFilter, $limit: Int!, $page: Int!, $trashed: Trashed, $publish: Publish) {
-            pages(filter: $filter, first: $limit, page: $page, trashed: $trashed, publish: $publish) {
-              data {
-                ${this.fields()}
-              }
-              paginatorInfo {
-                currentPage
-                lastPage
+          query: gql`
+            query(
+              $filter: PageFilter,
+              $limit: Int!,
+              $page: Int!,
+              $trashed: Trashed,
+              $publish: Publish
+            ) {
+              pages(
+                filter: $filter,
+                first: $limit,
+                page: $page,
+                trashed: $trashed,
+                publish: $publish
+              ) {
+                data {
+                  ${this.fields()}
+                }
+                paginatorInfo {
+                  currentPage
+                  lastPage
+                }
               }
             }
-          }`,
+          `,
           variables: {
             filter: filter,
             page: page,
@@ -780,19 +795,36 @@ export default {
 
       return this.$apollo
         .query({
-          query: gql`query($filter: PageFilter, $limit: Int!, $page: Int!, $trashed: Trashed, $publish: Publish) {
-            pages(filter: $filter, first: $limit, page: $page, trashed: $trashed, publish: $publish) {
-              data {
-                ${this.fields()}
-              }
-              paginatorInfo {
-                currentPage
-                lastPage
+          query: gql`
+            query(
+              $filter: PageFilter,
+              $sort: [QueryPagesSortOrderByClause!],
+              $limit: Int!,
+              $page: Int!,
+              $trashed: Trashed,
+              $publish: Publish
+            ) {
+              pages(
+                filter: $filter,
+                sort: $sort,
+                first: $limit,
+                page: $page,
+                trashed: $trashed,
+                publish: $publish
+              ) {
+                data {
+                  ${this.fields()}
+                }
+                paginatorInfo {
+                  currentPage
+                  lastPage
+                }
               }
             }
-          }`,
+          `,
           variables: {
             filter: filter,
+            sort: this.sort ? [this.sort] : null,
             page: page,
             limit: limit,
             trashed: trashed,
@@ -934,10 +966,12 @@ export default {
       }
     },
 
-    term: {
-      handler() {
-        this.reload(false)
-      }
+    sort() {
+      this.reload(false)
+    },
+
+    term() {
+      this.reload(false)
     }
   }
 }
@@ -1037,6 +1071,58 @@ export default {
       variant="text"
       class="no-rtl"
     />
+
+    <v-menu v-if="filter.view === 'list'">
+      <template #activator="{ props }">
+        <v-btn
+          v-bind="props"
+          :title="$gettext('Sort by')"
+          append-icon="mdi-menu-down"
+          prepend-icon="mdi-sort"
+          variant="text"
+        >
+            {{
+              sort?.column === 'ID'
+                ? sort?.order === 'DESC'
+                  ? $gettext('latest')
+                  : $gettext('oldest')
+                : $gettext('default')
+            }}
+        </v-btn>
+      </template>
+      <v-list>
+        <v-list-item>
+          <v-btn variant="text" @click="sort = { column: 'LFT', order: 'ASC' }">{{
+            $gettext('default')
+          }}</v-btn>
+        </v-list-item>
+        <v-list-item>
+          <v-btn variant="text" @click="sort = { column: 'ID', order: 'DESC' }">{{
+            $gettext('latest')
+          }}</v-btn>
+        </v-list-item>
+        <v-list-item>
+          <v-btn variant="text" @click="sort = { column: 'ID', order: 'ASC' }">{{
+            $gettext('oldest')
+          }}</v-btn>
+        </v-list-item>
+        <v-list-item>
+          <v-btn variant="text" @click="sort = { column: 'NAME', order: 'ASC' }">{{
+            $gettext('name')
+          }}</v-btn>
+        </v-list-item>
+        <v-list-item>
+          <v-btn variant="text" @click="sort = { column: 'TITLE', order: 'ASC' }">{{
+            $gettext('title')
+          }}</v-btn>
+        </v-list-item>
+        <v-list-item>
+          <v-btn variant="text" @click="sort = { column: 'EDITOR', order: 'ASC' }">{{
+            $gettext('editor')
+          }}</v-btn>
+        </v-list-item>
+      </v-list>
+    </v-menu>
   </div>
 
   <Draggable
