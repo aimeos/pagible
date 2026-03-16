@@ -311,15 +311,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 ul.style.left = '';
                 ul.style.right = '';
 
-                const rect = ul.getBoundingClientRect();
+                requestAnimationFrame(() => {
+                    const rect = ul.getBoundingClientRect();
 
-                if (rect.right > window.innerWidth) {
-                    ul.style.right = '0';
-                }
+                    if (rect.right > window.innerWidth) {
+                        ul.style.right = '0';
+                    }
 
-                if (rect.left < 0) {
-                    ul.style.left = '0';
-                }
+                    if (rect.left < 0) {
+                        ul.style.left = '0';
+                    }
+                });
             }
         });
     });
