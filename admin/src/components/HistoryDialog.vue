@@ -173,7 +173,7 @@ export default {
                   <span
                     v-for="(part, idx) of diff(latest?.data, current.data)"
                     :key="idx"
-                    :class="{ added: part.added, removed: part.removed }"
+                    :class="{ added: part.removed, removed: part.added }"
                   >
                     {{ part.value || part }}
                   </span>
