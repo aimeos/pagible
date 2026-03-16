@@ -302,4 +302,25 @@ document.addEventListener('DOMContentLoaded', () => {
         sideclose?.classList?.toggle("show");
         sidebar?.classList.toggle("show");
     });
+
+    document.querySelectorAll('header nav details.dropdown').forEach(el => {
+        el.addEventListener('toggle', () => {
+            const ul = el.querySelector('ul.align');
+
+            if (el.open && ul) {
+                ul.style.left = '';
+                ul.style.right = '';
+
+                const rect = ul.getBoundingClientRect();
+
+                if (rect.right > window.innerWidth) {
+                    ul.style.right = '0';
+                }
+
+                if (rect.left < 0) {
+                    ul.style.left = '0';
+                }
+            }
+        });
+    });
 });

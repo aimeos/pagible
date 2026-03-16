@@ -172,13 +172,9 @@ header nav details[open] summary::after {
 }
 
 header nav details.dropdown > summary + ul.align {
+    width: auto;
     left: auto;
-    right: 0;
-}
-
-[dir="rtl"] header nav details.dropdown > summary + ul.align {
     right: auto;
-    left: 0;
 }
 
 header nav .brand {
