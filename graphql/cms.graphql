@@ -28,7 +28,7 @@ extend type Query {
     @find
 
   "Get the available pages"
-  pages(filter: PageFilter, publish: Publish): [Page!]
+  pages(filter: PageFilter, sort: _ @orderBy(columns: ["id", "name", "title", "editor", "_lft"]), publish: Publish): [Page!]
     @paginate(builder: "\\Aimeos\\Cms\\GraphQL\\Query@pages", defaultCount: 100)
     @canModel(ability: "view", model: "\\Aimeos\\Cms\\Models\\Page")
     @orderBy(column: "_lft", direction: ASC)
