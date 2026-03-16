@@ -31,6 +31,10 @@ final class Translate
             throw new Error( 'Input texts must not be empty' );
         }
 
+        if( empty( $to = $args['to'] ) ) {
+            throw new Error( 'Target language must not be empty' );
+        }
+
         $provider = config( 'cms.ai.translate.provider' );
         $config = config( 'cms.ai.translate', [] );
         $model = config( 'cms.ai.translate.model' );
