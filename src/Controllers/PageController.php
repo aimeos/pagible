@@ -57,7 +57,8 @@ class PageController extends Controller
                 ->header( 'Cache-Control', 'public, max-age=' . ( $this->cache( $html ) * 60 ) );
         }
 
-        $page = Page::withGlobalScope('status', new Status)
+        $page = Page::with( ['files', 'elements'] )
+            ->withGlobalScope('status', new Status)
             ->where( 'domain', $domain )
             ->where( 'path', $path )
             ->firstOrFail();
@@ -130,8 +131,8 @@ class PageController extends Controller
             ->first();
 
         $page = $version
-            ? Page::where( 'id', $version->versionable_id )->firstOrFail()
-            : Page::where( 'domain', $domain )->where( 'path', $path )->firstOrFail();
+            ? Page::with( ['files', 'elements'] )->where( 'id', $version->versionable_id )->firstOrFail()
+            : Page::with( ['files', 'elements'] )->where( 'domain', $domain )->where( 'path', $path )->firstOrFail();
 
         if( $to = $version?->data->to ?? $page->to ) {
             return str_starts_with( $to, 'http' ) ? redirect()->away( $to ) : redirect()->to( $to );

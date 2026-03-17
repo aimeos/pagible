@@ -318,6 +318,10 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
 
         $sub->where( 'indexable_type', get_class( $builder->model ) );
 
+        if( isset( $builder->wheres['latest'] ) ) {
+            $sub->where( 'latest', $builder->wheres['latest'] );
+        }
+
         $query->joinSub( $sub, 'index', function( $join ) use ( $modelTable ) {
             $join->on( 'index.indexable_id', '=', "{$modelTable}.id" );
         })->orderByDesc( 'relevance' );
