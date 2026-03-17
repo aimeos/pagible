@@ -75,46 +75,46 @@ extend type Mutation {
   cmsUser(cmsdata: JSON!): User @guard
 
   "Summarize the content of the file passed by its file ID"
-  describe(file: String!, lang: String): String
+  describe(file: String!, lang: String): String @guard @throttle(maxAttempts: 10)
 
   "Remove the part of the image covered by the mask (black: keep, white: erase), returns a base64 encoded image"
-  erase(file: Upload!, mask: Upload!): String
+  erase(file: Upload!, mask: Upload!): String @guard @throttle(maxAttempts: 10)
 
   "Generate images from prompts and passed file IDs, returns a base64 encoded image"
-  imagine(prompt: String!, context: String, files: [String!]): String
+  imagine(prompt: String!, context: String, files: [String!]): String @guard @throttle(maxAttempts: 10)
 
   "Edit an image using a mask image and a prompt, returns a base64 encoded image"
-  inpaint(file: Upload!, mask: Upload!, prompt: String!): String
+  inpaint(file: Upload!, mask: Upload!, prompt: String!): String @guard @throttle(maxAttempts: 10)
 
   "Remove image background, returns a base64 encoded image"
-  isolate(file: Upload!): String
+  isolate(file: Upload!): String @guard @throttle(maxAttempts: 10)
 
   "Get page metrics for the last X days"
-  metrics(url: String!, days: Int, lang: String): Stats
+  metrics(url: String!, days: Int, lang: String): Stats @guard @throttle(maxAttempts: 10)
 
   "Edit an image using a prompt, returns a base64 encoded image"
-  repaint(file: Upload!, prompt: String!): String
+  repaint(file: Upload!, prompt: String!): String @guard @throttle(maxAttempts: 10)
 
   "Refine existing page content"
-  refine(prompt: String!, content: JSON!, type: String, context: String): JSON
+  refine(prompt: String!, content: JSON!, type: String, context: String): JSON @guard @throttle(maxAttempts: 10)
 
   "Synthesize pages and content from prompts and passed file IDs"
-  synthesize(prompt: String!, context: String, files: [String!]): String
+  synthesize(prompt: String!, context: String, files: [String!]): String @guard @throttle(maxAttempts: 10)
 
   "Transcribe uploaded audio file"
-  transcribe(file: Upload!): JSON
+  transcribe(file: Upload!): JSON @guard @throttle(maxAttempts: 10)
 
   "Translate texts"
-  translate(texts: [String!]!, to: String!, from: String, context: String): [String!]!
+  translate(texts: [String!]!, to: String!, from: String, context: String): [String!]! @guard @throttle(maxAttempts: 10)
 
   "Extend/outpaint image, returns a base64 encoded image"
-  uncrop(file: Upload!, top: Int!, right: Int, bottom: Int, left: Int): String
+  uncrop(file: Upload!, top: Int!, right: Int, bottom: Int, left: Int): String @guard @throttle(maxAttempts: 10)
 
   "Upscale image, returns a base64 encoded image"
-  upscale(file: Upload!, factor: Int!): String
+  upscale(file: Upload!, factor: Int!): String @guard @throttle(maxAttempts: 10)
 
   "Generate texts from prompts and passed file IDs"
-  write(prompt: String!, context: String, files: [String!]): String
+  write(prompt: String!, context: String, files: [String!]): String @guard @throttle(maxAttempts: 10)
 
 
   "Add a new page below the page referenced by 'parent' and before the page referenced by 'ref' (or append if NULL)"

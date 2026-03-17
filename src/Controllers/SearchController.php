@@ -24,7 +24,7 @@ class SearchController extends Controller
     public function index( Request $request, string $domain = '' )
     {
         $vals = $request->validate( [
-            'search' => 'required|string|min:3',
+            'search' => 'required|string|min:3|max:200',
             'size' => 'integer|between:5,100',
         ] );
 
