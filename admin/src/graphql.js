@@ -3,6 +3,7 @@
  */
 
 import { onError } from '@apollo/client/link/error'
+import { RetryLink } from '@apollo/client/link/retry'
 import { BatchHttpLink } from 'apollo-link-batch-http'
 import { createApolloProvider } from '@vue/apollo-option'
 import { ApolloClient, ApolloLink, InMemoryCache } from '@apollo/client/core'
@@ -10,6 +11,11 @@ import createUploadLink from 'apollo-upload-client/createUploadLink.mjs'
 import router from './routes'
 
 const node = document.querySelector('#app')
+
+const retryLink = new RetryLink({
+  delay: { initial: 300, max: 5000, jitter: true },
+  attempts: { max: 2, retryIf: (error) => !!error }
+})
 
 const errorLink = onError(({ errors }) => {
   if (!errors) return
@@ -42,7 +48,7 @@ const httpLink = ApolloLink.split(
 
 const apolloClient = new ApolloClient({
   cache: new InMemoryCache(),
-  link: ApolloLink.from([errorLink, httpLink])
+  link: ApolloLink.from([retryLink, errorLink, httpLink])
 })
 const apollo = createApolloProvider({ defaultClient: apolloClient })
 
