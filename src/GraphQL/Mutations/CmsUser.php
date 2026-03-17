@@ -29,7 +29,7 @@ final class CmsUser
             throw new Error( 'User data too large' );
         }
 
-        $user->cmsdata = $cmsdata;
+        $user->setAttribute( 'cmsdata', $cmsdata );
         $user->save();
 
         return $user;
