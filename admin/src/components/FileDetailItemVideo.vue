@@ -3,7 +3,7 @@
 <script>
 import gql from 'graphql-tag'
 import {
-  useAuthStore,
+  useUserStore,
   useMessageStore
 } from '../stores'
 
@@ -25,9 +25,9 @@ export default {
 
   setup() {
     const messages = useMessageStore()
-    const auth = useAuthStore()
+    const user = useUserStore()
 
-    return { auth, messages }
+    return { user, messages }
   },
 
   methods: {

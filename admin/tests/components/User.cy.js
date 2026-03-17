@@ -1,5 +1,5 @@
 import User from '../../src/components/User.vue'
-import { useAuthStore } from '../../src/stores'
+import { useUserStore } from '../../src/stores'
 
 const stubs = {
 }
@@ -8,8 +8,8 @@ function mountUser(perms = {}) {
   return cy.mount(User, {
     global: { stubs },
   }).then(() => {
-    const auth = useAuthStore()
-    auth.me = { permission: perms }
+    const user = useUserStore()
+    user.me = { permission: perms }
   })
 }
 

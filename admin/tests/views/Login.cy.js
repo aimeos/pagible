@@ -1,5 +1,5 @@
 import Login from '../../src/views/Login.vue'
-import { useAuthStore } from '../../src/stores'
+import { useUserStore } from '../../src/stores'
 
 describe('Login', () => {
   function mountLogin(opts = {}) {
@@ -7,8 +7,8 @@ describe('Login', () => {
       global: {
         plugins: [{
           install() {
-            const auth = useAuthStore()
-            auth.me = false // prevent real Apollo call in created()
+            const user = useUserStore()
+            user.me = false // prevent real Apollo call in created()
           }
         }],
         ...opts,

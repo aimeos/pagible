@@ -1,5 +1,5 @@
 import FileList from '../../src/views/FileList.vue'
-import { useAuthStore, useDrawerStore } from '../../src/stores'
+import { useUserStore, useDrawerStore } from '../../src/stores'
 
 const stubs = {
   FileListItems: { template: '<div class="file-list-items-stub" />' },
@@ -21,8 +21,8 @@ function mountFileList(perms = {}) {
       },
       plugins: [{
         install() {
-          const auth = useAuthStore()
-          auth.me = { permission: perms, email: 'test@test.com' }
+          const user = useUserStore()
+          user.me = { permission: perms, email: 'test@test.com' }
         }
       }],
     },
@@ -74,8 +74,8 @@ describe('FileList', () => {
         },
         plugins: [{
           install() {
-            const auth = useAuthStore()
-            auth.me = {
+            const user = useUserStore()
+            user.me = {
               permission: {},
               email: 'test@test.com',
               cmsdata: { file: { filter: { publish: 'DRAFT', editor: 'me@test.com' } } }

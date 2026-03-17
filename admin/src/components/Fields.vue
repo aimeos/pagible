@@ -3,7 +3,7 @@
 <script>
 import gql from 'graphql-tag'
 import { recording } from '../audio'
-import { useAuthStore, useMessageStore } from '../stores'
+import { useUserStore, useMessageStore } from '../stores'
 
 export default {
   props: {
@@ -32,9 +32,9 @@ export default {
 
   setup() {
     const messages = useMessageStore()
-    const auth = useAuthStore()
+    const user = useUserStore()
 
-    return { auth, messages }
+    return { user, messages }
   },
 
   methods: {
@@ -178,7 +178,7 @@ export default {
             />
           </template>
 
-          <v-card v-if="auth.can('text:translate')">
+          <v-card v-if="user.can('text:translate')">
             <v-toolbar density="compact">
               <v-toolbar-title>{{ $gettext('Translate') }}</v-toolbar-title>
               <v-btn icon="mdi-close" @click="menu[code] = false" />
@@ -197,7 +197,7 @@ export default {
           </v-card>
         </component>
         <v-btn
-          v-if="auth.can('text:write')"
+          v-if="user.can('text:write')"
           :title="$gettext('Generate text')"
           :loading="composing[code]"
           @click="writeText(code)"
@@ -205,7 +205,7 @@ export default {
           variant="text"
         />
         <v-btn
-          v-if="auth.can('audio:transcribe')"
+          v-if="user.can('audio:transcribe')"
           @click="record(code)"
           :class="{ dictating: audio[code] }"
           :icon="audio[code] ? 'mdi-microphone-outline' : 'mdi-microphone'"

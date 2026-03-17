@@ -1,5 +1,5 @@
 import PageListItems from '../../src/components/PageListItems.vue'
-import { useAuthStore } from '../../src/stores'
+import { useUserStore } from '../../src/stores'
 
 const stubs = {
   Draggable: {
@@ -31,8 +31,8 @@ function mountList(props = {}, perms = {}) {
       },
       plugins: [{
         install() {
-          const auth = useAuthStore()
-          auth.me = { permission: perms }
+          const user = useUserStore()
+          user.me = { permission: perms }
         }
       }],
     },

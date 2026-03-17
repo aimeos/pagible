@@ -6,7 +6,7 @@ import AsideMeta from '../components/AsideMeta.vue'
 import HistoryDialog from '../components/HistoryDialog.vue'
 import FileDetailRefs from '../components/FileDetailRefs.vue'
 import FileDetailItem from '../components/FileDetailItem.vue'
-import { useAuthStore, useDrawerStore, useMessageStore } from '../stores'
+import { useUserStore, useDrawerStore, useMessageStore } from '../stores'
 
 export default {
   components: {
@@ -37,9 +37,9 @@ export default {
   setup() {
     const messages = useMessageStore()
     const drawer = useDrawerStore()
-    const auth = useAuthStore()
+    const user = useUserStore()
 
-    return { auth, drawer, messages }
+    return { user, drawer, messages }
   },
 
   methods: {
@@ -59,7 +59,7 @@ export default {
     },
 
     publish(at = null) {
-      if (!this.auth.can('file:publish')) {
+      if (!this.user.can('file:publish')) {
         this.messages.add(this.$gettext('Permission denied'), 'error')
         return
       }
@@ -131,7 +131,7 @@ export default {
     },
 
     save(quiet = false) {
-      if (!this.auth.can('file:save')) {
+      if (!this.user.can('file:save')) {
         this.messages.add(this.$gettext('Permission denied'), 'error')
         return Promise.resolve(false)
       }
@@ -214,7 +214,7 @@ export default {
     },
 
     versions(id) {
-      if (!this.auth.can('file:view')) {
+      if (!this.user.can('file:view')) {
         this.messages.add(this.$gettext('Permission denied'), 'error')
         return Promise.resolve([])
       }
@@ -295,9 +295,9 @@ export default {
         :title="$gettext('Save')"
         :class="{ error: error }"
         class="menu-save"
-        :disabled="!changed || error || !auth.can('file:save')"
-        :variant="!changed || error || !auth.can('file:save') ? 'plain' : 'flat'"
-        :color="!changed || error || !auth.can('file:save') ? '' : 'blue-darken-1'"
+        :disabled="!changed || error || !user.can('file:save')"
+        :variant="!changed || error || !user.can('file:save') ? 'plain' : 'flat'"
+        :color="!changed || error || !user.can('file:save') ? '' : 'blue-darken-1'"
         icon="mdi-database-arrow-down"
       />
 
@@ -310,12 +310,12 @@ export default {
             :title="$gettext('Schedule publishing')"
             :class="{ error: error }"
             class="menu-publish"
-            :disabled="(item.published && !changed) || error || !auth.can('file:publish')"
+            :disabled="(item.published && !changed) || error || !user.can('file:publish')"
             :variant="
-              (item.published && !changed) || error || !auth.can('file:publish') ? 'plain' : 'flat'
+              (item.published && !changed) || error || !user.can('file:publish') ? 'plain' : 'flat'
             "
             :color="
-              (item.published && !changed) || error || !auth.can('file:publish')
+              (item.published && !changed) || error || !user.can('file:publish')
                 ? ''
                 : 'blue-darken-2'
             "
@@ -349,12 +349,12 @@ export default {
         :title="$gettext('Publish')"
         :class="{ error: error }"
         class="menu-publish"
-        :disabled="(item.published && !changed) || error || !auth.can('file:publish')"
+        :disabled="(item.published && !changed) || error || !user.can('file:publish')"
         :variant="
-          (item.published && !changed) || error || !auth.can('file:publish') ? 'plain' : 'flat'
+          (item.published && !changed) || error || !user.can('file:publish') ? 'plain' : 'flat'
         "
         :color="
-          (item.published && !changed) || error || !auth.can('file:publish') ? '' : 'blue-darken-2'
+          (item.published && !changed) || error || !user.can('file:publish') ? '' : 'blue-darken-2'
         "
       >
         <v-icon>
@@ -403,7 +403,7 @@ export default {
   <Teleport to="body">
     <HistoryDialog
       v-model="vhistory"
-      :readonly="!auth.can('file:save')"
+      :readonly="!user.can('file:save')"
       :current="{
         data: {
           lang: item.lang,

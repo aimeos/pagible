@@ -1,5 +1,5 @@
 import ElementDetailRefs from '../../src/components/ElementDetailRefs.vue'
-import { useAuthStore } from '../../src/stores'
+import { useUserStore } from '../../src/stores'
 
 const stubs = {
 }
@@ -12,8 +12,8 @@ function mountRefs(props = {}, perms = {}) {
     },
     global: { stubs },
   }).then(() => {
-    const auth = useAuthStore()
-    auth.me = { permission: perms }
+    const user = useUserStore()
+    user.me = { permission: perms }
   })
 }
 

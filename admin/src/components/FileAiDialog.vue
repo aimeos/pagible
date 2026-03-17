@@ -3,7 +3,7 @@
 <script>
 import gql from 'graphql-tag'
 import FileListItems from './FileListItems.vue'
-import { useAppStore, useAuthStore, useMessageStore } from '../stores'
+import { useAppStore, useUserStore, useMessageStore } from '../stores'
 import { recording } from '../audio'
 
 export default {
@@ -23,10 +23,10 @@ export default {
 
   setup() {
     const messages = useMessageStore()
-    const auth = useAuthStore()
+    const user = useUserStore()
     const app = useAppStore()
 
-    return { app, auth, messages }
+    return { app, user, messages }
   },
 
   data() {
@@ -124,7 +124,7 @@ export default {
     },
 
     create() {
-      if (!this.auth.can('image:imagine')) {
+      if (!this.user.can('image:imagine')) {
         this.messages.add(this.$gettext('Permission denied'), 'error')
         return
       }
@@ -222,7 +222,7 @@ export default {
     <v-card :loading="loading ? 'primary' : false">
       <template v-slot:append>
         <v-btn
-          v-if="auth.can('audio:transcribe')"
+          v-if="user.can('audio:transcribe')"
           @click="record()"
           :class="{ dictating: audio }"
           :icon="audio ? 'mdi-microphone-outline' : 'mdi-microphone'"

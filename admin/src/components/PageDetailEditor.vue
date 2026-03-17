@@ -3,7 +3,7 @@
 <script>
 import FieldsDialog from './FieldsDialog.vue'
 import SchemaDialog from './SchemaDialog.vue'
-import { useAppStore, useAuthStore, useMessageStore } from '../stores'
+import { useAppStore, useUserStore, useMessageStore } from '../stores'
 import { uid } from '../utils'
 
 export default {
@@ -23,10 +23,10 @@ export default {
 
   setup() {
     const messages = useMessageStore()
-    const auth = useAuthStore()
+    const user = useUserStore()
     const app = useAppStore()
 
-    return { app, auth, messages }
+    return { app, user, messages }
   },
 
   data() {
@@ -52,7 +52,7 @@ export default {
       this.$refs.iframe?.contentWindow?.postMessage('init', '*')
     })
 
-    if (this.auth.can('page:save')) {
+    if (this.user.can('page:save')) {
       this.messages.add(this.$gettext('Double-click to edit'), 'info')
     }
   },
@@ -271,7 +271,7 @@ export default {
       v-model="vedit"
       :assets="assets"
       :element="element.type === 'reference' ? elements[element.refid] : element"
-      :readonly="!auth.can('page:save') || !!element.refid"
+      :readonly="!user.can('page:save') || !!element.refid"
       :attach="$refs.preview"
       @update:element="update()"
     />

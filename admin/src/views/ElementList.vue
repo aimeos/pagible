@@ -7,7 +7,7 @@ import AsideList from '../components/AsideList.vue'
 import Navigation from '../components/Navigation.vue'
 import ElementDetail from '../views/ElementDetail.vue'
 import ElementListItems from '../components/ElementListItems.vue'
-import { useAuthStore, useDrawerStore } from '../stores'
+import { useUserStore, useDrawerStore } from '../stores'
 
 export default {
   components: {
@@ -31,7 +31,7 @@ export default {
     return {
       aside: null,
       defaults: defaults,
-      filter: { ...defaults, ...this.auth?.getData('element', 'filter') }
+      filter: { ...defaults, ...this.user?.getData('element', 'filter') }
     }
   },
 
@@ -39,20 +39,20 @@ export default {
     filter: {
       deep: true,
       handler(val) {
-        this.auth.saveData('element', 'filter', val)
+        this.user.saveData('element', 'filter', val)
       }
     }
   },
 
   setup() {
     const drawer = useDrawerStore()
-    const auth = useAuthStore()
+    const user = useUserStore()
 
-    return { auth, drawer }
+    return { user, drawer }
   },
 
   beforeUnmount() {
-    this.auth.flush()
+    this.user.flush()
   },
 
   methods: {
@@ -157,7 +157,7 @@ export default {
           {
             title: $gettext('Edited by me'),
             icon: 'mdi-account',
-            value: { editor: this.auth.me?.email }
+            value: { editor: this.user.me?.email }
           }
         ]
       },

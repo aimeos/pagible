@@ -1,5 +1,5 @@
 import PageList from '../../src/views/PageList.vue'
-import { useAuthStore } from '../../src/stores'
+import { useUserStore } from '../../src/stores'
 
 const stubs = {
   PageListItems: { template: '<div class="page-list-items-stub" />' },
@@ -20,8 +20,8 @@ function mountPageList(perms = {}) {
       },
       plugins: [{
         install() {
-          const auth = useAuthStore()
-          auth.me = { permission: perms, email: 'test@test.com' }
+          const user = useUserStore()
+          user.me = { permission: perms, email: 'test@test.com' }
         }
       }],
     },
@@ -96,8 +96,8 @@ describe('PageList', () => {
         },
         plugins: [{
           install() {
-            const auth = useAuthStore()
-            auth.me = {
+            const user = useUserStore()
+            user.me = {
               permission: {},
               email: 'test@test.com',
               cmsdata: { page: { filter: { view: 'list', publish: 'DRAFT' } } }

@@ -1,5 +1,5 @@
 import ItemsField from '../../src/fields/Items.vue'
-import { useAuthStore, useClipboardStore } from '../../src/stores'
+import { useUserStore, useClipboardStore } from '../../src/stores'
 
 const itemConfig = {
   item: {
@@ -12,8 +12,8 @@ function mountItems(props = {}, perms = {}) {
   return cy.mount(ItemsField, {
     props: { config: {}, assets: {}, ...props },
   }).then(() => {
-    const auth = useAuthStore()
-    auth.me = { permission: perms }
+    const user = useUserStore()
+    user.me = { permission: perms }
   })
 }
 

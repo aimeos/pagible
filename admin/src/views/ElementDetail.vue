@@ -6,7 +6,7 @@ import AsideMeta from '../components/AsideMeta.vue'
 import HistoryDialog from '../components/HistoryDialog.vue'
 import ElementDetailRefs from '../components/ElementDetailRefs.vue'
 import ElementDetailItem from '../components/ElementDetailItem.vue'
-import { useAuthStore, useDrawerStore, useMessageStore } from '../stores'
+import { useUserStore, useDrawerStore, useMessageStore } from '../stores'
 
 export default {
   components: {
@@ -37,13 +37,13 @@ export default {
   setup() {
     const messages = useMessageStore()
     const drawer = useDrawerStore()
-    const auth = useAuthStore()
+    const user = useUserStore()
 
-    return { auth, drawer, messages }
+    return { user, drawer, messages }
   },
 
   created() {
-    if (!this.item?.id || !this.auth.can('element:view')) {
+    if (!this.item?.id || !this.user.can('element:view')) {
       return
     }
 
@@ -121,7 +121,7 @@ export default {
     },
 
     publish(at = null) {
-      if (!this.auth.can('element:publish')) {
+      if (!this.user.can('element:publish')) {
         this.messages.add(this.$gettext('Permission denied'), 'error')
         return
       }
@@ -193,7 +193,7 @@ export default {
     },
 
     save(quiet = false) {
-      if (!this.auth.can('element:save')) {
+      if (!this.user.can('element:save')) {
         this.messages.add(this.$gettext('Permission denied'), 'error')
         return Promise.resolve(false)
       }
@@ -264,7 +264,7 @@ export default {
     },
 
     versions(id) {
-      if (!this.auth.can('element:view')) {
+      if (!this.user.can('element:view')) {
         this.messages.add(this.$gettext('Permission denied'), 'error')
         return Promise.resolve([])
       }
@@ -351,9 +351,9 @@ export default {
         :title="$gettext('Save')"
         :class="{ error: error }"
         class="menu-save"
-        :disabled="!changed || error || !auth.can('element:save')"
-        :variant="!changed || error || !auth.can('element:save') ? 'plain' : 'flat'"
-        :color="!changed || error || !auth.can('element:save') ? '' : 'blue-darken-1'"
+        :disabled="!changed || error || !user.can('element:save')"
+        :variant="!changed || error || !user.can('element:save') ? 'plain' : 'flat'"
+        :color="!changed || error || !user.can('element:save') ? '' : 'blue-darken-1'"
         icon="mdi-database-arrow-down"
       />
 
@@ -366,14 +366,14 @@ export default {
             :title="$gettext('Schedule publishing')"
             :class="{ error: error }"
             class="menu-publish"
-            :disabled="(item.published && !changed) || error || !auth.can('element:publish')"
+            :disabled="(item.published && !changed) || error || !user.can('element:publish')"
             :variant="
-              (item.published && !changed) || error || !auth.can('element:publish')
+              (item.published && !changed) || error || !user.can('element:publish')
                 ? 'plain'
                 : 'flat'
             "
             :color="
-              (item.published && !changed) || error || !auth.can('element:publish')
+              (item.published && !changed) || error || !user.can('element:publish')
                 ? ''
                 : 'blue-darken-2'
             "
@@ -407,12 +407,12 @@ export default {
         :title="$gettext('Publish')"
         :class="{ error: error }"
         class="menu-publish"
-        :disabled="(item.published && !changed) || error || !auth.can('element:publish')"
+        :disabled="(item.published && !changed) || error || !user.can('element:publish')"
         :variant="
-          (item.published && !changed) || error || !auth.can('element:publish') ? 'plain' : 'flat'
+          (item.published && !changed) || error || !user.can('element:publish') ? 'plain' : 'flat'
         "
         :color="
-          (item.published && !changed) || error || !auth.can('element:publish')
+          (item.published && !changed) || error || !user.can('element:publish')
             ? ''
             : 'blue-darken-2'
         "
@@ -463,7 +463,7 @@ export default {
   <Teleport to="body">
     <HistoryDialog
       v-model="vhistory"
-      :readonly="!auth.can('element:save')"
+      :readonly="!user.can('element:save')"
       :current="{
         data: {
           lang: item.lang,

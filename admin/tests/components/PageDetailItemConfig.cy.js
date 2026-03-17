@@ -1,5 +1,5 @@
 import PageDetailItemConfig from '../../src/components/PageDetailItemConfig.vue'
-import { useAuthStore, useSchemaStore } from '../../src/stores'
+import { useUserStore, useSchemaStore } from '../../src/stores'
 
 const stubs = {
   Fields: { template: '<div class="fields-stub" />' },
@@ -45,8 +45,8 @@ function mountConfig(props = {}, perms = {}) {
       plugins: [setupSchemaPlugin()],
     },
   }).then(() => {
-    const auth = useAuthStore()
-    auth.me = { permission: perms }
+    const user = useUserStore()
+    user.me = { permission: perms }
   })
 }
 

@@ -10,7 +10,7 @@
 import gql from 'graphql-tag'
 import { recording } from '../audio'
 import { VueDraggable } from 'vue-draggable-plus'
-import { useAuthStore, useClipboardStore, useMessageStore } from '../stores'
+import { useUserStore, useClipboardStore, useMessageStore } from '../stores'
 
 export default {
   components: {
@@ -45,9 +45,9 @@ export default {
   setup() {
     const clipboard = useClipboardStore()
     const messages = useMessageStore()
-    const auth = useAuthStore()
+    const user = useUserStore()
 
-    return { auth, clipboard, messages }
+    return { user, clipboard, messages }
   },
 
   computed: {
@@ -312,7 +312,7 @@ export default {
                 class="actions"
               >
                 <component
-                  v-if="auth.can('text:translate')"
+                  v-if="user.can('text:translate')"
                   :is="$vuetify.display.xs ? 'v-dialog' : 'v-menu'"
                   v-model="menu[idx + code]"
                   transition="scale-transition"
@@ -348,7 +348,7 @@ export default {
                   </v-card>
                 </component>
                 <v-btn
-                  v-if="auth.can('text:write')"
+                  v-if="user.can('text:write')"
                   :title="$gettext('Generate text')"
                   :loading="composing[idx + code]"
                   @click="writeText(idx, code)"
@@ -356,7 +356,7 @@ export default {
                   variant="text"
                 />
                 <v-btn
-                  v-if="auth.can('audio:transcribe')"
+                  v-if="user.can('audio:transcribe')"
                   @click="record(idx, code)"
                   :class="{ dictating: audio[idx + code] }"
                   :icon="audio[idx + code] ? 'mdi-microphone-outline' : 'mdi-microphone'"

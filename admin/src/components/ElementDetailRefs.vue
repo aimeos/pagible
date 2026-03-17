@@ -2,7 +2,7 @@
 
 <script>
 import gql from 'graphql-tag'
-import { useAuthStore } from '../stores'
+import { useUserStore } from '../stores'
 
 export default {
   props: {
@@ -18,16 +18,16 @@ export default {
   }),
 
   setup() {
-    const auth = useAuthStore()
+    const user = useUserStore()
 
-    return { auth }
+    return { user }
   },
 
   watch: {
     item: {
       immediate: true,
       handler(item) {
-        if (!item.id || !this.auth.can('element:view')) {
+        if (!item.id || !this.user.can('element:view')) {
           return
         }
 
@@ -75,7 +75,7 @@ export default {
                 }
               })
               .filter((item) => {
-                return this.auth.can(item.type.toLowerCase() + ':view')
+                return this.user.can(item.type.toLowerCase() + ':view')
               })
           })
           .catch((error) => {
@@ -91,7 +91,7 @@ export default {
   <v-container>
     <v-sheet class="scroll">
       <v-expansion-panels v-model="panel" elevation="0" multiple>
-        <v-expansion-panel v-if="element.bypages?.length && auth.can('page:view')">
+        <v-expansion-panel v-if="element.bypages?.length && user.can('page:view')">
           <v-expansion-panel-title>{{ $gettext('Shared elements') }}</v-expansion-panel-title>
           <v-expansion-panel-text>
             <v-table density="comfortable" hover>

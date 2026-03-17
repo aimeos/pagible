@@ -1,5 +1,5 @@
 import App from '../src/App.vue'
-import { useAuthStore, useMessageStore } from '../src/stores'
+import { useUserStore, useMessageStore } from '../src/stores'
 
 describe('App', () => {
   function mountApp(perms = {}) {
@@ -7,8 +7,8 @@ describe('App', () => {
       global: {
         plugins: [{
           install() {
-            const auth = useAuthStore()
-            auth.me = { permission: perms }
+            const user = useUserStore()
+            user.me = { permission: perms }
           }
         }],
       },

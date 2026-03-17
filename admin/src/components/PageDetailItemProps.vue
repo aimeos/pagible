@@ -4,7 +4,7 @@
 import gql from 'graphql-tag'
 import {
   useAppStore,
-  useAuthStore,
+  useUserStore,
   useConfigStore,
   useLanguageStore,
   useSideStore
@@ -29,10 +29,10 @@ export default {
     const languages = useLanguageStore()
     const config = useConfigStore()
     const side = useSideStore()
-    const auth = useAuthStore()
+    const user = useUserStore()
     const app = useAppStore()
 
-    return { app, auth, side, config, languages }
+    return { app, user, side, config, languages }
   },
 
   created() {
@@ -41,7 +41,7 @@ export default {
 
   computed: {
     readonly() {
-      return !this.auth.can('page:save')
+      return !this.user.can('page:save')
     }
   },
 

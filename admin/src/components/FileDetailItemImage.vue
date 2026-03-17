@@ -5,7 +5,7 @@ import gql from 'graphql-tag'
 import Cropper from 'cropperjs'
 import 'cropperjs/dist/cropper.css'
 import {
-  useAuthStore,
+  useUserStore,
   useMessageStore
 } from '../stores'
 
@@ -41,9 +41,9 @@ export default {
 
   setup() {
     const messages = useMessageStore()
-    const auth = useAuthStore()
+    const user = useUserStore()
 
-    return { auth, messages }
+    return { user, messages }
   },
 
   mounted() {
@@ -114,7 +114,7 @@ export default {
     },
 
     erase() {
-      if (this.readonly || !this.auth.can('image:erase')) {
+      if (this.readonly || !this.user.can('image:erase')) {
         return this.messages.add(this.$gettext('Permission denied'), 'error')
       }
 
@@ -222,7 +222,7 @@ export default {
     },
 
     inpaint() {
-      if (this.readonly || !this.auth.can('image:inpaint')) {
+      if (this.readonly || !this.user.can('image:inpaint')) {
         return this.messages.add(this.$gettext('Permission denied'), 'error')
       }
 
@@ -272,7 +272,7 @@ export default {
     },
 
     isolate() {
-      if (this.readonly || !this.auth.can('image:isolate')) {
+      if (this.readonly || !this.user.can('image:isolate')) {
         return this.messages.add(this.$gettext('Permission denied'), 'error')
       }
 
@@ -337,7 +337,7 @@ export default {
     },
 
     repaint() {
-      if (this.readonly || !this.auth.can('image:repaint')) {
+      if (this.readonly || !this.user.can('image:repaint')) {
         return this.messages.add(this.$gettext('Permission denied'), 'error')
       }
 
@@ -436,7 +436,7 @@ export default {
     },
 
     uncrop() {
-      if (this.readonly || !this.auth.can('image:uncrop')) {
+      if (this.readonly || !this.user.can('image:uncrop')) {
         return this.messages.add(this.$gettext('Permission denied'), 'error')
       }
 
@@ -509,7 +509,7 @@ export default {
     },
 
     upscale(factor) {
-      if (this.readonly || !this.auth.can('image:upscale')) {
+      if (this.readonly || !this.user.can('image:upscale')) {
         return this.messages.add(this.$gettext('Permission denied'), 'error')
       }
 
@@ -686,7 +686,7 @@ export default {
       />
 
       <v-btn
-        v-if="auth.can('image:erase')"
+        v-if="user.can('image:erase')"
         @click="erase()"
         :disabled="!selected"
         :loading="loading.erase"
@@ -697,8 +697,8 @@ export default {
 
       <v-dialog
         v-if="
-          (selected && auth.can('image:inpaint')) ||
-          (!selected && auth.can('image:repaint'))
+          (selected && user.can('image:inpaint')) ||
+          (!selected && user.can('image:repaint'))
         "
         v-model="menu['paint']"
         transition="scale-transition"
@@ -740,7 +740,7 @@ export default {
       </v-dialog>
 
       <v-btn
-        v-if="auth.can('image:isolate')"
+        v-if="user.can('image:isolate')"
         @click="isolate()"
         :title="$gettext('Remove background')"
         :loading="loading.isolate"
@@ -749,7 +749,7 @@ export default {
       />
 
       <v-dialog
-        v-if="auth.can('image:uncrop')"
+        v-if="user.can('image:uncrop')"
         v-model="menu['uncrop']"
         transition="scale-transition"
         max-width="300"
@@ -828,7 +828,7 @@ export default {
       </v-dialog>
 
       <component
-        v-if="auth.can('image:upscale')"
+        v-if="user.can('image:upscale')"
         :is="$vuetify.display.xs ? 'v-dialog' : 'v-menu'"
         v-model="menu['upscale']"
         transition="scale-transition"

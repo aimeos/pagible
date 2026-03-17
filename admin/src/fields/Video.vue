@@ -38,7 +38,7 @@ export default {
               />
             </template>
             <v-list>
-              <v-list-item v-if="auth.can('file:view')">
+              <v-list-item v-if="user.can('file:view')">
                 <v-btn @click="open(file)" prepend-icon="mdi-pencil" variant="text">
                   {{ $gettext('Edit') }}
                 </v-btn>
@@ -54,7 +54,7 @@ export default {
 
         <div v-else-if="!readonly" class="file">
           <v-btn
-            v-if="auth.can('file:view')"
+            v-if="user.can('file:view')"
             @click="vfiles = true"
             :title="$gettext('Add file')"
             icon="mdi-button-cursor"

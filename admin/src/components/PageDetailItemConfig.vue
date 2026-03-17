@@ -3,7 +3,7 @@
 <script>
 import Fields from './Fields.vue'
 import SchemaItems from './SchemaItems.vue'
-import { useAuthStore, useMessageStore, useSchemaStore, useSideStore } from '../stores'
+import { useUserStore, useMessageStore, useSchemaStore, useSideStore } from '../stores'
 import { uid } from '../utils'
 
 export default {
@@ -28,9 +28,9 @@ export default {
     const messages = useMessageStore()
     const schemas = useSchemaStore()
     const side = useSideStore()
-    const auth = useAuthStore()
+    const user = useUserStore()
 
-    return { auth, messages, schemas, side }
+    return { user, messages, schemas, side }
   },
 
   computed: {
@@ -176,7 +176,7 @@ export default {
         >
           <v-expansion-panel-title expand-icon="mdi-pencil">
             <v-btn
-              v-if="auth.can('page:save') && auth.can('config:page')"
+              v-if="user.can('page:save') && user.can('config:page')"
               @click="remove(code)"
               :title="$gettext('Remove content element')"
               icon="mdi-delete"
@@ -192,7 +192,7 @@ export default {
               v-model:files="el.files"
               @error="error(el, $event)"
               @change="update(el)"
-              :readonly="!auth.can('page:save') || !auth.can('config:page')"
+              :readonly="!user.can('page:save') || !user.can('config:page')"
               :fields="fields(el.type)"
               :assets="assets"
               :type="el.type"
@@ -201,7 +201,7 @@ export default {
         </v-expansion-panel>
       </v-expansion-panels>
 
-      <div v-if="available && auth.can('page:save') && auth.can('config:page')" class="btn-group">
+      <div v-if="available && user.can('page:save') && user.can('config:page')" class="btn-group">
         <v-btn
           @click="vschemas = true"
           :title="$gettext('Add element')"

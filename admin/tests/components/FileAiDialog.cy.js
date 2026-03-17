@@ -1,5 +1,5 @@
 import FileAiDialog from '../../src/components/FileAiDialog.vue'
-import { useAuthStore } from '../../src/stores'
+import { useUserStore } from '../../src/stores'
 
 const stubs = {
   FileListItems: { template: '<div class="file-list-stub" />' },
@@ -13,8 +13,8 @@ function mountDialog(props = {}, perms = {}) {
     },
     global: { stubs },
   }).then(() => {
-    const auth = useAuthStore()
-    auth.me = { permission: perms }
+    const user = useUserStore()
+    user.me = { permission: perms }
   })
 }
 

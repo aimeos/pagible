@@ -1,5 +1,5 @@
 import VideoField from '../../src/fields/Video.vue'
-import { useAuthStore } from '../../src/stores'
+import { useUserStore } from '../../src/stores'
 
 const videoAsset = {
   id: '1',
@@ -24,8 +24,8 @@ function mountVideo(props = {}, perms = {}) {
     props: { config: {}, assets: {}, ...props },
     global: { stubs },
   }).then(() => {
-    const auth = useAuthStore()
-    auth.me = { permission: perms }
+    const user = useUserStore()
+    user.me = { permission: perms }
   })
 }
 

@@ -1,5 +1,5 @@
 import ElementDetailItem from '../../src/components/ElementDetailItem.vue'
-import { useAuthStore, useSchemaStore } from '../../src/stores'
+import { useUserStore, useSchemaStore } from '../../src/stores'
 
 const stubs = {
   Fields: { template: '<div class="fields-stub" />' },
@@ -40,8 +40,8 @@ function mountDetail(props = {}, perms = {}) {
       },
     },
   }).then(() => {
-    const auth = useAuthStore()
-    auth.me = { permission: perms }
+    const user = useUserStore()
+    user.me = { permission: perms }
   })
 }
 
@@ -93,8 +93,8 @@ describe('ElementDetailItem', () => {
         },
       },
     }).then(() => {
-      const auth = useAuthStore()
-      auth.me = { permission: { 'element:save': true } }
+      const user = useUserStore()
+      user.me = { permission: { 'element:save': true } }
     })
     cy.get('input').first().clear().type('New Name')
     cy.get('@update').should('have.been.called')

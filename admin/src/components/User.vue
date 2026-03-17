@@ -3,29 +3,29 @@
 <script>
 import { useTheme } from 'vuetify'
 import { useGettext } from 'vue3-gettext'
-import { useAuthStore, useLanguageStore, useMessageStore } from '../stores'
+import { useUserStore, useLanguageStore, useMessageStore } from '../stores'
 
 export default {
   data: () => ({
-    user: null,
+    me: null,
     menu: {}
   }),
 
   setup() {
     const languages = useLanguageStore()
     const messages = useMessageStore()
-    const auth = useAuthStore()
+    const user = useUserStore()
     const i18n = useGettext()
     const theme = useTheme()
 
-    return { auth, i18n, languages, messages, theme }
+    return { user, i18n, languages, messages, theme }
   },
 
   created() {
-    this.auth
+    this.user
       .user()
       .then((user) => {
-        this.user = user
+        this.me = user
       })
       .catch((error) => {
         this.messages.add(this.$gettext('Failed to load user') + ':\n' + error, 'error')
@@ -43,8 +43,8 @@ export default {
     },
 
     logout() {
-      this.auth.logout().finally(() => {
-        this.user = null
+      this.user.logout().finally(() => {
+        this.me = null
         this.$router.push({ name: 'login' })
       })
     }
@@ -86,7 +86,7 @@ export default {
     </v-card>
   </component>
 
-  <v-menu v-if="user">
+  <v-menu v-if="me">
     <template #activator="{ props }">
       <v-btn
         v-bind="props"
@@ -96,8 +96,8 @@ export default {
       />
     </template>
     <v-list>
-      <v-list-item v-if="user?.name">
-        {{ user.name }}
+      <v-list-item v-if="me?.name">
+        {{ me.name }}
       </v-list-item>
       <v-list-item>
         <v-btn prepend-icon="mdi-logout" @click="logout()" variant="text" class="menu-item">{{

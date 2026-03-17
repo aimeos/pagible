@@ -1,5 +1,5 @@
 import PageDetailContentList from '../../src/components/PageDetailContentList.vue'
-import { useAuthStore, useSchemaStore } from '../../src/stores'
+import { useUserStore, useSchemaStore } from '../../src/stores'
 
 const stubs = {
   Fields: { template: '<div class="fields-stub" />' },
@@ -47,8 +47,8 @@ function mountList(props = {}, perms = {}) {
       },
     },
   }).then(() => {
-    const auth = useAuthStore()
-    auth.me = { permission: perms }
+    const user = useUserStore()
+    user.me = { permission: perms }
   })
 }
 

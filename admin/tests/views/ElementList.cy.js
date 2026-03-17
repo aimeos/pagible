@@ -1,5 +1,5 @@
 import ElementList from '../../src/views/ElementList.vue'
-import { useAuthStore } from '../../src/stores'
+import { useUserStore } from '../../src/stores'
 
 const stubs = {
   ElementListItems: { template: '<div class="element-list-items-stub" />' },
@@ -20,8 +20,8 @@ function mountElementList(perms = {}) {
       },
       plugins: [{
         install() {
-          const auth = useAuthStore()
-          auth.me = { permission: perms, email: 'test@test.com' }
+          const user = useUserStore()
+          user.me = { permission: perms, email: 'test@test.com' }
         }
       }],
     },
@@ -73,8 +73,8 @@ describe('ElementList', () => {
         },
         plugins: [{
           install() {
-            const auth = useAuthStore()
-            auth.me = {
+            const user = useUserStore()
+            user.me = {
               permission: {},
               email: 'test@test.com',
               cmsdata: { element: { filter: { publish: 'PUBLISHED', lang: 'de' } } }

@@ -10,7 +10,7 @@ import { toString } from 'mdast-util-to-string'
 import { toMarkdown } from 'mdast-util-to-markdown'
 import { fromMarkdown } from 'mdast-util-from-markdown'
 import {
-  useAuthStore,
+  useUserStore,
   useClipboardStore,
   useMessageStore,
   useSchemaStore,
@@ -60,9 +60,9 @@ export default {
     const messages = useMessageStore()
     const schemas = useSchemaStore()
     const side = useSideStore()
-    const auth = useAuthStore()
+    const user = useUserStore()
 
-    return { auth, clipboard, side, messages, schemas }
+    return { user, clipboard, side, messages, schemas }
   },
 
   computed: {
@@ -291,7 +291,7 @@ export default {
     },
 
     refine() {
-      if (!this.auth.can('page:refine')) {
+      if (!this.user.can('page:refine')) {
         this.messages.add(this.$gettext('Permission denied'), 'error')
         return
       }
@@ -380,7 +380,7 @@ export default {
     },
 
     share(idx) {
-      if (!this.auth.can('element:add')) {
+      if (!this.user.can('element:add')) {
         this.messages.add(this.$gettext('Permission denied'), 'error')
         return
       }
@@ -639,7 +639,7 @@ export default {
 <template>
   <div v-observe-visibility="store">
     <v-textarea
-      v-if="auth.can('page:refine')"
+      v-if="user.can('page:refine')"
       v-model="chat"
       :loading="refining"
       :placeholder="$gettext('Describe the task you want to perform')"
@@ -707,7 +707,7 @@ export default {
         </v-btn>
 
         <v-btn
-          v-else-if="auth.can('audio:transcribe')"
+          v-else-if="user.can('audio:transcribe')"
           @click="record()"
           :title="$gettext('Dictate')"
           :class="{ dictating: audio }"
@@ -750,7 +750,7 @@ export default {
     </div>
 
     <div class="header">
-      <div v-if="auth.can('page:save')" class="bulk">
+      <div v-if="user.can('page:save')" class="bulk">
         <v-checkbox-btn v-model="checked" @click.stop="toggle()" />
         <v-menu>
           <template v-slot:activator="{ props }">
@@ -807,7 +807,7 @@ export default {
     <v-expansion-panels class="list" v-model="panel" elevation="0" multiple>
       <VueDraggable
         @update:modelValue="$emit('update:content', $event)"
-        :disabled="$vuetify.display.smAndDown || !auth.can('page:save')"
+        :disabled="$vuetify.display.smAndDown || !user.can('page:save')"
         :modelValue="content"
         :forceFallback="true"
         fallbackTolerance="10"
@@ -823,7 +823,7 @@ export default {
         >
           <v-expansion-panel-title>
             <v-checkbox-btn
-              v-if="auth.can('page:save')"
+              v-if="user.can('page:save')"
               :model-value="el._checked"
               @click.stop="el._checked = !el._checked"
             />
@@ -893,7 +893,7 @@ export default {
                   <v-divider></v-divider>
 
                   <v-list-item
-                    v-if="!el._error && el.type !== 'reference' && auth.can('element:add')"
+                    v-if="!el._error && el.type !== 'reference' && user.can('element:add')"
                   >
                     <v-btn prepend-icon="mdi-link" variant="text" @click="share(idx)">{{
                       $gettext('Make shared')
@@ -948,7 +948,7 @@ export default {
               v-else
               v-model:data="el.data"
               v-model:files="el.files"
-              :readonly="!auth.can('page:save')"
+              :readonly="!user.can('page:save')"
               :fields="fields(el.type)"
               :assets="assets"
               :type="el.type"
@@ -960,7 +960,7 @@ export default {
       </VueDraggable>
     </v-expansion-panels>
 
-    <div v-if="auth.can('page:save')" class="btn-group">
+    <div v-if="user.can('page:save')" class="btn-group">
       <v-btn
         @click="openSchemas"
         :title="$gettext('Add element')"

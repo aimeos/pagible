@@ -10,7 +10,7 @@ import PageDetailEditor from '../components/PageDetailEditor.vue'
 import PageDetailContent from '../components/PageDetailContent.vue'
 import PageDetailMetrics from '../components/PageDetailMetrics.vue'
 import {
-  useAuthStore,
+  useUserStore,
   useDrawerStore,
   useLanguageStore,
   useMessageStore,
@@ -47,9 +47,9 @@ export default {
     const messages = useMessageStore()
     const schemas = useSchemaStore()
     const drawer = useDrawerStore()
-    const auth = useAuthStore()
+    const user = useUserStore()
 
-    return { auth, drawer, languages, messages, schemas }
+    return { user, drawer, languages, messages, schemas }
   },
 
   data: () => ({
@@ -143,7 +143,7 @@ export default {
   created() {
     this.$options._write = this.write
 
-    if (!this.item?.id || !this.auth.can('page:view')) {
+    if (!this.item?.id || !this.user.can('page:view')) {
       return
     }
 
@@ -327,7 +327,7 @@ export default {
     },
 
     publish(at = null) {
-      if (!this.auth.can('page:publish')) {
+      if (!this.user.can('page:publish')) {
         this.messages.add(this.$gettext('Permission denied'), 'error')
         return
       }
@@ -403,7 +403,7 @@ export default {
     },
 
     save(quiet = false) {
-      if (!this.auth.can('page:save')) {
+      if (!this.user.can('page:save')) {
         this.messages.add(this.$gettext('Permission denied'), 'error')
         return Promise.resolve(false)
       }
@@ -500,7 +500,7 @@ export default {
     },
 
     translatePage(lang) {
-      if (!this.auth.can('text:translate')) {
+      if (!this.user.can('text:translate')) {
         this.messages.add(this.$gettext('Permission denied'), 'error')
         return
       }
@@ -608,7 +608,7 @@ export default {
     },
 
     versions(id) {
-      if (!this.auth.can('page:view')) {
+      if (!this.user.can('page:view')) {
         this.messages.add(this.$gettext('Permission denied'), 'error')
         return Promise.resolve([])
       }
@@ -687,7 +687,7 @@ export default {
     </v-app-bar-title>
 
     <template v-slot:append>
-      <v-menu v-if="auth.can('text:translate')">
+      <v-menu v-if="user.can('text:translate')">
         <template #activator="{ props }">
           <v-btn
             v-bind="props"
@@ -721,9 +721,9 @@ export default {
         @click="save()"
         :loading="saving"
         :title="$gettext('Save')"
-        :disabled="!hasChanged || hasError || !auth.can('page:save')"
-        :variant="!hasChanged || hasError || !auth.can('page:save') ? 'plain' : 'flat'"
-        :class="{ active: hasChanged && !hasError && auth.can('page:save'), error: hasError }"
+        :disabled="!hasChanged || hasError || !user.can('page:save')"
+        :variant="!hasChanged || hasError || !user.can('page:save') ? 'plain' : 'flat'"
+        :class="{ active: hasChanged && !hasError && user.can('page:save'), error: hasError }"
         icon="mdi-database-arrow-down"
         class="menu-save"
       />
@@ -735,14 +735,14 @@ export default {
             icon
             :loading="publishing"
             :title="$gettext('Schedule publishing')"
-            :disabled="(item.published && !hasChanged) || hasError || !auth.can('page:publish')"
+            :disabled="(item.published && !hasChanged) || hasError || !user.can('page:publish')"
             :variant="
-              (item.published && !hasChanged) || hasError || !auth.can('page:publish')
+              (item.published && !hasChanged) || hasError || !user.can('page:publish')
                 ? 'plain'
                 : 'flat'
             "
             :class="{
-              active: (!item.published || hasChanged) && !hasError && auth.can('page:publish'),
+              active: (!item.published || hasChanged) && !hasError && user.can('page:publish'),
               error: hasError
             }"
             class="menu-publishat"
@@ -774,14 +774,14 @@ export default {
         @click="publish()"
         :loading="publishing"
         :title="$gettext('Publish')"
-        :disabled="(item.published && !hasChanged) || hasError || !auth.can('page:publish')"
+        :disabled="(item.published && !hasChanged) || hasError || !user.can('page:publish')"
         :variant="
-          (item.published && !hasChanged) || hasError || !auth.can('page:publish')
+          (item.published && !hasChanged) || hasError || !user.can('page:publish')
             ? 'plain'
             : 'flat'
         "
         :class="{
-          active: (!item.published || hasChanged) && !hasError && auth.can('page:publish'),
+          active: (!item.published || hasChanged) && !hasError && user.can('page:publish'),
           error: hasError
         }"
         class="menu-publish"
@@ -821,7 +821,7 @@ export default {
         >
           {{ $gettext('Page') }}
         </v-tab>
-        <v-tab v-if="auth.can('page:metrics')" value="metrics" @click="aside = ''">
+        <v-tab v-if="user.can('page:metrics')" value="metrics" @click="aside = ''">
           {{ $gettext('Metrics') }}
         </v-tab>
       </v-tabs>
@@ -859,7 +859,7 @@ export default {
           />
         </v-window-item>
 
-        <v-window-item v-if="auth.can('page:metrics')" value="metrics">
+        <v-window-item v-if="user.can('page:metrics')" value="metrics">
           <PageDetailMetrics ref="metrics" :item="item" />
         </v-window-item>
       </v-window>
@@ -873,7 +873,7 @@ export default {
     <HistoryDialog
       ref="history"
       v-model="vhistory"
-      :readonly="!auth.can('page:save')"
+      :readonly="!user.can('page:save')"
       :current="{
         data: {
           related_id: item.related_id,

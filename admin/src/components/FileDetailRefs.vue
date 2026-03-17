@@ -2,7 +2,7 @@
 
 <script>
 import gql from 'graphql-tag'
-import { useAuthStore } from '../stores'
+import { useUserStore } from '../stores'
 import PageDetail from '../views/PageDetail.vue'
 import ElementDetail from '../views/ElementDetail.vue'
 
@@ -22,8 +22,8 @@ export default {
   }),
 
   setup() {
-    const auth = useAuthStore()
-    return { auth }
+    const user = useUserStore()
+    return { user }
   },
 
   methods: {
@@ -40,7 +40,7 @@ export default {
     item: {
       immediate: true,
       handler(item) {
-        if (!item.id || !this.auth.can('file:view')) {
+        if (!item.id || !this.user.can('file:view')) {
           return
         }
 
@@ -93,7 +93,7 @@ export default {
                 }
               })
               .filter((item) => {
-                return this.auth.can(item.type.toLowerCase() + ':view')
+                return this.user.can(item.type.toLowerCase() + ':view')
               })
           })
           .catch((error) => {
@@ -109,7 +109,7 @@ export default {
   <v-container>
     <v-sheet class="scroll">
       <v-expansion-panels v-model="panel" elevation="0" multiple>
-        <v-expansion-panel v-if="file.bypages?.length && auth.can('page:view')">
+        <v-expansion-panel v-if="file.bypages?.length && user.can('page:view')">
           <v-expansion-panel-title>{{ $gettext('Pages') }}</v-expansion-panel-title>
           <v-expansion-panel-text>
             <v-table class="pages" density="comfortable" hover>
@@ -131,7 +131,7 @@ export default {
           </v-expansion-panel-text>
         </v-expansion-panel>
 
-        <v-expansion-panel v-if="file.byelements?.length && auth.can('element:view')">
+        <v-expansion-panel v-if="file.byelements?.length && user.can('element:view')">
           <v-expansion-panel-title>{{ $gettext('Elements') }}</v-expansion-panel-title>
           <v-expansion-panel-text>
             <v-table class="elements" density="comfortable" hover>

@@ -1,5 +1,5 @@
 import PageDetailEditor from '../../src/components/PageDetailEditor.vue'
-import { useAppStore, useAuthStore } from '../../src/stores'
+import { useAppStore, useUserStore } from '../../src/stores'
 
 const stubs = {
   FieldsDialog: { template: '<div class="fields-dialog-stub" />' },
@@ -34,8 +34,8 @@ function mountEditor(props = {}, perms = {}) {
       },
       plugins: [{
         install() {
-          const auth = useAuthStore()
-          auth.me = { permission: perms }
+          const user = useUserStore()
+          user.me = { permission: perms }
           const app = useAppStore()
           app.urlpage = 'http://localhost/_domain_/_path_'
         }

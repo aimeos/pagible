@@ -1,5 +1,5 @@
 import ElementListItems from '../../src/components/ElementListItems.vue'
-import { useAuthStore } from '../../src/stores'
+import { useUserStore } from '../../src/stores'
 
 const stubs = {
   SchemaItems: { template: '<div class="schema-items-stub" />' },
@@ -17,8 +17,8 @@ function mountList(props = {}, perms = {}) {
       },
     },
   }).then(() => {
-    const auth = useAuthStore()
-    auth.me = { permission: perms }
+    const user = useUserStore()
+    user.me = { permission: perms }
   })
 }
 

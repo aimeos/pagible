@@ -2,7 +2,7 @@
 
 <script>
 import gql from 'graphql-tag'
-import { useAppStore, useAuthStore, useMessageStore } from '../stores'
+import { useAppStore, useUserStore, useMessageStore } from '../stores'
 
 export default {
   props: {
@@ -20,7 +20,7 @@ export default {
       items: [],
       menu: [],
       term: '',
-      sort: this.auth.getData('file', 'sort') || { column: 'ID', order: 'DESC' },
+      sort: this.user.getData('file', 'sort') || { column: 'ID', order: 'DESC' },
       page: 1,
       last: 1,
       limit: 100,
@@ -33,15 +33,15 @@ export default {
 
   setup() {
     const messages = useMessageStore()
-    const auth = useAuthStore()
+    const user = useUserStore()
     const app = useAppStore()
 
-    return { app, auth, messages }
+    return { app, user, messages }
   },
 
   created() {
     this.searchd = this.debounce(this.search, 500)
-    this.vgrid = this.auth.getData('file', 'grid') ?? this.grid
+    this.vgrid = this.user.getData('file', 'grid') ?? this.grid
     this.search()
   },
 
@@ -71,7 +71,7 @@ export default {
 
   methods: {
     add(ev) {
-      if (this.embed || !this.auth.can('file:add')) {
+      if (this.embed || !this.user.can('file:add')) {
         this.messages.add(this.$gettext('Permission denied'), 'error')
         return
       }
@@ -144,7 +144,7 @@ export default {
     },
 
     drop(item) {
-      if (!this.auth.can('file:drop')) {
+      if (!this.user.can('file:drop')) {
         this.messages.add(this.$gettext('Permission denied'), 'error')
         return
       }
@@ -189,7 +189,7 @@ export default {
     },
 
     keep(item) {
-      if (!this.auth.can('file:keep')) {
+      if (!this.user.can('file:keep')) {
         this.messages.add(this.$gettext('Permission denied'), 'error')
         return
       }
@@ -232,7 +232,7 @@ export default {
     },
 
     publish(item) {
-      if (!this.auth.can('file:publish')) {
+      if (!this.user.can('file:publish')) {
         this.messages.add(this.$gettext('Permission denied'), 'error')
         return
       }
@@ -280,7 +280,7 @@ export default {
     },
 
     purge(item) {
-      if (!this.auth.can('file:purge')) {
+      if (!this.user.can('file:purge')) {
         this.messages.add(this.$gettext('Permission denied'), 'error')
         return
       }
@@ -319,7 +319,7 @@ export default {
     },
 
     search() {
-      if (!this.auth.can('file:view')) {
+      if (!this.user.can('file:view')) {
         this.messages.add(this.$gettext('Permission denied'), 'error')
         return Promise.resolve([])
       }
@@ -474,13 +474,13 @@ export default {
     sort: {
       deep: true,
       handler() {
-        this.auth.saveData('file', 'sort', this.sort)
+        this.user.saveData('file', 'sort', this.sort)
         this.search()
       }
     },
 
     vgrid(val) {
-      this.auth.saveData('file', 'grid', val)
+      this.user.saveData('file', 'grid', val)
     }
   }
 }
@@ -501,7 +501,7 @@ export default {
         <template v-slot:activator="{ props }">
           <v-btn
             v-bind="props"
-            :disabled="!isChecked || embed || !auth.can('file:add')"
+            :disabled="!isChecked || embed || !user.can('file:add')"
             :title="$gettext('Actions')"
             icon="mdi-dots-vertical"
             variant="text"
@@ -514,22 +514,22 @@ export default {
           </v-toolbar>
 
           <v-list @click="actions = false">
-            <v-list-item v-if="isChecked && auth.can('file:publish')">
+            <v-list-item v-if="isChecked && user.can('file:publish')">
               <v-btn prepend-icon="mdi-publish" variant="text" @click="publish()">{{
                 $gettext('Publish')
               }}</v-btn>
             </v-list-item>
-            <v-list-item v-if="canTrash && auth.can('file:drop')">
+            <v-list-item v-if="canTrash && user.can('file:drop')">
               <v-btn prepend-icon="mdi-delete" variant="text" @click="drop()">{{
                 $gettext('Delete')
               }}</v-btn>
             </v-list-item>
-            <v-list-item v-if="isTrashed && auth.can('file:keep')">
+            <v-list-item v-if="isTrashed && user.can('file:keep')">
               <v-btn prepend-icon="mdi-delete-restore" variant="text" @click="keep()">{{
                 $gettext('Restore')
               }}</v-btn>
             </v-list-item>
-            <v-list-item v-if="isChecked && auth.can('file:purge')">
+            <v-list-item v-if="isChecked && user.can('file:purge')">
               <v-btn prepend-icon="mdi-delete-forever" variant="text" @click="purge()">{{
                 $gettext('Purge')
               }}</v-btn>
@@ -538,7 +538,7 @@ export default {
         </v-card>
       </component>
 
-      <div v-if="!this.embed && auth.can('file:add')">
+      <div v-if="!this.embed && user.can('file:add')">
         <input @change="add($event)" ref="upload" type="file" multiple hidden />
         <v-btn
           @click="$refs.upload.click()"
@@ -661,22 +661,22 @@ export default {
           </v-toolbar>
 
           <v-list @click="menu[idx] = false">
-            <v-list-item v-show="!item.deleted_at && !item.published && auth.can('file:publish')">
+            <v-list-item v-show="!item.deleted_at && !item.published && user.can('file:publish')">
               <v-btn prepend-icon="mdi-publish" variant="text" @click="publish(item)">{{
                 $gettext('Publish')
               }}</v-btn>
             </v-list-item>
-            <v-list-item v-if="!item.deleted_at && auth.can('file:drop')">
+            <v-list-item v-if="!item.deleted_at && user.can('file:drop')">
               <v-btn prepend-icon="mdi-delete" variant="text" @click="drop(item)">{{
                 $gettext('Delete')
               }}</v-btn>
             </v-list-item>
-            <v-list-item v-if="item.deleted_at && auth.can('file:keep')">
+            <v-list-item v-if="item.deleted_at && user.can('file:keep')">
               <v-btn prepend-icon="mdi-delete-restore" variant="text" @click="keep(item)">{{
                 $gettext('Restore')
               }}</v-btn>
             </v-list-item>
-            <v-list-item v-if="auth.can('file:purge')">
+            <v-list-item v-if="user.can('file:purge')">
               <v-btn prepend-icon="mdi-delete-forever" variant="text" @click="purge(item)">{{
                 $gettext('Purge')
               }}</v-btn>
@@ -796,7 +796,7 @@ export default {
 
   <v-pagination v-if="last > 1" v-model="page" :length="last"></v-pagination>
 
-  <div v-if="!this.embed && auth.can('file:add')" class="btn-group">
+  <div v-if="!this.embed && user.can('file:add')" class="btn-group">
     <input @change="add($event)" ref="upload" type="file" multiple hidden />
     <v-btn
       @click="$refs.upload.click()"

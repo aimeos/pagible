@@ -3,7 +3,7 @@
  */
 
 import { createRouter, createWebHistory } from 'vue-router'
-import { useAuthStore, useMessageStore } from './stores'
+import { useUserStore, useMessageStore } from './stores'
 
 const router = createRouter({
   history: createWebHistory(document.querySelector('#app')?.dataset?.urladmin || ''),
@@ -41,14 +41,14 @@ const router = createRouter({
 })
 
 router.beforeEach(async (to, from, next) => {
-  const auth = useAuthStore()
+  const user = useUserStore()
   const message = useMessageStore()
-  const authenticated = await auth.isAuthenticated()
+  const authenticated = await user.isAuthenticated()
 
   if (to.matched.some((record) => record.meta.auth) && !authenticated) {
-    auth.intended(to.fullPath)
+    user.intended(to.fullPath)
     next({ name: 'login' })
-  } else if (to.name !== 'login' && !auth.can(to.name)) {
+  } else if (to.name !== 'login' && !user.can(to.name)) {
     message.add(
       $gettext('You do not have permission to access %{path}', { path: to.fullPath }),
       'error'

@@ -1,6 +1,6 @@
 import { h } from 'vue'
 import Fields from '../../src/components/Fields.vue'
-import { useAuthStore } from '../../src/stores'
+import { useUserStore } from '../../src/stores'
 
 const stubs = {
   String: { render() { return h('div', { class: 'field-string' }) } },
@@ -31,8 +31,8 @@ function mountFields(props = {}, perms = {}) {
       },
       plugins: [{
         install() {
-          const auth = useAuthStore()
-          auth.me = { permission: perms }
+          const user = useUserStore()
+          user.me = { permission: perms }
         }
       }],
     },

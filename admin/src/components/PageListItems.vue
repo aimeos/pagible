@@ -4,7 +4,7 @@
 import gql from 'graphql-tag'
 import { Draggable } from '@he-tree/vue'
 import { dragContext } from '@he-tree/vue'
-import { useAppStore, useAuthStore, useLanguageStore, useMessageStore } from '../stores'
+import { useAppStore, useUserStore, useLanguageStore, useMessageStore } from '../stores'
 
 export default {
   components: {
@@ -28,7 +28,7 @@ export default {
       loading: true,
       checked: null,
       clip: null,
-      sort: this.auth.getData('page', 'sort') || { column: 'LFT', order: 'ASC' },
+      sort: this.user.getData('page', 'sort') || { column: 'LFT', order: 'ASC' },
       term: ''
     }
   },
@@ -36,10 +36,10 @@ export default {
   setup() {
     const languages = useLanguageStore()
     const messages = useMessageStore()
-    const auth = useAuthStore()
+    const user = useUserStore()
     const app = useAppStore()
 
-    return { app, auth, languages, messages }
+    return { app, user, languages, messages }
   },
 
   created() {
@@ -77,7 +77,7 @@ export default {
 
   methods: {
     add() {
-      if (this.embed || !this.auth.can('page:add')) {
+      if (this.embed || !this.user.can('page:add')) {
         this.messages.add(this.$gettext('Permission denied'), 'error')
         return
       }
@@ -118,7 +118,7 @@ export default {
     },
 
     change() {
-      if (!this.auth.can('page:move')) {
+      if (!this.user.can('page:move')) {
         this.messages.add(this.$gettext('Permission denied'), 'error')
         return
       }
@@ -189,7 +189,7 @@ export default {
     },
 
     drop(stat) {
-      if (!this.auth.can('page:drop')) {
+      if (!this.user.can('page:drop')) {
         this.messages.add(this.$gettext('Permission denied'), 'error')
         return
       }
@@ -242,7 +242,7 @@ export default {
     },
 
     fetch(parent = null, page = 1, limit = 100) {
-      if (!this.auth.can('page:view')) {
+      if (!this.user.can('page:view')) {
         this.messages.add(this.$gettext('Permission denied'), 'error')
         return Promise.resolve([])
       }
@@ -340,7 +340,7 @@ export default {
     },
 
     insert(stat, idx = null) {
-      if (!this.auth.can('page:add')) {
+      if (!this.user.can('page:add')) {
         this.messages.add(this.$gettext('Permission denied'), 'error')
         return
       }
@@ -412,7 +412,7 @@ export default {
     },
 
     keep(stat) {
-      if (!this.auth.can('page:keep')) {
+      if (!this.user.can('page:keep')) {
         this.messages.add(this.$gettext('Permission denied'), 'error')
         return
       }
@@ -484,7 +484,7 @@ export default {
     },
 
     move(stat, idx = null) {
-      if (!this.auth.can('page:move')) {
+      if (!this.user.can('page:move')) {
         this.messages.add(this.$gettext('Permission denied'), 'error')
         return
       }
@@ -551,7 +551,7 @@ export default {
     },
 
     paste(stat, idx = null) {
-      if (!this.auth.can('page:add')) {
+      if (!this.user.can('page:add')) {
         this.messages.add(this.$gettext('Permission denied'), 'error')
         return
       }
@@ -663,7 +663,7 @@ export default {
     },
 
     publish(stat) {
-      if (!this.auth.can('page:publish')) {
+      if (!this.user.can('page:publish')) {
         this.messages.add(this.$gettext('Permission denied'), 'error')
         return
       }
@@ -710,7 +710,7 @@ export default {
     },
 
     purge(stat) {
-      if (!this.auth.can('page:purge')) {
+      if (!this.user.can('page:purge')) {
         this.messages.add(this.$gettext('Permission denied'), 'error')
         return
       }
@@ -776,7 +776,7 @@ export default {
     },
 
     search(page = 1, limit = 100) {
-      if (!this.auth.can('page:view')) {
+      if (!this.user.can('page:view')) {
         this.messages.add(this.$gettext('Permission denied'), 'error')
         return Promise.resolve([])
       }
@@ -845,7 +845,7 @@ export default {
     },
 
     status(stat, val) {
-      if (!this.auth.can('page:save')) {
+      if (!this.user.can('page:save')) {
         this.messages.add(this.$gettext('Permission denied'), 'error')
         return
       }
@@ -969,7 +969,7 @@ export default {
     sort: {
       deep: true,
       handler() {
-        this.auth.saveData('page', 'sort', this.sort)
+        this.user.saveData('page', 'sort', this.sort)
         this.reload(false)
       }
     },
@@ -996,7 +996,7 @@ export default {
         <template v-slot:activator="{ props }">
           <v-btn
             v-bind="props"
-            :disabled="!isChecked || embed || !auth.can('page:add')"
+            :disabled="!isChecked || embed || !user.can('page:add')"
             :title="$gettext('Actions')"
             icon="mdi-dots-vertical"
             variant="text"
@@ -1009,17 +1009,17 @@ export default {
           </v-toolbar>
 
           <v-list @click="actions = false">
-            <v-list-item v-if="isChecked && auth.can('page:publish')">
+            <v-list-item v-if="isChecked && user.can('page:publish')">
               <v-btn prepend-icon="mdi-publish" variant="text" @click="publish()">{{
                 $gettext('Publish')
               }}</v-btn>
             </v-list-item>
-            <v-list-item v-if="isChecked && auth.can('page:save')">
+            <v-list-item v-if="isChecked && user.can('page:save')">
               <v-btn prepend-icon="mdi-eye" variant="text" @click="status(null, 1)">{{
                 $gettext('Enable')
               }}</v-btn>
             </v-list-item>
-            <v-list-item v-if="isChecked && auth.can('page:save')">
+            <v-list-item v-if="isChecked && user.can('page:save')">
               <v-btn prepend-icon="mdi-eye-off" variant="text" @click="status(null, 0)">{{
                 $gettext('Disable')
               }}</v-btn>
@@ -1027,17 +1027,17 @@ export default {
 
             <v-divider></v-divider>
 
-            <v-list-item v-if="canTrash && auth.can('page:drop')">
+            <v-list-item v-if="canTrash && user.can('page:drop')">
               <v-btn prepend-icon="mdi-delete" variant="text" @click="drop()">{{
                 $gettext('Delete')
               }}</v-btn>
             </v-list-item>
-            <v-list-item v-if="isTrashed && auth.can('page:keep')">
+            <v-list-item v-if="isTrashed && user.can('page:keep')">
               <v-btn prepend-icon="mdi-delete-restore" variant="text" @click="keep()">{{
                 $gettext('Restore')
               }}</v-btn>
             </v-list-item>
-            <v-list-item v-if="isChecked && auth.can('page:purge')">
+            <v-list-item v-if="isChecked && user.can('page:purge')">
               <v-btn prepend-icon="mdi-delete-forever" variant="text" @click="purge()">{{
                 $gettext('Purge')
               }}</v-btn>
@@ -1047,7 +1047,7 @@ export default {
       </component>
 
       <v-btn
-        v-if="!this.embed && this.auth.can('page:add')"
+        v-if="!this.embed && this.user.can('page:add')"
         @click="add()"
         :disabled="loading"
         :title="$gettext('Add page')"
@@ -1134,7 +1134,7 @@ export default {
     v-model="items"
     @change="change()"
     :defaultOpen="false"
-    :disableDrag="$vuetify.display.smAndDown || !auth.can('page:move')"
+    :disableDrag="$vuetify.display.smAndDown || !user.can('page:move')"
     :rtl="$vuetify.locale.isRtl"
     :watermark="false"
     virtualization
@@ -1186,22 +1186,22 @@ export default {
             </v-toolbar>
 
             <v-list @click="menu[node.id] = false">
-              <v-list-item v-if="!node.deleted_at && !node.published && auth.can('page:publish')">
+              <v-list-item v-if="!node.deleted_at && !node.published && user.can('page:publish')">
                 <v-btn prepend-icon="mdi-publish" variant="text" @click="publish(stat)">{{
                   $gettext('Publish')
                 }}</v-btn>
               </v-list-item>
-              <v-list-item v-if="node.status !== 0 && auth.can('page:save')">
+              <v-list-item v-if="node.status !== 0 && user.can('page:save')">
                 <v-btn prepend-icon="mdi-eye-off" variant="text" @click="status(stat, 0)">{{
                   $gettext('Disable')
                 }}</v-btn>
               </v-list-item>
-              <v-list-item v-if="node.status !== 1 && auth.can('page:save')">
+              <v-list-item v-if="node.status !== 1 && user.can('page:save')">
                 <v-btn prepend-icon="mdi-eye" variant="text" @click="status(stat, 1)">{{
                   $gettext('Enable')
                 }}</v-btn>
               </v-list-item>
-              <v-list-item v-if="node.status !== 2 && auth.can('page:save')">
+              <v-list-item v-if="node.status !== 2 && user.can('page:save')">
                 <v-btn prepend-icon="mdi-eye-off-outline" variant="text" @click="status(stat, 2)">{{
                   $gettext('Hide')
                 }}</v-btn>
@@ -1209,18 +1209,18 @@ export default {
 
               <v-divider></v-divider>
 
-              <v-list-item v-if="auth.can('page:move')">
+              <v-list-item v-if="user.can('page:move')">
                 <v-btn prepend-icon="mdi-content-cut" variant="text" @click="cut(stat, node)">{{
                   $gettext('Cut')
                 }}</v-btn>
               </v-list-item>
-              <v-list-item v-if="!embed && auth.can('page:add')">
+              <v-list-item v-if="!embed && user.can('page:add')">
                 <v-btn prepend-icon="mdi-content-copy" variant="text" @click="copy(stat, node)">{{
                   $gettext('Copy')
                 }}</v-btn>
               </v-list-item>
 
-              <v-list-group v-if="clip?.type == 'copy' && !this.embed && auth.can('page:add')">
+              <v-list-group v-if="clip?.type == 'copy' && !this.embed && user.can('page:add')">
                 <template v-slot:activator="{ props }">
                   <v-list-item v-bind="props" @click.stop>
                     <v-btn prepend-icon="mdi-content-paste" variant="text">{{
@@ -1245,7 +1245,7 @@ export default {
                 </v-list-item>
               </v-list-group>
 
-              <v-list-group v-if="clip?.type == 'cut' && !this.embed && auth.can('page:move')">
+              <v-list-group v-if="clip?.type == 'cut' && !this.embed && user.can('page:move')">
                 <template v-slot:activator="{ props }">
                   <v-list-item v-bind="props" @click.stop>
                     <v-btn prepend-icon="mdi-content-paste" variant="text">{{
@@ -1270,7 +1270,7 @@ export default {
                 </v-list-item>
               </v-list-group>
 
-              <v-list-group v-if="!this.embed && auth.can('page:add')">
+              <v-list-group v-if="!this.embed && user.can('page:add')">
                 <template v-slot:activator="{ props }">
                   <v-list-item v-bind="props" @click.stop>
                     <v-btn prepend-icon="mdi-content-paste" variant="text">{{
@@ -1297,17 +1297,17 @@ export default {
 
               <v-divider></v-divider>
 
-              <v-list-item v-if="!node.deleted_at && auth.can('page:drop')">
+              <v-list-item v-if="!node.deleted_at && user.can('page:drop')">
                 <v-btn prepend-icon="mdi-delete" variant="text" @click="drop(stat)">{{
                   $gettext('Delete')
                 }}</v-btn>
               </v-list-item>
-              <v-list-item v-if="node.deleted_at && auth.can('page:keep')">
+              <v-list-item v-if="node.deleted_at && user.can('page:keep')">
                 <v-btn prepend-icon="mdi-delete-restore" variant="text" @click="keep(stat)">{{
                   $gettext('Restore')
                 }}</v-btn>
               </v-list-item>
-              <v-list-item v-if="auth.can('page:purge')">
+              <v-list-item v-if="user.can('page:purge')">
                 <v-btn prepend-icon="mdi-delete-forever" variant="text" @click="purge(stat)">{{
                   $gettext('Purge')
                 }}</v-btn>
@@ -1365,7 +1365,7 @@ export default {
     {{ $gettext('No entries found') }}
   </p>
 
-  <div v-if="!this.embed && this.auth.can('page:add')" class="btn-group">
+  <div v-if="!this.embed && this.user.can('page:add')" class="btn-group">
     <v-btn
       @click="add()"
       :disabled="loading"

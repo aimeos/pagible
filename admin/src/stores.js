@@ -18,7 +18,7 @@ export const useAppStore = defineStore('app', {
   })
 })
 
-export const useAuthStore = defineStore('auth', {
+export const useUserStore = defineStore('user', {
   state: () => ({
     me: null,
     urlintended: null,

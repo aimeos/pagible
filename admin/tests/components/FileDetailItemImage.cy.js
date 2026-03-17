@@ -1,5 +1,5 @@
 import FileDetailItemImage from '../../src/components/FileDetailItemImage.vue'
-import { useAuthStore } from '../../src/stores'
+import { useUserStore } from '../../src/stores'
 
 const item = {
   id: '1',
@@ -23,8 +23,8 @@ function mountImage(props = {}, perms = {}) {
       },
     },
   }).then(() => {
-    const auth = useAuthStore()
-    auth.me = { permission: perms }
+    const user = useUserStore()
+    user.me = { permission: perms }
   })
 }
 

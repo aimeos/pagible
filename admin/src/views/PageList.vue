@@ -7,7 +7,7 @@ import PageDetail from '../views//PageDetail.vue'
 import AsideList from '../components/AsideList.vue'
 import Navigation from '../components/Navigation.vue'
 import PageListItems from '../components/PageListItems.vue'
-import { useAuthStore, useDrawerStore, useMessageStore } from '../stores'
+import { useUserStore, useDrawerStore, useMessageStore } from '../stores'
 import { recording } from '../audio'
 
 export default {
@@ -41,7 +41,7 @@ export default {
       synthesizing: false,
       dictating: false,
       defaults: defaults,
-      filter: { ...defaults, ...this.auth?.getData('page', 'filter') }
+      filter: { ...defaults, ...this.user?.getData('page', 'filter') }
     }
   },
 
@@ -49,7 +49,7 @@ export default {
     filter: {
       deep: true,
       handler(val) {
-        this.auth.saveData('page', 'filter', val)
+        this.user.saveData('page', 'filter', val)
       }
     }
   },
@@ -57,13 +57,13 @@ export default {
   setup() {
     const messages = useMessageStore()
     const drawer = useDrawerStore()
-    const auth = useAuthStore()
+    const user = useUserStore()
 
-    return { auth, drawer, messages }
+    return { user, drawer, messages }
   },
 
   beforeUnmount() {
-    this.auth.flush()
+    this.user.flush()
   },
 
   computed: {
@@ -139,7 +139,7 @@ export default {
     },
 
     synthesize() {
-      if (!this.auth.can('page:synthesize')) {
+      if (!this.user.can('page:synthesize')) {
         this.messages.add(this.$gettext('Permission denied'), 'error')
         return
       }
@@ -175,7 +175,7 @@ export default {
             view: 'list',
             publish: 'DRAFT',
             trashed: 'WITHOUT',
-            editor: this.auth.me?.email,
+            editor: this.user.me?.email,
             cache: null,
             lang: null,
             status: 0
@@ -238,7 +238,7 @@ export default {
     <v-container>
       <v-sheet class="box scroll">
         <v-textarea
-          v-if="auth.can('page:synthesize')"
+          v-if="user.can('page:synthesize')"
           v-model="chat"
           :loading="synthesizing"
           :placeholder="$gettext('Describe the page and content you want to create')"
@@ -311,7 +311,7 @@ export default {
             </v-btn>
 
             <v-btn
-              v-else-if="auth.can('audio:transcribe')"
+              v-else-if="user.can('audio:transcribe')"
               @click="record()"
               :title="$gettext('Dictate')"
               :class="{ dictating: audio }"
@@ -437,7 +437,7 @@ export default {
           {
             title: $gettext('Edited by me'),
             icon: 'mdi-account',
-            value: { editor: this.auth.me?.email }
+            value: { editor: this.user.me?.email }
           }
         ]
       },

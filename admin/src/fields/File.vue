@@ -2,7 +2,7 @@
 
 <script>
 import gql from 'graphql-tag'
-import { useAppStore, useAuthStore, useMessageStore } from '../stores'
+import { useAppStore, useUserStore, useMessageStore } from '../stores'
 import FileUrlDialog from '../components/FileUrlDialog.vue'
 import FileDialog from '../components/FileDialog.vue'
 import FileDetail from '../views/FileDetail.vue'
@@ -38,10 +38,10 @@ export default {
 
   setup() {
     const messages = useMessageStore()
-    const auth = useAuthStore()
+    const user = useUserStore()
     const app = useAppStore()
 
-    return { app, auth, messages }
+    return { app, user, messages }
   },
 
   unmounted() {
@@ -63,7 +63,7 @@ export default {
   methods: {
 
     add(file) {
-      if (!this.auth.can('file:add')) {
+      if (!this.user.can('file:add')) {
         this.messages.add(this.$gettext('Permission denied'), 'error')
         return
       }
@@ -254,7 +254,7 @@ export default {
               />
             </template>
             <v-list>
-              <v-list-item v-if="auth.can('file:view')">
+              <v-list-item v-if="user.can('file:view')">
                 <v-btn @click="open(file)" prepend-icon="mdi-pencil" variant="text">
                   {{ $gettext('Edit') }}
                 </v-btn>
@@ -270,7 +270,7 @@ export default {
 
         <div v-else-if="!readonly" class="file">
           <v-btn
-            v-if="auth.can('file:view')"
+            v-if="user.can('file:view')"
             @click="vfiles = true"
             :title="$gettext('Add file')"
             icon="mdi-button-cursor"

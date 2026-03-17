@@ -1,5 +1,5 @@
 import ImagesField from '../../src/fields/Images.vue'
-import { useAuthStore } from '../../src/stores'
+import { useUserStore } from '../../src/stores'
 
 const imageAssets = {
   '1': { id: '1', name: 'a.jpg', path: '/files/a.jpg', mime: 'image/jpeg', previews: { '500': '/files/a-500.jpg' } },
@@ -19,8 +19,8 @@ function mountImages(props = {}, perms = {}) {
     props: { config: {}, assets: {}, ...props },
     global: { stubs },
   }).then(() => {
-    const auth = useAuthStore()
-    auth.me = { permission: perms }
+    const user = useUserStore()
+    user.me = { permission: perms }
   })
 }
 

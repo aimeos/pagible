@@ -4,7 +4,7 @@
 import Fields from './Fields.vue'
 import {
   useAppStore,
-  useAuthStore,
+  useUserStore,
   useLanguageStore,
   useSchemaStore,
   useSideStore
@@ -28,15 +28,15 @@ export default {
     const languages = useLanguageStore()
     const schemas = useSchemaStore()
     const side = useSideStore()
-    const auth = useAuthStore()
+    const user = useUserStore()
     const app = useAppStore()
 
-    return { app, auth, languages, schemas, side }
+    return { app, user, languages, schemas, side }
   },
 
   computed: {
     readonly() {
-      return !this.auth.can('element:save')
+      return !this.user.can('element:save')
     }
   },
 

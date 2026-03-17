@@ -3,7 +3,7 @@
 <script>
 import gql from 'graphql-tag'
 import SchemaItems from './SchemaItems.vue'
-import { useAuthStore, useMessageStore } from '../stores'
+import { useUserStore, useMessageStore } from '../stores'
 
 export default {
   components: {
@@ -24,7 +24,7 @@ export default {
       items: [],
       menu: [],
       term: '',
-      sort: this.auth.getData('element', 'sort') || { column: 'ID', order: 'DESC' },
+      sort: this.user.getData('element', 'sort') || { column: 'ID', order: 'DESC' },
       page: 1,
       last: 1,
       limit: 100,
@@ -38,9 +38,9 @@ export default {
 
   setup() {
     const messages = useMessageStore()
-    const auth = useAuthStore()
+    const user = useUserStore()
 
-    return { auth, messages }
+    return { user, messages }
   },
 
   created() {
@@ -64,7 +64,7 @@ export default {
 
   methods: {
     add(item) {
-      if (this.embed || !this.auth.can('element:add')) {
+      if (this.embed || !this.user.can('element:add')) {
         this.messages.add(this.$gettext('Permission denied'), 'error')
         return
       }
@@ -117,7 +117,7 @@ export default {
     },
 
     drop(item) {
-      if (!this.auth.can('element:drop')) {
+      if (!this.user.can('element:drop')) {
         this.messages.add(this.$gettext('Permission denied'), 'error')
         return
       }
@@ -162,7 +162,7 @@ export default {
     },
 
     keep(item) {
-      if (!this.auth.can('element:keep')) {
+      if (!this.user.can('element:keep')) {
         this.messages.add(this.$gettext('Permission denied'), 'error')
         return
       }
@@ -208,7 +208,7 @@ export default {
     },
 
     publish(item) {
-      if (!this.auth.can('element:publish')) {
+      if (!this.user.can('element:publish')) {
         this.messages.add(this.$gettext('Permission denied'), 'error')
         return
       }
@@ -259,7 +259,7 @@ export default {
     },
 
     purge(item) {
-      if (!this.auth.can('element:purge')) {
+      if (!this.user.can('element:purge')) {
         this.messages.add(this.$gettext('Permission denied'), 'error')
         return
       }
@@ -298,7 +298,7 @@ export default {
     },
 
     search() {
-      if (!this.auth.can('element:view')) {
+      if (!this.user.can('element:view')) {
         this.messages.add(this.$gettext('Permission denied'), 'error')
         return Promise.resolve([])
       }
@@ -446,7 +446,7 @@ export default {
     sort: {
       deep: true,
       handler() {
-        this.auth.saveData('element', 'sort', this.sort)
+        this.user.saveData('element', 'sort', this.sort)
         this.search()
       }
     }
@@ -469,7 +469,7 @@ export default {
         <template v-slot:activator="{ props }">
           <v-btn
             v-bind="props"
-            :disabled="!isChecked || embed || !auth.can('element:add')"
+            :disabled="!isChecked || embed || !user.can('element:add')"
             :title="$gettext('Actions')"
             icon="mdi-dots-vertical"
             variant="text"
@@ -482,22 +482,22 @@ export default {
           </v-toolbar>
 
           <v-list @click="actions = false">
-            <v-list-item v-show="isChecked && auth.can('element:publish')">
+            <v-list-item v-show="isChecked && user.can('element:publish')">
               <v-btn prepend-icon="mdi-publish" variant="text" @click="publish()">{{
                 $gettext('Publish')
               }}</v-btn>
             </v-list-item>
-            <v-list-item v-show="canTrash && auth.can('element:drop')">
+            <v-list-item v-show="canTrash && user.can('element:drop')">
               <v-btn prepend-icon="mdi-delete" variant="text" @click="drop()">{{
                 $gettext('Delete')
               }}</v-btn>
             </v-list-item>
-            <v-list-item v-show="isTrashed && auth.can('element:keep')">
+            <v-list-item v-show="isTrashed && user.can('element:keep')">
               <v-btn prepend-icon="mdi-delete-restore" variant="text" @click="keep()">{{
                 $gettext('Restore')
               }}</v-btn>
             </v-list-item>
-            <v-list-item v-show="isChecked && auth.can('element:purge')">
+            <v-list-item v-show="isChecked && user.can('element:purge')">
               <v-btn prepend-icon="mdi-delete-forever" variant="text" @click="purge()">{{
                 $gettext('Purge')
               }}</v-btn>
@@ -507,7 +507,7 @@ export default {
       </component>
 
       <v-btn
-        v-if="!this.embed && this.auth.can('element:add')"
+        v-if="!this.embed && this.user.can('element:add')"
         @click="vschemas = true"
         :title="$gettext('Add element')"
         :disabled="loading"
@@ -610,23 +610,23 @@ export default {
 
             <v-list @click="menu[idx] = false">
               <v-list-item
-                v-show="!item.deleted_at && !item.published && this.auth.can('element:publish')"
+                v-show="!item.deleted_at && !item.published && this.user.can('element:publish')"
               >
                 <v-btn prepend-icon="mdi-publish" variant="text" @click="publish(item)">{{
                   $gettext('Publish')
                 }}</v-btn>
               </v-list-item>
-              <v-list-item v-if="!item.deleted_at && this.auth.can('element:drop')">
+              <v-list-item v-if="!item.deleted_at && this.user.can('element:drop')">
                 <v-btn prepend-icon="mdi-delete" variant="text" @click="drop(item)">{{
                   $gettext('Delete')
                 }}</v-btn>
               </v-list-item>
-              <v-list-item v-if="item.deleted_at && this.auth.can('element:keep')">
+              <v-list-item v-if="item.deleted_at && this.user.can('element:keep')">
                 <v-btn prepend-icon="mdi-delete-restore" variant="text" @click="keep(item)">{{
                   $gettext('Restore')
                 }}</v-btn>
               </v-list-item>
-              <v-list-item v-if="this.auth.can('element:purge')">
+              <v-list-item v-if="this.user.can('element:purge')">
                 <v-btn prepend-icon="mdi-delete-forever" variant="text" @click="purge(item)">{{
                   $gettext('Purge')
                 }}</v-btn>
@@ -683,7 +683,7 @@ export default {
 
   <v-pagination v-if="last > 1" v-model="page" :length="last"></v-pagination>
 
-  <div v-if="!this.embed && this.auth.can('element:add')" class="btn-group">
+  <div v-if="!this.embed && this.user.can('element:add')" class="btn-group">
     <v-btn
       @click="vschemas = true"
       :title="$gettext('Add element')"

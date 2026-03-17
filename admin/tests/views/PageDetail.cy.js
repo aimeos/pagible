@@ -1,5 +1,5 @@
 import PageDetail from '../../src/views/PageDetail.vue'
-import { useAuthStore } from '../../src/stores'
+import { useUserStore } from '../../src/stores'
 
 const stubs = {
   AsideMeta: { template: '<div class="aside-meta-stub" />' },
@@ -40,8 +40,8 @@ function mountDetail(perms = {}, item = {}) {
       },
       plugins: [{
         install() {
-          const auth = useAuthStore()
-          auth.me = { permission: perms }
+          const user = useUserStore()
+          user.me = { permission: perms }
         }
       }],
     },

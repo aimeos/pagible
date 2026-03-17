@@ -3,7 +3,7 @@
 <script>
 import gql from 'graphql-tag'
 import { VueDraggable } from 'vue-draggable-plus'
-import { useAppStore, useAuthStore } from '../stores'
+import { useAppStore, useUserStore } from '../stores'
 import FileAiDialog from '../components/FileAiDialog.vue'
 import FileUrlDialog from '../components/FileUrlDialog.vue'
 import FileDialog from '../components/FileDialog.vue'
@@ -31,10 +31,10 @@ export default {
   emits: ['update:modelValue', 'error', 'addFile', 'removeFile'],
 
   setup() {
-    const auth = useAuthStore()
+    const user = useUserStore()
     const app = useAppStore()
 
-    return { app, auth }
+    return { app, user }
   },
 
   data() {
@@ -74,7 +74,7 @@ export default {
   methods: {
 
     add(files) {
-      if (!this.auth.can('file:add')) {
+      if (!this.user.can('file:add')) {
         this.messages.add(this.$gettext('Permission denied'), 'error')
         return
       }
@@ -264,7 +264,7 @@ export default {
           />
         </template>
         <v-list>
-          <v-list-item v-if="auth.can('file:view')">
+          <v-list-item v-if="user.can('file:view')">
             <v-btn @click="open(item)" prepend-icon="mdi-pencil" variant="text">
               {{ $gettext('Edit') }}
             </v-btn>
@@ -281,7 +281,7 @@ export default {
     <div v-if="!readonly" class="add">
       <div class="icon-group">
         <v-btn
-          v-if="auth.can('file:view')"
+          v-if="user.can('file:view')"
           @click="vfiles = true"
           :title="$gettext('Add files')"
           icon="mdi-button-cursor"
@@ -296,7 +296,7 @@ export default {
       </div>
       <div class="icon-group">
         <v-btn
-          v-if="auth.can('image:imagine')"
+          v-if="user.can('image:imagine')"
           @click="vcreate = true"
           :title="$gettext('Create file')"
           icon="mdi-creation"

@@ -1,5 +1,5 @@
 import ImageField from '../../src/fields/Image.vue'
-import { useAuthStore } from '../../src/stores'
+import { useUserStore } from '../../src/stores'
 
 const imageAsset = {
   id: '1',
@@ -25,8 +25,8 @@ function mountImage(props = {}, perms = {}) {
     props: { config: {}, assets: {}, ...props },
     global: { stubs },
   }).then(() => {
-    const auth = useAuthStore()
-    auth.me = { permission: perms }
+    const user = useUserStore()
+    user.me = { permission: perms }
   })
 }
 

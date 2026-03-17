@@ -1,5 +1,5 @@
 import Navigation from '../../src/components/Navigation.vue'
-import { useAuthStore } from '../../src/stores'
+import { useUserStore } from '../../src/stores'
 
 describe('Navigation', () => {
   function mountWithPerms(perms = {}) {
@@ -7,8 +7,8 @@ describe('Navigation', () => {
       global: {
         plugins: [{
           install() {
-            const auth = useAuthStore()
-            auth.me = { permission: perms }
+            const user = useUserStore()
+            user.me = { permission: perms }
           }
         }],
       },

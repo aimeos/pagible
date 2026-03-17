@@ -7,7 +7,7 @@ import FileDetail from '../views//FileDetail.vue'
 import AsideList from '../components/AsideList.vue'
 import Navigation from '../components/Navigation.vue'
 import FileListItems from '../components/FileListItems.vue'
-import { useAuthStore, useDrawerStore } from '../stores'
+import { useUserStore, useDrawerStore } from '../stores'
 
 export default {
   components: {
@@ -30,7 +30,7 @@ export default {
 
     return {
       defaults: defaults,
-      filter: { ...defaults, ...this.auth?.getData('file', 'filter') }
+      filter: { ...defaults, ...this.user?.getData('file', 'filter') }
     }
   },
 
@@ -38,20 +38,20 @@ export default {
     filter: {
       deep: true,
       handler(val) {
-        this.auth.saveData('file', 'filter', val)
+        this.user.saveData('file', 'filter', val)
       }
     }
   },
 
   setup() {
     const drawer = useDrawerStore()
-    const auth = useAuthStore()
+    const user = useUserStore()
 
-    return { auth, drawer }
+    return { user, drawer }
   },
 
   beforeUnmount() {
-    this.auth.flush()
+    this.user.flush()
   },
 
   methods: {
@@ -154,7 +154,7 @@ export default {
           {
             title: $gettext('Edited by me'),
             icon: 'mdi-account',
-            value: { editor: this.auth.me?.email }
+            value: { editor: this.user.me?.email }
           }
         ]
       },

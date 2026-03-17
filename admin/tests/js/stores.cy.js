@@ -1,6 +1,6 @@
 import { createPinia, setActivePinia } from 'pinia'
 import {
-  useAuthStore,
+  useUserStore,
   useClipboardStore,
   useConfigStore,
   useDrawerStore,
@@ -8,132 +8,132 @@ import {
   useSideStore,
 } from '../../src/stores'
 
-describe('useAuthStore', () => {
+describe('useUserStore', () => {
   beforeEach(() => {
     setActivePinia(createPinia())
   })
 
   describe('can()', () => {
     it('returns false when me is null', () => {
-      const auth = useAuthStore()
-      expect(auth.can('page:view')).to.be.false
+      const user = useUserStore()
+      expect(user.can('page:view')).to.be.false
     })
 
     it('returns false when me has no matching permission', () => {
-      const auth = useAuthStore()
-      auth.me = { permission: { 'file:view': true } }
-      expect(auth.can('page:view')).to.be.false
+      const user = useUserStore()
+      user.me = { permission: { 'file:view': true } }
+      expect(user.can('page:view')).to.be.false
     })
 
     it('returns true when me has the exact permission', () => {
-      const auth = useAuthStore()
-      auth.me = { permission: { 'page:view': true } }
-      expect(auth.can('page:view')).to.be.true
+      const user = useUserStore()
+      user.me = { permission: { 'page:view': true } }
+      expect(user.can('page:view')).to.be.true
     })
 
     it('accepts an array and returns true if any matches', () => {
-      const auth = useAuthStore()
-      auth.me = { permission: { 'file:view': true } }
-      expect(auth.can(['page:view', 'file:view'])).to.be.true
+      const user = useUserStore()
+      user.me = { permission: { 'file:view': true } }
+      expect(user.can(['page:view', 'file:view'])).to.be.true
     })
 
     it('returns false when array has no matching permissions', () => {
-      const auth = useAuthStore()
-      auth.me = { permission: { 'element:view': true } }
-      expect(auth.can(['page:view', 'file:view'])).to.be.false
+      const user = useUserStore()
+      user.me = { permission: { 'element:view': true } }
+      expect(user.can(['page:view', 'file:view'])).to.be.false
     })
 
     it('returns false when permission value is falsy', () => {
-      const auth = useAuthStore()
-      auth.me = { permission: { 'page:view': 0 } }
-      expect(auth.can('page:view')).to.be.false
+      const user = useUserStore()
+      user.me = { permission: { 'page:view': 0 } }
+      expect(user.can('page:view')).to.be.false
     })
   })
 
   describe('getData()', () => {
     it('returns defval when me is null', () => {
-      const auth = useAuthStore()
-      auth.me = null
-      expect(auth.getData('page', 'filter')).to.be.null
+      const user = useUserStore()
+      user.me = null
+      expect(user.getData('page', 'filter')).to.be.null
     })
 
     it('returns defval when cmsdata is null', () => {
-      const auth = useAuthStore()
-      auth.me = { cmsdata: null }
-      expect(auth.getData('page', 'filter', 'default')).to.equal('default')
+      const user = useUserStore()
+      user.me = { cmsdata: null }
+      expect(user.getData('page', 'filter', 'default')).to.equal('default')
     })
 
     it('returns defval when panel does not exist', () => {
-      const auth = useAuthStore()
-      auth.me = { cmsdata: {} }
-      expect(auth.getData('page', 'filter', 'fallback')).to.equal('fallback')
+      const user = useUserStore()
+      user.me = { cmsdata: {} }
+      expect(user.getData('page', 'filter', 'fallback')).to.equal('fallback')
     })
 
     it('returns stored value', () => {
-      const auth = useAuthStore()
-      auth.me = { cmsdata: { page: { filter: { view: 'list' } } } }
-      expect(auth.getData('page', 'filter')).to.deep.equal({ view: 'list' })
+      const user = useUserStore()
+      user.me = { cmsdata: { page: { filter: { view: 'list' } } } }
+      expect(user.getData('page', 'filter')).to.deep.equal({ view: 'list' })
     })
   })
 
   describe('saveData()', () => {
     it('creates cmsdata structure when missing', () => {
-      const auth = useAuthStore()
-      auth.me = {}
-      auth.saveData('page', 'filter', { view: 'list' })
-      expect(auth.me.cmsdata.page.filter).to.deep.equal({ view: 'list' })
-      clearTimeout(auth._saveTimer)
+      const user = useUserStore()
+      user.me = {}
+      user.saveData('page', 'filter', { view: 'list' })
+      expect(user.me.cmsdata.page.filter).to.deep.equal({ view: 'list' })
+      clearTimeout(user._saveTimer)
     })
 
     it('does nothing when me is null', () => {
-      const auth = useAuthStore()
-      auth.me = null
-      auth.saveData('page', 'filter', { view: 'list' })
-      expect(auth.me).to.be.null
+      const user = useUserStore()
+      user.me = null
+      user.saveData('page', 'filter', { view: 'list' })
+      expect(user.me).to.be.null
     })
 
     it('sets a debounce timer', () => {
-      const auth = useAuthStore()
-      auth.me = {}
-      auth.saveData('page', 'sort', { column: 'ID' })
-      expect(auth._saveTimer).to.not.be.null
-      clearTimeout(auth._saveTimer)
+      const user = useUserStore()
+      user.me = {}
+      user.saveData('page', 'sort', { column: 'ID' })
+      expect(user._saveTimer).to.not.be.null
+      clearTimeout(user._saveTimer)
     })
 
     it('overwrites existing values', () => {
-      const auth = useAuthStore()
-      auth.me = { cmsdata: { page: { filter: { view: 'tree' } } } }
-      auth.saveData('page', 'filter', { view: 'list' })
-      expect(auth.me.cmsdata.page.filter).to.deep.equal({ view: 'list' })
-      clearTimeout(auth._saveTimer)
+      const user = useUserStore()
+      user.me = { cmsdata: { page: { filter: { view: 'tree' } } } }
+      user.saveData('page', 'filter', { view: 'list' })
+      expect(user.me.cmsdata.page.filter).to.deep.equal({ view: 'list' })
+      clearTimeout(user._saveTimer)
     })
   })
 
   describe('flush()', () => {
     it('does nothing without pending timer', () => {
-      const auth = useAuthStore()
-      auth.me = { cmsdata: {} }
-      auth._saveTimer = null
-      auth.flush()
-      expect(auth._saveTimer).to.be.null
+      const user = useUserStore()
+      user.me = { cmsdata: {} }
+      user._saveTimer = null
+      user.flush()
+      expect(user._saveTimer).to.be.null
     })
   })
 
   describe('intended()', () => {
     it('stores and returns the intended URL', () => {
-      const auth = useAuthStore()
-      auth.intended('/pages')
-      expect(auth.intended()).to.equal('/pages')
+      const user = useUserStore()
+      user.intended('/pages')
+      expect(user.intended()).to.equal('/pages')
     })
 
     it('returns null when no URL has been set', () => {
-      const auth = useAuthStore()
-      expect(auth.intended()).to.be.null
+      const user = useUserStore()
+      expect(user.intended()).to.be.null
     })
 
     it('returns the URL when setting it', () => {
-      const auth = useAuthStore()
-      expect(auth.intended('/files')).to.equal('/files')
+      const user = useUserStore()
+      expect(user.intended('/files')).to.equal('/files')
     })
   })
 })
@@ -268,12 +268,12 @@ describe('useMessageStore', () => {
     expect(msg.queue[0].timeout).to.equal(500)
   })
 
-  it('limits the queue to 5 messages', () => {
+  it('limits the queue to 10 messages', () => {
     const msg = useMessageStore()
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 12; i++) {
       msg.add(`msg-${i}`)
     }
-    expect(msg.queue).to.have.length(5)
+    expect(msg.queue).to.have.length(10)
   })
 
   it('sets contentClass to text-pre-line', () => {

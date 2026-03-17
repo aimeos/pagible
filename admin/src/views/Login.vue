@@ -2,7 +2,7 @@
 
 <script>
 import router from '../routes'
-import { useAuthStore, useMessageStore } from '../stores'
+import { useUserStore, useMessageStore } from '../stores'
 
 export default {
   data: () => ({
@@ -19,9 +19,9 @@ export default {
 
   setup() {
     const messages = useMessageStore()
-    const auth = useAuthStore()
+    const user = useUserStore()
 
-    return { auth, messages }
+    return { user, messages }
   },
 
   created() {
@@ -31,7 +31,7 @@ export default {
     this.creds.email = config.email ?? ''
     this.creds.password = config.password ?? ''
 
-    this.auth
+    this.user
       .isAuthenticated()
       .then((result) => {
         if (!result) {
@@ -55,7 +55,7 @@ export default {
       this.error = null
       this.loading = true
 
-      this.auth
+      this.user
         .login(this.creds.email, this.creds.password)
         .then((user) => {
           if (Object.values(user.permission || {}).some((perm) => perm === true)) {
@@ -74,9 +74,9 @@ export default {
 
     next() {
       const url =
-        this.auth.intended() ||
+        this.user.intended() ||
         router.getRoutes().find((route) => {
-          return this.auth.can(route.name)
+          return this.user.can(route.name)
         })?.path
 
       if (!url) {

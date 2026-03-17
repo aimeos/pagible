@@ -4,7 +4,7 @@
 import gql from 'graphql-tag'
 import { toMp3, transcription } from './audio'
 import { computed, markRaw, provide } from 'vue'
-import { useAppStore, useAuthStore, useLanguageStore, useMessageStore } from './stores'
+import { useAppStore, useUserStore, useLanguageStore, useMessageStore } from './stores'
 
 export default {
   data() {
@@ -33,10 +33,10 @@ export default {
   setup() {
     const languages = useLanguageStore()
     const messages = useMessageStore()
-    const auth = useAuthStore()
+    const user = useUserStore()
     const app = useAppStore()
 
-    return { app, auth, languages, messages }
+    return { app, user, languages, messages }
   },
 
   methods: {
@@ -126,7 +126,7 @@ export default {
     },
 
     transcribe(input) {
-      if (!this.auth.can('audio:transcribe')) {
+      if (!this.user.can('audio:transcribe')) {
         this.messages.add(this.$gettext('Permission denied'), 'error')
         return
       }
@@ -161,7 +161,7 @@ export default {
     },
 
     translate(texts, to, from = null, context = null) {
-      if (!this.auth.can('text:translate')) {
+      if (!this.user.can('text:translate')) {
         this.messages.add(this.$gettext('Permission denied'), 'error')
         return
       }
@@ -279,7 +279,7 @@ export default {
     },
 
     write(prompt, context = [], files = []) {
-      if (!this.auth.can('text:write')) {
+      if (!this.user.can('text:write')) {
         return this.messages.add(this.$gettext('Permission denied'), 'error')
       }
 

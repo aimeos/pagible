@@ -8,7 +8,7 @@ import FileDetailItemVideo from './FileDetailItemVideo.vue'
 import FileDetailItemAudio from './FileDetailItemAudio.vue'
 import {
   useAppStore,
-  useAuthStore,
+  useUserStore,
   useLanguageStore,
   useMessageStore,
   useSideStore
@@ -45,10 +45,10 @@ export default {
     const languages = useLanguageStore()
     const messages = useMessageStore()
     const side = useSideStore()
-    const auth = useAuthStore()
+    const user = useUserStore()
     const app = useAppStore()
 
-    return { app, auth, languages, messages, side }
+    return { app, user, languages, messages, side }
   },
 
   computed: {
@@ -61,7 +61,7 @@ export default {
     },
 
     readonly() {
-      return !this.auth.can('file:save')
+      return !this.user.can('file:save')
     }
   },
 
@@ -172,7 +172,7 @@ export default {
     },
 
     translateText(map) {
-      if (!this.auth.can('text:translate')) {
+      if (!this.user.can('text:translate')) {
         this.messages.add(this.$gettext('Permission denied'), 'error')
         return
       }
@@ -217,7 +217,7 @@ export default {
     },
 
     translateVTT(map) {
-      if (this.readonly || !this.auth.can('text:translate')) {
+      if (this.readonly || !this.user.can('text:translate')) {
         return this.messages.add(this.$gettext('Permission denied'), 'error')
       }
 
@@ -350,7 +350,7 @@ export default {
             <div v-if="!readonly" class="actions">
               <v-btn
                 v-if="
-                  auth.can('text:translate') &&
+                  user.can('text:translate') &&
                   Object.values(item.description || {}).find((v) => !!v)
                 "
                 @click="translateText(item.description)"
@@ -360,7 +360,7 @@ export default {
                 variant="text"
               />
               <v-btn
-                v-if="auth.can('file:describe')"
+                v-if="user.can('file:describe')"
                 @click="describe()"
                 :title="$gettext('Generate description')"
                 :loading="loading.describe"
@@ -368,7 +368,7 @@ export default {
                 variant="text"
               />
               <v-btn
-                v-if="auth.can('audio:transcribe')"
+                v-if="user.can('audio:transcribe')"
                 @click="record()"
                 :class="{ dictating: audio }"
                 :icon="audio ? 'mdi-microphone-outline' : 'mdi-microphone'"
@@ -409,7 +409,7 @@ export default {
             <div v-if="!readonly" class="actions">
               <v-btn
                 v-if="
-                  auth.can('text:translate') &&
+                  user.can('text:translate') &&
                   Object.values(item.transcription || {}).find((v) => !!v)
                 "
                 @click="translateVTT(item.transcription)"
@@ -419,7 +419,7 @@ export default {
                 variant="text"
               />
               <v-btn
-                v-if="auth.can('audio:transcribe')"
+                v-if="user.can('audio:transcribe')"
                 @click="transcribeFile()"
                 :title="$gettext('Transcribe file content')"
                 :loading="loading.transcribe"

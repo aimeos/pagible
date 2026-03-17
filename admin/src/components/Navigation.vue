@@ -2,15 +2,15 @@
 
 <script>
 import { useDisplay } from 'vuetify'
-import { useAuthStore, useDrawerStore } from '../stores'
+import { useUserStore, useDrawerStore } from '../stores'
 
 export default {
   setup() {
     const { mobile } = useDisplay()
     const drawer = useDrawerStore()
-    const auth = useAuthStore()
+    const user = useUserStore()
 
-    return { auth, drawer, mobile }
+    return { user, drawer, mobile }
   },
 
   methods: {
@@ -26,19 +26,19 @@ export default {
 <template>
   <v-navigation-drawer v-model="drawer.nav" location="start" mobile-breakpoint="lg">
     <v-list>
-      <v-list-item v-if="auth.can('page:view')" rounded="lg">
+      <v-list-item v-if="user.can('page:view')" rounded="lg">
         <v-icon icon="mdi-file-tree" class="icon" />
         <router-link to="/pages" class="router-link" @click="toggle()">
           {{ $gettext('Pages') }}
         </router-link>
       </v-list-item>
-      <v-list-item v-if="auth.can('element:view')" rounded="lg">
+      <v-list-item v-if="user.can('element:view')" rounded="lg">
         <v-icon icon="mdi-share-variant" class="icon" />
         <router-link to="/elements" class="router-link" @click="toggle()">
           {{ $gettext('Shared elements') }}
         </router-link>
       </v-list-item>
-      <v-list-item v-if="auth.can('file:view')" rounded="lg">
+      <v-list-item v-if="user.can('file:view')" rounded="lg">
         <v-icon icon="mdi-folder-multiple-image" class="icon" />
         <router-link to="/files" class="router-link" @click="toggle()">
           {{ $gettext('Files') }}
