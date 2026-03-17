@@ -17,6 +17,7 @@ use Prism\Prism\ValueObjects\Media\Document;
 use Prism\Prism\ValueObjects\ProviderTool;
 use Prism\Prism\Exceptions\PrismException;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use GraphQL\Error\Error;
 
 
@@ -88,7 +89,8 @@ final class Write
         }
         catch( PrismException $e )
         {
-            throw new Error( $e->getMessage() );
+            Log::error( 'AI service error', ['mutation' => 'Write', 'message' => $e->getMessage(), 'trace' => $e->getTraceAsString()] );
+            throw new Error( config( 'app.debug' ) ? $e->getMessage() : 'AI service error', null, null, null, null, $e );
         }
     }
 }

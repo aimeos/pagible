@@ -18,6 +18,7 @@ use Prism\Prism\ValueObjects\Media\Video;
 use Prism\Prism\ValueObjects\Media\Document;
 use Prism\Prism\ValueObjects\ProviderTool;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use GraphQL\Error\Error;
 
 
@@ -84,14 +85,17 @@ final class Synthesize
         }
         catch( PrismException $e )
         {
-            throw new Error( $e->getMessage() );
+            Log::error( 'AI service error', ['mutation' => 'Synthesize', 'message' => $e->getMessage(), 'trace' => $e->getTraceAsString()] );
+            throw new Error( config( 'app.debug' ) ? $e->getMessage() : 'AI service error', null, null, null, null, $e );
         }
         catch( \Exception $e )
         {
+            Log::error( 'Synthesize error', ['message' => $e->getMessage()] );
+
             $msg = match( get_class( $ex = $e->getPrevious() ?? $e ) )
             {
                 'Illuminate\Database\UniqueConstraintViolationException' => 'Already exists',
-                default => $ex->getMessage(),
+                default => 'An unexpected error occurred',
             };
         }
 

@@ -64,7 +64,13 @@ class AdminController extends Controller
             abort(400, 'Invalid or missing URL');
         }
 
-        $response = $this->fetch($url, $method, $range);
+        try {
+            $response = $this->fetch($url, $method, $range);
+        } catch (\Illuminate\Http\Client\ConnectionException $e) {
+            Log::warning('Proxy fetch failed', ['url' => $url, 'error' => $e->getMessage()]);
+            abort(504, 'Upstream request timed out');
+        }
+
         $headers = $this->buildHeaders($response, $range);
 
         $statusCode = isset( $headers['Content-Range'] ) ? 206 : $response->status();
@@ -178,7 +184,7 @@ class AdminController extends Controller
 
         while (!$body->eof() && $sent < $maxBytes) {
             if ((time() - $start) > $timeout) {
-                Log::warning('Stream timed out');
+                Log::warning('Stream timed out', ['sent' => $sent, 'maxBytes' => $maxBytes, 'timeout' => $timeout]);
                 break;
             }
 

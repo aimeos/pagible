@@ -12,6 +12,7 @@ use Aimeos\Prisma\Prisma;
 use Aimeos\Prisma\Files\Audio;
 use Aimeos\Prisma\Exceptions\PrismaException;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Http\UploadedFile;
 use GraphQL\Error\Error;
 
@@ -58,7 +59,8 @@ final class Transcribe
         }
         catch( PrismaException $e )
         {
-            throw new Error( $e->getMessage(), null, null, null, null, $e );
+            Log::error( 'AI service error', ['mutation' => 'Transcribe', 'message' => $e->getMessage(), 'trace' => $e->getTraceAsString()] );
+            throw new Error( config( 'app.debug' ) ? $e->getMessage() : 'AI service error', null, null, null, null, $e );
         }
     }
 

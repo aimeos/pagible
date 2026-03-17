@@ -11,6 +11,7 @@ use Aimeos\Cms\Permission;
 use Aimeos\Prisma\Prisma;
 use Aimeos\Prisma\Exceptions\PrismaException;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use GraphQL\Error\Error;
 
 
@@ -57,7 +58,8 @@ final class Translate
         }
         catch( PrismaException $e )
         {
-            throw new Error( $e->getMessage(), null, null, null, null, $e );
+            Log::error( 'AI service error', ['mutation' => 'Translate', 'message' => $e->getMessage(), 'trace' => $e->getTraceAsString()] );
+            throw new Error( config( 'app.debug' ) ? $e->getMessage() : 'AI service error', null, null, null, null, $e );
         }
     }
 }

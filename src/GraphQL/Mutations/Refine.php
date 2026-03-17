@@ -17,6 +17,7 @@ use Prism\Prism\Schema\ObjectSchema;
 use Prism\Prism\Schema\StringSchema;
 use Prism\Prism\Exceptions\PrismException;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use GraphQL\Error\Error;
 
 
@@ -68,7 +69,8 @@ final class Refine
         }
         catch( PrismException $e )
         {
-            throw new Error( $e->getMessage() );
+            Log::error( 'AI service error', ['mutation' => 'Refine', 'message' => $e->getMessage(), 'trace' => $e->getTraceAsString()] );
+            throw new Error( config( 'app.debug' ) ? $e->getMessage() : 'AI service error', null, null, null, null, $e );
         }
     }
 
