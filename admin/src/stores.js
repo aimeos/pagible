@@ -458,14 +458,16 @@ export const useMessageStore = defineStore('message', {
 
   actions: {
     add(msg, type = 'info', timeout = null) {
-      if (this.queue.length < 5) {
-        this.queue.push({
-          text: msg,
-          color: type,
-          contentClass: 'text-pre-line',
-          timeout: timeout || (type === 'error' ? 10000 : 3000)
-        })
+      if (this.queue.length >= 10) {
+        console.warn('Message queue overflow, dropping message:', msg)
+        return
       }
+      this.queue.push({
+        text: msg,
+        color: type,
+        contentClass: 'text-pre-line',
+        timeout: timeout || (type === 'error' ? 10000 : 3000)
+      })
     }
   }
 })
