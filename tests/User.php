@@ -15,6 +15,7 @@ class User extends \Illuminate\Foundation\Auth\User
         'email' => '',
         'password' => '',
         'cmseditor' => 0,
+        'cmsdata' => null,
     ];
 
     protected $fillable = [
@@ -22,5 +23,7 @@ class User extends \Illuminate\Foundation\Auth\User
         'email',
         'password',
         'cmseditor',
+        'cmsdata',
     ];
+
 }

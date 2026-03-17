@@ -21,7 +21,8 @@ export const useAppStore = defineStore('app', {
 export const useAuthStore = defineStore('auth', {
   state: () => ({
     me: null,
-    urlintended: null
+    urlintended: null,
+    _saveTimer: null
   }),
 
   actions: {
@@ -53,6 +54,7 @@ export const useAuthStore = defineStore('auth', {
             query {
               me {
                 permission
+                cmsdata
                 email
                 name
               }
@@ -67,6 +69,7 @@ export const useAuthStore = defineStore('auth', {
           this.me = response.data.me
             ? { ...response.data.me, permission: JSON.parse(response.data.me.permission || '{}') }
             : false
+
         })
         .catch((error) => {
           console.error('Failed to fetch user data', error)
@@ -83,6 +86,7 @@ export const useAuthStore = defineStore('auth', {
             mutation ($email: String!, $password: String!) {
               cmsLogin(email: $email, password: $password) {
                 permission
+                cmsdata
                 email
                 name
               }
@@ -113,6 +117,9 @@ export const useAuthStore = defineStore('auth', {
     },
 
     logout() {
+      clearTimeout(this._saveTimer)
+      this._saveTimer = null
+
       return apolloClient
         .mutate({
           mutation: gql`
@@ -143,6 +150,48 @@ export const useAuthStore = defineStore('auth', {
       }
 
       return null
+    },
+
+    getData(panel, key, defval = null) {
+      return this.me?.cmsdata?.[panel]?.[key] ?? defval
+    },
+
+    saveData(panel, key, value) {
+      if (!this.me) return
+
+      if (!this.me.cmsdata) {
+        this.me.cmsdata = {}
+      }
+      if (!this.me.cmsdata[panel]) {
+        this.me.cmsdata[panel] = {}
+      }
+
+      this.me.cmsdata[panel][key] = value
+
+      clearTimeout(this._saveTimer)
+      this._saveTimer = setTimeout(() => this.flush(), 60000)
+    },
+
+    flush() {
+      if (!this._saveTimer || !this.me?.cmsdata) return
+
+      clearTimeout(this._saveTimer)
+      this._saveTimer = null
+
+      apolloClient.mutate({
+        mutation: gql`
+          mutation ($cmsdata: JSON!) {
+            cmsUser(cmsdata: $cmsdata) {
+              cmsdata
+            }
+          }
+        `,
+        variables: {
+          cmsdata: this.me.cmsdata
+        }
+      }).catch((error) => {
+        console.error('Failed to save user data', error)
+      })
     }
   }
 })

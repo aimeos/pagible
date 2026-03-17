@@ -63,4 +63,38 @@ describe('ElementList', () => {
     mountElementList()
     cy.get('.aside-list-stub').should('exist')
   })
+
+  it('initializes filter from cmsdata', () => {
+    cy.mount(ElementList, {
+      global: {
+        stubs,
+        provide: {
+          locales: () => [{ value: 'en', title: 'English (EN)' }],
+        },
+        plugins: [{
+          install() {
+            const auth = useAuthStore()
+            auth.me = {
+              permission: {},
+              email: 'test@test.com',
+              cmsdata: { element: { filter: { publish: 'PUBLISHED', lang: 'de' } } }
+            }
+          }
+        }],
+      },
+    }).then(() => {
+      const vm = Cypress.vueWrapper.findComponent(ElementList).vm
+      expect(vm.filter.publish).to.equal('PUBLISHED')
+      expect(vm.filter.lang).to.equal('de')
+      expect(vm.filter.trashed).to.equal('WITHOUT')
+    })
+  })
+
+  it('uses default filter when cmsdata is null', () => {
+    mountElementList().then(() => {
+      const vm = Cypress.vueWrapper.findComponent(ElementList).vm
+      expect(vm.filter.trashed).to.equal('WITHOUT')
+      expect(vm.filter.publish).to.be.null
+    })
+  })
 })

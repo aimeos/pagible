@@ -28,7 +28,7 @@ export default {
       loading: true,
       checked: null,
       clip: null,
-      sort: { column: 'LFT', order: 'ASC' },
+      sort: this.auth.getData('page', 'sort') || { column: 'LFT', order: 'ASC' },
       term: ''
     }
   },
@@ -966,8 +966,12 @@ export default {
       }
     },
 
-    sort() {
-      this.reload(false)
+    sort: {
+      deep: true,
+      handler() {
+        this.auth.saveData('page', 'sort', this.sort)
+        this.reload(false)
+      }
     },
 
     term() {

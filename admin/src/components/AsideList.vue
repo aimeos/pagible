@@ -6,6 +6,7 @@ import { useDrawerStore } from '../stores'
 export default {
   props: {
     content: { type: Array, required: true },
+    defaults: { type: Object, default: null },
     filter: { type: Object, required: true }
   },
 
@@ -24,7 +25,7 @@ export default {
   },
 
   created() {
-    this.initial = { ...this.filter }
+    this.initial = { ...(this.defaults || this.filter) }
     this.open = this.content
       .map((group, index) => {
         return this.has(group.key) ? index : false
@@ -68,7 +69,7 @@ export default {
     <v-btn
       class="reset"
       :disabled="disabled"
-      @click="$emit('update:filter', initial)"
+      @click="$emit('update:filter', { ...initial })"
       prepend-icon="mdi-close-circle-outline"
       variant="text"
       >{{ $gettext('Reset') }}</v-btn

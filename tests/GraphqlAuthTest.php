@@ -117,4 +117,105 @@ class GraphqlAuthTest extends TestAbstract
             ]
         ] );
     }
+
+
+    public function testMeCmsdata()
+    {
+        $cmsdata = ['page' => ['filter' => ['view' => 'list']]];
+
+        $this->user->update( ['cmsdata' => json_encode( $cmsdata )] );
+
+        $response = $this->actingAs( $this->user )->graphQL( "{
+            me {
+                cmsdata
+            }
+        }" );
+
+        $this->assertEquals( $cmsdata, json_decode( $response->json( 'data.me.cmsdata' ), true ) );
+    }
+
+
+    public function testMeCmsdataNull()
+    {
+        $this->actingAs( $this->user )->graphQL( "{
+            me {
+                cmsdata
+            }
+        }" )->assertJson( [
+            'data' => [
+                'me' => [
+                    'cmsdata' => null,
+                ],
+            ]
+        ] );
+    }
+
+
+    public function testUser()
+    {
+        $cmsdata = ['page' => ['filter' => ['view' => 'list'], 'sort' => ['column' => 'ID', 'order' => 'DESC']]];
+
+        $response = $this->actingAs( $this->user )->graphQL( '
+            mutation ($cmsdata: JSON!) {
+                cmsUser(cmsdata: $cmsdata) {
+                    cmsdata
+                }
+            }
+        ', ['cmsdata' => json_encode( $cmsdata )] );
+
+        $this->assertEquals( $cmsdata, json_decode( $response->json( 'data.cmsUser.cmsdata' ), true ) );
+
+        $this->assertEquals( $cmsdata, json_decode( $this->user->fresh()->cmsdata, true ) );
+    }
+
+
+    public function testUserOverwrite()
+    {
+        $first = ['page' => ['filter' => ['view' => 'list']]];
+        $second = ['file' => ['sort' => ['column' => 'NAME', 'order' => 'ASC']]];
+
+        $this->actingAs( $this->user )->graphQL( '
+            mutation ($cmsdata: JSON!) {
+                cmsUser(cmsdata: $cmsdata) {
+                    cmsdata
+                }
+            }
+        ', ['cmsdata' => json_encode( $first )] );
+
+        $this->actingAs( $this->user )->graphQL( '
+            mutation ($cmsdata: JSON!) {
+                cmsUser(cmsdata: $cmsdata) {
+                    cmsdata
+                }
+            }
+        ', ['cmsdata' => json_encode( $second )] );
+
+        $this->assertEquals( $second, json_decode( $this->user->fresh()->cmsdata, true ) );
+    }
+
+
+    public function testUserGuest()
+    {
+        $this->graphQL( '
+            mutation ($cmsdata: JSON!) {
+                cmsUser(cmsdata: $cmsdata) {
+                    cmsdata
+                }
+            }
+        ', ['cmsdata' => json_encode( ['page' => []] )] )->assertGraphQLErrorMessage( 'Unauthenticated.' );
+    }
+
+
+    public function testUserTooLarge()
+    {
+        $cmsdata = ['data' => str_repeat( 'x', 65536 )];
+
+        $this->actingAs( $this->user )->graphQL( '
+            mutation ($cmsdata: JSON!) {
+                cmsUser(cmsdata: $cmsdata) {
+                    cmsdata
+                }
+            }
+        ', ['cmsdata' => json_encode( $cmsdata )] )->assertGraphQLErrorMessage( 'User data too large' );
+    }
 }

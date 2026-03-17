@@ -21,15 +21,8 @@ export default {
 
   inject: ['locales', 'transcribe', 'openView'],
 
-  data: () => ({
-    chat: '',
-    response: '',
-    audio: null,
-    help: false,
-    shortmsg: true,
-    synthesizing: false,
-    dictating: false,
-    filter: {
+  data() {
+    const defaults = {
       view: 'tree',
       trashed: 'WITHOUT',
       publish: null,
@@ -38,7 +31,28 @@ export default {
       cache: null,
       lang: null
     }
-  }),
+
+    return {
+      chat: '',
+      response: '',
+      audio: null,
+      help: false,
+      shortmsg: true,
+      synthesizing: false,
+      dictating: false,
+      defaults: defaults,
+      filter: { ...defaults, ...this.auth?.getData('page', 'filter') }
+    }
+  },
+
+  watch: {
+    filter: {
+      deep: true,
+      handler(val) {
+        this.auth.saveData('page', 'filter', val)
+      }
+    }
+  },
 
   setup() {
     const messages = useMessageStore()
@@ -46,6 +60,10 @@ export default {
     const auth = useAuthStore()
 
     return { auth, drawer, messages }
+  },
+
+  beforeUnmount() {
+    this.auth.flush()
   },
 
   computed: {
@@ -352,6 +370,7 @@ export default {
 
   <AsideList
     v-model:filter="filter"
+    :defaults="defaults"
     :content="[
       {
         key: 'view',

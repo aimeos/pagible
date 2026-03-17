@@ -24,7 +24,7 @@ export default {
       items: [],
       menu: [],
       term: '',
-      sort: { column: 'ID', order: 'DESC' },
+      sort: this.auth.getData('element', 'sort') || { column: 'ID', order: 'DESC' },
       page: 1,
       last: 1,
       limit: 100,
@@ -443,8 +443,12 @@ export default {
       this.search()
     },
 
-    sort() {
-      this.search()
+    sort: {
+      deep: true,
+      handler() {
+        this.auth.saveData('element', 'sort', this.sort)
+        this.search()
+      }
     }
   }
 }
