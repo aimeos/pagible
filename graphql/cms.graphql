@@ -15,6 +15,9 @@ union RemoveableUpload = Upload | Boolean
 extend type User {
     "CMS editor capabilities"
     permission: JSON! @field(resolver: "\\Aimeos\\Cms\\GraphQL\\Resolvers\\UserResolver@permission")
+
+    "CMS user preferences"
+    cmsdata: JSON @field(resolver: "\\Aimeos\\Cms\\GraphQL\\Resolvers\\UserResolver@cmsdata")
 }
 
 extend type Query {
@@ -67,6 +70,9 @@ extend type Mutation {
 
   "Log out authenticated user"
   cmsLogout: User @guard
+
+  "Update CMS user preferences"
+  cmsUser(cmsdata: JSON!): User @guard
 
   "Summarize the content of the file passed by its file ID"
   describe(file: String!, lang: String): String

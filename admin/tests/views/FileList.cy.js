@@ -64,4 +64,38 @@ describe('FileList', () => {
     mountFileList()
     cy.get('.file-list-items-stub').should('exist')
   })
+
+  it('initializes filter from cmsdata', () => {
+    cy.mount(FileList, {
+      global: {
+        stubs,
+        provide: {
+          locales: () => [{ value: 'en', title: 'English (EN)' }],
+        },
+        plugins: [{
+          install() {
+            const auth = useAuthStore()
+            auth.me = {
+              permission: {},
+              email: 'test@test.com',
+              cmsdata: { file: { filter: { publish: 'DRAFT', editor: 'me@test.com' } } }
+            }
+          }
+        }],
+      },
+    }).then(() => {
+      const vm = Cypress.vueWrapper.findComponent(FileList).vm
+      expect(vm.filter.publish).to.equal('DRAFT')
+      expect(vm.filter.editor).to.equal('me@test.com')
+      expect(vm.filter.trashed).to.equal('WITHOUT')
+    })
+  })
+
+  it('uses default filter when cmsdata is null', () => {
+    mountFileList().then(() => {
+      const vm = Cypress.vueWrapper.findComponent(FileList).vm
+      expect(vm.filter.trashed).to.equal('WITHOUT')
+      expect(vm.filter.publish).to.be.null
+    })
+  })
 })

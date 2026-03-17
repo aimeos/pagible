@@ -20,7 +20,7 @@ export default {
       items: [],
       menu: [],
       term: '',
-      sort: { column: 'ID', order: 'DESC' },
+      sort: this.auth.getData('file', 'sort') || { column: 'ID', order: 'DESC' },
       page: 1,
       last: 1,
       limit: 100,
@@ -41,7 +41,7 @@ export default {
 
   created() {
     this.searchd = this.debounce(this.search, 500)
-    this.vgrid = this.grid
+    this.vgrid = this.auth.getData('file', 'grid') ?? this.grid
     this.search()
   },
 
@@ -471,8 +471,16 @@ export default {
       this.search()
     },
 
-    sort() {
-      this.search()
+    sort: {
+      deep: true,
+      handler() {
+        this.auth.saveData('file', 'sort', this.sort)
+        this.search()
+      }
+    },
+
+    vgrid(val) {
+      this.auth.saveData('file', 'grid', val)
     }
   }
 }

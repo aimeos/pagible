@@ -86,4 +86,39 @@ describe('PageList', () => {
       expect(vm.same({ a: 1 }, { a: 1, b: 2 })).to.be.false
     })
   })
+
+  it('initializes filter from cmsdata', () => {
+    cy.mount(PageList, {
+      global: {
+        stubs,
+        provide: {
+          locales: () => [{ value: 'en', title: 'English (EN)' }],
+        },
+        plugins: [{
+          install() {
+            const auth = useAuthStore()
+            auth.me = {
+              permission: {},
+              email: 'test@test.com',
+              cmsdata: { page: { filter: { view: 'list', publish: 'DRAFT' } } }
+            }
+          }
+        }],
+      },
+    }).then(() => {
+      const vm = Cypress.vueWrapper.findComponent(PageList).vm
+      expect(vm.filter.view).to.equal('list')
+      expect(vm.filter.publish).to.equal('DRAFT')
+      expect(vm.filter.trashed).to.equal('WITHOUT')
+    })
+  })
+
+  it('uses default filter when cmsdata is null', () => {
+    mountPageList().then(() => {
+      const vm = Cypress.vueWrapper.findComponent(PageList).vm
+      expect(vm.filter.view).to.equal('tree')
+      expect(vm.filter.trashed).to.equal('WITHOUT')
+      expect(vm.filter.publish).to.be.null
+    })
+  })
 })

@@ -50,6 +50,75 @@ describe('useAuthStore', () => {
     })
   })
 
+  describe('getData()', () => {
+    it('returns defval when me is null', () => {
+      const auth = useAuthStore()
+      auth.me = null
+      expect(auth.getData('page', 'filter')).to.be.null
+    })
+
+    it('returns defval when cmsdata is null', () => {
+      const auth = useAuthStore()
+      auth.me = { cmsdata: null }
+      expect(auth.getData('page', 'filter', 'default')).to.equal('default')
+    })
+
+    it('returns defval when panel does not exist', () => {
+      const auth = useAuthStore()
+      auth.me = { cmsdata: {} }
+      expect(auth.getData('page', 'filter', 'fallback')).to.equal('fallback')
+    })
+
+    it('returns stored value', () => {
+      const auth = useAuthStore()
+      auth.me = { cmsdata: { page: { filter: { view: 'list' } } } }
+      expect(auth.getData('page', 'filter')).to.deep.equal({ view: 'list' })
+    })
+  })
+
+  describe('saveData()', () => {
+    it('creates cmsdata structure when missing', () => {
+      const auth = useAuthStore()
+      auth.me = {}
+      auth.saveData('page', 'filter', { view: 'list' })
+      expect(auth.me.cmsdata.page.filter).to.deep.equal({ view: 'list' })
+      clearTimeout(auth._saveTimer)
+    })
+
+    it('does nothing when me is null', () => {
+      const auth = useAuthStore()
+      auth.me = null
+      auth.saveData('page', 'filter', { view: 'list' })
+      expect(auth.me).to.be.null
+    })
+
+    it('sets a debounce timer', () => {
+      const auth = useAuthStore()
+      auth.me = {}
+      auth.saveData('page', 'sort', { column: 'ID' })
+      expect(auth._saveTimer).to.not.be.null
+      clearTimeout(auth._saveTimer)
+    })
+
+    it('overwrites existing values', () => {
+      const auth = useAuthStore()
+      auth.me = { cmsdata: { page: { filter: { view: 'tree' } } } }
+      auth.saveData('page', 'filter', { view: 'list' })
+      expect(auth.me.cmsdata.page.filter).to.deep.equal({ view: 'list' })
+      clearTimeout(auth._saveTimer)
+    })
+  })
+
+  describe('flush()', () => {
+    it('does nothing without pending timer', () => {
+      const auth = useAuthStore()
+      auth.me = { cmsdata: {} }
+      auth._saveTimer = null
+      auth.flush()
+      expect(auth._saveTimer).to.be.null
+    })
+  })
+
   describe('intended()', () => {
     it('stores and returns the intended URL', () => {
       const auth = useAuthStore()

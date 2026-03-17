@@ -20,21 +20,39 @@ export default {
 
   inject: ['locales', 'openView'],
 
-  data: () => ({
-    aside: null,
-    filter: {
+  data() {
+    const defaults = {
       trashed: 'WITHOUT',
       publish: null,
       editor: null,
       lang: null
     }
-  }),
+
+    return {
+      aside: null,
+      defaults: defaults,
+      filter: { ...defaults, ...this.auth?.getData('element', 'filter') }
+    }
+  },
+
+  watch: {
+    filter: {
+      deep: true,
+      handler(val) {
+        this.auth.saveData('element', 'filter', val)
+      }
+    }
+  },
 
   setup() {
     const drawer = useDrawerStore()
     const auth = useAuthStore()
 
     return { auth, drawer }
+  },
+
+  beforeUnmount() {
+    this.auth.flush()
   },
 
   methods: {
@@ -102,6 +120,7 @@ export default {
 
   <AsideList
     v-model:filter="filter"
+    :defaults="defaults"
     :content="[
       {
         key: 'publish',

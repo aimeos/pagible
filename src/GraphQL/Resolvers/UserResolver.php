@@ -21,4 +21,15 @@ class UserResolver
     {
         return \Aimeos\Cms\Permission::get( $user );
     }
+
+
+    /**
+     * @param array<string, mixed> $args
+     * @param mixed $context
+     * @return array<string, mixed>|null
+     */
+    public function cmsdata( User $user, array $args, mixed $context ): array|null
+    {
+        return json_decode( $user->cmsdata ?? '', true ) ?: null;
+    }
 }
