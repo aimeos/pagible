@@ -165,10 +165,7 @@ class GraphqlAuthTest extends TestAbstract
 
         $this->assertEquals( $cmsdata, json_decode( $response->json( 'data.cmsUser.cmsdata' ), true ) );
 
-        $this->assertDatabaseHas( 'users', [
-            'id' => $this->user->id,
-            'cmsdata' => json_encode( $cmsdata ),
-        ] );
+        $this->assertEquals( $cmsdata, json_decode( $this->user->fresh()->cmsdata, true ) );
     }
 
 
@@ -193,10 +190,7 @@ class GraphqlAuthTest extends TestAbstract
             }
         ', ['cmsdata' => json_encode( $second )] );
 
-        $this->assertDatabaseHas( 'users', [
-            'id' => $this->user->id,
-            'cmsdata' => json_encode( $second ),
-        ] );
+        $this->assertEquals( $second, json_decode( $this->user->fresh()->cmsdata, true ) );
     }
 
 

@@ -20,6 +20,7 @@ final class CmsUser
      */
     public function __invoke( $rootValue, array $args ): Authenticatable
     {
+        /** @var \Illuminate\Foundation\Auth\User $user */
         $user = Auth::guard()->user() ?? throw new Error( 'Not authenticated' );
 
         $cmsdata = json_encode( $args['cmsdata'] );
