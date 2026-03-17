@@ -71,7 +71,7 @@ final class Query
         }
 
         if( isset( $filter['any'] ) ) {
-            $ids = Element::search( $filter['any'] )->where( 'latest', true )->take( 1000 )->keys();
+            $ids = Element::search( mb_substr( trim( $filter['any'] ), 0, 200 ) )->where( 'latest', true )->take( 1000 )->keys();
             $builder->whereIn( 'cms_elements.id', $ids->all() );
         }
 
@@ -128,7 +128,7 @@ final class Query
         }
 
         if( isset( $filter['any'] ) ) {
-            $ids = File::search( $filter['any'] )->where( 'latest', true )->take( 1000 )->keys();
+            $ids = File::search( mb_substr( trim( $filter['any'] ), 0, 200 ) )->where( 'latest', true )->take( 1000 )->keys();
             $builder->whereIn( 'cms_files.id', $ids->all() );
         }
 
@@ -219,7 +219,7 @@ final class Query
         }
 
         if( isset( $filter['any'] ) ) {
-            $ids = Page::search( $filter['any'] )->where( 'latest', true )->take( 1000 )->keys();
+            $ids = Page::search( mb_substr( trim( $filter['any'] ), 0, 200 ) )->where( 'latest', true )->take( 1000 )->keys();
             $builder->whereIn( 'cms_pages.id', $ids->all() );
         }
 
