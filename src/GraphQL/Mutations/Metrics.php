@@ -36,7 +36,8 @@ final class Metrics
         }
 
         if( !is_int( $days ) || $days < 1 || $days > 90 ) {
-            throw new Error( 'Number of days must be an integer between 1 and 90' );
+            $msg = 'Number of days must be an integer between 1 and 90, got "%s"';
+            throw new Error( sprintf( $msg, $days ) );
         }
 
         try {

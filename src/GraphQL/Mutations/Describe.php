@@ -45,7 +45,8 @@ final class Describe
             $class = '\\Aimeos\\Prisma\\Files\\' . ucfirst( $type );
 
             if( !class_exists( $class ) ) {
-                throw new Error( 'Unsupported file type' );
+                $msg = 'Unsupported file type "%s"';
+                throw new Error( sprintf( $msg, $file->mime ) );
             }
 
             if( !str_starts_with( (string) $file->path, 'http' ) ) {

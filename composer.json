@@ -21,7 +21,8 @@
 		"mll-lab/graphql-php-scalars": "^6.4",
 		"nuwave/lighthouse": "^6.54",
 		"prism-php/prism": "0.99.19",
-		"symfony/uid": "^7.0"
+		"symfony/uid": "^7.0",
+		"enshrined/svg-sanitize": "^0.22.0"
 	},
 	"require-dev": {
 		"orchestra/testbench": "^9.0||^10.0",

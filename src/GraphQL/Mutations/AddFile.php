@@ -86,6 +86,16 @@ final class AddFile
             throw new Error( 'Invalid file upload' );
         }
 
+        if( !Utils::isValidUpload( $upload ) ) {
+            $msg = 'File size of %s MB exceeds the maximum of %s MB';
+            throw new Error( sprintf( $msg, round( $upload->getSize() / 1024 / 1024, 3 ), config( 'cms.graphql.filesize', 50 ) ) );
+        }
+
+        if( !Utils::isValidMimetype( (string) $upload->getMimeType() ) ) {
+            $msg = 'File type "%s" not allowed, permitted types: %s';
+            throw new Error( sprintf( $msg, $upload->getMimeType(), implode( ', ', config( 'cms.graphql.mimetypes', [] ) ) ) );
+        }
+
         $file->addFile( $upload );
         $file->mime = Utils::mimetype( (string) $file->path );
         $file->name = $file->name ?: pathinfo( $upload->getClientOriginalName(), PATHINFO_BASENAME );
@@ -117,12 +127,18 @@ final class AddFile
     {
         $url = $args['input']['path'] ?? '';
 
-        if( !str_starts_with( $url, 'http' ) ) {
-            throw new Error( 'Invalid URL' );
+        if( !str_starts_with( $url, 'http' ) || !Utils::isValidUrl( $url ) ) {
+            $msg = 'Invalid URL "%s"';
+            throw new Error( sprintf( $msg, $url ) );
         }
 
         $file->path = $url;
         $file->mime = Utils::mimetype( $url );
+
+        if( !Utils::isValidMimetype( $file->mime ) ) {
+            $msg = 'File type "%s" not allowed, permitted types: %s';
+            throw new Error( sprintf( $msg, $file->mime, implode( ', ', config( 'cms.graphql.mimetypes', [] ) ) ) );
+        }
         $file->name = $file->name ?: substr( $url, 0, 255 );
 
         try
