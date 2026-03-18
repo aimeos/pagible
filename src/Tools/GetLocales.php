@@ -28,7 +28,7 @@ class GetLocales extends Tool
      */
     public function handle(): \Laravel\Mcp\ResponseFactory
     {
-        return Response::structured( config( 'cms.config.locales', [] ) );
+        return Response::structured( ['locales' => config( 'cms.config.locales', [] )] );
     }
 
 

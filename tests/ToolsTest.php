@@ -38,7 +38,7 @@ class ToolsTest extends TestAbstract
 
         $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\GetLocales::class );
 
-        $response->assertOk()->assertStructuredContent( ['en', 'de'] );
+        $response->assertOk()->assertStructuredContent( ['locales' => ['en', 'de']] );
     }
 
 
