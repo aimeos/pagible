@@ -34,11 +34,19 @@ class Utils
         $isZip = str_starts_with( $content, "\x1f\x8b" );
         $sanitizer = new \enshrined\svgSanitize\Sanitizer();
 
-        if( !( $clean = $sanitizer->sanitize( $isZip ? gzdecode( $content ) : $content ) ) ) {
+        $content = $isZip ? gzdecode( $content ) : $content;
+
+        if( !$content || !( $clean = $sanitizer->sanitize( $content ) ) ) {
             return null;
         }
 
-        return $isZip ? gzencode( $clean ) : $clean;
+        $clean = $isZip ? gzencode( $clean ) : $clean;
+
+        if( !$clean ) {
+            return null;
+        }
+
+        return $clean;
     }
 
 
