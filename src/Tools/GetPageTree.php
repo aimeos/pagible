@@ -83,7 +83,6 @@ class GetPageTree extends Tool
             } )->all();
         }
 
-        /** @phpstan-ignore argument.type */
         return Response::structured( ['tree' => $tree] );
     }
 

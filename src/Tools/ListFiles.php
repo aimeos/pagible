@@ -64,7 +64,6 @@ class ListFiles extends Tool
             ];
         } );
 
-        /** @phpstan-ignore argument.type */
         return Response::structured( ['files' => $result->all()] );
     }
 
