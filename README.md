@@ -245,14 +245,40 @@ Afterwards, tell PagibleAI CMS how the ID of the current tenant can be retrieved
 
 ### MCP API
 
-PagibleAI CMS offers tools within the Laravel MCP API that LLMs can use to interact with the CMS. To make them available, you have to add this line to your `./routes/ai.php` route file:
+PagibleAI CMS offers tools within the Laravel MCP API that LLMs can use to interact with the CMS. To make them available, you have to execute:
+
+```bash
+php artisan vendor:publish --provider=Laravel\\Mcp\\Server\\McpServiceProvider
+```
+
+Then, add these lines to your `./routes/ai.php` route file:
 
 ```php
 Mcp::oauthRoutes();
 Mcp::web('/mcp/cms', \Aimeos\Cms\Mcp\CmsServer::class)->middleware('auth:api');
 ```
 
-**Note:** You need to set up Laravel Passport for [MCP OAuth authentication](https://laravel.com/docs/master/mcp#authentication) too!
+**Note:** You need to set up [Laravel Passport](https://laravel.com/docs/master/passport)
+for [MCP OAuth authentication](https://laravel.com/docs/master/mcp#authentication) too!
+
+After setting up Laravel Passport execute:
+
+```bash
+php artisan vendor:publish --tag=mcp-views
+```
+
+Update your `./app/Providers/AppServiceProvider.php` file by adding:
+
+```php
+use Laravel\Passport\Passport;
+
+public function boot(): void
+{
+    Passport::authorizationView(function ($parameters) {
+        return view('mcp.authorize', $parameters);
+    });
+}
+```
 
 ## Security
 
