@@ -45,12 +45,29 @@ final class SaveFile
 
             $upload = $args['file'] ?? null;
 
-            if( $upload instanceof UploadedFile && $upload->isValid() ) {
+            if( $upload instanceof UploadedFile && $upload->isValid() )
+            {
+                if( !Utils::isValidUpload( $upload ) ) {
+                    $msg = 'File size of %s MB exceeds the maximum of %s MB';
+                    throw new Error( sprintf( $msg, round( $upload->getSize() / 1024 / 1024, 3 ), config( 'cms.graphql.filesize', 50 ) ) );
+                }
+
+                if( !Utils::isValidMimetype( (string) $upload->getMimeType() ) ) {
+                    $msg = 'File type "%s" not allowed, permitted types: %s';
+                    throw new Error( sprintf( $msg, $upload->getMimeType(), implode( ', ', config( 'cms.graphql.mimetypes', [] ) ) ) );
+                }
+
                 $file->addFile( $upload );
             }
 
-            if( $file->path !== $path ) {
+            if( $file->path !== $path )
+            {
                 $file->mime = Utils::mimetype( $file->path );
+
+                if( !Utils::isValidMimetype( $file->mime ) ) {
+                    $msg = 'File type "%s" not allowed, permitted types: %s';
+                    throw new Error( sprintf( $msg, $file->mime, implode( ', ', config( 'cms.graphql.mimetypes', [] ) ) ) );
+                }
             }
 
             try
@@ -61,7 +78,7 @@ final class SaveFile
                     $file->addPreviews( $preview );
                 } elseif( $upload instanceof UploadedFile && $upload->isValid() && str_starts_with( $upload->getClientMimeType(), 'image/' ) ) {
                     $file->addPreviews( $upload );
-                } elseif( $file->path !== $path && str_starts_with( $file->path, 'http' ) ) {
+                } elseif( $file->path !== $path && str_starts_with( $file->path, 'http' ) && Utils::isValidUrl( $file->path ) ) {
                     $file->addPreviews( $file->path );
                 } elseif( $preview === false ) {
                     $file->previews = [];

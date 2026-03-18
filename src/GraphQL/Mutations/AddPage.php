@@ -90,7 +90,8 @@ final class AddPage
     protected function sanitize( array $input ) : array
     {
         if( !\Aimeos\Cms\Utils::isValidUrl( $input['to'] ?? null, false ) ) {
-            throw new Error( 'Invalid URL in "to" field' );
+            $msg = 'Invalid URL "%s" in "to" field';
+            throw new Error( sprintf( $msg, $input['to'] ?? '' ) );
         }
 
         if( !Permission::can( 'config:page', Auth::user() ) ) {

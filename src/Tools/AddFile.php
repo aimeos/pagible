@@ -46,8 +46,8 @@ class AddFile extends Tool
 
         $url = $validated['url'];
 
-        if( !str_starts_with( $url, 'http' ) ) {
-            return Response::structured( ['error' => 'The URL must start with "http" or "https".'] );
+        if( !str_starts_with( $url, 'http' ) || !Utils::isValidUrl( $url ) ) {
+            return Response::structured( ['error' => sprintf( 'The URL "%s" must be a valid "http" or "https" URL.', $url )] );
         }
 
         return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $url, $validated, $request ) {
@@ -65,6 +65,10 @@ class AddFile extends Tool
             $file->tenant_id = \Aimeos\Cms\Tenancy::value();
             $file->path = $url;
             $file->mime = Utils::mimetype( $url );
+
+            if( !Utils::isValidMimetype( $file->mime ) ) {
+                return Response::structured( ['error' => sprintf( 'File type "%s" is not allowed.', $file->mime )] );
+            }
             $file->name = $file->name ?: substr( $url, 0, 255 );
             $file->latest_id = $versionId;
             $file->editor = $editor;

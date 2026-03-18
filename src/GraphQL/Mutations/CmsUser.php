@@ -26,7 +26,8 @@ final class CmsUser
         $cmsdata = json_encode( $args['cmsdata'] );
 
         if( $cmsdata && strlen( (string) $cmsdata ) > 65535 ) {
-            throw new Error( 'User data too large' );
+            $msg = 'User data too large (%s KB), maximum is 64 KB';
+            throw new Error( sprintf( $msg, round( strlen( (string) $cmsdata ) / 1024 ) ) );
         }
 
         $user->setAttribute( 'cmsdata', $cmsdata );

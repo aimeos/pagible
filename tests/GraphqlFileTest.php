@@ -510,4 +510,90 @@ class GraphqlFileTest extends TestAbstract
 
         $this->assertNull( File::find( $file->id ) );
     }
+
+
+    public function testAddFileRejectsSize()
+    {
+        config()->set( 'cms.graphql.filesize', 0.001 ); // ~1 KB
+
+        $response = $this->actingAs( $this->user )->multipartGraphQL( [
+            'query' => '
+                mutation($file: Upload!) {
+                    addFile(file: $file, input: { name: "test" }) {
+                        id
+                    }
+                }
+            ',
+            'variables' => [
+                'file' => null,
+            ],
+        ], [
+            '0' => ['variables.file'],
+        ], [
+            '0' => UploadedFile::fake()->create( 'test.pdf', 100 ),
+        ] );
+
+        $response->assertGraphQLErrorMessage( 'File size of 0.098 MB exceeds the maximum of 0.001 MB' );
+    }
+
+
+    public function testAddFileRejectsMime()
+    {
+        config()->set( 'cms.graphql.mimetypes', ['image/'] );
+
+        $response = $this->actingAs( $this->user )->multipartGraphQL( [
+            'query' => '
+                mutation($file: Upload!) {
+                    addFile(file: $file, input: { name: "test" }) {
+                        id
+                    }
+                }
+            ',
+            'variables' => [
+                'file' => null,
+            ],
+        ], [
+            '0' => ['variables.file'],
+        ], [
+            '0' => UploadedFile::fake()->create( 'test.pdf', 1 ),
+        ] );
+
+        $response->assertGraphQLErrorMessage( 'File type "application/pdf" not allowed, permitted types: image/' );
+    }
+
+
+    public function testAddFileSanitizesSvg()
+    {
+        $svgContent = '<svg xmlns="http://www.w3.org/2000/svg"><rect width="10" height="10"/><script>alert(1)</script></svg>';
+        $tmpFile = tempnam( sys_get_temp_dir(), 'svg' );
+        file_put_contents( $tmpFile, $svgContent );
+
+        $upload = new UploadedFile( $tmpFile, 'test.svg', 'image/svg+xml', null, true );
+
+        $response = $this->actingAs( $this->user )->multipartGraphQL( [
+            'query' => '
+                mutation($file: Upload!) {
+                    addFile(file: $file, input: { name: "test.svg" }) {
+                        id
+                        path
+                    }
+                }
+            ',
+            'variables' => [
+                'file' => null,
+            ],
+        ], [
+            '0' => ['variables.file'],
+        ], [
+            '0' => $upload,
+        ] );
+
+        $result = $response->json( 'data.addFile' );
+        $stored = \Illuminate\Support\Facades\Storage::disk( config( 'cms.disk', 'public' ) )->get( $result['path'] );
+
+        $this->assertStringContainsString( '<rect', $stored );
+        $this->assertStringNotContainsString( '<script', $stored );
+
+        @unlink( $tmpFile );
+    }
 }
