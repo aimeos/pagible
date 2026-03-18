@@ -162,17 +162,15 @@ class File extends Model
         $dir = rtrim( 'cms/' . \Aimeos\Cms\Tenancy::value(), '/' );
 
         $name = $this->filename( $upload->getClientOriginalName() );
+        $content = file_get_contents( $upload->getRealPath() );
         $path = $dir . '/' . $name;
 
-        if( $upload->getMimeType() === 'image/svg+xml' && (
-            !( $content = file_get_contents( $upload->getRealPath() ) )
-            || !( $content = \Aimeos\Cms\Utils::cleanSvg( $content ) )
-        ) ) {
+        if( $upload->getMimeType() === 'image/svg+xml' && !( $content = \Aimeos\Cms\Utils::cleanSvg( $content ) ) ) {
             $msg = 'Invalid file "%s"';
             throw new \RuntimeException( sprintf( $msg, $upload->getClientOriginalName() ) );
         }
 
-        if( !$disk->put( $path, $content ) ) {
+        if( !$content || !$disk->put( $path, $content ) ) {
             $msg = 'Unable to store file "%s" to "%s"';
             throw new \RuntimeException( sprintf( $msg, $upload->getClientOriginalName(), $path ) );
         }
