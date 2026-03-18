@@ -77,7 +77,7 @@ class SearchFiles extends Tool
         } );
 
         /** @phpstan-ignore argument.type */
-        return Response::structured( $result->all() );
+        return Response::structured( ['files' => $result->all()] );
     }
 
 

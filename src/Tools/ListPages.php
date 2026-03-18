@@ -71,7 +71,7 @@ class ListPages extends Tool
         } );
 
         /** @phpstan-ignore argument.type */
-        return Response::structured( $result->all() );
+        return Response::structured( ['pages' => $result->all()] );
     }
 
 

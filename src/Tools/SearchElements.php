@@ -67,7 +67,7 @@ class SearchElements extends Tool
         } );
 
         /** @phpstan-ignore argument.type */
-        return Response::structured( $result->all() );
+        return Response::structured( ['elements' => $result->all()] );
     }
 
 

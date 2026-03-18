@@ -63,7 +63,7 @@ class SearchPages extends Tool
                 return $item->toArray() + ['url' => route( 'cms.page', ['path' => $item->path] )];
             } );
 
-        return Response::structured( $result->all() );
+        return Response::structured( ['pages' => $result->all()] );
     }
 
 
