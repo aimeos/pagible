@@ -164,22 +164,15 @@ class File extends Model
         $name = $this->filename( $upload->getClientOriginalName() );
         $path = $dir . '/' . $name;
 
-        if( $upload->getMimeType() === 'image/svg+xml' )
-        {
-            $content = file_get_contents( $upload->getRealPath() );
-
-            if( !( $content = \Aimeos\Cms\Utils::cleanSvg( $content ) ) ) {
-                $msg = 'Invalid file "%s"';
-                throw new \RuntimeException( sprintf( $msg, $upload->getClientOriginalName() ) );
-            }
-
-            if( !$disk->put( $path, $content ) ) {
-                $msg = 'Unable to store file "%s" to "%s"';
-                throw new \RuntimeException( sprintf( $msg, $upload->getClientOriginalName(), $path ) );
-            }
+        if( $upload->getMimeType() === 'image/svg+xml' && (
+            !( $content = file_get_contents( $upload->getRealPath() ) )
+            || !( $content = \Aimeos\Cms\Utils::cleanSvg( $content ) )
+        ) ) {
+            $msg = 'Invalid file "%s"';
+            throw new \RuntimeException( sprintf( $msg, $upload->getClientOriginalName() ) );
         }
-        elseif( !$disk->putFileAs( $dir, $upload, $name ) )
-        {
+
+        if( !$disk->put( $path, $content ) ) {
             $msg = 'Unable to store file "%s" to "%s"';
             throw new \RuntimeException( sprintf( $msg, $upload->getClientOriginalName(), $path ) );
         }
