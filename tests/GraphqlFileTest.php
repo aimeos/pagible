@@ -243,6 +243,16 @@ class GraphqlFileTest extends TestAbstract
 
     public function testAddFile()
     {
+        $tmpFile = tempnam( sys_get_temp_dir(), 'pdf' );
+        file_put_contents( $tmpFile, '%PDF-1.4 test content' );
+        $upload = new UploadedFile( $tmpFile, 'test.pdf', 'application/pdf', null, true );
+
+        $tmpPreview = tempnam( sys_get_temp_dir(), 'jpg' );
+        $img = imagecreatetruecolor( 20, 20 );
+        imagejpeg( $img, $tmpPreview );
+        imagedestroy( $img );
+        $preview = new UploadedFile( $tmpPreview, 'test-preview-1.jpg', 'image/jpeg', null, true );
+
         $this->expectsDatabaseQueryCount( 6 );
         $response = $this->actingAs( $this->user )->multipartGraphQL( [
             'query' => '
@@ -275,8 +285,8 @@ class GraphqlFileTest extends TestAbstract
             '0' => ['variables.file'],
             '1' => ['variables.preview'],
         ], [
-            '0' => UploadedFile::fake()->create('test.pdf', 500),
-            '1' => UploadedFile::fake()->image('test-preview-1.jpg', 20),
+            '0' => $upload,
+            '1' => $preview,
         ] );
 
         $result = $response->json('data.addFile');
@@ -286,7 +296,7 @@ class GraphqlFileTest extends TestAbstract
             'data' => [
                 'addFile' => [
                     'id' => $file->id,
-                    'mime' => 'application/x-empty',
+                    'mime' => 'application/pdf',
                     'lang' => 'en-GB',
                     'name' => 'Test file name',
                     'path' => $file->path,
