@@ -505,4 +505,308 @@ class GraphqlTest extends TestAbstract
             }
         ')->assertGraphQLErrorMessage('Number of days must be an integer between 1 and 90');
     }
+
+
+    // --- Permission denial tests ---
+
+    public function testImagineNoPermission()
+    {
+        $user = $this->noPermUser();
+
+        $this->actingAs( $user )->graphQL( '
+            mutation {
+                imagine(prompt: "test", context: "ctx")
+            }
+        ' )->assertGraphQLErrorMessage( 'Insufficient permissions' );
+    }
+
+
+    public function testInpaintNoPermission()
+    {
+        $user = $this->noPermUser();
+        $image = file_get_contents( __DIR__ . '/assets/image.png' );
+
+        $this->actingAs( $user )->multipartGraphQL( [
+            'query' => '
+                mutation($file: Upload!, $mask: Upload!, $prompt: String!) {
+                    inpaint(file: $file, mask: $mask, prompt: $prompt)
+                }
+            ',
+            'variables' => ['file' => null, 'mask' => null, 'prompt' => 'test'],
+        ], [
+            '0' => ['variables.file'],
+            '1' => ['variables.mask'],
+        ], [
+            '0' => UploadedFile::fake()->createWithContent( 'test.png', $image ),
+            '1' => UploadedFile::fake()->createWithContent( 'mask.png', $image ),
+        ] )->assertGraphQLErrorMessage( 'Insufficient permissions' );
+    }
+
+
+    public function testIsolateNoPermission()
+    {
+        $user = $this->noPermUser();
+        $image = file_get_contents( __DIR__ . '/assets/image.png' );
+
+        $this->actingAs( $user )->multipartGraphQL( [
+            'query' => '
+                mutation($file: Upload!) {
+                    isolate(file: $file)
+                }
+            ',
+            'variables' => ['file' => null],
+        ], [
+            '0' => ['variables.file'],
+        ], [
+            '0' => UploadedFile::fake()->createWithContent( 'test.png', $image ),
+        ] )->assertGraphQLErrorMessage( 'Insufficient permissions' );
+    }
+
+
+    public function testRepaintNoPermission()
+    {
+        $user = $this->noPermUser();
+        $image = file_get_contents( __DIR__ . '/assets/image.png' );
+
+        $this->actingAs( $user )->multipartGraphQL( [
+            'query' => '
+                mutation($file: Upload!, $prompt: String!) {
+                    repaint(file: $file, prompt: $prompt)
+                }
+            ',
+            'variables' => ['file' => null, 'prompt' => 'test'],
+        ], [
+            '0' => ['variables.file'],
+        ], [
+            '0' => UploadedFile::fake()->createWithContent( 'test.png', $image ),
+        ] )->assertGraphQLErrorMessage( 'Insufficient permissions' );
+    }
+
+
+    public function testEraseNoPermission()
+    {
+        $user = $this->noPermUser();
+        $image = file_get_contents( __DIR__ . '/assets/image.png' );
+
+        $this->actingAs( $user )->multipartGraphQL( [
+            'query' => '
+                mutation($file: Upload!, $mask: Upload!) {
+                    erase(file: $file, mask: $mask)
+                }
+            ',
+            'variables' => ['file' => null, 'mask' => null],
+        ], [
+            '0' => ['variables.file'],
+            '1' => ['variables.mask'],
+        ], [
+            '0' => UploadedFile::fake()->createWithContent( 'test.png', $image ),
+            '1' => UploadedFile::fake()->createWithContent( 'mask.png', $image ),
+        ] )->assertGraphQLErrorMessage( 'Insufficient permissions' );
+    }
+
+
+    public function testUncropNoPermission()
+    {
+        $user = $this->noPermUser();
+        $image = file_get_contents( __DIR__ . '/assets/image.png' );
+
+        $this->actingAs( $user )->multipartGraphQL( [
+            'query' => '
+                mutation($file: Upload!) {
+                    uncrop(file: $file, top: 100, right: 100, bottom: 100, left: 100)
+                }
+            ',
+            'variables' => ['file' => null],
+        ], [
+            '0' => ['variables.file'],
+        ], [
+            '0' => UploadedFile::fake()->createWithContent( 'test.png', $image ),
+        ] )->assertGraphQLErrorMessage( 'Insufficient permissions' );
+    }
+
+
+    public function testUpscaleNoPermission()
+    {
+        $user = $this->noPermUser();
+        $image = file_get_contents( __DIR__ . '/assets/image.png' );
+
+        $this->actingAs( $user )->multipartGraphQL( [
+            'query' => '
+                mutation($file: Upload!) {
+                    upscale(file: $file, factor: 2)
+                }
+            ',
+            'variables' => ['file' => null],
+        ], [
+            '0' => ['variables.file'],
+        ], [
+            '0' => UploadedFile::fake()->createWithContent( 'test.png', $image ),
+        ] )->assertGraphQLErrorMessage( 'Insufficient permissions' );
+    }
+
+
+    public function testWriteNoPermission()
+    {
+        $user = $this->noPermUser();
+
+        $this->actingAs( $user )->graphQL( '
+            mutation {
+                write(prompt: "test")
+            }
+        ' )->assertGraphQLErrorMessage( 'Insufficient permissions' );
+    }
+
+
+    public function testSynthesizeNoPermission()
+    {
+        $user = $this->noPermUser();
+
+        $this->actingAs( $user )->graphQL( '
+            mutation($prompt: String!) {
+                synthesize(prompt: $prompt)
+            }
+        ', [
+            'prompt' => 'test',
+        ] )->assertGraphQLErrorMessage( 'Insufficient permissions' );
+    }
+
+
+    public function testRefineNoPermission()
+    {
+        $user = $this->noPermUser();
+
+        $this->actingAs( $user )->graphQL( '
+            mutation($prompt: String!, $content: JSON!) {
+                refine(prompt: $prompt, content: $content)
+            }
+        ', [
+            'prompt' => 'test',
+            'content' => json_encode( [] ),
+        ] )->assertGraphQLErrorMessage( 'Insufficient permissions' );
+    }
+
+
+    public function testTranslateNoPermission()
+    {
+        $user = $this->noPermUser();
+
+        $this->actingAs( $user )->graphQL( '
+            mutation($texts: [String!]!, $to: String!) {
+                translate(texts: $texts, to: $to)
+            }
+        ', [
+            'texts' => ['Hello'],
+            'to' => 'de',
+        ] )->assertGraphQLErrorMessage( 'Insufficient permissions' );
+    }
+
+
+    public function testTranscribeNoPermission()
+    {
+        $user = $this->noPermUser();
+
+        $this->actingAs( $user )->multipartGraphQL( [
+            'query' => '
+                mutation($file: Upload!) {
+                    transcribe(file: $file)
+                }
+            ',
+            'variables' => ['file' => null],
+        ], [
+            '0' => ['variables.file'],
+        ], [
+            '0' => UploadedFile::fake()->create( 'test.mp3', 500, 'audio/mpeg' ),
+        ] )->assertGraphQLErrorMessage( 'Insufficient permissions' );
+    }
+
+
+    public function testDescribeNoPermission()
+    {
+        $this->seed( CmsSeeder::class );
+        $user = $this->noPermUser();
+        $file = File::firstOrFail();
+
+        $this->actingAs( $user )->graphQL( '
+            mutation {
+                describe(file: "' . $file->id . '", lang: "en")
+            }
+        ' )->assertGraphQLErrorMessage( 'Insufficient permissions' );
+    }
+
+
+    public function testMetricsNoPermission()
+    {
+        $user = $this->noPermUser();
+
+        $this->actingAs( $user )->graphQL( '
+            mutation {
+                metrics(url: "/test", days: 30) {
+                    views { key value }
+                }
+            }
+        ' )->assertGraphQLErrorMessage( 'Insufficient permissions' );
+    }
+
+
+    // --- Input validation tests ---
+
+    public function testImagineEmptyPrompt()
+    {
+        $this->actingAs( $this->user )->graphQL( '
+            mutation {
+                imagine(prompt: "")
+            }
+        ' )->assertGraphQLErrorMessage( 'Prompt must not be empty' );
+    }
+
+
+    public function testWriteEmptyPrompt()
+    {
+        $this->actingAs( $this->user )->graphQL( '
+            mutation {
+                write(prompt: "")
+            }
+        ' )->assertGraphQLErrorMessage( 'Prompt must not be empty' );
+    }
+
+
+    public function testRefineEmptyPrompt()
+    {
+        $this->actingAs( $this->user )->graphQL( '
+            mutation {
+                refine(prompt: "", content: "[]")
+            }
+        ' )->assertGraphQLErrorMessage( 'Prompt must not be empty' );
+    }
+
+
+    public function testSynthesizeEmptyPrompt()
+    {
+        $this->actingAs( $this->user )->graphQL( '
+            mutation {
+                synthesize(prompt: "")
+            }
+        ' )->assertGraphQLErrorMessage( 'Prompt must not be empty' );
+    }
+
+
+    public function testDescribeEmptyFile()
+    {
+        $this->actingAs( $this->user )->graphQL( '
+            mutation {
+                describe(file: "", lang: "en")
+            }
+        ' )->assertGraphQLErrorMessage( 'File ID is required' );
+    }
+
+
+    protected function noPermUser(): \App\Models\User
+    {
+        return \App\Models\User::create( [
+            'name' => 'No permission',
+            'email' => 'noperm-' . \Aimeos\Cms\Utils::uid() . '@testbench',
+            'password' => 'secret',
+            'cmseditor' => 0,
+        ] );
+    }
 }
