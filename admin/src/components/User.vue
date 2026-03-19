@@ -4,7 +4,14 @@
 import { useTheme } from 'vuetify'
 import { useGettext } from 'vue3-gettext'
 import { useUserStore, useLanguageStore, useMessageStore } from '../stores'
-import { mdiWhiteBalanceSunny, mdiWeatherNight, mdiWeb, mdiClose, mdiAccountCircleOutline, mdiLogout } from '@mdi/js'
+import {
+  mdiWhiteBalanceSunny,
+  mdiWeatherNight,
+  mdiWeb,
+  mdiClose,
+  mdiAccountCircleOutline,
+  mdiLogout
+} from '@mdi/js'
 
 export default {
   data: () => ({
@@ -19,7 +26,19 @@ export default {
     const i18n = useGettext()
     const theme = useTheme()
 
-    return { user, i18n, languages, messages, theme, mdiWhiteBalanceSunny, mdiWeatherNight, mdiWeb, mdiClose, mdiAccountCircleOutline, mdiLogout }
+    return {
+      user,
+      i18n,
+      languages,
+      messages,
+      theme,
+      mdiWhiteBalanceSunny,
+      mdiWeatherNight,
+      mdiWeb,
+      mdiClose,
+      mdiAccountCircleOutline,
+      mdiLogout
+    }
   },
 
   created() {
@@ -34,7 +53,6 @@ export default {
   },
 
   methods: {
-
     change(code) {
       import(`../../i18n/${code}.json`).then((translations) => {
         this.i18n.translations = translations.default || translations

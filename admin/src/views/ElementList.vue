@@ -2,7 +2,20 @@
 
 <script>
 import gql from 'graphql-tag'
-import { mdiPlaylistCheck, mdiTranslate, mdiClose, mdiMenu, mdiChevronRight, mdiChevronLeft, mdiPublish, mdiClockOutline, mdiPencil, mdiDeleteOff, mdiDelete, mdiAccount } from '@mdi/js'
+import {
+  mdiPlaylistCheck,
+  mdiTranslate,
+  mdiClose,
+  mdiMenu,
+  mdiChevronRight,
+  mdiChevronLeft,
+  mdiPublish,
+  mdiClockOutline,
+  mdiPencil,
+  mdiDeleteOff,
+  mdiDelete,
+  mdiAccount
+} from '@mdi/js'
 import User from '../components/User.vue'
 import AsideList from '../components/AsideList.vue'
 import Navigation from '../components/Navigation.vue'
@@ -49,7 +62,22 @@ export default {
     const drawer = useDrawerStore()
     const user = useUserStore()
 
-    return { user, drawer, mdiPlaylistCheck, mdiTranslate, mdiClose, mdiMenu, mdiChevronRight, mdiChevronLeft, mdiPublish, mdiClockOutline, mdiPencil, mdiDeleteOff, mdiDelete, mdiAccount }
+    return {
+      user,
+      drawer,
+      mdiPlaylistCheck,
+      mdiTranslate,
+      mdiClose,
+      mdiMenu,
+      mdiChevronRight,
+      mdiChevronLeft,
+      mdiPublish,
+      mdiClockOutline,
+      mdiPencil,
+      mdiDeleteOff,
+      mdiDelete,
+      mdiAccount
+    }
   },
 
   beforeUnmount() {

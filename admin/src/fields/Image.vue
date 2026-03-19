@@ -2,7 +2,15 @@
 
 <script>
 import gql from 'graphql-tag'
-import { mdiDotsVertical, mdiPencil, mdiTrashCan, mdiButtonCursor, mdiLinkVariantPlus, mdiCreation, mdiUpload } from '@mdi/js'
+import {
+  mdiDotsVertical,
+  mdiPencil,
+  mdiTrashCan,
+  mdiButtonCursor,
+  mdiLinkVariantPlus,
+  mdiCreation,
+  mdiUpload
+} from '@mdi/js'
 import File from './File.vue'
 import FileAiDialog from '../components/FileAiDialog.vue'
 
@@ -14,7 +22,16 @@ export default {
   },
 
   setup() {
-    return { ...File.setup(), mdiDotsVertical, mdiPencil, mdiTrashCan, mdiButtonCursor, mdiLinkVariantPlus, mdiCreation, mdiUpload }
+    return {
+      ...File.setup(),
+      mdiDotsVertical,
+      mdiPencil,
+      mdiTrashCan,
+      mdiButtonCursor,
+      mdiLinkVariantPlus,
+      mdiCreation,
+      mdiUpload
+    }
   },
 
   data() {

@@ -7,7 +7,13 @@ import HistoryDialog from '../components/HistoryDialog.vue'
 import FileDetailRefs from '../components/FileDetailRefs.vue'
 import FileDetailItem from '../components/FileDetailItem.vue'
 import { useUserStore, useDrawerStore, useMessageStore } from '../stores'
-import { mdiKeyboardBackspace, mdiHistory, mdiDatabaseArrowDown, mdiChevronRight, mdiChevronLeft } from '@mdi/js'
+import {
+  mdiKeyboardBackspace,
+  mdiHistory,
+  mdiDatabaseArrowDown,
+  mdiChevronRight,
+  mdiChevronLeft
+} from '@mdi/js'
 
 export default {
   components: {
@@ -40,11 +46,19 @@ export default {
     const drawer = useDrawerStore()
     const user = useUserStore()
 
-    return { user, drawer, messages, mdiKeyboardBackspace, mdiHistory, mdiDatabaseArrowDown, mdiChevronRight, mdiChevronLeft }
+    return {
+      user,
+      drawer,
+      messages,
+      mdiKeyboardBackspace,
+      mdiHistory,
+      mdiDatabaseArrowDown,
+      mdiChevronRight,
+      mdiChevronLeft
+    }
   },
 
   methods: {
-
     errorUpdated(event) {
       this.error = event
     },

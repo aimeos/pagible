@@ -2,14 +2,29 @@
 
 <script>
 import gql from 'graphql-tag'
-import { mdiDotsVertical, mdiPencil, mdiTrashCan, mdiButtonCursor, mdiLinkVariantPlus, mdiUpload } from '@mdi/js'
+import {
+  mdiDotsVertical,
+  mdiPencil,
+  mdiTrashCan,
+  mdiButtonCursor,
+  mdiLinkVariantPlus,
+  mdiUpload
+} from '@mdi/js'
 import { default as FileComp } from './File.vue'
 
 export default {
   extends: FileComp,
 
   setup() {
-    return { ...FileComp.setup(), mdiDotsVertical, mdiPencil, mdiTrashCan, mdiButtonCursor, mdiLinkVariantPlus, mdiUpload }
+    return {
+      ...FileComp.setup(),
+      mdiDotsVertical,
+      mdiPencil,
+      mdiTrashCan,
+      mdiButtonCursor,
+      mdiLinkVariantPlus,
+      mdiUpload
+    }
   }
 }
 </script>

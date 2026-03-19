@@ -2,7 +2,15 @@
 
 <script>
 import gql from 'graphql-tag'
-import { mdiDotsVertical, mdiPencil, mdiTrashCan, mdiButtonCursor, mdiLinkVariantPlus, mdiCreation, mdiUpload } from '@mdi/js'
+import {
+  mdiDotsVertical,
+  mdiPencil,
+  mdiTrashCan,
+  mdiButtonCursor,
+  mdiLinkVariantPlus,
+  mdiCreation,
+  mdiUpload
+} from '@mdi/js'
 import { VueDraggable } from 'vue-draggable-plus'
 import { useAppStore, useUserStore } from '../stores'
 import FileAiDialog from '../components/FileAiDialog.vue'
@@ -35,7 +43,17 @@ export default {
     const user = useUserStore()
     const app = useAppStore()
 
-    return { app, user, mdiDotsVertical, mdiPencil, mdiTrashCan, mdiButtonCursor, mdiLinkVariantPlus, mdiCreation, mdiUpload }
+    return {
+      app,
+      user,
+      mdiDotsVertical,
+      mdiPencil,
+      mdiTrashCan,
+      mdiButtonCursor,
+      mdiLinkVariantPlus,
+      mdiCreation,
+      mdiUpload
+    }
   },
 
   data() {
@@ -73,7 +91,6 @@ export default {
   },
 
   methods: {
-
     add(files) {
       if (!this.user.can('file:add')) {
         this.messages.add(this.$gettext('Permission denied'), 'error')

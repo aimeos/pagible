@@ -2,7 +2,30 @@
 
 <script>
 import gql from 'graphql-tag'
-import { mdiDotsVertical, mdiClose, mdiPublish, mdiEye, mdiEyeOff, mdiDelete, mdiDeleteRestore, mdiDeleteForever, mdiPlus, mdiMagnify, mdiRefresh, mdiMenuDown, mdiSort, mdiMenuRight, mdiEyeOffOutline, mdiContentCut, mdiContentCopy, mdiContentPaste, mdiArrowUp, mdiArrowRight, mdiArrowDown, mdiClockOutline } from '@mdi/js'
+import {
+  mdiDotsVertical,
+  mdiClose,
+  mdiPublish,
+  mdiEye,
+  mdiEyeOff,
+  mdiDelete,
+  mdiDeleteRestore,
+  mdiDeleteForever,
+  mdiPlus,
+  mdiMagnify,
+  mdiRefresh,
+  mdiMenuDown,
+  mdiSort,
+  mdiMenuRight,
+  mdiEyeOffOutline,
+  mdiContentCut,
+  mdiContentCopy,
+  mdiContentPaste,
+  mdiArrowUp,
+  mdiArrowRight,
+  mdiArrowDown,
+  mdiClockOutline
+} from '@mdi/js'
 import { Draggable } from '@he-tree/vue'
 import { dragContext } from '@he-tree/vue'
 import { useAppStore, useUserStore, useLanguageStore, useMessageStore } from '../stores'
@@ -40,7 +63,34 @@ export default {
     const user = useUserStore()
     const app = useAppStore()
 
-    return { app, user, languages, messages, mdiDotsVertical, mdiClose, mdiPublish, mdiEye, mdiEyeOff, mdiDelete, mdiDeleteRestore, mdiDeleteForever, mdiPlus, mdiMagnify, mdiRefresh, mdiMenuDown, mdiSort, mdiMenuRight, mdiEyeOffOutline, mdiContentCut, mdiContentCopy, mdiContentPaste, mdiArrowUp, mdiArrowRight, mdiArrowDown, mdiClockOutline }
+    return {
+      app,
+      user,
+      languages,
+      messages,
+      mdiDotsVertical,
+      mdiClose,
+      mdiPublish,
+      mdiEye,
+      mdiEyeOff,
+      mdiDelete,
+      mdiDeleteRestore,
+      mdiDeleteForever,
+      mdiPlus,
+      mdiMagnify,
+      mdiRefresh,
+      mdiMenuDown,
+      mdiSort,
+      mdiMenuRight,
+      mdiEyeOffOutline,
+      mdiContentCut,
+      mdiContentCopy,
+      mdiContentPaste,
+      mdiArrowUp,
+      mdiArrowRight,
+      mdiArrowDown,
+      mdiClockOutline
+    }
   },
 
   created() {
@@ -1086,13 +1136,13 @@ export default {
           :prepend-icon="mdiSort"
           variant="text"
         >
-            {{
-              sort?.column === 'ID'
-                ? sort?.order === 'DESC'
-                  ? $gettext('latest')
-                  : $gettext('oldest')
-                : $gettext('default')
-            }}
+          {{
+            sort?.column === 'ID'
+              ? sort?.order === 'DESC'
+                ? $gettext('latest')
+                : $gettext('oldest')
+              : $gettext('default')
+          }}
         </v-btn>
       </template>
       <v-list>

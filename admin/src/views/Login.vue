@@ -47,7 +47,6 @@ export default {
   },
 
   methods: {
-
     cmslogin() {
       if (!this.creds.email || !this.creds.password) {
         return false
@@ -127,11 +126,7 @@ export default {
           variant="underlined"
         >
           <template v-slot:append-inner>
-            <v-icon
-              @click="toggleShow"
-              @keydown="toggle"
-              :icon="show ? mdiEyeOff : mdiEye"</v-icon
-            >
+            <v-icon @click="toggleShow" @keydown="toggle" :icon="show ? mdiEyeOff : mdiEye" />
           </template>
         </v-text-field>
         <v-alert v-show="error" color="error" :icon="mdiAlertOctagon">

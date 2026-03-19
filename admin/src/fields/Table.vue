@@ -1,14 +1,32 @@
 /** @license LGPL, https://opensource.org/license/lgpl-3-0 */
 
 <script>
-import { mdiDotsVertical, mdiClose, mdiTableColumnPlusBefore, mdiTableColumnPlusAfter, mdiDelete, mdiDragHorizontal, mdiTableRowPlusBefore, mdiTableRowPlusAfter } from '@mdi/js'
+import {
+  mdiDotsVertical,
+  mdiClose,
+  mdiTableColumnPlusBefore,
+  mdiTableColumnPlusAfter,
+  mdiDelete,
+  mdiDragHorizontal,
+  mdiTableRowPlusBefore,
+  mdiTableRowPlusAfter
+} from '@mdi/js'
 import { vDraggable } from 'vue-draggable-plus'
 
 export default {
   directives: { draggable: vDraggable },
 
   setup() {
-    return { mdiDotsVertical, mdiClose, mdiTableColumnPlusBefore, mdiTableColumnPlusAfter, mdiDelete, mdiDragHorizontal, mdiTableRowPlusBefore, mdiTableRowPlusAfter }
+    return {
+      mdiDotsVertical,
+      mdiClose,
+      mdiTableColumnPlusBefore,
+      mdiTableColumnPlusAfter,
+      mdiDelete,
+      mdiDragHorizontal,
+      mdiTableRowPlusBefore,
+      mdiTableRowPlusAfter
+    }
   },
 
   props: {

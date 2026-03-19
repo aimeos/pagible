@@ -8,7 +8,21 @@
  * - `required`: boolean, if true, the field is required
  */
 import gql from 'graphql-tag'
-import { mdiDotsVertical, mdiClose, mdiContentCopy, mdiContentCut, mdiDelete, mdiArrowUp, mdiArrowDown, mdiTranslate, mdiArrowRightThin, mdiCreation, mdiMicrophoneOutline, mdiMicrophone, mdiViewGridPlus } from '@mdi/js'
+import {
+  mdiDotsVertical,
+  mdiClose,
+  mdiContentCopy,
+  mdiContentCut,
+  mdiDelete,
+  mdiArrowUp,
+  mdiArrowDown,
+  mdiTranslate,
+  mdiArrowRightThin,
+  mdiCreation,
+  mdiMicrophoneOutline,
+  mdiMicrophone,
+  mdiViewGridPlus
+} from '@mdi/js'
 import { recording } from '../audio'
 import { VueDraggable } from 'vue-draggable-plus'
 import { useUserStore, useClipboardStore, useMessageStore } from '../stores'
@@ -48,7 +62,24 @@ export default {
     const messages = useMessageStore()
     const user = useUserStore()
 
-    return { user, clipboard, messages, mdiDotsVertical, mdiClose, mdiContentCopy, mdiContentCut, mdiDelete, mdiArrowUp, mdiArrowDown, mdiTranslate, mdiArrowRightThin, mdiCreation, mdiMicrophoneOutline, mdiMicrophone, mdiViewGridPlus }
+    return {
+      user,
+      clipboard,
+      messages,
+      mdiDotsVertical,
+      mdiClose,
+      mdiContentCopy,
+      mdiContentCut,
+      mdiDelete,
+      mdiArrowUp,
+      mdiArrowDown,
+      mdiTranslate,
+      mdiArrowRightThin,
+      mdiCreation,
+      mdiMicrophoneOutline,
+      mdiMicrophone,
+      mdiViewGridPlus
+    }
   },
 
   computed: {
@@ -66,7 +97,6 @@ export default {
   },
 
   methods: {
-
     add() {
       this.items.push({})
       this.panel.push(this.items.length - 1)

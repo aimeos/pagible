@@ -16,7 +16,15 @@ import {
   useMessageStore,
   useSchemaStore
 } from '../stores'
-import { mdiKeyboardBackspace, mdiTranslate, mdiArrowRightThin, mdiHistory, mdiDatabaseArrowDown, mdiChevronRight, mdiChevronLeft } from '@mdi/js'
+import {
+  mdiKeyboardBackspace,
+  mdiTranslate,
+  mdiArrowRightThin,
+  mdiHistory,
+  mdiDatabaseArrowDown,
+  mdiChevronRight,
+  mdiChevronLeft
+} from '@mdi/js'
 
 export default {
   components: {
@@ -50,7 +58,20 @@ export default {
     const drawer = useDrawerStore()
     const user = useUserStore()
 
-    return { user, drawer, languages, messages, schemas, mdiKeyboardBackspace, mdiTranslate, mdiArrowRightThin, mdiHistory, mdiDatabaseArrowDown, mdiChevronRight, mdiChevronLeft }
+    return {
+      user,
+      drawer,
+      languages,
+      messages,
+      schemas,
+      mdiKeyboardBackspace,
+      mdiTranslate,
+      mdiArrowRightThin,
+      mdiHistory,
+      mdiDatabaseArrowDown,
+      mdiChevronRight,
+      mdiChevronLeft
+    }
   },
 
   data: () => ({
@@ -188,7 +209,6 @@ export default {
   },
 
   methods: {
-
     clean(data, type) {
       if (data && type) {
         data = JSON.parse(JSON.stringify(data)) // deep copy

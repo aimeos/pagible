@@ -4,7 +4,14 @@
 import gql from 'graphql-tag'
 import { recording } from '../audio'
 import { useUserStore, useMessageStore } from '../stores'
-import { mdiTranslate, mdiClose, mdiArrowRightThin, mdiCreation, mdiMicrophoneOutline, mdiMicrophone } from '@mdi/js'
+import {
+  mdiTranslate,
+  mdiClose,
+  mdiArrowRightThin,
+  mdiCreation,
+  mdiMicrophoneOutline,
+  mdiMicrophone
+} from '@mdi/js'
 
 export default {
   props: {
@@ -35,11 +42,19 @@ export default {
     const messages = useMessageStore()
     const user = useUserStore()
 
-    return { user, messages, mdiTranslate, mdiClose, mdiArrowRightThin, mdiCreation, mdiMicrophoneOutline, mdiMicrophone }
+    return {
+      user,
+      messages,
+      mdiTranslate,
+      mdiClose,
+      mdiArrowRightThin,
+      mdiCreation,
+      mdiMicrophoneOutline,
+      mdiMicrophone
+    }
   },
 
   methods: {
-
     addFile(item) {
       if (!item?.id) {
         this.$log(`Fields::addFile(): Invalid item without ID`, item)

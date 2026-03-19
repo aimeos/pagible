@@ -69,7 +69,6 @@ export const useUserStore = defineStore('user', {
           this.me = response.data.me
             ? { ...response.data.me, permission: JSON.parse(response.data.me.permission || '{}') }
             : false
-
         })
         .catch((error) => {
           console.error('Failed to fetch user data', error)
@@ -178,20 +177,22 @@ export const useUserStore = defineStore('user', {
       clearTimeout(this._saveTimer)
       this._saveTimer = null
 
-      apolloClient.mutate({
-        mutation: gql`
-          mutation ($cmsdata: JSON!) {
-            cmsUser(cmsdata: $cmsdata) {
-              cmsdata
+      apolloClient
+        .mutate({
+          mutation: gql`
+            mutation ($cmsdata: JSON!) {
+              cmsUser(cmsdata: $cmsdata) {
+                cmsdata
+              }
             }
+          `,
+          variables: {
+            cmsdata: this.me.cmsdata
           }
-        `,
-        variables: {
-          cmsdata: this.me.cmsdata
-        }
-      }).catch((error) => {
-        console.error('Failed to save user data', error)
-      })
+        })
+        .catch((error) => {
+          console.error('Failed to save user data', error)
+        })
     }
   }
 })

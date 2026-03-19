@@ -5,7 +5,14 @@ import FieldsDialog from './FieldsDialog.vue'
 import SchemaDialog from './SchemaDialog.vue'
 import { useAppStore, useUserStore, useMessageStore } from '../stores'
 import { uid } from '../utils'
-import { mdiPencil, mdiTableRowPlusBefore, mdiTableRowPlusAfter, mdiTrashCanOutline, mdiFullscreen, mdiFullscreenExit } from '@mdi/js'
+import {
+  mdiPencil,
+  mdiTableRowPlusBefore,
+  mdiTableRowPlusAfter,
+  mdiTrashCanOutline,
+  mdiFullscreen,
+  mdiFullscreenExit
+} from '@mdi/js'
 
 export default {
   components: {
@@ -27,7 +34,17 @@ export default {
     const user = useUserStore()
     const app = useAppStore()
 
-    return { app, user, messages, mdiPencil, mdiTableRowPlusBefore, mdiTableRowPlusAfter, mdiTrashCanOutline, mdiFullscreen, mdiFullscreenExit }
+    return {
+      app,
+      user,
+      messages,
+      mdiPencil,
+      mdiTableRowPlusBefore,
+      mdiTableRowPlusAfter,
+      mdiTrashCanOutline,
+      mdiFullscreen,
+      mdiFullscreenExit
+    }
   },
 
   data() {
@@ -74,7 +91,6 @@ export default {
   },
 
   methods: {
-
     add(item) {
       const group = this.section || 'main'
       this.vschemas = false

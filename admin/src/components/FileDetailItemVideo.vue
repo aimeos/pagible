@@ -2,10 +2,7 @@
 
 <script>
 import gql from 'graphql-tag'
-import {
-  useUserStore,
-  useMessageStore
-} from '../stores'
+import { useUserStore, useMessageStore } from '../stores'
 import { mdiTooltipImage, mdiImagePlus } from '@mdi/js'
 
 export default {
@@ -243,12 +240,7 @@ export default {
           @click="$refs.coverInput.click()"
         >
           <v-icon :icon="mdiImagePlus" />
-          <input
-            ref="coverInput"
-            type="file"
-            class="cover-input"
-            @change="uploadCover($event)"
-          />
+          <input ref="coverInput" type="file" class="cover-input" @change="uploadCover($event)" />
         </v-btn>
       </div>
     </div>

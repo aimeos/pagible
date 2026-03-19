@@ -49,7 +49,17 @@ export default {
     const user = useUserStore()
     const app = useAppStore()
 
-    return { app, user, languages, messages, side, mdiTranslate, mdiCreation, mdiMicrophoneOutline, mdiMicrophone }
+    return {
+      app,
+      user,
+      languages,
+      messages,
+      side,
+      mdiTranslate,
+      mdiCreation,
+      mdiMicrophoneOutline,
+      mdiMicrophone
+    }
   },
 
   computed: {
@@ -323,10 +333,7 @@ export default {
             :readonly="readonly"
             @update:item="$emit('update:item', $event)"
           />
-          <FileDetailItemAudio
-            v-else-if="item.mime?.startsWith('audio/')"
-            :item="item"
-          />
+          <FileDetailItemAudio v-else-if="item.mime?.startsWith('audio/')" :item="item" />
           <svg
             v-else
             xmlns="http://www.w3.org/2000/svg"

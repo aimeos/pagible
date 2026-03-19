@@ -2,7 +2,19 @@
 
 <script>
 import gql from 'graphql-tag'
-import { mdiDotsVertical, mdiClose, mdiPublish, mdiDelete, mdiDeleteRestore, mdiDeleteForever, mdiPlus, mdiMagnify, mdiMenuDown, mdiSort, mdiClockOutline } from '@mdi/js'
+import {
+  mdiDotsVertical,
+  mdiClose,
+  mdiPublish,
+  mdiDelete,
+  mdiDeleteRestore,
+  mdiDeleteForever,
+  mdiPlus,
+  mdiMagnify,
+  mdiMenuDown,
+  mdiSort,
+  mdiClockOutline
+} from '@mdi/js'
 import SchemaItems from './SchemaItems.vue'
 import { useUserStore, useMessageStore } from '../stores'
 
@@ -41,7 +53,21 @@ export default {
     const messages = useMessageStore()
     const user = useUserStore()
 
-    return { user, messages, mdiDotsVertical, mdiClose, mdiPublish, mdiDelete, mdiDeleteRestore, mdiDeleteForever, mdiPlus, mdiMagnify, mdiMenuDown, mdiSort, mdiClockOutline }
+    return {
+      user,
+      messages,
+      mdiDotsVertical,
+      mdiClose,
+      mdiPublish,
+      mdiDelete,
+      mdiDeleteRestore,
+      mdiDeleteForever,
+      mdiPlus,
+      mdiMagnify,
+      mdiMenuDown,
+      mdiSort,
+      mdiClockOutline
+    }
   },
 
   created() {

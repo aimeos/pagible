@@ -46,7 +46,6 @@ export default {
   },
 
   methods: {
-
     checkPath() {
       return (
         this.$apollo

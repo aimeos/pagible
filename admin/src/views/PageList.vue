@@ -2,7 +2,30 @@
 
 <script>
 import gql from 'graphql-tag'
-import { mdiPlaylistCheck, mdiTranslate, mdiClose, mdiMenu, mdiChevronRight, mdiChevronLeft, mdiFileTree, mdiFormatListBulletedSquare, mdiPublish, mdiClockOutline, mdiPencil, mdiDeleteOff, mdiDelete, mdiEye, mdiEyeOffOutline, mdiEyeOff, mdiClockAlertOutline, mdiAccount, mdiHelpCircleOutline, mdiCheckBold, mdiMicrophone, mdiMicrophoneOutline } from '@mdi/js'
+import {
+  mdiPlaylistCheck,
+  mdiTranslate,
+  mdiClose,
+  mdiMenu,
+  mdiChevronRight,
+  mdiChevronLeft,
+  mdiFileTree,
+  mdiFormatListBulletedSquare,
+  mdiPublish,
+  mdiClockOutline,
+  mdiPencil,
+  mdiDeleteOff,
+  mdiDelete,
+  mdiEye,
+  mdiEyeOffOutline,
+  mdiEyeOff,
+  mdiClockAlertOutline,
+  mdiAccount,
+  mdiHelpCircleOutline,
+  mdiCheckBold,
+  mdiMicrophone,
+  mdiMicrophoneOutline
+} from '@mdi/js'
 import User from '../components/User.vue'
 import PageDetail from '../views//PageDetail.vue'
 import AsideList from '../components/AsideList.vue'
@@ -60,7 +83,33 @@ export default {
     const drawer = useDrawerStore()
     const user = useUserStore()
 
-    return { user, drawer, messages, mdiPlaylistCheck, mdiTranslate, mdiClose, mdiMenu, mdiChevronRight, mdiChevronLeft, mdiFileTree, mdiFormatListBulletedSquare, mdiPublish, mdiClockOutline, mdiPencil, mdiDeleteOff, mdiDelete, mdiEye, mdiEyeOffOutline, mdiEyeOff, mdiClockAlertOutline, mdiAccount, mdiHelpCircleOutline, mdiCheckBold, mdiMicrophone, mdiMicrophoneOutline }
+    return {
+      user,
+      drawer,
+      messages,
+      mdiPlaylistCheck,
+      mdiTranslate,
+      mdiClose,
+      mdiMenu,
+      mdiChevronRight,
+      mdiChevronLeft,
+      mdiFileTree,
+      mdiFormatListBulletedSquare,
+      mdiPublish,
+      mdiClockOutline,
+      mdiPencil,
+      mdiDeleteOff,
+      mdiDelete,
+      mdiEye,
+      mdiEyeOffOutline,
+      mdiEyeOff,
+      mdiClockAlertOutline,
+      mdiAccount,
+      mdiHelpCircleOutline,
+      mdiCheckBold,
+      mdiMicrophone,
+      mdiMicrophoneOutline
+    }
   },
 
   beforeUnmount() {
@@ -82,7 +131,6 @@ export default {
   },
 
   methods: {
-
     languages() {
       const list = [
         {
@@ -259,16 +307,20 @@ export default {
               :icon="mdiHelpCircleOutline"
               :title="help ? $gettext('Hide help') : $gettext('Show help')"
               variant="text"
-              icon
             />
-            </v-btn>
           </template>
           <template #append>
             <v-btn
               v-if="chat"
               @click="synthesizing || synthesize()"
               @keydown.enter="synthesizing || synthesize()"
-              :icon="synthesizing === false ? mdiArrowRightCircle : synthesizing === null ? mdiCheckBold : null"
+              :icon="
+                synthesizing === false
+                  ? mdiArrowRightCircle
+                  : synthesizing === null
+                    ? mdiCheckBold
+                    : null
+              "
               :title="
                 synthesizing
                   ? $gettext('Generating ...')

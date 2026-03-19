@@ -60,7 +60,6 @@ export default {
   },
 
   methods: {
-
     contentUpdated(section, event) {
       this.update(section, event)
       this.$emit('change', 'content')

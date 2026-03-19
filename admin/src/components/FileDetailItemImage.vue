@@ -4,10 +4,7 @@
 import gql from 'graphql-tag'
 import Cropper from 'cropperjs'
 import 'cropperjs/dist/cropper.css'
-import {
-  useUserStore,
-  useMessageStore
-} from '../stores'
+import { useUserStore, useMessageStore } from '../stores'
 import {
   mdiClose,
   mdiCropFree,
@@ -59,7 +56,24 @@ export default {
     const messages = useMessageStore()
     const user = useUserStore()
 
-    return { user, messages, mdiClose, mdiCropFree, mdiCrop, mdiEraser, mdiImageEdit, mdiImageFilterBlackWhite, mdiArrowExpandAll, mdiMagnifyExpand, mdiRotateLeft, mdiRotateRight, mdiFlipHorizontal, mdiFlipVertical, mdiDownload, mdiHistory }
+    return {
+      user,
+      messages,
+      mdiClose,
+      mdiCropFree,
+      mdiCrop,
+      mdiEraser,
+      mdiImageEdit,
+      mdiImageFilterBlackWhite,
+      mdiArrowExpandAll,
+      mdiMagnifyExpand,
+      mdiRotateLeft,
+      mdiRotateRight,
+      mdiFlipHorizontal,
+      mdiFlipVertical,
+      mdiDownload,
+      mdiHistory
+    }
   },
 
   mounted() {
@@ -645,13 +659,9 @@ export default {
               >
             </v-list-item>
             <v-list-item>
-              <v-btn
-                :prepend-icon="mdiCropFree"
-                class="no-rtl"
-                variant="text"
-                @click="aspect(1)"
-                >{{ $gettext('Square') }}</v-btn
-              >
+              <v-btn :prepend-icon="mdiCropFree" class="no-rtl" variant="text" @click="aspect(1)">{{
+                $gettext('Square')
+              }}</v-btn>
             </v-list-item>
             <v-list-item>
               <v-btn
@@ -712,10 +722,7 @@ export default {
       />
 
       <v-dialog
-        v-if="
-          (selected && user.can('image:inpaint')) ||
-          (!selected && user.can('image:repaint'))
-        "
+        v-if="(selected && user.can('image:inpaint')) || (!selected && user.can('image:repaint'))"
         v-model="menu['paint']"
         transition="scale-transition"
         max-width="600"
@@ -836,9 +843,7 @@ export default {
           </v-card-text>
 
           <v-card-actions>
-            <v-btn variant="outlined" @click="uncropped">{{
-              $gettext('Expand image')
-            }}</v-btn>
+            <v-btn variant="outlined" @click="uncropped">{{ $gettext('Expand image') }}</v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
@@ -939,12 +944,7 @@ export default {
         :title="$gettext('Flip vertically')"
       />
 
-      <v-btn
-        :icon="mdiDownload"
-        class="no-rtl"
-        @click="download()"
-        :title="$gettext('Download')"
-      />
+      <v-btn :icon="mdiDownload" class="no-rtl" @click="download()" :title="$gettext('Download')" />
 
       <component
         :is="$vuetify.display.xs ? 'v-dialog' : 'v-menu'"

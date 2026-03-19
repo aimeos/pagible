@@ -2,7 +2,21 @@
 
 <script>
 import gql from 'graphql-tag'
-import { mdiDotsVertical, mdiClose, mdiPublish, mdiDelete, mdiDeleteRestore, mdiDeleteForever, mdiPlus, mdiMagnify, mdiViewGridOutline, mdiFormatListBulletedSquare, mdiMenuDown, mdiSort, mdiClockOutline } from '@mdi/js'
+import {
+  mdiDotsVertical,
+  mdiClose,
+  mdiPublish,
+  mdiDelete,
+  mdiDeleteRestore,
+  mdiDeleteForever,
+  mdiPlus,
+  mdiMagnify,
+  mdiViewGridOutline,
+  mdiFormatListBulletedSquare,
+  mdiMenuDown,
+  mdiSort,
+  mdiClockOutline
+} from '@mdi/js'
 import { useAppStore, useUserStore, useMessageStore } from '../stores'
 
 export default {
@@ -37,7 +51,24 @@ export default {
     const user = useUserStore()
     const app = useAppStore()
 
-    return { app, user, messages, mdiDotsVertical, mdiClose, mdiPublish, mdiDelete, mdiDeleteRestore, mdiDeleteForever, mdiPlus, mdiMagnify, mdiViewGridOutline, mdiFormatListBulletedSquare, mdiMenuDown, mdiSort, mdiClockOutline }
+    return {
+      app,
+      user,
+      messages,
+      mdiDotsVertical,
+      mdiClose,
+      mdiPublish,
+      mdiDelete,
+      mdiDeleteRestore,
+      mdiDeleteForever,
+      mdiPlus,
+      mdiMagnify,
+      mdiViewGridOutline,
+      mdiFormatListBulletedSquare,
+      mdiMenuDown,
+      mdiSort,
+      mdiClockOutline
+    }
   },
 
   created() {

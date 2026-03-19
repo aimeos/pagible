@@ -18,7 +18,28 @@ import {
 } from '../stores'
 import { recording } from '../audio'
 import { uid } from '../utils'
-import { mdiMenuDown, mdiContentCopy, mdiContentCut, mdiContentPaste, mdiSetMerge, mdiDelete, mdiMagnify, mdiDotsVertical, mdiClose, mdiArrowUp, mdiArrowDown, mdiLink, mdiLinkOff, mdiSwapHorizontal, mdiSetSplit, mdiViewGridPlus, mdiHelpCircleOutline, mdiCheckBold, mdiMicrophone, mdiMicrophoneOutline } from '@mdi/js'
+import {
+  mdiMenuDown,
+  mdiContentCopy,
+  mdiContentCut,
+  mdiContentPaste,
+  mdiSetMerge,
+  mdiDelete,
+  mdiMagnify,
+  mdiDotsVertical,
+  mdiClose,
+  mdiArrowUp,
+  mdiArrowDown,
+  mdiLink,
+  mdiLinkOff,
+  mdiSwapHorizontal,
+  mdiSetSplit,
+  mdiViewGridPlus,
+  mdiHelpCircleOutline,
+  mdiCheckBold,
+  mdiMicrophone,
+  mdiMicrophoneOutline
+} from '@mdi/js'
 
 export default {
   components: {
@@ -63,7 +84,33 @@ export default {
     const side = useSideStore()
     const user = useUserStore()
 
-    return { user, clipboard, side, messages, schemas, mdiMenuDown, mdiContentCopy, mdiContentCut, mdiContentPaste, mdiSetMerge, mdiDelete, mdiMagnify, mdiDotsVertical, mdiClose, mdiArrowUp, mdiArrowDown, mdiLink, mdiLinkOff, mdiSwapHorizontal, mdiSetSplit, mdiViewGridPlus, mdiHelpCircleOutline, mdiCheckBold, mdiMicrophone, mdiMicrophoneOutline }
+    return {
+      user,
+      clipboard,
+      side,
+      messages,
+      schemas,
+      mdiMenuDown,
+      mdiContentCopy,
+      mdiContentCut,
+      mdiContentPaste,
+      mdiSetMerge,
+      mdiDelete,
+      mdiMagnify,
+      mdiDotsVertical,
+      mdiClose,
+      mdiArrowUp,
+      mdiArrowDown,
+      mdiLink,
+      mdiLinkOff,
+      mdiSwapHorizontal,
+      mdiSetSplit,
+      mdiViewGridPlus,
+      mdiHelpCircleOutline,
+      mdiCheckBold,
+      mdiMicrophone,
+      mdiMicrophoneOutline
+    }
   },
 
   computed: {
@@ -77,7 +124,6 @@ export default {
   },
 
   methods: {
-
     add(item, idx) {
       let entry = { id: uid(), group: this.section }
 

@@ -7,7 +7,13 @@ import HistoryDialog from '../components/HistoryDialog.vue'
 import ElementDetailRefs from '../components/ElementDetailRefs.vue'
 import ElementDetailItem from '../components/ElementDetailItem.vue'
 import { useUserStore, useDrawerStore, useMessageStore } from '../stores'
-import { mdiKeyboardBackspace, mdiHistory, mdiDatabaseArrowDown, mdiChevronRight, mdiChevronLeft } from '@mdi/js'
+import {
+  mdiKeyboardBackspace,
+  mdiHistory,
+  mdiDatabaseArrowDown,
+  mdiChevronRight,
+  mdiChevronLeft
+} from '@mdi/js'
 
 export default {
   components: {
@@ -40,7 +46,16 @@ export default {
     const drawer = useDrawerStore()
     const user = useUserStore()
 
-    return { user, drawer, messages, mdiKeyboardBackspace, mdiHistory, mdiDatabaseArrowDown, mdiChevronRight, mdiChevronLeft }
+    return {
+      user,
+      drawer,
+      messages,
+      mdiKeyboardBackspace,
+      mdiHistory,
+      mdiDatabaseArrowDown,
+      mdiChevronRight,
+      mdiChevronLeft
+    }
   },
 
   created() {
@@ -111,7 +126,6 @@ export default {
   },
 
   methods: {
-
     errorUpdated(event) {
       this.error = event
     },

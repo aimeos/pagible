@@ -2,7 +2,14 @@
 
 <script>
 import gql from 'graphql-tag'
-import { mdiDotsVertical, mdiPencil, mdiTrashCan, mdiButtonCursor, mdiLinkVariantPlus, mdiUpload } from '@mdi/js'
+import {
+  mdiDotsVertical,
+  mdiPencil,
+  mdiTrashCan,
+  mdiButtonCursor,
+  mdiLinkVariantPlus,
+  mdiUpload
+} from '@mdi/js'
 import { useAppStore, useUserStore, useMessageStore } from '../stores'
 import FileUrlDialog from '../components/FileUrlDialog.vue'
 import FileDialog from '../components/FileDialog.vue'
@@ -42,7 +49,17 @@ export default {
     const user = useUserStore()
     const app = useAppStore()
 
-    return { app, user, messages, mdiDotsVertical, mdiPencil, mdiTrashCan, mdiButtonCursor, mdiLinkVariantPlus, mdiUpload }
+    return {
+      app,
+      user,
+      messages,
+      mdiDotsVertical,
+      mdiPencil,
+      mdiTrashCan,
+      mdiButtonCursor,
+      mdiLinkVariantPlus,
+      mdiUpload
+    }
   },
 
   unmounted() {
@@ -62,7 +79,6 @@ export default {
   },
 
   methods: {
-
     add(file) {
       if (!this.user.can('file:add')) {
         this.messages.add(this.$gettext('Permission denied'), 'error')

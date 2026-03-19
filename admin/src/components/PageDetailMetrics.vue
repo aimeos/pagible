@@ -61,7 +61,6 @@ export default {
   },
 
   methods: {
-
     color(value, good, bad) {
       if (value === undefined || value === null) {
         return ''
