@@ -186,6 +186,7 @@ class ToolsTest extends TestAbstract
     public function testSearchPages()
     {
         $this->seed( \Database\Seeders\CmsSeeder::class );
+        sleep( 5 ); // Wait for SQL Server to update fulltext index
 
         $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\SearchPages::class, [
             'lang' => 'en',
