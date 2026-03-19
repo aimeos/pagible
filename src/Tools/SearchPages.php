@@ -9,7 +9,6 @@ namespace Aimeos\Cms\Tools;
 
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\Models\Page;
-use Aimeos\AnalyticsBridge\Facades\Analytics;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Tools\Annotations\IsReadOnly;
 use Laravel\Mcp\Server\Tools\Annotations\IsOpenWorld;
@@ -23,8 +22,8 @@ use Laravel\Mcp\Request;
 
 #[IsReadOnly]
 #[Name('search-pages')]
-#[Title('Search for pages by keyword')]
-#[Description('Searches the page tree for pages containing a keyword. Returns up to 10 matching pages as JSON array.')]
+#[Title('Search for pages by keywords')]
+#[Description('Searches the page tree for pages containing the keywords. Returns up to 10 matching pages as JSON array.')]
 class SearchPages extends Tool
 {
     /**
@@ -41,21 +40,14 @@ class SearchPages extends Tool
             'term' => 'required|string|max:255',
         ], [
             'lang.required' => 'You must specify a language code from the list of available locales. For example, "en" or "en-US".',
-            'term.required' => 'You must specify a search term. For example, "blog" or "product".',
+            'term.required' => 'You must specify a search term. For example, "blog" or "product documentation".',
         ] );
 
         $lang = $validated['lang'];
         $term = $validated['term'];
 
-        $result = Page::withoutTrashed()
-            ->where( function( $builder ) use ( $lang, $term ) {
-                $builder->whereAny( ['content', 'meta', 'name', 'path', 'title'], 'like', '%' . $term . '%' )
-                    ->where( 'lang', $lang );
-            } )
-            ->orWhereHas('latest', function( $builder ) use ( $lang, $term  ) {
-                $builder->whereAny( ['aux->content', 'aux->meta', 'data->name', 'data->path', 'data->title'], 'like', '%' . $term . '%' )
-                    ->where( 'lang', $lang );
-            } )
+        $result = Page::search( $term )
+            ->where( 'latest', true )
             ->take( 25 )
             ->get()
             ->map( function( $item ) {
