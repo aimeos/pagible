@@ -216,6 +216,6 @@ class GraphqlAuthTest extends TestAbstract
                     cmsdata
                 }
             }
-        ', ['cmsdata' => json_encode( $cmsdata )] )->assertGraphQLErrorMessage( 'User data too large' );
+        ', ['cmsdata' => json_encode( $cmsdata )] )->assertGraphQLErrorMessage( 'User data too large (64 KB), maximum is 64 KB' );
     }
 }

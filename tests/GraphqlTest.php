@@ -503,7 +503,7 @@ class GraphqlTest extends TestAbstract
                     views { key value }
                 }
             }
-        ')->assertGraphQLErrorMessage('Number of days must be an integer between 1 and 90');
+        ')->assertGraphQLErrorMessage('Number of days must be an integer between 1 and 90, got "100"');
     }
 
 

@@ -132,6 +132,21 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | GraphQL settings
+    |--------------------------------------------------------------------------
+    |
+    | The "graphql" settings define the maximum file size in MB and the allowed
+    | MIME type prefixes for file uploads via the GraphQL API. The MIME type
+    | prefixes are matched against the beginning of the detected MIME type.
+    |
+    */
+    'graphql' => [
+        'filesize' => env( 'CMS_GRAPHQL_FILESIZE', 50 ), // in MB
+        'mimetypes' => explode( ',', env( 'CMS_GRAPHQL_MIMETYPES', 'application/gzip,application/pdf,application/vnd.,application/zip,audio/,image/,text/,video/' ) ),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Image settings
     |--------------------------------------------------------------------------
     |

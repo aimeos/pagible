@@ -8,6 +8,7 @@
 namespace Aimeos\Cms;
 
 use Aimeos\Cms\Models\Page;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
@@ -16,6 +17,37 @@ use Illuminate\Support\Facades\Storage;
 class Utils
 {
     private static int $counter = 0;
+
+
+    /**
+     * Sanitizes SVG/SVGZ content, returns NULL for non-SVG or invalid input.
+     *
+     * @param mixed $content Raw SVG or gzip-compressed SVGZ content
+     * @return string|null Sanitized content (re-compressed if input was SVGZ), or NULL on failure
+     */
+    public static function cleanSvg( mixed $content ) : string|null
+    {
+        if( !$content || !is_string( $content ) ) {
+            return null;
+        }
+
+        $isZip = str_starts_with( $content, "\x1f\x8b" );
+        $sanitizer = new \enshrined\svgSanitize\Sanitizer();
+
+        $content = $isZip ? gzdecode( $content ) : $content;
+
+        if( !$content || !( $clean = $sanitizer->sanitize( $content ) ) ) {
+            return null;
+        }
+
+        $clean = $isZip ? gzencode( $clean ) : $clean;
+
+        if( !$clean ) {
+            return null;
+        }
+
+        return $clean;
+    }
 
 
     /**
@@ -55,6 +87,31 @@ class Utils
                 ?? $file->description->{substr( $lang, 0, 2 )}
                 ?? null
         );
+    }
+
+
+    /**
+     * Validates a MIME type against configured allowed prefixes.
+     *
+     * @param string $mime The MIME type to validate
+     * @return bool True if the MIME type is allowed, false otherwise
+     */
+    public static function isValidMimetype( string $mime ) : bool
+    {
+        $allowed = config( 'cms.graphql.mimetypes', [] );
+
+        if( empty( $allowed ) ) {
+            return true;
+        }
+
+        foreach( $allowed as $prefix )
+        {
+            if( str_starts_with( $mime, $prefix ) ) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
 
@@ -116,6 +173,18 @@ class Utils
             ->map( fn( $r ) => $r['ip'] ?? $r['ipv6'] ?? null )
             ->filter( fn( $ip ) => $ip && filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE ) )
             ->first() !== null;
+    }
+
+
+    /**
+     * Validates file upload size against configured limit.
+     *
+     * @param UploadedFile $upload The uploaded file to validate
+     * @return bool True if the file size is within the limit, false otherwise
+     */
+    public static function isValidUpload( UploadedFile $upload ) : bool
+    {
+        return $upload->getSize() <= config( 'cms.graphql.filesize', 50 ) * 1024 * 1024;
     }
 
 

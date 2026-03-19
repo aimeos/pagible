@@ -8,6 +8,7 @@
 namespace Tests;
 
 use Aimeos\Cms\Utils;
+use Illuminate\Http\UploadedFile;
 use PHPUnit\Framework\Attributes\Group;
 
 
@@ -216,5 +217,56 @@ class UtilsTest extends TestAbstract
         $ids = array_map( fn() => Utils::uid(), range( 1, 100 ) );
 
         $this->assertCount( 100, array_unique( $ids ) );
+    }
+
+
+    public function testIsValidUploadAllowed()
+    {
+        $upload = UploadedFile::fake()->image( 'test.jpg', 100, 100 );
+
+        $this->assertTrue( Utils::isValidUpload( $upload ) );
+    }
+
+
+    public function testIsValidUploadSizeExceeded()
+    {
+        config()->set( 'cms.graphql.filesize', 0.001 ); // ~1 KB
+
+        $upload = UploadedFile::fake()->create( 'test.pdf', 100, 'application/pdf' );
+
+        $this->assertFalse( Utils::isValidUpload( $upload ) );
+    }
+
+
+    public function testIsValidMimetypeAllowed()
+    {
+        config()->set( 'cms.graphql.mimetypes', ['application/pdf', 'application/vnd.', 'application/zip', 'application/gzip', 'audio/', 'image/', 'text/', 'video/'] );
+
+        $this->assertTrue( Utils::isValidMimetype( 'image/png' ) );
+        $this->assertTrue( Utils::isValidMimetype( 'audio/mpeg' ) );
+        $this->assertTrue( Utils::isValidMimetype( 'video/mp4' ) );
+        $this->assertTrue( Utils::isValidMimetype( 'text/plain' ) );
+        $this->assertTrue( Utils::isValidMimetype( 'application/pdf' ) );
+        $this->assertTrue( Utils::isValidMimetype( 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ) );
+        $this->assertTrue( Utils::isValidMimetype( 'application/zip' ) );
+        $this->assertTrue( Utils::isValidMimetype( 'application/gzip' ) );
+    }
+
+
+    public function testIsValidMimetypeRejected()
+    {
+        config()->set( 'cms.graphql.mimetypes', ['application/pdf', 'application/vnd.', 'application/zip', 'application/gzip', 'audio/', 'image/', 'text/', 'video/'] );
+
+        $this->assertFalse( Utils::isValidMimetype( 'application/x-httpd-php' ) );
+        $this->assertFalse( Utils::isValidMimetype( 'application/x-executable' ) );
+        $this->assertFalse( Utils::isValidMimetype( 'application/x-sharedlib' ) );
+    }
+
+
+    public function testIsValidMimetypeEmptyConfig()
+    {
+        config()->set( 'cms.graphql.mimetypes', [] );
+
+        $this->assertTrue( Utils::isValidMimetype( 'application/x-httpd-php' ) );
     }
 }
