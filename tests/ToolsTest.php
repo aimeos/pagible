@@ -12,11 +12,24 @@ use Aimeos\Cms\Mcp\CmsServer;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
+use Illuminate\Foundation\Testing\DatabaseTruncation;
 use Illuminate\Support\Facades\Http;
 
 
 class ToolsTest extends TestAbstract
 {
+    use DatabaseTruncation;
+
+    protected $connectionsToTransact = [];
+
+
+    public function beginDatabaseTransaction()
+    {
+        // Prevent RefreshDatabase from wrapping tests in a transaction
+        // SQLite FTS5 indexes can't see uncommitted data
+    }
+
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -173,6 +186,7 @@ class ToolsTest extends TestAbstract
     public function testSearchPages()
     {
         $this->seed( \Database\Seeders\CmsSeeder::class );
+        sleep( 5 ); // Wait for SQL Server to update fulltext index
 
         $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\SearchPages::class, [
             'lang' => 'en',
