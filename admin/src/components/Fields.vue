@@ -4,6 +4,7 @@
 import gql from 'graphql-tag'
 import { recording } from '../audio'
 import { useUserStore, useMessageStore } from '../stores'
+import { mdiTranslate, mdiClose, mdiArrowRightThin, mdiCreation, mdiMicrophoneOutline, mdiMicrophone } from '@mdi/js'
 
 export default {
   props: {
@@ -34,7 +35,7 @@ export default {
     const messages = useMessageStore()
     const user = useUserStore()
 
-    return { user, messages }
+    return { user, messages, mdiTranslate, mdiClose, mdiArrowRightThin, mdiCreation, mdiMicrophoneOutline, mdiMicrophone }
   },
 
   methods: {
@@ -173,7 +174,7 @@ export default {
               v-bind="props"
               :title="$gettext('Translate')"
               :loading="translating[code]"
-              icon="mdi-translate"
+              :icon="mdiTranslate"
               variant="text"
             />
           </template>
@@ -181,14 +182,14 @@ export default {
           <v-card v-if="user.can('text:translate')">
             <v-toolbar density="compact">
               <v-toolbar-title>{{ $gettext('Translate') }}</v-toolbar-title>
-              <v-btn icon="mdi-close" @click="menu[code] = false" />
+              <v-btn :icon="mdiClose" @click="menu[code] = false" />
             </v-toolbar>
 
             <v-list @click="menu[code] = false">
               <v-list-item v-for="lang in txlocales()" :key="lang.code">
                 <v-btn
                   @click="translateText(code, lang.code)"
-                  prepend-icon="mdi-arrow-right-thin"
+                  :prepend-icon="mdiArrowRightThin"
                   variant="text"
                   >{{ lang.name }}</v-btn
                 >
@@ -201,14 +202,14 @@ export default {
           :title="$gettext('Generate text')"
           :loading="composing[code]"
           @click="writeText(code)"
-          icon="mdi-creation"
+          :icon="mdiCreation"
           variant="text"
         />
         <v-btn
           v-if="user.can('audio:transcribe')"
           @click="record(code)"
           :class="{ dictating: audio[code] }"
-          :icon="audio[code] ? 'mdi-microphone-outline' : 'mdi-microphone'"
+          :icon="audio[code] ? mdiMicrophoneOutline : mdiMicrophone"
           :title="$gettext('Dictate')"
           :loading="dictating[code]"
           variant="text"

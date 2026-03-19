@@ -5,6 +5,7 @@ import FieldsDialog from './FieldsDialog.vue'
 import SchemaDialog from './SchemaDialog.vue'
 import { useAppStore, useUserStore, useMessageStore } from '../stores'
 import { uid } from '../utils'
+import { mdiPencil, mdiTableRowPlusBefore, mdiTableRowPlusAfter, mdiTrashCanOutline, mdiFullscreen, mdiFullscreenExit } from '@mdi/js'
 
 export default {
   components: {
@@ -26,7 +27,7 @@ export default {
     const user = useUserStore()
     const app = useAppStore()
 
-    return { app, user, messages }
+    return { app, user, messages, mdiPencil, mdiTableRowPlusBefore, mdiTableRowPlusAfter, mdiTrashCanOutline, mdiFullscreen, mdiFullscreenExit }
   },
 
   data() {
@@ -215,27 +216,27 @@ export default {
         v-if="index !== -1"
         @click="edit()"
         :title="$gettext('Edit element')"
-        icon="mdi-pencil"
+        :icon="mdiPencil"
         variant="text"
       />
       <v-btn
         v-if="index !== -1"
         @click="addBefore"
         :title="$gettext('Add element before')"
-        icon="mdi-table-row-plus-before"
+        :icon="mdiTableRowPlusBefore"
         variant="text"
       />
       <v-btn
         @click="addAfter"
         :title="$gettext('Add element after')"
-        icon="mdi-table-row-plus-after"
+        :icon="mdiTableRowPlusAfter"
         variant="text"
       />
       <v-btn
         v-if="index !== -1"
         @click="remove()"
         :title="$gettext('Remove element')"
-        icon="mdi-trash-can-outline"
+        :icon="mdiTrashCanOutline"
         variant="text"
       />
     </div>
@@ -253,7 +254,7 @@ export default {
       v-if="!expanded"
       @click="fullscreen()"
       :title="$gettext('Fullscreen mode')"
-      icon="mdi-fullscreen"
+      :icon="mdiFullscreen"
       class="fullscreen"
       variant="text"
     />
@@ -261,7 +262,7 @@ export default {
       v-if="expanded"
       @click="fullscreen()"
       :title="$gettext('Exit fullscreen mode')"
-      icon="mdi-fullscreen-exit"
+      :icon="mdiFullscreenExit"
       class="fullscreen"
       variant="text"
     />

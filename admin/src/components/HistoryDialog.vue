@@ -1,6 +1,7 @@
 /** @license LGPL, https://opensource.org/license/lgpl-3-0 */
 
 <script>
+import { mdiHistory, mdiClose } from '@mdi/js'
 import { jsonDiff } from 'diff'
 
 const diffCastInput = jsonDiff.castInput
@@ -26,6 +27,10 @@ export default {
   emits: ['update:modelValue', 'use', 'revert'],
 
   inject: ['url', 'srcset'],
+
+  setup() {
+    return { mdiHistory, mdiClose }
+  },
 
   data: () => ({
     list: [],
@@ -116,12 +121,12 @@ export default {
     max-width="1200"
     scrollable
   >
-    <v-card prepend-icon="mdi-history">
+    <v-card :prepend-icon="mdiHistory">
       <template v-slot:append>
         <v-btn
           :title="$gettext('Close')"
           @click="$emit('update:modelValue', false)"
-          icon="mdi-close"
+          :icon="mdiClose"
           variant="text"
         />
       </template>

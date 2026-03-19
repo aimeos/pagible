@@ -2,6 +2,7 @@
 
 <script>
 import gql from 'graphql-tag'
+import { mdiDotsVertical, mdiPencil, mdiTrashCan, mdiButtonCursor, mdiLinkVariantPlus, mdiCreation, mdiUpload } from '@mdi/js'
 import File from './File.vue'
 import FileAiDialog from '../components/FileAiDialog.vue'
 
@@ -13,7 +14,7 @@ export default {
   },
 
   setup() {
-    return { ...File.setup() }
+    return { ...File.setup(), mdiDotsVertical, mdiPencil, mdiTrashCan, mdiButtonCursor, mdiLinkVariantPlus, mdiCreation, mdiUpload }
   },
 
   data() {
@@ -71,19 +72,19 @@ export default {
               <v-btn
                 v-bind="props"
                 :title="$gettext('Open menu')"
-                icon="mdi-dots-vertical"
+                :icon="mdiDotsVertical"
                 class="btn-overlay"
                 variant="text"
               />
             </template>
             <v-list>
               <v-list-item v-if="user.can('file:view')">
-                <v-btn @click="open(file)" prepend-icon="mdi-pencil" variant="text">
+                <v-btn @click="open(file)" :prepend-icon="mdiPencil" variant="text">
                   {{ $gettext('Edit') }}
                 </v-btn>
               </v-list-item>
               <v-list-item>
-                <v-btn @click="remove()" prepend-icon="mdi-trash-can" variant="text">
+                <v-btn @click="remove()" :prepend-icon="mdiTrashCan" variant="text">
                   {{ $gettext('Remove') }}
                 </v-btn>
               </v-list-item>
@@ -96,29 +97,29 @@ export default {
             v-if="user.can('file:view')"
             @click="vfiles = true"
             :title="$gettext('Add file')"
-            icon="mdi-button-cursor"
+            :icon="mdiButtonCursor"
             variant="text"
           />
           <v-btn
             @click="vurls = true"
             :title="$gettext('Add file from URL')"
-            icon="mdi-link-variant-plus"
+            :icon="mdiLinkVariantPlus"
             variant="text"
           />
           <v-btn
             v-if="user.can('image:imagine')"
             @click="vcreate = true"
             :title="$gettext('Create file')"
-            icon="mdi-creation"
+            :icon="mdiCreation"
             variant="text"
           />
-          <v-btn :title="$gettext('Upload file')" icon="mdi-upload" variant="text">
+          <v-btn :title="$gettext('Upload file')" :icon="mdiUpload" variant="text">
             <v-file-input
               v-model="selected"
               @update:modelValue="add($event)"
               :accept="config.accept || 'image/*'"
               :hide-input="true"
-              prepend-icon="mdi-upload"
+              :prepend-icon="mdiUpload"
             />
           </v-btn>
         </div>

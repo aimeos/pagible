@@ -14,6 +14,7 @@ import {
   useSideStore
 } from '../stores'
 import { recording } from '../audio'
+import { mdiTranslate, mdiCreation, mdiMicrophoneOutline, mdiMicrophone } from '@mdi/js'
 
 export default {
   components: {
@@ -48,7 +49,7 @@ export default {
     const user = useUserStore()
     const app = useAppStore()
 
-    return { app, user, languages, messages, side }
+    return { app, user, languages, messages, side, mdiTranslate, mdiCreation, mdiMicrophoneOutline, mdiMicrophone }
   },
 
   computed: {
@@ -356,7 +357,7 @@ export default {
                 @click="translateText(item.description)"
                 :title="$gettext('Translate text')"
                 :loading="loading.translate"
-                icon="mdi-translate"
+                :icon="mdiTranslate"
                 variant="text"
               />
               <v-btn
@@ -364,14 +365,14 @@ export default {
                 @click="describe()"
                 :title="$gettext('Generate description')"
                 :loading="loading.describe"
-                icon="mdi-creation"
+                :icon="mdiCreation"
                 variant="text"
               />
               <v-btn
                 v-if="user.can('audio:transcribe')"
                 @click="record()"
                 :class="{ dictating: audio }"
-                :icon="audio ? 'mdi-microphone-outline' : 'mdi-microphone'"
+                :icon="audio ? mdiMicrophoneOutline : mdiMicrophone"
                 :title="$gettext('Dictate')"
                 :loading="loading.dictate"
                 variant="text"
@@ -415,7 +416,7 @@ export default {
                 @click="translateVTT(item.transcription)"
                 :title="$gettext('Translate text')"
                 :loading="loading.translate"
-                icon="mdi-translate"
+                :icon="mdiTranslate"
                 variant="text"
               />
               <v-btn
@@ -423,7 +424,7 @@ export default {
                 @click="transcribeFile()"
                 :title="$gettext('Transcribe file content')"
                 :loading="loading.transcribe"
-                icon="mdi-creation"
+                :icon="mdiCreation"
                 variant="text"
               />
             </div>

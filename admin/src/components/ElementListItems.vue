@@ -2,6 +2,7 @@
 
 <script>
 import gql from 'graphql-tag'
+import { mdiDotsVertical, mdiClose, mdiPublish, mdiDelete, mdiDeleteRestore, mdiDeleteForever, mdiPlus, mdiMagnify, mdiMenuDown, mdiSort, mdiClockOutline } from '@mdi/js'
 import SchemaItems from './SchemaItems.vue'
 import { useUserStore, useMessageStore } from '../stores'
 
@@ -40,7 +41,7 @@ export default {
     const messages = useMessageStore()
     const user = useUserStore()
 
-    return { user, messages }
+    return { user, messages, mdiDotsVertical, mdiClose, mdiPublish, mdiDelete, mdiDeleteRestore, mdiDeleteForever, mdiPlus, mdiMagnify, mdiMenuDown, mdiSort, mdiClockOutline }
   },
 
   created() {
@@ -471,34 +472,34 @@ export default {
             v-bind="props"
             :disabled="!isChecked || embed || !user.can('element:add')"
             :title="$gettext('Actions')"
-            icon="mdi-dots-vertical"
+            :icon="mdiDotsVertical"
             variant="text"
           />
         </template>
         <v-card>
           <v-toolbar density="compact">
             <v-toolbar-title>{{ $gettext('Actions') }}</v-toolbar-title>
-            <v-btn icon="mdi-close" @click="actions = false" />
+            <v-btn :icon="mdiClose" @click="actions = false" />
           </v-toolbar>
 
           <v-list @click="actions = false">
             <v-list-item v-show="isChecked && user.can('element:publish')">
-              <v-btn prepend-icon="mdi-publish" variant="text" @click="publish()">{{
+              <v-btn :prepend-icon="mdiPublish" variant="text" @click="publish()">{{
                 $gettext('Publish')
               }}</v-btn>
             </v-list-item>
             <v-list-item v-show="canTrash && user.can('element:drop')">
-              <v-btn prepend-icon="mdi-delete" variant="text" @click="drop()">{{
+              <v-btn :prepend-icon="mdiDelete" variant="text" @click="drop()">{{
                 $gettext('Delete')
               }}</v-btn>
             </v-list-item>
             <v-list-item v-show="isTrashed && user.can('element:keep')">
-              <v-btn prepend-icon="mdi-delete-restore" variant="text" @click="keep()">{{
+              <v-btn :prepend-icon="mdiDeleteRestore" variant="text" @click="keep()">{{
                 $gettext('Restore')
               }}</v-btn>
             </v-list-item>
             <v-list-item v-show="isChecked && user.can('element:purge')">
-              <v-btn prepend-icon="mdi-delete-forever" variant="text" @click="purge()">{{
+              <v-btn :prepend-icon="mdiDeleteForever" variant="text" @click="purge()">{{
                 $gettext('Purge')
               }}</v-btn>
             </v-list-item>
@@ -511,7 +512,7 @@ export default {
         @click="vschemas = true"
         :title="$gettext('Add element')"
         :disabled="loading"
-        icon="mdi-plus"
+        :icon="mdiPlus"
         color="primary"
         variant="tonal"
       />
@@ -520,7 +521,7 @@ export default {
     <div class="search">
       <v-text-field
         v-model="term"
-        prepend-inner-icon="mdi-magnify"
+        :prepend-inner-icon="mdiMagnify"
         variant="underlined"
         :label="$gettext('Search for')"
         hide-details
@@ -534,8 +535,8 @@ export default {
           <v-btn
             v-bind="props"
             :title="$gettext('Sort by')"
-            append-icon="mdi-menu-down"
-            prepend-icon="mdi-sort"
+            :append-icon="mdiMenuDown"
+            :prepend-icon="mdiSort"
             variant="text"
           >
             {{
@@ -598,36 +599,36 @@ export default {
             <v-btn
               v-bind="props"
               :title="$gettext('Actions')"
-              icon="mdi-dots-vertical"
+              :icon="mdiDotsVertical"
               variant="text"
             />
           </template>
           <v-card>
             <v-toolbar density="compact">
               <v-toolbar-title>{{ $gettext('Actions') }}</v-toolbar-title>
-              <v-btn icon="mdi-close" @click="menu[idx] = false" />
+              <v-btn :icon="mdiClose" @click="menu[idx] = false" />
             </v-toolbar>
 
             <v-list @click="menu[idx] = false">
               <v-list-item
                 v-show="!item.deleted_at && !item.published && this.user.can('element:publish')"
               >
-                <v-btn prepend-icon="mdi-publish" variant="text" @click="publish(item)">{{
+                <v-btn :prepend-icon="mdiPublish" variant="text" @click="publish(item)">{{
                   $gettext('Publish')
                 }}</v-btn>
               </v-list-item>
               <v-list-item v-if="!item.deleted_at && this.user.can('element:drop')">
-                <v-btn prepend-icon="mdi-delete" variant="text" @click="drop(item)">{{
+                <v-btn :prepend-icon="mdiDelete" variant="text" @click="drop(item)">{{
                   $gettext('Delete')
                 }}</v-btn>
               </v-list-item>
               <v-list-item v-if="item.deleted_at && this.user.can('element:keep')">
-                <v-btn prepend-icon="mdi-delete-restore" variant="text" @click="keep(item)">{{
+                <v-btn :prepend-icon="mdiDeleteRestore" variant="text" @click="keep(item)">{{
                   $gettext('Restore')
                 }}</v-btn>
               </v-list-item>
               <v-list-item v-if="this.user.can('element:purge')">
-                <v-btn prepend-icon="mdi-delete-forever" variant="text" @click="purge(item)">{{
+                <v-btn :prepend-icon="mdiDeleteForever" variant="text" @click="purge(item)">{{
                   $gettext('Purge')
                 }}</v-btn>
               </v-list-item>
@@ -646,7 +647,7 @@ export default {
         <div class="item-text">
           <div class="item-head">
             <span class="item-lang" v-if="item.lang">{{ item.lang }}</span>
-            <v-icon v-if="item.publish_at" class="publish-at" icon="mdi-clock-outline" />
+            <v-icon v-if="item.publish_at" class="publish-at" :icon="mdiClockOutline" />
             <span class="item-title">{{ item.name }}</span>
           </div>
           <div class="item-type item-subtitle">{{ item.type }}</div>
@@ -688,7 +689,7 @@ export default {
       @click="vschemas = true"
       :title="$gettext('Add element')"
       :disabled="loading"
-      icon="mdi-plus"
+      :icon="mdiPlus"
       color="primary"
       variant="tonal"
     />

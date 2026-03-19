@@ -3,6 +3,7 @@
 <script>
 import router from '../routes'
 import { useUserStore, useMessageStore } from '../stores'
+import { mdiEyeOff, mdiEye, mdiAlertOctagon } from '@mdi/js'
 
 export default {
   data: () => ({
@@ -21,7 +22,7 @@ export default {
     const messages = useMessageStore()
     const user = useUserStore()
 
-    return { user, messages }
+    return { user, messages, mdiEyeOff, mdiEye, mdiAlertOctagon }
   },
 
   created() {
@@ -129,11 +130,11 @@ export default {
             <v-icon
               @click="toggleShow"
               @keydown="toggle"
-              >{{ show ? `mdi-eye-off` : `mdi-eye` }}</v-icon
+              :icon="show ? mdiEyeOff : mdiEye"</v-icon
             >
           </template>
         </v-text-field>
-        <v-alert v-show="error" color="error" icon="mdi-alert-octagon">
+        <v-alert v-show="error" color="error" :icon="mdiAlertOctagon">
           {{ $gettext('Error') + ': ' + error }}
         </v-alert>
       </v-card-text>

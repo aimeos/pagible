@@ -4,6 +4,7 @@
 import { useTheme } from 'vuetify'
 import { useGettext } from 'vue3-gettext'
 import { useUserStore, useLanguageStore, useMessageStore } from '../stores'
+import { mdiWhiteBalanceSunny, mdiWeatherNight, mdiWeb, mdiClose, mdiAccountCircleOutline, mdiLogout } from '@mdi/js'
 
 export default {
   data: () => ({
@@ -18,7 +19,7 @@ export default {
     const i18n = useGettext()
     const theme = useTheme()
 
-    return { user, i18n, languages, messages, theme }
+    return { user, i18n, languages, messages, theme, mdiWhiteBalanceSunny, mdiWeatherNight, mdiWeb, mdiClose, mdiAccountCircleOutline, mdiLogout }
   },
 
   created() {
@@ -56,7 +57,7 @@ export default {
   <v-btn
     @click="theme.toggle()"
     :title="$gettext('Toggle light/dark mode')"
-    :icon="theme.global.current.value.dark ? 'mdi-white-balance-sunny' : 'mdi-weather-night'"
+    :icon="theme.global.current.value.dark ? mdiWhiteBalanceSunny : mdiWeatherNight"
   />
 
   <component
@@ -67,13 +68,13 @@ export default {
     max-width="300"
   >
     <template #activator="{ props }">
-      <v-btn v-bind="props" :title="$gettext('Switch language')" icon="mdi-web" variant="text" />
+      <v-btn v-bind="props" :title="$gettext('Switch language')" :icon="mdiWeb" variant="text" />
     </template>
 
     <v-card>
       <v-toolbar density="compact">
         <v-toolbar-title>{{ $gettext('Switch language') }}</v-toolbar-title>
-        <v-btn icon="mdi-close" @click="menu['lang'] = false" />
+        <v-btn :icon="mdiClose" @click="menu['lang'] = false" />
       </v-toolbar>
 
       <v-list @click="menu['lang'] = false">
@@ -91,7 +92,7 @@ export default {
       <v-btn
         v-bind="props"
         :title="$gettext('User menu')"
-        icon="mdi-account-circle-outline"
+        :icon="mdiAccountCircleOutline"
         class="icon"
       />
     </template>
@@ -100,7 +101,7 @@ export default {
         {{ me.name }}
       </v-list-item>
       <v-list-item>
-        <v-btn prepend-icon="mdi-logout" @click="logout()" variant="text" class="menu-item">{{
+        <v-btn :prepend-icon="mdiLogout" @click="logout()" variant="text" class="menu-item">{{
           $gettext('Logout')
         }}</v-btn>
       </v-list-item>

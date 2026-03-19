@@ -46,11 +46,11 @@ body {
   --v-theme-surface-light: 50, 58, 66 !important;
 }
 
-.v-locale--is-rtl .v-btn:not(.no-rtl) .mdi.v-icon {
+.v-locale--is-rtl .v-btn:not(.no-rtl) .v-icon {
   transform: scaleX(-1) !important;
 }
 
-.v-locale--is-rtl .v-pagination .v-btn .mdi.v-icon {
+.v-locale--is-rtl .v-pagination .v-btn .v-icon {
   transform: unset !important;
 }
 
@@ -333,7 +333,7 @@ body {
   text-decoration: line-through;
 }
 
-.icon::before {
+.icon {
   padding: 12px;
 }
 

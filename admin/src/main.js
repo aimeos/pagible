@@ -8,7 +8,6 @@ import VueObserveVisibility from 'vue3-observe-visibility'
 import DOMPurify from 'dompurify'
 import apollo from './graphql'
 
-import '@mdi/font/css/materialdesignicons.css'
 import 'vuetify/styles'
 import './assets/base.css'
 

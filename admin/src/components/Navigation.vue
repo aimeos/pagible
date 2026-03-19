@@ -3,6 +3,7 @@
 <script>
 import { useDisplay } from 'vuetify'
 import { useUserStore, useDrawerStore } from '../stores'
+import { mdiFileTree, mdiShareVariant, mdiFolderMultipleImage } from '@mdi/js'
 
 export default {
   setup() {
@@ -10,7 +11,7 @@ export default {
     const drawer = useDrawerStore()
     const user = useUserStore()
 
-    return { user, drawer, mobile }
+    return { user, drawer, mobile, mdiFileTree, mdiShareVariant, mdiFolderMultipleImage }
   },
 
   methods: {
@@ -27,19 +28,19 @@ export default {
   <v-navigation-drawer v-model="drawer.nav" location="start" mobile-breakpoint="lg">
     <v-list>
       <v-list-item v-if="user.can('page:view')" rounded="lg">
-        <v-icon icon="mdi-file-tree" class="icon" />
+        <v-icon :icon="mdiFileTree" class="icon" />
         <router-link to="/pages" class="router-link" @click="toggle()">
           {{ $gettext('Pages') }}
         </router-link>
       </v-list-item>
       <v-list-item v-if="user.can('element:view')" rounded="lg">
-        <v-icon icon="mdi-share-variant" class="icon" />
+        <v-icon :icon="mdiShareVariant" class="icon" />
         <router-link to="/elements" class="router-link" @click="toggle()">
           {{ $gettext('Shared elements') }}
         </router-link>
       </v-list-item>
       <v-list-item v-if="user.can('file:view')" rounded="lg">
-        <v-icon icon="mdi-folder-multiple-image" class="icon" />
+        <v-icon :icon="mdiFolderMultipleImage" class="icon" />
         <router-link to="/files" class="router-link" @click="toggle()">
           {{ $gettext('Files') }}
         </router-link>

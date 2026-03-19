@@ -4,6 +4,7 @@
 import gql from 'graphql-tag'
 import { Line } from 'vue-chartjs'
 import { useAppStore } from '../stores'
+import { mdiChevronUp, mdiChevronDown } from '@mdi/js'
 import {
   Chart as ChartJS,
   Title,
@@ -47,7 +48,7 @@ export default {
 
   setup() {
     const app = useAppStore()
-    return { app }
+    return { app, mdiChevronUp, mdiChevronDown }
   },
 
   created() {
@@ -584,7 +585,7 @@ export default {
               >
                 <template #[`item.data-table-expand`]="{ internalItem, isExpanded }">
                   <v-icon v-if="internalItem.raw?.rows?.length">
-                    {{ isExpanded(internalItem) ? 'mdi-chevron-up' : 'mdi-chevron-down' }}
+                    {{ isExpanded(internalItem) ? mdiChevronUp : mdiChevronDown }}
                   </v-icon>
                 </template>
                 <template v-slot:expanded-row="{ columns, item }">

@@ -1,10 +1,15 @@
 /** @license LGPL, https://opensource.org/license/lgpl-3-0 */
 
 <script>
+import { mdiDotsVertical, mdiClose, mdiTableColumnPlusBefore, mdiTableColumnPlusAfter, mdiDelete, mdiDragHorizontal, mdiTableRowPlusBefore, mdiTableRowPlusAfter } from '@mdi/js'
 import { vDraggable } from 'vue-draggable-plus'
 
 export default {
   directives: { draggable: vDraggable },
+
+  setup() {
+    return { mdiDotsVertical, mdiClose, mdiTableColumnPlusBefore, mdiTableColumnPlusAfter, mdiDelete, mdiDragHorizontal, mdiTableRowPlusBefore, mdiTableRowPlusAfter }
+  },
 
   props: {
     modelValue: { type: Array, default: () => [] },
@@ -164,7 +169,7 @@ export default {
                 <v-btn
                   v-bind="props"
                   :title="$gettext('Actions')"
-                  icon="mdi-dots-vertical"
+                  :icon="mdiDotsVertical"
                   variant="text"
                 />
               </template>
@@ -172,13 +177,13 @@ export default {
               <v-card>
                 <v-toolbar density="compact">
                   <v-toolbar-title>{{ $gettext('Actions') }}</v-toolbar-title>
-                  <v-btn icon="mdi-close" @click="menu['col-' + idx] = false" />
+                  <v-btn :icon="mdiClose" @click="menu['col-' + idx] = false" />
                 </v-toolbar>
 
                 <v-list @click="menu['col-' + idx] = false">
                   <v-list-item>
                     <v-btn
-                      prepend-icon="mdi-table-column-plus-before"
+                      :prepend-icon="mdiTableColumnPlusBefore"
                       variant="text"
                       @click="addCol(idx)"
                       >{{ $gettext('Insert before') }}</v-btn
@@ -186,14 +191,14 @@ export default {
                   </v-list-item>
                   <v-list-item>
                     <v-btn
-                      prepend-icon="mdi-table-column-plus-after"
+                      :prepend-icon="mdiTableColumnPlusAfter"
                       variant="text"
                       @click="addCol(idx + 1)"
                       >{{ $gettext('Insert after') }}</v-btn
                     >
                   </v-list-item>
                   <v-list-item v-if="cols.length > 1">
-                    <v-btn prepend-icon="mdi-delete" variant="text" @click="rmCol(idx)">{{
+                    <v-btn :prepend-icon="mdiDelete" variant="text" @click="rmCol(idx)">{{
                       $gettext('Delete')
                     }}</v-btn>
                   </v-list-item>
@@ -209,7 +214,7 @@ export default {
       <tbody v-draggable="[table, { animation: 300, handle: '.row-handle' }]">
         <tr v-for="(row, rowidx) in table" :key="rowidx">
           <td>
-            <v-btn icon="mdi-drag-horizontal" variant="text" class="row-handle cursor-move">
+            <v-btn :icon="mdiDragHorizontal" variant="text" class="row-handle cursor-move">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 height="24"
@@ -248,7 +253,7 @@ export default {
                 <v-btn
                   v-bind="props"
                   :title="$gettext('Actions')"
-                  icon="mdi-dots-vertical"
+                  :icon="mdiDotsVertical"
                   variant="text"
                 />
               </template>
@@ -256,13 +261,13 @@ export default {
               <v-card>
                 <v-toolbar density="compact">
                   <v-toolbar-title>{{ $gettext('Actions') }}</v-toolbar-title>
-                  <v-btn icon="mdi-close" @click="menu['row-' + rowidx] = false" />
+                  <v-btn :icon="mdiClose" @click="menu['row-' + rowidx] = false" />
                 </v-toolbar>
 
                 <v-list @click="menu['row-' + rowidx] = false">
                   <v-list-item>
                     <v-btn
-                      prepend-icon="mdi-table-row-plus-before"
+                      :prepend-icon="mdiTableRowPlusBefore"
                       variant="text"
                       @click="addRow(rowidx)"
                       >{{ $gettext('Insert before') }}</v-btn
@@ -270,14 +275,14 @@ export default {
                   </v-list-item>
                   <v-list-item>
                     <v-btn
-                      prepend-icon="mdi-table-row-plus-after"
+                      :prepend-icon="mdiTableRowPlusAfter"
                       variant="text"
                       @click="addRow(rowidx + 1)"
                       >{{ $gettext('Insert after') }}</v-btn
                     >
                   </v-list-item>
                   <v-list-item v-if="table.length > 1">
-                    <v-btn prepend-icon="mdi-delete" variant="text" @click="rmRow(rowidx)">{{
+                    <v-btn :prepend-icon="mdiDelete" variant="text" @click="rmRow(rowidx)">{{
                       $gettext('Delete')
                     }}</v-btn>
                   </v-list-item>

@@ -8,6 +8,22 @@ import {
   useUserStore,
   useMessageStore
 } from '../stores'
+import {
+  mdiClose,
+  mdiCropFree,
+  mdiCrop,
+  mdiEraser,
+  mdiImageEdit,
+  mdiImageFilterBlackWhite,
+  mdiArrowExpandAll,
+  mdiMagnifyExpand,
+  mdiRotateLeft,
+  mdiRotateRight,
+  mdiFlipHorizontal,
+  mdiFlipVertical,
+  mdiDownload,
+  mdiHistory
+} from '@mdi/js'
 
 export default {
   props: {
@@ -43,7 +59,7 @@ export default {
     const messages = useMessageStore()
     const user = useUserStore()
 
-    return { user, messages }
+    return { user, messages, mdiClose, mdiCropFree, mdiCrop, mdiEraser, mdiImageEdit, mdiImageFilterBlackWhite, mdiArrowExpandAll, mdiMagnifyExpand, mdiRotateLeft, mdiRotateRight, mdiFlipHorizontal, mdiFlipVertical, mdiDownload, mdiHistory }
   },
 
   mounted() {
@@ -583,7 +599,7 @@ export default {
         v-if="selected"
         @click="clear()"
         :title="$gettext('Cancel')"
-        icon="mdi-close"
+        :icon="mdiClose"
         class="no-rtl"
       />
       <component
@@ -598,7 +614,7 @@ export default {
           <v-btn
             v-bind="props"
             :title="$gettext('Select area')"
-            icon="mdi-crop-free"
+            :icon="mdiCropFree"
             class="no-rtl"
           />
         </template>
@@ -606,13 +622,13 @@ export default {
         <v-card>
           <v-toolbar density="compact">
             <v-toolbar-title>{{ $gettext('Select area') }}</v-toolbar-title>
-            <v-btn icon="mdi-close" @click="menu['select'] = false" />
+            <v-btn :icon="mdiClose" @click="menu['select'] = false" />
           </v-toolbar>
 
           <v-list @click="menu['select'] = false">
             <v-list-item>
               <v-btn
-                prepend-icon="mdi-crop-free"
+                :prepend-icon="mdiCropFree"
                 class="no-rtl"
                 variant="text"
                 @click="aspect(ratio)"
@@ -621,7 +637,7 @@ export default {
             </v-list-item>
             <v-list-item>
               <v-btn
-                prepend-icon="mdi-crop-free"
+                :prepend-icon="mdiCropFree"
                 class="no-rtl"
                 variant="text"
                 @click="aspect(NaN)"
@@ -630,7 +646,7 @@ export default {
             </v-list-item>
             <v-list-item>
               <v-btn
-                prepend-icon="mdi-crop-free"
+                :prepend-icon="mdiCropFree"
                 class="no-rtl"
                 variant="text"
                 @click="aspect(1)"
@@ -639,7 +655,7 @@ export default {
             </v-list-item>
             <v-list-item>
               <v-btn
-                prepend-icon="mdi-crop-free"
+                :prepend-icon="mdiCropFree"
                 class="no-rtl"
                 variant="text"
                 @click="aspect(3 / 2)"
@@ -648,7 +664,7 @@ export default {
             </v-list-item>
             <v-list-item>
               <v-btn
-                prepend-icon="mdi-crop-free"
+                :prepend-icon="mdiCropFree"
                 class="no-rtl"
                 variant="text"
                 @click="aspect(4 / 3)"
@@ -657,7 +673,7 @@ export default {
             </v-list-item>
             <v-list-item>
               <v-btn
-                prepend-icon="mdi-crop-free"
+                :prepend-icon="mdiCropFree"
                 class="no-rtl"
                 variant="text"
                 @click="aspect(5 / 3)"
@@ -666,7 +682,7 @@ export default {
             </v-list-item>
             <v-list-item>
               <v-btn
-                prepend-icon="mdi-crop-free"
+                :prepend-icon="mdiCropFree"
                 class="no-rtl"
                 variant="text"
                 @click="aspect(16 / 9)"
@@ -681,7 +697,7 @@ export default {
         @click="crop()"
         :disabled="!selected"
         :title="$gettext('Crop selected area')"
-        icon="mdi-crop"
+        :icon="mdiCrop"
         class="no-rtl"
       />
 
@@ -691,7 +707,7 @@ export default {
         :disabled="!selected"
         :loading="loading.erase"
         :title="$gettext('Erase selected area')"
-        icon="mdi-eraser"
+        :icon="mdiEraser"
         class="no-rtl"
       />
 
@@ -709,7 +725,7 @@ export default {
             v-bind="props"
             :loading="loading.paint"
             :title="$gettext('Edit image')"
-            icon="mdi-image-edit"
+            :icon="mdiImageEdit"
             class="no-rtl"
           />
         </template>
@@ -717,7 +733,7 @@ export default {
         <v-card>
           <v-toolbar density="compact">
             <v-toolbar-title>{{ $gettext('Edit image') }}</v-toolbar-title>
-            <v-btn icon="mdi-close" @click="menu['paint'] = false" />
+            <v-btn :icon="mdiClose" @click="menu['paint'] = false" />
           </v-toolbar>
 
           <v-card-text>
@@ -744,7 +760,7 @@ export default {
         @click="isolate()"
         :title="$gettext('Remove background')"
         :loading="loading.isolate"
-        icon="mdi-image-filter-black-white"
+        :icon="mdiImageFilterBlackWhite"
         class="no-rtl"
       />
 
@@ -759,7 +775,7 @@ export default {
             v-bind="props"
             :loading="loading.uncrop"
             :title="$gettext('Expand image')"
-            icon="mdi-arrow-expand-all"
+            :icon="mdiArrowExpandAll"
             class="no-rtl"
           />
         </template>
@@ -767,7 +783,7 @@ export default {
         <v-card class="uncrop">
           <v-toolbar density="compact">
             <v-toolbar-title>{{ $gettext('Expand image') }}</v-toolbar-title>
-            <v-btn icon="mdi-close" @click="menu['uncrop'] = false" />
+            <v-btn :icon="mdiClose" @click="menu['uncrop'] = false" />
           </v-toolbar>
 
           <v-card-text>
@@ -841,7 +857,7 @@ export default {
             :loading="loading.upscale"
             :disabled="width >= 4096 && height >= 4096"
             :title="$gettext('Upscale image')"
-            icon="mdi-magnify-expand"
+            :icon="mdiMagnifyExpand"
             class="no-rtl"
           />
         </template>
@@ -849,13 +865,13 @@ export default {
         <v-card>
           <v-toolbar density="compact">
             <v-toolbar-title>{{ $gettext('Upscale image') }}</v-toolbar-title>
-            <v-btn icon="mdi-close" @click="menu['upscale'] = false" />
+            <v-btn :icon="mdiClose" @click="menu['upscale'] = false" />
           </v-toolbar>
 
           <v-list @click="menu['upscale'] = false">
             <v-list-item v-if="width * 16 <= 4096 && height * 16 <= 4096">
               <v-btn
-                prepend-icon="mdi-magnify-expand"
+                :prepend-icon="mdiMagnifyExpand"
                 class="no-rtl"
                 variant="text"
                 @click="upscale(16)"
@@ -865,7 +881,7 @@ export default {
             </v-list-item>
             <v-list-item v-if="width * 8 <= 4096 && height * 8 <= 4096">
               <v-btn
-                prepend-icon="mdi-magnify-expand"
+                :prepend-icon="mdiMagnifyExpand"
                 class="no-rtl"
                 variant="text"
                 @click="upscale(8)"
@@ -875,7 +891,7 @@ export default {
             </v-list-item>
             <v-list-item v-if="width * 4 <= 4096 && height * 4 <= 4096">
               <v-btn
-                prepend-icon="mdi-magnify-expand"
+                :prepend-icon="mdiMagnifyExpand"
                 class="no-rtl"
                 variant="text"
                 @click="upscale(4)"
@@ -885,7 +901,7 @@ export default {
             </v-list-item>
             <v-list-item v-if="width * 2 <= 4096 && height * 2 <= 4096">
               <v-btn
-                prepend-icon="mdi-magnify-expand"
+                :prepend-icon="mdiMagnifyExpand"
                 class="no-rtl"
                 variant="text"
                 @click="upscale(2)"
@@ -898,33 +914,33 @@ export default {
       </component>
 
       <v-btn
-        icon="mdi-rotate-left"
+        :icon="mdiRotateLeft"
         class="no-rtl"
         @click="rotate(-90)"
         :title="$gettext('Rotate counter-clockwise')"
       />
       <v-btn
-        icon="mdi-rotate-right"
+        :icon="mdiRotateRight"
         class="no-rtl"
         @click="rotate(90)"
         :title="$gettext('Rotate clockwise')"
       />
 
       <v-btn
-        icon="mdi-flip-horizontal"
+        :icon="mdiFlipHorizontal"
         class="no-rtl"
         @click="flipX"
         :title="$gettext('Flip horizontally')"
       />
       <v-btn
-        icon="mdi-flip-vertical"
+        :icon="mdiFlipVertical"
         class="no-rtl"
         @click="flipY"
         :title="$gettext('Flip vertically')"
       />
 
       <v-btn
-        icon="mdi-download"
+        :icon="mdiDownload"
         class="no-rtl"
         @click="download()"
         :title="$gettext('Download')"
@@ -942,7 +958,7 @@ export default {
             v-bind="props"
             :disabled="!images.length"
             :title="$gettext('Undo')"
-            icon="mdi-history"
+            :icon="mdiHistory"
             class="no-rtl"
           />
         </template>
@@ -950,7 +966,7 @@ export default {
         <v-card>
           <v-toolbar density="compact">
             <v-toolbar-title>{{ $gettext('Undo') }}</v-toolbar-title>
-            <v-btn icon="mdi-close" @click="menu['undo'] = false" />
+            <v-btn :icon="mdiClose" @click="menu['undo'] = false" />
           </v-toolbar>
 
           <v-list @click="menu['undo'] = false">

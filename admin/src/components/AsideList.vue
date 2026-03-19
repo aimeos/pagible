@@ -2,6 +2,7 @@
 
 <script>
 import { useDrawerStore } from '../stores'
+import { mdiCloseCircleOutline } from '@mdi/js'
 
 export default {
   props: {
@@ -14,7 +15,7 @@ export default {
 
   setup() {
     const drawer = useDrawerStore()
-    return { drawer }
+    return { drawer, mdiCloseCircleOutline }
   },
 
   data() {
@@ -70,7 +71,7 @@ export default {
       class="reset"
       :disabled="disabled"
       @click="$emit('update:filter', { ...initial })"
-      prepend-icon="mdi-close-circle-outline"
+      :prepend-icon="mdiCloseCircleOutline"
       variant="text"
       >{{ $gettext('Reset') }}</v-btn
     >
