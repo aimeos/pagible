@@ -5,6 +5,7 @@ import gql from 'graphql-tag'
 import FileListItems from './FileListItems.vue'
 import { useAppStore, useUserStore, useMessageStore } from '../stores'
 import { recording } from '../audio'
+import { mdiMicrophoneOutline, mdiMicrophone, mdiClose, mdiDelete } from '@mdi/js'
 
 export default {
   components: {
@@ -26,7 +27,7 @@ export default {
     const user = useUserStore()
     const app = useAppStore()
 
-    return { app, user, messages }
+    return { app, user, messages, mdiMicrophoneOutline, mdiMicrophone, mdiClose, mdiDelete }
   },
 
   data() {
@@ -225,7 +226,7 @@ export default {
           v-if="user.can('audio:transcribe')"
           @click="record()"
           :class="{ dictating: audio }"
-          :icon="audio ? 'mdi-microphone-outline' : 'mdi-microphone'"
+          :icon="audio ? mdiMicrophoneOutline : mdiMicrophone"
           :title="$gettext('Dictate')"
           :loading="dictating"
           variant="text"
@@ -233,7 +234,7 @@ export default {
         <v-btn
           @click="$emit('update:modelValue', false)"
           :title="$gettext('Close')"
-          icon="mdi-close"
+          :icon="mdiClose"
           variant="text"
         />
       </template>
@@ -270,7 +271,7 @@ export default {
                 @click="remove(idx)"
                 :title="$gettext('Remove')"
                 class="btn-overlay"
-                icon="mdi-delete"
+                :icon="mdiDelete"
               />
 
               <div class="item-preview" @click="add(item)">
@@ -287,7 +288,7 @@ export default {
           <v-list class="items grid">
             <v-list-item v-for="(item, idx) in used" :key="idx">
               <v-btn
-                icon="mdi-delete"
+                :icon="mdiDelete"
                 @click="removeUsed(idx)"
                 class="btn-overlay"
                 :title="$gettext('Remove')"

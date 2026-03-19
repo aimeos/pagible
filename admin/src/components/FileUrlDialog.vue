@@ -3,6 +3,7 @@
 <script>
 import gql from 'graphql-tag'
 import { useAppStore, useMessageStore } from '../stores'
+import { mdiClose, mdiCheck, mdiDelete } from '@mdi/js'
 
 export default {
   props: {
@@ -17,7 +18,7 @@ export default {
     const messages = useMessageStore()
     const app = useAppStore()
 
-    return { app, messages }
+    return { app, messages, mdiClose, mdiCheck, mdiDelete }
   },
 
   data() {
@@ -192,7 +193,7 @@ export default {
         <v-btn
           @click="$emit('update:modelValue', false)"
           :title="$gettext('Close')"
-          icon="mdi-close"
+          :icon="mdiClose"
           variant="text"
         />
       </template>
@@ -209,7 +210,7 @@ export default {
           @click:appendInner="update()"
           @click:clear="errors = []"
           :error-messages="errors"
-          :append-inner-icon="input ? 'mdi-check' : ''"
+          :append-inner-icon="input ? mdiCheck : ''"
           :placeholder="$gettext('Enter one URL per line')"
           variant="outlined"
           autofocus
@@ -225,7 +226,7 @@ export default {
           @click:appendInner="update()"
           @click:clear="errors = []"
           :error-messages="errors"
-          :append-inner-icon="input ? 'mdi-check' : ''"
+          :append-inner-icon="input ? mdiCheck : ''"
           :placeholder="$gettext('Enter URL')"
           variant="outlined"
           maxlength="255"
@@ -240,7 +241,7 @@ export default {
               @click="remove(url)"
               :title="$gettext('Remove')"
               class="btn-overlay"
-              icon="mdi-delete"
+              :icon="mdiDelete"
             />
 
             <div class="item-preview" @click="$emit('select', item)">

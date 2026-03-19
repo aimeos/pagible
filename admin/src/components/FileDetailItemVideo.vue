@@ -2,10 +2,8 @@
 
 <script>
 import gql from 'graphql-tag'
-import {
-  useUserStore,
-  useMessageStore
-} from '../stores'
+import { useUserStore, useMessageStore } from '../stores'
+import { mdiTooltipImage, mdiImagePlus } from '@mdi/js'
 
 export default {
   props: {
@@ -27,7 +25,7 @@ export default {
     const messages = useMessageStore()
     const user = useUserStore()
 
-    return { user, messages }
+    return { user, messages, mdiTooltipImage, mdiImagePlus }
   },
 
   methods: {
@@ -230,7 +228,7 @@ export default {
       />
       <div v-else>
         <v-btn
-          icon="mdi-tooltip-image"
+          :icon="mdiTooltipImage"
           :loading="loading.cover"
           :title="$gettext('Use as cover image')"
           @click="addCover()"
@@ -241,13 +239,8 @@ export default {
           :title="$gettext('Upload cover image')"
           @click="$refs.coverInput.click()"
         >
-          <v-icon>mdi-image-plus</v-icon>
-          <input
-            ref="coverInput"
-            type="file"
-            class="cover-input"
-            @change="uploadCover($event)"
-          />
+          <v-icon :icon="mdiImagePlus" />
+          <input ref="coverInput" type="file" class="cover-input" @change="uploadCover($event)" />
         </v-btn>
       </div>
     </div>

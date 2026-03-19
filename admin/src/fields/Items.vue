@@ -8,6 +8,21 @@
  * - `required`: boolean, if true, the field is required
  */
 import gql from 'graphql-tag'
+import {
+  mdiDotsVertical,
+  mdiClose,
+  mdiContentCopy,
+  mdiContentCut,
+  mdiDelete,
+  mdiArrowUp,
+  mdiArrowDown,
+  mdiTranslate,
+  mdiArrowRightThin,
+  mdiCreation,
+  mdiMicrophoneOutline,
+  mdiMicrophone,
+  mdiViewGridPlus
+} from '@mdi/js'
 import { recording } from '../audio'
 import { VueDraggable } from 'vue-draggable-plus'
 import { useUserStore, useClipboardStore, useMessageStore } from '../stores'
@@ -47,7 +62,24 @@ export default {
     const messages = useMessageStore()
     const user = useUserStore()
 
-    return { user, clipboard, messages }
+    return {
+      user,
+      clipboard,
+      messages,
+      mdiDotsVertical,
+      mdiClose,
+      mdiContentCopy,
+      mdiContentCut,
+      mdiDelete,
+      mdiArrowUp,
+      mdiArrowDown,
+      mdiTranslate,
+      mdiArrowRightThin,
+      mdiCreation,
+      mdiMicrophoneOutline,
+      mdiMicrophone,
+      mdiViewGridPlus
+    }
   },
 
   computed: {
@@ -65,7 +97,6 @@ export default {
   },
 
   methods: {
-
     add() {
       this.items.push({})
       this.panel.push(this.items.length - 1)
@@ -246,7 +277,7 @@ export default {
               <v-btn
                 v-bind="props"
                 :title="$gettext('Actions')"
-                icon="mdi-dots-vertical"
+                :icon="mdiDotsVertical"
                 variant="text"
               />
             </template>
@@ -254,22 +285,22 @@ export default {
             <v-card>
               <v-toolbar density="compact">
                 <v-toolbar-title>{{ $gettext('Actions') }}</v-toolbar-title>
-                <v-btn icon="mdi-close" @click="menu[idx] = false" />
+                <v-btn :icon="mdiClose" @click="menu[idx] = false" />
               </v-toolbar>
 
               <v-list @click="menu[idx] = false">
                 <v-list-item>
-                  <v-btn prepend-icon="mdi-content-copy" variant="text" @click="copy(idx)">{{
+                  <v-btn :prepend-icon="mdiContentCopy" variant="text" @click="copy(idx)">{{
                     $gettext('Copy')
                   }}</v-btn>
                 </v-list-item>
                 <v-list-item>
-                  <v-btn prepend-icon="mdi-content-cut" variant="text" @click="cut(idx)">{{
+                  <v-btn :prepend-icon="mdiContentCut" variant="text" @click="cut(idx)">{{
                     $gettext('Cut')
                   }}</v-btn>
                 </v-list-item>
                 <v-list-item>
-                  <v-btn prepend-icon="mdi-delete" variant="text" @click="remove(idx)">{{
+                  <v-btn :prepend-icon="mdiDelete" variant="text" @click="remove(idx)">{{
                     $gettext('Delete')
                   }}</v-btn>
                 </v-list-item>
@@ -277,22 +308,22 @@ export default {
                 <v-divider></v-divider>
 
                 <v-list-item v-if="menu[idx] && clipboard.get('items-content')">
-                  <v-btn prepend-icon="mdi-arrow-up" variant="text" @click="paste(idx)">{{
+                  <v-btn :prepend-icon="mdiArrowUp" variant="text" @click="paste(idx)">{{
                     $gettext('Paste before')
                   }}</v-btn>
                 </v-list-item>
                 <v-list-item v-if="menu[idx] && clipboard.get('items-content')">
-                  <v-btn prepend-icon="mdi-arrow-down" variant="text" @click="paste(idx + 1)">{{
+                  <v-btn :prepend-icon="mdiArrowDown" variant="text" @click="paste(idx + 1)">{{
                     $gettext('Paste after')
                   }}</v-btn>
                 </v-list-item>
                 <v-list-item>
-                  <v-btn prepend-icon="mdi-arrow-up" variant="text" @click="insert(idx)">{{
+                  <v-btn :prepend-icon="mdiArrowUp" variant="text" @click="insert(idx)">{{
                     $gettext('Insert before')
                   }}</v-btn>
                 </v-list-item>
                 <v-list-item>
-                  <v-btn prepend-icon="mdi-arrow-down" variant="text" @click="insert(idx + 1)">{{
+                  <v-btn :prepend-icon="mdiArrowDown" variant="text" @click="insert(idx + 1)">{{
                     $gettext('Insert after')
                   }}</v-btn>
                 </v-list-item>
@@ -324,7 +355,7 @@ export default {
                       v-bind="props"
                       :title="$gettext('Translate')"
                       :loading="translating[idx + code]"
-                      icon="mdi-translate"
+                      :icon="mdiTranslate"
                       variant="text"
                     />
                   </template>
@@ -332,14 +363,14 @@ export default {
                   <v-card>
                     <v-toolbar density="compact">
                       <v-toolbar-title>{{ $gettext('Translate') }}</v-toolbar-title>
-                      <v-btn icon="mdi-close" @click="menu[idx + code] = false" />
+                      <v-btn :icon="mdiClose" @click="menu[idx + code] = false" />
                     </v-toolbar>
 
                     <v-list @click="menu[idx + code] = false">
                       <v-list-item v-for="lang in txlocales()" :key="lang.code">
                         <v-btn
                           @click="translateText(idx, code, lang.code)"
-                          prepend-icon="mdi-arrow-right-thin"
+                          :prepend-icon="mdiArrowRightThin"
                           variant="text"
                           >{{ lang.name }}</v-btn
                         >
@@ -352,14 +383,14 @@ export default {
                   :title="$gettext('Generate text')"
                   :loading="composing[idx + code]"
                   @click="writeText(idx, code)"
-                  icon="mdi-creation"
+                  :icon="mdiCreation"
                   variant="text"
                 />
                 <v-btn
                   v-if="user.can('audio:transcribe')"
                   @click="record(idx, code)"
                   :class="{ dictating: audio[idx + code] }"
-                  :icon="audio[idx + code] ? 'mdi-microphone-outline' : 'mdi-microphone'"
+                  :icon="audio[idx + code] ? mdiMicrophoneOutline : mdiMicrophone"
                   :title="$gettext('Dictate')"
                   :loading="dictating[idx + code]"
                   variant="text"
@@ -397,7 +428,7 @@ export default {
     <v-btn
       v-if="!readonly && (!config.max || (config.max && +items.length < +config.max))"
       :title="$gettext('Add element')"
-      icon="mdi-view-grid-plus"
+      :icon="mdiViewGridPlus"
       @click="add()"
     />
   </div>

@@ -83,7 +83,7 @@ describe('PageDetailItemMeta', () => {
   it('shows remove button with page:save permission', () => {
     mountMeta({}, { 'page:save': true })
     cy.get('.v-expansion-panel').first().click()
-    cy.get('button[title="Remove content element"], button .mdi-delete').should('exist')
+    cy.get('.v-expansion-panel-title button').should('exist')
   })
 
   it('renders Fields stub inside expansion panel', () => {

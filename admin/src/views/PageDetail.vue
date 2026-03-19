@@ -16,6 +16,15 @@ import {
   useMessageStore,
   useSchemaStore
 } from '../stores'
+import {
+  mdiKeyboardBackspace,
+  mdiTranslate,
+  mdiArrowRightThin,
+  mdiHistory,
+  mdiDatabaseArrowDown,
+  mdiChevronRight,
+  mdiChevronLeft
+} from '@mdi/js'
 
 export default {
   components: {
@@ -49,7 +58,20 @@ export default {
     const drawer = useDrawerStore()
     const user = useUserStore()
 
-    return { user, drawer, languages, messages, schemas }
+    return {
+      user,
+      drawer,
+      languages,
+      messages,
+      schemas,
+      mdiKeyboardBackspace,
+      mdiTranslate,
+      mdiArrowRightThin,
+      mdiHistory,
+      mdiDatabaseArrowDown,
+      mdiChevronRight,
+      mdiChevronLeft
+    }
   },
 
   data: () => ({
@@ -187,7 +209,6 @@ export default {
   },
 
   methods: {
-
     clean(data, type) {
       if (data && type) {
         data = JSON.parse(JSON.stringify(data)) // deep copy
@@ -678,7 +699,7 @@ export default {
       <v-btn
         @click="closeView()"
         :title="$gettext('Back to list view')"
-        icon="mdi-keyboard-backspace"
+        :icon="mdiKeyboardBackspace"
       />
     </template>
 
@@ -693,14 +714,14 @@ export default {
             v-bind="props"
             :title="$gettext('Translate page')"
             :loading="translating"
-            icon="mdi-translate"
+            :icon="mdiTranslate"
           />
         </template>
         <v-list>
           <v-list-item v-for="lang in txlocales(item.lang)" :key="lang.code">
             <v-btn
               @click="translatePage(lang.code)"
-              prepend-icon="mdi-arrow-right-thin"
+              :prepend-icon="mdiArrowRightThin"
               variant="text"
             >
               {{ lang.name }}
@@ -713,7 +734,7 @@ export default {
         @click="vhistory = true"
         :class="{ hidden: item.published && !hasChanged && !latest }"
         :title="$gettext('View history')"
-        icon="mdi-history"
+        :icon="mdiHistory"
         class="no-rtl"
       ></v-btn>
 
@@ -724,7 +745,7 @@ export default {
         :disabled="!hasChanged || hasError || !user.can('page:save')"
         :variant="!hasChanged || hasError || !user.can('page:save') ? 'plain' : 'flat'"
         :class="{ active: hasChanged && !hasError && user.can('page:save'), error: hasError }"
-        icon="mdi-database-arrow-down"
+        :icon="mdiDatabaseArrowDown"
         class="menu-save"
       />
 
@@ -796,7 +817,7 @@ export default {
       <v-btn
         @click.stop="drawer.toggle('aside')"
         :title="$gettext('Toggle side menu')"
-        :icon="drawer.aside ? 'mdi-chevron-right' : 'mdi-chevron-left'"
+        :icon="drawer.aside ? mdiChevronRight : mdiChevronLeft"
       />
     </template>
   </v-app-bar>

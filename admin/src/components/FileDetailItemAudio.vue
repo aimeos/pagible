@@ -11,12 +11,7 @@ export default {
 </script>
 
 <template>
-  <audio
-    :src="url(item.path)"
-    crossorigin="anonymous"
-    class="element"
-    controls
-  ></audio>
+  <audio :src="url(item.path)" crossorigin="anonymous" class="element" controls></audio>
 </template>
 
 <style scoped>

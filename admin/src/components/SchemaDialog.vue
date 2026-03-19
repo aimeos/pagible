@@ -3,6 +3,7 @@
 <script>
 import ElementListItems from './ElementListItems.vue'
 import SchemaItems from './SchemaItems.vue'
+import { mdiClose } from '@mdi/js'
 
 export default {
   components: {
@@ -15,7 +16,11 @@ export default {
     elements: { type: Boolean, default: true }
   },
 
-  emits: ['update:modelValue', 'add']
+  emits: ['update:modelValue', 'add'],
+
+  setup() {
+    return { mdiClose }
+  }
 }
 </script>
 
@@ -31,7 +36,7 @@ export default {
         <v-btn
           :title="$gettext('Close')"
           @click="$emit('update:modelValue', false)"
-          icon="mdi-close"
+          :icon="mdiClose"
           variant="text"
         />
       </template>

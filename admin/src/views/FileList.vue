@@ -2,6 +2,20 @@
 
 <script>
 import gql from 'graphql-tag'
+import {
+  mdiPlaylistCheck,
+  mdiTranslate,
+  mdiClose,
+  mdiMenu,
+  mdiChevronRight,
+  mdiChevronLeft,
+  mdiPublish,
+  mdiClockOutline,
+  mdiPencil,
+  mdiDeleteOff,
+  mdiDelete,
+  mdiAccount
+} from '@mdi/js'
 import User from '../components/User.vue'
 import FileDetail from '../views//FileDetail.vue'
 import AsideList from '../components/AsideList.vue'
@@ -47,7 +61,22 @@ export default {
     const drawer = useDrawerStore()
     const user = useUserStore()
 
-    return { user, drawer }
+    return {
+      user,
+      drawer,
+      mdiPlaylistCheck,
+      mdiTranslate,
+      mdiClose,
+      mdiMenu,
+      mdiChevronRight,
+      mdiChevronLeft,
+      mdiPublish,
+      mdiClockOutline,
+      mdiPencil,
+      mdiDeleteOff,
+      mdiDelete,
+      mdiAccount
+    }
   },
 
   beforeUnmount() {
@@ -59,7 +88,7 @@ export default {
       const list = [
         {
           title: this.$gettext('All'),
-          icon: 'mdi-playlist-check',
+          icon: mdiPlaylistCheck,
           value: { lang: null }
         }
       ]
@@ -67,7 +96,7 @@ export default {
       for (const entry of this.locales()) {
         list.push({
           title: entry.title,
-          icon: 'mdi-translate',
+          icon: mdiTranslate,
           value: { lang: entry.value }
         })
       }
@@ -88,7 +117,7 @@ export default {
       <v-btn
         @click="drawer.toggle('nav')"
         :title="drawer.nav ? $gettext('Close navigation') : $gettext('Open navigation')"
-        :icon="drawer.nav ? 'mdi-close' : 'mdi-menu'"
+        :icon="drawer.nav ? mdiClose : mdiMenu"
       />
     </template>
 
@@ -100,7 +129,7 @@ export default {
       <v-btn
         @click="drawer.toggle('aside')"
         :title="$gettext('Toggle side menu')"
-        :icon="drawer.aside ? 'mdi-chevron-right' : 'mdi-chevron-left'"
+        :icon="drawer.aside ? mdiChevronRight : mdiChevronLeft"
       />
     </template>
   </v-app-bar>
@@ -123,37 +152,37 @@ export default {
         key: 'publish',
         title: $gettext('publish'),
         items: [
-          { title: $gettext('All'), icon: 'mdi-playlist-check', value: { publish: null } },
-          { title: $gettext('Published'), icon: 'mdi-publish', value: { publish: 'PUBLISHED' } },
+          { title: $gettext('All'), icon: mdiPlaylistCheck, value: { publish: null } },
+          { title: $gettext('Published'), icon: mdiPublish, value: { publish: 'PUBLISHED' } },
           {
             title: $gettext('Scheduled'),
-            icon: 'mdi-clock-outline',
+            icon: mdiClockOutline,
             value: { publish: 'SCHEDULED' }
           },
-          { title: $gettext('Drafts'), icon: 'mdi-pencil', value: { publish: 'DRAFT' } }
+          { title: $gettext('Drafts'), icon: mdiPencil, value: { publish: 'DRAFT' } }
         ]
       },
       {
         key: 'trashed',
         title: $gettext('trashed'),
         items: [
-          { title: $gettext('All'), icon: 'mdi-playlist-check', value: { trashed: 'WITH' } },
+          { title: $gettext('All'), icon: mdiPlaylistCheck, value: { trashed: 'WITH' } },
           {
             title: $gettext('Available only'),
-            icon: 'mdi-delete-off',
+            icon: mdiDeleteOff,
             value: { trashed: 'WITHOUT' }
           },
-          { title: $gettext('Only trashed'), icon: 'mdi-delete', value: { trashed: 'ONLY' } }
+          { title: $gettext('Only trashed'), icon: mdiDelete, value: { trashed: 'ONLY' } }
         ]
       },
       {
         key: 'editor',
         title: $gettext('editor'),
         items: [
-          { title: $gettext('All'), icon: 'mdi-playlist-check', value: { editor: null } },
+          { title: $gettext('All'), icon: mdiPlaylistCheck, value: { editor: null } },
           {
             title: $gettext('Edited by me'),
-            icon: 'mdi-account',
+            icon: mdiAccount,
             value: { editor: this.user.me?.email }
           }
         ]

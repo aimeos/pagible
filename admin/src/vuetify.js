@@ -6,6 +6,7 @@ import gettext from './i18n'
 import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
 import { createVuetify } from 'vuetify'
+import { aliases, mdi } from 'vuetify/iconsets/mdi-svg'
 import {
   ar,
   bg,
@@ -46,7 +47,9 @@ const vuetify = createVuetify({
   components,
   directives,
   icons: {
-    defaultSet: 'mdi'
+    defaultSet: 'mdi',
+    aliases,
+    sets: { mdi }
   },
   locale: {
     locale: gettext.current,

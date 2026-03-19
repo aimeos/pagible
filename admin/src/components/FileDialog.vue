@@ -2,6 +2,7 @@
 
 <script>
 import FileListItems from './FileListItems.vue'
+import { mdiClose } from '@mdi/js'
 
 export default {
   components: {
@@ -14,7 +15,11 @@ export default {
     grid: { type: Boolean, default: false }
   },
 
-  emits: ['update:modelValue', 'add']
+  emits: ['update:modelValue', 'add'],
+
+  setup() {
+    return { mdiClose }
+  }
 }
 </script>
 
@@ -30,7 +35,7 @@ export default {
         <v-btn
           @click="$emit('update:modelValue', false)"
           :title="$gettext('Close')"
-          icon="mdi-close"
+          :icon="mdiClose"
           variant="text"
         />
       </template>

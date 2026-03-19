@@ -40,7 +40,6 @@ export default {
   },
 
   methods: {
-
     base64ToBlob(base64, mimeType = 'image/png') {
       if (!base64) {
         return null

@@ -3,6 +3,7 @@
 <script>
 import Fields from './Fields.vue'
 import { useSchemaStore } from '../stores'
+import { mdiClose } from '@mdi/js'
 
 export default {
   components: {
@@ -21,7 +22,7 @@ export default {
 
   setup() {
     const schemas = useSchemaStore()
-    return { schemas }
+    return { schemas, mdiClose }
   },
 
   data() {
@@ -61,7 +62,7 @@ export default {
         <v-btn
           @click="$emit('update:modelValue', false)"
           :title="$gettext('Close')"
-          icon="mdi-close"
+          :icon="mdiClose"
           variant="text"
         />
       </template>

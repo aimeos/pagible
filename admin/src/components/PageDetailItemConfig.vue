@@ -5,6 +5,7 @@ import Fields from './Fields.vue'
 import SchemaItems from './SchemaItems.vue'
 import { useUserStore, useMessageStore, useSchemaStore, useSideStore } from '../stores'
 import { uid } from '../utils'
+import { mdiPencil, mdiDelete, mdiViewGridPlus } from '@mdi/js'
 
 export default {
   components: {
@@ -30,7 +31,7 @@ export default {
     const side = useSideStore()
     const user = useUserStore()
 
-    return { user, messages, schemas, side }
+    return { user, messages, schemas, side, mdiPencil, mdiDelete, mdiViewGridPlus }
   },
 
   computed: {
@@ -174,12 +175,12 @@ export default {
           :class="{ changed: el._changed, error: el._error }"
           v-show="shown(el)"
         >
-          <v-expansion-panel-title expand-icon="mdi-pencil">
+          <v-expansion-panel-title :expand-icon="mdiPencil">
             <v-btn
               v-if="user.can('page:save') && user.can('config:page')"
               @click="remove(code)"
               :title="$gettext('Remove content element')"
-              icon="mdi-delete"
+              :icon="mdiDelete"
               variant="text"
             />
             <div class="element-title">{{ title(el) }}</div>
@@ -205,7 +206,7 @@ export default {
         <v-btn
           @click="vschemas = true"
           :title="$gettext('Add element')"
-          icon="mdi-view-grid-plus"
+          :icon="mdiViewGridPlus"
           color="primary"
           variant="flat"
         />

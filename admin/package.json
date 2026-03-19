@@ -63,7 +63,7 @@
     "vuetify": "^3.8"
   },
   "devDependencies": {
-    "@mdi/font": "^7.4",
+    "@mdi/js": "^7.4",
     "@vitejs/plugin-vue": "^5.2",
     "@vue/eslint-config-prettier": "^10.2.0",
     "cypress": "^15.12.0",

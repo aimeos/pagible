@@ -7,6 +7,13 @@ import HistoryDialog from '../components/HistoryDialog.vue'
 import ElementDetailRefs from '../components/ElementDetailRefs.vue'
 import ElementDetailItem from '../components/ElementDetailItem.vue'
 import { useUserStore, useDrawerStore, useMessageStore } from '../stores'
+import {
+  mdiKeyboardBackspace,
+  mdiHistory,
+  mdiDatabaseArrowDown,
+  mdiChevronRight,
+  mdiChevronLeft
+} from '@mdi/js'
 
 export default {
   components: {
@@ -39,7 +46,16 @@ export default {
     const drawer = useDrawerStore()
     const user = useUserStore()
 
-    return { user, drawer, messages }
+    return {
+      user,
+      drawer,
+      messages,
+      mdiKeyboardBackspace,
+      mdiHistory,
+      mdiDatabaseArrowDown,
+      mdiChevronRight,
+      mdiChevronLeft
+    }
   },
 
   created() {
@@ -110,7 +126,6 @@ export default {
   },
 
   methods: {
-
     errorUpdated(event) {
       this.error = event
     },
@@ -328,7 +343,7 @@ export default {
       <v-btn
         @click="closeView()"
         :title="$gettext('Back to list view')"
-        icon="mdi-keyboard-backspace"
+        :icon="mdiKeyboardBackspace"
       />
     </template>
 
@@ -341,7 +356,7 @@ export default {
         @click="vhistory = true"
         :class="{ hidden: item.published && !changed && !item.latest }"
         :title="$gettext('View history')"
-        icon="mdi-history"
+        :icon="mdiHistory"
         class="no-rtl"
       />
 
@@ -354,7 +369,7 @@ export default {
         :disabled="!changed || error || !user.can('element:save')"
         :variant="!changed || error || !user.can('element:save') ? 'plain' : 'flat'"
         :color="!changed || error || !user.can('element:save') ? '' : 'blue-darken-1'"
-        icon="mdi-database-arrow-down"
+        :icon="mdiDatabaseArrowDown"
       />
 
       <v-menu v-model="pubmenu" :close-on-content-click="false">
@@ -427,7 +442,7 @@ export default {
       <v-btn
         @click="drawer.toggle('aside')"
         :title="$gettext('Toggle side menu')"
-        :icon="drawer.aside ? 'mdi-chevron-right' : 'mdi-chevron-left'"
+        :icon="drawer.aside ? mdiChevronRight : mdiChevronLeft"
       />
     </template>
   </v-app-bar>

@@ -2,6 +2,30 @@
 
 <script>
 import gql from 'graphql-tag'
+import {
+  mdiPlaylistCheck,
+  mdiTranslate,
+  mdiClose,
+  mdiMenu,
+  mdiChevronRight,
+  mdiChevronLeft,
+  mdiFileTree,
+  mdiFormatListBulletedSquare,
+  mdiPublish,
+  mdiClockOutline,
+  mdiPencil,
+  mdiDeleteOff,
+  mdiDelete,
+  mdiEye,
+  mdiEyeOffOutline,
+  mdiEyeOff,
+  mdiClockAlertOutline,
+  mdiAccount,
+  mdiHelpCircleOutline,
+  mdiCheckBold,
+  mdiMicrophone,
+  mdiMicrophoneOutline
+} from '@mdi/js'
 import User from '../components/User.vue'
 import PageDetail from '../views//PageDetail.vue'
 import AsideList from '../components/AsideList.vue'
@@ -59,7 +83,33 @@ export default {
     const drawer = useDrawerStore()
     const user = useUserStore()
 
-    return { user, drawer, messages }
+    return {
+      user,
+      drawer,
+      messages,
+      mdiPlaylistCheck,
+      mdiTranslate,
+      mdiClose,
+      mdiMenu,
+      mdiChevronRight,
+      mdiChevronLeft,
+      mdiFileTree,
+      mdiFormatListBulletedSquare,
+      mdiPublish,
+      mdiClockOutline,
+      mdiPencil,
+      mdiDeleteOff,
+      mdiDelete,
+      mdiEye,
+      mdiEyeOffOutline,
+      mdiEyeOff,
+      mdiClockAlertOutline,
+      mdiAccount,
+      mdiHelpCircleOutline,
+      mdiCheckBold,
+      mdiMicrophone,
+      mdiMicrophoneOutline
+    }
   },
 
   beforeUnmount() {
@@ -81,12 +131,11 @@ export default {
   },
 
   methods: {
-
     languages() {
       const list = [
         {
           title: this.$gettext('All'),
-          icon: 'mdi-playlist-check',
+          icon: mdiPlaylistCheck,
           value: { lang: null }
         }
       ]
@@ -94,7 +143,7 @@ export default {
       for (const entry of this.locales()) {
         list.push({
           title: entry.title,
-          icon: 'mdi-translate',
+          icon: mdiTranslate,
           value: { lang: entry.value }
         })
       }
@@ -215,7 +264,7 @@ export default {
       <v-btn
         @click="drawer.toggle('nav')"
         :title="drawer.nav ? $gettext('Close navigation') : $gettext('Open navigation')"
-        :icon="drawer.nav ? 'mdi-close' : 'mdi-menu'"
+        :icon="drawer.nav ? mdiClose : mdiMenu"
       />
     </template>
 
@@ -227,7 +276,7 @@ export default {
       <v-btn
         @click="drawer.toggle('aside')"
         :title="$gettext('Toggle side menu')"
-        :icon="drawer.aside ? 'mdi-chevron-right' : 'mdi-chevron-left'"
+        :icon="drawer.aside ? mdiChevronRight : mdiChevronLeft"
       />
     </template>
   </v-app-bar>
@@ -255,28 +304,23 @@ export default {
           <template #prepend>
             <v-btn
               @click="help = !help"
+              :icon="mdiHelpCircleOutline"
               :title="help ? $gettext('Hide help') : $gettext('Show help')"
               variant="text"
-              icon
-            >
-              <svg
-                fill="currentColor"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M11,18H13V16H11V18M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,6A4,4 0 0,0 8,10H10A2,2 0 0,1 12,8A2,2 0 0,1 14,10C14,12 11,11.75 11,15H13C13,12.75 16,12.5 16,10A4,4 0 0,0 12,6Z"
-                />
-              </svg>
-            </v-btn>
+            />
           </template>
           <template #append>
             <v-btn
               v-if="chat"
               @click="synthesizing || synthesize()"
               @keydown.enter="synthesizing || synthesize()"
+              :icon="
+                synthesizing === false
+                  ? mdiArrowRightCircle
+                  : synthesizing === null
+                    ? mdiCheckBold
+                    : null
+              "
               :title="
                 synthesizing
                   ? $gettext('Generating ...')
@@ -284,66 +328,16 @@ export default {
               "
               :loading="synthesizing"
               variant="text"
-              icon
-            >
-              <svg
-                v-if="synthesizing === false"
-                fill="currentColor"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2A10,10 0 0,1 22,12M6,13H14L10.5,16.5L11.92,17.92L17.84,12L11.92,6.08L10.5,7.5L14,11H6V13Z"
-                />
-              </svg>
-              <svg
-                v-if="synthesizing === null"
-                fill="currentColor"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z" />
-              </svg>
-            </v-btn>
-
+            />
             <v-btn
               v-else-if="user.can('audio:transcribe')"
               @click="record()"
+              :icon="audio ? mdiMicrophoneOutline : mdiMicrophone"
               :title="$gettext('Dictate')"
               :class="{ dictating: audio }"
               :loading="dictating"
               variant="text"
-              icon
-            >
-              <svg
-                v-if="audio"
-                fill="currentColor"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M17.3,11C17.3,14 14.76,16.1 12,16.1C9.24,16.1 6.7,14 6.7,11H5C5,14.41 7.72,17.23 11,17.72V21H13V17.72C16.28,17.23 19,14.41 19,11M10.8,4.9C10.8,4.24 11.34,3.7 12,3.7C12.66,3.7 13.2,4.24 13.2,4.9L13.19,11.1C13.19,11.76 12.66,12.3 12,12.3C11.34,12.3 10.8,11.76 10.8,11.1M12,14A3,3 0 0,0 15,11V5A3,3 0 0,0 12,2A3,3 0 0,0 9,5V11A3,3 0 0,0 12,14Z"
-                />
-              </svg>
-              <svg
-                v-else
-                fill="currentColor"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M12,2A3,3 0 0,1 15,5V11A3,3 0 0,1 12,14A3,3 0 0,1 9,11V5A3,3 0 0,1 12,2M19,11C19,14.53 16.39,17.44 13,17.93V21H11V17.93C7.61,17.44 5,14.53 5,11H7A5,5 0 0,0 12,16A5,5 0 0,0 17,11H19Z"
-                />
-              </svg>
-            </v-btn>
+            />
           </template>
         </v-textarea>
         <div v-if="help" class="help">
@@ -376,10 +370,10 @@ export default {
         key: 'view',
         title: $gettext('view'),
         items: [
-          { title: $gettext('Tree'), icon: 'mdi-file-tree', value: { view: 'tree' } },
+          { title: $gettext('Tree'), icon: mdiFileTree, value: { view: 'tree' } },
           {
             title: $gettext('List'),
-            icon: 'mdi-format-list-bulleted-square',
+            icon: mdiFormatListBulletedSquare,
             value: { view: 'list' }
           }
         ]
@@ -388,55 +382,55 @@ export default {
         key: 'publish',
         title: $gettext('publish'),
         items: [
-          { title: $gettext('All'), icon: 'mdi-playlist-check', value: { publish: null } },
-          { title: $gettext('Published'), icon: 'mdi-publish', value: { publish: 'PUBLISHED' } },
+          { title: $gettext('All'), icon: mdiPlaylistCheck, value: { publish: null } },
+          { title: $gettext('Published'), icon: mdiPublish, value: { publish: 'PUBLISHED' } },
           {
             title: $gettext('Scheduled'),
-            icon: 'mdi-clock-outline',
+            icon: mdiClockOutline,
             value: { publish: 'SCHEDULED' }
           },
-          { title: $gettext('Drafts'), icon: 'mdi-pencil', value: { publish: 'DRAFT' } }
+          { title: $gettext('Drafts'), icon: mdiPencil, value: { publish: 'DRAFT' } }
         ]
       },
       {
         key: 'trashed',
         title: $gettext('trashed'),
         items: [
-          { title: $gettext('All'), icon: 'mdi-playlist-check', value: { trashed: 'WITH' } },
+          { title: $gettext('All'), icon: mdiPlaylistCheck, value: { trashed: 'WITH' } },
           {
             title: $gettext('Available only'),
-            icon: 'mdi-delete-off',
+            icon: mdiDeleteOff,
             value: { trashed: 'WITHOUT' }
           },
-          { title: $gettext('Only trashed'), icon: 'mdi-delete', value: { trashed: 'ONLY' } }
+          { title: $gettext('Only trashed'), icon: mdiDelete, value: { trashed: 'ONLY' } }
         ]
       },
       {
         key: 'status',
         title: $gettext('status'),
         items: [
-          { title: $gettext('All'), icon: 'mdi-playlist-check', value: { status: null } },
-          { title: $gettext('Enabled'), icon: 'mdi-eye', value: { status: 1 } },
-          { title: $gettext('Hidden'), icon: 'mdi-eye-off-outline', value: { status: 2 } },
-          { title: $gettext('Disabled'), icon: 'mdi-eye-off', value: { status: 0 } }
+          { title: $gettext('All'), icon: mdiPlaylistCheck, value: { status: null } },
+          { title: $gettext('Enabled'), icon: mdiEye, value: { status: 1 } },
+          { title: $gettext('Hidden'), icon: mdiEyeOffOutline, value: { status: 2 } },
+          { title: $gettext('Disabled'), icon: mdiEyeOff, value: { status: 0 } }
         ]
       },
       {
         key: 'cache',
         title: $gettext('cache'),
         items: [
-          { title: $gettext('All'), icon: 'mdi-playlist-check', value: { cache: null } },
-          { title: $gettext('No cache'), icon: 'mdi-clock-alert-outline', value: { cache: 0 } }
+          { title: $gettext('All'), icon: mdiPlaylistCheck, value: { cache: null } },
+          { title: $gettext('No cache'), icon: mdiClockAlertOutline, value: { cache: 0 } }
         ]
       },
       {
         key: 'editor',
         title: $gettext('editor'),
         items: [
-          { title: $gettext('All'), icon: 'mdi-playlist-check', value: { editor: null } },
+          { title: $gettext('All'), icon: mdiPlaylistCheck, value: { editor: null } },
           {
             title: $gettext('Edited by me'),
-            icon: 'mdi-account',
+            icon: mdiAccount,
             value: { editor: this.user.me?.email }
           }
         ]

@@ -2,6 +2,14 @@
 
 <script>
 import gql from 'graphql-tag'
+import {
+  mdiDotsVertical,
+  mdiPencil,
+  mdiTrashCan,
+  mdiButtonCursor,
+  mdiLinkVariantPlus,
+  mdiUpload
+} from '@mdi/js'
 import { useAppStore, useUserStore, useMessageStore } from '../stores'
 import FileUrlDialog from '../components/FileUrlDialog.vue'
 import FileDialog from '../components/FileDialog.vue'
@@ -41,7 +49,17 @@ export default {
     const user = useUserStore()
     const app = useAppStore()
 
-    return { app, user, messages }
+    return {
+      app,
+      user,
+      messages,
+      mdiDotsVertical,
+      mdiPencil,
+      mdiTrashCan,
+      mdiButtonCursor,
+      mdiLinkVariantPlus,
+      mdiUpload
+    }
   },
 
   unmounted() {
@@ -61,7 +79,6 @@ export default {
   },
 
   methods: {
-
     add(file) {
       if (!this.user.can('file:add')) {
         this.messages.add(this.$gettext('Permission denied'), 'error')
@@ -248,19 +265,19 @@ export default {
               <v-btn
                 v-bind="props"
                 :title="$gettext('Open menu')"
-                icon="mdi-dots-vertical"
+                :icon="mdiDotsVertical"
                 class="btn-overlay"
                 variant="text"
               />
             </template>
             <v-list>
               <v-list-item v-if="user.can('file:view')">
-                <v-btn @click="open(file)" prepend-icon="mdi-pencil" variant="text">
+                <v-btn @click="open(file)" :prepend-icon="mdiPencil" variant="text">
                   {{ $gettext('Edit') }}
                 </v-btn>
               </v-list-item>
               <v-list-item>
-                <v-btn @click="remove()" prepend-icon="mdi-trash-can" variant="text">
+                <v-btn @click="remove()" :prepend-icon="mdiTrashCan" variant="text">
                   {{ $gettext('Remove') }}
                 </v-btn>
               </v-list-item>
@@ -273,22 +290,22 @@ export default {
             v-if="user.can('file:view')"
             @click="vfiles = true"
             :title="$gettext('Add file')"
-            icon="mdi-button-cursor"
+            :icon="mdiButtonCursor"
             variant="text"
           />
           <v-btn
             @click="vurls = true"
             :title="$gettext('Add file from URL')"
-            icon="mdi-link-variant-plus"
+            :icon="mdiLinkVariantPlus"
             variant="text"
           />
-          <v-btn :title="$gettext('Upload file')" icon="mdi-upload" variant="text">
+          <v-btn :title="$gettext('Upload file')" :icon="mdiUpload" variant="text">
             <v-file-input
               v-model="selected"
               @update:modelValue="add($event)"
               :accept="config.accept || '*'"
               :hide-input="true"
-              prepend-icon="mdi-upload"
+              :prepend-icon="mdiUpload"
             />
           </v-btn>
         </div>
