@@ -1,62 +1,25 @@
 /** @license LGPL, https://opensource.org/license/lgpl-3-0 */
 
 <script>
-import {
-  ClassicEditor,
-  Markdown,
-  Essentials,
-  PasteFromOffice,
-  Fullscreen,
-  Clipboard,
-  FindAndReplace,
-  RemoveFormat,
-  Heading,
-  Paragraph,
-  Bold,
-  Italic,
-  Strikethrough,
-  BlockQuote,
-  Code,
-  CodeBlock,
-  AutoLink,
-  Link,
-  List,
-  SourceEditing
-} from 'ckeditor5'
+import { ClassicEditor } from '@ckeditor/ckeditor5-editor-classic'
+import { Markdown } from '@ckeditor/ckeditor5-markdown-gfm'
+import { Essentials } from '@ckeditor/ckeditor5-essentials'
+import { PasteFromOffice } from '@ckeditor/ckeditor5-paste-from-office'
+import { Fullscreen } from '@ckeditor/ckeditor5-fullscreen'
+import { Clipboard } from '@ckeditor/ckeditor5-clipboard'
+import { FindAndReplace } from '@ckeditor/ckeditor5-find-and-replace'
+import { RemoveFormat } from '@ckeditor/ckeditor5-remove-format'
+import { Heading } from '@ckeditor/ckeditor5-heading'
+import { Paragraph } from '@ckeditor/ckeditor5-paragraph'
+import { Bold, Italic, Strikethrough, Code } from '@ckeditor/ckeditor5-basic-styles'
+import { BlockQuote } from '@ckeditor/ckeditor5-block-quote'
+import { CodeBlock } from '@ckeditor/ckeditor5-code-block'
+import { AutoLink, Link } from '@ckeditor/ckeditor5-link'
+import { List } from '@ckeditor/ckeditor5-list'
+import { SourceEditing } from '@ckeditor/ckeditor5-source-editing'
 import { Ckeditor } from '@ckeditor/ckeditor5-vue'
-import ar from 'ckeditor5/translations/ar.js'
-import bg from 'ckeditor5/translations/bg.js'
-import cs from 'ckeditor5/translations/cs.js'
-import da from 'ckeditor5/translations/da.js'
-import de from 'ckeditor5/translations/de.js'
-import el from 'ckeditor5/translations/el.js'
-import es from 'ckeditor5/translations/es.js'
-import et from 'ckeditor5/translations/et.js'
-import fi from 'ckeditor5/translations/fi.js'
-import fr from 'ckeditor5/translations/fr.js'
-import he from 'ckeditor5/translations/he.js'
-import hu from 'ckeditor5/translations/hu.js'
-import id from 'ckeditor5/translations/id.js'
-import it from 'ckeditor5/translations/it.js'
-import ja from 'ckeditor5/translations/ja.js'
-import ko from 'ckeditor5/translations/ko.js'
-import lt from 'ckeditor5/translations/lt.js'
-import lv from 'ckeditor5/translations/lv.js'
-import nl from 'ckeditor5/translations/nl.js'
-import no from 'ckeditor5/translations/no.js'
-import pl from 'ckeditor5/translations/pl.js'
-import pt from 'ckeditor5/translations/pt.js'
-import ro from 'ckeditor5/translations/ro.js'
-import ru from 'ckeditor5/translations/ru.js'
-import sk from 'ckeditor5/translations/sk.js'
-import sl from 'ckeditor5/translations/sl.js'
-import sv from 'ckeditor5/translations/sv.js'
-import th from 'ckeditor5/translations/th.js'
-import tr from 'ckeditor5/translations/tr.js'
-import uk from 'ckeditor5/translations/uk.js'
-import vi from 'ckeditor5/translations/vi.js'
-import zh from 'ckeditor5/translations/zh.js'
-import 'ckeditor5/ckeditor5.css'
+import { getTranslations } from '@/ckeditor-translations.js'
+import '@ckeditor/ckeditor5-theme-lark/dist/index.css'
 
 export default {
   components: {
@@ -131,40 +94,7 @@ export default {
           'sourceEditing',
           'fullscreen'
         ],
-        translations: [
-          ar,
-          bg,
-          cs,
-          da,
-          de,
-          el,
-          es,
-          et,
-          fi,
-          fr,
-          he,
-          hu,
-          id,
-          it,
-          ja,
-          ko,
-          lt,
-          lv,
-          no,
-          nl,
-          pl,
-          pt,
-          ro,
-          ru,
-          sk,
-          sl,
-          sv,
-          th,
-          tr,
-          uk,
-          vi,
-          zh
-        ],
+        translations: getTranslations(this.$vuetify.locale.current),
         language: {
           ui: this.$vuetify.locale.current
         }
