@@ -63,7 +63,7 @@ export default {
           stacked
         >
           <template v-slot:prepend>
-            <span class="icon" v-safe-svg="item.icon"></span>
+            <span class="el-icon" v-safe-svg="item.icon"></span>
           </template>
           {{ $pgettext('st', item.label || item.type) }}
         </v-btn>
@@ -93,7 +93,7 @@ export default {
   min-width: 8rem !important;
 }
 
-.icon {
+.el-icon {
   width: 2rem;
 }
 </style>

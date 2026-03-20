@@ -171,7 +171,7 @@ export default {
             width="100%"
             size="small"
           >
-            <v-card class="elevation-2">
+            <v-card :elevation="2">
               <v-card-title @click="show = !show">{{ $gettext('Current') }}</v-card-title>
               <v-card-text>
                 <div class="diff" :class="{ show: show }" @click="show = !show">
@@ -239,7 +239,7 @@ export default {
             width="100%"
             size="small"
           >
-            <v-card class="elevation-2">
+            <v-card :elevation="2">
               <v-card-title @click="version._show = !version._show">
                 {{
                   new Date(version.publish_at || version.created_at).toLocaleString(
