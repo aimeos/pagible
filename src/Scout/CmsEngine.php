@@ -256,8 +256,8 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
                 call_user_func( $cb, $query, $builder, $builder->query );
             })
             ->when( !$builder->callback && !empty( $builder->wheres ), function ( $query ) use ( $builder ) {
-                foreach( $builder->wheres as $field => $value ) {
-                    $query->where( $field, '=', $value );
+                foreach( $builder->wheres as $key => $where ) {
+                    $query->where( $where['field'] ?? $key, $where['operator'] ?? '=', $where['value'] ?? $where );
                 }
             })
             ->when( !$builder->callback && !empty( $builder->whereIns ), function ( $query ) use ( $builder ) {
@@ -318,8 +318,11 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
 
         $sub->where( 'indexable_type', get_class( $builder->model ) );
 
-        if( isset( $builder->wheres['latest'] ) ) {
-            $sub->where( 'latest', $builder->wheres['latest'] );
+        foreach( $builder->wheres as $key => $where )
+        {
+            if( ( $where['field'] ?? $key ) == 'latest' ) {
+                $sub->where( 'latest', $where['operator'] ?? '=', $where['value'] ?? $where );
+            }
         }
 
         $query->joinSub( $sub, 'index', function( $join ) use ( $modelTable ) {
