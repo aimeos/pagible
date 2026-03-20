@@ -96,9 +96,8 @@ class PublishPage extends Tool
     public function schema( JsonSchema $schema ) : array
     {
         return [
-            /** @phpstan-ignore method.notFound */
-            'id' => $schema->anyOf( $schema->string(), $schema->array() )
-                ->description('A single page UUID string or an array of up to 50 page UUIDs to publish.')
+            'id' => $schema->array()
+                ->description('An array of up to 50 page UUIDs to publish.')
                 ->required(),
             'at' => $schema->string()
                 ->description('Schedule publication for a future date/time in ISO 8601 format, e.g., "2026-04-01 12:00:00". Omit to publish immediately.'),
