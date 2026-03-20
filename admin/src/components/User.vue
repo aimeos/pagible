@@ -46,6 +46,16 @@ export default {
       .user()
       .then((user) => {
         this.me = user
+
+        const storedTheme = this.user.getData('app', 'theme')
+        if (storedTheme) {
+          this.theme.global.name.value = storedTheme
+        }
+
+        const storedLanguage = this.user.getData('app', 'language')
+        if (storedLanguage && storedLanguage !== this.i18n.current) {
+          this.change(storedLanguage)
+        }
       })
       .catch((error) => {
         this.messages.add(this.$gettext('Failed to load user') + ':\n' + error, 'error')
@@ -58,7 +68,13 @@ export default {
         this.i18n.translations = translations.default || translations
         this.$vuetify.locale.current = code
         this.i18n.current = code
+        this.user.saveData('app', 'language', code)
       })
+    },
+
+    toggleTheme() {
+      this.theme.toggle()
+      this.user.saveData('app', 'theme', this.theme.global.name.value)
     },
 
     logout() {
@@ -73,7 +89,7 @@ export default {
 
 <template>
   <v-btn
-    @click="theme.toggle()"
+    @click="toggleTheme()"
     :title="$gettext('Toggle light/dark mode')"
     :icon="theme.global.current.value.dark ? mdiWhiteBalanceSunny : mdiWeatherNight"
   />
