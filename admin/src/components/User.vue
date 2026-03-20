@@ -64,7 +64,10 @@ export default {
 
   methods: {
     change(code) {
-      import(`../../i18n/${code}.json`).then((translations) => {
+      Promise.all([
+        import(`../../i18n/${code}.json`),
+        import('../vuetify').then(v => v.switchLocale(code))
+      ]).then(([translations]) => {
         this.i18n.translations = translations.default || translations
         this.$vuetify.locale.current = code
         this.i18n.current = code

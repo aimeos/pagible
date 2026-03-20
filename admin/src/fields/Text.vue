@@ -1,20 +1,25 @@
 /** @license LGPL, https://opensource.org/license/lgpl-3-0 */
 
 <script>
-import { ClassicEditor } from '@ckeditor/ckeditor5-editor-classic'
-import { Markdown } from '@ckeditor/ckeditor5-markdown-gfm'
-import { Essentials } from '@ckeditor/ckeditor5-essentials'
-import { PasteFromOffice } from '@ckeditor/ckeditor5-paste-from-office'
-import { Fullscreen } from '@ckeditor/ckeditor5-fullscreen'
-import { Clipboard } from '@ckeditor/ckeditor5-clipboard'
-import { FindAndReplace } from '@ckeditor/ckeditor5-find-and-replace'
-import { RemoveFormat } from '@ckeditor/ckeditor5-remove-format'
-import { Paragraph } from '@ckeditor/ckeditor5-paragraph'
-import { Bold, Italic, Strikethrough, Code } from '@ckeditor/ckeditor5-basic-styles'
-import { AutoLink, Link } from '@ckeditor/ckeditor5-link'
+import {
+  ClassicEditor,
+  Markdown,
+  Essentials,
+  PasteFromOffice,
+  Fullscreen,
+  Clipboard,
+  FindAndReplace,
+  RemoveFormat,
+  Paragraph,
+  Bold,
+  Italic,
+  Strikethrough,
+  Code,
+  AutoLink,
+  Link
+} from 'ckeditor5'
 import { Ckeditor } from '@ckeditor/ckeditor5-vue'
-import { getTranslations } from '@/ckeditor-translations.js'
-import '@ckeditor/ckeditor5-theme-lark/dist/index.css'
+import 'ckeditor5/ckeditor5.css'
 
 export default {
   components: {
@@ -34,8 +39,15 @@ export default {
   data() {
     return {
       editor: ClassicEditor,
-      visible: false
+      visible: false,
+      translations: undefined
     }
+  },
+
+  async created() {
+    const locale = this.$vuetify.locale.current
+    const mod = await import(`../../node_modules/ckeditor5/dist/translations/${locale}.js`)
+    this.translations = [mod.default]
   },
 
   beforeUnmount() {
@@ -75,7 +87,7 @@ export default {
           '|',
           'fullscreen'
         ],
-        translations: getTranslations(this.$vuetify.locale.current),
+        translations: this.translations,
         language: {
           ui: this.$vuetify.locale.current
         }
