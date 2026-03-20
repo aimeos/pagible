@@ -156,7 +156,10 @@ export default {
               data.published = true
 
               this.items.unshift(data)
-              this.$emit('select', data)
+
+              if(files.length === 1) {
+                this.$emit('select', data)
+              }
 
               return data
             })
