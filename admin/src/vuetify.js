@@ -7,41 +7,21 @@ import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
 import { createVuetify } from 'vuetify'
 import { aliases, mdi } from 'vuetify/iconsets/mdi-svg'
-import {
-  ar,
-  bg,
-  cs,
-  da,
-  de,
-  el,
-  en,
-  es,
-  et,
-  fi,
-  fr,
-  he,
-  hu,
-  id,
-  it,
-  ja,
-  ko,
-  lt,
-  lv,
-  no,
-  nl,
-  pl,
-  pt,
-  ro,
-  ru,
-  sk,
-  sl,
-  sv,
-  th,
-  tr,
-  uk,
-  vi,
-  zhHans
-} from 'vuetify/locale'
+
+
+const localeMap = { zh: 'zhHans' }
+const locales = import.meta.glob('../node_modules/vuetify/lib/locale/*.js')
+
+export async function switchLocale(code) {
+  const name = localeMap[code] || code
+  const loader = locales[`../node_modules/vuetify/lib/locale/${name}.js`]
+
+  if (loader) {
+    const mod = await loader()
+    vuetify.locale.messages.value[code] = mod.default
+  }
+}
+
 
 const vuetify = createVuetify({
   components,
@@ -54,41 +34,7 @@ const vuetify = createVuetify({
   locale: {
     locale: gettext.current,
     fallback: 'en',
-    messages: {
-      ar,
-      bg,
-      cs,
-      da,
-      de,
-      el,
-      en,
-      es,
-      et,
-      fi,
-      fr,
-      he,
-      hu,
-      id,
-      it,
-      ja,
-      ko,
-      lt,
-      lv,
-      no,
-      nl,
-      pl,
-      pt,
-      ro,
-      ru,
-      sk,
-      sl,
-      sv,
-      th,
-      tr,
-      uk,
-      vi,
-      zhHans
-    }
+    messages: {}
   },
   theme: {
     defaultTheme: 'system',
