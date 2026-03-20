@@ -36,32 +36,7 @@ const vuetify = createVuetify({
   },
   theme: {
     defaultTheme: 'system',
-    themes: {
-      light: {
-        colors: {
-          background: '#f0f4f8',
-          surface: '#ffffff',
-          primary: '#3070a0',
-          info: '#00c8d8',
-          error: '#f44038',
-          success: '#00a070',
-          warning: '#ffb080',
-          accent: '#ffa890'
-        }
-      },
-      dark: {
-        colors: {
-          background: '#000000',
-          surface: '#101418',
-          primary: '#105090',
-          info: '#00c8d8',
-          error: '#d06878',
-          success: '#008040',
-          warning: '#e0a080',
-          accent: '#ffa890'
-        }
-      }
-    }
+    themes: JSON.parse(document.querySelector('#app')?.dataset.theme || '{}')
   }
 })
 

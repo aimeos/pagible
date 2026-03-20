@@ -28,11 +28,6 @@ input:-webkit-autofill:focus {
   }
 }
 
-body {
-  --cms-primary: 64, 112, 160;
-  --cms-primary-dark: 16, 64, 112;
-}
-
 .ltr,
 .ltr .v-field {
   direction: ltr;
