@@ -13,6 +13,9 @@ use Laravel\Mcp\Server;
 #[Instructions('This server provides access to the content management system.')]
 class CmsServer extends Server
 {
+    public int $defaultPaginationLength = 50;
+
+
     /**
      * The tools registered with this MCP server.
      *
