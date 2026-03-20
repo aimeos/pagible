@@ -101,7 +101,7 @@ export default {
 
 <template>
   <v-form class="login" :class="{ show: login }" v-model="form" @submit.prevent="cmslogin()">
-    <v-card :loading="loading" class="elevation-2" :class="{ error: error }">
+    <v-card :loading="loading" :elevation="2" :class="{ error: error }">
       <template v-slot:title> PagibleAI CMS </template>
 
       <v-card-text>
