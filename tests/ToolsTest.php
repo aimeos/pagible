@@ -241,12 +241,12 @@ class ToolsTest extends TestAbstract
     }
 
 
-    public function testUpdatePage()
+    public function testSavePage()
     {
         $this->seed( \Database\Seeders\CmsSeeder::class );
         $page = Page::where( 'name', 'Home' )->first();
 
-        $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\UpdatePage::class, [
+        $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\SavePage::class, [
             'id' => $page->id,
             'name' => 'Updated Home',
             'title' => 'Updated Title',
@@ -256,11 +256,11 @@ class ToolsTest extends TestAbstract
     }
 
 
-    public function testUpdatePageNotFound()
+    public function testSavePageNotFound()
     {
         $this->seed( \Database\Seeders\CmsSeeder::class );
 
-        $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\UpdatePage::class, [
+        $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\SavePage::class, [
             'id' => '00000000-0000-0000-0000-000000000000',
             'name' => 'Nope',
         ] );
@@ -480,12 +480,12 @@ class ToolsTest extends TestAbstract
     }
 
 
-    public function testUpdateElement()
+    public function testSaveElement()
     {
         $this->seed( \Database\Seeders\CmsSeeder::class );
         $element = Element::where( 'name', 'Shared footer' )->first();
 
-        $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\UpdateElement::class, [
+        $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\SaveElement::class, [
             'id' => $element->id,
             'name' => 'Updated footer',
         ] );
@@ -494,11 +494,11 @@ class ToolsTest extends TestAbstract
     }
 
 
-    public function testUpdateElementNotFound()
+    public function testSaveElementNotFound()
     {
         $this->seed( \Database\Seeders\CmsSeeder::class );
 
-        $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\UpdateElement::class, [
+        $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\SaveElement::class, [
             'id' => '00000000-0000-0000-0000-000000000000',
             'name' => 'Nope',
         ] );
@@ -695,12 +695,12 @@ class ToolsTest extends TestAbstract
     }
 
 
-    public function testUpdateFile()
+    public function testSaveFile()
     {
         $this->seed( \Database\Seeders\CmsSeeder::class );
         $file = File::where( 'name', 'Test image' )->first();
 
-        $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\UpdateFile::class, [
+        $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\SaveFile::class, [
             'id' => $file->id,
             'name' => 'Renamed image',
         ] );
@@ -709,11 +709,11 @@ class ToolsTest extends TestAbstract
     }
 
 
-    public function testUpdateFileNotFound()
+    public function testSaveFileNotFound()
     {
         $this->seed( \Database\Seeders\CmsSeeder::class );
 
-        $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\UpdateFile::class, [
+        $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\SaveFile::class, [
             'id' => '00000000-0000-0000-0000-000000000000',
             'name' => 'Nope',
         ] );

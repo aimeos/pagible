@@ -20,10 +20,10 @@ use Laravel\Mcp\Response;
 use Laravel\Mcp\Request;
 
 
-#[Name('update-element')]
-#[Title('Update a shared content element')]
-#[Description('Updates an existing shared content element. Creates a new draft version. Returns the updated element as a JSON object.')]
-class UpdateElement extends Tool
+#[Name('save-element')]
+#[Title('Save a shared content element')]
+#[Description('Saves an existing shared content element. Creates a new draft version. Returns the updated element as a JSON object.')]
+class SaveElement extends Tool
 {
     /**
      * Handle the tool request.
@@ -40,7 +40,7 @@ class UpdateElement extends Tool
             'lang' => 'string|max:5',
             'data' => 'array',
         ], [
-            'id.required' => 'You must specify the ID of the element to update.',
+            'id.required' => 'You must specify the ID of the element to save.',
         ] );
 
         /** @var Element|null $element */
@@ -98,14 +98,14 @@ class UpdateElement extends Tool
     {
         return [
             'id' => $schema->string()
-                ->description('The UUID of the element to update. Use search-elements to find the ID.')
+                ->description( 'The UUID of the element to save. Use search-elements or list-elements to find the ID.' )
                 ->required(),
             'name' => $schema->string()
-                ->description('New name for the element.'),
+                ->description( 'New name for the element.' ),
             'lang' => $schema->string()
-                ->description('ISO language code for the version.'),
+                ->description( 'ISO language code for the version.' ),
             'data' => $schema->object()
-                ->description('Updated element data as a JSON object. Fields depend on the element type.'),
+                ->description( 'Element data as a JSON object. Fields depend on the element type. Use get-element to see the current type and get-schemas for available fields.' ),
         ];
     }
 
