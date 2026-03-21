@@ -59,72 +59,21 @@ class UpdatePage extends Tool
             $versionId = ( new Version )->newUniqueId();
 
             // Build data from latest version, then overlay changes
-            $data = (array) ( $page->latest->data ?? [] );
-            $aux = (array) ( $page->latest->aux ?? [] );
-
-            if( isset( $validated['name'] ) ) {
-                $data['name'] = $validated['name'];
-            }
+            $changes = array_intersect_key( $validated, array_flip( ['name', 'title'] ) );
 
             if( isset( $validated['title'] ) ) {
-                $data['title'] = $validated['title'];
-                $data['path'] = Utils::slugify( $validated['title'] );
+                $changes['path'] = Utils::slugify( $validated['title'] );
             }
 
-            if( isset( $validated['content'] ) )
-            {
-                $content = $aux['content'] ?? [];
+            $data = array_replace( (array) ( $page->latest->data ?? [] ), $changes );
+            $aux = (array) ( $page->latest->aux ?? [] );
 
-                // Find first text element or create one
-                $found = false;
-                foreach( $content as &$el )
-                {
-                    if( ( $el['type'] ?? $el->type ?? '' ) === 'text' )
-                    {
-                        if( is_object( $el ) ) {
-                            $el->data->text = $validated['content']; // @phpstan-ignore property.notFound
-                        } else {
-                            $el['data']['text'] = $validated['content'];
-                        }
-
-                        $found = true;
-                        break;
-                    }
-                }
-
-                if( !$found )
-                {
-                    $content[] = [
-                        'id' => Utils::uid(),
-                        'type' => 'text',
-                        'group' => 'main',
-                        'data' => [
-                            'text' => $validated['content'],
-                        ]
-                    ];
-                }
-
-                $aux['content'] = $content;
+            if( isset( $validated['content'] ) ) {
+                $aux['content'] = $this->updateContent( $aux['content'] ?? [], $validated['content'] );
             }
 
-            if( isset( $validated['summary'] ) )
-            {
-                $meta = $aux['meta'] ?? [];
-
-                if( is_object( $meta ) ) {
-                    $meta = (array) $meta;
-                }
-
-                $meta['meta-tags'] = [
-                    'id' => $meta['meta-tags']['id'] ?? $meta['meta-tags']->id ?? Utils::uid(),
-                    'type' => 'meta-tags',
-                    'group' => 'basic',
-                    'data' => [
-                        'description' => $validated['summary'],
-                    ]
-                ];
-
-                $aux['meta'] = $meta;
+            if( isset( $validated['summary'] ) ) {
+                $aux['meta'] = $this->updateMeta( $aux['meta'] ?? new \stdClass(), $validated['summary'] );
             }
 
             $version = $page->versions()->forceCreate([
@@ -138,17 +87,8 @@ class UpdatePage extends Tool
             $page->forceFill( ['latest_id' => $versionId] )->save();
             $page->removeVersions();
 
-            return Response::structured( [
+            return Response::structured( array_merge( $data, [
                 'id' => $page->id,
-                'tag' => $data['tag'] ?? '',
-                'lang' => $data['lang'] ?? '',
-                'path' => $data['path'] ?? '',
-                'domain' => $data['domain'] ?? '',
-                'to' => $data['to'] ?? '',
-                'name' => $data['name'] ?? '',
-                'title' => $data['title'] ?? '',
-                'type' => $data['type'] ?? '',
-                'theme' => $data['theme'] ?? '',
                 'meta' => $aux['meta'] ?? new \stdClass(),
                 'config' => $aux['config'] ?? new \stdClass(),
                 'content' => $aux['content'] ?? [],
@@ -157,8 +97,57 @@ class UpdatePage extends Tool
                 'created_at' => (string) $page->created_at,
                 'updated_at' => (string) $page->updated_at,
                 'url' => route( 'cms.page', ['path' => $data['path'] ?? ''] ),
-            ] );
+            ] ) );
         }, 3 );
+    }
+
+
+    /**
+     * Updates the content elements with new text.
+     *
+     * @param array<int, mixed>|object $content Existing content elements
+     * @param string $text New text content
+     * @return array<int, mixed> Updated content elements
+     */
+    private function updateContent( array|object $content, string $text ) : array
+    {
+        foreach( $content as $el )
+        {
+            if( ( $el->type ?? '' ) === 'text' )
+            {
+                $el->data->text = $text;
+                return (array) $content;
+            }
+        }
+
+        $content[] = (object) [
+            'id' => Utils::uid(),
+            'type' => 'text',
+            'group' => 'main',
+            'data' => (object) ['text' => $text],
+        ];
+
+        return (array) $content;
+    }
+
+
+    /**
+     * Updates the meta tags with a new description.
+     *
+     * @param array<string, mixed>|object $meta Existing meta data
+     * @param string $summary New meta description
+     * @return object Updated meta data
+     */
+    private function updateMeta( array|object $meta, string $summary ) : object
+    {
+        $meta->{'meta-tags'} = (object) [
+            'id' => $meta->{'meta-tags'}->id ?? Utils::uid(),
+            'type' => 'meta-tags',
+            'group' => 'basic',
+            'data' => (object) ['description' => $summary],
+        ];
+
+        return $meta;
     }
 
 
