@@ -24,6 +24,14 @@ export async function switchLocale(code) {
 const vuetify = createVuetify({
   components,
   directives,
+  display: {
+    thresholds: {
+      md: 960,
+      lg: 1280,
+      xl: 1920,
+      xxl: 2560,
+    },
+  },
   icons: {
     defaultSet: 'mdi',
     aliases,

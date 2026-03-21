@@ -23,7 +23,7 @@ const vuetifyLabs = readdirSync('node_modules/vuetify/lib/labs', { withFileTypes
 export default defineConfig({
   plugins: [
     vue(),
-    vuetify()
+    vuetify({ styles: { configFile: 'src/styles/settings.scss' } })
   ],
   resolve: {
     alias: {

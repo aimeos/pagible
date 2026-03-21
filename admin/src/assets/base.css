@@ -328,10 +328,6 @@ input:-webkit-autofill:focus {
   text-decoration: line-through;
 }
 
-.icon {
-  padding: 12px;
-}
-
 .btn-group {
   padding: 8px 0;
 }
