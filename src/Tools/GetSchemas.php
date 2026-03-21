@@ -20,7 +20,7 @@ use Laravel\Mcp\Request;
 #[IsReadOnly]
 #[Name('get-schemas')]
 #[Title('Get available content type schemas')]
-#[Description('Returns the available content element types (heading, text, image, video, etc.) and their field definitions. Use this to understand what content structures are valid when creating or updating pages.')]
+#[Description('Returns the available content, meta, and config element types and their field definitions. Use this to understand what structures are valid when creating or saving pages.')]
 class GetSchemas extends Tool
 {
     /**
@@ -28,27 +28,32 @@ class GetSchemas extends Tool
      */
     public function handle(): \Laravel\Mcp\ResponseFactory
     {
-        $schemas = config( 'cms.schemas.content', [] );
-
         $result = [];
 
-        foreach( $schemas as $type => $schema )
+        foreach( ['content', 'meta', 'config'] as $section )
         {
-            $fields = [];
-
-            foreach( $schema['fields'] ?? [] as $name => $field )
+            foreach( config( "cms.schemas.{$section}", [] ) as $type => $schema )
             {
-                $fields[$name] = [
-                    'type' => $field['type'] ?? 'string',
-                    'label' => $field['label'] ?? $name,
-                    'required' => $field['required'] ?? false,
+                $fields = [];
+
+                foreach( $schema['fields'] ?? [] as $name => $field )
+                {
+                    $fields[$name] = [
+                        'type' => $field['type'] ?? 'string',
+                        'label' => $field['label'] ?? $name,
+                        'required' => $field['required'] ?? false,
+                    ];
+
+                    if( !empty( $field['options'] ) ) {
+                        $fields[$name]['options'] = array_column( $field['options'], 'value' );
+                    }
+                }
+
+                $result[$section][$type] = [
+                    'group' => $schema['group'] ?? 'basic',
+                    'fields' => $fields,
                 ];
             }
-
-            $result[$type] = [
-                'group' => $schema['group'] ?? 'basic',
-                'fields' => $fields,
-            ];
         }
 
         return Response::structured( $result );

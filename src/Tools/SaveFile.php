@@ -20,10 +20,10 @@ use Laravel\Mcp\Response;
 use Laravel\Mcp\Request;
 
 
-#[Name('update-file')]
-#[Title('Update file metadata')]
-#[Description('Updates the name, description, or language of an existing media file. Creates a new draft version. Returns the updated file as a JSON object.')]
-class UpdateFile extends Tool
+#[Name('save-file')]
+#[Title('Save file metadata')]
+#[Description('Saves the name, description, or language of an existing media file. Creates a new draft version. Returns the updated file as a JSON object.')]
+class SaveFile extends Tool
 {
     /**
      * Handle the tool request.
@@ -40,7 +40,7 @@ class UpdateFile extends Tool
             'lang' => 'string|max:5',
             'description' => 'array',
         ], [
-            'id.required' => 'You must specify the ID of the file to update.',
+            'id.required' => 'You must specify the ID of the file to save.',
         ] );
 
         /** @var File|null $file */
@@ -102,14 +102,14 @@ class UpdateFile extends Tool
     {
         return [
             'id' => $schema->string()
-                ->description('The UUID of the file to update. Use list-files or search-files to find the ID.')
+                ->description( 'The UUID of the file to save. Use search-files or list-files to find the ID.' )
                 ->required(),
             'name' => $schema->string()
-                ->description('New display name for the file.'),
+                ->description( 'New display name for the file.' ),
             'lang' => $schema->string()
-                ->description('ISO language code for the file, e.g., "en" or "de".'),
+                ->description( 'ISO language code for the file, e.g., "en" or "de".' ),
             'description' => $schema->object()
-                ->description('Multilingual description object, e.g., {"en": "A sunset photo", "de": "Ein Sonnenuntergangsfoto"}. Used as alt text for images.'),
+                ->description( 'Multilingual description object, e.g., {"en": "A sunset photo", "de": "Ein Sonnenuntergangsfoto"}. Used as alt text for images.' ),
         ];
     }
 

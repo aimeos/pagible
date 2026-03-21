@@ -46,7 +46,7 @@ class CmsServer extends Server
 
         // Write tools - Pages
         \Aimeos\Cms\Tools\AddPage::class,
-        \Aimeos\Cms\Tools\UpdatePage::class,
+        \Aimeos\Cms\Tools\SavePage::class,
         \Aimeos\Cms\Tools\PublishPage::class,
         \Aimeos\Cms\Tools\DropPage::class,
         \Aimeos\Cms\Tools\RestorePage::class,
@@ -54,14 +54,14 @@ class CmsServer extends Server
 
         // Write tools - Elements
         \Aimeos\Cms\Tools\AddElement::class,
-        \Aimeos\Cms\Tools\UpdateElement::class,
+        \Aimeos\Cms\Tools\SaveElement::class,
         \Aimeos\Cms\Tools\PublishElement::class,
         \Aimeos\Cms\Tools\DropElement::class,
         \Aimeos\Cms\Tools\RestoreElement::class,
 
         // Write tools - Files
         \Aimeos\Cms\Tools\AddFile::class,
-        \Aimeos\Cms\Tools\UpdateFile::class,
+        \Aimeos\Cms\Tools\SaveFile::class,
         \Aimeos\Cms\Tools\PublishFile::class,
         \Aimeos\Cms\Tools\DropFile::class,
         \Aimeos\Cms\Tools\RestoreFile::class,
