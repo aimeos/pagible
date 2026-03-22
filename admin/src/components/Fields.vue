@@ -178,6 +178,7 @@ export default {
       >
         <component
           :is="$vuetify.display.xs ? 'v-dialog' : 'v-menu'"
+          :aria-label="$gettext('Translate')"
           v-if="!readonly"
           v-model="menu[code]"
           transition="scale-transition"
@@ -197,7 +198,7 @@ export default {
           <v-card v-if="user.can('text:translate')">
             <v-toolbar density="compact">
               <v-toolbar-title>{{ $gettext('Translate') }}</v-toolbar-title>
-              <v-btn :icon="mdiClose" @click="menu[code] = false" />
+              <v-btn :icon="mdiClose" :aria-label="$gettext('Close')" @click="menu[code] = false" />
             </v-toolbar>
 
             <v-list @click="menu[code] = false">
@@ -234,6 +235,7 @@ export default {
     <component
       :is="toName(field.type)"
       :key="field.type + '-' + code"
+      :aria-label="$pgettext('fn', field.label || code).replace(/-|_/g, ' ')"
       :context="data"
       :assets="assets"
       :config="field"

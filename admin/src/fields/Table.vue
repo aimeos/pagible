@@ -161,7 +161,12 @@ export default {
           <td></td>
 
           <td v-for="(col, idx) in cols" :key="idx">
-            <v-btn variant="text" class="col-handle cursor-move" icon>
+            <v-btn
+              variant="text"
+              class="col-handle cursor-move"
+              :aria-label="$gettext('Move column')"
+              icon
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 height="24"
@@ -177,6 +182,7 @@ export default {
 
             <component
               :is="$vuetify.display.xs ? 'v-dialog' : 'v-menu'"
+              :aria-label="$gettext('Column actions')"
               v-if="!readonly"
               v-model="menu['col-' + idx]"
               transition="scale-transition"
@@ -195,7 +201,11 @@ export default {
               <v-card>
                 <v-toolbar density="compact">
                   <v-toolbar-title>{{ $gettext('Actions') }}</v-toolbar-title>
-                  <v-btn :icon="mdiClose" @click="menu['col-' + idx] = false" />
+                  <v-btn
+                    :icon="mdiClose"
+                    :aria-label="$gettext('Close')"
+                    @click="menu['col-' + idx] = false"
+                  />
                 </v-toolbar>
 
                 <v-list @click="menu['col-' + idx] = false">
@@ -232,7 +242,12 @@ export default {
       <tbody v-draggable="[table, { animation: 300, handle: '.row-handle' }]">
         <tr v-for="(row, rowidx) in table" :key="rowidx">
           <td>
-            <v-btn :icon="mdiDragHorizontal" variant="text" class="row-handle cursor-move">
+            <v-btn
+              :icon="mdiDragHorizontal"
+              :aria-label="$gettext('Move row')"
+              variant="text"
+              class="row-handle cursor-move"
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 height="24"
@@ -261,6 +276,7 @@ export default {
           <td>
             <component
               :is="$vuetify.display.xs ? 'v-dialog' : 'v-menu'"
+              :aria-label="$gettext('Row actions')"
               v-if="!readonly"
               v-model="menu['row-' + rowidx]"
               transition="scale-transition"
@@ -279,7 +295,11 @@ export default {
               <v-card>
                 <v-toolbar density="compact">
                   <v-toolbar-title>{{ $gettext('Actions') }}</v-toolbar-title>
-                  <v-btn :icon="mdiClose" @click="menu['row-' + rowidx] = false" />
+                  <v-btn
+                    :icon="mdiClose"
+                    :aria-label="$gettext('Close')"
+                    @click="menu['row-' + rowidx] = false"
+                  />
                 </v-toolbar>
 
                 <v-list @click="menu['row-' + rowidx] = false">

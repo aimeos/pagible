@@ -255,7 +255,7 @@ input:-webkit-autofill:focus {
 
 .v-btn--variant-tonal .v-btn__content {
   color: rgb(var(--v-theme-on-surface));
-  opacity: var(--v-medium-emphasis-opacity);
+  opacity: 0.8;
 }
 
 .header {
@@ -338,7 +338,7 @@ input:-webkit-autofill:focus {
   position: absolute !important;
   border-radius: 50%;
   width: max-content;
-  opacity: 0.66;
+  opacity: 0.85;
   padding: 12px;
   right: 0;
   top: 0;
@@ -349,7 +349,7 @@ input:-webkit-autofill:focus {
   color: rgb(var(--v-theme-surface)) !important;
   border-radius: 50%;
   display: block;
-  opacity: 0.66;
+  opacity: 0.85;
   padding: 12px;
   margin: 4px 0;
 }
@@ -382,7 +382,7 @@ input:-webkit-autofill:focus {
 .publish-at,
 .item-status {
   margin-inline-end: 4px;
-  font-size: 20px !important;
+  font-size: 1.25rem !important;
 }
 
 .item-content {
@@ -490,4 +490,18 @@ input[readonly],
 .ck-editor * {
   padding: revert;
   margin: revert;
+}
+
+.v-toolbar-title h1 {
+  font-size: inherit;
+  font-weight: inherit;
+  margin: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spin1,
+  .spin2,
+  .spin3 {
+    animation: none;
+  }
 }

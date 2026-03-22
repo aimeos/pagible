@@ -25,6 +25,7 @@ export default {
 
 <template>
   <v-dialog
+    :aria-label="$gettext('Files')"
     :modelValue="modelValue"
     @afterLeave="$emit('update:modelValue', false)"
     max-width="1200"

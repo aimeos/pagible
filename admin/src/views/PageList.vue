@@ -268,7 +268,9 @@ export default {
       />
     </template>
 
-    <v-app-bar-title>{{ $gettext('Pages') }} </v-app-bar-title>
+    <v-app-bar-title
+      ><h1>{{ $gettext('Pages') }}</h1></v-app-bar-title
+    >
 
     <template #append>
       <User />

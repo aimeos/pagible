@@ -122,9 +122,9 @@ export default {
       />
     </template>
 
-    <v-app-bar-title>
-      {{ $gettext('Shared elements') }}
-    </v-app-bar-title>
+    <v-app-bar-title
+      ><h1>{{ $gettext('Shared elements') }}</h1></v-app-bar-title
+    >
 
     <template #append>
       <User />

@@ -121,7 +121,9 @@ export default {
       />
     </template>
 
-    <v-app-bar-title>{{ $gettext('Files') }}</v-app-bar-title>
+    <v-app-bar-title
+      ><h1>{{ $gettext('Files') }}</h1></v-app-bar-title
+    >
 
     <template #append>
       <User />

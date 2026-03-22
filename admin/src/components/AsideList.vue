@@ -66,7 +66,7 @@ export default {
 </script>
 
 <template>
-  <v-navigation-drawer v-model="drawer.aside" mobile-breakpoint="md" location="end">
+  <v-navigation-drawer v-model="drawer.aside" mobile-breakpoint="md" location="end" tag="aside">
     <v-btn
       class="reset"
       :disabled="disabled"

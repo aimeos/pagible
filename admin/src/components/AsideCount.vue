@@ -62,7 +62,7 @@ export default {
 </script>
 
 <template>
-  <v-navigation-drawer v-model="drawer.aside" mobile-breakpoint="md" location="end">
+  <v-navigation-drawer v-model="drawer.aside" mobile-breakpoint="md" location="end" tag="aside">
     <v-list v-model:opened="open">
       <v-list-group
         v-for="(items, key) in stores"
@@ -108,7 +108,7 @@ export default {
 }
 
 :deep(.v-list-item--active:not(.v-list-group__header) .v-list-item__content) {
-  color: rgba(var(--v-theme-on-surface-light), 0.5);
+  color: rgba(var(--v-theme-on-surface-light), 0.7);
   text-decoration: line-through;
 }
 

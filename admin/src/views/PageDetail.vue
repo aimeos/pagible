@@ -704,7 +704,7 @@ export default {
     </template>
 
     <v-app-bar-title>
-      <div class="app-title">{{ $gettext('Page') }}: {{ item.name }}</div>
+      <h1 class="app-title">{{ $gettext('Page') }}: {{ item.name }}</h1>
     </v-app-bar-title>
 
     <template v-slot:append>

@@ -29,8 +29,8 @@ const vuetify = createVuetify({
       md: 960,
       lg: 1280,
       xl: 1920,
-      xxl: 2560,
-    },
+      xxl: 2560
+    }
   },
   icons: {
     defaultSet: 'mdi',

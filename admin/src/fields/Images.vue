@@ -268,6 +268,7 @@ export default {
         v-if="item.path"
         :srcset="srcset(item.previews)"
         :src="url(item.path)"
+        :alt="description(item)"
         draggable="false"
       />
 

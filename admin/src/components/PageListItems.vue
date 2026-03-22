@@ -1039,6 +1039,7 @@ export default {
 
       <component
         :is="$vuetify.display.xs ? 'v-dialog' : 'v-menu'"
+        :aria-label="$gettext('Actions')"
         v-model="actions"
         transition="scale-transition"
         location="end center"
@@ -1056,7 +1057,7 @@ export default {
         <v-card>
           <v-toolbar density="compact">
             <v-toolbar-title>{{ $gettext('Actions') }}</v-toolbar-title>
-            <v-btn :icon="mdiClose" @click="actions = false" />
+            <v-btn :icon="mdiClose" :aria-label="$gettext('Close')" @click="actions = false" />
           </v-toolbar>
 
           <v-list @click="actions = false">
@@ -1216,6 +1217,7 @@ export default {
 
         <component
           :is="$vuetify.display.xs ? 'v-dialog' : 'v-menu'"
+          :aria-label="$gettext('Actions')"
           v-model="menu[node.id]"
           transition="scale-transition"
           location="end center"
@@ -1233,7 +1235,11 @@ export default {
           <v-card>
             <v-toolbar density="compact">
               <v-toolbar-title>{{ $gettext('Actions') }}</v-toolbar-title>
-              <v-btn :icon="mdiClose" @click="menu[node.id] = false" />
+              <v-btn
+                :icon="mdiClose"
+                :aria-label="$gettext('Close')"
+                @click="menu[node.id] = false"
+              />
             </v-toolbar>
 
             <v-list @click="menu[node.id] = false">
@@ -1378,7 +1384,7 @@ export default {
         }"
         :title="title(node)"
       >
-        <a href="#" class="item-text" @click="$emit('select', node)">
+        <a href="#" class="item-text" @click.prevent="$emit('select', node)">
           <div class="item-head">
             <span class="item-lang" v-if="node.lang">{{ node.lang }}</span>
             <v-icon v-if="node.publish_at" class="publish-at" :icon="mdiClockOutline" />
@@ -1472,7 +1478,7 @@ export default {
 }
 
 .tree-node-inner .item-content.cut {
-  opacity: 0.5;
+  opacity: 0.7;
 }
 
 .tree-node-inner .item-text {

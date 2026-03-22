@@ -86,12 +86,6 @@ export default {
       return url || '/'
     },
 
-    toggle(event) {
-      if ([13, 32].includes(event.keyCode)) {
-        this.toggleShow()
-      }
-    },
-
     toggleShow() {
       this.show = !this.show
     }
@@ -102,7 +96,7 @@ export default {
 <template>
   <v-form class="login" :class="{ show: login }" v-model="form" @submit.prevent="cmslogin()">
     <v-card :loading="loading" :elevation="2" :class="{ error: error }">
-      <template v-slot:title> PagibleAI CMS </template>
+      <template v-slot:title><h1>PagibleAI CMS</h1></template>
 
       <v-card-text>
         <v-text-field
@@ -126,7 +120,13 @@ export default {
           variant="underlined"
         >
           <template v-slot:append-inner>
-            <v-icon @click="toggleShow" @keydown="toggle" :icon="show ? mdiEyeOff : mdiEye" />
+            <v-btn
+              @click="toggleShow"
+              :aria-label="show ? $gettext('Hide password') : $gettext('Show password')"
+              :icon="show ? mdiEyeOff : mdiEye"
+              variant="text"
+              size="small"
+            />
           </template>
         </v-text-field>
         <v-alert v-show="error" color="error" :icon="mdiAlertOctagon">
@@ -206,6 +206,12 @@ export default {
   40%,
   60% {
     transform: translate3d(4px, 0, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .login .error {
+    animation: none;
   }
 }
 </style>
