@@ -64,7 +64,7 @@ describe('ElementList', () => {
     cy.get('.aside-list-stub').should('exist')
   })
 
-  it('initializes filter from cmsdata', () => {
+  it('initializes filter from settings', () => {
     cy.mount(ElementList, {
       global: {
         stubs,
@@ -77,7 +77,7 @@ describe('ElementList', () => {
             user.me = {
               permission: {},
               email: 'test@test.com',
-              cmsdata: { element: { filter: { publish: 'PUBLISHED', lang: 'de' } } }
+              settings: { element: { filter: { publish: 'PUBLISHED', lang: 'de' } } }
             }
           }
         }],
@@ -90,7 +90,7 @@ describe('ElementList', () => {
     })
   })
 
-  it('uses default filter when cmsdata is null', () => {
+  it('uses default filter when settings is null', () => {
     mountElementList().then(() => {
       const vm = Cypress.vueWrapper.findComponent(ElementList).vm
       expect(vm.filter.trashed).to.equal('WITHOUT')

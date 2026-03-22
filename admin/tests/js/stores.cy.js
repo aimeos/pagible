@@ -57,31 +57,31 @@ describe('useUserStore', () => {
       expect(user.getData('page', 'filter')).to.be.null
     })
 
-    it('returns defval when cmsdata is null', () => {
+    it('returns defval when settings is null', () => {
       const user = useUserStore()
-      user.me = { cmsdata: null }
+      user.me = { settings: null }
       expect(user.getData('page', 'filter', 'default')).to.equal('default')
     })
 
     it('returns defval when panel does not exist', () => {
       const user = useUserStore()
-      user.me = { cmsdata: {} }
+      user.me = { settings: {} }
       expect(user.getData('page', 'filter', 'fallback')).to.equal('fallback')
     })
 
     it('returns stored value', () => {
       const user = useUserStore()
-      user.me = { cmsdata: { page: { filter: { view: 'list' } } } }
+      user.me = { settings: { page: { filter: { view: 'list' } } } }
       expect(user.getData('page', 'filter')).to.deep.equal({ view: 'list' })
     })
   })
 
   describe('saveData()', () => {
-    it('creates cmsdata structure when missing', () => {
+    it('creates settings structure when missing', () => {
       const user = useUserStore()
       user.me = {}
       user.saveData('page', 'filter', { view: 'list' })
-      expect(user.me.cmsdata.page.filter).to.deep.equal({ view: 'list' })
+      expect(user.me.settings.page.filter).to.deep.equal({ view: 'list' })
       clearTimeout(user._saveTimer)
     })
 
@@ -102,9 +102,9 @@ describe('useUserStore', () => {
 
     it('overwrites existing values', () => {
       const user = useUserStore()
-      user.me = { cmsdata: { page: { filter: { view: 'tree' } } } }
+      user.me = { settings: { page: { filter: { view: 'tree' } } } }
       user.saveData('page', 'filter', { view: 'list' })
-      expect(user.me.cmsdata.page.filter).to.deep.equal({ view: 'list' })
+      expect(user.me.settings.page.filter).to.deep.equal({ view: 'list' })
       clearTimeout(user._saveTimer)
     })
   })
@@ -112,7 +112,7 @@ describe('useUserStore', () => {
   describe('flush()', () => {
     it('does nothing without pending timer', () => {
       const user = useUserStore()
-      user.me = { cmsdata: {} }
+      user.me = { settings: {} }
       user._saveTimer = null
       user.flush()
       expect(user._saveTimer).to.be.null

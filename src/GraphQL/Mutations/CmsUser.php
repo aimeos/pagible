@@ -23,14 +23,14 @@ final class CmsUser
         /** @var \Illuminate\Foundation\Auth\User $user */
         $user = Auth::guard()->user() ?? throw new Error( 'Not authenticated' );
 
-        $cmsdata = json_encode( $args['cmsdata'] );
+        $settings = json_encode( $args['settings'] );
 
-        if( $cmsdata && strlen( (string) $cmsdata ) > 65535 ) {
+        if( $settings && strlen( (string) $settings ) > 65535 ) {
             $msg = 'User data too large (%s KB), maximum is 64 KB';
-            throw new Error( sprintf( $msg, round( strlen( (string) $cmsdata ) / 1024 ) ) );
+            throw new Error( sprintf( $msg, round( strlen( (string) $settings ) / 1024 ) ) );
         }
 
-        $user->setAttribute( 'cmsdata', $cmsdata );
+        $user->setAttribute( 'cmsdata', $settings );
         $user->save();
 
         return $user;

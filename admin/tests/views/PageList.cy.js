@@ -87,7 +87,7 @@ describe('PageList', () => {
     })
   })
 
-  it('initializes filter from cmsdata', () => {
+  it('initializes filter from settings', () => {
     cy.mount(PageList, {
       global: {
         stubs,
@@ -100,7 +100,7 @@ describe('PageList', () => {
             user.me = {
               permission: {},
               email: 'test@test.com',
-              cmsdata: { page: { filter: { view: 'list', publish: 'DRAFT' } } }
+              settings: { page: { filter: { view: 'list', publish: 'DRAFT' } } }
             }
           }
         }],
@@ -113,7 +113,7 @@ describe('PageList', () => {
     })
   })
 
-  it('uses default filter when cmsdata is null', () => {
+  it('uses default filter when settings is null', () => {
     mountPageList().then(() => {
       const vm = Cypress.vueWrapper.findComponent(PageList).vm
       expect(vm.filter.view).to.equal('tree')
