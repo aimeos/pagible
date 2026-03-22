@@ -31,48 +31,21 @@ final class Query
     public function elements( $rootValue, array $args ) : Builder
     {
         $filter = $args['filter'] ?? [];
-        $publish = $args['publish'] ?? null;
         $limit = (int) ( $args['first'] ?? 100 );
 
         $builder = Element::skip( max( ( $args['page'] ?? 1 ) - 1, 0 ) * $limit )
             ->take( min( max( $limit, 1 ), 100 ) );
 
-        switch( $args['trashed'] ?? null ) {
-            case 'without': $builder->withoutTrashed(); break;
-            case 'with': $builder->withTrashed(); break;
-            case 'only': $builder->onlyTrashed(); break;
-        }
+        $this->trashed( $builder, $args['trashed'] ?? null );
 
         $builder->select( 'cms_elements.*' )
             ->join( 'cms_versions', 'cms_elements.latest_id', '=', 'cms_versions.id' );
 
-        switch( $publish )
-        {
-            case 'PUBLISHED': $builder->where( 'cms_versions.published', true ); break;
-            case 'DRAFT': $builder->where( 'cms_versions.published', false ); break;
-            case 'SCHEDULED': $builder->where( 'cms_versions.publish_at', '!=', null )
-                ->where( 'cms_versions.published', false ); break;
-        }
-
-        if( isset( $filter['id'] ) ) {
-            $builder->whereIn( 'cms_elements.id', $filter['id'] );
-        }
-
-        if( isset( $filter['lang'] ) ) {
-            $builder->where( 'cms_versions.lang', $filter['lang'] );
-        }
-
-        if( isset( $filter['editor'] ) ) {
-            $builder->where( 'cms_versions.editor', (string) $filter['editor'] );
-        }
+        $this->publish( $builder, $args['publish'] ?? null );
+        $this->filter( $builder, $filter, 'cms_elements', Element::class );
 
         if( isset( $filter['type'] ) ) {
             $builder->where( 'cms_versions.data->type', (string) $filter['type'] );
-        }
-
-        if( isset( $filter['any'] ) ) {
-            $ids = Element::search( mb_substr( trim( $filter['any'] ), 0, 200 ) )->where( 'latest', true )->take( 1000 )->keys();
-            $builder->whereIn( 'cms_elements.id', $ids->all() );
         }
 
         return $builder;
@@ -89,47 +62,20 @@ final class Query
     public function files( $rootValue, array $args ) : Builder
     {
         $filter = $args['filter'] ?? [];
-        $publish = $args['publish'] ?? null;
         $limit = (int) ( $args['first'] ?? 100 );
 
         $builder = File::withCount( 'byversions' )->skip( max( ( $args['page'] ?? 1 ) - 1, 0 ) * $limit )
             ->take( min( max( $limit, 1 ), 100 ) );
 
-        switch( $args['trashed'] ?? null ) {
-            case 'without': $builder->withoutTrashed(); break;
-            case 'with': $builder->withTrashed(); break;
-            case 'only': $builder->onlyTrashed(); break;
-        }
+        $this->trashed( $builder, $args['trashed'] ?? null );
 
         $builder->join( 'cms_versions', 'cms_files.latest_id', '=', 'cms_versions.id' );
 
-        switch( $publish )
-        {
-            case 'PUBLISHED': $builder->where( 'cms_versions.published', true ); break;
-            case 'DRAFT': $builder->where( 'cms_versions.published', false ); break;
-            case 'SCHEDULED': $builder->where( 'cms_versions.publish_at', '!=', null )
-                ->where( 'cms_versions.published', false ); break;
-        }
-
-        if( isset( $filter['id'] ) ) {
-            $builder->whereIn( 'cms_files.id', $filter['id'] );
-        }
-
-        if( isset( $filter['lang'] ) ) {
-            $builder->where( 'cms_versions.lang', $filter['lang'] );
-        }
-
-        if( isset( $filter['editor'] ) ) {
-            $builder->where( 'cms_versions.editor', (string) $filter['editor'] );
-        }
+        $this->publish( $builder, $args['publish'] ?? null );
+        $this->filter( $builder, $filter, 'cms_files', File::class );
 
         if( isset( $filter['mime'] ) ) {
             $builder->where( 'cms_versions.data->mime', 'like', $filter['mime'] . '%' );
-        }
-
-        if( isset( $filter['any'] ) ) {
-            $ids = File::search( mb_substr( trim( $filter['any'] ), 0, 200 ) )->where( 'latest', true )->take( 1000 )->keys();
-            $builder->whereIn( 'cms_files.id', $ids->all() );
         }
 
         return $builder;
@@ -146,18 +92,12 @@ final class Query
     public function pages( $rootValue, array $args ) : \Aimeos\Nestedset\QueryBuilder
     {
         $filter = $args['filter'] ?? [];
-        $publish = $args['publish'] ?? null;
         $limit = (int) ( $args['first'] ?? 100 );
-        $trashed = $args['trashed'] ?? null;
 
         $builder = Page::skip( max( ( $args['page'] ?? 1 ) - 1, 0 ) * $limit )
             ->take( min( max( $limit, 1 ), 100 ) );
 
-        switch( $trashed ) {
-            case 'without': $builder->withoutTrashed(); break;
-            case 'with': $builder->withTrashed(); break;
-            case 'only': $builder->onlyTrashed(); break;
-        }
+        $this->trashed( $builder, $args['trashed'] ?? null );
 
         if( array_key_exists( 'parent_id', $filter ) ) {
             $builder->where( 'cms_pages.parent_id', $filter['parent_id'] );
@@ -166,25 +106,8 @@ final class Query
         $builder->select( 'cms_pages.*' )
             ->join( 'cms_versions', 'cms_pages.latest_id', '=', 'cms_versions.id' );
 
-        switch( $publish )
-        {
-            case 'PUBLISHED': $builder->where( 'cms_versions.published', true ); break;
-            case 'DRAFT': $builder->where( 'cms_versions.published', false ); break;
-            case 'SCHEDULED': $builder->where( 'cms_versions.publish_at', '!=', null )
-                ->where( 'cms_versions.published', false ); break;
-        }
-
-        if( isset( $filter['id'] ) ) {
-            $builder->whereIn( 'cms_pages.id', $filter['id'] );
-        }
-
-        if( isset( $filter['lang'] ) ) {
-            $builder->where( 'cms_versions.lang', (string) $filter['lang'] );
-        }
-
-        if( isset( $filter['editor'] ) ) {
-            $builder->where( 'cms_versions.editor', (string) $filter['editor'] );
-        }
+        $this->publish( $builder, $args['publish'] ?? null );
+        $this->filter( $builder, $filter, 'cms_pages', Page::class );
 
         if( isset( $filter['status'] ) ) {
             $builder->where( 'cms_versions.data->status', (int) $filter['status'] );
@@ -218,11 +141,69 @@ final class Query
             $builder->where( 'cms_versions.data->type', (string) $filter['type'] );
         }
 
-        if( isset( $filter['any'] ) ) {
-            $ids = Page::search( mb_substr( trim( $filter['any'] ), 0, 200 ) )->where( 'latest', true )->take( 1000 )->keys();
-            $builder->whereIn( 'cms_pages.id', $ids->all() );
+        return $builder;
+    }
+
+
+    /**
+     * Applies trashed filter to the query builder.
+     *
+     * @param Builder<Page>|Builder<Element>|Builder<File> $builder Query builder
+     * @param string|null $trashed Trashed filter value
+     */
+    private function trashed( $builder, ?string $trashed ) : void
+    {
+        switch( $trashed ) {
+            case 'without': $builder->withoutTrashed(); break;
+            case 'with': $builder->withTrashed(); break;
+            case 'only': $builder->onlyTrashed(); break;
+        }
+    }
+
+
+    /**
+     * Applies publish status filter to the query builder.
+     *
+     * @param Builder<Page>|Builder<Element>|Builder<File> $builder Query builder
+     * @param string|null $publish Publish filter value
+     */
+    private function publish( $builder, ?string $publish ) : void
+    {
+        switch( $publish )
+        {
+            case 'PUBLISHED': $builder->where( 'cms_versions.published', true ); break;
+            case 'DRAFT': $builder->where( 'cms_versions.published', false ); break;
+            case 'SCHEDULED': $builder->where( 'cms_versions.publish_at', '!=', null )
+                ->where( 'cms_versions.published', false ); break;
+        }
+    }
+
+
+    /**
+     * Applies common filters (id, lang, editor, any) to the query builder.
+     *
+     * @param Builder<Page>|Builder<Element>|Builder<File> $builder Query builder
+     * @param array<string, mixed> $filter Filter values
+     * @param string $table Database table name
+     * @param string $model Model class name
+     */
+    private function filter( $builder, array $filter, string $table, string $model ) : void
+    {
+        if( isset( $filter['id'] ) ) {
+            $builder->whereIn( $table . '.id', $filter['id'] );
         }
 
-        return $builder;
+        if( isset( $filter['lang'] ) ) {
+            $builder->where( 'cms_versions.lang', (string) $filter['lang'] );
+        }
+
+        if( isset( $filter['editor'] ) ) {
+            $builder->where( 'cms_versions.editor', (string) $filter['editor'] );
+        }
+
+        if( isset( $filter['any'] ) ) {
+            $ids = $model::search( mb_substr( trim( $filter['any'] ), 0, 200 ) )->where( 'latest', true )->take( 1000 )->keys();
+            $builder->whereIn( $table . '.id', $ids->all() );
+        }
     }
 }
