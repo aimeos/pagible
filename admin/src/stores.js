@@ -54,7 +54,7 @@ export const useUserStore = defineStore('user', {
             query {
               me {
                 permission
-                cmsdata
+                settings
                 email
                 name
               }
@@ -85,7 +85,7 @@ export const useUserStore = defineStore('user', {
             mutation ($email: String!, $password: String!) {
               cmsLogin(email: $email, password: $password) {
                 permission
-                cmsdata
+                settings
                 email
                 name
               }
@@ -152,27 +152,27 @@ export const useUserStore = defineStore('user', {
     },
 
     getData(panel, key, defval = null) {
-      return this.me?.cmsdata?.[panel]?.[key] ?? defval
+      return this.me?.settings?.[panel]?.[key] ?? defval
     },
 
     saveData(panel, key, value) {
       if (!this.me) return
 
-      if (!this.me.cmsdata) {
-        this.me.cmsdata = {}
+      if (!this.me.settings) {
+        this.me.settings = {}
       }
-      if (!this.me.cmsdata[panel]) {
-        this.me.cmsdata[panel] = {}
+      if (!this.me.settings[panel]) {
+        this.me.settings[panel] = {}
       }
 
-      this.me.cmsdata[panel][key] = value
+      this.me.settings[panel][key] = value
 
       clearTimeout(this._saveTimer)
       this._saveTimer = setTimeout(() => this.flush(), 60000)
     },
 
     flush() {
-      if (!this._saveTimer || !this.me?.cmsdata) return
+      if (!this._saveTimer || !this.me?.settings) return
 
       clearTimeout(this._saveTimer)
       this._saveTimer = null
@@ -180,14 +180,14 @@ export const useUserStore = defineStore('user', {
       apolloClient
         .mutate({
           mutation: gql`
-            mutation ($cmsdata: JSON!) {
-              cmsUser(cmsdata: $cmsdata) {
-                cmsdata
+            mutation ($settings: JSON!) {
+              cmsUser(settings: $settings) {
+                settings
               }
             }
           `,
           variables: {
-            cmsdata: this.me.cmsdata
+            settings: this.me.settings
           }
         })
         .catch((error) => {
