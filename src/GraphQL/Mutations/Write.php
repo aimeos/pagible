@@ -7,7 +7,6 @@
 
 namespace Aimeos\Cms\GraphQL\Mutations;
 
-use Aimeos\Cms\Permission;
 use Aimeos\Cms\Models\File;
 use Prism\Prism\Facades\Prism;
 use Prism\Prism\ValueObjects\Media\Audio;
@@ -16,7 +15,6 @@ use Prism\Prism\ValueObjects\Media\Video;
 use Prism\Prism\ValueObjects\Media\Document;
 use Prism\Prism\ValueObjects\ProviderTool;
 use Prism\Prism\Exceptions\PrismException;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use GraphQL\Error\Error;
 
@@ -29,10 +27,6 @@ final class Write
      */
     public function __invoke( $rootValue, array $args ): string
     {
-        if( !Permission::can( 'text:write', Auth::user() ) ) {
-            throw new Error( 'Insufficient permissions' );
-        }
-
         if( empty( $args['prompt'] ) ) {
             throw new Error( 'Prompt must not be empty' );
         }

@@ -53,6 +53,11 @@ class ServiceProvider extends Provider
 			] );
 		}
 
+		$this->app['events']->listen(
+			\Nuwave\Lighthouse\Events\RegisterDirectiveNamespaces::class,
+			fn() => 'Aimeos\\Cms\\GraphQL\\Directives'
+		);
+
 		app(\Laravel\Scout\EngineManager::class)->extend('cms', function () {
 			return new \Aimeos\Cms\Scout\CmsEngine();
 		});

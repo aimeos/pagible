@@ -7,7 +7,6 @@
 
 namespace Aimeos\Cms\GraphQL\Mutations;
 
-use Aimeos\Cms\Permission;
 use Aimeos\Cms\Models\File;
 use Prism\Prism\Facades\Prism;
 use Prism\Prism\Enums\ToolChoice;
@@ -17,7 +16,6 @@ use Prism\Prism\ValueObjects\Media\Image;
 use Prism\Prism\ValueObjects\Media\Video;
 use Prism\Prism\ValueObjects\Media\Document;
 use Prism\Prism\ValueObjects\ProviderTool;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use GraphQL\Error\Error;
 
@@ -30,10 +28,6 @@ final class Synthesize
      */
     public function __invoke( $rootValue, array $args ): string
     {
-        if( !Permission::can( 'page:synthesize', Auth::user() ) ) {
-            throw new Error( 'Insufficient permissions' );
-        }
-
         if( empty( $args['prompt'] ) ) {
             throw new Error( 'Prompt must not be empty' );
         }

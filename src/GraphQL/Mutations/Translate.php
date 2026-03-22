@@ -7,10 +7,8 @@
 
 namespace Aimeos\Cms\GraphQL\Mutations;
 
-use Aimeos\Cms\Permission;
 use Aimeos\Prisma\Prisma;
 use Aimeos\Prisma\Exceptions\PrismaException;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use GraphQL\Error\Error;
 
@@ -24,10 +22,6 @@ final class Translate
      */
     public function __invoke( $rootValue, array $args ): array
     {
-        if( !Permission::can( 'text:translate', Auth::user() ) ) {
-            throw new Error( 'Insufficient permissions' );
-        }
-
         if( empty( $texts = $args['texts'] ) ) {
             throw new Error( 'Input texts must not be empty' );
         }

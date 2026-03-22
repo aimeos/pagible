@@ -10,8 +10,6 @@ namespace Aimeos\Cms\GraphQL\Mutations;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Aimeos\Cms\Models\Page;
-use Aimeos\Cms\Permission;
-use GraphQL\Error\Error;
 
 
 final class PubPage
@@ -23,10 +21,6 @@ final class PubPage
      */
     public function __invoke( $rootValue, array $args ) : array
     {
-        if( !Permission::can( 'page:publish', Auth::user() ) ) {
-            throw new Error( 'Insufficient permissions' );
-        }
-
         return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $args ) {
 
             $items = Page::with( 'latest.files', 'latest.elements' )->whereIn( 'id', $args['id'] )->get();

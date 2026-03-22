@@ -9,8 +9,6 @@ namespace Aimeos\Cms\GraphQL\Mutations;
 
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\Version;
-use Aimeos\Cms\Permission;
-use GraphQL\Error\Error;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -23,10 +21,6 @@ final class AddElement
      */
     public function __invoke( $rootValue, array $args ) : Element
     {
-        if( !Permission::can( 'element:add', Auth::user() ) ) {
-            throw new Error( 'Insufficient permissions' );
-        }
-
         if( @$args['input']['type'] === 'html' && @$args['input']['data']->text ) {
             $args['input']['data']->text = \Aimeos\Cms\Utils::html( (string) $args['input']['data']->text );
         }

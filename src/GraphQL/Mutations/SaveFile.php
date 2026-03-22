@@ -9,7 +9,6 @@ namespace Aimeos\Cms\GraphQL\Mutations;
 
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Version;
-use Aimeos\Cms\Permission;
 use Aimeos\Cms\Utils;
 use GraphQL\Error\Error;
 use Illuminate\Http\UploadedFile;
@@ -25,10 +24,6 @@ final class SaveFile
      */
     public function __invoke( $rootValue, array $args ) : File
     {
-        if( !Permission::can( 'file:save', Auth::user() ) ) {
-            throw new Error( 'Insufficient permissions' );
-        }
-
         return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $args ) {
 
             /** @var File $orig */

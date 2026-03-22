@@ -24,10 +24,6 @@ final class AddPage
      */
     public function __invoke( $rootValue, array $args ) : Page
     {
-        if( !Permission::can( 'page:add', Auth::user() ) ) {
-            throw new Error( 'Insufficient permissions' );
-        }
-
         return Cache::lock( 'cms_pages_' . \Aimeos\Cms\Tenancy::value(), 30 )->get( function() use ( $args ) {
             return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $args ) {
 

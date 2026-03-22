@@ -23,10 +23,6 @@ final class SavePage
      */
     public function __invoke( $rootValue, array $args ) : Page
     {
-        if( !Permission::can( 'page:save', Auth::user() ) ) {
-            throw new Error( 'Insufficient permissions' );
-        }
-
         return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $args ) {
 
             /** @var Page $page */

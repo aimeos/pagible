@@ -10,8 +10,6 @@ namespace Aimeos\Cms\GraphQL\Mutations;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Aimeos\Cms\Models\File;
-use Aimeos\Cms\Permission;
-use GraphQL\Error\Error;
 
 
 final class KeepFile
@@ -23,10 +21,6 @@ final class KeepFile
      */
     public function __invoke( $rootValue, array $args ) : array
     {
-        if( !Permission::can( 'file:keep', Auth::user() ) ) {
-            throw new Error( 'Insufficient permissions' );
-        }
-
         return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $args ) {
 
             $items = File::withTrashed()->whereIn( 'id', $args['id'] )->get();

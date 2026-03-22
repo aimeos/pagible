@@ -11,8 +11,6 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Aimeos\Cms\Models\Page;
-use Aimeos\Cms\Permission;
-use GraphQL\Error\Error;
 
 
 final class DropPage
@@ -24,10 +22,6 @@ final class DropPage
      */
     public function __invoke( $rootValue, array $args ) : array
     {
-        if( !Permission::can( 'page:drop', Auth::user() ) ) {
-            throw new Error( 'Insufficient permissions' );
-        }
-
         return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $args ) {
 
             $items = Page::withTrashed()->whereIn( 'id', $args['id'] )->get();
