@@ -28,7 +28,7 @@ class UserResolver
      * @param mixed $context
      * @return array<string, mixed>|null
      */
-    public function cmsdata( User $user, array $args, mixed $context ): array|null
+    public function settings( User $user, array $args, mixed $context ): array|null
     {
         return json_decode( $user->cmsdata ?? '', true ) ?: null;
     }

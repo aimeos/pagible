@@ -65,7 +65,7 @@ describe('FileList', () => {
     cy.get('.file-list-items-stub').should('exist')
   })
 
-  it('initializes filter from cmsdata', () => {
+  it('initializes filter from settings', () => {
     cy.mount(FileList, {
       global: {
         stubs,
@@ -78,7 +78,7 @@ describe('FileList', () => {
             user.me = {
               permission: {},
               email: 'test@test.com',
-              cmsdata: { file: { filter: { publish: 'DRAFT', editor: 'me@test.com' } } }
+              settings: { file: { filter: { publish: 'DRAFT', editor: 'me@test.com' } } }
             }
           }
         }],
@@ -91,7 +91,7 @@ describe('FileList', () => {
     })
   })
 
-  it('uses default filter when cmsdata is null', () => {
+  it('uses default filter when settings is null', () => {
     mountFileList().then(() => {
       const vm = Cypress.vueWrapper.findComponent(FileList).vm
       expect(vm.filter.trashed).to.equal('WITHOUT')

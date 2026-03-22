@@ -17,7 +17,7 @@ extend type User {
     permission: JSON! @field(resolver: "\\Aimeos\\Cms\\GraphQL\\Resolvers\\UserResolver@permission")
 
     "CMS user preferences"
-    cmsdata: JSON @field(resolver: "\\Aimeos\\Cms\\GraphQL\\Resolvers\\UserResolver@cmsdata")
+    settings: JSON @field(resolver: "\\Aimeos\\Cms\\GraphQL\\Resolvers\\UserResolver@settings")
 }
 
 extend type Query {
@@ -72,7 +72,7 @@ extend type Mutation {
   cmsLogout: User @guard
 
   "Update CMS user preferences"
-  cmsUser(cmsdata: JSON!): User @guard
+  cmsUser(settings: JSON!): User @guard
 
   "Summarize the content of the file passed by its file ID"
   describe(file: String!, lang: String): String @guard @throttle(maxAttempts: 10)
