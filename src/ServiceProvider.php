@@ -53,7 +53,7 @@ class ServiceProvider extends Provider
 			] );
 		}
 
-		$this->app['events']->listen(
+		$this->app->make('events')->listen(
 			\Nuwave\Lighthouse\Events\RegisterDirectiveNamespaces::class,
 			fn() => 'Aimeos\\Cms\\GraphQL\\Directives'
 		);
