@@ -144,46 +144,26 @@ export default {
     },
 
     erase() {
-      if (this.readonly || !this.user.can('image:erase')) {
-        return this.messages.add(this.$gettext('Permission denied'), 'error')
-      }
-
-      const self = this
-
       this.image().then((blob) => {
-        self.mask().toBlob(function (mask) {
-          self.loading.erase = true
-
-          self.$apollo
-            .mutate({
-              mutation: gql`
-                mutation ($file: Upload!, $mask: Upload!) {
-                  erase(file: $file, mask: $mask)
-                }
-              `,
-              variables: {
-                file: new File([blob], 'image', { type: self.item.mime }),
-                mask: new File([mask], 'mask', { type: 'image/png' })
-              },
-              context: {
-                hasUpload: true
+        this.mask().toBlob((mask) => {
+          this.mutate(
+            'image:erase',
+            gql`
+              mutation ($file: Upload!, $mask: Upload!) {
+                erase(file: $file, mask: $mask)
               }
-            })
-            .then((response) => {
-              if (response.errors) {
-                throw response.errors
-              }
-
-              self.replace(self.base64ToBlob(response.data?.erase))
-            })
+            `,
+            {
+              file: new File([blob], 'image', { type: this.item.mime }),
+              mask: new File([mask], 'mask', { type: 'image/png' })
+            }
+          )
+            .then((response) => this.replace(this.base64ToBlob(response.data?.erase)))
             .catch((error) => {
-              self.messages.add(self.$gettext('Error erasing image part') + ':\n' + error, 'error')
-              self.$log('FileDetailItemImage::erase(): Error erasing image part', error)
+              this.messages.add(this.$gettext('Error erasing image part') + ':\n' + error, 'error')
+              this.$log('FileDetailItemImage::erase(): Error erasing image part', error)
             })
-            .finally(() => {
-              self.loading.erase = false
-              self.clear()
-            })
+            .finally(() => this.clear())
         })
       })
     },
@@ -252,94 +232,77 @@ export default {
     },
 
     inpaint() {
-      if (this.readonly || !this.user.can('image:inpaint')) {
-        return this.messages.add(this.$gettext('Permission denied'), 'error')
-      }
-
       if (!this.edittext?.trim()) {
         return
       }
 
-      const self = this
-
       this.image().then((blob) => {
-        self.mask().toBlob(function (mask) {
-          self.loading.paint = true
-
-          self.$apollo
-            .mutate({
-              mutation: gql`
-                mutation ($file: Upload!, $mask: Upload!, $prompt: String!) {
-                  inpaint(file: $file, mask: $mask, prompt: $prompt)
-                }
-              `,
-              variables: {
-                file: new File([blob], 'image', { type: self.item.mime }),
-                mask: new File([mask], 'mask', { type: 'image/png' }),
-                prompt: self.edittext
-              },
-              context: {
-                hasUpload: true
+        this.mask().toBlob((mask) => {
+          this.mutate(
+            'image:inpaint',
+            gql`
+              mutation ($file: Upload!, $mask: Upload!, $prompt: String!) {
+                inpaint(file: $file, mask: $mask, prompt: $prompt)
               }
-            })
-            .then((response) => {
-              if (response.errors) {
-                throw response.errors
-              }
-
-              self.replace(self.base64ToBlob(response.data?.inpaint))
-            })
+            `,
+            {
+              file: new File([blob], 'image', { type: this.item.mime }),
+              mask: new File([mask], 'mask', { type: 'image/png' }),
+              prompt: this.edittext
+            }
+          )
+            .then((response) => this.replace(this.base64ToBlob(response.data?.inpaint)))
             .catch((error) => {
-              self.messages.add(self.$gettext('Error editing image part') + ':\n' + error, 'error')
-              self.$log('FileDetailItemImage::inpaint(): Error editing image part', error)
+              this.messages.add(this.$gettext('Error editing image part') + ':\n' + error, 'error')
+              this.$log('FileDetailItemImage::inpaint(): Error editing image part', error)
             })
-            .finally(() => {
-              self.loading.paint = false
-              self.clear()
-            })
+            .finally(() => this.clear())
         })
       })
     },
 
     isolate() {
-      if (this.readonly || !this.user.can('image:isolate')) {
-        return this.messages.add(this.$gettext('Permission denied'), 'error')
-      }
-
-      const self = this
-
-      this.cropper.getCroppedCanvas().toBlob(function (blob) {
-        self.loading.isolate = true
-
-        self.$apollo
-          .mutate({
-            mutation: gql`
-              mutation ($file: Upload!) {
-                isolate(file: $file)
-              }
-            `,
-            variables: {
-              file: new File([blob], 'image.png', { type: 'image/png' })
-            },
-            context: {
-              hasUpload: true
+      this.cropper.getCroppedCanvas().toBlob((blob) => {
+        this.mutate(
+          'image:isolate',
+          gql`
+            mutation ($file: Upload!) {
+              isolate(file: $file)
             }
-          })
-          .then((response) => {
-            if (response.errors) {
-              throw response.errors
-            }
-
-            self.replace(self.base64ToBlob(response.data?.isolate))
-          })
+          `,
+          {
+            file: new File([blob], 'image.png', { type: 'image/png' })
+          }
+        )
+          .then((response) => this.replace(this.base64ToBlob(response.data?.isolate)))
           .catch((error) => {
-            self.messages.add(self.$gettext('Error removing background') + ':\n' + error, 'error')
-            self.$log('FileDetailItemImage::isolate(): Error removing background', error)
-          })
-          .finally(() => {
-            self.loading.isolate = false
+            this.messages.add(this.$gettext('Error removing background') + ':\n' + error, 'error')
+            this.$log('FileDetailItemImage::isolate(): Error removing background', error)
           })
       })
+    },
+
+    mutate(action, mutation, variables) {
+      if (this.readonly || !this.user.can(action)) {
+        this.messages.add(this.$gettext('Permission denied'), 'error')
+        return Promise.reject()
+      }
+
+      this.loading[action] = true
+
+      return this.$apollo
+        .mutate({
+          mutation,
+          variables,
+          context: { hasUpload: true }
+        })
+        .then((response) => {
+          if (response.errors) throw response.errors
+          return response
+        })
+        .finally(() => {
+          this.loading[action] = false
+        })
     },
 
     mask() {
@@ -367,49 +330,29 @@ export default {
     },
 
     repaint() {
-      if (this.readonly || !this.user.can('image:repaint')) {
-        return this.messages.add(this.$gettext('Permission denied'), 'error')
-      }
-
       if (!this.edittext?.trim()) {
         return
       }
 
-      const self = this
-
       this.image().then((blob) => {
-        self.loading.paint = true
-
-        self.$apollo
-          .mutate({
-            mutation: gql`
-              mutation ($file: Upload!, $prompt: String!) {
-                repaint(file: $file, prompt: $prompt)
-              }
-            `,
-            variables: {
-              file: new File([blob], 'image', { type: self.item.mime }),
-              prompt: self.edittext
-            },
-            context: {
-              hasUpload: true
+        this.mutate(
+          'image:repaint',
+          gql`
+            mutation ($file: Upload!, $prompt: String!) {
+              repaint(file: $file, prompt: $prompt)
             }
-          })
-          .then((response) => {
-            if (response.errors) {
-              throw response.errors
-            }
-
-            self.replace(self.base64ToBlob(response.data?.repaint))
-          })
+          `,
+          {
+            file: new File([blob], 'image', { type: this.item.mime }),
+            prompt: this.edittext
+          }
+        )
+          .then((response) => this.replace(this.base64ToBlob(response.data?.repaint)))
           .catch((error) => {
-            self.messages.add(self.$gettext('Error editing image') + ':\n' + error, 'error')
-            self.$log('FileDetailItemImage::repaint(): Error editing image', error)
+            this.messages.add(this.$gettext('Error editing image') + ':\n' + error, 'error')
+            this.$log('FileDetailItemImage::repaint(): Error editing image', error)
           })
-          .finally(() => {
-            self.loading.paint = false
-            self.clear()
-          })
+          .finally(() => this.clear())
       })
     },
 
@@ -466,50 +409,30 @@ export default {
     },
 
     uncrop() {
-      if (this.readonly || !this.user.can('image:uncrop')) {
-        return this.messages.add(this.$gettext('Permission denied'), 'error')
-      }
-
       if (!this.extend.top && !this.extend.right && !this.extend.bottom && !this.extend.left) {
         return
       }
 
-      const self = this
-
-      this.cropper.getCroppedCanvas().toBlob(function (blob) {
-        self.loading.uncrop = true
-
-        self.$apollo
-          .mutate({
-            mutation: gql`
-              mutation ($file: Upload!, $top: Int!, $right: Int!, $bottom: Int, $left: Int) {
-                uncrop(file: $file, top: $top, right: $right, bottom: $bottom, left: $left)
-              }
-            `,
-            variables: {
-              file: new File([blob], 'image.png', { type: 'image/png' }),
-              top: self.extend.top ?? 0,
-              right: self.extend.right ?? 0,
-              bottom: self.extend.bottom ?? 0,
-              left: self.extend.left ?? 0
-            },
-            context: {
-              hasUpload: true
+      this.cropper.getCroppedCanvas().toBlob((blob) => {
+        this.mutate(
+          'image:uncrop',
+          gql`
+            mutation ($file: Upload!, $top: Int!, $right: Int!, $bottom: Int, $left: Int) {
+              uncrop(file: $file, top: $top, right: $right, bottom: $bottom, left: $left)
             }
-          })
-          .then((response) => {
-            if (response.errors) {
-              throw response.errors
-            }
-
-            self.replace(self.base64ToBlob(response.data?.uncrop))
-          })
+          `,
+          {
+            file: new File([blob], 'image.png', { type: 'image/png' }),
+            top: this.extend.top ?? 0,
+            right: this.extend.right ?? 0,
+            bottom: this.extend.bottom ?? 0,
+            left: this.extend.left ?? 0
+          }
+        )
+          .then((response) => this.replace(this.base64ToBlob(response.data?.uncrop)))
           .catch((error) => {
-            self.messages.add(self.$gettext('Error uncropping image') + ':\n' + error, 'error')
-            self.$log('FileDetailItemImage::uncrop(): Error uncropping image', error)
-          })
-          .finally(() => {
-            self.loading.uncrop = false
+            this.messages.add(this.$gettext('Error uncropping image') + ':\n' + error, 'error')
+            this.$log('FileDetailItemImage::uncrop(): Error uncropping image', error)
           })
       })
     },
@@ -539,43 +462,23 @@ export default {
     },
 
     upscale(factor) {
-      if (this.readonly || !this.user.can('image:upscale')) {
-        return this.messages.add(this.$gettext('Permission denied'), 'error')
-      }
-
-      const self = this
-
-      this.cropper.getCroppedCanvas().toBlob(function (blob) {
-        self.loading.upscale = true
-
-        self.$apollo
-          .mutate({
-            mutation: gql`
-              mutation ($file: Upload!, $factor: Int!) {
-                upscale(file: $file, factor: $factor)
-              }
-            `,
-            variables: {
-              file: new File([blob], 'image.png', { type: 'image/png' }),
-              factor: factor
-            },
-            context: {
-              hasUpload: true
+      this.cropper.getCroppedCanvas().toBlob((blob) => {
+        this.mutate(
+          'image:upscale',
+          gql`
+            mutation ($file: Upload!, $factor: Int!) {
+              upscale(file: $file, factor: $factor)
             }
-          })
-          .then((response) => {
-            if (response.errors) {
-              throw response.errors
-            }
-
-            self.replace(self.base64ToBlob(response.data?.upscale))
-          })
+          `,
+          {
+            file: new File([blob], 'image.png', { type: 'image/png' }),
+            factor: factor
+          }
+        )
+          .then((response) => this.replace(this.base64ToBlob(response.data?.upscale)))
           .catch((error) => {
-            self.messages.add(self.$gettext('Error upscaling image') + ':\n' + error, 'error')
-            self.$log('FileDetailItemImage::upscale(): Error upscaling image', error)
-          })
-          .finally(() => {
-            self.loading.upscale = false
+            this.messages.add(this.$gettext('Error upscaling image') + ':\n' + error, 'error')
+            this.$log('FileDetailItemImage::upscale(): Error upscaling image', error)
           })
       })
     },
@@ -726,7 +629,7 @@ export default {
         v-if="user.can('image:erase')"
         @click="erase()"
         :disabled="!selected"
-        :loading="loading.erase"
+        :loading="loading['image:erase']"
         :title="$gettext('Erase selected area')"
         :icon="mdiEraser"
         class="no-rtl"
@@ -741,7 +644,7 @@ export default {
         <template #activator="{ props }">
           <v-btn
             v-bind="props"
-            :loading="loading.paint"
+            :loading="loading['image:inpaint'] || loading['image:repaint']"
             :title="$gettext('Edit image')"
             :icon="mdiImageEdit"
             class="no-rtl"
@@ -781,7 +684,7 @@ export default {
         v-if="user.can('image:isolate')"
         @click="isolate()"
         :title="$gettext('Remove background')"
-        :loading="loading.isolate"
+        :loading="loading['image:isolate']"
         :icon="mdiImageFilterBlackWhite"
         class="no-rtl"
       />
@@ -795,7 +698,7 @@ export default {
         <template #activator="{ props }">
           <v-btn
             v-bind="props"
-            :loading="loading.uncrop"
+            :loading="loading['image:uncrop']"
             :title="$gettext('Expand image')"
             :icon="mdiArrowExpandAll"
             class="no-rtl"
@@ -879,7 +782,7 @@ export default {
         <template #activator="{ props }">
           <v-btn
             v-bind="props"
-            :loading="loading.upscale"
+            :loading="loading['image:upscale']"
             :disabled="width >= 4096 && height >= 4096"
             :title="$gettext('Upscale image')"
             :icon="mdiMagnifyExpand"
