@@ -7,11 +7,9 @@
 
 namespace Aimeos\Cms\GraphQL\Mutations;
 
-use Aimeos\Cms\Permission;
 use Aimeos\Prisma\Prisma;
 use Aimeos\Prisma\Files\Image;
 use Aimeos\Prisma\Exceptions\PrismaException;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\UploadedFile;
 use GraphQL\Error\Error;
@@ -25,10 +23,6 @@ final class Erase
      */
     public function __invoke( $rootValue, array $args ): string
     {
-        if( !Permission::can( 'image:erase', Auth::user() ) ) {
-            throw new Error( 'Insufficient permissions' );
-        }
-
         $upload = $args['file'];
         $filemask = $args['mask'];
 
