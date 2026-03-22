@@ -267,6 +267,7 @@ export default {
         <v-expansion-panel-title>
           <component
             :is="$vuetify.display.xs ? 'v-dialog' : 'v-menu'"
+            :aria-label="$gettext('Actions')"
             v-if="!readonly"
             v-model="menu[idx]"
             transition="scale-transition"
@@ -285,7 +286,11 @@ export default {
             <v-card>
               <v-toolbar density="compact">
                 <v-toolbar-title>{{ $gettext('Actions') }}</v-toolbar-title>
-                <v-btn :icon="mdiClose" @click="menu[idx] = false" />
+                <v-btn
+                  :icon="mdiClose"
+                  :aria-label="$gettext('Close')"
+                  @click="menu[idx] = false"
+                />
               </v-toolbar>
 
               <v-list @click="menu[idx] = false">
@@ -345,6 +350,7 @@ export default {
                 <component
                   v-if="user.can('text:translate')"
                   :is="$vuetify.display.xs ? 'v-dialog' : 'v-menu'"
+                  :aria-label="$gettext('Translate')"
                   v-model="menu[idx + code]"
                   transition="scale-transition"
                   location="end center"
@@ -363,7 +369,11 @@ export default {
                   <v-card>
                     <v-toolbar density="compact">
                       <v-toolbar-title>{{ $gettext('Translate') }}</v-toolbar-title>
-                      <v-btn :icon="mdiClose" @click="menu[idx + code] = false" />
+                      <v-btn
+                        :icon="mdiClose"
+                        :aria-label="$gettext('Close')"
+                        @click="menu[idx + code] = false"
+                      />
                     </v-toolbar>
 
                     <v-list @click="menu[idx + code] = false">

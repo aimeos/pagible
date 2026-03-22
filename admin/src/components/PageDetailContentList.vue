@@ -817,6 +817,7 @@ export default {
 
             <component
               :is="$vuetify.display.xs ? 'v-dialog' : 'v-menu'"
+              :aria-label="$gettext('Actions')"
               v-model="menu[idx]"
               transition="scale-transition"
               location="end center"
@@ -834,7 +835,11 @@ export default {
               <v-card>
                 <v-toolbar density="compact">
                   <v-toolbar-title>{{ $gettext('Actions') }}</v-toolbar-title>
-                  <v-btn :icon="mdiClose" @click="menu[idx] = false" />
+                  <v-btn
+                    :icon="mdiClose"
+                    :aria-label="$gettext('Close')"
+                    @click="menu[idx] = false"
+                  />
                 </v-toolbar>
 
                 <v-list @click="menu[idx] = false">

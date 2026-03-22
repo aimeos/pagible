@@ -326,23 +326,28 @@ export default {
 
 <template>
   <v-app>
-    <transition-group name="slide-stack">
-      <v-layout ref="baseview" key="list" class="view" style="z-index: 10">
-        <router-view />
-      </v-layout>
+    <main>
+      <transition-group name="slide-stack">
+        <v-layout ref="baseview" key="list" class="view" style="z-index: 10">
+          <router-view />
+        </v-layout>
 
-      <v-layout
-        ref="view"
-        v-for="(view, i) in viewStack"
-        :key="i"
-        class="view"
-        :style="{ zIndex: 11 + i }"
-      >
-        <component :is="view.component" v-bind="view.props" />
-      </v-layout>
-    </transition-group>
+        <v-layout
+          ref="view"
+          v-for="(view, i) in viewStack"
+          :key="i"
+          class="view"
+          :style="{ zIndex: 11 + i }"
+        >
+          <component :is="view.component" v-bind="view.props" />
+        </v-layout>
+      </transition-group>
+    </main>
 
     <v-snackbar-queue v-model="messages.queue"></v-snackbar-queue>
+    <div role="status" aria-live="polite" class="v-sr-only">
+      {{ messages.queue[messages.queue.length - 1]?.text }}
+    </div>
   </v-app>
 </template>
 
@@ -376,5 +381,20 @@ body {
 
 .slide-stack-leave-to {
   transform: translateX(100%);
+}
+
+a:focus-visible,
+button:focus-visible,
+[role='button']:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid rgb(var(--v-theme-primary));
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .slide-stack-enter-active,
+  .slide-stack-leave-active {
+    transition: none;
+  }
 }
 </style>

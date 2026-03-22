@@ -157,7 +157,7 @@ export default {
 
               this.items.unshift(data)
 
-              if(files.length === 1) {
+              if (files.length === 1) {
                 this.$emit('select', data)
               }
 
@@ -528,6 +528,7 @@ export default {
 
       <component
         :is="$vuetify.display.xs ? 'v-dialog' : 'v-menu'"
+        :aria-label="$gettext('Actions')"
         v-model="actions"
         transition="scale-transition"
         location="end center"
@@ -545,7 +546,7 @@ export default {
         <v-card>
           <v-toolbar density="compact">
             <v-toolbar-title>{{ $gettext('Actions') }}</v-toolbar-title>
-            <v-btn :icon="mdiClose" @click="actions = false" />
+            <v-btn :icon="mdiClose" :aria-label="$gettext('Close')" @click="actions = false" />
           </v-toolbar>
 
           <v-list @click="actions = false">
@@ -675,6 +676,7 @@ export default {
 
       <component
         :is="$vuetify.display.xs ? 'v-dialog' : 'v-menu'"
+        :aria-label="$gettext('Actions')"
         v-model="menu[idx]"
         transition="scale-transition"
         :location="vgrid ? 'start' : 'end center'"
@@ -692,7 +694,7 @@ export default {
         <v-card>
           <v-toolbar density="compact">
             <v-toolbar-title>{{ $gettext('Actions') }}</v-toolbar-title>
-            <v-btn :icon="mdiClose" @click="menu[idx] = false" />
+            <v-btn :icon="mdiClose" :aria-label="$gettext('Close')" @click="menu[idx] = false" />
           </v-toolbar>
 
           <v-list @click="menu[idx] = false">
@@ -720,14 +722,15 @@ export default {
         </v-card>
       </component>
 
-      <div
+      <a
+        href="#"
         class="item-usage"
         :class="{ notused: !item.usage }"
-        @click="$emit('select', item)"
+        @click.prevent="$emit('select', item)"
         :title="title(item)"
       >
         {{ item.usage || 0 }}
-      </div>
+      </a>
 
       <div class="item-preview" @click="$emit('select', item)" :title="title(item)">
         <v-img
@@ -735,6 +738,7 @@ export default {
           :src="url(item.path)"
           :srcset="srcset(item.previews)"
           :title="item.name"
+          :alt="item.name"
         ></v-img>
 
         <v-img
@@ -742,6 +746,7 @@ export default {
           :src="url(Object.values(item.previews)[0] ?? '')"
           :srcset="srcset(item.previews)"
           :title="item.name"
+          :alt="item.name"
         ></v-img>
 
         <svg
@@ -786,7 +791,7 @@ export default {
       <a
         href="#"
         class="item-content"
-        @click="$emit('select', item)"
+        @click.prevent="$emit('select', item)"
         :class="{ trashed: item.deleted_at }"
         :title="title(item)"
       >
@@ -851,6 +856,11 @@ export default {
 
 .items {
   margin: 0;
+}
+
+a.item-usage {
+  color: inherit;
+  text-decoration: none;
 }
 
 .items .item-usage {

@@ -180,6 +180,7 @@ export default {
 
 <template>
   <v-dialog
+    :aria-label="$gettext('Add files from URLs')"
     :modelValue="modelValue"
     @afterLeave="$emit('update:modelValue', false)"
     max-width="1200"
@@ -244,8 +245,15 @@ export default {
               :icon="mdiDelete"
             />
 
-            <div class="item-preview" @click="$emit('select', item)">
-              <img v-if="item.mime?.startsWith('image/')" :src="item.path" />
+            <div
+              class="item-preview"
+              @click="$emit('select', item)"
+              @keydown.enter="$emit('select', item)"
+              @keydown.space.prevent="$emit('select', item)"
+              role="button"
+              tabindex="0"
+            >
+              <img v-if="item.mime?.startsWith('image/')" :src="item.path" :alt="item.name" />
               <video
                 v-else-if="item.mime?.startsWith('video/')"
                 preload="metadata"
@@ -261,7 +269,14 @@ export default {
               <a v-else :href="item.path" target="_blank">{{ item.path }}</a>
             </div>
 
-            <div class="item-content" @click="$emit('select', item)">
+            <div
+              class="item-content"
+              @click="$emit('select', item)"
+              @keydown.enter="$emit('select', item)"
+              @keydown.space.prevent="$emit('select', item)"
+              role="button"
+              tabindex="0"
+            >
               <div class="item-text">
                 <span class="item-title">{{ item.name }}</span>
                 <div class="item-mime item-subtitle">{{ item.mime }}</div>

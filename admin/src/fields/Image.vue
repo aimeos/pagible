@@ -69,7 +69,16 @@ export default {
   <v-row>
     <v-col cols="12" md="6">
       <div class="files" :class="{ readonly: readonly }">
-        <div v-if="file.id" class="file" @click="open(file)" :title="$gettext('Edit')">
+        <div
+          v-if="file.id"
+          class="file"
+          @click="open(file)"
+          @keydown.enter="open(file)"
+          @keydown.space.prevent="open(file)"
+          role="button"
+          tabindex="0"
+          :title="$gettext('Edit')"
+        >
           <v-progress-linear
             v-if="file.uploading"
             color="primary"
@@ -81,6 +90,7 @@ export default {
             v-if="file.path"
             :srcset="srcset(file.previews)"
             :src="url(file.path)"
+            :alt="file.name"
             :draggable="false"
           />
 

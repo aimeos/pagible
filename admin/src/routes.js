@@ -4,6 +4,7 @@
 
 import { createRouter, createWebHistory } from 'vue-router'
 import { useUserStore, useMessageStore } from './stores'
+import gettext from './i18n'
 
 const router = createRouter({
   history: createWebHistory(document.querySelector('#app')?.dataset?.urladmin || ''),
@@ -11,14 +12,18 @@ const router = createRouter({
     {
       path: '/',
       name: 'login',
-      component: () => import('./views/Login.vue')
+      component: () => import('./views/Login.vue'),
+      meta: {
+        title: gettext.$gettext('Login')
+      }
     },
     {
       path: '/pages',
       name: 'page:view',
       component: () => import('./views/PageList.vue'),
       meta: {
-        auth: true
+        auth: true,
+        title: gettext.$gettext('Pages')
       }
     },
     {
@@ -26,7 +31,8 @@ const router = createRouter({
       name: 'element:view',
       component: () => import('./views/ElementList.vue'),
       meta: {
-        auth: true
+        auth: true,
+        title: gettext.$gettext('Shared elements')
       }
     },
     {
@@ -34,7 +40,8 @@ const router = createRouter({
       name: 'file:view',
       component: () => import('./views/FileList.vue'),
       meta: {
-        auth: true
+        auth: true,
+        title: gettext.$gettext('Files')
       }
     }
   ]
@@ -57,6 +64,10 @@ router.beforeEach(async (to, from, next) => {
   } else {
     next()
   }
+})
+
+router.afterEach((to) => {
+  document.title = (to.meta.title || to.path) + ' — PagibleAI CMS'
 })
 
 export default router

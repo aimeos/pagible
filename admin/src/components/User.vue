@@ -66,7 +66,7 @@ export default {
     change(code) {
       Promise.all([
         import(`../../i18n/${code}.json`),
-        import('../vuetify').then(v => v.switchLocale(code))
+        import('../vuetify').then((v) => v.switchLocale(code))
       ]).then(([translations]) => {
         this.i18n.translations = translations.default || translations
         this.$vuetify.locale.current = code
@@ -99,6 +99,7 @@ export default {
 
   <component
     :is="$vuetify.display.xs ? 'v-dialog' : 'v-menu'"
+    :aria-label="$gettext('Language')"
     v-model="menu['lang']"
     transition="scale-transition"
     location="bottom"
@@ -111,7 +112,7 @@ export default {
     <v-card>
       <v-toolbar density="compact">
         <v-toolbar-title>{{ $gettext('Switch language') }}</v-toolbar-title>
-        <v-btn :icon="mdiClose" @click="menu['lang'] = false" />
+        <v-btn :icon="mdiClose" :aria-label="$gettext('Close')" @click="menu['lang'] = false" />
       </v-toolbar>
 
       <v-list @click="menu['lang'] = false">

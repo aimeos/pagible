@@ -224,6 +224,7 @@ export default {
         v-if="Object.values(item.previews).length"
         class="video-preview"
         :src="url(Object.values(item.previews).shift())"
+        :alt="item.name"
         @click="removeCover()"
       />
       <div v-else>

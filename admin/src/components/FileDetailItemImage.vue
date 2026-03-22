@@ -606,7 +606,13 @@ export default {
 
 <template>
   <div ref="editorContainer" class="editor-container">
-    <img ref="image" :src="url(item.path, true)" class="element" crossorigin="anonymous" />
+    <img
+      ref="image"
+      :src="url(item.path, true)"
+      :alt="item.name"
+      class="element"
+      crossorigin="anonymous"
+    />
 
     <div v-if="!readonly" class="toolbar">
       <v-btn
@@ -619,6 +625,7 @@ export default {
       <component
         v-else
         :is="$vuetify.display.xs ? 'v-dialog' : 'v-menu'"
+        :aria-label="$gettext('Select area')"
         v-model="menu['select']"
         transition="scale-transition"
         location="end center"
@@ -636,7 +643,11 @@ export default {
         <v-card>
           <v-toolbar density="compact">
             <v-toolbar-title>{{ $gettext('Select area') }}</v-toolbar-title>
-            <v-btn :icon="mdiClose" @click="menu['select'] = false" />
+            <v-btn
+              :icon="mdiClose"
+              :aria-label="$gettext('Close')"
+              @click="menu['select'] = false"
+            />
           </v-toolbar>
 
           <v-list @click="menu['select'] = false">
@@ -740,7 +751,11 @@ export default {
         <v-card>
           <v-toolbar density="compact">
             <v-toolbar-title>{{ $gettext('Edit image') }}</v-toolbar-title>
-            <v-btn :icon="mdiClose" @click="menu['paint'] = false" />
+            <v-btn
+              :icon="mdiClose"
+              :aria-label="$gettext('Close')"
+              @click="menu['paint'] = false"
+            />
           </v-toolbar>
 
           <v-card-text>
@@ -790,7 +805,11 @@ export default {
         <v-card class="uncrop">
           <v-toolbar density="compact">
             <v-toolbar-title>{{ $gettext('Expand image') }}</v-toolbar-title>
-            <v-btn :icon="mdiClose" @click="menu['uncrop'] = false" />
+            <v-btn
+              :icon="mdiClose"
+              :aria-label="$gettext('Close')"
+              @click="menu['uncrop'] = false"
+            />
           </v-toolbar>
 
           <v-card-text>
@@ -851,6 +870,7 @@ export default {
       <component
         v-if="user.can('image:upscale')"
         :is="$vuetify.display.xs ? 'v-dialog' : 'v-menu'"
+        :aria-label="$gettext('Upscale')"
         v-model="menu['upscale']"
         transition="scale-transition"
         location="end center"
@@ -870,7 +890,11 @@ export default {
         <v-card>
           <v-toolbar density="compact">
             <v-toolbar-title>{{ $gettext('Upscale image') }}</v-toolbar-title>
-            <v-btn :icon="mdiClose" @click="menu['upscale'] = false" />
+            <v-btn
+              :icon="mdiClose"
+              :aria-label="$gettext('Close')"
+              @click="menu['upscale'] = false"
+            />
           </v-toolbar>
 
           <v-list @click="menu['upscale'] = false">
@@ -948,6 +972,7 @@ export default {
 
       <component
         :is="$vuetify.display.xs ? 'v-dialog' : 'v-menu'"
+        :aria-label="$gettext('Undo')"
         v-model="menu['undo']"
         transition="scale-transition"
         location="end center"
@@ -966,15 +991,19 @@ export default {
         <v-card>
           <v-toolbar density="compact">
             <v-toolbar-title>{{ $gettext('Undo') }}</v-toolbar-title>
-            <v-btn :icon="mdiClose" @click="menu['undo'] = false" />
+            <v-btn :icon="mdiClose" :aria-label="$gettext('Close')" @click="menu['undo'] = false" />
           </v-toolbar>
 
           <v-list @click="menu['undo'] = false">
             <v-list-item v-for="(img, idx) in images.slice(1)" :key="idx">
-              <v-img :src="img.url" @click="replace(img.blob, idx + 1)" />
+              <v-img
+                :src="img.url"
+                :alt="$gettext('Previous edit')"
+                @click="replace(img.blob, idx + 1)"
+              />
             </v-list-item>
             <v-list-item>
-              <v-img :src="url(item.path)" @click="use([item])" />
+              <v-img :src="url(item.path)" :alt="$gettext('Original')" @click="use([item])" />
             </v-list-item>
           </v-list>
         </v-card>

@@ -215,6 +215,7 @@ export default {
 
 <template>
   <v-dialog
+    :aria-label="$gettext('Create image')"
     :modelValue="modelValue"
     @afterLeave="$emit('update:modelValue', false)"
     max-width="1200"
@@ -274,8 +275,15 @@ export default {
                 :icon="mdiDelete"
               />
 
-              <div class="item-preview" @click="add(item)">
-                <img :src="url(item.path)" />
+              <div
+                class="item-preview"
+                @click="add(item)"
+                @keydown.enter="add(item)"
+                @keydown.space.prevent="add(item)"
+                role="button"
+                tabindex="0"
+              >
+                <img :src="url(item.path)" :alt="item.name" />
               </div>
             </v-list-item>
           </v-list>
@@ -295,7 +303,7 @@ export default {
               ></v-btn>
 
               <div class="item-preview">
-                <img :src="url(item.path)" />
+                <img :src="url(item.path)" :alt="item.name" />
               </div>
             </v-list-item>
           </v-list>

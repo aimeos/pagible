@@ -116,6 +116,7 @@ export default {
 
 <template>
   <v-dialog
+    :aria-label="$gettext('History')"
     :modelValue="modelValue"
     @afterLeave="$emit('update:modelValue', false)"
     max-width="1200"
@@ -174,7 +175,15 @@ export default {
             <v-card :elevation="2">
               <v-card-title @click="show = !show">{{ $gettext('Current') }}</v-card-title>
               <v-card-text>
-                <div class="diff" :class="{ show: show }" @click="show = !show">
+                <div
+                  class="diff"
+                  :class="{ show: show }"
+                  @click="show = !show"
+                  @keydown.enter="show = !show"
+                  @keydown.space.prevent="show = !show"
+                  role="button"
+                  tabindex="0"
+                >
                   <span
                     v-for="(part, idx) of diff(latest?.data, current.data)"
                     :key="idx"
@@ -255,6 +264,10 @@ export default {
                   class="diff"
                   :class="{ show: version._show }"
                   @click="version._show = !version._show"
+                  @keydown.enter="version._show = !version._show"
+                  @keydown.space.prevent="version._show = !version._show"
+                  role="button"
+                  tabindex="0"
                 >
                   <span
                     v-for="(part, idx) of diff(version.data, current.data)"

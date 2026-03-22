@@ -488,6 +488,7 @@ export default {
 
       <component
         :is="$vuetify.display.xs ? 'v-dialog' : 'v-menu'"
+        :aria-label="$gettext('Actions')"
         v-model="actions"
         transition="scale-transition"
         location="end center"
@@ -505,7 +506,7 @@ export default {
         <v-card>
           <v-toolbar density="compact">
             <v-toolbar-title>{{ $gettext('Actions') }}</v-toolbar-title>
-            <v-btn :icon="mdiClose" @click="actions = false" />
+            <v-btn :icon="mdiClose" :aria-label="$gettext('Close')" @click="actions = false" />
           </v-toolbar>
 
           <v-list @click="actions = false">
@@ -616,6 +617,7 @@ export default {
 
         <component
           :is="$vuetify.display.xs ? 'v-dialog' : 'v-menu'"
+          :aria-label="$gettext('Actions')"
           v-model="menu[idx]"
           transition="scale-transition"
           location="end center"
@@ -632,7 +634,7 @@ export default {
           <v-card>
             <v-toolbar density="compact">
               <v-toolbar-title>{{ $gettext('Actions') }}</v-toolbar-title>
-              <v-btn :icon="mdiClose" @click="menu[idx] = false" />
+              <v-btn :icon="mdiClose" :aria-label="$gettext('Close')" @click="menu[idx] = false" />
             </v-toolbar>
 
             <v-list @click="menu[idx] = false">
@@ -666,7 +668,7 @@ export default {
       <a
         href="#"
         class="item-content"
-        @click="$emit('select', item)"
+        @click.prevent="$emit('select', item)"
         :class="{ trashed: item.deleted_at }"
         :title="title(item)"
       >

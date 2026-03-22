@@ -26,6 +26,7 @@ export default {
 
 <template>
   <v-dialog
+    :aria-label="$gettext('Content elements')"
     :modelValue="modelValue"
     @afterLeave="$emit('update:modelValue', false)"
     max-width="1200"

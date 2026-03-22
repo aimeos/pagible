@@ -54,7 +54,7 @@ export default {
 </script>
 
 <template>
-  <v-navigation-drawer v-model="drawer.aside" mobile-breakpoint="md" location="end">
+  <v-navigation-drawer v-model="drawer.aside" mobile-breakpoint="md" location="end" tag="aside">
     <v-list :opened="[0]">
       <v-list-group :value="0">
         <template v-slot:activator="{ props }">
