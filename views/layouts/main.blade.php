@@ -50,7 +50,7 @@
         <dialog id="modal-search" class="search">
             <article>
                 <header>
-                    <form action="{{ route('cms.search', ['search' => '_term_']) }}">
+                    <form action="{{ route('cms.search', ['q' => '_term_']) }}">
                         <input id="modal-search-input" placeholder="{{ __('Search website') }}">
                         <button type="reset" aria-label="{{ __('Close') }}">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">

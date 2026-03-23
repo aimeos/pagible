@@ -31,7 +31,7 @@ class SearchControllerTest extends TestAbstract
         sleep( 5 ); // wait for SQL Server async fulltext index population
 
         $request = Request::create('/cmsapi/search', 'GET', [
-            'search' => 'welcome',
+            'q' => 'welcome',
             'locale' => 'en',
             'size' => 10,
         ]);
