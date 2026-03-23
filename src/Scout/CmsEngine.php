@@ -227,10 +227,15 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
                     continue;
                 }
 
+                $array = $model->toSearchableArray();
                 $common = ['indexable_id' => $model->getScoutKey(), 'indexable_type' => $type, 'tenant_id' => $tenant];
 
-                foreach( $model->toSearchableArray() as $row ) {
-                    $rows[] = $row + $common;
+                if( !empty( $array['draft'] ) ) {
+                    $rows[] = ['latest' => true, 'content' => $array['draft']] + $common;
+                }
+
+                if( !empty( $array['content'] ) ) {
+                    $rows[] = ['latest' => false, 'content' => $array['content']] + $common;
                 }
             }
 

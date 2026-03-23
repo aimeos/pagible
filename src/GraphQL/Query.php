@@ -202,7 +202,7 @@ final class Query
         }
 
         if( isset( $filter['any'] ) ) {
-            $ids = $model::search( mb_substr( trim( $filter['any'] ), 0, 200 ) )->where( 'latest', true )->take( 1000 )->keys();
+            $ids = $model::search( mb_substr( trim( $filter['any'] ), 0, 200 ) )->searchFields( 'draft' )->take( 1000 )->keys();
             $builder->whereIn( $table . '.id', $ids->all() );
         }
     }

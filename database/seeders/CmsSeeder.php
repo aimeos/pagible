@@ -215,6 +215,7 @@ class CmsSeeder extends Seeder
         $elementId = $this->element();
 
         $page = Page::forceCreate([
+            'lang' => 'en',
             'name' => 'Blog',
             'title' => 'Blog | Laravel CMS',
             'path' => 'blog',
