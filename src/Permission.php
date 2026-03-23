@@ -215,7 +215,9 @@ class Permission
      */
     public static function roles() : array
     {
-        return array_keys( config( 'cms.roles', [] ) );
+        /** @var array<string, mixed> $roles */
+        $roles = config( 'cms.roles', [] );
+        return array_keys( $roles );
     }
 
 
@@ -258,8 +260,8 @@ class Permission
      */
     private static function resolve( array $entries ) : array
     {
-        $perms = [];
-        $deny = [];
+        $roles = config( "cms.roles", [] );
+        $perms = $deny = [];
 
         foreach( $entries as $entry )
         {
@@ -268,11 +270,14 @@ class Permission
             } elseif( $entry === '*' ) {
                 array_push( $perms, ...self::$can );
             } elseif( !str_contains( $entry, ':' ) ) {
-                array_push( $perms, ...self::resolve( config( "cms.roles.{$entry}", [] ) ) );
+                array_push( $perms, ...self::resolve( $roles[$entry] ?? [] ) );
             } elseif( str_contains( $entry, '*' ) ) {
                 [$prefix, $suffix] = explode( ':', $entry, 2 );
-                foreach( self::$can as $perm ) {
+
+                foreach( self::$can as $perm )
+                {
                     [$p, $s] = explode( ':', $perm, 2 );
+
                     if( ( $prefix === '*' || $p === $prefix ) && ( $suffix === '*' || $s === $suffix ) ) {
                         $perms[] = $perm;
                     }
