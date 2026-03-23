@@ -24,12 +24,12 @@ class SearchController extends Controller
     public function index( Request $request, string $domain = '' )
     {
         $vals = $request->validate( [
-            'search' => 'required|string|min:3|max:200',
+            'q' => 'required|string|min:3|max:200',
             'size' => 'integer|between:5,100',
         ] );
 
         /** @var \Illuminate\Pagination\LengthAwarePaginator<int, \Aimeos\Cms\Models\Page> $paginator */
-        $paginator = Page::search( $vals['search'] )
+        $paginator = Page::search( $vals['q'] )
             ->where( 'domain', $domain )
             ->where( 'lang', $request->locale ?? app()->getLocale() )
             ->searchFields( 'content' ) // @phpstan-ignore method.notFound
