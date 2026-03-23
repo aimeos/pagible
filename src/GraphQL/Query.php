@@ -201,8 +201,13 @@ final class Query
             $builder->where( 'cms_versions.editor', (string) $filter['editor'] );
         }
 
-        if( isset( $filter['any'] ) ) {
-            $ids = $model::search( mb_substr( trim( $filter['any'] ), 0, 200 ) )->searchFields( 'draft' )->take( 1000 )->keys(); // @phpstan-ignore method.notFound
+        if( isset( $filter['any'] ) )
+        {
+            $ids = $model::search( mb_substr( trim( $filter['any'] ), 0, 200 ) )
+                ->searchFields( 'draft' ) // @phpstan-ignore method.notFound
+                ->take( 1000 )
+                ->keys();
+
             $builder->whereIn( $table . '.id', $ids->all() );
         }
     }
