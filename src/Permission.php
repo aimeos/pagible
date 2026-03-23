@@ -137,7 +137,7 @@ class Permission
             return $closure( $action, $user );
         }
 
-        $perms = $user->cmsperms ?? []; // @phpstan-ignore-line property.notFound
+        $perms = $user->cmsperms ?? [];
 
         if( $action === '*' ) {
             return !empty( $perms );

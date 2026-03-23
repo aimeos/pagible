@@ -70,7 +70,7 @@ class User extends Command
         }
 
         if( $this->input->hasParameterOption( '--password' ) ) {
-            $user->password = Hash::make( $this->option( 'password' ) ?: $this->secret( 'Password' ) ); // @phpstan-ignore-line property.notFound
+            $user->password = Hash::make( $this->option( 'password' ) ?: $this->secret( 'Password' ) );
         }
 
         $user->save();
