@@ -92,11 +92,12 @@ class User extends Command
         $password = $this->option( 'password' ) ?: $this->secret( 'Password' );
         $model = config( 'auth.providers.users.model', 'App\\Models\\User' );
 
+        /** @var Authenticatable $user */
         $user = new $model;
-        $user->password = Hash::make( $password );
-        $user->cmsperms = [];
-        $user->email = $email;
-        $user->name = $email;
+        $user->password = Hash::make( $password ); // @phpstan-ignore-line property.notFound
+        $user->cmsperms = []; // @phpstan-ignore-line property.notFound
+        $user->email = $email; // @phpstan-ignore-line property.notFound
+        $user->name = $email; // @phpstan-ignore-line property.notFound
 
         return $user;
     }
