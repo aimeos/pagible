@@ -141,7 +141,7 @@ class JsonapiTest extends TestAbstract
             $expected[] = ['type' => 'navs', 'id' => $item->id];
         }
 
-        $this->expectsDatabaseQueryCount( 6 ); // page + ancestors + disabled + menu + elements + elements.files
+        $this->expectsDatabaseQueryCount( 5 ); // page + ancestors + menu + elements + elements.files
         $response = $this->jsonApi()->expects( 'pages' )->includePaths( 'menu' )->get( "cms/pages/{$page->id}" );
 
         $response->assertFetchedOne( $page )->assertIncluded( $expected );
@@ -160,7 +160,7 @@ class JsonapiTest extends TestAbstract
             $expected[] = ['type' => 'navs', 'id' => $item->id];
         }
 
-        $this->expectsDatabaseQueryCount( 7 ); // page + ancestors + disabled + menu + children + elements + elements.files
+        $this->expectsDatabaseQueryCount( 6 ); // page + ancestors + menu + children + elements + elements.files
         $response = $this->jsonApi()->expects( 'pages' )->includePaths( 'menu,menu.children' )->get( "cms/pages/{$page->id}" );
 
         $response->assertFetchedOne( $page )->assertIncluded( $expected );
@@ -179,7 +179,7 @@ class JsonapiTest extends TestAbstract
             $expected[] = ['type' => 'navs', 'id' => $item->id];
         }
 
-        $this->expectsDatabaseQueryCount( 7 ); // page + count + files + elements + elements.files + disabled + page subtree
+        $this->expectsDatabaseQueryCount( 6 ); // page + count + files + elements + elements.files + page subtree
         $response = $this->jsonApi()->expects( 'pages' )
             ->filter( ['domain' => 'mydomain.tld', 'path' => '', 'tag' => 'root'] )
             ->includePaths( 'subtree' )->get( "cms/pages" );
@@ -200,7 +200,7 @@ class JsonapiTest extends TestAbstract
             $expected[] = ['type' => 'navs', 'id' => $item->id];
         }
 
-        $this->expectsDatabaseQueryCount( 5 ); // page + disabled + page subtree + elements + elements.files
+        $this->expectsDatabaseQueryCount( 4 ); // page + page subtree + elements + elements.files
         $response = $this->jsonApi()->expects( 'pages' )->includePaths( 'subtree' )->get( "cms/pages/{$page->id}" );
 
         $response->assertFetchedOne( $page )->assertIncluded( $expected );

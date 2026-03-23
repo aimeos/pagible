@@ -495,22 +495,21 @@ class Page extends Model
             ->defaultOrder()
             ->setModel(new Nav());
 
+        $builder->with( 'latest' );
+
         if( !\Aimeos\Cms\Permission::can( 'page:view', Auth::user() ) )
         {
-            $disabled = DB::table( $this->getTable() )
-                ->select( '_lft', '_rgt' )
-                ->where( 'tenant_id', '=', \Aimeos\Cms\Tenancy::value() )
-                ->where( 'status', 0 )
-                ->whereNull( 'deleted_at' )
-                ->get();
+            $table = $this->getTable();
 
-            foreach( $disabled as $node ) {
-                $builder->whereNotBetween( $this->qualifyColumn( '_lft' ), [$node->_lft, $node->_rgt] );
-            }
-        }
-        else
-        {
-            $builder->with( 'latest' );
+            $builder->whereNotExists( function( $query ) use ( $table ) {
+                $query->select( DB::raw( 1 ) )
+                    ->from( $table . ' as disabled' )
+                    ->where( 'disabled.tenant_id', '=', \Aimeos\Cms\Tenancy::value() )
+                    ->where( 'disabled.status', 0 )
+                    ->whereNull( 'disabled.deleted_at' )
+                    ->whereColumn( 'disabled._lft', '<=', $table . '._lft' )
+                    ->whereColumn( 'disabled._rgt', '>=', $table . '._rgt' );
+            });
         }
 
         return new DescendantsRelation( $builder, $this );

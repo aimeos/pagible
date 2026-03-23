@@ -56,13 +56,19 @@ class Utils
      * @param string|null $text The HTML text to sanitize
      * @return string The sanitized HTML text
      */
+    private static ?\HTMLPurifier $purifier = null;
+
     public static function html( ?string $text ) : string
     {
-        $config = \HTMLPurifier_Config::createDefault();
-        $config->set( 'Attr.AllowedFrameTargets', ['_blank', '_self'] );
-        $config->set( 'Cache.SerializerPath', sys_get_temp_dir() );
+        if( !self::$purifier )
+        {
+            $config = \HTMLPurifier_Config::createDefault();
+            $config->set( 'Attr.AllowedFrameTargets', ['_blank', '_self'] );
+            $config->set( 'Cache.SerializerPath', sys_get_temp_dir() );
+            self::$purifier = new \HTMLPurifier( $config );
+        }
 
-        return ( new \HTMLPurifier( $config ) )->purify( (string) $text );
+        return self::$purifier->purify( (string) $text );
     }
 
 

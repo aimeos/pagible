@@ -205,7 +205,7 @@ final class Query
         {
             $ids = $model::search( mb_substr( trim( $filter['any'] ), 0, 200 ) )
                 ->searchFields( 'draft' )
-                ->take( 1000 )
+                ->take( 250 )
                 ->keys();
 
             $builder->whereIn( $table . '.id', $ids->all() );
