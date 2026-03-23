@@ -68,7 +68,7 @@ return new class extends Migration
         if (!Schema::hasColumn('users', 'cmsperms'))
         {
             Schema::table('users', function (Blueprint $table) {
-                $table->json('cmsperms')->default('[]');
+                $table->json('cmsperms')->nullable();
             });
         }
 
