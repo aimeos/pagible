@@ -95,8 +95,12 @@ class Permission
             return $closure( $action, $user );
         }
 
+        $actions = array_filter( (array) $action, function( $entry ) {
+            return str_contains( $entry, ':' ) || array_key_exists( $entry, config( 'cms.roles', [] ) );
+        } );
+
         // @phpstan-ignore-next-line property.notFound
-        $user->cmsperms = array_values( array_unique( array_merge( $user->cmsperms ?? [], (array) $action ) ) );
+        $user->cmsperms = array_values( array_unique( array_merge( $user->cmsperms ?? [], $actions ) ) );
 
         return $user;
     }
@@ -143,7 +147,7 @@ class Permission
             return !empty( $perms );
         }
 
-        return in_array( $action, $perms );
+        return in_array( $action, self::resolve( $perms ) );
     }
 
 
@@ -193,6 +197,31 @@ class Permission
 
 
     /**
+     * Returns the expanded permissions for a named role.
+     *
+     * @param string $name Role name
+     * @return array<int, string> List of resolved permission names
+     */
+    public static function role( string $name ) : array
+    {
+        return self::resolve( config( "cms.roles.{$name}", [] ) );
+    }
+
+
+    /**
+     * Returns the available role names from config.
+     *
+     * @return array<int, string> List of role names
+     */
+    public static function roles() : array
+    {
+        /** @var array<string, mixed> $roles */
+        $roles = config( 'cms.roles', [] );
+        return array_keys( $roles );
+    }
+
+
+    /**
      * Removes the permission for the requested action from the user.
      *
      * @param array<string>|string $action Name(s) of the requested action(s), e.g. "page:view"
@@ -220,5 +249,44 @@ class Permission
     public static function removeUsing( ?\Closure $callback ) : void
     {
         self::$removeCallback = $callback;
+    }
+
+
+    /**
+     * Resolves roles and wildcards to concrete permission strings.
+     *
+     * @param array<int, string> $entries Permission and/or role entries
+     * @return array<int, string> Resolved permission names
+     */
+    private static function resolve( array $entries ) : array
+    {
+        $roles = config( "cms.roles", [] );
+        $perms = $deny = [];
+
+        foreach( $entries as $entry )
+        {
+            if( str_starts_with( $entry, '!' ) ) {
+                array_push( $deny, ...self::resolve( [substr( $entry, 1 )] ) );
+            } elseif( $entry === '*' ) {
+                array_push( $perms, ...self::$can );
+            } elseif( !str_contains( $entry, ':' ) ) {
+                array_push( $perms, ...self::resolve( $roles[$entry] ?? [] ) );
+            } elseif( str_contains( $entry, '*' ) ) {
+                [$prefix, $suffix] = explode( ':', $entry, 2 );
+
+                foreach( self::$can as $perm )
+                {
+                    [$p, $s] = explode( ':', $perm, 2 );
+
+                    if( ( $prefix === '*' || $p === $prefix ) && ( $suffix === '*' || $s === $suffix ) ) {
+                        $perms[] = $perm;
+                    }
+                }
+            } else {
+                $perms[] = $entry;
+            }
+        }
+
+        return $deny ? array_values( array_diff( $perms, $deny ) ) : $perms;
     }
 }

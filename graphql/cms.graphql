@@ -16,6 +16,9 @@ extend type User {
     "CMS editor capabilities"
     permission: JSON! @field(resolver: "\\Aimeos\\Cms\\GraphQL\\Resolvers\\UserResolver@permission")
 
+    "CMS named roles assigned to the user"
+    roles: [String!]! @field(resolver: "\\Aimeos\\Cms\\GraphQL\\Resolvers\\UserResolver@roles")
+
     "CMS user preferences"
     settings: JSON @field(resolver: "\\Aimeos\\Cms\\GraphQL\\Resolvers\\UserResolver@settings")
 }
