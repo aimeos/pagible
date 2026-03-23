@@ -32,7 +32,7 @@ class SearchController extends Controller
         $paginator = Page::search( $vals['search'] )
             ->where( 'domain', $domain )
             ->where( 'lang', $request->locale ?? app()->getLocale() )
-            ->searchFields( 'content' )
+            ->searchFields( 'content' ) // @phpstan-ignore method.notFound
             ->paginate( $vals['size'] ?? 25 )
             ->appends( $request->query() );
 

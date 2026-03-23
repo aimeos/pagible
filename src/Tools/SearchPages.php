@@ -48,7 +48,7 @@ class SearchPages extends Tool
 
         $result = Page::search( $term )
             ->where( 'lang', $lang )
-            ->searchFields( 'draft' )
+            ->searchFields( 'draft' ) // @phpstan-ignore method.notFound
             ->take( 25 )
             ->get()
             ->map( function( $item ) {
