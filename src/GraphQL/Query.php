@@ -204,7 +204,7 @@ final class Query
         if( isset( $filter['any'] ) )
         {
             $ids = $model::search( mb_substr( trim( $filter['any'] ), 0, 200 ) )
-                ->searchFields( 'draft' ) // @phpstan-ignore method.notFound
+                ->searchFields( 'draft' )
                 ->take( 1000 )
                 ->keys();
 
