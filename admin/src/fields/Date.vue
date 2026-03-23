@@ -19,6 +19,11 @@ export default {
   emits: ['update:modelValue', 'error'],
 
   computed: {
+    hasError() {
+      const val = this.modelValue ?? this.config.default ?? null
+      return !this.rules.every(rule => rule(val) === true)
+    },
+
     rules() {
       return [(v) => !this.config.required || !!v || this.$gettext(`Value is required`)]
     }
@@ -42,6 +47,7 @@ export default {
 
 <template>
   <v-date-input
+    :error="hasError"
     :rules="rules"
     :readonly="readonly"
     :allowed-dates="config.allowed"

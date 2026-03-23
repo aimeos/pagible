@@ -20,6 +20,11 @@ export default {
   emits: ['update:modelValue', 'error'],
 
   computed: {
+    hasError() {
+      const val = this.modelValue ?? this.config.default ?? ''
+      return !this.rules.every(rule => rule(val) === true)
+    },
+
     rules() {
       return [
         (v) =>
@@ -52,6 +57,7 @@ export default {
 
 <template>
   <v-textarea
+    :error="hasError"
     :rules="rules"
     :class="config.class"
     :readonly="readonly"

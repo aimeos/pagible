@@ -340,7 +340,7 @@ input:-webkit-autofill:focus {
   width: max-content;
   opacity: 0.85;
   padding: 12px;
-  right: 0;
+  inset-inline-end: 0;
   top: 0;
 }
 
@@ -357,7 +357,7 @@ input:-webkit-autofill:focus {
 .menu-overlay {
   position: absolute;
   width: max-content;
-  right: 0;
+  inset-inline-end: 0;
   top: 48px;
 }
 

@@ -13,6 +13,11 @@ export default {
   emits: ['update:modelValue', 'error'],
 
   computed: {
+    hasError() {
+      const val = this.modelValue ?? this.config.default ?? ''
+      return !this.rules.every(rule => rule(val) === true)
+    },
+
     rules() {
       return [(v) => !this.config.required || !!v || this.$gettext(`Value is required`)]
     }
@@ -36,6 +41,7 @@ export default {
 
 <template>
   <v-select
+    :error="hasError"
     :rules="rules"
     :readonly="readonly"
     :items="config.options || []"

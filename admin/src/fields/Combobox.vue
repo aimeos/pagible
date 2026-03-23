@@ -10,6 +10,7 @@ export default {
 
 <template>
   <v-combobox
+    :error="hasError"
     :rules="rules"
     :items="list"
     :loading="loading"

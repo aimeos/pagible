@@ -13,6 +13,11 @@ export default {
   emits: ['update:modelValue', 'error'],
 
   computed: {
+    hasError() {
+      const val = this.modelValue ?? this.config.default ?? ''
+      return !this.rules.every(rule => rule(val) === true)
+    },
+
     rules() {
       return [(v) => !this.config.required || !!v || this.$gettext(`Selection is required`)]
     }
@@ -36,6 +41,7 @@ export default {
 
 <template>
   <v-radio-group
+    :error="hasError"
     :rules="rules"
     :readonly="readonly"
     :modelValue="modelValue ?? config.default ?? ''"

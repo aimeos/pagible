@@ -345,7 +345,7 @@ export default {
     </main>
 
     <v-snackbar-queue v-model="messages.queue"></v-snackbar-queue>
-    <div role="status" aria-live="polite" class="v-sr-only">
+    <div role="status" aria-live="polite" aria-atomic="true" class="v-sr-only">
       {{ messages.queue[messages.queue.length - 1]?.text }}
     </div>
   </v-app>
