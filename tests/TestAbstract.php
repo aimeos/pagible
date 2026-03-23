@@ -40,6 +40,7 @@ abstract class TestAbstract extends \Orchestra\Testbench\TestCase
             'password' => env('DB_PASSWORD', ''),
         ]);
 
+        $app['config']->set('auth.providers.users.model', 'App\\Models\\User');
         $app['config']->set('cms.db', 'testing');
         $app['config']->set('cms.ai.write', ['provider' => 'gemini', 'model' => 'test', 'api_key' => 'test']);
         $app['config']->set('cms.ai.refine', ['provider' => 'gemini', 'model' => 'test', 'api_key' => 'test']);

@@ -7,7 +7,6 @@
 
 namespace Aimeos\Cms;
 
-use \App\Models\User;
 use \Illuminate\Contracts\Auth\Authenticatable;
 
 
@@ -17,71 +16,70 @@ use \Illuminate\Contracts\Auth\Authenticatable;
 class Permission
 {
     /**
-     * Action permissions
+     * Available permission names
      *
-     * @var array<string, int>
+     * @var array<int, string>
      */
-    private static $can = [
-        'page:view'        => 0b00000000_00000000_00000000_00000001,
-        'page:save'        => 0b00000000_00000000_00000000_00000010,
-        'page:add'         => 0b00000000_00000000_00000000_00000100,
-        'page:drop'        => 0b00000000_00000000_00000000_00001000,
-        'page:keep'        => 0b00000000_00000000_00000000_00010000,
-        'page:purge'       => 0b00000000_00000000_00000000_00100000,
-        'page:publish'     => 0b00000000_00000000_00000000_01000000,
-        'page:move'        => 0b00000000_00000000_00000000_10000000,
+    private static array $can = [
+        'page:view',
+        'page:save',
+        'page:add',
+        'page:drop',
+        'page:keep',
+        'page:purge',
+        'page:publish',
+        'page:move',
+        'page:metrics',
+        'page:synthesize',
+        'page:refine',
 
-        'element:view'     => 0b00000000_00000000_00000001_00000000,
-        'element:save'     => 0b00000000_00000000_00000010_00000000,
-        'element:add'      => 0b00000000_00000000_00000100_00000000,
-        'element:drop'     => 0b00000000_00000000_00001000_00000000,
-        'element:keep'     => 0b00000000_00000000_00010000_00000000,
-        'element:purge'    => 0b00000000_00000000_00100000_00000000,
-        'element:publish'  => 0b00000000_00000000_01000000_00000000,
+        'element:view',
+        'element:save',
+        'element:add',
+        'element:drop',
+        'element:keep',
+        'element:purge',
+        'element:publish',
 
-        'file:view'        => 0b00000000_00000001_00000000_00000000,
-        'file:save'        => 0b00000000_00000010_00000000_00000000,
-        'file:add'         => 0b00000000_00000100_00000000_00000000,
-        'file:drop'        => 0b00000000_00001000_00000000_00000000,
-        'file:keep'        => 0b00000000_00010000_00000000_00000000,
-        'file:purge'       => 0b00000000_00100000_00000000_00000000,
-        'file:publish'     => 0b00000000_01000000_00000000_00000000,
-        'file:describe'    => 0b00000000_10000000_00000000_00000000,
+        'file:view',
+        'file:save',
+        'file:add',
+        'file:drop',
+        'file:keep',
+        'file:purge',
+        'file:publish',
+        'file:describe',
 
-        'config:page'      => 0b00000001_00000000_00000000_00000000,
+        'config:page',
 
-        'page:metrics'     => 0b00000000_00000000_00000000_00000001_00000000_00000000_00000000_00000000,
-        'page:synthesize'  => 0b00000000_00000000_00000000_00000010_00000000_00000000_00000000_00000000,
-        'page:refine'      => 0b00000000_00000000_00000000_00000100_00000000_00000000_00000000_00000000,
+        'audio:transcribe',
 
-        'text:translate'   => 0b00000000_00000000_00000000_01000000_00000000_00000000_00000000_00000000,
-        'text:write'       => 0b00000000_00000000_00000000_10000000_00000000_00000000_00000000_00000000,
+        'image:imagine',
+        'image:inpaint',
+        'image:isolate',
+        'image:repaint',
+        'image:erase',
+        'image:uncrop',
+        'image:upscale',
 
-        'audio:transcribe' => 0b00000000_00000000_00000001_00000000_00000000_00000000_00000000_00000000,
-
-        'image:imagine'    => 0b00000000_00000001_00000000_00000000_00000000_00000000_00000000_00000000,
-        'image:inpaint'    => 0b00000000_00000010_00000000_00000000_00000000_00000000_00000000_00000000,
-        'image:isolate'    => 0b00000000_00000100_00000000_00000000_00000000_00000000_00000000_00000000,
-        'image:repaint'    => 0b00000000_00001000_00000000_00000000_00000000_00000000_00000000_00000000,
-        'image:erase'      => 0b00000000_00010000_00000000_00000000_00000000_00000000_00000000_00000000,
-        'image:uncrop'     => 0b00000000_00100000_00000000_00000000_00000000_00000000_00000000_00000000,
-        'image:upscale'    => 0b00000000_01000000_00000000_00000000_00000000_00000000_00000000_00000000,
+        'text:translate',
+        'text:write',
     ];
 
     /**
      * Anonymous callback which allows or denies actions.
      */
-    public static ?\Closure $callback = null;
+    private static ?\Closure $canCallback = null;
 
     /**
      * Anonymous callback which adds permissions.
      */
-    public static ?\Closure $addCallback = null;
+    private static ?\Closure $addCallback = null;
 
     /**
      * Anonymous callback which removes permissions.
      */
-    public static ?\Closure $delCallback = null;
+    private static ?\Closure $removeCallback = null;
 
 
     /**
@@ -97,13 +95,21 @@ class Permission
             return $closure( $action, $user );
         }
 
-        $user->cmseditor ??= 0; // @phpstan-ignore-line property.notFound
-
-        foreach( (array) $action as $name ) {
-            $user->cmseditor |= self::$can[$name] ?? 0;
-        }
+        // @phpstan-ignore-next-line property.notFound
+        $user->cmsperms = array_values( array_unique( array_merge( $user->cmsperms ?? [], (array) $action ) ) );
 
         return $user;
+    }
+
+
+    /**
+     * Sets the callback for adding permissions.
+     *
+     * @param \Closure|null $callback Anonymous function or NULL to reset
+     */
+    public static function addUsing( ?\Closure $callback ) : void
+    {
+        self::$addCallback = $callback;
     }
 
 
@@ -114,7 +120,7 @@ class Permission
      */
     public static function all(): array
     {
-        return array_keys( self::$can );
+        return self::$can;
     }
 
 
@@ -127,40 +133,28 @@ class Permission
      */
     public static function can( string $action, ?Authenticatable $user ) : bool
     {
-        if( $closure = self::$callback ) {
+        if( $closure = self::$canCallback ) {
             return $closure( $action, $user );
         }
 
-        $cmseditor = $user->cmseditor ?? 0;
+        $perms = $user->cmsperms ?? []; // @phpstan-ignore-line property.notFound
 
         if( $action === '*' ) {
-            return $cmseditor > 0;
+            return !empty( $perms );
         }
 
-        return (bool) ( ( self::$can[$action] ?? 0 ) & $cmseditor );
+        return in_array( $action, $perms );
     }
 
 
     /**
-     * Removes the permission for the requested action from the user.
+     * Sets the callback for checking permissions.
      *
-     * @param array<string>|string $action Name(s) of the requested action(s), e.g. "page:view"
-     * @param Authenticatable $user Laravel user object
-     * @return Authenticatable Updated Laravel user object with the removed permission
+     * @param \Closure|null $callback Anonymous function or NULL to reset
      */
-    public static function del( array|string $action, Authenticatable $user ) : Authenticatable
+    public static function canUsing( ?\Closure $callback ) : void
     {
-        if( $closure = self::$delCallback ) {
-            return $closure( $action, $user );
-        }
-
-        $user->cmseditor ??= 0; // @phpstan-ignore-line property.notFound
-
-        foreach( (array) $action as $name ) {
-            $user->cmseditor &= ~( self::$can[$name] ?? 0 );
-        }
-
-        return $user;
+        self::$canCallback = $callback;
     }
 
 
@@ -174,10 +168,57 @@ class Permission
     {
         $map = [];
 
-        foreach( self::$can as $action => $bit ) {
+        foreach( self::$can as $action ) {
             $map[$action] = self::can( $action, $user );
         }
 
         return $map;
+    }
+
+
+    /**
+     * Registers additional permission names.
+     *
+     * @param array<string>|string $actions Permission name(s) to register
+     */
+    public static function register( array|string $actions ) : void
+    {
+        foreach( (array) $actions as $action )
+        {
+            if( !in_array( $action, self::$can ) ) {
+                self::$can[] = $action;
+            }
+        }
+    }
+
+
+    /**
+     * Removes the permission for the requested action from the user.
+     *
+     * @param array<string>|string $action Name(s) of the requested action(s), e.g. "page:view"
+     * @param Authenticatable $user Laravel user object
+     * @return Authenticatable Updated Laravel user object with the removed permission
+     */
+    public static function remove( array|string $action, Authenticatable $user ) : Authenticatable
+    {
+        if( $closure = self::$removeCallback ) {
+            return $closure( $action, $user );
+        }
+
+        // @phpstan-ignore-next-line property.notFound
+        $user->cmsperms = array_values( array_diff( $user->cmsperms ?? [], (array) $action ) );
+
+        return $user;
+    }
+
+
+    /**
+     * Sets the callback for removing permissions.
+     *
+     * @param \Closure|null $callback Anonymous function or NULL to reset
+     */
+    public static function removeUsing( ?\Closure $callback ) : void
+    {
+        self::$removeCallback = $callback;
     }
 }

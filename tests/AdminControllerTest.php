@@ -26,7 +26,7 @@ class AdminControllerTest extends TestAbstract
             'name' => 'Admin',
             'email' => 'admin@testbench',
             'password' => 'secret',
-            'cmseditor' => PHP_INT_MAX,
+            'cmsperms' => \Aimeos\Cms\Permission::all(),
         ] );
     }
 

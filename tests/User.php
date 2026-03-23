@@ -14,7 +14,7 @@ class User extends \Illuminate\Foundation\Auth\User
         'name' => '',
         'email' => '',
         'password' => '',
-        'cmseditor' => 0,
+        'cmsperms' => '[]',
         'cmsdata' => null,
     ];
 
@@ -22,8 +22,12 @@ class User extends \Illuminate\Foundation\Auth\User
         'name',
         'email',
         'password',
-        'cmseditor',
+        'cmsperms',
         'cmsdata',
+    ];
+
+    protected $casts = [
+        'cmsperms' => 'array',
     ];
 
 }

@@ -9,7 +9,6 @@ namespace Aimeos\Cms\Commands;
 
 use Aimeos\Cms\Permission;
 use Illuminate\Contracts\Auth\Authenticatable;
-use Illuminate\Foundation\Auth\User as BaseUser;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Console\Command;
 
@@ -42,7 +41,8 @@ class User extends Command
     {
         // @phpstan-ignore-next-line cast.string
         $email = (string) $this->argument( 'email' );
-        $user = BaseUser::where( 'email', $email )->first();
+        $model = config( 'auth.providers.users.model', 'App\\Models\\User' );
+        $user = $model::where( 'email', $email )->first();
 
         if( $this->option( 'list' ) ) {
             $this->list( $user );
@@ -62,11 +62,11 @@ class User extends Command
         }
 
         if( $perms = $this->option( 'remove' ) ) {
-            $user = Permission::del( $this->permissions( $perms ), $user ); // @phpstan-ignore-line argument.type
+            $user = Permission::remove( $this->permissions( $perms ), $user ); // @phpstan-ignore-line argument.type
         }
 
         if( $this->option( 'disable' ) ) {
-            $user = Permission::del( $this->permissions( '*' ), $user );
+            $user = Permission::remove( $this->permissions( '*' ), $user );
         }
 
         if( $this->input->hasParameterOption( '--password' ) ) {
@@ -85,18 +85,20 @@ class User extends Command
      * Creates a new user with the given email.
      *
      * @param string $email E-Mail of the user
-     * @return BaseUser Created user object
+     * @return Authenticatable Created user object
      */
-    protected function create( string $email ) : BaseUser
+    protected function create( string $email ) : Authenticatable
     {
         $password = $this->option( 'password' ) ?: $this->secret( 'Password' );
+        $model = config( 'auth.providers.users.model', 'App\\Models\\User' );
 
-        return (new BaseUser())->forceFill( [
-            'password' => Hash::make( $password ),
-            'cmseditor' => 0,
-            'email' => $email,
-            'name' => $email,
-        ] );
+        $user = new $model;
+        $user->password = Hash::make( $password );
+        $user->cmsperms = [];
+        $user->email = $email;
+        $user->name = $email;
+
+        return $user;
     }
 
 
