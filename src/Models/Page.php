@@ -520,7 +520,7 @@ class Page extends Model
     /**
      * Returns the searchable data for the page.
      *
-     * @return list<array<string, bool|string>>
+     * @return array<string, string>
      */
     public function toSearchableArray(): array
     {
@@ -531,33 +531,30 @@ class Page extends Model
             return [];
         }
 
-        $rows = [];
+        $draft = '';
 
         if( $version = $this->latest )
         {
             $data = $version->data ?? new \stdClass();
-
-            $content = trim( ( $data->path ?? '' ) . "\n"
+            $draft = mb_strtolower( trim(
+                ( $data->path ?? '' ) . "\n"
                 . ( $data->to ?? '' ) . "\n"
-                . (string) $version );
-
-            if( !empty( $content ) ) {
-                $rows[] = ['latest' => true, 'content' => mb_strtolower( $content )];
-            }
+                . (string) $version
+            ) );
         }
+
+        $content = '';
 
         if( !$this->trashed() )
         {
-            $content = trim( $this->path . "\n"
+            $content = mb_strtolower( trim(
+                $this->path . "\n"
                 . $this->to . "\n"
-                . (string) $this );
-
-            if( !empty( $content ) ) {
-                $rows[] = ['latest' => false, 'content' => mb_strtolower( $content )];
-            }
+                . (string) $this
+            ) );
         }
 
-        return $rows;
+        return ['content' => $content, 'draft' => $draft, 'domain' => $this->domain ?? '', 'lang' => $this->lang ?? ''];
     }
 
 

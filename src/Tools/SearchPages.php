@@ -47,7 +47,8 @@ class SearchPages extends Tool
         $term = $validated['term'];
 
         $result = Page::search( $term )
-            ->where( 'latest', true )
+            ->where( 'lang', $lang )
+            ->searchFields( 'draft' ) // @phpstan-ignore method.notFound
             ->take( 25 )
             ->get()
             ->map( function( $item ) {

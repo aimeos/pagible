@@ -304,7 +304,7 @@ class Element extends Model
     /**
      * Returns the searchable data for the element.
      *
-     * @return list<array<string, bool|string>>
+     * @return array<string, string>
      */
     public function toSearchableArray(): array
     {
@@ -314,27 +314,10 @@ class Element extends Model
             return [];
         }
 
-        $rows = [];
-
-        if( $version = $this->latest )
-        {
-            $content = (string) $version;
-
-            if( !empty( $content ) ) {
-                $rows[] = ['latest' => true, 'content' => mb_strtolower( $content )];
-            }
-        }
-
-        if( !$this->trashed() )
-        {
-            $content = (string) $this;
-
-            if( !empty( $content ) ) {
-                $rows[] = ['latest' => false, 'content' => mb_strtolower( $content )];
-            }
-        }
-
-        return $rows;
+        return [
+            'content' => $this->trashed() ? '' : mb_strtolower( (string) $this ),
+            'draft' => mb_strtolower( (string) $this->latest ),
+        ];
     }
 
 
