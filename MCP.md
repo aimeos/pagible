@@ -200,6 +200,6 @@ In `.vscode/mcp.json` in your project root:
 
 **Draft/Publish workflow:** Creating or updating pages, elements, and files produces a draft version. Use the `publish-*` tools to make changes live. Scheduled publishing is supported via the `at` parameter (ISO 8601 datetime).
 
-**Permissions:** Each tool requires a specific permission (e.g. `page:view`, `page:add`, `file:publish`). The user's `cmseditor` bitmask field controls access. See `Permission.php` for the full list.
+**Permissions:** Each tool requires a specific permission (e.g. `page:view`, `page:add`, `file:publish`). The user's `cmsperms` JSON array column controls access. See `Permission.php` for the full list.
 
 **Multi-tenancy:** All operations are scoped to the authenticated user's tenant. Content from other tenants is never visible or modifiable.

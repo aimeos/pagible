@@ -55,7 +55,7 @@ class GraphqlTest extends TestAbstract
             'name' => 'Test editor',
             'email' => 'editor@testbench',
             'password' => 'secret',
-            'cmseditor' => 0x7fffffffffffffff
+            'cmsperms' => \Aimeos\Cms\Permission::all()
         ]);
     }
 
@@ -807,7 +807,7 @@ class GraphqlTest extends TestAbstract
             'name' => 'No permission',
             'email' => 'noperm-' . \Aimeos\Cms\Utils::uid() . '@testbench',
             'password' => 'secret',
-            'cmseditor' => 0,
+            'cmsperms' => [],
         ] );
     }
 }

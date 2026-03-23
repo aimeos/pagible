@@ -11,7 +11,7 @@ use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Element;
 use Database\Seeders\CmsSeeder;
-use Illuminate\Foundation\Auth\User;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Aimeos\Prisma\Prisma;
 use Aimeos\Prisma\Responses\TextResponse;
@@ -80,38 +80,45 @@ class CommandTest extends TestAbstract
 
     public function testUser(): void
     {
+        $allPerms = \Aimeos\Cms\Permission::all();
+        $imagePerms = array_values( array_filter( $allPerms, fn( $p ) => str_starts_with( $p, 'image:' ) ) );
+        $viewPerms = array_values( array_filter( $allPerms, fn( $p ) => str_ends_with( $p, ':view' ) ) );
+        $viewPublishPerms = array_values( array_filter( $allPerms, fn( $p ) => str_ends_with( $p, ':view' ) || str_ends_with( $p, ':publish' ) ) );
+
+        $perms = fn() => User::where('email', 'test@example.com')->first()?->cmsperms ?? [];
+
         $this->artisan('cms:user', ['-p' => 'test', 'email' => 'test@example.com'])->assertExitCode( 0 );
-        $this->assertEquals( 0, User::where('email', 'test@example.com')->get()->first()?->cmseditor );
+        $this->assertEmpty( $perms() );
 
         $this->artisan('cms:user', ['-e' => true, 'email' => 'test@example.com'])->assertExitCode( 0 );
-        $this->assertEquals( 0b00000000_01111111_00000001_11000111_00000001_11111111_01111111_11111111, User::where('email', 'test@example.com')->get()->first()?->cmseditor );
+        $this->assertEqualsCanonicalizing( $allPerms, $perms() );
 
         $this->artisan('cms:user', ['-d' => true, 'email' => 'test@example.com'])->assertExitCode( 0 );
-        $this->assertEquals( 0, User::where('email', 'test@example.com')->get()->first()?->cmseditor );
+        $this->assertEmpty( $perms() );
 
         $this->artisan('cms:user', ['-a' => '*', 'email' => 'test@example.com'])->assertExitCode( 0 );
-        $this->assertEquals( 0b00000000_01111111_00000001_11000111_00000001_11111111_01111111_11111111, User::where('email', 'test@example.com')->get()->first()?->cmseditor );
+        $this->assertEqualsCanonicalizing( $allPerms, $perms() );
 
         $this->artisan('cms:user', ['-r' => '*', 'email' => 'test@example.com'])->assertExitCode( 0 );
-        $this->assertEquals( 0, User::where('email', 'test@example.com')->get()->first()?->cmseditor );
+        $this->assertEmpty( $perms() );
 
         $this->artisan('cms:user', ['-a' => 'image:*', 'email' => 'test@example.com'])->assertExitCode( 0 );
-        $this->assertEquals( 0b00000000_01111111_00000000_00000000_00000000_00000000_00000000_00000000, User::where('email', 'test@example.com')->get()->first()?->cmseditor );
+        $this->assertEqualsCanonicalizing( $imagePerms, $perms() );
 
         $this->artisan('cms:user', ['-r' => 'image:*', 'email' => 'test@example.com'])->assertExitCode( 0 );
-        $this->assertEquals( 0, User::where('email', 'test@example.com')->get()->first()?->cmseditor );
+        $this->assertEmpty( $perms() );
 
         $this->artisan('cms:user', ['-a' => '*:view', 'email' => 'test@example.com'])->assertExitCode( 0 );
-        $this->assertEquals( 0b00000000_00000000_00000000_00000000_00000000_00000001_00000001_00000001, User::where('email', 'test@example.com')->get()->first()?->cmseditor );
+        $this->assertEqualsCanonicalizing( $viewPerms, $perms() );
 
         $this->artisan('cms:user', ['-a' => ['*:view', '*:publish'], 'email' => 'test@example.com'])->assertExitCode( 0 );
-        $this->assertEquals( 0b00000000_00000000_00000000_00000000_00000000_01000001_01000001_01000001, User::where('email', 'test@example.com')->get()->first()?->cmseditor );
+        $this->assertEqualsCanonicalizing( $viewPublishPerms, $perms() );
 
         $this->artisan('cms:user', ['-r' => ['*:view', '*:publish'], 'email' => 'test@example.com'])->assertExitCode( 0 );
-        $this->assertEquals( 0, User::where('email', 'test@example.com')->get()->first()?->cmseditor );
+        $this->assertEmpty( $perms() );
 
         $this->artisan('cms:user', ['-r' => '*:view', 'email' => 'test@example.com'])->assertExitCode( 0 );
-        $this->assertEquals( 0, User::where('email', 'test@example.com')->get()->first()?->cmseditor );
+        $this->assertEmpty( $perms() );
 
         $this->artisan('cms:user', ['-l' => true, 'email' => 'test@example.com'])->assertExitCode( 0 );
     }

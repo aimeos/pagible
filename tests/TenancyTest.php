@@ -22,7 +22,7 @@ class TenancyTest extends TestAbstract
         Tenancy::$callback = fn() => 'test';
         $this->resetTenancyValue();
 
-        Permission::$callback = null;
+        Permission::canUsing( null );
 
         parent::tearDown();
     }
@@ -116,7 +116,7 @@ class TenancyTest extends TestAbstract
             'name' => 'Editor',
             'email' => 'editor@tenancy-test',
             'password' => 'secret',
-            'cmseditor' => 0,
+            'cmsperms' => [],
         ] );
         Permission::add( 'page:view', $user );
         $user->save();

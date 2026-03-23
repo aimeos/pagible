@@ -14,9 +14,9 @@ class PermissionTest extends TestAbstract
 {
     protected function tearDown(): void
     {
-        Permission::$callback = null;
-        Permission::$addCallback = null;
-        Permission::$delCallback = null;
+        Permission::canUsing( null );
+        Permission::addUsing( null );
+        Permission::removeUsing( null );
 
         parent::tearDown();
     }
@@ -43,7 +43,7 @@ class PermissionTest extends TestAbstract
 
     public function testCanNoPermissions()
     {
-        $user = new \App\Models\User( ['cmseditor' => 0] );
+        $user = new \App\Models\User();
 
         $this->assertFalse( Permission::can( 'page:view', $user ) );
         $this->assertFalse( Permission::can( 'page:save', $user ) );
@@ -53,7 +53,7 @@ class PermissionTest extends TestAbstract
 
     public function testCanWithPermission()
     {
-        $user = new \App\Models\User( ['cmseditor' => 0b00000001] ); // page:view only
+        $user = new \App\Models\User( ['cmsperms' => ['page:view']] );
 
         $this->assertTrue( Permission::can( 'page:view', $user ) );
         $this->assertFalse( Permission::can( 'page:save', $user ) );
@@ -62,17 +62,17 @@ class PermissionTest extends TestAbstract
 
     public function testCanWildcard()
     {
-        $user = new \App\Models\User( ['cmseditor' => 0] );
+        $user = new \App\Models\User();
         $this->assertFalse( Permission::can( '*', $user ) );
 
-        $user->cmseditor = 0b00000001;
+        Permission::add( 'page:view', $user );
         $this->assertTrue( Permission::can( '*', $user ) );
     }
 
 
     public function testCanUnknownAction()
     {
-        $user = new \App\Models\User( ['cmseditor' => 0xFFFFFFFF] );
+        $user = new \App\Models\User( ['cmsperms' => ['page:view', 'page:save']] );
 
         $this->assertFalse( Permission::can( 'unknown:action', $user ) );
     }
@@ -80,7 +80,7 @@ class PermissionTest extends TestAbstract
 
     public function testAdd()
     {
-        $user = new \App\Models\User( ['cmseditor' => 0] );
+        $user = new \App\Models\User();
 
         Permission::add( 'page:view', $user );
 
@@ -91,7 +91,7 @@ class PermissionTest extends TestAbstract
 
     public function testAddMultiple()
     {
-        $user = new \App\Models\User( ['cmseditor' => 0] );
+        $user = new \App\Models\User();
 
         Permission::add( ['page:view', 'page:save', 'file:add'], $user );
 
@@ -102,22 +102,22 @@ class PermissionTest extends TestAbstract
     }
 
 
-    public function testAddUnknownAction()
+    public function testAddDuplicate()
     {
-        $user = new \App\Models\User( ['cmseditor' => 0] );
+        $user = new \App\Models\User( ['cmsperms' => ['page:view']] );
 
-        Permission::add( 'unknown:action', $user );
+        Permission::add( 'page:view', $user );
 
-        $this->assertEquals( 0, $user->cmseditor );
+        $this->assertEquals( ['page:view'], $user->cmsperms );
     }
 
 
     public function testDel()
     {
-        $user = new \App\Models\User( ['cmseditor' => 0] );
+        $user = new \App\Models\User();
 
         Permission::add( ['page:view', 'page:save'], $user );
-        Permission::del( 'page:view', $user );
+        Permission::remove( 'page:view', $user );
 
         $this->assertFalse( Permission::can( 'page:view', $user ) );
         $this->assertTrue( Permission::can( 'page:save', $user ) );
@@ -126,10 +126,10 @@ class PermissionTest extends TestAbstract
 
     public function testDelMultiple()
     {
-        $user = new \App\Models\User( ['cmseditor' => 0] );
+        $user = new \App\Models\User();
 
         Permission::add( ['page:view', 'page:save', 'file:add'], $user );
-        Permission::del( ['page:view', 'file:add'], $user );
+        Permission::remove( ['page:view', 'file:add'], $user );
 
         $this->assertFalse( Permission::can( 'page:view', $user ) );
         $this->assertTrue( Permission::can( 'page:save', $user ) );
@@ -139,7 +139,7 @@ class PermissionTest extends TestAbstract
 
     public function testGet()
     {
-        $user = new \App\Models\User( ['cmseditor' => 0] );
+        $user = new \App\Models\User();
 
         Permission::add( 'page:view', $user );
 
@@ -162,58 +162,79 @@ class PermissionTest extends TestAbstract
     }
 
 
-    public function testHighBitPermissions()
+    public function testRegister()
     {
-        $user = new \App\Models\User( ['cmseditor' => 0] );
+        Permission::register( 'custom:action' );
 
-        Permission::add( 'image:imagine', $user );
+        $this->assertContains( 'custom:action', Permission::all() );
 
-        $this->assertTrue( Permission::can( 'image:imagine', $user ) );
-        $this->assertFalse( Permission::can( 'page:view', $user ) );
+        $user = new \App\Models\User();
+        Permission::add( 'custom:action', $user );
+
+        $this->assertTrue( Permission::can( 'custom:action', $user ) );
     }
 
 
-    public function testCallback()
+    public function testRegisterMultiple()
     {
-        Permission::$callback = fn( $action, $user ) => $action === 'page:view';
+        Permission::register( ['custom:one', 'custom:two'] );
 
-        $user = new \App\Models\User( ['cmseditor' => 0] );
+        $this->assertContains( 'custom:one', Permission::all() );
+        $this->assertContains( 'custom:two', Permission::all() );
+    }
+
+
+    public function testRegisterDuplicate()
+    {
+        $countBefore = count( Permission::all() );
+
+        Permission::register( 'page:view' );
+
+        $this->assertCount( $countBefore, Permission::all() );
+    }
+
+
+    public function testCanUsing()
+    {
+        Permission::canUsing( fn( $action, $user ) => $action === 'page:view' );
+
+        $user = new \App\Models\User();
 
         $this->assertTrue( Permission::can( 'page:view', $user ) );
         $this->assertFalse( Permission::can( 'page:save', $user ) );
     }
 
 
-    public function testAddCallback()
+    public function testAddUsing()
     {
         $called = false;
 
-        Permission::$addCallback = function( $action, $user ) use ( &$called ) {
+        Permission::addUsing( function( $action, $user ) use ( &$called ) {
             $called = true;
             return $user;
-        };
+        } );
 
-        $user = new \App\Models\User( ['cmseditor' => 0] );
+        $user = new \App\Models\User();
         Permission::add( 'page:view', $user );
 
         $this->assertTrue( $called );
-        $this->assertFalse( Permission::can( 'page:view', $user ) ); // custom callback did not set bit
+        $this->assertFalse( Permission::can( 'page:view', $user ) );
     }
 
 
-    public function testDelCallback()
+    public function testDelUsing()
     {
         $called = false;
 
-        Permission::$delCallback = function( $action, $user ) use ( &$called ) {
+        Permission::removeUsing( function( $action, $user ) use ( &$called ) {
             $called = true;
             return $user;
-        };
+        } );
 
-        $user = new \App\Models\User( ['cmseditor' => 0b00000001] ); // page:view set
-        Permission::del( 'page:view', $user );
+        $user = new \App\Models\User( ['cmsperms' => ['page:view']] );
+        Permission::remove( 'page:view', $user );
 
         $this->assertTrue( $called );
-        $this->assertTrue( Permission::can( 'page:view', $user ) ); // custom callback did not clear bit
+        $this->assertTrue( Permission::can( 'page:view', $user ) );
     }
 }

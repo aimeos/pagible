@@ -45,7 +45,7 @@ class GraphqlAuthTest extends TestAbstract
             'name' => 'Test',
             'email' => 'editor@testbench',
             'password' => \Illuminate\Support\Facades\Hash::make('secret'),
-            'cmseditor' => 1
+            'cmsperms' => ['page:view']
         ]);
     }
 

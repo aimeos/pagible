@@ -48,7 +48,7 @@ class GraphqlFileTest extends TestAbstract
             'name' => 'Test editor',
             'email' => 'editor@testbench',
             'password' => 'secret',
-            'cmseditor' => PHP_INT_MAX
+            'cmsperms' => \Aimeos\Cms\Permission::all()
         ]);
     }
 
