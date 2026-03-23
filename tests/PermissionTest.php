@@ -237,4 +237,209 @@ class PermissionTest extends TestAbstract
         $this->assertTrue( $called );
         $this->assertTrue( Permission::can( 'page:view', $user ) );
     }
+
+
+    public function testCanWithRole()
+    {
+        $user = new \App\Models\User( ['cmsperms' => ['viewer']] );
+
+        $this->assertTrue( Permission::can( 'page:view', $user ) );
+        $this->assertTrue( Permission::can( 'element:view', $user ) );
+        $this->assertTrue( Permission::can( 'file:view', $user ) );
+        $this->assertFalse( Permission::can( 'page:save', $user ) );
+        $this->assertTrue( Permission::can( '*', $user ) );
+    }
+
+
+    public function testCanWithRoleWildcard()
+    {
+        $user = new \App\Models\User( ['cmsperms' => ['publisher']] );
+
+        // publisher role has page:*, element:*, file:*
+        $this->assertTrue( Permission::can( 'element:view', $user ) );
+        $this->assertTrue( Permission::can( 'element:save', $user ) );
+        $this->assertTrue( Permission::can( 'element:publish', $user ) );
+        $this->assertTrue( Permission::can( 'file:view', $user ) );
+        $this->assertTrue( Permission::can( 'file:describe', $user ) );
+    }
+
+
+    public function testCanWithRoleAndOverride()
+    {
+        $user = new \App\Models\User( ['cmsperms' => ['viewer', 'image:imagine']] );
+
+        $this->assertTrue( Permission::can( 'page:view', $user ) );
+        $this->assertTrue( Permission::can( 'image:imagine', $user ) );
+        $this->assertFalse( Permission::can( 'page:save', $user ) );
+    }
+
+
+    public function testCanWithMultipleRoles()
+    {
+        $user = new \App\Models\User( ['cmsperms' => ['viewer', 'publisher']] );
+
+        // viewer permissions
+        $this->assertTrue( Permission::can( 'page:view', $user ) );
+        // publisher permissions
+        $this->assertTrue( Permission::can( 'page:publish', $user ) );
+        $this->assertTrue( Permission::can( 'config:page', $user ) );
+    }
+
+
+    public function testCanWithAdminRole()
+    {
+        $user = new \App\Models\User( ['cmsperms' => ['admin']] );
+
+        $this->assertTrue( Permission::can( 'page:view', $user ) );
+        $this->assertTrue( Permission::can( 'image:imagine', $user ) );
+        $this->assertTrue( Permission::can( 'text:write', $user ) );
+    }
+
+
+    public function testAddRole()
+    {
+        $user = new \App\Models\User();
+
+        Permission::add( 'editor', $user );
+
+        $this->assertContains( 'editor', $user->cmsperms );
+        $this->assertTrue( Permission::can( 'page:view', $user ) );
+        $this->assertTrue( Permission::can( 'element:view', $user ) );
+    }
+
+
+    public function testAddInvalidRole()
+    {
+        $user = new \App\Models\User();
+
+        Permission::add( 'nonexistent', $user );
+
+        $this->assertNotContains( 'nonexistent', $user->cmsperms );
+    }
+
+
+    public function testRemoveRole()
+    {
+        $user = new \App\Models\User( ['cmsperms' => ['editor', 'page:view']] );
+
+        Permission::remove( 'editor', $user );
+
+        $this->assertNotContains( 'editor', $user->cmsperms );
+        $this->assertTrue( Permission::can( 'page:view', $user ) );
+        $this->assertFalse( Permission::can( 'element:view', $user ) );
+    }
+
+
+    public function testGetWithRole()
+    {
+        $user = new \App\Models\User( ['cmsperms' => ['viewer']] );
+
+        $perms = Permission::get( $user );
+
+        $this->assertTrue( $perms['page:view'] );
+        $this->assertTrue( $perms['element:view'] );
+        $this->assertTrue( $perms['file:view'] );
+        $this->assertFalse( $perms['page:save'] );
+    }
+
+
+    public function testRoles()
+    {
+        $roles = Permission::roles();
+
+        $this->assertContains( 'viewer', $roles );
+        $this->assertContains( 'editor', $roles );
+        $this->assertContains( 'publisher', $roles );
+        $this->assertContains( 'admin', $roles );
+    }
+
+
+    public function testRole()
+    {
+        $perms = Permission::role( 'viewer' );
+
+        $this->assertContains( 'page:view', $perms );
+        $this->assertContains( 'element:view', $perms );
+        $this->assertContains( 'file:view', $perms );
+        $this->assertNotContains( 'page:save', $perms );
+    }
+
+
+    public function testRoleWithWildcard()
+    {
+        $perms = Permission::role( 'admin' );
+
+        $this->assertContains( 'page:view', $perms );
+        $this->assertContains( 'image:imagine', $perms );
+        $this->assertCount( count( Permission::all() ), array_unique( $perms ) );
+    }
+
+
+    public function testRoleUnknown()
+    {
+        $perms = Permission::role( 'nonexistent' );
+
+        $this->assertEmpty( $perms );
+    }
+
+
+    public function testCanWithDeny()
+    {
+        $user = new \App\Models\User( ['cmsperms' => ['editor', '!page:save']] );
+
+        $this->assertTrue( Permission::can( 'page:view', $user ) );
+        $this->assertFalse( Permission::can( 'page:save', $user ) );
+        $this->assertTrue( Permission::can( 'element:view', $user ) );
+    }
+
+
+    public function testCanWithDenyWildcard()
+    {
+        $user = new \App\Models\User( ['cmsperms' => ['publisher', '!image:*']] );
+
+        $this->assertTrue( Permission::can( 'page:view', $user ) );
+        $this->assertFalse( Permission::can( 'image:imagine', $user ) );
+        $this->assertFalse( Permission::can( 'image:upscale', $user ) );
+    }
+
+
+    public function testGetWithDeny()
+    {
+        $user = new \App\Models\User( ['cmsperms' => ['admin', '!page:purge', '!page:drop']] );
+
+        $perms = Permission::get( $user );
+
+        $this->assertTrue( $perms['page:view'] );
+        $this->assertTrue( $perms['page:save'] );
+        $this->assertFalse( $perms['page:purge'] );
+        $this->assertFalse( $perms['page:drop'] );
+    }
+
+
+    public function testCanWithDenySuffixWildcard()
+    {
+        $user = new \App\Models\User( ['cmsperms' => ['publisher', '!*:publish'] ] );
+
+        $this->assertTrue( Permission::can( 'page:view', $user ) );
+        $this->assertTrue( Permission::can( 'page:save', $user ) );
+        $this->assertFalse( Permission::can( 'page:publish', $user ) );
+        $this->assertFalse( Permission::can( 'element:publish', $user ) );
+        $this->assertFalse( Permission::can( 'file:publish', $user ) );
+        $this->assertTrue( Permission::can( 'element:view', $user ) );
+    }
+
+
+    public function testCanWithRoleReferencingRole()
+    {
+        // editor = ['publisher', '!*:publish', '!*:purge'] in test config
+        $user = new \App\Models\User( ['cmsperms' => ['editor']] );
+
+        $this->assertTrue( Permission::can( 'page:view', $user ) );
+        $this->assertTrue( Permission::can( 'page:save', $user ) );
+        $this->assertFalse( Permission::can( 'page:publish', $user ) );
+        $this->assertFalse( Permission::can( 'page:purge', $user ) );
+        $this->assertFalse( Permission::can( 'element:publish', $user ) );
+        $this->assertFalse( Permission::can( 'element:purge', $user ) );
+        $this->assertTrue( Permission::can( 'element:view', $user ) );
+    }
 }

@@ -26,7 +26,9 @@ class User extends Command
         {--p|password= : Secret password of the account (will ask if user will be created)}
         {--q|--quiet : Do not output any message}
         {--r|remove= : Remove permissions for the user by permission names, patterns like "page:*", "*:view", or "*" for all permissions (can be used multiple times)}
-        {email : E-Mail of the user}';
+        {--role= : Add a named role to the user (e.g. "editor", "publisher", "admin")}
+        {--roles : Lists all available roles and their permissions}
+        {email? : E-Mail of the user}';
 
     /**
      * Command description
@@ -39,6 +41,11 @@ class User extends Command
      */
     public function handle(): void
     {
+        if( $this->option( 'roles' ) ) {
+            $this->listRoles();
+            return;
+        }
+
         // @phpstan-ignore-next-line cast.string
         $email = (string) $this->argument( 'email' );
         $model = config( 'auth.providers.users.model', 'App\\Models\\User' );
@@ -59,6 +66,10 @@ class User extends Command
 
         if( $perms = $this->option( 'add' ) ) {
             $user = Permission::add( $this->permissions( $perms ), $user ); // @phpstan-ignore-line argument.type
+        }
+
+        if( $role = $this->option( 'role' ) ) {
+            $user = Permission::add( (string) $role, $user );
         }
 
         if( $perms = $this->option( 'remove' ) ) {
@@ -115,6 +126,15 @@ class User extends Command
             return;
         }
 
+        $roles = array_filter( $user->cmsperms ?? [], fn( $entry ) => !str_contains( $entry, ':' ) );
+
+        if( $roles ) {
+            $this->info( 'roles:' );
+            foreach( $roles as $role ) {
+                $this->line( sprintf( '  %1$s', $role ) );
+            }
+        }
+
         $groups = collect( Permission::all() )->sort()->groupBy( fn( $name ) => explode( ':', $name )[0] );
 
         foreach( $groups as $group => $names )
@@ -128,6 +148,29 @@ class User extends Command
                 } else {
                     $this->line( sprintf( '  [ ] %1$s', $name ) );
                 }
+            }
+        }
+    }
+
+
+    /**
+     * Lists all available roles and their permissions.
+     */
+    protected function listRoles() : void
+    {
+        $roles = config( 'cms.roles', [] );
+
+        if( empty( $roles ) ) {
+            $this->info( 'No roles defined in config/cms.php' );
+            return;
+        }
+
+        foreach( $roles as $name => $perms )
+        {
+            $this->info( sprintf( '%1$s:', $name ) );
+
+            foreach( $perms as $perm ) {
+                $this->line( sprintf( '  %1$s', $perm ) );
             }
         }
     }

@@ -4,6 +4,35 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Named roles
+    |--------------------------------------------------------------------------
+    |
+    | Define named roles as permission sets. Role names are stored in the
+    | user's cmsperms JSON array alongside individual permissions and
+    | expanded at check time. Each role maps to an array of entries:
+    |
+    | - "page:view"    — grant a single permission
+    | - "page:*"       — grant all permissions in a group (page, element, …)
+    | - "*"            — grant every permission
+    | - "!page:purge"  — deny a single permission (applied after grants)
+    | - "!page:*"      — deny all permissions in a group
+    | - "!*:purge"     — deny all purge permissions
+    |
+    | Users can hold multiple roles and individual overrides together:
+    |   ["editor", "image:imagine"]    — editor + one extra permission
+    |   ["admin", "!page:purge"]       — admin minus purge
+    |   ["editor", "publisher"]        — union of both roles
+    |
+    */
+    'roles' => [
+        'editor' => ['publisher', '!*:publish', '!*:purge'],
+        'publisher' => ['page:*', 'element:*', 'file:*', 'audio:*', 'image:*', 'text:*', 'config:page'],
+        'viewer' => ['page:view', 'element:view', 'file:view'],
+        'admin' => ['*'],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | AI providers
     |--------------------------------------------------------------------------
     |

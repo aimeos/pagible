@@ -69,6 +69,8 @@ class ServiceProvider extends Provider
 	 */
 	public function register()
 	{
+		$this->mergeConfigFrom( dirname( __DIR__ ) . '/config/cms.php', 'cms' );
+
 		config(['jsonapi.servers' => array_merge(
 			config('jsonapi.servers', []) ,
 			['cms' => \Aimeos\Cms\JsonApi\V1\Server::class]),
