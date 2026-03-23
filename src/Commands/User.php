@@ -46,8 +46,10 @@ class User extends Command
             return;
         }
 
-        // @phpstan-ignore-next-line cast.string
-        $email = (string) $this->argument( 'email' );
+        if( !is_string( $email = $this->argument( 'email' ) ) ) {
+            $this->error( 'E-Mail address is required!' );
+            return;
+        }
         $model = config( 'auth.providers.users.model', 'App\\Models\\User' );
         $user = $model::where( 'email', $email )->first();
 
@@ -65,15 +67,15 @@ class User extends Command
         }
 
         if( $perms = $this->option( 'add' ) ) {
-            $user = Permission::add( $this->permissions( $perms ), $user ); // @phpstan-ignore-line argument.type
+            $user = Permission::add( $this->permissions( $perms ), $user );
         }
 
-        if( $role = $this->option( 'role' ) ) {
-            $user = Permission::add( (string) $role, $user );
+        if( is_string( $role = $this->option( 'role' ) ) ) {
+            $user = Permission::add( $role, $user );
         }
 
         if( $perms = $this->option( 'remove' ) ) {
-            $user = Permission::remove( $this->permissions( $perms ), $user ); // @phpstan-ignore-line argument.type
+            $user = Permission::remove( $this->permissions( $perms ), $user );
         }
 
         if( $this->option( 'disable' ) ) {
