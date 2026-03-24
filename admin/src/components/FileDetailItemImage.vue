@@ -34,6 +34,7 @@ export default {
 
   data() {
     return {
+      _destroyed: false,
       selected: false,
       loading: {},
       edittext: null,
@@ -81,6 +82,8 @@ export default {
   },
 
   beforeUnmount() {
+    this._destroyed = true
+
     if (this.cropper) {
       this.cropper.destroy()
     }
@@ -107,6 +110,8 @@ export default {
       this.cropper.setDragMode('crop')
 
       this.$nextTick(() => {
+        if (this._destroyed) return
+
         const cropBox = this.cropper.cropper.querySelector('.cropper-crop-box')
 
         if (cropBox && !this.cropLabel) {
@@ -119,6 +124,8 @@ export default {
     },
 
     clear() {
+      if (this._destroyed) return
+
       this.cropper.setDragMode('none')
       this.cropper.clear()
       this.selected = false
@@ -192,7 +199,7 @@ export default {
     },
 
     init() {
-      if (this.readonly) {
+      if (this.readonly || this._destroyed) {
         return null
       }
 
@@ -357,6 +364,8 @@ export default {
     },
 
     replace(blob, idx = null) {
+      if (this._destroyed) return
+
       let file = null
 
       if (blob) {
@@ -382,6 +391,8 @@ export default {
     },
 
     reset() {
+      if (this._destroyed) return
+
       this.selected = false
       this.cropper.reset()
       this.cropper.clear()
@@ -392,6 +403,8 @@ export default {
       this.updateFile()
 
       this.$nextTick(() => {
+        if (this._destroyed) return
+
         const container = this.cropper.getContainerData()
         const image = this.cropper.getImageData()
         let scaleX, scaleY
@@ -443,7 +456,7 @@ export default {
     },
 
     updateFile() {
-      if (!this.readonly) {
+      if (!this.readonly && !this._destroyed) {
         this.cropper.getCroppedCanvas().toBlob((blob) => {
           const url = URL.createObjectURL(blob)
 

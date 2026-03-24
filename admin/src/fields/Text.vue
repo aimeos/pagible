@@ -38,6 +38,7 @@ export default {
 
   data() {
     return {
+      _destroyed: false,
       editor: ClassicEditor,
       visible: false,
       translations: undefined
@@ -47,10 +48,12 @@ export default {
   async created() {
     const locale = this.$vuetify.locale.current
     const mod = await import(`../../node_modules/ckeditor5/dist/translations/${locale}.js`)
+    if (this._destroyed) return
     this.translations = [mod.default]
   },
 
   beforeUnmount() {
+    this._destroyed = true
     this.visible = false // avoid CKEditor DOM issues
   },
 
@@ -110,7 +113,9 @@ export default {
 
   methods: {
     show(isVisible) {
-      this.visible = isVisible
+      if (!this._destroyed) {
+        this.visible = isVisible
+      }
     },
 
     update(value) {
