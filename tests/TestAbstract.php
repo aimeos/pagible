@@ -7,14 +7,12 @@
 
 namespace Tests;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\Concerns\InteractsWithViews;
 use Orchestra\Testbench\Concerns\WithLaravelMigrations;
 
 
 abstract class TestAbstract extends \Orchestra\Testbench\TestCase
 {
-    use RefreshDatabase;
     use InteractsWithViews;
     use WithLaravelMigrations;
 
@@ -25,7 +23,9 @@ abstract class TestAbstract extends \Orchestra\Testbench\TestCase
 
     protected function defineDatabaseMigrations()
     {
-        $this->loadLaravelMigrations(['--database' => 'testing']);
+        \Orchestra\Testbench\after_resolving($this->app, 'migrator', static function ($migrator) {
+            $migrator->path(\Orchestra\Testbench\default_migration_path());
+        });
     }
 
 

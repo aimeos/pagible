@@ -7,6 +7,7 @@
 
 namespace Tests;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Nuwave\Lighthouse\Testing\MakesGraphQLRequests;
 use Nuwave\Lighthouse\Testing\RefreshesSchemaCache;
 use Database\Seeders\CmsSeeder;
@@ -17,6 +18,7 @@ use Aimeos\Cms\Models\Page;
 
 class GraphqlElementTest extends TestAbstract
 {
+    use RefreshDatabase;
     use MakesGraphQLRequests;
     use RefreshesSchemaCache;
 

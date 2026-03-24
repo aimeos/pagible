@@ -12,11 +12,14 @@ use Aimeos\Cms\Permission;
 use Aimeos\Cms\Scopes\Status;
 use Aimeos\Cms\Tenancy;
 use Database\Seeders\CmsSeeder;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Auth;
 
 
 class TenancyTest extends TestAbstract
 {
+    use RefreshDatabase;
+
     protected function tearDown(): void
     {
         Tenancy::$callback = fn() => 'test';

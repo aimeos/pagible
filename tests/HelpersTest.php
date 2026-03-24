@@ -7,17 +7,11 @@
 
 namespace Tests;
 
-use Database\Seeders\CmsSeeder;
-use Aimeos\Cms\Models\Page;
-
-
 class HelpersTest extends TestAbstract
 {
 	public function testCms()
 	{
-        $this->seed( CmsSeeder::class );
-
-        $page = Page::where('tag', 'blog')->firstOrFail();
+		$page = new \Aimeos\Cms\Models\Page( ['path' => 'blog'] );
 
 		$this->assertEquals( 'blog', cms( $page, 'path' ) );
 	}

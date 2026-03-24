@@ -8,6 +8,7 @@
 namespace Tests;
 
 use Illuminate\Http\UploadedFile;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Nuwave\Lighthouse\Testing\MakesGraphQLRequests;
 use Nuwave\Lighthouse\Testing\RefreshesSchemaCache;
 use Database\Seeders\CmsSeeder;
@@ -16,6 +17,7 @@ use Aimeos\Cms\Models\File;
 
 class GraphqlFileTest extends TestAbstract
 {
+    use RefreshDatabase;
     use MakesGraphQLRequests;
     use RefreshesSchemaCache;
 

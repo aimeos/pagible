@@ -21,6 +21,8 @@ use Prism\Prism\Testing\TextResponseFake;
 
 class CommandTest extends TestAbstract
 {
+    use \Illuminate\Foundation\Testing\RefreshDatabase;
+
     public function testIndex(): void
     {
         $this->seed( CmsSeeder::class );
