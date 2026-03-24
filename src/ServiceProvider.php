@@ -82,6 +82,11 @@ class ServiceProvider extends Provider
 	{
 		$this->mergeConfigFrom( dirname( __DIR__ ) . '/config/cms.php', 'cms' );
 
+		$this->app->scoped( \Aimeos\Cms\Tenancy::class, function() {
+			$callback = \Aimeos\Cms\Tenancy::$callback;
+			return new \Aimeos\Cms\Tenancy( $callback ? $callback() : '' );
+		} );
+
 		config(['jsonapi.servers' => array_merge(
 			config('jsonapi.servers', []) ,
 			['cms' => \Aimeos\Cms\JsonApi\V1\Server::class]),

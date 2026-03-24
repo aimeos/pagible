@@ -21,7 +21,29 @@ class Tenancy
     /**
      * Current tenant value.
      */
-    private static ?string $value = null;
+    private string $id;
+
+
+    /**
+     * Creates a new tenancy instance with the given tenant ID.
+     *
+     * @param string $id Tenant ID
+     */
+    public function __construct( string $id )
+    {
+        $this->id = $id;
+    }
+
+
+    /**
+     * Returns the tenant ID of this instance.
+     *
+     * @return string Tenant ID
+     */
+    public function id() : string
+    {
+        return $this->id;
+    }
 
 
     /**
@@ -31,12 +53,6 @@ class Tenancy
      */
     public static function value() : string
     {
-        if( self::$value === null && self::$callback !== null )
-        {
-            $closure = self::$callback;
-            self::$value = $closure();
-        }
-
-        return (string) self::$value;
+        return app( self::class )->id();
     }
 }
