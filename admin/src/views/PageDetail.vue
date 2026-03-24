@@ -8,7 +8,10 @@ import HistoryDialog from '../components/HistoryDialog.vue'
 import PageDetailItem from '../components/PageDetailItem.vue'
 import PageDetailEditor from '../components/PageDetailEditor.vue'
 import PageDetailContent from '../components/PageDetailContent.vue'
-import PageDetailMetrics from '../components/PageDetailMetrics.vue'
+import { defineAsyncComponent } from 'vue'
+
+const PageDetailMetrics = defineAsyncComponent(() => import('../components/PageDetailMetrics.vue'))
+
 import {
   useUserStore,
   useDrawerStore,
