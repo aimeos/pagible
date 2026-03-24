@@ -489,13 +489,11 @@ class Page extends Model
         // restrict maximum depth to three levels for performance reasons
         $maxDepth = ( $this->depth ?? 0 ) + config( 'cms.navdepth', 2 );
 
-        $builder = $this->newScopedQuery()
+        $builder = $this->newScopedQuery()->with( 'latest' )
             ->select( 'id', 'parent_id', '_lft', '_rgt', 'depth', 'name', 'title', 'tag', 'path', 'domain', 'lang', 'to', 'status', 'config' )
             ->whereIn( 'depth', range( 0, $maxDepth ) )
             ->defaultOrder()
             ->setModel(new Nav());
-
-        $builder->with( 'latest' );
 
         if( !\Aimeos\Cms\Permission::can( 'page:view', Auth::user() ) )
         {
