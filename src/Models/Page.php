@@ -489,7 +489,7 @@ class Page extends Model
         // restrict maximum depth to three levels for performance reasons
         $maxDepth = ( $this->depth ?? 0 ) + config( 'cms.navdepth', 2 );
 
-        $builder = $this->newScopedQuery()
+        $builder = $this->newScopedQuery()->with( 'latest' )
             ->select( 'id', 'parent_id', '_lft', '_rgt', 'depth', 'name', 'title', 'tag', 'path', 'domain', 'lang', 'to', 'status', 'config' )
             ->whereIn( 'depth', range( 0, $maxDepth ) )
             ->defaultOrder()
@@ -497,20 +497,17 @@ class Page extends Model
 
         if( !\Aimeos\Cms\Permission::can( 'page:view', Auth::user() ) )
         {
-            $disabled = DB::table( $this->getTable() )
-                ->select( '_lft', '_rgt' )
-                ->where( 'tenant_id', '=', \Aimeos\Cms\Tenancy::value() )
-                ->where( 'status', 0 )
-                ->whereNull( 'deleted_at' )
-                ->get();
+            $table = $this->getTable();
 
-            foreach( $disabled as $node ) {
-                $builder->whereNotBetween( $this->qualifyColumn( '_lft' ), [$node->_lft, $node->_rgt] );
-            }
-        }
-        else
-        {
-            $builder->with( 'latest' );
+            $builder->whereNotExists( function( $query ) use ( $table ) {
+                $query->select( DB::raw( 1 ) )
+                    ->from( $table . ' as disabled' )
+                    ->where( 'disabled.tenant_id', '=', \Aimeos\Cms\Tenancy::value() )
+                    ->where( 'disabled.status', 0 )
+                    ->whereNull( 'disabled.deleted_at' )
+                    ->whereColumn( 'disabled._lft', '<=', $table . '._lft' )
+                    ->whereColumn( 'disabled._rgt', '>=', $table . '._rgt' );
+            });
         }
 
         return new DescendantsRelation( $builder, $this );
