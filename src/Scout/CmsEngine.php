@@ -213,35 +213,37 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
                 continue;
             }
 
-            $db->table( 'cms_index' )
-                ->whereIn( 'indexable_id', $group->map( fn( $m ) => $m->getScoutKey() )->all() )
-                ->where( 'indexable_type', $type )
-                ->where( 'tenant_id', $tenant )
-                ->delete();
+            $db->transaction( function() use ( $db, $group, $type, $tenant ) {
+                $db->table( 'cms_index' )
+                    ->whereIn( 'indexable_id', $group->map( fn( $m ) => $m->getScoutKey() )->all() )
+                    ->where( 'indexable_type', $type )
+                    ->where( 'tenant_id', $tenant )
+                    ->delete();
 
-            $rows = [];
+                $rows = [];
 
-            foreach( $group as $model )
-            {
-                if( !$model->shouldBeSearchable() ) {
-                    continue;
+                foreach( $group as $model )
+                {
+                    if( !$model->shouldBeSearchable() ) {
+                        continue;
+                    }
+
+                    $array = $model->toSearchableArray();
+                    $common = ['indexable_id' => $model->getScoutKey(), 'indexable_type' => $type, 'tenant_id' => $tenant];
+
+                    if( !empty( $array['draft'] ) ) {
+                        $rows[] = ['latest' => true, 'content' => $array['draft']] + $common;
+                    }
+
+                    if( !empty( $array['content'] ) ) {
+                        $rows[] = ['latest' => false, 'content' => $array['content']] + $common;
+                    }
                 }
 
-                $array = $model->toSearchableArray();
-                $common = ['indexable_id' => $model->getScoutKey(), 'indexable_type' => $type, 'tenant_id' => $tenant];
-
-                if( !empty( $array['draft'] ) ) {
-                    $rows[] = ['latest' => true, 'content' => $array['draft']] + $common;
+                if( !empty( $rows ) ) {
+                    $db->table( 'cms_index' )->insert( $rows );
                 }
-
-                if( !empty( $array['content'] ) ) {
-                    $rows[] = ['latest' => false, 'content' => $array['content']] + $common;
-                }
-            }
-
-            if( !empty( $rows ) ) {
-                $db->table( 'cms_index' )->insert( $rows );
-            }
+            } );
         }
     }
 

@@ -81,6 +81,9 @@ class Permission
      */
     private static ?\Closure $removeCallback = null;
 
+    /** @var \WeakMap<object, array<int, string>>|null Cache resolved permissions per user (Octane-safe). */
+    private static ?\WeakMap $resolvedCache = null;
+
 
     /**
      * Adds the permission for the requested action to the user.
@@ -101,6 +104,8 @@ class Permission
 
         // @phpstan-ignore-next-line property.notFound
         $user->cmsperms = array_values( array_unique( array_merge( $user->cmsperms ?? [], $actions ) ) );
+
+        unset( self::$resolvedCache[$user] );
 
         return $user;
     }
@@ -141,13 +146,18 @@ class Permission
             return $closure( $action, $user );
         }
 
-        $perms = $user->cmsperms ?? [];
-
-        if( $action === '*' ) {
-            return !empty( $perms );
+        if( !$user ) {
+            return false;
         }
 
-        return in_array( $action, self::resolve( $perms ) );
+        if( $action === '*' ) {
+            return !empty( $user->cmsperms ?? [] );
+        }
+
+        self::$resolvedCache ??= new \WeakMap();
+        self::$resolvedCache[$user] ??= self::resolve( $user->cmsperms ?? [] );
+
+        return in_array( $action, self::$resolvedCache[$user] );
     }
 
 
@@ -236,6 +246,8 @@ class Permission
 
         // @phpstan-ignore-next-line property.notFound
         $user->cmsperms = array_values( array_diff( $user->cmsperms ?? [], (array) $action ) );
+
+        unset( self::$resolvedCache[$user] );
 
         return $user;
     }
