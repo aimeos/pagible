@@ -81,9 +81,7 @@ class Permission
      */
     private static ?\Closure $removeCallback = null;
 
-    /**
-     * Cache of resolved permissions per user instance (Octane-safe via WeakMap).
-     */
+    /** @var \WeakMap<object, array<int, string>>|null Cache resolved permissions per user (Octane-safe). */
     private static ?\WeakMap $resolvedCache = null;
 
 
