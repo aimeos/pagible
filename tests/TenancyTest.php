@@ -20,7 +20,7 @@ class TenancyTest extends TestAbstract
     protected function tearDown(): void
     {
         Tenancy::$callback = fn() => 'test';
-        $this->resetTenancyValue();
+        app()->forgetScopedInstances();
 
         Permission::canUsing( null );
 
@@ -50,7 +50,7 @@ class TenancyTest extends TestAbstract
         $this->assertGreaterThan( 0, $countBefore );
 
         Tenancy::$callback = fn() => 'other';
-        $this->resetTenancyValue();
+        app()->forgetScopedInstances();
 
         $pages = Page::all();
         $this->assertEquals( 0, $pages->count() );
@@ -62,7 +62,7 @@ class TenancyTest extends TestAbstract
         $this->seed( CmsSeeder::class );
 
         Tenancy::$callback = fn() => 'other';
-        $this->resetTenancyValue();
+        app()->forgetScopedInstances();
 
         $pages = Page::withoutTenancy()->get();
         $this->assertGreaterThan( 0, $pages->count() );
@@ -174,11 +174,4 @@ class TenancyTest extends TestAbstract
     }
 
 
-    protected function resetTenancyValue(): void
-    {
-        $ref = new \ReflectionClass( Tenancy::class );
-        $prop = $ref->getProperty( 'value' );
-        $prop->setAccessible( true );
-        $prop->setValue( null, null );
-    }
 }
