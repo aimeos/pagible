@@ -51,12 +51,12 @@ class GraphqlTest extends TestAbstract
         parent::setUp();
         $this->bootRefreshesSchemaCache();
 
-        $this->user = \App\Models\User::create([
+        $this->user = new \App\Models\User([
             'name' => 'Test editor',
             'email' => 'editor@testbench',
             'password' => 'secret',
-            'cmsperms' => \Aimeos\Cms\Permission::all()
         ]);
+        $this->user->cmsperms = \Aimeos\Cms\Permission::all();
     }
 
 
