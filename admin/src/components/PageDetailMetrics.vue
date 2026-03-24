@@ -28,6 +28,7 @@ export default {
   },
 
   data: () => ({
+    destroyed: false,
     days: 30,
     errors: [],
     loading: false,
@@ -58,6 +59,10 @@ export default {
 
   mounted() {
     this.metrics()
+  },
+
+  beforeUnmount() {
+    this.destroyed = true
   },
 
   methods: {
@@ -149,6 +154,8 @@ export default {
             days: this.days
           }
         })
+
+        if (this.destroyed) return
 
         const stats = data?.metrics || {}
         const dateFormatter = new Intl.DateTimeFormat(this.$vuetify.locale.current, {
