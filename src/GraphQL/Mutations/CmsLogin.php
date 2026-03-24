@@ -8,24 +8,35 @@
 namespace Aimeos\Cms\GraphQL\Mutations;
 
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Contracts\Auth\Authenticatable;
 use GraphQL\Error\Error;
 
 
 final class CmsLogin
 {
-    /**
-     * @param  null  $rootValue
-     * @param  array<string, mixed>  $args
-     */
-    public function __invoke( $rootValue, array $args ): Authenticatable
-    {
-        $guard = Auth::guard();
+	/**
+	 * @param  null  $rootValue
+	 * @param  array<string, mixed>  $args
+	 */
+	public function __invoke( $rootValue, array $args ): Authenticatable
+	{
+		$key = 'cms-login:' . request()->ip() . '|' . strtolower( $args['email'] );
 
-        if( !$guard->attempt( $args ) ) {
-            throw new Error( 'Invalid credentials' );
-        }
+		if( RateLimiter::tooManyAttempts( $key, 3 ) ) {
+			throw new Error( "Too many login attempts" );
+		}
 
-        return $guard->user() ?? throw new Error( 'Login failed' );
-    }
+		$guard = Auth::guard();
+
+		if( !$guard->attempt( $args ) )
+		{
+			RateLimiter::hit( $key, 60 );
+			throw new Error( 'Invalid credentials' );
+		}
+
+		RateLimiter::clear( $key );
+
+		return $guard->user() ?? throw new Error( 'Login failed' );
+	}
 }

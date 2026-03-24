@@ -9,6 +9,7 @@ namespace Tests;
 
 use Aimeos\Cms\Mails\ContactMail;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\RateLimiter;
 
 
 class ContactControllerTest extends TestAbstract
@@ -111,5 +112,24 @@ class ContactControllerTest extends TestAbstract
         $response->assertStatus( 422 );
         $response->assertJsonValidationErrors( ['name', 'email', 'message'] );
         Mail::assertNothingSent();
+    }
+
+
+    public function testSendThrottle()
+    {
+        Mail::fake();
+        RateLimiter::clear( 'cms-contact' );
+
+        $data = [
+            'name' => 'Test User',
+            'email' => 'sender@google.com',
+            'message' => 'Hello, this is a test message.',
+        ];
+
+        for( $i = 0; $i < 2; $i++ ) {
+            $this->post( route( 'cms.api.contact' ), $data )->assertStatus( 200 );
+        }
+
+        $this->post( route( 'cms.api.contact' ), $data )->assertStatus( 429 );
     }
 }

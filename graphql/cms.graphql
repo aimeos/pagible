@@ -25,178 +25,178 @@ extend type User {
 
 extend type Query {
   "Current authenticated user"
-  me: User @auth
+  me: User @auth @throttle(name: "cms-admin")
 
   "Get page by ID"
   page(id: ID! @eq): Page
-    @guard @cmsPermission(action: "page:view")
+    @guard @cmsPermission(action: "page:view") @throttle(name: "cms-admin")
     @softDeletes
     @find
 
   "Get the available pages"
   pages(filter: PageFilter, sort: _ @orderBy(columns: ["id", "name", "title", "editor", "_lft"]), publish: Publish): [Page!]
     @paginate(builder: "\\Aimeos\\Cms\\GraphQL\\Query@pages", defaultCount: 100)
-    @guard @cmsPermission(action: "page:view")
+    @guard @cmsPermission(action: "page:view") @throttle(name: "cms-admin")
     @orderBy(column: "_lft", direction: ASC)
     @softDeletes
 
   "Get element item by ID"
   element(id: ID! @eq): Element
-    @guard @cmsPermission(action: "element:view")
+    @guard @cmsPermission(action: "element:view") @throttle(name: "cms-admin")
     @softDeletes
     @find
 
   "Get available element items"
   elements(filter: ElementFilter, sort: _ @orderBy(columns: ["id", "lang", "name", "type", "editor"]), publish: Publish): [Element!]
     @paginate(builder: "\\Aimeos\\Cms\\GraphQL\\Query@elements", defaultCount: 100)
-    @guard @cmsPermission(action: "element:view")
+    @guard @cmsPermission(action: "element:view") @throttle(name: "cms-admin")
     @orderBy(column: "id", direction: DESC)
     @softDeletes
 
   "Get file item by ID"
   file(id: ID! @eq): File
-    @guard @cmsPermission(action: "file:view")
+    @guard @cmsPermission(action: "file:view") @throttle(name: "cms-admin")
     @softDeletes
     @find
 
   "Get available files"
   files(filter: FileFilter, sort: _ @orderBy(columns: ["id", "name", "mime", "lang", "editor", "byversions_count"]), publish: Publish): [File!]
     @paginate(builder: "\\Aimeos\\Cms\\GraphQL\\Query@files", defaultCount: 100)
-    @guard @cmsPermission(action: "file:view")
+    @guard @cmsPermission(action: "file:view") @throttle(name: "cms-admin")
     @orderBy(column: "id", direction: DESC)
     @softDeletes
 }
 
 extend type Mutation {
   "Authenticated user"
-  cmsLogin(email: String!, password: String!): User!
+  cmsLogin(email: String!, password: String!): User! @throttle(name: "cms-login")
 
   "Log out authenticated user"
   cmsLogout: User @guard
 
   "Update CMS user preferences"
-  cmsUser(settings: JSON!): User @guard
+  cmsUser(settings: JSON!): User @guard @throttle(name: "cms-admin")
 
   "Summarize the content of the file passed by its file ID"
-  describe(file: String!, lang: String): String @guard @cmsPermission(action: "file:describe") @throttle(maxAttempts: 10)
+  describe(file: String!, lang: String): String @guard @cmsPermission(action: "file:describe") @throttle(name: "cms-ai")
 
   "Remove the part of the image covered by the mask (black: keep, white: erase), returns a base64 encoded image"
-  erase(file: Upload!, mask: Upload!): String @guard @cmsPermission(action: "image:erase") @throttle(maxAttempts: 10)
+  erase(file: Upload!, mask: Upload!): String @guard @cmsPermission(action: "image:erase") @throttle(name: "cms-ai")
 
   "Generate images from prompts and passed file IDs, returns a base64 encoded image"
-  imagine(prompt: String!, context: String, files: [String!]): String @guard @cmsPermission(action: "image:imagine") @throttle(maxAttempts: 10)
+  imagine(prompt: String!, context: String, files: [String!]): String @guard @cmsPermission(action: "image:imagine") @throttle(name: "cms-ai")
 
   "Edit an image using a mask image and a prompt, returns a base64 encoded image"
-  inpaint(file: Upload!, mask: Upload!, prompt: String!): String @guard @cmsPermission(action: "image:inpaint") @throttle(maxAttempts: 10)
+  inpaint(file: Upload!, mask: Upload!, prompt: String!): String @guard @cmsPermission(action: "image:inpaint") @throttle(name: "cms-ai")
 
   "Remove image background, returns a base64 encoded image"
-  isolate(file: Upload!): String @guard @cmsPermission(action: "image:isolate") @throttle(maxAttempts: 10)
+  isolate(file: Upload!): String @guard @cmsPermission(action: "image:isolate") @throttle(name: "cms-ai")
 
   "Get page metrics for the last X days"
-  metrics(url: String!, days: Int, lang: String): Stats @guard @cmsPermission(action: "page:metrics") @throttle(maxAttempts: 10)
+  metrics(url: String!, days: Int, lang: String): Stats @guard @cmsPermission(action: "page:metrics") @throttle(name: "cms-ai")
 
   "Edit an image using a prompt, returns a base64 encoded image"
-  repaint(file: Upload!, prompt: String!): String @guard @cmsPermission(action: "image:repaint") @throttle(maxAttempts: 10)
+  repaint(file: Upload!, prompt: String!): String @guard @cmsPermission(action: "image:repaint") @throttle(name: "cms-ai")
 
   "Refine existing page content"
-  refine(prompt: String!, content: JSON!, type: String, context: String): JSON @guard @cmsPermission(action: "page:refine") @throttle(maxAttempts: 10)
+  refine(prompt: String!, content: JSON!, type: String, context: String): JSON @guard @cmsPermission(action: "page:refine") @throttle(name: "cms-ai")
 
   "Synthesize pages and content from prompts and passed file IDs"
-  synthesize(prompt: String!, context: String, files: [String!]): String @guard @cmsPermission(action: "page:synthesize") @throttle(maxAttempts: 10)
+  synthesize(prompt: String!, context: String, files: [String!]): String @guard @cmsPermission(action: "page:synthesize") @throttle(name: "cms-ai")
 
   "Transcribe uploaded audio file"
-  transcribe(file: Upload!): JSON @guard @cmsPermission(action: "audio:transcribe") @throttle(maxAttempts: 10)
+  transcribe(file: Upload!): JSON @guard @cmsPermission(action: "audio:transcribe") @throttle(name: "cms-ai")
 
   "Translate texts"
-  translate(texts: [String!]!, to: String!, from: String, context: String): [String!]! @guard @cmsPermission(action: "text:translate") @throttle(maxAttempts: 10)
+  translate(texts: [String!]!, to: String!, from: String, context: String): [String!]! @guard @cmsPermission(action: "text:translate") @throttle(name: "cms-ai")
 
   "Extend/outpaint image, returns a base64 encoded image"
-  uncrop(file: Upload!, top: Int!, right: Int, bottom: Int, left: Int): String @guard @cmsPermission(action: "image:uncrop") @throttle(maxAttempts: 10)
+  uncrop(file: Upload!, top: Int!, right: Int, bottom: Int, left: Int): String @guard @cmsPermission(action: "image:uncrop") @throttle(name: "cms-ai")
 
   "Upscale image, returns a base64 encoded image"
-  upscale(file: Upload!, factor: Int!): String @guard @cmsPermission(action: "image:upscale") @throttle(maxAttempts: 10)
+  upscale(file: Upload!, factor: Int!): String @guard @cmsPermission(action: "image:upscale") @throttle(name: "cms-ai")
 
   "Generate texts from prompts and passed file IDs"
-  write(prompt: String!, context: String, files: [String!]): String @guard @cmsPermission(action: "text:write") @throttle(maxAttempts: 10)
+  write(prompt: String!, context: String, files: [String!]): String @guard @cmsPermission(action: "text:write") @throttle(name: "cms-ai")
 
 
   "Add a new page below the page referenced by 'parent' and before the page referenced by 'ref' (or append if NULL)"
   addPage(input: PageInput!, parent: ID, ref: ID, elements: [ID!], files: [ID!]): Page
-    @guard @cmsPermission(action: "page:add")
+    @guard @cmsPermission(action: "page:add") @throttle(name: "cms-admin")
 
   "Move the page below the page referenced by 'parent' and before the page referenced by 'ref' (or append if NULL)"
   movePage(id: ID!, parent: ID, ref: ID): Page
-    @guard @cmsPermission(action: "page:move")
+    @guard @cmsPermission(action: "page:move") @throttle(name: "cms-admin")
 
   "Update the values of an existing page"
   savePage(id: ID!, input: PageInput!, elements: [ID!], files: [ID!]): Page
-    @guard @cmsPermission(action: "page:save")
+    @guard @cmsPermission(action: "page:save") @throttle(name: "cms-admin")
 
   "Delete an existing page"
   dropPage(id: [ID!]!): [Page]!
-    @guard @cmsPermission(action: "page:drop")
+    @guard @cmsPermission(action: "page:drop") @throttle(name: "cms-admin")
 
   "Restore an existing page"
   keepPage(id: [ID!]!): [Page]!
-    @guard @cmsPermission(action: "page:keep")
+    @guard @cmsPermission(action: "page:keep") @throttle(name: "cms-admin")
 
   "Purge an existing page"
   purgePage(id: [ID!]!): [Page]!
-    @guard @cmsPermission(action: "page:purge")
+    @guard @cmsPermission(action: "page:purge") @throttle(name: "cms-admin")
 
   "Publish page data"
   pubPage(id: [ID!]!, at: DateTime): [Page]!
-    @guard @cmsPermission(action: "page:publish")
+    @guard @cmsPermission(action: "page:publish") @throttle(name: "cms-admin")
 
 
   "Add a new shared content element with file references"
   addElement(input: ElementInput!, files: [ID!]): Element
-    @guard @cmsPermission(action: "element:add")
+    @guard @cmsPermission(action: "element:add") @throttle(name: "cms-admin")
 
   "Update an existing shared content element"
   saveElement(id: ID!, input: ElementInput!, files: [ID!]): Element
-    @guard @cmsPermission(action: "element:save")
+    @guard @cmsPermission(action: "element:save") @throttle(name: "cms-admin")
 
   "Delete an existing shared content element"
   dropElement(id: [ID!]!): [Element]!
-    @guard @cmsPermission(action: "element:drop")
+    @guard @cmsPermission(action: "element:drop") @throttle(name: "cms-admin")
 
   "Restore an existing shared content element"
   keepElement(id: [ID!]!): [Element]!
-    @guard @cmsPermission(action: "element:keep")
+    @guard @cmsPermission(action: "element:keep") @throttle(name: "cms-admin")
 
   "Purge an existing shared content element"
   purgeElement(id: [ID!]!): [Element]!
-    @guard @cmsPermission(action: "element:purge")
+    @guard @cmsPermission(action: "element:purge") @throttle(name: "cms-admin")
 
   "Publish an existing shared content element"
   pubElement(id: [ID!]!, at: DateTime): [Element]!
-    @guard @cmsPermission(action: "element:publish")
+    @guard @cmsPermission(action: "element:publish") @throttle(name: "cms-admin")
 
 
   "Adds a new file upload, optionally with preview and the description of the file"
   addFile(input: FileInput, file: Upload, preview: Upload): File
-    @guard @cmsPermission(action: "file:add")
+    @guard @cmsPermission(action: "file:add") @throttle(name: "cms-admin")
 
   "Update an existing file"
   saveFile(id: ID!, input: FileInput!, file: Upload, preview: RemoveableUpload): File
-    @guard @cmsPermission(action: "file:save")
+    @guard @cmsPermission(action: "file:save") @throttle(name: "cms-admin")
 
   "Delete an existing file"
   dropFile(id: [ID!]!): [File]!
-    @guard @cmsPermission(action: "file:drop")
+    @guard @cmsPermission(action: "file:drop") @throttle(name: "cms-admin")
 
   "Restore an existing file"
   keepFile(id: [ID!]!): [File]!
-    @guard @cmsPermission(action: "file:keep")
+    @guard @cmsPermission(action: "file:keep") @throttle(name: "cms-admin")
 
   "Purge an existing file"
   purgeFile(id: [ID!]!): [File]!
-    @guard @cmsPermission(action: "file:purge")
+    @guard @cmsPermission(action: "file:purge") @throttle(name: "cms-admin")
 
   "Publish file data"
   pubFile(id: [ID!]!, at: DateTime): [File]!
-    @guard @cmsPermission(action: "file:publish")
+    @guard @cmsPermission(action: "file:publish") @throttle(name: "cms-admin")
 }
 
 type Page {
