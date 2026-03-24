@@ -22,7 +22,7 @@ export const useUserStore = defineStore('user', {
   state: () => ({
     me: null,
     urlintended: null,
-    _saveTimer: null
+    saveTimer: null
   }),
 
   actions: {
@@ -116,8 +116,8 @@ export const useUserStore = defineStore('user', {
     },
 
     logout() {
-      clearTimeout(this._saveTimer)
-      this._saveTimer = null
+      clearTimeout(this.saveTimer)
+      this.saveTimer = null
 
       return apolloClient
         .mutate({
@@ -167,15 +167,15 @@ export const useUserStore = defineStore('user', {
 
       this.me.settings[panel][key] = value
 
-      clearTimeout(this._saveTimer)
-      this._saveTimer = setTimeout(() => this.flush(), 60000)
+      clearTimeout(this.saveTimer)
+      this.saveTimer = setTimeout(() => this.flush(), 60000)
     },
 
     flush() {
-      if (!this._saveTimer || !this.me?.settings) return
+      if (!this.saveTimer || !this.me?.settings) return
 
-      clearTimeout(this._saveTimer)
-      this._saveTimer = null
+      clearTimeout(this.saveTimer)
+      this.saveTimer = null
 
       apolloClient
         .mutate({
