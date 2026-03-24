@@ -7,6 +7,7 @@
 
 namespace Tests;
 
+use Illuminate\Support\Facades\RateLimiter;
 use Nuwave\Lighthouse\Testing\MakesGraphQLRequests;
 use Nuwave\Lighthouse\Testing\RefreshesSchemaCache;
 
@@ -40,6 +41,8 @@ class GraphqlAuthTest extends TestAbstract
     {
         parent::setUp();
         $this->bootRefreshesSchemaCache();
+
+        RateLimiter::clear( 'cms-login:127.0.0.1|editor@testbench' );
 
         $this->user = \App\Models\User::create([
             'name' => 'Test',
@@ -218,5 +221,57 @@ class GraphqlAuthTest extends TestAbstract
                 }
             }
         ', ['settings' => json_encode( $settings )] )->assertGraphQLErrorMessage( 'User data too large (64 KB), maximum is 64 KB' );
+    }
+
+
+    public function testLoginThrottle()
+    {
+        for( $i = 0; $i < 3; $i++ )
+        {
+            $this->graphQL( '
+                mutation {
+                    cmsLogin(email: "editor@testbench", password: "wrong") {
+                        id
+                    }
+                }
+            ' )->assertGraphQLErrorMessage( 'Invalid credentials' );
+        }
+
+        $this->graphQL( '
+            mutation {
+                cmsLogin(email: "editor@testbench", password: "secret") {
+                    id
+                }
+            }
+        ' )->assertGraphQLErrorMessage( 'Too many login attempts' );
+    }
+
+
+    public function testLoginThrottleClear()
+    {
+        $this->graphQL( '
+            mutation {
+                cmsLogin(email: "editor@testbench", password: "wrong") {
+                    id email
+                }
+            }
+        ' )->assertGraphQLErrorMessage( 'Invalid credentials' );
+
+        $this->graphQL( '
+            mutation {
+                cmsLogin(email: "editor@testbench", password: "secret") {
+                    id email
+                }
+            }
+        ' )->assertJsonPath( 'data.cmsLogin.email', 'editor@testbench' );
+
+        // After successful login, limiter is cleared — can fail again without being throttled
+        $this->graphQL( '
+            mutation {
+                cmsLogin(email: "editor@testbench", password: "wrong") {
+                    id email
+                }
+            }
+        ' )->assertGraphQLErrorMessage( 'Invalid credentials' );
     }
 }

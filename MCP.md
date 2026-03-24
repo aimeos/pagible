@@ -111,7 +111,7 @@ In `./routes/ai.php`:
 
 ```php
 Mcp::oauthRoutes();
-Mcp::web('/mcp/cms', \Aimeos\Cms\Mcp\CmsServer::class)->middleware('auth:api');
+Mcp::web('/mcp/cms', \Aimeos\Cms\Mcp\CmsServer::class)->middleware(['auth:api', 'throttle:cms-admin']);
 ```
 
 Setup for Passport:

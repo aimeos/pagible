@@ -7,9 +7,11 @@
 
 namespace Aimeos\Cms;
 
-use Illuminate\Support\ServiceProvider as Provider;
+use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\ServiceProvider as Provider;
 
 
 class ServiceProvider extends Provider
@@ -38,40 +40,14 @@ class ServiceProvider extends Provider
 		$this->publishes( [$basedir . '/admin/dist' => public_path( 'vendor/cms/admin' )], 'admin' );
 		$this->publishes( [$basedir . '/graphql' => base_path( 'graphql' )], 'admin' );
 
-
-		if( $this->app->runningInConsole() )
-		{
-			$this->commands( [
-				\Aimeos\Cms\Commands\Description::class,
-				\Aimeos\Cms\Commands\Index::class,
-				\Aimeos\Cms\Commands\Install::class,
-				\Aimeos\Cms\Commands\Publish::class,
-				\Aimeos\Cms\Commands\Serve::class,
-				\Aimeos\Cms\Commands\User::class,
-				\Aimeos\Cms\Commands\WpImport::class,
-				\Aimeos\Cms\Commands\Demo::class,
-			] );
-		}
+		$this->rateLimiter();
+		$this->console();
+		$this->scout();
 
 		$this->app->make('events')->listen(
 			\Nuwave\Lighthouse\Events\RegisterDirectiveNamespaces::class,
 			fn() => 'Aimeos\\Cms\\GraphQL\\Directives'
 		);
-
-		app(\Laravel\Scout\EngineManager::class)->extend('cms', function () {
-			return new \Aimeos\Cms\Scout\CmsEngine();
-		});
-
-		// handle split content/draft search
-		\Laravel\Scout\Builder::macro('searchFields', function( string ...$fields ) {
-			return match( config('scout.driver') ) {
-				'meilisearch' => $this->options( ['attributesToSearchOn' => $fields] ),
-				'typesense' => $this->options( ['query_by' => implode( ',', $fields )] ),
-				'algolia' => $this->options( ['restrictSearchableAttributes' => $fields] ),
-				'cms' => $this->where( 'latest', in_array( 'draft', $fields ) ),
-				default => $this,
-			};
-		});
 	}
 
 
@@ -86,6 +62,27 @@ class ServiceProvider extends Provider
 			config('jsonapi.servers', []) ,
 			['cms' => \Aimeos\Cms\JsonApi\V1\Server::class]),
 		]);
+	}
+
+
+	/**
+	 * Registers the commands
+	 */
+	protected function console() : void
+	{
+		if( $this->app->runningInConsole() )
+		{
+			 $this->commands( [
+				\Aimeos\Cms\Commands\Description::class,
+				\Aimeos\Cms\Commands\Index::class,
+				\Aimeos\Cms\Commands\Install::class,
+				\Aimeos\Cms\Commands\Publish::class,
+				\Aimeos\Cms\Commands\Serve::class,
+				\Aimeos\Cms\Commands\User::class,
+				\Aimeos\Cms\Commands\WpImport::class,
+				\Aimeos\Cms\Commands\Demo::class,
+			] );
+		}
 	}
 
 
@@ -112,5 +109,62 @@ class ServiceProvider extends Provider
 				]))->convert($expression ?? '');
 			?>";
 		} );
+	}
+
+
+	/**
+	 * Register rate limiters
+	 */
+	protected function rateLimiter(): void
+	{
+		RateLimiter::for( 'cms-admin', fn( $request ) =>
+			Limit::perMinute( 120 )->by( $request->user()?->getAuthIdentifier() ?: $request->ip() )
+		);
+
+		RateLimiter::for( 'cms-ai', fn( $request ) =>
+			Limit::perMinute( 10 )->by( $request->user()?->getAuthIdentifier() ?: $request->ip() )
+		);
+
+		RateLimiter::for( 'cms-contact', fn( $request ) =>
+			Limit::perMinute( 2 )->by( $request->ip() )
+		);
+
+		RateLimiter::for( 'cms-jsonapi', fn( $request ) =>
+			Limit::perMinute( 60 )->by( $request->ip() )
+		);
+
+		RateLimiter::for( 'cms-login', fn( $request ) =>
+			Limit::perMinute( 10 )->by( $request->ip() )
+		);
+
+		RateLimiter::for( 'cms-proxy', fn( $request ) =>
+			Limit::perMinute( 30 )->by( $request->ip() )
+		);
+
+		RateLimiter::for( 'cms-search', fn( $request ) =>
+			Limit::perMinute( 60 )->by( $request->ip() )
+		);
+	}
+
+
+	/**
+	 * Register Scout engine and macros
+	 */
+	protected function scout(): void
+	{
+		app(\Laravel\Scout\EngineManager::class)->extend('cms', function () {
+			return new \Aimeos\Cms\Scout\CmsEngine();
+		});
+
+		// handle split content/draft search
+		\Laravel\Scout\Builder::macro('searchFields', function( string ...$fields ) {
+			return match( config('scout.driver') ) {
+				'meilisearch' => $this->options( ['attributesToSearchOn' => $fields] ),
+				'typesense' => $this->options( ['query_by' => implode( ',', $fields )] ),
+				'algolia' => $this->options( ['restrictSearchableAttributes' => $fields] ),
+				'cms' => $this->where( 'latest', in_array( 'draft', $fields ) ),
+				default => $this,
+			};
+		});
 	}
 }
