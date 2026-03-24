@@ -11,16 +11,16 @@ use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Models\Version;
-use Database\Seeders\CmsSeeder;
 
 
 class ModelTest extends TestAbstract
 {
     public function testPageToString(): void
     {
-        $this->seed( CmsSeeder::class );
+        $page = new Page( ['name' => 'Home', 'title' => 'Home | Laravel CMS'] );
+        $page->content = [(object) ['type' => 'heading', 'data' => (object) ['title' => 'Welcome to Laravel CMS']]];
+        $page->setRelation( 'elements', collect( [] ) );
 
-        $page = Page::where( 'path', '' )->firstOrFail();
         $this->assertStringContainsString( 'Home', (string) $page );
         $this->assertStringContainsString( 'Home | Laravel CMS', (string) $page );
         $this->assertStringContainsString( 'Welcome to Laravel CMS', (string) $page );
@@ -29,9 +29,9 @@ class ModelTest extends TestAbstract
 
     public function testPageToStringEmpty(): void
     {
-        $this->seed( CmsSeeder::class );
+        $page = new Page( ['name' => 'Disabled'] );
+        $page->setRelation( 'elements', collect( [] ) );
 
-        $page = Page::where( 'path', 'disabled' )->firstOrFail();
         $this->assertStringContainsString( 'Disabled', (string) $page );
         $this->assertStringNotContainsString( 'Welcome', (string) $page );
     }
@@ -39,8 +39,6 @@ class ModelTest extends TestAbstract
 
     public function testElementToString(): void
     {
-        $this->seed( CmsSeeder::class );
-
         $element = new Element();
         $element->type = 'heading';
         $element->name = 'Test';
@@ -63,9 +61,8 @@ class ModelTest extends TestAbstract
 
     public function testFileToString(): void
     {
-        $this->seed( CmsSeeder::class );
+        $file = new File( ['name' => 'Test image', 'description' => (object) ['en' => 'Test file description']] );
 
-        $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
         $this->assertStringContainsString( 'Test image', (string) $file );
         $this->assertStringContainsString( "en:\nTest file description", (string) $file );
     }
@@ -80,10 +77,11 @@ class ModelTest extends TestAbstract
 
     public function testVersionToStringPage(): void
     {
-        $this->seed( CmsSeeder::class );
-
-        $page = Page::where( 'path', '' )->firstOrFail();
-        $version = $page->latest;
+        $version = new Version( [
+            'data' => (object) ['name' => 'Home', 'type' => 'heading', 'data' => (object) ['title' => 'Welcome to Laravel CMS']],
+            'aux' => (object) ['content' => []],
+        ] );
+        $version->setRelation( 'elements', collect( [] ) );
 
         $this->assertStringContainsString( 'Home', (string) $version );
         $this->assertStringContainsString( 'Welcome to Laravel CMS', (string) $version );
@@ -92,10 +90,7 @@ class ModelTest extends TestAbstract
 
     public function testVersionToStringElement(): void
     {
-        $this->seed( CmsSeeder::class );
-
-        $element = Element::where( 'name', 'Shared footer' )->firstOrFail();
-        $version = $element->latest;
+        $version = new Version( ['data' => (object) []] );
 
         $this->assertNotNull( $version );
     }
@@ -103,10 +98,11 @@ class ModelTest extends TestAbstract
 
     public function testVersionToStringFile(): void
     {
-        $this->seed( CmsSeeder::class );
-
-        $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
-        $version = $file->latest;
+        $version = new Version( [
+            'data' => (object) ['name' => 'Test image', 'description' => (object) ['en' => 'Test file description']],
+            'aux' => (object) [],
+        ] );
+        $version->setRelation( 'elements', collect( [] ) );
 
         $this->assertStringContainsString( 'Test image', (string) $version );
         $this->assertStringContainsString( "en:\nTest file description", (string) $version );

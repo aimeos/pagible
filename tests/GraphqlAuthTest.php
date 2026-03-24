@@ -8,12 +8,14 @@
 namespace Tests;
 
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Nuwave\Lighthouse\Testing\MakesGraphQLRequests;
 use Nuwave\Lighthouse\Testing\RefreshesSchemaCache;
 
 
 class GraphqlAuthTest extends TestAbstract
 {
+    use RefreshDatabase;
     use MakesGraphQLRequests;
     use RefreshesSchemaCache;
 

@@ -7,11 +7,13 @@
 
 namespace Tests;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use LaravelJsonApi\Testing\MakesJsonApiRequests;
 
 
 class JsonapiTest extends TestAbstract
 {
+    use RefreshDatabase;
     use MakesJsonApiRequests;
 
 

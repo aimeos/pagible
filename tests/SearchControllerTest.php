@@ -8,6 +8,7 @@
 namespace Tests;
 
 use Illuminate\Foundation\Testing\DatabaseTruncation;
+use Illuminate\Foundation\Testing\RefreshDatabaseState;
 use Illuminate\Http\Request;
 
 
@@ -18,10 +19,10 @@ class SearchControllerTest extends TestAbstract
     protected $connectionsToTransact = [];
 
 
-    public function beginDatabaseTransaction()
+    protected function beforeTruncatingDatabase(): void
     {
-        // Prevent RefreshDatabase from wrapping tests in a transaction
-        // MySQL/MariaDB/SQL Server FULLTEXT indexes can't see uncommitted data
+        // In-memory SQLite databases don't persist across test classes
+        RefreshDatabaseState::$migrated = false;
     }
 
 

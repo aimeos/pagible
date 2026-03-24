@@ -7,9 +7,13 @@
 
 namespace Tests;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
+
 
 class SitemapControllerTest extends TestAbstract
 {
+    use RefreshDatabase;
+
     public function testIndex()
     {
         $this->seed( \Database\Seeders\CmsSeeder::class );

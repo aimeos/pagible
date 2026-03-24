@@ -13,6 +13,7 @@ use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
 use Illuminate\Foundation\Testing\DatabaseTruncation;
+use Illuminate\Foundation\Testing\RefreshDatabaseState;
 use Illuminate\Support\Facades\Http;
 
 
@@ -23,10 +24,10 @@ class ToolsTest extends TestAbstract
     protected $connectionsToTransact = [];
 
 
-    public function beginDatabaseTransaction()
+    protected function beforeTruncatingDatabase(): void
     {
-        // Prevent RefreshDatabase from wrapping tests in a transaction
-        // SQLite FTS5 indexes can't see uncommitted data
+        // In-memory SQLite databases don't persist across test classes
+        RefreshDatabaseState::$migrated = false;
     }
 
 
