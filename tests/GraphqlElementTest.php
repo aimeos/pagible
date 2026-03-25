@@ -472,7 +472,7 @@ class GraphqlElementTest extends TestAbstract
         $this->expectsDatabaseQueryCount( 5 );
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
-                pubElement(id: ["' . $element->id . '"], at: "2025-01-01 00:00:00") {
+                pubElement(id: ["' . $element->id . '"], at: "2099-01-01 00:00:00") {
                     id
                 }
             }

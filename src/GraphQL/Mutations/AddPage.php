@@ -10,6 +10,7 @@ namespace Aimeos\Cms\GraphQL\Mutations;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Models\Version;
 use Aimeos\Cms\Permission;
+use Aimeos\Cms\Validation;
 use GraphQL\Error\Error;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
@@ -100,6 +101,10 @@ final class AddPage
                 $content->data->text = \Aimeos\Cms\Utils::html( (string) $content->data->text );
             }
         }
+
+        Validation::content( $input['content'] ?? [] );
+        Validation::structured( $input['meta'] ?? new \stdClass(), 'meta' );
+        Validation::structured( $input['config'] ?? new \stdClass(), 'config' );
 
         return $input;
     }

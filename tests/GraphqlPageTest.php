@@ -1086,7 +1086,7 @@ class GraphqlPageTest extends TestAbstract
         $this->expectsDatabaseQueryCount( 6 );
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
-                pubPage(id: ["' . $page->id . '"], at: "2025-01-01 00:00:00") {
+                pubPage(id: ["' . $page->id . '"], at: "2099-01-01 00:00:00") {
                     id
                 }
             }

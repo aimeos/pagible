@@ -488,7 +488,7 @@ class GraphqlFileTest extends TestAbstract
         $this->expectsDatabaseQueryCount( 4 );
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
-                pubFile(id: ["' . $file->id . '"], at: "2025-01-01 00:00:00") {
+                pubFile(id: ["' . $file->id . '"], at: "2099-01-01 00:00:00") {
                     id
                 }
             }

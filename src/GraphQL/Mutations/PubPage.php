@@ -10,6 +10,7 @@ namespace Aimeos\Cms\GraphQL\Mutations;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Validation;
 
 
 final class PubPage
@@ -21,6 +22,8 @@ final class PubPage
      */
     public function __invoke( $rootValue, array $args ) : array
     {
+        Validation::publishAt( $args['at'] ?? null );
+
         return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $args ) {
 
             $items = Page::with( 'latest.files', 'latest.elements' )->whereIn( 'id', $args['id'] )->get();
