@@ -15,7 +15,7 @@ class Validation
     /**
      * Validates page/element content arrays against configured schemas
      *
-     * @param iterable $items Content items to validate
+     * @param iterable<array<string, mixed>> $items Content items to validate
      * @throws \InvalidArgumentException If content type is unknown
      */
     public static function content( iterable $items ): void
