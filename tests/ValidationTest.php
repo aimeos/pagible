@@ -8,6 +8,7 @@
 namespace Tests;
 
 use Aimeos\Cms\Validation;
+use GraphQL\Error\Error;
 
 
 class ValidationTest extends TestAbstract
@@ -24,7 +25,7 @@ class ValidationTest extends TestAbstract
 
     public function testContentBadType()
     {
-        $this->expectException( \InvalidArgumentException::class );
+        $this->expectException( Error::class );
         $this->expectExceptionMessage( 'Unknown content type "nonexistent"' );
 
         Validation::content( [
@@ -35,7 +36,7 @@ class ValidationTest extends TestAbstract
 
     public function testContentNoType()
     {
-        $this->expectException( \InvalidArgumentException::class );
+        $this->expectException( Error::class );
         $this->expectExceptionMessage( 'Unknown content type ""' );
 
         Validation::content( [
@@ -89,6 +90,32 @@ class ValidationTest extends TestAbstract
         Validation::content( [] );
 
         $this->assertTrue( true );
+    }
+
+
+    public function testElementValid()
+    {
+        Validation::element( 'heading' );
+
+        $this->assertTrue( true );
+    }
+
+
+    public function testElementBadType()
+    {
+        $this->expectException( Error::class );
+        $this->expectExceptionMessage( 'Unknown element type "nonexistent"' );
+
+        Validation::element( 'nonexistent' );
+    }
+
+
+    public function testElementEmptyType()
+    {
+        $this->expectException( Error::class );
+        $this->expectExceptionMessage( 'Unknown element type ""' );
+
+        Validation::element( '' );
     }
 
 
@@ -146,7 +173,7 @@ class ValidationTest extends TestAbstract
 
     public function testPublishAtPast()
     {
-        $this->expectException( \InvalidArgumentException::class );
+        $this->expectException( Error::class );
         $this->expectExceptionMessage( 'Publish date must be in the future' );
 
         Validation::publishAt( '2020-01-01 00:00:00' );
@@ -155,7 +182,7 @@ class ValidationTest extends TestAbstract
 
     public function testPublishAtInvalid()
     {
-        $this->expectException( \InvalidArgumentException::class );
+        $this->expectException( Error::class );
         $this->expectExceptionMessage( 'Invalid publish date' );
 
         Validation::publishAt( 'not-a-date' );
