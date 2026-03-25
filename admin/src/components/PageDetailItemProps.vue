@@ -9,6 +9,7 @@ import {
   useLanguageStore,
   useSideStore
 } from '../stores'
+import { debounce, locales, slugify } from '../utils'
 
 export default {
   props: {
@@ -17,8 +18,6 @@ export default {
   },
 
   emits: ['change', 'error'],
-
-  inject: ['debounce', 'locales', 'slugify'],
 
   data: () => ({
     errors: {},
@@ -32,7 +31,7 @@ export default {
     const user = useUserStore()
     const app = useAppStore()
 
-    return { app, user, side, config, languages }
+    return { app, user, side, config, languages, debounce, slugify, locales }
   },
 
   created() {

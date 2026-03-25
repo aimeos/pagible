@@ -17,7 +17,8 @@ import {
   useDrawerStore,
   useLanguageStore,
   useMessageStore,
-  useSchemaStore
+  useSchemaStore,
+  useViewStack
 } from '../stores'
 import {
   mdiKeyboardBackspace,
@@ -28,6 +29,8 @@ import {
   mdiChevronRight,
   mdiChevronLeft
 } from '@mdi/js'
+import { txlocales } from '../utils'
+import { write, translate } from '../ai'
 
 export default {
   components: {
@@ -39,8 +42,6 @@ export default {
     PageDetailContent,
     PageDetailMetrics
   },
-
-  inject: ['closeView', 'write', 'translate', 'txlocales'],
 
   props: {
     item: { type: Object, required: true }
@@ -55,6 +56,7 @@ export default {
   },
 
   setup() {
+    const viewStack = useViewStack()
     const languages = useLanguageStore()
     const messages = useMessageStore()
     const schemas = useSchemaStore()
@@ -64,6 +66,7 @@ export default {
     return {
       user,
       drawer,
+      viewStack,
       languages,
       messages,
       schemas,
@@ -73,7 +76,9 @@ export default {
       mdiHistory,
       mdiDatabaseArrowDown,
       mdiChevronRight,
-      mdiChevronLeft
+      mdiChevronLeft,
+      txlocales,
+      translate
     }
   },
 
@@ -166,8 +171,6 @@ export default {
   },
 
   created() {
-    this.$options._write = this.write
-
     if (!this.item?.id || !this.user.can('page:view')) {
       return
     }
@@ -396,7 +399,7 @@ export default {
                 )
               }
 
-              this.closeView()
+              this.viewStack.closeView()
             })
             .catch((error) => {
               this.messages.add(this.$gettext('Error publishing page') + ':\n' + error, 'error')
@@ -684,7 +687,7 @@ export default {
       context.push('page content as JSON: ' + JSON.stringify(this.item.content))
       context.push('required output language: ' + (this.item.lang || 'en'))
 
-      return this.$options._write(prompt, context, files)
+      return write(prompt, context, files)
     }
   },
 
@@ -700,7 +703,7 @@ export default {
   <v-app-bar :elevation="0" density="compact">
     <template v-slot:prepend>
       <v-btn
-        @click="closeView()"
+        @click="viewStack.closeView()"
         :title="$gettext('Back to list view')"
         :icon="mdiKeyboardBackspace"
       />

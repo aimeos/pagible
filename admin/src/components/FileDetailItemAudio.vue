@@ -1,12 +1,16 @@
 /** @license LGPL, https://opensource.org/license/lgpl-3-0 */
 
 <script>
+import { url } from '../utils'
+
 export default {
   props: {
     item: { type: Object, required: true }
   },
 
-  inject: ['url']
+  setup() {
+    return { url }
+  }
 }
 </script>
 

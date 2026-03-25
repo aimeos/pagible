@@ -15,6 +15,8 @@ import {
 } from '../stores'
 import { recording } from '../audio'
 import { mdiTranslate, mdiCreation, mdiMicrophoneOutline, mdiMicrophone } from '@mdi/js'
+import { toBlob, locales, txlocales, url } from '../utils'
+import { transcribe, translate } from '../ai'
 
 export default {
   components: {
@@ -30,7 +32,6 @@ export default {
 
   emits: ['update:item', 'update:file', 'error'],
 
-  inject: ['base64ToBlob', 'locales', 'transcribe', 'translate', 'txlocales', 'url'],
 
   data() {
     return {
@@ -58,6 +59,12 @@ export default {
       mdiTranslate,
       mdiCreation,
       mdiMicrophoneOutline,
+      toBlob,
+      url,
+      locales,
+      txlocales,
+      transcribe,
+      translate,
       mdiMicrophone
     }
   },

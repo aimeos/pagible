@@ -3,6 +3,7 @@
 <script>
 import gql from 'graphql-tag'
 import { useUserStore, useMessageStore } from '../stores'
+import { url } from '../utils'
 import { mdiTooltipImage, mdiImagePlus } from '@mdi/js'
 
 export default {
@@ -13,7 +14,6 @@ export default {
 
   emits: ['update:item'],
 
-  inject: ['url'],
 
   data() {
     return {
@@ -25,7 +25,7 @@ export default {
     const messages = useMessageStore()
     const user = useUserStore()
 
-    return { user, messages, mdiTooltipImage, mdiImagePlus }
+    return { user, messages, url, mdiTooltipImage, mdiImagePlus }
   },
 
   methods: {

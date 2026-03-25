@@ -4,6 +4,8 @@
 import gql from 'graphql-tag'
 import { recording } from '../audio'
 import { useUserStore, useMessageStore } from '../stores'
+import { txlocales } from '../utils'
+import { transcribe } from '../ai'
 import {
   mdiTranslate,
   mdiClose,
@@ -25,7 +27,7 @@ export default {
 
   emits: ['change', 'error', 'update:files'],
 
-  inject: ['write', 'translate', 'transcribe', 'txlocales'],
+  inject: ['write', 'translate'],
 
   data() {
     return {
@@ -50,7 +52,9 @@ export default {
       mdiArrowRightThin,
       mdiCreation,
       mdiMicrophoneOutline,
-      mdiMicrophone
+      mdiMicrophone,
+      txlocales,
+      transcribe
     }
   },
 

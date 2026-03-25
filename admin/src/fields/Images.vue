@@ -12,7 +12,8 @@ import {
   mdiUpload
 } from '@mdi/js'
 import { VueDraggable } from 'vue-draggable-plus'
-import { useAppStore, useUserStore } from '../stores'
+import { useAppStore, useUserStore, useViewStack } from '../stores'
+import { url, srcset } from '../utils'
 import FileAiDialog from '../components/FileAiDialog.vue'
 import FileUrlDialog from '../components/FileUrlDialog.vue'
 import FileDialog from '../components/FileDialog.vue'
@@ -27,7 +28,6 @@ export default {
     VueDraggable
   },
 
-  inject: ['openView', 'url', 'srcset'],
 
   props: {
     modelValue: { type: Array, default: () => [] },
@@ -40,12 +40,16 @@ export default {
   emits: ['update:modelValue', 'error', 'addFile', 'removeFile'],
 
   setup() {
+    const viewStack = useViewStack()
     const user = useUserStore()
     const app = useAppStore()
 
     return {
       app,
       user,
+      viewStack,
+      url,
+      srcset,
       mdiDotsVertical,
       mdiPencil,
       mdiTrashCan,
@@ -187,7 +191,7 @@ export default {
     },
 
     open(item) {
-      this.openView(FileDetail, { item: item })
+      this.viewStack.openView(FileDetail, { item: item })
     },
 
     remove(idx) {

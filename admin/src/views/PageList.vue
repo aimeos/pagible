@@ -31,8 +31,10 @@ import PageDetail from '../views//PageDetail.vue'
 import AsideList from '../components/AsideList.vue'
 import Navigation from '../components/Navigation.vue'
 import PageListItems from '../components/PageListItems.vue'
-import { useUserStore, useDrawerStore, useMessageStore } from '../stores'
+import { useUserStore, useDrawerStore, useMessageStore, useViewStack } from '../stores'
 import { recording } from '../audio'
+import { locales } from '../utils'
+import { transcribe } from '../ai'
 
 export default {
   components: {
@@ -43,7 +45,6 @@ export default {
     User
   },
 
-  inject: ['locales', 'transcribe', 'openView'],
 
   data() {
     const defaults = {
@@ -79,6 +80,7 @@ export default {
   },
 
   setup() {
+    const viewStack = useViewStack()
     const messages = useMessageStore()
     const drawer = useDrawerStore()
     const user = useUserStore()
@@ -87,6 +89,7 @@ export default {
       user,
       drawer,
       messages,
+      viewStack,
       mdiPlaylistCheck,
       mdiTranslate,
       mdiClose,
@@ -108,7 +111,9 @@ export default {
       mdiHelpCircleOutline,
       mdiCheckBold,
       mdiMicrophone,
-      mdiMicrophoneOutline
+      mdiMicrophoneOutline,
+      locales,
+      transcribe
     }
   },
 
@@ -152,7 +157,7 @@ export default {
     },
 
     open(item) {
-      this.openView(PageDetail, { item: item })
+      this.viewStack.openView(PageDetail, { item: item })
     },
 
     record() {

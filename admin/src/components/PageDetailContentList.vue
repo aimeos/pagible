@@ -17,6 +17,7 @@ import {
   useSideStore
 } from '../stores'
 import { recording } from '../audio'
+import { transcribe } from '../ai'
 import { uid } from '../utils'
 import {
   mdiMenuDown,
@@ -57,8 +58,6 @@ export default {
   },
 
   emits: ['error', 'update:content'],
-
-  inject: ['transcribe'],
 
   data: () => ({
     chat: '',
@@ -109,7 +108,8 @@ export default {
       mdiHelpCircleOutline,
       mdiCheckBold,
       mdiMicrophone,
-      mdiMicrophoneOutline
+      mdiMicrophoneOutline,
+      transcribe
     }
   },
 

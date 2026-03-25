@@ -2,6 +2,7 @@
 
 <script>
 import { mdiHistory, mdiClose } from '@mdi/js'
+import { url, srcset } from '../utils'
 import { jsonDiff } from 'diff'
 
 const diffCastInput = jsonDiff.castInput
@@ -26,10 +27,8 @@ export default {
 
   emits: ['update:modelValue', 'use', 'revert'],
 
-  inject: ['url', 'srcset'],
-
   setup() {
-    return { mdiHistory, mdiClose }
+    return { mdiHistory, mdiClose, url, srcset }
   },
 
   data: () => ({

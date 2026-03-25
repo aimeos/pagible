@@ -12,6 +12,7 @@ import {
   mdiTableRowPlusAfter
 } from '@mdi/js'
 import { vDraggable } from 'vue-draggable-plus'
+import { debounce } from '../utils'
 
 export default {
   directives: { draggable: vDraggable },
@@ -25,7 +26,8 @@ export default {
       mdiDelete,
       mdiDragHorizontal,
       mdiTableRowPlusBefore,
-      mdiTableRowPlusAfter
+      mdiTableRowPlusAfter,
+      debounce
     }
   },
 
@@ -37,8 +39,6 @@ export default {
   },
 
   emits: ['update:modelValue', 'error'],
-
-  inject: ['debounce'],
 
   data() {
     return {

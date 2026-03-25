@@ -17,6 +17,7 @@ import {
 } from '@mdi/js'
 import SchemaItems from './SchemaItems.vue'
 import { useUserStore, useMessageStore } from '../stores'
+import { debounce } from '../utils'
 
 export default {
   components: {
@@ -29,8 +30,6 @@ export default {
   },
 
   emits: ['select'],
-
-  inject: ['debounce'],
 
   data() {
     return {
@@ -66,7 +65,8 @@ export default {
       mdiMagnify,
       mdiMenuDown,
       mdiSort,
-      mdiClockOutline
+      mdiClockOutline,
+      debounce
     }
   },
 
