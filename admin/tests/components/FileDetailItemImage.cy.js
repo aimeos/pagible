@@ -4,7 +4,7 @@ import { useUserStore } from '../../src/stores'
 const item = {
   id: '1',
   name: 'photo.jpg',
-  path: '/files/photo.jpg',
+  path: 'files/photo.jpg',
   mime: 'image/jpeg',
   previews: {},
 }
@@ -37,7 +37,7 @@ describe('FileDetailItemImage', () => {
   it('renders the image element', () => {
     mountImage()
     cy.get('img.element').should('exist')
-    cy.get('img.element').should('have.attr', 'src', '/files/photo.jpg')
+    cy.get('img.element').should('have.attr', 'src', '/storage/files/photo.jpg')
   })
 
   it('shows toolbar when not readonly', () => {

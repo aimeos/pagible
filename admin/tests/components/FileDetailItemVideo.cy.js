@@ -4,7 +4,7 @@ import { useUserStore } from '../../src/stores'
 const item = {
   id: '1',
   name: 'clip.mp4',
-  path: '/files/clip.mp4',
+  path: 'files/clip.mp4',
   mime: 'video/mp4',
   previews: {},
   updated_at: '2024-01-01T00:00:00Z',
@@ -57,12 +57,12 @@ describe('FileDetailItemVideo', () => {
   })
 
   it('shows cover preview when preview exists', () => {
-    mountVideo({ item: { previews: { thumb: '/files/thumb.jpg' } } })
+    mountVideo({ item: { previews: { thumb: 'files/thumb.jpg' } } })
     cy.get('img.video-preview').should('exist')
   })
 
   it('hides cover buttons when preview exists', () => {
-    mountVideo({ item: { previews: { thumb: '/files/thumb.jpg' } } })
+    mountVideo({ item: { previews: { thumb: 'files/thumb.jpg' } } })
     cy.get('.toolbar .v-btn[title="Use as cover image"]').should('not.exist')
   })
 

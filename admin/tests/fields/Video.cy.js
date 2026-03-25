@@ -4,7 +4,7 @@ import { useUserStore } from '../../src/stores'
 const videoAsset = {
   id: '1',
   name: 'clip.mp4',
-  path: '/files/clip.mp4',
+  path: 'files/clip.mp4',
   mime: 'video/mp4',
   editor: 'admin',
   updated_at: '2024-01-01T00:00:00Z',
@@ -60,7 +60,7 @@ describe('Video', () => {
       modelValue: { id: '1', type: 'file' },
       assets: { '1': videoAsset },
     })
-    cy.get('video').should('have.attr', 'src', '/files/clip.mp4')
+    cy.get('video').should('have.attr', 'src', '/storage/files/clip.mp4')
   })
 
   it('shows metadata when file is present', () => {

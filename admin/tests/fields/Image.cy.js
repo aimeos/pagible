@@ -4,12 +4,12 @@ import { useUserStore } from '../../src/stores'
 const imageAsset = {
   id: '1',
   name: 'photo.jpg',
-  path: '/files/photo.jpg',
+  path: 'files/photo.jpg',
   mime: 'image/jpeg',
   editor: 'admin',
   updated_at: '2024-01-01T00:00:00Z',
   description: { en: 'Test photo' },
-  previews: { '500': '/files/photo-500.jpg' },
+  previews: { '500': 'files/photo-500.jpg' },
 }
 
 const stubs = {
@@ -70,7 +70,7 @@ describe('Image', () => {
       modelValue: { id: '1', type: 'file' },
       assets: { '1': imageAsset },
     })
-    cy.get('.v-img img').should('have.attr', 'src', '/files/photo.jpg')
+    cy.get('.v-img img').should('have.attr', 'src', '/storage/files/photo.jpg')
   })
 
   it('shows metadata when file is present', () => {
