@@ -271,7 +271,7 @@ class GraphqlElementTest extends TestAbstract
         $response = $this->actingAs($this->user)->graphQL('
             mutation {
                 addElement(input: {
-                    type: "test"
+                    type: "heading"
                     lang: "en"
                     data: "{\\"key\\":\\"value\\"}"
                 }, files: ["' . $file->id . '"]) {
@@ -299,7 +299,7 @@ class GraphqlElementTest extends TestAbstract
             'data' => [
                 'addElement' => [
                     'id' => $element->id,
-                    'type' => 'test',
+                    'type' => 'heading',
                     'lang' => 'en',
                     'data' => json_encode( $element->data ),
                     'editor' => 'Test editor',
@@ -310,7 +310,7 @@ class GraphqlElementTest extends TestAbstract
                         'data' => json_encode( [
                             'data' => ['key' => 'value'],
                             'lang' => 'en',
-                            'type' => 'test',
+                            'type' => 'heading',
                         ] ),
                     ],
                 ]
@@ -331,7 +331,7 @@ class GraphqlElementTest extends TestAbstract
         $response = $this->actingAs($this->user)->graphQL('
             mutation {
                 saveElement(id: "' . $element->id . '", input: {
-                    type: "test"
+                    type: "heading"
                     lang: "de"
                     data: "{\\"key\\":\\"value\\"}"
                 }, files: ["' . $file->id . '"]) {
@@ -363,7 +363,7 @@ class GraphqlElementTest extends TestAbstract
 
         // Decode latest->data JSON for order-independent comparison
         $expectedLatestData = [
-            'type' => 'test',
+            'type' => 'heading',
             'lang' => 'de',
             'data' => ['key' => 'value'],
         ];
@@ -374,6 +374,46 @@ class GraphqlElementTest extends TestAbstract
         $this->assertEquals(false, $saveElement['latest']['published'] ?? null);
         $this->assertEquals('Test editor', $saveElement['latest']['editor'] ?? null);
         $this->assertEquals($expectedLatestData, json_decode($saveElement['latest']['data'] ?? null, true));
+    }
+
+
+    public function testAddElementBadType()
+    {
+        $response = $this->actingAs($this->user)->graphQL('
+            mutation {
+                addElement(input: {
+                    type: "nonexistent"
+                    lang: "en"
+                    data: "{\\"key\\":\\"value\\"}"
+                }) {
+                    id
+                }
+            }
+        ');
+
+        $response->assertGraphQLErrorMessage( 'Unknown element type "nonexistent"' );
+    }
+
+
+    public function testSaveElementBadType()
+    {
+        $this->seed( CmsSeeder::class );
+
+        $element = Element::where( 'type', 'footer' )->firstOrFail();
+
+        $response = $this->actingAs($this->user)->graphQL('
+            mutation {
+                saveElement(id: "' . $element->id . '", input: {
+                    type: "nonexistent"
+                    lang: "en"
+                    data: "{\\"key\\":\\"value\\"}"
+                }) {
+                    id
+                }
+            }
+        ');
+
+        $response->assertGraphQLErrorMessage( 'Unknown element type "nonexistent"' );
     }
 
 
@@ -472,7 +512,7 @@ class GraphqlElementTest extends TestAbstract
         $this->expectsDatabaseQueryCount( 5 );
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
-                pubElement(id: ["' . $element->id . '"], at: "2025-01-01 00:00:00") {
+                pubElement(id: ["' . $element->id . '"], at: "2099-01-01 00:00:00") {
                     id
                 }
             }
