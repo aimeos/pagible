@@ -2,9 +2,14 @@
 
 <script>
 import Autocomplete from './Autocomplete.vue'
+import { debounce } from '../utils'
 
 export default {
-  extends: Autocomplete
+  extends: Autocomplete,
+
+  setup() {
+    return { debounce }
+  }
 }
 </script>
 

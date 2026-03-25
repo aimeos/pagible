@@ -9,6 +9,7 @@ import {
   useSchemaStore,
   useSideStore
 } from '../stores'
+import { locales } from '../utils'
 
 export default {
   components: {
@@ -22,8 +23,6 @@ export default {
 
   emits: ['update:item', 'error'],
 
-  inject: ['locales'],
-
   setup() {
     const languages = useLanguageStore()
     const schemas = useSchemaStore()
@@ -31,7 +30,7 @@ export default {
     const user = useUserStore()
     const app = useAppStore()
 
-    return { app, user, languages, schemas, side }
+    return { app, user, languages, schemas, side, locales }
   },
 
   computed: {

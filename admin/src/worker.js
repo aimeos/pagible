@@ -21,6 +21,7 @@ function convert(float32) {
   return int16
 }
 
+
 /**
  * Mixes any PCM data (mono or stereo) into a mono Float32Array.
  *
@@ -41,6 +42,7 @@ function toMono(channels, length) {
 
   return mono
 }
+
 
 /**
  * Encodes a mono Float32Array to MP3 using lamejs.
@@ -67,6 +69,7 @@ function encode(pcm, sampleRate) {
 
   return new Blob(mp3, { type: 'audio/mpeg' })
 }
+
 
 self.onmessage = async (e) => {
   // Expect to receive AudioBuffer channel arrays, length and sampleRate

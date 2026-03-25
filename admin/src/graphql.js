@@ -10,6 +10,7 @@ import { ApolloClient, ApolloLink, InMemoryCache } from '@apollo/client/core'
 import createUploadLink from 'apollo-upload-client/createUploadLink.mjs'
 import router from './routes'
 
+
 const node = document.querySelector('#app')
 
 const retryLink = new RetryLink({
@@ -51,6 +52,7 @@ const apolloClient = new ApolloClient({
   link: ApolloLink.from([retryLink, errorLink, httpLink])
 })
 const apollo = createApolloProvider({ defaultClient: apolloClient })
+
 
 export default apollo
 export { apolloClient }

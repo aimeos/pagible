@@ -5,6 +5,7 @@ import gql from 'graphql-tag'
 import Cropper from 'cropperjs'
 import 'cropperjs/dist/cropper.css'
 import { useUserStore, useMessageStore } from '../stores'
+import { toBlob, url } from '../utils'
 import {
   mdiClose,
   mdiCropFree,
@@ -30,7 +31,6 @@ export default {
 
   emits: ['update:file', 'use'],
 
-  inject: ['base64ToBlob', 'url'],
 
   data() {
     return {
@@ -60,6 +60,8 @@ export default {
     return {
       user,
       messages,
+      toBlob,
+      url,
       mdiClose,
       mdiCropFree,
       mdiCrop,
@@ -165,7 +167,7 @@ export default {
               mask: new File([mask], 'mask', { type: 'image/png' })
             }
           )
-            .then((response) => this.replace(this.base64ToBlob(response.data?.erase)))
+            .then((response) => this.replace(this.toBlob(response.data?.erase)))
             .catch((error) => {
               this.messages.add(this.$gettext('Error erasing image part') + ':\n' + error, 'error')
               this.$log('FileDetailItemImage::erase(): Error erasing image part', error)
@@ -258,7 +260,7 @@ export default {
               prompt: this.edittext
             }
           )
-            .then((response) => this.replace(this.base64ToBlob(response.data?.inpaint)))
+            .then((response) => this.replace(this.toBlob(response.data?.inpaint)))
             .catch((error) => {
               this.messages.add(this.$gettext('Error editing image part') + ':\n' + error, 'error')
               this.$log('FileDetailItemImage::inpaint(): Error editing image part', error)
@@ -281,7 +283,7 @@ export default {
             file: new File([blob], 'image.png', { type: 'image/png' })
           }
         )
-          .then((response) => this.replace(this.base64ToBlob(response.data?.isolate)))
+          .then((response) => this.replace(this.toBlob(response.data?.isolate)))
           .catch((error) => {
             this.messages.add(this.$gettext('Error removing background') + ':\n' + error, 'error')
             this.$log('FileDetailItemImage::isolate(): Error removing background', error)
@@ -354,7 +356,7 @@ export default {
             prompt: this.edittext
           }
         )
-          .then((response) => this.replace(this.base64ToBlob(response.data?.repaint)))
+          .then((response) => this.replace(this.toBlob(response.data?.repaint)))
           .catch((error) => {
             this.messages.add(this.$gettext('Error editing image') + ':\n' + error, 'error')
             this.$log('FileDetailItemImage::repaint(): Error editing image', error)
@@ -442,7 +444,7 @@ export default {
             left: this.extend.left ?? 0
           }
         )
-          .then((response) => this.replace(this.base64ToBlob(response.data?.uncrop)))
+          .then((response) => this.replace(this.toBlob(response.data?.uncrop)))
           .catch((error) => {
             this.messages.add(this.$gettext('Error uncropping image') + ':\n' + error, 'error')
             this.$log('FileDetailItemImage::uncrop(): Error uncropping image', error)
@@ -488,7 +490,7 @@ export default {
             factor: factor
           }
         )
-          .then((response) => this.replace(this.base64ToBlob(response.data?.upscale)))
+          .then((response) => this.replace(this.toBlob(response.data?.upscale)))
           .catch((error) => {
             this.messages.add(this.$gettext('Error upscaling image') + ':\n' + error, 'error')
             this.$log('FileDetailItemImage::upscale(): Error upscaling image', error)

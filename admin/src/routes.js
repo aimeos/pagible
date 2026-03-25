@@ -6,6 +6,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import { useUserStore, useMessageStore } from './stores'
 import gettext from './i18n'
 
+
 const router = createRouter({
   history: createWebHistory(document.querySelector('#app')?.dataset?.urladmin || ''),
   routes: [
@@ -69,5 +70,6 @@ router.beforeEach(async (to, from, next) => {
 router.afterEach((to) => {
   document.title = (to.meta.title || to.path) + ' — PagibleAI CMS'
 })
+
 
 export default router

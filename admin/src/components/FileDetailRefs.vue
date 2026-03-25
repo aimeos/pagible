@@ -2,7 +2,7 @@
 
 <script>
 import gql from 'graphql-tag'
-import { useUserStore } from '../stores'
+import { useUserStore, useViewStack } from '../stores'
 import PageDetail from '../views/PageDetail.vue'
 import ElementDetail from '../views/ElementDetail.vue'
 
@@ -13,8 +13,6 @@ export default {
 
   emits: [],
 
-  inject: ['openView'],
-
   data: () => ({
     panel: [0, 1, 2],
     versions: {},
@@ -22,17 +20,18 @@ export default {
   }),
 
   setup() {
+    const viewStack = useViewStack()
     const user = useUserStore()
-    return { user }
+    return { user, viewStack }
   },
 
   methods: {
     openElement(item) {
-      this.openView(ElementDetail, { item: { ...item } })
+      this.viewStack.openView(ElementDetail, { item: { ...item } })
     },
 
     openPage(item) {
-      this.openView(PageDetail, { item: { ...item } })
+      this.viewStack.openView(PageDetail, { item: { ...item } })
     }
   },
 

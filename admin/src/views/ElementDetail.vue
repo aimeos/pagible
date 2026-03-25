@@ -6,7 +6,7 @@ import AsideMeta from '../components/AsideMeta.vue'
 import HistoryDialog from '../components/HistoryDialog.vue'
 import ElementDetailRefs from '../components/ElementDetailRefs.vue'
 import ElementDetailItem from '../components/ElementDetailItem.vue'
-import { useUserStore, useDrawerStore, useMessageStore } from '../stores'
+import { useUserStore, useDrawerStore, useMessageStore, useViewStack } from '../stores'
 import {
   mdiKeyboardBackspace,
   mdiHistory,
@@ -22,8 +22,6 @@ export default {
     ElementDetailRefs,
     ElementDetailItem
   },
-
-  inject: ['closeView'],
 
   props: {
     item: { type: Object, required: true }
@@ -42,6 +40,7 @@ export default {
   }),
 
   setup() {
+    const viewStack = useViewStack()
     const messages = useMessageStore()
     const drawer = useDrawerStore()
     const user = useUserStore()
@@ -50,6 +49,7 @@ export default {
       user,
       drawer,
       messages,
+      viewStack,
       mdiKeyboardBackspace,
       mdiHistory,
       mdiDatabaseArrowDown,
@@ -180,7 +180,7 @@ export default {
               )
             }
 
-            this.closeView()
+            this.viewStack.closeView()
           })
           .catch((error) => {
             this.messages.add(this.$gettext('Error publishing element') + ':\n' + error, 'error')
@@ -341,7 +341,7 @@ export default {
   <v-app-bar :elevation="0" density="compact">
     <template v-slot:prepend>
       <v-btn
-        @click="closeView()"
+        @click="viewStack.closeView()"
         :title="$gettext('Back to list view')"
         :icon="mdiKeyboardBackspace"
       />

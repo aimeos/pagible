@@ -29,6 +29,7 @@ import {
 import { Draggable } from '@he-tree/vue'
 import { dragContext } from '@he-tree/vue'
 import { useAppStore, useUserStore, useLanguageStore, useMessageStore } from '../stores'
+import { debounce } from '../utils'
 
 export default {
   components: {
@@ -41,8 +42,6 @@ export default {
   },
 
   emits: ['select'],
-
-  inject: ['debounce'],
 
   data() {
     return {
@@ -89,7 +88,8 @@ export default {
       mdiArrowUp,
       mdiArrowRight,
       mdiArrowDown,
-      mdiClockOutline
+      mdiClockOutline,
+      debounce
     }
   },
 

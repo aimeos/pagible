@@ -3,6 +3,7 @@
  */
 
 import gql from 'graphql-tag'
+import { markRaw } from 'vue'
 import { defineStore } from 'pinia'
 import { apolloClient } from './graphql'
 
@@ -521,6 +522,30 @@ export const useSideStore = defineStore('side', {
         this.show[key] = {}
       }
       this.show[key][what] = !this.show[key][what]
+    }
+  }
+})
+
+export const useViewStack = defineStore('viewStack', {
+  state: () => ({
+    stack: []
+  }),
+
+  actions: {
+    openView(component, props = {}) {
+      if (!component) {
+        console.error('Component is not defined')
+        return
+      }
+
+      this.stack.push({
+        component: markRaw(component),
+        props: props || {}
+      })
+    },
+
+    closeView() {
+      this.stack.pop()
     }
   }
 })

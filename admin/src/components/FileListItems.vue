@@ -18,6 +18,7 @@ import {
   mdiClockOutline
 } from '@mdi/js'
 import { useAppStore, useUserStore, useMessageStore } from '../stores'
+import { debounce, url, srcset } from '../utils'
 
 export default {
   props: {
@@ -27,8 +28,6 @@ export default {
   },
 
   emits: ['select'],
-
-  inject: ['debounce', 'url', 'srcset'],
 
   data() {
     return {
@@ -67,7 +66,10 @@ export default {
       mdiFormatListBulletedSquare,
       mdiMenuDown,
       mdiSort,
-      mdiClockOutline
+      mdiClockOutline,
+      debounce,
+      url,
+      srcset
     }
   },
 

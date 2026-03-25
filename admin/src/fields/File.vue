@@ -10,7 +10,8 @@ import {
   mdiLinkVariantPlus,
   mdiUpload
 } from '@mdi/js'
-import { useAppStore, useUserStore, useMessageStore } from '../stores'
+import { useAppStore, useUserStore, useMessageStore, useViewStack } from '../stores'
+import { url, srcset } from '../utils'
 import FileUrlDialog from '../components/FileUrlDialog.vue'
 import FileDialog from '../components/FileDialog.vue'
 import FileDetail from '../views/FileDetail.vue'
@@ -22,7 +23,6 @@ export default {
     FileDialog
   },
 
-  inject: ['openView', 'url', 'srcset'],
 
   props: {
     modelValue: { type: [Object, null], default: () => null },
@@ -45,6 +45,7 @@ export default {
   },
 
   setup() {
+    const viewStack = useViewStack()
     const messages = useMessageStore()
     const user = useUserStore()
     const app = useAppStore()
@@ -53,6 +54,9 @@ export default {
       app,
       user,
       messages,
+      viewStack,
+      url,
+      srcset,
       mdiDotsVertical,
       mdiPencil,
       mdiTrashCan,
@@ -165,7 +169,7 @@ export default {
     },
 
     open(item) {
-      this.openView(FileDetail, { item: item })
+      this.viewStack.openView(FileDetail, { item: item })
     },
 
     remove() {

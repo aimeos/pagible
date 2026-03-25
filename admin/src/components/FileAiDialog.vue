@@ -5,6 +5,8 @@ import gql from 'graphql-tag'
 import FileListItems from './FileListItems.vue'
 import { useAppStore, useUserStore, useMessageStore } from '../stores'
 import { recording } from '../audio'
+import { toBlob, url } from '../utils'
+import { transcribe } from '../ai'
 import { mdiMicrophoneOutline, mdiMicrophone, mdiClose, mdiDelete } from '@mdi/js'
 
 export default {
@@ -20,14 +22,12 @@ export default {
 
   emits: ['update:modelValue', 'add'],
 
-  inject: ['base64ToBlob', 'transcribe', 'url'],
-
   setup() {
     const messages = useMessageStore()
     const user = useUserStore()
     const app = useAppStore()
 
-    return { app, user, messages, mdiMicrophoneOutline, mdiMicrophone, mdiClose, mdiDelete }
+    return { app, user, messages, toBlob, url, transcribe, mdiMicrophoneOutline, mdiMicrophone, mdiClose, mdiDelete }
   },
 
   data() {
@@ -157,7 +157,7 @@ export default {
 
           if (response.data.imagine) {
             this.items.unshift({
-              path: URL.createObjectURL(this.base64ToBlob(response.data.imagine)),
+              path: URL.createObjectURL(this.toBlob(response.data.imagine)),
               name: this.chat.slice(
                 0,
                 this.chat.length > 250 ? this.chat.lastIndexOf(' ', 250) : 250

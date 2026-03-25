@@ -3,7 +3,7 @@ import FileDetailItemAudio from '../../src/components/FileDetailItemAudio.vue'
 const item = {
   id: '1',
   name: 'track.mp3',
-  path: '/files/track.mp3',
+  path: 'files/track.mp3',
   mime: 'audio/mpeg',
 }
 
@@ -29,7 +29,7 @@ describe('FileDetailItemAudio', () => {
 
   it('sets the correct source', () => {
     mountAudio()
-    cy.get('audio.element').should('have.attr', 'src', '/files/track.mp3')
+    cy.get('audio.element').should('have.attr', 'src', '/storage/files/track.mp3')
   })
 
   it('has controls enabled', () => {

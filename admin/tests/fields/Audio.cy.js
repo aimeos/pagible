@@ -4,7 +4,7 @@ import { useUserStore } from '../../src/stores'
 const audioAsset = {
   id: '1',
   name: 'recording.mp3',
-  path: '/files/recording.mp3',
+  path: 'files/recording.mp3',
   mime: 'audio/mpeg',
   editor: 'admin',
   updated_at: '2024-01-01T00:00:00Z',
@@ -60,7 +60,7 @@ describe('Audio', () => {
       modelValue: { id: '1', type: 'file' },
       assets: { '1': audioAsset },
     })
-    cy.get('audio').should('have.attr', 'src', '/files/recording.mp3')
+    cy.get('audio').should('have.attr', 'src', '/storage/files/recording.mp3')
   })
 
   it('shows metadata when file is present', () => {

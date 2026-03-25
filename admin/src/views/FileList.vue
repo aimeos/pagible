@@ -21,7 +21,8 @@ import FileDetail from '../views//FileDetail.vue'
 import AsideList from '../components/AsideList.vue'
 import Navigation from '../components/Navigation.vue'
 import FileListItems from '../components/FileListItems.vue'
-import { useUserStore, useDrawerStore } from '../stores'
+import { useUserStore, useDrawerStore, useViewStack } from '../stores'
+import { locales } from '../utils'
 
 export default {
   components: {
@@ -31,8 +32,6 @@ export default {
     AsideList,
     User
   },
-
-  inject: ['locales', 'openView'],
 
   data() {
     const defaults = {
@@ -58,12 +57,14 @@ export default {
   },
 
   setup() {
+    const viewStack = useViewStack()
     const drawer = useDrawerStore()
     const user = useUserStore()
 
     return {
       user,
       drawer,
+      viewStack,
       mdiPlaylistCheck,
       mdiTranslate,
       mdiClose,
@@ -75,7 +76,8 @@ export default {
       mdiPencil,
       mdiDeleteOff,
       mdiDelete,
-      mdiAccount
+      mdiAccount,
+      locales
     }
   },
 
@@ -105,7 +107,7 @@ export default {
     },
 
     open(item) {
-      this.openView(FileDetail, { item: item })
+      this.viewStack.openView(FileDetail, { item: item })
     }
   }
 }

@@ -2,6 +2,7 @@
 
 <script>
 import gql from 'graphql-tag'
+import { debounce } from '../utils'
 
 export default {
   props: {
@@ -14,7 +15,9 @@ export default {
 
   emits: ['update:modelValue', 'error'],
 
-  inject: ['debounce'],
+  setup() {
+    return { debounce }
+  },
 
   data() {
     return {

@@ -26,6 +26,8 @@ import {
 import { recording } from '../audio'
 import { VueDraggable } from 'vue-draggable-plus'
 import { useUserStore, useClipboardStore, useMessageStore } from '../stores'
+import { txlocales } from '../utils'
+import { transcribe } from '../ai'
 
 export default {
   components: {
@@ -42,7 +44,7 @@ export default {
 
   emits: ['update:modelValue', 'error', 'addFile', 'removeFile'],
 
-  inject: ['write', 'translate', 'transcribe', 'txlocales'],
+  inject: ['write', 'translate'],
 
   data() {
     return {
@@ -78,7 +80,9 @@ export default {
       mdiCreation,
       mdiMicrophoneOutline,
       mdiMicrophone,
-      mdiViewGridPlus
+      mdiViewGridPlus,
+      txlocales,
+      transcribe
     }
   },
 
