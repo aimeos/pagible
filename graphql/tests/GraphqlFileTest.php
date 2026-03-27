@@ -15,7 +15,7 @@ use Database\Seeders\CmsSeeder;
 use Aimeos\Cms\Models\File;
 
 
-class GraphqlFileTest extends TestAbstract
+class GraphqlFileTest extends GraphqlTestAbstract
 {
     use RefreshDatabase;
     use MakesGraphQLRequests;
@@ -256,7 +256,7 @@ class GraphqlFileTest extends TestAbstract
         imagedestroy( $img );
         $preview = new UploadedFile( $tmpPreview, 'test-preview-1.jpg', 'image/jpeg', null, true );
 
-        $this->expectsDatabaseQueryCount( 6 );
+        $this->expectsDatabaseQueryCount( 3 );
         $response = $this->actingAs( $this->user )->multipartGraphQL( [
             'query' => '
                 mutation($file: Upload!, $preview: Upload) {
@@ -321,7 +321,7 @@ class GraphqlFileTest extends TestAbstract
 
         $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 10 );
+        $this->expectsDatabaseQueryCount( 8 );
 
         $response = $this->actingAs($this->user)->multipartGraphQL([
             'query' => '
@@ -398,7 +398,7 @@ class GraphqlFileTest extends TestAbstract
 
         $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 4 );
+        $this->expectsDatabaseQueryCount( 3 );
 
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
@@ -429,7 +429,7 @@ class GraphqlFileTest extends TestAbstract
         $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
         $file->delete();
 
-        $this->expectsDatabaseQueryCount( 8 );
+        $this->expectsDatabaseQueryCount( 3 );
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
                 keepFile(id: ["' . $file->id . '"]) {
@@ -458,7 +458,7 @@ class GraphqlFileTest extends TestAbstract
 
         $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 8 );
+        $this->expectsDatabaseQueryCount( 6 );
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
                 pubFile(id: ["' . $file->id . '"]) {
@@ -512,7 +512,7 @@ class GraphqlFileTest extends TestAbstract
 
         $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 7 );
+        $this->expectsDatabaseQueryCount( 5 );
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
                 purgeFile(id: ["' . $file->id . '"]) {

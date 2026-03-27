@@ -40,4 +40,4 @@ type User {
     updated_at: DateTime!
 }
 
-#import ../graphql/cms.graphql
+#import ../schema/cms.graphql

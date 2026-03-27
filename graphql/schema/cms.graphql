@@ -77,49 +77,6 @@ extend type Mutation {
   "Update CMS user preferences"
   cmsUser(settings: JSON!): User @guard @throttle(name: "cms-admin")
 
-  "Summarize the content of the file passed by its file ID"
-  describe(file: String!, lang: String): String @guard @cmsPermission(action: "file:describe") @throttle(name: "cms-ai")
-
-  "Remove the part of the image covered by the mask (black: keep, white: erase), returns a base64 encoded image"
-  erase(file: Upload!, mask: Upload!): String @guard @cmsPermission(action: "image:erase") @throttle(name: "cms-ai")
-
-  "Generate images from prompts and passed file IDs, returns a base64 encoded image"
-  imagine(prompt: String!, context: String, files: [String!]): String @guard @cmsPermission(action: "image:imagine") @throttle(name: "cms-ai")
-
-  "Edit an image using a mask image and a prompt, returns a base64 encoded image"
-  inpaint(file: Upload!, mask: Upload!, prompt: String!): String @guard @cmsPermission(action: "image:inpaint") @throttle(name: "cms-ai")
-
-  "Remove image background, returns a base64 encoded image"
-  isolate(file: Upload!): String @guard @cmsPermission(action: "image:isolate") @throttle(name: "cms-ai")
-
-  "Get page metrics for the last X days"
-  metrics(url: String!, days: Int, lang: String): Stats @guard @cmsPermission(action: "page:metrics") @throttle(name: "cms-ai")
-
-  "Edit an image using a prompt, returns a base64 encoded image"
-  repaint(file: Upload!, prompt: String!): String @guard @cmsPermission(action: "image:repaint") @throttle(name: "cms-ai")
-
-  "Refine existing page content"
-  refine(prompt: String!, content: JSON!, type: String, context: String): JSON @guard @cmsPermission(action: "page:refine") @throttle(name: "cms-ai")
-
-  "Synthesize pages and content from prompts and passed file IDs"
-  synthesize(prompt: String!, context: String, files: [String!]): String @guard @cmsPermission(action: "page:synthesize") @throttle(name: "cms-ai")
-
-  "Transcribe uploaded audio file"
-  transcribe(file: Upload!): JSON @guard @cmsPermission(action: "audio:transcribe") @throttle(name: "cms-ai")
-
-  "Translate texts"
-  translate(texts: [String!]!, to: String!, from: String, context: String): [String!]! @guard @cmsPermission(action: "text:translate") @throttle(name: "cms-ai")
-
-  "Extend/outpaint image, returns a base64 encoded image"
-  uncrop(file: Upload!, top: Int!, right: Int, bottom: Int, left: Int): String @guard @cmsPermission(action: "image:uncrop") @throttle(name: "cms-ai")
-
-  "Upscale image, returns a base64 encoded image"
-  upscale(file: Upload!, factor: Int!): String @guard @cmsPermission(action: "image:upscale") @throttle(name: "cms-ai")
-
-  "Generate texts from prompts and passed file IDs"
-  write(prompt: String!, context: String, files: [String!]): String @guard @cmsPermission(action: "text:write") @throttle(name: "cms-ai")
-
-
   "Add a new page below the page referenced by 'parent' and before the page referenced by 'ref' (or append if NULL)"
   addPage(input: PageInput!, parent: ID, ref: ID, elements: [ID!], files: [ID!]): Page
     @guard @cmsPermission(action: "page:add") @throttle(name: "cms-admin")
@@ -197,6 +154,72 @@ extend type Mutation {
   "Publish file data"
   pubFile(id: [ID!]!, at: DateTime): [File]!
     @guard @cmsPermission(action: "file:publish") @throttle(name: "cms-admin")
+
+  "Get page metrics for the last X days"
+  metrics(url: String!, days: Int, lang: String): Stats @guard @cmsPermission(action: "page:metrics") @throttle(name: "cms-ai")
+}
+
+type Stats {
+  "List of errors occurred"
+  errors: [String!]
+
+  "Number of page views by day"
+  views: [StatsNumber!]
+
+  "Number of page visits by day"
+  visits: [StatsNumber!]
+
+  "Number of conversions on page by day"
+  conversions: [StatsNumber!]
+
+  "Average page visit duration in seconds by day"
+  durations: [StatsNumber!]
+
+  "Number of page visits by countries"
+  countries: [StatsNumber!]
+
+  "Number of page visits by referring website"
+  referrers: [StatsNumber!]
+
+  "Page Speed related values for the page"
+  pagespeed: [StatsNumber!]
+
+  "Number of Google search impressions"
+  impressions: [StatsNumber!]
+
+  "Number of Google search clicks"
+  clicks: [StatsNumber!]
+
+  "List of search queries"
+  queries: [StatsQuery!]
+}
+
+type StatsNumber {
+  "Date in ISO format (YYYY-MM-DD) or string"
+  key: String!
+
+  "Number of page views or visits"
+  value: Float
+
+  "List of individual rows"
+  rows: [StatsNumber!]
+}
+
+type StatsQuery {
+  "Query string"
+  key: String!
+
+  "Number of page impressions in Google Search results"
+  impressions: Int
+
+  "Number of page clicks in  Google Search results"
+  clicks: Int
+
+  "Click through rate in  Google Search (between 0 and 1)"
+  ctr: Float
+
+  "Position in Google Search results"
+  position: Float
 }
 
 type Page {
@@ -616,70 +639,4 @@ type Version {
 
   "Date/time value when the versioned data was created"
   created_at: String!
-}
-
-type Stats {
-  "List of errors occurred"
-  errors: [String!]
-
-  "Number of page views by day"
-  views: [StatsNumber!]
-
-  "Number of page visits by day"
-  visits: [StatsNumber!]
-
-  "Number of conversions on page by day"
-  conversions: [StatsNumber!]
-
-  "Average page visit duration in seconds by day"
-  durations: [StatsNumber!]
-
-  "Number of page visits by countries"
-  countries: [StatsNumber!]
-
-  "Number of page visits by referring website"
-  referrers: [StatsNumber!]
-
-  "Page Speed related values for the page"
-  pagespeed: [StatsNumber!]
-
-  "Number of Google search impressions"
-  impressions: [StatsNumber!]
-
-  "Number of Google search clicks"
-  clicks: [StatsNumber!]
-
-  "Click-throgh rate in Google search results"
-  ctrs: [StatsNumber!]
-
-  "Google search queries with stats"
-  queries: [StatsQuery!]
-}
-
-type StatsNumber {
-  "Date in ISO format (YYYY-MM-DD) or string"
-  key: String!
-
-  "Number of page views or visits"
-  value: Float
-
-  "List of individual rows"
-  rows: [StatsNumber!]
-}
-
-type StatsQuery {
-  "Query string"
-  key: String!
-
-  "Number of page impressions in Google Search results"
-  impressions: Int
-
-  "Number of page clicks in  Google Search results"
-  clicks: Int
-
-  "Click through rate in  Google Search (between 0 and 1)"
-  ctr: Float
-
-  "Position in Google Search results"
-  position: Float
 }

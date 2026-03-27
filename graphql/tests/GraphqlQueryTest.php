@@ -17,7 +17,7 @@ use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
 
 
-class GraphqlQueryTest extends TestAbstract
+class GraphqlQueryTest extends GraphqlTestAbstract
 {
     use DatabaseTruncation;
     use MakesGraphQLRequests;
@@ -37,6 +37,7 @@ class GraphqlQueryTest extends TestAbstract
 	{
         parent::defineEnvironment( $app );
 
+		$app['config']->set( 'scout.driver', 'collection' );
 		$app['config']->set( 'lighthouse.schema_path', __DIR__ . '/default-schema.graphql' );
 		$app['config']->set( 'lighthouse.namespaces.models', ['App\Models', 'Aimeos\\Cms\\Models'] );
 		$app['config']->set( 'lighthouse.namespaces.mutations', ['Aimeos\\Cms\\GraphQL\\Mutations'] );
