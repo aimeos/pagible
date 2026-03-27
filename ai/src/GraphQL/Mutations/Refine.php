@@ -36,7 +36,6 @@ final class Refine
         $config = config( 'cms.ai.refine', [] );
         $model = config( 'cms.ai.refine.model' );
 
-        /** @phpstan-ignore-next-line argument.type */
         $system = view( 'cms::prompts.refine' )->render();
         $type = $args['type'] ?? 'content';
         $content = $args['content'] ?: [];

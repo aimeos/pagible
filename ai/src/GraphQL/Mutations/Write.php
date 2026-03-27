@@ -38,7 +38,6 @@ final class Write
 
         try
         {
-            /** @phpstan-ignore-next-line argument.type */
             $system = view( 'cms::prompts.write' )->render() . "\n" . ( $args['context'] ?? '' );
 
             $prism = Prism::text()->using( $provider, $model, $config )

@@ -67,7 +67,7 @@ class User extends Command
         }
 
         if( $perms = $this->option( 'add' ) ) {
-            $user = Permission::add( $this->permissions( $perms ), $user ); // @phpstan-ignore-line argument.type
+            $user = Permission::add( $this->permissions( $perms ), $user );
         }
 
         if( is_string( $role = $this->option( 'role' ) ) ) {
@@ -75,7 +75,7 @@ class User extends Command
         }
 
         if( $perms = $this->option( 'remove' ) ) {
-            $user = Permission::remove( $this->permissions( $perms ), $user ); // @phpstan-ignore-line argument.type
+            $user = Permission::remove( $this->permissions( $perms ), $user );
         }
 
         if( $this->option( 'disable' ) ) {

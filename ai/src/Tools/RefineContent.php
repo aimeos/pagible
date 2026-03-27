@@ -61,7 +61,6 @@ class RefineContent extends Tool
         $config = config( 'cms.ai.refine', [] );
         $model = config( 'cms.ai.refine.model' );
 
-        /** @phpstan-ignore-next-line argument.type */
         $system = view( 'cms::prompts.refine' )->render();
         $types = collect( (array) config( 'cms.schemas.content', [] ) )->keys()->all();
 

@@ -52,8 +52,8 @@ class Demo extends Command
 
         $seeder = new DemoSeeder();
         $langs = (array) $this->option( 'lang' ) ?: ['en'];
-        $domain = (string) ($this->option( 'domain' ) ?: ''); // @phpstan-ignore cast.string
-        $editor = (string) $this->option( 'editor' ); // @phpstan-ignore cast.string
+        $domain = (string) ($this->option( 'domain' ) ?: '');
+        $editor = (string) $this->option( 'editor' );
 
         foreach( $langs as $lang )
         {

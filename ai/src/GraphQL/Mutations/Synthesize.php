@@ -32,7 +32,6 @@ final class Synthesize
             throw new Error( 'Prompt must not be empty' );
         }
 
-        /** @phpstan-ignore-next-line argument.type */
         $system = view( 'cms::prompts.synthesize' )->render() . "\n" . view( 'cms::prompts.write' )->render() . "\n";
 
         $files = [];

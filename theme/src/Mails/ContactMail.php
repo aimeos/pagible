@@ -33,7 +33,6 @@ class ContactMail extends Mailable
     {
         return $this
             ->subject( 'Contact mail from ' . config( 'app.name' ) )
-            /** @phpstan-ignore argument.type */
             ->markdown( 'cms::mails.contact' );
     }
 }

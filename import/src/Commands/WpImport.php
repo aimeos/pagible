@@ -52,12 +52,12 @@ class WpImport extends Command
      */
     public function handle(): void
     {
-        $this->wpConnection = (string) $this->option( 'connection' ); // @phpstan-ignore cast.string
-        $this->domain = (string) ($this->option( 'domain' ) ?: ''); // @phpstan-ignore cast.string
-        $this->lang = (string) $this->option( 'lang' ); // @phpstan-ignore cast.string
-        $this->type = (string) $this->option( 'type' ); // @phpstan-ignore cast.string
-        $this->mediaUrl = rtrim( (string) ($this->option( 'media-url' ) ?: ''), '/' ); // @phpstan-ignore cast.string
-        $this->editor = (string) $this->option( 'editor' ); // @phpstan-ignore cast.string
+        $this->wpConnection = (string) $this->option( 'connection' );
+        $this->domain = (string) ($this->option( 'domain' ) ?: '');
+        $this->lang = (string) $this->option( 'lang' );
+        $this->type = (string) $this->option( 'type' );
+        $this->mediaUrl = rtrim( (string) ($this->option( 'media-url' ) ?: ''), '/' );
+        $this->editor = (string) $this->option( 'editor' );
 
         $this->setupTenant();
 
@@ -352,8 +352,8 @@ class WpImport extends Command
      */
     protected function getBlogPage(): Page
     {
-        $blogPath = (string) $this->option( 'blog-path' ); // @phpstan-ignore cast.string
-        $blogName = (string) $this->option( 'blog-name' ); // @phpstan-ignore cast.string
+        $blogPath = (string) $this->option( 'blog-path' );
+        $blogName = (string) $this->option( 'blog-name' );
 
         $page = Page::where( 'path', $blogPath )->first();
 
