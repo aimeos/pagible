@@ -66,8 +66,25 @@ class CmsServer extends Server
         \Aimeos\Cms\Tools\DropFile::class,
         \Aimeos\Cms\Tools\RestoreFile::class,
 
-        // AI tools
-        \Aimeos\Cms\Tools\RefineContent::class,
-        \Aimeos\Cms\Tools\TranslateContent::class,
     ];
+
+    /** @var array<int, class-string<\Laravel\Mcp\Server\Tool>> */
+    protected static array $registered = [];
+
+
+    /**
+     * Register additional tools with the MCP server.
+     *
+     * @param array<int, class-string<\Laravel\Mcp\Server\Tool>> $tools
+     */
+    public static function register( array $tools ) : void
+    {
+        static::$registered = array_merge( static::$registered, $tools );
+    }
+
+
+    protected function boot() : void
+    {
+        $this->tools = array_merge( $this->tools, static::$registered );
+    }
 }

@@ -17,7 +17,7 @@ use Illuminate\Foundation\Testing\RefreshDatabaseState;
 use Illuminate\Support\Facades\Http;
 
 
-class ToolsTest extends TestAbstract
+class ToolsTest extends McpTestAbstract
 {
     use DatabaseTruncation;
 
@@ -28,6 +28,21 @@ class ToolsTest extends TestAbstract
     {
         // In-memory SQLite databases don't persist across test classes
         RefreshDatabaseState::$migrated = false;
+    }
+
+
+    protected function defineEnvironment( $app )
+    {
+        parent::defineEnvironment( $app );
+        $app['config']->set('scout.driver', 'cms');
+    }
+
+
+    protected function getPackageProviders( $app )
+    {
+        return array_merge( parent::getPackageProviders( $app ), [
+            'Aimeos\Cms\SearchServiceProvider',
+        ] );
     }
 
 
