@@ -12,10 +12,6 @@ class ImportServiceProvider extends Provider
         {
             $this->commands( [
                 \Aimeos\Cms\Commands\WpImport::class,
-                \Aimeos\Cms\Commands\JoomlaImport::class,
-                \Aimeos\Cms\Commands\DrupalImport::class,
-                \Aimeos\Cms\Commands\StatamicImport::class,
-                \Aimeos\Cms\Commands\T3Import::class,
             ] );
         }
     }
