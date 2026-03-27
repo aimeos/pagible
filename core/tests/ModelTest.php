@@ -13,7 +13,7 @@ use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Models\Version;
 
 
-class ModelTest extends TestAbstract
+class ModelTest extends CoreTestAbstract
 {
     public function testPageToString(): void
     {

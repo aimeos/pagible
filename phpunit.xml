@@ -11,11 +11,41 @@
   <coverage>
     <include>
       <directory suffix=".php">./src/</directory>
+      <directory suffix=".php">./core/src/</directory>
+      <directory suffix=".php">./admin/src/</directory>
+      <directory suffix=".php">./ai/src/</directory>
+      <directory suffix=".php">./graphql/src/</directory>
+      <directory suffix=".php">./import/src/</directory>
+      <directory suffix=".php">./jsonapi/src/</directory>
+      <directory suffix=".php">./mcp/src/</directory>
+      <directory suffix=".php">./search/src/</directory>
+      <directory suffix=".php">./theme/src/</directory>
     </include>
   </coverage>
   <testsuites>
-    <testsuite name="Tests">
-      <directory>./tests/</directory>
+    <testsuite name="Core">
+      <directory>./core/tests/</directory>
+    </testsuite>
+    <testsuite name="Admin">
+      <directory>./admin/tests/</directory>
+    </testsuite>
+    <testsuite name="GraphQL">
+      <directory>./graphql/tests/</directory>
+    </testsuite>
+    <testsuite name="AI">
+      <directory>./ai/tests/</directory>
+    </testsuite>
+    <testsuite name="JsonAPI">
+      <directory>./jsonapi/tests/</directory>
+    </testsuite>
+    <testsuite name="MCP">
+      <directory>./mcp/tests/</directory>
+    </testsuite>
+    <testsuite name="Theme">
+      <directory>./theme/tests/</directory>
+    </testsuite>
+    <testsuite name="Search">
+      <directory>./search/tests/</directory>
     </testsuite>
   </testsuites>
 </phpunit>

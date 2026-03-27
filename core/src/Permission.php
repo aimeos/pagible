@@ -29,9 +29,6 @@ class Permission
         'page:purge',
         'page:publish',
         'page:move',
-        'page:metrics',
-        'page:synthesize',
-        'page:refine',
 
         'element:view',
         'element:save',
@@ -48,22 +45,8 @@ class Permission
         'file:keep',
         'file:purge',
         'file:publish',
-        'file:describe',
 
         'config:page',
-
-        'audio:transcribe',
-
-        'image:imagine',
-        'image:inpaint',
-        'image:isolate',
-        'image:repaint',
-        'image:erase',
-        'image:uncrop',
-        'image:upscale',
-
-        'text:translate',
-        'text:write',
     ];
 
     /**

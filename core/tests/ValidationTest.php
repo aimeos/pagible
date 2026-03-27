@@ -11,7 +11,7 @@ use Aimeos\Cms\Validation;
 use GraphQL\Error\Error;
 
 
-class ValidationTest extends TestAbstract
+class ValidationTest extends CoreTestAbstract
 {
     public function testContentValid()
     {

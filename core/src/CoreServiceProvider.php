@@ -1,0 +1,80 @@
+<?php
+
+namespace Aimeos\Cms;
+
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\ServiceProvider as Provider;
+
+class CoreServiceProvider extends Provider
+{
+    protected bool $defer = false;
+
+    public function boot(): void
+    {
+        $basedir = dirname( __DIR__ );
+
+        $this->loadMigrationsFrom( $basedir . '/database/migrations' );
+        $this->publishes( [$basedir . '/config/cms.php' => config_path( 'cms.php' )], 'cms-core-config' );
+
+        $this->rateLimiter();
+        $this->console();
+
+        // Set null Scout driver as fallback if none configured
+        config(['scout.driver' => config('scout.driver', 'null')]);
+    }
+
+    public function register()
+    {
+        $this->mergeConfigFrom( dirname( __DIR__ ) . '/config/cms.php', 'cms' );
+
+        $this->app->scoped( \Aimeos\Cms\Tenancy::class, function() {
+            $callback = \Aimeos\Cms\Tenancy::$callback;
+            return new \Aimeos\Cms\Tenancy( $callback ? $callback() : '' );
+        } );
+    }
+
+    protected function console() : void
+    {
+        if( $this->app->runningInConsole() )
+        {
+            $this->commands( [
+                \Aimeos\Cms\Commands\Demo::class,
+                \Aimeos\Cms\Commands\InstallCore::class,
+                \Aimeos\Cms\Commands\Publish::class,
+                \Aimeos\Cms\Commands\User::class,
+            ] );
+        }
+    }
+
+    protected function rateLimiter(): void
+    {
+        RateLimiter::for( 'cms-admin', fn( $request ) =>
+            Limit::perMinute( 120 )->by( $request->user()?->getAuthIdentifier() ?: $request->ip() )
+        );
+
+        RateLimiter::for( 'cms-ai', fn( $request ) =>
+            Limit::perMinute( 10 )->by( $request->user()?->getAuthIdentifier() ?: $request->ip() )
+        );
+
+        RateLimiter::for( 'cms-contact', fn( $request ) =>
+            Limit::perMinute( 2 )->by( $request->ip() )
+        );
+
+        RateLimiter::for( 'cms-jsonapi', fn( $request ) =>
+            Limit::perMinute( 60 )->by( $request->ip() )
+        );
+
+        RateLimiter::for( 'cms-login', fn( $request ) =>
+            Limit::perMinute( 10 )->by( $request->ip() )
+        );
+
+        RateLimiter::for( 'cms-proxy', fn( $request ) =>
+            Limit::perMinute( 30 )->by( $request->ip() )
+        );
+
+        RateLimiter::for( 'cms-search', fn( $request ) =>
+            Limit::perMinute( 60 )->by( $request->ip() )
+        );
+    }
+}

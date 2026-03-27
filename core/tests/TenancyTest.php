@@ -16,7 +16,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Auth;
 
 
-class TenancyTest extends TestAbstract
+class TenancyTest extends CoreTestAbstract
 {
     use RefreshDatabase;
 

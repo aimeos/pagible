@@ -12,7 +12,7 @@ use Illuminate\Http\UploadedFile;
 use PHPUnit\Framework\Attributes\Group;
 
 
-class UtilsTest extends TestAbstract
+class UtilsTest extends CoreTestAbstract
 {
     public function testIsValidUrlNull()
     {

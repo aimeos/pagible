@@ -11,7 +11,7 @@ use Illuminate\Foundation\Testing\Concerns\InteractsWithViews;
 use Orchestra\Testbench\Concerns\WithLaravelMigrations;
 
 
-abstract class TestAbstract extends \Orchestra\Testbench\TestCase
+abstract class CoreTestAbstract extends \Orchestra\Testbench\TestCase
 {
     use InteractsWithViews;
     use WithLaravelMigrations;
@@ -42,19 +42,8 @@ abstract class TestAbstract extends \Orchestra\Testbench\TestCase
 
         $app['config']->set('auth.providers.users.model', 'App\\Models\\User');
         $app['config']->set('cms.db', 'testing');
-        $app['config']->set('cms.ai.write', ['provider' => 'gemini', 'model' => 'test', 'api_key' => 'test']);
-        $app['config']->set('cms.ai.refine', ['provider' => 'gemini', 'model' => 'test', 'api_key' => 'test']);
-        $app['config']->set('cms.ai.describe', ['provider' => 'gemini', 'api_key' => 'test']);
-        $app['config']->set('cms.ai.erase', ['provider' => 'clipdrop', 'api_key' => 'test']);
-        $app['config']->set('cms.ai.imagine', ['provider' => 'clipdrop', 'api_key' => 'test']);
-        $app['config']->set('cms.ai.inpaint', ['provider' => 'stabilityai', 'api_key' => 'test']);
-        $app['config']->set('cms.ai.isolate', ['provider' => 'clipdrop', 'api_key' => 'test']);
-        $app['config']->set('cms.ai.uncrop', ['provider' => 'clipdrop', 'api_key' => 'test']);
-        $app['config']->set('cms.ai.upscale', ['provider' => 'clipdrop', 'api_key' => 'test']);
-        $app['config']->set('cms.ai.transcribe', ['provider' => 'openai', 'api_key' => 'test']);
-        $app['config']->set('cms.ai.translate', ['provider' => 'deepl', 'api_key' => 'test']);
         $app['config']->set('cms.config.locales', ['en', 'de'] );
-        $app['config']->set('scout.driver', 'cms');
+        $app['config']->set('scout.driver', 'null');
 
         $app['config']->set('cms.schemas.content.heading', [
             'group' => 'basic',
@@ -79,7 +68,7 @@ abstract class TestAbstract extends \Orchestra\Testbench\TestCase
 	protected function getPackageProviders( $app )
 	{
 		return [
-			'Aimeos\Cms\ServiceProvider',
+			'Aimeos\Cms\CoreServiceProvider',
 			'Aimeos\Nestedset\NestedSetServiceProvider',
 		];
 	}

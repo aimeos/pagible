@@ -10,7 +10,7 @@ namespace Tests;
 use Aimeos\Cms\Permission;
 
 
-class PermissionTest extends TestAbstract
+class PermissionTest extends CoreTestAbstract
 {
     protected function tearDown(): void
     {

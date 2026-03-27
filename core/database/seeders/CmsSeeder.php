@@ -7,7 +7,6 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Seeder;
 use Aimeos\Cms\Models\Version;
 use Aimeos\Cms\Models\Element;
@@ -32,7 +31,6 @@ class CmsSeeder extends Seeder
             return 'demo';
         };
 
-        DB::connection( config( 'cms.db', 'sqlite' ) )->table( 'cms_index' )->where( 'tenant_id', 'demo' )->delete();
         File::where('tenant_id', 'demo')->forceDelete();
         Version::where('tenant_id', 'demo')->forceDelete();
         Element::where('tenant_id', 'demo')->forceDelete();
