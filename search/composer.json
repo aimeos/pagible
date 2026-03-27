@@ -1,0 +1,33 @@
+{
+    "name": "aimeos/pagible-search",
+    "description": "Pagible CMS - Custom search engine",
+    "keywords": ["laravel", "cms", "search", "scout"],
+    "homepage": "https://laravel-cms.org",
+    "type": "library",
+    "license": "LGPL-3.0-only",
+    "require": {
+        "php": "^8.2",
+        "aimeos/pagible-core": "*@dev",
+        "laravel/scout": "^10.20||^11.1"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^9.0||^10.0||^11.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Aimeos\\Cms\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Aimeos\\Cms\\SearchServiceProvider"
+            ]
+        }
+    }
+}
