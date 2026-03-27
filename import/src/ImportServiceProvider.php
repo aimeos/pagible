@@ -1,0 +1,22 @@
+<?php
+
+namespace Aimeos\Cms;
+
+use Illuminate\Support\ServiceProvider as Provider;
+
+class ImportServiceProvider extends Provider
+{
+    public function boot(): void
+    {
+        if( $this->app->runningInConsole() )
+        {
+            $this->commands( [
+                \Aimeos\Cms\Commands\WpImport::class,
+                \Aimeos\Cms\Commands\JoomlaImport::class,
+                \Aimeos\Cms\Commands\DrupalImport::class,
+                \Aimeos\Cms\Commands\StatamicImport::class,
+                \Aimeos\Cms\Commands\T3Import::class,
+            ] );
+        }
+    }
+}
