@@ -11,7 +11,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use LaravelJsonApi\Testing\MakesJsonApiRequests;
 
 
-class JsonapiTest extends TestAbstract
+class JsonapiTest extends JsonapiTestAbstract
 {
     use RefreshDatabase;
     use MakesJsonApiRequests;
@@ -21,7 +21,7 @@ class JsonapiTest extends TestAbstract
     {
         parent::defineEnvironment( $app );
 
-        $app['config']->set( 'cms.jsonapi_maxdepth', 2 );
+        $app['config']->set( 'cms.jsonapi.maxdepth', 2 );
     }
 
 

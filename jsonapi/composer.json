@@ -1,0 +1,33 @@
+{
+    "name": "aimeos/pagible-jsonapi",
+    "description": "Pagible CMS - JSON:API server",
+    "keywords": ["laravel", "cms", "jsonapi"],
+    "homepage": "https://laravel-cms.org",
+    "type": "library",
+    "license": "LGPL-3.0-only",
+    "require": {
+        "php": "^8.2",
+        "aimeos/pagible-core": "*@dev",
+        "laravel-json-api/laravel": "^5.1"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^9.0||^10.0||^11.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Aimeos\\Cms\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Aimeos\\Cms\\JsonapiServiceProvider"
+            ]
+        }
+    }
+}

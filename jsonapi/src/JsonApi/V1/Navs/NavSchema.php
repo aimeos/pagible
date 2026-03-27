@@ -57,7 +57,7 @@ class NavSchema extends Schema
     public function __construct( \LaravelJsonApi\Contracts\Server\Server $server )
     {
         parent::__construct( $server );
-        $this->maxDepth = config( 'cms.jsonapi_maxdepth', 1 );
+        $this->maxDepth = config( 'cms.jsonapi.maxdepth', 1 );
     }
 
 
