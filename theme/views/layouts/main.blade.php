@@ -8,12 +8,12 @@
             <meta http-equiv="Content-Security-Policy" content="
                 base-uri 'self';
                 default-src 'self';
-                frame-src 'self' {{ config('cms.csp.frame-src') }};
-                connect-src 'self' {{ config('cms.csp.connect-src') }};
-                img-src 'self' data: blob: {{ config('cms.csp.media-src') }};
-                media-src 'self' data: blob: {{ config('cms.csp.media-src') }};
-                style-src 'self' 'nonce-{{ csrf_token() }}' {{ config('cms.csp.style-src') }};
-                script-src 'self' 'nonce-{{ csrf_token() }}' {{ config('cms.csp.script-src') }};
+                frame-src 'self' {{ config('cms.theme.csp.frame-src') }};
+                connect-src 'self' {{ config('cms.theme.csp.connect-src') }};
+                img-src 'self' data: blob: {{ config('cms.theme.csp.media-src') }};
+                media-src 'self' data: blob: {{ config('cms.theme.csp.media-src') }};
+                style-src 'self' 'nonce-{{ csrf_token() }}' {{ config('cms.theme.csp.style-src') }};
+                script-src 'self' 'nonce-{{ csrf_token() }}' {{ config('cms.theme.csp.script-src') }};
             ">
         @endif
 

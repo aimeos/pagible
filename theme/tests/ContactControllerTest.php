@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\RateLimiter;
 
 
-class ContactControllerTest extends TestAbstract
+class ContactControllerTest extends ThemeTestAbstract
 {
     protected function defineEnvironment( $app )
     {

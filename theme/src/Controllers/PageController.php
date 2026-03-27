@@ -46,7 +46,7 @@ class PageController extends Controller
             return $this->latest( $path, $domain );
         }
 
-        $cache = Cache::store( config( 'cms.cache', 'file' ) );
+        $cache = Cache::store( config( 'cms.theme.cache', 'file' ) );
         $key = Page::key( $path, $domain );
         $args = $request->input();
 

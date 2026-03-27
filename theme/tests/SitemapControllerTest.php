@@ -10,7 +10,7 @@ namespace Tests;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 
-class SitemapControllerTest extends TestAbstract
+class SitemapControllerTest extends ThemeTestAbstract
 {
     use RefreshDatabase;
 

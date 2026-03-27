@@ -12,11 +12,26 @@ use Illuminate\Foundation\Testing\RefreshDatabaseState;
 use Illuminate\Http\Request;
 
 
-class SearchControllerTest extends TestAbstract
+class SearchControllerTest extends ThemeTestAbstract
 {
     use DatabaseTruncation;
 
     protected $connectionsToTransact = [];
+
+
+    protected function defineEnvironment( $app )
+    {
+        parent::defineEnvironment( $app );
+        $app['config']->set('scout.driver', 'cms');
+    }
+
+
+    protected function getPackageProviders( $app )
+    {
+        return array_merge( parent::getPackageProviders( $app ), [
+            'Aimeos\Cms\SearchServiceProvider',
+        ] );
+    }
 
 
     protected function beforeTruncatingDatabase(): void
