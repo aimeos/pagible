@@ -11,14 +11,13 @@ use Aimeos\Prisma\Prisma;
 use Aimeos\Prisma\Responses\FileResponse;
 use Aimeos\Prisma\Responses\TextResponse;
 use Illuminate\Http\UploadedFile;
-use Aimeos\AnalyticsBridge\Facades\Analytics;
 use Nuwave\Lighthouse\Testing\MakesGraphQLRequests;
 use Nuwave\Lighthouse\Testing\RefreshesSchemaCache;
 use Prism\Prism\Testing\TextResponseFake;
 use Prism\Prism\Facades\Prism;
 
 
-class GraphqlAiTest extends TestAbstract
+class GraphqlAiTest extends AiTestAbstract
 {
     use MakesGraphQLRequests;
     use RefreshesSchemaCache;
@@ -257,92 +256,6 @@ class GraphqlAiTest extends TestAbstract
     }
 
 
-    public function testMetrics()
-    {
-        $expected = [
-            'views' => [
-                ['key' => '2025-08-01', 'value' => 10],
-                ['key' => '2025-08-02', 'value' => 20],
-            ],
-            'visits' => [
-                ['key' => '2025-08-01', 'value' => 5],
-                ['key' => '2025-08-02', 'value' => 15],
-            ],
-            'durations' => [
-                ['key' => '2025-08-01', 'value' => 60],
-                ['key' => '2025-08-02', 'value' => 90],
-            ],
-            'countries' => [
-                ['key' => 'Germany', 'value' => 12],
-                ['key' => 'USA', 'value' => 8],
-            ],
-            'referrers' => [
-                ['key' => 'google.com', 'value' => 6],
-                ['key' => 'bing.com', 'value' => 3],
-            ],
-        ];
-
-        $pagespeed = [
-            ['key' => 'time_to_first_byte', 'value' => 250]
-        ];
-
-        Analytics::shouldReceive('driver->stats')
-            ->once()
-            ->with('/test', 30)
-            ->andReturn($expected);
-
-        Analytics::shouldReceive('pagespeed')
-            ->once()
-            ->with('/test')
-            ->andReturn($pagespeed);
-
-
-        $response = $this->actingAs($this->user)->graphQL('
-            mutation {
-                metrics(url: "/test", days: 30) {
-                    errors
-                    views { key value }
-                    visits { key value }
-                    durations { key value }
-                    countries { key value }
-                    referrers { key value }
-                    pagespeed { key value }
-                }
-            }
-        ');
-
-        $response->assertJson([
-            'data' => [
-                'metrics' => $expected + ['pagespeed' => $pagespeed],
-            ],
-        ]);
-    }
-
-
-    public function testMetricsEmptyUrl()
-    {
-        $this->actingAs($this->user)->graphQL('
-            mutation {
-                metrics(url: "", days: 30) {
-                    views { key value }
-                }
-            }
-        ')->assertGraphQLErrorMessage('URL must be a non-empty string');
-    }
-
-
-    public function testMetricsInvalidDays()
-    {
-        $this->actingAs($this->user)->graphQL('
-            mutation {
-                metrics(url: "/test", days: 100) {
-                    views { key value }
-                }
-            }
-        ')->assertGraphQLErrorMessage('Number of days must be an integer between 1 and 90, got "100"');
-    }
-
-
     // --- Permission denial tests ---
 
     public function testImagineNoPermission()
@@ -553,20 +466,6 @@ class GraphqlAiTest extends TestAbstract
         ], [
             '0' => UploadedFile::fake()->create( 'test.mp3', 500, 'audio/mpeg' ),
         ] )->assertGraphQLErrorMessage( 'Insufficient permissions' );
-    }
-
-
-    public function testMetricsNoPermission()
-    {
-        $user = $this->noPermUser();
-
-        $this->actingAs( $user )->graphQL( '
-            mutation {
-                metrics(url: "/test", days: 30) {
-                    views { key value }
-                }
-            }
-        ' )->assertGraphQLErrorMessage( 'Insufficient permissions' );
     }
 
 

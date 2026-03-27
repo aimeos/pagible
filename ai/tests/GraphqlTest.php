@@ -20,7 +20,7 @@ use Prism\Prism\Testing\TextResponseFake;
 use Prism\Prism\Facades\Prism;
 
 
-class GraphqlTest extends TestAbstract
+class GraphqlTest extends AiTestAbstract
 {
     use RefreshDatabase;
     use MakesGraphQLRequests;

@@ -1,0 +1,40 @@
+extend type Mutation {
+  "Summarize the content of the file passed by its file ID"
+  describe(file: String!, lang: String): String @guard @cmsPermission(action: "file:describe") @throttle(name: "cms-ai")
+
+  "Remove the part of the image covered by the mask (black: keep, white: erase), returns a base64 encoded image"
+  erase(file: Upload!, mask: Upload!): String @guard @cmsPermission(action: "image:erase") @throttle(name: "cms-ai")
+
+  "Generate images from prompts and passed file IDs, returns a base64 encoded image"
+  imagine(prompt: String!, context: String, files: [String!]): String @guard @cmsPermission(action: "image:imagine") @throttle(name: "cms-ai")
+
+  "Edit an image using a mask image and a prompt, returns a base64 encoded image"
+  inpaint(file: Upload!, mask: Upload!, prompt: String!): String @guard @cmsPermission(action: "image:inpaint") @throttle(name: "cms-ai")
+
+  "Remove image background, returns a base64 encoded image"
+  isolate(file: Upload!): String @guard @cmsPermission(action: "image:isolate") @throttle(name: "cms-ai")
+
+  "Edit an image using a prompt, returns a base64 encoded image"
+  repaint(file: Upload!, prompt: String!): String @guard @cmsPermission(action: "image:repaint") @throttle(name: "cms-ai")
+
+  "Refine existing page content"
+  refine(prompt: String!, content: JSON!, type: String, context: String): JSON @guard @cmsPermission(action: "page:refine") @throttle(name: "cms-ai")
+
+  "Synthesize pages and content from prompts and passed file IDs"
+  synthesize(prompt: String!, context: String, files: [String!]): String @guard @cmsPermission(action: "page:synthesize") @throttle(name: "cms-ai")
+
+  "Transcribe uploaded audio file"
+  transcribe(file: Upload!): JSON @guard @cmsPermission(action: "audio:transcribe") @throttle(name: "cms-ai")
+
+  "Translate texts"
+  translate(texts: [String!]!, to: String!, from: String, context: String): [String!]! @guard @cmsPermission(action: "text:translate") @throttle(name: "cms-ai")
+
+  "Extend/outpaint image, returns a base64 encoded image"
+  uncrop(file: Upload!, top: Int!, right: Int, bottom: Int, left: Int): String @guard @cmsPermission(action: "image:uncrop") @throttle(name: "cms-ai")
+
+  "Upscale image, returns a base64 encoded image"
+  upscale(file: Upload!, factor: Int!): String @guard @cmsPermission(action: "image:upscale") @throttle(name: "cms-ai")
+
+  "Generate texts from prompts and passed file IDs"
+  write(prompt: String!, context: String, files: [String!]): String @guard @cmsPermission(action: "text:write") @throttle(name: "cms-ai")
+}
