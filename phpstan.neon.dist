@@ -6,3 +6,12 @@ parameters:
 	level: 8
 	paths:
 		- src
+		- core/src
+		- admin/src
+		- ai/src
+		- graphql/src
+		- import/src
+		- jsonapi/src
+		- mcp/src
+		- search/src
+		- theme/src

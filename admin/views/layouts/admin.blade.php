@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" dir="{{ in_array(app()->getLocale(), ['ar', 'az', 'dv', 'fa', 'he', 'ku', 'ur']) ? 'rtl' : 'ltr' }}">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="csrf-token" content="{{ csrf_token() }}">
+
+    <title>PagibleAI CMS Admin</title>
+
+    @if($index = cmsadmin('vendor/cms/admin/.vite/manifest.json'))
+      <script type="module" crossorigin src="{{ asset('vendor/cms/admin/' . ($index['file'] ?? '')) }}"></script>
+      @foreach($index['css'] ?? [] as $file)
+        <link rel="stylesheet" crossorigin href="{{ asset('vendor/cms/admin/' . $file) }}">
+      @endforeach
+    @endif
+
+    @if(env('CMS_ADMIN_EMAIL'))
+      <script nonce="{{ $nonce }}">
+        window.__APP_CONFIG__ = {
+          email: {!! json_encode(env('CMS_ADMIN_EMAIL', '')) !!},
+          password: {!! json_encode(env('CMS_ADMIN_PASSWORD', '')) !!}
+        }
+      </script>
+    @endif
+  </head>
+  <body>
+    <div id="app"
+      data-urlgraphql="{{ route('graphql') }}"
+      data-urladmin="{{ route('cms.admin', [], false) }}"
+      data-urlproxy="{{ route('cms.proxy', ['url' => '_url_']) }}"
+      data-urlpage="{{ route('cms.page', ['path' => '_path_'] + (config('cms.multidomain') ? ['domain' => '_domain_'] : [])) }}"
+      data-urlfile="{{ \Illuminate\Support\Facades\Storage::disk( config( 'cms.disk', 'public' ) )->url( '' ) }}"
+      data-theme="{{ json_encode( config( 'cms.admin.colors', ['light' => ['colors' => ['background' => '#f0f4f8', 'surface' => '#ffffff', 'primary' => '#3070a0', 'info' => '#00c8d8', 'error' => '#f44038', 'success' => '#00a070', 'warning' => '#d97706', 'accent' => '#ea580c']], 'dark' => ['colors' => ['background' => '#000000', 'surface' => '#101418', 'primary' => '#105090', 'info' => '#00c8d8', 'error' => '#d06878', 'success' => '#008040', 'warning' => '#f59e0b', 'accent' => '#fb923c']]] ) ) }}"
+      data-config="{{ json_encode( config( 'cms.config', new \stdClass() ) ) }}"
+      data-schemas="{{ json_encode( config( 'cms.schemas', new \stdClass() ) ) }}"
+      data-multidomain="{{ (int) config('cms.multidomain', false) }}"
+    ></div>
+  </body>
+</html>

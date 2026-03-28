@@ -1,0 +1,39 @@
+{
+    "name": "aimeos/pagible-admin",
+    "description": "Pagible CMS - Admin panel",
+    "keywords": ["laravel", "cms", "admin", "vue"],
+    "homepage": "https://pagible.com",
+    "type": "library",
+    "license": "LGPL-3.0-only",
+    "require": {
+        "php": "^8.2",
+        "aimeos/pagible-core": "*@dev",
+        "aimeos/pagible-graphql": "*@dev"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^9.0||^10.0||^11.0"
+    },
+    "suggest": {
+        "aimeos/pagible-theme": "For page preview links in the admin panel"
+    },
+    "autoload": {
+        "psr-4": {
+            "Aimeos\\Cms\\": "src/"
+        },
+        "files": [
+            "src/helpers.php"
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Aimeos\\Cms\\AdminServiceProvider"
+            ]
+        }
+    }
+}

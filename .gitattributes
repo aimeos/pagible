@@ -1,0 +1,16 @@
+# Export ignores for sub-packages (not shipped with meta-package)
+/core/          export-ignore
+/admin/         export-ignore
+/ai/            export-ignore
+/graphql/       export-ignore
+/import/        export-ignore
+/search/        export-ignore
+/jsonapi/       export-ignore
+/mcp/           export-ignore
+/theme/         export-ignore
+/src/           export-ignore
+/.circleci/     export-ignore
+/.potrans/      export-ignore
+/tests/         export-ignore
+phpunit.xml     export-ignore
+phpstan.neon.dist export-ignore

@@ -1,0 +1,41 @@
+{
+    "name": "aimeos/pagible-ai",
+    "description": "Pagible CMS - AI features",
+    "keywords": ["laravel", "cms", "ai"],
+    "homepage": "https://pagible.com",
+    "type": "library",
+    "license": "LGPL-3.0-only",
+    "prefer-stable": true,
+    "minimum-stability": "dev",
+    "require": {
+        "php": "^8.2",
+        "aimeos/pagible-core": "*@dev",
+        "aimeos/prisma": "dev-master",
+        "prism-php/prism": "0.99.19"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^9.0||^10.0||^11.0",
+        "nuwave/lighthouse": "^6.54"
+    },
+    "suggest": {
+        "aimeos/pagible-graphql": "For AI GraphQL mutations",
+        "aimeos/pagible-mcp": "For AI MCP tools"
+    },
+    "autoload": {
+        "psr-4": {
+            "Aimeos\\Cms\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Aimeos\\Cms\\AiServiceProvider"
+            ]
+        }
+    }
+}

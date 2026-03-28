@@ -1,0 +1,39 @@
+{
+    "name": "aimeos/pagible-core",
+    "description": "Pagible CMS - Core package",
+    "keywords": ["laravel", "cms", "package", "multi-tenant", "multi-language"],
+    "homepage": "https://pagible.com",
+    "type": "library",
+    "license": "LGPL-3.0-only",
+    "require": {
+        "php": "^8.2",
+        "aimeos/laravel-nestedset": "~7.0",
+        "ezyang/htmlpurifier": "^4.18",
+        "intervention/image": "^3.11",
+        "laravel/framework": "^11.0||^12.0||^13.0",
+        "laravel/scout": "^10.20||^11.1",
+        "symfony/uid": "^7.0||^8.0",
+        "enshrined/svg-sanitize": "^0.22.0"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^9.0||^10.0||^11.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Aimeos\\Cms\\": "src/",
+            "Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Aimeos\\Cms\\CoreServiceProvider"
+            ]
+        }
+    }
+}

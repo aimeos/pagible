@@ -33,111 +33,6 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | AI providers
-    |--------------------------------------------------------------------------
-    |
-    | Use the AI providers defined in ./config/prism.php to generate content
-    | for pages and elements. You can use any other provider that is supported
-    | by Prism/Prisma.
-    |
-    */
-    'ai' => [
-        'maxtoken' => env( 'CMS_AI_MAXTOKEN' ), // maximum tokens per request
-
-        'write' => [ // Generate text content based on prompts
-            'provider' => env( 'CMS_AI_WRITE', 'gemini' ),
-            'model' => env( 'CMS_AI_WRITE_MODEL', 'gemini-2.5-flash' ),
-            'api_key' => env( 'CMS_AI_WRITE_API_KEY' ),
-        ],
-        'refine' => [ // Return content in a defined structure
-            'provider' => env( 'CMS_AI_REFINE', 'gemini' ),
-            'model' => env( 'CMS_AI_REFINE_MODEL', 'gemini-2.5-flash' ),
-            'api_key' => env( 'CMS_AI_REFINE_API_KEY' ),
-        ],
-        'describe' => [ // Generate summary of file content
-            'provider' => env( 'CMS_AI_DESCRIBE', 'gemini' ),
-            'model' => env( 'CMS_AI_DESCRIBE_MODEL', 'gemini-2.5-flash' ),
-            'api_key' => env( 'CMS_AI_DESCRIBE_API_KEY' ),
-        ],
-        'translate' => [ // Translate text content
-            'provider' => env( 'CMS_AI_TRANSLATE', 'deepl' ),
-            'model' => env( 'CMS_AI_TRANSLATE_MODEL' ),
-            'api_key' => env( 'CMS_AI_TRANSLATE_API_KEY' ),
-            'url' => env( 'CMS_AI_TRANSLATE_URL' ),
-        ],
-
-        'erase' => [ // Remove selected parts of images
-            'provider' => env( 'CMS_AI_ERASE', 'clipdrop' ),
-            'model' => env( 'CMS_AI_ERASE_MODEL' ),
-            'api_key' => env( 'CMS_AI_ERASE_API_KEY' ),
-        ],
-        'imagine' => [ // Generate images from text prompts
-            'provider' => env( 'CMS_AI_IMAGINE', 'gemini' ),
-            'model' => env( 'CMS_AI_IMAGINE_MODEL', 'gemini-2.5-flash-image' ),
-            'api_key' => env( 'CMS_AI_IMAGINE_API_KEY' ),
-        ],
-        'inpaint' => [ // Change selected parts of images based on prompt
-            'provider' => env( 'CMS_AI_INPAINT', 'gemini' ),
-            'model' => env( 'CMS_AI_INPAINT_MODEL', 'gemini-2.5-flash-image' ),
-            'api_key' => env( 'CMS_AI_INPAINT_API_KEY' ),
-        ],
-        'isolate' => [ // Remove background from images
-            'provider' => env( 'CMS_AI_ISOLATE', 'clipdrop' ),
-            'model' => env( 'CMS_AI_ISOLATE_MODEL' ),
-            'api_key' => env( 'CMS_AI_ISOLATE_API_KEY' ),
-        ],
-        'repaint' => [ // Change image based on prompt
-            'provider' => env( 'CMS_AI_REPAINT', 'gemini' ),
-            'model' => env( 'CMS_AI_REPAINT_MODEL', 'gemini-2.5-flash-image' ),
-            'api_key' => env( 'CMS_AI_REPAINT_API_KEY' ),
-        ],
-        'uncrop' => [ // Extend images
-            'provider' => env( 'CMS_AI_UNCROP', 'clipdrop' ),
-            'model' => env( 'CMS_AI_UNCROP_MODEL' ),
-            'api_key' => env( 'CMS_AI_UNCROP_API_KEY' ),
-        ],
-        'upscale' => [ // Upscale images
-            'provider' => env( 'CMS_AI_UPSCALE', 'clipdrop' ),
-            'model' => env( 'CMS_AI_UPSCALE_MODEL' ),
-            'api_key' => env( 'CMS_AI_UPSCALE_API_KEY' ),
-        ],
-
-        'transcribe' => [ // Transcribe audio
-            'provider' => env( 'CMS_AI_TRANSCRIBE', 'openai' ),
-            'model' => env( 'CMS_AI_TRANSCRIBE_MODEL', 'whisper-1' ),
-            'api_key' => env( 'CMS_AI_TRANSCRIBE_API_KEY' ),
-        ],
-    ],
-
-    /*
-    |--------------------------------------------------------------------------
-    | Cache store
-    |--------------------------------------------------------------------------
-    |
-    | Use the cache store defined in ./config/cache.php to store rendered pages
-    | for fast response times.
-    |
-    */
-    'cache' => env( 'APP_DEBUG' ) ? 'array' : 'file',
-
-    /*
-    |--------------------------------------------------------------------------
-    | Content Security Policy (CSP)
-    |--------------------------------------------------------------------------
-    |
-    | Define additional Content Security Policy (CSP) directives.
-    | The default settings already allow loading from the same origin.
-    */
-    'csp' => [
-        'media-src' => env( 'CMS_CSP_MEDIA_SRC' ),
-        'style-src' => env( 'CMS_CSP_STYLE_SRC', 'https://hcaptcha.com https://*.hcaptcha.com' ),
-        'frame-src' => env( 'CMS_CSP_FRAME_SRC', 'https://hcaptcha.com https://*.hcaptcha.com' ),
-        'script-src' => env( 'CMS_CSP_SCRIPT_SRC', 'https://hcaptcha.com https://*.hcaptcha.com' ),
-        'connect-src' => env( 'CMS_CSP_CONNECT_SRC', 'https://hcaptcha.com https://*.hcaptcha.com' ),
-    ],
-
-    /*
-    |--------------------------------------------------------------------------
     | Database connection
     |--------------------------------------------------------------------------
     |
@@ -161,21 +56,6 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | GraphQL settings
-    |--------------------------------------------------------------------------
-    |
-    | The "graphql" settings define the maximum file size in MB and the allowed
-    | MIME type prefixes for file uploads via the GraphQL API. The MIME type
-    | prefixes are matched against the beginning of the detected MIME type.
-    |
-    */
-    'graphql' => [
-        'filesize' => env( 'CMS_GRAPHQL_FILESIZE', 50 ), // in MB
-        'mimetypes' => explode( ',', env( 'CMS_GRAPHQL_MIMETYPES', 'application/gzip,application/pdf,application/vnd.,application/zip,audio/,image/,text/,video/' ) ),
-    ],
-
-    /*
-    |--------------------------------------------------------------------------
     | Image settings
     |--------------------------------------------------------------------------
     |
@@ -190,18 +70,6 @@ return [
             ['width' => 1920, 'height' => 1080],
         ]
     ],
-
-    /*
-    |--------------------------------------------------------------------------
-    | JSON:API settings
-    |--------------------------------------------------------------------------
-    |
-    | The "jsonapi_maxdepth" setting defines the maximum depth of the JSON:API
-    | resource relationships that will be included in the response.
-    | Example: 1 = include=children; 2 = include=children,children.children
-    |
-    */
-    'jsonapi_maxdepth' => env( 'CMS_JSONAPI_MAXDEPTH', 1 ),
 
     /*
     |--------------------------------------------------------------------------
@@ -223,38 +91,6 @@ return [
     |
     */
     'menu_maxdepth' => env( 'CMS_MENU_MAXDEPTH', 2 ),
-
-    /*
-    |--------------------------------------------------------------------------
-    | Use package catch-all page route
-    |--------------------------------------------------------------------------
-    |
-    | If enabled, the package will register a catch-all route that will
-    | match all requests and forward them to the CMS. Disable this option
-    | if you need to register own routes before the catch-all route.
-    |
-    */
-    'pageroute' => env( 'CMS_PAGEROUTE', true ),
-
-    /*
-    |--------------------------------------------------------------------------
-    | Proxy settings
-    |--------------------------------------------------------------------------
-    |
-    | The proxy settings define the maximum length of the file that can be
-    | downloaded via the proxy in MB and the timeout for streaming the file
-    | in seconds. The default values are 10 MB and 30 seconds, respectively.
-    |
-    | The proxy is used to fetch external resources like images, videos or
-    | files that are linked in the content. The proxy will download the file
-    | and stream it to the client, so that the browser can display it without
-    | potential CORS issues.
-    |
-    */
-    'proxy' => [
-        'max-length' => env( 'CMS_PROXY_MAX_LENGTH', 10 ), // in MB
-        'stream_timeout' => env( 'CMS_PROXY_STREAM_TIMEOUT', 30 ), // in seconds
-    ],
 
     /*
     |--------------------------------------------------------------------------

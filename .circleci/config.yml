@@ -246,7 +246,7 @@ jobs:
   "admin-lint":
     docker:
       - image: cimg/node:lts
-    working_directory: ~/project/admin
+    working_directory: ~/project/admin/app
     steps:
       - checkout:
           path: ~/project
@@ -263,7 +263,7 @@ jobs:
   "admin-unit":
     docker:
       - image: cypress/browsers:latest
-    working_directory: ~/project/admin
+    working_directory: ~/project/admin/app
     parallelism: 3
     steps:
       - checkout:
@@ -290,7 +290,7 @@ jobs:
   "admin-e2e":
     docker:
       - image: cypress/browsers:latest
-    working_directory: ~/project/admin
+    working_directory: ~/project/admin/app
     parallelism: 4
     steps:
       - checkout:

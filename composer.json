@@ -2,75 +2,76 @@
 	"name": "aimeos/pagible",
 	"description": "Pagible CMS",
 	"keywords": ["laravel", "cms", "package", "api", "graphql", "jsonapi", "multi-tenant", "multi-language"],
-	"homepage": "https://laravel-cms.org",
+	"homepage": "https://pagible.com",
 	"type": "library",
 	"license": "MIT",
 	"prefer-stable": true,
 	"minimum-stability": "dev",
 	"require": {
-		"aimeos/laravel-analytics-bridge": "~1.0",
-		"aimeos/laravel-nestedset": "~7.0",
-		"aimeos/prisma": "dev-master",
-		"ezyang/htmlpurifier": "^4.18",
-		"intervention/image": "^3.11",
-		"laravel-json-api/laravel": "^5.1",
-		"laravel/framework": "^11.0||^12.0||^13.0",
-		"laravel/mcp": "~0.5",
-		"laravel/scout": "^10.20||^11.1",
-		"league/commonmark": "^2.6",
-		"mll-lab/graphql-php-scalars": "^6.4",
-		"nuwave/lighthouse": "^6.54",
-		"prism-php/prism": "0.99.19",
-		"symfony/uid": "^7.0||^8.0",
-		"enshrined/svg-sanitize": "^0.22.0"
+		"aimeos/pagible-core": "*@dev",
+		"aimeos/pagible-admin": "*@dev",
+		"aimeos/pagible-ai": "*@dev",
+		"aimeos/pagible-graphql": "*@dev",
+		"aimeos/pagible-import": "*@dev",
+		"aimeos/pagible-search": "*@dev",
+		"aimeos/pagible-jsonapi": "*@dev",
+		"aimeos/pagible-mcp": "*@dev",
+		"aimeos/pagible-theme": "*@dev"
 	},
 	"require-dev": {
 		"orchestra/testbench": "^9.0||^10.0||^11.0",
 		"laravel-json-api/testing": "^3.1",
-		"om/potrans": "^1.0.1",
-		"larastan/larastan": "^3.9"
+		"larastan/larastan": "^3.9",
+		"om/potrans": "^1.0.1"
 	},
+	"repositories": [
+		{"type": "path", "url": "core"},
+		{"type": "path", "url": "admin"},
+		{"type": "path", "url": "ai"},
+		{"type": "path", "url": "graphql"},
+		{"type": "path", "url": "import"},
+		{"type": "path", "url": "search"},
+		{"type": "path", "url": "jsonapi"},
+		{"type": "path", "url": "mcp"},
+		{"type": "path", "url": "theme"}
+	],
 	"autoload": {
 		"psr-4": {
-			"Aimeos\\Cms\\": "src",
-			"Database\\Seeders\\": "database/seeders/"
-		},
-		"files": [
-			"src/helpers.php"
-		],
-		"classmap": [
-			"src"
-		]
+			"Aimeos\\Cms\\": "src/"
+		}
 	},
 	"autoload-dev": {
 		"psr-4": {
-			"Aimeos\\Cms\\": "tests"
+			"Tests\\": [
+				"core/tests/",
+				"admin/tests/",
+				"ai/tests/",
+				"graphql/tests/",
+				"import/tests/",
+				"jsonapi/tests/",
+				"mcp/tests/",
+				"search/tests/",
+				"theme/tests/"
+			]
 		},
 		"classmap": [
-			"tests"
+			"tests/User.php"
 		]
-	},
-	"extra": {
-		"laravel": {
-			"providers": [
-				"Aimeos\\Cms\\ServiceProvider"
-			]
-		}
 	},
 	"scripts": {
 		"post-autoload-dump": [
 			"@php vendor/bin/testbench package:discover --ansi"
 		],
 		"translate": [
-			"npm run gettext:extract --prefix admin",
-			"mv admin/i18n/no.po admin/i18n/nb.po",
-			"for POFILE in `ls admin/i18n/*.po`; do msgattrib --no-obsolete -o $POFILE $POFILE; done",
-			"for POFILE in `ls admin/i18n/*.po`; do vendor/bin/potrans deepl --ignore='%\\{[a-z]+\\}' --only --pot=admin/i18n/messages.pot $POFILE; done",
-			"mv admin/i18n/nb.po admin/i18n/no.po",
-			"npm run gettext:compile --prefix admin"
+			"npm run gettext:extract --prefix admin/app",
+			"mv admin/app/i18n/no.po admin/app/i18n/nb.po",
+			"for POFILE in `ls admin/app/i18n/*.po`; do msgattrib --no-obsolete -o $POFILE $POFILE; done",
+			"for POFILE in `ls admin/app/i18n/*.po`; do vendor/bin/potrans deepl --ignore='%\\{[a-z]+\\}' --only --pot=admin/app/i18n/messages.pot $POFILE; done",
+			"mv admin/app/i18n/nb.po admin/app/i18n/no.po",
+			"npm run gettext:compile --prefix admin/app"
 		],
 		"build": [
-			"npm run build --prefix admin"
+			"npm run build --prefix admin/app"
 		]
 	},
 	"config": {

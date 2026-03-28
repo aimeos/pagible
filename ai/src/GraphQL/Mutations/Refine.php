@@ -1,0 +1,163 @@
+<?php
+
+/**
+ * @license LGPL, https://opensource.org/license/lgpl-3-0
+ */
+
+
+namespace Aimeos\Cms\GraphQL\Mutations;
+
+use Aimeos\Cms\Utils;
+use Aimeos\Cms\Models\File;
+use Prism\Prism\Facades\Prism;
+use Prism\Prism\Schema\EnumSchema;
+use Prism\Prism\Schema\ArraySchema;
+use Prism\Prism\Schema\ObjectSchema;
+use Prism\Prism\Schema\StringSchema;
+use Prism\Prism\Exceptions\PrismException;
+use Illuminate\Support\Facades\Log;
+use GraphQL\Error\Error;
+
+
+final class Refine
+{
+    /**
+     * @param  null  $rootValue
+     * @param  array<string, mixed>  $args
+     * @return array<int, mixed>
+     */
+    public function __invoke( $rootValue, array $args ): array
+    {
+        if( empty( $args['prompt'] ) ) {
+            throw new Error( 'Prompt must not be empty' );
+        }
+
+        $provider = config( 'cms.ai.refine.provider' );
+        $config = config( 'cms.ai.refine', [] );
+        $model = config( 'cms.ai.refine.model' );
+
+        $system = view( 'cms::prompts.refine' )->render();
+        $type = $args['type'] ?? 'content';
+        $content = $args['content'] ?: [];
+
+        try
+        {
+            $response = Prism::structured()->using( $provider, $model, $config )
+                ->withMaxTokens( config( 'cms.ai.maxtoken', 32768 ) )
+                ->withSystemPrompt( $system . "\n" . ($args['context'] ?? '') )
+                ->withPrompt( $args['prompt'] . "\n\nContent as JSON:\n" . json_encode( $content ) )
+                ->withProviderOptions( ['use_tool_calling' => true] )
+                ->withSchema( $this->schema( $type ) )
+                ->withClientOptions( [
+                    'timeout' => 180,
+                    'connect_timeout' => 10,
+                ] )
+                ->asStructured();
+
+            if( !$response->structured ) {
+                throw new Error( 'Invalid content in refine response' );
+            }
+
+            return $this->merge( $content, $response->structured['contents'] ?? [] );
+        }
+        catch( PrismException $e )
+        {
+            Log::error( 'AI service error', ['mutation' => 'Refine', 'message' => $e->getMessage(), 'trace' => $e->getTraceAsString()] );
+            throw new Error( config( 'app.debug' ) ? $e->getMessage() : 'AI service error', null, null, null, null, $e );
+        }
+    }
+
+
+    /**
+     * Merges the existing content with the response from the AI
+     *
+     * @param array<mixed> $content Existing content elements
+     * @param array<mixed> $response AI response with updated text content
+     * @return array<mixed> Updated content elements
+     */
+    protected function merge( array $content, array $response ) : array
+    {
+        $result = [];
+        $map = collect( $content )->keyBy( 'id' );
+
+        foreach( $response as $item )
+        {
+            $entry = (array) $map->pull( $item['id'], [] );
+            $entry['data'] = (array) ( $entry['data'] ?? [] );
+            $entry['type'] = $item['type'] ?? ( $entry['type'] ?? 'text' );
+
+            if( !isset( $entry['id'] ) ) {
+                $entry['id'] = Utils::uid();
+            }
+
+            foreach( $item['data'] ?? [] as $data )
+            {
+                if( empty( $data['name'] ) ) {
+                    continue;
+                }
+
+                $m = [];
+
+                if( $entry['type'] === 'heading' && preg_match( '/^(#+)(.*)$/', (string) @$data['value'], $m ) )
+                {
+                    $entry['data'][$data['name']] = trim( $m[2] );
+                    $entry['data']['level'] = (string) strlen( $m[1] );
+                }
+                else
+                {
+                    $entry['data'][$data['name']] = (string) @$data['value'];
+                }
+            }
+
+            $result[] = $entry;
+        }
+
+        return $result;
+    }
+
+
+    /**
+     * Returns the schema for the content elements
+     *
+     * @param string $type The type of content elements
+     * @return ObjectSchema The schema for the content elements
+     */
+    protected function schema( string $type ) : ObjectSchema
+    {
+        $types = collect( (array) config( "cms.schemas.$type", [] ) )->keys()->all();
+
+        return new ObjectSchema(
+            name: 'response',
+            description: 'The content response',
+            properties: [
+                new ArraySchema(
+                    name: 'contents',
+                    description: 'List of page content elements',
+                    items: new ObjectSchema(
+                        name: 'content',
+                        description: 'A content element',
+                        properties: [
+                            new StringSchema( 'id', 'The ID of the content element', nullable: true ),
+                            new EnumSchema( 'type', 'The type of the content element', options: $types ),
+                            new ArraySchema(
+                                name: 'data',
+                                description: 'List of texts for the content element',
+                                items: new ObjectSchema(
+                                    name: 'text',
+                                    description: 'A text of the content element',
+                                    properties: [
+                                        new EnumSchema( 'name', 'Name of the text element', options: ['title', 'text'] ),
+                                        new StringSchema( 'value', 'Plain title, markdown text or source code text' ),
+                                    ],
+                                    requiredFields: ['name', 'value']
+                                )
+                            )
+                        ],
+                        requiredFields: ['id', 'type', 'data']
+                    )
+                )
+            ],
+            requiredFields: ['contents']
+        );
+    }
+}
