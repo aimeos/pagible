@@ -2,7 +2,7 @@
     "name": "aimeos/pagible-import",
     "description": "Pagible CMS - CMS importers",
     "keywords": ["laravel", "cms", "import", "wordpress", "joomla", "drupal"],
-    "homepage": "https://laravel-cms.org",
+    "homepage": "https://pagible.com",
     "type": "library",
     "license": "LGPL-3.0-only",
     "require": {

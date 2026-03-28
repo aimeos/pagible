@@ -2,7 +2,7 @@
     "name": "aimeos/pagible-core",
     "description": "Pagible CMS - Core package",
     "keywords": ["laravel", "cms", "package", "multi-tenant", "multi-language"],
-    "homepage": "https://laravel-cms.org",
+    "homepage": "https://pagible.com",
     "type": "library",
     "license": "LGPL-3.0-only",
     "require": {

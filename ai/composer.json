@@ -2,7 +2,7 @@
     "name": "aimeos/pagible-ai",
     "description": "Pagible CMS - AI features",
     "keywords": ["laravel", "cms", "ai"],
-    "homepage": "https://laravel-cms.org",
+    "homepage": "https://pagible.com",
     "type": "library",
     "license": "LGPL-3.0-only",
     "prefer-stable": true,
@@ -10,7 +10,6 @@
     "require": {
         "php": "^8.2",
         "aimeos/pagible-core": "*@dev",
-        "aimeos/laravel-analytics-bridge": "~1.0",
         "aimeos/prisma": "dev-master",
         "prism-php/prism": "0.99.19"
     },

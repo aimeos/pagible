@@ -2,7 +2,7 @@
     "name": "aimeos/pagible-theme",
     "description": "Pagible CMS - Frontend theme and rendering",
     "keywords": ["laravel", "cms", "theme", "frontend"],
-    "homepage": "https://laravel-cms.org",
+    "homepage": "https://pagible.com",
     "type": "library",
     "license": "LGPL-3.0-only",
     "require": {
