@@ -50,7 +50,7 @@ class Benchmark extends Command
             return 1;
         }
 
-        $tenant = strval( $this->option( 'tenant' ) );
+        $tenant = (string) $this->option( 'tenant' ); // @phpstan-ignore-line argument.type
 
         if( empty( $tenant ) )
         {
@@ -63,8 +63,8 @@ class Benchmark extends Command
             return $tenant;
         };
 
-        $domain = strval( $this->option( 'domain' ) ?: '' );
         $conn = config( 'cms.db', 'sqlite' );
+        $domain = (string) $this->option( 'domain' ) ?: ''; // @phpstan-ignore-line argument.type
 
         // Unseed mode
         if( $this->option( 'unseed' ) )
@@ -78,8 +78,8 @@ class Benchmark extends Command
         // Seed phase
         if( !$this->option( 'test-only' ) )
         {
-            $lang = strval( $this->option( 'lang' ) ?: '' );
-            $editor = strval( $this->option( 'editor' ) ?: '' );
+            $editor = (string) $this->option( 'editor' ) ?: ''; // @phpstan-ignore-line argument.type
+            $lang = (string) $this->option( 'lang' ) ?: ''; // @phpstan-ignore-line argument.type
             $pages = (int) $this->option( 'pages' );
             $chunk = (int) $this->option( 'chunk' );
 
