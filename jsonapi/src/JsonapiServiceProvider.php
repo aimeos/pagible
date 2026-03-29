@@ -20,6 +20,7 @@ class JsonapiServiceProvider extends Provider
         if( $this->app->runningInConsole() )
         {
             $this->commands( [
+                \Aimeos\Cms\Commands\BenchmarkJsonapi::class,
                 \Aimeos\Cms\Commands\InstallJsonapi::class,
             ] );
         }
