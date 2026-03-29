@@ -50,7 +50,7 @@ class Benchmark extends Command
             return 1;
         }
 
-        $tenant = $this->option( 'tenant' );
+        $tenant = (string) $this->option( 'tenant' );
 
         if( empty( $tenant ) )
         {
@@ -78,8 +78,8 @@ class Benchmark extends Command
         // Seed phase
         if( !$this->option( 'test-only' ) )
         {
-            $lang = (string) $this->option( 'lang' );
-            $editor = (string) $this->option( 'editor' );
+            $lang = (string) ( $this->option( 'lang' ) ?: '' );
+            $editor = (string) ( $this->option( 'editor' ) ?: '' );
             $pages = (int) $this->option( 'pages' );
             $chunk = (int) $this->option( 'chunk' );
 
