@@ -23,7 +23,7 @@ use Laravel\Mcp\Request;
 #[IsReadOnly]
 #[Name('list-files')]
 #[Title('Browse the media library')]
-#[Description('Lists files from the media library with optional filters by MIME type, name, or language. Returns up to 25 files as a JSON array with id, name, mime, path, previews, and description.')]
+#[Description('Lists up to 25 media files. Optional filters: mime (prefix like "image" or "image/png"), term (name search), lang (ISO code). Returns JSON array with id, name, mime, lang, path, previews, description, deleted, created_at.')]
 class ListFiles extends Tool
 {
     /**
@@ -35,18 +35,24 @@ class ListFiles extends Tool
             throw new \Exception( 'Insufficient permissions' );
         }
 
+        $v = $request->validate([
+            'mime' => 'string|max:50',
+            'term' => 'string|max:255',
+            'lang' => 'nullable|string|max:5',
+        ]);
+
         $query = File::withTrashed()->orderBy( 'updated_at', 'desc' );
 
-        if( $mime = $request->get( 'mime' ) ) {
-            $query->where( 'mime', 'like', $mime . '%' );
+        if( isset( $v['mime'] ) ) {
+            $query->where( 'mime', 'like', $v['mime'] . '%' );
         }
 
-        if( $term = $request->get( 'term' ) ) {
-            $query->where( 'name', 'like', '%' . $term . '%' );
+        if( isset( $v['term'] ) ) {
+            $query->where( 'name', 'like', '%' . $v['term'] . '%' );
         }
 
-        if( $lang = $request->get( 'lang' ) ) {
-            $query->where( 'lang', $lang );
+        if( array_key_exists( 'lang', $v ) ) {
+            $query->where( 'lang', $v['lang'] );
         }
 
         $result = $query->take( 25 )->get()->map( function( $item ) {

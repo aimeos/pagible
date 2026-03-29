@@ -51,9 +51,9 @@ final class Write
                     'connect_timeout' => 10,
                 ] );
 
-            if( !empty( $ids = $args['files'] ?? null ) )
+            if( !empty( $args['files'] ) )
             {
-                $files = File::whereIn( 'id', $ids )->select( 'id', 'path', 'mime' )->get()->map( function( $file ) {
+                $files = File::whereIn( 'id', $args['files'] )->select( 'id', 'path', 'mime' )->get()->map( function( $file ) {
 
                     if( str_starts_with( (string) $file->path, 'http' ) )
                     {

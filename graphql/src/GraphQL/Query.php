@@ -117,27 +117,27 @@ final class Query
             $builder->where( 'cms_versions.data->cache', (int) $filter['cache'] );
         }
 
-        if( array_key_exists( 'to', $filter ) ) {
+        if( isset( $filter['to'] ) ) {
             $builder->where( 'cms_versions.data->to', (string) $filter['to'] );
         }
 
-        if( array_key_exists( 'path', $filter ) ) {
+        if( isset( $filter['path'] ) ) {
             $builder->where( 'cms_versions.data->path', (string) $filter['path'] );
         }
 
-        if( array_key_exists( 'domain', $filter ) ) {
+        if( isset( $filter['domain'] ) ) {
             $builder->where( 'cms_versions.data->domain', (string) $filter['domain'] );
         }
 
-        if( array_key_exists( 'tag', $filter ) ) {
+        if( isset( $filter['tag'] ) ) {
             $builder->where( 'cms_versions.data->tag', (string) $filter['tag'] );
         }
 
-        if( array_key_exists( 'theme', $filter ) ) {
+        if( isset( $filter['theme'] ) ) {
             $builder->where( 'cms_versions.data->theme', (string) $filter['theme'] );
         }
 
-        if( array_key_exists( 'type', $filter ) ) {
+        if( isset( $filter['type'] ) ) {
             $builder->where( 'cms_versions.data->type', (string) $filter['type'] );
         }
 
@@ -193,8 +193,8 @@ final class Query
             $builder->whereIn( $table . '.id', $filter['id'] );
         }
 
-        if( isset( $filter['lang'] ) ) {
-            $builder->where( 'cms_versions.lang', (string) $filter['lang'] );
+        if( array_key_exists( 'lang', $filter ) ) {
+            $builder->where( 'cms_versions.lang', $filter['lang'] );
         }
 
         if( isset( $filter['editor'] ) ) {

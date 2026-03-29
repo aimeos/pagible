@@ -23,7 +23,7 @@ use Laravel\Mcp\Request;
 #[IsReadOnly]
 #[Name('list-elements')]
 #[Title('List shared content elements with optional filters')]
-#[Description('Lists shared content elements filtered by type or language. Returns up to 25 elements as a JSON array with id, type, name, language, data, and timestamps.')]
+#[Description('Lists up to 25 shared content elements. Optional filters: type, lang (ISO code). Returns JSON array with id, type, name, lang, data, deleted, timestamps.')]
 class ListElements extends Tool
 {
     /**
@@ -35,14 +35,19 @@ class ListElements extends Tool
             throw new \Exception( 'Insufficient permissions' );
         }
 
+        $v = $request->validate([
+            'type' => 'string|max:50',
+            'lang' => 'nullable|string|max:5',
+        ]);
+
         $query = Element::withTrashed()->orderBy( 'updated_at', 'desc' );
 
-        if( $type = $request->get( 'type' ) ) {
-            $query->where( 'type', $type );
+        if( isset( $v['type'] ) ) {
+            $query->where( 'type', $v['type'] );
         }
 
-        if( $lang = $request->get( 'lang' ) ) {
-            $query->where( 'lang', $lang );
+        if( array_key_exists( 'lang', $v ) ) {
+            $query->where( 'lang', $v['lang'] );
         }
 
         $result = $query->take( 25 )->get()->map( function( $item ) {

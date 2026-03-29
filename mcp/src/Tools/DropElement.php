@@ -33,14 +33,14 @@ class DropElement extends Tool
             throw new \Exception( 'Insufficient permissions' );
         }
 
-        $validated = $request->validate([
+        $v = $request->validate([
             'id' => 'required|string|max:36',
         ], [
             'id.required' => 'You must specify the ID of the element to delete.',
         ] );
 
         /** @var Element|null $element */
-        $element = Element::withTrashed()->find( $validated['id'] );
+        $element = Element::withTrashed()->find( $v['id'] );
 
         if( !$element ) {
             return Response::structured( ['error' => 'Element not found.'] );

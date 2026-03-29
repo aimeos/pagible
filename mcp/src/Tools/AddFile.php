@@ -35,31 +35,31 @@ class AddFile extends Tool
             throw new \Exception( 'Insufficient permissions' );
         }
 
-        $validated = $request->validate([
+        $v = $request->validate([
             'url' => 'required|string|max:500',
             'name' => 'string|max:255',
-            'lang' => 'string|max:5',
+            'lang' => 'nullable|string|max:5',
             'description' => 'array',
         ], [
             'url.required' => 'You must specify the URL of the file to add, e.g., "https://example.com/image.jpg".',
         ] );
 
-        $url = $validated['url'];
+        $url = $v['url'];
 
         if( !str_starts_with( $url, 'http' ) || !Utils::isValidUrl( $url ) ) {
             return Response::structured( ['error' => sprintf( 'The URL "%s" must be a valid "http" or "https" URL.', $url )] );
         }
 
-        return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $url, $validated, $request ) {
+        return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $url, $v, $request ) {
 
             $editor = $request->user()?->email ?? request()->ip(); // @phpstan-ignore-line property.notFound
             $versionId = ( new Version )->newUniqueId();
 
             $file = new File();
-            $file->fill( array_intersect_key( $validated, array_flip( ['name', 'lang'] ) ) );
+            $file->fill( array_intersect_key( $v, array_flip( ['name', 'lang'] ) ) );
 
-            if( isset( $validated['description'] ) ) {
-                $file->description = $validated['description'];
+            if( isset( $v['description'] ) ) {
+                $file->description = $v['description'];
             }
 
             $file->tenant_id = \Aimeos\Cms\Tenancy::value();
@@ -86,7 +86,7 @@ class AddFile extends Tool
 
             $file->versions()->forceCreate( [
                 'id' => $versionId,
-                'lang' => $validated['lang'] ?? null,
+                'lang' => $v['lang'] ?? null,
                 'editor' => $editor,
                 'data' => [
                     'lang' => $file->lang,

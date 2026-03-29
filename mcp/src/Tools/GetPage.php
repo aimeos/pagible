@@ -35,7 +35,7 @@ class GetPage extends Tool
             throw new \Exception( 'Insufficient permissions' );
         }
 
-        $validated = $request->validate([
+        $v = $request->validate([
             'id' => 'required_without:path|string|max:36',
             'path' => 'required_without:id|string|max:255',
         ], [
@@ -43,10 +43,10 @@ class GetPage extends Tool
             'path.required_without' => 'You must specify either an ID or a path.',
         ] );
 
-        if( !empty( $validated['id'] ) ) {
-            $page = Page::withTrashed()->find( $validated['id'] );
+        if( !empty( $v['id'] ) ) {
+            $page = Page::withTrashed()->find( $v['id'] );
         } else {
-            $page = Page::withTrashed()->where( 'path', $validated['path'] )->first();
+            $page = Page::withTrashed()->where( 'path', $v['path'] )->first();
         }
 
         if( !$page ) {

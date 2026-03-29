@@ -8,6 +8,7 @@
 namespace Aimeos\Cms\Tools;
 
 use Aimeos\Cms\Permission;
+use Aimeos\Cms\Validation;
 use Aimeos\Cms\Models\Element;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
@@ -21,7 +22,7 @@ use Laravel\Mcp\Request;
 
 #[Name('publish-element')]
 #[Title('Publish one or more shared content elements')]
-#[Description('Publishes the latest draft version of one or more shared content elements to make them publicly visible. Optionally schedule publication for a future date. Pass a single ID string or an array of up to 50 IDs.')]
+#[Description('Publishes one or more shared elements by ID. Pass an array of up to 50 UUIDs. Optionally schedule via "at". Returns published and skipped items.')]
 class PublishElement extends Tool
 {
     /**
@@ -33,16 +34,19 @@ class PublishElement extends Tool
             throw new \Exception( 'Insufficient permissions' );
         }
 
-        $validated = $request->validate([
-            'id' => 'required',
+        $v = $request->validate([
+            'id' => 'required|array|max:50',
+            'id.*' => 'string|max:36',
             'at' => 'date',
         ], [
             'id.required' => 'You must specify the ID (string) or IDs (array of up to 50) of the elements to publish.',
         ] );
 
-        return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $validated, $request ) {
+        Validation::publishAt( $v['at'] ?? null );
 
-            $ids = (array) $validated['id'];
+        return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $v, $request ) {
+
+            $ids = (array) $v['id'];
 
             $items = Element::with( 'latest.files' )->whereIn( 'id', $ids )->get();
             $editor = $request->user()?->email ?? request()->ip(); // @phpstan-ignore-line property.notFound
@@ -59,13 +63,13 @@ class PublishElement extends Tool
                     continue;
                 }
 
-                if( !empty( $validated['at'] ) )
+                if( !empty( $v['at'] ) )
                 {
-                    $latest->publish_at = $validated['at'];
+                    $latest->publish_at = $v['at'];
                     $latest->editor = $editor;
                     $latest->save();
 
-                    $published[] = ['id' => $item->id, 'name' => $item->name, 'scheduled_at' => $validated['at']];
+                    $published[] = ['id' => $item->id, 'name' => $item->name, 'scheduled_at' => $v['at']];
                 }
                 else
                 {

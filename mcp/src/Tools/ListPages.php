@@ -23,7 +23,7 @@ use Laravel\Mcp\Request;
 #[IsReadOnly]
 #[Name('list-pages')]
 #[Title('List pages with optional filters')]
-#[Description('Lists pages filtered by language, status, parent, or type. Returns up to 25 pages as a JSON array with id, name, title, path, lang, status, type, and URL.')]
+#[Description('Lists up to 25 pages. Optional filters: lang (ISO code), status (0=inactive, 1=visible, 2=hidden), parent_id (UUID), type. Returns JSON array with id, name, title, path, lang, status, type, parent_id, has_children, deleted, url.')]
 class ListPages extends Tool
 {
     /**
@@ -35,22 +35,29 @@ class ListPages extends Tool
             throw new \Exception( 'Insufficient permissions' );
         }
 
+        $v = $request->validate([
+            'lang' => 'string|max:5',
+            'status' => 'integer|in:0,1,2',
+            'parent_id' => 'string|max:36',
+            'type' => 'string|max:50',
+        ]);
+
         $query = Page::withTrashed()->defaultOrder();
 
-        if( $lang = $request->get( 'lang' ) ) {
-            $query->where( 'lang', $lang );
+        if( isset( $v['lang'] ) ) {
+            $query->where( 'lang', $v['lang'] );
         }
 
-        if( !is_null( $status = $request->get( 'status' ) ) ) {
-            $query->where( 'status', (int) $status );
+        if( isset( $v['status'] ) ) {
+            $query->where( 'status', (int) $v['status'] );
         }
 
-        if( $parentId = $request->get( 'parent_id' ) ) {
-            $query->where( 'parent_id', $parentId );
+        if( isset( $v['parent_id'] ) ) {
+            $query->where( 'parent_id', $v['parent_id'] );
         }
 
-        if( $type = $request->get( 'type' ) ) {
-            $query->where( 'type', $type );
+        if( isset( $v['type'] ) ) {
+            $query->where( 'type', $v['type'] );
         }
 
         $result = $query->take( 25 )->get()->map( function( $item ) {

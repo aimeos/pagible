@@ -38,14 +38,6 @@ class ToolsTest extends McpTestAbstract
     }
 
 
-    protected function getPackageProviders( $app )
-    {
-        return array_merge( parent::getPackageProviders( $app ), [
-            'Aimeos\Cms\SearchServiceProvider',
-        ] );
-    }
-
-
     protected function setUp(): void
     {
         parent::setUp();
@@ -227,8 +219,13 @@ class ToolsTest extends McpTestAbstract
             'lang' => 'en',
             'name' => 'Test page',
             'title' => 'A Test Page',
-            'summary' => 'This is a test page.',
-            'content' => '# Hello World\nThis is a test page.',
+            'content' => [
+                ['type' => 'heading', 'data' => ['title' => 'Hello World', 'level' => '1']],
+                ['type' => 'text', 'data' => ['text' => 'This is a test page.']],
+            ],
+            'meta' => [
+                'meta-tags' => ['description' => 'A test page for unit testing'],
+            ],
         ] );
 
         $response->assertOk()->assertSee( [
@@ -248,12 +245,76 @@ class ToolsTest extends McpTestAbstract
             'lang' => 'en',
             'name' => 'Child page',
             'title' => 'A Child Page',
-            'summary' => 'Child summary.',
-            'content' => 'Child content.',
+            'content' => [
+                ['type' => 'text', 'data' => ['text' => 'Child content.']],
+            ],
+            'meta' => [
+                'meta-tags' => ['description' => 'A child page for testing'],
+            ],
             'parent_id' => $parent->id,
         ] );
 
         $response->assertOk()->assertSee( ['Child page'] );
+    }
+
+
+    public function testAddPageWithMetaAndConfig()
+    {
+        $this->seed( \Database\Seeders\CmsSeeder::class );
+
+        $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\AddPage::class, [
+            'lang' => 'en',
+            'name' => 'Full page',
+            'title' => 'A Full Page',
+            'tag' => 'nav-start',
+            'status' => 1,
+            'cache' => 10,
+            'content' => [
+                ['type' => 'text', 'group' => 'main', 'data' => ['text' => 'Content']],
+            ],
+            'meta' => [
+                'meta-tags' => ['description' => 'SEO description'],
+            ],
+        ] );
+
+        $response->assertOk()->assertSee( ['Full page', 'nav-start'] );
+    }
+
+
+    public function testAddPageMissingMetaDescription()
+    {
+        $this->seed( \Database\Seeders\CmsSeeder::class );
+
+        $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\AddPage::class, [
+            'lang' => 'en',
+            'name' => 'No meta page',
+            'title' => 'No Meta Page',
+            'content' => [
+                ['type' => 'text', 'data' => ['text' => 'Missing meta description.']],
+            ],
+        ] );
+
+        $response->assertHasErrors( ['meta'] );
+    }
+
+
+    public function testAddPageInvalidContentType()
+    {
+        $this->seed( \Database\Seeders\CmsSeeder::class );
+
+        $this->expectException( \InvalidArgumentException::class );
+
+        CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\AddPage::class, [
+            'lang' => 'en',
+            'name' => 'Bad page',
+            'title' => 'Bad Page',
+            'content' => [
+                ['type' => 'nonexistent', 'data' => ['text' => 'fail']],
+            ],
+            'meta' => [
+                'meta-tags' => ['description' => 'A bad page test'],
+            ],
+        ] );
     }
 
 
@@ -291,7 +352,7 @@ class ToolsTest extends McpTestAbstract
         $page = Page::where( 'name', 'Hidden' )->first();
 
         $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\PublishPage::class, [
-            'id' => $page->id,
+            'id' => [$page->id],
         ] );
 
         $response->assertOk()->assertSee( ['published'] );
@@ -317,7 +378,7 @@ class ToolsTest extends McpTestAbstract
         $page = Page::where( 'name', 'Hidden' )->first();
 
         $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\PublishPage::class, [
-            'id' => $page->id,
+            'id' => [$page->id],
             'at' => '2099-01-01 00:00:00',
         ] );
 
@@ -458,23 +519,16 @@ class ToolsTest extends McpTestAbstract
     public function testSearchElements()
     {
         $this->seed( \Database\Seeders\CmsSeeder::class );
+        sleep( 5 ); // Wait for SQL Server to update fulltext index
 
         $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\SearchElements::class, [
             'term' => 'footer',
         ] );
-
         $response->assertOk()->assertSee( ['Shared footer'] );
-    }
-
-
-    public function testSearchElementsByType()
-    {
-        $this->seed( \Database\Seeders\CmsSeeder::class );
 
         $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\SearchElements::class, [
             'type' => 'footer',
         ] );
-
         $response->assertOk()->assertSee( ['Shared footer'] );
     }
 
@@ -529,7 +583,7 @@ class ToolsTest extends McpTestAbstract
         $element = Element::where( 'name', 'Shared footer' )->first();
 
         $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\PublishElement::class, [
-            'id' => $element->id,
+            'id' => [$element->id],
         ] );
 
         $response->assertOk()->assertSee( ['published'] );
@@ -542,7 +596,7 @@ class ToolsTest extends McpTestAbstract
         $element = Element::where( 'name', 'Shared footer' )->first();
 
         $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\PublishElement::class, [
-            'id' => $element->id,
+            'id' => [$element->id],
             'at' => '2099-06-01 00:00:00',
         ] );
 
@@ -656,24 +710,17 @@ class ToolsTest extends McpTestAbstract
     public function testSearchFiles()
     {
         $this->seed( \Database\Seeders\CmsSeeder::class );
+        sleep( 5 ); // Wait for SQL Server to update fulltext index
 
         $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\SearchFiles::class, [
             'term' => 'Test image',
         ] );
-
         $response->assertOk()->assertSee( ['Test image', 'image/jpeg'] );
-    }
-
-
-    public function testSearchFilesByMime()
-    {
-        $this->seed( \Database\Seeders\CmsSeeder::class );
 
         $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\SearchFiles::class, [
             'term' => 'Test',
             'mime' => 'image/tiff',
         ] );
-
         $response->assertOk()->assertSee( ['Test file', 'image/tiff'] );
     }
 
@@ -744,7 +791,7 @@ class ToolsTest extends McpTestAbstract
         $file = File::where( 'name', 'Test image' )->first();
 
         $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\PublishFile::class, [
-            'id' => $file->id,
+            'id' => [$file->id],
         ] );
 
         $response->assertOk()->assertSee( ['published'] );
@@ -757,7 +804,7 @@ class ToolsTest extends McpTestAbstract
         $file = File::where( 'name', 'Test image' )->first();
 
         $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\PublishFile::class, [
-            'id' => $file->id,
+            'id' => [$file->id],
             'at' => '2099-12-31 23:59:59',
         ] );
 

@@ -23,7 +23,7 @@ use Laravel\Mcp\Request;
 #[IsReadOnly]
 #[Name('get-page-tree')]
 #[Title('Get the page tree hierarchy')]
-#[Description('Returns the page tree as a nested JSON structure. Use root_id to get the subtree of a specific page, or omit it to get all root pages with their children up to 3 levels deep.')]
+#[Description('Returns the page tree as nested JSON. Pass root_id (UUID) for a subtree, or omit for all root pages (up to 50). Optional lang filter (ISO code, only without root_id).')]
 class GetPageTree extends Tool
 {
     /**
@@ -35,13 +35,15 @@ class GetPageTree extends Tool
             throw new \Exception( 'Insufficient permissions' );
         }
 
-        $rootId = $request->get( 'root_id' );
-        $lang = $request->get( 'lang' );
+        $v = $request->validate([
+            'root_id' => 'string|max:36',
+            'lang' => 'string|max:5',
+        ]);
 
-        if( $rootId )
+        if( isset( $v['root_id'] ) )
         {
             /** @var Nav|null $root */
-            $root = Nav::find( $rootId );
+            $root = Nav::find( $v['root_id'] );
 
             if( !$root ) {
                 return Response::structured( ['error' => 'Root page not found.'] );
@@ -49,41 +51,67 @@ class GetPageTree extends Tool
 
             $descendants = $root->subtree?->toTree() ?? collect();
             $tree = $this->buildTree( $descendants );
-        }
-        else
-        {
-            $query = Nav::whereNull( 'parent_id' )->defaultOrder();
 
-            if( $lang ) {
-                $query->where( 'lang', $lang );
+            return Response::structured( ['tree' => $tree] );
+        }
+
+        $query = Nav::whereNull( 'parent_id' )->defaultOrder();
+
+        if( isset( $v['lang'] ) ) {
+            $query->where( 'lang', $v['lang'] );
+        }
+
+        $tree = $query->take( 50 )->get()->map( function( $root ) {
+            /** @var Nav $root */
+            $node = [
+                'id' => $root->id,
+                'name' => $root->name,
+                'title' => $root->title,
+                'path' => $root->path,
+                'lang' => $root->lang,
+                'status' => $root->status,
+                'type' => $root->type,
+                'has_children' => $root->has,
+                'children' => [],
+            ];
+
+            if( $root->has ) {
+                $descendants = $root->subtree?->toTree() ?? collect();
+                $node['children'] = $this->buildTree( $descendants );
             }
 
-            $roots = $query->take( 50 )->get();
-
-            $tree = $roots->map( function( $root ) {
-                /** @var Nav $root */
-                $node = [
-                    'id' => $root->id,
-                    'name' => $root->name,
-                    'title' => $root->title,
-                    'path' => $root->path,
-                    'lang' => $root->lang,
-                    'status' => $root->status,
-                    'type' => $root->type,
-                    'has_children' => $root->has,
-                    'children' => [],
-                ];
-
-                if( $root->has ) {
-                    $descendants = $root->subtree?->toTree() ?? collect();
-                    $node['children'] = $this->buildTree( $descendants );
-                }
-
-                return $node;
-            } )->all();
-        }
+            return $node;
+        } )->all();
 
         return Response::structured( ['tree' => $tree] );
+    }
+
+
+    /**
+     * Get the tool's input schema.
+     *
+     * @return array<string, \Illuminate\JsonSchema\Types\Type>
+     */
+    public function schema( JsonSchema $schema ) : array
+    {
+        return [
+            'root_id' => $schema->string()
+                ->description('ID of the root page to get the subtree for. Omit to get all root pages.'),
+            'lang' => $schema->string()
+                ->description('Filter root pages by ISO language code, e.g., "en". Only used when root_id is not set.'),
+        ];
+    }
+
+
+    /**
+     * Determine if the tool should be registered.
+     *
+     * @param Request $request The incoming request to check permissions for.
+     * @return bool TRUE if the tool should be registered, FALSE otherwise.
+     */
+    public function shouldRegister( Request $request ) : bool
+    {
+        return Permission::can( 'page:view', $request->user() );
     }
 
 
@@ -119,33 +147,5 @@ class GetPageTree extends Tool
         }
 
         return $result;
-    }
-
-
-    /**
-     * Get the tool's input schema.
-     *
-     * @return array<string, \Illuminate\JsonSchema\Types\Type>
-     */
-    public function schema( JsonSchema $schema ) : array
-    {
-        return [
-            'root_id' => $schema->string()
-                ->description('ID of the root page to get the subtree for. Omit to get all root pages.'),
-            'lang' => $schema->string()
-                ->description('Filter root pages by ISO language code, e.g., "en". Only used when root_id is not set.'),
-        ];
-    }
-
-
-    /**
-     * Determine if the tool should be registered.
-     *
-     * @param Request $request The incoming request to check permissions for.
-     * @return bool TRUE if the tool should be registered, FALSE otherwise.
-     */
-    public function shouldRegister( Request $request ) : bool
-    {
-        return Permission::can( 'page:view', $request->user() );
     }
 }

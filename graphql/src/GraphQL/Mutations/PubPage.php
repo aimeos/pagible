@@ -38,7 +38,7 @@ final class PubPage
                 /** @var Page $item */
                 if( $latest = $item->latest )
                 {
-                    if( $args['at'] ?? null )
+                    if( isset( $args['at'] ) )
                     {
                         $latest->publish_at = $args['at'];
                         $latest->editor = $editor;

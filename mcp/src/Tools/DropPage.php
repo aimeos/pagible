@@ -34,14 +34,14 @@ class DropPage extends Tool
             throw new \Exception( 'Insufficient permissions' );
         }
 
-        $validated = $request->validate([
+        $v = $request->validate([
             'id' => 'required|string|max:36',
         ], [
             'id.required' => 'You must specify the ID of the page to delete.',
         ] );
 
         /** @var Page|null $page */
-        $page = Page::withTrashed()->find( $validated['id'] );
+        $page = Page::withTrashed()->find( $v['id'] );
 
         if( !$page ) {
             return Response::structured( ['error' => 'Page not found.'] );

@@ -37,15 +37,15 @@ class GetPageMetrics extends Tool
             throw new \Exception( 'Insufficient permissions' );
         }
 
-        $validated = $request->validate([
+        $v = $request->validate([
             'url' => 'required|string|max:500',
             'days' => 'integer|min:1|max:90',
         ], [
             'url.required' => 'You must specify the full URL of the page, e.g., "https://example.com/blog/my-article".',
         ] );
 
-        $url = $validated['url'];
-        $days = $validated['days'] ?? 30;
+        $url = $v['url'];
+        $days = $v['days'] ?? 30;
         $data = [];
 
         try {
