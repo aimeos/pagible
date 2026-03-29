@@ -62,21 +62,32 @@ class BenchmarkSeeder
         $now = now()->format( 'Y-m-d H:i:s' );
         $nowMs = now()->format( 'Y-m-d H:i:s.v' );
 
-        // Create files upfront (pages / 10)
         $fileCount = max( 1, intdiv( $totalPages, 10 ) );
         $fileIds = $this->createFiles( $lang, $fileCount, $now, $nowMs );
-
-        // Create shared element
         $elementId = $this->createElement( $lang, $now, $nowMs );
 
-        // Build tree structure: 1 root + 10 L1 + 100 L2 + remaining L3
+        $rows = $this->buildPageTree( $lang, $totalPages, $fileIds, $elementId, $now, $nowMs );
+
+        $this->insertRows( $rows );
+        $this->clearPageCache( $rows['pages'] );
+    }
+
+
+    /**
+     * Build page tree rows with nested set values.
+     *
+     * @param array<int, string> $fileIds
+     * @return array<string, array<int, array<string, mixed>>>
+     */
+    protected function buildPageTree( string $lang, int $totalPages, array $fileIds, string $elementId, string $now, string $nowMs ): array
+    {
         $level2Count = 100; // 10 L1 × 10 L2
         $level3PerL2 = max( 0, intdiv( $totalPages - 1 - 10 - $level2Count, $level2Count ) );
         $actualTotal = 1 + 10 + $level2Count + ( $level3PerL2 * $level2Count );
+        $fileCount = count( $fileIds );
 
-        // Pre-compute all pages with nested set values
-        $pageRows = [];
-        $versionRows = [];
+        $pages = [];
+        $versions = [];
         $pivotPageFile = [];
         $pivotPageElement = [];
         $pivotVersionFile = [];
@@ -102,146 +113,144 @@ class BenchmarkSeeder
             'editor' => $this->editor,
         ];
 
-        // Calculate root's _rgt: root encompasses all nodes
         $rootRgt = $lft + ( $actualTotal * 2 ) - 1;
 
-        $pageRows[] = $this->pageRow( $rootId, null, $rootVersionId, $lang, $rootData, $rootContent, $rootMeta, $lft, $rootRgt, 0, $now );
-        $versionRows[] = $this->versionRow( $rootVersionId, $rootId, Page::class, $lang, $rootData, $rootContent, $rootMeta, $nowMs );
+        $pages[] = $this->pageRow( $rootId, null, $rootVersionId, $lang, $rootData, $rootContent, $rootMeta, $lft, $rootRgt, 0, $now );
+        $versions[] = $this->versionRow( $rootVersionId, $rootId, Page::class, $lang, $rootData, $rootContent, $rootMeta, $nowMs );
         $pivotPageFile[] = ['page_id' => $rootId, 'file_id' => $fileIds[$fileIndex % $fileCount]];
         $pivotPageElement[] = ['page_id' => $rootId, 'element_id' => $elementId];
         $pivotVersionFile[] = ['version_id' => $rootVersionId, 'file_id' => $fileIds[$fileIndex % $fileCount]];
         $pivotVersionElement[] = ['version_id' => $rootVersionId, 'element_id' => $elementId];
 
-        $lft++; // Move past root's _lft
+        $lft++;
         $fileIndex++;
         $pageIndex++;
 
-        // Level 1 pages (10)
+        // Level 1–3 pages
         for( $i = 0; $i < 10; $i++ )
         {
             $l1Id = ( new Page )->newUniqueId();
             $l1VersionId = ( new Version )->newUniqueId();
-            $l1Name = "Category {$i}";
-            $l1Path = "category-{$i}";
             $l1Fid = $fileIds[$fileIndex % $fileCount];
 
-            // L1 encompasses: itself + 10 L2 + (10 × level3PerL2) L3
             $l1Children = 10 + ( 10 * $level3PerL2 );
             $l1Lft = $lft;
             $l1Rgt = $lft + ( ( $l1Children + 1 ) * 2 ) - 1;
 
             $l1Data = [
-                'lang' => $lang, 'name' => $l1Name, 'title' => "Category {$i} Title",
-                'path' => $l1Path, 'status' => 1, 'editor' => $this->editor,
+                'lang' => $lang, 'name' => "Category {$i}", 'title' => "Category {$i} Title",
+                'path' => "category-{$i}", 'status' => 1, 'editor' => $this->editor,
             ];
             $l1Content = $this->pageContent( $l1Fid, $elementId, $pageIndex );
             $l1Meta = $this->metaDescription( $pageIndex );
 
-            $pageRows[] = $this->pageRow( $l1Id, $rootId, $l1VersionId, $lang, $l1Data, $l1Content, $l1Meta, $l1Lft, $l1Rgt, 1, $now );
-            $versionRows[] = $this->versionRow( $l1VersionId, $l1Id, Page::class, $lang, $l1Data, $l1Content, $l1Meta, $nowMs );
+            $pages[] = $this->pageRow( $l1Id, $rootId, $l1VersionId, $lang, $l1Data, $l1Content, $l1Meta, $l1Lft, $l1Rgt, 1, $now );
+            $versions[] = $this->versionRow( $l1VersionId, $l1Id, Page::class, $lang, $l1Data, $l1Content, $l1Meta, $nowMs );
             $pivotPageFile[] = ['page_id' => $l1Id, 'file_id' => $l1Fid];
             $pivotPageElement[] = ['page_id' => $l1Id, 'element_id' => $elementId];
             $pivotVersionFile[] = ['version_id' => $l1VersionId, 'file_id' => $l1Fid];
             $pivotVersionElement[] = ['version_id' => $l1VersionId, 'element_id' => $elementId];
 
-            $lft++; // Past L1's _lft
+            $lft++;
             $fileIndex++;
             $pageIndex++;
 
-            // Level 2 pages (10 per L1)
             for( $j = 0; $j < 10; $j++ )
             {
                 $l2Id = ( new Page )->newUniqueId();
                 $l2VersionId = ( new Version )->newUniqueId();
-                $l2Name = "Subcategory {$i}-{$j}";
-                $l2Path = "subcategory-{$i}-{$j}";
                 $l2Fid = $fileIds[$fileIndex % $fileCount];
 
                 $l2Lft = $lft;
                 $l2Rgt = $lft + ( ( $level3PerL2 + 1 ) * 2 ) - 1;
 
                 $l2Data = [
-                    'lang' => $lang, 'name' => $l2Name, 'title' => "Subcategory {$i}-{$j} Title",
-                    'path' => $l2Path, 'status' => 1, 'editor' => $this->editor,
+                    'lang' => $lang, 'name' => "Subcategory {$i}-{$j}", 'title' => "Subcategory {$i}-{$j} Title",
+                    'path' => "subcategory-{$i}-{$j}", 'status' => 1, 'editor' => $this->editor,
                 ];
                 $l2Content = $this->pageContent( $l2Fid, $elementId, $pageIndex );
                 $l2Meta = $this->metaDescription( $pageIndex );
 
-                $pageRows[] = $this->pageRow( $l2Id, $l1Id, $l2VersionId, $lang, $l2Data, $l2Content, $l2Meta, $l2Lft, $l2Rgt, 2, $now );
-                $versionRows[] = $this->versionRow( $l2VersionId, $l2Id, Page::class, $lang, $l2Data, $l2Content, $l2Meta, $nowMs );
+                $pages[] = $this->pageRow( $l2Id, $l1Id, $l2VersionId, $lang, $l2Data, $l2Content, $l2Meta, $l2Lft, $l2Rgt, 2, $now );
+                $versions[] = $this->versionRow( $l2VersionId, $l2Id, Page::class, $lang, $l2Data, $l2Content, $l2Meta, $nowMs );
                 $pivotPageFile[] = ['page_id' => $l2Id, 'file_id' => $l2Fid];
                 $pivotPageElement[] = ['page_id' => $l2Id, 'element_id' => $elementId];
                 $pivotVersionFile[] = ['version_id' => $l2VersionId, 'file_id' => $l2Fid];
                 $pivotVersionElement[] = ['version_id' => $l2VersionId, 'element_id' => $elementId];
 
-                $lft++; // Past L2's _lft
+                $lft++;
                 $fileIndex++;
                 $pageIndex++;
 
-                // Level 3 pages
                 for( $k = 0; $k < $level3PerL2; $k++ )
                 {
                     $l3Id = ( new Page )->newUniqueId();
                     $l3VersionId = ( new Version )->newUniqueId();
-                    $l3Name = "Page {$i}-{$j}-{$k}";
-                    $l3Path = "page-{$i}-{$j}-{$k}";
                     $l3Fid = $fileIds[$fileIndex % $fileCount];
 
                     $l3Data = [
-                        'lang' => $lang, 'name' => $l3Name, 'title' => "Page {$i}-{$j}-{$k} Title",
-                        'path' => $l3Path, 'status' => 1, 'editor' => $this->editor,
+                        'lang' => $lang, 'name' => "Page {$i}-{$j}-{$k}", 'title' => "Page {$i}-{$j}-{$k} Title",
+                        'path' => "page-{$i}-{$j}-{$k}", 'status' => 1, 'editor' => $this->editor,
                     ];
                     $l3Content = $this->pageContent( $l3Fid, $elementId, $pageIndex );
                     $l3Meta = $this->metaDescription( $pageIndex );
 
-                    $pageRows[] = $this->pageRow( $l3Id, $l2Id, $l3VersionId, $lang, $l3Data, $l3Content, $l3Meta, $lft, $lft + 1, 3, $now );
-                    $versionRows[] = $this->versionRow( $l3VersionId, $l3Id, Page::class, $lang, $l3Data, $l3Content, $l3Meta, $nowMs );
+                    $pages[] = $this->pageRow( $l3Id, $l2Id, $l3VersionId, $lang, $l3Data, $l3Content, $l3Meta, $lft, $lft + 1, 3, $now );
+                    $versions[] = $this->versionRow( $l3VersionId, $l3Id, Page::class, $lang, $l3Data, $l3Content, $l3Meta, $nowMs );
                     $pivotPageFile[] = ['page_id' => $l3Id, 'file_id' => $l3Fid];
                     $pivotPageElement[] = ['page_id' => $l3Id, 'element_id' => $elementId];
                     $pivotVersionFile[] = ['version_id' => $l3VersionId, 'file_id' => $l3Fid];
                     $pivotVersionElement[] = ['version_id' => $l3VersionId, 'element_id' => $elementId];
 
-                    $lft += 2; // Leaf node: _lft and _rgt
+                    $lft += 2;
                     $fileIndex++;
                     $pageIndex++;
                 }
 
-                $lft++; // Past L2's _rgt
+                $lft++;
             }
 
-            $lft++; // Past L1's _rgt
+            $lft++;
         }
 
-        // Bulk insert pages
+        return compact( 'pages', 'versions', 'pivotPageFile', 'pivotPageElement', 'pivotVersionFile', 'pivotVersionElement' );
+    }
+
+
+    /**
+     * Bulk insert page, version, and pivot rows.
+     *
+     * @param array<string, array<int, array<string, mixed>>> $rows
+     */
+    protected function insertRows( array $rows ): void
+    {
         $conn = config( 'cms.db', 'sqlite' );
 
-        foreach( array_chunk( $pageRows, $this->chunk ) as $batch ) {
-            DB::connection( $conn )->table( 'cms_pages' )->insert( $batch );
-        }
+        $tables = [
+            'cms_pages' => $rows['pages'],
+            'cms_versions' => $rows['versions'],
+            'cms_page_file' => $rows['pivotPageFile'],
+            'cms_page_element' => $rows['pivotPageElement'],
+            'cms_version_file' => $rows['pivotVersionFile'],
+            'cms_version_element' => $rows['pivotVersionElement'],
+        ];
 
-        // Bulk insert versions
-        foreach( array_chunk( $versionRows, $this->chunk ) as $batch ) {
-            DB::connection( $conn )->table( 'cms_versions' )->insert( $batch );
+        foreach( $tables as $table => $data )
+        {
+            foreach( array_chunk( $data, $this->chunk ) as $batch ) {
+                DB::connection( $conn )->table( $table )->insert( $batch );
+            }
         }
+    }
 
-        // Bulk insert pivots
-        foreach( array_chunk( $pivotPageFile, $this->chunk ) as $batch ) {
-            DB::connection( $conn )->table( 'cms_page_file' )->insert( $batch );
-        }
 
-        foreach( array_chunk( $pivotPageElement, $this->chunk ) as $batch ) {
-            DB::connection( $conn )->table( 'cms_page_element' )->insert( $batch );
-        }
-
-        foreach( array_chunk( $pivotVersionFile, $this->chunk ) as $batch ) {
-            DB::connection( $conn )->table( 'cms_version_file' )->insert( $batch );
-        }
-
-        foreach( array_chunk( $pivotVersionElement, $this->chunk ) as $batch ) {
-            DB::connection( $conn )->table( 'cms_version_element' )->insert( $batch );
-        }
-
-        // Clear cache for seeded pages
+    /**
+     * Clear page cache for seeded pages.
+     *
+     * @param array<int, array<string, mixed>> $pageRows
+     */
+    protected function clearPageCache( array $pageRows ): void
+    {
         foreach( $pageRows as $row ) {
             Cache::forget( Page::key( $row['path'], $row['domain'] ) );
         }

@@ -97,7 +97,11 @@ class BenchmarkCore extends Command
 
         $this->header();
 
-        // Page operations
+
+        /**
+         * Page operations
+         */
+
         $pageIdx = 0;
         $this->benchmark( 'Page create', function() use ( $root, $lang ) {
             $page = Page::forceCreate( [
@@ -190,7 +194,11 @@ class BenchmarkCore extends Command
             Page::where( 'parent_id', $root->id )->with( ['children', 'latest'] )->get();
         }, readOnly: true );
 
-        // Element operations
+
+        /**
+         * Element operations
+         */
+
         $this->benchmark( 'Element create', function() use ( $lang ) {
             $el = Element::forceCreate( [
                 'lang' => $lang, 'type' => 'text', 'name' => 'Bench element',
@@ -223,7 +231,11 @@ class BenchmarkCore extends Command
             $elTrashIdx++;
         } );
 
-        // File operations
+
+        /**
+         * File operations
+         */
+
         $this->benchmark( 'File create', function() use ( $lang ) {
             $f = File::forceCreate( [
                 'mime' => 'image/png', 'lang' => $lang, 'name' => 'Bench file',
@@ -257,7 +269,11 @@ class BenchmarkCore extends Command
             $fileTrashIdx++;
         } );
 
-        // Version operations
+
+        /**
+         * Version operations
+         */
+
         $this->benchmark( 'Version list', function() use ( $pages ) {
             $page = $pages->first();
 
@@ -274,7 +290,11 @@ class BenchmarkCore extends Command
             }
         } );
 
-        // Sequential tree writes
+
+        /**
+         * Sequential tree writes
+         */
+
         $this->benchmark( 'Sequential add', function() use ( $root, $lang ) {
             for( $i = 0; $i < 10; $i++ ) {
                 $page = Page::forceCreate( [

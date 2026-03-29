@@ -107,7 +107,11 @@ class BenchmarkMcp extends Command
 
             $this->header();
 
-            // Read benchmarks
+
+            /**
+             * Read operations
+             */
+
             $pageIdx = 0;
             $this->benchmark( 'Get page', function() use ( $user, $pages, &$pageIdx ) {
                 $page = $pages[$pageIdx % $pages->count()];
@@ -131,7 +135,11 @@ class BenchmarkMcp extends Command
                 CmsServer::actingAs( $user )->tool( \Aimeos\Cms\Tools\SearchPages::class, ['lang' => $lang, 'term' => 'lorem'] );
             }, readOnly: true );
 
-            // Write benchmarks — each creates a fresh tool instance per call (numcalls guard)
+
+            /**
+             * Write operations
+             */
+
             $this->benchmark( 'Add page', function() use ( $user, $root, $lang ) {
                 CmsServer::actingAs( $user )->tool( \Aimeos\Cms\Tools\AddPage::class, [
                     'parent' => $root->id, 'lang' => $lang,

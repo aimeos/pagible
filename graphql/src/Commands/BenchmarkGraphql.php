@@ -113,7 +113,11 @@ class BenchmarkGraphql extends Command
 
             $this->header();
 
-            // Page benchmarks
+
+            /**
+             * Page operations
+             */
+
             $this->benchmark( 'Page add', function() use ( $root, $lang ) {
                 ( new Mutations\AddPage )( null, [
                     'parent' => $root->id,
@@ -212,7 +216,11 @@ class BenchmarkGraphql extends Command
                 $pageIdx++;
             }, readOnly: true );
 
-            // Element benchmark
+
+            /**
+             * Element operations
+             */
+
             $this->benchmark( 'Element add', function() use ( $lang ) {
                 ( new Mutations\AddElement )( null, [
                     'input' => [
@@ -222,7 +230,11 @@ class BenchmarkGraphql extends Command
                 ] );
             } );
 
-            // File benchmark
+
+            /**
+             * File operations
+             */
+
             $this->benchmark( 'File add', function() use ( $lang ) {
                 ( new Mutations\AddFile )( null, [
                     'input' => [
