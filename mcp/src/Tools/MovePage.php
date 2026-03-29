@@ -34,7 +34,7 @@ class MovePage extends Tool
             throw new \Exception( 'Insufficient permissions' );
         }
 
-        $validated = $request->validate([
+        $v = $request->validate([
             'id' => 'required|string|max:36',
             'parent_id' => 'string|max:36',
             'before_id' => 'string|max:36',
@@ -43,27 +43,27 @@ class MovePage extends Tool
         ] );
 
         /** @var Page|null $page */
-        $page = Page::withTrashed()->find( $validated['id'] );
+        $page = Page::withTrashed()->find( $v['id'] );
 
         if( !$page ) {
             return Response::structured( ['error' => 'Page not found.'] );
         }
 
-        return Cache::lock( 'cms_pages_' . \Aimeos\Cms\Tenancy::value(), 30 )->get( function() use ( $page, $validated, $request ) {
-            return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $page, $validated, $request ) {
+        return Cache::lock( 'cms_pages_' . \Aimeos\Cms\Tenancy::value(), 30 )->get( function() use ( $page, $v, $request ) {
+            return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $page, $v, $request ) {
 
                 $page->editor = $request->user()?->email ?? request()->ip(); // @phpstan-ignore-line property.notFound
 
-                if( !empty( $validated['before_id'] ) )
+                if( !empty( $v['before_id'] ) )
                 {
                     /** @var Page $ref */
-                    $ref = Page::withTrashed()->findOrFail( $validated['before_id'] );
+                    $ref = Page::withTrashed()->findOrFail( $v['before_id'] );
                     $page->beforeNode( $ref );
                 }
-                elseif( !empty( $validated['parent_id'] ) )
+                elseif( !empty( $v['parent_id'] ) )
                 {
                     /** @var Page $parent */
-                    $parent = Page::withTrashed()->findOrFail( $validated['parent_id'] );
+                    $parent = Page::withTrashed()->findOrFail( $v['parent_id'] );
                     $page->appendToNode( $parent );
                 }
                 else
@@ -71,7 +71,7 @@ class MovePage extends Tool
                     $page->makeRoot();
                 }
 
-                $page->save();
+                Page::withoutSyncingToSearch( fn() => $page->save() );
 
                 return Response::structured( $page->toArray() + ['url' => route( 'cms.page', ['path' => $page->path] )] );
             }, 3 );

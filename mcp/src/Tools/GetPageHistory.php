@@ -36,7 +36,7 @@ class GetPageHistory extends Tool
             throw new \Exception( 'Insufficient permissions' );
         }
 
-        $validated = $request->validate([
+        $v = $request->validate([
             'id' => 'required|string|max:36',
             'limit' => 'integer|min:1|max:50',
         ], [
@@ -44,13 +44,13 @@ class GetPageHistory extends Tool
         ] );
 
         /** @var Page|null $page */
-        $page = Page::withTrashed()->find( $validated['id'] );
+        $page = Page::withTrashed()->find( $v['id'] );
 
         if( !$page ) {
             return Response::structured( ['error' => 'Page not found.'] );
         }
 
-        $limit = $validated['limit'] ?? 10;
+        $limit = $v['limit'] ?? 10;
 
         $versions = $page->versions()
             ->take( $limit )

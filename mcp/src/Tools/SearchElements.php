@@ -35,21 +35,51 @@ class SearchElements extends Tool
             throw new \Exception( 'Insufficient permissions' );
         }
 
-        $query = Element::withTrashed()->orderBy( 'updated_at', 'desc' );
+        $v = $request->validate([
+            'term' => 'string|max:255',
+            'type' => 'string|max:50',
+            'lang' => 'nullable|string|max:5',
+            'trashed' => 'string|in:without,with,only',
+            'publish' => 'string|in:PUBLISHED,DRAFT,SCHEDULED',
+            'editor' => 'string|max:255',
+        ] );
 
-        if( $type = $request->get( 'type' ) ) {
-            $query->where( 'type', $type );
+        $query = Element::select( 'cms_elements.*' )
+            ->join( 'cms_versions', 'cms_elements.latest_id', '=', 'cms_versions.id' )
+            ->orderBy( 'cms_elements.updated_at', 'desc' );
+
+        switch( $v['trashed'] ?? null ) {
+            case 'with': $query->withTrashed(); break;
+            case 'only': $query->onlyTrashed(); break;
         }
 
-        if( $lang = $request->get( 'lang' ) ) {
-            $query->where( 'lang', $lang );
+        switch( $v['publish'] ?? null ) {
+            case 'PUBLISHED': $query->where( 'cms_versions.published', true ); break;
+            case 'DRAFT': $query->where( 'cms_versions.published', false ); break;
+            case 'SCHEDULED': $query->where( 'cms_versions.publish_at', '!=', null )
+                ->where( 'cms_versions.published', false ); break;
         }
 
-        if( $term = $request->get( 'term' ) ) {
-            $query->where( function( $builder ) use ( $term ) {
-                $builder->where( 'name', 'like', '%' . $term . '%' )
-                    ->orWhere( 'data', 'like', '%' . $term . '%' );
-            } );
+        if( array_key_exists( 'lang', $v ) ) {
+            $query->where( 'cms_versions.lang', $v['lang'] );
+        }
+
+        if( isset( $v['type'] ) ) {
+            $query->where( 'cms_versions.data->type', (string) $v['type'] );
+        }
+
+        if( isset( $v['editor'] ) ) {
+            $query->where( 'cms_versions.editor', (string) $v['editor'] );
+        }
+
+        if( isset( $v['term'] ) )
+        {
+            $ids = Element::search( mb_substr( trim( (string) $v['term'] ), 0, 200 ) )
+                ->searchFields( 'draft' )
+                ->take( 250 )
+                ->keys();
+
+            $query->whereIn( 'cms_elements.id', $ids->all() );
         }
 
         $result = $query->take( 25 )->get()->map( function( $item ) {
@@ -60,6 +90,7 @@ class SearchElements extends Tool
                 'name' => $item->name,
                 'lang' => $item->lang,
                 'data' => $item->data,
+                'editor' => $item->latest?->editor,
                 'deleted' => $item->trashed(),
                 'created_at' => $item->created_at?->format( 'Y-m-d H:i:s' ),
                 'updated_at' => $item->updated_at?->format( 'Y-m-d H:i:s' ),
@@ -84,6 +115,12 @@ class SearchElements extends Tool
                 ->description('Filter by element type, e.g., "heading", "text", "image", "contact".'),
             'lang' => $schema->string()
                 ->description('Filter by ISO language code, e.g., "en" or "de".'),
+            'trashed' => $schema->string()
+                ->description('Include trashed items: "without" (default), "with" (include deleted), or "only" (only deleted).'),
+            'publish' => $schema->string()
+                ->description('Filter by publish status: "PUBLISHED", "DRAFT", or "SCHEDULED".'),
+            'editor' => $schema->string()
+                ->description('Filter by editor name.'),
         ];
     }
 

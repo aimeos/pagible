@@ -33,14 +33,14 @@ class RestoreFile extends Tool
             throw new \Exception( 'Insufficient permissions' );
         }
 
-        $validated = $request->validate([
+        $v = $request->validate([
             'id' => 'required|string|max:36',
         ], [
             'id.required' => 'You must specify the ID of the file to restore.',
         ] );
 
         /** @var File|null $file */
-        $file = File::withTrashed()->find( $validated['id'] );
+        $file = File::withTrashed()->find( $v['id'] );
 
         if( !$file ) {
             return Response::structured( ['error' => 'File not found.'] );

@@ -35,30 +35,51 @@ class SearchFiles extends Tool
             throw new \Exception( 'Insufficient permissions' );
         }
 
-        $validated = $request->validate([
-            'term' => 'required|string|max:255',
+        $v = $request->validate([
+            'term' => 'string|max:255',
             'mime' => 'string|max:50',
-            'lang' => 'string|max:5',
-        ], [
-            'term.required' => 'You must specify a search term. For example, "logo" or "hero".',
+            'lang' => 'nullable|string|max:5',
+            'trashed' => 'string|in:without,with,only',
+            'publish' => 'string|in:PUBLISHED,DRAFT,SCHEDULED',
+            'editor' => 'string|max:255',
         ] );
 
-        $term = $validated['term'];
+        $query = File::select( 'cms_files.*' )
+            ->join( 'cms_versions', 'cms_files.latest_id', '=', 'cms_versions.id' )
+            ->orderBy( 'cms_files.updated_at', 'desc' );
 
-        $query = File::withTrashed()
-            ->where( function( $builder ) use ( $term ) {
-                $builder->where( 'name', 'like', '%' . $term . '%' )
-                    ->orWhere( 'description', 'like', '%' . $term . '%' )
-                    ->orWhere( 'transcription', 'like', '%' . $term . '%' );
-            } )
-            ->orderBy( 'updated_at', 'desc' );
-
-        if( !empty( $validated['mime'] ) ) {
-            $query->where( 'mime', 'like', $validated['mime'] . '%' );
+        switch( $v['trashed'] ?? null ) {
+            case 'with': $query->withTrashed(); break;
+            case 'only': $query->onlyTrashed(); break;
         }
 
-        if( !empty( $validated['lang'] ) ) {
-            $query->where( 'lang', $validated['lang'] );
+        switch( $v['publish'] ?? null ) {
+            case 'PUBLISHED': $query->where( 'cms_versions.published', true ); break;
+            case 'DRAFT': $query->where( 'cms_versions.published', false ); break;
+            case 'SCHEDULED': $query->where( 'cms_versions.publish_at', '!=', null )
+                ->where( 'cms_versions.published', false ); break;
+        }
+
+        if( array_key_exists( 'lang', $v ) ) {
+            $query->where( 'cms_versions.lang', $v['lang'] );
+        }
+
+        if( isset( $v['mime'] ) ) {
+            $query->where( 'cms_versions.data->mime', 'like', (string) $v['mime'] . '%' );
+        }
+
+        if( isset( $v['editor'] ) ) {
+            $query->where( 'cms_versions.editor', (string) $v['editor'] );
+        }
+
+        if( isset( $v['term'] ) )
+        {
+            $ids = File::search( mb_substr( trim( (string) $v['term'] ), 0, 200 ) )
+                ->searchFields( 'draft' )
+                ->take( 250 )
+                ->keys();
+
+            $query->whereIn( 'cms_files.id', $ids->all() );
         }
 
         $result = $query->take( 25 )->get()->map( function( $item ) {
@@ -71,8 +92,11 @@ class SearchFiles extends Tool
                 'path' => $item->path,
                 'previews' => $item->previews,
                 'description' => $item->description,
+                'transcription' => $item->transcription,
+                'editor' => $item->latest?->editor,
                 'deleted' => $item->trashed(),
                 'created_at' => $item->created_at?->format( 'Y-m-d H:i:s' ),
+                'updated_at' => $item->updated_at?->format( 'Y-m-d H:i:s' ),
             ];
         } );
 
@@ -89,12 +113,17 @@ class SearchFiles extends Tool
     {
         return [
             'term' => $schema->string()
-                ->description('Search keyword to match against file name, description, and transcription.')
-                ->required(),
+                ->description('Search keyword to match against file name, description, and transcription.'),
             'mime' => $schema->string()
                 ->description('Filter by MIME type prefix, e.g., "image" for all images, "video" for all videos.'),
             'lang' => $schema->string()
                 ->description('Filter by ISO language code, e.g., "en" or "de".'),
+            'trashed' => $schema->string()
+                ->description('Include trashed items: "without" (default), "with" (include deleted), or "only" (only deleted).'),
+            'publish' => $schema->string()
+                ->description('Filter by publish status: "PUBLISHED", "DRAFT", or "SCHEDULED".'),
+            'editor' => $schema->string()
+                ->description('Filter by editor name.'),
         ];
     }
 

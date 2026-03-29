@@ -23,9 +23,12 @@ use Laravel\Mcp\Request;
 
 #[Name('save-page')]
 #[Title('Save an existing page')]
-#[Description('Saves the content, meta data, config, title, or name of an existing page. Creates a new draft version. Returns the updated page as a JSON object.')]
+#[Description('Updates an existing page by ID. Only send fields you want to change — unsent fields are preserved from the latest version. Content, meta, and config are fully replaced when provided. Use get-schemas for content types and meta/config field definitions. Returns the updated page as JSON.')]
 class SavePage extends Tool
 {
+    use Concerns\SanitizesPages;
+
+
     /**
      * Handle the tool request.
      */
@@ -35,7 +38,7 @@ class SavePage extends Tool
             throw new \Exception( 'Insufficient permissions' );
         }
 
-        $validated = $request->validate([
+        $v = $request->validate([
             'id' => 'required|string|max:36',
             'name' => 'string|max:50',
             'title' => 'string|max:100',
@@ -46,51 +49,70 @@ class SavePage extends Tool
             'content.*.data' => 'required|array',
             'meta' => 'array',
             'config' => 'array',
+            'to' => 'string|max:2048',
+            'tag' => 'string|max:50',
+            'theme' => 'string|max:50',
+            'type' => 'string|max:50',
+            'domain' => 'string|max:255',
+            'path' => 'string|max:255',
+            'status' => 'integer|in:0,1,2',
+            'cache' => 'integer|min:0',
+            'related_id' => 'string|max:36',
+            'files' => 'array',
+            'files.*' => 'string|max:36',
+            'elements' => 'array',
+            'elements.*' => 'string|max:36',
         ], [
             'id.required' => 'You must specify the ID of the page to save.',
         ] );
 
         /** @var Page|null $page */
-        $page = Page::withTrashed()->with( 'latest' )->find( $validated['id'] );
+        $page = Page::withTrashed()->with( 'latest' )->find( $v['id'] );
 
         if( !$page ) {
             return Response::structured( ['error' => 'Page not found.'] );
         }
 
-        return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $page, $validated, $request ) {
+        $v = $this->sanitize( $v, $request->user() );
+
+        return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $page, $v, $request ) {
 
             $editor = $request->user()?->email ?? request()->ip(); // @phpstan-ignore-line property.notFound
             $versionId = ( new Version )->newUniqueId();
 
-            // Build data from latest version, then overlay changes
-            $changes = array_intersect_key( $validated, array_flip( ['name', 'title'] ) );
+            $input = array_diff_key( $v, array_flip( ['id', 'meta', 'config', 'content', 'files', 'elements'] ) );
 
-            if( isset( $validated['title'] ) ) {
-                $changes['path'] = Utils::slugify( $validated['title'] );
+            if( isset( $v['title'] ) && !isset( $v['path'] ) ) {
+                $input['path'] = Utils::slugify( $v['title'] );
             }
 
-            $data = array_replace( (array) ( $page->latest->data ?? [] ), $changes );
+            array_walk( $input, fn( &$v, $k ) => $v = !in_array( $k, ['related_id'] ) ? ( $v ?? '' ) : $v );
+            $data = array_replace( (array) ( $page->latest->data ?? [] ), $input );
+
             $aux = (array) ( $page->latest->aux ?? [] );
 
-            if( isset( $validated['content'] ) ) {
-                $aux['content'] = $this->buildContent( $validated['content'] );
+            if( isset( $v['content'] ) ) {
+                $aux['content'] = $v['content'];
             }
 
-            if( isset( $validated['meta'] ) ) {
-                $aux['meta'] = $this->buildStructured( $validated['meta'], 'meta', $aux['meta'] ?? new \stdClass() );
+            if( isset( $v['meta'] ) ) {
+                $aux['meta'] = $this->buildStructured( $v['meta'], 'meta', new \stdClass() );
             }
 
-            if( isset( $validated['config'] ) ) {
-                $aux['config'] = $this->buildStructured( $validated['config'], 'config', $aux['config'] ?? new \stdClass() );
+            if( isset( $v['config'] ) ) {
+                $aux['config'] = $this->buildStructured( $v['config'], 'config', new \stdClass() );
             }
 
             $version = $page->versions()->forceCreate([
                 'id' => $versionId,
-                'data' => array_map( fn( $v ) => $v ?? '', $data ),
+                'data' => $data,
                 'editor' => $editor,
-                'lang' => $validated['lang'] ?? $page->latest?->lang,
+                'lang' => $v['lang'] ?? $page->latest?->lang,
                 'aux' => $aux,
             ] );
+
+            $version->elements()->attach( $v['elements'] ?? [] );
+            $version->files()->attach( $v['files'] ?? [] );
 
             $page->forceFill( ['latest_id' => $versionId] )->save();
             $page->removeVersions();
@@ -124,7 +146,7 @@ class SavePage extends Tool
             'name' => $schema->string()
                 ->description( 'New short name for the page (max 50 characters).' ),
             'title' => $schema->string()
-                ->description( 'New page title (max 100 characters). Also updates the URL path slug.' ),
+                ->description( 'New page title (max 100 characters). Also updates the URL path slug unless path is explicitly set.' ),
             'lang' => $schema->string()
                 ->description( 'ISO language code for the version, e.g., "en" or "de".' ),
             'content' => $schema->array()
@@ -143,6 +165,30 @@ class SavePage extends Tool
                 ->description( 'Meta data object keyed by type. Each value is an object with the data fields. Use get-schemas for available types and fields.' ),
             'config' => $schema->object()
                 ->description( 'Page configuration keyed by type. Each value is an object with the data fields. Use get-schemas for available types and fields.' ),
+            'to' => $schema->string()
+                ->description( 'Redirect URL. If set, the page redirects to this URL instead of rendering content.' ),
+            'tag' => $schema->string()
+                ->description( 'Tag name to identify a page, e.g., for the starting point of a navigation structure.' ),
+            'theme' => $schema->string()
+                ->description( 'Theme name assigned to the page.' ),
+            'type' => $schema->string()
+                ->description( 'Page type for using different theme templates.' ),
+            'domain' => $schema->string()
+                ->description( 'Domain name the page is assigned to.' ),
+            'path' => $schema->string()
+                ->description( 'Unique URL segment. Auto-generated from title if not set explicitly.' ),
+            'status' => $schema->integer()
+                ->description( 'Visibility: 0=inactive, 1=visible, 2=hidden in navigation.' ),
+            'cache' => $schema->integer()
+                ->description( 'Cache lifetime in minutes.' ),
+            'related_id' => $schema->string()
+                ->description( 'Translation ID linking pages with the same content in different languages.' ),
+            'files' => $schema->array()
+                ->items( $schema->string() )
+                ->description( 'Array of file UUIDs to attach to the version.' ),
+            'elements' => $schema->array()
+                ->items( $schema->string() )
+                ->description( 'Array of shared element UUIDs to attach to the version.' ),
         ];
     }
 
@@ -156,59 +202,5 @@ class SavePage extends Tool
     public function shouldRegister( Request $request ) : bool
     {
         return Permission::can( 'page:save', $request->user() );
-    }
-
-
-    /**
-     * Builds content elements from the validated input.
-     *
-     * @param array<int, array<string, mixed>> $items Content element items
-     * @return array<int, object> Structured content elements
-     */
-    private function buildContent( array $items ) : array
-    {
-        $schemas = config( 'cms.schemas.content', [] );
-
-        return array_values( array_map( function( $item ) use ( $schemas ) {
-            $type = $item['type'];
-            $group = $item['group'] ?? $schemas[$type]['group'] ?? 'main';
-
-            return (object) [
-                'id' => $item['id'] ?? Utils::uid(),
-                'type' => $type,
-                'group' => $group,
-                'data' => (object) $item['data'],
-            ];
-        }, $items ) );
-    }
-
-
-    /**
-     * Builds structured meta or config objects from the validated input.
-     *
-     * @param array<string, array<string, mixed>> $items Keyed by type name, values are data fields
-     * @param string $section Schema section ('meta' or 'config')
-     * @param array<string, mixed>|object $existing Existing meta/config data
-     * @return object Structured meta/config object
-     */
-    private function buildStructured( array $items, string $section, array|object $existing ) : object
-    {
-        $schemas = config( "cms.schemas.{$section}", [] );
-        $result = (object) ( (array) $existing );
-
-        foreach( $items as $type => $data )
-        {
-            $group = $schemas[$type]['group'] ?? 'basic';
-            $existingId = $result->{$type}->id ?? null;
-
-            $result->{$type} = (object) [
-                'id' => $existingId ?? Utils::uid(),
-                'type' => $type,
-                'group' => $group,
-                'data' => (object) $data,
-            ];
-        }
-
-        return $result;
     }
 }

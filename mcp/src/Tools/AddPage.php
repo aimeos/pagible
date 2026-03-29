@@ -24,9 +24,11 @@ use Laravel\Mcp\Request;
 
 #[Name('add-page')]
 #[Title('Create a new page within the page tree')]
-#[Description('Creates a new page and adds it to the page tree. Returns the added page and its content as JSON object.')]
+#[Description('Creates a new page in the page tree. Requires lang (ISO code like "en"), name (max 50 chars), title (max 100 chars), content (array of {type, data} objects — use get-schemas for types), and meta with meta-tags description for SEO. Optional: config, to, tag, theme, type, domain, path, status (0/1/2), cache (minutes), related_id, parent_id, ref, files, elements. Returns the created page as JSON.')]
 class AddPage extends Tool
 {
+    use Concerns\SanitizesPages;
+
     private int $numcalls = 0;
 
 
@@ -35,7 +37,7 @@ class AddPage extends Tool
      */
     public function handle( Request $request ): \Laravel\Mcp\ResponseFactory
     {
-        if( !Permission::can( 'page:view', $request->user() ) ) {
+        if( !Permission::can( 'page:add', $request->user() ) ) {
             throw new \Exception( 'Insufficient permissions' );
         }
 
@@ -43,86 +45,116 @@ class AddPage extends Tool
             return Response::structured( ['error' => 'Only one page can be created at a time.'] );
         }
 
-        $validated = $request->validate([
+        $v = $request->validate([
             'lang' => 'required|string|max:5',
             'name' => 'required|string|max:50',
             'title' => 'required|string|max:100',
-            'summary' => 'required|string|max:200',
-            'content' => 'required|string',
+            'content' => 'required|array',
+            'content.*.type' => 'required|string|max:50',
+            'content.*.group' => 'string|max:50',
+            'content.*.data' => 'required|array',
+            'meta' => 'required|array',
+            'meta.meta-tags' => 'required|array',
+            'meta.meta-tags.description' => 'required|string|max:300',
+            'config' => 'array',
+            'to' => 'string|max:2048',
+            'tag' => 'string|max:50',
+            'theme' => 'string|max:50',
+            'type' => 'string|max:50',
+            'domain' => 'string|max:255',
+            'path' => 'string|max:255',
+            'status' => 'integer|in:0,1,2',
+            'cache' => 'integer|min:0',
+            'related_id' => 'string|max:36',
+            'parent_id' => 'string|max:36',
+            'ref' => 'string|max:36',
+            'files' => 'array',
+            'files.*' => 'string|max:36',
+            'elements' => 'array',
+            'elements.*' => 'string|max:36',
         ], [
             'lang.required' => 'You must specify a language code from the list of available locales. For example, "en" or "en-US".',
             'name.required' => 'You must specify a name for the page and it must not be longer than 50 characters.',
             'title.required' => 'You must specify a page title and it must not be longer than 100 characters.',
-            'summary.required' => 'You must provide a SEO optimized summary for the page which is shorter than 200 characters.',
-            'content.required' => 'You must provide content for the page in markdown format.',
+            'content.required' => 'You must provide content elements for the page. Use get-schemas for available types.',
+            'meta.required' => 'You must provide meta data with at least a meta-tags description for SEO.',
+            'meta.meta-tags.required' => 'You must provide meta-tags with a description for SEO.',
+            'meta.meta-tags.description.required' => 'You must provide a meta description in meta.meta-tags.description for SEO. It should be 150-160 characters.',
         ] );
 
+        $v = $this->sanitize( $v, $request->user() );
 
         $page = new Page();
-        $pid = $request->get( 'parent_id' );
+        $pid = $v['parent_id'] ?? null;
+        $rid = $v['ref'] ?? null;
 
         /** @var Page|null $parent */
-        $parent = $pid ? Page::find( $pid ) : null;
+        $parent = $pid ? Page::withTrashed()->find( $pid ) : null;
         $editor = $request->user()?->email ?? request()->ip(); // @phpstan-ignore-line property.notFound
         $versionId = ( new Version )->newUniqueId();
 
-        $elements = [[
-            'id' => Utils::uid(),
-            'type' => 'text',
-            'group' => 'main',
-            'data' => [
-                'text' => $validated['content'],
-            ]
-        ]];
-        $meta = [
-            'meta-tags' => [
-                'id' => Utils::uid(),
-                'type' => 'meta-tags',
-                'group' => 'basic',
-                'data' => [
-                    'description' => $validated['summary'],
-                ]
-            ]
-        ];
+        $meta = isset( $v['meta'] )
+            ? $this->buildStructured( $v['meta'], 'meta', new \stdClass() )
+            : new \stdClass();
+
+        $config = isset( $v['config'] )
+            ? $this->buildStructured( $v['config'], 'config', new \stdClass() )
+            : new \stdClass();
+
+        $content = $v['content'] ?? [];
+
+        $input = array_diff_key( $v, array_flip( ['content', 'config', 'meta', 'files', 'elements'] ) );
+        $input['path'] = $v['path'] ?? Utils::slugify( $v['title'] );
+        $input['to'] = $v['to'] ?? '';
+        $input['tag'] = $v['tag'] ?? '';
+        $input['theme'] = $v['theme'] ?? $parent?->latest?->data->theme ?? '';
+        $input['type'] = $v['type'] ?? '';
+        $input['domain'] = $v['domain'] ?? $parent?->latest?->data->domain ?? '';
+        $input['status'] = $v['status'] ?? 0;
+        $input['cache'] = $v['cache'] ?? 5;
+        $input['related_id'] = $v['related_id'] ?? null;
 
         $page->tenant_id = \Aimeos\Cms\Tenancy::value();
         $page->editor = $editor;
-        $page->fill( [
-            'lang' => $validated['lang'],
-            'name' => $validated['name'],
-            'title' => $validated['title'],
-            'path' => Utils::slugify( $validated['title'] ),
-            'domain' => $parent?->latest?->data?->domain,
-            'theme' => $parent?->latest?->data?->theme,
+        $page->fill( $input + [
             'meta' => $meta,
-            'content' => $elements,
+            'content' => $content,
             'latest_id' => $versionId,
         ] );
 
-        $exclude = array_flip( ['content', 'config', 'meta', 'editor', 'relatedid', 'tenant_id'] );
-
         $vdata = [
             'id' => $versionId,
-            'lang' => $validated['lang'],
+            'lang' => $v['lang'],
             'editor' => $editor,
-            'data' => array_diff_key( $page->toArray(), $exclude ),
+            'data' => array_map( fn( $v ) => is_null( $v ) ? (string) $v : $v, $input ),
             'aux' => [
                 'meta' => $meta,
-                'content' => $elements,
+                'config' => $config,
+                'content' => $content,
             ]
         ];
 
-        Cache::lock( 'cms_pages_' . \Aimeos\Cms\Tenancy::value(), 30 )->get( function() use ( $parent, $page, $vdata ) {
-            DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $parent, $page, $vdata ) {
+        Cache::lock( 'cms_pages_' . \Aimeos\Cms\Tenancy::value(), 30 )->get( function() use ( $parent, $rid, $page, $v, $vdata ) {
+            DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $parent, $rid, $page, $v, $vdata ) {
 
-                if( $parent && ( $ref = Page::where( 'parent_id', $parent->id )->orderBy( '_lft', 'asc' )->first() ) ) {
+                $files = $v['files'] ?? [];
+                $elements = $v['elements'] ?? [];
+
+                if( $rid && ( $ref = Page::withTrashed()->where( 'id', $rid )->first() ) ) {
                     $page->beforeNode( $ref );
                 } elseif( $parent ) {
                     $page->appendToNode( $parent );
                 }
 
                 $page->save();
-                $page->versions()->forceCreate( $vdata );
+
+                $page->files()->attach( $files );
+                $page->elements()->attach( $elements );
+
+                $version = $page->versions()->forceCreate( $vdata );
+
+                $version->files()->attach( $files );
+                $version->elements()->attach( $elements );
 
             }, 3 );
         } );
@@ -149,14 +181,52 @@ class AddPage extends Tool
             'title' => $schema->string()
                 ->description('Engaging and SEO optimized page title in the language of the page. Must be unique for each page and not longer than 60 characters.')
                 ->required(),
-            'summary' => $schema->string()
-                ->description('Engaging meta description for the page content in the language of the page. Maximum 160 characters and in plaintext format.')
+            'content' => $schema->array()
+                ->items( $schema->object( [
+                    'type' => $schema->string()
+                        ->description( 'Content element type. Use get-schemas for available types.' )
+                        ->required(),
+                    'group' => $schema->string()
+                        ->description( 'Layout section, e.g., "main", "footer". Use "main" if unsure.' ),
+                    'data' => $schema->object()
+                        ->description( 'Field values for this element. Use get-schemas for available fields per type.' )
+                        ->required(),
+                ] ) )
+                ->description( 'Content elements. Use get-schemas for available types and fields.' )
                 ->required(),
-            'content' => $schema->string()
-                ->description('Page content in the language of the page and in markdown format.')
+            'meta' => $schema->object()
+                ->description( 'Meta data object keyed by type. Must include "meta-tags" with a "description" field (150-160 chars) for SEO. Use get-schemas for available types and fields.' )
                 ->required(),
+            'config' => $schema->object()
+                ->description( 'Page configuration keyed by type. Each value is an object with the data fields. Use get-schemas for available types and fields.' ),
+            'to' => $schema->string()
+                ->description( 'Redirect URL. If set, the page redirects to this URL instead of rendering content.' ),
+            'tag' => $schema->string()
+                ->description( 'Tag name to identify a page, e.g., for the starting point of a navigation structure.' ),
+            'theme' => $schema->string()
+                ->description( 'Theme name assigned to the page. Inherited from parent if omitted.' ),
+            'type' => $schema->string()
+                ->description( 'Page type for using different theme templates.' ),
+            'domain' => $schema->string()
+                ->description( 'Domain name the page is assigned to. Inherited from parent if omitted.' ),
+            'path' => $schema->string()
+                ->description( 'Unique URL segment. Auto-generated from title if omitted.' ),
+            'status' => $schema->integer()
+                ->description( 'Visibility: 0=inactive (default), 1=visible, 2=hidden in navigation.' ),
+            'cache' => $schema->integer()
+                ->description( 'Cache lifetime in minutes. Default: 5.' ),
+            'related_id' => $schema->string()
+                ->description( 'Translation ID linking pages with the same content in different languages.' ),
             'parent_id' => $schema->string()
-                ->description('ID of the parent page from the search-pages tool call where the new page will be added below.')
+                ->description( 'ID of the parent page where the new page will be added below.' ),
+            'ref' => $schema->string()
+                ->description( 'ID of a sibling page to insert before. Takes priority over parent_id positioning.' ),
+            'files' => $schema->array()
+                ->items( $schema->string() )
+                ->description( 'Array of file UUIDs to attach to the page.' ),
+            'elements' => $schema->array()
+                ->items( $schema->string() )
+                ->description( 'Array of shared element UUIDs to attach to the page.' ),
         ];
     }
 

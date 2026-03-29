@@ -7,7 +7,9 @@
 
 namespace Aimeos\Cms\Tools;
 
+use Aimeos\Cms\Utils;
 use Aimeos\Cms\Permission;
+use Aimeos\Cms\Validation;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\Version;
 use Illuminate\Support\Facades\DB;
@@ -22,7 +24,7 @@ use Laravel\Mcp\Response;
 
 #[Name('add-element')]
 #[Title('Create a reusable content element')]
-#[Description('Creates a new shared content element (header, footer, CTA, etc.) that can be reused across multiple pages. Returns the created element as a JSON object.')]
+#[Description('Creates a reusable content element. Requires type (use get-schemas), name (max 100 chars), and data (object with type-specific fields). Optional: lang (ISO code), files (array of file UUIDs). Returns the created element as JSON.')]
 class AddElement extends Tool
 {
     /**
@@ -34,48 +36,61 @@ class AddElement extends Tool
             throw new \Exception( 'Insufficient permissions' );
         }
 
-        $validated = $request->validate([
+        $v = $request->validate([
             'type' => 'required|string|max:50',
             'name' => 'required|string|max:100',
-            'lang' => 'string|max:5',
+            'lang' => 'nullable|string|max:5',
             'data' => 'required|array',
+            'files' => 'array',
+            'files.*' => 'string|max:36',
         ], [
             'type.required' => 'You must specify the element type, e.g., "heading", "text", "image", "contact". Use get-schemas to see available types.',
             'name.required' => 'You must specify a name for the element.',
             'data.required' => 'You must provide the element data as a JSON object with field values.',
         ] );
 
-        return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $validated, $request ) {
+        Validation::element( $v['type'] );
+
+        if( $v['type'] === 'html' && isset( $v['data']['text'] ) ) {
+            $v['data']['text'] = Utils::html( (string) $v['data']['text'] );
+        }
+
+        return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $v, $request ) {
 
             $editor = $request->user()?->email ?? request()->ip(); // @phpstan-ignore-line property.notFound
             $versionId = ( new Version )->newUniqueId();
+            $files = $v['files'] ?? [];
 
             $element = new Element();
             $element->fill( [
-                'type' => $validated['type'],
-                'name' => $validated['name'],
-                'lang' => $validated['lang'] ?? null,
-                'data' => $validated['data'],
+                'type' => $v['type'],
+                'name' => $v['name'],
+                'lang' => $v['lang'] ?? null,
+                'data' => $v['data'],
             ] );
             $element->tenant_id = \Aimeos\Cms\Tenancy::value();
             $element->latest_id = $versionId;
             $element->editor = $editor;
             $element->save();
 
+            $element->files()->attach( $files );
+
             $data = [
-                'type' => $validated['type'],
-                'name' => $validated['name'],
-                'lang' => $validated['lang'] ?? null,
-                'data' => $validated['data'],
+                'type' => $v['type'],
+                'name' => $v['name'],
+                'lang' => $v['lang'] ?? null,
+                'data' => $v['data'],
             ];
             ksort( $data );
 
-            $element->versions()->forceCreate( [
+            $version = $element->versions()->forceCreate( [
                 'id' => $versionId,
                 'data' => array_map( fn( $v ) => is_null( $v ) ? (string) $v : $v, $data ),
-                'lang' => $validated['lang'] ?? null,
+                'lang' => $v['lang'] ?? null,
                 'editor' => $editor,
             ] );
+
+            $version->files()->attach( $files );
 
             return Response::structured( $element->toArray() );
         }, 3 );
@@ -101,6 +116,9 @@ class AddElement extends Tool
             'data' => $schema->object()
                 ->description('The element data as a JSON object. Fields depend on the type. For "text": {"text": "markdown content"}. For "heading": {"text": "Title", "level": "2"}. Use get-schemas to see field definitions.')
                 ->required(),
+            'files' => $schema->array()
+                ->items( $schema->string() )
+                ->description( 'Array of file UUIDs to attach to the element.' ),
         ];
     }
 

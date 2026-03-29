@@ -7,6 +7,7 @@
 
 namespace Aimeos\Cms\Tools;
 
+use Aimeos\Cms\Utils;
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\Version;
@@ -22,7 +23,7 @@ use Laravel\Mcp\Request;
 
 #[Name('save-element')]
 #[Title('Save a shared content element')]
-#[Description('Saves an existing shared content element. Creates a new draft version. Returns the updated element as a JSON object.')]
+#[Description('Updates an existing element by ID. Only send fields you want to change — unsent fields are preserved. Returns the updated element as JSON.')]
 class SaveElement extends Tool
 {
     /**
@@ -34,23 +35,31 @@ class SaveElement extends Tool
             throw new \Exception( 'Insufficient permissions' );
         }
 
-        $validated = $request->validate([
+        $v = $request->validate([
             'id' => 'required|string|max:36',
             'name' => 'string|max:100',
-            'lang' => 'string|max:5',
+            'lang' => 'nullable|string|max:5',
             'data' => 'array',
+            'files' => 'array',
+            'files.*' => 'string|max:36',
         ], [
             'id.required' => 'You must specify the ID of the element to save.',
         ] );
 
         /** @var Element|null $element */
-        $element = Element::withTrashed()->with( 'latest' )->find( $validated['id'] );
+        $element = Element::withTrashed()->with( 'latest' )->find( $v['id'] );
 
         if( !$element ) {
             return Response::structured( ['error' => 'Element not found.'] );
         }
 
-        return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $element, $validated, $request ) {
+        $type = $element->type ?? ( (array) ( $element->latest->data ?? [] ) )['type'] ?? '';
+
+        if( $type === 'html' && isset( $v['data']['text'] ) ) {
+            $v['data']['text'] = Utils::html( (string) $v['data']['text'] );
+        }
+
+        return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $element, $v, $request ) {
 
             $editor = $request->user()?->email ?? request()->ip(); // @phpstan-ignore-line property.notFound
             $versionId = ( new Version )->newUniqueId();
@@ -58,20 +67,22 @@ class SaveElement extends Tool
             // Build input from latest version, then overlay changes
             $input = (array) ( $element->latest->data ?? [] );
 
-            if( isset( $validated['name'] ) ) {
-                $input['name'] = $validated['name'];
+            if( isset( $v['name'] ) ) {
+                $input['name'] = $v['name'];
             }
 
-            if( isset( $validated['data'] ) ) {
-                $input['data'] = $validated['data'];
+            if( isset( $v['data'] ) ) {
+                $input['data'] = $v['data'];
             }
 
             $version = $element->versions()->forceCreate( [
                 'id' => $versionId,
                 'data' => array_map( fn( $v ) => $v ?? '', $input ),
                 'editor' => $editor,
-                'lang' => $validated['lang'] ?? $element->latest?->lang,
+                'lang' => $v['lang'] ?? $element->latest?->lang,
             ] );
+
+            $version->files()->attach( (array) ( $v['files'] ?? [] ) );
 
             $element->forceFill( ['latest_id' => $versionId] )->save();
             $element->removeVersions();
@@ -80,7 +91,7 @@ class SaveElement extends Tool
                 'id' => $element->id,
                 'type' => $input['type'] ?? '',
                 'name' => $input['name'] ?? '',
-                'lang' => $validated['lang'] ?? null,
+                'lang' => $v['lang'] ?? null,
                 'data' => $input['data'] ?? new \stdClass(),
                 'created_at' => (string) $element->created_at,
                 'updated_at' => (string) $element->updated_at,
@@ -106,6 +117,9 @@ class SaveElement extends Tool
                 ->description( 'ISO language code for the version.' ),
             'data' => $schema->object()
                 ->description( 'Element data as a JSON object. Fields depend on the element type. Use get-element to see the current type and get-schemas for available fields.' ),
+            'files' => $schema->array()
+                ->items( $schema->string() )
+                ->description( 'Array of file UUIDs to attach to the version.' ),
         ];
     }
 

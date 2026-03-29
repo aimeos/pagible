@@ -34,23 +34,23 @@ class SaveFile extends Tool
             throw new \Exception( 'Insufficient permissions' );
         }
 
-        $validated = $request->validate([
+        $v = $request->validate([
             'id' => 'required|string|max:36',
             'name' => 'string|max:255',
-            'lang' => 'string|max:5',
+            'lang' => 'nullable|string|max:5',
             'description' => 'array',
         ], [
             'id.required' => 'You must specify the ID of the file to save.',
         ] );
 
         /** @var File|null $file */
-        $file = File::withTrashed()->with( 'latest' )->find( $validated['id'] );
+        $file = File::withTrashed()->with( 'latest' )->find( $v['id'] );
 
         if( !$file ) {
             return Response::structured( ['error' => 'File not found.'] );
         }
 
-        return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $file, $validated, $request ) {
+        return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $file, $v, $request ) {
 
             $editor = $request->user()?->email ?? request()->ip(); // @phpstan-ignore-line property.notFound
             $versionId = ( new Version )->newUniqueId();
@@ -58,10 +58,10 @@ class SaveFile extends Tool
             // Clone file to build version data without saving to the model directly
             $clone = clone $file;
             $latestData = (array) ( $file->latest->data ?? [] );
-            $clone->fill( array_replace( $latestData, array_intersect_key( $validated, array_flip( ['name', 'lang'] ) ) ) );
+            $clone->fill( array_replace( $latestData, array_intersect_key( $v, array_flip( ['name', 'lang'] ) ) ) );
 
-            if( isset( $validated['description'] ) ) {
-                $clone->description = $validated['description'];
+            if( isset( $v['description'] ) ) {
+                $clone->description = $v['description'];
             }
 
             $clone->previews = $latestData['previews'] ?? $file->previews;
@@ -70,7 +70,7 @@ class SaveFile extends Tool
 
             $version = $clone->versions()->forceCreate( [
                 'id' => $versionId,
-                'lang' => $validated['lang'] ?? $file->latest->lang ?? $file->lang,
+                'lang' => $v['lang'] ?? $file->latest->lang ?? $file->lang,
                 'editor' => $editor,
                 'data' => $clone->toArray(),
             ] );

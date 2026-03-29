@@ -23,7 +23,7 @@ use Laravel\Mcp\Request;
 #[IsReadOnly]
 #[Name('search-pages')]
 #[Title('Search for pages by keywords')]
-#[Description('Searches the page tree for pages containing the keywords. Returns up to 10 matching pages as JSON array.')]
+#[Description('Full-text search across pages. Optional: term (keywords), lang, trashed (without/with/only), publish (PUBLISHED/DRAFT/SCHEDULED), editor. Returns up to 25 matches.')]
 class SearchPages extends Tool
 {
     /**
@@ -35,26 +35,56 @@ class SearchPages extends Tool
             throw new \Exception( 'Insufficient permissions' );
         }
 
-        $validated = $request->validate([
-            'lang' => 'required|string|max:5',
-            'term' => 'required|string|max:255',
-        ], [
-            'lang.required' => 'You must specify a language code from the list of available locales. For example, "en" or "en-US".',
-            'term.required' => 'You must specify a search term. For example, "blog" or "product documentation".',
+        $v = $request->validate([
+            'term' => 'string|max:255',
+            'lang' => 'string|max:5',
+            'trashed' => 'string|in:without,with,only',
+            'publish' => 'string|in:PUBLISHED,DRAFT,SCHEDULED',
+            'editor' => 'string|max:255',
         ] );
 
-        $lang = $validated['lang'];
-        $term = $validated['term'];
+        $query = Page::select( 'cms_pages.*' )
+            ->join( 'cms_versions', 'cms_pages.latest_id', '=', 'cms_versions.id' )
+            ->orderBy( 'cms_pages.updated_at', 'desc' );
 
-        $result = Page::search( $term )
-            ->where( 'lang', $lang )
-            ->searchFields( 'draft' )
-            ->take( 25 )
-            ->get()
-            ->map( function( $item ) {
-                /** @var Page $item */
-                return $item->toArray() + ['url' => route( 'cms.page', ['path' => $item->path] )];
-            } );
+        switch( $v['trashed'] ?? null ) {
+            case 'with': $query->withTrashed(); break;
+            case 'only': $query->onlyTrashed(); break;
+        }
+
+        switch( $v['publish'] ?? null ) {
+            case 'PUBLISHED': $query->where( 'cms_versions.published', true ); break;
+            case 'DRAFT': $query->where( 'cms_versions.published', false ); break;
+            case 'SCHEDULED': $query->where( 'cms_versions.publish_at', '!=', null )
+                ->where( 'cms_versions.published', false ); break;
+        }
+
+        if( isset( $v['lang'] ) ) {
+            $query->where( 'cms_versions.lang', $v['lang'] );
+        }
+
+        if( isset( $v['editor'] ) ) {
+            $query->where( 'cms_versions.editor', $v['editor'] );
+        }
+
+        if( isset( $v['term'] ) )
+        {
+            $ids = Page::search( mb_substr( trim( (string) $v['term'] ), 0, 200 ) )
+                ->searchFields( 'draft' )
+                ->take( 250 )
+                ->keys();
+
+            $query->whereIn( 'cms_pages.id', $ids->all() );
+        }
+
+        $result = $query->take( 25 )->get()->map( function( $item ) {
+            /** @var Page $item */
+            return $item->toArray() + [
+                'url' => route( 'cms.page', ['path' => $item->path] ),
+                'editor' => $item->latest?->editor,
+                'deleted' => $item->trashed(),
+            ];
+        } );
 
         return Response::structured( ['pages' => $result->all()] );
     }
@@ -68,12 +98,16 @@ class SearchPages extends Tool
     public function schema( JsonSchema $schema ) : array
     {
         return [
-            'lang' => $schema->string()
-                ->description('ISO language code from the get-locales tool call, e.g., "en" or "en-US".')
-                ->required(),
             'term' => $schema->string()
-                ->description('Search keyword, e.g., "blog", "product", or "FAQ". One word or page path only.')
-                ->required(),
+                ->description('Search keyword, e.g., "blog", "product", or "FAQ". One word or page path only.'),
+            'lang' => $schema->string()
+                ->description('ISO language code from the get-locales tool call, e.g., "en" or "en-US".'),
+            'trashed' => $schema->string()
+                ->description('Include trashed items: "without" (default), "with" (include deleted), or "only" (only deleted).'),
+            'publish' => $schema->string()
+                ->description('Filter by publish status: "PUBLISHED", "DRAFT", or "SCHEDULED".'),
+            'editor' => $schema->string()
+                ->description('Filter by editor name.'),
         ];
     }
 
