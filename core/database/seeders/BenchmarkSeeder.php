@@ -22,6 +22,7 @@ class BenchmarkSeeder
     private string $editor;
     private string $domain;
     private int $chunk;
+    private ?\Closure $onProgress = null;
 
 
     /**
@@ -32,10 +33,12 @@ class BenchmarkSeeder
      * @param string $editor Editor name
      * @param int $pages Total number of pages to create
      * @param int $chunk Rows per bulk insert batch
+     * @param \Closure|null $onProgress Called with row count after each bulk insert
      */
-    public function run( string $lang, string $domain = '', string $editor = 'benchmark', int $pages = 10000, int $chunk = 500 ): void
+    public function run( string $lang, string $domain = '', string $editor = 'benchmark', int $pages = 10000, int $chunk = 500, ?\Closure $onProgress = null ): void
     {
         $this->tenantId = \Aimeos\Cms\Tenancy::value();
+        $this->onProgress = $onProgress;
         $this->editor = $editor;
         $this->domain = $domain;
         $this->chunk = $chunk;
@@ -237,8 +240,13 @@ class BenchmarkSeeder
 
         foreach( $tables as $table => $data )
         {
-            foreach( array_chunk( $data, $this->chunk ) as $batch ) {
+            foreach( array_chunk( $data, $this->chunk ) as $batch )
+            {
                 DB::connection( $conn )->table( $table )->insert( $batch );
+
+                if( $this->onProgress ) {
+                    ( $this->onProgress )( count( $batch ) );
+                }
             }
         }
     }
@@ -313,12 +321,22 @@ class BenchmarkSeeder
             $ids[] = $id;
         }
 
-        foreach( array_chunk( $fileRows, $this->chunk ) as $batch ) {
+        foreach( array_chunk( $fileRows, $this->chunk ) as $batch )
+        {
             DB::connection( $conn )->table( 'cms_files' )->insert( $batch );
+
+            if( $this->onProgress ) {
+                ( $this->onProgress )( count( $batch ) );
+            }
         }
 
-        foreach( array_chunk( $versionRows, $this->chunk ) as $batch ) {
+        foreach( array_chunk( $versionRows, $this->chunk ) as $batch )
+        {
             DB::connection( $conn )->table( 'cms_versions' )->insert( $batch );
+
+            if( $this->onProgress ) {
+                ( $this->onProgress )( count( $batch ) );
+            }
         }
 
         return $ids;

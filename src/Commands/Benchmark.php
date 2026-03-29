@@ -85,9 +85,18 @@ class Benchmark extends Command
 
             $this->info( "Seeding {$pages} benchmark pages for language: {$lang}" );
 
-            $seeder = new BenchmarkSeeder();
-            $seeder->run( $lang, $domain, $editor, $pages, $chunk );
+            $fileCount = max( 1, intdiv( $pages, 10 ) );
+            $totalRows = $pages + $fileCount + 1 + ( $pages + $fileCount ) + ( $pages * 4 );
+            $bar = $this->output->createProgressBar( $totalRows );
+            $bar->setFormat( ' %current%/%max% [%bar%] %percent:3s%% %elapsed%' );
 
+            $seeder = new BenchmarkSeeder();
+            $seeder->run( $lang, $domain, $editor, $pages, $chunk, function( int $count ) use ( $bar ) {
+                $bar->advance( $count );
+            } );
+
+            $bar->finish();
+            $this->newLine();
             $this->info( 'Seeding complete.' );
         }
 
