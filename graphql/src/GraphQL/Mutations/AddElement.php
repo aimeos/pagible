@@ -34,7 +34,7 @@ final class AddElement
 
         return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $args ) {
 
-            $editor = Auth::user()->name ?? request()->ip();
+            $editor = Auth::user()->email ?? request()->ip();
             $versionId = ( new Version )->newUniqueId();
 
             $element = new Element();

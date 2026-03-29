@@ -49,7 +49,7 @@ class DropPage extends Tool
 
         return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $page, $request ) {
 
-            $page->editor = (string) $request->user()?->name; // @phpstan-ignore-line property.notFound
+            $page->editor = $request->user()?->email ?? request()->ip(); // @phpstan-ignore-line property.notFound
             $page->delete();
 
             Cache::forget( Page::key( $page ) );

@@ -306,7 +306,7 @@ class GraphqlFileTest extends GraphqlTestAbstract
                     'previews' => json_encode( $file->previews ),
                     'description' => json_encode( $file->description ),
                     'transcription' => json_encode( $file->transcription ),
-                    'editor' => 'Test editor',
+                    'editor' => 'editor@testbench',
                     'created_at' => (string) $file->created_at,
                     'updated_at' => (string) $file->updated_at,
                 ],
@@ -388,7 +388,7 @@ class GraphqlFileTest extends GraphqlTestAbstract
 
         // Assert latest->data as array
         $this->assertEquals($expectedLatestData, json_decode($saveFile['latest']['data'] ?? null, true));
-        $this->assertEquals('Test editor', $saveFile['latest']['editor'] ?? null);
+        $this->assertEquals('editor@testbench', $saveFile['latest']['editor'] ?? null);
     }
 
 

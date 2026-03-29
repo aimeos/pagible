@@ -52,7 +52,7 @@ class SaveFile extends Tool
 
         return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $file, $validated, $request ) {
 
-            $editor = (string) $request->user()?->name; // @phpstan-ignore-line property.notFound
+            $editor = $request->user()?->email ?? request()->ip(); // @phpstan-ignore-line property.notFound
             $versionId = ( new Version )->newUniqueId();
 
             // Clone file to build version data without saving to the model directly

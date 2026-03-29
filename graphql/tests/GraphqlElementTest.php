@@ -302,7 +302,7 @@ class GraphqlElementTest extends GraphqlTestAbstract
                     'type' => 'heading',
                     'lang' => 'en',
                     'data' => json_encode( $element->data ),
-                    'editor' => 'Test editor',
+                    'editor' => 'editor@testbench',
                     'created_at' => (string) $element->created_at,
                     'updated_at' => (string) $element->updated_at,
                     'bypages' => [],
@@ -372,7 +372,7 @@ class GraphqlElementTest extends GraphqlTestAbstract
         $this->assertNull($saveElement['latest']['publish_at'] ?? null);
         $this->assertEquals('de', $saveElement['latest']['lang'] ?? null);
         $this->assertEquals(false, $saveElement['latest']['published'] ?? null);
-        $this->assertEquals('Test editor', $saveElement['latest']['editor'] ?? null);
+        $this->assertEquals('editor@testbench', $saveElement['latest']['editor'] ?? null);
         $this->assertEquals($expectedLatestData, json_decode($saveElement['latest']['data'] ?? null, true));
     }
 

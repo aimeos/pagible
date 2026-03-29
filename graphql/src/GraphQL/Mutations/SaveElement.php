@@ -41,7 +41,7 @@ final class SaveElement
             $version = $element->versions()->forceCreate( [
                 'id' => $versionId,
                 'data' => array_map( fn( $v ) => $v ?? '', $args['input'] ?? [] ),
-                'editor' => Auth::user()->name ?? request()->ip(),
+                'editor' => Auth::user()->email ?? request()->ip(),
                 'lang' => $args['input']['lang'] ?? null,
             ] );
 

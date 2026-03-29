@@ -29,7 +29,7 @@ final class AddPage
             return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $args ) {
 
                 $args['input'] = $this->sanitize( $args['input'] ?? [] );
-                $editor = Auth::user()->name ?? request()->ip();
+                $editor = Auth::user()->email ?? request()->ip();
                 $versionId = ( new Version )->newUniqueId();
 
                 $page = new Page();

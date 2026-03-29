@@ -770,7 +770,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
                 'movePage' => [
                     'id' => (string) $page->id,
                     'parent_id' => null,
-                    'editor' => 'Test editor',
+                    'editor' => 'editor@testbench',
                 ],
             ]
         ] );
@@ -1001,7 +1001,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
             'data' => [
                 'dropPage' => [[
                     'id' => (string) $root->id,
-                    'editor' => 'Test editor',
+                    'editor' => 'editor@testbench',
                     'deleted_at' => (string) $page->deleted_at,
                 ]],
             ]
@@ -1037,7 +1037,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
             'data' => [
                 'keepPage' => [[
                     'id' => (string) $root->id,
-                    'editor' => 'Test editor',
+                    'editor' => 'editor@testbench',
                     'deleted_at' => null,
                 ]],
             ]

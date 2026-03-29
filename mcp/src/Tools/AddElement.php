@@ -47,7 +47,7 @@ class AddElement extends Tool
 
         return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $validated, $request ) {
 
-            $editor = (string) $request->user()?->name; // @phpstan-ignore-line property.notFound
+            $editor = $request->user()?->email ?? request()->ip(); // @phpstan-ignore-line property.notFound
             $versionId = ( new Version )->newUniqueId();
 
             $element = new Element();

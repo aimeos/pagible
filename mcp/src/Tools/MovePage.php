@@ -52,7 +52,7 @@ class MovePage extends Tool
         return Cache::lock( 'cms_pages_' . \Aimeos\Cms\Tenancy::value(), 30 )->get( function() use ( $page, $validated, $request ) {
             return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $page, $validated, $request ) {
 
-                $page->editor = (string) $request->user()?->name; // @phpstan-ignore-line property.notFound
+                $page->editor = $request->user()?->email ?? request()->ip(); // @phpstan-ignore-line property.notFound
 
                 if( !empty( $validated['before_id'] ) )
                 {

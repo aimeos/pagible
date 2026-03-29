@@ -41,7 +41,7 @@ final class SavePage
             $version = $page->versions()->forceCreate([
                 'id' => $versionId,
                 'data' => $data,
-                'editor' => Auth::user()->name ?? request()->ip(),
+                'editor' => Auth::user()->email ?? request()->ip(),
                 'lang' => $args['input']['lang'] ?? null,
                 'aux' => $aux
             ]);

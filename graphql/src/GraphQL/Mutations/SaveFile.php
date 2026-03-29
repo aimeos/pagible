@@ -30,7 +30,7 @@ final class SaveFile
             $orig = File::withTrashed()->with( 'latest' )->findOrFail( $args['id'] );
             $previews = $orig->latest?->data->previews ?? $orig->previews;
             $path = $orig->latest?->data->path ?? $orig->path;
-            $editor = Auth::user()->name ?? request()->ip();
+            $editor = Auth::user()->email ?? request()->ip();
 
             $file = clone $orig;
             $file->fill( array_replace( (array) $orig->latest?->data, (array) $args['input'] ) );

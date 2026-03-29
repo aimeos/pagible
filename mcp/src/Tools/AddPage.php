@@ -63,7 +63,7 @@ class AddPage extends Tool
 
         /** @var Page|null $parent */
         $parent = $pid ? Page::find( $pid ) : null;
-        $editor = (string) $request->user()?->name; // @phpstan-ignore-line property.notFound
+        $editor = $request->user()?->email ?? request()->ip(); // @phpstan-ignore-line property.notFound
         $versionId = ( new Version )->newUniqueId();
 
         $elements = [[

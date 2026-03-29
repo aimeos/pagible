@@ -48,7 +48,7 @@ class DropElement extends Tool
 
         return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $element, $request ) {
 
-            $element->editor = (string) $request->user()?->name; // @phpstan-ignore-line property.notFound
+            $element->editor = $request->user()?->email ?? request()->ip(); // @phpstan-ignore-line property.notFound
             $element->delete();
 
             return Response::structured( $element->toArray() );

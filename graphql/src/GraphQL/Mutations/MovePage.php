@@ -26,7 +26,7 @@ final class MovePage
 
                 /** @var Page $page */
                 $page = Page::withTrashed()->findOrFail( $args['id'] );
-                $page->editor = Auth::user()->name ?? request()->ip();
+                $page->editor = Auth::user()->email ?? request()->ip();
 
                 if( isset( $args['ref'] ) ) {
                     /** @var Page $ref */

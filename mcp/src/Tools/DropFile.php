@@ -48,7 +48,7 @@ class DropFile extends Tool
 
         return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $file, $request ) {
 
-            $file->editor = (string) $request->user()?->name; // @phpstan-ignore-line property.notFound
+            $file->editor = $request->user()?->email ?? request()->ip(); // @phpstan-ignore-line property.notFound
             $file->delete();
 
             return Response::structured( $file->toArray() );

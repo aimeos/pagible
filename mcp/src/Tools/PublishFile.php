@@ -45,7 +45,7 @@ class PublishFile extends Tool
             $ids = (array) $validated['id'];
 
             $items = File::with( 'latest' )->whereIn( 'id', $ids )->get();
-            $editor = (string) $request->user()?->name; // @phpstan-ignore-line property.notFound
+            $editor = $request->user()?->email ?? request()->ip(); // @phpstan-ignore-line property.notFound
             $published = [];
             $skipped = [];
 
