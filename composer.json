@@ -78,5 +78,12 @@
 		"allow-plugins": {
 			"php-http/discovery": true
 		}
+	},
+	"extra": {
+		"laravel": {
+			"providers": [
+				"Aimeos\\Cms\\ServiceProvider"
+			]
+		}
 	}
 }

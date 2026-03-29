@@ -8,7 +8,6 @@
 /jsonapi/       export-ignore
 /mcp/           export-ignore
 /theme/         export-ignore
-/src/           export-ignore
 /.circleci/     export-ignore
 /.potrans/      export-ignore
 /tests/         export-ignore
