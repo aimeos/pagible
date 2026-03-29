@@ -39,7 +39,7 @@ class CoreServiceProvider extends Provider
         if( $this->app->runningInConsole() )
         {
             $this->commands( [
-                \Aimeos\Cms\Commands\Demo::class,
+                \Aimeos\Cms\Commands\BenchmarkCore::class,
                 \Aimeos\Cms\Commands\InstallCore::class,
                 \Aimeos\Cms\Commands\Publish::class,
                 \Aimeos\Cms\Commands\User::class,

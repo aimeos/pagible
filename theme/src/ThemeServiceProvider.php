@@ -32,6 +32,7 @@ class ThemeServiceProvider extends Provider
         if( $this->app->runningInConsole() )
         {
             $this->commands( [
+                \Aimeos\Cms\Commands\BenchmarkTheme::class,
                 \Aimeos\Cms\Commands\InstallTheme::class,
             ] );
         }

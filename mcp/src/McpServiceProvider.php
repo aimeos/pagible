@@ -18,6 +18,7 @@ class McpServiceProvider extends Provider
         if( $this->app->runningInConsole() )
         {
             $this->commands( [
+                \Aimeos\Cms\Commands\BenchmarkMcp::class,
                 \Aimeos\Cms\Commands\InstallMcp::class,
             ] );
         }

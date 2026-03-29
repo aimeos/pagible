@@ -35,6 +35,7 @@ class GraphqlServiceProvider extends Provider
         if( $this->app->runningInConsole() )
         {
             $this->commands( [
+                \Aimeos\Cms\Commands\BenchmarkGraphql::class,
                 \Aimeos\Cms\Commands\InstallGraphql::class,
             ] );
         }
