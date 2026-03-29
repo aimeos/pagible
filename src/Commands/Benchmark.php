@@ -50,7 +50,7 @@ class Benchmark extends Command
             return 1;
         }
 
-        $tenant = (string) $this->option( 'tenant' );
+        $tenant = strval( $this->option( 'tenant' ) );
 
         if( empty( $tenant ) )
         {
@@ -63,7 +63,7 @@ class Benchmark extends Command
             return $tenant;
         };
 
-        $domain = (string) ( $this->option( 'domain' ) ?: '' );
+        $domain = strval( $this->option( 'domain' ) ?: '' );
         $conn = config( 'cms.db', 'sqlite' );
 
         // Unseed mode
@@ -78,8 +78,8 @@ class Benchmark extends Command
         // Seed phase
         if( !$this->option( 'test-only' ) )
         {
-            $lang = (string) ( $this->option( 'lang' ) ?: '' );
-            $editor = (string) ( $this->option( 'editor' ) ?: '' );
+            $lang = strval( $this->option( 'lang' ) ?: '' );
+            $editor = strval( $this->option( 'editor' ) ?: '' );
             $pages = (int) $this->option( 'pages' );
             $chunk = (int) $this->option( 'chunk' );
 
