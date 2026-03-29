@@ -81,9 +81,13 @@ final class SavePage
             }
         }
 
-        Validation::content( $input['content'] ?? [] );
-        Validation::structured( $input['meta'] ?? new \stdClass(), 'meta' );
-        Validation::structured( $input['config'] ?? new \stdClass(), 'config' );
+        try {
+            Validation::content( $input['content'] ?? [] );
+            Validation::structured( $input['meta'] ?? new \stdClass(), 'meta' );
+            Validation::structured( $input['config'] ?? new \stdClass(), 'config' );
+        } catch( \InvalidArgumentException $e ) {
+            throw new Error( $e->getMessage() );
+        }
 
         return $input;
     }

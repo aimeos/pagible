@@ -22,7 +22,11 @@ final class SaveElement
      */
     public function __invoke( $rootValue, array $args ) : Element
     {
-        Validation::element( $args['input']['type'] ?? '' );
+        try {
+            Validation::element( $args['input']['type'] ?? '' );
+        } catch( \InvalidArgumentException $e ) {
+            throw new \GraphQL\Error\Error( $e->getMessage() );
+        }
 
         if( @$args['input']['type'] === 'html' && @$args['input']['data']->text ) {
             $args['input']['data']->text = \Aimeos\Cms\Utils::html( (string) $args['input']['data']->text );

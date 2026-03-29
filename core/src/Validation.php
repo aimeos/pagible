@@ -8,7 +8,6 @@
 namespace Aimeos\Cms;
 
 use Carbon\Carbon;
-use GraphQL\Error\Error;
 
 
 class Validation
@@ -17,7 +16,7 @@ class Validation
      * Validates page/element content arrays against configured schemas
      *
      * @param iterable<array<string, mixed>> $items Content items to validate
-     * @throws Error If content type is unknown
+     * @throws \InvalidArgumentException If content type is unknown
      */
     public static function content( iterable $items ): void
     {
@@ -33,7 +32,7 @@ class Validation
             }
 
             if( !$type || !isset( $schemas[$type] ) ) {
-                throw new Error( sprintf( 'Unknown content type "%s"', $type ?? '' ) );
+                throw new \InvalidArgumentException( sprintf( 'Unknown content type "%s"', $type ?? '' ) );
             }
         }
     }
@@ -43,14 +42,14 @@ class Validation
      * Validates a single element type against configured content schemas
      *
      * @param string $type Element type to validate
-     * @throws Error If element type is unknown
+     * @throws \InvalidArgumentException If element type is unknown
      */
     public static function element( string $type ): void
     {
         $schemas = config( 'cms.schemas.content', [] );
 
         if( !isset( $schemas[$type] ) ) {
-            throw new Error( sprintf( 'Unknown element type "%s"', $type ) );
+            throw new \InvalidArgumentException( sprintf( 'Unknown element type "%s"', $type ) );
         }
     }
 
@@ -81,7 +80,7 @@ class Validation
      * Validates that publish_at is a valid future datetime
      *
      * @param string|null $at Datetime string
-     * @throws Error If datetime is invalid or in the past
+     * @throws \InvalidArgumentException If datetime is invalid or in the past
      */
     public static function publishAt( ?string $at ): void
     {
@@ -92,11 +91,11 @@ class Validation
         try {
             $date = Carbon::parse( $at );
         } catch( \Exception $e ) {
-            throw new Error( sprintf( 'Invalid publish date "%s"', $at ) );
+            throw new \InvalidArgumentException( sprintf( 'Invalid publish date "%s"', $at ) );
         }
 
         if( $date->isPast() ) {
-            throw new Error( 'Publish date must be in the future' );
+            throw new \InvalidArgumentException( 'Publish date must be in the future' );
         }
     }
 }

@@ -22,7 +22,11 @@ final class PubElement
      */
     public function __invoke( $rootValue, array $args ) : array
     {
-        Validation::publishAt( $args['at'] ?? null );
+        try {
+            Validation::publishAt( $args['at'] ?? null );
+        } catch( \InvalidArgumentException $e ) {
+            throw new \GraphQL\Error\Error( $e->getMessage() );
+        }
 
         return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $args ) {
 
