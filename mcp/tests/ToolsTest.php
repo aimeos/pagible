@@ -38,14 +38,6 @@ class ToolsTest extends McpTestAbstract
     }
 
 
-    protected function getPackageProviders( $app )
-    {
-        return array_merge( parent::getPackageProviders( $app ), [
-            'Aimeos\Cms\SearchServiceProvider',
-        ] );
-    }
-
-
     protected function setUp(): void
     {
         parent::setUp();
@@ -527,23 +519,16 @@ class ToolsTest extends McpTestAbstract
     public function testSearchElements()
     {
         $this->seed( \Database\Seeders\CmsSeeder::class );
+        sleep( 5 ); // Wait for SQL Server to update fulltext index
 
         $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\SearchElements::class, [
             'term' => 'footer',
         ] );
-
         $response->assertOk()->assertSee( ['Shared footer'] );
-    }
-
-
-    public function testSearchElementsByType()
-    {
-        $this->seed( \Database\Seeders\CmsSeeder::class );
 
         $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\SearchElements::class, [
             'type' => 'footer',
         ] );
-
         $response->assertOk()->assertSee( ['Shared footer'] );
     }
 
@@ -725,24 +710,17 @@ class ToolsTest extends McpTestAbstract
     public function testSearchFiles()
     {
         $this->seed( \Database\Seeders\CmsSeeder::class );
+        sleep( 5 ); // Wait for SQL Server to update fulltext index
 
         $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\SearchFiles::class, [
             'term' => 'Test image',
         ] );
-
         $response->assertOk()->assertSee( ['Test image', 'image/jpeg'] );
-    }
-
-
-    public function testSearchFilesByMime()
-    {
-        $this->seed( \Database\Seeders\CmsSeeder::class );
 
         $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\SearchFiles::class, [
             'term' => 'Test',
             'mime' => 'image/tiff',
         ] );
-
         $response->assertOk()->assertSee( ['Test file', 'image/tiff'] );
     }
 
