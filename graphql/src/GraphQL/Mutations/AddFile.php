@@ -13,7 +13,6 @@ use Aimeos\Cms\Utils;
 use GraphQL\Error\Error;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 
 
 final class AddFile
@@ -28,9 +27,9 @@ final class AddFile
             throw new Error( 'Either input "path" or "file" argument must be provided' );
         }
 
-        return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $args ) {
+        return Utils::transaction( function() use ( $args ) {
 
-            $editor = Auth::user()->email ?? request()->ip();
+            $editor = Utils::editor( Auth::user() );
             $versionId = ( new Version )->newUniqueId();
 
             $file = new File();
@@ -62,7 +61,7 @@ final class AddFile
             ] );
 
             return $file->setRelation( 'latest', $version );
-        }, 3 );
+        } );
     }
 
 

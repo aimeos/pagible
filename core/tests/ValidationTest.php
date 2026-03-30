@@ -121,29 +121,31 @@ class ValidationTest extends CoreTestAbstract
 
     public function testStructuredValid()
     {
-        Validation::structured( (object) [
-            'meta-tags' => (object) ['data' => (object) ['description' => 'Test']],
+        $result = Validation::structured( [
+            'meta-tags' => ['description' => 'Test'],
         ], 'meta' );
 
-        $this->assertTrue( true );
+        $this->assertIsObject( $result );
+        $this->assertIsObject( $result->{'meta-tags'} );
+        $this->assertEquals( 'meta-tags', $result->{'meta-tags'}->type );
     }
 
 
     public function testStructuredUnknownType()
     {
-        Validation::structured( (object) [
-            'nonexistent' => (object) ['data' => (object) []],
+        $result = Validation::structured( [
+            'nonexistent' => ['data' => []],
         ], 'meta' );
 
-        $this->assertTrue( true );
+        $this->assertIsObject( $result );
     }
 
 
     public function testStructuredEmpty()
     {
-        Validation::structured( new \stdClass(), 'meta' );
+        $result = Validation::structured( [], 'meta' );
 
-        $this->assertTrue( true );
+        $this->assertIsObject( $result );
     }
 
 

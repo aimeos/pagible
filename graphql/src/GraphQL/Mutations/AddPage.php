@@ -9,12 +9,11 @@ namespace Aimeos\Cms\GraphQL\Mutations;
 
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Models\Version;
-use Aimeos\Cms\Permission;
+use Aimeos\Cms\Resource;
+use Aimeos\Cms\Utils;
 use Aimeos\Cms\Validation;
 use GraphQL\Error\Error;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
 
 
 final class AddPage
@@ -25,11 +24,14 @@ final class AddPage
      */
     public function __invoke( $rootValue, array $args ) : Page
     {
-        return Cache::lock( 'cms_pages_' . \Aimeos\Cms\Tenancy::value(), 30 )->get( function() use ( $args ) {
-            return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $args ) {
+        return Utils::lockedTransaction( function() use ( $args ) {
 
-                $args['input'] = $this->sanitize( $args['input'] ?? [] );
-                $editor = Auth::user()->email ?? request()->ip();
+                try {
+                    $args['input'] = Validation::page( $args['input'] ?? [], Auth::user() );
+                } catch( \InvalidArgumentException $e ) {
+                    throw new Error( $e->getMessage() );
+                }
+                $editor = Utils::editor( Auth::user() );
                 $versionId = ( new Version )->newUniqueId();
 
                 $page = new Page();
@@ -37,16 +39,7 @@ final class AddPage
                 $page->tenant_id = \Aimeos\Cms\Tenancy::value();
                 $page->editor = $editor;
 
-                if( isset( $args['ref'] ) ) {
-                    /** @var Page $ref */
-                    $ref = Page::withTrashed()->findOrFail( $args['ref'] );
-                    $page->beforeNode( $ref );
-                }
-                elseif( isset( $args['parent'] ) ) {
-                    /** @var Page $parent */
-                    $parent = Page::withTrashed()->findOrFail( $args['parent'] );
-                    $page->appendToNode( $parent );
-                }
+                Resource::position( $page, $args['ref'] ?? null, $args['parent'] ?? null );
 
                 $page->latest_id = $versionId;
                 $page->save();
@@ -73,43 +66,6 @@ final class AddPage
                 $version->files()->attach( $args['files'] ?? [] );
 
                 return $page->setRelation( 'latest', $version );
-            }, 3 );
         } );
-    }
-
-
-    /**
-     * Sanitizes the input data by removing unauthorized fields and escaping HTML content
-     *
-     * @param array<string, mixed> $input
-     * @return array<string, mixed>
-     */
-    protected function sanitize( array $input ) : array
-    {
-        if( !\Aimeos\Cms\Utils::isValidUrl( $input['to'] ?? null, false ) ) {
-            $msg = 'Invalid URL "%s" in "to" field';
-            throw new Error( sprintf( $msg, $input['to'] ?? '' ) );
-        }
-
-        if( !Permission::can( 'config:page', Auth::user() ) ) {
-            unset( $input['config'] );
-        }
-
-        foreach( $input['content'] ?? [] as &$content )
-        {
-            if( @$content->type === 'html' && @$content->data->text ) {
-                $content->data->text = \Aimeos\Cms\Utils::html( (string) $content->data->text );
-            }
-        }
-
-        try {
-            Validation::content( $input['content'] ?? [] );
-            Validation::structured( $input['meta'] ?? new \stdClass(), 'meta' );
-            Validation::structured( $input['config'] ?? new \stdClass(), 'config' );
-        } catch( \InvalidArgumentException $e ) {
-            throw new Error( $e->getMessage() );
-        }
-
-        return $input;
     }
 }

@@ -12,7 +12,6 @@ use Aimeos\Cms\Permission;
 use Aimeos\Cms\Validation;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\Version;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Attributes\Title;
@@ -51,13 +50,13 @@ class AddElement extends Tool
 
         Validation::element( $v['type'] );
 
-        if( $v['type'] === 'html' && isset( $v['data']['text'] ) ) {
-            $v['data']['text'] = Utils::html( (string) $v['data']['text'] );
+        if( isset( $v['data'] ) ) {
+            Validation::html( $v['type'] ?? '', $v['data'] );
         }
 
-        return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $v, $request ) {
+        return Utils::transaction( function() use ( $v, $request ) {
 
-            $editor = $request->user()?->email ?? request()->ip(); // @phpstan-ignore-line property.notFound
+            $editor = Utils::editor( $request->user() );
             $versionId = ( new Version )->newUniqueId();
             $files = $v['files'] ?? [];
 
@@ -93,7 +92,7 @@ class AddElement extends Tool
             $version->files()->attach( $files );
 
             return Response::structured( $element->toArray() );
-        }, 3 );
+        } );
     }
 
 

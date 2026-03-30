@@ -7,8 +7,8 @@
 
 namespace Aimeos\Cms\GraphQL\Mutations;
 
-use Illuminate\Support\Facades\DB;
 use Aimeos\Cms\Models\Element;
+use Aimeos\Cms\Resource;
 
 
 final class PurgeElement
@@ -20,15 +20,6 @@ final class PurgeElement
      */
     public function __invoke( $rootValue, array $args ) : array
     {
-        return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $args ) {
-
-            $items = Element::withTrashed()->whereIn( 'id', $args['id'] )->get();
-
-            foreach( $items as $item ) {
-                $item->forceDelete();
-            }
-
-            return $items->all();
-        }, 3 );
+        return Resource::purge( Element::class, $args['id'] )->all();
     }
 }

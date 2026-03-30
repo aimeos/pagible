@@ -47,17 +47,8 @@ class SearchPages extends Tool
             ->join( 'cms_versions', 'cms_pages.latest_id', '=', 'cms_versions.id' )
             ->orderBy( 'cms_pages.updated_at', 'desc' );
 
-        switch( $v['trashed'] ?? null ) {
-            case 'with': $query->withTrashed(); break;
-            case 'only': $query->onlyTrashed(); break;
-        }
-
-        switch( $v['publish'] ?? null ) {
-            case 'PUBLISHED': $query->where( 'cms_versions.published', true ); break;
-            case 'DRAFT': $query->where( 'cms_versions.published', false ); break;
-            case 'SCHEDULED': $query->where( 'cms_versions.publish_at', '!=', null )
-                ->where( 'cms_versions.published', false ); break;
-        }
+        Filter::trashed( $query, $v['trashed'] ?? null );
+        Filter::publish( $query, $v['publish'] ?? null );
 
         if( isset( $v['lang'] ) ) {
             $query->where( 'cms_versions.lang', $v['lang'] );

@@ -11,17 +11,10 @@ use Aimeos\Cms\Concerns\Tenancy;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\MorphMany;
-use Illuminate\Database\Eloquent\Relations\MorphOne;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Prunable;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Str;
 use Laravel\Scout\Searchable;
 
 /**
@@ -40,7 +33,7 @@ use Laravel\Scout\Searchable;
  * @property \Illuminate\Support\Carbon|null $deleted_at
  * @method static \Illuminate\Database\Eloquent\Builder<static> withoutTenancy()
  */
-class Element extends Model
+class Element extends Base
 {
     use HasUuids;
     use SoftDeletes;
@@ -157,17 +150,6 @@ class Element extends Model
 
 
     /**
-     * Get the current timestamp in seconds precision.
-     *
-     * @return \Illuminate\Support\Carbon Current timestamp
-     */
-    public function freshTimestamp()
-    {
-        return Date::now()->startOfSecond(); // SQL Server workaround
-    }
-
-
-    /**
      * Enforce JSON columns to return object.
      *
      * @param string $key Attribute name
@@ -177,17 +159,6 @@ class Element extends Model
     {
         $value = parent::getAttribute( $key );
         return is_null( $value ) && $key === 'data' ? new \stdClass() : $value;
-    }
-
-
-    /**
-     * Get the connection name for the model.
-     *
-     * @return string Name of the database connection to use
-     */
-    public function getConnectionName() : string
-    {
-        return config( 'cms.db', 'sqlite' );
     }
 
 
@@ -207,25 +178,13 @@ class Element extends Model
 
 
     /**
-     * Get the element's latest version.
+     * Get the prunable model query.
      *
-     * @return BelongsTo<Version, $this> Eloquent relationship to the latest version of the element
+     * @return Builder<static> Eloquent query builder for pruning models
      */
-    public function latest() : BelongsTo
+    public function prunable() : Builder
     {
-        return $this->belongsTo( Version::class, 'latest_id' );
-    }
-
-
-    /**
-     * Generate a new unique key for the model.
-     *
-     * @return string
-     */
-    public function newUniqueId()
-    {
-        // workaround for SQL Server and Lighthouse when UUIDs are mixed case
-        return (string) ( $this->getConnection()->getDriverName() === 'sqlsrv' ? strtoupper( Str::uuid7() ) : Str::uuid7() );
+        return static::withoutTenancy()->where( 'deleted_at', '<=', now()->subDays( config( 'cms.prune', 30 ) ) );
     }
 
 
@@ -252,56 +211,6 @@ class Element extends Model
 
 
     /**
-     * Get the element's published version.
-     *
-     * @return MorphOne<Version, $this> Eloquent relationship to the last published version of the element
-     */
-    public function published() : MorphOne
-    {
-        return $this->morphOne( Version::class, 'versionable' )
-            ->ofMany( ['created_at' => 'max', 'id' => 'max'], function( $query ) {
-                $query->where( (new Version)->qualifyColumn( 'published' ), true );
-            } );
-    }
-
-
-    /**
-     * Get the prunable model query.
-     *
-     * @return Builder<static> Eloquent query builder instance for pruning
-     */
-    public function prunable() : Builder
-    {
-        return static::withoutTenancy()->where( 'deleted_at', '<=', now()->subDays( config( 'cms.prune', 30 ) ) );
-    }
-
-
-    /**
-     * Removes all versions of the element except the latest versions.
-     *
-     * @return self The current instance for method chaining
-     */
-    public function removeVersions() : self
-    {
-        $num = config( 'cms.versions', 10 );
-
-        // MySQL doesn't support offsets for DELETE
-        $ids = Version::where( 'versionable_id', $this->id )
-            ->where( 'versionable_type', Element::class )
-            ->orderByDesc( 'created_at' )
-            ->offset( $num )
-            ->limit( 10 )
-            ->pluck( 'id' );
-
-        if( !$ids->isEmpty() ) {
-            Version::whereIn( 'id', $ids )->forceDelete();
-        }
-
-        return $this;
-    }
-
-
-    /**
      * Returns the searchable data for the element.
      *
      * @return array<string, string>
@@ -322,13 +231,13 @@ class Element extends Model
 
 
     /**
-     * Get all of the element's versions.
-     *
-     * @return MorphMany<Version, $this> Eloquent relationship to the versions of the element
+     * Prepare the model for pruning.
      */
-    public function versions() : MorphMany
+    protected function pruning() : void
     {
-        return $this->morphMany( Version::class, 'versionable' )->orderByDesc( 'created_at' )->orderByDesc( 'id' );
+        Version::where( 'versionable_id', $this->id )
+            ->where( 'versionable_type', static::class )
+            ->delete();
     }
 
 
@@ -345,13 +254,4 @@ class Element extends Model
     }
 
 
-    /**
-     * Prepare the model for pruning.
-     */
-    protected function pruning() : void
-    {
-        Version::where( 'versionable_id', $this->id )
-            ->where( 'versionable_type', Element::class )
-            ->delete();
-    }
 }

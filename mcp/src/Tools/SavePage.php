@@ -9,10 +9,10 @@ namespace Aimeos\Cms\Tools;
 
 use Aimeos\Cms\Utils;
 use Aimeos\Cms\Permission;
+use Aimeos\Cms\Validation;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Models\Version;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
-use Illuminate\Support\Facades\DB;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Attributes\Title;
 use Laravel\Mcp\Server\Attributes\Name;
@@ -26,9 +26,6 @@ use Laravel\Mcp\Request;
 #[Description('Updates an existing page by ID. Only send fields you want to change — unsent fields are preserved from the latest version. Content, meta, and config are fully replaced when provided. Use get-schemas for content types and meta/config field definitions. Returns the updated page as JSON.')]
 class SavePage extends Tool
 {
-    use Concerns\SanitizesPages;
-
-
     /**
      * Handle the tool request.
      */
@@ -73,11 +70,15 @@ class SavePage extends Tool
             return Response::structured( ['error' => 'Page not found.'] );
         }
 
-        $v = $this->sanitize( $v, $request->user() );
+        $v = Validation::page( $v, $request->user() );
 
-        return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $page, $v, $request ) {
+        if( isset( $v['content'] ) ) {
+            $v['content'] = Validation::content( $v['content'] );
+        }
 
-            $editor = $request->user()?->email ?? request()->ip(); // @phpstan-ignore-line property.notFound
+        return Utils::transaction( function() use ( $page, $v, $request ) {
+
+            $editor = Utils::editor( $request->user() );
             $versionId = ( new Version )->newUniqueId();
 
             $input = array_diff_key( $v, array_flip( ['id', 'meta', 'config', 'content', 'files', 'elements'] ) );
@@ -96,11 +97,11 @@ class SavePage extends Tool
             }
 
             if( isset( $v['meta'] ) ) {
-                $aux['meta'] = $this->buildStructured( $v['meta'], 'meta', new \stdClass() );
+                $aux['meta'] = Validation::structured( $v['meta'], 'meta', new \stdClass() );
             }
 
             if( isset( $v['config'] ) ) {
-                $aux['config'] = $this->buildStructured( $v['config'], 'config', new \stdClass() );
+                $aux['config'] = Validation::structured( $v['config'], 'config', new \stdClass() );
             }
 
             $version = $page->versions()->forceCreate([
@@ -128,7 +129,7 @@ class SavePage extends Tool
                 'updated_at' => (string) $page->updated_at,
                 'url' => route( 'cms.page', ['path' => $data['path'] ?? ''] ),
             ] ) );
-        }, 3 );
+        } );
     }
 
 

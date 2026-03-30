@@ -16,18 +16,13 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\MorphMany;
-use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Prunable;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Str;
 use Laravel\Scout\Searchable;
 
 
@@ -63,7 +58,7 @@ use Laravel\Scout\Searchable;
  * @property \Aimeos\Nestedset\Collection<int, Nav>|null $subtree
  * @method static \Illuminate\Database\Eloquent\Builder<static> withoutTenancy()
  */
-class Page extends Model
+class Page extends Base
 {
     use HasUuids;
     use NodeTrait;
@@ -243,17 +238,6 @@ class Page extends Model
 
 
     /**
-     * Get the current timestamp in seconds precision.
-     *
-     * @return \Illuminate\Support\Carbon Current timestamp
-     */
-    public function freshTimestamp()
-    {
-        return Date::now()->startOfSecond(); // SQL Server workaround
-    }
-
-
-    /**
      * Enforce JSON columns to return object.
      *
      * @param string $key Attribute name
@@ -263,17 +247,6 @@ class Page extends Model
     {
         $value = parent::getAttribute( $key );
         return is_null( $value ) && in_array( $key, ['meta', 'config', 'content'] ) ? new \stdClass() : $value;
-    }
-
-
-    /**
-     * Get the connection name for the model.
-     *
-     * @return string Name of the database connection to use
-     */
-    public function getConnectionName() : string
-    {
-        return config( 'cms.db', 'sqlite' );
     }
 
 
@@ -330,17 +303,6 @@ class Page extends Model
 
 
     /**
-     * Get the page's latest head/meta data.
-     *
-     * @return BelongsTo<Version, $this> Eloquent relationship to the latest version of the page
-     */
-    public function latest() : BelongsTo
-    {
-        return $this->belongsTo( Version::class, 'latest_id' );
-    }
-
-
-    /**
      * Get the menu for the page.
      *
      * @return DescendantsRelation Eloquent relationship to the descendants of the page
@@ -363,18 +325,6 @@ class Page extends Model
             ->skip( $level )->first()
             ?->subtree?->toTree()
             ?? new \Aimeos\Nestedset\Collection();
-    }
-
-
-    /**
-     * Generate a new unique key for the model.
-     *
-     * @return string
-     */
-    public function newUniqueId()
-    {
-        // workaround for SQL Server and Lighthouse when UUIDs are mixed case
-        return (string) ( $this->getConnection()->getDriverName() === 'sqlsrv' ? strtoupper( Str::uuid7() ) : Str::uuid7() );
     }
 
 
@@ -430,20 +380,6 @@ class Page extends Model
 
 
     /**
-     * Get the page's published head/meta data.
-     *
-     * @return MorphOne<Version, $this> Eloquent relationship to the last published version of the page
-     */
-    public function published() : MorphOne
-    {
-        return $this->morphOne( Version::class, 'versionable' )
-            ->ofMany( ['created_at' => 'max', 'id' => 'max'], function( $query ) {
-                $query->where( (new Version)->qualifyColumn( 'published' ), true );
-            } );
-    }
-
-
-    /**
      * Determine if the page should be searchable.
      *
      * @return bool TRUE if the page should be searchable, FALSE if not
@@ -451,31 +387,6 @@ class Page extends Model
     public function shouldBeSearchable() : bool
     {
         return $this->status > 0;
-    }
-
-
-    /**
-     * Removes all versions of the page except the latest versions.
-     *
-     * @return self The current instance for method chaining
-     */
-    public function removeVersions() : self
-    {
-        $num = config( 'cms.versions', 10 );
-
-        // MySQL doesn't support offsets for DELETE
-        $ids = Version::where( 'versionable_id', $this->id )
-            ->where( 'versionable_type', Page::class )
-            ->orderByDesc( 'created_at' )
-            ->offset( $num )
-            ->limit( 10 )
-            ->pluck( 'id' );
-
-        if( !$ids->isEmpty() ) {
-            Version::whereIn( 'id', $ids )->forceDelete();
-        }
-
-        return $this;
     }
 
 
@@ -556,13 +467,13 @@ class Page extends Model
 
 
     /**
-     * Get all of the page's versions.
-     *
-     * @return MorphMany<Version, $this> Eloquent relationship to the versions of the page
+     * Prepare the model for pruning.
      */
-    public function versions() : MorphMany
+    protected function pruning() : void
     {
-        return $this->morphMany( Version::class, 'versionable' )->orderByDesc( 'created_at' )->orderByDesc( 'id' );
+        Version::where( 'versionable_id', $this->id )
+            ->where( 'versionable_type', static::class )
+            ->delete();
     }
 
 
@@ -654,17 +565,6 @@ class Page extends Model
         return Attribute::make(
             set: fn( $value ) => (string) $value,
         );
-    }
-
-
-    /**
-     * Prepare the model for pruning.
-     */
-    protected function pruning() : void
-    {
-        Version::where( 'versionable_id', $this->id )
-            ->where( 'versionable_type', Page::class )
-            ->delete();
     }
 
 

@@ -7,9 +7,10 @@
 
 namespace Aimeos\Cms\GraphQL\Mutations;
 
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Aimeos\Cms\Models\Element;
+use Aimeos\Cms\Resource;
+use Aimeos\Cms\Utils;
+use Illuminate\Support\Facades\Auth;
 
 
 final class KeepElement
@@ -21,19 +22,6 @@ final class KeepElement
      */
     public function __invoke( $rootValue, array $args ) : array
     {
-        return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $args ) {
-
-            $items = Element::withTrashed()->whereIn( 'id', $args['id'] )->get();
-            $editor = Auth::user()->email ?? request()->ip();
-
-            foreach( $items as $item )
-            {
-                /** @var Element $item */
-                $item->editor = $editor;
-                $item->restore();
-            }
-
-            return $items->all();
-        }, 3 );
+        return Resource::restore( Element::class, $args['id'], Utils::editor( Auth::user() ) )->all();
     }
 }

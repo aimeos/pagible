@@ -7,10 +7,11 @@
 
 namespace Aimeos\Cms\GraphQL\Mutations;
 
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Aimeos\Cms\Models\File;
+use Aimeos\Cms\Resource;
+use Aimeos\Cms\Utils;
 use Aimeos\Cms\Validation;
+use Illuminate\Support\Facades\Auth;
 
 
 final class PubFile
@@ -28,29 +29,6 @@ final class PubFile
             throw new \GraphQL\Error\Error( $e->getMessage() );
         }
 
-        return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $args ) {
-
-            $items = File::with( 'latest' )->whereIn( 'id', $args['id'] )->get();
-            $editor = Auth::user()->email ?? request()->ip();
-
-            foreach( $items as $item )
-            {
-                /** @var File $item */
-                if( $latest = $item->latest )
-                {
-                    if( isset( $args['at'] ) )
-                    {
-                        $latest->publish_at = $args['at'];
-                        $latest->editor = $editor;
-                        $latest->save();
-                        continue;
-                    }
-
-                    $item->publish( $latest );
-                }
-            }
-
-            return $items->all();
-        }, 3 );
+        return Resource::publish( File::class, $args['id'], Utils::editor( Auth::user() ), $args['at'] ?? null, ['latest'] )->all();
     }
 }

@@ -13,7 +13,6 @@ use Aimeos\Cms\Utils;
 use GraphQL\Error\Error;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 
 
 final class SaveFile
@@ -24,13 +23,13 @@ final class SaveFile
      */
     public function __invoke( $rootValue, array $args ) : File
     {
-        return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $args ) {
+        return Utils::transaction( function() use ( $args ) {
 
             /** @var File $orig */
             $orig = File::withTrashed()->with( 'latest' )->findOrFail( $args['id'] );
             $previews = $orig->latest?->data->previews ?? $orig->previews;
             $path = $orig->latest?->data->path ?? $orig->path;
-            $editor = Auth::user()->email ?? request()->ip();
+            $editor = Utils::editor( Auth::user() );
 
             $file = clone $orig;
             $file->fill( array_replace( (array) $orig->latest?->data, (array) $args['input'] ) );
@@ -97,6 +96,6 @@ final class SaveFile
             $file->removeVersions();
 
             return $orig->setRelation( 'latest', $version );
-        }, 3 );
+        } );
     }
 }

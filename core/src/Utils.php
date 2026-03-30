@@ -10,6 +10,8 @@ namespace Aimeos\Cms;
 use Aimeos\Cms\Models\Page;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 
@@ -17,6 +19,46 @@ use Illuminate\Support\Facades\Storage;
 class Utils
 {
     private static int $counter = 0;
+
+
+    /**
+     * Returns the editor identifier for the current user.
+     *
+     * @param object|null $user The authenticated user object
+     * @return string The user's email or the request IP address
+     */
+    public static function editor( ?object $user = null ) : string
+    {
+        return (string) ( $user && isset( $user->email ) ? $user->email : request()->ip() );
+    }
+
+
+    /**
+     * Executes a callback within a database transaction using the CMS connection.
+     *
+     * @template T
+     * @param \Closure(): T $callback The callback to execute within the transaction
+     * @return T The return value of the callback
+     */
+    public static function transaction( \Closure $callback ) : mixed
+    {
+        return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( $callback, 3 );
+    }
+
+
+    /**
+     * Executes a callback within a cache-locked database transaction for tree safety.
+     *
+     * @template T
+     * @param \Closure(): T $callback The callback to execute within the locked transaction
+     * @return T The return value of the callback
+     */
+    public static function lockedTransaction( \Closure $callback ) : mixed
+    {
+        return Cache::lock( 'cms_pages_' . Tenancy::value(), 30 )->get( function() use ( $callback ) {
+            return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( $callback, 3 );
+        } );
+    }
 
 
     /**

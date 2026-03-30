@@ -7,9 +7,10 @@
 
 namespace Aimeos\Cms\Tools;
 
+use Aimeos\Cms\Utils;
+use Aimeos\Cms\Resource;
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\Models\File;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Attributes\Name;
@@ -50,13 +51,9 @@ class RestoreFile extends Tool
             return Response::structured( ['error' => 'File is not deleted.'] );
         }
 
-        return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $file, $request ) {
+        $items = Resource::restore( File::class, [$v['id']], Utils::editor( $request->user() ) );
 
-            $file->editor = $request->user()?->email ?? request()->ip(); // @phpstan-ignore-line property.notFound
-            $file->restore();
-
-            return Response::structured( $file->toArray() );
-        }, 3 );
+        return Response::structured( $items->firstOrFail()->toArray() );
     }
 
 

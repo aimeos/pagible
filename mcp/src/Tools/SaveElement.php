@@ -9,9 +9,9 @@ namespace Aimeos\Cms\Tools;
 
 use Aimeos\Cms\Utils;
 use Aimeos\Cms\Permission;
+use Aimeos\Cms\Validation;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\Version;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Attributes\Title;
@@ -55,13 +55,13 @@ class SaveElement extends Tool
 
         $type = $element->type ?? ( (array) ( $element->latest->data ?? [] ) )['type'] ?? '';
 
-        if( $type === 'html' && isset( $v['data']['text'] ) ) {
-            $v['data']['text'] = Utils::html( (string) $v['data']['text'] );
+        if( isset( $v['data'] ) ) {
+            Validation::html( $type, $v['data'] );
         }
 
-        return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $element, $v, $request ) {
+        return Utils::transaction( function() use ( $element, $v, $request ) {
 
-            $editor = $request->user()?->email ?? request()->ip(); // @phpstan-ignore-line property.notFound
+            $editor = Utils::editor( $request->user() );
             $versionId = ( new Version )->newUniqueId();
 
             // Build input from latest version, then overlay changes
@@ -96,7 +96,7 @@ class SaveElement extends Tool
                 'created_at' => (string) $element->created_at,
                 'updated_at' => (string) $element->updated_at,
             ] );
-        }, 3 );
+        } );
     }
 
 

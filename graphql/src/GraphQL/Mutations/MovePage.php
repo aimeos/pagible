@@ -7,10 +7,10 @@
 
 namespace Aimeos\Cms\GraphQL\Mutations;
 
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
 use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Resource;
+use Aimeos\Cms\Utils;
+use Illuminate\Support\Facades\Auth;
 
 
 final class MovePage
@@ -21,29 +21,16 @@ final class MovePage
      */
     public function __invoke( $rootValue, array $args ) : Page
     {
-        return Cache::lock( 'cms_pages_' . \Aimeos\Cms\Tenancy::value(), 30 )->get( function() use ( $args ) {
-            return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $args ) {
+        return Utils::lockedTransaction( function() use ( $args ) {
 
                 /** @var Page $page */
                 $page = Page::withTrashed()->findOrFail( $args['id'] );
-                $page->editor = Auth::user()->email ?? request()->ip();
+                $page->editor = Utils::editor( Auth::user() );
 
-                if( isset( $args['ref'] ) ) {
-                    /** @var Page $ref */
-                    $ref = Page::withTrashed()->findOrFail( $args['ref'] );
-                    $page->beforeNode( $ref );
-                } elseif( isset( $args['parent'] ) ) {
-                    /** @var Page $parent */
-                    $parent = Page::withTrashed()->findOrFail( $args['parent'] );
-                    $page->appendToNode( $parent );
-                } else {
-                    $page->makeRoot();
-                }
-
+                Resource::position( $page, $args['ref'] ?? null, $args['parent'] ?? null, true );
                 Page::withoutSyncingToSearch( fn() => $page->save() );
 
                 return $page;
-            }, 3 );
         } );
     }
 }

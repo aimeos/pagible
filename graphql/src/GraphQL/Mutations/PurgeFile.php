@@ -7,8 +7,8 @@
 
 namespace Aimeos\Cms\GraphQL\Mutations;
 
-use Illuminate\Support\Facades\DB;
 use Aimeos\Cms\Models\File;
+use Aimeos\Cms\Resource;
 
 
 final class PurgeFile
@@ -20,15 +20,6 @@ final class PurgeFile
      */
     public function __invoke( $rootValue, array $args ) : array
     {
-        return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $args ) {
-
-            $items = File::withTrashed()->whereIn( 'id', $args['id'] )->get();
-
-            foreach( $items as $item ) {
-                $item->purge();
-            }
-
-            return $items->all();
-        }, 3 );
+        return Resource::purge( File::class, $args['id'] )->all();
     }
 }

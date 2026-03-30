@@ -11,7 +11,6 @@ use Aimeos\Cms\Utils;
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Version;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Attributes\Title;
@@ -50,9 +49,9 @@ class AddFile extends Tool
             return Response::structured( ['error' => sprintf( 'The URL "%s" must be a valid "http" or "https" URL.', $url )] );
         }
 
-        return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $url, $v, $request ) {
+        return Utils::transaction( function() use ( $url, $v, $request ) {
 
-            $editor = $request->user()?->email ?? request()->ip(); // @phpstan-ignore-line property.notFound
+            $editor = Utils::editor( $request->user() );
             $versionId = ( new Version )->newUniqueId();
 
             $file = new File();
@@ -100,7 +99,7 @@ class AddFile extends Tool
             ] );
 
             return Response::structured( $file->toArray() );
-        }, 3 );
+        } );
     }
 
 

@@ -9,9 +9,9 @@ namespace Aimeos\Cms\GraphQL\Mutations;
 
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\Version;
+use Aimeos\Cms\Utils;
 use Aimeos\Cms\Validation;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 
 
 final class AddElement
@@ -28,13 +28,13 @@ final class AddElement
             throw new \GraphQL\Error\Error( $e->getMessage() );
         }
 
-        if( @$args['input']['type'] === 'html' && @$args['input']['data']->text ) {
-            $args['input']['data']->text = \Aimeos\Cms\Utils::html( (string) $args['input']['data']->text );
+        if( isset( $args['input']['data'] ) ) {
+            Validation::html( $args['input']['type'] ?? '', $args['input']['data'] );
         }
 
-        return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $args ) {
+        return Utils::transaction( function() use ( $args ) {
 
-            $editor = Auth::user()->email ?? request()->ip();
+            $editor = Utils::editor( Auth::user() );
             $versionId = ( new Version )->newUniqueId();
 
             $element = new Element();
@@ -60,6 +60,6 @@ final class AddElement
             $version->files()->attach( $args['files'] ?? [] );
 
             return $element->setRelation( 'latest', $version );
-        }, 3 );
+        } );
     }
 }

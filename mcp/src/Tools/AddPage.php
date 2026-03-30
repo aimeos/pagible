@@ -8,11 +8,11 @@
 namespace Aimeos\Cms\Tools;
 
 use Aimeos\Cms\Utils;
+use Aimeos\Cms\Resource;
 use Aimeos\Cms\Permission;
+use Aimeos\Cms\Validation;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Models\Version;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Attributes\Title;
@@ -27,8 +27,6 @@ use Laravel\Mcp\Request;
 #[Description('Creates a new page in the page tree. Requires lang (ISO code like "en"), name (max 50 chars), title (max 100 chars), content (array of {type, data} objects — use get-schemas for types), and meta with meta-tags description for SEO. Optional: config, to, tag, theme, type, domain, path, status (0/1/2), cache (minutes), related_id, parent_id, ref, files, elements. Returns the created page as JSON.')]
 class AddPage extends Tool
 {
-    use Concerns\SanitizesPages;
-
     private int $numcalls = 0;
 
 
@@ -82,7 +80,11 @@ class AddPage extends Tool
             'meta.meta-tags.description.required' => 'You must provide a meta description in meta.meta-tags.description for SEO. It should be 150-160 characters.',
         ] );
 
-        $v = $this->sanitize( $v, $request->user() );
+        $v = Validation::page( $v, $request->user() );
+
+        if( isset( $v['content'] ) ) {
+            $v['content'] = Validation::content( $v['content'] );
+        }
 
         $page = new Page();
         $pid = $v['parent_id'] ?? null;
@@ -90,15 +92,15 @@ class AddPage extends Tool
 
         /** @var Page|null $parent */
         $parent = $pid ? Page::withTrashed()->find( $pid ) : null;
-        $editor = $request->user()?->email ?? request()->ip(); // @phpstan-ignore-line property.notFound
+        $editor = Utils::editor( $request->user() );
         $versionId = ( new Version )->newUniqueId();
 
         $meta = isset( $v['meta'] )
-            ? $this->buildStructured( $v['meta'], 'meta', new \stdClass() )
+            ? Validation::structured( $v['meta'], 'meta', new \stdClass() )
             : new \stdClass();
 
         $config = isset( $v['config'] )
-            ? $this->buildStructured( $v['config'], 'config', new \stdClass() )
+            ? Validation::structured( $v['config'], 'config', new \stdClass() )
             : new \stdClass();
 
         $content = $v['content'] ?? [];
@@ -134,29 +136,23 @@ class AddPage extends Tool
             ]
         ];
 
-        Cache::lock( 'cms_pages_' . \Aimeos\Cms\Tenancy::value(), 30 )->get( function() use ( $parent, $rid, $page, $v, $vdata ) {
-            DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $parent, $rid, $page, $v, $vdata ) {
+        Utils::lockedTransaction( function() use ( $rid, $pid, $page, $v, $vdata ) {
 
-                $files = $v['files'] ?? [];
-                $elements = $v['elements'] ?? [];
+            $files = $v['files'] ?? [];
+            $elements = $v['elements'] ?? [];
 
-                if( $rid && ( $ref = Page::withTrashed()->where( 'id', $rid )->first() ) ) {
-                    $page->beforeNode( $ref );
-                } elseif( $parent ) {
-                    $page->appendToNode( $parent );
-                }
+            Resource::position( $page, $rid, $pid );
 
-                $page->save();
+            $page->save();
 
-                $page->files()->attach( $files );
-                $page->elements()->attach( $elements );
+            $page->files()->attach( $files );
+            $page->elements()->attach( $elements );
 
-                $version = $page->versions()->forceCreate( $vdata );
+            $version = $page->versions()->forceCreate( $vdata );
 
-                $version->files()->attach( $files );
-                $version->elements()->attach( $elements );
+            $version->files()->attach( $files );
+            $version->elements()->attach( $elements );
 
-            }, 3 );
         } );
 
         $this->numcalls++;
