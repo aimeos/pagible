@@ -49,7 +49,7 @@ class Blog
         /** @phpstan-ignore property.notFound */
         return $builder->paginate( @$item->data?->limit ?: 10, $attr, 'p' )
             ->through( function( $item ) {
-                $item->content = collect( (array) $item->content )->filter( fn( $item ) => $item->type === 'article' );
+                $item->content = (object) collect( (array) $item->content )->filter( fn( $item ) => $item->type === 'article' )->all();
                 $item->setRelation( 'files', Utils::files( $item ) );
                 return $item;
             } );

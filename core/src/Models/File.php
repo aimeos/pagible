@@ -7,6 +7,7 @@
 
 namespace Aimeos\Cms\Models;
 
+use Aimeos\Cms\Casts\LazyObject;
 use Aimeos\Cms\Concerns\Tenancy;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
@@ -73,9 +74,9 @@ class File extends Base
      */
     protected $casts = [
         'name' => 'string',
-        'previews' => 'object',
-        'description' => 'object',
-        'transcription' => 'object',
+        'previews' => LazyObject::class,
+        'description' => LazyObject::class,
+        'transcription' => LazyObject::class,
         'created_at' => 'datetime:Y-m-d H:i:s',
         'updated_at' => 'datetime:Y-m-d H:i:s',
         'deleted_at' => 'datetime:Y-m-d H:i:s',
@@ -464,17 +465,6 @@ class File extends Base
     }
 
 
-    /**
-     * Interact with the "description" property.
-     *
-     * @return Attribute<mixed, mixed> Eloquent attribute for the "description" property
-     */
-    protected function description(): Attribute
-    {
-        return Attribute::make(
-            set: fn( $value ) => json_encode( $value ),
-        );
-    }
 
 
     /**
@@ -547,15 +537,4 @@ class File extends Base
     }
 
 
-    /**
-     * Interact with the "transcription" property.
-     *
-     * @return Attribute<mixed, mixed> Eloquent attribute for the "transcription" property
-     */
-    protected function transcription(): Attribute
-    {
-        return Attribute::make(
-            set: fn( $value ) => json_encode( $value ),
-        );
-    }
 }
