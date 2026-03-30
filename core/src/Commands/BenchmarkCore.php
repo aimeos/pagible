@@ -164,11 +164,11 @@ class BenchmarkCore extends Command
         } );
 
         $this->benchmark( 'Element read', function() use ( $element ) {
-            Element::with( 'latest' )->find( $element->id );
+            Element::with( 'latest.files' )->find( $element->id );
         }, readOnly: true );
 
         $this->benchmark( 'Element list', function() {
-            Element::with( 'latest' )->take( 100 )->get();
+            Element::with( 'latest.files' )->take( 100 )->get();
         }, readOnly: true );
 
         $this->benchmark( 'Element update', function() use ( $element, $lang ) {

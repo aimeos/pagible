@@ -7,8 +7,8 @@
 
 namespace Aimeos\Cms\Models;
 
-use Aimeos\Cms\Casts\LazyObject;
 use Aimeos\Cms\Concerns\Tenancy;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -62,7 +62,7 @@ class Element extends Base
      * @var array<string, string>
      */
     protected $casts = [
-        'data' => LazyObject::class,
+        'data' => 'object',
         'name' => 'string',
         'created_at' => 'datetime:Y-m-d H:i:s',
         'updated_at' => 'datetime:Y-m-d H:i:s',
@@ -238,6 +238,19 @@ class Element extends Base
         Version::where( 'versionable_id', $this->id )
             ->where( 'versionable_type', static::class )
             ->delete();
+    }
+
+
+    /**
+     * Interact with the "data" property.
+     *
+     * @return Attribute<mixed, mixed> Eloquent attribute for the "data" property
+     */
+    protected function data(): Attribute
+    {
+        return Attribute::make(
+            set: fn( $value ) => json_encode( $value ?? new \stdClass() )
+        );
     }
 
 

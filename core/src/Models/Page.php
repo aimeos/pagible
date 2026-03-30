@@ -7,7 +7,6 @@
 
 namespace Aimeos\Cms\Models;
 
-use Aimeos\Cms\Casts\LazyObject;
 use Aimeos\Cms\Concerns\Tenancy;
 use Aimeos\Nestedset\NodeTrait;
 use Aimeos\Nestedset\AncestorsRelation;
@@ -113,9 +112,9 @@ class Page extends Base
         'theme' => 'string',
         'status' => 'integer',
         'cache' => 'integer',
-        'meta' => LazyObject::class,
-        'config' => LazyObject::class,
-        'content' => LazyObject::class, // for object access in templates
+        'meta' => 'object',
+        'config' => 'object',
+        'content' => 'object', // for object access in templates
         'created_at' => 'datetime:Y-m-d H:i:s',
         'updated_at' => 'datetime:Y-m-d H:i:s',
         'deleted_at' => 'datetime:Y-m-d H:i:s',
@@ -491,6 +490,30 @@ class Page extends Base
     }
 
 
+    /**
+     * Interact with the "config" property.
+     *
+     * @return Attribute<mixed, mixed> Eloquent attribute for the "config" property
+     */
+    protected function config(): Attribute
+    {
+        return Attribute::make(
+            set: fn( $value ) => json_encode( $value ?? new \stdClass() ),
+        );
+    }
+
+
+    /**
+     * Interact with the "content" property.
+     *
+     * @return Attribute<mixed, mixed> Eloquent attribute for the "content" property
+     */
+    protected function content(): Attribute
+    {
+        return Attribute::make(
+            set: fn( $value ) => json_encode( $value ?? [] ),
+        );
+    }
 
 
     /**
@@ -519,6 +542,17 @@ class Page extends Base
     }
 
 
+    /**
+     * Interact with the "meta" property.
+     *
+     * @return Attribute<mixed, mixed> Eloquent attribute for the "meta" property
+     */
+    protected function meta(): Attribute
+    {
+        return Attribute::make(
+            set: fn( $value ) => json_encode( $value ?? new \stdClass() ),
+        );
+    }
 
 
     /**
