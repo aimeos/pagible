@@ -42,7 +42,9 @@ class ListPages extends Tool
             'type' => 'string|max:50',
         ]);
 
-        $query = Page::withTrashed()->defaultOrder();
+        $query = Page::withTrashed()
+            ->select( 'id', 'name', 'title', 'path', 'lang', 'status', 'type', 'parent_id', '_lft', '_rgt', 'deleted_at' )
+            ->defaultOrder();
 
         if( isset( $v['lang'] ) ) {
             $query->where( 'lang', $v['lang'] );

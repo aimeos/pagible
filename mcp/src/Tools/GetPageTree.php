@@ -55,7 +55,8 @@ class GetPageTree extends Tool
             return Response::structured( ['tree' => $tree] );
         }
 
-        $query = Nav::whereNull( 'parent_id' )->defaultOrder();
+        $query = Nav::select( 'id', 'name', 'title', 'path', 'lang', 'status', 'type', '_lft', '_rgt', 'parent_id' )
+            ->whereNull( 'parent_id' )->defaultOrder();
 
         if( isset( $v['lang'] ) ) {
             $query->where( 'lang', $v['lang'] );

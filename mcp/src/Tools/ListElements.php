@@ -40,7 +40,9 @@ class ListElements extends Tool
             'lang' => 'nullable|string|max:5',
         ]);
 
-        $query = Element::withTrashed()->orderBy( 'updated_at', 'desc' );
+        $query = Element::withTrashed()
+            ->select( 'id', 'type', 'name', 'lang', 'data', 'created_at', 'updated_at', 'deleted_at' )
+            ->orderBy( 'updated_at', 'desc' );
 
         if( isset( $v['type'] ) ) {
             $query->where( 'type', $v['type'] );

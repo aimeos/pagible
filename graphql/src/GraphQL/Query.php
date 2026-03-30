@@ -69,7 +69,8 @@ final class Query
 
         $this->trashed( $builder, $args['trashed'] ?? null );
 
-        $builder->join( 'cms_versions', 'cms_files.latest_id', '=', 'cms_versions.id' );
+        $builder->addSelect( 'cms_files.*' )
+            ->join( 'cms_versions', 'cms_files.latest_id', '=', 'cms_versions.id' );
 
         $this->publish( $builder, $args['publish'] ?? null );
         $this->filter( $builder, $filter, 'cms_files', File::class );

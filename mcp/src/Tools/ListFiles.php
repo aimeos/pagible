@@ -41,7 +41,9 @@ class ListFiles extends Tool
             'lang' => 'nullable|string|max:5',
         ]);
 
-        $query = File::withTrashed()->orderBy( 'updated_at', 'desc' );
+        $query = File::withTrashed()
+            ->select( 'id', 'name', 'mime', 'lang', 'path', 'previews', 'description', 'created_at', 'deleted_at' )
+            ->orderBy( 'updated_at', 'desc' );
 
         if( isset( $v['mime'] ) ) {
             $query->where( 'mime', 'like', $v['mime'] . '%' );
