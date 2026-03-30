@@ -56,7 +56,7 @@ class BenchmarkCore extends Command
         $root = Page::where( 'tag', 'root' )->where( 'lang', $lang )->where( 'domain', $domain )->firstOrFail();
         $page = Page::where( 'tag', '!=', 'root' )->where( 'lang', $lang )->orderByDesc( 'depth' )->firstOrFail();
         $moveParent = Page::where( 'depth', 1 )->where( 'lang', $lang )
-            ->whereNotIn( 'id', $page->ancestors()->pluck( 'id' ) )->firstOrFail();
+            ->whereNotIn( 'id', $page->ancestors()->get()->pluck( 'id' ) )->firstOrFail();
         $element = Element::where( 'lang', $lang )->firstOrFail();
         $file = File::where( 'lang', $lang )->firstOrFail();
 
@@ -72,7 +72,7 @@ class BenchmarkCore extends Command
         $page->setRelation( 'latest', $unpubVersion );
 
         // Soft-delete one of each for restore/purge benchmarks
-        $excludeIds = $page->ancestors()->pluck( 'id' )->push( $page->id );
+        $excludeIds = $page->ancestors()->get()->pluck( 'id' )->push( $page->id );
         $trashedPage = Page::where( 'tag', '!=', 'root' )->where( 'lang', $lang )
             ->whereNotIn( 'id', $excludeIds )->orderByDesc( 'depth' )->firstOrFail();
         $trashedPage->delete();
@@ -125,7 +125,7 @@ class BenchmarkCore extends Command
         } );
 
         $this->benchmark( 'Page publish', function() use ( $page ) {
-            $page->publish( $page->latest );
+            $page->publish( $page->latest ?? throw new \RuntimeException( 'No latest version' ) );
         } );
 
         $this->benchmark( 'Page delete', function() use ( $page ) {

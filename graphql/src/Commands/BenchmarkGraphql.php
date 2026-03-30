@@ -81,10 +81,10 @@ class BenchmarkGraphql extends Command
             $root = Page::where( 'tag', 'root' )->where( 'lang', $lang )->where( 'domain', $domain )->firstOrFail();
             $page = Page::where( 'tag', '!=', 'root' )->where( 'lang', $lang )->orderByDesc( 'depth' )->firstOrFail();
             $moveParent = Page::where( 'depth', 1 )->where( 'lang', $lang )
-                ->whereNotIn( 'id', $page->ancestors()->pluck( 'id' ) )->firstOrFail();
+                ->whereNotIn( 'id', $page->ancestors()->get()->pluck( 'id' ) )->firstOrFail();
 
             // Preconditions: soft-delete a page for KeepPage/PurgePage
-            $excludeIds = $page->ancestors()->pluck( 'id' )->push( $page->id );
+            $excludeIds = $page->ancestors()->get()->pluck( 'id' )->push( $page->id );
             $trashedPage = Page::where( 'tag', '!=', 'root' )->where( 'lang', $lang )
                 ->whereNotIn( 'id', $excludeIds )->orderByDesc( 'depth' )->firstOrFail();
             $trashedPage->delete();

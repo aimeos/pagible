@@ -81,7 +81,7 @@ class BenchmarkMcp extends Command
             $page = Page::where( 'tag', '!=', 'root' )->where( 'lang', $lang )->orderByDesc( 'depth' )->firstOrFail();
 
             // Preconditions: soft-delete a page for RestorePage
-            $excludeIds = $page->ancestors()->pluck( 'id' )->push( $page->id );
+            $excludeIds = $page->ancestors()->get()->pluck( 'id' )->push( $page->id );
             $trashedPage = Page::where( 'tag', '!=', 'root' )->where( 'lang', $lang )
                 ->whereNotIn( 'id', $excludeIds )->orderByDesc( 'depth' )->firstOrFail();
             $trashedPage->delete();
