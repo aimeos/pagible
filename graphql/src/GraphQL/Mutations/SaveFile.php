@@ -13,7 +13,6 @@ use Aimeos\Cms\Utils;
 use GraphQL\Error\Error;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 
 
 final class SaveFile
@@ -24,13 +23,38 @@ final class SaveFile
      */
     public function __invoke( $rootValue, array $args ) : File
     {
-        return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $args ) {
+        $upload = $args['file'] ?? null;
+
+        if( $upload instanceof UploadedFile && $upload->isValid() )
+        {
+            if( !Utils::isValidUpload( $upload ) ) {
+                $msg = 'File size of %s MB exceeds the maximum of %s MB';
+                throw new Error( sprintf( $msg, round( $upload->getSize() / 1024 / 1024, 3 ), config( 'cms.graphql.filesize', 50 ) ) );
+            }
+
+            if( !Utils::isValidMimetype( (string) $upload->getMimeType() ) ) {
+                $msg = 'File type "%s" not allowed, permitted types: %s';
+                throw new Error( sprintf( $msg, $upload->getMimeType(), implode( ', ', config( 'cms.graphql.mimetypes', [] ) ) ) );
+            }
+        }
+
+        if( isset( $args['input']['path'] ) )
+        {
+            $mime = Utils::mimetype( $args['input']['path'] );
+
+            if( !Utils::isValidMimetype( $mime ) ) {
+                $msg = 'File type "%s" not allowed, permitted types: %s';
+                throw new Error( sprintf( $msg, $mime, implode( ', ', config( 'cms.graphql.mimetypes', [] ) ) ) );
+            }
+        }
+
+        return Utils::transaction( function() use ( $args, $upload ) {
 
             /** @var File $orig */
             $orig = File::withTrashed()->with( 'latest' )->findOrFail( $args['id'] );
             $previews = $orig->latest?->data->previews ?? $orig->previews;
             $path = $orig->latest?->data->path ?? $orig->path;
-            $editor = Auth::user()->email ?? request()->ip();
+            $editor = Utils::editor( Auth::user() );
 
             $file = clone $orig;
             $file->fill( array_replace( (array) $orig->latest?->data, (array) $args['input'] ) );
@@ -38,31 +62,12 @@ final class SaveFile
             $file->path = $args['input']['path'] ?? $path;
             $file->editor = $editor;
 
-            $upload = $args['file'] ?? null;
-
-            if( $upload instanceof UploadedFile && $upload->isValid() )
-            {
-                if( !Utils::isValidUpload( $upload ) ) {
-                    $msg = 'File size of %s MB exceeds the maximum of %s MB';
-                    throw new Error( sprintf( $msg, round( $upload->getSize() / 1024 / 1024, 3 ), config( 'cms.graphql.filesize', 50 ) ) );
-                }
-
-                if( !Utils::isValidMimetype( (string) $upload->getMimeType() ) ) {
-                    $msg = 'File type "%s" not allowed, permitted types: %s';
-                    throw new Error( sprintf( $msg, $upload->getMimeType(), implode( ', ', config( 'cms.graphql.mimetypes', [] ) ) ) );
-                }
-
+            if( $upload instanceof UploadedFile && $upload->isValid() ) {
                 $file->addFile( $upload );
             }
 
-            if( $file->path !== $path )
-            {
+            if( $file->path !== $path ) {
                 $file->mime = Utils::mimetype( $file->path );
-
-                if( !Utils::isValidMimetype( $file->mime ) ) {
-                    $msg = 'File type "%s" not allowed, permitted types: %s';
-                    throw new Error( sprintf( $msg, $file->mime, implode( ', ', config( 'cms.graphql.mimetypes', [] ) ) ) );
-                }
             }
 
             try
@@ -97,6 +102,6 @@ final class SaveFile
             $file->removeVersions();
 
             return $orig->setRelation( 'latest', $version );
-        }, 3 );
+        } );
     }
 }

@@ -7,10 +7,11 @@
 
 namespace Aimeos\Cms\Tools;
 
+use Aimeos\Cms\Utils;
+use Aimeos\Cms\Resource;
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\Validation;
 use Aimeos\Cms\Models\Page;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Attributes\Name;
@@ -44,51 +45,35 @@ class PublishPage extends Tool
 
         Validation::publishAt( $v['at'] ?? null );
 
-        return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $v, $request ) {
+        $ids = (array) $v['id'];
+        $editor = Utils::editor( $request->user() );
+        $items = Resource::publish( Page::class, $ids, $editor, $v['at'] ?? null, ['latest.files', 'latest.elements'] );
 
-            $ids = (array) $v['id'];
+        $published = [];
+        $skipped = [];
 
-            $items = Page::with( 'latest.files', 'latest.elements' )->whereIn( 'id', $ids )->get();
-            $editor = $request->user()?->email ?? request()->ip(); // @phpstan-ignore-line property.notFound
-            $published = [];
-            $skipped = [];
-
-            foreach( $items as $item )
-            {
-                /** @var Page $item */
-                $latest = $item->latest;
-
-                if( !$latest ) {
-                    $skipped[] = ['id' => $item->id, 'reason' => 'No draft version'];
-                    continue;
-                }
-
-                if( !empty( $v['at'] ) )
-                {
-                    $latest->publish_at = $v['at'];
-                    $latest->editor = $editor;
-                    $latest->save();
-
-                    $published[] = ['id' => $item->id, 'name' => $item->name, 'scheduled_at' => $v['at']];
-                }
-                else
-                {
-                    $item->publish( $latest );
-                    $published[] = ['id' => $item->id, 'name' => $item->name, 'path' => $item->path];
-                }
+        foreach( $items as $item )
+        {
+            /** @var Page $item */
+            if( !$item->latest ) {
+                $skipped[] = ['id' => $item->id, 'reason' => 'No draft version'];
+            } elseif( !empty( $v['at'] ) ) {
+                $published[] = ['id' => $item->id, 'name' => $item->name, 'scheduled_at' => $v['at']];
+            } else {
+                $published[] = ['id' => $item->id, 'name' => $item->name, 'path' => $item->path];
             }
+        }
 
-            $notFound = array_diff( $ids, $items->pluck( 'id' )->all() );
+        $notFound = array_diff( $ids, $items->pluck( 'id' )->all() );
 
-            foreach( $notFound as $id ) {
-                $skipped[] = ['id' => $id, 'reason' => 'Not found'];
-            }
+        foreach( $notFound as $id ) {
+            $skipped[] = ['id' => $id, 'reason' => 'Not found'];
+        }
 
-            return Response::structured( [
-                'published' => $published,
-                'skipped' => $skipped,
-            ] );
-        }, 3 );
+        return Response::structured( [
+            'published' => $published,
+            'skipped' => $skipped,
+        ] );
     }
 
 

@@ -7,10 +7,10 @@
 
 namespace Aimeos\Cms\Tools;
 
+use Aimeos\Cms\Utils;
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Version;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Attributes\Title;
@@ -50,9 +50,9 @@ class SaveFile extends Tool
             return Response::structured( ['error' => 'File not found.'] );
         }
 
-        return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $file, $v, $request ) {
+        return Utils::transaction( function() use ( $file, $v, $request ) {
 
-            $editor = $request->user()?->email ?? request()->ip(); // @phpstan-ignore-line property.notFound
+            $editor = Utils::editor( $request->user() );
             $versionId = ( new Version )->newUniqueId();
 
             // Clone file to build version data without saving to the model directly
@@ -89,7 +89,7 @@ class SaveFile extends Tool
                 'created_at' => (string) $file->created_at,
                 'updated_at' => (string) $file->updated_at,
             ] );
-        }, 3 );
+        } );
     }
 
 

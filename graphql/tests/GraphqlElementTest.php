@@ -326,7 +326,7 @@ class GraphqlElementTest extends GraphqlTestAbstract
         $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
         $element = Element::where( 'type', 'footer' )->firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 7 );
+        $this->expectsDatabaseQueryCount( 8 );
 
         $response = $this->actingAs($this->user)->graphQL('
             mutation {
@@ -361,19 +361,16 @@ class GraphqlElementTest extends GraphqlTestAbstract
         $this->assertEquals('seeder', $saveElement['editor']);
         $this->assertEquals(['type' => 'footer', 'data' => ['text' => 'Powered by Laravel CMS']], json_decode($saveElement['data'], true));
 
-        // Decode latest->data JSON for order-independent comparison
-        $expectedLatestData = [
-            'type' => 'heading',
-            'lang' => 'de',
-            'data' => ['key' => 'value'],
-        ];
-
-        $latest = $saveElement['latest'];
+        // Decode latest->data JSON for order-independent comparison (merged with existing)
+        $latestData = json_decode($saveElement['latest']['data'] ?? null, true);
         $this->assertNull($saveElement['latest']['publish_at'] ?? null);
         $this->assertEquals('de', $saveElement['latest']['lang'] ?? null);
         $this->assertEquals(false, $saveElement['latest']['published'] ?? null);
         $this->assertEquals('editor@testbench', $saveElement['latest']['editor'] ?? null);
-        $this->assertEquals($expectedLatestData, json_decode($saveElement['latest']['data'] ?? null, true));
+        $this->assertEquals('heading', $latestData['type']);
+        $this->assertEquals('de', $latestData['lang']);
+        $this->assertEquals(['key' => 'value'], $latestData['data']);
+        $this->assertArrayHasKey('name', $latestData);
     }
 
 

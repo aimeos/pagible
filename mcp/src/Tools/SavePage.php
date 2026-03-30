@@ -9,10 +9,10 @@ namespace Aimeos\Cms\Tools;
 
 use Aimeos\Cms\Utils;
 use Aimeos\Cms\Permission;
-use Aimeos\Cms\Models\Page;
-use Aimeos\Cms\Models\Version;
+use Aimeos\Cms\Resource;
+use Aimeos\Cms\Validation;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Attributes\Title;
 use Laravel\Mcp\Server\Attributes\Name;
@@ -26,9 +26,6 @@ use Laravel\Mcp\Request;
 #[Description('Updates an existing page by ID. Only send fields you want to change — unsent fields are preserved from the latest version. Content, meta, and config are fully replaced when provided. Use get-schemas for content types and meta/config field definitions. Returns the updated page as JSON.')]
 class SavePage extends Tool
 {
-    use Concerns\SanitizesPages;
-
-
     /**
      * Handle the tool request.
      */
@@ -66,69 +63,48 @@ class SavePage extends Tool
             'id.required' => 'You must specify the ID of the page to save.',
         ] );
 
-        /** @var Page|null $page */
-        $page = Page::withTrashed()->with( 'latest' )->find( $v['id'] );
+        if( isset( $v['content'] ) ) {
+            $v['content'] = Validation::content( $v['content'] );
+        }
 
-        if( !$page ) {
+        if( isset( $v['title'] ) && !isset( $v['path'] ) ) {
+            $v['path'] = Utils::slugify( $v['title'] );
+        }
+
+        if( isset( $v['meta'] ) ) {
+            $v['meta'] = Validation::structured( $v['meta'], 'meta', new \stdClass() );
+        }
+
+        if( isset( $v['config'] ) ) {
+            $v['config'] = Validation::structured( $v['config'], 'config', new \stdClass() );
+        }
+
+        $input = array_diff_key( $v, array_flip( ['id', 'files', 'elements'] ) );
+
+        try {
+            $page = Resource::savePage(
+                $v['id'], $input, $request->user(),
+                Utils::editor( $request->user() ),
+                $v['files'] ?? [], $v['elements'] ?? [],
+            );
+        } catch( ModelNotFoundException $e ) {
             return Response::structured( ['error' => 'Page not found.'] );
         }
 
-        $v = $this->sanitize( $v, $request->user() );
+        $data = (array) ( $page->latest->data ?? [] );
+        $aux = (array) ( $page->latest->aux ?? [] );
 
-        return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $page, $v, $request ) {
-
-            $editor = $request->user()?->email ?? request()->ip(); // @phpstan-ignore-line property.notFound
-            $versionId = ( new Version )->newUniqueId();
-
-            $input = array_diff_key( $v, array_flip( ['id', 'meta', 'config', 'content', 'files', 'elements'] ) );
-
-            if( isset( $v['title'] ) && !isset( $v['path'] ) ) {
-                $input['path'] = Utils::slugify( $v['title'] );
-            }
-
-            array_walk( $input, fn( &$v, $k ) => $v = !in_array( $k, ['related_id'] ) ? ( $v ?? '' ) : $v );
-            $data = array_replace( (array) ( $page->latest->data ?? [] ), $input );
-
-            $aux = (array) ( $page->latest->aux ?? [] );
-
-            if( isset( $v['content'] ) ) {
-                $aux['content'] = $v['content'];
-            }
-
-            if( isset( $v['meta'] ) ) {
-                $aux['meta'] = $this->buildStructured( $v['meta'], 'meta', new \stdClass() );
-            }
-
-            if( isset( $v['config'] ) ) {
-                $aux['config'] = $this->buildStructured( $v['config'], 'config', new \stdClass() );
-            }
-
-            $version = $page->versions()->forceCreate([
-                'id' => $versionId,
-                'data' => $data,
-                'editor' => $editor,
-                'lang' => $v['lang'] ?? $page->latest?->lang,
-                'aux' => $aux,
-            ] );
-
-            $version->elements()->attach( $v['elements'] ?? [] );
-            $version->files()->attach( $v['files'] ?? [] );
-
-            $page->forceFill( ['latest_id' => $versionId] )->save();
-            $page->removeVersions();
-
-            return Response::structured( array_merge( $data, [
-                'id' => $page->id,
-                'meta' => $aux['meta'] ?? new \stdClass(),
-                'config' => $aux['config'] ?? new \stdClass(),
-                'content' => $aux['content'] ?? [],
-                'status' => $page->status,
-                'cache' => $page->cache,
-                'created_at' => (string) $page->created_at,
-                'updated_at' => (string) $page->updated_at,
-                'url' => route( 'cms.page', ['path' => $data['path'] ?? ''] ),
-            ] ) );
-        }, 3 );
+        return Response::structured( array_merge( $data, [
+            'id' => $page->id,
+            'meta' => $aux['meta'] ?? new \stdClass(),
+            'config' => $aux['config'] ?? new \stdClass(),
+            'content' => $aux['content'] ?? [],
+            'status' => $page->status,
+            'cache' => $page->cache,
+            'created_at' => (string) $page->created_at,
+            'updated_at' => (string) $page->updated_at,
+            'url' => route( 'cms.page', ['path' => $data['path'] ?? ''] ),
+        ] ) );
     }
 
 

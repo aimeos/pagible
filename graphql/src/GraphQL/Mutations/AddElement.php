@@ -8,10 +8,9 @@
 namespace Aimeos\Cms\GraphQL\Mutations;
 
 use Aimeos\Cms\Models\Element;
-use Aimeos\Cms\Models\Version;
-use Aimeos\Cms\Validation;
+use Aimeos\Cms\Resource;
+use Aimeos\Cms\Utils;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 
 
 final class AddElement
@@ -23,43 +22,9 @@ final class AddElement
     public function __invoke( $rootValue, array $args ) : Element
     {
         try {
-            Validation::element( $args['input']['type'] ?? '' );
+            return Resource::addElement( $args['input'] ?? [], Utils::editor( Auth::user() ), $args['files'] ?? [] );
         } catch( \InvalidArgumentException $e ) {
             throw new \GraphQL\Error\Error( $e->getMessage() );
         }
-
-        if( @$args['input']['type'] === 'html' && @$args['input']['data']->text ) {
-            $args['input']['data']->text = \Aimeos\Cms\Utils::html( (string) $args['input']['data']->text );
-        }
-
-        return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $args ) {
-
-            $editor = Auth::user()->email ?? request()->ip();
-            $versionId = ( new Version )->newUniqueId();
-
-            $element = new Element();
-            $element->latest_id = $versionId;
-            $element->fill( $args['input'] ?? [] );
-            $element->data = $args['input']['data'] ?? [];
-            $element->tenant_id = \Aimeos\Cms\Tenancy::value();
-            $element->editor = $editor;
-            $element->save();
-
-            $element->files()->attach( $args['files'] ?? [] );
-
-            $data = $args['input'] ?? [];
-            ksort( $data );
-
-            $version = $element->versions()->forceCreate( [
-                'id' => $versionId,
-                'data' => array_map( fn( $v ) => is_null( $v ) ? (string) $v : $v, $data ),
-                'lang' => $args['input']['lang'] ?? null,
-                'editor' => $editor,
-            ] );
-
-            $version->files()->attach( $args['files'] ?? [] );
-
-            return $element->setRelation( 'latest', $version );
-        }, 3 );
     }
 }

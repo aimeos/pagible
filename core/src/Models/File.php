@@ -7,22 +7,15 @@
 
 namespace Aimeos\Cms\Models;
 
-use Aimeos\Cms\Models\Version;
 use Aimeos\Cms\Concerns\Tenancy;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\MorphMany;
-use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Prunable;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Date;
-use Illuminate\Support\Str;
 use Illuminate\Http\UploadedFile;
 use Intervention\Image\ImageManager;
 use Laravel\Scout\Searchable;
@@ -47,7 +40,7 @@ use Laravel\Scout\Searchable;
  * @property \Illuminate\Support\Carbon|null $deleted_at
  * @method static \Illuminate\Database\Eloquent\Builder<static> withoutTenancy()
  */
-class File extends Model
+class File extends Base
 {
     use HasUuids;
     use SoftDeletes;
@@ -271,17 +264,6 @@ class File extends Model
 
 
     /**
-     * Get the current timestamp in seconds precision.
-     *
-     * @return \Illuminate\Support\Carbon Current timestamp
-     */
-    public function freshTimestamp()
-    {
-        return Date::now()->startOfSecond(); // SQL Server workaround
-    }
-
-
-    /**
      * Enforce JSON columns to return object.
      *
      * @param string $key Attribute name
@@ -291,40 +273,6 @@ class File extends Model
     {
         $value = parent::getAttribute( $key );
         return is_null( $value ) && in_array( $key, ['description', 'previews', 'transcription'] ) ? new \stdClass() : $value;
-    }
-
-
-    /**
-     * Get the connection name for the model.
-     *
-     * @return string The name of the database connection to use for the model
-     */
-    public function getConnectionName() : string
-    {
-        return config( 'cms.db', 'sqlite' );
-    }
-
-
-    /**
-     * Get the file's latest version.
-     *
-     * @return BelongsTo<Version, $this> Eloquent relationship to the latest version of the file
-     */
-    public function latest() : BelongsTo
-    {
-        return $this->belongsTo( Version::class, 'latest_id' );
-    }
-
-
-    /**
-     * Generate a new unique key for the model.
-     *
-     * @return string
-     */
-    public function newUniqueId()
-    {
-        // workaround for SQL Server and Lighthouse when UUIDs are mixed case
-        return (string) ( $this->getConnection()->getDriverName() === 'sqlsrv' ? strtoupper( Str::uuid7() ) : Str::uuid7() );
     }
 
 
@@ -384,20 +332,6 @@ class File extends Model
 
 
     /**
-     * Get the element's published head/meta data.
-     *
-     * @return MorphOne<Version, $this> Eloquent relationship to the last published version of the element
-     */
-    public function published() : MorphOne
-    {
-        return $this->morphOne( Version::class, 'versionable' )
-            ->ofMany( ['created_at' => 'max', 'id' => 'max'], function( $query ) {
-                $query->where( (new Version)->qualifyColumn( 'published' ), true );
-            } );
-    }
-
-
-    /**
      * Permanently delete the file and all of its versions incl. the stored files.
      *
      * @return void
@@ -448,9 +382,9 @@ class File extends Model
      * Removes all versions of the file except the latest versions and deletes the stored files
      * of the older versions.
      *
-     * @return self The current instance for method chaining
+     * @return static The current instance for method chaining
      */
-    public function removeVersions() : self
+    public function removeVersions() : static
     {
         $num = config( 'cms.versions', 10 );
 
@@ -514,17 +448,6 @@ class File extends Model
             'content' => $this->trashed() ? '' : mb_strtolower( (string) $this ),
             'draft' => mb_strtolower( (string) $this->latest ),
         ];
-    }
-
-
-    /**
-     * Get all of the files's versions.
-     *
-     * @return MorphMany<Version, $this> Eloquent relationship to the versions of the file
-     */
-    public function versions() : MorphMany
-    {
-        return $this->morphMany( Version::class, 'versionable' )->orderByDesc( 'created_at' )->orderByDesc( 'id' );
     }
 
 

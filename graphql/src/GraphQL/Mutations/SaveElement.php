@@ -8,10 +8,9 @@
 namespace Aimeos\Cms\GraphQL\Mutations;
 
 use Aimeos\Cms\Models\Element;
-use Aimeos\Cms\Models\Version;
-use Aimeos\Cms\Validation;
+use Aimeos\Cms\Resource;
+use Aimeos\Cms\Utils;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 
 
 final class SaveElement
@@ -23,33 +22,9 @@ final class SaveElement
     public function __invoke( $rootValue, array $args ) : Element
     {
         try {
-            Validation::element( $args['input']['type'] ?? '' );
+            return Resource::saveElement( $args['id'], $args['input'] ?? [], Utils::editor( Auth::user() ), $args['files'] ?? [] );
         } catch( \InvalidArgumentException $e ) {
             throw new \GraphQL\Error\Error( $e->getMessage() );
         }
-
-        if( @$args['input']['type'] === 'html' && @$args['input']['data']->text ) {
-            $args['input']['data']->text = \Aimeos\Cms\Utils::html( (string) $args['input']['data']->text );
-        }
-
-        return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $args ) {
-
-            /** @var Element $element */
-            $element = Element::withTrashed()->findOrFail( $args['id'] );
-            $versionId = ( new Version )->newUniqueId();
-
-            $version = $element->versions()->forceCreate( [
-                'id' => $versionId,
-                'data' => array_map( fn( $v ) => $v ?? '', $args['input'] ?? [] ),
-                'editor' => Auth::user()->email ?? request()->ip(),
-                'lang' => $args['input']['lang'] ?? null,
-            ] );
-
-            $version->files()->attach( $args['files'] ?? [] );
-            $element->forceFill( ['latest_id' => $version->id] )->save();
-
-            $element->setRelation( 'latest', $version );
-            return $element->removeVersions();
-        }, 3 );
     }
 }

@@ -7,10 +7,10 @@
 
 namespace Aimeos\Cms\GraphQL\Mutations;
 
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
 use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Resource;
+use Aimeos\Cms\Utils;
+use Illuminate\Support\Facades\Auth;
 
 
 final class KeepPage
@@ -22,21 +22,6 @@ final class KeepPage
      */
     public function __invoke( $rootValue, array $args ) : array
     {
-        return Cache::lock( 'cms_pages_' . \Aimeos\Cms\Tenancy::value(), 30 )->get( function() use ( $args ) {
-            return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $args ) {
-
-                $items = Page::withTrashed()->whereIn( 'id', $args['id'] )->get();
-                $editor = Auth::user()->email ?? request()->ip();
-
-                foreach( $items as $item )
-                {
-                    /** @var Page $item */
-                    $item->editor = $editor;
-                    $item->restore();
-                }
-
-                return $items->all();
-            }, 3 );
-        } );
+        return Resource::restore( Page::class, $args['id'], Utils::editor( Auth::user() ) )->all();
     }
 }

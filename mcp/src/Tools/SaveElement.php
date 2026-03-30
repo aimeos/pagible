@@ -9,10 +9,9 @@ namespace Aimeos\Cms\Tools;
 
 use Aimeos\Cms\Utils;
 use Aimeos\Cms\Permission;
-use Aimeos\Cms\Models\Element;
-use Aimeos\Cms\Models\Version;
-use Illuminate\Support\Facades\DB;
+use Aimeos\Cms\Resource;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Attributes\Title;
 use Laravel\Mcp\Server\Attributes\Name;
@@ -46,57 +45,24 @@ class SaveElement extends Tool
             'id.required' => 'You must specify the ID of the element to save.',
         ] );
 
-        /** @var Element|null $element */
-        $element = Element::withTrashed()->with( 'latest' )->find( $v['id'] );
-
-        if( !$element ) {
+        try {
+            $input = array_diff_key( $v, array_flip( ['id', 'files'] ) );
+            $element = Resource::saveElement( $v['id'], $input, Utils::editor( $request->user() ), $v['files'] ?? [] );
+        } catch( ModelNotFoundException $e ) {
             return Response::structured( ['error' => 'Element not found.'] );
         }
 
-        $type = $element->type ?? ( (array) ( $element->latest->data ?? [] ) )['type'] ?? '';
+        $data = (array) ( $element->latest->data ?? [] );
 
-        if( $type === 'html' && isset( $v['data']['text'] ) ) {
-            $v['data']['text'] = Utils::html( (string) $v['data']['text'] );
-        }
-
-        return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $element, $v, $request ) {
-
-            $editor = $request->user()?->email ?? request()->ip(); // @phpstan-ignore-line property.notFound
-            $versionId = ( new Version )->newUniqueId();
-
-            // Build input from latest version, then overlay changes
-            $input = (array) ( $element->latest->data ?? [] );
-
-            if( isset( $v['name'] ) ) {
-                $input['name'] = $v['name'];
-            }
-
-            if( isset( $v['data'] ) ) {
-                $input['data'] = $v['data'];
-            }
-
-            $version = $element->versions()->forceCreate( [
-                'id' => $versionId,
-                'data' => array_map( fn( $v ) => $v ?? '', $input ),
-                'editor' => $editor,
-                'lang' => $v['lang'] ?? $element->latest?->lang,
-            ] );
-
-            $version->files()->attach( (array) ( $v['files'] ?? [] ) );
-
-            $element->forceFill( ['latest_id' => $versionId] )->save();
-            $element->removeVersions();
-
-            return Response::structured( [
-                'id' => $element->id,
-                'type' => $input['type'] ?? '',
-                'name' => $input['name'] ?? '',
-                'lang' => $v['lang'] ?? null,
-                'data' => $input['data'] ?? new \stdClass(),
-                'created_at' => (string) $element->created_at,
-                'updated_at' => (string) $element->updated_at,
-            ] );
-        }, 3 );
+        return Response::structured( [
+            'id' => $element->id,
+            'type' => $data['type'] ?? '',
+            'name' => $data['name'] ?? '',
+            'lang' => $element->latest?->lang,
+            'data' => $data['data'] ?? new \stdClass(),
+            'created_at' => (string) $element->created_at,
+            'updated_at' => (string) $element->updated_at,
+        ] );
     }
 
 

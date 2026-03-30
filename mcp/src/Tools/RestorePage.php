@@ -7,10 +7,10 @@
 
 namespace Aimeos\Cms\Tools;
 
+use Aimeos\Cms\Utils;
+use Aimeos\Cms\Resource;
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\Models\Page;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Attributes\Name;
@@ -51,15 +51,12 @@ class RestorePage extends Tool
             return Response::structured( ['error' => 'Page is not deleted.'] );
         }
 
-        return Cache::lock( 'cms_pages_' . \Aimeos\Cms\Tenancy::value(), 30 )->get( function() use ( $page, $request ) {
-            return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $page, $request ) {
+        $items = Resource::restore( Page::class, [$v['id']], Utils::editor( $request->user() ) );
+        $restored = $items->firstOrFail();
 
-                $page->editor = $request->user()?->email ?? request()->ip(); // @phpstan-ignore-line property.notFound
-                $page->restore();
-
-                return Response::structured( $page->toArray() + ['url' => route( 'cms.page', ['path' => $page->path] )] );
-            }, 3 );
-        } );
+        return Response::structured( $restored->toArray() + ( $restored instanceof Page
+            ? ['url' => route( 'cms.page', ['path' => $restored->path] )]
+            : [] ) );
     }
 
 

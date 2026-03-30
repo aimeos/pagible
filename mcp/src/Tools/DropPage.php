@@ -7,10 +7,10 @@
 
 namespace Aimeos\Cms\Tools;
 
+use Aimeos\Cms\Utils;
+use Aimeos\Cms\Resource;
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\Models\Page;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Attributes\Name;
@@ -47,15 +47,9 @@ class DropPage extends Tool
             return Response::structured( ['error' => 'Page not found.'] );
         }
 
-        return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $page, $request ) {
+        $items = Resource::drop( Page::class, [$v['id']], Utils::editor( $request->user() ) );
 
-            $page->editor = $request->user()?->email ?? request()->ip(); // @phpstan-ignore-line property.notFound
-            $page->delete();
-
-            Cache::forget( Page::key( $page ) );
-
-            return Response::structured( $page->toArray() );
-        }, 3 );
+        return Response::structured( $items->firstOrFail()->toArray() );
     }
 
 

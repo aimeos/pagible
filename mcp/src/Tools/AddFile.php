@@ -11,7 +11,6 @@ use Aimeos\Cms\Utils;
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Version;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Attributes\Title;
@@ -50,9 +49,15 @@ class AddFile extends Tool
             return Response::structured( ['error' => sprintf( 'The URL "%s" must be a valid "http" or "https" URL.', $url )] );
         }
 
-        return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $url, $v, $request ) {
+        $mime = Utils::mimetype( $url );
 
-            $editor = $request->user()?->email ?? request()->ip(); // @phpstan-ignore-line property.notFound
+        if( !Utils::isValidMimetype( $mime ) ) {
+            return Response::structured( ['error' => sprintf( 'File type "%s" is not allowed.', $mime )] );
+        }
+
+        return Utils::transaction( function() use ( $url, $mime, $v, $request ) {
+
+            $editor = Utils::editor( $request->user() );
             $versionId = ( new Version )->newUniqueId();
 
             $file = new File();
@@ -64,11 +69,7 @@ class AddFile extends Tool
 
             $file->tenant_id = \Aimeos\Cms\Tenancy::value();
             $file->path = $url;
-            $file->mime = Utils::mimetype( $url );
-
-            if( !Utils::isValidMimetype( $file->mime ) ) {
-                return Response::structured( ['error' => sprintf( 'File type "%s" is not allowed.', $file->mime )] );
-            }
+            $file->mime = $mime;
             $file->name = $file->name ?: substr( $url, 0, 255 );
             $file->latest_id = $versionId;
             $file->editor = $editor;
@@ -100,7 +101,7 @@ class AddFile extends Tool
             ] );
 
             return Response::structured( $file->toArray() );
-        }, 3 );
+        } );
     }
 
 

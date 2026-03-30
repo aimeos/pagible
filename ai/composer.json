@@ -10,15 +10,14 @@
     "require": {
         "php": "^8.2",
         "aimeos/pagible-core": "*@dev",
+        "aimeos/pagible-graphql": "*@dev",
         "aimeos/prisma": "dev-master",
         "prism-php/prism": "0.99.19"
     },
     "require-dev": {
-        "orchestra/testbench": "^9.0||^10.0||^11.0",
-        "nuwave/lighthouse": "^6.54"
+        "orchestra/testbench": "^9.0||^10.0||^11.0"
     },
     "suggest": {
-        "aimeos/pagible-graphql": "For AI GraphQL mutations",
         "aimeos/pagible-mcp": "For AI MCP tools"
     },
     "autoload": {

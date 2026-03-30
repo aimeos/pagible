@@ -7,9 +7,10 @@
 
 namespace Aimeos\Cms\Tools;
 
+use Aimeos\Cms\Utils;
+use Aimeos\Cms\Resource;
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\Models\Element;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Attributes\Name;
@@ -50,13 +51,9 @@ class RestoreElement extends Tool
             return Response::structured( ['error' => 'Element is not deleted.'] );
         }
 
-        return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $element, $request ) {
+        $items = Resource::restore( Element::class, [$v['id']], Utils::editor( $request->user() ) );
 
-            $element->editor = $request->user()?->email ?? request()->ip(); // @phpstan-ignore-line property.notFound
-            $element->restore();
-
-            return Response::structured( $element->toArray() );
-        }, 3 );
+        return Response::structured( $items->firstOrFail()->toArray() );
     }
 
 
