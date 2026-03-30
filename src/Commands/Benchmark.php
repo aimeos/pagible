@@ -28,8 +28,7 @@ class Benchmark extends Command
         {--pages=10000 : Total number of pages to create}
         {--tries=100 : Number of iterations per benchmark}
         {--chunk=500 : Rows per bulk insert batch}
-        {--seed-only : Only seed, skip benchmarks}
-        {--test-only : Only run benchmarks, skip seeding}
+        {--seed : Seed benchmark data before running benchmarks}
         {--unseed : Remove all benchmark data and exit}
         {--force : Force the operation to run in production}';
 
@@ -47,7 +46,7 @@ class Benchmark extends Command
         if( app()->isProduction() && !$this->option( 'force' ) )
         {
             $this->error( 'Use --force to run in production.' );
-            return 1;
+            return self::FAILURE;
         }
 
         $tenant = (string) $this->option( 'tenant' ); // @phpstan-ignore-line argument.type
@@ -55,7 +54,7 @@ class Benchmark extends Command
         if( empty( $tenant ) )
         {
             $this->error( 'The --tenant option must not be empty.' );
-            return 1;
+            return self::FAILURE;
         }
 
         // Set up tenancy
@@ -72,11 +71,11 @@ class Benchmark extends Command
             $this->info( 'Removing benchmark data...' );
             $this->unseed( $conn, $tenant, $domain );
             $this->info( 'Done!' );
-            return 0;
+            return self::SUCCESS;
         }
 
         // Seed phase
-        if( !$this->option( 'test-only' ) )
+        if( $this->option( 'seed' ) )
         {
             $editor = (string) $this->option( 'editor' ) ?: ''; // @phpstan-ignore-line argument.type
             $lang = (string) $this->option( 'lang' ) ?: ''; // @phpstan-ignore-line argument.type
@@ -85,10 +84,10 @@ class Benchmark extends Command
 
             $this->info( "Seeding {$pages} benchmark pages for language: {$lang}" );
 
-            $fileCount = max( 1, intdiv( $pages, 10 ) );
+            $fileCount = max( 2, intdiv( $pages, 10 ) );
             $totalRows = $pages + $fileCount + 1 + ( $pages + $fileCount ) + ( $pages * 4 );
             $bar = $this->output->createProgressBar( $totalRows );
-            $bar->setFormat( ' %current%/%max% [%bar%] %percent:3s%% %elapsed%' );
+            $bar->setFormat( ' [%bar%] %percent:3s%% %elapsed%' );
 
             $seeder = new BenchmarkSeeder();
             $seeder->run( $lang, $domain, $editor, $pages, $chunk, function( int $count ) use ( $bar ) {
@@ -116,23 +115,19 @@ class Benchmark extends Command
             '--force' => true,
         ];
 
-        if( $this->option( 'seed-only' ) ) {
-            $sharedOptions['--seed-only'] = true;
-        }
-
-        if( $this->option( 'test-only' ) ) {
-            $sharedOptions['--test-only'] = true;
+        if( $this->option( 'seed' ) ) {
+            $sharedOptions['--seed'] = true;
         }
 
         foreach( $commands as $command )
         {
-            $this->comment( sprintf( '  Running %s ...', $command ) );
+            $this->comment( sprintf( '  Running %s', $command ) );
             $this->call( $command, $sharedOptions );
         }
 
         $this->info( 'All benchmarks complete.' );
 
-        return 0;
+        return self::SUCCESS;
     }
 
 
@@ -152,18 +147,46 @@ class Benchmark extends Command
             ->where( 'editor', 'benchmark' )
             ->update( ['latest_id' => null] );
 
-        // Delete in FK-safe order
-        $tables = [
-            'cms_index',
-            'cms_page_file', 'cms_page_element',
-            'cms_version_file', 'cms_version_element',
-            'cms_versions', 'cms_elements', 'cms_files', 'cms_pages',
-        ];
+        $pageIds = DB::connection( $conn )->table( 'cms_pages' )
+            ->where( 'tenant_id', $tenant )->where( 'editor', 'benchmark' )->pluck( 'id' );
+        $elementIds = DB::connection( $conn )->table( 'cms_elements' )
+            ->where( 'tenant_id', $tenant )->where( 'editor', 'benchmark' )->pluck( 'id' );
+        $versionIds = DB::connection( $conn )->table( 'cms_versions' )
+            ->where( 'tenant_id', $tenant )->where( 'editor', 'benchmark' )->pluck( 'id' );
+        $fileIds = DB::connection( $conn )->table( 'cms_files' )
+            ->where( 'tenant_id', $tenant )->where( 'editor', 'benchmark' )->pluck( 'id' );
+
+        // Delete pivot tables (no tenant_id column)
+        foreach( $pageIds->chunk( 500 ) as $chunk )
+        {
+            DB::connection( $conn )->table( 'cms_page_file' )->whereIn( 'page_id', $chunk )->delete();
+            DB::connection( $conn )->table( 'cms_page_element' )->whereIn( 'page_id', $chunk )->delete();
+        }
+
+        foreach( $versionIds->chunk( 500 ) as $chunk )
+        {
+            DB::connection( $conn )->table( 'cms_version_file' )->whereIn( 'version_id', $chunk )->delete();
+            DB::connection( $conn )->table( 'cms_version_element' )->whereIn( 'version_id', $chunk )->delete();
+        }
+
+        // Delete search index (no editor column)
+        $allIds = $pageIds->merge( $elementIds )->merge( $fileIds );
+
+        foreach( $allIds->chunk( 500 ) as $chunk )
+        {
+            DB::connection( $conn )->table( 'cms_index' )
+                ->whereIn( 'indexable_id', $chunk )
+                ->delete();
+        }
+
+        // Delete main tables
+        $tables = ['cms_versions', 'cms_elements', 'cms_files', 'cms_pages'];
 
         foreach( $tables as $table )
         {
             DB::connection( $conn )->table( $table )
                 ->where( 'tenant_id', $tenant )
+                ->where( 'editor', 'benchmark' )
                 ->delete();
         }
     }

@@ -65,11 +65,12 @@ class BenchmarkSeeder
         $now = now()->format( 'Y-m-d H:i:s' );
         $nowMs = now()->format( 'Y-m-d H:i:s.v' );
 
-        $fileCount = max( 1, intdiv( $totalPages, 10 ) );
+        $fileCount = max( 2, intdiv( $totalPages, 10 ) );
+        $elementCount = max( 2, intdiv( $totalPages, 50 ) );
         $fileIds = $this->createFiles( $lang, $fileCount, $now, $nowMs );
-        $elementId = $this->createElement( $lang, $now, $nowMs );
+        $elementIds = $this->createElements( $lang, $elementCount, $now, $nowMs );
 
-        $rows = $this->buildPageTree( $lang, $totalPages, $fileIds, $elementId, $now, $nowMs );
+        $rows = $this->buildPageTree( $lang, $totalPages, $fileIds, $elementIds[0], $now, $nowMs );
 
         $this->insertRows( $rows );
         $this->clearPageCache( $rows['pages'] );
@@ -344,47 +345,77 @@ class BenchmarkSeeder
 
 
     /**
-     * Create a shared element and return its ID.
+     * Create elements in bulk and return their IDs.
+     *
+     * @return array<int, string>
      */
-    protected function createElement( string $lang, string $now, string $nowMs ): string
+    protected function createElements( string $lang, int $count, string $now, string $nowMs ): array
     {
         $conn = config( 'cms.db', 'sqlite' );
-        $id = ( new Element )->newUniqueId();
-        $versionId = ( new Version )->newUniqueId();
-        $text = "Benchmark footer content ({$lang})";
+        $elementRows = [];
+        $versionRows = [];
+        $ids = [];
 
-        DB::connection( $conn )->table( 'cms_elements' )->insert( [
-            'id' => $id,
-            'tenant_id' => $this->tenantId,
-            'type' => 'text',
-            'lang' => $lang,
-            'name' => "Footer ({$lang})",
-            'data' => json_encode( ['type' => 'text', 'data' => ['text' => $text]] ),
-            'editor' => $this->editor,
-            'latest_id' => $versionId,
-            'created_at' => $now,
-            'updated_at' => $now,
-        ] );
+        for( $i = 0; $i < $count; $i++ )
+        {
+            $id = ( new Element )->newUniqueId();
+            $versionId = ( new Version )->newUniqueId();
+            $name = "Benchmark element {$i} ({$lang})";
+            $text = "Benchmark footer content {$i} ({$lang})";
 
-        DB::connection( $conn )->table( 'cms_versions' )->insert( [
-            'id' => $versionId,
-            'tenant_id' => $this->tenantId,
-            'versionable_id' => $id,
-            'versionable_type' => Element::class,
-            'lang' => $lang,
-            'data' => json_encode( [
-                'lang' => $lang,
+            $elementRows[] = [
+                'id' => $id,
+                'tenant_id' => $this->tenantId,
                 'type' => 'text',
-                'name' => "Footer ({$lang})",
-                'data' => ['text' => $text],
-            ] ),
-            'aux' => '{}',
-            'published' => true,
-            'editor' => $this->editor,
-            'created_at' => $nowMs,
-        ] );
+                'lang' => $lang,
+                'name' => $name,
+                'data' => json_encode( ['type' => 'text', 'data' => ['text' => $text]] ),
+                'editor' => $this->editor,
+                'latest_id' => $versionId,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ];
 
-        return $id;
+            $versionRows[] = [
+                'id' => $versionId,
+                'tenant_id' => $this->tenantId,
+                'versionable_id' => $id,
+                'versionable_type' => Element::class,
+                'lang' => $lang,
+                'data' => json_encode( [
+                    'lang' => $lang,
+                    'type' => 'text',
+                    'name' => $name,
+                    'data' => ['text' => $text],
+                ] ),
+                'aux' => '{}',
+                'published' => true,
+                'editor' => $this->editor,
+                'created_at' => $nowMs,
+            ];
+
+            $ids[] = $id;
+        }
+
+        foreach( array_chunk( $elementRows, $this->chunk ) as $batch )
+        {
+            DB::connection( $conn )->table( 'cms_elements' )->insert( $batch );
+
+            if( $this->onProgress ) {
+                ( $this->onProgress )( count( $batch ) );
+            }
+        }
+
+        foreach( array_chunk( $versionRows, $this->chunk ) as $batch )
+        {
+            DB::connection( $conn )->table( 'cms_versions' )->insert( $batch );
+
+            if( $this->onProgress ) {
+                ( $this->onProgress )( count( $batch ) );
+            }
+        }
+
+        return $ids;
     }
 
 

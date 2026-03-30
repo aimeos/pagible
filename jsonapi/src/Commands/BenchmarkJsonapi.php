@@ -23,8 +23,7 @@ class BenchmarkJsonapi extends Command
         {--tenant=benchmark : Tenant ID}
         {--domain= : Domain name}
         {--lang=en : Language code}
-        {--seed-only : Only seed, skip benchmarks}
-        {--test-only : Only run benchmarks, skip seeding}
+        {--seed : Seed benchmark data before running benchmarks}
         {--pages=10000 : Total number of pages}
         {--tries=100 : Number of iterations per benchmark}
         {--chunk=500 : Rows per bulk insert batch}
@@ -36,26 +35,22 @@ class BenchmarkJsonapi extends Command
     public function handle(): int
     {
         if( !$this->validateOptions() ) {
-            return 1;
+            return self::FAILURE;
         }
 
         $this->tenant();
 
         if( !$this->hasSeededData() )
         {
-            $this->error( 'No benchmark data found. Run `php artisan cms:benchmark --seed-only` first.' );
-            return 1;
-        }
-
-        if( $this->option( 'seed-only' ) ) {
-            return 0;
+            $this->error( 'No benchmark data found. Run `php artisan cms:benchmark --seed` first.' );
+            return self::FAILURE;
         }
 
         $domain = (string) ( $this->option( 'domain' ) ?: '' );
         $lang = (string) $this->option( 'lang' );
 
         $root = Page::where( 'tag', 'root' )->where( 'lang', $lang )->where( 'domain', $domain )->firstOrFail();
-        $page = Page::where( 'depth', 3 )->where( 'lang', $lang )->firstOrFail();
+        $page = Page::where( 'tag', '!=', 'root' )->where( 'lang', $lang )->orderByDesc( 'depth' )->firstOrFail();
 
         $this->header();
 
@@ -67,16 +62,16 @@ class BenchmarkJsonapi extends Command
             Page::with( ['files', 'elements.files'] )->find( $page->id );
         }, readOnly: true );
 
-        $this->benchmark( 'Page with children', function() use ( $root ) {
+        $this->benchmark( 'Page w/children', function() use ( $root ) {
             Page::with( ['children', 'files', 'elements.files'] )->find( $root->id );
         }, readOnly: true );
 
-        $this->benchmark( 'Page with ancestors', function() use ( $page ) {
+        $this->benchmark( 'Page w/ancestors', function() use ( $page ) {
             Page::with( ['ancestors', 'files', 'elements.files'] )->find( $page->id );
         }, readOnly: true );
 
         $this->line( '' );
 
-        return 0;
+        return self::SUCCESS;
     }
 }

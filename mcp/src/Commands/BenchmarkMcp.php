@@ -27,8 +27,7 @@ class BenchmarkMcp extends Command
         {--tenant=benchmark : Tenant ID}
         {--domain= : Domain name}
         {--lang=en : Language code}
-        {--seed-only : Only seed, skip benchmarks}
-        {--test-only : Only run benchmarks, skip seeding}
+        {--seed : Seed benchmark data before running benchmarks}
         {--pages=10000 : Total number of pages}
         {--tries=100 : Number of iterations per benchmark}
         {--chunk=500 : Rows per bulk insert batch}
@@ -40,24 +39,22 @@ class BenchmarkMcp extends Command
     public function handle(): int
     {
         if( !$this->validateOptions() ) {
-            return 1;
+            return self::FAILURE;
         }
 
         $this->tenant();
 
         if( !$this->hasSeededData() )
         {
-            $this->error( 'No benchmark data found. Run `php artisan cms:benchmark --seed-only` first.' );
-            return 1;
-        }
-
-        if( $this->option( 'seed-only' ) ) {
-            return 0;
+            $this->error( 'No benchmark data found. Run `php artisan cms:benchmark --seed` first.' );
+            return self::FAILURE;
         }
 
         $domain = (string) ( $this->option( 'domain' ) ?: '' );
         $lang = (string) $this->option( 'lang' );
         $conn = config( 'cms.db', 'sqlite' );
+
+        config( ['scout.driver' => 'cms'] );
 
         // Wrap everything in a transaction for user cleanup
         DB::connection( $conn )->beginTransaction();
@@ -72,6 +69,7 @@ class BenchmarkMcp extends Command
                 throw new \RuntimeException( 'User model must extend Illuminate\Foundation\Auth\User' );
             }
 
+            $user->mergeCasts( ['cmsperms' => 'array'] );
             $user->forceFill( [
                 'name' => 'Benchmark User',
                 'email' => 'benchmark@cms.benchmark',
@@ -80,30 +78,24 @@ class BenchmarkMcp extends Command
             ] )->save();
 
             $root = Page::where( 'tag', 'root' )->where( 'lang', $lang )->where( 'domain', $domain )->firstOrFail();
-            $pages = Page::where( 'depth', 3 )->where( 'lang', $lang )->take( 200 )->get();
+            $page = Page::where( 'tag', '!=', 'root' )->where( 'lang', $lang )->orderByDesc( 'depth' )->firstOrFail();
 
-            // Preconditions: soft-delete pages for RestorePage
-            $trashedPages = Page::where( 'depth', 3 )->where( 'lang', $lang )->skip( 200 )->take( 200 )->get();
-            $trashedPages->each( fn( $p ) => $p->delete() );
+            // Preconditions: soft-delete a page for RestorePage
+            $excludeIds = $page->ancestors()->pluck( 'id' )->push( $page->id );
+            $trashedPage = Page::where( 'tag', '!=', 'root' )->where( 'lang', $lang )
+                ->whereNotIn( 'id', $excludeIds )->orderByDesc( 'depth' )->firstOrFail();
+            $trashedPage->delete();
 
-            // Create unpublished versions for PublishPage
-            $unpublishedPages = $pages->take( 100 );
-            foreach( $unpublishedPages as $page )
-            {
-                if( !$page instanceof Page ) {
-                    continue;
-                }
-
-                $version = $page->versions()->forceCreate( [
-                    'lang' => $lang,
-                    'data' => (array) $page->latest?->data,
-                    'aux' => (array) $page->latest?->aux,
-                    'published' => false,
-                    'editor' => 'benchmark',
-                ] );
-                $page->forceFill( ['latest_id' => $version->id] )->saveQuietly();
-                $page->setRelation( 'latest', $version );
-            }
+            // Create unpublished version for PublishPage
+            $unpubVersion = $page->versions()->forceCreate( [
+                'lang' => $lang,
+                'data' => (array) $page->latest?->data,
+                'aux' => (array) $page->latest?->aux,
+                'published' => false,
+                'editor' => 'benchmark',
+            ] );
+            $page->forceFill( ['latest_id' => $unpubVersion->id] )->saveQuietly();
+            $page->setRelation( 'latest', $unpubVersion );
 
             $this->header();
 
@@ -112,15 +104,8 @@ class BenchmarkMcp extends Command
              * Read operations
              */
 
-            $pageIdx = 0;
-            $this->benchmark( 'Get page', function() use ( $user, $pages, &$pageIdx ) {
-                $page = $pages[$pageIdx % $pages->count()];
-
-                if( $page instanceof Page ) {
-                    CmsServer::actingAs( $user )->tool( \Aimeos\Cms\Tools\GetPage::class, ['id' => $page->id] );
-                }
-
-                $pageIdx++;
+            $this->benchmark( 'Get page', function() use ( $user, $page ) {
+                CmsServer::actingAs( $user )->tool( \Aimeos\Cms\Tools\GetPage::class, ['id' => $page->id] );
             }, readOnly: true );
 
             $this->benchmark( 'Get page tree', function() use ( $user, $lang ) {
@@ -148,50 +133,22 @@ class BenchmarkMcp extends Command
                 ] );
             } );
 
-            $pageIdx = 0;
-            $this->benchmark( 'Save page', function() use ( $user, $pages, &$pageIdx ) {
-                $page = $pages[$pageIdx % $pages->count()];
-
-                if( $page instanceof Page ) {
-                    CmsServer::actingAs( $user )->tool( \Aimeos\Cms\Tools\SavePage::class, [
-                        'id' => $page->id, 'title' => 'Updated ' . $pageIdx,
-                    ] );
-                }
-
-                $pageIdx++;
+            $this->benchmark( 'Save page', function() use ( $user, $page ) {
+                CmsServer::actingAs( $user )->tool( \Aimeos\Cms\Tools\SavePage::class, [
+                    'id' => $page->id, 'title' => 'Updated',
+                ] );
             } );
 
-            $pubIdx = 0;
-            $this->benchmark( 'Publish page', function() use ( $user, $unpublishedPages, &$pubIdx ) {
-                $page = $unpublishedPages[$pubIdx % $unpublishedPages->count()];
-
-                if( $page instanceof Page ) {
-                    CmsServer::actingAs( $user )->tool( \Aimeos\Cms\Tools\PublishPage::class, ['id' => $page->id] );
-                }
-
-                $pubIdx++;
+            $this->benchmark( 'Publish page', function() use ( $user, $page ) {
+                CmsServer::actingAs( $user )->tool( \Aimeos\Cms\Tools\PublishPage::class, ['id' => $page->id] );
             } );
 
-            $pageIdx = 0;
-            $this->benchmark( 'Drop page', function() use ( $user, $pages, &$pageIdx ) {
-                $page = $pages[$pageIdx % $pages->count()];
-
-                if( $page instanceof Page ) {
-                    CmsServer::actingAs( $user )->tool( \Aimeos\Cms\Tools\DropPage::class, ['id' => $page->id] );
-                }
-
-                $pageIdx++;
+            $this->benchmark( 'Drop page', function() use ( $user, $page ) {
+                CmsServer::actingAs( $user )->tool( \Aimeos\Cms\Tools\DropPage::class, ['id' => $page->id] );
             } );
 
-            $trashIdx = 0;
-            $this->benchmark( 'Restore page', function() use ( $user, $trashedPages, &$trashIdx ) {
-                $page = $trashedPages[$trashIdx % $trashedPages->count()];
-
-                if( $page instanceof Page ) {
-                    CmsServer::actingAs( $user )->tool( \Aimeos\Cms\Tools\RestorePage::class, ['id' => $page->id] );
-                }
-
-                $trashIdx++;
+            $this->benchmark( 'Restore page', function() use ( $user, $trashedPage ) {
+                CmsServer::actingAs( $user )->tool( \Aimeos\Cms\Tools\RestorePage::class, ['id' => $trashedPage->id] );
             } );
 
             $this->line( '' );
@@ -201,6 +158,6 @@ class BenchmarkMcp extends Command
             DB::connection( $conn )->rollBack();
         }
 
-        return 0;
+        return self::SUCCESS;
     }
 }

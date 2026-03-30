@@ -13,7 +13,6 @@ use Aimeos\Cms\Concerns\Benchmarks;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
-use Aimeos\Cms\Models\Version;
 use Aimeos\Cms\Utils;
 
 
@@ -27,8 +26,7 @@ class BenchmarkCore extends Command
         {--tenant=benchmark : Tenant ID}
         {--domain= : Domain name}
         {--lang=en : Language code}
-        {--seed-only : Only seed, skip benchmarks}
-        {--test-only : Only run benchmarks, skip seeding}
+        {--seed : Seed benchmark data before running benchmarks}
         {--pages=10000 : Total number of pages}
         {--tries=100 : Number of iterations per benchmark}
         {--chunk=500 : Rows per bulk insert batch}
@@ -40,60 +38,52 @@ class BenchmarkCore extends Command
     public function handle(): int
     {
         if( !$this->validateOptions() ) {
-            return 1;
+            return self::FAILURE;
         }
 
         $this->tenant();
 
         if( !$this->hasSeededData() )
         {
-            $this->error( 'No benchmark data found. Run `php artisan cms:benchmark --seed-only` first.' );
-            return 1;
-        }
-
-        if( $this->option( 'seed-only' ) ) {
-            return 0;
+            $this->error( 'No benchmark data found. Run `php artisan cms:benchmark --seed` first.' );
+            return self::FAILURE;
         }
 
         $domain = (string) ( $this->option( 'domain' ) ?: '' );
         $lang = (string) $this->option( 'lang' );
 
-        // Load test data
+        // Load one item per type (each benchmark iteration is rolled back)
         $root = Page::where( 'tag', 'root' )->where( 'lang', $lang )->where( 'domain', $domain )->firstOrFail();
-        $pages = Page::where( 'depth', 3 )->where( 'lang', $lang )->take( 200 )->get();
-        $l1Pages = Page::where( 'depth', 1 )->where( 'lang', $lang )->take( 10 )->get();
+        $page = Page::where( 'tag', '!=', 'root' )->where( 'lang', $lang )->orderByDesc( 'depth' )->firstOrFail();
+        $moveParent = Page::where( 'depth', 1 )->where( 'lang', $lang )
+            ->whereNotIn( 'id', $page->ancestors()->pluck( 'id' ) )->firstOrFail();
         $element = Element::where( 'lang', $lang )->firstOrFail();
         $file = File::where( 'lang', $lang )->firstOrFail();
 
-        // Preconditions: soft-delete some pages for restore/purge benchmarks
-        $trashedPages = Page::where( 'depth', 3 )->where( 'lang', $lang )->skip( 200 )->take( 200 )->get();
-        $trashedPages->each( fn( $p ) => $p->delete() );
+        // Create unpublished version for publish benchmark
+        $unpubVersion = $page->versions()->forceCreate( [
+            'lang' => $lang,
+            'data' => (array) $page->latest?->data,
+            'aux' => (array) $page->latest?->aux,
+            'published' => false,
+            'editor' => 'benchmark',
+        ] );
+        $page->forceFill( ['latest_id' => $unpubVersion->id] )->saveQuietly();
+        $page->setRelation( 'latest', $unpubVersion );
 
-        // Create unpublished versions for publish benchmark
-        $unpublishedPages = $pages->take( 100 );
-        foreach( $unpublishedPages as $page )
-        {
-            if( !$page instanceof Page ) {
-                continue;
-            }
+        // Soft-delete one of each for restore/purge benchmarks
+        $excludeIds = $page->ancestors()->pluck( 'id' )->push( $page->id );
+        $trashedPage = Page::where( 'tag', '!=', 'root' )->where( 'lang', $lang )
+            ->whereNotIn( 'id', $excludeIds )->orderByDesc( 'depth' )->firstOrFail();
+        $trashedPage->delete();
 
-            $version = $page->versions()->forceCreate( [
-                'lang' => $lang,
-                'data' => (array) $page->latest?->data,
-                'aux' => (array) $page->latest?->aux,
-                'published' => false,
-                'editor' => 'benchmark',
-            ] );
-            $page->forceFill( ['latest_id' => $version->id] )->saveQuietly();
-            $page->setRelation( 'latest', $version );
-        }
+        $trashedElement = Element::where( 'lang', $lang )
+            ->where( 'id', '!=', $element->id )->firstOrFail();
+        $trashedElement->delete();
 
-        // Soft-delete elements/files for restore benchmarks
-        $trashedElements = Element::where( 'lang', $lang )->skip( 1 )->take( 100 )->get();
-        $trashedElements->each( fn( $e ) => $e->delete() );
-
-        $trashedFiles = File::where( 'lang', $lang )->skip( 1 )->take( 100 )->get();
-        $trashedFiles->each( fn( $f ) => $f->delete() );
+        $trashedFile = File::where( 'lang', $lang )
+            ->where( 'id', '!=', $file->id )->firstOrFail();
+        $trashedFile->delete();
 
         $this->header();
 
@@ -102,92 +92,55 @@ class BenchmarkCore extends Command
          * Page operations
          */
 
-        $pageIdx = 0;
         $this->benchmark( 'Page create', function() use ( $root, $lang ) {
-            $page = Page::forceCreate( [
+            $p = Page::forceCreate( [
                 'lang' => $lang, 'name' => 'Bench page', 'title' => 'Bench',
                 'path' => 'bench-' . Utils::uid(), 'status' => 1, 'editor' => 'benchmark',
             ] );
-            $page->appendToNode( $root )->save();
-            $version = $page->versions()->forceCreate( [
+            $p->appendToNode( $root )->save();
+            $version = $p->versions()->forceCreate( [
                 'lang' => $lang, 'data' => ['name' => 'Bench page'], 'published' => false, 'editor' => 'benchmark',
             ] );
-            $page->publish( $version );
+            $p->publish( $version );
         } );
 
-        $this->benchmark( 'Page read', function() use ( $pages, &$pageIdx ) {
-            $page = $pages[$pageIdx % $pages->count()];
-
-            if( $page instanceof Page ) {
-                Page::with( 'latest.files', 'latest.elements' )->find( $page->id );
-            }
-
-            $pageIdx++;
+        $this->benchmark( 'Page read', function() use ( $page ) {
+            Page::with( 'latest.files', 'latest.elements' )->find( $page->id );
         }, readOnly: true );
 
         $this->benchmark( 'Page list', function() {
             Page::with( 'latest.files', 'latest.elements' )->take( 100 )->get();
         }, readOnly: true );
 
-        $pageIdx = 0;
-        $this->benchmark( 'Page update', function() use ( $pages, $lang, &$pageIdx ) {
-            $page = $pages[$pageIdx % $pages->count()];
-
-            if( $page instanceof Page ) {
-                $version = $page->versions()->forceCreate( [
-                    'lang' => $lang, 'data' => (array) $page->latest?->data,
-                    'aux' => (array) $page->latest?->aux, 'published' => false, 'editor' => 'benchmark',
-                ] );
-                $page->forceFill( ['latest_id' => $version->id] )->saveQuietly();
-            }
-
-            $pageIdx++;
+        $this->benchmark( 'Page update', function() use ( $page, $lang ) {
+            $version = $page->versions()->forceCreate( [
+                'lang' => $lang, 'data' => (array) $page->latest?->data,
+                'aux' => (array) $page->latest?->aux, 'published' => false, 'editor' => 'benchmark',
+            ] );
+            $page->forceFill( ['latest_id' => $version->id] )->saveQuietly();
         } );
 
-        $pageIdx = 0;
-        $this->benchmark( 'Page move', function() use ( $pages, $l1Pages, &$pageIdx ) {
-            $page = $pages[$pageIdx % $pages->count()];
-            $newParent = $l1Pages[$pageIdx % $l1Pages->count()];
-
-            if( $page instanceof Page && $newParent instanceof Page ) {
-                $page->appendToNode( $newParent )->save();
-            }
-
-            $pageIdx++;
+        $this->benchmark( 'Page move', function() use ( $page, $moveParent ) {
+            $page->appendToNode( $moveParent )->save();
         } );
 
-        $pubIdx = 0;
-        $this->benchmark( 'Page publish', function() use ( $unpublishedPages, &$pubIdx ) {
-            $page = $unpublishedPages[$pubIdx % $unpublishedPages->count()];
-
-            if( $page instanceof Page && $page->latest ) {
-                $page->publish( $page->latest );
-            }
-
-            $pubIdx++;
+        $this->benchmark( 'Page publish', function() use ( $page ) {
+            $page->publish( $page->latest );
         } );
 
-        $pageIdx = 0;
-        $this->benchmark( 'Page delete', function() use ( $pages, &$pageIdx ) {
-            $pages[$pageIdx % $pages->count()]?->delete();
-            $pageIdx++;
+        $this->benchmark( 'Page delete', function() use ( $page ) {
+            $page->delete();
+            $page->deleted_at = null;
         } );
 
-        $trashIdx = 0;
-        $this->benchmark( 'Page restore', function() use ( $trashedPages, &$trashIdx ) {
-            $page = $trashedPages[$trashIdx % $trashedPages->count()];
-
-            if( $page instanceof Page ) {
-                $page->restore();
-            }
-
-            $trashIdx++;
+        $this->benchmark( 'Page restore', function() use ( $trashedPage ) {
+            $trashedPage->restore();
+            $trashedPage->deleted_at = now();
         } );
 
-        $trashIdx = 0;
-        $this->benchmark( 'Page purge', function() use ( $trashedPages, &$trashIdx ) {
-            $trashedPages[$trashIdx % $trashedPages->count()]?->forceDelete();
-            $trashIdx++;
+        $this->benchmark( 'Page purge', function() use ( $trashedPage ) {
+            $trashedPage->forceDelete();
+            $trashedPage->deleted_at = now();
         } );
 
         $this->benchmark( 'Page tree', function() use ( $root ) {
@@ -214,6 +167,10 @@ class BenchmarkCore extends Command
             Element::with( 'latest' )->find( $element->id );
         }, readOnly: true );
 
+        $this->benchmark( 'Element list', function() {
+            Element::with( 'latest' )->take( 100 )->get();
+        }, readOnly: true );
+
         $this->benchmark( 'Element update', function() use ( $element, $lang ) {
             $version = $element->versions()->forceCreate( [
                 'lang' => $lang, 'data' => (array) $element->latest?->data, 'published' => false, 'editor' => 'benchmark',
@@ -223,12 +180,12 @@ class BenchmarkCore extends Command
 
         $this->benchmark( 'Element delete', function() use ( $element ) {
             $element->delete();
+            $element->deleted_at = null;
         } );
 
-        $elTrashIdx = 0;
-        $this->benchmark( 'Element restore', function() use ( $trashedElements, &$elTrashIdx ) {
-            $trashedElements[$elTrashIdx % $trashedElements->count()]?->restore();
-            $elTrashIdx++;
+        $this->benchmark( 'Element restore', function() use ( $trashedElement ) {
+            $trashedElement->restore();
+            $trashedElement->deleted_at = now();
         } );
 
 
@@ -242,7 +199,7 @@ class BenchmarkCore extends Command
                 'path' => 'https://placehold.co/1500x1000', 'editor' => 'benchmark',
             ] );
             $version = $f->versions()->forceCreate( [
-                'lang' => $lang, 'data' => ['mime' => 'image/png', 'name' => 'Bench file', 'path' => 'https://placehold.co/1500x1000'],
+                'lang' => $lang, 'data' => ['mime' => 'image/png', 'name' => 'Bench file', 'path' => 'https://placehold.co/1500x1000', 'previews' => []],
                 'published' => false, 'editor' => 'benchmark',
             ] );
             $f->publish( $version );
@@ -250,6 +207,10 @@ class BenchmarkCore extends Command
 
         $this->benchmark( 'File read', function() use ( $file ) {
             File::with( 'latest' )->find( $file->id );
+        }, readOnly: true );
+
+        $this->benchmark( 'File list', function() {
+            File::with( 'latest' )->take( 100 )->get();
         }, readOnly: true );
 
         $this->benchmark( 'File update', function() use ( $file, $lang ) {
@@ -261,12 +222,12 @@ class BenchmarkCore extends Command
 
         $this->benchmark( 'File delete', function() use ( $file ) {
             $file->delete();
+            $file->deleted_at = null;
         } );
 
-        $fileTrashIdx = 0;
-        $this->benchmark( 'File restore', function() use ( $trashedFiles, &$fileTrashIdx ) {
-            $trashedFiles[$fileTrashIdx % $trashedFiles->count()]?->restore();
-            $fileTrashIdx++;
+        $this->benchmark( 'File restore', function() use ( $trashedFile ) {
+            $trashedFile->restore();
+            $trashedFile->deleted_at = now();
         } );
 
 
@@ -274,50 +235,17 @@ class BenchmarkCore extends Command
          * Version operations
          */
 
-        $this->benchmark( 'Version list', function() use ( $pages ) {
-            $page = $pages->first();
-
-            if( $page instanceof Page ) {
-                $page->versions()->get();
-            }
+        $this->benchmark( 'Version list', function() use ( $page ) {
+            $page->versions()->get();
         }, readOnly: true );
 
-        $this->benchmark( 'Version prune', function() use ( $pages ) {
-            $page = $pages->first();
-
-            if( $page instanceof Page ) {
-                $page->removeVersions();
-            }
+        $this->benchmark( 'Version prune', function() use ( $page ) {
+            $page->removeVersions();
         } );
 
-
-        /**
-         * Sequential tree writes
-         */
-
-        $this->benchmark( 'Sequential add', function() use ( $root, $lang ) {
-            for( $i = 0; $i < 10; $i++ ) {
-                $page = Page::forceCreate( [
-                    'lang' => $lang, 'name' => "Seq {$i}", 'title' => "Seq {$i}",
-                    'path' => 'seq-' . Utils::uid(), 'status' => 1, 'editor' => 'benchmark',
-                ] );
-                $page->appendToNode( $root )->save();
-            }
-        } );
-
-        $this->benchmark( 'Sequential move', function() use ( $pages, $l1Pages ) {
-            for( $i = 0; $i < 10; $i++ ) {
-                $page = $pages[$i % $pages->count()];
-                $newParent = $l1Pages[( $i + 1 ) % $l1Pages->count()];
-
-                if( $page instanceof Page && $newParent instanceof Page ) {
-                    $page->appendToNode( $newParent )->save();
-                }
-            }
-        } );
 
         $this->line( '' );
 
-        return 0;
+        return self::SUCCESS;
     }
 }

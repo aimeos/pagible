@@ -27,8 +27,7 @@ class BenchmarkTheme extends Command
         {--tenant=benchmark : Tenant ID}
         {--domain= : Domain name}
         {--lang=en : Language code}
-        {--seed-only : Only seed, skip benchmarks}
-        {--test-only : Only run benchmarks, skip seeding}
+        {--seed : Seed benchmark data before running benchmarks}
         {--pages=10000 : Total number of pages}
         {--tries=100 : Number of iterations per benchmark}
         {--chunk=500 : Rows per bulk insert batch}
@@ -40,31 +39,31 @@ class BenchmarkTheme extends Command
     public function handle(): int
     {
         if( !$this->validateOptions() ) {
-            return 1;
+            return self::FAILURE;
         }
 
         $this->tenant();
 
         if( !$this->hasSeededData() )
         {
-            $this->error( 'No benchmark data found. Run `php artisan cms:benchmark --seed-only` first.' );
-            return 1;
-        }
-
-        if( $this->option( 'seed-only' ) ) {
-            return 0;
+            $this->error( 'No benchmark data found. Run `php artisan cms:benchmark --seed` first.' );
+            return self::FAILURE;
         }
 
         $domain = (string) ( $this->option( 'domain' ) ?: '' );
         $lang = (string) $this->option( 'lang' );
 
+        config( ['scout.driver' => 'cms'] );
+
         // Get a page with cache=0 for uncached rendering
-        $uncachedPage = Page::where( 'depth', 3 )->where( 'lang', $lang )->where( 'domain', $domain )->firstOrFail();
+        $uncachedPage = Page::where( 'tag', '!=', 'root' )->where( 'lang', $lang )
+            ->where( 'domain', $domain )->orderByDesc( 'depth' )->firstOrFail();
         $uncachedPage->forceFill( ['cache' => 0] )->saveQuietly();
 
         // Get a page with cache=5 for cached rendering
-        $cachedPage = Page::where( 'depth', 3 )->where( 'lang', $lang )->where( 'domain', $domain )
-            ->where( 'id', '!=', $uncachedPage->id )->firstOrFail();
+        $cachedPage = Page::where( 'tag', '!=', 'root' )->where( 'lang', $lang )
+            ->where( 'domain', $domain )->where( 'id', '!=', $uncachedPage->id )
+            ->orderByDesc( 'depth' )->firstOrFail();
         $cachedPage->forceFill( ['cache' => 5] )->saveQuietly();
 
         $this->header();
@@ -75,11 +74,11 @@ class BenchmarkTheme extends Command
             ( new PageController )->index( $request, $uncachedPage->path, $domain );
         }, readOnly: true );
 
-        // Page render (cached) — warm cache first
+        // Page cached — warm cache first
         $warmRequest = Request::create( '/' . $cachedPage->path, 'GET' );
         ( new PageController )->index( $warmRequest, $cachedPage->path, $domain );
 
-        $this->benchmark( 'Page render (cached)', function() use ( $cachedPage, $domain ) {
+        $this->benchmark( 'Page cached', function() use ( $cachedPage, $domain ) {
             $request = Request::create( '/' . $cachedPage->path, 'GET' );
             ( new PageController )->index( $request, $cachedPage->path, $domain );
         }, readOnly: true );
@@ -92,11 +91,13 @@ class BenchmarkTheme extends Command
 
         // Sitemap
         $this->benchmark( 'Sitemap', function() {
-            ( new SitemapController )->index();
+            ob_start();
+            ( new SitemapController )->index()->sendContent();
+            ob_end_clean();
         }, readOnly: true );
 
         $this->line( '' );
 
-        return 0;
+        return self::SUCCESS;
     }
 }

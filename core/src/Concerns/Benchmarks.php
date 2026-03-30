@@ -85,7 +85,7 @@ trait Benchmarks
 
         $stats = $this->stats( $durations );
         $this->line( sprintf(
-            ' %-20s %9s %9s %9s %9s %9s %9s',
+            ' %-18s %9s %9s %9s %9s %9s %9s',
             $name,
             $this->format( $stats['min'] ),
             $this->format( $stats['max'] ),
@@ -168,7 +168,7 @@ trait Benchmarks
     {
         $this->line( '' );
         $this->line( sprintf(
-            ' %-20s %9s %9s %9s %9s %9s %9s',
+            ' %-18s %9s %9s %9s %9s %9s %9s',
             'Benchmark', 'Min', 'Max', 'Avg', 'P90', 'P95', 'P99'
         ) );
         $this->line( ' ' . str_repeat( "\u{2500}", 78 ) );

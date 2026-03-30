@@ -25,8 +25,7 @@ class BenchmarkSearch extends Command
         {--tenant=benchmark : Tenant ID}
         {--domain= : Domain name}
         {--lang=en : Language code}
-        {--seed-only : Only seed, skip benchmarks}
-        {--test-only : Only run benchmarks, skip seeding}
+        {--seed : Seed benchmark data before running benchmarks}
         {--pages=10000 : Total number of pages}
         {--tries=100 : Number of iterations per benchmark}
         {--chunk=500 : Rows per bulk insert batch}
@@ -38,19 +37,19 @@ class BenchmarkSearch extends Command
     public function handle(): int
     {
         if( !$this->validateOptions() ) {
-            return 1;
+            return self::FAILURE;
         }
 
         $this->tenant();
 
         if( !$this->hasSeededData() )
         {
-            $this->error( 'No benchmark data found. Run `php artisan cms:benchmark --seed-only` first.' );
-            return 1;
+            $this->error( 'No benchmark data found. Run `php artisan cms:benchmark --seed` first.' );
+            return self::FAILURE;
         }
 
         // Seeding: ensure search index is populated
-        if( !$this->option( 'test-only' ) )
+        if( $this->option( 'seed' ) )
         {
             $this->info( '  Indexing pages, elements, and files for search...' );
             Page::makeAllSearchable();
@@ -59,12 +58,8 @@ class BenchmarkSearch extends Command
             $this->info( '  Search indexing complete.' );
         }
 
-        if( $this->option( 'seed-only' ) ) {
-            return 0;
-        }
-
         $lang = (string) $this->option( 'lang' );
-        $page = Page::where( 'depth', 3 )->where( 'lang', $lang )->firstOrFail();
+        $page = Page::where( 'tag', '!=', 'root' )->where( 'lang', $lang )->orderByDesc( 'depth' )->firstOrFail();
 
         $this->header();
 
@@ -72,7 +67,7 @@ class BenchmarkSearch extends Command
             Page::search( 'lorem' )->searchFields( 'content' )->take( 100 )->get();
         }, readOnly: true, searchSync: true );
 
-        $this->benchmark( 'Search pages (draft)', function() {
+        $this->benchmark( 'Search pages (adm)', function() {
             Page::search( 'lorem' )->searchFields( 'draft' )->take( 100 )->get();
         }, readOnly: true, searchSync: true );
 
@@ -95,6 +90,6 @@ class BenchmarkSearch extends Command
 
         $this->line( '' );
 
-        return 0;
+        return self::SUCCESS;
     }
 }
