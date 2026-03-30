@@ -244,7 +244,7 @@ class WpImport extends Command
         $file->forceFill( ['latest_id' => $version->id] )->saveQuietly();
         $file->publish( $version );
 
-        return $file->id;
+        return $file->id ?? '';
     }
 
 

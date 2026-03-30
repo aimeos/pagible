@@ -12,7 +12,6 @@ use Aimeos\Cms\Resource;
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\Validation;
 use Aimeos\Cms\Models\Page;
-use Aimeos\Cms\Models\Version;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Attributes\Title;
@@ -80,80 +79,44 @@ class AddPage extends Tool
             'meta.meta-tags.description.required' => 'You must provide a meta description in meta.meta-tags.description for SEO. It should be 150-160 characters.',
         ] );
 
-        $v = Validation::page( $v, $request->user() );
-
         if( isset( $v['content'] ) ) {
             $v['content'] = Validation::content( $v['content'] );
         }
 
-        $page = new Page();
         $pid = $v['parent_id'] ?? null;
-        $rid = $v['ref'] ?? null;
 
         /** @var Page|null $parent */
-        $parent = $pid ? Page::withTrashed()->find( $pid ) : null;
-        $editor = Utils::editor( $request->user() );
-        $versionId = ( new Version )->newUniqueId();
+        $parent = $pid ? Page::withTrashed()->with( 'latest' )->find( $pid ) : null;
 
-        $meta = isset( $v['meta'] )
-            ? Validation::structured( $v['meta'], 'meta', new \stdClass() )
-            : new \stdClass();
+        $v['path'] = $v['path'] ?? Utils::slugify( $v['title'] );
+        $v['to'] = $v['to'] ?? '';
+        $v['tag'] = $v['tag'] ?? '';
+        $v['theme'] = $v['theme'] ?? $parent?->latest?->data->theme ?? '';
+        $v['type'] = $v['type'] ?? '';
+        $v['domain'] = $v['domain'] ?? $parent?->latest?->data->domain ?? '';
+        $v['status'] = $v['status'] ?? 0;
+        $v['cache'] = $v['cache'] ?? 5;
+        $v['related_id'] = $v['related_id'] ?? null;
 
-        $config = isset( $v['config'] )
-            ? Validation::structured( $v['config'], 'config', new \stdClass() )
-            : new \stdClass();
+        if( isset( $v['meta'] ) ) {
+            $v['meta'] = Validation::structured( $v['meta'], 'meta', new \stdClass() );
+        }
 
-        $content = $v['content'] ?? [];
+        if( isset( $v['config'] ) ) {
+            $v['config'] = Validation::structured( $v['config'], 'config', new \stdClass() );
+        }
 
-        $input = array_diff_key( $v, array_flip( ['content', 'config', 'meta', 'files', 'elements'] ) );
-        $input['path'] = $v['path'] ?? Utils::slugify( $v['title'] );
-        $input['to'] = $v['to'] ?? '';
-        $input['tag'] = $v['tag'] ?? '';
-        $input['theme'] = $v['theme'] ?? $parent?->latest?->data->theme ?? '';
-        $input['type'] = $v['type'] ?? '';
-        $input['domain'] = $v['domain'] ?? $parent?->latest?->data->domain ?? '';
-        $input['status'] = $v['status'] ?? 0;
-        $input['cache'] = $v['cache'] ?? 5;
-        $input['related_id'] = $v['related_id'] ?? null;
+        $input = array_diff_key( $v, array_flip( ['parent_id', 'ref', 'files', 'elements'] ) );
 
-        $page->tenant_id = \Aimeos\Cms\Tenancy::value();
-        $page->editor = $editor;
-        $page->fill( $input + [
-            'meta' => $meta,
-            'content' => $content,
-            'latest_id' => $versionId,
-        ] );
-
-        $vdata = [
-            'id' => $versionId,
-            'lang' => $v['lang'],
-            'editor' => $editor,
-            'data' => array_map( fn( $v ) => is_null( $v ) ? (string) $v : $v, $input ),
-            'aux' => [
-                'meta' => $meta,
-                'config' => $config,
-                'content' => $content,
-            ]
-        ];
-
-        Utils::lockedTransaction( function() use ( $rid, $pid, $page, $v, $vdata ) {
-
-            $files = $v['files'] ?? [];
-            $elements = $v['elements'] ?? [];
-
-            Resource::position( $page, $rid, $pid );
-
-            $page->save();
-
-            $page->files()->attach( $files );
-            $page->elements()->attach( $elements );
-
-            $version = $page->versions()->forceCreate( $vdata );
-
-            $version->files()->attach( $files );
-            $version->elements()->attach( $elements );
-
-        } );
+        $page = Resource::addPage(
+            $input,
+            $request->user(),
+            Utils::editor( $request->user() ),
+            $v['files'] ?? [],
+            $v['elements'] ?? [],
+            $v['ref'] ?? null,
+            $pid,
+        );
 
         $this->numcalls++;
         return Response::structured( $page->toArray() );

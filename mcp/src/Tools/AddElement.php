@@ -9,9 +9,7 @@ namespace Aimeos\Cms\Tools;
 
 use Aimeos\Cms\Utils;
 use Aimeos\Cms\Permission;
-use Aimeos\Cms\Validation;
-use Aimeos\Cms\Models\Element;
-use Aimeos\Cms\Models\Version;
+use Aimeos\Cms\Resource;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Attributes\Title;
@@ -48,51 +46,10 @@ class AddElement extends Tool
             'data.required' => 'You must provide the element data as a JSON object with field values.',
         ] );
 
-        Validation::element( $v['type'] );
+        $input = array_diff_key( $v, array_flip( ['files'] ) );
+        $element = Resource::addElement( $input, Utils::editor( $request->user() ), $v['files'] ?? [] );
 
-        if( isset( $v['data'] ) ) {
-            Validation::html( $v['type'] ?? '', $v['data'] );
-        }
-
-        return Utils::transaction( function() use ( $v, $request ) {
-
-            $editor = Utils::editor( $request->user() );
-            $versionId = ( new Version )->newUniqueId();
-            $files = $v['files'] ?? [];
-
-            $element = new Element();
-            $element->fill( [
-                'type' => $v['type'],
-                'name' => $v['name'],
-                'lang' => $v['lang'] ?? null,
-                'data' => $v['data'],
-            ] );
-            $element->tenant_id = \Aimeos\Cms\Tenancy::value();
-            $element->latest_id = $versionId;
-            $element->editor = $editor;
-            $element->save();
-
-            $element->files()->attach( $files );
-
-            $data = [
-                'type' => $v['type'],
-                'name' => $v['name'],
-                'lang' => $v['lang'] ?? null,
-                'data' => $v['data'],
-            ];
-            ksort( $data );
-
-            $version = $element->versions()->forceCreate( [
-                'id' => $versionId,
-                'data' => array_map( fn( $v ) => is_null( $v ) ? (string) $v : $v, $data ),
-                'lang' => $v['lang'] ?? null,
-                'editor' => $editor,
-            ] );
-
-            $version->files()->attach( $files );
-
-            return Response::structured( $element->toArray() );
-        } );
+        return Response::structured( $element->toArray() );
     }
 
 

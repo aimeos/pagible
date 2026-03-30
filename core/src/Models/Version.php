@@ -240,6 +240,18 @@ class Version extends Model
 
 
     /**
+     * Normalize UUID case on SQL Server to prevent mixed-case mismatches.
+     *
+     * @param string|null $value Raw ID value
+     * @return string|null Uppercased on SQL Server, unchanged otherwise
+     */
+    public function getIdAttribute( $value )
+    {
+        return $this->getConnection()->getDriverName() === 'sqlsrv' && $value ? strtoupper( $value ) : $value;
+    }
+
+
+    /**
      * Generate a new unique key for the model.
      *
      * @return string

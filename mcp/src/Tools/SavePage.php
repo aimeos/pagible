@@ -9,10 +9,10 @@ namespace Aimeos\Cms\Tools;
 
 use Aimeos\Cms\Utils;
 use Aimeos\Cms\Permission;
+use Aimeos\Cms\Resource;
 use Aimeos\Cms\Validation;
-use Aimeos\Cms\Models\Page;
-use Aimeos\Cms\Models\Version;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Attributes\Title;
 use Laravel\Mcp\Server\Attributes\Name;
@@ -63,73 +63,48 @@ class SavePage extends Tool
             'id.required' => 'You must specify the ID of the page to save.',
         ] );
 
-        /** @var Page|null $page */
-        $page = Page::withTrashed()->with( 'latest' )->find( $v['id'] );
-
-        if( !$page ) {
-            return Response::structured( ['error' => 'Page not found.'] );
-        }
-
-        $v = Validation::page( $v, $request->user() );
-
         if( isset( $v['content'] ) ) {
             $v['content'] = Validation::content( $v['content'] );
         }
 
-        return Utils::transaction( function() use ( $page, $v, $request ) {
+        if( isset( $v['title'] ) && !isset( $v['path'] ) ) {
+            $v['path'] = Utils::slugify( $v['title'] );
+        }
 
-            $editor = Utils::editor( $request->user() );
-            $versionId = ( new Version )->newUniqueId();
+        if( isset( $v['meta'] ) ) {
+            $v['meta'] = Validation::structured( $v['meta'], 'meta', new \stdClass() );
+        }
 
-            $input = array_diff_key( $v, array_flip( ['id', 'meta', 'config', 'content', 'files', 'elements'] ) );
+        if( isset( $v['config'] ) ) {
+            $v['config'] = Validation::structured( $v['config'], 'config', new \stdClass() );
+        }
 
-            if( isset( $v['title'] ) && !isset( $v['path'] ) ) {
-                $input['path'] = Utils::slugify( $v['title'] );
-            }
+        $input = array_diff_key( $v, array_flip( ['id', 'files', 'elements'] ) );
 
-            array_walk( $input, fn( &$v, $k ) => $v = !in_array( $k, ['related_id'] ) ? ( $v ?? '' ) : $v );
-            $data = array_replace( (array) ( $page->latest->data ?? [] ), $input );
+        try {
+            $page = Resource::savePage(
+                $v['id'], $input, $request->user(),
+                Utils::editor( $request->user() ),
+                $v['files'] ?? [], $v['elements'] ?? [],
+            );
+        } catch( ModelNotFoundException $e ) {
+            return Response::structured( ['error' => 'Page not found.'] );
+        }
 
-            $aux = (array) ( $page->latest->aux ?? [] );
+        $data = (array) ( $page->latest->data ?? [] );
+        $aux = (array) ( $page->latest->aux ?? [] );
 
-            if( isset( $v['content'] ) ) {
-                $aux['content'] = $v['content'];
-            }
-
-            if( isset( $v['meta'] ) ) {
-                $aux['meta'] = Validation::structured( $v['meta'], 'meta', new \stdClass() );
-            }
-
-            if( isset( $v['config'] ) ) {
-                $aux['config'] = Validation::structured( $v['config'], 'config', new \stdClass() );
-            }
-
-            $version = $page->versions()->forceCreate([
-                'id' => $versionId,
-                'data' => $data,
-                'editor' => $editor,
-                'lang' => $v['lang'] ?? $page->latest?->lang,
-                'aux' => $aux,
-            ] );
-
-            $version->elements()->attach( $v['elements'] ?? [] );
-            $version->files()->attach( $v['files'] ?? [] );
-
-            $page->forceFill( ['latest_id' => $versionId] )->save();
-            $page->removeVersions();
-
-            return Response::structured( array_merge( $data, [
-                'id' => $page->id,
-                'meta' => $aux['meta'] ?? new \stdClass(),
-                'config' => $aux['config'] ?? new \stdClass(),
-                'content' => $aux['content'] ?? [],
-                'status' => $page->status,
-                'cache' => $page->cache,
-                'created_at' => (string) $page->created_at,
-                'updated_at' => (string) $page->updated_at,
-                'url' => route( 'cms.page', ['path' => $data['path'] ?? ''] ),
-            ] ) );
-        } );
+        return Response::structured( array_merge( $data, [
+            'id' => $page->id,
+            'meta' => $aux['meta'] ?? new \stdClass(),
+            'config' => $aux['config'] ?? new \stdClass(),
+            'content' => $aux['content'] ?? [],
+            'status' => $page->status,
+            'cache' => $page->cache,
+            'created_at' => (string) $page->created_at,
+            'updated_at' => (string) $page->updated_at,
+            'url' => route( 'cms.page', ['path' => $data['path'] ?? ''] ),
+        ] ) );
     }
 
 
