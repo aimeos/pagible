@@ -141,14 +141,6 @@ class Page extends Base
         'cache',
     ];
 
-
-    /**
-     * Don't fire model events for each descendant.
-     *
-     * @var bool
-     */
-    protected bool $fireDescendantEvents = false;
-
     /**
      * The table associated with the model.
      *
@@ -414,6 +406,17 @@ class Page extends Base
     public function shouldBeSearchable() : bool
     {
         return $this->status > 0;
+    }
+
+
+    /**
+     * Don't fire model events for each descendant for performance reasons.
+      *
+      * @return bool FALSE to disable firing events for descendants
+     */
+    protected function shouldFireDescendantEvents(): bool
+    {
+        return false;
     }
 
 
