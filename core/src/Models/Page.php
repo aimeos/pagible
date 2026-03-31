@@ -56,6 +56,7 @@ use Laravel\Scout\Searchable;
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property \Illuminate\Support\Carbon|null $deleted_at
  * @property \Aimeos\Nestedset\Collection<int, Nav>|null $subtree
+ * @property-read Collection<int, Page> $ancestors
  * @method static \Illuminate\Database\Eloquent\Builder<static> withoutTenancy()
  */
 class Page extends Base
@@ -68,6 +69,10 @@ class Page extends Base
     use Searchable {
         NodeTrait::usesSoftDelete insteadof Searchable;
     }
+
+
+    /** @var Collection<int, Page>|null */
+    private ?Collection $cachedAncestorsAndSelf = null;
 
 
     /**
@@ -271,6 +276,17 @@ class Page extends Base
     {
         $this->relationLoaded( 'files' ) ?: $this->load( 'files' );
         return $this->getRelation( 'files' )->pluck( null, 'id' );
+    }
+
+
+    /**
+     * Returns ancestors including self (root→self), cached per instance.
+     *
+     * @return Collection<int, Page>
+     */
+    public function getAncestorsAndSelfAttribute() : Collection
+    {
+        return $this->cachedAncestorsAndSelf ??= collect( $this->ancestors )->push( $this );
     }
 
 
