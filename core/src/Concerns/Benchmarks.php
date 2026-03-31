@@ -8,6 +8,7 @@
 namespace Aimeos\Cms\Concerns;
 
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
@@ -24,12 +25,11 @@ trait Benchmarks
      * @param bool $readOnly If true, skip transaction wrapping
      * @param bool $searchSync If true, keep search syncing enabled
      */
-    protected function benchmark( string $name, Closure $fn, bool $readOnly = false, bool $searchSync = false ): void
+    protected function benchmark( string $name, Closure $fn, bool $readOnly = false, int $tries = 100, bool $searchSync = false ): void
     {
-        $tries = (int) $this->option( 'tries' );
         $conn = config( 'cms.db', 'sqlite' );
 
-        DB::disableQueryLog();
+        DB::connection( $conn )->disableQueryLog();
         gc_disable();
 
         $run = function() use ( $fn, $readOnly, $conn ) {
@@ -135,13 +135,37 @@ trait Benchmarks
     /**
      * Set up tenancy from the --tenant option.
      */
-    protected function tenant(): void
+    protected function tenant( string $tenant ): void
     {
-        $tenant = $this->option( 'tenant' );
-
         \Aimeos\Cms\Tenancy::$callback = function() use ( $tenant ) {
             return $tenant;
         };
+    }
+
+
+    /**
+     * Create a benchmark user with full CMS permissions.
+     *
+     * @return \Illuminate\Foundation\Auth\User
+     */
+    protected function user(): \Illuminate\Foundation\Auth\User
+    {
+        $userClass = config( 'auth.providers.users.model', 'App\\Models\\User' );
+        $user = new $userClass();
+
+        if( !$user instanceof \Illuminate\Foundation\Auth\User ) {
+            throw new \RuntimeException( 'User model must extend Illuminate\Foundation\Auth\User' );
+        }
+
+        $user->mergeCasts( ['cmsperms' => 'array'] );
+        $user->forceFill( [
+            'name' => 'Benchmark User',
+            'email' => 'benchmark@example.com',
+            'password' => bcrypt( Str::random( 64 ) ),
+            'cmsperms' => ['*'],
+        ] )->save();
+
+        return $user;
     }
 
 
@@ -180,15 +204,21 @@ trait Benchmarks
      *
      * @return bool True if validation passed
      */
-    protected function validateOptions(): bool
+    protected function checks( string $tenant, int $tries, bool $force = false ): bool
     {
-        if( empty( $this->option( 'tenant' ) ) )
+        if( empty( $tenant ) )
         {
             $this->error( 'The --tenant option must not be empty.' );
             return false;
         }
 
-        if( app()->isProduction() && !$this->option( 'force' ) )
+        if( $tries <= 0 )
+        {
+            $this->error( 'The --tries option must be greater than 0.' );
+            return false;
+        }
+
+        if( app()->isProduction() && !$force )
         {
             $this->error( 'Use --force to run in production.' );
             return false;
@@ -205,7 +235,6 @@ trait Benchmarks
      */
     protected function hasSeededData(): bool
     {
-        $this->tenant();
         return Page::where( 'editor', 'benchmark' )->exists();
     }
 }

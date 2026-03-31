@@ -36,11 +36,15 @@ class BenchmarkSearch extends Command
 
     public function handle(): int
     {
-        if( !$this->validateOptions() ) {
+        $tenant = (string) $this->option( 'tenant' );
+        $tries = (int) $this->option( 'tries' );
+        $force = (bool) $this->option( 'force' );
+
+        if( !$this->checks( $tenant, $tries, $force ) ) {
             return self::FAILURE;
         }
 
-        $this->tenant();
+        $this->tenant( $tenant );
 
         if( !$this->hasSeededData() )
         {
@@ -65,28 +69,28 @@ class BenchmarkSearch extends Command
 
         $this->benchmark( 'Search pages (pub)', function() {
             Page::search( 'lorem' )->searchFields( 'content' )->take( 100 )->get();
-        }, readOnly: true, searchSync: true );
+        }, readOnly: true, tries: $tries, searchSync: true );
 
         $this->benchmark( 'Search pages (adm)', function() {
             Page::search( 'lorem' )->searchFields( 'draft' )->take( 100 )->get();
-        }, readOnly: true, searchSync: true );
+        }, readOnly: true, tries: $tries, searchSync: true );
 
         $this->benchmark( 'Search elements', function() {
             Element::search( 'footer' )->searchFields( 'content' )->take( 100 )->get();
-        }, readOnly: true, searchSync: true );
+        }, readOnly: true, tries: $tries, searchSync: true );
 
         $this->benchmark( 'Search files', function() {
             File::search( 'benchmark' )->searchFields( 'content' )->take( 100 )->get();
-        }, readOnly: true, searchSync: true );
+        }, readOnly: true, tries: $tries, searchSync: true );
 
         $this->benchmark( 'Index page', function() use ( $page ) {
             $page->searchable();
-        }, searchSync: true );
+        }, tries: $tries, searchSync: true );
 
         $this->benchmark( 'Remove from index', function() use ( $page ) {
             $page->unsearchable();
             $page->searchable();
-        }, searchSync: true );
+        }, tries: $tries, searchSync: true );
 
         $this->line( '' );
 

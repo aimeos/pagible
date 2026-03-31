@@ -97,6 +97,7 @@ class BenchmarkSeeder
         $pivotVersionFile = [];
         $pivotVersionElement = [];
 
+        $midIndex = (int) floor( $actualTotal / 2 );
         $lft = 1;
         $pageIndex = 0;
         $fileIndex = 0;
@@ -148,7 +149,13 @@ class BenchmarkSeeder
             $l1Content = $this->pageContent( $l1Fid, $elementId, $pageIndex );
             $l1Meta = $this->metaDescription( $pageIndex );
 
-            $pages[] = $this->pageRow( $l1Id, $rootId, $l1VersionId, $lang, $l1Data, $l1Content, $l1Meta, $l1Lft, $l1Rgt, 1, $now );
+            $l1Row = $this->pageRow( $l1Id, $rootId, $l1VersionId, $lang, $l1Data, $l1Content, $l1Meta, $l1Lft, $l1Rgt, 1, $now );
+
+            if( $pageIndex === $midIndex ) {
+                $l1Row['deleted_at'] = $now;
+            }
+
+            $pages[] = $l1Row;
             $versions[] = $this->versionRow( $l1VersionId, $l1Id, Page::class, $lang, $l1Data, $l1Content, $l1Meta, $nowMs );
             $pivotPageFile[] = ['page_id' => $l1Id, 'file_id' => $l1Fid];
             $pivotPageElement[] = ['page_id' => $l1Id, 'element_id' => $elementId];
@@ -175,7 +182,13 @@ class BenchmarkSeeder
                 $l2Content = $this->pageContent( $l2Fid, $elementId, $pageIndex );
                 $l2Meta = $this->metaDescription( $pageIndex );
 
-                $pages[] = $this->pageRow( $l2Id, $l1Id, $l2VersionId, $lang, $l2Data, $l2Content, $l2Meta, $l2Lft, $l2Rgt, 2, $now );
+                $l2Row = $this->pageRow( $l2Id, $l1Id, $l2VersionId, $lang, $l2Data, $l2Content, $l2Meta, $l2Lft, $l2Rgt, 2, $now );
+
+                if( $pageIndex === $midIndex ) {
+                    $l2Row['deleted_at'] = $now;
+                }
+
+                $pages[] = $l2Row;
                 $versions[] = $this->versionRow( $l2VersionId, $l2Id, Page::class, $lang, $l2Data, $l2Content, $l2Meta, $nowMs );
                 $pivotPageFile[] = ['page_id' => $l2Id, 'file_id' => $l2Fid];
                 $pivotPageElement[] = ['page_id' => $l2Id, 'element_id' => $elementId];
@@ -199,7 +212,13 @@ class BenchmarkSeeder
                     $l3Content = $this->pageContent( $l3Fid, $elementId, $pageIndex );
                     $l3Meta = $this->metaDescription( $pageIndex );
 
-                    $pages[] = $this->pageRow( $l3Id, $l2Id, $l3VersionId, $lang, $l3Data, $l3Content, $l3Meta, $lft, $lft + 1, 3, $now );
+                    $l3Row = $this->pageRow( $l3Id, $l2Id, $l3VersionId, $lang, $l3Data, $l3Content, $l3Meta, $lft, $lft + 1, 3, $now );
+
+                    if( $pageIndex === $midIndex ) {
+                        $l3Row['deleted_at'] = $now;
+                    }
+
+                    $pages[] = $l3Row;
                     $versions[] = $this->versionRow( $l3VersionId, $l3Id, Page::class, $lang, $l3Data, $l3Content, $l3Meta, $nowMs );
                     $pivotPageFile[] = ['page_id' => $l3Id, 'file_id' => $l3Fid];
                     $pivotPageElement[] = ['page_id' => $l3Id, 'element_id' => $elementId];
@@ -298,6 +317,7 @@ class BenchmarkSeeder
                 'latest_id' => $versionId,
                 'created_at' => $now,
                 'updated_at' => $now,
+                'deleted_at' => $i === $count - 1 ? $now : null,
             ];
 
             $versionRows[] = [
@@ -374,6 +394,7 @@ class BenchmarkSeeder
                 'latest_id' => $versionId,
                 'created_at' => $now,
                 'updated_at' => $now,
+                'deleted_at' => $i === $count - 1 ? $now : null,
             ];
 
             $versionRows[] = [

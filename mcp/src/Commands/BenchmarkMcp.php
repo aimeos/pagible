@@ -10,7 +10,6 @@ namespace Aimeos\Cms\Commands;
 use Illuminate\Console\Command;
 
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 use Aimeos\Cms\Concerns\Benchmarks;
 use Aimeos\Cms\Mcp\CmsServer;
 use Aimeos\Cms\Models\Page;
@@ -38,11 +37,15 @@ class BenchmarkMcp extends Command
 
     public function handle(): int
     {
-        if( !$this->validateOptions() ) {
+        $tenant = (string) $this->option( 'tenant' );
+        $tries = (int) $this->option( 'tries' );
+        $force = (bool) $this->option( 'force' );
+
+        if( !$this->checks( $tenant, $tries, $force ) ) {
             return self::FAILURE;
         }
 
-        $this->tenant();
+        $this->tenant( $tenant );
 
         if( !$this->hasSeededData() )
         {
@@ -61,30 +64,16 @@ class BenchmarkMcp extends Command
 
         try
         {
-            // Create benchmark user
-            $userClass = config( 'auth.providers.users.model', 'App\\Models\\User' );
-            $user = new $userClass();
-
-            if( !$user instanceof \Illuminate\Foundation\Auth\User ) {
-                throw new \RuntimeException( 'User model must extend Illuminate\Foundation\Auth\User' );
-            }
-
-            $user->mergeCasts( ['cmsperms' => 'array'] );
-            $user->forceFill( [
-                'name' => 'Benchmark User',
-                'email' => 'benchmark@cms.benchmark',
-                'password' => bcrypt( Str::random( 64 ) ),
-                'cmsperms' => ['*'],
-            ] )->save();
+            $user = $this->user();
 
             $root = Page::where( 'tag', 'root' )->where( 'lang', $lang )->where( 'domain', $domain )->firstOrFail();
-            $page = Page::where( 'tag', '!=', 'root' )->where( 'lang', $lang )->orderByDesc( 'depth' )->firstOrFail();
 
-            // Preconditions: soft-delete a page for RestorePage
-            $excludeIds = $page->ancestors()->get()->pluck( 'id' )->push( $page->id );
-            $trashedPage = Page::where( 'tag', '!=', 'root' )->where( 'lang', $lang )
-                ->whereNotIn( 'id', $excludeIds )->orderByDesc( 'depth' )->firstOrFail();
-            $trashedPage->delete();
+            $count = Page::where( 'tag', '!=', 'root' )->where( 'lang', $lang )->count();
+            $page = Page::where( 'tag', '!=', 'root' )->where( 'lang', $lang )
+                ->orderBy( '_lft' )->skip( (int) floor( $count / 2 ) )->firstOrFail();
+
+            // Query pre-seeded soft-deleted page for RestorePage
+            $trashedPage = Page::onlyTrashed()->where( 'lang', $lang )->firstOrFail();
 
             // Create unpublished version for PublishPage
             $unpubVersion = $page->versions()->forceCreate( [
@@ -106,19 +95,19 @@ class BenchmarkMcp extends Command
 
             $this->benchmark( 'Get page', function() use ( $user, $page ) {
                 CmsServer::actingAs( $user )->tool( \Aimeos\Cms\Tools\GetPage::class, ['id' => $page->id] );
-            }, readOnly: true );
+            }, readOnly: true, tries: $tries );
 
             $this->benchmark( 'Get page tree', function() use ( $user, $lang ) {
                 CmsServer::actingAs( $user )->tool( \Aimeos\Cms\Tools\GetPageTree::class, ['lang' => $lang] );
-            }, readOnly: true );
+            }, readOnly: true, tries: $tries );
 
             $this->benchmark( 'List pages', function() use ( $user, $lang ) {
                 CmsServer::actingAs( $user )->tool( \Aimeos\Cms\Tools\ListPages::class, ['lang' => $lang] );
-            }, readOnly: true );
+            }, readOnly: true, tries: $tries );
 
             $this->benchmark( 'Search pages', function() use ( $user, $lang ) {
                 CmsServer::actingAs( $user )->tool( \Aimeos\Cms\Tools\SearchPages::class, ['lang' => $lang, 'term' => 'lorem'] );
-            }, readOnly: true );
+            }, readOnly: true, tries: $tries );
 
 
             /**
@@ -131,25 +120,25 @@ class BenchmarkMcp extends Command
                     'name' => 'MCP Bench', 'title' => 'MCP Bench',
                     'path' => 'mcp-bench-' . Utils::uid(),
                 ] );
-            } );
+            }, tries: $tries );
 
             $this->benchmark( 'Save page', function() use ( $user, $page ) {
                 CmsServer::actingAs( $user )->tool( \Aimeos\Cms\Tools\SavePage::class, [
                     'id' => $page->id, 'title' => 'Updated',
                 ] );
-            } );
+            }, tries: $tries );
 
             $this->benchmark( 'Publish page', function() use ( $user, $page ) {
                 CmsServer::actingAs( $user )->tool( \Aimeos\Cms\Tools\PublishPage::class, ['id' => $page->id] );
-            } );
+            }, tries: $tries );
 
             $this->benchmark( 'Drop page', function() use ( $user, $page ) {
                 CmsServer::actingAs( $user )->tool( \Aimeos\Cms\Tools\DropPage::class, ['id' => $page->id] );
-            } );
+            }, tries: $tries );
 
             $this->benchmark( 'Restore page', function() use ( $user, $trashedPage ) {
                 CmsServer::actingAs( $user )->tool( \Aimeos\Cms\Tools\RestorePage::class, ['id' => $trashedPage->id] );
-            } );
+            }, tries: $tries );
 
             $this->line( '' );
         }
