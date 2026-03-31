@@ -71,10 +71,6 @@ class Page extends Base
     }
 
 
-    /** @var Collection<int, Page>|null */
-    private ?Collection $cachedAncestorsAndSelf = null;
-
-
     /**
      * The model's default values for attributes.
      *
@@ -145,12 +141,27 @@ class Page extends Base
         'cache',
     ];
 
+
+    /**
+     * Don't fire model events for each descendant.
+     *
+     * @var bool
+     */
+    protected bool $fireDescendantEvents = false;
+
     /**
      * The table associated with the model.
      *
      * @var string
      */
     protected $table = 'cms_pages';
+
+    /**
+     * Ancestors and self collection cache for performance reasons.
+     *
+     * @var Collection<int, Page>|null
+     */
+    protected ?Collection $cachedAncestorsAndSelf = null;
 
 
     /**

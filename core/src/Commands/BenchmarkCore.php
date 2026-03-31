@@ -139,6 +139,7 @@ class BenchmarkCore extends Command
 
         $this->benchmark( 'Page purge', function() use ( $page ) {
             $page->forceDelete();
+            $page->exists = true;
         }, tries: $tries );
 
         $this->benchmark( 'Page tree', function() use ( $root ) {
