@@ -52,7 +52,7 @@ class SearchFiles extends Tool
 
         $result = Filter::files( $search, $v )->get()->map( function( $item ) {
             /** @var File $item */
-            $data = $item->latest?->data ?? new \stdClass();
+            $data = $item->latest->data ?? new \stdClass();
             return [
                 'id' => $item->id,
                 'name' => $data->name ?? null,

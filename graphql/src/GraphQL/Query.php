@@ -111,8 +111,8 @@ final class Query
 
         foreach( $clauses as $clause )
         {
-            if( in_array( $clause['column'] ?? '', $allowed ) ) {
-                $search->orderBy( $clause['column'], $clause['order'] ?? 'ASC' );
+            if( in_array( $clause['column'], $allowed ) ) {
+                $search->orderBy( $clause['column'], $clause['order'] );
                 $applied = true;
             }
         }

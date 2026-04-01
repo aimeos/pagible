@@ -52,7 +52,7 @@ class SearchElements extends Tool
 
         $result = Filter::elements( $search, $v )->get()->map( function( $item ) {
             /** @var Element $item */
-            $data = $item->latest?->data ?? new \stdClass();
+            $data = $item->latest->data ?? new \stdClass();
             return [
                 'id' => $item->id,
                 'data' => $data,

@@ -59,7 +59,7 @@ class SearchPages extends Tool
 
         $result = Filter::pages( $search, $v )->get()->map( function( $item ) {
             /** @var Page $item */
-            $data = $item->latest?->data ?? new \stdClass();
+            $data = $item->latest->data ?? new \stdClass();
             return [
                 'id' => $item->id,
                 'parent_id' => $item->parent_id,

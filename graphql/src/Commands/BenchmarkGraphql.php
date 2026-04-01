@@ -148,7 +148,7 @@ class BenchmarkGraphql extends Command
             } );
 
             $this->benchmark( 'Page list', function() use ( $lang ) {
-                ( new Query )->pages( null, ['first' => 100, 'filter' => ['lang' => $lang]] )->get();
+                ( new Query )->pages( null, ['first' => 100, 'filter' => ['lang' => $lang]] )->items();
             }, readOnly: true );
 
             $this->benchmark( 'Page get', function() use ( $page ) {

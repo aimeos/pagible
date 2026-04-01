@@ -372,8 +372,10 @@ class Page extends Base
         $this->setRelation( 'latest', $version );
         $this->save();
 
-        $version->published = true;
-        $version->save();
+        if( !$version->published ) {
+            $version->published = true;
+            $version->save();
+        }
 
         Cache::forget( static::key( $this ) );
 
@@ -420,7 +422,7 @@ class Page extends Base
     /**
      * Returns the searchable data for the page.
      *
-     * @return array<string, string>
+     * @return array<string, mixed>
      */
     public function toSearchableArray(): array
     {
@@ -458,10 +460,10 @@ class Page extends Base
             'content' => $content,
             'draft' => $draft,
             'domain' => $this->latest?->data->domain ?? '',
-            'lang' => $this->latest?->lang ?? '',
+            'lang' => $this->latest->lang ?? '',
             'tenant_id' => $this->tenant_id ?? '',
             'parent_id' => $this->parent_id,
-            'editor' => $this->latest?->editor ?? '',
+            'editor' => $this->latest->editor ?? '',
             'status' => (int) ( $this->latest?->data->status ?? 0 ),
             'cache' => (int) ( $this->latest?->data->cache ?? 0 ),
             'to' => $this->latest?->data->to ?? '',
@@ -469,7 +471,7 @@ class Page extends Base
             'tag' => $this->latest?->data->tag ?? '',
             'theme' => $this->latest?->data->theme ?? '',
             'type' => $this->latest?->data->type ?? '',
-            'published' => (bool) ( $this->latest?->published ?? false ),
+            'published' => (bool) ( $this->latest->published ?? false ),
             'scheduled' => (bool) ( $this->latest?->data->scheduled ?? false ),
         ];
     }

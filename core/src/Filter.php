@@ -20,6 +20,7 @@ class Filter
      *
      * @param \Laravel\Scout\Builder<\Illuminate\Database\Eloquent\Model> $builder
      * @param array<string, mixed> $filter Validated filter values (may include 'publish' and 'trashed')
+     * @return \Laravel\Scout\Builder<\Illuminate\Database\Eloquent\Model>
      */
     public static function elements( Builder $builder, array $filter ) : Builder
     {
@@ -51,6 +52,7 @@ class Filter
      *
      * @param \Laravel\Scout\Builder<\Illuminate\Database\Eloquent\Model> $builder
      * @param array<string, mixed> $filter Validated filter values (may include 'publish' and 'trashed')
+     * @return \Laravel\Scout\Builder<\Illuminate\Database\Eloquent\Model>
      */
     public static function files( Builder $builder, array $filter ) : Builder
     {
@@ -82,6 +84,7 @@ class Filter
      *
      * @param \Laravel\Scout\Builder<\Illuminate\Database\Eloquent\Model> $builder
      * @param array<string, mixed> $filter Validated filter values (may include 'publish' and 'trashed')
+     * @return \Laravel\Scout\Builder<\Illuminate\Database\Eloquent\Model>
      */
     public static function pages( Builder $builder, array $filter ) : Builder
     {

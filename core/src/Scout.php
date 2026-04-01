@@ -36,6 +36,7 @@ class Scout
      * @param \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model> $query
      * @param \Laravel\Scout\Builder<\Illuminate\Database\Eloquent\Model> $builder
      * @param array<string> $fields The fields passed to searchFields(), used to detect 'draft' and skip if not present
+     * @return \Laravel\Scout\Builder<\Illuminate\Database\Eloquent\Model>
      */
     public static function collection( \Illuminate\Database\Eloquent\Builder $query, Builder $builder, array $fields ) : Builder
     {

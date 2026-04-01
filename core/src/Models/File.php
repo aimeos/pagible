@@ -308,8 +308,10 @@ class File extends Base
         $this->setRelation( 'latest', $version );
         $this->save();
 
-        $version->published = true;
-        $version->save();
+        if( !$version->published ) {
+            $version->published = true;
+            $version->save();
+        }
 
         $num = Version::where( 'versionable_id', $this->id )
             ->where( 'versionable_type', File::class )
@@ -436,7 +438,7 @@ class File extends Base
     /**
      * Returns the searchable data for the file.
      *
-     * @return array<string, string>
+     * @return array<string, mixed>
      */
     public function toSearchableArray(): array
     {
@@ -451,9 +453,9 @@ class File extends Base
             'draft' => mb_strtolower( (string) $this->latest ),
             'tenant_id' => $this->tenant_id ?? '',
             'lang' => $this->latest?->lang,
-            'editor' => $this->latest?->editor ?? '',
+            'editor' => $this->latest->editor ?? '',
             'mime' => $this->latest?->data->mime ?? '',
-            'published' => (bool) ( $this->latest?->published ?? false ),
+            'published' => (bool) ( $this->latest->published ?? false ),
             'scheduled' => (bool) ( $this->latest?->data->scheduled ?? false ),
         ];
     }

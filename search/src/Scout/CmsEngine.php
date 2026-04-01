@@ -143,7 +143,7 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
     public function paginateUsingDatabase( Builder $builder, $perPage, $pageName, $page )
     {
         $query = $this->buildSearchQuery( $builder );
-        $columns = $query->getQuery()->columns ?: ['*'];
+        $columns = array_filter( $query->getQuery()->columns ?: [], 'is_string' ) ?: ['*'];
         return $query->paginate( $perPage, $columns, $pageName, $page );
     }
 
@@ -177,7 +177,7 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
     public function simplePaginateUsingDatabase( Builder $builder, $perPage, $pageName, $page )
     {
         $query = $this->buildSearchQuery( $builder );
-        $columns = $query->getQuery()->columns ?: ['*'];
+        $columns = array_filter( $query->getQuery()->columns ?: [], 'is_string' ) ?: ['*'];
         return $query->simplePaginate( $perPage, $columns, $pageName, $page );
     }
 
@@ -257,7 +257,14 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
             }
 
             if( $field === '__soft_deleted' ) {
-                $value === null ? $query->withTrashed() : ( $value == 1 ? $query->onlyTrashed() : null );
+                $scope = \Illuminate\Database\Eloquent\SoftDeletingScope::class;
+
+                if( $value === null ) {
+                    $query->withoutGlobalScope( $scope );
+                } elseif( $value == 1 ) {
+                    $query->withoutGlobalScope( $scope )
+                        ->whereNotNull( $builder->model->qualifyColumn( 'deleted_at' ) );
+                }
             }
 
             if( !in_array( $field, $skip ) && !in_array( $field, $modelCols ) ) {
@@ -359,7 +366,8 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
     /**
      * Build a query scoped to the cms_index rows for the given model group.
      *
-     * @param  \Illuminate\Support\Collection<int, \Illuminate\Database\Eloquent\Model>  $group
+     * @template T of \Illuminate\Database\Eloquent\Model
+     * @param  \Illuminate\Support\Collection<int, T>  $group
      * @param  string  $type Model class name
      * @return \Illuminate\Database\Query\Builder|null
      */
@@ -372,7 +380,7 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
         }
 
         return $db->table( 'cms_index' )
-            ->whereIn( 'indexable_id', $group->map( fn( $m ) => $m->getScoutKey() )->all() )
+            ->whereIn( 'indexable_id', $group->map( fn( $m ) => $m->getKey() )->all() )
             ->where( 'indexable_type', $type )
             ->where( 'tenant_id', \Aimeos\Cms\Tenancy::value() );
     }

@@ -62,6 +62,7 @@ class CoreServiceProvider extends Provider
                     'typesense' => $this->options( ['query_by' => implode( ',', $fields )] ),
                     'meilisearch' => $this->options( ['attributesToSearchOn' => $fields] ),
                     'cms' => $this->where( 'latest', in_array( 'draft', $fields ) ),
+                    default => null,
                 };
                 return $this;
             } );
