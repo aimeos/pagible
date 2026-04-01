@@ -345,6 +345,6 @@ describe('Navigation Drawer', () => {
   it('Pages link navigates to /pages', () => {
     visitPages([makePage()])
     cy.get('.v-app-bar').first().find('.v-btn').first().click()
-    cy.get('.v-navigation-drawer--left a[href="/pages"]').should('exist')
+    cy.get('.v-navigation-drawer--left').contains('Pages').should('have.attr', 'href').and('include', '/pages')
   })
 })
