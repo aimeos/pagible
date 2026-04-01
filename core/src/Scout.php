@@ -77,13 +77,11 @@ class Scout
             }
         }
 
-        foreach( $builder->orders as $order )
+        foreach( $builder->orders as &$order )
         {
-            $col = static::qualify( $order['column'], $table ) ?? $table . '.' . $order['column'];
-            $query->orderBy( $col, $order['direction'] );
+            $order['column'] = static::qualify( $order['column'], $table ) ?? $table . '.' . $order['column'];
         }
-
-        $builder->orders = [];
+        unset( $order );
 
         return $builder;
     }

@@ -293,7 +293,7 @@ class CmsEngineTest extends SearchTestAbstract
         // mapIds
         $ids = $engine->mapIds( $results );
         $this->assertGreaterThanOrEqual( 1, $ids->count() );
-        $this->assertContainsOnly( 'string', $ids->toArray() );
+        $this->assertContainsOnlyString( $ids->toArray() );
 
         // lazyMap
         $lazy = $engine->lazyMap( $builder, $results, new Page() );
