@@ -79,7 +79,7 @@ export default {
             return this.messages.path
           })
           .catch((error) => {
-            console.error('PageDetailItemProps::checkPath: Error checking path', error)
+            this.$log('PageDetailItemProps::checkPath: Error checking path', error)
           }) || []
       )
     },

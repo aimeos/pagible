@@ -913,7 +913,7 @@ export default {
           </v-toolbar>
 
           <v-list @click="menu['undo'] = false">
-            <v-list-item v-for="(img, idx) in images.slice(1)" :key="idx">
+            <v-list-item v-for="(img, idx) in images.slice(1)" :key="img.url">
               <v-img
                 :src="img.url"
                 :alt="$gettext('Previous edit')"

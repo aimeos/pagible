@@ -75,6 +75,7 @@ export function recording() {
       )
 
       audioBuffer.getChannelData(0).set(buffer)
+      await context.close()
 
       return audioBuffer
     }
@@ -110,6 +111,8 @@ export async function toMp3(input) {
   for (let i = 0; i < audioBuffer.numberOfChannels; i++) {
     channels.push(audioBuffer.getChannelData(i))
   }
+
+  await context.close()
 
   const worker = new Worker(new URL('./worker.js', import.meta.url), { type: 'module' })
 
