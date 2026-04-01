@@ -42,6 +42,19 @@ class Version extends Model
 
 
     /**
+     * Boot the model.
+     */
+    protected static function booted() : void
+    {
+        static::saving( function( $version ) {
+            $data = $version->data ?? new \stdClass();
+            $data->scheduled = $version->publish_at !== null;
+            $version->data = $data;
+        } );
+    }
+
+
+    /**
      * The model's default values for attributes.
      *
      * @var array<string, mixed>

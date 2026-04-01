@@ -98,10 +98,11 @@ final class SaveFile
                 'data' => $file->toArray(),
             ] );
 
+            $orig->setRelation( 'latest', $version );
             $orig->forceFill( ['latest_id' => $version->id] )->save();
             $file->removeVersions();
 
-            return $orig->setRelation( 'latest', $version );
+            return $orig;
         } );
     }
 }

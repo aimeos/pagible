@@ -49,7 +49,7 @@ class Description extends Command
         $model = config( 'cms.ai.write.model' );
         $config = config( 'cms.ai.write', [] );
 
-        Page::where( 'status', '>', 0 )->chunk( 100, function( $pages ) use ( $provider, $model, $config ) {
+        Page::with( 'latest' )->where( 'status', '>', 0 )->chunk( 100, function( $pages ) use ( $provider, $model, $config ) {
 
             foreach( $pages as $page )
             {
@@ -105,7 +105,7 @@ class Description extends Command
         $model = config( 'cms.ai.describe.model' );
         $config = config( 'cms.ai.describe', [] );
 
-        File::whereRaw( "CAST(description AS CHAR(2)) = '{}'" )
+        File::with( 'latest' )->whereRaw( "CAST(description AS CHAR(2)) = '{}'" )
             ->where( function( $query ) {
                 $query->where( 'mime', 'like', 'audio/%' )
                     ->orWhere( 'mime', 'like', 'video/%' )

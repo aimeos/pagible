@@ -21,6 +21,6 @@ class SearchCommandTest extends SearchTestAbstract
 
         $this->artisan('cms:index')->assertExitCode( 0 );
 
-        $this->assertEquals( 18, DB::connection( config( 'cms.db', 'sqlite' ) )->table( 'cms_index' )->count() );
+        $this->assertEquals( 20, DB::connection( config( 'cms.db', 'sqlite' ) )->table( 'cms_index' )->count() );
     }
 }

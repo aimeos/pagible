@@ -22,6 +22,8 @@ class CoreServiceProvider extends Provider
 
         // Set null Scout driver as fallback if none configured
         config(['scout.driver' => config('scout.driver', 'null')]);
+
+        $this->scout();
     }
 
     public function register()
@@ -44,6 +46,25 @@ class CoreServiceProvider extends Provider
                 \Aimeos\Cms\Commands\Publish::class,
                 \Aimeos\Cms\Commands\User::class,
             ] );
+        }
+    }
+
+    protected function scout() : void
+    {
+        if( !\Laravel\Scout\Builder::hasMacro( 'searchFields' ) )
+        {
+            \Laravel\Scout\Builder::macro( 'searchFields', function( string ...$fields ) {
+                $this->where( 'tenant_id', Tenancy::value() );
+
+                match( config( 'scout.driver' ) ) {
+                    'collection' => $this->callback = fn( $query, $builder ) => Scout::collection( $query, $builder, $fields ),
+                    'algolia' => $this->options( ['restrictSearchableAttributes' => $fields] ),
+                    'typesense' => $this->options( ['query_by' => implode( ',', $fields )] ),
+                    'meilisearch' => $this->options( ['attributesToSearchOn' => $fields] ),
+                    'cms' => $this->where( 'latest', in_array( 'draft', $fields ) ),
+                };
+                return $this;
+            } );
         }
     }
 

@@ -2,6 +2,7 @@
 
 namespace Aimeos\Cms\Scout;
 
+use Aimeos\Cms\Scout as ScoutHelper;
 use Illuminate\Support\LazyCollection;
 use Laravel\Scout\Builder;
 use Laravel\Scout\Engines\Engine;
@@ -40,21 +41,9 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
      */
     public function delete( $models )
     {
-        $tenant = \Aimeos\Cms\Tenancy::value();
-
         foreach( $models->groupBy( fn( $m ) => get_class( $m ) ) as $type => $group )
         {
-            $db = $group->first()?->getConnection();
-
-            if( !$db ) {
-                continue;
-            }
-
-            $db->table( 'cms_index' )
-                ->whereIn( 'indexable_id', $group->map( fn( $m ) => $m->getScoutKey() )->all() )
-                ->where( 'indexable_type', $type )
-                ->where( 'tenant_id', $tenant )
-                ->delete();
+            $this->indexQuery( $group, $type )?->delete();
         }
     }
 
@@ -143,7 +132,7 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
 
 
     /**
-     * Paginate the given search on the engine using simple pagination.
+     * Paginate the given search on the engine using database pagination.
      *
      * @param  \Laravel\Scout\Builder<\Illuminate\Database\Eloquent\Model>  $builder
      * @param  int  $perPage
@@ -154,7 +143,6 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
     public function paginateUsingDatabase( Builder $builder, $perPage, $pageName, $page )
     {
         $query = $this->buildSearchQuery( $builder );
-        /** @var array<int, string> $columns */
         $columns = $query->getQuery()->columns ?: ['*'];
         return $query->paginate( $perPage, $columns, $pageName, $page );
     }
@@ -189,7 +177,6 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
     public function simplePaginateUsingDatabase( Builder $builder, $perPage, $pageName, $page )
     {
         $query = $this->buildSearchQuery( $builder );
-        /** @var array<int, string> $columns */
         $columns = $query->getQuery()->columns ?: ['*'];
         return $query->simplePaginate( $perPage, $columns, $pageName, $page );
     }
@@ -214,11 +201,7 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
             }
 
             $db->transaction( function() use ( $db, $group, $type, $tenant ) {
-                $db->table( 'cms_index' )
-                    ->whereIn( 'indexable_id', $group->map( fn( $m ) => $m->getScoutKey() )->all() )
-                    ->where( 'indexable_type', $type )
-                    ->where( 'tenant_id', $tenant )
-                    ->delete();
+                $this->indexQuery( $group, $type )?->delete();
 
                 $rows = [];
 
@@ -256,66 +239,159 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
      */
     protected function buildSearchQuery( Builder $builder )
     {
-        return $this->initializeSearchQuery( $builder )
-            ->when( !is_null( $builder->callback ), function( $query ) use ( $builder ) {
-                /** @var callable $cb */
-                $cb = $builder->callback;
-                call_user_func( $cb, $query, $builder, $builder->query );
-            })
-            ->when( !$builder->callback && !empty( $builder->wheres ), function ( $query ) use ( $builder ) {
-                foreach( $builder->wheres as $key => $where ) {
-                    $query->where( $where['field'] ?? $key, $where['operator'] ?? '=', $where['value'] ?? $where );
-                }
-            })
-            ->when( !$builder->callback && !empty( $builder->whereIns ), function ( $query ) use ( $builder ) {
-                foreach( $builder->whereIns as $key => $values ) {
-                    $query->whereIn( $key, $values );
-                }
-            })
-            ->when( !$builder->callback && !empty( $builder->whereNotIns ), function ( $query ) use ( $builder ) {
-                foreach( $builder->whereNotIns as $key => $values ) {
-                    $query->whereNotIn( $key, $values );
-                }
-            })
-            ->when( !is_null( $builder->queryCallback ), function( $query ) use ( $builder ) {
-                /** @var callable $cb */
-                $cb = $builder->queryCallback;
-                call_user_func( $cb, $query );
-            })
-            ->when( !empty( $builder->orders ), function ( $query ) use ( $builder ) {
-                $query->reorder();
+        $modelTable = $builder->model->getTable();
+        $modelCols = ScoutHelper::MODEL_COLUMNS[$modelTable] ?? ['id', 'tenant_id'];
+        $skip = ['latest', '__soft_deleted', 'tenant_id'];
+        $isDraft = false;
+        $needsJoin = false;
+        $query = $builder->model->newQuery();
 
-                foreach( $builder->orders as $order ) {
-                    $query->orderBy( $order['column'], $order['direction'] );
+        // Single pass over wheres: detect draft mode, version join need, and apply trashed scope
+        foreach( $builder->wheres as $key => $where )
+        {
+            $field = $where['field'] ?? $key;
+            $value = is_array( $where ) && array_key_exists( 'value', $where ) ? $where['value'] : $where;
+
+            if( $field === 'latest' && $value == true ) {
+                $isDraft = true;
+            }
+
+            if( $field === '__soft_deleted' ) {
+                $value === null ? $query->withTrashed() : ( $value == 1 ? $query->onlyTrashed() : null );
+            }
+
+            if( !in_array( $field, $skip ) && !in_array( $field, $modelCols ) ) {
+                $needsJoin = true;
+            }
+        }
+
+        // Check whereIns, whereNotIns and orders for version-level columns
+        $needsJoin = $needsJoin || collect( $builder->whereIns )->keys()
+            ->merge( collect( $builder->whereNotIns )->keys() )
+            ->merge( collect( $builder->orders )->pluck( 'column' ) )
+            ->contains( fn( $f ) => !in_array( $f, $modelCols ) );
+
+        // Join cms_versions when draft-mode filters target version-level columns
+        if( $isDraft && $needsJoin ) {
+            $query->select( "{$modelTable}.*" )
+                ->join( 'cms_versions', "{$modelTable}.latest_id", '=', 'cms_versions.id' );
+        }
+
+        // Join cms_index for full-text search
+        if( !empty( $builder->query ) ) {
+            $this->joinSearchIndex( $query, $builder, $modelTable );
+        }
+
+        // Apply Scout builder constraints to the Eloquent query
+        if( $builder->callback ) {
+            call_user_func( $builder->callback, $query, $builder, $builder->query );
+        } else {
+            $this->applyFilters( $query, $builder, $modelTable, $isDraft );
+        }
+
+        if( !is_null( $builder->queryCallback ) ) {
+            call_user_func( $builder->queryCallback, $query );
+        }
+
+        if( !empty( $builder->orders ) ) {
+            $query->reorder();
+
+            foreach( $builder->orders as $order ) {
+                if( $col = ScoutHelper::qualify( $order['column'], $modelTable, $isDraft ) ) {
+                    $query->orderBy( $col, $order['direction'] );
                 }
-            })
-            ->when( !is_null( $builder->limit ), function ( $query ) use ( $builder ) {
-                $query->limit( (int) $builder->limit );
-            });
+            }
+        }
+
+        if( !is_null( $builder->limit ) ) {
+            $query->limit( (int) $builder->limit );
+        }
+
+        return $query;
     }
 
 
     /**
-     * Initialize the search query by joining with the cms_index table.
+     * Apply Scout builder where/whereIn/whereNotIn filters to the Eloquent query.
      *
+     * @param  \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>  $query
      * @param  \Laravel\Scout\Builder<\Illuminate\Database\Eloquent\Model>  $builder
-     * @return \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>
+     * @param  string  $modelTable
+     * @param  bool  $isDraft
      */
-    protected function initializeSearchQuery( Builder $builder )
+    protected function applyFilters( $query, Builder $builder, string $modelTable, bool $isDraft ) : void
     {
-        $query = $builder->model->newQuery();
+        foreach( $builder->wheres as $key => $where )
+        {
+            $field = $where['field'] ?? $key;
 
-        if (empty($builder->query)) {
-            return $query;
+            if( in_array( $field, ['latest', '__soft_deleted', 'tenant_id'] ) ) {
+                continue;
+            }
+
+            if( $col = ScoutHelper::qualify( $field, $modelTable, $isDraft ) )
+            {
+                $value = is_array( $where ) && array_key_exists( 'value', $where ) ? $where['value'] : $where;
+                $operator = $where['operator'] ?? '=';
+
+                if( is_null( $value ) ) {
+                    $operator === '=' ? $query->whereNull( $col ) : $query->whereNotNull( $col );
+                } else {
+                    $query->where( $col, $operator, $value );
+                }
+            }
         }
 
-        $driver = $builder->model->getConnection()->getDriverName();
-        $modelTable = $builder->model->getTable();
+        foreach( $builder->whereIns as $key => $values ) {
+            if( $col = ScoutHelper::qualify( $key, $modelTable, $isDraft ) ) {
+                $query->whereIn( $col, $values );
+            }
+        }
 
+        foreach( $builder->whereNotIns as $key => $values ) {
+            if( $col = ScoutHelper::qualify( $key, $modelTable, $isDraft ) ) {
+                $query->whereNotIn( $col, $values );
+            }
+        }
+    }
+
+
+    /**
+     * Build a query scoped to the cms_index rows for the given model group.
+     *
+     * @param  \Illuminate\Support\Collection<int, \Illuminate\Database\Eloquent\Model>  $group
+     * @param  string  $type Model class name
+     * @return \Illuminate\Database\Query\Builder|null
+     */
+    protected function indexQuery( $group, string $type )
+    {
+        $db = $group->first()?->getConnection();
+
+        if( !$db ) {
+            return null;
+        }
+
+        return $db->table( 'cms_index' )
+            ->whereIn( 'indexable_id', $group->map( fn( $m ) => $m->getScoutKey() )->all() )
+            ->where( 'indexable_type', $type )
+            ->where( 'tenant_id', \Aimeos\Cms\Tenancy::value() );
+    }
+
+
+    /**
+     * Join the cms_index table for full-text search with relevance scoring.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>  $query
+     * @param  \Laravel\Scout\Builder<\Illuminate\Database\Eloquent\Model>  $builder
+     * @param  string  $modelTable
+     */
+    protected function joinSearchIndex( $query, Builder $builder, string $modelTable ) : void
+    {
+        $driver = $builder->model->getConnection()->getDriverName();
         $sub = $builder->model->getConnection()->table( 'cms_index' );
         $terms = mb_strtolower( $builder->query );
 
-        match( $driver)  {
+        match( $driver ) {
             'mysql', 'mariadb' => $this->searchMySQL( $sub, $terms ),
             'pgsql' => $this->searchPostgreSQL( $sub, $terms ),
             'sqlsrv' => $this->searchSQLServer( $sub, $terms ),
@@ -324,6 +400,7 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
         };
 
         $sub->where( 'indexable_type', get_class( $builder->model ) );
+        $sub->where( 'tenant_id', \Aimeos\Cms\Tenancy::value() );
 
         foreach( $builder->wheres as $key => $where )
         {
@@ -332,11 +409,13 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
             }
         }
 
+        if( !$query->getQuery()->columns ) {
+            $query->select( "{$modelTable}.*" );
+        }
+
         $query->joinSub( $sub, 'index', function( $join ) use ( $modelTable ) {
             $join->on( 'index.indexable_id', '=', "{$modelTable}.id" );
         })->orderByDesc( 'relevance' );
-
-        return $query;
     }
 
 

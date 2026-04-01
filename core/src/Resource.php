@@ -254,9 +254,9 @@ class Resource
             $version->elements()->attach( $elements );
             $version->files()->attach( $files );
 
+            $page->setRelation( 'latest', $version );
             $page->forceFill( ['latest_id' => $version->id] )->save();
 
-            $page->setRelation( 'latest', $version );
             return $page->removeVersions();
         } );
     }
@@ -349,9 +349,9 @@ class Resource
             ] );
 
             $version->files()->attach( $files );
+            $element->setRelation( 'latest', $version );
             $element->forceFill( ['latest_id' => $version->id] )->save();
 
-            $element->setRelation( 'latest', $version );
             return $element->removeVersions();
         } );
     }

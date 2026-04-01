@@ -37,7 +37,6 @@ class GraphqlQueryTest extends GraphqlTestAbstract
 	{
         parent::defineEnvironment( $app );
 
-		$app['config']->set( 'scout.driver', 'collection' );
 		$app['config']->set( 'lighthouse.schema_path', __DIR__ . '/default-schema.graphql' );
 		$app['config']->set( 'lighthouse.namespaces.models', ['App\Models', 'Aimeos\\Cms\\Models'] );
 		$app['config']->set( 'lighthouse.namespaces.mutations', ['Aimeos\\Cms\\GraphQL\\Mutations'] );
@@ -70,7 +69,6 @@ class GraphqlQueryTest extends GraphqlTestAbstract
     public function testPages()
     {
         $this->seed( CmsSeeder::class );
-        sleep( 5 );
 
         $page = Page::where( 'tag', 'root' )->firstOrFail();
 
@@ -97,7 +95,6 @@ class GraphqlQueryTest extends GraphqlTestAbstract
     public function testElements()
     {
         $this->seed( CmsSeeder::class );
-        sleep( 5 );
 
         $element = Element::where( 'type', 'footer' )->firstOrFail();
 
@@ -124,7 +121,6 @@ class GraphqlQueryTest extends GraphqlTestAbstract
     public function testFiles()
     {
         $this->seed( CmsSeeder::class );
-        sleep( 5 );
 
         $response = $this->actingAs( $this->user )->graphQL( '{
             files(filter: {

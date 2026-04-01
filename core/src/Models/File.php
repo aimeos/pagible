@@ -305,6 +305,7 @@ class File extends Base
         $this->path = $version->data?->path;
         $this->mime = $version->data?->mime;
         $this->editor = $version->editor;
+        $this->setRelation( 'latest', $version );
         $this->save();
 
         $version->published = true;
@@ -448,7 +449,25 @@ class File extends Base
         return [
             'content' => $this->trashed() ? '' : mb_strtolower( (string) $this ),
             'draft' => mb_strtolower( (string) $this->latest ),
+            'tenant_id' => $this->tenant_id ?? '',
+            'lang' => $this->latest?->lang,
+            'editor' => $this->latest?->editor ?? '',
+            'mime' => $this->latest?->data->mime ?? '',
+            'published' => (bool) ( $this->latest?->published ?? false ),
+            'scheduled' => (bool) ( $this->latest?->data->scheduled ?? false ),
         ];
+    }
+
+
+    /**
+     * Modify the query used to retrieve models when making all of the models searchable.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder<static> $query
+     * @return \Illuminate\Database\Eloquent\Builder<static>
+     */
+    protected function makeAllSearchableUsing( $query )
+    {
+        return $query->with( 'latest' );
     }
 
 
