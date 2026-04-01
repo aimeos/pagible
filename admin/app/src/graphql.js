@@ -9,9 +9,7 @@ import { createApolloProvider } from '@vue/apollo-option'
 import { ApolloClient, ApolloLink, InMemoryCache } from '@apollo/client/core'
 import createUploadLink from 'apollo-upload-client/createUploadLink.mjs'
 import router from './routes'
-
-
-const node = document.querySelector('#app')
+import { urlgraphql } from './config'
 
 const retryLink = new RetryLink({
   delay: { initial: 300, max: 5000, jitter: true },
@@ -36,11 +34,11 @@ const errorLink = onError(({ errors }) => {
 const httpLink = ApolloLink.split(
   (operation) => operation.getContext().hasUpload,
   createUploadLink({
-    uri: node?.dataset?.urlgraphql || '/graphql',
+    uri: urlgraphql,
     credentials: 'include'
   }),
   new BatchHttpLink({
-    uri: node?.dataset?.urlgraphql || '/graphql',
+    uri: urlgraphql,
     batchMax: 50,
     batchInterval: 20,
     credentials: 'include'

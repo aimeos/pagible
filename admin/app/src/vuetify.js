@@ -3,6 +3,7 @@
  */
 
 import gettext from './i18n'
+import { theme } from './config'
 import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
 import { createVuetify } from 'vuetify'
@@ -45,7 +46,7 @@ const vuetify = createVuetify({
   },
   theme: {
     defaultTheme: 'system',
-    themes: JSON.parse(document.querySelector('#app')?.dataset.theme || '{}')
+    themes: theme
   }
 })
 
