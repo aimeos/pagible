@@ -24,7 +24,11 @@ use Laravel\Mcp\Request;
 #[IsReadOnly]
 #[Name('search-pages')]
 #[Title('Search for pages by keywords')]
+<<<<<<< HEAD
 #[Description('Full-text search across pages. Optional: term (keywords), lang, domain, type, tag, theme, path, status, cache, to, trashed (without/with/only), publish (PUBLISHED/DRAFT/SCHEDULED), editor. Returns up to 25 matches.')]
+=======
+#[Description('Lists and searches pages. Optional: term (full-text search), lang, status (0/1/2), parent_id, type, trashed (without/with/only), publish (PUBLISHED/DRAFT/SCHEDULED), editor. Returns up to 25 matches.')]
+>>>>>>> master
 class SearchPages extends Tool
 {
     /**
@@ -39,6 +43,9 @@ class SearchPages extends Tool
         $v = $request->validate([
             'term' => 'string|max:255',
             'lang' => 'string|max:5',
+            'status' => 'integer|in:0,1,2',
+            'parent_id' => 'string|max:36',
+            'type' => 'string|max:50',
             'trashed' => 'string|in:without,with,only',
             'publish' => 'string|in:PUBLISHED,DRAFT,SCHEDULED',
             'editor' => 'string|max:255',
@@ -62,6 +69,7 @@ class SearchPages extends Tool
             $data = $item->latest->data ?? new \stdClass();
             return [
                 'id' => $item->id,
+                'has_children' => $item->has,
                 'parent_id' => $item->parent_id,
                 'tag' => $data->tag ?? null,
                 'lang' => $item->latest?->lang,
@@ -98,6 +106,12 @@ class SearchPages extends Tool
                 ->description('Search keyword, e.g., "blog", "product", or "FAQ". One word or page path only.'),
             'lang' => $schema->string()
                 ->description('ISO language code from the get-locales tool call, e.g., "en" or "en-US".'),
+            'status' => $schema->integer()
+                ->description('Filter by status: 0 = inactive, 1 = visible, 2 = hidden.'),
+            'parent_id' => $schema->string()
+                ->description('Filter by parent page ID to list children of a specific page.'),
+            'type' => $schema->string()
+                ->description('Filter by page type, e.g., "page", "blog", "docs".'),
             'trashed' => $schema->string()
                 ->description('Include trashed items: "without" (default), "with" (include deleted), or "only" (only deleted).'),
             'publish' => $schema->string()

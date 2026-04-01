@@ -151,11 +151,13 @@ export default {
                 throw response.errors
               }
 
-              const data = response.data?.addFile || {}
-              data.previews = JSON.parse(data.previews) || {}
-              data.description = JSON.parse(data.description) || {}
-              data.transcription = JSON.parse(data.transcription) || {}
-              data.published = true
+              const data = {
+                ...(response.data?.addFile || {}),
+                previews: JSON.parse(response.data?.addFile?.previews) || {},
+                description: JSON.parse(response.data?.addFile?.description) || {},
+                transcription: JSON.parse(response.data?.addFile?.transcription) || {},
+                published: true
+              }
 
               this.items.unshift(data)
 

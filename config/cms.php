@@ -90,7 +90,7 @@ return [
     | The maximum depth of the navigation tree menu that will be displayed.
     |
     */
-    'menu_maxdepth' => env( 'CMS_MENU_MAXDEPTH', 2 ),
+    'navdepth' => env( 'CMS_NAVDEPTH', 2 ),
 
     /*
     |--------------------------------------------------------------------------

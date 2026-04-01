@@ -11,7 +11,6 @@ use Illuminate\Console\Command;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 use Aimeos\Cms\Concerns\Benchmarks;
 use Aimeos\Cms\GraphQL\Mutations;
 use Aimeos\Cms\GraphQL\Query;
@@ -40,11 +39,15 @@ class BenchmarkGraphql extends Command
 
     public function handle(): int
     {
-        if( !$this->validateOptions() ) {
+        $tenant = (string) $this->option( 'tenant' );
+        $tries = (int) $this->option( 'tries' );
+        $force = (bool) $this->option( 'force' );
+
+        if( !$this->checks( $tenant, $tries, $force ) ) {
             return self::FAILURE;
         }
 
-        $this->tenant();
+        $this->tenant( $tenant );
 
         if( !$this->hasSeededData() )
         {
@@ -61,33 +64,20 @@ class BenchmarkGraphql extends Command
 
         try
         {
-            // Create benchmark user
-            $userClass = config( 'auth.providers.users.model', 'App\\Models\\User' );
-            $user = new $userClass();
-
-            if( !$user instanceof \Illuminate\Foundation\Auth\User ) {
-                throw new \RuntimeException( 'User model must extend Illuminate\Foundation\Auth\User' );
-            }
-
-            $user->mergeCasts( ['cmsperms' => 'array'] );
-            $user->forceFill( [
-                'name' => 'Benchmark User',
-                'email' => 'benchmark@cms.benchmark',
-                'password' => bcrypt( Str::random( 64 ) ),
-                'cmsperms' => ['*'],
-            ] )->save();
+            $user = $this->user();
             Auth::login( $user );
 
             $root = Page::where( 'tag', 'root' )->where( 'lang', $lang )->where( 'domain', $domain )->firstOrFail();
-            $page = Page::where( 'tag', '!=', 'root' )->where( 'lang', $lang )->orderByDesc( 'depth' )->firstOrFail();
+
+            $count = Page::where( 'tag', '!=', 'root' )->where( 'lang', $lang )->count();
+            $page = Page::where( 'tag', '!=', 'root' )->where( 'lang', $lang )
+                ->orderBy( '_lft' )->skip( (int) floor( $count / 2 ) )->firstOrFail();
+
             $moveParent = Page::where( 'depth', 1 )->where( 'lang', $lang )
                 ->whereNotIn( 'id', $page->ancestors()->get()->pluck( 'id' ) )->firstOrFail();
 
-            // Preconditions: soft-delete a page for KeepPage/PurgePage
-            $excludeIds = $page->ancestors()->get()->pluck( 'id' )->push( $page->id );
-            $trashedPage = Page::where( 'tag', '!=', 'root' )->where( 'lang', $lang )
-                ->whereNotIn( 'id', $excludeIds )->orderByDesc( 'depth' )->firstOrFail();
-            $trashedPage->delete();
+            // Query pre-seeded soft-deleted page for KeepPage
+            $trashedPage = Page::onlyTrashed()->where( 'lang', $lang )->firstOrFail();
 
             // Create unpublished version for PubPage
             $unpubVersion = $page->versions()->forceCreate( [
@@ -115,45 +105,45 @@ class BenchmarkGraphql extends Command
                         'path' => 'gql-bench-' . Utils::uid(), 'status' => 1,
                     ],
                 ] );
-            } );
+            }, tries: $tries );
 
             $this->benchmark( 'Page save', function() use ( $page ) {
                 ( new Mutations\SavePage )( null, [
                     'id' => $page->id,
                     'input' => ['title' => 'Updated'],
                 ] );
-            } );
+            }, tries: $tries );
 
             $this->benchmark( 'Page move', function() use ( $page, $moveParent ) {
                 ( new Mutations\MovePage )( null, [
                     'id' => $page->id,
                     'parent' => $moveParent->id,
                 ] );
-            } );
+            }, tries: $tries );
 
             $this->benchmark( 'Page publish', function() use ( $page ) {
                 ( new Mutations\PubPage )( null, ['id' => [$page->id]] );
-            } );
+            }, tries: $tries );
 
             $this->benchmark( 'Page delete', function() use ( $page ) {
                 ( new Mutations\DropPage )( null, ['id' => [$page->id]] );
-            } );
+            }, tries: $tries );
 
             $this->benchmark( 'Page restore', function() use ( $trashedPage ) {
                 ( new Mutations\KeepPage )( null, ['id' => [$trashedPage->id]] );
-            } );
+            }, tries: $tries );
 
-            $this->benchmark( 'Page purge', function() use ( $trashedPage ) {
-                ( new Mutations\PurgePage )( null, ['id' => [$trashedPage->id]] );
-            } );
+            $this->benchmark( 'Page purge', function() use ( $page ) {
+                ( new Mutations\PurgePage )( null, ['id' => [$page->id]] );
+            }, tries: $tries );
 
             $this->benchmark( 'Page list', function() use ( $lang ) {
                 ( new Query )->pages( null, ['first' => 100, 'filter' => ['lang' => $lang]] )->items();
-            }, readOnly: true );
+            }, readOnly: true, tries: $tries );
 
             $this->benchmark( 'Page get', function() use ( $page ) {
                 Page::with( 'latest.files', 'latest.elements' )->find( $page->id );
-            }, readOnly: true );
+            }, readOnly: true, tries: $tries );
 
 
             /**
@@ -167,7 +157,7 @@ class BenchmarkGraphql extends Command
                         'data' => (object) ['type' => 'text', 'data' => (object) ['text' => 'Benchmark']],
                     ],
                 ] );
-            } );
+            }, tries: $tries );
 
 
             /**
@@ -181,7 +171,7 @@ class BenchmarkGraphql extends Command
                         'path' => 'https://placehold.co/1500x1000',
                     ],
                 ] );
-            } );
+            }, tries: $tries );
 
             $this->line( '' );
         }

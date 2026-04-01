@@ -34,11 +34,15 @@ class BenchmarkJsonapi extends Command
 
     public function handle(): int
     {
-        if( !$this->validateOptions() ) {
+        $tenant = (string) $this->option( 'tenant' );
+        $tries = (int) $this->option( 'tries' );
+        $force = (bool) $this->option( 'force' );
+
+        if( !$this->checks( $tenant, $tries, $force ) ) {
             return self::FAILURE;
         }
 
-        $this->tenant();
+        $this->tenant( $tenant );
 
         if( !$this->hasSeededData() )
         {
@@ -56,19 +60,19 @@ class BenchmarkJsonapi extends Command
 
         $this->benchmark( 'Page list', function() use ( $domain ) {
             Page::with( ['files', 'elements.files'] )->where( 'domain', $domain )->take( 100 )->get();
-        }, readOnly: true );
+        }, readOnly: true, tries: $tries );
 
         $this->benchmark( 'Page detail', function() use ( $page ) {
             Page::with( ['files', 'elements.files'] )->find( $page->id );
-        }, readOnly: true );
+        }, readOnly: true, tries: $tries );
 
         $this->benchmark( 'Page w/children', function() use ( $root ) {
             Page::with( ['children', 'files', 'elements.files'] )->find( $root->id );
-        }, readOnly: true );
+        }, readOnly: true, tries: $tries );
 
         $this->benchmark( 'Page w/ancestors', function() use ( $page ) {
             Page::with( ['ancestors', 'files', 'elements.files'] )->find( $page->id );
-        }, readOnly: true );
+        }, readOnly: true, tries: $tries );
 
         $this->line( '' );
 

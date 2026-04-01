@@ -27,7 +27,7 @@
             @includeFirst(cmsviews($page, $item), cmsdata($page, $item))
         @endforeach
 
-        @foreach($page->ancestors ? (clone $page->ancestors)->push($page)->reverse() : [$page] as $navItem)
+        @foreach($page->ancestorsAndSelf->reverse() as $navItem)
             @if($fileId = @cms($navItem, 'config.icon.data.file.id'))
                 <link rel="icon" type="{{ cmsfile($navItem, $fileId)?->mime }}" href="{{ cmsurl(cmsfile($navItem, $fileId)?->path) }}">
                 @break
@@ -38,7 +38,7 @@
         <link href="{{ cmsasset('vendor/cms/theme/cms.css') }}" rel="stylesheet">
         @stack('css')
 
-        @foreach($page->ancestors ? (clone $page->ancestors)->push($page) : [$page] as $navItem)
+        @foreach($page->ancestorsAndSelf as $navItem)
             @if($text = @cms($navItem, 'config.styles.data.text'))
                 <style nonce="{{ csrf_token() }}">
                     {!! $text !!}
@@ -82,7 +82,7 @@
                     </li>
                     <li class="brand">
                         <a href="{{ cmsroute($page->ancestors?->first() ?? $page) }}" class="contrast" title="{{ config('app.name') }}" aria-label="{{ config('app.name') }}">
-                            @forelse($page->ancestors ? (clone $page->ancestors)->push($page)->reverse() : [$page] as $navItem)
+                            @forelse($page->ancestorsAndSelf->reverse() as $navItem)
                                 @if($fileId = @cms($navItem, 'config.logo.data.file.id'))
                                     <img src="{{ cmsurl(cmsfile($navItem, $fileId)?->path) }}" alt="{{ config('app.name') }}">
                                     @break
@@ -173,7 +173,7 @@
         <script defer src="{{ cmsasset('vendor/cms/theme/cms.js') }}"></script>
         @stack('js')
 
-        @foreach($page->ancestors ? (clone $page->ancestors)->push($page) : [$page] as $navItem)
+        @foreach($page->ancestorsAndSelf as $navItem)
             @if($text = @cms($navItem, 'config.javascript.data.text'))
                 <script nonce="{{ csrf_token() }}">
                     {!! $text !!}

@@ -6,16 +6,18 @@ import gql from 'graphql-tag'
 import { markRaw } from 'vue'
 import { defineStore } from 'pinia'
 import { apolloClient } from './graphql'
-
-const app = document.querySelector('#app')
+import {
+  urladmin, urlproxy, urlpage, urlfile, multidomain,
+  config as appConfig, schemas as appSchemas
+} from './config'
 
 export const useAppStore = defineStore('app', {
   state: () => ({
-    urladmin: app?.dataset.urladmin || '/cmsadmin',
-    urlproxy: app?.dataset.urlproxy || '/cmsproxy?url=_url_',
-    urlpage: app?.dataset.urlpage || '/_path_',
-    urlfile: app?.dataset.urlfile || '/storage',
-    multidomain: parseInt(app?.dataset.multidomain) || 0
+    urladmin,
+    urlproxy,
+    urlpage,
+    urlfile,
+    multidomain
   })
 })
 
@@ -178,6 +180,8 @@ export const useUserStore = defineStore('user', {
       clearTimeout(this.saveTimer)
       this.saveTimer = null
 
+      const messages = useMessageStore()
+
       apolloClient
         .mutate({
           mutation: gql`
@@ -191,7 +195,13 @@ export const useUserStore = defineStore('user', {
             settings: this.me.settings
           }
         })
+        .then((response) => {
+          if (response.errors) {
+            throw response.errors
+          }
+        })
         .catch((error) => {
+          messages.add('Failed to save user settings:\n' + error, 'error')
           console.error('Failed to save user data', error)
         })
     }
@@ -217,7 +227,7 @@ export const useClipboardStore = defineStore('clipboard', {
 })
 
 export const useConfigStore = defineStore('config', {
-  state: () => JSON.parse(app?.dataset.config || '{}'),
+  state: () => appConfig,
 
   actions: {
     get(key, defval = null) {
@@ -478,7 +488,7 @@ export const useMessageStore = defineStore('message', {
  * Available element schemas
  */
 export const useSchemaStore = defineStore('schema', {
-  state: () => JSON.parse(app?.dataset.schemas || '{}')
+  state: () => appSchemas
 })
 
 /**

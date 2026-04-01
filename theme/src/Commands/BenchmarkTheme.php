@@ -38,11 +38,15 @@ class BenchmarkTheme extends Command
 
     public function handle(): int
     {
-        if( !$this->validateOptions() ) {
+        $tenant = (string) $this->option( 'tenant' );
+        $tries = (int) $this->option( 'tries' );
+        $force = (bool) $this->option( 'force' );
+
+        if( !$this->checks( $tenant, $tries, $force ) ) {
             return self::FAILURE;
         }
 
-        $this->tenant();
+        $this->tenant( $tenant );
 
         if( !$this->hasSeededData() )
         {
@@ -72,7 +76,7 @@ class BenchmarkTheme extends Command
         $this->benchmark( 'Page render', function() use ( $uncachedPage, $domain ) {
             $request = Request::create( '/' . $uncachedPage->path, 'GET' );
             ( new PageController )->index( $request, $uncachedPage->path, $domain );
-        }, readOnly: true );
+        }, readOnly: true, tries: $tries );
 
         // Page cached — warm cache first
         $warmRequest = Request::create( '/' . $cachedPage->path, 'GET' );
@@ -81,20 +85,20 @@ class BenchmarkTheme extends Command
         $this->benchmark( 'Page cached', function() use ( $cachedPage, $domain ) {
             $request = Request::create( '/' . $cachedPage->path, 'GET' );
             ( new PageController )->index( $request, $cachedPage->path, $domain );
-        }, readOnly: true );
+        }, readOnly: true, tries: $tries );
 
         // Search
         $this->benchmark( 'Search', function() use ( $domain, $lang ) {
             $request = Request::create( '/cmsapi/search', 'GET', ['q' => 'lorem', 'locale' => $lang, 'size' => 10] );
             ( new SearchController )->index( $request, $domain );
-        }, readOnly: true );
+        }, readOnly: true, tries: $tries );
 
         // Sitemap
         $this->benchmark( 'Sitemap', function() {
             ob_start();
             ( new SitemapController )->index()->sendContent();
             ob_end_clean();
-        }, readOnly: true );
+        }, readOnly: true, tries: (int) ceil( $tries / 10 ) );
 
         $this->line( '' );
 

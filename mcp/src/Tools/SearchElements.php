@@ -24,7 +24,7 @@ use Laravel\Mcp\Request;
 #[IsReadOnly]
 #[Name('search-elements')]
 #[Title('Search shared content elements')]
-#[Description('Searches for shared content elements by name, type, or keyword. Returns up to 25 matching elements as a JSON array.')]
+#[Description('Lists and searches shared content elements. Optional: term (full-text search), type, lang, trashed, publish, editor. Without term, returns all matching elements. Returns up to 25 results.')]
 class SearchElements extends Tool
 {
     /**

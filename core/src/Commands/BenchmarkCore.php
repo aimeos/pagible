@@ -37,11 +37,15 @@ class BenchmarkCore extends Command
 
     public function handle(): int
     {
-        if( !$this->validateOptions() ) {
+        $tenant = (string) $this->option( 'tenant' );
+        $tries = (int) $this->option( 'tries' );
+        $force = (bool) $this->option( 'force' );
+
+        if( !$this->checks( $tenant, $tries, $force ) ) {
             return self::FAILURE;
         }
 
-        $this->tenant();
+        $this->tenant( $tenant );
 
         if( !$this->hasSeededData() )
         {
@@ -54,7 +58,11 @@ class BenchmarkCore extends Command
 
         // Load one item per type (each benchmark iteration is rolled back)
         $root = Page::where( 'tag', 'root' )->where( 'lang', $lang )->where( 'domain', $domain )->firstOrFail();
-        $page = Page::where( 'tag', '!=', 'root' )->where( 'lang', $lang )->orderByDesc( 'depth' )->firstOrFail();
+
+        $count = Page::where( 'tag', '!=', 'root' )->where( 'lang', $lang )->count();
+        $page = Page::where( 'tag', '!=', 'root' )->where( 'lang', $lang )
+            ->orderBy( '_lft' )->skip( (int) floor( $count / 2 ) )->firstOrFail();
+
         $moveParent = Page::where( 'depth', 1 )->where( 'lang', $lang )
             ->whereNotIn( 'id', $page->ancestors()->get()->pluck( 'id' ) )->firstOrFail();
         $element = Element::where( 'lang', $lang )->firstOrFail();
@@ -71,19 +79,10 @@ class BenchmarkCore extends Command
         $page->forceFill( ['latest_id' => $unpubVersion->id] )->saveQuietly();
         $page->setRelation( 'latest', $unpubVersion );
 
-        // Soft-delete one of each for restore/purge benchmarks
-        $excludeIds = $page->ancestors()->get()->pluck( 'id' )->push( $page->id );
-        $trashedPage = Page::where( 'tag', '!=', 'root' )->where( 'lang', $lang )
-            ->whereNotIn( 'id', $excludeIds )->orderByDesc( 'depth' )->firstOrFail();
-        $trashedPage->delete();
-
-        $trashedElement = Element::where( 'lang', $lang )
-            ->where( 'id', '!=', $element->id )->firstOrFail();
-        $trashedElement->delete();
-
-        $trashedFile = File::where( 'lang', $lang )
-            ->where( 'id', '!=', $file->id )->firstOrFail();
-        $trashedFile->delete();
+        // Query pre-seeded soft-deleted items for restore benchmarks
+        $trashedPage = Page::onlyTrashed()->where( 'lang', $lang )->firstOrFail();
+        $trashedElement = Element::onlyTrashed()->where( 'lang', $lang )->firstOrFail();
+        $trashedFile = File::onlyTrashed()->where( 'lang', $lang )->firstOrFail();
 
         $this->header();
 
@@ -102,15 +101,15 @@ class BenchmarkCore extends Command
                 'lang' => $lang, 'data' => ['name' => 'Bench page'], 'published' => false, 'editor' => 'benchmark',
             ] );
             $p->publish( $version );
-        } );
+        }, tries: $tries );
 
         $this->benchmark( 'Page read', function() use ( $page ) {
             Page::with( 'latest.files', 'latest.elements' )->find( $page->id );
-        }, readOnly: true );
+        }, readOnly: true, tries: $tries );
 
         $this->benchmark( 'Page list', function() {
             Page::with( 'latest.files', 'latest.elements' )->take( 100 )->get();
-        }, readOnly: true );
+        }, readOnly: true, tries: $tries );
 
         $this->benchmark( 'Page update', function() use ( $page, $lang ) {
             $version = $page->versions()->forceCreate( [
@@ -118,34 +117,34 @@ class BenchmarkCore extends Command
                 'aux' => (array) $page->latest?->aux, 'published' => false, 'editor' => 'benchmark',
             ] );
             $page->forceFill( ['latest_id' => $version->id] )->saveQuietly();
-        } );
+        }, tries: $tries );
 
         $this->benchmark( 'Page move', function() use ( $page, $moveParent ) {
             $page->appendToNode( $moveParent )->save();
-        } );
+        }, tries: $tries );
 
         $this->benchmark( 'Page publish', function() use ( $page ) {
             $page->publish( $page->latest ?? throw new \RuntimeException( 'No latest version' ) );
-        } );
+        }, tries: $tries );
 
         $this->benchmark( 'Page delete', function() use ( $page ) {
             $page->delete();
             $page->deleted_at = null;
-        } );
+        }, tries: $tries );
 
         $this->benchmark( 'Page restore', function() use ( $trashedPage ) {
             $trashedPage->restore();
             $trashedPage->deleted_at = now();
-        } );
+        }, tries: $tries );
 
-        $this->benchmark( 'Page purge', function() use ( $trashedPage ) {
-            $trashedPage->forceDelete();
-            $trashedPage->deleted_at = now();
-        } );
+        $this->benchmark( 'Page purge', function() use ( $page ) {
+            $page->forceDelete();
+            $page->exists = true;
+        }, tries: $tries );
 
         $this->benchmark( 'Page tree', function() use ( $root ) {
             Page::where( 'parent_id', $root->id )->with( ['children', 'latest'] )->get();
-        }, readOnly: true );
+        }, readOnly: true, tries: $tries );
 
 
         /**
@@ -161,32 +160,32 @@ class BenchmarkCore extends Command
                 'lang' => $lang, 'data' => ['type' => 'text', 'name' => 'Bench element'], 'published' => false, 'editor' => 'benchmark',
             ] );
             $el->publish( $version );
-        } );
+        }, tries: $tries );
 
         $this->benchmark( 'Element read', function() use ( $element ) {
-            Element::with( 'latest' )->find( $element->id );
-        }, readOnly: true );
+            Element::with( 'latest.files' )->find( $element->id );
+        }, readOnly: true, tries: $tries );
 
         $this->benchmark( 'Element list', function() {
-            Element::with( 'latest' )->take( 100 )->get();
-        }, readOnly: true );
+            Element::with( 'latest.files' )->take( 100 )->get();
+        }, readOnly: true, tries: $tries );
 
         $this->benchmark( 'Element update', function() use ( $element, $lang ) {
             $version = $element->versions()->forceCreate( [
                 'lang' => $lang, 'data' => (array) $element->latest?->data, 'published' => false, 'editor' => 'benchmark',
             ] );
             $element->forceFill( ['latest_id' => $version->id] )->saveQuietly();
-        } );
+        }, tries: $tries );
 
         $this->benchmark( 'Element delete', function() use ( $element ) {
             $element->delete();
             $element->deleted_at = null;
-        } );
+        }, tries: $tries );
 
         $this->benchmark( 'Element restore', function() use ( $trashedElement ) {
             $trashedElement->restore();
             $trashedElement->deleted_at = now();
-        } );
+        }, tries: $tries );
 
 
         /**
@@ -203,32 +202,32 @@ class BenchmarkCore extends Command
                 'published' => false, 'editor' => 'benchmark',
             ] );
             $f->publish( $version );
-        } );
+        }, tries: $tries );
 
         $this->benchmark( 'File read', function() use ( $file ) {
             File::with( 'latest' )->find( $file->id );
-        }, readOnly: true );
+        }, readOnly: true, tries: $tries );
 
         $this->benchmark( 'File list', function() {
             File::with( 'latest' )->take( 100 )->get();
-        }, readOnly: true );
+        }, readOnly: true, tries: $tries );
 
         $this->benchmark( 'File update', function() use ( $file, $lang ) {
             $version = $file->versions()->forceCreate( [
                 'lang' => $lang, 'data' => (array) $file->latest?->data, 'published' => false, 'editor' => 'benchmark',
             ] );
             $file->forceFill( ['latest_id' => $version->id] )->saveQuietly();
-        } );
+        }, tries: $tries );
 
         $this->benchmark( 'File delete', function() use ( $file ) {
             $file->delete();
             $file->deleted_at = null;
-        } );
+        }, tries: $tries );
 
         $this->benchmark( 'File restore', function() use ( $trashedFile ) {
             $trashedFile->restore();
             $trashedFile->deleted_at = now();
-        } );
+        }, tries: $tries );
 
 
         /**
@@ -237,11 +236,11 @@ class BenchmarkCore extends Command
 
         $this->benchmark( 'Version list', function() use ( $page ) {
             $page->versions()->get();
-        }, readOnly: true );
+        }, readOnly: true, tries: $tries );
 
         $this->benchmark( 'Version prune', function() use ( $page ) {
             $page->removeVersions();
-        } );
+        }, tries: $tries );
 
 
         $this->line( '' );

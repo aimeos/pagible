@@ -160,11 +160,11 @@ class ToolsTest extends McpTestAbstract
     }
 
 
-    public function testListPages()
+    public function testSearchPagesNoTerm()
     {
         $this->seed( \Database\Seeders\CmsSeeder::class );
 
-        $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\ListPages::class, [
+        $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\SearchPages::class, [
             'lang' => 'en',
         ] );
 
@@ -172,11 +172,11 @@ class ToolsTest extends McpTestAbstract
     }
 
 
-    public function testListPagesFilterStatus()
+    public function testSearchPagesFilterStatus()
     {
         $this->seed( \Database\Seeders\CmsSeeder::class );
 
-        $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\ListPages::class, [
+        $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\SearchPages::class, [
             'status' => 0,
         ] );
 
@@ -487,21 +487,21 @@ class ToolsTest extends McpTestAbstract
     }
 
 
-    public function testListElements()
+    public function testSearchElementsNoTerm()
     {
         $this->seed( \Database\Seeders\CmsSeeder::class );
 
-        $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\ListElements::class );
+        $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\SearchElements::class );
 
         $response->assertOk()->assertSee( ['Shared footer', 'footer'] );
     }
 
 
-    public function testListElementsFilterType()
+    public function testSearchElementsFilterType()
     {
         $this->seed( \Database\Seeders\CmsSeeder::class );
 
-        $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\ListElements::class, [
+        $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\SearchElements::class, [
             'type' => 'footer',
         ] );
 
@@ -678,21 +678,21 @@ class ToolsTest extends McpTestAbstract
     }
 
 
-    public function testListFiles()
+    public function testSearchFilesNoTerm()
     {
         $this->seed( \Database\Seeders\CmsSeeder::class );
 
-        $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\ListFiles::class );
+        $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\SearchFiles::class );
 
         $response->assertOk()->assertSee( ['Test image', 'image/jpeg'] );
     }
 
 
-    public function testListFilesFilterMime()
+    public function testSearchFilesFilterMime()
     {
         $this->seed( \Database\Seeders\CmsSeeder::class );
 
-        $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\ListFiles::class, [
+        $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\SearchFiles::class, [
             'mime' => 'image/tiff',
         ] );
 

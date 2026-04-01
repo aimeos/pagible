@@ -7,7 +7,6 @@
 
 namespace Aimeos\Cms\Models;
 
-use Aimeos\Cms\Casts\LazyObject;
 use Aimeos\Cms\Concerns\Tenancy;
 use Aimeos\Nestedset\NodeTrait;
 use Aimeos\Nestedset\AncestorsRelation;
@@ -57,6 +56,7 @@ use Laravel\Scout\Searchable;
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property \Illuminate\Support\Carbon|null $deleted_at
  * @property \Aimeos\Nestedset\Collection<int, Nav>|null $subtree
+ * @property-read Collection<int, Page> $ancestors
  * @method static \Illuminate\Database\Eloquent\Builder<static> withoutTenancy()
  */
 class Page extends Base
@@ -113,9 +113,9 @@ class Page extends Base
         'theme' => 'string',
         'status' => 'integer',
         'cache' => 'integer',
-        'meta' => LazyObject::class,
-        'config' => LazyObject::class,
-        'content' => LazyObject::class, // for object access in templates
+        'meta' => 'object',
+        'config' => 'object',
+        'content' => 'object', // for object access in templates
         'created_at' => 'datetime:Y-m-d H:i:s',
         'updated_at' => 'datetime:Y-m-d H:i:s',
         'deleted_at' => 'datetime:Y-m-d H:i:s',
@@ -147,6 +147,13 @@ class Page extends Base
      * @var string
      */
     protected $table = 'cms_pages';
+
+    /**
+     * Ancestors and self collection cache for performance reasons.
+     *
+     * @var Collection<int, Page>|null
+     */
+    protected ?Collection $cachedAncestorsAndSelf = null;
 
 
     /**
@@ -276,6 +283,17 @@ class Page extends Base
 
 
     /**
+     * Returns ancestors including self (root→self), cached per instance.
+     *
+     * @return Collection<int, Page>
+     */
+    public function getAncestorsAndSelfAttribute() : Collection
+    {
+        return $this->cachedAncestorsAndSelf ??= collect( $this->ancestors )->push( $this );
+    }
+
+
+    /**
      * Tests if node has children.
      *
      * @return bool TRUE if node has children, FALSE if not
@@ -322,7 +340,7 @@ class Page extends Base
      */
     public function nav( $level = 0 ) : \Aimeos\Nestedset\Collection
     {
-        return ( clone $this->ancestors )->push( $this ) // @phpstan-ignore-line property.notFound
+        return collect( $this->ancestors )->push( $this )
             ->skip( $level )->first()
             ?->subtree?->toTree()
             ?? new \Aimeos\Nestedset\Collection();
@@ -385,6 +403,17 @@ class Page extends Base
 
     /**
     /**
+     * Don't fire model events for each descendant for performance reasons.
+      *
+      * @return bool FALSE to disable firing events for descendants
+     */
+    protected function shouldFireDescendantEvents(): bool
+    {
+        return false;
+    }
+
+
+    /**
      * Get query for the complete sub-tree up to three levels.
      *
      * @return DescendantsRelation Eloquent relationship to the descendants of the page
@@ -394,13 +423,19 @@ class Page extends Base
         // restrict maximum depth to three levels for performance reasons
         $maxDepth = ( $this->depth ?? 0 ) + config( 'cms.navdepth', 2 );
 
-        $builder = $this->newScopedQuery()->with( 'latest' )
+        $isEditor = \Aimeos\Cms\Permission::can( 'page:view', Auth::user() );
+
+        $builder = $this->newScopedQuery()
             ->select( 'id', 'parent_id', '_lft', '_rgt', 'depth', 'name', 'title', 'tag', 'path', 'domain', 'lang', 'to', 'status', 'config' )
             ->whereIn( 'depth', range( 0, $maxDepth ) )
             ->defaultOrder()
             ->setModel(new Nav());
 
-        if( !\Aimeos\Cms\Permission::can( 'page:view', Auth::user() ) )
+        if( $isEditor ) {
+            $builder->with( 'latest' );
+        }
+
+        if( !$isEditor )
         {
             $table = $this->getTable();
 
@@ -513,6 +548,30 @@ class Page extends Base
     }
 
 
+    /**
+     * Interact with the "config" property.
+     *
+     * @return Attribute<mixed, mixed> Eloquent attribute for the "config" property
+     */
+    protected function config(): Attribute
+    {
+        return Attribute::make(
+            set: fn( $value ) => json_encode( $value ?? new \stdClass() ),
+        );
+    }
+
+
+    /**
+     * Interact with the "content" property.
+     *
+     * @return Attribute<mixed, mixed> Eloquent attribute for the "content" property
+     */
+    protected function content(): Attribute
+    {
+        return Attribute::make(
+            set: fn( $value ) => json_encode( $value ?? [] ),
+        );
+    }
 
 
     /**
@@ -541,6 +600,17 @@ class Page extends Base
     }
 
 
+    /**
+     * Interact with the "meta" property.
+     *
+     * @return Attribute<mixed, mixed> Eloquent attribute for the "meta" property
+     */
+    protected function meta(): Attribute
+    {
+        return Attribute::make(
+            set: fn( $value ) => json_encode( $value ?? new \stdClass() ),
+        );
+    }
 
 
     /**

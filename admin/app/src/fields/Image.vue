@@ -57,7 +57,7 @@ export default {
           return File.methods.handle.call(this, data, path)
         })
         .catch((error) => {
-          console.error(error)
+          this.$log(error)
           return false
         })
     }

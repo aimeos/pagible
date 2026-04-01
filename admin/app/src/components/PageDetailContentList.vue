@@ -118,7 +118,7 @@ export default {
       return this.content.some((el) => el._changed)
     },
 
-    isChecked() {
+    checkedCount() {
       return this.content.filter((el) => el._checked).length
     }
   },
@@ -293,9 +293,7 @@ export default {
       }
 
       const entries = (this.clipboard.get('page-content') || []).map((el) => {
-        el.group = this.section
-        el.id = uid()
-        return el
+        return { ...el, group: this.section, id: uid() }
       })
 
       this.content.splice(idx, 0, ...entries)
@@ -652,9 +650,12 @@ export default {
         this.assets[file.id] = file
       }
 
-      this.content[idx].type = this.elements[entry.refid].type || null
-      this.content[idx].data = this.elements[entry.refid].data || {}
-      delete this.content[idx].refid
+      this.content[idx] = {
+        ...this.content[idx],
+        type: this.elements[entry.refid].type || null,
+        data: { ...(this.elements[entry.refid].data || {}) },
+        refid: undefined
+      }
 
       this.$emit('update:content', this.content)
     },
@@ -743,19 +744,19 @@ export default {
           <template v-slot:activator="{ props }">
             <v-btn
               v-bind="props"
-              :disabled="!isChecked && !clipboard.get('page-content')"
+              :disabled="!checkedCount && !clipboard.get('page-content')"
               :append-icon="mdiMenuDown"
               variant="text"
               >{{ $gettext('Actions') }}</v-btn
             >
           </template>
           <v-list>
-            <v-list-item v-if="isChecked">
+            <v-list-item v-if="checkedCount">
               <v-btn :prepend-icon="mdiContentCopy" variant="text" @click="copy()">{{
                 $gettext('Copy')
               }}</v-btn>
             </v-list-item>
-            <v-list-item v-if="isChecked">
+            <v-list-item v-if="checkedCount">
               <v-btn :prepend-icon="mdiContentCut" variant="text" @click="cut()">{{
                 $gettext('Cut')
               }}</v-btn>
@@ -765,12 +766,12 @@ export default {
                 $gettext('Paste')
               }}</v-btn>
             </v-list-item>
-            <v-list-item v-if="isChecked > 1">
+            <v-list-item v-if="checkedCount > 1">
               <v-btn :prepend-icon="mdiSetMerge" variant="text" @click="merge()">{{
                 $gettext('Merge')
               }}</v-btn>
             </v-list-item>
-            <v-list-item v-if="isChecked">
+            <v-list-item v-if="checkedCount">
               <v-btn :prepend-icon="mdiDelete" variant="text" @click="purge()">{{
                 $gettext('Delete')
               }}</v-btn>
@@ -906,7 +907,7 @@ export default {
                       $gettext('Split')
                     }}</v-btn>
                   </v-list-item>
-                  <v-list-item v-if="el._checked && isChecked > 1">
+                  <v-list-item v-if="el._checked && checkedCount > 1">
                     <v-btn :prepend-icon="mdiSetMerge" variant="text" @click="merge()">{{
                       $gettext('Merge')
                     }}</v-btn>

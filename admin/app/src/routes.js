@@ -4,11 +4,12 @@
 
 import { createRouter, createWebHistory } from 'vue-router'
 import { useUserStore, useMessageStore } from './stores'
+import { urladmin } from './config'
 import gettext from './i18n'
 
 
 const router = createRouter({
-  history: createWebHistory(document.querySelector('#app')?.dataset?.urladmin || ''),
+  history: createWebHistory(urladmin),
   routes: [
     {
       path: '/',
@@ -58,7 +59,7 @@ router.beforeEach(async (to, from, next) => {
     next({ name: 'login' })
   } else if (to.name !== 'login' && !user.can(to.name)) {
     message.add(
-      $gettext('You do not have permission to access %{path}', { path: to.fullPath }),
+      gettext.$gettext('You do not have permission to access %{path}', { path: to.fullPath }),
       'error'
     )
     return next(false)
