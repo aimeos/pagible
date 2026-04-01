@@ -1,3 +1,6 @@
+.claude/
+.vexp/
+.vscode/
 .phpunit.result.cache
 .potrans
 .env*
