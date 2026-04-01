@@ -24,11 +24,7 @@ use Laravel\Mcp\Request;
 #[IsReadOnly]
 #[Name('search-pages')]
 #[Title('Search for pages by keywords')]
-<<<<<<< HEAD
-#[Description('Full-text search across pages. Optional: term (keywords), lang, domain, type, tag, theme, path, status, cache, to, trashed (without/with/only), publish (PUBLISHED/DRAFT/SCHEDULED), editor. Returns up to 25 matches.')]
-=======
-#[Description('Lists and searches pages. Optional: term (full-text search), lang, status (0/1/2), parent_id, type, trashed (without/with/only), publish (PUBLISHED/DRAFT/SCHEDULED), editor. Returns up to 25 matches.')]
->>>>>>> master
+#[Description('Lists and searches pages. Optional: term (full-text search), lang, domain, type, tag, theme, path, status, cache, to, trashed (without/with/only), publish (PUBLISHED/DRAFT/SCHEDULED), editor. Returns up to 25 matches.')]
 class SearchPages extends Tool
 {
     /**
