@@ -58,7 +58,7 @@ router.beforeEach(async (to, from, next) => {
     next({ name: 'login' })
   } else if (to.name !== 'login' && !user.can(to.name)) {
     message.add(
-      $gettext('You do not have permission to access %{path}', { path: to.fullPath }),
+      gettext.$gettext('You do not have permission to access %{path}', { path: to.fullPath }),
       'error'
     )
     return next(false)

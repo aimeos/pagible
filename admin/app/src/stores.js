@@ -178,6 +178,8 @@ export const useUserStore = defineStore('user', {
       clearTimeout(this.saveTimer)
       this.saveTimer = null
 
+      const messages = useMessageStore()
+
       apolloClient
         .mutate({
           mutation: gql`
@@ -191,7 +193,13 @@ export const useUserStore = defineStore('user', {
             settings: this.me.settings
           }
         })
+        .then((response) => {
+          if (response.errors) {
+            throw response.errors
+          }
+        })
         .catch((error) => {
+          messages.add('Failed to save user settings:\n' + error, 'error')
           console.error('Failed to save user data', error)
         })
     }

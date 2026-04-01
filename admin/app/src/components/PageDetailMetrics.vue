@@ -166,23 +166,13 @@ export default {
         const sortByValue = (a, b) => b.value - a.value
         const sortByDate = (a, b) => (a.key > b.key ? 1 : a.key < b.key ? -1 : 0)
 
-        const percent = (item) => {
-          item.value = item.value * 100
-          return item
-        }
-        const minutes = (item) => {
-          item.value = item.value / 60
-          return item
-        }
-
-        const formatValue = (item) => {
-          item.value = this.value(item.value)
-          return item
-        }
-        const formatDate = (item) => {
-          item.key = dateFormatter.format(new Date(item.key))
-          return item
-        }
+        const percent = (item) => ({ ...item, value: item.value * 100 })
+        const minutes = (item) => ({ ...item, value: item.value / 60 })
+        const formatValue = (item) => ({ ...item, value: this.value(item.value) })
+        const formatDate = (item) => ({
+          ...item,
+          key: dateFormatter.format(new Date(item.key))
+        })
 
         this.views = (stats.views || []).sort(sortByDate).map(formatDate)
         this.visits = (stats.visits || []).sort(sortByDate).map(formatDate)
@@ -598,7 +588,7 @@ export default {
                   <tr v-if="item.rows.length">
                     <td :colspan="columns.length" class="py-2">
                       <v-data-table
-                        :items="item.rows.sort((a, b) => b.value - a.value)"
+                        :items="[...item.rows].sort((a, b) => b.value - a.value)"
                         density="compact"
                         hide-default-header
                         hover

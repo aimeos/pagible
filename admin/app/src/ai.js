@@ -135,7 +135,8 @@ export function write(prompt, context = [], files = []) {
   const { $gettext } = gettext
 
   if (!user.can('text:write')) {
-    return messages.add($gettext('Permission denied'), 'error')
+    messages.add($gettext('Permission denied'), 'error')
+    return
   }
 
   prompt = String(prompt).trim()
