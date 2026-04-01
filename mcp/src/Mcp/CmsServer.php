@@ -31,17 +31,14 @@ class CmsServer extends Server
         \Aimeos\Cms\Tools\GetPageTree::class,
         \Aimeos\Cms\Tools\GetPageHistory::class,
         \Aimeos\Cms\Tools\GetPageMetrics::class,
-        \Aimeos\Cms\Tools\ListPages::class,
         \Aimeos\Cms\Tools\SearchPages::class,
 
         // Read tools - Elements
         \Aimeos\Cms\Tools\GetElement::class,
-        \Aimeos\Cms\Tools\ListElements::class,
         \Aimeos\Cms\Tools\SearchElements::class,
 
         // Read tools - Files
         \Aimeos\Cms\Tools\GetFile::class,
-        \Aimeos\Cms\Tools\ListFiles::class,
         \Aimeos\Cms\Tools\SearchFiles::class,
 
         // Write tools - Pages

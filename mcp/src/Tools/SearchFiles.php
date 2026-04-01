@@ -23,7 +23,7 @@ use Laravel\Mcp\Request;
 #[IsReadOnly]
 #[Name('search-files')]
 #[Title('Search files by keyword')]
-#[Description('Searches the media library for files matching a keyword in the name, description, or transcription. Returns up to 25 matching files as a JSON array.')]
+#[Description('Lists and searches media files. Optional: term (full-text search), mime, lang, trashed, publish, editor. Without term, returns all matching files. Returns up to 25 results.')]
 class SearchFiles extends Tool
 {
     /**
