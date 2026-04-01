@@ -46,11 +46,9 @@ class SearchPages extends Tool
             'publish' => 'string|in:PUBLISHED,DRAFT,SCHEDULED',
             'editor' => 'string|max:255',
             'domain' => 'string|max:255',
-            'type' => 'string|max:50',
             'tag' => 'string|max:50',
             'theme' => 'string|max:50',
             'path' => 'string|max:255',
-            'status' => 'integer|in:0,1,2',
             'cache' => 'integer|min:0|max:525600',
             'to' => 'string|max:2000',
         ] );
@@ -116,16 +114,12 @@ class SearchPages extends Tool
                 ->description('Filter by editor name.'),
             'domain' => $schema->string()
                 ->description('Filter by domain name.'),
-            'type' => $schema->string()
-                ->description('Filter by page type.'),
             'tag' => $schema->string()
                 ->description('Filter by page tag, e.g., "root".'),
             'theme' => $schema->string()
                 ->description('Filter by theme name.'),
             'path' => $schema->string()
                 ->description('Filter by page path.'),
-            'status' => $schema->integer()
-                ->description('Filter by status: 0 (disabled), 1 (enabled), 2 (review).'),
             'cache' => $schema->integer()
                 ->description('Filter by cache duration in minutes.'),
             'to' => $schema->string()
