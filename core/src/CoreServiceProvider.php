@@ -18,6 +18,7 @@ class CoreServiceProvider extends Provider
         $this->publishes( [$basedir . '/config/cms.php' => config_path( 'cms.php' )], 'cms-core-config' );
 
         $this->rateLimiter();
+        $this->userCasts();
         $this->console();
 
         // Set null Scout driver as fallback if none configured
@@ -68,6 +69,32 @@ class CoreServiceProvider extends Provider
             } );
         }
     }
+
+    protected function userCasts() : void
+    {
+        $this->app->booted( function() {
+            $userClass = config( 'auth.providers.users.model', 'App\\Models\\User' );
+
+            if( !$userClass || !class_exists( $userClass ) || !method_exists( $userClass, 'mergeCasts' ) ) {
+                return;
+            }
+
+            $casts = ['cmsperms' => 'array'];
+
+            $userClass::retrieved( function( $model ) use ( $casts ) {
+                $model->mergeCasts( $casts );
+            } );
+
+            $userClass::saving( function( $model ) use ( $casts ) {
+                $model->mergeCasts( $casts );
+
+                if( is_array( $model->getAttributes()['cmsperms'] ?? null ) ) {
+                    $model->setAttribute( 'cmsperms', $model->getAttributes()['cmsperms'] );
+                }
+            } );
+        } );
+    }
+
 
     protected function rateLimiter(): void
     {

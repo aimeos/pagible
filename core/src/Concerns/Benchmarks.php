@@ -157,7 +157,6 @@ trait Benchmarks
             throw new \RuntimeException( 'User model must extend Illuminate\Foundation\Auth\User' );
         }
 
-        $user->mergeCasts( ['cmsperms' => 'array'] );
         $user->forceFill( [
             'name' => 'Benchmark User',
             'email' => 'benchmark@example.com',
