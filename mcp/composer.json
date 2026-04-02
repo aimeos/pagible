@@ -7,8 +7,9 @@
     "license": "LGPL-3.0-only",
     "require": {
         "php": "^8.2",
+        "laravel/mcp": "~0.5",
         "aimeos/pagible-core": "*@dev",
-        "laravel/mcp": "~0.5"
+        "aimeos/laravel-analytics-bridge": "~1.0"
     },
     "require-dev": {
         "orchestra/testbench": "^9.0||^10.0||^11.0"
