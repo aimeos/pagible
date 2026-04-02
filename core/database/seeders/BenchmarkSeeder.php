@@ -475,6 +475,7 @@ class BenchmarkSeeder
             'depth' => $depth,
             'created_at' => $now,
             'updated_at' => $now,
+            'deleted_at' => null,
         ];
     }
 
