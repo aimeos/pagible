@@ -31,6 +31,17 @@ use Illuminate\Support\Str;
 abstract class Base extends Model
 {
     /**
+     * Prevent instantiation of abstract Base class by Laravel's HasCollection trait.
+     *
+     * @return class-string|null
+     */
+    public function resolveCollectionFromAttribute()
+    {
+        return null;
+    }
+
+
+    /**
      * Get the current timestamp in seconds precision.
      *
      * @return \Illuminate\Support\Carbon Current timestamp
