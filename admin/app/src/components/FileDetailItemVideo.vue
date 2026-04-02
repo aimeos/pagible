@@ -14,7 +14,6 @@ export default {
 
   emits: ['update:item'],
 
-
   data() {
     return {
       loading: {}

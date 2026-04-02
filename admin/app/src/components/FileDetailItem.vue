@@ -32,7 +32,6 @@ export default {
 
   emits: ['update:item', 'update:file', 'error'],
 
-
   data() {
     return {
       vedit: false,

@@ -23,7 +23,6 @@ export default {
     FileDialog
   },
 
-
   props: {
     modelValue: { type: [Object, null], default: () => null },
     config: { type: Object, default: () => {} },

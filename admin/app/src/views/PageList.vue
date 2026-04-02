@@ -45,7 +45,6 @@ export default {
     User
   },
 
-
   data() {
     const defaults = {
       view: 'tree',

@@ -31,7 +31,6 @@ export default {
 
   emits: ['update:file', 'use'],
 
-
   data() {
     return {
       destroyed: false,

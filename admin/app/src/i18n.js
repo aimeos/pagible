@@ -4,7 +4,6 @@
 
 import { createGettext } from 'vue3-gettext'
 
-
 const gettext = createGettext({
   defaultLanguage: 'en',
   translations: {},
@@ -25,6 +24,5 @@ import(`../i18n/LINGUAS?raw`).then((content) => {
     gettext.current = locale
   })
 })
-
 
 export default gettext

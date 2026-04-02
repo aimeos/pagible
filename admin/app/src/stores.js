@@ -7,8 +7,13 @@ import { markRaw } from 'vue'
 import { defineStore } from 'pinia'
 import { apolloClient } from './graphql'
 import {
-  urladmin, urlproxy, urlpage, urlfile, multidomain,
-  config as appConfig, schemas as appSchemas
+  urladmin,
+  urlproxy,
+  urlpage,
+  urlfile,
+  multidomain,
+  config as appConfig,
+  schemas as appSchemas
 } from './config'
 
 export const useAppStore = defineStore('app', {

@@ -82,7 +82,6 @@ export function recording() {
   }
 }
 
-
 /**
  * Converts the audio data to a MP3 file (mono).
  *
@@ -128,7 +127,6 @@ export async function toMp3(input) {
     )
   })
 }
-
 
 /**
  * Transcribes a list of audio segments into text.

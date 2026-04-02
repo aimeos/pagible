@@ -28,7 +28,6 @@ export default {
     VueDraggable
   },
 
-
   props: {
     modelValue: { type: Array, default: () => [] },
     config: { type: Object, default: () => {} },

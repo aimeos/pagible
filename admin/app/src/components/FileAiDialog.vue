@@ -27,7 +27,18 @@ export default {
     const user = useUserStore()
     const app = useAppStore()
 
-    return { app, user, messages, toBlob, url, transcribe, mdiMicrophoneOutline, mdiMicrophone, mdiClose, mdiDelete }
+    return {
+      app,
+      user,
+      messages,
+      toBlob,
+      url,
+      transcribe,
+      mdiMicrophoneOutline,
+      mdiMicrophone,
+      mdiClose,
+      mdiDelete
+    }
   },
 
   data() {

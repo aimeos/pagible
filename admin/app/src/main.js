@@ -17,7 +17,6 @@ import router from './routes'
 import vuetify from './vuetify'
 import App from './App.vue'
 
-
 const app = createApp(App)
 const pinia = createPinia()
 

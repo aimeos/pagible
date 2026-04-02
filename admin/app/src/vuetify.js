@@ -9,7 +9,6 @@ import * as directives from 'vuetify/directives'
 import { createVuetify } from 'vuetify'
 import { aliases, mdi } from 'vuetify/iconsets/mdi-svg'
 
-
 const localeMap = { zh: 'zhHans' }
 const locales = import.meta.glob('../node_modules/vuetify/lib/locale/*.js')
 

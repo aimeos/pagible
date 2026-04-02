@@ -9,7 +9,6 @@ import { toMp3, transcription } from './audio'
 import { useUserStore, useMessageStore } from './stores'
 import { url } from './utils'
 
-
 /**
  * Transcribes audio/video from a media URL to text via GraphQL
  *
@@ -56,7 +55,6 @@ export function transcribe(input) {
       console.error(`useAi::transcribe(): Error transcribing from media URL`, error)
     })
 }
-
 
 /**
  * Translates one or more texts to a target language via GraphQL
@@ -117,7 +115,6 @@ export function translate(texts, to, from = null, context = null) {
       console.error(`useAi::translate(): Error translating texts`, error)
     })
 }
-
 
 /**
  * Generates text from a prompt using AI via GraphQL

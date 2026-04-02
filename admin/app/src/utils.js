@@ -5,7 +5,6 @@
 import gettext from './i18n'
 import { useAppStore, useLanguageStore } from './stores'
 
-
 /**
  * Creates a debounced version of a function that returns a Promise
  *
@@ -32,7 +31,6 @@ export function debounce(func, delay) {
   }
 }
 
-
 /**
  * Returns available locales as a list for dropdown menus
  *
@@ -57,7 +55,6 @@ export function locales(none = false) {
   return list
 }
 
-
 /**
  * Builds an HTML srcset string from a width-to-path map
  *
@@ -71,7 +68,6 @@ export function srcset(map) {
   }
   return list.join(', ')
 }
-
 
 /**
  * Converts text to a URL-safe slug
@@ -87,7 +83,6 @@ export function slugify(text) {
     .replace(/^-|-$/g, '')
     .toLowerCase()
 }
-
 
 /**
  * Converts a base64-encoded string to a Blob
@@ -111,14 +106,46 @@ export function toBlob(base64, mimeType = 'image/png') {
   return new Blob([byteArray], { type: mimeType })
 }
 
-
 const supported = [
-  'ar', 'bg', 'cs', 'da', 'de', 'el', 'en', 'en-GB', 'en-US',
-  'es', 'et', 'fi', 'fr', 'he', 'hu', 'id', 'it', 'ja', 'ko',
-  'lt', 'lv', 'nb', 'nl', 'pl', 'pt', 'pt-BR', 'ro', 'ru', 'sk',
-  'sl', 'sv', 'th', 'tr', 'uk', 'vi', 'zh', 'zh-Hans', 'zh-Hant'
+  'ar',
+  'bg',
+  'cs',
+  'da',
+  'de',
+  'el',
+  'en',
+  'en-GB',
+  'en-US',
+  'es',
+  'et',
+  'fi',
+  'fr',
+  'he',
+  'hu',
+  'id',
+  'it',
+  'ja',
+  'ko',
+  'lt',
+  'lv',
+  'nb',
+  'nl',
+  'pl',
+  'pt',
+  'pt-BR',
+  'ro',
+  'ru',
+  'sk',
+  'sl',
+  'sv',
+  'th',
+  'tr',
+  'uk',
+  'vi',
+  'zh',
+  'zh-Hans',
+  'zh-Hant'
 ]
-
 
 /**
  * Returns available locales that support AI translation, excluding the current locale
@@ -141,7 +168,6 @@ export function txlocales(current = null) {
 
   return list
 }
-
 
 /**
  * Generates a unique content ID based on the current date and time.
@@ -167,7 +193,6 @@ const uid = (function () {
 })()
 
 export { uid }
-
 
 /**
  * Resolves a file path to a full URL using the app's file or proxy URL

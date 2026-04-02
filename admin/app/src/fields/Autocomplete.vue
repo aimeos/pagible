@@ -34,7 +34,7 @@ export default {
   computed: {
     hasError() {
       const val = this.modelValue ?? this.config.default ?? null
-      return !this.rules.every(rule => rule(val) === true)
+      return !this.rules.every((rule) => rule(val) === true)
     },
 
     rules() {
