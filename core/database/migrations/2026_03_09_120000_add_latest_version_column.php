@@ -22,6 +22,10 @@ return new class extends Migration
     {
         $name = config('cms.db', 'sqlite');
 
+        if( Schema::connection($name)->hasColumn('cms_pages', 'latest_id') ) {
+            return;
+        }
+
         Schema::connection($name)->table('cms_pages', function (Blueprint $table) {
             $table->uuid('latest_id')->nullable()->index();
         });

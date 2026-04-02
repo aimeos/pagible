@@ -20,7 +20,12 @@ return new class extends Migration
      */
     public function up()
     {
-        $schema = Schema::connection(config('cms.db', 'sqlite'));
+        $name = config('cms.db', 'sqlite');
+        $schema = Schema::connection($name);
+
+        if( $schema->hasColumn('cms_pages', 'depth') ) {
+            return;
+        }
 
         $schema->table('cms_pages', function (Blueprint $table) {
             $table->nestedSetDepth(); // update table schema

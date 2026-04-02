@@ -25,14 +25,14 @@ return new class extends Migration
             $table->string('lang', 5)->nullable();
             $table->string('name');
             $table->json('data');
+            $table->uuid('latest_id')->nullable();
             $table->string('editor');
             $table->timestamps();
             $table->softDeletes();
 
             $table->index(['type', 'tenant_id']);
             $table->index(['lang', 'tenant_id']);
-            $table->index(['name', 'tenant_id']);
-            $table->index(['editor', 'tenant_id']);
+            $table->index(['latest_id']);
             $table->index('deleted_at');
         });
     }

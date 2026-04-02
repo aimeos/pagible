@@ -24,6 +24,12 @@ return new class extends Migration
         $db = $schema->getConnection();
         $driver = $db->getDriverName();
 
+        $indexes = collect($schema->getIndexes('cms_versions'))->pluck('name')->all();
+
+        if( in_array('cms_versions_published_lang_index', $indexes) ) {
+            return;
+        }
+
         // Add simple column indexes on cms_versions
         $schema->table('cms_versions', function (Blueprint $table) {
             $table->index(['published', 'lang']);

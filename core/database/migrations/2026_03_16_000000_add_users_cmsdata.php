@@ -18,6 +18,10 @@ return new class extends Migration
      */
     public function up()
     {
+        if( Schema::hasColumn('users', 'cmsdata') ) {
+            return;
+        }
+
         Schema::table('users', function (Blueprint $table) {
             $table->json('cmsdata')->nullable()->default(null);
         });

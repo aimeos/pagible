@@ -28,14 +28,14 @@ return new class extends Migration
             $table->json('previews');
             $table->json('description');
             $table->json('transcription');
+            $table->uuid('latest_id')->nullable();
             $table->string('editor');
             $table->softDeletes();
             $table->timestamps();
 
             $table->index(['mime', 'tenant_id']);
             $table->index(['lang', 'tenant_id']);
-            $table->index(['name', 'tenant_id']);
-            $table->index(['editor', 'tenant_id']);
+            $table->index(['latest_id']);
             $table->index('deleted_at');
         });
     }
