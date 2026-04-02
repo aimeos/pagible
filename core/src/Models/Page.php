@@ -387,10 +387,13 @@ class Page extends Base
         $this->config = $version->aux->config ?? new \stdClass();
         $this->meta = $version->aux->meta ?? new \stdClass();
         $this->editor = $version->editor;
+        $this->setRelation( 'latest', $version );
         $this->save();
 
-        $version->published = true;
-        $version->save();
+        if( !$version->published ) {
+            $version->published = true;
+            $version->save();
+        }
 
         Cache::forget( static::key( $this ) );
 
@@ -399,16 +402,6 @@ class Page extends Base
 
 
     /**
-     * Determine if the page should be searchable.
-     *
-     * @return bool TRUE if the page should be searchable, FALSE if not
-     */
-    public function shouldBeSearchable() : bool
-    {
-        return $this->status > 0;
-    }
-
-
     /**
      * Don't fire model events for each descendant for performance reasons.
       *
@@ -464,7 +457,7 @@ class Page extends Base
     /**
      * Returns the searchable data for the page.
      *
-     * @return array<string, string>
+     * @return array<string, mixed>
      */
     public function toSearchableArray(): array
     {
@@ -498,7 +491,36 @@ class Page extends Base
             ) );
         }
 
-        return ['content' => $content, 'draft' => $draft, 'domain' => $this->domain ?? '', 'lang' => $this->lang ?? ''];
+        return [
+            'content' => $content,
+            'draft' => $draft,
+            'domain' => $this->latest?->data->domain ?? '',
+            'lang' => $this->latest->lang ?? '',
+            'tenant_id' => $this->tenant_id ?? '',
+            'parent_id' => $this->parent_id,
+            'editor' => $this->latest->editor ?? '',
+            'status' => (int) ( $this->latest?->data->status ?? 0 ),
+            'cache' => (int) ( $this->latest?->data->cache ?? 0 ),
+            'to' => $this->latest?->data->to ?? '',
+            'path' => $this->latest?->data->path ?? '',
+            'tag' => $this->latest?->data->tag ?? '',
+            'theme' => $this->latest?->data->theme ?? '',
+            'type' => $this->latest?->data->type ?? '',
+            'published' => (bool) ( $this->latest->published ?? false ),
+            'scheduled' => (bool) ( $this->latest?->data->scheduled ?? false ),
+        ];
+    }
+
+
+    /**
+     * Modify the query used to retrieve models when making all of the models searchable.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder<static> $query
+     * @return \Illuminate\Database\Eloquent\Builder<static>
+     */
+    protected function makeAllSearchableUsing( $query )
+    {
+        return $query->with( ['elements', 'latest.elements'] );
     }
 
 

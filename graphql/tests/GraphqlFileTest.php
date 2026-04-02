@@ -130,7 +130,7 @@ class GraphqlFileTest extends GraphqlTestAbstract
             ] + collect($file->getAttributes())->except(['tenant_id', 'latest_id'])->all();
         } )->all();
 
-        $this->expectsDatabaseQueryCount(2);
+        $this->expectsDatabaseQueryCount(3);
 
         $response = $this->actingAs($this->user)->graphQL('{
             files(filter: {
@@ -182,7 +182,7 @@ class GraphqlFileTest extends GraphqlTestAbstract
 
         $file = File::where( 'mime', 'image/tiff' )->first();
 
-        $this->expectsDatabaseQueryCount( 2 );
+        $this->expectsDatabaseQueryCount( 3 );
         $response = $this->actingAs( $this->user )->graphQL( '{
             files(publish: PUBLISHED) {
                 data {
@@ -217,7 +217,7 @@ class GraphqlFileTest extends GraphqlTestAbstract
             $builder->where( 'cms_versions.publish_at', '!=', null )->where( 'cms_versions.published', false );
         } )->firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 2 );
+        $this->expectsDatabaseQueryCount( 3 );
         $response = $this->actingAs( $this->user )->graphQL( '{
             files(publish: SCHEDULED) {
                 data {
@@ -371,6 +371,7 @@ class GraphqlFileTest extends GraphqlTestAbstract
             'previews' => (array) ( $file->latest?->data?->previews ?? [] ),
             'description' => (array) ( $file->latest?->data?->description ?? [] ),
             'transcription' => (array) ( $file->latest?->data?->transcription ?? [] ),
+            'scheduled' => false,
         ];
 
         // Assert scalar fields

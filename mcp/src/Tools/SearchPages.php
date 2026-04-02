@@ -7,6 +7,7 @@
 
 namespace Aimeos\Cms\Tools;
 
+use Aimeos\Cms\Filter;
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\Models\Page;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
@@ -23,7 +24,7 @@ use Laravel\Mcp\Request;
 #[IsReadOnly]
 #[Name('search-pages')]
 #[Title('Search for pages by keywords')]
-#[Description('Lists and searches pages. Optional: term (full-text search), lang, status (0/1/2), parent_id, type, trashed (without/with/only), publish (PUBLISHED/DRAFT/SCHEDULED), editor. Returns up to 25 matches.')]
+#[Description('Lists and searches pages. Optional: term (full-text search), lang, domain, type, tag, theme, path, status, cache, to, trashed (without/with/only), publish (PUBLISHED/DRAFT/SCHEDULED), editor. Returns up to 25 matches.')]
 class SearchPages extends Tool
 {
     /**
@@ -44,52 +45,42 @@ class SearchPages extends Tool
             'trashed' => 'string|in:without,with,only',
             'publish' => 'string|in:PUBLISHED,DRAFT,SCHEDULED',
             'editor' => 'string|max:255',
+            'domain' => 'string|max:255',
+            'tag' => 'string|max:50',
+            'theme' => 'string|max:50',
+            'path' => 'string|max:255',
+            'cache' => 'integer|min:0|max:525600',
+            'to' => 'string|max:2000',
         ] );
 
-        $query = Page::select( 'cms_pages.*' )
-            ->join( 'cms_versions', 'cms_pages.latest_id', '=', 'cms_versions.id' )
-            ->orderBy( 'cms_pages.updated_at', 'desc' );
+        $search = Page::search( mb_substr( trim( (string) ( $v['term'] ?? '' ) ), 0, 200 ) )
+            ->query( fn( $q ) => $q->with( 'latest' ) )
+            ->searchFields( 'draft' )
+            ->take( 25 );
 
-        Filter::trashed( $query, $v['trashed'] ?? null );
-        Filter::publish( $query, $v['publish'] ?? null );
-
-        if( isset( $v['lang'] ) ) {
-            $query->where( 'cms_versions.lang', $v['lang'] );
-        }
-
-        if( isset( $v['status'] ) ) {
-            $query->where( 'cms_pages.status', (int) $v['status'] );
-        }
-
-        if( isset( $v['parent_id'] ) ) {
-            $query->where( 'cms_pages.parent_id', $v['parent_id'] );
-        }
-
-        if( isset( $v['type'] ) ) {
-            $query->where( 'cms_pages.type', $v['type'] );
-        }
-
-        if( isset( $v['editor'] ) ) {
-            $query->where( 'cms_versions.editor', $v['editor'] );
-        }
-
-        if( isset( $v['term'] ) )
-        {
-            $ids = Page::search( mb_substr( trim( (string) $v['term'] ), 0, 200 ) )
-                ->searchFields( 'draft' )
-                ->take( 250 )
-                ->keys();
-
-            $query->whereIn( 'cms_pages.id', $ids->all() );
-        }
-
-        $result = $query->take( 25 )->get()->map( function( $item ) {
+        $result = Filter::pages( $search, $v )->get()->map( function( $item ) {
             /** @var Page $item */
-            return $item->toArray() + [
+            $data = $item->latest->data ?? new \stdClass();
+            return [
+                'id' => $item->id,
                 'has_children' => $item->has,
-                'url' => route( 'cms.page', ['path' => $item->path] ),
+                'parent_id' => $item->parent_id,
+                'tag' => $data->tag ?? null,
+                'lang' => $item->latest?->lang,
+                'path' => $data->path ?? null,
+                'domain' => $data->domain ?? null,
+                'to' => $data->to ?? null,
+                'name' => $data->name ?? null,
+                'title' => $data->title ?? null,
+                'type' => $data->type ?? null,
+                'theme' => $data->theme ?? null,
+                'status' => $data->status ?? null,
+                'cache' => $data->cache ?? null,
                 'editor' => $item->latest?->editor,
                 'deleted' => $item->trashed(),
+                'created_at' => $item->created_at?->format( 'Y-m-d H:i:s' ),
+                'updated_at' => $item->updated_at?->format( 'Y-m-d H:i:s' ),
+                'url' => route( 'cms.page', ['path' => $data->path ?? ''] ),
             ];
         } );
 
@@ -121,6 +112,18 @@ class SearchPages extends Tool
                 ->description('Filter by publish status: "PUBLISHED", "DRAFT", or "SCHEDULED".'),
             'editor' => $schema->string()
                 ->description('Filter by editor name.'),
+            'domain' => $schema->string()
+                ->description('Filter by domain name.'),
+            'tag' => $schema->string()
+                ->description('Filter by page tag, e.g., "root".'),
+            'theme' => $schema->string()
+                ->description('Filter by theme name.'),
+            'path' => $schema->string()
+                ->description('Filter by page path.'),
+            'cache' => $schema->integer()
+                ->description('Filter by cache duration in minutes.'),
+            'to' => $schema->string()
+                ->description('Filter by redirect URL.'),
         ];
     }
 

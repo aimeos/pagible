@@ -7,6 +7,7 @@
 
 namespace Aimeos\Cms\Tools;
 
+use Aimeos\Cms\Filter;
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\Models\File;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
@@ -44,46 +45,23 @@ class SearchFiles extends Tool
             'editor' => 'string|max:255',
         ] );
 
-        $query = File::select( 'cms_files.*' )
-            ->join( 'cms_versions', 'cms_files.latest_id', '=', 'cms_versions.id' )
-            ->orderBy( 'cms_files.updated_at', 'desc' );
+        $search = File::search( mb_substr( trim( (string) ( $v['term'] ?? '' ) ), 0, 200 ) )
+            ->query( fn( $q ) => $q->with( 'latest' ) )
+            ->searchFields( 'draft' )
+            ->take( 25 );
 
-        Filter::trashed( $query, $v['trashed'] ?? null );
-        Filter::publish( $query, $v['publish'] ?? null );
-
-        if( array_key_exists( 'lang', $v ) ) {
-            $query->where( 'cms_versions.lang', $v['lang'] );
-        }
-
-        if( isset( $v['mime'] ) ) {
-            $query->where( 'cms_versions.data->mime', 'like', (string) $v['mime'] . '%' );
-        }
-
-        if( isset( $v['editor'] ) ) {
-            $query->where( 'cms_versions.editor', (string) $v['editor'] );
-        }
-
-        if( isset( $v['term'] ) )
-        {
-            $ids = File::search( mb_substr( trim( (string) $v['term'] ), 0, 200 ) )
-                ->searchFields( 'draft' )
-                ->take( 250 )
-                ->keys();
-
-            $query->whereIn( 'cms_files.id', $ids->all() );
-        }
-
-        $result = $query->take( 25 )->get()->map( function( $item ) {
+        $result = Filter::files( $search, $v )->get()->map( function( $item ) {
             /** @var File $item */
+            $data = $item->latest->data ?? new \stdClass();
             return [
                 'id' => $item->id,
-                'name' => $item->name,
-                'mime' => $item->mime,
-                'lang' => $item->lang,
-                'path' => $item->path,
-                'previews' => $item->previews,
-                'description' => $item->description,
-                'transcription' => $item->transcription,
+                'name' => $data->name ?? null,
+                'mime' => $data->mime ?? null,
+                'lang' => $item->latest?->lang,
+                'path' => $data->path ?? null,
+                'previews' => $data->previews ?? null,
+                'description' => $data->description ?? null,
+                'transcription' => $data->transcription ?? null,
                 'editor' => $item->latest?->editor,
                 'deleted' => $item->trashed(),
                 'created_at' => $item->created_at?->format( 'Y-m-d H:i:s' ),

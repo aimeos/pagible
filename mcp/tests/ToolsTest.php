@@ -31,13 +31,6 @@ class ToolsTest extends McpTestAbstract
     }
 
 
-    protected function defineEnvironment( $app )
-    {
-        parent::defineEnvironment( $app );
-        $app['config']->set('scout.driver', 'cms');
-    }
-
-
     protected function setUp(): void
     {
         parent::setUp();

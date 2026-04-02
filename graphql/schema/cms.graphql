@@ -10,6 +10,12 @@ enum Publish {
   DRAFT
 }
 
+enum Trashed {
+  WITHOUT @enum(value: "without")
+  WITH @enum(value: "with")
+  ONLY @enum(value: "only")
+}
+
 union RemoveableUpload = Upload | Boolean
 
 extend type User {
@@ -34,11 +40,9 @@ extend type Query {
     @find
 
   "Get the available pages"
-  pages(filter: PageFilter, sort: _ @orderBy(columns: ["id", "name", "title", "editor", "_lft"]), publish: Publish): [Page!]
-    @paginate(builder: "\\Aimeos\\Cms\\GraphQL\\Query@pages", defaultCount: 100)
+  pages(filter: PageFilter, sort: _ @orderBy(columns: ["id", "name", "title", "editor", "_lft"]), publish: Publish, trashed: Trashed): [Page!]
+    @paginate(resolver: "\\Aimeos\\Cms\\GraphQL\\Query@pages", defaultCount: 100)
     @guard @cmsPermission(action: "page:view") @throttle(name: "cms-admin")
-    @orderBy(column: "_lft", direction: ASC)
-    @softDeletes
 
   "Get element item by ID"
   element(id: ID! @eq): Element
@@ -47,11 +51,9 @@ extend type Query {
     @find
 
   "Get available element items"
-  elements(filter: ElementFilter, sort: _ @orderBy(columns: ["id", "lang", "name", "type", "editor"]), publish: Publish): [Element!]
-    @paginate(builder: "\\Aimeos\\Cms\\GraphQL\\Query@elements", defaultCount: 100)
+  elements(filter: ElementFilter, sort: _ @orderBy(columns: ["id", "lang", "name", "type", "editor"]), publish: Publish, trashed: Trashed): [Element!]
+    @paginate(resolver: "\\Aimeos\\Cms\\GraphQL\\Query@elements", defaultCount: 100)
     @guard @cmsPermission(action: "element:view") @throttle(name: "cms-admin")
-    @orderBy(column: "id", direction: DESC)
-    @softDeletes
 
   "Get file item by ID"
   file(id: ID! @eq): File
@@ -60,11 +62,9 @@ extend type Query {
     @find
 
   "Get available files"
-  files(filter: FileFilter, sort: _ @orderBy(columns: ["id", "name", "mime", "lang", "editor", "byversions_count"]), publish: Publish): [File!]
-    @paginate(builder: "\\Aimeos\\Cms\\GraphQL\\Query@files", defaultCount: 100)
+  files(filter: FileFilter, sort: _ @orderBy(columns: ["id", "name", "mime", "lang", "editor", "byversions_count"]), publish: Publish, trashed: Trashed): [File!]
+    @paginate(resolver: "\\Aimeos\\Cms\\GraphQL\\Query@files", defaultCount: 100)
     @guard @cmsPermission(action: "file:view") @throttle(name: "cms-admin")
-    @orderBy(column: "id", direction: DESC)
-    @softDeletes
 }
 
 extend type Mutation {

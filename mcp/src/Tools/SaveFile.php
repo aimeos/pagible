@@ -75,6 +75,7 @@ class SaveFile extends Tool
                 'data' => $clone->toArray(),
             ] );
 
+            $file->setRelation( 'latest', $version );
             $file->forceFill( ['latest_id' => $versionId] )->save();
             $file->removeVersions();
 

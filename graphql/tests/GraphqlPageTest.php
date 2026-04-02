@@ -131,8 +131,6 @@ class GraphqlPageTest extends GraphqlTestAbstract
             'updated_at' => (string) $page->updated_at,
         ] + $attr;
 
-        $this->expectsDatabaseQueryCount(2);
-
         $response = $this->actingAs($this->user)->graphQL('{
             pages(filter: {
                 id: ["' . $page->id . '"]
@@ -497,6 +495,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
             'status' => 1,
             'cache' => 5,
             'editor' => 'seeder',
+            'scheduled' => false,
         ];
         $this->assertEquals($expectedData, json_decode($version['data'], true));
 
@@ -941,6 +940,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
             'cache' => 5,
             'editor' => 'seeder',
             'lang' => 'de',
+            'scheduled' => false,
         ];
         $this->assertEquals($expectedLatestData, json_decode($savePage['latest']['data'] ?? null, true));
 
@@ -963,6 +963,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
             'status' => 1,
             'cache' => 5,
             'editor' => 'seeder',
+            'scheduled' => false,
         ];
         $this->assertEquals($expectedPublishedData, json_decode($savePage['published']['data'] ?? null, true));
 

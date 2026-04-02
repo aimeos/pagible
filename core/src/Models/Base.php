@@ -23,6 +23,7 @@ use Illuminate\Support\Str;
  *
  * @property string $id
  * @property string $editor
+ * @property Version|null $latest
  * @method static \Illuminate\Database\Eloquent\Builder<static> withTrashed()
  * @method self publish(Version $version)
  * @method bool restore()

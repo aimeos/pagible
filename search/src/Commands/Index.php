@@ -31,8 +31,11 @@ class Index extends Command
      */
     public function handle(): void
     {
-        Page::withTrashed()->with( 'elements' )->where( 'status', '>', 0 )->chunk( 100, fn( $items ) => $items->searchable() ); // @phpstan-ignore method.notFound
-        Element::withTrashed()->chunk( 100, fn( $items ) => $items->searchable() ); // @phpstan-ignore method.notFound
-        File::withTrashed()->chunk( 100, fn( $items ) => $items->searchable() ); // @phpstan-ignore method.notFound
+        Page::withTrashed()->with( ['elements', 'latest.elements'] )
+            ->chunk( 100, fn( $items ) => $items->searchable() ); // @phpstan-ignore method.notFound
+        Element::withTrashed()->with( 'latest' )
+            ->chunk( 100, fn( $items ) => $items->searchable() ); // @phpstan-ignore method.notFound
+        File::withTrashed()->with( 'latest' )
+            ->chunk( 100, fn( $items ) => $items->searchable() ); // @phpstan-ignore method.notFound
     }
 }

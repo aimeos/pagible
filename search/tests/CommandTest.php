@@ -17,10 +17,14 @@ class SearchCommandTest extends SearchTestAbstract
 
     public function testIndex(): void
     {
+        // Clear orphaned FTS data from other test classes (FTS5 virtual tables
+        // are not truncated by DatabaseTruncation in other test classes)
+        DB::connection( config( 'cms.db', 'sqlite' ) )->table( 'cms_index' )->delete();
+
         $this->seed( CmsSeeder::class );
 
         $this->artisan('cms:index')->assertExitCode( 0 );
 
-        $this->assertEquals( 18, DB::connection( config( 'cms.db', 'sqlite' ) )->table( 'cms_index' )->count() );
+        $this->assertEquals( 20, DB::connection( config( 'cms.db', 'sqlite' ) )->table( 'cms_index' )->count() );
     }
 }

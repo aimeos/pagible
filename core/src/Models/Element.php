@@ -201,10 +201,13 @@ class Element extends Base
         $this->fill( (array) $version->data );
         $this->editor = $version->editor;
         $this->lang = $version->lang;
+        $this->setRelation( 'latest', $version );
         $this->save();
 
-        $version->published = true;
-        $version->save();
+        if( !$version->published ) {
+            $version->published = true;
+            $version->save();
+        }
 
         return $this;
     }
@@ -213,7 +216,7 @@ class Element extends Base
     /**
      * Returns the searchable data for the element.
      *
-     * @return array<string, string>
+     * @return array<string, mixed>
      */
     public function toSearchableArray(): array
     {
@@ -226,7 +229,25 @@ class Element extends Base
         return [
             'content' => $this->trashed() ? '' : mb_strtolower( (string) $this ),
             'draft' => mb_strtolower( (string) $this->latest ),
+            'tenant_id' => $this->tenant_id ?? '',
+            'lang' => $this->latest?->lang,
+            'editor' => $this->latest->editor ?? '',
+            'type' => $this->latest?->data->type ?? '',
+            'published' => (bool) ( $this->latest->published ?? false ),
+            'scheduled' => (bool) ( $this->latest?->data->scheduled ?? false ),
         ];
+    }
+
+
+    /**
+     * Modify the query used to retrieve models when making all of the models searchable.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder<static> $query
+     * @return \Illuminate\Database\Eloquent\Builder<static>
+     */
+    protected function makeAllSearchableUsing( $query )
+    {
+        return $query->with( 'latest' );
     }
 
 

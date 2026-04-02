@@ -7,208 +7,118 @@
 
 namespace Aimeos\Cms\GraphQL;
 
-use Illuminate\Database\Query\Builder as QueryBuilder;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Query\JoinClause;
-use Illuminate\Support\Facades\DB;
+use Aimeos\Cms\Filter;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 
 /**
- * Custom query builder.
+ * Custom query resolvers for paginated list queries.
  */
 final class Query
 {
     /**
-     * Custom query builder for elements to search items by ID (optional).
+     * Resolver for paginated element list query.
      *
      * @param  null  $rootValue
      * @param  array<string, mixed>  $args
-     * @return \Illuminate\Database\Eloquent\Builder<\Aimeos\Cms\Models\Element>
+     * @return LengthAwarePaginator<int, Element>
      */
-    public function elements( $rootValue, array $args ) : Builder
+    public function elements( $rootValue, array $args ) : LengthAwarePaginator
     {
         $filter = $args['filter'] ?? [];
-        $limit = (int) ( $args['first'] ?? 100 );
+        $limit = min( max( (int) ( $args['first'] ?? 100 ), 1 ), 100 );
+        $page = max( (int) ( $args['page'] ?? 1 ), 1 );
 
-        $builder = Element::skip( max( ( $args['page'] ?? 1 ) - 1, 0 ) * $limit )
-            ->take( min( max( $limit, 1 ), 100 ) );
+        $search = Element::search( mb_substr( trim( (string) ( $filter['any'] ?? '' ) ), 0, 200 ) )
+            ->searchFields( 'draft' );
 
-        $this->trashed( $builder, $args['trashed'] ?? null );
+        Filter::elements( $search, $filter + $args );
 
-        $builder->select( 'cms_elements.*' )
-            ->join( 'cms_versions', 'cms_elements.latest_id', '=', 'cms_versions.id' );
+        $allowed = ['id', 'lang', 'name', 'type', 'editor'];
+        $this->sort( $search, $args['sort'] ?? [], $allowed, 'id', 'desc' );
 
-        $this->publish( $builder, $args['publish'] ?? null );
-        $this->filter( $builder, $filter, 'cms_elements', Element::class );
-
-        if( isset( $filter['type'] ) ) {
-            $builder->where( 'cms_versions.data->type', (string) $filter['type'] );
-        }
-
-        return $builder;
+        return $search->paginate( $limit, 'page', $page );
     }
 
 
     /**
-     * Custom query builder for files to search for.
+     * Resolver for paginated file list query.
      *
      * @param  null  $rootValue
      * @param  array<string, mixed>  $args
-     * @return \Illuminate\Database\Eloquent\Builder<\Aimeos\Cms\Models\File>
+     * @return LengthAwarePaginator<int, File>
      */
-    public function files( $rootValue, array $args ) : Builder
+    public function files( $rootValue, array $args ) : LengthAwarePaginator
     {
         $filter = $args['filter'] ?? [];
-        $limit = (int) ( $args['first'] ?? 100 );
+        $limit = min( max( (int) ( $args['first'] ?? 100 ), 1 ), 100 );
+        $page = max( (int) ( $args['page'] ?? 1 ), 1 );
 
-        $builder = File::withCount( 'byversions' )->skip( max( ( $args['page'] ?? 1 ) - 1, 0 ) * $limit )
-            ->take( min( max( $limit, 1 ), 100 ) );
+        $search = File::search( mb_substr( trim( (string) ( $filter['any'] ?? '' ) ), 0, 200 ) )
+            ->searchFields( 'draft' );
 
-        $this->trashed( $builder, $args['trashed'] ?? null );
+        $search->query( fn( $q ) => $q->withCount( 'byversions' ) );
 
-        $builder->join( 'cms_versions', 'cms_files.latest_id', '=', 'cms_versions.id' );
+        Filter::files( $search, $filter + $args );
 
-        $this->publish( $builder, $args['publish'] ?? null );
-        $this->filter( $builder, $filter, 'cms_files', File::class );
+        $allowed = ['id', 'name', 'mime', 'lang', 'editor', 'byversions_count'];
+        $this->sort( $search, $args['sort'] ?? [], $allowed, 'id', 'desc' );
 
-        if( isset( $filter['mime'] ) ) {
-            $builder->where( 'cms_versions.data->mime', 'like', $filter['mime'] . '%' );
-        }
-
-        return $builder;
+        return $search->paginate( $limit, 'page', $page );
     }
 
 
     /**
-     * Custom query builder for pages to get pages by parent ID.
+     * Resolver for paginated page list query.
      *
      * @param  null  $rootValue
      * @param  array<string, mixed>  $args
-     * @return \Aimeos\Nestedset\QueryBuilder<\Aimeos\Cms\Models\Page>
+     * @return LengthAwarePaginator<int, Page>
      */
-    public function pages( $rootValue, array $args ) : \Aimeos\Nestedset\QueryBuilder
+    public function pages( $rootValue, array $args ) : LengthAwarePaginator
     {
         $filter = $args['filter'] ?? [];
-        $limit = (int) ( $args['first'] ?? 100 );
+        $limit = min( max( (int) ( $args['first'] ?? 100 ), 1 ), 100 );
+        $page = max( (int) ( $args['page'] ?? 1 ), 1 );
 
-        $builder = Page::skip( max( ( $args['page'] ?? 1 ) - 1, 0 ) * $limit )
-            ->take( min( max( $limit, 1 ), 100 ) );
+        $search = Page::search( mb_substr( trim( (string) ( $filter['any'] ?? '' ) ), 0, 200 ) )
+            ->searchFields( 'draft' );
 
-        $this->trashed( $builder, $args['trashed'] ?? null );
+        Filter::pages( $search, $filter + $args );
 
-        if( array_key_exists( 'parent_id', $filter ) ) {
-            $builder->where( 'cms_pages.parent_id', $filter['parent_id'] );
-        }
+        $allowed = ['id', 'name', 'title', 'editor', '_lft'];
+        $this->sort( $search, $args['sort'] ?? [], $allowed, '_lft', 'asc' );
 
-        $builder->select( 'cms_pages.*' )
-            ->join( 'cms_versions', 'cms_pages.latest_id', '=', 'cms_versions.id' );
-
-        $this->publish( $builder, $args['publish'] ?? null );
-        $this->filter( $builder, $filter, 'cms_pages', Page::class );
-
-        if( isset( $filter['status'] ) ) {
-            $builder->where( 'cms_versions.data->status', (int) $filter['status'] );
-        }
-
-        if( isset( $filter['cache'] ) ) {
-            $builder->where( 'cms_versions.data->cache', (int) $filter['cache'] );
-        }
-
-        if( isset( $filter['to'] ) ) {
-            $builder->where( 'cms_versions.data->to', (string) $filter['to'] );
-        }
-
-        if( isset( $filter['path'] ) ) {
-            $builder->where( 'cms_versions.data->path', (string) $filter['path'] );
-        }
-
-        if( isset( $filter['domain'] ) ) {
-            $builder->where( 'cms_versions.data->domain', (string) $filter['domain'] );
-        }
-
-        if( isset( $filter['tag'] ) ) {
-            $builder->where( 'cms_versions.data->tag', (string) $filter['tag'] );
-        }
-
-        if( isset( $filter['theme'] ) ) {
-            $builder->where( 'cms_versions.data->theme', (string) $filter['theme'] );
-        }
-
-        if( isset( $filter['type'] ) ) {
-            $builder->where( 'cms_versions.data->type', (string) $filter['type'] );
-        }
-
-        return $builder;
+        return $search->paginate( $limit, 'page', $page );
     }
 
 
     /**
-     * Applies trashed filter to the query builder.
+     * Apply sort clauses from @orderBy to the Scout builder.
      *
-     * @param Builder<Page>|Builder<Element>|Builder<File> $builder Query builder
-     * @param string|null $trashed Trashed filter value
+     * @param \Laravel\Scout\Builder<\Illuminate\Database\Eloquent\Model> $search
+     * @param array<int, array{column: string, order: string}> $clauses
+     * @param array<int, string> $allowed Allowlisted column names
+     * @param string $defaultColumn Default sort column
+     * @param string $defaultDirection Default sort direction
      */
-    private function trashed( $builder, ?string $trashed ) : void
+    private function sort( $search, array $clauses, array $allowed, string $defaultColumn, string $defaultDirection ) : void
     {
-        switch( $trashed ) {
-            case 'without': $builder->withoutTrashed(); break;
-            case 'with': $builder->withTrashed(); break;
-            case 'only': $builder->onlyTrashed(); break;
-        }
-    }
+        $applied = false;
 
-
-    /**
-     * Applies publish status filter to the query builder.
-     *
-     * @param Builder<Page>|Builder<Element>|Builder<File> $builder Query builder
-     * @param string|null $publish Publish filter value
-     */
-    private function publish( $builder, ?string $publish ) : void
-    {
-        switch( $publish )
+        foreach( $clauses as $clause )
         {
-            case 'PUBLISHED': $builder->where( 'cms_versions.published', true ); break;
-            case 'DRAFT': $builder->where( 'cms_versions.published', false ); break;
-            case 'SCHEDULED': $builder->where( 'cms_versions.publish_at', '!=', null )
-                ->where( 'cms_versions.published', false ); break;
-        }
-    }
-
-
-    /**
-     * Applies common filters (id, lang, editor, any) to the query builder.
-     *
-     * @param Builder<Page>|Builder<Element>|Builder<File> $builder Query builder
-     * @param array<string, mixed> $filter Filter values
-     * @param string $table Database table name
-     * @param string $model Model class name
-     */
-    private function filter( $builder, array $filter, string $table, string $model ) : void
-    {
-        if( isset( $filter['id'] ) ) {
-            $builder->whereIn( $table . '.id', $filter['id'] );
+            if( in_array( $clause['column'], $allowed ) ) {
+                $search->orderBy( $clause['column'], $clause['order'] );
+                $applied = true;
+            }
         }
 
-        if( array_key_exists( 'lang', $filter ) ) {
-            $builder->where( 'cms_versions.lang', $filter['lang'] );
-        }
-
-        if( isset( $filter['editor'] ) ) {
-            $builder->where( 'cms_versions.editor', (string) $filter['editor'] );
-        }
-
-        if( isset( $filter['any'] ) )
-        {
-            $ids = $model::search( mb_substr( trim( $filter['any'] ), 0, 200 ) )
-                ->searchFields( 'draft' )
-                ->take( 250 )
-                ->keys();
-
-            $builder->whereIn( $table . '.id', $ids->all() );
+        if( !$applied ) {
+            $search->orderBy( $defaultColumn, $defaultDirection );
         }
     }
 }

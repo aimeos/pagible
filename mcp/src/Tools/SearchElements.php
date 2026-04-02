@@ -7,6 +7,7 @@
 
 namespace Aimeos\Cms\Tools;
 
+use Aimeos\Cms\Filter;
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\Models\Element;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
@@ -44,43 +45,20 @@ class SearchElements extends Tool
             'editor' => 'string|max:255',
         ] );
 
-        $query = Element::select( 'cms_elements.*' )
-            ->join( 'cms_versions', 'cms_elements.latest_id', '=', 'cms_versions.id' )
-            ->orderBy( 'cms_elements.updated_at', 'desc' );
+        $search = Element::search( mb_substr( trim( (string) ( $v['term'] ?? '' ) ), 0, 200 ) )
+            ->query( fn( $q ) => $q->with( 'latest' ) )
+            ->searchFields( 'draft' )
+            ->take( 25 );
 
-        Filter::trashed( $query, $v['trashed'] ?? null );
-        Filter::publish( $query, $v['publish'] ?? null );
-
-        if( array_key_exists( 'lang', $v ) ) {
-            $query->where( 'cms_versions.lang', $v['lang'] );
-        }
-
-        if( isset( $v['type'] ) ) {
-            $query->where( 'cms_versions.data->type', (string) $v['type'] );
-        }
-
-        if( isset( $v['editor'] ) ) {
-            $query->where( 'cms_versions.editor', (string) $v['editor'] );
-        }
-
-        if( isset( $v['term'] ) )
-        {
-            $ids = Element::search( mb_substr( trim( (string) $v['term'] ), 0, 200 ) )
-                ->searchFields( 'draft' )
-                ->take( 250 )
-                ->keys();
-
-            $query->whereIn( 'cms_elements.id', $ids->all() );
-        }
-
-        $result = $query->take( 25 )->get()->map( function( $item ) {
+        $result = Filter::elements( $search, $v )->get()->map( function( $item ) {
             /** @var Element $item */
+            $data = $item->latest->data ?? new \stdClass();
             return [
                 'id' => $item->id,
-                'type' => $item->type,
-                'name' => $item->name,
-                'lang' => $item->lang,
-                'data' => $item->data,
+                'data' => $data,
+                'type' => $data->type ?? null,
+                'name' => $data->name ?? null,
+                'lang' => $item->latest?->lang,
                 'editor' => $item->latest?->editor,
                 'deleted' => $item->trashed(),
                 'created_at' => $item->created_at?->format( 'Y-m-d H:i:s' ),

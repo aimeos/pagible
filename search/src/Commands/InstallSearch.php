@@ -55,14 +55,29 @@ class InstallSearch extends Command
             return 1;
         }
 
+        $updated = false;
+
         $search = "env('SCOUT_DRIVER', 'collection')";
         $replace = "env('SCOUT_DRIVER', 'cms')";
 
         if( strpos( $content, $replace ) === false )
         {
             $content = str_replace( $search, $replace, $content );
+            $this->line( sprintf( '  Updated default Scout driver to "cms" in [%1$s]', $filename ) );
+            $updated = true;
+        }
+
+        if( strpos( $content, "'soft_delete' => true" ) === false && strpos( $content, "'soft_delete' => false" ) !== false )
+        {
+            $content = str_replace( "'soft_delete' => false", "'soft_delete' => true", $content );
+            $this->line( sprintf( '  Enabled Scout soft_delete in [%1$s]', $filename ) );
+            $updated = true;
+        }
+
+        if( $updated )
+        {
             file_put_contents( base_path( $filename ), $content );
-            $this->line( sprintf( '  Updated default Scout driver to "cms" in [%1$s]' . PHP_EOL, $filename ) );
+            $this->line( '' );
         }
         else
         {
