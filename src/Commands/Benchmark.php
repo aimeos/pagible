@@ -7,12 +7,12 @@
 
 namespace Aimeos\Cms\Commands;
 
+use Aimeos\Cms\Models\Page;
+use Database\Seeders\BenchmarkSeeder;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
-use Aimeos\Cms\Models\Page;
-use Database\Seeders\BenchmarkSeeder;
 
 
 class Benchmark extends Command
@@ -24,7 +24,6 @@ class Benchmark extends Command
         {--lang=en : Language code}
         {--tenant=benchmark : Tenant ID}
         {--domain= : Domain name}
-        {--editor=benchmark : Editor name}
         {--pages=10000 : Total number of pages to create}
         {--tries=100 : Number of iterations per benchmark}
         {--chunk=500 : Rows per bulk insert batch}
@@ -49,8 +48,9 @@ class Benchmark extends Command
             return self::FAILURE;
         }
 
-        $tenant = strval( $this->option( 'tenant' ) );
-        if( empty( $tenant ) )
+        $tenant = $this->option( 'tenant' );
+
+        if( empty( $tenant = $this->option( 'tenant' ) ) )
         {
             $this->error( 'The --tenant option must not be empty.' );
             return self::FAILURE;
@@ -61,8 +61,12 @@ class Benchmark extends Command
             return $tenant;
         };
 
-        $conn = config( 'cms.db', 'sqlite' );
-        $domain = strval( $this->option( 'domain' ) );
+        if( empty( $domain = $this->option( 'domain' ) ) )
+        {
+            $this->error( 'The --domain option must not be empty.' );
+            return self::FAILURE;
+        }
+
         // Unseed mode
         if( $this->option( 'unseed' ) )
         {
@@ -82,7 +86,7 @@ class Benchmark extends Command
             }
 
             $this->output->write( 'Removing benchmark data... ' );
-            $this->unseed( $conn, $tenant, $domain );
+            $this->unseed( config( 'cms.db', 'sqlite' ), $tenant, $domain );
             $this->line( 'done' );
             return self::SUCCESS;
         }
@@ -126,10 +130,14 @@ class Benchmark extends Command
      */
     protected function seed( string $domain ): int
     {
-        $editor = strval( $this->option( 'editor' ) );
-        $lang = strval( $this->option( 'lang' ) );
         $pages = (int) $this->option( 'pages' );
         $chunk = (int) $this->option( 'chunk' );
+
+        if( empty( $lang = $this->option( 'lang' ) ) )
+        {
+            $this->error( 'The --lang option must not be empty.' );
+            return self::FAILURE;
+        }
 
         $this->info( "Seeding {$pages} benchmark pages for language: {$lang}" );
 
@@ -139,7 +147,7 @@ class Benchmark extends Command
         $bar->setFormat( ' [%bar%] %percent:3s%% %elapsed%' );
 
         $seeder = new BenchmarkSeeder();
-        $seeder->run( $lang, $domain, $editor, $pages, $chunk, function( int $count ) use ( $bar ) {
+        $seeder->run( $lang, $domain, 'benchmark', $pages, $chunk, function( int $count ) use ( $bar ) {
             $bar->advance( $count );
         } );
 
