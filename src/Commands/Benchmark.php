@@ -50,9 +50,9 @@ class Benchmark extends Command
 
         $tenant = $this->option( 'tenant' );
 
-        if( empty( $tenant = $this->option( 'tenant' ) ) )
+        if( empty( $tenant ) || !is_string( $tenant ) )
         {
-            $this->error( 'The --tenant option must not be empty.' );
+            $this->error( 'The --tenant option must be a non-empty string.' );
             return self::FAILURE;
         }
 
@@ -61,9 +61,11 @@ class Benchmark extends Command
             return $tenant;
         };
 
-        if( empty( $domain = $this->option( 'domain' ) ) )
+        $domain = $this->option( 'domain' );
+
+        if( empty( $domain ) || !is_string( $domain ) )
         {
-            $this->error( 'The --domain option must not be empty.' );
+            $this->error( 'The --domain option must be a non-empty string.' );
             return self::FAILURE;
         }
 
@@ -132,10 +134,11 @@ class Benchmark extends Command
     {
         $pages = (int) $this->option( 'pages' );
         $chunk = (int) $this->option( 'chunk' );
+        $lang = $this->option( 'lang' );
 
-        if( empty( $lang = $this->option( 'lang' ) ) )
+        if( empty( $lang ) || !is_string( $lang ) )
         {
-            $this->error( 'The --lang option must not be empty.' );
+            $this->error( 'The --lang option must be a non-empty string.' );
             return self::FAILURE;
         }
 
