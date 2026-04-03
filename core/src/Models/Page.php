@@ -157,6 +157,34 @@ class Page extends Base
 
 
     /**
+     * Returns a query builder for the full page tree including disabled and trashed pages.
+     *
+     * @param string|null $id Root page ID or null for all root pages
+     * @return \Aimeos\Nestedset\QueryBuilder<Nav> Query builder for further chaining, call ->get()->toTree() to execute
+     */
+    public static function tree( ?string $id = null ) : \Aimeos\Nestedset\QueryBuilder
+    {
+        $root = $id ? static::withTrashed()->findOrFail( $id ) : null;
+        $maxDepth = ( $root->depth ?? 0 ) + config( 'cms.navdepth', 2 );
+
+        $builder = Nav::withTrashed()
+            ->select( 'id', 'parent_id', '_lft', '_rgt', 'depth', 'name', 'title', 'tag', 'path', 'domain', 'lang', 'to', 'status', 'config' )
+            ->with( 'latest' )
+            ->orderBy( '_lft' );
+
+        if( $root ) {
+            $builder->where( '_lft', '>=', $root->_lft )
+                ->where( '_rgt', '<=', $root->_rgt )
+                ->whereIn( 'depth', range( (int) $root->depth, $maxDepth ) );
+        } else {
+            $builder->whereIn( 'depth', range( 0, $maxDepth ) );
+        }
+
+        return $builder;
+    }
+
+
+    /**
      * Returns the text content of the page.
      *
      * @return string Text content
@@ -340,10 +368,21 @@ class Page extends Base
      */
     public function nav( $level = 0 ) : \Aimeos\Nestedset\Collection
     {
-        return collect( $this->ancestors )->push( $this )
-            ->skip( $level )->first()
-            ?->subtree?->toTree()
-            ?? new \Aimeos\Nestedset\Collection();
+        if( !$start = collect( $this->ancestors )->push( $this )->skip( $level )->first() ) {
+            return new \Aimeos\Nestedset\Collection();
+        }
+
+        $builder = Nav::select( 'id', 'parent_id', '_lft', '_rgt', 'depth', 'name', 'title', 'tag', 'path', 'domain', 'lang', 'to', 'status', 'config' )
+            ->where( '_lft', '>=', $start->_lft )
+            ->where( '_rgt', '<=', $start->_rgt )
+            ->whereIn( 'depth', range( (int) $start->depth, ( $start->depth ?? 0 ) + config( 'cms.navdepth', 2 ) ) )
+            ->orderBy( '_lft' );
+
+        if( \Aimeos\Cms\Permission::can( 'page:view', Auth::user() ) ) {
+            $builder->with( 'latest' );
+        }
+
+        return $builder->get()->toTree();
     }
 
 
@@ -422,24 +461,12 @@ class Page extends Base
     {
         // restrict maximum depth to three levels for performance reasons
         $maxDepth = ( $this->depth ?? 0 ) + config( 'cms.navdepth', 2 );
-
-        $isEditor = \Aimeos\Cms\Permission::can( 'page:view', Auth::user() );
+        $table = $this->getTable();
 
         $builder = $this->newScopedQuery()
             ->select( 'id', 'parent_id', '_lft', '_rgt', 'depth', 'name', 'title', 'tag', 'path', 'domain', 'lang', 'to', 'status', 'config' )
             ->whereIn( 'depth', range( 0, $maxDepth ) )
-            ->defaultOrder()
-            ->setModel(new Nav());
-
-        if( $isEditor ) {
-            $builder->with( 'latest' );
-        }
-
-        if( !$isEditor )
-        {
-            $table = $this->getTable();
-
-            $builder->whereNotExists( function( $query ) use ( $table ) {
+            ->whereNotExists( function( $query ) use ( $table ) {
                 $query->select( DB::raw( 1 ) )
                     ->from( $table . ' as disabled' )
                     ->where( 'disabled.tenant_id', '=', \Aimeos\Cms\Tenancy::value() )
@@ -447,10 +474,14 @@ class Page extends Base
                     ->whereNull( 'disabled.deleted_at' )
                     ->whereColumn( 'disabled._lft', '<=', $table . '._lft' )
                     ->whereColumn( 'disabled._rgt', '>=', $table . '._rgt' );
-            });
+            })
+            ->defaultOrder();
+
+        if( \Aimeos\Cms\Permission::can( 'page:view', Auth::user() ) ) {
+            $builder->with( 'latest' );
         }
 
-        return new DescendantsRelation( $builder, $this );
+        return new DescendantsRelation( $builder->setModel( new Nav() ), $this );
     }
 
 
