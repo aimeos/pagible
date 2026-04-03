@@ -25,10 +25,10 @@ return [
     |
     */
     'roles' => [
-        'editor' => ['publisher', '!*:publish', '!*:purge'],
-        'publisher' => ['page:*', 'element:*', 'file:*', 'audio:*', 'image:*', 'text:*', 'config:page'],
-        'viewer' => ['page:view', 'element:view', 'file:view'],
         'admin' => ['*'],
+        'viewer' => ['page:view', 'element:view', 'file:view'],
+        'publisher' => ['page:*', 'element:*', 'file:*', 'audio:*', 'image:*', 'text:*', 'config:page'],
+        'editor' => ['publisher', '!*:publish', '!*:purge'],
     ],
 
     /*
@@ -73,6 +73,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Locales
+    |--------------------------------------------------------------------------
+    |
+    | The list of supported locales for the content. This is used to generate
+    | the locale switcher in the admin panel and to validate the locale of the
+    | pages and elements. The first locale in the list is used as the default
+    | locale for the content.
+    |
+    */
+    'locales' => explode( ',', env( 'CMS_LOCALES', 'en,ar,zh,fr,de,es,pt,pt-BR,ru' ) ),
+
+    /*
+    |--------------------------------------------------------------------------
     | Multi-domain support
     |--------------------------------------------------------------------------
     |
@@ -90,7 +103,7 @@ return [
     | The maximum depth of the navigation tree menu that will be displayed.
     |
     */
-    'menu_maxdepth' => env( 'CMS_MENU_MAXDEPTH', 2 ),
+    'navdepth' => env( 'CMS_NAVDEPTH', 2 ),
 
     /*
     |--------------------------------------------------------------------------
@@ -125,8 +138,8 @@ return [
     | can be used to define the layout of the page.
     |
     */
+
     'config' => [
-        'locales' => ['en', 'ar', 'zh', 'fr', 'de', 'es', 'pt', 'pt-BR', 'ru'],
         'themes' => [
             'cms' => [
                 'types' => [
@@ -152,7 +165,36 @@ return [
     |
     | Define the content schemas that can be used to in pages and elements.
     | Each schema has a group, an icon and a set of fields with the key as
-    | property name and the value from the field definition.
+    | property name and the value from the field definition. Each field
+    | has a type, which can be one of the following:
+    |
+    | - audio: an audio file field
+    | - autocomplete: a text field with autocomplete options
+    | - checkbox: a checkbox field
+    | - color: a color picker field
+    | - combobox: a dropdown field with options and a text input
+    | - date: a date field
+    | - file: a generic file field
+    | - hidden: a hidden field that is not displayed in the UI
+    | - html: a text field with HTML support
+    | - image: an image file field
+    | - images: a list of images in the defined order
+    | - items: a list of items with a defined structure
+    | - markdown: a text field with Markdown support
+    | - number: a numeric field
+    | - plaintext: a text field without formatting
+    | - radio: a radio button field with options
+    | - range: a range slider field with start and end values
+    | - select: a dropdown field with options
+    | - slider: a slider field for a value
+    | - string: a simple text field
+    | - switch: a toggle switch field
+    | - table: a table field with rows and columns
+    | - text: a text field with very basic formatting and links
+    | - url: a URL field
+    | - video: a video file field
+    |
+    | The configuration options for each field depend on the type of the field.
     |
     */
     'schemas' => [

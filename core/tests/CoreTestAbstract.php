@@ -14,7 +14,7 @@ abstract class CoreTestAbstract extends CmsTestAbstract
 	{
 		parent::defineEnvironment( $app );
 
-		$app['config']->set('cms.config.locales', ['en', 'de'] );
+		$app['config']->set('cms.locales', ['en', 'de'] );
 
 		$app['config']->set('cms.schemas.content.heading', [
 			'group' => 'basic',
