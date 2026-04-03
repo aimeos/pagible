@@ -49,7 +49,7 @@ class Benchmark extends Command
             return self::FAILURE;
         }
 
-        $tenant = $this->option( 'tenant' ) ?: '';
+        $tenant = (string) ( $this->option( 'tenant' ) ?: '' );
         if( empty( $tenant ) )
         {
             $this->error( 'The --tenant option must not be empty.' );
@@ -62,7 +62,7 @@ class Benchmark extends Command
         };
 
         $conn = config( 'cms.db', 'sqlite' );
-        $domain = $this->option( 'domain' ) ?: '';
+        $domain = (string) ( $this->option( 'domain' ) ?: '' );
         // Unseed mode
         if( $this->option( 'unseed' ) )
         {
@@ -126,8 +126,8 @@ class Benchmark extends Command
      */
     protected function seed( string $domain ): int
     {
-        $editor = $this->option( 'editor' ) ?: '';
-        $lang = $this->option( 'lang' ) ?: '';
+        $editor = (string) ( $this->option( 'editor' ) ?: '' );
+        $lang = (string) ( $this->option( 'lang' ) ?: '' );
         $pages = (int) $this->option( 'pages' );
         $chunk = (int) $this->option( 'chunk' );
 
