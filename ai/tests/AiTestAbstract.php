@@ -14,7 +14,7 @@ abstract class AiTestAbstract extends CmsTestAbstract
 	{
 		parent::defineEnvironment( $app );
 
-		$app['config']->set('cms.config.locales', ['en', 'de'] );
+		$app['config']->set('cms.locales', ['en', 'de'] );
 		$app['config']->set('cms.ai.write', ['provider' => 'gemini', 'model' => 'test', 'api_key' => 'test']);
 		$app['config']->set('cms.ai.refine', ['provider' => 'gemini', 'model' => 'test', 'api_key' => 'test']);
 		$app['config']->set('cms.ai.describe', ['provider' => 'gemini', 'api_key' => 'test']);

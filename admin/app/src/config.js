@@ -11,6 +11,7 @@ export const urlpage = dataset.urlpage || '/_path_'
 export const urlfile = dataset.urlfile || '/storage'
 export const urlgraphql = dataset.urlgraphql || '/graphql'
 export const multidomain = parseInt(dataset.multidomain) || 0
+export const locales = JSON.parse(dataset.locales || '["en"]')
 export const config = JSON.parse(dataset.config || '{}')
 export const schemas = JSON.parse(dataset.schemas || '{}')
 export const theme = JSON.parse(dataset.theme || '{}')

@@ -12,6 +12,7 @@ import {
   urlpage,
   urlfile,
   multidomain,
+  locales as appLocales,
   config as appConfig,
   schemas as appSchemas
 } from './config'
@@ -451,7 +452,7 @@ export const useLanguageStore = defineStore('language', {
       zh: '中文',
       zu: 'isiZulu'
     },
-    available: useConfigStore().get('locales', ['en'])
+    available: appLocales
   }),
 
   actions: {

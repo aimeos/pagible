@@ -100,7 +100,7 @@ class Description extends Command
      */
     protected function files() : void
     {
-        $lang = current( config( 'cms.config.locales', ['en'] ) );
+        $lang = current( config( 'cms.locales', ['en'] ) );
         $provider = config( 'cms.ai.describe.provider' );
         $model = config( 'cms.ai.describe.model' );
         $config = config( 'cms.ai.describe', [] );
