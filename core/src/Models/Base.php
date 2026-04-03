@@ -30,6 +30,7 @@ use Illuminate\Support\Str;
  */
 abstract class Base extends Model
 {
+
     /**
      * Prevent instantiation of abstract Base class by Laravel's HasCollection trait.
      *
@@ -146,6 +147,4 @@ abstract class Base extends Model
     {
         return $this->morphMany( Version::class, 'versionable' )->orderByDesc( 'created_at' )->orderByDesc( 'id' );
     }
-
-
 }

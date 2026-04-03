@@ -74,10 +74,37 @@ trait Benchmarks
         // Warmup iteration
         $execute();
 
+        $verbose = $this->output->isVerbose();
+        $queryTimes = [];
         $durations = [];
 
-        for( $i = 0; $i < $tries; $i++ ) {
+        if( $verbose ) {
+            DB::connection( $conn )->enableQueryLog();
+        }
+
+        for( $i = 0; $i < $tries; $i++ )
+        {
             $durations[] = $execute();
+
+            if( $verbose )
+            {
+                $log = DB::connection( $conn )->getQueryLog();
+                DB::connection( $conn )->flushQueryLog();
+
+                if( !$readOnly )
+                {
+                    array_shift( $log ); // BEGIN
+                    array_pop( $log );   // ROLLBACK
+                }
+
+                foreach( $log as $q ) {
+                    $queryTimes[$q['query']][] = $q['time'] * 1_000_000;
+                }
+            }
+        }
+
+        if( $verbose ) {
+            DB::connection( $conn )->disableQueryLog();
         }
 
         gc_enable();
@@ -94,6 +121,31 @@ trait Benchmarks
             $this->format( $stats['p95'] ),
             $this->format( $stats['p99'] ),
         ) );
+
+        if( $verbose )
+        {
+            foreach( $queryTimes as $sql => $timings )
+            {
+                $type = strtoupper( strtok( ltrim( $sql ), ' ' ) ?: '' );
+                $qStats = $this->stats( $timings );
+                $this->line( sprintf(
+                    '   %-16s %9s %9s %9s %9s %9s %9s',
+                    $type,
+                    $this->format( $qStats['min'] ),
+                    $this->format( $qStats['max'] ),
+                    $this->format( $qStats['avg'] ),
+                    $this->format( $qStats['p90'] ),
+                    $this->format( $qStats['p95'] ),
+                    $this->format( $qStats['p99'] ),
+                ) );
+
+                if( $this->output->isVeryVerbose() ) {
+                    $this->line( '     ' . $sql );
+                }
+            }
+
+            $this->line( '' );
+        }
     }
 
 

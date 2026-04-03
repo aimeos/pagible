@@ -26,6 +26,7 @@ class BenchmarkSearch extends Command
         {--domain= : Domain name}
         {--lang=en : Language code}
         {--seed : Seed benchmark data before running benchmarks}
+        {--unseed : Remove search index data and exit}
         {--pages=10000 : Total number of pages}
         {--tries=100 : Number of iterations per benchmark}
         {--chunk=500 : Rows per bulk insert batch}
@@ -46,6 +47,21 @@ class BenchmarkSearch extends Command
 
         $this->tenant( $tenant );
 
+        if( $this->option( 'unseed' ) )
+        {
+            $this->output->write( '  Flushing search index... ' );
+            Page::removeAllFromSearch();
+            Element::removeAllFromSearch();
+            File::removeAllFromSearch();
+            $this->line( 'done' );
+            $this->output->write( '  Rebuilding search index... ' );
+            Page::makeAllSearchable();
+            Element::makeAllSearchable();
+            File::makeAllSearchable();
+            $this->line( 'done' );
+            return self::SUCCESS;
+        }
+
         if( !$this->hasSeededData() )
         {
             $this->error( 'No benchmark data found. Run `php artisan cms:benchmark --seed` first.' );
@@ -55,11 +71,11 @@ class BenchmarkSearch extends Command
         // Seeding: ensure search index is populated
         if( $this->option( 'seed' ) )
         {
-            $this->info( '  Indexing pages, elements, and files for search...' );
+            $this->output->write( '  Indexing pages, elements, and files for search... ' );
             Page::makeAllSearchable();
             Element::makeAllSearchable();
             File::makeAllSearchable();
-            $this->info( '  Search indexing complete.' );
+            $this->line( 'done' );
         }
 
         $lang = (string) $this->option( 'lang' );
