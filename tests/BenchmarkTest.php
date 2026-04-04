@@ -8,6 +8,7 @@
 namespace Tests;
 
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\DB;
 use PHPUnit\Framework\Attributes\Group;
 use Symfony\Component\Console\Output\ConsoleOutput;
 
@@ -50,11 +51,13 @@ class BenchmarkTest extends CmsTestAbstract
     public function testBenchmark(): void
     {
         $output = new ConsoleOutput();
+        $chunk = DB::connection( config( 'cms.db', 'sqlite' ) )->getDriverName() === 'sqlsrv' ? 75 : 500;
 
         $seed = Artisan::call( 'cms:benchmark', [
             '--seed' => true,
             '--domain' => 'benchmark',
             '--pages' => 10000,
+            '--chunk' => $chunk,
             '--force' => true,
         ], $output );
 
@@ -63,6 +66,7 @@ class BenchmarkTest extends CmsTestAbstract
         $run = Artisan::call( 'cms:benchmark', [
             '--domain' => 'benchmark',
             '--tries' => 10,
+            '--chunk' => $chunk,
             '--force' => true,
             '-v' => true,
         ], $output );

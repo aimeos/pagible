@@ -35,7 +35,7 @@ class BenchmarkSeeder
      * @param int $chunk Rows per bulk insert batch
      * @param \Closure|null $onProgress Called with row count after each bulk insert
      */
-    public function run( string $lang, string $domain = '', string $editor = 'benchmark', int $pages = 10000, int $chunk = 500, ?\Closure $onProgress = null ): void
+    public function run( string $lang, string $domain = '', string $editor = 'benchmark', int $pages = 10000, int $chunk = 75, ?\Closure $onProgress = null ): void
     {
         $this->tenantId = \Aimeos\Cms\Tenancy::value();
         $this->onProgress = $onProgress;
