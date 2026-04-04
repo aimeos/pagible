@@ -18,6 +18,12 @@ jobs:
         run: |
           CHANGED=$(git diff --name-only HEAD~1)
 
+          RUN_PHP=false
+          if echo "$CHANGED" | grep -qv "^admin/"; then
+            RUN_PHP=true
+          fi
+          echo "run_php=$RUN_PHP" >> $GITHUB_OUTPUT
+
           PERF_DIRS="core graphql jsonapi mcp search theme"
           RUN_PERF=false
           for dir in $PERF_DIRS; do
@@ -34,16 +40,21 @@ jobs:
           fi
           echo "run_admin=$RUN_ADMIN" >> $GITHUB_OUTPUT
 
-      - name: Trigger CircleCI performance pipeline
-        if: steps.check.outputs.run_perf == 'true'
+      - name: Trigger CircleCI PHP pipeline
+        if: steps.check.outputs.run_php == 'true'
         run: |
+          PARAMS='{"run_php": true}'
+          if [ "$RUN_PERF" = "true" ]; then
+            PARAMS='{"run_php": true, "run_perf": true}'
+          fi
           curl -s -X POST \
             "https://circleci.com/api/v2/project/gh/aimeos/pagible/pipeline" \
             -H "Circle-Token: $CCI_TOKEN" \
             -H "Content-Type: application/json" \
-            -d '{"branch": "master", "parameters": {"run_perf": true}}'
+            -d "{\"branch\": \"master\", \"parameters\": $PARAMS}"
         env:
           CCI_TOKEN: ${{ secrets.CCI_TOKEN }}
+          RUN_PERF: ${{ steps.check.outputs.run_perf }}
 
       - name: Trigger CircleCI admin pipeline
         if: steps.check.outputs.run_admin == 'true'
