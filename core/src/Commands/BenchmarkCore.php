@@ -40,14 +40,15 @@ class BenchmarkCore extends Command
 
     public function handle(): int
     {
+        $tenant = (string) $this->option( 'tenant' );
+
         if( $this->option( 'unseed' ) )
         {
-            $this->tenant( (string) $this->option( 'tenant' ) );
+            $this->tenant( $tenant);
             $this->unseed( config( 'cms.db', 'sqlite' ), $tenant );
             return self::SUCCESS;
         }
 
-        $tenant = (string) $this->option( 'tenant' );
         $tries = (int) $this->option( 'tries' );
         $force = (bool) $this->option( 'force' );
 
