@@ -27,10 +27,13 @@ jobs:
           done
           echo "run_perf=$RUN" >> $GITHUB_OUTPUT
 
-      - uses: CircleCI-Public/trigger-circleci-pipeline-action@v1.0.5
+      - name: Trigger CircleCI performance pipeline
         if: steps.check.outputs.run_perf == 'true'
-        with:
-          target-slug: "gh/aimeos/pagible"
-          pipeline-parameters: '{"run_perf": true}'
+        run: |
+          curl -s -X POST \
+            "https://circleci.com/api/v2/project/gh/aimeos/pagible/pipeline" \
+            -H "Circle-Token: $CCI_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d '{"branch": "master", "parameters": {"run_perf": true}}'
         env:
           CCI_TOKEN: ${{ secrets.CCI_TOKEN }}
