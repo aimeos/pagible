@@ -42,8 +42,7 @@ class BenchmarkCore extends Command
     {
         if( $this->option( 'unseed' ) )
         {
-            $tenant = (string) $this->option( 'tenant' );
-            $this->tenant( $tenant );
+            $this->tenant( (string) $this->option( 'tenant' ) );
             $this->unseed( config( 'cms.db', 'sqlite' ), $tenant );
             return self::SUCCESS;
         }
@@ -72,10 +71,14 @@ class BenchmarkCore extends Command
 
         $count = Page::where( 'tag', '!=', 'root' )->where( 'lang', $lang )->count();
         $page = Page::where( 'tag', '!=', 'root' )->where( 'lang', $lang )
-            ->orderBy( '_lft' )->skip( (int) floor( $count / 2 ) )->firstOrFail();
+            ->orderBy( '_lft' )->skip( (int) floor( $count / 2 ) )
+            ->firstOrFail();
 
+        $parentIds = $page->ancestors()->get()->pluck( 'id' );
         $moveParent = Page::where( 'depth', 1 )->where( 'lang', $lang )
-            ->whereNotIn( 'id', $page->ancestors()->get()->pluck( 'id' ) )->firstOrFail();
+            ->whereNotIn( 'id', $parentIds )
+            ->firstOrFail();
+
         $element = Element::where( 'lang', $lang )->firstOrFail();
         $file = File::where( 'lang', $lang )->firstOrFail();
 
