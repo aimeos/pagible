@@ -7,12 +7,9 @@
 
 namespace Aimeos\Cms\Commands;
 
-use Aimeos\Cms\Models\Page;
 use Database\Seeders\BenchmarkSeeder;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
 
 
 class Benchmark extends Command
@@ -87,9 +84,6 @@ class Benchmark extends Command
                 ] );
             }
 
-            $this->output->write( 'Removing benchmark data... ' );
-            $this->unseed( config( 'cms.db', 'sqlite' ), $tenant, $domain );
-            $this->line( 'done' );
             return self::SUCCESS;
         }
 
@@ -161,50 +155,4 @@ class Benchmark extends Command
         return self::SUCCESS;
     }
 
-
-    /**
-     * Remove all benchmark data for the tenant, respecting FK constraints.
-     */
-    protected function unseed( string $conn, string $tenant, string $domain ): void
-    {
-        // Clear cache for benchmark pages
-        Page::where( 'editor', 'benchmark' )->each( function( $page ) {
-            Cache::forget( Page::key( $page ) );
-        } );
-
-        // Break circular page↔version FK by clearing latest_id first
-        DB::connection( $conn )->table( 'cms_pages' )
-            ->where( 'tenant_id', $tenant )
-            ->where( 'editor', 'benchmark' )
-            ->update( ['latest_id' => null] );
-
-        $pageIds = DB::connection( $conn )->table( 'cms_pages' )
-            ->where( 'tenant_id', $tenant )->where( 'editor', 'benchmark' )->pluck( 'id' );
-        $versionIds = DB::connection( $conn )->table( 'cms_versions' )
-            ->where( 'tenant_id', $tenant )->where( 'editor', 'benchmark' )->pluck( 'id' );
-
-        // Delete pivot tables (no tenant_id column)
-        foreach( $pageIds->chunk( 500 ) as $chunk )
-        {
-            DB::connection( $conn )->table( 'cms_page_file' )->whereIn( 'page_id', $chunk )->delete();
-            DB::connection( $conn )->table( 'cms_page_element' )->whereIn( 'page_id', $chunk )->delete();
-        }
-
-        foreach( $versionIds->chunk( 500 ) as $chunk )
-        {
-            DB::connection( $conn )->table( 'cms_version_file' )->whereIn( 'version_id', $chunk )->delete();
-            DB::connection( $conn )->table( 'cms_version_element' )->whereIn( 'version_id', $chunk )->delete();
-        }
-
-        // Delete main tables
-        $tables = ['cms_versions', 'cms_elements', 'cms_files', 'cms_pages'];
-
-        foreach( $tables as $table )
-        {
-            DB::connection( $conn )->table( $table )
-                ->where( 'tenant_id', $tenant )
-                ->where( 'editor', 'benchmark' )
-                ->delete();
-        }
-    }
 }

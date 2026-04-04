@@ -32,6 +32,7 @@ class BenchmarkGraphql extends Command
         {--pages=10000 : Total number of pages}
         {--tries=100 : Number of iterations per benchmark}
         {--chunk=500 : Rows per bulk insert batch}
+        {--unseed : Remove benchmark data and exit}
         {--force : Force the operation to run in production}';
 
     protected $description = 'Run GraphQL mutation benchmarks';
@@ -39,6 +40,10 @@ class BenchmarkGraphql extends Command
 
     public function handle(): int
     {
+        if( $this->option( 'unseed' ) ) {
+            return self::SUCCESS;
+        }
+
         $tenant = (string) $this->option( 'tenant' );
         $tries = (int) $this->option( 'tries' );
         $force = (bool) $this->option( 'force' );
@@ -58,6 +63,8 @@ class BenchmarkGraphql extends Command
         $domain = (string) ( $this->option( 'domain' ) ?: '' );
         $lang = (string) $this->option( 'lang' );
         $conn = config( 'cms.db', 'sqlite' );
+
+        config( ['scout.driver' => 'cms'] );
 
         // Wrap everything in a transaction for user cleanup
         DB::connection( $conn )->beginTransaction();
