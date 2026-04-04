@@ -1,4 +1,6 @@
 name: Trigger Performance Tests
+permissions:
+  contents: read
 on:
   push:
     branches: [master]
