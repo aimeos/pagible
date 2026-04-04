@@ -104,11 +104,11 @@ class BenchmarkCore extends Command
         }, tries: $tries );
 
         $this->benchmark( 'Page read', function() use ( $page ) {
-            Page::with( 'latest.files', 'latest.elements' )->find( $page->id );
+            Page::with( 'files', 'elements' )->find( $page->id );
         }, readOnly: true, tries: $tries );
 
         $this->benchmark( 'Page list', function() {
-            Page::with( 'latest.files', 'latest.elements' )->take( 100 )->get();
+            Page::with( 'files', 'elements' )->take( 100 )->get();
         }, readOnly: true, tries: $tries );
 
         $this->benchmark( 'Page update', function() use ( $page, $lang ) {
@@ -163,11 +163,11 @@ class BenchmarkCore extends Command
         }, tries: $tries );
 
         $this->benchmark( 'Element read', function() use ( $element ) {
-            Element::with( 'latest.files' )->find( $element->id );
+            Element::with( 'files' )->find( $element->id );
         }, readOnly: true, tries: $tries );
 
         $this->benchmark( 'Element list', function() {
-            Element::with( 'latest.files' )->take( 100 )->get();
+            Element::with( 'files' )->take( 100 )->get();
         }, readOnly: true, tries: $tries );
 
         $this->benchmark( 'Element update', function() use ( $element, $lang ) {
