@@ -1,4 +1,4 @@
-name: Trigger Performance Tests
+name: Trigger CircleCI Pipelines
 permissions:
   contents: read
 on:
@@ -9,23 +9,30 @@ jobs:
   trigger:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 2
 
-      - name: Check if perf-relevant packages changed
+      - name: Detect changed packages
         id: check
         run: |
-          PERF_DIRS="core graphql jsonapi mcp search theme"
           CHANGED=$(git diff --name-only HEAD~1)
-          RUN=false
+
+          PERF_DIRS="core graphql jsonapi mcp search theme"
+          RUN_PERF=false
           for dir in $PERF_DIRS; do
             if echo "$CHANGED" | grep -q "^${dir}/"; then
-              RUN=true
+              RUN_PERF=true
               break
             fi
           done
-          echo "run_perf=$RUN" >> $GITHUB_OUTPUT
+          echo "run_perf=$RUN_PERF" >> $GITHUB_OUTPUT
+
+          RUN_ADMIN=false
+          if echo "$CHANGED" | grep -q "^admin/"; then
+            RUN_ADMIN=true
+          fi
+          echo "run_admin=$RUN_ADMIN" >> $GITHUB_OUTPUT
 
       - name: Trigger CircleCI performance pipeline
         if: steps.check.outputs.run_perf == 'true'
@@ -35,5 +42,16 @@ jobs:
             -H "Circle-Token: $CCI_TOKEN" \
             -H "Content-Type: application/json" \
             -d '{"branch": "master", "parameters": {"run_perf": true}}'
+        env:
+          CCI_TOKEN: ${{ secrets.CCI_TOKEN }}
+
+      - name: Trigger CircleCI admin pipeline
+        if: steps.check.outputs.run_admin == 'true'
+        run: |
+          curl -s -X POST \
+            "https://circleci.com/api/v2/project/gh/aimeos/pagible/pipeline" \
+            -H "Circle-Token: $CCI_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d '{"branch": "master", "parameters": {"run_admin": true}}'
         env:
           CCI_TOKEN: ${{ secrets.CCI_TOKEN }}

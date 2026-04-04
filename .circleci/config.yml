@@ -8,6 +8,9 @@ parameters:
   run_perf:
     type: boolean
     default: false
+  run_admin:
+    type: boolean
+    default: false
 
 jobs:
   "php82-sqlite3":
@@ -454,6 +457,9 @@ workflows:
       - "php85-mysql"
       - "php85-pgsql"
       - "php85-phpstan"
+  admin:
+    when: << pipeline.parameters.run_admin >>
+    jobs:
       - "admin-lint"
       - "admin-unit"
       - "admin-e2e"
