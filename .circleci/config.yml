@@ -422,7 +422,7 @@ jobs:
 
   "perf-mssql":
     docker:
-      - image: aimeos/ci-php:8.5
+      - image: aimeos/ci-php:8.2
         environment:
           DB_DRIVER: sqlsrv
           DB_HOST: "127.0.0.1"
@@ -438,10 +438,10 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - php85-{{ checksum "composer.json" }}
+            - php82-{{ checksum "composer.json" }}
       - run: composer update -n --prefer-dist
       - save_cache:
-          key: php85-{{ checksum "composer.json" }}
+          key: php82-{{ checksum "composer.json" }}
           paths: [./vendor]
       - run: echo "CREATE DATABASE cms;" > sqlserver.sql; for i in `seq 1 10`; do /opt/mssql-tools/bin/sqlcmd -S 127.0.0.1 -U SA -P 'S3c0r3P4ss' -i sqlserver.sql && exit 0; sleep 3; done
       - run: ./vendor/bin/phpunit --group benchmark
@@ -471,20 +471,15 @@ workflows:
       - "php85-pgsql":
           requires: ["php85-phpstan"]
       - "perf-sqlite":
-          when: << pipeline.parameters.run_perf >>
           requires: ["php82-sqlite3", "php85-sqlite"]
       - "perf-mariadb":
-          when: << pipeline.parameters.run_perf >>
           requires: ["php82-mariadb10", "php85-mariadb"]
       - "perf-mysql":
-          when: << pipeline.parameters.run_perf >>
           requires: ["php82-mysql8", "php85-mysql"]
       - "perf-pgsql":
-          when: << pipeline.parameters.run_perf >>
           requires: ["php82-pgsql14", "php85-pgsql"]
       - "perf-mssql":
-          when: << pipeline.parameters.run_perf >>
-          requires: ["php82-mssql17", "php85-mssql"]
+          requires: ["php82-mssql17"]
   admin:
     when: << pipeline.parameters.run_admin >>
     jobs:
