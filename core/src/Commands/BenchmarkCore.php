@@ -8,6 +8,8 @@
 namespace Aimeos\Cms\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 use Aimeos\Cms\Concerns\Benchmarks;
 use Aimeos\Cms\Models\Element;
@@ -30,6 +32,7 @@ class BenchmarkCore extends Command
         {--pages=10000 : Total number of pages}
         {--tries=100 : Number of iterations per benchmark}
         {--chunk=500 : Rows per bulk insert batch}
+        {--unseed : Remove benchmark data and exit}
         {--force : Force the operation to run in production}';
 
     protected $description = 'Run core model benchmarks';
@@ -37,6 +40,14 @@ class BenchmarkCore extends Command
 
     public function handle(): int
     {
+        if( $this->option( 'unseed' ) )
+        {
+            $tenant = (string) $this->option( 'tenant' );
+            $this->tenant( $tenant );
+            $this->unseed( config( 'cms.db', 'sqlite' ), $tenant );
+            return self::SUCCESS;
+        }
+
         $tenant = (string) $this->option( 'tenant' );
         $tries = (int) $this->option( 'tries' );
         $force = (bool) $this->option( 'force' );
@@ -135,6 +146,7 @@ class BenchmarkCore extends Command
         $this->benchmark( 'Page restore', function() use ( $trashedPage ) {
             $trashedPage->restore();
             $trashedPage->deleted_at = now();
+            $trashedPage->syncOriginal();
         }, tries: $tries );
 
         $this->benchmark( 'Page purge', function() use ( $page ) {
@@ -185,6 +197,7 @@ class BenchmarkCore extends Command
         $this->benchmark( 'Element restore', function() use ( $trashedElement ) {
             $trashedElement->restore();
             $trashedElement->deleted_at = now();
+            $trashedElement->syncOriginal();
         }, tries: $tries );
 
 
@@ -227,6 +240,7 @@ class BenchmarkCore extends Command
         $this->benchmark( 'File restore', function() use ( $trashedFile ) {
             $trashedFile->restore();
             $trashedFile->deleted_at = now();
+            $trashedFile->syncOriginal();
         }, tries: $tries );
 
 
@@ -246,5 +260,52 @@ class BenchmarkCore extends Command
         $this->line( '' );
 
         return self::SUCCESS;
+    }
+
+
+    /**
+     * Remove all benchmark data for the tenant, respecting FK constraints.
+     */
+    protected function unseed( string $conn, string $tenant ): void
+    {
+        // Clear cache for benchmark pages
+        Page::where( 'editor', 'benchmark' )->each( function( $page ) {
+            Cache::forget( Page::key( $page ) );
+        } );
+
+        // Break circular page↔version FK by clearing latest_id first
+        DB::connection( $conn )->table( 'cms_pages' )
+            ->where( 'tenant_id', $tenant )
+            ->where( 'editor', 'benchmark' )
+            ->update( ['latest_id' => null] );
+
+        $pageIds = DB::connection( $conn )->table( 'cms_pages' )
+            ->where( 'tenant_id', $tenant )->where( 'editor', 'benchmark' )->pluck( 'id' );
+        $versionIds = DB::connection( $conn )->table( 'cms_versions' )
+            ->where( 'tenant_id', $tenant )->where( 'editor', 'benchmark' )->pluck( 'id' );
+
+        // Delete pivot tables (no tenant_id column)
+        foreach( $pageIds->chunk( 500 ) as $chunk )
+        {
+            DB::connection( $conn )->table( 'cms_page_file' )->whereIn( 'page_id', $chunk )->delete();
+            DB::connection( $conn )->table( 'cms_page_element' )->whereIn( 'page_id', $chunk )->delete();
+        }
+
+        foreach( $versionIds->chunk( 500 ) as $chunk )
+        {
+            DB::connection( $conn )->table( 'cms_version_file' )->whereIn( 'version_id', $chunk )->delete();
+            DB::connection( $conn )->table( 'cms_version_element' )->whereIn( 'version_id', $chunk )->delete();
+        }
+
+        // Delete main tables
+        $tables = ['cms_versions', 'cms_elements', 'cms_files', 'cms_pages'];
+
+        foreach( $tables as $table )
+        {
+            DB::connection( $conn )->table( $table )
+                ->where( 'tenant_id', $tenant )
+                ->where( 'editor', 'benchmark' )
+                ->delete();
+        }
     }
 }

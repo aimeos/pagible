@@ -91,12 +91,6 @@ trait Benchmarks
                 $log = DB::connection( $conn )->getQueryLog();
                 DB::connection( $conn )->flushQueryLog();
 
-                if( !$readOnly )
-                {
-                    array_shift( $log ); // BEGIN
-                    array_pop( $log );   // ROLLBACK
-                }
-
                 foreach( $log as $q ) {
                     $queryTimes[$q['query']][] = $q['time'] * 1_000_000;
                 }

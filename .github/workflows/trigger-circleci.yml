@@ -1,0 +1,36 @@
+name: Trigger Performance Tests
+permissions:
+  contents: read
+on:
+  push:
+    branches: [master]
+
+jobs:
+  trigger:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Check if perf-relevant packages changed
+        id: check
+        run: |
+          PERF_DIRS="core graphql jsonapi mcp search theme"
+          CHANGED=$(git diff --name-only HEAD~1)
+          RUN=false
+          for dir in $PERF_DIRS; do
+            if echo "$CHANGED" | grep -q "^${dir}/"; then
+              RUN=true
+              break
+            fi
+          done
+          echo "run_perf=$RUN" >> $GITHUB_OUTPUT
+
+      - uses: CircleCI-Public/trigger-circleci-pipeline-action@v1.0.5
+        if: steps.check.outputs.run_perf == 'true'
+        with:
+          target-slug: "gh/aimeos/pagible"
+          pipeline-parameters: '{"run_perf": true}'
+        env:
+          CCI_TOKEN: ${{ secrets.CCI_TOKEN }}

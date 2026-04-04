@@ -33,6 +33,7 @@ class BenchmarkMcp extends Command
         {--pages=10000 : Total number of pages}
         {--tries=100 : Number of iterations per benchmark}
         {--chunk=500 : Rows per bulk insert batch}
+        {--unseed : Remove benchmark data and exit}
         {--force : Force the operation to run in production}';
 
     protected $description = 'Run MCP tool benchmarks';
@@ -40,6 +41,10 @@ class BenchmarkMcp extends Command
 
     public function handle(): int
     {
+        if( $this->option( 'unseed' ) ) {
+            return self::SUCCESS;
+        }
+
         $tenant = (string) $this->option( 'tenant' );
         $tries = (int) $this->option( 'tries' );
         $force = (bool) $this->option( 'force' );
@@ -147,9 +152,11 @@ class BenchmarkMcp extends Command
 
             $this->benchmark( 'Add page', function() use ( $user, $root, $lang ) {
                 CmsServer::actingAs( $user )->tool( \Aimeos\Cms\Tools\AddPage::class, [
-                    'parent' => $root->id, 'lang' => $lang,
+                    'parent_id' => $root->id, 'lang' => $lang,
                     'name' => 'MCP Bench', 'title' => 'MCP Bench',
                     'path' => 'mcp-bench-' . Utils::uid(),
+                    'content' => [['type' => 'text', 'data' => ['text' => 'Benchmark']]],
+                    'meta' => ['meta-tags' => ['description' => 'Benchmark page']],
                 ] );
             }, tries: $tries );
 
@@ -160,7 +167,7 @@ class BenchmarkMcp extends Command
             }, tries: $tries );
 
             $this->benchmark( 'Publish page', function() use ( $user, $page ) {
-                CmsServer::actingAs( $user )->tool( \Aimeos\Cms\Tools\PublishPage::class, ['id' => $page->id] );
+                CmsServer::actingAs( $user )->tool( \Aimeos\Cms\Tools\PublishPage::class, ['id' => [$page->id]] );
             }, tries: $tries );
 
             $this->benchmark( 'Drop page', function() use ( $user, $page ) {

@@ -4,6 +4,11 @@
 #
 version: 2.1
 
+parameters:
+  run_perf:
+    type: boolean
+    default: false
+
 jobs:
   "php82-sqlite3":
     docker:
@@ -310,6 +315,131 @@ jobs:
       - store_artifacts:
           path: cypress
 
+  "perf-sqlite":
+    docker:
+      - image: aimeos/ci-php:8.5
+        environment:
+          DB_DRIVER: sqlite
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - php85-{{ checksum "composer.json" }}
+      - run: composer update -n --prefer-dist
+      - save_cache:
+          key: php85-{{ checksum "composer.json" }}
+          paths: [./vendor]
+      - run: ./vendor/bin/phpunit --group benchmark
+
+  "perf-mariadb":
+    docker:
+      - image: aimeos/ci-php:8.5
+        environment:
+          DB_DRIVER: mariadb
+          DB_HOST: "127.0.0.1"
+          DB_PORT: 3306
+          DB_USERNAME: pagible
+          DB_PASSWORD: pagible
+          DB_DATABASE: cms
+      - image: mariadb:latest
+        environment:
+          MARIADB_ROOT_PASSWORD: rootpw
+          MARIADB_USER: pagible
+          MARIADB_PASSWORD: pagible
+          MARIADB_DATABASE: cms
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - php85-{{ checksum "composer.json" }}
+      - run: composer update -n --prefer-dist
+      - save_cache:
+          key: php85-{{ checksum "composer.json" }}
+          paths: [./vendor]
+      - run: for i in `seq 1 10`; do nc -z 127.0.0.1 3306 && echo OK && exit 0; echo -n .; sleep 1; done
+      - run: ./vendor/bin/phpunit --group benchmark
+
+  "perf-mysql":
+    docker:
+      - image: aimeos/ci-php:8.5
+        environment:
+          DB_DRIVER: mysql
+          DB_HOST: "127.0.0.1"
+          DB_PORT: 3306
+          DB_USERNAME: pagible
+          DB_PASSWORD: pagible
+          DB_DATABASE: cms
+      - image: mysql:latest
+        environment:
+          MYSQL_ROOT_PASSWORD: rootpw
+          MYSQL_USER: pagible
+          MYSQL_PASSWORD: pagible
+          MYSQL_DATABASE: cms
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - php85-{{ checksum "composer.json" }}
+      - run: composer update -n --prefer-dist
+      - save_cache:
+          key: php85-{{ checksum "composer.json" }}
+          paths: [./vendor]
+      - run: for i in `seq 1 10`; do nc -z 127.0.0.1 3306 && echo OK && exit 0; echo -n .; sleep 1; done
+      - run: ./vendor/bin/phpunit --group benchmark
+
+  "perf-pgsql":
+    docker:
+      - image: aimeos/ci-php:8.5
+        environment:
+          DB_DRIVER: pgsql
+          DB_HOST: "127.0.0.1"
+          DB_PORT: 5432
+          DB_USERNAME: pagible
+          DB_PASSWORD: pagible
+          DB_DATABASE: cms
+      - image: postgres:18
+        environment:
+          POSTGRES_PASSWORD: pagible
+          POSTGRES_USER: pagible
+          POSTGRES_DB: cms
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - php85-{{ checksum "composer.json" }}
+      - run: composer update -n --prefer-dist
+      - save_cache:
+          key: php85-{{ checksum "composer.json" }}
+          paths: [./vendor]
+      - run: for i in `seq 1 10`; do nc -z 127.0.0.1 5432 && echo OK && exit 0; echo -n .; sleep 1; done
+      - run: ./vendor/bin/phpunit --group benchmark
+
+  "perf-mssql":
+    docker:
+      - image: aimeos/ci-php:8.5
+        environment:
+          DB_DRIVER: sqlsrv
+          DB_HOST: "127.0.0.1"
+          DB_PORT: 1433
+          DB_USERNAME: SA
+          DB_PASSWORD: S3c0r3P4ss
+          DB_DATABASE: cms
+      - image: aimeos/ci-mssql-fts:2017
+        environment:
+          SA_PASSWORD: S3c0r3P4ss
+          ACCEPT_EULA: Y
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - php85-{{ checksum "composer.json" }}
+      - run: composer update -n --prefer-dist
+      - save_cache:
+          key: php85-{{ checksum "composer.json" }}
+          paths: [./vendor]
+      - run: echo "CREATE DATABASE cms;" > sqlserver.sql; for i in `seq 1 10`; do /opt/mssql-tools/bin/sqlcmd -S 127.0.0.1 -U SA -P 'S3c0r3P4ss' -i sqlserver.sql && exit 0; sleep 3; done
+      - run: ./vendor/bin/phpunit --group benchmark
+
 workflows:
   version: 2
   unittest:
@@ -327,3 +457,11 @@ workflows:
       - "admin-lint"
       - "admin-unit"
       - "admin-e2e"
+  performance:
+    when: << pipeline.parameters.run_perf >>
+    jobs:
+      - "perf-sqlite"
+      - "perf-mariadb"
+      - "perf-mysql"
+      - "perf-pgsql"
+      - "perf-mssql"
