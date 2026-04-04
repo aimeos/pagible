@@ -198,7 +198,7 @@ export const useUserStore = defineStore('user', {
             }
           `,
           variables: {
-            settings: this.me.settings
+            settings: JSON.stringify(this.me.settings)
           }
         })
         .then((response) => {

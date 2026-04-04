@@ -48,22 +48,20 @@ const router = createRouter({
   ]
 })
 
-router.beforeEach(async (to, from, next) => {
+router.beforeEach(async (to) => {
   const user = useUserStore()
   const message = useMessageStore()
   const authenticated = await user.isAuthenticated()
 
   if (to.matched.some((record) => record.meta.auth) && !authenticated) {
     user.intended(to.fullPath)
-    next({ name: 'login' })
+    return { name: 'login' }
   } else if (to.name !== 'login' && !user.can(to.name)) {
     message.add(
       gettext.$gettext('You do not have permission to access %{path}', { path: to.fullPath }),
       'error'
     )
-    return next(false)
-  } else {
-    next()
+    return false
   }
 })
 
