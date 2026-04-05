@@ -47,7 +47,7 @@ return new class extends Migration
 
             $table->unique(['path', 'domain', 'tenant_id']);
             $table->index(['tag', 'lang', 'tenant_id', 'status']);
-            $table->index(['parent_id', '_lft', 'tenant_id']);
+            $table->index(['tenant_id', 'parent_id', 'deleted_at']);
             $table->index(['lang', 'tenant_id', 'status']);
             $table->index(['domain', 'tenant_id']);
             $table->index(['title', 'tenant_id']);

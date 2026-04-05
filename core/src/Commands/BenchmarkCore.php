@@ -159,7 +159,8 @@ class BenchmarkCore extends Command
         }, tries: $tries );
 
         $this->benchmark( 'Page tree', function() use ( $root ) {
-            Page::where( 'parent_id', $root->id )->with( ['children', 'latest'] )->get();
+            Page::select( 'id', 'parent_id', '_lft', '_rgt', 'depth', 'name', 'title', 'tag', 'path', 'domain', 'lang', 'to', 'status', 'config', 'latest_id' )
+                ->where( 'parent_id', $root->id )->with( ['children', 'latest'] )->get();
         }, readOnly: true, tries: $tries );
 
 
