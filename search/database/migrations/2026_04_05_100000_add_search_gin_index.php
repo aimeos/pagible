@@ -17,19 +17,25 @@ return new class extends Migration
     public function up(): void
     {
         $name = config('cms.db', 'sqlite');
-        $db = Schema::connection($name)->getConnection();
+        $schema = Schema::connection($name);
+        $db = $schema->getConnection();
+        $driver = $db->getDriverName();
 
-        if( $db->getDriverName() !== 'pgsql' ) {
+        if( $driver === 'sqlite' ) {
             return;
         }
 
-        $indexes = collect(Schema::connection($name)->getIndexes('cms_index'))->pluck('name')->all();
+        $indexes = collect($schema->getIndexes('cms_index'))->pluck('name')->all();
 
-        if( in_array('cms_index_content_gin', $indexes) ) {
-            return;
+        if( $driver === 'pgsql' && !in_array('cms_index_content_gin', $indexes) ) {
+            $db->statement("CREATE INDEX cms_index_content_gin ON cms_index USING gin(to_tsvector('simple', coalesce(content, '')))");
         }
 
-        $db->statement("CREATE INDEX cms_index_content_gin ON cms_index USING gin(to_tsvector('simple', coalesce(content, '')))");
+        if( !in_array('cms_index_tenant_id_indexable_type_latest_index', $indexes) ) {
+            $schema->table('cms_index', function($table) {
+                $table->index(['tenant_id', 'indexable_type', 'latest']);
+            });
+        }
     }
 
     /**
@@ -38,16 +44,24 @@ return new class extends Migration
     public function down(): void
     {
         $name = config('cms.db', 'sqlite');
-        $db = Schema::connection($name)->getConnection();
+        $schema = Schema::connection($name);
+        $db = $schema->getConnection();
+        $driver = $db->getDriverName();
 
-        if( $db->getDriverName() !== 'pgsql' ) {
+        if( $driver === 'sqlite' ) {
             return;
         }
 
-        $indexes = collect(Schema::connection($name)->getIndexes('cms_index'))->pluck('name')->all();
+        $indexes = collect($schema->getIndexes('cms_index'))->pluck('name')->all();
 
         if( in_array('cms_index_content_gin', $indexes) ) {
             $db->statement('DROP INDEX cms_index_content_gin');
+        }
+
+        if( in_array('cms_index_tenant_id_indexable_type_latest_index', $indexes) ) {
+            $schema->table('cms_index', function($table) {
+                $table->dropIndex(['tenant_id', 'indexable_type', 'latest']);
+            });
         }
     }
 };

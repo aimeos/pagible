@@ -51,6 +51,7 @@ return new class extends Migration
                 $table->text('content');
 
                 $table->index(['indexable_id', 'indexable_type', 'latest', 'tenant_id']);
+                $table->index(['tenant_id', 'indexable_type', 'latest']);
 
                 if( in_array($driver, ['mariadb', 'mysql']) ) {
                     $table->fullText('content');
