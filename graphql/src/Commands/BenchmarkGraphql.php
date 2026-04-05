@@ -161,19 +161,19 @@ class BenchmarkGraphql extends Command
             }, readOnly: true, tries: $tries );
 
             $this->benchmark( 'Page status', function() use ( $lang ) {
-                ( new Query )->pages( null, ['first' => 100, 'filter' => ['lang' => $lang, 'status' => 1]] )->items();
+                ( new Query )->pages( null, ['first' => 100, 'filter' => ['status' => 1]] )->items();
             }, readOnly: true, tries: $tries );
 
             $this->benchmark( 'Page cache', function() use ( $lang ) {
-                ( new Query )->pages( null, ['first' => 100, 'filter' => ['lang' => $lang, 'cache' => 5]] )->items();
+                ( new Query )->pages( null, ['first' => 100, 'filter' => ['cache' => 5]] )->items();
             }, readOnly: true, tries: $tries );
 
             $this->benchmark( 'Page editor', function() use ( $lang ) {
-                ( new Query )->pages( null, ['first' => 100, 'filter' => ['lang' => $lang, 'editor' => 'benchmark']] )->items();
+                ( new Query )->pages( null, ['first' => 100, 'filter' => ['editor' => 'benchmark']] )->items();
             }, readOnly: true, tries: $tries );
 
             $this->benchmark( 'Page type', function() use ( $lang ) {
-                ( new Query )->pages( null, ['first' => 100, 'filter' => ['lang' => $lang, 'type' => '']] )->items();
+                ( new Query )->pages( null, ['first' => 100, 'filter' => ['type' => '']] )->items();
             }, readOnly: true, tries: $tries );
 
             $this->benchmark( 'File mime', function() {

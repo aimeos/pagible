@@ -201,7 +201,7 @@ class Page extends Base
     public function ancestors() : AncestorsRelation
     {
         $builder = $this->newScopedQuery()
-            ->select( 'id', 'parent_id', '_lft', '_rgt', 'depth', 'name', 'title', 'tag', 'path', 'domain', 'lang', 'to', 'status', 'config' )
+            ->select( 'id', 'parent_id', '_lft', '_rgt', 'depth', 'name', 'title', 'tag', 'path', 'domain', 'lang', 'to', 'status', 'config', 'latest_id' )
             ->setModel( new Nav() )
             ->defaultOrder();
 
@@ -217,7 +217,7 @@ class Page extends Base
     public function children() : HasMany
     {
         return $this->hasMany( Nav::class, $this->getParentIdName() )
-            ->select( 'id', 'parent_id', '_lft', '_rgt', 'depth', 'name', 'title', 'tag', 'path', 'domain', 'lang', 'to', 'status', 'config' )
+            ->select( 'id', 'parent_id', '_lft', '_rgt', 'depth', 'name', 'title', 'tag', 'path', 'domain', 'lang', 'to', 'status', 'config', 'latest_id' )
             ->setModel( new Nav() )
             ->defaultOrder();
     }
@@ -355,7 +355,7 @@ class Page extends Base
     public function parent() : BelongsTo
     {
         return $this->belongsTo( Nav::class, $this->getParentIdName() )
-            ->select( 'id', 'parent_id', '_lft', '_rgt', 'depth', 'name', 'title', 'tag', 'path', 'domain', 'lang', 'to', 'status', 'config' )
+            ->select( 'id', 'parent_id', '_lft', '_rgt', 'depth', 'name', 'title', 'tag', 'path', 'domain', 'lang', 'to', 'status', 'config', 'latest_id' )
             ->setModel( new Nav() );
     }
 
@@ -426,7 +426,7 @@ class Page extends Base
         $isEditor = \Aimeos\Cms\Permission::can( 'page:view', Auth::user() );
 
         $builder = $this->newScopedQuery()
-            ->select( 'id', 'parent_id', '_lft', '_rgt', 'depth', 'name', 'title', 'tag', 'path', 'domain', 'lang', 'to', 'status', 'config' )
+            ->select( 'id', 'parent_id', '_lft', '_rgt', 'depth', 'name', 'title', 'tag', 'path', 'domain', 'lang', 'to', 'status', 'config', 'latest_id' )
             ->whereIn( 'depth', range( 0, $maxDepth ) )
             ->defaultOrder()
             ->setModel(new Nav());
