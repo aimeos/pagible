@@ -123,7 +123,7 @@ class BenchmarkCore extends Command
         }, readOnly: true, tries: $tries );
 
         $this->benchmark( 'Page list', function() {
-            Page::with( 'files', 'elements' )->take( 100 )->get();
+            Page::with( 'files', 'elements' )->orderBy( '_lft' )->take( 100 )->get();
         }, readOnly: true, tries: $tries );
 
         $this->benchmark( 'Page update', function() use ( $page, $lang ) {
