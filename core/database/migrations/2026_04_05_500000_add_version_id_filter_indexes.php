@@ -37,12 +37,23 @@ return new class extends Migration
             $table->index(['editor', 'id'], 'cms_versions_editor_id_index');
         });
 
-        if ($driver === 'sqlsrv') {
+        if (in_array($driver, ['mysql', 'mariadb'])) {
+            $db->statement("ALTER TABLE cms_versions ADD COLUMN data_scheduled BOOLEAN GENERATED ALWAYS AS (JSON_EXTRACT(data, '$.scheduled')) VIRTUAL");
+
+            Schema::connection($name)->table('cms_versions', function (Blueprint $table) {
+                $table->index('data_scheduled', 'cms_versions_data_scheduled_index');
+            });
+        } elseif ($driver === 'pgsql') {
+            $db->statement("CREATE INDEX cms_versions_data_scheduled_id_index ON cms_versions ((data->>'scheduled'), id)");
+        } elseif ($driver === 'sqlsrv') {
             // SQL Server computed columns don't include PK implicitly, need explicit composites
             $db->statement('CREATE INDEX cms_versions_data_theme_id_index ON cms_versions (data_theme, id)');
             $db->statement('CREATE INDEX cms_versions_data_status_id_index ON cms_versions (data_status, id)');
             $db->statement('CREATE INDEX cms_versions_data_cache_id_index ON cms_versions (data_cache, id)');
             $db->statement('CREATE INDEX cms_versions_data_type_id_index ON cms_versions (data_type, id)');
+
+            $db->statement("ALTER TABLE cms_versions ADD data_scheduled AS CAST(JSON_VALUE(data, '$.scheduled') AS BIT)");
+            $db->statement('CREATE INDEX cms_versions_data_scheduled_id_index ON cms_versions (data_scheduled, id)');
         }
         // MySQL/MariaDB: standalone virtual column indexes already provide (data_*, id) order in InnoDB
         // PostgreSQL: (expression, id) indexes already created in migration 400000
@@ -66,11 +77,20 @@ return new class extends Migration
             $table->dropIndex('cms_versions_editor_id_index');
         });
 
-        if ($driver === 'sqlsrv') {
+        if (in_array($driver, ['mysql', 'mariadb'])) {
+            Schema::connection($name)->table('cms_versions', function (Blueprint $table) {
+                $table->dropIndex('cms_versions_data_scheduled_index');
+            });
+            $db->statement('ALTER TABLE cms_versions DROP COLUMN data_scheduled');
+        } elseif ($driver === 'pgsql') {
+            $db->statement('DROP INDEX IF EXISTS cms_versions_data_scheduled_id_index');
+        } elseif ($driver === 'sqlsrv') {
             $db->statement('DROP INDEX IF EXISTS cms_versions_data_theme_id_index ON cms_versions');
             $db->statement('DROP INDEX IF EXISTS cms_versions_data_status_id_index ON cms_versions');
             $db->statement('DROP INDEX IF EXISTS cms_versions_data_cache_id_index ON cms_versions');
             $db->statement('DROP INDEX IF EXISTS cms_versions_data_type_id_index ON cms_versions');
+            $db->statement('DROP INDEX IF EXISTS cms_versions_data_scheduled_id_index ON cms_versions');
+            $db->statement('ALTER TABLE cms_versions DROP COLUMN data_scheduled');
         }
     }
 };
