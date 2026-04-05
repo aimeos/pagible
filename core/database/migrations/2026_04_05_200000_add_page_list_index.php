@@ -19,17 +19,15 @@ return new class extends Migration
         $name = config('cms.db', 'sqlite');
         $indexes = collect(Schema::connection($name)->getIndexes('cms_pages'))->pluck('name')->all();
 
-        if( in_array('cms_pages_tenant_id_parent_id_deleted_at__lft_index', $indexes) ) {
+        if( in_array('cms_pages_tenant_id_deleted_at__lft_latest_id_index', $indexes) ) {
             return;
         }
 
         Schema::connection($name)->table('cms_pages', function (Blueprint $table) use ($indexes) {
-            if( in_array('cms_pages_tenant_id_parent_id_deleted_at_index', $indexes) ) {
-                $table->dropIndex(['tenant_id', 'parent_id', 'deleted_at']);
-            } elseif( in_array('cms_pages_parent_id_tenant_id_index', $indexes) ) {
-                $table->dropIndex(['parent_id', 'tenant_id']);
+            if( in_array('cms_pages_tenant_id_deleted_at__lft__rgt_index', $indexes) ) {
+                $table->dropIndex(['tenant_id', 'deleted_at', '_lft', '_rgt']);
             }
-            $table->index(['tenant_id', 'parent_id', 'deleted_at', '_lft']);
+            $table->index(['tenant_id', 'deleted_at', '_lft', 'latest_id']);
         });
     }
 
@@ -41,8 +39,8 @@ return new class extends Migration
         $name = config('cms.db', 'sqlite');
 
         Schema::connection($name)->table('cms_pages', function (Blueprint $table) {
-            $table->dropIndex(['tenant_id', 'parent_id', 'deleted_at', '_lft']);
-            $table->index(['parent_id', 'tenant_id']);
+            $table->dropIndex(['tenant_id', 'deleted_at', '_lft', 'latest_id']);
+            $table->index(['tenant_id', 'deleted_at', '_lft', '_rgt']);
         });
     }
 };
