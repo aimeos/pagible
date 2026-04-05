@@ -234,7 +234,7 @@ return new class extends Migration
                 $table->dropIndex(['data_status']);
                 $table->dropIndex(['data_cache']);
                 $table->dropIndex(['data_mime']);
-                $table->dropColumn(['data_type', 'data_path', 'data_domain', 'data_tag', 'data_theme', 'data_status', 'data_cache', 'data_to', 'data_mime']);
+                $table->dropColumn(['data_type', 'data_path', 'data_domain', 'data_tag', 'data_theme', 'data_status', 'data_cache', 'data_mime']);
             });
         }
         elseif( $driver === 'pgsql' )
