@@ -58,6 +58,11 @@ return new class extends Migration
             });
 
 
+            if( $driver === 'pgsql' )
+            {
+                $db->statement("CREATE INDEX cms_index_content_gin ON cms_index USING gin(to_tsvector('simple', coalesce(content, '')))");
+            }
+
             if( $driver === 'sqlsrv' )
             {
                 $db->statement("IF NOT EXISTS (SELECT 1 FROM sys.fulltext_catalogs WHERE name = 'cms_index_catalog') CREATE FULLTEXT CATALOG cms_index_catalog AS DEFAULT");

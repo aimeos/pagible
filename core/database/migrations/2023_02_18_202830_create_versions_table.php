@@ -37,6 +37,7 @@ return new class extends Migration
             $table->index(['versionable_id', 'versionable_type', 'created_at', 'tenant_id'], 'idx_versions_id_type_created_tenantid');
             $table->index(['publish_at', 'published']);
             $table->index(['published', 'lang']);
+            $table->index(['id', 'lang']);
             $table->index('editor');
         });
 
