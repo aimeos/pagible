@@ -507,7 +507,7 @@ class Page extends Base
             'theme' => $this->latest?->data->theme ?? '',
             'type' => $this->latest?->data->type ?? '',
             'published' => (bool) ( $this->latest->published ?? false ),
-            'scheduled' => (bool) ( $this->latest?->data->scheduled ?? false ),
+            'scheduled' => (int) ( $this->latest?->data->scheduled ?? 0 ),
         ];
     }
 

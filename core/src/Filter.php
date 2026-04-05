@@ -133,7 +133,7 @@ class Filter
         match( $publish ) {
             'PUBLISHED' => $builder->where( 'published', true ),
             'DRAFT' => $builder->where( 'published', false ),
-            'SCHEDULED' => $builder->where( 'published', false )->where( 'scheduled', true ),
+            'SCHEDULED' => $builder->where( 'published', false )->where( 'scheduled', 1 ),
             default => null,
         };
     }

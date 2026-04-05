@@ -46,7 +46,7 @@ class Version extends Model
     protected static function booted() : void
     {
         static::saving( function( $version ) {
-            $scheduled = $version->publish_at !== null;
+            $scheduled = $version->publish_at !== null ? 1 : 0;
             $data = $version->data ?? new \stdClass();
 
             if( ( $data->scheduled ?? null ) !== $scheduled ) {

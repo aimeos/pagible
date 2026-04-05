@@ -234,7 +234,7 @@ class Element extends Base
             'editor' => $this->latest->editor ?? '',
             'type' => $this->latest?->data->type ?? '',
             'published' => (bool) ( $this->latest->published ?? false ),
-            'scheduled' => (bool) ( $this->latest?->data->scheduled ?? false ),
+            'scheduled' => (int) ( $this->latest?->data->scheduled ?? 0 ),
         ];
     }
 

@@ -39,7 +39,7 @@ return new class extends Migration
 
         if (in_array($driver, ['mysql', 'mariadb'])) {
             $db->statement("ALTER TABLE cms_versions
-                ADD COLUMN data_scheduled BOOLEAN GENERATED ALWAYS AS (IF(JSON_EXTRACT(data, '$.scheduled'), 1, 0)) VIRTUAL,
+                ADD COLUMN data_scheduled SMALLINT GENERATED ALWAYS AS (JSON_EXTRACT(data, '$.scheduled')) VIRTUAL,
                 ADD COLUMN data_name VARCHAR(255) GENERATED ALWAYS AS (JSON_VALUE(data, '$.name')) VIRTUAL
             ");
 

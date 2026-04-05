@@ -311,7 +311,7 @@ class GraphqlElementTest extends GraphqlTestAbstract
                             'data' => ['key' => 'value'],
                             'lang' => 'en',
                             'type' => 'heading',
-                            'scheduled' => false,
+                            'scheduled' => 0,
                         ] ),
                     ],
                 ]

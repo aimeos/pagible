@@ -371,7 +371,7 @@ class GraphqlFileTest extends GraphqlTestAbstract
             'previews' => (array) ( $file->latest?->data?->previews ?? [] ),
             'description' => (array) ( $file->latest?->data?->description ?? [] ),
             'transcription' => (array) ( $file->latest?->data?->transcription ?? [] ),
-            'scheduled' => false,
+            'scheduled' => 0,
         ];
 
         // Assert scalar fields

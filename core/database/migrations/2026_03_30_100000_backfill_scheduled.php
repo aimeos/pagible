@@ -20,13 +20,13 @@ return new class extends Migration
         $db->table( 'cms_versions' )->whereNotNull( 'publish_at' )
             ->chunkById( 500, function( $chunk ) use ( $db ) {
                 $db->table( 'cms_versions' )->whereIn( 'id', $chunk->pluck( 'id' ) )
-                    ->update( ['data->scheduled' => true] );
+                    ->update( ['data->scheduled' => 1] );
             } );
 
         $db->table( 'cms_versions' )->whereNull( 'publish_at' )
             ->chunkById( 500, function( $chunk ) use ( $db ) {
                 $db->table( 'cms_versions' )->whereIn( 'id', $chunk->pluck( 'id' ) )
-                    ->update( ['data->scheduled' => false] );
+                    ->update( ['data->scheduled' => 0] );
             } );
     }
 

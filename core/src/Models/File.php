@@ -455,7 +455,7 @@ class File extends Base
             'editor' => $this->latest->editor ?? '',
             'mime' => $this->latest?->data->mime ?? '',
             'published' => (bool) ( $this->latest->published ?? false ),
-            'scheduled' => (bool) ( $this->latest?->data->scheduled ?? false ),
+            'scheduled' => (int) ( $this->latest?->data->scheduled ?? 0 ),
         ];
     }
 
