@@ -39,8 +39,8 @@ return new class extends Migration
 
         if (in_array($driver, ['mysql', 'mariadb'])) {
             $db->statement("ALTER TABLE cms_versions
-                ADD COLUMN data_scheduled BOOLEAN GENERATED ALWAYS AS (JSON_EXTRACT(data, '$.scheduled') = CAST('true' AS JSON)) VIRTUAL,
-                ADD COLUMN data_name VARCHAR(255) GENERATED ALWAYS AS (JSON_UNQUOTE(JSON_EXTRACT(data, '$.name'))) VIRTUAL
+                ADD COLUMN data_scheduled BOOLEAN GENERATED ALWAYS AS (JSON_VALUE(data, '$.scheduled') = 'true') VIRTUAL,
+                ADD COLUMN data_name VARCHAR(255) GENERATED ALWAYS AS (JSON_VALUE(data, '$.name')) VIRTUAL
             ");
 
             Schema::connection($name)->table('cms_versions', function (Blueprint $table) {
