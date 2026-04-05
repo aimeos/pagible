@@ -47,7 +47,8 @@ class Scout
         $table = $query->getModel()->getTable();
         $driver = $query->getModel()->getConnection()->getDriverName();
         $query->select( "{$table}.*" )
-            ->join( 'cms_versions', "{$table}.latest_id", '=', 'cms_versions.id' );
+            ->join( 'cms_versions', "{$table}.latest_id", '=', 'cms_versions.id' )
+            ->where( 'cms_versions.tenant_id', Tenancy::value() );
 
         foreach( $builder->wheres as $where )
         {

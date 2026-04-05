@@ -282,7 +282,8 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
         // Join cms_versions when draft-mode filters target version-level columns
         if( $isDraft && $needsJoin ) {
             $query->select( "{$modelTable}.*" )
-                ->join( 'cms_versions', "{$modelTable}.latest_id", '=', 'cms_versions.id' );
+                ->join( 'cms_versions', "{$modelTable}.latest_id", '=', 'cms_versions.id' )
+                ->where( 'cms_versions.tenant_id', \Aimeos\Cms\Tenancy::value() );
         }
 
         // Join cms_index for full-text search
