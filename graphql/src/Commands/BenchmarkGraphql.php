@@ -160,19 +160,19 @@ class BenchmarkGraphql extends Command
                 ( new Query )->pages( null, ['first' => 100, 'filter' => ['theme' => 'default']] )->items();
             }, readOnly: true, tries: $tries );
 
-            $this->benchmark( 'Page status', function() use ( $lang ) {
+            $this->benchmark( 'Page status', function() {
                 ( new Query )->pages( null, ['first' => 100, 'filter' => ['status' => 1]] )->items();
             }, readOnly: true, tries: $tries );
 
-            $this->benchmark( 'Page cache', function() use ( $lang ) {
+            $this->benchmark( 'Page cache', function() {
                 ( new Query )->pages( null, ['first' => 100, 'filter' => ['cache' => 5]] )->items();
             }, readOnly: true, tries: $tries );
 
-            $this->benchmark( 'Page editor', function() use ( $lang ) {
+            $this->benchmark( 'Page editor', function() {
                 ( new Query )->pages( null, ['first' => 100, 'filter' => ['editor' => 'benchmark']] )->items();
             }, readOnly: true, tries: $tries );
 
-            $this->benchmark( 'Page type', function() use ( $lang ) {
+            $this->benchmark( 'Page type', function() {
                 ( new Query )->pages( null, ['first' => 100, 'filter' => ['type' => '']] )->items();
             }, readOnly: true, tries: $tries );
 
