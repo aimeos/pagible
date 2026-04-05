@@ -119,11 +119,11 @@ class BenchmarkCore extends Command
         }, tries: $tries );
 
         $this->benchmark( 'Page read', function() use ( $page ) {
-            Page::with( 'files', 'elements' )->find( $page->id );
+            Page::with( 'files', 'elements.files' )->find( $page->id );
         }, readOnly: true, tries: $tries );
 
         $this->benchmark( 'Page list', function() {
-            Page::with( 'files', 'elements' )->orderBy( '_lft' )->take( 100 )->get();
+            Page::with( 'files', 'elements.files' )->orderBy( '_lft' )->take( 100 )->get();
         }, readOnly: true, tries: $tries );
 
         $this->benchmark( 'Page update', function() use ( $page, $lang ) {

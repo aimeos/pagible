@@ -79,6 +79,22 @@ class BenchmarkJsonapi extends Command
             Page::with( ['ancestors', 'files', 'elements.files'] )->find( $page->id );
         }, readOnly: true, tries: $tries );
 
+        $this->benchmark( 'Page path', function() use ( $page ) {
+            Page::with( ['files', 'elements.files'] )->where( 'path', $page->path )->first();
+        }, readOnly: true, tries: $tries );
+
+        $this->benchmark( 'Page domain', function() use ( $domain ) {
+            Page::with( ['files', 'elements.files'] )->where( 'domain', $domain )->take( 100 )->get();
+        }, readOnly: true, tries: $tries );
+
+        $this->benchmark( 'Page tag', function() {
+            Page::with( ['files', 'elements.files'] )->where( 'tag', 'root' )->take( 100 )->get();
+        }, readOnly: true, tries: $tries );
+
+        $this->benchmark( 'Page lang', function() use ( $lang ) {
+            Page::with( ['files', 'elements.files'] )->where( 'lang', $lang )->take( 100 )->get();
+        }, readOnly: true, tries: $tries );
+
         $this->line( '' );
 
         return self::SUCCESS;

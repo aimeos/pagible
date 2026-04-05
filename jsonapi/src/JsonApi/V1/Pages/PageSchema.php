@@ -248,6 +248,9 @@ class PageSchema extends Schema
             Where::make( 'tag' )->deserializeUsing(
                 fn($value) => (string) $value
             ),
+            Where::make( 'lang' )->deserializeUsing(
+                fn($value) => (string) $value
+            ),
             WhereIdIn::make( $this ),
         ];
     }
