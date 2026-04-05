@@ -70,7 +70,7 @@ class BenchmarkSeeder
         $fileIds = $this->createFiles( $lang, $fileCount, $now, $nowMs );
         $elementIds = $this->createElements( $lang, $elementCount, $now, $nowMs );
 
-        $rows = $this->buildPageTree( $lang, $totalPages, $fileIds, $elementIds[0], $now, $nowMs );
+        $rows = $this->buildPageTree( $lang, $totalPages, $fileIds, $elementIds, $now, $nowMs );
 
         $this->insertRows( $rows );
         $this->clearPageCache( $rows['pages'] );
@@ -81,14 +81,16 @@ class BenchmarkSeeder
      * Build page tree rows with nested set values.
      *
      * @param array<int, string> $fileIds
+     * @param array<int, string> $elementIds
      * @return array<string, array<int, array<string, mixed>>>
      */
-    protected function buildPageTree( string $lang, int $totalPages, array $fileIds, string $elementId, string $now, string $nowMs ): array
+    protected function buildPageTree( string $lang, int $totalPages, array $fileIds, array $elementIds, string $now, string $nowMs ): array
     {
         $level2Count = 100; // 10 L1 × 10 L2
         $level3PerL2 = max( 0, intdiv( $totalPages - 1 - 10 - $level2Count, $level2Count ) );
         $actualTotal = 1 + 10 + $level2Count + ( $level3PerL2 * $level2Count );
         $fileCount = count( $fileIds );
+        $elementCount = count( $elementIds );
 
         $pages = [];
         $versions = [];
@@ -105,7 +107,7 @@ class BenchmarkSeeder
         // Root page
         $rootId = ( new Page )->newUniqueId();
         $rootVersionId = ( new Version )->newUniqueId();
-        $rootContent = $this->pageContent( $fileIds[$fileIndex % $fileCount], $elementId, 0 );
+        $rootContent = $this->pageContent( $fileIds[$fileIndex % $fileCount], $elementIds[$pageIndex % $elementCount], 0 );
         $rootMeta = $this->metaDescription( 0 );
         $rootData = [
             'lang' => $lang,
@@ -123,9 +125,9 @@ class BenchmarkSeeder
         $pages[] = $this->pageRow( $rootId, null, $rootVersionId, $lang, $rootData, $rootContent, $rootMeta, $lft, $rootRgt, 0, $now );
         $versions[] = $this->versionRow( $rootVersionId, $rootId, Page::class, $lang, $rootData, $rootContent, $rootMeta, $nowMs );
         $pivotPageFile[] = ['page_id' => $rootId, 'file_id' => $fileIds[$fileIndex % $fileCount]];
-        $pivotPageElement[] = ['page_id' => $rootId, 'element_id' => $elementId];
+        $pivotPageElement[] = ['page_id' => $rootId, 'element_id' => $elementIds[$pageIndex % $elementCount]];
         $pivotVersionFile[] = ['version_id' => $rootVersionId, 'file_id' => $fileIds[$fileIndex % $fileCount]];
-        $pivotVersionElement[] = ['version_id' => $rootVersionId, 'element_id' => $elementId];
+        $pivotVersionElement[] = ['version_id' => $rootVersionId, 'element_id' => $elementIds[$pageIndex % $elementCount]];
 
         $lft++;
         $fileIndex++;
@@ -146,7 +148,7 @@ class BenchmarkSeeder
                 'lang' => $lang, 'name' => "Category {$i}", 'title' => "Category {$i} Title",
                 'path' => "category-{$i}", 'status' => 1, 'editor' => $this->editor,
             ];
-            $l1Content = $this->pageContent( $l1Fid, $elementId, $pageIndex );
+            $l1Content = $this->pageContent( $l1Fid, $elementIds[$pageIndex % $elementCount], $pageIndex );
             $l1Meta = $this->metaDescription( $pageIndex );
 
             $l1Row = $this->pageRow( $l1Id, $rootId, $l1VersionId, $lang, $l1Data, $l1Content, $l1Meta, $l1Lft, $l1Rgt, 1, $now );
@@ -158,9 +160,9 @@ class BenchmarkSeeder
             $pages[] = $l1Row;
             $versions[] = $this->versionRow( $l1VersionId, $l1Id, Page::class, $lang, $l1Data, $l1Content, $l1Meta, $nowMs );
             $pivotPageFile[] = ['page_id' => $l1Id, 'file_id' => $l1Fid];
-            $pivotPageElement[] = ['page_id' => $l1Id, 'element_id' => $elementId];
+            $pivotPageElement[] = ['page_id' => $l1Id, 'element_id' => $elementIds[$pageIndex % $elementCount]];
             $pivotVersionFile[] = ['version_id' => $l1VersionId, 'file_id' => $l1Fid];
-            $pivotVersionElement[] = ['version_id' => $l1VersionId, 'element_id' => $elementId];
+            $pivotVersionElement[] = ['version_id' => $l1VersionId, 'element_id' => $elementIds[$pageIndex % $elementCount]];
 
             $lft++;
             $fileIndex++;
@@ -179,7 +181,7 @@ class BenchmarkSeeder
                     'lang' => $lang, 'name' => "Subcategory {$i}-{$j}", 'title' => "Subcategory {$i}-{$j} Title",
                     'path' => "subcategory-{$i}-{$j}", 'status' => 1, 'editor' => $this->editor,
                 ];
-                $l2Content = $this->pageContent( $l2Fid, $elementId, $pageIndex );
+                $l2Content = $this->pageContent( $l2Fid, $elementIds[$pageIndex % $elementCount], $pageIndex );
                 $l2Meta = $this->metaDescription( $pageIndex );
 
                 $l2Row = $this->pageRow( $l2Id, $l1Id, $l2VersionId, $lang, $l2Data, $l2Content, $l2Meta, $l2Lft, $l2Rgt, 2, $now );
@@ -191,9 +193,9 @@ class BenchmarkSeeder
                 $pages[] = $l2Row;
                 $versions[] = $this->versionRow( $l2VersionId, $l2Id, Page::class, $lang, $l2Data, $l2Content, $l2Meta, $nowMs );
                 $pivotPageFile[] = ['page_id' => $l2Id, 'file_id' => $l2Fid];
-                $pivotPageElement[] = ['page_id' => $l2Id, 'element_id' => $elementId];
+                $pivotPageElement[] = ['page_id' => $l2Id, 'element_id' => $elementIds[$pageIndex % $elementCount]];
                 $pivotVersionFile[] = ['version_id' => $l2VersionId, 'file_id' => $l2Fid];
-                $pivotVersionElement[] = ['version_id' => $l2VersionId, 'element_id' => $elementId];
+                $pivotVersionElement[] = ['version_id' => $l2VersionId, 'element_id' => $elementIds[$pageIndex % $elementCount]];
 
                 $lft++;
                 $fileIndex++;
@@ -209,7 +211,7 @@ class BenchmarkSeeder
                         'lang' => $lang, 'name' => "Page {$i}-{$j}-{$k}", 'title' => "Page {$i}-{$j}-{$k} Title",
                         'path' => "page-{$i}-{$j}-{$k}", 'status' => 1, 'editor' => $this->editor,
                     ];
-                    $l3Content = $this->pageContent( $l3Fid, $elementId, $pageIndex );
+                    $l3Content = $this->pageContent( $l3Fid, $elementIds[$pageIndex % $elementCount], $pageIndex );
                     $l3Meta = $this->metaDescription( $pageIndex );
 
                     $l3Row = $this->pageRow( $l3Id, $l2Id, $l3VersionId, $lang, $l3Data, $l3Content, $l3Meta, $lft, $lft + 1, 3, $now );
@@ -221,9 +223,9 @@ class BenchmarkSeeder
                     $pages[] = $l3Row;
                     $versions[] = $this->versionRow( $l3VersionId, $l3Id, Page::class, $lang, $l3Data, $l3Content, $l3Meta, $nowMs );
                     $pivotPageFile[] = ['page_id' => $l3Id, 'file_id' => $l3Fid];
-                    $pivotPageElement[] = ['page_id' => $l3Id, 'element_id' => $elementId];
+                    $pivotPageElement[] = ['page_id' => $l3Id, 'element_id' => $elementIds[$pageIndex % $elementCount]];
                     $pivotVersionFile[] = ['version_id' => $l3VersionId, 'file_id' => $l3Fid];
-                    $pivotVersionElement[] = ['version_id' => $l3VersionId, 'element_id' => $elementId];
+                    $pivotVersionElement[] = ['version_id' => $l3VersionId, 'element_id' => $elementIds[$pageIndex % $elementCount]];
 
                     $lft += 2;
                     $fileIndex++;
