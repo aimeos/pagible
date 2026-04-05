@@ -23,7 +23,7 @@ return new class extends Migration
         }
 
         Schema::connection($name)->table('cms_index', function (Blueprint $table) {
-            $table->index(['tenant_id', 'indexable_type', 'latest', 'indexable_id'], 'cms_index_tenant_type_latest_id');
+            $table->index(['tenant_id', 'indexable_type', 'latest', 'indexable_id'], 'cms_index_tenant_id_indexable_type_latest_indexable_id_index');
         });
     }
 
@@ -39,7 +39,7 @@ return new class extends Migration
         }
 
         Schema::connection($name)->table('cms_index', function (Blueprint $table) {
-            $table->dropIndex('cms_index_tenant_type_latest_id');
+            $table->dropIndex('cms_index_tenant_id_indexable_type_latest_indexable_id_index');
         });
     }
 };

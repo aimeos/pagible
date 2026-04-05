@@ -25,28 +25,27 @@ return new class extends Migration
             return;
         }
 
-        // id + editor: all databases
+        // Standalone lang index: enables filter-first plans for lang queries
+        // (existing indexes (published, lang) and (id, lang) can't be used for lang-first scans)
         Schema::connection($name)->table('cms_versions', function (Blueprint $table) {
-            $table->index(['id', 'editor'], 'cms_versions_id_editor_idx');
+            $table->index('lang', 'cms_versions_lang_index');
         });
 
-        if (in_array($driver, ['mysql', 'mariadb'])) {
-            // MySQL virtual columns: composite with id for join-friendly access
-            Schema::connection($name)->table('cms_versions', function (Blueprint $table) {
-                $table->index(['id', 'data_theme'], 'cms_versions_id_data_theme_idx');
-                $table->index(['id', 'data_status'], 'cms_versions_id_data_status_idx');
-                $table->index(['id', 'data_cache'], 'cms_versions_id_data_cache_idx');
-                $table->index(['id', 'data_type'], 'cms_versions_id_data_type_idx');
-            });
-        } elseif ($driver === 'sqlsrv') {
-            // SQL Server computed columns
-            $db->statement('CREATE INDEX cms_versions_id_data_theme_idx ON cms_versions (id, data_theme)');
-            $db->statement('CREATE INDEX cms_versions_id_data_status_idx ON cms_versions (id, data_status)');
-            $db->statement('CREATE INDEX cms_versions_id_data_cache_idx ON cms_versions (id, data_cache)');
-            $db->statement('CREATE INDEX cms_versions_id_data_type_idx ON cms_versions (id, data_type)');
+        // (editor, id) composite: enables filter-first plans
+        // For MySQL, standalone editor index already exists but explicit composite helps PostgreSQL/SQL Server
+        Schema::connection($name)->table('cms_versions', function (Blueprint $table) {
+            $table->index(['editor', 'id'], 'cms_versions_editor_id_index');
+        });
+
+        if ($driver === 'sqlsrv') {
+            // SQL Server computed columns don't include PK implicitly, need explicit composites
+            $db->statement('CREATE INDEX cms_versions_data_theme_id_index ON cms_versions (data_theme, id)');
+            $db->statement('CREATE INDEX cms_versions_data_status_id_index ON cms_versions (data_status, id)');
+            $db->statement('CREATE INDEX cms_versions_data_cache_id_index ON cms_versions (data_cache, id)');
+            $db->statement('CREATE INDEX cms_versions_data_type_id_index ON cms_versions (data_type, id)');
         }
-        // PostgreSQL: (id, expression) indexes already created in migration 400000
-        // Only (id, editor) is new for PostgreSQL, handled above
+        // MySQL/MariaDB: standalone virtual column indexes already provide (data_*, id) order in InnoDB
+        // PostgreSQL: (expression, id) indexes already created in migration 400000
     }
 
     /**
@@ -63,14 +62,15 @@ return new class extends Migration
         }
 
         Schema::connection($name)->table('cms_versions', function (Blueprint $table) {
-            $table->dropIndex('cms_versions_id_editor_idx');
+            $table->dropIndex('cms_versions_lang_index');
+            $table->dropIndex('cms_versions_editor_id_index');
         });
 
-        if (in_array($driver, ['mysql', 'mariadb', 'sqlsrv'])) {
-            $db->statement('DROP INDEX IF EXISTS cms_versions_id_data_theme_idx ON cms_versions');
-            $db->statement('DROP INDEX IF EXISTS cms_versions_id_data_status_idx ON cms_versions');
-            $db->statement('DROP INDEX IF EXISTS cms_versions_id_data_cache_idx ON cms_versions');
-            $db->statement('DROP INDEX IF EXISTS cms_versions_id_data_type_idx ON cms_versions');
+        if ($driver === 'sqlsrv') {
+            $db->statement('DROP INDEX IF EXISTS cms_versions_data_theme_id_index ON cms_versions');
+            $db->statement('DROP INDEX IF EXISTS cms_versions_data_status_id_index ON cms_versions');
+            $db->statement('DROP INDEX IF EXISTS cms_versions_data_cache_id_index ON cms_versions');
+            $db->statement('DROP INDEX IF EXISTS cms_versions_data_type_id_index ON cms_versions');
         }
     }
 };

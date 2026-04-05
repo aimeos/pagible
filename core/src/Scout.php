@@ -45,6 +45,7 @@ class Scout
         }
 
         $table = $query->getModel()->getTable();
+        $driver = $query->getModel()->getConnection()->getDriverName();
         $query->select( "{$table}.*" )
             ->join( 'cms_versions', "{$table}.latest_id", '=', 'cms_versions.id' );
 
@@ -54,7 +55,7 @@ class Scout
                 continue;
             }
 
-            if( $col = static::qualify( $where['field'], $table ) )
+            if( $col = static::qualify( $where['field'], $table, true, $driver ) )
             {
                 if( is_null( $where['value'] ) ) {
                     $where['operator'] === '=' ? $query->whereNull( $col ) : $query->whereNotNull( $col );
@@ -66,21 +67,21 @@ class Scout
 
         foreach( $builder->whereIns as $field => $values )
         {
-            if( $col = static::qualify( $field, $table ) ) {
+            if( $col = static::qualify( $field, $table, true, $driver ) ) {
                 $query->whereIn( $col, $values );
             }
         }
 
         foreach( $builder->whereNotIns as $field => $values )
         {
-            if( $col = static::qualify( $field, $table ) ) {
+            if( $col = static::qualify( $field, $table, true, $driver ) ) {
                 $query->whereNotIn( $col, $values );
             }
         }
 
         foreach( $builder->orders as &$order )
         {
-            $order['column'] = static::qualify( $order['column'], $table ) ?? $table . '.' . $order['column'];
+            $order['column'] = static::qualify( $order['column'], $table, true, $driver ) ?? $table . '.' . $order['column'];
         }
         unset( $order );
 
@@ -93,13 +94,15 @@ class Scout
      *
      * In draft mode ($isDraft=true), routes version-level fields to cms_versions.
      * In content mode ($isDraft=false), routes all fields to the model table.
+     * For MySQL/MariaDB/SQL Server, uses virtual/computed column names instead of JSON paths.
      *
      * @param string $field Unqualified field name
      * @param string $table Model table name (e.g., cms_pages)
      * @param bool $isDraft Whether draft mode is active (default: true)
+     * @param string $driver Database driver name (default: '')
      * @return string|null Qualified column name, or null to skip
      */
-    public static function qualify( string $field, string $table, bool $isDraft = true ) : ?string
+    public static function qualify( string $field, string $table, bool $isDraft = true, string $driver = '' ) : ?string
     {
         $modelCols = self::MODEL_COLUMNS[$table] ?? ['id', 'tenant_id'];
 
@@ -107,6 +110,7 @@ class Scout
             in_array( $field, ['lang', 'editor'] ) => ( $isDraft ? 'cms_versions.' : $table . '.' ) . $field,
             $field === 'published' => $isDraft ? 'cms_versions.published' : null,
             in_array( $field, $modelCols ) => $table . '.' . $field,
+            $isDraft && in_array( $driver, ['mysql', 'mariadb', 'sqlsrv'] ) => 'cms_versions.data_' . $field,
             $isDraft => 'cms_versions.data->' . $field,
             default => $table . '.' . $field,
         };

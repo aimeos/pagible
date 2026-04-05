@@ -29,11 +29,12 @@ return new class extends Migration
         $db->statement('DROP INDEX IF EXISTS cms_versions_data_theme_index');
         $db->statement('DROP INDEX IF EXISTS cms_versions_data_type_index');
 
-        // Composite indexes: id (for JOIN) + expression (for filter)
-        $db->statement("CREATE INDEX cms_versions_id_data_theme_idx ON cms_versions (id, (data->>'theme'))");
-        $db->statement("CREATE INDEX cms_versions_id_data_status_idx ON cms_versions (id, (data->>'status'))");
-        $db->statement("CREATE INDEX cms_versions_id_data_cache_idx ON cms_versions (id, (data->>'cache'))");
-        $db->statement("CREATE INDEX cms_versions_id_data_type_idx ON cms_versions (id, (data->>'type'))");
+        // Composite indexes: expression (for filter-first) + id (for join)
+        // (expression, id) supports both point lookups AND range scans by expression
+        $db->statement("CREATE INDEX cms_versions_data_theme_id_index ON cms_versions ((data->>'theme'), id)");
+        $db->statement("CREATE INDEX cms_versions_data_status_id_index ON cms_versions ((data->>'status'), id)");
+        $db->statement("CREATE INDEX cms_versions_data_cache_id_index ON cms_versions ((data->>'cache'), id)");
+        $db->statement("CREATE INDEX cms_versions_data_type_id_index ON cms_versions ((data->>'type'), id)");
     }
 
     /**
@@ -48,10 +49,10 @@ return new class extends Migration
         }
 
         // Drop composite indexes
-        $db->statement('DROP INDEX IF EXISTS cms_versions_id_data_theme_idx');
-        $db->statement('DROP INDEX IF EXISTS cms_versions_id_data_status_idx');
-        $db->statement('DROP INDEX IF EXISTS cms_versions_id_data_cache_idx');
-        $db->statement('DROP INDEX IF EXISTS cms_versions_id_data_type_idx');
+        $db->statement('DROP INDEX IF EXISTS cms_versions_data_theme_id_index');
+        $db->statement('DROP INDEX IF EXISTS cms_versions_data_status_id_index');
+        $db->statement('DROP INDEX IF EXISTS cms_versions_data_cache_id_index');
+        $db->statement('DROP INDEX IF EXISTS cms_versions_data_type_id_index');
 
         // Restore original single-column expression indexes
         $db->statement("CREATE INDEX cms_versions_data_theme_index ON cms_versions ((data->>'theme'))");

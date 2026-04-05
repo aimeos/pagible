@@ -241,6 +241,7 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
     {
         $modelTable = $builder->model->getTable();
         $modelCols = ScoutHelper::MODEL_COLUMNS[$modelTable] ?? ['id', 'tenant_id'];
+        $driver = $builder->model->getConnection()->getDriverName();
         $skip = ['latest', '__soft_deleted', 'tenant_id'];
         $isDraft = false;
         $needsJoin = false;
@@ -293,7 +294,7 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
         if( $builder->callback ) {
             call_user_func( $builder->callback, $query, $builder, $builder->query );
         } else {
-            $this->applyFilters( $query, $builder, $modelTable, $isDraft );
+            $this->applyFilters( $query, $builder, $modelTable, $isDraft, $driver );
         }
 
         if( !is_null( $builder->queryCallback ) ) {
@@ -304,7 +305,7 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
             $query->reorder();
 
             foreach( $builder->orders as $order ) {
-                if( $col = ScoutHelper::qualify( $order['column'], $modelTable, $isDraft ) ) {
+                if( $col = ScoutHelper::qualify( $order['column'], $modelTable, $isDraft, $driver ) ) {
                     $query->orderBy( $col, $order['direction'] );
                 }
             }
@@ -326,7 +327,7 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
      * @param  string  $modelTable
      * @param  bool  $isDraft
      */
-    protected function applyFilters( $query, Builder $builder, string $modelTable, bool $isDraft ) : void
+    protected function applyFilters( $query, Builder $builder, string $modelTable, bool $isDraft, string $driver = 'sqlite' ) : void
     {
         foreach( $builder->wheres as $key => $where )
         {
@@ -336,7 +337,7 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
                 continue;
             }
 
-            if( $col = ScoutHelper::qualify( $field, $modelTable, $isDraft ) )
+            if( $col = ScoutHelper::qualify( $field, $modelTable, $isDraft, $driver ) )
             {
                 $value = is_array( $where ) && array_key_exists( 'value', $where ) ? $where['value'] : $where;
                 $operator = $where['operator'] ?? '=';
@@ -350,13 +351,13 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
         }
 
         foreach( $builder->whereIns as $key => $values ) {
-            if( $col = ScoutHelper::qualify( $key, $modelTable, $isDraft ) ) {
+            if( $col = ScoutHelper::qualify( $key, $modelTable, $isDraft, $driver ) ) {
                 $query->whereIn( $col, $values );
             }
         }
 
         foreach( $builder->whereNotIns as $key => $values ) {
-            if( $col = ScoutHelper::qualify( $key, $modelTable, $isDraft ) ) {
+            if( $col = ScoutHelper::qualify( $key, $modelTable, $isDraft, $driver ) ) {
                 $query->whereNotIn( $col, $values );
             }
         }
