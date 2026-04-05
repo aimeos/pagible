@@ -32,13 +32,19 @@ abstract class Base extends Model
 {
 
     /**
-     * Prevent instantiation of abstract Base class by Laravel's HasCollection trait.
+     * Create a new Eloquent Collection without automatic relationship autoloading.
      *
-     * @return class-string|null
+     * CMS models use explicit eager loading (->with()) for all needed relations.
+     * Automatic autoloading causes unwanted version queries when the host application
+     * enables Model::automaticallyEagerLoadRelationships().
+     *
+     * @param array<array-key, \Illuminate\Database\Eloquent\Model> $models
+     * @return \Illuminate\Database\Eloquent\Collection<array-key, static>
      */
-    public function resolveCollectionFromAttribute()
+    public function newCollection(array $models = [])
     {
-        return null;
+        /** @var \Illuminate\Database\Eloquent\Collection<array-key, static> */
+        return new \Illuminate\Database\Eloquent\Collection($models);
     }
 
 
