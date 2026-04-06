@@ -227,6 +227,7 @@ class BenchmarkGraphql extends Command
         finally
         {
             Auth::logout();
+            Auth::guard()->forgetUser();
             DB::connection( $conn )->rollBack();
         }
 
