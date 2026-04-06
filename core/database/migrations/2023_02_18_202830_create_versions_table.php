@@ -55,7 +55,9 @@ return new class extends Migration
                 ADD COLUMN data_theme VARCHAR(30) GENERATED ALWAYS AS (JSON_UNQUOTE(JSON_EXTRACT(data, \'$.theme\'))) VIRTUAL,
                 ADD COLUMN data_status SMALLINT GENERATED ALWAYS AS (JSON_EXTRACT(data, \'$.status\')) VIRTUAL,
                 ADD COLUMN data_cache SMALLINT GENERATED ALWAYS AS (JSON_EXTRACT(data, \'$.cache\')) VIRTUAL,
-                ADD COLUMN data_mime VARCHAR(100) GENERATED ALWAYS AS (JSON_UNQUOTE(JSON_EXTRACT(data, \'$.mime\'))) VIRTUAL
+                ADD COLUMN data_mime VARCHAR(100) GENERATED ALWAYS AS (JSON_UNQUOTE(JSON_EXTRACT(data, \'$.mime\'))) VIRTUAL,
+                ADD COLUMN data_scheduled SMALLINT GENERATED ALWAYS AS (JSON_EXTRACT(data, \'$.scheduled\')) VIRTUAL,
+                ADD COLUMN data_name VARCHAR(255) GENERATED ALWAYS AS (JSON_VALUE(data, \'$.name\')) VIRTUAL
             ');
 
             Schema::connection($name)->table('cms_versions', function (Blueprint $table) {
@@ -67,9 +69,12 @@ return new class extends Migration
                 $table->index(['tenant_id', 'data_status', 'id']);
                 $table->index(['tenant_id', 'data_cache', 'id']);
                 $table->index(['tenant_id', 'data_mime', 'id']);
+                $table->index(['tenant_id', 'data_scheduled', 'id']);
+                $table->index(['tenant_id', 'data_name', 'id']);
             });
 
             $db->statement('CREATE INDEX cms_versions_tenantid_versionabletype_datadomain_datapath_index ON cms_versions (tenant_id, versionable_type, data_domain(200), data_path(255))');
+            $db->statement('CREATE INDEX cms_versions_id_covering_index ON cms_versions (id, tenant_id, lang, editor, data_status)');
         }
         elseif( $driver === 'pgsql' )
         {
@@ -81,7 +86,10 @@ return new class extends Migration
             $db->statement("CREATE INDEX cms_versions_data_status_index ON cms_versions (tenant_id, ((data->>'status')::smallint), id)");
             $db->statement("CREATE INDEX cms_versions_data_cache_index ON cms_versions (tenant_id, ((data->>'cache')::smallint), id)");
             $db->statement("CREATE INDEX cms_versions_data_mime_index ON cms_versions (tenant_id, (data->>'mime'), id)");
+            $db->statement("CREATE INDEX cms_versions_data_scheduled_index ON cms_versions (tenant_id, (data->>'scheduled'), id)");
+            $db->statement("CREATE INDEX cms_versions_data_name_index ON cms_versions (tenant_id, (data->>'name'), id)");
             $db->statement("CREATE INDEX cms_versions_tenantid_versionabletype_datadomain_datapath_index ON cms_versions (tenant_id, versionable_type, (data->>'domain'), (data->>'path'))");
+            $db->statement("CREATE INDEX cms_versions_id_covering_index ON cms_versions (id, tenant_id) INCLUDE (lang, editor)");
         }
         elseif( $driver === 'sqlsrv' )
         {
@@ -102,7 +110,13 @@ return new class extends Migration
             $db->statement('CREATE INDEX cms_versions_data_status_index ON cms_versions (tenant_id, data_status, id)');
             $db->statement('CREATE INDEX cms_versions_data_cache_index ON cms_versions (tenant_id, data_cache, id)');
             $db->statement('CREATE INDEX cms_versions_data_mime_index ON cms_versions (tenant_id, data_mime, id)');
+
+            $db->statement("ALTER TABLE cms_versions ADD data_scheduled AS CAST(JSON_VALUE(data, '$.scheduled') AS BIT)");
+            $db->statement("ALTER TABLE cms_versions ADD data_name AS CAST(JSON_VALUE(data, '$.name') AS VARCHAR(255))");
+            $db->statement('CREATE INDEX cms_versions_data_scheduled_index ON cms_versions (tenant_id, data_scheduled, id)');
+            $db->statement('CREATE INDEX cms_versions_data_name_index ON cms_versions (tenant_id, data_name, id)');
             $db->statement('CREATE INDEX cms_versions_tenantid_versionabletype_datadomain_datapath_index ON cms_versions (tenant_id, versionable_type, data_domain, data_path)');
+            $db->statement('CREATE INDEX cms_versions_id_covering_index ON cms_versions (id, tenant_id) INCLUDE (lang, editor, data_status)');
         }
         elseif( $driver === 'sqlite' )
         {
@@ -114,6 +128,8 @@ return new class extends Migration
             $db->statement('CREATE INDEX cms_versions_data_status_index ON cms_versions (tenant_id, json_extract(data, \'$."status"\'), id)');
             $db->statement('CREATE INDEX cms_versions_data_cache_index ON cms_versions (tenant_id, json_extract(data, \'$."cache"\'), id)');
             $db->statement('CREATE INDEX cms_versions_data_mime_index ON cms_versions (tenant_id, json_extract(data, \'$."mime"\'), id)');
+            $db->statement('CREATE INDEX cms_versions_data_scheduled_index ON cms_versions (tenant_id, json_extract(data, \'$."scheduled"\'), id)');
+            $db->statement('CREATE INDEX cms_versions_data_name_index ON cms_versions (tenant_id, json_extract(data, \'$."name"\'), id)');
         }
     }
 

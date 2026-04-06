@@ -25,6 +25,11 @@ return new class extends Migration
             return;
         }
 
+        // Skip if base migration already created these columns (fresh install)
+        if (in_array('data_scheduled', Schema::connection($name)->getColumnListing('cms_versions'))) {
+            return;
+        }
+
         // Standalone lang index: enables filter-first plans for lang queries
         // (existing indexes (published, lang) and (id, lang) can't be used for lang-first scans)
         Schema::connection($name)->table('cms_versions', function (Blueprint $table) {

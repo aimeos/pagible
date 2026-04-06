@@ -25,6 +25,12 @@ return new class extends Migration
             return;
         }
 
+        // Skip if base migration already created composite indexes (fresh install)
+        $indexes = collect(Schema::connection($name)->getIndexes('cms_versions'))->pluck('name')->all();
+        if (in_array('cms_versions_tenant_id_data_theme_id_index', $indexes)) {
+            return;
+        }
+
         // Drop standalone filter indexes (replaced by tenant composites below)
         if (in_array($driver, ['mysql', 'mariadb'])) {
             Schema::connection($name)->table('cms_versions', function (Blueprint $table) {

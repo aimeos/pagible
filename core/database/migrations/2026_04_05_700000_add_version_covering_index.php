@@ -7,6 +7,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
@@ -20,6 +21,12 @@ return new class extends Migration
         $driver = $db->getDriverName();
 
         if ($driver === 'sqlite') {
+            return;
+        }
+
+        // Skip if base migration already created covering index (fresh install)
+        $indexes = collect(Schema::connection($name)->getIndexes('cms_versions'))->pluck('name')->all();
+        if (in_array('cms_versions_id_covering_index', $indexes)) {
             return;
         }
 
