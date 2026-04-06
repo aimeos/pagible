@@ -470,15 +470,15 @@ workflows:
 #          requires: ["php85-phpstan"]
 #      - "php85-pgsql":
 #          requires: ["php85-phpstan"]
-      - "perf-sqlite":
+      - "perf-sqlite"
 #          requires: ["php82-sqlite3", "php85-sqlite"]
-      - "perf-mariadb":
+      - "perf-mariadb"
 #          requires: ["php82-mariadb10", "php85-mariadb"]
-      - "perf-mysql":
+      - "perf-mysql"
 #          requires: ["php82-mysql8", "php85-mysql"]
-      - "perf-pgsql":
+      - "perf-pgsql"
 #          requires: ["php82-pgsql14", "php85-pgsql"]
-      - "perf-mssql":
+      - "perf-mssql"
 #          requires: ["php82-mssql17"]
   admin:
     when: << pipeline.parameters.run_admin >>
