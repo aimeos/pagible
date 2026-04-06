@@ -30,13 +30,8 @@ use Illuminate\Support\Str;
  */
 abstract class Base extends Model
 {
-
     /**
      * Create a new Eloquent Collection without automatic relationship autoloading.
-     *
-     * CMS models use explicit eager loading (->with()) for all needed relations.
-     * Automatic autoloading causes unwanted version queries when the host application
-     * enables Model::automaticallyEagerLoadRelationships().
      *
      * @param array<array-key, \Illuminate\Database\Eloquent\Model> $models
      * @return \Illuminate\Database\Eloquent\Collection<array-key, static>
