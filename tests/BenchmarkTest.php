@@ -68,7 +68,7 @@ class BenchmarkTest extends CmsTestAbstract
             '--tries' => 10,
             '--chunk' => $chunk,
             '--force' => true,
-            '-vv' => true,
+            '-vvv' => true,
         ], $output );
 
         $run += Artisan::call( 'cms:benchmark:theme', [
