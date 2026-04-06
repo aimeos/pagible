@@ -173,12 +173,21 @@ trait Benchmarks
                 try {
                     $stmt = $pdo->prepare( $sql );
                     $stmt->execute( $bindings );
-                    $rows = $stmt->fetchAll( \PDO::FETCH_COLUMN, 0 );
+
+                    $lines = [];
+
+                    do {
+                        foreach( $stmt->fetchAll( \PDO::FETCH_ASSOC ) as $row ) {
+                            if( isset( $row['StmtText'] ) && trim( $row['StmtText'] ) !== '' ) {
+                                $lines[] = trim( $row['StmtText'] );
+                            }
+                        }
+                    } while( $stmt->nextRowset() );
                 } finally {
                     $pdo->exec( 'SET SHOWPLAN_TEXT OFF' );
                 }
 
-                return array_map( 'trim', array_filter( $rows ) );
+                return $lines;
             }
 
             $prefix = $driver === 'sqlite' ? 'EXPLAIN QUERY PLAN ' : 'EXPLAIN ';
