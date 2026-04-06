@@ -240,14 +240,11 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
     protected function buildSearchQuery( Builder $builder )
     {
         $modelTable = $builder->model->getTable();
-        $modelCols = ScoutHelper::MODEL_COLUMNS[$modelTable] ?? ['id', 'tenant_id'];
         $driver = $builder->model->getConnection()->getDriverName();
-        $skip = ['latest', '__soft_deleted', 'tenant_id'];
         $isDraft = false;
-        $needsJoin = false;
         $query = $builder->model->newQuery();
 
-        // Single pass over wheres: detect draft mode, version join need, and apply trashed scope
+        // Detect draft mode and apply trashed scope
         foreach( $builder->wheres as $key => $where )
         {
             $field = $where['field'] ?? $key;
@@ -267,23 +264,6 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
                         ->whereNotNull( $builder->model->qualifyColumn( 'deleted_at' ) );
                 }
             }
-
-            if( !in_array( $field, $skip ) && !in_array( $field, $modelCols ) ) {
-                $needsJoin = true;
-            }
-        }
-
-        // Check whereIns, whereNotIns and orders for version-level columns
-        $needsJoin = $needsJoin || collect( $builder->whereIns )->keys()
-            ->merge( collect( $builder->whereNotIns )->keys() )
-            ->merge( collect( $builder->orders )->pluck( 'column' ) )
-            ->contains( fn( $f ) => !in_array( $f, $modelCols ) );
-
-        // Join cms_versions when draft-mode filters target version-level columns
-        if( $isDraft && $needsJoin ) {
-            $query->select( "{$modelTable}.*" )
-                ->join( 'cms_versions', "{$modelTable}.latest_id", '=', 'cms_versions.id' )
-                ->where( 'cms_versions.tenant_id', \Aimeos\Cms\Tenancy::value() );
         }
 
         // Join cms_index for full-text search
@@ -294,8 +274,10 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
         // Apply Scout builder constraints to the Eloquent query
         if( $builder->callback ) {
             call_user_func( $builder->callback, $query, $builder, $builder->query );
+        } elseif( $isDraft ) {
+            ScoutHelper::whereVersionExists( $query, $builder, $modelTable, $driver );
         } else {
-            $this->applyFilters( $query, $builder, $modelTable, $isDraft, $driver );
+            ScoutHelper::applyFilters( $query, $builder, $modelTable, $isDraft, $driver );
         }
 
         if( !is_null( $builder->queryCallback ) ) {
@@ -317,51 +299,6 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
         }
 
         return $query;
-    }
-
-
-    /**
-     * Apply Scout builder where/whereIn/whereNotIn filters to the Eloquent query.
-     *
-     * @param  \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>  $query
-     * @param  \Laravel\Scout\Builder<\Illuminate\Database\Eloquent\Model>  $builder
-     * @param  string  $modelTable
-     * @param  bool  $isDraft
-     */
-    protected function applyFilters( $query, Builder $builder, string $modelTable, bool $isDraft, string $driver = 'sqlite' ) : void
-    {
-        foreach( $builder->wheres as $key => $where )
-        {
-            $field = $where['field'] ?? $key;
-
-            if( in_array( $field, ['latest', '__soft_deleted', 'tenant_id'] ) ) {
-                continue;
-            }
-
-            if( $col = ScoutHelper::qualify( $field, $modelTable, $isDraft, $driver ) )
-            {
-                $value = is_array( $where ) && array_key_exists( 'value', $where ) ? $where['value'] : $where;
-                $operator = $where['operator'] ?? '=';
-
-                if( is_null( $value ) ) {
-                    $operator === '=' ? $query->whereNull( $col ) : $query->whereNotNull( $col );
-                } else {
-                    $query->where( $col, $operator, $value );
-                }
-            }
-        }
-
-        foreach( $builder->whereIns as $key => $values ) {
-            if( $col = ScoutHelper::qualify( $key, $modelTable, $isDraft, $driver ) ) {
-                $query->whereIn( $col, $values );
-            }
-        }
-
-        foreach( $builder->whereNotIns as $key => $values ) {
-            if( $col = ScoutHelper::qualify( $key, $modelTable, $isDraft, $driver ) ) {
-                $query->whereNotIn( $col, $values );
-            }
-        }
     }
 
 

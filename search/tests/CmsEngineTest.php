@@ -74,12 +74,12 @@ class CmsEngineTest extends SearchTestAbstract
         $this->assertLessThanOrEqual( 2, $result->count() );
 
         // order by
-        $result = Page::search( '' )->searchFields( 'draft' )->orderBy( 'name', 'asc' )->take( 25 )->get();
+        $result = Page::search( '' )->searchFields( 'draft' )->orderBy( '_lft', 'asc' )->take( 25 )->get();
         $this->assertGreaterThanOrEqual( 2, $result->count() );
-        $names = $result->pluck( 'name' )->toArray();
-        $sorted = $names;
+        $lfts = $result->pluck( '_lft' )->toArray();
+        $sorted = $lfts;
         sort( $sorted );
-        $this->assertEquals( $sorted, $names );
+        $this->assertEquals( $sorted, $lfts );
 
         // query callback eager-loads relation
         $result = Page::search( 'Home' )->searchFields( 'draft' )

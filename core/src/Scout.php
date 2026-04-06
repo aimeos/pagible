@@ -46,39 +46,8 @@ class Scout
 
         $table = $query->getModel()->getTable();
         $driver = $query->getModel()->getConnection()->getDriverName();
-        $query->select( "{$table}.*" )
-            ->join( 'cms_versions', "{$table}.latest_id", '=', 'cms_versions.id' )
-            ->where( 'cms_versions.tenant_id', Tenancy::value() );
 
-        foreach( $builder->wheres as $where )
-        {
-            if( $where['field'] === '__soft_deleted' ) {
-                continue;
-            }
-
-            if( $col = static::qualify( $where['field'], $table, true, $driver ) )
-            {
-                if( is_null( $where['value'] ) ) {
-                    $where['operator'] === '=' ? $query->whereNull( $col ) : $query->whereNotNull( $col );
-                } else {
-                    $query->where( $col, $where['operator'], $where['value'] );
-                }
-            }
-        }
-
-        foreach( $builder->whereIns as $field => $values )
-        {
-            if( $col = static::qualify( $field, $table, true, $driver ) ) {
-                $query->whereIn( $col, $values );
-            }
-        }
-
-        foreach( $builder->whereNotIns as $field => $values )
-        {
-            if( $col = static::qualify( $field, $table, true, $driver ) ) {
-                $query->whereNotIn( $col, $values );
-            }
-        }
+        static::whereVersionExists( $query, $builder, $table, $driver );
 
         foreach( $builder->orders as &$order )
         {
@@ -87,6 +56,78 @@ class Scout
         unset( $order );
 
         return $builder;
+    }
+
+
+    /**
+     * Add a WHERE EXISTS subquery against cms_versions with version-level filters.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model> $query
+     * @param \Laravel\Scout\Builder<\Illuminate\Database\Eloquent\Model> $builder
+     * @param string $table
+     * @param string $driver
+     */
+    public static function whereVersionExists( $query, Builder $builder, string $table, string $driver ) : void
+    {
+        $sub = $query->getModel()->getConnection()->query()
+            ->selectRaw( '1' )
+            ->from( 'cms_versions' )
+            ->whereColumn( 'cms_versions.id', '=', "{$table}.latest_id" )
+            ->where( 'cms_versions.tenant_id', Tenancy::value() );
+
+        static::applyFilters( $query, $builder, $table, true, $driver, $sub );
+        $query->whereExists( $sub );
+    }
+
+
+    /**
+     * Apply Scout builder where/whereIn/whereNotIn filters, routing version-level
+     * columns to the EXISTS subquery when provided.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>|\Illuminate\Database\Query\Builder $query
+     * @param \Laravel\Scout\Builder<\Illuminate\Database\Eloquent\Model> $builder
+     * @param string $table
+     * @param bool $isDraft
+     * @param string $driver
+     * @param \Illuminate\Database\Query\Builder|null $versionQuery
+     */
+    public static function applyFilters( $query, Builder $builder, string $table, bool $isDraft, string $driver, ?\Illuminate\Database\Query\Builder $versionQuery = null ) : void
+    {
+        foreach( $builder->wheres as $key => $where )
+        {
+            $field = $where['field'] ?? $key;
+
+            if( in_array( $field, ['latest', '__soft_deleted', 'tenant_id'] ) ) {
+                continue;
+            }
+
+            if( $col = static::qualify( $field, $table, $isDraft, $driver ) )
+            {
+                $target = $versionQuery && str_starts_with( $col, 'cms_versions.' ) ? $versionQuery : $query;
+                $value = is_array( $where ) && array_key_exists( 'value', $where ) ? $where['value'] : $where;
+                $operator = $where['operator'] ?? '=';
+
+                if( is_null( $value ) ) {
+                    $operator === '=' ? $target->whereNull( $col ) : $target->whereNotNull( $col );
+                } else {
+                    $target->where( $col, $operator, $value );
+                }
+            }
+        }
+
+        foreach( $builder->whereIns as $key => $values ) {
+            if( $col = static::qualify( $key, $table, $isDraft, $driver ) ) {
+                $target = $versionQuery && str_starts_with( $col, 'cms_versions.' ) ? $versionQuery : $query;
+                $target->whereIn( $col, $values );
+            }
+        }
+
+        foreach( $builder->whereNotIns as $key => $values ) {
+            if( $col = static::qualify( $key, $table, $isDraft, $driver ) ) {
+                $target = $versionQuery && str_starts_with( $col, 'cms_versions.' ) ? $versionQuery : $query;
+                $target->whereNotIn( $col, $values );
+            }
+        }
     }
 
 
