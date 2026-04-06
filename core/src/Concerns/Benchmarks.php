@@ -92,7 +92,8 @@ trait Benchmarks
                 DB::connection( $conn )->flushQueryLog();
 
                 foreach( $log as $q ) {
-                    $queryTimes[$q['query']][] = $q['time'] * 1_000_000;
+                    $queryTimes[$q['query']]['times'][] = $q['time'] * 1_000_000;
+                    $queryTimes[$q['query']]['bindings'] = $q['bindings'];
                 }
             }
         }
@@ -118,10 +119,10 @@ trait Benchmarks
 
         if( $verbose )
         {
-            foreach( $queryTimes as $sql => $timings )
+            foreach( $queryTimes as $sql => $entry )
             {
                 $type = strtoupper( strtok( ltrim( $sql ), ' ' ) ?: '' );
-                $qStats = $this->stats( $timings );
+                $qStats = $this->stats( $entry['times'] );
                 $this->line( sprintf(
                     '   %-16s %9s %9s %9s %9s %9s %9s',
                     $type,
@@ -136,9 +137,71 @@ trait Benchmarks
                 if( $this->output->isVeryVerbose() ) {
                     $this->line( '     ' . $sql );
                 }
+
+                if( $this->output->isDebug() )
+                {
+                    foreach( $this->explain( $sql, $entry['bindings'], $conn ) as $line ) {
+                        $this->line( '       ' . $line );
+                    }
+                }
             }
 
             $this->line( '' );
+        }
+    }
+
+
+    /**
+     * Get the query execution plan for a SQL statement.
+     *
+     * @param string $sql SQL query
+     * @param array<mixed> $bindings Query bindings
+     * @param string $conn Connection name
+     * @return array<int, string> Plan lines
+     */
+    protected function explain( string $sql, array $bindings, string $conn ): array
+    {
+        $driver = DB::connection( $conn )->getDriverName();
+
+        try
+        {
+            if( $driver === 'sqlsrv' )
+            {
+                $pdo = DB::connection( $conn )->getPdo();
+                $pdo->exec( 'SET SHOWPLAN_TEXT ON' );
+
+                try {
+                    $stmt = $pdo->prepare( $sql );
+                    $stmt->execute( $bindings );
+                    $rows = $stmt->fetchAll( \PDO::FETCH_COLUMN, 0 );
+                } finally {
+                    $pdo->exec( 'SET SHOWPLAN_TEXT OFF' );
+                }
+
+                return array_map( 'trim', array_filter( $rows ) );
+            }
+
+            $prefix = $driver === 'sqlite' ? 'EXPLAIN QUERY PLAN ' : 'EXPLAIN ';
+            $rows = DB::connection( $conn )->select( $prefix . $sql, $bindings );
+
+            $lines = [];
+
+            foreach( $rows as $row )
+            {
+                $row = (array) $row;
+
+                if( $driver === 'sqlite' ) {
+                    $lines[] = ( $row['detail'] ?? implode( ' | ', $row ) );
+                } else {
+                    $lines[] = implode( ' | ', $row );
+                }
+            }
+
+            return $lines;
+        }
+        catch( \Throwable $e )
+        {
+            return ['EXPLAIN failed: ' . $e->getMessage()];
         }
     }
 
