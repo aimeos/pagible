@@ -177,10 +177,14 @@ trait Benchmarks
                     $lines = [];
 
                     do {
-                        foreach( $stmt->fetchAll( \PDO::FETCH_ASSOC ) as $row ) {
-                            if( isset( $row['StmtText'] ) && trim( $row['StmtText'] ) !== '' ) {
-                                $lines[] = trim( $row['StmtText'] );
+                        try {
+                            foreach( $stmt->fetchAll( \PDO::FETCH_ASSOC ) as $row ) {
+                                if( isset( $row['StmtText'] ) && trim( $row['StmtText'] ) !== '' ) {
+                                    $lines[] = trim( $row['StmtText'] );
+                                }
                             }
+                        } catch( \Throwable ) {
+                            // Skip rowsets with no column metadata
                         }
                     } while( $stmt->nextRowset() );
                 } finally {
