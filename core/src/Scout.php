@@ -73,7 +73,8 @@ class Scout
             ->selectRaw( '1' )
             ->from( 'cms_versions' )
             ->whereColumn( 'cms_versions.id', '=', "{$table}.latest_id" )
-            ->where( 'cms_versions.tenant_id', Tenancy::value() );
+            ->where( 'cms_versions.tenant_id', Tenancy::value() )
+            ->limit( 1 );
 
         static::applyFilters( $query, $builder, $table, true, $driver, $sub );
         $query->whereExists( $sub );
