@@ -2,7 +2,9 @@
 
 namespace Aimeos\Cms;
 
+use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider as Provider;
 
@@ -11,6 +13,10 @@ class ThemeServiceProvider extends Provider
     public function boot(): void
     {
         $basedir = dirname( __DIR__ );
+
+        RateLimiter::for( 'cms-sitemap', fn( $request ) =>
+            Limit::perMinutes( 5, 1 )->by( $request->ip() )
+        );
 
         $this->loadBladeDirectives();
         $this->loadViewsFrom( $basedir . '/views', 'cms' );

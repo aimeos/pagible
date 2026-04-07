@@ -30,7 +30,7 @@
       data-urlproxy="{{ route('cms.proxy', ['url' => '_url_']) }}"
       data-urlpage="{{ route('cms.page', ['path' => '_path_'] + (config('cms.multidomain') ? ['domain' => '_domain_'] : [])) }}"
       data-urlfile="{{ \Illuminate\Support\Facades\Storage::disk( config( 'cms.disk', 'public' ) )->url( '' ) }}"
-      data-theme="{{ json_encode( config( 'cms.admin.colors', ['light' => ['colors' => ['background' => '#f0f4f8', 'surface' => '#ffffff', 'primary' => '#3070a0', 'info' => '#00c8d8', 'error' => '#f44038', 'success' => '#00a070', 'warning' => '#d97706', 'accent' => '#ea580c']], 'dark' => ['colors' => ['background' => '#000000', 'surface' => '#101418', 'primary' => '#105090', 'info' => '#00c8d8', 'error' => '#d06878', 'success' => '#008040', 'warning' => '#f59e0b', 'accent' => '#fb923c']]] ) ) }}"
+      data-theme="{{ json_encode( config( 'cms.admin.colors', [] ) ) }}"
       data-locales="{{ json_encode( config( 'cms.locales', ['en'] ) ) }}"
       data-config="{{ json_encode( config( 'cms.config', new \stdClass() ) ) }}"
       data-schemas="{{ json_encode( config( 'cms.schemas', new \stdClass() ) ) }}"

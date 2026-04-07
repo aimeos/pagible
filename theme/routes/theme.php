@@ -13,7 +13,8 @@ Route::post('cmsapi/contact', [Controllers\ContactController::class, 'send'])
 
 Route::group(config('cms.multidomain') ? ['domain' => '{domain}'] : [], function() {
     Route::get('cmsapi/search', [Controllers\SearchController::class, 'index'])->middleware(['throttle:cms-search'])->name('cms.search');
-    Route::get('cms-sitemap.xml', [Controllers\SitemapController::class, 'index'])->name('cms.sitemap');
+    Route::get('cms-sitemap.xml', [Controllers\SitemapController::class, 'index'])->middleware(['throttle:cms-sitemap'])->name('cms.sitemap');
+    Route::get('cms-sitemap-{page}.xml', [Controllers\SitemapController::class, 'chunk'])->where('page', '[0-9]+')->middleware(['throttle:cms-sitemap'])->name('cms.sitemap.chunk');
 });
 
 if(config('cms.theme.pageroute', true))

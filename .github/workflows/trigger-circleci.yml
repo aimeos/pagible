@@ -3,7 +3,6 @@ permissions:
   contents: read
 on:
   push:
-    branches: ['**']
 
 jobs:
   trigger:

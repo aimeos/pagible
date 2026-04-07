@@ -8,6 +8,7 @@
 namespace Aimeos\Cms\Tools;
 
 use Aimeos\Cms\Permission;
+use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Models\Nav;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Tools\Annotations\IsReadOnly;
@@ -23,7 +24,7 @@ use Laravel\Mcp\Request;
 #[IsReadOnly]
 #[Name('get-page-tree')]
 #[Title('Get the page tree hierarchy')]
-#[Description('Returns the page tree as nested JSON. Pass root_id (UUID) for a subtree, or omit for all root pages (up to 50). Optional lang filter (ISO code, only without root_id).')]
+#[Description('Returns the page tree as nested JSON. Pass node_id (UUID) for a subtree, or omit for all root pages (up to 50). Optional lang filter (ISO code, only without node_id).')]
 class GetPageTree extends Tool
 {
     /**
@@ -36,52 +37,19 @@ class GetPageTree extends Tool
         }
 
         $v = $request->validate([
-            'root_id' => 'string|max:36',
+            'node_id' => 'string|max:36',
             'lang' => 'string|max:5',
         ]);
 
-        if( isset( $v['root_id'] ) )
-        {
-            /** @var Nav|null $root */
-            $root = Nav::find( $v['root_id'] );
+        $builder = Page::tree( $v['node_id'] ?? null );
 
-            if( !$root ) {
-                return Response::structured( ['error' => 'Root page not found.'] );
-            }
-
-            $descendants = $root->subtree?->toTree() ?? collect();
-            $tree = $this->buildTree( $descendants );
-
-            return Response::structured( ['tree' => $tree] );
+        if( !isset( $v['node_id'] ) && isset( $v['lang'] ) ) {
+            $builder->where( 'lang', $v['lang'] );
         }
 
-        $query = Nav::whereNull( 'parent_id' )->defaultOrder();
-
-        if( isset( $v['lang'] ) ) {
-            $query->where( 'lang', $v['lang'] );
-        }
-
-        $tree = $query->take( 50 )->get()->map( function( $root ) {
-            /** @var Nav $root */
-            $node = [
-                'id' => $root->id,
-                'name' => $root->name,
-                'title' => $root->title,
-                'path' => $root->path,
-                'lang' => $root->lang,
-                'status' => $root->status,
-                'type' => $root->type,
-                'has_children' => $root->has,
-                'children' => [],
-            ];
-
-            if( $root->has ) {
-                $descendants = $root->subtree?->toTree() ?? collect();
-                $node['children'] = $this->buildTree( $descendants );
-            }
-
-            return $node;
-        } )->all();
+        /** @var \Aimeos\Nestedset\Collection $nodes */
+        $nodes = $builder->get();
+        $tree = $this->buildTree( $nodes->toTree() );
 
         return Response::structured( ['tree' => $tree] );
     }
@@ -95,10 +63,10 @@ class GetPageTree extends Tool
     public function schema( JsonSchema $schema ) : array
     {
         return [
-            'root_id' => $schema->string()
+            'node_id' => $schema->string()
                 ->description('ID of the root page to get the subtree for. Omit to get all root pages.'),
             'lang' => $schema->string()
-                ->description('Filter root pages by ISO language code, e.g., "en". Only used when root_id is not set.'),
+                ->description('Filter root pages by ISO language code, e.g., "en". Only used when node_id is not set.'),
         ];
     }
 
