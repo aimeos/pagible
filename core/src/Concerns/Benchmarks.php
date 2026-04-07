@@ -167,14 +167,16 @@ trait Benchmarks
         {
             if( $driver === 'sqlsrv' )
             {
-                $db = DB::connection( $conn );
-                $db->statement( 'SET STATISTICS XML ON' );
+                $pdo = DB::connection( $conn )->getPdo();
+                $pdo->exec( 'SET SHOWPLAN_XML ON' );
 
                 try {
-                    $row = (array) ( $db->select( $sql, $bindings )[0] ?? [] );
-                    return preg_split( '/\R/', (string) reset( $row ) ) ?: [];
+                    $stmt = $pdo->prepare( $sql );
+                    $stmt->execute( $bindings );
+                    $xml = (string) $stmt->fetchColumn();
+                    return $xml === '' ? [] : ( preg_split( '/\R/', $xml ) ?: [] );
                 } finally {
-                    $db->statement( 'SET STATISTICS XML OFF' );
+                    $pdo->exec( 'SET SHOWPLAN_XML OFF' );
                 }
             }
 
