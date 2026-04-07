@@ -49,6 +49,13 @@ class Scout
 
         static::whereVersionExists( $query, $builder, $table, $driver );
 
+        if( !empty( $builder->options['select'] ) ) {
+            $query->select( array_map(
+                fn( $c ) => str_contains( $c, '.' ) ? $c : "{$table}.{$c}",
+                $builder->options['select']
+            ) );
+        }
+
         foreach( $builder->orders as &$order )
         {
             $order['column'] = static::qualify( $order['column'], $table, true, $driver ) ?? $table . '.' . $order['column'];
