@@ -30,6 +30,11 @@ class BenchmarkTest extends CmsTestAbstract
         \Aimeos\Cms\Tenancy::$callback = function() {
             return 'benchmark';
         };
+
+        $app['config']->set( 'lighthouse.schema_path', dirname(__DIR__) . '/graphql/tests/default-schema.graphql' );
+        $app['config']->set( 'lighthouse.namespaces.models', ['App\\Models', 'Aimeos\\Cms\\Models'] );
+        $app['config']->set( 'lighthouse.namespaces.mutations', ['Aimeos\\Cms\\GraphQL\\Mutations'] );
+        $app['config']->set( 'lighthouse.namespaces.directives', ['Aimeos\\Cms\\GraphQL\\Directives'] );
     }
 
 
