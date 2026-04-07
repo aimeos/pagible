@@ -3,7 +3,6 @@ permissions:
   contents: read
 on:
   push:
-    branches: [master]
 
 jobs:
   trigger:
@@ -51,7 +50,7 @@ jobs:
             "https://circleci.com/api/v2/project/gh/aimeos/pagible/pipeline" \
             -H "Circle-Token: $CCI_TOKEN" \
             -H "Content-Type: application/json" \
-            -d "{\"branch\": \"master\", \"parameters\": $PARAMS}"
+            -d "{\"branch\": \"${{ github.ref_name }}\", \"parameters\": $PARAMS}"
         env:
           CCI_TOKEN: ${{ secrets.CCI_TOKEN }}
           RUN_PERF: ${{ steps.check.outputs.run_perf }}
@@ -63,6 +62,6 @@ jobs:
             "https://circleci.com/api/v2/project/gh/aimeos/pagible/pipeline" \
             -H "Circle-Token: $CCI_TOKEN" \
             -H "Content-Type: application/json" \
-            -d '{"branch": "master", "parameters": {"run_admin": true}}'
+            -d "{\"branch\": \"${{ github.ref_name }}\", \"parameters\": {\"run_admin\": true}}"
         env:
           CCI_TOKEN: ${{ secrets.CCI_TOKEN }}
