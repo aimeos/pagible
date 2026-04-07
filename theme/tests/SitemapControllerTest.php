@@ -34,8 +34,8 @@ class SitemapControllerTest extends ThemeTestAbstract
         $this->assertStringContainsString('<urlset', $content);
         $this->assertStringContainsString('</urlset>', $content);
 
-        $this->assertStringContainsString('<loc>http://localhost/hidden</loc>', $content);
-        $this->assertStringContainsString('<loc>http://localhost/disabled-child</loc>', $content);
-        $this->assertStringNotContainsString('<loc>http://localhost/disabled</loc>', $content);
+        $this->assertStringContainsString('<loc><![CDATA[http://localhost/hidden]]></loc>', $content);
+        $this->assertStringContainsString('<loc><![CDATA[http://localhost/disabled-child]]></loc>', $content);
+        $this->assertStringNotContainsString('http://localhost/disabled]]>', $content);
     }
 }
