@@ -38,4 +38,56 @@ class SitemapControllerTest extends ThemeTestAbstract
         $this->assertStringContainsString('<loc><![CDATA[http://localhost/disabled-child]]></loc>', $content);
         $this->assertStringNotContainsString('http://localhost/disabled]]>', $content);
     }
+
+
+    public function testIndexAsSitemapIndex()
+    {
+        $this->seed( \Database\Seeders\CmsSeeder::class );
+
+        $controller = new SitemapControllerLowThreshold();
+
+        $response = $controller->index();
+        $content = $response->getContent();
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertStringContainsString('<sitemapindex', $content);
+        $this->assertStringContainsString('</sitemapindex>', $content);
+        $this->assertStringContainsString('<loc><![CDATA[http://localhost/cms-sitemap-1.xml]]></loc>', $content);
+        $this->assertStringNotContainsString('<urlset', $content);
+    }
+
+
+    public function testChunk()
+    {
+        $this->seed( \Database\Seeders\CmsSeeder::class );
+
+        $controller = new SitemapControllerLowThreshold();
+
+        ob_start();
+        $response = $controller->chunk(1);
+        $response->getCallback()();
+        $content = ob_get_clean();
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertStringContainsString('<urlset', $content);
+        $this->assertStringContainsString('</urlset>', $content);
+        $this->assertStringContainsString('<loc><![CDATA[http://localhost/', $content);
+    }
+
+
+    public function testChunkOutOfRange()
+    {
+        $this->seed( \Database\Seeders\CmsSeeder::class );
+
+        $controller = new SitemapControllerLowThreshold();
+
+        $this->expectException(\Symfony\Component\HttpKernel\Exception\NotFoundHttpException::class);
+        $controller->chunk(999);
+    }
+}
+
+
+class SitemapControllerLowThreshold extends \Aimeos\Cms\Controllers\SitemapController
+{
+    protected const URLS_PER_SITEMAP = 2;
 }
