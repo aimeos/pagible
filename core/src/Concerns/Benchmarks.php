@@ -167,31 +167,15 @@ trait Benchmarks
         {
             if( $driver === 'sqlsrv' )
             {
-                $pdo = DB::connection( $conn )->getPdo();
-                $pdo->exec( 'SET SHOWPLAN_TEXT ON' );
+                $db = DB::connection( $conn );
+                $db->statement( 'SET STATISTICS XML ON' );
 
                 try {
-                    $stmt = $pdo->prepare( $sql );
-                    $stmt->execute( $bindings );
-
-                    $lines = [];
-
-                    do {
-                        try {
-                            foreach( $stmt->fetchAll( \PDO::FETCH_ASSOC ) as $row ) {
-                                if( isset( $row['StmtText'] ) && trim( $row['StmtText'] ) !== '' ) {
-                                    $lines[] = trim( $row['StmtText'] );
-                                }
-                            }
-                        } catch( \Throwable ) {
-                            // Skip rowsets with no column metadata
-                        }
-                    } while( $stmt->nextRowset() );
+                    $row = (array) ( $db->select( $sql, $bindings )[0] ?? [] );
+                    return preg_split( '/\R/', (string) reset( $row ) ) ?: [];
                 } finally {
-                    $pdo->exec( 'SET SHOWPLAN_TEXT OFF' );
+                    $db->statement( 'SET STATISTICS XML OFF' );
                 }
-
-                return $lines;
             }
 
             $prefix = $driver === 'sqlite' ? 'EXPLAIN QUERY PLAN ' : 'EXPLAIN ';
