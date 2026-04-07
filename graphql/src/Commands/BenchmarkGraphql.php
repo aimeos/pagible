@@ -16,6 +16,8 @@ use Aimeos\Cms\GraphQL\Mutations;
 use Aimeos\Cms\GraphQL\Query;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Utils;
+use Nuwave\Lighthouse\GraphQL as Lighthouse;
+use Nuwave\Lighthouse\Support\Contracts\CreatesContext;
 
 
 class BenchmarkGraphql extends Command
@@ -144,28 +146,53 @@ class BenchmarkGraphql extends Command
                 ( new Mutations\PurgePage )( null, ['id' => [$page->id]] );
             }, tries: $tries );
 
-            $this->benchmark( 'Page list', function() use ( $lang ) {
-                ( new Query )->pages( null, ['first' => 100, 'filter' => ['lang' => $lang]] )->items();
+            $lighthouse = app( Lighthouse::class );
+            $context    = app( CreatesContext::class )->generate( null );
+
+            $pagesQuery = <<<'GQL'
+            query($first: Int!, $filter: PageFilter) {
+                pages(first: $first, filter: $filter) {
+                    data {
+                        id parent_id _lft _rgt depth
+                        name title tag path domain lang to type theme
+                        status cache config editor related_id latest_id
+                        created_at updated_at deleted_at
+                    }
+                    paginatorInfo { total }
+                }
+            }
+            GQL;
+
+            $runPages = function( array $filter ) use ( $lighthouse, $pagesQuery, $context ) {
+                $lighthouse->executeQueryString(
+                    $pagesQuery,
+                    $context,
+                    ['first' => 100, 'filter' => $filter],
+                );
+            };
+
+            $this->benchmark( 'Page list', function() use ( $runPages, $lang ) {
+                $runPages( ['lang' => $lang] );
             }, readOnly: true, tries: $tries );
 
             $this->benchmark( 'Page get', function() use ( $page ) {
                 Page::with( 'latest.files', 'latest.elements' )->find( $page->id );
             }, readOnly: true, tries: $tries );
 
-            $this->benchmark( 'Page lang', function() use ( $lang ) {
-                ( new Query )->pages( null, ['first' => 100, 'filter' => ['lang' => $lang]] )->items();
+            $this->benchmark( 'Page lang', function() use ( $runPages, $lang ) {
+                $runPages( ['lang' => $lang] );
             }, readOnly: true, tries: $tries );
 
-            $this->benchmark( 'Page theme', function() {
-                ( new Query )->pages( null, ['first' => 100, 'filter' => ['theme' => 'default']] )->items();
+            $this->benchmark( 'Page theme', function() use ( $runPages ) {
+                $runPages( ['theme' => 'default'] );
             }, readOnly: true, tries: $tries );
 
-            $this->benchmark( 'Page status', function() {
-                ( new Query )->pages( null, ['first' => 100, 'filter' => ['status' => 1]] )->items();
+            $this->benchmark( 'Page status', function() use ( $runPages ) {
+                $runPages( ['status' => 1] );
             }, readOnly: true, tries: $tries );
 
-            $this->benchmark( 'Page cache', function() {
-                ( new Query )->pages( null, ['first' => 100, 'filter' => ['cache' => 5]] )->items();
+            $this->benchmark( 'Page cache', function() use ( $runPages ) {
+                $runPages( ['cache' => 5] );
             }, readOnly: true, tries: $tries );
 
             $this->benchmark( 'Page editor', function() {
