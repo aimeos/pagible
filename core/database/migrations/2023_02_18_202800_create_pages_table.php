@@ -47,7 +47,7 @@ return new class extends Migration
 
             $table->unique(['path', 'domain', 'tenant_id']);
             $table->index(['tag', 'lang', 'tenant_id', 'status']);
-            $table->index(['parent_id', '_lft', 'tenant_id']);
+            $table->index(['tenant_id', 'parent_id', 'deleted_at', '_lft']);
             $table->index(['lang', 'tenant_id', 'status']);
             $table->index(['domain', 'tenant_id']);
             $table->index(['title', 'tenant_id']);
@@ -64,7 +64,7 @@ return new class extends Migration
             if( $driver === 'sqlite' ) {
                 $table->index(['tenant_id', 'deleted_at', 'depth', '_lft', '_rgt', 'id', 'parent_id', 'name', 'title', 'tag', 'path', 'domain', 'lang', 'to', 'status', 'config'], 'cms_pages_covering_index');
             } else {
-                $table->index(['tenant_id', 'deleted_at', '_lft', '_rgt']);
+                $table->index(['tenant_id', 'deleted_at', '_lft', 'latest_id']);
             }
         });
     }

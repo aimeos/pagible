@@ -29,7 +29,7 @@ class BenchmarkSearch extends Command
         {--unseed : Remove search index data and exit}
         {--pages=10000 : Total number of pages}
         {--tries=100 : Number of iterations per benchmark}
-        {--chunk=500 : Rows per bulk insert batch}
+        {--chunk=50 : Rows per bulk insert batch}
         {--force : Force the operation to run in production}';
 
     protected $description = 'Run search index benchmarks';

@@ -495,7 +495,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
             'status' => 1,
             'cache' => 5,
             'editor' => 'seeder',
-            'scheduled' => false,
+            'scheduled' => 0,
         ];
         $this->assertEquals($expectedData, json_decode($version['data'], true));
 
@@ -940,7 +940,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
             'cache' => 5,
             'editor' => 'seeder',
             'lang' => 'de',
-            'scheduled' => false,
+            'scheduled' => 0,
         ];
         $this->assertEquals($expectedLatestData, json_decode($savePage['latest']['data'] ?? null, true));
 
@@ -963,7 +963,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
             'status' => 1,
             'cache' => 5,
             'editor' => 'seeder',
-            'scheduled' => false,
+            'scheduled' => 0,
         ];
         $this->assertEquals($expectedPublishedData, json_decode($savePage['published']['data'] ?? null, true));
 

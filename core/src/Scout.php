@@ -26,65 +26,108 @@ class Scout
         'cms_files' => ['id', 'tenant_id', 'name', 'mime', 'path'],
     ];
 
+    /**
+     * Builder fields handled out-of-band; never translated to SQL columns.
+     */
+    public const SKIP_FIELDS = ['latest', '__soft_deleted', 'tenant_id'];
+
 
     /**
      * Apply draft-mode filters for the collection engine via callback.
      *
-     * Joins cms_versions and qualifies all where/whereIn/order columns.
-     * Called from the searchFields('draft') macro when using the collection engine.
-     *
      * @param \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model> $query
      * @param \Laravel\Scout\Builder<\Illuminate\Database\Eloquent\Model> $builder
-     * @param array<string> $fields The fields passed to searchFields(), used to detect 'draft' and skip if not present
+     * @param array<string> $fields The fields passed to searchFields(); only 'draft' triggers this path
      * @return \Laravel\Scout\Builder<\Illuminate\Database\Eloquent\Model>
      */
     public static function collection( \Illuminate\Database\Eloquent\Builder $query, Builder $builder, array $fields ) : Builder
     {
-        if( !in_array( 'draft', $fields ) ) {
-            return $builder;
+        if( in_array( 'draft', $fields ) ) {
+            static::apply( $query, $builder, true );
         }
 
-        $table = $query->getModel()->getTable();
-        $query->select( "{$table}.*" )
-            ->join( 'cms_versions', "{$table}.latest_id", '=', 'cms_versions.id' );
+        return $builder;
+    }
 
-        foreach( $builder->wheres as $where )
+
+    /**
+     * Apply Scout builder where/whereIn/whereNotIn filters and order qualification
+     * to an Eloquent query, joining cms_versions when any referenced column lives
+     * on the version table.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model> $query
+     * @param \Laravel\Scout\Builder<\Illuminate\Database\Eloquent\Model> $builder
+     */
+    public static function apply( \Illuminate\Database\Eloquent\Builder $query, Builder $builder, bool $isDraft ) : void
+    {
+        $table = $query->getModel()->getTable();
+        $driver = $query->getModel()->getConnection()->getDriverName();
+        $joined = false;
+
+        $join = function() use ( $query, $table, &$joined ) {
+            if( $joined ) {
+                return;
+            }
+            $query->select( "{$table}.*" )
+                ->join( 'cms_versions', "{$table}.latest_id", '=', 'cms_versions.id' )
+                ->where( 'cms_versions.tenant_id', Tenancy::value() );
+            $joined = true;
+        };
+
+        foreach( $builder->wheres as $key => $where )
         {
-            if( $where['field'] === '__soft_deleted' ) {
+            $field = is_array( $where ) ? ( $where['field'] ?? $key ) : $key;
+
+            if( in_array( $field, self::SKIP_FIELDS ) ) {
                 continue;
             }
 
-            if( $col = static::qualify( $where['field'], $table ) )
-            {
-                if( is_null( $where['value'] ) ) {
-                    $where['operator'] === '=' ? $query->whereNull( $col ) : $query->whereNotNull( $col );
-                } else {
-                    $query->where( $col, $where['operator'], $where['value'] );
-                }
+            if( !( $col = static::qualify( $field, $table, $isDraft, $driver ) ) ) {
+                continue;
+            }
+
+            if( $isDraft && str_starts_with( $col, 'cms_versions.' ) ) {
+                $join();
+            }
+
+            $value = is_array( $where ) && array_key_exists( 'value', $where ) ? $where['value'] : $where;
+            $operator = is_array( $where ) ? ( $where['operator'] ?? '=' ) : '=';
+
+            if( is_null( $value ) ) {
+                $operator === '=' ? $query->whereNull( $col ) : $query->whereNotNull( $col );
+            } else {
+                $query->where( $col, $operator, $value );
             }
         }
 
-        foreach( $builder->whereIns as $field => $values )
-        {
-            if( $col = static::qualify( $field, $table ) ) {
+        foreach( $builder->whereIns as $field => $values ) {
+            if( $col = static::qualify( $field, $table, $isDraft, $driver ) ) {
+                if( $isDraft && str_starts_with( $col, 'cms_versions.' ) ) {
+                    $join();
+                }
                 $query->whereIn( $col, $values );
             }
         }
 
-        foreach( $builder->whereNotIns as $field => $values )
-        {
-            if( $col = static::qualify( $field, $table ) ) {
+        foreach( $builder->whereNotIns as $field => $values ) {
+            if( $col = static::qualify( $field, $table, $isDraft, $driver ) ) {
+                if( $isDraft && str_starts_with( $col, 'cms_versions.' ) ) {
+                    $join();
+                }
                 $query->whereNotIn( $col, $values );
             }
         }
 
         foreach( $builder->orders as &$order )
         {
-            $order['column'] = static::qualify( $order['column'], $table ) ?? $table . '.' . $order['column'];
-        }
-        unset( $order );
+            $col = static::qualify( $order['column'], $table, $isDraft, $driver ) ?? $table . '.' . $order['column'];
 
-        return $builder;
+            if( $isDraft && str_starts_with( $col, 'cms_versions.' ) ) {
+                $join();
+            }
+
+            $order['column'] = $col;
+        }
     }
 
 
@@ -93,13 +136,15 @@ class Scout
      *
      * In draft mode ($isDraft=true), routes version-level fields to cms_versions.
      * In content mode ($isDraft=false), routes all fields to the model table.
+     * For MySQL/MariaDB/SQL Server, uses virtual/computed column names instead of JSON paths.
      *
      * @param string $field Unqualified field name
      * @param string $table Model table name (e.g., cms_pages)
      * @param bool $isDraft Whether draft mode is active (default: true)
+     * @param string $driver Database driver name (default: '')
      * @return string|null Qualified column name, or null to skip
      */
-    public static function qualify( string $field, string $table, bool $isDraft = true ) : ?string
+    public static function qualify( string $field, string $table, bool $isDraft = true, string $driver = '' ) : ?string
     {
         $modelCols = self::MODEL_COLUMNS[$table] ?? ['id', 'tenant_id'];
 
@@ -107,6 +152,7 @@ class Scout
             in_array( $field, ['lang', 'editor'] ) => ( $isDraft ? 'cms_versions.' : $table . '.' ) . $field,
             $field === 'published' => $isDraft ? 'cms_versions.published' : null,
             in_array( $field, $modelCols ) => $table . '.' . $field,
+            $isDraft && in_array( $driver, ['mysql', 'mariadb', 'sqlsrv'] ) => 'cms_versions.data_' . $field,
             $isDraft => 'cms_versions.data->' . $field,
             default => $table . '.' . $field,
         };

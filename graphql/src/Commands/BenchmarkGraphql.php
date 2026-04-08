@@ -31,7 +31,7 @@ class BenchmarkGraphql extends Command
         {--seed : Seed benchmark data before running benchmarks}
         {--pages=10000 : Total number of pages}
         {--tries=100 : Number of iterations per benchmark}
-        {--chunk=500 : Rows per bulk insert batch}
+        {--chunk=50 : Rows per bulk insert batch}
         {--unseed : Remove benchmark data and exit}
         {--force : Force the operation to run in production}';
 
@@ -152,10 +152,47 @@ class BenchmarkGraphql extends Command
                 Page::with( 'latest.files', 'latest.elements' )->find( $page->id );
             }, readOnly: true, tries: $tries );
 
+            $this->benchmark( 'Page lang', function() use ( $lang ) {
+                ( new Query )->pages( null, ['first' => 100, 'filter' => ['lang' => $lang]] )->items();
+            }, readOnly: true, tries: $tries );
+
+            $this->benchmark( 'Page theme', function() {
+                ( new Query )->pages( null, ['first' => 100, 'filter' => ['theme' => 'default']] )->items();
+            }, readOnly: true, tries: $tries );
+
+            $this->benchmark( 'Page status', function() {
+                ( new Query )->pages( null, ['first' => 100, 'filter' => ['status' => 1]] )->items();
+            }, readOnly: true, tries: $tries );
+
+            $this->benchmark( 'Page cache', function() {
+                ( new Query )->pages( null, ['first' => 100, 'filter' => ['cache' => 5]] )->items();
+            }, readOnly: true, tries: $tries );
+
+            $this->benchmark( 'Page editor', function() {
+                ( new Query )->pages( null, ['first' => 100, 'filter' => ['editor' => 'benchmark']] )->items();
+            }, readOnly: true, tries: $tries );
+
+            $this->benchmark( 'Page type', function() {
+                ( new Query )->pages( null, ['first' => 100, 'filter' => ['type' => '']] )->items();
+            }, readOnly: true, tries: $tries );
+
+            $this->benchmark( 'File mime', function() {
+                ( new Query )->files( null, ['first' => 100, 'filter' => ['mime' => 'image/jpeg']] )->items();
+            }, readOnly: true, tries: $tries );
+
 
             /**
              * Element operations
              */
+
+            $this->benchmark( 'Element type', function() {
+                ( new Query )->elements( null, ['first' => 100, 'filter' => ['type' => 'text']] )->items();
+            }, readOnly: true, tries: $tries );
+
+            $this->benchmark( 'Element lang', function() use ( $lang ) {
+                ( new Query )->elements( null, ['first' => 100, 'filter' => ['lang' => $lang]] )->items();
+            }, readOnly: true, tries: $tries );
+
 
             $this->benchmark( 'Element add', function() use ( $lang ) {
                 ( new Mutations\AddElement )( null, [
@@ -171,6 +208,11 @@ class BenchmarkGraphql extends Command
              * File operations
              */
 
+            $this->benchmark( 'File lang', function() use ( $lang ) {
+                ( new Query )->files( null, ['first' => 100, 'filter' => ['lang' => $lang]] )->items();
+            }, readOnly: true, tries: $tries );
+
+
             $this->benchmark( 'File add', function() use ( $lang ) {
                 ( new Mutations\AddFile )( null, [
                     'input' => [
@@ -185,6 +227,7 @@ class BenchmarkGraphql extends Command
         finally
         {
             Auth::logout();
+            Auth::guard()->forgetUser();
             DB::connection( $conn )->rollBack();
         }
 

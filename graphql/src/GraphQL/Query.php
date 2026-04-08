@@ -12,6 +12,7 @@ use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\DB;
 
 
 /**
@@ -60,7 +61,9 @@ final class Query
         $search = File::search( mb_substr( trim( (string) ( $filter['any'] ?? '' ) ), 0, 200 ) )
             ->searchFields( 'draft' );
 
-        $search->query( fn( $q ) => $q->withCount( 'byversions' ) );
+        $search->query( fn( $q ) => $q->addSelect( ['byversions_count' => DB::table( 'cms_version_file' )
+            ->selectRaw( 'count(*)' )
+            ->whereColumn( 'file_id', 'cms_files.id' )] ) );
 
         Filter::files( $search, $filter + $args );
 

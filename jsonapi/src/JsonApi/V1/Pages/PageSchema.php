@@ -248,6 +248,9 @@ class PageSchema extends Schema
             Where::make( 'tag' )->deserializeUsing(
                 fn($value) => (string) $value
             ),
+            Where::make( 'lang' )->deserializeUsing(
+                fn($value) => (string) $value
+            ),
             WhereIdIn::make( $this ),
         ];
     }
@@ -262,7 +265,7 @@ class PageSchema extends Schema
      */
     public function indexQuery( ?Request $request, Builder $query ): Builder
     {
-        $query = $query->with( ['files', 'elements.files'] );
+        $query = $query->with( ['files', 'elements.files'] )->orderBy( '_lft' );
 
         if( $request && ( $filter = $request->get( 'filter' ) ) ) {
             return $query;

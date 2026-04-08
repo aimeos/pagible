@@ -33,7 +33,7 @@ return new class extends Migration
             $table->index(['type', 'tenant_id']);
             $table->index(['lang', 'tenant_id']);
             $table->index(['latest_id']);
-            $table->index('deleted_at');
+            $table->index(['tenant_id', 'deleted_at']);
         });
     }
 

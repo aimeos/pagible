@@ -45,8 +45,15 @@ class Version extends Model
      */
     protected static function booted() : void
     {
+        static::addGlobalScope( new \Aimeos\Cms\Scopes\Tenancy() );
+
+        static::creating( function( \Illuminate\Database\Eloquent\Model $model ) {
+            /** @phpstan-ignore method.notFound */
+            $model->setAttribute( $model->getTenantColumn(), \Aimeos\Cms\Tenancy::value() );
+        } );
+
         static::saving( function( $version ) {
-            $scheduled = $version->publish_at !== null;
+            $scheduled = $version->publish_at !== null ? 1 : 0;
             $data = $version->data ?? new \stdClass();
 
             if( ( $data->scheduled ?? null ) !== $scheduled ) {

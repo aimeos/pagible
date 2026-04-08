@@ -31,7 +31,7 @@ class BenchmarkCore extends Command
         {--seed : Seed benchmark data before running benchmarks}
         {--pages=10000 : Total number of pages}
         {--tries=100 : Number of iterations per benchmark}
-        {--chunk=500 : Rows per bulk insert batch}
+        {--chunk=50 : Rows per bulk insert batch}
         {--unseed : Remove benchmark data and exit}
         {--force : Force the operation to run in production}';
 
@@ -40,15 +40,15 @@ class BenchmarkCore extends Command
 
     public function handle(): int
     {
+        $tenant = (string) $this->option( 'tenant' );
+
         if( $this->option( 'unseed' ) )
         {
-            $tenant = (string) $this->option( 'tenant' );
-            $this->tenant( $tenant );
+            $this->tenant( $tenant);
             $this->unseed( config( 'cms.db', 'sqlite' ), $tenant );
             return self::SUCCESS;
         }
 
-        $tenant = (string) $this->option( 'tenant' );
         $tries = (int) $this->option( 'tries' );
         $force = (bool) $this->option( 'force' );
 
@@ -72,10 +72,14 @@ class BenchmarkCore extends Command
 
         $count = Page::where( 'tag', '!=', 'root' )->where( 'lang', $lang )->count();
         $page = Page::where( 'tag', '!=', 'root' )->where( 'lang', $lang )
-            ->orderBy( '_lft' )->skip( (int) floor( $count / 2 ) )->firstOrFail();
+            ->orderBy( '_lft' )->skip( (int) floor( $count / 2 ) )
+            ->firstOrFail();
 
+        $parentIds = $page->ancestors()->get()->pluck( 'id' );
         $moveParent = Page::where( 'depth', 1 )->where( 'lang', $lang )
-            ->whereNotIn( 'id', $page->ancestors()->get()->pluck( 'id' ) )->firstOrFail();
+            ->whereNotIn( 'id', $parentIds )
+            ->firstOrFail();
+
         $element = Element::where( 'lang', $lang )->firstOrFail();
         $file = File::where( 'lang', $lang )->firstOrFail();
 
@@ -115,11 +119,11 @@ class BenchmarkCore extends Command
         }, tries: $tries );
 
         $this->benchmark( 'Page read', function() use ( $page ) {
-            Page::with( 'files', 'elements' )->find( $page->id );
+            Page::with( 'files', 'elements.files' )->find( $page->id );
         }, readOnly: true, tries: $tries );
 
         $this->benchmark( 'Page list', function() {
-            Page::with( 'files', 'elements' )->take( 100 )->get();
+            Page::with( 'files', 'elements.files' )->orderBy( '_lft' )->take( 100 )->get();
         }, readOnly: true, tries: $tries );
 
         $this->benchmark( 'Page update', function() use ( $page, $lang ) {
@@ -155,7 +159,8 @@ class BenchmarkCore extends Command
         }, tries: $tries );
 
         $this->benchmark( 'Page tree', function() use ( $root ) {
-            Page::where( 'parent_id', $root->id )->with( ['children', 'latest'] )->get();
+            Page::select( 'id', 'parent_id', '_lft', '_rgt', 'depth', 'name', 'title', 'tag', 'path', 'domain', 'lang', 'to', 'status', 'config', 'latest_id' )
+                ->where( 'parent_id', $root->id )->with( ['children', 'latest'] )->get();
         }, readOnly: true, tries: $tries );
 
 

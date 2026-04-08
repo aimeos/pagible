@@ -23,7 +23,7 @@ class Benchmark extends Command
         {--domain= : Domain name}
         {--pages=10000 : Total number of pages to create}
         {--tries=100 : Number of iterations per benchmark}
-        {--chunk=500 : Rows per bulk insert batch}
+        {--chunk=50 : Rows per bulk insert batch}
         {--seed : Seed benchmark data before running benchmarks}
         {--unseed : Remove all benchmark data and exit}
         {--force : Force the operation to run in production}';

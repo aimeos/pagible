@@ -30,15 +30,16 @@ use Illuminate\Support\Str;
  */
 abstract class Base extends Model
 {
-
     /**
-     * Prevent instantiation of abstract Base class by Laravel's HasCollection trait.
+     * Create a new Eloquent Collection without automatic relationship autoloading.
      *
-     * @return class-string|null
+     * @param array<array-key, \Illuminate\Database\Eloquent\Model> $models
+     * @return \Illuminate\Database\Eloquent\Collection<array-key, static>
      */
-    public function resolveCollectionFromAttribute()
+    public function newCollection(array $models = [])
     {
-        return null;
+        /** @var \Illuminate\Database\Eloquent\Collection<array-key, static> */
+        return new \Illuminate\Database\Eloquent\Collection($models);
     }
 
 

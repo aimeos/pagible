@@ -229,7 +229,7 @@ class Page extends Base
     public function ancestors() : AncestorsRelation
     {
         $builder = $this->newScopedQuery()
-            ->select( 'id', 'parent_id', '_lft', '_rgt', 'depth', 'name', 'title', 'tag', 'path', 'domain', 'lang', 'to', 'status', 'config' )
+            ->select( 'id', 'parent_id', '_lft', '_rgt', 'depth', 'name', 'title', 'tag', 'path', 'domain', 'lang', 'to', 'status', 'config', 'latest_id' )
             ->setModel( new Nav() )
             ->defaultOrder();
 
@@ -245,7 +245,7 @@ class Page extends Base
     public function children() : HasMany
     {
         return $this->hasMany( Nav::class, $this->getParentIdName() )
-            ->select( 'id', 'parent_id', '_lft', '_rgt', 'depth', 'name', 'title', 'tag', 'path', 'domain', 'lang', 'to', 'status', 'config' )
+            ->select( 'id', 'parent_id', '_lft', '_rgt', 'depth', 'name', 'title', 'tag', 'path', 'domain', 'lang', 'to', 'status', 'config', 'latest_id' )
             ->setModel( new Nav() )
             ->defaultOrder();
     }
@@ -394,7 +394,7 @@ class Page extends Base
     public function parent() : BelongsTo
     {
         return $this->belongsTo( Nav::class, $this->getParentIdName() )
-            ->select( 'id', 'parent_id', '_lft', '_rgt', 'depth', 'name', 'title', 'tag', 'path', 'domain', 'lang', 'to', 'status', 'config' )
+            ->select( 'id', 'parent_id', '_lft', '_rgt', 'depth', 'name', 'title', 'tag', 'path', 'domain', 'lang', 'to', 'status', 'config', 'latest_id' )
             ->setModel( new Nav() );
     }
 
@@ -464,7 +464,7 @@ class Page extends Base
         $table = $this->getTable();
 
         $builder = $this->newScopedQuery()
-            ->select( 'id', 'parent_id', '_lft', '_rgt', 'depth', 'name', 'title', 'tag', 'path', 'domain', 'lang', 'to', 'status', 'config' )
+            ->select( 'id', 'parent_id', '_lft', '_rgt', 'depth', 'name', 'title', 'tag', 'path', 'domain', 'lang', 'to', 'status', 'config', 'latest_id' )
             ->whereIn( 'depth', range( 0, $maxDepth ) )
             ->whereNotExists( function( $query ) use ( $table ) {
                 $query->select( DB::raw( 1 ) )
@@ -538,7 +538,7 @@ class Page extends Base
             'theme' => $this->latest?->data->theme ?? '',
             'type' => $this->latest?->data->type ?? '',
             'published' => (bool) ( $this->latest->published ?? false ),
-            'scheduled' => (bool) ( $this->latest?->data->scheduled ?? false ),
+            'scheduled' => (int) ( $this->latest?->data->scheduled ?? 0 ),
         ];
     }
 

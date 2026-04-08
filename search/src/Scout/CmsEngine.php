@@ -143,8 +143,7 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
     public function paginateUsingDatabase( Builder $builder, $perPage, $pageName, $page )
     {
         $query = $this->buildSearchQuery( $builder );
-        $columns = array_filter( $query->getQuery()->columns ?: [], 'is_string' ) ?: ['*'];
-        return $query->paginate( $perPage, $columns, $pageName, $page );
+        return $query->paginate( $perPage, $this->paginateColumns( $query ), $pageName, $page );
     }
 
 
@@ -177,8 +176,20 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
     public function simplePaginateUsingDatabase( Builder $builder, $perPage, $pageName, $page )
     {
         $query = $this->buildSearchQuery( $builder );
-        $columns = array_filter( $query->getQuery()->columns ?: [], 'is_string' ) ?: ['*'];
-        return $query->simplePaginate( $perPage, $columns, $pageName, $page );
+        return $query->simplePaginate( $perPage, $this->paginateColumns( $query ), $pageName, $page );
+    }
+
+
+    /**
+     * Extract the string columns currently selected on the underlying query,
+     * defaulting to ['*'] when no columns are set.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>  $query
+     * @return list<string>
+     */
+    protected function paginateColumns( $query ) : array
+    {
+        return array_values( array_filter( $query->getQuery()->columns ?: [], 'is_string' ) ) ?: ['*'];
     }
 
 
@@ -240,13 +251,10 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
     protected function buildSearchQuery( Builder $builder )
     {
         $modelTable = $builder->model->getTable();
-        $modelCols = ScoutHelper::MODEL_COLUMNS[$modelTable] ?? ['id', 'tenant_id'];
-        $skip = ['latest', '__soft_deleted', 'tenant_id'];
         $isDraft = false;
-        $needsJoin = false;
         $query = $builder->model->newQuery();
 
-        // Single pass over wheres: detect draft mode, version join need, and apply trashed scope
+        // Pre-pass: detect draft mode and apply trashed scope side effects
         foreach( $builder->wheres as $key => $where )
         {
             $field = $where['field'] ?? $key;
@@ -266,22 +274,6 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
                         ->whereNotNull( $builder->model->qualifyColumn( 'deleted_at' ) );
                 }
             }
-
-            if( !in_array( $field, $skip ) && !in_array( $field, $modelCols ) ) {
-                $needsJoin = true;
-            }
-        }
-
-        // Check whereIns, whereNotIns and orders for version-level columns
-        $needsJoin = $needsJoin || collect( $builder->whereIns )->keys()
-            ->merge( collect( $builder->whereNotIns )->keys() )
-            ->merge( collect( $builder->orders )->pluck( 'column' ) )
-            ->contains( fn( $f ) => !in_array( $f, $modelCols ) );
-
-        // Join cms_versions when draft-mode filters target version-level columns
-        if( $isDraft && $needsJoin ) {
-            $query->select( "{$modelTable}.*" )
-                ->join( 'cms_versions', "{$modelTable}.latest_id", '=', 'cms_versions.id' );
         }
 
         // Join cms_index for full-text search
@@ -293,7 +285,7 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
         if( $builder->callback ) {
             call_user_func( $builder->callback, $query, $builder, $builder->query );
         } else {
-            $this->applyFilters( $query, $builder, $modelTable, $isDraft );
+            ScoutHelper::apply( $query, $builder, $isDraft );
         }
 
         if( !is_null( $builder->queryCallback ) ) {
@@ -302,11 +294,14 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
 
         if( !empty( $builder->orders ) ) {
             $query->reorder();
+            $driver = $builder->model->getConnection()->getDriverName();
 
             foreach( $builder->orders as $order ) {
-                if( $col = ScoutHelper::qualify( $order['column'], $modelTable, $isDraft ) ) {
-                    $query->orderBy( $col, $order['direction'] );
-                }
+                // In non-callback mode Scout::apply() already qualified the column.
+                $col = $builder->callback
+                    ? ( ScoutHelper::qualify( $order['column'], $modelTable, $isDraft, $driver ) ?? $order['column'] )
+                    : $order['column'];
+                $query->orderBy( $col, $order['direction'] );
             }
         }
 
@@ -315,51 +310,6 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
         }
 
         return $query;
-    }
-
-
-    /**
-     * Apply Scout builder where/whereIn/whereNotIn filters to the Eloquent query.
-     *
-     * @param  \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>  $query
-     * @param  \Laravel\Scout\Builder<\Illuminate\Database\Eloquent\Model>  $builder
-     * @param  string  $modelTable
-     * @param  bool  $isDraft
-     */
-    protected function applyFilters( $query, Builder $builder, string $modelTable, bool $isDraft ) : void
-    {
-        foreach( $builder->wheres as $key => $where )
-        {
-            $field = $where['field'] ?? $key;
-
-            if( in_array( $field, ['latest', '__soft_deleted', 'tenant_id'] ) ) {
-                continue;
-            }
-
-            if( $col = ScoutHelper::qualify( $field, $modelTable, $isDraft ) )
-            {
-                $value = is_array( $where ) && array_key_exists( 'value', $where ) ? $where['value'] : $where;
-                $operator = $where['operator'] ?? '=';
-
-                if( is_null( $value ) ) {
-                    $operator === '=' ? $query->whereNull( $col ) : $query->whereNotNull( $col );
-                } else {
-                    $query->where( $col, $operator, $value );
-                }
-            }
-        }
-
-        foreach( $builder->whereIns as $key => $values ) {
-            if( $col = ScoutHelper::qualify( $key, $modelTable, $isDraft ) ) {
-                $query->whereIn( $col, $values );
-            }
-        }
-
-        foreach( $builder->whereNotIns as $key => $values ) {
-            if( $col = ScoutHelper::qualify( $key, $modelTable, $isDraft ) ) {
-                $query->whereNotIn( $col, $values );
-            }
-        }
     }
 
 

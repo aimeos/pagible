@@ -51,12 +51,18 @@ return new class extends Migration
                 $table->text('content');
 
                 $table->index(['indexable_id', 'indexable_type', 'latest', 'tenant_id']);
+                $table->index(['tenant_id', 'indexable_type', 'latest']);
 
                 if( in_array($driver, ['mariadb', 'mysql']) ) {
                     $table->fullText('content');
                 }
             });
 
+
+            if( $driver === 'pgsql' )
+            {
+                $db->statement("CREATE INDEX cms_index_content_gin ON cms_index USING gin(to_tsvector('simple', coalesce(content, '')))");
+            }
 
             if( $driver === 'sqlsrv' )
             {
