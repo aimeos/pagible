@@ -29,7 +29,6 @@ trait Benchmarks
     {
         $conn = config( 'cms.db', 'sqlite' );
 
-        DB::connection( $conn )->disableQueryLog();
         gc_disable();
 
         $run = function() use ( $fn, $readOnly, $conn ) {
@@ -77,30 +76,26 @@ trait Benchmarks
         $verbose = $this->output->isVerbose();
         $queryTimes = [];
         $durations = [];
+        $collect = false;
 
         if( $verbose ) {
-            DB::connection( $conn )->enableQueryLog();
+            DB::listen( function( \Illuminate\Database\Events\QueryExecuted $e ) use ( &$queryTimes, &$collect ) {
+                if( !$collect ) {
+                    return;
+                }
+                $queryTimes[$e->sql]['times'][] = $e->time * 1_000_000;
+                $queryTimes[$e->sql]['bindings'] = $e->bindings;
+            } );
         }
+
+        $collect = true;
 
         for( $i = 0; $i < $tries; $i++ )
         {
             $durations[] = $execute();
-
-            if( $verbose )
-            {
-                $log = DB::connection( $conn )->getQueryLog();
-                DB::connection( $conn )->flushQueryLog();
-
-                foreach( $log as $q ) {
-                    $queryTimes[$q['query']]['times'][] = $q['time'] * 1_000_000;
-                    $queryTimes[$q['query']]['bindings'] = $q['bindings'];
-                }
-            }
         }
 
-        if( $verbose ) {
-            DB::connection( $conn )->disableQueryLog();
-        }
+        $collect = false;
 
         gc_enable();
         gc_collect_cycles();
