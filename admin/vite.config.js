@@ -23,11 +23,11 @@ const vuetifyLabs = readdirSync('node_modules/vuetify/lib/labs', { withFileTypes
 export default defineConfig({
   plugins: [
     vue(),
-    vuetify({ styles: { configFile: 'src/styles/settings.scss' } })
+    vuetify({ styles: { configFile: 'js/styles/settings.scss' } })
   ],
   resolve: {
     alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url))
+      '@': fileURLToPath(new URL('./js', import.meta.url))
     },
     dedupe: ['pinia', 'vue']
   },
