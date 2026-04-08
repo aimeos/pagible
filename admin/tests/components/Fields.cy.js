@@ -1,6 +1,6 @@
 import { h } from 'vue'
-import Fields from '../../src/components/Fields.vue'
-import { useUserStore } from '../../src/stores'
+import Fields from '../../js/components/Fields.vue'
+import { useUserStore } from '../../js/stores'
 
 const stubs = {
   String: { render() { return h('div', { class: 'field-string' }) } },

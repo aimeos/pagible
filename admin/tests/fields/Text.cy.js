@@ -1,4 +1,4 @@
-import TextField from '../../src/fields/Text.vue'
+import TextField from '../../js/fields/Text.vue'
 
 const stubs = {
   Ckeditor: {

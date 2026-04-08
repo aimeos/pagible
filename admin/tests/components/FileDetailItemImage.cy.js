@@ -1,5 +1,5 @@
-import FileDetailItemImage from '../../src/components/FileDetailItemImage.vue'
-import { useUserStore } from '../../src/stores'
+import FileDetailItemImage from '../../js/components/FileDetailItemImage.vue'
+import { useUserStore } from '../../js/stores'
 
 const item = {
   id: '1',

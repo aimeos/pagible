@@ -1,5 +1,5 @@
-import PageDetailMetrics from '../../src/components/PageDetailMetrics.vue'
-import { useAppStore } from '../../src/stores'
+import PageDetailMetrics from '../../js/components/PageDetailMetrics.vue'
+import { useAppStore } from '../../js/stores'
 
 const stubs = {
   Line: { template: '<div class="chart-stub" />' },

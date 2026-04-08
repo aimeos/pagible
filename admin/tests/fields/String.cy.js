@@ -1,4 +1,4 @@
-import StringField from '../../src/fields/String.vue'
+import StringField from '../../js/fields/String.vue'
 
 describe('String (textarea)', () => {
   it('renders a textarea', () => {

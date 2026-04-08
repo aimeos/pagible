@@ -1,4 +1,4 @@
-import Switch from '../../src/fields/Switch.vue'
+import Switch from '../../js/fields/Switch.vue'
 
 describe('Switch', () => {
   it('renders a switch', () => {

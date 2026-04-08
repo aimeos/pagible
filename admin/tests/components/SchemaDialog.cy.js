@@ -1,4 +1,4 @@
-import SchemaDialog from '../../src/components/SchemaDialog.vue'
+import SchemaDialog from '../../js/components/SchemaDialog.vue'
 
 const stubs = {
   SchemaItems: { template: '<div class="schema-items-stub" />' },

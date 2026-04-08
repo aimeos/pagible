@@ -1,4 +1,4 @@
-import Color from '../../src/fields/Color.vue'
+import Color from '../../js/fields/Color.vue'
 
 describe('Color', () => {
   it('renders a color input', () => {

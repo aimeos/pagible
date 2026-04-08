@@ -1,4 +1,4 @@
-import log from '../../src/log'
+import log from '../../js/log'
 
 describe('log plugin', () => {
   it('installs $log onto app globalProperties', () => {

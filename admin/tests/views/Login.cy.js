@@ -1,5 +1,5 @@
-import Login from '../../src/views/Login.vue'
-import { useUserStore } from '../../src/stores'
+import Login from '../../js/views/Login.vue'
+import { useUserStore } from '../../js/stores'
 
 describe('Login', () => {
   function mountLogin(opts = {}) {

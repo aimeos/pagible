@@ -6,7 +6,7 @@ import {
   useDrawerStore,
   useMessageStore,
   useSideStore,
-} from '../../src/stores'
+} from '../../js/stores'
 
 describe('useUserStore', () => {
   beforeEach(() => {

@@ -1,4 +1,4 @@
-import Radio from '../../src/fields/Radio.vue'
+import Radio from '../../js/fields/Radio.vue'
 
 const options = [
   { label: 'Red', value: 'red' },

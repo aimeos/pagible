@@ -1,5 +1,5 @@
-import Navigation from '../../src/components/Navigation.vue'
-import { useUserStore } from '../../src/stores'
+import Navigation from '../../js/components/Navigation.vue'
+import { useUserStore } from '../../js/stores'
 
 describe('Navigation', () => {
   function mountWithPerms(perms = {}) {

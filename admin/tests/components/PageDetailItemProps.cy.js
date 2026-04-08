@@ -1,5 +1,5 @@
-import PageDetailItemProps from '../../src/components/PageDetailItemProps.vue'
-import { useAppStore, useUserStore, useConfigStore } from '../../src/stores'
+import PageDetailItemProps from '../../js/components/PageDetailItemProps.vue'
+import { useAppStore, useUserStore, useConfigStore } from '../../js/stores'
 
 const stubs = {
 }

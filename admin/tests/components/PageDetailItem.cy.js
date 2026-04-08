@@ -1,4 +1,4 @@
-import PageDetailItem from '../../src/components/PageDetailItem.vue'
+import PageDetailItem from '../../js/components/PageDetailItem.vue'
 
 const stubs = {
   PageDetailItemProps: { template: '<div class="props-stub" />' },

@@ -1,5 +1,5 @@
-import ImageField from '../../src/fields/Image.vue'
-import { useUserStore } from '../../src/stores'
+import ImageField from '../../js/fields/Image.vue'
+import { useUserStore } from '../../js/stores'
 
 const imageAsset = {
   id: '1',

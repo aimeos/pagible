@@ -1,5 +1,5 @@
-import VideoField from '../../src/fields/Video.vue'
-import { useUserStore } from '../../src/stores'
+import VideoField from '../../js/fields/Video.vue'
+import { useUserStore } from '../../js/stores'
 
 const videoAsset = {
   id: '1',

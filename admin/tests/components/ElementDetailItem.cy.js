@@ -1,5 +1,5 @@
-import ElementDetailItem from '../../src/components/ElementDetailItem.vue'
-import { useUserStore, useSchemaStore } from '../../src/stores'
+import ElementDetailItem from '../../js/components/ElementDetailItem.vue'
+import { useUserStore, useSchemaStore } from '../../js/stores'
 
 const stubs = {
   Fields: { template: '<div class="fields-stub" />' },

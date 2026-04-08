@@ -1,5 +1,5 @@
-import ElementDetail from '../../src/views/ElementDetail.vue'
-import { useUserStore } from '../../src/stores'
+import ElementDetail from '../../js/views/ElementDetail.vue'
+import { useUserStore } from '../../js/stores'
 
 const stubs = {
   AsideMeta: { template: '<div class="aside-meta-stub" />' },

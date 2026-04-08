@@ -1,5 +1,5 @@
-import AsideCount from '../../src/components/AsideCount.vue'
-import { useSideStore } from '../../src/stores'
+import AsideCount from '../../js/components/AsideCount.vue'
+import { useSideStore } from '../../js/stores'
 
 function mountWithData(storeData = {}) {
   return cy.mount(AsideCount).then(() => {

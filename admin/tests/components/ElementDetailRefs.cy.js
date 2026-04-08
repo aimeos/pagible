@@ -1,5 +1,5 @@
-import ElementDetailRefs from '../../src/components/ElementDetailRefs.vue'
-import { useUserStore } from '../../src/stores'
+import ElementDetailRefs from '../../js/components/ElementDetailRefs.vue'
+import { useUserStore } from '../../js/stores'
 
 const stubs = {
 }

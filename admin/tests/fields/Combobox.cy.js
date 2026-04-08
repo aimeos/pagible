@@ -1,4 +1,4 @@
-import Combobox from '../../src/fields/Combobox.vue'
+import Combobox from '../../js/fields/Combobox.vue'
 
 const staticOptions = [
   { label: 'Cat', value: 'cat' },

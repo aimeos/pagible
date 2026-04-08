@@ -1,5 +1,5 @@
-import ItemsField from '../../src/fields/Items.vue'
-import { useUserStore, useClipboardStore } from '../../src/stores'
+import ItemsField from '../../js/fields/Items.vue'
+import { useUserStore, useClipboardStore } from '../../js/stores'
 
 const itemConfig = {
   item: {

@@ -1,4 +1,4 @@
-import Range from '../../src/fields/Range.vue'
+import Range from '../../js/fields/Range.vue'
 
 describe('Range', () => {
   it('renders a range slider', () => {

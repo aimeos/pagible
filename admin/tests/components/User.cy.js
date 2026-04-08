@@ -1,5 +1,5 @@
-import User from '../../src/components/User.vue'
-import { useUserStore } from '../../src/stores'
+import User from '../../js/components/User.vue'
+import { useUserStore } from '../../js/stores'
 
 const stubs = {
 }

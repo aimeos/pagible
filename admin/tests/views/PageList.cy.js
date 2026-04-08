@@ -1,5 +1,5 @@
-import PageList from '../../src/views/PageList.vue'
-import { useUserStore } from '../../src/stores'
+import PageList from '../../js/views/PageList.vue'
+import { useUserStore } from '../../js/stores'
 
 const stubs = {
   PageListItems: { template: '<div class="page-list-items-stub" />' },

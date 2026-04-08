@@ -1,4 +1,4 @@
-import AsideList from '../../src/components/AsideList.vue'
+import AsideList from '../../js/components/AsideList.vue'
 
 const content = [
   {

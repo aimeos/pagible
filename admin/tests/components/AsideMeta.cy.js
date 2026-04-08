@@ -1,4 +1,4 @@
-import AsideMeta from '../../src/components/AsideMeta.vue'
+import AsideMeta from '../../js/components/AsideMeta.vue'
 
 function mountMeta(item = {}) {
   return cy.mount(AsideMeta, {

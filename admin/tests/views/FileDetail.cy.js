@@ -1,5 +1,5 @@
-import FileDetail from '../../src/views/FileDetail.vue'
-import { useUserStore, useMessageStore } from '../../src/stores'
+import FileDetail from '../../js/views/FileDetail.vue'
+import { useUserStore, useMessageStore } from '../../js/stores'
 
 const stubs = {
   AsideMeta: { template: '<div class="aside-meta-stub" />' },

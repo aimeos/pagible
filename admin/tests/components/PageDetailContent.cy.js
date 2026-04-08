@@ -1,5 +1,5 @@
-import PageDetailContent from '../../src/components/PageDetailContent.vue'
-import { useConfigStore } from '../../src/stores'
+import PageDetailContent from '../../js/components/PageDetailContent.vue'
+import { useConfigStore } from '../../js/stores'
 
 const stubs = {
   PageDetailContentList: { template: '<div class="content-list-stub" />' },

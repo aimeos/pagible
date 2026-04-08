@@ -1,5 +1,5 @@
-import AudioField from '../../src/fields/Audio.vue'
-import { useUserStore } from '../../src/stores'
+import AudioField from '../../js/fields/Audio.vue'
+import { useUserStore } from '../../js/stores'
 
 const audioAsset = {
   id: '1',

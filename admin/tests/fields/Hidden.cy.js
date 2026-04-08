@@ -1,4 +1,4 @@
-import Hidden from '../../src/fields/Hidden.vue'
+import Hidden from '../../js/fields/Hidden.vue'
 
 describe('Hidden', () => {
   it('renders nothing visible', () => {

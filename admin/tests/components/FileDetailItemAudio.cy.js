@@ -1,4 +1,4 @@
-import FileDetailItemAudio from '../../src/components/FileDetailItemAudio.vue'
+import FileDetailItemAudio from '../../js/components/FileDetailItemAudio.vue'
 
 const item = {
   id: '1',

@@ -1,4 +1,4 @@
-import Html from '../../src/fields/Html.vue'
+import Html from '../../js/fields/Html.vue'
 
 describe('Html (textarea)', () => {
   it('renders a textarea', () => {

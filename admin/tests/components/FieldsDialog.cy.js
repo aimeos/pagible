@@ -1,6 +1,6 @@
 import { h } from 'vue'
-import FieldsDialog from '../../src/components/FieldsDialog.vue'
-import { useSchemaStore } from '../../src/stores'
+import FieldsDialog from '../../js/components/FieldsDialog.vue'
+import { useSchemaStore } from '../../js/stores'
 
 const stubs = {
   Fields: { template: '<div class="fields-stub" />' },

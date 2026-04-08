@@ -1,8 +1,8 @@
-import App from '../src/App.vue'
+import App from '../js/App.vue'
 import { createPinia, setActivePinia } from 'pinia'
-import { slugify, srcset, toBlob, debounce, locales, txlocales, url } from '../src/utils'
-import { write, translate, transcribe } from '../src/ai'
-import { useAppStore, useUserStore, useMessageStore, useLanguageStore, useViewStack } from '../src/stores'
+import { slugify, srcset, toBlob, debounce, locales, txlocales, url } from '../js/utils'
+import { write, translate, transcribe } from '../js/ai'
+import { useAppStore, useUserStore, useMessageStore, useLanguageStore, useViewStack } from '../js/stores'
 
 describe('App', () => {
   it('renders v-application', () => {

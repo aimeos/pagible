@@ -1,4 +1,4 @@
-import Plaintext from '../../src/fields/Plaintext.vue'
+import Plaintext from '../../js/fields/Plaintext.vue'
 
 describe('Plaintext (textarea)', () => {
   it('renders a textarea', () => {

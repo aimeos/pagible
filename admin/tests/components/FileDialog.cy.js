@@ -1,4 +1,4 @@
-import FileDialog from '../../src/components/FileDialog.vue'
+import FileDialog from '../../js/components/FileDialog.vue'
 
 const stubs = {
   FileListItems: { template: '<div class="file-list-stub" />' },

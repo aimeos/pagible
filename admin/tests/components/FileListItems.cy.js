@@ -1,5 +1,5 @@
-import FileListItems from '../../src/components/FileListItems.vue'
-import { useUserStore } from '../../src/stores'
+import FileListItems from '../../js/components/FileListItems.vue'
+import { useUserStore } from '../../js/stores'
 
 const stubs = {
 }

@@ -1,4 +1,4 @@
-import { uid } from '../../src/utils'
+import { uid } from '../../js/utils'
 
 describe('uid()', () => {
   it('returns a string of length 6', () => {

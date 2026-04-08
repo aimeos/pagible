@@ -1,4 +1,4 @@
-import FileUrlDialog from '../../src/components/FileUrlDialog.vue'
+import FileUrlDialog from '../../js/components/FileUrlDialog.vue'
 
 const stubs = {
 }

@@ -1,5 +1,5 @@
-import ElementList from '../../src/views/ElementList.vue'
-import { useUserStore } from '../../src/stores'
+import ElementList from '../../js/views/ElementList.vue'
+import { useUserStore } from '../../js/stores'
 
 const stubs = {
   ElementListItems: { template: '<div class="element-list-items-stub" />' },

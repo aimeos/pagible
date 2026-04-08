@@ -1,4 +1,4 @@
-import Date from '../../src/fields/Date.vue'
+import Date from '../../js/fields/Date.vue'
 
 describe('Date', () => {
   it('renders a date input', () => {

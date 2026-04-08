@@ -1,4 +1,4 @@
-import Number from '../../src/fields/Number.vue'
+import Number from '../../js/fields/Number.vue'
 
 describe('Number', () => {
   it('renders a number input', () => {

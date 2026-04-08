@@ -1,5 +1,5 @@
-import FileField from '../../src/fields/File.vue'
-import { useUserStore } from '../../src/stores'
+import FileField from '../../js/fields/File.vue'
+import { useUserStore } from '../../js/stores'
 
 const fileAsset = {
   id: '1',

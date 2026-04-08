@@ -1,4 +1,4 @@
-import Slider from '../../src/fields/Slider.vue'
+import Slider from '../../js/fields/Slider.vue'
 
 describe('Slider', () => {
   it('renders a slider', () => {

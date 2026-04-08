@@ -1,5 +1,5 @@
-import SchemaItems from '../../src/components/SchemaItems.vue'
-import { useSchemaStore } from '../../src/stores'
+import SchemaItems from '../../js/components/SchemaItems.vue'
+import { useSchemaStore } from '../../js/stores'
 
 const sampleSchemas = {
   page: {

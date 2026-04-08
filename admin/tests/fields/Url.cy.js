@@ -1,4 +1,4 @@
-import Url from '../../src/fields/Url.vue'
+import Url from '../../js/fields/Url.vue'
 
 describe('Url', () => {
   it('renders a text field with ltr class', () => {

@@ -1,5 +1,5 @@
-import PageDetailItemMeta from '../../src/components/PageDetailItemMeta.vue'
-import { useUserStore, useSchemaStore } from '../../src/stores'
+import PageDetailItemMeta from '../../js/components/PageDetailItemMeta.vue'
+import { useUserStore, useSchemaStore } from '../../js/stores'
 
 const stubs = {
   Fields: { template: '<div class="fields-stub" />' },

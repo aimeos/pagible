@@ -1,4 +1,4 @@
-import { transcription } from '../../src/audio'
+import { transcription } from '../../js/audio'
 
 describe('transcription()', () => {
   describe('asText()', () => {

@@ -1,5 +1,5 @@
-import FileDetailItemVideo from '../../src/components/FileDetailItemVideo.vue'
-import { useUserStore } from '../../src/stores'
+import FileDetailItemVideo from '../../js/components/FileDetailItemVideo.vue'
+import { useUserStore } from '../../js/stores'
 
 const item = {
   id: '1',

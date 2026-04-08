@@ -1,5 +1,5 @@
-import ElementListItems from '../../src/components/ElementListItems.vue'
-import { useUserStore } from '../../src/stores'
+import ElementListItems from '../../js/components/ElementListItems.vue'
+import { useUserStore } from '../../js/stores'
 
 const stubs = {
   SchemaItems: { template: '<div class="schema-items-stub" />' },

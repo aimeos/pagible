@@ -1,4 +1,4 @@
-import HistoryDialog from '../../src/components/HistoryDialog.vue'
+import HistoryDialog from '../../js/components/HistoryDialog.vue'
 
 const stubs = {
 }

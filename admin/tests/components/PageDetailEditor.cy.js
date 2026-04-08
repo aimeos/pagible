@@ -1,5 +1,5 @@
-import PageDetailEditor from '../../src/components/PageDetailEditor.vue'
-import { useAppStore, useUserStore } from '../../src/stores'
+import PageDetailEditor from '../../js/components/PageDetailEditor.vue'
+import { useAppStore, useUserStore } from '../../js/stores'
 
 const stubs = {
   FieldsDialog: { template: '<div class="fields-dialog-stub" />' },

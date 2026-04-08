@@ -1,4 +1,4 @@
-import Autocomplete from '../../src/fields/Autocomplete.vue'
+import Autocomplete from '../../js/fields/Autocomplete.vue'
 
 const staticOptions = [
   { label: 'Paris', value: 'paris' },

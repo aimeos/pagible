@@ -1,4 +1,4 @@
-import Select from '../../src/fields/Select.vue'
+import Select from '../../js/fields/Select.vue'
 
 const options = [
   { label: 'Apple', value: 'apple' },

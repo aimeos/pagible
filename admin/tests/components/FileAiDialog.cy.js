@@ -1,5 +1,5 @@
-import FileAiDialog from '../../src/components/FileAiDialog.vue'
-import { useUserStore } from '../../src/stores'
+import FileAiDialog from '../../js/components/FileAiDialog.vue'
+import { useUserStore } from '../../js/stores'
 
 const stubs = {
   FileListItems: { template: '<div class="file-list-stub" />' },

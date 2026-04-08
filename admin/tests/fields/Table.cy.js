@@ -1,4 +1,4 @@
-import TableField from '../../src/fields/Table.vue'
+import TableField from '../../js/fields/Table.vue'
 
 describe('Table', () => {
   it('renders a table', () => {

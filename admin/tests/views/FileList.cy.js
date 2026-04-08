@@ -1,5 +1,5 @@
-import FileList from '../../src/views/FileList.vue'
-import { useUserStore, useDrawerStore } from '../../src/stores'
+import FileList from '../../js/views/FileList.vue'
+import { useUserStore, useDrawerStore } from '../../js/stores'
 
 const stubs = {
   FileListItems: { template: '<div class="file-list-items-stub" />' },

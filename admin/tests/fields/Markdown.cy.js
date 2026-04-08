@@ -1,4 +1,4 @@
-import MarkdownField from '../../src/fields/Markdown.vue'
+import MarkdownField from '../../js/fields/Markdown.vue'
 
 const stubs = {
   Ckeditor: {

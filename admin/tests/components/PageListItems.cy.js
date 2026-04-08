@@ -1,5 +1,5 @@
-import PageListItems from '../../src/components/PageListItems.vue'
-import { useUserStore } from '../../src/stores'
+import PageListItems from '../../js/components/PageListItems.vue'
+import { useUserStore } from '../../js/stores'
 
 const stubs = {
   Draggable: {

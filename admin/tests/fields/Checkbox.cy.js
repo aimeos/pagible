@@ -1,4 +1,4 @@
-import Checkbox from '../../src/fields/Checkbox.vue'
+import Checkbox from '../../js/fields/Checkbox.vue'
 
 describe('Checkbox', () => {
   it('renders a checkbox', () => {
