@@ -63,20 +63,12 @@ class BenchmarkTest extends CmsTestAbstract
 
         $this->assertSame( 0, $seed, 'Seeding failed: ' . Artisan::output() );
 
-        $run = Artisan::call( 'cms:benchmark:graphql', [
+        $run = Artisan::call( 'cms:benchmark', [
             '--domain' => 'benchmark',
             '--tries' => 10,
             '--chunk' => $chunk,
             '--force' => true,
-            '-vvv' => true,
-        ], $output );
-
-        $run += Artisan::call( 'cms:benchmark:theme', [
-            '--domain' => 'benchmark',
-            '--tries' => 10,
-            '--chunk' => $chunk,
-            '--force' => true,
-            '-vv' => true,
+            '-v' => true,
         ], $output );
 
         $this->assertSame( 0, $run, 'Benchmark run failed: ' . Artisan::output() );

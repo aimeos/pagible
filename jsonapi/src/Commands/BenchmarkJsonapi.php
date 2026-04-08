@@ -26,7 +26,7 @@ class BenchmarkJsonapi extends Command
         {--seed : Seed benchmark data before running benchmarks}
         {--pages=10000 : Total number of pages}
         {--tries=100 : Number of iterations per benchmark}
-        {--chunk=500 : Rows per bulk insert batch}
+        {--chunk=50 : Rows per bulk insert batch}
         {--unseed : Remove benchmark data and exit}
         {--force : Force the operation to run in production}';
 
