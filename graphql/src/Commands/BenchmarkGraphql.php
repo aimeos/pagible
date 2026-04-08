@@ -18,7 +18,7 @@ use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Utils;
 use GraphQL\Language\Parser;
 use GraphQL\Type\Definition\ResolveInfo;
-use Nuwave\Lighthouse\GraphQL as Lighthouse;
+use Nuwave\Lighthouse\Schema\SchemaBuilder;
 
 
 class BenchmarkGraphql extends Command
@@ -110,7 +110,7 @@ class BenchmarkGraphql extends Command
             ] );
 
             $gqlQuery = '{ pages(first: 100) { data { id name title path lang status editor } } }';
-            $schema = app( Lighthouse::class )->prepSchema();
+            $schema = app( SchemaBuilder::class )->schema();
             $document = Parser::parse( $gqlQuery );
             $op = $document->definitions[0];
             $pagesSel = $op->selectionSet->selections[0];
