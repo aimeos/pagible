@@ -143,8 +143,7 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
     public function paginateUsingDatabase( Builder $builder, $perPage, $pageName, $page )
     {
         $query = $this->buildSearchQuery( $builder );
-        $columns = array_filter( $query->getQuery()->columns ?: [], 'is_string' ) ?: ['*'];
-        return $query->paginate( $perPage, $columns, $pageName, $page );
+        return $query->paginate( $perPage, $this->paginateColumns( $query ), $pageName, $page );
     }
 
 
@@ -177,8 +176,20 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
     public function simplePaginateUsingDatabase( Builder $builder, $perPage, $pageName, $page )
     {
         $query = $this->buildSearchQuery( $builder );
-        $columns = array_filter( $query->getQuery()->columns ?: [], 'is_string' ) ?: ['*'];
-        return $query->simplePaginate( $perPage, $columns, $pageName, $page );
+        return $query->simplePaginate( $perPage, $this->paginateColumns( $query ), $pageName, $page );
+    }
+
+
+    /**
+     * Extract the string columns currently selected on the underlying query,
+     * defaulting to ['*'] when no columns are set.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>  $query
+     * @return list<string>
+     */
+    protected function paginateColumns( $query ) : array
+    {
+        return array_values( array_filter( $query->getQuery()->columns ?: [], 'is_string' ) ) ?: ['*'];
     }
 
 
@@ -240,11 +251,10 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
     protected function buildSearchQuery( Builder $builder )
     {
         $modelTable = $builder->model->getTable();
-        $driver = $builder->model->getConnection()->getDriverName();
         $isDraft = false;
         $query = $builder->model->newQuery();
 
-        // Detect draft mode and apply trashed scope
+        // Pre-pass: detect draft mode and apply trashed scope side effects
         foreach( $builder->wheres as $key => $where )
         {
             $field = $where['field'] ?? $key;
@@ -274,10 +284,8 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
         // Apply Scout builder constraints to the Eloquent query
         if( $builder->callback ) {
             call_user_func( $builder->callback, $query, $builder, $builder->query );
-        } elseif( $isDraft ) {
-            ScoutHelper::whereVersionExists( $query, $builder, $modelTable, $driver );
         } else {
-            ScoutHelper::applyFilters( $query, $builder, $modelTable, $isDraft, $driver );
+            ScoutHelper::apply( $query, $builder, $isDraft );
         }
 
         if( !is_null( $builder->queryCallback ) ) {
@@ -286,11 +294,14 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
 
         if( !empty( $builder->orders ) ) {
             $query->reorder();
+            $driver = $builder->model->getConnection()->getDriverName();
 
             foreach( $builder->orders as $order ) {
-                if( $col = ScoutHelper::qualify( $order['column'], $modelTable, $isDraft, $driver ) ) {
-                    $query->orderBy( $col, $order['direction'] );
-                }
+                // In non-callback mode Scout::apply() already qualified the column.
+                $col = $builder->callback
+                    ? ( ScoutHelper::qualify( $order['column'], $modelTable, $isDraft, $driver ) ?? $order['column'] )
+                    : $order['column'];
+                $query->orderBy( $col, $order['direction'] );
             }
         }
 
