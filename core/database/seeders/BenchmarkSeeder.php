@@ -295,6 +295,7 @@ class BenchmarkSeeder
     protected function createFiles( string $lang, int $count, string $now, string $nowMs ): array
     {
         $conn = config( 'cms.db', 'sqlite' );
+        $imagePath = realpath( __DIR__ . '/../../tests/assets/image.png' );
         $fileRows = [];
         $versionRows = [];
         $ids = [];
@@ -311,8 +312,8 @@ class BenchmarkSeeder
                 'mime' => 'image/png',
                 'lang' => $lang,
                 'name' => $name,
-                'path' => 'https://placehold.co/1500x1000',
-                'previews' => json_encode( ['500' => 'https://placehold.co/500x333', '1000' => 'https://placehold.co/1000x666'] ),
+                'path' => $imagePath,
+                'previews' => json_encode( ['500' => $imagePath, '1000' => $imagePath] ),
                 'description' => '{}',
                 'transcription' => '{}',
                 'editor' => $this->editor,
@@ -332,8 +333,8 @@ class BenchmarkSeeder
                     'mime' => 'image/png',
                     'lang' => $lang,
                     'name' => $name,
-                    'path' => 'https://placehold.co/1500x1000',
-                    'previews' => ['500' => 'https://placehold.co/500x333', '1000' => 'https://placehold.co/1000x666'],
+                    'path' => $imagePath,
+                    'previews' => ['500' => $imagePath, '1000' => $imagePath],
                 ] ),
                 'aux' => '{}',
                 'published' => true,

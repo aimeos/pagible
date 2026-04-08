@@ -213,12 +213,14 @@ class BenchmarkGraphql extends Command
             }, readOnly: true, tries: $tries );
 
 
-            $this->benchmark( 'File add', function() use ( $lang ) {
+            $imagePath = realpath( __DIR__ . '/../../tests/assets/image.png' );
+            $this->benchmark( 'File add', function() use ( $lang, $imagePath ) {
+                $upload = new \Illuminate\Http\UploadedFile(
+                    $imagePath, 'image.png', 'image/png', null, true
+                );
                 ( new Mutations\AddFile )( null, [
-                    'input' => [
-                        'lang' => $lang, 'name' => 'GQL Bench File',
-                        'path' => 'https://placehold.co/1500x1000',
-                    ],
+                    'input' => ['lang' => $lang, 'name' => 'GQL Bench File'],
+                    'file' => $upload,
                 ] );
             }, tries: $tries );
 
