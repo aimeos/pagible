@@ -7,7 +7,9 @@
 
 namespace Aimeos\Cms\Concerns;
 
+use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Str;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
@@ -79,7 +81,7 @@ trait Benchmarks
         $collect = false;
 
         if( $verbose ) {
-            DB::listen( function( \Illuminate\Database\Events\QueryExecuted $e ) use ( &$queryTimes, &$collect ) {
+            Event::listen( function( QueryExecuted $e ) use ( &$queryTimes, &$collect ) {
                 if( !$collect ) {
                     return;
                 }
