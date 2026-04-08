@@ -123,7 +123,7 @@ class BenchmarkGraphql extends Command
                 $parentType,
                 [],
                 $schema,
-                new \ArrayObject(),
+                [],
                 null,
                 $op,
                 []
