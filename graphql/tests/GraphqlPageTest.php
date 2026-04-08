@@ -847,7 +847,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
         $element = Element::where( 'type', 'footer' )->firstOrFail();
         $root = Page::where('tag', 'root')->firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 13 );
+        $this->expectsDatabaseQueryCount( 10 );
 
         $response = $this->actingAs($this->user)->graphQL('
             mutation {
@@ -906,16 +906,9 @@ class GraphqlPageTest extends GraphqlTestAbstract
                         publish_at
                         editor
                     }
-                    published {
-                        data
-                        aux
-                    }
                 }
             }
         ');
-
-        $page = Page::findOrFail( $root->id );
-        $element = $page->elements()->firstOrFail();
 
         $savePage = $response->json('data.savePage');
 
@@ -950,32 +943,6 @@ class GraphqlPageTest extends GraphqlTestAbstract
             'content' => [['type' => 'heading', 'data' => ['title' => 'Welcome to Laravel CMS']]],
         ];
         $this->assertEquals($expectedLatestAux, json_decode($savePage['latest']['aux'] ?? null, true));
-
-        $expectedPublishedData = [
-            'name' => 'Home',
-            'title' => 'Home | Laravel CMS',
-            'path' => '',
-            'to' => '',
-            'tag' => 'root',
-            'domain' => 'mydomain.tld',
-            'theme' => '',
-            'type' => '',
-            'status' => 1,
-            'cache' => 5,
-            'editor' => 'seeder',
-            'scheduled' => 0,
-        ];
-        $this->assertEquals($expectedPublishedData, json_decode($savePage['published']['data'] ?? null, true));
-
-        $expectedPublishedAux = [
-            'meta' => ['type' => 'meta', 'data' => ['text' => 'Laravel CMS is outstanding']],
-            'config' => ['test' => ['type' => 'test', 'data' => ['key' => 'value']]],
-            'content' => [
-                ['type' => 'heading', 'data' => ['title' => 'Welcome to Laravel CMS']],
-                ['type' => 'reference', 'refid' => $element->id, 'group' => 'footer'],
-            ],
-        ];
-        $this->assertEquals($expectedPublishedAux, json_decode($savePage['published']['aux'] ?? null, true));
     }
 
 

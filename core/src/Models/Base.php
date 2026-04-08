@@ -9,7 +9,6 @@ namespace Aimeos\Cms\Models;
 
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
-use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Str;
@@ -97,20 +96,6 @@ abstract class Base extends Model
     {
         // workaround for SQL Server and Lighthouse when UUIDs are mixed case
         return (string) ( $this->getConnection()->getDriverName() === 'sqlsrv' ? strtoupper( Str::uuid7() ) : Str::uuid7() );
-    }
-
-
-    /**
-     * Get the model's published version.
-     *
-     * @return MorphOne<Version, $this> Eloquent relationship to the last published version
-     */
-    public function published() : MorphOne
-    {
-        return $this->morphOne( Version::class, 'versionable' )
-            ->ofMany( ['created_at' => 'max', 'id' => 'max'], function( $query ) {
-                $query->where( (new Version)->qualifyColumn( 'published' ), true );
-            } );
     }
 
 
