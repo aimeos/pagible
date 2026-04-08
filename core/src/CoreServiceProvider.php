@@ -15,7 +15,10 @@ class CoreServiceProvider extends Provider
         $basedir = dirname( __DIR__ );
 
         $this->loadMigrationsFrom( $basedir . '/database/migrations' );
-        $this->publishes( [$basedir . '/config/cms.php' => config_path( 'cms.php' )], 'cms-core-config' );
+        $this->publishes( [
+            $basedir . '/config/cms.php' => config_path( 'cms.php' ),
+            $basedir . '/config/cms/schemas.php' => config_path( 'cms/schemas.php' ),
+        ], 'cms-core-config' );
 
         $this->rateLimiter();
         $this->userCasts();
@@ -29,7 +32,12 @@ class CoreServiceProvider extends Provider
 
     public function register()
     {
-        $this->mergeConfigFrom( dirname( __DIR__ ) . '/config/cms.php', 'cms' );
+        $cfgdir = dirname( __DIR__ ) . '/config';
+        $this->mergeConfigFrom( $cfgdir . '/cms.php', 'cms' );
+
+        // Load schemas from the published config/cms/schemas.php if present, else the package default.
+        $path = config_path( 'cms/schemas.php' );
+        $this->mergeConfigFrom( file_exists( $path ) ? $path : $cfgdir . '/cms/schemas.php', 'cms.schemas' );
 
         $this->app->scoped( \Aimeos\Cms\Tenancy::class, function() {
             $callback = \Aimeos\Cms\Tenancy::$callback;
