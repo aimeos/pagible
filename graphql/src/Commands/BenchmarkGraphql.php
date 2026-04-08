@@ -16,8 +16,9 @@ use Aimeos\Cms\GraphQL\Mutations;
 use Aimeos\Cms\GraphQL\Query;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Utils;
+use GraphQL\Language\Parser;
+use GraphQL\Type\Definition\ResolveInfo;
 use Nuwave\Lighthouse\GraphQL as Lighthouse;
-use Nuwave\Lighthouse\Support\Contracts\CreatesContext;
 
 
 class BenchmarkGraphql extends Command
@@ -99,6 +100,35 @@ class BenchmarkGraphql extends Command
             $page->forceFill( ['latest_id' => $unpubVersion->id] )->saveQuietly();
             $page->setRelation( 'latest', $unpubVersion );
 
+            // Build a ResolveInfo mirroring a realistic admin page-list query
+            // so Query::pages() exercises pageColumns() projection.
+            config( [
+                'lighthouse.schema_path' => dirname( __DIR__, 2 ) . '/tests/default-schema.graphql',
+                'lighthouse.namespaces.models' => ['App\\Models', 'Aimeos\\Cms\\Models'],
+                'lighthouse.namespaces.mutations' => ['Aimeos\\Cms\\GraphQL\\Mutations'],
+                'lighthouse.namespaces.directives' => ['Aimeos\\Cms\\GraphQL\\Directives'],
+            ] );
+
+            $gqlQuery = '{ pages(first: 100) { data { id name title path lang status editor } } }';
+            $schema = app( Lighthouse::class )->prepSchema();
+            $document = Parser::parse( $gqlQuery );
+            $op = $document->definitions[0];
+            $pagesSel = $op->selectionSet->selections[0];
+            $parentType = $schema->getQueryType();
+            $fieldDef = $parentType->getField( 'pages' );
+
+            $resolveInfo = new ResolveInfo(
+                $fieldDef,
+                new \ArrayObject( [$pagesSel] ),
+                $parentType,
+                [],
+                $schema,
+                new \ArrayObject(),
+                null,
+                $op,
+                []
+            );
+
             $this->header();
 
 
@@ -146,61 +176,36 @@ class BenchmarkGraphql extends Command
                 ( new Mutations\PurgePage )( null, ['id' => [$page->id]] );
             }, tries: $tries );
 
-            $lighthouse = app( Lighthouse::class );
-            $context    = app( CreatesContext::class )->generate( null );
-
-            $pagesQuery = <<<'GQL'
-            query($first: Int!, $filter: PageFilter) {
-                pages(first: $first, filter: $filter) {
-                    data {
-                        id parent_id _lft _rgt depth
-                        name title tag path domain lang to type theme
-                        status cache config editor related_id latest_id
-                        created_at updated_at deleted_at
-                    }
-                    paginatorInfo { total }
-                }
-            }
-            GQL;
-
-            $runPages = function( array $filter ) use ( $lighthouse, $pagesQuery, $context ) {
-                $lighthouse->executeQueryString(
-                    $pagesQuery,
-                    $context,
-                    ['first' => 100, 'filter' => $filter],
-                );
-            };
-
-            $this->benchmark( 'Page list', function() use ( $runPages, $lang ) {
-                $runPages( ['lang' => $lang] );
+            $this->benchmark( 'Page list', function() use ( $lang, $resolveInfo ) {
+                ( new Query )->pages( null, ['first' => 100, 'filter' => ['lang' => $lang]], null, $resolveInfo )->items();
             }, readOnly: true, tries: $tries );
 
             $this->benchmark( 'Page get', function() use ( $page ) {
                 Page::with( 'latest.files', 'latest.elements' )->find( $page->id );
             }, readOnly: true, tries: $tries );
 
-            $this->benchmark( 'Page lang', function() use ( $runPages, $lang ) {
-                $runPages( ['lang' => $lang] );
+            $this->benchmark( 'Page lang', function() use ( $lang, $resolveInfo ) {
+                ( new Query )->pages( null, ['first' => 100, 'filter' => ['lang' => $lang]], null, $resolveInfo )->items();
             }, readOnly: true, tries: $tries );
 
-            $this->benchmark( 'Page theme', function() use ( $runPages ) {
-                $runPages( ['theme' => 'default'] );
+            $this->benchmark( 'Page theme', function() use ( $resolveInfo ) {
+                ( new Query )->pages( null, ['first' => 100, 'filter' => ['theme' => 'default']], null, $resolveInfo )->items();
             }, readOnly: true, tries: $tries );
 
-            $this->benchmark( 'Page status', function() use ( $runPages ) {
-                $runPages( ['status' => 1] );
+            $this->benchmark( 'Page status', function() use ( $resolveInfo ) {
+                ( new Query )->pages( null, ['first' => 100, 'filter' => ['status' => 1]], null, $resolveInfo )->items();
             }, readOnly: true, tries: $tries );
 
-            $this->benchmark( 'Page cache', function() use ( $runPages ) {
-                $runPages( ['cache' => 5] );
+            $this->benchmark( 'Page cache', function() use ( $resolveInfo ) {
+                ( new Query )->pages( null, ['first' => 100, 'filter' => ['cache' => 5]], null, $resolveInfo )->items();
             }, readOnly: true, tries: $tries );
 
-            $this->benchmark( 'Page editor', function() {
-                ( new Query )->pages( null, ['first' => 100, 'filter' => ['editor' => 'benchmark']] )->items();
+            $this->benchmark( 'Page editor', function() use ( $resolveInfo ) {
+                ( new Query )->pages( null, ['first' => 100, 'filter' => ['editor' => 'benchmark']], null, $resolveInfo )->items();
             }, readOnly: true, tries: $tries );
 
-            $this->benchmark( 'Page type', function() {
-                ( new Query )->pages( null, ['first' => 100, 'filter' => ['type' => '']] )->items();
+            $this->benchmark( 'Page type', function() use ( $resolveInfo ) {
+                ( new Query )->pages( null, ['first' => 100, 'filter' => ['type' => '']], null, $resolveInfo )->items();
             }, readOnly: true, tries: $tries );
 
             $this->benchmark( 'File mime', function() {
