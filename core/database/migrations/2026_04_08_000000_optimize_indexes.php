@@ -47,7 +47,7 @@ return new class extends Migration
     }
 
 
-    private function dropLegacyVersionIndexes(Builder $schema, Connection $db, bool $rawDrop): void
+    private function dropLegacyVersionIndexes(Builder $schema, Connection $db, string $driver): void
     {
         $names  = $this->indexNames($schema, 'cms_versions');
         $legacy = [];
@@ -75,8 +75,10 @@ return new class extends Migration
 
         foreach ($legacy as $idx) {
             if (in_array($idx, $names, true)) {
-                if ($rawDrop) {
+                if (in_array($driver, ['pgsql', 'sqlite'], true)) {
                     $db->statement("DROP INDEX IF EXISTS $idx");
+                } elseif ($driver === 'sqlsrv') {
+                    $db->statement("DROP INDEX IF EXISTS $idx ON cms_versions");
                 } else {
                     $schema->table('cms_versions', function (Blueprint $table) use ($idx) {
                         $table->dropIndex($idx);
@@ -96,6 +98,8 @@ return new class extends Migration
                 if (in_array($idx, $names, true)) {
                     if (in_array($driver, ['pgsql', 'sqlite'], true)) {
                         $db->statement("DROP INDEX IF EXISTS $idx");
+                    } elseif ($driver === 'sqlsrv') {
+                        $db->statement("DROP INDEX IF EXISTS $idx ON cms_versions");
                     } else {
                         $schema->table('cms_versions', function (Blueprint $table) use ($idx) {
                             $table->dropIndex($idx);
@@ -321,7 +325,7 @@ return new class extends Migration
             }
         }
 
-        $this->dropLegacyVersionIndexes($schema, $db, false);
+        $this->dropLegacyVersionIndexes($schema, $db, 'mysql');
 
         $indexed = ['data_type', 'data_path', 'data_theme', 'data_status', 'data_cache', 'data_mime', 'data_scheduled', 'data_name'];
 
@@ -342,7 +346,7 @@ return new class extends Migration
 
     private function versionsPgsql(Builder $schema, Connection $db): void
     {
-        $this->dropLegacyVersionIndexes($schema, $db, true);
+        $this->dropLegacyVersionIndexes($schema, $db, 'pgsql');
 
         $exprs = [
             'type'   => "(data->>'type')",
@@ -412,7 +416,7 @@ return new class extends Migration
             }
         }
 
-        $this->dropLegacyVersionIndexes($schema, $db, true);
+        $this->dropLegacyVersionIndexes($schema, $db, 'sqlsrv');
 
         $indexed = ['data_type', 'data_path', 'data_theme', 'data_status', 'data_cache', 'data_mime', 'data_scheduled', 'data_name'];
 
