@@ -173,20 +173,19 @@ trait Benchmarks
                 }, $sql);
 
                 $pdo  = DB::getPdo();
-                $stmt = $pdo->prepare('SET STATISTICS XML ON');
-                $stmt->execute();
+                $pdo->exec('SET STATISTICS XML ON');
 
-                $stmt = $pdo->prepare($fullSql);
-                $stmt->execute();
+                $stmt = $pdo->query($fullSql);
+                $results = [];
 
-                // Advance to the second result set (the plan)
-                $stmt->nextRowset();
-                $result = $stmt->fetchAll();
-                var_dump($result);
+                do {
+                    $results[] = $stmt->fetchAll();
+                } while ($stmt->nextRowset());
 
                 $pdo->exec('SET STATISTICS XML OFF');
+var_dump($results);
 
-                return $result;
+                return $results;
             }
 
             $prefix = $driver === 'sqlite' ? 'EXPLAIN QUERY PLAN ' : 'EXPLAIN ';
