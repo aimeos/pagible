@@ -173,7 +173,7 @@ trait Benchmarks
                 }, $sql);
 
                 $pdo  = DB::getPdo();
-                $pdo->exec('SET STATISTICS XML ON');
+                $pdo->exec('SET SHOWPLAN_TEXT ON');
 
                 $stmt = $pdo->query($fullSql);
                 $results = [];
@@ -182,7 +182,7 @@ trait Benchmarks
                     $results[] = $stmt->fetchAll();
                 } while ($stmt->nextRowset());
 
-                $pdo->exec('SET STATISTICS XML OFF');
+                $pdo->exec('SET SHOWPLAN_TEXT OFF');
 var_dump($results);
 
                 return $results;
