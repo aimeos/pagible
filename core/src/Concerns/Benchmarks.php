@@ -168,7 +168,7 @@ trait Benchmarks
             if( $driver === 'sqlsrv' )
             {
                 $fullSql = array_reduce($bindings, function (string $carry, mixed $binding): string {
-                    $value = is_numeric($binding) ? $binding : "'" . addslashes((string) $binding) . "'";
+                    $value = is_numeric( $bindings[$i] ) ? $bindings[$i] : "'" . str_replace( "'", "''", (string) $bindings[$i] ) . "'";
                     return preg_replace('/\?/', $value, $carry, 1);
                 }, $sql);
 
