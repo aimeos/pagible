@@ -307,9 +307,6 @@ type Page {
   "Latest version of the page meta data"
   latest: Version @belongsTo
 
-  "Published version of the page meta data"
-  published: Version @morphOne
-
   "List of versions for the page meta data"
   versions: [Version!]! @morphMany
 }
@@ -460,9 +457,6 @@ type Element {
   "Latest version of the content element"
   latest: Version @belongsTo
 
-  "Published version of the content element"
-  published: Version @morphOne
-
   "List of versioned data for the content element"
   versions: [Version!]! @morphMany
 }
@@ -555,9 +549,6 @@ type File {
 
   "Latest version of the file"
   latest: Version @belongsTo
-
-  "Published version of the content element"
-  published: Version @morphOne
 
   "List of versioned data for the file"
   versions: [Version!]! @morphMany
