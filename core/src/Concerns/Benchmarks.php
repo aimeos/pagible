@@ -179,7 +179,7 @@ trait Benchmarks
                     ORDER BY qs.last_execution_time DESC
                 ";
 
-                $row = DB::getPdo()->query($planSql)->fetch(PDO::FETCH_ASSOC);
+                $row = DB::getPdo()->query($planSql)->fetch(\PDO::FETCH_ASSOC);
 var_dump( $row );
                 $results = [$row['query_plan'] ?? ''];
 
