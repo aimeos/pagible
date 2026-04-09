@@ -176,7 +176,6 @@ trait Benchmarks
                 ";
 
                 $row = DB::getPdo()->query($planSql)->fetch(\PDO::FETCH_ASSOC);
-
                 return $this->xml2plan( $row['query_plan'] ?? '' );
             }
 
