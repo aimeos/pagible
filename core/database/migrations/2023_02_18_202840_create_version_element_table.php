@@ -23,7 +23,7 @@ return new class extends Migration
             $table->foreignUuid('element_id')->constrained('cms_elements')->cascadeOnUpdate()->cascadeOnDelete();
 
             $table->unique(['version_id', 'element_id']);
-            $table->index('element_id');
+            $table->index(['element_id', 'version_id']);
         });
     }
 

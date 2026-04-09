@@ -23,7 +23,7 @@ return new class extends Migration
             $table->foreignUuid('file_id')->constrained('cms_files')->cascadeOnUpdate()->cascadeOnDelete();
 
             $table->unique(['version_id', 'file_id']);
-            $table->index('file_id');
+            $table->index(['file_id', 'version_id']);
         });
     }
 
