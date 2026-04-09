@@ -167,13 +167,17 @@ trait Benchmarks
         {
             if( $driver === 'sqlsrv' )
             {
+                $fullSql = array_reduce( $bindings, function( string $carry, mixed $binding ): string {
+                    $value = is_numeric( $binding ) ? $binding : "'" . addslashes( (string) $binding ) . "'";
+                    return preg_replace( '/\?/', (string) $value, $carry, 1 );
+                }, $sql );
+
                 $pdo = DB::connection( $conn )->getPdo();
                 $pdo->exec( 'SET SHOWPLAN_XML ON' );
 
                 try {
-                    $stmt = $pdo->prepare( $sql );
-                    $stmt->execute( $bindings );
-                    $xml = (string) $stmt->fetchColumn();
+                    $result = $pdo->query( $fullSql );
+                    $xml = $result ? (string) $result->fetchColumn() : '';
                     return $xml === '' ? [] : ( preg_split( '/\R/', $xml ) ?: [] );
                 } finally {
                     $pdo->exec( 'SET SHOWPLAN_XML OFF' );
