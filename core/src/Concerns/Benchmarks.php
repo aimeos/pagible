@@ -172,10 +172,20 @@ trait Benchmarks
                     return preg_replace('/\?/', $value, $carry, 1);
                 }, $sql);
 
-                DB::statement('SET SHOWPLAN_XML ON');
-                $result = DB::select($fullSql);
-                DB::statement('SET SHOWPLAN_XML OFF');
-var_dump($result);
+                $pdo  = DB::getPdo();
+                $stmt = $pdo->prepare('SET STATISTICS XML ON');
+                $stmt->execute();
+
+                $stmt = $pdo->prepare($fullSql);
+                $stmt->execute();
+
+                // Advance to the second result set (the plan)
+                $stmt->nextRowset();
+                $result = $stmt->fetchAll();
+                var_dump($result);
+
+                $pdo->exec('SET STATISTICS XML OFF');
+
                 return $result;
             }
 
