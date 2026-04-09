@@ -173,17 +173,26 @@ trait Benchmarks
                 }, $sql);
 
                 $pdo  = DB::getPdo();
-                $pdo->exec('SET SHOWPLAN_TEXT ON');
+                $pdo->exec($fullSql)->closeCursor();
 
-                $stmt = $pdo->query($fullSql);
-                $results = [];
+                $planSql = "
+                    SELECT TOP 1
+                        qp.query_plan,
+                        qs.execution_count,
+                        qs.total_logical_reads,
+                        qs.total_elapsed_time
+                    FROM sys.dm_exec_query_stats qs
+                    CROSS APPLY sys.dm_exec_sql_text(qs.sql_handle)  AS qt
+                    CROSS APPLY sys.dm_exec_query_plan(qs.plan_handle) AS qp
+                    WHERE qt.text LIKE :search
+                    ORDER BY qs.last_execution_time DESC
+                ";
 
-                do {
-                    $results[] = $stmt->columnCount() > 0 ? $stmt->fetchAll() : null;
-                } while ($stmt->nextRowset());
+                $planStmt = $pdo->prepare($planSql);
+                $planStmt->execute([':search' => '%' . substr(trim($fullSql), 0, 80) . '%']);
 
-                $pdo->exec('SET SHOWPLAN_TEXT OFF');
-var_dump($results);
+                $row = $planStmt->fetch(PDO::FETCH_ASSOC);
+                $results = [$row['query_plan'] ?? ''];
 
                 return $results;
             }
