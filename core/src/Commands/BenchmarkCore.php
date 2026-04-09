@@ -210,13 +210,14 @@ class BenchmarkCore extends Command
          * File operations
          */
 
-        $this->benchmark( 'File create', function() use ( $lang ) {
+        $imagePath = realpath( __DIR__ . '/../../tests/assets/image.png' );
+        $this->benchmark( 'File create', function() use ( $lang, $imagePath ) {
             $f = File::forceCreate( [
                 'mime' => 'image/png', 'lang' => $lang, 'name' => 'Bench file',
-                'path' => 'https://placehold.co/1500x1000', 'editor' => 'benchmark',
+                'path' => $imagePath, 'editor' => 'benchmark',
             ] );
             $version = $f->versions()->forceCreate( [
-                'lang' => $lang, 'data' => ['mime' => 'image/png', 'name' => 'Bench file', 'path' => 'https://placehold.co/1500x1000', 'previews' => []],
+                'lang' => $lang, 'data' => ['mime' => 'image/png', 'name' => 'Bench file', 'path' => $imagePath, 'previews' => []],
                 'published' => false, 'editor' => 'benchmark',
             ] );
             $f->publish( $version );
