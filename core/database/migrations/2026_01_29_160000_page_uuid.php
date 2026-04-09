@@ -117,16 +117,6 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
-    public function down()
-    {
-        // removed by previous migration
-    }
-
 
     protected function copyPages(string $name)
     {
