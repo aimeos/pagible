@@ -175,7 +175,7 @@ trait Benchmarks
                 DB::statement('SET SHOWPLAN_XML ON');
                 $result = DB::select($fullSql);
                 DB::statement('SET SHOWPLAN_XML OFF');
-
+var_dump($result);
                 return $result;
             }
 
