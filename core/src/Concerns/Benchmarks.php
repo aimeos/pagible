@@ -176,10 +176,8 @@ trait Benchmarks
                 ";
 
                 $row = DB::getPdo()->query($planSql)->fetch(\PDO::FETCH_ASSOC);
-var_dump( $row );
-                $results = [$row['query_plan'] ?? ''];
 
-                return $results;
+                return $this->xml2plan( $row['query_plan'] ?? '' );
             }
 
             $prefix = $driver === 'sqlite' ? 'EXPLAIN QUERY PLAN ' : 'EXPLAIN ';
@@ -345,5 +343,42 @@ var_dump( $row );
     protected function hasSeededData(): bool
     {
         return Page::where( 'editor', 'benchmark' )->exists();
+    }
+
+
+    protected function xml2plan( string $xml ) : array
+    {
+        $xml = simplexml_load_string($xml);
+        $xml->registerXPathNamespace('qp', 'http://schemas.microsoft.com/sqlserver/2004/07/showplan');
+
+        $nodes = $xml->xpath('//qp:RelOp');
+        $lines = [];
+
+        foreach ($nodes as $node) {
+            $indent = str_repeat('  ', (int) $node['NodeId']);
+
+            $line = $indent . (string) $node['PhysicalOp']
+                . ' / ' . (string) $node['LogicalOp']
+                . ' (cost: ' . round((float) $node['EstimatedTotalSubtreeCost'], 4) . ')';
+
+            // Pull index/table info from child Object elements
+            $node->registerXPathNamespace('qp', 'http://schemas.microsoft.com/sqlserver/2004/07/showplan');
+            $objects = $node->xpath('*/qp:Object');
+
+            foreach ($objects as $obj) {
+                $parts = array_filter([
+                    (string) $obj['Table'],
+                    (string) $obj['Index'],
+                    (string) $obj['Alias'] ? 'AS ' . (string) $obj['Alias'] : null,
+                ]);
+                if ($parts) {
+                    $line .= "\n" . $indent . '    → ' . implode(' ', $parts);
+                }
+            }
+
+            $lines[] = $line;
+        }
+
+        return $lines;
     }
 }
