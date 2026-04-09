@@ -173,8 +173,8 @@ trait Benchmarks
                 }, $sql);
 
                 $pdo  = DB::getPdo();
-                $stmt = $pdo->exec($fullSql);
-                $stmt->closeCursor();
+                $pdo->exec($fullSql);
+                $pdo->closeCursor();
 
                 $planSql = "
                     SELECT TOP 1
