@@ -204,7 +204,7 @@ trait Benchmarks
         }
         catch( \Throwable $e )
         {
-            return ['EXPLAIN failed: ' . $e->getMessage()];
+            return ['EXPLAIN failed: ' . $e->getMessage(), $e->getTraceAsString()];
         }
     }
 
