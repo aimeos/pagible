@@ -167,15 +167,6 @@ trait Benchmarks
         {
             if( $driver === 'sqlsrv' )
             {
-                $fullSql = array_reduce($bindings, function (string $carry, mixed $binding): string {
-                    $value = is_numeric( $binding ) ? $binding : "'" . str_replace( "'", "''", (string) $binding ) . "'";
-                    return preg_replace('/\?/', $value, $carry, 1);
-                }, $sql);
-
-                $pdo  = DB::getPdo();
-                $pdo->exec($fullSql);
-                $pdo->closeCursor();
-
                 $planSql = "
                     SELECT TOP 1
                         qp.query_plan,
@@ -185,14 +176,11 @@ trait Benchmarks
                     FROM sys.dm_exec_query_stats qs
                     CROSS APPLY sys.dm_exec_sql_text(qs.sql_handle)  AS qt
                     CROSS APPLY sys.dm_exec_query_plan(qs.plan_handle) AS qp
-                    WHERE qt.text LIKE :search
                     ORDER BY qs.last_execution_time DESC
                 ";
 
-                $planStmt = $pdo->prepare($planSql);
-                $planStmt->execute([':search' => '%' . substr(trim($fullSql), 0, 80) . '%']);
-
-                $row = $planStmt->fetch(PDO::FETCH_ASSOC);
+                $row = DB::getPdo()->query($planSql)->fetch(PDO::FETCH_ASSOC);
+var_dump( $row );
                 $results = [$row['query_plan'] ?? ''];
 
                 return $results;
