@@ -231,6 +231,10 @@ class BenchmarkCore extends Command
             File::with( 'latest' )->take( 100 )->get();
         }, readOnly: true, tries: $tries );
 
+        $this->benchmark( 'File mime', function() {
+            File::with( 'latest' )->where( 'mime', 'image/jpeg' )->take( 100 )->get();
+        }, readOnly: true, tries: $tries );
+
         $this->benchmark( 'File update', function() use ( $file, $lang ) {
             $version = $file->versions()->forceCreate( [
                 'lang' => $lang, 'data' => (array) $file->latest?->data, 'published' => false, 'editor' => 'benchmark',

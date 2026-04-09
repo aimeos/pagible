@@ -44,7 +44,6 @@ return new class extends Migration
             $table->timestamps();
 
             $table->index(['mime', 'tenant_id']);
-            $table->index(['lang', 'tenant_id']);
             $table->index(['deleted_at', 'tenant_id']);
         });
     }

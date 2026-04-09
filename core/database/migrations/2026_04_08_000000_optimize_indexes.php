@@ -125,6 +125,9 @@ return new class extends Migration
             if (in_array('cms_elements_tenant_id_deleted_at_index', $names, true)) {
                 $table->dropIndex('cms_elements_tenant_id_deleted_at_index');
             }
+            if (in_array('cms_elements_lang_tenant_id_index', $names, true)) {
+                $table->dropIndex(['lang', 'tenant_id']);
+            }
         });
 
         $this->addIndex($schema, 'cms_elements', ['deleted_at', 'tenant_id']);
@@ -144,6 +147,9 @@ return new class extends Migration
             }
             if (in_array('cms_files_tenant_id_deleted_at_index', $names, true)) {
                 $table->dropIndex('cms_files_tenant_id_deleted_at_index');
+            }
+            if (in_array('cms_files_lang_tenant_id_index', $names, true)) {
+                $table->dropIndex(['lang', 'tenant_id']);
             }
         });
 

@@ -180,6 +180,18 @@ class BenchmarkGraphql extends Command
                 ( new Query )->files( null, ['first' => 100, 'filter' => ['mime' => 'image/jpeg']] )->items();
             }, readOnly: true, tries: $tries );
 
+            $this->benchmark( 'File mime', function() {
+                ( new Query )->files( null, ['first' => 100, 'filter' => ['mime' => 'image/jpeg']] )->items();
+            }, readOnly: true, tries: $tries );
+
+            $this->benchmark( 'File name', function() {
+                ( new Query )->files( null, ['first' => 100, 'filter' => [], 'sort' => [['column' => 'name', 'order' => 'asc']]] )->items();
+            }, readOnly: true, tries: $tries );
+
+            $this->benchmark( 'Page scheduled', function() {
+                ( new Query )->pages( null, ['first' => 100, 'filter' => [], 'publish' => 'SCHEDULED'] )->items();
+            }, readOnly: true, tries: $tries );
+
 
             /**
              * Element operations
