@@ -167,21 +167,16 @@ trait Benchmarks
         {
             if( $driver === 'sqlsrv' )
             {
-                $fullSql = array_reduce( $bindings, function( string $carry, mixed $binding ): string {
-                    $value = is_numeric( $binding ) ? $binding : "'" . addslashes( (string) $binding ) . "'";
-                    return preg_replace( '/\?/', (string) $value, $carry, 1 );
-                }, $sql );
+                $fullSql = array_reduce($bindings, function (string $carry, mixed $binding): string {
+                    $value = is_numeric($binding) ? $binding : "'" . addslashes((string) $binding) . "'";
+                    return preg_replace('/\?/', $value, $carry, 1);
+                }, $sql);
 
-                $pdo = DB::connection( $conn )->getPdo();
-                $pdo->exec( 'SET SHOWPLAN_XML ON' );
+                DB::statement('SET SHOWPLAN_XML ON');
+                $result = DB::select($fullSql);
+                DB::statement('SET SHOWPLAN_XML OFF');
 
-                try {
-                    $result = $pdo->query( $fullSql )->fetchAll();
-                    var_dump( $result );
-                    return $result;
-                } finally {
-                    $pdo->exec( 'SET SHOWPLAN_XML OFF' );
-                }
+                return $result;
             }
 
             $prefix = $driver === 'sqlite' ? 'EXPLAIN QUERY PLAN ' : 'EXPLAIN ';
