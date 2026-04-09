@@ -177,7 +177,7 @@ trait Benchmarks
 
                 try {
                     $result = $pdo->query( $fullSql );
-                    $xml = $result ? (string) $result->fetchColumn() : '';
+                    $xml = $result && $result->columnCount() > 0 ? (string) $result->fetchColumn() : '';
                     return $xml === '' ? [] : ( preg_split( '/\R/', $xml ) ?: [] );
                 } finally {
                     $pdo->exec( 'SET SHOWPLAN_XML OFF' );
