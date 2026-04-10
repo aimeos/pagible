@@ -168,7 +168,7 @@ trait Benchmarks
             if( $driver === 'sqlsrv' )
             {
                 $pdo = DB::connection( $conn )->getPdo();
-                $pdo->exec( 'SET STATISTICS PROFILE ON' );
+                $pdo->exec( 'SET STATISTICS XML ON' );
 
                 try {
                     $stmt = $pdo->prepare( $sql );
@@ -182,9 +182,11 @@ var_dump( $row );
                         }
                     } while( $stmt->nextRowset() );
 
-                    return []; // $this->xml2plan( $xml );
+                    $stmt->closeCursor();
+
+                    return $this->xml2plan( $xml );
                 } finally {
-                    $pdo->exec( 'SET STATISTICS PROFILE OFF' );
+                    $pdo->exec( 'SET STATISTICS XML OFF' );
                 }
             }
 
