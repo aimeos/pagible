@@ -176,8 +176,7 @@ trait Benchmarks
 
                     $xml = '';
                     do {
-                        $row = $stmt->fetch( \PDO::FETCH_NUM );
-                        if( $row ) {
+                        if( $stmt->columnCount() > 0 && ( $row = $stmt->fetch( \PDO::FETCH_NUM ) )) {
                             $xml = $row[0];
                         }
                     } while( $stmt->nextRowset() );
