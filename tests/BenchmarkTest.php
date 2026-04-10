@@ -68,7 +68,7 @@ class BenchmarkTest extends CmsTestAbstract
             '--tries' => 10,
             '--chunk' => $chunk,
             '--force' => true,
-            '-vvv' => true,
+            '-v' => true,
         ], $output );
 
         $this->assertSame( 0, $run, 'Benchmark run failed: ' . Artisan::output() );
