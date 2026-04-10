@@ -179,14 +179,15 @@ trait Benchmarks
                     $stmt = $pdo->query( $resolved );
 
                     $xml = '';
+                    $pdo->setAttribute( \PDO::ATTR_ERRMODE, \PDO::ERRMODE_SILENT );
+
                     do {
-                        try {
-                            if( $row = $stmt->fetch( \PDO::FETCH_NUM ) ) {
-var_dump($row);
-                                $xml = $row[0];
-                            }
-                        } catch( \PDOException $e ) {}
+                        if( $row = $stmt->fetch( \PDO::FETCH_NUM ) ) {
+                            $xml = $row[0];
+                        }
                     } while( $stmt->nextRowset() );
+
+                    $pdo->setAttribute( \PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION );
 
                     $stmt->closeCursor();
 
