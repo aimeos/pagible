@@ -171,7 +171,7 @@ trait Benchmarks
 
                 try {
                     $conn->statement('SET SHOWPLAN_XML ON');
-                    $plan = $conn->select($query, $params);
+                    $plan = $conn->select($sql, $bindings);
                 } finally {
                     $conn->statement('SET SHOWPLAN_XML OFF');
                 }
