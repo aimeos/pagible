@@ -168,7 +168,7 @@ trait Benchmarks
             if( $driver === 'sqlsrv' )
             {
                 $pdo = DB::connection( $conn )->getPdo();
-                $pdo->exec( 'SET SHOWPLAN_XML ON' );
+                $pdo->exec( 'SET STATISTICS PROFILE ON' );
 
                 try {
                     $stmt = $pdo->prepare( $sql );
@@ -180,10 +180,10 @@ trait Benchmarks
                             $xml = $row[0];
                         }
                     } while( $stmt->nextRowset() );
-
-                    return $this->xml2plan( $xml );
+var_dump( $xml );
+                    return []; // $this->xml2plan( $xml );
                 } finally {
-                    $pdo->exec( 'SET SHOWPLAN_XML OFF' );
+                    $pdo->exec( 'SET STATISTICS PROFILE OFF' );
                 }
             }
 
