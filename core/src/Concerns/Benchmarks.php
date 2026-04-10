@@ -167,35 +167,17 @@ trait Benchmarks
         {
             if( $driver === 'sqlsrv' )
             {
-                $pdo = DB::connection( $conn )->getPdo();
-                $pdo->exec( 'SET SHOWPLAN_XML ON' );
+                $conn = DB::connection('sqlsrv');
 
                 try {
-                    foreach( $bindings as $value ) {
-                        $sql = preg_replace( '/\?/', $pdo->quote( (string) $value ), $sql, 1 );
-                    }
-
-                    $xml = '';
-                    $errmode = $pdo->getAttribute( \PDO::ATTR_ERRMODE );
-                    $pdo->setAttribute( \PDO::ATTR_ERRMODE, \PDO::ERRMODE_SILENT );
-                    $stmt = $pdo->query( $sql );
-
-                    do {
-                        $row = $stmt->fetch( \PDO::FETCH_NUM );
-var_dump($row);
-
-                        if( $row ) {
-                            $xml = $row[0];
-                        }
-                    } while( $stmt->nextRowset() );
-
-                    $stmt->closeCursor();
-                    $pdo->setAttribute( \PDO::ATTR_ERRMODE, $errmode );
-
-                    return $this->xml2plan( $xml );
+                    $conn->statement('SET SHOWPLAN_XML ON');
+                    $plan = $conn->select($query, $params);
                 } finally {
-                    $pdo->exec( 'SET SHOWPLAN_XML OFF' );
+                    $conn->statement('SET SHOWPLAN_XML OFF');
                 }
+
+                var_dump($plan);
+                return [];
             }
 
             $prefix = $driver === 'sqlite' ? 'EXPLAIN QUERY PLAN ' : 'EXPLAIN ';
