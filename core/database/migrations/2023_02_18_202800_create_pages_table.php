@@ -63,6 +63,7 @@ return new class extends Migration
             $table->index(['status', 'tenant_id', '_lft', '_rgt']);
             $table->index(['depth', 'deleted_at', 'tenant_id', '_lft']);
             $table->index(['_lft', '_rgt', 'parent_id', 'tenant_id']);
+            $table->index(['_rgt', 'tenant_id']);
 
             $driver = Schema::connection($name)->getConnection()->getDriverName();
 

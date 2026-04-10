@@ -233,6 +233,7 @@ return new class extends Migration
         $this->addIndex($schema, 'cms_pages', ['status', 'tenant_id', '_lft', '_rgt']);
         $this->addIndex($schema, 'cms_pages', ['depth', 'deleted_at', 'tenant_id', '_lft']);
         $this->addIndex($schema, 'cms_pages', ['_lft', '_rgt', 'parent_id', 'tenant_id']);
+        $this->addIndex($schema, 'cms_pages', ['_rgt', 'tenant_id']);
 
         if ($driver === 'sqlite') {
             $this->addIndex(
