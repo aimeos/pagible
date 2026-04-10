@@ -175,7 +175,8 @@ trait Benchmarks
                     ORDER BY qs.last_execution_time DESC
                 ";
 
-                $row = DB::getPdo()->query($planSql)->fetch(\PDO::FETCH_ASSOC);
+                $stmt = DB::getPdo()->query($planSql);
+                $row = $stmt ? $stmt->fetch(\PDO::FETCH_ASSOC) : false;
                 return $this->xml2plan( $row['query_plan'] ?? '' );
             }
 
@@ -345,12 +346,20 @@ trait Benchmarks
     }
 
 
+    /**
+     * @return array<int, string>
+     */
     protected function xml2plan( string $xml ) : array
     {
-        $xml = simplexml_load_string($xml);
-        $xml->registerXPathNamespace('qp', 'http://schemas.microsoft.com/sqlserver/2004/07/showplan');
+        $doc = simplexml_load_string($xml);
 
-        $nodes = $xml->xpath('//qp:RelOp');
+        if( $doc === false ) {
+            return [];
+        }
+
+        $doc->registerXPathNamespace('qp', 'http://schemas.microsoft.com/sqlserver/2004/07/showplan');
+
+        $nodes = $doc->xpath('//qp:RelOp') ?: [];
         $lines = [];
 
         foreach ($nodes as $node) {
@@ -362,7 +371,7 @@ trait Benchmarks
 
             // Pull index/table info from child Object elements
             $node->registerXPathNamespace('qp', 'http://schemas.microsoft.com/sqlserver/2004/07/showplan');
-            $objects = $node->xpath('*/qp:Object');
+            $objects = $node->xpath('*/qp:Object') ?: [];
 
             foreach ($objects as $obj) {
                 $parts = array_filter([

@@ -176,18 +176,6 @@ class BenchmarkGraphql extends Command
                 ( new Query )->pages( null, ['first' => 100, 'filter' => ['type' => '']] )->items();
             }, readOnly: true, tries: $tries );
 
-            $this->benchmark( 'File mime', function() {
-                ( new Query )->files( null, ['first' => 100, 'filter' => ['mime' => 'image/jpeg']] )->items();
-            }, readOnly: true, tries: $tries );
-
-            $this->benchmark( 'File mime', function() {
-                ( new Query )->files( null, ['first' => 100, 'filter' => ['mime' => 'image/jpeg']] )->items();
-            }, readOnly: true, tries: $tries );
-
-            $this->benchmark( 'File name', function() {
-                ( new Query )->files( null, ['first' => 100, 'filter' => [], 'sort' => [['column' => 'name', 'order' => 'asc']]] )->items();
-            }, readOnly: true, tries: $tries );
-
             $this->benchmark( 'Page scheduled', function() {
                 ( new Query )->pages( null, ['first' => 100, 'filter' => [], 'publish' => 'SCHEDULED'] )->items();
             }, readOnly: true, tries: $tries );
@@ -222,6 +210,14 @@ class BenchmarkGraphql extends Command
 
             $this->benchmark( 'File lang', function() use ( $lang ) {
                 ( new Query )->files( null, ['first' => 100, 'filter' => ['lang' => $lang]] )->items();
+            }, readOnly: true, tries: $tries );
+
+            $this->benchmark( 'File mime', function() {
+                ( new Query )->files( null, ['first' => 100, 'filter' => ['mime' => 'image/jpeg']] )->items();
+            }, readOnly: true, tries: $tries );
+
+            $this->benchmark( 'File name', function() {
+                ( new Query )->files( null, ['first' => 100, 'filter' => [], 'sort' => [['column' => 'name', 'order' => 'asc']]] )->items();
             }, readOnly: true, tries: $tries );
 
 
