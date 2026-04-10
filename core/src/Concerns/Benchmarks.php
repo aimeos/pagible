@@ -364,14 +364,15 @@ trait Benchmarks
         $raw = [];
 
         foreach ($nodes as $node) {
-            $indent = str_repeat('  ', (int) $node['NodeId']);
+            $node->registerXPathNamespace('qp', 'http://schemas.microsoft.com/sqlserver/2004/07/showplan');
+            $depth = count($node->xpath('ancestor::qp:RelOp') ?: []);
+            $indent = str_repeat('  ', $depth);
 
             $raw[] = $indent . (string) $node['PhysicalOp']
                 . ' / ' . (string) $node['LogicalOp']
                 . ' (cost: ' . round((float) $node['EstimatedTotalSubtreeCost'], 4) . ')';
 
             // Pull index/table info from child Object elements
-            $node->registerXPathNamespace('qp', 'http://schemas.microsoft.com/sqlserver/2004/07/showplan');
             $objects = $node->xpath('*/qp:Object') ?: [];
 
             foreach ($objects as $obj) {
