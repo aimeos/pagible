@@ -168,7 +168,7 @@ trait Benchmarks
             if( $driver === 'sqlsrv' )
             {
                 $pdo = DB::connection( $conn )->getPdo();
-                $pdo->exec( 'SET STATISTICS XML ON' );
+                $pdo->exec( 'SET SHOWPLAN_XML ON' );
 
                 try {
                     $stmt = $pdo->prepare( $sql );
@@ -177,7 +177,6 @@ trait Benchmarks
                     $xml = '';
                     do {
                         if( $stmt->columnCount() > 0 && ( $row = $stmt->fetch( \PDO::FETCH_NUM ) )) {
-var_dump( $row );
                             $xml = $row[0];
                         }
                     } while( $stmt->nextRowset() );
@@ -186,7 +185,7 @@ var_dump( $row );
 
                     return $this->xml2plan( $xml );
                 } finally {
-                    $pdo->exec( 'SET STATISTICS XML OFF' );
+                    $pdo->exec( 'SET SHOWPLAN_XML OFF' );
                 }
             }
 
@@ -370,12 +369,12 @@ var_dump( $row );
         $doc->registerXPathNamespace('qp', 'http://schemas.microsoft.com/sqlserver/2004/07/showplan');
 
         $nodes = $doc->xpath('//qp:RelOp') ?: [];
-        $lines = [];
+        $raw = [];
 
         foreach ($nodes as $node) {
             $indent = str_repeat('  ', (int) $node['NodeId']);
 
-            $line = $indent . (string) $node['PhysicalOp']
+            $raw[] = $indent . (string) $node['PhysicalOp']
                 . ' / ' . (string) $node['LogicalOp']
                 . ' (cost: ' . round((float) $node['EstimatedTotalSubtreeCost'], 4) . ')';
 
@@ -390,11 +389,30 @@ var_dump( $row );
                     (string) $obj['Alias'] ? 'AS ' . (string) $obj['Alias'] : null,
                 ]);
                 if ($parts) {
-                    $line .= "\n" . $indent . '    → ' . implode(' ', $parts);
+                    $raw[] = $indent . '  → ' . implode(' ', $parts);
                 }
             }
+        }
 
-            $lines[] = $line;
+        // Collapse consecutive duplicate lines
+        $lines = [];
+        $prev = null;
+        $count = 0;
+
+        foreach ($raw as $line) {
+            if ($line === $prev) {
+                $count++;
+            } else {
+                if ($prev !== null) {
+                    $lines[] = $count > 1 ? $prev . ' [x' . $count . ']' : $prev;
+                }
+                $prev = $line;
+                $count = 1;
+            }
+        }
+
+        if ($prev !== null) {
+            $lines[] = $count > 1 ? $prev . ' [x' . $count . ']' : $prev;
         }
 
         return $lines;
