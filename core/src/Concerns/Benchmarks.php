@@ -176,18 +176,21 @@ trait Benchmarks
                     }
 
                     $xml = '';
-                    $stmt = $pdo->query( $sql );
+                    $errmode = $pdo->getAttribute( \PDO::ATTR_ERRMODE );
                     $pdo->setAttribute( \PDO::ATTR_ERRMODE, \PDO::ERRMODE_SILENT );
+                    $stmt = $pdo->query( $sql );
 
                     do {
-                        if( $row = $stmt->fetch( \PDO::FETCH_NUM ) ) {
+                        $row = $stmt->fetch( \PDO::FETCH_NUM );
 var_dump($row);
+
+                        if( $row ) {
                             $xml = $row[0];
                         }
                     } while( $stmt->nextRowset() );
 
                     $stmt->closeCursor();
-                    $pdo->setAttribute( \PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION );
+                    $pdo->setAttribute( \PDO::ATTR_ERRMODE, $errmode );
 
                     return $this->xml2plan( $xml );
                 } finally {
