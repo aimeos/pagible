@@ -12,6 +12,16 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::connection(config('cms.db', 'sqlite'))->dropIfExists('cms_elements');
+    }
+
+    /**
      * Run the migrations.
      *
      * @return void
@@ -31,19 +41,7 @@ return new class extends Migration
             $table->softDeletes();
 
             $table->index(['type', 'tenant_id']);
-            $table->index(['lang', 'tenant_id']);
-            $table->index(['latest_id']);
-            $table->index(['tenant_id', 'deleted_at']);
+            $table->index(['deleted_at', 'tenant_id']);
         });
-    }
-
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
-    public function down()
-    {
-        Schema::connection(config('cms.db', 'sqlite'))->dropIfExists('cms_elements');
     }
 };

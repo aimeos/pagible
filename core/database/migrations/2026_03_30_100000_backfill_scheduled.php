@@ -29,12 +29,4 @@ return new class extends Migration
                     ->update( ['data->scheduled' => 0] );
             } );
     }
-
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
-    {
-        // scheduled field in data JSON is harmless to leave in place
-    }
 };

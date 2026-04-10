@@ -12,6 +12,17 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::connection(config('cms.db', 'sqlite'))->dropIfExists('cms_page_element');
+    }
+
+
+    /**
      * Run the migrations.
      *
      * @return void
@@ -25,15 +36,5 @@ return new class extends Migration
             $table->unique(['page_id', 'element_id']);
             $table->index('element_id');
         });
-    }
-
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
-    public function down()
-    {
-        Schema::connection(config('cms.db', 'sqlite'))->dropIfExists('cms_page_element');
     }
 };

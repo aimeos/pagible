@@ -33,14 +33,4 @@ return new class extends Migration
 
         \Aimeos\Cms\Models\Page::fixTree(); // update existing data
     }
-
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
-    public function down()
-    {
-        // removed by previous migration
-    }
 };

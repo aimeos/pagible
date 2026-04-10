@@ -27,7 +27,6 @@ class BenchmarkCore extends Command
     protected $signature = 'cms:benchmark:core
         {--tenant=benchmark : Tenant ID}
         {--domain= : Domain name}
-        {--lang=en : Language code}
         {--seed : Seed benchmark data before running benchmarks}
         {--pages=10000 : Total number of pages}
         {--tries=100 : Number of iterations per benchmark}
@@ -65,27 +64,26 @@ class BenchmarkCore extends Command
         }
 
         $domain = (string) ( $this->option( 'domain' ) ?: '' );
-        $lang = (string) $this->option( 'lang' );
 
         // Load one item per type (each benchmark iteration is rolled back)
-        $root = Page::where( 'tag', 'root' )->where( 'lang', $lang )->where( 'domain', $domain )->firstOrFail();
+        $root = Page::where( 'tag', 'root' )->where( 'domain', $domain )->firstOrFail();
 
-        $count = Page::where( 'tag', '!=', 'root' )->where( 'lang', $lang )->count();
-        $page = Page::where( 'tag', '!=', 'root' )->where( 'lang', $lang )
+        $count = Page::where( 'tag', '!=', 'root' )->count();
+        $page = Page::where( 'tag', '!=', 'root' )
             ->orderBy( '_lft' )->skip( (int) floor( $count / 2 ) )
             ->firstOrFail();
 
         $parentIds = $page->ancestors()->get()->pluck( 'id' );
-        $moveParent = Page::where( 'depth', 1 )->where( 'lang', $lang )
+        $moveParent = Page::where( 'depth', 1 )
             ->whereNotIn( 'id', $parentIds )
             ->firstOrFail();
 
-        $element = Element::where( 'lang', $lang )->firstOrFail();
-        $file = File::where( 'lang', $lang )->firstOrFail();
+        $element = Element::firstOrFail();
+        $file = File::firstOrFail();
 
         // Create unpublished version for publish benchmark
         $unpubVersion = $page->versions()->forceCreate( [
-            'lang' => $lang,
+            'lang' => 'en',
             'data' => (array) $page->latest?->data,
             'aux' => (array) $page->latest?->aux,
             'published' => false,
@@ -95,9 +93,9 @@ class BenchmarkCore extends Command
         $page->setRelation( 'latest', $unpubVersion );
 
         // Query pre-seeded soft-deleted items for restore benchmarks
-        $trashedPage = Page::onlyTrashed()->where( 'lang', $lang )->firstOrFail();
-        $trashedElement = Element::onlyTrashed()->where( 'lang', $lang )->firstOrFail();
-        $trashedFile = File::onlyTrashed()->where( 'lang', $lang )->firstOrFail();
+        $trashedPage = Page::onlyTrashed()->firstOrFail();
+        $trashedElement = Element::onlyTrashed()->firstOrFail();
+        $trashedFile = File::onlyTrashed()->firstOrFail();
 
         $this->header();
 
@@ -106,14 +104,14 @@ class BenchmarkCore extends Command
          * Page operations
          */
 
-        $this->benchmark( 'Page create', function() use ( $root, $lang ) {
+        $this->benchmark( 'Page create', function() use ( $root ) {
             $p = Page::forceCreate( [
-                'lang' => $lang, 'name' => 'Bench page', 'title' => 'Bench',
+                'lang' => 'en', 'name' => 'Bench page', 'title' => 'Bench',
                 'path' => 'bench-' . Utils::uid(), 'status' => 1, 'editor' => 'benchmark',
             ] );
             $p->appendToNode( $root )->save();
             $version = $p->versions()->forceCreate( [
-                'lang' => $lang, 'data' => ['name' => 'Bench page'], 'published' => false, 'editor' => 'benchmark',
+                'lang' => 'en', 'data' => ['name' => 'Bench page'], 'published' => false, 'editor' => 'benchmark',
             ] );
             $p->publish( $version );
         }, tries: $tries );
@@ -126,9 +124,9 @@ class BenchmarkCore extends Command
             Page::with( 'files', 'elements.files' )->orderBy( '_lft' )->take( 100 )->get();
         }, readOnly: true, tries: $tries );
 
-        $this->benchmark( 'Page update', function() use ( $page, $lang ) {
+        $this->benchmark( 'Page update', function() use ( $page ) {
             $version = $page->versions()->forceCreate( [
-                'lang' => $lang, 'data' => (array) $page->latest?->data,
+                'lang' => 'en', 'data' => (array) $page->latest?->data,
                 'aux' => (array) $page->latest?->aux, 'published' => false, 'editor' => 'benchmark',
             ] );
             $page->forceFill( ['latest_id' => $version->id] )->saveQuietly();
@@ -168,13 +166,13 @@ class BenchmarkCore extends Command
          * Element operations
          */
 
-        $this->benchmark( 'Element create', function() use ( $lang ) {
+        $this->benchmark( 'Element create', function() {
             $el = Element::forceCreate( [
-                'lang' => $lang, 'type' => 'text', 'name' => 'Bench element',
+                'lang' => 'en', 'type' => 'text', 'name' => 'Bench element',
                 'data' => ['type' => 'text', 'data' => ['text' => 'Bench']], 'editor' => 'benchmark',
             ] );
             $version = $el->versions()->forceCreate( [
-                'lang' => $lang, 'data' => ['type' => 'text', 'name' => 'Bench element'], 'published' => false, 'editor' => 'benchmark',
+                'lang' => 'en', 'data' => ['type' => 'text', 'name' => 'Bench element'], 'published' => false, 'editor' => 'benchmark',
             ] );
             $el->publish( $version );
         }, tries: $tries );
@@ -187,9 +185,9 @@ class BenchmarkCore extends Command
             Element::with( 'files' )->take( 100 )->get();
         }, readOnly: true, tries: $tries );
 
-        $this->benchmark( 'Element update', function() use ( $element, $lang ) {
+        $this->benchmark( 'Element update', function() use ( $element ) {
             $version = $element->versions()->forceCreate( [
-                'lang' => $lang, 'data' => (array) $element->latest?->data, 'published' => false, 'editor' => 'benchmark',
+                'lang' => 'en', 'data' => (array) $element->latest?->data, 'published' => false, 'editor' => 'benchmark',
             ] );
             $element->forceFill( ['latest_id' => $version->id] )->saveQuietly();
         }, tries: $tries );
@@ -211,13 +209,13 @@ class BenchmarkCore extends Command
          */
 
         $imagePath = realpath( __DIR__ . '/../../tests/assets/image.png' );
-        $this->benchmark( 'File create', function() use ( $lang, $imagePath ) {
+        $this->benchmark( 'File create', function() use ( $imagePath ) {
             $f = File::forceCreate( [
-                'mime' => 'image/png', 'lang' => $lang, 'name' => 'Bench file',
+                'mime' => 'image/png', 'lang' => 'en', 'name' => 'Bench file',
                 'path' => $imagePath, 'editor' => 'benchmark',
             ] );
             $version = $f->versions()->forceCreate( [
-                'lang' => $lang, 'data' => ['mime' => 'image/png', 'name' => 'Bench file', 'path' => $imagePath, 'previews' => []],
+                'lang' => 'en', 'data' => ['mime' => 'image/png', 'name' => 'Bench file', 'path' => $imagePath, 'previews' => []],
                 'published' => false, 'editor' => 'benchmark',
             ] );
             $f->publish( $version );
@@ -231,9 +229,13 @@ class BenchmarkCore extends Command
             File::with( 'latest' )->take( 100 )->get();
         }, readOnly: true, tries: $tries );
 
-        $this->benchmark( 'File update', function() use ( $file, $lang ) {
+        $this->benchmark( 'File mime', function() {
+            File::with( 'latest' )->where( 'mime', 'image/jpeg' )->take( 100 )->get();
+        }, readOnly: true, tries: $tries );
+
+        $this->benchmark( 'File update', function() use ( $file ) {
             $version = $file->versions()->forceCreate( [
-                'lang' => $lang, 'data' => (array) $file->latest?->data, 'published' => false, 'editor' => 'benchmark',
+                'lang' => 'en', 'data' => (array) $file->latest?->data, 'published' => false, 'editor' => 'benchmark',
             ] );
             $file->forceFill( ['latest_id' => $version->id] )->saveQuietly();
         }, tries: $tries );

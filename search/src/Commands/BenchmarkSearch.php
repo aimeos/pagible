@@ -24,7 +24,6 @@ class BenchmarkSearch extends Command
     protected $signature = 'cms:benchmark:search
         {--tenant=benchmark : Tenant ID}
         {--domain= : Domain name}
-        {--lang=en : Language code}
         {--seed : Seed benchmark data before running benchmarks}
         {--unseed : Remove search index data and exit}
         {--pages=10000 : Total number of pages}
@@ -78,8 +77,7 @@ class BenchmarkSearch extends Command
             $this->line( 'done' );
         }
 
-        $lang = (string) $this->option( 'lang' );
-        $page = Page::where( 'tag', '!=', 'root' )->where( 'lang', $lang )->orderByDesc( 'depth' )->firstOrFail();
+        $page = Page::where( 'tag', '!=', 'root' )->orderByDesc( 'depth' )->firstOrFail();
 
         $this->header();
 

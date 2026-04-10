@@ -12,6 +12,17 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::connection(config('cms.db', 'sqlite'))->dropIfExists('cms_version_file');
+    }
+
+
+    /**
      * Run the migrations.
      *
      * @return void
@@ -23,17 +34,7 @@ return new class extends Migration
             $table->foreignUuid('file_id')->constrained('cms_files')->cascadeOnUpdate()->cascadeOnDelete();
 
             $table->unique(['version_id', 'file_id']);
-            $table->index('file_id');
+            $table->index(['file_id', 'version_id']);
         });
-    }
-
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
-    public function down()
-    {
-        Schema::connection(config('cms.db', 'sqlite'))->dropIfExists('cms_version_file');
     }
 };

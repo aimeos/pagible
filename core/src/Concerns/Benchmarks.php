@@ -167,17 +167,18 @@ trait Benchmarks
         {
             if( $driver === 'sqlsrv' )
             {
-                $pdo = DB::connection( $conn )->getPdo();
-                $pdo->exec( 'SET SHOWPLAN_XML ON' );
+                $results = DB::connection( $conn )->select("
+                        SELECT TOP 1 CAST(qp.query_plan AS NVARCHAR(MAX)) AS query_plan
+                        FROM sys.dm_exec_query_stats AS qs
+                        CROSS APPLY sys.dm_exec_sql_text(qs.sql_handle) AS st
+                        CROSS APPLY sys.dm_exec_query_plan(qs.plan_handle) AS qp
+                        WHERE st.text LIKE ? AND st.text NOT LIKE '%dm_exec%'
+                        ORDER BY qs.last_execution_time DESC
+                    ",
+                    ['%' . substr( $sql, 0, 6 ) . '%']
+                );
 
-                try {
-                    $stmt = $pdo->prepare( $sql );
-                    $stmt->execute( $bindings );
-                    $xml = (string) $stmt->fetchColumn();
-                    return $xml === '' ? [] : ( preg_split( '/\R/', $xml ) ?: [] );
-                } finally {
-                    $pdo->exec( 'SET SHOWPLAN_XML OFF' );
-                }
+                return $this->xml2plan( $results[0]->query_plan ?? '' );
             }
 
             $prefix = $driver === 'sqlite' ? 'EXPLAIN QUERY PLAN ' : 'EXPLAIN ';
@@ -200,7 +201,7 @@ trait Benchmarks
         }
         catch( \Throwable $e )
         {
-            return ['EXPLAIN failed: ' . $e->getMessage()];
+            return ['EXPLAIN failed: ' . $e->getMessage(), $e->getTraceAsString()];
         }
     }
 
@@ -343,5 +344,98 @@ trait Benchmarks
     protected function hasSeededData(): bool
     {
         return Page::where( 'editor', 'benchmark' )->exists();
+    }
+
+
+    /**
+     * @return array<int, string>
+     */
+    protected function xml2plan( string $xml ) : array
+    {
+        $doc = simplexml_load_string($xml);
+
+        if( $doc === false ) {
+            return [];
+        }
+
+        $doc->registerXPathNamespace('qp', 'http://schemas.microsoft.com/sqlserver/2004/07/showplan');
+
+        $nodes = $doc->xpath('//qp:RelOp') ?: [];
+        $raw = [];
+
+        foreach ($nodes as $node) {
+            $node->registerXPathNamespace('qp', 'http://schemas.microsoft.com/sqlserver/2004/07/showplan');
+            $depth = count($node->xpath('ancestor::qp:RelOp') ?: []);
+            $indent = str_repeat('  ', $depth);
+
+            $raw[] = $indent . (string) $node['PhysicalOp']
+                . ' / ' . (string) $node['LogicalOp']
+                . ' (cost: ' . round((float) $node['EstimatedTotalSubtreeCost'], 4) . ')';
+
+            // Pull index/table info from child Object elements
+            $objects = $node->xpath('*/qp:Object') ?: [];
+
+            foreach ($objects as $obj) {
+                $parts = array_filter([
+                    (string) $obj['Table'],
+                    (string) $obj['Index'],
+                    (string) $obj['Alias'] ? 'AS ' . (string) $obj['Alias'] : null,
+                ]);
+                if ($parts) {
+                    $raw[] = $indent . '  → ' . implode(' ', $parts);
+                }
+            }
+        }
+
+        // Collapse consecutive repeated line groups (single or multi-line patterns)
+        $lines = [];
+        $total = count($raw);
+        $i = 0;
+
+        while ($i < $total)
+        {
+            $bestSize = 1;
+            $bestCount = 1;
+            $maxGroup = min(5, intdiv($total - $i, 2));
+
+            for ($size = 1; $size <= $maxGroup; $size++)
+            {
+                $count = 1;
+
+                while ($i + ($count + 1) * $size <= $total)
+                {
+                    $match = true;
+
+                    for ($k = 0; $k < $size; $k++) {
+                        if ($raw[$i + $k] !== $raw[$i + $count * $size + $k]) {
+                            $match = false;
+                            break;
+                        }
+                    }
+
+                    if (!$match) {
+                        break;
+                    }
+
+                    $count++;
+                }
+
+                if ($count > 1 && $size * $count > $bestSize * $bestCount) {
+                    $bestSize = $size;
+                    $bestCount = $count;
+                }
+            }
+
+            for ($k = 0; $k < $bestSize; $k++) {
+                $line = $raw[$i + $k];
+                $lines[] = ($bestCount > 1 && $k === $bestSize - 1)
+                    ? $line . ' [x' . $bestCount . ']'
+                    : $line;
+            }
+
+            $i += $bestSize * $bestCount;
+        }
+
+        return $lines;
     }
 }

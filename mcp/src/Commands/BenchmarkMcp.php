@@ -28,7 +28,6 @@ class BenchmarkMcp extends Command
     protected $signature = 'cms:benchmark:mcp
         {--tenant=benchmark : Tenant ID}
         {--domain= : Domain name}
-        {--lang=en : Language code}
         {--seed : Seed benchmark data before running benchmarks}
         {--pages=10000 : Total number of pages}
         {--tries=100 : Number of iterations per benchmark}
@@ -62,7 +61,6 @@ class BenchmarkMcp extends Command
         }
 
         $domain = (string) ( $this->option( 'domain' ) ?: '' );
-        $lang = (string) $this->option( 'lang' );
         $conn = config( 'cms.db', 'sqlite' );
 
         config( ['scout.driver' => 'cms'] );
@@ -76,16 +74,16 @@ class BenchmarkMcp extends Command
 
             // ── Page setup ────────────────────────────────────────────
 
-            $root = Page::where( 'tag', 'root' )->where( 'lang', $lang )->where( 'domain', $domain )->firstOrFail();
+            $root = Page::where( 'tag', 'root' )->where( 'domain', $domain )->firstOrFail();
 
-            $count = Page::where( 'tag', '!=', 'root' )->where( 'lang', $lang )->count();
-            $page = Page::where( 'tag', '!=', 'root' )->where( 'lang', $lang )
+            $count = Page::where( 'tag', '!=', 'root' )->count();
+            $page = Page::where( 'tag', '!=', 'root' )
                 ->orderBy( '_lft' )->skip( (int) floor( $count / 2 ) )->firstOrFail();
 
-            $trashedPage = Page::onlyTrashed()->where( 'lang', $lang )->firstOrFail();
+            $trashedPage = Page::onlyTrashed()->firstOrFail();
 
             $unpubVersion = $page->versions()->forceCreate( [
-                'lang' => $lang,
+                'lang' => 'en',
                 'data' => (array) $page->latest?->data,
                 'aux' => (array) $page->latest?->aux,
                 'published' => false,
@@ -100,7 +98,7 @@ class BenchmarkMcp extends Command
             $trashedElement = Element::onlyTrashed()->where( 'editor', 'benchmark' )->firstOrFail();
 
             $unpubElVersion = $element->versions()->forceCreate( [
-                'lang' => $lang,
+                'lang' => 'en',
                 'data' => (array) $element->latest?->data,
                 'aux' => (array) $element->latest?->aux,
                 'published' => false,
@@ -115,7 +113,7 @@ class BenchmarkMcp extends Command
             $trashedFile = File::onlyTrashed()->where( 'editor', 'benchmark' )->firstOrFail();
 
             $unpubFileVersion = $file->versions()->forceCreate( [
-                'lang' => $lang,
+                'lang' => 'en',
                 'data' => (array) $file->latest?->data,
                 'aux' => (array) $file->latest?->aux,
                 'published' => false,
@@ -137,12 +135,12 @@ class BenchmarkMcp extends Command
                 CmsServer::actingAs( $user )->tool( \Aimeos\Cms\Tools\GetPage::class, ['id' => $page->id] );
             }, readOnly: true, tries: $tries );
 
-            $this->benchmark( 'Get page tree', function() use ( $user, $lang ) {
-                CmsServer::actingAs( $user )->tool( \Aimeos\Cms\Tools\GetPageTree::class, ['lang' => $lang] );
+            $this->benchmark( 'Get page tree', function() use ( $user ) {
+                CmsServer::actingAs( $user )->tool( \Aimeos\Cms\Tools\GetPageTree::class, ['lang' => 'en'] );
             }, readOnly: true, tries: $tries );
 
-            $this->benchmark( 'Search pages', function() use ( $user, $lang ) {
-                CmsServer::actingAs( $user )->tool( \Aimeos\Cms\Tools\SearchPages::class, ['lang' => $lang, 'term' => 'lorem'] );
+            $this->benchmark( 'Search pages', function() use ( $user ) {
+                CmsServer::actingAs( $user )->tool( \Aimeos\Cms\Tools\SearchPages::class, ['lang' => 'en', 'term' => 'lorem'] );
             }, readOnly: true, tries: $tries );
 
 
@@ -150,9 +148,9 @@ class BenchmarkMcp extends Command
              * Page – Write
              */
 
-            $this->benchmark( 'Add page', function() use ( $user, $root, $lang ) {
+            $this->benchmark( 'Add page', function() use ( $user, $root ) {
                 CmsServer::actingAs( $user )->tool( \Aimeos\Cms\Tools\AddPage::class, [
-                    'parent_id' => $root->id, 'lang' => $lang,
+                    'parent_id' => $root->id, 'lang' => 'en',
                     'name' => 'MCP Bench', 'title' => 'MCP Bench',
                     'path' => 'mcp-bench-' . Utils::uid(),
                     'content' => [['type' => 'text', 'data' => ['text' => 'Benchmark']]],
@@ -196,9 +194,9 @@ class BenchmarkMcp extends Command
              * Element – Write
              */
 
-            $this->benchmark( 'Add element', function() use ( $user, $lang ) {
+            $this->benchmark( 'Add element', function() use ( $user ) {
                 CmsServer::actingAs( $user )->tool( \Aimeos\Cms\Tools\AddElement::class, [
-                    'type' => 'text', 'name' => 'MCP Bench', 'lang' => $lang,
+                    'type' => 'text', 'name' => 'MCP Bench', 'lang' => 'en',
                     'data' => ['text' => 'Benchmark'],
                 ] );
             }, tries: $tries );
@@ -239,9 +237,9 @@ class BenchmarkMcp extends Command
              * File – Write
              */
 
-            $this->benchmark( 'Add file', function() use ( $user, $lang ) {
+            $this->benchmark( 'Add file', function() use ( $user ) {
                 CmsServer::actingAs( $user )->tool( \Aimeos\Cms\Tools\AddFile::class, [
-                    'url' => 'https://example.com/bench.txt', 'name' => 'MCP Bench', 'lang' => $lang,
+                    'url' => 'https://example.com/bench.txt', 'name' => 'MCP Bench', 'lang' => 'en',
                 ] );
             }, tries: $tries );
 

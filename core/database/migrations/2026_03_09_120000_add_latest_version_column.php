@@ -27,15 +27,15 @@ return new class extends Migration
         }
 
         Schema::connection($name)->table('cms_pages', function (Blueprint $table) {
-            $table->uuid('latest_id')->nullable()->index();
+            $table->uuid('latest_id')->nullable();
         });
 
         Schema::connection($name)->table('cms_elements', function (Blueprint $table) {
-            $table->uuid('latest_id')->nullable()->index();
+            $table->uuid('latest_id')->nullable();
         });
 
         Schema::connection($name)->table('cms_files', function (Blueprint $table) {
-            $table->uuid('latest_id')->nullable()->index();
+            $table->uuid('latest_id')->nullable();
         });
 
         $db = DB::connection($name);
@@ -63,28 +63,5 @@ return new class extends Migration
                 }
             });
         }
-    }
-
-
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
-    public function down()
-    {
-        $name = config('cms.db', 'sqlite');
-
-        Schema::connection($name)->table('cms_pages', function (Blueprint $table) {
-            $table->dropColumn('latest_id');
-        });
-
-        Schema::connection($name)->table('cms_elements', function (Blueprint $table) {
-            $table->dropColumn('latest_id');
-        });
-
-        Schema::connection($name)->table('cms_files', function (Blueprint $table) {
-            $table->dropColumn('latest_id');
-        });
     }
 };
