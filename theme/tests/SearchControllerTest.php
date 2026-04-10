@@ -22,15 +22,7 @@ class SearchControllerTest extends ThemeTestAbstract
     protected function defineEnvironment( $app )
     {
         parent::defineEnvironment( $app );
-        $app['config']->set('scout.driver', 'cms');
-    }
-
-
-    protected function getPackageProviders( $app )
-    {
-        return array_merge( parent::getPackageProviders( $app ), [
-            'Aimeos\Cms\SearchServiceProvider',
-        ] );
+        $app['config']->set('scout.driver', 'collection');
     }
 
 
@@ -44,7 +36,6 @@ class SearchControllerTest extends ThemeTestAbstract
     public function testIndex()
     {
         $this->seed( \Database\Seeders\CmsSeeder::class );
-        sleep( 5 ); // wait for SQL Server async fulltext index population
 
         $request = Request::create('/cmsapi/search', 'GET', [
             'q' => 'welcome',

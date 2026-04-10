@@ -42,9 +42,8 @@ class Scout
      */
     public static function collection( \Illuminate\Database\Eloquent\Builder $query, Builder $builder, array $fields ) : Builder
     {
-        if( in_array( 'draft', $fields ) ) {
-            static::apply( $query, $builder, true );
-        }
+        $isDraft = in_array( 'draft', $fields );
+        static::apply( $query, $builder, $isDraft );
 
         return $builder;
     }
