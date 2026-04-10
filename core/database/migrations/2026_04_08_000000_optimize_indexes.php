@@ -93,7 +93,7 @@ return new class extends Migration
     {
         $names = $this->indexNames($schema, 'cms_versions');
 
-        foreach (['domain', 'tag'] as $f) {
+        foreach (['domain'] as $f) {
             foreach (["cms_versions_data_{$f}_index", "cms_versions_data_{$f}_tenant_id_id_index"] as $idx) {
                 if (in_array($idx, $names, true)) {
                     if (in_array($driver, ['pgsql', 'sqlite'], true)) {
@@ -321,6 +321,8 @@ return new class extends Migration
             'data_mime'   => "VARCHAR(100) GENERATED ALWAYS AS (JSON_UNQUOTE(JSON_EXTRACT(data, '$.mime'))) VIRTUAL",
             'data_scheduled' => "SMALLINT GENERATED ALWAYS AS (JSON_EXTRACT(data, '$.scheduled')) VIRTUAL",
             'data_name'   => "VARCHAR(255) GENERATED ALWAYS AS (JSON_UNQUOTE(JSON_EXTRACT(data, '$.name'))) VIRTUAL",
+            'data_tag'    => "VARCHAR(30) GENERATED ALWAYS AS (JSON_UNQUOTE(JSON_EXTRACT(data, '$.tag'))) VIRTUAL",
+            'data_to'     => "VARCHAR(255) GENERATED ALWAYS AS (JSON_UNQUOTE(JSON_EXTRACT(data, '$.to'))) VIRTUAL",
         ];
 
         foreach ($cols as $col => $def) {
@@ -410,6 +412,8 @@ return new class extends Migration
             'data_mime'   => "AS CAST(JSON_VALUE(data, '$.mime') AS VARCHAR(100))",
             'data_scheduled' => "AS CAST(JSON_VALUE(data, '$.scheduled') AS SMALLINT)",
             'data_name'   => "AS CAST(JSON_VALUE(data, '$.name') AS VARCHAR(255))",
+            'data_tag'    => "AS CAST(JSON_VALUE(data, '$.tag') AS VARCHAR(30))",
+            'data_to'     => "AS CAST(JSON_VALUE(data, '$.to') AS VARCHAR(255))",
         ];
 
         foreach ($cols as $col => $def) {

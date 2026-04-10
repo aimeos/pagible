@@ -77,7 +77,9 @@ return new class extends Migration
             ADD COLUMN data_cache SMALLINT GENERATED ALWAYS AS (JSON_EXTRACT(data, \'$.cache\')) VIRTUAL,
             ADD COLUMN data_mime VARCHAR(100) GENERATED ALWAYS AS (JSON_UNQUOTE(JSON_EXTRACT(data, \'$.mime\'))) VIRTUAL,
             ADD COLUMN data_scheduled SMALLINT GENERATED ALWAYS AS (JSON_EXTRACT(data, \'$.scheduled\')) VIRTUAL,
-            ADD COLUMN data_name VARCHAR(255) GENERATED ALWAYS AS (JSON_UNQUOTE(JSON_EXTRACT(data, \'$.name\'))) VIRTUAL
+            ADD COLUMN data_name VARCHAR(255) GENERATED ALWAYS AS (JSON_UNQUOTE(JSON_EXTRACT(data, \'$.name\'))) VIRTUAL,
+            ADD COLUMN data_tag VARCHAR(30) GENERATED ALWAYS AS (JSON_UNQUOTE(JSON_EXTRACT(data, \'$.tag\'))) VIRTUAL,
+            ADD COLUMN data_to VARCHAR(255) GENERATED ALWAYS AS (JSON_UNQUOTE(JSON_EXTRACT(data, \'$.to\'))) VIRTUAL
         ');
 
         Schema::connection($name)->table('cms_versions', function (Blueprint $table) {
@@ -130,6 +132,8 @@ return new class extends Migration
         $db->statement("ALTER TABLE cms_versions ADD data_mime AS CAST(JSON_VALUE(data, '$.mime') AS VARCHAR(100))");
         $db->statement("ALTER TABLE cms_versions ADD data_scheduled AS CAST(JSON_VALUE(data, '$.scheduled') AS SMALLINT)");
         $db->statement("ALTER TABLE cms_versions ADD data_name AS CAST(JSON_VALUE(data, '$.name') AS VARCHAR(255))");
+        $db->statement("ALTER TABLE cms_versions ADD data_tag AS CAST(JSON_VALUE(data, '$.tag') AS VARCHAR(30))");
+        $db->statement("ALTER TABLE cms_versions ADD data_to AS CAST(JSON_VALUE(data, '$.to') AS VARCHAR(255))");
 
         $db->statement('CREATE INDEX cms_versions_data_type_tenant_id_id_index ON cms_versions (data_type, tenant_id, id)');
         $db->statement('CREATE INDEX cms_versions_data_theme_tenant_id_id_index ON cms_versions (data_theme, tenant_id, id)');
