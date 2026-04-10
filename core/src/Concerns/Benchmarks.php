@@ -167,17 +167,25 @@ trait Benchmarks
         {
             if( $driver === 'sqlsrv' )
             {
-                $planSql = "
-                    SELECT TOP 1 qp.query_plan
-                    FROM sys.dm_exec_query_stats qs
-                    CROSS APPLY sys.dm_exec_sql_text(qs.sql_handle)  AS qt
-                    CROSS APPLY sys.dm_exec_text_query_plan(qs.plan_handle, DEFAULT, DEFAULT) AS qp
-                    ORDER BY qs.last_execution_time DESC
-                ";
+                $pdo = DB::connection( $conn )->getPdo();
+                $pdo->exec( 'SET SHOWPLAN_XML ON' );
 
-                $stmt = DB::getPdo()->query($planSql);
-                $row = $stmt ? $stmt->fetch(\PDO::FETCH_ASSOC) : false;
-                return $this->xml2plan( $row['query_plan'] ?? '' );
+                try {
+                    $stmt = $pdo->prepare( $sql );
+                    $stmt->execute( $bindings );
+
+                    $xml = '';
+                    do {
+                        $row = $stmt->fetch( \PDO::FETCH_NUM );
+                        if( $row ) {
+                            $xml = $row[0];
+                        }
+                    } while( $stmt->nextRowset() );
+
+                    return $this->xml2plan( $xml );
+                } finally {
+                    $pdo->exec( 'SET SHOWPLAN_XML OFF' );
+                }
             }
 
             $prefix = $driver === 'sqlite' ? 'EXPLAIN QUERY PLAN ' : 'EXPLAIN ';
