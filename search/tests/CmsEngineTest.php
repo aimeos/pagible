@@ -44,8 +44,9 @@ class CmsEngineTest extends SearchTestAbstract
 
             for( $i = 0; $i < 10; $i++ )
             {
+                sleep( 1 );
                 if( !$conn->scalar( "SELECT FULLTEXTCATALOGPROPERTY('cms_index_catalog', 'PopulateStatus')" ) ) {
-                    sleep( 1 );
+                    break;
                 }
             }
         }
