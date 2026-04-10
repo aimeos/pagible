@@ -292,9 +292,9 @@ jobs:
           name: Run component tests
           command: |
             case $CIRCLE_NODE_INDEX in
-              0) SPECS="tests/fields/**/*.cy.{js,ts}" ;;
-              1) SPECS="tests/components/**/*.cy.{js,ts}" ;;
-              2) SPECS="tests/*.cy.{js,ts},tests/js/**/*.cy.{js,ts},tests/views/**/*.cy.{js,ts}" ;;
+              0) SPECS="cypress/unit/fields/**/*.cy.{js,ts}" ;;
+              1) SPECS="cypress/unit/components/**/*.cy.{js,ts}" ;;
+              2) SPECS="cypress/unit/*.cy.{js,ts},cypress/unit/js/**/*.cy.{js,ts},cypress/unit/views/**/*.cy.{js,ts}" ;;
             esac
             npx cypress run --component --spec "$SPECS"
 
