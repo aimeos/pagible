@@ -171,8 +171,12 @@ trait Benchmarks
                 $pdo->exec( 'SET SHOWPLAN_XML ON' );
 
                 try {
-                    $stmt = $pdo->prepare( $sql );
-                    $stmt->execute( $bindings );
+                    $resolved = $sql;
+                    foreach( $bindings as $value ) {
+                        $resolved = preg_replace( '/\?/', $pdo->quote( (string) $value ), $resolved, 1 );
+                    }
+
+                    $stmt = $pdo->query( $resolved );
 
                     $xml = '';
                     do {
