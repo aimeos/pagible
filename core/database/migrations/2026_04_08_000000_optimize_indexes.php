@@ -272,9 +272,9 @@ return new class extends Migration
                 $table->dropIndex(['element_id']);
             });
         }
-        if (!$this->hasIndex($schema, 'cms_version_element', 'cms_version_element_element_id_version_id_index')) {
+        if ($this->hasIndex($schema, 'cms_version_element', 'cms_version_element_element_id_version_id_index')) {
             $schema->table('cms_version_element', function (Blueprint $table) {
-                $table->index(['element_id', 'version_id']);
+                $table->dropIndex(['element_id', 'version_id']);
             });
         }
 
