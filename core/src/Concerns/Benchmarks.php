@@ -387,25 +387,53 @@ trait Benchmarks
             }
         }
 
-        // Collapse consecutive duplicate lines
+        // Collapse consecutive repeated line groups (single or multi-line patterns)
         $lines = [];
-        $prev = null;
-        $count = 0;
+        $total = count($raw);
+        $i = 0;
 
-        foreach ($raw as $line) {
-            if ($line === $prev) {
-                $count++;
-            } else {
-                if ($prev !== null) {
-                    $lines[] = $count > 1 ? $prev . ' [x' . $count . ']' : $prev;
-                }
-                $prev = $line;
+        while ($i < $total)
+        {
+            $bestSize = 1;
+            $bestCount = 1;
+            $maxGroup = min(5, intdiv($total - $i, 2));
+
+            for ($size = 1; $size <= $maxGroup; $size++)
+            {
                 $count = 1;
-            }
-        }
 
-        if ($prev !== null) {
-            $lines[] = $count > 1 ? $prev . ' [x' . $count . ']' : $prev;
+                while ($i + ($count + 1) * $size <= $total)
+                {
+                    $match = true;
+
+                    for ($k = 0; $k < $size; $k++) {
+                        if ($raw[$i + $k] !== $raw[$i + $count * $size + $k]) {
+                            $match = false;
+                            break;
+                        }
+                    }
+
+                    if (!$match) {
+                        break;
+                    }
+
+                    $count++;
+                }
+
+                if ($count > 1 && $size * $count > $bestSize * $bestCount) {
+                    $bestSize = $size;
+                    $bestCount = $count;
+                }
+            }
+
+            for ($k = 0; $k < $bestSize; $k++) {
+                $line = $raw[$i + $k];
+                $lines[] = ($bestCount > 1 && $k === $bestSize - 1)
+                    ? $line . ' [x' . $bestCount . ']'
+                    : $line;
+            }
+
+            $i += $bestSize * $bestCount;
         }
 
         return $lines;

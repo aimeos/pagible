@@ -152,7 +152,6 @@ return new class extends Migration
             $table->index(['lang', 'tenant_id', 'status']);
             $table->index(['related_id', 'tenant_id']);
             $table->index(['parent_id', 'tenant_id']);
-            $table->index(['domain', 'tenant_id']);
             $table->index(['to', 'tenant_id']);
             $table->index(['name', 'tenant_id']);
             $table->index(['title', 'tenant_id']);

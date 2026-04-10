@@ -229,8 +229,6 @@ return new class extends Migration
         $this->addIndex($schema, 'cms_pages', ['tag', 'lang', 'tenant_id', 'status']);
         $this->addIndex($schema, 'cms_pages', ['parent_id', 'deleted_at', 'tenant_id', '_lft']);
         $this->addIndex($schema, 'cms_pages', ['lang', 'tenant_id', 'status']);
-        $this->addIndex($schema, 'cms_pages', ['domain', 'tenant_id']);
-        $this->addIndex($schema, 'cms_pages', ['status', 'tenant_id', '_lft', '_rgt']);
         $this->addIndex($schema, 'cms_pages', ['depth', 'deleted_at', 'tenant_id', '_lft']);
         $this->addIndex($schema, 'cms_pages', ['_lft', '_rgt', 'parent_id', 'tenant_id']);
         $this->addIndex($schema, 'cms_pages', ['_rgt', 'tenant_id']);
@@ -296,7 +294,6 @@ return new class extends Migration
     {
         $this->dropUnusedVersionIndexes($schema, $db, $driver);
 
-        $this->addIndex($schema, 'cms_versions', ['published', 'lang']);
         $this->addIndex($schema, 'cms_versions', ['editor', 'tenant_id', 'id']);
         $this->addIndex($schema, 'cms_versions', ['lang', 'tenant_id', 'id']);
 
@@ -334,7 +331,7 @@ return new class extends Migration
 
         $this->dropLegacyVersionIndexes($schema, $db, 'mysql');
 
-        $indexed = ['data_type', 'data_path', 'data_theme', 'data_status', 'data_cache', 'data_mime', 'data_scheduled', 'data_name'];
+        $indexed = ['data_type', 'data_theme', 'data_status', 'data_cache', 'data_mime', 'data_scheduled', 'data_name'];
 
         foreach ($indexed as $col) {
             $field = substr($col, 5);
@@ -357,7 +354,6 @@ return new class extends Migration
 
         $exprs = [
             'type'   => "(data->>'type')",
-            'path'   => "(data->>'path')",
             'theme'  => "(data->>'theme')",
             'status' => "((data->>'status')::smallint)",
             'cache'  => "((data->>'cache')::smallint)",
@@ -384,7 +380,6 @@ return new class extends Migration
     {
         $exprs = [
             'type'   => "json_extract(data, '\$.\"type\"')",
-            'path'   => "json_extract(data, '\$.\"path\"')",
             'theme'  => "json_extract(data, '\$.\"theme\"')",
             'status' => "json_extract(data, '\$.\"status\"')",
             'cache'  => "json_extract(data, '\$.\"cache\"')",
@@ -425,7 +420,7 @@ return new class extends Migration
 
         $this->dropLegacyVersionIndexes($schema, $db, 'sqlsrv');
 
-        $indexed = ['data_type', 'data_path', 'data_theme', 'data_status', 'data_cache', 'data_mime', 'data_scheduled', 'data_name'];
+        $indexed = ['data_type', 'data_theme', 'data_status', 'data_cache', 'data_mime', 'data_scheduled', 'data_name'];
 
         foreach ($indexed as $col) {
             $field = substr($col, 5);

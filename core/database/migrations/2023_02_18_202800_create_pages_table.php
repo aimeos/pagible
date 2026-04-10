@@ -59,8 +59,6 @@ return new class extends Migration
             $table->index(['tag', 'lang', 'tenant_id', 'status']);
             $table->index(['parent_id', 'deleted_at', 'tenant_id', '_lft']);
             $table->index(['lang', 'tenant_id', 'status']);
-            $table->index(['domain', 'tenant_id']);
-            $table->index(['status', 'tenant_id', '_lft', '_rgt']);
             $table->index(['depth', 'deleted_at', 'tenant_id', '_lft']);
             $table->index(['_lft', '_rgt', 'parent_id', 'tenant_id']);
             $table->index(['_rgt', 'tenant_id']);
