@@ -167,17 +167,18 @@ trait Benchmarks
         {
             if( $driver === 'sqlsrv' )
             {
-                $conn = DB::connection('sqlsrv');
+                $results = DB::connection( $conn )->select("
+                        SELECT TOP 1 CAST(qp.query_plan AS NVARCHAR(MAX)) AS query_plan
+                        FROM sys.dm_exec_query_stats AS qs
+                        CROSS APPLY sys.dm_exec_sql_text(qs.sql_handle) AS st
+                        CROSS APPLY sys.dm_exec_query_plan(qs.plan_handle) AS qp
+                        WHERE st.text LIKE ? AND st.text NOT LIKE '%dm_exec%'
+                        ORDER BY qs.last_execution_time DESC
+                    ",
+                    ['%' . substr( $sql, 0, strpos( $sql, '?' ) ?: strlen( $sql ) ) . '%']
+                );
 
-                try {
-                    $conn->statement('SET SHOWPLAN_XML ON');
-                    $plan = $conn->select($sql, $bindings);
-                } finally {
-                    $conn->statement('SET SHOWPLAN_XML OFF');
-                }
-
-                var_dump($plan);
-                return [];
+                return $this->xml2plan( $results[0]->query_plan ?? '' );
             }
 
             $prefix = $driver === 'sqlite' ? 'EXPLAIN QUERY PLAN ' : 'EXPLAIN ';
