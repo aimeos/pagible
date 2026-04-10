@@ -171,25 +171,23 @@ trait Benchmarks
                 $pdo->exec( 'SET SHOWPLAN_XML ON' );
 
                 try {
-                    $resolved = $sql;
                     foreach( $bindings as $value ) {
-                        $resolved = preg_replace( '/\?/', $pdo->quote( (string) $value ), $resolved, 1 );
+                        $sql = preg_replace( '/\?/', $pdo->quote( (string) $value ), $sql, 1 );
                     }
 
-                    $stmt = $pdo->query( $resolved );
-
                     $xml = '';
+                    $stmt = $pdo->query( $sql );
                     $pdo->setAttribute( \PDO::ATTR_ERRMODE, \PDO::ERRMODE_SILENT );
 
                     do {
                         if( $row = $stmt->fetch( \PDO::FETCH_NUM ) ) {
+var_dump($row);
                             $xml = $row[0];
                         }
                     } while( $stmt->nextRowset() );
 
-                    $pdo->setAttribute( \PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION );
-
                     $stmt->closeCursor();
+                    $pdo->setAttribute( \PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION );
 
                     return $this->xml2plan( $xml );
                 } finally {
