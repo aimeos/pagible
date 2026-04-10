@@ -175,7 +175,7 @@ trait Benchmarks
                         WHERE st.text LIKE ? AND st.text NOT LIKE '%dm_exec%'
                         ORDER BY qs.last_execution_time DESC
                     ",
-                    ['%' . substr( $sql, 0, 30 ) . '%']
+                    ['%' . substr( $sql, 0, 6 ) . '%']
                 );
 
                 return $this->xml2plan( $results[0]->query_plan ?? '' );
