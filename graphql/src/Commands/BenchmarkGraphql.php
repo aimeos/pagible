@@ -14,6 +14,8 @@ use Illuminate\Support\Facades\DB;
 use Aimeos\Cms\Concerns\Benchmarks;
 use Aimeos\Cms\GraphQL\Mutations;
 use Aimeos\Cms\GraphQL\Query;
+use Aimeos\Cms\Models\Element;
+use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Utils;
 
@@ -193,6 +195,12 @@ class BenchmarkGraphql extends Command
                 ( new Query )->elements( null, ['first' => 100, 'filter' => ['lang' => $lang]] )->items();
             }, readOnly: true, tries: $tries );
 
+            $element = Element::where( 'lang', $lang )->firstOrFail();
+
+            $this->benchmark( 'Element get', function() use ( $element ) {
+                Element::with( 'latest.files', 'bypages' )->find( $element->id );
+            }, readOnly: true, tries: $tries );
+
 
             $this->benchmark( 'Element add', function() use ( $lang ) {
                 ( new Mutations\AddElement )( null, [
@@ -218,6 +226,12 @@ class BenchmarkGraphql extends Command
 
             $this->benchmark( 'File name', function() {
                 ( new Query )->files( null, ['first' => 100, 'filter' => [], 'sort' => [['column' => 'name', 'order' => 'asc']]] )->items();
+            }, readOnly: true, tries: $tries );
+
+            $file = File::where( 'lang', $lang )->firstOrFail();
+
+            $this->benchmark( 'File get', function() use ( $file ) {
+                File::with( 'latest', 'bypages', 'byelements' )->find( $file->id );
             }, readOnly: true, tries: $tries );
 
 
