@@ -26,7 +26,6 @@ class BenchmarkTheme extends Command
     protected $signature = 'cms:benchmark:theme
         {--tenant=benchmark : Tenant ID}
         {--domain= : Domain name}
-        {--lang=en : Language code}
         {--seed : Seed benchmark data before running benchmarks}
         {--pages=10000 : Total number of pages}
         {--tries=100 : Number of iterations per benchmark}
@@ -60,17 +59,16 @@ class BenchmarkTheme extends Command
         }
 
         $domain = (string) ( $this->option( 'domain' ) ?: '' );
-        $lang = (string) $this->option( 'lang' );
 
         config( ['scout.driver' => 'cms'] );
 
         // Get a page with cache=0 for uncached rendering
-        $uncachedPage = Page::where( 'tag', '!=', 'root' )->where( 'lang', $lang )
+        $uncachedPage = Page::where( 'tag', '!=', 'root' )
             ->where( 'domain', $domain )->orderByDesc( 'depth' )->firstOrFail();
         $uncachedPage->forceFill( ['cache' => 0] )->saveQuietly();
 
         // Get a page with cache=5 for cached rendering
-        $cachedPage = Page::where( 'tag', '!=', 'root' )->where( 'lang', $lang )
+        $cachedPage = Page::where( 'tag', '!=', 'root' )
             ->where( 'domain', $domain )->where( 'id', '!=', $uncachedPage->id )
             ->orderByDesc( 'depth' )->firstOrFail();
         $cachedPage->forceFill( ['cache' => 5] )->saveQuietly();
@@ -93,8 +91,8 @@ class BenchmarkTheme extends Command
         }, readOnly: true, tries: $tries );
 
         // Search
-        $this->benchmark( 'Search', function() use ( $domain, $lang ) {
-            $request = Request::create( '/cmsapi/search', 'GET', ['q' => 'lorem', 'locale' => $lang, 'size' => 10] );
+        $this->benchmark( 'Search', function() use ( $domain ) {
+            $request = Request::create( '/cmsapi/search', 'GET', ['q' => 'lorem', 'locale' => 'en', 'size' => 10] );
             ( new SearchController )->index( $request, $domain );
         }, readOnly: true, tries: $tries );
 

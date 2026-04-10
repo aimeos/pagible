@@ -28,14 +28,13 @@ class BenchmarkSeeder
     /**
      * Generate benchmark data for a single language.
      *
-     * @param string $lang Language code
      * @param string $domain Domain name
      * @param string $editor Editor name
      * @param int $pages Total number of pages to create
      * @param int $chunk Rows per bulk insert batch
      * @param \Closure|null $onProgress Called with row count after each bulk insert
      */
-    public function run( string $lang, string $domain = '', string $editor = 'benchmark', int $pages = 10000, int $chunk = 75, ?\Closure $onProgress = null ): void
+    public function run( string $domain = '', string $editor = 'benchmark', int $pages = 10000, int $chunk = 75, ?\Closure $onProgress = null ): void
     {
         $this->tenantId = \Aimeos\Cms\Tenancy::value();
         $this->onProgress = $onProgress;
@@ -45,11 +44,11 @@ class BenchmarkSeeder
 
         $conn = config( 'cms.db', 'sqlite' );
 
-        Page::withoutSyncingToSearch( function() use ( $lang, $pages, $conn ) {
-            Element::withoutSyncingToSearch( function() use ( $lang, $pages, $conn ) {
-                File::withoutSyncingToSearch( function() use ( $lang, $pages, $conn ) {
-                    DB::connection( $conn )->transaction( function() use ( $lang, $pages ) {
-                        $this->seedAll( $lang, $pages );
+        Page::withoutSyncingToSearch( function() use ( $pages, $conn ) {
+            Element::withoutSyncingToSearch( function() use ( $pages, $conn ) {
+                File::withoutSyncingToSearch( function() use ( $pages, $conn ) {
+                    DB::connection( $conn )->transaction( function() use ( $pages ) {
+                        $this->seedAll( $pages );
                     } );
                 } );
             } );
@@ -60,17 +59,17 @@ class BenchmarkSeeder
     /**
      * Seed all data within a single transaction.
      */
-    protected function seedAll( string $lang, int $totalPages ): void
+    protected function seedAll( int $totalPages ): void
     {
         $now = now()->format( 'Y-m-d H:i:s' );
         $nowMs = now()->format( 'Y-m-d H:i:s.v' );
 
         $fileCount = max( 2, intdiv( $totalPages, 10 ) );
         $elementCount = max( 2, intdiv( $totalPages, 50 ) );
-        $fileIds = $this->createFiles( $lang, $fileCount, $now, $nowMs );
-        $elementIds = $this->createElements( $lang, $elementCount, $now, $nowMs );
+        $fileIds = $this->createFiles( $fileCount, $now, $nowMs );
+        $elementIds = $this->createElements( $elementCount, $now, $nowMs );
 
-        $rows = $this->buildPageTree( $lang, $totalPages, $fileIds, $elementIds, $now, $nowMs );
+        $rows = $this->buildPageTree( $totalPages, $fileIds, $elementIds, $now, $nowMs );
 
         $this->insertRows( $rows );
         $this->clearPageCache( $rows['pages'] );
@@ -84,7 +83,7 @@ class BenchmarkSeeder
      * @param array<int, string> $elementIds
      * @return array<string, array<int, array<string, mixed>>>
      */
-    protected function buildPageTree( string $lang, int $totalPages, array $fileIds, array $elementIds, string $now, string $nowMs ): array
+    protected function buildPageTree( int $totalPages, array $fileIds, array $elementIds, string $now, string $nowMs ): array
     {
         $level2Count = 100; // 10 L1 × 10 L2
         $level3PerL2 = max( 0, intdiv( $totalPages - 1 - 10 - $level2Count, $level2Count ) );
@@ -110,9 +109,9 @@ class BenchmarkSeeder
         $rootContent = $this->pageContent( $fileIds[$fileIndex % $fileCount], $elementIds[$pageIndex % $elementCount], 0 );
         $rootMeta = $this->metaDescription( 0 );
         $rootData = [
-            'lang' => $lang,
-            'name' => "Home ({$lang})",
-            'title' => "Home ({$lang})",
+            'lang' => 'en',
+            'name' => 'Home',
+            'title' => 'Home',
             'path' => '',
             'tag' => 'root',
             'domain' => $this->domain,
@@ -122,8 +121,8 @@ class BenchmarkSeeder
 
         $rootRgt = $lft + ( $actualTotal * 2 ) - 1;
 
-        $pages[] = $this->pageRow( $rootId, null, $rootVersionId, $lang, $rootData, $rootContent, $rootMeta, $lft, $rootRgt, 0, $now );
-        $versions[] = $this->versionRow( $rootVersionId, $rootId, Page::class, $lang, $rootData, $rootContent, $rootMeta, $nowMs );
+        $pages[] = $this->pageRow( $rootId, null, $rootVersionId, $rootData, $rootContent, $rootMeta, $lft, $rootRgt, 0, $now );
+        $versions[] = $this->versionRow( $rootVersionId, $rootId, Page::class, $rootData, $rootContent, $rootMeta, $nowMs );
         $pivotPageFile[] = ['page_id' => $rootId, 'file_id' => $fileIds[$fileIndex % $fileCount]];
         $pivotPageElement[] = ['page_id' => $rootId, 'element_id' => $elementIds[$pageIndex % $elementCount]];
         $pivotVersionFile[] = ['version_id' => $rootVersionId, 'file_id' => $fileIds[$fileIndex % $fileCount]];
@@ -145,20 +144,20 @@ class BenchmarkSeeder
             $l1Rgt = $lft + ( ( $l1Children + 1 ) * 2 ) - 1;
 
             $l1Data = [
-                'lang' => $lang, 'name' => "Category {$i}", 'title' => "Category {$i} Title",
+                'lang' => 'en', 'name' => "Category {$i}", 'title' => "Category {$i} Title",
                 'path' => "category-{$i}", 'status' => 1, 'editor' => $this->editor,
             ];
             $l1Content = $this->pageContent( $l1Fid, $elementIds[$pageIndex % $elementCount], $pageIndex );
             $l1Meta = $this->metaDescription( $pageIndex );
 
-            $l1Row = $this->pageRow( $l1Id, $rootId, $l1VersionId, $lang, $l1Data, $l1Content, $l1Meta, $l1Lft, $l1Rgt, 1, $now );
+            $l1Row = $this->pageRow( $l1Id, $rootId, $l1VersionId, $l1Data, $l1Content, $l1Meta, $l1Lft, $l1Rgt, 1, $now );
 
             if( $pageIndex === $midIndex ) {
                 $l1Row['deleted_at'] = $now;
             }
 
             $pages[] = $l1Row;
-            $versions[] = $this->versionRow( $l1VersionId, $l1Id, Page::class, $lang, $l1Data, $l1Content, $l1Meta, $nowMs );
+            $versions[] = $this->versionRow( $l1VersionId, $l1Id, Page::class, $l1Data, $l1Content, $l1Meta, $nowMs );
             $pivotPageFile[] = ['page_id' => $l1Id, 'file_id' => $l1Fid];
             $pivotPageElement[] = ['page_id' => $l1Id, 'element_id' => $elementIds[$pageIndex % $elementCount]];
             $pivotVersionFile[] = ['version_id' => $l1VersionId, 'file_id' => $l1Fid];
@@ -178,20 +177,20 @@ class BenchmarkSeeder
                 $l2Rgt = $lft + ( ( $level3PerL2 + 1 ) * 2 ) - 1;
 
                 $l2Data = [
-                    'lang' => $lang, 'name' => "Subcategory {$i}-{$j}", 'title' => "Subcategory {$i}-{$j} Title",
+                    'lang' => 'en', 'name' => "Subcategory {$i}-{$j}", 'title' => "Subcategory {$i}-{$j} Title",
                     'path' => "subcategory-{$i}-{$j}", 'status' => 1, 'editor' => $this->editor,
                 ];
                 $l2Content = $this->pageContent( $l2Fid, $elementIds[$pageIndex % $elementCount], $pageIndex );
                 $l2Meta = $this->metaDescription( $pageIndex );
 
-                $l2Row = $this->pageRow( $l2Id, $l1Id, $l2VersionId, $lang, $l2Data, $l2Content, $l2Meta, $l2Lft, $l2Rgt, 2, $now );
+                $l2Row = $this->pageRow( $l2Id, $l1Id, $l2VersionId, $l2Data, $l2Content, $l2Meta, $l2Lft, $l2Rgt, 2, $now );
 
                 if( $pageIndex === $midIndex ) {
                     $l2Row['deleted_at'] = $now;
                 }
 
                 $pages[] = $l2Row;
-                $versions[] = $this->versionRow( $l2VersionId, $l2Id, Page::class, $lang, $l2Data, $l2Content, $l2Meta, $nowMs );
+                $versions[] = $this->versionRow( $l2VersionId, $l2Id, Page::class, $l2Data, $l2Content, $l2Meta, $nowMs );
                 $pivotPageFile[] = ['page_id' => $l2Id, 'file_id' => $l2Fid];
                 $pivotPageElement[] = ['page_id' => $l2Id, 'element_id' => $elementIds[$pageIndex % $elementCount]];
                 $pivotVersionFile[] = ['version_id' => $l2VersionId, 'file_id' => $l2Fid];
@@ -208,20 +207,20 @@ class BenchmarkSeeder
                     $l3Fid = $fileIds[$fileIndex % $fileCount];
 
                     $l3Data = [
-                        'lang' => $lang, 'name' => "Page {$i}-{$j}-{$k}", 'title' => "Page {$i}-{$j}-{$k} Title",
+                        'lang' => 'en', 'name' => "Page {$i}-{$j}-{$k}", 'title' => "Page {$i}-{$j}-{$k} Title",
                         'path' => "page-{$i}-{$j}-{$k}", 'status' => 1, 'editor' => $this->editor,
                     ];
                     $l3Content = $this->pageContent( $l3Fid, $elementIds[$pageIndex % $elementCount], $pageIndex );
                     $l3Meta = $this->metaDescription( $pageIndex );
 
-                    $l3Row = $this->pageRow( $l3Id, $l2Id, $l3VersionId, $lang, $l3Data, $l3Content, $l3Meta, $lft, $lft + 1, 3, $now );
+                    $l3Row = $this->pageRow( $l3Id, $l2Id, $l3VersionId, $l3Data, $l3Content, $l3Meta, $lft, $lft + 1, 3, $now );
 
                     if( $pageIndex === $midIndex ) {
                         $l3Row['deleted_at'] = $now;
                     }
 
                     $pages[] = $l3Row;
-                    $versions[] = $this->versionRow( $l3VersionId, $l3Id, Page::class, $lang, $l3Data, $l3Content, $l3Meta, $nowMs );
+                    $versions[] = $this->versionRow( $l3VersionId, $l3Id, Page::class, $l3Data, $l3Content, $l3Meta, $nowMs );
                     $pivotPageFile[] = ['page_id' => $l3Id, 'file_id' => $l3Fid];
                     $pivotPageElement[] = ['page_id' => $l3Id, 'element_id' => $elementIds[$pageIndex % $elementCount]];
                     $pivotVersionFile[] = ['version_id' => $l3VersionId, 'file_id' => $l3Fid];
@@ -292,7 +291,7 @@ class BenchmarkSeeder
      *
      * @return array<int, string>
      */
-    protected function createFiles( string $lang, int $count, string $now, string $nowMs ): array
+    protected function createFiles( int $count, string $now, string $nowMs ): array
     {
         $conn = config( 'cms.db', 'sqlite' );
         $imagePath = realpath( __DIR__ . '/../../tests/assets/image.png' );
@@ -310,7 +309,7 @@ class BenchmarkSeeder
                 'id' => $id,
                 'tenant_id' => $this->tenantId,
                 'mime' => 'image/png',
-                'lang' => $lang,
+                'lang' => 'en',
                 'name' => $name,
                 'path' => $imagePath,
                 'previews' => json_encode( ['500' => $imagePath, '1000' => $imagePath] ),
@@ -328,10 +327,10 @@ class BenchmarkSeeder
                 'tenant_id' => $this->tenantId,
                 'versionable_id' => $id,
                 'versionable_type' => File::class,
-                'lang' => $lang,
+                'lang' => 'en',
                 'data' => json_encode( [
                     'mime' => 'image/png',
-                    'lang' => $lang,
+                    'lang' => 'en',
                     'name' => $name,
                     'path' => $imagePath,
                     'previews' => ['500' => $imagePath, '1000' => $imagePath],
@@ -372,7 +371,7 @@ class BenchmarkSeeder
      *
      * @return array<int, string>
      */
-    protected function createElements( string $lang, int $count, string $now, string $nowMs ): array
+    protected function createElements( int $count, string $now, string $nowMs ): array
     {
         $conn = config( 'cms.db', 'sqlite' );
         $elementRows = [];
@@ -383,14 +382,14 @@ class BenchmarkSeeder
         {
             $id = ( new Element )->newUniqueId();
             $versionId = ( new Version )->newUniqueId();
-            $name = "Benchmark element {$i} ({$lang})";
-            $text = "Benchmark footer content {$i} ({$lang})";
+            $name = "Benchmark element {$i}";
+            $text = "Benchmark footer content {$i}";
 
             $elementRows[] = [
                 'id' => $id,
                 'tenant_id' => $this->tenantId,
                 'type' => 'text',
-                'lang' => $lang,
+                'lang' => 'en',
                 'name' => $name,
                 'data' => json_encode( ['type' => 'text', 'data' => ['text' => $text]] ),
                 'editor' => $this->editor,
@@ -405,9 +404,9 @@ class BenchmarkSeeder
                 'tenant_id' => $this->tenantId,
                 'versionable_id' => $id,
                 'versionable_type' => Element::class,
-                'lang' => $lang,
+                'lang' => 'en',
                 'data' => json_encode( [
-                    'lang' => $lang,
+                    'lang' => 'en',
                     'type' => 'text',
                     'name' => $name,
                     'data' => ['text' => $text],
@@ -447,7 +446,7 @@ class BenchmarkSeeder
      * Build a page row for bulk insert.
      */
     protected function pageRow(
-        string $id, ?string $parentId, string $versionId, string $lang,
+        string $id, ?string $parentId, string $versionId,
         array $data, array $content, array $meta,
         int $lft, int $rgt, int $depth, string $now
     ): array
@@ -457,7 +456,7 @@ class BenchmarkSeeder
             'tenant_id' => $this->tenantId,
             'related_id' => null,
             'tag' => $data['tag'] ?? '',
-            'lang' => $lang,
+            'lang' => 'en',
             'path' => $data['path'],
             'domain' => $data['domain'] ?? $this->domain,
             'to' => '',
@@ -487,7 +486,7 @@ class BenchmarkSeeder
      * Build a version row for bulk insert.
      */
     protected function versionRow(
-        string $id, string $versionableId, string $versionableType, string $lang,
+        string $id, string $versionableId, string $versionableType,
         array $data, array $content, array $meta, string $nowMs
     ): array
     {
@@ -496,7 +495,7 @@ class BenchmarkSeeder
             'tenant_id' => $this->tenantId,
             'versionable_id' => $versionableId,
             'versionable_type' => $versionableType,
-            'lang' => $lang,
+            'lang' => 'en',
             'data' => json_encode( $data ),
             'aux' => json_encode( ['content' => $content, 'meta' => $meta] ),
             'published' => true,

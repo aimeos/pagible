@@ -29,7 +29,6 @@ class BenchmarkGraphql extends Command
     protected $signature = 'cms:benchmark:graphql
         {--tenant=benchmark : Tenant ID}
         {--domain= : Domain name}
-        {--lang=en : Language code}
         {--seed : Seed benchmark data before running benchmarks}
         {--pages=10000 : Total number of pages}
         {--tries=100 : Number of iterations per benchmark}
@@ -63,7 +62,6 @@ class BenchmarkGraphql extends Command
         }
 
         $domain = (string) ( $this->option( 'domain' ) ?: '' );
-        $lang = (string) $this->option( 'lang' );
         $conn = config( 'cms.db', 'sqlite' );
 
         config( ['scout.driver' => 'cms'] );
@@ -76,21 +74,21 @@ class BenchmarkGraphql extends Command
             $user = $this->user();
             Auth::login( $user );
 
-            $root = Page::where( 'tag', 'root' )->where( 'lang', $lang )->where( 'domain', $domain )->firstOrFail();
+            $root = Page::where( 'tag', 'root' )->where( 'domain', $domain )->firstOrFail();
 
-            $count = Page::where( 'tag', '!=', 'root' )->where( 'lang', $lang )->count();
-            $page = Page::where( 'tag', '!=', 'root' )->where( 'lang', $lang )
+            $count = Page::where( 'tag', '!=', 'root' )->count();
+            $page = Page::where( 'tag', '!=', 'root' )
                 ->orderBy( '_lft' )->skip( (int) floor( $count / 2 ) )->firstOrFail();
 
-            $moveParent = Page::where( 'depth', 1 )->where( 'lang', $lang )
+            $moveParent = Page::where( 'depth', 1 )
                 ->whereNotIn( 'id', $page->ancestors()->get()->pluck( 'id' ) )->firstOrFail();
 
             // Query pre-seeded soft-deleted page for KeepPage
-            $trashedPage = Page::onlyTrashed()->where( 'lang', $lang )->firstOrFail();
+            $trashedPage = Page::onlyTrashed()->firstOrFail();
 
             // Create unpublished version for PubPage
             $unpubVersion = $page->versions()->forceCreate( [
-                'lang' => $lang,
+                'lang' => 'en',
                 'data' => (array) $page->latest?->data,
                 'aux' => (array) $page->latest?->aux,
                 'published' => false,
@@ -106,11 +104,11 @@ class BenchmarkGraphql extends Command
              * Page operations
              */
 
-            $this->benchmark( 'Page add', function() use ( $root, $lang ) {
+            $this->benchmark( 'Page add', function() use ( $root ) {
                 ( new Mutations\AddPage )( null, [
                     'parent' => $root->id,
                     'input' => [
-                        'lang' => $lang, 'name' => 'GQL Bench', 'title' => 'GQL Bench',
+                        'lang' => 'en', 'name' => 'GQL Bench', 'title' => 'GQL Bench',
                         'path' => 'gql-bench-' . Utils::uid(), 'status' => 1,
                     ],
                 ] );
@@ -146,16 +144,16 @@ class BenchmarkGraphql extends Command
                 ( new Mutations\PurgePage )( null, ['id' => [$page->id]] );
             }, tries: $tries );
 
-            $this->benchmark( 'Page list', function() use ( $lang ) {
-                ( new Query )->pages( null, ['first' => 100, 'filter' => ['lang' => $lang]] )->items();
+            $this->benchmark( 'Page list', function() {
+                ( new Query )->pages( null, ['first' => 100, 'filter' => ['lang' => 'en']] )->items();
             }, readOnly: true, tries: $tries );
 
             $this->benchmark( 'Page get', function() use ( $page ) {
                 Page::with( 'latest.files', 'latest.elements' )->find( $page->id );
             }, readOnly: true, tries: $tries );
 
-            $this->benchmark( 'Page lang', function() use ( $lang ) {
-                ( new Query )->pages( null, ['first' => 100, 'filter' => ['lang' => $lang]] )->items();
+            $this->benchmark( 'Page lang', function() {
+                ( new Query )->pages( null, ['first' => 100, 'filter' => ['lang' => 'en']] )->items();
             }, readOnly: true, tries: $tries );
 
             $this->benchmark( 'Page theme', function() {
@@ -191,21 +189,21 @@ class BenchmarkGraphql extends Command
                 ( new Query )->elements( null, ['first' => 100, 'filter' => ['type' => 'text']] )->items();
             }, readOnly: true, tries: $tries );
 
-            $this->benchmark( 'Element lang', function() use ( $lang ) {
-                ( new Query )->elements( null, ['first' => 100, 'filter' => ['lang' => $lang]] )->items();
+            $this->benchmark( 'Element lang', function() {
+                ( new Query )->elements( null, ['first' => 100, 'filter' => ['lang' => 'en']] )->items();
             }, readOnly: true, tries: $tries );
 
-            $element = Element::where( 'lang', $lang )->firstOrFail();
+            $element = Element::firstOrFail();
 
             $this->benchmark( 'Element get', function() use ( $element ) {
                 Element::with( 'latest.files', 'bypages' )->find( $element->id );
             }, readOnly: true, tries: $tries );
 
 
-            $this->benchmark( 'Element add', function() use ( $lang ) {
+            $this->benchmark( 'Element add', function() {
                 ( new Mutations\AddElement )( null, [
                     'input' => [
-                        'lang' => $lang, 'type' => 'text', 'name' => 'GQL Bench Element',
+                        'lang' => 'en', 'type' => 'text', 'name' => 'GQL Bench Element',
                         'data' => (object) ['type' => 'text', 'data' => (object) ['text' => 'Benchmark']],
                     ],
                 ] );
@@ -216,8 +214,8 @@ class BenchmarkGraphql extends Command
              * File operations
              */
 
-            $this->benchmark( 'File lang', function() use ( $lang ) {
-                ( new Query )->files( null, ['first' => 100, 'filter' => ['lang' => $lang]] )->items();
+            $this->benchmark( 'File lang', function() {
+                ( new Query )->files( null, ['first' => 100, 'filter' => ['lang' => 'en']] )->items();
             }, readOnly: true, tries: $tries );
 
             $this->benchmark( 'File mime', function() {
@@ -228,7 +226,7 @@ class BenchmarkGraphql extends Command
                 ( new Query )->files( null, ['first' => 100, 'filter' => [], 'sort' => [['column' => 'name', 'order' => 'asc']]] )->items();
             }, readOnly: true, tries: $tries );
 
-            $file = File::where( 'lang', $lang )->firstOrFail();
+            $file = File::firstOrFail();
 
             $this->benchmark( 'File get', function() use ( $file ) {
                 File::with( 'latest', 'bypages', 'byelements' )->find( $file->id );
@@ -237,9 +235,9 @@ class BenchmarkGraphql extends Command
 
             $imagePath = (string) realpath( __DIR__ . '/../../tests/assets/image.png' );
 
-            $this->benchmark( 'File add', function() use ( $lang, $imagePath ) {
+            $this->benchmark( 'File add', function() use ( $imagePath ) {
                 ( new Mutations\AddFile )( null, [
-                    'input' => ['lang' => $lang, 'name' => 'GQL Bench File'],
+                    'input' => ['lang' => 'en', 'name' => 'GQL Bench File'],
                     'file' => new \Illuminate\Http\UploadedFile(
                         $imagePath, 'image.png', 'image/png', null, true
                     ),

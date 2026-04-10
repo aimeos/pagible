@@ -18,7 +18,6 @@ class Benchmark extends Command
      * Command name
      */
     protected $signature = 'cms:benchmark
-        {--lang=en : Language code}
         {--tenant=benchmark : Tenant ID}
         {--domain= : Domain name}
         {--pages=10000 : Total number of pages to create}
@@ -102,7 +101,6 @@ class Benchmark extends Command
         $sharedOptions = [
             '--tenant' => $tenant,
             '--domain' => $domain,
-            '--lang' => $this->option( 'lang' ),
             '--pages' => $this->option( 'pages' ),
             '--tries' => $this->option( 'tries' ),
             '--chunk' => $this->option( 'chunk' ),
@@ -128,15 +126,8 @@ class Benchmark extends Command
     {
         $pages = (int) $this->option( 'pages' );
         $chunk = (int) $this->option( 'chunk' );
-        $lang = $this->option( 'lang' );
 
-        if( empty( $lang ) || !is_string( $lang ) )
-        {
-            $this->error( 'The --lang option must be a non-empty string.' );
-            return self::FAILURE;
-        }
-
-        $this->info( "Seeding {$pages} benchmark pages for language: {$lang}" );
+        $this->info( "Seeding {$pages} benchmark pages" );
 
         $fileCount = max( 2, intdiv( $pages, 10 ) );
         $totalRows = $pages + $fileCount + 1 + ( $pages + $fileCount ) + ( $pages * 4 );
@@ -144,7 +135,7 @@ class Benchmark extends Command
         $bar->setFormat( ' [%bar%] %percent:3s%% %elapsed%' );
 
         $seeder = new BenchmarkSeeder();
-        $seeder->run( $lang, $domain, 'benchmark', $pages, $chunk, function( int $count ) use ( $bar ) {
+        $seeder->run( $domain, 'benchmark', $pages, $chunk, function( int $count ) use ( $bar ) {
             $bar->advance( $count );
         } );
 

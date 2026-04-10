@@ -22,7 +22,6 @@ class BenchmarkJsonapi extends Command
     protected $signature = 'cms:benchmark:jsonapi
         {--tenant=benchmark : Tenant ID}
         {--domain= : Domain name}
-        {--lang=en : Language code}
         {--seed : Seed benchmark data before running benchmarks}
         {--pages=10000 : Total number of pages}
         {--tries=100 : Number of iterations per benchmark}
@@ -56,10 +55,9 @@ class BenchmarkJsonapi extends Command
         }
 
         $domain = (string) ( $this->option( 'domain' ) ?: '' );
-        $lang = (string) $this->option( 'lang' );
 
-        $root = Page::where( 'tag', 'root' )->where( 'lang', $lang )->where( 'domain', $domain )->firstOrFail();
-        $page = Page::where( 'tag', '!=', 'root' )->where( 'lang', $lang )->orderByDesc( 'depth' )->firstOrFail();
+        $root = Page::where( 'tag', 'root' )->where( 'domain', $domain )->firstOrFail();
+        $page = Page::where( 'tag', '!=', 'root' )->orderByDesc( 'depth' )->firstOrFail();
 
         $this->header();
 
@@ -91,8 +89,8 @@ class BenchmarkJsonapi extends Command
             Page::with( ['files', 'elements.files'] )->where( 'tag', 'root' )->take( 100 )->get();
         }, readOnly: true, tries: $tries );
 
-        $this->benchmark( 'Page lang', function() use ( $lang ) {
-            Page::with( ['files', 'elements.files'] )->where( 'lang', $lang )->take( 100 )->get();
+        $this->benchmark( 'Page lang', function() {
+            Page::with( ['files', 'elements.files'] )->where( 'lang', 'en' )->take( 100 )->get();
         }, readOnly: true, tries: $tries );
 
         $this->line( '' );
