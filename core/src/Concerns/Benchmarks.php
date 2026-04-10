@@ -180,9 +180,12 @@ trait Benchmarks
 
                     $xml = '';
                     do {
-                        if( $stmt->columnCount() > 0 && ( $row = $stmt->fetch( \PDO::FETCH_NUM ) ) ) {
-                            $xml = $row[0];
-                        }
+                        try {
+                            if( $row = $stmt->fetch( \PDO::FETCH_NUM ) ) {
+var_dump($row);
+                                $xml = $row[0];
+                            }
+                        } catch( \PDOException $e ) {}
                     } while( $stmt->nextRowset() );
 
                     $stmt->closeCursor();
