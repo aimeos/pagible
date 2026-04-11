@@ -147,8 +147,6 @@ class GraphqlTest extends AiTestAbstract
 
     public function testUncrop()
     {
-        $this->seed( CmsSeeder::class );
-
         $image = file_get_contents( __DIR__ . '/assets/image.png' );
         Prisma::fake( [FileResponse::fromBinary( $image, 'image/png' )] );
 
@@ -175,8 +173,6 @@ class GraphqlTest extends AiTestAbstract
 
     public function testUpscale()
     {
-        $this->seed( CmsSeeder::class );
-
         $image = file_get_contents( __DIR__ . '/assets/image.png' );
         Prisma::fake( [FileResponse::fromBinary( $image, 'image/png' )] );
 
@@ -225,9 +221,9 @@ class GraphqlTest extends AiTestAbstract
     {
         $this->seed( CmsSeeder::class );
 
-        $user = \App\Models\User::create( [
+        $user = new \App\Models\User( [
             'name' => 'No permission',
-            'email' => 'noperm-' . \Aimeos\Cms\Utils::uid() . '@testbench',
+            'email' => 'noperm@testbench',
             'password' => 'secret',
             'cmsperms' => [],
         ] );

@@ -41,8 +41,8 @@ abstract class CmsTestAbstract extends \Orchestra\Testbench\TestCase
         ]);
 
         $app['config']->set('auth.providers.users.model', 'App\\Models\\User');
+        $app['config']->set('scout.driver', 'collection');
         $app['config']->set('cms.db', 'testing');
-        $app['config']->set('scout.driver', 'null');
 
         \Aimeos\Cms\Tenancy::$callback = function() {
             return 'test';
