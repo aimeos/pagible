@@ -12,6 +12,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class SitemapControllerTest extends ThemeTestAbstract
 {
+    use CmsWithMigrations;
     use RefreshDatabase;
 
     public function testIndex()

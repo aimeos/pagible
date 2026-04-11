@@ -22,6 +22,7 @@ use Prism\Prism\Facades\Prism;
 
 class GraphqlTest extends AiTestAbstract
 {
+    use CmsWithMigrations;
     use RefreshDatabase;
     use MakesGraphQLRequests;
     use RefreshesSchemaCache;

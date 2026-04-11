@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Auth;
 
 class TenancyTest extends CoreTestAbstract
 {
+    use CmsWithMigrations;
     use RefreshDatabase;
 
     protected function tearDown(): void

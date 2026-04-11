@@ -18,6 +18,7 @@ use Aimeos\Cms\Models\Page;
 
 class GraphqlPageTest extends GraphqlTestAbstract
 {
+    use CmsWithMigrations;
     use RefreshDatabase;
     use MakesGraphQLRequests;
     use RefreshesSchemaCache;

@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\DB;
 
 class CmsEngineTest extends SearchTestAbstract
 {
+    use CmsWithMigrations;
     use DatabaseTruncation;
 
     protected $connectionsToTruncate = ['testing'];

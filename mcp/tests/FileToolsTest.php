@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Http;
 
 class FileToolsTest extends McpTestAbstract
 {
+    use CmsWithMigrations;
     use DatabaseTruncation;
 
     protected $connectionsToTransact = [];

@@ -17,6 +17,7 @@ use Aimeos\Cms\Models\File;
 
 class GraphqlFileTest extends GraphqlTestAbstract
 {
+    use CmsWithMigrations;
     use RefreshDatabase;
     use MakesGraphQLRequests;
     use RefreshesSchemaCache;

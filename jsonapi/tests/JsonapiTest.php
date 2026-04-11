@@ -13,6 +13,7 @@ use LaravelJsonApi\Testing\MakesJsonApiRequests;
 
 class JsonapiTest extends JsonapiTestAbstract
 {
+    use CmsWithMigrations;
     use RefreshDatabase;
     use MakesJsonApiRequests;
 
