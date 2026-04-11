@@ -58,6 +58,11 @@ describe('ElementListItems', () => {
     cy.get('button[title="Add element"]').should('not.exist')
   })
 
+  it('renders reload button', () => {
+    mountList({}, { 'element:view': true })
+    cy.get('button[title="Reload elements"]').should('exist')
+  })
+
   it('shows loading state initially', () => {
     mountList({}, { 'element:view': true })
     cy.contains('Loading').should('exist')

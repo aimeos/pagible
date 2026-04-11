@@ -15,7 +15,8 @@ import {
   mdiFormatListBulletedSquare,
   mdiMenuDown,
   mdiSort,
-  mdiClockOutline
+  mdiClockOutline,
+  mdiRefresh
 } from '@mdi/js'
 import { useAppStore, useUserStore, useMessageStore } from '../stores'
 import { debounce, url, srcset } from '../utils'
@@ -67,6 +68,7 @@ export default {
       mdiMenuDown,
       mdiSort,
       mdiClockOutline,
+      mdiRefresh,
       debounce,
       url,
       srcset
@@ -221,9 +223,23 @@ export default {
         })
     },
 
+    reload() {
+      this.items = []
+      this.loading = true
+      this.invalidate()
+      this.search()
+    },
+
     invalidate() {
       const cache = this.$apollo.provider.defaultClient.cache
       cache.evict({ id: 'ROOT_QUERY', fieldName: 'files' })
+
+      Object.keys(cache.extract()).forEach(key => {
+        if(key.startsWith('File:')) {
+          cache.evict({ id: key })
+        }
+      })
+
       cache.gc()
     },
 
@@ -603,6 +619,13 @@ export default {
     </div>
 
     <div class="layout">
+      <v-btn
+        @click="reload()"
+        :title="$gettext('Reload files')"
+        :icon="mdiRefresh"
+        variant="text"
+      />
+
       <v-btn
         v-if="!vgrid"
         @click="vgrid = true"

@@ -13,7 +13,8 @@ import {
   mdiMagnify,
   mdiMenuDown,
   mdiSort,
-  mdiClockOutline
+  mdiClockOutline,
+  mdiRefresh
 } from '@mdi/js'
 import SchemaItems from './SchemaItems.vue'
 import { useUserStore, useMessageStore } from '../stores'
@@ -66,6 +67,7 @@ export default {
       mdiMenuDown,
       mdiSort,
       mdiClockOutline,
+      mdiRefresh,
       debounce
     }
   },
@@ -182,9 +184,23 @@ export default {
         })
     },
 
+    reload() {
+      this.items = []
+      this.loading = true
+      this.invalidate()
+      this.search()
+    },
+
     invalidate() {
       const cache = this.$apollo.provider.defaultClient.cache
       cache.evict({ id: 'ROOT_QUERY', fieldName: 'elements' })
+
+      Object.keys(cache.extract()).forEach(key => {
+        if(key.startsWith('Element:')) {
+          cache.evict({ id: key })
+        }
+      })
+
       cache.gc()
     },
 
@@ -557,6 +573,13 @@ export default {
     </div>
 
     <div class="layout">
+      <v-btn
+        @click="reload()"
+        :title="$gettext('Reload elements')"
+        :icon="mdiRefresh"
+        variant="text"
+      />
+
       <v-menu>
         <template #activator="{ props }">
           <v-btn

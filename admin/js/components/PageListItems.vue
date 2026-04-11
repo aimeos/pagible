@@ -459,6 +459,14 @@ export default {
     invalidate() {
       const cache = this.$apollo.provider.defaultClient.cache
       cache.evict({ id: 'ROOT_QUERY', fieldName: 'pages' })
+      cache.evict({ id: 'ROOT_QUERY', fieldName: 'page' })
+
+      Object.keys(cache.extract()).forEach(key => {
+        if(key.startsWith('Page:')) {
+          cache.evict({ id: key })
+        }
+      })
+
       cache.gc()
     },
 
@@ -813,9 +821,7 @@ export default {
       this.loading = true
 
       if (cache) {
-        const cache = this.$apollo.provider.defaultClient.cache
-        cache.evict({ id: 'ROOT_QUERY', fieldName: 'pages' })
-        cache.gc()
+        this.invalidate()
       }
 
       const promise = this.filter.view === 'list' ? this.search() : this.fetch()
@@ -968,6 +974,7 @@ export default {
       this.$refs.tree.statsFlat.forEach((stat) => {
         stat._checked = !stat._checked
       })
+      this.$forceUpdate()
     },
 
     transform(result) {

@@ -208,7 +208,7 @@ describe('Element List', () => {
 
   it('shows sort menu with options', () => {
     visitElements()
-    cy.get('.layout .v-btn').click()
+    cy.get('.layout .v-btn[title="Sort by"]').click()
     cy.get('.v-list').should('contain', 'latest')
     cy.get('.v-list').should('contain', 'oldest')
     cy.get('.v-list').should('contain', 'name')
@@ -218,7 +218,7 @@ describe('Element List', () => {
 
   it('clicking a sort option triggers GQL reload', () => {
     visitElements()
-    cy.get('.layout .v-btn').click()
+    cy.get('.layout .v-btn[title="Sort by"]').click()
     cy.contains('.v-list .v-btn', 'name').click()
     cy.wait('@gql')
   })
