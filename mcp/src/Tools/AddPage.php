@@ -89,14 +89,15 @@ class AddPage extends Tool
         $parent = $pid ? Page::withTrashed()->with( 'latest' )->find( $pid ) : null;
 
         $v['path'] = $v['path'] ?? Utils::slugify( $v['title'] );
-        $v['to'] = $v['to'] ?? '';
-        $v['tag'] = $v['tag'] ?? '';
-        $v['theme'] = $v['theme'] ?? $parent?->latest?->data->theme ?? '';
-        $v['type'] = $v['type'] ?? '';
         $v['domain'] = $v['domain'] ?? $parent?->latest?->data->domain ?? '';
+        $v['theme'] = $v['theme'] ?? $parent?->latest?->data->theme ?? '';
+        $v['type'] = $v['type'] ?? $parent?->latest?->data->type ?? '';
+        $v['lang'] = $v['lang'] ?? $parent?->lang ?? '';
+        $v['related_id'] = $v['related_id'] ?? null;
         $v['status'] = $v['status'] ?? 0;
         $v['cache'] = $v['cache'] ?? 5;
-        $v['related_id'] = $v['related_id'] ?? null;
+        $v['tag'] = $v['tag'] ?? '';
+        $v['to'] = $v['to'] ?? '';
 
         if( isset( $v['meta'] ) ) {
             $v['meta'] = Validation::structured( $v['meta'], 'meta', new \stdClass() );
