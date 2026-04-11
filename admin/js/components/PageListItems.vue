@@ -974,6 +974,7 @@ export default {
       this.$refs.tree.statsFlat.forEach((stat) => {
         stat._checked = !stat._checked
       })
+      this.$forceUpdate()
     },
 
     transform(result) {
