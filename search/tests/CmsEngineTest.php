@@ -34,10 +34,21 @@ class CmsEngineTest extends SearchTestAbstract
     protected function setUp(): void
     {
         parent::setUp();
-        $this->seed( CmsSeeder::class );
 
-        if( DB::connection( config( 'cms.db' ) )->getDriverName() === 'sqlsrv' ) {
-            sleep( 5 );
+        $this->seed( CmsSeeder::class );
+        $conn = DB::connection( config( 'cms.db' ) );
+
+        if( $conn->getDriverName() === 'sqlsrv' )
+        {
+            $conn->statement( 'ALTER FULLTEXT INDEX ON cms_index START FULL POPULATION' );
+
+            for( $i = 0; $i < 10; $i++ )
+            {
+                sleep( 1 );
+                if( !$conn->scalar( "SELECT FULLTEXTCATALOGPROPERTY('cms_index_catalog', 'PopulateStatus')" ) ) {
+                    break;
+                }
+            }
         }
     }
 

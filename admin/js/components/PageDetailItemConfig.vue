@@ -177,7 +177,7 @@ export default {
         >
           <v-expansion-panel-title :expand-icon="mdiPencil">
             <v-btn
-              v-if="user.can('page:save') && user.can('config:page')"
+              v-if="user.can('page:save') && user.can('page:config')"
               @click="remove(code)"
               :title="$gettext('Remove content element')"
               :icon="mdiDelete"
@@ -193,7 +193,7 @@ export default {
               v-model:files="el.files"
               @error="error(el, $event)"
               @change="update(el)"
-              :readonly="!user.can('page:save') || !user.can('config:page')"
+              :readonly="!user.can('page:save') || !user.can('page:config')"
               :fields="fields(el.type)"
               :assets="assets"
               :type="el.type"
@@ -202,7 +202,7 @@ export default {
         </v-expansion-panel>
       </v-expansion-panels>
 
-      <div v-if="available && user.can('page:save') && user.can('config:page')" class="btn-group">
+      <div v-if="available && user.can('page:save') && user.can('page:config')" class="btn-group">
         <v-btn
           @click="vschemas = true"
           :title="$gettext('Add element')"

@@ -46,7 +46,7 @@ class Permission
         'file:purge',
         'file:publish',
 
-        'config:page',
+        'page:config',
     ];
 
     /**

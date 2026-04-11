@@ -282,7 +282,7 @@ class PermissionTest extends CoreTestAbstract
         $this->assertTrue( Permission::can( 'page:view', $user ) );
         // publisher permissions
         $this->assertTrue( Permission::can( 'page:publish', $user ) );
-        $this->assertTrue( Permission::can( 'config:page', $user ) );
+        $this->assertTrue( Permission::can( 'page:config', $user ) );
     }
 
 
