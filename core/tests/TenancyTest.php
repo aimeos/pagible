@@ -115,14 +115,12 @@ class TenancyTest extends CoreTestAbstract
 
     public function testStatusScopeWithPermission()
     {
-        $user = \App\Models\User::create( [
+        $user = new \App\Models\User( [
             'name' => 'Editor',
             'email' => 'editor@tenancy-test',
             'password' => 'secret',
-            'cmsperms' => [],
+            'cmsperms' => ['page:view'],
         ] );
-        Permission::add( 'page:view', $user );
-        $user->save();
 
         Auth::shouldReceive( 'user' )->andReturn( $user );
 

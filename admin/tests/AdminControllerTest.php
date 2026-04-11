@@ -23,7 +23,7 @@ class AdminControllerTest extends AdminTestAbstract
     {
         parent::setUp();
 
-        $this->user = \App\Models\User::create( [
+        $this->user = new \App\Models\User( [
             'name' => 'Admin',
             'email' => 'admin@testbench',
             'password' => 'secret',

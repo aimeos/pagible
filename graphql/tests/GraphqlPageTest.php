@@ -48,7 +48,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
 
         $this->bootRefreshesSchemaCache();
 
-        $this->user = \App\Models\User::create([
+        $this->user = new \App\Models\User([
             'name' => 'Test editor',
             'email' => 'editor@testbench',
             'password' => 'secret',

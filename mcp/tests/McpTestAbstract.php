@@ -15,7 +15,6 @@ abstract class McpTestAbstract extends CmsTestAbstract
 		parent::defineEnvironment( $app );
 
 		$app['config']->set('cms.locales', ['en', 'de'] );
-		$app['config']->set('scout.driver', 'collection');
 	}
 
 
