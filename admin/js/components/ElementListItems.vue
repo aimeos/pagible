@@ -194,6 +194,13 @@ export default {
     invalidate() {
       const cache = this.$apollo.provider.defaultClient.cache
       cache.evict({ id: 'ROOT_QUERY', fieldName: 'elements' })
+
+      Object.keys(cache.extract()).forEach(key => {
+        if(key.startsWith('Element:')) {
+          cache.evict({ id: key })
+        }
+      })
+
       cache.gc()
     },
 
