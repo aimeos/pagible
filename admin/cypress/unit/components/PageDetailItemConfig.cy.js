@@ -70,8 +70,8 @@ describe('PageDetailItemConfig', () => {
     cy.get('.element-type').should('contain', 'tracking')
   })
 
-  it('shows add button with page:save and config:page permissions', () => {
-    mountConfig({}, { 'page:save': true, 'config:page': true })
+  it('shows add button with page:save and page:config permissions', () => {
+    mountConfig({}, { 'page:save': true, 'page:config': true })
     cy.get('button[title="Add element"]').should('exist')
   })
 
@@ -81,7 +81,7 @@ describe('PageDetailItemConfig', () => {
   })
 
   it('shows remove button with proper permissions', () => {
-    mountConfig({}, { 'page:save': true, 'config:page': true })
+    mountConfig({}, { 'page:save': true, 'page:config': true })
     cy.get('.v-expansion-panel').first().click()
     cy.get('button[title="Remove content element"]').should('exist')
   })
