@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\DB;
 
 class SearchCommandTest extends SearchTestAbstract
 {
+    use CmsWithMigrations;
     use \Illuminate\Foundation\Testing\RefreshDatabase;
 
     public function testIndex(): void

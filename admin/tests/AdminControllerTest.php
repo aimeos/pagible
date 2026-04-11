@@ -14,6 +14,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class AdminControllerTest extends AdminTestAbstract
 {
+    use CmsWithMigrations;
     use RefreshDatabase;
 
     protected ?\App\Models\User $user = null;

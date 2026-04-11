@@ -15,6 +15,7 @@ use Illuminate\Foundation\Testing\RefreshDatabaseState;
 
 class ElementToolsTest extends McpTestAbstract
 {
+    use CmsWithMigrations;
     use DatabaseTruncation;
 
     protected $connectionsToTransact = [];

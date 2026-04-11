@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 
 class SearchControllerTest extends ThemeTestAbstract
 {
+    use CmsWithMigrations;
     use DatabaseTruncation;
 
     protected $connectionsToTransact = [];

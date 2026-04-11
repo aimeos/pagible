@@ -16,6 +16,7 @@ use App\Models\User;
 
 class CoreCommandTest extends CoreTestAbstract
 {
+    use CmsWithMigrations;
     use \Illuminate\Foundation\Testing\RefreshDatabase;
 
     public function testPublish(): void

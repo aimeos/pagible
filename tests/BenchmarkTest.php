@@ -16,6 +16,9 @@ use Symfony\Component\Console\Output\ConsoleOutput;
 #[Group( 'benchmark' )]
 class BenchmarkTest extends CmsTestAbstract
 {
+    use CmsWithMigrations;
+
+
     protected function defineDatabaseMigrations()
     {
         parent::defineDatabaseMigrations();

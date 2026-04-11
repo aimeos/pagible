@@ -18,6 +18,7 @@ use Prism\Prism\Testing\TextResponseFake;
 
 class AiCommandTest extends AiTestAbstract
 {
+    use CmsWithMigrations;
     use \Illuminate\Foundation\Testing\RefreshDatabase;
 
     public function testDescription(): void

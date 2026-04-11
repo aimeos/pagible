@@ -8,25 +8,15 @@
 namespace Tests;
 
 use Illuminate\Foundation\Testing\Concerns\InteractsWithViews;
-use Orchestra\Testbench\Concerns\WithLaravelMigrations;
 
 
 abstract class CmsTestAbstract extends \Orchestra\Testbench\TestCase
 {
     use InteractsWithViews;
-    use WithLaravelMigrations;
 
 
     protected ?\App\Models\User $user = null;
     protected $enablesPackageDiscoveries = true;
-
-
-    protected function defineDatabaseMigrations()
-    {
-        \Orchestra\Testbench\after_resolving($this->app, 'migrator', static function ($migrator) {
-            $migrator->path(\Orchestra\Testbench\default_migration_path());
-        });
-    }
 
 
 	protected function defineEnvironment( $app )

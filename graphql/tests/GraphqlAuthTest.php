@@ -15,6 +15,7 @@ use Nuwave\Lighthouse\Testing\RefreshesSchemaCache;
 
 class GraphqlAuthTest extends GraphqlTestAbstract
 {
+    use CmsWithMigrations;
     use RefreshDatabase;
     use MakesGraphQLRequests;
     use RefreshesSchemaCache;
