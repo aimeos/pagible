@@ -92,7 +92,7 @@ class AddPage extends Tool
         $v['domain'] = $v['domain'] ?? $parent?->latest?->data->domain ?? '';
         $v['theme'] = $v['theme'] ?? $parent?->latest?->data->theme ?? '';
         $v['type'] = $v['type'] ?? $parent?->latest?->data->type ?? '';
-        $v['lang'] = $v['lang'] ?? $parent?->lang ?? '';
+        $v['lang'] = $v['lang'] ?? $parent?->lang ?: '';
         $v['related_id'] = $v['related_id'] ?? null;
         $v['status'] = $v['status'] ?? 0;
         $v['cache'] = $v['cache'] ?? 5;
