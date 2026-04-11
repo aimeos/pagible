@@ -27,7 +27,7 @@ class Validation
             throw new \InvalidArgumentException( sprintf( 'Invalid URL "%s" in "to" field', $input['to'] ?? '' ) );
         }
 
-        if( !Permission::can( 'config:page', $user ) ) {
+        if( !Permission::can( 'page:config', $user ) ) {
             unset( $input['config'] );
         }
 

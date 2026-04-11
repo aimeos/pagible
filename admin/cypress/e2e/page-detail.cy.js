@@ -26,7 +26,7 @@ const ALL_PERMISSIONS = {
   'audio:transcribe': true,
   'element:view': true,
   'file:view': true,
-  'config:page': true,
+  'page:config': true,
 }
 
 const ME_ADMIN = {
