@@ -64,6 +64,11 @@ describe('FileListItems', () => {
     cy.get('button[title="Add files"]').should('not.exist')
   })
 
+  it('renders reload button', () => {
+    mountList({}, { 'file:view': true })
+    cy.get('button[title="Reload files"]').should('exist')
+  })
+
   it('shows loading state initially', () => {
     mountList({}, { 'file:view': true })
     cy.contains('Loading').should('exist')

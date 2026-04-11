@@ -13,7 +13,8 @@ import {
   mdiMagnify,
   mdiMenuDown,
   mdiSort,
-  mdiClockOutline
+  mdiClockOutline,
+  mdiRefresh
 } from '@mdi/js'
 import SchemaItems from './SchemaItems.vue'
 import { useUserStore, useMessageStore } from '../stores'
@@ -66,6 +67,7 @@ export default {
       mdiMenuDown,
       mdiSort,
       mdiClockOutline,
+      mdiRefresh,
       debounce
     }
   },
@@ -180,6 +182,13 @@ export default {
           this.messages.add(this.$gettext('Error trashing shared element') + ':\n' + error, 'error')
           this.$log(`ElementListItems::drop(): Error trashing shared element`, list, error)
         })
+    },
+
+    reload() {
+      this.items = []
+      this.loading = true
+      this.invalidate()
+      this.search()
     },
 
     invalidate() {
@@ -557,6 +566,13 @@ export default {
     </div>
 
     <div class="layout">
+      <v-btn
+        @click="reload()"
+        :title="$gettext('Reload elements')"
+        :icon="mdiRefresh"
+        variant="text"
+      />
+
       <v-menu>
         <template #activator="{ props }">
           <v-btn

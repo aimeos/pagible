@@ -15,7 +15,8 @@ import {
   mdiFormatListBulletedSquare,
   mdiMenuDown,
   mdiSort,
-  mdiClockOutline
+  mdiClockOutline,
+  mdiRefresh
 } from '@mdi/js'
 import { useAppStore, useUserStore, useMessageStore } from '../stores'
 import { debounce, url, srcset } from '../utils'
@@ -67,6 +68,7 @@ export default {
       mdiMenuDown,
       mdiSort,
       mdiClockOutline,
+      mdiRefresh,
       debounce,
       url,
       srcset
@@ -219,6 +221,13 @@ export default {
           this.messages.add(this.$gettext('Error trashing file') + ':\n' + error, 'error')
           this.$log(`FileListItems::drop(): Error trashing file`, item, error)
         })
+    },
+
+    reload() {
+      this.items = []
+      this.loading = true
+      this.invalidate()
+      this.search()
     },
 
     invalidate() {
@@ -603,6 +612,13 @@ export default {
     </div>
 
     <div class="layout">
+      <v-btn
+        @click="reload()"
+        :title="$gettext('Reload files')"
+        :icon="mdiRefresh"
+        variant="text"
+      />
+
       <v-btn
         v-if="!vgrid"
         @click="vgrid = true"
