@@ -76,7 +76,7 @@ export const useUserStore = defineStore('user', {
           }
 
           this.me = response.data.me
-            ? { ...response.data.me, permission: JSON.parse(response.data.me.permission || '{}') }
+            ? { ...response.data.me, permission: JSON.parse(response.data.me.permission || '{}'), settings: JSON.parse(response.data.me.settings || '{}') }
             : false
         })
         .catch((error) => {
@@ -114,6 +114,9 @@ export const useUserStore = defineStore('user', {
 
           if (this.me?.permission) {
             this.me.permission = JSON.parse(this.me.permission)
+          }
+          if (this.me?.settings) {
+            this.me.settings = JSON.parse(this.me.settings)
           }
 
           return this.me
