@@ -190,6 +190,9 @@ type Stats {
   "Number of Google search clicks"
   clicks: [StatsNumber!]
 
+  "Google search click through rate by day"
+  ctrs: [StatsNumber!]
+
   "List of search queries"
   queries: [StatsQuery!]
 }
