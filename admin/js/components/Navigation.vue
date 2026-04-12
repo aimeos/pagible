@@ -25,23 +25,23 @@ export default {
 </script>
 
 <template>
-  <v-navigation-drawer v-model="drawer.nav" location="start" mobile-breakpoint="lg">
+  <v-navigation-drawer v-model="drawer.nav" location="start" mobile-breakpoint="lg" :aria-label="$gettext('Panels')">
     <v-list>
       <v-list-item v-if="user.can('page:view')" rounded="lg">
-        <v-icon :icon="mdiFileTree" class="icon" />
         <router-link to="/pages" class="router-link" @click="toggle()">
+          <v-icon :icon="mdiFileTree" class="icon" />
           {{ $gettext('Pages') }}
         </router-link>
       </v-list-item>
       <v-list-item v-if="user.can('element:view')" rounded="lg">
-        <v-icon :icon="mdiShareVariant" class="icon" />
         <router-link to="/elements" class="router-link" @click="toggle()">
+          <v-icon :icon="mdiShareVariant" class="icon" />
           {{ $gettext('Shared elements') }}
         </router-link>
       </v-list-item>
       <v-list-item v-if="user.can('file:view')" rounded="lg">
-        <v-icon :icon="mdiFolderMultipleImage" class="icon" />
         <router-link to="/files" class="router-link" @click="toggle()">
+          <v-icon :icon="mdiFolderMultipleImage" class="icon" />
           {{ $gettext('Files') }}
         </router-link>
       </v-list-item>
@@ -59,16 +59,19 @@ export default {
   border-top-left-radius: 8px;
 }
 
-:deep(.v-list-item__content) {
-  align-items: center;
-  display: flex;
+a.router-link:focus-visible {
+  outline: 2px solid rgb(var(--v-theme-primary));
+  outline-offset: -2px;
+  border-radius: 4px;
 }
 
 a.router-link,
 a.router-link:focus,
 a.router-link:visited {
   color: rgb(var(--v-theme-on-surface-light));
-  display: block;
+  align-items: center;
+  display: flex;
+  gap: 8px;
   width: 100%;
   padding: 8px;
 }
