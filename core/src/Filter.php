@@ -28,7 +28,7 @@ class Filter
             $builder->whereIn( 'id', (array) $filter['id'] );
         }
 
-        if( array_key_exists( 'lang', $filter ) ) {
+        if( isset( $filter['lang'] ) ) {
             $builder->where( 'lang', $filter['lang'] );
         }
 
@@ -60,7 +60,7 @@ class Filter
             $builder->whereIn( 'id', (array) $filter['id'] );
         }
 
-        if( array_key_exists( 'lang', $filter ) ) {
+        if( isset( $filter['lang'] ) ) {
             $builder->where( 'lang', $filter['lang'] );
         }
 
@@ -96,7 +96,7 @@ class Filter
             $builder->where( 'parent_id', $filter['parent_id'] );
         }
 
-        if( array_key_exists( 'lang', $filter ) ) {
+        if( isset( $filter['lang'] ) ) {
             $builder->where( 'lang', $filter['lang'] );
         }
 
