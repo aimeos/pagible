@@ -23,10 +23,6 @@ class CoreServiceProvider extends Provider
         $this->rateLimiter();
         $this->userCasts();
         $this->console();
-
-        // Set null Scout driver as fallback if none configured
-        config(['scout.driver' => config('scout.driver', 'null')]);
-
         $this->scout();
     }
 
