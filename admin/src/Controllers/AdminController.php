@@ -91,7 +91,7 @@ class AdminController extends Controller
      */
     protected function buildHeaders(ClientResponse $response, ?string $range): array
     {
-        $maxBytes = config('cms.admin.proxy.max-length', 10) * 1024 * 1024;
+        $maxBytes = config('cms.admin.proxy.maxsize', 10) * 1024 * 1024;
         $rawLength = (int) ($response->header('Content-Length') ?: 0);
         $contentLength = min($rawLength, $maxBytes);
         $contentRange = null;
@@ -177,7 +177,7 @@ class AdminController extends Controller
     {
         $sent = 0;
         $chunkSize = 1048576; // 1MB
-        $timeout = config('cms.admin.proxy.stream_timeout', 30); // default: 30 seconds
+        $timeout = config('cms.admin.proxy.timeout', 30); // default: 30 seconds
         $start = time();
 
         while (ob_get_level() > 0) ob_end_flush();
