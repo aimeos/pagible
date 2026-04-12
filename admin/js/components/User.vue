@@ -49,7 +49,7 @@ export default {
 
         const storedTheme = this.user.getData('app', 'theme')
         if (storedTheme) {
-          this.theme.global.name.value = storedTheme
+          this.theme.change(storedTheme)
         }
 
         const storedLanguage = this.user.getData('app', 'language')
@@ -115,11 +115,9 @@ export default {
         <v-btn :icon="mdiClose" :aria-label="$gettext('Close')" @click="menu['lang'] = false" />
       </v-toolbar>
 
-      <v-list @click="menu['lang'] = false">
-        <v-list-item v-for="(_, code) in i18n.available" :key="code">
-          <v-btn @click="change(code)" variant="text"
-            >{{ languages.translate(code) }} ({{ code }})</v-btn
-          >
+      <v-list @click="menu['lang'] = false" role="listbox">
+        <v-list-item v-for="(_, code) in i18n.available" :key="code" role="option" @click="change(code)">
+          {{ languages.translate(code) }} ({{ code }})
         </v-list-item>
       </v-list>
     </v-card>

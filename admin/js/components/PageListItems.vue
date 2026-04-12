@@ -1042,11 +1042,10 @@ export default {
 <template>
   <div class="header">
     <div class="bulk">
-      <v-checkbox-btn v-model="checked" @click.stop="toggle()" />
+      <v-checkbox-btn v-model="checked" @click.stop="toggle()" :aria-label="$gettext('Toggle selection')" />
 
       <component
         :is="$vuetify.display.xs ? 'v-dialog' : 'v-menu'"
-        :aria-label="$gettext('Actions')"
         v-model="actions"
         transition="scale-transition"
         location="end center"
@@ -1140,6 +1139,7 @@ export default {
         <v-btn
           v-bind="props"
           :title="$gettext('Sort by')"
+          :aria-label="$gettext('Sort by')"
           :append-icon="mdiMenuDown"
           :prepend-icon="mdiSort"
           variant="text"
@@ -1149,14 +1149,14 @@ export default {
               ? sort?.order === 'DESC'
                 ? $gettext('latest')
                 : $gettext('oldest')
-              : $gettext('default')
+              : $gettext('tree')
           }}
         </v-btn>
       </template>
       <v-list>
         <v-list-item>
           <v-btn variant="text" @click="sort = { column: 'LFT', order: 'ASC' }">{{
-            $gettext('default')
+            $gettext('tree')
           }}</v-btn>
         </v-list-item>
         <v-list-item>
@@ -1224,7 +1224,6 @@ export default {
 
         <component
           :is="$vuetify.display.xs ? 'v-dialog' : 'v-menu'"
-          :aria-label="$gettext('Actions')"
           v-model="menu[node.id]"
           transition="scale-transition"
           location="end center"
@@ -1458,6 +1457,11 @@ export default {
   user-select: none;
 }
 
+.tree-node:focus {
+  outline: none;
+}
+
+.tree-node:focus > .tree-node-inner,
 .tree-node-inner:focus-within {
   background-color: rgb(var(--v-theme-surface-light));
 }
@@ -1513,6 +1517,8 @@ export default {
 }
 
 .tree-node-inner .item-aux {
+  min-height: 3rem;
+  min-width: 3rem;
   text-align: end;
   width: 100%;
 }

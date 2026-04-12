@@ -263,7 +263,7 @@ export default {
 </script>
 
 <template>
-  <v-app-bar :elevation="0" density="compact">
+  <v-app-bar :elevation="0" density="compact" role="sectionheader" :aria-label="$gettext('Menu')">
     <template #prepend>
       <v-btn
         @click="drawer.toggle('nav')"
@@ -289,7 +289,7 @@ export default {
 
   <Navigation />
 
-  <v-main class="page-list">
+  <v-main class="page-list" :aria-label="$gettext('Pages')">
     <v-container>
       <v-sheet class="box scroll">
         <v-textarea
@@ -312,6 +312,8 @@ export default {
               @click="help = !help"
               :icon="mdiHelpCircleOutline"
               :title="help ? $gettext('Hide help') : $gettext('Show help')"
+              :aria-expanded="help"
+              aria-controls="page-help"
               variant="text"
             />
           </template>
@@ -346,8 +348,8 @@ export default {
             />
           </template>
         </v-textarea>
-        <div v-if="help" class="help">
-          <ul>
+        <div v-if="help" id="page-help" class="help">
+          <ul :aria-label="$gettext('Help')">
             <li>
               {{
                 $gettext(

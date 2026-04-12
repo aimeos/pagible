@@ -705,6 +705,8 @@ export default {
           @click="help = !help"
           :icon="mdiHelpCircleOutline"
           :title="help ? $gettext('Hide help') : $gettext('Show help')"
+          :aria-expanded="help"
+          aria-controls="content-help"
           variant="text"
         />
       </template>
@@ -730,8 +732,8 @@ export default {
         />
       </template>
     </v-textarea>
-    <div v-if="help" class="help">
-      <ul>
+    <div v-if="help" id="content-help" class="help">
+      <ul :aria-label="$gettext('Help')">
         <li>{{ $gettext('AI can add or improve content based on your input') }}</li>
         <li>{{ $gettext('It can take a long time depending on the task and content size') }}</li>
       </ul>
@@ -739,7 +741,7 @@ export default {
 
     <div class="header">
       <div v-if="user.can('page:save')" class="bulk">
-        <v-checkbox-btn v-model="checked" @click.stop="toggle()" />
+        <v-checkbox-btn v-model="checked" @click.stop="toggle()" :aria-label="$gettext('Toggle selection')" />
         <v-menu>
           <template v-slot:activator="{ props }">
             <v-btn

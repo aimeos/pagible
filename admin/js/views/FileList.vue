@@ -114,7 +114,7 @@ export default {
 </script>
 
 <template>
-  <v-app-bar :elevation="0" density="compact">
+  <v-app-bar :elevation="0" density="compact" role="sectionheader" :aria-label="$gettext('Menu')">
     <template #prepend>
       <v-btn
         @click="drawer.toggle('nav')"
@@ -140,7 +140,7 @@ export default {
 
   <Navigation />
 
-  <v-main class="file-list">
+  <v-main class="file-list" :aria-label="$gettext('Files')">
     <v-container>
       <v-sheet class="box scroll">
         <FileListItems @select="open($event)" :filter="filter" />

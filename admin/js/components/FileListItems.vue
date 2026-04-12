@@ -544,7 +544,7 @@ export default {
 <template>
   <div class="header">
     <div class="bulk">
-      <v-checkbox-btn v-model="checked" @click.stop="toggle()" />
+      <v-checkbox-btn v-model="checked" @click.stop="toggle()" :aria-label="$gettext('Toggle selection')" />
 
       <component
         :is="$vuetify.display.xs ? 'v-dialog' : 'v-menu'"

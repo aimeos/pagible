@@ -66,7 +66,7 @@ export default {
 </script>
 
 <template>
-  <v-navigation-drawer v-model="drawer.aside" mobile-breakpoint="md" location="end" tag="aside">
+  <v-navigation-drawer v-model="drawer.aside" mobile-breakpoint="md" location="end" tag="aside" :aria-label="$gettext('Filters')">
     <v-btn
       class="reset"
       :disabled="disabled"

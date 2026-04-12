@@ -338,7 +338,7 @@ export default {
 </script>
 
 <template>
-  <v-app-bar :elevation="0" density="compact">
+  <v-app-bar :elevation="0" density="compact" role="sectionheader" :aria-label="$gettext('Menu')">
     <template v-slot:prepend>
       <v-btn
         @click="viewStack.closeView()"
@@ -447,7 +447,7 @@ export default {
     </template>
   </v-app-bar>
 
-  <v-main class="element-details">
+  <v-main class="element-details" :aria-label="$gettext('Elements')">
     <v-form @submit.prevent>
       <v-tabs fixed-tabs v-model="tab">
         <v-tab value="element" :class="{ changed: changed, error: error }">{{
