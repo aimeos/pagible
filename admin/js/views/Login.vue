@@ -124,8 +124,8 @@ export default {
               @click="toggleShow"
               :aria-label="show ? $gettext('Hide password') : $gettext('Show password')"
               :icon="show ? mdiEyeOff : mdiEye"
+              density="compact"
               variant="text"
-              size="small"
             />
           </template>
         </v-text-field>
@@ -169,6 +169,11 @@ export default {
 
 .login .v-card-title {
   text-align: center;
+}
+
+.login .v-card-title h1 {
+  font-size: 125%;
+  margin-top: 0;
 }
 
 .login .v-card-actions {
