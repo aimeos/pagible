@@ -33,7 +33,7 @@ class AdminHeadersTest extends AdminTestAbstract
 
     public function testBuildHeadersExceedsMax()
     {
-        config()->set( 'cms.admin.proxy.max-length', 1 ); // 1 MB
+        config()->set( 'cms.admin.proxy.maxsize', 1 ); // 1 MB
 
         $controller = new AdminController();
         $rawLength = 2 * 1024 * 1024; // 2 MB
@@ -71,7 +71,7 @@ class AdminHeadersTest extends AdminTestAbstract
 
     public function testBuildHeadersWithOpenRange()
     {
-        config()->set( 'cms.admin.proxy.max-length', 1 ); // 1 MB
+        config()->set( 'cms.admin.proxy.maxsize', 1 ); // 1 MB
 
         $controller = new AdminController();
         $rawLength = 5 * 1024 * 1024;
