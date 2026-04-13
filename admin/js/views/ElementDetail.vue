@@ -7,6 +7,7 @@ import HistoryDialog from '../components/HistoryDialog.vue'
 import ElementDetailRefs from '../components/ElementDetailRefs.vue'
 import ElementDetailItem from '../components/ElementDetailItem.vue'
 import { useUserStore, useDrawerStore, useMessageStore, useViewStack } from '../stores'
+import { write, translate } from '../ai'
 import {
   mdiKeyboardBackspace,
   mdiHistory,
@@ -25,6 +26,13 @@ export default {
 
   props: {
     item: { type: Object, required: true }
+  },
+
+  provide() {
+    return {
+      write: this.writeText,
+      translate: this.translateText
+    }
   },
 
   data: () => ({
@@ -272,10 +280,25 @@ export default {
         })
     },
 
+    writeText(prompt, context = [], files = []) {
+      if (!Array.isArray(context)) {
+        context = [context]
+      }
+
+      context.push('element data as JSON: ' + JSON.stringify(this.item.data))
+      context.push('required output language: ' + (this.item.lang || 'en'))
+
+      return write(prompt, context, files)
+    },
+
     use(version) {
       Object.assign(this.item, version.data)
       this.vhistory = false
       this.changed = true
+    },
+
+    translateText(texts, to, from = null) {
+      return translate(texts, to, from || this.item.lang)
     },
 
     versions(id) {
