@@ -387,7 +387,7 @@ export default {
     </template>
   </v-app-bar>
 
-  <v-main class="file-details" :aria-label="$gettext('Files')">
+  <v-main class="file-details" :aria-label="$gettext('File')">
     <v-form @submit.prevent>
       <v-tabs fixed-tabs v-model="tab">
         <v-tab value="file" :class="{ changed: changed, error: error }">{{

@@ -447,7 +447,7 @@ export default {
     </template>
   </v-app-bar>
 
-  <v-main class="element-details" :aria-label="$gettext('Elements')">
+  <v-main class="element-details" :aria-label="$gettext('Element')">
     <v-form @submit.prevent>
       <v-tabs fixed-tabs v-model="tab">
         <v-tab value="element" :class="{ changed: changed, error: error }">{{

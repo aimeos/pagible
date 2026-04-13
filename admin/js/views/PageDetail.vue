@@ -828,7 +828,7 @@ export default {
     </template>
   </v-app-bar>
 
-  <v-main class="page-details" :aria-label="$gettext('Pages')">
+  <v-main class="page-details" :aria-label="$gettext('Page')">
     <v-form @submit.prevent>
       <v-tabs fixed-tabs v-model="tab">
         <v-tab value="editor" @click="aside = ''">
