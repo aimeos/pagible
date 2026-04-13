@@ -279,6 +279,8 @@ class Resource
             Validation::html( $input['type'] ?? '', $input['data'] );
         }
 
+        $input['name'] = (string) $input['name'];
+
         return Utils::transaction( function() use ( $input, $editor, $files ) {
 
             $versionId = ( new Version )->newUniqueId();
