@@ -55,17 +55,12 @@ export default {
 
 <template>
   <v-navigation-drawer v-model="drawer.aside" mobile-breakpoint="md" location="end" tag="aside" :aria-label="$gettext('Meta data')">
-    <v-list :opened="[0]">
-      <v-list-group :value="0">
-        <template v-slot:activator="{ props }">
-          <v-list-item v-bind="props">{{ $gettext('Meta data') }}</v-list-item>
-        </template>
-
-        <v-list-item v-for="(value, key) in values" :key="key" rounded="lg">
-          <v-list-item-title class="name">{{ key }}</v-list-item-title>
-          <div>{{ value }}</div>
-        </v-list-item>
-      </v-list-group>
+    <v-list>
+      <v-list-subheader>{{ $gettext('Meta data') }}</v-list-subheader>
+      <v-list-item v-for="(value, key) in values" :key="key" rounded="lg">
+        <v-list-item-title class="name">{{ key }}</v-list-item-title>
+        <div>{{ value }}</div>
+      </v-list-item>
     </v-list>
   </v-navigation-drawer>
 </template>
