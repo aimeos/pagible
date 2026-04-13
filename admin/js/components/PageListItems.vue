@@ -169,53 +169,47 @@ export default {
     },
 
     change() {
-      if (!this.user.can('page:move')) {
-        this.messages.add(this.$gettext('Permission denied'), 'error')
-        return
-      }
+      if (!dragContext?.targetInfo) return
 
       const parent = dragContext.targetInfo.parent
       const siblings = dragContext.targetInfo.siblings
       const ref = siblings[dragContext.targetInfo.indexBeforeDrop + 1] || null
 
-      this.$apollo
-        .mutate({
-          mutation: gql`
-            mutation ($id: ID!, $parent: ID, $ref: ID) {
-              movePage(id: $id, parent: $parent, ref: $ref) {
-                id
-              }
-            }
-          `,
-          variables: {
-            id: dragContext.startInfo.dragNode.data.id,
-            parent: parent ? parent.data.id : null,
-            ref: ref ? ref.data.id : null
-          }
-        })
-        .then((result) => {
-          if (result.errors) {
-            throw result.errors
-          }
+      this.movePage(
+        dragContext.startInfo.dragNode.data.id,
+        parent ? parent.data.id : null,
+        ref ? ref.data.id : null
+      ).then(() => {
+        const srcparent = dragContext.startInfo.parent
 
-          const srcparent = dragContext.startInfo.parent
+        if (srcparent?.data && !srcparent?.children.length) {
+          srcparent.data.has = false
+        }
 
-          if (srcparent?.data && !srcparent?.children.length) {
-            srcparent.data.has = false
-          }
+        if (parent) {
+          parent.data.has = true
+        }
+      })
+    },
 
-          if (parent) {
-            parent.data.has = true
-          }
-        })
-        .catch((error) => {
-          this.messages.add(this.$gettext('Error moving page') + ':\n' + error, 'error')
-          this.$log(`PageList::change(): Error moving page`, error)
-        })
+    check() {
+      const stat = this.$refs.tree.activeDescendant
+
+      if (stat) {
+        stat._checked = !stat._checked
+      }
     },
 
     copy(stat, node) {
       this.clip = { type: 'copy', node: node, stat: stat }
+    },
+
+    copyKey() {
+      const stat = this.$refs.tree.activeDescendant
+
+      if (stat) {
+        this.copy(stat, stat.data)
+      }
     },
 
     create(attr = {}) {
@@ -237,6 +231,22 @@ export default {
       stat.cut = true
 
       this.clip = { type: 'cut', node: node, stat: stat }
+    },
+
+    cutKey() {
+      const stat = this.$refs.tree.activeDescendant
+
+      if (stat) {
+        this.cut(stat, stat.data)
+      }
+    },
+
+    deleteKey() {
+      const stat = this.$refs.tree.activeDescendant
+
+      if (stat) {
+        this.drop(stat)
+      }
     },
 
     drop(stat) {
@@ -290,6 +300,14 @@ export default {
           this.messages.add(this.$gettext('Error trashing page') + ':\n' + error, 'error')
           this.$log(`PageList::drop(): Error trashing page`, list, error)
         })
+    },
+
+    expand() {
+      const stat = this.$refs.tree.activeDescendant
+
+      if (stat && stat.data.has && !stat.children.length) {
+        this.load(stat, stat.data)
+      }
     },
 
     fetch(parent = null, page = 1, limit = 100) {
@@ -388,6 +406,9 @@ export default {
         publish_at: entry.latest?.publish_at || null,
         latest: entry.latest
       })
+
+      item.text = this.label(item)
+      return item
     },
 
     insert(stat, idx = null) {
@@ -525,6 +546,17 @@ export default {
         })
     },
 
+    label(node) {
+      const name = node.name || this.$gettext('New')
+      const path = '/' + (node.path || '')
+
+      if (node.domain) {
+        return this.$gettext('%{name} (%{lang}, path: %{path}, domain: %{domain})', { name, lang: node.lang || '', path, domain: node.domain })
+      }
+
+      return this.$gettext('%{name} (%{lang}, path: %{path})', { name, lang: node.lang || '', path })
+    },
+
     load(stat, node) {
       if (!stat.open && !node.children) {
         stat.loading = true
@@ -532,6 +564,7 @@ export default {
         this.fetch(node.id, stat.page ? stat.page + 1 : 1)
           .then((result) => {
             this.$refs.tree.addMulti(result.data, stat, 0)
+            this.$refs.tree._focusNode(stat)
             stat.page = result.currentPage || 1
           })
           .finally(() => {
@@ -543,11 +576,6 @@ export default {
     },
 
     move(stat, idx = null) {
-      if (!this.user.can('page:move')) {
-        this.messages.add(this.$gettext('Permission denied'), 'error')
-        return
-      }
-
       const siblings = this.$refs.tree.getSiblings(stat)
       const parent = idx !== null ? stat.parent : stat
       const pos = siblings.indexOf(stat)
@@ -565,7 +593,39 @@ export default {
           break
       }
 
-      this.$apollo
+      this.movePage(
+        this.clip.node.id,
+        parent ? parent.data.id : null,
+        refid
+      ).then(() => {
+        const clipIdx = this.$refs.tree.getSiblings(stat).indexOf(this.clip.stat)
+        const index =
+          idx !== null
+            ? clipIdx >= 0 && clipIdx <= pos
+              ? pos
+              : pos + idx
+            : 0
+
+        this.$refs.tree.move(this.clip.stat, parent, index)
+
+        if (parent) {
+          if (!this.clip.stat.children?.length) {
+            stat.parent.data.has = false
+          }
+          parent.data.has = true
+        }
+
+        this.invalidate()
+      })
+    },
+
+    movePage(id, parentId, refId) {
+      if (!this.user.can('page:move')) {
+        this.messages.add(this.$gettext('Permission denied'), 'error')
+        return Promise.reject()
+      }
+
+      return this.$apollo
         .mutate({
           mutation: gql`
             mutation ($id: ID!, $parent: ID, $ref: ID) {
@@ -574,38 +634,18 @@ export default {
               }
             }
           `,
-          variables: {
-            id: this.clip.node.id,
-            parent: parent ? parent.data.id : null,
-            ref: refid
-          }
+          variables: { id, parent: parentId, ref: refId }
         })
         .then((result) => {
           if (result.errors) {
             throw result.errors
           }
-
-          const index =
-            idx !== null
-              ? pos < this.$refs.tree.getSiblings(stat).indexOf(this.clip.stat)
-                ? pos + idx
-                : pos
-              : 0
-
-          this.$refs.tree.move(this.clip.stat, parent, index)
-
-          if (parent) {
-            if (!this.clip.stat.children?.length) {
-              stat.parent.data.has = false
-            }
-            parent.data.has = true
-          }
-
-          this.invalidate()
         })
         .catch((error) => {
-          this.messages.add(this.$gettext('Error moving page') + ':\n' + error, 'error')
-          this.$log(`PageList::move(): Error moving page`, stat, idx, error)
+          if (error) {
+            this.messages.add(this.$gettext('Error moving page') + ':\n' + error, 'error')
+            this.$log(`PageList::movePage(): Error moving page`, error)
+          }
         })
     },
 
@@ -721,6 +761,20 @@ export default {
         })
     },
 
+    pasteKey() {
+      const stat = this.$refs.tree.activeDescendant
+
+      if (!stat || !this.clip) {
+        return
+      }
+
+      if (this.clip.type === 'copy' && !this.embed && this.user.can('page:add')) {
+        this.paste(stat, 1)
+      } else if (this.clip.type === 'cut' && !this.embed && this.user.can('page:move')) {
+        this.move(stat, 1)
+      }
+    },
+
     publish(stat) {
       if (!this.user.can('page:publish')) {
         this.messages.add(this.$gettext('Permission denied'), 'error')
@@ -829,6 +883,24 @@ export default {
       promise.then((result) => {
         this.items = result?.data || []
         this.loading = false
+      })
+    },
+
+    reorder(event) {
+      if (!['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(event.key)) return
+
+      this.$nextTick(() => {
+        const stat = this.$refs.tree.activeDescendant
+        if (!stat) return
+
+        const siblings = this.$refs.tree.getSiblings(stat)
+        const ref = siblings[siblings.indexOf(stat) + 1] || null
+
+        this.movePage(
+          stat.data.id,
+          stat.parent ? stat.parent.data.id : null,
+          ref ? ref.data.id : null
+        )
       })
     },
 
@@ -1192,8 +1264,21 @@ export default {
     ref="tree"
     v-model="items"
     @change="change()"
+    @keydown.alt="reorder"
+    @keydown.right.exact="expand"
+    @keydown.space.exact.prevent="check"
+    @keydown.ctrl.c.exact.prevent="copyKey"
+    @keydown.ctrl.x.exact.prevent="cutKey"
+    @keydown.ctrl.v.exact.prevent="pasteKey"
+    @keydown.delete.exact="deleteKey"
     :defaultOpen="false"
     :disableDrag="$vuetify.display.smAndDown || !user.can('page:move')"
+    :i18n="{
+      instructions: $gettext('Use arrow keys to navigate. Alt plus arrow keys to reorder.'),
+      movedToPosition: (position, total) => $gettext('Moved to position %{position} of %{total}', {position, total}),
+      outdentedToLevel: (level, position, total) => $gettext('Outdented to level %{level}, position %{position} of %{total}', {level, position, total}),
+      indentedToLevel: (level, position, total) => $gettext('Indented to level %{level}, position %{position} of %{total}', {level, position, total}),
+    }"
     :rtl="$vuetify.locale.isRtl"
     :watermark="false"
     virtualization
@@ -1214,6 +1299,7 @@ export default {
         <v-btn
           v-else
           @click="load(stat, node)"
+          @keydown.enter.prevent="load(stat, node)"
           :class="{ hidden: !node.has && !stat.children.length }"
           :icon="stat.open ? mdiMenuDown : mdiMenuRight"
           :title="$gettext('Toggle child nodes')"
