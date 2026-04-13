@@ -118,7 +118,7 @@ export default {
           variables: {
             input: {
               type: item.type,
-              name: this.$gettext('New shared element'),
+              name: '',
               data: '{}'
             }
           }
@@ -699,7 +699,7 @@ export default {
           <div class="item-head">
             <span class="item-lang" v-if="item.lang">{{ item.lang }}</span>
             <v-icon v-if="item.publish_at" class="publish-at" :icon="mdiClockOutline" />
-            <span class="item-title">{{ item.name }}</span>
+            <span class="item-title">{{ item.name || $gettext('New') }}</span>
           </div>
           <div class="item-type item-subtitle">{{ item.type }}</div>
         </div>

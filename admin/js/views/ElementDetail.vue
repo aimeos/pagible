@@ -233,6 +233,10 @@ export default {
         return Promise.resolve(true)
       }
 
+      if (!this.item.name) {
+        this.item.name = this.title(this.item.data)
+      }
+
       this.saving = true
 
       return this.$apollo
@@ -278,6 +282,19 @@ export default {
         .finally(() => {
           this.saving = false
         })
+    },
+
+    title(data) {
+      return (
+        (
+          data?.title ||
+          data?.text ||
+          Object.values(data || {})
+            .map((v) => (v && typeof v !== 'object' && typeof v !== 'boolean' ? v : null))
+            .filter((v) => !!v)
+            .join(' - ')
+        ).substring(0, 100) || ''
+      )
     },
 
     writeText(prompt, context = [], files = []) {
