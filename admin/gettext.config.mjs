@@ -1,4 +1,8 @@
 export default {
+  input: {
+    path: "./js",
+    include: ["**/*.js", "**/*.ts", "**/*.vue"],
+  },
   output: {
     locales: [
       'ar', 'bg', 'cs', 'da', 'de', 'el', 'en', 'es', 'et', 'fi', 'fr',

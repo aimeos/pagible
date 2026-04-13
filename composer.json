@@ -22,7 +22,8 @@
 		"orchestra/testbench": "^9.0||^10.0||^11.0",
 		"laravel-json-api/testing": "^3.1",
 		"larastan/larastan": "^3.9",
-		"om/potrans": "^1.0.1"
+		"om/potrans": "^1.0.1",
+		"brianium/paratest": "^7.19"
 	},
 	"repositories": [
 		{"type": "path", "url": "core"},
@@ -43,6 +44,7 @@
 	"autoload-dev": {
 		"psr-4": {
 			"Tests\\": [
+				"tests/",
 				"core/tests/",
 				"admin/tests/",
 				"ai/tests/",
@@ -63,15 +65,15 @@
 			"@php vendor/bin/testbench package:discover --ansi"
 		],
 		"translate": [
-			"npm run gettext:extract --prefix admin/app",
-			"mv admin/app/i18n/no.po admin/app/i18n/nb.po",
-			"for POFILE in `ls admin/app/i18n/*.po`; do msgattrib --no-obsolete -o $POFILE $POFILE; done",
-			"for POFILE in `ls admin/app/i18n/*.po`; do vendor/bin/potrans deepl --ignore='%\\{[a-z]+\\}' --only --pot=admin/app/i18n/messages.pot $POFILE; done",
-			"mv admin/app/i18n/nb.po admin/app/i18n/no.po",
-			"npm run gettext:compile --prefix admin/app"
+			"npm run gettext:extract --prefix admin",
+			"mv admin/i18n/no.po admin/i18n/nb.po",
+			"for POFILE in `ls admin/i18n/*.po`; do msgattrib --no-obsolete -o $POFILE $POFILE; done",
+			"for POFILE in `ls admin/i18n/*.po`; do vendor/bin/potrans deepl --ignore='%\\{[a-z]+\\}' --only --pot=admin/i18n/messages.pot $POFILE; done",
+			"mv admin/i18n/nb.po admin/i18n/no.po",
+			"npm run gettext:compile --prefix admin"
 		],
 		"build": [
-			"npm run build --prefix admin/app"
+			"npm run build --prefix admin"
 		]
 	},
 	"config": {
