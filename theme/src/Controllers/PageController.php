@@ -123,16 +123,11 @@ class PageController extends Controller
      */
     protected function latest( string $path, string $domain )
     {
-        $version = Version::where( 'versionable_type', Page::class )
-            ->where( 'data->domain', $domain )
-            ->where( 'data->path', $path )
-            ->orderByDesc( 'id' )
-            ->take( 1 )
-            ->first();
+        $page = Page::with( ['files', 'elements', 'latest'] )
+            ->whereHas( 'latest', fn( $q ) => $q->where( 'data->path', $path )->where( 'data->domain', $domain ) )->first()
+            ?? Page::with( ['files', 'elements'] )->where( 'domain', $domain )->where( 'path', $path )->firstOrFail();
 
-        $page = $version
-            ? Page::with( ['files', 'elements'] )->where( 'id', $version->versionable_id )->firstOrFail()
-            : Page::with( ['files', 'elements'] )->where( 'domain', $domain )->where( 'path', $path )->firstOrFail();
+        $version = $page->latest;
 
         if( $to = $version?->data->to ?? $page->to ) {
             return str_starts_with( $to, 'http' ) ? redirect()->away( $to ) : redirect()->to( $to );
