@@ -10,7 +10,7 @@ class JsonapiServiceProvider extends Provider
     {
         $this->loadRoutesFrom( dirname( __DIR__ ) . '/routes/jsonapi.php' );
 
-        $this->publishes( [dirname( __DIR__ ) . '/config/cms/jsonapi.php' => config_path( 'cms/jsonapi.php' )], 'cms-jsonapi-config' );
+        $this->publishes( [dirname( __DIR__ ) . '/config/cms/jsonapi.php' => config_path( 'cms/jsonapi.php' )], 'cms-config' );
 
         $this->console();
     }

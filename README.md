@@ -53,8 +53,8 @@ Add a line in the "post-update-cmd" section of your `composer.json` file to upda
 
 ```json
 "post-update-cmd": [
-    "@php artisan vendor:publish --force --tag=admin",
-    "@php artisan vendor:publish --tag=public",
+    "@php artisan vendor:publish --force --tag=cms-admin",
+    "@php artisan vendor:publish --tag=cms-theme",
     "@php artisan migrate",
     ...
 ],

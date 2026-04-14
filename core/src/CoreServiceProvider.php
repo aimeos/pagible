@@ -18,7 +18,7 @@ class CoreServiceProvider extends Provider
         $this->publishes( [
             $basedir . '/config/cms.php' => config_path( 'cms.php' ),
             $basedir . '/config/cms/schemas.php' => config_path( 'cms/schemas.php' ),
-        ], 'cms-core-config' );
+        ], 'cms-config' );
 
         $this->rateLimiter();
         $this->userCasts();

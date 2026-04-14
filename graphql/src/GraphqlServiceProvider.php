@@ -10,8 +10,8 @@ class GraphqlServiceProvider extends Provider
     {
         $basedir = dirname( __DIR__ );
 
-        $this->publishes( [$basedir . '/schema/cms.graphql' => base_path( 'graphql/cms.graphql' )], 'cms-graphql-schema' );
-        $this->publishes( [$basedir . '/config/cms/graphql.php' => config_path( 'cms/graphql.php' )], 'cms-graphql-config' );
+        $this->publishes( [$basedir . '/schema/cms.graphql' => base_path( 'graphql/cms.graphql' )], 'cms-graphql' );
+        $this->publishes( [$basedir . '/config/cms/graphql.php' => config_path( 'cms/graphql.php' )], 'cms-config' );
 
         \Aimeos\Cms\Permission::register( [
             'page:metrics',

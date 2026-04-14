@@ -12,12 +12,8 @@ class AiServiceProvider extends Provider
 
         $this->loadViewsFrom( $basedir . '/views', 'cms' );
 
-        $this->publishes( [$basedir . '/config/cms/ai.php' => config_path( 'cms/ai.php' )], 'cms-ai-config' );
-
-        if( class_exists( \Nuwave\Lighthouse\LighthouseServiceProvider::class ) )
-        {
-            $this->publishes( [$basedir . '/graphql/cms-ai.graphql' => base_path( 'graphql/cms-ai.graphql' )], 'cms-graphql-schema' );
-        }
+        $this->publishes( [$basedir . '/config/cms/ai.php' => config_path( 'cms/ai.php' )], 'cms-config' );
+        $this->publishes( [$basedir . '/graphql/cms-ai.graphql' => base_path( 'graphql/cms-ai.graphql' )], 'cms-graphql' );
 
         \Aimeos\Cms\Permission::register( [
             'page:synthesize',

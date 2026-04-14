@@ -10,11 +10,6 @@ class McpServiceProvider extends Provider
     {
         // MCP server registration is handled by laravel/mcp package discovery
 
-        $this->console();
-    }
-
-    protected function console() : void
-    {
         if( $this->app->runningInConsole() )
         {
             $this->commands( [

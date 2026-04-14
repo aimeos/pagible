@@ -10,12 +10,6 @@ class SearchServiceProvider extends Provider
     {
         $this->loadMigrationsFrom( dirname( __DIR__ ) . '/database/migrations' );
 
-        $this->console();
-        $this->scout();
-    }
-
-    protected function console() : void
-    {
         if( $this->app->runningInConsole() )
         {
             $this->commands( [
@@ -24,10 +18,7 @@ class SearchServiceProvider extends Provider
                 \Aimeos\Cms\Commands\InstallSearch::class,
             ] );
         }
-    }
 
-    protected function scout(): void
-    {
         app(\Laravel\Scout\EngineManager::class)->extend('cms', function () {
             return new \Aimeos\Cms\Scout\CmsEngine();
         });

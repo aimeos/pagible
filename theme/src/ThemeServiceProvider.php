@@ -22,8 +22,8 @@ class ThemeServiceProvider extends Provider
         $this->loadViewsFrom( $basedir . '/views', 'cms' );
         $this->loadJsonTranslationsFrom( $basedir . '/lang' );
 
-        $this->publishes( [$basedir . '/public' => public_path( 'vendor/cms/theme' )], 'cms-theme-public' );
-        $this->publishes( [$basedir . '/config/cms/theme.php' => config_path( 'cms/theme.php' )], 'cms-theme-config' );
+        $this->publishes( [$basedir . '/public' => public_path( 'vendor/cms/theme' )], 'cms-theme' );
+        $this->publishes( [$basedir . '/config/cms/theme.php' => config_path( 'cms/theme.php' )], 'cms-config' );
 
         // Defer catch-all route to ensure it loads last
         $this->app->booted(function() use ($basedir) {

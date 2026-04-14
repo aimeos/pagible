@@ -14,9 +14,10 @@ class AdminServiceProvider extends Provider
         $this->loadViewsFrom( $basedir . '/views', 'cms' );
         $this->loadRoutesFrom( $basedir . '/routes/admin.php' );
 
-        $this->publishes( [$basedir . '/app/dist' => public_path( 'vendor/cms/admin' )], 'cms-admin' );
-        $this->publishes( [$basedir . '/config/cms/admin.php' => config_path( 'cms/admin.php' )], 'cms-admin-config' );
+        $this->publishes( [$basedir . '/dist' => public_path( 'vendor/cms/admin' )], 'cms-admin' );
+        $this->publishes( [$basedir . '/config/cms/admin.php' => config_path( 'cms/admin.php' )], 'cms-config' );
     }
+
 
     public function register()
     {
