@@ -108,7 +108,7 @@
                             </svg>
                         </a>
                     </li>
-                    @foreach($page->nav() as $item)
+                    @foreach($page->nav(1) as $item)
                         @if(cms($item, 'status') == 1)
                             <li>
                                 @if($item->children->count())
