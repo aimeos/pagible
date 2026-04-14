@@ -118,6 +118,7 @@ return new class extends Migration
         $db->statement('CREATE INDEX cms_versions_data_mime_tenant_id_id_index ON cms_versions (json_extract(data, \'$."mime"\'), tenant_id, id)');
         $db->statement('CREATE INDEX cms_versions_data_scheduled_tenant_id_id_index ON cms_versions (json_extract(data, \'$."scheduled"\'), tenant_id, id)');
         $db->statement('CREATE INDEX cms_versions_data_name_tenant_id_id_index ON cms_versions (json_extract(data, \'$."name"\'), tenant_id, id)');
+        $db->statement('CREATE INDEX cms_versions_tenantid_versionabletype_datadomain_datapath_index ON cms_versions (versionable_type, json_extract(data, \'$."domain"\'), json_extract(data, \'$."path"\'), tenant_id)');
     }
 
 

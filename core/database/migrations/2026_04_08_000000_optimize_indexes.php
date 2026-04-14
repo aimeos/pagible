@@ -397,6 +397,10 @@ return new class extends Migration
                 $db->statement("CREATE INDEX $idx ON cms_versions ($expr, tenant_id, id)");
             }
         }
+
+        if (!$this->hasIndex($schema, 'cms_versions', 'cms_versions_tenantid_versionabletype_datadomain_datapath_index')) {
+            $db->statement("CREATE INDEX cms_versions_tenantid_versionabletype_datadomain_datapath_index ON cms_versions (versionable_type, json_extract(data, '\$.\"domain\"'), json_extract(data, '\$.\"path\"'), tenant_id)");
+        }
     }
 
 
