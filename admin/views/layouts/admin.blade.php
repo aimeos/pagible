@@ -28,7 +28,7 @@
       data-urlgraphql="{{ route('graphql') }}"
       data-urladmin="{{ route('cms.admin', [], false) }}"
       data-urlproxy="{{ route('cms.proxy', ['url' => '_url_']) }}"
-      data-urlpage="{{ route('cms.page', ['path' => '_path_'] + (config('cms.multidomain') ? ['domain' => '_domain_'] : [])) }}"
+      data-urlpage="{{ Route::has('cms.page') ? route('cms.page', ['path' => '_path_'] + (config('cms.multidomain') ? ['domain' => '_domain_'] : [])) : '' }}"
       data-urlfile="{{ \Illuminate\Support\Facades\Storage::disk( config( 'cms.disk', 'public' ) )->url( '' ) }}"
       data-theme="{{ json_encode( config( 'cms.admin.colors', [] ) ) }}"
       data-locales="{{ json_encode( config( 'cms.locales', ['en'] ) ) }}"

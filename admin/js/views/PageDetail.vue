@@ -13,6 +13,7 @@ import { defineAsyncComponent } from 'vue'
 const PageDetailMetrics = defineAsyncComponent(() => import('../components/PageDetailMetrics.vue'))
 
 import {
+  useAppStore,
   useUserStore,
   useDrawerStore,
   useLanguageStore,
@@ -62,8 +63,10 @@ export default {
     const schemas = useSchemaStore()
     const drawer = useDrawerStore()
     const user = useUserStore()
+    const app = useAppStore()
 
     return {
+      app,
       user,
       drawer,
       viewStack,
@@ -82,23 +85,25 @@ export default {
     }
   },
 
-  data: () => ({
-    tab: 'editor',
-    aside: '',
-    asidePage: 'meta',
-    changed: {},
-    errors: {},
-    assets: {},
-    elements: {},
-    latest: null,
-    pubmenu: null,
-    publishAt: null,
-    publishing: false,
-    translating: false,
-    vhistory: false,
-    saving: false,
-    savecnt: 0
-  }),
+  data() {
+    return {
+      tab: this.app.urlpage ? 'editor' : 'content',
+      aside: '',
+      asidePage: 'meta',
+      changed: {},
+      errors: {},
+      assets: {},
+      elements: {},
+      latest: null,
+      pubmenu: null,
+      publishAt: null,
+      publishing: false,
+      translating: false,
+      vhistory: false,
+      saving: false,
+      savecnt: 0
+    }
+  },
 
   computed: {
     currentAssets() {
@@ -831,7 +836,7 @@ export default {
   <v-main class="page-details" :aria-label="$gettext('Page')">
     <v-form @submit.prevent>
       <v-tabs fixed-tabs v-model="tab">
-        <v-tab value="editor" @click="aside = ''">
+        <v-tab v-if="app.urlpage" value="editor" @click="aside = ''">
           {{ $gettext('Editor') }}
         </v-tab>
         <v-tab
@@ -854,7 +859,7 @@ export default {
       </v-tabs>
 
       <v-window v-model="tab" :touch="false">
-        <v-window-item value="editor">
+        <v-window-item v-if="app.urlpage" value="editor">
           <PageDetailEditor
             :save="{ fcn: save, count: savecnt }"
             :item="item"
