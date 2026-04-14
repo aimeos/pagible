@@ -311,6 +311,7 @@ class GraphqlElementTest extends GraphqlTestAbstract
                         'data' => json_encode( [
                             'data' => ['key' => 'value'],
                             'lang' => 'en',
+                            'name' => '',
                             'type' => 'heading',
                             'scheduled' => 0,
                         ] ),
