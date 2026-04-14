@@ -239,6 +239,7 @@ class Resource
             $data = array_diff_key( $input, array_flip( ['meta', 'config', 'content'] ) );
             array_walk( $data, fn( &$v, $k ) => $v = !in_array( $k, ['related_id'] ) ? ( $v ?? '' ) : $v );
             $data = array_replace( (array) $page->latest?->data, $data );
+            $data['domain'] ??= $page->domain ?? '';
 
             $aux = array_intersect_key( $input, array_flip( ['meta', 'config', 'content'] ) );
             $aux = array_replace( (array) $page->latest?->aux, $aux );

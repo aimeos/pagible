@@ -124,7 +124,9 @@ class PageController extends Controller
     protected function latest( string $path, string $domain )
     {
         $page = Page::with( ['files', 'elements', 'latest'] )
-            ->whereHas( 'latest', fn( $q ) => $q->where( 'data->path', $path )->where( 'data->domain', $domain ) )->first()
+            ->whereHas( 'latest', fn( $q ) => $q->where( 'data->path', $path )
+                ->when( $domain !== '', fn( $q ) => $q->where( 'data->domain', $domain ) )
+            )->first()
             ?? Page::with( ['files', 'elements'] )->where( 'domain', $domain )->where( 'path', $path )->firstOrFail();
 
         $version = $page->latest;
