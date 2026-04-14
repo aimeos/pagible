@@ -9,6 +9,7 @@ import { createApolloProvider } from '@vue/apollo-option'
 import { ApolloClient, ApolloLink, InMemoryCache } from '@apollo/client/core'
 import createUploadLink from 'apollo-upload-client/createUploadLink.mjs'
 import router from './routes'
+import { useUserStore } from './stores'
 import { urlgraphql } from './config'
 
 const retryLink = new RetryLink({
@@ -25,6 +26,7 @@ const errorLink = onError(({ errors }) => {
       err.extensions?.code === 'UNAUTHENTICATED' ||
       err.extensions?.http?.status === 401
     ) {
+      useUserStore().me = null
       router.push({ name: 'login' })
       break
     }
