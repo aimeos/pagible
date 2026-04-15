@@ -9,6 +9,7 @@ namespace Aimeos\Cms\Commands;
 
 use Illuminate\Console\Command;
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Aimeos\Cms\Concerns\Benchmarks;
@@ -265,6 +266,8 @@ class BenchmarkMcp extends Command
         }
         finally
         {
+            Auth::logout();
+            Auth::guard()->forgetUser();
             DB::connection( $conn )->rollBack();
         }
 
