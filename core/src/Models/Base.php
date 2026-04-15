@@ -88,7 +88,7 @@ abstract class Base extends Model
         $table = $this->getTable();
         $driver = $this->getConnection()->getDriverName();
 
-        $query->whereIn( "{$table}.latest_id", function( $sub ) use ( $table, $driver, $wheres ) {
+        $query->where( "{$table}.latest_id", '=', function( $sub ) use ( $table, $driver, $wheres ) {
             $sub->select( 'cms_versions.id' )
                 ->from( 'cms_versions' )
                 ->where( 'cms_versions.versionable_type', static::class )
@@ -97,6 +97,8 @@ abstract class Base extends Model
             foreach( $wheres as $field => $value ) {
                 $sub->where( DB::qualify( $field, $table, true, $driver ) ?? "{$table}.{$field}", $value );
             }
+
+            $sub->limit( 1 );
         } );
     }
 
