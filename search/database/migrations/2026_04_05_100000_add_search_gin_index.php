@@ -39,10 +39,24 @@ return new class extends Migration
             }
         }
 
-        if( !in_array('cms_index_tenant_id_indexable_type_latest_index', $indexes) )
+        if( in_array('cms_index_tenant_id_indexable_type_latest_index', $indexes) )
         {
             $schema->table('cms_index', function($table) {
-                $table->index(['tenant_id', 'indexable_type', 'latest']);
+                $table->dropIndex(['tenant_id', 'indexable_type', 'latest']);
+            });
+        }
+
+        if( in_array('cms_index_indexable_id_indexable_type_latest_tenant_id_index', $indexes) )
+        {
+            $schema->table('cms_index', function($table) {
+                $table->dropIndex(['indexable_id', 'indexable_type', 'latest', 'tenant_id']);
+            });
+        }
+
+        if( !in_array('cms_index_tenant_id_indexable_type_latest_indexable_id_index', $indexes) )
+        {
+            $schema->table('cms_index', function($table) {
+                $table->index(['tenant_id', 'indexable_type', 'latest', 'indexable_id']);
             });
         }
     }
