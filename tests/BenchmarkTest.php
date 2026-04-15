@@ -74,6 +74,14 @@ class BenchmarkTest extends CmsTestAbstract
             '-vvv' => true,
         ], $output );
 
+        $run += Artisan::call( 'cms:benchmark:search', [
+            '--domain' => 'benchmark',
+            '--tries' => 10,
+            '--chunk' => $chunk,
+            '--force' => true,
+            '-vvv' => true,
+        ], $output );
+
         $this->assertSame( 0, $run, 'Benchmark run failed: ' . Artisan::output() );
 
         $unseed = Artisan::call( 'cms:benchmark', [
