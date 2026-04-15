@@ -37,9 +37,7 @@ class Blog
         }
 
         if( \Aimeos\Cms\Permission::can( 'page:view', $request->user() ) ) {
-            $builder->whereHas('latest', function( $builder ) {
-                $builder->where( 'data->status', 1 );
-            } );
+            $builder->whereLatest( ['status' => 1] );
         } else {
             $builder->where( 'status', 1 );
         }

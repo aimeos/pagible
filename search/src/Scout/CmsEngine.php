@@ -2,6 +2,7 @@
 
 namespace Aimeos\Cms\Scout;
 
+use Aimeos\Cms\DB;
 use Aimeos\Cms\Scout as ScoutHelper;
 use Illuminate\Support\LazyCollection;
 use Laravel\Scout\Builder;
@@ -299,7 +300,7 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
             foreach( $builder->orders as $order ) {
                 // In non-callback mode Scout::apply() already qualified the column.
                 $col = $builder->callback
-                    ? ( ScoutHelper::qualify( $order['column'], $modelTable, $isDraft, $driver ) ?? $order['column'] )
+                    ? ( DB::qualify( $order['column'], $modelTable, $isDraft, $driver ) ?? $order['column'] )
                     : $order['column'];
                 $query->orderBy( $col, $order['direction'] );
             }
