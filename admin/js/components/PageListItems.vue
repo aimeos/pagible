@@ -324,6 +324,12 @@ export default {
       delete filter.publish
       delete filter.view
 
+      for(const key in filter) {
+        if(filter[key] === null) {
+          delete filter[key]
+        }
+      }
+
       filter.parent_id = parent
 
       return this.$apollo
@@ -917,6 +923,12 @@ export default {
       delete filter.trashed
       delete filter.publish
       delete filter.view
+
+      for(const key in filter) {
+        if(filter[key] === null) {
+          delete filter[key]
+        }
+      }
 
       if (this.term) {
         filter.any = this.term

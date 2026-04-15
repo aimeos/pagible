@@ -353,6 +353,12 @@ export default {
       delete filter.publish
       delete filter.trashed
 
+      for(const key in filter) {
+        if(filter[key] === null) {
+          delete filter[key]
+        }
+      }
+
       if (this.term) {
         filter.any = this.term
       }

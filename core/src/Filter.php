@@ -24,20 +24,20 @@ class Filter
      */
     public static function elements( Builder $builder, array $filter ) : Builder
     {
-        if( isset( $filter['id'] ) ) {
+        if( array_key_exists( 'id', $filter ) ) {
             $builder->whereIn( 'id', (array) $filter['id'] );
         }
 
-        if( isset( $filter['lang'] ) ) {
-            $builder->where( 'lang', $filter['lang'] );
+        if( array_key_exists( 'lang', $filter ) ) {
+            $builder->where( 'lang', (string) ( $filter['lang'] ?? '' ) );
         }
 
-        if( isset( $filter['type'] ) ) {
-            $builder->where( 'type', (string) $filter['type'] );
+        if( array_key_exists( 'type', $filter ) ) {
+            $builder->where( 'type', (string) ( $filter['type'] ?? '' ) );
         }
 
-        if( isset( $filter['editor'] ) ) {
-            $builder->where( 'editor', (string) $filter['editor'] );
+        if( array_key_exists( 'editor', $filter ) ) {
+            $builder->where( 'editor', (string) ( $filter['editor'] ?? '' ) );
         }
 
         static::publish( $builder, $filter['publish'] ?? null );
@@ -56,20 +56,20 @@ class Filter
      */
     public static function files( Builder $builder, array $filter ) : Builder
     {
-        if( isset( $filter['id'] ) ) {
+        if( array_key_exists( 'id', $filter ) ) {
             $builder->whereIn( 'id', (array) $filter['id'] );
         }
 
-        if( isset( $filter['lang'] ) ) {
-            $builder->where( 'lang', $filter['lang'] );
+        if( array_key_exists( 'lang', $filter ) ) {
+            $builder->where( 'lang', (string) ( $filter['lang'] ?? '' ) );
         }
 
-        if( isset( $filter['mime'] ) ) {
-            $builder->where( 'mime', (string) $filter['mime'] );
+        if( array_key_exists( 'mime', $filter ) ) {
+            $builder->where( 'mime', (string) ( $filter['mime'] ?? '' ) );
         }
 
-        if( isset( $filter['editor'] ) ) {
-            $builder->where( 'editor', (string) $filter['editor'] );
+        if( array_key_exists( 'editor', $filter ) ) {
+            $builder->where( 'editor', (string) ( $filter['editor'] ?? '' ) );
         }
 
         static::publish( $builder, $filter['publish'] ?? null );
@@ -88,7 +88,7 @@ class Filter
      */
     public static function pages( Builder $builder, array $filter ) : Builder
     {
-        if( isset( $filter['id'] ) ) {
+        if( array_key_exists( 'id', $filter ) ) {
             $builder->whereIn( 'id', (array) $filter['id'] );
         }
 
@@ -96,22 +96,22 @@ class Filter
             $builder->where( 'parent_id', $filter['parent_id'] );
         }
 
-        if( isset( $filter['lang'] ) ) {
-            $builder->where( 'lang', $filter['lang'] );
+        if( array_key_exists( 'lang', $filter ) ) {
+            $builder->where( 'lang', (string) ( $filter['lang'] ?? '' ) );
         }
 
-        if( isset( $filter['status'] ) ) {
-            $builder->where( 'status', (int) $filter['status'] );
+        if( array_key_exists( 'status', $filter ) ) {
+            $builder->where( 'status', (int) ( $filter['status'] ?? 0 ) );
         }
 
-        if( isset( $filter['cache'] ) ) {
-            $builder->where( 'cache', (int) $filter['cache'] );
+        if( array_key_exists( 'cache', $filter ) ) {
+            $builder->where( 'cache', (int) ( $filter['cache'] ?? 0 ) );
         }
 
         foreach( ['domain', 'editor', 'path', 'tag', 'theme', 'to', 'type'] as $field )
         {
-            if( isset( $filter[$field] ) ) {
-                $builder->where( $field, (string) $filter[$field] );
+            if( array_key_exists( $field, $filter ) ) {
+                $builder->where( $field, (string) ( $filter[$field] ?? '' ) );
             }
         }
 
