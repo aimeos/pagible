@@ -66,12 +66,12 @@ class BenchmarkTest extends CmsTestAbstract
 
         $this->assertSame( 0, $seed, 'Seeding failed: ' . Artisan::output() );
 
-        $run = Artisan::call( 'cms:benchmark', [
+        $run = Artisan::call( 'cms:benchmark:theme', [
             '--domain' => 'benchmark',
             '--tries' => 10,
             '--chunk' => $chunk,
             '--force' => true,
-            '-v' => true,
+            '-vvv' => true,
         ], $output );
 
         $this->assertSame( 0, $run, 'Benchmark run failed: ' . Artisan::output() );
