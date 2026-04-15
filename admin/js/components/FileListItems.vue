@@ -95,13 +95,19 @@ export default {
     },
 
     order() {
-      return this.sort?.column === 'ID'
-        ? this.sort?.order === 'DESC'
-          ? this.$gettext('latest')
-          : this.$gettext('oldest')
-        : this.sort?.column === 'BYVERSIONS_COUNT'
-          ? this.$gettext('usage')
-          : this.sort?.column || ''
+      if(this.sort?.column === 'ID') {
+        return this.sort?.order === 'DESC' ? this.$gettext('latest') : this.$gettext('oldest')
+      }
+
+      const labels = {
+        'BYVERSIONS_COUNT': this.$gettext('usage'),
+        'EDITOR': this.$gettext('editor'),
+        'LANG': this.$gettext('language'),
+        'MIME': this.$gettext('mime'),
+        'NAME': this.$gettext('name'),
+      }
+
+      return labels[this.sort?.column] || this.sort?.column || ''
     }
   },
 

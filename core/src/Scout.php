@@ -148,6 +148,7 @@ class Scout
         $modelCols = self::MODEL_COLUMNS[$table] ?? ['id', 'tenant_id'];
 
         return match( true ) {
+            $field === 'byversions_count' => $field,
             in_array( $field, ['lang', 'editor'] ) => ( $isDraft ? 'cms_versions.' : $table . '.' ) . $field,
             $field === 'published' => $isDraft ? 'cms_versions.published' : null,
             in_array( $field, $modelCols ) => $table . '.' . $field,

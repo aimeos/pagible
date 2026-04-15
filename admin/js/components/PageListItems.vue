@@ -1259,11 +1259,6 @@ export default {
           }}</v-btn>
         </v-list-item>
         <v-list-item>
-          <v-btn variant="text" @click="sort = { column: 'TITLE', order: 'ASC' }">{{
-            $gettext('title')
-          }}</v-btn>
-        </v-list-item>
-        <v-list-item>
           <v-btn variant="text" @click="sort = { column: 'EDITOR', order: 'ASC' }">{{
             $gettext('editor')
           }}</v-btn>

@@ -290,6 +290,14 @@ class CmsEngineTest extends SearchTestAbstract
         $search = File::search( '' )->searchFields( 'draft' )->take( 25 );
         Filter::files( $search, ['publish' => 'SCHEDULED'] );
         $this->assertGreaterThanOrEqual( 1, $search->get()->count() );
+
+        // sort by usage (byversions_count)
+        $search = File::search( '' )->searchFields( 'draft' )
+            ->query( fn( $q ) => $q->addSelect( ['byversions_count' => DB::table( 'cms_version_file' )
+                ->selectRaw( 'count(*)' )
+                ->whereColumn( 'file_id', 'cms_files.id' )] ) )
+            ->orderBy( 'byversions_count', 'asc' )->take( 25 );
+        $this->assertGreaterThanOrEqual( 1, $search->get()->count() );
     }
 
 
