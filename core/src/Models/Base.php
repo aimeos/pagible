@@ -90,6 +90,7 @@ abstract class Base extends Model
 
         $query->select( "{$table}.*" )
             ->join( 'cms_versions', "{$table}.latest_id", '=', 'cms_versions.id' )
+            ->where( 'cms_versions.versionable_type', static::class )
             ->where( 'cms_versions.tenant_id', \Aimeos\Cms\Tenancy::value() );
 
         foreach( $wheres as $field => $value ) {

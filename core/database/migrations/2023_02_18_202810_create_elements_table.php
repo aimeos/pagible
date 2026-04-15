@@ -42,6 +42,7 @@ return new class extends Migration
 
             $table->index(['type', 'tenant_id']);
             $table->index(['deleted_at', 'tenant_id']);
+            $table->index(['latest_id']);
         });
     }
 };
