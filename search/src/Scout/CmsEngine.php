@@ -353,6 +353,10 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
             $query->select( "{$modelTable}.*" );
         }
 
+        $query->join( 'cms_index', 'cms_index.indexable_id', '=', "{$modelTable}.id" )
+            ->where( 'cms_index.indexable_type', get_class( $builder->model ) )
+            ->where( 'cms_index.tenant_id', \Aimeos\Cms\Tenancy::value() );
+
         match( $driver ) {
             'mysql', 'mariadb' => $this->searchMySQL( $query->getQuery(), $terms ),
             'pgsql' => $this->searchPostgreSQL( $query->getQuery(), $terms ),
@@ -360,10 +364,6 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
             'sqlite' => $this->searchSQLite( $query->getQuery(), $terms ),
             default => $this->searchLike( $query->getQuery(), $terms ),
         };
-
-        $query->join( 'cms_index', 'cms_index.indexable_id', '=', "{$modelTable}.id" )
-            ->where( 'cms_index.indexable_type', get_class( $builder->model ) )
-            ->where( 'cms_index.tenant_id', \Aimeos\Cms\Tenancy::value() );
 
         foreach( $builder->wheres as $key => $where )
         {
