@@ -47,9 +47,6 @@ use Laravel\Scout\Searchable;
  * @property int $status
  * @property int $cache
  * @property string $editor
- * @property int $_lft
- * @property int $_rgt
- * @property int $depth
  * @property string|null $parent_id
  * @property string|null $latest_id
  * @property \Illuminate\Support\Carbon|null $created_at
@@ -165,19 +162,23 @@ class Page extends Base
     public static function tree( ?string $id = null ) : \Aimeos\Nestedset\QueryBuilder
     {
         $root = $id ? static::withTrashed()->findOrFail( $id ) : null;
-        $maxDepth = ( $root->depth ?? 0 ) + config( 'cms.navdepth', 2 );
+        $maxDepth = ( $root?->getDepth() ?? 0 ) + config( 'cms.navdepth', 2 );
+
+        $lft = \Aimeos\Nestedset\NestedSet::LFT;
+        $rgt = \Aimeos\Nestedset\NestedSet::RGT;
+        $depth = \Aimeos\Nestedset\NestedSet::DEPTH;
 
         $builder = Nav::withTrashed()
-            ->select( 'id', 'parent_id', '_lft', '_rgt', 'depth', 'name', 'title', 'tag', 'path', 'domain', 'lang', 'to', 'status', 'config' )
+            ->select( 'id', 'parent_id', 'name', 'title', 'tag', 'path', 'domain', 'lang', 'to', 'status', 'config', 'latest_id', $lft, $rgt, $depth )
             ->with( 'latest' )
-            ->orderBy( '_lft' );
+            ->orderBy( $lft );
 
         if( $root ) {
-            $builder->where( '_lft', '>=', $root->_lft )
-                ->where( '_rgt', '<=', $root->_rgt )
-                ->whereIn( 'depth', range( (int) $root->depth, $maxDepth ) );
+            $builder->where( $lft, '>=', $root->getLft() )
+                ->where( $rgt, '<=', $root->getRgt() )
+                ->whereIn( $depth, range( (int) $root->getDepth(), $maxDepth ) );
         } else {
-            $builder->whereIn( 'depth', range( 0, $maxDepth ) );
+            $builder->whereIn( $depth, range( 0, $maxDepth ) );
         }
 
         return $builder;
@@ -229,7 +230,8 @@ class Page extends Base
     public function ancestors() : AncestorsRelation
     {
         $builder = $this->newScopedQuery()
-            ->select( 'id', 'parent_id', '_lft', '_rgt', 'depth', 'name', 'title', 'tag', 'path', 'domain', 'lang', 'to', 'status', 'config', 'latest_id' )
+            ->select(
+                'id', 'parent_id', $this->getLftName(), $this->getRgtName(), $this->getDepthName(), 'name', 'title', 'tag', 'path', 'domain', 'lang', 'to', 'status', 'config', 'latest_id' )
             ->setModel( new Nav() )
             ->defaultOrder();
 
@@ -245,7 +247,7 @@ class Page extends Base
     public function children() : HasMany
     {
         return $this->hasMany( Nav::class, $this->getParentIdName() )
-            ->select( 'id', 'parent_id', '_lft', '_rgt', 'depth', 'name', 'title', 'tag', 'path', 'domain', 'lang', 'to', 'status', 'config', 'latest_id' )
+            ->select( 'id', 'parent_id', $this->getLftName(), $this->getRgtName(), $this->getDepthName(), 'name', 'title', 'tag', 'path', 'domain', 'lang', 'to', 'status', 'config', 'latest_id' )
             ->setModel( new Nav() )
             ->defaultOrder();
     }
@@ -328,7 +330,7 @@ class Page extends Base
      */
     public function getHasAttribute() : bool
     {
-        return $this->_rgt > $this->_lft + 1;
+        return $this->getRgt() > $this->getLft() + 1;
     }
 
 
@@ -372,11 +374,15 @@ class Page extends Base
             return new \Aimeos\Nestedset\Collection();
         }
 
-        $builder = Nav::select( 'id', 'parent_id', '_lft', '_rgt', 'depth', 'name', 'title', 'tag', 'path', 'domain', 'lang', 'to', 'status', 'config' )
-            ->where( '_lft', '>=', $start->_lft )
-            ->where( '_rgt', '<=', $start->_rgt )
-            ->whereIn( 'depth', range( (int) $start->depth, ( $start->depth ?? 0 ) + config( 'cms.navdepth', 2 ) ) )
-            ->orderBy( '_lft' );
+        $lft = $this->getLftName();
+        $rgt = $this->getRgtName();
+        $depth = $this->getDepthName();
+
+        $builder = Nav::select( 'id', 'parent_id', 'name', 'title', 'tag', 'path', 'domain', 'lang', 'to', 'status', 'config', 'latest_id', $lft, $rgt, $depth )
+            ->where( $lft, '>', $start->getLft() )
+            ->where( $rgt, '<', $start->getRgt() )
+            ->whereIn( $depth, range( (int) $start->getDepth(), ( $start->getDepth() ?? 0 ) + config( 'cms.navdepth', 2 ) ) )
+            ->orderBy( $lft );
 
         if( \Aimeos\Cms\Permission::can( 'page:view', Auth::user() ) ) {
             $builder->with( 'latest' );
@@ -394,8 +400,10 @@ class Page extends Base
     public function parent() : BelongsTo
     {
         return $this->belongsTo( Nav::class, $this->getParentIdName() )
-            ->select( 'id', 'parent_id', '_lft', '_rgt', 'depth', 'name', 'title', 'tag', 'path', 'domain', 'lang', 'to', 'status', 'config', 'latest_id' )
-            ->setModel( new Nav() );
+            ->select(
+                'id', 'parent_id', 'name', 'title', 'tag', 'path', 'domain', 'lang', 'to', 'status',
+                'config', 'latest_id', $this->getDepthName(), $this->getLftName(), $this->getRgtName()
+            )->setModel( new Nav() );
     }
 
 
@@ -459,21 +467,25 @@ class Page extends Base
      */
     public function subtree() : DescendantsRelation
     {
-        // restrict maximum depth to three levels for performance reasons
-        $maxDepth = ( $this->depth ?? 0 ) + config( 'cms.navdepth', 2 );
         $table = $this->getTable();
+        $lft = $this->getLftName();
+        $rgt = $this->getRgtName();
+        $depth = $this->getDepthName();
+
+        // restrict maximum depth to three levels for performance reasons
+        $maxDepth = ( $this->getDepth() ?? 0 ) + config( 'cms.navdepth', 2 );
 
         $builder = $this->newScopedQuery()
-            ->select( 'id', 'parent_id', '_lft', '_rgt', 'depth', 'name', 'title', 'tag', 'path', 'domain', 'lang', 'to', 'status', 'config', 'latest_id' )
-            ->whereIn( 'depth', range( 0, $maxDepth ) )
-            ->whereNotExists( function( $query ) use ( $table ) {
+            ->select( 'id', 'parent_id', 'name', 'title', 'tag', 'path', 'domain', 'lang', 'to', 'status', 'config', 'latest_id', $lft, $rgt, $depth )
+            ->whereIn( $depth, range( 0, $maxDepth ) )
+            ->whereNotExists( function( $query ) use ( $table, $lft, $rgt ) {
                 $query->select( DB::raw( 1 ) )
                     ->from( $table . ' as disabled' )
                     ->where( 'disabled.tenant_id', '=', \Aimeos\Cms\Tenancy::value() )
                     ->where( 'disabled.status', 0 )
                     ->whereNull( 'disabled.deleted_at' )
-                    ->whereColumn( 'disabled._lft', '<=', $table . '._lft' )
-                    ->whereColumn( 'disabled._rgt', '>=', $table . '._rgt' );
+                    ->whereColumn( "disabled.$lft", '<=', "$table.$lft" )
+                    ->whereColumn( "disabled.$rgt", '>=', "$table.$rgt" );
             })
             ->defaultOrder();
 
