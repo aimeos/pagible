@@ -88,14 +88,16 @@ abstract class Base extends Model
         $table = $this->getTable();
         $driver = $this->getConnection()->getDriverName();
 
-        $query->select( "{$table}.*" )
-            ->join( 'cms_versions', "{$table}.latest_id", '=', 'cms_versions.id' )
-            ->where( 'cms_versions.versionable_type', static::class )
-            ->where( 'cms_versions.tenant_id', \Aimeos\Cms\Tenancy::value() );
+        $query->whereIn( "{$table}.latest_id", function( $sub ) use ( $table, $driver, $wheres ) {
+            $sub->select( 'cms_versions.id' )
+                ->from( 'cms_versions' )
+                ->where( 'cms_versions.versionable_type', static::class )
+                ->where( 'cms_versions.tenant_id', \Aimeos\Cms\Tenancy::value() );
 
-        foreach( $wheres as $field => $value ) {
-            $query->where( DB::qualify( $field, $table, true, $driver ) ?? "{$table}.{$field}", $value );
-        }
+            foreach( $wheres as $field => $value ) {
+                $sub->where( DB::qualify( $field, $table, true, $driver ) ?? "{$table}.{$field}", $value );
+            }
+        } );
     }
 
 
