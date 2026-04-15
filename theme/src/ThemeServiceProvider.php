@@ -62,11 +62,12 @@ class ThemeServiceProvider extends Provider
 
         Blade::directive( 'markdown', function( $expression ) {
             return "<?php
-                echo (new \League\CommonMark\GithubFlavoredMarkdownConverter([
+                static \$__cmsMarkdown = new \League\CommonMark\GithubFlavoredMarkdownConverter([
                     'html_input' => 'strip',
                     'allow_unsafe_links' => false,
                     'max_nesting_level' => 25
-                ]))->convert($expression ?? '');
+                ]);
+                echo \$__cmsMarkdown->convert($expression ?? '');
             ?>";
         } );
     }
