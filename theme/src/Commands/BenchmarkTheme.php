@@ -90,6 +90,15 @@ class BenchmarkTheme extends Command
             ( new PageController )->index( $request, $cachedPage->path, $domain );
         }, readOnly: true, tries: $tries );
 
+        // Page latest (editor preview via versioned path)
+        $user = $this->user();
+        $latestRequest = Request::create( '/' . $uncachedPage->path, 'GET' );
+        $latestRequest->setUserResolver( fn() => $user );
+
+        $this->benchmark( 'Page latest', function() use ( $uncachedPage, $domain, $latestRequest ) {
+            ( new PageController )->index( $latestRequest, $uncachedPage->path, $domain );
+        }, readOnly: true, tries: $tries );
+
         // Search
         $this->benchmark( 'Search', function() use ( $domain ) {
             $request = Request::create( '/cmsapi/search', 'GET', ['q' => 'lorem', 'locale' => 'en', 'size' => 10] );
