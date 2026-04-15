@@ -357,14 +357,6 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
             ->where( 'cms_index.indexable_type', get_class( $builder->model ) )
             ->where( 'cms_index.tenant_id', \Aimeos\Cms\Tenancy::value() );
 
-        match( $driver ) {
-            'mysql', 'mariadb' => $this->searchMySQL( $query->getQuery(), $terms ),
-            'pgsql' => $this->searchPostgreSQL( $query->getQuery(), $terms ),
-            'sqlsrv' => $this->searchSQLServer( $query->getQuery(), $terms ),
-            'sqlite' => $this->searchSQLite( $query->getQuery(), $terms ),
-            default => $this->searchLike( $query->getQuery(), $terms ),
-        };
-
         foreach( $builder->wheres as $key => $where )
         {
             if( ( $where['field'] ?? $key ) == 'latest' ) {
@@ -372,7 +364,13 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
             }
         }
 
-        $query->orderByDesc( 'relevance' );
+        match( $driver ) {
+            'mysql', 'mariadb' => $this->searchMySQL( $query->getQuery(), $terms ),
+            'pgsql' => $this->searchPostgreSQL( $query->getQuery(), $terms ),
+            'sqlsrv' => $this->searchSQLServer( $query->getQuery(), $terms ),
+            'sqlite' => $this->searchSQLite( $query->getQuery(), $terms ),
+            default => $this->searchLike( $query->getQuery(), $terms ),
+        };
     }
 
 
@@ -388,8 +386,6 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
         if( !( $words = $this->words( $search ) ) ) {
             return;
         }
-
-        $sub->selectRaw( '1 AS relevance' );
 
         foreach( $words as $word ) {
             $sub->where( 'cms_index.content', 'like', '%' . $word . '%' );
@@ -413,10 +409,9 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
         $terms = implode( ' ', array_map( fn( $w ) => '+' . $w . '*', $words ) );
 
         $boost = "IF(LOCATE(?, LEFT(cms_index.content, 500)) > 0, 1.5, 0.5)";
-        $select = "MATCH(cms_index.content) AGAINST(? IN BOOLEAN MODE) * {$boost} AS relevance";
 
-        $sub->selectRaw( $select, [$terms, $words[0]] )
-            ->whereRaw( 'MATCH(cms_index.content) AGAINST(? IN BOOLEAN MODE)', [$terms] );
+        $sub->whereRaw( 'MATCH(cms_index.content) AGAINST(? IN BOOLEAN MODE)', [$terms] )
+            ->orderByRaw( "MATCH(cms_index.content) AGAINST(? IN BOOLEAN MODE) * {$boost} DESC", [$terms, $words[0]] );
     }
 
 
@@ -436,10 +431,9 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
         $terms = implode( ' & ', array_map( fn( $w ) => $w . ':*', $words ) );
 
         $boost = "CASE WHEN POSITION(? IN LEFT(cms_index.content, 500)) > 0 THEN 1.5 ELSE 0.5 END";
-        $select = "ts_rank(cms_index.content_vector, to_tsquery('simple', ?)) * {$boost} AS relevance";
 
-        $sub->selectRaw( $select, [$terms, $words[0]] )
-            ->whereRaw( "cms_index.content_vector @@ to_tsquery('simple', ?)", [$terms] );
+        $sub->whereRaw( "cms_index.content_vector @@ to_tsquery('simple', ?)", [$terms] )
+            ->orderByRaw( "ts_rank(cms_index.content_vector, to_tsquery('simple', ?)) * {$boost} DESC", [$terms, $words[0]] );
     }
 
 
@@ -460,8 +454,8 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
 
         $boost = "CASE WHEN INSTR(SUBSTR(cms_index.content, 1, 500), ?) > 0 THEN 1.5 ELSE 0.5 END";
 
-        $sub->selectRaw( "-cms_index.rank * {$boost} AS relevance", [$words[0]] )
-            ->whereRaw( 'cms_index MATCH ?', [$terms] );
+        $sub->whereRaw( 'cms_index MATCH ?', [$terms] )
+            ->orderByRaw( "-cms_index.rank * {$boost} DESC", [$words[0]] );
     }
 
 
@@ -482,9 +476,9 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
 
         $boost = "CASE WHEN CHARINDEX(?, LEFT(cms_index.content, 500)) > 0 THEN 1.5 ELSE 0.5 END";
 
-        $sub->selectRaw( "ct.[RANK] * {$boost} AS relevance", [$words[0]] )
-            ->join( $sub->raw( 'CONTAINSTABLE(cms_index, content, ?) AS ct' ), $sub->raw( 'cms_index.id' ), '=', $sub->raw( 'ct.[KEY]' ) )
-            ->addBinding( [$terms], 'join' );
+        $sub->join( $sub->raw( 'CONTAINSTABLE(cms_index, content, ?) AS ct' ), $sub->raw( 'cms_index.id' ), '=', $sub->raw( 'ct.[KEY]' ) )
+            ->addBinding( [$terms], 'join' )
+            ->orderByRaw( "ct.[RANK] * {$boost} DESC", [$words[0]] );
     }
 
 
