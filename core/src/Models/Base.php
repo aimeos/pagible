@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Str;
+use Aimeos\Cms\DB;
 
 
 /**
@@ -72,6 +73,33 @@ abstract class Base extends Model
     public function latest() : BelongsTo
     {
         return $this->belongsTo( Version::class, 'latest_id' );
+    }
+
+
+    /**
+     * Scope that joins cms_versions and filters by version-level fields.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder<static> $query
+     * @param array<string, mixed> $wheres Field => value pairs to filter on version data
+     * @return void
+     */
+    public function scopeWhereLatest( $query, array $wheres ) : void
+    {
+        $table = $this->getTable();
+        $driver = $this->getConnection()->getDriverName();
+
+        $query->where( "{$table}.latest_id", '=', function( $sub ) use ( $table, $driver, $wheres ) {
+            $sub->select( 'cms_versions.id' )
+                ->from( 'cms_versions' )
+                ->where( 'cms_versions.versionable_type', static::class )
+                ->where( 'cms_versions.tenant_id', \Aimeos\Cms\Tenancy::value() );
+
+            foreach( $wheres as $field => $value ) {
+                $sub->where( DB::qualify( $field, $table, true, $driver ) ?? "{$table}.{$field}", $value );
+            }
+
+            $sub->limit( 1 );
+        } );
     }
 
 

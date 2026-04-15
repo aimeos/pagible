@@ -131,6 +131,7 @@ return new class extends Migration
         });
 
         $this->addIndex($schema, 'cms_elements', ['deleted_at', 'tenant_id']);
+        $this->addIndex($schema, 'cms_elements', ['latest_id']);
     }
 
 
@@ -154,6 +155,7 @@ return new class extends Migration
         });
 
         $this->addIndex($schema, 'cms_files', ['deleted_at', 'tenant_id']);
+        $this->addIndex($schema, 'cms_files', ['latest_id']);
     }
 
 
@@ -232,6 +234,8 @@ return new class extends Migration
         $this->addIndex($schema, 'cms_pages', ['depth', 'deleted_at', 'tenant_id', '_lft']);
         $this->addIndex($schema, 'cms_pages', ['_lft', '_rgt', 'parent_id', 'tenant_id']);
         $this->addIndex($schema, 'cms_pages', ['_rgt', 'tenant_id']);
+
+        $this->addIndex($schema, 'cms_pages', ['latest_id']);
 
         if ($driver === 'sqlite') {
             $this->addIndex(
