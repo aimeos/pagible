@@ -25,42 +25,24 @@ return new class extends Migration
             return;
         }
 
+        $columns = collect($schema->getColumns('cms_index'))->pluck('name')->all();
         $indexes = collect($schema->getIndexes('cms_index'))->pluck('name')->all();
 
-        if( $driver === 'pgsql' && !in_array('cms_index_content_gin', $indexes) ) {
-            $db->statement("CREATE INDEX cms_index_content_gin ON cms_index USING gin(to_tsvector('simple', coalesce(content, '')))");
+        if( $driver === 'pgsql' )
+        {
+            if( !in_array('content_vector', $columns) ) {
+                $db->statement("ALTER TABLE cms_index ADD COLUMN content_vector tsvector GENERATED ALWAYS AS (to_tsvector('simple', coalesce(content, ''))) STORED");
+            }
+
+            if( !in_array('cms_index_content_vector_gin', $indexes) ) {
+                $db->statement('CREATE INDEX cms_index_content_vector_gin ON cms_index USING gin(content_vector)');
+            }
         }
 
-        if( !in_array('cms_index_tenant_id_indexable_type_latest_index', $indexes) ) {
+        if( !in_array('cms_index_tenant_id_indexable_type_latest_index', $indexes) )
+        {
             $schema->table('cms_index', function($table) {
                 $table->index(['tenant_id', 'indexable_type', 'latest']);
-            });
-        }
-    }
-
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
-    {
-        $name = config('cms.db', 'sqlite');
-        $schema = Schema::connection($name);
-        $db = $schema->getConnection();
-        $driver = $db->getDriverName();
-
-        if( $driver === 'sqlite' ) {
-            return;
-        }
-
-        $indexes = collect($schema->getIndexes('cms_index'))->pluck('name')->all();
-
-        if( in_array('cms_index_content_gin', $indexes) ) {
-            $db->statement('DROP INDEX cms_index_content_gin');
-        }
-
-        if( in_array('cms_index_tenant_id_indexable_type_latest_index', $indexes) ) {
-            $schema->table('cms_index', function($table) {
-                $table->dropIndex(['tenant_id', 'indexable_type', 'latest']);
             });
         }
     }

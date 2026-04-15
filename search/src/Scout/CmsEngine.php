@@ -438,10 +438,10 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
         $terms = implode( ' & ', array_map( fn( $w ) => $w . ':*', $words ) );
 
         $boost = "CASE WHEN POSITION(? IN LEFT(content, 500)) > 0 THEN 1.5 ELSE 0.5 END";
-        $select = "indexable_id, latest, ts_rank(to_tsvector('simple', coalesce(content, '')), to_tsquery('simple', ?)) * {$boost} AS relevance";
+        $select = "indexable_id, latest, ts_rank(content_vector, to_tsquery('simple', ?)) * {$boost} AS relevance";
 
         $sub->selectRaw( $select, [$terms, $words[0]] )
-            ->whereRaw( "to_tsvector('simple', coalesce(content, '')) @@ to_tsquery('simple', ?)", [$terms] );
+            ->whereRaw( "content_vector @@ to_tsquery('simple', ?)", [$terms] );
     }
 
 
