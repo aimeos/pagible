@@ -1,66 +1,66 @@
 {
-  "_ElementDetail-Bk6pPVJO.css": {
-    "file": "assets/ElementDetail-Bk6pPVJO.css",
-    "src": "_ElementDetail-Bk6pPVJO.css"
-  },
-  "_ElementDetail-mUNZkUCI.js": {
-    "file": "assets/ElementDetail-mUNZkUCI.js",
+  "_ElementDetail-BOu6euw-.js": {
+    "file": "assets/ElementDetail-BOu6euw-.js",
     "name": "ElementDetail",
     "imports": [
       "index.html",
-      "_ElementListItems-BApz0gk2.js",
-      "_utils-C05pYWvt.js",
-      "_ai-C4SF2e8U.js",
+      "_ElementListItems-LCnu_D1W.js",
+      "_utils-DxT0FLgc.js",
+      "_ai-CB-KIUlr.js",
       "_mdi-DA9g8ejv.js"
     ],
     "css": [
       "assets/ElementDetail-Bk6pPVJO.css"
     ]
   },
-  "_ElementListItems-BApz0gk2.js": {
-    "file": "assets/ElementListItems-BApz0gk2.js",
+  "_ElementDetail-Bk6pPVJO.css": {
+    "file": "assets/ElementDetail-Bk6pPVJO.css",
+    "src": "_ElementDetail-Bk6pPVJO.css"
+  },
+  "_ElementListItems-9dThxMPY.css": {
+    "file": "assets/ElementListItems-9dThxMPY.css",
+    "src": "_ElementListItems-9dThxMPY.css"
+  },
+  "_ElementListItems-LCnu_D1W.js": {
+    "file": "assets/ElementListItems-LCnu_D1W.js",
     "name": "ElementListItems",
     "imports": [
       "index.html",
       "_mdi-DA9g8ejv.js",
-      "_utils-C05pYWvt.js",
-      "_ai-C4SF2e8U.js"
+      "_utils-DxT0FLgc.js",
+      "_ai-CB-KIUlr.js"
     ],
     "css": [
-      "assets/ElementListItems-C1RCIsAW.css"
+      "assets/ElementListItems-9dThxMPY.css"
     ]
   },
-  "_ElementListItems-C1RCIsAW.css": {
-    "file": "assets/ElementListItems-C1RCIsAW.css",
-    "src": "_ElementListItems-C1RCIsAW.css"
+  "_FileDetail-DAzBHfpo.css": {
+    "file": "assets/FileDetail-DAzBHfpo.css",
+    "src": "_FileDetail-DAzBHfpo.css"
   },
-  "_FileDetail-CADuHChW.js": {
-    "file": "assets/FileDetail-CADuHChW.js",
+  "_FileDetail-MTxsEqS2.js": {
+    "file": "assets/FileDetail-MTxsEqS2.js",
     "name": "FileDetail",
     "imports": [
       "index.html",
-      "_ElementListItems-BApz0gk2.js",
-      "_PageDetail-DsrZbJ0g.js",
-      "_ElementDetail-mUNZkUCI.js",
+      "_ElementListItems-LCnu_D1W.js",
+      "_PageDetail-kbwO8Sep.js",
+      "_ElementDetail-BOu6euw-.js",
       "_mdi-DA9g8ejv.js",
-      "_utils-C05pYWvt.js",
-      "_ai-C4SF2e8U.js"
+      "_utils-DxT0FLgc.js",
+      "_ai-CB-KIUlr.js"
     ],
     "css": [
-      "assets/FileDetail-DVwIwSzL.css"
+      "assets/FileDetail-DAzBHfpo.css"
     ]
   },
-  "_FileDetail-DVwIwSzL.css": {
-    "file": "assets/FileDetail-DVwIwSzL.css",
-    "src": "_FileDetail-DVwIwSzL.css"
-  },
-  "_FileDialog-D8E2JdKh.js": {
-    "file": "assets/FileDialog-D8E2JdKh.js",
+  "_FileDialog-DSAuzvfT.js": {
+    "file": "assets/FileDialog-DSAuzvfT.js",
     "name": "FileDialog",
     "imports": [
       "index.html",
       "_mdi-DA9g8ejv.js",
-      "_FileDetail-CADuHChW.js"
+      "_FileDetail-MTxsEqS2.js"
     ],
     "css": [
       "assets/FileDialog-DvspyD5_.css"
@@ -70,12 +70,8 @@
     "file": "assets/FileDialog-DvspyD5_.css",
     "src": "_FileDialog-DvspyD5_.css"
   },
-  "_Navigation-Cd4ZXH13.css": {
-    "file": "assets/Navigation-Cd4ZXH13.css",
-    "src": "_Navigation-Cd4ZXH13.css"
-  },
-  "_Navigation-RHbpRRck.js": {
-    "file": "assets/Navigation-RHbpRRck.js",
+  "_Navigation-Bqx4Y3gL.js": {
+    "file": "assets/Navigation-Bqx4Y3gL.js",
     "name": "Navigation",
     "imports": [
       "index.html",
@@ -121,111 +117,119 @@
       "assets/Navigation-Cd4ZXH13.css"
     ]
   },
-  "_PageDetail-CWOVjJSa.css": {
-    "file": "assets/PageDetail-CWOVjJSa.css",
-    "src": "_PageDetail-CWOVjJSa.css"
+  "_Navigation-Cd4ZXH13.css": {
+    "file": "assets/Navigation-Cd4ZXH13.css",
+    "src": "_Navigation-Cd4ZXH13.css"
   },
-  "_PageDetail-DsrZbJ0g.js": {
-    "file": "assets/PageDetail-DsrZbJ0g.js",
+  "_PageDetail-BXj9bFiI.css": {
+    "file": "assets/PageDetail-BXj9bFiI.css",
+    "src": "_PageDetail-BXj9bFiI.css"
+  },
+  "_PageDetail-kbwO8Sep.js": {
+    "file": "assets/PageDetail-kbwO8Sep.js",
     "name": "PageDetail",
     "imports": [
       "index.html",
-      "_ElementListItems-BApz0gk2.js",
-      "_utils-C05pYWvt.js",
+      "_ElementListItems-LCnu_D1W.js",
+      "_utils-DxT0FLgc.js",
       "_mdi-DA9g8ejv.js",
-      "_vue-draggable-plus-CAvEB1xe.js",
-      "_ai-C4SF2e8U.js",
+      "_vue-draggable-plus-8-Uawa_h.js",
+      "_ai-CB-KIUlr.js",
       "_index-DfyB7TPt.js"
     ],
     "dynamicImports": [
       "js/components/PageDetailMetrics.vue"
     ],
     "css": [
-      "assets/PageDetail-CWOVjJSa.css"
+      "assets/PageDetail-BXj9bFiI.css"
     ]
   },
-  "_af.umd-BPV_kJbh.js": {
-    "file": "assets/af.umd-BPV_kJbh.js",
+  "_af.umd-Cpng0K96.js": {
+    "file": "assets/af.umd-Cpng0K96.js",
     "name": "af.umd",
     "isDynamicEntry": true,
     "imports": [
       "index.html"
     ]
   },
-  "_ai-C4SF2e8U.js": {
-    "file": "assets/ai-C4SF2e8U.js",
+  "_ai-CB-KIUlr.js": {
+    "file": "assets/ai-CB-KIUlr.js",
     "name": "ai",
     "imports": [
       "index.html",
-      "_utils-C05pYWvt.js"
+      "_utils-DxT0FLgc.js"
     ]
   },
-  "_ar.umd-tDgh5IZp.js": {
-    "file": "assets/ar.umd-tDgh5IZp.js",
+  "_ar.umd-DxC0BvSY.js": {
+    "file": "assets/ar.umd-DxC0BvSY.js",
     "name": "ar.umd",
     "isDynamicEntry": true,
     "imports": [
       "index.html"
     ]
   },
-  "_ast.umd-DAmjw7Q4.js": {
-    "file": "assets/ast.umd-DAmjw7Q4.js",
+  "_ast.umd-DUlZxIT9.js": {
+    "file": "assets/ast.umd-DUlZxIT9.js",
     "name": "ast.umd",
     "isDynamicEntry": true,
     "imports": [
       "index.html"
     ]
   },
-  "_az.umd-doVw94jh.js": {
-    "file": "assets/az.umd-doVw94jh.js",
+  "_az.umd-CCQtVsuk.js": {
+    "file": "assets/az.umd-CCQtVsuk.js",
     "name": "az.umd",
     "isDynamicEntry": true,
     "imports": [
       "index.html"
     ]
   },
-  "_be.umd-BOVYeDxz.js": {
-    "file": "assets/be.umd-BOVYeDxz.js",
+  "_be.umd-DV_LBcy9.js": {
+    "file": "assets/be.umd-DV_LBcy9.js",
     "name": "be.umd",
     "isDynamicEntry": true,
     "imports": [
       "index.html"
     ]
   },
-  "_bg.umd-BZ7Dkbl8.js": {
-    "file": "assets/bg.umd-BZ7Dkbl8.js",
+  "_bg.umd-0TZ7mf0F.js": {
+    "file": "assets/bg.umd-0TZ7mf0F.js",
     "name": "bg.umd",
     "isDynamicEntry": true,
     "imports": [
       "index.html"
     ]
   },
-  "_bn.umd-23hC0OUK.js": {
-    "file": "assets/bn.umd-23hC0OUK.js",
+  "_bn.umd-CauOVQgc.js": {
+    "file": "assets/bn.umd-CauOVQgc.js",
     "name": "bn.umd",
     "isDynamicEntry": true,
     "imports": [
       "index.html"
     ]
   },
-  "_bs.umd-D3LecJXM.js": {
-    "file": "assets/bs.umd-D3LecJXM.js",
+  "_bs.umd-DQi9GRIx.js": {
+    "file": "assets/bs.umd-DQi9GRIx.js",
     "name": "bs.umd",
     "isDynamicEntry": true,
     "imports": [
       "index.html"
     ]
   },
-  "_ca.umd-C7q-DImE.js": {
-    "file": "assets/ca.umd-C7q-DImE.js",
+  "_ca.umd-CHt_PslS.js": {
+    "file": "assets/ca.umd-CHt_PslS.js",
     "name": "ca.umd",
     "isDynamicEntry": true,
     "imports": [
       "index.html"
     ]
   },
-  "_ckeditor5-CBaqwIYy.js": {
-    "file": "assets/ckeditor5-CBaqwIYy.js",
+  "_ckeditor5-CgTLYDlK.css": {
+    "file": "assets/ckeditor5-CgTLYDlK.css",
+    "src": "_ckeditor5-CgTLYDlK.css"
+  },
+  "_ckeditor5-D7kOdhPX.js": {
+    "file": "assets/ckeditor5-D7kOdhPX.js",
     "name": "ckeditor5",
     "imports": [
       "index.html",
@@ -235,196 +239,192 @@
       "assets/ckeditor5-CgTLYDlK.css"
     ]
   },
-  "_ckeditor5-CgTLYDlK.css": {
-    "file": "assets/ckeditor5-CgTLYDlK.css",
-    "src": "_ckeditor5-CgTLYDlK.css"
-  },
-  "_cs.umd-BCtWOMff.js": {
-    "file": "assets/cs.umd-BCtWOMff.js",
+  "_cs.umd-DFsYkGGS.js": {
+    "file": "assets/cs.umd-DFsYkGGS.js",
     "name": "cs.umd",
     "isDynamicEntry": true,
     "imports": [
       "index.html"
     ]
   },
-  "_da.umd-DZUB4VTi.js": {
-    "file": "assets/da.umd-DZUB4VTi.js",
+  "_da.umd-DrVLKp58.js": {
+    "file": "assets/da.umd-DrVLKp58.js",
     "name": "da.umd",
     "isDynamicEntry": true,
     "imports": [
       "index.html"
     ]
   },
-  "_de-ch.umd-C53gyPTB.js": {
-    "file": "assets/de-ch.umd-C53gyPTB.js",
+  "_de-ch.umd-DkzoYUn_.js": {
+    "file": "assets/de-ch.umd-DkzoYUn_.js",
     "name": "de-ch.umd",
     "isDynamicEntry": true,
     "imports": [
       "index.html"
     ]
   },
-  "_de.umd-uHpp4bex.js": {
-    "file": "assets/de.umd-uHpp4bex.js",
+  "_de.umd-C4Jvx118.js": {
+    "file": "assets/de.umd-C4Jvx118.js",
     "name": "de.umd",
     "isDynamicEntry": true,
     "imports": [
       "index.html"
     ]
   },
-  "_el.umd-B4ZVp38o.js": {
-    "file": "assets/el.umd-B4ZVp38o.js",
+  "_el.umd-BcLFRhmc.js": {
+    "file": "assets/el.umd-BcLFRhmc.js",
     "name": "el.umd",
     "isDynamicEntry": true,
     "imports": [
       "index.html"
     ]
   },
-  "_en-au.umd-OQOkD9as.js": {
-    "file": "assets/en-au.umd-OQOkD9as.js",
+  "_en-au.umd-DuKagPE2.js": {
+    "file": "assets/en-au.umd-DuKagPE2.js",
     "name": "en-au.umd",
     "isDynamicEntry": true,
     "imports": [
       "index.html"
     ]
   },
-  "_en-gb.umd-BrQGmvN9.js": {
-    "file": "assets/en-gb.umd-BrQGmvN9.js",
+  "_en-gb.umd-BgGgtOaL.js": {
+    "file": "assets/en-gb.umd-BgGgtOaL.js",
     "name": "en-gb.umd",
     "isDynamicEntry": true,
     "imports": [
       "index.html"
     ]
   },
-  "_en.umd-CEqJjUEv.js": {
-    "file": "assets/en.umd-CEqJjUEv.js",
+  "_en.umd-DulRGM8B.js": {
+    "file": "assets/en.umd-DulRGM8B.js",
     "name": "en.umd",
     "isDynamicEntry": true,
     "imports": [
       "index.html"
     ]
   },
-  "_eo.umd-DALXM57I.js": {
-    "file": "assets/eo.umd-DALXM57I.js",
+  "_eo.umd-4HQPYwBV.js": {
+    "file": "assets/eo.umd-4HQPYwBV.js",
     "name": "eo.umd",
     "isDynamicEntry": true,
     "imports": [
       "index.html"
     ]
   },
-  "_es-co.umd-DsHRb0X5.js": {
-    "file": "assets/es-co.umd-DsHRb0X5.js",
+  "_es-co.umd-pHRtGzvH.js": {
+    "file": "assets/es-co.umd-pHRtGzvH.js",
     "name": "es-co.umd",
     "isDynamicEntry": true,
     "imports": [
       "index.html"
     ]
   },
-  "_es.umd-D0xwZ6Um.js": {
-    "file": "assets/es.umd-D0xwZ6Um.js",
+  "_es.umd-CwKo_ILA.js": {
+    "file": "assets/es.umd-CwKo_ILA.js",
     "name": "es.umd",
     "isDynamicEntry": true,
     "imports": [
       "index.html"
     ]
   },
-  "_et.umd-CfAAU51H.js": {
-    "file": "assets/et.umd-CfAAU51H.js",
+  "_et.umd-CNznEf0Y.js": {
+    "file": "assets/et.umd-CNznEf0Y.js",
     "name": "et.umd",
     "isDynamicEntry": true,
     "imports": [
       "index.html"
     ]
   },
-  "_eu.umd-DDHZ1W_-.js": {
-    "file": "assets/eu.umd-DDHZ1W_-.js",
+  "_eu.umd-DYnbMXhi.js": {
+    "file": "assets/eu.umd-DYnbMXhi.js",
     "name": "eu.umd",
     "isDynamicEntry": true,
     "imports": [
       "index.html"
     ]
   },
-  "_fa.umd-CLcAizCv.js": {
-    "file": "assets/fa.umd-CLcAizCv.js",
+  "_fa.umd-6CC5SWm-.js": {
+    "file": "assets/fa.umd-6CC5SWm-.js",
     "name": "fa.umd",
     "isDynamicEntry": true,
     "imports": [
       "index.html"
     ]
   },
-  "_fi.umd-sIMB3G1E.js": {
-    "file": "assets/fi.umd-sIMB3G1E.js",
+  "_fi.umd-pSJjADmK.js": {
+    "file": "assets/fi.umd-pSJjADmK.js",
     "name": "fi.umd",
     "isDynamicEntry": true,
     "imports": [
       "index.html"
     ]
   },
-  "_fr.umd-PeTZdnJd.js": {
-    "file": "assets/fr.umd-PeTZdnJd.js",
+  "_fr.umd-B5i74fid.js": {
+    "file": "assets/fr.umd-B5i74fid.js",
     "name": "fr.umd",
     "isDynamicEntry": true,
     "imports": [
       "index.html"
     ]
   },
-  "_gl.umd-Du32rWTc.js": {
-    "file": "assets/gl.umd-Du32rWTc.js",
+  "_gl.umd-BLyJwTuS.js": {
+    "file": "assets/gl.umd-BLyJwTuS.js",
     "name": "gl.umd",
     "isDynamicEntry": true,
     "imports": [
       "index.html"
     ]
   },
-  "_gu.umd-dinaIjHN.js": {
-    "file": "assets/gu.umd-dinaIjHN.js",
+  "_gu.umd-Bpm6OmKo.js": {
+    "file": "assets/gu.umd-Bpm6OmKo.js",
     "name": "gu.umd",
     "isDynamicEntry": true,
     "imports": [
       "index.html"
     ]
   },
-  "_he.umd-yBOc9tmM.js": {
-    "file": "assets/he.umd-yBOc9tmM.js",
+  "_he.umd-B9DDT0Ql.js": {
+    "file": "assets/he.umd-B9DDT0Ql.js",
     "name": "he.umd",
     "isDynamicEntry": true,
     "imports": [
       "index.html"
     ]
   },
-  "_hi.umd-BebxCg9R.js": {
-    "file": "assets/hi.umd-BebxCg9R.js",
+  "_hi.umd-CYsR_ddg.js": {
+    "file": "assets/hi.umd-CYsR_ddg.js",
     "name": "hi.umd",
     "isDynamicEntry": true,
     "imports": [
       "index.html"
     ]
   },
-  "_hr.umd-CY2kjw59.js": {
-    "file": "assets/hr.umd-CY2kjw59.js",
+  "_hr.umd-DasLwi9k.js": {
+    "file": "assets/hr.umd-DasLwi9k.js",
     "name": "hr.umd",
     "isDynamicEntry": true,
     "imports": [
       "index.html"
     ]
   },
-  "_hu.umd-4YbkKcOr.js": {
-    "file": "assets/hu.umd-4YbkKcOr.js",
+  "_hu.umd-k7gaUszk.js": {
+    "file": "assets/hu.umd-k7gaUszk.js",
     "name": "hu.umd",
     "isDynamicEntry": true,
     "imports": [
       "index.html"
     ]
   },
-  "_hy.umd-x5U_WWHu.js": {
-    "file": "assets/hy.umd-x5U_WWHu.js",
+  "_hy.umd-CcEkgHIw.js": {
+    "file": "assets/hy.umd-CcEkgHIw.js",
     "name": "hy.umd",
     "isDynamicEntry": true,
     "imports": [
       "index.html"
     ]
   },
-  "_id.umd-nnpgzAI7.js": {
-    "file": "assets/id.umd-nnpgzAI7.js",
+  "_id.umd-V5m6GIEN.js": {
+    "file": "assets/id.umd-V5m6GIEN.js",
     "name": "id.umd",
     "isDynamicEntry": true,
     "imports": [
@@ -435,80 +435,80 @@
     "file": "assets/index-DfyB7TPt.js",
     "name": "index"
   },
-  "_it.umd-BSpe1Gv0.js": {
-    "file": "assets/it.umd-BSpe1Gv0.js",
+  "_it.umd-BmyAmUKp.js": {
+    "file": "assets/it.umd-BmyAmUKp.js",
     "name": "it.umd",
     "isDynamicEntry": true,
     "imports": [
       "index.html"
     ]
   },
-  "_ja.umd-C7Raama6.js": {
-    "file": "assets/ja.umd-C7Raama6.js",
+  "_ja.umd-DczdkkYv.js": {
+    "file": "assets/ja.umd-DczdkkYv.js",
     "name": "ja.umd",
     "isDynamicEntry": true,
     "imports": [
       "index.html"
     ]
   },
-  "_jv.umd-B-zuuTSr.js": {
-    "file": "assets/jv.umd-B-zuuTSr.js",
+  "_jv.umd-CWoZVe7-.js": {
+    "file": "assets/jv.umd-CWoZVe7-.js",
     "name": "jv.umd",
     "isDynamicEntry": true,
     "imports": [
       "index.html"
     ]
   },
-  "_kk.umd-CeNzoCc5.js": {
-    "file": "assets/kk.umd-CeNzoCc5.js",
+  "_kk.umd-DtO6ULm8.js": {
+    "file": "assets/kk.umd-DtO6ULm8.js",
     "name": "kk.umd",
     "isDynamicEntry": true,
     "imports": [
       "index.html"
     ]
   },
-  "_km.umd-RzJTQaH0.js": {
-    "file": "assets/km.umd-RzJTQaH0.js",
+  "_km.umd-U1Xf1zRo.js": {
+    "file": "assets/km.umd-U1Xf1zRo.js",
     "name": "km.umd",
     "isDynamicEntry": true,
     "imports": [
       "index.html"
     ]
   },
-  "_kn.umd-C3Cv-ytO.js": {
-    "file": "assets/kn.umd-C3Cv-ytO.js",
+  "_kn.umd-BAnBERM-.js": {
+    "file": "assets/kn.umd-BAnBERM-.js",
     "name": "kn.umd",
     "isDynamicEntry": true,
     "imports": [
       "index.html"
     ]
   },
-  "_ko.umd-C4tLvbzX.js": {
-    "file": "assets/ko.umd-C4tLvbzX.js",
+  "_ko.umd-YqKggph2.js": {
+    "file": "assets/ko.umd-YqKggph2.js",
     "name": "ko.umd",
     "isDynamicEntry": true,
     "imports": [
       "index.html"
     ]
   },
-  "_ku.umd-DTwzsrOJ.js": {
-    "file": "assets/ku.umd-DTwzsrOJ.js",
+  "_ku.umd-BHt7gG9G.js": {
+    "file": "assets/ku.umd-BHt7gG9G.js",
     "name": "ku.umd",
     "isDynamicEntry": true,
     "imports": [
       "index.html"
     ]
   },
-  "_lt.umd-iuQTUBPe.js": {
-    "file": "assets/lt.umd-iuQTUBPe.js",
+  "_lt.umd-DB7JO8NI.js": {
+    "file": "assets/lt.umd-DB7JO8NI.js",
     "name": "lt.umd",
     "isDynamicEntry": true,
     "imports": [
       "index.html"
     ]
   },
-  "_lv.umd-tO6wPhFb.js": {
-    "file": "assets/lv.umd-tO6wPhFb.js",
+  "_lv.umd-DpUTkdEf.js": {
+    "file": "assets/lv.umd-DpUTkdEf.js",
     "name": "lv.umd",
     "isDynamicEntry": true,
     "imports": [
@@ -519,254 +519,254 @@
     "file": "assets/mdi-DA9g8ejv.js",
     "name": "mdi"
   },
-  "_ms.umd-CSk0h8aD.js": {
-    "file": "assets/ms.umd-CSk0h8aD.js",
+  "_ms.umd-Vklv2y3d.js": {
+    "file": "assets/ms.umd-Vklv2y3d.js",
     "name": "ms.umd",
     "isDynamicEntry": true,
     "imports": [
       "index.html"
     ]
   },
-  "_nb.umd-Dxklohsq.js": {
-    "file": "assets/nb.umd-Dxklohsq.js",
+  "_nb.umd-C43ZhF3M.js": {
+    "file": "assets/nb.umd-C43ZhF3M.js",
     "name": "nb.umd",
     "isDynamicEntry": true,
     "imports": [
       "index.html"
     ]
   },
-  "_ne.umd-DJZT9i1m.js": {
-    "file": "assets/ne.umd-DJZT9i1m.js",
+  "_ne.umd-CfRwBUtC.js": {
+    "file": "assets/ne.umd-CfRwBUtC.js",
     "name": "ne.umd",
     "isDynamicEntry": true,
     "imports": [
       "index.html"
     ]
   },
-  "_nl.umd-DitLQNQJ.js": {
-    "file": "assets/nl.umd-DitLQNQJ.js",
+  "_nl.umd-B5aCz_VW.js": {
+    "file": "assets/nl.umd-B5aCz_VW.js",
     "name": "nl.umd",
     "isDynamicEntry": true,
     "imports": [
       "index.html"
     ]
   },
-  "_no.umd-Bk4DUndC.js": {
-    "file": "assets/no.umd-Bk4DUndC.js",
+  "_no.umd-P02qo_AC.js": {
+    "file": "assets/no.umd-P02qo_AC.js",
     "name": "no.umd",
     "isDynamicEntry": true,
     "imports": [
       "index.html"
     ]
   },
-  "_oc.umd-DVj7xlBx.js": {
-    "file": "assets/oc.umd-DVj7xlBx.js",
+  "_oc.umd-27ToDA5j.js": {
+    "file": "assets/oc.umd-27ToDA5j.js",
     "name": "oc.umd",
     "isDynamicEntry": true,
     "imports": [
       "index.html"
     ]
   },
-  "_pl.umd-CBV40ppd.js": {
-    "file": "assets/pl.umd-CBV40ppd.js",
+  "_pl.umd-DPP_yhMB.js": {
+    "file": "assets/pl.umd-DPP_yhMB.js",
     "name": "pl.umd",
     "isDynamicEntry": true,
     "imports": [
       "index.html"
     ]
   },
-  "_pt-br.umd-Bs0ZHba5.js": {
-    "file": "assets/pt-br.umd-Bs0ZHba5.js",
+  "_pt-br.umd-BOCN3nCF.js": {
+    "file": "assets/pt-br.umd-BOCN3nCF.js",
     "name": "pt-br.umd",
     "isDynamicEntry": true,
     "imports": [
       "index.html"
     ]
   },
-  "_pt.umd-DQh2JFZC.js": {
-    "file": "assets/pt.umd-DQh2JFZC.js",
+  "_pt.umd-Bo2czk8_.js": {
+    "file": "assets/pt.umd-Bo2czk8_.js",
     "name": "pt.umd",
     "isDynamicEntry": true,
     "imports": [
       "index.html"
     ]
   },
-  "_ro.umd-DLpRJqUw.js": {
-    "file": "assets/ro.umd-DLpRJqUw.js",
+  "_ro.umd-HAMSNGb_.js": {
+    "file": "assets/ro.umd-HAMSNGb_.js",
     "name": "ro.umd",
     "isDynamicEntry": true,
     "imports": [
       "index.html"
     ]
   },
-  "_ru.umd-BwLMMcmY.js": {
-    "file": "assets/ru.umd-BwLMMcmY.js",
+  "_ru.umd-DrE2VTyt.js": {
+    "file": "assets/ru.umd-DrE2VTyt.js",
     "name": "ru.umd",
     "isDynamicEntry": true,
     "imports": [
       "index.html"
     ]
   },
-  "_si.umd-B7tR6d2m.js": {
-    "file": "assets/si.umd-B7tR6d2m.js",
+  "_si.umd-BZktjEmM.js": {
+    "file": "assets/si.umd-BZktjEmM.js",
     "name": "si.umd",
     "isDynamicEntry": true,
     "imports": [
       "index.html"
     ]
   },
-  "_sk.umd-DmXIgPmX.js": {
-    "file": "assets/sk.umd-DmXIgPmX.js",
+  "_sk.umd-Cly-6x9o.js": {
+    "file": "assets/sk.umd-Cly-6x9o.js",
     "name": "sk.umd",
     "isDynamicEntry": true,
     "imports": [
       "index.html"
     ]
   },
-  "_sl.umd-CNKiuhzK.js": {
-    "file": "assets/sl.umd-CNKiuhzK.js",
+  "_sl.umd-T-4uJOnQ.js": {
+    "file": "assets/sl.umd-T-4uJOnQ.js",
     "name": "sl.umd",
     "isDynamicEntry": true,
     "imports": [
       "index.html"
     ]
   },
-  "_sq.umd-hrIRvPMX.js": {
-    "file": "assets/sq.umd-hrIRvPMX.js",
+  "_sq.umd-DAZng6Xg.js": {
+    "file": "assets/sq.umd-DAZng6Xg.js",
     "name": "sq.umd",
     "isDynamicEntry": true,
     "imports": [
       "index.html"
     ]
   },
-  "_sr-latn.umd-B_c_vnMX.js": {
-    "file": "assets/sr-latn.umd-B_c_vnMX.js",
+  "_sr-latn.umd-_4ki5EgE.js": {
+    "file": "assets/sr-latn.umd-_4ki5EgE.js",
     "name": "sr-latn.umd",
     "isDynamicEntry": true,
     "imports": [
       "index.html"
     ]
   },
-  "_sr.umd-BClBO5EW.js": {
-    "file": "assets/sr.umd-BClBO5EW.js",
+  "_sr.umd-CIhrGajJ.js": {
+    "file": "assets/sr.umd-CIhrGajJ.js",
     "name": "sr.umd",
     "isDynamicEntry": true,
     "imports": [
       "index.html"
     ]
   },
-  "_sv.umd-BeHkgZd1.js": {
-    "file": "assets/sv.umd-BeHkgZd1.js",
+  "_sv.umd-0NRKW1rN.js": {
+    "file": "assets/sv.umd-0NRKW1rN.js",
     "name": "sv.umd",
     "isDynamicEntry": true,
     "imports": [
       "index.html"
     ]
   },
-  "_th.umd-CuJ9K_Rp.js": {
-    "file": "assets/th.umd-CuJ9K_Rp.js",
+  "_th.umd-Dn8NxfRA.js": {
+    "file": "assets/th.umd-Dn8NxfRA.js",
     "name": "th.umd",
     "isDynamicEntry": true,
     "imports": [
       "index.html"
     ]
   },
-  "_ti.umd-CX2sImPY.js": {
-    "file": "assets/ti.umd-CX2sImPY.js",
+  "_ti.umd-nX5MR-0V.js": {
+    "file": "assets/ti.umd-nX5MR-0V.js",
     "name": "ti.umd",
     "isDynamicEntry": true,
     "imports": [
       "index.html"
     ]
   },
-  "_tk.umd-nYEc82Jn.js": {
-    "file": "assets/tk.umd-nYEc82Jn.js",
+  "_tk.umd-DUdp9fhh.js": {
+    "file": "assets/tk.umd-DUdp9fhh.js",
     "name": "tk.umd",
     "isDynamicEntry": true,
     "imports": [
       "index.html"
     ]
   },
-  "_tr.umd-I7AoybNx.js": {
-    "file": "assets/tr.umd-I7AoybNx.js",
+  "_tr.umd-BhHenafR.js": {
+    "file": "assets/tr.umd-BhHenafR.js",
     "name": "tr.umd",
     "isDynamicEntry": true,
     "imports": [
       "index.html"
     ]
   },
-  "_tt.umd-CnrKeB-d.js": {
-    "file": "assets/tt.umd-CnrKeB-d.js",
+  "_tt.umd-UHCK-quj.js": {
+    "file": "assets/tt.umd-UHCK-quj.js",
     "name": "tt.umd",
     "isDynamicEntry": true,
     "imports": [
       "index.html"
     ]
   },
-  "_ug.umd-Hb68JhtD.js": {
-    "file": "assets/ug.umd-Hb68JhtD.js",
+  "_ug.umd-BbC_LYgh.js": {
+    "file": "assets/ug.umd-BbC_LYgh.js",
     "name": "ug.umd",
     "isDynamicEntry": true,
     "imports": [
       "index.html"
     ]
   },
-  "_uk.umd-2LJLDQsG.js": {
-    "file": "assets/uk.umd-2LJLDQsG.js",
+  "_uk.umd-BESHs4NE.js": {
+    "file": "assets/uk.umd-BESHs4NE.js",
     "name": "uk.umd",
     "isDynamicEntry": true,
     "imports": [
       "index.html"
     ]
   },
-  "_ur.umd-08E2vNBZ.js": {
-    "file": "assets/ur.umd-08E2vNBZ.js",
+  "_ur.umd-BcOqRB-t.js": {
+    "file": "assets/ur.umd-BcOqRB-t.js",
     "name": "ur.umd",
     "isDynamicEntry": true,
     "imports": [
       "index.html"
     ]
   },
-  "_utils-C05pYWvt.js": {
-    "file": "assets/utils-C05pYWvt.js",
+  "_utils-DxT0FLgc.js": {
+    "file": "assets/utils-DxT0FLgc.js",
     "name": "utils",
     "imports": [
       "index.html"
     ]
   },
-  "_uz.umd-CV41LgDO.js": {
-    "file": "assets/uz.umd-CV41LgDO.js",
+  "_uz.umd-Dwxcyi6h.js": {
+    "file": "assets/uz.umd-Dwxcyi6h.js",
     "name": "uz.umd",
     "isDynamicEntry": true,
     "imports": [
       "index.html"
     ]
   },
-  "_vi.umd-D5wsSyZu.js": {
-    "file": "assets/vi.umd-D5wsSyZu.js",
+  "_vi.umd-BqrpNB_I.js": {
+    "file": "assets/vi.umd-BqrpNB_I.js",
     "name": "vi.umd",
     "isDynamicEntry": true,
     "imports": [
       "index.html"
     ]
   },
-  "_vue-draggable-plus-CAvEB1xe.js": {
-    "file": "assets/vue-draggable-plus-CAvEB1xe.js",
+  "_vue-draggable-plus-8-Uawa_h.js": {
+    "file": "assets/vue-draggable-plus-8-Uawa_h.js",
     "name": "vue-draggable-plus",
     "imports": [
       "index.html"
     ]
   },
-  "_zh-cn.umd-Bt01FJq-.js": {
-    "file": "assets/zh-cn.umd-Bt01FJq-.js",
+  "_zh-cn.umd-bFHlALoa.js": {
+    "file": "assets/zh-cn.umd-bFHlALoa.js",
     "name": "zh-cn.umd",
     "isDynamicEntry": true,
     "imports": [
       "index.html"
     ]
   },
-  "_zh.umd-kgjuUrEc.js": {
-    "file": "assets/zh.umd-kgjuUrEc.js",
+  "_zh.umd-IUNJ2i3I.js": {
+    "file": "assets/zh.umd-IUNJ2i3I.js",
     "name": "zh.umd",
     "isDynamicEntry": true,
     "imports": [
@@ -804,7 +804,7 @@
     "isDynamicEntry": true
   },
   "i18n/de.json": {
-    "file": "assets/de-CQ_1sBgi.js",
+    "file": "assets/de-D7gfP8RN.js",
     "name": "de",
     "src": "i18n/de.json",
     "isDynamicEntry": true
@@ -978,7 +978,7 @@
     "isDynamicEntry": true
   },
   "index.html": {
-    "file": "assets/index-01jQtBHc.js",
+    "file": "assets/index-BXxmzExr.js",
     "name": "index",
     "src": "index.html",
     "isEntry": true,
@@ -1096,7 +1096,7 @@
     ]
   },
   "js/components/PageDetailMetrics.vue": {
-    "file": "assets/PageDetailMetrics-CsGV_l0Z.js",
+    "file": "assets/PageDetailMetrics-BucCETz1.js",
     "name": "PageDetailMetrics",
     "src": "js/components/PageDetailMetrics.vue",
     "isDynamicEntry": true,
@@ -1109,7 +1109,7 @@
     ]
   },
   "js/fields/Audio.vue": {
-    "file": "assets/Audio-BwRRut-K.js",
+    "file": "assets/Audio-BXUduCmT.js",
     "name": "Audio",
     "src": "js/fields/Audio.vue",
     "isDynamicEntry": true,
@@ -1117,29 +1117,29 @@
       "_mdi-DA9g8ejv.js",
       "js/fields/File.vue",
       "index.html",
-      "_utils-C05pYWvt.js",
-      "_FileDialog-D8E2JdKh.js",
-      "_FileDetail-CADuHChW.js",
-      "_ElementListItems-BApz0gk2.js",
-      "_ai-C4SF2e8U.js",
-      "_PageDetail-DsrZbJ0g.js",
-      "_vue-draggable-plus-CAvEB1xe.js",
+      "_utils-DxT0FLgc.js",
+      "_FileDialog-DSAuzvfT.js",
+      "_FileDetail-MTxsEqS2.js",
+      "_ElementListItems-LCnu_D1W.js",
+      "_ai-CB-KIUlr.js",
+      "_PageDetail-kbwO8Sep.js",
+      "_vue-draggable-plus-8-Uawa_h.js",
       "_index-DfyB7TPt.js",
-      "_ElementDetail-mUNZkUCI.js"
+      "_ElementDetail-BOu6euw-.js"
     ]
   },
   "js/fields/Autocomplete.vue": {
-    "file": "assets/Autocomplete-BPPljS0A.js",
+    "file": "assets/Autocomplete-DTh8k1cE.js",
     "name": "Autocomplete",
     "src": "js/fields/Autocomplete.vue",
     "isDynamicEntry": true,
     "imports": [
       "index.html",
-      "_utils-C05pYWvt.js"
+      "_utils-DxT0FLgc.js"
     ]
   },
   "js/fields/Checkbox.vue": {
-    "file": "assets/Checkbox-C_rrDUMp.js",
+    "file": "assets/Checkbox-BGaX7ab7.js",
     "name": "Checkbox",
     "src": "js/fields/Checkbox.vue",
     "isDynamicEntry": true,
@@ -1148,7 +1148,7 @@
     ]
   },
   "js/fields/Color.vue": {
-    "file": "assets/Color-DGg0TXc1.js",
+    "file": "assets/Color-B8C0FH5A.js",
     "name": "Color",
     "src": "js/fields/Color.vue",
     "isDynamicEntry": true,
@@ -1160,18 +1160,18 @@
     ]
   },
   "js/fields/Combobox.vue": {
-    "file": "assets/Combobox-3GP8ra7-.js",
+    "file": "assets/Combobox-CEPkugvW.js",
     "name": "Combobox",
     "src": "js/fields/Combobox.vue",
     "isDynamicEntry": true,
     "imports": [
       "js/fields/Autocomplete.vue",
-      "_utils-C05pYWvt.js",
+      "_utils-DxT0FLgc.js",
       "index.html"
     ]
   },
   "js/fields/Date.vue": {
-    "file": "assets/Date-Ue5pxzPn.js",
+    "file": "assets/Date-DvBmwJfv.js",
     "name": "Date",
     "src": "js/fields/Date.vue",
     "isDynamicEntry": true,
@@ -1180,29 +1180,29 @@
     ]
   },
   "js/fields/File.vue": {
-    "file": "assets/File-CZeW4_aA.js",
+    "file": "assets/File-DEaCnmau.js",
     "name": "File",
     "src": "js/fields/File.vue",
     "isDynamicEntry": true,
     "imports": [
       "index.html",
       "_mdi-DA9g8ejv.js",
-      "_utils-C05pYWvt.js",
-      "_FileDialog-D8E2JdKh.js",
-      "_FileDetail-CADuHChW.js",
-      "_ElementListItems-BApz0gk2.js",
-      "_ai-C4SF2e8U.js",
-      "_PageDetail-DsrZbJ0g.js",
-      "_vue-draggable-plus-CAvEB1xe.js",
+      "_utils-DxT0FLgc.js",
+      "_FileDialog-DSAuzvfT.js",
+      "_FileDetail-MTxsEqS2.js",
+      "_ElementListItems-LCnu_D1W.js",
+      "_ai-CB-KIUlr.js",
+      "_PageDetail-kbwO8Sep.js",
+      "_vue-draggable-plus-8-Uawa_h.js",
       "_index-DfyB7TPt.js",
-      "_ElementDetail-mUNZkUCI.js"
+      "_ElementDetail-BOu6euw-.js"
     ],
     "css": [
       "assets/File-DxYCo63E.css"
     ]
   },
   "js/fields/Hidden.vue": {
-    "file": "assets/Hidden-C-iVGv8D.js",
+    "file": "assets/Hidden-DrJU31h_.js",
     "name": "Hidden",
     "src": "js/fields/Hidden.vue",
     "isDynamicEntry": true,
@@ -1211,7 +1211,7 @@
     ]
   },
   "js/fields/Html.vue": {
-    "file": "assets/Html-Bd_NEPbb.js",
+    "file": "assets/Html-Bi21zBZ3.js",
     "name": "Html",
     "src": "js/fields/Html.vue",
     "isDynamicEntry": true,
@@ -1220,227 +1220,227 @@
     ]
   },
   "js/fields/Image.vue": {
-    "file": "assets/Image-BehyING7.js",
+    "file": "assets/Image-OCdpmqQT.js",
     "name": "Image",
     "src": "js/fields/Image.vue",
     "isDynamicEntry": true,
     "imports": [
       "_mdi-DA9g8ejv.js",
       "js/fields/File.vue",
-      "_FileDetail-CADuHChW.js",
+      "_FileDetail-MTxsEqS2.js",
       "index.html",
-      "_utils-C05pYWvt.js",
-      "_FileDialog-D8E2JdKh.js",
-      "_ElementListItems-BApz0gk2.js",
-      "_ai-C4SF2e8U.js",
-      "_PageDetail-DsrZbJ0g.js",
-      "_vue-draggable-plus-CAvEB1xe.js",
+      "_utils-DxT0FLgc.js",
+      "_FileDialog-DSAuzvfT.js",
+      "_ElementListItems-LCnu_D1W.js",
+      "_ai-CB-KIUlr.js",
+      "_PageDetail-kbwO8Sep.js",
+      "_vue-draggable-plus-8-Uawa_h.js",
       "_index-DfyB7TPt.js",
-      "_ElementDetail-mUNZkUCI.js"
+      "_ElementDetail-BOu6euw-.js"
     ],
     "css": [
       "assets/Image-C_3flh9A.css"
     ]
   },
   "js/fields/Images.vue": {
-    "file": "assets/Images-Iamnoig1.js",
+    "file": "assets/Images-BAQ9OCRs.js",
     "name": "Images",
     "src": "js/fields/Images.vue",
     "isDynamicEntry": true,
     "imports": [
       "index.html",
       "_mdi-DA9g8ejv.js",
-      "_vue-draggable-plus-CAvEB1xe.js",
-      "_utils-C05pYWvt.js",
-      "_FileDetail-CADuHChW.js",
-      "_FileDialog-D8E2JdKh.js",
-      "_ElementListItems-BApz0gk2.js",
-      "_ai-C4SF2e8U.js",
-      "_PageDetail-DsrZbJ0g.js",
+      "_vue-draggable-plus-8-Uawa_h.js",
+      "_utils-DxT0FLgc.js",
+      "_FileDetail-MTxsEqS2.js",
+      "_FileDialog-DSAuzvfT.js",
+      "_ElementListItems-LCnu_D1W.js",
+      "_ai-CB-KIUlr.js",
+      "_PageDetail-kbwO8Sep.js",
       "_index-DfyB7TPt.js",
-      "_ElementDetail-mUNZkUCI.js"
+      "_ElementDetail-BOu6euw-.js"
     ],
     "css": [
       "assets/Images-2UgAvTOP.css"
     ]
   },
   "js/fields/Items.vue": {
-    "file": "assets/Items-WEVC4utm.js",
+    "file": "assets/Items-Bcd4Vvrn.js",
     "name": "Items",
     "src": "js/fields/Items.vue",
     "isDynamicEntry": true,
     "imports": [
       "_mdi-DA9g8ejv.js",
-      "_ai-C4SF2e8U.js",
-      "_vue-draggable-plus-CAvEB1xe.js",
+      "_ai-CB-KIUlr.js",
+      "_vue-draggable-plus-8-Uawa_h.js",
       "index.html",
-      "_utils-C05pYWvt.js"
+      "_utils-DxT0FLgc.js"
     ],
     "css": [
       "assets/Items-CJ_v3B2N.css"
     ]
   },
   "js/fields/Markdown.vue": {
-    "file": "assets/Markdown-D1yrBEKQ.js",
+    "file": "assets/Markdown--l7tHaj1.js",
     "name": "Markdown",
     "src": "js/fields/Markdown.vue",
     "isDynamicEntry": true,
     "imports": [
       "index.html",
-      "_ckeditor5-CBaqwIYy.js",
+      "_ckeditor5-D7kOdhPX.js",
       "_index-DfyB7TPt.js"
     ],
     "dynamicImports": [
       "node_modules/ckeditor5/dist/translations/af.js",
-      "_af.umd-BPV_kJbh.js",
+      "_af.umd-Cpng0K96.js",
       "node_modules/ckeditor5/dist/translations/ar.js",
-      "_ar.umd-tDgh5IZp.js",
+      "_ar.umd-DxC0BvSY.js",
       "node_modules/ckeditor5/dist/translations/ast.js",
-      "_ast.umd-DAmjw7Q4.js",
+      "_ast.umd-DUlZxIT9.js",
       "node_modules/ckeditor5/dist/translations/az.js",
-      "_az.umd-doVw94jh.js",
+      "_az.umd-CCQtVsuk.js",
       "node_modules/ckeditor5/dist/translations/be.js",
-      "_be.umd-BOVYeDxz.js",
+      "_be.umd-DV_LBcy9.js",
       "node_modules/ckeditor5/dist/translations/bg.js",
-      "_bg.umd-BZ7Dkbl8.js",
+      "_bg.umd-0TZ7mf0F.js",
       "node_modules/ckeditor5/dist/translations/bn.js",
-      "_bn.umd-23hC0OUK.js",
+      "_bn.umd-CauOVQgc.js",
       "node_modules/ckeditor5/dist/translations/bs.js",
-      "_bs.umd-D3LecJXM.js",
+      "_bs.umd-DQi9GRIx.js",
       "node_modules/ckeditor5/dist/translations/ca.js",
-      "_ca.umd-C7q-DImE.js",
+      "_ca.umd-CHt_PslS.js",
       "node_modules/ckeditor5/dist/translations/cs.js",
-      "_cs.umd-BCtWOMff.js",
+      "_cs.umd-DFsYkGGS.js",
       "node_modules/ckeditor5/dist/translations/da.js",
-      "_da.umd-DZUB4VTi.js",
+      "_da.umd-DrVLKp58.js",
       "node_modules/ckeditor5/dist/translations/de-ch.js",
-      "_de-ch.umd-C53gyPTB.js",
+      "_de-ch.umd-DkzoYUn_.js",
       "node_modules/ckeditor5/dist/translations/de.js",
-      "_de.umd-uHpp4bex.js",
+      "_de.umd-C4Jvx118.js",
       "node_modules/ckeditor5/dist/translations/el.js",
-      "_el.umd-B4ZVp38o.js",
+      "_el.umd-BcLFRhmc.js",
       "node_modules/ckeditor5/dist/translations/en-au.js",
-      "_en-au.umd-OQOkD9as.js",
+      "_en-au.umd-DuKagPE2.js",
       "node_modules/ckeditor5/dist/translations/en-gb.js",
-      "_en-gb.umd-BrQGmvN9.js",
+      "_en-gb.umd-BgGgtOaL.js",
       "node_modules/ckeditor5/dist/translations/en.js",
-      "_en.umd-CEqJjUEv.js",
+      "_en.umd-DulRGM8B.js",
       "node_modules/ckeditor5/dist/translations/eo.js",
-      "_eo.umd-DALXM57I.js",
+      "_eo.umd-4HQPYwBV.js",
       "node_modules/ckeditor5/dist/translations/es-co.js",
-      "_es-co.umd-DsHRb0X5.js",
+      "_es-co.umd-pHRtGzvH.js",
       "node_modules/ckeditor5/dist/translations/es.js",
-      "_es.umd-D0xwZ6Um.js",
+      "_es.umd-CwKo_ILA.js",
       "node_modules/ckeditor5/dist/translations/et.js",
-      "_et.umd-CfAAU51H.js",
+      "_et.umd-CNznEf0Y.js",
       "node_modules/ckeditor5/dist/translations/eu.js",
-      "_eu.umd-DDHZ1W_-.js",
+      "_eu.umd-DYnbMXhi.js",
       "node_modules/ckeditor5/dist/translations/fa.js",
-      "_fa.umd-CLcAizCv.js",
+      "_fa.umd-6CC5SWm-.js",
       "node_modules/ckeditor5/dist/translations/fi.js",
-      "_fi.umd-sIMB3G1E.js",
+      "_fi.umd-pSJjADmK.js",
       "node_modules/ckeditor5/dist/translations/fr.js",
-      "_fr.umd-PeTZdnJd.js",
+      "_fr.umd-B5i74fid.js",
       "node_modules/ckeditor5/dist/translations/gl.js",
-      "_gl.umd-Du32rWTc.js",
+      "_gl.umd-BLyJwTuS.js",
       "node_modules/ckeditor5/dist/translations/gu.js",
-      "_gu.umd-dinaIjHN.js",
+      "_gu.umd-Bpm6OmKo.js",
       "node_modules/ckeditor5/dist/translations/he.js",
-      "_he.umd-yBOc9tmM.js",
+      "_he.umd-B9DDT0Ql.js",
       "node_modules/ckeditor5/dist/translations/hi.js",
-      "_hi.umd-BebxCg9R.js",
+      "_hi.umd-CYsR_ddg.js",
       "node_modules/ckeditor5/dist/translations/hr.js",
-      "_hr.umd-CY2kjw59.js",
+      "_hr.umd-DasLwi9k.js",
       "node_modules/ckeditor5/dist/translations/hu.js",
-      "_hu.umd-4YbkKcOr.js",
+      "_hu.umd-k7gaUszk.js",
       "node_modules/ckeditor5/dist/translations/hy.js",
-      "_hy.umd-x5U_WWHu.js",
+      "_hy.umd-CcEkgHIw.js",
       "node_modules/ckeditor5/dist/translations/id.js",
-      "_id.umd-nnpgzAI7.js",
+      "_id.umd-V5m6GIEN.js",
       "node_modules/ckeditor5/dist/translations/it.js",
-      "_it.umd-BSpe1Gv0.js",
+      "_it.umd-BmyAmUKp.js",
       "node_modules/ckeditor5/dist/translations/ja.js",
-      "_ja.umd-C7Raama6.js",
+      "_ja.umd-DczdkkYv.js",
       "node_modules/ckeditor5/dist/translations/jv.js",
-      "_jv.umd-B-zuuTSr.js",
+      "_jv.umd-CWoZVe7-.js",
       "node_modules/ckeditor5/dist/translations/kk.js",
-      "_kk.umd-CeNzoCc5.js",
+      "_kk.umd-DtO6ULm8.js",
       "node_modules/ckeditor5/dist/translations/km.js",
-      "_km.umd-RzJTQaH0.js",
+      "_km.umd-U1Xf1zRo.js",
       "node_modules/ckeditor5/dist/translations/kn.js",
-      "_kn.umd-C3Cv-ytO.js",
+      "_kn.umd-BAnBERM-.js",
       "node_modules/ckeditor5/dist/translations/ko.js",
-      "_ko.umd-C4tLvbzX.js",
+      "_ko.umd-YqKggph2.js",
       "node_modules/ckeditor5/dist/translations/ku.js",
-      "_ku.umd-DTwzsrOJ.js",
+      "_ku.umd-BHt7gG9G.js",
       "node_modules/ckeditor5/dist/translations/lt.js",
-      "_lt.umd-iuQTUBPe.js",
+      "_lt.umd-DB7JO8NI.js",
       "node_modules/ckeditor5/dist/translations/lv.js",
-      "_lv.umd-tO6wPhFb.js",
+      "_lv.umd-DpUTkdEf.js",
       "node_modules/ckeditor5/dist/translations/ms.js",
-      "_ms.umd-CSk0h8aD.js",
+      "_ms.umd-Vklv2y3d.js",
       "node_modules/ckeditor5/dist/translations/nb.js",
-      "_nb.umd-Dxklohsq.js",
+      "_nb.umd-C43ZhF3M.js",
       "node_modules/ckeditor5/dist/translations/ne.js",
-      "_ne.umd-DJZT9i1m.js",
+      "_ne.umd-CfRwBUtC.js",
       "node_modules/ckeditor5/dist/translations/nl.js",
-      "_nl.umd-DitLQNQJ.js",
+      "_nl.umd-B5aCz_VW.js",
       "node_modules/ckeditor5/dist/translations/no.js",
-      "_no.umd-Bk4DUndC.js",
+      "_no.umd-P02qo_AC.js",
       "node_modules/ckeditor5/dist/translations/oc.js",
-      "_oc.umd-DVj7xlBx.js",
+      "_oc.umd-27ToDA5j.js",
       "node_modules/ckeditor5/dist/translations/pl.js",
-      "_pl.umd-CBV40ppd.js",
+      "_pl.umd-DPP_yhMB.js",
       "node_modules/ckeditor5/dist/translations/pt-br.js",
-      "_pt-br.umd-Bs0ZHba5.js",
+      "_pt-br.umd-BOCN3nCF.js",
       "node_modules/ckeditor5/dist/translations/pt.js",
-      "_pt.umd-DQh2JFZC.js",
+      "_pt.umd-Bo2czk8_.js",
       "node_modules/ckeditor5/dist/translations/ro.js",
-      "_ro.umd-DLpRJqUw.js",
+      "_ro.umd-HAMSNGb_.js",
       "node_modules/ckeditor5/dist/translations/ru.js",
-      "_ru.umd-BwLMMcmY.js",
+      "_ru.umd-DrE2VTyt.js",
       "node_modules/ckeditor5/dist/translations/si.js",
-      "_si.umd-B7tR6d2m.js",
+      "_si.umd-BZktjEmM.js",
       "node_modules/ckeditor5/dist/translations/sk.js",
-      "_sk.umd-DmXIgPmX.js",
+      "_sk.umd-Cly-6x9o.js",
       "node_modules/ckeditor5/dist/translations/sl.js",
-      "_sl.umd-CNKiuhzK.js",
+      "_sl.umd-T-4uJOnQ.js",
       "node_modules/ckeditor5/dist/translations/sq.js",
-      "_sq.umd-hrIRvPMX.js",
+      "_sq.umd-DAZng6Xg.js",
       "node_modules/ckeditor5/dist/translations/sr-latn.js",
-      "_sr-latn.umd-B_c_vnMX.js",
+      "_sr-latn.umd-_4ki5EgE.js",
       "node_modules/ckeditor5/dist/translations/sr.js",
-      "_sr.umd-BClBO5EW.js",
+      "_sr.umd-CIhrGajJ.js",
       "node_modules/ckeditor5/dist/translations/sv.js",
-      "_sv.umd-BeHkgZd1.js",
+      "_sv.umd-0NRKW1rN.js",
       "node_modules/ckeditor5/dist/translations/th.js",
-      "_th.umd-CuJ9K_Rp.js",
+      "_th.umd-Dn8NxfRA.js",
       "node_modules/ckeditor5/dist/translations/ti.js",
-      "_ti.umd-CX2sImPY.js",
+      "_ti.umd-nX5MR-0V.js",
       "node_modules/ckeditor5/dist/translations/tk.js",
-      "_tk.umd-nYEc82Jn.js",
+      "_tk.umd-DUdp9fhh.js",
       "node_modules/ckeditor5/dist/translations/tr.js",
-      "_tr.umd-I7AoybNx.js",
+      "_tr.umd-BhHenafR.js",
       "node_modules/ckeditor5/dist/translations/tt.js",
-      "_tt.umd-CnrKeB-d.js",
+      "_tt.umd-UHCK-quj.js",
       "node_modules/ckeditor5/dist/translations/ug.js",
-      "_ug.umd-Hb68JhtD.js",
+      "_ug.umd-BbC_LYgh.js",
       "node_modules/ckeditor5/dist/translations/uk.js",
-      "_uk.umd-2LJLDQsG.js",
+      "_uk.umd-BESHs4NE.js",
       "node_modules/ckeditor5/dist/translations/ur.js",
-      "_ur.umd-08E2vNBZ.js",
+      "_ur.umd-BcOqRB-t.js",
       "node_modules/ckeditor5/dist/translations/uz.js",
-      "_uz.umd-CV41LgDO.js",
+      "_uz.umd-Dwxcyi6h.js",
       "node_modules/ckeditor5/dist/translations/vi.js",
-      "_vi.umd-D5wsSyZu.js",
+      "_vi.umd-BqrpNB_I.js",
       "node_modules/ckeditor5/dist/translations/zh-cn.js",
-      "_zh-cn.umd-Bt01FJq-.js",
+      "_zh-cn.umd-bFHlALoa.js",
       "node_modules/ckeditor5/dist/translations/zh.js",
-      "_zh.umd-kgjuUrEc.js"
+      "_zh.umd-IUNJ2i3I.js"
     ]
   },
   "js/fields/Number.vue": {
-    "file": "assets/Number-BMqKMYT6.js",
+    "file": "assets/Number-C_mKPM9J.js",
     "name": "Number",
     "src": "js/fields/Number.vue",
     "isDynamicEntry": true,
@@ -1449,7 +1449,7 @@
     ]
   },
   "js/fields/Plaintext.vue": {
-    "file": "assets/Plaintext-sL6Kctuo.js",
+    "file": "assets/Plaintext-Dc5gBh-i.js",
     "name": "Plaintext",
     "src": "js/fields/Plaintext.vue",
     "isDynamicEntry": true,
@@ -1458,7 +1458,7 @@
     ]
   },
   "js/fields/Radio.vue": {
-    "file": "assets/Radio-Dr4qZ0k9.js",
+    "file": "assets/Radio-CEXiJmt7.js",
     "name": "Radio",
     "src": "js/fields/Radio.vue",
     "isDynamicEntry": true,
@@ -1467,7 +1467,7 @@
     ]
   },
   "js/fields/Range.vue": {
-    "file": "assets/Range-DWtk3Puu.js",
+    "file": "assets/Range-BhK1LKNX.js",
     "name": "Range",
     "src": "js/fields/Range.vue",
     "isDynamicEntry": true,
@@ -1476,7 +1476,7 @@
     ]
   },
   "js/fields/Select.vue": {
-    "file": "assets/Select-vuNqgs4n.js",
+    "file": "assets/Select-Hgj85vLL.js",
     "name": "Select",
     "src": "js/fields/Select.vue",
     "isDynamicEntry": true,
@@ -1485,7 +1485,7 @@
     ]
   },
   "js/fields/Slider.vue": {
-    "file": "assets/Slider-DaIKDfxy.js",
+    "file": "assets/Slider-I0OjT0hf.js",
     "name": "Slider",
     "src": "js/fields/Slider.vue",
     "isDynamicEntry": true,
@@ -1494,7 +1494,7 @@
     ]
   },
   "js/fields/String.vue": {
-    "file": "assets/String-D9C8qwQI.js",
+    "file": "assets/String-BtmSOlOE.js",
     "name": "String",
     "src": "js/fields/String.vue",
     "isDynamicEntry": true,
@@ -1503,7 +1503,7 @@
     ]
   },
   "js/fields/Switch.vue": {
-    "file": "assets/Switch-C9NkfhLl.js",
+    "file": "assets/Switch-DNrw2ISU.js",
     "name": "Switch",
     "src": "js/fields/Switch.vue",
     "isDynamicEntry": true,
@@ -1512,14 +1512,14 @@
     ]
   },
   "js/fields/Table.vue": {
-    "file": "assets/Table-DPbBFd-P.js",
+    "file": "assets/Table-BCyNepTs.js",
     "name": "Table",
     "src": "js/fields/Table.vue",
     "isDynamicEntry": true,
     "imports": [
       "_mdi-DA9g8ejv.js",
-      "_vue-draggable-plus-CAvEB1xe.js",
-      "_utils-C05pYWvt.js",
+      "_vue-draggable-plus-8-Uawa_h.js",
+      "_utils-DxT0FLgc.js",
       "index.html"
     ],
     "css": [
@@ -1527,166 +1527,166 @@
     ]
   },
   "js/fields/Text.vue": {
-    "file": "assets/Text-Dy9ZcV4m.js",
+    "file": "assets/Text-BLtKwYOs.js",
     "name": "Text",
     "src": "js/fields/Text.vue",
     "isDynamicEntry": true,
     "imports": [
       "index.html",
-      "_ckeditor5-CBaqwIYy.js",
+      "_ckeditor5-D7kOdhPX.js",
       "_index-DfyB7TPt.js"
     ],
     "dynamicImports": [
       "node_modules/ckeditor5/dist/translations/af.js",
-      "_af.umd-BPV_kJbh.js",
+      "_af.umd-Cpng0K96.js",
       "node_modules/ckeditor5/dist/translations/ar.js",
-      "_ar.umd-tDgh5IZp.js",
+      "_ar.umd-DxC0BvSY.js",
       "node_modules/ckeditor5/dist/translations/ast.js",
-      "_ast.umd-DAmjw7Q4.js",
+      "_ast.umd-DUlZxIT9.js",
       "node_modules/ckeditor5/dist/translations/az.js",
-      "_az.umd-doVw94jh.js",
+      "_az.umd-CCQtVsuk.js",
       "node_modules/ckeditor5/dist/translations/be.js",
-      "_be.umd-BOVYeDxz.js",
+      "_be.umd-DV_LBcy9.js",
       "node_modules/ckeditor5/dist/translations/bg.js",
-      "_bg.umd-BZ7Dkbl8.js",
+      "_bg.umd-0TZ7mf0F.js",
       "node_modules/ckeditor5/dist/translations/bn.js",
-      "_bn.umd-23hC0OUK.js",
+      "_bn.umd-CauOVQgc.js",
       "node_modules/ckeditor5/dist/translations/bs.js",
-      "_bs.umd-D3LecJXM.js",
+      "_bs.umd-DQi9GRIx.js",
       "node_modules/ckeditor5/dist/translations/ca.js",
-      "_ca.umd-C7q-DImE.js",
+      "_ca.umd-CHt_PslS.js",
       "node_modules/ckeditor5/dist/translations/cs.js",
-      "_cs.umd-BCtWOMff.js",
+      "_cs.umd-DFsYkGGS.js",
       "node_modules/ckeditor5/dist/translations/da.js",
-      "_da.umd-DZUB4VTi.js",
+      "_da.umd-DrVLKp58.js",
       "node_modules/ckeditor5/dist/translations/de-ch.js",
-      "_de-ch.umd-C53gyPTB.js",
+      "_de-ch.umd-DkzoYUn_.js",
       "node_modules/ckeditor5/dist/translations/de.js",
-      "_de.umd-uHpp4bex.js",
+      "_de.umd-C4Jvx118.js",
       "node_modules/ckeditor5/dist/translations/el.js",
-      "_el.umd-B4ZVp38o.js",
+      "_el.umd-BcLFRhmc.js",
       "node_modules/ckeditor5/dist/translations/en-au.js",
-      "_en-au.umd-OQOkD9as.js",
+      "_en-au.umd-DuKagPE2.js",
       "node_modules/ckeditor5/dist/translations/en-gb.js",
-      "_en-gb.umd-BrQGmvN9.js",
+      "_en-gb.umd-BgGgtOaL.js",
       "node_modules/ckeditor5/dist/translations/en.js",
-      "_en.umd-CEqJjUEv.js",
+      "_en.umd-DulRGM8B.js",
       "node_modules/ckeditor5/dist/translations/eo.js",
-      "_eo.umd-DALXM57I.js",
+      "_eo.umd-4HQPYwBV.js",
       "node_modules/ckeditor5/dist/translations/es-co.js",
-      "_es-co.umd-DsHRb0X5.js",
+      "_es-co.umd-pHRtGzvH.js",
       "node_modules/ckeditor5/dist/translations/es.js",
-      "_es.umd-D0xwZ6Um.js",
+      "_es.umd-CwKo_ILA.js",
       "node_modules/ckeditor5/dist/translations/et.js",
-      "_et.umd-CfAAU51H.js",
+      "_et.umd-CNznEf0Y.js",
       "node_modules/ckeditor5/dist/translations/eu.js",
-      "_eu.umd-DDHZ1W_-.js",
+      "_eu.umd-DYnbMXhi.js",
       "node_modules/ckeditor5/dist/translations/fa.js",
-      "_fa.umd-CLcAizCv.js",
+      "_fa.umd-6CC5SWm-.js",
       "node_modules/ckeditor5/dist/translations/fi.js",
-      "_fi.umd-sIMB3G1E.js",
+      "_fi.umd-pSJjADmK.js",
       "node_modules/ckeditor5/dist/translations/fr.js",
-      "_fr.umd-PeTZdnJd.js",
+      "_fr.umd-B5i74fid.js",
       "node_modules/ckeditor5/dist/translations/gl.js",
-      "_gl.umd-Du32rWTc.js",
+      "_gl.umd-BLyJwTuS.js",
       "node_modules/ckeditor5/dist/translations/gu.js",
-      "_gu.umd-dinaIjHN.js",
+      "_gu.umd-Bpm6OmKo.js",
       "node_modules/ckeditor5/dist/translations/he.js",
-      "_he.umd-yBOc9tmM.js",
+      "_he.umd-B9DDT0Ql.js",
       "node_modules/ckeditor5/dist/translations/hi.js",
-      "_hi.umd-BebxCg9R.js",
+      "_hi.umd-CYsR_ddg.js",
       "node_modules/ckeditor5/dist/translations/hr.js",
-      "_hr.umd-CY2kjw59.js",
+      "_hr.umd-DasLwi9k.js",
       "node_modules/ckeditor5/dist/translations/hu.js",
-      "_hu.umd-4YbkKcOr.js",
+      "_hu.umd-k7gaUszk.js",
       "node_modules/ckeditor5/dist/translations/hy.js",
-      "_hy.umd-x5U_WWHu.js",
+      "_hy.umd-CcEkgHIw.js",
       "node_modules/ckeditor5/dist/translations/id.js",
-      "_id.umd-nnpgzAI7.js",
+      "_id.umd-V5m6GIEN.js",
       "node_modules/ckeditor5/dist/translations/it.js",
-      "_it.umd-BSpe1Gv0.js",
+      "_it.umd-BmyAmUKp.js",
       "node_modules/ckeditor5/dist/translations/ja.js",
-      "_ja.umd-C7Raama6.js",
+      "_ja.umd-DczdkkYv.js",
       "node_modules/ckeditor5/dist/translations/jv.js",
-      "_jv.umd-B-zuuTSr.js",
+      "_jv.umd-CWoZVe7-.js",
       "node_modules/ckeditor5/dist/translations/kk.js",
-      "_kk.umd-CeNzoCc5.js",
+      "_kk.umd-DtO6ULm8.js",
       "node_modules/ckeditor5/dist/translations/km.js",
-      "_km.umd-RzJTQaH0.js",
+      "_km.umd-U1Xf1zRo.js",
       "node_modules/ckeditor5/dist/translations/kn.js",
-      "_kn.umd-C3Cv-ytO.js",
+      "_kn.umd-BAnBERM-.js",
       "node_modules/ckeditor5/dist/translations/ko.js",
-      "_ko.umd-C4tLvbzX.js",
+      "_ko.umd-YqKggph2.js",
       "node_modules/ckeditor5/dist/translations/ku.js",
-      "_ku.umd-DTwzsrOJ.js",
+      "_ku.umd-BHt7gG9G.js",
       "node_modules/ckeditor5/dist/translations/lt.js",
-      "_lt.umd-iuQTUBPe.js",
+      "_lt.umd-DB7JO8NI.js",
       "node_modules/ckeditor5/dist/translations/lv.js",
-      "_lv.umd-tO6wPhFb.js",
+      "_lv.umd-DpUTkdEf.js",
       "node_modules/ckeditor5/dist/translations/ms.js",
-      "_ms.umd-CSk0h8aD.js",
+      "_ms.umd-Vklv2y3d.js",
       "node_modules/ckeditor5/dist/translations/nb.js",
-      "_nb.umd-Dxklohsq.js",
+      "_nb.umd-C43ZhF3M.js",
       "node_modules/ckeditor5/dist/translations/ne.js",
-      "_ne.umd-DJZT9i1m.js",
+      "_ne.umd-CfRwBUtC.js",
       "node_modules/ckeditor5/dist/translations/nl.js",
-      "_nl.umd-DitLQNQJ.js",
+      "_nl.umd-B5aCz_VW.js",
       "node_modules/ckeditor5/dist/translations/no.js",
-      "_no.umd-Bk4DUndC.js",
+      "_no.umd-P02qo_AC.js",
       "node_modules/ckeditor5/dist/translations/oc.js",
-      "_oc.umd-DVj7xlBx.js",
+      "_oc.umd-27ToDA5j.js",
       "node_modules/ckeditor5/dist/translations/pl.js",
-      "_pl.umd-CBV40ppd.js",
+      "_pl.umd-DPP_yhMB.js",
       "node_modules/ckeditor5/dist/translations/pt-br.js",
-      "_pt-br.umd-Bs0ZHba5.js",
+      "_pt-br.umd-BOCN3nCF.js",
       "node_modules/ckeditor5/dist/translations/pt.js",
-      "_pt.umd-DQh2JFZC.js",
+      "_pt.umd-Bo2czk8_.js",
       "node_modules/ckeditor5/dist/translations/ro.js",
-      "_ro.umd-DLpRJqUw.js",
+      "_ro.umd-HAMSNGb_.js",
       "node_modules/ckeditor5/dist/translations/ru.js",
-      "_ru.umd-BwLMMcmY.js",
+      "_ru.umd-DrE2VTyt.js",
       "node_modules/ckeditor5/dist/translations/si.js",
-      "_si.umd-B7tR6d2m.js",
+      "_si.umd-BZktjEmM.js",
       "node_modules/ckeditor5/dist/translations/sk.js",
-      "_sk.umd-DmXIgPmX.js",
+      "_sk.umd-Cly-6x9o.js",
       "node_modules/ckeditor5/dist/translations/sl.js",
-      "_sl.umd-CNKiuhzK.js",
+      "_sl.umd-T-4uJOnQ.js",
       "node_modules/ckeditor5/dist/translations/sq.js",
-      "_sq.umd-hrIRvPMX.js",
+      "_sq.umd-DAZng6Xg.js",
       "node_modules/ckeditor5/dist/translations/sr-latn.js",
-      "_sr-latn.umd-B_c_vnMX.js",
+      "_sr-latn.umd-_4ki5EgE.js",
       "node_modules/ckeditor5/dist/translations/sr.js",
-      "_sr.umd-BClBO5EW.js",
+      "_sr.umd-CIhrGajJ.js",
       "node_modules/ckeditor5/dist/translations/sv.js",
-      "_sv.umd-BeHkgZd1.js",
+      "_sv.umd-0NRKW1rN.js",
       "node_modules/ckeditor5/dist/translations/th.js",
-      "_th.umd-CuJ9K_Rp.js",
+      "_th.umd-Dn8NxfRA.js",
       "node_modules/ckeditor5/dist/translations/ti.js",
-      "_ti.umd-CX2sImPY.js",
+      "_ti.umd-nX5MR-0V.js",
       "node_modules/ckeditor5/dist/translations/tk.js",
-      "_tk.umd-nYEc82Jn.js",
+      "_tk.umd-DUdp9fhh.js",
       "node_modules/ckeditor5/dist/translations/tr.js",
-      "_tr.umd-I7AoybNx.js",
+      "_tr.umd-BhHenafR.js",
       "node_modules/ckeditor5/dist/translations/tt.js",
-      "_tt.umd-CnrKeB-d.js",
+      "_tt.umd-UHCK-quj.js",
       "node_modules/ckeditor5/dist/translations/ug.js",
-      "_ug.umd-Hb68JhtD.js",
+      "_ug.umd-BbC_LYgh.js",
       "node_modules/ckeditor5/dist/translations/uk.js",
-      "_uk.umd-2LJLDQsG.js",
+      "_uk.umd-BESHs4NE.js",
       "node_modules/ckeditor5/dist/translations/ur.js",
-      "_ur.umd-08E2vNBZ.js",
+      "_ur.umd-BcOqRB-t.js",
       "node_modules/ckeditor5/dist/translations/uz.js",
-      "_uz.umd-CV41LgDO.js",
+      "_uz.umd-Dwxcyi6h.js",
       "node_modules/ckeditor5/dist/translations/vi.js",
-      "_vi.umd-D5wsSyZu.js",
+      "_vi.umd-BqrpNB_I.js",
       "node_modules/ckeditor5/dist/translations/zh-cn.js",
-      "_zh-cn.umd-Bt01FJq-.js",
+      "_zh-cn.umd-bFHlALoa.js",
       "node_modules/ckeditor5/dist/translations/zh.js",
-      "_zh.umd-kgjuUrEc.js"
+      "_zh.umd-IUNJ2i3I.js"
     ]
   },
   "js/fields/Url.vue": {
-    "file": "assets/Url-BLWeyW56.js",
+    "file": "assets/Url-C0aChrpQ.js",
     "name": "Url",
     "src": "js/fields/Url.vue",
     "isDynamicEntry": true,
@@ -1695,7 +1695,7 @@
     ]
   },
   "js/fields/Video.vue": {
-    "file": "assets/Video-CXvfd6HD.js",
+    "file": "assets/Video-CwrE9mW7.js",
     "name": "Video",
     "src": "js/fields/Video.vue",
     "isDynamicEntry": true,
@@ -1703,62 +1703,62 @@
       "_mdi-DA9g8ejv.js",
       "js/fields/File.vue",
       "index.html",
-      "_utils-C05pYWvt.js",
-      "_FileDialog-D8E2JdKh.js",
-      "_FileDetail-CADuHChW.js",
-      "_ElementListItems-BApz0gk2.js",
-      "_ai-C4SF2e8U.js",
-      "_PageDetail-DsrZbJ0g.js",
-      "_vue-draggable-plus-CAvEB1xe.js",
+      "_utils-DxT0FLgc.js",
+      "_FileDialog-DSAuzvfT.js",
+      "_FileDetail-MTxsEqS2.js",
+      "_ElementListItems-LCnu_D1W.js",
+      "_ai-CB-KIUlr.js",
+      "_PageDetail-kbwO8Sep.js",
+      "_vue-draggable-plus-8-Uawa_h.js",
       "_index-DfyB7TPt.js",
-      "_ElementDetail-mUNZkUCI.js"
+      "_ElementDetail-BOu6euw-.js"
     ],
     "css": [
       "assets/Video-4rye7IDl.css"
     ]
   },
   "js/views/ElementList.vue": {
-    "file": "assets/ElementList-DSAjIH4i.js",
+    "file": "assets/ElementList-Xqs2fFvm.js",
     "name": "ElementList",
     "src": "js/views/ElementList.vue",
     "isDynamicEntry": true,
     "imports": [
       "_mdi-DA9g8ejv.js",
-      "_Navigation-RHbpRRck.js",
-      "_ElementDetail-mUNZkUCI.js",
-      "_ElementListItems-BApz0gk2.js",
+      "_Navigation-Bqx4Y3gL.js",
+      "_ElementDetail-BOu6euw-.js",
+      "_ElementListItems-LCnu_D1W.js",
       "index.html",
-      "_utils-C05pYWvt.js",
-      "_ai-C4SF2e8U.js"
+      "_utils-DxT0FLgc.js",
+      "_ai-CB-KIUlr.js"
     ],
     "css": [
       "assets/ElementList-bR048U4H.css"
     ]
   },
   "js/views/FileList.vue": {
-    "file": "assets/FileList-BQ9NXtki.js",
+    "file": "assets/FileList-BxSAVTYm.js",
     "name": "FileList",
     "src": "js/views/FileList.vue",
     "isDynamicEntry": true,
     "imports": [
       "_mdi-DA9g8ejv.js",
-      "_Navigation-RHbpRRck.js",
-      "_FileDetail-CADuHChW.js",
+      "_Navigation-Bqx4Y3gL.js",
+      "_FileDetail-MTxsEqS2.js",
       "index.html",
-      "_utils-C05pYWvt.js",
-      "_ElementListItems-BApz0gk2.js",
-      "_ai-C4SF2e8U.js",
-      "_PageDetail-DsrZbJ0g.js",
-      "_vue-draggable-plus-CAvEB1xe.js",
+      "_utils-DxT0FLgc.js",
+      "_ElementListItems-LCnu_D1W.js",
+      "_ai-CB-KIUlr.js",
+      "_PageDetail-kbwO8Sep.js",
+      "_vue-draggable-plus-8-Uawa_h.js",
       "_index-DfyB7TPt.js",
-      "_ElementDetail-mUNZkUCI.js"
+      "_ElementDetail-BOu6euw-.js"
     ],
     "css": [
       "assets/FileList-BE9Sy7qA.css"
     ]
   },
   "js/views/Login.vue": {
-    "file": "assets/Login-CT65n4d2.js",
+    "file": "assets/Login-B6prLIRj.js",
     "name": "Login",
     "src": "js/views/Login.vue",
     "isDynamicEntry": true,
@@ -1771,23 +1771,23 @@
     ]
   },
   "js/views/PageList.vue": {
-    "file": "assets/PageList-BRogSHl4.js",
+    "file": "assets/PageList-YP0TyXBT.js",
     "name": "PageList",
     "src": "js/views/PageList.vue",
     "isDynamicEntry": true,
     "imports": [
       "index.html",
       "_mdi-DA9g8ejv.js",
-      "_Navigation-RHbpRRck.js",
-      "_PageDetail-DsrZbJ0g.js",
-      "_utils-C05pYWvt.js",
-      "_ai-C4SF2e8U.js",
-      "_ElementListItems-BApz0gk2.js",
-      "_vue-draggable-plus-CAvEB1xe.js",
+      "_Navigation-Bqx4Y3gL.js",
+      "_PageDetail-kbwO8Sep.js",
+      "_utils-DxT0FLgc.js",
+      "_ai-CB-KIUlr.js",
+      "_ElementListItems-LCnu_D1W.js",
+      "_vue-draggable-plus-8-Uawa_h.js",
       "_index-DfyB7TPt.js"
     ],
     "css": [
-      "assets/PageList-ykG6fwzS.css"
+      "assets/PageList-CXk3IjtO.css"
     ]
   },
   "node_modules/ckeditor5/dist/translations/af.js": {
@@ -2343,7 +2343,7 @@
     "isDynamicEntry": true
   },
   "node_modules/vuetify/lib/locale/index.js": {
-    "file": "assets/index-DTsnhoBS.js",
+    "file": "assets/index-CZPF28tP.js",
     "name": "index",
     "src": "node_modules/vuetify/lib/locale/index.js",
     "isDynamicEntry": true,
