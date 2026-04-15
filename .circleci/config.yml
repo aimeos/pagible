@@ -451,35 +451,35 @@ workflows:
   php:
     when: << pipeline.parameters.run_php >>
     jobs:
-#      - "php85-phpstan"
-#      - "php82-sqlite3":
-#          requires: ["php85-phpstan"]
-#      - "php82-mariadb10":
-#          requires: ["php85-phpstan"]
-#      - "php82-mysql8":
-#          requires: ["php85-phpstan"]
-#      - "php82-pgsql14":
-#          requires: ["php85-phpstan"]
-#      - "php82-mssql17":
-#          requires: ["php85-phpstan"]
-#      - "php85-sqlite":
-#          requires: ["php85-phpstan"]
-#      - "php85-mariadb":
-#          requires: ["php85-phpstan"]
-#      - "php85-mysql":
-#          requires: ["php85-phpstan"]
-#      - "php85-pgsql":
-#          requires: ["php85-phpstan"]
-      - "perf-sqlite"
-#          requires: ["php82-sqlite3", "php85-sqlite"]
-      - "perf-mariadb"
-#          requires: ["php82-mariadb10", "php85-mariadb"]
-      - "perf-mysql"
-#          requires: ["php82-mysql8", "php85-mysql"]
-      - "perf-pgsql"
-#          requires: ["php82-pgsql14", "php85-pgsql"]
-      - "perf-mssql"
-#          requires: ["php82-mssql17"]
+      - "php85-phpstan"
+      - "php82-sqlite3":
+          requires: ["php85-phpstan"]
+      - "php82-mariadb10":
+          requires: ["php85-phpstan"]
+      - "php82-mysql8":
+          requires: ["php85-phpstan"]
+      - "php82-pgsql14":
+          requires: ["php85-phpstan"]
+      - "php82-mssql17":
+          requires: ["php85-phpstan"]
+      - "php85-sqlite":
+          requires: ["php85-phpstan"]
+      - "php85-mariadb":
+          requires: ["php85-phpstan"]
+      - "php85-mysql":
+          requires: ["php85-phpstan"]
+      - "php85-pgsql":
+          requires: ["php85-phpstan"]
+      - "perf-sqlite":
+          requires: ["php82-sqlite3", "php85-sqlite"]
+      - "perf-mariadb":
+          requires: ["php82-mariadb10", "php85-mariadb"]
+      - "perf-mysql":
+          requires: ["php82-mysql8", "php85-mysql"]
+      - "perf-pgsql":
+          requires: ["php82-pgsql14", "php85-pgsql"]
+      - "perf-mssql":
+          requires: ["php82-mssql17"]
   admin:
     when: << pipeline.parameters.run_admin >>
     jobs:
