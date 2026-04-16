@@ -8,15 +8,15 @@
 	"prefer-stable": true,
 	"minimum-stability": "dev",
 	"require": {
-		"aimeos/pagible-core": "~0.10",
-		"aimeos/pagible-admin": "~0.10",
-		"aimeos/pagible-ai": "~0.10",
-		"aimeos/pagible-graphql": "~0.10",
-		"aimeos/pagible-import": "~0.10",
-		"aimeos/pagible-search": "~0.10",
-		"aimeos/pagible-jsonapi": "~0.10",
-		"aimeos/pagible-mcp": "~0.10",
-		"aimeos/pagible-theme": "~0.10"
+		"aimeos/pagible-core": "0.10.*",
+		"aimeos/pagible-admin": "0.10.*",
+		"aimeos/pagible-ai": "0.10.*",
+		"aimeos/pagible-graphql": "0.10.*",
+		"aimeos/pagible-import": "0.10.*",
+		"aimeos/pagible-search": "0.10.*",
+		"aimeos/pagible-jsonapi": "0.10.*",
+		"aimeos/pagible-mcp": "0.10.*",
+		"aimeos/pagible-theme": "0.10.*"
 	},
 	"require-dev": {
 		"orchestra/testbench": "^9.0||^10.0||^11.0",

@@ -9,10 +9,10 @@
     "minimum-stability": "dev",
     "require": {
         "php": "^8.2",
-        "aimeos/pagible-core": "~0.10",
-        "aimeos/pagible-graphql": "~0.10",
+        "aimeos/pagible-core": "0.10.*",
+        "aimeos/pagible-graphql": "0.10.*",
         "aimeos/prisma": "dev-master",
-        "prism-php/prism": "~0.100.0"
+        "prism-php/prism": "0.10.*0.0"
     },
     "require-dev": {
         "orchestra/testbench": "^9.0||^10.0||^11.0"

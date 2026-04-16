@@ -7,7 +7,7 @@
     "license": "LGPL-3.0-only",
     "require": {
         "php": "^8.2",
-        "aimeos/pagible-core": "~0.10",
+        "aimeos/pagible-core": "0.10.*",
         "laravel-json-api/laravel": "^5.1"
     },
     "require-dev": {

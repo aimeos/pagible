@@ -8,7 +8,7 @@
     "require": {
         "php": "^8.2",
         "laravel/mcp": "~0.5",
-        "aimeos/pagible-core": "~0.10",
+        "aimeos/pagible-core": "0.10.*",
         "aimeos/laravel-analytics-bridge": "~1.0"
     },
     "require-dev": {
