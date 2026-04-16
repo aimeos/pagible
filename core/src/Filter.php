@@ -64,8 +64,8 @@ class Filter
             $builder->where( 'lang', (string) ( $filter['lang'] ?? '' ) );
         }
 
-        if( array_key_exists( 'mime', $filter ) ) {
-            $builder->where( 'mime', (string) ( $filter['mime'] ?? '' ) );
+        if( isset( $filter['mime'] ) ) {
+            $builder->whereIn( 'mime', (array) $filter['mime'] );
         }
 
         if( array_key_exists( 'editor', $filter ) ) {
