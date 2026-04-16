@@ -19,6 +19,7 @@ Route::group(config('cms.multidomain') ? ['domain' => '{domain}'] : [], function
     {
         Route::get('{path?}', [Controllers\PageController::class, 'index'])
             ->middleware(['web'])
-            ->name('cms.page');
+            ->name('cms.page')
+            ->fallback();
     }
 });
