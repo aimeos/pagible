@@ -31,15 +31,15 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Use package catch-all page route
+    | Page catch-all route configuration
     |--------------------------------------------------------------------------
     |
-    | If enabled, the package will register a catch-all route that will
-    | match all requests and forward them to the CMS. Disable this option
-    | if you need to register own routes before the catch-all route.
+    | Configuration array for the catch-all page route. Supports all Laravel
+    | route group options such as 'prefix', 'middleware', 'domain', 'where',
+    | 'as', etc. Set to null to disable the page route entirely.
     |
     */
-    'pageroute' => env( 'CMS_PAGEROUTE', true ),
+    'pageroute' => json_decode( env( 'CMS_PAGEROUTE', '{}' ), true ),
 
     /*
     |--------------------------------------------------------------------------
