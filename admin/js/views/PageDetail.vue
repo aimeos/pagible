@@ -908,7 +908,8 @@ export default {
       :readonly="!user.can('page:save')"
       :current="{
         data: {
-          related_id: item.related_id,
+          related_id: item.related_id || null,
+          scheduled: item.publish_at ? 1 : 0,
           cache: item.cache,
           domain: item.domain,
           lang: item.lang,
