@@ -41,6 +41,7 @@ class SavePage extends Tool
             'title' => 'string|max:100',
             'lang' => 'string|max:5',
             'content' => 'array',
+            'content.*.id' => 'string|max:10',
             'content.*.type' => 'required|string|max:50',
             'content.*.group' => 'string|max:50',
             'content.*.data' => 'required|array',
@@ -127,6 +128,8 @@ class SavePage extends Tool
                 ->description( 'ISO language code for the version, e.g., "en" or "de".' ),
             'content' => $schema->array()
                 ->items( $schema->object( [
+                    'id' => $schema->string()
+                        ->description( 'Existing element ID to preserve. Omit to auto-generate a new ID.' ),
                     'type' => $schema->string()
                         ->description( 'Content element type. Use get-schemas for available types.' )
                         ->required(),
