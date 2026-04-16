@@ -15,11 +15,13 @@ Route::group(config('cms.multidomain') ? ['domain' => '{domain}'] : [], function
     Route::get("{$sitemap}.xml", [Controllers\SitemapController::class, 'index'])->middleware(['web', 'throttle:cms-sitemap'])->name('cms.sitemap');
     Route::get("{$sitemap}-{page}.xml", [Controllers\SitemapController::class, 'chunk'])->where('page', '[0-9]+')->middleware(['web', 'throttle:cms-sitemap'])->name('cms.sitemap.chunk');
 
-    if(config('cms.theme.pageroute', true))
+    if(is_array($page = config('cms.theme.pageroute')))
     {
-        Route::get('{path?}', [Controllers\PageController::class, 'index'])
-            ->middleware(['web'])
-            ->name('cms.page')
-            ->fallback();
+        Route::group($page, function() {
+            Route::get('{path?}', [Controllers\PageController::class, 'index'])
+                ->middleware(['web'])
+                ->name('cms.page')
+                ->fallback();
+        });
     }
 });
