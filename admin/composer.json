@@ -7,8 +7,8 @@
     "license": "LGPL-3.0-only",
     "require": {
         "php": "^8.2",
-        "aimeos/pagible-core": "*@dev",
-        "aimeos/pagible-graphql": "*@dev"
+        "aimeos/pagible-core": "~0.10",
+        "aimeos/pagible-graphql": "~0.10"
     },
     "require-dev": {
         "orchestra/testbench": "^9.0||^10.0||^11.0"
