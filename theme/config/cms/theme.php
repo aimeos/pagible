@@ -40,4 +40,15 @@ return [
     |
     */
     'pageroute' => env( 'CMS_PAGEROUTE', true ),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Sitemap URL path
+    |--------------------------------------------------------------------------
+    |
+    | The URL path prefix for the XML sitemap. The sitemap index will be
+    | available at /{sitemap}.xml and chunks at /{sitemap}-{page}.xml.
+    |
+    */
+    'sitemap' => env( 'CMS_SITEMAP', 'sitemap' ),
 ];
