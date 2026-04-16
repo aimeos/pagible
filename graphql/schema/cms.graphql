@@ -561,8 +561,8 @@ input FileFilter {
   "IDs of the stored files"
   id: [ID!]
 
-  "Mime type of the stored files"
-  mime: String
+  "Mime types of the stored files"
+  mime: [String!]
 
   "ISO language code, e.g. 'en', 'en-GB' or empty for default language"
   lang: String
