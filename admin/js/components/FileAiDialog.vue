@@ -323,7 +323,7 @@ export default {
         <v-tabs>
           <v-tab>{{ $gettext('Select images') }}</v-tab>
         </v-tabs>
-        <FileListItems ref="filelist" :filter="{ mime: 'image/' }" @select="use($event)" />
+        <FileListItems ref="filelist" :filter="{ mime: ['image/gif', 'image/jpeg', 'image/png', 'image/svg+xml', 'image/webp'] }" @select="use($event)" />
       </v-card-text>
     </v-card>
   </v-dialog>

@@ -177,6 +177,28 @@ class GraphqlFileTest extends GraphqlTestAbstract
     }
 
 
+    public function testFilesMime()
+    {
+        $this->seed( CmsSeeder::class );
+
+        $this->expectsDatabaseQueryCount( 3 );
+        $response = $this->actingAs( $this->user )->graphQL( '{
+            files(filter: {
+                mime: ["image/jpeg", "image/png"]
+            }) {
+                data {
+                    id
+                    mime
+                }
+            }
+        }' );
+
+        $filesData = $response->json( 'data.files.data' );
+        $this->assertCount( 1, $filesData );
+        $this->assertEquals( 'image/jpeg', $filesData[0]['mime'] );
+    }
+
+
     public function testFilesPublished()
     {
         $this->seed( CmsSeeder::class );
