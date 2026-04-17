@@ -91,6 +91,7 @@ abstract class Base extends Model
         $query->where( "{$table}.latest_id", '=', function( $sub ) use ( $table, $driver, $wheres ) {
             $sub->select( 'cms_versions.id' )
                 ->from( 'cms_versions' )
+                ->whereColumn( 'cms_versions.id', $table . '.latest_id' )
                 ->where( 'cms_versions.versionable_type', static::class )
                 ->where( 'cms_versions.tenant_id', \Aimeos\Cms\Tenancy::value() );
 
