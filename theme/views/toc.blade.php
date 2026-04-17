@@ -1,7 +1,7 @@
 @if(!empty($action))
 	<nav class="toc">
 		@if(@$data->title)
-			<h2>{{ $data->title }}</h2>
+			<p>{{ $data->title }}</p>
 		@endif
 
 		@include('cms::toc-list', ['items' => $action])
