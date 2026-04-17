@@ -359,6 +359,19 @@ return [
                 ],
             ],
         ],
+        'toc' => [
+            'group' => 'content',
+            'icon' => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M3,4H21V6H3V4M3,11H21V13H3V11M3,18H21V20H3V18M1,4H2V6H1V4M1,11H2V13H1V11M1,18H2V20H1V18Z" /></svg>',
+            'fields' => [
+                'title' => [
+                    'type' => 'string',
+                ],
+                'action' => [
+                    'type' => 'hidden',
+                    'value' => '\Aimeos\Cms\Actions\Toc',
+                ],
+            ],
+        ],
         'contact' => [
             'group' => 'forms',
             'icon' => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M13 19C13 18.66 13.04 18.33 13.09 18H4V8L12 13L20 8V13.09C20.72 13.21 21.39 13.46 22 13.81V6C22 4.9 21.1 4 20 4H4C2.9 4 2 4.9 2 6V18C2 19.1 2.9 20 4 20H13.09C13.04 19.67 13 19.34 13 19M20 6L12 11L4 6H20M20 22V20H16V18H20V16L23 19L20 22Z" /></svg>',
