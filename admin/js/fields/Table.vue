@@ -239,7 +239,7 @@ export default {
         </tr>
       </thead>
 
-      <tbody v-draggable="[table, { animation: 300, handle: '.row-handle' }]">
+      <tbody v-draggable="[table, { animation: 300, handle: '.row-handle', onUpdate: update }]">
         <tr v-for="(row, rowidx) in table" :key="rowidx">
           <td>
             <v-btn
