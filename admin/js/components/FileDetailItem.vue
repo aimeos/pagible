@@ -300,6 +300,11 @@ export default {
   <v-container>
     <v-sheet class="scroll">
       <v-row>
+        <v-col cols="12">
+          <a :href="url(item.path)" target="_blank" class="file-url">{{ url(item.path) }}</a>
+        </v-col>
+      </v-row>
+      <v-row>
         <v-col cols="12" md="6">
           <v-text-field
             ref="name"
@@ -476,6 +481,15 @@ export default {
 <style scoped>
 .v-sheet.scroll {
   max-height: calc(100vh - 96px);
+}
+
+.file-url {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.85rem;
+  color: rgb(var(--v-theme-primary));
 }
 
 .preview {
