@@ -28,8 +28,8 @@ final class SavePage
                 $args['input'] ?? [],
                 Auth::user(),
                 Utils::editor( Auth::user() ),
-                $args['files'] ?? [],
-                $args['elements'] ?? [],
+                $args['files'] ?? null,
+                $args['elements'] ?? null,
             );
         } catch( \InvalidArgumentException $e ) {
             throw new Error( $e->getMessage() );
