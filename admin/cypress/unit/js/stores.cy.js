@@ -2,7 +2,6 @@ import { createPinia, setActivePinia } from 'pinia'
 import {
   useUserStore,
   useClipboardStore,
-  useConfigStore,
   useDrawerStore,
   useMessageStore,
   useSideStore,
@@ -170,32 +169,6 @@ describe('useClipboardStore', () => {
   })
 })
 
-
-describe('useConfigStore', () => {
-  beforeEach(() => {
-    setActivePinia(createPinia())
-  })
-
-  it('returns defval for missing keys', () => {
-    const config = useConfigStore()
-    expect(config.get('missing')).to.be.null
-    expect(config.get('missing', 42)).to.equal(42)
-  })
-
-  it('returns defval when key is not a string', () => {
-    const config = useConfigStore()
-    expect(config.get(null, 'fallback')).to.equal('fallback')
-    expect(config.get(123, 'fallback')).to.equal('fallback')
-  })
-
-  // Note: state is read from DOM (#app data-config) at import time,
-  // so top-level/nested value retrieval can't be tested without the DOM element.
-
-  it('returns defval when the dot-path leads nowhere', () => {
-    const config = useConfigStore()
-    expect(config.get('a.b.c', 'nope')).to.equal('nope')
-  })
-})
 
 
 describe('useDrawerStore', () => {

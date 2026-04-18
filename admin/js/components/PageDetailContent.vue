@@ -1,6 +1,6 @@
 <script>
 import PageDetailContentList from './PageDetailContentList.vue'
-import { useConfigStore } from '../stores'
+import { useSchemaStore } from '../stores'
 
 export default {
   components: {
@@ -22,8 +22,8 @@ export default {
   }),
 
   setup() {
-    const config = useConfigStore()
-    return { config }
+    const schemas = useSchemaStore()
+    return { schemas }
   },
 
   computed: {
@@ -31,7 +31,7 @@ export default {
       const type = this.item.type || 'page'
       const theme = this.item.theme || 'cms'
 
-      return this.config.get(`themes.${theme}.types.${type}.sections`, ['main'])
+      return this.schemas.themes[theme]?.types?.[type]?.sections || ['main']
     },
 
     sections() {

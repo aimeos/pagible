@@ -2,10 +2,12 @@
 
 namespace Aimeos\Cms;
 
+use Aimeos\Cms\Schema;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider as Provider;
 
 class ThemeServiceProvider extends Provider
@@ -19,7 +21,8 @@ class ThemeServiceProvider extends Provider
         );
 
         $this->loadBladeDirectives();
-        $this->loadViewsFrom( $basedir . '/views', 'cms' );
+        Schema::register( $basedir, 'cms' );
+        View::addNamespace( 'cms', $basedir . '/views' );
         $this->loadJsonTranslationsFrom( $basedir . '/lang' );
 
         $this->publishes( [$basedir . '/public' => public_path( 'vendor/cms/theme' )], 'cms-theme' );

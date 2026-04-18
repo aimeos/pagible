@@ -176,6 +176,8 @@ export default {
   },
 
   created() {
+    this.schemas.load()
+
     if (!this.item?.id || !this.user.can('page:view')) {
       return
     }

@@ -15,6 +15,17 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Theme TTL
+    |--------------------------------------------------------------------------
+    |
+    | Time-to-live (TTL) for cached theme data in seconds. Set to 0 to disable
+    | caching.
+    |
+    */
+    'ttl' => env( 'CMS_THEME_TTL', env( 'APP_DEBUG' ) ? 0 : 86400 ),
+
+    /*
+    |--------------------------------------------------------------------------
     | Content Security Policy (CSP)
     |--------------------------------------------------------------------------
     |
@@ -28,6 +39,18 @@ return [
         'script-src' => env( 'CMS_CSP_SCRIPT_SRC', 'https://hcaptcha.com https://*.hcaptcha.com' ),
         'connect-src' => env( 'CMS_CSP_CONNECT_SRC', 'https://hcaptcha.com https://*.hcaptcha.com' ),
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Theme storage disk
+    |--------------------------------------------------------------------------
+    |
+    | Filesystem disk for tenant-uploaded themes. Disabled unless configured.
+    | Themes on this disk are discovered per-tenant and their views synced
+    | to local storage for Blade compilation.
+    |
+    */
+    'disk' => env( 'CMS_THEME_DISK' ),
 
     /*
     |--------------------------------------------------------------------------

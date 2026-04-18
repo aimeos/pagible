@@ -197,7 +197,7 @@ class Page extends Base
             . ( $this->title ?? '' ) . "\n"
             . ( $this->meta->{'meta-tags'}->data->description ?? '' ) . "\n";
 
-        $config = config( 'cms.schemas.content', [] );
+        $config = \Aimeos\Cms\Schema::schemas( section: 'content' );
 
         foreach( collect( (array) $this->content )->merge( $this->elements ) as $el )
         {

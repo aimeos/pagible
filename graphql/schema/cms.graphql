@@ -634,3 +634,31 @@ type Version {
   "Date/time value when the versioned data was created"
   created_at: String!
 }
+
+"Theme schema definition"
+type Schema {
+  "Theme identifier"
+  name: String!
+
+  "Human-readable theme label"
+  label: String!
+
+  "Available page types and their sections"
+  types: JSON
+
+  "Content element definitions"
+  content: JSON
+
+  "Meta element definitions"
+  meta: JSON
+
+  "Config element definitions"
+  config: JSON
+}
+
+extend type Query {
+  "Get all registered theme schemas"
+  schemas: [Schema!]!
+    @field(resolver: "\\Aimeos\\Cms\\GraphQL\\Resolvers\\SchemaResolver@schemas")
+    @guard @throttle(name: "cms-admin")
+}

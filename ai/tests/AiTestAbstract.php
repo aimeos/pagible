@@ -27,19 +27,7 @@ abstract class AiTestAbstract extends CmsTestAbstract
 		$app['config']->set('cms.ai.transcribe', ['provider' => 'openai', 'api_key' => 'test']);
 		$app['config']->set('cms.ai.translate', ['provider' => 'deepl', 'api_key' => 'test']);
 
-		$app['config']->set('cms.schemas.content.heading', [
-			'group' => 'basic',
-			'fields' => [
-				'title' => [
-					'type' => 'string',
-					'min' => 1,
-				],
-				'level' => [
-					'type' => 'select',
-					'required' => true,
-				],
-			],
-		]);
+		\Aimeos\Cms\Schema::register( dirname( __DIR__, 2 ) . '/theme', 'cms' );
 	}
 
 

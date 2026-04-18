@@ -1,5 +1,5 @@
 import PageDetailContent from '../../../js/components/PageDetailContent.vue'
-import { useConfigStore } from '../../../js/stores'
+import { useSchemaStore } from '../../../js/stores'
 
 const stubs = {
   PageDetailContentList: { template: '<div class="content-list-stub" />' },
@@ -19,8 +19,8 @@ function mountContent(props = {}, sections = null) {
   if (sections) {
     plugins.push({
       install() {
-        const config = useConfigStore()
-        config.themes = { cms: { types: { page: { sections } } } }
+        const schemas = useSchemaStore()
+        schemas.themes = { cms: { types: { page: { sections } } } }
       }
     })
   }
