@@ -86,7 +86,7 @@ class SavePage extends Tool
             $page = Resource::savePage(
                 $v['id'], $input, $request->user(),
                 Utils::editor( $request->user() ),
-                $v['files'] ?? [], $v['elements'] ?? [],
+                $v['files'] ?? null, $v['elements'] ?? null,
             );
         } catch( ModelNotFoundException $e ) {
             return Response::structured( ['error' => 'Page not found.'] );
