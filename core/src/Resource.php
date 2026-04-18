@@ -226,7 +226,7 @@ class Resource
      * @throws \Illuminate\Database\Eloquent\ModelNotFoundException If page not found
      */
     public static function savePage( string $id, array $input, mixed $user, string $editor,
-        array $files = [], array $elements = [] ) : Page
+        ?array $files = null, ?array $elements = null ) : Page
     {
         $input = Validation::page( $input, $user );
 
@@ -252,8 +252,8 @@ class Resource
                 'aux' => $aux,
             ] );
 
-            $version->elements()->attach( $elements );
-            $version->files()->attach( $files );
+            $version->elements()->attach( $elements ?? $page->latest?->elements()->pluck( 'id' )->all() ?? [] );
+            $version->files()->attach( $files ?? $page->latest?->files()->pluck( 'id' )->all() ?? [] );
 
             $page->setRelation( 'latest', $version );
             $page->forceFill( ['latest_id' => $version->id] )->save();
@@ -324,7 +324,7 @@ class Resource
      * @throws \InvalidArgumentException On validation failure
      * @throws \Illuminate\Database\Eloquent\ModelNotFoundException If element not found
      */
-    public static function saveElement( string $id, array $input, string $editor, array $files = [] ) : Element
+    public static function saveElement( string $id, array $input, string $editor, ?array $files = null ) : Element
     {
         /** @var Element $element */
         $element = Element::withTrashed()->with( 'latest' )->findOrFail( $id );
@@ -351,7 +351,7 @@ class Resource
                 'lang' => $input['lang'] ?? $element->latest?->lang,
             ] );
 
-            $version->files()->attach( $files );
+            $version->files()->attach( $files ?? $element->latest?->files()->pluck( 'id' )->all() ?? [] );
             $element->setRelation( 'latest', $version );
             $element->forceFill( ['latest_id' => $version->id] )->save();
 

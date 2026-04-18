@@ -47,7 +47,7 @@ class SaveElement extends Tool
 
         try {
             $input = array_diff_key( $v, array_flip( ['id', 'files'] ) );
-            $element = Resource::saveElement( $v['id'], $input, Utils::editor( $request->user() ), $v['files'] ?? [] );
+            $element = Resource::saveElement( $v['id'], $input, Utils::editor( $request->user() ), $v['files'] ?? null );
         } catch( ModelNotFoundException $e ) {
             return Response::structured( ['error' => 'Element not found.'] );
         }
