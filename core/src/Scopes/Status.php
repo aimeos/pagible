@@ -15,6 +15,8 @@ use Illuminate\Support\Facades\Auth;
 
 /**
  * Status scope for limiting query results.
+ *
+ * @implements Scope<\Illuminate\Database\Eloquent\Model>
  */
 class Status implements Scope
 {
