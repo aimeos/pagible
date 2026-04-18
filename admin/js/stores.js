@@ -487,12 +487,19 @@ export const useSchemaStore = defineStore('schema', {
       _loading = apolloClient.query({
         query: gql`query { schemas { name label types content meta config } }`
       }).then((result) => {
-        const list = result.data?.schemas || []
+        const parse = (v) => typeof v === 'string' ? JSON.parse(v) : v || {}
+        const list = (result.data?.schemas || []).map(t => ({
+          ...t,
+          types: parse(t.types),
+          content: parse(t.content),
+          meta: parse(t.meta),
+          config: parse(t.config)
+        }))
         this.themes = Object.fromEntries(list.map(t => [t.name, t]))
         for (const theme of list) {
-          Object.assign(this.content, theme.content || {})
-          Object.assign(this.meta, theme.meta || {})
-          Object.assign(this.config, theme.config || {})
+          Object.assign(this.content, theme.content)
+          Object.assign(this.meta, theme.meta)
+          Object.assign(this.config, theme.config)
         }
       }).catch((err) => {
         _loading = null
