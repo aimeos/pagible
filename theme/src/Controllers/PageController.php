@@ -20,6 +20,7 @@ use Aimeos\Cms\Models\Version;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\Scopes\Status;
+use Aimeos\Cms\Theme;
 
 
 class PageController extends Controller
@@ -71,10 +72,10 @@ class PageController extends Controller
         Paginator::useBootstrap(); // Use Bootstrap CSS classes for pagination links
 
         $content = collect( (array) ($page->content ?? []) )->groupBy( 'group' );
-        $theme = cms( $page, 'theme' ) ?: 'cms';
+        $theme = Theme::views( cms( $page, 'theme' ) ?: 'cms' );
         $type = cms( $page, 'type' ) ?: 'page';
 
-        $views = [$theme . '::layouts.' . $type, 'cms::layouts.page'];
+        $views = [$theme . '::layouts.' . $type, 'cms::layouts.' . $type, 'cms::layouts.page'];
         $html = view()->first( $views, ['page' => $page, 'content' => $content] )->render();
 
         if( empty( $args ) && $request->isMethod( 'GET' ) && $page->cache ) {
@@ -139,12 +140,12 @@ class PageController extends Controller
         App::setLocale( $version?->data->lang ?? $page->lang );
         Paginator::useBootstrap();
 
-        $theme = cms( $page, 'theme' ) ?: 'cms';
+        $theme = Theme::views( cms( $page, 'theme' ) ?: 'cms' );
         $type = cms( $page, 'type' ) ?: 'page';
 
         $content = collect( (array) ($version->aux->content ?? $page->content ?? []) )->groupBy( 'group' );
 
-        $views = [$theme . '::layouts.' . $type, 'cms::layouts.page'];
+        $views = [$theme . '::layouts.' . $type, 'cms::layouts.' . $type, 'cms::layouts.page'];
         $html = view()->first( $views, ['page' => $page, 'content' => $content] )->render();
 
         return ( new Response( $html, 200 ) )

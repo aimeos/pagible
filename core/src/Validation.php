@@ -71,9 +71,9 @@ class Validation
      */
     public static function content( array $items ) : array
     {
-        self::validateContent( $items );
+        $schemas = Schema::schemas( section: 'content' );
 
-        $schemas = config( 'cms.schemas.content', [] );
+        self::validateContent( $items, $schemas );
 
         return array_values( array_map( function( array|object $item ) use ( $schemas ) {
             $item = (array) $item;
@@ -100,9 +100,9 @@ class Validation
      */
     public static function structured( array $items, string $section, array|object|null $existing = null ) : object
     {
-        self::validateStructured( (object) $items, $section );
+        $schemas = Schema::schemas( section: $section );
 
-        $schemas = config( "cms.schemas.{$section}", [] );
+        self::validateStructured( (object) $items, $section, $schemas );
         $result = (object) ( (array) ( $existing ?? new \stdClass() ) );
 
         foreach( $items as $type => $data )
@@ -146,11 +146,12 @@ class Validation
      * Validates page/element content arrays against configured schemas
      *
      * @param iterable<array<string, mixed>|object> $items Content items to validate
+     * @param array<string, mixed>|null $schemas Pre-loaded schemas or null to load
      * @throws \InvalidArgumentException If content type is unknown
      */
-    private static function validateContent( iterable $items ): void
+    private static function validateContent( iterable $items, ?array $schemas = null ): void
     {
-        $schemas = config( 'cms.schemas.content', [] );
+        $schemas ??= Schema::schemas( section: 'content' );
 
         foreach( $items as $item )
         {
@@ -176,7 +177,7 @@ class Validation
      */
     public static function element( string $type ): void
     {
-        $schemas = config( 'cms.schemas.content', [] );
+        $schemas = Schema::schemas( section: 'content' );
 
         if( !isset( $schemas[$type] ) ) {
             throw new \InvalidArgumentException( sprintf( 'Unknown element type "%s"', $type ) );
@@ -192,10 +193,11 @@ class Validation
      *
      * @param object $items Object with named entries to validate
      * @param string $schemaKey Schema config key (e.g. 'meta', 'config')
+     * @param array<string, mixed>|null $schemas Pre-loaded schemas or null to load
      */
-    private static function validateStructured( object $items, string $schemaKey ): void
+    private static function validateStructured( object $items, string $schemaKey, ?array $schemas = null ): void
     {
-        $schemas = config( 'cms.schemas.' . $schemaKey, [] );
+        $schemas ??= Schema::schemas( section: $schemaKey );
 
         foreach( get_object_vars( $items ) as $key => $item )
         {

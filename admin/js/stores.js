@@ -12,9 +12,7 @@ import {
   urlpage,
   urlfile,
   multidomain,
-  locales as appLocales,
-  config as appConfig,
-  schemas as appSchemas
+  locales as appLocales
 } from './config'
 
 export const useAppStore = defineStore('app', {
@@ -235,23 +233,6 @@ export const useClipboardStore = defineStore('clipboard', {
   }
 })
 
-export const useConfigStore = defineStore('config', {
-  state: () => appConfig,
-
-  actions: {
-    get(key, defval = null) {
-      if (typeof key !== 'string') {
-        return defval
-      }
-
-      const val = key.split('.').reduce((part, key) => {
-        return typeof part === 'object' && part !== null ? part[key] : part
-      }, this)
-
-      return typeof val === 'undefined' ? defval : val
-    }
-  }
-})
 
 export const useDrawerStore = defineStore('drawer', {
   state: () => ({
@@ -494,10 +475,32 @@ export const useMessageStore = defineStore('message', {
 })
 
 /**
- * Available element schemas
+ * Available element schemas fetched from GraphQL
  */
+let _loading = null
+
 export const useSchemaStore = defineStore('schema', {
-  state: () => appSchemas
+  state: () => ({ themes: {}, content: {}, meta: {}, config: {} }),
+  actions: {
+    load() {
+      if (_loading) return _loading
+      _loading = apolloClient.query({
+        query: gql`query { schemas { name label types content meta config } }`
+      }).then((result) => {
+        const list = result.data?.schemas || []
+        this.themes = Object.fromEntries(list.map(t => [t.name, t]))
+        for (const theme of list) {
+          Object.assign(this.content, theme.content || {})
+          Object.assign(this.meta, theme.meta || {})
+          Object.assign(this.config, theme.config || {})
+        }
+      }).catch((err) => {
+        _loading = null
+        throw err
+      })
+      return _loading
+    }
+  }
 })
 
 /**

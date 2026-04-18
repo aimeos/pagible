@@ -139,22 +139,4 @@ return [
     |
     */
 
-    'config' => [
-        'themes' => [
-            'cms' => [
-                'types' => [
-                    'page' => [
-                        'sections' => [
-                            'main',
-                            'footer',
-                        ],
-                    ],
-                    'docs' => [
-                    ],
-                    'blog' => [
-                    ],
-                ],
-            ],
-        ]
-    ],
 ];

@@ -32,8 +32,6 @@
       data-urlfile="{{ \Illuminate\Support\Facades\Storage::disk( config( 'cms.disk', 'public' ) )->url( '' ) }}"
       data-theme="{{ json_encode( config( 'cms.admin.colors', [] ) ) }}"
       data-locales="{{ json_encode( config( 'cms.locales', ['en'] ) ) }}"
-      data-config="{{ json_encode( config( 'cms.config', new \stdClass() ) ) }}"
-      data-schemas="{{ json_encode( config( 'cms.schemas', new \stdClass() ) ) }}"
       data-multidomain="{{ (int) config('cms.multidomain', false) }}"
     ></div>
   </body>

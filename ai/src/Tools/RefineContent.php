@@ -62,7 +62,7 @@ class RefineContent extends Tool
         $model = config( 'cms.ai.refine.model' );
 
         $system = view( 'cms::prompts.refine' )->render();
-        $types = collect( (array) config( 'cms.schemas.content', [] ) )->keys()->all();
+        $types = collect( \Aimeos\Cms\Schema::schemas( section: 'content' ) )->keys()->all();
 
         try
         {
