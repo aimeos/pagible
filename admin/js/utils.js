@@ -218,5 +218,11 @@ export function url(path, proxy = false) {
     return path
   }
 
-  return app.urlfile.replace(/\/+$/g, '') + '/' + path
+  const result = app.urlfile.replace(/\/+$/g, '') + '/' + path
+
+  if (proxy && result.startsWith('http')) {
+    return app.urlproxy.replace(/_url_/, encodeURIComponent(result))
+  }
+
+  return result
 }
