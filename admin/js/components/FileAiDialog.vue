@@ -80,7 +80,7 @@ export default {
 
       this.loading = true
 
-      fetch(this.url(item.path, true))
+      fetch(this.url(item.path, true), {credentials: 'include'})
         .then((response) => {
           return response.blob()
         })

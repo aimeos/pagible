@@ -191,7 +191,7 @@ export default {
         return Promise.resolve(this.images[0]?.blob)
       }
 
-      return fetch(this.url(this.item.path, true)).then((response) => {
+      return fetch(this.url(this.item.path, true), {credentials: 'include'}).then((response) => {
         if (!response.ok) {
           throw new Error('Network error: ' + response.statusText)
         }
