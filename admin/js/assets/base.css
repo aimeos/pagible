@@ -242,6 +242,7 @@ input:-webkit-autofill:focus {
 }
 
 .v-btn.v-btn--density-default:not(.v-btn--stacked) {
+  min-width: 48px;
   height: 48px;
 }
 

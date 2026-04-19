@@ -14,7 +14,7 @@ import {
   useSideStore
 } from '../stores'
 import { recording } from '../audio'
-import { mdiTranslate, mdiCreation, mdiMicrophoneOutline, mdiMicrophone } from '@mdi/js'
+import { mdiContentCopy, mdiTranslate, mdiCreation, mdiMicrophoneOutline, mdiMicrophone } from '@mdi/js'
 import { toBlob, locales, txlocales, url } from '../utils'
 import { transcribe, translate } from '../ai'
 
@@ -64,6 +64,7 @@ export default {
       txlocales,
       transcribe,
       translate,
+      mdiContentCopy,
       mdiMicrophone
     }
   },
@@ -83,6 +84,12 @@ export default {
   },
 
   methods: {
+    copyUrl() {
+      navigator.clipboard.writeText(this.url(this.item.path)).then(() => {
+        this.messages.add(this.$gettext('Copied to clipboard'), 'success')
+      })
+    },
+
     describe() {
       const lang = this.desclangs[0] || this.item.lang || 'en'
 
@@ -300,11 +307,6 @@ export default {
   <v-container>
     <v-sheet class="scroll">
       <v-row>
-        <v-col cols="12">
-          <a :href="url(item.path)" target="_blank" class="file-url">{{ url(item.path) }}</a>
-        </v-col>
-      </v-row>
-      <v-row>
         <v-col cols="12" md="6">
           <v-text-field
             ref="name"
@@ -327,6 +329,18 @@ export default {
             variant="underlined"
             :label="$gettext('Language')"
           ></v-select>
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col cols="12" class="file-url-col">
+          <a :href="url(item.path)" target="_blank" class="file-url">{{ url(item.path) }}</a>
+          <v-btn
+            @click="copyUrl()"
+            :icon="mdiContentCopy"
+            :title="$gettext('Copy URL')"
+            variant="text"
+            size="small"
+          />
         </v-col>
       </v-row>
       <v-row>
@@ -483,13 +497,21 @@ export default {
   max-height: calc(100vh - 96px);
 }
 
+.file-url-col {
+  display: flex;
+  align-items: center;
+  background-color: rgb(var(--v-theme-background));
+}
+
 .file-url {
+  flex: 1;
+  min-width: 0;
   display: block;
   overflow: hidden;
-  text-overflow: ellipsis;
   white-space: nowrap;
-  font-size: 0.85rem;
+  text-overflow: ellipsis;
   color: rgb(var(--v-theme-primary));
+  padding: 1rem;
 }
 
 .preview {
