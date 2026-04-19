@@ -3,6 +3,7 @@
 namespace Aimeos\Cms;
 
 use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider as Provider;
 
@@ -22,6 +23,7 @@ class CoreServiceProvider extends Provider
 
         $this->rateLimiter();
         $this->userCasts();
+        $this->schedule();
         $this->console();
         $this->scout();
     }
@@ -96,6 +98,19 @@ class CoreServiceProvider extends Provider
                     $model->setAttribute( 'cmsperms', $model->getAttributes()['cmsperms'] );
                 }
             } );
+        } );
+    }
+
+
+    protected function schedule() : void
+    {
+        $this->app->afterResolving( Schedule::class, function( Schedule $schedule ) {
+            $schedule->command( 'cms:publish' )->everyThirtyMinutes();
+            $schedule->command( 'model:prune', ['--model' => [
+                \Aimeos\Cms\Models\Element::class,
+                \Aimeos\Cms\Models\File::class,
+                \Aimeos\Cms\Models\Page::class,
+            ]] )->daily();
         } );
     }
 
