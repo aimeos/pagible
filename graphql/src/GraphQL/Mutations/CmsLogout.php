@@ -8,6 +8,7 @@
 namespace Aimeos\Cms\GraphQL\Mutations;
 
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cookie;
 use Illuminate\Contracts\Auth\Authenticatable;
 
 
@@ -27,6 +28,8 @@ final class CmsLogout
         } catch( \Exception $e ) {
             // No error if logout fails
         }
+
+        Cookie::queue( Cookie::forget( 'cms_proxy' ) );
 
         return $user;
     }

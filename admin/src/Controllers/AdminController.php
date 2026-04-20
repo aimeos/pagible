@@ -57,6 +57,19 @@ class AdminController extends Controller
             abort(405, "Unsupported HTTP method: $method");
         }
 
+        if (!$request->user()) {
+            try {
+                $cookie = $request->cookie('cms_proxy') ?? '';
+                [$userId, $expires] = explode('|', decrypt(is_array($cookie) ? '' : $cookie));
+
+                if ((int) $expires < now()->timestamp) {
+                    abort(403, 'Proxy cookie expired');
+                }
+            } catch (\Exception $e) {
+                abort(403, 'Unauthorized');
+            }
+        }
+
         $url = (string) $request->query('url');
         $range = $request->header('Range') ?: null;
 
