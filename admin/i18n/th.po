@@ -1711,6 +1711,16 @@ msgstr "บทความ"
 
 #: js/strings.js:47
 msgctxt "st"
+msgid "questions"
+msgstr ""
+
+#: js/strings.js:48
+msgctxt "st"
+msgid "toc"
+msgstr ""
+
+#: js/strings.js:47
+msgctxt "st"
 msgid "contact"
 msgstr "ติดต่อ"
 
@@ -1843,6 +1853,11 @@ msgstr "รูปภาพ"
 msgctxt "fn"
 msgid "images"
 msgstr "รูปภาพ"
+
+#: js/strings.js:78
+msgctxt "fn"
+msgid "items"
+msgstr ""
 
 #: js/strings.js:77
 msgctxt "fn"

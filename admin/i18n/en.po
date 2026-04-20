@@ -1524,6 +1524,16 @@ msgstr "Blog article"
 
 #: js/strings.js:47
 msgctxt "st"
+msgid "questions"
+msgstr "FAQ"
+
+#: js/strings.js:48
+msgctxt "st"
+msgid "toc"
+msgstr "Table of contents"
+
+#: js/strings.js:47
+msgctxt "st"
 msgid "contact"
 msgstr ""
 
@@ -1655,6 +1665,11 @@ msgstr ""
 #: js/strings.js:76
 msgctxt "fn"
 msgid "images"
+msgstr ""
+
+#: js/strings.js:78
+msgctxt "fn"
+msgid "items"
 msgstr ""
 
 #: js/strings.js:77

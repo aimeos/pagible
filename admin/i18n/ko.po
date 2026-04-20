@@ -1710,6 +1710,16 @@ msgstr "기사"
 
 #: js/strings.js:47
 msgctxt "st"
+msgid "questions"
+msgstr ""
+
+#: js/strings.js:48
+msgctxt "st"
+msgid "toc"
+msgstr ""
+
+#: js/strings.js:47
+msgctxt "st"
 msgid "contact"
 msgstr "연락처"
 
@@ -1842,6 +1852,11 @@ msgstr "이미지"
 msgctxt "fn"
 msgid "images"
 msgstr "이미지"
+
+#: js/strings.js:78
+msgctxt "fn"
+msgid "items"
+msgstr ""
 
 #: js/strings.js:77
 msgctxt "fn"

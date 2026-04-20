@@ -1712,6 +1712,16 @@ msgstr "Blogartikel"
 
 #: js/strings.js:47
 msgctxt "st"
+msgid "questions"
+msgstr "Fragen"
+
+#: js/strings.js:48
+msgctxt "st"
+msgid "toc"
+msgstr "Inhaltsverzeichnis"
+
+#: js/strings.js:47
+msgctxt "st"
 msgid "contact"
 msgstr "Kontakt"
 
@@ -1844,6 +1854,11 @@ msgstr "Bild"
 msgctxt "fn"
 msgid "images"
 msgstr "Bilder"
+
+#: js/strings.js:78
+msgctxt "fn"
+msgid "items"
+msgstr "Einträge"
 
 #: js/strings.js:77
 msgctxt "fn"
