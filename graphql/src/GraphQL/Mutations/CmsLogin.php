@@ -8,7 +8,6 @@
 namespace Aimeos\Cms\GraphQL\Mutations;
 
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Contracts\Auth\Authenticatable;
 use GraphQL\Error\Error;
@@ -38,11 +37,6 @@ final class CmsLogin
 
 		RateLimiter::clear( $key );
 
-		$user = $guard->user() ?? throw new Error( 'Login failed' );
-
-		$expires = now()->addDay();
-		Cookie::queue( 'cms_proxy', encrypt( $user->getAuthIdentifier() . '|' . $expires->timestamp ), $expires->diffInMinutes() );
-
-		return $user;
+		return $guard->user() ?? throw new Error( 'Login failed' );
 	}
 }

@@ -64,6 +64,7 @@ export const useUserStore = defineStore('user', {
                 settings
                 email
                 name
+                token
               }
             }
           `
@@ -76,6 +77,11 @@ export const useUserStore = defineStore('user', {
           this.me = response.data.me
             ? { ...response.data.me, permission: JSON.parse(response.data.me.permission || '{}'), settings: JSON.parse(response.data.me.settings || '{}') }
             : false
+
+          if (this.me?.token) {
+            const app = useAppStore()
+            app.urlproxy = urlproxy.replace('url=', 'token=' + encodeURIComponent(this.me.token) + '&url=')
+          }
         })
         .catch((error) => {
           console.error('Failed to fetch user data', error)
@@ -95,6 +101,7 @@ export const useUserStore = defineStore('user', {
                 settings
                 email
                 name
+                token
               }
             }
           `,
@@ -115,6 +122,11 @@ export const useUserStore = defineStore('user', {
           }
           if (this.me?.settings) {
             this.me.settings = JSON.parse(this.me.settings)
+          }
+
+          if (this.me?.token) {
+            const app = useAppStore()
+            app.urlproxy = urlproxy.replace('url=', 'token=' + encodeURIComponent(this.me.token) + '&url=')
           }
 
           return this.me

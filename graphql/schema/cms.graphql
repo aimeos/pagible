@@ -27,6 +27,9 @@ extend type User {
 
     "CMS user preferences"
     settings: JSON @field(resolver: "\\Aimeos\\Cms\\GraphQL\\Resolvers\\UserResolver@settings")
+
+    "Time-limited proxy authentication token"
+    token: String! @field(resolver: "\\Aimeos\\Cms\\GraphQL\\Resolvers\\UserResolver@token")
 }
 
 extend type Query {

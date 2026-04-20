@@ -64,6 +64,6 @@ return [
     'proxy' => [
         'maxsize' => env( 'CMS_PROXY_MAXSIZE', 10 ), // in MB
         'timeout' => env( 'CMS_PROXY_TIMEOUT', 30 ), // in seconds
-        'middleware' => ['web', 'auth', 'throttle:cms-proxy'],
+        'middleware' => ['throttle:cms-proxy'],
     ],
 ];
