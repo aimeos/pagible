@@ -8,7 +8,7 @@
 namespace Aimeos\Cms\Concerns;
 
 
-trait HasChanges
+trait HasChanged
 {
     /**
      * @var array<string, mixed>|null
@@ -21,7 +21,7 @@ trait HasChanges
      *
      * @return array<string, mixed>|null
      */
-    public function changes() : ?array
+    public function changed() : ?array
     {
         return $this->changeInfo;
     }
@@ -33,7 +33,7 @@ trait HasChanges
      * @param array<string, mixed> $info
      * @return static
      */
-    public function setChanges( array $info ) : static
+    public function setChanged( array $info ) : static
     {
         $this->changeInfo = $info;
         return $this;

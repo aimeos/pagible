@@ -291,7 +291,7 @@ class Resource
             $page->forceFill( ['latest_id' => $version->id] )->save();
 
             if( $diffs ) {
-                $page->setChanges( [
+                $page->setChanged( [
                     'editor' => $previousEditor,
                     'latest' => ['id' => $versionId, 'data' => $data, 'aux' => $aux],
                     ...$diffs,
@@ -401,7 +401,7 @@ class Resource
             $element->forceFill( ['latest_id' => $version->id] )->save();
 
             if( $dd ) {
-                $element->setChanges( [
+                $element->setChanged( [
                     'editor' => $previousEditor,
                     'latest' => ['id' => $versionId, 'data' => $data],
                     'data' => $dd,
@@ -486,7 +486,7 @@ class Resource
             $file->removeVersions();
 
             if( $dd ) {
-                $orig->setChanges( [
+                $orig->setChanged( [
                     'editor' => $previousEditor,
                     'latest' => ['id' => $versionId, 'data' => $file->toArray()],
                     'data' => $dd,

@@ -61,7 +61,7 @@ class SaveFile extends Tool
             'path' => $data['path'] ?? $file->path,
             'previews' => $data['previews'] ?? $file->previews,
             'description' => $data['description'] ?? $file->description,
-            'changes' => $file->changes(),
+            'changes' => $file->changed(),
             'created_at' => (string) $file->created_at,
             'updated_at' => (string) $file->updated_at,
         ] );

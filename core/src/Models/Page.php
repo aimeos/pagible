@@ -7,7 +7,7 @@
 
 namespace Aimeos\Cms\Models;
 
-use Aimeos\Cms\Concerns\HasChanges;
+use Aimeos\Cms\Concerns\HasChanged;
 use Aimeos\Cms\Concerns\Tenancy;
 use Aimeos\Nestedset\NodeTrait;
 use Aimeos\Nestedset\AncestorsRelation;
@@ -59,7 +59,7 @@ use Laravel\Scout\Searchable;
  */
 class Page extends Base
 {
-    use HasChanges;
+    use HasChanged;
     use HasUuids;
     use NodeTrait;
     use SoftDeletes;
