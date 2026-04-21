@@ -47,6 +47,16 @@ class Tenancy
 
 
     /**
+     * Sets up Pagible tenancy for stancl/tenancy.
+     */
+    public static function stancl() : void
+    {
+        /** @phpstan-ignore function.notFound */
+        self::$callback = fn() : string => (string) tenant()?->getTenantKey();
+    }
+
+
+    /**
      * Returns the value for the tenant column in the models.
      *
      * @return string ID of the current tenant
