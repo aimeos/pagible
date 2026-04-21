@@ -43,11 +43,15 @@ class Merge
             $c = $currentMap[$key] ?? null;
             $i = $block;
 
-            if( $c !== null && json_encode( $c ) === json_encode( $i ) ) {
+            $bj = $b !== null ? json_encode( $b ) : null;
+            $cj = $c !== null ? json_encode( $c ) : null;
+            $ij = json_encode( $i );
+
+            if( $cj === $ij ) {
                 $result[] = $i;
-            } elseif( $b !== null && json_encode( $b ) === json_encode( $c ) ) {
+            } elseif( $bj === $cj ) {
                 $result[] = $i;
-            } elseif( $b !== null && json_encode( $b ) === json_encode( $i ) ) {
+            } elseif( $bj === $ij ) {
                 $result[] = $c ?? $i;
                 if( $c !== null ) {
                     $diff[$key] = ['previous' => $b, 'current' => $c];
@@ -90,6 +94,14 @@ class Merge
      */
     public static function structured( array $base, array $current, array $incoming ) : array
     {
+        if( $base === $current ) {
+            return [$incoming, null];
+        }
+
+        if( $current === $incoming ) {
+            return [$incoming, null];
+        }
+
         $allKeys = array_unique( array_merge( array_keys( $base ), array_keys( $current ), array_keys( $incoming ) ) );
         $result = [];
         $diff = [];

@@ -9,7 +9,6 @@ namespace Aimeos\Cms\GraphQL\Mutations;
 
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Resource;
-use Aimeos\Cms\Utils;
 use GraphQL\Error\Error;
 use Illuminate\Support\Facades\Auth;
 
@@ -27,7 +26,6 @@ final class SavePage
                 $args['id'],
                 $args['input'] ?? [],
                 Auth::user(),
-                Utils::editor( Auth::user() ),
                 $args['files'] ?? null,
                 $args['elements'] ?? null,
                 $args['latestId'] ?? null,

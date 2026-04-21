@@ -7,7 +7,6 @@
 
 namespace Aimeos\Cms\Tools;
 
-use Aimeos\Cms\Utils;
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\Resource;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
@@ -48,7 +47,7 @@ class SaveElement extends Tool
 
         try {
             $input = array_diff_key( $v, array_flip( ['id', 'files', 'latestId'] ) );
-            $element = Resource::saveElement( $v['id'], $input, Utils::editor( $request->user() ), $v['files'] ?? null, $v['latestId'] ?? null );
+            $element = Resource::saveElement( $v['id'], $input, $request->user(), $v['files'] ?? null, $v['latestId'] ?? null );
         } catch( ModelNotFoundException $e ) {
             return Response::structured( ['error' => 'Element not found.'] );
         }

@@ -7,7 +7,6 @@
 
 namespace Aimeos\Cms\Tools;
 
-use Aimeos\Cms\Utils;
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\Resource;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
@@ -47,7 +46,7 @@ class SaveFile extends Tool
         $input = array_diff_key( $v, array_flip( ['id', 'latestId'] ) );
 
         try {
-            $file = Resource::saveFile( $v['id'], $input, Utils::editor( $request->user() ), $v['latestId'] ?? null );
+            $file = Resource::saveFile( $v['id'], $input, $request->user(), $v['latestId'] ?? null );
         } catch( ModelNotFoundException $e ) {
             return Response::structured( ['error' => 'File not found.'] );
         }

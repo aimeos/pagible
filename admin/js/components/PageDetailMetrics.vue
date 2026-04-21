@@ -913,7 +913,7 @@ export default {
 
 .title {
   font-weight: 500;
-  font-size: 1.25rem;
+  font-size: 125%;
   justify-content: flex-start;
 }
 
@@ -922,7 +922,7 @@ export default {
 }
 
 .v-card-title {
-  font-size: 1.125rem;
+  font-size: 112.5%;
 }
 
 .panel {

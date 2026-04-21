@@ -12,6 +12,7 @@ use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Models\Version;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
@@ -159,8 +160,7 @@ class Resource
      * Creates a new page with version and attached relations.
      *
      * @param array<string, mixed> $input Page fields (content/meta/config go into version aux)
-     * @param mixed $user Authenticated user for permission-based validation
-     * @param string $editor Editor identifier for tracking
+     * @param Authenticatable|null $user Authenticated user for permission-based validation and editor tracking
      * @param array<string> $files File IDs to attach
      * @param array<string> $elements Element IDs to attach
      * @param string|null $ref Sibling page ID to insert before
@@ -168,11 +168,12 @@ class Resource
      * @return Page
      * @throws \InvalidArgumentException On validation failure
      */
-    public static function addPage( array $input, mixed $user, string $editor,
+    public static function addPage( array $input, ?Authenticatable $user = null,
         array $files = [], array $elements = [],
         ?string $ref = null, ?string $parent = null ) : Page
     {
         $input = Validation::page( $input, $user );
+        $editor = Utils::editor( $user );
 
         return Utils::lockedTransaction( function() use ( $input, $editor, $files, $elements, $ref, $parent ) {
 
@@ -218,18 +219,19 @@ class Resource
      *
      * @param string $id Page UUID
      * @param array<string, mixed> $input Changed fields (merged with latest version)
-     * @param mixed $user Authenticated user for permission-based validation
-     * @param string $editor Editor identifier for tracking
-     * @param array<string> $files File IDs to attach to version
-     * @param array<string> $elements Element IDs to attach to version
+     * @param Authenticatable|null $user Authenticated user for permission-based validation and editor tracking
+     * @param array<string>|null $files File IDs to attach to version
+     * @param array<string>|null $elements Element IDs to attach to version
+     * @param string|null $latestId Version ID the editor was working on (for conflict detection)
      * @return Page
      * @throws \InvalidArgumentException On validation failure
      * @throws \Illuminate\Database\Eloquent\ModelNotFoundException If page not found
      */
-    public static function savePage( string $id, array $input, mixed $user, string $editor,
+    public static function savePage( string $id, array $input, ?Authenticatable $user = null,
         ?array $files = null, ?array $elements = null, ?string $latestId = null ) : Page
     {
         $input = Validation::page( $input, $user );
+        $editor = Utils::editor( $user );
 
         return Utils::transaction( function() use ( $id, $input, $user, $editor, $files, $elements, $latestId ) {
 
@@ -241,45 +243,38 @@ class Resource
             array_walk( $data, fn( &$v, $k ) => $v = !in_array( $k, ['related_id'] ) ? ( $v ?? '' ) : $v );
 
             $aux = array_intersect_key( $input, array_flip( ['meta', 'config', 'content'] ) );
+            $previousEditor = $page->latest->editor ?? '';
             $diffs = null;
 
-            if( $latestId && $page->latest_id && $latestId !== $page->latest_id )
+            /** @var Version|null $base */
+            $base = $latestId && $page->latest_id && $latestId !== $page->latest_id
+                ? $page->versions()->find( $latestId ) : null;
+
+            if( $base )
             {
-                /** @var Version|null $base */
-                $base = $page->versions()->find( $latestId );
+                [$data, $dd] = Merge::structured( (array) $base->data, (array) $page->latest?->data, $data );
 
-                if( $base )
-                {
-                    [$data, $dd] = Merge::structured( (array) $base->data, (array) $page->latest?->data, $data );
-                    $data['domain'] ??= $page->domain ?? '';
+                $merged = array_replace( (array) $page->latest?->aux, $aux );
+                [$merged['meta'], $md] = Merge::structured( (array) ( $base->aux->meta ?? [] ), (array) ( $page->latest?->aux->meta ?? [] ), (array) ( $merged['meta'] ?? [] ) );
+                [$merged['content'], $xd] = Merge::content( (array) ( $base->aux->content ?? [] ), (array) ( $page->latest?->aux->content ?? [] ), (array) ( $merged['content'] ?? [] ) );
 
-                    $merged = array_replace( (array) $page->latest?->aux, $aux );
-                    [$merged['meta'], $md] = Merge::structured( (array) ( $base->aux->meta ?? [] ), (array) ( $page->latest?->aux->meta ?? [] ), (array) ( $merged['meta'] ?? [] ) );
-                    [$merged['content'], $xd] = Merge::content( (array) ( $base->aux->content ?? [] ), (array) ( $page->latest?->aux->content ?? [] ), (array) ( $merged['content'] ?? [] ) );
-
-                    $cd = null;
-                    if( Permission::can( 'config:page', $user ) ) {
-                        [$merged['config'], $cd] = Merge::structured( (array) ( $base->aux->config ?? [] ), (array) ( $page->latest?->aux->config ?? [] ), (array) ( $merged['config'] ?? [] ) );
-                    } else {
-                        $merged['config'] = (array) ( $page->latest?->aux->config ?? [] );
-                    }
-
-                    $aux = $merged;
-                    $diffs = array_filter( ['data' => $dd, 'meta' => $md, 'config' => $cd, 'content' => $xd] );
+                $cd = null;
+                if( Permission::can( 'config:page', $user ) ) {
+                    [$merged['config'], $cd] = Merge::structured( (array) ( $base->aux->config ?? [] ), (array) ( $page->latest?->aux->config ?? [] ), (array) ( $merged['config'] ?? [] ) );
+                } else {
+                    $merged['config'] = (array) ( $page->latest?->aux->config ?? [] );
                 }
-                else
-                {
-                    $data = array_replace( (array) $page->latest?->data, $data );
-                    $data['domain'] ??= $page->domain ?? '';
-                    $aux = array_replace( (array) $page->latest?->aux, $aux );
-                }
+
+                $aux = $merged;
+                $diffs = array_filter( ['data' => $dd, 'meta' => $md, 'config' => $cd, 'content' => $xd] );
             }
             else
             {
                 $data = array_replace( (array) $page->latest?->data, $data );
-                $data['domain'] ??= $page->domain ?? '';
                 $aux = array_replace( (array) $page->latest?->aux, $aux );
             }
+
+            $data['domain'] ??= $page->domain ?? '';
 
             $version = $page->versions()->forceCreate( [
                 'id' => $versionId,
@@ -297,7 +292,7 @@ class Resource
 
             if( $diffs ) {
                 $page->setChanges( [
-                    'editor' => $page->latest->editor ?? '',
+                    'editor' => $previousEditor,
                     'latest' => ['id' => $versionId, 'data' => $data, 'aux' => $aux],
                     ...$diffs,
                 ] );
@@ -312,12 +307,12 @@ class Resource
      * Creates a new element with version and attached files.
      *
      * @param array<string, mixed> $input Element fields (type, name, lang, data)
-     * @param string $editor Editor identifier for tracking
+     * @param Authenticatable|null $user Authenticated user for editor tracking
      * @param array<string> $files File IDs to attach
      * @return Element
      * @throws \InvalidArgumentException On validation failure
      */
-    public static function addElement( array $input, string $editor, array $files = [] ) : Element
+    public static function addElement( array $input, ?Authenticatable $user = null, array $files = [] ) : Element
     {
         Validation::element( $input['type'] ?? '' );
 
@@ -326,6 +321,7 @@ class Resource
         }
 
         $input['name'] = (string) ( $input['name'] ?? '' );
+        $editor = Utils::editor( $user );
 
         return Utils::transaction( function() use ( $input, $editor, $files ) {
 
@@ -363,13 +359,14 @@ class Resource
      *
      * @param string $id Element UUID
      * @param array<string, mixed> $input Changed fields (merged with latest version)
-     * @param string $editor Editor identifier for tracking
-     * @param array<string> $files File IDs to attach to version
+     * @param Authenticatable|null $user Authenticated user for editor tracking
+     * @param array<string>|null $files File IDs to attach to version
+     * @param string|null $latestId Version ID the editor was working on (for conflict detection)
      * @return Element
      * @throws \InvalidArgumentException On validation failure
      * @throws \Illuminate\Database\Eloquent\ModelNotFoundException If element not found
      */
-    public static function saveElement( string $id, array $input, string $editor, ?array $files = null, ?string $latestId = null ) : Element
+    public static function saveElement( string $id, array $input, ?Authenticatable $user = null, ?array $files = null, ?string $latestId = null ) : Element
     {
         /** @var Element $element */
         $element = Element::withTrashed()->with( 'latest' )->findOrFail( $id );
@@ -383,25 +380,14 @@ class Resource
             Validation::html( $type, $input['data'] );
         }
 
+        $editor = Utils::editor( $user );
+
         return Utils::transaction( function() use ( $element, $input, $editor, $files, $latestId ) {
 
             $versionId = ( new Version )->newUniqueId();
-            $dd = null;
+            $previousEditor = $element->latest->editor ?? '';
 
-            if( $latestId && $element->latest_id && $latestId !== $element->latest_id )
-            {
-                $base = $element->versions()->find( $latestId );
-
-                if( $base ) {
-                    [$data, $dd] = Merge::structured( (array) ( $base->data ?? [] ), (array) ( $element->latest->data ?? [] ), $input );
-                } else {
-                    $data = array_replace( (array) ( $element->latest->data ?? [] ), $input );
-                }
-            }
-            else
-            {
-                $data = array_replace( (array) ( $element->latest->data ?? [] ), $input );
-            }
+            [$data, $dd] = self::mergeOrReplace( $element, $input, $latestId );
 
             $version = $element->versions()->forceCreate( [
                 'id' => $versionId,
@@ -416,7 +402,7 @@ class Resource
 
             if( $dd ) {
                 $element->setChanges( [
-                    'editor' => $element->latest->editor ?? '',
+                    'editor' => $previousEditor,
                     'latest' => ['id' => $versionId, 'data' => $data],
                     'data' => $dd,
                 ] );
@@ -432,42 +418,31 @@ class Resource
      *
      * @param string $id File UUID
      * @param array<string, mixed> $input File fields to update
-     * @param string $editor Editor identifier
+     * @param Authenticatable|null $user Authenticated user for editor tracking
      * @param string|null $latestId Version ID the editor was working on (for conflict detection)
      * @param UploadedFile|null $upload File upload to store
      * @param UploadedFile|false|null $preview Preview upload, false to clear, null for auto-detect
      * @return File
      */
-    public static function saveFile( string $id, array $input, string $editor,
+    public static function saveFile( string $id, array $input, ?Authenticatable $user = null,
         ?string $latestId = null, ?UploadedFile $upload = null, UploadedFile|false|null $preview = null ) : File
     {
+        $editor = Utils::editor( $user );
+
         return Utils::transaction( function() use ( $id, $input, $editor, $latestId, $upload, $preview ) {
 
             /** @var File $orig */
             $orig = File::withTrashed()->with( 'latest' )->findOrFail( $id );
             $previews = $orig->latest?->data->previews ?? $orig->previews;
             $path = $orig->latest?->data->path ?? $orig->path;
+            $previousEditor = $orig->latest->editor ?? '';
             $versionId = ( new Version )->newUniqueId();
             $dd = null;
 
             $file = clone $orig;
 
-            if( $latestId && $orig->latest_id && $latestId !== $orig->latest_id )
-            {
-                /** @var Version|null $base */
-                $base = $orig->versions()->find( $latestId );
-
-                if( $base ) {
-                    [$data, $dd] = Merge::structured( (array) $base->data, (array) $orig->latest?->data, $input );
-                    $file->fill( $data );
-                } else {
-                    $file->fill( array_replace( (array) $orig->latest?->data, $input ) );
-                }
-            }
-            else
-            {
-                $file->fill( array_replace( (array) $orig->latest?->data, $input ) );
-            }
+            [$data, $dd] = self::mergeOrReplace( $orig, $input, $latestId );
+            $file->fill( $data );
 
             $file->previews = $input['previews'] ?? $previews;
             $file->path = $input['path'] ?? $path;
@@ -512,7 +487,7 @@ class Resource
 
             if( $dd ) {
                 $orig->setChanges( [
-                    'editor' => $orig->latest->editor ?? '',
+                    'editor' => $previousEditor,
                     'latest' => ['id' => $versionId, 'data' => $file->toArray()],
                     'data' => $dd,
                 ] );
@@ -542,5 +517,28 @@ class Resource
         } elseif( $root ) {
             $page->makeRoot();
         }
+    }
+
+
+    /**
+     * Three-way merges or replaces data based on version conflict detection.
+     *
+     * @param Page|Element|File $model Model with versions relation
+     * @param array<string, mixed> $input Incoming data
+     * @param string|null $latestId Version ID the editor was working on
+     * @return array{0: array<string, mixed>, 1: array<string, array<string, mixed>>|null}
+     */
+    protected static function mergeOrReplace( Base $model, array $input, ?string $latestId ) : array
+    {
+        if( $latestId && $model->latest_id && $latestId !== $model->latest_id )
+        {
+            $base = $model->versions()->find( $latestId );
+
+            if( $base ) {
+                return Merge::structured( (array) $base->data, (array) $model->latest?->data, $input );
+            }
+        }
+
+        return [array_replace( (array) $model->latest?->data, $input ), null];
     }
 }

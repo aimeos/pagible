@@ -86,7 +86,6 @@ class SavePage extends Tool
         try {
             $page = Resource::savePage(
                 $v['id'], $input, $request->user(),
-                Utils::editor( $request->user() ),
                 $v['files'] ?? null, $v['elements'] ?? null,
                 $v['latestId'] ?? null,
             );

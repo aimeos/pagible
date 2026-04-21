@@ -7,7 +7,6 @@
 
 namespace Aimeos\Cms\Tools;
 
-use Aimeos\Cms\Utils;
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\Resource;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
@@ -47,7 +46,7 @@ class AddElement extends Tool
         ] );
 
         $input = array_diff_key( $v, array_flip( ['files'] ) );
-        $element = Resource::addElement( $input, Utils::editor( $request->user() ), $v['files'] ?? [] );
+        $element = Resource::addElement( $input, $request->user(), $v['files'] ?? [] );
 
         return Response::structured( $element->toArray() );
     }

@@ -9,7 +9,6 @@ namespace Aimeos\Cms\GraphQL\Mutations;
 
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Resource;
-use Aimeos\Cms\Utils;
 use Illuminate\Support\Facades\Auth;
 
 
@@ -22,7 +21,7 @@ final class SaveElement
     public function __invoke( $rootValue, array $args ) : Element
     {
         try {
-            return Resource::saveElement( $args['id'], $args['input'] ?? [], Utils::editor( Auth::user() ), $args['files'] ?? null, $args['latestId'] ?? null );
+            return Resource::saveElement( $args['id'], $args['input'] ?? [], Auth::user(), $args['files'] ?? null, $args['latestId'] ?? null );
         } catch( \InvalidArgumentException $e ) {
             throw new \GraphQL\Error\Error( $e->getMessage() );
         }

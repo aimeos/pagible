@@ -45,7 +45,6 @@ class PageControllerTest extends ThemeTestAbstract
             $page->id,
             ['path' => 'new-blog-path', 'domain' => $page->domain ?? ''],
             $this->user,
-            'test@example.com',
         );
 
         // Now try to access the page via the new path (as an editor would)
@@ -67,7 +66,6 @@ class PageControllerTest extends ThemeTestAbstract
             $page->id,
             ['path' => 'changed-article-path'],
             $this->user,
-            'test@example.com',
         );
 
         // Try to access via new path
@@ -91,7 +89,6 @@ class PageControllerTest extends ThemeTestAbstract
             $page->id,
             ['path' => 'new-home', 'domain' => $page->domain],
             $this->user,
-            'test@example.com',
         );
 
         // Without multidomain config, the route has no {domain} parameter,
@@ -128,7 +125,6 @@ class PageControllerTest extends ThemeTestAbstract
             $page->id,
             ['path' => 'new-test-page'],
             $this->user,
-            'test@example.com',
         );
 
         // Verify the version data now includes domain

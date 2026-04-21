@@ -141,6 +141,12 @@ export default {
       })
   },
 
+  computed: {
+    hasConflict() {
+      return Object.values(this.changes?.data || {}).some((v) => v.overwritten)
+    }
+  },
+
   methods: {
     errorUpdated(event) {
       this.error = event
@@ -294,7 +300,7 @@ export default {
             this.vchanges = true
             this.messages.add(
               this.$gettext('Merged with changes from %{editor}', { editor: changes.editor }),
-              Object.values(changes.data || {}).some((v) => v.overwritten) ? 'warning' : 'info'
+              this.hasConflict ? 'warning' : 'info'
             )
           } else {
             if (!quiet) {
@@ -513,7 +519,7 @@ export default {
         @click="vchanges = true"
         :title="$gettext('View merge changes')"
         :icon="mdiSwapHorizontal"
-        :class="{ 'text-error': changes && Object.values(changes.data || {}).some((v) => v.overwritten) }"
+        :class="{ 'text-error': hasConflict }"
         class="menu-changes"
       />
 

@@ -383,7 +383,7 @@ input:-webkit-autofill:focus {
 .publish-at,
 .item-status {
   margin-inline-end: 4px;
-  font-size: 1.25rem !important;
+  font-size: 125% !important;
 }
 
 .item-content {

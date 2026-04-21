@@ -300,13 +300,13 @@ export default {
 
 .merged-value {
   color: rgb(var(--v-theme-info));
-  font-size: 0.85em;
+  font-size: 85%;
   padding: 2px 0 4px;
 }
 
 .conflict-value {
   color: rgb(var(--v-theme-error));
-  font-size: 0.85em;
+  font-size: 85%;
   padding: 2px 0 4px;
   word-break: break-word;
 }

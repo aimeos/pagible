@@ -51,7 +51,7 @@ final class SaveFile
         return Resource::saveFile(
             $args['id'],
             $args['input'] ?? [],
-            Utils::editor( Auth::user() ),
+            Auth::user(),
             $args['latestId'] ?? null,
             $upload instanceof UploadedFile && $upload->isValid() ? $upload : null,
             $args['preview'] ?? null,
