@@ -7,6 +7,7 @@
 
 namespace Aimeos\Cms\Models;
 
+use Aimeos\Cms\Concerns\HasChanges;
 use Aimeos\Cms\Concerns\Tenancy;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
@@ -35,6 +36,7 @@ use Laravel\Scout\Searchable;
  */
 class Element extends Base
 {
+    use HasChanges;
     use HasUuids;
     use SoftDeletes;
     use Searchable;

@@ -8,6 +8,7 @@
 namespace Aimeos\Cms;
 
 use Carbon\Carbon;
+use Illuminate\Contracts\Auth\Authenticatable;
 
 
 class Validation
@@ -17,11 +18,11 @@ class Validation
      * sanitizes HTML content, validates content/meta/config schemas.
      *
      * @param array<string, mixed> $input Page input data
-     * @param mixed $user Authenticated user
+     * @param Authenticatable|null $user Authenticated user
      * @return array<string, mixed> Sanitized input
      * @throws \InvalidArgumentException On validation failure
      */
-    public static function page( array $input, mixed $user ) : array
+    public static function page( array $input, ?Authenticatable $user = null ) : array
     {
         if( !Utils::isValidUrl( $input['to'] ?? null, false ) ) {
             throw new \InvalidArgumentException( sprintf( 'Invalid URL "%s" in "to" field', $input['to'] ?? '' ) );

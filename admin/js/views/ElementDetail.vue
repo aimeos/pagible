@@ -3,6 +3,7 @@
 <script>
 import gql from 'graphql-tag'
 import AsideMeta from '../components/AsideMeta.vue'
+import ChangesDialog from '../components/ChangesDialog.vue'
 import HistoryDialog from '../components/HistoryDialog.vue'
 import ElementDetailRefs from '../components/ElementDetailRefs.vue'
 import ElementDetailItem from '../components/ElementDetailItem.vue'
@@ -12,6 +13,7 @@ import {
   mdiKeyboardBackspace,
   mdiHistory,
   mdiDatabaseArrowDown,
+  mdiSwapHorizontal,
   mdiChevronRight,
   mdiChevronLeft
 } from '@mdi/js'
@@ -19,6 +21,7 @@ import {
 export default {
   components: {
     AsideMeta,
+    ChangesDialog,
     HistoryDialog,
     ElementDetailRefs,
     ElementDetailItem
@@ -38,11 +41,14 @@ export default {
   data: () => ({
     assets: {},
     changed: false,
+    changes: null,
     error: false,
+    latestId: null,
     publishAt: null,
     publishing: false,
     pubmenu: false,
     saving: false,
+    vchanges: false,
     vhistory: false,
     tab: 'element'
   }),
@@ -61,6 +67,7 @@ export default {
       mdiKeyboardBackspace,
       mdiHistory,
       mdiDatabaseArrowDown,
+      mdiSwapHorizontal,
       mdiChevronRight,
       mdiChevronLeft
     }
@@ -118,6 +125,7 @@ export default {
         const element = result.data.element
 
         this.reset()
+        this.latestId = element.latest?.id
         this.assets = {}
 
         for (const entry of element.latest?.files || element.files || []) {
@@ -131,6 +139,12 @@ export default {
         this.messages.add(this.$gettext('Error fetching element') + ':\n' + error, 'error')
         this.$log(`ElementDetail::watch(item): Error fetching element`, error)
       })
+  },
+
+  computed: {
+    hasConflict() {
+      return Object.values(this.changes?.data || {}).some((v) => v.overwritten)
+    }
   },
 
   methods: {
@@ -152,7 +166,7 @@ export default {
       this.publishing = true
 
       this.save(true).then((valid) => {
-        if (!valid) {
+        if (!valid || this.changes) {
           return
         }
 
@@ -207,6 +221,7 @@ export default {
 
     reset() {
       this.changed = false
+      this.changes = null
       this.error = false
     },
 
@@ -242,9 +257,11 @@ export default {
       return this.$apollo
         .mutate({
           mutation: gql`
-            mutation ($id: ID!, $input: ElementInput!, $files: [ID!]) {
-              saveElement(id: $id, input: $input, files: $files) {
+            mutation ($id: ID!, $input: ElementInput!, $files: [ID!], $latestId: ID) {
+              saveElement(id: $id, input: $input, files: $files, latestId: $latestId) {
                 id
+                latest { id }
+                changes
               }
             }
           `,
@@ -258,7 +275,8 @@ export default {
             },
             files: this.item.files.filter((id, idx, self) => {
               return self.indexOf(id) === idx
-            })
+            }),
+            latestId: this.latestId
           }
         })
         .then((result) => {
@@ -266,11 +284,28 @@ export default {
             throw result.errors
           }
 
+          const el = result.data?.saveElement
+          const changes = el?.changes
+
+          if (changes?.latest?.id || el?.latest?.id) {
+            this.latestId = changes?.latest?.id ?? el.latest.id
+          }
+
           this.item.published = false
           this.reset()
 
-          if (!quiet) {
-            this.messages.add(this.$gettext('Element saved successfully'), 'success')
+          if (changes) {
+            Object.assign(this.item, changes.latest.data)
+            this.changes = changes
+            this.vchanges = true
+            this.messages.add(
+              this.$gettext('Merged with changes from %{editor}', { editor: changes.editor }),
+              this.hasConflict ? 'warning' : 'info'
+            )
+          } else {
+            if (!quiet) {
+              this.messages.add(this.$gettext('Element saved successfully'), 'success')
+            }
           }
 
           return true
@@ -480,6 +515,15 @@ export default {
       </v-btn>
 
       <v-btn
+        v-if="changes"
+        @click="vchanges = true"
+        :title="$gettext('View merge changes')"
+        :icon="mdiSwapHorizontal"
+        :class="{ 'text-error': hasConflict }"
+        class="menu-changes"
+      />
+
+      <v-btn
         @click="drawer.toggle('aside')"
         :title="$gettext('Toggle side menu')"
         :icon="drawer.aside ? mdiChevronRight : mdiChevronLeft"
@@ -532,6 +576,7 @@ export default {
       @revert="revertVersion"
       @use="use($event)"
     />
+    <ChangesDialog v-model="vchanges" :changes="changes" />
   </Teleport>
 </template>
 

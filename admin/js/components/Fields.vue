@@ -20,6 +20,7 @@ export default {
     data: { type: Object, default: () => {} },
     files: { type: Array, default: () => [] },
     assets: { type: Object, default: () => {} },
+    changes: { type: Object, default: () => ({}) },
     readonly: { type: Boolean, default: false },
     fields: { type: Object, required: true },
     type: { type: String, default: '' }
@@ -31,6 +32,7 @@ export default {
 
   data() {
     return {
+      dirty: new Set(),
       translating: {},
       dictating: {},
       composing: {},
@@ -134,8 +136,17 @@ export default {
         })
     },
 
+    isDirty(code) {
+      return this.dirty.has(code)
+    },
+
+    resetDirty() {
+      this.dirty = new Set()
+    },
+
     update(code, value) {
       this.data[code] = value
+      this.dirty.add(code)
       this.$emit('change', this.data[code])
     },
 
@@ -173,7 +184,16 @@ export default {
 </script>
 
 <template>
-  <div v-for="(field, code) in fields" :key="code" class="item" :class="{ error: errors[code] }">
+  <div
+    v-for="(field, code) in fields"
+    :key="code"
+    class="item"
+    :class="{
+      error: errors[code],
+      merged: changes[code] && !changes[code]?.overwritten,
+      conflict: !!changes[code]?.overwritten
+    }"
+  >
     <div v-if="field.type !== 'hidden'" class="label">
       {{ $pgettext('fn', field.label || code).replace(/-|_/g, ' ') }}
       <div
@@ -236,6 +256,12 @@ export default {
         />
       </div>
     </div>
+    <div v-if="changes[code] && !changes[code]?.overwritten" class="merged-value">
+      {{ $gettext('Updated by other editor') }}
+    </div>
+    <div v-if="changes[code]?.overwritten" class="conflict-value">
+      {{ $gettext('Overwritten') }}: {{ typeof changes[code].overwritten === 'object' ? JSON.stringify(changes[code].overwritten) : changes[code].overwritten }}
+    </div>
     <component
       :is="toName(field.type)"
       :key="field.type + '-' + code"
@@ -262,6 +288,27 @@ export default {
 
 .item.error {
   border-inline-start: 3px solid rgb(var(--v-theme-error));
+}
+
+.item.merged {
+  border-inline-start: 3px solid rgb(var(--v-theme-info));
+}
+
+.item.conflict {
+  border-inline-start: 3px solid rgb(var(--v-theme-error));
+}
+
+.merged-value {
+  color: rgb(var(--v-theme-info));
+  font-size: 85%;
+  padding: 2px 0 4px;
+}
+
+.conflict-value {
+  color: rgb(var(--v-theme-error));
+  font-size: 85%;
+  padding: 2px 0 4px;
+  word-break: break-word;
 }
 
 .label {

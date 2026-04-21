@@ -948,7 +948,7 @@ export default {
   top: calc(50% + 16px);
   left: 50%;
   color: #fff;
-  font-size: 12px;
+  font-size: 100%;
   padding: 12px 6px;
   border-radius: 4px;
   white-space: nowrap;

@@ -89,7 +89,7 @@ extend type Mutation {
     @guard @cmsPermission(action: "page:move") @throttle(name: "cms-admin")
 
   "Update the values of an existing page"
-  savePage(id: ID!, input: PageInput!, elements: [ID!], files: [ID!]): Page
+  savePage(id: ID!, input: PageInput!, elements: [ID!], files: [ID!], latestId: ID): Page
     @guard @cmsPermission(action: "page:save") @throttle(name: "cms-admin")
 
   "Delete an existing page"
@@ -114,7 +114,7 @@ extend type Mutation {
     @guard @cmsPermission(action: "element:add") @throttle(name: "cms-admin")
 
   "Update an existing shared content element"
-  saveElement(id: ID!, input: ElementInput!, files: [ID!]): Element
+  saveElement(id: ID!, input: ElementInput!, files: [ID!], latestId: ID): Element
     @guard @cmsPermission(action: "element:save") @throttle(name: "cms-admin")
 
   "Delete an existing shared content element"
@@ -139,7 +139,7 @@ extend type Mutation {
     @guard @cmsPermission(action: "file:add") @throttle(name: "cms-admin")
 
   "Update an existing file"
-  saveFile(id: ID!, input: FileInput!, file: Upload, preview: RemoveableUpload): File
+  saveFile(id: ID!, input: FileInput!, file: Upload, preview: RemoveableUpload, latestId: ID): File
     @guard @cmsPermission(action: "file:save") @throttle(name: "cms-admin")
 
   "Delete an existing file"
@@ -315,6 +315,9 @@ type Page {
 
   "List of versions for the page meta data"
   versions: [Version!]! @morphMany
+
+  "Change and conflict info when concurrent edit was detected, null otherwise"
+  changes: JSON
 }
 
 input PageFilter {
@@ -465,6 +468,9 @@ type Element {
 
   "List of versioned data for the content element"
   versions: [Version!]! @morphMany
+
+  "Change and conflict info when concurrent edit was detected, null otherwise"
+  changes: JSON
 }
 
 input ElementFilter {
@@ -558,6 +564,9 @@ type File {
 
   "List of versioned data for the file"
   versions: [Version!]! @morphMany
+
+  "Change and conflict info when concurrent edit was detected, null otherwise"
+  changes: JSON
 }
 
 input FileFilter {

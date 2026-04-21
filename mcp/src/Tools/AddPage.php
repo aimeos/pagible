@@ -113,7 +113,6 @@ class AddPage extends Tool
         $page = Resource::addPage(
             $input,
             $request->user(),
-            Utils::editor( $request->user() ),
             $v['files'] ?? [],
             $v['elements'] ?? [],
             $v['ref'] ?? null,

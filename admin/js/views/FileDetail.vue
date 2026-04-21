@@ -3,6 +3,7 @@
 <script>
 import gql from 'graphql-tag'
 import AsideMeta from '../components/AsideMeta.vue'
+import ChangesDialog from '../components/ChangesDialog.vue'
 import HistoryDialog from '../components/HistoryDialog.vue'
 import FileDetailRefs from '../components/FileDetailRefs.vue'
 import FileDetailItem from '../components/FileDetailItem.vue'
@@ -11,6 +12,7 @@ import {
   mdiKeyboardBackspace,
   mdiHistory,
   mdiDatabaseArrowDown,
+  mdiSwapHorizontal,
   mdiChevronRight,
   mdiChevronLeft
 } from '@mdi/js'
@@ -18,6 +20,7 @@ import {
 export default {
   components: {
     AsideMeta,
+    ChangesDialog,
     HistoryDialog,
     FileDetailItem,
     FileDetailRefs
@@ -31,10 +34,12 @@ export default {
     file: null,
     error: false,
     changed: false,
+    changes: null,
     publishAt: null,
     publishing: false,
     pubmenu: false,
     saving: false,
+    vchanges: false,
     vhistory: false,
     tab: 'file'
   }),
@@ -53,8 +58,15 @@ export default {
       mdiKeyboardBackspace,
       mdiHistory,
       mdiDatabaseArrowDown,
+      mdiSwapHorizontal,
       mdiChevronRight,
       mdiChevronLeft
+    }
+  },
+
+  computed: {
+    hasConflict() {
+      return Object.values(this.changes?.data || {}).some((v) => v.overwritten)
     }
   },
 
@@ -82,7 +94,7 @@ export default {
       this.publishing = true
 
       this.save(true).then((valid) => {
-        if (!valid) {
+        if (!valid || this.changes) {
           return
         }
 
@@ -137,6 +149,7 @@ export default {
 
     reset() {
       this.changed = false
+      this.changes = null
       this.error = false
     },
 
@@ -168,14 +181,15 @@ export default {
       return this.$apollo
         .mutate({
           mutation: gql`
-            mutation ($id: ID!, $input: FileInput!, $file: Upload) {
-              saveFile(id: $id, input: $input, file: $file) {
+            mutation ($id: ID!, $input: FileInput!, $file: Upload, $latestId: ID) {
+              saveFile(id: $id, input: $input, file: $file, latestId: $latestId) {
                 id
                 latest {
                   id
                   data
                   created_at
                 }
+                changes
               }
             }
           `,
@@ -189,7 +203,8 @@ export default {
               name: this.item.name,
               lang: this.item.lang
             },
-            file: this.file
+            file: this.file,
+            latestId: this.item.latestId
           },
           context: {
             hasUpload: true
@@ -200,15 +215,28 @@ export default {
             throw result.errors
           }
 
-          const latest = result.data?.saveFile?.latest
+          const file = result.data?.saveFile
+          const latest = file?.latest
+          const changes = file?.changes
 
           Object.assign(this.item, JSON.parse(latest?.data || '{}'))
           this.item.updated_at = latest?.created_at
+          this.item.latestId = latest?.id
           this.item.published = false
           this.reset()
 
-          if (!quiet) {
-            this.messages.add(this.$gettext('File saved successfully'), 'success')
+          if (changes) {
+            Object.assign(this.item, changes.latest.data)
+            this.changes = changes
+            this.vchanges = true
+            this.messages.add(
+              this.$gettext('Merged with changes from %{editor}', { editor: changes.editor }),
+              this.hasConflict ? 'warning' : 'info'
+            )
+          } else {
+            if (!quiet) {
+              this.messages.add(this.$gettext('File saved successfully'), 'success')
+            }
           }
 
           return true
@@ -380,6 +408,15 @@ export default {
       </v-btn>
 
       <v-btn
+        v-if="changes"
+        @click="vchanges = true"
+        :title="$gettext('View merge changes')"
+        :icon="mdiSwapHorizontal"
+        :class="{ 'text-error': hasConflict }"
+        class="menu-changes"
+      />
+
+      <v-btn
         @click.stop="drawer.toggle('aside')"
         :title="$gettext('Toggle side menu')"
         :icon="drawer.aside ? mdiChevronRight : mdiChevronLeft"
@@ -434,6 +471,7 @@ export default {
       @revert="revertVersion"
       @use="use($event)"
     />
+    <ChangesDialog v-model="vchanges" :changes="changes" />
   </Teleport>
 </template>
 
