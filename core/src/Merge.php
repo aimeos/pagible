@@ -32,6 +32,7 @@ class Merge
         // Process incoming blocks in incoming order
         foreach( $incoming as $block )
         {
+            $block = (array) $block;
             $key = self::blockKey( $block );
 
             if( !$key ) {
@@ -148,11 +149,12 @@ class Merge
     /**
      * Returns the key for a content block (id or refid).
      *
-     * @param array<string, mixed> $block
+     * @param array<string, mixed>|object $block
      * @return string|null
      */
-    protected static function blockKey( array $block ) : ?string
+    protected static function blockKey( array|object $block ) : ?string
     {
+        $block = (array) $block;
         return $block['id'] ?? $block['refid'] ?? null;
     }
 
@@ -169,6 +171,7 @@ class Merge
 
         foreach( $blocks as $block )
         {
+            $block = (array) $block;
             $key = self::blockKey( $block );
 
             if( $key ) {
