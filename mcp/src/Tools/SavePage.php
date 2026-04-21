@@ -60,6 +60,7 @@ class SavePage extends Tool
             'files.*' => 'string|max:36',
             'elements' => 'array',
             'elements.*' => 'string|max:36',
+            'latestId' => 'string|max:36',
         ], [
             'id.required' => 'You must specify the ID of the page to save.',
         ] );
@@ -80,13 +81,14 @@ class SavePage extends Tool
             $v['config'] = Validation::structured( $v['config'], 'config', new \stdClass() );
         }
 
-        $input = array_diff_key( $v, array_flip( ['id', 'files', 'elements'] ) );
+        $input = array_diff_key( $v, array_flip( ['id', 'files', 'elements', 'latestId'] ) );
 
         try {
             $page = Resource::savePage(
                 $v['id'], $input, $request->user(),
                 Utils::editor( $request->user() ),
                 $v['files'] ?? null, $v['elements'] ?? null,
+                $v['latestId'] ?? null,
             );
         } catch( ModelNotFoundException $e ) {
             return Response::structured( ['error' => 'Page not found.'] );
@@ -102,6 +104,7 @@ class SavePage extends Tool
             'content' => $aux['content'] ?? [],
             'status' => $page->status,
             'cache' => $page->cache,
+            'changes' => $page->changes(),
             'created_at' => (string) $page->created_at,
             'updated_at' => (string) $page->updated_at,
             'url' => route( 'cms.page', ['path' => $data['path'] ?? ''] ),
@@ -168,6 +171,8 @@ class SavePage extends Tool
             'elements' => $schema->array()
                 ->items( $schema->string() )
                 ->description( 'Array of shared element UUIDs to attach to the version.' ),
+            'latestId' => $schema->string()
+                ->description( 'Version ID the caller last retrieved. Enables conflict detection and three-way merge when another editor has saved in the meantime.' ),
         ];
     }
 

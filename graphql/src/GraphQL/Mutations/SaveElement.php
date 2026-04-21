@@ -22,7 +22,7 @@ final class SaveElement
     public function __invoke( $rootValue, array $args ) : Element
     {
         try {
-            return Resource::saveElement( $args['id'], $args['input'] ?? [], Utils::editor( Auth::user() ), $args['files'] ?? null );
+            return Resource::saveElement( $args['id'], $args['input'] ?? [], Utils::editor( Auth::user() ), $args['files'] ?? null, $args['latestId'] ?? null );
         } catch( \InvalidArgumentException $e ) {
             throw new \GraphQL\Error\Error( $e->getMessage() );
         }

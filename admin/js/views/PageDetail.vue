@@ -4,6 +4,7 @@
 import gql from 'graphql-tag'
 import AsideMeta from '../components/AsideMeta.vue'
 import AsideCount from '../components/AsideCount.vue'
+import ChangesDialog from '../components/ChangesDialog.vue'
 import HistoryDialog from '../components/HistoryDialog.vue'
 import PageDetailItem from '../components/PageDetailItem.vue'
 import PageDetailEditor from '../components/PageDetailEditor.vue'
@@ -27,6 +28,7 @@ import {
   mdiArrowRightThin,
   mdiHistory,
   mdiDatabaseArrowDown,
+  mdiSwapHorizontal,
   mdiChevronRight,
   mdiChevronLeft
 } from '@mdi/js'
@@ -37,6 +39,7 @@ export default {
   components: {
     AsideMeta,
     AsideCount,
+    ChangesDialog,
     HistoryDialog,
     PageDetailItem,
     PageDetailEditor,
@@ -78,6 +81,7 @@ export default {
       mdiArrowRightThin,
       mdiHistory,
       mdiDatabaseArrowDown,
+      mdiSwapHorizontal,
       mdiChevronRight,
       mdiChevronLeft,
       txlocales,
@@ -100,6 +104,8 @@ export default {
       publishing: false,
       translating: false,
       vhistory: false,
+      vchanges: false,
+      changes: null,
       saving: false,
       savecnt: 0
     }
@@ -118,8 +124,22 @@ export default {
       return Object.values(this.changed).some((entry) => entry)
     },
 
+    hasConflict() {
+      return this.hasContentConflict || this.hasPageConflict
+    },
+
+    hasContentConflict() {
+      return ['content', 'meta', 'config'].some((s) =>
+        Object.values(this.changes?.[s] || {}).some((v) => v.overwritten)
+      )
+    },
+
     hasError() {
       return Object.values(this.errors).some((entry) => entry)
+    },
+
+    hasPageConflict() {
+      return Object.values(this.changes?.data || {}).some((v) => v.overwritten)
     },
 
     langs() {
@@ -370,7 +390,7 @@ export default {
 
       this.save(true)
         .then((valid) => {
-          if (!valid) {
+          if (!valid || this.changes) {
             return
           }
 
@@ -428,6 +448,7 @@ export default {
       this.$refs.content?.reset()
 
       this.changed = {}
+      this.changes = null
       this.errors = {}
     },
 
@@ -477,9 +498,11 @@ export default {
       return this.$apollo
         .mutate({
           mutation: gql`
-            mutation ($id: ID!, $input: PageInput!, $elements: [ID!], $files: [ID!]) {
-              savePage(id: $id, input: $input, elements: $elements, files: $files) {
+            mutation ($id: ID!, $input: PageInput!, $elements: [ID!], $files: [ID!], $latestId: ID) {
+              savePage(id: $id, input: $input, elements: $elements, files: $files, latestId: $latestId) {
                 id
+                latest { id }
+                changes
               }
             }
           `,
@@ -503,7 +526,8 @@ export default {
               content: JSON.stringify(this.clean(this.item.content, 'content'))
             },
             elements: Object.keys(this.elements),
-            files: this.fileIds()
+            files: this.fileIds(),
+            latestId: this.latest?.id
           }
         })
         .then((response) => {
@@ -511,12 +535,35 @@ export default {
             throw response.errors
           }
 
+          const page = response.data?.savePage
+          const changes = page?.changes
+
+          if (changes?.latest?.id || page?.latest?.id) {
+            this.latest = { ...this.latest, id: changes?.latest?.id ?? page.latest.id }
+          }
+
           this.item.published = false
           this.$refs.history?.reset()
           this.reset()
 
-          if (!quiet) {
-            this.messages.add(this.$gettext('Page saved successfully'), 'success')
+          if (changes) {
+            Object.assign(this.item, changes.latest.data)
+            const aux = changes.latest.aux
+            this.item.content = aux?.content ?? this.item.content
+            this.item.config = aux?.config ?? this.item.config
+            this.item.meta = aux?.meta ?? this.item.meta
+
+            this.changes = changes
+            this.vchanges = true
+
+            this.messages.add(
+              this.$gettext('Merged with changes from %{editor}', { editor: changes.editor }),
+              this.hasConflict ? 'warning' : 'info'
+            )
+          } else {
+            if (!quiet) {
+              this.messages.add(this.$gettext('Page saved successfully'), 'success')
+            }
           }
 
           this.invalidate()
@@ -828,6 +875,15 @@ export default {
       </v-btn>
 
       <v-btn
+        v-if="changes"
+        @click="vchanges = true"
+        :title="$gettext('View merge changes')"
+        :icon="mdiSwapHorizontal"
+        :class="{ 'text-error': hasConflict }"
+        class="menu-changes"
+      />
+
+      <v-btn
         @click.stop="drawer.toggle('aside')"
         :title="$gettext('Toggle side menu')"
         :icon="drawer.aside ? mdiChevronRight : mdiChevronLeft"
@@ -843,14 +899,14 @@ export default {
         </v-tab>
         <v-tab
           value="content"
-          :class="{ changed: changed.content, error: errors.content }"
+          :class="{ changed: changed.content, error: errors.content, conflict: hasContentConflict }"
           @click="aside = 'count'"
         >
           {{ $gettext('Content') }}
         </v-tab>
         <v-tab
           value="page"
-          :class="{ changed: changed.page, error: errors.page }"
+          :class="{ changed: changed.page, error: errors.page, conflict: hasPageConflict }"
           @click="aside = asidePage"
         >
           {{ $gettext('Page') }}
@@ -876,6 +932,7 @@ export default {
             ref="content"
             :item="item"
             :assets="assets"
+            :changes="changes?.content"
             :elements="elements"
             @error="errors.content = $event"
             @change="changed.content = true"
@@ -934,6 +991,7 @@ export default {
       @revert="revertVersion"
       @use="use($event)"
     />
+    <ChangesDialog v-model="vchanges" :changes="changes" />
   </Teleport>
 </template>
 
@@ -955,5 +1013,9 @@ export default {
 .v-app-bar .v-btn.menu-publish.active {
   background-color: rgba(var(--v-theme-primary), 1);
   color: rgb(var(--v-theme-on-primary));
+}
+
+.v-tab.conflict {
+  color: rgb(var(--v-theme-error));
 }
 </style>

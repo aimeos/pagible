@@ -9,9 +9,9 @@ namespace Aimeos\Cms\Tools;
 
 use Aimeos\Cms\Utils;
 use Aimeos\Cms\Permission;
-use Aimeos\Cms\Models\File;
-use Aimeos\Cms\Models\Version;
+use Aimeos\Cms\Resource;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Attributes\Title;
 use Laravel\Mcp\Server\Attributes\Name;
@@ -39,58 +39,33 @@ class SaveFile extends Tool
             'name' => 'string|max:255',
             'lang' => 'nullable|string|max:5',
             'description' => 'array',
+            'latestId' => 'string|max:36',
         ], [
             'id.required' => 'You must specify the ID of the file to save.',
         ] );
 
-        /** @var File|null $file */
-        $file = File::withTrashed()->with( 'latest' )->find( $v['id'] );
+        $input = array_diff_key( $v, array_flip( ['id', 'latestId'] ) );
 
-        if( !$file ) {
+        try {
+            $file = Resource::saveFile( $v['id'], $input, Utils::editor( $request->user() ), $v['latestId'] ?? null );
+        } catch( ModelNotFoundException $e ) {
             return Response::structured( ['error' => 'File not found.'] );
         }
 
-        return Utils::transaction( function() use ( $file, $v, $request ) {
+        $data = (array) ( $file->latest->data ?? [] );
 
-            $editor = Utils::editor( $request->user() );
-            $versionId = ( new Version )->newUniqueId();
-
-            // Clone file to build version data without saving to the model directly
-            $clone = clone $file;
-            $latestData = (array) ( $file->latest->data ?? [] );
-            $clone->fill( array_replace( $latestData, array_intersect_key( $v, array_flip( ['name', 'lang'] ) ) ) );
-
-            if( isset( $v['description'] ) ) {
-                $clone->description = $v['description'];
-            }
-
-            $clone->previews = $latestData['previews'] ?? $file->previews;
-            $clone->path = $latestData['path'] ?? $file->path;
-            $clone->editor = $editor;
-
-            $version = $clone->versions()->forceCreate( [
-                'id' => $versionId,
-                'lang' => $v['lang'] ?? $file->latest->lang ?? $file->lang,
-                'editor' => $editor,
-                'data' => $clone->toArray(),
-            ] );
-
-            $file->setRelation( 'latest', $version );
-            $file->forceFill( ['latest_id' => $versionId] )->save();
-            $file->removeVersions();
-
-            return Response::structured( [
-                'id' => $file->id,
-                'name' => $clone->name,
-                'mime' => $clone->mime,
-                'lang' => $clone->lang,
-                'path' => $clone->path,
-                'previews' => $clone->previews,
-                'description' => $clone->description,
-                'created_at' => (string) $file->created_at,
-                'updated_at' => (string) $file->updated_at,
-            ] );
-        } );
+        return Response::structured( [
+            'id' => $file->id,
+            'name' => $data['name'] ?? $file->name,
+            'mime' => $data['mime'] ?? $file->mime,
+            'lang' => $data['lang'] ?? $file->lang,
+            'path' => $data['path'] ?? $file->path,
+            'previews' => $data['previews'] ?? $file->previews,
+            'description' => $data['description'] ?? $file->description,
+            'changes' => $file->changes(),
+            'created_at' => (string) $file->created_at,
+            'updated_at' => (string) $file->updated_at,
+        ] );
     }
 
 
@@ -111,6 +86,8 @@ class SaveFile extends Tool
                 ->description( 'ISO language code for the file, e.g., "en" or "de".' ),
             'description' => $schema->object()
                 ->description( 'Multilingual description object, e.g., {"en": "A sunset photo", "de": "Ein Sonnenuntergangsfoto"}. Used as alt text for images.' ),
+            'latestId' => $schema->string()
+                ->description( 'Version ID the caller last retrieved. Enables conflict detection and three-way merge when another editor has saved in the meantime.' ),
         ];
     }
 

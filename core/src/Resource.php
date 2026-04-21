@@ -12,6 +12,7 @@ use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Models\Version;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 
@@ -226,11 +227,11 @@ class Resource
      * @throws \Illuminate\Database\Eloquent\ModelNotFoundException If page not found
      */
     public static function savePage( string $id, array $input, mixed $user, string $editor,
-        ?array $files = null, ?array $elements = null ) : Page
+        ?array $files = null, ?array $elements = null, ?string $latestId = null ) : Page
     {
         $input = Validation::page( $input, $user );
 
-        return Utils::transaction( function() use ( $id, $input, $editor, $files, $elements ) {
+        return Utils::transaction( function() use ( $id, $input, $user, $editor, $files, $elements, $latestId ) {
 
             /** @var Page $page */
             $page = Page::withTrashed()->with( 'latest' )->findOrFail( $id );
@@ -238,11 +239,47 @@ class Resource
 
             $data = array_diff_key( $input, array_flip( ['meta', 'config', 'content'] ) );
             array_walk( $data, fn( &$v, $k ) => $v = !in_array( $k, ['related_id'] ) ? ( $v ?? '' ) : $v );
-            $data = array_replace( (array) $page->latest?->data, $data );
-            $data['domain'] ??= $page->domain ?? '';
 
             $aux = array_intersect_key( $input, array_flip( ['meta', 'config', 'content'] ) );
-            $aux = array_replace( (array) $page->latest?->aux, $aux );
+            $diffs = null;
+
+            if( $latestId && $page->latest_id && $latestId !== $page->latest_id )
+            {
+                /** @var Version|null $base */
+                $base = $page->versions()->find( $latestId );
+
+                if( $base )
+                {
+                    [$data, $dd] = Merge::structured( (array) $base->data, (array) $page->latest?->data, $data );
+                    $data['domain'] ??= $page->domain ?? '';
+
+                    $merged = array_replace( (array) $page->latest?->aux, $aux );
+                    [$merged['meta'], $md] = Merge::structured( (array) ( $base->aux->meta ?? [] ), (array) ( $page->latest?->aux->meta ?? [] ), (array) ( $merged['meta'] ?? [] ) );
+                    [$merged['content'], $xd] = Merge::content( (array) ( $base->aux->content ?? [] ), (array) ( $page->latest?->aux->content ?? [] ), (array) ( $merged['content'] ?? [] ) );
+
+                    $cd = null;
+                    if( Permission::can( 'config:page', $user ) ) {
+                        [$merged['config'], $cd] = Merge::structured( (array) ( $base->aux->config ?? [] ), (array) ( $page->latest?->aux->config ?? [] ), (array) ( $merged['config'] ?? [] ) );
+                    } else {
+                        $merged['config'] = (array) ( $page->latest?->aux->config ?? [] );
+                    }
+
+                    $aux = $merged;
+                    $diffs = array_filter( ['data' => $dd, 'meta' => $md, 'config' => $cd, 'content' => $xd] );
+                }
+                else
+                {
+                    $data = array_replace( (array) $page->latest?->data, $data );
+                    $data['domain'] ??= $page->domain ?? '';
+                    $aux = array_replace( (array) $page->latest?->aux, $aux );
+                }
+            }
+            else
+            {
+                $data = array_replace( (array) $page->latest?->data, $data );
+                $data['domain'] ??= $page->domain ?? '';
+                $aux = array_replace( (array) $page->latest?->aux, $aux );
+            }
 
             $version = $page->versions()->forceCreate( [
                 'id' => $versionId,
@@ -257,6 +294,14 @@ class Resource
 
             $page->setRelation( 'latest', $version );
             $page->forceFill( ['latest_id' => $version->id] )->save();
+
+            if( $diffs ) {
+                $page->setChanges( [
+                    'editor' => $page->latest->editor ?? '',
+                    'latest' => ['id' => $versionId, 'data' => $data, 'aux' => $aux],
+                    ...$diffs,
+                ] );
+            }
 
             return $page->removeVersions();
         } );
@@ -324,7 +369,7 @@ class Resource
      * @throws \InvalidArgumentException On validation failure
      * @throws \Illuminate\Database\Eloquent\ModelNotFoundException If element not found
      */
-    public static function saveElement( string $id, array $input, string $editor, ?array $files = null ) : Element
+    public static function saveElement( string $id, array $input, string $editor, ?array $files = null, ?string $latestId = null ) : Element
     {
         /** @var Element $element */
         $element = Element::withTrashed()->with( 'latest' )->findOrFail( $id );
@@ -338,11 +383,25 @@ class Resource
             Validation::html( $type, $input['data'] );
         }
 
-        return Utils::transaction( function() use ( $element, $input, $editor, $files ) {
+        return Utils::transaction( function() use ( $element, $input, $editor, $files, $latestId ) {
 
             $versionId = ( new Version )->newUniqueId();
+            $dd = null;
 
-            $data = array_replace( (array) ( $element->latest->data ?? [] ), $input );
+            if( $latestId && $element->latest_id && $latestId !== $element->latest_id )
+            {
+                $base = $element->versions()->find( $latestId );
+
+                if( $base ) {
+                    [$data, $dd] = Merge::structured( (array) ( $base->data ?? [] ), (array) ( $element->latest->data ?? [] ), $input );
+                } else {
+                    $data = array_replace( (array) ( $element->latest->data ?? [] ), $input );
+                }
+            }
+            else
+            {
+                $data = array_replace( (array) ( $element->latest->data ?? [] ), $input );
+            }
 
             $version = $element->versions()->forceCreate( [
                 'id' => $versionId,
@@ -355,7 +414,111 @@ class Resource
             $element->setRelation( 'latest', $version );
             $element->forceFill( ['latest_id' => $version->id] )->save();
 
+            if( $dd ) {
+                $element->setChanges( [
+                    'editor' => $element->latest->editor ?? '',
+                    'latest' => ['id' => $versionId, 'data' => $data],
+                    'data' => $dd,
+                ] );
+            }
+
             return $element->removeVersions();
+        } );
+    }
+
+
+    /**
+     * Updates file metadata and creates a new version with optional merge.
+     *
+     * @param string $id File UUID
+     * @param array<string, mixed> $input File fields to update
+     * @param string $editor Editor identifier
+     * @param string|null $latestId Version ID the editor was working on (for conflict detection)
+     * @param UploadedFile|null $upload File upload to store
+     * @param UploadedFile|false|null $preview Preview upload, false to clear, null for auto-detect
+     * @return File
+     */
+    public static function saveFile( string $id, array $input, string $editor,
+        ?string $latestId = null, ?UploadedFile $upload = null, UploadedFile|false|null $preview = null ) : File
+    {
+        return Utils::transaction( function() use ( $id, $input, $editor, $latestId, $upload, $preview ) {
+
+            /** @var File $orig */
+            $orig = File::withTrashed()->with( 'latest' )->findOrFail( $id );
+            $previews = $orig->latest?->data->previews ?? $orig->previews;
+            $path = $orig->latest?->data->path ?? $orig->path;
+            $versionId = ( new Version )->newUniqueId();
+            $dd = null;
+
+            $file = clone $orig;
+
+            if( $latestId && $orig->latest_id && $latestId !== $orig->latest_id )
+            {
+                /** @var Version|null $base */
+                $base = $orig->versions()->find( $latestId );
+
+                if( $base ) {
+                    [$data, $dd] = Merge::structured( (array) $base->data, (array) $orig->latest?->data, $input );
+                    $file->fill( $data );
+                } else {
+                    $file->fill( array_replace( (array) $orig->latest?->data, $input ) );
+                }
+            }
+            else
+            {
+                $file->fill( array_replace( (array) $orig->latest?->data, $input ) );
+            }
+
+            $file->previews = $input['previews'] ?? $previews;
+            $file->path = $input['path'] ?? $path;
+            $file->editor = $editor;
+
+            if( $upload instanceof UploadedFile && $upload->isValid() ) {
+                $file->addFile( $upload );
+            }
+
+            if( $file->path !== $path ) {
+                $file->mime = Utils::mimetype( $file->path );
+            }
+
+            try
+            {
+                if( $preview instanceof UploadedFile && $preview->isValid() && str_starts_with( $preview->getClientMimeType(), 'image/' ) ) {
+                    $file->addPreviews( $preview );
+                } elseif( $upload instanceof UploadedFile && $upload->isValid() && str_starts_with( $upload->getClientMimeType(), 'image/' ) ) {
+                    $file->addPreviews( $upload );
+                } elseif( $file->path !== $path && str_starts_with( $file->path, 'http' ) && Utils::isValidUrl( $file->path ) ) {
+                    $file->addPreviews( $file->path );
+                } elseif( $preview === false ) {
+                    $file->previews = [];
+                }
+            }
+            catch( \Throwable $t )
+            {
+                $file->removePreviews();
+                throw $t;
+            }
+
+            $version = $file->versions()->forceCreate( [
+                'id' => $versionId,
+                'lang' => $file->lang,
+                'editor' => $editor,
+                'data' => $file->toArray(),
+            ] );
+
+            $orig->setRelation( 'latest', $version );
+            $orig->forceFill( ['latest_id' => $version->id] )->save();
+            $file->removeVersions();
+
+            if( $dd ) {
+                $orig->setChanges( [
+                    'editor' => $orig->latest->editor ?? '',
+                    'latest' => ['id' => $versionId, 'data' => $file->toArray()],
+                    'data' => $dd,
+                ] );
+            }
+
+            return $orig;
         } );
     }
 

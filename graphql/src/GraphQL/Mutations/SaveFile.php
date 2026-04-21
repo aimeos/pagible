@@ -8,7 +8,7 @@
 namespace Aimeos\Cms\GraphQL\Mutations;
 
 use Aimeos\Cms\Models\File;
-use Aimeos\Cms\Models\Version;
+use Aimeos\Cms\Resource;
 use Aimeos\Cms\Utils;
 use GraphQL\Error\Error;
 use Illuminate\Http\UploadedFile;
@@ -48,61 +48,13 @@ final class SaveFile
             }
         }
 
-        return Utils::transaction( function() use ( $args, $upload ) {
-
-            /** @var File $orig */
-            $orig = File::withTrashed()->with( 'latest' )->findOrFail( $args['id'] );
-            $previews = $orig->latest?->data->previews ?? $orig->previews;
-            $path = $orig->latest?->data->path ?? $orig->path;
-            $editor = Utils::editor( Auth::user() );
-
-            $file = clone $orig;
-            $file->fill( array_replace( (array) $orig->latest?->data, (array) $args['input'] ) );
-            $file->previews = $args['input']['previews'] ?? $previews;
-            $file->path = $args['input']['path'] ?? $path;
-            $file->editor = $editor;
-
-            if( $upload instanceof UploadedFile && $upload->isValid() ) {
-                $file->addFile( $upload );
-            }
-
-            if( $file->path !== $path ) {
-                $file->mime = Utils::mimetype( $file->path );
-            }
-
-            try
-            {
-                $preview = $args['preview'] ?? null;
-
-                if( $preview instanceof UploadedFile && $preview->isValid() && str_starts_with( $preview->getClientMimeType(), 'image/' ) ) {
-                    $file->addPreviews( $preview );
-                } elseif( $upload instanceof UploadedFile && $upload->isValid() && str_starts_with( $upload->getClientMimeType(), 'image/' ) ) {
-                    $file->addPreviews( $upload );
-                } elseif( $file->path !== $path && str_starts_with( $file->path, 'http' ) && Utils::isValidUrl( $file->path ) ) {
-                    $file->addPreviews( $file->path );
-                } elseif( $preview === false ) {
-                    $file->previews = [];
-                }
-            }
-            catch( \Throwable $t )
-            {
-                $file->removePreviews();
-                throw $t;
-            }
-
-            $versionId = ( new Version )->newUniqueId();
-            $version = $file->versions()->forceCreate( [
-                'id' => $versionId,
-                'lang' => $file->lang,
-                'editor' => $editor,
-                'data' => $file->toArray(),
-            ] );
-
-            $orig->setRelation( 'latest', $version );
-            $orig->forceFill( ['latest_id' => $version->id] )->save();
-            $file->removeVersions();
-
-            return $orig;
-        } );
+        return Resource::saveFile(
+            $args['id'],
+            $args['input'] ?? [],
+            Utils::editor( Auth::user() ),
+            $args['latestId'] ?? null,
+            $upload instanceof UploadedFile && $upload->isValid() ? $upload : null,
+            $args['preview'] ?? null,
+        );
     }
 }

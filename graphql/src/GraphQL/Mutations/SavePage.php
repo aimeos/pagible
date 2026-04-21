@@ -30,6 +30,7 @@ final class SavePage
                 Utils::editor( Auth::user() ),
                 $args['files'] ?? null,
                 $args['elements'] ?? null,
+                $args['latestId'] ?? null,
             );
         } catch( \InvalidArgumentException $e ) {
             throw new Error( $e->getMessage() );
