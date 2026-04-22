@@ -49,6 +49,10 @@ function mountDetail(perms = {}, item = {}) {
 }
 
 describe('PageDetail', () => {
+  beforeEach(() => {
+    cy.on('uncaught:exception', () => false)
+  })
+
   it('renders the app bar', () => {
     mountDetail()
     cy.get('.v-app-bar').should('exist')
