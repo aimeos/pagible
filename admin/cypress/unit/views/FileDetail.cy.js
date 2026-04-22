@@ -104,10 +104,10 @@ describe('FileDetail', () => {
     it('clears changed and error flags', () => {
       mountDetail().then(() => {
         const vm = Cypress.vueWrapper.findComponent(FileDetail).vm
-        vm.changed = true
+        vm.dirty = true
         vm.error = true
         vm.reset()
-        expect(vm.changed).to.be.false
+        expect(vm.dirty).to.be.false
         expect(vm.error).to.be.false
       })
     })
@@ -119,7 +119,7 @@ describe('FileDetail', () => {
         const vm = Cypress.vueWrapper.findComponent(FileDetail).vm
         vm.use({ data: { name: 'updated.jpg', path: 'new/path.jpg' } })
         expect(vm.item.name).to.equal('updated.jpg')
-        expect(vm.changed).to.be.true
+        expect(vm.dirty).to.be.true
         expect(vm.vhistory).to.be.false
       })
     })
@@ -139,7 +139,7 @@ describe('FileDetail', () => {
       mountDetail({ 'file:save': true }).then(() => {
         const vm = Cypress.vueWrapper.findComponent(FileDetail).vm
         vm.error = true
-        vm.changed = true
+        vm.dirty = true
         vm.save().then(result => {
           expect(result).to.be.false
         })

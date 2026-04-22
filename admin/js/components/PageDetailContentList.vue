@@ -115,7 +115,7 @@ export default {
   },
 
   computed: {
-    changed() {
+    dirty() {
       return this.content.some((el) => el._changed)
     },
 

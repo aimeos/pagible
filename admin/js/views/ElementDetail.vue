@@ -8,6 +8,7 @@ import HistoryDialog from '../components/HistoryDialog.vue'
 import ElementDetailRefs from '../components/ElementDetailRefs.vue'
 import ElementDetailItem from '../components/ElementDetailItem.vue'
 import { useUserStore, useDrawerStore, useMessageStore, useViewStack } from '../stores'
+import { subscribe } from '../echo'
 import { write, translate } from '../ai'
 import {
   mdiKeyboardBackspace,
@@ -40,8 +41,8 @@ export default {
 
   data: () => ({
     assets: {},
-    changed: false,
     changed: null,
+    dirty: false,
     echoCleanup: null,
     error: false,
     latestId: null,
@@ -135,11 +136,24 @@ export default {
         }
 
         this.item.files = files
+
+        subscribe('element', this.item.id, (event) => {
+          if (!this.dirty && this.user.can('element:view') && event.editor !== this.user.me?.email) {
+            this.latestId = event.versionId
+            Object.assign(this.item, event.data)
+          }
+        }).then((cleanup) => {
+          this.echoCleanup = cleanup
+        })
       })
       .catch((error) => {
         this.messages.add(this.$gettext('Error fetching element') + ':\n' + error, 'error')
         this.$log(`ElementDetail::watch(item): Error fetching element`, error)
       })
+  },
+
+  beforeUnmount() {
+    this.echoCleanup?.()
   },
 
   computed: {
@@ -155,7 +169,7 @@ export default {
 
     itemUpdated() {
       this.$emit('update:item', this.item)
-      this.changed = true
+      this.dirty = true
     },
 
     publish(at = null) {
@@ -221,7 +235,7 @@ export default {
     },
 
     reset() {
-      this.changed = false
+      this.dirty = false
       this.changed = null
       this.error = false
     },
@@ -245,7 +259,7 @@ export default {
         return Promise.resolve(false)
       }
 
-      if (!this.changed) {
+      if (!this.dirty) {
         return Promise.resolve(true)
       }
 
@@ -347,7 +361,7 @@ export default {
     use(version) {
       Object.assign(this.item, version.data)
       this.vhistory = false
-      this.changed = true
+      this.dirty = true
     },
 
     translateText(texts, to, from = null) {
@@ -430,7 +444,7 @@ export default {
     <template v-slot:append>
       <v-btn
         @click="vhistory = true"
-        :class="{ hidden: item.published && !changed && !item.latest }"
+        :class="{ hidden: item.published && !dirty && !item.latest }"
         :title="$gettext('View history')"
         :icon="mdiHistory"
         class="no-rtl"
@@ -442,9 +456,9 @@ export default {
         :title="$gettext('Save')"
         :class="{ error: error }"
         class="menu-save"
-        :disabled="!changed || error || !user.can('element:save')"
-        :variant="!changed || error || !user.can('element:save') ? 'plain' : 'flat'"
-        :color="!changed || error || !user.can('element:save') ? '' : 'blue-darken-1'"
+        :disabled="!dirty || error || !user.can('element:save')"
+        :variant="!dirty || error || !user.can('element:save') ? 'plain' : 'flat'"
+        :color="!dirty || error || !user.can('element:save') ? '' : 'blue-darken-1'"
         :icon="mdiDatabaseArrowDown"
       />
 
@@ -457,14 +471,14 @@ export default {
             :title="$gettext('Schedule publishing')"
             :class="{ error: error }"
             class="menu-publish"
-            :disabled="(item.published && !changed) || error || !user.can('element:publish')"
+            :disabled="(item.published && !dirty) || error || !user.can('element:publish')"
             :variant="
-              (item.published && !changed) || error || !user.can('element:publish')
+              (item.published && !dirty) || error || !user.can('element:publish')
                 ? 'plain'
                 : 'flat'
             "
             :color="
-              (item.published && !changed) || error || !user.can('element:publish')
+              (item.published && !dirty) || error || !user.can('element:publish')
                 ? ''
                 : 'blue-darken-2'
             "
@@ -498,12 +512,12 @@ export default {
         :title="$gettext('Publish')"
         :class="{ error: error }"
         class="menu-publish"
-        :disabled="(item.published && !changed) || error || !user.can('element:publish')"
+        :disabled="(item.published && !dirty) || error || !user.can('element:publish')"
         :variant="
-          (item.published && !changed) || error || !user.can('element:publish') ? 'plain' : 'flat'
+          (item.published && !dirty) || error || !user.can('element:publish') ? 'plain' : 'flat'
         "
         :color="
-          (item.published && !changed) || error || !user.can('element:publish')
+          (item.published && !dirty) || error || !user.can('element:publish')
             ? ''
             : 'blue-darken-2'
         "
@@ -535,7 +549,7 @@ export default {
   <v-main class="element-details" :aria-label="$gettext('Element')">
     <v-form @submit.prevent>
       <v-tabs fixed-tabs v-model="tab">
-        <v-tab value="element" :class="{ changed: changed, error: error }">{{
+        <v-tab value="element" :class="{ changed: dirty, error: error }">{{
           $gettext('Element')
         }}</v-tab>
         <v-tab value="refs">{{ $gettext('Used by') }}</v-tab>

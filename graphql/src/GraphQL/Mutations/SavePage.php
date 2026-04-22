@@ -22,7 +22,7 @@ final class SavePage
     public function __invoke( $rootValue, array $args ) : Page
     {
         try {
-            return Resource::savePage(
+            $page = Resource::savePage(
                 $args['id'],
                 $args['input'] ?? [],
                 Auth::user(),
@@ -33,5 +33,9 @@ final class SavePage
         } catch( \InvalidArgumentException $e ) {
             throw new Error( $e->getMessage() );
         }
+
+        Resource::broadcast( $page, Auth::user() );
+
+        return $page;
     }
 }

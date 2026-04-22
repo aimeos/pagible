@@ -32,6 +32,7 @@ import {
   mdiChevronRight,
   mdiChevronLeft
 } from '@mdi/js'
+import { subscribe } from '../echo'
 import { txlocales } from '../utils'
 import { write, translate } from '../ai'
 
@@ -104,8 +105,8 @@ export default {
       publishing: false,
       translating: false,
       vhistory: false,
-      vchanged: false,
       changed: null,
+      vchanged: false,
       echoCleanup: null,
       saving: false,
       savecnt: 0
@@ -235,11 +236,28 @@ export default {
         this.assets = this.files(this.latest?.files || [])
         this.elements = this.elems(this.latest?.elements || [])
         this.item.content = this.obsolete(this.item.content)
+
+        subscribe('page', this.item.id, (event) => {
+          if (!this.hasChanged && this.user.can('page:view') && event.editor !== this.user.me?.email) {
+            this.latest = { ...this.latest, id: event.versionId }
+            Object.assign(this.item, event.data)
+
+            this.item.content = event.aux?.content ?? this.item.content
+            this.item.config = event.aux?.config ?? this.item.config
+            this.item.meta = event.aux?.meta ?? this.item.meta
+          }
+        }).then((cleanup) => {
+          this.echoCleanup = cleanup
+        })
       })
       .catch((error) => {
         this.messages.add(this.$gettext('Error fetching page') + ':\n' + error, 'error')
         this.$log(`PageDetail::watch(item): Error fetching page`, error)
       })
+  },
+
+  beforeUnmount() {
+    this.echoCleanup?.()
   },
 
   methods: {
