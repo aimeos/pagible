@@ -21,7 +21,7 @@ trait HasChanged
      *
      * @return array<string, mixed>|null
      */
-    public function changed() : ?array
+    public function getChanged() : ?array
     {
         return $this->changed;
     }

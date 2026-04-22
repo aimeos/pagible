@@ -60,7 +60,7 @@ class SaveElement extends Tool
             'name' => $data['name'] ?? '',
             'lang' => $element->latest?->lang,
             'data' => $data['data'] ?? new \stdClass(),
-            'changes' => $element->changed(),
+            'changed' => $element->getChanged(),
             'created_at' => (string) $element->created_at,
             'updated_at' => (string) $element->updated_at,
         ] );
