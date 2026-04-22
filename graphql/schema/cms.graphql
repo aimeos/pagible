@@ -317,7 +317,7 @@ type Page {
   versions: [Version!]! @morphMany
 
   "Change and conflict info when concurrent edit was detected, null otherwise"
-  changes: JSON
+  changed: JSON
 }
 
 input PageFilter {
@@ -470,7 +470,7 @@ type Element {
   versions: [Version!]! @morphMany
 
   "Change and conflict info when concurrent edit was detected, null otherwise"
-  changes: JSON
+  changed: JSON
 }
 
 input ElementFilter {
@@ -566,7 +566,7 @@ type File {
   versions: [Version!]! @morphMany
 
   "Change and conflict info when concurrent edit was detected, null otherwise"
-  changes: JSON
+  changed: JSON
 }
 
 input FileFilter {

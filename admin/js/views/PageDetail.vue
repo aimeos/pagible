@@ -104,8 +104,9 @@ export default {
       publishing: false,
       translating: false,
       vhistory: false,
-      vchanges: false,
-      changes: null,
+      vchanged: false,
+      changed: null,
+      echoCleanup: null,
       saving: false,
       savecnt: 0
     }
@@ -130,7 +131,7 @@ export default {
 
     hasContentConflict() {
       return ['content', 'meta', 'config'].some((s) =>
-        Object.values(this.changes?.[s] || {}).some((v) => v.overwritten)
+        Object.values(this.changed?.[s] || {}).some((v) => v.overwritten)
       )
     },
 
@@ -139,7 +140,7 @@ export default {
     },
 
     hasPageConflict() {
-      return Object.values(this.changes?.data || {}).some((v) => v.overwritten)
+      return Object.values(this.changed?.data || {}).some((v) => v.overwritten)
     },
 
     langs() {
@@ -390,7 +391,7 @@ export default {
 
       this.save(true)
         .then((valid) => {
-          if (!valid || this.changes) {
+          if (!valid || this.changed) {
             return
           }
 
@@ -448,7 +449,7 @@ export default {
       this.$refs.content?.reset()
 
       this.changed = {}
-      this.changes = null
+      this.changed = null
       this.errors = {}
     },
 
@@ -502,7 +503,7 @@ export default {
               savePage(id: $id, input: $input, elements: $elements, files: $files, latestId: $latestId) {
                 id
                 latest { id }
-                changes
+                changed
               }
             }
           `,
@@ -536,28 +537,28 @@ export default {
           }
 
           const page = response.data?.savePage
-          const changes = page?.changes
+          const changed = page?.changed
 
-          if (changes?.latest?.id || page?.latest?.id) {
-            this.latest = { ...this.latest, id: changes?.latest?.id ?? page.latest.id }
+          if (changed?.latest?.id || page?.latest?.id) {
+            this.latest = { ...this.latest, id: changed?.latest?.id ?? page.latest.id }
           }
 
           this.item.published = false
           this.$refs.history?.reset()
           this.reset()
 
-          if (changes) {
-            Object.assign(this.item, changes.latest.data)
-            const aux = changes.latest.aux
+          if (changed) {
+            Object.assign(this.item, changed.latest.data)
+            const aux = changed.latest.aux
             this.item.content = aux?.content ?? this.item.content
             this.item.config = aux?.config ?? this.item.config
             this.item.meta = aux?.meta ?? this.item.meta
 
-            this.changes = changes
-            this.vchanges = true
+            this.changed = changed
+            this.vchanged = true
 
             this.messages.add(
-              this.$gettext('Merged with changes from %{editor}', { editor: changes.editor }),
+              this.$gettext('Merged with changes from %{editor}', { editor: changed.editor }),
               this.hasConflict ? 'warning' : 'info'
             )
           } else {
@@ -875,12 +876,12 @@ export default {
       </v-btn>
 
       <v-btn
-        v-if="changes"
-        @click="vchanges = true"
+        v-if="changed"
+        @click="vchanged = true"
         :title="$gettext('View merge changes')"
         :icon="mdiSwapHorizontal"
         :class="{ 'text-error': hasConflict }"
-        class="menu-changes"
+        class="menu-changed"
       />
 
       <v-btn
@@ -932,7 +933,7 @@ export default {
             ref="content"
             :item="item"
             :assets="assets"
-            :changes="changes?.content"
+            :changed="changed?.content"
             :elements="elements"
             @error="errors.content = $event"
             @change="changed.content = true"
@@ -991,7 +992,7 @@ export default {
       @revert="revertVersion"
       @use="use($event)"
     />
-    <ChangesDialog v-model="vchanges" :changes="changes" />
+    <ChangesDialog v-model="vchanged" :changed="changed" />
   </Teleport>
 </template>
 

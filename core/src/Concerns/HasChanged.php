@@ -13,7 +13,7 @@ trait HasChanged
     /**
      * @var array<string, mixed>|null
      */
-    protected ?array $changeInfo = null;
+    protected ?array $changed = null;
 
 
     /**
@@ -23,7 +23,7 @@ trait HasChanged
      */
     public function changed() : ?array
     {
-        return $this->changeInfo;
+        return $this->changed;
     }
 
 
@@ -35,7 +35,7 @@ trait HasChanged
      */
     public function setChanged( array $info ) : static
     {
-        $this->changeInfo = $info;
+        $this->changed = $info;
         return $this;
     }
 }

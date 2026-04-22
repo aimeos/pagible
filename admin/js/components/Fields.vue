@@ -20,7 +20,7 @@ export default {
     data: { type: Object, default: () => {} },
     files: { type: Array, default: () => [] },
     assets: { type: Object, default: () => {} },
-    changes: { type: Object, default: () => ({}) },
+    changed: { type: Object, default: () => ({}) },
     readonly: { type: Boolean, default: false },
     fields: { type: Object, required: true },
     type: { type: String, default: '' }
@@ -190,8 +190,8 @@ export default {
     class="item"
     :class="{
       error: errors[code],
-      merged: changes[code] && !changes[code]?.overwritten,
-      conflict: !!changes[code]?.overwritten
+      merged: changed[code] && !changed[code]?.overwritten,
+      conflict: !!changed[code]?.overwritten
     }"
   >
     <div v-if="field.type !== 'hidden'" class="label">
@@ -256,11 +256,11 @@ export default {
         />
       </div>
     </div>
-    <div v-if="changes[code] && !changes[code]?.overwritten" class="merged-value">
+    <div v-if="changed[code] && !changed[code]?.overwritten" class="merged-value">
       {{ $gettext('Updated by other editor') }}
     </div>
-    <div v-if="changes[code]?.overwritten" class="conflict-value">
-      {{ $gettext('Overwritten') }}: {{ typeof changes[code].overwritten === 'object' ? JSON.stringify(changes[code].overwritten) : changes[code].overwritten }}
+    <div v-if="changed[code]?.overwritten" class="conflict-value">
+      {{ $gettext('Overwritten') }}: {{ typeof changed[code].overwritten === 'object' ? JSON.stringify(changed[code].overwritten) : changed[code].overwritten }}
     </div>
     <component
       :is="toName(field.type)"

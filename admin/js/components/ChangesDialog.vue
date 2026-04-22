@@ -6,7 +6,7 @@ import { mdiClose } from '@mdi/js'
 export default {
   props: {
     modelValue: { type: Boolean, default: false },
-    changes: { type: Object, default: null }
+    changed: { type: Object, default: null }
   },
 
   emits: ['update:modelValue'],
@@ -26,8 +26,8 @@ export default {
     },
 
     sections() {
-      if (!this.changes) return {}
-      const { editor, latest, ...sections } = this.changes
+      if (!this.changed) return {}
+      const { editor, latest, ...sections } = this.changed
       return sections
     },
 
@@ -59,7 +59,7 @@ export default {
     <v-card>
       <v-toolbar density="compact">
         <v-toolbar-title>
-          {{ $gettext('Changes from %{editor}', { editor: changes?.editor }) }}
+          {{ $gettext('Changes from %{editor}', { editor: changed?.editor }) }}
         </v-toolbar-title>
         <v-btn :icon="mdiClose" @click="show = false" />
       </v-toolbar>

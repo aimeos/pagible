@@ -52,7 +52,7 @@ export default {
   props: {
     item: { type: Object, required: true },
     assets: { type: Object, required: true },
-    changes: { type: Object, default: null },
+    changed: { type: Object, default: null },
     content: { type: Array, required: true },
     elements: { type: Object, required: true },
     section: { type: String, default: 'main' }
@@ -813,8 +813,8 @@ export default {
           :class="{
             changed: el._changed,
             error: el._error,
-            merged: changes?.[el.id || el.refid] && !changes[el.id || el.refid]?.overwritten,
-            conflict: !!changes?.[el.id || el.refid]?.overwritten
+            merged: changed?.[el.id || el.refid] && !changed[el.id || el.refid]?.overwritten,
+            conflict: !!changed?.[el.id || el.refid]?.overwritten
           }"
         >
           <v-expansion-panel-title>

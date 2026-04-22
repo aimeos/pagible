@@ -34,12 +34,12 @@ export default {
     file: null,
     error: false,
     changed: false,
-    changes: null,
+    changed: null,
     publishAt: null,
     publishing: false,
     pubmenu: false,
     saving: false,
-    vchanges: false,
+    vchanged: false,
     vhistory: false,
     tab: 'file'
   }),
@@ -94,7 +94,7 @@ export default {
       this.publishing = true
 
       this.save(true).then((valid) => {
-        if (!valid || this.changes) {
+        if (!valid || this.changed) {
           return
         }
 
@@ -149,7 +149,7 @@ export default {
 
     reset() {
       this.changed = false
-      this.changes = null
+      this.changed = null
       this.error = false
     },
 
@@ -189,7 +189,7 @@ export default {
                   data
                   created_at
                 }
-                changes
+                changed
               }
             }
           `,
@@ -217,7 +217,7 @@ export default {
 
           const file = result.data?.saveFile
           const latest = file?.latest
-          const changes = file?.changes
+          const changed = file?.changed
 
           Object.assign(this.item, JSON.parse(latest?.data || '{}'))
           this.item.updated_at = latest?.created_at
@@ -225,12 +225,12 @@ export default {
           this.item.published = false
           this.reset()
 
-          if (changes) {
-            Object.assign(this.item, changes.latest.data)
-            this.changes = changes
-            this.vchanges = true
+          if (changed) {
+            Object.assign(this.item, changed.latest.data)
+            this.changed = changed
+            this.vchanged = true
             this.messages.add(
-              this.$gettext('Merged with changes from %{editor}', { editor: changes.editor }),
+              this.$gettext('Merged with changes from %{editor}', { editor: changed.editor }),
               this.hasConflict ? 'warning' : 'info'
             )
           } else {
@@ -408,12 +408,12 @@ export default {
       </v-btn>
 
       <v-btn
-        v-if="changes"
-        @click="vchanges = true"
+        v-if="changed"
+        @click="vchanged = true"
         :title="$gettext('View merge changes')"
         :icon="mdiSwapHorizontal"
         :class="{ 'text-error': hasConflict }"
-        class="menu-changes"
+        class="menu-changed"
       />
 
       <v-btn
@@ -471,7 +471,7 @@ export default {
       @revert="revertVersion"
       @use="use($event)"
     />
-    <ChangesDialog v-model="vchanges" :changes="changes" />
+    <ChangesDialog v-model="vchanged" :changed="changed" />
   </Teleport>
 </template>
 

@@ -10,7 +10,7 @@ export default {
   props: {
     item: { type: Object, required: true },
     assets: { type: Object, required: true },
-    changes: { type: Object, default: null },
+    changed: { type: Object, default: null },
     elements: { type: Object, required: true }
   },
 
@@ -123,7 +123,7 @@ export default {
               :section="section"
               :item="item"
               :assets="assets"
-              :changes="changes"
+              :changed="changed"
               :content="list"
               :elements="elements"
               @error="error(section, $event)"
@@ -139,7 +139,7 @@ export default {
           ref="content"
           :item="item"
           :assets="assets"
-          :changes="changes"
+          :changed="changed"
           :content="item.content || []"
           :elements="elements"
           @error="error('main', $event)"
