@@ -129,7 +129,7 @@ describe('PageDetail', () => {
     it('hasChanged is true when changed has a truthy entry', () => {
       mountDetail().then(() => {
         const vm = Cypress.vueWrapper.findComponent(PageDetail).vm
-        vm.changed = { content: true }
+        vm.dirty = { content: true }
         expect(vm.hasChanged).to.be.true
       })
     })
@@ -148,7 +148,7 @@ describe('PageDetail', () => {
       mountDetail().then(() => {
         const vm = Cypress.vueWrapper.findComponent(PageDetail).vm
         vm.update('content', [])
-        expect(vm.changed.content).to.be.true
+        expect(vm.dirty.content).to.be.true
       })
     })
 
@@ -157,7 +157,7 @@ describe('PageDetail', () => {
         const vm = Cypress.vueWrapper.findComponent(PageDetail).vm
         vm.update('page', { name: 'New' })
         expect(vm.item.name).to.equal('New')
-        expect(vm.changed.page).to.be.true
+        expect(vm.dirty.page).to.be.true
       })
     })
   })

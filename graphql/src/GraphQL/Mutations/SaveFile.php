@@ -48,7 +48,7 @@ final class SaveFile
             }
         }
 
-        return Resource::saveFile(
+        $file = Resource::saveFile(
             $args['id'],
             $args['input'] ?? [],
             Auth::user(),
@@ -56,5 +56,9 @@ final class SaveFile
             $upload instanceof UploadedFile && $upload->isValid() ? $upload : null,
             $args['preview'] ?? null,
         );
+
+        Resource::broadcast( $file, Auth::user() );
+
+        return $file;
     }
 }

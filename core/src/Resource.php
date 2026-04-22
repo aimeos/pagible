@@ -7,6 +7,7 @@
 
 namespace Aimeos\Cms;
 
+use Aimeos\Cms\Events\ContentSaved;
 use Aimeos\Cms\Models\Base;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
@@ -16,143 +17,59 @@ use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 
 class Resource
 {
     /**
-     * Publishes or schedules items by ID.
+     * Creates a new element with version and attached files.
      *
-     * @param class-string<Base> $model
-     * @param array<string> $ids
-     * @param string $editor
-     * @param string|null $at ISO 8601 datetime to schedule publication
-     * @param array<string> $with Eager-load relations
-     * @return Collection<int, Base>
+     * @param array<string, mixed> $input Element fields (type, name, lang, data)
+     * @param Authenticatable|null $user Authenticated user for editor tracking
+     * @param array<string> $files File IDs to attach
+     * @return Element
+     * @throws \InvalidArgumentException On validation failure
      */
-    public static function publish( string $model, array $ids, string $editor, ?string $at = null, array $with = ['latest'] ) : Collection
+    public static function addElement( array $input, ?Authenticatable $user = null, array $files = [] ) : Element
     {
-        return Utils::transaction( function() use ( $model, $ids, $editor, $at, $with ) {
+        Validation::element( $input['type'] ?? '' );
 
-            $items = $model::with( $with )->whereIn( 'id', $ids )->get();
+        if( isset( $input['data'] ) ) {
+            Validation::html( $input['type'] ?? '', $input['data'] );
+        }
 
-            foreach( $items as $item )
-            {
-                if( $latest = $item->latest )
-                {
-                    if( $at )
-                    {
-                        $latest->publish_at = $at;
-                        $latest->editor = $editor;
-                        $latest->save();
-                    }
-                    else
-                    {
-                        $item->publish( $latest );
-                    }
-                }
-            }
+        $input['name'] = (string) ( $input['name'] ?? '' );
+        $editor = Utils::editor( $user );
 
-            return $items;
+        return Utils::transaction( function() use ( $input, $editor, $files ) {
+
+            $versionId = ( new Version )->newUniqueId();
+
+            $element = new Element();
+            $element->fill( $input );
+            $element->data = $input['data'] ?? [];
+            $element->tenant_id = Tenancy::value();
+            $element->latest_id = $versionId;
+            $element->editor = $editor;
+            $element->save();
+
+            $element->files()->attach( $files );
+
+            $data = $input;
+            ksort( $data );
+
+            $version = $element->versions()->forceCreate( [
+                'id' => $versionId,
+                'data' => array_map( fn( $v ) => is_null( $v ) ? (string) $v : $v, $data ),
+                'lang' => $input['lang'] ?? null,
+                'editor' => $editor,
+            ] );
+
+            $version->files()->attach( $files );
+
+            return $element->setRelation( 'latest', $version );
         } );
-    }
-
-
-    /**
-     * Soft-deletes items by ID.
-     *
-     * @param class-string<Base> $model
-     * @param array<string> $ids
-     * @param string $editor
-     * @return Collection<int, Base>
-     */
-    public static function drop( string $model, array $ids, string $editor ) : Collection
-    {
-        return Utils::transaction( function() use ( $model, $ids, $editor ) {
-
-            $items = $model::withTrashed()->whereIn( 'id', $ids )->get();
-
-            foreach( $items as $item )
-            {
-                $item->editor = $editor;
-                $item->delete();
-
-                if( $item instanceof Page ) {
-                    Cache::forget( Page::key( $item ) );
-                }
-            }
-
-            return $items;
-        } );
-    }
-
-
-    /**
-     * Restores soft-deleted items by ID.
-     *
-     * Uses a cache-locked transaction for Page models to protect tree integrity.
-     *
-     * @param class-string<Base> $model
-     * @param array<string> $ids
-     * @param string $editor
-     * @return Collection<int, Base>
-     */
-    public static function restore( string $model, array $ids, string $editor ) : Collection
-    {
-        $callback = function() use ( $model, $ids, $editor ) {
-
-            $items = $model::withTrashed()->whereIn( 'id', $ids )->get();
-
-            foreach( $items as $item )
-            {
-                $item->editor = $editor;
-                $item->restore();
-            }
-
-            return $items;
-        };
-
-        return is_a( $model, Page::class, true )
-            ? Utils::lockedTransaction( $callback )
-            : Utils::transaction( $callback );
-    }
-
-
-    /**
-     * Permanently deletes items by ID.
-     *
-     * Uses a cache-locked transaction for Page models to protect tree integrity.
-     * Calls purge() on File models to clean up storage.
-     *
-     * @param class-string<Base> $model
-     * @param array<string> $ids
-     * @return Collection<int, Base>
-     */
-    public static function purge( string $model, array $ids ) : Collection
-    {
-        $callback = function() use ( $model, $ids ) {
-
-            $items = $model::withTrashed()->whereIn( 'id', $ids )->get();
-
-            foreach( $items as $item )
-            {
-                if( $item instanceof File ) {
-                    $item->purge();
-                } else {
-                    $item->forceDelete();
-                }
-
-                if( $item instanceof Page ) {
-                    Cache::forget( Page::key( $item ) );
-                }
-            }
-
-            return $items;
-        };
-
-        return is_a( $model, Page::class, true )
-            ? Utils::lockedTransaction( $callback )
-            : Utils::transaction( $callback );
     }
 
 
@@ -215,142 +132,186 @@ class Resource
 
 
     /**
-     * Updates an existing page with a new version.
+     * Dispatches a broadcast event after the current transaction commits.
      *
-     * @param string $id Page UUID
-     * @param array<string, mixed> $input Changed fields (merged with latest version)
-     * @param Authenticatable|null $user Authenticated user for permission-based validation and editor tracking
-     * @param array<string>|null $files File IDs to attach to version
-     * @param array<string>|null $elements Element IDs to attach to version
-     * @param string|null $latestId Version ID the editor was working on (for conflict detection)
-     * @return Page
-     * @throws \InvalidArgumentException On validation failure
-     * @throws \Illuminate\Database\Eloquent\ModelNotFoundException If page not found
+     * @param Base $model Model with latest relation loaded
+     * @param Authenticatable|null $user Authenticated user
      */
-    public static function savePage( string $id, array $input, ?Authenticatable $user = null,
-        ?array $files = null, ?array $elements = null, ?string $latestId = null ) : Page
+    public static function broadcast( Base $model, ?Authenticatable $user = null ) : void
     {
-        $input = Validation::page( $input, $user );
+        if( !config( 'cms.broadcast' ) || !( $version = $model->latest ) ) {
+            return;
+        }
+
         $editor = Utils::editor( $user );
+        $type = strtolower( class_basename( $model ) );
+        $aux = $model instanceof Page ? (array) $version->aux : null;
 
-        return Utils::transaction( function() use ( $id, $input, $user, $editor, $files, $elements, $latestId ) {
-
-            /** @var Page $page */
-            $page = Page::withTrashed()->with( 'latest' )->findOrFail( $id );
-            $versionId = ( new Version )->newUniqueId();
-
-            $data = array_diff_key( $input, array_flip( ['meta', 'config', 'content'] ) );
-            array_walk( $data, fn( &$v, $k ) => $v = !in_array( $k, ['related_id'] ) ? ( $v ?? '' ) : $v );
-
-            $aux = array_intersect_key( $input, array_flip( ['meta', 'config', 'content'] ) );
-            $previousEditor = $page->latest->editor ?? '';
-            $diffs = null;
-
-            /** @var Version|null $base */
-            $base = $latestId && $page->latest_id && $latestId !== $page->latest_id
-                ? $page->versions()->find( $latestId ) : null;
-
-            if( $base )
-            {
-                [$data, $dd] = Merge::structured( (array) $base->data, (array) $page->latest?->data, $data );
-
-                $merged = array_replace( (array) $page->latest?->aux, $aux );
-                [$merged['meta'], $md] = Merge::structured( (array) ( $base->aux->meta ?? [] ), (array) ( $page->latest?->aux->meta ?? [] ), (array) ( $merged['meta'] ?? [] ) );
-                [$merged['content'], $xd] = Merge::content( (array) ( $base->aux->content ?? [] ), (array) ( $page->latest?->aux->content ?? [] ), (array) ( $merged['content'] ?? [] ) );
-
-                $cd = null;
-                if( Permission::can( 'config:page', $user ) ) {
-                    [$merged['config'], $cd] = Merge::structured( (array) ( $base->aux->config ?? [] ), (array) ( $page->latest?->aux->config ?? [] ), (array) ( $merged['config'] ?? [] ) );
-                } else {
-                    $merged['config'] = (array) ( $page->latest?->aux->config ?? [] );
-                }
-
-                $aux = $merged;
-                $diffs = array_filter( ['data' => $dd, 'meta' => $md, 'config' => $cd, 'content' => $xd] );
+        DB::afterCommit( function() use ( $type, $model, $version, $editor, $aux ) {
+            try {
+                ContentSaved::dispatch( $type, (string) $model->id, (string) $version->id, $editor, (array) $version->data, $aux );
+            } catch( \Throwable $e ) {
+                report( $e );
             }
-            else
-            {
-                $data = array_replace( (array) $page->latest?->data, $data );
-                $aux = array_replace( (array) $page->latest?->aux, $aux );
-            }
-
-            $data['domain'] ??= $page->domain ?? '';
-
-            $version = $page->versions()->forceCreate( [
-                'id' => $versionId,
-                'data' => $data,
-                'editor' => $editor,
-                'lang' => $input['lang'] ?? $page->latest?->lang,
-                'aux' => $aux,
-            ] );
-
-            $version->elements()->attach( $elements ?? $page->latest?->elements()->pluck( 'id' )->all() ?? [] );
-            $version->files()->attach( $files ?? $page->latest?->files()->pluck( 'id' )->all() ?? [] );
-
-            $page->setRelation( 'latest', $version );
-            $page->forceFill( ['latest_id' => $version->id] )->save();
-
-            if( $diffs ) {
-                $page->setChanged( [
-                    'editor' => $previousEditor,
-                    'latest' => ['id' => $versionId, 'data' => $data, 'aux' => $aux],
-                    ...$diffs,
-                ] );
-            }
-
-            return $page->removeVersions();
         } );
     }
 
 
     /**
-     * Creates a new element with version and attached files.
+     * Soft-deletes items by ID.
      *
-     * @param array<string, mixed> $input Element fields (type, name, lang, data)
-     * @param Authenticatable|null $user Authenticated user for editor tracking
-     * @param array<string> $files File IDs to attach
-     * @return Element
-     * @throws \InvalidArgumentException On validation failure
+     * @param class-string<Base> $model
+     * @param array<string> $ids
+     * @param string $editor
+     * @return Collection<int, Base>
      */
-    public static function addElement( array $input, ?Authenticatable $user = null, array $files = [] ) : Element
+    public static function drop( string $model, array $ids, string $editor ) : Collection
     {
-        Validation::element( $input['type'] ?? '' );
+        return Utils::transaction( function() use ( $model, $ids, $editor ) {
 
-        if( isset( $input['data'] ) ) {
-            Validation::html( $input['type'] ?? '', $input['data'] );
-        }
+            $items = $model::withTrashed()->whereIn( 'id', $ids )->get();
 
-        $input['name'] = (string) ( $input['name'] ?? '' );
-        $editor = Utils::editor( $user );
+            foreach( $items as $item )
+            {
+                $item->editor = $editor;
+                $item->delete();
 
-        return Utils::transaction( function() use ( $input, $editor, $files ) {
+                if( $item instanceof Page ) {
+                    Cache::forget( Page::key( $item ) );
+                }
+            }
 
-            $versionId = ( new Version )->newUniqueId();
-
-            $element = new Element();
-            $element->fill( $input );
-            $element->data = $input['data'] ?? [];
-            $element->tenant_id = Tenancy::value();
-            $element->latest_id = $versionId;
-            $element->editor = $editor;
-            $element->save();
-
-            $element->files()->attach( $files );
-
-            $data = $input;
-            ksort( $data );
-
-            $version = $element->versions()->forceCreate( [
-                'id' => $versionId,
-                'data' => array_map( fn( $v ) => is_null( $v ) ? (string) $v : $v, $data ),
-                'lang' => $input['lang'] ?? null,
-                'editor' => $editor,
-            ] );
-
-            $version->files()->attach( $files );
-
-            return $element->setRelation( 'latest', $version );
+            return $items;
         } );
+    }
+
+
+    /**
+     * Positions a page in the tree relative to a sibling or parent.
+     *
+     * @param Page $page The page to position
+     * @param string|null $beforeId ID of sibling to insert before
+     * @param string|null $parentId ID of parent to append to
+     * @param bool $root Whether to make the page a root node when no ref/parent given
+     */
+    public static function position( Page $page, ?string $beforeId = null, ?string $parentId = null, bool $root = false ) : void
+    {
+        if( $beforeId ) {
+            $ref = Page::withTrashed()->findOrFail( $beforeId );
+            $page->beforeNode( $ref );
+        } elseif( $parentId ) {
+            $parent = Page::withTrashed()->findOrFail( $parentId );
+            $page->appendToNode( $parent );
+        } elseif( $root ) {
+            $page->makeRoot();
+        }
+    }
+
+
+    /**
+     * Publishes or schedules items by ID.
+     *
+     * @param class-string<Base> $model
+     * @param array<string> $ids
+     * @param string $editor
+     * @param string|null $at ISO 8601 datetime to schedule publication
+     * @param array<string> $with Eager-load relations
+     * @return Collection<int, Base>
+     */
+    public static function publish( string $model, array $ids, string $editor, ?string $at = null, array $with = ['latest'] ) : Collection
+    {
+        return Utils::transaction( function() use ( $model, $ids, $editor, $at, $with ) {
+
+            $items = $model::with( $with )->whereIn( 'id', $ids )->get();
+
+            foreach( $items as $item )
+            {
+                if( $latest = $item->latest )
+                {
+                    if( $at )
+                    {
+                        $latest->publish_at = $at;
+                        $latest->editor = $editor;
+                        $latest->save();
+                    }
+                    else
+                    {
+                        $item->publish( $latest );
+                    }
+                }
+            }
+
+            return $items;
+        } );
+    }
+
+
+    /**
+     * Permanently deletes items by ID.
+     *
+     * Uses a cache-locked transaction for Page models to protect tree integrity.
+     * Calls purge() on File models to clean up storage.
+     *
+     * @param class-string<Base> $model
+     * @param array<string> $ids
+     * @return Collection<int, Base>
+     */
+    public static function purge( string $model, array $ids ) : Collection
+    {
+        $callback = function() use ( $model, $ids ) {
+
+            $items = $model::withTrashed()->whereIn( 'id', $ids )->get();
+
+            foreach( $items as $item )
+            {
+                if( $item instanceof File ) {
+                    $item->purge();
+                } else {
+                    $item->forceDelete();
+                }
+
+                if( $item instanceof Page ) {
+                    Cache::forget( Page::key( $item ) );
+                }
+            }
+
+            return $items;
+        };
+
+        return is_a( $model, Page::class, true )
+            ? Utils::lockedTransaction( $callback )
+            : Utils::transaction( $callback );
+    }
+
+
+    /**
+     * Restores soft-deleted items by ID.
+     *
+     * Uses a cache-locked transaction for Page models to protect tree integrity.
+     *
+     * @param class-string<Base> $model
+     * @param array<string> $ids
+     * @param string $editor
+     * @return Collection<int, Base>
+     */
+    public static function restore( string $model, array $ids, string $editor ) : Collection
+    {
+        $callback = function() use ( $model, $ids, $editor ) {
+
+            $items = $model::withTrashed()->whereIn( 'id', $ids )->get();
+
+            foreach( $items as $item )
+            {
+                $item->editor = $editor;
+                $item->restore();
+            }
+
+            return $items;
+        };
+
+        return is_a( $model, Page::class, true )
+            ? Utils::lockedTransaction( $callback )
+            : Utils::transaction( $callback );
     }
 
 
@@ -499,24 +460,91 @@ class Resource
 
 
     /**
-     * Positions a page in the tree relative to a sibling or parent.
+     * Updates an existing page with a new version.
      *
-     * @param Page $page The page to position
-     * @param string|null $beforeId ID of sibling to insert before
-     * @param string|null $parentId ID of parent to append to
-     * @param bool $root Whether to make the page a root node when no ref/parent given
+     * @param string $id Page UUID
+     * @param array<string, mixed> $input Changed fields (merged with latest version)
+     * @param Authenticatable|null $user Authenticated user for permission-based validation and editor tracking
+     * @param array<string>|null $files File IDs to attach to version
+     * @param array<string>|null $elements Element IDs to attach to version
+     * @param string|null $latestId Version ID the editor was working on (for conflict detection)
+     * @return Page
+     * @throws \InvalidArgumentException On validation failure
+     * @throws \Illuminate\Database\Eloquent\ModelNotFoundException If page not found
      */
-    public static function position( Page $page, ?string $beforeId = null, ?string $parentId = null, bool $root = false ) : void
+    public static function savePage( string $id, array $input, ?Authenticatable $user = null,
+        ?array $files = null, ?array $elements = null, ?string $latestId = null ) : Page
     {
-        if( $beforeId ) {
-            $ref = Page::withTrashed()->findOrFail( $beforeId );
-            $page->beforeNode( $ref );
-        } elseif( $parentId ) {
-            $parent = Page::withTrashed()->findOrFail( $parentId );
-            $page->appendToNode( $parent );
-        } elseif( $root ) {
-            $page->makeRoot();
-        }
+        $input = Validation::page( $input, $user );
+        $editor = Utils::editor( $user );
+
+        return Utils::transaction( function() use ( $id, $input, $user, $editor, $files, $elements, $latestId ) {
+
+            /** @var Page $page */
+            $page = Page::withTrashed()->with( 'latest' )->findOrFail( $id );
+            $versionId = ( new Version )->newUniqueId();
+
+            $data = array_diff_key( $input, array_flip( ['meta', 'config', 'content'] ) );
+            array_walk( $data, fn( &$v, $k ) => $v = !in_array( $k, ['related_id'] ) ? ( $v ?? '' ) : $v );
+
+            $aux = array_intersect_key( $input, array_flip( ['meta', 'config', 'content'] ) );
+            $previousEditor = $page->latest->editor ?? '';
+            $diffs = null;
+
+            /** @var Version|null $base */
+            $base = $latestId && $page->latest_id && $latestId !== $page->latest_id
+                ? $page->versions()->find( $latestId ) : null;
+
+            if( $base )
+            {
+                [$data, $dd] = Merge::structured( (array) $base->data, (array) $page->latest?->data, $data );
+
+                $merged = array_replace( (array) $page->latest?->aux, $aux );
+                [$merged['meta'], $md] = Merge::structured( (array) ( $base->aux->meta ?? [] ), (array) ( $page->latest?->aux->meta ?? [] ), (array) ( $merged['meta'] ?? [] ) );
+                [$merged['content'], $xd] = Merge::content( (array) ( $base->aux->content ?? [] ), (array) ( $page->latest?->aux->content ?? [] ), (array) ( $merged['content'] ?? [] ) );
+
+                $cd = null;
+                if( Permission::can( 'config:page', $user ) ) {
+                    [$merged['config'], $cd] = Merge::structured( (array) ( $base->aux->config ?? [] ), (array) ( $page->latest?->aux->config ?? [] ), (array) ( $merged['config'] ?? [] ) );
+                } else {
+                    $merged['config'] = (array) ( $page->latest?->aux->config ?? [] );
+                }
+
+                $aux = $merged;
+                $diffs = array_filter( ['data' => $dd, 'meta' => $md, 'config' => $cd, 'content' => $xd] );
+            }
+            else
+            {
+                $data = array_replace( (array) $page->latest?->data, $data );
+                $aux = array_replace( (array) $page->latest?->aux, $aux );
+            }
+
+            $data['domain'] ??= $page->domain ?? '';
+
+            $version = $page->versions()->forceCreate( [
+                'id' => $versionId,
+                'data' => $data,
+                'editor' => $editor,
+                'lang' => $input['lang'] ?? $page->latest?->lang,
+                'aux' => $aux,
+            ] );
+
+            $version->elements()->attach( $elements ?? $page->latest?->elements()->pluck( 'id' )->all() ?? [] );
+            $version->files()->attach( $files ?? $page->latest?->files()->pluck( 'id' )->all() ?? [] );
+
+            $page->setRelation( 'latest', $version );
+            $page->forceFill( ['latest_id' => $version->id] )->save();
+
+            if( $diffs ) {
+                $page->setChanged( [
+                    'editor' => $previousEditor,
+                    'latest' => ['id' => $versionId, 'data' => $data, 'aux' => $aux],
+                    ...$diffs,
+                ] );
+            }
+
+            return $page->removeVersions();
+        } );
     }
 
 

@@ -4,6 +4,7 @@ namespace Aimeos\Cms;
 
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Console\Scheduling\Schedule;
+use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider as Provider;
 
@@ -20,6 +21,7 @@ class CoreServiceProvider extends Provider
             $basedir . '/config/cms.php' => config_path( 'cms.php' ),
         ], 'cms-config' );
 
+        $this->broadcast();
         $this->rateLimiter();
         $this->userCasts();
         $this->schedule();
@@ -37,6 +39,21 @@ class CoreServiceProvider extends Provider
             return new \Aimeos\Cms\Tenancy( $callback ? $callback() : '' );
         } );
     }
+
+    protected function broadcast() : void
+    {
+        if( !config( 'cms.broadcast' ) ) {
+            return;
+        }
+
+        foreach( ['page', 'element', 'file'] as $type )
+        {
+            Broadcast::channel( "cms.{$type}.{id}", fn( $user ) =>
+                Permission::can( "{$type}:view", $user )
+            );
+        }
+    }
+
 
     protected function console() : void
     {

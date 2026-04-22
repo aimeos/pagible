@@ -17,7 +17,7 @@ export default {
   emits: ['change', 'error'],
 
   data: () => ({
-    changed: {},
+    dirty: {},
     errors: {},
     tab: 'default'
   }),
@@ -77,7 +77,7 @@ export default {
     },
 
     reset() {
-      this.changed = {}
+      this.dirty = {}
       this.errors = {}
 
       Array.isArray(this.$refs.content)
@@ -93,7 +93,7 @@ export default {
         return acc.concat(entries)
       }, [])
 
-      this.changed[section] = true
+      this.dirty[section] = true
     }
   }
 }
@@ -108,7 +108,7 @@ export default {
             v-for="(list, section) in sections"
             :key="section"
             :class="{
-              changed: changed[section],
+              changed: dirty[section],
               error: errors[section]
             }"
             :value="section"

@@ -32,6 +32,7 @@ import {
   mdiChevronRight,
   mdiChevronLeft
 } from '@mdi/js'
+import { subscribe } from '../echo'
 import { txlocales } from '../utils'
 import { write, translate } from '../ai'
 
@@ -94,7 +95,7 @@ export default {
       tab: this.app.urlpage ? 'editor' : 'content',
       aside: '',
       asidePage: 'meta',
-      changed: {},
+      dirty: {},
       errors: {},
       assets: {},
       elements: {},
@@ -104,8 +105,8 @@ export default {
       publishing: false,
       translating: false,
       vhistory: false,
-      vchanged: false,
       changed: null,
+      vchanged: false,
       echoCleanup: null,
       saving: false,
       savecnt: 0
@@ -122,7 +123,7 @@ export default {
     },
 
     hasChanged() {
-      return Object.values(this.changed).some((entry) => entry)
+      return Object.values(this.dirty).some((entry) => entry)
     },
 
     hasConflict() {
@@ -235,11 +236,28 @@ export default {
         this.assets = this.files(this.latest?.files || [])
         this.elements = this.elems(this.latest?.elements || [])
         this.item.content = this.obsolete(this.item.content)
+
+        subscribe('page', this.item.id, (event) => {
+          if (!this.hasChanged && this.user.can('page:view') && event.editor !== this.user.me?.email) {
+            this.latest = { ...this.latest, id: event.versionId }
+            Object.assign(this.item, event.data)
+
+            this.item.content = event.aux?.content ?? this.item.content
+            this.item.config = event.aux?.config ?? this.item.config
+            this.item.meta = event.aux?.meta ?? this.item.meta
+          }
+        }).then((cleanup) => {
+          this.echoCleanup = cleanup
+        })
       })
       .catch((error) => {
         this.messages.add(this.$gettext('Error fetching page') + ':\n' + error, 'error')
         this.$log(`PageDetail::watch(item): Error fetching page`, error)
       })
+  },
+
+  beforeUnmount() {
+    this.echoCleanup?.()
   },
 
   methods: {
@@ -378,7 +396,7 @@ export default {
 
     pageUpdated(event) {
       Object.assign(this.item, event)
-      this.changed.page = true
+      this.dirty.page = true
     },
 
     publish(at = null) {
@@ -448,7 +466,7 @@ export default {
       this.$refs.page?.reset()
       this.$refs.content?.reset()
 
-      this.changed = {}
+      this.dirty = {}
       this.changed = null
       this.errors = {}
     },
@@ -644,8 +662,8 @@ export default {
             }
           })
 
-          this.changed['content'] = true
-          this.changed['page'] = true
+          this.dirty['content'] = true
+          this.dirty['page'] = true
 
           this.item.lang = lang
         })
@@ -665,7 +683,7 @@ export default {
         this[what] = value
       }
 
-      this.changed[what] = true
+      this.dirty[what] = true
     },
 
     use(version) {
@@ -675,8 +693,8 @@ export default {
       this.elements = this.elems(version.elements || [])
       this.item.content = this.obsolete(this.item.content)
 
-      this.changed['content'] = true
-      this.changed['page'] = true
+      this.dirty['content'] = true
+      this.dirty['page'] = true
 
       this.vhistory = false
     },
@@ -900,14 +918,14 @@ export default {
         </v-tab>
         <v-tab
           value="content"
-          :class="{ changed: changed.content, error: errors.content, conflict: hasContentConflict }"
+          :class="{ changed: dirty.content, error: errors.content, conflict: hasContentConflict }"
           @click="aside = 'count'"
         >
           {{ $gettext('Content') }}
         </v-tab>
         <v-tab
           value="page"
-          :class="{ changed: changed.page, error: errors.page, conflict: hasPageConflict }"
+          :class="{ changed: dirty.page, error: errors.page, conflict: hasPageConflict }"
           @click="aside = asidePage"
         >
           {{ $gettext('Page') }}
@@ -924,7 +942,7 @@ export default {
             :item="item"
             :assets="assets"
             :elements="elements"
-            @change="changed.content = true"
+            @change="dirty.content = true"
           />
         </v-window-item>
 
@@ -936,7 +954,7 @@ export default {
             :changed="changed?.content"
             :elements="elements"
             @error="errors.content = $event"
-            @change="changed.content = true"
+            @change="dirty.content = true"
           />
         </v-window-item>
 
