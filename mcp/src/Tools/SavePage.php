@@ -103,7 +103,7 @@ class SavePage extends Tool
             'content' => $aux['content'] ?? [],
             'status' => $page->status,
             'cache' => $page->cache,
-            'changed' => $page->getChanged(),
+            'changed' => $page->changed,
             'created_at' => (string) $page->created_at,
             'updated_at' => (string) $page->updated_at,
             'url' => route( 'cms.page', ['path' => $data['path'] ?? ''] ),
