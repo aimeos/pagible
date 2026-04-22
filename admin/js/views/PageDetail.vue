@@ -94,7 +94,7 @@ export default {
       tab: this.app.urlpage ? 'editor' : 'content',
       aside: '',
       asidePage: 'meta',
-      changed: {},
+      dirty: {},
       errors: {},
       assets: {},
       elements: {},
@@ -122,7 +122,7 @@ export default {
     },
 
     hasChanged() {
-      return Object.values(this.changed).some((entry) => entry)
+      return Object.values(this.dirty).some((entry) => entry)
     },
 
     hasConflict() {
@@ -378,7 +378,7 @@ export default {
 
     pageUpdated(event) {
       Object.assign(this.item, event)
-      this.changed.page = true
+      this.dirty.page = true
     },
 
     publish(at = null) {
@@ -448,7 +448,7 @@ export default {
       this.$refs.page?.reset()
       this.$refs.content?.reset()
 
-      this.changed = {}
+      this.dirty = {}
       this.changed = null
       this.errors = {}
     },
@@ -644,8 +644,8 @@ export default {
             }
           })
 
-          this.changed['content'] = true
-          this.changed['page'] = true
+          this.dirty['content'] = true
+          this.dirty['page'] = true
 
           this.item.lang = lang
         })
@@ -665,7 +665,7 @@ export default {
         this[what] = value
       }
 
-      this.changed[what] = true
+      this.dirty[what] = true
     },
 
     use(version) {
@@ -675,8 +675,8 @@ export default {
       this.elements = this.elems(version.elements || [])
       this.item.content = this.obsolete(this.item.content)
 
-      this.changed['content'] = true
-      this.changed['page'] = true
+      this.dirty['content'] = true
+      this.dirty['page'] = true
 
       this.vhistory = false
     },
@@ -900,14 +900,14 @@ export default {
         </v-tab>
         <v-tab
           value="content"
-          :class="{ changed: changed.content, error: errors.content, conflict: hasContentConflict }"
+          :class="{ changed: dirty.content, error: errors.content, conflict: hasContentConflict }"
           @click="aside = 'count'"
         >
           {{ $gettext('Content') }}
         </v-tab>
         <v-tab
           value="page"
-          :class="{ changed: changed.page, error: errors.page, conflict: hasPageConflict }"
+          :class="{ changed: dirty.page, error: errors.page, conflict: hasPageConflict }"
           @click="aside = asidePage"
         >
           {{ $gettext('Page') }}
@@ -924,7 +924,7 @@ export default {
             :item="item"
             :assets="assets"
             :elements="elements"
-            @change="changed.content = true"
+            @change="dirty.content = true"
           />
         </v-window-item>
 
@@ -936,7 +936,7 @@ export default {
             :changed="changed?.content"
             :elements="elements"
             @error="errors.content = $event"
-            @change="changed.content = true"
+            @change="dirty.content = true"
           />
         </v-window-item>
 
