@@ -306,6 +306,19 @@ class MergeTest extends CoreTestAbstract
     }
 
 
+    public function testStructuredMergedStringField()
+    {
+        $base = ['title' => 'A Home 1'];
+        $current = ['title' => 'AThe Home 1'];
+        $incoming = ['title' => 'A Home 12'];
+
+        [$result, $diff] = Merge::structured( $base, $current, $incoming );
+
+        $this->assertNotNull( $diff['title']['merged'] );
+        $this->assertEquals( 'AThe Home 12', $diff['title']['merged'] );
+    }
+
+
     public function testContentMergedFieldNonOverlapping()
     {
         $base = [['id' => 'a', 'type' => 'text', 'data' => ['title' => 'old', 'text' => 'old']]];
@@ -348,6 +361,31 @@ class MergeTest extends CoreTestAbstract
     }
 
 
+    public function testTryStringNonOverlapping()
+    {
+        $base = ['text' => 'Hello World'];
+        $current = ['text' => 'Hi World'];
+        $incoming = ['text' => 'Hello Earth'];
+
+        $result = Merge::try( $base, $current, $incoming );
+
+        $this->assertNotNull( $result );
+        $this->assertEquals( 'Hi Earth', $result['text'] );
+    }
+
+
+    public function testTryStringConflict()
+    {
+        $base = ['text' => 'Hello World'];
+        $current = ['text' => 'Hi World'];
+        $incoming = ['text' => 'Hey World'];
+
+        $result = Merge::try( $base, $current, $incoming );
+
+        $this->assertNull( $result );
+    }
+
+
     public function testTryWithStdClass()
     {
         $base = ['data' => (object) ['title' => 'old', 'text' => 'old']];
@@ -359,5 +397,57 @@ class MergeTest extends CoreTestAbstract
         $this->assertNotNull( $result );
         $this->assertEquals( 'new-title', $result['data']['title'] );
         $this->assertEquals( 'new-text', $result['data']['text'] );
+    }
+
+
+    public function testTryStringWordInsertion()
+    {
+        $base = ['text' => 'test 2'];
+        $current = ['text' => 'test 23'];
+        $incoming = ['text' => 'new test 2'];
+
+        $result = Merge::try( $base, $current, $incoming );
+
+        $this->assertNotNull( $result );
+        $this->assertEquals( 'new test 23', $result['text'] );
+    }
+
+
+    public function testTryStringWordDeletion()
+    {
+        $base = ['text' => 'one two three'];
+        $current = ['text' => 'one two three four'];
+        $incoming = ['text' => 'one three'];
+
+        $result = Merge::try( $base, $current, $incoming );
+
+        $this->assertNotNull( $result );
+        $this->assertEquals( 'one three four', $result['text'] );
+    }
+
+
+    public function testContentMergedStringFields()
+    {
+        $base = [['id' => 'a', 'type' => 'text', 'data' => ['text' => 'Hello World']]];
+        $current = [['id' => 'a', 'type' => 'text', 'data' => ['text' => 'Hi World']]];
+        $incoming = [['id' => 'a', 'type' => 'text', 'data' => ['text' => 'Hello Earth']]];
+
+        [$result, $diff] = Merge::content( $base, $current, $incoming );
+
+        $this->assertNotNull( $diff['a']['merged'] );
+        $this->assertEquals( 'Hi Earth', $diff['a']['merged']['data']['text'] );
+    }
+
+
+    public function testContentMergedStringInsertion()
+    {
+        $base = [['id' => 'a', 'type' => 'text', 'data' => ['text' => 'test 2']]];
+        $current = [['id' => 'a', 'type' => 'text', 'data' => ['text' => 'test 23']]];
+        $incoming = [['id' => 'a', 'type' => 'text', 'data' => ['text' => 'new test 2']]];
+
+        [$result, $diff] = Merge::content( $base, $current, $incoming );
+
+        $this->assertNotNull( $diff['a']['merged'] );
+        $this->assertEquals( 'new test 23', $diff['a']['merged']['data']['text'] );
     }
 }

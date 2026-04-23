@@ -159,7 +159,8 @@ class Merge
             else
             {
                 // Both changed differently from base — last-write-wins (incoming)
-                $merged = self::isMap( $b ) && self::isMap( $c ) && self::isMap( $i ) ? self::try( (array) $b, (array) $c, (array) $i ) : null;
+                $merged = self::isMap( $b ) && self::isMap( $c ) && self::isMap( $i ) ? self::try( (array) $b, (array) $c, (array) $i )
+                    : ( is_string( $b ) && is_string( $c ) && is_string( $i ) ? self::tryString( $b, $c, $i ) : null );
                 $diff[$k] = ['previous' => $b, 'current' => $i, 'overwritten' => $c, 'merged' => $merged];
                 $result[$k] = $i;
             }
@@ -206,6 +207,16 @@ class Merge
 
                     $result[$k] = $sub;
                 }
+                elseif( is_string( $base[$k] ?? null ) && is_string( $current[$k] ?? null ) && is_string( $incoming[$k] ?? null ) )
+                {
+                    $sub = self::tryString( $base[$k], $current[$k], $incoming[$k] );
+
+                    if( $sub === null ) {
+                        return null;
+                    }
+
+                    $result[$k] = $sub;
+                }
                 else
                 {
                     return null;
@@ -214,6 +225,121 @@ class Merge
         }
 
         return $result;
+    }
+
+
+    /**
+     * Attempts a word-level three-way merge for strings using LCS alignment.
+     *
+     * Splits strings by whitespace, computes change regions via LCS for each side,
+     * and merges if the change regions don't overlap.
+     *
+     * @param string $base
+     * @param string $current
+     * @param string $incoming
+     * @return string|null
+     */
+    protected static function tryString( string $base, string $current, string $incoming ) : ?string
+    {
+        $bw = preg_split( '/\s+/', $base, -1, PREG_SPLIT_NO_EMPTY ) ?: [];
+        $cw = preg_split( '/\s+/', $current, -1, PREG_SPLIT_NO_EMPTY ) ?: [];
+        $iw = preg_split( '/\s+/', $incoming, -1, PREG_SPLIT_NO_EMPTY ) ?: [];
+
+        $cc = self::wordChanges( $bw, $cw );
+        $ic = self::wordChanges( $bw, $iw );
+
+        foreach( $cc as [$cs, $ce, $_] ) {
+            foreach( $ic as [$is, $ie, $_2] ) {
+                if( $cs < $ie && $is < $ce ) {
+                    return null;
+                }
+            }
+        }
+
+        $all = array_merge( $cc, $ic );
+        usort( $all, fn( $a, $b ) => $b[0] - $a[0] );
+
+        $result = $bw;
+
+        foreach( $all as [$start, $end, $words] ) {
+            array_splice( $result, $start, $end - $start, $words );
+        }
+
+        return implode( ' ', $result );
+    }
+
+
+    /**
+     * Computes change regions between base and modified word arrays using LCS.
+     *
+     * @param array<int, string> $base
+     * @param array<int, string> $mod
+     * @return array<int, array{0: int, 1: int, 2: array<int, string>}> [baseStart, baseEnd, replacementWords]
+     */
+    protected static function wordChanges( array $base, array $mod ) : array
+    {
+        $matches = self::wordLcs( $base, $mod );
+        $changes = [];
+        $bi = 0;
+        $mi = 0;
+
+        foreach( $matches as [$bIdx, $mIdx] )
+        {
+            if( $bi < $bIdx || $mi < $mIdx ) {
+                $changes[] = [$bi, $bIdx, array_slice( $mod, $mi, $mIdx - $mi )];
+            }
+
+            $bi = $bIdx + 1;
+            $mi = $mIdx + 1;
+        }
+
+        if( $bi < count( $base ) || $mi < count( $mod ) ) {
+            $changes[] = [$bi, count( $base ), array_slice( $mod, $mi )];
+        }
+
+        return $changes;
+    }
+
+
+    /**
+     * Computes the Longest Common Subsequence positions between two word arrays.
+     *
+     * @param array<int, string> $a
+     * @param array<int, string> $b
+     * @return array<int, array{0: int, 1: int}> Pairs of [posInA, posInB]
+     */
+    protected static function wordLcs( array $a, array $b ) : array
+    {
+        $m = count( $a );
+        $n = count( $b );
+        $dp = [];
+
+        for( $i = 0; $i <= $m; $i++ ) {
+            for( $j = 0; $j <= $n; $j++ ) {
+                $dp[$i][$j] = ( $i === 0 || $j === 0 ) ? 0
+                    : ( $a[$i - 1] === $b[$j - 1] ? $dp[$i - 1][$j - 1] + 1
+                        : max( $dp[$i - 1][$j], $dp[$i][$j - 1] ) );
+            }
+        }
+
+        $result = [];
+        $i = $m;
+        $j = $n;
+
+        while( $i > 0 && $j > 0 )
+        {
+            if( $a[$i - 1] === $b[$j - 1] ) {
+                $result[] = [$i - 1, $j - 1];
+                $i--;
+                $j--;
+            } elseif( $dp[$i - 1][$j] >= $dp[$i][$j - 1] ) {
+                $i--;
+            } else {
+                $j--;
+            }
+        }
+
+        return array_reverse( $result );
     }
 
 
