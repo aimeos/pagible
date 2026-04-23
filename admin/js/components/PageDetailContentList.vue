@@ -18,6 +18,7 @@ import {
 } from '../stores'
 import { recording } from '../audio'
 import { transcribe } from '../ai'
+import { changedState } from '../merge'
 import { uid } from '../utils'
 import {
   mdiMenuDown,
@@ -90,6 +91,7 @@ export default {
       side,
       messages,
       schemas,
+      changedState,
       mdiMenuDown,
       mdiContentCopy,
       mdiContentCut,
@@ -813,8 +815,7 @@ export default {
           :class="{
             changed: el._changed,
             error: el._error,
-            merged: changed?.[el.id || el.refid] && !changed[el.id || el.refid]?.overwritten,
-            conflict: !!changed?.[el.id || el.refid]?.overwritten
+            ...changedState(changed, el.id || el.refid)
           }"
         >
           <v-expansion-panel-title>

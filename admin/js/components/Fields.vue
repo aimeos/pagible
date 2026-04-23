@@ -4,6 +4,7 @@
 import gql from 'graphql-tag'
 import { recording } from '../audio'
 import { useUserStore, useMessageStore } from '../stores'
+import { changedState } from '../merge'
 import { txlocales } from '../utils'
 import { transcribe } from '../ai'
 import {
@@ -49,6 +50,7 @@ export default {
     return {
       user,
       messages,
+      changedState,
       mdiTranslate,
       mdiClose,
       mdiArrowRightThin,
@@ -190,8 +192,7 @@ export default {
     class="item"
     :class="{
       error: errors[code],
-      merged: changed[code] && !changed[code]?.overwritten,
-      conflict: !!changed[code]?.overwritten
+      ...changedState(changed, code)
     }"
   >
     <div v-if="field.type !== 'hidden'" class="label">

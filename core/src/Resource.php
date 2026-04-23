@@ -348,7 +348,7 @@ class Resource
             $versionId = ( new Version )->newUniqueId();
             $previousEditor = $element->latest->editor ?? '';
 
-            [$data, $dd] = self::mergeOrReplace( $element, $input, $latestId );
+            [$data, $dd] = self::merge( $element, $input, $latestId );
 
             $version = $element->versions()->forceCreate( [
                 'id' => $versionId,
@@ -402,7 +402,7 @@ class Resource
 
             $file = clone $orig;
 
-            [$data, $dd] = self::mergeOrReplace( $orig, $input, $latestId );
+            [$data, $dd] = self::merge( $orig, $input, $latestId );
             $file->fill( $data );
 
             $file->previews = $input['previews'] ?? $previews;
@@ -489,35 +489,8 @@ class Resource
 
             $aux = array_intersect_key( $input, array_flip( ['meta', 'config', 'content'] ) );
             $previousEditor = $page->latest->editor ?? '';
-            $diffs = null;
 
-            /** @var Version|null $base */
-            $base = $latestId && $page->latest_id && $latestId !== $page->latest_id
-                ? $page->versions()->find( $latestId ) : null;
-
-            if( $base )
-            {
-                [$data, $dd] = Merge::structured( (array) $base->data, (array) $page->latest?->data, $data );
-
-                $merged = array_replace( (array) $page->latest?->aux, $aux );
-                [$merged['meta'], $md] = Merge::structured( (array) ( $base->aux->meta ?? [] ), (array) ( $page->latest?->aux->meta ?? [] ), (array) ( $merged['meta'] ?? [] ) );
-                [$merged['content'], $xd] = Merge::content( (array) ( $base->aux->content ?? [] ), (array) ( $page->latest?->aux->content ?? [] ), (array) ( $merged['content'] ?? [] ) );
-
-                $cd = null;
-                if( Permission::can( 'config:page', $user ) ) {
-                    [$merged['config'], $cd] = Merge::structured( (array) ( $base->aux->config ?? [] ), (array) ( $page->latest?->aux->config ?? [] ), (array) ( $merged['config'] ?? [] ) );
-                } else {
-                    $merged['config'] = (array) ( $page->latest?->aux->config ?? [] );
-                }
-
-                $aux = $merged;
-                $diffs = array_filter( ['data' => $dd, 'meta' => $md, 'config' => $cd, 'content' => $xd] );
-            }
-            else
-            {
-                $data = array_replace( (array) $page->latest?->data, $data );
-                $aux = array_replace( (array) $page->latest?->aux, $aux );
-            }
+            [$data, $aux, $diffs] = self::mergePage( $page, $data, $aux, $latestId, $user );
 
             $data['domain'] ??= $page->domain ?? '';
 
@@ -549,6 +522,51 @@ class Resource
 
 
     /**
+     * Three-way merges or replaces page data and aux based on version conflict detection.
+     *
+     * @param Page $page Page model with versions relation
+     * @param array<string, mixed> $data Incoming page data
+     * @param array<string, mixed> $aux Incoming aux (meta/config/content)
+     * @param string|null $latestId Version ID the editor was working on
+     * @param \Illuminate\Contracts\Auth\Authenticatable|null $user Current user
+     * @return array{0: array<string, mixed>, 1: array<string, mixed>, 2: array<string, mixed>|null}
+     */
+    protected static function mergePage( Page $page, array $data, array $aux, ?string $latestId, ?Authenticatable $user = null ) : array
+    {
+        if( $latestId && $page->latest_id && $latestId !== $page->latest_id )
+        {
+            /** @var Version|null $base */
+            $base = $page->versions()->find( $latestId );
+
+            if( $base )
+            {
+                [$data, $dd] = Merge::structured( (array) $base->data, (array) $page->latest?->data, $data );
+
+                $merged = array_replace( (array) $page->latest?->aux, $aux );
+                [$merged['meta'], $md] = Merge::structured( (array) ( $base->aux->meta ?? [] ), (array) ( $page->latest?->aux->meta ?? [] ), (array) ( $merged['meta'] ?? [] ) );
+                [$merged['content'], $xd] = Merge::content( (array) ( $base->aux->content ?? [] ), (array) ( $page->latest?->aux->content ?? [] ), (array) ( $merged['content'] ?? [] ) );
+
+                $cd = null;
+                if( Permission::can( 'config:page', $user ) ) {
+                    [$merged['config'], $cd] = Merge::structured( (array) ( $base->aux->config ?? [] ), (array) ( $page->latest?->aux->config ?? [] ), (array) ( $merged['config'] ?? [] ) );
+                } else {
+                    $merged['config'] = (array) ( $page->latest?->aux->config ?? [] );
+                }
+
+                $diffs = array_filter( ['data' => $dd, 'meta' => $md, 'config' => $cd, 'content' => $xd] );
+                return [$data, $merged, $diffs ?: null];
+            }
+        }
+
+        return [
+            array_replace( (array) $page->latest?->data, $data ),
+            array_replace( (array) $page->latest?->aux, $aux ),
+            null
+        ];
+    }
+
+
+    /**
      * Three-way merges or replaces data based on version conflict detection.
      *
      * @param Page|Element|File $model Model with versions relation
@@ -556,7 +574,7 @@ class Resource
      * @param string|null $latestId Version ID the editor was working on
      * @return array{0: array<string, mixed>, 1: array<string, array<string, mixed>>|null}
      */
-    protected static function mergeOrReplace( Base $model, array $input, ?string $latestId ) : array
+    protected static function merge( Base $model, array $input, ?string $latestId ) : array
     {
         if( $latestId && $model->latest_id && $latestId !== $model->latest_id )
         {

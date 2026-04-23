@@ -48,19 +48,30 @@ class Merge
             $cj = $c !== null ? json_encode( $c ) : null;
             $ij = json_encode( $i );
 
-            if( $cj === $ij ) {
+            if( $cj === $ij )
+            {
                 $result[] = $i;
-            } elseif( $bj === $cj ) {
+            }
+            elseif( $bj === $cj )
+            {
                 $result[] = $i;
-            } elseif( $bj === $ij ) {
+            }
+            elseif( $bj === $ij )
+            {
                 $result[] = $c ?? $i;
+
                 if( $c !== null ) {
                     $diff[$key] = ['previous' => $b, 'current' => $c];
                 }
-            } elseif( $b !== null && $c !== null ) {
+            }
+            elseif( $b !== null && $c !== null )
+            {
+                $merged = self::try( (array) $b, (array) $c, (array) $i );
+                $diff[$key] = ['previous' => $b, 'current' => $i, 'overwritten' => $c, 'merged' => $merged];
                 $result[] = $i;
-                $diff[$key] = ['previous' => $b, 'current' => $i, 'overwritten' => $c];
-            } else {
+            }
+            else
+            {
                 $result[] = $i;
             }
         }
@@ -103,9 +114,9 @@ class Merge
             return [$incoming, null];
         }
 
-        $allKeys = array_unique( array_merge( array_keys( $base ), array_keys( $current ), array_keys( $incoming ) ) );
-        $result = [];
         $diff = [];
+        $result = [];
+        $allKeys = array_unique( array_merge( array_keys( $base ), array_keys( $current ), array_keys( $incoming ) ) );
 
         foreach( $allKeys as $k )
         {
@@ -121,28 +132,88 @@ class Merge
             $cj = json_encode( $c );
             $ij = json_encode( $i );
 
-            if( $cj === $ij ) {
+            if( $cj === $ij )
+            {
                 $result[$k] = $i ?? $c;
-            } elseif( !$inIncoming && $inCurrent ) {
+            }
+            elseif( !$inIncoming && $inCurrent )
+            {
                 // Key only in current (new from other editor)
-                $result[$k] = $c;
                 $diff[$k] = ['previous' => null, 'current' => $c];
-            } elseif( $inIncoming && !$inCurrent && !$inBase ) {
+                $result[$k] = $c;
+            }
+            elseif( $inIncoming && !$inCurrent && !$inBase )
+            {
                 // Key only in incoming (new from this editor)
                 $result[$k] = $i;
-            } elseif( $bj === $cj ) {
+            }
+            elseif( $bj === $cj )
+            {
                 $result[$k] = $i;
-            } elseif( $bj === $ij ) {
-                $result[$k] = $c;
+            }
+            elseif( $bj === $ij )
+            {
                 $diff[$k] = ['previous' => $b, 'current' => $c];
-            } else {
+                $result[$k] = $c;
+            }
+            else
+            {
                 // Both changed differently from base — last-write-wins (incoming)
+                $merged = is_array( $b ) && is_array( $c ) && is_array( $i ) ? self::try( $b, $c, $i ) : null;
+                $diff[$k] = ['previous' => $b, 'current' => $i, 'overwritten' => $c, 'merged' => $merged];
                 $result[$k] = $i;
-                $diff[$k] = ['previous' => $b, 'current' => $i, 'overwritten' => $c];
             }
         }
 
         return [$result, $diff ?: null];
+    }
+
+
+    /**
+     * Attempts a structural three-way merge for arrays with non-overlapping changes.
+     *
+     * Returns the merged array if all changed keys are non-conflicting, or null if any key
+     * was changed by both sides to different values.
+     *
+     * @param array<string, mixed> $base
+     * @param array<string, mixed> $current
+     * @param array<string, mixed> $incoming
+     * @return array<string, mixed>|null
+     */
+    public static function try( array $base, array $current, array $incoming ) : ?array
+    {
+        $result = $incoming;
+
+        foreach( array_unique( array_merge( array_keys( $base ), array_keys( $current ) ) ) as $k )
+        {
+            $bj = json_encode( $base[$k] ?? null );
+            $cj = json_encode( $current[$k] ?? null );
+            $ij = json_encode( $incoming[$k] ?? null );
+
+            if( $cj !== $bj && $ij === $bj )
+            {
+                $result[$k] = $current[$k];
+            }
+            elseif( $cj !== $bj && $ij !== $bj && $cj !== $ij )
+            {
+                if( is_array( $base[$k] ?? null ) && is_array( $current[$k] ?? null ) && is_array( $incoming[$k] ?? null ) )
+                {
+                    $sub = self::try( $base[$k], $current[$k], $incoming[$k] );
+
+                    if( $sub === null ) {
+                        return null;
+                    }
+
+                    $result[$k] = $sub;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+        }
+
+        return $result;
     }
 
 

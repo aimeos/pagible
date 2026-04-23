@@ -227,4 +227,60 @@ describe('PageDetail', () => {
       })
     })
   })
+
+  describe('conflict UI', () => {
+    it('hides changes button when changed is null', () => {
+      mountDetail()
+      cy.get('.menu-changed').should('not.exist')
+    })
+
+    it('shows changes button when changed is set', () => {
+      mountDetail().then(() => {
+        const vm = Cypress.vueWrapper.findComponent(PageDetail).vm
+        vm.changed = { editor: 'x', data: { title: { previous: 'a', current: 'b' } } }
+        cy.get('.menu-changed').should('exist')
+      })
+    })
+
+    it('shows changes button even when all conflicts are resolved', () => {
+      mountDetail().then(() => {
+        const vm = Cypress.vueWrapper.findComponent(PageDetail).vm
+        vm.changed = { editor: 'x', data: { title: { previous: 'a', current: 'b', overwritten: 'c', resolved: 'c' } } }
+        cy.get('.menu-changed').should('exist')
+      })
+    })
+
+    it('adds warning class to save button when hasConflict is true', () => {
+      mountDetail({ 'page:save': true }).then(() => {
+        const vm = Cypress.vueWrapper.findComponent(PageDetail).vm
+        vm.changed = { editor: 'x', data: { title: { previous: 'a', current: 'b', overwritten: 'c' } } }
+        vm.dirty = { page: true }
+        cy.get('.menu-save').should('have.class', 'warning')
+      })
+    })
+
+    it('does not add warning class when no conflicts', () => {
+      mountDetail({ 'page:save': true }).then(() => {
+        const vm = Cypress.vueWrapper.findComponent(PageDetail).vm
+        vm.dirty = { page: true }
+        cy.get('.menu-save').should('not.have.class', 'warning')
+      })
+    })
+
+    it('hasConflict is false when all conflicts are resolved', () => {
+      mountDetail().then(() => {
+        const vm = Cypress.vueWrapper.findComponent(PageDetail).vm
+        vm.changed = { editor: 'x', data: { title: { previous: 'a', current: 'b', overwritten: 'c', resolved: 'c' } } }
+        expect(vm.hasConflict).to.be.false
+      })
+    })
+
+    it('hasConflict is true when overwritten exists without resolved', () => {
+      mountDetail().then(() => {
+        const vm = Cypress.vueWrapper.findComponent(PageDetail).vm
+        vm.changed = { editor: 'x', data: { title: { previous: 'a', current: 'b', overwritten: 'c' } } }
+        expect(vm.hasConflict).to.be.true
+      })
+    })
+  })
 })

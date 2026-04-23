@@ -8,6 +8,7 @@ import HistoryDialog from '../components/HistoryDialog.vue'
 import FileDetailRefs from '../components/FileDetailRefs.vue'
 import FileDetailItem from '../components/FileDetailItem.vue'
 import { useUserStore, useDrawerStore, useMessageStore, useViewStack } from '../stores'
+import { applyResult, hasUnresolved } from '../merge'
 import { subscribe } from '../echo'
 import {
   mdiKeyboardBackspace,
@@ -68,7 +69,7 @@ export default {
 
   computed: {
     hasConflict() {
-      return Object.values(this.changed?.data || {}).some((v) => v.overwritten)
+      return hasUnresolved(this.changed)
     }
   },
 
@@ -238,27 +239,13 @@ export default {
 
           const file = result.data?.saveFile
           const latest = file?.latest
-          const changed = file?.changed
+          const changed = file?.changed ? JSON.parse(file.changed) : null
 
           Object.assign(this.item, JSON.parse(latest?.data || '{}'))
           this.item.updated_at = latest?.created_at
           this.item.latestId = latest?.id
-          this.item.published = false
-          this.reset()
 
-          if (changed) {
-            Object.assign(this.item, changed.latest.data)
-            this.changed = changed
-            this.vchanged = true
-            this.messages.add(
-              this.$gettext('Merged with changes from %{editor}', { editor: changed.editor }),
-              this.hasConflict ? 'warning' : 'info'
-            )
-          } else {
-            if (!quiet) {
-              this.messages.add(this.$gettext('File saved successfully'), 'success')
-            }
-          }
+          applyResult(this, changed, this.$gettext('File saved successfully'), quiet)
 
           return true
         })
@@ -353,6 +340,14 @@ export default {
         class="no-rtl"
       />
 
+      <v-btn v-if="changed"
+        @click="vchanged = true"
+        :class="{ error: hasConflict }"
+        :title="$gettext('View merge changes')"
+        :icon="mdiSwapHorizontal"
+        class="menu-changed"
+      />
+
       <v-btn
         @click="save()"
         :loading="saving"
@@ -361,7 +356,7 @@ export default {
         class="menu-save"
         :disabled="!dirty || error || !user.can('file:save')"
         :variant="!dirty || error || !user.can('file:save') ? 'plain' : 'flat'"
-        :color="!dirty || error || !user.can('file:save') ? '' : 'blue-darken-1'"
+        :color="hasConflict ? 'warning' : (!dirty || error || !user.can('file:save') ? '' : 'blue-darken-1')"
         :icon="mdiDatabaseArrowDown"
       />
 
@@ -429,15 +424,6 @@ export default {
       </v-btn>
 
       <v-btn
-        v-if="changed"
-        @click="vchanged = true"
-        :title="$gettext('View merge changes')"
-        :icon="mdiSwapHorizontal"
-        :class="{ 'text-error': hasConflict }"
-        class="menu-changed"
-      />
-
-      <v-btn
         @click.stop="drawer.toggle('aside')"
         :title="$gettext('Toggle side menu')"
         :icon="drawer.aside ? mdiChevronRight : mdiChevronLeft"
@@ -492,7 +478,10 @@ export default {
       @revert="revertVersion"
       @use="use($event)"
     />
-    <ChangesDialog v-model="vchanged" :changed="changed" />
+    <ChangesDialog v-model="vchanged" :changed="changed"
+      :targets="{ data: item }"
+      @resolve="dirty = true"
+    />
   </Teleport>
 </template>
 

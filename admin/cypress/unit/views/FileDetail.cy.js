@@ -175,4 +175,52 @@ describe('FileDetail', () => {
       })
     })
   })
+
+  describe('conflict UI', () => {
+    it('hides changes button when changed is null', () => {
+      mountDetail()
+      cy.get('.menu-changed').should('not.exist')
+    })
+
+    it('shows changes button when changed is set', () => {
+      mountDetail().then(() => {
+        const vm = Cypress.vueWrapper.findComponent(FileDetail).vm
+        vm.changed = { editor: 'x', data: { name: { previous: 'a', current: 'b' } } }
+        cy.get('.menu-changed').should('exist')
+      })
+    })
+
+    it('shows changes button even when all conflicts are resolved', () => {
+      mountDetail().then(() => {
+        const vm = Cypress.vueWrapper.findComponent(FileDetail).vm
+        vm.changed = { editor: 'x', data: { name: { previous: 'a', current: 'b', overwritten: 'c', resolved: 'c' } } }
+        cy.get('.menu-changed').should('exist')
+      })
+    })
+
+    it('uses warning color on save button when hasConflict is true', () => {
+      mountDetail({ 'file:save': true }).then(() => {
+        const vm = Cypress.vueWrapper.findComponent(FileDetail).vm
+        vm.changed = { editor: 'x', data: { name: { previous: 'a', current: 'b', overwritten: 'c' } } }
+        vm.dirty = true
+        cy.get('.menu-save').should('have.class', 'bg-warning')
+      })
+    })
+
+    it('hasConflict is false when all conflicts are resolved', () => {
+      mountDetail().then(() => {
+        const vm = Cypress.vueWrapper.findComponent(FileDetail).vm
+        vm.changed = { editor: 'x', data: { name: { previous: 'a', current: 'b', overwritten: 'c', resolved: 'c' } } }
+        expect(vm.hasConflict).to.be.false
+      })
+    })
+
+    it('hasConflict is true when overwritten exists without resolved', () => {
+      mountDetail().then(() => {
+        const vm = Cypress.vueWrapper.findComponent(FileDetail).vm
+        vm.changed = { editor: 'x', data: { name: { previous: 'a', current: 'b', overwritten: 'c' } } }
+        expect(vm.hasConflict).to.be.true
+      })
+    })
+  })
 })

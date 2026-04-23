@@ -75,7 +75,7 @@ class MergeTest extends CoreTestAbstract
 
         $this->assertEquals( ['a' => 3], $result );
         $this->assertNotNull( $diff );
-        $this->assertEquals( ['previous' => 1, 'current' => 3, 'overwritten' => 2], $diff['a'] );
+        $this->assertEquals( ['previous' => 1, 'current' => 3, 'overwritten' => 2, 'merged' => null], $diff['a'] );
     }
 
 
@@ -246,5 +246,76 @@ class MergeTest extends CoreTestAbstract
 
         $this->assertEquals( 'b', $result[0]['id'] );
         $this->assertEquals( 'a', $result[1]['id'] );
+    }
+
+
+    public function testTryNonOverlapping()
+    {
+        $base = ['a' => 1, 'b' => 2];
+        $current = ['a' => 1, 'b' => 3];
+        $incoming = ['a' => 4, 'b' => 2];
+
+        $result = Merge::try( $base, $current, $incoming );
+
+        $this->assertEquals( ['a' => 4, 'b' => 3], $result );
+    }
+
+
+    public function testTryConflict()
+    {
+        $base = ['a' => 1];
+        $current = ['a' => 2];
+        $incoming = ['a' => 3];
+
+        $this->assertNull( Merge::try( $base, $current, $incoming ) );
+    }
+
+
+    public function testTryNoChanges()
+    {
+        $base = ['a' => 1, 'b' => 2];
+        $current = ['a' => 1, 'b' => 2];
+        $incoming = ['a' => 1, 'b' => 2];
+
+        $this->assertEquals( ['a' => 1, 'b' => 2], Merge::try( $base, $current, $incoming ) );
+    }
+
+
+    public function testStructuredMergedFieldNonOverlapping()
+    {
+        $base = ['x' => ['a' => 1, 'b' => 2]];
+        $current = ['x' => ['a' => 1, 'b' => 3]];
+        $incoming = ['x' => ['a' => 4, 'b' => 2]];
+
+        [$result, $diff] = Merge::structured( $base, $current, $incoming );
+
+        $this->assertNotNull( $diff['x']['merged'] );
+        $this->assertEquals( ['a' => 4, 'b' => 3], $diff['x']['merged'] );
+    }
+
+
+    public function testStructuredMergedFieldConflict()
+    {
+        $base = ['x' => ['a' => 1]];
+        $current = ['x' => ['a' => 2]];
+        $incoming = ['x' => ['a' => 3]];
+
+        [$result, $diff] = Merge::structured( $base, $current, $incoming );
+
+        $this->assertNull( $diff['x']['merged'] );
+    }
+
+
+    public function testContentMergedFieldNonOverlapping()
+    {
+        $base = [['id' => 'a', 'type' => 'text', 'data' => ['title' => 'old', 'text' => 'old']]];
+        $current = [['id' => 'a', 'type' => 'text', 'data' => ['title' => 'new-title', 'text' => 'old']]];
+        $incoming = [['id' => 'a', 'type' => 'text', 'data' => ['title' => 'old', 'text' => 'new-text']]];
+
+        [$result, $diff] = Merge::content( $base, $current, $incoming );
+
+        $this->assertNotNull( $diff['a']['merged'] );
+        $this->assertEquals( 'new-title', $diff['a']['merged']['data']['title'] );
+        $this->assertEquals( 'new-text', $diff['a']['merged']['data']['text'] );
     }
 }

@@ -9,10 +9,11 @@ import HistoryDialog from '../components/HistoryDialog.vue'
 import PageDetailItem from '../components/PageDetailItem.vue'
 import PageDetailEditor from '../components/PageDetailEditor.vue'
 import PageDetailContent from '../components/PageDetailContent.vue'
+import { applyResult, hasUnresolved } from '../merge'
 import { defineAsyncComponent } from 'vue'
-
-const PageDetailMetrics = defineAsyncComponent(() => import('../components/PageDetailMetrics.vue'))
-
+import { write, translate } from '../ai'
+import { txlocales } from '../utils'
+import { subscribe } from '../echo'
 import {
   useAppStore,
   useUserStore,
@@ -32,9 +33,10 @@ import {
   mdiChevronRight,
   mdiChevronLeft
 } from '@mdi/js'
-import { subscribe } from '../echo'
-import { txlocales } from '../utils'
-import { write, translate } from '../ai'
+
+
+const PageDetailMetrics = defineAsyncComponent(() => import('../components/PageDetailMetrics.vue'))
+
 
 export default {
   components: {
@@ -127,21 +129,19 @@ export default {
     },
 
     hasConflict() {
-      return this.hasContentConflict || this.hasPageConflict
+      return hasUnresolved(this.changed, ['data', 'content', 'meta', 'config'])
     },
 
     hasContentConflict() {
-      return ['content', 'meta', 'config'].some((s) =>
-        Object.values(this.changed?.[s] || {}).some((v) => v.overwritten)
-      )
+      return hasUnresolved(this.changed, ['content', 'meta', 'config'])
+    },
+
+    hasPageConflict() {
+      return hasUnresolved(this.changed)
     },
 
     hasError() {
       return Object.values(this.errors).some((entry) => entry)
-    },
-
-    hasPageConflict() {
-      return Object.values(this.changed?.data || {}).some((v) => v.overwritten)
     },
 
     langs() {
@@ -555,34 +555,20 @@ export default {
           }
 
           const page = response.data?.savePage
-          const changed = page?.changed
+          const changed = page?.changed ? JSON.parse(page.changed) : null
 
           if (changed?.latest?.id || page?.latest?.id) {
             this.latest = { ...this.latest, id: changed?.latest?.id ?? page.latest.id }
           }
 
-          this.item.published = false
           this.$refs.history?.reset()
-          this.reset()
+          applyResult(this, changed, this.$gettext('Page saved successfully'), quiet)
 
           if (changed) {
-            Object.assign(this.item, changed.latest.data)
-            const aux = changed.latest.aux
+            const aux = changed.latest?.aux
             this.item.content = aux?.content ?? this.item.content
             this.item.config = aux?.config ?? this.item.config
             this.item.meta = aux?.meta ?? this.item.meta
-
-            this.changed = changed
-            this.vchanged = true
-
-            this.messages.add(
-              this.$gettext('Merged with changes from %{editor}', { editor: changed.editor }),
-              this.hasConflict ? 'warning' : 'info'
-            )
-          } else {
-            if (!quiet) {
-              this.messages.add(this.$gettext('Page saved successfully'), 'success')
-            }
           }
 
           this.invalidate()
@@ -817,13 +803,21 @@ export default {
         class="no-rtl"
       ></v-btn>
 
+      <v-btn v-if="changed"
+        @click="vchanged = true"
+        :class="{ error: hasConflict }"
+        :title="$gettext('View merge changes')"
+        :icon="mdiSwapHorizontal"
+        class="menu-changed"
+      />
+
       <v-btn
         @click="save()"
         :loading="saving"
         :title="$gettext('Save')"
         :disabled="!hasChanged || hasError || !user.can('page:save')"
         :variant="!hasChanged || hasError || !user.can('page:save') ? 'plain' : 'flat'"
-        :class="{ active: hasChanged && !hasError && user.can('page:save'), error: hasError }"
+        :class="{ active: hasChanged && !hasError && user.can('page:save'), error: hasError, warning: hasConflict }"
         :icon="mdiDatabaseArrowDown"
         class="menu-save"
       />
@@ -892,15 +886,6 @@ export default {
           </svg>
         </v-icon>
       </v-btn>
-
-      <v-btn
-        v-if="changed"
-        @click="vchanged = true"
-        :title="$gettext('View merge changes')"
-        :icon="mdiSwapHorizontal"
-        :class="{ 'text-error': hasConflict }"
-        class="menu-changed"
-      />
 
       <v-btn
         @click.stop="drawer.toggle('aside')"
@@ -1010,7 +995,10 @@ export default {
       @revert="revertVersion"
       @use="use($event)"
     />
-    <ChangesDialog v-model="vchanged" :changed="changed" />
+    <ChangesDialog v-model="vchanged" :changed="changed"
+      :targets="{ data: item, meta: item.meta, config: item.config, content: item.content }"
+      @resolve="dirty.page = true"
+    />
   </Teleport>
 </template>
 
@@ -1022,6 +1010,11 @@ export default {
 .v-app-bar .v-btn.menu-save.active {
   background-color: rgba(var(--v-theme-primary), 0.75);
   color: rgb(var(--v-theme-on-primary));
+}
+
+.v-app-bar .v-btn.menu-save.warning {
+  background-color: rgba(var(--v-theme-warning), 0.75);
+  color: rgb(var(--v-theme-on-warning));
 }
 
 .v-app-bar .v-btn.menu-publishat.active {
