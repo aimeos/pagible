@@ -159,7 +159,7 @@ class Merge
             else
             {
                 // Both changed differently from base — last-write-wins (incoming)
-                $merged = is_array( $b ) && is_array( $c ) && is_array( $i ) ? self::try( $b, $c, $i ) : null;
+                $merged = self::isMap( $b ) && self::isMap( $c ) && self::isMap( $i ) ? self::try( (array) $b, (array) $c, (array) $i ) : null;
                 $diff[$k] = ['previous' => $b, 'current' => $i, 'overwritten' => $c, 'merged' => $merged];
                 $result[$k] = $i;
             }
@@ -196,9 +196,9 @@ class Merge
             }
             elseif( $cj !== $bj && $ij !== $bj && $cj !== $ij )
             {
-                if( is_array( $base[$k] ?? null ) && is_array( $current[$k] ?? null ) && is_array( $incoming[$k] ?? null ) )
+                if( self::isMap( $base[$k] ?? null ) && self::isMap( $current[$k] ?? null ) && self::isMap( $incoming[$k] ?? null ) )
                 {
-                    $sub = self::try( $base[$k], $current[$k], $incoming[$k] );
+                    $sub = self::try( (array) $base[$k], (array) $current[$k], (array) $incoming[$k] );
 
                     if( $sub === null ) {
                         return null;
@@ -227,6 +227,18 @@ class Merge
     {
         $block = (array) $block;
         return $block['id'] ?? $block['refid'] ?? null;
+    }
+
+
+    /**
+     * Checks if a value is an array or object (stdClass from JSON decoding).
+     *
+     * @param mixed $value
+     * @return bool
+     */
+    protected static function isMap( mixed $value ) : bool
+    {
+        return is_array( $value ) || $value instanceof \stdClass;
     }
 
 

@@ -318,4 +318,46 @@ class MergeTest extends CoreTestAbstract
         $this->assertEquals( 'new-title', $diff['a']['merged']['data']['title'] );
         $this->assertEquals( 'new-text', $diff['a']['merged']['data']['text'] );
     }
+
+
+    public function testContentMergedFieldWithStdClass()
+    {
+        $base = [json_decode( '{"id":"a","type":"text","data":{"title":"old","text":"old"}}' )];
+        $current = [json_decode( '{"id":"a","type":"text","data":{"title":"new-title","text":"old"}}' )];
+        $incoming = [['id' => 'a', 'type' => 'text', 'data' => ['title' => 'old', 'text' => 'new-text']]];
+
+        [$result, $diff] = Merge::content( $base, $current, $incoming );
+
+        $this->assertNotNull( $diff['a']['merged'] );
+        $this->assertEquals( 'new-title', $diff['a']['merged']['data']['title'] );
+        $this->assertEquals( 'new-text', $diff['a']['merged']['data']['text'] );
+    }
+
+
+    public function testStructuredMergedFieldWithStdClass()
+    {
+        $base = ['x' => json_decode( '{"a":1,"b":2}' )];
+        $current = ['x' => json_decode( '{"a":1,"b":3}' )];
+        $incoming = ['x' => ['a' => 4, 'b' => 2]];
+
+        [$result, $diff] = Merge::structured( $base, $current, $incoming );
+
+        $this->assertNotNull( $diff['x']['merged'] );
+        $this->assertEquals( 4, $diff['x']['merged']['a'] );
+        $this->assertEquals( 3, $diff['x']['merged']['b'] );
+    }
+
+
+    public function testTryWithStdClass()
+    {
+        $base = ['data' => (object) ['title' => 'old', 'text' => 'old']];
+        $current = ['data' => (object) ['title' => 'new-title', 'text' => 'old']];
+        $incoming = ['data' => (object) ['title' => 'old', 'text' => 'new-text']];
+
+        $result = Merge::try( $base, $current, $incoming );
+
+        $this->assertNotNull( $result );
+        $this->assertEquals( 'new-title', $result['data']['title'] );
+        $this->assertEquals( 'new-text', $result['data']['text'] );
+    }
 }
