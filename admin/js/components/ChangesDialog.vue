@@ -15,7 +15,7 @@ export default {
   emits: ['update:modelValue', 'resolve'],
 
   setup() {
-    return { mdiClose, mdiUndoVariant }
+    return { mdiClose, mdiUndoVariant, stringify }
   },
 
   data: () => ({
@@ -392,7 +392,7 @@ export default {
                 </template>
                 <template v-if="changes[`${name}.${key}`]?.merge != null && !changes[`${name}.${key}`]?.isObj">
                   <span class="diff-symbol">⇒</span>
-                  <div class="merged">{{ format(changes[`${name}.${key}`].merge) }}</div>
+                  <div class="merged">{{ stringify(changes[`${name}.${key}`].merge) }}</div>
                 </template>
               </div>
             </v-card-text>

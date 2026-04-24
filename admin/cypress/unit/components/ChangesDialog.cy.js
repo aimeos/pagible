@@ -232,25 +232,25 @@ describe('ChangesDialog', () => {
     })
   })
 
-  describe('format()', () => {
+  describe('stringify()', () => {
     it('returns empty string for null', () => {
       mountDialog().then(() => {
         const vm = Cypress.vueWrapper.findComponent(ChangesDialog).vm
-        expect(vm.format(null)).to.equal('')
+        expect(vm.stringify(null)).to.equal('')
       })
     })
 
     it('stringifies objects as JSON', () => {
       mountDialog().then(() => {
         const vm = Cypress.vueWrapper.findComponent(ChangesDialog).vm
-        expect(vm.format({ a: 1 })).to.contain('"a": 1')
+        expect(vm.stringify({ a: 1 })).to.contain('"a": 1')
       })
     })
 
     it('converts primitives to string', () => {
       mountDialog().then(() => {
         const vm = Cypress.vueWrapper.findComponent(ChangesDialog).vm
-        expect(vm.format(42)).to.equal('42')
+        expect(vm.stringify(42)).to.equal('42')
       })
     })
   })
