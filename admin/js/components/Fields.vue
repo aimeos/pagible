@@ -13,7 +13,8 @@ import {
   mdiArrowRightThin,
   mdiCreation,
   mdiMicrophoneOutline,
-  mdiMicrophone
+  mdiMicrophone,
+  mdiUndoVariant
 } from '@mdi/js'
 
 export default {
@@ -34,6 +35,7 @@ export default {
   data() {
     return {
       dirty: new Set(),
+      original: {},
       translating: {},
       dictating: {},
       composing: {},
@@ -57,6 +59,7 @@ export default {
       mdiCreation,
       mdiMicrophoneOutline,
       mdiMicrophone,
+      mdiUndoVariant,
       txlocales,
       transcribe
     }
@@ -144,9 +147,22 @@ export default {
 
     resetDirty() {
       this.dirty = new Set()
+      this.original = {}
+    },
+
+    resetField(code) {
+      if (code in this.original) {
+        this.data[code] = this.original[code]
+        this.dirty.delete(code)
+        delete this.original[code]
+        this.$emit('change', this.data[code])
+      }
     },
 
     update(code, value) {
+      if (!this.dirty.has(code)) {
+        this.original[code] = this.data[code]
+      }
       this.data[code] = value
       this.dirty.add(code)
       this.$emit('change', this.data[code])
@@ -198,61 +214,69 @@ export default {
     <div v-if="field.type !== 'hidden'" class="label">
       {{ $pgettext('fn', field.label || code).replace(/-|_/g, ' ') }}
       <div
-        v-if="!readonly && ['markdown', 'plaintext', 'string', 'text'].includes(field.type)"
+        v-if="!readonly && (['markdown', 'plaintext', 'string', 'text'].includes(field.type) || isDirty(code))"
         class="actions"
       >
-        <component
-          :is="$vuetify.display.xs ? 'v-dialog' : 'v-menu'"
-          :aria-label="$gettext('Translate')"
-          v-if="!readonly"
-          v-model="menu[code]"
-          transition="scale-transition"
-          location="end center"
-          max-width="300"
-        >
-          <template #activator="{ props }">
-            <v-btn
-              v-bind="props"
-              :title="$gettext('Translate')"
-              :loading="translating[code]"
-              :icon="mdiTranslate"
-              variant="text"
-            />
-          </template>
+        <template v-if="['markdown', 'plaintext', 'string', 'text'].includes(field.type)">
+          <component
+            :is="$vuetify.display.xs ? 'v-dialog' : 'v-menu'"
+            :aria-label="$gettext('Translate')"
+            v-model="menu[code]"
+            transition="scale-transition"
+            location="end center"
+            max-width="300"
+          >
+            <template #activator="{ props }">
+              <v-btn
+                v-bind="props"
+                :title="$gettext('Translate')"
+                :loading="translating[code]"
+                :icon="mdiTranslate"
+                variant="text"
+              />
+            </template>
 
-          <v-card v-if="user.can('text:translate')">
-            <v-toolbar density="compact">
-              <v-toolbar-title>{{ $gettext('Translate') }}</v-toolbar-title>
-              <v-btn :icon="mdiClose" :aria-label="$gettext('Close')" @click="menu[code] = false" />
-            </v-toolbar>
+            <v-card v-if="user.can('text:translate')">
+              <v-toolbar density="compact">
+                <v-toolbar-title>{{ $gettext('Translate') }}</v-toolbar-title>
+                <v-btn :icon="mdiClose" :aria-label="$gettext('Close')" @click="menu[code] = false" />
+              </v-toolbar>
 
-            <v-list @click="menu[code] = false">
-              <v-list-item v-for="lang in txlocales()" :key="lang.code">
-                <v-btn
-                  @click="translateText(code, lang.code)"
-                  :prepend-icon="mdiArrowRightThin"
-                  variant="text"
-                  >{{ lang.name }}</v-btn
-                >
-              </v-list-item>
-            </v-list>
-          </v-card>
-        </component>
+              <v-list @click="menu[code] = false">
+                <v-list-item v-for="lang in txlocales()" :key="lang.code">
+                  <v-btn
+                    @click="translateText(code, lang.code)"
+                    :prepend-icon="mdiArrowRightThin"
+                    variant="text"
+                    >{{ lang.name }}</v-btn
+                  >
+                </v-list-item>
+              </v-list>
+            </v-card>
+          </component>
+          <v-btn
+            v-if="user.can('text:write')"
+            :title="$gettext('Generate text')"
+            :loading="composing[code]"
+            @click="writeText(code)"
+            :icon="mdiCreation"
+            variant="text"
+          />
+          <v-btn
+            v-if="user.can('audio:transcribe')"
+            @click="record(code)"
+            :class="{ dictating: audio[code] }"
+            :icon="audio[code] ? mdiMicrophoneOutline : mdiMicrophone"
+            :title="$gettext('Dictate')"
+            :loading="dictating[code]"
+            variant="text"
+          />
+        </template>
         <v-btn
-          v-if="user.can('text:write')"
-          :title="$gettext('Generate text')"
-          :loading="composing[code]"
-          @click="writeText(code)"
-          :icon="mdiCreation"
-          variant="text"
-        />
-        <v-btn
-          v-if="user.can('audio:transcribe')"
-          @click="record(code)"
-          :class="{ dictating: audio[code] }"
-          :icon="audio[code] ? mdiMicrophoneOutline : mdiMicrophone"
-          :title="$gettext('Dictate')"
-          :loading="dictating[code]"
+          v-if="isDirty(code)"
+          :title="$gettext('Reset')"
+          @click="resetField(code)"
+          :icon="mdiUndoVariant"
           variant="text"
         />
       </div>

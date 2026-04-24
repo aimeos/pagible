@@ -32,6 +32,16 @@ export function debounce(func, delay) {
 }
 
 /**
+ * Checks if a value is empty (null, undefined, or empty object)
+ *
+ * @param {*} val Value to check
+ * @returns {boolean} True if the value is empty
+ */
+export function empty(val) {
+  return val == null || (typeof val === 'object' && Object.keys(val).length === 0)
+}
+
+/**
  * Returns available locales as a list for dropdown menus
  *
  * @param {boolean} none If true, prepends a "None" option with null value
@@ -82,6 +92,17 @@ export function slugify(text) {
     .replace(/-+/g, '-')
     .replace(/^-|-$/g, '')
     .toLowerCase()
+}
+
+/**
+ * Formats a value as a displayable string
+ *
+ * @param {*} value Value to format
+ * @returns {string} Formatted string representation
+ */
+export function stringify(value) {
+  if (value == null) return ''
+  return typeof value === 'object' ? JSON.stringify(value, null, 2) : String(value)
 }
 
 /**

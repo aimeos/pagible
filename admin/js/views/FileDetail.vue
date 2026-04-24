@@ -93,6 +93,12 @@ export default {
   },
 
   methods: {
+    apply(changes) {
+      Object.assign(this.item, changes)
+      this.dirty = true
+      this.vhistory = false
+    },
+
     errorUpdated(event) {
       this.error = event
     },
@@ -476,6 +482,7 @@ export default {
       }"
       :load="() => versions(item.id)"
       @revert="revertVersion"
+      @apply="apply"
       @use="use($event)"
     />
     <ChangesDialog v-model="vchanged" :changed="changed"

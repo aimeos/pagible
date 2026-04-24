@@ -3,6 +3,7 @@
 <script>
 import { diffLines, diffWords } from 'diff'
 import { mdiClose, mdiUndoVariant } from '@mdi/js'
+import { empty, stringify } from '../utils'
 
 export default {
   props: {
@@ -169,13 +170,8 @@ export default {
       return diff
     },
 
-    format(value) {
-      if (value == null) return ''
-      return typeof value === 'object' ? JSON.stringify(value, null, 2) : String(value)
-    },
-
     formatDiffPair(a, b) {
-      return { old: this.format(a), new: this.format(b) }
+      return { old: stringify(a), new: stringify(b) }
     },
 
     getChangedFields(a, b) {
@@ -185,6 +181,7 @@ export default {
         const aVal = a?.[k]
         const bVal = b?.[k]
         if (JSON.stringify(aVal) === JSON.stringify(bVal)) continue
+        if (empty(aVal) && empty(bVal)) continue
 
         const label = this.$pgettext('fn', k)
 
@@ -193,7 +190,7 @@ export default {
           const sub = this.getChangedFields(aVal, bVal)
           fields.push(...sub.map(f => ({ ...f, label: `${label} › ${f.label}` })))
         } else {
-          fields.push({ label, old: this.format(aVal), new: this.format(bVal) })
+          fields.push({ label, old: stringify(aVal), new: stringify(bVal) })
         }
       }
 
