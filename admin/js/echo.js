@@ -7,10 +7,11 @@ function getEcho() {
   if (!node?.dataset?.reverb) return Promise.resolve(null)
 
   if (!echoPromise) {
-    echoPromise = import('laravel-echo')
-      .then(({ default: Echo }) => {
+    echoPromise = Promise.all([import('laravel-echo'), import('pusher-js')])
+      .then(([{ default: Echo }, { default: Pusher }]) => {
         const config = JSON.parse(node.dataset.reverb)
         return new Echo({
+          Pusher,
           broadcaster: 'reverb',
           key: config.key,
           wsHost: config.host,

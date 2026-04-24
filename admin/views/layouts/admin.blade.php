@@ -35,7 +35,7 @@
       data-multidomain="{{ (int) config('cms.multidomain', false) }}"
       @if(config('cms.broadcast'))
         data-reverb="{{ json_encode([
-            'key' => config('reverb.apps.0.key', ''),
+            'key' => config('reverb.apps.apps.0.key', ''),
             'host' => config('reverb.servers.reverb.host', '127.0.0.1'),
             'port' => config('reverb.servers.reverb.port', 8080),
             'scheme' => config('reverb.servers.reverb.hostname') ? 'https' : 'http',
