@@ -8,7 +8,8 @@ function getEcho() {
 
   if (!echoPromise) {
     echoPromise = Promise.all([import('laravel-echo'), import('pusher-js')])
-      .then(([{ default: Echo }, { default: Pusher }]) => {
+      .then(([{ default: Echo }, pusherModule]) => {
+        const Pusher = pusherModule.default || pusherModule
         const config = JSON.parse(node.dataset.reverb)
         return new Echo({
           Pusher,

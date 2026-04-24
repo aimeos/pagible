@@ -36,9 +36,9 @@
       @if(config('cms.broadcast'))
         data-reverb="{{ json_encode([
             'key' => config('reverb.apps.apps.0.key', ''),
-            'host' => config('reverb.servers.reverb.host', '127.0.0.1'),
-            'port' => config('reverb.servers.reverb.port', 8080),
-            'scheme' => config('reverb.servers.reverb.hostname') ? 'https' : 'http',
+            'host' => config('reverb.apps.apps.0.options.host', config('reverb.servers.reverb.host', '127.0.0.1')),
+            'port' => config('reverb.apps.apps.0.options.port', config('reverb.servers.reverb.port', 8080)),
+            'scheme' => config('reverb.apps.apps.0.options.scheme', 'http'),
         ]) }}"
       @endif
     ></div>
