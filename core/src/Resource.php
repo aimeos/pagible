@@ -117,8 +117,8 @@ class Resource
                 'lang' => $input['lang'] ?? null,
                 'editor' => $editor,
                 'aux' => [
-                    'meta' => $input['meta'] ?? new \stdClass(),
-                    'config' => $input['config'] ?? new \stdClass(),
+                    'meta' => (object) ( $input['meta'] ?? [] ),
+                    'config' => (object) ( $input['config'] ?? [] ),
                     'content' => $input['content'] ?? [],
                 ]
             ] );
@@ -488,6 +488,8 @@ class Resource
             array_walk( $data, fn( &$v, $k ) => $v = !in_array( $k, ['related_id'] ) ? ( $v ?? '' ) : $v );
 
             $aux = array_intersect_key( $input, array_flip( ['meta', 'config', 'content'] ) );
+            $aux['meta'] = (object) ( $aux['meta'] ?? [] );
+            $aux['config'] = (object) ( $aux['config'] ?? [] );
             $previousEditor = $page->latest->editor ?? '';
 
             [$data, $aux, $diffs] = self::mergePage( $page, $data, $aux, $latestId, $user );

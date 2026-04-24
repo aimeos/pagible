@@ -38,7 +38,7 @@ describe('HistoryDialog', () => {
 
   it('renders a close button', () => {
     mountDialog()
-    cy.get('button[title="Close"]').should('exist')
+    cy.get('button[aria-label="Close"]').should('exist')
   })
 
   it('emits update:modelValue when close is clicked', () => {
@@ -53,7 +53,7 @@ describe('HistoryDialog', () => {
       },
       global: { stubs },
     })
-    cy.get('button[title="Close"]').click()
+    cy.get('button[aria-label="Close"]').click()
     cy.get('@update').should('have.been.calledWith', false)
   })
 

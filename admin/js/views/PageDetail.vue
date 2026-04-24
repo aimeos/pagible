@@ -261,6 +261,13 @@ export default {
   },
 
   methods: {
+    apply(changes) {
+      Object.assign(this.item, changes)
+      this.dirty.page = true
+      if(changes.content) this.dirty.content = true
+      this.vhistory = false
+    },
+
     clean(data, type) {
       if (data && type) {
         data = JSON.parse(JSON.stringify(data)) // deep copy
@@ -993,6 +1000,7 @@ export default {
       }"
       :load="() => versions(item.id)"
       @revert="revertVersion"
+      @apply="apply"
       @use="use($event)"
     />
     <ChangesDialog v-model="vchanged" :changed="changed"
