@@ -46,6 +46,8 @@ class CoreServiceProvider extends Provider
             return;
         }
 
+        Broadcast::routes( ['middleware' => ['web', 'auth']] );
+
         foreach( ['page', 'element', 'file'] as $type )
         {
             Broadcast::channel( "cms.{$type}.{id}", fn( $user ) =>
