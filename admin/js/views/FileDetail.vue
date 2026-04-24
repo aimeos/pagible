@@ -7,7 +7,7 @@ import ChangesDialog from '../components/ChangesDialog.vue'
 import HistoryDialog from '../components/HistoryDialog.vue'
 import FileDetailRefs from '../components/FileDetailRefs.vue'
 import FileDetailItem from '../components/FileDetailItem.vue'
-import { useUserStore, useDrawerStore, useMessageStore, useViewStack } from '../stores'
+import { useDirtyStore, useUserStore, useDrawerStore, useMessageStore, useViewStack } from '../stores'
 import { applyResult, hasUnresolved } from '../merge'
 import { subscribe } from '../echo'
 import {
@@ -48,12 +48,14 @@ export default {
   }),
 
   setup() {
+    const dirtyStore = useDirtyStore()
     const viewStack = useViewStack()
     const messages = useMessageStore()
     const drawer = useDrawerStore()
     const user = useUserStore()
 
     return {
+      dirtyStore,
       user,
       drawer,
       messages,
@@ -74,6 +76,8 @@ export default {
   },
 
   created() {
+    this.dirtyStore.register(() => this.save(true))
+
     if (!this.item?.id || !this.user.can('file:view')) {
       return
     }
@@ -89,6 +93,7 @@ export default {
   },
 
   beforeUnmount() {
+    this.dirtyStore.unregister()
     this.echoCleanup?.()
   },
 
@@ -318,6 +323,12 @@ export default {
           this.messages.add(this.$gettext('Error fetching file versions') + ':\n' + error, 'error')
           this.$log(`FileDetail::versions(): Error fetching file versions`, id, error)
         })
+    }
+  },
+
+  watch: {
+    dirty(value) {
+      this.dirtyStore.set(value)
     }
   }
 }

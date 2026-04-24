@@ -567,12 +567,98 @@ export const useSideStore = defineStore('side', {
   }
 })
 
+export const useDirtyStore = defineStore('dirty', {
+  state: () => ({
+    dirty: false,
+    pendingResolve: null,
+    saveFn: null,
+    show: false
+  }),
+
+  actions: {
+    cancel() {
+      this.show = false
+      this.resolve(false)
+    },
+
+    confirm(action) {
+      return new Promise((resolve) => {
+        this.pendingResolve = resolve
+        this.show = true
+        this._action = action
+      })
+    },
+
+    async discard() {
+      await this.finalize()
+    },
+
+    async finalize() {
+      this.dirty = false
+      this.show = false
+
+      const action = this._action
+      this._action = null
+      if (action) await action()
+
+      this.resolve(true)
+    },
+
+    register(saveFn) {
+      this.saveFn = saveFn
+    },
+
+    resolve(value) {
+      const fn = this.pendingResolve
+      this.pendingResolve = null
+      this._action = null
+      if (fn) fn(value)
+    },
+
+    async saveAndLeave() {
+      if (this.saveFn) {
+        const result = await this.saveFn(true)
+        if (result === false) return
+      }
+
+      await this.finalize()
+    },
+
+    set(value) {
+      if (value !== this.dirty) {
+        this.dirty = value
+      }
+    },
+
+    unregister() {
+      this.dirty = false
+      this.saveFn = null
+      this.resolve(false)
+    }
+  }
+})
+
 export const useViewStack = defineStore('viewStack', {
   state: () => ({
     stack: []
   }),
 
   actions: {
+    async closeView() {
+      const dirtyStore = useDirtyStore()
+
+      if (dirtyStore.dirty) {
+        await dirtyStore.confirm(() => {
+          dirtyStore.unregister()
+          this.stack.pop()
+        })
+        return
+      }
+
+      dirtyStore.unregister()
+      this.stack.pop()
+    },
+
     openView(component, props = {}) {
       if (!component) {
         console.error('Component is not defined')
@@ -583,10 +669,6 @@ export const useViewStack = defineStore('viewStack', {
         component: markRaw(component),
         props: props || {}
       })
-    },
-
-    closeView() {
-      this.stack.pop()
     }
   }
 })
