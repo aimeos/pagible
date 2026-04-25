@@ -259,6 +259,14 @@ input:-webkit-autofill:focus {
   opacity: 0.8;
 }
 
+.v-date-picker-controls {
+  width: 100%;
+}
+
+.v-date-picker-controls__month, .v-date-picker-controls__year {
+  align-items: center;
+}
+
 .header {
   display: flex;
   flex-wrap: wrap;
@@ -303,10 +311,10 @@ input:-webkit-autofill:focus {
 }
 
 .menu-content {
-  background-color: var(--v-theme-background);
+  background-color: rgb(var(--v-theme-background));
 }
 
-.menu-content .v-btn {
+.menu-content > .v-btn {
   width: 100%;
 }
 
