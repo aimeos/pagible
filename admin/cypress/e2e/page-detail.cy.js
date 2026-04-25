@@ -377,7 +377,7 @@ describe('Page Detail', () => {
 
   it('schedule publish button opens date picker', () => {
     visitPageDetail({ latest: { ...makePage().latest, published: false } }, { published: false })
-    detailView().find('.menu-publish').first().click()
+    detailView().find('.menu-publishat').click()
     cy.get('.v-date-picker').should('be.visible')
   })
 
