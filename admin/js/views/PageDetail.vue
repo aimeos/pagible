@@ -24,14 +24,9 @@ import {
   useSchemaStore,
   useViewStack
 } from '../stores'
-import {
-  mdiTranslate,
-  mdiArrowRightThin
-} from '@mdi/js'
-
+import { mdiTranslate, mdiArrowRightThin } from '@mdi/js'
 
 const PageDetailMetrics = defineAsyncComponent(() => import('../components/PageDetailMetrics.vue'))
-
 
 export default {
   components: {
@@ -174,7 +169,11 @@ export default {
         this.item.content = this.obsolete(this.item.content)
 
         subscribe('page', this.item.id, (event) => {
-          if (!this.hasChanged && this.user.can('page:view') && event.editor !== this.user.me?.email) {
+          if (
+            !this.hasChanged &&
+            this.user.can('page:view') &&
+            event.editor !== this.user.me?.email
+          ) {
             this.latest = { ...this.latest, id: event.versionId }
             Object.assign(this.item, event.data)
 
@@ -201,7 +200,7 @@ export default {
     apply(changes) {
       Object.assign(this.item, changes)
       this.dirty.page = true
-      if(changes.content) this.dirty.content = true
+      if (changes.content) this.dirty.content = true
       this.vhistory = false
     },
 
@@ -344,11 +343,19 @@ export default {
     },
 
     publish(at = null) {
-      publishItem(this, 'page', {
-        success: this.$gettext('Page published successfully'),
-        scheduled: (d) => this.$gettext('Page scheduled for publishing at %{date}', { date: d.toLocaleDateString() }),
-        error: this.$gettext('Error publishing page')
-      }, at)
+      publishItem(
+        this,
+        'page',
+        {
+          success: this.$gettext('Page published successfully'),
+          scheduled: (d) =>
+            this.$gettext('Page scheduled for publishing at %{date}', {
+              date: d.toLocaleDateString()
+            }),
+          error: this.$gettext('Error publishing page')
+        },
+        at
+      )
     },
 
     published() {
@@ -410,10 +417,24 @@ export default {
       return this.$apollo
         .mutate({
           mutation: gql`
-            mutation ($id: ID!, $input: PageInput!, $elements: [ID!], $files: [ID!], $latestId: ID) {
-              savePage(id: $id, input: $input, elements: $elements, files: $files, latestId: $latestId) {
+            mutation (
+              $id: ID!
+              $input: PageInput!
+              $elements: [ID!]
+              $files: [ID!]
+              $latestId: ID
+            ) {
+              savePage(
+                id: $id
+                input: $input
+                elements: $elements
+                files: $files
+                latestId: $latestId
+              ) {
                 id
-                latest { id }
+                latest {
+                  id
+                }
                 changed
               }
             }
@@ -801,7 +822,9 @@ export default {
       @apply="apply"
       @use="use($event)"
     />
-    <ChangesDialog v-model="vchanged" :changed="changed"
+    <ChangesDialog
+      v-model="vchanged"
+      :changed="changed"
       :targets="{ data: item, meta: item.meta, config: item.config, content: item.content }"
       @resolve="dirty.page = true"
     />

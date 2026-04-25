@@ -62,7 +62,13 @@ export default {
 </script>
 
 <template>
-  <v-navigation-drawer v-model="drawer.aside" mobile-breakpoint="md" location="end" tag="aside" :aria-label="$gettext('Used elements')">
+  <v-navigation-drawer
+    v-model="drawer.aside"
+    mobile-breakpoint="md"
+    location="end"
+    tag="aside"
+    :aria-label="$gettext('Used elements')"
+  >
     <v-list v-model:opened="open">
       <v-list-group
         v-for="(items, key) in stores"

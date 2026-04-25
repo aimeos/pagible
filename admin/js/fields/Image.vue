@@ -178,7 +178,12 @@ export default {
   </v-row>
 
   <Teleport to="body">
-    <FileDialog v-model="vfiles" @add="addFromDialog" :filter="{ mime: ['image/gif', 'image/jpeg', 'image/png', 'image/svg+xml', 'image/webp'] }" grid />
+    <FileDialog
+      v-model="vfiles"
+      @add="addFromDialog"
+      :filter="{ mime: ['image/gif', 'image/jpeg', 'image/png', 'image/svg+xml', 'image/webp'] }"
+      grid
+    />
   </Teleport>
 
   <Teleport to="body">

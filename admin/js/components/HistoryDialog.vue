@@ -61,11 +61,13 @@ export default {
       const sectionNames = ['meta', 'config', 'content']
 
       for (const key of new Set([
-        ...Object.keys(version.data || {}).filter(k => !sectionNames.includes(k)),
-        ...Object.keys(later?.data || {}).filter(k => !sectionNames.includes(k))
+        ...Object.keys(version.data || {}).filter((k) => !sectionNames.includes(k)),
+        ...Object.keys(later?.data || {}).filter((k) => !sectionNames.includes(k))
       ])) {
-        if (JSON.stringify(version.data?.[key]) !== JSON.stringify(later?.data?.[key])
-            && this.isChecked(idx, `data:${key}`)) {
+        if (
+          JSON.stringify(version.data?.[key]) !== JSON.stringify(later?.data?.[key]) &&
+          this.isChecked(idx, `data:${key}`)
+        ) {
           changes[key] = version.data[key]
         }
       }
@@ -78,8 +80,10 @@ export default {
         const merged = { ...lSec }
         let hasChanges = false
         for (const key of new Set([...Object.keys(vSec), ...Object.keys(lSec)])) {
-          if (JSON.stringify(vSec[key]) !== JSON.stringify(lSec[key])
-              && this.isChecked(idx, `${section}:${key}`)) {
+          if (
+            JSON.stringify(vSec[key]) !== JSON.stringify(lSec[key]) &&
+            this.isChecked(idx, `${section}:${key}`)
+          ) {
             merged[key] = vSec[key]
             hasChanges = true
           }
@@ -89,7 +93,7 @@ export default {
 
       if (JSON.stringify(version.data?.content) !== JSON.stringify(later?.data?.content)) {
         const diffs = isCurrent ? this.currentDiffs : this.versionDiffs(idx)
-        if ((diffs.content || []).some(block => this.isChecked(idx, block.diffKey))) {
+        if ((diffs.content || []).some((block) => this.isChecked(idx, block.diffKey))) {
           changes.content = version.data.content
         }
       }
@@ -100,13 +104,17 @@ export default {
     buildFieldDiffs(fields, prefix = '') {
       return fields.map(({ label, old: oldVal, new: newVal, rootKey }) => {
         const words = diffWords(oldVal || '', newVal || '')
-        const removed = words.filter(w => !w.added).map(w => ({ value: w.value, highlight: !!w.removed }))
-        const added = words.filter(w => !w.removed).map(w => ({ value: w.value, highlight: !!w.added }))
+        const removed = words
+          .filter((w) => !w.added)
+          .map((w) => ({ value: w.value, highlight: !!w.removed }))
+        const added = words
+          .filter((w) => !w.removed)
+          .map((w) => ({ value: w.value, highlight: !!w.added }))
         return {
           label,
-          removed: removed.some(w => w.value) ? removed : [{ value: '\u00a0', highlight: false }],
-          added: added.some(w => w.value) ? added : [{ value: '\u00a0', highlight: false }],
-          diffKey: prefix ? `${prefix}:${rootKey}` : rootKey,
+          removed: removed.some((w) => w.value) ? removed : [{ value: '\u00a0', highlight: false }],
+          added: added.some((w) => w.value) ? added : [{ value: '\u00a0', highlight: false }],
+          diffKey: prefix ? `${prefix}:${rootKey}` : rootKey
         }
       })
     },
@@ -118,12 +126,16 @@ export default {
 
       const diffBlock = (aItem, bItem) => {
         if (JSON.stringify(aItem) === JSON.stringify(bItem)) return
-        const fields = this.buildFieldDiffs(this.getChangedFields(aItem?.data || aItem || {}, bItem?.data || bItem || {}))
+        const fields = this.buildFieldDiffs(
+          this.getChangedFields(aItem?.data || aItem || {}, bItem?.data || bItem || {})
+        )
         if (!fields.length) {
-          const top = this.buildFieldDiffs(this.getChangedFields(
-            { type: aItem?.type, group: aItem?.group },
-            { type: bItem?.type, group: bItem?.group }
-          ))
+          const top = this.buildFieldDiffs(
+            this.getChangedFields(
+              { type: aItem?.type, group: aItem?.group },
+              { type: bItem?.type, group: bItem?.group }
+            )
+          )
           if (top.length) blocks.push({ title: this.blockLabel(bItem || aItem), fields: top })
         } else {
           blocks.push({ title: this.blockLabel(bItem || aItem), fields })
@@ -131,20 +143,38 @@ export default {
       }
 
       if (hasKeys) {
-        const aMap = new Map(aArr.map(i => [blockKey(i), i]).filter(([k]) => k))
-        const bMap = new Map(bArr.map(i => [blockKey(i), i]).filter(([k]) => k))
+        const aMap = new Map(aArr.map((i) => [blockKey(i), i]).filter(([k]) => k))
+        const bMap = new Map(bArr.map((i) => [blockKey(i), i]).filter(([k]) => k))
 
         for (const [key, aItem] of aMap) {
           const bItem = bMap.get(key)
           if (!bItem) {
-            blocks.push({ title: this.blockLabel(aItem), fields: [{ label: '', removed: [{ value: this.$gettext('Removed'), highlight: true }], added: [{ value: '\u00a0', highlight: false }] }] })
+            blocks.push({
+              title: this.blockLabel(aItem),
+              fields: [
+                {
+                  label: '',
+                  removed: [{ value: this.$gettext('Removed'), highlight: true }],
+                  added: [{ value: '\u00a0', highlight: false }]
+                }
+              ]
+            })
           } else {
             diffBlock(aItem, bItem)
           }
         }
         for (const [key, bItem] of bMap) {
           if (!aMap.has(key)) {
-            blocks.push({ title: this.blockLabel(bItem), fields: [{ label: '', removed: [{ value: '\u00a0', highlight: false }], added: [{ value: this.$gettext('Added'), highlight: true }] }] })
+            blocks.push({
+              title: this.blockLabel(bItem),
+              fields: [
+                {
+                  label: '',
+                  removed: [{ value: '\u00a0', highlight: false }],
+                  added: [{ value: this.$gettext('Added'), highlight: true }]
+                }
+              ]
+            })
           }
         }
       } else {
@@ -153,9 +183,27 @@ export default {
           const aItem = aArr[i]
           const bItem = bArr[i]
           if (!aItem) {
-            blocks.push({ title: this.blockLabel(bItem), fields: [{ label: '', removed: [{ value: '\u00a0', highlight: false }], added: [{ value: this.$gettext('Added'), highlight: true }] }] })
+            blocks.push({
+              title: this.blockLabel(bItem),
+              fields: [
+                {
+                  label: '',
+                  removed: [{ value: '\u00a0', highlight: false }],
+                  added: [{ value: this.$gettext('Added'), highlight: true }]
+                }
+              ]
+            })
           } else if (!bItem) {
-            blocks.push({ title: this.blockLabel(aItem), fields: [{ label: '', removed: [{ value: this.$gettext('Removed'), highlight: true }], added: [{ value: '\u00a0', highlight: false }] }] })
+            blocks.push({
+              title: this.blockLabel(aItem),
+              fields: [
+                {
+                  label: '',
+                  removed: [{ value: this.$gettext('Removed'), highlight: true }],
+                  added: [{ value: '\u00a0', highlight: false }]
+                }
+              ]
+            })
           } else {
             diffBlock(aItem, bItem)
           }
@@ -170,9 +218,9 @@ export default {
       const keys = []
       for (const [name, entries] of Object.entries(diffs)) {
         if (name === 'content') {
-          entries.forEach(block => keys.push(block.diffKey))
+          entries.forEach((block) => keys.push(block.diffKey))
         } else {
-          entries.forEach(entry => keys.push(entry.diffKey))
+          entries.forEach((entry) => keys.push(entry.diffKey))
         }
       }
       return keys
@@ -217,10 +265,16 @@ export default {
         const rk = rootKey || k
         const label = this.$pgettext('fn', k)
 
-        if (aVal && bVal && typeof aVal === 'object' && !Array.isArray(aVal)
-            && typeof bVal === 'object' && !Array.isArray(bVal)) {
+        if (
+          aVal &&
+          bVal &&
+          typeof aVal === 'object' &&
+          !Array.isArray(aVal) &&
+          typeof bVal === 'object' &&
+          !Array.isArray(bVal)
+        ) {
           const sub = this.getChangedFields(aVal, bVal, rk)
-          fields.push(...sub.map(f => ({ ...f, label: `${label} › ${f.label}` })))
+          fields.push(...sub.map((f) => ({ ...f, label: `${label} › ${f.label}` })))
         } else {
           fields.push({ label, old: stringify(aVal), new: stringify(bVal), rootKey: rk })
         }
@@ -231,7 +285,7 @@ export default {
 
     isAllChecked(idx) {
       const prefix = `${idx}:`
-      return !Object.keys(this.unchecked).some(k => k.startsWith(prefix))
+      return !Object.keys(this.unchecked).some((k) => k.startsWith(prefix))
     },
 
     isChecked(idx, diffKey) {
@@ -243,7 +297,8 @@ export default {
       const a = v1.data || {}
       const b = v2.data || {}
       for (const k of new Set([...Object.keys(a), ...Object.keys(b)])) {
-        if (JSON.stringify(a[k]) !== JSON.stringify(b[k]) && !(empty(a[k]) && empty(b[k]))) return true
+        if (JSON.stringify(a[k]) !== JSON.stringify(b[k]) && !(empty(a[k]) && empty(b[k])))
+          return true
       }
       return false
     },
@@ -339,7 +394,11 @@ export default {
     <v-card>
       <v-toolbar density="compact">
         <v-toolbar-title>{{ $gettext('History') }}</v-toolbar-title>
-        <v-btn :icon="mdiClose" :aria-label="$gettext('Close')" @click="$emit('update:modelValue', false)" />
+        <v-btn
+          :icon="mdiClose"
+          :aria-label="$gettext('Close')"
+          @click="$emit('update:modelValue', false)"
+        />
       </v-toolbar>
       <v-card-text>
         <v-timeline side="end" align="start">
@@ -389,22 +448,36 @@ export default {
                       <template v-for="(block, bi) in entries" :key="bi">
                         <div role="group" :aria-label="block.title">
                           <div class="diff-block-title">{{ block.title }}</div>
-                          <div v-for="(entry, ei) in block.fields" :key="ei" class="diff-group" role="group" :aria-label="entry.label">
+                          <div
+                            v-for="(entry, ei) in block.fields"
+                            :key="ei"
+                            class="diff-group"
+                            role="group"
+                            :aria-label="entry.label"
+                          >
                             <div class="diff-row change-old" :aria-label="$gettext('Removed')">
                               <span class="diff-symbol" aria-hidden="true">−</span>
                               <span class="diff-label">{{ entry.label }}</span>
-                              <div class="diff-text"><span
-                                v-for="(word, wi) in entry.removed" :key="wi"
-                                :class="{ highlight: word.highlight }"
-                              >{{ word.value }}</span></div>
+                              <div class="diff-text">
+                                <span
+                                  v-for="(word, wi) in entry.removed"
+                                  :key="wi"
+                                  :class="{ highlight: word.highlight }"
+                                  >{{ word.value }}</span
+                                >
+                              </div>
                             </div>
                             <div class="diff-row change-new" :aria-label="$gettext('Added')">
                               <span class="diff-symbol" aria-hidden="true">+</span>
                               <span class="diff-label">{{ entry.label }}</span>
-                              <div class="diff-text"><span
-                                v-for="(word, wi) in entry.added" :key="wi"
-                                :class="{ highlight: word.highlight }"
-                              >{{ word.value }}</span></div>
+                              <div class="diff-text">
+                                <span
+                                  v-for="(word, wi) in entry.added"
+                                  :key="wi"
+                                  :class="{ highlight: word.highlight }"
+                                  >{{ word.value }}</span
+                                >
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -424,18 +497,26 @@ export default {
                           <div class="diff-row change-old" :aria-label="$gettext('Removed')">
                             <span class="diff-symbol" aria-hidden="true">−</span>
                             <span class="diff-label">{{ entry.label }}</span>
-                            <div class="diff-text"><span
-                              v-for="(word, wi) in entry.removed" :key="wi"
-                              :class="{ highlight: word.highlight }"
-                            >{{ word.value }}</span></div>
+                            <div class="diff-text">
+                              <span
+                                v-for="(word, wi) in entry.removed"
+                                :key="wi"
+                                :class="{ highlight: word.highlight }"
+                                >{{ word.value }}</span
+                              >
+                            </div>
                           </div>
                           <div class="diff-row change-new" :aria-label="$gettext('Added')">
                             <span class="diff-symbol" aria-hidden="true">+</span>
                             <span class="diff-label">{{ entry.label }}</span>
-                            <div class="diff-text"><span
-                              v-for="(word, wi) in entry.added" :key="wi"
-                              :class="{ highlight: word.highlight }"
-                            >{{ word.value }}</span></div>
+                            <div class="diff-text">
+                              <span
+                                v-for="(word, wi) in entry.added"
+                                :key="wi"
+                                :class="{ highlight: word.highlight }"
+                                >{{ word.value }}</span
+                              >
+                            </div>
                           </div>
                         </div>
                         <v-checkbox
@@ -540,22 +621,36 @@ export default {
                       <template v-for="(block, bi) in entries" :key="bi">
                         <div role="group" :aria-label="block.title">
                           <div class="diff-block-title">{{ block.title }}</div>
-                          <div v-for="(entry, didx) in block.fields" :key="didx" class="diff-group" role="group" :aria-label="entry.label">
+                          <div
+                            v-for="(entry, didx) in block.fields"
+                            :key="didx"
+                            class="diff-group"
+                            role="group"
+                            :aria-label="entry.label"
+                          >
                             <div class="diff-row change-old" :aria-label="$gettext('Removed')">
                               <span class="diff-symbol" aria-hidden="true">−</span>
                               <span class="diff-label">{{ entry.label }}</span>
-                              <div class="diff-text"><span
-                                v-for="(word, wi) in entry.removed" :key="wi"
-                                :class="{ highlight: word.highlight }"
-                              >{{ word.value }}</span></div>
+                              <div class="diff-text">
+                                <span
+                                  v-for="(word, wi) in entry.removed"
+                                  :key="wi"
+                                  :class="{ highlight: word.highlight }"
+                                  >{{ word.value }}</span
+                                >
+                              </div>
                             </div>
                             <div class="diff-row change-new" :aria-label="$gettext('Added')">
                               <span class="diff-symbol" aria-hidden="true">+</span>
                               <span class="diff-label">{{ entry.label }}</span>
-                              <div class="diff-text"><span
-                                v-for="(word, wi) in entry.added" :key="wi"
-                                :class="{ highlight: word.highlight }"
-                              >{{ word.value }}</span></div>
+                              <div class="diff-text">
+                                <span
+                                  v-for="(word, wi) in entry.added"
+                                  :key="wi"
+                                  :class="{ highlight: word.highlight }"
+                                  >{{ word.value }}</span
+                                >
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -575,18 +670,26 @@ export default {
                           <div class="diff-row change-old" :aria-label="$gettext('Removed')">
                             <span class="diff-symbol" aria-hidden="true">−</span>
                             <span class="diff-label">{{ entry.label }}</span>
-                            <div class="diff-text"><span
-                              v-for="(word, wi) in entry.removed" :key="wi"
-                              :class="{ highlight: word.highlight }"
-                            >{{ word.value }}</span></div>
+                            <div class="diff-text">
+                              <span
+                                v-for="(word, wi) in entry.removed"
+                                :key="wi"
+                                :class="{ highlight: word.highlight }"
+                                >{{ word.value }}</span
+                              >
+                            </div>
                           </div>
                           <div class="diff-row change-new" :aria-label="$gettext('Added')">
                             <span class="diff-symbol" aria-hidden="true">+</span>
                             <span class="diff-label">{{ entry.label }}</span>
-                            <div class="diff-text"><span
-                              v-for="(word, wi) in entry.added" :key="wi"
-                              :class="{ highlight: word.highlight }"
-                            >{{ word.value }}</span></div>
+                            <div class="diff-text">
+                              <span
+                                v-for="(word, wi) in entry.added"
+                                :key="wi"
+                                :class="{ highlight: word.highlight }"
+                                >{{ word.value }}</span
+                              >
+                            </div>
                           </div>
                         </div>
                         <v-checkbox

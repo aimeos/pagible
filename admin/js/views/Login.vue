@@ -123,7 +123,13 @@ export default {
 </script>
 
 <template>
-  <v-form ref="form" class="login" :class="{ show: login }" v-model="form" @submit.prevent="cmslogin()">
+  <v-form
+    ref="form"
+    class="login"
+    :class="{ show: login }"
+    v-model="form"
+    @submit.prevent="cmslogin()"
+  >
     <v-card :loading="loading" :elevation="2" :class="{ error: error }">
       <template v-slot:title><h1>PagibleAI CMS</h1></template>
 
@@ -223,8 +229,12 @@ export default {
 }
 
 @keyframes autofill-detect {
-  from { opacity: 0.99; }
-  to { opacity: 1; }
+  from {
+    opacity: 0.99;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .login input:-webkit-autofill {

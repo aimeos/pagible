@@ -95,16 +95,16 @@ export default {
     },
 
     order() {
-      if(this.sort?.column === 'ID') {
+      if (this.sort?.column === 'ID') {
         return this.sort?.order === 'DESC' ? this.$gettext('latest') : this.$gettext('oldest')
       }
 
       const labels = {
-        'BYVERSIONS_COUNT': this.$gettext('usage'),
-        'EDITOR': this.$gettext('editor'),
-        'LANG': this.$gettext('language'),
-        'MIME': this.$gettext('mime'),
-        'NAME': this.$gettext('name'),
+        BYVERSIONS_COUNT: this.$gettext('usage'),
+        EDITOR: this.$gettext('editor'),
+        LANG: this.$gettext('language'),
+        MIME: this.$gettext('mime'),
+        NAME: this.$gettext('name')
       }
 
       return labels[this.sort?.column] || this.sort?.column || ''
@@ -240,8 +240,8 @@ export default {
       const cache = this.$apollo.provider.defaultClient.cache
       cache.evict({ id: 'ROOT_QUERY', fieldName: 'files' })
 
-      Object.keys(cache.extract()).forEach(key => {
-        if(key.startsWith('File:')) {
+      Object.keys(cache.extract()).forEach((key) => {
+        if (key.startsWith('File:')) {
           cache.evict({ id: key })
         }
       })
@@ -392,8 +392,8 @@ export default {
       delete filter.trashed
       delete filter.publish
 
-      for(const key in filter) {
-        if(filter[key] === null) {
+      for (const key in filter) {
+        if (filter[key] === null) {
           delete filter[key]
         }
       }
@@ -556,7 +556,11 @@ export default {
 <template>
   <div class="header">
     <div class="bulk">
-      <v-checkbox-btn v-model="checked" @click.stop="toggle()" :aria-label="$gettext('Toggle selection')" />
+      <v-checkbox-btn
+        v-model="checked"
+        @click.stop="toggle()"
+        :aria-label="$gettext('Toggle selection')"
+      />
 
       <component
         :is="$vuetify.display.xs ? 'v-dialog' : 'v-menu'"

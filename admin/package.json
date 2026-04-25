@@ -22,7 +22,7 @@
     "test:unit": "vite optimize && cypress run --component",
     "test:unit:dev": "cypress open --component",
     "lint": "eslint --fix",
-    "format": "prettier --write src/",
+    "format": "prettier --write js/",
     "gettext:extract": "vue-gettext-extract",
     "gettext:compile": "vue-gettext-compile"
   },

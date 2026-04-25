@@ -324,8 +324,8 @@ export default {
       delete filter.publish
       delete filter.view
 
-      for(const key in filter) {
-        if(filter[key] === null) {
+      for (const key in filter) {
+        if (filter[key] === null) {
           delete filter[key]
         }
       }
@@ -488,8 +488,8 @@ export default {
       cache.evict({ id: 'ROOT_QUERY', fieldName: 'pages' })
       cache.evict({ id: 'ROOT_QUERY', fieldName: 'page' })
 
-      Object.keys(cache.extract()).forEach(key => {
-        if(key.startsWith('Page:')) {
+      Object.keys(cache.extract()).forEach((key) => {
+        if (key.startsWith('Page:')) {
           cache.evict({ id: key })
         }
       })
@@ -557,10 +557,19 @@ export default {
       const path = '/' + (node.path || '')
 
       if (node.domain) {
-        return this.$gettext('%{name} (%{lang}, path: %{path}, domain: %{domain})', { name, lang: node.lang || '', path, domain: node.domain })
+        return this.$gettext('%{name} (%{lang}, path: %{path}, domain: %{domain})', {
+          name,
+          lang: node.lang || '',
+          path,
+          domain: node.domain
+        })
       }
 
-      return this.$gettext('%{name} (%{lang}, path: %{path})', { name, lang: node.lang || '', path })
+      return this.$gettext('%{name} (%{lang}, path: %{path})', {
+        name,
+        lang: node.lang || '',
+        path
+      })
     },
 
     load(stat, node) {
@@ -599,18 +608,9 @@ export default {
           break
       }
 
-      this.movePage(
-        this.clip.node.id,
-        parent ? parent.data.id : null,
-        refid
-      ).then(() => {
+      this.movePage(this.clip.node.id, parent ? parent.data.id : null, refid).then(() => {
         const clipIdx = this.$refs.tree.getSiblings(stat).indexOf(this.clip.stat)
-        const index =
-          idx !== null
-            ? clipIdx >= 0 && clipIdx <= pos
-              ? pos
-              : pos + idx
-            : 0
+        const index = idx !== null ? (clipIdx >= 0 && clipIdx <= pos ? pos : pos + idx) : 0
 
         this.$refs.tree.move(this.clip.stat, parent, index)
 
@@ -924,8 +924,8 @@ export default {
       delete filter.publish
       delete filter.view
 
-      for(const key in filter) {
-        if(filter[key] === null) {
+      for (const key in filter) {
+        if (filter[key] === null) {
           delete filter[key]
         }
       }
@@ -1126,7 +1126,11 @@ export default {
 <template>
   <div class="header">
     <div class="bulk">
-      <v-checkbox-btn v-model="checked" @click.stop="toggle()" :aria-label="$gettext('Toggle selection')" />
+      <v-checkbox-btn
+        v-model="checked"
+        @click.stop="toggle()"
+        :aria-label="$gettext('Toggle selection')"
+      />
 
       <component
         :is="$vuetify.display.xs ? 'v-dialog' : 'v-menu'"
@@ -1282,9 +1286,20 @@ export default {
     :disableDrag="$vuetify.display.smAndDown || !user.can('page:move')"
     :i18n="{
       instructions: $gettext('Use arrow keys to navigate. Alt plus arrow keys to reorder.'),
-      movedToPosition: (position, total) => $gettext('Moved to position %{position} of %{total}', {position, total}),
-      outdentedToLevel: (level, position, total) => $gettext('Outdented to level %{level}, position %{position} of %{total}', {level, position, total}),
-      indentedToLevel: (level, position, total) => $gettext('Indented to level %{level}, position %{position} of %{total}', {level, position, total}),
+      movedToPosition: (position, total) =>
+        $gettext('Moved to position %{position} of %{total}', { position, total }),
+      outdentedToLevel: (level, position, total) =>
+        $gettext('Outdented to level %{level}, position %{position} of %{total}', {
+          level,
+          position,
+          total
+        }),
+      indentedToLevel: (level, position, total) =>
+        $gettext('Indented to level %{level}, position %{position} of %{total}', {
+          level,
+          position,
+          total
+        })
     }"
     :rtl="$vuetify.locale.isRtl"
     :watermark="false"
@@ -1495,7 +1510,9 @@ export default {
         <a class="item-aux" :href="url(node)" target="_blank" draggable="false">
           <div class="item-domain">{{ node.domain }}</div>
           <span class="item-path item-subtitle">{{ '/' + node.path }}</span>
-          <span v-if="node.to" class="item-to item-subtitle"> ➔ {{ node.to.substring(0, 50) + (node.to.length > 50 ? '...' : '') }}</span>
+          <span v-if="node.to" class="item-to item-subtitle">
+            ➔ {{ node.to.substring(0, 50) + (node.to.length > 50 ? '...' : '') }}</span
+          >
         </a>
       </div>
     </template>

@@ -2,7 +2,6 @@
  * @license LGPL, https://opensource.org/license/lgpl-3-0
  */
 
-
 /**
  * Applies conflict info from a save response to a detail view
  *
@@ -14,7 +13,6 @@ export function applyConflict(vm, changed) {
   vm.changed = changed
   vm.vchanged = vm.hasConflict
 }
-
 
 /**
  * Handles save result: resets state, applies conflicts or shows success message
@@ -39,7 +37,6 @@ export function applyResult(vm, changed, successMsg, quiet) {
   }
 }
 
-
 /**
  * Returns merged/conflict CSS class state for a changed entry
  *
@@ -54,7 +51,6 @@ export function changedState(changed, key) {
     conflict: !!info?.overwritten && !info?.resolved
   }
 }
-
 
 /**
  * Checks if any conflict sections have unresolved entries

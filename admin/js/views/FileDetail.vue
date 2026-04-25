@@ -105,11 +105,19 @@ export default {
     },
 
     publish(at = null) {
-      publishItem(this, 'file', {
-        success: this.$gettext('File published successfully'),
-        scheduled: (d) => this.$gettext('File scheduled for publishing at %{date}', { date: d.toLocaleDateString() }),
-        error: this.$gettext('Error publishing file')
-      }, at)
+      publishItem(
+        this,
+        'file',
+        {
+          success: this.$gettext('File published successfully'),
+          scheduled: (d) =>
+            this.$gettext('File scheduled for publishing at %{date}', {
+              date: d.toLocaleDateString()
+            }),
+          error: this.$gettext('Error publishing file')
+        },
+        at
+      )
     },
 
     published() {
@@ -294,9 +302,7 @@ export default {
   <v-main class="file-details" :aria-label="$gettext('File')">
     <v-form @submit.prevent>
       <v-tabs fixed-tabs v-model="tab">
-        <v-tab value="file" :class="{ changed: dirty, error: error }">{{
-          $gettext('File')
-        }}</v-tab>
+        <v-tab value="file" :class="{ changed: dirty, error: error }">{{ $gettext('File') }}</v-tab>
         <v-tab value="refs">{{ $gettext('Used by') }}</v-tab>
       </v-tabs>
 
@@ -339,7 +345,9 @@ export default {
       @apply="apply"
       @use="use($event)"
     />
-    <ChangesDialog v-model="vchanged" :changed="changed"
+    <ChangesDialog
+      v-model="vchanged"
+      :changed="changed"
       :targets="{ data: item }"
       @resolve="dirty = true"
     />

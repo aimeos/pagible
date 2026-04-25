@@ -54,7 +54,13 @@ export default {
 </script>
 
 <template>
-  <v-navigation-drawer v-model="drawer.aside" mobile-breakpoint="md" location="end" tag="aside" :aria-label="$gettext('Meta data')">
+  <v-navigation-drawer
+    v-model="drawer.aside"
+    mobile-breakpoint="md"
+    location="end"
+    tag="aside"
+    :aria-label="$gettext('Meta data')"
+  >
     <v-list>
       <v-list-subheader>{{ $gettext('Meta data') }}</v-list-subheader>
       <v-list-item v-for="(value, key) in values" :key="key" rounded="lg">

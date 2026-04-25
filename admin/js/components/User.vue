@@ -116,7 +116,12 @@ export default {
       </v-toolbar>
 
       <v-list @click="menu['lang'] = false" role="listbox">
-        <v-list-item v-for="(_, code) in i18n.available" :key="code" role="option" @click="change(code)">
+        <v-list-item
+          v-for="(_, code) in i18n.available"
+          :key="code"
+          role="option"
+          @click="change(code)"
+        >
           {{ languages.translate(code) }} ({{ code }})
         </v-list-item>
       </v-list>

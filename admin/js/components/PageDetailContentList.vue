@@ -744,7 +744,11 @@ export default {
 
     <div class="header">
       <div v-if="user.can('page:save')" class="bulk">
-        <v-checkbox-btn v-model="checked" @click.stop="toggle()" :aria-label="$gettext('Toggle selection')" />
+        <v-checkbox-btn
+          v-model="checked"
+          @click.stop="toggle()"
+          :aria-label="$gettext('Toggle selection')"
+        />
         <v-menu>
           <template v-slot:activator="{ props }">
             <v-btn
