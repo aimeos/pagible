@@ -7,7 +7,7 @@ import ChangesDialog from '../components/ChangesDialog.vue'
 import HistoryDialog from '../components/HistoryDialog.vue'
 import ElementDetailRefs from '../components/ElementDetailRefs.vue'
 import ElementDetailItem from '../components/ElementDetailItem.vue'
-import { useUserStore, useDrawerStore, useMessageStore, useViewStack } from '../stores'
+import { useDirtyStore, useUserStore, useDrawerStore, useMessageStore, useViewStack } from '../stores'
 import { applyResult, hasUnresolved } from '../merge'
 import { write, translate } from '../ai'
 import { subscribe } from '../echo'
@@ -57,12 +57,14 @@ export default {
   }),
 
   setup() {
+    const dirtyStore = useDirtyStore()
     const viewStack = useViewStack()
     const messages = useMessageStore()
     const drawer = useDrawerStore()
     const user = useUserStore()
 
     return {
+      dirtyStore,
       user,
       drawer,
       messages,
@@ -77,6 +79,8 @@ export default {
   },
 
   created() {
+    this.dirtyStore.register(() => this.save(true))
+
     if (!this.item?.id || !this.user.can('element:view')) {
       return
     }
@@ -154,6 +158,7 @@ export default {
   },
 
   beforeUnmount() {
+    this.dirtyStore.unregister()
     this.echoCleanup?.()
   },
 
@@ -164,6 +169,12 @@ export default {
   },
 
   methods: {
+    apply(changes) {
+      Object.assign(this.item, changes)
+      this.dirty = true
+      this.vhistory = false
+    },
+
     errorUpdated(event) {
       this.error = event
     },
@@ -409,6 +420,12 @@ export default {
           this.$log(`ElementDetail::versions(): Error fetching element versions`, id, error)
         })
     }
+  },
+
+  watch: {
+    dirty(value) {
+      this.dirtyStore.set(value)
+    }
   }
 }
 </script>
@@ -574,6 +591,7 @@ export default {
       }"
       :load="() => versions(item.id)"
       @revert="revertVersion"
+      @apply="apply"
       @use="use($event)"
     />
     <ChangesDialog v-model="vchanged" :changed="changed"

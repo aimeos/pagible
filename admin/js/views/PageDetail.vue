@@ -16,6 +16,7 @@ import { txlocales } from '../utils'
 import { subscribe } from '../echo'
 import {
   useAppStore,
+  useDirtyStore,
   useUserStore,
   useDrawerStore,
   useLanguageStore,
@@ -63,6 +64,7 @@ export default {
   },
 
   setup() {
+    const dirtyStore = useDirtyStore()
     const viewStack = useViewStack()
     const languages = useLanguageStore()
     const messages = useMessageStore()
@@ -73,6 +75,7 @@ export default {
 
     return {
       app,
+      dirtyStore,
       user,
       drawer,
       viewStack,
@@ -198,6 +201,7 @@ export default {
   },
 
   created() {
+    this.dirtyStore.register(() => this.save(true))
     this.schemas.load()
 
     if (!this.item?.id || !this.user.can('page:view')) {
@@ -257,10 +261,18 @@ export default {
   },
 
   beforeUnmount() {
+    this.dirtyStore.unregister()
     this.echoCleanup?.()
   },
 
   methods: {
+    apply(changes) {
+      Object.assign(this.item, changes)
+      this.dirty.page = true
+      if(changes.content) this.dirty.content = true
+      this.vhistory = false
+    },
+
     clean(data, type) {
       if (data && type) {
         data = JSON.parse(JSON.stringify(data)) // deep copy
@@ -753,6 +765,10 @@ export default {
   watch: {
     asidePage(newAside) {
       this.aside = newAside
+    },
+
+    hasChanged(value) {
+      this.dirtyStore.set(value)
     }
   }
 }
@@ -993,6 +1009,7 @@ export default {
       }"
       :load="() => versions(item.id)"
       @revert="revertVersion"
+      @apply="apply"
       @use="use($event)"
     />
     <ChangesDialog v-model="vchanged" :changed="changed"
