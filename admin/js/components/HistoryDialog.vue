@@ -2,7 +2,7 @@
 
 <script>
 import { diffWords } from 'diff'
-import { mdiHistory, mdiClose } from '@mdi/js'
+import { mdiClose } from '@mdi/js'
 import { empty, stringify, url, srcset } from '../utils'
 
 export default {
@@ -16,7 +16,7 @@ export default {
   emits: ['update:modelValue', 'apply', 'use', 'revert'],
 
   setup() {
-    return { mdiHistory, mdiClose, url, srcset }
+    return { mdiClose, url, srcset }
   },
 
   data: () => ({
@@ -336,21 +336,11 @@ export default {
     max-width="1200"
     scrollable
   >
-    <v-card :prepend-icon="mdiHistory">
-      <template v-slot:append>
-        <v-btn
-          :aria-label="$gettext('Close')"
-          @click="$emit('update:modelValue', false)"
-          :icon="mdiClose"
-          variant="text"
-        />
-      </template>
-      <template v-slot:title>
-        {{ $gettext('History') }}
-      </template>
-
-      <v-divider></v-divider>
-
+    <v-card>
+      <v-toolbar density="compact">
+        <v-toolbar-title>{{ $gettext('History') }}</v-toolbar-title>
+        <v-btn :icon="mdiClose" :aria-label="$gettext('Close')" @click="$emit('update:modelValue', false)" />
+      </v-toolbar>
       <v-card-text>
         <v-timeline side="end" align="start">
           <v-timeline-item v-if="loading" dot-color="grey-lighten-1" size="small" width="100%">

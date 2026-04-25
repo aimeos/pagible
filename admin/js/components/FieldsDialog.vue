@@ -53,26 +53,15 @@ export default {
     scrollable
   >
     <v-card>
-      <template v-slot:append>
+      <v-toolbar density="compact">
+        <v-toolbar-title>{{ $gettext('Content Element') }}</v-toolbar-title>
         <v-btn
           v-if="!readonly && !error && element._changed"
           @click="$emit('update:element', element)"
           variant="outlined"
-          >{{ $gettext('Save') }}</v-btn
-        >
-        <v-btn
-          @click="$emit('update:modelValue', false)"
-          :title="$gettext('Close')"
-          :icon="mdiClose"
-          variant="text"
-        />
-      </template>
-      <template v-slot:title>
-        {{ $gettext('Content Element') }}
-      </template>
-
-      <v-divider></v-divider>
-
+        >{{ $gettext('Save') }}</v-btn>
+        <v-btn :icon="mdiClose" :aria-label="$gettext('Close')" @click="$emit('update:modelValue', false)" />
+      </v-toolbar>
       <v-card-text>
         <Fields
           v-model:data="element.data"

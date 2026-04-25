@@ -33,20 +33,10 @@ export default {
     scrollable
   >
     <v-card>
-      <template v-slot:append>
-        <v-btn
-          :title="$gettext('Close')"
-          @click="$emit('update:modelValue', false)"
-          :icon="mdiClose"
-          variant="text"
-        />
-      </template>
-      <template v-slot:title>
-        {{ $gettext('Content elements') }}
-      </template>
-
-      <v-divider></v-divider>
-
+      <v-toolbar density="compact">
+        <v-toolbar-title>{{ $gettext('Content elements') }}</v-toolbar-title>
+        <v-btn :icon="mdiClose" :aria-label="$gettext('Close')" @click="$emit('update:modelValue', false)" />
+      </v-toolbar>
       <v-card-text>
         <SchemaItems type="content" @add="$emit('add', $event)" />
 

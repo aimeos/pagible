@@ -35,7 +35,7 @@ describe('FileAiDialog', () => {
 
   it('renders a close button', () => {
     mountDialog()
-    cy.get('button[title="Close"]').should('exist')
+    cy.get('button[aria-label="Close"]').should('exist')
   })
 
   it('emits update:modelValue when close is clicked', () => {
@@ -44,7 +44,7 @@ describe('FileAiDialog', () => {
       props: { modelValue: true, 'onUpdate:modelValue': onUpdate },
       global: { stubs },
     })
-    cy.get('button[title="Close"]').click()
+    cy.get('button[aria-label="Close"]').click()
     cy.get('@update').should('have.been.calledWith', false)
   })
 
@@ -65,12 +65,12 @@ describe('FileAiDialog', () => {
 
   it('shows dictate button with audio:transcribe permission', () => {
     mountDialog({}, { 'audio:transcribe': true })
-    cy.get('button[title="Dictate"]').should('exist')
+    cy.get('button[aria-label="Dictate"]').should('exist')
   })
 
   it('hides dictate button without audio:transcribe permission', () => {
     mountDialog()
-    cy.get('button[title="Dictate"]').should('not.exist')
+    cy.get('button[aria-label="Dictate"]').should('not.exist')
   })
 
   it('renders the FileListItems stub for selecting images', () => {
