@@ -863,7 +863,7 @@ export default {
               active: (!item.published || hasChanged) && !hasError && user.can('page:publish'),
               error: hasError
             }"
-            class="menu-publishat"
+            class="menu-publish"
           >
             <v-icon>
               <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
@@ -1043,11 +1043,6 @@ export default {
 .v-app-bar .v-btn.menu-save.warning {
   background-color: rgba(var(--v-theme-warning), 0.75);
   color: rgb(var(--v-theme-on-warning));
-}
-
-.v-app-bar .v-btn.menu-publishat.active {
-  background-color: rgba(var(--v-theme-primary), 0.875);
-  color: rgb(var(--v-theme-on-primary));
 }
 
 .v-app-bar .v-btn.menu-publish.active {

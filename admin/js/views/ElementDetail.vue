@@ -616,4 +616,5 @@ export default {
 .v-toolbar-title {
   margin-inline-start: 0;
 }
+
 </style>

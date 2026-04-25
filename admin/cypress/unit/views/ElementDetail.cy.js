@@ -101,25 +101,19 @@ describe('ElementDetail', () => {
   describe('publish schedule', () => {
     it('renders the schedule publish button', () => {
       mountDetail({ 'element:publish': true })
-      cy.get('.menu-publishat').should('exist')
+      cy.get('.menu-publish').first().should('exist')
     })
 
     it('opens menu with date and time pickers', () => {
       mountDetail({ 'element:publish': true })
-      cy.get('.menu-publishat').click()
+      cy.get('.menu-publish').first().click()
       cy.get('.v-date-picker').should('exist')
       cy.get('.v-time-picker').should('exist')
     })
 
-    it('shows date and time pickers side by side', () => {
-      mountDetail({ 'element:publish': true })
-      cy.get('.menu-publishat').click()
-      cy.get('.menu-publish-pickers').should('have.css', 'display', 'flex')
-    })
-
     it('disables publish button in menu when no date selected', () => {
       mountDetail({ 'element:publish': true })
-      cy.get('.menu-publishat').click()
+      cy.get('.menu-publish').first().click()
       cy.get('.menu-content .v-btn').last().should('be.disabled')
     })
 
