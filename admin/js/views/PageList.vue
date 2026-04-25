@@ -33,7 +33,7 @@ import Navigation from '../components/Navigation.vue'
 import PageListItems from '../components/PageListItems.vue'
 import { useUserStore, useDrawerStore, useMessageStore, useViewStack } from '../stores'
 import { recording } from '../audio'
-import { locales } from '../utils'
+import { languageFilter } from '../utils'
 import { transcribe } from '../ai'
 
 export default {
@@ -111,7 +111,7 @@ export default {
       mdiCheckBold,
       mdiMicrophone,
       mdiMicrophoneOutline,
-      locales,
+      languageFilter,
       transcribe
     }
   },
@@ -135,26 +135,6 @@ export default {
   },
 
   methods: {
-    languages() {
-      const list = [
-        {
-          title: this.$gettext('All'),
-          icon: mdiPlaylistCheck,
-          value: { lang: null }
-        }
-      ]
-
-      for (const entry of this.locales()) {
-        list.push({
-          title: entry.title,
-          icon: mdiTranslate,
-          value: { lang: entry.value }
-        })
-      }
-
-      return list
-    },
-
     open(item) {
       this.viewStack.openView(PageDetail, { item: item })
     },
@@ -446,7 +426,7 @@ export default {
       {
         key: 'lang',
         title: $gettext('languages'),
-        items: languages()
+        items: languageFilter(mdiPlaylistCheck, mdiTranslate)
       }
     ]"
   />

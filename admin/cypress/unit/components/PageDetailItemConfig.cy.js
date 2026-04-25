@@ -1,4 +1,4 @@
-import PageDetailItemConfig from '../../../js/components/PageDetailItemConfig.vue'
+import PageDetailItemSection from '../../../js/components/PageDetailItemSection.vue'
 import { useUserStore, useSchemaStore } from '../../../js/stores'
 
 const stubs = {
@@ -34,9 +34,11 @@ function setupSchemaPlugin() {
 }
 
 function mountConfig(props = {}, perms = {}) {
-  return cy.mount(PageDetailItemConfig, {
+  return cy.mount(PageDetailItemSection, {
     props: {
       item: { ...item, config: { ...item.config } },
+      section: 'config',
+      permission: 'page:config',
       assets: {},
       ...props,
     },
@@ -50,7 +52,7 @@ function mountConfig(props = {}, perms = {}) {
   })
 }
 
-describe('PageDetailItemConfig', () => {
+describe('PageDetailItemSection (config)', () => {
   beforeEach(() => {
     cy.on('uncaught:exception', () => false)
   })

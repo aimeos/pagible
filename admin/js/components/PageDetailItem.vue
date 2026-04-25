@@ -1,15 +1,13 @@
 /** @license LGPL, https://opensource.org/license/lgpl-3-0 */
 
 <script>
-import PageDetailItemMeta from './PageDetailItemMeta.vue'
 import PageDetailItemProps from './PageDetailItemProps.vue'
-import PageDetailItemConfig from './PageDetailItemConfig.vue'
+import PageDetailItemSection from './PageDetailItemSection.vue'
 
 export default {
   components: {
-    PageDetailItemMeta,
     PageDetailItemProps,
-    PageDetailItemConfig
+    PageDetailItemSection
   },
 
   props: {
@@ -95,8 +93,9 @@ export default {
         </v-window-item>
 
         <v-window-item value="meta">
-          <PageDetailItemMeta
+          <PageDetailItemSection
             ref="meta"
+            section="meta"
             :item="item"
             :assets="assets"
             @change="update('meta')"
@@ -105,8 +104,10 @@ export default {
         </v-window-item>
 
         <v-window-item value="config">
-          <PageDetailItemConfig
+          <PageDetailItemSection
             ref="config"
+            section="config"
+            permission="page:config"
             :item="item"
             :assets="assets"
             @change="update('config')"

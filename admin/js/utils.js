@@ -66,6 +66,33 @@ export function locales(none = false) {
 }
 
 /**
+ * Returns filter dropdown items for language selection in list views
+ *
+ * @param {String} allIcon Icon for the "All" item
+ * @param {String} langIcon Icon for each language item
+ * @returns {Array} List of { title, icon, value } objects
+ */
+export function languageFilter(allIcon, langIcon) {
+  const list = [
+    {
+      title: gettext.$gettext('All'),
+      icon: allIcon,
+      value: { lang: null }
+    }
+  ]
+
+  for (const entry of locales()) {
+    list.push({
+      title: entry.title,
+      icon: langIcon,
+      value: { lang: entry.value }
+    })
+  }
+
+  return list
+}
+
+/**
  * Builds an HTML srcset string from a width-to-path map
  *
  * @param {Object} map Object mapping widths to file paths, e.g. {200: 'img/small.jpg', 800: 'img/large.jpg'}
