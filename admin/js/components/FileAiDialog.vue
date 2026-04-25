@@ -233,27 +233,18 @@ export default {
     scrollable
   >
     <v-card :loading="loading ? 'primary' : false">
-      <template v-slot:append>
+      <v-toolbar density="compact">
+        <v-toolbar-title>{{ $gettext('Create image') }}</v-toolbar-title>
         <v-btn
           v-if="user.can('audio:transcribe')"
           @click="record()"
           :class="{ dictating: audio }"
           :icon="audio ? mdiMicrophoneOutline : mdiMicrophone"
-          :title="$gettext('Dictate')"
+          :aria-label="$gettext('Dictate')"
           :loading="dictating"
-          variant="text"
         />
-        <v-btn
-          @click="$emit('update:modelValue', false)"
-          :title="$gettext('Close')"
-          :icon="mdiClose"
-          variant="text"
-        />
-      </template>
-      <template v-slot:title>
-        {{ $gettext('Create image') }}
-      </template>
-
+        <v-btn :icon="mdiClose" :aria-label="$gettext('Close')" @click="$emit('update:modelValue', false)" />
+      </v-toolbar>
       <v-card-text>
         <v-textarea
           v-model="chat"

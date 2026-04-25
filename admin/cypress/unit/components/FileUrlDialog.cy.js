@@ -30,7 +30,7 @@ describe('FileUrlDialog', () => {
 
   it('renders a close button', () => {
     mountDialog()
-    cy.get('button[title="Close"]').should('exist')
+    cy.get('button[aria-label="Close"]').should('exist')
   })
 
   it('emits update:modelValue when close is clicked', () => {
@@ -39,7 +39,7 @@ describe('FileUrlDialog', () => {
       props: { modelValue: true, 'onUpdate:modelValue': onUpdate },
       global: { stubs },
     })
-    cy.get('button[title="Close"]').click({ force: true })
+    cy.get('button[aria-label="Close"]').click({ force: true })
     cy.get('@update').should('have.been.calledWith', false)
   })
 
