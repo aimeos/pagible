@@ -296,7 +296,7 @@ jobs:
               1) SPECS="cypress/unit/components/**/*.cy.{js,ts}" ;;
               2) SPECS="cypress/unit/*.cy.{js,ts},cypress/unit/js/**/*.cy.{js,ts},cypress/unit/views/**/*.cy.{js,ts}" ;;
             esac
-            npx cypress run --component --spec "$SPECS"
+            npx cypress run --component --parallel --spec "$SPECS"
 
   "admin-e2e":
     docker:
@@ -317,7 +317,7 @@ jobs:
             - ~/.cache/Cypress
       - run: npm run build
       - run: npx start-server-and-test preview http://localhost:4173 \
-          "npx cypress run --spec $(circleci tests glob 'cypress/e2e/**/*.cy.{js,ts}' | circleci tests split --split-by=timings | tr '\n' ',')"
+          "npx cypress run --parallel --spec $(circleci tests glob 'cypress/e2e/**/*.cy.{js,ts}' | circleci tests split --split-by=timings | tr '\n' ',')"
       - store_artifacts:
           path: cypress
 
