@@ -92,6 +92,7 @@ export default {
 
 <template>
   <v-btn
+    class="theme-toggle"
     @click="toggleTheme()"
     :title="$gettext('Toggle light/dark mode')"
     :icon="theme.global.current.value.dark ? mdiWhiteBalanceSunny : mdiWeatherNight"
@@ -106,7 +107,7 @@ export default {
     max-width="300"
   >
     <template #activator="{ props }">
-      <v-btn v-bind="props" :title="$gettext('Switch language')" :icon="mdiWeb" variant="text" />
+      <v-btn v-bind="props" class="lang-switch" :title="$gettext('Switch language')" :icon="mdiWeb" variant="text" />
     </template>
 
     <v-card>

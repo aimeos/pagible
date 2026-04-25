@@ -16,16 +16,16 @@ function mountUser(perms = {}) {
 describe('User', () => {
   it('renders the theme toggle button', () => {
     mountUser()
-    cy.get('button[title="Toggle light/dark mode"]').should('exist')
+    cy.get('.theme-toggle').should('exist')
   })
 
   it('renders the language switch button', () => {
     mountUser()
-    cy.get('button[title="Switch language"]').should('exist')
+    cy.get('.lang-switch').should('exist')
   })
 
   it('renders the theme toggle with sun or moon icon', () => {
     mountUser()
-    cy.get('button[title="Toggle light/dark mode"] .v-icon').should('exist')
+    cy.get('.theme-toggle .v-icon').should('exist')
   })
 })

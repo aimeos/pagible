@@ -16,7 +16,7 @@
 import { mount } from 'cypress/vue'
 import { h } from 'vue'
 import { createVuetify } from 'vuetify'
-import { VApp } from 'vuetify/components'
+import { VApp, VMenu, VDialog } from 'vuetify/components'
 import * as directives from 'vuetify/directives'
 import { createPinia, setActivePinia } from 'pinia'
 import { createGettext } from 'vue3-gettext'
@@ -64,7 +64,7 @@ let _restorePrevious = null
 // ---------------------------------------------------------------------------
 
 const vuetify = createVuetify({
-  components: { VApp },
+  components: { VApp, VMenu, VDialog },
   directives,
   icons: { defaultSet: 'mdi' },
   defaults: {
