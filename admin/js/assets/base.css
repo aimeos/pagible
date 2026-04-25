@@ -267,6 +267,14 @@ input:-webkit-autofill:focus {
   align-items: center;
 }
 
+.v-time-picker-controls__time {
+  scale: 0.75;
+}
+
+.v-time-picker-clock {
+  margin: auto;
+}
+
 .header {
   display: flex;
   flex-wrap: wrap;
@@ -316,6 +324,15 @@ input:-webkit-autofill:focus {
 
 .menu-content > .v-btn {
   width: 100%;
+}
+
+.menu-publish-pickers {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.menu-publish-pickers > .v-time-picker {
+  flex: 0 0 auto;
 }
 
 .loading,

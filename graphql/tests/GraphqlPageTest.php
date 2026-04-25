@@ -1073,6 +1073,33 @@ class GraphqlPageTest extends GraphqlTestAbstract
     }
 
 
+    public function testPubPageAtWithTime()
+    {
+        $this->seed( CmsSeeder::class );
+
+        $page = Page::where('tag', 'root')->firstOrFail();
+
+        $response = $this->actingAs( $this->user )->graphQL( '
+            mutation {
+                pubPage(id: ["' . $page->id . '"], at: "2099-06-15 14:30:00") {
+                    id
+                }
+            }
+        ' );
+
+        $response->assertJson( [
+            'data' => [
+                'pubPage' => [[
+                    'id' => (string) $page->id
+                ]],
+            ]
+        ] );
+
+        $page = Page::with( 'latest' )->findOrFail( $page->id );
+        $this->assertStringContainsString( '14:30:00', $page->latest->publish_at );
+    }
+
+
     public function testPurgePage()
     {
         $this->seed( CmsSeeder::class );

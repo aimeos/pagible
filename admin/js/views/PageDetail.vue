@@ -107,6 +107,7 @@ export default {
       latest: null,
       pubmenu: null,
       publishAt: null,
+      publishTime: null,
       publishing: false,
       translating: false,
       vhistory: false,
@@ -451,7 +452,7 @@ export default {
                 this.item.publish_at = at
                 this.messages.add(
                   this.$gettext('Page scheduled for publishing at %{date}', {
-                    date: at.toLocaleDateString()
+                    date: at.toLocaleString()
                   }),
                   'info'
                 )
@@ -470,7 +471,14 @@ export default {
     },
 
     published() {
-      this.publish(this.publishAt)
+      const at = new Date(this.publishAt)
+
+      if (this.publishTime) {
+        const [hours, minutes] = this.publishTime.split(':').map(Number)
+        at.setHours(hours, minutes, 0, 0)
+      }
+
+      this.publish(at)
       this.pubmenu = false
     },
 
@@ -868,7 +876,10 @@ export default {
           </v-btn>
         </template>
         <div class="menu-content">
-          <v-date-picker v-model="publishAt" hide-header show-adjacent-months />
+          <div class="menu-publish-pickers">
+            <v-date-picker v-model="publishAt" hide-header show-adjacent-months />
+            <v-time-picker v-model="publishTime" :allowed-minutes="[0,5,10,15,20,25,30,35,40,45,50,55]" format="24hr" density="compact" hide-title />
+          </div>
           <v-btn
             @click="published"
             :disabled="!publishAt || hasError"

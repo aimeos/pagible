@@ -176,6 +176,65 @@ describe('FileDetail', () => {
     })
   })
 
+  describe('publish schedule', () => {
+    it('renders the schedule publish button', () => {
+      mountDetail({ 'file:publish': true })
+      cy.get('.menu-publishat').should('exist')
+    })
+
+    it('opens menu with date and time pickers', () => {
+      mountDetail({ 'file:publish': true })
+      cy.get('.menu-publishat').click()
+      cy.get('.v-date-picker').should('exist')
+      cy.get('.v-time-picker').should('exist')
+    })
+
+    it('shows date and time pickers side by side', () => {
+      mountDetail({ 'file:publish': true })
+      cy.get('.menu-publishat').click()
+      cy.get('.menu-publish-pickers').should('have.css', 'display', 'flex')
+    })
+
+    it('disables publish button in menu when no date selected', () => {
+      mountDetail({ 'file:publish': true })
+      cy.get('.menu-publishat').click()
+      cy.get('.menu-content .v-btn').last().should('be.disabled')
+    })
+
+    it('published() combines date and time', () => {
+      mountDetail({ 'file:publish': true }).then(() => {
+        const vm = Cypress.vueWrapper.findComponent(FileDetail).vm
+        vm.publishAt = new Date(2026, 5, 15)
+        vm.publishTime = '14:30'
+        cy.spy(vm, 'publish').as('publishSpy')
+        vm.published()
+        cy.get('@publishSpy').should('have.been.calledOnce').then(() => {
+          const arg = vm.publish.args[0][0]
+          expect(arg.getFullYear()).to.equal(2026)
+          expect(arg.getMonth()).to.equal(5)
+          expect(arg.getDate()).to.equal(15)
+          expect(arg.getHours()).to.equal(14)
+          expect(arg.getMinutes()).to.equal(30)
+        })
+      })
+    })
+
+    it('published() uses midnight when no time selected', () => {
+      mountDetail({ 'file:publish': true }).then(() => {
+        const vm = Cypress.vueWrapper.findComponent(FileDetail).vm
+        vm.publishAt = new Date(2026, 5, 15)
+        vm.publishTime = null
+        cy.spy(vm, 'publish').as('publishSpy')
+        vm.published()
+        cy.get('@publishSpy').should('have.been.calledOnce').then(() => {
+          const arg = vm.publish.args[0][0]
+          expect(arg.getHours()).to.equal(0)
+          expect(arg.getMinutes()).to.equal(0)
+        })
+      })
+    })
+  })
+
   describe('conflict UI', () => {
     it('hides changes button when changed is null', () => {
       mountDetail()

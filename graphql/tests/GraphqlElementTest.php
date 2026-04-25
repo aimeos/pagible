@@ -530,6 +530,33 @@ class GraphqlElementTest extends GraphqlTestAbstract
     }
 
 
+    public function testPubElementAtWithTime()
+    {
+        $this->seed( CmsSeeder::class );
+
+        $element = Element::where( 'type', 'footer' )->firstOrFail();
+
+        $response = $this->actingAs( $this->user )->graphQL( '
+            mutation {
+                pubElement(id: ["' . $element->id . '"], at: "2099-06-15 14:30:00") {
+                    id
+                }
+            }
+        ' );
+
+        $response->assertJson( [
+            'data' => [
+                'pubElement' => [[
+                    'id' => (string) $element->id
+                ]],
+            ]
+        ] );
+
+        $element = Element::with( 'latest' )->findOrFail( $element->id );
+        $this->assertStringContainsString( '14:30:00', $element->latest->publish_at );
+    }
+
+
     public function testPurgeElement()
     {
         $this->seed( CmsSeeder::class );
