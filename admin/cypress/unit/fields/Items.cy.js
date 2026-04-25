@@ -145,7 +145,7 @@ describe('Items', () => {
       modelValue: [{ title: 'Item' }],
       config: itemConfig,
     })
-    cy.get('.v-expansion-panel button[title="Actions"]').should('exist')
+    cy.get('.v-expansion-panel-title .v-btn--icon').should('exist')
   })
 
   it('hides action menu buttons in readonly mode', () => {
@@ -154,7 +154,7 @@ describe('Items', () => {
       config: itemConfig,
       readonly: true,
     })
-    cy.get('.v-expansion-panel button[title="Actions"]').should('not.exist')
+    cy.get('.v-expansion-panel-title .v-btn--icon').should('not.exist')
   })
 
   it('renders field labels from config', () => {
