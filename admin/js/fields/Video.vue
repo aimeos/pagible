@@ -14,6 +14,7 @@ import { default as FileComp } from './File.vue'
 
 export default {
   extends: FileComp,
+  inheritAttrs: false,
 
   setup() {
     return {

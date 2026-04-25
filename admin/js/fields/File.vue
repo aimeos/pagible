@@ -17,6 +17,8 @@ import FileDialog from '../components/FileDialog.vue'
 import FileDetail from '../views/FileDetail.vue'
 
 export default {
+  inheritAttrs: false,
+
   components: {
     FileUrlDialog,
     FileDetail, // eslint-disable-line vue/no-unused-components -- used programmatically via openView()
