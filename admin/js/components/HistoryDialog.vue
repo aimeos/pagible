@@ -1,7 +1,7 @@
 /** @license LGPL, https://opensource.org/license/lgpl-3-0 */
 
 <script>
-import { mdiHistory, mdiClose } from '@mdi/js'
+import { mdiClose } from '@mdi/js'
 import { url, srcset } from '../utils'
 import { jsonDiff } from 'diff'
 
@@ -28,7 +28,7 @@ export default {
   emits: ['update:modelValue', 'use', 'revert'],
 
   setup() {
-    return { mdiHistory, mdiClose, url, srcset }
+    return { mdiClose, url, srcset }
   },
 
   data: () => ({
@@ -121,21 +121,11 @@ export default {
     max-width="1200"
     scrollable
   >
-    <v-card :prepend-icon="mdiHistory">
-      <template v-slot:append>
-        <v-btn
-          :title="$gettext('Close')"
-          @click="$emit('update:modelValue', false)"
-          :icon="mdiClose"
-          variant="text"
-        />
-      </template>
-      <template v-slot:title>
-        {{ $gettext('History') }}
-      </template>
-
-      <v-divider></v-divider>
-
+    <v-card>
+      <v-toolbar density="compact">
+        <v-toolbar-title>{{ $gettext('History') }}</v-toolbar-title>
+        <v-btn :icon="mdiClose" :aria-label="$gettext('Close')" @click="$emit('update:modelValue', false)" />
+      </v-toolbar>
       <v-card-text>
         <v-timeline side="end" align="start">
           <v-timeline-item v-if="loading" dot-color="grey-lighten-1" size="small" width="100%">
