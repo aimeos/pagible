@@ -198,12 +198,12 @@ describe('FileDetail', () => {
       })
     })
 
-    it('uses warning color on save button when hasConflict is true', () => {
+    it('uses warning class on save button when hasConflict is true', () => {
       mountDetail({ 'file:save': true }).then(() => {
         const vm = Cypress.vueWrapper.findComponent(FileDetail).vm
         vm.changed = { editor: 'x', data: { name: { previous: 'a', current: 'b', overwritten: 'c' } } }
         vm.dirty = true
-        cy.get('.menu-save').should('have.class', 'bg-warning')
+        cy.get('.menu-save').should('have.class', 'warning')
       })
     })
 

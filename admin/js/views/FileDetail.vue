@@ -4,25 +4,20 @@
 import gql from 'graphql-tag'
 import AsideMeta from '../components/AsideMeta.vue'
 import ChangesDialog from '../components/ChangesDialog.vue'
+import DetailAppBar from '../components/DetailAppBar.vue'
 import HistoryDialog from '../components/HistoryDialog.vue'
 import FileDetailRefs from '../components/FileDetailRefs.vue'
 import FileDetailItem from '../components/FileDetailItem.vue'
-import { useDirtyStore, useUserStore, useDrawerStore, useMessageStore, useViewStack } from '../stores'
+import { useDirtyStore, useUserStore, useMessageStore, useViewStack } from '../stores'
 import { applyResult, hasUnresolved } from '../merge'
+import { publishItem } from '../publish'
 import { subscribe } from '../echo'
-import {
-  mdiKeyboardBackspace,
-  mdiHistory,
-  mdiDatabaseArrowDown,
-  mdiSwapHorizontal,
-  mdiChevronRight,
-  mdiChevronLeft
-} from '@mdi/js'
 
 export default {
   components: {
     AsideMeta,
     ChangesDialog,
+    DetailAppBar,
     HistoryDialog,
     FileDetailItem,
     FileDetailRefs
@@ -40,7 +35,6 @@ export default {
     dirty: false,
     publishAt: null,
     publishing: false,
-    pubmenu: false,
     saving: false,
     vchanged: false,
     vhistory: false,
@@ -51,21 +45,13 @@ export default {
     const dirtyStore = useDirtyStore()
     const viewStack = useViewStack()
     const messages = useMessageStore()
-    const drawer = useDrawerStore()
     const user = useUserStore()
 
     return {
       dirtyStore,
       user,
-      drawer,
       messages,
-      viewStack,
-      mdiKeyboardBackspace,
-      mdiHistory,
-      mdiDatabaseArrowDown,
-      mdiSwapHorizontal,
-      mdiChevronRight,
-      mdiChevronLeft
+      viewStack
     }
   },
 
@@ -119,65 +105,15 @@ export default {
     },
 
     publish(at = null) {
-      if (!this.user.can('file:publish')) {
-        this.messages.add(this.$gettext('Permission denied'), 'error')
-        return
-      }
-
-      this.publishing = true
-
-      this.save(true).then((valid) => {
-        if (!valid || this.changed) {
-          return
-        }
-
-        this.$apollo
-          .mutate({
-            mutation: gql`
-              mutation ($id: [ID!]!, $at: DateTime) {
-                pubFile(id: $id, at: $at) {
-                  id
-                }
-              }
-            `,
-            variables: {
-              id: [this.item.id],
-              at: at?.toISOString()?.substring(0, 19)?.replace('T', ' ')
-            }
-          })
-          .then((response) => {
-            if (response.errors) {
-              throw response.errors
-            }
-
-            if (!at) {
-              this.item.published = true
-              this.messages.add(this.$gettext('File published successfully'), 'success')
-            } else {
-              this.item.publish_at = at
-              this.messages.add(
-                this.$gettext('File scheduled for publishing at %{date}', {
-                  date: at.toLocaleDateString()
-                }),
-                'info'
-              )
-            }
-
-            this.viewStack.closeView()
-          })
-          .catch((error) => {
-            this.messages.add(this.$gettext('Error publishing file') + ':\n' + error, 'error')
-            this.$log(`FileDetail::publish(): Error publishing file`, at, error)
-          })
-          .finally(() => {
-            this.publishing = false
-          })
-      })
+      publishItem(this, 'file', {
+        success: this.$gettext('File published successfully'),
+        scheduled: (d) => this.$gettext('File scheduled for publishing at %{date}', { date: d.toLocaleDateString() }),
+        error: this.$gettext('Error publishing file')
+      }, at)
     },
 
     published() {
       this.publish(this.publishAt)
-      this.pubmenu = false
     },
 
     reset() {
@@ -335,118 +271,25 @@ export default {
 </script>
 
 <template>
-  <v-app-bar :elevation="0" density="compact" role="sectionheader" :aria-label="$gettext('Menu')">
-    <template v-slot:prepend>
-      <v-btn
-        @click="viewStack.closeView()"
-        :title="$gettext('Back to list view')"
-        :icon="mdiKeyboardBackspace"
-      />
-    </template>
-
-    <v-app-bar-title>
-      <h1 class="app-title">{{ $gettext('File') }}: {{ item.name }}</h1>
-    </v-app-bar-title>
-
-    <template v-slot:append>
-      <v-btn
-        @click="vhistory = true"
-        :class="{ hidden: item.published && !dirty && !item.latest }"
-        :title="$gettext('View history')"
-        :icon="mdiHistory"
-        class="no-rtl"
-      />
-
-      <v-btn v-if="changed"
-        @click="vchanged = true"
-        :class="{ error: hasConflict }"
-        :title="$gettext('View merge changes')"
-        :icon="mdiSwapHorizontal"
-        class="menu-changed"
-      />
-
-      <v-btn
-        @click="save()"
-        :loading="saving"
-        :title="$gettext('Save')"
-        :class="{ error: error }"
-        class="menu-save"
-        :disabled="!dirty || error || !user.can('file:save')"
-        :variant="!dirty || error || !user.can('file:save') ? 'plain' : 'flat'"
-        :color="hasConflict ? 'warning' : (!dirty || error || !user.can('file:save') ? '' : 'blue-darken-1')"
-        :icon="mdiDatabaseArrowDown"
-      />
-
-      <v-menu v-model="pubmenu" :close-on-content-click="false">
-        <template #activator="{ props }">
-          <v-btn
-            v-bind="props"
-            icon
-            :loading="publishing"
-            :title="$gettext('Schedule publishing')"
-            :class="{ error: error }"
-            class="menu-publish"
-            :disabled="(item.published && !dirty) || error || !user.can('file:publish')"
-            :variant="
-              (item.published && !dirty) || error || !user.can('file:publish') ? 'plain' : 'flat'
-            "
-            :color="
-              (item.published && !dirty) || error || !user.can('file:publish')
-                ? ''
-                : 'blue-darken-2'
-            "
-          >
-            <v-icon>
-              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
-                <path d="M2,1V3H16V1H2 M2,10H6V19H12V10H16L9,3L2,10Z" />
-                <path
-                  d="M16.7 11.4C16.7 11.4 16.61 11.4 16.7 11.4C13.19 11.49 10.4 14.28 10.4 17.7C10.4 21.21 13.19 24 16.7 24S23 21.21 23 17.7 20.21 11.4 16.7 11.4M16.7 22.2C14.18 22.2 12.2 20.22 12.2 17.7S14.18 13.2 16.7 13.2 21.2 15.18 21.2 17.7 19.22 22.2 16.7 22.2M15.6 13.1V17.6L18.84 19.58L19.56 18.5L16.95 16.97V13.1H15.6Z"
-                />
-              </svg>
-            </v-icon>
-          </v-btn>
-        </template>
-        <div class="menu-content">
-          <v-date-picker v-model="publishAt" hide-header show-adjacent-months />
-          <v-btn
-            @click="published"
-            :disabled="!publishAt || error"
-            :color="publishAt ? 'primary' : ''"
-            variant="text"
-            >{{ $gettext('Publish') }}</v-btn
-          >
-        </div>
-      </v-menu>
-
-      <v-btn
-        icon
-        @click="publish()"
-        :loading="publishing"
-        :title="$gettext('Publish')"
-        :class="{ error: error }"
-        class="menu-publish"
-        :disabled="(item.published && !dirty) || error || !user.can('file:publish')"
-        :variant="
-          (item.published && !dirty) || error || !user.can('file:publish') ? 'plain' : 'flat'
-        "
-        :color="
-          (item.published && !dirty) || error || !user.can('file:publish') ? '' : 'blue-darken-2'
-        "
-      >
-        <v-icon>
-          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
-            <path d="M5,2V4H19V2H5 M5,12H9V21H15V12H19L12,5L5,12Z" />
-          </svg>
-        </v-icon>
-      </v-btn>
-
-      <v-btn
-        @click.stop="drawer.toggle('aside')"
-        :title="$gettext('Toggle side menu')"
-        :icon="drawer.aside ? mdiChevronRight : mdiChevronLeft"
-      />
-    </template>
-  </v-app-bar>
+  <DetailAppBar
+    type="file"
+    :label="$gettext('File')"
+    :name="item.name"
+    :dirty="dirty"
+    :error="error"
+    :conflict="hasConflict"
+    :changed="changed"
+    :published="item.published"
+    :has-latest="!!item.latest"
+    :saving="saving"
+    :publishing="publishing"
+    v-model:publish-at="publishAt"
+    @save="save()"
+    @publish="publish()"
+    @schedule="published"
+    @history="vhistory = true"
+    @changes="vchanged = true"
+  />
 
   <v-main class="file-details" :aria-label="$gettext('File')">
     <v-form @submit.prevent>
@@ -502,9 +345,3 @@ export default {
     />
   </Teleport>
 </template>
-
-<style scoped>
-.v-toolbar-title {
-  margin-inline-start: 0;
-}
-</style>
