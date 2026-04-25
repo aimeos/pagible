@@ -11,6 +11,7 @@ export default {
       email: '',
       password: ''
     },
+    autofilled: false,
     form: null,
     error: null,
     loading: false,
@@ -23,6 +24,23 @@ export default {
     const user = useUserStore()
 
     return { user, messages, mdiEyeOff, mdiEye, mdiAlertOctagon }
+  },
+
+  watch: {
+    creds: {
+      handler() {
+        this.$refs.form?.validate()
+      },
+      deep: true
+    }
+  },
+
+  mounted() {
+    this.$el.addEventListener('animationstart', (e) => {
+      if (e.animationName === 'autofill-detect') {
+        this.autofilled = true
+      }
+    })
   },
 
   created() {
@@ -48,6 +66,17 @@ export default {
 
   methods: {
     cmslogin() {
+      if (this.autofilled) {
+        this.$el.querySelectorAll('input').forEach((input) => {
+          if (input.matches('[autocomplete="username"]')) {
+            this.creds.email = input.value
+          } else if (input.matches('[autocomplete="current-password"]')) {
+            this.creds.password = input.value
+          }
+        })
+        this.autofilled = false
+      }
+
       if (!this.creds.email || !this.creds.password) {
         return false
       }
@@ -94,7 +123,7 @@ export default {
 </script>
 
 <template>
-  <v-form class="login" :class="{ show: login }" v-model="form" @submit.prevent="cmslogin()">
+  <v-form ref="form" class="login" :class="{ show: login }" v-model="form" @submit.prevent="cmslogin()">
     <v-card :loading="loading" :elevation="2" :class="{ error: error }">
       <template v-slot:title><h1>PagibleAI CMS</h1></template>
 
@@ -116,6 +145,8 @@ export default {
           :type="show ? `text` : `password`"
           :label="$gettext('Password')"
           :rules="[(v) => !!v || $gettext('Field is required')]"
+          :placeholder="autofilled ? '********' : undefined"
+          :persistent-placeholder="autofilled"
           autocomplete="current-password"
           variant="underlined"
         >
@@ -135,7 +166,7 @@ export default {
       </v-card-text>
 
       <v-card-actions>
-        <v-btn type="submit" variant="outlined" :disabled="form != true">
+        <v-btn type="submit" variant="outlined" :disabled="form != true && !autofilled">
           {{ $gettext('Login') }}
         </v-btn>
       </v-card-actions>
@@ -189,6 +220,15 @@ export default {
 .login .error {
   animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
   transform: translate3d(0, 0, 0);
+}
+
+@keyframes autofill-detect {
+  from { opacity: 0.99; }
+  to { opacity: 1; }
+}
+
+.login input:-webkit-autofill {
+  animation: autofill-detect 0.1s;
 }
 
 @keyframes shake {
