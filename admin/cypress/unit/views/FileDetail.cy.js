@@ -184,14 +184,14 @@ describe('FileDetail', () => {
 
     it('opens menu with date and time pickers', () => {
       mountDetail({ 'file:publish': true })
-      cy.get('.menu-publish').click()
+      cy.get('.menu-publish').first().click()
       cy.get('.v-date-picker').should('exist')
       cy.get('.v-time-picker').should('exist')
     })
 
     it('disables publish button in menu when no date selected', () => {
       mountDetail({ 'file:publish': true })
-      cy.get('.menu-publish').click()
+      cy.get('.menu-publish').first().click()
       cy.get('.menu-content .v-btn').last().should('be.disabled')
     })
 

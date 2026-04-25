@@ -360,7 +360,7 @@ describe('Page Detail', () => {
 
   it('clicking publish fires pubPage mutation for unpublished page', () => {
     visitPageDetail({ latest: { ...makePage().latest, published: false } }, { published: false })
-    detailView().find('.menu-publish').click()
+    detailView().find('.menu-publish').last().click()
     // Wait for the pubPage mutation, skipping any intermediate queries
     function waitForPubPage() {
       return cy.wait('@gql').then((interception) => {
@@ -377,7 +377,7 @@ describe('Page Detail', () => {
 
   it('schedule publish button opens date picker', () => {
     visitPageDetail({ latest: { ...makePage().latest, published: false } }, { published: false })
-    detailView().find('.menu-publish').click()
+    detailView().find('.menu-publish').first().click()
     cy.get('.v-date-picker').should('be.visible')
   })
 
