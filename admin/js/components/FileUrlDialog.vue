@@ -187,21 +187,13 @@ export default {
     scrollable
   >
     <v-card :loading="loading ? 'primary' : false">
-      <template v-slot:append>
+      <v-toolbar density="compact">
+        <v-toolbar-title>{{ $gettext('Add files from URLs') }}</v-toolbar-title>
         <v-btn v-if="Object.keys(items).length" variant="outlined" @click="add()">
           {{ multiple ? $gettext('Add files') : $gettext('Add file') }}
         </v-btn>
-        <v-btn
-          @click="$emit('update:modelValue', false)"
-          :title="$gettext('Close')"
-          :icon="mdiClose"
-          variant="text"
-        />
-      </template>
-      <template v-slot:title>
-        {{ $gettext('Add files from URLs') }}
-      </template>
-
+        <v-btn :icon="mdiClose" :aria-label="$gettext('Close')" @click="$emit('update:modelValue', false)" />
+      </v-toolbar>
       <v-card-text>
         <v-textarea
           v-if="multiple"
