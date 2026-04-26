@@ -10,6 +10,10 @@
  * array (batched) or an object (single) and replies in the same shape.
  */
 
+Cypress.on('uncaught:exception', (err) => {
+  if (err.message.includes('ResizeObserver')) return false
+})
+
 const ALL_PERMISSIONS = {
   'page:view': true,
   'page:add': true,

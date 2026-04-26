@@ -1,5 +1,9 @@
 import MarkdownField from '../../../js/fields/Markdown.vue'
 
+Cypress.on('uncaught:exception', (err) => {
+  if (err.message.includes('ckeditor5/translations')) return false
+})
+
 const stubs = {
   Ckeditor: {
     template: '<div class="ck-editor-stub" />',
