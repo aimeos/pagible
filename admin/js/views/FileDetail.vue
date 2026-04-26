@@ -34,6 +34,7 @@ export default {
     changed: null,
     dirty: false,
     publishAt: null,
+    publishTime: null,
     publishing: false,
     saving: false,
     vchanged: false,
@@ -121,7 +122,14 @@ export default {
     },
 
     published() {
-      this.publish(this.publishAt)
+      const at = new Date(this.publishAt)
+
+      if (this.publishTime) {
+        const [hours, minutes] = this.publishTime.split(':').map(Number)
+        at.setHours(hours, minutes, 0, 0)
+      }
+
+      this.publish(at)
     },
 
     reset() {
@@ -292,6 +300,7 @@ export default {
     :saving="saving"
     :publishing="publishing"
     v-model:publish-at="publishAt"
+    v-model:publish-time="publishTime"
     @save="save()"
     @publish="publish()"
     @schedule="published"

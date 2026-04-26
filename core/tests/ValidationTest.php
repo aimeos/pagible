@@ -173,6 +173,14 @@ class ValidationTest extends CoreTestAbstract
     }
 
 
+    public function testPublishAtFutureWithTime()
+    {
+        Validation::publishAt( '2099-06-15 14:30:00' );
+
+        $this->assertTrue( true );
+    }
+
+
     public function testPublishAtPast()
     {
         $this->expectException( InvalidArgumentException::class );

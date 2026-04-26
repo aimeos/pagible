@@ -257,7 +257,7 @@ describe('Page Detail', () => {
 
   it('shows schedule publish button', () => {
     visitPageDetail()
-    detailView().find('.menu-publishat').should('exist')
+    detailView().find('.menu-publish').should('exist')
   })
 
   it('shows history button', () => {
@@ -360,7 +360,7 @@ describe('Page Detail', () => {
 
   it('clicking publish fires pubPage mutation for unpublished page', () => {
     visitPageDetail({ latest: { ...makePage().latest, published: false } }, { published: false })
-    detailView().find('.menu-publish').click()
+    detailView().find('.menu-publish').last().click()
     // Wait for the pubPage mutation, skipping any intermediate queries
     function waitForPubPage() {
       return cy.wait('@gql').then((interception) => {
