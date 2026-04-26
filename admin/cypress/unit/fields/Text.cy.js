@@ -1,5 +1,9 @@
 import TextField from '../../../js/fields/Text.vue'
 
+Cypress.on('uncaught:exception', (err) => {
+  if (err.message.includes('ckeditor5/translations')) return false
+})
+
 const stubs = {
   Ckeditor: {
     template: '<div class="ck-editor-stub" />',
