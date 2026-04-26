@@ -54,7 +54,7 @@
     "@mdi/js": "^7.4",
     "@vitejs/plugin-vue": "^6.0",
     "@vue/eslint-config-prettier": "^10.2.0",
-    "cypress": "^4.2.0",
+    "cypress": "^15.14.1",
     "eslint": "^10.0",
     "eslint-plugin-vue": "^10.8",
     "prettier": "^3.8",
