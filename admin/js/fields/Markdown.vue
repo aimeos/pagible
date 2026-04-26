@@ -52,8 +52,10 @@ export default {
 
   async created() {
     const locale = this.$vuetify.locale.current
-    const mod = await import(`../../node_modules/ckeditor5/dist/translations/${locale}.js`)
+    const mod = await import(`ckeditor5/translations/${locale}.js`)
+
     if (this.destroyed) return
+
     this.translations = [mod.default]
   },
 
