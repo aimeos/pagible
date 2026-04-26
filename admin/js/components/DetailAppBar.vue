@@ -23,11 +23,12 @@ export default {
     published: { type: Boolean, default: false },
     publishing: { type: Boolean, default: false },
     publishAt: { type: [Date, null], default: null },
+    publishTime: { type: [String, null], default: null },
     saving: { type: Boolean, default: false },
     type: { type: String, required: true }
   },
 
-  emits: ['update:publishAt', 'changes', 'history', 'publish', 'save', 'schedule'],
+  emits: ['update:publishAt', 'update:publishTime', 'changes', 'history', 'publish', 'save', 'schedule'],
 
   setup() {
     const drawer = useDrawerStore()
@@ -132,7 +133,10 @@ export default {
           </v-btn>
         </template>
         <div class="menu-content">
-          <v-date-picker :model-value="publishAt" @update:model-value="$emit('update:publishAt', $event)" hide-header show-adjacent-months />
+          <div class="menu-publish-pickers">
+            <v-date-picker :model-value="publishAt" @update:model-value="$emit('update:publishAt', $event)" hide-header show-adjacent-months />
+            <v-time-picker :model-value="publishTime" @update:model-value="$emit('update:publishTime', $event)" :allowed-minutes="[0,5,10,15,20,25,30,35,40,45,50,55]" format="24hr" density="compact" hide-title />
+          </div>
           <v-btn
             @click="$emit('schedule')"
             :disabled="!publishAt || error"

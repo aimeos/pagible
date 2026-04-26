@@ -530,6 +530,33 @@ class GraphqlFileTest extends GraphqlTestAbstract
     }
 
 
+    public function testPubFileAtWithTime()
+    {
+        $this->seed( CmsSeeder::class );
+
+        $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
+
+        $response = $this->actingAs( $this->user )->graphQL( '
+            mutation {
+                pubFile(id: ["' . $file->id . '"], at: "2099-06-15 14:30:00") {
+                    id
+                }
+            }
+        ' );
+
+        $response->assertJson( [
+            'data' => [
+                'pubFile' => [[
+                    'id' => (string) $file->id
+                ]],
+            ]
+        ] );
+
+        $file = File::with( 'latest' )->findOrFail( $file->id );
+        $this->assertStringContainsString( '14:30:00', $file->latest->publish_at );
+    }
+
+
     public function testPurgeFile()
     {
         $this->seed( CmsSeeder::class );
