@@ -17,6 +17,7 @@ use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
+use Aimeos\Nestedset\NestedSet;
 use Illuminate\Support\Facades\DB;
 
 
@@ -169,7 +170,9 @@ class Resource
     {
         return Utils::transaction( function() use ( $model, $ids, $editor ) {
 
-            $items = $model::withTrashed()->whereIn( 'id', $ids )->get();
+            $items = $model::withTrashed()->whereIn( 'id', $ids )
+                ->when( is_a( $model, Page::class, true ), fn( $q ) => $q->select( Page::SELECT_COLUMNS ) )
+                ->get();
 
             foreach( $items as $item )
             {
@@ -197,10 +200,10 @@ class Resource
     public static function position( Page $page, ?string $beforeId = null, ?string $parentId = null, bool $root = false ) : void
     {
         if( $beforeId ) {
-            $ref = Page::withTrashed()->findOrFail( $beforeId );
+            $ref = Page::withTrashed()->select( 'id', 'tenant_id', 'parent_id', NestedSet::LFT, NestedSet::RGT, NestedSet::DEPTH )->findOrFail( $beforeId );
             $page->beforeNode( $ref );
         } elseif( $parentId ) {
-            $parent = Page::withTrashed()->findOrFail( $parentId );
+            $parent = Page::withTrashed()->select( 'id', 'tenant_id', 'parent_id', NestedSet::LFT, NestedSet::RGT, NestedSet::DEPTH )->findOrFail( $parentId );
             $page->appendToNode( $parent );
         } elseif( $root ) {
             $page->makeRoot();
@@ -215,14 +218,16 @@ class Resource
      * @param array<string> $ids
      * @param string $editor
      * @param string|null $at ISO 8601 datetime to schedule publication
-     * @param array<string> $with Eager-load relations
+     * @param array<string|int, string|\Closure> $with Eager-load relations
      * @return Collection<int, Base>
      */
     public static function publish( string $model, array $ids, string $editor, ?string $at = null, array $with = ['latest'] ) : Collection
     {
         return Utils::transaction( function() use ( $model, $ids, $editor, $at, $with ) {
 
-            $items = $model::with( $with )->whereIn( 'id', $ids )->get();
+            $items = $at
+                ? $model::select( 'id', 'latest_id' )->whereIn( 'id', $ids )->get()
+                : $model::with( $with )->whereIn( 'id', $ids )->get();
 
             foreach( $items as $item )
             {
@@ -260,7 +265,9 @@ class Resource
     {
         $callback = function() use ( $model, $ids ) {
 
-            $items = $model::withTrashed()->whereIn( 'id', $ids )->get();
+            $items = $model::withTrashed()->whereIn( 'id', $ids )
+                ->when( is_a( $model, Page::class, true ), fn( $q ) => $q->select( Page::SELECT_COLUMNS ) )
+                ->get();
 
             foreach( $items as $item )
             {
@@ -298,7 +305,9 @@ class Resource
     {
         $callback = function() use ( $model, $ids, $editor ) {
 
-            $items = $model::withTrashed()->whereIn( 'id', $ids )->get();
+            $items = $model::withTrashed()->whereIn( 'id', $ids )
+                ->when( is_a( $model, Page::class, true ), fn( $q ) => $q->select( Page::SELECT_COLUMNS ) )
+                ->get();
 
             foreach( $items as $item )
             {
@@ -329,8 +338,14 @@ class Resource
      */
     public static function saveElement( string $id, array $input, ?Authenticatable $user = null, ?array $files = null, ?string $latestId = null ) : Element
     {
+        $with = ['latest' => fn( $q ) => $q->select( 'id', 'versionable_id', 'data', 'lang', 'editor' )];
+
+        if( $files === null ) {
+            $with['latest.files'] = fn( $q ) => $q->select( 'cms_files.id' );
+        }
+
         /** @var Element $element */
-        $element = Element::withTrashed()->with( 'latest' )->findOrFail( $id );
+        $element = Element::withTrashed()->with( $with )->findOrFail( $id );
         $type = $input['type'] ?? $element->type ?? ( (array) ( $element->latest->data ?? [] ) )['type'] ?? '';
 
         if( isset( $input['type'] ) ) {
@@ -357,7 +372,7 @@ class Resource
                 'lang' => $input['lang'] ?? $element->latest?->lang,
             ] );
 
-            $version->files()->attach( $files ?? $element->latest?->files()->pluck( 'id' )->all() ?? [] );
+            $version->files()->attach( $files ?? $element->latest?->getRelation( 'files' )->modelKeys() ?? [] );
             $element->setRelation( 'latest', $version );
             $element->forceFill( ['latest_id' => $version->id] )->save();
 
@@ -393,7 +408,7 @@ class Resource
         return Utils::transaction( function() use ( $id, $input, $editor, $latestId, $upload, $preview ) {
 
             /** @var File $orig */
-            $orig = File::withTrashed()->with( 'latest' )->findOrFail( $id );
+            $orig = File::withTrashed()->with( ['latest' => fn( $q ) => $q->select( 'id', 'versionable_id', 'data', 'lang', 'editor' )] )->findOrFail( $id );
             $previews = $orig->latest?->data->previews ?? $orig->previews;
             $path = $orig->latest?->data->path ?? $orig->path;
             $previousEditor = $orig->latest->editor ?? '';
@@ -480,8 +495,17 @@ class Resource
 
         return Utils::transaction( function() use ( $id, $input, $user, $editor, $files, $elements, $latestId ) {
 
+            $with = ['latest' => fn( $q ) => $q->select( 'id', 'versionable_id', 'data', 'aux', 'lang', 'editor' )];
+
+            if( $files === null ) {
+                $with['latest.files'] = fn( $q ) => $q->select( 'cms_files.id' );
+            }
+            if( $elements === null ) {
+                $with['latest.elements'] = fn( $q ) => $q->select( 'cms_elements.id' );
+            }
+
             /** @var Page $page */
-            $page = Page::withTrashed()->with( 'latest' )->findOrFail( $id );
+            $page = Page::withTrashed()->with( $with )->findOrFail( $id );
             $versionId = ( new Version )->newUniqueId();
 
             $data = array_diff_key( $input, array_flip( ['meta', 'config', 'content'] ) );
@@ -504,8 +528,11 @@ class Resource
                 'aux' => $aux,
             ] );
 
-            $version->elements()->attach( $elements ?? $page->latest?->elements()->pluck( 'id' )->all() ?? [] );
-            $version->files()->attach( $files ?? $page->latest?->files()->pluck( 'id' )->all() ?? [] );
+            $elementIds = $elements ?? $page->latest?->getRelation( 'elements' )->modelKeys() ?? [];
+            $fileIds = $files ?? $page->latest?->getRelation( 'files' )->modelKeys() ?? [];
+
+            $version->elements()->attach( $elementIds );
+            $version->files()->attach( $fileIds );
 
             $page->setRelation( 'latest', $version );
             $page->forceFill( ['latest_id' => $version->id] )->save();
@@ -535,6 +562,9 @@ class Resource
      */
     protected static function mergePage( Page $page, array $data, array $aux, ?string $latestId, ?Authenticatable $user = null ) : array
     {
+        $latestData = (array) ( $page->latest?->data );
+        $latestAux = (array) ( $page->latest?->aux );
+
         if( $latestId && $page->latest_id && $latestId !== $page->latest_id )
         {
             /** @var Version|null $base */
@@ -542,17 +572,21 @@ class Resource
 
             if( $base )
             {
-                [$data, $dd] = Merge::structured( (array) $base->data, (array) $page->latest?->data, $data );
+                $latestMeta = (array) ( $page->latest?->aux->meta ?? [] );
+                $latestContent = (array) ( $page->latest?->aux->content ?? [] );
+                $latestConfig = (array) ( $page->latest?->aux->config ?? [] );
 
-                $merged = array_replace( (array) $page->latest?->aux, $aux );
-                [$merged['meta'], $md] = Merge::structured( (array) ( $base->aux->meta ?? [] ), (array) ( $page->latest?->aux->meta ?? [] ), (array) ( $merged['meta'] ?? [] ) );
-                [$merged['content'], $xd] = Merge::content( (array) ( $base->aux->content ?? [] ), (array) ( $page->latest?->aux->content ?? [] ), (array) ( $merged['content'] ?? [] ) );
+                [$data, $dd] = Merge::structured( (array) $base->data, $latestData, $data );
+
+                $merged = array_replace( $latestAux, $aux );
+                [$merged['meta'], $md] = Merge::structured( (array) ( $base->aux->meta ?? [] ), $latestMeta, (array) ( $merged['meta'] ?? [] ) );
+                [$merged['content'], $xd] = Merge::content( (array) ( $base->aux->content ?? [] ), $latestContent, (array) ( $merged['content'] ?? [] ) );
 
                 $cd = null;
                 if( Permission::can( 'config:page', $user ) ) {
-                    [$merged['config'], $cd] = Merge::structured( (array) ( $base->aux->config ?? [] ), (array) ( $page->latest?->aux->config ?? [] ), (array) ( $merged['config'] ?? [] ) );
+                    [$merged['config'], $cd] = Merge::structured( (array) ( $base->aux->config ?? [] ), $latestConfig, (array) ( $merged['config'] ?? [] ) );
                 } else {
-                    $merged['config'] = (array) ( $page->latest?->aux->config ?? [] );
+                    $merged['config'] = $latestConfig;
                 }
 
                 $diffs = array_filter( ['data' => $dd, 'meta' => $md, 'config' => $cd, 'content' => $xd] );
@@ -561,8 +595,8 @@ class Resource
         }
 
         return [
-            array_replace( (array) $page->latest?->data, $data ),
-            array_replace( (array) $page->latest?->aux, $aux ),
+            array_replace( $latestData, $data ),
+            array_replace( $latestAux, $aux ),
             null
         ];
     }

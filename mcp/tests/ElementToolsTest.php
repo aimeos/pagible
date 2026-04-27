@@ -52,7 +52,7 @@ class ElementToolsTest extends McpTestAbstract
             'id' => $element->id,
         ] );
 
-        $response->assertOk()->assertSee( ['Shared footer', 'footer', 'latest_version'] );
+        $response->assertOk()->assertSee( ['Shared footer', 'footer', 'used_by_pages'] );
     }
 
 

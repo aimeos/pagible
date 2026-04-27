@@ -44,35 +44,37 @@ class GetPageHistory extends Tool
         ] );
 
         /** @var Page|null $page */
-        $page = Page::withTrashed()->find( $v['id'] );
+        $page = Page::withTrashed()->select( 'id', 'name' )->find( $v['id'] );
 
         if( !$page ) {
             return Response::structured( ['error' => 'Page not found.'] );
         }
 
+        $result = [];
         $limit = $v['limit'] ?? 10;
+        $versions = $page->versions()->select(
+            'id', 'versionable_id', 'editor', 'lang', 'published', 'publish_at', 'created_at', 'data', 'aux'
+        )->take( $limit )->get();
 
-        $versions = $page->versions()
-            ->take( $limit )
-            ->get()
-            ->map( function( $version ) {
-                /** @var Version $version */
-                return [
-                    'id' => $version->id,
-                    'editor' => $version->editor,
-                    'lang' => $version->lang,
-                    'published' => (bool) $version->published,
-                    'publish_at' => $version->publish_at,
-                    'created_at' => $version->created_at?->format( 'Y-m-d H:i:s' ),
-                    'data' => $version->data ?? [],
-                    'aux' => $version->aux ?? [],
-                ];
-            } );
+        foreach( $versions as $version )
+        {
+            /** @var Version $version */
+            $result[] = [
+                'id' => $version->id,
+                'editor' => $version->editor,
+                'lang' => $version->lang,
+                'published' => (bool) $version->published,
+                'publish_at' => $version->publish_at,
+                'created_at' => $version->created_at?->format( 'Y-m-d H:i:s' ),
+                'data' => $version->data ?? [],
+                'aux' => $version->aux ?? [],
+            ];
+        }
 
         return Response::structured( [
             'page_id' => $page->id,
             'page_name' => $page->name,
-            'versions' => $versions->all(),
+            'versions' => $result,
         ] );
     }
 

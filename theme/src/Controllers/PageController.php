@@ -49,16 +49,19 @@ class PageController extends Controller
 
         $cache = Cache::store( config( 'cms.theme.cache', 'file' ) );
         $key = Page::key( $path, $domain );
-        $args = $request->input();
+        $np = empty( $request->input() );
 
-        if( empty( $args ) && $request->isMethod( 'GET' ) && ( $html = $cache->get( $key ) ) )
+        if( $np && $request->isMethod( 'GET' ) && ( $html = $cache->get( $key ) ) )
         {
             return response( $html, 200 )
                 ->header( 'Content-Type', 'text/html' )
-                ->header( 'Cache-Control', 'public, max-age=' . ( $this->cache( $html ) * 60 ) );
+                ->header( 'Expires', substr( $html, -29 ) );
         }
 
-        $page = Page::with( ['files', 'elements'] )
+        $page = Page::with( [
+            'files' => fn( $q ) => $q->select( 'cms_files.id', 'name', 'mime', 'path', 'previews', 'description', 'transcription' ),
+            'elements' => fn( $q ) => $q->select( 'cms_elements.id', 'type', 'name', 'data' ),
+        ] )
             ->withGlobalScope('status', new Status)
             ->where( 'domain', $domain )
             ->where( 'path', $path )
@@ -78,37 +81,19 @@ class PageController extends Controller
         $views = [$theme . '::layouts.' . $type, 'cms::layouts.' . $type, 'cms::layouts.page'];
         $html = view()->first( $views, ['page' => $page, 'content' => $content] )->render();
 
-        if( empty( $args ) && $request->isMethod( 'GET' ) && $page->cache ) {
-            $cache->put( $key, $html . '<!--:' . $page->cache, now()->addMinutes( (int) $page->cache ) );
+        $expires = gmdate( 'D, d M Y H:i:s', time() + (int) $page->cache * 60 ) . ' GMT';
+
+        if( $np && $request->isMethod( 'GET' ) && $page->cache ) {
+            $cache->put( $key, $html . '<!-- ' . $expires, now()->addMinutes( (int) $page->cache ) );
         }
 
         $response = ( new Response( $html, 200 ) )->header( 'Content-Type', 'text/html' );
 
         if( $request->isMethod( 'GET' ) ) {
-            $response->header( 'Cache-Control', 'public, max-age=' . ( $page->cache * 60 ) );
+            $response->header( 'Expires', $expires );
         }
 
         return $response;
-    }
-
-
-    /**
-     * Extracts the cache time from the HTML content.
-     *
-     * This method looks for a specific comment in the HTML that indicates
-     * the cache duration in minutes. If found, it returns the cache time as
-     * an integer. If the comment is not present, it returns 0.
-     *
-     * @param string $html The HTML content to search for the cache comment
-     * @return int The cache time in minutes, or 0 if not found
-     */
-    protected function cache( string $html ) : int
-    {
-        if( ( $pos = strpos( $html, '<!--:', -10 ) ) !== false ) {
-            return (int) substr( $html, $pos + 5 );
-        }
-
-        return 0;
     }
 
 
@@ -124,10 +109,16 @@ class PageController extends Controller
      */
     protected function latest( string $path, string $domain )
     {
-        $page = Page::with( ['files', 'elements', 'latest'] )
+        $with = [
+            'files' => fn( $q ) => $q->select( 'cms_files.id', 'name', 'mime', 'path', 'previews', 'description', 'transcription' ),
+            'elements' => fn( $q ) => $q->select( 'cms_elements.id', 'type', 'name', 'data' ),
+            'latest',
+        ];
+
+        $page = Page::with( $with )
             ->whereLatest( ['path' => $path] + ( $domain !== '' ? ['domain' => $domain] : [] ) )
             ->first()
-            ?? Page::with( ['files', 'elements'] )->where( 'domain', $domain )->where( 'path', $path )->firstOrFail();
+            ?? Page::with( $with )->where( 'domain', $domain )->where( 'path', $path )->firstOrFail();
 
         $version = $page->latest;
 

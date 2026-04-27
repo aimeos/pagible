@@ -13,6 +13,7 @@ use Aimeos\Cms\Concerns\Benchmarks;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
+use Aimeos\Nestedset\NestedSet;
 
 
 class BenchmarkSearch extends Command
@@ -77,7 +78,7 @@ class BenchmarkSearch extends Command
             $this->line( 'done' );
         }
 
-        $page = Page::where( 'tag', '!=', 'root' )->orderByDesc( 'depth' )->firstOrFail();
+        $page = Page::where( 'tag', '!=', 'root' )->orderByDesc( NestedSet::DEPTH )->firstOrFail();
 
         $this->header();
 

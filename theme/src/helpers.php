@@ -24,16 +24,19 @@ if( !function_exists( 'cms' ) )
         $parts = explode( '.', $prop );
         $first = array_shift( $parts );
 
-        if( $item instanceof \Illuminate\Support\Collection ) {
+        if( $item instanceof \Illuminate\Support\Collection )
+        {
             $val = $item->get( $first );
         }
-        else if( \Aimeos\Cms\Permission::can( 'page:view', \Illuminate\Support\Facades\Auth::user() ) ) {
+        else if( \Aimeos\Cms\Permission::can( 'page:view', \Illuminate\Support\Facades\Auth::user() ) )
+        {
             $val = @$item->latest?->data?->{$first} // @phpstan-ignore-line property.notFound
                 ?? @$item->latest?->aux?->{$first} // @phpstan-ignore-line property.notFound
                 ?? @$item->latest?->{$first} // @phpstan-ignore-line property.notFound
                 ?? @$item->{$first};
         }
-        else {
+        else
+        {
             $val = @$item->{$first};
         }
 
@@ -76,7 +79,7 @@ if( !function_exists( 'cmsdata' ) )
     function cmsdata( \Aimeos\Cms\Models\Page $page, object $item ) : array
     {
         if( $item instanceof \Aimeos\Cms\Models\Element ) {
-            $item = (object) $item->toArray();
+            $item = (object) ['id' => $item->id, 'type' => $item->type, 'name' => $item->name, 'data' => $item->data];
         }
 
         $data = ['files' => cms($page, 'files')];
@@ -183,7 +186,7 @@ if( !function_exists( 'cmsurl' ) )
             return '';
         }
 
-        if( \Illuminate\Support\Str::startsWith( $path, ['data:', 'http:', 'https:'] ) ) {
+        if( str_starts_with( $path, 'data:' ) || str_starts_with( $path, 'http' ) ) {
             return $path;
         }
 

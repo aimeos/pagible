@@ -49,49 +49,52 @@ class Description extends Command
         $model = config( 'cms.ai.write.model' );
         $config = config( 'cms.ai.write', [] );
 
-        Page::with( 'latest' )->where( 'status', '>', 0 )->chunk( 100, function( $pages ) use ( $provider, $model, $config ) {
+        Page::select( Page::SELECT_COLUMNS )
+            ->where( 'status', '>', 0 )
+            ->chunk( 50, function( $pages ) use ( $provider, $model, $config ) {
 
-            foreach( $pages as $page )
-            {
-                /** @var Page $page */
-                if( !empty( $page->meta->{'meta-tags'}->data->description ?? '' ) ) {
-                    continue;
-                }
-
-                $text = (string) $page;
-
-                if( empty( trim( $text ) ) ) {
-                    continue;
-                }
-
-                try
+                foreach( $pages as $page )
                 {
-                    $response = Prism::text()
-                        ->using( $provider, $model, $config )
-                        ->withSystemPrompt( 'You are an SEO expert. Generate a concise meta description of max. 160 characters for the given page content. Return only the meta description text, nothing else.' )
-                        ->withPrompt( "Page title: {$page->title}\n\nPage content:\n{$text}" )
-                        ->withClientOptions( ['timeout' => 30, 'connect_timeout' => 10] )
-                        ->asText();
+                    /** @var Page $page */
+                    if( !empty( $page->meta->{'meta-tags'}->data->description ?? '' ) ) {
+                        continue;
+                    }
 
-                    $meta = json_decode( (string) json_encode( $page->meta ), true );
-                    $meta['meta-tags'] = $meta['meta-tags'] ?? [
-                        'id' => Utils::uid(),
-                        'type' => 'meta-tags',
-                        'group' => 'basic',
-                        'data' => [],
-                    ];
-                    $meta['meta-tags']['data']['description'] = $response->text;
-                    $page->meta = $meta;
-                    $page->save();
-                }
-                catch( PrismException $e )
-                {
-                    $this->error( $page->title . ': ' . $e->getMessage() );
-                }
+                    $text = (string) $page;
 
-                unset( $page );
-            }
-        } );
+                    if( empty( trim( $text ) ) ) {
+                        continue;
+                    }
+
+                    try
+                    {
+                        $response = Prism::text()
+                            ->using( $provider, $model, $config )
+                            ->withSystemPrompt( 'You are an SEO expert. Generate a concise meta description of max. 160 characters for the given page content. Return only the meta description text, nothing else.' )
+                            ->withPrompt( "Page title: {$page->title}\n\nPage content:\n{$text}" )
+                            ->withClientOptions( ['timeout' => 30, 'connect_timeout' => 10] )
+                            ->asText();
+
+                        $meta = $page->meta ?? (object) [];
+                        $meta->{'meta-tags'} ??= (object) [
+                            'id' => Utils::uid(),
+                            'type' => 'meta-tags',
+                            'group' => 'basic',
+                            'data' => (object) [],
+                        ];
+                        $meta->{'meta-tags'}->data ??= (object) [];
+                        $meta->{'meta-tags'}->data->description = $response->text;
+                        $page->meta = $meta;
+                        $page->save();
+                    }
+                    catch( PrismException $e )
+                    {
+                        $this->error( $page->title . ': ' . $e->getMessage() );
+                    }
+
+                    unset( $page );
+                }
+            } );
     }
 
 
@@ -105,17 +108,21 @@ class Description extends Command
         $model = config( 'cms.ai.describe.model' );
         $config = config( 'cms.ai.describe', [] );
 
-        File::with( 'latest' )->whereRaw( "CAST(description AS CHAR(2)) = '{}'" )
+        File::select(
+                'id', 'tenant_id', 'path', 'mime', 'name', 'description', 'transcription',
+                'latest_id', 'created_at', 'updated_at', 'deleted_at'
+            )
+            ->whereRaw( "CAST(description AS CHAR(2)) = '{}'" )
             ->where( function( $query ) {
                 $query->where( 'mime', 'like', 'audio/%' )
                     ->orWhere( 'mime', 'like', 'video/%' )
                     ->orWhereIn( 'mime', ['image/jpeg', 'image/png', 'image/webp'] );
             } )
-            ->chunk( 100, function( $files ) use ( $provider, $model, $config, $lang ) {
+            ->chunk( 50, function( $files ) use ( $provider, $model, $config, $lang ) {
 
                 foreach( $files as $file )
                 {
-                    $type = current( explode( '/', $file->mime ) );
+                    $type = explode( '/', $file->mime, 2 )[0];
                     $class = '\\Aimeos\\Prisma\\Files\\' . ucfirst( $type );
 
                     try
@@ -143,7 +150,6 @@ class Description extends Command
 
                     unset( $file, $doc );
                 }
-            }
-        );
+            } );
     }
 }

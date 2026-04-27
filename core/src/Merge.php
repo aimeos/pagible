@@ -44,19 +44,15 @@ class Merge
             $c = $currentMap[$key] ?? null;
             $i = $block;
 
-            $bj = $b !== null ? json_encode( $b ) : null;
-            $cj = $c !== null ? json_encode( $c ) : null;
-            $ij = json_encode( $i );
-
-            if( $cj === $ij )
+            if( $c == $i )
             {
                 $result[] = $i;
             }
-            elseif( $bj === $cj )
+            elseif( $b == $c )
             {
                 $result[] = $i;
             }
-            elseif( $bj === $ij )
+            elseif( $b == $i )
             {
                 $result[] = $c ?? $i;
 
@@ -116,7 +112,7 @@ class Merge
 
         $diff = [];
         $result = [];
-        $allKeys = array_unique( array_merge( array_keys( $base ), array_keys( $current ), array_keys( $incoming ) ) );
+        $allKeys = array_keys( $base + $current + $incoming );
 
         foreach( $allKeys as $k )
         {
@@ -128,11 +124,7 @@ class Merge
             $c = $current[$k] ?? null;
             $i = $incoming[$k] ?? null;
 
-            $bj = json_encode( $b );
-            $cj = json_encode( $c );
-            $ij = json_encode( $i );
-
-            if( $cj === $ij )
+            if( self::eq( $c, $i ) )
             {
                 $result[$k] = $i ?? $c;
             }
@@ -147,11 +139,11 @@ class Merge
                 // Key only in incoming (new from this editor)
                 $result[$k] = $i;
             }
-            elseif( $bj === $cj )
+            elseif( self::eq( $b, $c ) )
             {
                 $result[$k] = $i;
             }
-            elseif( $bj === $ij )
+            elseif( self::eq( $b, $i ) )
             {
                 $diff[$k] = ['previous' => $b, 'current' => $c];
                 $result[$k] = $c;
@@ -185,21 +177,21 @@ class Merge
     {
         $result = $incoming;
 
-        foreach( array_unique( array_merge( array_keys( $base ), array_keys( $current ) ) ) as $k )
+        foreach( array_keys( $base + $current ) as $k )
         {
-            $bj = json_encode( $base[$k] ?? null );
-            $cj = json_encode( $current[$k] ?? null );
-            $ij = json_encode( $incoming[$k] ?? null );
+            $bv = $base[$k] ?? null;
+            $cv = $current[$k] ?? null;
+            $iv = $incoming[$k] ?? null;
 
-            if( $cj !== $bj && $ij === $bj )
+            if( !self::eq( $cv, $bv ) && self::eq( $iv, $bv ) )
             {
-                $result[$k] = $current[$k];
+                $result[$k] = $cv;
             }
-            elseif( $cj !== $bj && $ij !== $bj && $cj !== $ij )
+            elseif( !self::eq( $cv, $bv ) && !self::eq( $iv, $bv ) && !self::eq( $cv, $iv ) )
             {
-                if( self::isMap( $base[$k] ?? null ) && self::isMap( $current[$k] ?? null ) && self::isMap( $incoming[$k] ?? null ) )
+                if( self::isMap( $bv ) && self::isMap( $cv ) && self::isMap( $iv ) )
                 {
-                    $sub = self::try( (array) $base[$k], (array) $current[$k], (array) $incoming[$k] );
+                    $sub = self::try( (array) $bv, (array) $cv, (array) $iv );
 
                     if( $sub === null ) {
                         return null;
@@ -225,6 +217,30 @@ class Merge
         }
 
         return $result;
+    }
+
+
+    /**
+     * Deep-compares two values that may contain nested stdClass objects from JSON decode.
+     *
+     * Uses strict identity for scalars/nulls, loose comparison for objects/arrays
+     * which compares object properties recursively without json_encode overhead.
+     *
+     * @param mixed $a
+     * @param mixed $b
+     * @return bool
+     */
+    protected static function eq( mixed $a, mixed $b ) : bool
+    {
+        if( $a === $b ) {
+            return true;
+        }
+
+        if( is_scalar( $a ) || is_scalar( $b ) || is_null( $a ) || is_null( $b ) ) {
+            return false;
+        }
+
+        return $a == $b;
     }
 
 
@@ -312,14 +328,31 @@ class Merge
     {
         $m = count( $a );
         $n = count( $b );
-        $dp = [];
 
-        for( $i = 0; $i <= $m; $i++ ) {
-            for( $j = 0; $j <= $n; $j++ ) {
-                $dp[$i][$j] = ( $i === 0 || $j === 0 ) ? 0
-                    : ( $a[$i - 1] === $b[$j - 1] ? $dp[$i - 1][$j - 1] + 1
-                        : max( $dp[$i - 1][$j], $dp[$i][$j - 1] ) );
+        // Direction matrix: 0=diagonal(match), 1=up, 2=left — uses O(m×n) bytes instead of O(m×n) ints for full DP
+        // Two rolling rows for DP values — uses O(n) instead of O(m×n)
+        $dir = [];
+        $prev = array_fill( 0, $n + 1, 0 );
+
+        for( $i = 1; $i <= $m; $i++ )
+        {
+            $curr = [0];
+
+            for( $j = 1; $j <= $n; $j++ )
+            {
+                if( $a[$i - 1] === $b[$j - 1] ) {
+                    $curr[$j] = $prev[$j - 1] + 1;
+                    $dir[$i][$j] = 0;
+                } elseif( $prev[$j] >= $curr[$j - 1] ) {
+                    $curr[$j] = $prev[$j];
+                    $dir[$i][$j] = 1;
+                } else {
+                    $curr[$j] = $curr[$j - 1];
+                    $dir[$i][$j] = 2;
+                }
             }
+
+            $prev = $curr;
         }
 
         $result = [];
@@ -328,17 +361,18 @@ class Merge
 
         while( $i > 0 && $j > 0 )
         {
-            if( $a[$i - 1] === $b[$j - 1] ) {
+            if( $dir[$i][$j] === 0 ) {
                 $result[] = [$i - 1, $j - 1];
                 $i--;
                 $j--;
-            } elseif( $dp[$i - 1][$j] >= $dp[$i][$j - 1] ) {
+            } elseif( $dir[$i][$j] === 1 ) {
                 $i--;
             } else {
                 $j--;
             }
         }
 
+        unset( $dir, $prev );
         return array_reverse( $result );
     }
 

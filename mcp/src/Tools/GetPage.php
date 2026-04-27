@@ -43,10 +43,14 @@ class GetPage extends Tool
             'path.required_without' => 'You must specify either an ID or a path.',
         ] );
 
+        $query = Page::withTrashed()
+            ->select( 'id', 'parent_id', 'latest_id', 'created_at', 'deleted_at' )
+            ->with( ['latest' => fn( $q ) => $q->select( 'id', 'versionable_id', 'data', 'aux', 'lang', 'editor', 'published', 'publish_at', 'created_at' )] );
+
         if( !empty( $v['id'] ) ) {
-            $page = Page::withTrashed()->find( $v['id'] );
+            $page = $query->find( $v['id'] );
         } else {
-            $page = Page::withTrashed()->where( 'path', $v['path'] )->first();
+            $page = $query->where( 'path', $v['path'] )->first();
         }
 
         if( !$page ) {
@@ -54,20 +58,35 @@ class GetPage extends Tool
         }
 
         /** @var Page $page */
-        $data = $page->toArray();
-        $data['url'] = route( 'cms.page', ['path' => $page->path] );
+        $version = $page->latest;
+        $vdata = $version?->data;
+        $vaux = $version?->aux;
 
-        if( $latest = $page->latest ) {
-            $data['latest_version'] = array_merge(
-                (array) $latest->data,
-                ['meta' => $latest->aux->meta ?? null],
-                ['content' => $latest->aux->content ?? null],
-                ['config' => $latest->aux->config ?? null],
-                ['published' => $latest->published],
-                ['publish_at' => $latest->publish_at],
-                ['editor' => $latest->editor],
-            );
-        }
+        $data = [
+            'id' => $page->id,
+            'parent_id' => $page->parent_id,
+            'deleted' => $page->trashed(),
+            'lang' => $version->lang ?? '',
+            'editor' => $version->editor ?? '',
+            'tag' => $vdata->tag ?? '',
+            'path' => $vdata->path ?? '',
+            'domain' => $vdata->domain ?? '',
+            'to' => $vdata->to ?? '',
+            'name' => $vdata->name ?? '',
+            'title' => $vdata->title ?? '',
+            'type' => $vdata->type ?? '',
+            'theme' => $vdata->theme ?? '',
+            'status' => $vdata->status ?? 0,
+            'cache' => $vdata->cache ?? 0,
+            'content' => $vaux->content ?? [],
+            'meta' => $vaux->meta ?? new \stdClass(),
+            'config' => $vaux->config ?? new \stdClass(),
+            'published' => $version->published ?? false,
+            'publish_at' => $version->publish_at ?? null,
+            'created_at' => $page->created_at?->format( 'Y-m-d H:i:s' ),
+            'updated_at' => $version?->created_at?->format( 'Y-m-d H:i:s' ),
+            'url' => route( 'cms.page', ['path' => $vdata->path ?? ''] ),
+        ];
 
         return Response::structured( $data );
     }

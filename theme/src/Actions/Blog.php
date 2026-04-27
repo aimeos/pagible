@@ -29,7 +29,9 @@ class Blog
         $order = $sort[0] === '-' ? substr( $sort, 1 ) : $sort;
         $dir = $sort[0] === '-' ? 'desc' : 'asc';
 
-        $builder = Page::where( 'type', 'blog' )->orderBy( $order, $dir );
+        $builder = Page::where( 'type', 'blog' )->with( [
+            'files' => fn( $q ) => $q->select( 'cms_files.id', 'name', 'mime', 'path', 'previews' ),
+        ] )->orderBy( $order, $dir );
 
         /** @phpstan-ignore property.notFound */
         if( $pid = @$item->data?->{'parent-page'}?->value ) {

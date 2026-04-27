@@ -92,26 +92,25 @@ class NavSchema extends Schema
             DateTime::make( 'createdAt' )->readOnly(),
             DateTime::make( 'updatedAt' )->readOnly(),
             ArrayHash::make( 'config' )->readOnly()->extractUsing( function( $model, $column, $items ) {
+                $lang = $model->lang;
+                $lang2 = substr( $lang, 0, 2 );
+
                 foreach( (array) $items as $item )
                 {
                     if( !empty( $item->files ) )
                     {
-                        $lang = $model->lang;
-                        $lang2 = substr( $lang, 0, 2 );
+                        $resolved = [];
 
-                        $item->files = collect( (array) $item->files )
-                            ->map( fn( $id ) => $model->files[$id] ?? null )
-                            ->filter()
-                            ->pluck( null, 'id' )
-                            ->each( function( $file ) use ( $lang, $lang2 ) {
-                                $file->description = $file->description->{$lang}
-                                    ?? $file->description->{$lang2}
-                                    ?? null;
+                        foreach( (array) $item->files as $id )
+                        {
+                            if( $file = $model->files[$id] ?? null ) {
+                                $file->description = $file->description->{$lang} ?? $file->description->{$lang2} ?? null;
+                                $file->transcription = $file->transcription->{$lang} ?? $file->transcription->{$lang2} ?? null;
+                                $resolved[$id] = $file;
+                            }
+                        }
 
-                                $file->transcription = $file->transcription->{$lang}
-                                    ?? $file->transcription->{$lang2}
-                                    ?? null;
-                            } );
+                        $item->files = (object) $resolved;
                     }
                     else
                     {

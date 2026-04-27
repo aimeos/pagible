@@ -41,7 +41,7 @@ class RestorePage extends Tool
         ] );
 
         /** @var Page|null $page */
-        $page = Page::withTrashed()->find( $v['id'] );
+        $page = Page::withTrashed()->select( 'id', 'deleted_at' )->find( $v['id'] );
 
         if( !$page ) {
             return Response::structured( ['error' => 'Page not found.'] );
@@ -52,11 +52,11 @@ class RestorePage extends Tool
         }
 
         $items = Resource::restore( Page::class, [$v['id']], Utils::editor( $request->user() ) );
+
+        /** @var Page $restored */
         $restored = $items->firstOrFail();
 
-        return Response::structured( $restored->toArray() + ( $restored instanceof Page
-            ? ['url' => route( 'cms.page', ['path' => $restored->path] )]
-            : [] ) );
+        return Response::structured( $restored->toArray() + ['url' => route( 'cms.page', ['path' => $restored->path] )] );
     }
 
 

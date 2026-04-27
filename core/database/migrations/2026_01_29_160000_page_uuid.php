@@ -162,18 +162,20 @@ return new class extends Migration
             $table->index(['deleted_at']);
         });
 
-        DB::connection($name)->table('cms_pages_new')->insert(
-            DB::connection($name)->table('cms_pages')->get()->map(function ($row) {
-                $row->oid = $row->id;
-                $row->opid = $row->parent_id;
-                $row->orid = $row->related_id;
-                $row->id = Str::uuid7()->toString();
+        DB::connection($name)->table('cms_pages')->orderBy('id')->chunk(500, function ($batch) use ($name) {
+            DB::connection($name)->table('cms_pages_new')->insert(
+                $batch->map(function ($row) {
+                    $row->oid = $row->id;
+                    $row->opid = $row->parent_id;
+                    $row->orid = $row->related_id;
+                    $row->id = Str::uuid7()->toString();
 
-                unset( $row->parent_id, $row->related_id );
+                    unset( $row->parent_id, $row->related_id );
 
-                return (array) $row;
-            })->toArray()
-        );
+                    return (array) $row;
+                })->toArray()
+            );
+        });
 
         DB::connection($name)->table('cms_pages_new as c')
             ->join('cms_pages_new as p', 'p.oid', '=', 'c.opid')

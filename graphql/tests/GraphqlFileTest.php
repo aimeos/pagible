@@ -482,7 +482,7 @@ class GraphqlFileTest extends GraphqlTestAbstract
 
         $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 6 );
+        $this->expectsDatabaseQueryCount( 5 );
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
                 pubFile(id: ["' . $file->id . '"]) {

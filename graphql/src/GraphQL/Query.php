@@ -11,8 +11,8 @@ use Aimeos\Cms\Filter;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
+use Aimeos\Nestedset\NestedSet;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Facades\DB;
 
 
 /**
@@ -61,9 +61,7 @@ final class Query
         $search = File::search( mb_substr( trim( (string) ( $filter['any'] ?? '' ) ), 0, 200 ) )
             ->searchFields( 'draft' );
 
-        $search->query( fn( $q ) => $q->addSelect( ['byversions_count' => DB::table( 'cms_version_file' )
-            ->selectRaw( 'count(*)' )
-            ->whereColumn( 'file_id', 'cms_files.id' )] ) );
+        $search->query( fn( $q ) => $q->withCount( 'byversions' ) );
 
         Filter::files( $search, $filter + $args );
 
@@ -92,8 +90,8 @@ final class Query
 
         Filter::pages( $search, $filter + $args );
 
-        $allowed = ['id', 'name', 'title', 'editor', '_lft'];
-        $this->sort( $search, $args['sort'] ?? [], $allowed, '_lft', 'asc' );
+        $allowed = ['id', 'name', 'title', 'editor', NestedSet::LFT];
+        $this->sort( $search, $args['sort'] ?? [], $allowed, NestedSet::LFT, 'asc' );
 
         return $search->paginate( $limit, 'page', $page );
     }

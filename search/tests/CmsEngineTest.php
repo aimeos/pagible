@@ -13,6 +13,7 @@ use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Filter;
+use Aimeos\Nestedset\NestedSet;
 use Illuminate\Foundation\Testing\DatabaseTruncation;
 use Illuminate\Foundation\Testing\RefreshDatabaseState;
 use Illuminate\Support\Facades\DB;
@@ -86,9 +87,9 @@ class CmsEngineTest extends SearchTestAbstract
         $this->assertLessThanOrEqual( 2, $result->count() );
 
         // order by
-        $result = Page::search( '' )->searchFields( 'draft' )->orderBy( '_lft', 'asc' )->take( 25 )->get();
+        $result = Page::search( '' )->searchFields( 'draft' )->orderBy( NestedSet::LFT, 'asc' )->take( 25 )->get();
         $this->assertGreaterThanOrEqual( 2, $result->count() );
-        $lfts = $result->pluck( '_lft' )->toArray();
+        $lfts = $result->pluck( NestedSet::LFT )->toArray();
         $sorted = $lfts;
         sort( $sorted );
         $this->assertEquals( $sorted, $lfts );

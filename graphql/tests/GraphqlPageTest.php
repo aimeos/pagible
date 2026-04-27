@@ -14,6 +14,7 @@ use Database\Seeders\CmsSeeder;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
+use Aimeos\Nestedset\NestedSet;
 
 
 class GraphqlPageTest extends GraphqlTestAbstract
@@ -65,7 +66,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
         $page = Page::where('tag', 'root')->firstOrFail();
 
         // Prepare expected attributes
-        $attr = collect($page->getAttributes())->except(['tenant_id', 'latest_id', '_lft', '_rgt', 'depth'])->all();
+        $attr = collect($page->getAttributes())->except(['tenant_id', 'latest_id', NestedSet::LFT, NestedSet::RGT, NestedSet::DEPTH])->all();
         $expected = [
             'id' => (string) $page->id,
             'has' => $page->has,
@@ -122,7 +123,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
         $page = Page::where('tag', 'root')->firstOrFail();
 
         // Prepare expected attributes
-        $attr = collect($page->getAttributes())->except(['tenant_id', 'latest_id', '_lft', '_rgt', 'depth'])->all();
+        $attr = collect($page->getAttributes())->except(['tenant_id', 'latest_id', NestedSet::LFT, NestedSet::RGT, NestedSet::DEPTH])->all();
         $expected[] = [
             'id' => (string) $page->id,
             'meta' => (array) $page->meta,
@@ -294,7 +295,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
                 'parent_id' => (string) $page->parent_id,
                 'created_at' => (string) $page->created_at,
                 'updated_at' => (string) $page->updated_at,
-            ] + collect($page->getAttributes())->except(['tenant_id', 'latest_id', '_lft', '_rgt', 'depth'])->all();
+            ] + collect($page->getAttributes())->except(['tenant_id', 'latest_id', NestedSet::LFT, NestedSet::RGT, NestedSet::DEPTH])->all();
         }
 
         $this->expectsDatabaseQueryCount(2);
@@ -647,7 +648,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
 
         $page = Page::where('tag', 'test')->where('lang', 'en')->firstOrFail();
 
-        $attr = collect($page->getAttributes())->except(['tenant_id', 'latest_id', '_lft', '_rgt', 'depth'])->all();
+        $attr = collect($page->getAttributes())->except(['tenant_id', 'latest_id', NestedSet::LFT, NestedSet::RGT, NestedSet::DEPTH])->all();
         $expected = [
             'id' => $page->id,
             'parent_id' => null,
@@ -741,8 +742,8 @@ class GraphqlPageTest extends GraphqlTestAbstract
                 'addPage' => ['id' => $page->id, 'parent_id' => $root->id],
             ]
         ] );
-        $this->assertEquals( 2, $page->_lft );
-        $this->assertEquals( 3, $page->_rgt );
+        $this->assertEquals( 2, $page->{NestedSet::LFT} );
+        $this->assertEquals( 3, $page->{NestedSet::RGT} );
     }
 
 
@@ -835,8 +836,8 @@ class GraphqlPageTest extends GraphqlTestAbstract
                 ],
             ]
         ] );
-        $this->assertEquals( 2, $page->_lft );
-        $this->assertEquals( 3, $page->_rgt );
+        $this->assertEquals( 2, $page->{NestedSet::LFT} );
+        $this->assertEquals( 3, $page->{NestedSet::RGT} );
     }
 
 
@@ -1052,7 +1053,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
 
         $page = Page::where('tag', 'root')->firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 6 );
+        $this->expectsDatabaseQueryCount( 4 );
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
                 pubPage(id: ["' . $page->id . '"], at: "2099-01-01 00:00:00") {

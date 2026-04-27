@@ -124,7 +124,7 @@ final class Refine
      */
     protected function schema( string $type ) : ObjectSchema
     {
-        $types = collect( \Aimeos\Cms\Schema::schemas( section: $type ) )->keys()->all();
+        $types = array_keys( \Aimeos\Cms\Schema::schemas( section: $type ) );
 
         return new ObjectSchema(
             name: 'response',

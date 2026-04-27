@@ -24,6 +24,7 @@ use LaravelJsonApi\Eloquent\Fields\ID;
 use LaravelJsonApi\Eloquent\Schema;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Models\Nav;
+use Aimeos\Nestedset\NestedSet;
 
 
 class PageSchema extends Schema
@@ -96,121 +97,13 @@ class PageSchema extends Schema
             DateTime::make( 'createdAt' )->readOnly(),
             DateTime::make( 'updatedAt' )->readOnly(),
             ArrayHash::make( 'meta' )->readOnly()->extractUsing( function( $model, $column, $items ) {
-                foreach( (array) $items as $item )
-                {
-                    if( !empty( $item->files ) )
-                    {
-                        $lang = $model->lang;
-                        $lang2 = substr( $lang, 0, 2 );
-
-                        $item->files = collect( (array) $item->files )
-                            ->map( fn( $id ) => $model->files[$id] ?? null )
-                            ->filter()
-                            ->pluck( null, 'id' )
-                            ->each( function( $file ) use ( $lang, $lang2 ) {
-                                $file->description = $file->description->{$lang}
-                                    ?? $file->description->{$lang2}
-                                    ?? null;
-
-                                $file->transcription = $file->transcription->{$lang}
-                                    ?? $file->transcription->{$lang2}
-                                    ?? null;
-                            } );
-                    }
-                    else
-                    {
-                        unset( $item->files );
-                    }
-
-                    if( !empty( $item->data->action ) ) {
-                        $item->data->action = app()->call( $item->data->action, ['model' => $model, 'item' => $item] );
-                    }
-                }
-                return $items;
+                return $this->resolveFiles( $model, $items );
             } ),
             ArrayHash::make( 'config' )->readOnly()->extractUsing( function( $model, $column, $items ) {
-                foreach( (array) $items as $item )
-                {
-                    if( !empty( $item->files ) )
-                    {
-                        $lang = $model->lang;
-                        $lang2 = substr( $lang, 0, 2 );
-
-                        $item->files = collect( (array) $item->files )
-                            ->map( fn( $id ) => $model->files[$id] ?? null )
-                            ->filter()
-                            ->pluck( null, 'id' )
-                            ->each( function( $file ) use ( $lang, $lang2 ) {
-                                $file->description = $file->description->{$lang}
-                                    ?? $file->description->{$lang2}
-                                    ?? null;
-
-                                $file->transcription = $file->transcription->{$lang}
-                                    ?? $file->transcription->{$lang2}
-                                    ?? null;
-                            } );
-                    }
-                    else
-                    {
-                        unset( $item->files );
-                    }
-
-                    if( !empty( $item->data->action ) ) {
-                        $item->data->action = app()->call( $item->data->action, ['model' => $model, 'item' => $item] );
-                    }
-                }
-                return $items;
+                return $this->resolveFiles( $model, $items );
             } ),
             ArrayHash::make( 'content' )->readOnly()->extractUsing( function( $model, $column, $items ) {
-                $list = [];
-                foreach( (array) $items as $key => $item )
-                {
-                    if( $item->type === 'reference' && $element = @$model->elements[@$item->refid] )
-                    {
-                        $item->type = $element->type;
-                        $item->data = $element->data;
-
-                        if( !$element->files->isEmpty() ) {
-                            $item->files = $element->files;
-                        }
-                        unset( $item->refid );
-                    }
-                    elseif( !empty( $item->files ) )
-                    {
-                        $item->files = collect( (array) $item->files )
-                            ->map( fn( $id ) => $model->files[$id] ?? null )
-                            ->filter()
-                            ->pluck( null, 'id' );
-                    }
-
-                    if( !empty( $item->files ) )
-                    {
-                        $lang = $model->lang;
-                        $lang2 = substr( $lang, 0, 2 );
-
-                        $item->files->each( function( $file ) use ( $lang, $lang2 ) {
-                            $file->description = $file->description->{$lang}
-                                ?? $file->description->{$lang2}
-                                ?? null;
-
-                            $file->transcription = $file->transcription->{$lang}
-                                ?? $file->transcription->{$lang2}
-                                ?? null;
-                        } );
-                    }
-                    else
-                    {
-                        unset( $item->files );
-                    }
-
-                    if( !empty( $item->data->action ) ) {
-                        $item->data->action = app()->call( $item->data->action, ['model' => $model, 'item' => $item] );
-                    }
-
-                    unset( $item->group );
-                    $list[] = $item;
-                }
-                return $list;
+                return $this->resolveContent( $model, $items );
             } ),
             HasOne::make( 'parent' )->type( 'navs' )->readOnly()->serializeUsing(
                 static fn($relation) => $relation->withoutLinks()
@@ -265,7 +158,21 @@ class PageSchema extends Schema
      */
     public function indexQuery( ?Request $request, Builder $query ): Builder
     {
-        $query = $query->with( ['files', 'elements.files'] )->orderBy( '_lft' );
+        $fields = $request?->input( 'fields.pages' );
+        $needsRelations = !$fields
+            || str_contains( $fields, 'content' )
+            || str_contains( $fields, 'meta' )
+            || str_contains( $fields, 'config' );
+
+        if( $needsRelations ) {
+            $query = $query->with( [
+                'files' => fn( $q ) => $q->select( 'cms_files.id', 'name', 'mime', 'path', 'previews', 'description', 'transcription' ),
+                'elements' => fn( $q ) => $q->select( 'cms_elements.id', 'type', 'data' ),
+                'elements.files' => fn( $q ) => $q->select( 'cms_files.id', 'name', 'mime', 'path', 'previews', 'description', 'transcription' ),
+            ] );
+        }
+
+        $query = $query->orderBy( NestedSet::LFT );
 
         if( $request && ( $filter = $request->get( 'filter' ) ) ) {
             return $query;
@@ -283,5 +190,83 @@ class PageSchema extends Schema
     public function pagination(): ?Paginator
     {
         return PagePagination::make();
+    }
+
+
+    /**
+     * Resolves element references, file references and actions for content items.
+     *
+     * @param Page $model The page model with loaded relations
+     * @param mixed $items The content items to resolve
+     * @return array<int, mixed> The resolved content items
+     */
+    protected function resolveContent( Page $model, mixed $items ) : array
+    {
+        $allFiles = null;
+
+        foreach( (array) $items as $item )
+        {
+            if( $item->type === 'reference' && $element = @$model->elements[@$item->refid] )
+            {
+                $item->type = $element->type;
+                $item->data = $element->data;
+
+                if( !$element->files->isEmpty() ) {
+                    $allFiles = ( $allFiles ?? $model->files )->merge( $element->files );
+                    $item->files = $element->files->keys()->all();
+                }
+                unset( $item->refid );
+            }
+
+            unset( $item->group );
+        }
+
+        return array_values( (array) $this->resolveFiles( $model, $items, $allFiles ) );
+    }
+
+
+    /**
+     * Resolves file references and actions for a list of items.
+     *
+     * @param Page $model The page model with loaded files relation
+     * @param mixed $items The items to resolve files for
+     * @param \Illuminate\Database\Eloquent\Collection<int, \Aimeos\Cms\Models\File>|null $lookup Optional file lookup collection
+     * @return mixed The items with resolved file references
+     */
+    protected function resolveFiles( Page $model, mixed $items, ?\Illuminate\Support\Collection $lookup = null ) : mixed
+    {
+        $filesById = null;
+        $lang = $model->lang;
+        $lang2 = substr( $lang, 0, 2 );
+
+        foreach( (array) $items as $item )
+        {
+            if( !empty( $item->files ) )
+            {
+                $resolved = [];
+                $filesById ??= $lookup ?? $model->files;
+
+                foreach( (array) $item->files as $id )
+                {
+                    if( $file = $filesById[$id] ?? null )
+                    {
+                        $file->description = $file->description->{$lang} ?? $file->description->{$lang2} ?? null;
+                        $file->transcription = $file->transcription->{$lang} ?? $file->transcription->{$lang2} ?? null;
+                        $resolved[$id] = $file;
+                    }
+                }
+                $item->files = $resolved ?: null;
+            }
+
+            if( empty( $item->files ) ) {
+                unset( $item->files );
+            }
+
+            if( !empty( $item->data->action ) ) {
+                $item->data->action = app()->call( $item->data->action, ['model' => $model, 'item' => $item] );
+            }
+        }
+
+        return $items;
     }
 }

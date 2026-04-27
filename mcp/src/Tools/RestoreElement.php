@@ -41,7 +41,7 @@ class RestoreElement extends Tool
         ] );
 
         /** @var Element|null $element */
-        $element = Element::withTrashed()->find( $v['id'] );
+        $element = Element::withTrashed()->select( 'id', 'deleted_at' )->find( $v['id'] );
 
         if( !$element ) {
             return Response::structured( ['error' => 'Element not found.'] );
