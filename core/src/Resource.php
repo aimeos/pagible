@@ -338,14 +338,8 @@ class Resource
      */
     public static function saveElement( string $id, array $input, ?Authenticatable $user = null, ?array $files = null, ?string $latestId = null ) : Element
     {
-        $with = ['latest' => fn( $q ) => $q->select( 'id', 'versionable_id', 'data', 'lang', 'editor' )];
-
-        if( $files === null ) {
-            $with['latest.files'] = fn( $q ) => $q->select( 'cms_files.id' );
-        }
-
         /** @var Element $element */
-        $element = Element::withTrashed()->with( $with )->findOrFail( $id );
+        $element = Element::withTrashed()->with( 'latest' )->findOrFail( $id );
         $type = $input['type'] ?? $element->type ?? ( (array) ( $element->latest->data ?? [] ) )['type'] ?? '';
 
         if( isset( $input['type'] ) ) {
@@ -372,7 +366,7 @@ class Resource
                 'lang' => $input['lang'] ?? $element->latest?->lang,
             ] );
 
-            $version->files()->attach( $files ?? $element->latest?->getRelation( 'files' )->modelKeys() ?? [] );
+            $version->files()->attach( $files ?? $element->latest?->files()->pluck( 'id' )->all() ?? [] );
             $element->setRelation( 'latest', $version );
             $element->forceFill( ['latest_id' => $version->id] )->save();
 
@@ -495,17 +489,8 @@ class Resource
 
         return Utils::transaction( function() use ( $id, $input, $user, $editor, $files, $elements, $latestId ) {
 
-            $with = ['latest' => fn( $q ) => $q->select( 'id', 'versionable_id', 'data', 'aux', 'lang', 'editor' )];
-
-            if( $files === null ) {
-                $with['latest.files'] = fn( $q ) => $q->select( 'cms_files.id' );
-            }
-            if( $elements === null ) {
-                $with['latest.elements'] = fn( $q ) => $q->select( 'cms_elements.id' );
-            }
-
             /** @var Page $page */
-            $page = Page::withTrashed()->with( $with )->findOrFail( $id );
+            $page = Page::withTrashed()->with( 'latest' )->findOrFail( $id );
             $versionId = ( new Version )->newUniqueId();
 
             $data = array_diff_key( $input, array_flip( ['meta', 'config', 'content'] ) );
@@ -528,11 +513,8 @@ class Resource
                 'aux' => $aux,
             ] );
 
-            $elementIds = $elements ?? $page->latest?->getRelation( 'elements' )->modelKeys() ?? [];
-            $fileIds = $files ?? $page->latest?->getRelation( 'files' )->modelKeys() ?? [];
-
-            $version->elements()->attach( $elementIds );
-            $version->files()->attach( $fileIds );
+            $version->elements()->attach( $elements ?? $page->latest?->elements()->pluck( 'id' )->all() ?? [] );
+            $version->files()->attach( $files ?? $page->latest?->files()->pluck( 'id' )->all() ?? [] );
 
             $page->setRelation( 'latest', $version );
             $page->forceFill( ['latest_id' => $version->id] )->save();
