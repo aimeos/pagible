@@ -43,7 +43,6 @@ class GetElement extends Tool
 
         /** @var Element|null $element */
         $element = Element::withTrashed()->with( [
-            'bypages',
             'latest' => fn( $q ) => $q->select( 'id', 'versionable_id', 'data', 'lang', 'editor', 'published', 'publish_at', 'created_at' )
         ] )->find( $v['id'] );
 
@@ -53,11 +52,9 @@ class GetElement extends Tool
 
         $version = $element->latest;
         $vdata = $version?->data;
-        $usedByPages = [];
-
-        foreach( $element->bypages as $p ) {
-            $usedByPages[] = ['id' => $p->id, 'name' => $p->name, 'path' => $p->path];
-        }
+        $usedByPages = $element->bypages()->toBase()
+            ->select( 'cms_pages.id', 'cms_pages.name', 'cms_pages.path' )
+            ->cursor()->map( fn( $p ) => (array) $p )->all();
 
         $data = [
             'id' => $element->id,

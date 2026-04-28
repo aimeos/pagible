@@ -42,7 +42,9 @@ class GetFile extends Tool
         ] );
 
         /** @var File|null $file */
-        $file = File::withTrashed()->with( ['bypages', 'byelements', 'latest' => fn( $q ) => $q->select( 'id', 'versionable_id', 'data', 'lang', 'editor', 'published', 'publish_at', 'created_at' )] )->find( $v['id'] );
+        $file = File::withTrashed()->with( [
+            'latest' => fn( $q ) => $q->select( 'id', 'versionable_id', 'data', 'lang', 'editor', 'published', 'publish_at', 'created_at' )
+        ] )->find( $v['id'] );
 
         if( !$file ) {
             return Response::structured( ['error' => 'File not found.'] );
@@ -50,15 +52,12 @@ class GetFile extends Tool
 
         $version = $file->latest;
         $vdata = $version?->data;
-        $usedByElements = $usedByPages = [];
-
-        foreach( $file->byelements as $e ) {
-            $usedByElements[] = ['id' => $e->id, 'type' => $e->type, 'name' => $e->name];
-        }
-
-        foreach( $file->bypages as $p ) {
-            $usedByPages[] = ['id' => $p->id, 'name' => $p->name, 'path' => $p->path];
-        }
+        $usedByElements = $file->byelements()->toBase()
+            ->select( 'cms_elements.id', 'cms_elements.type', 'cms_elements.name' )
+            ->cursor()->map( fn( $e ) => (array) $e )->all();
+        $usedByPages = $file->bypages()->toBase()
+            ->select( 'cms_pages.id', 'cms_pages.name', 'cms_pages.path' )
+            ->cursor()->map( fn( $p ) => (array) $p )->all();
 
         $data = [
             'id' => $file->id,
