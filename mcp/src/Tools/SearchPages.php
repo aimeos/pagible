@@ -55,7 +55,7 @@ class SearchPages extends Tool
         ] );
 
         $search = Page::search( mb_substr( trim( (string) ( $v['term'] ?? '' ) ), 0, 200 ) )
-            ->query( fn( $q ) => $q->select( 'cms_pages.id', 'parent_id', 'path', 'has', 'created_at', 'updated_at', 'deleted_at', 'latest_id', NestedSet::LFT, NestedSet::RGT )
+            ->query( fn( $q ) => $q->select( 'cms_pages.id', 'parent_id', 'path', 'created_at', 'updated_at', 'deleted_at', 'latest_id', NestedSet::LFT, NestedSet::RGT )
             ->with( ['latest' => fn( $q ) => $q->select( 'id', 'versionable_id', 'data', 'lang', 'editor' )] ) )
             ->searchFields( 'draft' )
             ->take( 25 );

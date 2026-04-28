@@ -46,7 +46,7 @@ class MovePage extends Tool
         /** @var Page|null $page */
         $page = Page::withTrashed()->select(
             'id', 'tenant_id', 'parent_id', 'path', 'domain', 'name', 'editor',
-            'latest_id', NestedSet::LFT, NestedSet::RGT, NestedSet::DEPTH, 'deleted_at'
+            'latest_id', 'deleted_at', NestedSet::LFT, NestedSet::RGT, NestedSet::DEPTH
         )->find( $v['id'] );
 
         if( !$page ) {

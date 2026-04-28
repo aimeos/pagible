@@ -74,8 +74,9 @@ class Page extends Base
     /** @var list<string> Columns needed for memory-efficient Page queries */
     public const SELECT_COLUMNS = [
         'id', 'tenant_id', 'parent_id', 'related_id', 'path', 'domain', 'name', 'title',
-        'tag', 'to', 'type', 'theme', 'meta', 'content', 'status', 'cache', 'has',
-        'editor', 'latest_id', NestedSet::LFT, NestedSet::RGT, NestedSet::DEPTH, 'created_at', 'updated_at', 'deleted_at',
+        'tag', 'to', 'type', 'theme', 'meta', 'content', 'status', 'cache',
+        'editor', 'latest_id', 'created_at', 'updated_at', 'deleted_at',
+        NestedSet::LFT, NestedSet::RGT, NestedSet::DEPTH
     ];
 
 
@@ -426,7 +427,7 @@ class Page extends Base
     public function prunable() : Builder
     {
         return static::withoutTenancy()
-            ->select( 'id', 'tenant_id', 'parent_id', NestedSet::LFT, NestedSet::RGT, NestedSet::DEPTH, 'deleted_at' )
+            ->select( 'id', 'tenant_id', 'parent_id', 'deleted_at', NestedSet::LFT, NestedSet::RGT, NestedSet::DEPTH )
             ->where( 'deleted_at', '<=', now()->subDays( config( 'cms.prune', 30 ) ) );
     }
 

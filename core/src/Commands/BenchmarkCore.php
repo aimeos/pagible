@@ -158,7 +158,7 @@ class BenchmarkCore extends Command
         }, tries: $tries );
 
         $this->benchmark( 'Page tree', function() use ( $root ) {
-            Page::select( 'id', 'parent_id', NestedSet::LFT, NestedSet::RGT, NestedSet::DEPTH, 'name', 'title', 'tag', 'path', 'domain', 'lang', 'to', 'status', 'config', 'latest_id' )
+            Page::select( 'id', 'parent_id', 'name', 'title', 'tag', 'path', 'domain', 'lang', 'to', 'status', 'config', 'latest_id', NestedSet::LFT, NestedSet::RGT, NestedSet::DEPTH )
                 ->where( 'parent_id', $root->id )->with( ['children', 'latest'] )->get();
         }, readOnly: true, tries: $tries );
 
