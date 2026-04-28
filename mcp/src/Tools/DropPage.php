@@ -40,16 +40,13 @@ class DropPage extends Tool
             'id.required' => 'You must specify the ID of the page to delete.',
         ] );
 
-        /** @var Page|null $page */
-        $page = Page::withTrashed()->find( $v['id'] );
+        $items = Resource::drop( Page::class, [$v['id']], Utils::editor( $request->user() ) );
 
-        if( !$page ) {
+        if( $items->isEmpty() ) {
             return Response::structured( ['error' => 'Page not found.'] );
         }
 
-        $items = Resource::drop( Page::class, [$v['id']], Utils::editor( $request->user() ) );
-
-        return Response::structured( $items->firstOrFail()->toArray() );
+        return Response::structured( $items->first()->toArray() );
     }
 
 

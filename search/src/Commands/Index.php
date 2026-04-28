@@ -31,11 +31,15 @@ class Index extends Command
      */
     public function handle(): void
     {
-        Page::withTrashed()->with( ['elements', 'latest.elements'] )
-            ->chunk( 100, fn( $items ) => $items->searchable() ); // @phpstan-ignore method.notFound
-        Element::withTrashed()->with( 'latest' )
-            ->chunk( 100, fn( $items ) => $items->searchable() ); // @phpstan-ignore method.notFound
-        File::withTrashed()->with( 'latest' )
-            ->chunk( 100, fn( $items ) => $items->searchable() ); // @phpstan-ignore method.notFound
+        Page::withTrashed()->select( Page::SELECT_COLUMNS )->with( [
+                'elements' => fn( $q ) => $q->select( 'cms_elements.id', 'type', 'data' ),
+                'latest' => fn( $q ) => $q->select( 'id', 'versionable_id', 'data', 'aux', 'lang', 'editor', 'published' ),
+                'latest.elements' => fn( $q ) => $q->select( 'cms_elements.id', 'type', 'data' ),
+            ] )
+            ->chunk( 50, fn( $items ) => $items->searchable() ); // @phpstan-ignore method.notFound
+        Element::withTrashed()->with( ['latest' => fn( $q ) => $q->select( 'id', 'versionable_id', 'data', 'lang', 'editor', 'published' )] )
+            ->chunk( 50, fn( $items ) => $items->searchable() ); // @phpstan-ignore method.notFound
+        File::withTrashed()->with( ['latest' => fn( $q ) => $q->select( 'id', 'versionable_id', 'data', 'lang', 'editor', 'published' )] )
+            ->chunk( 50, fn( $items ) => $items->searchable() ); // @phpstan-ignore method.notFound
     }
 }

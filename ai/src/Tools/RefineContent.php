@@ -49,7 +49,9 @@ class RefineContent extends Tool
         ] );
 
         /** @var Page|null $page */
-        $page = Page::withTrashed()->find( $validated['id'] );
+        $page = Page::withTrashed()->select( 'id', 'content', 'latest_id' )
+            ->with( ['latest' => fn( $q ) => $q->select( 'id', 'versionable_id', 'aux' )] )
+            ->find( $validated['id'] );
 
         if( !$page ) {
             return Response::structured( ['error' => 'Page not found.'] );
@@ -62,7 +64,7 @@ class RefineContent extends Tool
         $model = config( 'cms.ai.refine.model' );
 
         $system = view( 'cms::prompts.refine' )->render();
-        $types = collect( \Aimeos\Cms\Schema::schemas( section: 'content' ) )->keys()->all();
+        $types = array_keys( \Aimeos\Cms\Schema::schemas( section: 'content' ) );
 
         try
         {

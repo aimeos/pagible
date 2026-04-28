@@ -32,6 +32,7 @@ use Laravel\Scout\Searchable;
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property string|null $latest_id
  * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Page> $bypages
  * @method static \Illuminate\Database\Eloquent\Builder<static> withoutTenancy()
  */
 class Element extends Base
@@ -42,6 +43,8 @@ class Element extends Base
     use Searchable;
     use Prunable;
     use Tenancy;
+
+
 
 
     /**
@@ -98,7 +101,7 @@ class Element extends Base
      */
     public function __toString() : string
     {
-        $content = ( $this->name ?? '' ) . "\n";
+        $parts = [$this->name ?? ''];
         $config = \Aimeos\Cms\Schema::schemas( section: 'content' );
         $fields = (array) ( $config[@$this->data->type]['fields'] ?? [] );
 
@@ -108,11 +111,11 @@ class Element extends Base
                 && ( $fields[$name]['searchable'] ?? true )
                 && in_array( $fields[$name]['type'], ['markdown', 'plaintext', 'string', 'text'] )
             ) {
-                $content .= $value . "\n";
+                $parts[] = $value;
             }
         }
 
-        return trim( $content );
+        return trim( implode( "\n", $parts ) );
     }
 
 
@@ -186,7 +189,9 @@ class Element extends Base
      */
     public function prunable() : Builder
     {
-        return static::withoutTenancy()->where( 'deleted_at', '<=', now()->subDays( config( 'cms.prune', 30 ) ) );
+        return static::withoutTenancy()
+            ->select( 'id', 'tenant_id', 'deleted_at' )
+            ->where( 'deleted_at', '<=', now()->subDays( config( 'cms.prune', 30 ) ) );
     }
 
 
@@ -198,7 +203,10 @@ class Element extends Base
      */
     public function publish( Version $version ) : self
     {
-        $this->files()->sync( $version->files ?? [] );
+        $fileIds = $version->relationLoaded( 'files' )
+            ? $version->getRelation( 'files' )->modelKeys()
+            : $version->files()->pluck( 'id' )->all();
+        $this->files()->sync( $fileIds );
 
         $this->fill( (array) $version->data );
         $this->editor = $version->editor;
@@ -249,7 +257,7 @@ class Element extends Base
      */
     protected function makeAllSearchableUsing( $query )
     {
-        return $query->with( 'latest' );
+        return $query->with( ['latest' => fn( $q ) => $q->select( 'id', 'versionable_id', 'data', 'lang', 'editor', 'published' )] );
     }
 
 

@@ -123,18 +123,21 @@ class Utils
     public static function files( Page $page ) : Collection
     {
         $lang = $page->lang;
+        $lang2 = substr( $lang, 0, 2 );
+        $seen = [];
 
-        return Collection::make( (array) $page->content )
-            ->map( fn( $item ) => $item->files ?? [] )
-            ->collapse()
-            ->unique()
-            ->map( fn( $id ) => $page->files[$id] ?? null )
-            ->filter()
-            ->pluck( null, 'id' )
-            ->each( fn( $file ) => $file->description = $file->description->{$lang}
-                ?? $file->description->{substr( $lang, 0, 2 )}
-                ?? null
-        );
+        foreach( (array) $page->content as $item )
+        {
+            foreach( (array) ( $item->files ?? [] ) as $id )
+            {
+                if( !isset( $seen[$id] ) && ( $file = $page->files[$id] ?? null ) ) {
+                    $file->description = $file->description->{$lang} ?? $file->description->{$lang2} ?? null;
+                    $seen[$id] = $file;
+                }
+            }
+        }
+
+        return new Collection( $seen );
     }
 
 
@@ -217,10 +220,15 @@ class Utils
         }
 
         // Strict: DNS lookup and reject private/reserved IPs
-        return collect( @dns_get_record( $parsed['host'], DNS_A + DNS_AAAA ) ?: [] )
-            ->map( fn( $r ) => $r['ip'] ?? $r['ipv6'] ?? null )
-            ->filter( fn( $ip ) => $ip && filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE ) )
-            ->first() !== null;
+        foreach( @dns_get_record( $parsed['host'], DNS_A + DNS_AAAA ) ?: [] as $r )
+        {
+            $ip = $r['ip'] ?? $r['ipv6'] ?? null;
+
+            if( $ip && filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE ) ) {
+                return true;
+            }
+        }
+        return false;
     }
 
 

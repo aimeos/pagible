@@ -53,7 +53,7 @@ class SitemapControllerTest extends ThemeTestAbstract
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertStringContainsString('<sitemapindex', $content);
         $this->assertStringContainsString('</sitemapindex>', $content);
-        $this->assertStringContainsString('<loc><![CDATA[http://localhost/sitemap-1.xml]]></loc>', $content);
+        $this->assertStringContainsString('<loc>http://localhost/sitemap-1.xml</loc>', $content);
         $this->assertStringNotContainsString('<urlset', $content);
     }
 

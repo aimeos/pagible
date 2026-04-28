@@ -8,7 +8,6 @@
 namespace Aimeos\Cms\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
@@ -43,8 +42,10 @@ class WpImport extends Command
     protected string $type;
     protected string $mediaUrl;
     protected string $editor;
-    /** @var Collection<int|string, mixed> */
-    protected Collection $attachments;
+    /** @var array<int|string, array{guid: string, title: string, mime: string}> */
+    protected array $attachmentsById = [];
+    /** @var array<string, array{guid: string, title: string, mime: string}> */
+    protected array $attachmentsByBasename = [];
 
 
     /**
@@ -65,24 +66,30 @@ class WpImport extends Command
             return;
         }
 
-        $posts = $this->fetchPosts();
+        $postQuery = DB::connection( $this->wpConnection )
+            ->table( 'wp_posts' )
+            ->where( 'post_type', 'post' )
+            ->where( 'post_status', 'publish' )
+            ->orderBy( 'post_date', 'asc' );
 
-        if( $posts->isEmpty() ) {
+        $postCount = $postQuery->count();
+
+        if( $postCount === 0 ) {
             $this->warn( 'No published WordPress posts found.' );
             return;
         }
 
-        $this->info( "Found {$posts->count()} published WordPress posts." );
+        $this->info( "Found {$postCount} published WordPress posts." );
 
         if( $this->option( 'dry-run' ) ) {
-            $this->printDryRun( $posts );
+            $this->printDryRun( $postQuery );
             return;
         }
 
-        $this->attachments = $this->fetchAttachments();
+        $this->fetchAttachments();
         $blogPage = $this->getBlogPage();
 
-        $this->importPosts( $posts, $blogPage );
+        $this->importPosts( $postQuery, $blogPage, $postCount );
     }
 
 
@@ -251,11 +258,14 @@ class WpImport extends Command
     /**
      * Creates a Pagible File record from a WordPress attachment.
      */
-    protected function createFileFromAttachment( object $attachment, string $alt = '' ): string
+    /**
+     * @param array{guid: string, title: string, mime: string} $attachment
+     */
+    protected function createFileFromAttachment( array $attachment, string $alt = '' ): string
     {
-        $url = $attachment->guid; // @phpstan-ignore property.notFound
-        $name = $alt ?: $attachment->post_title ?: basename( parse_url( $url, PHP_URL_PATH ) ?: 'image' ); // @phpstan-ignore property.notFound
-        $mime = $attachment->post_mime_type ?: $this->guessMimeFromUrl( $url ); // @phpstan-ignore property.notFound
+        $url = $attachment['guid'];
+        $name = $alt ?: $attachment['title'] ?: basename( parse_url( $url, PHP_URL_PATH ) ?: 'image' );
+        $mime = $attachment['mime'] ?: $this->guessMimeFromUrl( $url );
 
         return $this->createFile( $mime, $name, $url );
     }
@@ -301,44 +311,57 @@ class WpImport extends Command
 
     /**
      * Fetches WordPress image attachments keyed by ID.
-     *
-     * @return Collection<int|string, mixed>
      */
-    protected function fetchAttachments(): Collection
+    protected function fetchAttachments(): void
     {
-        return DB::connection( $this->wpConnection )
+        $this->attachmentsById = [];
+
+        DB::connection( $this->wpConnection )
             ->table( 'wp_posts' )
+            ->select( 'ID', 'guid', 'post_title', 'post_mime_type' )
             ->where( 'post_type', 'attachment' )
             ->whereIn( 'post_mime_type', ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'] )
-            ->get()
-            ->keyBy( 'ID' );
+            ->orderBy( 'ID' )
+            ->chunk( 100, function( $chunk ) {
+                foreach( $chunk as $attachment )
+                {
+                    $this->attachmentsById[$attachment->ID] = [
+                        'guid' => $attachment->guid,
+                        'title' => $attachment->post_title,
+                        'mime' => $attachment->post_mime_type,
+                    ];
+                    $this->attachmentsByBasename[basename( $attachment->guid )] = &$this->attachmentsById[$attachment->ID];
+                }
+            } );
     }
 
 
     /**
      * Fetches published WordPress posts.
      *
-     * @return Collection<int|string, mixed>
+     * @return \Illuminate\Database\Query\Builder
      */
-    protected function fetchPosts(): Collection
+    protected function fetchPosts(): \Illuminate\Database\Query\Builder
     {
-        return DB::connection( $this->wpConnection ) // @phpstan-ignore return.type
+        return DB::connection( $this->wpConnection )
             ->table( 'wp_posts' )
             ->where( 'post_type', 'post' )
             ->where( 'post_status', 'publish' )
-            ->orderBy( 'post_date', 'asc' )
-            ->get();
+            ->orderBy( 'post_date', 'asc' );
     }
 
 
     /**
      * Finds a WordPress attachment matching the given image URL.
      */
-    protected function findAttachmentByUrl( string $src ): ?object
+    /**
+     * @return array{guid: string, title: string, mime: string}|null
+     */
+    protected function findAttachmentByUrl( string $src ): ?array
     {
-        foreach( $this->attachments as $attachment )
+        foreach( $this->attachmentsByBasename as $basename => $attachment )
         {
-            if( str_contains( $src, basename( $attachment->guid ) ) ) {
+            if( str_contains( $src, $basename ) ) {
                 return $attachment;
             }
         }
@@ -470,18 +493,22 @@ class WpImport extends Command
             }, $m[1] );
         }, $text );
 
-        // Inline formatting
-        $text = (string) preg_replace( '/<strong>(.*?)<\/strong>/is', '**$1**', $text );
-        $text = (string) preg_replace( '/<b>(.*?)<\/b>/is', '**$1**', $text );
-        $text = (string) preg_replace( '/<em>(.*?)<\/em>/is', '*$1*', $text );
-        $text = (string) preg_replace( '/<i>(.*?)<\/i>/is', '*$1*', $text );
-        $text = (string) preg_replace( '/<del>(.*?)<\/del>/is', '~~$1~~', $text );
-        $text = (string) preg_replace( '/<s>(.*?)<\/s>/is', '~~$1~~', $text );
+        // Inline formatting — links need a separate pass due to capture group numbering
         $text = (string) preg_replace( '/<a[^>]+href=["\']([^"\']+)["\'][^>]*>(.*?)<\/a>/is', '[$2]($1)', $text );
-        $text = (string) preg_replace( '/<code>(.*?)<\/code>/is', '`$1`', $text );
-        $text = (string) preg_replace( '/<hr\s*\/?>/', "\n---\n", $text );
-        $text = (string) preg_replace( '/<p[^>]*>(.*?)<\/p>/is', "$1\n\n", $text );
-        $text = (string) preg_replace( '/<br\s*\/?>/', "\n", $text );
+        $text = (string) preg_replace( [
+            '/<strong>(.*?)<\/strong>/is',
+            '/<b>(.*?)<\/b>/is',
+            '/<em>(.*?)<\/em>/is',
+            '/<i>(.*?)<\/i>/is',
+            '/<del>(.*?)<\/del>/is',
+            '/<s>(.*?)<\/s>/is',
+            '/<code>(.*?)<\/code>/is',
+            '/<hr\s*\/?>/',
+            '/<p[^>]*>(.*?)<\/p>/is',
+            '/<br\s*\/?>/',
+        ], [
+            '**$1**', '**$1**', '*$1*', '*$1*', '~~$1~~', '~~$1~~', '`$1`', "\n---\n", "$1\n\n", "\n",
+        ], $text );
         $text = strip_tags( $text );
         $text = html_entity_decode( $text, ENT_QUOTES, 'UTF-8' );
         $text = (string) preg_replace( '/\n{3,}/', "\n\n", $text );
@@ -501,11 +528,11 @@ class WpImport extends Command
             ->where( 'meta_key', '_thumbnail_id' )
             ->value( 'meta_value' );
 
-        if( !$thumbnailId || !isset( $this->attachments[$thumbnailId] ) ) {
+        if( !$thumbnailId || !isset( $this->attachmentsById[$thumbnailId] ) ) {
             return null;
         }
 
-        return $this->createFileFromAttachment( $this->attachments[$thumbnailId] );
+        return $this->createFileFromAttachment( $this->attachmentsById[$thumbnailId] );
     }
 
 
@@ -559,28 +586,28 @@ class WpImport extends Command
 
     /**
      * Imports all posts under the given blog page.
-     *
-     * @param Collection<int|string, mixed> $posts
      */
-    protected function importPosts( Collection $posts, Page $blogPage ): void
+    protected function importPosts( \Illuminate\Database\Query\Builder $query, Page $blogPage, int $total ): void
     {
         $imported = 0;
 
-        foreach( $posts as $post )
-        {
-            try {
-                DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $post, $blogPage ) {
-                    $this->importPost( $post, $blogPage );
-                } );
+        $query->chunk( 100, function( $posts ) use ( $blogPage, &$imported ) {
+            foreach( $posts as $post )
+            {
+                try {
+                    DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $post, $blogPage ) {
+                        $this->importPost( $post, $blogPage );
+                    } );
 
-                $imported++;
-                $this->info( "  Imported: {$post->post_title}" );
-            } catch( \Exception $e ) {
-                $this->error( "  Failed to import [{$post->ID}] {$post->post_title}: " . $e->getMessage() );
+                    $imported++;
+                    $this->info( "  Imported: {$post->post_title}" );
+                } catch( \Exception $e ) {
+                    $this->error( "  Failed to import [{$post->ID}] {$post->post_title}: " . $e->getMessage() );
+                }
             }
-        }
+        } );
 
-        $this->info( "Import complete. {$imported}/{$posts->count()} posts imported." );
+        $this->info( "Import complete. {$imported}/{$total} posts imported." );
     }
 
 
@@ -591,49 +618,52 @@ class WpImport extends Command
      */
     protected function parseBlock( string $block, ?string $wpType = null ): ?array
     {
-        // Skip decorative/layout-only Gutenberg blocks
-        if( in_array( $wpType, ['separator', 'spacer', 'buttons', 'button', 'columns', 'column', 'group', 'more'] ) ) {
-            return null;
-        }
+        if( $wpType !== null )
+        {
+            // Skip decorative/layout-only Gutenberg blocks
+            if( in_array( $wpType, ['separator', 'spacer', 'buttons', 'button', 'columns', 'column', 'group', 'more'] ) ) {
+                return null;
+            }
 
-        // Use Gutenberg type hints to map to Pagible schema types
-        if( $wpType === 'heading' ) {
-            return $this->parseHeadingBlock( $block ) ?? $this->parseTextBlock( $block );
-        }
+            // Use Gutenberg type hints to map to Pagible schema types
+            if( $wpType === 'heading' ) {
+                return $this->parseHeadingBlock( $block ) ?? $this->parseTextBlock( $block );
+            }
 
-        if( in_array( $wpType, ['code', 'preformatted', 'syntaxhighlighter/code'] ) ) {
-            return $this->parseCodeBlock( $block ) ?? $this->parseTextBlock( $block );
-        }
+            if( in_array( $wpType, ['code', 'preformatted', 'syntaxhighlighter/code'] ) ) {
+                return $this->parseCodeBlock( $block ) ?? $this->parseTextBlock( $block );
+            }
 
-        if( $wpType === 'image' ) {
-            return $this->parseStandaloneImageBlock( $block ) ?? $this->parseImageTextBlock( $block );
-        }
+            if( $wpType === 'image' ) {
+                return $this->parseStandaloneImageBlock( $block ) ?? $this->parseImageTextBlock( $block );
+            }
 
-        if( $wpType === 'gallery' ) {
-            return $this->parseGalleryBlock( $block ) ?? $this->parseStandaloneImageBlock( $block );
-        }
+            if( $wpType === 'gallery' ) {
+                return $this->parseGalleryBlock( $block ) ?? $this->parseStandaloneImageBlock( $block );
+            }
 
-        if( in_array( $wpType, ['media-text', 'cover'] ) ) {
-            return $this->parseImageTextBlock( $block );
-        }
-
-        if( $wpType === 'table' ) {
-            return $this->parseTableBlock( $block ) ?? $this->parseTextBlock( $block );
-        }
-
-        if( in_array( $wpType, ['video', 'core-embed/youtube', 'core-embed/vimeo', 'embed'] ) ) {
-            return $this->parseVideoBlock( $block ) ?? $this->parseTextBlock( $block );
-        }
-
-        if( $wpType === 'audio' ) {
-            return $this->parseAudioBlock( $block );
-        }
-
-        if( in_array( $wpType, ['paragraph', 'list', 'quote', 'pullquote', 'verse', 'freeform'] ) ) {
-            if( preg_match( '/<img[^>]+>/i', $block ) ) {
+            if( in_array( $wpType, ['media-text', 'cover'] ) ) {
                 return $this->parseImageTextBlock( $block );
             }
-            return $this->parseTextBlock( $block );
+
+            if( $wpType === 'table' ) {
+                return $this->parseTableBlock( $block ) ?? $this->parseTextBlock( $block );
+            }
+
+            if( in_array( $wpType, ['video', 'core-embed/youtube', 'core-embed/vimeo', 'embed'] ) ) {
+                return $this->parseVideoBlock( $block ) ?? $this->parseTextBlock( $block );
+            }
+
+            if( $wpType === 'audio' ) {
+                return $this->parseAudioBlock( $block );
+            }
+
+            if( in_array( $wpType, ['paragraph', 'list', 'quote', 'pullquote', 'verse', 'freeform'] ) ) {
+                if( preg_match( '/<img[^>]+>/i', $block ) ) {
+                    return $this->parseImageTextBlock( $block );
+                }
+                return $this->parseTextBlock( $block );
+            }
         }
 
         // Fall through to existing HTML-based detection for unknown/null types
@@ -776,8 +806,10 @@ class WpImport extends Command
 
                 $result = $this->parseBlock( $innerHtml, $inner['type'] );
                 if( $result ) {
-                    $elements = array_merge( $elements, $result['elements'] );
-                    $fileIds = array_merge( $fileIds, $result['fileIds'] ?? [] );
+                    array_push( $elements, ...$result['elements'] );
+                    if( !empty( $result['fileIds'] ) ) {
+                        array_push( $fileIds, ...$result['fileIds'] );
+                    }
                 }
             }
         }
@@ -884,7 +916,7 @@ class WpImport extends Command
 
                 // Merge aligned image with following paragraph blocks into image-text
                 $align = $entry['attrs']['align'] ?? '';
-                if( $entry['type'] === 'image' && in_array( $align, ['left', 'right'] ) )
+                if( $entry['type'] === 'image' && ( $align === 'left' || $align === 'right' ) )
                 {
                     $fileId = $this->importImageFromHtml( $block );
                     $textParts = [];
@@ -929,7 +961,7 @@ class WpImport extends Command
                     if( !empty( $text ) ) {
                         $result = $this->parseTextBlock( $text );
                         if( $result ) {
-                            $elements = array_merge( $elements, $result['elements'] );
+                            array_push( $elements, ...$result['elements'] );
                         }
                     }
                     continue;
@@ -940,8 +972,8 @@ class WpImport extends Command
                 {
                     $result = $this->parseColumnsBlock( $entry['html'] );
                     if( $result ) {
-                        $elements = array_merge( $elements, $result['elements'] );
-                        $fileIds = array_merge( $fileIds, $result['fileIds'] ?? [] );
+                        array_push( $elements, ...$result['elements'] );
+                        array_push( $fileIds, ...( $result['fileIds'] ?? [] ) );
                     }
                     continue;
                 }
@@ -949,8 +981,8 @@ class WpImport extends Command
                 $result = $this->parseBlock( $block, $entry['type'] );
 
                 if( $result ) {
-                    $elements = array_merge( $elements, $result['elements'] );
-                    $fileIds = array_merge( $fileIds, $result['fileIds'] ?? [] );
+                    array_push( $elements, ...$result['elements'] );
+                    array_push( $fileIds, ...( $result['fileIds'] ?? [] ) );
                 }
             }
         }
@@ -966,8 +998,8 @@ class WpImport extends Command
                 $result = $this->parseBlock( $block );
 
                 if( $result ) {
-                    $elements = array_merge( $elements, $result['elements'] );
-                    $fileIds = array_merge( $fileIds, $result['fileIds'] ?? [] );
+                    array_push( $elements, ...$result['elements'] );
+                    array_push( $fileIds, ...( $result['fileIds'] ?? [] ) );
                 }
             }
         }
@@ -1277,11 +1309,11 @@ class WpImport extends Command
     /**
      * Prints a dry run summary.
      *
-     * @param Collection<int|string, mixed> $posts
+     * @param \Illuminate\Database\Query\Builder $query
      */
-    protected function printDryRun( Collection $posts ): void
+    protected function printDryRun( \Illuminate\Database\Query\Builder $query ): void
     {
-        foreach( $posts as $post ) {
+        foreach( $query->cursor() as $post ) {
             $this->line( "  [{$post->ID}] {$post->post_title} ({$post->post_name})" );
         }
         $this->info( 'Dry run complete. No changes were made.' );

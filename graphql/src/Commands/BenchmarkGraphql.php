@@ -18,6 +18,7 @@ use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Utils;
+use Aimeos\Nestedset\NestedSet;
 
 
 class BenchmarkGraphql extends Command
@@ -78,9 +79,9 @@ class BenchmarkGraphql extends Command
 
             $count = Page::where( 'tag', '!=', 'root' )->count();
             $page = Page::where( 'tag', '!=', 'root' )
-                ->orderBy( '_lft' )->skip( (int) floor( $count / 2 ) )->firstOrFail();
+                ->orderBy( NestedSet::LFT )->skip( (int) floor( $count / 2 ) )->firstOrFail();
 
-            $moveParent = Page::where( 'depth', 1 )
+            $moveParent = Page::where( NestedSet::DEPTH, 1 )
                 ->whereNotIn( 'id', $page->ancestors()->get()->pluck( 'id' ) )->firstOrFail();
 
             // Query pre-seeded soft-deleted page for KeepPage

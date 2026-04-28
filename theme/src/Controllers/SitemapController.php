@@ -33,13 +33,14 @@ class SitemapController extends Controller
      */
     public function index() : Response
     {
-        $count = $this->query()->count();
+        /** @var object{cnt: int, max_updated: string|null} $agg */
+        $agg = $this->query()->selectRaw( 'COUNT(*) as cnt, MAX(updated_at) as max_updated' )->first();
 
-        if( $count <= static::URLS_PER_SITEMAP ) {
+        if( $agg->cnt <= static::URLS_PER_SITEMAP ) {
             return $this->urlset();
         }
 
-        return $this->sitemapIndex( $count );
+        return $this->sitemapIndex( (int) $agg->cnt, $agg->max_updated );
     }
 
 
@@ -54,14 +55,17 @@ class SitemapController extends Controller
      */
     public function chunk( int $page ) : StreamedResponse
     {
-        $count = $this->query()->count();
-        $pages = (int) ceil( $count / static::URLS_PER_SITEMAP );
-
-        if( $page < 1 || $page > $pages ) {
+        if( $page < 1 ) {
             abort( 404 );
         }
 
-        return $this->urlset( ( $page - 1 ) * static::URLS_PER_SITEMAP, static::URLS_PER_SITEMAP );
+        $offset = ( $page - 1 ) * static::URLS_PER_SITEMAP;
+
+        if( $offset > 0 && $this->query()->count() <= $offset ) {
+            abort( 404 );
+        }
+
+        return $this->urlset( $offset, static::URLS_PER_SITEMAP );
     }
 
 
@@ -109,7 +113,7 @@ class SitemapController extends Controller
             $query->orderBy( 'id' )->offset( (int) $offset )->limit( $limit );
         }
 
-        return response()->stream( function() use ($tz, $template, $query) {
+        return response()->stream( function() use ( $tz, $template, $query ) {
             echo '<?xml version="1.0" encoding="UTF-8"?>';
             echo '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
 
@@ -120,7 +124,10 @@ class SitemapController extends Controller
                     ? ( new \DateTimeImmutable( $page->updated_at, $tz ) )->format( \DateTimeInterface::ATOM )
                     : '';
 
-                $encodedPath = implode( '/', array_map( 'rawurlencode', explode( '/', (string) $page->path ) ) );
+                $path = (string) $page->path;
+                $encodedPath = preg_match( '/[^A-Za-z0-9\/._~-]/', $path )
+                    ? implode( '/', array_map( 'rawurlencode', explode( '/', $path ) ) )
+                    : $path;
                 $loc = str_replace( ['__CMS_PATH__', '__CMS_DOMAIN__'], [$encodedPath, $page->domain ?? ''], $template );
 
                 echo '<url>';
@@ -150,23 +157,27 @@ class SitemapController extends Controller
      * @param int $count Total URL count from {@see self::query()}
      * @return Response `<sitemapindex>` XML response
      */
-    protected function sitemapIndex( int $count ) : Response
+    protected function sitemapIndex( int $count, ?string $maxUpdated ) : Response
     {
+        $lastmod = '';
+        $entries = [];
         $pages = (int) ceil( $count / static::URLS_PER_SITEMAP );
-        $maxUpdated = $this->query()->max( 'updated_at' );
-        $lastmod = $maxUpdated
-            ? ( new \DateTimeImmutable( $maxUpdated, new \DateTimeZone( config('app.timezone') ?: 'UTC' ) ) )->format( \DateTimeInterface::ATOM )
-            : '';
 
-        $entries = '';
-        for( $n = 1; $n <= $pages; $n++ ) {
-            $entries .= '<sitemap><loc><![CDATA[' . route( 'cms.sitemap.chunk', ['page' => $n] ) . ']]></loc>'
-                . '<lastmod><![CDATA[' . $lastmod . ']]></lastmod></sitemap>';
+        if( $maxUpdated )
+        {
+            $tz = new \DateTimeZone( config('app.timezone') ?: 'UTC' );
+            $lastmod = ( date_create( $maxUpdated, $tz ) ?: new \DateTime( 'now', $tz ) )->format( \DateTimeInterface::ATOM );
+        }
+
+        for( $n = 1; $n <= $pages; $n++ )
+        {
+            $route = route( 'cms.sitemap.chunk', ['page' => $n] );
+            $entries[] = '<sitemap><loc>' . $route . '</loc><lastmod>' . $lastmod . '</lastmod></sitemap>';
         }
 
         return response(
             '<?xml version="1.0" encoding="UTF-8"?><sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
-             . $entries .
+             . implode( '', $entries ) .
             '</sitemapindex>',
             200, ['Content-Type' => 'application/xml', 'Cache-Control' => 'public, max-age=300']
         );

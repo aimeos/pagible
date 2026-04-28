@@ -18,6 +18,13 @@ use Illuminate\Support\Facades\Storage;
 class Schema
 {
     /**
+     * Cached schema results.
+     *
+     * @var array<string, array<string, mixed>>
+     */
+    private static array $schemas = [];
+
+    /**
      * Registered themes (Composer packages).
      *
      * @var array<string, array<string, mixed>>
@@ -64,6 +71,7 @@ class Schema
         }
 
         self::$themes[$name] = $data;
+        self::$schemas = [];
     }
 
 
@@ -78,16 +86,21 @@ class Schema
      */
     public static function schemas( ?string $name = null, ?string $section = null ) : array
     {
+        $key = ( $name ?? '*' ) . '/' . ( $section ?? '*' );
+
+        if( isset( self::$schemas[$key] ) ) {
+            return self::$schemas[$key];
+        }
+
         $result = [];
         $themes = $name !== null ? [$name => self::get( $name )] : self::all();
+        $sections = $section ? [$section] : ['content', 'meta', 'config'];
 
         foreach( $themes as $themeName => $theme )
         {
             if( !$theme ) {
                 continue;
             }
-
-            $sections = $section ? [$section] : ['content', 'meta', 'config'];
 
             foreach( $sections as $sec )
             {
@@ -110,7 +123,7 @@ class Schema
             }
         }
 
-        return $result;
+        return self::$schemas[$key] = $result;
     }
 
 

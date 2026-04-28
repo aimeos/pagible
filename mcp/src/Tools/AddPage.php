@@ -87,7 +87,12 @@ class AddPage extends Tool
         $pid = $v['parent_id'] ?? null;
 
         /** @var Page|null $parent */
-        $parent = $pid ? Page::withTrashed()->with( 'latest' )->find( $pid ) : null;
+        $parent = $pid
+            ? Page::withTrashed()
+                ->select( 'id', 'latest_id', 'lang' )
+                ->with( ['latest' => fn( $q ) => $q->select( 'id', 'versionable_id', 'data' )] )
+                ->find( $pid )
+            : null;
 
         $v['path'] = $v['path'] ?? Utils::slugify( $v['title'] );
         $v['domain'] = $v['domain'] ?? $parent?->latest?->data->domain ?? '';

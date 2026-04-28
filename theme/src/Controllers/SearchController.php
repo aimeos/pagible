@@ -30,6 +30,7 @@ class SearchController extends Controller
 
         /** @var \Illuminate\Pagination\LengthAwarePaginator<int, \Aimeos\Cms\Models\Page> $paginator */
         $paginator = Page::search( $vals['q'] )
+            ->query( fn( $q ) => $q->select( 'cms_pages.id', 'domain', 'path', 'lang', 'title', 'meta' ) )
             ->where( 'domain', $domain )
             ->where( 'lang', $request->locale ?? app()->getLocale() )
             ->searchFields( 'content' )

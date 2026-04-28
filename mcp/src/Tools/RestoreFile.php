@@ -41,7 +41,7 @@ class RestoreFile extends Tool
         ] );
 
         /** @var File|null $file */
-        $file = File::withTrashed()->find( $v['id'] );
+        $file = File::withTrashed()->select( 'id', 'deleted_at' )->find( $v['id'] );
 
         if( !$file ) {
             return Response::structured( ['error' => 'File not found.'] );

@@ -33,9 +33,9 @@ final class Describe
         try
         {
             /** @var File $file */
-            $file = File::findOrFail( $id );
+            $file = File::select( 'id', 'path', 'mime' )->findOrFail( $id );
             $lang = $args['lang'] ?? null;
-            $type = current( explode( '/', $file->mime ) );
+            $type = explode( '/', $file->mime, 2 )[0];
             $class = '\\Aimeos\\Prisma\\Files\\' . ucfirst( $type );
 
             if( !class_exists( $class ) ) {

@@ -29,6 +29,8 @@ final class PubElement
             throw new \GraphQL\Error\Error( $e->getMessage() );
         }
 
-        return Resource::publish( Element::class, $args['id'], Utils::editor( Auth::user() ), $args['at'] ?? null, ['latest.files'] )->all();
+        return Resource::publish( Element::class, $args['id'], Utils::editor( Auth::user() ), $args['at'] ?? null, [
+            'latest.files' => fn( $q ) => $q->select( 'cms_files.id' )
+        ] )->all();
     }
 }
