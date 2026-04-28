@@ -30,24 +30,26 @@ trait Benchmarks
         $conn = config( 'cms.db', 'sqlite' );
 
         DB::connection( $conn )->disableQueryLog();
-        gc_disable();
 
         $run = function() use ( $fn, $readOnly, $conn ) {
+
             if( $readOnly )
             {
                 $start = hrtime( true );
                 $fn();
-                return hrtime( true ) - $start;
-            }
-
-            DB::connection( $conn )->beginTransaction();
-
-            try {
-                $start = hrtime( true );
-                $fn();
                 $elapsed = hrtime( true ) - $start;
-            } finally {
-                DB::connection( $conn )->rollBack();
+            }
+            else
+            {
+                DB::connection( $conn )->beginTransaction();
+
+                try {
+                    $start = hrtime( true );
+                    $fn();
+                    $elapsed = hrtime( true ) - $start;
+                } finally {
+                    DB::connection( $conn )->rollBack();
+                }
             }
 
             return $elapsed;
@@ -77,14 +79,25 @@ trait Benchmarks
         $verbose = $this->output->isVerbose();
         $queryTimes = [];
         $durations = [];
+        $memories = [];
+        $peakmems = [];
 
         if( $verbose ) {
             DB::connection( $conn )->enableQueryLog();
         }
 
+        gc_disable();
+
         for( $i = 0; $i < $tries; $i++ )
         {
+            gc_collect_cycles();
+            memory_reset_peak_usage();
+
+            $memBefore = memory_get_usage();
             $durations[] = $execute();
+            $memories[] = ( memory_get_usage() - $memBefore ) / 1_048_576;
+
+            $peakmems[] = memory_get_peak_usage() / 1_048_576;
 
             if( $verbose )
             {
@@ -98,23 +111,23 @@ trait Benchmarks
             }
         }
 
+        gc_enable();
+
         if( $verbose ) {
             DB::connection( $conn )->disableQueryLog();
         }
 
-        gc_enable();
-        gc_collect_cycles();
+        $stats = $this->stats( $durations, $memories, $peakmems );
 
-        $stats = $this->stats( $durations );
         $this->line( sprintf(
             ' %-18s %9s %9s %9s %9s %9s %9s',
             $name,
             $this->format( $stats['min'] ),
             $this->format( $stats['max'] ),
             $this->format( $stats['avg'] ),
-            $this->format( $stats['p90'] ),
-            $this->format( $stats['p95'] ),
             $this->format( $stats['p99'] ),
+            $this->formatMem( $stats['mem'] ),
+            $this->formatMem( $stats['peak'] ),
         ) );
 
         if( $verbose )
@@ -124,13 +137,11 @@ trait Benchmarks
                 $type = strtoupper( strtok( ltrim( $sql ), ' ' ) ?: '' );
                 $qStats = $this->stats( $entry['times'] );
                 $this->line( sprintf(
-                    '   %-16s %9s %9s %9s %9s %9s %9s',
+                    '   %-16s %9s %9s %9s %9s',
                     $type,
                     $this->format( $qStats['min'] ),
                     $this->format( $qStats['max'] ),
                     $this->format( $qStats['avg'] ),
-                    $this->format( $qStats['p90'] ),
-                    $this->format( $qStats['p95'] ),
                     $this->format( $qStats['p99'] ),
                 ) );
 
@@ -210,9 +221,11 @@ trait Benchmarks
      * Compute min/max/avg/p90/p95/p99 from nanosecond durations.
      *
      * @param array<int, int|float> $durations Durations in nanoseconds
+     * @param array<int, int|float> $memories Memory usages in MB
+     * @param array<int, int|float> $peakmems Peak memory usages in MB
      * @return array<string, float> Stats in nanoseconds
      */
-    protected function stats( array $durations ): array
+    protected function stats( array $durations, array $memories = [], array $peakmems = [] ): array
     {
         sort( $durations );
         $count = count( $durations );
@@ -221,10 +234,22 @@ trait Benchmarks
             'min' => $durations[0],
             'max' => $durations[$count - 1],
             'avg' => array_sum( $durations ) / $count,
-            'p90' => $durations[(int) ceil( $count * 0.90 ) - 1],
-            'p95' => $durations[(int) ceil( $count * 0.95 ) - 1],
             'p99' => $durations[(int) ceil( $count * 0.99 ) - 1],
+            'mem' => $memories ? array_sum( $memories ) / count( $memories ) : 0,
+            'peak' => $peakmems ? array_sum( $peakmems ) / count( $peakmems ) : 0,
         ];
+    }
+
+
+    /**
+     * Format megabytes to human-readable string.
+     *
+     * @param int|float $num Megabytes
+     * @return string Formatted string
+     */
+    protected function formatMem( int|float $num ): string
+    {
+        return number_format( $num, 1 ) . 'MB';
     }
 
 
@@ -301,7 +326,7 @@ trait Benchmarks
         $this->line( '' );
         $this->line( sprintf(
             ' %-18s %9s %9s %9s %9s %9s %9s',
-            'Benchmark', 'Min', 'Max', 'Avg', 'P90', 'P95', 'P99'
+            'Benchmark', 'Min', 'Max', 'Avg', 'P99', 'Mem', 'Peak'
         ) );
         $this->line( ' ' . str_repeat( "\u{2500}", 78 ) );
     }
