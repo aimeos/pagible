@@ -46,7 +46,7 @@ class SearchElements extends Tool
         ] );
 
         $search = Element::search( mb_substr( trim( (string) ( $v['term'] ?? '' ) ), 0, 200 ) )
-            ->query( fn( $q ) => $q->select( 'cms_elements.id', 'created_at', 'updated_at', 'deleted_at', 'latest_id' )
+            ->query( fn( $q ) => $q->select( 'cms_elements.id', 'cms_elements.created_at', 'cms_elements.updated_at', 'cms_elements.deleted_at', 'cms_elements.latest_id' )
             ->with( ['latest' => fn( $q ) => $q->select( 'id', 'versionable_id', 'data', 'lang', 'editor' )] ) )
             ->searchFields( 'draft' )
             ->take( 25 );

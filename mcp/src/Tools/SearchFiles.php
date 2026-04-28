@@ -46,7 +46,7 @@ class SearchFiles extends Tool
         ] );
 
         $search = File::search( mb_substr( trim( (string) ( $v['term'] ?? '' ) ), 0, 200 ) )
-            ->query( fn( $q ) => $q->select( 'cms_files.id', 'created_at', 'updated_at', 'deleted_at', 'latest_id' )
+            ->query( fn( $q ) => $q->select( 'cms_files.id', 'cms_files.created_at', 'cms_files.updated_at', 'cms_files.deleted_at', 'cms_files.latest_id' )
             ->with( ['latest' => fn( $q ) => $q->select( 'id', 'versionable_id', 'data', 'lang', 'editor' )] ) )
             ->searchFields( 'draft' )
             ->take( 25 );
