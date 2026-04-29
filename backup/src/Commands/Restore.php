@@ -302,15 +302,12 @@ class Restore extends Command
     {
         $query = $db->table( $table );
 
-        if( $merge && $hasTenant )
+        if( $merge )
         {
+            /** @var non-empty-list<non-empty-string> $columns */
             $columns = array_keys( $rows[0] ?? [] );
-            $updateColumns = array_values( array_diff( $columns, ['id'] ) );
-            $query->upsert( $rows, ['id'], $updateColumns );
-        }
-        elseif( $merge )
-        {
-            $query->insertOrIgnore( $rows );
+            $updateColumns = $hasTenant ? array_values( array_diff( $columns, ['id'] ) ) : $columns;
+            $query->upsert( $rows, $hasTenant ? ['id'] : $columns, $updateColumns );
         }
         else
         {
