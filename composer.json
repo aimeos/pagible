@@ -16,7 +16,8 @@
 		"aimeos/pagible-search": "dev-master",
 		"aimeos/pagible-jsonapi": "dev-master",
 		"aimeos/pagible-mcp": "dev-master",
-		"aimeos/pagible-theme": "dev-master"
+		"aimeos/pagible-theme": "dev-master",
+		"aimeos/pagible-backup": "dev-master"
 	},
 	"require-dev": {
 		"orchestra/testbench": "^9.0||^10.0||^11.0",
@@ -33,7 +34,8 @@
 		{"type": "path", "url": "search"},
 		{"type": "path", "url": "jsonapi"},
 		{"type": "path", "url": "mcp"},
-		{"type": "path", "url": "theme"}
+		{"type": "path", "url": "theme"},
+		{"type": "path", "url": "backup"}
 	],
 	"autoload": {
 		"psr-4": {
@@ -52,7 +54,8 @@
 				"jsonapi/tests/",
 				"mcp/tests/",
 				"search/tests/",
-				"theme/tests/"
+				"theme/tests/",
+				"backup/tests/"
 			]
 		},
 		"classmap": [

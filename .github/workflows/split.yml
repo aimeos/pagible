@@ -15,7 +15,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        package: [core, admin, ai, graphql, import, search, jsonapi, mcp, theme]
+        package: [core, admin, ai, backup, graphql, import, search, jsonapi, mcp, theme]
     steps:
       - uses: actions/checkout@v5
 
