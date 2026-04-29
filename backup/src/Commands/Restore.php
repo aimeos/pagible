@@ -544,31 +544,30 @@ class Restore extends Command
 
         $columns = $this->classify( $db, $this->discover( $zip, $db ) );
 
+        // Sort entity tables (with id) before pivot tables, shorter names first (parents before children)
+        uksort( $columns, function( string $a, string $b ) use ( $columns ) {
+            $aHasId = in_array( 'id', $columns[$a] );
+            $bHasId = in_array( 'id', $columns[$b] );
+
+            return $aHasId === $bHasId ? ( strlen( $b ) <=> strlen( $a ) ?: strcmp( $a, $b ) ) : ( $bHasId <=> $aHasId );
+        } );
+
         $db->transaction( function() use ( $zip, $db, $tenant, $sourceTenant, $merge, $columns ) {
 
-            $db->getSchemaBuilder()->disableForeignKeyConstraints();
-
-            try
-            {
-                if( !$merge ) {
-                    $this->cleanupDatabase( $db, $tenant, $columns );
-                }
-
-                foreach( $columns as $table => $cols )
-                {
-                    $entry = $table . '.ndjson';
-
-                    if( $zip->locateName( $entry ) === false ) {
-                        continue;
-                    }
-
-                    $count = $this->import( $zip, $db, $table, $cols, $entry, $tenant, $sourceTenant, $merge );
-                    $this->line( sprintf( '  %s: %d records', $table, $count ), null, 'v' );
-                }
+            if( !$merge ) {
+                $this->cleanupDatabase( $db, $tenant, $columns );
             }
-            finally
+
+            foreach( $columns as $table => $cols )
             {
-                $db->getSchemaBuilder()->enableForeignKeyConstraints();
+                $entry = $table . '.ndjson';
+
+                if( $zip->locateName( $entry ) === false ) {
+                    continue;
+                }
+
+                $count = $this->import( $zip, $db, $table, $cols, $entry, $tenant, $sourceTenant, $merge );
+                $this->line( sprintf( '  %s: %d records', $table, $count ), null, 'v' );
             }
         } );
     }

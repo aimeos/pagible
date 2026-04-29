@@ -66,8 +66,13 @@ class Backup extends Command
                     $query->where( 'tenant_id', $tenant );
                 }
 
-                $orderBy = in_array( '_lft', $cols ) ? '_lft' : 'id';
-                $counts[$table] = $this->export( $query->orderBy( $orderBy )->cursor(), $tmpDir . '/' . $table . '.ndjson' );
+                if( in_array( '_lft', $cols ) ) {
+                    $query->orderBy( '_lft' );
+                } elseif( in_array( 'id', $cols ) ) {
+                    $query->orderBy( 'id' );
+                }
+
+                $counts[$table] = $this->export( $query->cursor(), $tmpDir . '/' . $table . '.ndjson' );
 
                 $this->line( sprintf( '  %s: %d records', $table, $counts[$table] ), null, 'v' );
             }
