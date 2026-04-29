@@ -26,8 +26,12 @@ trait BackupTrait
         /** @var array<string, list<string>> */
         $columns = [];
 
-        foreach( $tableNames as $table ) {
-            $columns[$table] = $schema->getColumnListing( $table );
+        foreach( $tableNames as $table )
+        {
+            $columns[$table] = array_values( array_map(
+                fn( array $col ) => $col['name'],
+                array_filter( $schema->getColumns( $table ), fn( array $col ) => empty( $col['generation'] ) )
+            ) );
         }
 
         return $columns;
