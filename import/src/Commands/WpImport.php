@@ -232,9 +232,13 @@ class WpImport extends Command
     /**
      * Creates a File record with a published version.
      */
-    protected function createFile( string $mime, string $name, string $path ): string
+    protected function createFile( string $mime, string $name, string $path ): ?string
     {
         $path = $this->rewriteMediaUrl( $path );
+
+        if( !Utils::isValidUrl( $path, strict: false ) ) {
+            return null;
+        }
 
         $file = File::forceCreate( [
             'mime' => $mime,
@@ -258,10 +262,7 @@ class WpImport extends Command
     /**
      * Creates a Pagible File record from a WordPress attachment.
      */
-    /**
-     * @param array{guid: string, title: string, mime: string} $attachment
-     */
-    protected function createFileFromAttachment( array $attachment, string $alt = '' ): string
+    protected function createFileFromAttachment( object $attachment, string $alt = '' ): ?string
     {
         $url = $attachment['guid'];
         $name = $alt ?: $attachment['title'] ?: basename( parse_url( $url, PHP_URL_PATH ) ?: 'image' );
@@ -276,10 +277,6 @@ class WpImport extends Command
      */
     protected function createFileFromUrl( string $url, string $alt = '' ): ?string
     {
-        if( !filter_var( $url, FILTER_VALIDATE_URL ) ) {
-            return null;
-        }
-
         $name = $alt ?: basename( parse_url( $url, PHP_URL_PATH ) ?: 'image' );
         $mime = $this->guessMimeFromUrl( $url );
 
