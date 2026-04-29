@@ -261,8 +261,10 @@ class WpImport extends Command
 
     /**
      * Creates a Pagible File record from a WordPress attachment.
+     *
+     * @param array<string, string> $attachment
      */
-    protected function createFileFromAttachment( object $attachment, string $alt = '' ): ?string
+    protected function createFileFromAttachment( array $attachment, string $alt = '' ): ?string
     {
         $url = $attachment['guid'];
         $name = $alt ?: $attachment['title'] ?: basename( parse_url( $url, PHP_URL_PATH ) ?: 'image' );
