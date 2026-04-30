@@ -35,11 +35,15 @@
 	],
 	"autoload": {
 		"psr-4": {
-			"Aimeos\\Cms\\": "src/"
+			"Aimeos\\Cms\\": ["src/"]
 		}
 	},
 	"autoload-dev": {
 		"psr-4": {
+			"Aimeos\\Cms\\": [
+				"backup/src/",
+				"import/src/"
+			],
 			"Tests\\": [
 				"tests/",
 				"core/tests/",
