@@ -1,6 +1,6 @@
 @pushOnce('js')
-<link rel="preload" href="{{ cmsasset($themedir . '/blog.css') }}" as="style">
-<script defer src="{{ cmsasset('vendor/cms/theme/blog.js') }}"></script>
+<link rel="preload" href="{{ cmstheme($page, 'blog.css') }}" as="style">
+<script defer src="{{ cmstheme($page, 'blog.js') }}"></script>
 @endPushOnce
 
 @if($first = @$action?->first())

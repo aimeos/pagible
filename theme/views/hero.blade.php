@@ -1,5 +1,5 @@
 @pushOnce('css')
-<link href="{{ cmsasset($themedir . '/hero.css') }}" rel="stylesheet">
+<link href="{{ cmstheme($page, 'hero.css') }}" rel="stylesheet">
 @endPushOnce
 
 <div class="first">
@@ -15,8 +15,15 @@
         @markdown($data->text)
     @endif
 
-    @if(@$data->url)
-        <a class="btn url" href="{{ $data->url }}">{{ @$data->button }}</a>
+    @if(@$data->url || @$data->url2)
+        <div class="actions">
+            @if(@$data->url)
+                <a class="btn url" href="{{ $data->url }}">{{ @$data->button }}</a>
+            @endif
+            @if(@$data->url2)
+                <a class="btn url2" href="{{ $data->url2 }}">{{ @$data->button2 }}</a>
+            @endif
+        </div>
     @endif
 </div>
 

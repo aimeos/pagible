@@ -1,6 +1,6 @@
 @pushOnce('js')
-<link rel="preload" href="{{ cmsasset($themedir . '/contact.css') }}" as="style">
-<script defer src="{{ cmsasset('vendor/cms/theme/contact.js') }}"></script>
+<link rel="preload" href="{{ cmstheme($page, 'contact.css') }}" as="style">
+<script defer src="{{ cmstheme($page, 'contact.js') }}"></script>
 @endPushOnce
 
 <h2 class="title">{{ @$data->title }}</h2>

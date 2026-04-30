@@ -67,6 +67,28 @@ if( !function_exists( 'cmsasset' ) )
 }
 
 
+if( !function_exists( 'cmstheme' ) )
+{
+    /**
+     * Generate an asset URL for a theme file, falling back to the base theme if the file doesn't exist.
+     *
+     * @param \Aimeos\Cms\Models\Page $page The CMS page to resolve the theme from
+     * @param string $file The filename (e.g. "hero.css", "slideshow.js")
+     * @return string The asset URL for the file
+     */
+    function cmstheme( \Aimeos\Cms\Models\Page $page, string $file ) : string
+    {
+        $themedir = 'vendor/cms/' . ( cms( $page, 'theme' ) ?: 'theme' );
+
+        if( file_exists( public_path( $themedir . '/' . $file ) ) ) {
+            return cmsasset( $themedir . '/' . $file );
+        }
+
+        return cmsasset( 'vendor/cms/theme/' . $file );
+    }
+}
+
+
 if( !function_exists( 'cmsattr' ) )
 {
     /**

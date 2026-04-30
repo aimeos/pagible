@@ -1,16 +1,16 @@
 @extends($theme . '::layouts.main')
 
 @pushOnce('css')
-<link href="{{ cmsasset($themedir . '/layout-docs.css') }}" rel="stylesheet">
+<link href="{{ cmstheme($page, 'layout-docs.css') }}" rel="stylesheet">
 @endPushOnce
 
 @once('prism')
     @pushOnce('css')
-    <link href="{{ cmsasset('vendor/cms/theme/prism.css') }}" rel="stylesheet">
+    <link href="{{ cmstheme($page, 'prism.css') }}" rel="stylesheet">
     @endPushOnce
 
     @pushOnce('js')
-    <script defer src="{{ cmsasset('vendor/cms/theme/prism.js') }}"></script>
+    <script defer src="{{ cmstheme($page, 'prism.js') }}"></script>
     @endPushOnce
 @endOnce
 
@@ -88,9 +88,6 @@
                     </div>
                 @endif
             @endforeach
-        </footer>
-        <footer class="copyright">
-            &copy; {{ date('Y') }} {{ config('app.name') }}
         </footer>
     </div>
 @endsection

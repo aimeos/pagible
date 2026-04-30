@@ -34,8 +34,8 @@
             @endif
         @endforeach
 
-        <link href="{{ cmsasset('vendor/cms/theme/pico.css') }}" rel="stylesheet">
-        <link href="{{ cmsasset('vendor/cms/theme/cms.css') }}" rel="stylesheet">
+        <link href="{{ cmstheme($page, 'pico.css') }}" rel="stylesheet">
+        <link href="{{ cmstheme($page, 'cms.css') }}" rel="stylesheet">
         @stack('css')
 
         @foreach($page->ancestorsAndSelf as $navItem)
@@ -167,10 +167,14 @@
         <main>
             @yield('main')
         </main>
+
         @yield('footer')
 
+        <footer class="copyright">
+            &copy; {{ date('Y') }} {{ config('app.name') }}
+        </footer>
 
-        <script defer src="{{ cmsasset('vendor/cms/theme/cms.js') }}"></script>
+        <script defer src="{{ cmstheme($page, 'cms.js') }}"></script>
         @stack('js')
 
         @foreach($page->ancestorsAndSelf as $navItem)
@@ -185,7 +189,7 @@
             <link href="{{ cmsasset('vendor/cms/admin/editor.css') }}" rel="stylesheet">
             <script defer src="{{ cmsasset('vendor/cms/admin/editor.js') }}"></script>
         @else
-            <script defer src="{{ cmsasset('vendor/cms/theme/stats.js') }}"></script>
+            <script defer src="{{ cmstheme($page, 'stats.js') }}"></script>
         @endif
     </body>
 </html>

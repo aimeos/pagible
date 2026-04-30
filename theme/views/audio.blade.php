@@ -1,5 +1,5 @@
 @pushOnce('js:caption')
-	<script defer src="{{ cmsasset('vendor/cms/theme/caption.js') }}"></script>
+	<script defer src="{{ cmstheme($page, 'caption.js') }}"></script>
 @endPushOnce
 
 @if($file = cms($files, @$data->file?->id))

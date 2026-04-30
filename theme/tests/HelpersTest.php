@@ -38,6 +38,22 @@ class HelpersTest extends CoreTestAbstract
 	}
 
 
+	public function testCmstheme()
+	{
+		$page = new \Aimeos\Cms\Models\Page();
+
+		$this->assertEquals( 'http://localhost/vendor/cms/theme/hero.css?v=0', cmstheme( $page, 'hero.css' ) );
+	}
+
+
+	public function testCmsthemeWithTheme()
+	{
+		$page = new \Aimeos\Cms\Models\Page( ['theme' => 'notexist'] );
+
+		$this->assertEquals( 'http://localhost/vendor/cms/theme/hero.css?v=0', cmstheme( $page, 'hero.css' ) );
+	}
+
+
 	public function testCmsattr()
 	{
 		$this->assertEquals( 'Hello-World', cmsattr( 'Hello World' ) );

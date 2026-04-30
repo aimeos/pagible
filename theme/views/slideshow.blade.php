@@ -1,9 +1,9 @@
 @pushOnce('css')
-<link href="{{ cmsasset($themedir . '/slideshow.css') }}" rel="stylesheet">
+<link href="{{ cmstheme($page, 'slideshow.css') }}" rel="stylesheet">
 @endPushOnce
 
 @pushOnce('js')
-<script defer src="{{ cmsasset('vendor/cms/theme/slideshow.js') }}"></script>
+<script defer src="{{ cmstheme($page, 'slideshow.js') }}"></script>
 @endPushOnce
 
 @if(@$data->title)

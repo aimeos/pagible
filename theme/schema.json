@@ -290,6 +290,12 @@
                 "button": {
                     "type": "string"
                 },
+                "url2": {
+                    "type": "url"
+                },
+                "button2": {
+                    "type": "string"
+                },
                 "file": {
                     "type": "image",
                     "label": "image"

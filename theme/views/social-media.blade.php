@@ -1,6 +1,8 @@
 <meta property="og:title" content="{{ @$data->title }}" />
 <meta property="og:description" content="{{ @$data->description }}" />
 <meta property="og:site_name" content="{{ config('app.name') }}" />
+<meta property="og:url" content="{{ cmsroute($page) }}" />
+<meta property="og:type" content="website" />
 <meta name="twitter:card" content="summary" />
 <meta name="twitter:title" content="{{ @$data->title }}" />
 <meta name="twitter:description" content="{{ @$data->description }}" />

@@ -75,12 +75,11 @@ class PageController extends Controller
         Paginator::useBootstrap(); // Use Bootstrap CSS classes for pagination links
 
         $content = collect( (array) ($page->content ?? []) )->groupBy( 'group' );
-        $themedir = 'vendor/cms/' . ( cms( $page, 'theme' ) ?: 'theme' );
-        $theme = Theme::views( cms( $page, 'theme' ) ?: 'cms' );
+        $theme = Theme::views( cms( $page, 'theme', 'cms' ) );
         $type = cms( $page, 'type', 'page' );
 
         $views = [$theme . '::layouts.' . $type, 'cms::layouts.' . $type, 'cms::layouts.page'];
-        $html = view()->first( $views, ['page' => $page, 'content' => $content, 'theme' => $theme, 'themedir' => $themedir] )->render();
+        $html = view()->first( $views, ['page' => $page, 'content' => $content, 'theme' => $theme] )->render();
 
         $expires = gmdate( 'D, d M Y H:i:s', time() + (int) $page->cache * 60 ) . ' GMT';
 
@@ -132,14 +131,13 @@ class PageController extends Controller
         App::setLocale( $version?->data->lang ?? $page->lang );
         Paginator::useBootstrap();
 
-        $themedir = 'vendor/cms/' . ( cms( $page, 'theme' ) ?: 'theme' );
         $theme = Theme::views( cms( $page, 'theme' ) ?: 'cms' );
         $type = cms( $page, 'type', 'page' );
 
         $content = collect( (array) ($version->aux->content ?? $page->content ?? []) )->groupBy( 'group' );
 
         $views = [$theme . '::layouts.' . $type, 'cms::layouts.' . $type, 'cms::layouts.page'];
-        $html = view()->first( $views, ['page' => $page, 'content' => $content, 'theme' => $theme, 'themedir' => $themedir] )->render();
+        $html = view()->first( $views, ['page' => $page, 'content' => $content, 'theme' => $theme] )->render();
 
         return ( new Response( $html, 200 ) )
             ->header( 'Content-Type', 'text/html' )

@@ -1,7 +1,7 @@
 @extends($theme . '::layouts.main')
 
 @pushOnce('css')
-<link href="{{ cmsasset($themedir . '/layout-page.css') }}" rel="stylesheet">
+<link href="{{ cmstheme($page, 'layout-page.css') }}" rel="stylesheet">
 @endPushOnce
 
 
@@ -31,9 +31,5 @@
                 </div>
             @endif
         @endforeach
-    </footer>
-
-    <footer class="copyright">
-        &copy; {{ date('Y') }} {{ config('app.name') }}
     </footer>
 @endsection

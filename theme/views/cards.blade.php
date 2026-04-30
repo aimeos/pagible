@@ -1,5 +1,5 @@
 @pushOnce('js')
-<link rel="preload" href="{{ cmsasset($themedir . '/cards.css') }}" as="style">
+<link rel="preload" href="{{ cmstheme($page, 'cards.css') }}" as="style">
 @endPushOnce
 
 @if($data->title)
