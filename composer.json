@@ -12,7 +12,6 @@
 		"aimeos/pagible-admin": "dev-master",
 		"aimeos/pagible-ai": "dev-master",
 		"aimeos/pagible-graphql": "dev-master",
-		"aimeos/pagible-import": "dev-master",
 		"aimeos/pagible-search": "dev-master",
 		"aimeos/pagible-jsonapi": "dev-master",
 		"aimeos/pagible-mcp": "dev-master",
@@ -29,7 +28,6 @@
 		{"type": "path", "url": "admin"},
 		{"type": "path", "url": "ai"},
 		{"type": "path", "url": "graphql"},
-		{"type": "path", "url": "import"},
 		{"type": "path", "url": "search"},
 		{"type": "path", "url": "jsonapi"},
 		{"type": "path", "url": "mcp"},
@@ -37,11 +35,15 @@
 	],
 	"autoload": {
 		"psr-4": {
-			"Aimeos\\Cms\\": "src/"
+			"Aimeos\\Cms\\": ["src/"]
 		}
 	},
 	"autoload-dev": {
 		"psr-4": {
+			"Aimeos\\Cms\\": [
+				"backup/src/",
+				"import/src/"
+			],
 			"Tests\\": [
 				"tests/",
 				"core/tests/",
@@ -52,7 +54,8 @@
 				"jsonapi/tests/",
 				"mcp/tests/",
 				"search/tests/",
-				"theme/tests/"
+				"theme/tests/",
+				"backup/tests/"
 			]
 		},
 		"classmap": [

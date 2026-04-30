@@ -2,6 +2,7 @@
 /core/          export-ignore
 /admin/         export-ignore
 /ai/            export-ignore
+/backup/        export-ignore
 /graphql/       export-ignore
 /import/        export-ignore
 /search/        export-ignore

@@ -15,4 +15,5 @@ parameters:
 		- jsonapi/src
 		- mcp/src
 		- search/src
+		- backup/src
 		- theme/src

@@ -1,0 +1,32 @@
+{
+    "name": "aimeos/pagible-backup",
+    "description": "Pagible CMS - Backup and restore",
+    "homepage": "https://pagible.com",
+    "type": "library",
+    "license": "LGPL-3.0-only",
+    "require": {
+        "php": "^8.2",
+        "ext-zip": "*",
+        "aimeos/pagible-core": "*@dev"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^9.0||^10.0||^11.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Aimeos\\Cms\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Aimeos\\Cms\\BackupServiceProvider"
+            ]
+        }
+    }
+}

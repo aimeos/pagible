@@ -33,6 +33,9 @@
     <testsuite name="Search">
       <directory>./search/tests/</directory>
     </testsuite>
+    <testsuite name="Backup">
+      <directory>./backup/tests/</directory>
+    </testsuite>
     <testsuite name="Benchmark">
       <file>./tests/BenchmarkTest.php</file>
     </testsuite>
@@ -53,6 +56,7 @@
       <directory suffix=".php">./jsonapi/src/</directory>
       <directory suffix=".php">./mcp/src/</directory>
       <directory suffix=".php">./search/src/</directory>
+      <directory suffix=".php">./backup/src/</directory>
       <directory suffix=".php">./theme/src/</directory>
     </include>
   </source>
