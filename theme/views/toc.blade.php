@@ -1,5 +1,5 @@
 @pushOnce('css')
-<link href="{{ cmsasset('vendor/cms/theme/toc.css') }}" rel="stylesheet">
+<link href="{{ cmsasset($themedir . '/toc.css') }}" rel="stylesheet">
 @endPushOnce
 
 @if(!empty($action))

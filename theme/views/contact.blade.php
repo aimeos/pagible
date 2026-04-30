@@ -1,5 +1,5 @@
 @pushOnce('js')
-<link rel="preload" href="{{ cmsasset('vendor/cms/theme/contact.css') }}" as="style">
+<link rel="preload" href="{{ cmsasset($themedir . '/contact.css') }}" as="style">
 <script defer src="{{ cmsasset('vendor/cms/theme/contact.js') }}"></script>
 @endPushOnce
 
