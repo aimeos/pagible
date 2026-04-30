@@ -46,7 +46,7 @@
             @endif
         @endforeach
     </head>
-    <body class="theme-{{ cms($page, 'theme') ?: 'cms' }} type-{{ cms($page, 'type') ?: 'page' }}">
+    <body class="theme-{{ $theme }} type-{{ cms($page, 'type', 'page') }}">
         <dialog id="modal-search" class="search">
             <article>
                 <header>

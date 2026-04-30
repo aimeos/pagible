@@ -5,12 +5,7 @@
     "email": "info@aimeos.com",
     "website": "https://aimeos.com",
     "types": {
-        "page": {
-            "sections": [
-                "main",
-                "footer"
-            ]
-        },
+        "page": {},
         "docs": {},
         "blog": {}
     },

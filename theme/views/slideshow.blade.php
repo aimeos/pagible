@@ -1,5 +1,5 @@
 @pushOnce('css')
-<link href="{{ cmsasset('vendor/cms/theme/slideshow.css') }}" rel="stylesheet">
+<link href="{{ cmsasset($themedir . '/slideshow.css') }}" rel="stylesheet">
 @endPushOnce
 
 @pushOnce('js')

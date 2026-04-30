@@ -1,7 +1,7 @@
-@extends('cms::layouts.main')
+@extends($theme . '::layouts.main')
 
 @pushOnce('css')
-<link href="{{ cmsasset('vendor/cms/theme/layout-page.css') }}" rel="stylesheet">
+<link href="{{ cmsasset($themedir . '/layout-page.css') }}" rel="stylesheet">
 @endPushOnce
 
 

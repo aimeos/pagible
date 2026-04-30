@@ -238,12 +238,21 @@ class Schema
     /**
      * Prefixes schema keys with the theme name for non-core themes.
      *
+     * Inherits content and meta definitions from the core theme so custom
+     * themes only need to define elements they override or add.
+     *
      * @param array<string, mixed> $data Theme data
      * @param string $name Theme name
      * @return array<string, mixed> Theme data with prefixed keys
      */
     private static function prefix( array $data, string $name ) : array
     {
+        $core = self::$themes['cms'] ?? [];
+
+        foreach( ['content', 'meta', 'config'] as $section ) {
+            $data[$section] = array_merge( $core[$section] ?? [], $data[$section] ?? [] );
+        }
+
         foreach( ['content', 'meta', 'config'] as $section )
         {
             if( !empty( $data[$section] ) )

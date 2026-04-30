@@ -19,18 +19,3 @@ if( !function_exists( 'cmsadmin' ) )
         return $manifest['index.html'] ?? [];
     }
 }
-
-
-if( !function_exists( 'cmsasset' ) )
-{
-    /**
-     * Generate an asset URL with a version query parameter based on the file's last modification time for cache busting.
-     *
-     * @param string|null $path The path to the asset file
-     * @return string The asset URL with a version query parameter, or an empty string if the path is null
-     */
-    function cmsasset( ?string $path ) : string
-    {
-        return $path ? asset( $path ) . '?v=' . ( file_exists( public_path( $path ) ) ? filemtime( public_path( $path ) ) : 0 ) : '';
-    }
-}

@@ -1,7 +1,7 @@
-@extends('cms::layouts.main')
+@extends($theme . '::layouts.main')
 
 @pushOnce('css')
-<link href="{{ cmsasset('vendor/cms/theme/layout-blog.css') }}" rel="stylesheet">
+<link href="{{ cmsasset($themedir . '/layout-blog.css') }}" rel="stylesheet">
 @endPushOnce
 
 @once('prism')
