@@ -12,12 +12,10 @@
 		"aimeos/pagible-admin": "dev-master",
 		"aimeos/pagible-ai": "dev-master",
 		"aimeos/pagible-graphql": "dev-master",
-		"aimeos/pagible-import": "dev-master",
 		"aimeos/pagible-search": "dev-master",
 		"aimeos/pagible-jsonapi": "dev-master",
 		"aimeos/pagible-mcp": "dev-master",
-		"aimeos/pagible-theme": "dev-master",
-		"aimeos/pagible-backup": "dev-master"
+		"aimeos/pagible-theme": "dev-master"
 	},
 	"require-dev": {
 		"orchestra/testbench": "^9.0||^10.0||^11.0",
@@ -30,12 +28,10 @@
 		{"type": "path", "url": "admin"},
 		{"type": "path", "url": "ai"},
 		{"type": "path", "url": "graphql"},
-		{"type": "path", "url": "import"},
 		{"type": "path", "url": "search"},
 		{"type": "path", "url": "jsonapi"},
 		{"type": "path", "url": "mcp"},
-		{"type": "path", "url": "theme"},
-		{"type": "path", "url": "backup"}
+		{"type": "path", "url": "theme"}
 	],
 	"autoload": {
 		"psr-4": {

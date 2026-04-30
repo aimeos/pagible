@@ -62,7 +62,7 @@ Whether you need a simple blog or a multi-tenant, multi-domain CMS serving milli
 
 ## Architecture
 
-PagibleAI CMS is a modular monorepo split into 9 sub-packages. Each package handles a specific concern and can be used independently:
+PagibleAI CMS is a modular monorepo split into 10 sub-packages. Each package handles a specific concern and can be used independently:
 
 * **Core** provides the data models (Page, Element, File, Version), multi-tenancy, permissions, and migrations
 * **Admin** delivers the Vue.js-based admin panel with drag & drop page management
@@ -71,6 +71,7 @@ PagibleAI CMS is a modular monorepo split into 9 sub-packages. Each package hand
 * **AI** integrates LLM providers through Prism/Prisma PHP for content generation, image manipulation, and translation
 * **Search** implements a custom Laravel Scout engine supporting FTS5 (SQLite), MATCH/AGAINST (MySQL), tsvector (PostgreSQL), and CONTAINSTABLE (SQL Server)
 * **MCP** offers 30+ tools for LLM-driven content management
+* **Backup** provides per-tenant backup and restore with media files, integrity verification, and cross-tenant support
 * **Import** provides importers from external CMS platforms (WordPress, etc.)
 * **Theme** handles frontend rendering with Blade templates
 
@@ -85,6 +86,7 @@ pagible/
 ├── admin/        Vue.js admin panel (Vuetify + Vite)
 ├── ai/           AI features (Prism / Prisma PHP)
 ├── graphql/      GraphQL API (Lighthouse)
+├── backup/       Backup and restore
 ├── import/       CMS importers (WordPress, etc.)
 ├── search/       Full-text search (Laravel Scout)
 ├── jsonapi/      Read-only JSON:API
@@ -272,7 +274,6 @@ Please make sure all tests pass and PHPStan reports no new errors before submitt
 * Observability & Audit Trail
 * User and group restrictions
 * Webhook & Event System
-* Backup/restore
 * More themes
 
 ## License
