@@ -1,0 +1,103 @@
+{
+    "label": "Paper",
+    "description": "Warm, minimal landing page design with off-white background, diagonal line pattern, generous rounded corners, and a dark footer",
+    "maintainer": "Aimeos",
+    "email": "info@aimeos.org",
+    "website": "https://pagible.com",
+    "types": {
+        "page": {
+            "sections": [
+                "main",
+                "footer"
+            ]
+        },
+        "docs": {
+            "sections": [
+                "main",
+                "footer"
+            ]
+        },
+        "blog": {
+            "sections": [
+                "main",
+                "footer"
+            ]
+        }
+    },
+    "config": {
+        "theme": {
+            "group": "basic",
+            "icon": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path d=\"M19,19L12,11V19H5L12,11V5H19M19,3H5A2,2 0 0,0 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5A2,2 0 0,0 19,3Z\" /></svg>",
+            "fields": {
+                "--pico-font-family-sans-serif": {
+                    "type": "string",
+                    "default": "\"Inter\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif"
+                },
+                "--pico-color": {
+                    "type": "color",
+                    "default": "#1A1A1A"
+                },
+                "--pico-background-color": {
+                    "type": "color",
+                    "default": "#F7F7F4"
+                },
+                "--pico-text-selection-color": {
+                    "type": "color",
+                    "default": "#E5E5DF"
+                },
+                "--pico-contrast": {
+                    "type": "color",
+                    "default": "#1A1A1A"
+                },
+                "--pico-contrast-hover": {
+                    "type": "color",
+                    "default": "#000000"
+                },
+                "--pico-contrast-inverse": {
+                    "type": "color",
+                    "default": "#FFFFFF"
+                },
+                "--pico-primary": {
+                    "type": "color",
+                    "default": "#1A1A1A"
+                },
+                "--pico-primary-background": {
+                    "type": "color",
+                    "default": "#1A1A1A10"
+                },
+                "--pico-primary-hover": {
+                    "type": "color",
+                    "default": "#000000"
+                },
+                "--pico-primary-hover-background": {
+                    "type": "color",
+                    "default": "#00000010"
+                },
+                "--pico-secondary": {
+                    "type": "color",
+                    "default": "#1A1A1A"
+                },
+                "--pico-secondary-background": {
+                    "type": "color",
+                    "default": "#1A1A1A10"
+                },
+                "--pico-secondary-hover": {
+                    "type": "color",
+                    "default": "#000000"
+                },
+                "--pico-secondary-hover-background": {
+                    "type": "color",
+                    "default": "#00000010"
+                },
+                "--pico-border-radius": {
+                    "type": "string",
+                    "default": "8px"
+                },
+                "--pico-nav-breadcrumb-divider": {
+                    "type": "string",
+                    "default": "/"
+                }
+            }
+        }
+    }
+}

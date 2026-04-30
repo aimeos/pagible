@@ -1,0 +1,100 @@
+/**
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+.contact form {
+    display: flex;
+    flex-direction: column;
+}
+
+.contact .col {
+    margin-bottom: 1rem;
+    width: 100%;
+}
+
+@media screen and (min-width: 768px) {
+    .contact .row {
+        display: flex;
+        gap: 2rem;
+    }
+}
+
+.contact label {
+    color: var(--pico-contrast);
+    display: inline-block;
+    margin: 0.5rem 0;
+    font-weight: 500;
+    font-size: 0.9375rem;
+}
+
+.contact input, textarea {
+    border: 1px solid var(--pico-contrast-border);
+    background-color: #FFFFFF;
+    color: var(--pico-color);
+    resize: vertical;
+    font-size: 1rem;
+    display: block;
+    padding: 0.75rem 1.25rem;
+    width: 100%;
+    border-radius: 9999px;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.contact textarea {
+    border-radius: 1.5rem;
+}
+
+.contact input:focus,
+.contact textarea:focus {
+    border-color: var(--pico-contrast);
+    box-shadow: 0 0 0 3px rgba(26, 26, 26, 0.1);
+    outline: none;
+}
+
+.contact input::-webkit-input-placeholder,
+.contact textarea::-webkit-input-placeholder {
+    color: var(--pico-muted-color);
+}
+
+.contact .errors {
+    color: var(--pico-form-element-invalid-focus-color);
+    font-size: 0.875rem;
+}
+
+.contact .error {
+    border-color: var(--pico-form-element-invalid-border-color);
+}
+
+.contact .h-captcha {
+    text-align: center;
+}
+
+.contact .h-captcha iframe {
+    margin-bottom: 0.5rem;
+    max-width: 100%;
+}
+
+.contact button {
+    display: block;
+    margin-inline-end: auto;
+    margin-inline-start: auto;
+    border-radius: 9999px;
+}
+
+.contact button:disabled {
+    border: 1px solid var(--pico-contrast-border);
+    background-color: var(--pico-muted-background-color);
+    color: var(--pico-muted-color);
+}
+
+.contact button:has(.success:not(.hidden)) {
+    background-color: #16A34A;
+    border-color: #16A34A;
+    color: #FFFFFF;
+}
+
+.contact button:has(.failure:not(.hidden)) {
+    background-color: #DC2626;
+    border-color: #DC2626;
+    color: #FFFFFF;
+}

@@ -1,0 +1,139 @@
+/**
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+main {
+    max-width: 80rem;
+    margin: auto;
+    width: 100%;
+}
+
+main .content {
+    overflow: auto;
+}
+
+main h1,
+main .container {
+    padding: 0 min(5%, 2rem);
+}
+
+main nav.sidebar {
+    background: var(--pico-background-color);
+    border-inline-end: 1px solid var(--pico-muted-border-color);
+    transition: left 0.3s ease;
+    position: absolute;
+    z-index: 95;
+    height: 100%;
+    left: -20rem;
+    width: 20rem;
+}
+
+[dir="rtl"] main nav.sidebar {
+    transition: right 0.3s ease;
+    right: -20rem;
+    left: 0;
+}
+
+main nav.sidebar.show {
+    left: 0;
+}
+
+[dir="rtl"] main nav.sidebar.show {
+    right: 0;
+}
+
+@media screen and (max-width: 991px) {
+    header nav .sidebar-open.show,
+    header nav .sidebar-close.show {
+        display: block;
+    }
+}
+
+@media screen and (min-width: 992px) {
+    main {
+        display: flex;
+    }
+
+    main nav.sidebar {
+        position: relative;
+        background: none;
+        height: unset;
+        width: 20rem;
+        left: 0;
+    }
+
+    [dir="rtl"] main nav.sidebar {
+        right: 0;
+    }
+}
+
+main nav.sidebar .menu {
+    --pico-nav-element-spacing-vertical: 0.35rem;
+    --pico-nav-element-spacing-horizontal: 1rem;
+    flex-direction: column;
+    height: fit-content;
+    align-items: start;
+    position: sticky;
+    display: block;
+    width: 100%;
+    top: 0;
+}
+
+main nav.sidebar > .menu {
+    padding: 1rem 0;
+}
+
+main nav.sidebar li {
+    width: 100%;
+}
+
+main nav.sidebar .menu .menu li {
+    padding-inline-start: 1.5rem;
+}
+
+main nav.sidebar .active {
+    font-weight: 500;
+    color: var(--pico-contrast);
+}
+
+main nav.sidebar a {
+    color: var(--pico-muted-color);
+    font-size: 0.9375rem;
+    font-weight: 300;
+    transition: color 0.15s ease;
+}
+
+main nav.sidebar a:hover {
+    color: var(--pico-contrast);
+    opacity: 1;
+}
+
+main nav.sidebar summary a {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+main nav.sidebar details.is-menu[open] > summary a {
+    color: var(--pico-contrast);
+}
+
+main nav.sidebar details.is-menu[open] > summary svg {
+    transform: rotate(90deg);
+}
+
+[dir="rtl"] main nav.sidebar svg {
+    transform:scaleX(-1);
+}
+
+main nav.sidebar .menu-item {
+    padding: var(--pico-nav-element-spacing-vertical) 0;
+    justify-content: space-between;
+    align-items: center;
+    display: flex;
+}
+
+main nav.sidebar details summary::marker,
+main nav.sidebar details summary ::-webkit-details-marker {
+    content: "";
+}

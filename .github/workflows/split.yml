@@ -15,13 +15,24 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        package: [core, admin, ai, backup, graphql, import, search, jsonapi, mcp, theme]
+        include:
+          - { package: core, repo: pagible-core }
+          - { package: admin, repo: pagible-admin }
+          - { package: ai, repo: pagible-ai }
+          - { package: backup, repo: pagible-backup }
+          - { package: graphql, repo: pagible-graphql }
+          - { package: import, repo: pagible-import }
+          - { package: search, repo: pagible-search }
+          - { package: jsonapi, repo: pagible-jsonapi }
+          - { package: mcp, repo: pagible-mcp }
+          - { package: theme, repo: pagible-theme }
+          - { package: themes/paper, repo: pagible-themes-paper }
     steps:
       - uses: actions/checkout@v5
 
       - name: Seed empty repo
         run: |
-          REPO="https://${GITHUB_TOKEN}@github.com/aimeos/pagible-${{ matrix.package }}.git"
+          REPO="https://${GITHUB_TOKEN}@github.com/aimeos/${{ matrix.repo }}.git"
           DIR=$(mktemp -d)
           git clone -- "$REPO" "$DIR" 2>&1 || true
           cd "$DIR"
@@ -41,7 +52,7 @@ jobs:
           branch: ${{ github.ref_name }}
           package_directory: ${{ matrix.package }}
           repository_organization: 'aimeos'
-          repository_name: 'pagible-${{ matrix.package }}'
+          repository_name: ${{ matrix.repo }}
           user_name: 'aimeos'
           user_email: 'aimeos@aimeos.org'
 
@@ -53,6 +64,6 @@ jobs:
           tag: ${{ github.ref_name }}
           package_directory: ${{ matrix.package }}
           repository_organization: 'aimeos'
-          repository_name: 'pagible-${{ matrix.package }}'
+          repository_name: ${{ matrix.repo }}
           user_name: 'aimeos'
           user_email: 'aimeos@aimeos.org'

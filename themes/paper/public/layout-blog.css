@@ -1,0 +1,12 @@
+/**
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+.cms-content {
+    max-width: 60rem;
+    margin: auto;
+}
+
+.cms-content .container {
+    padding: 0 min(5%, 2rem);
+}

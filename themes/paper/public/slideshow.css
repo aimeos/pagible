@@ -1,0 +1,11 @@
+/**
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+@media screen and (min-width: 576px) {
+    .swiffy-slider {
+        border: 1px solid var(--pico-muted-border-color);
+        border-radius: 2rem;
+        overflow: hidden;
+    }
+}
