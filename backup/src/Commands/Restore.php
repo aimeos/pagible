@@ -46,7 +46,8 @@ class Restore extends Command
 
     public function handle(): int
     {
-        $disk = $this->option( 'disk' ) ?: 'local';
+        $optDisk = $this->option( 'disk' );
+        $disk = is_string( $optDisk ) ? $optDisk : 'local';
 
         if( $this->option( 'list' ) ) {
             return $this->list( $disk );
@@ -60,7 +61,7 @@ class Restore extends Command
             return Command::FAILURE;
         }
 
-        $tenant = $this->option( 'tenant' );
+        $tenant = is_string( $this->option( 'tenant' ) ) ? $this->option( 'tenant' ) : null;
         $path = null;
 
         try
@@ -71,7 +72,7 @@ class Restore extends Command
             try
             {
                 $manifest = $this->manifest( $zip );
-                $tenant = $tenant ?? $manifest['tenant_id'] ?: Tenancy::value();
+                $tenant = (string) ( $tenant ?? $manifest['tenant_id'] ?: Tenancy::value() );
 
                 if( $this->option( 'verify' ) ) {
                     return $this->verify( $zip, $manifest );
@@ -325,7 +326,8 @@ class Restore extends Command
     protected function list( string $disk ): int
     {
         $storage = Storage::disk( $disk );
-        $tenant = $this->option( 'tenant' );
+        $optTenant = $this->option( 'tenant' );
+        $tenant = is_string( $optTenant ) ? $optTenant : '';
         $prefix = 'pagible-' . $tenant . '-';
 
         /** @var list<string> $allFiles */
@@ -472,7 +474,7 @@ class Restore extends Command
      */
     protected function restore( \ZipArchive $zip, array $manifest, string $tenant, string $file ): int
     {
-        $merge = $this->option( 'merge' );
+        $merge = (bool) $this->option( 'merge' );
 
         if( !$merge && !$this->option( 'force' ) && !$this->option( 'no-interaction' ) )
         {

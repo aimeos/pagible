@@ -53,12 +53,18 @@ class WpImport extends Command
      */
     public function handle(): void
     {
-        $this->wpConnection = (string) $this->option( 'connection' );
-        $this->domain = (string) ($this->option( 'domain' ) ?: '');
-        $this->lang = (string) $this->option( 'lang' );
-        $this->type = (string) $this->option( 'type' );
-        $this->mediaUrl = rtrim( (string) ($this->option( 'media-url' ) ?: ''), '/' );
-        $this->editor = (string) $this->option( 'editor' );
+        $optConn = $this->option( 'connection' );
+        $this->wpConnection = is_string( $optConn ) ? $optConn : 'wordpress';
+        $optDomain = $this->option( 'domain' );
+        $this->domain = is_string( $optDomain ) ? $optDomain : '';
+        $optLang = $this->option( 'lang' );
+        $this->lang = is_string( $optLang ) ? $optLang : 'en';
+        $optType = $this->option( 'type' );
+        $this->type = is_string( $optType ) ? $optType : 'blog';
+        $optMedia = $this->option( 'media-url' );
+        $this->mediaUrl = rtrim( is_string( $optMedia ) ? $optMedia : '', '/' );
+        $optEditor = $this->option( 'editor' );
+        $this->editor = is_string( $optEditor ) ? $optEditor : 'wp-import';
 
         $this->setupTenant();
 
@@ -374,8 +380,10 @@ class WpImport extends Command
      */
     protected function getBlogPage(): Page
     {
-        $blogPath = (string) $this->option( 'blog-path' );
-        $blogName = (string) $this->option( 'blog-name' );
+        $optPath = $this->option( 'blog-path' );
+        $blogPath = is_string( $optPath ) ? $optPath : 'blog';
+        $optName = $this->option( 'blog-name' );
+        $blogName = is_string( $optName ) ? $optName : 'Blog';
 
         $page = Page::where( 'path', $blogPath )->first();
 

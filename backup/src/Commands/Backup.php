@@ -31,8 +31,10 @@ class Backup extends Command
 
     public function handle(): int
     {
-        $tenant = $this->option( 'tenant' ) ?? Tenancy::value();
-        $disk = $this->option( 'disk' ) ?: 'local';
+        $optTenant = $this->option( 'tenant' );
+        $tenant = is_string( $optTenant ) ? $optTenant : Tenancy::value();
+        $optDisk = $this->option( 'disk' );
+        $disk = is_string( $optDisk ) ? $optDisk : 'local';
         $noMedia = $this->option( 'no-media' );
 
         $lock = Cache::lock( 'cms_backup_' . $tenant, 300 );
