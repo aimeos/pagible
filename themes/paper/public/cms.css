@@ -75,6 +75,11 @@
     html { scroll-behavior: smooth; }
 }
 
+:focus-visible {
+    outline: 1px solid var(--pico-contrast);
+    border-radius: 9999px;
+}
+
 .skip-link {
     position: absolute;
     top: -100%;
@@ -95,7 +100,7 @@
 }
 
 body {
-    line-height: 1.7;
+    line-height: 1.75;
     font-family: var(--pico-font-family-sans-serif);
     background-color: var(--pico-background-color);
     color: var(--pico-color);
@@ -147,28 +152,53 @@ nav ol:last-of-type, nav ul:last-of-type {
 nav li :where(a,[role=link]) {
     color: var(--pico-contrast);
     text-decoration: none;
+    margin: 0;
 }
 
 body > header {
-    max-width: 80rem;
-    margin: auto;
+    max-width: 1280px;
     border-bottom: none;
-    padding: 0.5rem 2rem;
+    padding: 0.5rem 1rem;
+    position: relative;
+    margin: auto;
+    z-index: 10;
 }
 
 header nav ol,
-header nav ul {
-    margin-top: 0;
+header nav ul,
+header nav li {
+    margin: 0;
+}
+
+header nav > ul > li {
+    list-style: none;
+    padding: 0 0.25rem;
 }
 
 header nav > ul:not(.menu) > li {
-    padding: var(--pico-nav-element-spacing-vertical) 0;
+    padding: 0;
 }
 
+header nav > ul > li:last-of-type a {
+    background-color: var(--pico-primary);
+    color: var(--pico-primary-inverse);
+    padding: 0.5rem 1rem;
+    border-radius: 2rem;
+    text-wrap: nowrap;
+}
+
+header nav a,
 header nav details summary {
-    display: flex;
+    font-size: 75%;
     list-style: none;
     cursor: pointer;
+    padding: 0.5rem;
+    color: var(--pico-color);
+}
+
+header nav a,
+header nav details.dropdown {
+    text-decoration: none;
 }
 
 header nav details summary::marker,
@@ -176,22 +206,21 @@ header nav details summary::-webkit-details-marker {
     display: none;
 }
 
-header nav details summary::after {
+header nav details.dropdown > summary::after {
     display: block;
+    height: 1.25rem;
     float: inline-end;
-    width: 1.5rem;
-    height: calc(1rem * var(--pico-line-height, 1.5));
     transform: rotate(0) translateX(.2rem);
     background-image: var(--pico-icon-chevron);
     background-position: right center;
     background-repeat: no-repeat;
     background-size: 1rem auto;
-    margin-inline-start: .25rem;
+    margin-inline-start: 0;
     content: "";
 }
 
 header nav details[open] summary::after {
-    transform: rotate(0.5turn) translateX(0);
+    transform: rotate(0.5turn) translateX(-0.2rem);
 }
 
 header nav details.dropdown > summary + ul.align {
@@ -208,7 +237,7 @@ header nav .brand a,
 header nav .brand img {
     display: flex;
     align-items: center;
-    height: 3.75rem;
+    height: 60px;
     padding: 0;
     margin: 0;
 }
@@ -239,20 +268,18 @@ header nav .sidebar-close button {
     border: none;
 }
 
-header nav a {
-    display: inline-block;
-    text-decoration: none;
-    color: var(--pico-color);
-    padding: 0.25rem 1rem;
-    margin-inline-start: -1rem;
-    font-weight: 400;
-    font-size: 0.875rem;
-    transition: opacity 0.15s ease;
+header nav .menu a[role=button] {
+    background-color: var(--pico-contrast);
+    color: var(--pico-contrast-inverse);
+    border-color: var(--pico-contrast);
+    border-radius: 9999px;
+    margin-inline-start: 0;
 }
 
-header nav a:hover,
-header nav a.active {
-    color: var(--pico-contrast);
+header nav .menu a[role=button]:hover {
+    background-color: var(--pico-contrast-hover);
+    border-color: var(--pico-contrast-hover);
+    color: var(--pico-contrast-inverse);
 }
 
 @media (max-width: 991px) {
@@ -303,7 +330,7 @@ nav[aria-label="breadcrumb"] {
 
 nav[aria-label="breadcrumb"] > ul {
     text-align: center;
-    max-width: 80rem;
+    max-width: 1200px;
     margin: auto;
     width: 100%;
 }
@@ -336,7 +363,7 @@ nav[aria-label=breadcrumb] ul li a:hover {
 
 
 dialog > article {
-    background-color: #FFFFFF;
+    background-color: var(--pico-contrast-inverse);
     height: calc(100vh - 2rem);
     overflow: unset;
     border: 1px solid var(--pico-muted-border-color);
@@ -356,7 +383,7 @@ dialog form {
 
 dialog input,
 dialog button {
-    background-color: #FFFFFF;
+    background-color: var(--pico-contrast-inverse);
     color: var(--pico-contrast);
     appearance: none;
     box-shadow: none;
@@ -364,9 +391,19 @@ dialog button {
     padding: 0.5rem;
 }
 
+dialog button[type=reset] {
+    border-radius: 9999px;
+    margin-inline-start: 4px;
+    cursor: pointer;
+}
+
+dialog button[type=reset]:hover {
+    background-color: var(--pico-muted-background-color);
+}
+
 dialog input {
     border: 1px solid var(--pico-contrast-border);
-    background-color: #FFFFFF;
+    background-color: var(--pico-contrast-inverse);
     font-size: 1rem;
     display: block;
     width: 100%;
@@ -434,7 +471,7 @@ dialog.search .result-content b {
 }
 
 dialog.search .load-more {
-    background-color: #FFFFFF;
+    background-color: var(--pico-contrast-inverse);
     color: var(--pico-contrast);
     border: 1px solid var(--pico-contrast-border);
     cursor: pointer;
@@ -457,11 +494,7 @@ dialog.search .load-more:disabled {
 
 
 .container {
-    max-width: 75rem !important;
-}
-
-details summary {
-    line-height: inherit;
+    max-width: 1200px !important;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -481,12 +514,14 @@ h1 {
     --pico-typography-spacing-vertical: 2.5rem;
     --pico-font-size: 3rem;
     line-height: 1.1;
+    text-align: center;
 }
 
 h2 {
     --pico-typography-spacing-vertical: 2rem;
     --pico-font-size: 2.5rem;
     line-height: 1.15;
+    text-align: center;
 }
 
 h3 {
@@ -519,7 +554,7 @@ img {
     border: 1px solid var(--pico-contrast-border);
     border-radius: 9999px;
     color: var(--pico-contrast);
-    background-color: #FFFFFF;
+    background-color: var(--pico-contrast-inverse);
     transition: background-color 0.2s ease, color 0.2s ease;
 }
 
@@ -538,7 +573,7 @@ img {
 
 .btn-primary:hover,
 .btn:first-of-type:hover {
-    background-color: #000000;
+    background-color: var(--pico-contrast-hover);
     color: var(--pico-contrast-inverse);
 }
 
@@ -668,15 +703,15 @@ p code {
 }
 
 pre code[class*=language-] {
-    background-color: #1A1A1A;
-    color: #E2E8F0;
+    background-color: var(--pico-contrast);
+    color: var(--pico-contrast-inverse);
     overflow-x: auto;
     font-family: var(--pico-font-family-monospace);
     border-radius: 1.5rem;
 }
 
 pre:has(code[class*="language-"]) {
-    background-color: #1A1A1A;
+    background-color: var(--pico-contrast);
     border-radius: 1.5rem;
     padding: 1.5rem;
     border: 1px solid var(--pico-muted-border-color);
@@ -684,36 +719,53 @@ pre:has(code[class*="language-"]) {
 
 
 footer.copyright {
-    background-color: #1A1A1A;
-    color: rgba(255, 255, 255, 0.65);
+    background-color: var(--pico-contrast);
+    color: rgba(255, 255, 255, 0.8);
     font-size: 0.875rem;
     font-weight: 300;
-    padding: 6rem 2rem 3rem;
     border-radius: 3rem 3rem 0 0;
     margin-top: 3rem;
-    text-align: center;
+}
+
+footer.copyright .container {
+    max-width: 1200px;
+    margin: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+footer.cms-content + footer.copyright {
+    margin-top: 0;
+    border-radius: 0;
+}
+
+footer.cms-content + footer.copyright .container {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 footer.copyright .brand {
-    display: block;
-    opacity: 0.2;
-    margin-bottom: 2rem;
+    display: inline;
+    margin-inline-end: 0.5rem;
     user-select: none;
+    vertical-align: middle;
 }
 
 footer.copyright .brand img {
-    max-height: clamp(4rem, 10vw, 8rem);
+    height: 7.5rem;
     filter: brightness(0) invert(1);
+    vertical-align: middle;
+    opacity: 0.5;
 }
 
 footer.cms-content {
-    background-color: #1A1A1A;
+    background-color: var(--pico-contrast);
     border-radius: 3rem 3rem 0 0;
     padding: 4rem 0 2rem;
 }
 
 footer.cms-content .container {
-    max-width: 80rem;
+    max-width: 1200px;
 }
 
 footer.cms-content .cards .card-list {
@@ -763,7 +815,7 @@ footer.cms-content .cards .text a:hover {
 footer.cms-content .heading h1,
 footer.cms-content .heading h2,
 footer.cms-content .heading h3 {
-    color: #FFFFFF;
+    color: var(--pico-contrast-inverse);
 }
 
 footer.cms-content .text {
@@ -779,25 +831,17 @@ footer.cms-content a:hover {
     color: rgba(255, 255, 255, 0.65);
 }
 
-:focus-visible {
-    outline: 3px solid var(--pico-contrast);
-    outline-offset: 3px;
-    border-radius: 3px;
-}
-
 footer.cms-content :focus-visible {
-    outline-color: #FFFFFF;
-}
-
-header nav button,
-header nav a {
-    min-width: 2.75rem;
-    min-height: 2.75rem;
+    outline-color: var(--pico-contrast-inverse);
 }
 
 @media screen and (min-width: 768px) {
     h1 {
-        --pico-font-size: 3.5rem;
+        --pico-font-size: 4.5rem;
+    }
+
+    h2 {
+        --pico-font-size: 3rem;
     }
 
     footer.cms-content .cards .card-list {

@@ -142,6 +142,12 @@ header nav > ul:not(.menu) > li {
     padding: var(--pico-nav-element-spacing-vertical) 0;
 }
 
+header nav > ul > li:last-of-type a {
+    background-image: linear-gradient(90deg, var(--pico-primary), var(--pico-secondary));
+    border-radius: 2rem;
+    text-wrap: nowrap;
+}
+
 header nav details summary {
     display: flex;
     list-style: none;

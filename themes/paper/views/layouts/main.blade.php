@@ -42,7 +42,7 @@
         <link rel="preload" href="{{ cmstheme($page, 'fonts/inter-500.woff2') }}" as="font" type="font/woff2" crossorigin>
         <link href="{{ cmstheme($page, 'fonts.css') }}" rel="stylesheet">
 
-        <link href="{{ cmstheme($page, 'pico.min.css') }}" rel="stylesheet">
+        <link href="{{ cmstheme($page, 'pico.css') }}" rel="stylesheet">
         <link href="{{ cmstheme($page, 'cms.css') }}" rel="stylesheet">
         @stack('css')
 
@@ -216,15 +216,17 @@
         @yield('footer')
 
         <footer class="copyright">
-            @foreach($page->ancestorsAndSelf->reverse() as $navItem)
-                @if($fileId = @cms($navItem, 'config.logo.data.file.id'))
-                    <span class="brand">
-                        <img src="{{ cmsurl(cmsfile($navItem, $fileId)?->path) }}" alt="{{ config('app.name') }}">
-                    </span>
-                    @break
-                @endif
-            @endforeach
-            &copy; {{ date('Y') }} {{ config('app.name') }}
+            <div class="container">
+                @foreach($page->ancestorsAndSelf->reverse() as $navItem)
+                    @if($fileId = @cms($navItem, 'config.logo.data.file.id'))
+                        <span class="brand">
+                            <img src="{{ cmsurl(cmsfile($navItem, $fileId)?->path) }}" alt="{{ config('app.name') }}">
+                        </span>
+                        @break
+                    @endif
+                @endforeach
+                &copy; {{ date('Y') }} {{ config('app.name') }}
+            </div>
         </footer>
 
 

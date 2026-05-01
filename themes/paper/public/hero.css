@@ -8,9 +8,10 @@
 
 .hero .container {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    padding-top: 4rem;
-    padding-bottom: 4rem;
+    padding-top: 6rem;
+    padding-bottom: 8rem;
 }
 
 .hero .first {
@@ -20,13 +21,17 @@
 }
 
 .hero .second {
-    display: none;
+    display: block;
+    width: 100%;
+    max-width: 64rem;
+    margin: auto;
 }
 
 .hero .first:has(+ .second),
 .hero .first:has(+ .second) h1 {
-    text-align: start;
-    margin: initial;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .hero h1 {
@@ -72,37 +77,36 @@
 .hero .image img {
     background-color: #FFFFFF;
     border: 1px solid rgba(0, 0, 0, 0.05);
-    border-radius: 2rem;
+    border-radius: 1.5rem;
     box-shadow: 0 1.25rem 3.75rem -0.9375rem rgba(0, 0, 0, 0.05);
-    padding: 1rem;
+    padding: 0.5rem;
 }
 
 @media screen and (min-width: 576px) {
     .hero .first:has(+ .second) {
-        width: 66%;
-        margin-inline-end: 2rem;
+        width: 100%;
+        margin-inline-end: 0;
     }
 
     .hero .second {
-        width: 33%;
-        display: block;
-        margin-inline-start: 2rem;
+        width: 100%;
+        margin-inline-start: 0;
     }
 
     .hero .second img {
         max-height: 100%;
-        max-width: unset;
+        max-width: 100%;
     }
 }
 
 @media screen and (min-width: 768px) {
     .hero .first:has(+ .second),
     .hero .second {
-        width: 50%;
+        width: 100%;
     }
 
     .hero h1 {
-        font-size: 4rem;
+        font-size: 4.5rem;
     }
 
     .hero p {
