@@ -1,0 +1,121 @@
+/**
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+.blog .blog-items {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.blog .first,
+.blog .second {
+    width: 100%;
+}
+
+.blog .second {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.blog .blog-item {
+    --pico-text-decoration: none;
+    background-color: #FFFFFF;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    border-radius: 2rem;
+    overflow: hidden;
+    transition: box-shadow 0.2s ease;
+}
+
+.blog .blog-item:hover {
+    box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.06);
+}
+
+.blog img {
+    display: block;
+    aspect-ratio: 5 / 3;
+    object-fit: cover;
+    width: 100%;
+}
+
+.blog .date {
+    color: var(--pico-muted-color);
+    font-size: 0.8125rem;
+    font-weight: 300;
+}
+
+.blog h3 {
+    font-size: 1.25rem;
+    font-weight: 400;
+    margin-top: 0.75rem;
+    height: 3.75rem;
+    overflow: hidden;
+    line-height: 1.3;
+}
+
+.blog .first .content {
+    display: flex;
+    align-items: baseline;
+    gap: 1.5rem;
+    padding: 1rem 1.25rem;
+}
+
+.blog .first .date-day {
+    font-weight: 500;
+    font-size: 2rem;
+    line-height: 1;
+    font-family: var(--pico-font-family-display);
+}
+
+.blog .first .date-month {
+    text-transform: uppercase;
+    font-size: 0.8125rem;
+    line-height: 0.75;
+    letter-spacing: 0.05em;
+}
+
+.blog .first h3 {
+    flex-grow: 1;
+}
+
+.blog .second .blog-item {
+    display: flex;
+    gap: 0;
+}
+
+.blog .second picture {
+    flex: 2;
+}
+
+.blog .second .content {
+    flex: 3;
+    padding: 0.75rem 1rem;
+}
+
+.blog .second h3 {
+    font-size: 1rem;
+    margin: 0.5rem 0;
+    line-height: 1.3;
+}
+
+@media (min-width: 768px) {
+    .blog .blog-items {
+        flex-direction: row;
+    }
+
+    .blog .first,
+    .blog .second {
+        width: 50%;
+    }
+
+    .blog .first h3 {
+        height: 7.25rem;
+    }
+}
+
+@media (min-width: 992px) {
+    .blog .first h3 {
+        height: 5.5rem;
+    }
+}

@@ -1,0 +1,24 @@
+{
+    "name": "aimeos/pagible-theme-paper",
+    "description": "Pagible CMS - Paper theme with warm, minimal design",
+    "keywords": ["laravel", "cms", "theme", "paper"],
+    "homepage": "https://pagible.com",
+    "type": "library",
+    "license": "LGPL-3.0-only",
+    "require": {
+        "php": "^8.2",
+        "aimeos/pagible-theme": "*@dev"
+    },
+    "autoload": {
+        "psr-4": {
+            "Aimeos\\Cms\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Aimeos\\Cms\\PaperServiceProvider"
+            ]
+        }
+    }
+}
