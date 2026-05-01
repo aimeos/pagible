@@ -37,11 +37,11 @@
             @endif
         @endforeach
 
-        <link rel="preload" href="{{ cmstheme($page, 'fonts/inter-400.woff2') }}" as="font" type="font/woff2" crossorigin>
-        <link rel="preload" href="{{ cmstheme($page, 'fonts/inter-300.woff2') }}" as="font" type="font/woff2" crossorigin>
-        <link rel="preload" href="{{ cmstheme($page, 'fonts/inter-500.woff2') }}" as="font" type="font/woff2" crossorigin>
-        <link href="{{ cmstheme($page, 'fonts.css') }}" rel="stylesheet">
+        <link rel="preload" href="{{ cmstheme($page, 'fonts/inter-400.woff2', false) }}" as="font" type="font/woff2" crossorigin>
+        <link rel="preload" href="{{ cmstheme($page, 'fonts/inter-300.woff2', false) }}" as="font" type="font/woff2" crossorigin>
+        <link rel="preload" href="{{ cmstheme($page, 'fonts/inter-500.woff2', false) }}" as="font" type="font/woff2" crossorigin>
 
+        <link href="{{ cmstheme($page, 'fonts.css') }}" rel="stylesheet">
         <link href="{{ cmstheme($page, 'pico.css') }}" rel="stylesheet">
         <link href="{{ cmstheme($page, 'cms.css') }}" rel="stylesheet">
         @stack('css')
