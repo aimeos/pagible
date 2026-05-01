@@ -321,7 +321,7 @@
                             "label": "image"
                         },
                         "text": {
-                            "type": "text"
+                            "type": "markdown"
                         }
                     }
                 }
