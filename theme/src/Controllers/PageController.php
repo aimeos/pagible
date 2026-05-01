@@ -75,8 +75,8 @@ class PageController extends Controller
         Paginator::useBootstrap(); // Use Bootstrap CSS classes for pagination links
 
         $content = collect( (array) ($page->content ?? []) )->groupBy( 'group' );
-        $theme = Theme::views( cms( $page, 'theme', 'cms' ) );
-        $type = cms( $page, 'type', 'page' );
+        $theme = Theme::views( cms( $page, 'theme' ) ?: 'cms' );
+        $type = cms( $page, 'type' ) ?: 'page';
 
         $views = [$theme . '::layouts.' . $type, 'cms::layouts.' . $type, 'cms::layouts.page'];
         $html = view()->first( $views, ['page' => $page, 'content' => $content, 'theme' => $theme] )->render();
