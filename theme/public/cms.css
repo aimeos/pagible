@@ -68,6 +68,10 @@
   scrollbar-color: var(--pico-primary-background) var(--pico-background-color);
 }
 
+:focus-visible {
+    outline: 1px solid var(--pico-contrast);
+}
+
 body {
     line-height: 1.6;
     scroll-behavior: smooth;
@@ -134,24 +138,33 @@ body > header {
 }
 
 header nav ol,
-header nav ul {
-    margin-top: 0;
+header nav ul,
+header nav li {
+    margin: 0;
+}
+
+header nav > ul > li {
+    list-style: none;
+    padding: 0 0.25rem;
 }
 
 header nav > ul:not(.menu) > li {
-    padding: var(--pico-nav-element-spacing-vertical) 0;
+    padding: 0;
 }
 
 header nav > ul > li:last-of-type a {
     background-image: linear-gradient(90deg, var(--pico-primary), var(--pico-secondary));
+    padding: 0.5rem 1rem;
     border-radius: 2rem;
     text-wrap: nowrap;
 }
 
+header nav a,
 header nav details summary {
-    display: flex;
     list-style: none;
     cursor: pointer;
+    padding: 0.5rem;
+    color: var(--pico-color);
 }
 
 header nav details summary::marker,
@@ -161,9 +174,8 @@ header nav details summary::-webkit-details-marker {
 
 header nav details summary::after {
     display: block;
-    float: right;
-    width: 1.5rem;
-    height: calc(1rem * var(--pico-line-height, 1.5));
+    height: 1.25rem;
+    float: inline-end;
     transform: rotate(0) translateX(.2rem);
     background-image: var(--pico-icon-chevron);
     background-position: right center;
@@ -174,7 +186,7 @@ header nav details summary::after {
 }
 
 header nav details[open] summary::after {
-    transform: rotate(0.5turn) translateX(0);
+    transform: rotate(0.5turn) translateX(-0.2rem);
 }
 
 header nav details.dropdown > summary + ul.align {
@@ -213,12 +225,9 @@ header nav .sidebar-close button {
     border: none;
 }
 
-header nav a {
-    display: inline-block;
+header nav a,
+header nav details.dropdown {
     text-decoration: none;
-    color: var(--pico-color);
-    padding: 0.25rem 1rem;
-    margin-inline-start: -1rem;
 }
 
 @media (max-width: 991px) {
