@@ -12,6 +12,61 @@
     margin-bottom: 2rem;
 }
 
+.pricing .pricing-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-bottom: 2rem;
+}
+
+.pricing .pricing-toggle-label {
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.pricing .pricing-switch {
+    position: relative;
+    display: inline-block;
+    width: 3rem;
+    height: 1.5rem;
+}
+
+.pricing .pricing-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.pricing .pricing-slider {
+    position: absolute;
+    cursor: pointer;
+    inset: 0;
+    background: var(--pico-muted-border-color);
+    border-radius: 1.5rem;
+    transition: background 0.2s;
+}
+
+.pricing .pricing-slider::before {
+    content: "";
+    position: absolute;
+    height: 1.125rem;
+    width: 1.125rem;
+    left: 0.1875rem;
+    bottom: 0.1875rem;
+    background: white;
+    border-radius: 50%;
+    transition: transform 0.2s;
+}
+
+.pricing .pricing-switch input:checked + .pricing-slider {
+    background: var(--pico-contrast);
+}
+
+.pricing .pricing-switch input:checked + .pricing-slider::before {
+    transform: translateX(1.5rem);
+}
+
 .pricing .pricing-list {
     display: grid;
     grid-template-columns: 1fr;

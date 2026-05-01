@@ -398,6 +398,14 @@
                     "type": "string",
                     "label": "subtitle"
                 },
+                "label": {
+                    "type": "string",
+                    "label": "switch label"
+                },
+                "label-alternative": {
+                    "type": "string",
+                    "label": "alternative switch label"
+                },
                 "items": {
                     "type": "items",
                     "item": {
@@ -419,6 +427,36 @@
                         "features": {
                             "type": "markdown",
                             "label": "features (one per line)"
+                        },
+                        "priceid": {
+                            "type": "string",
+                            "label": "price/product identifier"
+                        },
+                        "price-alternative": {
+                            "type": "string",
+                            "label": "alternative price"
+                        },
+                        "unit-alternative": {
+                            "type": "string",
+                            "label": "alternative unit"
+                        },
+                        "priceid-alternative": {
+                            "type": "string",
+                            "label": "alternative price/product identifier"
+                        },
+                        "paytype": {
+                            "type": "select",
+                            "label": "payment type",
+                            "options": [
+                                {
+                                    "value": "recurring",
+                                    "label": "Recurring"
+                                },
+                                {
+                                    "value": "onetime",
+                                    "label": "One-time"
+                                }
+                            ]
                         },
                         "url": {
                             "type": "url"
