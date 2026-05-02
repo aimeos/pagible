@@ -37,7 +37,6 @@
             @endif
         @endforeach
 
-        <link rel="preload" href="{{ cmstheme($page, 'fonts/inter-400.woff2', false) }}" as="font" type="font/woff2" crossorigin>
         <link href="{{ cmstheme($page, 'pico.min.css') }}" rel="stylesheet">
         <link href="{{ cmstheme($page, 'cms.css') }}" rel="stylesheet">
         @stack('css')
@@ -49,6 +48,7 @@
                 </style>
             @endif
         @endforeach
+
         <script type="application/ld+json" nonce="{{ csrf_token() }}">
             [{
                 "@@context": "https://schema.org",

@@ -22,9 +22,9 @@
 
 .cards .card-item {
     padding: 2rem;
-    background-color: #FFFFFF;
-    border: 1px solid rgba(0, 0, 0, 0.05);
-    border-radius: 2rem;
+    background-color: var(--pico-contrast-inverse);
+    border: 1px solid var(--pico-muted-border-color);
+    border-radius: calc(var(--pico-border-radius) * 4);
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
     transition: box-shadow 0.2s ease;
     text-align: start;
@@ -35,18 +35,18 @@
 }
 
 .cards .card-item img {
-    border-radius: 1rem;
+    border-radius: calc(var(--pico-border-radius) * 2);
 }
 
 .cards .title {
-    --pico-font-size: 1.25rem;
+    font-size: calc(var(--pico-font-size) * 1.25);
     margin: 1rem 0 0.75rem;
     font-weight: 400;
 }
 
 .cards .text {
     color: var(--pico-muted-color);
-    font-size: 0.9375rem;
+    font-size: var(--pico-font-size);
     font-weight: 300;
     line-height: 1.6;
 }

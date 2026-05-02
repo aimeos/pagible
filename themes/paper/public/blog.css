@@ -21,9 +21,9 @@
 
 .blog .blog-item {
     --pico-text-decoration: none;
-    background-color: #FFFFFF;
-    border: 1px solid rgba(0, 0, 0, 0.05);
-    border-radius: 2rem;
+    background-color: var(--pico-contrast-inverse);
+    border: 1px solid var(--pico-muted-border-color);
+    border-radius: calc(var(--pico-border-radius) * 4);
     overflow: hidden;
     transition: box-shadow 0.2s ease;
 }
@@ -41,12 +41,12 @@
 
 .blog .date {
     color: var(--pico-muted-color);
-    font-size: 0.8125rem;
+    font-size: calc(var(--pico-font-size) * 0.8125);
     font-weight: 300;
 }
 
 .blog h3 {
-    font-size: 1.25rem;
+    font-size: calc(var(--pico-font-size) * 1.125);
     font-weight: 400;
     margin-top: 0.75rem;
     height: 3.75rem;
@@ -63,14 +63,14 @@
 
 .blog .first .date-day {
     font-weight: 500;
-    font-size: 2rem;
+    font-size: calc(var(--pico-font-size) * 1.5);
     line-height: 1;
     font-family: var(--pico-font-family-display);
 }
 
 .blog .first .date-month {
     text-transform: uppercase;
-    font-size: 0.8125rem;
+    font-size: calc(var(--pico-font-size) * 0.8125);
     line-height: 0.75;
     letter-spacing: 0.05em;
 }
@@ -94,7 +94,7 @@
 }
 
 .blog .second h3 {
-    font-size: 1rem;
+    font-size: var(--pico-font-size);
     margin: 0.5rem 0;
     line-height: 1.3;
 }

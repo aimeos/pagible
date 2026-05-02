@@ -45,35 +45,13 @@
 .text {
     font-weight: 300;
     color: var(--pico-muted-color);
-    font-size: 1.125rem;
+    font-size: var(--pico-font-size);
     line-height: 1.8;
 }
 
 .cms-content .text .container {
     max-width: 50rem;
     margin: auto;
-}
-
-footer.cms-content .contact label {
-    color: rgba(255, 255, 255, 0.8);
-}
-
-footer.cms-content .contact input,
-footer.cms-content .contact textarea {
-    background-color: rgba(255, 255, 255, 0.1);
-    border-color: rgba(255, 255, 255, 0.15);
-    color: #FFFFFF;
-}
-
-footer.cms-content .contact input::-webkit-input-placeholder,
-footer.cms-content .contact textarea::-webkit-input-placeholder {
-    color: rgba(255, 255, 255, 0.4);
-}
-
-footer.cms-content .contact input:focus,
-footer.cms-content .contact textarea:focus {
-    border-color: rgba(255, 255, 255, 0.4);
-    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
 }
 
 @media screen and (min-width: 768px) {

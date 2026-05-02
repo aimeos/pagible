@@ -5,14 +5,14 @@
 .article .cover {
     display: block;
     margin: 2rem 0;
-    border-radius: 2rem;
+    border-radius: calc(var(--pico-border-radius) * 4);
     overflow: hidden;
 }
 
 .article .cover source,
 .article .cover img {
     width: 100%;
-    border-radius: 2rem;
+    border-radius: calc(var(--pico-border-radius) * 4);
 }
 
 .article .text {

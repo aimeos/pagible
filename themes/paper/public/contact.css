@@ -24,15 +24,15 @@
     display: inline-block;
     margin: 0.5rem 0;
     font-weight: 500;
-    font-size: 0.9375rem;
+    font-size: calc(var(--pico-font-size) * 0.9375);
 }
 
 .contact input, textarea {
     border: 1px solid var(--pico-contrast-border);
-    background-color: #FFFFFF;
+    background-color: var(--pico-contrast-inverse);
     color: var(--pico-color);
     resize: vertical;
-    font-size: 1rem;
+    font-size: var(--pico-font-size);
     display: block;
     padding: 0.75rem 1.25rem;
     width: 100%;
@@ -41,7 +41,7 @@
 }
 
 .contact textarea {
-    border-radius: 1.5rem;
+    border-radius: calc(var(--pico-border-radius) * 3);
 }
 
 .contact input:focus,
@@ -58,7 +58,7 @@
 
 .contact .errors {
     color: var(--pico-form-element-invalid-focus-color);
-    font-size: 0.875rem;
+    font-size: calc(var(--pico-font-size) * 0.875);
 }
 
 .contact .error {
@@ -90,11 +90,11 @@
 .contact button:has(.success:not(.hidden)) {
     background-color: #16A34A;
     border-color: #16A34A;
-    color: #FFFFFF;
+    color: var(--pico-contrast-inverse);
 }
 
 .contact button:has(.failure:not(.hidden)) {
     background-color: #DC2626;
     border-color: #DC2626;
-    color: #FFFFFF;
+    color: var(--pico-contrast-inverse);
 }

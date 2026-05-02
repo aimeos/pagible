@@ -4,7 +4,7 @@
  */
 
 :root, :root:not([data-theme=dark]) {
-    --pico-font-family-sans-serif: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    --pico-font-family-sans-serif:  "Helvetica Neue", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, Arial, sans-serif;
     --pico-font-family-display: var(--pico-font-family-sans-serif);
     --pico-font-family-monospace: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
     --pico-nav-breadcrumb-divider: '/';
@@ -64,6 +64,7 @@
     --pico-modal-overlay-background-color: rgba(26, 26, 26, 0.5);
     --pico-code-background-color: #F4F4F0;
     --pico-code-color: #1A1A1A;
+    --pico-font-size: 1rem;
     --pico-border-radius: 0.5rem;
 }
 
@@ -183,13 +184,13 @@ header nav > ul > li:last-of-type a {
     background-color: var(--pico-primary);
     color: var(--pico-primary-inverse);
     padding: 0.5rem 1rem;
-    border-radius: 2rem;
+    border-radius: calc(var(--pico-border-radius) * 4);
     text-wrap: nowrap;
 }
 
 header nav a,
 header nav details summary {
-    font-size: 75%;
+    font-size: calc(var(--pico-font-size) * 0.875);
     list-style: none;
     cursor: pointer;
     padding: 0.5rem;
@@ -245,7 +246,7 @@ header nav .brand img {
 header nav .brand a {
     font-family: var(--pico-font-family-display);
     font-weight: 500;
-    font-size: 1.25rem;
+    font-size: calc(var(--pico-font-size) * 1.25);
     letter-spacing: -0.02em;
     color: var(--pico-contrast);
     text-decoration: none;
@@ -339,7 +340,7 @@ nav[aria-label=breadcrumb] ul li {
     justify-content: flex-end;
     align-items: center;
     display: flex;
-    font-size: 0.875rem;
+    font-size: calc(var(--pico-font-size) * 0.875);
     color: var(--pico-muted-color);
 }
 
@@ -367,13 +368,13 @@ dialog > article {
     height: calc(100vh - 2rem);
     overflow: unset;
     border: 1px solid var(--pico-muted-border-color);
-    border-radius: 2rem;
+    border-radius: calc(var(--pico-border-radius) * 4);
 }
 
 dialog header {
     background-color: var(--pico-muted-background-color);
     border-bottom: 1px solid var(--pico-muted-border-color);
-    border-radius: 2rem 2rem 0 0;
+    border-radius: calc(var(--pico-border-radius) * 4) calc(var(--pico-border-radius) * 4) 0 0;
 }
 
 dialog form {
@@ -404,7 +405,7 @@ dialog button[type=reset]:hover {
 dialog input {
     border: 1px solid var(--pico-contrast-border);
     background-color: var(--pico-contrast-inverse);
-    font-size: 1rem;
+    font-size: var(--pico-font-size);
     display: block;
     width: 100%;
     margin: 0 1px;
@@ -460,14 +461,14 @@ dialog.search .result-title {
 dialog.search .result-content {
     display: block;
     color: var(--pico-muted-color);
-    font-size: 0.9375rem;
+    font-size: calc(var(--pico-font-size) * 0.9375);
 }
 
 dialog.search .result-content b {
     background-color: var(--pico-text-selection-color);
     color: var(--pico-contrast);
     padding: 0.1rem 0.25rem;
-    border-radius: 2px;
+    border-radius: calc(var(--pico-border-radius) * 0.5);
 }
 
 dialog.search .load-more {
@@ -476,7 +477,7 @@ dialog.search .load-more {
     border: 1px solid var(--pico-contrast-border);
     cursor: pointer;
     display: block;
-    font-size: 0.9375rem;
+    font-size: calc(var(--pico-font-size) * 0.9375);
     margin: 1rem auto;
     padding: 0.5rem 1.5rem;
     border-radius: 9999px;
@@ -511,28 +512,28 @@ h4, h5, h6 {
 }
 
 h1 {
-    --pico-typography-spacing-vertical: 2.5rem;
-    --pico-font-size: 3rem;
+    --pico-typography-spacing-vertical: 2rem;
+    font-size: calc(var(--pico-font-size) * 3);
     line-height: 1.1;
     text-align: center;
 }
 
 h2 {
-    --pico-typography-spacing-vertical: 2rem;
-    --pico-font-size: 2.5rem;
+    --pico-typography-spacing-vertical: 1.5rem;
+    font-size: calc(var(--pico-font-size) * 2.25);
     line-height: 1.15;
     text-align: center;
 }
 
 h3 {
-    --pico-typography-spacing-vertical: 1.5rem;
-    --pico-font-size: 1.25rem;
+    --pico-typography-spacing-vertical: 1.25rem;
+    font-size: calc(var(--pico-font-size) * 1.25);
     line-height: 1.3;
 }
 
 h4 {
-    --pico-typography-spacing-vertical: 1.25rem;
-    --pico-font-size: 1.125rem;
+    --pico-typography-spacing-vertical: 1rem;
+    font-size: calc(var(--pico-font-size) * 1.125);
     line-height: 1.35;
 }
 
@@ -545,9 +546,9 @@ img {
     display: inline-block;
     text-decoration: none;
     vertical-align: sub;
-    padding: 1rem 2rem;
+    padding: 0.5rem 2rem;
     margin: 0.5rem 0;
-    font-size: 1.125rem;
+    font-size: calc(var(--pico-font-size) * 1.125);
     font-weight: 400;
     font-family: var(--pico-font-family-display);
     letter-spacing: 0;
@@ -599,22 +600,23 @@ img {
 
 .video video {
     max-width: 100%;
-    border-radius: 1.5rem;
+    border-radius: calc(var(--pico-border-radius) * 3);
 }
 
-@media screen and (min-width: 576px) {
-    .image picture,
-    .video video {
-        display: block;
-        border: 1px solid var(--pico-muted-border-color);
-        border-radius: 1.5rem;
-    }
+.image picture,
+.video video {
+    display: block;
+    background-color: var(--pico-contrast-inverse);
+    border: 1px solid var(--pico-muted-border-color);
+    border-radius: calc(var(--pico-border-radius) * 2);
+    padding: 1rem;
+    box-shadow: var(--pico-box-shadow);
 }
 
 .caption:not(:empty) {
     max-width: 60rem;
     margin: 0.75rem auto;
-    font-size: 0.875rem;
+    font-size: calc(var(--pico-font-size) * 0.875);
     color: var(--pico-muted-color);
     font-weight: 300;
 }
@@ -662,7 +664,7 @@ img {
     color: var(--pico-contrast);
     font-weight: 500;
     font-family: var(--pico-font-family-display);
-    font-size: 0.875rem;
+    font-size: calc(var(--pico-font-size) * 0.875);
     letter-spacing: 0.04em;
     text-transform: uppercase;
 }
@@ -698,7 +700,7 @@ p code {
     font-family: var(--pico-font-family-monospace);
     background-color: var(--pico-code-background-color);
     padding: 0.15rem 0.4rem;
-    border-radius: 3px;
+    border-radius: calc(var(--pico-border-radius) * 0.5);
     font-size: 0.875em;
 }
 
@@ -707,12 +709,12 @@ pre code[class*=language-] {
     color: var(--pico-contrast-inverse);
     overflow-x: auto;
     font-family: var(--pico-font-family-monospace);
-    border-radius: 1.5rem;
+    border-radius: calc(var(--pico-border-radius) * 3);
 }
 
 pre:has(code[class*="language-"]) {
     background-color: var(--pico-contrast);
-    border-radius: 1.5rem;
+    border-radius: calc(var(--pico-border-radius) * 3);
     padding: 1.5rem;
     border: 1px solid var(--pico-muted-border-color);
 }
@@ -721,14 +723,14 @@ pre:has(code[class*="language-"]) {
 footer.copyright {
     background-color: var(--pico-contrast);
     color: rgba(255, 255, 255, 0.8);
-    font-size: 0.875rem;
+    font-size: calc(var(--pico-font-size) * 0.875);
     font-weight: 300;
-    border-radius: 3rem 3rem 0 0;
+    border-radius: calc(var(--pico-border-radius) * 6) calc(var(--pico-border-radius) * 6) 0 0;
     margin-top: 3rem;
 }
 
 footer.copyright .container {
-    max-width: 1200px;
+    max-width: 1280px;
     margin: auto;
     display: flex;
     justify-content: space-between;
@@ -760,12 +762,12 @@ footer.copyright .brand img {
 
 footer.cms-content {
     background-color: var(--pico-contrast);
-    border-radius: 3rem 3rem 0 0;
+    border-radius: calc(var(--pico-border-radius) * 6) calc(var(--pico-border-radius) * 6) 0 0;
     padding: 4rem 0 2rem;
 }
 
 footer.cms-content .container {
-    max-width: 1200px;
+    max-width: 1280px;
 }
 
 footer.cms-content .cards .card-list {
@@ -787,8 +789,8 @@ footer.cms-content .cards .card-item:hover {
 }
 
 footer.cms-content .cards .title {
-    color: rgba(255, 255, 255, 0.65);
-    font-size: 1.125rem;
+    color: #9ca3af;
+    font-size: calc(var(--pico-font-size) * 0.875);
     margin-bottom: 1.5rem;
 }
 
@@ -798,7 +800,7 @@ footer.cms-content .cards .text {
 }
 
 footer.cms-content .cards .text p {
-    line-height: 2.5;
+    line-height: 2;
     margin: 0;
 }
 
@@ -810,6 +812,11 @@ footer.cms-content .cards .text a:visited {
 
 footer.cms-content .cards .text a:hover {
     color: rgba(255, 255, 255, 0.65);
+}
+
+footer.cms-content .cards .text ul {
+    padding-left: 0;
+    list-style: none;
 }
 
 footer.cms-content .heading h1,
@@ -837,11 +844,11 @@ footer.cms-content :focus-visible {
 
 @media screen and (min-width: 768px) {
     h1 {
-        --pico-font-size: 4.5rem;
+        font-size: calc(var(--pico-font-size) * 4.5);
     }
 
     h2 {
-        --pico-font-size: 3rem;
+        font-size: calc(var(--pico-font-size) * 3);
     }
 
     footer.cms-content .cards .card-list {

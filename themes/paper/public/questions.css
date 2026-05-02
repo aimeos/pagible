@@ -4,10 +4,10 @@
 
 .questions details {
     border: 1px solid var(--pico-muted-border-color);
-    border-radius: 2rem;
+    border-radius: calc(var(--pico-border-radius) * 4);
     margin-bottom: 0.75rem;
     padding: 1.25rem 1.5rem;
-    background-color: #FFFFFF;
+    background-color: var(--pico-contrast-inverse);
     transition: box-shadow 0.2s ease;
 }
 
@@ -28,7 +28,7 @@
 }
 
 .questions h3 {
-    --pico-font-size: 1.0625rem;
+    font-size: calc(var(--pico-font-size) * 1.0625);
     margin: 0;
     font-weight: 500;
 }
