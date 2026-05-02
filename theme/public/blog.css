@@ -32,11 +32,11 @@
 
 .blog .date {
     color: var(--pico-contrast);
-    font-size: 80%;
+    font-size: calc(var(--pico-font-size) * 0.8);
 }
 
 .blog h3 {
-    font-size: 150%;
+    font-size: calc(var(--pico-font-size) * 1.5);
     margin-top: 1rem;
     height: 3.75rem;
     overflow: hidden;
@@ -50,13 +50,13 @@
 
 .blog .first .date-day {
     font-weight: bold;
-    font-size: 200%;
+    font-size: calc(var(--pico-font-size) * 2);
     line-height: 1;
 }
 
 .blog .first .date-month {
     text-transform: uppercase;
-    font-size: 90%;
+    font-size: calc(var(--pico-font-size) * 0.9);
     line-height: 0.75;
 }
 
@@ -78,7 +78,7 @@
 }
 
 .blog .second h3 {
-    font-size: 100%;
+    font-size: var(--pico-font-size);
     margin: 0.5rem 0;
     line-height: 1.25;
 }

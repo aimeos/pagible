@@ -202,7 +202,7 @@
             </nav>
         @endif
 
-        <main>
+        <main id="main">
             @yield('main')
         </main>
 

@@ -345,7 +345,7 @@ dialog button {
 dialog input {
     border: 1px solid var(--pico-contrast-border);
     background-color: var(--pico-contrast-background);
-    font-size: 1rem;
+    font-size: var(--pico-font-size);
     display: block;
     width: 100%;
     margin: 0 1px;
@@ -406,7 +406,7 @@ dialog.search .load-more {
     border: 1px solid var(--pico-contrast-border);
     cursor: pointer;
     display: block;
-    font-size: 1rem;
+    font-size: var(--pico-font-size);
     margin: 1rem auto;
     padding: 0.5rem 1.5rem;
 }
@@ -435,24 +435,24 @@ h1, h2, h3, h4 {
 
 h1 {
     --pico-typography-spacing-vertical: 3rem;
-    --pico-font-size: 300%;
+    font-size: calc(var(--pico-font-size) * 3);
     text-align: center;
 }
 
 h2 {
     --pico-typography-spacing-vertical: 2.25rem;
-    --pico-font-size: 225%;
+    font-size: calc(var(--pico-font-size) * 2.25);
     text-align: center;
 }
 
 h3 {
     --pico-typography-spacing-vertical: 1.75rem;
-    --pico-font-size: 175%;
+    font-size: calc(var(--pico-font-size) * 1.75);
 }
 
 h4 {
     --pico-typography-spacing-vertical: 1.33rem;
-    --pico-font-size: 133%;
+    font-size: calc(var(--pico-font-size) * 1.33);
 }
 
 img {
@@ -465,7 +465,7 @@ img {
     vertical-align: sub;
     padding: 0.75rem 1.5rem;
     margin: 0.5rem 0;
-    font-size: 100%;
+    font-size: var(--pico-font-size);
     border: none;
     border-radius: 2rem;
     color: var(--pico-contrast);
