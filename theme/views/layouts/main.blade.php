@@ -34,7 +34,7 @@
             @endif
         @endforeach
 
-        <link href="{{ cmstheme($page, 'pico.css') }}" rel="stylesheet">
+        <link href="{{ cmstheme($page, 'pico.min.css') }}" rel="stylesheet">
         <link href="{{ cmstheme($page, 'cms.css') }}" rel="stylesheet">
         @stack('css')
 
@@ -47,6 +47,7 @@
         @endforeach
     </head>
     <body class="theme-{{ $theme }} type-{{ cms($page, 'type', 'page') }}">
+        <a href="#main" class="skip-link">{{ __('Skip to main content') }}</a>
         <dialog id="modal-search" class="search">
             <article>
                 <header>
