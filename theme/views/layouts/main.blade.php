@@ -45,6 +45,43 @@
                 </style>
             @endif
         @endforeach
+
+        <script type="application/ld+json" nonce="{{ csrf_token() }}">
+            [{
+                "@@context": "https://schema.org",
+                "@@type": "WebSite",
+                "name": {{ Js::from(config('app.name')) }},
+                "url": {{ Js::from(url('/')) }}
+            },
+            {
+                "@@context": "https://schema.org",
+                "@@type": "WebPage",
+                "name": {{ Js::from(cms($page, 'title')) }},
+                "url": {{ Js::from(cmsroute($page)) }}
+            }
+            @if($page->ancestors->count() > 1)
+            ,{
+                "@@context": "https://schema.org",
+                "@@type": "BreadcrumbList",
+                "itemListElement": [
+                    @foreach($page->ancestors->skip(1)->filter(fn($item) => cms($item, 'status') == 1)->values() as $item)
+                    {
+                        "@@type": "ListItem",
+                        "position": {{ $loop->iteration }},
+                        "name": {{ Js::from(cms($item, 'name')) }},
+                        "item": {{ Js::from(cmsroute($item)) }}
+                    },
+                    @endforeach
+                    {
+                        "@@type": "ListItem",
+                        "position": {{ $page->ancestors->skip(1)->filter(fn($item) => cms($item, 'status') == 1)->count() + 1 }},
+                        "name": {{ Js::from(cms($page, 'name')) }}
+                    }
+                ]
+            }
+            @endif
+            ]
+        </script>
     </head>
     <body class="theme-{{ $theme }} type-{{ cms($page, 'type', 'page') }}">
         <a href="#main" class="skip-link">{{ __('Skip to main content') }}</a>

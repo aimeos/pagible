@@ -15,3 +15,21 @@
 		</details>
 	@endforeach
 </div>
+
+<script type="application/ld+json">{
+	"@@context": "https://schema.org",
+	"@@type": "FAQPage",
+	"mainEntity": [
+	@foreach(cms($data, 'items', []) as $item)
+		{
+			"@@type": "Question",
+			"name": {{ Js::from(@$item->title) }},
+			"acceptedAnswer": {
+				"@@type": "Answer",
+				"text": {{ Js::from(strip_tags(Str::markdown(@$item->text ?? ''))) }}
+			}
+		}
+		@if(!$loop->last),@endif
+	@endforeach
+	]
+}</script>
