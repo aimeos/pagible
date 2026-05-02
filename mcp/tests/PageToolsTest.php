@@ -68,6 +68,26 @@ class PageToolsTest extends McpTestAbstract
     }
 
 
+    public function testGetPageByEmptyPath()
+    {
+        $this->seed( \Database\Seeders\CmsSeeder::class );
+
+        $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\GetPage::class, [
+            'path' => '',
+        ] );
+
+        $response->assertOk()->assertSee( ['Home'] );
+    }
+
+
+    public function testGetPageMissingParams()
+    {
+        $this->expectException( \Exception::class );
+
+        CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\GetPage::class, [] );
+    }
+
+
     public function testGetPageNotFound()
     {
         $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\GetPage::class, [
