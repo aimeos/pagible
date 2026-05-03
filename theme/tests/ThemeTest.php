@@ -49,7 +49,7 @@ class ThemeTest extends ThemeTestAbstract
 		$path = $this->createTestTheme( 'corporate', [
 			'label' => 'Corporate',
 			'content' => [
-				'pricing' => ['group' => 'content', 'fields' => ['price' => ['type' => 'string']]],
+				'xylotron' => ['group' => 'content', 'fields' => ['price' => ['type' => 'string']]],
 			],
 		] );
 
@@ -57,8 +57,8 @@ class ThemeTest extends ThemeTestAbstract
 
 		$schemas = Schema::schemas( section: 'content' );
 
-		$this->assertArrayHasKey( 'corporate::pricing', $schemas );
-		$this->assertArrayNotHasKey( 'pricing', $schemas );
+		$this->assertArrayHasKey( 'corporate::xylotron', $schemas );
+		$this->assertArrayNotHasKey( 'xylotron', $schemas );
 	}
 
 
