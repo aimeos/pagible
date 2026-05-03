@@ -26,6 +26,7 @@ jobs:
           - { package: jsonapi, repo: pagible-jsonapi }
           - { package: mcp, repo: pagible-mcp }
           - { package: theme, repo: pagible-theme }
+          - { package: cashier, repo: pagible-cashier }
           - { package: themes/paper, repo: pagible-themes-paper }
     steps:
       - uses: actions/checkout@v5

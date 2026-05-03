@@ -42,6 +42,7 @@
 		"psr-4": {
 			"Aimeos\\Cms\\": [
 				"backup/src/",
+				"cashier/src/",
 				"import/src/"
 			],
 			"Tests\\": [
@@ -49,6 +50,7 @@
 				"core/tests/",
 				"admin/tests/",
 				"ai/tests/",
+				"cashier/tests/",
 				"graphql/tests/",
 				"import/tests/",
 				"jsonapi/tests/",
