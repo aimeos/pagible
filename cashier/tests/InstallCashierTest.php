@@ -201,7 +201,8 @@ PHP;
             $this->artisan( 'cms:install:cashier' )
                 ->expectsQuestion( 'Which payment provider do you want to use?', 'stripe' )
                 ->expectsQuestion( 'Stripe Publishable Key', 'pk_test_123' )
-                ->expectsQuestion( 'Stripe Secret Key', 'sk_test_123' );
+                ->expectsQuestion( 'Stripe Secret Key', 'sk_test_123' )
+                ->expectsConfirmation( 'Install laravel/cashier via Composer?', 'no' );
 
             $content = file_get_contents( $path );
 

@@ -12,6 +12,7 @@ use Illuminate\Console\Command;
 
 use function Laravel\Prompts\select;
 use function Laravel\Prompts\text;
+use function Laravel\Prompts\confirm;
 use function Laravel\Prompts\info;
 use function Laravel\Prompts\note;
 
@@ -163,10 +164,16 @@ class InstallCashier extends Command
             return;
         }
 
+        if( !$this->option( 'quiet' ) && !confirm( "Install {$package} via Composer?", true ) )
+        {
+            note( "Skipped. Please run: composer require {$package}" );
+            return;
+        }
+
         $this->comment( "  Installing {$package} ..." );
 
         $process = new \Symfony\Component\Process\Process(
-            ['composer', 'require', $package, '--no-scripts'],
+            ['composer', 'require', $package],
             base_path()
         );
 
