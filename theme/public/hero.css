@@ -42,7 +42,7 @@
     background-color: var(--pico-muted-background-color);
     border: 1px solid var(--pico-contrast-border);
     border-radius: 2rem;
-    font-size: 75%;
+    font-size: calc(var(--pico-font-size) * 0.75);
 }
 
 .hero .subtitle::before {

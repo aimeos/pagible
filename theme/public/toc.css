@@ -7,7 +7,7 @@ nav.toc {
 
 nav.toc > p {
     font-weight: bold;
-    font-size: 120%;
+    font-size: calc(var(--pico-font-size) * 1.2);
     margin-bottom: 0.5rem;
     margin-top: 0;
 }

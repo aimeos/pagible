@@ -2,7 +2,7 @@
 <link rel="preload" href="{{ cmstheme($page, 'cards.css') }}" as="style">
 @endPushOnce
 
-@if($data->title)
+@if(@$data->title)
 	<h2>{{ @$data->title }}</h2>
 @endif
 

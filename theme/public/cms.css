@@ -68,6 +68,10 @@
   scrollbar-color: var(--pico-primary-background) var(--pico-background-color);
 }
 
+:focus-visible {
+    outline: 1px solid var(--pico-contrast);
+}
+
 body {
     line-height: 1.6;
     scroll-behavior: smooth;
@@ -107,6 +111,24 @@ body {
         );
 }
 
+.skip-link {
+    position: absolute;
+    top: -100%;
+    left: 1rem;
+    z-index: 1000;
+    padding: 0.75rem 1.5rem;
+    background-color: var(--pico-contrast);
+    color: var(--pico-contrast-inverse);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.skip-link:focus {
+    top: 1rem;
+    color: var(--pico-contrast-inverse);
+    opacity: 1;
+}
+
 :where(a:not([role=button])), [role=link],
 :where(a:not([role=button]):visited), [role=link]:visited {
     --pico-color: var(--pico-contrast);
@@ -134,18 +156,33 @@ body > header {
 }
 
 header nav ol,
-header nav ul {
-    margin-top: 0;
+header nav ul,
+header nav li {
+    margin: 0;
+}
+
+header nav > ul > li {
+    list-style: none;
+    padding: 0 0.25rem;
 }
 
 header nav > ul:not(.menu) > li {
-    padding: var(--pico-nav-element-spacing-vertical) 0;
+    padding: 0;
 }
 
+header nav > ul > li:last-of-type a {
+    background-image: linear-gradient(90deg, var(--pico-primary), var(--pico-secondary));
+    padding: 0.5rem 1rem;
+    border-radius: 2rem;
+    text-wrap: nowrap;
+}
+
+header nav a,
 header nav details summary {
-    display: flex;
     list-style: none;
     cursor: pointer;
+    padding: 0.5rem;
+    color: var(--pico-color);
 }
 
 header nav details summary::marker,
@@ -155,9 +192,8 @@ header nav details summary::-webkit-details-marker {
 
 header nav details summary::after {
     display: block;
-    float: right;
-    width: 1.5rem;
-    height: calc(1rem * var(--pico-line-height, 1.5));
+    height: 1.25rem;
+    float: inline-end;
     transform: rotate(0) translateX(.2rem);
     background-image: var(--pico-icon-chevron);
     background-position: right center;
@@ -168,7 +204,7 @@ header nav details summary::after {
 }
 
 header nav details[open] summary::after {
-    transform: rotate(0.5turn) translateX(0);
+    transform: rotate(0.5turn) translateX(-0.2rem);
 }
 
 header nav details.dropdown > summary + ul.align {
@@ -207,12 +243,9 @@ header nav .sidebar-close button {
     border: none;
 }
 
-header nav a {
-    display: inline-block;
+header nav a,
+header nav details.dropdown {
     text-decoration: none;
-    color: var(--pico-color);
-    padding: 0.25rem 1rem;
-    margin-inline-start: -1rem;
 }
 
 @media (max-width: 991px) {
@@ -312,7 +345,7 @@ dialog button {
 dialog input {
     border: 1px solid var(--pico-contrast-border);
     background-color: var(--pico-contrast-background);
-    font-size: 1rem;
+    font-size: var(--pico-font-size);
     display: block;
     width: 100%;
     margin: 0 1px;
@@ -373,7 +406,7 @@ dialog.search .load-more {
     border: 1px solid var(--pico-contrast-border);
     cursor: pointer;
     display: block;
-    font-size: 1rem;
+    font-size: var(--pico-font-size);
     margin: 1rem auto;
     padding: 0.5rem 1.5rem;
 }
@@ -402,24 +435,24 @@ h1, h2, h3, h4 {
 
 h1 {
     --pico-typography-spacing-vertical: 3rem;
-    --pico-font-size: 300%;
+    font-size: calc(var(--pico-font-size) * 3);
     text-align: center;
 }
 
 h2 {
     --pico-typography-spacing-vertical: 2.25rem;
-    --pico-font-size: 225%;
+    font-size: calc(var(--pico-font-size) * 2.25);
     text-align: center;
 }
 
 h3 {
     --pico-typography-spacing-vertical: 1.75rem;
-    --pico-font-size: 175%;
+    font-size: calc(var(--pico-font-size) * 1.75);
 }
 
 h4 {
     --pico-typography-spacing-vertical: 1.33rem;
-    --pico-font-size: 133%;
+    font-size: calc(var(--pico-font-size) * 1.33);
 }
 
 img {
@@ -432,7 +465,7 @@ img {
     vertical-align: sub;
     padding: 0.75rem 1.5rem;
     margin: 0.5rem 0;
-    font-size: 100%;
+    font-size: var(--pico-font-size);
     border: none;
     border-radius: 2rem;
     color: var(--pico-contrast);
@@ -503,27 +536,61 @@ img {
     width: 100%;
 }
 
-.image-text::after {
+.image-text .r1-3 { --ratio: 25%; }
+.image-text .r1-2 { --ratio: 33.333%; }
+.image-text .r1-1 { --ratio: 50%; }
+
+.image-text .start::after,
+.image-text .end::after {
     content: "";
     display: table;
     clear: both;
 }
 
-.image-text .image {
+.image-text .start .image,
+.image-text .end .image {
+    max-width: var(--ratio);
     margin-bottom: 1.5rem;
-    max-width: 25%;
 }
 
-.image-text:nth-of-type(2n) .image.auto,
-.image-text .image.start {
-    margin-inline-end: 2rem;
+.image-text .start .image {
     float: inline-start;
+    margin-inline-end: 2rem;
 }
 
-.image-text:nth-of-type(2n+1) .image.auto,
-.image-text .image.end {
-    margin-inline-start: 2rem;
+.image-text .end .image {
     float: inline-end;
+    margin-inline-start: 2rem;
+}
+
+.image-text .grid-start,
+.image-text .grid-end {
+    display: flex;
+    gap: 2rem;
+    align-items: flex-start;
+}
+
+.image-text .grid-end {
+    flex-direction: row-reverse;
+}
+
+.image-text .grid-start .text,
+.image-text .grid-end .text {
+    flex: 1;
+    min-width: 0;
+}
+
+.image-text .grid-start .image,
+.image-text .grid-end .image {
+    flex: 0 0 var(--ratio);
+    max-width: var(--ratio);
+}
+
+@media (max-width: 767px) {
+    .image-text .grid-start,
+    .image-text .grid-end {
+        flex-direction: column;
+    }
 }
 
 .table-responsive .table-row {

@@ -1,0 +1,34 @@
+{
+    "name": "aimeos/pagible-cashier",
+    "description": "Pagible CMS - Payment integration via Laravel Cashier",
+    "keywords": ["laravel", "cms", "cashier", "payments", "stripe", "paddle", "mollie"],
+    "homepage": "https://pagible.com",
+    "type": "library",
+    "license": "LGPL-3.0-only",
+    "require": {
+        "php": "^8.2",
+        "aimeos/pagible-core": "*@dev"
+    },
+    "suggest": {
+        "laravel/cashier": "Required for Stripe payments (^15.0)",
+        "laravel/cashier-paddle": "Required for Paddle payments (^2.0)",
+        "mollie/laravel-cashier-mollie": "Required for Mollie payments (^2.0)"
+    },
+    "autoload": {
+        "psr-4": {
+            "Aimeos\\Cms\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Aimeos\\Cms\\CashierServiceProvider"
+            ]
+        }
+    }
+}

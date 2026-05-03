@@ -30,7 +30,7 @@
     background-color: var(--pico-muted-background-color);
     color: var(--pico-contrast);
     resize: vertical;
-    font-size: 1rem;
+    font-size: var(--pico-font-size);
     display: block;
     padding: 1rem;
     width: 100%;

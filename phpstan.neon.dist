@@ -16,4 +16,5 @@ parameters:
 		- mcp/src
 		- search/src
 		- backup/src
+		- cashier/src
 		- theme/src

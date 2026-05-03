@@ -7,6 +7,6 @@
             srcset="{{ cmssrcset($file?->previews) }}"
             src="{{ cmsurl($preview) }}"
             sizes="{{ @$sizes ?? '100vw' }}"
-            alt="{{ @cms($file, 'description')?->{cms($page, 'lang')} }}">
+            alt="{{ @cms($file, 'description')?->{cms($page, 'lang')} ?: cms($file, 'name') }}">
     @endif
 </picture>

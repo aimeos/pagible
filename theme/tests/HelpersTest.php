@@ -19,7 +19,7 @@ class HelpersTest extends CoreTestAbstract
 
 	public function testCmsAsset()
 	{
-		$this->assertEquals( 'http://localhost/not/exists.js?v=0', cmsasset( 'not/exists.js' ) );
+		$this->assertEquals( 'http://localhost/not/exists.js', cmsasset( 'not/exists.js' ) );
 	}
 
 
@@ -42,7 +42,7 @@ class HelpersTest extends CoreTestAbstract
 	{
 		$page = new \Aimeos\Cms\Models\Page();
 
-		$this->assertEquals( 'http://localhost/vendor/cms/theme/hero.css?v=0', cmstheme( $page, 'hero.css' ) );
+		$this->assertEquals( 'http://localhost/vendor/cms/theme/hero.css', cmstheme( $page, 'hero.css' ) );
 	}
 
 
@@ -50,7 +50,7 @@ class HelpersTest extends CoreTestAbstract
 	{
 		$page = new \Aimeos\Cms\Models\Page( ['theme' => 'notexist'] );
 
-		$this->assertEquals( 'http://localhost/vendor/cms/theme/hero.css?v=0', cmstheme( $page, 'hero.css' ) );
+		$this->assertEquals( 'http://localhost/vendor/cms/theme/hero.css', cmstheme( $page, 'hero.css' ) );
 	}
 
 

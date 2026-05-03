@@ -25,3 +25,22 @@
 	<button type="button" class="slider-nav slider-nav-prev" aria-label="Go to previous"></button>
 	<button type="button" class="slider-nav slider-nav-next" aria-label="Go to next"></button>
 </div>
+
+<script type="application/ld+json">{
+	"@@context": "https://schema.org",
+	"@@type": "ImageGallery",
+	"name": {{ Js::from(@$data->title ?? cms($page, 'title')) }},
+	"image": [
+	@foreach($data->files ?? [] as $item)
+		@if($file = cms($files, @$item->id))
+			{
+				"@@type": "ImageObject",
+				"contentUrl": {{ Js::from(cmsurl(cms($file, 'path'))) }},
+				"name": {{ Js::from(@cms($file, 'name')) }},
+				"description": {{ Js::from(@cms($file, 'description')?->{cms($page, 'lang')}) }}
+			}
+			@if(!$loop->last),@endif
+		@endif
+	@endforeach
+	]
+}</script>

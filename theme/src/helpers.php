@@ -58,33 +58,16 @@ if( !function_exists( 'cmsasset' ) )
      * Generate an asset URL with a version query parameter based on the file's last modification time for cache busting.
      *
      * @param string|null $path The path to the asset file
+     * @param bool $version Whether to append a version query parameter based on the file's last modification time for cache busting
      * @return string The asset URL with a version query parameter, or an empty string if the path is null
      */
-    function cmsasset( ?string $path ) : string
+    function cmsasset( ?string $path, bool $version = true ) : string
     {
-        return $path ? asset( $path ) . '?v=' . ( file_exists( public_path( $path ) ) ? filemtime( public_path( $path ) ) : 0 ) : '';
-    }
-}
-
-
-if( !function_exists( 'cmstheme' ) )
-{
-    /**
-     * Generate an asset URL for a theme file, falling back to the base theme if the file doesn't exist.
-     *
-     * @param \Aimeos\Cms\Models\Page $page The CMS page to resolve the theme from
-     * @param string $file The filename (e.g. "hero.css", "slideshow.js")
-     * @return string The asset URL for the file
-     */
-    function cmstheme( \Aimeos\Cms\Models\Page $page, string $file ) : string
-    {
-        $themedir = 'vendor/cms/' . ( cms( $page, 'theme' ) ?: 'theme' );
-
-        if( file_exists( public_path( $themedir . '/' . $file ) ) ) {
-            return cmsasset( $themedir . '/' . $file );
+        if( $path ) {
+            return asset( $path ) . ( $version && file_exists( public_path( $path ) ) ? '?v=' . filemtime( public_path( $path ) ) : '' );
         }
 
-        return cmsasset( 'vendor/cms/theme/' . $file );
+        return '';
     }
 }
 
@@ -205,6 +188,29 @@ if( !function_exists( 'cmssrcset' ) )
         }
 
         return implode( ',', $list );
+    }
+}
+
+
+if( !function_exists( 'cmstheme' ) )
+{
+    /**
+     * Generate an asset URL for a theme file, falling back to the base theme if the file doesn't exist.
+     *
+     * @param \Aimeos\Cms\Models\Page $page The CMS page to resolve the theme from
+     * @param string $file The filename (e.g. "hero.css", "slideshow.js")
+     * @param bool $version Whether to append a version query parameter based on the file's last modification time for cache busting
+     * @return string The asset URL for the file
+     */
+    function cmstheme( \Aimeos\Cms\Models\Page $page, string $file, bool $version = true ) : string
+    {
+        $themedir = 'vendor/cms/' . ( cms( $page, 'theme' ) ?: 'theme' );
+
+        if( file_exists( public_path( $themedir . '/' . $file ) ) ) {
+            return cmsasset( $themedir . '/' . $file, $version );
+        }
+
+        return cmsasset( 'vendor/cms/theme/' . $file, $version );
     }
 }
 

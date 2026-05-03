@@ -6,14 +6,14 @@ nav.toc {
     display: block;
     padding: 1.5rem 2rem;
     border: 1px solid var(--pico-muted-border-color);
-    border-radius: 2rem;
-    background-color: #FFFFFF;
+    border-radius: calc(var(--pico-border-radius) * 4);
+    background-color: var(--pico-contrast-inverse);
 }
 
 nav.toc > p {
     font-family: var(--pico-font-family-display);
     font-weight: 500;
-    font-size: 1.125rem;
+    font-size: var(--pico-font-size);
     margin-bottom: 0.75rem;
     margin-top: 0;
 }
@@ -34,7 +34,7 @@ nav.toc li a {
     padding: 0.25rem 0;
     margin: 0;
     color: var(--pico-muted-color);
-    font-size: 0.9375rem;
+    font-size: calc(var(--pico-font-size) * 0.9375);
     font-weight: 300;
 }
 

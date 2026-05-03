@@ -36,12 +36,13 @@ class GetPage extends Tool
         }
 
         $v = $request->validate([
-            'id' => 'required_without:path|string|max:36',
-            'path' => 'required_without:id|string|max:255',
-        ], [
-            'id.required_without' => 'You must specify either an ID or a path.',
-            'path.required_without' => 'You must specify either an ID or a path.',
+            'id' => 'nullable|string|max:36',
+            'path' => 'nullable|string|max:255',
         ] );
+
+        if( ( $v['id'] ?? null ) === null && ( $v['path'] ?? null ) === null ) {
+            throw new \Exception( 'You must specify either an ID or a path.' );
+        }
 
         $query = Page::withTrashed()
             ->select( 'id', 'parent_id', 'latest_id', 'created_at', 'deleted_at' )
@@ -50,7 +51,7 @@ class GetPage extends Tool
         if( !empty( $v['id'] ) ) {
             $page = $query->find( $v['id'] );
         } else {
-            $page = $query->where( 'path', $v['path'] )->first();
+            $page = $query->where( 'path', $v['path'] ?? '' )->first();
         }
 
         if( !$page ) {

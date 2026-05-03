@@ -8,9 +8,10 @@
 
 .hero .container {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    padding-top: 4rem;
-    padding-bottom: 4rem;
+    padding-top: 6rem;
+    padding-bottom: 8rem;
 }
 
 .hero .first {
@@ -20,19 +21,23 @@
 }
 
 .hero .second {
-    display: none;
+    display: block;
+    width: 100%;
+    max-width: 64rem;
+    margin: auto;
 }
 
 .hero .first:has(+ .second),
 .hero .first:has(+ .second) h1 {
-    text-align: start;
-    margin: initial;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .hero h1 {
     margin-top: 0;
     margin-bottom: 1.5rem;
-    font-size: 3rem;
+    font-size: calc(var(--pico-font-size) * 3);
     font-weight: 400;
     line-height: 1.1;
     letter-spacing: -0.03em;
@@ -43,7 +48,7 @@
     margin-bottom: 1rem;
     padding: 0.375rem 1rem;
     color: var(--pico-muted-color);
-    font-size: 0.875rem;
+    font-size: calc(var(--pico-font-size) * 0.875);
     letter-spacing: 0.04em;
     text-transform: uppercase;
     border: 1px solid var(--pico-muted-border-color);
@@ -51,13 +56,17 @@
 }
 
 .hero p {
-    line-height: 1.8;
+    line-height: 1.5;
     color: var(--pico-muted-color);
-    font-size: 1.125rem;
+    font-size: calc(var(--pico-font-size) * 1.125);
     font-weight: 300;
     max-width: 40rem;
     margin-left: auto;
     margin-right: auto;
+}
+
+.hero .actions {
+    padding: 1rem 0;
 }
 
 .hero .btn {
@@ -70,42 +79,41 @@
 
 .hero .image picture,
 .hero .image img {
-    background-color: #FFFFFF;
-    border: 1px solid rgba(0, 0, 0, 0.05);
-    border-radius: 2rem;
-    box-shadow: 0 1.25rem 3.75rem -0.9375rem rgba(0, 0, 0, 0.05);
-    padding: 1rem;
+    background-color: var(--pico-contrast-inverse);
+    border: 1px solid var(--pico-muted-border-color);
+    border-radius: calc(var(--pico-border-radius) * 3);
+    box-shadow: var(--pico-box-shadow);
+    padding: 0.5rem;
 }
 
 @media screen and (min-width: 576px) {
     .hero .first:has(+ .second) {
-        width: 66%;
-        margin-inline-end: 2rem;
+        width: 100%;
+        margin-inline-end: 0;
     }
 
     .hero .second {
-        width: 33%;
-        display: block;
-        margin-inline-start: 2rem;
+        width: 100%;
+        margin-inline-start: 0;
     }
 
     .hero .second img {
         max-height: 100%;
-        max-width: unset;
+        max-width: 100%;
     }
 }
 
 @media screen and (min-width: 768px) {
     .hero .first:has(+ .second),
     .hero .second {
-        width: 50%;
+        width: 100%;
     }
 
     .hero h1 {
-        font-size: 4rem;
+        font-size: calc(var(--pico-font-size) * 4.5);
     }
 
     .hero p {
-        font-size: 1.25rem;
+        font-size: calc(var(--pico-font-size) * 1.25);
     }
 }
