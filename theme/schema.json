@@ -441,14 +441,6 @@
                         "unit": {
                             "type": "string"
                         },
-                        "text": {
-                            "type": "string",
-                            "label": "Description"
-                        },
-                        "features": {
-                            "type": "markdown",
-                            "label": "One feature per line or as a list"
-                        },
                         "priceid": {
                             "type": "string",
                             "label": "Price/Product Identifier"
@@ -465,9 +457,20 @@
                             "type": "string",
                             "label": "Alternative price/product Identifier"
                         },
+                        "text": {
+                            "type": "string",
+                            "label": "Description"
+                        },
+                        "features": {
+                            "type": "markdown"
+                        },
                         "success": {
                             "type": "url",
-                            "label": "Success page after checkout"
+                            "label": "Target page after checkout"
+                        },
+                        "url": {
+                            "type": "url",
+                            "label": "Target link instead of checkout"
                         },
                         "button": {
                             "type": "string"
@@ -476,6 +479,10 @@
                             "type": "switch",
                             "label": "Highlighted",
                             "default": false
+                        },
+                        "badge": {
+                            "type": "string",
+                            "label": "Highlight text"
                         }
                     }
                 }

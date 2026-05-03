@@ -9,14 +9,14 @@
 .pricing .subtitle {
     text-align: center;
     color: var(--pico-muted-color);
-    margin-bottom: 2rem;
+    margin-bottom: 3rem;
 }
 
 .pricing .pricing-toggle {
     position: relative;
     display: flex;
     width: fit-content;
-    margin: 0 auto 2rem;
+    margin: 0 auto 3rem;
     padding: 0.25rem;
     background: var(--pico-muted-border-color);
     border-radius: 9999px;
@@ -62,8 +62,9 @@
 .pricing .pricing-list {
     display: grid;
     grid-template-columns: 1fr;
+    align-items: stretch;
+    padding: 1rem 0;
     gap: 1.5rem;
-    align-items: start;
 }
 
 @media screen and (min-width: 768px) {
@@ -93,8 +94,12 @@
 }
 
 .pricing .pricing-item.highlight {
+    background-color: var(--pico-primary-background);
+    color: var(--pico-primary-inverse);
     border-color: var(--pico-primary);
-    box-shadow: 0 0 0 1px var(--pico-primary);
+    margin: -1rem 0;
+    padding-top: 3rem;
+    padding-bottom: 3rem;
 }
 
 .pricing .badge {
@@ -102,7 +107,7 @@
     top: -0.75rem;
     left: 50%;
     transform: translateX(-50%);
-    background: var(--pico-primary-background);
+    background: var(--pico-primary);
     color: var(--pico-primary-inverse);
     padding: 0.2rem 0.75rem;
     font-size: 0.8rem;
@@ -112,6 +117,8 @@
 }
 
 .pricing .pricing-header {
+    display: flex;
+    flex-direction: column;
     margin-bottom: 1.5rem;
 }
 
@@ -119,6 +126,13 @@
     display: flex;
     align-items: baseline;
     gap: 0.25rem;
+    order: 3;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--pico-muted-border-color);
+}
+
+.pricing .highlight .price {
+    border-bottom-color: color-mix(in srgb, var(--pico-primary-inverse) 20%, transparent);
 }
 
 .pricing .amount {
@@ -132,15 +146,25 @@
     color: var(--pico-muted-color);
 }
 
+.pricing .highlight .unit {
+    color: color-mix(in srgb, var(--pico-primary-inverse) 70%, transparent);
+}
+
 .pricing .name {
     --pico-font-size: 1.125rem;
-    margin: 0.75rem 0 0.25rem;
+    order: 1;
+    margin: 0 0 0.25rem;
 }
 
 .pricing .pricing-header .text {
     font-size: 0.875rem;
     color: var(--pico-muted-color);
-    margin: 0;
+    order: 2;
+    margin: 0 0 0.75rem;
+}
+
+.pricing .highlight .pricing-header .text {
+    color: color-mix(in srgb, var(--pico-primary-inverse) 70%, transparent);
 }
 
 .pricing .features {
@@ -174,27 +198,50 @@
     mask-repeat: no-repeat;
 }
 
+.pricing .highlight .name {
+    color: var(--pico-primary-inverse);
+}
+
+.pricing .highlight .features li {
+    color: var(--pico-primary-inverse);
+}
+
+.pricing .highlight .features li::before {
+    background-color: var(--pico-primary-inverse);
+}
+
 .pricing .btn {
     display: block;
     width: 100%;
     text-align: center;
     padding: 0.5rem 1rem;
-    background: var(--pico-primary-background);
-    color: var(--pico-primary-inverse);
+    background: transparent;
+    color: var(--pico-color);
+    border: 1px solid var(--pico-muted-border-color);
     text-decoration: none;
     font-weight: 500;
     transition: background 0.2s;
 }
 
 .pricing .btn:hover {
-    background: var(--pico-primary-hover-background);
+    background: var(--pico-muted-border-color);
 }
 
 .pricing .highlight .btn {
-    background: var(--pico-primary);
-    color: var(--pico-primary-inverse);
+    color: var(--pico-primary);
+    background: var(--pico-primary-inverse);
+    border-color: var(--pico-primary-inverse);
+}
+
+.pricing .highlight .btn:after {
+    background-color: var(--pico-primary);
 }
 
 .pricing .highlight .btn:hover {
-    background: var(--pico-primary-hover);
+    background: var(--pico-background-color);
+    color: var(--pico-color);
+}
+
+.pricing .highlight .btn:hover:after {
+    background-color: var(--pico-color);
 }

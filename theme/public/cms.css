@@ -155,6 +155,11 @@ body > header {
     margin: auto;
 }
 
+header nav {
+    font-size: calc(var(--pico-font-size) * 1.25);
+    padding: var(--pico-nav-element-spacing-vertical) 0;
+}
+
 header nav ol,
 header nav ul,
 header nav li {
@@ -435,24 +440,24 @@ h1, h2, h3, h4 {
 
 h1 {
     --pico-typography-spacing-vertical: 3rem;
-    font-size: calc(var(--pico-font-size) * 3);
+    font-size: calc(var(--pico-font-size) * 3.75);
     text-align: center;
 }
 
 h2 {
     --pico-typography-spacing-vertical: 2.25rem;
-    font-size: calc(var(--pico-font-size) * 2.25);
+    font-size: calc(var(--pico-font-size) * 2.875);
     text-align: center;
 }
 
 h3 {
     --pico-typography-spacing-vertical: 1.75rem;
-    font-size: calc(var(--pico-font-size) * 1.75);
+    font-size: calc(var(--pico-font-size) * 2.25);
 }
 
 h4 {
     --pico-typography-spacing-vertical: 1.33rem;
-    font-size: calc(var(--pico-font-size) * 1.33);
+    font-size: calc(var(--pico-font-size) * 1.75);
 }
 
 img {
@@ -466,6 +471,7 @@ img {
     padding: 0.75rem 1.5rem;
     margin: 0.5rem 0;
     font-size: var(--pico-font-size);
+    line-height: inherit;
     border: none;
     border-radius: 2rem;
     color: var(--pico-contrast);

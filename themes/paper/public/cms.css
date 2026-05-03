@@ -39,7 +39,7 @@
     --pico-primary-hover-underline: var(--pico-primary-hover);
     --pico-primary-focus: var(--pico-text-selection-color);
     --pico-primary-inverse: #FFFFFF;
-    --pico-secondary: #1A1A1A;
+    --pico-secondary: #6090d8;
     --pico-secondary-background: #1A1A1A10;
     --pico-secondary-border: var(--pico-secondary);
     --pico-secondary-underline: var(--pico-secondary);
@@ -548,9 +548,10 @@ img {
     vertical-align: sub;
     padding: 1rem 2rem;
     margin: 0.5rem 0;
+    line-height: inherit;
+    font-family: var(--pico-font-family-display);
     font-size: calc(var(--pico-font-size) * 1.125);
     font-weight: 400;
-    font-family: var(--pico-font-family-display);
     letter-spacing: 0;
     border: 1px solid var(--pico-contrast-border);
     border-radius: 9999px;

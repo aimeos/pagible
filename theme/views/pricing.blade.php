@@ -27,11 +27,13 @@
 			data-price-alternative="{{ @$item->{'price-alternative'} }}"
 			data-unit-alternative="{{ @$item->{'unit-alternative'} }}"
 			data-priceid-alternative="{{ @$item->{'priceid-alternative'} }}">
+
+			@if(@$item->badge)
+				<div class="badge">{{ $item->badge }}</div>
+			@endif
+
 			@if($file = cms($files, @$item->file?->id))
 				@include('cms::pic', ['file' => $file, 'class' => 'pricing-image', 'sizes' => '(max-width: 576px) 100vw, 33vw'])
-			@endif
-			@if(@$item->highlight)
-				<div class="badge">{{ __('Most Popular') }}</div>
 			@endif
 
 			<div class="pricing-header">
