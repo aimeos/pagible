@@ -56,13 +56,17 @@
 }
 
 .hero p {
-    line-height: 1.8;
+    line-height: 1.5;
     color: var(--pico-muted-color);
     font-size: calc(var(--pico-font-size) * 1.125);
     font-weight: 300;
     max-width: 40rem;
     margin-left: auto;
     margin-right: auto;
+}
+
+.hero .actions {
+    padding: 1rem 0;
 }
 
 .hero .btn {

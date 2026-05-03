@@ -101,7 +101,7 @@
 }
 
 body {
-    line-height: 1.75;
+    line-height: 1.5;
     font-family: var(--pico-font-family-sans-serif);
     background-color: var(--pico-background-color);
     color: var(--pico-color);
@@ -159,7 +159,7 @@ nav li :where(a,[role=link]) {
 body > header {
     max-width: 1280px;
     border-bottom: none;
-    padding: 0.5rem 1rem;
+    padding: 1.5rem 2rem;
     position: relative;
     margin: auto;
     z-index: 10;
@@ -181,10 +181,10 @@ header nav > ul:not(.menu) > li {
 }
 
 header nav > ul > li:last-of-type a {
-    background-color: var(--pico-primary);
     color: var(--pico-primary-inverse);
-    padding: 0.5rem 1rem;
+    background-color: var(--pico-primary);
     border-radius: calc(var(--pico-border-radius) * 4);
+    padding: 0.625rem 1rem;
     text-wrap: nowrap;
 }
 
@@ -238,7 +238,7 @@ header nav .brand a,
 header nav .brand img {
     display: flex;
     align-items: center;
-    height: 60px;
+    height: 40px;
     padding: 0;
     margin: 0;
 }
@@ -546,7 +546,7 @@ img {
     display: inline-block;
     text-decoration: none;
     vertical-align: sub;
-    padding: 0.5rem 2rem;
+    padding: 1rem 2rem;
     margin: 0.5rem 0;
     font-size: calc(var(--pico-font-size) * 1.125);
     font-weight: 400;
@@ -604,6 +604,7 @@ img {
 }
 
 .image picture,
+picture.image,
 .video video {
     display: block;
     background-color: var(--pico-contrast-inverse);
@@ -834,7 +835,7 @@ footer.cms-content .cards .text {
 }
 
 footer.cms-content .cards .text p {
-    line-height: 2;
+    line-height: 1.75;
     margin: 0;
 }
 

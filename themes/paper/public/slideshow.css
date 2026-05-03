@@ -2,16 +2,17 @@
  * @license MIT, https://opensource.org/license/MIT
  */
 
-.slider-container {
-	border-radius: var(--pico-border-radius);
-}
-
 .swiffy-slider {
 	background-color: var(--pico-contrast-inverse);
 	border: 1px solid var(--pico-muted-border-color);
+	border-radius: calc(var(--pico-border-radius) * 2);
 	box-shadow: var(--pico-box-shadow);
 	overflow: hidden;
 	padding: 1rem;
+}
+
+.slider-container {
+	border-radius: calc(var(--pico-border-radius));
 }
 
 /* Swiffy slider 1.2.0 (modified) https://github.com/dynamicweb/swiffy-slider/ (MIT license) */
