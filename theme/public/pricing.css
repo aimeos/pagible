@@ -13,58 +13,50 @@
 }
 
 .pricing .pricing-toggle {
+    position: relative;
     display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.75rem;
-    margin-bottom: 2rem;
+    width: fit-content;
+    margin: 0 auto 2rem;
+    padding: 0.25rem;
+    background: var(--pico-muted-border-color);
+    border-radius: 9999px;
 }
 
-.pricing .pricing-toggle-label {
+.pricing .pricing-toggle > span {
+    position: relative;
+    z-index: 1;
+    padding: 0.5rem 1.25rem;
     font-size: 0.875rem;
     font-weight: 500;
-}
-
-.pricing .pricing-switch {
-    position: relative;
-    display: inline-block;
-    width: 3rem;
-    height: 1.5rem;
-}
-
-.pricing .pricing-switch input {
-    opacity: 0;
-    width: 0;
-    height: 0;
-}
-
-.pricing .pricing-slider {
-    position: absolute;
+    color: var(--pico-muted-color);
     cursor: pointer;
-    inset: 0;
-    background: var(--pico-muted-border-color);
-    border-radius: 1.5rem;
-    transition: background 0.2s;
 }
 
-.pricing .pricing-slider::before {
+.pricing .pricing-toggle > span:first-child {
+    color: var(--pico-color);
+}
+
+.pricing .pricing-toggle.alt > span:first-child {
+    color: var(--pico-muted-color);
+}
+
+.pricing .pricing-toggle.alt > span:last-child {
+    color: var(--pico-color);
+}
+
+.pricing .pricing-toggle::before {
     content: "";
     position: absolute;
-    height: 1.125rem;
-    width: 1.125rem;
-    left: 0.1875rem;
-    bottom: 0.1875rem;
-    background: white;
-    border-radius: 50%;
+    inset: 0.25rem;
+    width: calc(50% - 0.25rem);
+    background: var(--pico-background-color, #fff);
+    border-radius: 9999px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     transition: transform 0.2s;
 }
 
-.pricing .pricing-switch input:checked + .pricing-slider {
-    background: var(--pico-primary);
-}
-
-.pricing .pricing-switch input:checked + .pricing-slider::before {
-    transform: translateX(1.5rem);
+.pricing .pricing-toggle.alt::before {
+    transform: translateX(100%);
 }
 
 .pricing .pricing-list {
@@ -93,6 +85,12 @@
     padding: 2rem;
     border: 1px solid var(--pico-muted-border-color);
     border-radius: var(--pico-border-radius);
+}
+
+.pricing .pricing-image {
+    display: block;
+    max-height: 4rem;
+    margin: 0 auto 1rem;
 }
 
 .pricing .pricing-item.highlight {

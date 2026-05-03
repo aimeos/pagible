@@ -1,5 +1,6 @@
 @pushOnce('js')
 <link rel="preload" href="{{ cmstheme($page, 'pricing.css') }}" as="style">
+<script defer src="{{ cmstheme($page, 'pricing.js') }}"></script>
 @endPushOnce
 
 @if(@$data->title)
@@ -12,12 +13,8 @@
 
 @if(@$data->label && @$data->{'label-alternative'})
 	<div class="pricing-toggle">
-		<span class="pricing-toggle-label">{{ $data->label }}</span>
-		<label class="pricing-switch">
-			<input type="checkbox" class="pricing-period">
-			<span class="pricing-slider"></span>
-		</label>
-		<span class="pricing-toggle-label">{{ $data->{'label-alternative'} }}</span>
+		<span>{{ $data->label }}</span>
+		<span>{{ $data->{'label-alternative'} }}</span>
 	</div>
 @endif
 
@@ -30,6 +27,9 @@
 			data-price-alternative="{{ @$item->{'price-alternative'} }}"
 			data-unit-alternative="{{ @$item->{'unit-alternative'} }}"
 			data-priceid-alternative="{{ @$item->{'priceid-alternative'} }}">
+			@if($file = cms($files, @$item->file?->id))
+				@include('cms::pic', ['file' => $file, 'class' => 'pricing-image', 'sizes' => '(max-width: 576px) 100vw, 33vw'])
+			@endif
 			@if(@$item->highlight)
 				<div class="badge">{{ __('Most Popular') }}</div>
 			@endif
@@ -67,32 +67,3 @@
 	@endforeach
 </div>
 
-@pushOnce('js')
-<script>
-document.querySelectorAll('.pricing .pricing-period').forEach(function(toggle) {
-	toggle.addEventListener('change', function() {
-		const section = toggle.closest('.pricing');
-		const alt = toggle.checked;
-
-		section.querySelectorAll('.pricing-item').forEach(function(item) {
-			const amount = item.querySelector('.amount');
-			const unit = item.querySelector('.unit');
-			const priceid = item.querySelector('input[name="priceid"]');
-			const suffix = alt ? '-alternative' : '';
-
-			if(amount) {
-				amount.textContent = item.dataset['price' + (alt ? 'Alternative' : '')] || amount.textContent;
-			}
-
-			if(unit) {
-				unit.textContent = item.dataset['unit' + (alt ? 'Alternative' : '')] || unit.textContent;
-			}
-
-			if(priceid) {
-				priceid.value = item.dataset['priceid' + (alt ? 'Alternative' : '')] || priceid.value;
-			}
-		});
-	});
-});
-</script>
-@endPushOnce
