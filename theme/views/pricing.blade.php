@@ -57,7 +57,7 @@
 				<form method="POST" action="{{ route('cms.cashier') }}">
 					@csrf
 					<input type="hidden" name="priceid" value="{{ $item->priceid }}">
-					<input type="hidden" name="paytype" value="{{ @$item->paytype ?: 'recurring' }}">
+					<input type="hidden" name="success" value="{{ @$item->success ?: '/' }}">
 					<button type="submit" class="btn">{{ @$item->button ?: __('Get Started') }}</button>
 				</form>
 			@elseif(@$item->url)

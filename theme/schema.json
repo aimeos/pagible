@@ -417,15 +417,15 @@
                 },
                 "text": {
                     "type": "string",
-                    "label": "subtitle"
+                    "label": "Subtitle"
                 },
                 "label": {
                     "type": "string",
-                    "label": "switch label"
+                    "label": "Switch label"
                 },
                 "label-alternative": {
                     "type": "string",
-                    "label": "alternative switch label"
+                    "label": "Alternative switch label"
                 },
                 "items": {
                     "type": "items",
@@ -443,51 +443,38 @@
                         },
                         "text": {
                             "type": "string",
-                            "label": "description"
+                            "label": "Description"
                         },
                         "features": {
                             "type": "markdown",
-                            "label": "features (one per line)"
+                            "label": "One feature per line or as a list"
                         },
                         "priceid": {
                             "type": "string",
-                            "label": "price/product identifier"
+                            "label": "Price/Product Identifier"
                         },
                         "price-alternative": {
                             "type": "string",
-                            "label": "alternative price"
+                            "label": "Alternative Price"
                         },
                         "unit-alternative": {
                             "type": "string",
-                            "label": "alternative unit"
+                            "label": "Alternative Unit"
                         },
                         "priceid-alternative": {
                             "type": "string",
-                            "label": "alternative price/product identifier"
+                            "label": "Alternative price/product Identifier"
                         },
-                        "paytype": {
-                            "type": "select",
-                            "label": "payment type",
-                            "options": [
-                                {
-                                    "value": "recurring",
-                                    "label": "Recurring"
-                                },
-                                {
-                                    "value": "onetime",
-                                    "label": "One-time"
-                                }
-                            ]
-                        },
-                        "url": {
-                            "type": "url"
+                        "success": {
+                            "type": "url",
+                            "label": "Success page after checkout"
                         },
                         "button": {
                             "type": "string"
                         },
                         "highlight": {
                             "type": "switch",
-                            "label": "highlighted",
+                            "label": "Highlighted",
                             "default": false
                         }
                     }
