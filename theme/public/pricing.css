@@ -84,7 +84,6 @@
     flex-direction: column;
     padding: 2rem;
     border: 1px solid var(--pico-muted-border-color);
-    border-radius: var(--pico-border-radius);
 }
 
 .pricing .pricing-image {
@@ -182,7 +181,6 @@
     padding: 0.5rem 1rem;
     background: var(--pico-primary-background);
     color: var(--pico-primary-inverse);
-    border-radius: var(--pico-border-radius);
     text-decoration: none;
     font-weight: 500;
     transition: background 0.2s;
