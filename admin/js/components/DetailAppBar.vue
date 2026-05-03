@@ -93,7 +93,8 @@ export default {
         class="no-rtl"
       />
 
-      <v-btn v-if="changed"
+      <v-btn
+        v-if="changed"
         @click="$emit('changes')"
         :class="{ error: conflict }"
         :title="$gettext('View merge changes')"
@@ -127,7 +128,9 @@ export default {
             <v-icon>
               <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
                 <path d="M2,1V3H16V1H2 M2,10H6V19H12V10H16L9,3L2,10Z" />
-                <path d="M16.7 11.4C16.7 11.4 16.61 11.4 16.7 11.4C13.19 11.49 10.4 14.28 10.4 17.7C10.4 21.21 13.19 24 16.7 24S23 21.21 23 17.7 20.21 11.4 16.7 11.4M16.7 22.2C14.18 22.2 12.2 20.22 12.2 17.7S14.18 13.2 16.7 13.2 21.2 15.18 21.2 17.7 19.22 22.2 16.7 22.2M15.6 13.1V17.6L18.84 19.58L19.56 18.5L16.95 16.97V13.1H15.6Z" />
+                <path
+                  d="M16.7 11.4C16.7 11.4 16.61 11.4 16.7 11.4C13.19 11.49 10.4 14.28 10.4 17.7C10.4 21.21 13.19 24 16.7 24S23 21.21 23 17.7 20.21 11.4 16.7 11.4M16.7 22.2C14.18 22.2 12.2 20.22 12.2 17.7S14.18 13.2 16.7 13.2 21.2 15.18 21.2 17.7 19.22 22.2 16.7 22.2M15.6 13.1V17.6L18.84 19.58L19.56 18.5L16.95 16.97V13.1H15.6Z"
+                />
               </svg>
             </v-icon>
           </v-btn>
@@ -142,7 +145,8 @@ export default {
             :disabled="!publishAt || error"
             :color="publishAt ? 'primary' : ''"
             variant="text"
-          >{{ $gettext('Publish') }}</v-btn>
+            >{{ $gettext('Publish') }}</v-btn
+          >
         </div>
       </v-menu>
 

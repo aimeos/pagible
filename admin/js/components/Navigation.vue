@@ -25,7 +25,12 @@ export default {
 </script>
 
 <template>
-  <v-navigation-drawer v-model="drawer.nav" location="start" mobile-breakpoint="lg" :aria-label="$gettext('Panels')">
+  <v-navigation-drawer
+    v-model="drawer.nav"
+    location="start"
+    mobile-breakpoint="lg"
+    :aria-label="$gettext('Panels')"
+  >
     <v-list>
       <v-list-item v-if="user.can('page:view')" rounded="lg">
         <router-link to="/pages" class="router-link" @click="toggle()">

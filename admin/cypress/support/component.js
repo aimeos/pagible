@@ -16,9 +16,7 @@
 import { mount } from 'cypress/vue'
 import { h } from 'vue'
 import { createVuetify } from 'vuetify'
-import { VApp } from 'vuetify/components'
-import * as components from 'vuetify/components'
-import * as labsComponents from 'vuetify/labs/components'
+import { VApp, VMenu, VDialog } from 'vuetify/components'
 import * as directives from 'vuetify/directives'
 import { createPinia, setActivePinia } from 'pinia'
 import { createGettext } from 'vue3-gettext'
@@ -62,6 +60,27 @@ function compileStub(stub) {
 let _restorePrevious = null
 
 // ---------------------------------------------------------------------------
+// Shared plugin instances (created once, reused across all mounts)
+// ---------------------------------------------------------------------------
+
+const vuetify = createVuetify({
+  components: { VApp, VMenu, VDialog },
+  directives,
+  icons: { defaultSet: 'mdi' },
+  defaults: {
+    VDialog: { scrollStrategy: 'none' },
+    VMenu: { scrollStrategy: 'none' },
+    VNavigationDrawer: { disableResizeWatcher: true },
+  },
+})
+
+const gettext = createGettext({
+  defaultLanguage: 'en',
+  translations: {},
+  silent: true,
+})
+
+// ---------------------------------------------------------------------------
 // cy.mount
 // ---------------------------------------------------------------------------
 
@@ -72,25 +91,8 @@ Cypress.Commands.add('mount', (Component, options = {}) => {
     _restorePrevious = null
   }
 
-  const vuetify = createVuetify({
-    components: { ...components, ...labsComponents },
-    directives,
-    icons: { defaultSet: 'mdi' },
-    defaults: {
-      VDialog: { scrollStrategy: 'none' },
-      VMenu: { scrollStrategy: 'none' },
-      VNavigationDrawer: { disableResizeWatcher: true },
-    },
-  })
-
   const pinia = createPinia()
   setActivePinia(pinia)
-
-  const gettext = createGettext({
-    defaultLanguage: 'en',
-    translations: {},
-    silent: true,
-  })
 
   const { props = {}, ...restOptions } = options
   const testStubs = restOptions.global?.stubs || {}

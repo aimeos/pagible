@@ -263,7 +263,8 @@ input:-webkit-autofill:focus {
   width: 100%;
 }
 
-.v-date-picker-controls__month, .v-date-picker-controls__year {
+.v-date-picker-controls__month,
+.v-date-picker-controls__year {
   align-items: center;
 }
 

@@ -192,7 +192,11 @@ export default {
         <v-btn v-if="Object.keys(items).length" variant="outlined" @click="add()">
           {{ multiple ? $gettext('Add files') : $gettext('Add file') }}
         </v-btn>
-        <v-btn :icon="mdiClose" :aria-label="$gettext('Close')" @click="$emit('update:modelValue', false)" />
+        <v-btn
+          :icon="mdiClose"
+          :aria-label="$gettext('Close')"
+          @click="$emit('update:modelValue', false)"
+        />
       </v-toolbar>
       <v-card-text>
         <v-textarea

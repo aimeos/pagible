@@ -54,7 +54,12 @@ export default {
         <v-btn @click="dirtyStore.cancel()" variant="text">
           {{ $gettext('Cancel') }}
         </v-btn>
-        <v-btn ref="saveBtn" @click="dirtyStore.saveAndLeave()" variant="flat" color="blue-darken-1">
+        <v-btn
+          ref="saveBtn"
+          @click="dirtyStore.saveAndLeave()"
+          variant="flat"
+          color="blue-darken-1"
+        >
           {{ $gettext('Save & leave') }}
         </v-btn>
       </v-card-actions>

@@ -34,7 +34,11 @@ export default {
     <v-card>
       <v-toolbar density="compact">
         <v-toolbar-title>{{ $gettext('Files') }}</v-toolbar-title>
-        <v-btn :icon="mdiClose" :aria-label="$gettext('Close')" @click="$emit('update:modelValue', false)" />
+        <v-btn
+          :icon="mdiClose"
+          :aria-label="$gettext('Close')"
+          @click="$emit('update:modelValue', false)"
+        />
       </v-toolbar>
       <v-card-text>
         <FileListItems :filter="filter" :grid="grid" @select="$emit('add', $event)" embed />

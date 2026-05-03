@@ -195,8 +195,8 @@ export default {
       const cache = this.$apollo.provider.defaultClient.cache
       cache.evict({ id: 'ROOT_QUERY', fieldName: 'elements' })
 
-      Object.keys(cache.extract()).forEach(key => {
-        if(key.startsWith('Element:')) {
+      Object.keys(cache.extract()).forEach((key) => {
+        if (key.startsWith('Element:')) {
           cache.evict({ id: key })
         }
       })
@@ -353,8 +353,8 @@ export default {
       delete filter.publish
       delete filter.trashed
 
-      for(const key in filter) {
-        if(filter[key] === null) {
+      for (const key in filter) {
+        if (filter[key] === null) {
           delete filter[key]
         }
       }
@@ -506,7 +506,11 @@ export default {
 <template>
   <div class="header">
     <div class="bulk">
-      <v-checkbox-btn v-model="checked" @click.stop="toggle()" :aria-label="$gettext('Toggle selection')" />
+      <v-checkbox-btn
+        v-model="checked"
+        @click.stop="toggle()"
+        :aria-label="$gettext('Toggle selection')"
+      />
 
       <component
         :is="$vuetify.display.xs ? 'v-dialog' : 'v-menu'"

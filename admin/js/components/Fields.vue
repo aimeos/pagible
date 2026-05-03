@@ -214,7 +214,10 @@ export default {
     <div v-if="field.type !== 'hidden'" class="label">
       {{ $pgettext('fn', field.label || code).replace(/-|_/g, ' ') }}
       <div
-        v-if="!readonly && (['markdown', 'plaintext', 'string', 'text'].includes(field.type) || isDirty(code))"
+        v-if="
+          !readonly &&
+          (['markdown', 'plaintext', 'string', 'text'].includes(field.type) || isDirty(code))
+        "
         class="actions"
       >
         <template v-if="['markdown', 'plaintext', 'string', 'text'].includes(field.type)">
@@ -239,7 +242,11 @@ export default {
             <v-card v-if="user.can('text:translate')">
               <v-toolbar density="compact">
                 <v-toolbar-title>{{ $gettext('Translate') }}</v-toolbar-title>
-                <v-btn :icon="mdiClose" :aria-label="$gettext('Close')" @click="menu[code] = false" />
+                <v-btn
+                  :icon="mdiClose"
+                  :aria-label="$gettext('Close')"
+                  @click="menu[code] = false"
+                />
               </v-toolbar>
 
               <v-list @click="menu[code] = false">
@@ -285,7 +292,12 @@ export default {
       {{ $gettext('Updated by other editor') }}
     </div>
     <div v-if="changed[code]?.overwritten" class="conflict-value">
-      {{ $gettext('Overwritten') }}: {{ typeof changed[code].overwritten === 'object' ? JSON.stringify(changed[code].overwritten) : changed[code].overwritten }}
+      {{ $gettext('Overwritten') }}:
+      {{
+        typeof changed[code].overwritten === 'object'
+          ? JSON.stringify(changed[code].overwritten)
+          : changed[code].overwritten
+      }}
     </div>
     <component
       :is="toName(field.type)"

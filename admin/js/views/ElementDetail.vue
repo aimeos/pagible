@@ -130,7 +130,11 @@ export default {
         this.item.files = files
 
         subscribe('element', this.item.id, (event) => {
-          if (!this.dirty && this.user.can('element:view') && event.editor !== this.user.me?.email) {
+          if (
+            !this.dirty &&
+            this.user.can('element:view') &&
+            event.editor !== this.user.me?.email
+          ) {
             this.latestId = event.versionId
             Object.assign(this.item, event.data)
           }
@@ -172,11 +176,19 @@ export default {
     },
 
     publish(at = null) {
-      publishItem(this, 'element', {
-        success: this.$gettext('Element published successfully'),
-        scheduled: (d) => this.$gettext('Element scheduled for publishing at %{date}', { date: d.toLocaleDateString() }),
-        error: this.$gettext('Error publishing element')
-      }, at)
+      publishItem(
+        this,
+        'element',
+        {
+          success: this.$gettext('Element published successfully'),
+          scheduled: (d) =>
+            this.$gettext('Element scheduled for publishing at %{date}', {
+              date: d.toLocaleDateString()
+            }),
+          error: this.$gettext('Error publishing element')
+        },
+        at
+      )
     },
 
     published() {
@@ -231,7 +243,9 @@ export default {
             mutation ($id: ID!, $input: ElementInput!, $files: [ID!], $latestId: ID) {
               saveElement(id: $id, input: $input, files: $files, latestId: $latestId) {
                 id
-                latest { id }
+                latest {
+                  id
+                }
                 changed
               }
             }
@@ -442,7 +456,9 @@ export default {
       @apply="apply"
       @use="use($event)"
     />
-    <ChangesDialog v-model="vchanged" :changed="changed"
+    <ChangesDialog
+      v-model="vchanged"
+      :changed="changed"
       :targets="{ data: item }"
       @resolve="dirty = true"
     />

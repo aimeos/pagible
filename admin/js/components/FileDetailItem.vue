@@ -14,7 +14,13 @@ import {
   useSideStore
 } from '../stores'
 import { recording } from '../audio'
-import { mdiContentCopy, mdiTranslate, mdiCreation, mdiMicrophoneOutline, mdiMicrophone } from '@mdi/js'
+import {
+  mdiContentCopy,
+  mdiTranslate,
+  mdiCreation,
+  mdiMicrophoneOutline,
+  mdiMicrophone
+} from '@mdi/js'
 import { toBlob, locales, txlocales, url } from '../utils'
 import { transcribe, translate } from '../ai'
 

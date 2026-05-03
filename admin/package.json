@@ -5,7 +5,11 @@
   "type": "module",
   "description": "PagibleAI CMS admin backend",
   "keywords": [
+    "headless",
+    "graphql",
+    "pagible",
     "cms",
+    "mcp",
     "vue",
     "vuetify"
   ],
@@ -15,13 +19,12 @@
     "preview": "vite preview",
     "test:e2e": "start-server-and-test preview http://localhost:4173 'cypress run --e2e'",
     "test:e2e:dev": "start-server-and-test 'vite dev --port 4173' http://localhost:4173 'cypress open --e2e'",
-    "test:unit": "cypress run --component",
+    "test:unit": "vite optimize && cypress run --component",
     "test:unit:dev": "cypress open --component",
     "lint": "eslint --fix",
-    "format": "prettier --write src/",
+    "format": "prettier --write js/",
     "gettext:extract": "vue-gettext-extract",
-    "gettext:compile": "vue-gettext-compile",
-    "postinstall": "patch -p1 -N < vue3-gettext-extract.patch || true; patch -p1 -N < he-tree-i18n.patch || true"
+    "gettext:compile": "vue-gettext-compile"
   },
   "dependencies": {
     "@breezystack/lamejs": "^1.2.7",

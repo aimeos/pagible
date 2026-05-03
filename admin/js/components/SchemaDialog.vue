@@ -35,7 +35,11 @@ export default {
     <v-card>
       <v-toolbar density="compact">
         <v-toolbar-title>{{ $gettext('Content elements') }}</v-toolbar-title>
-        <v-btn :icon="mdiClose" :aria-label="$gettext('Close')" @click="$emit('update:modelValue', false)" />
+        <v-btn
+          :icon="mdiClose"
+          :aria-label="$gettext('Close')"
+          @click="$emit('update:modelValue', false)"
+        />
       </v-toolbar>
       <v-card-text>
         <SchemaItems type="content" @add="$emit('add', $event)" />

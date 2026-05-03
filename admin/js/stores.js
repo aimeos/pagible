@@ -6,14 +6,7 @@ import gql from 'graphql-tag'
 import { markRaw } from 'vue'
 import { defineStore } from 'pinia'
 import { apolloClient } from './graphql'
-import {
-  urladmin,
-  urlproxy,
-  urlpage,
-  urlfile,
-  multidomain,
-  locales as appLocales
-} from './config'
+import { urladmin, urlproxy, urlpage, urlfile, multidomain, locales as appLocales } from './config'
 
 export const useAppStore = defineStore('app', {
   state: () => ({
@@ -75,12 +68,19 @@ export const useUserStore = defineStore('user', {
           }
 
           this.me = response.data.me
-            ? { ...response.data.me, permission: JSON.parse(response.data.me.permission || '{}'), settings: JSON.parse(response.data.me.settings || '{}') }
+            ? {
+                ...response.data.me,
+                permission: JSON.parse(response.data.me.permission || '{}'),
+                settings: JSON.parse(response.data.me.settings || '{}')
+              }
             : false
 
           if (this.me?.token) {
             const app = useAppStore()
-            app.urlproxy = urlproxy.replace('url=', 'token=' + encodeURIComponent(this.me.token) + '&url=')
+            app.urlproxy = urlproxy.replace(
+              'url=',
+              'token=' + encodeURIComponent(this.me.token) + '&url='
+            )
           }
         })
         .catch((error) => {
@@ -126,7 +126,10 @@ export const useUserStore = defineStore('user', {
 
           if (this.me?.token) {
             const app = useAppStore()
-            app.urlproxy = urlproxy.replace('url=', 'token=' + encodeURIComponent(this.me.token) + '&url=')
+            app.urlproxy = urlproxy.replace(
+              'url=',
+              'token=' + encodeURIComponent(this.me.token) + '&url='
+            )
           }
 
           return this.me
@@ -244,7 +247,6 @@ export const useClipboardStore = defineStore('clipboard', {
     }
   }
 })
-
 
 export const useDrawerStore = defineStore('drawer', {
   state: () => ({
@@ -496,27 +498,41 @@ export const useSchemaStore = defineStore('schema', {
   actions: {
     load() {
       if (_loading) return _loading
-      _loading = apolloClient.query({
-        query: gql`query { schemas { name label types content meta config } }`
-      }).then((result) => {
-        const parse = (v) => typeof v === 'string' ? JSON.parse(v) : v || {}
-        const list = (result.data?.schemas || []).map(t => ({
-          ...t,
-          types: parse(t.types),
-          content: parse(t.content),
-          meta: parse(t.meta),
-          config: parse(t.config)
-        }))
-        this.themes = Object.fromEntries(list.map(t => [t.name, t]))
-        for (const theme of list) {
-          Object.assign(this.content, theme.content)
-          Object.assign(this.meta, theme.meta)
-          Object.assign(this.config, theme.config)
-        }
-      }).catch((err) => {
-        _loading = null
-        throw err
-      })
+      _loading = apolloClient
+        .query({
+          query: gql`
+            query {
+              schemas {
+                name
+                label
+                types
+                content
+                meta
+                config
+              }
+            }
+          `
+        })
+        .then((result) => {
+          const parse = (v) => (typeof v === 'string' ? JSON.parse(v) : v || {})
+          const list = (result.data?.schemas || []).map((t) => ({
+            ...t,
+            types: parse(t.types),
+            content: parse(t.content),
+            meta: parse(t.meta),
+            config: parse(t.config)
+          }))
+          this.themes = Object.fromEntries(list.map((t) => [t.name, t]))
+          for (const theme of list) {
+            Object.assign(this.content, theme.content)
+            Object.assign(this.meta, theme.meta)
+            Object.assign(this.config, theme.config)
+          }
+        })
+        .catch((err) => {
+          _loading = null
+          throw err
+        })
       return _loading
     }
   }

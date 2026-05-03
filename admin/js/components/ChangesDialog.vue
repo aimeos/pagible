@@ -60,7 +60,9 @@ export default {
       for (const [name, section] of Object.entries(this.conflicts)) {
         for (const [key, info] of Object.entries(section)) {
           const id = `${name}.${key}`
-          const isObj = typeof info.overwritten === 'object' && typeof (info.current ?? info.overwritten) === 'object'
+          const isObj =
+            typeof info.overwritten === 'object' &&
+            typeof (info.current ?? info.overwritten) === 'object'
 
           const unwrap = (o) => o?.data ?? o
 
@@ -68,8 +70,12 @@ export default {
           let mineDiff = null
           if (info.previous != null) {
             if (isObj) {
-              theirsDiff = this.buildFieldDiffs(this.getChangedFields(unwrap(info.previous), unwrap(info.overwritten)))
-              mineDiff = this.buildFieldDiffs(this.getChangedFields(unwrap(info.previous), unwrap(info.current)))
+              theirsDiff = this.buildFieldDiffs(
+                this.getChangedFields(unwrap(info.previous), unwrap(info.overwritten))
+              )
+              mineDiff = this.buildFieldDiffs(
+                this.getChangedFields(unwrap(info.previous), unwrap(info.current))
+              )
             } else {
               const fmtTheirs = this.formatDiffPair(info.previous, info.overwritten)
               theirsDiff = this.buildDiff(fmtTheirs.old, fmtTheirs.new)
@@ -78,7 +84,9 @@ export default {
             }
           } else {
             if (isObj) {
-              theirsDiff = this.buildFieldDiffs(this.getChangedFields(unwrap(info.overwritten), unwrap(info.current)))
+              theirsDiff = this.buildFieldDiffs(
+                this.getChangedFields(unwrap(info.overwritten), unwrap(info.current))
+              )
             } else {
               const fmt = this.formatDiffPair(info.overwritten, info.current)
               theirsDiff = this.buildDiff(fmt.old, fmt.new)
@@ -91,9 +99,12 @@ export default {
           if (merge != null) {
             if (typeof info.current === 'object' && typeof merge === 'object') {
               const hasData = info.current.data && merge.data
-              const a = hasData ? (info.previous?.data || {}) : info.previous
+              const a = hasData ? info.previous?.data || {} : info.previous
               const b = hasData ? merge.data : merge
-              mergeFields = this.getChangedFields(a, b).map(f => ({ label: f.label, value: f.new }))
+              mergeFields = this.getChangedFields(a, b).map((f) => ({
+                label: f.label,
+                value: f.new
+              }))
             }
           }
 
@@ -135,7 +146,7 @@ export default {
         const words = diffWords(oldVal || '', newVal || '')
         return {
           label,
-          words: words.map(w => ({ value: w.value, removed: !!w.removed, added: !!w.added })),
+          words: words.map((w) => ({ value: w.value, removed: !!w.removed, added: !!w.added }))
         }
       })
     },
@@ -151,9 +162,13 @@ export default {
           if (next?.added) {
             const words = diffWords(part.value, next.value)
             diff.push({
-              removed: words.filter(w => !w.added).map(w => ({ value: w.value, highlight: !!w.removed })),
-              added: words.filter(w => !w.removed).map(w => ({ value: w.value, highlight: !!w.added })),
-              words: words.map(w => ({ value: w.value, removed: !!w.removed, added: !!w.added })),
+              removed: words
+                .filter((w) => !w.added)
+                .map((w) => ({ value: w.value, highlight: !!w.removed })),
+              added: words
+                .filter((w) => !w.removed)
+                .map((w) => ({ value: w.value, highlight: !!w.added })),
+              words: words.map((w) => ({ value: w.value, removed: !!w.removed, added: !!w.added }))
             })
             i += 2
           } else {
@@ -185,10 +200,16 @@ export default {
 
         const label = this.$pgettext('fn', k)
 
-        if (aVal && bVal && typeof aVal === 'object' && !Array.isArray(aVal)
-            && typeof bVal === 'object' && !Array.isArray(bVal)) {
+        if (
+          aVal &&
+          bVal &&
+          typeof aVal === 'object' &&
+          !Array.isArray(aVal) &&
+          typeof bVal === 'object' &&
+          !Array.isArray(bVal)
+        ) {
           const sub = this.getChangedFields(aVal, bVal)
-          fields.push(...sub.map(f => ({ ...f, label: `${label} › ${f.label}` })))
+          fields.push(...sub.map((f) => ({ ...f, label: `${label} › ${f.label}` })))
         } else {
           fields.push({ label, old: stringify(aVal), new: stringify(bVal) })
         }
@@ -267,8 +288,7 @@ export default {
         this.$pgettext('st', block.type) ||
         ''
       )
-    },
-
+    }
   }
 }
 </script>
@@ -305,30 +325,56 @@ export default {
                 variant="text"
                 :prepend-icon="mdiUndoVariant"
                 @click="unresolve(name, key)"
-              >{{ $gettext('Revert') }}</v-btn>
+                >{{ $gettext('Revert') }}</v-btn
+              >
             </v-card-title>
             <v-card-text class="pt-0">
-              <div v-if="changes[`${name}.${key}`]?.isObj" class="conflict-diff field-diff" role="group" :aria-label="$gettext('Changes')">
-                <template v-for="(entry, idx) in changes[`${name}.${key}`]?.theirsDiff" :key="'t' + idx">
+              <div
+                v-if="changes[`${name}.${key}`]?.isObj"
+                class="conflict-diff field-diff"
+                role="group"
+                :aria-label="$gettext('Changes')"
+              >
+                <template
+                  v-for="(entry, idx) in changes[`${name}.${key}`]?.theirsDiff"
+                  :key="'t' + idx"
+                >
                   <span class="diff-symbol">−</span>
                   <span class="diff-label">{{ entry.label }}</span>
-                  <div class="change-theirs"><span
-                    v-for="(word, wi) in entry.words" :key="wi"
-                    :class="{ 'highlight-removed': word.removed, 'highlight-added': word.added }"
-                  >{{ word.value }}</span></div>
+                  <div class="change-theirs">
+                    <span
+                      v-for="(word, wi) in entry.words"
+                      :key="wi"
+                      :class="{ 'highlight-removed': word.removed, 'highlight-added': word.added }"
+                      >{{ word.value }}</span
+                    >
+                  </div>
                 </template>
                 <template v-if="changes[`${name}.${key}`]?.mineDiff">
-                  <template v-for="(entry, idx) in changes[`${name}.${key}`].mineDiff" :key="'m' + idx">
+                  <template
+                    v-for="(entry, idx) in changes[`${name}.${key}`].mineDiff"
+                    :key="'m' + idx"
+                  >
                     <span class="diff-symbol">+</span>
                     <span class="diff-label">{{ entry.label }}</span>
-                    <div class="change-mine"><span
-                      v-for="(word, wi) in entry.words" :key="wi"
-                      :class="{ 'highlight-removed': word.removed, 'highlight-added': word.added }"
-                    >{{ word.value }}</span></div>
+                    <div class="change-mine">
+                      <span
+                        v-for="(word, wi) in entry.words"
+                        :key="wi"
+                        :class="{
+                          'highlight-removed': word.removed,
+                          'highlight-added': word.added
+                        }"
+                        >{{ word.value }}</span
+                      >
+                    </div>
                   </template>
                 </template>
                 <template v-if="changes[`${name}.${key}`]?.mergeFields">
-                  <template v-for="(field, idx) in changes[`${name}.${key}`].mergeFields" :key="'g' + idx">
+                  <template
+                    v-for="(field, idx) in changes[`${name}.${key}`].mergeFields"
+                    :key="'g' + idx"
+                  >
                     <span class="diff-symbol">⇒</span>
                     <span class="diff-label">{{ field.label }}</span>
                     <div class="merged">{{ field.value }}</div>
@@ -336,18 +382,30 @@ export default {
                 </template>
               </div>
               <div v-else class="conflict-diff" role="group" :aria-label="$gettext('Changes')">
-                <template v-for="(entry, idx) in changes[`${name}.${key}`]?.theirsDiff" :key="'t' + idx">
+                <template
+                  v-for="(entry, idx) in changes[`${name}.${key}`]?.theirsDiff"
+                  :key="'t' + idx"
+                >
                   <template v-if="changes[`${name}.${key}`]?.mineDiff">
                     <template v-if="entry.words">
                       <span class="diff-symbol">−</span>
-                      <div class="change-theirs"><span
-                        v-for="(word, wi) in entry.words" :key="wi"
-                        :class="{ 'highlight-removed': word.removed, 'highlight-added': word.added }"
-                      >{{ word.value }}</span></div>
+                      <div class="change-theirs">
+                        <span
+                          v-for="(word, wi) in entry.words"
+                          :key="wi"
+                          :class="{
+                            'highlight-removed': word.removed,
+                            'highlight-added': word.added
+                          }"
+                          >{{ word.value }}</span
+                        >
+                      </div>
                     </template>
                     <template v-else-if="entry.removed">
                       <span class="diff-symbol">−</span>
-                      <div class="change-theirs highlight-removed">{{ entry.removed[0].value }}</div>
+                      <div class="change-theirs highlight-removed">
+                        {{ entry.removed[0].value }}
+                      </div>
                     </template>
                     <template v-else-if="entry.added">
                       <span class="diff-symbol">−</span>
@@ -357,28 +415,46 @@ export default {
                   <template v-else>
                     <template v-if="entry.removed">
                       <span class="diff-symbol">−</span>
-                      <div class="removed" :aria-label="$gettext('Removed')"><span
-                        v-for="(word, wi) in entry.removed" :key="wi"
-                        :class="{ highlight: word.highlight }"
-                      >{{ word.value }}</span></div>
+                      <div class="removed" :aria-label="$gettext('Removed')">
+                        <span
+                          v-for="(word, wi) in entry.removed"
+                          :key="wi"
+                          :class="{ highlight: word.highlight }"
+                          >{{ word.value }}</span
+                        >
+                      </div>
                     </template>
                     <template v-if="entry.added">
                       <span class="diff-symbol">+</span>
-                      <div class="added" :aria-label="$gettext('Added')"><span
-                        v-for="(word, wi) in entry.added" :key="wi"
-                        :class="{ highlight: word.highlight }"
-                      >{{ word.value }}</span></div>
+                      <div class="added" :aria-label="$gettext('Added')">
+                        <span
+                          v-for="(word, wi) in entry.added"
+                          :key="wi"
+                          :class="{ highlight: word.highlight }"
+                          >{{ word.value }}</span
+                        >
+                      </div>
                     </template>
                   </template>
                 </template>
                 <template v-if="changes[`${name}.${key}`]?.mineDiff">
-                  <template v-for="(entry, idx) in changes[`${name}.${key}`].mineDiff" :key="'m' + idx">
+                  <template
+                    v-for="(entry, idx) in changes[`${name}.${key}`].mineDiff"
+                    :key="'m' + idx"
+                  >
                     <template v-if="entry.words">
                       <span class="diff-symbol">+</span>
-                      <div class="change-mine"><span
-                        v-for="(word, wi) in entry.words" :key="wi"
-                        :class="{ 'highlight-removed': word.removed, 'highlight-added': word.added }"
-                      >{{ word.value }}</span></div>
+                      <div class="change-mine">
+                        <span
+                          v-for="(word, wi) in entry.words"
+                          :key="wi"
+                          :class="{
+                            'highlight-removed': word.removed,
+                            'highlight-added': word.added
+                          }"
+                          >{{ word.value }}</span
+                        >
+                      </div>
                     </template>
                     <template v-else-if="entry.removed">
                       <span class="diff-symbol">+</span>
@@ -390,7 +466,11 @@ export default {
                     </template>
                   </template>
                 </template>
-                <template v-if="changes[`${name}.${key}`]?.merge != null && !changes[`${name}.${key}`]?.isObj">
+                <template
+                  v-if="
+                    changes[`${name}.${key}`]?.merge != null && !changes[`${name}.${key}`]?.isObj
+                  "
+                >
                   <span class="diff-symbol">⇒</span>
                   <div class="merged">{{ stringify(changes[`${name}.${key}`].merge) }}</div>
                 </template>
@@ -402,20 +482,23 @@ export default {
                 class="option"
                 variant="tonal"
                 @click="resolve(name, key, info.overwritten)"
-              >{{ $gettext('Use theirs') }}</v-btn>
+                >{{ $gettext('Use theirs') }}</v-btn
+              >
               <v-btn
                 color="success"
                 class="option"
                 variant="tonal"
                 @click="resolve(name, key, info.current)"
-              >{{ $gettext('Keep mine') }}</v-btn>
+                >{{ $gettext('Keep mine') }}</v-btn
+              >
               <v-btn
                 v-if="changes[`${name}.${key}`]?.merge != null"
                 color="primary"
                 class="option"
                 variant="tonal"
                 @click="merge(name, key)"
-              >{{ $gettext('Merge both') }}</v-btn>
+                >{{ $gettext('Merge both') }}</v-btn
+              >
             </v-card-actions>
           </v-card>
         </template>
@@ -535,5 +618,4 @@ h3.section-header:first-child {
 .change-mine .highlight-added {
   background-color: rgba(var(--v-theme-success), 0.4);
 }
-
 </style>
