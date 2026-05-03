@@ -15,13 +15,13 @@
         @markdown($data->text)
     @endif
 
-    @if(@$data->url || @$data->url2)
+    @if(@$data->url || @$data->{'url-alternative'})
         <div class="actions">
             @if(@$data->url)
                 <a class="btn url" href="{{ $data->url }}">{{ @$data->button }}</a>
             @endif
-            @if(@$data->url2)
-                <a class="btn url2" href="{{ $data->url2 }}">{{ @$data->button2 }}</a>
+            @if(@$data->{'url-alternative'})
+                <a class="btn url-alternative" href="{{ $data->{'url-alternative'} }}">{{ @$data->{'button-alternative'} }}</a>
             @endif
         </div>
     @endif
