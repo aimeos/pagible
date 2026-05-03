@@ -24,37 +24,20 @@ class CashierControllerTest extends CashierTestAbstract
     }
 
 
-    public function testCheckoutInvalidPaytype()
-    {
-        $response = $this->actingAs( $this->user )->postJson( route( 'cms.cashier' ), [
-            'priceid' => 'price_test123',
-            'paytype' => 'invalid',
-        ] );
-
-        $response->assertStatus( 422 );
-        $response->assertJsonValidationErrors( 'paytype' );
-    }
-
-
-    public function testCheckoutMissingPaytype()
-    {
-        $response = $this->actingAs( $this->user )->postJson( route( 'cms.cashier' ), [
-            'priceid' => 'price_test123',
-        ] );
-
-        $response->assertStatus( 422 );
-        $response->assertJsonValidationErrors( 'paytype' );
-    }
-
-
     public function testCheckoutMissingPriceid()
     {
-        $response = $this->actingAs( $this->user )->postJson( route( 'cms.cashier' ), [
-            'paytype' => 'recurring',
-        ] );
+        $response = $this->actingAs( $this->user )->postJson( route( 'cms.cashier' ) );
 
         $response->assertStatus( 422 );
         $response->assertJsonValidationErrors( 'priceid' );
+    }
+
+
+    public function testCheckoutMissingSession()
+    {
+        $response = $this->actingAs( $this->user )->get( route( 'cms.cashier' ) );
+
+        $response->assertStatus( 404 );
     }
 
 
@@ -64,10 +47,20 @@ class CashierControllerTest extends CashierTestAbstract
 
         $response = $this->actingAs( $this->user )->postJson( route( 'cms.cashier' ), [
             'priceid' => 'price_test123',
-            'paytype' => 'recurring',
         ] );
 
         $response->assertStatus( 500 );
+    }
+
+
+    public function testCheckoutPriceidUnknown()
+    {
+        $response = $this->actingAs( $this->user )->postJson( route( 'cms.cashier' ), [
+            'priceid' => 'price_unknown',
+        ] );
+
+        $response->assertStatus( 422 );
+        $response->assertJsonValidationErrors( 'priceid' );
     }
 
 
@@ -75,7 +68,6 @@ class CashierControllerTest extends CashierTestAbstract
     {
         $response = $this->actingAs( $this->user )->postJson( route( 'cms.cashier' ), [
             'priceid' => str_repeat( 'a', 256 ),
-            'paytype' => 'recurring',
         ] );
 
         $response->assertStatus( 422 );
@@ -90,13 +82,11 @@ class CashierControllerTest extends CashierTestAbstract
         for( $i = 0; $i < 10; $i++ ) {
             $this->actingAs( $this->user )->postJson( route( 'cms.cashier' ), [
                 'priceid' => 'price_test123',
-                'paytype' => 'recurring',
             ] );
         }
 
         $response = $this->actingAs( $this->user )->postJson( route( 'cms.cashier' ), [
             'priceid' => 'price_test123',
-            'paytype' => 'recurring',
         ] );
 
         $response->assertStatus( 429 );
@@ -105,12 +95,12 @@ class CashierControllerTest extends CashierTestAbstract
 
     public function testCheckoutUnauthenticated()
     {
-        $response = $this->postJson( route( 'cms.cashier' ), [
+        $response = $this->post( route( 'cms.cashier' ), [
             'priceid' => 'price_test123',
-            'paytype' => 'recurring',
         ] );
 
-        $response->assertStatus( 401 );
+        $response->assertRedirect( route( 'login' ) );
+        $this->assertEquals( 'price_test123', session( 'cms.cashier.priceid' ) );
     }
 
 
@@ -120,7 +110,6 @@ class CashierControllerTest extends CashierTestAbstract
 
         $response = $this->actingAs( $this->user )->postJson( route( 'cms.cashier' ), [
             'priceid' => 'price_test123',
-            'paytype' => 'recurring',
         ] );
 
         $response->assertStatus( 500 );

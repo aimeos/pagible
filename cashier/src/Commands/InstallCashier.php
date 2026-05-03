@@ -196,16 +196,6 @@ class InstallCashier extends Command
             placeholder: 'test_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
             required: true,
         );
-
-        $env['CMS_CASHIER_SUCCESS_URL'] = text(
-            label: 'Success redirect URL (after payment)',
-            default: '/',
-        );
-
-        $env['CMS_CASHIER_CANCEL_URL'] = text(
-            label: 'Cancel redirect URL',
-            default: '/',
-        );
     }
 
 
@@ -235,11 +225,6 @@ class InstallCashier extends Command
             options: ['true' => 'Yes (testing)', 'false' => 'No (production)'],
             default: 'true',
         );
-
-        $env['CMS_CASHIER_SUCCESS_URL'] = text(
-            label: 'Success redirect URL (after payment)',
-            default: '/',
-        );
     }
 
 
@@ -260,16 +245,6 @@ class InstallCashier extends Command
             label: 'Stripe Secret Key',
             placeholder: 'sk_test_...',
             required: true,
-        );
-
-        $env['CMS_CASHIER_SUCCESS_URL'] = text(
-            label: 'Success redirect URL (after payment)',
-            default: '/',
-        );
-
-        $env['CMS_CASHIER_CANCEL_URL'] = text(
-            label: 'Cancel redirect URL',
-            default: '/',
         );
     }
 

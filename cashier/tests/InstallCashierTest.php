@@ -106,11 +106,11 @@ class InstallCashierTest extends CashierTestAbstract
             $command = new \Aimeos\Cms\Commands\InstallCashier();
             $method = new \ReflectionMethod( $command, 'writeEnv' );
 
-            $method->invoke( $command, ['CMS_CASHIER_SUCCESS_URL' => '/my page'] );
+            $method->invoke( $command, ['APP_NAME' => 'My App'] );
 
             $content = file_get_contents( $path );
 
-            $this->assertStringContainsString( 'CMS_CASHIER_SUCCESS_URL="/my page"', $content );
+            $this->assertStringContainsString( 'APP_NAME="My App"', $content );
         } finally {
             if( $backup !== null ) {
                 file_put_contents( $path, $backup );
@@ -201,9 +201,7 @@ PHP;
             $this->artisan( 'cms:install:cashier' )
                 ->expectsQuestion( 'Which payment provider do you want to use?', 'stripe' )
                 ->expectsQuestion( 'Stripe Publishable Key', 'pk_test_123' )
-                ->expectsQuestion( 'Stripe Secret Key', 'sk_test_123' )
-                ->expectsQuestion( 'Success redirect URL (after payment)', '/' )
-                ->expectsQuestion( 'Cancel redirect URL', '/' );
+                ->expectsQuestion( 'Stripe Secret Key', 'sk_test_123' );
 
             $content = file_get_contents( $path );
 

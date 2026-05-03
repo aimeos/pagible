@@ -20,14 +20,21 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Redirect URLs
+    | Products
     |--------------------------------------------------------------------------
     |
-    | Where to redirect users after a successful or canceled checkout.
+    | Map payment provider price IDs to server-side metadata. This prevents
+    | clients from manipulating metadata to gain unauthorized access.
+    | The metadata is forwarded to the payment provider and available
+    | in webhook events.
+    |
+    | 'products' => [
+    |     'price_xxx' => ['once' => true, 'action' => 'course_access', 'course_id' => '123'],
+    |     'price_yyy' => ['action' => 'premium'],
+    | ],
     |
     */
 
-    'success_url' => env( 'CMS_CASHIER_SUCCESS_URL', '/' ),
-    'cancel_url' => env( 'CMS_CASHIER_CANCEL_URL', '/' ),
+    'products' => [],
 
 ];

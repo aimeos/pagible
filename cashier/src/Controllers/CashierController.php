@@ -8,48 +8,68 @@
 namespace Aimeos\Cms\Controllers;
 
 use Aimeos\Cms\CashierServiceProvider;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Illuminate\Validation\Rule;
 
 
 class CashierController extends Controller
 {
     public function checkout( Request $request ): mixed
     {
-        $request->validate( [
-            'paytype' => 'required|string|in:onetime,recurring',
-            'priceid' => 'required|string|max:255',
-        ] );
+        $products = (array) config( 'cms.cashier.products', [] );
 
+        if( $request->isMethod( 'post' ) )
+        {
+            $request->validate( [
+                'priceid' => ['required', 'string', 'max:255', Rule::in( array_keys( $products ) )],
+                'success' => ['sometimes', 'string', 'max:255', 'regex:/^\/[^\/]/'],
+            ] );
+
+            $request->session()->put( 'cms.cashier', [
+                'priceid' => $request->input( 'priceid' ),
+                'success' => $request->input( 'success' ),
+            ] );
+        }
+
+        /** @var Authenticatable|null $user */
+        $user = $request->user();
+
+        if( !$user ) {
+            return redirect()->guest( route( 'login' ) );
+        }
+
+        $checkout = (array) $request->session()->pull( 'cms.cashier', [] );
+        $priceid = (string) ( $checkout['priceid'] ?? '' );
+        $product = $products[$priceid] ?? null;
+
+        if( $product === null ) {
+            abort( 404, __( 'Unknown product' ) );
+        }
+
+        $successUrl = url( (string) ( $checkout['success'] ?? '/' ) );
         $provider = (string) config( 'cms.cashier.provider' );
 
         if( !isset( CashierServiceProvider::PROVIDERS[$provider] ) ) {
             abort( 500, __( 'Unknown payment provider' ) );
         }
 
-        if( !class_exists( CashierServiceProvider::PROVIDERS[$provider][1] . '\CashierServiceProvider' ) ) {
-            abort( 500, __( ucfirst( $provider ) . ' Cashier package is not installed' ) );
-        }
-
-        return match( $provider ) {
-            'stripe' => $this->stripe( $request ),
-            'paddle' => $this->paddle( $request ),
-            'mollie' => $this->mollie( $request ),
-        };
+        return $this->$provider( $user, $product, $priceid, $successUrl );
     }
 
 
-    protected function mollie( Request $request ): \Illuminate\Http\RedirectResponse
+    /**
+     * @param array<string, mixed> $product
+     */
+    protected function mollie( Authenticatable $user, array $product, string $priceid, string $successUrl ): \Illuminate\Http\RedirectResponse
     {
-        /** @var \Illuminate\Foundation\Auth\User $user */
-        $user = $request->user();
-        $priceid = (string) $request->input( 'priceid' );
-
-        if( $request->input( 'paytype' ) === 'onetime' )
+        if( !empty( $product['once'] ) )
         {
             /** @phpstan-ignore method.notFound */
             $checkout = $user->checkout( $priceid, [
-                'redirectUrl' => url( (string) config( 'cms.cashier.success_url', '/' ) ),
+                'redirectUrl' => $successUrl,
+                'metadata' => $product,
             ] );
         }
         else
@@ -63,38 +83,38 @@ class CashierController extends Controller
     }
 
 
-    protected function paddle( Request $request ): \Illuminate\Http\RedirectResponse
+    /**
+     * @param array<string, mixed> $product
+     */
+    protected function paddle( Authenticatable $user, array $product, string $priceid, string $successUrl ): \Illuminate\Http\RedirectResponse
     {
-        /** @var \Illuminate\Foundation\Auth\User $user */
-        $user = $request->user();
-
         /** @phpstan-ignore method.notFound */
-        $checkout = $user->checkout( (string) $request->input( 'priceid' ) )
-            ->returnTo( url( (string) config( 'cms.cashier.success_url', '/' ) ) );
+        $checkout = $user->checkout( $priceid )
+            ->customData( $product )
+            ->returnTo( $successUrl );
 
         return new \Illuminate\Http\RedirectResponse( $checkout->url() );
     }
 
 
-    protected function stripe( Request $request ): \Symfony\Component\HttpFoundation\Response
+    /**
+     * @param array<string, mixed> $product
+     */
+    protected function stripe( Authenticatable $user, array $product, string $priceid, string $successUrl ): \Symfony\Component\HttpFoundation\Response
     {
-        /** @var \Illuminate\Foundation\Auth\User $user */
-        $user = $request->user();
-        $priceid = (string) $request->input( 'priceid' );
-
         $urls = [
-            'success_url' => url( (string) config( 'cms.cashier.success_url', '/' ) ),
-            'cancel_url' => url( (string) config( 'cms.cashier.cancel_url', '/' ) ),
+            'success_url' => $successUrl,
+            'cancel_url' => url()->previous( '/' ),
         ];
 
-        if( $request->input( 'paytype' ) === 'onetime' )
+        if( !empty( $product['once'] ) )
         {
             /** @phpstan-ignore method.notFound */
-            return $user->checkout( [$priceid => 1], $urls );
+            return $user->checkout( [$priceid => 1], $urls + ['metadata' => $product] );
         }
 
         /** @phpstan-ignore method.notFound */
         return $user->newSubscription( 'default', $priceid )
-            ->checkout( $urls );
+            ->checkout( $urls + ['metadata' => $product] );
     }
 }
