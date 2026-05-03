@@ -81,12 +81,22 @@ class Validation
             $type = $item['type'];
             $group = $item['group'] ?? $schemas[$type]['group'] ?? 'main';
 
-            return (object) [
+            $entry = [
                 'id' => $item['id'] ?? Utils::uid(),
                 'type' => $type,
                 'group' => $group,
                 'data' => (object) ( $item['data'] ?? [] ),
             ];
+
+            if( !empty( $item['refid'] ) ) {
+                $entry['refid'] = $item['refid'];
+            }
+
+            if( !empty( $item['files'] ) ) {
+                $entry['files'] = array_values( array_unique( $item['files'] ) );
+            }
+
+            return (object) $entry;
         }, $items ) );
     }
 
