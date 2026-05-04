@@ -39,6 +39,6 @@
 }
 
 .cards .title {
-    font-size: calc(var(--pico-font-size) * 1.875);
+    font-size: calc(var(--pico-font-size) * 1.25);
     margin: 1rem 0;
 }

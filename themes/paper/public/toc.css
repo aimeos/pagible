@@ -11,17 +11,16 @@ nav.toc {
 }
 
 nav.toc > p {
-    font-family: var(--pico-font-family-display);
     font-weight: 500;
-    font-size: var(--pico-font-size);
+    font-family: var(--pico-font-family-display);
     margin-bottom: 0.75rem;
     margin-top: 0;
 }
 
 nav.toc ol {
     list-style: decimal;
-    margin: 0;
     padding-inline-start: 1.5rem;
+    margin: 0;
 }
 
 nav.toc li {
@@ -31,11 +30,11 @@ nav.toc li {
 
 nav.toc li a {
     display: inline-block;
+    color: var(--pico-muted-color);
+    font-size: calc(var(--pico-font-size) * 0.85);
+    font-weight: 300;
     padding: 0.25rem 0;
     margin: 0;
-    color: var(--pico-muted-color);
-    font-size: calc(var(--pico-font-size) * 0.9375);
-    font-weight: 300;
 }
 
 nav.toc li a:hover {

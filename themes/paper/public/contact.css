@@ -24,7 +24,7 @@
     display: inline-block;
     margin: 0.5rem 0;
     font-weight: 500;
-    font-size: calc(var(--pico-font-size) * 0.9375);
+    font-size: calc(var(--pico-font-size) * 0.7);
 }
 
 .contact input, textarea {
@@ -58,7 +58,7 @@
 
 .contact .errors {
     color: var(--pico-form-element-invalid-focus-color);
-    font-size: calc(var(--pico-font-size) * 0.875);
+    font-size: calc(var(--pico-font-size) * 0.65);
 }
 
 .contact .error {

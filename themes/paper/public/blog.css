@@ -41,12 +41,12 @@
 
 .blog .date {
     color: var(--pico-muted-color);
-    font-size: calc(var(--pico-font-size) * 0.8125);
+    font-size: calc(var(--pico-font-size) * 0.6);
     font-weight: 300;
 }
 
 .blog h3 {
-    font-size: calc(var(--pico-font-size) * 1.125);
+    font-size: calc(var(--pico-font-size) * 0.8);
     font-weight: 400;
     margin-top: 0.75rem;
     height: 3.75rem;
@@ -63,14 +63,14 @@
 
 .blog .first .date-day {
     font-weight: 500;
-    font-size: calc(var(--pico-font-size) * 1.5);
+    font-size: calc(var(--pico-font-size) * 1.1);
     line-height: 1;
     font-family: var(--pico-font-family-display);
 }
 
 .blog .first .date-month {
     text-transform: uppercase;
-    font-size: calc(var(--pico-font-size) * 0.8125);
+    font-size: calc(var(--pico-font-size) * 0.6);
     line-height: 0.75;
     letter-spacing: 0.05em;
 }

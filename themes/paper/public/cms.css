@@ -64,7 +64,6 @@
     --pico-modal-overlay-background-color: rgba(26, 26, 26, 0.5);
     --pico-code-background-color: #F4F4F0;
     --pico-code-color: #1A1A1A;
-    --pico-font-size: 1rem;
     --pico-border-radius: 0.5rem;
 }
 
@@ -101,11 +100,8 @@
 }
 
 body {
-    line-height: 1.5;
     font-family: var(--pico-font-family-sans-serif);
     background-color: var(--pico-background-color);
-    color: var(--pico-color);
-    font-weight: 400;
     position: relative;
 }
 
@@ -128,10 +124,6 @@ body::before {
 body > * {
     position: relative;
     z-index: 1;
-}
-
-::selection {
-    background-color: var(--pico-text-selection-color);
 }
 
 :where(a:not([role=button])), [role=link],
@@ -189,12 +181,14 @@ header nav > ul > li:last-of-type a {
 }
 
 header nav a,
-header nav details summary {
-    font-size: calc(var(--pico-font-size) * 0.875);
+header nav details.dropdown > summary {
+    display: flex;
+    align-items: center;
     list-style: none;
     cursor: pointer;
     padding: 0.5rem;
     color: var(--pico-color);
+    font-size: calc(var(--pico-font-size) * 0.65);
 }
 
 header nav a,
@@ -208,16 +202,8 @@ header nav details summary::-webkit-details-marker {
 }
 
 header nav details.dropdown > summary::after {
-    display: block;
-    height: 1.25rem;
+    background-size: var(--pico-font-size) auto;
     float: inline-end;
-    transform: rotate(0) translateX(.2rem);
-    background-image: var(--pico-icon-chevron);
-    background-position: right center;
-    background-repeat: no-repeat;
-    background-size: 1rem auto;
-    margin-inline-start: 0;
-    content: "";
 }
 
 header nav details[open] summary::after {
@@ -246,7 +232,7 @@ header nav .brand img {
 header nav .brand a {
     font-family: var(--pico-font-family-display);
     font-weight: 500;
-    font-size: calc(var(--pico-font-size) * 1.25);
+    font-size: calc(var(--pico-font-size) * 0.9);
     letter-spacing: -0.02em;
     color: var(--pico-contrast);
     text-decoration: none;
@@ -340,7 +326,7 @@ nav[aria-label=breadcrumb] ul li {
     justify-content: flex-end;
     align-items: center;
     display: flex;
-    font-size: calc(var(--pico-font-size) * 0.875);
+    font-size: calc(var(--pico-font-size) * 0.65);
     color: var(--pico-muted-color);
 }
 
@@ -461,7 +447,7 @@ dialog.search .result-title {
 dialog.search .result-content {
     display: block;
     color: var(--pico-muted-color);
-    font-size: calc(var(--pico-font-size) * 0.9375);
+    font-size: calc(var(--pico-font-size) * 0.7);
 }
 
 dialog.search .result-content b {
@@ -477,7 +463,7 @@ dialog.search .load-more {
     border: 1px solid var(--pico-contrast-border);
     cursor: pointer;
     display: block;
-    font-size: calc(var(--pico-font-size) * 0.9375);
+    font-size: calc(var(--pico-font-size) * 0.7);
     margin: 1rem auto;
     padding: 0.5rem 1.5rem;
     border-radius: 9999px;
@@ -513,32 +499,31 @@ h4, h5, h6 {
 
 h1 {
     --pico-typography-spacing-vertical: 2rem;
-    font-size: calc(var(--pico-font-size) * 3);
+    font-size: calc(var(--pico-font-size) * 2.1);
     line-height: 1.1;
     text-align: center;
 }
 
 h2 {
     --pico-typography-spacing-vertical: 1.5rem;
-    font-size: calc(var(--pico-font-size) * 2.25);
+    font-size: calc(var(--pico-font-size) * 1.6);
     line-height: 1.15;
     text-align: center;
 }
 
 h3 {
     --pico-typography-spacing-vertical: 1.25rem;
-    font-size: calc(var(--pico-font-size) * 1.25);
+    font-size: calc(var(--pico-font-size) * 0.9);
     line-height: 1.3;
 }
 
 h4 {
     --pico-typography-spacing-vertical: 1rem;
-    font-size: calc(var(--pico-font-size) * 1.125);
+    font-size: calc(var(--pico-font-size) * 0.8);
     line-height: 1.35;
 }
 
 img {
-    max-width: 100%;
     border-radius: var(--pico-border-radius);
 }
 
@@ -550,7 +535,7 @@ img {
     margin: 0.5rem 0;
     line-height: inherit;
     font-family: var(--pico-font-family-display);
-    font-size: calc(var(--pico-font-size) * 1.125);
+    font-size: calc(var(--pico-font-size) * 0.8);
     font-weight: 400;
     letter-spacing: 0;
     border: 1px solid var(--pico-contrast-border);
@@ -618,7 +603,7 @@ picture.image,
 .caption:not(:empty) {
     max-width: 60rem;
     margin: 0.75rem auto;
-    font-size: calc(var(--pico-font-size) * 0.875);
+    font-size: calc(var(--pico-font-size) * 0.65);
     color: var(--pico-muted-color);
     font-weight: 300;
 }
@@ -700,7 +685,7 @@ picture.image,
     color: var(--pico-contrast);
     font-weight: 500;
     font-family: var(--pico-font-family-display);
-    font-size: calc(var(--pico-font-size) * 0.875);
+    font-size: calc(var(--pico-font-size) * 0.65);
     letter-spacing: 0.04em;
     text-transform: uppercase;
 }
@@ -759,7 +744,7 @@ pre:has(code[class*="language-"]) {
 footer.copyright {
     background-color: var(--pico-contrast);
     color: rgba(255, 255, 255, 0.8);
-    font-size: calc(var(--pico-font-size) * 0.875);
+    font-size: calc(var(--pico-font-size) * 0.65);
     font-weight: 300;
     border-radius: calc(var(--pico-border-radius) * 6) calc(var(--pico-border-radius) * 6) 0 0;
     margin-top: 3rem;
@@ -826,7 +811,7 @@ footer.cms-content .cards .card-item:hover {
 
 footer.cms-content .cards .title {
     color: #9ca3af;
-    font-size: calc(var(--pico-font-size) * 0.875);
+    font-size: calc(var(--pico-font-size) * 0.65);
     margin-bottom: 1.5rem;
 }
 
@@ -880,11 +865,11 @@ footer.cms-content :focus-visible {
 
 @media screen and (min-width: 768px) {
     h1 {
-        font-size: calc(var(--pico-font-size) * 4.5);
+        font-size: calc(var(--pico-font-size) * 3.2);
     }
 
     h2 {
-        font-size: calc(var(--pico-font-size) * 3);
+        font-size: calc(var(--pico-font-size) * 2.1);
     }
 
     footer.cms-content .cards .card-list {

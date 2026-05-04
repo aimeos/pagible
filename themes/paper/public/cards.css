@@ -5,18 +5,12 @@
 .cards .card-list {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 2rem;
+    gap: 1rem;
 }
 
 @media screen and (min-width: 768px) {
     .cards .card-list {
         grid-template-columns: 1fr 1fr;
-    }
-}
-
-@media screen and (min-width: 992px) {
-    .cards .card-list {
-        grid-template-columns: 1fr 1fr 1fr;
     }
 }
 

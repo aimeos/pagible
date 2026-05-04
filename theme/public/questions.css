@@ -21,7 +21,7 @@
 }
 
 .questions h3 {
-    font-size: calc(var(--pico-font-size) * 1.2);
+    font-size: calc(var(--pico-font-size) * 1);
     margin: 0;
 }
 
