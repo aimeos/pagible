@@ -1,4 +1,4 @@
-@pushOnce('css')
+@pushOnce('head')
 <link href="{{ cmstheme($page, 'hero.css') }}" rel="stylesheet">
 @endPushOnce
 

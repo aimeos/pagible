@@ -1,4 +1,4 @@
-@pushOnce('js')
+@pushOnce('foot')
 <link rel="preload" href="{{ cmstheme($page, 'article.css') }}" as="style">
 @endPushOnce
 

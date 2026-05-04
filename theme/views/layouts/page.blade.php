@@ -1,6 +1,6 @@
 @extends($theme . '::layouts.main')
 
-@pushOnce('css')
+@pushOnce('head')
 <link href="{{ cmstheme($page, 'layout-page.css') }}" rel="stylesheet">
 @endPushOnce
 

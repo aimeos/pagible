@@ -1,4 +1,4 @@
-@pushOnce('js:caption')
+@pushOnce('foot:caption')
 	<script defer src="{{ cmstheme($page, 'caption.js') }}"></script>
 @endPushOnce
 

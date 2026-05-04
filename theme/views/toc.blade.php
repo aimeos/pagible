@@ -1,4 +1,4 @@
-@pushOnce('css')
+@pushOnce('head')
 <link href="{{ cmstheme($page, 'toc.css') }}" rel="stylesheet">
 @endPushOnce
 
