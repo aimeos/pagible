@@ -1,3 +1,7 @@
+@pushOnce('js')
+<link href="{{ cmstheme($page, 'image.css') }}" rel="stylesheet">
+@endPushOnce
+
 @if($file = cms($files, @$data->file?->id))
 	@include('cms::pic', ['file' => $file, 'main' => @$data->main, 'sizes' => '(max-width: 1200px) 100vw, 1200px'])
 @else

@@ -1,3 +1,7 @@
+@pushOnce('js')
+<link href="{{ cmstheme($page, 'table.css') }}" rel="stylesheet">
+@endPushOnce
+
 @if(@$data->title)
 	<h2>{{ $data->title }}</h2>
 @endif

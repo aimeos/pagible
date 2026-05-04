@@ -1,0 +1,26 @@
+/**
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+p code {
+    overflow-wrap: anywhere;
+}
+
+pre code[class*=language-] {
+    background-color: var(--pico-muted-background-color);
+    overflow-x: auto;
+}
+
+pre:has(code[class*="language-"]) {
+    padding: 2rem 5%;
+    background: var(--cms-accent-gradient-tight);
+}
+
+@media screen and (min-width: 768px) {
+    pre:has(code[class*="language-"]) {
+        background:
+            var(--cms-accent-gradient-tight),
+            url('code-background.svg') no-repeat -10% calc(100% + 2.5rem) / 20% auto,
+            url('code-background.svg') no-repeat 110% calc(100% + 2.5rem) / 20% auto;
+    }
+}

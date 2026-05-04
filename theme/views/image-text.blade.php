@@ -1,3 +1,10 @@
+@pushOnce('js')
+<link href="{{ cmstheme($page, 'image.css') }}" rel="stylesheet">
+@endPushOnce
+@pushOnce('js')
+<link href="{{ cmstheme($page, 'image-text.css') }}" rel="stylesheet">
+@endPushOnce
+
 <div class="{{ @$data->position ?? 'start' }} r{{ @$data->ratio ?? '1-3' }}">
 	@if($file = cms($files, @$data->file?->id))
 		@include('cms::pic', ['file' => $file, 'class' => 'image', 'sizes' => match(@$data->ratio ?? '1-3') {

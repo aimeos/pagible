@@ -25,7 +25,7 @@
     margin: 0.5rem 0;
 }
 
-.contact input, textarea {
+.contact input, .contact textarea {
     border: 1px solid var(--pico-muted-border-color);
     background-color: var(--pico-muted-background-color);
     color: var(--pico-contrast);

@@ -1,3 +1,7 @@
+@pushOnce('js')
+<link href="{{ cmstheme($page, 'video.css') }}" rel="stylesheet">
+@endPushOnce
+
 @pushOnce('js:caption')
 	<script defer src="{{ cmstheme($page, 'caption.js') }}"></script>
 @endPushOnce

@@ -10,7 +10,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding-top: 6rem 0;
+    padding: 6rem 0;
 }
 
 .hero .first {
@@ -90,29 +90,7 @@
     margin: auto;
 }
 
-@media screen and (min-width: 576px) {
-    .hero .first:has(+ .second) {
-        width: 100%;
-        margin-inline-end: 0;
-    }
-
-    .hero .second {
-        width: 100%;
-        margin-inline-start: 0;
-    }
-
-    .hero .second img {
-        max-height: 100%;
-        max-width: 100%;
-    }
-}
-
 @media screen and (min-width: 768px) {
-    .hero .first:has(+ .second),
-    .hero .second {
-        width: 100%;
-    }
-
     .hero h1 {
         font-size: calc(var(--pico-font-size) * 3.2);
     }

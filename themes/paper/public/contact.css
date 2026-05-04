@@ -27,7 +27,7 @@
     font-size: calc(var(--pico-font-size) * 0.7);
 }
 
-.contact input, textarea {
+.contact input, .contact textarea {
     border: 1px solid var(--pico-contrast-border);
     background-color: var(--pico-contrast-inverse);
     color: var(--pico-color);

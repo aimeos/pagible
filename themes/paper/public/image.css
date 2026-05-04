@@ -1,0 +1,26 @@
+/**
+ * Paper Theme
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+.image > img,
+.image > source {
+    max-width: 100%;
+    display: block;
+    margin: auto;
+}
+
+.image picture,
+picture.image {
+    display: block;
+    background-color: var(--pico-contrast-inverse);
+    border: 1px solid var(--pico-muted-border-color);
+    border-radius: calc(var(--pico-border-radius) * 2);
+    padding: 1rem;
+    box-shadow: var(--pico-box-shadow);
+}
+
+.image .main > img,
+.image .main > source {
+    width: 100%;
+}
