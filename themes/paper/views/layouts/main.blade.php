@@ -38,6 +38,8 @@
         @endforeach
 
         <link href="{{ cmstheme($page, 'pico.min.css') }}" rel="stylesheet">
+        <link href="{{ cmstheme($page, 'pico.nav.min.css') }}" rel="stylesheet">
+        <link href="{{ cmstheme($page, 'pico.dropdown.min.css') }}" rel="stylesheet">
         <link href="{{ cmstheme($page, 'cms.css') }}" rel="stylesheet">
         @stack('css')
 
@@ -226,6 +228,7 @@
         </footer>
 
 
+        <link href="{{ cmstheme($page, 'pico.modal.min.css') }}" rel="stylesheet">
         <script defer src="{{ cmstheme($page, 'cms.js') }}"></script>
         @stack('js')
 
