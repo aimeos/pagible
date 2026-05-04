@@ -84,7 +84,9 @@
         </script>
     </head>
     <body class="theme-{{ $theme }} type-{{ cms($page, 'type', 'page') }}">
+
         <a href="#main" class="skip-link">{{ __('Skip to main content') }}</a>
+
         <dialog id="modal-search" class="search">
             <article>
                 <header>
@@ -101,6 +103,7 @@
                 </div>
             </article>
         </dialog>
+
         <header>
             <nav>
                 <ul>
@@ -120,14 +123,17 @@
                     </li>
                     <li class="brand">
                         <a href="{{ cmsroute($page->ancestors?->first() ?? $page) }}" class="contrast" title="{{ config('app.name') }}" aria-label="{{ config('app.name') }}">
-                            @forelse($page->ancestorsAndSelf->reverse() as $navItem)
+                            @php($logoFound = false)
+                            @foreach($page->ancestorsAndSelf->reverse() as $navItem)
                                 @if($fileId = @cms($navItem, 'config.logo.data.file.id'))
                                     <img src="{{ cmsurl(cmsfile($navItem, $fileId)?->path) }}" alt="{{ config('app.name') }}">
+                                    @php($logoFound = true)
                                     @break
                                 @endif
-                            @empty
+                            @endforeach
+                            @unless($logoFound)
                                 {{ config('app.name') }}
-                            @endforelse
+                            @endunless
                         </a>
                     </li>
                     <li class="menu-close">
