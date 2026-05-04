@@ -1,8 +1,8 @@
-@pushOnce('css')
+@pushOnce('head')
 <link href="{{ cmstheme($page, 'slideshow.css') }}" rel="stylesheet">
 @endPushOnce
 
-@pushOnce('js')
+@pushOnce('foot')
 <script defer src="{{ cmstheme($page, 'slideshow.js') }}"></script>
 @endPushOnce
 

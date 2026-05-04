@@ -1,15 +1,15 @@
 @extends($theme . '::layouts.main')
 
-@pushOnce('css')
+@pushOnce('head')
 <link href="{{ cmstheme($page, 'layout-docs.css') }}" rel="stylesheet">
 @endPushOnce
 
 @once('prism')
-    @pushOnce('css')
+    @pushOnce('head')
     <link href="{{ cmstheme($page, 'prism.css') }}" rel="stylesheet">
     @endPushOnce
 
-    @pushOnce('js')
+    @pushOnce('foot')
     <script defer src="{{ cmstheme($page, 'prism.js') }}"></script>
     @endPushOnce
 @endOnce

@@ -1,7 +1,7 @@
-@pushOnce('js')
+@pushOnce('foot')
 <link href="{{ cmstheme($page, 'image.css') }}" rel="stylesheet">
 @endPushOnce
-@pushOnce('js')
+@pushOnce('foot')
 <link href="{{ cmstheme($page, 'image-text.css') }}" rel="stylesheet">
 @endPushOnce
 

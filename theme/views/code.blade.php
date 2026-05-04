@@ -1,4 +1,4 @@
-@pushOnce('js')
+@pushOnce('foot')
 <link href="{{ cmstheme($page, 'code.css') }}" rel="stylesheet">
 @endPushOnce
 

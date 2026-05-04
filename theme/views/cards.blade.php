@@ -1,4 +1,4 @@
-@pushOnce('js')
+@pushOnce('foot')
 <link rel="preload" href="{{ cmstheme($page, 'cards.css') }}" as="style">
 @endPushOnce
 
