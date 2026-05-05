@@ -16,11 +16,11 @@ trait ResolvesFiles
      * Resolves file references and actions for a list of items.
      *
      * @param Page $model The page model with loaded files relation
-     * @param mixed $items The items to resolve files for
+     * @param object|array<int|string,object>|null $items The items to resolve files for
      * @param \Illuminate\Support\Collection<int, \Aimeos\Cms\Models\File>|null $lookup Optional file lookup collection
-     * @return mixed The items with resolved file references
+     * @return object|array<int|string,object>|null The items with resolved file references
      */
-    protected function resolveFiles( Page $model, mixed $items, ?\Illuminate\Support\Collection $lookup = null ) : mixed
+    protected function resolveFiles( Page $model, object|array|null $items, ?\Illuminate\Support\Collection $lookup = null ) : object|array|null
     {
         $version = $model->relationLoaded( 'latest' ) ? $model->latest : null;
         $filesById = null;
