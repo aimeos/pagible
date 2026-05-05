@@ -10,3 +10,11 @@
 .cms-content .container {
     padding: 0 min(5%, 2rem);
 }
+
+.cms-content .container > * {
+    background-color: var(--pico-contrast-inverse);
+    border: 1px solid var(--pico-muted-border-color);
+    border-radius: calc(var(--pico-border-radius) * 2);
+    padding: 1rem;
+    box-shadow: var(--pico-box-shadow);
+}

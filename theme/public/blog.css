@@ -5,7 +5,7 @@
 .blog .blog-items {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 2rem;
 }
 
 .blog .first,
@@ -16,7 +16,7 @@
 .blog .second {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 2rem;
 }
 
 .blog .blog-item {
@@ -36,15 +36,12 @@
 }
 
 .blog h3 {
-    font-size: calc(var(--pico-font-size) * 1.5);
-    margin-top: 1rem;
-    height: 3.75rem;
-    overflow: hidden;
+    margin: 0;
 }
 
 .blog .first .content {
     display: flex;
-    align-items: baseline;
+    margin: 1rem 0.5rem;
     gap: 2rem;
 }
 
@@ -61,6 +58,7 @@
 }
 
 .blog .first h3 {
+    font-size: calc(var(--pico-font-size) * 1.1);
     flex-grow: 1;
 }
 
@@ -78,8 +76,7 @@
 }
 
 .blog .second h3 {
-    font-size: var(--pico-font-size);
-    margin: 0.5rem 0;
+    font-size: calc(var(--pico-font-size) * 0.9);
     line-height: 1.25;
 }
 
@@ -91,15 +88,5 @@
     .blog .first,
     .blog .second {
         width: 50%;
-    }
-
-    .blog .first h3 {
-        height: 7.25rem;
-    }
-}
-
-@media (min-width: 992px) {
-    .blog .first h3 {
-        height: 5.5rem;
     }
 }

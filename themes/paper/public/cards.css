@@ -5,7 +5,9 @@
 .cards .card-list {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 1rem;
+    justify-self: center;
+    max-width: 50rem;
+    gap: 2rem;
 }
 
 @media screen and (min-width: 768px) {
@@ -15,13 +17,14 @@
 }
 
 .cards .card-item {
-    padding: 2rem;
     background-color: var(--pico-contrast-inverse);
     border: 1px solid var(--pico-muted-border-color);
     border-radius: calc(var(--pico-border-radius) * 4);
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
     transition: box-shadow 0.2s ease;
     text-align: start;
+    max-width: 24rem;
+    padding: 2rem;
 }
 
 .cards .card-item:hover {
@@ -33,14 +36,12 @@
 }
 
 .cards .title {
-    font-size: calc(var(--pico-font-size) * 1.25);
+    font-size: var(--pico-font-size);
     margin: 1rem 0 0.75rem;
-    font-weight: 400;
+    font-weight: 500;
 }
 
-.cards .text {
+.cards .text p {
+    font-size: calc(var(--pico-font-size) * 0.75);
     color: var(--pico-muted-color);
-    font-size: var(--pico-font-size);
-    font-weight: 300;
-    line-height: 1.6;
 }

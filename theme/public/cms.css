@@ -171,7 +171,7 @@ header nav li {
 
 header nav > ul > li {
     list-style: none;
-    padding: 0 0.25rem;
+    padding: 0 0.5rem;
 }
 
 header nav > ul:not(.menu) > li {
@@ -180,7 +180,7 @@ header nav > ul:not(.menu) > li {
 
 header nav > ul > li:last-of-type a {
     background-image: linear-gradient(90deg, var(--pico-primary), var(--pico-secondary));
-    padding: 0.25rem 1rem;
+    padding: 0.5rem 1rem;
     border-radius: 2rem;
     text-wrap: nowrap;
 }
@@ -195,8 +195,8 @@ header nav details summary {
     align-items: center;
     list-style: none;
     cursor: pointer;
-    margin: 0 0.25rem;
-    padding: 0.25rem 0.5rem;
+    margin: 0 0.5rem;
+    padding: 0.5rem;
     color: var(--pico-color);
 }
 
@@ -332,7 +332,7 @@ nav[aria-label=breadcrumb] ul li:not(:last-child)::after {
 
 
 dialog > article {
-    background-color: var(--pico-background-color);
+    background: var(--cms-accent-gradient-tight), var(--pico-background-color);
     height: calc(100vh - 2rem);
     overflow: unset;
 }
@@ -357,7 +357,8 @@ dialog button {
 }
 
 dialog input {
-    border: 1px solid var(--pico-contrast-border);
+    border: none;
+    border-bottom: 2px solid var(--pico-primary);
     background-color: var(--pico-contrast-background);
     font-size: var(--pico-font-size);
     display: block;
@@ -367,7 +368,15 @@ dialog input {
 }
 
 dialog input:focus-visible {
-    border: 1px solid var(--pico-contrast-hover-border);
+    border-bottom: 2px solid var(--pico-contrast);
+}
+
+dialog button[type=reset] {
+    cursor: pointer;
+}
+
+dialog button[type=reset]:hover {
+    background-color: var(--pico-contrast-background);
 }
 
 dialog input::-webkit-input-placeholder {
@@ -449,6 +458,7 @@ h1, h2, h3, h4 {
 
 h1, h2 {
     text-align: center;
+    margin-bottom: 2.5rem;
 }
 
 .btn {
@@ -456,7 +466,7 @@ h1, h2 {
     text-decoration: none;
     vertical-align: sub;
     padding: 0.75rem 1.5rem;
-    margin: 0.5rem 0;
+    margin: 0.5rem;
     font-size: var(--pico-font-size);
     line-height: inherit;
     border: none;
@@ -497,6 +507,30 @@ h1, h2 {
 .caption:not(:empty) {
     max-width: 960px;
     margin: 1rem auto;
+}
+
+
+p code {
+    overflow-wrap: anywhere;
+}
+
+pre code[class*=language-] {
+    background-color: var(--pico-muted-background-color);
+    overflow-x: auto;
+}
+
+pre:has(code[class*="language-"]) {
+    padding: 2rem 5%;
+    background: var(--cms-accent-gradient-tight);
+}
+
+@media screen and (min-width: 768px) {
+    pre:has(code[class*="language-"]) {
+        background:
+            var(--cms-accent-gradient-tight),
+            url('code-background.svg') no-repeat -10% calc(100% + 2.5rem) / 20% auto,
+            url('code-background.svg') no-repeat 110% calc(100% + 2.5rem) / 20% auto;
+    }
 }
 
 

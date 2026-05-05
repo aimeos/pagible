@@ -1,4 +1,4 @@
-@pushOnce('foot')
+@pushOnce('foot', 'css:image')
 <link href="{{ cmstheme($page, 'image.css') }}" rel="stylesheet">
 @endPushOnce
 

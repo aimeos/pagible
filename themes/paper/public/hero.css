@@ -10,7 +10,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 6rem 0;
+    padding: 4rem 0;
 }
 
 .hero .first {
@@ -79,7 +79,8 @@
     border: 1px solid var(--pico-muted-border-color);
     border-radius: calc(var(--pico-border-radius) * 2);
     box-shadow: var(--pico-box-shadow);
-    margin-top: 3rem;
+    width: fit-content;
+    margin: 3rem auto 0;
     padding: 0.5rem;
     display: block;
 }
@@ -87,7 +88,6 @@
 .hero .second img {
     border-radius: var(--pico-border-radius);
     display: block;
-    margin: auto;
 }
 
 @media screen and (min-width: 768px) {
