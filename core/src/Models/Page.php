@@ -584,9 +584,9 @@ class Page extends Base
     protected function makeAllSearchableUsing( $query )
     {
         return $query->select( self::SELECT_COLUMNS )->with( [
-            'elements' => fn( $q ) => $q->select( 'cms_elements.id', 'type', 'data' ),
+            'elements' => fn( $q ) => $q->select( Element::SELECT_COLS ),
             'latest' => fn( $q ) => $q->select( 'id', 'versionable_id', 'data', 'aux', 'lang', 'editor', 'published' ),
-            'latest.elements' => fn( $q ) => $q->select( 'cms_elements.id', 'type', 'data' ),
+            'latest.elements' => fn( $q ) => $q->select( Element::SELECT_COLS ),
         ] );
     }
 

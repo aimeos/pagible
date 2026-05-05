@@ -16,6 +16,8 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Routing\Controller;
+use Aimeos\Cms\Models\Element;
+use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Version;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Permission;
@@ -59,8 +61,8 @@ class PageController extends Controller
         }
 
         $page = Page::with( [
-            'files' => fn( $q ) => $q->select( 'cms_files.id', 'name', 'mime', 'path', 'previews', 'description', 'transcription' ),
-            'elements' => fn( $q ) => $q->select( 'cms_elements.id', 'type', 'name', 'data' ),
+            'files' => fn( $q ) => $q->select( File::SELECT_COLS ),
+            'elements' => fn( $q ) => $q->select( [...Element::SELECT_COLS, 'name'] ),
         ] )
             ->withGlobalScope('status', new Status)
             ->where( 'domain', $domain )
@@ -110,9 +112,12 @@ class PageController extends Controller
     protected function latest( string $path, string $domain )
     {
         $with = [
-            'files' => fn( $q ) => $q->select( 'cms_files.id', 'name', 'mime', 'path', 'previews', 'description', 'transcription' ),
-            'elements' => fn( $q ) => $q->select( 'cms_elements.id', 'type', 'name', 'data' ),
+            'files' => fn( $q ) => $q->select( File::SELECT_COLS ),
+            'elements' => fn( $q ) => $q->select( [...Element::SELECT_COLS, 'name'] ),
             'latest',
+            'latest.files' => fn( $q ) => $q->select( File::SELECT_COLS ),
+            'latest.elements' => fn( $q ) => $q->select( [...Element::SELECT_COLS, 'name'] ),
+            'latest.elements.files' => fn( $q ) => $q->select( File::SELECT_COLS ),
         ];
 
         $page = Page::with( $with )

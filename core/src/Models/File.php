@@ -53,6 +53,9 @@ class File extends Base
     use Tenancy;
 
 
+    /** @var list<string> Columns for eager-loading file relations */
+    public const SELECT_COLS = ['cms_files.id', 'name', 'mime', 'path', 'previews', 'description', 'transcription'];
+
 
     /**
      * The model's default values for attributes.

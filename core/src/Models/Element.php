@@ -45,6 +45,8 @@ class Element extends Base
     use Tenancy;
 
 
+    /** @var list<string> Columns for eager-loading element relations */
+    public const SELECT_COLS = ['cms_elements.id', 'type', 'data'];
 
 
     /**

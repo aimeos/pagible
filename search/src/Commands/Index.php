@@ -32,9 +32,9 @@ class Index extends Command
     public function handle(): void
     {
         Page::withTrashed()->select( Page::SELECT_COLUMNS )->with( [
-                'elements' => fn( $q ) => $q->select( 'cms_elements.id', 'type', 'data' ),
+                'elements' => fn( $q ) => $q->select( Element::SELECT_COLS ),
                 'latest' => fn( $q ) => $q->select( 'id', 'versionable_id', 'data', 'aux', 'lang', 'editor', 'published' ),
-                'latest.elements' => fn( $q ) => $q->select( 'cms_elements.id', 'type', 'data' ),
+                'latest.elements' => fn( $q ) => $q->select( Element::SELECT_COLS ),
             ] )
             ->chunk( 50, fn( $items ) => $items->searchable() ); // @phpstan-ignore method.notFound
         Element::withTrashed()->with( ['latest' => fn( $q ) => $q->select( 'id', 'versionable_id', 'data', 'lang', 'editor', 'published' )] )
