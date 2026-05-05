@@ -5,8 +5,7 @@
 .table-responsive .table-row {
     display: flex;
     align-items: flex-end;
-    background-color: var(--pico-background-color);
-    border-bottom: var(--pico-border-width) solid var(--pico-table-border-color);
+    border-bottom: 1px solid var(--pico-muted-border-color);
 }
 
 .table-responsive .table-col {
@@ -15,8 +14,12 @@
 }
 
 .table-responsive .th {
-    --pico-color: var(--pico-contrast-hover);
-    text-align: center;
+    color: var(--pico-contrast);
+    font-weight: 500;
+    font-family: var(--pico-font-family-display);
+    font-size: calc(var(--pico-font-size) * 0.65);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
 }
 
 .table-responsive .th > *:first-child,

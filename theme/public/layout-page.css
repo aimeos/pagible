@@ -8,13 +8,28 @@
 }
 
 .cms-content .container {
-    padding: 2rem min(5%, 2rem);
+    padding: 3rem min(5%, 2rem);
+}
+
+.cms-content > :nth-child(even) {
+    background-color: var(--pico-muted-background-color);
+}
+
+.cms-content > .heading + .text,
+.cms-content > .heading + .cards,
+.cms-content > .heading + .image {
+    margin-top: -2rem;
 }
 
 .heading h1,
 .heading h2,
 .heading h3 {
     margin: 0;
+}
+
+.heading h1,
+.heading h2 {
+    text-align: center;
 }
 
 .container h1:first-child,
@@ -25,4 +40,21 @@
 
 .text p:last-of-type {
     margin-bottom: 0;
+}
+
+.text {
+    color: var(--pico-muted-color);
+    font-size: var(--pico-font-size);
+    line-height: 1.625;
+}
+
+.cms-content .text .container {
+    max-width: 50rem;
+    margin: auto;
+}
+
+@media screen and (min-width: 768px) {
+    .cms-content .container {
+        padding: 4rem min(5%, 2rem);
+    }
 }

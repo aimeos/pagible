@@ -23,8 +23,9 @@
     width: fit-content;
     margin: 0 auto 3rem;
     padding: 0.25rem;
-    background: var(--pico-muted-border-color);
-    border-radius: 9999px;
+    background: var(--pico-muted-background-color);
+    border: 1px solid var(--pico-muted-border-color);
+    border-radius: var(--pico-border-radius);
 }
 
 .pricing .pricing-toggle > span {
@@ -55,8 +56,8 @@
     inset: 0.25rem;
     width: calc(50% - 0.25rem);
     background: var(--pico-background-color, #fff);
-    border-radius: 9999px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border-radius: calc(var(--pico-border-radius) * 0.75);
+    box-shadow: var(--pico-box-shadow);
     transition: transform 0.2s;
 }
 
@@ -69,7 +70,7 @@
     grid-template-columns: 1fr;
     align-items: stretch;
     padding: 1rem 0;
-    gap: 1.5rem;
+    gap: 2rem;
 }
 
 @media screen and (min-width: 768px) {
@@ -89,22 +90,20 @@
     display: flex;
     flex-direction: column;
     padding: 2rem;
+    background-color: var(--pico-contrast-inverse);
     border: 1px solid var(--pico-muted-border-color);
-}
-
-.pricing .pricing-image {
-    display: block;
-    max-height: 4rem;
-    margin: 0 auto 1rem;
+    border-radius: calc(var(--pico-border-radius) * 2);
+    box-shadow: var(--pico-box-shadow);
 }
 
 .pricing .pricing-item.highlight {
-    background-color: var(--pico-primary-background);
+    background: linear-gradient(135deg, #3B82F6, #2563EB);
     color: var(--pico-primary-inverse);
-    border-color: var(--pico-primary);
+    border-color: transparent;
     margin: -1rem 0;
     padding-top: 3rem;
     padding-bottom: 3rem;
+    box-shadow: 0 20px 40px -12px rgba(59, 130, 246, 0.3);
 }
 
 .pricing .badge {
@@ -112,18 +111,19 @@
     top: -0.75rem;
     left: 50%;
     transform: translateX(-50%);
-    background: var(--pico-primary);
-    color: var(--pico-primary-inverse);
-    padding: 0.2rem 0.75rem;
-    font-size: 0.8rem;
+    background: var(--pico-contrast);
+    color: var(--pico-contrast-inverse);
+    border-radius: var(--pico-border-radius);
     font-weight: 500;
-    border-radius: 1rem;
+    font-size: 0.75rem;
+    padding: 0.25rem 1rem;
     white-space: nowrap;
 }
 
 .pricing .pricing-header {
     display: flex;
     flex-direction: column;
+    padding-bottom: 1.5rem;
     margin-bottom: 1.5rem;
 }
 
@@ -137,13 +137,14 @@
 }
 
 .pricing .highlight .price {
-    border-bottom-color: color-mix(in srgb, var(--pico-primary-inverse) 20%, transparent);
+    border-bottom-color: rgba(255, 255, 255, 0.2);
 }
 
 .pricing .amount {
     font-size: 2.5rem;
-    font-weight: 700;
+    font-weight: 600;
     line-height: 1.2;
+    letter-spacing: -0.03em;
 }
 
 .pricing .unit {
@@ -152,11 +153,12 @@
 }
 
 .pricing .highlight .unit {
-    color: color-mix(in srgb, var(--pico-primary-inverse) 70%, transparent);
+    color: rgba(255, 255, 255, 0.7);
 }
 
 .pricing .name {
     --pico-font-size: 1.125rem;
+    font-weight: 500;
     order: 1;
     margin: 0 0 0.25rem;
 }
@@ -169,7 +171,7 @@
 }
 
 .pricing .highlight .pricing-header .text {
-    color: color-mix(in srgb, var(--pico-primary-inverse) 70%, transparent);
+    color: rgba(255, 255, 255, 0.7);
 }
 
 .pricing .features {
@@ -219,34 +221,29 @@
     display: block;
     width: 100%;
     text-align: center;
-    padding: 0.5rem 1rem;
-    background: transparent;
-    color: var(--pico-color);
+    padding: 0.75rem 1.5rem;
+    background-color: transparent;
+    color: var(--pico-contrast);
     border: 1px solid var(--pico-muted-border-color);
+    border-radius: var(--pico-border-radius);
     text-decoration: none;
     font-weight: 500;
-    transition: background 0.2s;
+    transition: all 0.2s ease;
 }
 
 .pricing .btn:hover {
-    background: var(--pico-muted-border-color);
+    background-color: var(--pico-muted-background-color);
+    color: var(--pico-contrast);
+    opacity: 1;
 }
 
 .pricing .highlight .btn {
+    background-color: var(--pico-contrast-inverse);
     color: var(--pico-primary);
-    background: var(--pico-primary-inverse);
-    border-color: var(--pico-primary-inverse);
-}
-
-.pricing .highlight .btn:after {
-    background-color: var(--pico-primary);
+    border-color: var(--pico-contrast-inverse);
 }
 
 .pricing .highlight .btn:hover {
-    background: var(--pico-background-color);
-    color: var(--pico-color);
-}
-
-.pricing .highlight .btn:hover:after {
-    background-color: var(--pico-color);
+    background-color: rgba(255, 255, 255, 0.9);
+    color: var(--pico-primary);
 }

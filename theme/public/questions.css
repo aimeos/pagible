@@ -3,9 +3,16 @@
  */
 
 .questions details {
-    background-color: var(--pico-contrast-background);
-    margin-bottom: 1rem;
-    padding: 1rem;
+    border: 1px solid var(--pico-muted-border-color);
+    border-radius: calc(var(--pico-border-radius) * 2);
+    margin-bottom: 0.75rem;
+    padding: 1.25rem 1.5rem;
+    background-color: var(--pico-contrast-inverse);
+    transition: box-shadow 0.2s ease;
+}
+
+.questions details[open] {
+    box-shadow: var(--pico-box-shadow);
 }
 
 .questions summary {
@@ -21,23 +28,28 @@
 }
 
 .questions h3 {
-    font-size: var(--pico-font-size);
+    font-size: calc(var(--pico-font-size) * 0.75);
     margin: 0;
+    font-weight: 500;
 }
 
 .questions details summary svg {
     margin-inline-start: 0.5rem;
     transition: transform 0.3s;
     min-width: 1.5rem;
+    color: var(--pico-muted-color);
 }
 
 .questions details[open] summary svg {
     transform: rotate(180deg);
+    color: var(--pico-primary);
 }
 
 .questions details > *:not(summary) {
     transition: opacity 1s ease;
     opacity: 0;
+    color: var(--pico-muted-color);
+    line-height: 1.7;
 }
 
 .questions details[open] > *:not(summary) {
@@ -47,7 +59,7 @@
 @media screen and (min-width: 768px) {
     .questions .faqs {
         column-count: 2;
-        column-gap: 1rem;
+        column-gap: 0.75rem;
     }
 
     .questions details {

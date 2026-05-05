@@ -5,7 +5,7 @@
 .blog .blog-items {
     display: flex;
     flex-direction: column;
-    gap: 2rem;
+    gap: 1.5rem;
 }
 
 .blog .first,
@@ -16,11 +16,21 @@
 .blog .second {
     display: flex;
     flex-direction: column;
-    gap: 2rem;
+    gap: 1.5rem;
 }
 
 .blog .blog-item {
     --pico-text-decoration: none;
+    background-color: var(--pico-contrast-inverse);
+    border: 1px solid var(--pico-muted-border-color);
+    border-radius: calc(var(--pico-border-radius) * 2);
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+    overflow: hidden;
+}
+
+.blog .blog-item:hover {
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08);
+    transform: translateY(-2px);
 }
 
 .blog img {
@@ -31,40 +41,47 @@
 }
 
 .blog .date {
-    color: var(--pico-contrast);
-    font-size: calc(var(--pico-font-size) * 0.8);
+    color: var(--pico-muted-color);
+    font-size: calc(var(--pico-font-size) * 0.6);
 }
 
 .blog h3 {
-    margin: 0;
+    font-size: calc(var(--pico-font-size) * 0.8);
+    font-weight: 500;
+    margin-top: 0.75rem;
+    height: 3.75rem;
+    overflow: hidden;
+    line-height: 1.3;
 }
 
 .blog .first .content {
     display: flex;
-    margin: 1rem 0.5rem;
-    gap: 2rem;
+    align-items: baseline;
+    gap: 1.5rem;
+    padding: 1rem 1.25rem;
 }
 
 .blog .first .date-day {
-    font-weight: bold;
-    font-size: calc(var(--pico-font-size) * 2);
+    font-weight: 600;
+    font-size: calc(var(--pico-font-size) * 1.1);
     line-height: 1;
+    font-family: var(--pico-font-family-display);
 }
 
 .blog .first .date-month {
     text-transform: uppercase;
-    font-size: calc(var(--pico-font-size) * 0.9);
+    font-size: calc(var(--pico-font-size) * 0.6);
     line-height: 0.75;
+    letter-spacing: 0.05em;
 }
 
 .blog .first h3 {
-    font-size: calc(var(--pico-font-size) * 1.1);
     flex-grow: 1;
 }
 
 .blog .second .blog-item {
     display: flex;
-    gap: 1rem;
+    gap: 0;
 }
 
 .blog .second picture {
@@ -73,11 +90,13 @@
 
 .blog .second .content {
     flex: 3;
+    padding: 0.75rem 1rem;
 }
 
 .blog .second h3 {
-    font-size: calc(var(--pico-font-size) * 0.9);
-    line-height: 1.25;
+    font-size: var(--pico-font-size);
+    margin: 0.5rem 0;
+    line-height: 1.3;
 }
 
 @media (min-width: 768px) {
@@ -88,5 +107,15 @@
     .blog .first,
     .blog .second {
         width: 50%;
+    }
+
+    .blog .first h3 {
+        height: 7.25rem;
+    }
+}
+
+@media (min-width: 992px) {
+    .blog .first h3 {
+        height: 5.5rem;
     }
 }

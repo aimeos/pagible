@@ -2,23 +2,17 @@
  * @license MIT, https://opensource.org/license/MIT
  */
 
-@media screen and (min-width: 576px) {
-	.swiffy-slider {
-		padding: 5%;
-		background:
-			radial-gradient(
-				circle at 90% -50%,
-				var(--pico-primary-background) 0,
-				transparent 100%
-			),
-			radial-gradient(
-				circle at 10% 150%,
-				var(--pico-secondary-background) 0,
-				transparent 100%
-			);
-	}
+.swiffy-slider {
+	border: 1px solid var(--pico-muted-border-color);
+	border-radius: calc(var(--pico-border-radius) * 2);
+	box-shadow: var(--pico-box-shadow);
+	overflow: hidden;
+	padding: 0.5rem;
 }
 
+.slider-container {
+	border-radius: var(--pico-border-radius);
+}
 
 /* Swiffy slider 1.2.0 (modified) https://github.com/dynamicweb/swiffy-slider/ (MIT license) */
 

@@ -8,74 +8,94 @@
 
 .hero .container {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    padding-top: 2rem;
-    padding-bottom: 2rem;
+    padding: 4rem 0;
 }
 
 .hero .first {
     text-align: center;
-    max-width: 800px;
     margin: auto;
 }
 
 .hero .second {
-    display: none;
+    display: block;
+    width: 100%;
+    margin: auto;
 }
 
 .hero .first:has(+ .second),
 .hero .first:has(+ .second) h1 {
-    text-align: start;
-    margin: initial;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .hero h1 {
     margin-top: 0;
-    margin-bottom: 1rem;
-    font-size: calc(var(--pico-font-size) * 2.5);
+    margin-bottom: 1.5rem;
+    font-size: calc(var(--pico-font-size) * 2.1);
+    font-weight: 600;
+    line-height: 1.1;
+    letter-spacing: -0.03em;
 }
 
 .hero .subtitle {
     display: inline-block;
-    margin-bottom: 0.5rem;
-    padding: 0.5rem 1.25rem;
-    color: var(--pico-contrast);
-    background-color: var(--pico-muted-background-color);
-    border: 1px solid var(--pico-contrast-border);
-    border-radius: 2rem;
-    font-size: calc(var(--pico-font-size) * 0.66);
-}
-
-.hero .subtitle::before {
-    content: url('data:image/svg+xml;utf8,<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14.9997 7.99967C15.0013 8.20475 14.9389 8.40524 14.8213 8.57325C14.7037 8.74127 14.5367 8.86847 14.3434 8.93717L10.3784 10.379L8.93717 14.3434C8.86613 14.5348 8.73823 14.6999 8.57064 14.8164C8.40305 14.933 8.20381 14.9954 7.99967 14.9954C7.79554 14.9954 7.59629 14.933 7.4287 14.8164C7.26111 14.6999 7.13321 14.5348 7.06217 14.3434L5.62092 10.3784L1.65592 8.93717C1.46454 8.86613 1.29949 8.73823 1.18294 8.57064C1.06638 8.40305 1.00391 8.20381 1.00391 7.99967C1.00391 7.79554 1.06638 7.59629 1.18294 7.4287C1.29949 7.26111 1.46454 7.13321 1.65592 7.06217L5.62092 5.62092L7.06217 1.65592C7.13321 1.46454 7.26111 1.29949 7.4287 1.18294C7.59629 1.06638 7.79554 1.00391 7.99967 1.00391C8.20381 1.00391 8.40305 1.06638 8.57064 1.18294C8.73823 1.29949 8.86613 1.46454 8.93717 1.65592L10.379 5.62092L14.3434 7.06217C14.5367 7.13087 14.7037 7.25807 14.8213 7.42609C14.9389 7.59411 15.0013 7.79459 14.9997 7.99967Z" fill="url(%23paint0_linear_111_5714)"/><defs><linearGradient id="paint0_linear_111_5714" x1="8.0018" y1="1.00391" x2="8.0018" y2="14.9954" gradientUnits="userSpaceOnUse"><stop stop-color="%23A130E3"/><stop offset="1" stop-color="%2301A1F8"/></linearGradient></defs></svg>');
-    vertical-align: middle;
+    margin-bottom: 1rem;
+    padding: 0.375rem 1rem;
+    color: var(--pico-primary);
+    font-size: calc(var(--pico-font-size) * 0.65);
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    background-color: rgba(59, 130, 246, 0.08);
+    border: 1px solid rgba(59, 130, 246, 0.15);
+    border-radius: var(--pico-border-radius);
 }
 
 .hero p {
-    line-height: 1.75;
+    line-height: 1.6;
+    color: var(--pico-muted-color);
+    font-size: calc(var(--pico-font-size) * 0.8);
+    max-width: 40rem;
+    margin-left: auto;
+    margin-right: auto;
 }
 
-@media screen and (min-width: 576px) {
-    .hero .first:has(+ .second) {
-        width: 66%;
-        margin-inline-end: 2rem;
-    }
+.hero .actions {
+    padding: 1rem 0;
+}
 
-    .hero .second {
-        width: 33%;
-        display: block;
-        margin-inline-start: 2rem;
-    }
+.hero .btn {
+    margin: 0.5rem 0.25rem;
+}
 
-    .hero .second img {
-        max-height: 100%;
-        max-width: unset;
-    }
+.hero picture {
+    margin-top: 3rem;
+}
+
+.hero .second picture {
+    border: 1px solid var(--pico-muted-border-color);
+    border-radius: calc(var(--pico-border-radius) * 2);
+    box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.08);
+    width: fit-content;
+    margin: 3rem auto 0;
+    padding: 0.5rem;
+    display: block;
+}
+
+.hero .second img {
+    border-radius: var(--pico-border-radius);
+    display: block;
 }
 
 @media screen and (min-width: 768px) {
-    .hero .first:has(+ .second),
-    .hero .second {
-        width: 50%;
+    .hero h1 {
+        font-size: calc(var(--pico-font-size) * 3.2);
+    }
+
+    .hero p {
+        font-size: calc(var(--pico-font-size) * 0.9);
     }
 }

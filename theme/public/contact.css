@@ -20,20 +20,35 @@
 }
 
 .contact label {
-    color: var(--pico-contrast-hover);
+    color: var(--pico-contrast);
     display: inline-block;
     margin: 0.5rem 0;
+    font-weight: 500;
+    font-size: calc(var(--pico-font-size) * 0.7);
 }
 
 .contact input, .contact textarea {
-    border: 1px solid var(--pico-muted-border-color);
-    background-color: var(--pico-muted-background-color);
-    color: var(--pico-contrast);
+    border: 1px solid var(--pico-contrast-border);
+    background-color: var(--pico-contrast-inverse);
+    color: var(--pico-color);
     resize: vertical;
     font-size: var(--pico-font-size);
     display: block;
-    padding: 1rem;
+    padding: 0.75rem 1.25rem;
     width: 100%;
+    border-radius: var(--pico-border-radius);
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.contact textarea {
+    border-radius: var(--pico-border-radius);
+}
+
+.contact input:focus,
+.contact textarea:focus {
+    border-color: var(--pico-primary);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+    outline: none;
 }
 
 .contact input::-webkit-input-placeholder,
@@ -43,6 +58,7 @@
 
 .contact .errors {
     color: var(--pico-form-element-invalid-focus-color);
+    font-size: calc(var(--pico-font-size) * 0.65);
 }
 
 .contact .error {
@@ -62,22 +78,23 @@
     display: block;
     margin-inline-end: auto;
     margin-inline-start: auto;
+    border-radius: var(--pico-border-radius);
 }
 
 .contact button:disabled {
-    border: 1px solid var(--pico-muted-border-color);
-    background-color: var(--pico-background-color);
-    color: var(--pico-muted-background-color);
+    border: 1px solid var(--pico-contrast-border);
+    background-color: var(--pico-muted-background-color);
+    color: var(--pico-muted-color);
 }
 
 .contact button:has(.success:not(.hidden)) {
-    background-color: var(--pico-form-element-valid-focus-color);
-    border: 1px solid var(--pico-form-element-valid-focus-color);
-    color: var(--pico-primary-inverse);
+    background-color: #16A34A;
+    border-color: #16A34A;
+    color: var(--pico-contrast-inverse);
 }
 
 .contact button:has(.failure:not(.hidden)) {
-    background-color: var(--pico-form-element-invalid-focus-color);
-    border: 1px solid var(--pico-form-element-invalid-focus-color);
-    color: var(--pico-primary-inverse);
+    background-color: #DC2626;
+    border-color: #DC2626;
+    color: var(--pico-contrast-inverse);
 }
