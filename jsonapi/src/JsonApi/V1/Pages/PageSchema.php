@@ -22,13 +22,19 @@ use LaravelJsonApi\Eloquent\Fields\Number;
 use LaravelJsonApi\Eloquent\Fields\Str;
 use LaravelJsonApi\Eloquent\Fields\ID;
 use LaravelJsonApi\Eloquent\Schema;
+use Aimeos\Cms\Concerns\ResolvesFiles;
+use Aimeos\Cms\Models\Element;
+use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Models\Nav;
+use Aimeos\Cms\Permission;
 use Aimeos\Nestedset\NestedSet;
+use Illuminate\Support\Facades\Auth;
 
 
 class PageSchema extends Schema
 {
+    use ResolvesFiles;
     /**
      * Default page value if no pagination was sent by the client.
      *
@@ -97,13 +103,16 @@ class PageSchema extends Schema
             DateTime::make( 'createdAt' )->readOnly(),
             DateTime::make( 'updatedAt' )->readOnly(),
             ArrayHash::make( 'meta' )->readOnly()->extractUsing( function( $model, $column, $items ) {
-                return $this->resolveFiles( $model, $items );
+                $version = $model->relationLoaded( 'latest' ) ? $model->latest : null;
+                return $this->resolveFiles( $model, $version ? $version->aux->meta : $items );
             } ),
             ArrayHash::make( 'config' )->readOnly()->extractUsing( function( $model, $column, $items ) {
-                return $this->resolveFiles( $model, $items );
+                $version = $model->relationLoaded( 'latest' ) ? $model->latest : null;
+                return $this->resolveFiles( $model, $version ? $version->aux->config : $items );
             } ),
             ArrayHash::make( 'content' )->readOnly()->extractUsing( function( $model, $column, $items ) {
-                return $this->resolveContent( $model, $items );
+                $version = $model->relationLoaded( 'latest' ) ? $model->latest : null;
+                return $this->resolveContent( $model, $version ? $version->aux->content : $items );
             } ),
             HasOne::make( 'parent' )->type( 'navs' )->readOnly()->serializeUsing(
                 static fn($relation) => $relation->withoutLinks()
@@ -165,11 +174,20 @@ class PageSchema extends Schema
             || str_contains( $fields, 'config' );
 
         if( $needsRelations ) {
-            $query = $query->with( [
-                'files' => fn( $q ) => $q->select( 'cms_files.id', 'name', 'mime', 'path', 'previews', 'description', 'transcription' ),
-                'elements' => fn( $q ) => $q->select( 'cms_elements.id', 'type', 'data' ),
-                'elements.files' => fn( $q ) => $q->select( 'cms_files.id', 'name', 'mime', 'path', 'previews', 'description', 'transcription' ),
-            ] );
+            $with = [
+                'files' => fn( $q ) => $q->select( File::SELECT_COLS ),
+                'elements' => fn( $q ) => $q->select( Element::SELECT_COLS ),
+                'elements.files' => fn( $q ) => $q->select( File::SELECT_COLS ),
+            ];
+
+            if( Permission::can( 'page:view', Auth::user() ) ) {
+                $with['latest'] = fn( $q ) => $q->select( 'id', 'versionable_id', 'aux' );
+                $with['latest.files'] = fn( $q ) => $q->select( File::SELECT_COLS );
+                $with['latest.elements'] = fn( $q ) => $q->select( Element::SELECT_COLS );
+                $with['latest.elements.files'] = fn( $q ) => $q->select( File::SELECT_COLS );
+            }
+
+            $query = $query->with( $with );
         }
 
         $query = $query->orderBy( NestedSet::LFT );
@@ -202,17 +220,21 @@ class PageSchema extends Schema
      */
     protected function resolveContent( Page $model, mixed $items ) : array
     {
+        $version = $model->relationLoaded( 'latest' ) ? $model->latest : null;
+        $elements = null;
         $allFiles = null;
 
         foreach( (array) $items as $item )
         {
-            if( $item->type === 'reference' && $element = @$model->elements[@$item->refid] )
+            $elements ??= $version ? $version->elements : $model->elements;
+
+            if( $item->type === 'reference' && $element = @$elements[@$item->refid] )
             {
                 $item->type = $element->type;
                 $item->data = $element->data;
 
                 if( !$element->files->isEmpty() ) {
-                    $allFiles = ( $allFiles ?? $model->files )->merge( $element->files );
+                    $allFiles = ( $allFiles ?? ( $version ? $version->files : $model->files ) )->merge( $element->files );
                     $item->files = $element->files->keys()->all();
                 }
                 unset( $item->refid );
@@ -225,48 +247,4 @@ class PageSchema extends Schema
     }
 
 
-    /**
-     * Resolves file references and actions for a list of items.
-     *
-     * @param Page $model The page model with loaded files relation
-     * @param mixed $items The items to resolve files for
-     * @param \Illuminate\Database\Eloquent\Collection<int, \Aimeos\Cms\Models\File>|null $lookup Optional file lookup collection
-     * @return mixed The items with resolved file references
-     */
-    protected function resolveFiles( Page $model, mixed $items, ?\Illuminate\Support\Collection $lookup = null ) : mixed
-    {
-        $filesById = null;
-        $lang = $model->lang;
-        $lang2 = substr( $lang, 0, 2 );
-
-        foreach( (array) $items as $item )
-        {
-            if( !empty( $item->files ) )
-            {
-                $resolved = [];
-                $filesById ??= $lookup ?? $model->files;
-
-                foreach( (array) $item->files as $id )
-                {
-                    if( $file = $filesById[$id] ?? null )
-                    {
-                        $file->description = $file->description->{$lang} ?? $file->description->{$lang2} ?? null;
-                        $file->transcription = $file->transcription->{$lang} ?? $file->transcription->{$lang2} ?? null;
-                        $resolved[$id] = $file;
-                    }
-                }
-                $item->files = $resolved ?: null;
-            }
-
-            if( empty( $item->files ) ) {
-                unset( $item->files );
-            }
-
-            if( !empty( $item->data->action ) ) {
-                $item->data->action = app()->call( $item->data->action, ['model' => $model, 'item' => $item] );
-            }
-        }
-
-        return $items;
-    }
 }

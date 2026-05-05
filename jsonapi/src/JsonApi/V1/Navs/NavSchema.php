@@ -7,6 +7,13 @@
 
 namespace Aimeos\Cms\JsonApi\V1\Navs;
 
+use Aimeos\Cms\Concerns\ResolvesFiles;
+use Aimeos\Cms\Models\File;
+use Aimeos\Cms\Models\Nav;
+use Aimeos\Cms\Permission;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use LaravelJsonApi\Eloquent\Fields\Relations\HasMany;
 use LaravelJsonApi\Eloquent\Fields\ArrayHash;
 use LaravelJsonApi\Eloquent\Fields\DateTime;
@@ -15,11 +22,11 @@ use LaravelJsonApi\Eloquent\Fields\Number;
 use LaravelJsonApi\Eloquent\Fields\Str;
 use LaravelJsonApi\Eloquent\Fields\ID;
 use LaravelJsonApi\Eloquent\Schema;
-use Aimeos\Cms\Models\Nav;
 
 
 class NavSchema extends Schema
 {
+    use ResolvesFiles;
     /**
      * Default page value if no pagination was sent by the client.
      *
@@ -92,40 +99,33 @@ class NavSchema extends Schema
             DateTime::make( 'createdAt' )->readOnly(),
             DateTime::make( 'updatedAt' )->readOnly(),
             ArrayHash::make( 'config' )->readOnly()->extractUsing( function( $model, $column, $items ) {
-                $lang = $model->lang;
-                $lang2 = substr( $lang, 0, 2 );
-
-                foreach( (array) $items as $item )
-                {
-                    if( !empty( $item->files ) )
-                    {
-                        $resolved = [];
-
-                        foreach( (array) $item->files as $id )
-                        {
-                            if( $file = $model->files[$id] ?? null ) {
-                                $file->description = $file->description->{$lang} ?? $file->description->{$lang2} ?? null;
-                                $file->transcription = $file->transcription->{$lang} ?? $file->transcription->{$lang2} ?? null;
-                                $resolved[$id] = $file;
-                            }
-                        }
-
-                        $item->files = (object) $resolved;
-                    }
-                    else
-                    {
-                        unset( $item->files );
-                    }
-
-                    if( !empty( $item->data->action ) ) {
-                        $item->data->action = app()->call( $item->data->action, ['model' => $model, 'item' => $item] );
-                    }
-                }
-                return $items;
+                $version = $model->relationLoaded( 'latest' ) ? $model->latest : null;
+                return $this->resolveFiles( $model, $version ? $version->aux->config : $items );
             } ),
             HasMany::make( 'children' )->type( 'navs' )->readOnly()->serializeUsing(
                 static fn($relation) => $relation->withoutLinks()
             ),
         ];
+    }
+
+
+    /**
+     * Build an index query for this resource.
+     *
+     * @param Request|null $request
+     * @param Builder<\Aimeos\Cms\Models\Nav> $query
+     * @return Builder<\Aimeos\Cms\Models\Nav>
+     */
+    public function indexQuery( ?Request $request, Builder $query ): Builder
+    {
+        if( Permission::can( 'page:view', Auth::user() ) ) {
+            $query = $query->with( [
+                'files' => fn( $q ) => $q->select( File::SELECT_COLS ),
+                'latest' => fn( $q ) => $q->select( 'id', 'versionable_id', 'aux' ),
+                'latest.files' => fn( $q ) => $q->select( File::SELECT_COLS ),
+            ] );
+        }
+
+        return $query;
     }
 }
