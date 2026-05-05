@@ -2,23 +2,14 @@
  * @license MIT, https://opensource.org/license/MIT
  */
 
-@media screen and (min-width: 576px) {
-	.swiffy-slider {
-		padding: 5%;
-		background:
-			radial-gradient(
-				circle at 90% -50%,
-				var(--pico-primary-background) 0,
-				transparent 100%
-			),
-			radial-gradient(
-				circle at 10% 150%,
-				var(--pico-secondary-background) 0,
-				transparent 100%
-			);
-	}
+.swiffy-slider {
+	border-radius: calc(var(--pico-border-radius) * 2);
+	overflow: hidden;
 }
 
+.slider-container {
+	border-radius: var(--pico-border-radius);
+}
 
 /* Swiffy slider 1.2.0 (modified) https://github.com/dynamicweb/swiffy-slider/ (MIT license) */
 
@@ -32,8 +23,8 @@
 	--swiffy-slider-item-reveal: 0rem;
 	--swiffy-slider-item-ratio: 2/1;
 	--swiffy-slider-item-count: 1;
-	--swiffy-slider-nav-light: #fff;
-	--swiffy-slider-nav-dark: #333;
+	--swiffy-slider-nav-light: #FFFFFF;
+	--swiffy-slider-nav-dark: #333333;
 	--swiffy-slider-nav-zoom: 1;
 	--swiffy-slider-track-opacity: 0.1;
 	--swiffy-slider-track-height: 0;
@@ -73,7 +64,7 @@
 	margin: 0;
 	padding: 0;
 	scrollbar-width: none;
-	scrollbar-color: rgba(0,0,0,.4) rgba(0,0,0,var(--swiffy-slider-track-opacity));
+	scrollbar-color: #00000066 rgba(0,0,0,var(--swiffy-slider-track-opacity));
 	background-clip: padding-box
 }
 
@@ -130,7 +121,7 @@
 	left: 0;
 	bottom: 0;
 	border: 0;
-	background-color: transparent;
+	background-color: #00000000;
 	cursor: pointer;
 	padding: 0;
 	visibility: hidden;
@@ -140,8 +131,8 @@
 	display: flex;
 	align-items: center;
 	padding: 0 .5rem;
-	-webkit-filter: drop-shadow(0 0 .5rem rgba(0, 0, 0, .5));
-	filter: drop-shadow(0 0 .5rem rgba(0, 0, 0, .5));
+	-webkit-filter: drop-shadow(0 0 .5rem #00000080);
+	filter: drop-shadow(0 0 .5rem #00000080);
 	transform: scale(var(--swiffy-slider-nav-zoom))
 }
 

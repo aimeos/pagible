@@ -5,9 +5,15 @@
 .article .cover {
     display: block;
     margin: 2rem 0;
+    border-radius: calc(var(--pico-border-radius) * 2);
+    overflow: hidden;
 }
 
 .article .cover source,
 .article .cover img {
     width: 100%;
+}
+
+.article .text {
+    line-height: 1.625;
 }

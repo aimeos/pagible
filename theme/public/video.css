@@ -4,12 +4,8 @@
 
 .video video {
     max-width: 100%;
-}
-
-@media screen and (min-width: 576px) {
-    .video video {
-        display: block;
-		padding: 5%;
-		background: var(--cms-accent-gradient);
-	}
+    display: block;
+    border: 1px solid var(--pico-muted-border-color);
+    border-radius: calc(var(--pico-border-radius) * 2);
+    box-shadow: var(--pico-box-shadow);
 }

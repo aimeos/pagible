@@ -5,6 +5,8 @@
 .cards .card-list {
     display: grid;
     grid-template-columns: 1fr;
+    justify-self: center;
+    gap: 2rem;
 }
 
 @media screen and (min-width: 768px) {
@@ -15,30 +17,26 @@
 
 @media screen and (min-width: 992px) {
     .cards .card-list {
-        grid-template-columns: 1fr 1fr 1fr;
-    }
-}
-
-@media screen and (max-width: 767px), screen and (min-width: 992px) {
-    .cards div.card-item:nth-of-type(2n) {
-        background-color: var(--pico-muted-background-color);
-        border: 1px solid var(--pico-muted-border-color);
-    }
-}
-
-@media screen and (min-width: 768px) and (max-width: 991px) {
-    .cards div.card-item:nth-of-type(4n+2),
-    .cards div.card-item:nth-of-type(4n+3) {
-        background-color: var(--pico-muted-background-color);
-        border: 1px solid var(--pico-muted-border-color);
+        grid-template-columns: repeat(3, 1fr);
     }
 }
 
 .cards .card-item {
-    padding: 2rem;
+    text-align: start;
+    padding: 1.5rem;
+}
+
+.cards .card-item img {
+    border-radius: var(--pico-border-radius);
 }
 
 .cards .title {
-    font-size: calc(var(--pico-font-size) * 1.2);
-    margin: 1rem 0;
+    font-size: var(--pico-font-size);
+    margin: 1rem 0 0.75rem;
+    font-weight: 600;
+}
+
+.cards .text p {
+    font-size: calc(var(--pico-font-size) * 0.75);
+    color: var(--pico-muted-color);
 }

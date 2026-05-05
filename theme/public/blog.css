@@ -5,7 +5,7 @@
 .blog .blog-items {
     display: flex;
     flex-direction: column;
-    gap: 2rem;
+    gap: 1rem;
 }
 
 .blog .first,
@@ -16,11 +16,14 @@
 .blog .second {
     display: flex;
     flex-direction: column;
-    gap: 2rem;
+    gap: 1rem;
 }
 
 .blog .blog-item {
     --pico-text-decoration: none;
+    border-radius: calc(var(--pico-border-radius) * 2);
+    display: block;
+    height: 100%;
 }
 
 .blog img {
@@ -31,43 +34,47 @@
 }
 
 .blog .date {
-    color: var(--pico-contrast);
-    font-size: calc(var(--pico-font-size) * 0.8);
+    color: var(--pico-muted-color);
+    font-size: calc(var(--pico-font-size) * 0.6);
+    font-weight: 300;
 }
 
 .blog h3 {
     margin: 0;
+    margin-top: 0.75rem;
+    font-weight: 400;
 }
 
 .blog .first .content {
     display: flex;
-    margin: 1rem 0.5rem;
-    gap: 2rem;
+    align-items: baseline;
+    padding: 1rem 1.25rem;
+    gap: 1rem;
 }
 
 .blog .first .date-day {
-    font-weight: bold;
-    font-size: calc(var(--pico-font-size) * 2);
-    line-height: 1;
+    font-weight: 500;
+    font-size: calc(var(--pico-font-size) * 1.1);
+    font-family: var(--pico-font-family-display);
 }
 
 .blog .first .date-month {
     text-transform: uppercase;
-    font-size: calc(var(--pico-font-size) * 0.9);
-    line-height: 0.75;
+    font-size: calc(var(--pico-font-size) * 0.6);
+    letter-spacing: 0.05em;
 }
 
 .blog .first h3 {
-    font-size: calc(var(--pico-font-size) * 1.1);
     flex-grow: 1;
 }
 
 .blog .second .blog-item {
+    align-items: center;
     display: flex;
-    gap: 1rem;
 }
 
 .blog .second picture {
+    padding-inline-end: 1rem;
     flex: 2;
 }
 
@@ -76,8 +83,7 @@
 }
 
 .blog .second h3 {
-    font-size: calc(var(--pico-font-size) * 0.9);
-    line-height: 1.25;
+    font-size: calc(var(--pico-font-size) * 0.75);
 }
 
 @media (min-width: 768px) {
