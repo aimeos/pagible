@@ -1,0 +1,23 @@
+/**
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+.image > img,
+.image > source {
+    max-width: 100%;
+    display: block;
+    margin: auto;
+}
+
+@media screen and (min-width: 576px) {
+	.image picture {
+        display: block;
+		padding: 5%;
+		background: var(--cms-accent-gradient);
+	}
+}
+
+.image .main > img,
+.image .main > source {
+    width: 100%;
+}

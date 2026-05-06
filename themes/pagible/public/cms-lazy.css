@@ -1,0 +1,157 @@
+/**
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+dialog > article {
+    background: var(--cms-accent-gradient-tight), var(--pico-background-color);
+    height: calc(100vh - 2rem);
+    overflow: unset;
+}
+
+dialog header {
+    background-color: var(--pico-contrast-background);
+}
+
+dialog form {
+    display: flex;
+    padding: 1rem;
+}
+
+dialog input,
+dialog button {
+    background-color: var(--pico-background-color);
+    color: var(--pico-contrast);
+    appearance: none;
+    box-shadow: none;
+    border: none;
+    padding: 0.5rem;
+}
+
+dialog input {
+    border: none;
+    border-bottom: 2px solid var(--pico-primary);
+    background-color: var(--pico-contrast-background);
+    font-size: var(--pico-font-size);
+    display: block;
+    width: 100%;
+    margin: 0 1px;
+    outline: none;
+}
+
+dialog input:focus-visible {
+    border-bottom: 2px solid var(--pico-contrast);
+}
+
+dialog button[type=reset] {
+    cursor: pointer;
+}
+
+dialog button[type=reset]:hover {
+    background-color: var(--pico-contrast-background);
+}
+
+dialog input::-webkit-input-placeholder {
+    color: var(--pico-muted-color);
+}
+
+dialog.search .results {
+    height: calc(100% - 4.25rem);
+    overflow-y: auto;
+    padding: 1rem;
+}
+
+dialog.search a.result-item {
+    border-inline-start: 1px solid var(--pico-contrast-border);
+    color: var(--pico-color);
+    text-decoration: none;
+    cursor: pointer;
+    display: block;
+    padding: 0.5rem;
+    padding-inline-start: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+dialog.search a.result-item:hover {
+    --pico-color: var(--pico-contrast);
+    background-color: var(--pico-contrast-background);
+    color: var(--pico-contrast);
+}
+
+dialog.search .result-title {
+    font-size: calc(var(--pico-font-size) * 1.1);
+    border-bottom: 1px solid var(--pico-contrast-border);
+    display: block;
+    font-weight: bold;
+    padding-bottom: 0.25rem;
+    margin-bottom: 0.25rem;
+}
+
+dialog.search .result-content {
+    display: block;
+}
+
+dialog.search .result-content b {
+    background-color: var(--pico-contrast-background);
+    padding: 0.1rem 0.25rem;
+}
+
+dialog.search .load-more {
+    background-color: var(--pico-contrast-background);
+    color: var(--pico-contrast);
+    border: 1px solid var(--pico-contrast-border);
+    cursor: pointer;
+    display: block;
+    font-size: var(--pico-font-size);
+    margin: 1rem auto;
+    padding: 0.5rem 1.5rem;
+}
+
+dialog.search .load-more:hover {
+    background-color: var(--pico-contrast-hover-background);
+}
+
+dialog.search .load-more:disabled {
+    opacity: 0.5;
+    cursor: wait;
+}
+
+@media (min-width: 1024px) {
+    dialog>article {
+        max-width: 950px;
+    }
+}
+
+
+.caption:not(:empty) {
+    max-width: 960px;
+    margin: 1rem auto;
+}
+
+
+p code {
+    overflow-wrap: anywhere;
+}
+
+pre code[class*=language-] {
+    background-color: var(--pico-muted-background-color);
+    overflow-x: auto;
+}
+
+pre:has(code[class*="language-"]) {
+    padding: 2rem 5%;
+    background: var(--cms-accent-gradient-tight);
+}
+
+@media screen and (min-width: 768px) {
+    pre:has(code[class*="language-"]) {
+        background:
+            var(--cms-accent-gradient-tight),
+            url('code-background.svg') no-repeat -10% calc(100% + 2.5rem) / 20% auto,
+            url('code-background.svg') no-repeat 110% calc(100% + 2.5rem) / 20% auto;
+    }
+}
+
+
+footer.bottom {
+    text-align: center;
+}

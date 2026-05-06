@@ -1,0 +1,92 @@
+/**
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+.blog .blog-items {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.blog .first,
+.blog .second {
+    width: 100%;
+}
+
+.blog .second {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.blog .blog-item {
+    --pico-text-decoration: none;
+}
+
+.blog img {
+    display: block;
+    aspect-ratio: 5 / 3;
+    object-fit: cover;
+    width: 100%;
+}
+
+.blog .date {
+    color: var(--pico-contrast);
+    font-size: calc(var(--pico-font-size) * 0.8);
+}
+
+.blog h3 {
+    margin: 0;
+}
+
+.blog .first .content {
+    display: flex;
+    margin: 1rem 0.5rem;
+    gap: 2rem;
+}
+
+.blog .first .date-day {
+    font-weight: bold;
+    font-size: calc(var(--pico-font-size) * 2);
+    line-height: 1;
+}
+
+.blog .first .date-month {
+    text-transform: uppercase;
+    font-size: calc(var(--pico-font-size) * 0.9);
+    line-height: 0.75;
+}
+
+.blog .first h3 {
+    font-size: calc(var(--pico-font-size) * 1.1);
+    flex-grow: 1;
+}
+
+.blog .second .blog-item {
+    display: flex;
+    gap: 1rem;
+}
+
+.blog .second picture {
+    flex: 2;
+}
+
+.blog .second .content {
+    flex: 3;
+}
+
+.blog .second h3 {
+    font-size: calc(var(--pico-font-size) * 0.9);
+    line-height: 1.25;
+}
+
+@media (min-width: 768px) {
+    .blog .blog-items {
+        flex-direction: row;
+    }
+
+    .blog .first,
+    .blog .second {
+        width: 50%;
+    }
+}

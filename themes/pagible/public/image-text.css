@@ -1,0 +1,60 @@
+/**
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+.image-text .r1-3 { --ratio: 25%; }
+.image-text .r1-2 { --ratio: 33.333%; }
+.image-text .r1-1 { --ratio: 50%; }
+
+.image-text .start::after,
+.image-text .end::after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+.image-text .start .image,
+.image-text .end .image {
+    max-width: var(--ratio);
+    margin-bottom: 1.5rem;
+}
+
+.image-text .start .image {
+    float: inline-start;
+    margin-inline-end: 2rem;
+}
+
+.image-text .end .image {
+    float: inline-end;
+    margin-inline-start: 2rem;
+}
+
+.image-text .grid-start,
+.image-text .grid-end {
+    display: flex;
+    gap: 2rem;
+    align-items: flex-start;
+}
+
+.image-text .grid-end {
+    flex-direction: row-reverse;
+}
+
+.image-text .grid-start .text,
+.image-text .grid-end .text {
+    flex: 1;
+    min-width: 0;
+}
+
+.image-text .grid-start .image,
+.image-text .grid-end .image {
+    flex: 0 0 var(--ratio);
+    max-width: var(--ratio);
+}
+
+@media (max-width: 767px) {
+    .image-text .grid-start,
+    .image-text .grid-end {
+        flex-direction: column;
+    }
+}

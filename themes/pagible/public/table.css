@@ -1,0 +1,44 @@
+/**
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+.table-responsive .table-row {
+    display: flex;
+    align-items: flex-end;
+    background-color: var(--pico-background-color);
+    border-bottom: var(--pico-border-width) solid var(--pico-table-border-color);
+}
+
+.table-responsive .table-col {
+    padding: calc(var(--pico-spacing) / 2) var(--pico-spacing);
+    flex: 1;
+}
+
+.table-responsive .th {
+    --pico-color: var(--pico-contrast-hover);
+    text-align: center;
+}
+
+.table-responsive .th > *:first-child,
+.table-responsive .td > *:first-child {
+    margin-top: 0;
+}
+
+.table-responsive .th > *:last-child,
+.table-responsive .td > *:last-child {
+    margin-bottom: 0;
+}
+
+@media (max-width: 576px) {
+  .table-responsive .table-row {
+    flex-wrap: wrap;
+  }
+
+  .table-responsive .table-col:first-child {
+    flex: 0 0 100%;
+  }
+
+  .table-responsive .table-col:not(:first-child) {
+    flex: 1;
+  }
+}
