@@ -1,0 +1,771 @@
+/**
+ * Glass Theme - Dark glassmorphism design with frosted glass panels and backdrop blur
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+:root, :root:not([data-theme=dark]) {
+    --pico-font-family-sans-serif: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    --pico-font-family-display: var(--pico-font-family-sans-serif);
+    --pico-font-family-monospace: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+    --pico-nav-breadcrumb-divider: '/';
+    --pico-block-spacing-vertical: 0;
+    --pico-nav-element-spacing-horizontal: 1rem;
+    --pico-nav-element-spacing-vertical: 0.75rem;
+    --pico-nav-link-spacing-vertical: 0.625rem;
+    --pico-nav-link-spacing-horizontal: 0.625rem;
+    --pico-color: #E2E8F0;
+    --pico-background-color: #060A12;
+    --pico-text-selection-color: #06B6D433;
+    --pico-muted-color: #94A3B8;
+    --pico-muted-border-color: #FFFFFF14;
+    --pico-muted-background-color: #FFFFFF0A;
+    --pico-contrast: #F8FAFC;
+    --pico-contrast-border: #FFFFFF1A;
+    --pico-contrast-background: #FFFFFF0A;
+    --pico-contrast-underline: var(--pico-contrast);
+    --pico-contrast-hover: #FFFFFF;
+    --pico-contrast-hover-border: #FFFFFF26;
+    --pico-contrast-hover-background: #FFFFFF14;
+    --pico-contrast-hover-underline: var(--pico-contrast-hover);
+    --pico-contrast-focus: var(--pico-text-selection-color);
+    --pico-contrast-inverse: #060A12;
+    --pico-primary: #06B6D4;
+    --pico-primary-background: #06B6D41A;
+    --pico-primary-border: var(--pico-primary);
+    --pico-primary-underline: var(--pico-primary);
+    --pico-primary-hover: #22D3EE;
+    --pico-primary-hover-background: #22D3EE1A;
+    --pico-primary-hover-border: var(--pico-primary-hover);
+    --pico-primary-hover-underline: var(--pico-primary-hover);
+    --pico-primary-focus: var(--pico-text-selection-color);
+    --pico-primary-inverse: #060A12;
+    --pico-secondary: #8B5CF6;
+    --pico-secondary-background: #8B5CF61A;
+    --pico-secondary-border: var(--pico-secondary);
+    --pico-secondary-underline: var(--pico-secondary);
+    --pico-secondary-hover: #A78BFA;
+    --pico-secondary-hover-background: #A78BFA1A;
+    --pico-secondary-hover-border: var(--pico-secondary-hover);
+    --pico-secondary-hover-underline: var(--pico-secondary-hover);
+    --pico-secondary-focus: var(--pico-text-selection-color);
+    --pico-secondary-inverse: #FFFFFF;
+    --pico-h1-color: #F8FAFC;
+    --pico-h2-color: #F8FAFC;
+    --pico-h3-color: #F1F5F9;
+    --pico-h4-color: #E2E8F0;
+    --pico-h5-color: #CBD5E1;
+    --pico-h6-color: #94A3B8;
+    --pico-box-shadow: 0 1.25rem 3.75rem -0.9375rem #00000066;
+    --pico-dropdown-color: var(--pico-contrast);
+    --pico-dropdown-border-color: var(--pico-contrast-border);
+    --pico-dropdown-background-color: #0F172ACC;
+    --pico-dropdown-hover-background-color: #FFFFFF14;
+    --pico-dropdown-box-shadow: 0 0.5rem 2rem -0.25rem #00000066;
+    --pico-modal-overlay-background-color: #00000099;
+    --pico-code-background-color: #0F172A;
+    --pico-code-color: #06B6D4;
+    --pico-border-radius: 0.75rem;
+    --glass-bg: #FFFFFF0A;
+    --glass-border: #FFFFFF14;
+    --glass-blur: 20px;
+    --glass-bg-hover: #FFFFFF14;
+}
+
+* {
+  scrollbar-color: var(--pico-contrast-border) var(--pico-background-color);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    html { scroll-behavior: smooth; }
+}
+
+body {
+    font-family: var(--pico-font-family-sans-serif);
+    background-color: var(--pico-background-color);
+    position: relative;
+    color: var(--pico-color);
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    contain: strict;
+    background:
+        radial-gradient(ellipse 50% 60% at 10% 20%, #06B6D40D, transparent),
+        radial-gradient(ellipse 40% 50% at 80% 70%, #8B5CF60D, transparent),
+        radial-gradient(ellipse 60% 40% at 50% 50%, #EC489914, transparent);
+}
+
+body > * {
+    position: relative;
+    z-index: 1;
+}
+
+:focus-visible {
+    outline: 1px solid var(--pico-primary);
+    border-radius: var(--pico-border-radius);
+}
+
+:where(a:not([role=button])), [role=link],
+:where(a:not([role=button]):visited), [role=link]:visited {
+    --pico-color: var(--pico-primary);
+    --pico-underline: var(--pico-primary);
+}
+
+:where(a:not([role=button]):hover), [role=link]:hover {
+    --pico-color: var(--pico-primary-hover);
+    --pico-underline: var(--pico-primary-hover);
+}
+
+.skip-link {
+    position: absolute;
+    top: -100%;
+}
+
+nav ol:first-of-type, nav ul:first-of-type,
+nav ol:last-of-type, nav ul:last-of-type {
+    margin: 0;
+}
+
+nav li :where(a,[role=link]) {
+    color: var(--pico-color);
+    text-decoration: none;
+    margin: 0;
+}
+
+body > header {
+    max-width: 1280px;
+    border-bottom: none;
+    padding: 1.5rem 2rem;
+    position: relative;
+    margin: auto;
+    z-index: 10;
+}
+
+header nav ol,
+header nav ul,
+header nav li {
+    margin: 0;
+}
+
+header nav > ul > li {
+    list-style: none;
+    padding: 0 0.25rem;
+}
+
+header nav > ul:not(.menu) > li {
+    padding: 0;
+}
+
+header nav > ul > li:last-of-type a {
+    color: var(--pico-primary-inverse);
+    background-color: var(--pico-primary);
+    border-radius: 9999px;
+    padding: 0.5rem 1rem;
+    text-wrap: nowrap;
+}
+
+header nav a,
+header nav details.dropdown > summary {
+    display: flex;
+    align-items: center;
+    list-style: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    color: var(--pico-color);
+    font-size: calc(var(--pico-font-size) * 0.65);
+    transition: color 0.15s ease;
+}
+
+header nav a,
+header nav details.dropdown {
+    text-decoration: none;
+}
+
+header nav details summary::marker,
+header nav details summary::-webkit-details-marker {
+    display: none;
+}
+
+header nav details.dropdown > summary::after {
+    background-size: var(--pico-font-size) auto;
+    float: inline-end;
+}
+
+header nav details[open] summary::after {
+    transform: rotate(0.5turn) translateX(-0.2rem);
+}
+
+header nav details.dropdown > summary + ul.align {
+    width: auto;
+    left: auto;
+    right: auto;
+    background: var(--pico-dropdown-background-color);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid var(--glass-border);
+}
+
+header nav .brand {
+    flex-grow: 1;
+}
+
+header nav .brand a,
+header nav .brand img {
+    display: flex;
+    align-items: center;
+    height: 40px;
+    padding: 0;
+    margin: 0;
+}
+
+header nav .brand a {
+    font-family: var(--pico-font-family-display);
+    font-weight: 500;
+    font-size: calc(var(--pico-font-size) * 0.9);
+    letter-spacing: -0.02em;
+    color: var(--pico-contrast);
+    text-decoration: none;
+}
+
+header nav .menu-open,
+header nav .menu-close,
+header nav .sidebar-open,
+header nav .sidebar-close {
+    display: none;
+}
+
+header nav .menu-open button,
+header nav .menu-close button,
+header nav .sidebar-open button,
+header nav .sidebar-close button {
+    color: var(--pico-contrast);
+    padding: 0.75rem;
+    background: none;
+    border: none;
+}
+
+header nav .menu a[role=button] {
+    background-color: var(--pico-primary);
+    color: var(--pico-primary-inverse);
+    border-color: var(--pico-primary);
+    border-radius: 9999px;
+    margin-inline-start: 0;
+}
+
+header nav .menu a[role=button]:hover {
+    background-color: var(--pico-primary-hover);
+    border-color: var(--pico-primary-hover);
+    color: var(--pico-primary-inverse);
+}
+
+@media (max-width: 991px) {
+    header nav .menu-open.show,
+    header nav .menu-close.show {
+        display: flex;
+    }
+
+    header nav.small {
+        display: block;
+        overflow-y: auto;
+        position: absolute;
+        background-color: var(--pico-background-color);
+        min-height: 100%;
+        z-index: 100;
+        width: 100%;
+    }
+
+    header nav .menu {
+        display: none;
+    }
+
+    header nav.small .menu {
+        flex-direction: column;
+        display: flex;
+    }
+
+    header nav .menu ul {
+        display: block;
+    }
+
+    header nav .menu li {
+        padding: 0.75rem 2rem;
+        width: 100%;
+    }
+
+    body > header > nav {
+        padding: 0 1rem;
+    }
+}
+
+nav[aria-label="breadcrumb"] {
+    border-bottom: 1px solid var(--glass-border);
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+}
+
+nav[aria-label="breadcrumb"] > ul {
+    text-align: center;
+    max-width: 1200px;
+    margin: auto;
+    width: 100%;
+}
+
+nav[aria-label=breadcrumb] ul li {
+    justify-content: flex-end;
+    align-items: center;
+    display: flex;
+    font-size: calc(var(--pico-font-size) * 0.65);
+    color: var(--pico-muted-color);
+}
+
+nav[aria-label=breadcrumb] ul li:not(:first-child) {
+    margin-inline-start: 0;
+}
+
+nav[aria-label=breadcrumb] ul li:not(:last-child)::after {
+    color: var(--pico-muted-color);
+    width: auto;
+}
+
+nav[aria-label=breadcrumb] ul li a {
+    color: var(--pico-muted-color);
+}
+
+nav[aria-label=breadcrumb] ul li a:hover {
+    color: var(--pico-contrast);
+    opacity: 1;
+}
+
+
+dialog > article {
+    background: #0F172AE6;
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    height: calc(100vh - 2rem);
+    overflow: unset;
+    border: 1px solid var(--glass-border);
+    border-radius: calc(var(--pico-border-radius) * 2);
+}
+
+dialog header {
+    background: var(--glass-bg);
+    border-bottom: 1px solid var(--glass-border);
+    border-radius: calc(var(--pico-border-radius) * 2) calc(var(--pico-border-radius) * 2) 0 0;
+}
+
+dialog form {
+    display: flex;
+    padding: 1rem;
+}
+
+dialog input,
+dialog button {
+    background-color: #0F172A;
+    color: var(--pico-contrast);
+    appearance: none;
+    box-shadow: none;
+    border: none;
+    padding: 0.5rem;
+}
+
+dialog button[type=reset] {
+    border-radius: 9999px;
+    margin-inline-start: 4px;
+    cursor: pointer;
+}
+
+dialog button[type=reset]:hover {
+    background-color: var(--glass-bg-hover);
+}
+
+dialog input {
+    border: 1px solid var(--glass-border);
+    background-color: #0F172A;
+    font-size: var(--pico-font-size);
+    display: block;
+    width: 100%;
+    margin: 0 1px;
+    outline: none;
+    border-radius: 9999px;
+    padding: 0.5rem 1rem;
+}
+
+dialog input:focus-visible {
+    border: 1px solid var(--pico-primary);
+    box-shadow: 0 0 0 3px #06B6D41A;
+}
+
+dialog input::-webkit-input-placeholder {
+    color: var(--pico-muted-color);
+}
+
+dialog.search .results {
+    height: calc(100% - 4.25rem);
+    overflow-y: auto;
+    padding: 1rem;
+}
+
+dialog.search a.result-item {
+    border-inline-start: 2px solid var(--glass-border);
+    color: var(--pico-color);
+    text-decoration: none;
+    cursor: pointer;
+    display: block;
+    padding: 0.5rem;
+    padding-inline-start: 1rem;
+    margin-bottom: 0.5rem;
+    border-radius: 0 var(--pico-border-radius) var(--pico-border-radius) 0;
+    transition: background-color 0.15s ease;
+}
+
+dialog.search a.result-item:hover {
+    --pico-color: var(--pico-contrast);
+    background-color: var(--glass-bg-hover);
+    border-inline-start-color: var(--pico-primary);
+    color: var(--pico-contrast);
+    opacity: 1;
+}
+
+dialog.search .result-title {
+    border-bottom: 1px solid var(--glass-border);
+    display: block;
+    font-weight: 500;
+    padding-bottom: 0.25rem;
+    margin-bottom: 0.25rem;
+}
+
+dialog.search .result-content {
+    display: block;
+    color: var(--pico-muted-color);
+    font-size: calc(var(--pico-font-size) * 0.7);
+}
+
+dialog.search .result-content b {
+    background-color: var(--pico-primary-background);
+    color: var(--pico-primary);
+    padding: 0.1rem 0.25rem;
+    border-radius: calc(var(--pico-border-radius) * 0.5);
+}
+
+dialog.search .load-more {
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    color: var(--pico-contrast);
+    border: 1px solid var(--glass-border);
+    cursor: pointer;
+    display: block;
+    font-size: calc(var(--pico-font-size) * 0.7);
+    margin: 1rem auto;
+    padding: 0.5rem 1.5rem;
+    border-radius: 9999px;
+    transition: background-color 0.15s ease;
+}
+
+dialog.search .load-more:hover {
+    background-color: var(--glass-bg-hover);
+}
+
+dialog.search .load-more:disabled {
+    opacity: 0.5;
+    cursor: wait;
+}
+
+@media (min-width: 1024px) {
+    dialog>article {
+        max-width: 950px;
+    }
+}
+
+
+.container {
+    max-width: 1200px !important;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--pico-font-family-display);
+    letter-spacing: -0.03em;
+}
+
+h1, h2 {
+    margin-bottom: 2.5rem;
+}
+
+h1, h2, h3 {
+    font-weight: 500;
+}
+
+h4, h5, h6 {
+    font-weight: 500;
+}
+
+h1 {
+    --pico-typography-spacing-vertical: 2rem;
+    font-size: calc(var(--pico-font-size) * 2.1);
+    line-height: 1.1;
+    text-align: center;
+}
+
+h2 {
+    --pico-typography-spacing-vertical: 1.5rem;
+    font-size: calc(var(--pico-font-size) * 1.6);
+    line-height: 1.2;
+    text-align: center;
+}
+
+h3 {
+    --pico-typography-spacing-vertical: 1.25rem;
+    font-size: calc(var(--pico-font-size) * 0.9);
+    line-height: 1.3;
+}
+
+h4 {
+    --pico-typography-spacing-vertical: 1rem;
+    font-size: calc(var(--pico-font-size) * 0.8);
+    line-height: 1.4;
+}
+
+img {
+    border-radius: var(--pico-border-radius);
+}
+
+.btn {
+    display: inline-block;
+    text-decoration: none;
+    vertical-align: sub;
+    padding: 0.75rem 2rem;
+    margin: 0.5rem 0;
+    line-height: inherit;
+    font-family: var(--pico-font-family-display);
+    font-size: calc(var(--pico-font-size) * 0.8);
+    font-weight: 500;
+    letter-spacing: 0;
+    border: 1px solid var(--glass-border);
+    border-radius: 9999px;
+    color: var(--pico-contrast);
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.btn:hover {
+    background-color: var(--glass-bg-hover);
+    color: var(--pico-contrast);
+    opacity: 1;
+}
+
+.btn-primary,
+.btn:first-of-type {
+    background: linear-gradient(135deg, #06B6D4, #8B5CF6);
+    color: #FFFFFF;
+    border-color: #06B6D433;
+}
+
+.btn-primary:hover,
+.btn:first-of-type:hover {
+    background: linear-gradient(135deg, #22D3EE, #A78BFA);
+    color: #FFFFFF;
+}
+
+.btn::after {
+    display: none;
+}
+
+.hidden {
+    display: none;
+}
+
+.file,
+.audio,
+.image,
+.video {
+    max-width: 100%;
+    text-align: center;
+    display: block;
+    margin: auto;
+}
+
+.caption:not(:empty) {
+    max-width: 60rem;
+    margin: 0.75rem auto;
+    font-size: calc(var(--pico-font-size) * 0.65);
+    color: var(--pico-muted-color);
+    font-weight: 300;
+}
+
+
+pre:has(code[class*="language-"]) {
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border-radius: calc(var(--pico-border-radius) * 2);
+    border: 1px solid var(--glass-border);
+    padding: 1rem;
+}
+
+pre code[class*=language-] {
+    color: var(--pico-code-color);
+    background-color: var(--pico-code-background-color);
+    font-family: var(--pico-font-family-monospace);
+    border-radius: var(--pico-border-radius);
+    overflow-x: auto;
+    padding: 1rem;
+}
+
+p code {
+    color: var(--pico-code-color);
+    background-color: var(--pico-code-background-color);
+    border-radius: calc(var(--pico-border-radius) * 0.5);
+    font-family: var(--pico-font-family-monospace);
+    overflow-wrap: anywhere;
+    padding: 0.15rem 0.4rem;
+    font-size: 0.875em;
+}
+
+
+footer.bottom {
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border-top: 1px solid var(--glass-border);
+    color: var(--pico-muted-color);
+    font-size: calc(var(--pico-font-size) * 0.65);
+    font-weight: 300;
+    margin-top: 3rem;
+}
+
+footer.bottom .container {
+    max-width: 1280px;
+    margin: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+footer.cms-content + footer.bottom {
+    margin-top: 0;
+}
+
+footer.cms-content + footer.bottom .container {
+    border-top: 1px solid var(--glass-border);
+}
+
+footer.bottom .brand {
+    display: inline;
+    margin-inline-end: 0.5rem;
+    user-select: none;
+    vertical-align: middle;
+}
+
+footer.bottom .brand img {
+    height: 7.5rem;
+    filter: brightness(0) invert(1);
+    vertical-align: middle;
+    opacity: 0.3;
+}
+
+footer.cms-content {
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border-top: 1px solid var(--glass-border);
+    padding: 4rem 0 2rem;
+}
+
+footer.cms-content .container {
+    max-width: 1280px;
+}
+
+footer.cms-content .cards .card-list {
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+}
+
+footer.cms-content .cards .card-item {
+    background-color: #00000000;
+    border: none;
+    box-shadow: none;
+    border-radius: 0;
+    padding: 0;
+    text-align: start;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+}
+
+footer.cms-content .cards .card-item:hover {
+    box-shadow: none;
+}
+
+footer.cms-content .cards .title {
+    color: var(--pico-muted-color);
+    font-size: calc(var(--pico-font-size) * 0.65);
+    margin-bottom: 1.5rem;
+}
+
+footer.cms-content .cards .text {
+    color: #FFFFFFCC;
+    font-weight: 300;
+}
+
+footer.cms-content .cards .text p {
+    line-height: 1.75;
+    margin: 0;
+}
+
+footer.cms-content .cards .text a,
+footer.cms-content .cards .text a:visited {
+    color: #FFFFFFCC;
+    text-decoration: none;
+}
+
+footer.cms-content .cards .text a:hover {
+    color: var(--pico-primary);
+}
+
+footer.cms-content .cards .text ul {
+    padding-left: 0;
+    list-style: none;
+}
+
+footer.cms-content .heading h1,
+footer.cms-content .heading h2,
+footer.cms-content .heading h3 {
+    color: var(--pico-contrast);
+}
+
+footer.cms-content .text {
+    color: #FFFFFFA6;
+}
+
+footer.cms-content a,
+footer.cms-content a:visited {
+    color: #FFFFFFCC;
+}
+
+footer.cms-content a:hover {
+    color: var(--pico-primary);
+}
+
+footer.cms-content :focus-visible {
+    outline-color: var(--pico-primary);
+}
+
+@media screen and (min-width: 768px) {
+    h1 {
+        font-size: calc(var(--pico-font-size) * 3.2);
+    }
+
+    h2 {
+        font-size: calc(var(--pico-font-size) * 2.1);
+    }
+
+    footer.cms-content .cards .card-list {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
