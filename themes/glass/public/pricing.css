@@ -1,0 +1,277 @@
+/**
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+.pricing .title {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.pricing .title ~ .subtitle {
+    margin-top: -1rem;
+}
+
+.pricing .subtitle {
+    text-align: center;
+    color: var(--pico-muted-color);
+    margin-bottom: 2rem;
+}
+
+.pricing .pricing-toggle {
+    position: relative;
+    display: flex;
+    width: fit-content;
+    margin: 0 auto 2rem;
+    padding: 0.25rem;
+    background: var(--pico-contrast-background);
+    border: 1px solid var(--pico-contrast-border);
+    border-radius: 9999px;
+}
+
+.pricing .pricing-toggle > span {
+    position: relative;
+    z-index: 1;
+    padding: 0.5rem 1.25rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--pico-muted-color);
+    cursor: pointer;
+}
+
+.pricing .pricing-toggle > span:first-child {
+    color: var(--pico-color);
+}
+
+.pricing .pricing-toggle.alt > span:first-child {
+    color: var(--pico-muted-color);
+}
+
+.pricing .pricing-toggle.alt > span:last-child {
+    color: var(--pico-color);
+}
+
+.pricing .pricing-toggle::before {
+    content: "";
+    position: absolute;
+    inset: 0.25rem;
+    width: calc(50% - 0.25rem);
+    background: var(--pico-contrast-hover-background);
+    border-radius: 9999px;
+    box-shadow: 0 1px 3px #0000001A;
+    transition: transform 0.2s;
+}
+
+.pricing .pricing-toggle.alt::before {
+    transform: translateX(100%);
+}
+
+.pricing .pricing-list {
+    display: grid;
+    grid-template-columns: 1fr;
+    align-items: stretch;
+    padding: 1rem 0;
+    gap: 1rem;
+}
+
+@media screen and (min-width: 576px) {
+    .pricing .pricing-list {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media screen and (min-width: 768px) {
+    .pricing .pricing-list {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+.pricing .pricing-item {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding: 2rem;
+    margin: 0 auto;
+    backdrop-filter: blur(20px);
+    background: var(--pico-contrast-background);
+    border: 1px solid var(--pico-contrast-border);
+    border-top: 2px solid var(--pico-contrast-hover-border);
+    border-radius: var(--pico-border-radius);
+    box-shadow: var(--pico-box-shadow);
+}
+
+.pricing .pricing-item::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    pointer-events: none;
+    background: linear-gradient(90deg, transparent, #FFFFFF33, transparent);
+}
+
+.pricing .pricing-item::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 1px;
+    height: 100%;
+    pointer-events: none;
+    background: linear-gradient(180deg, #FFFFFF33, transparent, #FFFFFF0D);
+}
+
+.pricing .pricing-item.highlight {
+    background: linear-gradient(135deg, var(--pico-primary-background), var(--pico-secondary-background));
+    border-color: var(--pico-text-selection-color);
+    color: var(--pico-contrast);
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+}
+
+.pricing .badge {
+    position: absolute;
+    top: -0.75rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--pico-primary);
+    color: var(--pico-primary-inverse);
+    border-radius: 9999px;
+    font-weight: 500;
+    font-size: 0.75rem;
+    padding: 0.25rem 1rem;
+    white-space: nowrap;
+}
+
+.pricing .pricing-header {
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.pricing .price {
+    display: flex;
+    align-items: baseline;
+    gap: 0.25rem;
+    order: 3;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--pico-contrast-border);
+}
+
+.pricing .highlight .price {
+    border-bottom-color: var(--pico-contrast-border);
+}
+
+.pricing .amount {
+    font-size: 2.5rem;
+    font-weight: 500;
+    line-height: 1.2;
+    letter-spacing: -0.03em;
+}
+
+.pricing .unit {
+    font-size: 0.875rem;
+    color: var(--pico-muted-color);
+}
+
+.pricing .highlight .unit {
+    color: var(--pico-muted-color);
+}
+
+.pricing .name {
+    --pico-font-size: 1.125rem;
+    font-weight: 500;
+    order: 1;
+    margin: 0 0 0.25rem;
+}
+
+.pricing .pricing-header .text {
+    font-size: 0.875rem;
+    color: var(--pico-muted-color);
+    font-weight: 300;
+    order: 2;
+    margin: 0 0 0.75rem;
+}
+
+.pricing .highlight .pricing-header .text {
+    color: var(--pico-muted-color);
+}
+
+.pricing .features {
+    flex: 1;
+}
+
+.pricing .features ul {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.pricing .features li {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 300;
+}
+
+.pricing .features li::before {
+    content: "";
+    flex-shrink: 0;
+    width: 1rem;
+    height: 1rem;
+    background-color: var(--pico-primary);
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='currentColor'%3E%3Cpath d='M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0'/%3E%3C/svg%3E");
+    mask-size: contain;
+    mask-repeat: no-repeat;
+}
+
+.pricing .highlight .name {
+    color: var(--pico-contrast);
+}
+
+.pricing .highlight .features li {
+    color: var(--pico-color);
+}
+
+.pricing .highlight .features li::before {
+    background-color: var(--pico-primary);
+}
+
+.pricing .btn {
+    display: block;
+    width: 100%;
+    text-align: center;
+    margin-top: auto;
+    padding: 0.75rem 1.5rem;
+    background: var(--pico-contrast-background);
+    color: var(--pico-contrast);
+    border: 1px solid var(--pico-contrast-border);
+    border-radius: var(--pico-border-radius);
+    text-decoration: none;
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+}
+
+.pricing .btn:hover {
+    background-color: var(--pico-contrast-hover-background);
+    color: var(--pico-contrast);
+    opacity: 1;
+}
+
+.pricing .highlight .btn {
+    background: var(--pico-primary);
+    color: var(--pico-primary-inverse);
+    border-color: var(--pico-primary);
+    box-shadow: 0 0 1.5rem -0.25rem var(--pico-text-selection-color);
+}
+
+.pricing .highlight .btn:hover {
+    background: var(--pico-primary-hover);
+    color: var(--pico-primary-inverse);
+    box-shadow: 0 0 2rem -0.25rem var(--pico-text-selection-color);
+}

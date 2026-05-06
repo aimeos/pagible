@@ -1,0 +1,322 @@
+/**
+ * Glass Theme - Lazy loaded CSS
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+dialog > article {
+    background: #0F172AE6;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    height: calc(100vh - 2rem);
+    overflow: unset;
+    border: 1px solid var(--pico-contrast-border);
+    border-top: 2px solid var(--pico-contrast-hover-border);
+    border-radius: calc(var(--pico-border-radius) * 1.5);
+    box-shadow: var(--pico-box-shadow);
+}
+
+dialog header {
+    background: var(--pico-contrast-background);
+    border-bottom: 1px solid var(--pico-contrast-border);
+    border-radius: calc(var(--pico-border-radius) * 1.5) calc(var(--pico-border-radius) * 1.5) 0 0;
+}
+
+dialog form {
+    display: flex;
+    padding: 1rem;
+}
+
+dialog input,
+dialog button {
+    background-color: var(--pico-code-background-color);
+    color: var(--pico-contrast);
+    appearance: none;
+    box-shadow: none;
+    border: none;
+    padding: 0.5rem;
+}
+
+dialog button[type=reset] {
+    border-radius: 9999px;
+    margin-inline-start: 4px;
+    cursor: pointer;
+}
+
+dialog button[type=reset]:hover {
+    background-color: var(--pico-contrast-hover-background);
+}
+
+dialog input {
+    border: 1px solid var(--pico-contrast-border);
+    background-color: var(--pico-code-background-color);
+    font-size: var(--pico-font-size);
+    display: block;
+    width: 100%;
+    margin: 0 1px;
+    outline: none;
+    border-radius: 9999px;
+    padding: 0.5rem 1rem;
+}
+
+dialog input:focus-visible {
+    border: 1px solid var(--pico-primary);
+    box-shadow: 0 0 0 3px var(--pico-primary-background);
+}
+
+dialog input::-webkit-input-placeholder {
+    color: var(--pico-muted-color);
+}
+
+dialog.search .results {
+    height: calc(100% - 4.25rem);
+    overflow-y: auto;
+    padding: 1rem;
+}
+
+dialog.search a.result-item {
+    border-inline-start: 2px solid var(--pico-contrast-border);
+    color: var(--pico-color);
+    text-decoration: none;
+    cursor: pointer;
+    display: block;
+    padding: 0.5rem;
+    padding-inline-start: 1rem;
+    margin-bottom: 0.5rem;
+    border-radius: 0 var(--pico-border-radius) var(--pico-border-radius) 0;
+    transition: background-color 0.15s ease;
+}
+
+dialog.search a.result-item:hover {
+    --pico-color: var(--pico-contrast);
+    background-color: var(--pico-contrast-hover-background);
+    border-inline-start-color: var(--pico-primary);
+    color: var(--pico-contrast);
+    opacity: 1;
+}
+
+dialog.search .result-title {
+    border-bottom: 1px solid var(--pico-contrast-border);
+    display: block;
+    font-weight: 500;
+    padding-bottom: 0.25rem;
+    margin-bottom: 0.25rem;
+}
+
+dialog.search .result-content {
+    display: block;
+    color: var(--pico-muted-color);
+    font-size: calc(var(--pico-font-size) * 0.75);
+}
+
+dialog.search .result-content b {
+    background-color: var(--pico-primary-background);
+    color: var(--pico-primary);
+    padding: 0.1rem 0.25rem;
+    border-radius: calc(var(--pico-border-radius) * 0.5);
+}
+
+dialog.search .load-more {
+    background: var(--pico-contrast-background);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    color: var(--pico-contrast);
+    border: 1px solid var(--pico-contrast-border);
+    cursor: pointer;
+    display: block;
+    font-size: calc(var(--pico-font-size) * 0.75);
+    margin: 1rem auto;
+    padding: 0.5rem 1.5rem;
+    border-radius: 9999px;
+    transition: background-color 0.15s ease;
+}
+
+dialog.search .load-more:hover {
+    background-color: var(--pico-contrast-hover-background);
+}
+
+dialog.search .load-more:disabled {
+    opacity: 0.5;
+    cursor: wait;
+}
+
+@media (min-width: 1024px) {
+    dialog>article {
+        max-width: 900px;
+    }
+}
+
+
+.caption:not(:empty) {
+    max-width: 60rem;
+    margin: 0.75rem auto;
+    font-size: calc(var(--pico-font-size) * 0.75);
+    color: var(--pico-muted-color);
+    font-weight: 300;
+}
+
+
+p code {
+    color: var(--pico-code-color);
+    background-color: var(--pico-code-background-color);
+    border-radius: calc(var(--pico-border-radius) * 0.5);
+    font-family: var(--pico-font-family-monospace);
+    overflow-wrap: anywhere;
+    padding: 0.15rem 0.4rem;
+    font-size: 0.875em;
+}
+
+pre:has(code[class*="language-"]) {
+    backdrop-filter: blur(20px);
+    background: var(--pico-contrast-background);
+    border: 1px solid var(--pico-contrast-border);
+    border-top: 2px solid var(--pico-contrast-hover-border);
+    border-radius: calc(var(--pico-border-radius) * 1.5);
+    box-shadow: 0 0.5rem 2rem -0.5rem #00000033, 0 0 0 0 transparent;
+    transition: box-shadow 0.3s ease, border-color 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    padding: 1rem;
+}
+
+pre:has(code[class*="language-"]):hover {
+    box-shadow: 0 0.75rem 2.5rem -0.25rem #00000066, 0 0 0 1px var(--pico-contrast-background);
+    border-color: var(--pico-contrast-hover-border);
+}
+
+pre code[class*=language-] {
+    color: var(--pico-code-color);
+    background-color: var(--pico-code-background-color);
+    font-family: var(--pico-font-family-monospace);
+    overflow-x: auto;
+    padding: 1rem;
+}
+
+
+footer.cms-content {
+    background: var(--pico-contrast-background);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid var(--pico-contrast-border);
+    padding: 2rem 0;
+}
+
+footer.cms-content .container {
+    max-width: 1152px;
+    padding: 0 1rem;
+    padding-top: 2rem;
+}
+
+footer.cms-content .cards .card-list {
+    grid-template-columns: repeat(2, 1fr);
+    justify-self: auto;
+    max-width: 100%;
+}
+
+footer.cms-content .cards .card-item {
+    background-color: transparent;
+    box-shadow: none;
+    border: none;
+    border-radius: 0;
+    padding: 0;
+    text-align: start;
+    backdrop-filter: none;
+}
+
+footer.cms-content .cards .card-item:hover {
+    box-shadow: none;
+    border: none;
+}
+
+footer.cms-content .cards .title {
+    color: var(--pico-contrast);
+    font-size: calc(var(--pico-font-size) * 0.75);
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    margin-bottom: 1.5rem;
+    text-transform: uppercase;
+}
+
+footer.cms-content .cards .text {
+    color: #FFFFFFCC;
+    font-size: calc(var(--pico-font-size) * 0.75);
+    font-weight: 300;
+}
+
+footer.cms-content .cards .text p {
+    line-height: 1.75;
+    margin: 0;
+}
+
+footer.cms-content .cards .text a:hover {
+    color: var(--pico-contrast);
+}
+
+footer.cms-content ul {
+    padding-left: 0;
+    list-style: none;
+}
+
+footer.cms-content ul li {
+    list-style: none;
+    line-height: 2;
+}
+
+footer.cms-content .heading h1,
+footer.cms-content .heading h2,
+footer.cms-content .heading h3 {
+    color: var(--pico-contrast);
+}
+
+footer.cms-content .text {
+    color: #FFFFFFA6;
+}
+
+footer.cms-content a,
+footer.cms-content a:visited {
+    color: #FFFFFFCC;
+    text-decoration: none;
+}
+
+footer.cms-content a:hover {
+    color: var(--pico-contrast);
+}
+
+footer.bottom {
+    background: var(--pico-contrast-background);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid var(--pico-contrast-border);
+    color: var(--pico-muted-color);
+    font-size: calc(var(--pico-font-size) * 0.75);
+    font-weight: 300;
+    margin: 0;
+}
+
+footer.bottom .container {
+    max-width: 1152px;
+    margin: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 1rem;
+}
+
+footer.bottom .brand {
+    display: inline;
+    margin-inline-end: 0.5rem;
+    user-select: none;
+    vertical-align: middle;
+}
+
+footer.bottom .brand img {
+    height: 7.5rem;
+    filter: brightness(0) invert(1);
+    vertical-align: middle;
+    opacity: 0.3;
+}
+
+@media screen and (min-width: 768px) {
+    footer.cms-content .cards .card-list {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}

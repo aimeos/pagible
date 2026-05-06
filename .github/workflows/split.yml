@@ -27,6 +27,7 @@ jobs:
           - { package: mcp, repo: pagible-mcp }
           - { package: search, repo: pagible-search }
           - { package: theme, repo: pagible-theme }
+          - { package: themes/glass, repo: pagible-themes-glass }
           - { package: themes/pagible, repo: pagible-themes-pagible }
           - { package: themes/paper, repo: pagible-themes-paper }
     steps:

@@ -1,0 +1,23 @@
+/**
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+.cms-content {
+    max-width: 60rem;
+    margin: auto;
+}
+
+.cms-content .container {
+    padding: 0 min(5%, 2rem);
+}
+
+.cms-content .container > * {
+    background: var(--pico-contrast-background);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--pico-contrast-border);
+    border-top: 2px solid var(--pico-contrast-hover-border);
+    border-radius: calc(var(--pico-border-radius) * 1.5);
+    padding: 1rem;
+    box-shadow: var(--pico-box-shadow);
+}

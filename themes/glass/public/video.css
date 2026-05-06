@@ -1,0 +1,17 @@
+/**
+ * Glass Theme
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+.video video {
+    max-width: 100%;
+    display: block;
+    background: var(--pico-contrast-background);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--pico-contrast-border);
+    border-top: 2px solid var(--pico-contrast-hover-border);
+    border-radius: calc(var(--pico-border-radius) * 1.5);
+    padding: 0.75rem;
+    box-shadow: var(--pico-box-shadow);
+}

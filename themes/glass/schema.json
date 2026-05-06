@@ -1,0 +1,103 @@
+{
+    "label": "Glass",
+    "description": "Dark glassmorphism design with frosted glass panels, backdrop blur effects, and vibrant mint-green accents on a deep navy background",
+    "maintainer": "Aimeos",
+    "email": "info@aimeos.org",
+    "website": "https://pagible.com",
+    "types": {
+        "page": {
+            "sections": [
+                "main",
+                "footer"
+            ]
+        },
+        "docs": {
+            "sections": [
+                "main",
+                "footer"
+            ]
+        },
+        "blog": {
+            "sections": [
+                "main",
+                "footer"
+            ]
+        }
+    },
+    "config": {
+        "theme": {
+            "group": "basic",
+            "icon": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path d=\"M3,3H21V21H3V3M5,5V19H19V5H5M7,7H17V9H7V7M7,11H17V13H7V11M7,15H14V17H7V15Z\" opacity=\"0.6\"/></svg>",
+            "fields": {
+                "--pico-font-family-sans-serif": {
+                    "type": "string",
+                    "default": "\"Inter\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif"
+                },
+                "--pico-color": {
+                    "type": "color",
+                    "default": "#E2E8F0"
+                },
+                "--pico-background-color": {
+                    "type": "color",
+                    "default": "#060A12"
+                },
+                "--pico-text-selection-color": {
+                    "type": "color",
+                    "default": "#8AFFC433"
+                },
+                "--pico-contrast": {
+                    "type": "color",
+                    "default": "#F8FAFC"
+                },
+                "--pico-contrast-hover": {
+                    "type": "color",
+                    "default": "#FFFFFF"
+                },
+                "--pico-contrast-inverse": {
+                    "type": "color",
+                    "default": "#060A12"
+                },
+                "--pico-primary": {
+                    "type": "color",
+                    "default": "#8AFFC4"
+                },
+                "--pico-primary-background": {
+                    "type": "color",
+                    "default": "#8AFFC41A"
+                },
+                "--pico-primary-hover": {
+                    "type": "color",
+                    "default": "#B8FFD9"
+                },
+                "--pico-primary-hover-background": {
+                    "type": "color",
+                    "default": "#B8FFD91A"
+                },
+                "--pico-secondary": {
+                    "type": "color",
+                    "default": "#6366F1"
+                },
+                "--pico-secondary-background": {
+                    "type": "color",
+                    "default": "#6366F11A"
+                },
+                "--pico-secondary-hover": {
+                    "type": "color",
+                    "default": "#818CF8"
+                },
+                "--pico-secondary-hover-background": {
+                    "type": "color",
+                    "default": "#818CF81A"
+                },
+                "--pico-border-radius": {
+                    "type": "string",
+                    "default": "20px"
+                },
+                "--pico-nav-breadcrumb-divider": {
+                    "type": "string",
+                    "default": "/"
+                }
+            }
+        }
+    }
+}

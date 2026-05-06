@@ -1,0 +1,107 @@
+/**
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+.hero {
+    overflow-x: hidden;
+}
+
+.hero .container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 5rem 0 4rem;
+}
+
+.hero .first {
+    text-align: center;
+    margin: auto;
+}
+
+.hero .second {
+    display: block;
+    width: 100%;
+    margin: auto;
+}
+
+.hero .first:has(+ .second),
+.hero .first:has(+ .second) h1 {
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.hero h1 {
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+    font-size: calc(var(--pico-font-size) * 2.1);
+    font-weight: 500;
+    line-height: 1.2;
+    letter-spacing: -0.03em;
+}
+
+.hero .subtitle {
+    display: inline-block;
+    margin-bottom: 1.5rem;
+    padding: 0.375rem 1rem;
+    color: var(--pico-primary);
+    font-size: calc(var(--pico-font-size) * 0.75);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    border: 1px solid var(--pico-contrast-border);
+    border-radius: 9999px;
+    background: var(--pico-contrast-background);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+}
+
+.hero p {
+    line-height: 1.5;
+    color: var(--pico-muted-color);
+    font-size: calc(var(--pico-font-size) * 0.9);
+    font-weight: 300;
+    max-width: 40rem;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.hero .actions {
+    padding: 1rem 0;
+}
+
+.hero .btn {
+    margin: 0.5rem 0.25rem;
+}
+
+.hero picture {
+    margin-top: 3rem;
+}
+
+.hero .second picture {
+    backdrop-filter: blur(20px);
+    background: var(--pico-contrast-background);
+    border: 1px solid var(--pico-contrast-border);
+    border-top: 2px solid var(--pico-contrast-hover-border);
+    border-radius: calc(var(--pico-border-radius) * 1.5);
+    box-shadow: var(--pico-box-shadow);
+    margin: 3rem auto 0;
+    padding: 0.75rem;
+    display: block;
+    width: 50%;
+    aspect-ratio: 3 / 2;
+}
+
+.hero .second img {
+    border-radius: var(--pico-border-radius);
+    display: block;
+}
+
+@media screen and (min-width: 768px) {
+    .hero h1 {
+        font-size: calc(var(--pico-font-size) * 3.2);
+    }
+
+    .hero p {
+        font-size: var(--pico-font-size);
+    }
+}

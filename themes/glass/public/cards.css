@@ -1,0 +1,50 @@
+/**
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+.cards .card-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    justify-self: center;
+    gap: 1rem;
+}
+
+@media screen and (min-width: 768px) {
+    .cards .card-list {
+        grid-template-columns: 1fr 1fr 1fr;
+    }
+}
+
+.cards .card-item {
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(20px);
+    background: var(--pico-contrast-background);
+    border: 1px solid var(--pico-contrast-border);
+    border-top: 2px solid var(--pico-contrast-hover-border);
+    border-radius: calc(var(--pico-border-radius) * 1.25);
+    box-shadow: 0 0.5rem 2rem -0.5rem #00000033, 0 0 0 0 transparent;
+    transition: box-shadow 0.3s ease, border-color 0.3s ease;
+    text-align: start;
+    padding: 2rem;
+}
+
+.cards .card-item:hover {
+    box-shadow: 0 0.75rem 2.5rem -0.25rem #00000066, 0 0 0 1px var(--pico-contrast-background);
+    border-color: var(--pico-contrast-hover-border);
+}
+
+.cards .card-item img {
+    border-radius: calc(var(--pico-border-radius) * 1.5);
+}
+
+.cards .title {
+    font-size: var(--pico-font-size);
+    margin: 1rem 0 0.75rem;
+    font-weight: 600;
+}
+
+.cards .text p {
+    font-size: calc(var(--pico-font-size) * 0.85);
+    color: var(--pico-muted-color);
+}
