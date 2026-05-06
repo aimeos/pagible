@@ -1,0 +1,267 @@
+/**
+ * Clean Theme - Lazy loaded CSS
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+dialog > article {
+    background-color: var(--pico-contrast-inverse);
+    height: calc(100vh - 2rem);
+    overflow: unset;
+    border: 1px solid var(--pico-muted-border-color);
+    border-radius: calc(var(--pico-border-radius) * 2);
+}
+
+dialog header {
+    background-color: var(--pico-muted-background-color);
+    border-bottom: 1px solid var(--pico-muted-border-color);
+    border-radius: calc(var(--pico-border-radius) * 2) calc(var(--pico-border-radius) * 2) 0 0;
+}
+
+dialog form {
+    display: flex;
+    padding: 1rem;
+}
+
+dialog input,
+dialog button {
+    background-color: var(--pico-contrast-inverse);
+    color: var(--pico-contrast);
+    appearance: none;
+    box-shadow: none;
+    border: none;
+    padding: 0.5rem;
+}
+
+dialog button[type=reset] {
+    border-radius: var(--pico-border-radius);
+    margin-inline-start: 4px;
+    cursor: pointer;
+}
+
+dialog button[type=reset]:hover {
+    background-color: var(--pico-muted-background-color);
+}
+
+dialog input {
+    border: 1px solid var(--pico-contrast-border);
+    background-color: var(--pico-contrast-inverse);
+    font-size: var(--pico-font-size);
+    display: block;
+    width: 100%;
+    margin: 0 1px;
+    outline: none;
+    border-radius: var(--pico-border-radius);
+    padding: 0.5rem 1rem;
+}
+
+dialog input:focus-visible {
+    border: 1px solid var(--pico-primary);
+    box-shadow: 0 0 0 3px #3B82F626;
+}
+
+dialog input::-webkit-input-placeholder {
+    color: var(--pico-muted-color);
+}
+
+dialog.search .results {
+    height: calc(100% - 4.25rem);
+    overflow-y: auto;
+    padding: 1rem;
+}
+
+dialog.search a.result-item {
+    border-inline-start: 2px solid var(--pico-muted-border-color);
+    color: var(--pico-color);
+    text-decoration: none;
+    cursor: pointer;
+    display: block;
+    padding: 0.5rem;
+    padding-inline-start: 1rem;
+    margin-bottom: 0.5rem;
+    border-radius: 0 var(--pico-border-radius) var(--pico-border-radius) 0;
+    transition: background-color 0.15s ease;
+}
+
+dialog.search a.result-item:hover {
+    --pico-color: var(--pico-contrast);
+    background-color: var(--pico-muted-background-color);
+    border-inline-start-color: var(--pico-primary);
+    color: var(--pico-contrast);
+    opacity: 1;
+}
+
+dialog.search .result-title {
+    border-bottom: 1px solid var(--pico-muted-border-color);
+    display: block;
+    font-weight: 500;
+    padding-bottom: 0.25rem;
+    margin-bottom: 0.25rem;
+}
+
+dialog.search .result-content {
+    display: block;
+    color: var(--pico-muted-color);
+    font-size: calc(var(--pico-font-size) * 0.7);
+}
+
+dialog.search .result-content b {
+    background-color: var(--pico-text-selection-color);
+    color: var(--pico-primary);
+    padding: 0.1rem 0.25rem;
+    border-radius: calc(var(--pico-border-radius) * 0.5);
+}
+
+dialog.search .load-more {
+    background-color: var(--pico-contrast-inverse);
+    color: var(--pico-contrast);
+    border: 1px solid var(--pico-contrast-border);
+    cursor: pointer;
+    display: block;
+    font-size: calc(var(--pico-font-size) * 0.7);
+    margin: 1rem auto;
+    padding: 0.5rem 1.5rem;
+    border-radius: var(--pico-border-radius);
+    transition: background-color 0.15s ease;
+}
+
+dialog.search .load-more:hover {
+    background-color: var(--pico-muted-background-color);
+}
+
+dialog.search .load-more:disabled {
+    opacity: 0.5;
+    cursor: wait;
+}
+
+@media (min-width: 1024px) {
+    dialog>article {
+        max-width: 950px;
+    }
+}
+
+
+.caption:not(:empty) {
+    max-width: 60rem;
+    margin: 0.75rem auto;
+    font-size: calc(var(--pico-font-size) * 0.65);
+    color: var(--pico-muted-color);
+}
+
+
+p code {
+    overflow-wrap: anywhere;
+    font-family: var(--pico-font-family-monospace);
+    background-color: var(--pico-code-background-color);
+    padding: 0.15rem 0.4rem;
+    border-radius: calc(var(--pico-border-radius) * 0.5);
+    font-size: 0.875em;
+}
+
+pre code[class*=language-] {
+    background-color: var(--pico-contrast);
+    color: var(--pico-contrast-inverse);
+    overflow-x: auto;
+    font-family: var(--pico-font-family-monospace);
+    border-radius: calc(var(--pico-border-radius) * 2);
+}
+
+pre:has(code[class*="language-"]) {
+    background-color: var(--pico-contrast);
+    border-radius: calc(var(--pico-border-radius) * 2);
+    padding: 1.5rem;
+    border: 1px solid var(--pico-muted-border-color);
+}
+
+
+footer.cms-content {
+    background-color: var(--pico-background-color);
+    padding: 2rem 0;
+}
+
+footer.cms-content .container {
+    padding: 0;
+    padding-top: 2rem;
+}
+
+footer.cms-content .cards .card-list {
+    grid-template-columns: 2fr 1fr;
+    justify-self: normal;
+}
+
+footer.cms-content .cards .card-item {
+    padding: 0;
+}
+
+footer.cms-content .cards .title {
+    color: var(--pico-contrast);
+    font-size: calc(var(--pico-font-size) * 0.65);
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    margin-bottom: 1.5rem;
+    text-transform: uppercase;
+}
+
+footer.cms-content .cards .text {
+    color: var(--pico-muted-color);
+    font-size: calc(var(--pico-font-size) * 0.7);
+}
+
+footer.cms-content .cards .text p {
+    line-height: 1.75;
+    margin: 0;
+}
+
+footer.cms-content .cards .text a:hover {
+    color: var(--pico-contrast);
+}
+
+footer.cms-content ul {
+    padding-left: 0;
+    list-style: none;
+}
+
+footer.cms-content ul li {
+    list-style: none;
+}
+
+footer.cms-content .heading h1,
+footer.cms-content .heading h2,
+footer.cms-content .heading h3 {
+    color: var(--pico-contrast);
+}
+
+footer.cms-content .text {
+    color: var(--pico-muted-color);
+}
+
+footer.cms-content a,
+footer.cms-content a:visited {
+    color: var(--pico-muted-color);
+    text-decoration: none;
+}
+
+footer.cms-content a:hover {
+    color: var(--pico-contrast);
+}
+
+footer.bottom {
+    color: var(--pico-muted-color);
+    background-color: var(--pico-background-color);
+    border-top: 1px solid var(--pico-muted-border-color);
+    font-size: calc(var(--pico-font-size) * 0.65);
+    margin: 0;
+}
+
+footer.bottom .container {
+    margin: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 0;
+}
+
+@media screen and (min-width: 768px) {
+    footer.cms-content .cards .card-list {
+        grid-template-columns: 2fr repeat(3, 1fr);
+    }
+}
