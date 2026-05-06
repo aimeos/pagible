@@ -16,17 +16,18 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - { package: core, repo: pagible-core }
-          - { package: admin, repo: pagible-admin }
           - { package: ai, repo: pagible-ai }
+          - { package: admin, repo: pagible-admin }
           - { package: backup, repo: pagible-backup }
+          - { package: cashier, repo: pagible-cashier }
+          - { package: core, repo: pagible-core }
           - { package: graphql, repo: pagible-graphql }
           - { package: import, repo: pagible-import }
-          - { package: search, repo: pagible-search }
           - { package: jsonapi, repo: pagible-jsonapi }
           - { package: mcp, repo: pagible-mcp }
+          - { package: search, repo: pagible-search }
           - { package: theme, repo: pagible-theme }
-          - { package: cashier, repo: pagible-cashier }
+          - { package: themes/pagible, repo: pagible-themes-pagible }
           - { package: themes/paper, repo: pagible-themes-paper }
     steps:
       - uses: actions/checkout@v5
