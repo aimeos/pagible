@@ -12,7 +12,7 @@
 }
 
 .cms-content > :nth-child(even) {
-    background-color: rgba(255, 255, 255, 0.5);
+    background-color: #FFFFFF80;
 }
 
 .cms-content > .heading + .text,

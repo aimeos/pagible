@@ -213,7 +213,7 @@
 
         @yield('footer')
 
-        <footer class="copyright">
+        <footer class="bottom">
             <div class="container">
                 @foreach($page->ancestorsAndSelf->reverse() as $navItem)
                     @if($fileId = @cms($navItem, 'config.logo.data.file.id'))
@@ -223,7 +223,9 @@
                         @break
                     @endif
                 @endforeach
-                &copy; {{ date('Y') }} {{ config('app.name') }}
+                <span class="copyright">
+                    &copy; {{ date('Y') }} {{ config('app.name') }}
+                </span>
             </div>
         </footer>
 

@@ -47,7 +47,7 @@
 .contact input:focus,
 .contact textarea:focus {
     border-color: var(--pico-contrast);
-    box-shadow: 0 0 0 3px rgba(26, 26, 26, 0.1);
+    box-shadow: 0 0 0 3px #1A1A1A1A;
     outline: none;
 }
 

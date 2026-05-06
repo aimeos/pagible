@@ -20,7 +20,7 @@
     background-color: var(--pico-contrast-inverse);
     border: 1px solid var(--pico-muted-border-color);
     border-radius: calc(var(--pico-border-radius) * 4);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    box-shadow: 0 1px 3px #0000000A;
     transition: box-shadow 0.2s ease;
     text-align: start;
     max-width: 24rem;
@@ -28,7 +28,7 @@
 }
 
 .cards .card-item:hover {
-    box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.06);
+    box-shadow: 0 0.25rem 0.75rem #0000000F;
 }
 
 .cards .card-item img {

@@ -17,14 +17,14 @@
     --pico-background-color: #F7F7F4;
     --pico-text-selection-color: #E5E5DF;
     --pico-muted-color: #525252;
-    --pico-muted-border-color: rgba(0, 0, 0, 0.08);
+    --pico-muted-border-color: #00000014;
     --pico-muted-background-color: #F4F4F0;
     --pico-contrast: #1A1A1A;
-    --pico-contrast-border: rgba(0, 0, 0, 0.1);
+    --pico-contrast-border: #0000001A;
     --pico-contrast-background: #F4F4F0;
     --pico-contrast-underline: var(--pico-contrast);
     --pico-contrast-hover: #000000;
-    --pico-contrast-hover-border: rgba(0, 0, 0, 0.15);
+    --pico-contrast-hover-border: #00000026;
     --pico-contrast-hover-background: #EAEAE6;
     --pico-contrast-hover-underline: var(--pico-contrast-hover);
     --pico-contrast-focus: var(--pico-text-selection-color);
@@ -55,13 +55,13 @@
     --pico-h4-color: #1A1A1A;
     --pico-h5-color: #333333;
     --pico-h6-color: #4B5563;
-    --pico-box-shadow: 0 1.25rem 3.75rem -0.9375rem rgba(0, 0, 0, 0.05);
+    --pico-box-shadow: 0 1.25rem 3.75rem -0.9375rem #0000000D;
     --pico-dropdown-color: var(--pico-contrast);
     --pico-dropdown-border-color: var(--pico-contrast-border);
     --pico-dropdown-background-color: #FFFFFF;
     --pico-dropdown-hover-background-color: var(--pico-muted-background-color);
-    --pico-dropdown-box-shadow: 0 0.25rem 0.375rem -1px rgba(0, 0, 0, 0.08), 0 2px 0.25rem -2px rgba(0, 0, 0, 0.04);
-    --pico-modal-overlay-background-color: rgba(26, 26, 26, 0.5);
+    --pico-dropdown-box-shadow: 0 0.25rem 0.375rem -1px #00000014, 0 2px 0.25rem -2px #0000000A;
+    --pico-modal-overlay-background-color: #1A1A1A80;
     --pico-code-background-color: var(--pico-primary);
     --pico-code-color: var(--pico-primary-inverse);
     --pico-border-radius: 0.5rem;
@@ -73,30 +73,6 @@
 
 @media (prefers-reduced-motion: no-preference) {
     html { scroll-behavior: smooth; }
-}
-
-:focus-visible {
-    outline: 1px solid var(--pico-contrast);
-    border-radius: 9999px;
-}
-
-.skip-link {
-    position: absolute;
-    top: -100%;
-    left: 1rem;
-    z-index: 1000;
-    padding: 0.75rem 1.5rem;
-    background-color: var(--pico-contrast);
-    color: var(--pico-contrast-inverse);
-    border-radius: 9999px;
-    text-decoration: none;
-    font-weight: 500;
-}
-
-.skip-link:focus {
-    top: 1rem;
-    color: var(--pico-contrast-inverse);
-    opacity: 1;
 }
 
 body {
@@ -114,8 +90,8 @@ body::before {
     contain: strict;
     background-image: repeating-linear-gradient(
         -45deg,
-        rgba(0, 0, 0, 0.03),
-        rgba(0, 0, 0, 0.03) 1px,
+        #00000008,
+        #00000008 1px,
         transparent 1px,
         transparent 1.5rem
     );
@@ -124,6 +100,11 @@ body::before {
 body > * {
     position: relative;
     z-index: 1;
+}
+
+:focus-visible {
+    outline: 1px solid var(--pico-contrast);
+    border-radius: 9999px;
 }
 
 :where(a:not([role=button])), [role=link],
@@ -135,6 +116,11 @@ body > * {
 :where(a:not([role=button]):hover), [role=link]:hover {
     --pico-color: var(--pico-contrast-hover);
     --pico-underline: var(--pico-contrast-hover);
+}
+
+.skip-link {
+    position: absolute;
+    top: -100%;
 }
 
 nav ol:first-of-type, nav ul:first-of-type,
@@ -189,6 +175,7 @@ header nav details.dropdown > summary {
     padding: 0.5rem;
     color: var(--pico-color);
     font-size: calc(var(--pico-font-size) * 0.65);
+    transition: color 0.15s ease;
 }
 
 header nav a,
@@ -310,7 +297,7 @@ header nav .menu a[role=button]:hover {
 
 nav[aria-label="breadcrumb"] {
     border-bottom: 1px solid var(--pico-muted-border-color);
-    background-color: rgba(255, 255, 255, 0.5);
+    background-color: #FFFFFF80;
 }
 
 nav[aria-label="breadcrumb"] > ul {
@@ -400,7 +387,7 @@ dialog input {
 
 dialog input:focus-visible {
     border: 1px solid var(--pico-contrast);
-    box-shadow: 0 0 0 3px rgba(26, 26, 26, 0.1);
+    box-shadow: 0 0 0 3px #1A1A1A1A;
 }
 
 dialog input::-webkit-input-placeholder {
@@ -475,6 +462,12 @@ dialog.search .load-more:hover {
 dialog.search .load-more:disabled {
     opacity: 0.5;
     cursor: wait;
+}
+
+@media (min-width: 1024px) {
+    dialog>article {
+        max-width: 950px;
+    }
 }
 
 
@@ -620,16 +613,16 @@ p code {
 }
 
 
-footer.copyright {
+footer.bottom {
     background-color: var(--pico-contrast);
-    color: rgba(255, 255, 255, 0.8);
+    color: #FFFFFFCC;
     font-size: calc(var(--pico-font-size) * 0.65);
     font-weight: 300;
     border-radius: calc(var(--pico-border-radius) * 6) calc(var(--pico-border-radius) * 6) 0 0;
     margin-top: 3rem;
 }
 
-footer.copyright .container {
+footer.bottom .container {
     max-width: 1280px;
     margin: auto;
     display: flex;
@@ -637,23 +630,23 @@ footer.copyright .container {
     align-items: center;
 }
 
-footer.cms-content + footer.copyright {
+footer.cms-content + footer.bottom {
     margin-top: 0;
     border-radius: 0;
 }
 
-footer.cms-content + footer.copyright .container {
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+footer.cms-content + footer.bottom .container {
+    border-top: 1px solid #FFFFFF1A;
 }
 
-footer.copyright .brand {
+footer.bottom .brand {
     display: inline;
     margin-inline-end: 0.5rem;
     user-select: none;
     vertical-align: middle;
 }
 
-footer.copyright .brand img {
+footer.bottom .brand img {
     height: 7.5rem;
     filter: brightness(0) invert(1);
     vertical-align: middle;
@@ -676,7 +669,7 @@ footer.cms-content .cards .card-list {
 }
 
 footer.cms-content .cards .card-item {
-    background-color: transparent;
+    background-color: #00000000;
     border: none;
     box-shadow: none;
     border-radius: 0;
@@ -689,13 +682,13 @@ footer.cms-content .cards .card-item:hover {
 }
 
 footer.cms-content .cards .title {
-    color: #9ca3af;
+    color: #9CA3AF;
     font-size: calc(var(--pico-font-size) * 0.65);
     margin-bottom: 1.5rem;
 }
 
 footer.cms-content .cards .text {
-    color: rgba(255, 255, 255, 0.8);
+    color: #FFFFFFCC;
     font-weight: 300;
 }
 
@@ -706,12 +699,12 @@ footer.cms-content .cards .text p {
 
 footer.cms-content .cards .text a,
 footer.cms-content .cards .text a:visited {
-    color: rgba(255, 255, 255, 0.8);
+    color: #FFFFFFCC;
     text-decoration: none;
 }
 
 footer.cms-content .cards .text a:hover {
-    color: rgba(255, 255, 255, 0.65);
+    color: #FFFFFFA6;
 }
 
 footer.cms-content .cards .text ul {
@@ -726,16 +719,16 @@ footer.cms-content .heading h3 {
 }
 
 footer.cms-content .text {
-    color: rgba(255, 255, 255, 0.65);
+    color: #FFFFFFA6;
 }
 
 footer.cms-content a,
 footer.cms-content a:visited {
-    color: rgba(255, 255, 255, 0.8);
+    color: #FFFFFFCC;
 }
 
 footer.cms-content a:hover {
-    color: rgba(255, 255, 255, 0.65);
+    color: #FFFFFFA6;
 }
 
 footer.cms-content :focus-visible {
