@@ -93,7 +93,7 @@ class Restore extends Command
         }
         finally
         {
-            if( $path && str_starts_with( $path, $this->tempdir() ) ) {
+            if( $path && str_contains( basename( $path ), 'cms-restore-' ) ) {
                 @unlink( $path );
             }
         }
@@ -451,11 +451,14 @@ class Restore extends Command
             throw new \RuntimeException( sprintf( 'Unsafe media path detected: %s', $relativePath ) );
         }
 
-        $targetPath = $tenant !== $sourceTenant
-            ? str_replace( 'cms/' . $sourceTenant . '/', 'cms/' . $tenant . '/', $relativePath )
+        $sourcePrefix = 'cms/' . ( $sourceTenant !== '' ? $sourceTenant . '/' : '' );
+        $targetPrefix = 'cms/' . ( $tenant !== '' ? $tenant . '/' : '' );
+
+        $targetPath = $sourcePrefix !== $targetPrefix
+            ? str_replace( $sourcePrefix, $targetPrefix, $relativePath )
             : $relativePath;
 
-        if( !str_starts_with( $targetPath, 'cms/' . $tenant . '/' ) ) {
+        if( !str_starts_with( $targetPath, $targetPrefix ) ) {
             throw new \RuntimeException( sprintf( 'Media path outside tenant scope: %s', $targetPath ) );
         }
 
@@ -676,8 +679,8 @@ class Restore extends Command
      */
     protected function rewritePaths( array $row, string $from, string $to, array $fields ): array
     {
-        $search = 'cms/' . $from . '/';
-        $replace = 'cms/' . $to . '/';
+        $search = 'cms/' . ( $from !== '' ? $from . '/' : '' );
+        $replace = 'cms/' . ( $to !== '' ? $to . '/' : '' );
 
         foreach( $fields as $field )
         {
