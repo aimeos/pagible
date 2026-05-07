@@ -4,7 +4,7 @@
 
 @if(!empty($action))
 	<nav class="toc">
-		@if(@$data->title)
+		@if($data->title ?? null)
 			<p>{{ $data->title }}</p>
 		@endif
 

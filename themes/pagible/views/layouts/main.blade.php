@@ -28,7 +28,7 @@
         @endforeach
 
         @foreach($page->ancestorsAndSelf->reverse() as $navItem)
-            @if($fileId = @cms($navItem, 'config.icon.data.file.id'))
+            @if($fileId = cms($navItem, 'config.icon.data.file.id'))
                 <link rel="icon" type="{{ cmsfile($navItem, $fileId)?->mime }}" href="{{ cmsurl(cmsfile($navItem, $fileId)?->path) }}">
                 @break
             @endif
@@ -41,7 +41,7 @@
         @stack('head')
 
         @foreach($page->ancestorsAndSelf as $navItem)
-            @if($text = @cms($navItem, 'config.styles.data.text'))
+            @if($text = cms($navItem, 'config.styles.data.text'))
                 <style nonce="{{ csrf_token() }}">
                     {!! $text !!}
                 </style>
@@ -127,7 +127,7 @@
                         <a href="{{ cmsroute($page->ancestors?->first() ?? $page) }}" class="contrast" title="{{ config('app.name') }}" aria-label="{{ config('app.name') }}">
                             @php($logoFound = false)
                             @foreach($page->ancestorsAndSelf->reverse() as $navItem)
-                                @if($fileId = @cms($navItem, 'config.logo.data.file.id'))
+                                @if($fileId = cms($navItem, 'config.logo.data.file.id'))
                                     <img src="{{ cmsurl(cmsfile($navItem, $fileId)?->path) }}" alt="{{ config('app.name') }}">
                                     @php($logoFound = true)
                                     @break
@@ -227,7 +227,7 @@
         @stack('foot')
 
         @foreach($page->ancestorsAndSelf as $navItem)
-            @if($text = @cms($navItem, 'config.javascript.data.text'))
+            @if($text = cms($navItem, 'config.javascript.data.text'))
                 <script nonce="{{ csrf_token() }}">
                     {!! $text !!}
                 </script>

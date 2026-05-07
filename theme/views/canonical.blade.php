@@ -1,1 +1,1 @@
-<link rel="canonical" href="{{ @$data->url }}" />
+<link rel="canonical" href="{{ $data->url ?? '' }}" />

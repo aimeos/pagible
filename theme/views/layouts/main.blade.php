@@ -18,7 +18,7 @@
             ">
         @endif
 
-        <meta name="theme-color" content="{{ @cms($page, 'config.theme.data.--pico-background-color') ?: '#FFFFFF' }}">
+        <meta name="theme-color" content="{{ cms($page, 'config.theme.data.--pico-background-color') ?: '#FFFFFF' }}">
 
         <title>{{ cms($page, 'title') }}</title>
 
@@ -31,7 +31,7 @@
         @endforeach
 
         @foreach($page->ancestorsAndSelf->reverse() as $navItem)
-            @if($fileId = @cms($navItem, 'config.icon.data.file.id'))
+            @if($fileId = cms($navItem, 'config.icon.data.file.id'))
                 <link rel="icon" type="{{ cmsfile($navItem, $fileId)?->mime }}" href="{{ cmsurl(cmsfile($navItem, $fileId)?->path) }}">
                 @break
             @endif
@@ -44,7 +44,7 @@
         @stack('head')
 
         @foreach($page->ancestorsAndSelf as $navItem)
-            @if($text = @cms($navItem, 'config.styles.data.text'))
+            @if($text = cms($navItem, 'config.styles.data.text'))
                 <style nonce="{{ csrf_token() }}">
                     {!! $text !!}
                 </style>
@@ -126,7 +126,7 @@
                     <li class="brand">
                         <a href="{{ cmsroute($page->ancestors?->first() ?? $page) }}" title="{{ config('app.name') }}" aria-label="{{ config('app.name') }}">
                             @forelse($page->ancestorsAndSelf->reverse() as $navItem)
-                                @if($fileId = @cms($navItem, 'config.logo.data.file.id'))
+                                @if($fileId = cms($navItem, 'config.logo.data.file.id'))
                                     <img src="{{ cmsurl(cmsfile($navItem, $fileId)?->path) }}" alt="{{ config('app.name') }}">
                                     @break
                                 @endif
@@ -145,7 +145,7 @@
                 </ul>
                 <ul class="menu">
                     <li>
-                        <a href="#" class="search" data-modal="modal-search" title="{{ __('Search') }}" aria-label="{{ __('Search') }}">
+                        <a href="#" class="search" data-modal="modal-search" title="{{ __('Search') }}" aria-label="{{ __('Search') }}" role="menuitem">
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
                                 <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
                             </svg>
@@ -161,7 +161,7 @@
                                             @foreach($item->children as $subItem)
                                                 @if(cms($subItem, 'status') == 1)
                                                     <li>
-                                                        <a href="{{ cmsroute($subItem) }}" class="{{ $page->isSelfOrDescendantOf($subItem) ? 'active' : '' }}">
+                                                        <a href="{{ cmsroute($subItem) }}" class="{{ $page->isSelfOrDescendantOf($subItem) ? 'active' : '' }}" role="menuitem">
                                                             {{ cms($subItem, 'name') }}
                                                         </a>
                                                     </li>
@@ -170,7 +170,7 @@
                                         </ul>
                                     </details>
                                 @else
-                                    <a href="{{ cmsroute($item) }}" class="{{ $page->isSelfOrDescendantOf($item) ? 'active' : '' }}">
+                                    <a href="{{ cmsroute($item) }}" class="{{ $page->isSelfOrDescendantOf($item) ? 'active' : '' }}" role="menuitem">
                                         {{ cms($item, 'name') }}
                                     </a>
                                 @endif
@@ -228,7 +228,7 @@
         @stack('foot')
 
         @foreach($page->ancestorsAndSelf as $navItem)
-            @if($text = @cms($navItem, 'config.javascript.data.text'))
+            @if($text = cms($navItem, 'config.javascript.data.text'))
                 <script nonce="{{ csrf_token() }}">
                     {!! $text !!}
                 </script>

@@ -153,7 +153,7 @@ class Version extends Model
 
         foreach( $items as $el )
         {
-            $fields = (array) ( $config[@$el->type]['fields'] ?? [] );
+            $fields = (array) ( $config[$el->type ?? '']['fields'] ?? [] );
 
             if( empty( $fields ) ) {
                 continue;

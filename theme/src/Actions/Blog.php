@@ -24,8 +24,7 @@ class Blog
      */
     public function __invoke( Request $request, Page $page, object $item ): \Illuminate\Pagination\LengthAwarePaginator
     {
-        /** @phpstan-ignore property.notFound */
-        $sort = @$item->data?->order ?: '-id';
+        $sort = $item->data->order ?? '-id';
         $order = $sort[0] === '-' ? substr( $sort, 1 ) : $sort;
         $dir = $sort[0] === '-' ? 'desc' : 'asc';
 
@@ -42,8 +41,7 @@ class Blog
 
         $builder = Page::where( 'type', 'blog' )->with( $with )->orderBy( $order, $dir );
 
-        /** @phpstan-ignore property.notFound */
-        if( $pid = @$item->data?->{'parent-page'}?->value ) {
+        if( $pid = $item->data->{'parent-page'}->value ?? null ) {
             $builder->where( 'parent_id', $pid );
         }
 
@@ -55,8 +53,7 @@ class Blog
 
         $attr = ['id', 'lang', 'path', 'name', 'title', 'to', 'domain', 'content', 'created_at'];
 
-        /** @phpstan-ignore property.notFound */
-        return $builder->paginate( @$item->data?->limit ?: 10, $attr, 'p' )
+        return $builder->paginate( $item->data->limit ?? 10, $attr, 'p' )
             ->through( function( $item ) {
                 if( $item->relationLoaded( 'latest' ) && $version = $item->latest ) {
                     $item->content = $version->aux->content ?? $item->content;

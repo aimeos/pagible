@@ -1,12 +1,12 @@
-@pushOnce('head')
-<link href="{{ cmstheme($page, 'slideshow.css') }}" rel="stylesheet">
+@pushOnce('foot')
+<link href="{{ cmstheme($page, 'slideshow.css') }}" rel="preload" as="style">
 @endPushOnce
 
 @pushOnce('foot')
 <script defer src="{{ cmstheme($page, 'slideshow.js') }}"></script>
 @endPushOnce
 
-@if(@$data->title)
+@if($data->title ?? null)
 	<h2>{{ $data->title }}</h2>
 @endif
 <div class="swiffy-slider slider-item-nogap slider-nav-animation slider-nav-autoplay slider-nav-autopause slider-nav-round slider-nav-dark"
@@ -14,8 +14,8 @@
 
 	<div class="slider-container">
 		@foreach($data->files ?? [] as $idx => $item)
-			@if($file = cms($files, @$item->id))
-				@include('cms::pic', ['file' => $file, 'main' => ($idx == 0 ? @$data->main : false), 'sizes' => '(max-width: 1200px) 100vw, 1200px'])
+			@if($file = cms($files, $item->id ?? null))
+				@include('cms::pic', ['file' => $file, 'main' => ($idx == 0 ? ($data->main ?? false) : false), 'sizes' => '(max-width: 1200px) 100vw, 1200px'])
 			@else
 				<!-- no image file -->
 			@endif
@@ -29,15 +29,15 @@
 <script type="application/ld+json">{
 	"@@context": "https://schema.org",
 	"@@type": "ImageGallery",
-	"name": {{ Js::from(@$data->title ?? cms($page, 'title')) }},
+	"name": {{ Js::from($data->title ?? cms($page, 'title')) }},
 	"image": [
 	@foreach($data->files ?? [] as $item)
-		@if($file = cms($files, @$item->id))
+		@if($file = cms($files, $item->id ?? null))
 			{
 				"@@type": "ImageObject",
 				"contentUrl": {{ Js::from(cmsurl(cms($file, 'path'))) }},
-				"name": {{ Js::from(@cms($file, 'name')) }},
-				"description": {{ Js::from(@cms($file, 'description')?->{cms($page, 'lang')}) }}
+				"name": {{ Js::from(cms($file, 'name') ?? '') }},
+				"description": {{ Js::from(cms($file, 'description')?->{cms($page, 'lang')} ?? '') }}
 			}
 			@if(!$loop->last),@endif
 		@endif

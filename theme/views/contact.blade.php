@@ -1,9 +1,9 @@
 @pushOnce('foot')
-<link rel="preload" href="{{ cmstheme($page, 'contact.css') }}" as="style">
+<link href="{{ cmstheme($page, 'contact.css') }}" rel="preload" as="style">
 <script defer src="{{ cmstheme($page, 'contact.js') }}"></script>
 @endPushOnce
 
-<h2 class="title">{{ @$data->title }}</h2>
+<h2 class="title">{{ $data->title ?? '' }}</h2>
 
 <form action="{{ route('cms.api.contact') }}" method="POST">
     @csrf
@@ -49,5 +49,5 @@
 <script type="application/ld+json">{
     "@@context": "https://schema.org",
     "@@type": "ContactPage",
-    "name": {{ Js::from(@$data->title ?? cms($page, 'title')) }}
+    "name": {{ Js::from($data->title ?? cms($page, 'title')) }}
 }</script>

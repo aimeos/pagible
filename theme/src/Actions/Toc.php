@@ -31,15 +31,13 @@ class Toc
             $el = cmsref( $page, $el );
 
             if( !$found ) {
-                // @phpstan-ignore-next-line property.notFound
-                $found = @$el->type === 'toc' && @$el->id === @$item->id;
+                $found = ($el->type ?? null) === 'toc' && ($el->id ?? null) === ($item->id ?? null);
                 continue;
             }
 
-            // @phpstan-ignore-next-line property.notFound
-            if( @$el->type === 'heading' && @$el->data->title ) {
-                // @phpstan-ignore-next-line property.notFound
-                $headings[] = ['id' => @$el->id, 'level' => (int) ( $el->data->level ?? 1 ), 'title' => $el->data->title];
+            if( ($el->type ?? null) === 'heading' && ($el->data->title ?? null) ) {
+                /** @phpstan-ignore property.notFound */
+                $headings[] = ['id' => $el->id ?? '', 'level' => (int) ( $el->data->level ?? 1 ), 'title' => $el->data->title];
             }
         }
 

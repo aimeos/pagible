@@ -105,7 +105,7 @@ class Element extends Base
     {
         $parts = [$this->name ?? ''];
         $config = \Aimeos\Cms\Schema::schemas( section: 'content' );
-        $fields = (array) ( $config[@$this->data->type]['fields'] ?? [] );
+        $fields = (array) ( $config[$this->data->type ?? '']['fields'] ?? [] );
 
         foreach( (array) ( $this->data->data ?? [] ) as $name => $value )
         {

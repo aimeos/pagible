@@ -18,7 +18,7 @@
             ">
         @endif
 
-        <meta name="theme-color" content="{{ @cms($page, 'config.theme.data.--pico-background-color') ?: '#F7F7F4' }}">
+        <meta name="theme-color" content="{{ cms($page, 'config.theme.data.--pico-background-color') ?: '#F7F7F4' }}">
 
         <title>{{ cms($page, 'title') }}</title>
 
@@ -31,7 +31,7 @@
         @endforeach
 
         @foreach($page->ancestorsAndSelf->reverse() as $navItem)
-            @if($fileId = @cms($navItem, 'config.icon.data.file.id'))
+            @if($fileId = cms($navItem, 'config.icon.data.file.id'))
                 <link rel="icon" type="{{ cmsfile($navItem, $fileId)?->mime }}" href="{{ cmsurl(cmsfile($navItem, $fileId)?->path) }}">
                 @break
             @endif
@@ -44,7 +44,7 @@
         @stack('head')
 
         @foreach($page->ancestorsAndSelf as $navItem)
-            @if($text = @cms($navItem, 'config.styles.data.text'))
+            @if($text = cms($navItem, 'config.styles.data.text'))
                 <style nonce="{{ csrf_token() }}">
                     {!! $text !!}
                 </style>
@@ -126,7 +126,7 @@
                     <li class="brand">
                         <a href="{{ cmsroute($page->ancestors?->first() ?? $page) }}" title="{{ config('app.name') }}" aria-label="{{ config('app.name') }}">
                             @forelse($page->ancestorsAndSelf->reverse() as $navItem)
-                                @if($fileId = @cms($navItem, 'config.logo.data.file.id'))
+                                @if($fileId = cms($navItem, 'config.logo.data.file.id'))
                                     <img src="{{ cmsurl(cmsfile($navItem, $fileId)?->path) }}" alt="{{ config('app.name') }}">
                                     @break
                                 @endif
@@ -216,7 +216,7 @@
         <footer class="bottom">
             <div class="container">
                 @foreach($page->ancestorsAndSelf->reverse() as $navItem)
-                    @if($fileId = @cms($navItem, 'config.logo.data.file.id'))
+                    @if($fileId = cms($navItem, 'config.logo.data.file.id'))
                         <span class="brand">
                             <img src="{{ cmsurl(cmsfile($navItem, $fileId)?->path) }}" alt="{{ config('app.name') }}">
                         </span>
@@ -235,7 +235,7 @@
         @stack('foot')
 
         @foreach($page->ancestorsAndSelf as $navItem)
-            @if($text = @cms($navItem, 'config.javascript.data.text'))
+            @if($text = cms($navItem, 'config.javascript.data.text'))
                 <script nonce="{{ csrf_token() }}">
                     {!! $text !!}
                 </script>
