@@ -228,7 +228,7 @@ class PageSchema extends Schema
         {
             $elements ??= $version ? $version->elements : $model->elements;
 
-            if( $item->type === 'reference' && $element = @$elements[@$item->refid] )
+            if( $item->type === 'reference' && ($refid = $item->refid ?? null) && $element = $elements[$refid] ?? null )
             {
                 $item->type = $element->type;
                 $item->data = $element->data;

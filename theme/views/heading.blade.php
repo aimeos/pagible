@@ -1,3 +1,3 @@
 <h{{ (int) ($data->level ?? 1) }}>
-	{{ @$data->title }}
+	{{ $data->title ?? '' }}
 </h{{ (int) ($data->level ?? 1) }}>

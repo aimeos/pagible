@@ -213,7 +213,7 @@ class Page extends Base
 
         foreach( collect( (array) $this->content )->merge( $this->elements ) as $el )
         {
-            $fields = (array) ( $config[@$el->type]['fields'] ?? [] );
+            $fields = (array) ( $config[$el->type ?? '']['fields'] ?? [] );
 
             if( empty( $fields ) ) {
                 continue;

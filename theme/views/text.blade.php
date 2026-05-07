@@ -1,1 +1,1 @@
-@markdown(@$data->text)
+@markdown($data->text ?? '')

@@ -30,19 +30,20 @@ if( !function_exists( 'cms' ) )
         }
         else if( \Aimeos\Cms\Permission::can( 'page:view', \Illuminate\Support\Facades\Auth::user() ) )
         {
-            $val = @$item->latest?->data?->{$first} // @phpstan-ignore-line property.notFound
-                ?? @$item->latest?->aux?->{$first} // @phpstan-ignore-line property.notFound
-                ?? @$item->latest?->{$first} // @phpstan-ignore-line property.notFound
-                ?? @$item->{$first};
+            $val = $item->latest?->data->{$first}
+                ?? $item->latest?->aux->{$first}
+                ?? $item->latest->{$first}
+                ?? $item->{$first}
+                ?? null;
         }
         else
         {
-            $val = @$item->{$first};
+            $val = $item->{$first} ?? null;
         }
 
         foreach( $parts as $part )
         {
-            if( is_object( $val ) && ( $val = @$val->{$part} ) === null ) {
+            if( is_object( $val ) && ( $val = $val->{$part} ?? null ) === null ) {
                 return $default;
             }
         }
@@ -104,8 +105,7 @@ if( !function_exists( 'cmsdata' ) )
 
         $data = ['files' => cms($page, 'files')];
 
-        /** @phpstan-ignore property.notFound */
-        if( $action = @$item->data?->action ) {
+        if( $action = $item->data->action ?? null ) {
             $data['action'] = app()->call( $action, ['page' => $page, 'item' => $item] );
         }
 
@@ -142,8 +142,7 @@ if( !function_exists( 'cmsref' ) )
      */
     function cmsref( \Aimeos\Cms\Models\Page $page, object $item ) : object
     {
-        // @phpstan-ignore-next-line property.notFound
-        if(@$item->type === 'reference' && ($refid = @$item->refid) && ($element = cms(cms($page, 'elements'), $refid))) {
+        if(($item->type ?? null) === 'reference' && ($refid = $item->refid ?? null) && ($element = cms(cms($page, 'elements'), $refid))) {
             return (object) $element;
         }
 
@@ -163,10 +162,10 @@ if( !function_exists( 'cmsroute' ) )
     function cmsroute( \Aimeos\Cms\Models\Page $page ) : string
     {
         if( \Aimeos\Cms\Permission::can( 'page:view', \Illuminate\Support\Facades\Auth::user() ) ) {
-            return @$page->latest?->data?->to ?: route( 'cms.page', ['path' => @$page->latest?->data?->path ?? @$page->path] );
+            return $page->latest?->data->to ?? null ?: route( 'cms.page', ['path' => $page->latest?->data->path ?? $page->path] );
         }
 
-        return @$page->to ?: route( 'cms.page', ['path' => @$page->path] );
+        return $page->to ?: route( 'cms.page', ['path' => $page->path] );
     }
 }
 

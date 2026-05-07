@@ -1,17 +1,17 @@
 @pushOnce('foot')
-<link rel="preload" href="{{ cmstheme($page, 'blog.css') }}" as="style">
+<link href="{{ cmstheme($page, 'blog.css') }}" rel="preload" as="style">
 <script defer src="{{ cmstheme($page, 'blog.js') }}"></script>
 @endPushOnce
 
-@if($first = @$action?->first())
-    @if(@$data->title)
+@if($first = $action?->first())
+    @if($data->title ?? null)
         <h2>{{ $data->title }}</h2>
     @endif
-    <div class="blog-items" data-blog="{{ @$data->{'parent-page'}?->value }}">
+    <div class="blog-items" data-blog="{{ $data->{'parent-page'}?->value ?? '' }}">
         <div class="first">
-            <a href="{{ route('cms.page', ['path' => @$first->path]) }}" class="blog-item">
-                @if($article = collect(cms($first, 'content'))->first(fn($el) => @$el->type === 'article')?->data)
-                    @if($file = cms(cms($first, 'files'), @$article->file?->id))
+            <a href="{{ route('cms.page', ['path' => $first->path]) }}" class="blog-item">
+                @if($article = collect(cms($first, 'content'))->first(fn($el) => ($el->type ?? null) === 'article')?->data)
+                    @if($file = cms(cms($first, 'files'), $article->file?->id ?? null))
                         @include('cms::pic', ['file' => $file])
                     @endif
                     <div class="content">
@@ -27,10 +27,10 @@
             </a>
         </div>
         <div class="second">
-            @foreach(@$action?->skip(1) ?? [] as $item)
-                <a href="{{ route('cms.page', ['path' => @$item->path]) }}" class="blog-item">
-                    @if($article = collect(cms($item, 'content'))->first(fn($el) => @$el->type === 'article')?->data)
-                        @if($file = cms(cms($item, 'files'), @$article->file?->id))
+            @foreach($action?->skip(1) ?? [] as $item)
+                <a href="{{ route('cms.page', ['path' => $item->path]) }}" class="blog-item">
+                    @if($article = collect(cms($item, 'content'))->first(fn($el) => ($el->type ?? null) === 'article')?->data)
+                        @if($file = cms(cms($item, 'files'), $article->file?->id ?? null))
                             @include('cms::pic', ['file' => $file])
                         @endif
                         <div class="content">
@@ -46,18 +46,18 @@
             @endforeach
         </div>
     </div>
-    {{ @$action?->appends(request()->query())?->links() }}
+    {{ $action?->appends(request()->query())?->links() }}
 
     <script type="application/ld+json">{
         "@@context": "https://schema.org",
         "@@type": "Blog",
-        "name": {{ Js::from(@$data->title ?? cms($page, 'title')) }},
+        "name": {{ Js::from($data->title ?? cms($page, 'title')) }},
         "blogPost": [
-        @foreach(@$action ?? [] as $item)
+        @foreach($action ?? [] as $item)
             {
                 "@@type": "BlogPosting",
                 "headline": {{ Js::from(cms($item, 'title')) }},
-                "url": {{ Js::from(route('cms.page', ['path' => @$item->path])) }},
+                "url": {{ Js::from(route('cms.page', ['path' => $item->path])) }},
                 "datePublished": "{{ $item->created_at->toIso8601String() }}"
             }
             @if(!$loop->last),@endif
