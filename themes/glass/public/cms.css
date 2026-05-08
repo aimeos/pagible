@@ -16,7 +16,7 @@
     --pico-color: #E2E8F0;
     --pico-background-color: #060A12;
     --pico-text-selection-color: #8AFFC433;
-    --pico-muted-color: #94A3B8;
+    --pico-muted-color: #A5B5C5;
     --pico-muted-border-color: #FFFFFF14;
     --pico-muted-background-color: #FFFFFF0A;
     --pico-contrast: #F8FAFC;
@@ -90,7 +90,7 @@
 body {
     font-family: var(--pico-font-family-sans-serif);
     background-color: var(--pico-background-color);
-    padding-top: 5rem;
+    padding-top: 6rem;
     position: relative;
     color: var(--pico-color);
 }
@@ -124,17 +124,6 @@ body > * {
     border-radius: var(--pico-border-radius);
 }
 
-:where(a:not([role=button]):not([role=menuitem])),
-:where(a:not([role=button]):not([role=menuitem]):visited) {
-    --pico-color: var(--pico-primary);
-    --pico-underline: var(--pico-primary);
-}
-
-:where(a:not([role=button]):not([role=menuitem]):hover) {
-    --pico-color: var(--pico-primary-hover);
-    --pico-underline: var(--pico-primary-hover);
-}
-
 .skip-link {
     position: absolute;
     top: -100%;
@@ -145,16 +134,10 @@ nav ol:last-of-type, nav ul:last-of-type {
     margin: 0;
 }
 
-nav li :where(a,[role=link]) {
-    color: var(--pico-color);
-    text-decoration: none;
-    margin: 0;
-}
-
 body > header {
     max-width: 1152px;
     border-bottom: none;
-    padding: 1rem;
+    padding: 1rem 1.5rem;
     position: fixed;
     margin: 0 auto;
     z-index: 10;
@@ -191,25 +174,21 @@ header nav > ul > li:last-of-type a {
     color: var(--pico-primary-inverse);
     background-color: var(--pico-primary);
     border-radius: 9999px;
-    padding: 0.4rem 1rem;
+    padding: 0.7rem 1rem;
     text-wrap: nowrap;
 }
 
 header nav a,
-header nav details.dropdown > summary {
+header nav details > summary {
     display: flex;
     align-items: center;
     list-style: none;
     cursor: pointer;
-    padding: 0.4rem 0.5rem;
-    color: var(--pico-color);
+    padding: 0.7rem 0.5rem;
     font-size: calc(var(--pico-font-size) * 0.75);
     transition: color 0.15s ease;
-}
-
-header nav a,
-header nav details.dropdown {
     text-decoration: none;
+    margin: 0;
 }
 
 header nav details summary::marker,
@@ -217,22 +196,17 @@ header nav details summary::-webkit-details-marker {
     display: none;
 }
 
-header nav details.dropdown > summary::after {
-    background-size: calc(var(--pico-font-size) *0.75) auto;
-    float: inline-end;
-}
-
 header nav details[open] summary::after {
     transform: rotate(0.5turn) translateX(-0.2rem);
 }
 
-header nav details.dropdown > summary + ul.align {
+header nav details > summary + ul.align {
+    background: var(--pico-dropdown-background-color);
+    border: 1px solid var(--pico-contrast-border);
+    backdrop-filter: blur(20px);
     width: auto;
     left: auto;
     right: auto;
-    background: var(--pico-dropdown-background-color);
-    backdrop-filter: blur(20px);
-    border: 1px solid var(--pico-contrast-border);
 }
 
 header nav .brand {
@@ -241,20 +215,20 @@ header nav .brand {
 
 header nav .brand a,
 header nav .brand img {
-    display: flex;
     align-items: center;
-    height: 40px;
+    display: flex;
+    height: 44px;
     padding: 0;
     margin: 0;
 }
 
 header nav .brand a {
-    font-family: var(--pico-font-family-display);
     font-weight: 500;
+    font-family: var(--pico-font-family-display);
     font-size: var(--pico-font-size);
     letter-spacing: -0.02em;
-    color: var(--pico-contrast);
     text-decoration: none;
+    color: var(--pico-contrast);
 }
 
 header nav .menu-open,
@@ -269,7 +243,7 @@ header nav .menu-close button,
 header nav .sidebar-open button,
 header nav .sidebar-close button {
     color: var(--pico-contrast);
-    padding: 0.75rem;
+    padding: 0.6rem;
     background: none;
     border: none;
 }
@@ -302,12 +276,13 @@ header nav .menu a[role=button]:hover {
         min-height: 100vh;
         z-index: 100;
         width: 100%;
+        height: 100%;
         border-radius: 0;
         border: none;
         backdrop-filter: none;
         box-shadow: none;
-        top: 0;
         left: 0;
+        top: 0;
     }
 
     header nav .menu {
@@ -324,28 +299,31 @@ header nav .menu a[role=button]:hover {
     }
 
     header nav .menu li {
-        padding: 0.75rem 2rem;
+        padding: 0 2rem;
         width: 100%;
     }
 
-    header nav.small .menu a,
-    header nav.small .menu details.dropdown > summary {
-        font-size: var(--pico-font-size);
-        padding: 0.5rem 0;
-    }
-
-    header nav.small .menu details.dropdown > summary + ul.align {
+    header nav.small .menu details > summary + ul.align {
         position: relative;
-        background: none;
         backdrop-filter: none;
-        border: none;
+        background: none;
         box-shadow: none;
+        border: none;
         padding: 0;
-        padding-inline-start: 1rem;
     }
 
-    body > header > nav {
-        padding: 0.5rem 1rem;
+    header nav.small .menu details > summary::after {
+        content: "";
+        display: block;
+        float: inline-end;
+        margin-inline-start: .25rem;
+        height: calc(1rem * var(--pico-line-height, 1.5));
+        transform: rotate(0) translateX(.2rem);
+        background-image: var(--pico-icon-chevron);
+        background-position: right center;
+        background-size: 1rem auto;
+        background-repeat: no-repeat;
+        width: 1rem;
     }
 }
 

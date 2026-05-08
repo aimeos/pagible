@@ -56,6 +56,6 @@
 
 @media screen and (min-width: 768px) {
     .cms-content .container {
-        padding: 4rem 1rem;
+        padding: 4rem 1.5rem;
     }
 }

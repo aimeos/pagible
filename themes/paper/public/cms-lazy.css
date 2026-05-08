@@ -176,46 +176,6 @@ p code {
 }
 
 
-footer.bottom {
-    background-color: var(--pico-contrast);
-    color: #FFFFFFCC;
-    font-size: calc(var(--pico-font-size) * 0.65);
-    font-weight: 300;
-    border-radius: calc(var(--pico-border-radius) * 6) calc(var(--pico-border-radius) * 6) 0 0;
-    margin-top: 3rem;
-}
-
-footer.bottom .container {
-    max-width: 1280px;
-    margin: auto;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-footer.cms-content + footer.bottom {
-    margin-top: 0;
-    border-radius: 0;
-}
-
-footer.cms-content + footer.bottom .container {
-    border-top: 1px solid #FFFFFF1A;
-}
-
-footer.bottom .brand {
-    display: inline;
-    margin-inline-end: 0.5rem;
-    user-select: none;
-    vertical-align: middle;
-}
-
-footer.bottom .brand img {
-    height: 7.5rem;
-    filter: brightness(0) invert(1);
-    vertical-align: middle;
-    opacity: 0.5;
-}
-
 footer.cms-content {
     background-color: var(--pico-contrast);
     border-radius: calc(var(--pico-border-radius) * 6) calc(var(--pico-border-radius) * 6) 0 0;
@@ -228,16 +188,22 @@ footer.cms-content .container {
 
 footer.cms-content .cards .card-list {
     grid-template-columns: 1fr 1fr;
-    gap: 2rem;
+    gap: 3rem;
+}
+
+@media screen and (min-width: 768px) {
+    footer.cms-content .cards .card-list {
+        grid-template-columns: repeat(4, 1fr);
+    }
 }
 
 footer.cms-content .cards .card-item {
-    background-color: #00000000;
-    border: none;
+    background-color: transparent;
     box-shadow: none;
+    border: none;
     border-radius: 0;
-    padding: 0;
     text-align: start;
+    padding: 0;
 }
 
 footer.cms-content .cards .card-item:hover {
@@ -247,7 +213,9 @@ footer.cms-content .cards .card-item:hover {
 footer.cms-content .cards .title {
     color: #9CA3AF;
     font-size: calc(var(--pico-font-size) * 0.65);
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
 }
 
 footer.cms-content .cards .text {
@@ -264,15 +232,22 @@ footer.cms-content .cards .text a,
 footer.cms-content .cards .text a:visited {
     color: #FFFFFFCC;
     text-decoration: none;
+    display: inline-block;
+    padding: 0.5rem 0;
+    font-size: calc(var(--pico-font-size) * 0.8);
 }
 
 footer.cms-content .cards .text a:hover {
     color: #FFFFFFA6;
+    transition: color 0.15s ease;
 }
 
-footer.cms-content .cards .text ul {
-    padding-left: 0;
-    list-style: none;
+footer.cms-content ul {
+    padding: 0;
+}
+
+footer.cms-content ul li {
+    list-style-type: none;
 }
 
 footer.cms-content .heading h1,
@@ -298,8 +273,41 @@ footer.cms-content :focus-visible {
     outline-color: var(--pico-contrast-inverse);
 }
 
-@media screen and (min-width: 768px) {
-    footer.cms-content .cards .card-list {
-        grid-template-columns: repeat(4, 1fr);
-    }
+footer.bottom {
+    background-color: var(--pico-contrast);
+    color: #FFFFFFCC;
+    font-size: calc(var(--pico-font-size) * 0.75);
+    font-weight: 300;
+    border-radius: calc(var(--pico-border-radius) * 6) calc(var(--pico-border-radius) * 6) 0 0;
+    margin-top: 3rem;
+}
+
+footer.bottom .container {
+    display: flex;
+    max-width: 1280px;
+    justify-content: space-between;
+    align-items: center;
+}
+
+footer.cms-content + footer.bottom {
+    margin-top: 0;
+    border-radius: 0;
+}
+
+footer.cms-content + footer.bottom .container {
+    border-top: 1px solid #FFFFFF1A;
+}
+
+footer.bottom .brand {
+    display: inline;
+    margin-inline-end: 0.5rem;
+    user-select: none;
+    vertical-align: middle;
+}
+
+footer.bottom .brand img {
+    height: 7.5rem;
+    filter: brightness(0) invert(1);
+    vertical-align: middle;
+    opacity: 0.5;
 }

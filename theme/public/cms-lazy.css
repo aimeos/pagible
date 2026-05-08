@@ -179,8 +179,7 @@ footer.cms-content {
 }
 
 footer.cms-content .container {
-    padding: 0;
-    padding-top: 2rem;
+    padding: 1rem min(5%, 2rem);
 }
 
 footer.cms-content .cards .card-list {
@@ -238,6 +237,8 @@ footer.cms-content a,
 footer.cms-content a:visited {
     color: var(--pico-muted-color);
     text-decoration: none;
+    display: inline-block;
+    padding: 0.5rem;
 }
 
 footer.cms-content a:hover {
@@ -257,7 +258,7 @@ footer.bottom .container {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1.5rem 0;
+    padding: 1rem min(5%, 2rem);
 }
 
 @media screen and (min-width: 768px) {

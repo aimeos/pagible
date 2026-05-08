@@ -33,10 +33,10 @@ nav.toc li {
 
 nav.toc li a {
     display: inline-block;
-    color: var(--pico-muted-color);
+    color: var(--pico-color);
     font-size: calc(var(--pico-font-size) * 0.95);
     font-weight: 300;
-    padding: 0.25rem 0;
+    padding: 0.54rem 0;
     margin: 0;
 }
 

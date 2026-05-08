@@ -93,7 +93,7 @@
             <article>
                 <header>
                     <form action="{{ route('cms.search', ['q' => '_term_']) }}">
-                        <input id="modal-search-input" placeholder="{{ __('Search website') }}">
+                        <input id="modal-search-input" placeholder="{{ __('Search website') }}" aria-label="{{ __('Search website') }}" name="q" required>
                         <button type="reset" aria-label="{{ __('Close') }}">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
                                 <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
@@ -107,7 +107,7 @@
         </dialog>
 
         <header>
-            <nav>
+            <nav role="navigation" aria-label="{{ __('Main navigation') }}">
                 <ul>
                     <li class="sidebar-open show">
                         <button aria-label="{{ __('Open sidebar') }}">
@@ -146,9 +146,9 @@
                         </button>
                     </li>
                 </ul>
-                <ul class="menu">
+                <ul class="menu" role="menu">
                     <li>
-                        <a href="#" class="search contrast" data-modal="modal-search" title="{{ __('Search') }}" aria-label="{{ __('Search') }}">
+                        <a href="#" class="search contrast" data-modal="modal-search" title="{{ __('Search') }}" aria-label="{{ __('Search') }}" role="menuitem">
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
                                 <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
                             </svg>
@@ -159,12 +159,12 @@
                             <li>
                                 @if($item->children->count())
                                     <details class="dropdown is-menu">
-                                        <summary role>{{ cms($item, 'name') }}</summary>
+                                        <summary role="menuitem">{{ cms($item, 'name') }}</summary>
                                         <ul class="align">
                                             @foreach($item->children as $subItem)
                                                 @if(cms($subItem, 'status') == 1)
                                                     <li>
-                                                        <a href="{{ cmsroute($subItem) }}" class="{{ $page->isSelfOrDescendantOf($subItem) ? 'active' : '' }} contrast">
+                                                        <a href="{{ cmsroute($subItem) }}" class="{{ $page->isSelfOrDescendantOf($subItem) ? 'active' : '' }} contrast" role="menuitem">
                                                             {{ cms($subItem, 'name') }}
                                                         </a>
                                                     </li>
@@ -173,7 +173,7 @@
                                         </ul>
                                     </details>
                                 @else
-                                    <a href="{{ cmsroute($item) }}" class="{{ $page->isSelfOrDescendantOf($item) ? 'active' : '' }} contrast">
+                                    <a href="{{ cmsroute($item) }}" class="{{ $page->isSelfOrDescendantOf($item) ? 'active' : '' }} contrast" role="menuitem">
                                         {{ cms($item, 'name') }}
                                     </a>
                                 @endif
@@ -222,7 +222,8 @@
             </span>
         </footer>
 
-        <link href="{{ cmstheme($page, 'pico.modal.min.css') }}" rel="stylesheet">
+        <link href="{{ cmstheme($page, 'pico.modal.min.css') }}" rel="preload" as="style">
+        <link href="{{ cmstheme($page, 'cms-lazy.css') }}" rel="preload" as="style">
         <script defer src="{{ cmstheme($page, 'cms.js') }}"></script>
         @stack('foot')
 

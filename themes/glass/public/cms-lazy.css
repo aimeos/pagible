@@ -193,16 +193,15 @@ pre code[class*=language-] {
 
 
 footer.cms-content {
-    background: var(--pico-contrast-background);
     backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    background: var(--pico-contrast-background);
     border-top: 1px solid var(--pico-contrast-border);
     padding: 2rem 0;
 }
 
 footer.cms-content .container {
     max-width: 1152px;
-    padding: 0 1rem;
+    padding: 0 1.5rem;
     padding-top: 2rem;
 }
 
@@ -258,7 +257,6 @@ footer.cms-content ul {
 
 footer.cms-content ul li {
     list-style: none;
-    line-height: 2;
 }
 
 footer.cms-content .heading h1,
@@ -275,6 +273,8 @@ footer.cms-content a,
 footer.cms-content a:visited {
     color: #FFFFFFCC;
     text-decoration: none;
+    display: inline-block;
+    padding: 0.65rem 0;
 }
 
 footer.cms-content a:hover {
@@ -282,11 +282,10 @@ footer.cms-content a:hover {
 }
 
 footer.bottom {
-    background: var(--pico-contrast-background);
     backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border-top: 1px solid var(--pico-contrast-border);
     color: var(--pico-muted-color);
+    background: var(--pico-contrast-background);
+    border-top: 1px solid var(--pico-contrast-border);
     font-size: calc(var(--pico-font-size) * 0.75);
     font-weight: 300;
     margin: 0;
@@ -298,7 +297,7 @@ footer.bottom .container {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1.5rem 1rem;
+    padding: 1.5rem;
 }
 
 footer.bottom .brand {

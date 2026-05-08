@@ -10,6 +10,7 @@ main {
 
 main .content {
     overflow: auto;
+    margin-bottom: 2rem;
 }
 
 main h1,
