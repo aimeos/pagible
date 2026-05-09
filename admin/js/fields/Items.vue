@@ -289,6 +289,7 @@ export default {
                 v-bind="props"
                 :title="$gettext('Actions')"
                 :icon="mdiDotsVertical"
+                class="btn-actions"
                 variant="text"
               />
             </template>
@@ -449,6 +450,7 @@ export default {
       v-if="!readonly && (!config.max || (config.max && +items.length < +config.max))"
       :title="$gettext('Add element')"
       :icon="mdiViewGridPlus"
+      class="btn-add"
       @click="add()"
     />
   </div>

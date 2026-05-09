@@ -587,6 +587,7 @@ export default {
             :disabled="!isChecked || embed || !user.can('file:add')"
             :title="$gettext('Actions')"
             :icon="mdiDotsVertical"
+            class="btn-actions"
             variant="text"
           />
         </template>
@@ -628,6 +629,7 @@ export default {
           :title="$gettext('Add files')"
           :disabled="loading"
           :icon="mdiPlus"
+          class="btn-add"
           color="primary"
           variant="tonal"
         />
@@ -650,6 +652,7 @@ export default {
         @click="reload()"
         :title="$gettext('Reload files')"
         :icon="mdiRefresh"
+        class="btn-reload"
         variant="text"
       />
 
@@ -658,6 +661,7 @@ export default {
         @click="vgrid = true"
         :title="$gettext('Grid view')"
         :icon="mdiViewGridOutline"
+        class="btn-grid"
         variant="text"
       />
       <v-btn
@@ -665,6 +669,7 @@ export default {
         @click="vgrid = false"
         :title="$gettext('List view')"
         :icon="mdiFormatListBulletedSquare"
+        class="btn-list"
         variant="text"
       />
 
@@ -675,6 +680,7 @@ export default {
             :title="$gettext('Sort by')"
             :append-icon="mdiMenuDown"
             :prepend-icon="mdiSort"
+            class="btn-sort"
             variant="text"
             >{{ order }}</v-btn
           >
@@ -742,7 +748,7 @@ export default {
             v-bind="props"
             :title="$gettext('Actions')"
             :icon="mdiDotsVertical"
-            class="item-menu"
+            class="btn-actions item-menu"
             variant="text"
           />
         </template>
@@ -898,6 +904,7 @@ export default {
       :title="$gettext('Add files')"
       :disabled="loading"
       :icon="mdiPlus"
+      class="btn-add"
       color="primary"
       variant="tonal"
     />

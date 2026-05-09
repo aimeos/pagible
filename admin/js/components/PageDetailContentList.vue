@@ -870,6 +870,7 @@ export default {
                   v-bind="props"
                   :title="$gettext('Actions')"
                   :icon="mdiDotsVertical"
+                  class="btn-actions"
                   variant="text"
                 />
               </template>
@@ -999,6 +1000,7 @@ export default {
         @click="openSchemas"
         :title="$gettext('Add element')"
         :icon="mdiViewGridPlus"
+        class="btn-add"
         color="primary"
         variant="flat"
       />

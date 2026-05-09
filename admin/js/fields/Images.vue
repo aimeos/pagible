@@ -317,12 +317,14 @@ export default {
           @click="vfiles = true"
           :title="$gettext('Add files')"
           :icon="mdiButtonCursor"
+          class="btn-add"
           variant="text"
         />
         <v-btn
           @click="vurls = true"
           :title="$gettext('Add files from URLs')"
           :icon="mdiLinkVariantPlus"
+          class="btn-add-urls"
           variant="text"
         />
       </div>
@@ -332,9 +334,10 @@ export default {
           @click="vcreate = true"
           :title="$gettext('Create file')"
           :icon="mdiCreation"
+          class="btn-create"
           variant="text"
         />
-        <v-btn :title="$gettext('Add files')" :icon="mdiUpload" variant="text"
+        <v-btn :title="$gettext('Add files')" :icon="mdiUpload" class="btn-upload" variant="text"
           ><v-file-input
             v-model="selected"
             @update:modelValue="add($event)"

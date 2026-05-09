@@ -181,7 +181,7 @@ describe('File Detail', () => {
 
   it('back button closes the detail view', () => {
     visitFileDetail()
-    detailView().find('.v-btn[title="Back to list view"]').click()
+    detailView().find('.v-btn.btn-back').click()
     cy.get('.file-details').should('not.exist')
   })
 
@@ -247,12 +247,12 @@ describe('File Detail', () => {
 
   it('shows history button', () => {
     visitFileDetail()
-    detailView().find('.v-btn[title="View history"]').should('exist')
+    detailView().find('.v-btn.btn-history').should('exist')
   })
 
   it('clicking history button opens history dialog', () => {
     visitFileDetail({ latest: { ...makeFile().latest, published: false } })
-    detailView().find('.v-btn[title="View history"]').click()
+    detailView().find('.v-btn.btn-history').click()
     cy.get('.v-dialog').should('be.visible')
   })
 

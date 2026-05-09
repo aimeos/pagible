@@ -78,6 +78,7 @@ export default {
         @click="viewStack.closeView()"
         :title="$gettext('Back to list view')"
         :icon="mdiKeyboardBackspace"
+        class="btn-back"
       />
     </template>
 
@@ -93,7 +94,7 @@ export default {
         :class="{ hidden: published && !dirty && !hasLatest }"
         :title="$gettext('View history')"
         :icon="mdiHistory"
-        class="no-rtl"
+        class="btn-history no-rtl"
       />
 
       <v-btn v-if="changed"
@@ -170,6 +171,7 @@ export default {
         @click.stop="drawer.toggle('aside')"
         :title="$gettext('Toggle side menu')"
         :icon="drawer.aside ? mdiChevronRight : mdiChevronLeft"
+        class="btn-sidemenu"
       />
     </template>
   </v-app-bar>

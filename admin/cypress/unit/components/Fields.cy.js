@@ -70,32 +70,32 @@ describe('Fields', () => {
 
   it('does not show translate button in readonly mode', () => {
     mountFields({ readonly: true })
-    cy.get('button[title="Translate"]').should('not.exist')
+    cy.get('button.btn-translate').should('not.exist')
   })
 
   it('shows translate button for text fields when not readonly', () => {
     mountFields({}, { 'text:translate': true })
-    cy.get('button[title="Translate"]').should('exist')
+    cy.get('button.btn-translate').should('exist')
   })
 
   it('shows generate text button with text:write permission', () => {
     mountFields({}, { 'text:write': true })
-    cy.get('button[title="Generate text"]').should('exist')
+    cy.get('button.btn-generate').should('exist')
   })
 
   it('hides generate text button without text:write permission', () => {
     mountFields()
-    cy.get('button[title="Generate text"]').should('not.exist')
+    cy.get('button.btn-generate').should('not.exist')
   })
 
   it('shows dictate button with audio:transcribe permission', () => {
     mountFields({}, { 'audio:transcribe': true })
-    cy.get('button[title="Dictate"]').should('exist')
+    cy.get('button.btn-dictate').should('exist')
   })
 
   it('hides dictate button without audio:transcribe permission', () => {
     mountFields()
-    cy.get('button[title="Dictate"]').should('not.exist')
+    cy.get('button.btn-dictate').should('not.exist')
   })
 
   it('adds error class when a field has an error', () => {

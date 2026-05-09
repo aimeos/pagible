@@ -549,6 +549,7 @@ export default {
             :disabled="!isChecked || embed || !user.can('element:add')"
             :title="$gettext('Actions')"
             :icon="mdiDotsVertical"
+            class="btn-actions"
             variant="text"
           />
         </template>
@@ -589,6 +590,7 @@ export default {
         :title="$gettext('Add element')"
         :disabled="loading"
         :icon="mdiPlus"
+        class="btn-add"
         color="primary"
         variant="tonal"
       />
@@ -610,6 +612,7 @@ export default {
         @click="reload()"
         :title="$gettext('Reload elements')"
         :icon="mdiRefresh"
+        class="btn-reload"
         variant="text"
       />
 
@@ -620,6 +623,7 @@ export default {
             :title="$gettext('Sort by')"
             :append-icon="mdiMenuDown"
             :prepend-icon="mdiSort"
+            class="btn-sort"
             variant="text"
           >
             {{
@@ -685,6 +689,7 @@ export default {
               v-bind="props"
               :title="$gettext('Actions')"
               :icon="mdiDotsVertical"
+              class="btn-actions"
               variant="text"
             />
           </template>
@@ -775,6 +780,7 @@ export default {
       :title="$gettext('Add element')"
       :disabled="loading"
       :icon="mdiPlus"
+      class="btn-add"
       color="primary"
       variant="tonal"
     />

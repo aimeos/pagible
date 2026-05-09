@@ -686,7 +686,7 @@ export default {
         :disabled="!selected"
         :title="$gettext('Crop selected area')"
         :icon="mdiCrop"
-        class="no-rtl"
+        class="btn-crop no-rtl"
       />
 
       <v-btn
@@ -696,7 +696,7 @@ export default {
         :loading="loading['image:erase']"
         :title="$gettext('Erase selected area')"
         :icon="mdiEraser"
-        class="no-rtl"
+        class="btn-erase no-rtl"
       />
 
       <v-dialog
@@ -750,7 +750,7 @@ export default {
         :title="$gettext('Remove background')"
         :loading="loading['image:isolate']"
         :icon="mdiImageFilterBlackWhite"
-        class="no-rtl"
+        class="btn-remove-bg no-rtl"
       />
 
       <v-dialog
@@ -765,7 +765,7 @@ export default {
             :loading="loading['image:uncrop']"
             :title="$gettext('Expand image')"
             :icon="mdiArrowExpandAll"
-            class="no-rtl"
+            class="btn-expand no-rtl"
           />
         </template>
 
@@ -850,7 +850,7 @@ export default {
             :disabled="width >= 4096 && height >= 4096"
             :title="$gettext('Upscale image')"
             :icon="mdiMagnifyExpand"
-            class="no-rtl"
+            class="btn-upscale no-rtl"
           />
         </template>
 
@@ -911,31 +911,31 @@ export default {
 
       <v-btn
         :icon="mdiRotateLeft"
-        class="no-rtl"
+        class="btn-rotate-ccw no-rtl"
         @click="rotate(-90)"
         :title="$gettext('Rotate counter-clockwise')"
       />
       <v-btn
         :icon="mdiRotateRight"
-        class="no-rtl"
+        class="btn-rotate-cw no-rtl"
         @click="rotate(90)"
         :title="$gettext('Rotate clockwise')"
       />
 
       <v-btn
         :icon="mdiFlipHorizontal"
-        class="no-rtl"
+        class="btn-flip-h no-rtl"
         @click="flipX"
         :title="$gettext('Flip horizontally')"
       />
       <v-btn
         :icon="mdiFlipVertical"
-        class="no-rtl"
+        class="btn-flip-v no-rtl"
         @click="flipY"
         :title="$gettext('Flip vertically')"
       />
 
-      <v-btn :icon="mdiDownload" class="no-rtl" @click="download()" :title="$gettext('Download')" />
+      <v-btn :icon="mdiDownload" class="btn-download no-rtl" @click="download()" :title="$gettext('Download')" />
 
       <component
         :is="$vuetify.display.xs ? 'v-dialog' : 'v-menu'"

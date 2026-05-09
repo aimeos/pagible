@@ -253,6 +253,7 @@ export default {
                 :title="$gettext('Translate')"
                 :loading="translating[code]"
                 :icon="mdiTranslate"
+                class="btn-translate"
                 variant="text"
               />
             </template>
@@ -281,12 +282,13 @@ export default {
             :loading="composing[code]"
             @click="writeText(code)"
             :icon="mdiCreation"
+            class="btn-generate"
             variant="text"
           />
           <v-btn
             v-if="user.can('audio:transcribe')"
             @click="record(code)"
-            :class="{ dictating: audio[code] }"
+            :class="['btn-dictate', { dictating: audio[code] }]"
             :icon="audio[code] ? mdiMicrophoneOutline : mdiMicrophone"
             :title="$gettext('Dictate')"
             :loading="dictating[code]"

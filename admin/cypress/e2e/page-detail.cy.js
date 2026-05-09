@@ -240,7 +240,7 @@ describe('Page Detail', () => {
 
   it('back button closes the detail view', () => {
     visitPageDetail()
-    detailView().find('.v-btn[title="Back to list view"]').click()
+    detailView().find('.v-btn.btn-back').click()
     cy.get('.page-details').should('not.exist')
   })
 
@@ -266,12 +266,12 @@ describe('Page Detail', () => {
 
   it('shows history button', () => {
     visitPageDetail()
-    detailView().find('.v-btn[title="View history"]').should('exist')
+    detailView().find('.v-btn.btn-history').should('exist')
   })
 
   it('shows translate button when user has text:translate permission', () => {
     visitPageDetail()
-    detailView().find('.v-btn[title="Translate page"]').should('exist')
+    detailView().find('.v-btn.btn-translate-page').should('exist')
   })
 
   it('hides translate button when user lacks text:translate permission', () => {
@@ -285,12 +285,12 @@ describe('Page Detail', () => {
       name: 'Editor',
     }
     visitPageDetail({}, {}, me)
-    detailView().find('.v-btn[title="Translate page"]').should('not.exist')
+    detailView().find('.v-btn.btn-translate-page').should('not.exist')
   })
 
   it('shows aside toggle button', () => {
     visitPageDetail()
-    detailView().find('.v-btn[title="Toggle side menu"]').should('exist')
+    detailView().find('.v-btn.btn-sidemenu').should('exist')
   })
 
   // ---- Tabs ----
@@ -389,7 +389,7 @@ describe('Page Detail', () => {
 
   it('clicking history button opens history dialog', () => {
     visitPageDetail({}, { published: false })
-    detailView().find('.v-btn[title="View history"]').click()
+    detailView().find('.v-btn.btn-history').click()
     cy.get('.v-dialog').should('be.visible')
   })
 

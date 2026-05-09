@@ -208,7 +208,7 @@ describe('Element List', () => {
 
   it('shows sort menu with options', () => {
     visitElements()
-    cy.get('.layout .v-btn[title="Sort by"]').click()
+    cy.get('.layout .v-btn.btn-sort').click()
     cy.get('.v-list').should('contain', 'latest')
     cy.get('.v-list').should('contain', 'oldest')
     cy.get('.v-list').should('contain', 'name')
@@ -218,7 +218,7 @@ describe('Element List', () => {
 
   it('clicking a sort option triggers GQL reload', () => {
     visitElements()
-    cy.get('.layout .v-btn[title="Sort by"]').click()
+    cy.get('.layout .v-btn.btn-sort').click()
     cy.contains('.v-list .v-btn', 'name').click()
     cy.wait('@gql')
   })
@@ -227,7 +227,7 @@ describe('Element List', () => {
 
   it('shows add element button for users with element:add permission', () => {
     visitElements()
-    cy.get('.v-btn[title="Add element"]').should('exist')
+    cy.get('.v-btn.btn-add').should('exist')
   })
 
   it('hides add element button for users without element:add permission', () => {
@@ -237,12 +237,12 @@ describe('Element List', () => {
       name: 'Viewer',
     }
     visitElements([], me)
-    cy.get('.v-btn[title="Add element"]').should('not.exist')
+    cy.get('.v-btn.btn-add').should('not.exist')
   })
 
   it('clicking add element button opens schema picker dialog', () => {
     visitElements()
-    cy.get('.v-btn[title="Add element"]').first().click()
+    cy.get('.v-btn.btn-add').first().click()
     cy.get('.v-dialog').should('be.visible')
   })
 
@@ -280,21 +280,21 @@ describe('Element List', () => {
   it('shows context menu with actions when clicking three-dot button on an item', () => {
     const el = makeElement()
     visitElements([el])
-    cy.get('.items .v-list-item .actions .v-btn[title="Actions"]').first().click()
+    cy.get('.items .v-list-item .actions .v-btn.btn-actions').first().click()
     cy.get('.v-card .v-toolbar-title').should('contain', 'Actions')
   })
 
   it('context menu shows Publish for unpublished element', () => {
     const el = makeElement({ latest: { ...makeElement().latest, published: false } })
     visitElements([el])
-    cy.get('.items .v-list-item .actions .v-btn[title="Actions"]').first().click()
+    cy.get('.items .v-list-item .actions .v-btn.btn-actions').first().click()
     cy.get('.v-card .v-list').should('contain', 'Publish')
   })
 
   it('context menu hides Publish for already published element', () => {
     const el = makeElement()
     visitElements([el])
-    cy.get('.items .v-list-item .actions .v-btn[title="Actions"]').first().click()
+    cy.get('.items .v-list-item .actions .v-btn.btn-actions').first().click()
     cy.get('.v-card .v-list .v-list-item').filter(':visible').then(($items) => {
       const texts = [...$items].map((item) => item.textContent.trim())
       expect(texts.some((t) => t === 'Publish')).to.be.false
@@ -304,21 +304,21 @@ describe('Element List', () => {
   it('context menu shows Delete for non-trashed element', () => {
     const el = makeElement()
     visitElements([el])
-    cy.get('.items .v-list-item .actions .v-btn[title="Actions"]').first().click()
+    cy.get('.items .v-list-item .actions .v-btn.btn-actions').first().click()
     cy.get('.v-card .v-list').should('contain', 'Delete')
   })
 
   it('context menu shows Restore for trashed element', () => {
     const el = makeElement({ deleted_at: '2026-01-15 00:00:00' })
     visitElements([el])
-    cy.get('.items .v-list-item .actions .v-btn[title="Actions"]').first().click()
+    cy.get('.items .v-list-item .actions .v-btn.btn-actions').first().click()
     cy.get('.v-card .v-list').should('contain', 'Restore')
   })
 
   it('context menu hides Delete for trashed element', () => {
     const el = makeElement({ deleted_at: '2026-01-15 00:00:00' })
     visitElements([el])
-    cy.get('.items .v-list-item .actions .v-btn[title="Actions"]').first().click()
+    cy.get('.items .v-list-item .actions .v-btn.btn-actions').first().click()
     cy.get('.v-card .v-list .v-btn').then(($btns) => {
       const texts = [...$btns].map((b) => b.textContent.trim())
       expect(texts).to.not.include('Delete')
@@ -328,7 +328,7 @@ describe('Element List', () => {
   it('context menu shows Purge button', () => {
     const el = makeElement()
     visitElements([el])
-    cy.get('.items .v-list-item .actions .v-btn[title="Actions"]').first().click()
+    cy.get('.items .v-list-item .actions .v-btn.btn-actions').first().click()
     cy.get('.v-card .v-list').should('contain', 'Purge')
   })
 
@@ -337,7 +337,7 @@ describe('Element List', () => {
   it('clicking Publish sends pubElement mutation', () => {
     const el = makeElement({ latest: { ...makeElement().latest, published: false } })
     visitElements([el])
-    cy.get('.items .v-list-item .actions .v-btn[title="Actions"]').first().click()
+    cy.get('.items .v-list-item .actions .v-btn.btn-actions').first().click()
     cy.contains('.v-card .v-list .v-btn', 'Publish').click()
     cy.wait('@gql').its('request.body').should((body) => {
       const ops = Array.isArray(body) ? body : [body]
@@ -348,7 +348,7 @@ describe('Element List', () => {
   it('clicking Delete sends dropElement mutation', () => {
     const el = makeElement()
     visitElements([el])
-    cy.get('.items .v-list-item .actions .v-btn[title="Actions"]').first().click()
+    cy.get('.items .v-list-item .actions .v-btn.btn-actions').first().click()
     cy.contains('.v-card .v-list .v-btn', 'Delete').click()
     cy.wait('@gql').its('request.body').should((body) => {
       const ops = Array.isArray(body) ? body : [body]
@@ -359,7 +359,7 @@ describe('Element List', () => {
   it('clicking Purge sends purgeElement mutation', () => {
     const el = makeElement()
     visitElements([el])
-    cy.get('.items .v-list-item .actions .v-btn[title="Actions"]').first().click()
+    cy.get('.items .v-list-item .actions .v-btn.btn-actions').first().click()
     cy.contains('.v-card .v-list .v-btn', 'Purge').click()
     cy.wait('@gql').its('request.body').should((body) => {
       const ops = Array.isArray(body) ? body : [body]
@@ -372,20 +372,20 @@ describe('Element List', () => {
   it('shows bulk checkbox and actions button in header', () => {
     visitElements()
     cy.get('.header .bulk .v-checkbox-btn').should('exist')
-    cy.get('.header .bulk .v-btn[title="Actions"]').should('exist')
+    cy.get('.header .bulk .v-btn.btn-actions').should('exist')
   })
 
   it('bulk actions button is disabled when no items are checked', () => {
     const el = makeElement()
     visitElements([el])
-    cy.get('.header .bulk .v-btn[title="Actions"]').should('be.disabled')
+    cy.get('.header .bulk .v-btn.btn-actions').should('be.disabled')
   })
 
   it('checking an element item enables the bulk actions button', () => {
     const el = makeElement()
     visitElements([el])
     cy.get('.items .v-list-item .item-check').first().click()
-    cy.get('.header .bulk .v-btn[title="Actions"]').should('not.be.disabled')
+    cy.get('.header .bulk .v-btn.btn-actions').should('not.be.disabled')
   })
 
   it('toggle all checkbox checks all items', () => {
@@ -407,7 +407,7 @@ describe('Element List', () => {
     })
     visitElements([el])
     cy.get('.items .v-list-item .item-check').first().click()
-    cy.get('.header .bulk .v-btn[title="Actions"]').click()
+    cy.get('.header .bulk .v-btn.btn-actions').click()
     cy.get('.v-card .v-list').should('contain', 'Publish')
     cy.get('.v-card .v-list').should('contain', 'Delete')
     cy.get('.v-card .v-list').should('contain', 'Restore')

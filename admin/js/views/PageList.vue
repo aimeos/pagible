@@ -330,6 +330,7 @@ export default {
         @click="drawer.toggle('aside')"
         :title="$gettext('Toggle side menu')"
         :icon="drawer.aside ? mdiChevronRight : mdiChevronLeft"
+        class="btn-sidemenu"
       />
     </template>
   </v-app-bar>

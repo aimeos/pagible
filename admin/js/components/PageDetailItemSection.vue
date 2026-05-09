@@ -180,6 +180,7 @@ export default {
               @click="remove(code)"
               :title="$gettext('Remove content element')"
               :icon="mdiDelete"
+              class="btn-remove"
               variant="text"
             />
             <div class="element-title">{{ title(el) }}</div>
@@ -206,6 +207,7 @@ export default {
           @click="vschemas = true"
           :title="$gettext('Add element')"
           :icon="mdiViewGridPlus"
+          class="btn-add"
           color="primary"
           variant="flat"
         />

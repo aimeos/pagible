@@ -136,14 +136,14 @@ describe('Page Filter Sidebar', () => {
     cy.viewport(800, 660) // mobile width (< md 960px threshold)
     visitPages([makePage()])
     cy.get('.v-navigation-drawer--right').should('not.be.visible')
-    cy.get('.v-app-bar .v-btn[title="Toggle side menu"]').click()
+    cy.get('.v-app-bar .v-btn.btn-sidemenu').click()
     cy.get('.v-navigation-drawer--right').should('be.visible')
   })
 
   it('aside toggle button closes the filter sidebar when already open', () => {
     visitPages([makePage()])
     ensureAsideVisible()
-    cy.get('.v-app-bar .v-btn[title="Toggle side menu"]').click()
+    cy.get('.v-app-bar .v-btn.btn-sidemenu').click()
     cy.get('.v-navigation-drawer--right').should('not.be.visible')
   })
 

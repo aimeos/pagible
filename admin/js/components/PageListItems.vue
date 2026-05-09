@@ -1171,6 +1171,7 @@ export default {
             :disabled="!isChecked || embed || !user.can('page:add')"
             :title="$gettext('Actions')"
             :icon="mdiDotsVertical"
+            class="btn-actions"
             variant="text"
           />
         </template>
@@ -1224,6 +1225,7 @@ export default {
         :disabled="loading"
         :title="$gettext('Add page')"
         :icon="mdiPlus"
+        class="btn-add"
         color="primary"
         variant="tonal"
       />
@@ -1245,7 +1247,7 @@ export default {
       :title="$gettext('Reload page tree')"
       :icon="mdiRefresh"
       variant="text"
-      class="no-rtl"
+      class="btn-reload no-rtl"
     />
 
     <v-menu v-if="filter.view === 'list'">
@@ -1256,6 +1258,7 @@ export default {
           :aria-label="$gettext('Sort by')"
           :append-icon="mdiMenuDown"
           :prepend-icon="mdiSort"
+          class="btn-sort"
           variant="text"
         >
           {{
@@ -1357,6 +1360,7 @@ export default {
               v-bind="props"
               :title="$gettext('Actions')"
               :icon="mdiDotsVertical"
+              class="btn-actions"
               variant="text"
             />
           </template>
@@ -1557,6 +1561,7 @@ export default {
       :disabled="loading"
       :title="$gettext('Add page')"
       :icon="mdiPlus"
+      class="btn-add"
       color="primary"
       variant="tonal"
     />

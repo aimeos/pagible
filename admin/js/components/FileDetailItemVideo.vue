@@ -237,10 +237,12 @@ export default {
           :icon="mdiTooltipImage"
           :loading="loading.cover"
           :title="$gettext('Use as cover image')"
+          class="btn-cover-use"
           @click="addCover()"
         />
         <v-btn
           icon
+          class="btn-cover-upload"
           :loading="loading.cover"
           :title="$gettext('Upload cover image')"
           @click="$refs.coverInput.click()"

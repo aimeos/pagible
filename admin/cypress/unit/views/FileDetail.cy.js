@@ -51,7 +51,7 @@ describe('FileDetail', () => {
 
   it('renders the back button', () => {
     mountDetail()
-    cy.get('button[title="Back to list view"]').should('exist')
+    cy.get('button.btn-back').should('exist')
   })
 
   it('renders the File and Used by tabs', () => {
@@ -92,12 +92,12 @@ describe('FileDetail', () => {
 
   it('renders the history button', () => {
     mountDetail()
-    cy.get('button[title="View history"]').should('exist')
+    cy.get('button.btn-history').should('exist')
   })
 
   it('renders the aside toggle button', () => {
     mountDetail()
-    cy.get('button[title="Toggle side menu"]').should('exist')
+    cy.get('button.btn-sidemenu').should('exist')
   })
 
   describe('reset()', () => {

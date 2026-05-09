@@ -282,7 +282,7 @@ export default {
       @click="fullscreen()"
       :title="$gettext('Fullscreen mode')"
       :icon="mdiFullscreen"
-      class="fullscreen"
+      class="btn-fullscreen fullscreen"
       variant="text"
     />
     <v-btn

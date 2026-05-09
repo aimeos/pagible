@@ -87,27 +87,27 @@ describe('Table', () => {
       props: { modelValue: [['a'], ['b']], config: {} },
     })
     // Each row has an action button (mdi-dots-vertical)
-    cy.get('tbody button[title="Actions"]').should('have.length', 2)
+    cy.get('tbody button.btn-actions').should('have.length', 2)
   })
 
   it('hides row action menus in readonly mode', () => {
     cy.mount(TableField, {
       props: { modelValue: [['a']], config: {}, readonly: true },
     })
-    cy.get('tbody button[title="Actions"]').should('not.exist')
+    cy.get('tbody button.btn-actions').should('not.exist')
   })
 
   it('renders column action menus when not readonly', () => {
     cy.mount(TableField, {
       props: { modelValue: [['a', 'b']], config: {} },
     })
-    cy.get('thead button[title="Actions"]').should('have.length', 2)
+    cy.get('thead button.btn-actions').should('have.length', 2)
   })
 
   it('hides column action menus in readonly mode', () => {
     cy.mount(TableField, {
       props: { modelValue: [['a', 'b']], config: {}, readonly: true },
     })
-    cy.get('thead button[title="Actions"]').should('not.exist')
+    cy.get('thead button.btn-actions').should('not.exist')
   })
 })

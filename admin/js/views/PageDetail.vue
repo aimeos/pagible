@@ -767,6 +767,7 @@ export default {
             :title="$gettext('Translate page')"
             :loading="translating"
             :icon="mdiTranslate"
+            class="btn-translate-page"
           />
         </template>
         <v-list>

@@ -37,13 +37,13 @@ describe('Video', () => {
 
   it('shows upload and URL buttons when no file is loaded', () => {
     mountVideo()
-    cy.get('button[title="Upload file"]').should('exist')
-    cy.get('button[title="Add file from URL"]').should('exist')
+    cy.get('button.btn-upload').should('exist')
+    cy.get('button.btn-add-url').should('exist')
   })
 
   it('shows "Add file" button with file:view permission', () => {
     mountVideo({}, { 'file:view': true })
-    cy.get('button[title="Add file"]').should('exist')
+    cy.get('button.btn-add').should('exist')
   })
 
   it('renders video element when file is loaded', () => {
@@ -75,8 +75,8 @@ describe('Video', () => {
 
   it('hides action buttons in readonly mode', () => {
     mountVideo({ readonly: true })
-    cy.get('button[title="Upload file"]').should('not.exist')
-    cy.get('button[title="Add file from URL"]').should('not.exist')
+    cy.get('button.btn-upload').should('not.exist')
+    cy.get('button.btn-add-url').should('not.exist')
   })
 
   it('hides overlay menu in readonly mode with file present', () => {

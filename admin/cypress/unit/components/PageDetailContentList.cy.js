@@ -95,12 +95,12 @@ describe('PageDetailContentList', () => {
 
   it('shows add element button with page:save permission', () => {
     mountList({}, { 'page:save': true })
-    cy.get('button[title="Add element"]').should('exist')
+    cy.get('button.btn-add').should('exist')
   })
 
   it('hides add element button without page:save permission', () => {
     mountList()
-    cy.get('button[title="Add element"]').should('not.exist')
+    cy.get('button.btn-add').should('not.exist')
   })
 
   it('shows AI refine textarea with page:refine permission', () => {

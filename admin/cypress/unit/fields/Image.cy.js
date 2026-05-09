@@ -38,23 +38,23 @@ describe('Image', () => {
 
   it('shows upload and URL buttons when no file is loaded', () => {
     mountImage()
-    cy.get('button[title="Upload file"]').should('exist')
-    cy.get('button[title="Add file from URL"]').should('exist')
+    cy.get('button.btn-upload').should('exist')
+    cy.get('button.btn-add-url').should('exist')
   })
 
   it('shows "Add file" button with file:view permission', () => {
     mountImage({}, { 'file:view': true })
-    cy.get('button[title="Add file"]').should('exist')
+    cy.get('button.btn-add').should('exist')
   })
 
   it('shows "Create file" button with image:imagine permission', () => {
     mountImage({}, { 'image:imagine': true })
-    cy.get('button[title="Create file"]').should('exist')
+    cy.get('button.btn-create').should('exist')
   })
 
   it('hides "Create file" button without image:imagine permission', () => {
     mountImage()
-    cy.get('button[title="Create file"]').should('not.exist')
+    cy.get('button.btn-create').should('not.exist')
   })
 
   it('renders v-img when image file is loaded', () => {
@@ -85,9 +85,9 @@ describe('Image', () => {
 
   it('hides action buttons in readonly mode', () => {
     mountImage({ readonly: true })
-    cy.get('button[title="Upload file"]').should('not.exist')
-    cy.get('button[title="Add file from URL"]').should('not.exist')
-    cy.get('button[title="Create file"]').should('not.exist')
+    cy.get('button.btn-upload').should('not.exist')
+    cy.get('button.btn-add-url').should('not.exist')
+    cy.get('button.btn-create').should('not.exist')
   })
 
   it('hides overlay menu in readonly mode with file present', () => {

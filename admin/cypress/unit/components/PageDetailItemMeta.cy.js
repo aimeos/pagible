@@ -73,18 +73,18 @@ describe('PageDetailItemSection (meta)', () => {
 
   it('shows add button with page:save permission', () => {
     mountMeta({}, { 'page:save': true })
-    cy.get('button[title="Add element"]').should('exist')
+    cy.get('button.btn-add').should('exist')
   })
 
   it('hides add button without page:save permission', () => {
     mountMeta()
-    cy.get('button[title="Add element"]').should('not.exist')
+    cy.get('button.btn-add').should('not.exist')
   })
 
   it('shows remove button with page:save permission', () => {
     mountMeta({}, { 'page:save': true })
     cy.get('.v-expansion-panel').first().click()
-    cy.get('button[title="Remove content element"]').should('exist')
+    cy.get('button.btn-remove').should('exist')
   })
 
   it('renders Fields stub inside expansion panel', () => {
