@@ -11,7 +11,7 @@ use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Models\Version;
 use Aimeos\Cms\Resource;
 use Aimeos\Cms\Tenancy;
-use Database\Seeders\CmsSeeder;
+use Database\Seeders\TestSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 
@@ -36,7 +36,7 @@ class PageControllerTest extends ThemeTestAbstract
     {
         Tenancy::$callback = fn() => 'demo';
 
-        $this->seed( CmsSeeder::class );
+        $this->seed( TestSeeder::class );
 
         $page = Page::where( 'tag', 'blog' )->firstOrFail();
 
@@ -57,7 +57,7 @@ class PageControllerTest extends ThemeTestAbstract
     {
         Tenancy::$callback = fn() => 'demo';
 
-        $this->seed( CmsSeeder::class );
+        $this->seed( TestSeeder::class );
 
         $page = Page::where( 'tag', 'article' )->firstOrFail();
 
@@ -78,7 +78,7 @@ class PageControllerTest extends ThemeTestAbstract
     {
         Tenancy::$callback = fn() => 'demo';
 
-        $this->seed( CmsSeeder::class );
+        $this->seed( TestSeeder::class );
 
         // Home page has domain='mydomain.tld' in the seeder
         $page = Page::where( 'tag', 'root' )->firstOrFail();

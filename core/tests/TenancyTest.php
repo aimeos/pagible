@@ -11,7 +11,7 @@ use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\Scopes\Status;
 use Aimeos\Cms\Tenancy;
-use Database\Seeders\CmsSeeder;
+use Database\Seeders\TestSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Auth;
 
@@ -34,7 +34,7 @@ class TenancyTest extends CoreTestAbstract
 
     public function testTenancyScopeApply()
     {
-        $this->seed( CmsSeeder::class );
+        $this->seed( TestSeeder::class );
 
         $pages = Page::all();
 
@@ -48,7 +48,7 @@ class TenancyTest extends CoreTestAbstract
 
     public function testCrossTenantIsolation()
     {
-        $this->seed( CmsSeeder::class );
+        $this->seed( TestSeeder::class );
 
         $countBefore = Page::withoutTenancy()->count();
         $this->assertGreaterThan( 0, $countBefore );
@@ -63,7 +63,7 @@ class TenancyTest extends CoreTestAbstract
 
     public function testWithoutTenancyMacro()
     {
-        $this->seed( CmsSeeder::class );
+        $this->seed( TestSeeder::class );
 
         Tenancy::$callback = fn() => 'other';
         app()->forgetScopedInstances();

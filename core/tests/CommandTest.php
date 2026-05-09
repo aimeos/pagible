@@ -10,7 +10,7 @@ namespace Tests;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Element;
-use Database\Seeders\CmsSeeder;
+use Database\Seeders\TestSeeder;
 use App\Models\User;
 
 
@@ -21,7 +21,7 @@ class CoreCommandTest extends CoreTestAbstract
 
     public function testPublish(): void
     {
-        $this->seed( CmsSeeder::class );
+        $this->seed( TestSeeder::class );
 
         $this->artisan('cms:publish')->assertExitCode( 0 );
 

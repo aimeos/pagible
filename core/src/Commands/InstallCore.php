@@ -42,7 +42,7 @@ class InstallCore extends Command
         if( $this->option( 'seed' ) )
         {
             $this->comment( '  Seed database ...' );
-            $result += $this->call( 'db:seed', ['--class' => 'CmsSeeder'] );
+            $result += $this->call( 'db:seed', ['--class' => 'TestSeeder'] );
         }
 
         $this->comment( '  Link public storage folder ...' );

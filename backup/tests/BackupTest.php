@@ -7,7 +7,7 @@
 
 namespace Tests;
 
-use Database\Seeders\CmsSeeder;
+use Database\Seeders\TestSeeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Storage;
@@ -42,7 +42,7 @@ class BackupTest extends BackupTestAbstract
 
     public function testBackupAndRestore(): void
     {
-        $this->seed( CmsSeeder::class );
+        $this->seed( TestSeeder::class );
 
         $conn = config( 'cms.db', 'sqlite' );
         $t = $this->tenant;
@@ -89,7 +89,7 @@ class BackupTest extends BackupTestAbstract
 
     public function testBackupKeep(): void
     {
-        $this->seed( CmsSeeder::class );
+        $this->seed( TestSeeder::class );
 
         $t = $this->tenant;
         $prefix = 'pagible-' . $t . '-';
@@ -118,7 +118,7 @@ class BackupTest extends BackupTestAbstract
 
     public function testBackupList(): void
     {
-        $this->seed( CmsSeeder::class );
+        $this->seed( TestSeeder::class );
 
         $t = $this->tenant;
 
@@ -132,7 +132,7 @@ class BackupTest extends BackupTestAbstract
 
     public function testBackupMerge(): void
     {
-        $this->seed( CmsSeeder::class );
+        $this->seed( TestSeeder::class );
 
         $conn = config( 'cms.db', 'sqlite' );
         $t = $this->tenant;
@@ -155,7 +155,7 @@ class BackupTest extends BackupTestAbstract
 
     public function testBackupVerify(): void
     {
-        $this->seed( CmsSeeder::class );
+        $this->seed( TestSeeder::class );
 
         $t = $this->tenant;
 
@@ -171,7 +171,7 @@ class BackupTest extends BackupTestAbstract
 
     public function testBackupCrossTenant(): void
     {
-        $this->seed( CmsSeeder::class );
+        $this->seed( TestSeeder::class );
 
         $conn = config( 'cms.db', 'sqlite' );
         $t = $this->tenant;

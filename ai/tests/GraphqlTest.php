@@ -11,7 +11,7 @@ use Aimeos\Cms\Models\File;
 use Aimeos\Prisma\Prisma;
 use Aimeos\Prisma\Responses\FileResponse;
 use Aimeos\Prisma\Responses\TextResponse;
-use Database\Seeders\CmsSeeder;
+use Database\Seeders\TestSeeder;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Nuwave\Lighthouse\Testing\MakesGraphQLRequests;
@@ -63,7 +63,7 @@ class GraphqlTest extends AiTestAbstract
 
     public function testDescribe()
     {
-        $this->seed( CmsSeeder::class );
+        $this->seed( TestSeeder::class );
 
         $file = File::firstOrFail();
         $expected = 'Description of the file content.';
@@ -83,7 +83,7 @@ class GraphqlTest extends AiTestAbstract
 
     public function testImagine()
     {
-        $this->seed( CmsSeeder::class );
+        $this->seed( TestSeeder::class );
 
         $file = File::firstOrFail();
         $image = base64_encode( file_get_contents( __DIR__ . '/assets/image.png' ) );
@@ -103,7 +103,7 @@ class GraphqlTest extends AiTestAbstract
 
     public function testSynthesize()
     {
-        $this->seed( CmsSeeder::class );
+        $this->seed( TestSeeder::class );
 
         $file = File::firstOrFail();
         $fake = \Prism\Prism\Testing\TextResponseFake::make()
@@ -200,7 +200,7 @@ class GraphqlTest extends AiTestAbstract
 
     public function testWrite()
     {
-        $this->seed( CmsSeeder::class );
+        $this->seed( TestSeeder::class );
 
         $file = File::firstOrFail();
         $expected = 'Generated content based on the prompt.';
@@ -220,7 +220,7 @@ class GraphqlTest extends AiTestAbstract
 
     public function testDescribeNoPermission()
     {
-        $this->seed( CmsSeeder::class );
+        $this->seed( TestSeeder::class );
 
         $user = new \App\Models\User( [
             'name' => 'No permission',

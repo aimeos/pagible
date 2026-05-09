@@ -7,7 +7,7 @@
 
 namespace Tests;
 
-use Database\Seeders\CmsSeeder;
+use Database\Seeders\TestSeeder;
 use Aimeos\Cms\Scout\CmsEngine;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
@@ -37,7 +37,7 @@ class CmsEngineTest extends SearchTestAbstract
     {
         parent::setUp();
 
-        $this->seed( CmsSeeder::class );
+        $this->seed( TestSeeder::class );
         $conn = DB::connection( config( 'cms.db' ) );
 
         if( $conn->getDriverName() === 'sqlsrv' )

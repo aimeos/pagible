@@ -36,7 +36,7 @@ class SearchControllerTest extends ThemeTestAbstract
 
     public function testIndex()
     {
-        $this->seed( \Database\Seeders\CmsSeeder::class );
+        $this->seed( \Database\Seeders\TestSeeder::class );
 
         $request = Request::create('/cmsapi/search', 'GET', [
             'q' => 'welcome',

@@ -10,7 +10,7 @@ namespace Tests;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Nuwave\Lighthouse\Testing\MakesGraphQLRequests;
 use Nuwave\Lighthouse\Testing\RefreshesSchemaCache;
-use Database\Seeders\CmsSeeder;
+use Database\Seeders\TestSeeder;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
@@ -59,7 +59,7 @@ class GraphqlElementTest extends GraphqlTestAbstract
 
     public function testElement()
     {
-        $this->seed( CmsSeeder::class );
+        $this->seed( TestSeeder::class );
 
         $element = Element::where( 'type', 'footer' )->firstOrFail();
 
@@ -107,7 +107,7 @@ class GraphqlElementTest extends GraphqlTestAbstract
 
     public function testElements()
     {
-        $this->seed(CmsSeeder::class);
+        $this->seed(TestSeeder::class);
 
         $element = Element::where('type', 'footer')->first();
 
@@ -161,7 +161,7 @@ class GraphqlElementTest extends GraphqlTestAbstract
 
     public function testElementsPublished()
     {
-        $this->seed( CmsSeeder::class );
+        $this->seed( TestSeeder::class );
 
         $this->expectsDatabaseQueryCount( 1 );
         $response = $this->actingAs( $this->user )->graphQL( '{
@@ -190,7 +190,7 @@ class GraphqlElementTest extends GraphqlTestAbstract
 
     public function testElementsScheduled()
     {
-        $this->seed( CmsSeeder::class );
+        $this->seed( TestSeeder::class );
 
         $element = Element::where( 'type', 'footer' )->get()->first();
 
@@ -223,7 +223,7 @@ class GraphqlElementTest extends GraphqlTestAbstract
 
     public function testElementVersions()
     {
-        $this->seed(CmsSeeder::class);
+        $this->seed(TestSeeder::class);
 
         $element = Element::where( 'type', 'footer' )->firstOrFail();
 
@@ -262,7 +262,7 @@ class GraphqlElementTest extends GraphqlTestAbstract
 
     public function testAddElement()
     {
-        $this->seed(CmsSeeder::class);
+        $this->seed(TestSeeder::class);
 
         $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
         $element = Element::where( 'type', 'footer' )->firstOrFail();
@@ -324,7 +324,7 @@ class GraphqlElementTest extends GraphqlTestAbstract
 
     public function testSaveElement()
     {
-        $this->seed(CmsSeeder::class);
+        $this->seed(TestSeeder::class);
 
         $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
         $element = Element::where( 'type', 'footer' )->firstOrFail();
@@ -397,7 +397,7 @@ class GraphqlElementTest extends GraphqlTestAbstract
 
     public function testSaveElementBadType()
     {
-        $this->seed( CmsSeeder::class );
+        $this->seed( TestSeeder::class );
 
         $element = Element::where( 'type', 'footer' )->firstOrFail();
 
@@ -419,7 +419,7 @@ class GraphqlElementTest extends GraphqlTestAbstract
 
     public function testDropElement()
     {
-        $this->seed( CmsSeeder::class );
+        $this->seed( TestSeeder::class );
 
         $element = Element::where( 'type', 'footer' )->firstOrFail();
 
@@ -448,7 +448,7 @@ class GraphqlElementTest extends GraphqlTestAbstract
 
     public function testKeepElement()
     {
-        $this->seed( CmsSeeder::class );
+        $this->seed( TestSeeder::class );
 
         $element = Element::where( 'type', 'footer' )->firstOrFail();
         $element->delete();
@@ -478,7 +478,7 @@ class GraphqlElementTest extends GraphqlTestAbstract
 
     public function testPubElement()
     {
-        $this->seed( CmsSeeder::class );
+        $this->seed( TestSeeder::class );
 
         $element = Element::where( 'type', 'footer' )->firstOrFail();
 
@@ -505,7 +505,7 @@ class GraphqlElementTest extends GraphqlTestAbstract
 
     public function testPubElementAt()
     {
-        $this->seed( CmsSeeder::class );
+        $this->seed( TestSeeder::class );
 
         $element = Element::where( 'type', 'footer' )->firstOrFail();
 
@@ -532,7 +532,7 @@ class GraphqlElementTest extends GraphqlTestAbstract
 
     public function testPubElementAtWithTime()
     {
-        $this->seed( CmsSeeder::class );
+        $this->seed( TestSeeder::class );
 
         $element = Element::where( 'type', 'footer' )->firstOrFail();
 
@@ -559,7 +559,7 @@ class GraphqlElementTest extends GraphqlTestAbstract
 
     public function testPurgeElement()
     {
-        $this->seed( CmsSeeder::class );
+        $this->seed( TestSeeder::class );
 
         $element = Element::where( 'type', 'footer' )->firstOrFail();
 

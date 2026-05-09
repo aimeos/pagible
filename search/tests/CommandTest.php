@@ -7,7 +7,7 @@
 
 namespace Tests;
 
-use Database\Seeders\CmsSeeder;
+use Database\Seeders\TestSeeder;
 use Illuminate\Support\Facades\DB;
 
 
@@ -22,7 +22,7 @@ class SearchCommandTest extends SearchTestAbstract
         // are not truncated by DatabaseTruncation in other test classes)
         DB::connection( config( 'cms.db', 'sqlite' ) )->table( 'cms_index' )->delete();
 
-        $this->seed( CmsSeeder::class );
+        $this->seed( TestSeeder::class );
 
         $this->artisan('cms:index')->assertExitCode( 0 );
 

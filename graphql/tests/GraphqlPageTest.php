@@ -10,7 +10,7 @@ namespace Tests;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Nuwave\Lighthouse\Testing\MakesGraphQLRequests;
 use Nuwave\Lighthouse\Testing\RefreshesSchemaCache;
-use Database\Seeders\CmsSeeder;
+use Database\Seeders\TestSeeder;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
@@ -61,7 +61,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
 
     public function testPage()
     {
-        $this->seed(CmsSeeder::class);
+        $this->seed(TestSeeder::class);
 
         $page = Page::where('tag', 'root')->firstOrFail();
 
@@ -120,7 +120,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
 
     public function testPages()
     {
-        $this->seed(CmsSeeder::class);
+        $this->seed(TestSeeder::class);
 
         $expected = [];
         $page = Page::where('tag', 'root')->firstOrFail();
@@ -202,7 +202,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
 
     public function testPagesDraft()
     {
-        $this->seed( CmsSeeder::class );
+        $this->seed( TestSeeder::class );
 
         $page = Page::where('tag', 'hidden')->firstOrFail();
 
@@ -235,7 +235,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
 
     public function testPagesScheduled()
     {
-        $this->seed( CmsSeeder::class );
+        $this->seed( TestSeeder::class );
 
         $page = Page::where('tag', 'hidden')->firstOrFail();
 
@@ -268,7 +268,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
 
     public function testPagesSort()
     {
-        $this->seed(CmsSeeder::class);
+        $this->seed(TestSeeder::class);
 
         $pages = Page::orderBy('id', 'desc')->take(2)->get();
 
@@ -289,7 +289,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
 
     public function testPagesWithParentid()
     {
-        $this->seed(CmsSeeder::class);
+        $this->seed(TestSeeder::class);
 
         $root = Page::where('tag', 'root')->firstOrFail();
         $pages = Page::where('parent_id', $root->id)->defaultOrder()->get();
@@ -366,7 +366,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
 
     public function testPageParent()
     {
-        $this->seed( CmsSeeder::class );
+        $this->seed( TestSeeder::class );
 
         $page = Page::where('tag', 'article')->firstOrFail();
 
@@ -395,7 +395,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
 
     public function testPageChildren()
     {
-        $this->seed( CmsSeeder::class );
+        $this->seed( TestSeeder::class );
 
         $page = Page::where('tag', 'blog')->firstOrFail();
 
@@ -435,7 +435,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
 
     public function testPageAncestors()
     {
-        $this->seed( CmsSeeder::class );
+        $this->seed( TestSeeder::class );
 
         $page = Page::where('tag', 'article')->firstOrFail();
 
@@ -463,7 +463,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
 
     public function testPageVersions()
     {
-        $this->seed(CmsSeeder::class);
+        $this->seed(TestSeeder::class);
 
         $page = Page::where('tag', 'root')->firstOrFail();
         $element = $page->elements()->firstOrFail();
@@ -523,7 +523,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
 
     public function testPageSimple()
     {
-        $this->seed( CmsSeeder::class );
+        $this->seed( TestSeeder::class );
 
         $page = Page::where('tag', 'disabled')->firstOrFail();
 
@@ -562,7 +562,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
 
     public function testPageElements()
     {
-        $this->seed(CmsSeeder::class);
+        $this->seed(TestSeeder::class);
 
         $page = Page::where('tag', 'root')->firstOrFail();
 
@@ -602,7 +602,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
 
     public function testAddPage()
     {
-        $this->seed( CmsSeeder::class );
+        $this->seed( TestSeeder::class );
 
         $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
         $element = Element::where( 'type', 'footer' )->firstOrFail();
@@ -679,7 +679,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
 
     public function testAddPageChild()
     {
-        $this->seed( CmsSeeder::class );
+        $this->seed( TestSeeder::class );
 
         $root = Page::where('tag', 'root')->firstOrFail();
 
@@ -718,7 +718,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
 
     public function testAddPageChildRef()
     {
-        $this->seed( CmsSeeder::class );
+        $this->seed( TestSeeder::class );
 
         $root = Page::where('tag', 'root')->firstOrFail();
         $ref = Page::where('tag', 'blog')->firstOrFail();
@@ -760,7 +760,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
 
     public function testMovePage()
     {
-        $this->seed( CmsSeeder::class );
+        $this->seed( TestSeeder::class );
 
         $blog = Page::where('tag', 'blog')->firstOrFail();
 
@@ -791,7 +791,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
 
     public function testMovePageParent()
     {
-        $this->seed( CmsSeeder::class );
+        $this->seed( TestSeeder::class );
 
         $root = Page::where('tag', 'root')->firstOrFail();
         $article = Page::where('tag', 'article')->firstOrFail();
@@ -821,7 +821,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
 
     public function testMovePageParentRef()
     {
-        $this->seed( CmsSeeder::class );
+        $this->seed( TestSeeder::class );
 
         $root = Page::where('tag', 'root')->firstOrFail();
         $blog = Page::where('tag', 'blog')->firstOrFail();
@@ -854,7 +854,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
 
     public function testSavePage()
     {
-        $this->seed(CmsSeeder::class);
+        $this->seed(TestSeeder::class);
 
         $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
         $element = Element::where( 'type', 'footer' )->firstOrFail();
@@ -961,7 +961,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
 
     public function testDropPage()
     {
-        $this->seed( CmsSeeder::class );
+        $this->seed( TestSeeder::class );
 
         $root = Page::where('tag', 'root')->firstOrFail();
 
@@ -996,7 +996,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
 
     public function testKeepPage()
     {
-        $this->seed( CmsSeeder::class );
+        $this->seed( TestSeeder::class );
 
         $root = Page::where('tag', 'root')->firstOrFail();
         $root->delete();
@@ -1032,7 +1032,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
 
     public function testPubPage()
     {
-        $this->seed( CmsSeeder::class );
+        $this->seed( TestSeeder::class );
 
         $page = Page::where('tag', 'root')->firstOrFail();
 
@@ -1060,7 +1060,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
 
     public function testPubPageAt()
     {
-        $this->seed( CmsSeeder::class );
+        $this->seed( TestSeeder::class );
 
         $page = Page::where('tag', 'root')->firstOrFail();
 
@@ -1087,7 +1087,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
 
     public function testPubPageAtWithTime()
     {
-        $this->seed( CmsSeeder::class );
+        $this->seed( TestSeeder::class );
 
         $page = Page::where('tag', 'root')->firstOrFail();
 
@@ -1114,7 +1114,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
 
     public function testPurgePage()
     {
-        $this->seed( CmsSeeder::class );
+        $this->seed( TestSeeder::class );
 
         $root = Page::where('tag', 'root')->firstOrFail();
 
