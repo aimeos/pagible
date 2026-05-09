@@ -30,6 +30,7 @@ jobs:
           - { package: themes/glass, repo: pagible-themes-glass }
           - { package: themes/pagible, repo: pagible-themes-pagible }
           - { package: themes/paper, repo: pagible-themes-paper }
+          - { package: themes/premium, repo: pagible-themes-premium }
     steps:
       - uses: actions/checkout@v5
 

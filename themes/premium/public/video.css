@@ -1,0 +1,14 @@
+/**
+ * Premium Theme
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+.video video {
+    max-width: 100%;
+    display: block;
+    background-color: var(--pico-muted-background-color);
+    border: 1px solid var(--pico-muted-border-color);
+    border-radius: calc(var(--pico-border-radius) * 4);
+    padding: 2rem;
+    filter: drop-shadow(0 1.5rem 3rem #0F172A14);
+}

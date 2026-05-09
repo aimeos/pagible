@@ -18,7 +18,7 @@
             ">
         @endif
 
-        <meta name="theme-color" content="{{ cms($page, 'config.theme.data.--pico-background-color') ?: '#FFFFFF' }}">
+        <meta name="theme-color" content="{{ cms($page, 'config.theme.data.--pico-background-color') ?: '#F8F9FA' }}">
 
         <title>{{ cms($page, 'title') }}</title>
 
@@ -88,7 +88,7 @@
             ]
         </script>
     </head>
-    <body class="theme-clean type-{{ cms($page, 'type', 'page') }}">
+    <body class="theme-premium type-{{ cms($page, 'type', 'page') }}">
         <a href="#main" class="skip-link">{{ __('Skip to main content') }}</a>
         <dialog id="modal-search" class="search">
             <article>
@@ -191,7 +191,7 @@
         </header>
 
         @if($page->ancestors->count() > 1)
-            <nav class="breadcrumb" aria-label="{{ __('Breadcrumb navigation') }}">
+            <nav aria-label="breadcrumb">
                 <ul>
                     @foreach($page->ancestors->skip(1) as $item)
                         @if(cms($item, 'status') == 1)
@@ -236,7 +236,7 @@
         @endforeach
 
         @if(\Aimeos\Cms\Permission::can('page:save', auth()->user()))
-            <link href="{{ cmsasset('vendor/cms/admin/editor.css') }}" rel="preload" as="style">
+            <link href="{{ cmsasset('vendor/cms/admin/editor.css') }}" rel="stylesheet">
             <script defer src="{{ cmsasset('vendor/cms/admin/editor.js') }}"></script>
         @else
             <script defer src="{{ cmstheme($page, 'stats.js') }}"></script>
