@@ -109,13 +109,13 @@ body > * {
 
 :where(a:not([role=button]):not([role=menuitem])),
 :where(a:not([role=button]):not([role=menuitem]):visited) {
-    --pico-color: var(--pico-primary);
-    --pico-underline: var(--pico-primary);
+    color: var(--pico-primary);
+    text-decoration-color: var(--pico-primary);
 }
 
 :where(a:not([role=button]):not([role=menuitem]):hover) {
-    --pico-color: var(--pico-primary-hover);
-    --pico-underline: var(--pico-primary-hover);
+    color: var(--pico-primary-hover);
+    text-decoration-color: var(--pico-primary-hover);
 }
 
 .skip-link {
@@ -371,27 +371,27 @@ h4, h5, h6 {
 }
 
 h1 {
-    --pico-typography-spacing-vertical: 2rem;
+    margin-bottom: 2rem;
     font-size: calc(var(--pico-font-size) * 2.1);
     line-height: 1.1;
     text-align: center;
 }
 
 h2 {
-    --pico-typography-spacing-vertical: 1.5rem;
+    margin-bottom: 1.5rem;
     font-size: calc(var(--pico-font-size) * 1.6);
     line-height: 1.2;
     text-align: center;
 }
 
 h3 {
-    --pico-typography-spacing-vertical: 1.25rem;
+    margin-bottom: 1.25rem;
     font-size: calc(var(--pico-font-size) * 0.9);
     line-height: 1.3;
 }
 
 h4 {
-    --pico-typography-spacing-vertical: 1rem;
+    margin-bottom: 1rem;
     font-size: calc(var(--pico-font-size) * 0.8);
     line-height: 1.4;
 }
@@ -425,14 +425,14 @@ img {
 }
 
 .btn-primary,
-.btn:first-of-type {
+.btn:first-child {
     background-color: var(--pico-contrast);
     color: var(--pico-contrast-inverse);
     border-color: var(--pico-contrast);
 }
 
 .btn-primary:hover,
-.btn:first-of-type:hover {
+.btn:first-child:hover {
     background-color: var(--pico-contrast-hover);
     color: var(--pico-contrast-inverse);
 }

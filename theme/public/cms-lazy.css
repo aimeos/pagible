@@ -83,7 +83,6 @@ dialog.search a.result-item {
 }
 
 dialog.search a.result-item:hover {
-    --pico-color: var(--pico-contrast);
     background-color: var(--pico-muted-background-color);
     border-inline-start-color: var(--pico-primary);
     color: var(--pico-contrast);
@@ -174,8 +173,8 @@ pre:has(code[class*="language-"]) {
 
 
 footer.cms-content {
-    background-color: var(--pico-background-color);
-    padding: 2rem 0;
+    background-color: var(--pico-contrast);
+    padding: 3rem 0 1rem;
 }
 
 footer.cms-content .container {
@@ -192,7 +191,7 @@ footer.cms-content .cards .card-item {
 }
 
 footer.cms-content .cards .title {
-    color: var(--pico-contrast);
+    color: var(--pico-muted-color);
     font-size: calc(var(--pico-font-size) * 0.65);
     font-weight: 700;
     letter-spacing: 0.05em;
@@ -201,7 +200,7 @@ footer.cms-content .cards .title {
 }
 
 footer.cms-content .cards .text {
-    color: var(--pico-muted-color);
+    color: var(--pico-contrast-inverse);
     font-size: calc(var(--pico-font-size) * 0.7);
 }
 
@@ -211,7 +210,7 @@ footer.cms-content .cards .text p {
 }
 
 footer.cms-content .cards .text a:hover {
-    color: var(--pico-contrast);
+    color: var(--pico-muted-color);
 }
 
 footer.cms-content ul {
@@ -226,7 +225,7 @@ footer.cms-content ul li {
 footer.cms-content .heading h1,
 footer.cms-content .heading h2,
 footer.cms-content .heading h3 {
-    color: var(--pico-contrast);
+    color: var(--pico-contrast-inverse);
 }
 
 footer.cms-content .text {
@@ -235,19 +234,19 @@ footer.cms-content .text {
 
 footer.cms-content a,
 footer.cms-content a:visited {
-    color: var(--pico-muted-color);
+    color: var(--pico-contrast-inverse);
     text-decoration: none;
     display: inline-block;
     padding: 0.5rem;
 }
 
 footer.cms-content a:hover {
-    color: var(--pico-contrast);
+    color: var(--pico-muted-color);
 }
 
 footer.bottom {
+    background-color: var(--pico-contrast);
     color: var(--pico-muted-color);
-    background-color: var(--pico-background-color);
     border-top: 1px solid var(--pico-muted-border-color);
     font-size: calc(var(--pico-font-size) * 0.65);
     margin: 0;

@@ -194,7 +194,7 @@
         </header>
 
         @if($page->ancestors->count() > 1)
-            <nav aria-label="breadcrumb">
+            <nav class="breadcrumb" aria-label="breadcrumb">
                 <ul>
                     @foreach($page->ancestors->skip(1) as $item)
                         @if(cms($item, 'status') == 1)

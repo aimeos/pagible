@@ -117,13 +117,13 @@ body {
 
 :where(a:not([role=button]):not([role=menuitem])),
 :where(a:not([role=button]):not([role=menuitem]):visited) {
-    --pico-color: var(--pico-primary);
-    --pico-underline: var(--pico-primary);
+    color: var(--pico-primary);
+    text-decoration-color: var(--pico-primary);
 }
 
 :where(a:not([role=button]):not([role=menuitem]):hover) {
-    --pico-color: var(--pico-primary-hover);
-    --pico-underline: var(--pico-primary-hover);
+    color: var(--pico-primary-hover);
+    text-decoration-color: var(--pico-primary-hover);
 }
 
 .skip-link {

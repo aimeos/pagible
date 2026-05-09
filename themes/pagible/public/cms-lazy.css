@@ -72,7 +72,6 @@ dialog.search a.result-item {
 }
 
 dialog.search a.result-item:hover {
-    --pico-color: var(--pico-contrast);
     background-color: var(--pico-contrast-background);
     color: var(--pico-contrast);
 }

@@ -11,7 +11,7 @@
     --pico-block-spacing-vertical: 0;
     --pico-nav-element-spacing-horizontal: 1rem;
     --pico-nav-element-spacing-vertical: 0.75rem;
-    --pico-nav-link-spacing-vertical: 0.625rem;
+    --pico-nav-link-spacing-vertical: 0.825rem;
     --pico-nav-link-spacing-horizontal: 0.625rem;
     --pico-color: #E2E8F0;
     --pico-background-color: #060A12;
@@ -65,12 +65,6 @@
     --pico-code-background-color: var(--pico-contrast-background);
     --pico-code-color: var(--pico-contrast);
     --pico-border-radius: 1.25rem;
-}
-
-@media (min-width: 768px) {
-    :host, :root {
-        --pico-font-size: 1.125rem !important;
-    }
 }
 
 @media (min-width: 768px) {
@@ -140,7 +134,7 @@ body > header {
     padding: 1rem 1.5rem;
     position: fixed;
     margin: 0 auto;
-    z-index: 10;
+    z-index: 100;
     right: 0;
     left: 0;
     top: 0;
@@ -174,7 +168,7 @@ header nav > ul > li:last-of-type a {
     color: var(--pico-primary-inverse);
     background-color: var(--pico-primary);
     border-radius: 9999px;
-    padding: 0.7rem 1rem;
+    padding: 0.71rem 1rem;
     text-wrap: nowrap;
 }
 
@@ -184,7 +178,7 @@ header nav details > summary {
     align-items: center;
     list-style: none;
     cursor: pointer;
-    padding: 0.7rem 0.5rem;
+    padding: 0.71rem 0.5rem;
     font-size: calc(var(--pico-font-size) * 0.75);
     transition: color 0.15s ease;
     text-decoration: none;
@@ -389,27 +383,27 @@ h4, h5, h6 {
 }
 
 h1 {
-    --pico-typography-spacing-vertical: 2rem;
+    margin-bottom: 2rem;
     font-size: calc(var(--pico-font-size) * 2.1);
     line-height: 1.2;
     text-align: center;
 }
 
 h2 {
-    --pico-typography-spacing-vertical: 1.5rem;
+    margin-bottom: 1.5rem;
     font-size: calc(var(--pico-font-size) * 1.6);
     line-height: 1.2;
     text-align: center;
 }
 
 h3 {
-    --pico-typography-spacing-vertical: 1.25rem;
+    margin-bottom: 1.25rem;
     font-size: var(--pico-font-size);
     line-height: 1.5;
 }
 
 h4 {
-    --pico-typography-spacing-vertical: 1rem;
+    margin-bottom: 1rem;
     font-size: calc(var(--pico-font-size) * 0.9);
     line-height: 1.5;
 }
@@ -444,14 +438,14 @@ img {
 }
 
 .btn-primary,
-.btn:first-of-type {
+.btn:first-child {
     background: var(--pico-primary);
     color: var(--pico-primary-inverse);
     border-color: var(--pico-primary);
 }
 
 .btn-primary:hover,
-.btn:first-of-type:hover {
+.btn:first-child:hover {
     background: var(--pico-primary-hover);
     color: var(--pico-primary-inverse);
     border-color: var(--pico-primary-hover);

@@ -32,8 +32,8 @@
 .image-text .grid-start,
 .image-text .grid-end {
     display: flex;
-    gap: 2rem;
-    align-items: flex-start;
+    gap: 0;
+    align-items: stretch;
 }
 
 .image-text .grid-end {
@@ -44,17 +44,35 @@
 .image-text .grid-end .text {
     flex: 1;
     min-width: 0;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 .image-text .grid-start .image,
 .image-text .grid-end .image {
     flex: 0 0 var(--ratio);
     max-width: var(--ratio);
+    background-color: var(--pico-muted-background-color);
+    display: flex;
+    align-items: center;
+}
+
+.image-text .grid-start .image img,
+.image-text .grid-end .image img {
+    border-radius: 0;
 }
 
 @media (max-width: 767px) {
     .image-text .grid-start,
     .image-text .grid-end {
         flex-direction: column;
+    }
+
+    .image-text .grid-start .image,
+    .image-text .grid-end .image {
+        max-width: 100%;
+        flex: 0 0 auto;
     }
 }

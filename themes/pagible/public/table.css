@@ -15,7 +15,7 @@
 }
 
 .table-responsive .th {
-    --pico-color: var(--pico-contrast-hover);
+    color: var(--pico-contrast-hover);
     text-align: center;
 }
 

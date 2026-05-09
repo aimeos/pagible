@@ -87,7 +87,6 @@ dialog.search a.result-item {
 }
 
 dialog.search a.result-item:hover {
-    --pico-color: var(--pico-contrast);
     background-color: var(--pico-contrast-hover-background);
     border-inline-start-color: var(--pico-primary);
     color: var(--pico-contrast);

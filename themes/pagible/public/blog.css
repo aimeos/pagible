@@ -20,7 +20,7 @@
 }
 
 .blog .blog-item {
-    --pico-text-decoration: none;
+    text-decoration: none;
 }
 
 .blog img {

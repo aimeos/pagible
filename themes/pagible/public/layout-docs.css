@@ -70,8 +70,6 @@ main nav.sidebar.show {
 }
 
 main nav.sidebar .menu {
-    --pico-nav-element-spacing-vertical: 0.35rem;
-    --pico-nav-element-spacing-horizontal: 1rem;
     flex-direction: column;
     height: fit-content;
     align-items: start;
@@ -99,6 +97,7 @@ main nav.sidebar .active {
 
 main nav.sidebar a {
     color: var(--pico-contrast);
+    padding: 0.35rem 1rem;
 }
 
 main nav.sidebar summary a {

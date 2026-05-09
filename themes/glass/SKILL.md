@@ -17,7 +17,7 @@ Dark, modern, layered. Deep navy background (#060A12) with frosted glass panels 
 
 ## Style Foundations
 - Visual style: dark glassmorphism, frosted panels, layered depth. Ambient radial gradients on body background
-- Typography: Font=Inter/System, weights=300 (body/description text), 500 (headings/labels) | Sizes: h1=3rem/4.5rem, h2=2.5rem/3rem, h3=1.25rem, h4=1.125rem, body=1rem, small=0.875rem | line-height: body=1.5, text blocks=1.625, h1=1.1
+- Typography: Font=System, weights=300 (body/description text), 500 (headings/labels) | Sizes: h1=3rem/4.5rem, h2=2.5rem/3rem, h3=1.25rem, h4=1.125rem, body=1rem, small=0.875rem | line-height: body=1.5, text blocks=1.625, h1=1.1
 - Color tokens: --pico-color=#E2E8F0, --pico-background-color=#060A12, --pico-muted-color=#94A3B8, --pico-muted-border-color=#FFFFFF14, --pico-contrast=#F8FAFC, --pico-contrast-inverse=#060A12, --pico-primary=#8AFFC4, --pico-secondary=#6366F1 | Glass: --pico-contrast-background=#FFFFFF0D, --pico-contrast-border=#FFFFFF1A
 - Border radius: 0.75rem (default), 1.5rem (cards/containers), 9999px (buttons/inputs/badges) | Shadows: deep, e.g. 0 1.25rem 3.75rem -0.9375rem rgba(0,0,0,0.4)
 - Max widths: 80rem (header/docs), 75rem (container), 60rem (blog), 50rem (text) | Breakpoints: 576px, 768px, 992px

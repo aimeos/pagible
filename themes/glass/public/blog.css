@@ -20,7 +20,7 @@
 }
 
 .blog .blog-item {
-    --pico-text-decoration: none;
+    text-decoration: none;
     background: var(--pico-contrast-background);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);

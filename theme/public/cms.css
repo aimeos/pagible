@@ -29,12 +29,12 @@
     --pico-contrast-hover-underline: var(--pico-contrast-hover);
     --pico-contrast-focus: var(--pico-text-selection-color);
     --pico-contrast-inverse: #FFFFFF;
-    --pico-primary: #3B82F6;
-    --pico-primary-background: #3B82F608;
+    --pico-primary: #DC2626;
+    --pico-primary-background: #DC262608;
     --pico-primary-border: var(--pico-primary);
     --pico-primary-underline: var(--pico-primary);
-    --pico-primary-hover: #2563EB;
-    --pico-primary-hover-background: #2563EB08;
+    --pico-primary-hover: #B91C1C;
+    --pico-primary-hover-background: #B91C1C08;
     --pico-primary-hover-border: var(--pico-primary-hover);
     --pico-primary-hover-underline: var(--pico-primary-hover);
     --pico-primary-focus: var(--pico-text-selection-color);
@@ -112,11 +112,15 @@ nav li :where(a,[role=link]) {
 }
 
 body > header {
+    background-color: var(--pico-background-color);
+    position: relative;
+    z-index: 10;
+}
+
+body > header > nav {
     max-width: 1200px;
     padding: 1rem 2rem;
-    position: relative;
     margin: auto;
-    z-index: 10;
 }
 
 header nav ol,
@@ -403,31 +407,31 @@ img {
     font-size: calc(var(--pico-font-size) * 0.8);
     font-weight: 600;
     letter-spacing: 0;
-    border: 1px solid var(--pico-muted-border-color);
+    border: 1px solid var(--pico-contrast-border);
     border-radius: 9999px;
     color: var(--pico-contrast);
-    background-color: var(--pico-contrast-inverse);
+    background-color: var(--pico-contrast-background);
     transition: all 0.2s ease;
 }
 
 .btn:hover {
-    background-color: var(--pico-muted-background-color);
-    color: var(--pico-contrast);
+    background-color: var(--pico-contrast-hover-background);
+    color: var(--pico-contrast-hover);
     border-color: var(--pico-contrast-hover-border);
     opacity: 1;
 }
 
 .btn-primary,
-.btn:first-of-type {
-    background-color: var(--pico-contrast);
-    color: var(--pico-contrast-inverse);
-    border-color: #00000000;
+.btn:first-child {
+    background-color: var(--pico-primary);
+    color: var(--pico-primary-inverse);
+    border-color: var(--pico-primary);
 }
 
 .btn-primary:hover,
-.btn:first-of-type:hover {
-    background-color: #374151;
-    color: var(--pico-contrast-inverse);
+.btn:first-child:hover {
+    background-color: var(--pico-primary-hover);
+    color: var(--pico-primary-inverse);
 }
 
 .btn::after {
