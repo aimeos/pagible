@@ -11,6 +11,8 @@ import {
   mdiSwapHorizontal
 } from '@mdi/js'
 
+const allowedMinutes = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55]
+
 export default {
   props: {
     changed: { type: Object, default: null },
@@ -44,7 +46,8 @@ export default {
       mdiDatabaseArrowDown,
       mdiHistory,
       mdiKeyboardBackspace,
-      mdiSwapHorizontal
+      mdiSwapHorizontal,
+      allowedMinutes
     }
   },
 
@@ -135,7 +138,7 @@ export default {
         <div class="menu-content">
           <div class="menu-publish-pickers">
             <v-date-picker :model-value="publishAt" @update:model-value="$emit('update:publishAt', $event)" hide-header show-adjacent-months />
-            <v-time-picker :model-value="publishTime" @update:model-value="$emit('update:publishTime', $event)" :allowed-minutes="[0,5,10,15,20,25,30,35,40,45,50,55]" format="24hr" density="compact" hide-title />
+            <v-time-picker :model-value="publishTime" @update:model-value="$emit('update:publishTime', $event)" :allowed-minutes="allowedMinutes" format="24hr" density="compact" hide-title />
           </div>
           <v-btn
             @click="$emit('schedule')"

@@ -19,6 +19,17 @@ export default {
 
   emits: ['update:modelValue', 'error'],
 
+  data() {
+    const allowed = this.config.allowed || ['http', 'https']
+
+    return {
+      lastError: null,
+      regex: new RegExp(
+        `^((${allowed.join('|')}://)?([^/@: ]+(:[^/@: ]+)?@)?([0-9a-z]+(-[0-9a-z]+)*\\.)*[0-9a-z]+(-[0-9a-z]+)*\\.[a-z]{2,}(:[0-9]{1,5})?)?(/.*)?$`
+      )
+    }
+  },
+
   computed: {
     hasError() {
       const val = this.modelValue ?? this.config.default ?? ''
@@ -41,11 +52,7 @@ export default {
         return this.$gettext('Invalid URL schema configuration')
       }
 
-      return v
-        ? new RegExp(
-            `^((${allowed.join('|')}://)?([^/@: ]+(:[^/@: ]+)?@)?([0-9a-z]+(-[0-9a-z]+)*\\.)*[0-9a-z]+(-[0-9a-z]+)*\\.[a-z]{2,}(:[0-9]{1,5})?)?(/.*)?$`
-          ).test(v)
-        : true
+      return v ? this.regex.test(v) : true
     }
   },
 
@@ -53,12 +60,11 @@ export default {
     modelValue: {
       immediate: true,
       handler(val) {
-        this.$emit(
-          'error',
-          !this.rules.every((rule) => {
-            return rule(val ?? this.config.default ?? '') === true
-          })
-        )
+        const hasError = !this.rules.every((rule) => rule(val ?? this.config.default ?? '') === true)
+        if (hasError !== this.lastError) {
+          this.lastError = hasError
+          this.$emit('error', hasError)
+        }
       }
     }
   }

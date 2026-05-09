@@ -3,15 +3,48 @@
 <script>
 import gql from 'graphql-tag'
 import AsideMeta from '../components/AsideMeta.vue'
-import ChangesDialog from '../components/ChangesDialog.vue'
 import DetailAppBar from '../components/DetailAppBar.vue'
-import HistoryDialog from '../components/HistoryDialog.vue'
 import FileDetailRefs from '../components/FileDetailRefs.vue'
 import FileDetailItem from '../components/FileDetailItem.vue'
-import { useDirtyStore, useUserStore, useMessageStore, useViewStack } from '../stores'
+import { useDirtyStore, useSideStore, useUserStore, useMessageStore, useViewStack } from '../stores'
 import { applyResult, hasUnresolved } from '../merge'
-import { publishItem } from '../publish'
-import { subscribe } from '../echo'
+import { publishDate, publishItem } from '../publish'
+import { defineAsyncComponent, markRaw } from 'vue'
+import { setupEcho, cleanEcho } from '../echo'
+import { frozenParse } from '../utils'
+
+const ChangesDialog = defineAsyncComponent(() => import('../components/ChangesDialog.vue'))
+const HistoryDialog = defineAsyncComponent(() => import('../components/HistoryDialog.vue'))
+
+const SAVE_FILE = gql`
+  mutation ($id: ID!, $input: FileInput!, $file: Upload, $latestId: ID) {
+    saveFile(id: $id, input: $input, file: $file, latestId: $latestId) {
+      id
+      latest {
+        id
+        data
+        created_at
+      }
+      changed
+    }
+  }
+`
+
+const FETCH_FILE_VERSIONS = gql`
+  query ($id: ID!) {
+    file(id: $id) {
+      id
+      versions {
+        id
+        published
+        publish_at
+        data
+        editor
+        created_at
+      }
+    }
+  }
+`
 
 export default {
   components: {
@@ -28,7 +61,9 @@ export default {
   },
 
   data: () => ({
+    destroyed: false,
     echoCleanup: null,
+    echoPromise: null,
     file: null,
     error: false,
     changed: null,
@@ -46,10 +81,12 @@ export default {
     const dirtyStore = useDirtyStore()
     const viewStack = useViewStack()
     const messages = useMessageStore()
+    const side = useSideStore()
     const user = useUserStore()
 
     return {
       dirtyStore,
+      side,
       user,
       messages,
       viewStack
@@ -59,6 +96,21 @@ export default {
   computed: {
     hasConflict() {
       return hasUnresolved(this.changed)
+    },
+
+    historyCurrent() {
+      const item = this.item
+      return markRaw({
+        data: Object.freeze({
+          lang: item.lang,
+          name: item.name,
+          mime: item.mime,
+          path: item.path,
+          previews: item.previews,
+          description: item.description,
+          transcription: item.transcription
+        })
+      })
     }
   },
 
@@ -69,19 +121,21 @@ export default {
       return
     }
 
-    subscribe('file', this.item.id, (event) => {
+    setupEcho(this, 'file', this.item.id, (event) => {
       if (!this.dirty && this.user.can('file:view') && event.editor !== this.user.me?.email) {
         this.item.latestId = event.versionId
         Object.assign(this.item, event.data)
       }
-    }).then((cleanup) => {
-      this.echoCleanup = cleanup
     })
   },
 
   beforeUnmount() {
+    this.destroyed = true
     this.dirtyStore.unregister()
-    this.echoCleanup?.()
+    cleanEcho(this)
+    this.changed = null
+    this.file = null
+    this.side.$reset()
   },
 
   methods: {
@@ -105,6 +159,10 @@ export default {
       this.dirty = true
     },
 
+    loadVersions() {
+      return this.versions(this.item.id)
+    },
+
     publish(at = null) {
       publishItem(this, 'file', {
         success: this.$gettext('File published successfully'),
@@ -114,14 +172,7 @@ export default {
     },
 
     published() {
-      const at = new Date(this.publishAt)
-
-      if (this.publishTime) {
-        const [hours, minutes] = this.publishTime.split(':').map(Number)
-        at.setHours(hours, minutes, 0, 0)
-      }
-
-      this.publish(at)
+      this.publish(publishDate(this.publishAt, this.publishTime))
     },
 
     reset() {
@@ -157,19 +208,7 @@ export default {
 
       return this.$apollo
         .mutate({
-          mutation: gql`
-            mutation ($id: ID!, $input: FileInput!, $file: Upload, $latestId: ID) {
-              saveFile(id: $id, input: $input, file: $file, latestId: $latestId) {
-                id
-                latest {
-                  id
-                  data
-                  created_at
-                }
-                changed
-              }
-            }
-          `,
+          mutation: SAVE_FILE,
           variables: {
             id: this.item.id,
             input: {
@@ -194,7 +233,7 @@ export default {
 
           const file = result.data?.saveFile
           const latest = file?.latest
-          const changed = file?.changed ? JSON.parse(file.changed) : null
+          const changed = file?.changed ? markRaw(JSON.parse(file.changed)) : null
 
           Object.assign(this.item, JSON.parse(latest?.data || '{}'))
           this.item.updated_at = latest?.created_at
@@ -231,21 +270,8 @@ export default {
 
       return this.$apollo
         .query({
-          query: gql`
-            query ($id: ID!) {
-              file(id: $id) {
-                id
-                versions {
-                  id
-                  published
-                  publish_at
-                  data
-                  editor
-                  created_at
-                }
-              }
-            }
-          `,
+          query: FETCH_FILE_VERSIONS,
+          fetchPolicy: 'no-cache',
           variables: {
             id: id
           }
@@ -258,9 +284,9 @@ export default {
           const keys = ['previews', 'description', 'transcription']
 
           return (result.data.file.versions || []).map((v) => {
-            const item = { ...v, data: JSON.parse(v.data || '{}') }
-            keys.forEach((key) => (item[key] ??= {}))
-            return item
+            const item = { ...v, data: frozenParse(v.data) }
+            keys.forEach((key) => (item[key] = Object.freeze(item[key] ?? {})))
+            return Object.freeze(item)
           })
         })
         .catch((error) => {
@@ -288,7 +314,7 @@ export default {
     :conflict="hasConflict"
     :changed="changed"
     :published="item.published"
-    :has-latest="!!item.latest"
+    :has-latest="!!item.latestId"
     :saving="saving"
     :publishing="publishing"
     v-model:publish-at="publishAt"
@@ -332,18 +358,8 @@ export default {
     <HistoryDialog
       v-model="vhistory"
       :readonly="!user.can('file:save')"
-      :current="{
-        data: {
-          lang: item.lang,
-          name: item.name,
-          mime: item.mime,
-          path: item.path,
-          previews: item.previews,
-          description: item.description,
-          transcription: item.transcription
-        }
-      }"
-      :load="() => versions(item.id)"
+      :current="historyCurrent"
+      :load="loadVersions"
       @revert="revertVersion"
       @apply="apply"
       @use="use($event)"

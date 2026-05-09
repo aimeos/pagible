@@ -3,6 +3,7 @@
 <script>
 import PageDetailItemProps from './PageDetailItemProps.vue'
 import PageDetailItemSection from './PageDetailItemSection.vue'
+import { hasTrue } from '../utils'
 
 export default {
   components: {
@@ -26,7 +27,7 @@ export default {
   methods: {
     error(what, value) {
       this.errors[what] = value
-      this.$emit('error', Object.values(this.errors).includes(true))
+      this.$emit('error', hasTrue(this.errors))
     },
 
     reset() {

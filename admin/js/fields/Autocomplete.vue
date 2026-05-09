@@ -21,6 +21,7 @@ export default {
 
   data() {
     return {
+      lastError: null,
       list: this.config.options || [],
       loading: false
     }
@@ -144,12 +145,11 @@ export default {
     modelValue: {
       immediate: true,
       handler(val) {
-        this.$emit(
-          'error',
-          !this.rules.every((rule) => {
-            return rule(val ?? this.config.default ?? null) === true
-          })
-        )
+        const hasError = !this.rules.every((rule) => rule(val ?? this.config.default ?? null) === true)
+        if (hasError !== this.lastError) {
+          this.lastError = hasError
+          this.$emit('error', hasError)
+        }
       }
     }
   }

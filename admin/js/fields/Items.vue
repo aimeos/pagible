@@ -8,6 +8,7 @@
  * - `required`: boolean, if true, the field is required
  */
 import gql from 'graphql-tag'
+import { markRaw } from 'vue'
 import {
   mdiDotsVertical,
   mdiClose,
@@ -23,11 +24,9 @@ import {
   mdiMicrophone,
   mdiViewGridPlus
 } from '@mdi/js'
-import { recording } from '../audio'
 import { VueDraggable } from 'vue-draggable-plus'
 import { useUserStore, useClipboardStore, useMessageStore } from '../stores'
-import { txlocales } from '../utils'
-import { transcribe } from '../ai'
+import { itemTitle, txlocales } from '../utils'
 
 export default {
   components: {
@@ -53,6 +52,7 @@ export default {
       composing: {},
       errors: [],
       items: [],
+      lastError: null,
       menu: [],
       panel: [],
       audio: {}
@@ -81,9 +81,24 @@ export default {
       mdiMicrophoneOutline,
       mdiMicrophone,
       mdiViewGridPlus,
-      txlocales,
-      transcribe
+      txlocales
     }
+  },
+
+  beforeUnmount() {
+    for (const key of Object.keys(this.audio)) {
+      if (this.audio[key]) {
+        this.audio[key].then((rec) => rec?.stop?.()).catch(() => {})
+      }
+    }
+    this.audio = null
+    this.translating = null
+    this.dictating = null
+    this.composing = null
+    this.menu = null
+    this.panel = null
+    this.items = null
+    this.errors = null
   },
 
   computed: {
@@ -112,11 +127,11 @@ export default {
     },
 
     copy(idx) {
-      this.clipboard.set('items-content', JSON.parse(JSON.stringify(this.items[idx])))
+      this.clipboard.set('items-content', structuredClone(this.items[idx]))
     },
 
     cut(idx) {
-      this.clipboard.set('items-content', JSON.parse(JSON.stringify(this.items[idx])))
+      this.clipboard.set('items-content', structuredClone(this.items[idx]))
       this.items.splice(idx, 1)
       this.$emit('update:modelValue', this.items)
     },
@@ -142,7 +157,7 @@ export default {
       }
 
       if (!this.audio[idx + code]) {
-        return (this.audio[idx + code] = recording().start())
+        return (this.audio[idx + code] = markRaw(import('../audio').then((mod) => mod.recording().start())))
       }
 
       this.audio[idx + code].then((rec) => {
@@ -150,7 +165,8 @@ export default {
         this.audio[idx + code] = null
 
         rec.stop()?.then((buffer) => {
-          this.transcribe(buffer)
+          import('../ai')
+            .then((mod) => mod.transcribe(buffer))
             .then((transcription) => {
               this.update(idx, code, transcription.asText())
             })
@@ -167,16 +183,7 @@ export default {
     },
 
     title(el) {
-      return (
-        (
-          el.title ||
-          el.text ||
-          Object.values(el || {})
-            .map((v) => (v && typeof v !== 'object' && typeof v !== 'boolean' ? v : null))
-            .filter((v) => !!v)
-            .join(' - ')
-        ).substring(0, 100) || ''
-      )
+      return itemTitle(el)
     },
 
     toName(type) {
@@ -243,12 +250,11 @@ export default {
       handler(val) {
         this.items = Array.isArray(val) ? val : (this.config.default ?? [])
 
-        this.$emit(
-          'error',
-          !this.rules.every((rule) => {
-            return rule(this.items) === true
-          })
-        )
+        const hasError = !this.rules.every((rule) => rule(this.items) === true)
+        if (hasError !== this.lastError) {
+          this.lastError = hasError
+          this.$emit('error', hasError)
+        }
       }
     }
   }

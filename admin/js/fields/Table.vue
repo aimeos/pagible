@@ -43,6 +43,7 @@ export default {
   data() {
     return {
       columns: this.header(),
+      lastError: null,
       table: this.modelValue,
       validated: null,
       updated: null,
@@ -134,7 +135,11 @@ export default {
     },
 
     validate(val) {
-      this.$emit('error', !this.rules.every((rule) => rule(val) === true))
+      const hasError = !this.rules.every((rule) => rule(val) === true)
+      if (hasError !== this.lastError) {
+        this.lastError = hasError
+        this.$emit('error', hasError)
+      }
     }
   },
 

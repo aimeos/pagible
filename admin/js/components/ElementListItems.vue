@@ -1,6 +1,7 @@
 /** @license LGPL, https://opensource.org/license/lgpl-3-0 */
 
 <script>
+import { markRaw } from 'vue'
 import gql from 'graphql-tag'
 import {
   mdiDotsVertical,
@@ -18,7 +19,98 @@ import {
 } from '@mdi/js'
 import SchemaItems from './SchemaItems.vue'
 import { useUserStore, useMessageStore } from '../stores'
-import { debounce } from '../utils'
+import { debounce, frozenParse } from '../utils'
+
+const ADD_ELEMENT = gql`
+  mutation ($input: ElementInput!) {
+    addElement(input: $input) {
+      id
+      lang
+      name
+      type
+      data
+      editor
+      created_at
+      updated_at
+      deleted_at
+    }
+  }
+`
+
+const DROP_ELEMENT = gql`
+  mutation ($id: [ID!]!) {
+    dropElement(id: $id) {
+      id
+    }
+  }
+`
+
+const KEEP_ELEMENT = gql`
+  mutation ($id: [ID!]!) {
+    keepElement(id: $id) {
+      id
+    }
+  }
+`
+
+const PUB_ELEMENT = gql`
+  mutation ($id: [ID!]!) {
+    pubElement(id: $id) {
+      id
+    }
+  }
+`
+
+const PURGE_ELEMENT = gql`
+  mutation ($id: [ID!]!) {
+    purgeElement(id: $id) {
+      id
+    }
+  }
+`
+
+const FETCH_ELEMENTS = gql`
+  query (
+    $filter: ElementFilter
+    $sort: [QueryElementsSortOrderByClause!]
+    $limit: Int!
+    $page: Int!
+    $trashed: Trashed
+    $publish: Publish
+  ) {
+    elements(
+      filter: $filter
+      sort: $sort
+      first: $limit
+      page: $page
+      trashed: $trashed
+      publish: $publish
+    ) {
+      data {
+        id
+        lang
+        name
+        type
+        data
+        editor
+        created_at
+        updated_at
+        deleted_at
+        latest {
+          id
+          published
+          publish_at
+          data
+          editor
+          created_at
+        }
+      }
+      paginatorInfo {
+        lastPage
+      }
+    }
+  }
+`
 
 export default {
   components: {
@@ -36,6 +128,7 @@ export default {
     return {
       items: [],
       menu: [],
+      checked: new Set(),
       term: '',
       sort: this.user.getData('element', 'sort') || { column: 'ID', order: 'DESC' },
       page: 1,
@@ -43,7 +136,6 @@ export default {
       limit: 100,
       vschemas: false,
       actions: false,
-      checked: false,
       loading: true,
       trash: false
     }
@@ -77,17 +169,23 @@ export default {
     this.searchd = this.debounce(this.search, 500)
   },
 
+  beforeUnmount() {
+    this.items = null
+    this.menu = null
+    this.checked = null
+  },
+
   computed: {
     canTrash() {
-      return this.items.some((item) => item._checked && !item.deleted_at)
+      return this.items.some((item) => this.checked.has(item.id) && !item.deleted_at)
     },
 
     isChecked() {
-      return this.items.some((item) => item._checked)
+      return this.checked.size > 0
     },
 
     isTrashed() {
-      return this.items.some((item) => item._checked && item.deleted_at)
+      return this.items.some((item) => this.checked.has(item.id) && item.deleted_at)
     }
   },
 
@@ -100,21 +198,7 @@ export default {
 
       return this.$apollo
         .mutate({
-          mutation: gql`
-            mutation ($input: ElementInput!) {
-              addElement(input: $input) {
-                id
-                lang
-                name
-                type
-                data
-                editor
-                created_at
-                updated_at
-                deleted_at
-              }
-            }
-          `,
+          mutation: ADD_ELEMENT,
           variables: {
             input: {
               type: item.type,
@@ -129,7 +213,7 @@ export default {
           }
 
           const data = response.data?.addElement || {}
-          data.data = JSON.parse(data.data) || {}
+          data.data = frozenParse(data.data)
           data.published = true
 
           this.vschemas = false
@@ -151,7 +235,7 @@ export default {
         return
       }
 
-      const list = item ? [item] : this.items.filter((item) => item._checked)
+      const list = item ? [item] : this.items.filter((item) => this.checked.has(item.id))
 
       if (!list.length) {
         return
@@ -159,13 +243,7 @@ export default {
 
       this.$apollo
         .mutate({
-          mutation: gql`
-            mutation ($id: [ID!]!) {
-              dropElement(id: $id) {
-                id
-              }
-            }
-          `,
+          mutation: DROP_ELEMENT,
           variables: {
             id: list.map((item) => item.id)
           }
@@ -194,13 +272,6 @@ export default {
     invalidate() {
       const cache = this.$apollo.provider.defaultClient.cache
       cache.evict({ id: 'ROOT_QUERY', fieldName: 'elements' })
-
-      Object.keys(cache.extract()).forEach(key => {
-        if(key.startsWith('Element:')) {
-          cache.evict({ id: key })
-        }
-      })
-
       cache.gc()
     },
 
@@ -210,7 +281,7 @@ export default {
         return
       }
 
-      const list = item ? [item] : this.items.filter((item) => item._checked)
+      const list = item ? [item] : this.items.filter((item) => this.checked.has(item.id))
 
       if (!list.length) {
         return
@@ -218,13 +289,7 @@ export default {
 
       this.$apollo
         .mutate({
-          mutation: gql`
-            mutation ($id: [ID!]!) {
-              keepElement(id: $id) {
-                id
-              }
-            }
-          `,
+          mutation: KEEP_ELEMENT,
           variables: {
             id: list.map((item) => item.id)
           }
@@ -233,10 +298,6 @@ export default {
           if (result.errors) {
             throw result.errors
           }
-
-          list.forEach((item) => {
-            item.deleted_at = null
-          })
 
           this.invalidate()
           this.search()
@@ -259,7 +320,7 @@ export default {
       const list = item
         ? [item]
         : this.items.filter((item) => {
-            return item._checked && item.id && !item.published
+            return this.checked.has(item.id) && item.id && !item.published
           })
 
       if (!list.length) {
@@ -268,13 +329,7 @@ export default {
 
       this.$apollo
         .mutate({
-          mutation: gql`
-            mutation ($id: [ID!]!) {
-              pubElement(id: $id) {
-                id
-              }
-            }
-          `,
+          mutation: PUB_ELEMENT,
           variables: {
             id: list.map((item) => item.id)
           }
@@ -283,11 +338,6 @@ export default {
           if (result.errors) {
             throw result.errors
           }
-
-          list.forEach((item) => {
-            item.published = true
-            item._checked = false
-          })
 
           this.invalidate()
           this.search()
@@ -307,7 +357,7 @@ export default {
         return
       }
 
-      const list = item ? [item] : this.items.filter((item) => item._checked)
+      const list = item ? [item] : this.items.filter((item) => this.checked.has(item.id))
 
       if (!list.length) {
         return
@@ -315,13 +365,7 @@ export default {
 
       this.$apollo
         .mutate({
-          mutation: gql`
-            mutation ($id: [ID!]!) {
-              purgeElement(id: $id) {
-                id
-              }
-            }
-          `,
+          mutation: PURGE_ELEMENT,
           variables: {
             id: list.map((item) => item.id)
           }
@@ -338,6 +382,10 @@ export default {
           this.messages.add(this.$gettext('Error purging shared element') + ':\n' + error, 'error')
           this.$log(`ElementListItems::purge(): Error purging shared element`, list, error)
         })
+    },
+
+    setSort(column, order) {
+      this.sort = { column, order }
     },
 
     search() {
@@ -367,48 +415,8 @@ export default {
 
       return this.$apollo
         .query({
-          query: gql`
-            query (
-              $filter: ElementFilter
-              $sort: [QueryElementsSortOrderByClause!]
-              $limit: Int!
-              $page: Int!
-              $trashed: Trashed
-              $publish: Publish
-            ) {
-              elements(
-                filter: $filter
-                sort: $sort
-                first: $limit
-                page: $page
-                trashed: $trashed
-                publish: $publish
-              ) {
-                data {
-                  id
-                  lang
-                  name
-                  type
-                  data
-                  editor
-                  created_at
-                  updated_at
-                  deleted_at
-                  latest {
-                    id
-                    published
-                    publish_at
-                    data
-                    editor
-                    created_at
-                  }
-                }
-                paginatorInfo {
-                  lastPage
-                }
-              }
-            }
-          `,
+          query: FETCH_ELEMENTS,
+          fetchPolicy: 'no-cache',
           variables: {
             filter: filter,
             page: this.page,
@@ -434,6 +442,10 @@ export default {
                   data: JSON.parse(entry.data || '{}')
                 }
 
+            if (item.data && typeof item.data === 'object') {
+              item.data = markRaw(item.data)
+            }
+
             return Object.assign(item, {
               id: entry.id,
               deleted_at: entry.deleted_at,
@@ -442,10 +454,11 @@ export default {
               editor: entry.latest?.editor || entry.editor,
               published: entry.latest?.published ?? true,
               publish_at: entry.latest?.publish_at || null,
-              latest: entry.latest
+              latestId: entry.latest?.id || null
             })
           })
-          this.checked = false
+
+          this.checked = new Set()
           this.loading = false
 
           return this.items
@@ -470,9 +483,23 @@ export default {
     },
 
     toggle() {
-      this.items.forEach((el) => {
-        el._checked = !el._checked
-      })
+      if (this.checked.size > 0) {
+        this.checked = new Set()
+      } else {
+        this.checked = new Set(this.items.map((item) => item.id))
+      }
+    },
+
+    toggleCheck(item) {
+      const next = new Set(this.checked)
+
+      if (next.has(item.id)) {
+        next.delete(item.id)
+      } else {
+        next.add(item.id)
+      }
+
+      this.checked = next
     }
   },
 
@@ -506,7 +533,7 @@ export default {
 <template>
   <div class="header">
     <div class="bulk">
-      <v-checkbox-btn v-model="checked" @click.stop="toggle()" :aria-label="$gettext('Toggle selection')" />
+      <v-checkbox-btn :model-value="checked.size > 0" @click.stop="toggle()" :aria-label="$gettext('Toggle selection')" />
 
       <component
         :is="$vuetify.display.xs ? 'v-dialog' : 'v-menu'"
@@ -606,27 +633,27 @@ export default {
         </template>
         <v-list>
           <v-list-item>
-            <v-btn variant="text" @click="sort = { column: 'ID', order: 'DESC' }">{{
+            <v-btn variant="text" @click="setSort('ID', 'DESC')">{{
               $gettext('latest')
             }}</v-btn>
           </v-list-item>
           <v-list-item>
-            <v-btn variant="text" @click="sort = { column: 'ID', order: 'ASC' }">{{
+            <v-btn variant="text" @click="setSort('ID', 'ASC')">{{
               $gettext('oldest')
             }}</v-btn>
           </v-list-item>
           <v-list-item>
-            <v-btn variant="text" @click="sort = { column: 'NAME', order: 'ASC' }">{{
+            <v-btn variant="text" @click="setSort('NAME', 'ASC')">{{
               $gettext('name')
             }}</v-btn>
           </v-list-item>
           <v-list-item>
-            <v-btn variant="text" @click="sort = { column: 'TYPE', order: 'ASC' }">{{
+            <v-btn variant="text" @click="setSort('TYPE', 'ASC')">{{
               $gettext('type')
             }}</v-btn>
           </v-list-item>
           <v-list-item>
-            <v-btn variant="text" @click="sort = { column: 'EDITOR', order: 'ASC' }">{{
+            <v-btn variant="text" @click="setSort('EDITOR', 'ASC')">{{
               $gettext('editor')
             }}</v-btn>
           </v-list-item>
@@ -639,7 +666,8 @@ export default {
     <v-list-item v-for="(item, idx) in items" :key="idx">
       <div class="actions">
         <v-checkbox-btn
-          v-model="item._checked"
+          :model-value="checked.has(item.id)"
+          @update:model-value="toggleCheck(item)"
           :class="{ draft: !item.published }"
           class="item-check"
         />
@@ -774,6 +802,8 @@ export default {
 
 .items .v-list-item {
   border-bottom: 1px solid rgba(var(--v-border-color), 0.38);
+  contain-intrinsic-size: auto 56px;
+  content-visibility: auto;
   padding: 4px 0;
 }
 

@@ -1,6 +1,7 @@
 /** @license LGPL, https://opensource.org/license/lgpl-3-0 */
 
 <script>
+import { markRaw } from 'vue'
 import gql from 'graphql-tag'
 import {
   mdiDotsVertical,
@@ -19,7 +20,105 @@ import {
   mdiRefresh
 } from '@mdi/js'
 import { useAppStore, useUserStore, useMessageStore } from '../stores'
-import { debounce, url, srcset } from '../utils'
+import { debounce, frozenParse, url, srcset } from '../utils'
+
+const ADD_FILE = gql`
+  mutation ($file: Upload!) {
+    addFile(file: $file) {
+      id
+      lang
+      mime
+      name
+      path
+      previews
+      description
+      transcription
+      editor
+      created_at
+      updated_at
+      deleted_at
+    }
+  }
+`
+
+const DROP_FILE = gql`
+  mutation ($id: [ID!]!) {
+    dropFile(id: $id) {
+      id
+    }
+  }
+`
+
+const KEEP_FILE = gql`
+  mutation ($id: [ID!]!) {
+    keepFile(id: $id) {
+      id
+    }
+  }
+`
+
+const PUB_FILE = gql`
+  mutation ($id: [ID!]!) {
+    pubFile(id: $id) {
+      id
+    }
+  }
+`
+
+const PURGE_FILE = gql`
+  mutation ($id: [ID!]!) {
+    purgeFile(id: $id) {
+      id
+    }
+  }
+`
+
+const FETCH_FILES = gql`
+  query (
+    $filter: FileFilter
+    $sort: [QueryFilesSortOrderByClause!]
+    $limit: Int!
+    $page: Int!
+    $trashed: Trashed
+    $publish: Publish
+  ) {
+    files(
+      filter: $filter
+      sort: $sort
+      first: $limit
+      page: $page
+      trashed: $trashed
+      publish: $publish
+    ) {
+      data {
+        id
+        lang
+        name
+        mime
+        path
+        previews
+        description
+        transcription
+        editor
+        created_at
+        updated_at
+        deleted_at
+        latest {
+          id
+          published
+          publish_at
+          data
+          editor
+          created_at
+        }
+        byversions_count
+      }
+      paginatorInfo {
+        lastPage
+      }
+    }
+  }
+`
 
 export default {
   props: {
@@ -34,13 +133,13 @@ export default {
     return {
       items: [],
       menu: [],
+      checked: new Set(),
       term: '',
       sort: this.user.getData('file', 'sort') || { column: 'ID', order: 'DESC' },
       page: 1,
       last: 1,
       limit: 100,
       actions: false,
-      checked: false,
       loading: true,
       vgrid: false
     }
@@ -81,17 +180,23 @@ export default {
     this.search()
   },
 
+  beforeUnmount() {
+    this.items = null
+    this.menu = null
+    this.checked = null
+  },
+
   computed: {
     canTrash() {
-      return this.items.some((item) => item._checked && !item.deleted_at)
+      return this.items.some((item) => this.checked.has(item.id) && !item.deleted_at)
     },
 
     isChecked() {
-      return this.items.some((item) => item._checked)
+      return this.checked.size > 0
     },
 
     isTrashed() {
-      return this.items.some((item) => item._checked && item.deleted_at)
+      return this.items.some((item) => this.checked.has(item.id) && item.deleted_at)
     },
 
     order() {
@@ -125,28 +230,11 @@ export default {
         return
       }
 
-      Array.from(files).forEach((file) => {
+      for (const file of files) {
         promises.push(
           this.$apollo
             .mutate({
-              mutation: gql`
-                mutation ($file: Upload!) {
-                  addFile(file: $file) {
-                    id
-                    lang
-                    mime
-                    name
-                    path
-                    previews
-                    description
-                    transcription
-                    editor
-                    created_at
-                    updated_at
-                    deleted_at
-                  }
-                }
-              `,
+              mutation: ADD_FILE,
               variables: {
                 file: file
               },
@@ -161,9 +249,9 @@ export default {
 
               const data = {
                 ...(response.data?.addFile || {}),
-                previews: JSON.parse(response.data?.addFile?.previews) || {},
-                description: JSON.parse(response.data?.addFile?.description) || {},
-                transcription: JSON.parse(response.data?.addFile?.transcription) || {},
+                previews: frozenParse(response.data?.addFile?.previews),
+                description: frozenParse(response.data?.addFile?.description),
+                transcription: frozenParse(response.data?.addFile?.transcription),
                 published: true
               }
 
@@ -180,10 +268,10 @@ export default {
                 this.$gettext(`Error adding file %{path}`, { path: file.name }) + ':\n' + error,
                 'error'
               )
-              this.$log(`FileListItems::add(): Error adding file`, ev, error)
+              this.$log(`FileListItems::add(): Error adding file`, file, error)
             })
         )
-      })
+      }
 
       return Promise.all(promises).then(() => {
         this.invalidate()
@@ -196,7 +284,7 @@ export default {
         return
       }
 
-      const list = item ? [item] : this.items.filter((item) => item._checked)
+      const list = item ? [item] : this.items.filter((item) => this.checked.has(item.id))
 
       if (!list.length) {
         return
@@ -204,13 +292,7 @@ export default {
 
       this.$apollo
         .mutate({
-          mutation: gql`
-            mutation ($id: [ID!]!) {
-              dropFile(id: $id) {
-                id
-              }
-            }
-          `,
+          mutation: DROP_FILE,
           variables: {
             id: list.map((item) => item.id)
           }
@@ -239,13 +321,6 @@ export default {
     invalidate() {
       const cache = this.$apollo.provider.defaultClient.cache
       cache.evict({ id: 'ROOT_QUERY', fieldName: 'files' })
-
-      Object.keys(cache.extract()).forEach(key => {
-        if(key.startsWith('File:')) {
-          cache.evict({ id: key })
-        }
-      })
-
       cache.gc()
     },
 
@@ -255,7 +330,7 @@ export default {
         return
       }
 
-      const list = item ? [item] : this.items.filter((item) => item._checked)
+      const list = item ? [item] : this.items.filter((item) => this.checked.has(item.id))
 
       if (!list.length) {
         return
@@ -263,13 +338,7 @@ export default {
 
       this.$apollo
         .mutate({
-          mutation: gql`
-            mutation ($id: [ID!]!) {
-              keepFile(id: $id) {
-                id
-              }
-            }
-          `,
+          mutation: KEEP_FILE,
           variables: {
             id: list.map((item) => item.id)
           }
@@ -278,10 +347,6 @@ export default {
           if (result.errors) {
             throw result.errors
           }
-
-          list.forEach((item) => {
-            item.deleted_at = null
-          })
 
           this.invalidate()
           this.search()
@@ -301,7 +366,7 @@ export default {
       const list = item
         ? [item]
         : this.items.filter((item) => {
-            return item._checked && item.id && !item.published
+            return this.checked.has(item.id) && item.id && !item.published
           })
 
       if (!list.length) {
@@ -310,13 +375,7 @@ export default {
 
       this.$apollo
         .mutate({
-          mutation: gql`
-            mutation ($id: [ID!]!) {
-              pubFile(id: $id) {
-                id
-              }
-            }
-          `,
+          mutation: PUB_FILE,
           variables: {
             id: list.map((item) => item.id)
           }
@@ -325,11 +384,6 @@ export default {
           if (result.errors) {
             throw result.errors
           }
-
-          list.forEach((item) => {
-            item.published = true
-            item._checked = false
-          })
 
           this.invalidate()
           this.search()
@@ -346,7 +400,7 @@ export default {
         return
       }
 
-      const list = item ? [item] : this.items.filter((item) => item._checked)
+      const list = item ? [item] : this.items.filter((item) => this.checked.has(item.id))
 
       if (!list.length) {
         return
@@ -354,13 +408,7 @@ export default {
 
       this.$apollo
         .mutate({
-          mutation: gql`
-            mutation ($id: [ID!]!) {
-              purgeFile(id: $id) {
-                id
-              }
-            }
-          `,
+          mutation: PURGE_FILE,
           variables: {
             id: list.map((item) => item.id)
           }
@@ -377,6 +425,10 @@ export default {
           this.messages.add(this.$gettext('Error purging file') + ':\n' + error, 'error')
           this.$log(`FileListItems::purge(): Error purging file`, item, error)
         })
+    },
+
+    setSort(column, order) {
+      this.sort = { column, order }
     },
 
     search() {
@@ -406,52 +458,8 @@ export default {
 
       return this.$apollo
         .query({
-          query: gql`
-            query (
-              $filter: FileFilter
-              $sort: [QueryFilesSortOrderByClause!]
-              $limit: Int!
-              $page: Int!
-              $trashed: Trashed
-              $publish: Publish
-            ) {
-              files(
-                filter: $filter
-                sort: $sort
-                first: $limit
-                page: $page
-                trashed: $trashed
-                publish: $publish
-              ) {
-                data {
-                  id
-                  lang
-                  name
-                  mime
-                  path
-                  previews
-                  description
-                  transcription
-                  editor
-                  created_at
-                  updated_at
-                  deleted_at
-                  latest {
-                    id
-                    published
-                    publish_at
-                    data
-                    editor
-                    created_at
-                  }
-                  byversions_count
-                }
-                paginatorInfo {
-                  lastPage
-                }
-              }
-            }
-          `,
+          query: FETCH_FILES,
+          fetchPolicy: 'no-cache',
           variables: {
             filter: filter,
             page: this.page,
@@ -467,20 +475,15 @@ export default {
           }
 
           const files = result.data.files || {}
-          const keys = ['previews', 'description', 'transcription']
-
           this.last = files.paginatorInfo?.lastPage || 1
           this.items = [...(files.data || [])].map((entry) => {
             const item = entry.latest?.data
               ? JSON.parse(entry.latest?.data)
-              : {
-                  ...entry,
-                  previews: JSON.parse(entry.previews || '{}'),
-                  description: JSON.parse(entry.description || '{}'),
-                  transcription: JSON.parse(entry.transcription || '{}')
-                }
+              : { ...entry, previews: JSON.parse(entry.previews || '{}') }
 
-            keys.forEach((key) => (item[key] ??= {}))
+            delete item.description
+            delete item.transcription
+            item.previews = markRaw(item.previews ?? {})
 
             return Object.assign(item, {
               id: entry.id,
@@ -490,11 +493,11 @@ export default {
               editor: entry.latest?.editor || entry.editor,
               published: entry.latest?.published ?? true,
               publish_at: entry.latest?.publish_at || null,
-              latest: entry.latest,
+              latestId: entry.latest?.id || null,
               usage: entry.byversions_count
             })
           })
-          this.checked = false
+          this.checked = new Set()
           this.loading = false
 
           return this.items
@@ -516,9 +519,21 @@ export default {
     },
 
     toggle() {
-      this.items.forEach((el) => {
-        el._checked = !el._checked
-      })
+      if (this.checked.size > 0) {
+        this.checked = new Set()
+      } else {
+        this.checked = new Set(this.items.map((item) => item.id))
+      }
+    },
+
+    toggleCheck(item) {
+      const next = new Set(this.checked)
+      if (next.has(item.id)) {
+        next.delete(item.id)
+      } else {
+        next.add(item.id)
+      }
+      this.checked = next
     }
   },
 
@@ -556,7 +571,7 @@ export default {
 <template>
   <div class="header">
     <div class="bulk">
-      <v-checkbox-btn v-model="checked" @click.stop="toggle()" :aria-label="$gettext('Toggle selection')" />
+      <v-checkbox-btn :model-value="checked.size > 0" @click.stop="toggle()" :aria-label="$gettext('Toggle selection')" />
 
       <component
         :is="$vuetify.display.xs ? 'v-dialog' : 'v-menu'"
@@ -666,37 +681,37 @@ export default {
         </template>
         <v-list>
           <v-list-item>
-            <v-btn variant="text" @click="sort = { column: 'ID', order: 'DESC' }">{{
+            <v-btn variant="text" @click="setSort('ID', 'DESC')">{{
               $gettext('latest')
             }}</v-btn>
           </v-list-item>
           <v-list-item>
-            <v-btn variant="text" @click="sort = { column: 'ID', order: 'ASC' }">{{
+            <v-btn variant="text" @click="setSort('ID', 'ASC')">{{
               $gettext('oldest')
             }}</v-btn>
           </v-list-item>
           <v-list-item>
-            <v-btn variant="text" @click="sort = { column: 'NAME', order: 'ASC' }">{{
+            <v-btn variant="text" @click="setSort('NAME', 'ASC')">{{
               $gettext('name')
             }}</v-btn>
           </v-list-item>
           <v-list-item>
-            <v-btn variant="text" @click="sort = { column: 'MIME', order: 'ASC' }">{{
+            <v-btn variant="text" @click="setSort('MIME', 'ASC')">{{
               $gettext('mime')
             }}</v-btn>
           </v-list-item>
           <v-list-item>
-            <v-btn variant="text" @click="sort = { column: 'LANG', order: 'ASC' }">{{
+            <v-btn variant="text" @click="setSort('LANG', 'ASC')">{{
               $gettext('language')
             }}</v-btn>
           </v-list-item>
           <v-list-item>
-            <v-btn variant="text" @click="sort = { column: 'EDITOR', order: 'ASC' }">{{
+            <v-btn variant="text" @click="setSort('EDITOR', 'ASC')">{{
               $gettext('editor')
             }}</v-btn>
           </v-list-item>
           <v-list-item>
-            <v-btn variant="text" @click="sort = { column: 'BYVERSIONS_COUNT', order: 'ASC' }">{{
+            <v-btn variant="text" @click="setSort('BYVERSIONS_COUNT', 'ASC')">{{
               $gettext('usage')
             }}</v-btn>
           </v-list-item>
@@ -708,7 +723,8 @@ export default {
   <v-list class="items" :class="{ grid: vgrid, list: !vgrid }">
     <v-list-item v-for="(item, idx) in items" :key="idx">
       <v-checkbox-btn
-        v-model="item._checked"
+        :model-value="checked.has(item.id)"
+        @update:model-value="toggleCheck(item)"
         :class="{ draft: !item.published }"
         class="item-check"
       />
@@ -917,6 +933,8 @@ a.item-usage {
 
 .items.list .v-list-item {
   border-bottom: 1px solid rgba(var(--v-border-color), 0.38);
+  content-visibility: auto;
+  contain-intrinsic-size: auto 56px;
   padding: 4px 0;
 }
 
@@ -972,6 +990,8 @@ a.item-usage {
 .items.grid .v-list-item {
   grid-template-rows: max-content;
   border: 1px solid rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
+  content-visibility: auto;
+  contain-intrinsic-size: auto 260px;
 }
 
 .items.grid .v-list-item .item-check,

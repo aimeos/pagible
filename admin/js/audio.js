@@ -1,3 +1,5 @@
+const MAX_CHUNKS = 3000 // ~3 minutes at 44100Hz
+
 /**
  * Provides audio recording functionality using the MediaRecorder API.
  *
@@ -8,7 +10,8 @@ export function recording() {
   let source
   let node
   let active = false
-  const chunks = []
+  let chunks = []
+  let blobUrl
 
   return {
     async start() {
@@ -32,12 +35,15 @@ export function recording() {
       )
 
       audioContext = new AudioContext()
-      await audioContext.audioWorklet.addModule(URL.createObjectURL(blob))
+      blobUrl = URL.createObjectURL(blob)
+      await audioContext.audioWorklet.addModule(blobUrl)
 
       node = new AudioWorkletNode(audioContext, 'recorder-processor')
 
       node.port.onmessage = (e) => {
-        chunks.push(new Float32Array(e.data))
+        if (chunks.length < MAX_CHUNKS) {
+          chunks.push(new Float32Array(e.data))
+        }
       }
 
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
@@ -52,9 +58,16 @@ export function recording() {
       if (!active || !node || !source) return
       active = false
 
+      source.mediaStream.getTracks().forEach((t) => t.stop())
       source.disconnect()
       node.disconnect()
       await audioContext.close()
+      audioContext = null
+
+      if (blobUrl) {
+        URL.revokeObjectURL(blobUrl)
+        blobUrl = null
+      }
 
       const length = chunks.reduce((a, c) => a + c.length, 0)
       const buffer = new Float32Array(length)
@@ -65,17 +78,15 @@ export function recording() {
         offset += chunk.length
       }
 
+      chunks = []
+
       if (!buffer.length) return null
 
-      const context = new AudioContext()
-      const audioBuffer = context.createBuffer(
-        1, // number of channels
-        buffer.length,
-        44100
-      )
+      const context = new OfflineAudioContext(1, buffer.length, 44100)
+      const audioBuffer = context.createBuffer(1, buffer.length, 44100)
 
       audioBuffer.getChannelData(0).set(buffer)
-      await context.close()
+      context.startRendering().catch(() => {})
 
       return audioBuffer
     }
@@ -89,34 +100,45 @@ export function recording() {
  * @returns {Promise} - Promise with MP3 blob
  */
 export async function toMp3(input) {
-  const context = new AudioContext()
   const channels = []
   let audioBuffer
 
   if (input instanceof AudioBuffer) {
     audioBuffer = input
-  } else if (input instanceof ArrayBuffer) {
-    audioBuffer = await context.decodeAudioData(input)
-  } else if (typeof input === 'string' || input instanceof URL) {
-    audioBuffer = await context.decodeAudioData(await (await fetch(input)).arrayBuffer())
-  } else if (input instanceof Blob) {
-    audioBuffer = await context.decodeAudioData(await input.arrayBuffer())
   } else {
-    throw new Error(
-      'toMp3(): Unsupported input type. Expected URL, Blob, ArrayBuffer, or AudioBuffer.'
-    )
+    const context = new AudioContext()
+    try {
+      if (input instanceof ArrayBuffer) {
+        audioBuffer = await context.decodeAudioData(input)
+      } else if (typeof input === 'string' || input instanceof URL) {
+        audioBuffer = await context.decodeAudioData(await (await fetch(input)).arrayBuffer())
+      } else if (input instanceof Blob) {
+        audioBuffer = await context.decodeAudioData(await input.arrayBuffer())
+      } else {
+        throw new Error(
+          'toMp3(): Unsupported input type. Expected URL, Blob, ArrayBuffer, or AudioBuffer.'
+        )
+      }
+    } finally {
+      await context.close()
+    }
   }
 
   for (let i = 0; i < audioBuffer.numberOfChannels; i++) {
     channels.push(audioBuffer.getChannelData(i))
   }
 
-  await context.close()
-
   const worker = new Worker(new URL('./worker.js', import.meta.url), { type: 'module' })
 
-  return new Promise((resolve) => {
-    worker.onmessage = (e) => resolve(e.data)
+  return new Promise((resolve, reject) => {
+    worker.onmessage = (e) => {
+      worker.terminate()
+      resolve(e.data)
+    }
+    worker.onerror = (e) => {
+      worker.terminate()
+      reject(e)
+    }
     worker.postMessage(
       {
         channels, // audioBuffer itself isn't transferable

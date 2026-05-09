@@ -2,11 +2,10 @@
 
 <script>
 import gql from 'graphql-tag'
-import { recording } from '../audio'
+import { markRaw } from 'vue'
 import { useUserStore, useMessageStore } from '../stores'
 import { changedState } from '../merge'
-import { txlocales } from '../utils'
-import { transcribe } from '../ai'
+import { hasTrue, txlocales } from '../utils'
 import {
   mdiTranslate,
   mdiClose,
@@ -40,6 +39,7 @@ export default {
       dictating: {},
       composing: {},
       errors: {},
+      lastError: false,
       audio: {},
       menu: {}
     }
@@ -60,9 +60,25 @@ export default {
       mdiMicrophoneOutline,
       mdiMicrophone,
       mdiUndoVariant,
-      txlocales,
-      transcribe
+      txlocales
     }
+  },
+
+  beforeUnmount() {
+    for (const key of Object.keys(this.audio)) {
+      if (this.audio[key]) {
+        this.audio[key].then((rec) => rec?.stop?.()).catch(() => {})
+      }
+    }
+
+    this.audio = null
+    this.dirty = null
+    this.original = null
+    this.translating = null
+    this.dictating = null
+    this.composing = null
+    this.errors = null
+    this.menu = null
   },
 
   methods: {
@@ -81,7 +97,11 @@ export default {
 
     error(code, value) {
       this.errors[code] = value
-      this.$emit('error', Object.values(this.errors).includes(true))
+      const has = hasTrue(this.errors)
+      if (has !== this.lastError) {
+        this.lastError = has
+        this.$emit('error', has)
+      }
     },
 
     record(code) {
@@ -90,7 +110,7 @@ export default {
       }
 
       if (!this.audio[code]) {
-        return (this.audio[code] = recording().start())
+        return (this.audio[code] = markRaw(import('../audio').then((mod) => mod.recording().start())))
       }
 
       this.audio[code].then((rec) => {
@@ -98,7 +118,8 @@ export default {
         this.audio[code] = null
 
         rec.stop()?.then((buffer) => {
-          this.transcribe(buffer)
+          import('../ai')
+            .then((mod) => mod.transcribe(buffer))
             .then((transcription) => {
               this.update(code, transcription.asText())
             })
@@ -146,8 +167,8 @@ export default {
     },
 
     resetDirty() {
-      this.dirty = new Set()
-      this.original = {}
+      this.dirty.clear()
+      for (const k in this.original) delete this.original[k]
     },
 
     resetField(code) {

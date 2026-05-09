@@ -3,7 +3,8 @@
  */
 
 import { createRouter, createWebHistory } from 'vue-router'
-import { useDirtyStore, useUserStore, useMessageStore } from './stores'
+import { useClipboardStore, useDirtyStore, useUserStore, useMessageStore, useViewStack } from './stores'
+import { apolloClient } from './graphql'
 import { urladmin } from './config'
 import gettext from './i18n'
 
@@ -73,8 +74,17 @@ router.beforeEach(async (to) => {
   }
 })
 
-router.afterEach((to) => {
+router.afterEach((to, from) => {
   document.title = (to.meta.title || to.path) + ' — PagibleAI CMS'
+
+  if (to.name !== from.name) {
+    useClipboardStore().clear()
+    useViewStack().stack = []
+    apolloClient.cache.evict({ fieldName: 'pages' })
+    apolloClient.cache.evict({ fieldName: 'elements' })
+    apolloClient.cache.evict({ fieldName: 'files' })
+    apolloClient.cache.gc()
+  }
 })
 
 export default router

@@ -2,13 +2,9 @@
 
 <script>
 import gql from 'graphql-tag'
-import isEqual from 'fast-deep-equal'
 import Fields from './Fields.vue'
-import SchemaDialog from './SchemaDialog.vue'
+import { defineAsyncComponent, markRaw } from 'vue'
 import { VueDraggable } from 'vue-draggable-plus'
-import { toString } from 'mdast-util-to-string'
-import { toMarkdown } from 'mdast-util-to-markdown'
-import { fromMarkdown } from 'mdast-util-from-markdown'
 import {
   useUserStore,
   useClipboardStore,
@@ -16,10 +12,8 @@ import {
   useSchemaStore,
   useSideStore
 } from '../stores'
-import { recording } from '../audio'
-import { transcribe } from '../ai'
 import { changedState } from '../merge'
-import { uid } from '../utils'
+import { debounce, frozenParse, itemTitle, uid } from '../utils'
 import {
   mdiMenuDown,
   mdiContentCopy,
@@ -39,9 +33,43 @@ import {
   mdiViewGridPlus,
   mdiHelpCircleOutline,
   mdiCheckBold,
+  mdiArrowRightCircle,
   mdiMicrophone,
   mdiMicrophoneOutline
 } from '@mdi/js'
+
+const SchemaDialog = defineAsyncComponent(() => import('./SchemaDialog.vue'))
+
+const REFINE_CONTENT = gql`
+  mutation ($prompt: String!, $content: JSON!, $type: String, $context: String) {
+    refine(prompt: $prompt, content: $content, type: $type, context: $context)
+  }
+`
+
+const ADD_ELEMENT = gql`
+  mutation ($input: ElementInput!, $files: [ID!]) {
+    addElement(input: $input, files: $files) {
+      id
+      type
+      lang
+      name
+      data
+      editor
+      updated_at
+      files {
+        id
+        lang
+        mime
+        name
+        path
+        previews
+        description
+        updated_at
+        editor
+      }
+    }
+  }
+`
 
 export default {
   components: {
@@ -67,6 +95,7 @@ export default {
     audio: null,
     dictating: false,
     help: false,
+    lastError: false,
     refining: false,
     panel: [],
     menu: [],
@@ -110,17 +139,13 @@ export default {
       mdiViewGridPlus,
       mdiHelpCircleOutline,
       mdiCheckBold,
+      mdiArrowRightCircle,
       mdiMicrophone,
-      mdiMicrophoneOutline,
-      transcribe
+      mdiMicrophoneOutline
     }
   },
 
   computed: {
-    dirty() {
-      return this.content.some((el) => el._changed)
-    },
-
     checkedCount() {
       return this.content.filter((el) => el._checked).length
     }
@@ -128,13 +153,12 @@ export default {
 
   methods: {
     add(item, idx) {
-      let entry = { id: uid(), group: this.section }
+      const entry = item.id
+        ? { id: uid(), group: this.section, type: 'reference', refid: item.id }
+        : { id: uid(), group: this.section, type: item.type, data: {} }
 
       if (item.id) {
         this.elements[item.id] = item
-        entry = Object.assign(entry, { type: 'reference', refid: item.id })
-      } else {
-        entry = Object.assign(entry, { type: item.type, data: {} })
       }
 
       if (idx !== null) {
@@ -176,14 +200,14 @@ export default {
       if (idx === undefined) {
         for (let i = this.content.length - 1; i >= 0; i--) {
           if (this.content[i]._checked) {
-            const entry = JSON.parse(JSON.stringify(this.content[i]))
+            const entry = structuredClone(this.content[i])
             entry._checked = false
             entry['id'] = null
             list.push(entry)
           }
         }
       } else {
-        const entry = JSON.parse(JSON.stringify(this.content[idx]))
+        const entry = structuredClone(this.content[idx])
         entry._checked = false
         entry['id'] = null
         list.push(entry)
@@ -209,16 +233,16 @@ export default {
       if (idx === undefined) {
         for (let i = this.content.length - 1; i >= 0; i--) {
           if (this.content[i]._checked) {
-            const entry = JSON.parse(JSON.stringify(this.content[i]))
-            this.content.splice(i, 1)
+            const [entry] = this.content.splice(i, 1)
             entry._checked = false
+            entry.id = null
             list.push(entry)
           }
         }
       } else {
-        const entry = JSON.parse(JSON.stringify(this.content[idx]))
-        this.content.splice(idx, 1)
+        const [entry] = this.content.splice(idx, 1)
         entry._checked = false
+        entry.id = null
         list.push(entry)
       }
 
@@ -228,11 +252,12 @@ export default {
 
     error(el, value) {
       el._error = value
-      this.$emit(
-        'error',
-        this.content.some((el) => el._error)
-      )
-      this.store()
+      const has = this.content.some((el) => el._error)
+      if (has !== this.lastError) {
+        this.lastError = has
+        this.$emit('error', has)
+      }
+      this.stored()
     },
 
     fields(type) {
@@ -319,7 +344,7 @@ export default {
 
     record() {
       if (!this.audio) {
-        return (this.audio = recording().start())
+        return (this.audio = markRaw(import('../audio').then((mod) => mod.recording().start())))
       }
 
       this.audio.then((rec) => {
@@ -327,7 +352,8 @@ export default {
         this.audio = null
 
         rec.stop()?.then((buffer) => {
-          this.transcribe(buffer)
+          import('../ai')
+            .then((mod) => mod.transcribe(buffer))
             .then((transcription) => {
               this.chat = transcription.asText()
             })
@@ -354,11 +380,7 @@ export default {
 
       this.$apollo
         .mutate({
-          mutation: gql`
-            mutation ($prompt: String!, $content: JSON!, $type: String, $context: String) {
-              refine(prompt: $prompt, content: $content, type: $type, context: $context)
-            }
-          `,
+          mutation: REFINE_CONTENT,
           variables: {
             prompt: prompt,
             content: JSON.stringify(this.content),
@@ -371,14 +393,16 @@ export default {
             throw result
           }
 
-          const map = Object.fromEntries(this.content.map((item) => [item.id, item]))
           const content = JSON.parse(result.data?.refine || '[]')
 
           if (content.length) {
+            const map = {}
+            for (const item of this.content) map[item.id] = item
+
             content.forEach((item) => {
               item.group = this.section
 
-              if (!isEqual(item, map[item.id] || {})) {
+              if (JSON.stringify(item) !== JSON.stringify(map[item.id] || {})) {
                 item._changed = true
               }
             })
@@ -387,6 +411,7 @@ export default {
           }
 
           this.refining = null
+          this.response = ''
           this.chat = ''
         })
         .catch((error) => {
@@ -419,10 +444,19 @@ export default {
         term = term.toLocaleLowerCase().trim()
 
         this.content.forEach((el) => {
-          const item = el.type === 'reference' ? this.elements[el.refid] || {} : el
-          el._hide = !JSON.stringify(Object.values(item?.data || {}))
-            .toLocaleLowerCase()
-            .includes(term)
+          const data = (el.type === 'reference' ? this.elements[el.refid] : el)?.data || {}
+          let found = false
+
+          for (const k in data) {
+            const v = data[k]
+
+            if (v && typeof v !== 'object' && typeof v !== 'boolean' && String(v).toLocaleLowerCase().includes(term)) {
+              found = true
+              break
+            }
+          }
+
+          el._hide = !found
         })
       }
     },
@@ -447,30 +481,7 @@ export default {
 
       this.$apollo
         .mutate({
-          mutation: gql`
-            mutation ($input: ElementInput!, $files: [ID!]) {
-              addElement(input: $input, files: $files) {
-                id
-                type
-                lang
-                name
-                data
-                editor
-                updated_at
-                files {
-                  id
-                  lang
-                  mime
-                  name
-                  path
-                  previews
-                  description
-                  updated_at
-                  editor
-                }
-              }
-            }
-          `,
+          mutation: ADD_ELEMENT,
           variables: {
             input: {
               type: entry.type,
@@ -492,12 +503,12 @@ export default {
           const element = result.data.addElement
 
           for (const file of element.files || []) {
-            file.previews = JSON.parse(file.previews || '{}')
-            this.assets[file.id] = file
+            file.previews = frozenParse(file.previews)
+            this.assets[file.id] = Object.freeze(file)
           }
 
-          element.data = JSON.parse(element.data)
-          element.files = element.files.map((file) => file.id)
+          element.data = frozenParse(element.data)
+          element.files = Object.freeze(element.files.map((file) => file.id))
 
           this.elements[element.id] = element
           this.content[idx] = {
@@ -526,11 +537,17 @@ export default {
       )
     },
 
-    split(idx) {
+    async split(idx) {
       if (!this.content[idx]) {
         this.messages.add(this.$gettext('Not available for this content element'), 'error')
         return
       }
+
+      const [{ fromMarkdown }, { toString }, { toMarkdown }] = await Promise.all([
+        import('mdast-util-from-markdown'),
+        import('mdast-util-to-string'),
+        import('mdast-util-to-markdown')
+      ])
 
       const list = []
       const ast = fromMarkdown(this.content[idx].data?.text || '')
@@ -572,7 +589,6 @@ export default {
             break
           }
           default: {
-            // Convert unhandled node types back to raw Markdown
             list.push({
               id: uid(),
               type: 'text',
@@ -610,22 +626,11 @@ export default {
         }
       })
 
-      return (this.side.store = { type: types, state: state })
+      return (this.side.store = Object.freeze({ type: Object.freeze(types), state: Object.freeze(state) }))
     },
 
     title(el) {
-      return (
-        (
-          el.data?.title ||
-          el.data?.text ||
-          Object.values(el.data || {})
-            .map((v) => (v && typeof v !== 'object' && typeof v !== 'boolean' ? v : null))
-            .filter((v) => !!v)
-            .join(' - ')
-        ).substring(0, 100) ||
-        this.$pgettext('st', el.type) ||
-        ''
-      )
+      return itemTitle(el.data) || this.$pgettext('st', el.type) || ''
     },
 
     toggle() {
@@ -671,8 +676,29 @@ export default {
         el.id = uid()
       }
 
+      this.emitContent()
+    },
+
+    flush() {
       this.$emit('update:content', this.content)
     }
+  },
+
+  created() {
+    this.stored = debounce(() => this.store(), 200)
+    this.emitContent = debounce(() => this.$emit('update:content', this.content), 150)
+  },
+
+  beforeUnmount() {
+    if (this.audio) {
+      this.audio.then((rec) => rec?.stop?.()).catch(() => {})
+      this.audio = null
+    }
+
+    this.panel = null
+    this.menu = null
+    this.response = ''
+    this.chat = ''
   },
 
   watch: {
@@ -680,7 +706,13 @@ export default {
       immediate: true,
       handler() {
         this.checked = false
-        this.store()
+        this.stored?.()
+      }
+    },
+
+    panel(val) {
+      if (Array.isArray(val) && val.length > 3) {
+        this.panel = val.slice(-3)
       }
     }
   }
@@ -688,7 +720,7 @@ export default {
 </script>
 
 <template>
-  <div v-observe-visibility="store">
+  <div v-visible="store">
     <v-textarea
       v-if="user.can('page:refine')"
       v-model="chat"
@@ -809,7 +841,7 @@ export default {
       >
         <v-expansion-panel
           v-for="(el, idx) in content"
-          :key="idx"
+          :key="el.id"
           v-show="shown(el)"
           class="content"
           :class="{
@@ -937,7 +969,7 @@ export default {
             </div>
             <div class="element-type">{{ $pgettext('st', el.type) }}</div>
           </v-expansion-panel-title>
-          <v-expansion-panel-text eager>
+          <v-expansion-panel-text>
             <Fields
               v-if="el.type === 'reference'"
               :data="elements[el.refid]?.data || {}"
