@@ -5,9 +5,25 @@
 import gql from 'graphql-tag'
 
 const mutations = {
-  element: 'pubElement',
-  file: 'pubFile',
-  page: 'pubPage'
+  element: gql`mutation ($id: [ID!]!, $at: DateTime) { pubElement(id: $id, at: $at) { id } }`,
+  file: gql`mutation ($id: [ID!]!, $at: DateTime) { pubFile(id: $id, at: $at) { id } }`,
+  page: gql`mutation ($id: [ID!]!, $at: DateTime) { pubPage(id: $id, at: $at) { id } }`
+}
+
+/**
+ * @param {String} publishAt Date string
+ * @param {String|null} publishTime Time string in HH:MM format
+ * @returns {Date}
+ */
+export function publishDate(publishAt, publishTime) {
+  const at = new Date(publishAt)
+
+  if (publishTime) {
+    const [hours, minutes] = publishTime.split(':').map(Number)
+    at.setHours(hours, minutes, 0, 0)
+  }
+
+  return at
 }
 
 /**
@@ -32,13 +48,7 @@ export function publishItem(vm, type, msgs, at = null) {
 
       return vm.$apollo
         .mutate({
-          mutation: gql`
-            mutation ($id: [ID!]!, $at: DateTime) {
-              ${mutations[type]}(id: $id, at: $at) {
-                id
-              }
-            }
-          `,
+          mutation: mutations[type],
           variables: {
             id: [vm.item.id],
             at: at?.toISOString()?.substring(0, 19)?.replace('T', ' ')

@@ -23,8 +23,55 @@ import {
   List,
   SourceEditing
 } from 'ckeditor5'
+import { markRaw } from 'vue'
 import { Ckeditor } from '@ckeditor/ckeditor5-vue'
+import { translationCache, TRANSLATION_CACHE_MAX } from '../ckcache'
 import 'ckeditor5/ckeditor5.css'
+
+const ckPlugins = [
+  Markdown,
+  Essentials,
+  PasteFromOffice,
+  Fullscreen,
+  Clipboard,
+  FindAndReplace,
+  RemoveFormat,
+  Heading,
+  Paragraph,
+  Bold,
+  Italic,
+  Strikethrough,
+  BlockQuote,
+  Code,
+  CodeBlock,
+  AutoLink,
+  Link,
+  List,
+  SourceEditing
+]
+
+const ckToolbar = [
+  'undo',
+  'redo',
+  'removeFormat',
+  '|',
+  'heading',
+  '|',
+  'bold',
+  'italic',
+  'strikethrough',
+  'link',
+  'code',
+  '|',
+  'codeBlock',
+  'blockQuote',
+  '|',
+  'bulletedList',
+  'numberedList',
+  '|',
+  'sourceEditing',
+  'fullscreen'
+]
 
 export default {
   components: {
@@ -44,7 +91,8 @@ export default {
   data() {
     return {
       destroyed: false,
-      editor: ClassicEditor,
+      editor: markRaw(ClassicEditor),
+      lastError: null,
       visible: false,
       translations: undefined
     }
@@ -52,11 +100,22 @@ export default {
 
   async created() {
     const locale = this.$vuetify.locale.current
-    const mod = await import(`ckeditor5/translations/${locale}.js`)
+
+    if (!translationCache[locale]) {
+      const keys = Object.keys(translationCache)
+
+      if (keys.length >= TRANSLATION_CACHE_MAX) {
+        delete translationCache[keys[0]]
+      }
+
+      const mod = await import(`ckeditor5/translations/${locale}.js`)
+
+      translationCache[locale] = [mod.default]
+    }
 
     if (this.destroyed) return
 
-    this.translations = [mod.default]
+    this.translations = translationCache[locale]
   },
 
   beforeUnmount() {
@@ -66,56 +125,15 @@ export default {
 
   computed: {
     ckconfig() {
-      return {
+      return markRaw({
         licenseKey: 'GPL',
-        plugins: [
-          Markdown,
-          Essentials,
-          PasteFromOffice,
-          Fullscreen,
-          Clipboard,
-          FindAndReplace,
-          RemoveFormat,
-          Heading,
-          Paragraph,
-          Bold,
-          Italic,
-          Strikethrough,
-          BlockQuote,
-          Code,
-          CodeBlock,
-          AutoLink,
-          Link,
-          List,
-          SourceEditing
-        ],
-        toolbar: [
-          'undo',
-          'redo',
-          'removeFormat',
-          '|',
-          'heading',
-          '|',
-          'bold',
-          'italic',
-          'strikethrough',
-          'link',
-          'code',
-          '|',
-          'codeBlock',
-          'blockQuote',
-          '|',
-          'bulletedList',
-          'numberedList',
-          '|',
-          'sourceEditing',
-          'fullscreen'
-        ],
+        plugins: ckPlugins,
+        toolbar: ckToolbar,
         translations: this.translations,
         language: {
           ui: this.$vuetify.locale.current
         }
-      }
+      })
     },
 
     rules() {
@@ -150,12 +168,11 @@ export default {
     modelValue: {
       immediate: true,
       handler(val) {
-        this.$emit(
-          'error',
-          !this.rules.every((rule) => {
-            return rule(val ?? this.config.default ?? '') === true
-          })
-        )
+        const hasError = !this.rules.every((rule) => rule(val ?? this.config.default ?? '') === true)
+        if (hasError !== this.lastError) {
+          this.lastError = hasError
+          this.$emit('error', hasError)
+        }
       }
     }
   }
@@ -163,7 +180,7 @@ export default {
 </script>
 
 <template>
-  <div v-observe-visibility="show">
+  <div v-visible="show">
     <div v-if="visible">
       <ckeditor
         :config="ckconfig"

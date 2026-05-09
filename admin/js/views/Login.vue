@@ -27,23 +27,25 @@ export default {
   },
 
   watch: {
-    creds: {
-      handler() {
-        this.$refs.form?.validate()
-      },
-      deep: true
-    }
+    'creds.email': function () { this.$refs.form?.validate() },
+    'creds.password': function () { this.$refs.form?.validate() }
   },
 
   mounted() {
-    this.$el.addEventListener('animationstart', (e) => {
-      if (e.animationName === 'autofill-detect') {
-        this.autofilled = true
-      }
-    })
+    this.$el.addEventListener('animationstart', this.detectAutofill)
+  },
+
+  beforeUnmount() {
+    this.$el.removeEventListener('animationstart', this.detectAutofill)
   },
 
   created() {
+    this.emailRules = [
+      (v) => !!v || this.$gettext('Field is required'),
+      (v) => !!v.match(/.+@.+/) || this.$gettext('Invalid e-mail address')
+    ]
+    this.passwordRules = [(v) => !!v || this.$gettext('Field is required')]
+
     const config = window.__APP_CONFIG__ || {}
 
     // For pre-filled demo login
@@ -65,6 +67,12 @@ export default {
   },
 
   methods: {
+    detectAutofill(e) {
+      if (e.animationName === 'autofill-detect') {
+        this.autofilled = true
+      }
+    },
+
     cmslogin() {
       if (this.autofilled) {
         this.$el.querySelectorAll('input').forEach((input) => {
@@ -131,10 +139,7 @@ export default {
         <v-text-field
           v-model="creds.email"
           :label="$gettext('E-Mail')"
-          :rules="[
-            (v) => !!v || $gettext('Field is required'),
-            (v) => !!v.match(/.+@.+/) || $gettext('Invalid e-mail address')
-          ]"
+          :rules="emailRules"
           autocomplete="username"
           variant="underlined"
           validate-on="blur"
@@ -144,7 +149,7 @@ export default {
           v-model="creds.password"
           :type="show ? `text` : `password`"
           :label="$gettext('Password')"
-          :rules="[(v) => !!v || $gettext('Field is required')]"
+          :rules="passwordRules"
           :placeholder="autofilled ? '********' : undefined"
           :persistent-placeholder="autofilled"
           autocomplete="current-password"

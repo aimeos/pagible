@@ -6,8 +6,7 @@ import { onError } from '@apollo/client/link/error'
 import { RetryLink } from '@apollo/client/link/retry'
 import { BatchHttpLink } from 'apollo-link-batch-http'
 import { createApolloProvider } from '@vue/apollo-option'
-import { ApolloClient, ApolloLink, InMemoryCache } from '@apollo/client/core'
-import createUploadLink from 'apollo-upload-client/createUploadLink.mjs'
+import { ApolloClient, ApolloLink, InMemoryCache, Observable } from '@apollo/client/core'
 import router from './routes'
 import { useUserStore } from './stores'
 import { urlgraphql } from './config'
@@ -33,12 +32,34 @@ const errorLink = onError(({ errors }) => {
   }
 })
 
+let uploadLink = null
+
+export function clearUploadLink() {
+  uploadLink = null
+}
+
+const lazyUploadLink = new ApolloLink((operation, forward) => {
+  return new Observable((observer) => {
+    let sub = null
+
+    const load = uploadLink
+      ? Promise.resolve(uploadLink)
+      : import('apollo-upload-client/createUploadLink.mjs').then((mod) => {
+          uploadLink = mod.default({ uri: urlgraphql, credentials: 'include' })
+          return uploadLink
+        })
+
+    load
+      .then((link) => { sub = link.request(operation).subscribe(observer) })
+      .catch((err) => observer.error(err))
+
+    return () => sub?.unsubscribe()
+  })
+})
+
 const httpLink = ApolloLink.split(
   (operation) => operation.getContext().hasUpload,
-  createUploadLink({
-    uri: urlgraphql,
-    credentials: 'include'
-  }),
+  lazyUploadLink,
   new BatchHttpLink({
     uri: urlgraphql,
     batchMax: 50,
@@ -48,8 +69,20 @@ const httpLink = ApolloLink.split(
 )
 
 const apolloClient = new ApolloClient({
-  cache: new InMemoryCache(),
-  link: ApolloLink.from([retryLink, errorLink, httpLink])
+  cache: new InMemoryCache({
+    typePolicies: {
+      Query: {
+        fields: {
+          elements: { merge: false },
+          files: { merge: false },
+          pages: { merge: false }
+        }
+      }
+    },
+    resultCacheMaxSize: 100
+  }),
+  link: ApolloLink.from([retryLink, errorLink, httpLink]),
+  queryDeduplication: true
 })
 const apollo = createApolloProvider({ defaultClient: apolloClient })
 

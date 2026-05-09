@@ -1,9 +1,13 @@
 /** @license LGPL, https://opensource.org/license/lgpl-3-0 */
 
 <script>
-import { diffWords } from 'diff'
+let diffWordsFn = null
+
 import { mdiClose } from '@mdi/js'
 import { empty, stringify, url, srcset } from '../utils'
+
+const SECTION_NAMES = ['meta', 'config', 'content']
+const EMPTY_SPACE = { value: '\u00a0', highlight: false }
 
 export default {
   props: {
@@ -20,22 +24,31 @@ export default {
   },
 
   data: () => ({
+    labels: null,
     list: [],
     latest: null,
     loading: false,
     unchecked: {}
   }),
 
-  computed: {
-    labels() {
-      return {
-        data: this.$gettext('Fields'),
-        meta: this.$gettext('Meta tags'),
-        config: this.$gettext('Configuration'),
-        content: this.$gettext('Content')
-      }
-    },
+  created() {
+    this.labels = {
+      data: this.$gettext('Fields'),
+      meta: this.$gettext('Meta tags'),
+      config: this.$gettext('Configuration'),
+      content: this.$gettext('Content')
+    }
+  },
 
+  beforeUnmount() {
+    this.list = null
+    this.latest = null
+    this.unchecked = null
+    this.labels = null
+    this.diffCache = null
+  },
+
+  computed: {
     currentDiffs() {
       if (!this.latest || !this.hasCurrentChanges) return {}
       return this.sectionDiffs(this.latest.data || {}, this.current.data || {})
@@ -58,12 +71,15 @@ export default {
       const version = isCurrent ? this.latest : this.versions[idx]
       const later = isCurrent ? this.current : this.laterVersion(idx)
       const changes = {}
-      const sectionNames = ['meta', 'config', 'content']
+      const seen = {}
 
-      for (const key of new Set([
-        ...Object.keys(version.data || {}).filter(k => !sectionNames.includes(k)),
-        ...Object.keys(later?.data || {}).filter(k => !sectionNames.includes(k))
-      ])) {
+      for (const key in version.data) {
+        if (!SECTION_NAMES.includes(key)) seen[key] = true
+      }
+      for (const key in later?.data) {
+        if (!SECTION_NAMES.includes(key)) seen[key] = true
+      }
+      for (const key in seen) {
         if (JSON.stringify(version.data?.[key]) !== JSON.stringify(later?.data?.[key])
             && this.isChecked(idx, `data:${key}`)) {
           changes[key] = version.data[key]
@@ -73,22 +89,28 @@ export default {
       for (const section of ['meta', 'config']) {
         const vSec = version.data?.[section] || {}
         const lSec = later?.data?.[section] || {}
+
         if (JSON.stringify(vSec) === JSON.stringify(lSec)) continue
 
         const merged = { ...lSec }
+        const sectionSeen = {}
         let hasChanges = false
-        for (const key of new Set([...Object.keys(vSec), ...Object.keys(lSec)])) {
-          if (JSON.stringify(vSec[key]) !== JSON.stringify(lSec[key])
-              && this.isChecked(idx, `${section}:${key}`)) {
+
+        for (const key in vSec) sectionSeen[key] = true
+        for (const key in lSec) sectionSeen[key] = true
+        for (const key in sectionSeen) {
+          if (JSON.stringify(vSec[key]) !== JSON.stringify(lSec[key]) && this.isChecked(idx, `${section}:${key}`)) {
             merged[key] = vSec[key]
             hasChanges = true
           }
         }
+
         if (hasChanges) changes[section] = merged
       }
 
       if (JSON.stringify(version.data?.content) !== JSON.stringify(later?.data?.content)) {
         const diffs = isCurrent ? this.currentDiffs : this.versionDiffs(idx)
+
         if ((diffs.content || []).some(block => this.isChecked(idx, block.diffKey))) {
           changes.content = version.data.content
         }
@@ -97,15 +119,26 @@ export default {
       this.$emit('apply', changes)
     },
 
+    addedBlock(item) {
+      return {
+        title: this.blockLabel(item),
+        fields: [{
+          label: '', removed: [EMPTY_SPACE],
+          added: [{ value: this.$gettext('Added'), highlight: true }]
+        }]
+      }
+    },
+
     buildFieldDiffs(fields, prefix = '') {
       return fields.map(({ label, old: oldVal, new: newVal, rootKey }) => {
-        const words = diffWords(oldVal || '', newVal || '')
+        const words = diffWordsFn(oldVal || '', newVal || '')
         const removed = words.filter(w => !w.added).map(w => ({ value: w.value, highlight: !!w.removed }))
         const added = words.filter(w => !w.removed).map(w => ({ value: w.value, highlight: !!w.added }))
+
         return {
           label,
-          removed: removed.some(w => w.value) ? removed : [{ value: '\u00a0', highlight: false }],
-          added: added.some(w => w.value) ? added : [{ value: '\u00a0', highlight: false }],
+          removed: removed.some(w => w.value) ? removed : [EMPTY_SPACE],
+          added: added.some(w => w.value) ? added : [EMPTY_SPACE],
           diffKey: prefix ? `${prefix}:${rootKey}` : rootKey,
         }
       })
@@ -118,12 +151,15 @@ export default {
 
       const diffBlock = (aItem, bItem) => {
         if (JSON.stringify(aItem) === JSON.stringify(bItem)) return
+
         const fields = this.buildFieldDiffs(this.getChangedFields(aItem?.data || aItem || {}, bItem?.data || bItem || {}))
+
         if (!fields.length) {
           const top = this.buildFieldDiffs(this.getChangedFields(
             { type: aItem?.type, group: aItem?.group },
             { type: bItem?.type, group: bItem?.group }
           ))
+
           if (top.length) blocks.push({ title: this.blockLabel(bItem || aItem), fields: top })
         } else {
           blocks.push({ title: this.blockLabel(bItem || aItem), fields })
@@ -136,38 +172,50 @@ export default {
 
         for (const [key, aItem] of aMap) {
           const bItem = bMap.get(key)
+
           if (!bItem) {
-            blocks.push({ title: this.blockLabel(aItem), fields: [{ label: '', removed: [{ value: this.$gettext('Removed'), highlight: true }], added: [{ value: '\u00a0', highlight: false }] }] })
+            blocks.push(this.removedBlock(aItem))
           } else {
             diffBlock(aItem, bItem)
           }
         }
         for (const [key, bItem] of bMap) {
           if (!aMap.has(key)) {
-            blocks.push({ title: this.blockLabel(bItem), fields: [{ label: '', removed: [{ value: '\u00a0', highlight: false }], added: [{ value: this.$gettext('Added'), highlight: true }] }] })
+            blocks.push(this.addedBlock(bItem))
           }
         }
       } else {
         const len = Math.max(aArr.length, bArr.length)
+
         for (let i = 0; i < len; i++) {
           const aItem = aArr[i]
           const bItem = bArr[i]
+
           if (!aItem) {
-            blocks.push({ title: this.blockLabel(bItem), fields: [{ label: '', removed: [{ value: '\u00a0', highlight: false }], added: [{ value: this.$gettext('Added'), highlight: true }] }] })
+            blocks.push(this.addedBlock(bItem))
           } else if (!bItem) {
-            blocks.push({ title: this.blockLabel(aItem), fields: [{ label: '', removed: [{ value: this.$gettext('Removed'), highlight: true }], added: [{ value: '\u00a0', highlight: false }] }] })
+            blocks.push(this.removedBlock(aItem))
           } else {
             diffBlock(aItem, bItem)
           }
         }
       }
 
-      return blocks.map((b, i) => ({ ...b, diffKey: `content:${i}` }))
+      for (let i = 0; i < blocks.length; i++) {
+        blocks[i].diffKey = `content:${i}`
+      }
+
+      return blocks
+    },
+
+    formatDate(dateStr) {
+      return new Date(dateStr).toLocaleString(this.$vuetify.locale.current)
     },
 
     diffKeys(idx) {
       const diffs = idx === 'current' ? this.currentDiffs : this.versionDiffs(idx)
       const keys = []
+
       for (const [name, entries] of Object.entries(diffs)) {
         if (name === 'content') {
           entries.forEach(block => keys.push(block.diffKey))
@@ -179,38 +227,46 @@ export default {
     },
 
     filesdiff(map1, map2) {
-      const keys1 = Object.keys(map1 || {})
-      const keys2 = Object.keys(map2 || {})
+      const m1 = map1 || {}
+      const m2 = map2 || {}
+      const result = {}
 
-      const only1 = keys1.filter((key) => !keys2.includes(key))
-      const only2 = keys2.filter((key) => !keys1.includes(key))
+      for (const key in m1) {
+        if (!(key in m2)) {
+          result[key] = Object.assign({}, m1[key], { css: 'added' })
+        }
+      }
 
-      const diff1 = Object.fromEntries(
-        Object.entries(map1 || {})
-          .filter(([key]) => only1.includes(key))
-          .map(([key, value]) => [key, { ...value, css: 'added' }])
-      )
-      const diff2 = Object.fromEntries(
-        Object.entries(map2 || {})
-          .filter(([key]) => only2.includes(key))
-          .map(([key, value]) => [key, { ...value, css: 'removed' }])
-      )
+      for (const key in m2) {
+        if (!(key in m1)) {
+          result[key] = Object.assign({}, m2[key], { css: 'removed' })
+        }
+      }
 
-      return { ...diff1, ...diff2 }
+      return result
     },
 
     blockLabel(block) {
       if (!block?.type) return ''
+
       const title = block.data?.title || block.data?.text || ''
+
       return this.$pgettext('st', block.type) + (title ? ': ' + title.substring(0, 60) : '')
     },
 
     getChangedFields(a, b, rootKey = null) {
       const fields = []
+      const seen = {}
+      const aObj = a || {}
+      const bObj = b || {}
 
-      for (const k of new Set([...Object.keys(a || {}), ...Object.keys(b || {})])) {
-        const aVal = a?.[k]
-        const bVal = b?.[k]
+      for (const k in aObj) seen[k] = true
+      for (const k in bObj) seen[k] = true
+
+      for (const k in seen) {
+        const aVal = aObj[k]
+        const bVal = bObj[k]
+
         if (JSON.stringify(aVal) === JSON.stringify(bVal)) continue
         if (empty(aVal) && empty(bVal)) continue
 
@@ -219,8 +275,10 @@ export default {
 
         if (aVal && bVal && typeof aVal === 'object' && !Array.isArray(aVal)
             && typeof bVal === 'object' && !Array.isArray(bVal)) {
-          const sub = this.getChangedFields(aVal, bVal, rk)
-          fields.push(...sub.map(f => ({ ...f, label: `${label} › ${f.label}` })))
+          for (const f of this.getChangedFields(aVal, bVal, rk)) {
+            f.label = `${label} › ${f.label}`
+            fields.push(f)
+          }
         } else {
           fields.push({ label, old: stringify(aVal), new: stringify(bVal), rootKey: rk })
         }
@@ -240,11 +298,18 @@ export default {
 
     isModified(v1, v2) {
       if (!v1 || !v2) return false
+
       const a = v1.data || {}
       const b = v2.data || {}
-      for (const k of new Set([...Object.keys(a), ...Object.keys(b)])) {
+
+      for (const k in a) {
         if (JSON.stringify(a[k]) !== JSON.stringify(b[k]) && !(empty(a[k]) && empty(b[k]))) return true
       }
+
+      for (const k in b) {
+        if (!(k in a) && !empty(b[k])) return true
+      }
+
       return false
     },
 
@@ -252,27 +317,43 @@ export default {
       return idx === 0 ? this.latest : this.versions[idx - 1]
     },
 
+    removedBlock(item) {
+      return { title: this.blockLabel(item), fields: [{ label: '', removed: [{ value: this.$gettext('Removed'), highlight: true }], added: [EMPTY_SPACE] }] }
+    },
+
     reset() {
       this.list = []
       this.latest = null
+      this.unchecked = {}
+      this.diffCache = {}
     },
 
     sectionDiffs(a, b) {
-      const sections = ['meta', 'config', 'content']
       const result = {}
+      const dataA = {}
+      const dataB = {}
 
-      const dataA = Object.fromEntries(Object.entries(a).filter(([k]) => !sections.includes(k)))
-      const dataB = Object.fromEntries(Object.entries(b).filter(([k]) => !sections.includes(k)))
+      for (const k in a) {
+        if (!SECTION_NAMES.includes(k)) dataA[k] = a[k]
+      }
+
+      for (const k in b) {
+        if (!SECTION_NAMES.includes(k)) dataB[k] = b[k]
+      }
+
       const dataFields = this.getChangedFields(dataA, dataB)
-      if (dataFields.length) result.data = this.buildFieldDiffs(dataFields, 'data')
+
+      if (dataFields.length) result.data = Object.freeze(this.buildFieldDiffs(dataFields, 'data'))
 
       for (const section of ['meta', 'config']) {
         const fields = this.getChangedFields(a[section] || {}, b[section] || {})
-        if (fields.length) result[section] = this.buildFieldDiffs(fields, section)
+
+        if (fields.length) result[section] = Object.freeze(this.buildFieldDiffs(fields, section))
       }
 
       const contentBlocks = this.contentDiffs(a.content || [], b.content || [])
-      if (contentBlocks.length) result.content = contentBlocks
+
+      if (contentBlocks.length) result.content = Object.freeze(contentBlocks)
 
       return result
     },
@@ -291,6 +372,7 @@ export default {
 
     toggleDiff(idx, diffKey) {
       const key = `${idx}:${diffKey}`
+
       if (this.unchecked[key]) {
         delete this.unchecked[key]
       } else {
@@ -299,24 +381,52 @@ export default {
     },
 
     versionDiffs(idx) {
+      if (this.diffCache?.[idx]) return this.diffCache[idx]
+
       const version = this.versions[idx]
       const later = this.laterVersion(idx)
+
       if (!version?.data || !later?.data) return {}
-      return this.sectionDiffs(later.data, version.data)
+
+      const result = Object.freeze(this.sectionDiffs(later.data, version.data))
+
+      if (!this.diffCache) this.diffCache = {}
+
+      const keys = Object.keys(this.diffCache)
+
+      if (keys.length >= 3) {
+        delete this.diffCache[keys[0]]
+      }
+
+      this.diffCache[idx] = result
+
+      return result
     }
   },
 
   watch: {
     modelValue: {
       immediate: true,
-      handler(val) {
+      async handler(val) {
+        if (!val) {
+          this.list = []
+          this.latest = null
+          this.diffCache = {}
+          return
+        }
+
         if (val && !this.latest) {
           this.loading = true
 
+          if (!diffWordsFn) {
+            const mod = await import('diff')
+            diffWordsFn = mod.diffWords
+          }
+
           this.load()
             .then((versions) => {
-              this.list = versions || []
-              this.latest = versions?.shift() || null
+              this.latest = versions?.[0] || null
+              this.list = Object.freeze(versions?.slice(1) || [])
             })
             .finally(() => {
               this.loading = false
@@ -332,7 +442,7 @@ export default {
   <v-dialog
     :aria-label="$gettext('History')"
     :modelValue="modelValue"
-    @afterLeave="$emit('update:modelValue', false)"
+    @afterLeave="reset(); $emit('update:modelValue', false)"
     max-width="1200"
     scrollable
   >
@@ -521,11 +631,7 @@ export default {
           >
             <v-card :elevation="2">
               <v-card-title>
-                {{
-                  new Date(version.publish_at || version.created_at).toLocaleString(
-                    $vuetify.locale.current
-                  )
-                }}
+                {{ formatDate(version.publish_at || version.created_at) }}
               </v-card-title>
               <v-card-subtitle>
                 {{ version.editor }}

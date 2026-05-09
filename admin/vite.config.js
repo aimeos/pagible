@@ -43,6 +43,21 @@ export default defineConfig({
   },
   build: {
     manifest: true,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          ckeditor: ['ckeditor5', '@ckeditor/ckeditor5-vue'],
+          charts: ['chart.js', 'vue-chartjs'],
+          cropper: ['cropperjs'],
+          diff: ['diff'],
+          dompurify: ['dompurify'],
+          graphql: ['graphql', 'graphql-tag', '@apollo/client', 'apollo-link-batch-http', '@apollo/client/link/error', '@apollo/client/link/retry'],
+          'graphql-upload': ['apollo-upload-client/createUploadLink.mjs'],
+          markdown: ['mdast-util-from-markdown', 'mdast-util-to-markdown'],
+          tree: ['@he-tree/vue'],
+        }
+      }
+    }
   },
   experimental: {
     renderBuiltUrl: () => {

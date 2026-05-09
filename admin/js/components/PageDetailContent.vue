@@ -1,6 +1,8 @@
 <script>
 import PageDetailContentList from './PageDetailContentList.vue'
 import { useSchemaStore } from '../stores'
+import { hasTrue } from '../utils'
+import { markRaw } from 'vue'
 
 export default {
   components: {
@@ -19,12 +21,18 @@ export default {
   data: () => ({
     dirty: {},
     errors: {},
+    lastError: false,
     tab: 'default'
   }),
 
   setup() {
     const schemas = useSchemaStore()
     return { schemas }
+  },
+
+  beforeUnmount() {
+    this.dirty = null
+    this.errors = null
   },
 
   computed: {
@@ -56,7 +64,7 @@ export default {
         sections[name].push(item)
       }
 
-      return sections
+      return markRaw(sections)
     }
   },
 
@@ -68,12 +76,22 @@ export default {
 
     error(what, value) {
       this.errors[what] = value
-      this.$emit('error', Object.values(this.errors).includes(true))
+      const has = hasTrue(this.errors)
+      if (has !== this.lastError) {
+        this.lastError = has
+        this.$emit('error', has)
+      }
     },
 
     mainContentUpdated(event) {
       this.item.content = event
       this.$emit('change', 'content')
+    },
+
+    flush() {
+      Array.isArray(this.$refs.content)
+        ? this.$refs.content.forEach((ref) => ref.flush())
+        : this.$refs.content?.flush()
     },
 
     reset() {
@@ -89,9 +107,7 @@ export default {
       const sections = this.sections
       sections[section] = list
 
-      this.item.content = Object.values(sections).reduce((acc, entries) => {
-        return acc.concat(entries)
-      }, [])
+      this.item.content = Object.values(sections).flat()
 
       this.dirty[section] = true
     }

@@ -19,6 +19,8 @@ export default {
 
   emits: ['update:modelValue', 'error'],
 
+  data: () => ({ lastError: null }),
+
   computed: {
     hasError() {
       const val = this.modelValue ?? this.config.default ?? ''
@@ -43,12 +45,11 @@ export default {
     modelValue: {
       immediate: true,
       handler(val) {
-        this.$emit(
-          'error',
-          !this.rules.every((rule) => {
-            return rule(val ?? this.config.default ?? '') === true
-          })
-        )
+        const hasError = !this.rules.every((rule) => rule(val ?? this.config.default ?? '') === true)
+        if (hasError !== this.lastError) {
+          this.lastError = hasError
+          this.$emit('error', hasError)
+        }
       }
     }
   }

@@ -5,6 +5,9 @@
 import gettext from './i18n'
 import { useAppStore, useLanguageStore } from './stores'
 
+
+export const IMAGE_MIME_FILTER = { mime: ['image/gif', 'image/jpeg', 'image/png', 'image/svg+xml', 'image/webp'] }
+
 /**
  * Creates a debounced version of a function that returns a Promise
  *
@@ -42,25 +45,104 @@ export function empty(val) {
 }
 
 /**
+ * Parses a JSON string and freezes the result
+ *
+ * @param {string} str JSON string to parse
+ * @returns {Object} Frozen parsed object
+ */
+export function frozenParse(str) {
+  try {
+    return Object.freeze(JSON.parse(str || '{}') || {})
+  } catch {
+    return Object.freeze({})
+  }
+}
+
+/**
+ * Checks if any value in an object is truthy
+ *
+ * @param {Object} obj Object to check
+ * @returns {boolean} True if any value is truthy
+ */
+export function hasTrue(obj) {
+  for (const k in obj) {
+    if (obj[k]) return true
+  }
+  return false
+}
+
+/**
+ * Checks if any value in an object has a truthy property
+ *
+ * @param {Object} obj Object to check
+ * @param {string} prop Property name to check on each value
+ * @returns {boolean} True if any value has a truthy property
+ */
+export function hasProp(obj, prop) {
+  for (const k in obj) {
+    if (obj[k]?.[prop]) return true
+  }
+  return false
+}
+
+/**
+ * Returns a title string from a data object by checking title, text, or joining primitive values
+ *
+ * @param {Object} data Data object to extract title from
+ * @returns {string} Title string (max 100 chars)
+ */
+export function itemTitle(data) {
+  return (
+    (
+      data?.title ||
+      data?.text ||
+      Object.values(data || {})
+        .map((v) => (v && typeof v !== 'object' && typeof v !== 'boolean' ? v : null))
+        .filter((v) => !!v)
+        .join(' - ')
+    ).substring(0, 100) || ''
+  )
+}
+
+/**
  * Returns available locales as a list for dropdown menus
  *
  * @param {boolean} none If true, prepends a "None" option with null value
  * @returns {Array<{value: string|null, title: string}>} Locale options
  */
+let localesCache = null
+let localesCacheKey = null
+
 export function locales(none = false) {
   const languages = useLanguageStore()
-  const list = []
 
   if (none) {
-    list.push({ value: null, title: gettext.$gettext('None') })
+    const list = [{ value: null, title: gettext.$gettext('None') }]
+
+    languages.available.forEach((code) => {
+      list.push({
+        value: code,
+        title: languages.translate(code) + ' (' + code.toUpperCase() + ')'
+      })
+    })
+
+    return list
   }
 
+  if (localesCache && localesCacheKey === languages.available) {
+    return localesCache
+  }
+
+  const list = []
   languages.available.forEach((code) => {
     list.push({
       value: code,
       title: languages.translate(code) + ' (' + code.toUpperCase() + ')'
     })
   })
+
+  localesCacheKey = languages.available
+  localesCache = list
 
   return list
 }
@@ -72,7 +154,17 @@ export function locales(none = false) {
  * @param {String} langIcon Icon for each language item
  * @returns {Array} List of { title, icon, value } objects
  */
+let langFilterCache = null
+let langFilterCacheKey = null
+let langFilterCacheIcons = null
+
 export function languageFilter(allIcon, langIcon) {
+  const languages = useLanguageStore()
+
+  if (langFilterCache && langFilterCacheKey === languages.available && langFilterCacheIcons === allIcon) {
+    return langFilterCache
+  }
+
   const list = [
     {
       title: gettext.$gettext('All'),
@@ -89,6 +181,10 @@ export function languageFilter(allIcon, langIcon) {
     })
   }
 
+  langFilterCacheKey = languages.available
+  langFilterCacheIcons = allIcon
+  langFilterCache = list
+
   return list
 }
 
@@ -100,9 +196,11 @@ export function languageFilter(allIcon, langIcon) {
  */
 export function srcset(map) {
   let list = []
+
   for (const key in map || {}) {
     list.push(`${url(map[key])} ${key}w`)
   }
+
   return list.join(', ')
 }
 
@@ -114,6 +212,7 @@ export function srcset(map) {
  */
 export function slugify(text) {
   if (!text) return ''
+
   return text
     .replace(/[?&=%#@!$^*()+=\[\]{}|\\"'<>;:.,_\s]/gu, '-')
     .replace(/-+/g, '-')
@@ -129,6 +228,7 @@ export function slugify(text) {
  */
 export function stringify(value) {
   if (value == null) return ''
+
   return typeof value === 'object' ? JSON.stringify(value, null, 2) : String(value)
 }
 
@@ -154,67 +254,46 @@ export function toBlob(base64, mimeType = 'image/png') {
   return new Blob([byteArray], { type: mimeType })
 }
 
-const supported = [
-  'ar',
-  'bg',
-  'cs',
-  'da',
-  'de',
-  'el',
-  'en',
-  'en-GB',
-  'en-US',
-  'es',
-  'et',
-  'fi',
-  'fr',
-  'he',
-  'hu',
-  'id',
-  'it',
-  'ja',
-  'ko',
-  'lt',
-  'lv',
-  'nb',
-  'nl',
-  'pl',
-  'pt',
-  'pt-BR',
-  'ro',
-  'ru',
-  'sk',
-  'sl',
-  'sv',
-  'th',
-  'tr',
-  'uk',
-  'vi',
-  'zh',
-  'zh-Hans',
-  'zh-Hant'
-]
-
 /**
  * Returns available locales that support AI translation, excluding the current locale
  *
  * @param {string|null} current Locale code to exclude from the list
  * @returns {Array<{code: string, name: string}>} Translation-supported locale options
  */
+let txCache = null
+let txCacheKey = null
+
+const supported = new Set([
+  'ar', 'bg', 'cs', 'da', 'de', 'el', 'en', 'en-GB', 'en-US',
+  'es', 'et', 'fi', 'fr', 'he', 'hu', 'id', 'it', 'ja', 'ko',
+  'lt', 'lv', 'nb', 'nl', 'pl', 'pt', 'pt-BR', 'ro', 'ru', 'sk',
+  'sl', 'sv', 'th', 'tr', 'uk', 'vi', 'zh', 'zh-Hans', 'zh-Hant'
+])
+
 export function txlocales(current = null) {
   const languages = useLanguageStore()
-  const list = []
 
-  languages.available.forEach((code) => {
-    if (supported.includes(code) && code !== current) {
-      list.push({
-        code: code,
-        name: languages.translate(code) + ' (' + code.toUpperCase() + ')'
-      })
-    }
-  })
+  if (!txCache || txCacheKey !== languages.available) {
+    const list = []
 
-  return list
+    languages.available.forEach((code) => {
+      if (supported.has(code)) {
+        list.push({
+          code: code,
+          name: languages.translate(code) + ' (' + code.toUpperCase() + ')'
+        })
+      }
+    })
+
+    txCacheKey = languages.available
+    txCache = list
+  }
+
+  if (current) {
+    return txCache.filter((entry) => entry.code !== current)
+  }
+
+  return txCache
 }
 
 /**
