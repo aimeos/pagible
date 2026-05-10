@@ -210,7 +210,7 @@ class Element extends Base
             : $version->files()->pluck( 'id' )->all();
         $this->files()->sync( $fileIds );
 
-        $this->fill( (array) $version->data );
+        $this->forceFill( array_intersect_key( (array) $version->data, array_flip( $this->getFillable() ) ) );
         $this->editor = $version->editor;
         $this->lang = $version->lang;
         $this->setRelation( 'latest', $version );

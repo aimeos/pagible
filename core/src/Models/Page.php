@@ -446,7 +446,7 @@ class Page extends Base
         $this->files()->sync( $version->getRelation( 'files' )->modelKeys() );
         $this->elements()->sync( $version->getRelation( 'elements' )->modelKeys() );
 
-        $this->fill( (array) $version->data );
+        $this->forceFill( array_intersect_key( (array) $version->data, array_flip( $this->getFillable() ) ) );
         $this->content = $version->aux->content ?? [];
         $this->config = $version->aux->config ?? new \stdClass();
         $this->meta = $version->aux->meta ?? new \stdClass();

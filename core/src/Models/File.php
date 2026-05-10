@@ -323,7 +323,7 @@ class File extends Base
         $path = $this->path;
         $previews = $this->previews;
 
-        $this->fill( (array) $version->data );
+        $this->forceFill( array_intersect_key( (array) $version->data, array_flip( $this->getFillable() ) ) );
         $this->previews = (array) $version->data?->previews;
         $this->path = $version->data?->path;
         $this->mime = $version->data?->mime;
