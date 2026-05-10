@@ -299,18 +299,18 @@ header nav .menu a[role=button]:hover {
     }
 }
 
-nav[aria-label="breadcrumb"] {
+nav.breadcrumb {
     border-bottom: 1px solid var(--pico-muted-border-color);
 }
 
-nav[aria-label="breadcrumb"] > ul {
+nav.breadcrumb > ul {
     text-align: center;
     max-width: 1200px;
     margin: auto;
     width: 100%;
 }
 
-nav[aria-label=breadcrumb] ul li {
+nav.breadcrumb ul li {
     justify-content: flex-end;
     align-items: center;
     display: flex;
@@ -318,20 +318,20 @@ nav[aria-label=breadcrumb] ul li {
     color: var(--pico-muted-color);
 }
 
-nav[aria-label=breadcrumb] ul li:not(:first-child) {
+nav.breadcrumb ul li:not(:first-child) {
     margin-inline-start: 0;
 }
 
-nav[aria-label=breadcrumb] ul li:not(:last-child)::after {
+nav.breadcrumb ul li:not(:last-child)::after {
     color: var(--pico-muted-color);
     width: auto;
 }
 
-nav[aria-label=breadcrumb] ul li a {
+nav.breadcrumb ul li a {
     color: var(--pico-muted-color);
 }
 
-nav[aria-label=breadcrumb] ul li a:hover {
+nav.breadcrumb ul li a:hover {
     color: var(--pico-primary);
     opacity: 1;
 }
