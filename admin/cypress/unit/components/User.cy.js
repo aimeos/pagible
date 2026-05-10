@@ -21,7 +21,7 @@ describe('User', () => {
 
   it('renders the language switch button', () => {
     mountUser()
-    cy.get('button.btn-language').should('exist')
+    cy.get('.btn-language button').should('exist')
   })
 
   it('renders the theme toggle with sun or moon icon', () => {

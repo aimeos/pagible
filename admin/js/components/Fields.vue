@@ -239,43 +239,44 @@ export default {
         class="actions"
       >
         <template v-if="['markdown', 'plaintext', 'string', 'text'].includes(field.type)">
-          <component
-            :is="$vuetify.display.xs ? 'v-dialog' : 'v-menu'"
-            :aria-label="$gettext('Translate')"
-            v-model="menu[code]"
-            transition="scale-transition"
-            location="end center"
-            max-width="300"
-          >
-            <template #activator="{ props }">
-              <v-btn
-                v-bind="props"
-                :title="$gettext('Translate')"
-                :loading="translating[code]"
-                :icon="mdiTranslate"
-                class="btn-translate"
-                variant="text"
-              />
-            </template>
+          <span class="btn-translate">
+            <component
+              :is="$vuetify.display.xs ? 'v-dialog' : 'v-menu'"
+              :aria-label="$gettext('Translate')"
+              v-model="menu[code]"
+              transition="scale-transition"
+              location="end center"
+              max-width="300"
+            >
+              <template #activator="{ props }">
+                <v-btn
+                  v-bind="props"
+                  :title="$gettext('Translate')"
+                  :loading="translating[code]"
+                  :icon="mdiTranslate"
+                  variant="text"
+                />
+              </template>
 
-            <v-card v-if="user.can('text:translate')">
-              <v-toolbar density="compact">
-                <v-toolbar-title>{{ $gettext('Translate') }}</v-toolbar-title>
-                <v-btn :icon="mdiClose" :aria-label="$gettext('Close')" @click="menu[code] = false" />
-              </v-toolbar>
+              <v-card v-if="user.can('text:translate')">
+                <v-toolbar density="compact">
+                  <v-toolbar-title>{{ $gettext('Translate') }}</v-toolbar-title>
+                  <v-btn :icon="mdiClose" :aria-label="$gettext('Close')" @click="menu[code] = false" />
+                </v-toolbar>
 
-              <v-list @click="menu[code] = false">
-                <v-list-item v-for="lang in txlocales()" :key="lang.code">
-                  <v-btn
-                    @click="translateText(code, lang.code)"
-                    :prepend-icon="mdiArrowRightThin"
-                    variant="text"
-                    >{{ lang.name }}</v-btn
-                  >
-                </v-list-item>
-              </v-list>
-            </v-card>
-          </component>
+                <v-list @click="menu[code] = false">
+                  <v-list-item v-for="lang in txlocales()" :key="lang.code">
+                    <v-btn
+                      @click="translateText(code, lang.code)"
+                      :prepend-icon="mdiArrowRightThin"
+                      variant="text"
+                      >{{ lang.name }}</v-btn
+                    >
+                  </v-list-item>
+                </v-list>
+              </v-card>
+            </component>
+          </span>
           <v-btn
             v-if="user.can('text:write')"
             :title="$gettext('Generate text')"

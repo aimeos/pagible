@@ -70,12 +70,12 @@ describe('Fields', () => {
 
   it('does not show translate button in readonly mode', () => {
     mountFields({ readonly: true })
-    cy.get('button.btn-translate').should('not.exist')
+    cy.get('.btn-translate button').should('not.exist')
   })
 
   it('shows translate button for text fields when not readonly', () => {
     mountFields({}, { 'text:translate': true })
-    cy.get('button.btn-translate').should('exist')
+    cy.get('.btn-translate button').should('exist')
   })
 
   it('shows generate text button with text:write permission', () => {

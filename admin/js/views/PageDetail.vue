@@ -760,28 +760,29 @@ export default {
     @changes="vchanged = true"
   >
     <template #actions>
-      <v-menu v-if="user.can('text:translate')">
-        <template #activator="{ props }">
-          <v-btn
-            v-bind="props"
-            :title="$gettext('Translate page')"
-            :loading="translating"
-            :icon="mdiTranslate"
-            class="btn-translate-page"
-          />
-        </template>
-        <v-list>
-          <v-list-item v-for="lang in txlocales(item.lang)" :key="lang.code">
+      <span class="btn-translate-page" v-if="user.can('text:translate')">
+        <v-menu>
+          <template #activator="{ props }">
             <v-btn
-              @click="translatePage(lang.code)"
-              :prepend-icon="mdiArrowRightThin"
-              variant="text"
-            >
-              {{ lang.name }}
-            </v-btn>
-          </v-list-item>
-        </v-list>
-      </v-menu>
+              v-bind="props"
+              :title="$gettext('Translate page')"
+              :loading="translating"
+              :icon="mdiTranslate"
+            />
+          </template>
+          <v-list>
+            <v-list-item v-for="lang in txlocales(item.lang)" :key="lang.code">
+              <v-btn
+                @click="translatePage(lang.code)"
+                :prepend-icon="mdiArrowRightThin"
+                variant="text"
+              >
+                {{ lang.name }}
+              </v-btn>
+            </v-list-item>
+          </v-list>
+        </v-menu>
+      </span>
     </template>
   </DetailAppBar>
 

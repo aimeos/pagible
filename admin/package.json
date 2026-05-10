@@ -21,7 +21,7 @@
     "format": "prettier --write src/",
     "gettext:extract": "vue-gettext-extract",
     "gettext:compile": "vue-gettext-compile",
-    "postinstall": "patch -p1 -N < vue3-gettext-extract.patch || true; patch -p1 -N < he-tree-i18n.patch || true"
+    "postinstall": "patch -p1 -N < vue3-gettext-extract.patch || true"
   },
   "dependencies": {
     "@breezystack/lamejs": "^1.2.7",

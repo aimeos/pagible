@@ -102,12 +102,12 @@ describe('PageDetail', () => {
 
   it('shows translate button with text:translate permission', () => {
     mountDetail({ 'text:translate': true })
-    cy.get('button.btn-translate-page').should('exist')
+    cy.get('.btn-translate-page button').should('exist')
   })
 
   it('hides translate button without text:translate permission', () => {
     mountDetail({})
-    cy.get('button.btn-translate-page').should('not.exist')
+    cy.get('.btn-translate-page button').should('not.exist')
   })
 
   it('renders the history button', () => {

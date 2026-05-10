@@ -86,11 +86,11 @@ describe('PageListItems', () => {
 
   it('hides sort dropdown in tree view (default)', () => {
     mountList({ filter: { view: 'tree' } }, { 'page:view': true })
-    cy.get('button.btn-sort').should('not.exist')
+    cy.get('.btn-sort button').should('not.exist')
   })
 
   it('shows sort dropdown in list view', () => {
     mountList({ filter: { view: 'list' } }, { 'page:view': true })
-    cy.get('button.btn-sort').should('exist')
+    cy.get('.btn-sort button').should('exist')
   })
 })

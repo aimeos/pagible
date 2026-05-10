@@ -35,7 +35,7 @@ describe('ElementListItems', () => {
 
   it('renders sort menu button', () => {
     mountList({}, { 'element:view': true })
-    cy.get('button.btn-sort').should('exist')
+    cy.get('.btn-sort button').should('exist')
   })
 
   it('renders checkbox for bulk selection', () => {

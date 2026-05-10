@@ -12,7 +12,7 @@ import {
 import { debounce, locales, slugify } from '../utils'
 
 const DOMAIN_REGEX = /^([0-9a-z]+[.-])*[0-9a-z]+\.[a-z]{2,}$/
-const REDIRECT_REGEX = /^((https?:)?\/\/([^\s/:@]+(:[^\s/:@]+)?@)?([0-9a-z]+(\.|-))*[0-9a-z]+\.[a-z]{2,}(:[0-9]{1,5})?)?(\/[^\s]*)*$/
+const REDIRECT_REGEX = /^((https?:)?\/\/([^\s/:@]+(:[^\s/:@]+)?@)?([0-9a-z]+(\.|-))*[0-9a-z]+\.[a-z]{2,}(:[0-9]{1,5})?)?(\/[^\s]*)?$/
 
 const CHECK_PATH = gql`
   query ($filter: PageFilter) {

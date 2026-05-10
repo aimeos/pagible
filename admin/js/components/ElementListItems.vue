@@ -535,54 +535,55 @@ export default {
     <div class="bulk">
       <v-checkbox-btn :model-value="checked.size > 0" @click.stop="toggle()" :aria-label="$gettext('Toggle selection')" />
 
-      <component
-        :is="$vuetify.display.xs ? 'v-dialog' : 'v-menu'"
-        :aria-label="$gettext('Actions')"
-        v-model="actions"
-        transition="scale-transition"
-        location="end center"
-        max-width="300"
-      >
-        <template v-slot:activator="{ props }">
-          <v-btn
-            v-bind="props"
-            :disabled="!isChecked || embed || !user.can('element:add')"
-            :title="$gettext('Actions')"
-            :icon="mdiDotsVertical"
-            class="btn-actions"
-            variant="text"
-          />
-        </template>
-        <v-card>
-          <v-toolbar density="compact">
-            <v-toolbar-title>{{ $gettext('Actions') }}</v-toolbar-title>
-            <v-btn :icon="mdiClose" :aria-label="$gettext('Close')" @click="actions = false" />
-          </v-toolbar>
+      <span class="btn-actions">
+        <component
+          :is="$vuetify.display.xs ? 'v-dialog' : 'v-menu'"
+          :aria-label="$gettext('Actions')"
+          v-model="actions"
+          transition="scale-transition"
+          location="end center"
+          max-width="300"
+        >
+          <template v-slot:activator="{ props }">
+            <v-btn
+              v-bind="props"
+              :disabled="!isChecked || embed || !user.can('element:add')"
+              :title="$gettext('Actions')"
+              :icon="mdiDotsVertical"
+              variant="text"
+            />
+          </template>
+          <v-card>
+            <v-toolbar density="compact">
+              <v-toolbar-title>{{ $gettext('Actions') }}</v-toolbar-title>
+              <v-btn :icon="mdiClose" :aria-label="$gettext('Close')" @click="actions = false" />
+            </v-toolbar>
 
-          <v-list @click="actions = false">
-            <v-list-item v-show="isChecked && user.can('element:publish')">
-              <v-btn :prepend-icon="mdiPublish" variant="text" @click="publish()">{{
-                $gettext('Publish')
-              }}</v-btn>
-            </v-list-item>
-            <v-list-item v-show="canTrash && user.can('element:drop')">
-              <v-btn :prepend-icon="mdiDelete" variant="text" @click="drop()">{{
-                $gettext('Delete')
-              }}</v-btn>
-            </v-list-item>
-            <v-list-item v-show="isTrashed && user.can('element:keep')">
-              <v-btn :prepend-icon="mdiDeleteRestore" variant="text" @click="keep()">{{
-                $gettext('Restore')
-              }}</v-btn>
-            </v-list-item>
-            <v-list-item v-show="isChecked && user.can('element:purge')">
-              <v-btn :prepend-icon="mdiDeleteForever" variant="text" @click="purge()">{{
-                $gettext('Purge')
-              }}</v-btn>
-            </v-list-item>
-          </v-list>
-        </v-card>
-      </component>
+            <v-list @click="actions = false">
+              <v-list-item v-show="isChecked && user.can('element:publish')">
+                <v-btn :prepend-icon="mdiPublish" variant="text" @click="publish()">{{
+                  $gettext('Publish')
+                }}</v-btn>
+              </v-list-item>
+              <v-list-item v-show="canTrash && user.can('element:drop')">
+                <v-btn :prepend-icon="mdiDelete" variant="text" @click="drop()">{{
+                  $gettext('Delete')
+                }}</v-btn>
+              </v-list-item>
+              <v-list-item v-show="isTrashed && user.can('element:keep')">
+                <v-btn :prepend-icon="mdiDeleteRestore" variant="text" @click="keep()">{{
+                  $gettext('Restore')
+                }}</v-btn>
+              </v-list-item>
+              <v-list-item v-show="isChecked && user.can('element:purge')">
+                <v-btn :prepend-icon="mdiDeleteForever" variant="text" @click="purge()">{{
+                  $gettext('Purge')
+                }}</v-btn>
+              </v-list-item>
+            </v-list>
+          </v-card>
+        </component>
+      </span>
 
       <v-btn
         v-if="!this.embed && this.user.can('element:add')"
@@ -616,53 +617,54 @@ export default {
         variant="text"
       />
 
-      <v-menu>
-        <template #activator="{ props }">
-          <v-btn
-            v-bind="props"
-            :title="$gettext('Sort by')"
-            :append-icon="mdiMenuDown"
-            :prepend-icon="mdiSort"
-            class="btn-sort"
-            variant="text"
-          >
-            {{
-              sort?.column === 'ID'
-                ? sort?.order === 'DESC'
-                  ? $gettext('latest')
-                  : $gettext('oldest')
-                : sort?.column || ''
-            }}
-          </v-btn>
-        </template>
-        <v-list>
-          <v-list-item>
-            <v-btn variant="text" @click="setSort('ID', 'DESC')">{{
-              $gettext('latest')
-            }}</v-btn>
-          </v-list-item>
-          <v-list-item>
-            <v-btn variant="text" @click="setSort('ID', 'ASC')">{{
-              $gettext('oldest')
-            }}</v-btn>
-          </v-list-item>
-          <v-list-item>
-            <v-btn variant="text" @click="setSort('NAME', 'ASC')">{{
-              $gettext('name')
-            }}</v-btn>
-          </v-list-item>
-          <v-list-item>
-            <v-btn variant="text" @click="setSort('TYPE', 'ASC')">{{
-              $gettext('type')
-            }}</v-btn>
-          </v-list-item>
-          <v-list-item>
-            <v-btn variant="text" @click="setSort('EDITOR', 'ASC')">{{
-              $gettext('editor')
-            }}</v-btn>
-          </v-list-item>
-        </v-list>
-      </v-menu>
+      <span class="btn-sort">
+        <v-menu>
+          <template #activator="{ props }">
+            <v-btn
+              v-bind="props"
+              :title="$gettext('Sort by')"
+              :append-icon="mdiMenuDown"
+              :prepend-icon="mdiSort"
+              variant="text"
+            >
+              {{
+                sort?.column === 'ID'
+                  ? sort?.order === 'DESC'
+                    ? $gettext('latest')
+                    : $gettext('oldest')
+                  : sort?.column || ''
+              }}
+            </v-btn>
+          </template>
+          <v-list>
+            <v-list-item>
+              <v-btn variant="text" @click="setSort('ID', 'DESC')">{{
+                $gettext('latest')
+              }}</v-btn>
+            </v-list-item>
+            <v-list-item>
+              <v-btn variant="text" @click="setSort('ID', 'ASC')">{{
+                $gettext('oldest')
+              }}</v-btn>
+            </v-list-item>
+            <v-list-item>
+              <v-btn variant="text" @click="setSort('NAME', 'ASC')">{{
+                $gettext('name')
+              }}</v-btn>
+            </v-list-item>
+            <v-list-item>
+              <v-btn variant="text" @click="setSort('TYPE', 'ASC')">{{
+                $gettext('type')
+              }}</v-btn>
+            </v-list-item>
+            <v-list-item>
+              <v-btn variant="text" @click="setSort('EDITOR', 'ASC')">{{
+                $gettext('editor')
+              }}</v-btn>
+            </v-list-item>
+          </v-list>
+        </v-menu>
+      </span>
     </div>
   </div>
 
@@ -676,55 +678,56 @@ export default {
           class="item-check"
         />
 
-        <component
-          :is="$vuetify.display.xs ? 'v-dialog' : 'v-menu'"
-          :aria-label="$gettext('Actions')"
-          v-model="menu[idx]"
-          transition="scale-transition"
-          location="end center"
-          max-width="300"
-        >
-          <template v-slot:activator="{ props }">
-            <v-btn
-              v-bind="props"
-              :title="$gettext('Actions')"
-              :icon="mdiDotsVertical"
-              class="btn-actions"
-              variant="text"
-            />
-          </template>
-          <v-card>
-            <v-toolbar density="compact">
-              <v-toolbar-title>{{ $gettext('Actions') }}</v-toolbar-title>
-              <v-btn :icon="mdiClose" :aria-label="$gettext('Close')" @click="menu[idx] = false" />
-            </v-toolbar>
+        <span class="btn-actions">
+          <component
+            :is="$vuetify.display.xs ? 'v-dialog' : 'v-menu'"
+            :aria-label="$gettext('Actions')"
+            v-model="menu[idx]"
+            transition="scale-transition"
+            location="end center"
+            max-width="300"
+          >
+            <template v-slot:activator="{ props }">
+              <v-btn
+                v-bind="props"
+                :title="$gettext('Actions')"
+                :icon="mdiDotsVertical"
+                variant="text"
+              />
+            </template>
+            <v-card>
+              <v-toolbar density="compact">
+                <v-toolbar-title>{{ $gettext('Actions') }}</v-toolbar-title>
+                <v-btn :icon="mdiClose" :aria-label="$gettext('Close')" @click="menu[idx] = false" />
+              </v-toolbar>
 
-            <v-list @click="menu[idx] = false">
-              <v-list-item
-                v-show="!item.deleted_at && !item.published && this.user.can('element:publish')"
-              >
-                <v-btn :prepend-icon="mdiPublish" variant="text" @click="publish(item)">{{
-                  $gettext('Publish')
-                }}</v-btn>
-              </v-list-item>
-              <v-list-item v-if="!item.deleted_at && this.user.can('element:drop')">
-                <v-btn :prepend-icon="mdiDelete" variant="text" @click="drop(item)">{{
-                  $gettext('Delete')
-                }}</v-btn>
-              </v-list-item>
-              <v-list-item v-if="item.deleted_at && this.user.can('element:keep')">
-                <v-btn :prepend-icon="mdiDeleteRestore" variant="text" @click="keep(item)">{{
-                  $gettext('Restore')
-                }}</v-btn>
-              </v-list-item>
-              <v-list-item v-if="this.user.can('element:purge')">
-                <v-btn :prepend-icon="mdiDeleteForever" variant="text" @click="purge(item)">{{
-                  $gettext('Purge')
-                }}</v-btn>
-              </v-list-item>
-            </v-list>
-          </v-card>
-        </component>
+              <v-list @click="menu[idx] = false">
+                <v-list-item
+                  v-show="!item.deleted_at && !item.published && this.user.can('element:publish')"
+                >
+                  <v-btn :prepend-icon="mdiPublish" variant="text" @click="publish(item)">{{
+                    $gettext('Publish')
+                  }}</v-btn>
+                </v-list-item>
+                <v-list-item v-if="!item.deleted_at && this.user.can('element:drop')">
+                  <v-btn :prepend-icon="mdiDelete" variant="text" @click="drop(item)">{{
+                    $gettext('Delete')
+                  }}</v-btn>
+                </v-list-item>
+                <v-list-item v-if="item.deleted_at && this.user.can('element:keep')">
+                  <v-btn :prepend-icon="mdiDeleteRestore" variant="text" @click="keep(item)">{{
+                    $gettext('Restore')
+                  }}</v-btn>
+                </v-list-item>
+                <v-list-item v-if="this.user.can('element:purge')">
+                  <v-btn :prepend-icon="mdiDeleteForever" variant="text" @click="purge(item)">{{
+                    $gettext('Purge')
+                  }}</v-btn>
+                </v-list-item>
+              </v-list>
+            </v-card>
+          </component>
+        </span>
       </div>
 
       <a

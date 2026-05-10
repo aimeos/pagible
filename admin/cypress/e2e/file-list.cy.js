@@ -223,7 +223,7 @@ describe('File List', () => {
 
   it('shows sort menu with options', () => {
     visitFiles()
-    cy.get('.layout .v-btn.btn-sort').click()
+    cy.get('.layout .btn-sort .v-btn').click()
     cy.get('.v-list').should('contain', 'latest')
     cy.get('.v-list').should('contain', 'oldest')
     cy.get('.v-list').should('contain', 'name')
@@ -235,7 +235,7 @@ describe('File List', () => {
 
   it('clicking a sort option triggers GQL reload', () => {
     visitFiles()
-    cy.get('.layout .v-btn.btn-sort').click()
+    cy.get('.layout .btn-sort .v-btn').click()
     cy.contains('.v-list .v-btn', 'name').click()
     cy.wait('@gql')
   })
@@ -409,20 +409,20 @@ describe('File List', () => {
   it('shows bulk checkbox and actions button in header', () => {
     visitFiles()
     cy.get('.header .bulk .v-checkbox-btn').should('exist')
-    cy.get('.header .bulk .v-btn.btn-actions').should('exist')
+    cy.get('.header .bulk .btn-actions .v-btn').should('exist')
   })
 
   it('bulk actions button is disabled when no items are checked', () => {
     const file = makeFile()
     visitFiles([file])
-    cy.get('.header .bulk .v-btn.btn-actions').should('be.disabled')
+    cy.get('.header .bulk .btn-actions .v-btn').should('be.disabled')
   })
 
   it('checking a file item enables the bulk actions button', () => {
     const file = makeFile()
     visitFiles([file])
     cy.get('.items .v-list-item .item-check').first().click()
-    cy.get('.header .bulk .v-btn.btn-actions').should('not.be.disabled')
+    cy.get('.header .bulk .btn-actions .v-btn').should('not.be.disabled')
   })
 
   it('toggle all checkbox checks all items', () => {
@@ -458,7 +458,7 @@ describe('File List', () => {
     visitFiles(files)
     // Toggle all to check both items
     cy.get('.header .bulk .v-checkbox-btn').click()
-    cy.get('.header .bulk .v-btn.btn-actions').click()
+    cy.get('.header .bulk .btn-actions .v-btn').click()
     cy.get('.v-card .v-list').should('contain', 'Publish')
     cy.get('.v-card .v-list').should('contain', 'Delete')
     cy.get('.v-card .v-list').should('contain', 'Restore')

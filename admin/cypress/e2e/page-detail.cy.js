@@ -271,7 +271,7 @@ describe('Page Detail', () => {
 
   it('shows translate button when user has text:translate permission', () => {
     visitPageDetail()
-    detailView().find('.v-btn.btn-translate-page').should('exist')
+    detailView().find('.btn-translate-page .v-btn').should('exist')
   })
 
   it('hides translate button when user lacks text:translate permission', () => {
@@ -285,7 +285,7 @@ describe('Page Detail', () => {
       name: 'Editor',
     }
     visitPageDetail({}, {}, me)
-    detailView().find('.v-btn.btn-translate-page').should('not.exist')
+    detailView().find('.btn-translate-page .v-btn').should('not.exist')
   })
 
   it('shows aside toggle button', () => {

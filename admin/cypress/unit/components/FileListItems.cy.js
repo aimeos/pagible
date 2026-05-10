@@ -41,7 +41,7 @@ describe('FileListItems', () => {
 
   it('renders sort menu button', () => {
     mountList({}, { 'file:view': true })
-    cy.get('button.btn-sort').should('exist')
+    cy.get('.btn-sort button').should('exist')
   })
 
   it('renders grid/list toggle button', () => {
