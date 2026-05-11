@@ -1,13 +1,13 @@
 {
     "private": true,
     "scripts": {
-        "coverage": "npx playwright test --config theme/coverage.config.mjs",
-        "coverage:pagible": "THEME=pagible npx playwright test --config theme/coverage.config.mjs",
-        "coverage:glass": "THEME=glass npx playwright test --config theme/coverage.config.mjs",
-        "coverage:paper": "THEME=paper npx playwright test --config theme/coverage.config.mjs",
-        "coverage:premium": "THEME=premium npx playwright test --config theme/coverage.config.mjs",
-        "coverage:all": "npm run coverage && npm run coverage:pagible && npm run coverage:glass && npm run coverage:paper && npm run coverage:premium",
-        "coverage:install": "npx playwright install chromium"
+        "coverage:install": "npx playwright install chromium",
+        "coverage:default": "npx playwright test --config tests/coverage.config.mjs",
+        "coverage:glass": "THEME=glass npx playwright test --config tests/coverage.config.mjs",
+        "coverage:pagible": "THEME=pagible npx playwright test --config tests/coverage.config.mjs",
+        "coverage:paper": "THEME=paper npx playwright test --config tests/coverage.config.mjs",
+        "coverage:premium": "THEME=premium npx playwright test --config tests/coverage.config.mjs",
+        "coverage:all": "npx playwright test --config tests/coverage.config.mjs && for t in themes/*/; do THEME=$(basename \"$t\") npx playwright test --config tests/coverage.config.mjs; done"
     },
     "devDependencies": {
         "@playwright/test": "^1.50"

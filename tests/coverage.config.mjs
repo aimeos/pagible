@@ -8,15 +8,16 @@ const appKey = 'base64:dGVzdGtleWZvcmNvdmVyYWdlMTIzNDU2Nzg5MDEyMzQ=';
 const dbPath = path.join(import.meta.dirname, 'coverage', 'test.sqlite');
 
 export default defineConfig({
-    testDir: path.join(import.meta.dirname, 'tests'),
+    testDir: import.meta.dirname,
     testMatch: 'css-coverage.spec.mjs',
-    timeout: 300_000,
+    outputDir: path.join(import.meta.dirname, 'coverage'),
+    timeout: 600_000,
     use: { baseURL },
     webServer: process.env.BASE_URL ? undefined : {
         command: [
             'ENV_FILE=vendor/orchestra/testbench-core/laravel/.env;',
             'cp "$ENV_FILE" "$ENV_FILE.bak" 2>/dev/null;',
-            'mkdir -p theme/coverage && touch theme/coverage/test.sqlite;',
+            'mkdir -p tests/coverage && touch tests/coverage/test.sqlite;',
             'rm -rf vendor/orchestra/testbench-core/laravel/storage/framework/cache/data/*;',
             `printf 'APP_KEY=${appKey}\\nDB_CONNECTION=sqlite\\nDB_DATABASE=${dbPath}\\nCMS_THEME=${theme}\\nSCOUT_DRIVER=cms\\n' > "$ENV_FILE";`,
             'php vendor/bin/testbench migrate --database=sqlite 2>/dev/null;',

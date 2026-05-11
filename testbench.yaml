@@ -1,0 +1,5 @@
+providers:
+  - Aimeos\Cms\GlassServiceProvider
+  - Aimeos\Cms\PagibleServiceProvider
+  - Aimeos\Cms\PaperServiceProvider
+  - Aimeos\Cms\PremiumServiceProvider
