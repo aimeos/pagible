@@ -3,7 +3,7 @@
  * @license MIT, https://opensource.org/license/MIT
  */
 
-:root, :root:not([data-theme=dark]) {
+:root {
     --pico-font-family-sans-serif: ui-sans-serif, sans-serif;
     --pico-font-family-display: var(--pico-font-family-sans-serif);
     --pico-font-family-monospace: ui-monospace, , monospace;
@@ -234,7 +234,7 @@ header nav .sidebar-close button {
     border: none;
 }
 
-header nav .menu a[role=button] {
+header nav .menu a[role=menuitem] {
     background-color: var(--pico-contrast);
     color: var(--pico-contrast-inverse);
     border-color: var(--pico-contrast);
@@ -242,7 +242,7 @@ header nav .menu a[role=button] {
     margin-inline-start: 0;
 }
 
-header nav .menu a[role=button]:hover {
+header nav .menu a[role=menuitem]:hover {
     background-color: var(--pico-contrast-hover);
     border-color: var(--pico-contrast-hover);
     color: var(--pico-contrast-inverse);
@@ -310,19 +310,19 @@ header nav .menu a[role=button]:hover {
     }
 }
 
-nav[aria-label="breadcrumb"] {
+nav.breadcrumb {
     border-bottom: 1px solid var(--pico-muted-border-color);
     background-color: #FFFFFF80;
 }
 
-nav[aria-label="breadcrumb"] > ul {
+nav.breadcrumb > ul {
     text-align: center;
     max-width: 1200px;
     margin: auto;
     width: 100%;
 }
 
-nav[aria-label=breadcrumb] ul li {
+nav.breadcrumb ul li {
     justify-content: flex-end;
     align-items: center;
     display: flex;
@@ -330,20 +330,20 @@ nav[aria-label=breadcrumb] ul li {
     color: var(--pico-muted-color);
 }
 
-nav[aria-label=breadcrumb] ul li:not(:first-child) {
+nav.breadcrumb ul li:not(:first-child) {
     margin-inline-start: 0;
 }
 
-nav[aria-label=breadcrumb] ul li:not(:last-child)::after {
+nav.breadcrumb ul li:not(:last-child)::after {
     color: var(--pico-muted-color);
     width: auto;
 }
 
-nav[aria-label=breadcrumb] ul li a {
+nav.breadcrumb ul li a {
     color: var(--pico-muted-color);
 }
 
-nav[aria-label=breadcrumb] ul li a:hover {
+nav.breadcrumb ul li a:hover {
     color: var(--pico-contrast);
     opacity: 1;
 }
@@ -435,10 +435,6 @@ img {
 .btn:first-child:hover {
     background-color: var(--pico-contrast-hover);
     color: var(--pico-contrast-inverse);
-}
-
-.btn::after {
-    display: none;
 }
 
 .hidden {

@@ -1,0 +1,4 @@
+@charset "UTF-8";/*!
+ * Pico CSS ✨ v2.1.1 (https://picocss.com)
+ * Copyright 2019-2025 - Licensed under MIT
+ */code,kbd,pre,samp{font-size:.875em;font-family:var(--pico-font-family)}pre code,pre samp{font-size:inherit;font-family:inherit}pre{-ms-overflow-style:scrollbar;overflow:auto}code,kbd,pre,samp{border-radius:var(--pico-border-radius);background:var(--pico-code-background-color);color:var(--pico-code-color);font-weight:var(--pico-font-weight);line-height:initial}code,kbd,samp{display:inline-block;padding:.375rem}pre{display:block;margin-bottom:var(--pico-spacing);overflow-x:auto}pre>code,pre>samp{display:block;padding:var(--pico-spacing);background:0 0;line-height:var(--pico-line-height)}kbd{background-color:var(--pico-code-kbd-background-color);color:var(--pico-code-kbd-color);vertical-align:baseline}

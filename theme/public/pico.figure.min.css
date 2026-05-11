@@ -1,0 +1,4 @@
+@charset "UTF-8";/*!
+ * Pico CSS ✨ v2.1.1 (https://picocss.com)
+ * Copyright 2019-2025 - Licensed under MIT
+ */figure{display:block;margin:0;padding:0}figure figcaption{padding:calc(var(--pico-spacing) * .5) 0;color:var(--pico-muted-color)}

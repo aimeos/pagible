@@ -3,7 +3,7 @@
  * @license MIT, https://opensource.org/license/MIT
  */
 
-:root, :root:not([data-theme=dark]) {
+:root {
     --pico-font-family-sans-serif: ui-sans-serif, sans-serif;
     --pico-font-family-display: var(--pico-font-family-sans-serif);
     --pico-font-family-monospace: ui-monospace, , monospace;
@@ -223,7 +223,7 @@ header nav .sidebar-close button {
     border: none;
 }
 
-header nav .menu a[role=button] {
+header nav .menu a[role=menuitem] {
     background-color: var(--pico-contrast);
     color: var(--pico-contrast-inverse);
     border-color: #00000000;
@@ -231,7 +231,7 @@ header nav .menu a[role=button] {
     margin-inline-start: 0;
 }
 
-header nav .menu a[role=button]:hover {
+header nav .menu a[role=menuitem]:hover {
     background-color: #374151;
     border-color: #00000000;
     color: var(--pico-contrast-inverse);
@@ -432,10 +432,6 @@ img {
 .btn:first-child:hover {
     background-color: var(--pico-primary-hover);
     color: var(--pico-primary-inverse);
-}
-
-.btn::after {
-    display: none;
 }
 
 .hidden {

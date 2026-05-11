@@ -23,8 +23,3 @@ picture.image {
 .image picture img {
     border-radius: calc(var(--pico-border-radius) * 2);
 }
-
-.image .main > img,
-.image .main > source {
-    width: 100%;
-}
