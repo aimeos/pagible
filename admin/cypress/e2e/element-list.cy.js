@@ -319,7 +319,8 @@ describe('Element List', () => {
     const el = makeElement({ deleted_at: '2026-01-15 00:00:00' })
     visitElements([el])
     cy.get('.items .v-list-item .actions .btn-actions .v-btn').first().click()
-    cy.get('.v-card .v-list .v-btn').then(($btns) => {
+    cy.get('.v-card .v-toolbar-title').should('contain', 'Actions')
+    cy.get('.v-card .v-list .v-btn').filter(':visible').then(($btns) => {
       const texts = [...$btns].map((b) => b.textContent.trim())
       expect(texts).to.not.include('Delete')
     })
@@ -338,7 +339,7 @@ describe('Element List', () => {
     const el = makeElement({ latest: { ...makeElement().latest, published: false } })
     visitElements([el])
     cy.get('.items .v-list-item .actions .btn-actions .v-btn').first().click()
-    cy.contains('.v-card .v-list .v-btn', 'Publish').click()
+    cy.contains('.v-card .v-list .v-list-item:visible .v-btn', 'Publish').click()
     cy.wait('@gql').its('request.body').should((body) => {
       const ops = Array.isArray(body) ? body : [body]
       expect(ops.some((op) => (op.query || '').includes('pubElement'))).to.be.true
@@ -349,7 +350,7 @@ describe('Element List', () => {
     const el = makeElement()
     visitElements([el])
     cy.get('.items .v-list-item .actions .btn-actions .v-btn').first().click()
-    cy.contains('.v-card .v-list .v-btn', 'Delete').click()
+    cy.contains('.v-card .v-list .v-list-item:visible .v-btn', 'Delete').click()
     cy.wait('@gql').its('request.body').should((body) => {
       const ops = Array.isArray(body) ? body : [body]
       expect(ops.some((op) => (op.query || '').includes('dropElement'))).to.be.true
@@ -360,7 +361,7 @@ describe('Element List', () => {
     const el = makeElement()
     visitElements([el])
     cy.get('.items .v-list-item .actions .btn-actions .v-btn').first().click()
-    cy.contains('.v-card .v-list .v-btn', 'Purge').click()
+    cy.contains('.v-card .v-list .v-list-item:visible .v-btn', 'Purge').click()
     cy.wait('@gql').its('request.body').should((body) => {
       const ops = Array.isArray(body) ? body : [body]
       expect(ops.some((op) => (op.query || '').includes('purgeElement'))).to.be.true
@@ -375,10 +376,13 @@ describe('Element List', () => {
     cy.get('.header .bulk .btn-actions .v-btn').should('exist')
   })
 
-  it('bulk actions button is disabled when no items are checked', () => {
+  it('bulk actions are hidden when no items are checked', () => {
     const el = makeElement()
     visitElements([el])
-    cy.get('.header .bulk .btn-actions .v-btn').should('be.disabled')
+    // When no items are checked, all action list items inside the bulk menu are hidden
+    cy.get('.header .bulk .btn-actions .v-list .v-list-item').each(($item) => {
+      cy.wrap($item).should('not.be.visible')
+    })
   })
 
   it('checking an element item enables the bulk actions button', () => {
@@ -407,7 +411,7 @@ describe('Element List', () => {
     })
     visitElements([el])
     cy.get('.items .v-list-item .item-check').first().click()
-    cy.get('.header .bulk .btn-actions .v-btn').click()
+    cy.get('.header .bulk .btn-actions .v-btn').first().click()
     cy.get('.v-card .v-list').should('contain', 'Publish')
     cy.get('.v-card .v-list').should('contain', 'Delete')
     cy.get('.v-card .v-list').should('contain', 'Restore')
@@ -429,7 +433,7 @@ describe('Element List', () => {
       }),
     ]
     visitElements(elements)
-    cy.get('.items .v-list-item').should('have.length', 3)
+    cy.get('.items > .v-list-item').should('have.length', 3)
     cy.get('.item-title').eq(0).should('contain', 'Hero Banner')
     cy.get('.item-title').eq(1).should('contain', 'Footer CTA')
     cy.get('.item-title').eq(2).should('contain', 'Sidebar Widget')

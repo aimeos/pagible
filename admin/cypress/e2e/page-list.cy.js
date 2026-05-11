@@ -442,10 +442,11 @@ describe('Page List', () => {
     cy.get('.header .bulk .btn-actions .v-btn').should('exist')
   })
 
-  it('bulk actions button is disabled when no items are checked', () => {
+  it('bulk actions are hidden when no items are checked', () => {
     const page = makePage()
     visitPages([page])
-    cy.get('.header .bulk .btn-actions .v-btn').should('be.disabled')
+    // When no items are checked, bulk action list items are removed from DOM (v-if)
+    cy.get('.header .bulk .btn-actions .v-list .v-list-item').should('not.exist')
   })
 
   it('checking a page item enables the bulk actions button', () => {
@@ -478,12 +479,12 @@ describe('Page List', () => {
     page.latest.published = false
     visitPages([page])
     cy.get('.tree-node-inner .v-checkbox-btn').first().click()
-    cy.get('.header .bulk .btn-actions .v-btn').click()
-    cy.get('.v-card .v-list').should('contain', 'Publish')
-    cy.get('.v-card .v-list').should('contain', 'Enable')
-    cy.get('.v-card .v-list').should('contain', 'Disable')
-    cy.get('.v-card .v-list').should('contain', 'Delete')
-    cy.get('.v-card .v-list').should('contain', 'Purge')
+    // Card content is always in DOM; check action items are visible after checking items
+    cy.get('.header .bulk .btn-actions .v-card .v-list').should('contain', 'Publish')
+    cy.get('.header .bulk .btn-actions .v-card .v-list').should('contain', 'Enable')
+    cy.get('.header .bulk .btn-actions .v-card .v-list').should('contain', 'Disable')
+    cy.get('.header .bulk .btn-actions .v-card .v-list').should('contain', 'Delete')
+    cy.get('.header .bulk .btn-actions .v-card .v-list').should('contain', 'Purge')
   })
 
   // ---- Status styling ----
