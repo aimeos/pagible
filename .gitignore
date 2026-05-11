@@ -6,6 +6,5 @@
 .env*
 composer.lock
 node_modules/
-test-results/
-theme/coverage/
+tests/coverage/
 vendor/

@@ -43,7 +43,11 @@
 			"Aimeos\\Cms\\": [
 				"backup/src/",
 				"cashier/src/",
-				"import/src/"
+				"import/src/",
+				"themes/glass/src/",
+				"themes/pagible/src/",
+				"themes/paper/src/",
+				"themes/premium/src/"
 			],
 			"Tests\\": [
 				"tests/",
@@ -78,6 +82,10 @@
 		],
 		"build": [
 			"npm run build --prefix admin"
+		],
+		"coverage": [
+			"npx playwright install chromium",
+			"npm run coverage:all"
 		]
 	},
 	"config": {
