@@ -11,10 +11,26 @@ import {
   mdiUpload
 } from '@mdi/js'
 import { useAppStore, useUserStore, useMessageStore, useViewStack } from '../stores'
-import { url, srcset } from '../utils'
-import FileUrlDialog from '../components/FileUrlDialog.vue'
-import FileDialog from '../components/FileDialog.vue'
+import { frozenParse, url, srcset } from '../utils'
+import { defineAsyncComponent } from 'vue'
 import FileDetail from '../views/FileDetail.vue'
+
+const FileUrlDialog = defineAsyncComponent(() => import('../components/FileUrlDialog.vue'))
+const FileDialog = defineAsyncComponent(() => import('../components/FileDialog.vue'))
+
+const ADD_FILE = gql`
+  mutation ($file: Upload!) {
+    addFile(file: $file) {
+      id
+      mime
+      name
+      path
+      previews
+      updated_at
+      editor
+    }
+  }
+`
 
 export default {
   inheritAttrs: false,
@@ -99,19 +115,7 @@ export default {
 
       return this.$apollo
         .mutate({
-          mutation: gql`
-            mutation ($file: Upload!) {
-              addFile(file: $file) {
-                id
-                mime
-                name
-                path
-                previews
-                updated_at
-                editor
-              }
-            }
-          `,
+          mutation: ADD_FILE,
           variables: {
             file: file
           },
@@ -125,7 +129,7 @@ export default {
           }
 
           const data = response.data?.addFile || {}
-          data.previews = JSON.parse(data.previews) || {}
+          data.previews = frozenParse(data.previews)
           delete data.__typename
 
           return this.handle(data, path)
@@ -150,6 +154,10 @@ export default {
     addFromUrl(event) {
       this.select(event)
       this.vurls = false
+    },
+
+    formatDate(dateStr) {
+      return new Date(dateStr).toLocaleString()
     },
 
     handle(item, path) {
@@ -305,15 +313,17 @@ export default {
             @click="vfiles = true"
             :title="$gettext('Add file')"
             :icon="mdiButtonCursor"
+            class="btn-add"
             variant="text"
           />
           <v-btn
             @click="vurls = true"
             :title="$gettext('Add file from URL')"
             :icon="mdiLinkVariantPlus"
+            class="btn-add-url"
             variant="text"
           />
-          <v-btn :title="$gettext('Upload file')" :icon="mdiUpload" variant="text">
+          <v-btn :title="$gettext('Upload file')" :icon="mdiUpload" class="btn-upload" variant="text">
             <v-file-input
               v-model="selected"
               @update:modelValue="add($event)"
@@ -344,7 +354,7 @@ export default {
       </v-row>
       <v-row>
         <v-col cols="12" md="3" class="name">{{ $gettext('updated') }}:</v-col>
-        <v-col cols="12" md="9">{{ new Date(file.updated_at).toLocaleString() }}</v-col>
+        <v-col cols="12" md="9">{{ formatDate(file.updated_at) }}</v-col>
       </v-row>
     </v-col>
   </v-row>

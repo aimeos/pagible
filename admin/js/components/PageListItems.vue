@@ -31,6 +31,165 @@ import { dragContext } from '@he-tree/vue'
 import { useAppStore, useUserStore, useLanguageStore, useMessageStore } from '../stores'
 import { debounce } from '../utils'
 
+const ADD_PAGE = gql`
+  mutation ($input: PageInput!) {
+    addPage(input: $input) {
+      id
+    }
+  }
+`
+
+const DROP_PAGE = gql`
+  mutation ($id: [ID!]!) {
+    dropPage(id: $id) {
+      id
+    }
+  }
+`
+
+const FETCH_PAGE_FOR_PASTE = gql`
+  query ($id: ID!) {
+    page(id: $id) {
+      id
+      latest {
+        id
+        aux
+        files {
+          id
+        }
+        elements {
+          id
+        }
+      }
+    }
+  }
+`
+
+const INSERT_PAGE = gql`
+  mutation ($input: PageInput!, $parent: ID, $ref: ID) {
+    addPage(input: $input, parent: $parent, ref: $ref) {
+      id
+    }
+  }
+`
+
+const KEEP_PAGE = gql`
+  mutation ($id: [ID!]!) {
+    keepPage(id: $id) {
+      id
+    }
+  }
+`
+
+const MOVE_PAGE = gql`
+  mutation ($id: ID!, $parent: ID, $ref: ID) {
+    movePage(id: $id, parent: $parent, ref: $ref) {
+      id
+    }
+  }
+`
+
+const PUB_PAGE = gql`
+  mutation ($id: [ID!]!) {
+    pubPage(id: $id) {
+      id
+    }
+  }
+`
+
+const PURGE_PAGE = gql`
+  mutation ($id: [ID!]!) {
+    purgePage(id: $id) {
+      id
+    }
+  }
+`
+
+const SAVE_PAGE = gql`
+  mutation ($id: ID!, $input: PageInput!) {
+    savePage(id: $id, input: $input) {
+      id
+    }
+  }
+`
+
+const PAGE_FIELDS = `id
+          parent_id
+          created_at
+          deleted_at
+          editor
+          has
+          latest {
+            id
+            published
+            publish_at
+            data
+            editor
+            created_at
+          }`
+
+const FETCH_CHILD_PAGES = gql`
+  query(
+    $filter: PageFilter,
+    $limit: Int!,
+    $page: Int!,
+    $trashed: Trashed,
+    $publish: Publish
+  ) {
+    pages(
+      filter: $filter,
+      first: $limit,
+      page: $page,
+      trashed: $trashed,
+      publish: $publish
+    ) {
+      data {
+        ${PAGE_FIELDS}
+      }
+      paginatorInfo {
+        currentPage
+        lastPage
+      }
+    }
+  }
+`
+
+const PASTE_PAGE = gql`
+  mutation ($input: PageInput!, $parent: ID, $ref: ID, $elements: [ID!], $files: [ID!]) {
+    addPage(input: $input, parent: $parent, ref: $ref, elements: $elements, files: $files) {
+      ${PAGE_FIELDS}
+    }
+  }
+`
+
+const SEARCH_PAGES = gql`
+  query(
+    $filter: PageFilter,
+    $sort: [QueryPagesSortOrderByClause!],
+    $limit: Int!,
+    $page: Int!,
+    $trashed: Trashed,
+    $publish: Publish
+  ) {
+    pages(
+      filter: $filter,
+      sort: $sort,
+      first: $limit,
+      page: $page,
+      trashed: $trashed,
+      publish: $publish
+    ) {
+      data {
+        ${PAGE_FIELDS}
+      }
+      paginatorInfo {
+        currentPage
+        lastPage
+      }
+    }
+  }
+`
+
 export default {
   components: {
     Draggable
@@ -95,6 +254,7 @@ export default {
 
   created() {
     this.searchd = this.debounce(this.search, 500)
+    this.reloadd = this.debounce(() => this.reload(false), 300)
 
     this.fetch().then((result) => {
       this.items = result.data
@@ -104,6 +264,12 @@ export default {
 
   mounted() {
     this.checked = false // required for isChecked() to work correctly
+  },
+
+  beforeUnmount() {
+    this.items = null
+    this.clip = null
+    this.menu = null
   },
 
   computed: {
@@ -137,13 +303,7 @@ export default {
 
       this.$apollo
         .mutate({
-          mutation: gql`
-            mutation ($input: PageInput!) {
-              addPage(input: $input) {
-                id
-              }
-            }
-          `,
+          mutation: ADD_PAGE,
           variables: {
             input: item
           }
@@ -267,13 +427,7 @@ export default {
 
       this.$apollo
         .mutate({
-          mutation: gql`
-            mutation ($id: [ID!]!) {
-              dropPage(id: $id) {
-                id
-              }
-            }
-          `,
+          mutation: DROP_PAGE,
           variables: {
             id: list.map((item) => item.data.id)
           }
@@ -334,31 +488,8 @@ export default {
 
       return this.$apollo
         .query({
-          query: gql`
-            query(
-              $filter: PageFilter,
-              $limit: Int!,
-              $page: Int!,
-              $trashed: Trashed,
-              $publish: Publish
-            ) {
-              pages(
-                filter: $filter,
-                first: $limit,
-                page: $page,
-                trashed: $trashed,
-                publish: $publish
-              ) {
-                data {
-                  ${this.fields()}
-                }
-                paginatorInfo {
-                  currentPage
-                  lastPage
-                }
-              }
-            }
-          `,
+          query: FETCH_CHILD_PAGES,
+          fetchPolicy: 'no-cache',
           variables: {
             filter: filter,
             page: page,
@@ -381,20 +512,7 @@ export default {
     },
 
     fields() {
-      return `id
-          parent_id
-          created_at
-          deleted_at
-          editor
-          has
-          latest {
-            id
-            published
-            publish_at
-            data
-            editor
-            created_at
-          }`
+      return PAGE_FIELDS
     },
 
     hydrate(entry) {
@@ -409,12 +527,8 @@ export default {
         updated_at: entry.latest?.created_at || entry.updated_at,
         editor: entry.latest?.editor || entry.editor,
         published: entry.latest?.published ?? true,
-        publish_at: entry.latest?.publish_at || null,
-        latest: entry.latest
+        publish_at: entry.latest?.publish_at || null
       })
-
-      item.text = this.label(item)
-      return item
     },
 
     insert(stat, idx = null) {
@@ -447,13 +561,7 @@ export default {
 
       this.$apollo
         .mutate({
-          mutation: gql`
-            mutation ($input: PageInput!, $parent: ID, $ref: ID) {
-              addPage(input: $input, parent: $parent, ref: $ref) {
-                id
-              }
-            }
-          `,
+          mutation: INSERT_PAGE,
           variables: {
             input: node,
             parent: parent ? parent.data.id : null,
@@ -487,13 +595,6 @@ export default {
       const cache = this.$apollo.provider.defaultClient.cache
       cache.evict({ id: 'ROOT_QUERY', fieldName: 'pages' })
       cache.evict({ id: 'ROOT_QUERY', fieldName: 'page' })
-
-      Object.keys(cache.extract()).forEach(key => {
-        if(key.startsWith('Page:')) {
-          cache.evict({ id: key })
-        }
-      })
-
       cache.gc()
     },
 
@@ -519,13 +620,7 @@ export default {
 
       this.$apollo
         .mutate({
-          mutation: gql`
-            mutation ($id: [ID!]!) {
-              keepPage(id: $id) {
-                id
-              }
-            }
-          `,
+          mutation: KEEP_PAGE,
           variables: {
             id: list.map((item) => item.data.id)
           }
@@ -633,13 +728,7 @@ export default {
 
       return this.$apollo
         .mutate({
-          mutation: gql`
-            mutation ($id: ID!, $parent: ID, $ref: ID) {
-              movePage(id: $id, parent: $parent, ref: $ref) {
-                id
-              }
-            }
-          `,
+          mutation: MOVE_PAGE,
           variables: { id, parent: parentId, ref: refId }
         })
         .then((result) => {
@@ -681,23 +770,7 @@ export default {
 
       return this.$apollo
         .query({
-          query: gql`
-            query ($id: ID!) {
-              page(id: $id) {
-                id
-                latest {
-                  id
-                  aux
-                  files {
-                    id
-                  }
-                  elements {
-                    id
-                  }
-                }
-              }
-            }
-          `,
+          query: FETCH_PAGE_FOR_PASTE,
           variables: {
             id: node.id
           }
@@ -712,11 +785,7 @@ export default {
 
           this.$apollo
             .mutate({
-              mutation: gql`mutation ($input: PageInput!, $parent: ID, $ref: ID, $elements: [ID!], $files: [ID!]) {
-              addPage(input: $input, parent: $parent, ref: $ref, elements: $elements, files: $files) {
-                ${this.fields()}
-              }
-            }`,
+              mutation: PASTE_PAGE,
               variables: {
                 input: {
                   status: 0,
@@ -799,13 +868,7 @@ export default {
 
       this.$apollo
         .mutate({
-          mutation: gql`
-            mutation ($id: [ID!]!) {
-              pubPage(id: $id) {
-                id
-              }
-            }
-          `,
+          mutation: PUB_PAGE,
           variables: {
             id: list.map((item) => item.data.id)
           }
@@ -846,13 +909,7 @@ export default {
 
       this.$apollo
         .mutate({
-          mutation: gql`
-            mutation ($id: [ID!]!) {
-              purgePage(id: $id) {
-                id
-              }
-            }
-          `,
+          mutation: PURGE_PAGE,
           variables: {
             id: list.map((item) => item.data.id).reverse()
           }
@@ -936,33 +993,8 @@ export default {
 
       return this.$apollo
         .query({
-          query: gql`
-            query(
-              $filter: PageFilter,
-              $sort: [QueryPagesSortOrderByClause!],
-              $limit: Int!,
-              $page: Int!,
-              $trashed: Trashed,
-              $publish: Publish
-            ) {
-              pages(
-                filter: $filter,
-                sort: $sort,
-                first: $limit,
-                page: $page,
-                trashed: $trashed,
-                publish: $publish
-              ) {
-                data {
-                  ${this.fields()}
-                }
-                paginatorInfo {
-                  currentPage
-                  lastPage
-                }
-              }
-            }
-          `,
+          query: SEARCH_PAGES,
+          fetchPolicy: 'no-cache',
           variables: {
             filter: filter,
             sort: this.sort ? [this.sort] : null,
@@ -985,6 +1017,10 @@ export default {
         })
     },
 
+    setSort(column, order) {
+      this.sort = { column, order }
+    },
+
     status(stat, val) {
       if (!this.user.can('page:save')) {
         this.messages.add(this.$gettext('Permission denied'), 'error')
@@ -1000,13 +1036,7 @@ export default {
       list.forEach((stat) => {
         this.$apollo
           .mutate({
-            mutation: gql`
-              mutation ($id: ID!, $input: PageInput!) {
-                savePage(id: $id, input: $input) {
-                  id
-                }
-              }
-            `,
+            mutation: SAVE_PAGE,
             variables: {
               id: stat.data.id,
               input: {
@@ -1117,7 +1147,7 @@ export default {
     },
 
     term() {
-      this.reload(false)
+      this.reloadd()
     }
   }
 }
@@ -1128,65 +1158,67 @@ export default {
     <div class="bulk">
       <v-checkbox-btn v-model="checked" @click.stop="toggle()" :aria-label="$gettext('Toggle selection')" />
 
-      <component
-        :is="$vuetify.display.xs ? 'v-dialog' : 'v-menu'"
-        v-model="actions"
-        transition="scale-transition"
-        location="end center"
-        max-width="300"
-      >
-        <template v-slot:activator="{ props }">
-          <v-btn
-            v-bind="props"
-            :disabled="!isChecked || embed || !user.can('page:add')"
-            :title="$gettext('Actions')"
-            :icon="mdiDotsVertical"
-            variant="text"
-          />
-        </template>
-        <v-card>
-          <v-toolbar density="compact">
-            <v-toolbar-title>{{ $gettext('Actions') }}</v-toolbar-title>
-            <v-btn :icon="mdiClose" :aria-label="$gettext('Close')" @click="actions = false" />
-          </v-toolbar>
+      <span class="btn-actions">
+        <component
+          :is="$vuetify.display.xs ? 'v-dialog' : 'v-menu'"
+          v-model="actions"
+          transition="scale-transition"
+          location="end center"
+          max-width="300"
+        >
+          <template v-slot:activator="{ props }">
+            <v-btn
+              v-bind="props"
+              :disabled="!isChecked || embed || !user.can('page:add')"
+              :title="$gettext('Actions')"
+              :icon="mdiDotsVertical"
+              variant="text"
+            />
+          </template>
+          <v-card>
+            <v-toolbar density="compact">
+              <v-toolbar-title>{{ $gettext('Actions') }}</v-toolbar-title>
+              <v-btn :icon="mdiClose" :aria-label="$gettext('Close')" @click="actions = false" />
+            </v-toolbar>
 
-          <v-list @click="actions = false">
-            <v-list-item v-if="isChecked && user.can('page:publish')">
-              <v-btn :prepend-icon="mdiPublish" variant="text" @click="publish()">{{
-                $gettext('Publish')
-              }}</v-btn>
-            </v-list-item>
-            <v-list-item v-if="isChecked && user.can('page:save')">
-              <v-btn :prepend-icon="mdiEye" variant="text" @click="status(null, 1)">{{
-                $gettext('Enable')
-              }}</v-btn>
-            </v-list-item>
-            <v-list-item v-if="isChecked && user.can('page:save')">
-              <v-btn :prepend-icon="mdiEyeOff" variant="text" @click="status(null, 0)">{{
-                $gettext('Disable')
-              }}</v-btn>
-            </v-list-item>
+            <v-list @click="actions = false">
+              <v-list-item v-if="isChecked && user.can('page:publish')">
+                <v-btn :prepend-icon="mdiPublish" variant="text" @click="publish()">{{
+                  $gettext('Publish')
+                }}</v-btn>
+              </v-list-item>
+              <v-list-item v-if="isChecked && user.can('page:save')">
+                <v-btn :prepend-icon="mdiEye" variant="text" @click="status(null, 1)">{{
+                  $gettext('Enable')
+                }}</v-btn>
+              </v-list-item>
+              <v-list-item v-if="isChecked && user.can('page:save')">
+                <v-btn :prepend-icon="mdiEyeOff" variant="text" @click="status(null, 0)">{{
+                  $gettext('Disable')
+                }}</v-btn>
+              </v-list-item>
 
-            <v-divider></v-divider>
+              <v-divider></v-divider>
 
-            <v-list-item v-if="canTrash && user.can('page:drop')">
-              <v-btn :prepend-icon="mdiDelete" variant="text" @click="drop()">{{
-                $gettext('Delete')
-              }}</v-btn>
-            </v-list-item>
-            <v-list-item v-if="isTrashed && user.can('page:keep')">
-              <v-btn :prepend-icon="mdiDeleteRestore" variant="text" @click="keep()">{{
-                $gettext('Restore')
-              }}</v-btn>
-            </v-list-item>
-            <v-list-item v-if="isChecked && user.can('page:purge')">
-              <v-btn :prepend-icon="mdiDeleteForever" variant="text" @click="purge()">{{
-                $gettext('Purge')
-              }}</v-btn>
-            </v-list-item>
-          </v-list>
-        </v-card>
-      </component>
+              <v-list-item v-if="canTrash && user.can('page:drop')">
+                <v-btn :prepend-icon="mdiDelete" variant="text" @click="drop()">{{
+                  $gettext('Delete')
+                }}</v-btn>
+              </v-list-item>
+              <v-list-item v-if="isTrashed && user.can('page:keep')">
+                <v-btn :prepend-icon="mdiDeleteRestore" variant="text" @click="keep()">{{
+                  $gettext('Restore')
+                }}</v-btn>
+              </v-list-item>
+              <v-list-item v-if="isChecked && user.can('page:purge')">
+                <v-btn :prepend-icon="mdiDeleteForever" variant="text" @click="purge()">{{
+                  $gettext('Purge')
+                }}</v-btn>
+              </v-list-item>
+            </v-list>
+          </v-card>
+        </component>
+      </span>
 
       <v-btn
         v-if="!this.embed && this.user.can('page:add')"
@@ -1194,6 +1226,7 @@ export default {
         :disabled="loading"
         :title="$gettext('Add page')"
         :icon="mdiPlus"
+        class="btn-add"
         color="primary"
         variant="tonal"
       />
@@ -1215,56 +1248,58 @@ export default {
       :title="$gettext('Reload page tree')"
       :icon="mdiRefresh"
       variant="text"
-      class="no-rtl"
+      class="btn-reload no-rtl"
     />
 
-    <v-menu v-if="filter.view === 'list'">
-      <template #activator="{ props }">
-        <v-btn
-          v-bind="props"
-          :title="$gettext('Sort by')"
-          :aria-label="$gettext('Sort by')"
-          :append-icon="mdiMenuDown"
-          :prepend-icon="mdiSort"
-          variant="text"
-        >
-          {{
-            sort?.column === 'ID'
-              ? sort?.order === 'DESC'
-                ? $gettext('latest')
-                : $gettext('oldest')
-              : $gettext('tree')
-          }}
-        </v-btn>
-      </template>
-      <v-list>
-        <v-list-item>
-          <v-btn variant="text" @click="sort = { column: 'LFT', order: 'ASC' }">{{
-            $gettext('tree')
-          }}</v-btn>
-        </v-list-item>
-        <v-list-item>
-          <v-btn variant="text" @click="sort = { column: 'ID', order: 'DESC' }">{{
-            $gettext('latest')
-          }}</v-btn>
-        </v-list-item>
-        <v-list-item>
-          <v-btn variant="text" @click="sort = { column: 'ID', order: 'ASC' }">{{
-            $gettext('oldest')
-          }}</v-btn>
-        </v-list-item>
-        <v-list-item>
-          <v-btn variant="text" @click="sort = { column: 'NAME', order: 'ASC' }">{{
-            $gettext('name')
-          }}</v-btn>
-        </v-list-item>
-        <v-list-item>
-          <v-btn variant="text" @click="sort = { column: 'EDITOR', order: 'ASC' }">{{
-            $gettext('editor')
-          }}</v-btn>
-        </v-list-item>
-      </v-list>
-    </v-menu>
+    <span class="btn-sort" v-if="filter.view === 'list'">
+      <v-menu>
+        <template #activator="{ props }">
+          <v-btn
+            v-bind="props"
+            :title="$gettext('Sort by')"
+            :aria-label="$gettext('Sort by')"
+            :append-icon="mdiMenuDown"
+            :prepend-icon="mdiSort"
+            variant="text"
+          >
+            {{
+              sort?.column === 'ID'
+                ? sort?.order === 'DESC'
+                  ? $gettext('latest')
+                  : $gettext('oldest')
+                : $gettext('tree')
+            }}
+          </v-btn>
+        </template>
+        <v-list>
+          <v-list-item>
+            <v-btn variant="text" @click="setSort('LFT', 'ASC')">{{
+              $gettext('tree')
+            }}</v-btn>
+          </v-list-item>
+          <v-list-item>
+            <v-btn variant="text" @click="setSort('ID', 'DESC')">{{
+              $gettext('latest')
+            }}</v-btn>
+          </v-list-item>
+          <v-list-item>
+            <v-btn variant="text" @click="setSort('ID', 'ASC')">{{
+              $gettext('oldest')
+            }}</v-btn>
+          </v-list-item>
+          <v-list-item>
+            <v-btn variant="text" @click="setSort('NAME', 'ASC')">{{
+              $gettext('name')
+            }}</v-btn>
+          </v-list-item>
+          <v-list-item>
+            <v-btn variant="text" @click="setSort('EDITOR', 'ASC')">{{
+              $gettext('editor')
+            }}</v-btn>
+          </v-list-item>
+        </v-list>
+      </v-menu>
+    </span>
   </div>
 
   <Draggable
@@ -1315,162 +1350,164 @@ export default {
 
         <v-checkbox-btn v-model="stat._checked" :class="{ draft: !node.published }" />
 
-        <component
-          :is="$vuetify.display.xs ? 'v-dialog' : 'v-menu'"
-          v-model="menu[node.id]"
-          transition="scale-transition"
-          location="end center"
-          max-width="300"
-        >
-          <template #activator="{ props }">
-            <v-btn
-              v-bind="props"
-              :title="$gettext('Actions')"
-              :icon="mdiDotsVertical"
-              variant="text"
-            />
-          </template>
-
-          <v-card>
-            <v-toolbar density="compact">
-              <v-toolbar-title>{{ $gettext('Actions') }}</v-toolbar-title>
+        <span class="btn-actions">
+          <component
+            :is="$vuetify.display.xs ? 'v-dialog' : 'v-menu'"
+            v-model="menu[node.id]"
+            transition="scale-transition"
+            location="end center"
+            max-width="300"
+          >
+            <template #activator="{ props }">
               <v-btn
-                :icon="mdiClose"
-                :aria-label="$gettext('Close')"
-                @click="menu[node.id] = false"
+                v-bind="props"
+                :title="$gettext('Actions')"
+                :icon="mdiDotsVertical"
+                variant="text"
               />
-            </v-toolbar>
+            </template>
 
-            <v-list @click="menu[node.id] = false">
-              <v-list-item v-if="!node.deleted_at && !node.published && user.can('page:publish')">
-                <v-btn :prepend-icon="mdiPublish" variant="text" @click="publish(stat)">{{
-                  $gettext('Publish')
-                }}</v-btn>
-              </v-list-item>
-              <v-list-item v-if="node.status !== 0 && user.can('page:save')">
-                <v-btn :prepend-icon="mdiEyeOff" variant="text" @click="status(stat, 0)">{{
-                  $gettext('Disable')
-                }}</v-btn>
-              </v-list-item>
-              <v-list-item v-if="node.status !== 1 && user.can('page:save')">
-                <v-btn :prepend-icon="mdiEye" variant="text" @click="status(stat, 1)">{{
-                  $gettext('Enable')
-                }}</v-btn>
-              </v-list-item>
-              <v-list-item v-if="node.status !== 2 && user.can('page:save')">
-                <v-btn :prepend-icon="mdiEyeOffOutline" variant="text" @click="status(stat, 2)">{{
-                  $gettext('Hide')
-                }}</v-btn>
-              </v-list-item>
+            <v-card>
+              <v-toolbar density="compact">
+                <v-toolbar-title>{{ $gettext('Actions') }}</v-toolbar-title>
+                <v-btn
+                  :icon="mdiClose"
+                  :aria-label="$gettext('Close')"
+                  @click="menu[node.id] = false"
+                />
+              </v-toolbar>
 
-              <v-divider></v-divider>
+              <v-list @click="menu[node.id] = false">
+                <v-list-item v-if="!node.deleted_at && !node.published && user.can('page:publish')">
+                  <v-btn :prepend-icon="mdiPublish" variant="text" @click="publish(stat)">{{
+                    $gettext('Publish')
+                  }}</v-btn>
+                </v-list-item>
+                <v-list-item v-if="node.status !== 0 && user.can('page:save')">
+                  <v-btn :prepend-icon="mdiEyeOff" variant="text" @click="status(stat, 0)">{{
+                    $gettext('Disable')
+                  }}</v-btn>
+                </v-list-item>
+                <v-list-item v-if="node.status !== 1 && user.can('page:save')">
+                  <v-btn :prepend-icon="mdiEye" variant="text" @click="status(stat, 1)">{{
+                    $gettext('Enable')
+                  }}</v-btn>
+                </v-list-item>
+                <v-list-item v-if="node.status !== 2 && user.can('page:save')">
+                  <v-btn :prepend-icon="mdiEyeOffOutline" variant="text" @click="status(stat, 2)">{{
+                    $gettext('Hide')
+                  }}</v-btn>
+                </v-list-item>
 
-              <v-list-item v-if="user.can('page:move')">
-                <v-btn :prepend-icon="mdiContentCut" variant="text" @click="cut(stat, node)">{{
-                  $gettext('Cut')
-                }}</v-btn>
-              </v-list-item>
-              <v-list-item v-if="!embed && user.can('page:add')">
-                <v-btn :prepend-icon="mdiContentCopy" variant="text" @click="copy(stat, node)">{{
-                  $gettext('Copy')
-                }}</v-btn>
-              </v-list-item>
+                <v-divider></v-divider>
 
-              <v-list-group v-if="clip?.type == 'copy' && !this.embed && user.can('page:add')">
-                <template v-slot:activator="{ props }">
-                  <v-list-item v-bind="props" @click.stop>
-                    <v-btn :prepend-icon="mdiContentPaste" variant="text">{{
-                      $gettext('Paste')
+                <v-list-item v-if="user.can('page:move')">
+                  <v-btn :prepend-icon="mdiContentCut" variant="text" @click="cut(stat, node)">{{
+                    $gettext('Cut')
+                  }}</v-btn>
+                </v-list-item>
+                <v-list-item v-if="!embed && user.can('page:add')">
+                  <v-btn :prepend-icon="mdiContentCopy" variant="text" @click="copy(stat, node)">{{
+                    $gettext('Copy')
+                  }}</v-btn>
+                </v-list-item>
+
+                <v-list-group v-if="clip?.type == 'copy' && !this.embed && user.can('page:add')">
+                  <template v-slot:activator="{ props }">
+                    <v-list-item v-bind="props" @click.stop>
+                      <v-btn :prepend-icon="mdiContentPaste" variant="text">{{
+                        $gettext('Paste')
+                      }}</v-btn>
+                    </v-list-item>
+                  </template>
+                  <v-list-item>
+                    <v-btn :prepend-icon="mdiArrowUp" variant="text" @click="paste(stat, 0)">{{
+                      $gettext('Before')
                     }}</v-btn>
                   </v-list-item>
-                </template>
-                <v-list-item>
-                  <v-btn :prepend-icon="mdiArrowUp" variant="text" @click="paste(stat, 0)">{{
-                    $gettext('Before')
-                  }}</v-btn>
-                </v-list-item>
-                <v-list-item>
-                  <v-btn :prepend-icon="mdiArrowRight" variant="text" @click="paste(stat)">{{
-                    $gettext('Into')
-                  }}</v-btn>
-                </v-list-item>
-                <v-list-item>
-                  <v-btn :prepend-icon="mdiArrowDown" variant="text" @click="paste(stat, 1)">{{
-                    $gettext('After')
-                  }}</v-btn>
-                </v-list-item>
-              </v-list-group>
-
-              <v-list-group v-if="clip?.type == 'cut' && !this.embed && user.can('page:move')">
-                <template v-slot:activator="{ props }">
-                  <v-list-item v-bind="props" @click.stop>
-                    <v-btn :prepend-icon="mdiContentPaste" variant="text">{{
-                      $gettext('Paste')
+                  <v-list-item>
+                    <v-btn :prepend-icon="mdiArrowRight" variant="text" @click="paste(stat)">{{
+                      $gettext('Into')
                     }}</v-btn>
                   </v-list-item>
-                </template>
-                <v-list-item>
-                  <v-btn :prepend-icon="mdiArrowUp" variant="text" @click="move(stat, 0)">{{
-                    $gettext('Before')
-                  }}</v-btn>
-                </v-list-item>
-                <v-list-item>
-                  <v-btn :prepend-icon="mdiArrowRight" variant="text" @click="move(stat)">{{
-                    $gettext('Into')
-                  }}</v-btn>
-                </v-list-item>
-                <v-list-item>
-                  <v-btn :prepend-icon="mdiArrowDown" variant="text" @click="move(stat, 1)">{{
-                    $gettext('After')
-                  }}</v-btn>
-                </v-list-item>
-              </v-list-group>
-
-              <v-list-group v-if="!this.embed && user.can('page:add')">
-                <template v-slot:activator="{ props }">
-                  <v-list-item v-bind="props" @click.stop>
-                    <v-btn :prepend-icon="mdiContentPaste" variant="text">{{
-                      $gettext('Insert')
+                  <v-list-item>
+                    <v-btn :prepend-icon="mdiArrowDown" variant="text" @click="paste(stat, 1)">{{
+                      $gettext('After')
                     }}</v-btn>
                   </v-list-item>
-                </template>
-                <v-list-item>
-                  <v-btn :prepend-icon="mdiArrowUp" variant="text" @click="insert(stat, 0)">{{
-                    $gettext('Before')
-                  }}</v-btn>
-                </v-list-item>
-                <v-list-item>
-                  <v-btn :prepend-icon="mdiArrowRight" variant="text" @click="insert(stat)">{{
-                    $gettext('Into')
-                  }}</v-btn>
-                </v-list-item>
-                <v-list-item>
-                  <v-btn :prepend-icon="mdiArrowDown" variant="text" @click="insert(stat, 1)">{{
-                    $gettext('After')
-                  }}</v-btn>
-                </v-list-item>
-              </v-list-group>
+                </v-list-group>
 
-              <v-divider></v-divider>
+                <v-list-group v-if="clip?.type == 'cut' && !this.embed && user.can('page:move')">
+                  <template v-slot:activator="{ props }">
+                    <v-list-item v-bind="props" @click.stop>
+                      <v-btn :prepend-icon="mdiContentPaste" variant="text">{{
+                        $gettext('Paste')
+                      }}</v-btn>
+                    </v-list-item>
+                  </template>
+                  <v-list-item>
+                    <v-btn :prepend-icon="mdiArrowUp" variant="text" @click="move(stat, 0)">{{
+                      $gettext('Before')
+                    }}</v-btn>
+                  </v-list-item>
+                  <v-list-item>
+                    <v-btn :prepend-icon="mdiArrowRight" variant="text" @click="move(stat)">{{
+                      $gettext('Into')
+                    }}</v-btn>
+                  </v-list-item>
+                  <v-list-item>
+                    <v-btn :prepend-icon="mdiArrowDown" variant="text" @click="move(stat, 1)">{{
+                      $gettext('After')
+                    }}</v-btn>
+                  </v-list-item>
+                </v-list-group>
 
-              <v-list-item v-if="!node.deleted_at && user.can('page:drop')">
-                <v-btn :prepend-icon="mdiDelete" variant="text" @click="drop(stat)">{{
-                  $gettext('Delete')
-                }}</v-btn>
-              </v-list-item>
-              <v-list-item v-if="node.deleted_at && user.can('page:keep')">
-                <v-btn :prepend-icon="mdiDeleteRestore" variant="text" @click="keep(stat)">{{
-                  $gettext('Restore')
-                }}</v-btn>
-              </v-list-item>
-              <v-list-item v-if="user.can('page:purge')">
-                <v-btn :prepend-icon="mdiDeleteForever" variant="text" @click="purge(stat)">{{
-                  $gettext('Purge')
-                }}</v-btn>
-              </v-list-item>
-            </v-list>
-          </v-card>
-        </component>
+                <v-list-group v-if="!this.embed && user.can('page:add')">
+                  <template v-slot:activator="{ props }">
+                    <v-list-item v-bind="props" @click.stop>
+                      <v-btn :prepend-icon="mdiContentPaste" variant="text">{{
+                        $gettext('Insert')
+                      }}</v-btn>
+                    </v-list-item>
+                  </template>
+                  <v-list-item>
+                    <v-btn :prepend-icon="mdiArrowUp" variant="text" @click="insert(stat, 0)">{{
+                      $gettext('Before')
+                    }}</v-btn>
+                  </v-list-item>
+                  <v-list-item>
+                    <v-btn :prepend-icon="mdiArrowRight" variant="text" @click="insert(stat)">{{
+                      $gettext('Into')
+                    }}</v-btn>
+                  </v-list-item>
+                  <v-list-item>
+                    <v-btn :prepend-icon="mdiArrowDown" variant="text" @click="insert(stat, 1)">{{
+                      $gettext('After')
+                    }}</v-btn>
+                  </v-list-item>
+                </v-list-group>
+
+                <v-divider></v-divider>
+
+                <v-list-item v-if="!node.deleted_at && user.can('page:drop')">
+                  <v-btn :prepend-icon="mdiDelete" variant="text" @click="drop(stat)">{{
+                    $gettext('Delete')
+                  }}</v-btn>
+                </v-list-item>
+                <v-list-item v-if="node.deleted_at && user.can('page:keep')">
+                  <v-btn :prepend-icon="mdiDeleteRestore" variant="text" @click="keep(stat)">{{
+                    $gettext('Restore')
+                  }}</v-btn>
+                </v-list-item>
+                <v-list-item v-if="user.can('page:purge')">
+                  <v-btn :prepend-icon="mdiDeleteForever" variant="text" @click="purge(stat)">{{
+                    $gettext('Purge')
+                  }}</v-btn>
+                </v-list-item>
+              </v-list>
+            </v-card>
+          </component>
+        </span>
       </div>
       <div
         class="item-content"
@@ -1527,6 +1564,7 @@ export default {
       :disabled="loading"
       :title="$gettext('Add page')"
       :icon="mdiPlus"
+      class="btn-add"
       color="primary"
       variant="tonal"
     />

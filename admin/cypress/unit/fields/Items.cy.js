@@ -49,12 +49,12 @@ describe('Items', () => {
 
   it('shows the "Add element" button when not readonly', () => {
     mountItems({ modelValue: [], config: {} })
-    cy.get('button[title="Add element"]').should('exist')
+    cy.get('button.btn-add').should('exist')
   })
 
   it('hides "Add element" button in readonly mode', () => {
     mountItems({ modelValue: [], config: {}, readonly: true })
-    cy.get('button[title="Add element"]').should('not.exist')
+    cy.get('button.btn-add').should('not.exist')
   })
 
   it('hides "Add element" when at config.max items', () => {
@@ -62,7 +62,7 @@ describe('Items', () => {
       modelValue: [{ title: 'A' }, { title: 'B' }],
       config: { ...itemConfig, max: 2 },
     })
-    cy.get('button[title="Add element"]').should('not.exist')
+    cy.get('button.btn-add').should('not.exist')
   })
 
   it('shows "Add element" when below config.max', () => {
@@ -70,7 +70,7 @@ describe('Items', () => {
       modelValue: [{ title: 'A' }],
       config: { ...itemConfig, max: 3 },
     })
-    cy.get('button[title="Add element"]').should('exist')
+    cy.get('button.btn-add').should('exist')
   })
 
   it('emits update:modelValue when add is clicked', () => {
@@ -80,7 +80,7 @@ describe('Items', () => {
       config: itemConfig,
       'onUpdate:modelValue': onUpdate,
     })
-    cy.get('button[title="Add element"]').click()
+    cy.get('button.btn-add').click()
     cy.get('@update').should('have.been.called')
   })
 
@@ -145,7 +145,7 @@ describe('Items', () => {
       modelValue: [{ title: 'Item' }],
       config: itemConfig,
     })
-    cy.get('.v-expansion-panel button[title="Actions"]').should('exist')
+    cy.get('.v-expansion-panel .btn-actions button').should('exist')
   })
 
   it('hides action menu buttons in readonly mode', () => {
@@ -154,7 +154,7 @@ describe('Items', () => {
       config: itemConfig,
       readonly: true,
     })
-    cy.get('.v-expansion-panel button[title="Actions"]').should('not.exist')
+    cy.get('.v-expansion-panel .btn-actions button').should('not.exist')
   })
 
   it('renders field labels from config', () => {

@@ -41,32 +41,32 @@ describe('FileListItems', () => {
 
   it('renders sort menu button', () => {
     mountList({}, { 'file:view': true })
-    cy.get('button[title="Sort by"]').should('exist')
+    cy.get('.btn-sort button').should('exist')
   })
 
   it('renders grid/list toggle button', () => {
     mountList({}, { 'file:view': true })
-    cy.get('button[title="Grid view"], button[title="List view"]').should('exist')
+    cy.get('button.btn-grid, button.btn-list').should('exist')
   })
 
   it('shows add button with file:add permission and not embed', () => {
     mountList({ embed: false }, { 'file:view': true, 'file:add': true })
-    cy.get('button[title="Add files"]').should('exist')
+    cy.get('button.btn-add').should('exist')
   })
 
   it('hides add button when embed is true', () => {
     mountList({ embed: true }, { 'file:view': true, 'file:add': true })
-    cy.get('button[title="Add files"]').should('not.exist')
+    cy.get('button.btn-add').should('not.exist')
   })
 
   it('hides add button without file:add permission', () => {
     mountList({}, { 'file:view': true })
-    cy.get('button[title="Add files"]').should('not.exist')
+    cy.get('button.btn-add').should('not.exist')
   })
 
   it('renders reload button', () => {
     mountList({}, { 'file:view': true })
-    cy.get('button[title="Reload files"]').should('exist')
+    cy.get('button.btn-reload').should('exist')
   })
 
   it('shows loading state initially', () => {
@@ -76,11 +76,11 @@ describe('FileListItems', () => {
 
   it('starts in list view by default', () => {
     mountList({}, { 'file:view': true })
-    cy.get('button[title="Grid view"]').should('exist')
+    cy.get('button.btn-grid').should('exist')
   })
 
   it('starts in grid view when grid prop is true', () => {
     mountList({ grid: true }, { 'file:view': true })
-    cy.get('button[title="List view"]').should('exist')
+    cy.get('button.btn-list').should('exist')
   })
 })

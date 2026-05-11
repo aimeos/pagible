@@ -85,12 +85,12 @@ describe('ElementDetail', () => {
 
   it('renders the history button', () => {
     mountDetail()
-    cy.get('button[title="View history"]').should('exist')
+    cy.get('button.btn-history').should('exist')
   })
 
   it('renders the aside toggle button', () => {
     mountDetail()
-    cy.get('button[title="Toggle side menu"]').should('exist')
+    cy.get('button.btn-sidemenu').should('exist')
   })
 
   it('renders the AsideMeta stub', () => {

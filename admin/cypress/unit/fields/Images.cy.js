@@ -37,27 +37,27 @@ describe('Images', () => {
 
   it('shows upload button', () => {
     mountImages()
-    cy.get('.add button[title="Add files"]').should('exist')
+    cy.get('.add button.btn-upload').should('exist')
   })
 
   it('shows "Add files from URLs" button', () => {
     mountImages()
-    cy.get('button[title="Add files from URLs"]').should('exist')
+    cy.get('button.btn-add-urls').should('exist')
   })
 
   it('shows "Add files" select button with file:view permission', () => {
     mountImages({}, { 'file:view': true })
-    cy.get('.add button[title="Add files"]').first().should('exist')
+    cy.get('.add button.btn-add').should('exist')
   })
 
   it('shows "Create file" button with image:imagine permission', () => {
     mountImages({}, { 'image:imagine': true })
-    cy.get('button[title="Create file"]').should('exist')
+    cy.get('button.btn-create').should('exist')
   })
 
   it('hides "Create file" button without image:imagine permission', () => {
     mountImages()
-    cy.get('button[title="Create file"]').should('not.exist')
+    cy.get('button.btn-create').should('not.exist')
   })
 
   it('renders images from modelValue and assets', () => {

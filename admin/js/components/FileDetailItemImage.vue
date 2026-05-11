@@ -2,8 +2,7 @@
 
 <script>
 import gql from 'graphql-tag'
-import Cropper from 'cropperjs'
-import 'cropperjs/dist/cropper.css'
+import { markRaw } from 'vue'
 import { useUserStore, useMessageStore } from '../stores'
 import { toBlob, url } from '../utils'
 import {
@@ -22,6 +21,42 @@ import {
   mdiDownload,
   mdiHistory
 } from '@mdi/js'
+
+const ERASE_IMAGE = gql`
+  mutation ($file: Upload!, $mask: Upload!) {
+    erase(file: $file, mask: $mask)
+  }
+`
+
+const INPAINT_IMAGE = gql`
+  mutation ($file: Upload!, $mask: Upload!, $prompt: String!) {
+    inpaint(file: $file, mask: $mask, prompt: $prompt)
+  }
+`
+
+const ISOLATE_IMAGE = gql`
+  mutation ($file: Upload!) {
+    isolate(file: $file)
+  }
+`
+
+const REPAINT_IMAGE = gql`
+  mutation ($file: Upload!, $prompt: String!) {
+    repaint(file: $file, prompt: $prompt)
+  }
+`
+
+const UNCROP_IMAGE = gql`
+  mutation ($file: Upload!, $top: Int!, $right: Int!, $bottom: Int, $left: Int) {
+    uncrop(file: $file, top: $top, right: $right, bottom: $bottom, left: $left)
+  }
+`
+
+const UPSCALE_IMAGE = gql`
+  mutation ($file: Upload!, $factor: Int!) {
+    upscale(file: $file, factor: $factor)
+  }
+`
 
 export default {
   props: {
@@ -79,19 +114,39 @@ export default {
   },
 
   mounted() {
-    this.cropper = this.init()
+    if (!this.readonly) {
+      Promise.all([
+        import('cropperjs'),
+        import('cropperjs/dist/cropper.css')
+      ]).then(([mod]) => {
+        if (!this.destroyed) {
+          this.Cropper = markRaw(mod.default)
+          this.cropper = markRaw(this.init())
+        }
+      })
+    }
   },
 
   beforeUnmount() {
     this.destroyed = true
 
-    if (this.cropper) {
-      this.cropper.destroy()
-    }
+    try {
+      if (this.cropper) {
+        this.cropper.destroy()
+        this.cropper = null
+      }
+    } finally {
+      this.images.forEach((img) => {
+        URL.revokeObjectURL(img.url)
+      })
 
-    this.images.forEach((img) => {
-      URL.revokeObjectURL(img.url)
-    })
+      this.images = null
+      this.Cropper = null
+      this.loading = null
+      this.menu = null
+      this.edittext = null
+      this.cropLabel = null
+    }
   },
 
   computed: {
@@ -107,6 +162,7 @@ export default {
 
   methods: {
     aspect(ratio) {
+      if (!this.cropper) return
       this.cropper.setAspectRatio(ratio)
       this.cropper.setDragMode('crop')
 
@@ -117,6 +173,7 @@ export default {
 
         if (cropBox && !this.cropLabel) {
           const label = document.createElement('div')
+
           label.className = 'crop-label'
           cropBox.appendChild(label)
           this.cropLabel = label
@@ -125,7 +182,7 @@ export default {
     },
 
     clear() {
-      if (this.destroyed) return
+      if (this.destroyed || !this.cropper) return
 
       this.cropper.setDragMode('none')
       this.cropper.clear()
@@ -139,6 +196,7 @@ export default {
     },
 
     download() {
+      if (!this.cropper) return
       this.cropper.getCroppedCanvas().toBlob((blob) => {
         const url = URL.createObjectURL(blob)
         const link = document.createElement('a')
@@ -152,36 +210,34 @@ export default {
     },
 
     erase() {
+      if (!this.cropper) return
       this.image().then((blob) => {
         this.mask().toBlob((mask) => {
           this.mutate(
             'image:erase',
-            gql`
-              mutation ($file: Upload!, $mask: Upload!) {
-                erase(file: $file, mask: $mask)
-              }
-            `,
+            ERASE_IMAGE,
             {
               file: new File([blob], 'image', { type: this.item.mime }),
               mask: new File([mask], 'mask', { type: 'image/png' })
             }
-          )
-            .then((response) => this.replace(this.toBlob(response.data?.erase)))
-            .catch((error) => {
-              this.messages.add(this.$gettext('Error erasing image part') + ':\n' + error, 'error')
-              this.$log('FileDetailItemImage::erase(): Error erasing image part', error)
-            })
-            .finally(() => this.clear())
+          ).then((response) => this.replace(this.toBlob(response.data?.erase)))
+          .catch((error) => {
+            this.messages.add(this.$gettext('Error erasing image part') + ':\n' + error, 'error')
+            this.$log('FileDetailItemImage::erase(): Error erasing image part', error)
+          })
+          .finally(() => this.clear())
         })
       })
     },
 
     flipX() {
+      if (!this.cropper) return
       this.cropper.scaleX(-1)
       this.updateFile()
     },
 
     flipY() {
+      if (!this.cropper) return
       this.cropper.scaleY(-1)
       this.updateFile()
     },
@@ -195,12 +251,13 @@ export default {
         if (!response.ok) {
           throw new Error('Network error: ' + response.statusText)
         }
+
         return response.blob()
       })
     },
 
     init() {
-      if (this.readonly || this.destroyed) {
+      if (this.readonly || this.destroyed || !this.Cropper) {
         return null
       }
 
@@ -210,7 +267,7 @@ export default {
 
       const self = this
 
-      return new Cropper(this.$refs.image, {
+      return new this.Cropper(this.$refs.image, {
         aspectRatio: NaN,
         background: true,
         dragMode: 'none',
@@ -228,11 +285,13 @@ export default {
           if (!self.cropLabel) return
 
           const { width, height } = event.detail
+
           self.cropLabel.textContent = `${Math.round(width)} × ${Math.round(height)}`
           self.selected = true
         },
         ready() {
           const imageData = this.cropper.getImageData()
+
           self.height = imageData.naturalHeight
           self.width = imageData.naturalWidth
         }
@@ -240,7 +299,7 @@ export default {
     },
 
     inpaint() {
-      if (!this.edittext?.trim()) {
+      if (!this.cropper || !this.edittext?.trim()) {
         return
       }
 
@@ -248,45 +307,36 @@ export default {
         this.mask().toBlob((mask) => {
           this.mutate(
             'image:inpaint',
-            gql`
-              mutation ($file: Upload!, $mask: Upload!, $prompt: String!) {
-                inpaint(file: $file, mask: $mask, prompt: $prompt)
-              }
-            `,
+            INPAINT_IMAGE,
             {
               file: new File([blob], 'image', { type: this.item.mime }),
               mask: new File([mask], 'mask', { type: 'image/png' }),
               prompt: this.edittext
             }
-          )
-            .then((response) => this.replace(this.toBlob(response.data?.inpaint)))
-            .catch((error) => {
-              this.messages.add(this.$gettext('Error editing image part') + ':\n' + error, 'error')
-              this.$log('FileDetailItemImage::inpaint(): Error editing image part', error)
-            })
-            .finally(() => this.clear())
+          ).then((response) => this.replace(this.toBlob(response.data?.inpaint)))
+          .catch((error) => {
+            this.messages.add(this.$gettext('Error editing image part') + ':\n' + error, 'error')
+            this.$log('FileDetailItemImage::inpaint(): Error editing image part', error)
+          })
+          .finally(() => this.clear())
         })
       })
     },
 
     isolate() {
+      if (!this.cropper) return
       this.cropper.getCroppedCanvas().toBlob((blob) => {
         this.mutate(
           'image:isolate',
-          gql`
-            mutation ($file: Upload!) {
-              isolate(file: $file)
-            }
-          `,
+          ISOLATE_IMAGE,
           {
             file: new File([blob], 'image.png', { type: 'image/png' })
           }
-        )
-          .then((response) => this.replace(this.toBlob(response.data?.isolate)))
-          .catch((error) => {
-            this.messages.add(this.$gettext('Error removing background') + ':\n' + error, 'error')
-            this.$log('FileDetailItemImage::isolate(): Error removing background', error)
-          })
+        ).then((response) => this.replace(this.toBlob(response.data?.isolate)))
+        .catch((error) => {
+          this.messages.add(this.$gettext('Error removing background') + ':\n' + error, 'error')
+          this.$log('FileDetailItemImage::isolate(): Error removing background', error)
+        })
       })
     },
 
@@ -314,6 +364,8 @@ export default {
     },
 
     mask() {
+      if (!this.cropper) return null
+
       const canvas = document.createElement('canvas')
       const context = canvas.getContext('2d')
 
@@ -328,6 +380,15 @@ export default {
 
       context.fillStyle = 'white'
       context.fillRect(crop.x, crop.y, crop.width, crop.height)
+
+      const origToBlob = canvas.toBlob.bind(canvas)
+      canvas.toBlob = (callback, ...args) => {
+        origToBlob((blob) => {
+          canvas.width = 0
+          canvas.height = 0
+          callback(blob)
+        }, ...args)
+      }
 
       return canvas
     },
@@ -345,27 +406,22 @@ export default {
       this.image().then((blob) => {
         this.mutate(
           'image:repaint',
-          gql`
-            mutation ($file: Upload!, $prompt: String!) {
-              repaint(file: $file, prompt: $prompt)
-            }
-          `,
+          REPAINT_IMAGE,
           {
             file: new File([blob], 'image', { type: this.item.mime }),
             prompt: this.edittext
           }
-        )
-          .then((response) => this.replace(this.toBlob(response.data?.repaint)))
-          .catch((error) => {
-            this.messages.add(this.$gettext('Error editing image') + ':\n' + error, 'error')
-            this.$log('FileDetailItemImage::repaint(): Error editing image', error)
-          })
-          .finally(() => this.clear())
+        ).then((response) => this.replace(this.toBlob(response.data?.repaint)))
+        .catch((error) => {
+          this.messages.add(this.$gettext('Error editing image') + ':\n' + error, 'error')
+          this.$log('FileDetailItemImage::repaint(): Error editing image', error)
+        })
+        .finally(() => this.clear())
       })
     },
 
     replace(blob, idx = null) {
-      if (this.destroyed) return
+      if (this.destroyed || !this.cropper) return
 
       let file = null
 
@@ -392,7 +448,7 @@ export default {
     },
 
     reset() {
-      if (this.destroyed) return
+      if (this.destroyed || !this.cropper) return
 
       this.selected = false
       this.cropper.reset()
@@ -400,6 +456,8 @@ export default {
     },
 
     rotate(deg) {
+      if (!this.cropper) return
+
       this.cropper.rotate(deg)
       this.updateFile()
 
@@ -423,18 +481,14 @@ export default {
     },
 
     uncrop() {
-      if (!this.extend.top && !this.extend.right && !this.extend.bottom && !this.extend.left) {
+      if (!this.cropper || (!this.extend.top && !this.extend.right && !this.extend.bottom && !this.extend.left)) {
         return
       }
 
       this.cropper.getCroppedCanvas().toBlob((blob) => {
         this.mutate(
           'image:uncrop',
-          gql`
-            mutation ($file: Upload!, $top: Int!, $right: Int!, $bottom: Int, $left: Int) {
-              uncrop(file: $file, top: $top, right: $right, bottom: $bottom, left: $left)
-            }
-          `,
+          UNCROP_IMAGE,
           {
             file: new File([blob], 'image.png', { type: 'image/png' }),
             top: this.extend.top ?? 0,
@@ -442,12 +496,11 @@ export default {
             bottom: this.extend.bottom ?? 0,
             left: this.extend.left ?? 0
           }
-        )
-          .then((response) => this.replace(this.toBlob(response.data?.uncrop)))
-          .catch((error) => {
-            this.messages.add(this.$gettext('Error uncropping image') + ':\n' + error, 'error')
-            this.$log('FileDetailItemImage::uncrop(): Error uncropping image', error)
-          })
+        ).then((response) => this.replace(this.toBlob(response.data?.uncrop)))
+        .catch((error) => {
+          this.messages.add(this.$gettext('Error uncropping image') + ':\n' + error, 'error')
+          this.$log('FileDetailItemImage::uncrop(): Error uncropping image', error)
+        })
       })
     },
 
@@ -457,7 +510,7 @@ export default {
     },
 
     updateFile() {
-      if (!this.readonly && !this.destroyed) {
+      if (!this.readonly && !this.destroyed && this.cropper) {
         this.cropper.getCroppedCanvas().toBlob((blob) => {
           const url = URL.createObjectURL(blob)
 
@@ -476,24 +529,21 @@ export default {
     },
 
     upscale(factor) {
+      if (!this.cropper) return
+
       this.cropper.getCroppedCanvas().toBlob((blob) => {
         this.mutate(
           'image:upscale',
-          gql`
-            mutation ($file: Upload!, $factor: Int!) {
-              upscale(file: $file, factor: $factor)
-            }
-          `,
+          UPSCALE_IMAGE,
           {
             file: new File([blob], 'image.png', { type: 'image/png' }),
             factor: factor
           }
-        )
-          .then((response) => this.replace(this.toBlob(response.data?.upscale)))
-          .catch((error) => {
-            this.messages.add(this.$gettext('Error upscaling image') + ':\n' + error, 'error')
-            this.$log('FileDetailItemImage::upscale(): Error upscaling image', error)
-          })
+        ).then((response) => this.replace(this.toBlob(response.data?.upscale)))
+        .catch((error) => {
+          this.messages.add(this.$gettext('Error upscaling image') + ':\n' + error, 'error')
+          this.$log('FileDetailItemImage::upscale(): Error upscaling image', error)
+        })
       })
     },
 
@@ -636,7 +686,7 @@ export default {
         :disabled="!selected"
         :title="$gettext('Crop selected area')"
         :icon="mdiCrop"
-        class="no-rtl"
+        class="btn-crop no-rtl"
       />
 
       <v-btn
@@ -646,7 +696,7 @@ export default {
         :loading="loading['image:erase']"
         :title="$gettext('Erase selected area')"
         :icon="mdiEraser"
-        class="no-rtl"
+        class="btn-erase no-rtl"
       />
 
       <v-dialog
@@ -700,7 +750,7 @@ export default {
         :title="$gettext('Remove background')"
         :loading="loading['image:isolate']"
         :icon="mdiImageFilterBlackWhite"
-        class="no-rtl"
+        class="btn-remove-bg no-rtl"
       />
 
       <v-dialog
@@ -715,7 +765,7 @@ export default {
             :loading="loading['image:uncrop']"
             :title="$gettext('Expand image')"
             :icon="mdiArrowExpandAll"
-            class="no-rtl"
+            class="btn-expand no-rtl"
           />
         </template>
 
@@ -800,7 +850,7 @@ export default {
             :disabled="width >= 4096 && height >= 4096"
             :title="$gettext('Upscale image')"
             :icon="mdiMagnifyExpand"
-            class="no-rtl"
+            class="btn-upscale no-rtl"
           />
         </template>
 
@@ -861,31 +911,31 @@ export default {
 
       <v-btn
         :icon="mdiRotateLeft"
-        class="no-rtl"
+        class="btn-rotate-ccw no-rtl"
         @click="rotate(-90)"
         :title="$gettext('Rotate counter-clockwise')"
       />
       <v-btn
         :icon="mdiRotateRight"
-        class="no-rtl"
+        class="btn-rotate-cw no-rtl"
         @click="rotate(90)"
         :title="$gettext('Rotate clockwise')"
       />
 
       <v-btn
         :icon="mdiFlipHorizontal"
-        class="no-rtl"
+        class="btn-flip-h no-rtl"
         @click="flipX"
         :title="$gettext('Flip horizontally')"
       />
       <v-btn
         :icon="mdiFlipVertical"
-        class="no-rtl"
+        class="btn-flip-v no-rtl"
         @click="flipY"
         :title="$gettext('Flip vertically')"
       />
 
-      <v-btn :icon="mdiDownload" class="no-rtl" @click="download()" :title="$gettext('Download')" />
+      <v-btn :icon="mdiDownload" class="btn-download no-rtl" @click="download()" :title="$gettext('Download')" />
 
       <component
         :is="$vuetify.display.xs ? 'v-dialog' : 'v-menu'"

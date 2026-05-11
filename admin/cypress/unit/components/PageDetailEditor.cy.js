@@ -61,7 +61,7 @@ describe('PageDetailEditor', () => {
 
   it('renders fullscreen button', () => {
     mountEditor()
-    cy.get('button[title="Fullscreen mode"]').should('exist')
+    cy.get('button.btn-fullscreen').should('exist')
   })
 
   it('starts with loading data property', () => {

@@ -1,8 +1,7 @@
 /** @license LGPL, https://opensource.org/license/lgpl-3-0 */
 
 <script>
-import FieldsDialog from './FieldsDialog.vue'
-import SchemaDialog from './SchemaDialog.vue'
+import { defineAsyncComponent } from 'vue'
 import { useAppStore, useUserStore, useMessageStore } from '../stores'
 import { uid } from '../utils'
 import {
@@ -13,6 +12,9 @@ import {
   mdiFullscreen,
   mdiFullscreenExit
 } from '@mdi/js'
+
+const FieldsDialog = defineAsyncComponent(() => import('./FieldsDialog.vue'))
+const SchemaDialog = defineAsyncComponent(() => import('./SchemaDialog.vue'))
 
 export default {
   components: {
@@ -59,16 +61,18 @@ export default {
       vschemas: false,
       vpreview: false,
       visible: false,
-      vedit: false
+      vedit: false,
+      timers: []
     }
   },
 
   mounted() {
     window.addEventListener('message', this.message)
 
-    this.$refs.iframe?.addEventListener('load', () => {
+    this.iframeLoad = () => {
       this.$refs.iframe?.contentWindow?.postMessage('init', '*')
-    })
+    }
+    this.$refs.iframe?.addEventListener('load', this.iframeLoad)
 
     if (this.user.can('page:save')) {
       this.messages.add(this.$gettext('Double-click to edit'), 'info')
@@ -77,6 +81,13 @@ export default {
 
   beforeUnmount() {
     window.removeEventListener('message', this.message)
+    this.$refs.iframe?.removeEventListener('load', this.iframeLoad)
+
+    if (this.$refs.iframe) {
+      this.$refs.iframe.src = 'about:blank'
+    }
+
+    this.timers.forEach((id) => clearTimeout(id))
   },
 
   computed: {
@@ -154,16 +165,16 @@ export default {
         // not allowed
         case -1:
           this.vpreview = true
-          setTimeout(() => {
+          this.timers.push(setTimeout(() => {
             this.vpreview = false
-          }, 3000)
+          }, 3000))
           break
         // not cms content
         case -2:
           this.vcontent = true
-          setTimeout(() => {
+          this.timers.push(setTimeout(() => {
             this.vcontent = false
-          }, 3000)
+          }, 3000))
           break
         default:
           this.index =
@@ -213,7 +224,7 @@ export default {
 </script>
 
 <template>
-  <div class="page-preview" ref="preview" v-observe-visibility="load">
+  <div class="page-preview" ref="preview" v-visible="load">
     <div v-if="loading" class="controls">
       <svg
         class="spinner"
@@ -271,7 +282,7 @@ export default {
       @click="fullscreen()"
       :title="$gettext('Fullscreen mode')"
       :icon="mdiFullscreen"
-      class="fullscreen"
+      class="btn-fullscreen fullscreen"
       variant="text"
     />
     <v-btn

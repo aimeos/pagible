@@ -223,7 +223,7 @@ describe('File List', () => {
 
   it('shows sort menu with options', () => {
     visitFiles()
-    cy.get('.layout .v-btn[title="Sort by"]').click()
+    cy.get('.layout .btn-sort .v-btn').click()
     cy.get('.v-list').should('contain', 'latest')
     cy.get('.v-list').should('contain', 'oldest')
     cy.get('.v-list').should('contain', 'name')
@@ -235,7 +235,7 @@ describe('File List', () => {
 
   it('clicking a sort option triggers GQL reload', () => {
     visitFiles()
-    cy.get('.layout .v-btn[title="Sort by"]').click()
+    cy.get('.layout .btn-sort .v-btn').click()
     cy.contains('.v-list .v-btn', 'name').click()
     cy.wait('@gql')
   })
@@ -244,22 +244,22 @@ describe('File List', () => {
 
   it('shows grid view toggle button', () => {
     visitFiles()
-    cy.get('.layout .v-btn[title="Grid view"]').should('exist')
+    cy.get('.layout .v-btn.btn-grid').should('exist')
   })
 
   it('clicking grid view switches to grid layout', () => {
     const file = makeFile()
     visitFiles([file])
-    cy.get('.layout .v-btn[title="Grid view"]').click()
+    cy.get('.layout .v-btn.btn-grid').click()
     cy.get('.items.grid').should('exist')
   })
 
   it('clicking list view switches back to list layout', () => {
     const file = makeFile()
     visitFiles([file])
-    cy.get('.layout .v-btn[title="Grid view"]').click()
+    cy.get('.layout .v-btn.btn-grid').click()
     cy.get('.items.grid').should('exist')
-    cy.get('.layout .v-btn[title="List view"]').click()
+    cy.get('.layout .v-btn.btn-list').click()
     cy.get('.items.list').should('exist')
   })
 
@@ -267,7 +267,7 @@ describe('File List', () => {
 
   it('shows add files button for users with file:add permission', () => {
     visitFiles()
-    cy.get('.v-btn[title="Add files"]').should('exist')
+    cy.get('.v-btn.btn-add').should('exist')
   })
 
   it('hides add files button for users without file:add permission', () => {
@@ -277,7 +277,7 @@ describe('File List', () => {
       name: 'Viewer',
     }
     visitFiles([], me)
-    cy.get('.v-btn[title="Add files"]').should('not.exist')
+    cy.get('.v-btn.btn-add').should('not.exist')
   })
 
   // ---- Item display ----
@@ -317,22 +317,20 @@ describe('File List', () => {
   it('shows context menu with actions when clicking three-dot button on an item', () => {
     const file = makeFile()
     visitFiles([file])
-    cy.get('.items .v-list-item .item-menu').first().click()
-    cy.get('.v-card .v-toolbar-title').should('contain', 'Actions')
+    // The v-menu renders card content inline; check the toolbar title directly
+    cy.get('.items > .v-list-item').first().find('.v-card .v-toolbar-title').should('contain', 'Actions')
   })
 
   it('context menu shows Publish for unpublished file', () => {
     const file = makeFile({ latest: { ...makeFile().latest, published: false } })
     visitFiles([file])
-    cy.get('.items .v-list-item .item-menu').first().click()
-    cy.get('.v-card .v-list').should('contain', 'Publish')
+    cy.get('.items > .v-list-item').first().find('.v-card .v-list').should('contain', 'Publish')
   })
 
   it('context menu hides Publish for already published file', () => {
     const file = makeFile()
     visitFiles([file])
-    cy.get('.items .v-list-item .item-menu').first().click()
-    cy.get('.v-card .v-list .v-list-item').filter(':visible').then(($items) => {
+    cy.get('.items > .v-list-item').first().find('.v-card .v-list .v-list-item').filter(':visible').then(($items) => {
       const texts = [...$items].map((item) => item.textContent.trim())
       expect(texts.some((t) => t === 'Publish')).to.be.false
     })
@@ -341,22 +339,19 @@ describe('File List', () => {
   it('context menu shows Delete for non-trashed file', () => {
     const file = makeFile()
     visitFiles([file])
-    cy.get('.items .v-list-item .item-menu').first().click()
-    cy.get('.v-card .v-list').should('contain', 'Delete')
+    cy.get('.items > .v-list-item').first().find('.v-card .v-list').should('contain', 'Delete')
   })
 
   it('context menu shows Restore for trashed file', () => {
     const file = makeFile({ deleted_at: '2026-01-15 00:00:00' })
     visitFiles([file])
-    cy.get('.items .v-list-item .item-menu').first().click()
-    cy.get('.v-card .v-list').should('contain', 'Restore')
+    cy.get('.items > .v-list-item').first().find('.v-card .v-list').should('contain', 'Restore')
   })
 
   it('context menu hides Delete for trashed file', () => {
     const file = makeFile({ deleted_at: '2026-01-15 00:00:00' })
     visitFiles([file])
-    cy.get('.items .v-list-item .item-menu').first().click()
-    cy.get('.v-card .v-list .v-btn').then(($btns) => {
+    cy.get('.items > .v-list-item').first().find('.v-card .v-list .v-btn').filter(':visible').then(($btns) => {
       const texts = [...$btns].map((b) => b.textContent.trim())
       expect(texts).to.not.include('Delete')
     })
@@ -365,8 +360,7 @@ describe('File List', () => {
   it('context menu shows Purge button', () => {
     const file = makeFile()
     visitFiles([file])
-    cy.get('.items .v-list-item .item-menu').first().click()
-    cy.get('.v-card .v-list').should('contain', 'Purge')
+    cy.get('.items > .v-list-item').first().find('.v-card .v-list').should('contain', 'Purge')
   })
 
   // ---- Context menu mutations ----
@@ -374,8 +368,7 @@ describe('File List', () => {
   it('clicking Publish sends pubFile mutation', () => {
     const file = makeFile({ latest: { ...makeFile().latest, published: false } })
     visitFiles([file])
-    cy.get('.items .v-list-item .item-menu').first().click()
-    cy.contains('.v-card .v-list .v-btn', 'Publish').click()
+    cy.contains('.items > .v-list-item:first .v-card .v-list .v-list-item:visible .v-btn', 'Publish').click()
     cy.wait('@gql').its('request.body').should((body) => {
       const ops = Array.isArray(body) ? body : [body]
       expect(ops.some((op) => (op.query || '').includes('pubFile'))).to.be.true
@@ -385,8 +378,7 @@ describe('File List', () => {
   it('clicking Delete sends dropFile mutation', () => {
     const file = makeFile()
     visitFiles([file])
-    cy.get('.items .v-list-item .item-menu').first().click()
-    cy.contains('.v-card .v-list .v-btn', 'Delete').click()
+    cy.contains('.items > .v-list-item:first .v-card .v-list .v-btn', 'Delete').click()
     cy.wait('@gql').its('request.body').should((body) => {
       const ops = Array.isArray(body) ? body : [body]
       expect(ops.some((op) => (op.query || '').includes('dropFile'))).to.be.true
@@ -396,8 +388,7 @@ describe('File List', () => {
   it('clicking Purge sends purgeFile mutation', () => {
     const file = makeFile()
     visitFiles([file])
-    cy.get('.items .v-list-item .item-menu').first().click()
-    cy.contains('.v-card .v-list .v-btn', 'Purge').click()
+    cy.contains('.items > .v-list-item:first .v-card .v-list .v-btn', 'Purge').click()
     cy.wait('@gql').its('request.body').should((body) => {
       const ops = Array.isArray(body) ? body : [body]
       expect(ops.some((op) => (op.query || '').includes('purgeFile'))).to.be.true
@@ -409,20 +400,21 @@ describe('File List', () => {
   it('shows bulk checkbox and actions button in header', () => {
     visitFiles()
     cy.get('.header .bulk .v-checkbox-btn').should('exist')
-    cy.get('.header .bulk .v-btn[title="Actions"]').should('exist')
+    cy.get('.header .bulk .btn-actions .v-btn').should('exist')
   })
 
-  it('bulk actions button is disabled when no items are checked', () => {
+  it('bulk actions are hidden when no items are checked', () => {
     const file = makeFile()
     visitFiles([file])
-    cy.get('.header .bulk .v-btn[title="Actions"]').should('be.disabled')
+    // When no items are checked, bulk action list items are removed from DOM (v-if)
+    cy.get('.header .bulk .btn-actions .v-list .v-list-item').should('not.exist')
   })
 
   it('checking a file item enables the bulk actions button', () => {
     const file = makeFile()
     visitFiles([file])
     cy.get('.items .v-list-item .item-check').first().click()
-    cy.get('.header .bulk .v-btn[title="Actions"]').should('not.be.disabled')
+    cy.get('.header .bulk .btn-actions .v-btn').should('not.be.disabled')
   })
 
   it('toggle all checkbox checks all items', () => {
@@ -458,11 +450,11 @@ describe('File List', () => {
     visitFiles(files)
     // Toggle all to check both items
     cy.get('.header .bulk .v-checkbox-btn').click()
-    cy.get('.header .bulk .v-btn[title="Actions"]').click()
-    cy.get('.v-card .v-list').should('contain', 'Publish')
-    cy.get('.v-card .v-list').should('contain', 'Delete')
-    cy.get('.v-card .v-list').should('contain', 'Restore')
-    cy.get('.v-card .v-list').should('contain', 'Purge')
+    // Card content is always in DOM; check action items are visible after checking items
+    cy.get('.header .bulk .btn-actions .v-card .v-list').should('contain', 'Publish')
+    cy.get('.header .bulk .btn-actions .v-card .v-list').should('contain', 'Delete')
+    cy.get('.header .bulk .btn-actions .v-card .v-list').should('contain', 'Restore')
+    cy.get('.header .bulk .btn-actions .v-card .v-list').should('contain', 'Purge')
   })
 
   // ---- Multiple files ----
@@ -486,7 +478,7 @@ describe('File List', () => {
       }),
     ]
     visitFiles(files)
-    cy.get('.items .v-list-item').should('have.length', 3)
+    cy.get('.items > .v-list-item').should('have.length', 3)
     cy.get('.item-title').eq(0).should('contain', 'test.png')
     cy.get('.item-title').eq(1).should('contain', 'video.mp4')
     cy.get('.item-title').eq(2).should('contain', 'song.mp3')

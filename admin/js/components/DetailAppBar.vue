@@ -11,6 +11,8 @@ import {
   mdiSwapHorizontal
 } from '@mdi/js'
 
+const allowedMinutes = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55]
+
 export default {
   props: {
     changed: { type: Object, default: null },
@@ -44,7 +46,8 @@ export default {
       mdiDatabaseArrowDown,
       mdiHistory,
       mdiKeyboardBackspace,
-      mdiSwapHorizontal
+      mdiSwapHorizontal,
+      allowedMinutes
     }
   },
 
@@ -75,6 +78,7 @@ export default {
         @click="viewStack.closeView()"
         :title="$gettext('Back to list view')"
         :icon="mdiKeyboardBackspace"
+        class="btn-back"
       />
     </template>
 
@@ -90,7 +94,7 @@ export default {
         :class="{ hidden: published && !dirty && !hasLatest }"
         :title="$gettext('View history')"
         :icon="mdiHistory"
-        class="no-rtl"
+        class="btn-history no-rtl"
       />
 
       <v-btn v-if="changed"
@@ -135,7 +139,7 @@ export default {
         <div class="menu-content">
           <div class="menu-publish-pickers">
             <v-date-picker :model-value="publishAt" @update:model-value="$emit('update:publishAt', $event)" hide-header show-adjacent-months />
-            <v-time-picker :model-value="publishTime" @update:model-value="$emit('update:publishTime', $event)" :allowed-minutes="[0,5,10,15,20,25,30,35,40,45,50,55]" format="24hr" density="compact" hide-title />
+            <v-time-picker :model-value="publishTime" @update:model-value="$emit('update:publishTime', $event)" :allowed-minutes="allowedMinutes" format="24hr" density="compact" hide-title />
           </div>
           <v-btn
             @click="$emit('schedule')"
@@ -167,6 +171,7 @@ export default {
         @click.stop="drawer.toggle('aside')"
         :title="$gettext('Toggle side menu')"
         :icon="drawer.aside ? mdiChevronRight : mdiChevronLeft"
+        class="btn-sidemenu"
       />
     </template>
   </v-app-bar>

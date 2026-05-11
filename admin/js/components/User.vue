@@ -95,33 +95,36 @@ export default {
     @click="toggleTheme()"
     :title="$gettext('Toggle light/dark mode')"
     :icon="theme.global.current.value.dark ? mdiWhiteBalanceSunny : mdiWeatherNight"
+    class="btn-darkmode"
   />
 
-  <component
-    :is="$vuetify.display.xs ? 'v-dialog' : 'v-menu'"
-    :aria-label="$gettext('Language')"
-    v-model="menu['lang']"
-    transition="scale-transition"
-    location="bottom"
-    max-width="300"
-  >
-    <template #activator="{ props }">
-      <v-btn v-bind="props" :title="$gettext('Switch language')" :icon="mdiWeb" variant="text" />
-    </template>
+  <span class="btn-language">
+    <component
+      :is="$vuetify.display.xs ? 'v-dialog' : 'v-menu'"
+      :aria-label="$gettext('Language')"
+      v-model="menu['lang']"
+      transition="scale-transition"
+      location="bottom"
+      max-width="300"
+    >
+      <template #activator="{ props }">
+        <v-btn v-bind="props" :title="$gettext('Switch language')" :icon="mdiWeb" variant="text" />
+      </template>
 
-    <v-card>
-      <v-toolbar density="compact">
-        <v-toolbar-title>{{ $gettext('Switch language') }}</v-toolbar-title>
-        <v-btn :icon="mdiClose" :aria-label="$gettext('Close')" @click="menu['lang'] = false" />
-      </v-toolbar>
+      <v-card>
+        <v-toolbar density="compact">
+          <v-toolbar-title>{{ $gettext('Switch language') }}</v-toolbar-title>
+          <v-btn :icon="mdiClose" :aria-label="$gettext('Close')" @click="menu['lang'] = false" />
+        </v-toolbar>
 
-      <v-list @click="menu['lang'] = false" role="listbox">
-        <v-list-item v-for="(_, code) in i18n.available" :key="code" role="option" @click="change(code)">
-          {{ languages.translate(code) }} ({{ code }})
-        </v-list-item>
-      </v-list>
-    </v-card>
-  </component>
+        <v-list @click="menu['lang'] = false" role="listbox">
+          <v-list-item v-for="(_, code) in i18n.available" :key="code" role="option" @click="change(code)">
+            {{ languages.translate(code) }} ({{ code }})
+          </v-list-item>
+        </v-list>
+      </v-card>
+    </component>
+  </span>
 
   <v-menu v-if="me">
     <template #activator="{ props }">

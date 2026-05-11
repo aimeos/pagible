@@ -5,7 +5,7 @@
 import gql from 'graphql-tag'
 import { markRaw } from 'vue'
 import { defineStore } from 'pinia'
-import { apolloClient } from './graphql'
+import { apolloClient, clearUploadLink } from './graphql'
 import {
   urladmin,
   urlproxy,
@@ -14,6 +14,60 @@ import {
   multidomain,
   locales as appLocales
 } from './config'
+
+const FETCH_ME = gql`
+  query {
+    me {
+      permission
+      settings
+      email
+      name
+      token
+    }
+  }
+`
+
+const LOGIN = gql`
+  mutation ($email: String!, $password: String!) {
+    cmsLogin(email: $email, password: $password) {
+      permission
+      settings
+      email
+      name
+      token
+    }
+  }
+`
+
+const LOGOUT = gql`
+  mutation {
+    cmsLogout {
+      email
+      name
+    }
+  }
+`
+
+const SAVE_SETTINGS = gql`
+  mutation ($settings: JSON!) {
+    cmsUser(settings: $settings) {
+      settings
+    }
+  }
+`
+
+const FETCH_SCHEMAS = gql`
+  query {
+    schemas {
+      name
+      label
+      types
+      content
+      meta
+      config
+    }
+  }
+`
 
 export const useAppStore = defineStore('app', {
   state: () => ({
@@ -57,17 +111,7 @@ export const useUserStore = defineStore('user', {
 
       await apolloClient
         .query({
-          query: gql`
-            query {
-              me {
-                permission
-                settings
-                email
-                name
-                token
-              }
-            }
-          `
+          query: FETCH_ME
         })
         .then((response) => {
           if (response.errors) {
@@ -94,17 +138,7 @@ export const useUserStore = defineStore('user', {
     login(email, password) {
       return apolloClient
         .mutate({
-          mutation: gql`
-            mutation ($email: String!, $password: String!) {
-              cmsLogin(email: $email, password: $password) {
-                permission
-                settings
-                email
-                name
-                token
-              }
-            }
-          `,
+          mutation: LOGIN,
           variables: {
             email: email,
             password: password
@@ -120,6 +154,7 @@ export const useUserStore = defineStore('user', {
           if (this.me?.permission) {
             this.me.permission = JSON.parse(this.me.permission)
           }
+
           if (this.me?.settings) {
             this.me.settings = JSON.parse(this.me.settings)
           }
@@ -143,14 +178,7 @@ export const useUserStore = defineStore('user', {
 
       return apolloClient
         .mutate({
-          mutation: gql`
-            mutation {
-              cmsLogout {
-                email
-                name
-              }
-            }
-          `
+          mutation: LOGOUT
         })
         .then((response) => {
           if (response.errors) {
@@ -159,8 +187,16 @@ export const useUserStore = defineStore('user', {
 
           return response.data.cmsLogout || false
         })
-        .finally(() => {
+        .finally(async () => {
           this.me = null
+
+          useClipboardStore().$reset()
+          useSideStore().$reset()
+          clearUploadLink()
+
+          const { disconnect } = await import('./echo')
+          disconnect()
+
           return apolloClient.clearStore()
         })
     },
@@ -183,6 +219,7 @@ export const useUserStore = defineStore('user', {
       if (!this.me.settings) {
         this.me.settings = {}
       }
+
       if (!this.me.settings[panel]) {
         this.me.settings[panel] = {}
       }
@@ -203,13 +240,7 @@ export const useUserStore = defineStore('user', {
 
       apolloClient
         .mutate({
-          mutation: gql`
-            mutation ($settings: JSON!) {
-              cmsUser(settings: $settings) {
-                settings
-              }
-            }
-          `,
+          mutation: SAVE_SETTINGS,
           variables: {
             settings: JSON.stringify(this.me.settings)
           }
@@ -231,6 +262,10 @@ export const useClipboardStore = defineStore('clipboard', {
   state: () => ({}),
 
   actions: {
+    clear() {
+      this.$reset()
+    },
+
     get(key, defval = null) {
       return this[key] ?? defval
     },
@@ -238,6 +273,14 @@ export const useClipboardStore = defineStore('clipboard', {
     set(key, value) {
       if (typeof key !== 'string') {
         return
+      }
+
+      if (typeof value === 'object' && value !== null) {
+        const json = JSON.stringify(value)
+        if (json && json.length > 256 * 1024) {
+          console.warn('Clipboard entry too large, skipping')
+          return
+        }
       }
 
       this[key] = value
@@ -259,195 +302,10 @@ export const useDrawerStore = defineStore('drawer', {
   }
 })
 
+import languages from './languages'
+
 export const useLanguageStore = defineStore('language', {
   state: () => ({
-    translations: {
-      aa: 'Afar',
-      ab: 'Аҧсуа',
-      af: 'Afrikaans',
-      ak: 'Akana',
-      am: 'አማርኛ',
-      an: 'Aragonés',
-      ar: 'العربية',
-      as: 'অসমীয়া',
-      av: 'Авар',
-      ay: 'Aymar',
-      az: 'Azərbaycanca',
-      ba: 'Башҡорт',
-      be: 'Беларуская',
-      bg: 'Български',
-      bh: 'भोजपुरी',
-      bi: 'Bislama',
-      bm: 'Bamanankan',
-      bn: 'বাংলা',
-      bo: 'བོད་ཡིག',
-      br: 'Brezhoneg',
-      bs: 'Bosanski',
-      ca: 'Català',
-      ce: 'Нохчийн',
-      ch: 'Chamoru',
-      co: 'Corsu',
-      cr: 'Nehiyaw',
-      cs: 'Česky',
-      cu: 'словѣньскъ',
-      cv: 'Чăваш',
-      cy: 'Cymraeg',
-      da: 'Dansk',
-      de: 'Deutsch',
-      dv: 'ދިވެހިބަސް',
-      dz: 'རྫོང་ཁ',
-      ee: 'Ɛʋɛ',
-      el: 'Ελληνικά',
-      en: 'English',
-      eo: 'Esperanto',
-      es: 'Español',
-      et: 'Eesti',
-      eu: 'Euskara',
-      fa: 'فارسی',
-      ff: 'Fulfulde',
-      fi: 'Suomi',
-      fj: 'Na Vosa Vakaviti',
-      fo: 'Føroyskt',
-      fr: 'Français',
-      fy: 'Frysk',
-      ga: 'Gaeilge',
-      gd: 'Gàidhlig',
-      gl: 'Galego',
-      gn: "Avañe'ẽ",
-      gu: 'ગુજરાતી',
-      gv: 'Gaelg',
-      ha: 'هَوُسَ',
-      he: 'עברית',
-      hi: 'हिन्दी',
-      ho: 'Hiri Motu',
-      hr: 'Hrvatski',
-      ht: 'Krèyol ayisyen',
-      hu: 'Magyar',
-      hy: 'Հայերեն',
-      hz: 'Otsiherero',
-      ia: 'Interlingua',
-      id: 'Bahasa Indonesia',
-      ie: 'Interlingue',
-      ig: 'Igbo',
-      ii: 'ꆇꉙ',
-      ik: 'Iñupiak',
-      io: 'Ido',
-      is: 'Íslenska',
-      it: 'Italiano',
-      iu: 'ᐃᓄᒃᑎᑐᑦ',
-      ja: '日本語',
-      jv: 'Basa Jawa',
-      ka: 'ქართული',
-      kg: 'KiKongo',
-      ki: 'Gĩkũyũ',
-      kj: 'Kuanyama',
-      kk: 'Қазақша',
-      kl: 'Kalaallisut',
-      km: 'ភាសាខ្មែរ',
-      kn: 'ಕನ್ನಡ',
-      ko: '한국어',
-      kr: 'Kanuri',
-      ks: 'कॉशुर',
-      ku: 'Kurdî',
-      kv: 'Коми',
-      kw: 'Kernewek',
-      ky: 'Kırgızca',
-      la: 'Latina',
-      lb: 'Lëtzebuergesch',
-      lg: 'Luganda',
-      li: 'Limburgs',
-      ln: 'Lingála',
-      lo: 'ລາວ',
-      lt: 'Lietuvių',
-      lv: 'Latviešu',
-      mg: 'Malagasy',
-      mh: 'Kajin Majel',
-      mi: 'Māori',
-      mk: 'Македонски',
-      ml: 'മലയാളം',
-      mn: 'Монгол',
-      mo: 'Moldovenească',
-      mr: 'मराठी',
-      ms: 'Bahasa Melayu',
-      mt: 'bil-Malti',
-      my: 'Myanmasa',
-      na: 'Dorerin Naoero',
-      nd: 'Sindebele',
-      ne: 'नेपाली',
-      ng: 'Oshiwambo',
-      nl: 'Nederlands',
-      nn: 'Norsk (nynorsk)',
-      no: 'Norsk',
-      nr: 'isiNdebele',
-      nv: 'Diné bizaad',
-      ny: 'Chi-Chewa',
-      oc: 'Occitan',
-      oj: 'ᐊᓂᔑᓈᐯᒧᐎᓐ',
-      om: 'Oromoo',
-      or: 'ଓଡ଼ିଆ',
-      os: 'Иронау',
-      pa: 'ਪੰਜਾਬੀ',
-      pi: 'Pāli',
-      pl: 'Polski',
-      ps: 'پښتو',
-      pt: 'Português',
-      qu: 'Runa Simi',
-      rm: 'Rumantsch',
-      rn: 'Kirundi',
-      ro: 'Română',
-      ru: 'Русский',
-      rw: 'Kinyarwandi',
-      sa: 'संस्कृतम्',
-      sc: 'Sardu',
-      sd: 'सिंधी',
-      se: 'Davvisámegiella',
-      sg: 'Sängö',
-      sh: 'Srpskohrvatski',
-      si: 'සිංහල',
-      sk: 'Slovenčina',
-      sl: 'Slovenščina',
-      sm: 'Gagana Samoa',
-      sn: 'chiShona',
-      so: 'Soomaaliga',
-      sq: 'shqip',
-      sr: 'Српски',
-      ss: 'SiSwati',
-      st: 'Sesotho',
-      su: 'Basa Sunda',
-      sv: 'Svenska',
-      sw: 'Kiswahili',
-      ta: 'தமிழ்',
-      te: 'తెలుగు',
-      tet: 'Tetun',
-      tg: 'Тоҷикӣ',
-      th: 'ไทย',
-      ti: 'ትግርኛ',
-      tk: 'Туркмен',
-      tl: 'Tagalog',
-      tn: 'Setswana',
-      to: 'Lea Faka-Tonga',
-      tr: 'Türkçe',
-      ts: 'Xitsonga',
-      tt: 'Tatarça',
-      tw: 'Twi',
-      ty: "Reo Mā'ohi",
-      ug: 'Uyƣurqə',
-      uk: 'Українська',
-      ur: 'اردو',
-      uz: 'Ўзбек',
-      ve: 'Tshivenḓa',
-      vi: 'Tiếng Việt',
-      vo: 'Volapük',
-      wa: 'Walon',
-      wo: 'Wollof',
-      xh: 'isiXhosa',
-      yi: 'ייִדיש',
-      yo: 'Yorùbá',
-      za: 'Cuengh',
-      zg: 'ⵜⴰⵎⴰⵣⵉⵖⵜ',
-      zh: '中文',
-      zu: 'isiZulu'
-    },
     available: appLocales
   }),
 
@@ -457,7 +315,7 @@ export const useLanguageStore = defineStore('language', {
     },
 
     translate(key) {
-      return this.translations[key] ?? this.translations[key?.substring(0, 2)] ?? key
+      return languages[key] ?? languages[key?.substring(0, 2)] ?? key
     }
   }
 })
@@ -476,6 +334,7 @@ export const useMessageStore = defineStore('message', {
         console.warn('Message queue overflow, dropping message:', msg)
         return
       }
+
       this.queue.push({
         text: msg,
         color: type,
@@ -495,28 +354,38 @@ export const useSchemaStore = defineStore('schema', {
   state: () => ({ themes: {}, content: {}, meta: {}, config: {} }),
   actions: {
     load() {
-      if (_loading) return _loading
+      if (_loading) return _loading instanceof Promise ? _loading : Promise.resolve()
+
       _loading = apolloClient.query({
-        query: gql`query { schemas { name label types content meta config } }`
+        query: FETCH_SCHEMAS
       }).then((result) => {
+        const content = {}, meta = {}, config = {}
         const parse = (v) => typeof v === 'string' ? JSON.parse(v) : v || {}
-        const list = (result.data?.schemas || []).map(t => ({
+        const list = (result.data?.schemas || []).map(t => markRaw({
           ...t,
           types: parse(t.types),
           content: parse(t.content),
           meta: parse(t.meta),
           config: parse(t.config)
         }))
-        this.themes = Object.fromEntries(list.map(t => [t.name, t]))
+
         for (const theme of list) {
-          Object.assign(this.content, theme.content)
-          Object.assign(this.meta, theme.meta)
-          Object.assign(this.config, theme.config)
+          for (const key in theme.content) content[key] = markRaw(theme.content[key])
+          for (const key in theme.meta) meta[key] = markRaw(theme.meta[key])
+          for (const key in theme.config) config[key] = markRaw(theme.config[key])
         }
+
+        this.themes = Object.freeze(Object.fromEntries(list.map(t => [t.name, t])))
+        this.content = Object.freeze(content)
+        this.meta = Object.freeze(meta)
+        this.config = Object.freeze(config)
+
+        _loading = true
       }).catch((err) => {
         _loading = null
         throw err
-      })
+      }).then(() => _loading)
+
       return _loading
     }
   }
@@ -599,6 +468,7 @@ export const useDirtyStore = defineStore('dirty', {
 
       const action = this._action
       this._action = null
+
       if (action) await action()
 
       this.resolve(true)
@@ -612,6 +482,7 @@ export const useDirtyStore = defineStore('dirty', {
       const fn = this.pendingResolve
       this.pendingResolve = null
       this._action = null
+
       if (fn) fn(value)
     },
 
@@ -665,9 +536,13 @@ export const useViewStack = defineStore('viewStack', {
         return
       }
 
+      if (this.stack.length >= 3) {
+        this.stack.splice(0, this.stack.length - 2)
+      }
+
       this.stack.push({
         component: markRaw(component),
-        props: props || {}
+        props: markRaw(props || {})
       })
     }
   }

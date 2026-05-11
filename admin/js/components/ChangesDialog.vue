@@ -1,9 +1,11 @@
 /** @license LGPL, https://opensource.org/license/lgpl-3-0 */
 
 <script>
-import { diffLines, diffWords } from 'diff'
+let diffLinesFn = null
+let diffWordsFn = null
+
 import { mdiClose, mdiUndoVariant } from '@mdi/js'
-import { empty, stringify } from '../utils'
+import { empty, itemTitle, stringify } from '../utils'
 
 export default {
   props: {
@@ -19,6 +21,7 @@ export default {
   },
 
   data: () => ({
+    diffReady: !!diffLinesFn,
     resolved: new Set()
   }),
 
@@ -56,12 +59,14 @@ export default {
     },
 
     changes() {
+      if (!this.diffReady) return {}
+
       const map = {}
+
       for (const [name, section] of Object.entries(this.conflicts)) {
         for (const [key, info] of Object.entries(section)) {
           const id = `${name}.${key}`
           const isObj = typeof info.overwritten === 'object' && typeof (info.current ?? info.overwritten) === 'object'
-
           const unwrap = (o) => o?.data ?? o
 
           let theirsDiff = null
@@ -72,8 +77,9 @@ export default {
               mineDiff = this.buildFieldDiffs(this.getChangedFields(unwrap(info.previous), unwrap(info.current)))
             } else {
               const fmtTheirs = this.formatDiffPair(info.previous, info.overwritten)
-              theirsDiff = this.buildDiff(fmtTheirs.old, fmtTheirs.new)
               const fmtMine = this.formatDiffPair(info.previous, info.current)
+
+              theirsDiff = this.buildDiff(fmtTheirs.old, fmtTheirs.new)
               mineDiff = this.buildDiff(fmtMine.old, fmtMine.new)
             }
           } else {
@@ -86,8 +92,8 @@ export default {
           }
 
           const merge = info.merged ?? null
-
           let mergeFields = null
+
           if (merge != null) {
             if (typeof info.current === 'object' && typeof merge === 'object') {
               const hasData = info.current.data && merge.data
@@ -117,14 +123,34 @@ export default {
     }
   },
 
+  async created() {
+    if (!diffWordsFn) {
+      const mod = await import('diff')
+
+      diffWordsFn = mod.diffWords
+      diffLinesFn = mod.diffLines
+    }
+
+    this.diffReady = true
+  },
+
   watch: {
     changed() {
       this.resolved = new Set()
     },
 
-    resolved(val) {
-      if (val.size > 0 && val.size >= this.totalConflicts) {
-        this.show = false
+    modelValue(val) {
+      if (!val) {
+        this.resolved = new Set()
+      }
+    },
+
+    resolved: {
+      deep: true,
+      handler(val) {
+        if (val.size > 0 && val.size >= this.totalConflicts) {
+          this.show = false
+        }
       }
     }
   },
@@ -132,42 +158,48 @@ export default {
   methods: {
     buildFieldDiffs(fields) {
       return fields.map(({ label, old: oldVal, new: newVal }) => {
-        const words = diffWords(oldVal || '', newVal || '')
         return {
           label,
-          words: words.map(w => ({ value: w.value, removed: !!w.removed, added: !!w.added })),
+          words: diffWordsFn(oldVal || '', newVal || '').map(this.wordDiff),
         }
       })
     },
 
     buildDiff(oldStr, newStr) {
-      const lines = diffLines(oldStr, newStr)
+      const lines = diffLinesFn(oldStr, newStr)
       const diff = []
       let i = 0
+
       while (i < lines.length) {
         const part = lines[i]
+
         if (part.removed) {
           const next = lines[i + 1]
+
           if (next?.added) {
-            const words = diffWords(part.value, next.value)
+            const words = diffWordsFn(part.value, next.value)
+
             diff.push({
-              removed: words.filter(w => !w.added).map(w => ({ value: w.value, highlight: !!w.removed })),
-              added: words.filter(w => !w.removed).map(w => ({ value: w.value, highlight: !!w.added })),
-              words: words.map(w => ({ value: w.value, removed: !!w.removed, added: !!w.added })),
+              removed: words.filter(w => !w.added).map(w => this.highlightDiff(w, w.removed)),
+              added: words.filter(w => !w.removed).map(w => this.highlightDiff(w, w.added)),
+              words: words.map(this.wordDiff),
             })
-            i += 2
+            i++
           } else {
             diff.push({ removed: [{ value: part.value, highlight: true }], added: null })
-            i++
           }
         } else if (part.added) {
           diff.push({ removed: null, added: [{ value: part.value, highlight: true }] })
-          i++
-        } else {
-          i++
         }
+
+        i++
       }
+
       return diff
+    },
+
+    highlightDiff(w, flag) {
+      return { value: w.value, highlight: !!flag }
     },
 
     formatDiffPair(a, b) {
@@ -176,19 +208,27 @@ export default {
 
     getChangedFields(a, b) {
       const fields = []
+      const aObj = a || {}
+      const bObj = b || {}
+      const seen = {}
 
-      for (const k of new Set([...Object.keys(a || {}), ...Object.keys(b || {})])) {
-        const aVal = a?.[k]
-        const bVal = b?.[k]
+      for (const k in aObj) seen[k] = true
+      for (const k in bObj) seen[k] = true
+
+      for (const k in seen) {
+        const aVal = aObj[k]
+        const bVal = bObj[k]
+
         if (JSON.stringify(aVal) === JSON.stringify(bVal)) continue
         if (empty(aVal) && empty(bVal)) continue
 
         const label = this.$pgettext('fn', k)
 
-        if (aVal && bVal && typeof aVal === 'object' && !Array.isArray(aVal)
-            && typeof bVal === 'object' && !Array.isArray(bVal)) {
-          const sub = this.getChangedFields(aVal, bVal)
-          fields.push(...sub.map(f => ({ ...f, label: `${label} › ${f.label}` })))
+        if (aVal && bVal && typeof aVal === 'object' && !Array.isArray(aVal) && typeof bVal === 'object' && !Array.isArray(bVal)) {
+          for (const f of this.getChangedFields(aVal, bVal)) {
+            f.label = `${label} › ${f.label}`
+            fields.push(f)
+          }
         } else {
           fields.push({ label, old: stringify(aVal), new: stringify(bVal) })
         }
@@ -199,6 +239,7 @@ export default {
 
     merge(section, key) {
       const merged = this.changes[`${section}.${key}`]?.merge
+
       if (merged == null) return
 
       this.resolve(section, key, merged)
@@ -211,6 +252,7 @@ export default {
       if (target) {
         if (Array.isArray(target)) {
           const idx = target.findIndex((b) => (b.id || b.refid) === key)
+
           if (idx >= 0) {
             info.snapshot = target[idx]
             target[idx] = value
@@ -222,7 +264,7 @@ export default {
       }
 
       info.resolved = value
-      this.resolved = new Set([...this.resolved, `${section}.${key}`])
+      this.resolved.add(`${section}.${key}`)
       this.$emit('resolve')
     },
 
@@ -233,6 +275,7 @@ export default {
       if (target && 'snapshot' in info) {
         if (Array.isArray(target)) {
           const idx = target.findIndex((b) => (b.id || b.refid) === key)
+
           if (idx >= 0) target[idx] = info.snapshot
         } else {
           target[key] = info.snapshot
@@ -241,13 +284,12 @@ export default {
       }
 
       delete info.resolved
-      const next = new Set(this.resolved)
-      next.delete(`${section}.${key}`)
-      this.resolved = next
+      this.resolved.delete(`${section}.${key}`)
     },
 
     label(name, key, info) {
       const block = info.current || info.overwritten
+
       return block?.type
         ? this.$pgettext('st', block.type) + ': ' + this.title(block)
         : this.$pgettext('fn', key)
@@ -255,18 +297,11 @@ export default {
 
     title(block) {
       if (!block || typeof block !== 'object' || !block.type) return null
-      return (
-        (
-          block.data?.title ||
-          block.data?.text ||
-          Object.values(block.data || {})
-            .map((v) => (v && typeof v !== 'object' && typeof v !== 'boolean' ? v : null))
-            .filter((v) => !!v)
-            .join(' - ')
-        ).substring(0, 100) ||
-        this.$pgettext('st', block.type) ||
-        ''
-      )
+      return itemTitle(block.data) || this.$pgettext('st', block.type) || ''
+    },
+
+    wordDiff(w) {
+      return { value: w.value, removed: !!w.removed, added: !!w.added }
     },
 
   }

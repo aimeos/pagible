@@ -85,6 +85,45 @@ export default {
     this.user.flush()
   },
 
+  computed: {
+    asideContent() {
+      return [
+        {
+          key: 'publish',
+          title: this.$gettext('publish'),
+          items: [
+            { title: this.$gettext('All'), icon: mdiPlaylistCheck, value: { publish: null } },
+            { title: this.$gettext('Published'), icon: mdiPublish, value: { publish: 'PUBLISHED' } },
+            { title: this.$gettext('Scheduled'), icon: mdiClockOutline, value: { publish: 'SCHEDULED' } },
+            { title: this.$gettext('Drafts'), icon: mdiPencil, value: { publish: 'DRAFT' } }
+          ]
+        },
+        {
+          key: 'trashed',
+          title: this.$gettext('trashed'),
+          items: [
+            { title: this.$gettext('All'), icon: mdiPlaylistCheck, value: { trashed: 'WITH' } },
+            { title: this.$gettext('Available only'), icon: mdiDeleteOff, value: { trashed: 'WITHOUT' } },
+            { title: this.$gettext('Only trashed'), icon: mdiDelete, value: { trashed: 'ONLY' } }
+          ]
+        },
+        {
+          key: 'editor',
+          title: this.$gettext('editor'),
+          items: [
+            { title: this.$gettext('All'), icon: mdiPlaylistCheck, value: { editor: null } },
+            { title: this.$gettext('Edited by me'), icon: mdiAccount, value: { editor: this.user.me?.email } }
+          ]
+        },
+        {
+          key: 'lang',
+          title: this.$gettext('languages'),
+          items: languageFilter(mdiPlaylistCheck, mdiTranslate)
+        }
+      ]
+    }
+  },
+
   methods: {
     open(item) {
       this.viewStack.openView(FileDetail, { item: item })
@@ -114,6 +153,7 @@ export default {
         @click="drawer.toggle('aside')"
         :title="$gettext('Toggle side menu')"
         :icon="drawer.aside ? mdiChevronRight : mdiChevronLeft"
+        class="btn-sidemenu"
       />
     </template>
   </v-app-bar>
@@ -131,52 +171,7 @@ export default {
   <AsideList
     v-model:filter="filter"
     :defaults="defaults"
-    :content="[
-      {
-        key: 'publish',
-        title: $gettext('publish'),
-        items: [
-          { title: $gettext('All'), icon: mdiPlaylistCheck, value: { publish: null } },
-          { title: $gettext('Published'), icon: mdiPublish, value: { publish: 'PUBLISHED' } },
-          {
-            title: $gettext('Scheduled'),
-            icon: mdiClockOutline,
-            value: { publish: 'SCHEDULED' }
-          },
-          { title: $gettext('Drafts'), icon: mdiPencil, value: { publish: 'DRAFT' } }
-        ]
-      },
-      {
-        key: 'trashed',
-        title: $gettext('trashed'),
-        items: [
-          { title: $gettext('All'), icon: mdiPlaylistCheck, value: { trashed: 'WITH' } },
-          {
-            title: $gettext('Available only'),
-            icon: mdiDeleteOff,
-            value: { trashed: 'WITHOUT' }
-          },
-          { title: $gettext('Only trashed'), icon: mdiDelete, value: { trashed: 'ONLY' } }
-        ]
-      },
-      {
-        key: 'editor',
-        title: $gettext('editor'),
-        items: [
-          { title: $gettext('All'), icon: mdiPlaylistCheck, value: { editor: null } },
-          {
-            title: $gettext('Edited by me'),
-            icon: mdiAccount,
-            value: { editor: this.user.me?.email }
-          }
-        ]
-      },
-      {
-        key: 'lang',
-        title: $gettext('languages'),
-        items: languageFilter(mdiPlaylistCheck, mdiTranslate)
-      }
-    ]"
+    :content="asideContent"
   />
 </template>
 

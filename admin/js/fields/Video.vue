@@ -84,15 +84,17 @@ export default {
             @click="vfiles = true"
             :title="$gettext('Add file')"
             :icon="mdiButtonCursor"
+            class="btn-add"
             variant="text"
           />
           <v-btn
             @click="vurls = true"
             :title="$gettext('Add file from URL')"
             :icon="mdiLinkVariantPlus"
+            class="btn-add-url"
             variant="text"
           />
-          <v-btn :title="$gettext('Upload file')" :icon="mdiUpload" variant="text">
+          <v-btn :title="$gettext('Upload file')" :icon="mdiUpload" class="btn-upload" variant="text">
             <v-file-input
               v-model="selected"
               @update:modelValue="add($event)"
@@ -123,7 +125,7 @@ export default {
       </v-row>
       <v-row>
         <v-col cols="12" md="3" class="name">{{ $gettext('updated') }}:</v-col>
-        <v-col cols="12" md="9">{{ new Date(file.updated_at).toLocaleString() }}</v-col>
+        <v-col cols="12" md="9">{{ formatDate(file.updated_at) }}</v-col>
       </v-row>
     </v-col>
   </v-row>

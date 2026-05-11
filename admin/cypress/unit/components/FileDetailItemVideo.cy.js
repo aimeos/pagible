@@ -52,8 +52,8 @@ describe('FileDetailItemVideo', () => {
 
   it('shows cover image buttons when no preview exists', () => {
     mountVideo({}, { 'file:save': true })
-    cy.get('.toolbar .v-btn[title="Use as cover image"]').should('exist')
-    cy.get('.toolbar .v-btn[title="Upload cover image"]').should('exist')
+    cy.get('.toolbar .v-btn.btn-cover-use').should('exist')
+    cy.get('.toolbar .v-btn.btn-cover-upload').should('exist')
   })
 
   it('shows cover preview when preview exists', () => {
@@ -63,7 +63,7 @@ describe('FileDetailItemVideo', () => {
 
   it('hides cover buttons when preview exists', () => {
     mountVideo({ item: { previews: { thumb: 'files/thumb.jpg' } } })
-    cy.get('.toolbar .v-btn[title="Use as cover image"]').should('not.exist')
+    cy.get('.toolbar .v-btn.btn-cover-use').should('not.exist')
   })
 
   it('has hidden file input for cover upload', () => {

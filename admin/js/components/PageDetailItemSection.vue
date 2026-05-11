@@ -4,7 +4,7 @@
 import Fields from './Fields.vue'
 import SchemaItems from './SchemaItems.vue'
 import { useUserStore, useMessageStore, useSchemaStore, useSideStore } from '../stores'
-import { uid } from '../utils'
+import { hasProp, itemTitle, uid } from '../utils'
 import { mdiPencil, mdiDelete, mdiViewGridPlus } from '@mdi/js'
 
 export default {
@@ -70,7 +70,7 @@ export default {
       el._error = value
       this.$emit(
         'error',
-        Object.values(this.entries).some((item) => item._error)
+        hasProp(this.entries, '_error')
       )
       this.store()
     },
@@ -96,10 +96,10 @@ export default {
     },
 
     reset() {
-      Object.values(this.entries).forEach((el) => {
-        delete el._changed
-        delete el._error
-      })
+      for (const k in this.entries) {
+        delete this.entries[k]._changed
+        delete this.entries[k]._error
+      }
     },
 
     shown(el) {
@@ -140,18 +140,7 @@ export default {
     },
 
     title(el) {
-      return (
-        (
-          el.data?.title ||
-          el.data?.text ||
-          Object.values(el.data || {})
-            .map((v) => (v && typeof v !== 'object' && typeof v !== 'boolean' ? v : null))
-            .filter((v) => !!v)
-            .join(' - ')
-        ).substring(0, 100) ||
-        this.$pgettext('st', el.type) ||
-        ''
-      )
+      return itemTitle(el.data) || this.$pgettext('st', el.type) || ''
     },
 
     update(el) {
@@ -176,7 +165,7 @@ export default {
 </script>
 
 <template>
-  <v-container v-observe-visibility="store">
+  <v-container v-visible="store">
     <v-sheet>
       <v-expansion-panels class="list" v-model="panel" elevation="0" multiple>
         <v-expansion-panel
@@ -191,6 +180,7 @@ export default {
               @click="remove(code)"
               :title="$gettext('Remove content element')"
               :icon="mdiDelete"
+              class="btn-remove"
               variant="text"
             />
             <div class="element-title">{{ title(el) }}</div>
@@ -217,6 +207,7 @@ export default {
           @click="vschemas = true"
           :title="$gettext('Add element')"
           :icon="mdiViewGridPlus"
+          class="btn-add"
           color="primary"
           variant="flat"
         />

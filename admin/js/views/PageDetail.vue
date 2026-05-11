@@ -4,21 +4,20 @@
 import gql from 'graphql-tag'
 import AsideMeta from '../components/AsideMeta.vue'
 import AsideCount from '../components/AsideCount.vue'
-import ChangesDialog from '../components/ChangesDialog.vue'
 import DetailAppBar from '../components/DetailAppBar.vue'
-import HistoryDialog from '../components/HistoryDialog.vue'
-import PageDetailItem from '../components/PageDetailItem.vue'
-import PageDetailEditor from '../components/PageDetailEditor.vue'
 import PageDetailContent from '../components/PageDetailContent.vue'
+
+const PageDetailItem = defineAsyncComponent(() => import('../components/PageDetailItem.vue'))
+const PageDetailEditor = defineAsyncComponent(() => import('../components/PageDetailEditor.vue'))
 import { applyResult, hasUnresolved } from '../merge'
-import { publishItem } from '../publish'
-import { defineAsyncComponent } from 'vue'
-import { write, translate } from '../ai'
-import { txlocales } from '../utils'
-import { subscribe } from '../echo'
+import { publishDate, publishItem } from '../publish'
+import { defineAsyncComponent, markRaw } from 'vue'
+import { frozenParse, hasTrue, txlocales } from '../utils'
+import { setupEcho, cleanEcho } from '../echo'
 import {
   useAppStore,
   useDirtyStore,
+  useSideStore,
   useUserStore,
   useMessageStore,
   useSchemaStore,
@@ -30,8 +29,79 @@ import {
 } from '@mdi/js'
 
 
+const ChangesDialog = defineAsyncComponent(() => import('../components/ChangesDialog.vue'))
+const HistoryDialog = defineAsyncComponent(() => import('../components/HistoryDialog.vue'))
 const PageDetailMetrics = defineAsyncComponent(() => import('../components/PageDetailMetrics.vue'))
 
+const PAGE_DETAIL_FIELDS = `
+  id
+  aux
+  data
+  published
+  publish_at
+  created_at
+  editor
+  files {
+    id
+    lang
+    mime
+    name
+    path
+    previews
+    description
+    transcription
+    updated_at
+    editor
+  }
+  elements {
+    id
+    type
+    name
+    data
+    editor
+    updated_at
+    files {
+      id
+      lang
+      mime
+      name
+      path
+      previews
+      description
+      transcription
+      updated_at
+      editor
+    }
+  }
+`
+
+const FETCH_PAGE = gql`query($id: ID!) {
+  page(id: $id) {
+    id
+    latest {
+      ${PAGE_DETAIL_FIELDS}
+    }
+  }
+}`
+
+const FETCH_PAGE_VERSIONS = gql`query($id: ID!) {
+  page(id: $id) {
+    id
+    versions {
+      ${PAGE_DETAIL_FIELDS}
+    }
+  }
+}`
+
+const SAVE_PAGE = gql`
+  mutation ($id: ID!, $input: PageInput!, $elements: [ID!], $files: [ID!], $latestId: ID) {
+    savePage(id: $id, input: $input, elements: $elements, files: $files, latestId: $latestId) {
+      id
+      latest { id }
+      changed
+    }
+  }
+`
 
 export default {
   components: {
@@ -63,20 +133,21 @@ export default {
     const viewStack = useViewStack()
     const messages = useMessageStore()
     const schemas = useSchemaStore()
+    const side = useSideStore()
     const user = useUserStore()
     const app = useAppStore()
 
     return {
       app,
       dirtyStore,
+      side,
       user,
       viewStack,
       messages,
       schemas,
       mdiTranslate,
       mdiArrowRightThin,
-      txlocales,
-      translate
+      txlocales
     }
   },
 
@@ -97,23 +168,18 @@ export default {
       vhistory: false,
       changed: null,
       vchanged: false,
+      destroyed: false,
       echoCleanup: null,
+      echoPromise: null,
       saving: false,
-      savecnt: 0
+      savecnt: 0,
+      historyData: null
     }
   },
 
   computed: {
-    currentAssets() {
-      const fileIds = this.fileIds()
-
-      return Object.fromEntries(
-        Object.entries(this.assets || {}).filter(([key, value]) => fileIds.includes(key))
-      )
-    },
-
     hasChanged() {
-      return Object.values(this.dirty).some((entry) => entry)
+      return hasTrue(this.dirty)
     },
 
     hasConflict() {
@@ -129,7 +195,16 @@ export default {
     },
 
     hasError() {
-      return Object.values(this.errors).some((entry) => entry)
+      return hasTrue(this.errors)
+    },
+
+    changeTargets() {
+      const item = this.item
+      return markRaw({ data: item, meta: item.meta, config: item.config, content: item.content })
+    },
+
+    saveConfig() {
+      return { fcn: this.save, count: this.savecnt }
     }
   },
 
@@ -143,14 +218,8 @@ export default {
 
     this.$apollo
       .query({
-        query: gql`query($id: ID!) {
-          page(id: $id) {
-            id
-            latest {
-              ${this.fields()}
-            }
-          }
-        }`,
+        query: FETCH_PAGE,
+        fetchPolicy: 'no-cache',
         variables: {
           id: this.item.id
         }
@@ -170,21 +239,20 @@ export default {
         this.item.config = aux.config ?? {}
         this.item.meta = aux.meta ?? {}
 
-        this.assets = this.files(this.latest?.files || [])
-        this.elements = this.elems(this.latest?.elements || [])
+        this.assets = markRaw(this.files(this.latest?.files || []))
+        this.elements = markRaw(this.elems(this.latest?.elements || []))
         this.item.content = this.obsolete(this.item.content)
+        this.latest = { id: this.latest?.id }
 
-        subscribe('page', this.item.id, (event) => {
+        setupEcho(this, 'page', this.item.id, (event) => {
           if (!this.hasChanged && this.user.can('page:view') && event.editor !== this.user.me?.email) {
-            this.latest = { ...this.latest, id: event.versionId }
+            this.latest = { id: event.versionId }
             Object.assign(this.item, event.data)
 
             this.item.content = event.aux?.content ?? this.item.content
             this.item.config = event.aux?.config ?? this.item.config
             this.item.meta = event.aux?.meta ?? this.item.meta
           }
-        }).then((cleanup) => {
-          this.echoCleanup = cleanup
         })
       })
       .catch((error) => {
@@ -194,8 +262,18 @@ export default {
   },
 
   beforeUnmount() {
+    this.side.$reset()
     this.dirtyStore.unregister()
-    this.echoCleanup?.()
+
+    this.assets = markRaw({})
+    this.elements = markRaw({})
+    this.destroyed = true
+    this.changed = null
+    this.latest = null
+    this.dirty = null
+    this.errors = null
+
+    cleanEcho(this)
   },
 
   methods: {
@@ -207,27 +285,45 @@ export default {
     },
 
     clean(data, type) {
-      if (data && type) {
-        data = JSON.parse(JSON.stringify(data)) // deep copy
+      if (!data || !type) return data
 
-        for (const key in data) {
-          const el = data[key]
+      const isArray = Array.isArray(data)
+      const result = isArray ? [] : {}
 
-          for (const k in el) {
-            if (k.startsWith('_')) {
-              delete el[k]
-            }
+      for (const key in data) {
+        const el = data[key]
+        const cleaned = {}
+
+        for (const k in el) {
+          if (!k.startsWith('_')) {
+            cleaned[k] = el[k]
           }
+        }
 
-          for (const name in el.data || {}) {
-            if (!this.schemas[type]?.[el.type]?.fields?.[name]) {
-              delete el.data[name]
+        if (cleaned.data) {
+          const fields = this.schemas[type]?.[el.type]?.fields
+
+          if (fields) {
+            const cleanedData = {}
+
+            for (const name in cleaned.data) {
+              if (fields[name]) {
+                cleanedData[name] = cleaned.data[name]
+              }
             }
+
+            cleaned.data = cleanedData
           }
+        }
+
+        if (isArray) {
+          result.push(cleaned)
+        } else {
+          result[key] = cleaned
         }
       }
 
-      return data
+      return result
     },
 
     elems(entries) {
@@ -236,95 +332,88 @@ export default {
       for (const entry of entries) {
         map[entry.id] = {
           ...entry,
-          data: JSON.parse(entry.data || '{}'),
-          files: Object.values(this.files(entry.files || []))
+          data: frozenParse(entry.data),
+          files: Object.freeze(Object.values(this.files(entry.files || [])))
         }
       }
 
       return map
     },
 
-    fields() {
-      return `id
-              aux
-              data
-              published
-              publish_at
-              created_at
-              editor
-              files {
-                id
-                lang
-                mime
-                name
-                path
-                previews
-                description
-                transcription
-                updated_at
-                editor
-              }
-              elements {
-                id
-                type
-                name
-                data
-                editor
-                updated_at
-                files {
-                  id
-                  lang
-                  mime
-                  name
-                  path
-                  previews
-                  description
-                  transcription
-                  updated_at
-                  editor
-                }
-              }`
-    },
-
     fileIds() {
-      const files = []
+      const files = new Set()
 
       for (const entry of this.item.content || []) {
-        files.push(...(entry.files || []))
+        for (const id of entry.files || []) files.add(id)
       }
 
       for (const key in this.item.meta || {}) {
-        files.push(...(this.item.meta[key].files || []))
+        for (const id of this.item.meta[key].files || []) files.add(id)
       }
 
       for (const key in this.item.config || {}) {
-        files.push(...(this.item.config[key].files || []))
+        for (const id of this.item.config[key].files || []) files.add(id)
       }
 
-      return files.filter((id, idx, self) => {
-        return self.indexOf(id) === idx
-      })
+      return [...files]
     },
 
     files(entries) {
       const map = {}
 
       for (const entry of entries) {
-        map[entry.id] = {
+        map[entry.id] = Object.freeze({
           ...entry,
-          previews: JSON.parse(entry.previews || '{}'),
-          description: JSON.parse(entry.description || '{}'),
-          transcription: JSON.parse(entry.transcription || '{}')
-        }
+          previews: frozenParse(entry.previews),
+          description: frozenParse(entry.description),
+          transcription: frozenParse(entry.transcription)
+        })
       }
 
       return map
+    },
+
+    historyCurrent() {
+      const item = this.item
+      const fileIds = new Set(this.fileIds())
+      const files = {}
+
+      for (const key in this.assets) {
+        if (fileIds.has(key)) files[key] = this.assets[key]
+      }
+
+      return markRaw({
+        data: Object.freeze({
+          related_id: item.related_id || null,
+          scheduled: item.publish_at ? 1 : 0,
+          cache: item.cache,
+          domain: item.domain,
+          lang: item.lang,
+          name: item.name,
+          path: item.path,
+          status: item.status,
+          title: item.title,
+          tag: item.tag,
+          to: item.to,
+          type: item.type,
+          theme: item.theme,
+          meta: this.clean(item.meta, 'meta'),
+          config: this.clean(item.config, 'config'),
+          content: this.clean(item.content, 'content')
+        }),
+        elements: this.latest?.elements || [],
+        files: markRaw(files)
+      })
     },
 
     invalidate() {
       const cache = this.$apollo.provider.defaultClient.cache
       cache.evict({ id: 'Page:' + this.item.id })
       cache.gc()
+    },
+
+    loadVersions() {
+      return this.versions(this.item.id)
     },
 
     obsolete(content) {
@@ -353,14 +442,7 @@ export default {
     },
 
     published() {
-      const at = new Date(this.publishAt)
-
-      if (this.publishTime) {
-        const [hours, minutes] = this.publishTime.split(':').map(Number)
-        at.setHours(hours, minutes, 0, 0)
-      }
-
-      this.publish(at)
+      this.publish(publishDate(this.publishAt, this.publishTime))
     },
 
     reset() {
@@ -378,6 +460,8 @@ export default {
     },
 
     save(quiet = false) {
+      this.$refs.content?.flush()
+
       if (!this.user.can('page:save')) {
         this.messages.add(this.$gettext('Permission denied'), 'error')
         return Promise.resolve(false)
@@ -417,15 +501,7 @@ export default {
 
       return this.$apollo
         .mutate({
-          mutation: gql`
-            mutation ($id: ID!, $input: PageInput!, $elements: [ID!], $files: [ID!], $latestId: ID) {
-              savePage(id: $id, input: $input, elements: $elements, files: $files, latestId: $latestId) {
-                id
-                latest { id }
-                changed
-              }
-            }
-          `,
+          mutation: SAVE_PAGE,
           variables: {
             id: this.item.id,
             input: {
@@ -456,10 +532,10 @@ export default {
           }
 
           const page = response.data?.savePage
-          const changed = page?.changed ? JSON.parse(page.changed) : null
+          const changed = page?.changed ? markRaw(JSON.parse(page.changed)) : null
 
           if (changed?.latest?.id || page?.latest?.id) {
-            this.latest = { ...this.latest, id: changed?.latest?.id ?? page.latest.id }
+            this.latest = { id: changed?.latest?.id ?? page.latest.id }
           }
 
           this.$refs.history?.reset()
@@ -486,7 +562,7 @@ export default {
         })
     },
 
-    translatePage(lang) {
+    async translatePage(lang) {
       if (!this.user.can('text:translate')) {
         this.messages.add(this.$gettext('Permission denied'), 'error')
         return
@@ -537,7 +613,8 @@ export default {
 
       this.translating = true
 
-      this.translate(
+      const { translate } = await import('../ai')
+      translate(
         list.map((entry) => entry.text),
         lang,
         this.item.lang
@@ -560,7 +637,7 @@ export default {
     },
 
     translateText(texts, to, from = null) {
-      return this.translate(texts, to, from || this.item.lang)
+      return import('../ai').then(({ translate }) => translate(texts, to, from || this.item.lang))
     },
 
     update(what, value) {
@@ -606,17 +683,11 @@ export default {
 
       return this.$apollo
         .query({
-          query: gql`query($id: ID!) {
-            page(id: $id) {
-              id
-              versions {
-                ${this.fields()}
-              }
-            }
-          }`,
+          query: FETCH_PAGE_VERSIONS,
           variables: {
             id: id
-          }
+          },
+          fetchPolicy: 'no-cache'
         })
         .then((result) => {
           if (result.errors || !result.data.page) {
@@ -626,11 +697,11 @@ export default {
           return (result.data.page.versions || []).map((v) => {
             const item = {
               ...v,
-              data: Object.assign(JSON.parse(v.data || '{}'), JSON.parse(v.aux || '{}'))
+              data: Object.freeze(Object.assign(JSON.parse(v.data || '{}'), JSON.parse(v.aux || '{}')))
             }
-            item.files = this.files(v.files || [])
+            item.files = Object.freeze(this.files(v.files || []))
             delete item.aux
-            return item
+            return Object.freeze(item)
           })
         })
         .catch((error) => {
@@ -647,7 +718,7 @@ export default {
       context.push('page content as JSON: ' + JSON.stringify(this.item.content))
       context.push('required output language: ' + (this.item.lang || 'en'))
 
-      return write(prompt, context, files)
+      return import('../ai').then(({ write }) => write(prompt, context, files))
     }
   },
 
@@ -656,8 +727,12 @@ export default {
       this.aside = newAside
     },
 
-    hasChanged(value) {
-      this.dirtyStore.set(value)
+    hasChanged(value, old) {
+      if (value !== old) this.dirtyStore.set(value)
+    },
+
+    vhistory(val) {
+      if (val) this.historyData = this.historyCurrent()
     }
   }
 }
@@ -685,27 +760,29 @@ export default {
     @changes="vchanged = true"
   >
     <template #actions>
-      <v-menu v-if="user.can('text:translate')">
-        <template #activator="{ props }">
-          <v-btn
-            v-bind="props"
-            :title="$gettext('Translate page')"
-            :loading="translating"
-            :icon="mdiTranslate"
-          />
-        </template>
-        <v-list>
-          <v-list-item v-for="lang in txlocales(item.lang)" :key="lang.code">
+      <span class="btn-translate-page" v-if="user.can('text:translate')">
+        <v-menu>
+          <template #activator="{ props }">
             <v-btn
-              @click="translatePage(lang.code)"
-              :prepend-icon="mdiArrowRightThin"
-              variant="text"
-            >
-              {{ lang.name }}
-            </v-btn>
-          </v-list-item>
-        </v-list>
-      </v-menu>
+              v-bind="props"
+              :title="$gettext('Translate page')"
+              :loading="translating"
+              :icon="mdiTranslate"
+            />
+          </template>
+          <v-list>
+            <v-list-item v-for="lang in txlocales(item.lang)" :key="lang.code">
+              <v-btn
+                @click="translatePage(lang.code)"
+                :prepend-icon="mdiArrowRightThin"
+                variant="text"
+              >
+                {{ lang.name }}
+              </v-btn>
+            </v-list-item>
+          </v-list>
+        </v-menu>
+      </span>
     </template>
   </DetailAppBar>
 
@@ -737,7 +814,7 @@ export default {
       <v-window v-model="tab" :touch="false">
         <v-window-item v-if="app.urlpage" value="editor">
           <PageDetailEditor
-            :save="{ fcn: save, count: savecnt }"
+            :save="saveConfig"
             :item="item"
             :assets="assets"
             :elements="elements"
@@ -783,35 +860,14 @@ export default {
       ref="history"
       v-model="vhistory"
       :readonly="!user.can('page:save')"
-      :current="{
-        data: {
-          related_id: item.related_id || null,
-          scheduled: item.publish_at ? 1 : 0,
-          cache: item.cache,
-          domain: item.domain,
-          lang: item.lang,
-          name: item.name,
-          path: item.path,
-          status: item.status,
-          title: item.title,
-          tag: item.tag,
-          to: item.to,
-          type: item.type,
-          theme: item.theme,
-          meta: clean(item.meta, 'meta'),
-          config: clean(item.config, 'config'),
-          content: clean(item.content, 'content')
-        },
-        elements: latest?.elements || [],
-        files: currentAssets
-      }"
-      :load="() => versions(item.id)"
+      :current="historyData"
+      :load="loadVersions"
       @revert="revertVersion"
       @apply="apply"
       @use="use($event)"
     />
     <ChangesDialog v-model="vchanged" :changed="changed"
-      :targets="{ data: item, meta: item.meta, config: item.config, content: item.content }"
+      :targets="changeTargets"
       @resolve="dirty.page = true"
     />
   </Teleport>

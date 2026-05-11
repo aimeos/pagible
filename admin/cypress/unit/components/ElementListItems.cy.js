@@ -35,7 +35,7 @@ describe('ElementListItems', () => {
 
   it('renders sort menu button', () => {
     mountList({}, { 'element:view': true })
-    cy.get('button[title="Sort by"]').should('exist')
+    cy.get('.btn-sort button').should('exist')
   })
 
   it('renders checkbox for bulk selection', () => {
@@ -45,22 +45,22 @@ describe('ElementListItems', () => {
 
   it('shows add button with element:add permission and not embed', () => {
     mountList({ embed: false }, { 'element:view': true, 'element:add': true })
-    cy.get('button[title="Add element"]').should('exist')
+    cy.get('button.btn-add').should('exist')
   })
 
   it('hides add button when embed is true', () => {
     mountList({ embed: true }, { 'element:view': true, 'element:add': true })
-    cy.get('button[title="Add element"]').should('not.exist')
+    cy.get('button.btn-add').should('not.exist')
   })
 
   it('hides add button without element:add permission', () => {
     mountList({}, { 'element:view': true })
-    cy.get('button[title="Add element"]').should('not.exist')
+    cy.get('button.btn-add').should('not.exist')
   })
 
   it('renders reload button', () => {
     mountList({}, { 'element:view': true })
-    cy.get('button[title="Reload elements"]').should('exist')
+    cy.get('button.btn-reload').should('exist')
   })
 
   it('shows loading state initially', () => {
