@@ -3,27 +3,29 @@
  */
 
 .blog .blog-items {
-    display: flex;
+    background-color: var(--pico-contrast-background);
+    border: 1px solid var(--pico-muted-border-color);
+    border-radius: calc(var(--pico-border-radius) * 4);
     flex-direction: column;
-    gap: 1rem;
+    display: flex;
+    overflow: clip;
 }
 
 .blog .first,
 .blog .second {
+    padding: 2rem;
     width: 100%;
 }
 
 .blog .second {
-    display: flex;
+    background-color: var(--pico-contrast-inverse);
     flex-direction: column;
+    display: flex;
     gap: 1rem;
 }
 
 .blog .blog-item {
     text-decoration: none;
-    background-color: var(--pico-contrast-inverse);
-    border: 1px solid var(--pico-muted-border-color);
-    border-radius: calc(var(--pico-border-radius) * 2);
     transition: box-shadow 0.25s ease, transform 0.25s ease;
     padding: 0.5rem;
     display: block;

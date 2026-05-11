@@ -14,8 +14,3 @@ picture.image {
     display: block;
     border-radius: calc(var(--pico-border-radius) * 2);
 }
-
-.image .main > img,
-.image .main > source {
-    width: 100%;
-}

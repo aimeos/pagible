@@ -3,7 +3,7 @@
  */
 
 .swiffy-slider {
-	background-color: var(--pico-muted-background-color);
+	background-color: var(--pico-contrast-background);
 	border: 1px solid var(--pico-muted-border-color);
 	border-radius: calc(var(--pico-border-radius) * 4);
 	filter: drop-shadow(0 1.5rem 3rem #0F172A14);

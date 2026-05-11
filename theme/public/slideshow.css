@@ -349,7 +349,7 @@
 	}
 }
 
-@media (max-width: 992px) {
+@media (max-width: 991px) {
 	.swiffy-slider {
 		--swiffy-slider-track-height:0rem;
 		--swiffy-slider-item-reveal: 0rem;

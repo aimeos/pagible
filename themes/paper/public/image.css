@@ -19,8 +19,3 @@ picture.image {
     padding: 1rem;
     box-shadow: var(--pico-box-shadow);
 }
-
-.image .main > img,
-.image .main > source {
-    width: 100%;
-}

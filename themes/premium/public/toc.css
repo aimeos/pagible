@@ -3,11 +3,11 @@
  */
 
 nav.toc {
-    display: block;
-    padding: 1.5rem 2rem;
     border: 1px solid var(--pico-muted-border-color);
-    border-radius: calc(var(--pico-border-radius) * 3);
-    background-color: var(--pico-contrast-inverse);
+    border-radius: calc(var(--pico-border-radius) * 4);
+    background-color: var(--pico-contrast-background);
+    display: block;
+    padding: 2rem;
 }
 
 nav.toc > p {

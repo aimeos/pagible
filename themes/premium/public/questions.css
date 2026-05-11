@@ -5,10 +5,10 @@
 .questions details {
     border: 1px solid var(--pico-muted-border-color);
     border-radius: calc(var(--pico-border-radius) * 3);
+    background-color: var(--pico-contrast-background);
+    transition: box-shadow 0.2s ease;
     margin-bottom: 0.75rem;
     padding: 2rem;
-    background-color: var(--pico-contrast-inverse);
-    transition: box-shadow 0.2s ease;
 }
 
 .questions details[open] {

@@ -16,8 +16,3 @@
 		background: var(--cms-accent-gradient);
 	}
 }
-
-.image .main > img,
-.image .main > source {
-    width: 100%;
-}

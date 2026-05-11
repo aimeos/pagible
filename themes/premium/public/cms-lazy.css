@@ -149,7 +149,7 @@ dialog.search .load-more:disabled {
 
 
 pre:has(code[class*="language-"]) {
-    background-color: var(--pico-contrast-inverse);
+    background-color: var(--pico-code-background-color);
     border-radius: calc(var(--pico-border-radius) * 2);
     border: 1px solid var(--pico-muted-border-color);
     padding: 2rem;
@@ -157,11 +157,9 @@ pre:has(code[class*="language-"]) {
 
 pre code[class*=language-] {
     color: var(--pico-code-color);
-    background-color: var(--pico-code-background-color);
     font-family: var(--pico-font-family-monospace);
     border-radius: calc(var(--pico-border-radius) * 2);
     overflow-x: auto;
-    padding: 2rem;
 }
 
 p code {
