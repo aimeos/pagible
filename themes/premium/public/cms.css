@@ -3,7 +3,7 @@
  * @license MIT, https://opensource.org/license/MIT
  */
 
-:root {
+:root[data-theme=light] {
     --pico-font-family-sans-serif: ui-sans-serif, sans-serif;
     --pico-font-family-display: var(--pico-font-family-sans-serif);
     --pico-font-family-monospace: ui-monospace, , monospace;
@@ -21,14 +21,14 @@
     --pico-muted-background-color: #F1F5F9;
     --pico-contrast: #0F172A;
     --pico-contrast-border: #0F172A1A;
-    --pico-contrast-background: #F1F5F9;
+    --pico-contrast-background: #FDFEFF;
     --pico-contrast-underline: var(--pico-contrast);
     --pico-contrast-hover: #020617;
     --pico-contrast-hover-border: #0F172A26;
     --pico-contrast-hover-background: #E2E8F0;
     --pico-contrast-hover-underline: var(--pico-contrast-hover);
     --pico-contrast-focus: var(--pico-text-selection-color);
-    --pico-contrast-inverse: #FFFFFF;
+    --pico-contrast-inverse: #FDFEFF;
     --pico-primary: #991B1B;
     --pico-primary-background: #991B1B10;
     --pico-primary-border: var(--pico-primary);
@@ -221,20 +221,6 @@ header nav .sidebar-close button {
     padding: 0.75rem;
     background: none;
     border: none;
-}
-
-header nav .menu a[role=menuitem] {
-    background-color: var(--pico-primary);
-    color: var(--pico-primary-inverse);
-    border-color: var(--pico-primary);
-    border-radius: var(--pico-border-radius);
-    margin-inline-start: 0;
-}
-
-header nav .menu a[role=menuitem]:hover {
-    background-color: var(--pico-primary-hover);
-    border-color: var(--pico-primary-hover);
-    color: var(--pico-primary-inverse);
 }
 
 @media (max-width: 991px) {

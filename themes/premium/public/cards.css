@@ -16,7 +16,7 @@
 }
 
 .cards .card-item {
-    background-color: var(--pico-contrast-inverse);
+    background-color: var(--pico-contrast-background);
     border: 1px solid var(--pico-muted-border-color);
     border-radius: calc(var(--pico-border-radius) * 4);
     transition: box-shadow 0.25s ease, transform 0.25s ease;

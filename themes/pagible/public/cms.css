@@ -2,7 +2,7 @@
  * @license MIT, https://opensource.org/license/MIT
  */
 
-:root {
+:root[data-theme=dark] {
     --pico-font-family-sans-serif: ui-sans-serif, sans-serif;
     --pico-block-spacing-vertical: 0;
     --pico-nav-element-spacing-horizontal: 1rem;

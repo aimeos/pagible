@@ -59,11 +59,6 @@
     margin: auto;
 }
 
-.cms-content > :nth-child(even) .image-text .grid-start .image,
-.cms-content > :nth-child(even) .image-text .grid-end .image {
-    background-color: var(--pico-contrast-inverse);
-}
-
 @media screen and (min-width: 768px) {
     .cms-content .container {
         padding: 6rem min(5%, 2rem);

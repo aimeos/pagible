@@ -54,7 +54,7 @@
     position: absolute;
     inset: 0.25rem;
     width: calc(50% - 0.25rem);
-    background: var(--pico-background-color, #FFFFFF);
+    background-color: var(--pico-background-color);
     border-radius: calc(var(--pico-border-radius) * 1.5);
     box-shadow: var(--pico-box-shadow);
     transition: transform 0.2s;
@@ -89,7 +89,7 @@
     display: flex;
     flex-direction: column;
     padding: 2rem;
-    background-color: var(--pico-primary-inverse, #FFFFFF);
+    background-color: var(--pico-contrast-background);
     border: 1px solid var(--pico-muted-border-color);
     border-radius: var(--pico-border-radius);
     box-shadow: var(--pico-box-shadow);
