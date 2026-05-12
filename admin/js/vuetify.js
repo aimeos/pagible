@@ -5,6 +5,8 @@
 import gettext from './i18n'
 import { theme } from './config'
 import { createVuetify } from 'vuetify'
+import { VDialog } from 'vuetify/components/VDialog'
+import { VMenu } from 'vuetify/components/VMenu'
 import { aliases, mdi } from 'vuetify/iconsets/mdi-svg'
 
 const localeMap = { zh: 'zhHans' }
@@ -33,6 +35,7 @@ export async function switchLocale(code) {
 }
 
 const vuetify = createVuetify({
+  components: { VDialog, VMenu },
   display: {
     thresholds: {
       md: 960,
