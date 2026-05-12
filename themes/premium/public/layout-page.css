@@ -12,23 +12,11 @@
 }
 
 .cms-content > :nth-child(odd) {
-    --pico-contrast-background: var(--pico-muted-background-color);
     background-color: var(--pico-background-color);
 }
 
-.cms-content > :nth-child(odd) .image-text .grid-start .image,
-.cms-content > :nth-child(odd) .image-text .grid-end .image {
-    background-color: var(--pico-contrast-inverse);
-}
-
 .cms-content > :nth-child(even) {
-    --pico-contrast-background: var(--pico-background-color);
     background-color: var(--pico-muted-background-color);
-}
-
-.cms-content > :nth-child(even) .image-text .grid-start .image,
-.cms-content > :nth-child(even) .image-text .grid-end .image {
-    background-color: var(--pico-contrast-inverse);
 }
 
 .cms-content > .heading + .text,
