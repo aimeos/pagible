@@ -20,6 +20,40 @@ composer require aimeos/pagible
 - **vue3-gettext** - Internationalization (32 languages)
 - **Cypress** - Component and E2E testing
 
+## Configuration
+
+After installation, the configuration is available in `config/cms/admin.php`:
+
+### Theme Colors
+
+The `colors` section defines Vuetify theme colors for `light` and `dark` modes. Each theme contains 14 color tokens (background, surface, primary, secondary, error, info, success, warning, text-primary, text-secondary, map-accent, border, etc.) using 6-char hex format (`#RRGGBB`).
+
+### Media Proxy
+
+| Option | Env Variable | Default | Description |
+|--------|-------------|---------|-------------|
+| `proxy.maxsize` | `CMS_PROXY_MAXSIZE` | `10` | Maximum downloadable file size in MB via proxy |
+| `proxy.timeout` | `CMS_PROXY_TIMEOUT` | `30` | Stream timeout in seconds |
+| `proxy.middleware` | | `['throttle:cms-proxy']` | Middleware applied to the proxy route |
+
+### CSP Media Source
+
+| Option | Description |
+|--------|-------------|
+| `csp.media-src` | Additional CSP `media-src` directive for the admin panel (e.g., CDN domains) |
+
+## Commands
+
+### cms:install:admin
+
+Installs the Pagible CMS admin package.
+
+```bash
+php artisan cms:install:admin
+```
+
+Publishes admin assets and configuration to `public/vendor/cms/admin` and `config/cms/admin.php`.
+
 ## Project Setup
 
 ```sh

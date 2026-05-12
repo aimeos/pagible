@@ -74,6 +74,7 @@ PagibleAI CMS is a modular monorepo split into 10 sub-packages. Each package han
 * **Backup** provides per-tenant backup and restore with media files, integrity verification, and cross-tenant support
 * **Import** provides importers from external CMS platforms (WordPress, etc.)
 * **Theme** handles frontend rendering with Blade templates
+* **Themes** contains high-quality frontend themes
 
 Pages are organized as a nested set tree (using `_lft`/`_rgt` columns). All content changes are tracked as immutable version snapshots — editors see the latest draft while the public sees the published version. Caching is per-page with configurable duration.
 
@@ -92,6 +93,7 @@ pagible/
 ├── jsonapi/      Read-only JSON:API
 ├── mcp/          MCP server (30+ tools)
 ├── theme/        Frontend rendering (Blade templates)
+├── themes/       Frontend themes (CSS)
 ├── tests/        Shared test infrastructure
 ├── config/       Configuration files
 └── phpunit.xml   Aggregated test runner
@@ -101,7 +103,7 @@ pagible/
 
 ### Prerequisites
 
-* PHP 8.1 or higher
+* PHP 8.2 or higher
 * Composer
 * Node.js & npm (for admin panel development)
 * A working Laravel 11.x, 12.x, or 13.x installation
