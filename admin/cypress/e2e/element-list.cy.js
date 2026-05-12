@@ -379,10 +379,8 @@ describe('Element List', () => {
   it('bulk actions are hidden when no items are checked', () => {
     const el = makeElement()
     visitElements([el])
-    // When no items are checked, all action list items inside the bulk menu are hidden
-    cy.get('.header .bulk .btn-actions .v-list .v-list-item').each(($item) => {
-      cy.wrap($item).should('not.be.visible')
-    })
+    // When no items are checked, bulk actions button is disabled
+    cy.get('.header .bulk .btn-actions .v-btn').should('be.disabled')
   })
 
   it('checking an element item enables the bulk actions button', () => {
