@@ -158,8 +158,12 @@ pre:has(code[class*="language-"]) {
 pre code[class*=language-] {
     color: var(--pico-code-color);
     font-family: var(--pico-font-family-monospace);
+    background-color: var(--pico-code-background-color);
     border-radius: calc(var(--pico-border-radius) * 2);
     overflow-x: auto;
+    display: block;
+    padding: 2rem;
+    width: 100%;
 }
 
 p code {

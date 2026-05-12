@@ -6,6 +6,8 @@
 .image-text .r1-3 { --ratio: 25%; }
 .image-text .r1-2 { --ratio: 33.333%; }
 .image-text .r1-1 { --ratio: 50%; }
+.image-text .r2-1 { --ratio: 66.666%; }
+.image-text .r3-1 { --ratio: 75%; }
 
 .image-text .start::after,
 .image-text .end::after {
@@ -59,7 +61,7 @@
 .image-text .grid-end .image {
     flex: 0 0 var(--ratio);
     max-width: var(--ratio);
-    background-color: var(--pico-muted-background-color);
+    background-color: transparent;
     display: flex;
     align-items: center;
 }
