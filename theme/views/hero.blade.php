@@ -2,6 +2,10 @@
 <link href="{{ cmstheme($page, 'hero.css') }}" rel="stylesheet">
 @endPushOnce
 
+@if($bg = cms($files, $data->background?->id ?? null))
+    @include('cms::pic', ['file' => $bg, 'main' => true, 'class' => 'background', 'sizes' => '100vw'])
+@endif
+
 <div class="first">
     @if($data->subtitle ?? null)
         <div class="subtitle">

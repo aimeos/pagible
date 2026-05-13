@@ -325,6 +325,10 @@
                 "button-alternative": {
                     "type": "string"
                 },
+                "background": {
+                    "type": "image",
+                    "label": "background"
+                },
                 "file": {
                     "type": "image",
                     "label": "image"
