@@ -31,7 +31,7 @@
             "fields": {
                 "--pico-font-family-sans-serif": {
                     "type": "string",
-                    "default": "\"Inter\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif"
+                    "default": "ui-sans-serif, sans-serif"
                 },
                 "--pico-color": {
                     "type": "color",
@@ -63,7 +63,7 @@
                 },
                 "--pico-primary-background": {
                     "type": "color",
-                    "default": "#1A1A1A10"
+                    "default": "#1A1A1A08"
                 },
                 "--pico-primary-hover": {
                     "type": "color",
@@ -71,11 +71,11 @@
                 },
                 "--pico-primary-hover-background": {
                     "type": "color",
-                    "default": "#00000010"
+                    "default": "#00000008"
                 },
                 "--pico-secondary": {
                     "type": "color",
-                    "default": "#1A1A1A"
+                    "default": "#6090D8"
                 },
                 "--pico-secondary-background": {
                     "type": "color",
@@ -91,7 +91,7 @@
                 },
                 "--pico-border-radius": {
                     "type": "string",
-                    "default": "8px"
+                    "default": "0.5rem"
                 },
                 "--pico-nav-breadcrumb-divider": {
                     "type": "string",

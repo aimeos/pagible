@@ -31,7 +31,7 @@
             "fields": {
                 "--pico-font-family-sans-serif": {
                     "type": "string",
-                    "default": "\"Helvetica Neue\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Oxygen, Ubuntu, Cantarell, Arial, sans-serif"
+                    "default": "ui-sans-serif, sans-serif"
                 },
                 "--pico-color": {
                     "type": "color",
