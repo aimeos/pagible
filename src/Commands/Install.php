@@ -46,10 +46,10 @@ Made with <fg=green>love</> by the Pagible CMS community. Be a part of it!
         $result = 0;
         $options = $this->option( 'seed' ) ? ['--seed' => true] : [];
 
-        $commands = collect( Artisan::all() )
-            ->filter( fn( $cmd, $name ) => str_starts_with( $name, 'cms:install:' ) )
-            ->keys()
-            ->sort();
+        $all = collect( Artisan::all() )->filter( fn( $cmd, $name ) => str_starts_with( $name, 'cms:install:' ) )->keys();
+
+        $commands = collect( ['cms:install:core', 'cms:install:graphql', 'cms:install:ai'] )
+            ->merge( $all )->unique()->filter( fn( $name ) => $all->contains( $name ) );
 
         foreach( $commands as $command )
         {
