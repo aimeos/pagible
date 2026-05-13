@@ -8,6 +8,9 @@
  * - `required`: boolean, if true, the field is required
  */
 
+import gql from 'graphql-tag'
+import { debounce } from '../utils'
+
 export default {
   props: {
     modelValue: { type: String },
@@ -19,15 +22,25 @@ export default {
 
   emits: ['update:modelValue', 'error'],
 
+  setup() {
+    return { debounce }
+  },
+
   data() {
     const allowed = this.config.allowed || ['http', 'https']
 
     return {
       lastError: null,
+      loading: false,
+      pages: [],
       regex: new RegExp(
         `^((${allowed.join('|')}://)?([^/@: ]+(:[^/@: ]+)?@)?([0-9a-z]+(-[0-9a-z]+)*\\.)*[0-9a-z]+(-[0-9a-z]+)*\\.[a-z]{2,}(:[0-9]{1,5})?)?(/.*)?$`
       )
     }
+  },
+
+  created() {
+    this.searchd = this.debounce(this.search, 300)
   },
 
   computed: {
@@ -53,6 +66,39 @@ export default {
       }
 
       return v ? this.regex.test(v) : true
+    },
+
+    search(value) {
+      if (!value) {
+        this.pages = []
+        return
+      }
+
+      this.loading = true
+      this.$apollo
+        .query({
+          query: gql`
+            query pages($filter: PageFilter) {
+              pages(first: 10, filter: $filter) {
+                data {
+                  path
+                }
+              }
+            }
+          `,
+          variables: {
+            filter: { any: value.replace(/^\/+/, '') }
+          }
+        })
+        .then((result) => {
+          this.pages = (result.data?.pages?.data || []).map((page) => '/' + (page.path || ''))
+        })
+        .catch((error) => {
+          this.$log('Url::search(): Error fetching pages', error)
+        })
+        .finally(() => {
+          this.loading = false
+        })
     }
   },
 
@@ -72,17 +118,21 @@ export default {
 </script>
 
 <template>
-  <v-text-field
+  <v-combobox
     :error="hasError"
     :rules="rules"
+    :items="pages"
+    :loading="loading"
     :readonly="readonly"
     :placeholder="config.placeholder || ''"
+    :no-data-text="!loading ? $gettext('No pages found') : $gettext('Loading') + ' ...'"
     :modelValue="modelValue ?? config.default ?? ''"
     @update:modelValue="$emit('update:modelValue', $event)"
+    @update:search="searchd($event)"
     density="comfortable"
     hide-details="auto"
     variant="outlined"
     class="ltr"
     clearable
-  ></v-text-field>
+  ></v-combobox>
 </template>
