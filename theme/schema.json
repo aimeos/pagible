@@ -326,8 +326,8 @@
                     "type": "string"
                 },
                 "file": {
-                    "type": "image",
-                    "label": "image"
+                    "type": "media",
+                    "label": "media file"
                 }
             }
         },

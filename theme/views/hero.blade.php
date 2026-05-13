@@ -29,6 +29,17 @@
 
 @if($file = cms($files, $data->file?->id ?? null))
     <div class="second">
-        @include('cms::pic', ['file' => $file, 'main' => true, 'sizes' => '50vw'])
+        @if(str_starts_with(cms($file, 'mime') ?? '', 'video/'))
+            <video autoplay muted loop playsinline preload="metadata"
+                title="{{ cms($file, 'description')?->{cms($page, 'lang')} ?? '' }}"
+                src="{{ cmsurl(cms($file, 'path')) }}"
+                @if($preview = current(array_reverse((array) cms($file, 'previews', []))))
+                    poster="{{ cmsurl($preview) }}"
+                @endif
+            >
+            </video>
+        @else
+            @include('cms::pic', ['file' => $file, 'main' => true, 'sizes' => '50vw'])
+        @endif
     </div>
 @endif
