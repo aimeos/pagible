@@ -23,6 +23,14 @@ function mountText(props = {}) {
 }
 
 describe('Text (CKEditor)', () => {
+  beforeEach(() => {
+    cy.on('uncaught:exception', (err) => {
+      if (err.message.includes('ckeditor5/translations')) {
+        return false
+      }
+    })
+  })
+
   it('renders a container', () => {
     mountText()
     cy.get('div').should('exist')
