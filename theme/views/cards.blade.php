@@ -6,7 +6,7 @@
 	<h2>{{ $data->title }}</h2>
 @endif
 
-<div class="card-list">
+<div class="card-list cols-{{ $data->columns ?? 'auto' }}">
 	@foreach($data->cards ?? [] as $card)
 		<div class="card-item">
 			@if($file = cms($files, $card->file?->id ?? null))

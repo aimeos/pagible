@@ -4,14 +4,38 @@
 
 .cards .card-list {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
     justify-self: center;
     gap: 1rem;
 }
 
 @media screen and (min-width: 768px) {
-    .cards .card-list {
+    .cards .card-list.cols-auto {
         grid-template-columns: 1fr 1fr 1fr;
+    }
+}
+
+.cards .card-list.cols-1 {
+    grid-template-columns: 1fr;
+}
+
+@media screen and (min-width: 768px) {
+    .cards .card-list.cols-2 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .cards .card-list.cols-3 {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .cards .card-list.cols-4 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media screen and (min-width: 992px) {
+    .cards .card-list.cols-4 {
+        grid-template-columns: repeat(4, 1fr);
     }
 }
 
