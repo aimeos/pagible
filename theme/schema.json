@@ -330,8 +330,8 @@
                     "label": "background"
                 },
                 "file": {
-                    "type": "image",
-                    "label": "image"
+                    "type": "media",
+                    "label": "media file"
                 }
             }
         },

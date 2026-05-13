@@ -8,6 +8,8 @@ import { useAppStore, useLanguageStore } from './stores'
 
 export const IMAGE_MIME_FILTER = { mime: ['image/gif', 'image/jpeg', 'image/png', 'image/svg+xml', 'image/webp'] }
 
+export const MEDIA_MIME_FILTER = { mime: ['image/gif', 'image/jpeg', 'image/png', 'image/svg+xml', 'image/webp', 'video/mp4', 'video/webm', 'video/ogg'] }
+
 /**
  * Creates a debounced version of a function that returns a Promise
  *
