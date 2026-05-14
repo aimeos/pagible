@@ -7,8 +7,6 @@
 
 namespace Tests;
 
-use Illuminate\Foundation\Testing\DatabaseTruncation;
-use Illuminate\Foundation\Testing\RefreshDatabaseState;
 use Nuwave\Lighthouse\Testing\MakesGraphQLRequests;
 use Nuwave\Lighthouse\Testing\RefreshesSchemaCache;
 use Aimeos\Cms\Schema;
@@ -18,14 +16,6 @@ class GraphqlSchemaTest extends GraphqlTestAbstract
 {
 	use MakesGraphQLRequests;
 	use RefreshesSchemaCache;
-
-	protected $connectionsToTruncate = ['testing'];
-
-
-	protected function beforeTruncatingDatabase(): void
-	{
-		RefreshDatabaseState::$migrated = false;
-	}
 
 
 	protected function defineEnvironment( $app )

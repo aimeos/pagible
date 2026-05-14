@@ -21,10 +21,10 @@ class AiCommandTest extends AiTestAbstract
     use CmsWithMigrations;
     use \Illuminate\Foundation\Testing\RefreshDatabase;
 
+    protected $seeder = TestSeeder::class;
+
     public function testDescription(): void
     {
-        $this->seed( TestSeeder::class );
-
         Prism::fake( [
             TextResponseFake::make()->withText( 'Generated meta description' ),
             TextResponseFake::make()->withText( 'Generated meta description' ),

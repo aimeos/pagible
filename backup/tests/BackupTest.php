@@ -20,6 +20,8 @@ class BackupTest extends BackupTestAbstract
     use CmsWithMigrations;
     use \Illuminate\Foundation\Testing\RefreshDatabase;
 
+    protected $seeder = TestSeeder::class;
+
     private string $tenant = 'test';
 
 
@@ -42,10 +44,9 @@ class BackupTest extends BackupTestAbstract
 
     public function testBackupAndRestore(): void
     {
-        $this->seed( TestSeeder::class );
-
         $conn = config( 'cms.db', 'sqlite' );
         $t = $this->tenant;
+
         $pageCount = DB::connection( $conn )->table( 'cms_pages' )->where( 'tenant_id', $t )->count();
         $elementCount = DB::connection( $conn )->table( 'cms_elements' )->where( 'tenant_id', $t )->count();
         $fileCount = DB::connection( $conn )->table( 'cms_files' )->where( 'tenant_id', $t )->count();
@@ -89,8 +90,6 @@ class BackupTest extends BackupTestAbstract
 
     public function testBackupKeep(): void
     {
-        $this->seed( TestSeeder::class );
-
         $t = $this->tenant;
         $prefix = 'pagible-' . $t . '-';
 
@@ -118,8 +117,6 @@ class BackupTest extends BackupTestAbstract
 
     public function testBackupList(): void
     {
-        $this->seed( TestSeeder::class );
-
         $t = $this->tenant;
 
         $this->artisan( 'cms:backup', ['--tenant' => $t, '--disk' => 'backup', '--no-media' => true] )
@@ -132,12 +129,10 @@ class BackupTest extends BackupTestAbstract
 
     public function testBackupMerge(): void
     {
-        $this->seed( TestSeeder::class );
-
         $conn = config( 'cms.db', 'sqlite' );
         $t = $this->tenant;
-        $pageCount = DB::connection( $conn )->table( 'cms_pages' )->where( 'tenant_id', $t )->count();
 
+        $pageCount = DB::connection( $conn )->table( 'cms_pages' )->where( 'tenant_id', $t )->count();
         $backupFile = $this->backup( $t );
 
         $this->artisan( 'cms:restore', [
@@ -155,10 +150,7 @@ class BackupTest extends BackupTestAbstract
 
     public function testBackupVerify(): void
     {
-        $this->seed( TestSeeder::class );
-
         $t = $this->tenant;
-
         $backupFile = $this->backup( $t );
 
         $this->artisan( 'cms:restore', [
@@ -171,12 +163,10 @@ class BackupTest extends BackupTestAbstract
 
     public function testBackupCrossTenant(): void
     {
-        $this->seed( TestSeeder::class );
-
         $conn = config( 'cms.db', 'sqlite' );
         $t = $this->tenant;
-        $pageCount = DB::connection( $conn )->table( 'cms_pages' )->where( 'tenant_id', $t )->count();
 
+        $pageCount = DB::connection( $conn )->table( 'cms_pages' )->where( 'tenant_id', $t )->count();
         $backupFile = $this->backup( $t );
 
         // Delete source tenant data so UUIDs don't conflict

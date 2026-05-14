@@ -23,24 +23,26 @@ class GraphqlElementTest extends GraphqlTestAbstract
     use MakesGraphQLRequests;
     use RefreshesSchemaCache;
 
+    protected $seeder = TestSeeder::class;
 
-	protected function defineEnvironment( $app )
-	{
+
+    protected function defineEnvironment( $app )
+    {
         parent::defineEnvironment( $app );
 
-		$app['config']->set( 'lighthouse.schema_path', __DIR__ . '/default-schema.graphql' );
-		$app['config']->set( 'lighthouse.namespaces.models', ['App\Models', 'Aimeos\\Cms\\Models'] );
-		$app['config']->set( 'lighthouse.namespaces.mutations', ['Aimeos\\Cms\\GraphQL\\Mutations'] );
-		$app['config']->set( 'lighthouse.namespaces.directives', ['Aimeos\\Cms\\GraphQL\\Directives'] );
+        $app['config']->set( 'lighthouse.schema_path', __DIR__ . '/default-schema.graphql' );
+        $app['config']->set( 'lighthouse.namespaces.models', ['App\Models', 'Aimeos\\Cms\\Models'] );
+        $app['config']->set( 'lighthouse.namespaces.mutations', ['Aimeos\\Cms\\GraphQL\\Mutations'] );
+        $app['config']->set( 'lighthouse.namespaces.directives', ['Aimeos\\Cms\\GraphQL\\Directives'] );
     }
 
 
-	protected function getPackageProviders( $app )
-	{
-		return array_merge( parent::getPackageProviders( $app ), [
-			'Nuwave\Lighthouse\LighthouseServiceProvider'
-		] );
-	}
+    protected function getPackageProviders( $app )
+    {
+        return array_merge( parent::getPackageProviders( $app ), [
+            'Nuwave\Lighthouse\LighthouseServiceProvider'
+        ] );
+    }
 
 
     protected function setUp(): void
@@ -59,8 +61,6 @@ class GraphqlElementTest extends GraphqlTestAbstract
 
     public function testElement()
     {
-        $this->seed( TestSeeder::class );
-
         $element = Element::where( 'type', 'footer' )->firstOrFail();
 
         $expected = [
@@ -107,8 +107,6 @@ class GraphqlElementTest extends GraphqlTestAbstract
 
     public function testElements()
     {
-        $this->seed(TestSeeder::class);
-
         $element = Element::where('type', 'footer')->first();
 
         $expected = [
@@ -161,8 +159,6 @@ class GraphqlElementTest extends GraphqlTestAbstract
 
     public function testElementsPublished()
     {
-        $this->seed( TestSeeder::class );
-
         $this->expectsDatabaseQueryCount( 1 );
         $response = $this->actingAs( $this->user )->graphQL( '{
             elements(publish: PUBLISHED) {
@@ -190,8 +186,6 @@ class GraphqlElementTest extends GraphqlTestAbstract
 
     public function testElementsScheduled()
     {
-        $this->seed( TestSeeder::class );
-
         $element = Element::where( 'type', 'footer' )->get()->first();
 
         $this->expectsDatabaseQueryCount( 2 );
@@ -223,8 +217,6 @@ class GraphqlElementTest extends GraphqlTestAbstract
 
     public function testElementVersions()
     {
-        $this->seed(TestSeeder::class);
-
         $element = Element::where( 'type', 'footer' )->firstOrFail();
 
         $this->expectsDatabaseQueryCount(3);
@@ -262,8 +254,6 @@ class GraphqlElementTest extends GraphqlTestAbstract
 
     public function testAddElement()
     {
-        $this->seed(TestSeeder::class);
-
         $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
         $element = Element::where( 'type', 'footer' )->firstOrFail();
 
@@ -324,8 +314,6 @@ class GraphqlElementTest extends GraphqlTestAbstract
 
     public function testSaveElement()
     {
-        $this->seed(TestSeeder::class);
-
         $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
         $element = Element::where( 'type', 'footer' )->firstOrFail();
 
@@ -397,8 +385,6 @@ class GraphqlElementTest extends GraphqlTestAbstract
 
     public function testSaveElementBadType()
     {
-        $this->seed( TestSeeder::class );
-
         $element = Element::where( 'type', 'footer' )->firstOrFail();
 
         $response = $this->actingAs($this->user)->graphQL('
@@ -419,8 +405,6 @@ class GraphqlElementTest extends GraphqlTestAbstract
 
     public function testDropElement()
     {
-        $this->seed( TestSeeder::class );
-
         $element = Element::where( 'type', 'footer' )->firstOrFail();
 
         $this->expectsDatabaseQueryCount( 3 );
@@ -448,8 +432,6 @@ class GraphqlElementTest extends GraphqlTestAbstract
 
     public function testKeepElement()
     {
-        $this->seed( TestSeeder::class );
-
         $element = Element::where( 'type', 'footer' )->firstOrFail();
         $element->delete();
 
@@ -478,8 +460,6 @@ class GraphqlElementTest extends GraphqlTestAbstract
 
     public function testPubElement()
     {
-        $this->seed( TestSeeder::class );
-
         $element = Element::where( 'type', 'footer' )->firstOrFail();
 
         $this->expectsDatabaseQueryCount( 7 );
@@ -505,8 +485,6 @@ class GraphqlElementTest extends GraphqlTestAbstract
 
     public function testPubElementAt()
     {
-        $this->seed( TestSeeder::class );
-
         $element = Element::where( 'type', 'footer' )->firstOrFail();
 
         $this->expectsDatabaseQueryCount( 4 );
@@ -532,8 +510,6 @@ class GraphqlElementTest extends GraphqlTestAbstract
 
     public function testPubElementAtWithTime()
     {
-        $this->seed( TestSeeder::class );
-
         $element = Element::where( 'type', 'footer' )->firstOrFail();
 
         $response = $this->actingAs( $this->user )->graphQL( '
@@ -559,8 +535,6 @@ class GraphqlElementTest extends GraphqlTestAbstract
 
     public function testPurgeElement()
     {
-        $this->seed( TestSeeder::class );
-
         $element = Element::where( 'type', 'footer' )->firstOrFail();
 
         $this->expectsDatabaseQueryCount( 3 );

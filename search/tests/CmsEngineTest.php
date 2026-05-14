@@ -24,6 +24,7 @@ class CmsEngineTest extends SearchTestAbstract
     use CmsWithMigrations;
     use DatabaseTruncation;
 
+    protected $seeder = TestSeeder::class;
     protected $connectionsToTruncate = ['testing'];
 
 
@@ -37,7 +38,6 @@ class CmsEngineTest extends SearchTestAbstract
     {
         parent::setUp();
 
-        $this->seed( TestSeeder::class );
         $conn = DB::connection( config( 'cms.db' ) );
 
         if( $conn->getDriverName() === 'sqlsrv' )

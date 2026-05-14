@@ -20,6 +20,8 @@ class PageControllerTest extends ThemeTestAbstract
     use CmsWithMigrations;
     use RefreshDatabase;
 
+    protected $seeder = TestSeeder::class;
+
 
     protected function setUp(): void
     {
@@ -35,8 +37,6 @@ class PageControllerTest extends ThemeTestAbstract
     public function testLatestFindsChangedPath()
     {
         Tenancy::$callback = fn() => 'demo';
-
-        $this->seed( TestSeeder::class );
 
         $page = Page::where( 'tag', 'blog' )->firstOrFail();
 
@@ -57,8 +57,6 @@ class PageControllerTest extends ThemeTestAbstract
     {
         Tenancy::$callback = fn() => 'demo';
 
-        $this->seed( TestSeeder::class );
-
         $page = Page::where( 'tag', 'article' )->firstOrFail();
 
         // Save with a new path (no domain in input — e.g. MCP tool)
@@ -77,8 +75,6 @@ class PageControllerTest extends ThemeTestAbstract
     public function testLatestFindsChangedPathWithDomainPage()
     {
         Tenancy::$callback = fn() => 'demo';
-
-        $this->seed( TestSeeder::class );
 
         // Home page has domain='mydomain.tld' in the seeder
         $page = Page::where( 'tag', 'root' )->firstOrFail();
