@@ -19,10 +19,10 @@ class CoreCommandTest extends CoreTestAbstract
     use CmsWithMigrations;
     use \Illuminate\Foundation\Testing\RefreshDatabase;
 
+    protected $seeder = TestSeeder::class;
+
     public function testPublish(): void
     {
-        $this->seed( TestSeeder::class );
-
         $this->artisan('cms:publish')->assertExitCode( 0 );
 
         $this->assertEquals( 1, Page::where( 'path', 'hidden' )->firstOrFail()?->status );

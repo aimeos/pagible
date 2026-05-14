@@ -9,24 +9,18 @@ namespace Tests;
 
 use Aimeos\Cms\Mcp\CmsServer;
 use Aimeos\Cms\Models\File;
-use Illuminate\Foundation\Testing\DatabaseTruncation;
-use Illuminate\Foundation\Testing\RefreshDatabaseState;
+use Database\Seeders\TestSeeder;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
 
 class FileToolsTest extends McpTestAbstract
 {
     use CmsWithMigrations;
-    use DatabaseTruncation;
+    use RefreshDatabase;
 
-    protected $connectionsToTransact = [];
-
-
-    protected function beforeTruncatingDatabase(): void
-    {
-        // In-memory SQLite databases don't persist across test classes
-        RefreshDatabaseState::$migrated = false;
-    }
+    protected $seeder = TestSeeder::class;
 
 
     protected function setUp(): void
@@ -46,7 +40,6 @@ class FileToolsTest extends McpTestAbstract
 
     public function testGetFile()
     {
-        $this->seed( \Database\Seeders\TestSeeder::class );
         $file = File::where( 'name', 'Test image' )->first();
 
         $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\GetFile::class, [
@@ -69,8 +62,6 @@ class FileToolsTest extends McpTestAbstract
 
     public function testSearchFilesNoTerm()
     {
-        $this->seed( \Database\Seeders\TestSeeder::class );
-
         $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\SearchFiles::class );
 
         $response->assertOk()->assertSee( ['Test image', 'image/jpeg'] );
@@ -79,8 +70,6 @@ class FileToolsTest extends McpTestAbstract
 
     public function testSearchFilesFilterMime()
     {
-        $this->seed( \Database\Seeders\TestSeeder::class );
-
         $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\SearchFiles::class, [
             'mime' => 'image/tiff',
         ] );
@@ -91,8 +80,9 @@ class FileToolsTest extends McpTestAbstract
 
     public function testSearchFiles()
     {
-        $this->seed( \Database\Seeders\TestSeeder::class );
-        sleep( 5 ); // Wait for SQL Server to update fulltext index
+        if( DB::connection( config( 'cms.db' ) )->getDriverName() === 'sqlsrv' ) {
+            sleep( 5 );
+        }
 
         $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\SearchFiles::class, [
             'term' => 'Test image',
@@ -138,7 +128,6 @@ class FileToolsTest extends McpTestAbstract
 
     public function testSaveFile()
     {
-        $this->seed( \Database\Seeders\TestSeeder::class );
         $file = File::where( 'name', 'Test image' )->first();
 
         $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\SaveFile::class, [
@@ -163,7 +152,6 @@ class FileToolsTest extends McpTestAbstract
 
     public function testPublishFile()
     {
-        $this->seed( \Database\Seeders\TestSeeder::class );
         $file = File::where( 'name', 'Test image' )->first();
 
         $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\PublishFile::class, [
@@ -176,7 +164,6 @@ class FileToolsTest extends McpTestAbstract
 
     public function testPublishFileScheduled()
     {
-        $this->seed( \Database\Seeders\TestSeeder::class );
         $file = File::where( 'name', 'Test image' )->first();
 
         $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\PublishFile::class, [
@@ -190,7 +177,6 @@ class FileToolsTest extends McpTestAbstract
 
     public function testDropFile()
     {
-        $this->seed( \Database\Seeders\TestSeeder::class );
         $file = File::where( 'name', 'Test image' )->first();
 
         $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\DropFile::class, [
@@ -214,7 +200,6 @@ class FileToolsTest extends McpTestAbstract
 
     public function testRestoreFile()
     {
-        $this->seed( \Database\Seeders\TestSeeder::class );
         $file = File::where( 'name', 'Test image' )->first();
         $file->delete();
 
@@ -229,7 +214,6 @@ class FileToolsTest extends McpTestAbstract
 
     public function testRestoreFileNotDeleted()
     {
-        $this->seed( \Database\Seeders\TestSeeder::class );
         $file = File::where( 'name', 'Test image' )->first();
 
         $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\RestoreFile::class, [

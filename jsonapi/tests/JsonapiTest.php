@@ -7,6 +7,7 @@
 
 namespace Tests;
 
+use Database\Seeders\TestSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use LaravelJsonApi\Testing\MakesJsonApiRequests;
 
@@ -16,6 +17,8 @@ class JsonapiTest extends JsonapiTestAbstract
     use CmsWithMigrations;
     use RefreshDatabase;
     use MakesJsonApiRequests;
+
+    protected $seeder = TestSeeder::class;
 
 
     protected function defineEnvironment( $app )
@@ -36,7 +39,6 @@ class JsonapiTest extends JsonapiTestAbstract
 
     public function testPages()
     {
-        $this->seed( \Database\Seeders\TestSeeder::class );
 
         $pages = \Aimeos\Cms\Models\Page::where('tag', 'root')->get();
 
@@ -50,7 +52,6 @@ class JsonapiTest extends JsonapiTestAbstract
 
     public function testPagesFilter()
     {
-        $this->seed( \Database\Seeders\TestSeeder::class );
 
         $pages = \Aimeos\Cms\Models\Page::where('tag', 'root')->get();
 
@@ -65,7 +66,6 @@ class JsonapiTest extends JsonapiTestAbstract
 
     public function testPage()
     {
-        $this->seed( \Database\Seeders\TestSeeder::class );
 
         $page = \Aimeos\Cms\Models\Page::where('tag', 'root')->firstOrFail();
 
@@ -79,7 +79,6 @@ class JsonapiTest extends JsonapiTestAbstract
 
     public function testPageIncludeAncestors()
     {
-        $this->seed( \Database\Seeders\TestSeeder::class );
 
         $page = \Aimeos\Cms\Models\Page::where('tag', 'article')->firstOrFail();
         $expected = [];
@@ -98,7 +97,6 @@ class JsonapiTest extends JsonapiTestAbstract
 
     public function testPageIncludeChildren()
     {
-        $this->seed( \Database\Seeders\TestSeeder::class );
 
         $page = \Aimeos\Cms\Models\Page::where('tag', 'root')->firstOrFail();
         $expected = [];
@@ -117,7 +115,6 @@ class JsonapiTest extends JsonapiTestAbstract
 
     public function testPageIncludeChildrenChildren()
     {
-        $this->seed( \Database\Seeders\TestSeeder::class );
 
         $page = \Aimeos\Cms\Models\Page::where('tag', 'root')->firstOrFail();
         $expected = [];
@@ -135,7 +132,6 @@ class JsonapiTest extends JsonapiTestAbstract
 
     public function testPageIncludeMenu()
     {
-        $this->seed( \Database\Seeders\TestSeeder::class );
 
         $page = \Aimeos\Cms\Models\Page::where('tag', 'root')->firstOrFail();
         $expected = [];
@@ -154,7 +150,6 @@ class JsonapiTest extends JsonapiTestAbstract
 
     public function testPageIncludeMenuChildren()
     {
-        $this->seed( \Database\Seeders\TestSeeder::class );
 
         $page = \Aimeos\Cms\Models\Page::where('tag', 'root')->firstOrFail();
         $expected = [];
@@ -173,7 +168,6 @@ class JsonapiTest extends JsonapiTestAbstract
 
     public function testPageFilterSubtree()
     {
-        $this->seed( \Database\Seeders\TestSeeder::class );
 
         $pages = \Aimeos\Cms\Models\Page::where('tag', 'root')->get();
         $expected = [];
@@ -194,7 +188,6 @@ class JsonapiTest extends JsonapiTestAbstract
 
     public function testPageIncludeSubtree()
     {
-        $this->seed( \Database\Seeders\TestSeeder::class );
 
         $page = \Aimeos\Cms\Models\Page::where('tag', 'root')->firstOrFail();
         $expected = [];
@@ -213,7 +206,6 @@ class JsonapiTest extends JsonapiTestAbstract
 
     public function testPageIncludeParent()
     {
-        $this->seed( \Database\Seeders\TestSeeder::class );
 
         $page = \Aimeos\Cms\Models\Page::where('tag', 'article')->firstOrFail();
         $expected = $page->parent;
@@ -227,7 +219,6 @@ class JsonapiTest extends JsonapiTestAbstract
 
     public function testPageDisabled()
     {
-        $this->seed( \Database\Seeders\TestSeeder::class );
 
         $page = \Aimeos\Cms\Models\Page::where('tag', 'disabled')->firstOrFail();
 
@@ -240,7 +231,6 @@ class JsonapiTest extends JsonapiTestAbstract
 
     public function testPageDisabledParent()
     {
-        $this->seed( \Database\Seeders\TestSeeder::class );
 
         $page = \Aimeos\Cms\Models\Page::where('tag', 'disabled-child')->firstOrFail();
 
@@ -253,7 +243,6 @@ class JsonapiTest extends JsonapiTestAbstract
 
     public function testPageHidden()
     {
-        $this->seed( \Database\Seeders\TestSeeder::class );
 
         $page = \Aimeos\Cms\Models\Page::where('tag', 'hidden')->firstOrFail();
 
