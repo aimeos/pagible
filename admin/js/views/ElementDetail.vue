@@ -6,7 +6,7 @@ import AsideMeta from '../components/AsideMeta.vue'
 import DetailAppBar from '../components/DetailAppBar.vue'
 import ElementDetailRefs from '../components/ElementDetailRefs.vue'
 import ElementDetailItem from '../components/ElementDetailItem.vue'
-import { useDirtyStore, useSideStore, useUserStore, useMessageStore, useViewStack } from '../stores'
+import { useDirtyStore, useSideStore, useUserStore, useMessageStore } from '../stores'
 import { applyResult, hasUnresolved } from '../merge'
 import { publishDate, publishItem } from '../publish'
 import { setupEcho, cleanEcho } from '../echo'
@@ -89,7 +89,8 @@ export default {
   },
 
   props: {
-    item: { type: Object, required: true }
+    item: { type: Object, required: true },
+    stacked: { type: Boolean, default: false }
   },
 
   provide() {
@@ -119,7 +120,6 @@ export default {
 
   setup() {
     const dirtyStore = useDirtyStore()
-    const viewStack = useViewStack()
     const messages = useMessageStore()
     const side = useSideStore()
     const user = useUserStore()
@@ -128,8 +128,7 @@ export default {
       dirtyStore,
       side,
       user,
-      messages,
-      viewStack
+      messages
     }
   },
 
@@ -158,6 +157,10 @@ export default {
         const element = result.data.element
 
         this.reset()
+        Object.assign(this.item, JSON.parse(element.latest?.data || '{}'))
+        this.item.published = element.latest?.published
+        this.item.editor = element.latest?.editor
+        this.item.updated_at = element.latest?.created_at
         this.latestId = element.latest?.id
 
         for (const entry of element.latest?.files || element.files || []) {
@@ -401,6 +404,7 @@ export default {
     type="element"
     :label="$gettext('Element')"
     :name="item.name"
+    :stacked="stacked"
     :dirty="dirty"
     :error="error"
     :conflict="hasConflict"

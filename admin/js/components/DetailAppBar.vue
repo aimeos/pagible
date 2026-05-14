@@ -27,6 +27,7 @@ export default {
     publishAt: { type: [Date, null], default: null },
     publishTime: { type: [String, null], default: null },
     saving: { type: Boolean, default: false },
+    stacked: { type: Boolean, default: false },
     type: { type: String, required: true }
   },
 
@@ -48,6 +49,16 @@ export default {
       mdiKeyboardBackspace,
       mdiSwapHorizontal,
       allowedMinutes
+    }
+  },
+
+  methods: {
+    goBack() {
+      if (this.stacked) {
+        this.viewStack.closeView()
+      } else {
+        this.$router.back()
+      }
     }
   },
 
@@ -75,7 +86,7 @@ export default {
   <v-app-bar :elevation="0" density="compact" role="sectionheader" :aria-label="$gettext('Menu')">
     <template v-slot:prepend>
       <v-btn
-        @click="viewStack.closeView()"
+        @click="goBack()"
         :title="$gettext('Back to list view')"
         :icon="mdiKeyboardBackspace"
         class="btn-back"

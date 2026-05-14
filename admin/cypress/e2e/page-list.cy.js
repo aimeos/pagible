@@ -282,13 +282,11 @@ describe('Page List', () => {
 
   // ---- Page click opens detail ----
 
-  it('clicking a page item emits select / opens detail', () => {
+  it('clicking a page item navigates to detail view', () => {
     const page = makePage()
     visitPages([page])
     cy.get('.item-text').first().click()
-    // The openView method is called - check that PageDetail overlay appears or URL changes
-    // Since openView pushes a view overlay, we can check the DOM for the detail component
-    cy.wait(300) // give time for view transition
+    cy.url().should('include', '/pages/')
   })
 
   // ---- Node context menu (three-dot menu) ----

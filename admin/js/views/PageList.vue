@@ -29,11 +29,10 @@ import {
 } from '@mdi/js'
 import { markRaw } from 'vue'
 import User from '../components/User.vue'
-import PageDetail from '../views//PageDetail.vue'
 import AsideList from '../components/AsideList.vue'
 import Navigation from '../components/Navigation.vue'
 import PageListItems from '../components/PageListItems.vue'
-import { useUserStore, useDrawerStore, useMessageStore, useViewStack } from '../stores'
+import { useUserStore, useDrawerStore, useMessageStore } from '../stores'
 import { languageFilter } from '../utils'
 
 const SYNTHESIZE = gql`
@@ -45,7 +44,6 @@ const SYNTHESIZE = gql`
 export default {
   components: {
     PageListItems,
-    PageDetail, // eslint-disable-line vue/no-unused-components -- used programmatically via openView()
     Navigation,
     AsideList,
     User
@@ -86,7 +84,6 @@ export default {
   },
 
   setup() {
-    const viewStack = useViewStack()
     const messages = useMessageStore()
     const drawer = useDrawerStore()
     const user = useUserStore()
@@ -95,7 +92,6 @@ export default {
       user,
       drawer,
       messages,
-      viewStack,
       mdiPlaylistCheck,
       mdiTranslate,
       mdiClose,
@@ -206,7 +202,7 @@ export default {
 
   methods: {
     open(item) {
-      this.viewStack.openView(PageDetail, { item: item })
+      this.$router.push({ name: 'page:detail', params: { id: item.id } })
     },
 
     record() {

@@ -178,7 +178,7 @@ export default {
     },
 
     open(item) {
-      this.viewStack.openView(FileDetail, { item: item })
+      this.viewStack.openView(FileDetail, { item: item, stacked: true })
     },
 
     remove() {
