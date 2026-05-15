@@ -3,7 +3,7 @@
 @endPushOnce
 
 @if($bg = cms($files, $data->background?->id ?? null))
-    @include('cms::pic', ['file' => $bg, 'main' => true, 'class' => 'background', 'sizes' => '100vw'])
+    @include('cms::pic', ['file' => $bg, 'main' => true, 'class' => array_filter(['background', $data->{'background-animation'} ?? null]), 'sizes' => '100vw'])
 @endif
 
 <div class="first">

@@ -329,6 +329,20 @@
                     "type": "image",
                     "label": "background"
                 },
+                "background-animation": {
+                    "type": "select",
+                    "label": "background animation",
+                    "options": [
+                        {
+                            "value": "",
+                            "label": "None"
+                        },
+                        {
+                            "value": "zoom",
+                            "label": "Zoom"
+                        }
+                    ]
+                },
                 "file": {
                     "type": "media",
                     "label": "media file"
