@@ -23,11 +23,20 @@ const vuetifyLabs = readdirSync('node_modules/vuetify/lib/labs', { withFileTypes
 export default defineConfig({
   plugins: [
     vue(),
-    vuetify({ styles: { configFile: 'js/styles/settings.scss' } })
+    vuetify({ styles: { configFile: 'js/styles/settings.scss' } }),
+    {
+      name: 'exclude-ckeditor-umd',
+      generateBundle(_, bundle) {
+        for(const key in bundle) {
+          if(key.includes('.umd-')) delete bundle[key]
+        }
+      }
+    },
   ],
   resolve: {
     alias: {
-      '@': fileURLToPath(new URL('./js', import.meta.url))
+      '@': fileURLToPath(new URL('./js', import.meta.url)),
+      'ckeditor5/translations': fileURLToPath(new URL('./node_modules/ckeditor5/dist/translations', import.meta.url)),
     },
     dedupe: ['pinia', 'vue']
   },
