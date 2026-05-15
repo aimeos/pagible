@@ -1,4 +1,4 @@
-<picture class="{{ $class ?? '' }}" itemscope itemprop="image" itemtype="http://schema.org/ImageObject">
+<picture class="{{ join(' ', (array) ($class ?? '')) }}" itemscope itemprop="image" itemtype="http://schema.org/ImageObject">
 	<meta itemprop="representativeOfPage" content="{{ ($main ?? false) ? 'true' : 'false' }}">
     @if($preview = current(array_reverse((array) $file?->previews ?? [])) ?: $file?->path )
         <img itemprop="contentUrl"

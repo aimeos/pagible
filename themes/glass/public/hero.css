@@ -19,6 +19,17 @@
     object-fit: cover;
 }
 
+@keyframes hero-zoom {
+    from { transform: scale(1); }
+    to { transform: scale(1.08); }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .hero .background.zoom img {
+        animation: hero-zoom 12s ease-in-out infinite alternate;
+    }
+}
+
 .hero .container {
     display: flex;
     flex-direction: column;
