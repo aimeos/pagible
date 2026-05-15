@@ -89,7 +89,7 @@ export default {
         delete translationCache[keys[0]]
       }
 
-      const mod = await import(`ckeditor5/translations/${locale}.js`)
+      const mod = await import(`ckeditor5/translations/${locale}`)
 
       translationCache[locale] = [mod.default]
     }
