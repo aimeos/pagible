@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Storage;
 class Utils
 {
     private static int $counter = 0;
+    private static ?\HTMLPurifier $purifier = null;
 
 
     /**
@@ -98,8 +99,6 @@ class Utils
      * @param string|null $text The HTML text to sanitize
      * @return string The sanitized HTML text
      */
-    private static ?\HTMLPurifier $purifier = null;
-
     public static function html( ?string $text ) : string
     {
         if( !self::$purifier )
@@ -107,6 +106,7 @@ class Utils
             $config = \HTMLPurifier_Config::createDefault();
             $config->set( 'Attr.AllowedFrameTargets', ['_blank', '_self'] );
             $config->set( 'Cache.SerializerPath', sys_get_temp_dir() );
+
             self::$purifier = new \HTMLPurifier( $config );
         }
 

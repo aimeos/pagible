@@ -114,19 +114,24 @@ final class AddFile
         $url = $args['input']['path'];
 
         $file->path = $url;
-        $file->mime = Utils::mimetype( $url );
         $file->name = $file->name ?: substr( $url, 0, 255 );
 
         try
         {
-            if( isset( $args['preview'] ) || str_starts_with( $file->mime, 'image/' ) ) {
-                $file->addPreviews( $args['preview'] ?? $url );
-            }
+            $file->addPreviews( $args['preview'] ?? $url );
         }
         catch( \Throwable $t )
         {
             $file->removePreviews();
             throw $t;
+        }
+
+        if( !Utils::isValidMimetype( $file->mime ) )
+        {
+            $file->removePreviews();
+
+            $msg = 'File type "%s" not allowed, permitted types: %s';
+            throw new Error( sprintf( $msg, $file->mime, implode( ', ', config( 'cms.graphql.mimetypes', [] ) ) ) );
         }
 
         return $file;
@@ -169,11 +174,6 @@ final class AddFile
 
         if( !str_starts_with( $url, 'http' ) || !Utils::isValidUrl( $url ) ) {
             throw new Error( sprintf( 'Invalid URL "%s"', $url ) );
-        }
-
-        if( !Utils::isValidMimetype( Utils::mimetype( $url ) ) ) {
-            $msg = 'File type "%s" not allowed, permitted types: %s';
-            throw new Error( sprintf( $msg, Utils::mimetype( $url ), implode( ', ', config( 'cms.graphql.mimetypes', [] ) ) ) );
         }
     }
 }

@@ -84,7 +84,11 @@ class AdminController extends Controller
         $headers = $this->buildHeaders($response, $range);
 
         $statusCode = isset( $headers['Content-Range'] ) ? 206 : $response->status();
-        $maxBytes = (int) $headers['Content-Length'];
+        $maxBytes = (int) ( $headers['Content-Length'] ?? 0 ) ?: config( 'cms.admin.proxy.maxsize', 10 ) * 1024 * 1024;
+
+        if( $method === 'HEAD' ) {
+            return response( '', $statusCode, $headers );
+        }
 
         return response()->stream(function () use ($response, $maxBytes) {
             $this->stream($response->toPsrResponse()->getBody(), $maxBytes);
@@ -121,9 +125,12 @@ class AdminController extends Controller
             'Access-Control-Allow-Methods' => 'GET, HEAD, OPTIONS',
             'Access-Control-Allow-Headers' => 'Content-Type, Content-Length, Content-Range, Accept-Encoding, Range',
             'Accept-Ranges' => 'bytes',
-            'Content-Length' => $contentLength,
             'Content-Type' => $response->header('Content-Type') ?: 'application/octet-stream',
         ];
+
+        if( $contentLength > 0 ) {
+            $headers['Content-Length'] = $contentLength;
+        }
 
         if ($contentRange) {
             $headers['Content-Range'] = $contentRange;

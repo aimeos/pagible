@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Http\UploadedFile;
+use Intervention\Image\Interfaces\DriverInterface;
 use Intervention\Image\ImageManager;
 use Laravel\Scout\Searchable;
 
@@ -209,16 +210,11 @@ class File extends Base
         $ext = $manager->driver()->supports( 'image/webp' ) ? 'webp' : 'jpg';
 
         if( is_string( $resource ) && \Aimeos\Cms\Utils::isValidUrl( $resource ) ) {
-            $tmp = tmpfile();
-            $response = Http::withOptions( ['sink' => $tmp] )->get( $resource );
+            $resource = $this->fetchUrl( $resource, $manager->driver() );
 
-            if( !$response->successful() ) {
-                fclose( $tmp );
-                throw new \RuntimeException( sprintf( 'Failed to download "%s"', $resource ) );
+            if( !is_resource( $resource ) ) {
+                return $this;
             }
-
-            fseek( $tmp, 0 );
-            $resource = $tmp;
         }
 
         if( $resource instanceof UploadedFile ) {
@@ -368,7 +364,7 @@ class File extends Base
      */
     public function removeFile() : self
     {
-        if( $this->path && str_starts_with( $this->path, 'http' ) ) {
+        if( $this->path && !str_starts_with( $this->path, 'http' ) ) {
             Storage::disk( config( 'cms.disk', 'public' ) )->delete( $this->path );
         }
 
@@ -512,6 +508,45 @@ class File extends Base
         return Attribute::make(
             set: fn( $value ) => json_encode( $value ),
         );
+    }
+
+
+    /**
+     * Fetches a URL as stream, detects MIME from first 4KB, downloads to tmpfile for images.
+     *
+     * @param string $url URL to fetch
+     * @param DriverInterface $driver Image driver for format support check
+     * @return resource|null Seekable tmpfile resource or null if not an image
+     */
+    protected function fetchUrl( string $url, DriverInterface $driver )
+    {
+        $response = Http::withOptions( ['stream' => true] )->get( $url );
+
+        if( !$response->successful() ) {
+            throw new \RuntimeException( sprintf( 'Failed to download "%s"', $url ) );
+        }
+
+        $body = $response->toPsrResponse()->getBody();
+        $bytes = $body->read( 4096 );
+
+        $this->mime = ( new \finfo( FILEINFO_MIME_TYPE ) )->buffer( $bytes ) ?: 'application/octet-stream';
+
+        if( !$driver->supports( $this->mime ) ) {
+            $body->close();
+            return null;
+        }
+
+        $tmp = tmpfile();
+        fwrite( $tmp, $bytes );
+
+        while( !$body->eof() ) {
+            fwrite( $tmp, $body->read( 1048576 ) );
+        }
+
+        $body->close();
+        fseek( $tmp, 0 );
+
+        return $tmp;
     }
 
 

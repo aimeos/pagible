@@ -49,13 +49,7 @@ class AddFile extends Tool
             return Response::structured( ['error' => sprintf( 'The URL "%s" must be a valid "http" or "https" URL.', $url )] );
         }
 
-        $mime = Utils::mimetype( $url );
-
-        if( !Utils::isValidMimetype( $mime ) ) {
-            return Response::structured( ['error' => sprintf( 'File type "%s" is not allowed.', $mime )] );
-        }
-
-        return Utils::transaction( function() use ( $url, $mime, $v, $request ) {
+        return Utils::transaction( function() use ( $url, $v, $request ) {
 
             $editor = Utils::editor( $request->user() );
             $versionId = ( new Version )->newUniqueId();
@@ -69,18 +63,21 @@ class AddFile extends Tool
 
             $file->tenant_id = \Aimeos\Cms\Tenancy::value();
             $file->path = $url;
-            $file->mime = $mime;
             $file->name = $file->name ?: substr( $url, 0, 255 );
             $file->latest_id = $versionId;
             $file->editor = $editor;
 
             try {
-                if( str_starts_with( $file->mime, 'image/' ) ) {
-                    $file->addPreviews( $url );
-                }
+                $file->addPreviews( $url );
             } catch( \Throwable $t ) {
                 $file->removePreviews();
                 throw $t;
+            }
+
+            if( !Utils::isValidMimetype( $file->mime ) )
+            {
+                $file->removePreviews();
+                return Response::structured( ['error' => sprintf( 'File type "%s" is not allowed.', $file->mime )] );
             }
 
             $file->save();

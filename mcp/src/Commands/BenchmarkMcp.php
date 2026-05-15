@@ -124,7 +124,7 @@ class BenchmarkMcp extends Command
             $file->forceFill( ['latest_id' => $unpubFileVersion->id] )->saveQuietly();
             $file->setRelation( 'latest', $unpubFileVersion );
 
-            Http::fake( ['*' => Http::response( 'benchmark', 200 )] );
+            Http::fake( fn() => Http::response( 'benchmark', 200 ) );
 
             $this->header();
 

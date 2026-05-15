@@ -422,7 +422,7 @@ class Resource
                 $file->addFile( $upload );
             }
 
-            if( $file->path !== $path ) {
+            if( $file->path !== $path && !str_starts_with( $file->path, 'http' ) ) {
                 $file->mime = Utils::mimetype( $file->path );
             }
 
