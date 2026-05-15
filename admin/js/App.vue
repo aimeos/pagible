@@ -38,7 +38,7 @@ export default {
     <main>
       <transition-group name="slide-stack">
         <v-layout ref="baseview" key="list" class="view" style="z-index: 10">
-          <router-view />
+          <router-view :key="$route.path" />
         </v-layout>
 
         <v-layout

@@ -6,7 +6,7 @@ import AsideMeta from '../components/AsideMeta.vue'
 import DetailAppBar from '../components/DetailAppBar.vue'
 import FileDetailRefs from '../components/FileDetailRefs.vue'
 import FileDetailItem from '../components/FileDetailItem.vue'
-import { useDirtyStore, useSideStore, useUserStore, useMessageStore, useViewStack } from '../stores'
+import { useDirtyStore, useSideStore, useUserStore, useMessageStore } from '../stores'
 import { applyResult, hasUnresolved } from '../merge'
 import { publishDate, publishItem } from '../publish'
 import { defineAsyncComponent, markRaw } from 'vue'
@@ -15,6 +15,21 @@ import { frozenParse } from '../utils'
 
 const ChangesDialog = defineAsyncComponent(() => import('../components/ChangesDialog.vue'))
 const HistoryDialog = defineAsyncComponent(() => import('../components/HistoryDialog.vue'))
+
+const FETCH_FILE = gql`
+  query ($id: ID!) {
+    file(id: $id) {
+      id
+      latest {
+        id
+        published
+        data
+        editor
+        created_at
+      }
+    }
+  }
+`
 
 const SAVE_FILE = gql`
   mutation ($id: ID!, $input: FileInput!, $file: Upload, $latestId: ID) {
@@ -57,7 +72,8 @@ export default {
   },
 
   props: {
-    item: { type: Object, required: true }
+    item: { type: Object, required: true },
+    stacked: { type: Boolean, default: false }
   },
 
   data: () => ({
@@ -79,7 +95,6 @@ export default {
 
   setup() {
     const dirtyStore = useDirtyStore()
-    const viewStack = useViewStack()
     const messages = useMessageStore()
     const side = useSideStore()
     const user = useUserStore()
@@ -88,8 +103,7 @@ export default {
       dirtyStore,
       side,
       user,
-      messages,
-      viewStack
+      messages
     }
   },
 
@@ -121,12 +135,39 @@ export default {
       return
     }
 
-    setupEcho(this, 'file', this.item.id, (event) => {
-      if (!this.dirty && this.user.can('file:view') && event.editor !== this.user.me?.email) {
-        this.item.latestId = event.versionId
-        Object.assign(this.item, event.data)
-      }
-    })
+    this.$apollo
+      .query({
+        query: FETCH_FILE,
+        fetchPolicy: 'no-cache',
+        variables: {
+          id: this.item.id
+        }
+      })
+      .then((result) => {
+        if (result.errors || !result.data.file) {
+          throw result
+        }
+
+        const latest = result.data.file.latest
+
+        this.reset()
+        Object.assign(this.item, JSON.parse(latest?.data || '{}'))
+        this.item.latestId = latest?.id
+        this.item.published = latest?.published
+        this.item.updated_at = latest?.created_at
+        this.item.editor = latest?.editor
+
+        setupEcho(this, 'file', this.item.id, (event) => {
+          if (!this.dirty && this.user.can('file:view') && event.editor !== this.user.me?.email) {
+            this.item.latestId = event.versionId
+            Object.assign(this.item, event.data)
+          }
+        })
+      })
+      .catch((error) => {
+        this.messages.add(this.$gettext('Error fetching file') + ':\n' + error, 'error')
+        this.$log(`FileDetail::created(): Error fetching file`, error)
+      })
   },
 
   beforeUnmount() {
@@ -309,6 +350,7 @@ export default {
     type="file"
     :label="$gettext('File')"
     :name="item.name"
+    :stacked="stacked"
     :dirty="dirty"
     :error="error"
     :conflict="hasConflict"

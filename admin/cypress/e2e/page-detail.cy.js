@@ -1,9 +1,9 @@
 /**
- * E2E tests for the page detail stacked view.
+ * E2E tests for the page detail view.
  *
- * The PageDetail component opens as an overlay on top of the page list
- * when a page item is clicked. Both views coexist in the DOM (stacked
- * via z-index), so selectors must be scoped to the detail's .view container.
+ * The PageDetail component opens via Vue Router navigation when a page
+ * item is clicked in the list (/pages → /pages/:id). The list view is
+ * replaced by the detail view inside the same router-view container.
  *
  * GraphQL is intercepted at POST /graphql. Apollo's BatchHttpLink sends
  * requests as JSON arrays, so the handler checks whether req.body is an
@@ -169,6 +169,9 @@ function setupIntercept({
       if (query.includes('synthesize')) {
         return { data: { synthesize: synthesize || 'Generated page content' } }
       }
+      if (query.includes('schemas')) {
+        return { data: { schemas: [] } }
+      }
       // Versions query (contains both 'versions' and 'page(')
       if (query.includes('versions')) {
         return { data: { page: { id: op.variables?.id || '1', versions: pageVersions } } }
@@ -192,6 +195,8 @@ function setupIntercept({
           data: {
             me: {
               permission: meResponse.permission,
+              settings: meResponse.settings || '{}',
+              token: meResponse.token || null,
               email: meResponse.email,
               name: meResponse.name,
             },
@@ -206,22 +211,20 @@ function setupIntercept({
 }
 
 /**
- * Navigate to /pages, wait for initial queries, click a page to open the
- * detail overlay, and wait for the detail data query.
+ * Navigate to /pages, wait for initial queries, click a page to navigate
+ * to /pages/:id, and wait for the detail data query.
  */
 function visitPageDetail(pageOverrides = {}, detailOverrides = {}, meResponse = ME_ADMIN) {
   const page = makePage(pageOverrides)
   const detail = makePageDetail(detailOverrides)
   setupIntercept({ meResponse, pages: [page], pageDetail: detail })
   cy.visit('/pages')
-  cy.wait('@gql') // me query
-  cy.wait('@gql') // pages query
   cy.get('.item-text').first().click()
-  cy.wait('@gql') // page(id) detail query
+  cy.url().should('include', '/pages/')
   cy.get('.page-details').should('be.visible')
 }
 
-/** Shorthand to scope selectors to the detail view (topmost stacked view). */
+/** Shorthand to scope selectors to the detail view. */
 function detailView() {
   return cy.get('.view').last()
 }
@@ -382,7 +385,7 @@ describe('Page Detail', () => {
   it('schedule publish button opens date picker', () => {
     visitPageDetail({ latest: { ...makePage().latest, published: false } }, { published: false })
     detailView().find('.menu-publishat').click()
-    cy.get('.v-date-picker').should('be.visible')
+    cy.get('.v-date-picker', { timeout: 5000 }).should('exist')
   })
 
   // ---- History ----

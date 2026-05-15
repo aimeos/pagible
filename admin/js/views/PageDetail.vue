@@ -20,8 +20,7 @@ import {
   useSideStore,
   useUserStore,
   useMessageStore,
-  useSchemaStore,
-  useViewStack
+  useSchemaStore
 } from '../stores'
 import {
   mdiTranslate,
@@ -117,7 +116,8 @@ export default {
   },
 
   props: {
-    item: { type: Object, required: true }
+    item: { type: Object, required: true },
+    stacked: { type: Boolean, default: false }
   },
 
   provide() {
@@ -130,7 +130,6 @@ export default {
 
   setup() {
     const dirtyStore = useDirtyStore()
-    const viewStack = useViewStack()
     const messages = useMessageStore()
     const schemas = useSchemaStore()
     const side = useSideStore()
@@ -142,7 +141,6 @@ export default {
       dirtyStore,
       side,
       user,
-      viewStack,
       messages,
       schemas,
       mdiTranslate,
@@ -233,6 +231,9 @@ export default {
         this.latest = result?.data?.page?.latest
 
         Object.assign(this.item, JSON.parse(this.latest?.data || '{}'))
+        this.item.published = this.latest?.published
+        this.item.editor = this.latest?.editor
+        this.item.updated_at = this.latest?.created_at
 
         const aux = JSON.parse(this.latest?.aux || '{}')
         this.item.content = aux.content ?? []
@@ -743,6 +744,7 @@ export default {
     type="page"
     :label="$gettext('Page')"
     :name="item.name"
+    :stacked="stacked"
     :dirty="hasChanged"
     :error="hasError"
     :conflict="hasConflict"

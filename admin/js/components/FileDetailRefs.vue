@@ -69,12 +69,12 @@ export default {
 
     async openElement(item) {
       const { default: ElementDetail } = await import('../views/ElementDetail.vue')
-      this.viewStack.openView(ElementDetail, { item: { ...item } })
+      this.viewStack.openView(ElementDetail, { item: { ...item }, stacked: true })
     },
 
     async openPage(item) {
       const { default: PageDetail } = await import('../views/PageDetail.vue')
-      this.viewStack.openView(PageDetail, { item: { ...item } })
+      this.viewStack.openView(PageDetail, { item: { ...item }, stacked: true })
     }
   },
 
