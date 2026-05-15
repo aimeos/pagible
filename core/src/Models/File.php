@@ -209,7 +209,16 @@ class File extends Base
         $ext = $manager->driver()->supports( 'image/webp' ) ? 'webp' : 'jpg';
 
         if( is_string( $resource ) && \Aimeos\Cms\Utils::isValidUrl( $resource ) ) {
-            $resource = Http::withOptions( ['stream' => true] )->get( $resource )->toPsrResponse()->getBody()->detach();
+            $tmp = tmpfile();
+            $response = Http::withOptions( ['sink' => $tmp] )->get( $resource );
+
+            if( !$response->successful() ) {
+                fclose( $tmp );
+                throw new \RuntimeException( sprintf( 'Failed to download "%s"', $resource ) );
+            }
+
+            fseek( $tmp, 0 );
+            $resource = $tmp;
         }
 
         if( $resource instanceof UploadedFile ) {
