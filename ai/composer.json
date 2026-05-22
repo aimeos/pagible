@@ -11,8 +11,7 @@
         "php": "^8.2",
         "aimeos/pagible-core": "*@dev",
         "aimeos/pagible-graphql": "*@dev",
-        "aimeos/prisma": "dev-master",
-        "prism-php/prism": "~0.100.0"
+        "aimeos/prisma": "~0.4"
     },
     "require-dev": {
         "orchestra/testbench": "^9.0||^10.0||^11.0"
