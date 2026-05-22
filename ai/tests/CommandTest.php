@@ -12,10 +12,6 @@ use Aimeos\Cms\Models\File;
 use Aimeos\Prisma\Prisma;
 use Aimeos\Prisma\Responses\TextResponse;
 use Database\Seeders\TestSeeder;
-use Prism\Prism\Facades\Prism;
-use Prism\Prism\Testing\TextResponseFake;
-
-
 class AiCommandTest extends AiTestAbstract
 {
     use CmsWithMigrations;
@@ -25,15 +21,6 @@ class AiCommandTest extends AiTestAbstract
 
     public function testDescription(): void
     {
-        Prism::fake( [
-            TextResponseFake::make()->withText( 'Generated meta description' ),
-            TextResponseFake::make()->withText( 'Generated meta description' ),
-            TextResponseFake::make()->withText( 'Generated meta description' ),
-            TextResponseFake::make()->withText( 'Generated meta description' ),
-            TextResponseFake::make()->withText( 'Generated meta description' ),
-            TextResponseFake::make()->withText( 'Generated meta description' ),
-        ] );
-
         File::forceCreate( [
             'mime' => 'image/png',
             'name' => 'No description',
@@ -41,7 +28,15 @@ class AiCommandTest extends AiTestAbstract
             'editor' => 'test',
         ] );
 
-        Prisma::fake( [TextResponse::fromText( 'Generated file description' )] );
+        Prisma::fake( [
+            TextResponse::fromText( 'Generated meta description' ),
+            TextResponse::fromText( 'Generated meta description' ),
+            TextResponse::fromText( 'Generated meta description' ),
+            TextResponse::fromText( 'Generated meta description' ),
+            TextResponse::fromText( 'Generated meta description' ),
+            TextResponse::fromText( 'Generated meta description' ),
+            TextResponse::fromText( 'Generated file description' ),
+        ] );
 
         $this->artisan( 'cms:description' )->assertExitCode( 0 );
 

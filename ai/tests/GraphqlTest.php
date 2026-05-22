@@ -16,8 +16,6 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Nuwave\Lighthouse\Testing\MakesGraphQLRequests;
 use Nuwave\Lighthouse\Testing\RefreshesSchemaCache;
-use Prism\Prism\Testing\TextResponseFake;
-use Prism\Prism\Facades\Prism;
 
 
 class GraphqlTest extends AiTestAbstract
@@ -102,27 +100,13 @@ class GraphqlTest extends AiTestAbstract
     public function testSynthesize()
     {
         $file = File::firstOrFail();
-        $fake = \Prism\Prism\Testing\TextResponseFake::make()
-            ->withSteps( collect( [
-                new \Prism\Prism\Text\Step(
-                    'text',
-                    \Prism\Prism\Enums\FinishReason::Stop,
-                    [
-                        new \Prism\Prism\ValueObjects\ToolCall( '1', 'summarize', ['text' => str_repeat( 'A', 80 )] ),
-                        new \Prism\Prism\ValueObjects\ToolCall( '2', 'classify', ['category' => 'example'] ),
-                    ],
-                    [],
-                    [],
-                    new \Prism\Prism\ValueObjects\Usage(0, 0),
-                    new \Prism\Prism\ValueObjects\Meta('fake', 'fake'),
-                    [],
-                    [],
-                    []
-                ),
-            ] ) )
-            ->withText('This is the generated response.');
+        $fake = TextResponse::fromText( 'This is the generated response.' )
+            ->withSteps( [
+                new \Aimeos\Prisma\Tools\Step( '1', 'summarize', ['text' => str_repeat( 'A', 80 )] ),
+                new \Aimeos\Prisma\Tools\Step( '2', 'classify', ['category' => 'example'] ),
+            ] );
 
-        Prism::fake([$fake]);
+        Prisma::fake( [$fake] );
 
         $response = $this->actingAs($this->user)->graphQL('
             mutation($prompt: String!, $context: String, $files: [String!]) {
@@ -198,7 +182,7 @@ class GraphqlTest extends AiTestAbstract
     {
         $file = File::firstOrFail();
         $expected = 'Generated content based on the prompt.';
-        Prism::fake( [TextResponseFake::make()->withText( $expected )] );
+        Prisma::fake( [TextResponse::fromText( $expected )] );
 
         $response = $this->actingAs( $this->user )->graphQL( "
             mutation {

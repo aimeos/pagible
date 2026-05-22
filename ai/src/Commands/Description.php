@@ -12,9 +12,8 @@ use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Utils;
 use Aimeos\Prisma\Prisma;
+use Aimeos\Prisma\Tools;
 use Aimeos\Prisma\Exceptions\PrismaException;
-use Prism\Prism\Facades\Prism;
-use Prism\Prism\Exceptions\PrismException;
 
 
 class Description extends Command
@@ -68,12 +67,14 @@ class Description extends Command
 
                     try
                     {
-                        $response = Prism::text()
-                            ->using( $provider, $model, $config )
+                        $text = Prisma::text()
+                            ->using( $provider, $config )
+                            ->model( $model )
                             ->withSystemPrompt( 'You are an SEO expert. Generate a concise meta description of max. 160 characters for the given page content. Return only the meta description text, nothing else.' )
-                            ->withPrompt( "Page title: {$page->title}\n\nPage content:\n{$text}" )
-                            ->withClientOptions( ['timeout' => 30, 'connect_timeout' => 10] )
-                            ->asText();
+                            ->withTools( [Tools::provider( 'web_search' ), Tools::provider( 'web_fetch' )] )
+                            ->ensure( 'write' )
+                            ->write( "Page title: {$page->title}\n\nPage content:\n{$text}", [], $config ) // @phpstan-ignore-line method.notFound
+                            ->text();
 
                         $meta = $page->meta ?? (object) [];
                         $meta->{'meta-tags'} ??= (object) [
@@ -83,11 +84,11 @@ class Description extends Command
                             'data' => (object) [],
                         ];
                         $meta->{'meta-tags'}->data ??= (object) [];
-                        $meta->{'meta-tags'}->data->description = $response->text;
+                        $meta->{'meta-tags'}->data->description = $text;
                         $page->meta = $meta;
                         $page->save();
                     }
-                    catch( PrismException $e )
+                    catch( PrismaException $e )
                     {
                         $this->error( $page->title . ': ' . $e->getMessage() );
                     }
@@ -123,15 +124,12 @@ class Description extends Command
                 foreach( $files as $file )
                 {
                     $type = explode( '/', $file->mime, 2 )[0];
-                    $class = '\\Aimeos\\Prisma\\Files\\' . ucfirst( $type );
 
                     try
                     {
-                        if( !str_starts_with( (string) $file->path, 'http' ) ) {
-                            $doc = $class::fromStoragePath( $file->path, config( 'cms.disk', 'public' ), $file->mime );
-                        } else {
-                            $doc = $class::fromUrl( $file->path, $file->mime );
-                        }
+                        $doc = str_starts_with( (string) $file->path, 'http' )
+                            ? \Aimeos\Prisma\Files\File::fromUrl( (string) $file->path, $file->mime )
+                            : \Aimeos\Prisma\Files\File::fromStoragePath( (string) $file->path, config( 'cms.disk', 'public' ), $file->mime );
 
                         $text = Prisma::type( $type )
                             ->using( $provider, $config )

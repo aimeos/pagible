@@ -8,14 +8,9 @@
 namespace Aimeos\Cms\GraphQL\Mutations;
 
 use Aimeos\Cms\Models\File;
-use Prism\Prism\Facades\Prism;
-use Prism\Prism\Enums\ToolChoice;
-use Prism\Prism\Exceptions\PrismException;
-use Prism\Prism\ValueObjects\Media\Audio;
-use Prism\Prism\ValueObjects\Media\Image;
-use Prism\Prism\ValueObjects\Media\Video;
-use Prism\Prism\ValueObjects\Media\Document;
-use Prism\Prism\ValueObjects\ProviderTool;
+use Aimeos\Prisma\Prisma;
+use Aimeos\Prisma\Tools;
+use Aimeos\Prisma\Exceptions\PrismaException;
 use Illuminate\Support\Facades\Log;
 use GraphQL\Error\Error;
 
@@ -41,46 +36,36 @@ final class Synthesize
 
         try
         {
-            $prism = Prism::text()->using( $provider, $model, $config )
-                ->withMaxTokens( config( 'cms.ai.maxtoken', 32768 ) )
-                ->withSystemPrompt( $system . "\n" . ($args['context'] ?? '') )
-                ->withTools( \Aimeos\Cms\Tools::get() )
-                ->withToolChoice( ToolChoice::Any )
-                ->withMaxSteps( 10 );
-
             if( !empty( $args['files'] ) )
             {
                 $disk = config( 'cms.disk', 'public' );
 
                 foreach( File::whereIn( 'id', $args['files'] )->select( 'id', 'path', 'mime' )->get() as $file )
                 {
-                    $type = explode( '/', $file->mime, 2 )[0];
-
-                    if( str_starts_with( (string) $file->path, 'http' ) )
-                    {
-                        $files[] = match( $type ) {
-                            'image' => Image::fromUrl( (string) $file->path ),
-                            'audio' => Audio::fromUrl( (string) $file->path ),
-                            'video' => Video::fromUrl( (string) $file->path ),
-                            default => Document::fromUrl( (string) $file->path ),
-                        };
-                    }
-                    else
-                    {
-                        $files[] = match( $type ) {
-                            'image' => Image::fromStoragePath( (string) $file->path, $disk ),
-                            'audio' => Audio::fromStoragePath( (string) $file->path, $disk ),
-                            'video' => Video::fromStoragePath( (string) $file->path, $disk ),
-                            default => Document::fromStoragePath( (string) $file->path, $disk ),
-                        };
-                    }
+                    $files[] = str_starts_with( (string) $file->path, 'http' )
+                        ? \Aimeos\Prisma\Files\File::fromUrl( (string) $file->path, $file->mime )
+                        : \Aimeos\Prisma\Files\File::fromStoragePath( (string) $file->path, $disk, $file->mime );
                 }
             }
 
+            $response = Prisma::text()
+                ->using( $provider, $config )
+                ->model( $model )
+                ->withMaxTokens( config( 'cms.ai.maxtoken' ) )
+                ->withSystemPrompt( $system . "\n" . ( $args['context'] ?? '' ) )
+                ->withTools( array_merge( \Aimeos\Cms\Tools::get(), [
+                    Tools::provider( 'web_search' ),
+                    Tools::provider( 'web_fetch' ),
+                ] ) )
+                ->withToolChoice( \Aimeos\Prisma\Providers\Base::REQ )
+                ->withMaxSteps( 10 )
+                ->ensure( 'write' )
+                ->write( $args['prompt'], $files, $config ); // @phpstan-ignore-line method.notFound
+
             $msg = 'Done';
-            $msg .= "\n---\n" . join( "\n", $this->trace( $prism->withPrompt( $args['prompt'], $files )->asText() ) );
+            $msg .= "\n---\n" . join( "\n", $this->trace( $response ) );
         }
-        catch( PrismException $e )
+        catch( PrismaException $e )
         {
             Log::error( 'AI service error', ['mutation' => 'Synthesize', 'message' => $e->getMessage(), 'trace' => $e->getTraceAsString()] );
             throw new Error( config( 'app.debug' ) ? $e->getMessage() : 'AI service error', null, null, null, null, $e );
@@ -101,33 +86,27 @@ final class Synthesize
 
 
     /**
-     * Returns a list of tool calls made during the execution of the Prism response for debugging purposes.
+     * Returns a list of tool calls made during the execution for debugging purposes.
      *
-     * @param \Prism\Prism\Text\Response $response
+     * @param \Aimeos\Prisma\Responses\TextResponse $response
      * @return list<string>
      */
-    protected function trace( \Prism\Prism\Text\Response $response ) : array
+    protected function trace( \Aimeos\Prisma\Responses\TextResponse $response ) : array
     {
         $msgs = [];
 
-        foreach( $response->steps as $step )
+        foreach( $response->steps() as $step )
         {
-            if( $step->toolCalls )
+            $args = $step->arguments();
+
+            foreach( $args as $key => $value )
             {
-                foreach( $step->toolCalls as $toolCall )
-                {
-                    $args = $toolCall->arguments();
-
-                    foreach( $args as $key => $value )
-                    {
-                        $args[$key] = is_string( $value ) && mb_strlen( $value ) > 60
-                            ? mb_substr( $value, 0, 60 ) . ' ...'
-                            : $value;
-                    }
-
-                    $msgs[] = $toolCall->name . '(' . ( empty( $args ) ? '' : json_encode( $args, JSON_PRETTY_PRINT ) ) . ')';
-                }
+                $args[$key] = is_string( $value ) && mb_strlen( $value ) > 60
+                    ? mb_substr( $value, 0, 60 ) . ' ...'
+                    : $value;
             }
+
+            $msgs[] = $step->name() . '(' . ( empty( $args ) ? '' : json_encode( $args, JSON_PRETTY_PRINT ) ) . ')';
         }
 
         return $msgs;
