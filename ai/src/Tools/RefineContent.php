@@ -10,12 +10,10 @@ namespace Aimeos\Cms\Tools;
 use Aimeos\Cms\Utils;
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\Models\Page;
-use Prism\Prism\Facades\Prism;
-use Prism\Prism\Schema\EnumSchema;
-use Prism\Prism\Schema\ArraySchema;
-use Prism\Prism\Schema\ObjectSchema;
-use Prism\Prism\Schema\StringSchema;
-use Prism\Prism\Exceptions\PrismException;
+use Aimeos\Prisma\Prisma;
+use Aimeos\Prisma\Schema\Schema;
+use Aimeos\Prisma\Tools;
+use Aimeos\Prisma\Exceptions\PrismaException;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Attributes\Name;
@@ -68,27 +66,29 @@ class RefineContent extends Tool
 
         try
         {
-            $response = Prism::structured()->using( $provider, $model, $config )
-                ->withMaxTokens( config( 'cms.ai.maxtoken', 32768 ) )
+            $response = Prisma::text()->using( $provider, $config )
+                ->model( $model )
+                ->withMaxTokens( config( 'cms.ai.maxtoken' ) )
                 ->withSystemPrompt( $system . "\n" . ( $validated['context'] ?? '' ) )
-                ->withPrompt( $validated['prompt'] . "\n\nContent as JSON:\n" . json_encode( $content ) )
-                ->withProviderOptions( ['use_tool_calling' => true] )
-                ->withSchema( $this->schema_response( $types ) )
+                ->withTools( [Tools::provider( 'web_search' ), Tools::provider( 'web_fetch' )] )
                 ->withClientOptions( [
                     'timeout' => 180,
                     'connect_timeout' => 10,
                 ] )
-                ->asStructured();
+                ->ensure( 'structured' )
+                ->structured( $validated['prompt'] . "\n\nContent as JSON:\n" . json_encode( $content ), $this->schema_response( $types ) ); // @phpstan-ignore-line method.notFound
 
-            if( !$response->structured ) {
+            $structured = $response->structured();
+
+            if( !$structured ) {
                 return Response::structured( ['error' => 'Invalid content in refine response.'] );
             }
 
-            $result = $this->merge( $content, $response->structured['contents'] ?? [] );
+            $result = $this->merge( $content, $structured['contents'] ?? [] );
 
             return Response::structured( ['content' => $result] );
         }
-        catch( PrismException $e )
+        catch( PrismaException $e )
         {
             throw new \Exception( $e->getMessage() );
         }
@@ -147,43 +147,24 @@ class RefineContent extends Tool
      * Returns the schema for the AI structured response.
      *
      * @param array<string> $types Available content element types
-     * @return ObjectSchema
+     * @return Schema
      */
-    protected function schema_response( array $types ) : ObjectSchema
+    protected function schema_response( array $types ) : Schema
     {
-        return new ObjectSchema(
-            name: 'response',
-            description: 'The content response',
-            properties: [
-                new ArraySchema(
-                    name: 'contents',
-                    description: 'List of page content elements',
-                    items: new ObjectSchema(
-                        name: 'content',
-                        description: 'A content element',
-                        properties: [
-                            new StringSchema( 'id', 'The ID of the content element', nullable: true ),
-                            new EnumSchema( 'type', 'The type of the content element', options: $types ),
-                            new ArraySchema(
-                                name: 'data',
-                                description: 'List of texts for the content element',
-                                items: new ObjectSchema(
-                                    name: 'text',
-                                    description: 'A text of the content element',
-                                    properties: [
-                                        new EnumSchema( 'name', 'Name of the text element', options: ['title', 'text'] ),
-                                        new StringSchema( 'value', 'Plain title, markdown text or source code text' ),
-                                    ],
-                                    requiredFields: ['name', 'value']
-                                )
-                            )
-                        ],
-                        requiredFields: ['id', 'type', 'data']
-                    )
-                )
-            ],
-            requiredFields: ['contents']
-        );
+        return Schema::for( 'response', [
+            'contents' => Schema::array()->description( 'List of page content elements' )->required()->items(
+                Schema::object( [
+                    'id' => Schema::string()->description( 'The ID of the content element' )->nullable()->required(),
+                    'type' => Schema::string()->description( 'The type of the content element' )->enum( $types )->required(),
+                    'data' => Schema::array()->description( 'List of texts for the content element' )->required()->items(
+                        Schema::object( [
+                            'name' => Schema::string()->description( 'Name of the text element' )->enum( ['title', 'text'] )->required(),
+                            'value' => Schema::string()->description( 'Plain title, markdown text or source code text' )->required(),
+                        ] )
+                    ),
+                ] )
+            ),
+        ] );
     }
 
 
