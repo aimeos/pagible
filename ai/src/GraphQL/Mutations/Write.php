@@ -8,13 +8,9 @@
 namespace Aimeos\Cms\GraphQL\Mutations;
 
 use Aimeos\Cms\Models\File;
-use Prism\Prism\Facades\Prism;
-use Prism\Prism\ValueObjects\Media\Audio;
-use Prism\Prism\ValueObjects\Media\Image;
-use Prism\Prism\ValueObjects\Media\Video;
-use Prism\Prism\ValueObjects\Media\Document;
-use Prism\Prism\ValueObjects\ProviderTool;
-use Prism\Prism\Exceptions\PrismException;
+use Aimeos\Prisma\Prisma;
+use Aimeos\Prisma\Tools;
+use Aimeos\Prisma\Exceptions\PrismaException;
 use Illuminate\Support\Facades\Log;
 use GraphQL\Error\Error;
 
@@ -40,51 +36,29 @@ final class Write
         {
             $system = view( 'cms::prompts.write' )->render() . "\n" . ( $args['context'] ?? '' );
 
-            $prism = Prism::text()->using( $provider, $model, $config )
-                ->withMaxTokens( config( 'cms.ai.maxtoken', 32768 ) )
-                ->withSystemPrompt( $system )
-                ->whenProvider( 'gemini', fn( $request ) => $request->withProviderTools( [
-                    new ProviderTool( 'google_search' )
-                ] ) )
-                ->withClientOptions( [
-                    'timeout' => 60,
-                    'connect_timeout' => 10,
-                ] );
-
             if( !empty( $args['files'] ) )
             {
                 $disk = config( 'cms.disk', 'public' );
 
                 foreach( File::whereIn( 'id', $args['files'] )->select( 'id', 'path', 'mime' )->get() as $file )
                 {
-                    $type = explode( '/', $file->mime, 2 )[0];
-
-                    if( str_starts_with( (string) $file->path, 'http' ) )
-                    {
-                        $files[] = match( $type ) {
-                            'image' => Image::fromUrl( (string) $file->path ),
-                            'audio' => Audio::fromUrl( (string) $file->path ),
-                            'video' => Video::fromUrl( (string) $file->path ),
-                            default => Document::fromUrl( (string) $file->path ),
-                        };
-                    }
-                    else
-                    {
-                        $files[] = match( $type ) {
-                            'image' => Image::fromStoragePath( (string) $file->path, $disk ),
-                            'audio' => Audio::fromStoragePath( (string) $file->path, $disk ),
-                            'video' => Video::fromStoragePath( (string) $file->path, $disk ),
-                            default => Document::fromStoragePath( (string) $file->path, $disk ),
-                        };
-                    }
+                    $files[] = str_starts_with( (string) $file->path, 'http' )
+                        ? \Aimeos\Prisma\Files\File::fromUrl( (string) $file->path, $file->mime )
+                        : \Aimeos\Prisma\Files\File::fromStoragePath( (string) $file->path, $disk, $file->mime );
                 }
             }
 
-            $response = $prism->withPrompt( $args['prompt'], $files )->asText();
-
-            return $response->text;
+            return Prisma::text()
+                ->using( $provider, $config )
+                ->model( $model )
+                ->withMaxTokens( config( 'cms.ai.maxtoken' ) )
+                ->withSystemPrompt( $system )
+                ->withTools( [Tools::provider( 'web_search' ), Tools::provider( 'web_fetch' )] )
+                ->ensure( 'write' )
+                ->write( $args['prompt'], $files, $config ) // @phpstan-ignore-line method.notFound
+                ->text();
         }
-        catch( PrismException $e )
+        catch( PrismaException $e )
         {
             Log::error( 'AI service error', ['mutation' => 'Write', 'message' => $e->getMessage(), 'trace' => $e->getTraceAsString()] );
             throw new Error( config( 'app.debug' ) ? $e->getMessage() : 'AI service error', null, null, null, null, $e );
