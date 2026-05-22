@@ -48,8 +48,8 @@ final class Refine
                     'timeout' => 180,
                     'connect_timeout' => 10,
                 ] )
-                ->ensure( 'structured' )
-                ->structured( $args['prompt'] . "\n\nContent as JSON:\n" . json_encode( $content ), $this->schema( $type ) ); // @phpstan-ignore-line method.notFound
+                ->ensure( 'structure' )
+                ->structure( $args['prompt'] . "\n\nContent as JSON:\n" . json_encode( $content ), $this->schema( $type ) ); // @phpstan-ignore-line method.notFound
 
             $structured = $response->structured();
 
