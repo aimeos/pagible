@@ -234,17 +234,26 @@ class File extends Base
         $this->previews = [];
         $map = [];
 
-        foreach( $sizes as $size )
+        try
         {
-            $image = ( clone $file )->scaleDown( $size['width'] ?? null, $size['height'] ?? null );
-            $ptr = $image->encodeByExtension( $ext, quality: 90 )->toFilePointer();
-            $path = $dir . '/' . $this->filename( $filename, $ext, $size );
+            foreach( $sizes as $size )
+            {
+                $image = ( clone $file )->scaleDown( $size['width'] ?? null, $size['height'] ?? null );
+                $ptr = $image->encodeByExtension( $ext, quality: 90 )->toFilePointer();
+                $path = $dir . '/' . $this->filename( $filename, $ext, $size );
 
-            if( $disk->put( $path, $ptr, 'public' ) ) {
+                if( !$disk->put( $path, $ptr ) ) {
+                    throw new \RuntimeException( sprintf( 'Unable to store preview "%s"', $path ) );
+                }
+
                 $map[$image->width()] = $path;
+                unset( $image, $ptr );
             }
-
-            unset( $image, $ptr );
+        }
+        catch( \Throwable $t )
+        {
+            $disk->delete( array_values( $map ) );
+            throw $t;
         }
 
         $this->previews = $map;
