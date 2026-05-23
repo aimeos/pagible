@@ -70,7 +70,7 @@ describe('Image', () => {
       modelValue: { id: '1', type: 'file' },
       assets: { '1': imageAsset },
     })
-    cy.get('.v-img img').should('have.attr', 'src', '/storage/files/photo.jpg')
+    cy.get('.v-img img').should('have.attr', 'src', '/storage/files/photo-500.jpg')
   })
 
   it('shows metadata when file is present', () => {
