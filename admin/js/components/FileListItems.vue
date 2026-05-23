@@ -798,7 +798,7 @@ export default {
       <div class="item-preview" @click="$emit('select', item)" :title="title(item)">
         <v-img
           v-if="item.mime?.startsWith('image/')"
-          :src="url(item.path)"
+          :src="url(Object.values(item.previews)[0] ?? item.path)"
           :srcset="srcset(item.previews)"
           :title="item.name"
           :alt="item.name"
@@ -929,6 +929,7 @@ a.item-usage {
 
 .items .item-usage {
   text-align: center;
+  display: block;
 }
 
 .items .item-usage.notused {

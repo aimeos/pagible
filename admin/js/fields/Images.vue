@@ -280,7 +280,7 @@ export default {
       <v-img
         v-if="item.path"
         :srcset="srcset(item.previews)"
-        :src="url(item.path)"
+        :src="url(Object.values(item.previews)[0] ?? item.path)"
         :alt="description(item)"
         draggable="false"
       />

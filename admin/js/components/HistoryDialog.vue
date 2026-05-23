@@ -569,7 +569,7 @@ export default {
                       <v-img
                         v-if="file.mime?.startsWith('image/')"
                         :srcset="srcset(file.previews)"
-                        :src="url(file.path)"
+                        :src="url(Object.values(file.previews)[0] ?? file.path)"
                         :alt="file.name"
                         draggable="false"
                         loading="lazy"
@@ -716,7 +716,7 @@ export default {
                       <v-img
                         v-if="file.mime?.startsWith('image/')"
                         :srcset="srcset(file.previews)"
-                        :src="url(file.path)"
+                        :src="url(Object.values(file.previews)[0] ?? file.path)"
                         :alt="file.name"
                         draggable="false"
                         loading="lazy"
