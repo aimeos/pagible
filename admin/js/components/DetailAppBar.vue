@@ -1,7 +1,7 @@
 /** @license LGPL, https://opensource.org/license/lgpl-3-0 */
 
 <script>
-import { useDrawerStore, useUserStore, useViewStack } from '../stores'
+import { useDirtyStore, useDrawerStore, useUserStore, useViewStack } from '../stores'
 import {
   mdiChevronLeft,
   mdiChevronRight,
@@ -34,11 +34,13 @@ export default {
   emits: ['update:publishAt', 'update:publishTime', 'changes', 'history', 'publish', 'save', 'schedule'],
 
   setup() {
+    const dirtyStore = useDirtyStore()
     const drawer = useDrawerStore()
     const user = useUserStore()
     const viewStack = useViewStack()
 
     return {
+      dirtyStore,
       drawer,
       user,
       viewStack,
@@ -53,9 +55,13 @@ export default {
   },
 
   methods: {
-    goBack() {
+    async goBack() {
       if (this.stacked) {
         this.viewStack.closeView()
+      } else if (this.dirtyStore.dirty) {
+        await this.dirtyStore.confirm(() => {
+          this.$router.back()
+        })
       } else {
         this.$router.back()
       }
