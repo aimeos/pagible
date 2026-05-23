@@ -476,6 +476,7 @@ export const useDirtyStore = defineStore('dirty', {
 
     register(saveFn) {
       this.saveFn = saveFn
+      this.dirty = false
     },
 
     resolve(value) {
