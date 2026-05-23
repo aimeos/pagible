@@ -1,4 +1,7 @@
 # Export ignores for sub-packages (not shipped with meta-package)
+/.circleci/     export-ignore
+/.potrans/      export-ignore
+/bin/           export-ignore
 /core/          export-ignore
 /admin/         export-ignore
 /ai/            export-ignore
@@ -9,8 +12,6 @@
 /jsonapi/       export-ignore
 /mcp/           export-ignore
 /theme/         export-ignore
-/.circleci/     export-ignore
-/.potrans/      export-ignore
 /tests/         export-ignore
 phpunit.xml     export-ignore
 phpstan.neon.dist export-ignore

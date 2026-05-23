@@ -1,0 +1,130 @@
+#!/usr/bin/env php
+<?php
+
+/**
+ * Extract translatable strings from all sub-packages and update language files.
+ * Optionally translates untranslated strings via DeepL (requires DEEPL_API_KEY env var).
+ *
+ * Usage: composer extract-translations -- ar bg cs da de el en es et fi fr he hu id it ja lt lv nb nl pl pt-br pt ro ru sk sl sv tr uk vi zh
+ */
+
+// DeepL target language codes (where they differ from the JSON filename)
+$deeplCodes = [
+    'en' => 'en-US',
+    'nb' => 'nb',
+    'pt' => 'pt-PT',
+    'pt-br' => 'pt-BR',
+    'zh' => 'zh-HANS',
+];
+
+$workingPath = realpath(__DIR__ . '/..');
+
+require $workingPath . '/vendor/autoload.php';
+
+define('TESTBENCH_WORKING_PATH', $workingPath);
+
+$config = Orchestra\Testbench\Foundation\Config::loadFromYaml(workingPath: $workingPath);
+$commander = new Orchestra\Testbench\Console\Commander($config, $workingPath);
+
+$app = $commander->laravel();
+$app->setBasePath($workingPath);
+$app->useLangPath($workingPath . '/theme/lang');
+
+config()->set('laravel-translatable-string-exporter.directories', array_filter([
+    'src',
+    'core/src',
+    'admin/src',
+    'theme/src',
+    'theme/views',
+    'themes/glass/src',
+    'themes/glass/views',
+    'themes/pagible/src',
+    'themes/pagible/views',
+    'themes/paper/src',
+    'themes/paper/views',
+    'themes/premium/src',
+    'themes/premium/views',
+    'ai/src',
+    'backup/src',
+    'cashier/src',
+    'graphql/src',
+    'import/src',
+    'jsonapi/src',
+    'mcp/src',
+    'search/src',
+], fn($dir) => is_dir($workingPath . '/' . $dir)));
+
+$languages = array_slice($argv, 1);
+
+if (empty($languages)) {
+    fwrite(STDERR, "Usage: php bin/translate.php <lang> [<lang> ...]\n");
+    fwrite(STDERR, "Example: php bin/translate.php de en fr\n");
+    exit(1);
+}
+
+// Read existing translations before extraction to detect new strings
+$langPath = $workingPath . '/theme/lang';
+$existing = [];
+
+foreach ($languages as $lang) {
+    $file = $langPath . '/' . $lang . '.json';
+    $existing[$lang] = file_exists($file) ? json_decode(file_get_contents($file), true) : [];
+}
+
+// Extract translatable strings
+$exporter = new KKomelin\TranslatableStringExporter\Core\Exporter();
+
+foreach ($languages as $lang) {
+    $exporter->export($lang);
+    echo "Extracted translations to theme/lang/{$lang}.json\n";
+}
+
+// Translate untranslated strings via DeepL
+$envFile = $workingPath . '/.env';
+
+if (file_exists($envFile)) {
+    $dotenv = Dotenv\Dotenv::createImmutable($workingPath);
+    $dotenv->safeLoad();
+}
+
+$apiKey = getenv('DEEPL_API_KEY') ?: ($_ENV['DEEPL_API_KEY'] ?? null);
+
+if (!$apiKey) {
+    echo "\nDEEPL_API_KEY not set, skipping translation\n";
+    exit(0);
+}
+
+$translator = new DeepL\Translator($apiKey);
+
+foreach ($languages as $lang) {
+    if ($lang === 'en') {
+        continue;
+    }
+
+    $file = $langPath . '/' . $lang . '.json';
+    $strings = json_decode(file_get_contents($file), true);
+
+    // Only translate strings that were newly added by the exporter
+    $untranslated = array_keys(array_diff_key($strings, $existing[$lang]));
+
+    if (empty($untranslated)) {
+        echo "No new strings for {$lang}\n";
+        continue;
+    }
+
+    $targetLang = $deeplCodes[$lang] ?? $lang;
+
+    try {
+        $results = $translator->translateText($untranslated, 'en', $targetLang);
+
+        foreach ($untranslated as $i => $key) {
+            $strings[$key] = $results[$i]->text;
+        }
+
+        ksort($strings);
+        file_put_contents($file, json_encode($strings, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) . "\n");
+        echo "Translated " . count($untranslated) . " strings for {$lang}\n";
+    } catch (DeepL\DeepLException $e) {
+        fwrite(STDERR, "DeepL error for {$lang}: " . $e->getMessage() . "\n");
+    }
+}
