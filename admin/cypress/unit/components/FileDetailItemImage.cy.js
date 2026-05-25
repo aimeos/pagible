@@ -67,6 +67,11 @@ describe('FileDetailItemImage', () => {
     cy.get('.toolbar .v-btn.btn-flip-v').should('exist')
   })
 
+  it('renders monochrome button', () => {
+    mountImage({}, { 'file:save': true })
+    cy.get('.toolbar .v-btn.btn-monochrome').should('exist')
+  })
+
   it('renders download button', () => {
     mountImage({}, { 'file:save': true })
     cy.get('.toolbar .v-btn.btn-download').should('exist')
