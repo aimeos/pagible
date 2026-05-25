@@ -3,7 +3,7 @@
  */
 
 .hero {
-    overflow-x: hidden;
+    overflow: hidden;
     position: relative;
 }
 
@@ -21,12 +21,12 @@
 
 @keyframes hero-zoom {
     from { transform: scale(1); }
-    to { transform: scale(1.08); }
+    to { transform: scale(1.1); }
 }
 
 @media (prefers-reduced-motion: no-preference) {
     .hero .background.zoom img {
-        animation: hero-zoom 12s ease-in-out infinite alternate;
+        animation: hero-zoom 10s ease-in-out infinite alternate;
     }
 }
 

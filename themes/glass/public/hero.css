@@ -3,7 +3,7 @@
  */
 
 .hero {
-    overflow-x: hidden;
+    overflow: hidden;
     position: relative;
 }
 
@@ -11,6 +11,17 @@
     position: absolute;
     inset: 0;
     z-index: -1;
+    mask-image: linear-gradient(to bottom, transparent, black 60%, transparent);
+    -webkit-mask-image: linear-gradient(to bottom, transparent, black 60%, transparent);
+}
+
+.hero .background::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--pico-primary);
+    opacity: 0.3;
+    mix-blend-mode: color;
 }
 
 .hero .background img {
@@ -21,12 +32,12 @@
 
 @keyframes hero-zoom {
     from { transform: scale(1); }
-    to { transform: scale(1.08); }
+    to { transform: scale(1.1); }
 }
 
 @media (prefers-reduced-motion: no-preference) {
     .hero .background.zoom img {
-        animation: hero-zoom 12s ease-in-out infinite alternate;
+        animation: hero-zoom 10s ease-in-out infinite alternate;
     }
 }
 
