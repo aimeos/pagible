@@ -70,12 +70,20 @@ class AdminController extends Controller
         $url = (string) $request->query('url');
         $range = $request->header('Range') ?: null;
 
-        if (!\Aimeos\Cms\Utils::isValidUrl($url)) {
+        if (empty($url) || !\Aimeos\Cms\Utils::isValidUrl($url)) {
+            abort(400, 'Invalid or missing URL');
+        }
+
+        $parsed = parse_url($url);
+        $host = $parsed['host'] ?? '';
+        $port = $parsed['port'] ?? (($parsed['scheme'] ?? '') === 'https' ? 443 : 80);
+
+        if (!($ip = \Aimeos\Cms\Utils::resolve($host))) {
             abort(400, 'Invalid or missing URL');
         }
 
         try {
-            $response = $this->fetch($url, $method, $range);
+            $response = $this->fetch($url, $method, $range, "$host:$port:$ip");
         } catch (\Illuminate\Http\Client\ConnectionException $e) {
             Log::warning('Proxy fetch failed', ['url' => $url, 'error' => $e->getMessage()]);
             abort(504, 'Upstream request timed out');
@@ -148,7 +156,7 @@ class AdminController extends Controller
      * @param string|null $range
      * @return ClientResponse
      */
-    protected function fetch(string $url, string $method, ?string $range): ClientResponse
+    protected function fetch(string $url, string $method, ?string $range, string $resolve = ''): ClientResponse
     {
         $headers = [
             'User-Agent' => 'Pagible-Proxy/1.0',
@@ -159,12 +167,18 @@ class AdminController extends Controller
             $headers['Range'] = $range;
         }
 
+        $options = [
+            'stream' => true,
+            'verify' => true,
+        ];
+
+        if( $resolve ) {
+            $options['curl'] = [CURLOPT_RESOLVE => [$resolve]];
+        }
+
         return Http::withHeaders($headers)
             ->timeout(10)
-            ->withOptions([
-                'stream' => true,
-                'verify' => true
-            ])
+            ->withOptions($options)
             ->send($method, $url);
     }
 
