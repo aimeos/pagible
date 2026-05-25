@@ -23,7 +23,7 @@ class Status implements Scope
     /**
      * Applys additional restrictions to the query builder.
      *
-     * @param \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model> $builder Query builder
+     * @param \Illuminate\Database\Eloquent\Builder<covariant \Illuminate\Database\Eloquent\Model> $builder Query builder
      * @param \Illuminate\Database\Eloquent\Model $model Eloquent model
      */
     public function apply( Builder $builder, Model $model ): void
