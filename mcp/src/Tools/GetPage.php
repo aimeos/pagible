@@ -32,7 +32,7 @@ class GetPage extends Tool
     public function handle( Request $request ): \Laravel\Mcp\ResponseFactory
     {
         if( !Permission::can( 'page:view', $request->user() ) ) {
-            throw new \Exception( 'Insufficient permissions' );
+            throw new \Aimeos\Cms\Exception( 'Insufficient permissions' );
         }
 
         $v = $request->validate([
@@ -41,7 +41,7 @@ class GetPage extends Tool
         ] );
 
         if( ( $v['id'] ?? null ) === null && ( $v['path'] ?? null ) === null ) {
-            throw new \Exception( 'You must specify either an ID or a path.' );
+            throw new \Aimeos\Cms\Exception( 'You must specify either an ID or a path.' );
         }
 
         $query = Page::withTrashed()

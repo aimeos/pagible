@@ -241,20 +241,20 @@ class Utils
      *
      * @param string $path The file path or URL
      * @return string The MIME type of the file
-     * @throws \RuntimeException If the file cannot be accessed or read
+     * @throws Exception If the file cannot be accessed or read
      */
     public static function mimetype( string $path ) : string
     {
         if( str_starts_with( $path, 'http') )
         {
             if( !self::isValidUrl( $path ) ) {
-                throw new \RuntimeException( 'Invalid URL' );
+                throw new Exception( 'Invalid URL' );
             }
 
             $response = Http::withHeaders( ['Range' => 'bytes=0-299'] )->get( $path );
 
             if( !$response->successful() ) {
-                throw new \RuntimeException( 'URL not accessible' );
+                throw new Exception( 'URL not accessible' );
             }
 
             $buffer = $response->body();
@@ -264,12 +264,12 @@ class Utils
             $stream = Storage::disk( config( 'cms.storage.disk', 'public' ) )->readStream( $path );
 
             if( !$stream ) {
-                throw new \RuntimeException( 'File not accessible' );
+                throw new Exception( 'File not accessible' );
             }
 
             if( ( $buffer = fread( $stream, 300 ) ) === false ) {
                 fclose($stream);
-                throw new \RuntimeException( 'File not readable' );
+                throw new Exception( 'File not readable' );
 
             }
 
@@ -279,7 +279,7 @@ class Utils
         $finfo = new \finfo( FILEINFO_MIME_TYPE );
 
         if( ( $mime = $finfo->buffer( $buffer ) ) === false ) {
-            throw new \RuntimeException( 'Failed to get mime type' );
+            throw new Exception( 'Failed to get mime type' );
         }
 
         return $mime;

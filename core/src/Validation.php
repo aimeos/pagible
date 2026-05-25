@@ -20,12 +20,12 @@ class Validation
      * @param array<string, mixed> $input Page input data
      * @param Authenticatable|null $user Authenticated user
      * @return array<string, mixed> Sanitized input
-     * @throws \InvalidArgumentException On validation failure
+     * @throws Exception On validation failure
      */
     public static function page( array $input, ?Authenticatable $user = null ) : array
     {
         if( !Utils::isValidUrl( $input['to'] ?? null, false ) ) {
-            throw new \InvalidArgumentException( sprintf( 'Invalid URL "%s" in "to" field', $input['to'] ?? '' ) );
+            throw new Exception( sprintf( 'Invalid URL "%s" in "to" field', $input['to'] ?? '' ) );
         }
 
         if( !Permission::can( 'page:config', $user ) ) {
@@ -68,7 +68,7 @@ class Validation
      *
      * @param array<int, array<string, mixed>|object> $items Content element items
      * @return array<int, object> Structured content elements
-     * @throws \InvalidArgumentException If content type is unknown
+     * @throws Exception If content type is unknown
      */
     public static function content( array $items ) : array
     {
@@ -158,7 +158,7 @@ class Validation
      *
      * @param iterable<array<string, mixed>|object> $items Content items to validate
      * @param array<string, mixed>|null $schemas Pre-loaded schemas or null to load
-     * @throws \InvalidArgumentException If content type is unknown
+     * @throws Exception If content type is unknown
      */
     private static function validateContent( iterable $items, ?array $schemas = null ): void
     {
@@ -174,7 +174,7 @@ class Validation
             }
 
             if( !$type || !isset( $schemas[$type] ) ) {
-                throw new \InvalidArgumentException( sprintf( 'Unknown content type "%s"', $type ?? '' ) );
+                throw new Exception( sprintf( 'Unknown content type "%s"', $type ?? '' ) );
             }
         }
     }
@@ -184,14 +184,14 @@ class Validation
      * Validates a single element type against configured content schemas
      *
      * @param string $type Element type to validate
-     * @throws \InvalidArgumentException If element type is unknown
+     * @throws Exception If element type is unknown
      */
     public static function element( string $type ): void
     {
         $schemas = Schema::schemas( section: 'content' );
 
         if( !isset( $schemas[$type] ) ) {
-            throw new \InvalidArgumentException( sprintf( 'Unknown element type "%s"', $type ) );
+            throw new Exception( sprintf( 'Unknown element type "%s"', $type ) );
         }
     }
 
@@ -223,7 +223,7 @@ class Validation
      * Validates that publish_at is a valid future datetime
      *
      * @param string|null $at Datetime string
-     * @throws \InvalidArgumentException If datetime is invalid or in the past
+     * @throws Exception If datetime is invalid or in the past
      */
     public static function publishAt( ?string $at ): void
     {
@@ -234,11 +234,11 @@ class Validation
         try {
             $date = Carbon::parse( $at );
         } catch( \Exception $e ) {
-            throw new \InvalidArgumentException( sprintf( 'Invalid publish date "%s"', $at ) );
+            throw new Exception( sprintf( 'Invalid publish date "%s"', $at ) );
         }
 
         if( $date->isPast() ) {
-            throw new \InvalidArgumentException( 'Publish date must be in the future' );
+            throw new Exception( 'Publish date must be in the future' );
         }
     }
 }

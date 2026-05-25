@@ -9,7 +9,6 @@ namespace Aimeos\Cms\GraphQL\Mutations;
 
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Resource;
-use GraphQL\Error\Error;
 use Illuminate\Support\Facades\Auth;
 
 
@@ -21,17 +20,13 @@ final class AddPage
      */
     public function __invoke( $rootValue, array $args ) : Page
     {
-        try {
-            return Resource::addPage(
-                $args['input'] ?? [],
-                Auth::user(),
-                $args['files'] ?? [],
-                $args['elements'] ?? [],
-                $args['ref'] ?? null,
-                $args['parent'] ?? null,
-            );
-        } catch( \InvalidArgumentException $e ) {
-            throw new Error( $e->getMessage() );
-        }
+        return Resource::addPage(
+            $args['input'] ?? [],
+            Auth::user(),
+            $args['files'] ?? [],
+            $args['elements'] ?? [],
+            $args['ref'] ?? null,
+            $args['parent'] ?? null,
+        );
     }
 }

@@ -71,7 +71,7 @@ class PageToolsTest extends McpTestAbstract
 
     public function testGetPageMissingParams()
     {
-        $this->expectException( \Exception::class );
+        $this->expectException( \Aimeos\Cms\Exception::class );
 
         CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\GetPage::class, [] );
     }
@@ -262,7 +262,7 @@ class PageToolsTest extends McpTestAbstract
 
     public function testAddPageInvalidContentType()
     {
-        $this->expectException( \InvalidArgumentException::class );
+        $this->expectException( \Aimeos\Cms\Exception::class );
 
         CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\AddPage::class, [
             'lang' => 'en',

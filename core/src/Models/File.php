@@ -157,7 +157,7 @@ class File extends Base
         $this->path = null;
 
         if( !$upload->isValid() ) {
-            throw new \RuntimeException( 'Invalid file upload' );
+            throw new \Aimeos\Cms\Exception( 'Invalid file upload' );
         }
 
         $disk = Storage::disk( config( 'cms.disk', 'public' ) );
@@ -172,19 +172,19 @@ class File extends Base
 
             if( !( $content = \Aimeos\Cms\Utils::cleanSvg( $content ) ) ) {
                 $msg = 'Invalid file "%s"';
-                throw new \RuntimeException( sprintf( $msg, $upload->getClientOriginalName() ) );
+                throw new \Aimeos\Cms\Exception( sprintf( $msg, $upload->getClientOriginalName() ) );
             }
 
             if( !$disk->put( $path, $content ) ) {
                 $msg = 'Unable to store file "%s" to "%s"';
-                throw new \RuntimeException( sprintf( $msg, $upload->getClientOriginalName(), $path ) );
+                throw new \Aimeos\Cms\Exception( sprintf( $msg, $upload->getClientOriginalName(), $path ) );
             }
         }
         else
         {
             if( !$disk->putFileAs( $dir, $upload, $name ) ) {
                 $msg = 'Unable to store file "%s" to "%s"';
-                throw new \RuntimeException( sprintf( $msg, $upload->getClientOriginalName(), $path ) );
+                throw new \Aimeos\Cms\Exception( sprintf( $msg, $upload->getClientOriginalName(), $path ) );
             }
         }
 
@@ -243,7 +243,7 @@ class File extends Base
                 $path = $dir . '/' . $this->filename( $filename, $ext, $size );
 
                 if( !$disk->put( $path, $ptr ) ) {
-                    throw new \RuntimeException( sprintf( 'Unable to store preview "%s"', $path ) );
+                    throw new \Aimeos\Cms\Exception( sprintf( 'Unable to store preview "%s"', $path ) );
                 }
 
                 $map[$image->width()] = $path;
@@ -532,7 +532,7 @@ class File extends Base
         $response = Http::withOptions( ['stream' => true] )->get( $url );
 
         if( !$response->successful() ) {
-            throw new \RuntimeException( sprintf( 'Failed to download "%s"', $url ) );
+            throw new \Aimeos\Cms\Exception( sprintf( 'Failed to download "%s"', $url ) );
         }
 
         $body = $response->toPsrResponse()->getBody();

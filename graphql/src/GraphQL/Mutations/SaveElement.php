@@ -20,11 +20,7 @@ final class SaveElement
      */
     public function __invoke( $rootValue, array $args ) : Element
     {
-        try {
-            $element = Resource::saveElement( $args['id'], $args['input'] ?? [], Auth::user(), $args['files'] ?? null, $args['latestId'] ?? null );
-        } catch( \InvalidArgumentException $e ) {
-            throw new \GraphQL\Error\Error( $e->getMessage() );
-        }
+        $element = Resource::saveElement( $args['id'], $args['input'] ?? [], Auth::user(), $args['files'] ?? null, $args['latestId'] ?? null );
 
         Resource::broadcast( $element, Auth::user() );
 

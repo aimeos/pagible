@@ -203,26 +203,26 @@ class Schema
      *
      * @param string $path Base path of the theme
      * @return array<string, mixed> Parsed theme metadata
-     * @throws \RuntimeException If schema.json is missing or invalid
+     * @throws Exception If schema.json is missing or invalid
      */
     private static function meta( string $path ) : array
     {
         $file = $path . '/schema.json';
 
         if( !file_exists( $file ) ) {
-            throw new \RuntimeException( sprintf( 'Missing schema.json in "%s"', $path ) );
+            throw new Exception( sprintf( 'Missing schema.json in "%s"', $path ) );
         }
 
         $json = file_get_contents( $file );
 
         if( $json === false || strlen( $json ) > 1048576 ) {
-            throw new \RuntimeException( sprintf( 'Invalid schema.json in "%s"', $path ) );
+            throw new Exception( sprintf( 'Invalid schema.json in "%s"', $path ) );
         }
 
         $data = json_decode( $json, true );
 
         if( !is_array( $data ) ) {
-            throw new \RuntimeException( sprintf( 'Invalid JSON in schema.json at "%s"', $path ) );
+            throw new Exception( sprintf( 'Invalid JSON in schema.json at "%s"', $path ) );
         }
 
         if( isset( $data['website'] ) && !Utils::isValidUrl( $data['website'] ) ) {
