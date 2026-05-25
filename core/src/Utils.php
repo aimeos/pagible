@@ -217,10 +217,7 @@ class Utils
         }
 
         // Strict: DNS lookup and reject private/reserved IPs
-        return collect( @dns_get_record( $parsed['host'], DNS_A + DNS_AAAA ) ?: [] )
-            ->map( fn( $r ) => $r['ip'] ?? $r['ipv6'] ?? null )
-            ->filter( fn( $ip ) => $ip && filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE ) )
-            ->first() !== null;
+        return self::resolve( $parsed['host'] ) !== null;
     }
 
 
@@ -283,6 +280,27 @@ class Utils
         }
 
         return $mime;
+    }
+
+
+    /**
+     * Resolves a hostname to a public IP address via DNS.
+     *
+     * @param string $host The hostname to resolve
+     * @return string|null The first public IP address, or null if none found
+     */
+    public static function resolve( string $host ) : ?string
+    {
+        foreach( @dns_get_record( $host, DNS_A + DNS_AAAA ) ?: [] as $r )
+        {
+            $ip = $r['ip'] ?? $r['ipv6'] ?? null;
+
+            if( $ip && filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE ) ) {
+                return $ip;
+            }
+        }
+
+        return null;
     }
 
 

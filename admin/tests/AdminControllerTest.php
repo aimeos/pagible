@@ -94,12 +94,9 @@ class AdminControllerTest extends AdminTestAbstract
 
     public function testProxyMissingUrl()
     {
-        Http::fake( fn() => throw new \Illuminate\Http\Client\ConnectionException( 'Connection failed' ) );
-
         $response = $this->actingAs( $this->user )->get( route( 'cms.proxy' ) );
 
-        // Empty URL passes isValidUrl check (returns true for empty), then fetch fails
-        $response->assertStatus( 504 );
+        $response->assertStatus( 400 );
     }
 
 
