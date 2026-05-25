@@ -244,6 +244,7 @@ describe('Page Detail', () => {
   it('back button closes the detail view', () => {
     visitPageDetail()
     detailView().find('.v-btn.btn-back').click()
+    cy.url().should('match', /\/pages$/)
     cy.get('.page-details').should('not.exist')
   })
 
