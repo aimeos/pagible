@@ -60,10 +60,10 @@ export default {
         this.viewStack.closeView()
       } else if (this.dirtyStore.dirty) {
         await this.dirtyStore.confirm(() => {
-          this.$router.back()
+          this.$router.push({ name: `${this.type}:view` })
         })
       } else {
-        this.$router.back()
+        this.$router.push({ name: `${this.type}:view` })
       }
     }
   },

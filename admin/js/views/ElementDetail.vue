@@ -6,7 +6,7 @@ import AsideMeta from '../components/AsideMeta.vue'
 import DetailAppBar from '../components/DetailAppBar.vue'
 import ElementDetailRefs from '../components/ElementDetailRefs.vue'
 import ElementDetailItem from '../components/ElementDetailItem.vue'
-import { useDirtyStore, useSideStore, useUserStore, useMessageStore } from '../stores'
+import { useDirtyStore, useSideStore, useUserStore, useMessageStore, useViewStack } from '../stores'
 import { applyResult, hasUnresolved } from '../merge'
 import { publishDate, publishItem } from '../publish'
 import { setupEcho, cleanEcho } from '../echo'
@@ -123,12 +123,14 @@ export default {
     const messages = useMessageStore()
     const side = useSideStore()
     const user = useUserStore()
+    const viewStack = useViewStack()
 
     return {
       dirtyStore,
       side,
       user,
-      messages
+      messages,
+      viewStack
     }
   },
 
@@ -164,7 +166,7 @@ export default {
         this.latestId = element.latest?.id
 
         for (const entry of element.latest?.files || element.files || []) {
-          assets[entry.id] = Object.freeze({ ...entry, previews: frozenParse(entry.previews) })
+          assets[entry.id] = { ...entry, previews: frozenParse(entry.previews) }
           files.push(entry.id)
         }
 

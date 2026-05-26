@@ -60,8 +60,7 @@ export default defineConfig({
           cropper: ['cropperjs'],
           diff: ['diff'],
           dompurify: ['dompurify'],
-          graphql: ['graphql', 'graphql-tag', '@apollo/client', 'apollo-link-batch-http', '@apollo/client/link/error', '@apollo/client/link/retry'],
-          'graphql-upload': ['apollo-upload-client/createUploadLink.mjs'],
+          graphql: ['graphql', 'graphql-tag', '@apollo/client', 'apollo-link-batch-http', '@apollo/client/link/error', '@apollo/client/link/retry', 'apollo-upload-client/createUploadLink.mjs'],
           markdown: ['mdast-util-from-markdown', 'mdast-util-to-markdown'],
           tree: ['@he-tree/vue'],
         }

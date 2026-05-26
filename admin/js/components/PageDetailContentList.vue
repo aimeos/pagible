@@ -504,7 +504,7 @@ export default {
 
           for (const file of element.files || []) {
             file.previews = frozenParse(file.previews)
-            this.assets[file.id] = Object.freeze(file)
+            this.assets[file.id] = file
           }
 
           element.data = frozenParse(element.data)

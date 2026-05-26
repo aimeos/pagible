@@ -6,7 +6,7 @@ import AsideMeta from '../components/AsideMeta.vue'
 import DetailAppBar from '../components/DetailAppBar.vue'
 import FileDetailRefs from '../components/FileDetailRefs.vue'
 import FileDetailItem from '../components/FileDetailItem.vue'
-import { useDirtyStore, useSideStore, useUserStore, useMessageStore } from '../stores'
+import { useDirtyStore, useSideStore, useUserStore, useMessageStore, useViewStack } from '../stores'
 import { applyResult, hasUnresolved } from '../merge'
 import { publishDate, publishItem } from '../publish'
 import { defineAsyncComponent, markRaw } from 'vue'
@@ -98,12 +98,14 @@ export default {
     const messages = useMessageStore()
     const side = useSideStore()
     const user = useUserStore()
+    const viewStack = useViewStack()
 
     return {
       dirtyStore,
       side,
       user,
-      messages
+      messages,
+      viewStack
     }
   },
 

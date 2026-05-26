@@ -20,7 +20,8 @@ import {
   useSideStore,
   useUserStore,
   useMessageStore,
-  useSchemaStore
+  useSchemaStore,
+  useViewStack
 } from '../stores'
 import {
   mdiTranslate,
@@ -135,6 +136,7 @@ export default {
     const side = useSideStore()
     const user = useUserStore()
     const app = useAppStore()
+    const viewStack = useViewStack()
 
     return {
       app,
@@ -143,6 +145,7 @@ export default {
       user,
       messages,
       schemas,
+      viewStack,
       mdiTranslate,
       mdiArrowRightThin,
       txlocales
@@ -363,12 +366,12 @@ export default {
       const map = {}
 
       for (const entry of entries) {
-        map[entry.id] = Object.freeze({
+        map[entry.id] = {
           ...entry,
           previews: frozenParse(entry.previews),
           description: frozenParse(entry.description),
           transcription: frozenParse(entry.transcription)
-        })
+        }
       }
 
       return map
