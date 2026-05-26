@@ -21,10 +21,10 @@ class AdminController extends Controller
     public function index(): Response
     {
         $media = config( 'cms.admin.csp.media-src' );
-        $nonce = base64_encode(random_bytes(16));
+        $nonce = base64_encode( random_bytes( 16 ) );
 
         return response()
-            ->view('cms::layouts.admin', compact('nonce'))
+            ->view('cms::layouts.admin', ['nonce' => $nonce] )
             ->header('Content-Security-Policy',
                 "base-uri 'self';" .
                 "default-src 'self' data: blob:;" .
@@ -45,51 +45,57 @@ class AdminController extends Controller
      * @param Request $request
      * @return SymfonyResponse
      */
-    public function proxy(Request $request): SymfonyResponse
+    public function proxy( Request $request ): SymfonyResponse
     {
-        $method = strtoupper($request->method());
+        $method = strtoupper( $request->method() );
 
-        if ($method === 'OPTIONS') {
+        if( $method === 'OPTIONS' ) {
             return $this->optionsResponse();
         }
 
-        if (!in_array($method, ['GET', 'HEAD'])) {
-            abort(405, "Unsupported HTTP method: $method");
+        if( !in_array( $method, ['GET', 'HEAD'] ) ) {
+            abort( 405, "Unsupported HTTP method: $method" );
         }
 
-        try {
+        try
+        {
             [$expires, $hmac] = explode( '|', base64_decode( (string) $request->query( 'token', '' ) ) );
 
             if( !hash_equals( hash_hmac( 'sha256', $expires, config( 'app.key' ) ), $hmac ) || (int) $expires < now()->timestamp ) {
                 abort( 403, 'Unauthorized' );
             }
-        } catch( \Exception $e ) {
+        }
+        catch( \Exception $e )
+        {
             abort( 403, 'Unauthorized' );
         }
 
-        $url = (string) $request->query('url');
-        $range = $request->header('Range') ?: null;
+        $url = (string) $request->query( 'url' );
+        $range = $request->header( 'Range' ) ?: null;
 
-        if (empty($url) || !\Aimeos\Cms\Utils::isValidUrl($url)) {
-            abort(400, 'Invalid or missing URL');
+        if( empty( $url ) || !\Aimeos\Cms\Utils::isValidUrl( $url ) ) {
+            abort( 400, 'Invalid or missing URL' );
         }
 
-        $parsed = parse_url($url);
+        $parsed = parse_url( $url );
         $host = $parsed['host'] ?? '';
-        $port = $parsed['port'] ?? (($parsed['scheme'] ?? '') === 'https' ? 443 : 80);
+        $port = $parsed['port'] ?? ( ( $parsed['scheme'] ?? '' ) === 'https' ? 443 : 80 );
 
-        if (!($ip = \Aimeos\Cms\Utils::resolve($host))) {
-            abort(400, 'Invalid or missing URL');
+        if( !( $ip = \Aimeos\Cms\Utils::resolve( $host ) ) ) {
+            abort( 400, 'Invalid IP address for host: ' . $host );
         }
 
-        try {
-            $response = $this->fetch($url, $method, $range, "$host:$port:$ip");
-        } catch (\Illuminate\Http\Client\ConnectionException $e) {
-            Log::warning('Proxy fetch failed', ['url' => $url, 'error' => $e->getMessage()]);
-            abort(504, 'Upstream request timed out');
+        try
+        {
+            $response = $this->fetch( $url, $method, $range, "$host:$port:$ip" );
+        }
+        catch( \Exception $e )
+        {
+            Log::warning( 'Proxy fetch failed', ['url' => $url, 'error' => $e->getMessage()] );
+            abort( 504, 'Upstream request timed out' );
         }
 
-        $headers = $this->buildHeaders($response, $range);
+        $headers = $this->buildHeaders( $response, $range );
 
         $statusCode = isset( $headers['Content-Range'] ) ? 206 : $response->status();
         $maxBytes = (int) ( $headers['Content-Length'] ?? 0 ) ?: config( 'cms.admin.proxy.maxsize', 10 ) * 1024 * 1024;
@@ -98,9 +104,9 @@ class AdminController extends Controller
             return response( '', $statusCode, $headers );
         }
 
-        return response()->stream(function () use ($response, $maxBytes) {
-            $this->stream($response->toPsrResponse()->getBody(), $maxBytes);
-        }, $statusCode, $headers);
+        return response()->stream( function() use ( $response, $maxBytes ) {
+            $this->stream( $response->toPsrResponse()->getBody(), $maxBytes );
+        }, $statusCode, $headers );
     }
 
 
@@ -111,16 +117,18 @@ class AdminController extends Controller
      * @param string|null $range
      * @return array<string, mixed>
      */
-    protected function buildHeaders(ClientResponse $response, ?string $range): array
+    protected function buildHeaders( ClientResponse $response, ?string $range ): array
     {
         $maxBytes = config('cms.admin.proxy.maxsize', 10) * 1024 * 1024;
         $rawLength = (int) ($response->header('Content-Length') ?: 0);
-        $contentLength = min($rawLength, $maxBytes);
+        $contentLength = min( $rawLength, $maxBytes );
         $contentRange = null;
 
-        if ($rawLength > $maxBytes && !$range) {
+        if( $rawLength > $maxBytes && !$range ) {
             $contentRange = "bytes 0-" . ($maxBytes - 1) . "/$rawLength";
-        } elseif ($range && preg_match('/bytes=(\d+)-(\d*)/', $range, $m)) {
+        }
+        elseif( $range && preg_match( '/bytes=(\d+)-(\d*)/', $range, $m ) )
+        {
             $start = (int) $m[1];
             $end = $m[2] !== '' ? (int) $m[2] : ($start + $maxBytes - 1);
             $end = min($end, $start + $maxBytes - 1);
@@ -140,7 +148,7 @@ class AdminController extends Controller
             $headers['Content-Length'] = $contentLength;
         }
 
-        if ($contentRange) {
+        if( $contentRange ) {
             $headers['Content-Range'] = $contentRange;
         }
 
@@ -170,16 +178,26 @@ class AdminController extends Controller
         $options = [
             'stream' => true,
             'verify' => true,
+            'allow_redirects' => [
+                'max' => 1,
+                'on_redirect' => function( $request, $response, $uri ) {
+                    $host = $uri->getHost();
+
+                    if( !$host || !\Aimeos\Cms\Utils::resolve( $host ) ) {
+                        throw new \Aimeos\Cms\Exception( "Redirect to '$host' blocked" );
+                    }
+                },
+            ],
         ];
 
         if( $resolve ) {
             $options['curl'] = [CURLOPT_RESOLVE => [$resolve]];
         }
 
-        return Http::withHeaders($headers)
+        return Http::withHeaders( $headers )
             ->timeout(10)
-            ->withOptions($options)
-            ->send($method, $url);
+            ->withOptions( $options )
+            ->send( $method, $url );
     }
 
 
@@ -204,23 +222,26 @@ class AdminController extends Controller
      * @param \Psr\Http\Message\StreamInterface $body
      * @param int $maxBytes
      */
-    protected function stream(\Psr\Http\Message\StreamInterface $body, int $maxBytes): void
+    protected function stream( \Psr\Http\Message\StreamInterface $body, int $maxBytes ): void
     {
         $sent = 0;
         $chunkSize = 1048576; // 1MB
-        $timeout = config('cms.admin.proxy.timeout', 30); // default: 30 seconds
+        $timeout = config( 'cms.admin.proxy.timeout', 30 ); // default: 30 seconds
         $start = time();
 
-        while (ob_get_level() > 0) ob_end_flush();
+        while( ob_get_level() > 0 ) {
+            ob_end_flush();
+        }
 
-        while (!$body->eof() && $sent < $maxBytes) {
-            if ((time() - $start) > $timeout) {
-                Log::warning('Stream timed out', ['sent' => $sent, 'maxBytes' => $maxBytes, 'timeout' => $timeout]);
+        while( !$body->eof() && $sent < $maxBytes )
+        {
+            if( ( time() - $start ) > $timeout ) {
+                Log::warning( 'Stream timed out', ['sent' => $sent, 'maxBytes' => $maxBytes, 'timeout' => $timeout] );
                 break;
             }
 
-            $chunk = $body->read($chunkSize);
-            $sent += strlen($chunk);
+            $chunk = $body->read( $chunkSize );
+            $sent += strlen( $chunk );
 
             echo $chunk;
             flush();
