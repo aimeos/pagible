@@ -25,8 +25,6 @@ final class PubElement
     {
         Validation::publishAt( $args['at'] ?? null );
 
-        return Resource::publish( Element::class, $args['id'], Utils::editor( Auth::user() ), $args['at'] ?? null, [
-            'latest.files' => fn( $q ) => $q->select( 'cms_files.id' )
-        ] )->all();
+        return Resource::publish( Element::class, $args['id'], Utils::editor( Auth::user() ), $args['at'] ?? null )->all();
     }
 }

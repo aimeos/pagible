@@ -205,10 +205,11 @@ class Element extends Base
      */
     public function publish( Version $version ) : self
     {
-        $fileIds = $version->relationLoaded( 'files' )
-            ? $version->getRelation( 'files' )->modelKeys()
-            : $version->files()->pluck( 'id' )->all();
-        $this->files()->sync( $fileIds );
+        $files = $version->files()->with( 'latest' )->get();
+
+        $this->files()->sync( $files->modelKeys() );
+
+        $files->each( fn( $f ) => $f->latest && !$f->latest->published ? $f->publish( $f->latest ) : null );
 
         $this->forceFill( array_intersect_key( (array) $version->data, array_flip( $this->getFillable() ) ) );
         $this->editor = $version->editor;

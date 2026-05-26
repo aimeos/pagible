@@ -440,11 +440,14 @@ class Page extends Base
      */
     public function publish( Version $version ) : self
     {
-        $version->relationLoaded( 'files' ) ?: $version->load( ['files' => fn( $q ) => $q->select( 'cms_files.id' )] );
-        $version->relationLoaded( 'elements' ) ?: $version->load( ['elements' => fn( $q ) => $q->select( 'cms_elements.id' )] );
+        $files = $version->files()->with( 'latest' )->get();
+        $elements = $version->elements()->with( 'latest' )->get();
 
-        $this->files()->sync( $version->getRelation( 'files' )->modelKeys() );
-        $this->elements()->sync( $version->getRelation( 'elements' )->modelKeys() );
+        $this->files()->sync( $files->modelKeys() );
+        $this->elements()->sync( $elements->modelKeys() );
+
+        $files->each( fn( $f ) => $f->latest && !$f->latest->published ? $f->publish( $f->latest ) : null );
+        $elements->each( fn( $e ) => $e->latest && !$e->latest->published ? $e->publish( $e->latest ) : null );
 
         $this->forceFill( array_intersect_key( (array) $version->data, array_flip( $this->getFillable() ) ) );
         $this->content = $version->aux->content ?? [];

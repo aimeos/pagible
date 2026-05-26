@@ -994,7 +994,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
     {
         $page = Page::where('tag', 'root')->firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 8 );
+        $this->expectsDatabaseQueryCount( 13 );
 
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
