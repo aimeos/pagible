@@ -25,7 +25,7 @@ msgstr ""
 #: js/components/FileDetailItem.vue:211
 #: js/components/FileDetailItem.vue:216
 #: js/components/FileDetailItem.vue:259
-#: js/components/FileDetailItemImage.vue:345
+#: js/components/FileDetailItemImage.vue:372
 #: js/components/FileDetailItemVideo.vue:67
 #: js/components/FileDetailItemVideo.vue:134
 #: js/components/FileDetailItemVideo.vue:171
@@ -52,13 +52,13 @@ msgstr ""
 #: js/fields/Images.vue:119
 #: js/fields/Items.vue:156
 #: js/publish.js:37
-#: js/views/ElementDetail.vue:266
-#: js/views/ElementDetail.vue:355
-#: js/views/FileDetail.vue:232
-#: js/views/FileDetail.vue:304
-#: js/views/PageDetail.vue:467
-#: js/views/PageDetail.vue:568
-#: js/views/PageDetail.vue:677
+#: js/views/ElementDetail.vue:268
+#: js/views/ElementDetail.vue:357
+#: js/views/FileDetail.vue:234
+#: js/views/FileDetail.vue:306
+#: js/views/PageDetail.vue:470
+#: js/views/PageDetail.vue:571
+#: js/views/PageDetail.vue:680
 #: js/views/PageList.vue:243
 msgid "Permission denied"
 msgstr "Odmowa zezwolenia"
@@ -162,7 +162,7 @@ msgstr "Konfiguracja"
 
 #: js/components/ChangesDialog.vue:57
 #: js/components/HistoryDialog.vue:39
-#: js/views/PageDetail.vue:802
+#: js/views/PageDetail.vue:805
 msgid "Content"
 msgstr "Treść"
 
@@ -184,11 +184,11 @@ msgstr "%{count} / %{total}"
 #: js/components/Fields.vue:264
 #: js/components/FieldsDialog.vue:63
 #: js/components/FileAiDialog.vue:275
-#: js/components/FileDetailItemImage.vue:615
-#: js/components/FileDetailItemImage.vue:723
-#: js/components/FileDetailItemImage.vue:777
-#: js/components/FileDetailItemImage.vue:862
-#: js/components/FileDetailItemImage.vue:961
+#: js/components/FileDetailItemImage.vue:642
+#: js/components/FileDetailItemImage.vue:750
+#: js/components/FileDetailItemImage.vue:804
+#: js/components/FileDetailItemImage.vue:889
+#: js/components/FileDetailItemImage.vue:995
 #: js/components/FileDialog.vue:37
 #: js/components/FileListItems.vue:597
 #: js/components/FileListItems.vue:760
@@ -247,36 +247,36 @@ msgstr "Zostaw mi to"
 msgid "Merge both"
 msgstr "Połącz obie"
 
-#: js/components/DetailAppBar.vue:86
+#: js/components/DetailAppBar.vue:92
 #: js/views/ElementList.vue:133
 #: js/views/FileList.vue:132
 #: js/views/PageList.vue:309
 msgid "Menu"
 msgstr "Menu"
 
-#: js/components/DetailAppBar.vue:90
+#: js/components/DetailAppBar.vue:96
 msgid "Back to list view"
 msgstr "Powrót do widoku listy"
 
-#: js/components/DetailAppBar.vue:106
+#: js/components/DetailAppBar.vue:112
 msgid "View history"
 msgstr "Wyświetl historię"
 
-#: js/components/DetailAppBar.vue:114
+#: js/components/DetailAppBar.vue:120
 msgid "View merge changes"
 msgstr "Wyświetl zmiany po scaleniu"
 
-#: js/components/DetailAppBar.vue:122
+#: js/components/DetailAppBar.vue:128
 #: js/components/FieldsDialog.vue:62
 msgid "Save"
 msgstr "Zapisz"
 
-#: js/components/DetailAppBar.vue:136
+#: js/components/DetailAppBar.vue:142
 msgid "Schedule publishing"
 msgstr "Harmonogram publikacji"
 
-#: js/components/DetailAppBar.vue:160
-#: js/components/DetailAppBar.vue:168
+#: js/components/DetailAppBar.vue:166
+#: js/components/DetailAppBar.vue:174
 #: js/components/ElementListItems.vue:565
 #: js/components/ElementListItems.vue:709
 #: js/components/FileListItems.vue:603
@@ -286,7 +286,7 @@ msgstr "Harmonogram publikacji"
 msgid "Publish"
 msgstr "Publikować"
 
-#: js/components/DetailAppBar.vue:183
+#: js/components/DetailAppBar.vue:189
 #: js/views/ElementList.vue:151
 #: js/views/FileList.vue:150
 #: js/views/PageList.vue:327
@@ -303,7 +303,7 @@ msgstr "Nazwa"
 
 #: js/components/ElementDetailItem.vue:88
 #: js/components/FileDetailItem.vue:340
-#: js/components/PageDetailItemProps.vue:249
+#: js/components/PageDetailItemProps.vue:254
 #: js/components/User.vue:104
 msgid "Language"
 msgstr "Język"
@@ -655,144 +655,148 @@ msgstr "Transkrypcja zawartości pliku"
 msgid "Transcription (%{lang})"
 msgstr "Transkrypcja (%{lang})"
 
-#: js/components/FileDetailItemImage.vue:225
+#: js/components/FileDetailItemImage.vue:227
 msgid "Error erasing image part"
 msgstr "Błąd kasowania części obrazu"
 
-#: js/components/FileDetailItemImage.vue:318
+#: js/components/FileDetailItemImage.vue:320
 msgid "Error editing image part"
 msgstr "Błąd edycji części obrazu"
 
-#: js/components/FileDetailItemImage.vue:337
+#: js/components/FileDetailItemImage.vue:339
 msgid "Error removing background"
 msgstr "Błąd usuwania tła"
 
-#: js/components/FileDetailItemImage.vue:416
+#: js/components/FileDetailItemImage.vue:443
 msgid "Error editing image"
 msgstr "Błąd edycji obrazu"
 
-#: js/components/FileDetailItemImage.vue:501
+#: js/components/FileDetailItemImage.vue:528
 msgid "Error uncropping image"
 msgstr "Błąd przycinania obrazu"
 
-#: js/components/FileDetailItemImage.vue:544
+#: js/components/FileDetailItemImage.vue:571
 msgid "Error upscaling image"
 msgstr "Błąd skalowania obrazu"
 
-#: js/components/FileDetailItemImage.vue:588
+#: js/components/FileDetailItemImage.vue:615
 #: js/components/UnsavedDialog.vue:55
 msgid "Cancel"
 msgstr "Anuluj"
 
-#: js/components/FileDetailItemImage.vue:595
-#: js/components/FileDetailItemImage.vue:604
-#: js/components/FileDetailItemImage.vue:612
+#: js/components/FileDetailItemImage.vue:622
+#: js/components/FileDetailItemImage.vue:631
+#: js/components/FileDetailItemImage.vue:639
 msgid "Select area"
 msgstr "Wybierz obszar"
 
-#: js/components/FileDetailItemImage.vue:627
+#: js/components/FileDetailItemImage.vue:654
 msgid "Original ratio"
 msgstr "Oryginalny współczynnik"
 
-#: js/components/FileDetailItemImage.vue:636
+#: js/components/FileDetailItemImage.vue:663
 msgid "No ratio"
 msgstr "Brak współczynnika"
 
-#: js/components/FileDetailItemImage.vue:641
+#: js/components/FileDetailItemImage.vue:668
 msgid "Square"
 msgstr "Kwadrat"
 
-#: js/components/FileDetailItemImage.vue:687
+#: js/components/FileDetailItemImage.vue:714
 msgid "Crop selected area"
 msgstr "Wybrany obszar upraw"
 
-#: js/components/FileDetailItemImage.vue:697
+#: js/components/FileDetailItemImage.vue:724
 msgid "Erase selected area"
 msgstr "Kasowanie wybranego obszaru"
 
-#: js/components/FileDetailItemImage.vue:712
-#: js/components/FileDetailItemImage.vue:720
-#: js/components/FileDetailItemImage.vue:741
+#: js/components/FileDetailItemImage.vue:739
+#: js/components/FileDetailItemImage.vue:747
+#: js/components/FileDetailItemImage.vue:768
 msgid "Edit image"
 msgstr "Edytuj obraz"
 
-#: js/components/FileDetailItemImage.vue:731
+#: js/components/FileDetailItemImage.vue:758
 msgid "Describe the changes"
 msgstr "Opisać zmiany"
 
-#: js/components/FileDetailItemImage.vue:750
+#: js/components/FileDetailItemImage.vue:777
 msgid "Remove background"
 msgstr "Usuń tło"
 
-#: js/components/FileDetailItemImage.vue:766
-#: js/components/FileDetailItemImage.vue:774
-#: js/components/FileDetailItemImage.vue:832
+#: js/components/FileDetailItemImage.vue:793
+#: js/components/FileDetailItemImage.vue:801
+#: js/components/FileDetailItemImage.vue:859
 msgid "Expand image"
 msgstr "Rozwiń obraz"
 
-#: js/components/FileDetailItemImage.vue:789
+#: js/components/FileDetailItemImage.vue:816
 msgid "Top"
 msgstr "Top"
 
-#: js/components/FileDetailItemImage.vue:801
+#: js/components/FileDetailItemImage.vue:828
 msgid "Left"
 msgstr "Lewa"
 
-#: js/components/FileDetailItemImage.vue:811
+#: js/components/FileDetailItemImage.vue:838
 msgid "Right"
 msgstr "Prawo"
 
-#: js/components/FileDetailItemImage.vue:823
+#: js/components/FileDetailItemImage.vue:850
 msgid "Bottom"
 msgstr "Dół"
 
-#: js/components/FileDetailItemImage.vue:840
+#: js/components/FileDetailItemImage.vue:867
 msgid "Upscale"
 msgstr "Ekskluzywny"
 
-#: js/components/FileDetailItemImage.vue:851
-#: js/components/FileDetailItemImage.vue:859
+#: js/components/FileDetailItemImage.vue:878
+#: js/components/FileDetailItemImage.vue:886
 msgid "Upscale image"
 msgstr "Ekskluzywny wizerunek"
 
-#: js/components/FileDetailItemImage.vue:875
-#: js/components/FileDetailItemImage.vue:885
-#: js/components/FileDetailItemImage.vue:895
-#: js/components/FileDetailItemImage.vue:905
+#: js/components/FileDetailItemImage.vue:902
+#: js/components/FileDetailItemImage.vue:912
+#: js/components/FileDetailItemImage.vue:922
+#: js/components/FileDetailItemImage.vue:932
 msgid "Scale %{factor}"
 msgstr "Skala %{factor}"
 
-#: js/components/FileDetailItemImage.vue:916
+#: js/components/FileDetailItemImage.vue:943
 msgid "Rotate counter-clockwise"
 msgstr "Obrót w kierunku przeciwnym do ruchu wskazówek zegara"
 
-#: js/components/FileDetailItemImage.vue:922
+#: js/components/FileDetailItemImage.vue:949
 msgid "Rotate clockwise"
 msgstr "Obrót zgodnie z ruchem wskazówek zegara"
 
-#: js/components/FileDetailItemImage.vue:929
+#: js/components/FileDetailItemImage.vue:956
 msgid "Flip horizontally"
 msgstr "Odwrócenie w poziomie"
 
-#: js/components/FileDetailItemImage.vue:935
+#: js/components/FileDetailItemImage.vue:962
 msgid "Flip vertically"
 msgstr "Obrót w pionie"
 
-#: js/components/FileDetailItemImage.vue:938
+#: js/components/FileDetailItemImage.vue:969
+msgid "Convert to monochrome"
+msgstr "Przekonwertuj na czarno-biały"
+
+#: js/components/FileDetailItemImage.vue:972
 msgid "Download"
 msgstr "Pobierz"
 
-#: js/components/FileDetailItemImage.vue:942
-#: js/components/FileDetailItemImage.vue:952
-#: js/components/FileDetailItemImage.vue:960
+#: js/components/FileDetailItemImage.vue:976
+#: js/components/FileDetailItemImage.vue:986
+#: js/components/FileDetailItemImage.vue:994
 msgid "Undo"
 msgstr "Cofnij"
 
-#: js/components/FileDetailItemImage.vue:968
+#: js/components/FileDetailItemImage.vue:1002
 msgid "Previous edit"
 msgstr "Poprzednia edycja"
 
-#: js/components/FileDetailItemImage.vue:973
+#: js/components/FileDetailItemImage.vue:1007
 msgid "Original"
 msgstr "Oryginał"
 
@@ -869,7 +873,7 @@ msgid "Error restoring file"
 msgstr "Błąd przywracania pliku"
 
 #: js/components/FileListItems.vue:392
-#: js/views/FileDetail.vue:211
+#: js/views/FileDetail.vue:213
 msgid "Error publishing file"
 msgstr "Błąd publikowania pliku"
 
@@ -1217,43 +1221,43 @@ msgstr "Adres URL jest nieprawidłowy"
 msgid "The path is already in use by another page"
 msgstr "Ścieżka jest już używana przez inną stronę"
 
-#: js/components/PageDetailItemProps.vue:236
+#: js/components/PageDetailItemProps.vue:241
 msgid "Status"
 msgstr "Status"
 
-#: js/components/PageDetailItemProps.vue:263
+#: js/components/PageDetailItemProps.vue:268
 msgid "Page title"
 msgstr "Tytuł strony"
 
-#: js/components/PageDetailItemProps.vue:274
+#: js/components/PageDetailItemProps.vue:279
 msgid "Page name"
 msgstr "Nazwa strony"
 
-#: js/components/PageDetailItemProps.vue:289
+#: js/components/PageDetailItemProps.vue:294
 msgid "URL path"
 msgstr "Ścieżka URL"
 
-#: js/components/PageDetailItemProps.vue:302
+#: js/components/PageDetailItemProps.vue:308
 msgid "Domain"
 msgstr "Domena"
 
-#: js/components/PageDetailItemProps.vue:317
+#: js/components/PageDetailItemProps.vue:323
 msgid "Theme"
 msgstr "Temat"
 
-#: js/components/PageDetailItemProps.vue:326
+#: js/components/PageDetailItemProps.vue:332
 msgid "Page type"
 msgstr "Typ strony"
 
-#: js/components/PageDetailItemProps.vue:337
+#: js/components/PageDetailItemProps.vue:343
 msgid "Page tag"
 msgstr "Znacznik strony"
 
-#: js/components/PageDetailItemProps.vue:348
+#: js/components/PageDetailItemProps.vue:354
 msgid "Cache time"
 msgstr "Czas pamięci podręcznej"
 
-#: js/components/PageDetailItemProps.vue:364
+#: js/components/PageDetailItemProps.vue:370
 msgid "Redirect URL"
 msgstr "Przekierowanie URL"
 
@@ -1433,12 +1437,12 @@ msgid "Error copying page"
 msgstr "Błąd kopiowania strony"
 
 #: js/components/PageListItems.vue:834
-#: js/views/PageDetail.vue:260
+#: js/views/PageDetail.vue:263
 msgid "Error fetching page"
 msgstr "Błąd pobierania strony"
 
 #: js/components/PageListItems.vue:889
-#: js/views/PageDetail.vue:441
+#: js/views/PageDetail.vue:444
 msgid "Error publishing page"
 msgstr "Błąd publikowania strony"
 
@@ -1451,7 +1455,7 @@ msgid "Error searching pages"
 msgstr "Błąd wyszukiwania stron"
 
 #: js/components/PageListItems.vue:1055
-#: js/views/PageDetail.vue:558
+#: js/views/PageDetail.vue:561
 msgid "Error saving page"
 msgstr "Błąd zapisywania strony"
 
@@ -1722,23 +1726,23 @@ msgid "Login"
 msgstr "Logowanie"
 
 #: js/routes.js:40
-#: js/views/PageDetail.vue:745
-#: js/views/PageDetail.vue:791
-#: js/views/PageDetail.vue:809
+#: js/views/PageDetail.vue:748
+#: js/views/PageDetail.vue:794
+#: js/views/PageDetail.vue:812
 msgid "Page"
 msgstr "Strona"
 
 #: js/routes.js:60
-#: js/views/ElementDetail.vue:405
-#: js/views/ElementDetail.vue:425
-#: js/views/ElementDetail.vue:429
+#: js/views/ElementDetail.vue:407
+#: js/views/ElementDetail.vue:427
+#: js/views/ElementDetail.vue:431
 msgid "Element"
 msgstr "Element"
 
 #: js/routes.js:80
-#: js/views/FileDetail.vue:351
-#: js/views/FileDetail.vue:371
-#: js/views/FileDetail.vue:375
+#: js/views/FileDetail.vue:353
+#: js/views/FileDetail.vue:373
+#: js/views/FileDetail.vue:377
 msgid "File"
 msgstr "Plik"
 
@@ -2090,42 +2094,42 @@ msgstr "Brak"
 msgid "All"
 msgstr "Wszystkie"
 
-#: js/views/ElementDetail.vue:182
+#: js/views/ElementDetail.vue:184
 msgid "Error fetching element"
 msgstr "Błąd pobierania elementu"
 
-#: js/views/ElementDetail.vue:243
+#: js/views/ElementDetail.vue:245
 msgid "Element published successfully"
 msgstr "Element został pomyślnie opublikowany"
 
-#: js/views/ElementDetail.vue:244
+#: js/views/ElementDetail.vue:246
 msgid "Element scheduled for publishing at %{date}"
 msgstr "Element zaplanowany do publikacji na stronie %{date}"
 
-#: js/views/ElementDetail.vue:245
+#: js/views/ElementDetail.vue:247
 msgid "Error publishing element"
 msgstr "Błąd publikowania elementu"
 
-#: js/views/ElementDetail.vue:272
-#: js/views/FileDetail.vue:238
-#: js/views/PageDetail.vue:473
+#: js/views/ElementDetail.vue:274
+#: js/views/FileDetail.vue:240
+#: js/views/PageDetail.vue:476
 msgid "There are invalid fields, please resolve the errors first"
 msgstr "Istnieją nieprawidłowe pola, najpierw usuń błędy"
 
-#: js/views/ElementDetail.vue:315
+#: js/views/ElementDetail.vue:317
 msgid "Element saved successfully"
 msgstr "Element zapisany pomyślnie"
 
-#: js/views/ElementDetail.vue:320
+#: js/views/ElementDetail.vue:322
 msgid "Error saving element"
 msgstr "Błąd zapisu elementu"
 
-#: js/views/ElementDetail.vue:386
+#: js/views/ElementDetail.vue:388
 msgid "Error fetching element versions"
 msgstr "Błąd pobierania wersji elementów"
 
-#: js/views/ElementDetail.vue:431
-#: js/views/FileDetail.vue:377
+#: js/views/ElementDetail.vue:433
+#: js/views/FileDetail.vue:379
 msgid "Used by"
 msgstr "Używany przez"
 
@@ -2189,27 +2193,27 @@ msgstr "Zamknij nawigację"
 msgid "Open navigation"
 msgstr "Otwarta nawigacja"
 
-#: js/views/FileDetail.vue:168
+#: js/views/FileDetail.vue:170
 msgid "Error fetching file"
 msgstr "Wystąpił błąd podczas pobierania pliku"
 
-#: js/views/FileDetail.vue:209
+#: js/views/FileDetail.vue:211
 msgid "File published successfully"
 msgstr "Plik został pomyślnie opublikowany"
 
-#: js/views/FileDetail.vue:210
+#: js/views/FileDetail.vue:212
 msgid "File scheduled for publishing at %{date}"
 msgstr "Plik zaplanowany do publikacji pod adresem %{date}"
 
-#: js/views/FileDetail.vue:283
+#: js/views/FileDetail.vue:285
 msgid "File saved successfully"
 msgstr "Plik został pomyślnie zapisany"
 
-#: js/views/FileDetail.vue:288
+#: js/views/FileDetail.vue:290
 msgid "Error saving file"
 msgstr "Błąd zapisu pliku"
 
-#: js/views/FileDetail.vue:334
+#: js/views/FileDetail.vue:336
 msgid "Error fetching file versions"
 msgstr "Błąd pobierania wersji pliku"
 
@@ -2245,35 +2249,35 @@ msgstr "Pokaż hasło"
 msgid "Error"
 msgstr "Błąd"
 
-#: js/views/PageDetail.vue:439
+#: js/views/PageDetail.vue:442
 msgid "Page published successfully"
 msgstr "Strona została pomyślnie opublikowana"
 
-#: js/views/PageDetail.vue:440
+#: js/views/PageDetail.vue:443
 msgid "Page scheduled for publishing at %{date}"
 msgstr "Strona zaplanowana do publikacji pod adresem %{date}"
 
-#: js/views/PageDetail.vue:543
+#: js/views/PageDetail.vue:546
 msgid "Page saved successfully"
 msgstr "Strona została pomyślnie zapisana"
 
-#: js/views/PageDetail.vue:573
+#: js/views/PageDetail.vue:576
 msgid "No page schema for \"content\" found"
 msgstr "Nie znaleziono schematu strony dla \"content\""
 
-#: js/views/PageDetail.vue:709
+#: js/views/PageDetail.vue:712
 msgid "Error fetching page versions"
 msgstr "Błąd pobierania wersji strony"
 
-#: js/views/PageDetail.vue:770
+#: js/views/PageDetail.vue:773
 msgid "Translate page"
 msgstr "Przetłumacz stronę"
 
-#: js/views/PageDetail.vue:795
+#: js/views/PageDetail.vue:798
 msgid "Editor"
 msgstr "Edytor"
 
-#: js/views/PageDetail.vue:812
+#: js/views/PageDetail.vue:815
 msgid "Metrics"
 msgstr "Metryki"
 

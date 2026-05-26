@@ -25,7 +25,7 @@ msgstr ""
 #: js/components/FileDetailItem.vue:211
 #: js/components/FileDetailItem.vue:216
 #: js/components/FileDetailItem.vue:259
-#: js/components/FileDetailItemImage.vue:345
+#: js/components/FileDetailItemImage.vue:372
 #: js/components/FileDetailItemVideo.vue:67
 #: js/components/FileDetailItemVideo.vue:134
 #: js/components/FileDetailItemVideo.vue:171
@@ -52,13 +52,13 @@ msgstr ""
 #: js/fields/Images.vue:119
 #: js/fields/Items.vue:156
 #: js/publish.js:37
-#: js/views/ElementDetail.vue:266
-#: js/views/ElementDetail.vue:355
-#: js/views/FileDetail.vue:232
-#: js/views/FileDetail.vue:304
-#: js/views/PageDetail.vue:467
-#: js/views/PageDetail.vue:568
-#: js/views/PageDetail.vue:677
+#: js/views/ElementDetail.vue:268
+#: js/views/ElementDetail.vue:357
+#: js/views/FileDetail.vue:234
+#: js/views/FileDetail.vue:306
+#: js/views/PageDetail.vue:470
+#: js/views/PageDetail.vue:571
+#: js/views/PageDetail.vue:680
 #: js/views/PageList.vue:243
 msgid "Permission denied"
 msgstr "Разрешението е отказано"
@@ -162,7 +162,7 @@ msgstr "Конфигурация"
 
 #: js/components/ChangesDialog.vue:57
 #: js/components/HistoryDialog.vue:39
-#: js/views/PageDetail.vue:802
+#: js/views/PageDetail.vue:805
 msgid "Content"
 msgstr "Съдържание"
 
@@ -184,11 +184,11 @@ msgstr "%{count} / %{total}"
 #: js/components/Fields.vue:264
 #: js/components/FieldsDialog.vue:63
 #: js/components/FileAiDialog.vue:275
-#: js/components/FileDetailItemImage.vue:615
-#: js/components/FileDetailItemImage.vue:723
-#: js/components/FileDetailItemImage.vue:777
-#: js/components/FileDetailItemImage.vue:862
-#: js/components/FileDetailItemImage.vue:961
+#: js/components/FileDetailItemImage.vue:642
+#: js/components/FileDetailItemImage.vue:750
+#: js/components/FileDetailItemImage.vue:804
+#: js/components/FileDetailItemImage.vue:889
+#: js/components/FileDetailItemImage.vue:995
 #: js/components/FileDialog.vue:37
 #: js/components/FileListItems.vue:597
 #: js/components/FileListItems.vue:760
@@ -247,36 +247,36 @@ msgstr "Запази моето"
 msgid "Merge both"
 msgstr "Обединете и двете"
 
-#: js/components/DetailAppBar.vue:86
+#: js/components/DetailAppBar.vue:92
 #: js/views/ElementList.vue:133
 #: js/views/FileList.vue:132
 #: js/views/PageList.vue:309
 msgid "Menu"
 msgstr "Меню"
 
-#: js/components/DetailAppBar.vue:90
+#: js/components/DetailAppBar.vue:96
 msgid "Back to list view"
 msgstr "Връщане към изглед на списъка"
 
-#: js/components/DetailAppBar.vue:106
+#: js/components/DetailAppBar.vue:112
 msgid "View history"
 msgstr "Преглед на историята"
 
-#: js/components/DetailAppBar.vue:114
+#: js/components/DetailAppBar.vue:120
 msgid "View merge changes"
 msgstr "Преглед на промените при сливането"
 
-#: js/components/DetailAppBar.vue:122
+#: js/components/DetailAppBar.vue:128
 #: js/components/FieldsDialog.vue:62
 msgid "Save"
 msgstr "Запазете"
 
-#: js/components/DetailAppBar.vue:136
+#: js/components/DetailAppBar.vue:142
 msgid "Schedule publishing"
 msgstr "Публикуване на график"
 
-#: js/components/DetailAppBar.vue:160
-#: js/components/DetailAppBar.vue:168
+#: js/components/DetailAppBar.vue:166
+#: js/components/DetailAppBar.vue:174
 #: js/components/ElementListItems.vue:565
 #: js/components/ElementListItems.vue:709
 #: js/components/FileListItems.vue:603
@@ -286,7 +286,7 @@ msgstr "Публикуване на график"
 msgid "Publish"
 msgstr "Публикувайте"
 
-#: js/components/DetailAppBar.vue:183
+#: js/components/DetailAppBar.vue:189
 #: js/views/ElementList.vue:151
 #: js/views/FileList.vue:150
 #: js/views/PageList.vue:327
@@ -303,7 +303,7 @@ msgstr "Име"
 
 #: js/components/ElementDetailItem.vue:88
 #: js/components/FileDetailItem.vue:340
-#: js/components/PageDetailItemProps.vue:249
+#: js/components/PageDetailItemProps.vue:254
 #: js/components/User.vue:104
 msgid "Language"
 msgstr "Език"
@@ -655,144 +655,148 @@ msgstr "Транскрибирайте съдържанието на файла"
 msgid "Transcription (%{lang})"
 msgstr "Транскрипция (%{lang})"
 
-#: js/components/FileDetailItemImage.vue:225
+#: js/components/FileDetailItemImage.vue:227
 msgid "Error erasing image part"
 msgstr "Грешка при изтриване на част от изображението"
 
-#: js/components/FileDetailItemImage.vue:318
+#: js/components/FileDetailItemImage.vue:320
 msgid "Error editing image part"
 msgstr "Грешка при редактиране на част от изображението"
 
-#: js/components/FileDetailItemImage.vue:337
+#: js/components/FileDetailItemImage.vue:339
 msgid "Error removing background"
 msgstr "Грешка при премахването на фона"
 
-#: js/components/FileDetailItemImage.vue:416
+#: js/components/FileDetailItemImage.vue:443
 msgid "Error editing image"
 msgstr "Грешка при редактиране на изображение"
 
-#: js/components/FileDetailItemImage.vue:501
+#: js/components/FileDetailItemImage.vue:528
 msgid "Error uncropping image"
 msgstr "Грешка при разкрояване на изображението"
 
-#: js/components/FileDetailItemImage.vue:544
+#: js/components/FileDetailItemImage.vue:571
 msgid "Error upscaling image"
 msgstr "Грешка при увеличаване на мащаба на изображението"
 
-#: js/components/FileDetailItemImage.vue:588
+#: js/components/FileDetailItemImage.vue:615
 #: js/components/UnsavedDialog.vue:55
 msgid "Cancel"
 msgstr "Отмяна на"
 
-#: js/components/FileDetailItemImage.vue:595
-#: js/components/FileDetailItemImage.vue:604
-#: js/components/FileDetailItemImage.vue:612
+#: js/components/FileDetailItemImage.vue:622
+#: js/components/FileDetailItemImage.vue:631
+#: js/components/FileDetailItemImage.vue:639
 msgid "Select area"
 msgstr "Изберете област"
 
-#: js/components/FileDetailItemImage.vue:627
+#: js/components/FileDetailItemImage.vue:654
 msgid "Original ratio"
 msgstr "Първоначално съотношение"
 
-#: js/components/FileDetailItemImage.vue:636
+#: js/components/FileDetailItemImage.vue:663
 msgid "No ratio"
 msgstr "Няма съотношение"
 
-#: js/components/FileDetailItemImage.vue:641
+#: js/components/FileDetailItemImage.vue:668
 msgid "Square"
 msgstr "Квадрат"
 
-#: js/components/FileDetailItemImage.vue:687
+#: js/components/FileDetailItemImage.vue:714
 msgid "Crop selected area"
 msgstr "Избрана площ за културата"
 
-#: js/components/FileDetailItemImage.vue:697
+#: js/components/FileDetailItemImage.vue:724
 msgid "Erase selected area"
 msgstr "Изтриване на избрана област"
 
-#: js/components/FileDetailItemImage.vue:712
-#: js/components/FileDetailItemImage.vue:720
-#: js/components/FileDetailItemImage.vue:741
+#: js/components/FileDetailItemImage.vue:739
+#: js/components/FileDetailItemImage.vue:747
+#: js/components/FileDetailItemImage.vue:768
 msgid "Edit image"
 msgstr "Редактиране на изображението"
 
-#: js/components/FileDetailItemImage.vue:731
+#: js/components/FileDetailItemImage.vue:758
 msgid "Describe the changes"
 msgstr "Опишете промените"
 
-#: js/components/FileDetailItemImage.vue:750
+#: js/components/FileDetailItemImage.vue:777
 msgid "Remove background"
 msgstr "Премахване на фона"
 
-#: js/components/FileDetailItemImage.vue:766
-#: js/components/FileDetailItemImage.vue:774
-#: js/components/FileDetailItemImage.vue:832
+#: js/components/FileDetailItemImage.vue:793
+#: js/components/FileDetailItemImage.vue:801
+#: js/components/FileDetailItemImage.vue:859
 msgid "Expand image"
 msgstr "Разширяване на изображението"
 
-#: js/components/FileDetailItemImage.vue:789
+#: js/components/FileDetailItemImage.vue:816
 msgid "Top"
 msgstr "Топ"
 
-#: js/components/FileDetailItemImage.vue:801
+#: js/components/FileDetailItemImage.vue:828
 msgid "Left"
 msgstr "Вляво"
 
-#: js/components/FileDetailItemImage.vue:811
+#: js/components/FileDetailItemImage.vue:838
 msgid "Right"
 msgstr "Вдясно"
 
-#: js/components/FileDetailItemImage.vue:823
+#: js/components/FileDetailItemImage.vue:850
 msgid "Bottom"
 msgstr "Дъно"
 
-#: js/components/FileDetailItemImage.vue:840
+#: js/components/FileDetailItemImage.vue:867
 msgid "Upscale"
 msgstr "Луксозен"
 
-#: js/components/FileDetailItemImage.vue:851
-#: js/components/FileDetailItemImage.vue:859
+#: js/components/FileDetailItemImage.vue:878
+#: js/components/FileDetailItemImage.vue:886
 msgid "Upscale image"
 msgstr "Висококачествен имидж"
 
-#: js/components/FileDetailItemImage.vue:875
-#: js/components/FileDetailItemImage.vue:885
-#: js/components/FileDetailItemImage.vue:895
-#: js/components/FileDetailItemImage.vue:905
+#: js/components/FileDetailItemImage.vue:902
+#: js/components/FileDetailItemImage.vue:912
+#: js/components/FileDetailItemImage.vue:922
+#: js/components/FileDetailItemImage.vue:932
 msgid "Scale %{factor}"
 msgstr "Скала %{factor}"
 
-#: js/components/FileDetailItemImage.vue:916
+#: js/components/FileDetailItemImage.vue:943
 msgid "Rotate counter-clockwise"
 msgstr "Завъртете в посока, обратна на часовниковата стрелка"
 
-#: js/components/FileDetailItemImage.vue:922
+#: js/components/FileDetailItemImage.vue:949
 msgid "Rotate clockwise"
 msgstr "Завъртете по посока на часовниковата стрелка"
 
-#: js/components/FileDetailItemImage.vue:929
+#: js/components/FileDetailItemImage.vue:956
 msgid "Flip horizontally"
 msgstr "Обръщане по хоризонтала"
 
-#: js/components/FileDetailItemImage.vue:935
+#: js/components/FileDetailItemImage.vue:962
 msgid "Flip vertically"
 msgstr "Обръщане по вертикала"
 
-#: js/components/FileDetailItemImage.vue:938
+#: js/components/FileDetailItemImage.vue:969
+msgid "Convert to monochrome"
+msgstr "Преобразувай в монохромно"
+
+#: js/components/FileDetailItemImage.vue:972
 msgid "Download"
 msgstr "Изтегляне"
 
-#: js/components/FileDetailItemImage.vue:942
-#: js/components/FileDetailItemImage.vue:952
-#: js/components/FileDetailItemImage.vue:960
+#: js/components/FileDetailItemImage.vue:976
+#: js/components/FileDetailItemImage.vue:986
+#: js/components/FileDetailItemImage.vue:994
 msgid "Undo"
 msgstr "Отмяна на"
 
-#: js/components/FileDetailItemImage.vue:968
+#: js/components/FileDetailItemImage.vue:1002
 msgid "Previous edit"
 msgstr "Предишна редакция"
 
-#: js/components/FileDetailItemImage.vue:973
+#: js/components/FileDetailItemImage.vue:1007
 msgid "Original"
 msgstr "Оригинал"
 
@@ -869,7 +873,7 @@ msgid "Error restoring file"
 msgstr "Грешка при възстановяването на файла"
 
 #: js/components/FileListItems.vue:392
-#: js/views/FileDetail.vue:211
+#: js/views/FileDetail.vue:213
 msgid "Error publishing file"
 msgstr "Грешка при публикуването на файла"
 
@@ -1215,43 +1219,43 @@ msgstr "URL адресът не е валиден"
 msgid "The path is already in use by another page"
 msgstr "Пътят вече се използва от друга страница"
 
-#: js/components/PageDetailItemProps.vue:236
+#: js/components/PageDetailItemProps.vue:241
 msgid "Status"
 msgstr "Статус"
 
-#: js/components/PageDetailItemProps.vue:263
+#: js/components/PageDetailItemProps.vue:268
 msgid "Page title"
 msgstr "Заглавие на страницата"
 
-#: js/components/PageDetailItemProps.vue:274
+#: js/components/PageDetailItemProps.vue:279
 msgid "Page name"
 msgstr "Име на страницата"
 
-#: js/components/PageDetailItemProps.vue:289
+#: js/components/PageDetailItemProps.vue:294
 msgid "URL path"
 msgstr "Път на URL"
 
-#: js/components/PageDetailItemProps.vue:302
+#: js/components/PageDetailItemProps.vue:308
 msgid "Domain"
 msgstr "Домейн"
 
-#: js/components/PageDetailItemProps.vue:317
+#: js/components/PageDetailItemProps.vue:323
 msgid "Theme"
 msgstr "Тема"
 
-#: js/components/PageDetailItemProps.vue:326
+#: js/components/PageDetailItemProps.vue:332
 msgid "Page type"
 msgstr "Вид на страницата"
 
-#: js/components/PageDetailItemProps.vue:337
+#: js/components/PageDetailItemProps.vue:343
 msgid "Page tag"
 msgstr "Таг на страницата"
 
-#: js/components/PageDetailItemProps.vue:348
+#: js/components/PageDetailItemProps.vue:354
 msgid "Cache time"
 msgstr "Време за кеширане"
 
-#: js/components/PageDetailItemProps.vue:364
+#: js/components/PageDetailItemProps.vue:370
 msgid "Redirect URL"
 msgstr "Пренасочване на URL"
 
@@ -1431,12 +1435,12 @@ msgid "Error copying page"
 msgstr "Грешка при копиране на страница"
 
 #: js/components/PageListItems.vue:834
-#: js/views/PageDetail.vue:260
+#: js/views/PageDetail.vue:263
 msgid "Error fetching page"
 msgstr "Грешка при извличането на страница"
 
 #: js/components/PageListItems.vue:889
-#: js/views/PageDetail.vue:441
+#: js/views/PageDetail.vue:444
 msgid "Error publishing page"
 msgstr "Грешка при публикуване на страницата"
 
@@ -1449,7 +1453,7 @@ msgid "Error searching pages"
 msgstr "Търсене на страници с грешки"
 
 #: js/components/PageListItems.vue:1055
-#: js/views/PageDetail.vue:558
+#: js/views/PageDetail.vue:561
 msgid "Error saving page"
 msgstr "Записване на страница с грешка"
 
@@ -1720,23 +1724,23 @@ msgid "Login"
 msgstr "Вход"
 
 #: js/routes.js:40
-#: js/views/PageDetail.vue:745
-#: js/views/PageDetail.vue:791
-#: js/views/PageDetail.vue:809
+#: js/views/PageDetail.vue:748
+#: js/views/PageDetail.vue:794
+#: js/views/PageDetail.vue:812
 msgid "Page"
 msgstr "Страница"
 
 #: js/routes.js:60
-#: js/views/ElementDetail.vue:405
-#: js/views/ElementDetail.vue:425
-#: js/views/ElementDetail.vue:429
+#: js/views/ElementDetail.vue:407
+#: js/views/ElementDetail.vue:427
+#: js/views/ElementDetail.vue:431
 msgid "Element"
 msgstr "Елемент"
 
 #: js/routes.js:80
-#: js/views/FileDetail.vue:351
-#: js/views/FileDetail.vue:371
-#: js/views/FileDetail.vue:375
+#: js/views/FileDetail.vue:353
+#: js/views/FileDetail.vue:373
+#: js/views/FileDetail.vue:377
 msgid "File"
 msgstr "Файл"
 
@@ -2088,42 +2092,42 @@ msgstr "Няма"
 msgid "All"
 msgstr "Всички"
 
-#: js/views/ElementDetail.vue:182
+#: js/views/ElementDetail.vue:184
 msgid "Error fetching element"
 msgstr "Грешка при извличането на елемент"
 
-#: js/views/ElementDetail.vue:243
+#: js/views/ElementDetail.vue:245
 msgid "Element published successfully"
 msgstr "Елементът е публикуван успешно"
 
-#: js/views/ElementDetail.vue:244
+#: js/views/ElementDetail.vue:246
 msgid "Element scheduled for publishing at %{date}"
 msgstr "Елемент, планиран за публикуване в %{date}"
 
-#: js/views/ElementDetail.vue:245
+#: js/views/ElementDetail.vue:247
 msgid "Error publishing element"
 msgstr "Грешка при публикуване на елемент"
 
-#: js/views/ElementDetail.vue:272
-#: js/views/FileDetail.vue:238
-#: js/views/PageDetail.vue:473
+#: js/views/ElementDetail.vue:274
+#: js/views/FileDetail.vue:240
+#: js/views/PageDetail.vue:476
 msgid "There are invalid fields, please resolve the errors first"
 msgstr "Има невалидни полета, моля, първо разрешете грешките."
 
-#: js/views/ElementDetail.vue:315
+#: js/views/ElementDetail.vue:317
 msgid "Element saved successfully"
 msgstr "Елементът е запазен успешно"
 
-#: js/views/ElementDetail.vue:320
+#: js/views/ElementDetail.vue:322
 msgid "Error saving element"
 msgstr "Грешка при запазване на елемент"
 
-#: js/views/ElementDetail.vue:386
+#: js/views/ElementDetail.vue:388
 msgid "Error fetching element versions"
 msgstr "Грешка при извличането на версиите на елементите"
 
-#: js/views/ElementDetail.vue:431
-#: js/views/FileDetail.vue:377
+#: js/views/ElementDetail.vue:433
+#: js/views/FileDetail.vue:379
 msgid "Used by"
 msgstr "Използва се от"
 
@@ -2187,27 +2191,27 @@ msgstr "Затвори навигацията"
 msgid "Open navigation"
 msgstr "Отворена навигация"
 
-#: js/views/FileDetail.vue:168
+#: js/views/FileDetail.vue:170
 msgid "Error fetching file"
 msgstr "Грешка при изтеглянето на файла"
 
-#: js/views/FileDetail.vue:209
+#: js/views/FileDetail.vue:211
 msgid "File published successfully"
 msgstr "Файлът е публикуван успешно"
 
-#: js/views/FileDetail.vue:210
+#: js/views/FileDetail.vue:212
 msgid "File scheduled for publishing at %{date}"
 msgstr "Файл, планиран за публикуване в %{date}"
 
-#: js/views/FileDetail.vue:283
+#: js/views/FileDetail.vue:285
 msgid "File saved successfully"
 msgstr "Файлът е запазен успешно"
 
-#: js/views/FileDetail.vue:288
+#: js/views/FileDetail.vue:290
 msgid "Error saving file"
 msgstr "Грешка при запазване на файла"
 
-#: js/views/FileDetail.vue:334
+#: js/views/FileDetail.vue:336
 msgid "Error fetching file versions"
 msgstr "Грешка при извличането на версии на файлове"
 
@@ -2243,35 +2247,35 @@ msgstr "Покажи паролата"
 msgid "Error"
 msgstr "Грешка"
 
-#: js/views/PageDetail.vue:439
+#: js/views/PageDetail.vue:442
 msgid "Page published successfully"
 msgstr "Страницата е публикувана успешно"
 
-#: js/views/PageDetail.vue:440
+#: js/views/PageDetail.vue:443
 msgid "Page scheduled for publishing at %{date}"
 msgstr "Страница, планирана за публикуване в %{date}"
 
-#: js/views/PageDetail.vue:543
+#: js/views/PageDetail.vue:546
 msgid "Page saved successfully"
 msgstr "Страницата е запазена успешно"
 
-#: js/views/PageDetail.vue:573
+#: js/views/PageDetail.vue:576
 msgid "No page schema for \"content\" found"
 msgstr "Не е намерена схема на страницата за \"content\""
 
-#: js/views/PageDetail.vue:709
+#: js/views/PageDetail.vue:712
 msgid "Error fetching page versions"
 msgstr "Грешка при извличането на версии на страници"
 
-#: js/views/PageDetail.vue:770
+#: js/views/PageDetail.vue:773
 msgid "Translate page"
 msgstr "Превод на страницата"
 
-#: js/views/PageDetail.vue:795
+#: js/views/PageDetail.vue:798
 msgid "Editor"
 msgstr "Редактор"
 
-#: js/views/PageDetail.vue:812
+#: js/views/PageDetail.vue:815
 msgid "Metrics"
 msgstr "Метрики"
 

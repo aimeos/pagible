@@ -25,7 +25,7 @@ msgstr ""
 #: js/components/FileDetailItem.vue:211
 #: js/components/FileDetailItem.vue:216
 #: js/components/FileDetailItem.vue:259
-#: js/components/FileDetailItemImage.vue:345
+#: js/components/FileDetailItemImage.vue:372
 #: js/components/FileDetailItemVideo.vue:67
 #: js/components/FileDetailItemVideo.vue:134
 #: js/components/FileDetailItemVideo.vue:171
@@ -52,13 +52,13 @@ msgstr ""
 #: js/fields/Images.vue:119
 #: js/fields/Items.vue:156
 #: js/publish.js:37
-#: js/views/ElementDetail.vue:266
-#: js/views/ElementDetail.vue:355
-#: js/views/FileDetail.vue:232
-#: js/views/FileDetail.vue:304
-#: js/views/PageDetail.vue:467
-#: js/views/PageDetail.vue:568
-#: js/views/PageDetail.vue:677
+#: js/views/ElementDetail.vue:268
+#: js/views/ElementDetail.vue:357
+#: js/views/FileDetail.vue:234
+#: js/views/FileDetail.vue:306
+#: js/views/PageDetail.vue:470
+#: js/views/PageDetail.vue:571
+#: js/views/PageDetail.vue:680
 #: js/views/PageList.vue:243
 msgid "Permission denied"
 msgstr "Permisiune refuzată"
@@ -162,7 +162,7 @@ msgstr "Configurare"
 
 #: js/components/ChangesDialog.vue:57
 #: js/components/HistoryDialog.vue:39
-#: js/views/PageDetail.vue:802
+#: js/views/PageDetail.vue:805
 msgid "Content"
 msgstr "Conținut"
 
@@ -184,11 +184,11 @@ msgstr "%{count} / %{total}"
 #: js/components/Fields.vue:264
 #: js/components/FieldsDialog.vue:63
 #: js/components/FileAiDialog.vue:275
-#: js/components/FileDetailItemImage.vue:615
-#: js/components/FileDetailItemImage.vue:723
-#: js/components/FileDetailItemImage.vue:777
-#: js/components/FileDetailItemImage.vue:862
-#: js/components/FileDetailItemImage.vue:961
+#: js/components/FileDetailItemImage.vue:642
+#: js/components/FileDetailItemImage.vue:750
+#: js/components/FileDetailItemImage.vue:804
+#: js/components/FileDetailItemImage.vue:889
+#: js/components/FileDetailItemImage.vue:995
 #: js/components/FileDialog.vue:37
 #: js/components/FileListItems.vue:597
 #: js/components/FileListItems.vue:760
@@ -247,36 +247,36 @@ msgstr "Păstrează-l pe al meu"
 msgid "Merge both"
 msgstr "Combină-le pe amândouă"
 
-#: js/components/DetailAppBar.vue:86
+#: js/components/DetailAppBar.vue:92
 #: js/views/ElementList.vue:133
 #: js/views/FileList.vue:132
 #: js/views/PageList.vue:309
 msgid "Menu"
 msgstr "Meniu"
 
-#: js/components/DetailAppBar.vue:90
+#: js/components/DetailAppBar.vue:96
 msgid "Back to list view"
 msgstr "Înapoi la vizualizarea listei"
 
-#: js/components/DetailAppBar.vue:106
+#: js/components/DetailAppBar.vue:112
 msgid "View history"
 msgstr "Vezi istoricul"
 
-#: js/components/DetailAppBar.vue:114
+#: js/components/DetailAppBar.vue:120
 msgid "View merge changes"
 msgstr "Vizualizează modificările din fuziune"
 
-#: js/components/DetailAppBar.vue:122
+#: js/components/DetailAppBar.vue:128
 #: js/components/FieldsDialog.vue:62
 msgid "Save"
 msgstr "Salvați"
 
-#: js/components/DetailAppBar.vue:136
+#: js/components/DetailAppBar.vue:142
 msgid "Schedule publishing"
 msgstr "Program de publicare"
 
-#: js/components/DetailAppBar.vue:160
-#: js/components/DetailAppBar.vue:168
+#: js/components/DetailAppBar.vue:166
+#: js/components/DetailAppBar.vue:174
 #: js/components/ElementListItems.vue:565
 #: js/components/ElementListItems.vue:709
 #: js/components/FileListItems.vue:603
@@ -286,7 +286,7 @@ msgstr "Program de publicare"
 msgid "Publish"
 msgstr "Publicare"
 
-#: js/components/DetailAppBar.vue:183
+#: js/components/DetailAppBar.vue:189
 #: js/views/ElementList.vue:151
 #: js/views/FileList.vue:150
 #: js/views/PageList.vue:327
@@ -303,7 +303,7 @@ msgstr "Nume și prenume"
 
 #: js/components/ElementDetailItem.vue:88
 #: js/components/FileDetailItem.vue:340
-#: js/components/PageDetailItemProps.vue:249
+#: js/components/PageDetailItemProps.vue:254
 #: js/components/User.vue:104
 msgid "Language"
 msgstr "Limba"
@@ -655,144 +655,148 @@ msgstr "Transcrierea conținutului fișierului"
 msgid "Transcription (%{lang})"
 msgstr "Transcriere (%{lang})"
 
-#: js/components/FileDetailItemImage.vue:225
+#: js/components/FileDetailItemImage.vue:227
 msgid "Error erasing image part"
 msgstr "Eroare ștergere parte imagine"
 
-#: js/components/FileDetailItemImage.vue:318
+#: js/components/FileDetailItemImage.vue:320
 msgid "Error editing image part"
 msgstr "Eroare la editarea părții de imagine"
 
-#: js/components/FileDetailItemImage.vue:337
+#: js/components/FileDetailItemImage.vue:339
 msgid "Error removing background"
 msgstr "Eroare la eliminarea fundalului"
 
-#: js/components/FileDetailItemImage.vue:416
+#: js/components/FileDetailItemImage.vue:443
 msgid "Error editing image"
 msgstr "Eroare la editarea imaginii"
 
-#: js/components/FileDetailItemImage.vue:501
+#: js/components/FileDetailItemImage.vue:528
 msgid "Error uncropping image"
 msgstr "Eroare de decupare a imaginii"
 
-#: js/components/FileDetailItemImage.vue:544
+#: js/components/FileDetailItemImage.vue:571
 msgid "Error upscaling image"
 msgstr "Eroare upscaling imagine"
 
-#: js/components/FileDetailItemImage.vue:588
+#: js/components/FileDetailItemImage.vue:615
 #: js/components/UnsavedDialog.vue:55
 msgid "Cancel"
 msgstr "Anulează"
 
-#: js/components/FileDetailItemImage.vue:595
-#: js/components/FileDetailItemImage.vue:604
-#: js/components/FileDetailItemImage.vue:612
+#: js/components/FileDetailItemImage.vue:622
+#: js/components/FileDetailItemImage.vue:631
+#: js/components/FileDetailItemImage.vue:639
 msgid "Select area"
 msgstr "Selectați zona"
 
-#: js/components/FileDetailItemImage.vue:627
+#: js/components/FileDetailItemImage.vue:654
 msgid "Original ratio"
 msgstr "Raportul original"
 
-#: js/components/FileDetailItemImage.vue:636
+#: js/components/FileDetailItemImage.vue:663
 msgid "No ratio"
 msgstr "Nici un raport"
 
-#: js/components/FileDetailItemImage.vue:641
+#: js/components/FileDetailItemImage.vue:668
 msgid "Square"
 msgstr "Pătrat"
 
-#: js/components/FileDetailItemImage.vue:687
+#: js/components/FileDetailItemImage.vue:714
 msgid "Crop selected area"
 msgstr "Suprafața cultivată selectată"
 
-#: js/components/FileDetailItemImage.vue:697
+#: js/components/FileDetailItemImage.vue:724
 msgid "Erase selected area"
 msgstr "Ștergeți zona selectată"
 
-#: js/components/FileDetailItemImage.vue:712
-#: js/components/FileDetailItemImage.vue:720
-#: js/components/FileDetailItemImage.vue:741
+#: js/components/FileDetailItemImage.vue:739
+#: js/components/FileDetailItemImage.vue:747
+#: js/components/FileDetailItemImage.vue:768
 msgid "Edit image"
 msgstr "Editează imaginea"
 
-#: js/components/FileDetailItemImage.vue:731
+#: js/components/FileDetailItemImage.vue:758
 msgid "Describe the changes"
 msgstr "Descrieți modificările"
 
-#: js/components/FileDetailItemImage.vue:750
+#: js/components/FileDetailItemImage.vue:777
 msgid "Remove background"
 msgstr "Eliminarea fundalului"
 
-#: js/components/FileDetailItemImage.vue:766
-#: js/components/FileDetailItemImage.vue:774
-#: js/components/FileDetailItemImage.vue:832
+#: js/components/FileDetailItemImage.vue:793
+#: js/components/FileDetailItemImage.vue:801
+#: js/components/FileDetailItemImage.vue:859
 msgid "Expand image"
 msgstr "Extinde imaginea"
 
-#: js/components/FileDetailItemImage.vue:789
+#: js/components/FileDetailItemImage.vue:816
 msgid "Top"
 msgstr "Sus"
 
-#: js/components/FileDetailItemImage.vue:801
+#: js/components/FileDetailItemImage.vue:828
 msgid "Left"
 msgstr "Stânga"
 
-#: js/components/FileDetailItemImage.vue:811
+#: js/components/FileDetailItemImage.vue:838
 msgid "Right"
 msgstr "Corect"
 
-#: js/components/FileDetailItemImage.vue:823
+#: js/components/FileDetailItemImage.vue:850
 msgid "Bottom"
 msgstr "Fund"
 
-#: js/components/FileDetailItemImage.vue:840
+#: js/components/FileDetailItemImage.vue:867
 msgid "Upscale"
 msgstr "De lux"
 
-#: js/components/FileDetailItemImage.vue:851
-#: js/components/FileDetailItemImage.vue:859
+#: js/components/FileDetailItemImage.vue:878
+#: js/components/FileDetailItemImage.vue:886
 msgid "Upscale image"
 msgstr "Imagine elegantă"
 
-#: js/components/FileDetailItemImage.vue:875
-#: js/components/FileDetailItemImage.vue:885
-#: js/components/FileDetailItemImage.vue:895
-#: js/components/FileDetailItemImage.vue:905
+#: js/components/FileDetailItemImage.vue:902
+#: js/components/FileDetailItemImage.vue:912
+#: js/components/FileDetailItemImage.vue:922
+#: js/components/FileDetailItemImage.vue:932
 msgid "Scale %{factor}"
 msgstr "Scară %{factor}"
 
-#: js/components/FileDetailItemImage.vue:916
+#: js/components/FileDetailItemImage.vue:943
 msgid "Rotate counter-clockwise"
 msgstr "Rotiți în sensul invers acelor de ceasornic"
 
-#: js/components/FileDetailItemImage.vue:922
+#: js/components/FileDetailItemImage.vue:949
 msgid "Rotate clockwise"
 msgstr "Rotiți în sensul acelor de ceasornic"
 
-#: js/components/FileDetailItemImage.vue:929
+#: js/components/FileDetailItemImage.vue:956
 msgid "Flip horizontally"
 msgstr "Răsuciți orizontal"
 
-#: js/components/FileDetailItemImage.vue:935
+#: js/components/FileDetailItemImage.vue:962
 msgid "Flip vertically"
 msgstr "Răsucire verticală"
 
-#: js/components/FileDetailItemImage.vue:938
+#: js/components/FileDetailItemImage.vue:969
+msgid "Convert to monochrome"
+msgstr "Convertiți în monocrom"
+
+#: js/components/FileDetailItemImage.vue:972
 msgid "Download"
 msgstr "Descărcare"
 
-#: js/components/FileDetailItemImage.vue:942
-#: js/components/FileDetailItemImage.vue:952
-#: js/components/FileDetailItemImage.vue:960
+#: js/components/FileDetailItemImage.vue:976
+#: js/components/FileDetailItemImage.vue:986
+#: js/components/FileDetailItemImage.vue:994
 msgid "Undo"
 msgstr "Anulare"
 
-#: js/components/FileDetailItemImage.vue:968
+#: js/components/FileDetailItemImage.vue:1002
 msgid "Previous edit"
 msgstr "Modificare anterioară"
 
-#: js/components/FileDetailItemImage.vue:973
+#: js/components/FileDetailItemImage.vue:1007
 msgid "Original"
 msgstr "Original"
 
@@ -869,7 +873,7 @@ msgid "Error restoring file"
 msgstr "Eroare la restaurarea fișierului"
 
 #: js/components/FileListItems.vue:392
-#: js/views/FileDetail.vue:211
+#: js/views/FileDetail.vue:213
 msgid "Error publishing file"
 msgstr "Eroare la publicarea fișierului"
 
@@ -1217,43 +1221,43 @@ msgstr "URL-ul nu este valid"
 msgid "The path is already in use by another page"
 msgstr "Calea este deja utilizată de o altă pagină"
 
-#: js/components/PageDetailItemProps.vue:236
+#: js/components/PageDetailItemProps.vue:241
 msgid "Status"
 msgstr "Statut"
 
-#: js/components/PageDetailItemProps.vue:263
+#: js/components/PageDetailItemProps.vue:268
 msgid "Page title"
 msgstr "Titlul paginii"
 
-#: js/components/PageDetailItemProps.vue:274
+#: js/components/PageDetailItemProps.vue:279
 msgid "Page name"
 msgstr "Numele paginii"
 
-#: js/components/PageDetailItemProps.vue:289
+#: js/components/PageDetailItemProps.vue:294
 msgid "URL path"
 msgstr "Calea URL"
 
-#: js/components/PageDetailItemProps.vue:302
+#: js/components/PageDetailItemProps.vue:308
 msgid "Domain"
 msgstr "Domeniu"
 
-#: js/components/PageDetailItemProps.vue:317
+#: js/components/PageDetailItemProps.vue:323
 msgid "Theme"
 msgstr "Tema"
 
-#: js/components/PageDetailItemProps.vue:326
+#: js/components/PageDetailItemProps.vue:332
 msgid "Page type"
 msgstr "Tipul paginii"
 
-#: js/components/PageDetailItemProps.vue:337
+#: js/components/PageDetailItemProps.vue:343
 msgid "Page tag"
 msgstr "Etichetă de pagină"
 
-#: js/components/PageDetailItemProps.vue:348
+#: js/components/PageDetailItemProps.vue:354
 msgid "Cache time"
 msgstr "Timp de cache"
 
-#: js/components/PageDetailItemProps.vue:364
+#: js/components/PageDetailItemProps.vue:370
 msgid "Redirect URL"
 msgstr "Redirecționare URL"
 
@@ -1433,12 +1437,12 @@ msgid "Error copying page"
 msgstr "Eroare copiere pagină"
 
 #: js/components/PageListItems.vue:834
-#: js/views/PageDetail.vue:260
+#: js/views/PageDetail.vue:263
 msgid "Error fetching page"
 msgstr "Eroare la preluarea paginii"
 
 #: js/components/PageListItems.vue:889
-#: js/views/PageDetail.vue:441
+#: js/views/PageDetail.vue:444
 msgid "Error publishing page"
 msgstr "Eroare la publicarea paginii"
 
@@ -1451,7 +1455,7 @@ msgid "Error searching pages"
 msgstr "Eroare în căutarea paginilor"
 
 #: js/components/PageListItems.vue:1055
-#: js/views/PageDetail.vue:558
+#: js/views/PageDetail.vue:561
 msgid "Error saving page"
 msgstr "Eroare la salvarea paginii"
 
@@ -1722,23 +1726,23 @@ msgid "Login"
 msgstr "Autentificare"
 
 #: js/routes.js:40
-#: js/views/PageDetail.vue:745
-#: js/views/PageDetail.vue:791
-#: js/views/PageDetail.vue:809
+#: js/views/PageDetail.vue:748
+#: js/views/PageDetail.vue:794
+#: js/views/PageDetail.vue:812
 msgid "Page"
 msgstr "Pagina"
 
 #: js/routes.js:60
-#: js/views/ElementDetail.vue:405
-#: js/views/ElementDetail.vue:425
-#: js/views/ElementDetail.vue:429
+#: js/views/ElementDetail.vue:407
+#: js/views/ElementDetail.vue:427
+#: js/views/ElementDetail.vue:431
 msgid "Element"
 msgstr "Element"
 
 #: js/routes.js:80
-#: js/views/FileDetail.vue:351
-#: js/views/FileDetail.vue:371
-#: js/views/FileDetail.vue:375
+#: js/views/FileDetail.vue:353
+#: js/views/FileDetail.vue:373
+#: js/views/FileDetail.vue:377
 msgid "File"
 msgstr "Fișier"
 
@@ -2090,42 +2094,42 @@ msgstr "Niciuna"
 msgid "All"
 msgstr "Toate"
 
-#: js/views/ElementDetail.vue:182
+#: js/views/ElementDetail.vue:184
 msgid "Error fetching element"
 msgstr "Eroare la preluarea elementului"
 
-#: js/views/ElementDetail.vue:243
+#: js/views/ElementDetail.vue:245
 msgid "Element published successfully"
 msgstr "Element publicat cu succes"
 
-#: js/views/ElementDetail.vue:244
+#: js/views/ElementDetail.vue:246
 msgid "Element scheduled for publishing at %{date}"
 msgstr "Element programat pentru publicare la %{date}"
 
-#: js/views/ElementDetail.vue:245
+#: js/views/ElementDetail.vue:247
 msgid "Error publishing element"
 msgstr "Eroare la publicarea elementului"
 
-#: js/views/ElementDetail.vue:272
-#: js/views/FileDetail.vue:238
-#: js/views/PageDetail.vue:473
+#: js/views/ElementDetail.vue:274
+#: js/views/FileDetail.vue:240
+#: js/views/PageDetail.vue:476
 msgid "There are invalid fields, please resolve the errors first"
 msgstr "Există câmpuri invalide, vă rugăm să rezolvați mai întâi erorile"
 
-#: js/views/ElementDetail.vue:315
+#: js/views/ElementDetail.vue:317
 msgid "Element saved successfully"
 msgstr "Element salvat cu succes"
 
-#: js/views/ElementDetail.vue:320
+#: js/views/ElementDetail.vue:322
 msgid "Error saving element"
 msgstr "Eroare la salvarea elementului"
 
-#: js/views/ElementDetail.vue:386
+#: js/views/ElementDetail.vue:388
 msgid "Error fetching element versions"
 msgstr "Eroare la preluarea versiunilor elementelor"
 
-#: js/views/ElementDetail.vue:431
-#: js/views/FileDetail.vue:377
+#: js/views/ElementDetail.vue:433
+#: js/views/FileDetail.vue:379
 msgid "Used by"
 msgstr "Folosit de"
 
@@ -2189,27 +2193,27 @@ msgstr "Închideți navigarea"
 msgid "Open navigation"
 msgstr "Deschideți navigarea"
 
-#: js/views/FileDetail.vue:168
+#: js/views/FileDetail.vue:170
 msgid "Error fetching file"
 msgstr "Eroare la preluarea fișierului"
 
-#: js/views/FileDetail.vue:209
+#: js/views/FileDetail.vue:211
 msgid "File published successfully"
 msgstr "Fișier publicat cu succes"
 
-#: js/views/FileDetail.vue:210
+#: js/views/FileDetail.vue:212
 msgid "File scheduled for publishing at %{date}"
 msgstr "Fișier programat pentru publicare la %{date}"
 
-#: js/views/FileDetail.vue:283
+#: js/views/FileDetail.vue:285
 msgid "File saved successfully"
 msgstr "Fișier salvat cu succes"
 
-#: js/views/FileDetail.vue:288
+#: js/views/FileDetail.vue:290
 msgid "Error saving file"
 msgstr "Eroare la salvarea fișierului"
 
-#: js/views/FileDetail.vue:334
+#: js/views/FileDetail.vue:336
 msgid "Error fetching file versions"
 msgstr "Eroare la preluarea versiunilor fișierelor"
 
@@ -2245,35 +2249,35 @@ msgstr "Afișează parola"
 msgid "Error"
 msgstr "Eroare"
 
-#: js/views/PageDetail.vue:439
+#: js/views/PageDetail.vue:442
 msgid "Page published successfully"
 msgstr "Pagină publicată cu succes"
 
-#: js/views/PageDetail.vue:440
+#: js/views/PageDetail.vue:443
 msgid "Page scheduled for publishing at %{date}"
 msgstr "Pagina programată pentru publicare la %{date}"
 
-#: js/views/PageDetail.vue:543
+#: js/views/PageDetail.vue:546
 msgid "Page saved successfully"
 msgstr "Pagină salvată cu succes"
 
-#: js/views/PageDetail.vue:573
+#: js/views/PageDetail.vue:576
 msgid "No page schema for \"content\" found"
 msgstr "Nu s-a găsit nicio schemă de pagină pentru \"content\""
 
-#: js/views/PageDetail.vue:709
+#: js/views/PageDetail.vue:712
 msgid "Error fetching page versions"
 msgstr "Eroare la preluarea versiunilor paginilor"
 
-#: js/views/PageDetail.vue:770
+#: js/views/PageDetail.vue:773
 msgid "Translate page"
 msgstr "Traduceți pagina"
 
-#: js/views/PageDetail.vue:795
+#: js/views/PageDetail.vue:798
 msgid "Editor"
 msgstr "Editor"
 
-#: js/views/PageDetail.vue:812
+#: js/views/PageDetail.vue:815
 msgid "Metrics"
 msgstr "Metrici"
 
