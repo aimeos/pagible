@@ -126,7 +126,7 @@
                     <li class="brand">
                         <a href="{{ cmsroute($page->ancestors?->first() ?? $page) }}" title="{{ config('app.name') }}" aria-label="{{ config('app.name') }}">
                             @forelse($page->ancestorsAndSelf->reverse() as $navItem)
-                                @if($fileId = cms($navItem, 'config.logo.data.file.id'))
+                                @if($fileId = cms($navItem, 'config.logo-alternative.data.file.id') ?: cms($navItem, 'config.logo.data.file.id'))
                                     <img src="{{ cmsurl(cmsfile($navItem, $fileId)?->path) }}" alt="{{ config('app.name') }}">
                                     @break
                                 @endif

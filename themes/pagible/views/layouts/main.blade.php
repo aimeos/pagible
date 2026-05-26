@@ -127,7 +127,7 @@
                         <a href="{{ cmsroute($page->ancestors?->first() ?? $page) }}" class="contrast" title="{{ config('app.name') }}" aria-label="{{ config('app.name') }}">
                             @php($logoFound = false)
                             @foreach($page->ancestorsAndSelf->reverse() as $navItem)
-                                @if($fileId = cms($navItem, 'config.logo.data.file.id'))
+                                @if($fileId = cms($navItem, 'config.logo-alternative.data.file.id') ?: cms($navItem, 'config.logo.data.file.id'))
                                     <img src="{{ cmsurl(cmsfile($navItem, $fileId)?->path) }}" alt="{{ config('app.name') }}">
                                     @php($logoFound = true)
                                     @break
