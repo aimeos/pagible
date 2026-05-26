@@ -47,10 +47,7 @@ class PublishPage extends Tool
 
         $ids = (array) $v['id'];
         $editor = Utils::editor( $request->user() );
-        $items = Resource::publish( Page::class, $ids, $editor, $v['at'] ?? null, [
-            'latest.files' => fn( $q ) => $q->select( 'cms_files.id' ),
-            'latest.elements' => fn( $q ) => $q->select( 'cms_elements.id' )
-        ] );
+        $items = Resource::publish( Page::class, $ids, $editor, $v['at'] ?? null );
 
         $published = [];
         $skipped = [];
