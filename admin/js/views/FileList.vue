@@ -24,6 +24,8 @@ import { useUserStore, useDrawerStore } from '../stores'
 import { languageFilter } from '../utils'
 
 export default {
+  name: 'FileList',
+
   components: {
     FileListItems,
     Navigation,

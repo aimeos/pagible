@@ -13,7 +13,7 @@ export default {
   props: {
     modelValue: { type: Boolean, required: true },
     readonly: { type: Boolean, required: false },
-    current: { type: Object, required: true },
+    current: { type: Object, default: null },
     load: { type: Function, required: true }
   },
 

@@ -38,7 +38,11 @@ export default {
     <main>
       <transition-group name="slide-stack">
         <v-layout ref="baseview" key="list" class="view" style="z-index: 10">
-          <router-view :key="$route.path" />
+          <router-view v-slot="{ Component, route }">
+            <keep-alive :include="['PageList', 'ElementList', 'FileList']">
+              <component :is="Component" :key="route.path" />
+            </keep-alive>
+          </router-view>
         </v-layout>
 
         <v-layout

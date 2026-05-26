@@ -42,6 +42,8 @@ const SYNTHESIZE = gql`
 `
 
 export default {
+  name: 'PageList',
+
   components: {
     PageListItems,
     Navigation,
