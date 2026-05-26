@@ -67,7 +67,11 @@ export function publishItem(vm, type, msgs, at = null) {
             vm.messages.add(msgs.scheduled(at), 'info')
           }
 
-          vm.viewStack.closeView()
+          if (vm.stacked) {
+            vm.viewStack.closeView()
+          } else {
+            vm.$router.push({ name: `${type}:view` })
+          }
         })
         .catch((error) => {
           vm.messages.add(msgs.error + ':\n' + error, 'error')
