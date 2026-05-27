@@ -83,6 +83,7 @@ export default {
     file: null,
     error: false,
     changed: null,
+    loading: true,
     dirty: false,
     publishAt: null,
     publishTime: null,
@@ -134,6 +135,7 @@ export default {
     this.dirtyStore.register(() => this.save(true))
 
     if (!this.item?.id || !this.user.can('file:view')) {
+      this.loading = false
       return
     }
 
@@ -152,6 +154,10 @@ export default {
           throw result
         }
 
+        if (!result.data.file.latest) {
+          throw new Error('No version data available')
+        }
+
         const latest = result.data.file.latest
 
         this.reset()
@@ -167,8 +173,11 @@ export default {
             Object.assign(this.item, event.data)
           }
         })
+
+        this.loading = false
       })
       .catch((error) => {
+        this.loading = false
         this.messages.add(this.$gettext('Error fetching file') + ':\n' + error, 'error')
         this.$log(`FileDetail::created(): Error fetching file`, error)
       })
@@ -373,7 +382,8 @@ export default {
   />
 
   <v-main class="file-details" :aria-label="$gettext('File')">
-    <v-form @submit.prevent>
+    <v-progress-linear v-if="loading" indeterminate color="primary" />
+    <v-form v-else @submit.prevent>
       <v-tabs fixed-tabs v-model="tab">
         <v-tab value="file" :class="{ changed: dirty, error: error }">{{
           $gettext('File')

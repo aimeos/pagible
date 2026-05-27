@@ -172,6 +172,7 @@ export default {
       destroyed: false,
       echoCleanup: null,
       echoPromise: null,
+      loading: true,
       saving: false,
       savecnt: 0,
       historyData: null
@@ -214,6 +215,7 @@ export default {
     this.schemas.load()
 
     if (!this.item?.id || !this.user.can('page:view')) {
+      this.loading = false
       return
     }
 
@@ -232,8 +234,12 @@ export default {
           throw result
         }
 
+        if (!result.data.page.latest) {
+          throw new Error('No version data available')
+        }
+
         this.reset()
-        this.latest = result?.data?.page?.latest
+        this.latest = result.data.page.latest
 
         Object.assign(this.item, JSON.parse(this.latest?.data || '{}'))
         this.item.published = this.latest?.published
@@ -260,8 +266,11 @@ export default {
             this.item.meta = event.aux?.meta ?? this.item.meta
           }
         })
+
+        this.loading = false
       })
       .catch((error) => {
+        this.loading = false
         this.messages.add(this.$gettext('Error fetching page') + ':\n' + error, 'error')
         this.$log(`PageDetail::watch(item): Error fetching page`, error)
       })
@@ -794,7 +803,8 @@ export default {
   </DetailAppBar>
 
   <v-main class="page-details" :aria-label="$gettext('Page')">
-    <v-form @submit.prevent>
+    <v-progress-linear v-if="loading" indeterminate color="primary" />
+    <v-form v-else @submit.prevent>
       <v-tabs fixed-tabs v-model="tab">
         <v-tab v-if="app.urlpage" value="editor" @click="aside = ''">
           {{ $gettext('Editor') }}

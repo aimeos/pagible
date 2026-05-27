@@ -109,6 +109,7 @@ export default {
     echoPromise: null,
     error: false,
     latestId: null,
+    loading: true,
     publishAt: null,
     publishTime: null,
     publishing: false,
@@ -138,6 +139,7 @@ export default {
     this.dirtyStore.register(() => this.save(true))
 
     if (!this.item?.id || !this.user.can('element:view')) {
+      this.loading = false
       return
     }
 
@@ -154,6 +156,10 @@ export default {
 
         if (result.errors || !result.data.element) {
           throw result
+        }
+
+        if (!result.data.element.latest) {
+          throw new Error('No version data available')
         }
 
         const files = []
@@ -181,8 +187,11 @@ export default {
             Object.assign(this.item, event.data)
           }
         })
+
+        this.loading = false
       })
       .catch((error) => {
+        this.loading = false
         this.messages.add(this.$gettext('Error fetching element') + ':\n' + error, 'error')
         this.$log(`ElementDetail::watch(item): Error fetching element`, error)
       })
@@ -427,7 +436,8 @@ export default {
   />
 
   <v-main class="element-details" :aria-label="$gettext('Element')">
-    <v-form @submit.prevent>
+    <v-progress-linear v-if="loading" indeterminate color="primary" />
+    <v-form v-else @submit.prevent>
       <v-tabs fixed-tabs v-model="tab">
         <v-tab value="element" :class="{ changed: dirty, error: error }">{{
           $gettext('Element')
