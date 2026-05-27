@@ -606,10 +606,10 @@ export default {
   <div ref="editorContainer" class="editor-container">
     <img
       ref="image"
-      :src="url(item.path, true)"
+      :src="url(item.path, !svg)"
       :alt="item.name"
       class="element"
-      crossorigin="anonymous"
+      :crossorigin="svg ? undefined : 'anonymous'"
     />
 
     <div v-if="!readonly && !svg" class="toolbar">
@@ -1025,6 +1025,8 @@ export default {
 .element {
   max-width: 100%;
   max-height: 100%;
+  display: block;
+  margin: auto;
 }
 
 :deep(.cropper-bg) {
