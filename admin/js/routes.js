@@ -2,12 +2,22 @@
  * @license LGPL, https://opensource.org/license/lgpl-3-0
  */
 
-import { createRouter, createWebHistory } from 'vue-router'
 import { reactive } from 'vue'
+import { createRouter, createWebHistory } from 'vue-router'
 import { useClipboardStore, useDirtyStore, useUserStore, useMessageStore, useViewStack } from './stores'
 import { apolloClient } from './graphql'
 import { urladmin } from './config'
 import gettext from './i18n'
+
+function itemProps() {
+  let item
+  return route => {
+    if (!item || item.id !== route.params.id) {
+      item = reactive({ id: route.params.id })
+    }
+    return { item }
+  }
+}
 
 const router = createRouter({
   history: createWebHistory(urladmin),
@@ -33,7 +43,7 @@ const router = createRouter({
       path: '/pages/:id',
       name: 'page:detail',
       component: () => import('./views/PageDetail.vue'),
-      props: route => ({ item: reactive({ id: route.params.id }) }),
+      props: itemProps(),
       meta: {
         auth: true,
         permission: 'page:view',
@@ -53,7 +63,7 @@ const router = createRouter({
       path: '/elements/:id',
       name: 'element:detail',
       component: () => import('./views/ElementDetail.vue'),
-      props: route => ({ item: reactive({ id: route.params.id }) }),
+      props: itemProps(),
       meta: {
         auth: true,
         permission: 'element:view',
@@ -73,7 +83,7 @@ const router = createRouter({
       path: '/files/:id',
       name: 'file:detail',
       component: () => import('./views/FileDetail.vue'),
-      props: route => ({ item: reactive({ id: route.params.id }) }),
+      props: itemProps(),
       meta: {
         auth: true,
         permission: 'file:view',
