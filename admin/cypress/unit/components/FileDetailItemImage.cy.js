@@ -116,4 +116,19 @@ describe('FileDetailItemImage', () => {
     mountImage({}, { 'file:save': true })
     cy.get('.toolbar .v-btn.btn-expand').should('not.exist')
   })
+
+  it('hides toolbar for SVG images', () => {
+    mountImage({ item: { ...item, mime: 'image/svg+xml' } }, { 'file:save': true })
+    cy.get('.toolbar').should('not.exist')
+  })
+
+  it('hides toolbar for compressed SVG images', () => {
+    mountImage({ item: { ...item, mime: 'image/svg+xml-compressed' } }, { 'file:save': true })
+    cy.get('.toolbar').should('not.exist')
+  })
+
+  it('renders image element for SVG', () => {
+    mountImage({ item: { ...item, name: 'logo.svg', path: 'files/logo.svg', mime: 'image/svg+xml' } })
+    cy.get('img.element').should('exist')
+  })
 })

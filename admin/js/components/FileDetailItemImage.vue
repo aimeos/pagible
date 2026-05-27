@@ -116,7 +116,7 @@ export default {
   },
 
   mounted() {
-    if (!this.readonly) {
+    if (!this.readonly && !this.svg) {
       Promise.all([
         import('cropperjs'),
         import('cropperjs/dist/cropper.css')
@@ -159,6 +159,10 @@ export default {
 
       const imageData = this.cropper.getImageData()
       return imageData.naturalWidth / imageData.naturalHeight
+    },
+
+    svg() {
+      return this.item.mime?.startsWith('image/svg')
     }
   },
 
@@ -588,7 +592,7 @@ export default {
 
   watch: {
     item: function (item, old) {
-      if (item.path !== old.path) {
+      if (item.path !== old.path && !this.svg) {
         this.$nextTick(() => {
           this.init()
         })
@@ -608,7 +612,7 @@ export default {
       crossorigin="anonymous"
     />
 
-    <div v-if="!readonly" class="toolbar">
+    <div v-if="!readonly && !svg" class="toolbar">
       <v-btn
         v-if="selected"
         @click="clear()"
