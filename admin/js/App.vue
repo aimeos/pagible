@@ -83,6 +83,13 @@ body {
   width: 100%;
 }
 
+@media (min-width: 960px) {
+  .v-navigation-drawer,
+  .v-main {
+    transition: none !important;
+  }
+}
+
 /* Slide animation */
 .slide-stack-enter-active,
 .slide-stack-leave-active {
