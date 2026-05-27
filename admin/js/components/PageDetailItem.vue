@@ -45,7 +45,7 @@ export default {
     },
 
     validate() {
-      const promises = Object.values(this.$refs).map((ref) => ref.validate())
+      const promises = Object.values(this.$refs).filter(ref => ref).map((ref) => ref.validate())
 
       return Promise.all(promises).then((results) => {
         return results.every((result) => result)

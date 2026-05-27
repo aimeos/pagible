@@ -167,7 +167,7 @@ export default {
       await this.$nextTick()
       const list = [lazy ? this.checkPathd() : this.checkPath()]
 
-      Object.values(this.$refs).forEach((field) => {
+      Object.values(this.$refs).filter(field => field).forEach((field) => {
         list.push(field.validate())
       })
 
@@ -388,5 +388,9 @@ export default {
   align-self: stretch;
   display: flex;
   align-items: center;
+}
+
+:deep(.v-text-field--prefixed.v-text-field .v-field:not(.v-field--reverse) .v-field__input) {
+  --v-field-padding-start: 0;
 }
 </style>

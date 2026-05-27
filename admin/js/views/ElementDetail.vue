@@ -150,6 +150,8 @@ export default {
         }
       })
       .then((result) => {
+        if (this.destroyed) return
+
         if (result.errors || !result.data.element) {
           throw result
         }

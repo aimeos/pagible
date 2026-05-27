@@ -146,6 +146,8 @@ export default {
         }
       })
       .then((result) => {
+        if (this.destroyed) return
+
         if (result.errors || !result.data.file) {
           throw result
         }
