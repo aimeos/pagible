@@ -100,7 +100,7 @@ if( !function_exists( 'cmsdata' ) )
     function cmsdata( \Aimeos\Cms\Models\Page $page, object $item ) : array
     {
         if( $item instanceof \Aimeos\Cms\Models\Element ) {
-            $item = (object) ['id' => $item->id, 'type' => $item->type, 'name' => $item->name, 'data' => $item->data];
+            $item = (object) ['id' => cms($item, 'id'), 'type' => cms($item, 'type'), 'name' => cms($item, 'name'), 'data' => cms($item, 'data')];
         }
 
         $data = ['files' => cms($page, 'files')];
