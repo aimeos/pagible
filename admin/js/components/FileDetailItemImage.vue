@@ -182,7 +182,7 @@ export default {
 
           label.className = 'crop-label'
           cropBox.appendChild(label)
-          this.cropLabel = label
+          this.cropLabel = markRaw(label)
         }
       })
     },
