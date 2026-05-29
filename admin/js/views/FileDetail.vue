@@ -126,7 +126,8 @@ export default {
           previews: item.previews,
           description: item.description,
           transcription: item.transcription
-        })
+        }),
+        files: this.media(item)
       })
     }
   },
@@ -215,6 +216,22 @@ export default {
 
     loadVersions() {
       return this.versions(this.item.id)
+    },
+
+    media(data) {
+      if (!data?.path) {
+        return {}
+      }
+
+      return Object.freeze({
+        [data.path]: Object.freeze({
+          id: data.path,
+          name: data.name,
+          mime: data.mime,
+          path: data.path,
+          previews: data.previews || {}
+        })
+      })
     },
 
     publish(at = null) {
@@ -340,6 +357,7 @@ export default {
           return (result.data.file.versions || []).map((v) => {
             const item = { ...v, data: frozenParse(v.data) }
             keys.forEach((key) => (item[key] = Object.freeze(item[key] ?? {})))
+            item.files = this.media(item.data)
             return Object.freeze(item)
           })
         })

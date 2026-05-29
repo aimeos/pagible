@@ -81,4 +81,38 @@ describe('HistoryDialog', () => {
     mountDialog()
     cy.get('.v-timeline').should('exist')
   })
+
+  it('shows added and removed images when the file changed', () => {
+    const newImage = { id: 'files/new.jpg', name: 'new.jpg', mime: 'image/jpeg', path: 'files/new.jpg', previews: {} }
+    const oldImage = { id: 'files/old.jpg', name: 'old.jpg', mime: 'image/jpeg', path: 'files/old.jpg', previews: {} }
+
+    mountDialog({
+      current: {
+        data: { mime: 'image/jpeg', path: 'files/new.jpg' },
+        files: { 'files/new.jpg': newImage },
+      },
+      load: () => Promise.resolve([
+        { data: { mime: 'image/jpeg', path: 'files/old.jpg' }, files: { 'files/old.jpg': oldImage }, created_at: '2026-01-01T00:00:00Z' },
+      ]),
+    })
+
+    cy.get('.media-list .file.added .v-img').should('exist')
+    cy.get('.media-list .file.removed .v-img').should('exist')
+  })
+
+  it('does not show a previews diff when the file changed', () => {
+    mountDialog({
+      current: {
+        data: { name: 'new.jpg', path: 'files/new.jpg', previews: { 200: 'files/new-200.webp' } },
+        files: {},
+      },
+      load: () => Promise.resolve([
+        { data: { name: 'old.jpg', path: 'files/old.jpg', previews: { 200: 'files/old-200.webp' } }, files: {}, created_at: '2026-01-01T00:00:00Z' },
+      ]),
+    })
+
+    cy.contains('.version-diffs', 'new.jpg').should('exist')
+    cy.get('.version-diffs').should('not.contain', 'new-200.webp')
+    cy.get('.version-diffs').should('not.contain', 'old-200.webp')
+  })
 })

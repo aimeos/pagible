@@ -7,6 +7,7 @@ import { mdiClose } from '@mdi/js'
 import { empty, stringify, url, srcset } from '../utils'
 
 const SECTION_NAMES = ['meta', 'config', 'content']
+const SKIP_FIELDS = ['previews']
 const EMPTY_SPACE = { value: '\u00a0', highlight: false }
 
 export default {
@@ -74,16 +75,21 @@ export default {
       const seen = {}
 
       for (const key in version.data) {
-        if (!SECTION_NAMES.includes(key)) seen[key] = true
+        if (!SECTION_NAMES.includes(key) && !SKIP_FIELDS.includes(key)) seen[key] = true
       }
       for (const key in later?.data) {
-        if (!SECTION_NAMES.includes(key)) seen[key] = true
+        if (!SECTION_NAMES.includes(key) && !SKIP_FIELDS.includes(key)) seen[key] = true
       }
       for (const key in seen) {
         if (JSON.stringify(version.data?.[key]) !== JSON.stringify(later?.data?.[key])
             && this.isChecked(idx, `data:${key}`)) {
           changes[key] = version.data[key]
         }
+      }
+
+      if ('path' in changes
+          && JSON.stringify(version.data?.previews) !== JSON.stringify(later?.data?.previews)) {
+        changes.previews = version.data?.previews
       }
 
       for (const section of ['meta', 'config']) {
@@ -303,10 +309,12 @@ export default {
       const b = v2.data || {}
 
       for (const k in a) {
+        if (SKIP_FIELDS.includes(k)) continue
         if (JSON.stringify(a[k]) !== JSON.stringify(b[k]) && !(empty(a[k]) && empty(b[k]))) return true
       }
 
       for (const k in b) {
+        if (SKIP_FIELDS.includes(k)) continue
         if (!(k in a) && !empty(b[k])) return true
       }
 
@@ -334,11 +342,11 @@ export default {
       const dataB = {}
 
       for (const k in a) {
-        if (!SECTION_NAMES.includes(k)) dataA[k] = a[k]
+        if (!SECTION_NAMES.includes(k) && !SKIP_FIELDS.includes(k)) dataA[k] = a[k]
       }
 
       for (const k in b) {
-        if (!SECTION_NAMES.includes(k)) dataB[k] = b[k]
+        if (!SECTION_NAMES.includes(k) && !SKIP_FIELDS.includes(k)) dataB[k] = b[k]
       }
 
       const dataFields = this.getChangedFields(dataA, dataB)
