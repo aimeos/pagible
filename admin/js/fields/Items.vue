@@ -120,10 +120,19 @@ export default {
       this.items.push({})
       this.panel.push(this.items.length - 1)
       this.$emit('update:modelValue', this.items)
+      this.check()
     },
 
     change() {
       this.$emit('update:modelValue', this.items)
+    },
+
+    check() {
+      const hasError = !this.rules.every((rule) => rule(this.items) === true)
+      if (hasError !== this.lastError) {
+        this.lastError = hasError
+        this.$emit('error', hasError)
+      }
     },
 
     copy(idx) {
@@ -134,12 +143,14 @@ export default {
       this.clipboard.set('items-content', structuredClone(this.items[idx]))
       this.items.splice(idx, 1)
       this.$emit('update:modelValue', this.items)
+      this.check()
     },
 
     insert(idx) {
       this.items.splice(idx, 0, {})
       this.panel.push(idx)
       this.$emit('update:modelValue', this.items)
+      this.check()
     },
 
     paste(idx = null) {
@@ -149,6 +160,7 @@ export default {
 
       this.items.splice(idx, 0, this.clipboard.get('items-content'))
       this.$emit('update:modelValue', this.items)
+      this.check()
     },
 
     record(idx, code) {
@@ -180,6 +192,7 @@ export default {
     remove(idx) {
       this.items.splice(idx, 1)
       this.$emit('update:modelValue', this.items)
+      this.check()
     },
 
     title(el) {
@@ -249,12 +262,7 @@ export default {
       immediate: true,
       handler(val) {
         this.items = Array.isArray(val) ? val : (this.config.default ?? [])
-
-        const hasError = !this.rules.every((rule) => rule(this.items) === true)
-        if (hasError !== this.lastError) {
-          this.lastError = hasError
-          this.$emit('error', hasError)
-        }
+        this.check()
       }
     }
   }
