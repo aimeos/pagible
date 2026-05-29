@@ -128,12 +128,15 @@ dialog.search .load-more:disabled {
 
 
 p code {
+    background-color: var(--pico-text-selection-color);
     overflow-wrap: anywhere;
 }
 
 pre code[class*=language-] {
     background-color: var(--pico-muted-background-color);
     overflow-x: auto;
+    padding: 0.5rem;
+    display: block;
 }
 
 pre:has(code[class*="language-"]) {
