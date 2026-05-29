@@ -2,10 +2,13 @@
  * @license MIT, https://opensource.org/license/MIT
  */
 
+.table-responsive {
+    background-color: var(--pico-background-color);
+}
+
 .table-responsive .table-row {
     display: flex;
     align-items: flex-end;
-    background-color: var(--pico-background-color);
     border-bottom: var(--pico-border-width) solid var(--pico-table-border-color);
 }
 
@@ -15,8 +18,12 @@
 }
 
 .table-responsive .th {
-    color: var(--pico-contrast-hover);
+    background-color: var(--pico-muted-background-color);
     text-align: center;
+}
+
+.table-responsive .th * {
+    color: var(--pico-contrast-hover);
 }
 
 .table-responsive .th > *:first-child,

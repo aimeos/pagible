@@ -7,6 +7,12 @@
     position: relative;
 }
 
+.hero:not(:first-child) {
+    background-color: var(--pico-muted-background-color);
+    margin: 4rem 0;
+    padding: 2rem;
+}
+
 .hero .background {
     position: absolute;
     inset: 0;
