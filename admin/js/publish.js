@@ -3,6 +3,7 @@
  */
 
 import gql from 'graphql-tag'
+import { useChangeStore } from './stores'
 
 const mutations = {
   element: gql`mutation ($id: [ID!]!, $at: DateTime) { pubElement(id: $id, at: $at) { id } }`,
@@ -66,6 +67,8 @@ export function publishItem(vm, type, msgs, at = null) {
             vm.item.publish_at = at
             vm.messages.add(msgs.scheduled(at), 'info')
           }
+
+          useChangeStore().notify(type, vm.item)
 
           if (vm.stacked) {
             vm.viewStack.closeView()

@@ -6,7 +6,7 @@ import AsideMeta from '../components/AsideMeta.vue'
 import DetailAppBar from '../components/DetailAppBar.vue'
 import FileDetailRefs from '../components/FileDetailRefs.vue'
 import FileDetailItem from '../components/FileDetailItem.vue'
-import { useDirtyStore, useSideStore, useUserStore, useMessageStore, useViewStack } from '../stores'
+import { useDirtyStore, useSideStore, useUserStore, useMessageStore, useViewStack, useChangeStore } from '../stores'
 import { applyResult, hasUnresolved } from '../merge'
 import { publishDate, publishItem } from '../publish'
 import { defineAsyncComponent, markRaw } from 'vue'
@@ -38,6 +38,9 @@ const SAVE_FILE = gql`
       latest {
         id
         data
+        published
+        publish_at
+        editor
         created_at
       }
       changed
@@ -100,13 +103,15 @@ export default {
     const side = useSideStore()
     const user = useUserStore()
     const viewStack = useViewStack()
+    const changes = useChangeStore()
 
     return {
       dirtyStore,
       side,
       user,
       messages,
-      viewStack
+      viewStack,
+      changes
     }
   },
 
@@ -311,6 +316,11 @@ export default {
           this.item.latestId = latest?.id
 
           applyResult(this, changed, this.$gettext('File saved successfully'), quiet)
+
+          this.item.published = latest?.published ?? false
+          this.item.publish_at = latest?.publish_at ?? null
+          this.item.editor = latest?.editor ?? this.item.editor
+          this.changes.notify('file', this.item)
 
           return true
         })

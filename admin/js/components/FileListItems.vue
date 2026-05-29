@@ -19,7 +19,7 @@ import {
   mdiClockOutline,
   mdiRefresh
 } from '@mdi/js'
-import { useAppStore, useUserStore, useMessageStore } from '../stores'
+import { useAppStore, useUserStore, useMessageStore, useChangeStore } from '../stores'
 import { debounce, frozenParse, url, srcset } from '../utils'
 
 const ADD_FILE = gql`
@@ -149,10 +149,12 @@ export default {
     const messages = useMessageStore()
     const user = useUserStore()
     const app = useAppStore()
+    const changes = useChangeStore()
 
     return {
       app,
       user,
+      changes,
       messages,
       mdiDotsVertical,
       mdiClose,
@@ -184,6 +186,10 @@ export default {
     this.items = null
     this.menu = null
     this.checked = null
+  },
+
+  activated() {
+    this.sync()
   },
 
   computed: {
@@ -316,6 +322,30 @@ export default {
       this.loading = true
       this.invalidate()
       this.search()
+    },
+
+    patch(item) {
+      const node = this.items?.find((node) => node.id === item.id)
+
+      if (!node) {
+        return false
+      }
+
+      for (const key in item) {
+        if (key in node) {
+          node[key] = item[key]
+        }
+      }
+
+      return true
+    },
+
+    sync() {
+      const ids = this.changes.get('file')
+        .filter((item) => this.patch(item))
+        .map((item) => item.id)
+
+      this.changes.patched('file', ids)
     },
 
     invalidate() {
@@ -538,6 +568,10 @@ export default {
   },
 
   watch: {
+    'changes.changed.file'() {
+      this.sync()
+    },
+
     filter: {
       deep: true,
       handler() {

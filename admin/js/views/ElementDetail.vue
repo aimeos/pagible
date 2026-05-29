@@ -6,7 +6,7 @@ import AsideMeta from '../components/AsideMeta.vue'
 import DetailAppBar from '../components/DetailAppBar.vue'
 import ElementDetailRefs from '../components/ElementDetailRefs.vue'
 import ElementDetailItem from '../components/ElementDetailItem.vue'
-import { useDirtyStore, useSideStore, useUserStore, useMessageStore, useViewStack } from '../stores'
+import { useDirtyStore, useSideStore, useUserStore, useMessageStore, useViewStack, useChangeStore } from '../stores'
 import { applyResult, hasUnresolved } from '../merge'
 import { publishDate, publishItem } from '../publish'
 import { setupEcho, cleanEcho } from '../echo'
@@ -53,7 +53,7 @@ const SAVE_ELEMENT = gql`
   mutation ($id: ID!, $input: ElementInput!, $files: [ID!], $latestId: ID) {
     saveElement(id: $id, input: $input, files: $files, latestId: $latestId) {
       id
-      latest { id }
+      latest { id published publish_at editor created_at }
       changed
     }
   }
@@ -125,13 +125,15 @@ export default {
     const side = useSideStore()
     const user = useUserStore()
     const viewStack = useViewStack()
+    const changes = useChangeStore()
 
     return {
       dirtyStore,
       side,
       user,
       messages,
-      viewStack
+      viewStack,
+      changes
     }
   },
 
@@ -326,6 +328,14 @@ export default {
           }
 
           applyResult(this, changed, this.$gettext('Element saved successfully'), quiet)
+
+          const version = el?.latest
+          this.item.published = version?.published ?? false
+          this.item.publish_at = version?.publish_at ?? null
+          this.item.editor = version?.editor ?? this.item.editor
+          this.item.updated_at = version?.created_at ?? this.item.updated_at
+          this.item.latestId = this.latestId
+          this.changes.notify('element', this.item)
 
           return true
         })

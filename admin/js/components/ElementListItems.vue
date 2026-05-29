@@ -18,7 +18,7 @@ import {
   mdiRefresh
 } from '@mdi/js'
 import SchemaItems from './SchemaItems.vue'
-import { useUserStore, useMessageStore } from '../stores'
+import { useUserStore, useMessageStore, useChangeStore } from '../stores'
 import { debounce, frozenParse } from '../utils'
 
 const ADD_ELEMENT = gql`
@@ -144,9 +144,11 @@ export default {
   setup() {
     const messages = useMessageStore()
     const user = useUserStore()
+    const changes = useChangeStore()
 
     return {
       user,
+      changes,
       messages,
       mdiDotsVertical,
       mdiClose,
@@ -173,6 +175,10 @@ export default {
     this.items = null
     this.menu = null
     this.checked = null
+  },
+
+  activated() {
+    this.sync()
   },
 
   computed: {
@@ -267,6 +273,30 @@ export default {
       this.loading = true
       this.invalidate()
       this.search()
+    },
+
+    patch(item) {
+      const node = this.items?.find((node) => node.id === item.id)
+
+      if (!node) {
+        return false
+      }
+
+      for (const key in item) {
+        if (key in node) {
+          node[key] = item[key]
+        }
+      }
+
+      return true
+    },
+
+    sync() {
+      const ids = this.changes.get('element')
+        .filter((item) => this.patch(item))
+        .map((item) => item.id)
+
+      this.changes.patched('element', ids)
     },
 
     invalidate() {
@@ -504,6 +534,10 @@ export default {
   },
 
   watch: {
+    'changes.changed.element'() {
+      this.sync()
+    },
+
     filter: {
       deep: true,
       handler() {

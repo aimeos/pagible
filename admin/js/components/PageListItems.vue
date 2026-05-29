@@ -28,7 +28,7 @@ import {
 } from '@mdi/js'
 import { Draggable } from '@he-tree/vue'
 import { dragContext } from '@he-tree/vue'
-import { useAppStore, useUserStore, useLanguageStore, useMessageStore } from '../stores'
+import { useAppStore, useUserStore, useLanguageStore, useMessageStore, useChangeStore } from '../stores'
 import { debounce } from '../utils'
 
 const ADD_PAGE = gql`
@@ -220,10 +220,12 @@ export default {
     const messages = useMessageStore()
     const user = useUserStore()
     const app = useAppStore()
+    const changes = useChangeStore()
 
     return {
       app,
       user,
+      changes,
       languages,
       messages,
       mdiDotsVertical,
@@ -264,6 +266,10 @@ export default {
 
   mounted() {
     this.checked = false // required for isChecked() to work correctly
+  },
+
+  activated() {
+    this.sync()
   },
 
   beforeUnmount() {
@@ -850,6 +856,22 @@ export default {
       }
     },
 
+    patch(item) {
+      const stat = this.$refs.tree?.statsFlat.find((stat) => stat.data?.id === item.id)
+
+      if (!stat) {
+        return false
+      }
+
+      for (const key in item) {
+        if (key in stat.data) {
+          stat.data[key] = item[key]
+        }
+      }
+
+      return true
+    },
+
     publish(stat) {
       if (!this.user.can('page:publish')) {
         this.messages.add(this.$gettext('Permission denied'), 'error')
@@ -1058,6 +1080,14 @@ export default {
       })
     },
 
+    sync() {
+      const ids = this.changes.get('page')
+        .filter((item) => this.patch(item))
+        .map((item) => item.id)
+
+      this.changes.patched('page', ids)
+    },
+
     title(item) {
       const list = []
 
@@ -1123,6 +1153,10 @@ export default {
   },
 
   watch: {
+    'changes.changed.page'() {
+      this.sync()
+    },
+
     filter: {
       deep: true,
       handler(filter) {
