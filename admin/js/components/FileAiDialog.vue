@@ -122,23 +122,20 @@ export default {
 
       this.loading = true
 
-      fetch(this.url(item.path, true), {credentials: 'include'})
-        .then((response) => response.blob())
-        .then((blob) => {
-          const filename = 'ai-image_' + new Date().toISOString().replace(/[^0-9]/g, '') + '.png'
+      const filename = 'ai-image_' + new Date().toISOString().replace(/[^0-9]/g, '') + '.png'
 
-          return this.$apollo.mutate({
-            mutation: ADD_AI_FILE,
-            variables: {
-              input: {
-                name: item.name
-              },
-              file: new File([blob], filename, { type: item.mime })
+      this.$apollo
+        .mutate({
+          mutation: ADD_AI_FILE,
+          variables: {
+            input: {
+              name: item.name
             },
-            context: {
-              hasUpload: true
-            }
-          })
+            file: new File([item.blob], filename, { type: item.mime })
+          },
+          context: {
+            hasUpload: true
+          }
         })
         .then((response) => {
           if (response.errors) {
@@ -192,8 +189,11 @@ export default {
           }
 
           if (response.data.imagine) {
+            const blob = this.toBlob(response.data.imagine)
+
             this.items.unshift({
-              path: URL.createObjectURL(this.toBlob(response.data.imagine)),
+              path: URL.createObjectURL(blob),
+              blob: markRaw(blob),
               name: this.chat.slice(0, this.chat.length > 250 ? this.chat.lastIndexOf(' ', 250) : 250),
               mime: 'image/png'
             })
