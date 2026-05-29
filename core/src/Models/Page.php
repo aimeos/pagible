@@ -440,14 +440,20 @@ class Page extends Base
      */
     public function publish( Version $version ) : self
     {
-        $files = $version->files()->with( 'latest' )->get();
-        $elements = $version->elements()->with( 'latest' )->get();
+        $fileIds = $version->files()->pluck( 'cms_files.id' )->all();
+        $elementIds = $version->elements()->pluck( 'cms_elements.id' )->all();
 
-        $this->files()->sync( $files->modelKeys() );
-        $this->elements()->sync( $elements->modelKeys() );
+        $this->files()->sync( $fileIds );
+        $this->elements()->sync( $elementIds );
 
-        $files->each( fn( $f ) => $f->latest && !$f->latest->published ? $f->publish( $f->latest ) : null );
-        $elements->each( fn( $e ) => $e->latest && !$e->latest->published ? $e->publish( $e->latest ) : null );
+        if( $fileIds ) {
+            File::whereIn( 'id', $fileIds )->with( 'latest' )->get()
+                ->each( fn( $f ) => $f->latest && !$f->latest->published ? $f->publish( $f->latest ) : null );
+        }
+        if( $elementIds ) {
+            Element::whereIn( 'id', $elementIds )->with( 'latest' )->get()
+                ->each( fn( $e ) => $e->latest && !$e->latest->published ? $e->publish( $e->latest ) : null );
+        }
 
         $this->forceFill( array_intersect_key( (array) $version->data, array_flip( $this->getFillable() ) ) );
         $this->content = $version->aux->content ?? [];

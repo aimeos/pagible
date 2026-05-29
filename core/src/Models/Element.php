@@ -205,11 +205,14 @@ class Element extends Base
      */
     public function publish( Version $version ) : self
     {
-        $files = $version->files()->with( 'latest' )->get();
+        $fileIds = $version->files()->pluck( 'cms_files.id' )->all();
 
-        $this->files()->sync( $files->modelKeys() );
+        $this->files()->sync( $fileIds );
 
-        $files->each( fn( $f ) => $f->latest && !$f->latest->published ? $f->publish( $f->latest ) : null );
+        if( $fileIds ) {
+            File::whereIn( 'id', $fileIds )->with( 'latest' )->get()
+                ->each( fn( $f ) => $f->latest && !$f->latest->published ? $f->publish( $f->latest ) : null );
+        }
 
         $this->forceFill( array_intersect_key( (array) $version->data, array_flip( $this->getFillable() ) ) );
         $this->editor = $version->editor;
