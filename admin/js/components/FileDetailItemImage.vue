@@ -591,12 +591,15 @@ export default {
   },
 
   watch: {
-    item: function (item, old) {
-      if (item.path !== old.path && !this.svg) {
-        this.$nextTick(() => {
-          this.init()
-        })
+    'item.path': function (path, old) {
+      if (path === old || this.svg || this.readonly) {
+        return
       }
+
+      this.$nextTick(() => {
+        if (this.destroyed || !this.Cropper) return
+        this.cropper = markRaw(this.init())
+      })
     }
   }
 }
