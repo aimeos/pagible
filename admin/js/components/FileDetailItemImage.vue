@@ -329,6 +329,9 @@ export default {
 
     isolate() {
       if (!this.cropper) return
+
+      this.clear()
+
       this.cropper.getCroppedCanvas().toBlob((blob) => {
         this.mutate(
           'image:isolate',
@@ -346,6 +349,8 @@ export default {
 
     monochrome() {
       if (!this.cropper) return
+
+      this.clear()
 
       const canvas = this.cropper.getCroppedCanvas()
       const context = canvas.getContext('2d')
@@ -514,6 +519,8 @@ export default {
         return
       }
 
+      this.clear()
+
       this.cropper.getCroppedCanvas().toBlob((blob) => {
         this.mutate(
           'image:uncrop',
@@ -560,6 +567,8 @@ export default {
     upscale(factor) {
       if (!this.cropper) return
 
+      this.clear()
+
       this.cropper.getCroppedCanvas().toBlob((blob) => {
         this.mutate(
           'image:upscale',
@@ -593,6 +602,9 @@ export default {
       if (path === old || this.svg || this.readonly) {
         return
       }
+
+      this.images.forEach((img) => URL.revokeObjectURL(img.url))
+      this.images = []
 
       this.$nextTick(() => {
         if (this.destroyed || !this.Cropper) return
@@ -1001,11 +1013,11 @@ export default {
           </v-toolbar>
 
           <v-list @click="menu['undo'] = false">
-            <v-list-item v-for="(img, idx) in images.slice(1)" :key="img.url">
+            <v-list-item v-for="(img, idx) in images" :key="img.url">
               <v-img
                 :src="img.url"
                 :alt="$gettext('Previous edit')"
-                @click="replace(img.blob, idx + 1)"
+                @click="replace(img.blob, idx)"
               />
             </v-list-item>
             <v-list-item>
@@ -1039,7 +1051,8 @@ export default {
   top: calc(50% + 16px);
   left: 50%;
   color: #fff;
-  font-size: 100%;
+  font-size: 14px;
+  line-height: 1.2;
   padding: 12px 6px;
   border-radius: 4px;
   white-space: nowrap;
