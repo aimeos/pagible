@@ -52,12 +52,12 @@ export default {
   },
 
   created() {
-    if (!this.table.length) {
-      return this.$emit('update:modelValue', this.config.default ?? [['']])
-    }
-
     this.validated = this.debounce(this.validate, 500)
     this.updated = this.debounce(this.update, 500)
+
+    if (!this.table.length) {
+      this.$emit('update:modelValue', this.config.default ?? [['']])
+    }
   },
 
   computed: {
