@@ -34,7 +34,7 @@ export default {
   created() {
     this.labels = {
       data: this.$gettext('Fields'),
-      meta: this.$gettext('Meta tags'),
+      meta: this.$gettext('Meta data'),
       config: this.$gettext('Configuration'),
       content: this.$gettext('Content')
     }
