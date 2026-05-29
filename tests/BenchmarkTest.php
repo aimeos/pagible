@@ -30,6 +30,25 @@ class BenchmarkTest extends CmsTestAbstract
     {
         parent::defineEnvironment( $app );
 
+        // Benchmarks use an on-disk SQLite database to reflect real I/O costs.
+        // Tests keep the in-memory database configured by the parent class.
+        if( env( 'DB_DRIVER', 'sqlite' ) === 'sqlite' )
+        {
+            $path = database_path( 'benchmark.sqlite' );
+
+            if( !is_dir( $dir = dirname( $path ) ) ) {
+                mkdir( $dir, 0755, true );
+            }
+
+            if( file_exists( $path ) ) {
+                unlink( $path );
+            }
+
+            touch( $path );
+
+            $app['config']->set( 'database.connections.testing.database', $path );
+        }
+
         \Aimeos\Cms\Tenancy::$callback = function() {
             return 'benchmark';
         };
