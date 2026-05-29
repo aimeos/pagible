@@ -169,22 +169,9 @@ export default {
   methods: {
     aspect(ratio) {
       if (!this.cropper) return
+
       this.cropper.setAspectRatio(ratio)
       this.cropper.setDragMode('crop')
-
-      this.$nextTick(() => {
-        if (this.destroyed) return
-
-        const cropBox = this.cropper.cropper.querySelector('.cropper-crop-box')
-
-        if (cropBox && !this.cropLabel) {
-          const label = document.createElement('div')
-
-          label.className = 'crop-label'
-          cropBox.appendChild(label)
-          this.cropLabel = markRaw(label)
-        }
-      })
     },
 
     clear() {
@@ -193,6 +180,7 @@ export default {
       this.cropper.setDragMode('none')
       this.cropper.clear()
       this.selected = false
+      this.cropLabel?.remove()
       this.cropLabel = null
     },
 
@@ -288,7 +276,17 @@ export default {
         checkOrientation: false,
         viewMode: 1,
         crop(event) {
-          if (!self.cropLabel) return
+          const cropBox = self.cropper?.cropBox
+
+          if (!cropBox) return
+
+          if (!self.cropLabel || self.cropLabel.parentNode !== cropBox) {
+            const label = document.createElement('div')
+
+            label.className = 'crop-label'
+            cropBox.appendChild(label)
+            self.cropLabel = markRaw(label)
+          }
 
           const { width, height } = event.detail
 
