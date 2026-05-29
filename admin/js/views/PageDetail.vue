@@ -21,7 +21,8 @@ import {
   useUserStore,
   useMessageStore,
   useSchemaStore,
-  useViewStack
+  useViewStack,
+  useChangeStore
 } from '../stores'
 import {
   mdiTranslate,
@@ -97,7 +98,7 @@ const SAVE_PAGE = gql`
   mutation ($id: ID!, $input: PageInput!, $elements: [ID!], $files: [ID!], $latestId: ID) {
     savePage(id: $id, input: $input, elements: $elements, files: $files, latestId: $latestId) {
       id
-      latest { id }
+      latest { id published publish_at editor created_at }
       changed
     }
   }
@@ -137,6 +138,7 @@ export default {
     const user = useUserStore()
     const app = useAppStore()
     const viewStack = useViewStack()
+    const changes = useChangeStore()
 
     return {
       app,
@@ -146,6 +148,7 @@ export default {
       messages,
       schemas,
       viewStack,
+      changes,
       mdiTranslate,
       mdiArrowRightThin,
       txlocales
@@ -565,6 +568,13 @@ export default {
 
           this.invalidate()
           this.savecnt++
+
+          const version = page?.latest
+          this.item.published = version?.published ?? false
+          this.item.publish_at = version?.publish_at ?? null
+          this.item.editor = version?.editor ?? this.item.editor
+          this.item.updated_at = version?.created_at ?? this.item.updated_at
+          this.changes.notify('page', this.item)
 
           return true
         })
