@@ -72,6 +72,12 @@ const FETCH_ELEMENT_VERSIONS = gql`
         created_at
         files {
           id
+          mime
+          name
+          path
+          previews
+          updated_at
+          editor
         }
       }
     }
@@ -221,6 +227,13 @@ export default {
 
     historyCurrent() {
       const item = this.item
+      const ids = new Set(item.files || [])
+      const files = {}
+
+      for (const key in this.assets) {
+        if (ids.has(key)) files[key] = this.assets[key]
+      }
+
       return markRaw({
         data: Object.freeze({
           lang: item.lang,
@@ -228,7 +241,7 @@ export default {
           name: item.name,
           data: item.data
         }),
-        files: item.files
+        files: markRaw(files)
       })
     }
   },
@@ -242,6 +255,16 @@ export default {
 
     errorUpdated(event) {
       this.error = event
+    },
+
+    files(entries) {
+      const map = {}
+
+      for (const entry of entries) {
+        map[entry.id] = { ...entry, previews: frozenParse(entry.previews) }
+      }
+
+      return map
     },
 
     itemUpdated() {
@@ -365,6 +388,10 @@ export default {
 
     use(version) {
       Object.assign(this.item, version.data)
+
+      this.assets = version.files || {}
+      this.item.files = Object.keys(version.files || {})
+
       this.vhistory = false
       this.dirty = true
     },
@@ -400,7 +427,7 @@ export default {
             return Object.freeze({
               ...v,
               data: frozenParse(v.data),
-              files: Object.freeze(v.files.map((file) => file.id))
+              files: Object.freeze(this.files(v.files || []))
             })
           })
         })
