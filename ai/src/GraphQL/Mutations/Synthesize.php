@@ -106,8 +106,10 @@ final class Synthesize
                     : $value;
             }
 
-            $msgs[] = $step->name() . '(' . ( empty( $args ) ? '' : json_encode( $args, JSON_PRETTY_PRINT ) ) . ')';
+            $msgs[] = '- ' . $step->name() . '(' . ( empty( $args ) ? '' : json_encode( $args, JSON_PRETTY_PRINT ) ) . ')';
         }
+
+        $msgs[] = '-> ' . $response->reason();
 
         return $msgs;
     }
