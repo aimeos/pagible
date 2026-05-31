@@ -8,6 +8,7 @@
 namespace Aimeos\Cms\GraphQL\Mutations;
 
 use Aimeos\Cms\Models\File;
+use Aimeos\Cms\Tools as CmsTools;
 use Aimeos\Prisma\Prisma;
 use Aimeos\Prisma\Tools;
 use Aimeos\Prisma\Exceptions\PrismaException;
@@ -53,10 +54,16 @@ final class Synthesize
                 ->model( $model )
                 ->withMaxTokens( config( 'cms.ai.maxtoken' ) )
                 ->withSystemPrompt( $system . "\n" . ( $args['context'] ?? '' ) )
-                ->withTools( array_merge( \Aimeos\Cms\Tools::get(), [
+                ->withTools( [
+                    Tools::laravel( CmsTools\GetPage::class )->max( 1 )->concurrent(),
+                    Tools::laravel( CmsTools\GetPageTree::class )->max( 1 )->concurrent(),
+                    Tools::laravel( CmsTools\SearchPages::class )->max( 3 )->concurrent(),
+                    Tools::laravel( CmsTools\GetLocales::class )->max( 1 )->concurrent(),
+                    Tools::laravel( CmsTools\GetSchemas::class )->max( 1 )->concurrent(),
+                    Tools::laravel( CmsTools\AddPage::class )->max( 1 ),
                     Tools::provider( 'web_search' ),
                     Tools::provider( 'web_fetch' ),
-                ] ) )
+                ] )
                 ->withToolChoice( \Aimeos\Prisma\Providers\Base::REQ )
                 ->withMaxSteps( 10 )
                 ->ensure( 'write' )

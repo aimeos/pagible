@@ -26,9 +26,6 @@ use Laravel\Mcp\Request;
 #[Description('Creates a new page in the page tree. Requires lang (ISO code like "en"), name (max 50 chars), title (max 100 chars), content (array of {type, data} objects — use get-schemas for types), and meta with meta-tags description for SEO. Optional: config, to, tag, theme, type, domain, path, status (0/1/2), cache (minutes), related_id, parent_id, ref, files, elements. Returns the created page as JSON.')]
 class AddPage extends Tool
 {
-    private int $numcalls = 0;
-
-
     /**
      * Handle the tool request.
      */
@@ -36,10 +33,6 @@ class AddPage extends Tool
     {
         if( !Permission::can( 'page:add', $request->user() ) ) {
             throw new \Aimeos\Cms\Exception( 'Insufficient permissions' );
-        }
-
-        if( $this->numcalls > 0 ) {
-            return Response::structured( ['error' => 'Only one page can be created at a time.'] );
         }
 
         $v = $request->validate([
@@ -124,7 +117,6 @@ class AddPage extends Tool
             $pid,
         );
 
-        $this->numcalls++;
         return Response::structured( $page->toArray() );
     }
 
@@ -154,7 +146,8 @@ class AddPage extends Tool
                         ->description( 'Content element type. Use get-schemas for available types.' )
                         ->required(),
                     'group' => $schema->string()
-                        ->description( 'Layout section, e.g., "main", "footer". Use "main" if unsure.' ),
+                        ->description( 'Layout section, e.g., "main", "footer". Use "main" if unsure.' )
+                        ->required(),
                     'data' => $schema->object()
                         ->description( 'Field values for this element. Use get-schemas for available fields per type.' )
                         ->required(),
