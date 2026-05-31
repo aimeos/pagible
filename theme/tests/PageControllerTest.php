@@ -7,6 +7,7 @@
 
 namespace Tests;
 
+use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Models\Version;
 use Aimeos\Cms\Resource;
@@ -131,5 +132,53 @@ class PageControllerTest extends ThemeTestAbstract
         // Try to access via new path
         $response = $this->actingAs( $this->user )->get( '/new-test-page' );
         $response->assertStatus( 200 );
+    }
+
+
+    public function testLatestShowsUnpublishedReferencedElement()
+    {
+        Tenancy::$callback = fn() => 'demo';
+
+        // Shared element that was never published: its own "data" column is still
+        // empty, the draft content lives only in the latest (unpublished) version.
+        $element = Element::forceCreate([
+            'lang' => 'en',
+            'type' => 'text',
+            'name' => 'Draft element',
+            'editor' => 'test',
+        ]);
+        $version = $element->versions()->forceCreate([
+            'lang' => 'en',
+            'data' => ['type' => 'text', 'name' => 'Draft element', 'data' => ['text' => 'DRAFT_ELEMENT_TEXT']],
+            'published' => false,
+            'editor' => 'test',
+        ]);
+        $element->forceFill( ['latest_id' => $version->id] )->saveQuietly();
+
+        // Deactivated, never-published page referencing the unpublished element.
+        $page = Page::forceCreate([
+            'lang' => 'en',
+            'name' => 'Draft preview',
+            'title' => 'Draft preview',
+            'path' => 'draft-preview',
+            'status' => 0,
+            'editor' => 'test',
+        ]);
+        $pageVersion = $page->versions()->forceCreate([
+            'lang' => 'en',
+            'data' => ['name' => 'Draft preview', 'path' => 'draft-preview', 'status' => 0],
+            'aux' => ['content' => [
+                ['id' => 'el1', 'type' => 'reference', 'group' => 'main', 'refid' => $element->id],
+            ]],
+            'published' => false,
+            'editor' => 'test',
+        ]);
+        $page->forceFill( ['latest_id' => $pageVersion->id] )->saveQuietly();
+        $pageVersion->elements()->attach( $element->id );
+
+        // Editor preview must render the element's draft content
+        $response = $this->actingAs( $this->user )->get( '/draft-preview' );
+        $response->assertStatus( 200 );
+        $response->assertSee( 'DRAFT_ELEMENT_TEXT' );
     }
 }

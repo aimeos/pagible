@@ -113,11 +113,16 @@ class PageController extends Controller
     {
         $with = [
             'files' => fn( $q ) => $q->select( File::SELECT_COLS ),
+            'files.latest',
             'elements' => fn( $q ) => $q->select( [...Element::SELECT_COLS, 'name'] ),
+            'elements.latest',
             'latest',
             'latest.files' => fn( $q ) => $q->select( File::SELECT_COLS ),
+            'latest.files.latest',
             'latest.elements' => fn( $q ) => $q->select( [...Element::SELECT_COLS, 'name'] ),
+            'latest.elements.latest',
             'latest.elements.files' => fn( $q ) => $q->select( File::SELECT_COLS ),
+            'latest.elements.files.latest',
         ];
 
         $page = Page::with( $with )

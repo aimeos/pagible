@@ -46,7 +46,7 @@ class Element extends Base
 
 
     /** @var list<string> Columns for eager-loading element relations */
-    public const SELECT_COLS = ['cms_elements.id', 'type', 'data'];
+    public const SELECT_COLS = ['cms_elements.id', 'cms_elements.latest_id', 'type', 'data'];
 
 
     /**
