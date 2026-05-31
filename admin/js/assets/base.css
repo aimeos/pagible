@@ -214,6 +214,10 @@ input:-webkit-autofill:focus {
 
 .list .v-expansion-panel-title .element-type {
   margin-inline-start: 8px;
+  overflow: hidden;
+  max-height: 48px;
+  max-width: 5rem;
+  text-align: end;
 }
 
 .list .v-expansion-panel-title__icon {

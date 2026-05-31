@@ -1078,12 +1078,6 @@ export default {
   flex: none;
 }
 
-.element-type {
-  max-height: 48px;
-  max-width: 5rem;
-  text-align: end;
-}
-
 .item-handle {
   cursor: move;
 }

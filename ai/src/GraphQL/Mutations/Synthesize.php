@@ -52,14 +52,15 @@ final class Synthesize
             $response = Prisma::text()
                 ->using( $provider, $config )
                 ->model( $model )
+                ->withClientOptions( ['timeout' => 150] )
                 ->withMaxTokens( config( 'cms.ai.maxtoken' ) )
                 ->withSystemPrompt( $system . "\n" . ( $args['context'] ?? '' ) )
                 ->withTools( [
-                    Tools::laravel( CmsTools\GetPage::class )->max( 1 )->concurrent(),
-                    Tools::laravel( CmsTools\GetPageTree::class )->max( 1 )->concurrent(),
-                    Tools::laravel( CmsTools\SearchPages::class )->max( 3 )->concurrent(),
-                    Tools::laravel( CmsTools\GetLocales::class )->max( 1 )->concurrent(),
-                    Tools::laravel( CmsTools\GetSchemas::class )->max( 1 )->concurrent(),
+                    Tools::laravel( CmsTools\GetPage::class )->max( 1 ),
+                    Tools::laravel( CmsTools\GetPageTree::class )->max( 1 ),
+                    Tools::laravel( CmsTools\SearchPages::class )->max( 3 ),
+                    Tools::laravel( CmsTools\GetLocales::class )->max( 1 ),
+                    Tools::laravel( CmsTools\GetSchemas::class )->max( 1 ),
                     Tools::laravel( CmsTools\AddPage::class )->max( 1 ),
                     Tools::provider( 'web_search' ),
                     Tools::provider( 'web_fetch' ),

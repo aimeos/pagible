@@ -23,7 +23,7 @@ use Laravel\Mcp\Request;
 
 #[Name('add-page')]
 #[Title('Create a new page within the page tree')]
-#[Description('Creates a new page in the page tree. Requires lang (ISO code like "en"), name (max 50 chars), title (max 100 chars), content (array of {type, data} objects — use get-schemas for types), and meta with meta-tags description for SEO. Optional: config, to, tag, theme, type, domain, path, status (0/1/2), cache (minutes), related_id, parent_id, ref, files, elements. Returns the created page as JSON.')]
+#[Description('Creates a new page in the page tree. Requires lang (ISO code like "en"), name (max 50 chars), title (max 100 chars), content (array of {type, data} objects — use get-schemas for types), and meta with meta-tags description for SEO. Optional: config, to, tag, theme, type, domain, path, cache (minutes), related_id, parent_id, ref, files, elements. Returns the created page as JSON.')]
 class AddPage extends Tool
 {
     /**
@@ -54,7 +54,6 @@ class AddPage extends Tool
             'type' => 'string|max:50',
             'domain' => 'string|max:255',
             'path' => 'string|max:255',
-            'status' => 'integer|in:0,1,2',
             'cache' => 'integer|min:0',
             'related_id' => 'string|max:36',
             'parent_id' => 'string|max:36',
@@ -93,10 +92,10 @@ class AddPage extends Tool
         $v['type'] = $v['type'] ?? $parent?->latest?->data->type ?? '';
         $v['lang'] = $v['lang'] ?? $parent?->lang ?: '';
         $v['related_id'] = $v['related_id'] ?? null;
-        $v['status'] = $v['status'] ?? 0;
         $v['cache'] = $v['cache'] ?? 5;
         $v['tag'] = $v['tag'] ?? '';
         $v['to'] = $v['to'] ?? '';
+        $v['status'] = 0;
 
         if( isset( $v['meta'] ) ) {
             $v['meta'] = Validation::structured( $v['meta'], 'meta', new \stdClass() );
