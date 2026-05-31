@@ -16,17 +16,17 @@ return [
 
     'write' => [ // Generate text content based on prompts
         'provider' => env( 'CMS_AI_WRITE', 'gemini' ),
-        'model' => env( 'CMS_AI_WRITE_MODEL', 'gemini-2.5-flash' ),
+        'model' => env( 'CMS_AI_WRITE_MODEL' ),
         'api_key' => env( 'CMS_AI_WRITE_API_KEY' ),
     ],
     'refine' => [ // Return content in a defined structure
         'provider' => env( 'CMS_AI_REFINE', 'gemini' ),
-        'model' => env( 'CMS_AI_REFINE_MODEL', 'gemini-2.5-flash' ),
+        'model' => env( 'CMS_AI_REFINE_MODEL' ),
         'api_key' => env( 'CMS_AI_REFINE_API_KEY' ),
     ],
     'describe' => [ // Generate summary of file content
         'provider' => env( 'CMS_AI_DESCRIBE', 'gemini' ),
-        'model' => env( 'CMS_AI_DESCRIBE_MODEL', 'gemini-2.5-flash' ),
+        'model' => env( 'CMS_AI_DESCRIBE_MODEL' ),
         'api_key' => env( 'CMS_AI_DESCRIBE_API_KEY' ),
     ],
     'translate' => [ // Translate text content
@@ -43,12 +43,12 @@ return [
     ],
     'imagine' => [ // Generate images from text prompts
         'provider' => env( 'CMS_AI_IMAGINE', 'gemini' ),
-        'model' => env( 'CMS_AI_IMAGINE_MODEL', 'gemini-2.5-flash-image' ),
+        'model' => env( 'CMS_AI_IMAGINE_MODEL' ),
         'api_key' => env( 'CMS_AI_IMAGINE_API_KEY' ),
     ],
     'inpaint' => [ // Change selected parts of images based on prompt
         'provider' => env( 'CMS_AI_INPAINT', 'gemini' ),
-        'model' => env( 'CMS_AI_INPAINT_MODEL', 'gemini-2.5-flash-image' ),
+        'model' => env( 'CMS_AI_INPAINT_MODEL' ),
         'api_key' => env( 'CMS_AI_INPAINT_API_KEY' ),
     ],
     'isolate' => [ // Remove background from images
@@ -58,7 +58,7 @@ return [
     ],
     'repaint' => [ // Change image based on prompt
         'provider' => env( 'CMS_AI_REPAINT', 'gemini' ),
-        'model' => env( 'CMS_AI_REPAINT_MODEL', 'gemini-2.5-flash-image' ),
+        'model' => env( 'CMS_AI_REPAINT_MODEL' ),
         'api_key' => env( 'CMS_AI_REPAINT_API_KEY' ),
     ],
     'uncrop' => [ // Extend images
@@ -74,7 +74,7 @@ return [
 
     'transcribe' => [ // Transcribe audio
         'provider' => env( 'CMS_AI_TRANSCRIBE', 'openai' ),
-        'model' => env( 'CMS_AI_TRANSCRIBE_MODEL', 'whisper-1' ),
+        'model' => env( 'CMS_AI_TRANSCRIBE_MODEL' ),
         'api_key' => env( 'CMS_AI_TRANSCRIBE_API_KEY' ),
     ],
 ];
