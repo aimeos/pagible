@@ -15,10 +15,10 @@
 <script type="application/ld+json">{
 	"@@context": "https://schema.org",
 	"@@type": "Article",
-	"headline": {{ Js::from(cms($page, 'title')) }},
+	"headline": {!! cmsjson(cms($page, 'title')) !!},
 	"datePublished": "{{ $page->created_at->toIso8601String() }}",
 	"dateModified": "{{ $page->updated_at->toIso8601String() }}"
 	@if($file = cms($files, $data->file?->id ?? null))
-		, "image": {{ Js::from(cmsurl(cms($file, 'path'))) }}
+		, "image": {!! cmsjson(cmsurl(cms($file, 'path'))) !!}
 	@endif
 }</script>

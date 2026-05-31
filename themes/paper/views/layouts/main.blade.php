@@ -55,14 +55,14 @@
             [{
                 "@@context": "https://schema.org",
                 "@@type": "WebSite",
-                "name": {{ Js::from(config('app.name')) }},
-                "url": {{ Js::from(url('/')) }}
+                "name": {!! cmsjson(config('app.name')) !!},
+                "url": {!! cmsjson(url('/')) !!}
             },
             {
                 "@@context": "https://schema.org",
                 "@@type": "WebPage",
-                "name": {{ Js::from(cms($page, 'title')) }},
-                "url": {{ Js::from(cmsroute($page)) }}
+                "name": {!! cmsjson(cms($page, 'title')) !!},
+                "url": {!! cmsjson(cmsroute($page)) !!}
             }
             @if($page->ancestors->count() > 1)
             ,{
@@ -73,14 +73,14 @@
                     {
                         "@@type": "ListItem",
                         "position": {{ $loop->iteration }},
-                        "name": {{ Js::from(cms($item, 'name')) }},
-                        "item": {{ Js::from(cmsroute($item)) }}
+                        "name": {!! cmsjson(cms($item, 'name')) !!},
+                        "item": {!! cmsjson(cmsroute($item)) !!}
                     },
                     @endforeach
                     {
                         "@@type": "ListItem",
                         "position": {{ $page->ancestors->skip(1)->filter(fn($item) => cms($item, 'status') == 1)->count() + 1 }},
-                        "name": {{ Js::from(cms($page, 'name')) }}
+                        "name": {!! cmsjson(cms($page, 'name')) !!}
                     }
                 ]
             }

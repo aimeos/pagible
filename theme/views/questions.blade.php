@@ -23,10 +23,10 @@
 	@foreach(cms($data, 'items', []) as $item)
 		{
 			"@@type": "Question",
-			"name": {{ Js::from($item->title ?? '') }},
+			"name": {!! cmsjson($item->title ?? '') !!},
 			"acceptedAnswer": {
 				"@@type": "Answer",
-				"text": {{ Js::from(strip_tags(Str::markdown($item->text ?? ''))) }}
+				"text": {!! cmsjson(strip_tags(Str::markdown($item->text ?? ''))) !!}
 			}
 		}
 		@if(!$loop->last),@endif

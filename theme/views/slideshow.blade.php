@@ -29,15 +29,15 @@
 <script type="application/ld+json">{
 	"@@context": "https://schema.org",
 	"@@type": "ImageGallery",
-	"name": {{ Js::from($data->title ?? cms($page, 'title')) }},
+	"name": {!! cmsjson($data->title ?? cms($page, 'title')) !!},
 	"image": [
 	@foreach($data->files ?? [] as $item)
 		@if($file = cms($files, $item->id ?? null))
 			{
 				"@@type": "ImageObject",
-				"contentUrl": {{ Js::from(cmsurl(cms($file, 'path'))) }},
-				"name": {{ Js::from(cms($file, 'name') ?? '') }},
-				"description": {{ Js::from(cms($file, 'description')?->{cms($page, 'lang')} ?? '') }}
+				"contentUrl": {!! cmsjson(cmsurl(cms($file, 'path'))) !!},
+				"name": {!! cmsjson(cms($file, 'name') ?? '') !!},
+				"description": {!! cmsjson(cms($file, 'description')?->{cms($page, 'lang')} ?? '') !!}
 			}
 			@if(!$loop->last),@endif
 		@endif

@@ -130,6 +130,24 @@ if( !function_exists( 'cmsfile' ) )
 }
 
 
+if( !function_exists( 'cmsjson' ) )
+{
+    /**
+     * Encode a value as JSON for safe output within a <script> block (e.g. JSON-LD).
+     *
+     * Unlike Js::from() the result is valid JSON (double quoted), and JSON_HEX_TAG
+     * prevents a value containing "</script>" from breaking out of the script element.
+     *
+     * @param mixed $value The value to encode
+     * @return string The JSON encoded value, safe for embedding in a <script> block
+     */
+    function cmsjson( mixed $value ) : string
+    {
+        return (string) json_encode( $value, JSON_HEX_TAG | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE );
+    }
+}
+
+
 if( !function_exists( 'cmsref' ) )
 {
     /**

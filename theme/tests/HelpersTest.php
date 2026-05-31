@@ -64,6 +64,18 @@ class HelpersTest extends CoreTestAbstract
     }
 
 
+    public function testCmsjson()
+    {
+        $this->assertEquals( '"page title"', cmsjson( 'page title' ) );
+        $this->assertEquals( '"O\'Brien & Co."', cmsjson( 'O\'Brien & Co.' ) );
+        $this->assertEquals( '"\u003C/script\u003E"', cmsjson( '</script>' ) );
+        $this->assertEquals( '"http://example.com/a/b"', cmsjson( 'http://example.com/a/b' ) );
+        $this->assertEquals( '"Grüße"', cmsjson( 'Grüße' ) );
+        $this->assertEquals( '{"name":"Tÿpe"}', cmsjson( ['name' => 'Tÿpe'] ) );
+        $this->assertEquals( 'null', cmsjson( null ) );
+    }
+
+
     public function testCmsviews()
     {
         $page = new \Aimeos\Cms\Models\Page();

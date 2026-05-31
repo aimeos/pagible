@@ -47,5 +47,5 @@
 <script type="application/ld+json">{
     "@@context": "https://schema.org",
     "@@type": "ContactPage",
-    "name": {{ Js::from($data->title ?? cms($page, 'title')) }}
+    "name": {!! cmsjson($data->title ?? cms($page, 'title')) !!}
 }</script>
