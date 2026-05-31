@@ -51,7 +51,7 @@ class GetSchemas extends Tool
                 }
 
                 $result[$section][$type] = [
-                    'group' => $schema['group'] ?? 'basic',
+                    'group' => $schema['group'] ?? 'main',
                     'fields' => $fields,
                 ];
             }
