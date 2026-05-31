@@ -86,6 +86,7 @@ class PublishPage extends Tool
     {
         return [
             'id' => $schema->array()
+                ->items( $schema->string() )
                 ->description('An array of up to 50 page UUIDs to publish.')
                 ->required(),
             'at' => $schema->string()
