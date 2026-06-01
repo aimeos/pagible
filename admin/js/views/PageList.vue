@@ -267,6 +267,7 @@ export default {
           }
 
           this.response = result.data?.synthesize || ''
+          this.shortmsg = true
           this.chat = this.message
 
           const filter = {
