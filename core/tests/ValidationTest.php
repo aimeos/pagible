@@ -93,6 +93,46 @@ class ValidationTest extends CoreTestAbstract
     }
 
 
+    public function testContentHiddenDefault()
+    {
+        $result = Validation::content( [
+            ['type' => 'toc', 'data' => ['title' => 'On this page']],
+        ] );
+
+        $this->assertCount( 1, $result );
+        $this->assertEquals( 'toc', $result[0]->type );
+        $this->assertEquals( '\\Aimeos\\Cms\\Actions\\Toc', $result[0]->data->action );
+        $this->assertEquals( 'On this page', $result[0]->data->title );
+    }
+
+
+    public function testContentHiddenDefaultNotOverwritten()
+    {
+        $result = Validation::content( [
+            ['type' => 'toc', 'data' => ['action' => 'custom']],
+        ] );
+
+        $this->assertEquals( 'custom', $result[0]->data->action );
+    }
+
+
+    public function testDefaultsAppliesHiddenValue()
+    {
+        $data = Validation::defaults( 'toc', ['title' => 'Test'] );
+
+        $this->assertEquals( '\\Aimeos\\Cms\\Actions\\Toc', $data->action );
+        $this->assertEquals( 'Test', $data->title );
+    }
+
+
+    public function testDefaultsUnknownType()
+    {
+        $data = Validation::defaults( 'nonexistent', ['foo' => 'bar'] );
+
+        $this->assertEquals( 'bar', $data->foo );
+    }
+
+
     public function testElementValid()
     {
         Validation::element( 'heading' );

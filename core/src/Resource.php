@@ -40,6 +40,10 @@ class Resource
             Validation::html( $input['type'] ?? '', $input['data'] );
         }
 
+        if( $input['type'] ?? null ) {
+            $input['data'] = (array) Validation::defaults( $input['type'], $input['data'] ?? [] );
+        }
+
         $input['name'] = (string) ( $input['name'] ?? '' );
         $editor = Utils::editor( $user );
 
@@ -348,6 +352,7 @@ class Resource
 
         if( isset( $input['data'] ) ) {
             Validation::html( $type, $input['data'] );
+            $input['data'] = (array) Validation::defaults( $type, $input['data'] );
         }
 
         $editor = Utils::editor( $user );

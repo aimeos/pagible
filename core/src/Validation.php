@@ -85,7 +85,7 @@ class Validation
                 'id' => $item['id'] ?? Utils::uid(),
                 'type' => $type,
                 'group' => $group,
-                'data' => (object) ( $item['data'] ?? [] ),
+                'data' => self::defaults( $type, $item['data'] ?? [], 'content', $schemas ),
             ];
 
             if( !empty( $item['refid'] ) ) {
@@ -98,6 +98,36 @@ class Validation
 
             return (object) $entry;
         }, $items ) );
+    }
+
+
+    /**
+     * Applies default values of hidden schema fields to the given element data.
+     *
+     * Hidden fields carry a fixed "value" in the schema (e.g. the action handler
+     * class for "toc" and "blog" elements). The admin editor injects these values
+     * client-side, so this ensures non-browser writers (MCP/LLM, GraphQL, importers)
+     * produce the same data and the action gets wired up on render.
+     *
+     * @param string $type Element/section type name
+     * @param object|array<string, mixed> $data Element data fields
+     * @param string $section Schema section ('content', 'meta', 'config')
+     * @param array<string, mixed>|null $schemas Pre-loaded schemas or null to load
+     * @return object Data with hidden field defaults applied
+     */
+    public static function defaults( string $type, object|array $data, string $section = 'content', ?array $schemas = null ) : object
+    {
+        $data = (object) $data;
+        $schemas ??= Schema::schemas( section: $section );
+
+        foreach( $schemas[$type]['fields'] ?? [] as $name => $field )
+        {
+            if( ( $field['type'] ?? null ) === 'hidden' && isset( $field['value'] ) && !isset( $data->{$name} ) ) {
+                $data->{$name} = $field['value'];
+            }
+        }
+
+        return $data;
     }
 
 
@@ -125,7 +155,7 @@ class Validation
                 'id' => $existingId ?? Utils::uid(),
                 'type' => $type,
                 'group' => $group,
-                'data' => (object) $data,
+                'data' => self::defaults( $type, $data, $section, $schemas ),
             ];
         }
 
