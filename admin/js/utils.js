@@ -90,17 +90,27 @@ export function hasProp(obj, prop) {
 /**
  * Returns a title string from a data object by checking title, text, or joining primitive values
  *
+ * Array values (e.g. table rows/cells) are flattened so their content also
+ * contributes to the title when no title or text field is set.
+ *
  * @param {Object} data Data object to extract title from
  * @returns {string} Title string (max 100 chars)
  */
 export function itemTitle(data) {
+  const flatten = (v) =>
+    Array.isArray(v)
+      ? v.flatMap(flatten)
+      : v && typeof v !== 'object' && typeof v !== 'boolean'
+        ? [v]
+        : []
+
   return (
     (
       data?.title ||
       data?.text ||
       Object.values(data || {})
-        .map((v) => (v && typeof v !== 'object' && typeof v !== 'boolean' ? v : null))
-        .filter((v) => !!v)
+        .flatMap(flatten)
+        .filter((v) => !!String(v).trim())
         .join(' - ')
     ).substring(0, 100) || ''
   )
