@@ -45,6 +45,13 @@ class GetSchemas extends Tool
                         'required' => $field['required'] ?? false,
                     ];
 
+                    foreach( ['description', 'example', 'item', 'min', 'max'] as $key )
+                    {
+                        if( isset( $field[$key] ) ) {
+                            $fields[$name][$key] = $field[$key];
+                        }
+                    }
+
                     if( !empty( $field['options'] ) ) {
                         $fields[$name]['options'] = array_column( $field['options'], 'value' );
                     }

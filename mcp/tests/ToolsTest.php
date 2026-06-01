@@ -39,6 +39,9 @@ class ToolsTest extends McpTestAbstract
     {
         $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\GetSchemas::class );
 
-        $response->assertOk()->assertSee( ['heading'] );
+        $response->assertOk()
+            ->assertSee( ['heading'] )
+            ->assertSee( ['description'] )
+            ->assertSee( ['example'] );
     }
 }
