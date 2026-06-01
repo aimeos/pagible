@@ -8,6 +8,7 @@
 namespace Aimeos\Cms\GraphQL\Mutations;
 
 use Aimeos\Cms\Utils;
+use Aimeos\Cms\Validation;
 use Aimeos\Prisma\Prisma;
 use Aimeos\Prisma\Schema\Schema;
 use Aimeos\Prisma\Tools;
@@ -107,6 +108,8 @@ final class Refine
                     $entry['data'][$data['name']] = (string) ($data['value'] ?? '');
                 }
             }
+
+            $entry['data'] = (array) Validation::defaults( $entry['type'], $entry['data'] );
 
             $result[] = $entry;
         }
