@@ -18,7 +18,7 @@ extend type Mutation {
   repaint(file: Upload!, prompt: String!): String @guard @cmsPermission(action: "image:repaint") @throttle(name: "cms-ai")
 
   "Refine existing page content"
-  refine(prompt: String!, content: JSON!, type: String, context: String): JSON @guard @cmsPermission(action: "page:refine") @throttle(name: "cms-ai")
+  refine(prompt: String!, content: JSON!, type: String, context: String, lang: String, pagetype: String): JSON @guard @cmsPermission(action: "page:refine") @throttle(name: "cms-ai")
 
   "Synthesize pages and content from prompts and passed file IDs"
   synthesize(prompt: String!, context: String, files: [String!]): String @guard @cmsPermission(action: "page:synthesize") @throttle(name: "cms-ai")

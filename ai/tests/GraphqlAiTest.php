@@ -145,29 +145,30 @@ class GraphqlAiTest extends AiTestAbstract
             TextResponse::fromText( '' )->withStructured( [
                 'contents' => [[
                     'id' => 'content-1',
-                    'type' => 'text',
+                    'type' => 'heading',
                     'data' => [
-                        ['name' => 'title', 'value' => 'Generated title'],
-                        ['name' => 'body', 'value' => 'Generated body content'],
+                        'title' => 'Generated title',
+                        'level' => '1',
                     ]
                 ] ]
             ] )
         ] );
 
         $response = $this->actingAs( $this->user )->graphQL( '
-            mutation($prompt: String!, $content: JSON!, $type: String, $context: String) {
-                refine(prompt: $prompt, content: $content, type: $type, context: $context)
+            mutation($prompt: String!, $content: JSON!, $type: String, $context: String, $lang: String) {
+                refine(prompt: $prompt, content: $content, type: $type, context: $context, lang: $lang)
             }
         ', [
             'prompt' => 'Refine this content',
             'context' => 'Testing refine mutation',
             'type' => 'content',
+            'lang' => 'en',
             'content' => json_encode( [ [
                 'id' => 'content-1',
-                'type' => 'text',
+                'type' => 'heading',
                 'data' => [
                     'title' => 'Old title',
-                    'body' => 'Old body'
+                    'level' => '2'
                 ]
             ] ] ),
         ] );
@@ -176,14 +177,161 @@ class GraphqlAiTest extends AiTestAbstract
             'data' => [
                 'refine' => json_encode( [ [
                     'id' => 'content-1',
-                    'type' => 'text',
+                    'type' => 'heading',
                     'data' => [
                         'title' => 'Generated title',
-                        'body' => 'Generated body content'
-                    ]
+                        'level' => '1'
+                    ],
+                    'group' => 'main'
                 ] ] )
             ]
         ] );
+    }
+
+
+    public function testAiSchemaShape()
+    {
+        $ai = \Aimeos\Cms\JsonSchema::build( 'content', 'page' );
+
+        $byType = [];
+        foreach( $ai['properties']['contents']['items']['anyOf'] as $v ) {
+            $byType[$v['properties']['type']['enum'][0] ?? '?'] = $v;
+        }
+
+        // group is always present on every variant
+        $this->assertArrayHasKey( 'group', $byType['heading']['properties'] );
+        $this->assertArrayHasKey( 'group', $byType['reference']['properties'] );
+
+        // file references are {id,type} objects
+        $file = $byType['image']['properties']['data']['properties']['file'];
+        $this->assertSame( 'object', $file['type'] );
+        $this->assertArrayHasKey( 'id', $file['properties'] );
+        $this->assertSame( ['file'], $file['properties']['type']['enum'] );
+    }
+
+
+    public function testRefineDerivesFiles()
+    {
+        $uuid = '11111111-1111-4111-8111-111111111111';
+
+        Prisma::fake( [
+            TextResponse::fromText( '' )->withStructured( [
+                'contents' => [[
+                    'id' => 'img-1',
+                    'type' => 'image',
+                    'data' => ['file' => ['id' => $uuid, 'type' => 'file']],
+                ]]
+            ] )
+        ] );
+
+        $response = $this->actingAs( $this->user )->graphQL( '
+            mutation($prompt: String!, $content: JSON!) {
+                refine(prompt: $prompt, content: $content)
+            }
+        ', [
+            'prompt' => 'Add an image',
+            'content' => json_encode( [] ),
+        ] );
+
+        $refine = json_decode( (string) $response->json( 'data.refine' ), true );
+
+        $this->assertSame( ['id' => $uuid, 'type' => 'file'], $refine[0]['data']['file'] );
+        $this->assertSame( [$uuid], $refine[0]['files'] );
+    }
+
+
+    public function testRefineMeta()
+    {
+        Prisma::fake( [
+            TextResponse::fromText( '' )->withStructured( [
+                'canonical' => ['url' => 'https://example.com/new'],
+            ] )
+        ] );
+
+        $this->actingAs( $this->user )->graphQL( '
+            mutation($prompt: String!, $content: JSON!, $type: String) {
+                refine(prompt: $prompt, content: $content, type: $type)
+            }
+        ', [
+            'prompt' => 'Refine meta',
+            'type' => 'meta',
+            'content' => json_encode( new \stdClass() ),
+        ] )->assertOk()
+            ->assertSee( 'canonical' )
+            ->assertSee( 'example.com' );
+    }
+
+
+    public function testAiPageTypeGroups()
+    {
+        // bundled theme defines no sections -> fallback
+        $this->assertSame( [], \Aimeos\Cms\Schema::sections( 'page' ) );
+
+        $ai = \Aimeos\Cms\JsonSchema::build( 'content', 'page' );
+        $variant = $ai['properties']['contents']['items']['anyOf'][0];
+        $this->assertSame( ['main'], $variant['properties']['group']['enum'] );
+
+        // a theme with page-type sections constrains the element groups
+        $ref = new \ReflectionClass( \Aimeos\Cms\Schema::class );
+        $themes = $ref->getProperty( 'themes' );
+        $snapshot = $themes->getValue();
+
+        try
+        {
+            \Aimeos\Cms\Schema::register( dirname( __DIR__, 2 ) . '/themes/pagible', 'pg' );
+
+            $this->assertSame( ['main', 'footer'], \Aimeos\Cms\Schema::sections( 'page' ) );
+
+            $ai = \Aimeos\Cms\JsonSchema::build( 'content', 'page' );
+            $variant = $ai['properties']['contents']['items']['anyOf'][0];
+            $reference = end( $ai['properties']['contents']['items']['anyOf'] );
+
+            $this->assertSame( ['main', 'footer'], $variant['properties']['group']['enum'] );
+            $this->assertSame( ['main', 'footer'], $reference['properties']['group']['enum'] );
+        }
+        finally
+        {
+            $themes->setValue( null, $snapshot );
+            $ref->getProperty( 'schemas' )->setValue( null, [] );
+        }
+    }
+
+
+    public function testAiNoUnsupportedFormat()
+    {
+        // "format" (e.g. uri-reference) is rejected by OpenAI strict; must not be emitted
+        $json = (string) json_encode( \Aimeos\Cms\JsonSchema::build( 'content' ) );
+
+        $this->assertStringNotContainsString( '"format"', $json );
+        $this->assertStringContainsString( 'site-relative path', $json );
+    }
+
+
+    public function testContentGroupCoercion()
+    {
+        $ref = new \ReflectionClass( \Aimeos\Cms\Schema::class );
+        $themes = $ref->getProperty( 'themes' );
+        $snapshot = $themes->getValue();
+
+        try
+        {
+            \Aimeos\Cms\Schema::register( dirname( __DIR__, 2 ) . '/themes/pagible', 'pg' );
+
+            $result = \Aimeos\Cms\Validation::content( [
+                ['type' => 'heading', 'group' => 'footer', 'data' => ['title' => 'A', 'level' => '2']],
+                ['type' => 'heading', 'group' => 'bogus', 'data' => ['title' => 'B', 'level' => '2']],
+                ['type' => 'heading', 'data' => ['title' => 'C', 'level' => '2']],
+            ], 'page' );
+
+            $this->assertSame( 'footer', $result[0]->group ); // valid section kept
+            $this->assertSame( 'main', $result[1]->group );   // invalid group coerced
+            $this->assertSame( 'main', $result[2]->group );   // missing group defaulted
+        }
+        finally
+        {
+            $themes->setValue( null, $snapshot );
+            $ref->getProperty( 'schemas' )->setValue( null, [] );
+        }
     }
 
 

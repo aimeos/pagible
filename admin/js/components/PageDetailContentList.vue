@@ -41,8 +41,8 @@ import {
 const SchemaDialog = defineAsyncComponent(() => import('./SchemaDialog.vue'))
 
 const REFINE_CONTENT = gql`
-  mutation ($prompt: String!, $content: JSON!, $type: String, $context: String) {
-    refine(prompt: $prompt, content: $content, type: $type, context: $context)
+  mutation ($prompt: String!, $content: JSON!, $type: String, $context: String, $lang: String, $pagetype: String) {
+    refine(prompt: $prompt, content: $content, type: $type, context: $context, lang: $lang, pagetype: $pagetype)
   }
 `
 
@@ -385,7 +385,9 @@ export default {
             prompt: prompt,
             content: JSON.stringify(this.content),
             type: 'content',
-            context: null
+            context: null,
+            lang: this.item.lang,
+            pagetype: this.item.type
           }
         })
         .then((result) => {

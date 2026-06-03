@@ -7,11 +7,10 @@
 
 namespace Aimeos\Cms\Tools;
 
-use Aimeos\Cms\Utils;
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Refiner;
 use Aimeos\Prisma\Prisma;
-use Aimeos\Prisma\Schema\Schema;
 use Aimeos\Prisma\Tools;
 use Aimeos\Prisma\Exceptions\PrismaException;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
@@ -41,13 +40,14 @@ class RefineContent extends Tool
             'id' => 'required|string|max:36',
             'prompt' => 'required|string|max:2000',
             'context' => 'string|max:30000',
+            'lang' => 'string|max:10',
         ], [
             'id.required' => 'You must specify the ID of the page to refine.',
             'prompt.required' => 'You must provide a prompt describing how to refine the content.',
         ] );
 
         /** @var Page|null $page */
-        $page = Page::withTrashed()->select( 'id', 'content', 'latest_id' )
+        $page = Page::withTrashed()->select( 'id', 'type', 'content', 'latest_id' )
             ->with( ['latest' => fn( $q ) => $q->select( 'id', 'versionable_id', 'aux' )] )
             ->find( $validated['id'] );
 
@@ -62,21 +62,19 @@ class RefineContent extends Tool
         $model = config( 'cms.ai.refine.model' );
 
         $system = view( 'cms::prompts.refine' )->render();
-        $types = array_keys( \Aimeos\Cms\Schema::schemas( section: 'content' ) );
 
         try
         {
             $response = Prisma::text()->using( $provider, $config )
                 ->model( $model )
                 ->withMaxTokens( config( 'cms.ai.maxtoken' ) )
-                ->withSystemPrompt( $system . "\n" . ( $validated['context'] ?? '' ) )
-                ->withTools( [Tools::provider( 'web_search' ), Tools::provider( 'web_fetch' )] )
+                ->withSystemPrompt( $system . "\n" . ( $validated['context'] ?? '' ) . ( !empty( $validated['lang'] ) ? "\nWrite the content in language: " . $validated['lang'] : '' ) )
                 ->withClientOptions( [
                     'timeout' => 180,
                     'connect_timeout' => 10,
                 ] )
                 ->ensure( 'structure' )
-                ->structure( $validated['prompt'] . "\n\nContent as JSON:\n" . json_encode( $content ), $this->schema_response( $types ) ); // @phpstan-ignore-line method.notFound
+                ->structure( $validated['prompt'] . "\n\nContent as JSON:\n" . json_encode( $content ), \Aimeos\Prisma\Schema\Schema::fromArray( 'response', \Aimeos\Cms\JsonSchema::build( 'content', $page->type ) ) ); // @phpstan-ignore-line method.notFound
 
             $structured = $response->structured();
 
@@ -84,7 +82,7 @@ class RefineContent extends Tool
                 return Response::structured( ['error' => 'Invalid content in refine response.'] );
             }
 
-            $result = $this->merge( $content, $structured['contents'] ?? [] );
+            $result = Refiner::merge( $content, $structured['contents'] ?? [], $page->type );
 
             return Response::structured( ['content' => $result] );
         }
@@ -92,79 +90,6 @@ class RefineContent extends Tool
         {
             throw new \Aimeos\Cms\Exception( $e->getMessage() );
         }
-    }
-
-
-    /**
-     * Merges the existing content with the response from the AI.
-     *
-     * @param array<mixed> $content Existing content elements
-     * @param array<mixed> $response AI response with updated text content
-     * @return array<mixed> Updated content elements
-     */
-    protected function merge( array $content, array $response ) : array
-    {
-        $result = [];
-        $map = collect( $content )->keyBy( 'id' );
-
-        foreach( $response as $item )
-        {
-            $entry = (array) $map->pull( $item['id'], [] );
-            $entry['data'] = (array) ( $entry['data'] ?? [] );
-            $entry['type'] = $item['type'] ?? ( $entry['type'] ?? 'text' );
-
-            if( !isset( $entry['id'] ) ) {
-                $entry['id'] = Utils::uid();
-            }
-
-            foreach( $item['data'] ?? [] as $data )
-            {
-                if( empty( $data['name'] ) ) {
-                    continue;
-                }
-
-                $m = [];
-
-                if( $entry['type'] === 'heading' && preg_match( '/^(#+)(.*)$/', (string) ($data['value'] ?? ''), $m ) )
-                {
-                    $entry['data'][$data['name']] = trim( $m[2] );
-                    $entry['data']['level'] = (string) strlen( $m[1] );
-                }
-                else
-                {
-                    $entry['data'][$data['name']] = (string) ($data['value'] ?? '');
-                }
-            }
-
-            $result[] = $entry;
-        }
-
-        return $result;
-    }
-
-
-    /**
-     * Returns the schema for the AI structured response.
-     *
-     * @param array<string> $types Available content element types
-     * @return Schema
-     */
-    protected function schema_response( array $types ) : Schema
-    {
-        return Schema::for( 'response', [
-            'contents' => Schema::array()->description( 'List of page content elements' )->required()->items(
-                Schema::object( [
-                    'id' => Schema::string()->description( 'The ID of the content element' )->nullable()->required(),
-                    'type' => Schema::string()->description( 'The type of the content element' )->enum( $types )->required(),
-                    'data' => Schema::array()->description( 'List of texts for the content element' )->required()->items(
-                        Schema::object( [
-                            'name' => Schema::string()->description( 'Name of the text element' )->enum( ['title', 'text'] )->required(),
-                            'value' => Schema::string()->description( 'Plain title, markdown text or source code text' )->required(),
-                        ] )
-                    ),
-                ] )
-            ),
-        ] );
     }
 
 
@@ -184,6 +109,8 @@ class RefineContent extends Tool
                 ->required(),
             'context' => $schema->string()
                 ->description('Additional context such as target audience, tone, or brand guidelines.'),
+            'lang' => $schema->string()
+                ->description('Language code the refined content should be written in, e.g. "en" or "de".'),
         ];
     }
 
