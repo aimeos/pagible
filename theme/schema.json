@@ -71,12 +71,7 @@
                 "file": {
                     "type": "image",
                     "label": "image",
-                    "required": true,
-                    "description": "Single file reference object pointing to an existing media file. Upload or pick a file first to obtain its ID.",
-                    "example": {
-                        "id": "<file-uuid>",
-                        "type": "file"
-                    }
+                    "required": true
                 },
                 "position": {
                     "type": "select",
@@ -136,18 +131,7 @@
                 "files": {
                     "type": "images",
                     "label": "images",
-                    "min": 2,
-                    "description": "Array of file reference objects pointing to existing media files. Upload or pick files first to obtain their IDs.",
-                    "example": [
-                        {
-                            "id": "<file-uuid>",
-                            "type": "file"
-                        },
-                        {
-                            "id": "<file-uuid>",
-                            "type": "file"
-                        }
-                    ]
+                    "min": 2
                 },
                 "main": {
                     "type": "switch",
@@ -256,25 +240,7 @@
                 "table": {
                     "type": "table",
                     "label": "table",
-                    "required": true,
-                    "description": "Array of rows; each row is an array of cell strings. Rows must have equal length. The sibling 'header' field selects which row/column renders as a header.",
-                    "example": [
-                        [
-                            "CMS",
-                            "Cached (ms)",
-                            "Uncached (ms)"
-                        ],
-                        [
-                            "Pagible",
-                            "0.3",
-                            "2.1"
-                        ],
-                        [
-                            "WordPress",
-                            "45",
-                            "250"
-                        ]
-                    ]
+                    "required": true
                 }
             }
         },
@@ -295,12 +261,7 @@
             "fields": {
                 "file": {
                     "type": "image",
-                    "required": true,
-                    "description": "Single file reference object pointing to an existing media file. Upload or pick a file first to obtain its ID.",
-                    "example": {
-                        "id": "<file-uuid>",
-                        "type": "file"
-                    }
+                    "required": true
                 },
                 "main": {
                     "type": "switch",
@@ -315,12 +276,7 @@
             "fields": {
                 "file": {
                     "type": "video",
-                    "required": true,
-                    "description": "Single file reference object pointing to an existing media file. Upload or pick a file first to obtain its ID.",
-                    "example": {
-                        "id": "<file-uuid>",
-                        "type": "file"
-                    }
+                    "required": true
                 }
             }
         },
@@ -330,12 +286,7 @@
             "fields": {
                 "file": {
                     "type": "audio",
-                    "required": true,
-                    "description": "Single file reference object pointing to an existing media file. Upload or pick a file first to obtain its ID.",
-                    "example": {
-                        "id": "<file-uuid>",
-                        "type": "file"
-                    }
+                    "required": true
                 }
             }
         },
@@ -345,12 +296,7 @@
             "fields": {
                 "file": {
                     "type": "file",
-                    "required": true,
-                    "description": "Single file reference object pointing to an existing media file. Upload or pick a file first to obtain its ID.",
-                    "example": {
-                        "id": "<file-uuid>",
-                        "type": "file"
-                    }
+                    "required": true
                 }
             }
         },
@@ -382,12 +328,7 @@
                 },
                 "background": {
                     "type": "image",
-                    "label": "background",
-                    "description": "Single file reference object pointing to an existing media file. Upload or pick a file first to obtain its ID.",
-                    "example": {
-                        "id": "<file-uuid>",
-                        "type": "file"
-                    }
+                    "label": "background"
                 },
                 "background-animation": {
                     "type": "select",
@@ -405,12 +346,7 @@
                 },
                 "file": {
                     "type": "media",
-                    "label": "media file",
-                    "description": "Single file reference object pointing to an existing media file. Upload or pick a file first to obtain its ID.",
-                    "example": {
-                        "id": "<file-uuid>",
-                        "type": "file"
-                    }
+                    "label": "media file"
                 }
             }
         },
@@ -430,28 +366,12 @@
                         },
                         "file": {
                             "type": "image",
-                            "label": "image",
-                            "description": "Single file reference object pointing to an existing media file. Upload or pick a file first to obtain its ID.",
-                            "example": {
-                                "id": "<file-uuid>",
-                                "type": "file"
-                            }
+                            "label": "image"
                         },
                         "text": {
                             "type": "markdown"
                         }
-                    },
-                    "description": "Array of objects, each matching the field definitions in 'item'.",
-                    "example": [
-                        {
-                            "title": "Example title",
-                            "file": {
-                                "id": "<file-uuid>",
-                                "type": "file"
-                            },
-                            "text": "Example text"
-                        }
-                    ]
+                    }
                 }
             }
         },
@@ -467,12 +387,7 @@
                 },
                 "file": {
                     "type": "image",
-                    "label": "image",
-                    "description": "Single file reference object pointing to an existing media file. Upload or pick a file first to obtain its ID.",
-                    "example": {
-                        "id": "<file-uuid>",
-                        "type": "file"
-                    }
+                    "label": "image"
                 }
             }
         },
@@ -596,26 +511,7 @@
                             "type": "string",
                             "label": "Highlight text"
                         }
-                    },
-                    "description": "Array of objects, each matching the field definitions in 'item'.",
-                    "example": [
-                        {
-                            "name": "Example name",
-                            "price": "Example price",
-                            "unit": "Example unit",
-                            "priceid": "Example priceid",
-                            "price-alternative": "Example price-alternative",
-                            "unit-alternative": "Example unit-alternative",
-                            "priceid-alternative": "Example priceid-alternative",
-                            "text": "Example text",
-                            "features": "Example features",
-                            "success": "Example success",
-                            "url": "Example url",
-                            "button": "Example button",
-                            "highlight": "Example highlight",
-                            "badge": "Example badge"
-                        }
-                    ]
+                    }
                 }
             }
         },
@@ -637,14 +533,7 @@
                             "type": "markdown",
                             "min": 1
                         }
-                    },
-                    "description": "Array of objects, each matching the field definitions in 'item'.",
-                    "example": [
-                        {
-                            "title": "Example title",
-                            "text": "Example text"
-                        }
-                    ]
+                    }
                 }
             }
         },
@@ -676,11 +565,6 @@
             "group": "basic",
             "icon": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M21.35,11.1H12.18V13.83H18.69C18.36,17.64 15.19,19.27 12.19,19.27C8.36,19.27 5,16.25 5,12C5,7.9 8.2,4.73 12.2,4.73C15.29,4.73 17.1,6.7 17.1,6.7L19,4.72C19,4.72 16.56,2 12.1,2C6.42,2 2.03,6.8 2.03,12C2.03,17.05 6.16,22 12.25,22C17.6,22 21.5,18.33 21.5,12.91C21.5,11.76 21.35,11.1 21.35,11.1V11.1Z\" /></svg>",
             "fields": {
-                "description": {
-                    "type": "string",
-                    "min": 1,
-                    "max": 160
-                },
                 "keywords": {
                     "type": "string",
                     "max": 255
@@ -696,18 +580,9 @@
                     "min": 1,
                     "max": 60
                 },
-                "description": {
-                    "type": "string",
-                    "max": 160
-                },
                 "file": {
                     "type": "image",
-                    "label": "image",
-                    "description": "Single file reference object pointing to an existing media file. Upload or pick a file first to obtain its ID.",
-                    "example": {
-                        "id": "<file-uuid>",
-                        "type": "file"
-                    }
+                    "label": "image"
                 }
             }
         },
@@ -729,12 +604,7 @@
             "fields": {
                 "file": {
                     "type": "image",
-                    "required": true,
-                    "description": "Single file reference object pointing to an existing media file. Upload or pick a file first to obtain its ID.",
-                    "example": {
-                        "id": "<file-uuid>",
-                        "type": "file"
-                    }
+                    "required": true
                 }
             }
         },
@@ -744,12 +614,7 @@
             "icon": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path d=\"M8.5,13.5L11,16.5L14.5,12L19,18H5M21,19V5C21,3.89 20.1,3 19,3H5A2,2 0 0,0 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19Z\" /></svg>",
             "fields": {
                 "file": {
-                    "type": "image",
-                    "description": "Single file reference object pointing to an existing media file. Upload or pick a file first to obtain its ID.",
-                    "example": {
-                        "id": "<file-uuid>",
-                        "type": "file"
-                    }
+                    "type": "image"
                 }
             }
         },
@@ -759,12 +624,7 @@
             "fields": {
                 "file": {
                     "type": "image",
-                    "required": true,
-                    "description": "Single file reference object pointing to an existing media file. Upload or pick a file first to obtain its ID.",
-                    "example": {
-                        "id": "<file-uuid>",
-                        "type": "file"
-                    }
+                    "required": true
                 }
             }
         },

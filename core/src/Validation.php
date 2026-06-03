@@ -66,20 +66,32 @@ class Validation
     /**
      * Validates and builds content elements with auto IDs and group defaults.
      *
+     * Elements without an explicit group, or with a group that is not a section of
+     * the given page type, default to the first section defined for the page type in
+     * schema.json (falling back to "main").
+     *
      * @param array<int, array<string, mixed>|object> $items Content element items
+     * @param string|null $type Page type whose sections provide the valid groups
      * @return array<int, object> Structured content elements
      * @throws Exception If content type is unknown
      */
-    public static function content( array $items ) : array
+    public static function content( array $items, ?string $type = null ) : array
     {
         $schemas = Schema::schemas( section: 'content' );
 
         self::validateContent( $items, $schemas );
 
-        return array_values( array_map( function( array|object $item ) use ( $schemas ) {
+        $sections = Schema::sections( $type );
+        $default = $sections[0] ?? 'main';
+
+        return array_values( array_map( function( array|object $item ) use ( $schemas, $sections, $default ) {
             $item = (array) $item;
             $type = $item['type'];
-            $group = $item['group'] ?? $schemas[$type]['group'] ?? 'main';
+            $group = $item['group'] ?? $default;
+
+            if( $sections && !in_array( $group, $sections, true ) ) {
+                $group = $default;
+            }
 
             $entry = [
                 'id' => $item['id'] ?? Utils::uid(),
@@ -134,28 +146,32 @@ class Validation
     /**
      * Validates and builds structured meta/config objects.
      *
+     * The entry group defaults to the first section defined for the given page type
+     * in schema.json (falling back to "main").
+     *
      * @param array<string, array<string, mixed>> $items Keyed by type name, values are data fields
      * @param string $section Schema section ('meta' or 'config')
      * @param array<string, mixed>|object $existing Existing meta/config data to merge with
+     * @param string|null $type Page type whose sections provide the default group
      * @return object Structured meta/config object
      */
-    public static function structured( array $items, string $section, array|object|null $existing = null ) : object
+    public static function structured( array $items, string $section, array|object|null $existing = null, ?string $type = null ) : object
     {
         $schemas = Schema::schemas( section: $section );
 
         self::validateStructured( (object) $items, $section, $schemas );
         $result = (object) ( (array) ( $existing ?? new \stdClass() ) );
+        $group = Schema::section( $type );
 
-        foreach( $items as $type => $data )
+        foreach( $items as $key => $data )
         {
-            $group = $schemas[$type]['group'] ?? 'basic';
-            $existingId = $result->{$type}->id ?? null;
+            $existingId = $result->{$key}->id ?? null;
 
-            $result->{$type} = (object) [
+            $result->{$key} = (object) [
                 'id' => $existingId ?? Utils::uid(),
-                'type' => $type,
+                'type' => $key,
                 'group' => $group,
-                'data' => self::defaults( $type, $data, $section, $schemas ),
+                'data' => self::defaults( $key, $data, $section, $schemas ),
             ];
         }
 

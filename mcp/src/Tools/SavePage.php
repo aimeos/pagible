@@ -66,7 +66,7 @@ class SavePage extends Tool
         ] );
 
         if( isset( $v['content'] ) ) {
-            $v['content'] = Validation::content( $v['content'] );
+            $v['content'] = Validation::content( $v['content'], $v['type'] ?? null );
         }
 
         if( isset( $v['title'] ) && !isset( $v['path'] ) ) {
@@ -74,11 +74,11 @@ class SavePage extends Tool
         }
 
         if( isset( $v['meta'] ) ) {
-            $v['meta'] = Validation::structured( $v['meta'], 'meta', new \stdClass() );
+            $v['meta'] = Validation::structured( $v['meta'], 'meta', new \stdClass(), $v['type'] ?? null );
         }
 
         if( isset( $v['config'] ) ) {
-            $v['config'] = Validation::structured( $v['config'], 'config', new \stdClass() );
+            $v['config'] = Validation::structured( $v['config'], 'config', new \stdClass(), $v['type'] ?? null );
         }
 
         $input = array_diff_key( $v, array_flip( ['id', 'files', 'elements', 'latestId'] ) );
