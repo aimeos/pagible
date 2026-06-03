@@ -41,7 +41,7 @@ class ToolsTest extends McpTestAbstract
 
         $response->assertOk()
             ->assertSee( ['heading'] )
-            ->assertSee( ['description'] )
-            ->assertSee( ['example'] );
+            ->assertSee( ['contents'] )
+            ->assertSee( ['anyOf'] );
     }
 }

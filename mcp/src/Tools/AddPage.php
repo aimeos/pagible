@@ -72,10 +72,6 @@ class AddPage extends Tool
             'meta.meta-tags.description.required' => 'You must provide a meta description in meta.meta-tags.description for SEO. It should be 150-160 characters.',
         ] );
 
-        if( isset( $v['content'] ) ) {
-            $v['content'] = Validation::content( $v['content'] );
-        }
-
         $pid = $v['parent_id'] ?? null;
 
         /** @var Page|null $parent */
@@ -91,6 +87,10 @@ class AddPage extends Tool
         $v['theme'] = $v['theme'] ?? $parent?->latest?->data->theme ?? '';
         $v['type'] = $v['type'] ?? $parent?->latest?->data->type ?? '';
         $v['lang'] = $v['lang'] ?? $parent?->lang ?: '';
+
+        if( isset( $v['content'] ) ) {
+            $v['content'] = Validation::content( $v['content'], $v['type'] );
+        }
         $v['related_id'] = $v['related_id'] ?? null;
         $v['cache'] = $v['cache'] ?? 5;
         $v['tag'] = $v['tag'] ?? '';
@@ -98,11 +98,11 @@ class AddPage extends Tool
         $v['status'] = 0;
 
         if( isset( $v['meta'] ) ) {
-            $v['meta'] = Validation::structured( $v['meta'], 'meta', new \stdClass() );
+            $v['meta'] = Validation::structured( $v['meta'], 'meta', new \stdClass(), $v['type'] );
         }
 
         if( isset( $v['config'] ) ) {
-            $v['config'] = Validation::structured( $v['config'], 'config', new \stdClass() );
+            $v['config'] = Validation::structured( $v['config'], 'config', new \stdClass(), $v['type'] );
         }
 
         $input = array_diff_key( $v, array_flip( ['parent_id', 'ref', 'files', 'elements'] ) );

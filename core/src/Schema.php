@@ -128,6 +128,49 @@ class Schema
 
 
     /**
+     * Returns the default (first) section defined for a page type, or "main".
+     *
+     * @param string|null $type Page type
+     * @return string Default section name
+     */
+    public static function section( ?string $type = null ) : string
+    {
+        return self::sections( $type )[0] ?? 'main';
+    }
+
+
+    /**
+     * Returns the content section names defined for a page type in schema.json.
+     *
+     * Sections are the layout regions a page type exposes (e.g. "main", "footer")
+     * and are used as the valid "group" values of its content elements. Results are
+     * merged across all registered themes.
+     *
+     * @param string|null $type Page type or null for all page types
+     * @return array<int, string> Section names
+     */
+    public static function sections( ?string $type = null ) : array
+    {
+        $result = [];
+
+        foreach( self::all() as $theme )
+        {
+            $types = $theme['types'] ?? [];
+            $defs = $type !== null ? [$types[$type] ?? []] : array_values( $types );
+
+            foreach( $defs as $def )
+            {
+                foreach( (array) ( $def['sections'] ?? [] ) as $section ) {
+                    $result[$section] = true;
+                }
+            }
+        }
+
+        return array_keys( $result );
+    }
+
+
+    /**
      * Discovers tenant themes from the configured storage disk.
      *
      * @return array<string, array<string, mixed>> Discovered themes keyed by name
