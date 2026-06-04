@@ -56,8 +56,7 @@ class AiToolsTest extends AiTestAbstract
                     'id' => 'content-1',
                     'type' => 'text',
                     'data' => [
-                        ['name' => 'title', 'value' => 'Refined title'],
-                        ['name' => 'text', 'value' => 'Refined text'],
+                        'text' => 'Refined text',
                     ]
                 ]]
             ] )
