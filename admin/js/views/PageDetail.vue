@@ -296,9 +296,35 @@ export default {
 
   methods: {
     apply(changes) {
+      if (changes.content) {
+        const strip = (el) => {
+          const out = {}
+          for (const k in el) {
+            if (!k.startsWith('_')) out[k] = el[k]
+          }
+          return out
+        }
+
+        const prev = {}
+        for (const el of this.item.content || []) {
+          prev[el.id || el.refid] = JSON.stringify(strip(el))
+        }
+
+        changes.content = changes.content.map((el) => {
+          const copy = { ...el }
+          const old = prev[el.id || el.refid]
+
+          if (old === undefined || old !== JSON.stringify(strip(el))) {
+            copy._changed = true
+          }
+
+          return copy
+        })
+      }
+
       Object.assign(this.item, changes)
       this.dirty.page = true
-      if(changes.content) this.dirty.content = true
+      if (changes.content) this.dirty.content = true
       this.vhistory = false
     },
 
