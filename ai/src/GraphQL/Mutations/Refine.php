@@ -60,7 +60,7 @@ final class Refine
             $structured = $response->structured();
 
             if( !$structured ) {
-                throw new Error( 'Invalid content in refine response' );
+                throw new Error( 'No structured content returned in refine response' );
             }
 
             if( $type !== 'content' )
