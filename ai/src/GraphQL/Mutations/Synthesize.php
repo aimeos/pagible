@@ -52,7 +52,7 @@ final class Synthesize
             $response = Prisma::text()
                 ->using( $provider, $config )
                 ->model( $model )
-                ->withClientOptions( ['timeout' => 150] )
+                ->withClientOptions( ['timeout' => 300] )
                 ->withMaxTokens( config( 'cms.ai.maxtoken' ) )
                 ->withSystemPrompt( $system . "\n" . ( $args['context'] ?? '' ) )
                 ->withTools( [

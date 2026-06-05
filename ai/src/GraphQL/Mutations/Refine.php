@@ -44,6 +44,7 @@ final class Refine
         {
             $response = Prisma::text()->using( $provider, $config )
                 ->model( $model )
+                ->withClientOptions( ['timeout' => 300] )
                 ->withMaxTokens( config( 'cms.ai.maxtoken' ) )
                 ->withSystemPrompt( $system . "\n" . ($args['context'] ?? '') . ( !empty( $args['lang'] ) ? "\nWrite the content in language: " . $args['lang'] : '' ) )
                 ->withTools( [
@@ -52,10 +53,6 @@ final class Refine
                     Tools::laravel( CmsTools\SearchPages::class )->max( 3 ),
                     Tools::provider( 'web_search' ),
                     Tools::provider( 'web_fetch' )
-                ] )
-                ->withClientOptions( [
-                    'timeout' => 180,
-                    'connect_timeout' => 10,
                 ] )
                 ->ensure( 'structure' )
                 ->structure( $args['prompt'] . "\n\nContent as JSON:\n" . json_encode( $content ), Schema::fromArray( 'response', JsonSchema::build( $type, $args['pagetype'] ?? null ) ) ); // @phpstan-ignore-line method.notFound
