@@ -1,7 +1,7 @@
 name: Split Packages
 on:
   push:
-    branches: [master, '*.x']
+    branches: [master, '[0-9]*.[0-9]*']
     tags: ['[0-9]*.[0-9]*.[0-9]*']
 
 env:
