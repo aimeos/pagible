@@ -7,7 +7,7 @@
     "require": {
         "php": "^8.2",
         "ext-zip": "*",
-        "aimeos/pagible-core": "*@dev"
+        "aimeos/pagible-core": "0.11.*"
     },
     "require-dev": {
         "orchestra/testbench": "^9.0||^10.0||^11.0"

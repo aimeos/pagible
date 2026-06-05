@@ -9,9 +9,9 @@
     "minimum-stability": "dev",
     "require": {
         "php": "^8.2",
-        "aimeos/pagible-mcp": "*@dev",
-        "aimeos/pagible-core": "*@dev",
-        "aimeos/pagible-graphql": "*@dev",
+        "aimeos/pagible-mcp": "0.11.*",
+        "aimeos/pagible-core": "0.11.*",
+        "aimeos/pagible-graphql": "0.11.*",
         "aimeos/prisma": "~0.4"
     },
     "require-dev": {
