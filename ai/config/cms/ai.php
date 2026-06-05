@@ -20,7 +20,7 @@ return [
         'api_key' => env( 'CMS_AI_WRITE_API_KEY' ),
     ],
     'refine' => [ // Return content in a defined structure
-        'provider' => env( 'CMS_AI_REFINE', 'gemini' ),
+        'provider' => env( 'CMS_AI_REFINE', 'openai' ),
         'model' => env( 'CMS_AI_REFINE_MODEL' ),
         'api_key' => env( 'CMS_AI_REFINE_API_KEY' ),
     ],
