@@ -162,7 +162,6 @@ pre code[class*=language-] {
     border-radius: calc(var(--pico-border-radius) * 2);
     overflow-x: auto;
     display: block;
-    padding: 2rem;
     width: 100%;
 }
 
