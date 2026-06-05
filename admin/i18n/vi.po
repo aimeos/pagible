@@ -12,54 +12,54 @@ msgstr ""
 #: js/ai.js:44
 #: js/ai.js:90
 #: js/ai.js:145
-#: js/components/ElementListItems.vue:195
-#: js/components/ElementListItems.vue:234
-#: js/components/ElementListItems.vue:280
-#: js/components/ElementListItems.vue:316
-#: js/components/ElementListItems.vue:356
-#: js/components/ElementListItems.vue:393
+#: js/components/ElementListItems.vue:201
+#: js/components/ElementListItems.vue:240
+#: js/components/ElementListItems.vue:310
+#: js/components/ElementListItems.vue:346
+#: js/components/ElementListItems.vue:386
+#: js/components/ElementListItems.vue:423
 #: js/components/Fields.vue:109
-#: js/components/FileAiDialog.vue:169
+#: js/components/FileAiDialog.vue:166
 #: js/components/FileDetailItem.vue:146
 #: js/components/FileDetailItem.vue:177
 #: js/components/FileDetailItem.vue:211
 #: js/components/FileDetailItem.vue:216
 #: js/components/FileDetailItem.vue:259
-#: js/components/FileDetailItemImage.vue:372
+#: js/components/FileDetailItemImage.vue:379
 #: js/components/FileDetailItemVideo.vue:67
 #: js/components/FileDetailItemVideo.vue:134
 #: js/components/FileDetailItemVideo.vue:171
-#: js/components/FileListItems.vue:222
-#: js/components/FileListItems.vue:283
-#: js/components/FileListItems.vue:329
-#: js/components/FileListItems.vue:362
-#: js/components/FileListItems.vue:399
-#: js/components/FileListItems.vue:436
+#: js/components/FileListItems.vue:228
+#: js/components/FileListItems.vue:289
+#: js/components/FileListItems.vue:359
+#: js/components/FileListItems.vue:392
+#: js/components/FileListItems.vue:429
+#: js/components/FileListItems.vue:466
 #: js/components/PageDetailContentList.vue:369
-#: js/components/PageDetailContentList.vue:466
-#: js/components/PageListItems.vue:298
-#: js/components/PageListItems.vue:414
-#: js/components/PageListItems.vue:469
-#: js/components/PageListItems.vue:536
-#: js/components/PageListItems.vue:603
-#: js/components/PageListItems.vue:725
-#: js/components/PageListItems.vue:749
-#: js/components/PageListItems.vue:855
-#: js/components/PageListItems.vue:896
-#: js/components/PageListItems.vue:972
-#: js/components/PageListItems.vue:1026
+#: js/components/PageDetailContentList.vue:468
+#: js/components/PageListItems.vue:304
+#: js/components/PageListItems.vue:420
+#: js/components/PageListItems.vue:475
+#: js/components/PageListItems.vue:542
+#: js/components/PageListItems.vue:609
+#: js/components/PageListItems.vue:731
+#: js/components/PageListItems.vue:755
+#: js/components/PageListItems.vue:877
+#: js/components/PageListItems.vue:918
+#: js/components/PageListItems.vue:994
+#: js/components/PageListItems.vue:1048
 #: js/fields/File.vue:105
 #: js/fields/Images.vue:119
-#: js/fields/Items.vue:156
-#: js/publish.js:37
-#: js/views/ElementDetail.vue:268
-#: js/views/ElementDetail.vue:357
-#: js/views/FileDetail.vue:234
-#: js/views/FileDetail.vue:306
-#: js/views/PageDetail.vue:470
-#: js/views/PageDetail.vue:571
-#: js/views/PageDetail.vue:680
-#: js/views/PageList.vue:243
+#: js/fields/Items.vue:168
+#: js/publish.js:38
+#: js/views/ElementDetail.vue:304
+#: js/views/ElementDetail.vue:405
+#: js/views/FileDetail.vue:267
+#: js/views/FileDetail.vue:344
+#: js/views/PageDetail.vue:484
+#: js/views/PageDetail.vue:592
+#: js/views/PageDetail.vue:701
+#: js/views/PageList.vue:245
 msgid "Permission denied"
 msgstr "Quyền truy cập bị từ chối"
 
@@ -97,8 +97,8 @@ msgid "id"
 msgstr "id"
 
 #: js/components/AsideMeta.vue:25
-#: js/components/FileListItems.vue:211
-#: js/components/FileListItems.vue:707
+#: js/components/FileListItems.vue:217
+#: js/components/FileListItems.vue:741
 #: js/fields/Audio.vue:119
 #: js/fields/File.vue:348
 #: js/fields/Image.vue:176
@@ -108,18 +108,18 @@ msgid "mime"
 msgstr "mime"
 
 #: js/components/AsideMeta.vue:29
-#: js/components/ElementListItems.vue:662
-#: js/components/FileListItems.vue:209
-#: js/components/FileListItems.vue:717
-#: js/components/PageListItems.vue:1297
+#: js/components/ElementListItems.vue:696
+#: js/components/FileListItems.vue:215
+#: js/components/FileListItems.vue:751
+#: js/components/PageListItems.vue:1331
 #: js/fields/Audio.vue:123
 #: js/fields/File.vue:352
 #: js/fields/Image.vue:180
 #: js/fields/Media.vue:191
 #: js/fields/Video.vue:123
-#: js/views/ElementList.vue:109
-#: js/views/FileList.vue:108
-#: js/views/PageList.vue:176
+#: js/views/ElementList.vue:111
+#: js/views/FileList.vue:110
+#: js/views/PageList.vue:178
 msgid "editor"
 msgstr "biên tập viên"
 
@@ -142,27 +142,27 @@ msgstr "đã xóa"
 
 #: js/components/AsideMeta.vue:57
 #: js/components/AsideMeta.vue:59
+#: js/components/HistoryDialog.vue:38
 msgid "Meta data"
 msgstr "Dữ liệu meta"
 
 #: js/components/ChangesDialog.vue:54
-#: js/components/HistoryDialog.vue:36
+#: js/components/HistoryDialog.vue:37
 msgid "Fields"
 msgstr "Các lĩnh vực"
 
 #: js/components/ChangesDialog.vue:55
-#: js/components/HistoryDialog.vue:37
 msgid "Meta tags"
 msgstr "Thẻ meta"
 
 #: js/components/ChangesDialog.vue:56
-#: js/components/HistoryDialog.vue:38
+#: js/components/HistoryDialog.vue:39
 msgid "Configuration"
 msgstr "Cấu hình"
 
 #: js/components/ChangesDialog.vue:57
-#: js/components/HistoryDialog.vue:39
-#: js/views/PageDetail.vue:805
+#: js/components/HistoryDialog.vue:40
+#: js/views/PageDetail.vue:827
 msgid "Content"
 msgstr "Nội dung"
 
@@ -179,36 +179,36 @@ msgid "%{count} / %{total}"
 msgstr "%{count} / %{total}"
 
 #: js/components/ChangesDialog.vue:321
-#: js/components/ElementListItems.vue:559
-#: js/components/ElementListItems.vue:701
+#: js/components/ElementListItems.vue:593
+#: js/components/ElementListItems.vue:735
 #: js/components/Fields.vue:264
 #: js/components/FieldsDialog.vue:63
 #: js/components/FileAiDialog.vue:275
-#: js/components/FileDetailItemImage.vue:642
-#: js/components/FileDetailItemImage.vue:750
-#: js/components/FileDetailItemImage.vue:804
-#: js/components/FileDetailItemImage.vue:889
-#: js/components/FileDetailItemImage.vue:995
+#: js/components/FileDetailItemImage.vue:659
+#: js/components/FileDetailItemImage.vue:767
+#: js/components/FileDetailItemImage.vue:821
+#: js/components/FileDetailItemImage.vue:906
+#: js/components/FileDetailItemImage.vue:1012
 #: js/components/FileDialog.vue:37
-#: js/components/FileListItems.vue:597
-#: js/components/FileListItems.vue:760
+#: js/components/FileListItems.vue:631
+#: js/components/FileListItems.vue:794
 #: js/components/FileUrlDialog.vue:219
-#: js/components/HistoryDialog.vue:452
-#: js/components/PageDetailContentList.vue:890
-#: js/components/PageListItems.vue:1181
-#: js/components/PageListItems.vue:1375
+#: js/components/HistoryDialog.vue:460
+#: js/components/PageDetailContentList.vue:892
+#: js/components/PageListItems.vue:1215
+#: js/components/PageListItems.vue:1409
 #: js/components/SchemaDialog.vue:38
 #: js/components/UnsavedDialog.vue:39
 #: js/components/User.vue:117
-#: js/fields/Items.vue:308
-#: js/fields/Items.vue:392
+#: js/fields/Items.vue:316
+#: js/fields/Items.vue:400
 #: js/fields/Table.vue:211
 #: js/fields/Table.vue:306
 msgid "Close"
 msgstr "Đóng"
 
 #: js/components/ChangesDialog.vue:343
-#: js/components/HistoryDialog.vue:603
+#: js/components/HistoryDialog.vue:611
 msgid "Revert"
 msgstr "Quay lại"
 
@@ -218,20 +218,20 @@ msgid "Changes"
 msgstr "Những thay đổi"
 
 #: js/components/ChangesDialog.vue:395
-#: js/components/HistoryDialog.vue:321
-#: js/components/HistoryDialog.vue:503
-#: js/components/HistoryDialog.vue:534
-#: js/components/HistoryDialog.vue:650
-#: js/components/HistoryDialog.vue:681
-msgid "Removed"
-msgstr "Đã xóa"
-
-#: js/components/ChangesDialog.vue:402
-#: js/components/HistoryDialog.vue:127
+#: js/components/HistoryDialog.vue:329
 #: js/components/HistoryDialog.vue:511
 #: js/components/HistoryDialog.vue:542
 #: js/components/HistoryDialog.vue:658
 #: js/components/HistoryDialog.vue:689
+msgid "Removed"
+msgstr "Đã xóa"
+
+#: js/components/ChangesDialog.vue:402
+#: js/components/HistoryDialog.vue:133
+#: js/components/HistoryDialog.vue:519
+#: js/components/HistoryDialog.vue:550
+#: js/components/HistoryDialog.vue:666
+#: js/components/HistoryDialog.vue:697
 msgid "Added"
 msgstr "Đã thêm"
 
@@ -248,9 +248,9 @@ msgid "Merge both"
 msgstr "Hợp nhất cả hai"
 
 #: js/components/DetailAppBar.vue:92
-#: js/views/ElementList.vue:133
-#: js/views/FileList.vue:132
-#: js/views/PageList.vue:309
+#: js/views/ElementList.vue:135
+#: js/views/FileList.vue:134
+#: js/views/PageList.vue:312
 msgid "Menu"
 msgstr "Thực đơn"
 
@@ -277,19 +277,19 @@ msgstr "Lịch trình đăng tải"
 
 #: js/components/DetailAppBar.vue:166
 #: js/components/DetailAppBar.vue:174
-#: js/components/ElementListItems.vue:565
-#: js/components/ElementListItems.vue:709
-#: js/components/FileListItems.vue:603
-#: js/components/FileListItems.vue:766
-#: js/components/PageListItems.vue:1187
-#: js/components/PageListItems.vue:1383
+#: js/components/ElementListItems.vue:599
+#: js/components/ElementListItems.vue:743
+#: js/components/FileListItems.vue:637
+#: js/components/FileListItems.vue:800
+#: js/components/PageListItems.vue:1221
+#: js/components/PageListItems.vue:1417
 msgid "Publish"
 msgstr "Xuất bản"
 
 #: js/components/DetailAppBar.vue:189
-#: js/views/ElementList.vue:151
-#: js/views/FileList.vue:150
-#: js/views/PageList.vue:327
+#: js/views/ElementList.vue:153
+#: js/views/FileList.vue:152
+#: js/views/PageList.vue:330
 msgid "Toggle side menu"
 msgstr "Bật/tắt menu bên"
 
@@ -321,8 +321,8 @@ msgstr "Không"
 #: js/components/ElementDetailRefs.vue:114
 #: js/components/Navigation.vue:39
 #: js/components/SchemaDialog.vue:45
-#: js/routes.js:49
-#: js/views/ElementList.vue:143
+#: js/routes.js:59
+#: js/views/ElementList.vue:145
 msgid "Shared elements"
 msgstr "Các thành phần chung"
 
@@ -347,62 +347,62 @@ msgstr "Loại"
 
 #: js/components/ElementDetailRefs.vue:143
 #: js/components/FileDetailRefs.vue:180
-#: js/views/ElementList.vue:93
-#: js/views/FileList.vue:92
-#: js/views/PageList.vue:142
+#: js/views/ElementList.vue:95
+#: js/views/FileList.vue:94
+#: js/views/PageList.vue:144
 msgid "Published"
 msgstr "Đã xuất bản"
 
-#: js/components/ElementListItems.vue:260
+#: js/components/ElementListItems.vue:266
 msgid "Error trashing shared element"
 msgstr "Lỗi xóa phần tử chia sẻ"
 
-#: js/components/ElementListItems.vue:307
+#: js/components/ElementListItems.vue:337
 msgid "Error restoring shared element"
 msgstr "Lỗi khôi phục thành phần chia sẻ"
 
-#: js/components/ElementListItems.vue:347
+#: js/components/ElementListItems.vue:377
 msgid "Error publishing shared element"
 msgstr "Lỗi khi xuất bản thành phần chia sẻ"
 
-#: js/components/ElementListItems.vue:382
+#: js/components/ElementListItems.vue:412
 msgid "Error purging shared element"
 msgstr "Lỗi xóa phần tử chung"
 
-#: js/components/ElementListItems.vue:468
+#: js/components/ElementListItems.vue:498
 msgid "Error fetching shared elements"
 msgstr "Lỗi khi lấy các phần tử chung"
 
-#: js/components/ElementListItems.vue:536
-#: js/components/FileListItems.vue:574
-#: js/components/PageDetailContentList.vue:779
-#: js/components/PageListItems.vue:1159
+#: js/components/ElementListItems.vue:570
+#: js/components/FileListItems.vue:608
+#: js/components/PageDetailContentList.vue:781
+#: js/components/PageListItems.vue:1193
 msgid "Toggle selection"
 msgstr "Chuyển đổi lựa chọn"
 
-#: js/components/ElementListItems.vue:541
-#: js/components/ElementListItems.vue:551
-#: js/components/ElementListItems.vue:558
-#: js/components/ElementListItems.vue:684
-#: js/components/ElementListItems.vue:693
-#: js/components/ElementListItems.vue:700
-#: js/components/FileListItems.vue:579
-#: js/components/FileListItems.vue:589
-#: js/components/FileListItems.vue:596
-#: js/components/FileListItems.vue:742
-#: js/components/FileListItems.vue:751
-#: js/components/FileListItems.vue:759
-#: js/components/PageDetailContentList.vue:787
-#: js/components/PageDetailContentList.vue:870
-#: js/components/PageDetailContentList.vue:879
-#: js/components/PageDetailContentList.vue:887
-#: js/components/PageListItems.vue:1173
-#: js/components/PageListItems.vue:1180
-#: js/components/PageListItems.vue:1364
-#: js/components/PageListItems.vue:1372
-#: js/fields/Items.vue:288
-#: js/fields/Items.vue:297
+#: js/components/ElementListItems.vue:575
+#: js/components/ElementListItems.vue:585
+#: js/components/ElementListItems.vue:592
+#: js/components/ElementListItems.vue:718
+#: js/components/ElementListItems.vue:727
+#: js/components/ElementListItems.vue:734
+#: js/components/FileListItems.vue:613
+#: js/components/FileListItems.vue:623
+#: js/components/FileListItems.vue:630
+#: js/components/FileListItems.vue:776
+#: js/components/FileListItems.vue:785
+#: js/components/FileListItems.vue:793
+#: js/components/PageDetailContentList.vue:789
+#: js/components/PageDetailContentList.vue:872
+#: js/components/PageDetailContentList.vue:881
+#: js/components/PageDetailContentList.vue:889
+#: js/components/PageListItems.vue:1207
+#: js/components/PageListItems.vue:1214
+#: js/components/PageListItems.vue:1398
+#: js/components/PageListItems.vue:1406
+#: js/fields/Items.vue:296
 #: js/fields/Items.vue:305
+#: js/fields/Items.vue:313
 #: js/fields/Table.vue:200
 #: js/fields/Table.vue:208
 #: js/fields/Table.vue:295
@@ -410,86 +410,86 @@ msgstr "Chuyển đổi lựa chọn"
 msgid "Actions"
 msgstr "Hành động"
 
-#: js/components/ElementListItems.vue:570
-#: js/components/ElementListItems.vue:714
-#: js/components/FileListItems.vue:608
-#: js/components/FileListItems.vue:771
-#: js/components/PageDetailContentList.vue:813
-#: js/components/PageDetailContentList.vue:908
-#: js/components/PageListItems.vue:1205
-#: js/components/PageListItems.vue:1494
-#: js/fields/Items.vue:326
+#: js/components/ElementListItems.vue:604
+#: js/components/ElementListItems.vue:748
+#: js/components/FileListItems.vue:642
+#: js/components/FileListItems.vue:805
+#: js/components/PageDetailContentList.vue:815
+#: js/components/PageDetailContentList.vue:910
+#: js/components/PageListItems.vue:1239
+#: js/components/PageListItems.vue:1528
+#: js/fields/Items.vue:334
 #: js/fields/Table.vue:235
 #: js/fields/Table.vue:330
 msgid "Delete"
 msgstr "Rác"
 
-#: js/components/ElementListItems.vue:575
-#: js/components/ElementListItems.vue:719
-#: js/components/FileListItems.vue:613
-#: js/components/FileListItems.vue:776
-#: js/components/PageListItems.vue:1210
-#: js/components/PageListItems.vue:1499
+#: js/components/ElementListItems.vue:609
+#: js/components/ElementListItems.vue:753
+#: js/components/FileListItems.vue:647
+#: js/components/FileListItems.vue:810
+#: js/components/PageListItems.vue:1244
+#: js/components/PageListItems.vue:1533
 msgid "Restore"
 msgstr "Khôi phục"
 
-#: js/components/ElementListItems.vue:580
-#: js/components/ElementListItems.vue:724
-#: js/components/FileListItems.vue:618
-#: js/components/FileListItems.vue:781
-#: js/components/PageListItems.vue:1215
-#: js/components/PageListItems.vue:1504
+#: js/components/ElementListItems.vue:614
+#: js/components/ElementListItems.vue:758
+#: js/components/FileListItems.vue:652
+#: js/components/FileListItems.vue:815
+#: js/components/PageListItems.vue:1249
+#: js/components/PageListItems.vue:1538
 msgid "Purge"
 msgstr "Xóa sạch"
 
-#: js/components/ElementListItems.vue:591
-#: js/components/ElementListItems.vue:783
-#: js/components/PageDetailContentList.vue:1009
+#: js/components/ElementListItems.vue:625
+#: js/components/ElementListItems.vue:817
+#: js/components/PageDetailContentList.vue:1011
 #: js/components/PageDetailItemSection.vue:208
-#: js/fields/Items.vue:458
+#: js/fields/Items.vue:466
 msgid "Add element"
 msgstr "Thêm phần tử"
 
-#: js/components/ElementListItems.vue:605
-#: js/components/FileListItems.vue:643
-#: js/components/PageDetailContentList.vue:823
-#: js/components/PageListItems.vue:1238
+#: js/components/ElementListItems.vue:639
+#: js/components/FileListItems.vue:677
+#: js/components/PageDetailContentList.vue:825
+#: js/components/PageListItems.vue:1272
 msgid "Search for"
 msgstr "Tìm kiếm"
 
-#: js/components/ElementListItems.vue:614
+#: js/components/ElementListItems.vue:648
 msgid "Reload elements"
 msgstr "Tải lại các phần tử"
 
-#: js/components/ElementListItems.vue:625
-#: js/components/FileListItems.vue:682
-#: js/components/PageListItems.vue:1259
-#: js/components/PageListItems.vue:1260
+#: js/components/ElementListItems.vue:659
+#: js/components/FileListItems.vue:716
+#: js/components/PageListItems.vue:1293
+#: js/components/PageListItems.vue:1294
 msgid "Sort by"
 msgstr "Sắp xếp theo"
 
-#: js/components/ElementListItems.vue:633
-#: js/components/ElementListItems.vue:642
-#: js/components/FileListItems.vue:204
-#: js/components/FileListItems.vue:692
-#: js/components/PageListItems.vue:1268
-#: js/components/PageListItems.vue:1282
+#: js/components/ElementListItems.vue:667
+#: js/components/ElementListItems.vue:676
+#: js/components/FileListItems.vue:210
+#: js/components/FileListItems.vue:726
+#: js/components/PageListItems.vue:1302
+#: js/components/PageListItems.vue:1316
 msgid "latest"
 msgstr "mới nhất"
 
-#: js/components/ElementListItems.vue:634
-#: js/components/ElementListItems.vue:647
-#: js/components/FileListItems.vue:204
-#: js/components/FileListItems.vue:697
-#: js/components/PageListItems.vue:1269
-#: js/components/PageListItems.vue:1287
+#: js/components/ElementListItems.vue:668
+#: js/components/ElementListItems.vue:681
+#: js/components/FileListItems.vue:210
+#: js/components/FileListItems.vue:731
+#: js/components/PageListItems.vue:1303
+#: js/components/PageListItems.vue:1321
 msgid "oldest"
 msgstr "cổ nhất"
 
-#: js/components/ElementListItems.vue:652
-#: js/components/FileListItems.vue:212
-#: js/components/FileListItems.vue:702
-#: js/components/PageListItems.vue:1292
+#: js/components/ElementListItems.vue:686
+#: js/components/FileListItems.vue:218
+#: js/components/FileListItems.vue:736
+#: js/components/PageListItems.vue:1326
 #: js/fields/Audio.vue:111
 #: js/fields/File.vue:340
 #: js/fields/Image.vue:168
@@ -498,52 +498,52 @@ msgstr "cổ nhất"
 msgid "name"
 msgstr "tên"
 
-#: js/components/ElementListItems.vue:657
+#: js/components/ElementListItems.vue:691
 msgid "type"
 msgstr "loại"
 
-#: js/components/ElementListItems.vue:744
-#: js/components/PageListItems.vue:651
-#: js/components/PageListItems.vue:1528
+#: js/components/ElementListItems.vue:778
+#: js/components/PageListItems.vue:657
+#: js/components/PageListItems.vue:1562
 msgid "New"
 msgstr "Mới"
 
-#: js/components/ElementListItems.vue:760
-#: js/components/FileListItems.vue:881
-#: js/components/HistoryDialog.vue:458
-#: js/components/PageListItems.vue:1542
+#: js/components/ElementListItems.vue:794
+#: js/components/FileListItems.vue:915
+#: js/components/HistoryDialog.vue:466
+#: js/components/PageListItems.vue:1576
 #: js/fields/Autocomplete.vue:170
 #: js/fields/Combobox.vue:27
 #: js/fields/Url.vue:128
 msgid "Loading"
 msgstr "Đang tải"
 
-#: js/components/ElementListItems.vue:775
-#: js/components/FileListItems.vue:897
-#: js/components/PageListItems.vue:1558
+#: js/components/ElementListItems.vue:809
+#: js/components/FileListItems.vue:931
+#: js/components/PageListItems.vue:1592
 msgid "No entries found"
 msgstr "Không tìm thấy kết quả nào."
 
 #: js/components/Fields.vue:245
 #: js/components/Fields.vue:254
 #: js/components/Fields.vue:263
-#: js/fields/Items.vue:371
-#: js/fields/Items.vue:380
-#: js/fields/Items.vue:389
+#: js/fields/Items.vue:379
+#: js/fields/Items.vue:388
+#: js/fields/Items.vue:397
 msgid "Translate"
 msgstr "Dịch"
 
 #: js/components/Fields.vue:282
-#: js/fields/Items.vue:411
+#: js/fields/Items.vue:419
 msgid "Generate text"
 msgstr "Tạo văn bản"
 
 #: js/components/Fields.vue:294
 #: js/components/FileAiDialog.vue:272
 #: js/components/FileDetailItem.vue:418
-#: js/components/PageDetailContentList.vue:763
-#: js/fields/Items.vue:422
-#: js/views/PageList.vue:388
+#: js/components/PageDetailContentList.vue:765
+#: js/fields/Items.vue:430
+#: js/views/PageList.vue:391
 msgid "Dictate"
 msgstr "Đọc"
 
@@ -560,8 +560,8 @@ msgstr "Đã bị ghi đè"
 msgid "Content Element"
 msgstr "Thành phần nội dung"
 
-#: js/components/FileAiDialog.vue:157
-#: js/components/FileListItems.vue:268
+#: js/components/FileAiDialog.vue:154
+#: js/components/FileListItems.vue:274
 #: js/components/FileUrlDialog.vue:83
 #: js/components/FileUrlDialog.vue:183
 #: js/fields/File.vue:139
@@ -655,148 +655,148 @@ msgstr "Chuyển đổi nội dung tệp thành văn bản"
 msgid "Transcription (%{lang})"
 msgstr "Chuyển đổi văn bản (%{lang})"
 
-#: js/components/FileDetailItemImage.vue:227
+#: js/components/FileDetailItemImage.vue:219
 msgid "Error erasing image part"
 msgstr "Lỗi khi xóa phần hình ảnh"
 
-#: js/components/FileDetailItemImage.vue:320
+#: js/components/FileDetailItemImage.vue:322
 msgid "Error editing image part"
 msgstr "Lỗi khi chỉnh sửa phần hình ảnh"
 
-#: js/components/FileDetailItemImage.vue:339
+#: js/components/FileDetailItemImage.vue:344
 msgid "Error removing background"
 msgstr "Lỗi khi xóa nền"
 
-#: js/components/FileDetailItemImage.vue:443
+#: js/components/FileDetailItemImage.vue:450
 msgid "Error editing image"
 msgstr "Lỗi khi chỉnh sửa hình ảnh"
 
-#: js/components/FileDetailItemImage.vue:528
+#: js/components/FileDetailItemImage.vue:537
 msgid "Error uncropping image"
 msgstr "Lỗi khi cắt xén hình ảnh"
 
-#: js/components/FileDetailItemImage.vue:571
+#: js/components/FileDetailItemImage.vue:582
 msgid "Error upscaling image"
 msgstr "Lỗi khi nâng cấp độ phân giải hình ảnh"
 
-#: js/components/FileDetailItemImage.vue:615
+#: js/components/FileDetailItemImage.vue:632
 #: js/components/UnsavedDialog.vue:55
 msgid "Cancel"
 msgstr "Hủy"
 
-#: js/components/FileDetailItemImage.vue:622
-#: js/components/FileDetailItemImage.vue:631
 #: js/components/FileDetailItemImage.vue:639
+#: js/components/FileDetailItemImage.vue:648
+#: js/components/FileDetailItemImage.vue:656
 msgid "Select area"
 msgstr "Chọn khu vực"
 
-#: js/components/FileDetailItemImage.vue:654
+#: js/components/FileDetailItemImage.vue:671
 msgid "Original ratio"
 msgstr "Tỷ lệ gốc"
 
-#: js/components/FileDetailItemImage.vue:663
+#: js/components/FileDetailItemImage.vue:680
 msgid "No ratio"
 msgstr "Không có tỷ lệ"
 
-#: js/components/FileDetailItemImage.vue:668
+#: js/components/FileDetailItemImage.vue:685
 msgid "Square"
 msgstr "Hình vuông"
 
-#: js/components/FileDetailItemImage.vue:714
+#: js/components/FileDetailItemImage.vue:731
 msgid "Crop selected area"
 msgstr "Chọn vùng cây trồng"
 
-#: js/components/FileDetailItemImage.vue:724
+#: js/components/FileDetailItemImage.vue:741
 msgid "Erase selected area"
 msgstr "Xóa vùng đã chọn"
 
-#: js/components/FileDetailItemImage.vue:739
-#: js/components/FileDetailItemImage.vue:747
-#: js/components/FileDetailItemImage.vue:768
+#: js/components/FileDetailItemImage.vue:756
+#: js/components/FileDetailItemImage.vue:764
+#: js/components/FileDetailItemImage.vue:785
 msgid "Edit image"
 msgstr "Chỉnh sửa hình ảnh"
 
-#: js/components/FileDetailItemImage.vue:758
+#: js/components/FileDetailItemImage.vue:775
 msgid "Describe the changes"
 msgstr "Mô tả các thay đổi"
 
-#: js/components/FileDetailItemImage.vue:777
+#: js/components/FileDetailItemImage.vue:794
 msgid "Remove background"
 msgstr "Xóa nền"
 
-#: js/components/FileDetailItemImage.vue:793
-#: js/components/FileDetailItemImage.vue:801
-#: js/components/FileDetailItemImage.vue:859
+#: js/components/FileDetailItemImage.vue:810
+#: js/components/FileDetailItemImage.vue:818
+#: js/components/FileDetailItemImage.vue:876
 msgid "Expand image"
 msgstr "Mở rộng hình ảnh"
 
-#: js/components/FileDetailItemImage.vue:816
+#: js/components/FileDetailItemImage.vue:833
 msgid "Top"
 msgstr "Đỉnh"
 
-#: js/components/FileDetailItemImage.vue:828
+#: js/components/FileDetailItemImage.vue:845
 msgid "Left"
 msgstr "Bên trái"
 
-#: js/components/FileDetailItemImage.vue:838
+#: js/components/FileDetailItemImage.vue:855
 msgid "Right"
 msgstr "Đúng"
 
-#: js/components/FileDetailItemImage.vue:850
+#: js/components/FileDetailItemImage.vue:867
 msgid "Bottom"
 msgstr "Dưới cùng"
 
-#: js/components/FileDetailItemImage.vue:867
+#: js/components/FileDetailItemImage.vue:884
 msgid "Upscale"
 msgstr "Cao cấp"
 
-#: js/components/FileDetailItemImage.vue:878
-#: js/components/FileDetailItemImage.vue:886
+#: js/components/FileDetailItemImage.vue:895
+#: js/components/FileDetailItemImage.vue:903
 msgid "Upscale image"
 msgstr "Hình ảnh cao cấp"
 
-#: js/components/FileDetailItemImage.vue:902
-#: js/components/FileDetailItemImage.vue:912
-#: js/components/FileDetailItemImage.vue:922
-#: js/components/FileDetailItemImage.vue:932
+#: js/components/FileDetailItemImage.vue:919
+#: js/components/FileDetailItemImage.vue:929
+#: js/components/FileDetailItemImage.vue:939
+#: js/components/FileDetailItemImage.vue:949
 msgid "Scale %{factor}"
 msgstr "Quy mô %{factor}"
 
-#: js/components/FileDetailItemImage.vue:943
+#: js/components/FileDetailItemImage.vue:960
 msgid "Rotate counter-clockwise"
 msgstr "Xoay ngược chiều kim đồng hồ"
 
-#: js/components/FileDetailItemImage.vue:949
+#: js/components/FileDetailItemImage.vue:966
 msgid "Rotate clockwise"
 msgstr "Xoay theo chiều kim đồng hồ"
 
-#: js/components/FileDetailItemImage.vue:956
+#: js/components/FileDetailItemImage.vue:973
 msgid "Flip horizontally"
 msgstr "Lật ngang"
 
-#: js/components/FileDetailItemImage.vue:962
+#: js/components/FileDetailItemImage.vue:979
 msgid "Flip vertically"
 msgstr "Lật dọc"
 
-#: js/components/FileDetailItemImage.vue:969
+#: js/components/FileDetailItemImage.vue:986
 msgid "Convert to monochrome"
 msgstr "Chuyển sang chế độ đơn sắc"
 
-#: js/components/FileDetailItemImage.vue:972
+#: js/components/FileDetailItemImage.vue:989
 msgid "Download"
 msgstr "Tải xuống"
 
-#: js/components/FileDetailItemImage.vue:976
-#: js/components/FileDetailItemImage.vue:986
-#: js/components/FileDetailItemImage.vue:994
+#: js/components/FileDetailItemImage.vue:993
+#: js/components/FileDetailItemImage.vue:1003
+#: js/components/FileDetailItemImage.vue:1011
 msgid "Undo"
 msgstr "Hủy bỏ"
 
-#: js/components/FileDetailItemImage.vue:1002
+#: js/components/FileDetailItemImage.vue:1019
 msgid "Previous edit"
 msgstr "Lần chỉnh sửa trước"
 
-#: js/components/FileDetailItemImage.vue:1007
+#: js/components/FileDetailItemImage.vue:1024
 msgid "Original"
 msgstr "Bản gốc"
 
@@ -830,14 +830,14 @@ msgstr "Tải lên hình ảnh bìa"
 
 #: js/components/FileDetailRefs.vue:129
 #: js/components/Navigation.vue:33
-#: js/routes.js:29
-#: js/views/PageList.vue:319
-#: js/views/PageList.vue:336
+#: js/routes.js:39
+#: js/views/PageList.vue:322
+#: js/views/PageList.vue:339
 msgid "Pages"
 msgstr "Trang"
 
 #: js/components/FileDetailRefs.vue:151
-#: js/views/ElementList.vue:160
+#: js/views/ElementList.vue:162
 msgid "Elements"
 msgstr "Các yếu tố"
 
@@ -848,60 +848,60 @@ msgstr "Phiên bản"
 #: js/components/FileDialog.vue:28
 #: js/components/FileDialog.vue:36
 #: js/components/Navigation.vue:45
-#: js/routes.js:69
-#: js/views/FileList.vue:142
-#: js/views/FileList.vue:159
+#: js/routes.js:79
+#: js/views/FileList.vue:144
+#: js/views/FileList.vue:161
 msgid "Files"
 msgstr "Tệp tin"
 
-#: js/components/FileListItems.vue:208
-#: js/components/FileListItems.vue:722
+#: js/components/FileListItems.vue:214
+#: js/components/FileListItems.vue:756
 msgid "usage"
 msgstr "sử dụng"
 
-#: js/components/FileListItems.vue:210
-#: js/components/FileListItems.vue:712
+#: js/components/FileListItems.vue:216
+#: js/components/FileListItems.vue:746
 msgid "language"
 msgstr "ngôn ngữ"
 
-#: js/components/FileListItems.vue:309
+#: js/components/FileListItems.vue:315
 msgid "Error trashing file"
 msgstr "Lỗi xóa tệp"
 
-#: js/components/FileListItems.vue:355
+#: js/components/FileListItems.vue:385
 msgid "Error restoring file"
 msgstr "Lỗi khôi phục tệp"
 
-#: js/components/FileListItems.vue:392
-#: js/views/FileDetail.vue:213
+#: js/components/FileListItems.vue:422
+#: js/views/FileDetail.vue:246
 msgid "Error publishing file"
 msgstr "Lỗi khi đăng tải tệp tin"
 
-#: js/components/FileListItems.vue:425
+#: js/components/FileListItems.vue:455
 msgid "Error purging file"
 msgstr "Lỗi xóa file"
 
-#: js/components/FileListItems.vue:506
+#: js/components/FileListItems.vue:536
 msgid "Error fetching files"
 msgstr "Lỗi khi lấy tệp tin"
 
-#: js/components/FileListItems.vue:630
-#: js/components/FileListItems.vue:906
+#: js/components/FileListItems.vue:664
+#: js/components/FileListItems.vue:940
 #: js/components/FileUrlDialog.vue:217
 #: js/fields/Images.vue:318
 #: js/fields/Images.vue:340
 msgid "Add files"
 msgstr "Thêm tệp"
 
-#: js/components/FileListItems.vue:654
+#: js/components/FileListItems.vue:688
 msgid "Reload files"
 msgstr "Tải lại tệp"
 
-#: js/components/FileListItems.vue:663
+#: js/components/FileListItems.vue:697
 msgid "Grid view"
 msgstr "Chế độ xem lưới"
 
-#: js/components/FileListItems.vue:671
+#: js/components/FileListItems.vue:705
 msgid "List view"
 msgstr "Chế độ xem danh sách"
 
@@ -940,30 +940,30 @@ msgstr "Nhập một URL vào mỗi dòng."
 msgid "Enter URL"
 msgstr "Nhập URL"
 
-#: js/components/HistoryDialog.vue:443
 #: js/components/HistoryDialog.vue:451
+#: js/components/HistoryDialog.vue:459
 msgid "History"
 msgstr "Lịch sử"
 
-#: js/components/HistoryDialog.vue:481
+#: js/components/HistoryDialog.vue:489
 msgid "No changes"
 msgstr "Không có thay đổi"
 
-#: js/components/HistoryDialog.vue:491
+#: js/components/HistoryDialog.vue:499
 msgid "Current"
 msgstr "Hiện tại"
 
-#: js/components/HistoryDialog.vue:607
-#: js/components/HistoryDialog.vue:754
+#: js/components/HistoryDialog.vue:615
+#: js/components/HistoryDialog.vue:762
 msgid "Apply changes"
 msgstr "Áp dụng các thay đổi"
 
-#: js/components/HistoryDialog.vue:615
-#: js/components/HistoryDialog.vue:762
+#: js/components/HistoryDialog.vue:623
+#: js/components/HistoryDialog.vue:770
 msgid "Toggle all"
 msgstr "Chọn tất cả"
 
-#: js/components/HistoryDialog.vue:750
+#: js/components/HistoryDialog.vue:758
 msgid "Revert to version"
 msgstr "Quay lại phiên bản"
 
@@ -973,140 +973,140 @@ msgstr "Tấm ốp"
 
 #: js/components/PageDetailContentList.vue:178
 #: js/components/PageDetailContentList.vue:188
-#: js/components/PageDetailContentList.vue:646
+#: js/components/PageDetailContentList.vue:648
 msgid "Content element not found"
 msgstr "Không tìm thấy phần nội dung"
 
-#: js/components/PageDetailContentList.vue:418
+#: js/components/PageDetailContentList.vue:420
 msgid "Error refining content"
 msgstr "Lỗi trong quá trình tinh chỉnh nội dung"
 
-#: js/components/PageDetailContentList.vue:473
+#: js/components/PageDetailContentList.vue:475
 msgid "Element not found"
 msgstr "Không tìm thấy thành phần"
 
-#: js/components/PageDetailContentList.vue:478
+#: js/components/PageDetailContentList.vue:480
 msgid "Element is already shared"
 msgstr "Phần tử đã được chia sẻ."
 
-#: js/components/PageDetailContentList.vue:523
+#: js/components/PageDetailContentList.vue:525
 msgid "Unable to make element shared"
 msgstr "Không thể chia sẻ phần tử"
 
-#: js/components/PageDetailContentList.vue:542
+#: js/components/PageDetailContentList.vue:544
 msgid "Not available for this content element"
 msgstr "Không khả dụng cho thành phần nội dung này."
 
-#: js/components/PageDetailContentList.vue:653
+#: js/components/PageDetailContentList.vue:655
 msgid "Element is not shared"
 msgstr "Thành phần không được chia sẻ"
 
-#: js/components/PageDetailContentList.vue:728
+#: js/components/PageDetailContentList.vue:730
 msgid "Describe the task you want to perform"
 msgstr "Mô tả công việc bạn muốn thực hiện."
 
-#: js/components/PageDetailContentList.vue:742
-#: js/views/PageList.vue:358
+#: js/components/PageDetailContentList.vue:744
+#: js/views/PageList.vue:361
 msgid "Hide help"
 msgstr "Ẩn trợ giúp"
 
-#: js/components/PageDetailContentList.vue:742
-#: js/views/PageList.vue:358
+#: js/components/PageDetailContentList.vue:744
+#: js/views/PageList.vue:361
 msgid "Show help"
 msgstr "Hiển thị trợ giúp"
 
-#: js/components/PageDetailContentList.vue:754
+#: js/components/PageDetailContentList.vue:756
 msgid "Refining ..."
 msgstr "Đang tinh chế ..."
 
-#: js/components/PageDetailContentList.vue:754
+#: js/components/PageDetailContentList.vue:756
 msgid "Refine content based on prompt"
 msgstr "Tinh chỉnh nội dung dựa trên yêu cầu."
 
-#: js/components/PageDetailContentList.vue:771
-#: js/views/PageList.vue:396
+#: js/components/PageDetailContentList.vue:773
+#: js/views/PageList.vue:399
 msgid "Help"
 msgstr "Trợ giúp"
 
-#: js/components/PageDetailContentList.vue:772
+#: js/components/PageDetailContentList.vue:774
 msgid "AI can add or improve content based on your input"
 msgstr "Trí tuệ nhân tạo (AI) có thể tạo ra hoặc cải thiện nội dung dựa trên đầu vào của bạn."
 
-#: js/components/PageDetailContentList.vue:773
+#: js/components/PageDetailContentList.vue:775
 msgid "It can take a long time depending on the task and content size"
 msgstr "Thời gian thực hiện có thể kéo dài tùy thuộc vào tính chất công việc và kích thước nội dung."
 
-#: js/components/PageDetailContentList.vue:793
-#: js/components/PageDetailContentList.vue:898
-#: js/components/PageListItems.vue:1411
-#: js/fields/Items.vue:316
+#: js/components/PageDetailContentList.vue:795
+#: js/components/PageDetailContentList.vue:900
+#: js/components/PageListItems.vue:1445
+#: js/fields/Items.vue:324
 msgid "Copy"
 msgstr "Sao chép"
 
-#: js/components/PageDetailContentList.vue:798
-#: js/components/PageDetailContentList.vue:903
-#: js/components/PageListItems.vue:1406
-#: js/fields/Items.vue:321
+#: js/components/PageDetailContentList.vue:800
+#: js/components/PageDetailContentList.vue:905
+#: js/components/PageListItems.vue:1440
+#: js/fields/Items.vue:329
 msgid "Cut"
 msgstr "Cắt"
 
-#: js/components/PageDetailContentList.vue:803
-#: js/components/PageListItems.vue:1419
-#: js/components/PageListItems.vue:1444
+#: js/components/PageDetailContentList.vue:805
+#: js/components/PageListItems.vue:1453
+#: js/components/PageListItems.vue:1478
 msgid "Paste"
 msgstr "Dán"
 
-#: js/components/PageDetailContentList.vue:808
-#: js/components/PageDetailContentList.vue:961
+#: js/components/PageDetailContentList.vue:810
+#: js/components/PageDetailContentList.vue:963
 msgid "Merge"
 msgstr "Ghép"
 
-#: js/components/PageDetailContentList.vue:855
-#: js/fields/Items.vue:279
+#: js/components/PageDetailContentList.vue:857
+#: js/fields/Items.vue:287
 msgid "Move element"
 msgstr "Di chuyển phần tử"
 
-#: js/components/PageDetailContentList.vue:916
-#: js/fields/Items.vue:334
+#: js/components/PageDetailContentList.vue:918
+#: js/fields/Items.vue:342
 msgid "Paste before"
 msgstr "Dán nội dung trước đó"
 
-#: js/components/PageDetailContentList.vue:921
-#: js/fields/Items.vue:339
+#: js/components/PageDetailContentList.vue:923
+#: js/fields/Items.vue:347
 msgid "Paste after"
 msgstr "Dán sau đây:"
 
-#: js/components/PageDetailContentList.vue:926
-#: js/fields/Items.vue:344
+#: js/components/PageDetailContentList.vue:928
+#: js/fields/Items.vue:352
 #: js/fields/Table.vue:222
 #: js/fields/Table.vue:317
 msgid "Insert before"
 msgstr "Chèn trước"
 
-#: js/components/PageDetailContentList.vue:931
-#: js/fields/Items.vue:349
+#: js/components/PageDetailContentList.vue:933
+#: js/fields/Items.vue:357
 #: js/fields/Table.vue:230
 #: js/fields/Table.vue:325
 msgid "Insert after"
 msgstr "Chèn sau"
 
-#: js/components/PageDetailContentList.vue:941
+#: js/components/PageDetailContentList.vue:943
 msgid "Make shared"
 msgstr "Tạo chung"
 
-#: js/components/PageDetailContentList.vue:946
+#: js/components/PageDetailContentList.vue:948
 msgid "Merge copy"
 msgstr "Ghép bản sao"
 
-#: js/components/PageDetailContentList.vue:951
+#: js/components/PageDetailContentList.vue:953
 msgid "Change to"
 msgstr "Thay đổi thành"
 
-#: js/components/PageDetailContentList.vue:956
+#: js/components/PageDetailContentList.vue:958
 msgid "Split"
 msgstr "Phân chia"
 
-#: js/components/PageDetailContentList.vue:971
+#: js/components/PageDetailContentList.vue:973
 msgid "Shared element"
 msgstr "Yếu tố chung"
 
@@ -1159,7 +1159,7 @@ msgid "Config"
 msgstr "Cấu hình"
 
 #: js/components/PageDetailItemProps.vue:56
-#: js/views/PageList.vue:171
+#: js/views/PageList.vue:173
 msgid "No cache"
 msgstr "Không lưu vào bộ nhớ đệm"
 
@@ -1181,12 +1181,12 @@ msgid_plural "%{num} hours"
 msgstr[0] "%{num} giờ"
 
 #: js/components/PageDetailItemProps.vue:68
-#: js/views/PageList.vue:163
+#: js/views/PageList.vue:165
 msgid "Disabled"
 msgstr "Người khuyết tật"
 
 #: js/components/PageDetailItemProps.vue:69
-#: js/views/PageList.vue:161
+#: js/views/PageList.vue:163
 msgid "Enabled"
 msgstr "Đã bật"
 
@@ -1396,132 +1396,132 @@ msgstr "Tìm kiếm Google: Lượt hiển thị &amp; Lượt nhấp chuột"
 msgid "Google Search: Conversions"
 msgstr "Tìm kiếm Google: Chuyển đổi"
 
-#: js/components/PageListItems.vue:326
+#: js/components/PageListItems.vue:332
 msgid "Error adding root page"
 msgstr "Lỗi khi thêm trang gốc"
 
-#: js/components/PageListItems.vue:454
+#: js/components/PageListItems.vue:460
 msgid "Error trashing page"
 msgstr "Lỗi xóa trang"
 
-#: js/components/PageListItems.vue:509
+#: js/components/PageListItems.vue:515
 msgid "Error fetching pages"
 msgstr "Lỗi khi tải trang"
 
-#: js/components/PageListItems.vue:589
+#: js/components/PageListItems.vue:595
 msgid "Error inserting page"
 msgstr "Lỗi khi chèn trang"
 
-#: js/components/PageListItems.vue:645
+#: js/components/PageListItems.vue:651
 msgid "Error restoring page"
 msgstr "Lỗi khôi phục trang"
 
-#: js/components/PageListItems.vue:655
+#: js/components/PageListItems.vue:661
 msgid "%{name} (%{lang}, path: %{path}, domain: %{domain})"
 msgstr "%{name} (%{lang}, đường dẫn: %{path}, tên miền: %{domain})"
 
-#: js/components/PageListItems.vue:658
+#: js/components/PageListItems.vue:664
 msgid "%{name} (%{lang}, path: %{path})"
 msgstr "%{name} (%{lang}, đường dẫn: %{path})"
 
-#: js/components/PageListItems.vue:741
+#: js/components/PageListItems.vue:747
 msgid "Error moving page"
 msgstr "Lỗi di chuyển trang"
 
-#: js/components/PageListItems.vue:829
+#: js/components/PageListItems.vue:835
 msgid "Error copying page"
 msgstr "Lỗi sao chép trang"
 
-#: js/components/PageListItems.vue:834
-#: js/views/PageDetail.vue:263
+#: js/components/PageListItems.vue:840
+#: js/views/PageDetail.vue:277
 msgid "Error fetching page"
 msgstr "Lỗi khi tải trang"
 
-#: js/components/PageListItems.vue:889
-#: js/views/PageDetail.vue:444
+#: js/components/PageListItems.vue:911
+#: js/views/PageDetail.vue:458
 msgid "Error publishing page"
 msgstr "Lỗi khi đăng trang"
 
-#: js/components/PageListItems.vue:931
+#: js/components/PageListItems.vue:953
 msgid "Error purging page"
 msgstr "Lỗi xóa trang"
 
-#: js/components/PageListItems.vue:1015
+#: js/components/PageListItems.vue:1037
 msgid "Error searching pages"
 msgstr "Lỗi tìm kiếm trang"
 
-#: js/components/PageListItems.vue:1055
-#: js/views/PageDetail.vue:561
+#: js/components/PageListItems.vue:1077
+#: js/views/PageDetail.vue:582
 msgid "Error saving page"
 msgstr "Lỗi khi lưu trang"
 
-#: js/components/PageListItems.vue:1192
-#: js/components/PageListItems.vue:1393
+#: js/components/PageListItems.vue:1226
+#: js/components/PageListItems.vue:1427
 msgid "Enable"
 msgstr "Bật"
 
-#: js/components/PageListItems.vue:1197
-#: js/components/PageListItems.vue:1388
+#: js/components/PageListItems.vue:1231
+#: js/components/PageListItems.vue:1422
 msgid "Disable"
 msgstr "Vô hiệu hóa"
 
-#: js/components/PageListItems.vue:1227
-#: js/components/PageListItems.vue:1565
+#: js/components/PageListItems.vue:1261
+#: js/components/PageListItems.vue:1599
 msgid "Add page"
 msgstr "Thêm trang"
 
-#: js/components/PageListItems.vue:1248
+#: js/components/PageListItems.vue:1282
 msgid "Reload page tree"
 msgstr "Tải lại cây trang"
 
-#: js/components/PageListItems.vue:1270
-#: js/components/PageListItems.vue:1277
+#: js/components/PageListItems.vue:1304
+#: js/components/PageListItems.vue:1311
 msgid "tree"
 msgstr "cây"
 
-#: js/components/PageListItems.vue:1319
+#: js/components/PageListItems.vue:1353
 msgid "Use arrow keys to navigate. Alt plus arrow keys to reorder."
 msgstr "Sử dụng các phím mũi tên để di chuyển. Nhấn phím Alt cùng với các phím mũi tên để sắp xếp lại thứ tự."
 
-#: js/components/PageListItems.vue:1320
+#: js/components/PageListItems.vue:1354
 msgid "Moved to position %{position} of %{total}"
 msgstr "Đã chuyển đến địa chỉ %{position} từ %{total}"
 
-#: js/components/PageListItems.vue:1321
+#: js/components/PageListItems.vue:1355
 msgid "Outdented to level %{level}, position %{position} of %{total}"
 msgstr "Đã được điều chỉnh để phù hợp với %{level}, vị trí %{position} trên %{total}"
 
-#: js/components/PageListItems.vue:1322
+#: js/components/PageListItems.vue:1356
 msgid "Indented to level %{level}, position %{position} of %{total}"
 msgstr "Được trích dẫn từ trang %{level}, tại địa chỉ %{position} thuộc trang %{total}"
 
-#: js/components/PageListItems.vue:1347
+#: js/components/PageListItems.vue:1381
 msgid "Toggle child nodes"
 msgstr "Bật/tắt các nút con"
 
-#: js/components/PageListItems.vue:1398
+#: js/components/PageListItems.vue:1432
 msgid "Hide"
 msgstr "Ẩn trong menu"
 
-#: js/components/PageListItems.vue:1425
-#: js/components/PageListItems.vue:1450
-#: js/components/PageListItems.vue:1475
+#: js/components/PageListItems.vue:1459
+#: js/components/PageListItems.vue:1484
+#: js/components/PageListItems.vue:1509
 msgid "Before"
 msgstr "Trước"
 
-#: js/components/PageListItems.vue:1430
-#: js/components/PageListItems.vue:1455
-#: js/components/PageListItems.vue:1480
+#: js/components/PageListItems.vue:1464
+#: js/components/PageListItems.vue:1489
+#: js/components/PageListItems.vue:1514
 msgid "Into"
 msgstr "Vào"
 
-#: js/components/PageListItems.vue:1435
-#: js/components/PageListItems.vue:1460
-#: js/components/PageListItems.vue:1485
+#: js/components/PageListItems.vue:1469
+#: js/components/PageListItems.vue:1494
+#: js/components/PageListItems.vue:1519
 msgid "After"
 msgstr "Sau"
 
-#: js/components/PageListItems.vue:1469
+#: js/components/PageListItems.vue:1503
 msgid "Insert"
 msgstr "Chèn"
 
@@ -1716,33 +1716,33 @@ msgstr "Không tìm thấy trang nào"
 msgid "Merged with changes from %{editor}"
 msgstr "Đã hợp nhất các thay đổi từ %{editor}"
 
-#: js/routes.js:20
+#: js/routes.js:30
 #: js/views/Login.vue:175
 msgid "Login"
 msgstr "Đăng nhập"
 
-#: js/routes.js:40
-#: js/views/PageDetail.vue:748
-#: js/views/PageDetail.vue:794
-#: js/views/PageDetail.vue:812
+#: js/routes.js:50
+#: js/views/PageDetail.vue:769
+#: js/views/PageDetail.vue:815
+#: js/views/PageDetail.vue:834
 msgid "Page"
 msgstr "Trang"
 
-#: js/routes.js:60
-#: js/views/ElementDetail.vue:407
-#: js/views/ElementDetail.vue:427
-#: js/views/ElementDetail.vue:431
+#: js/routes.js:70
+#: js/views/ElementDetail.vue:455
+#: js/views/ElementDetail.vue:475
+#: js/views/ElementDetail.vue:480
 msgid "Element"
 msgstr "Yếu tố"
 
-#: js/routes.js:80
-#: js/views/FileDetail.vue:353
-#: js/views/FileDetail.vue:373
-#: js/views/FileDetail.vue:377
+#: js/routes.js:90
+#: js/views/FileDetail.vue:392
+#: js/views/FileDetail.vue:412
+#: js/views/FileDetail.vue:417
 msgid "File"
 msgstr "Tệp"
 
-#: js/routes.js:107
+#: js/routes.js:117
 msgid "You do not have permission to access %{path}"
 msgstr "Bạn không có quyền truy cập vào %{path}"
 
@@ -2071,145 +2071,145 @@ msgctxt "ai"
 msgid "Already exists"
 msgstr "Đã tồn tại"
 
-#: js/utils.js:122
+#: js/utils.js:132
 msgid "None"
 msgstr "Không có"
 
-#: js/utils.js:172
-#: js/views/ElementList.vue:92
-#: js/views/ElementList.vue:102
-#: js/views/ElementList.vue:111
-#: js/views/FileList.vue:91
-#: js/views/FileList.vue:101
-#: js/views/FileList.vue:110
-#: js/views/PageList.vue:141
-#: js/views/PageList.vue:151
-#: js/views/PageList.vue:160
-#: js/views/PageList.vue:170
-#: js/views/PageList.vue:178
+#: js/utils.js:182
+#: js/views/ElementList.vue:94
+#: js/views/ElementList.vue:104
+#: js/views/ElementList.vue:113
+#: js/views/FileList.vue:93
+#: js/views/FileList.vue:103
+#: js/views/FileList.vue:112
+#: js/views/PageList.vue:143
+#: js/views/PageList.vue:153
+#: js/views/PageList.vue:162
+#: js/views/PageList.vue:172
+#: js/views/PageList.vue:180
 msgid "All"
 msgstr "Tất cả"
 
-#: js/views/ElementDetail.vue:184
+#: js/views/ElementDetail.vue:203
 msgid "Error fetching element"
 msgstr "Lỗi khi lấy phần tử"
 
-#: js/views/ElementDetail.vue:245
+#: js/views/ElementDetail.vue:281
 msgid "Element published successfully"
 msgstr "Yếu tố đã được xuất bản thành công."
 
-#: js/views/ElementDetail.vue:246
+#: js/views/ElementDetail.vue:282
 msgid "Element scheduled for publishing at %{date}"
 msgstr "Thành phần được lên lịch để đăng vào lúc %{date}"
 
-#: js/views/ElementDetail.vue:247
+#: js/views/ElementDetail.vue:283
 msgid "Error publishing element"
 msgstr "Lỗi khi xuất bản thành phần"
 
-#: js/views/ElementDetail.vue:274
-#: js/views/FileDetail.vue:240
-#: js/views/PageDetail.vue:476
+#: js/views/ElementDetail.vue:310
+#: js/views/FileDetail.vue:273
+#: js/views/PageDetail.vue:490
 msgid "There are invalid fields, please resolve the errors first"
 msgstr "Có các trường không hợp lệ, vui lòng khắc phục các lỗi trước."
 
-#: js/views/ElementDetail.vue:317
+#: js/views/ElementDetail.vue:353
 msgid "Element saved successfully"
 msgstr "Phần tử đã được lưu thành công."
 
-#: js/views/ElementDetail.vue:322
+#: js/views/ElementDetail.vue:366
 msgid "Error saving element"
 msgstr "Lỗi khi lưu thành phần"
 
-#: js/views/ElementDetail.vue:388
+#: js/views/ElementDetail.vue:436
 msgid "Error fetching element versions"
 msgstr "Lỗi khi lấy phiên bản của các phần tử"
 
-#: js/views/ElementDetail.vue:433
-#: js/views/FileDetail.vue:379
+#: js/views/ElementDetail.vue:482
+#: js/views/FileDetail.vue:419
 msgid "Used by"
 msgstr "Được sử dụng bởi"
 
-#: js/views/ElementList.vue:90
-#: js/views/FileList.vue:89
-#: js/views/PageList.vue:139
+#: js/views/ElementList.vue:92
+#: js/views/FileList.vue:91
+#: js/views/PageList.vue:141
 msgid "publish"
 msgstr "xuất bản"
 
-#: js/views/ElementList.vue:94
-#: js/views/FileList.vue:93
-#: js/views/PageList.vue:143
+#: js/views/ElementList.vue:96
+#: js/views/FileList.vue:95
+#: js/views/PageList.vue:145
 msgid "Scheduled"
 msgstr "Đã lên lịch"
 
-#: js/views/ElementList.vue:95
-#: js/views/FileList.vue:94
-#: js/views/PageList.vue:144
+#: js/views/ElementList.vue:97
+#: js/views/FileList.vue:96
+#: js/views/PageList.vue:146
 msgid "Drafts"
 msgstr "Bản nháp"
 
-#: js/views/ElementList.vue:100
-#: js/views/FileList.vue:99
-#: js/views/PageList.vue:149
+#: js/views/ElementList.vue:102
+#: js/views/FileList.vue:101
+#: js/views/PageList.vue:151
 msgid "trashed"
 msgstr "bị vứt bỏ"
 
-#: js/views/ElementList.vue:103
-#: js/views/FileList.vue:102
-#: js/views/PageList.vue:152
+#: js/views/ElementList.vue:105
+#: js/views/FileList.vue:104
+#: js/views/PageList.vue:154
 msgid "Available only"
 msgstr "Chỉ có sẵn"
 
-#: js/views/ElementList.vue:104
-#: js/views/FileList.vue:103
-#: js/views/PageList.vue:153
+#: js/views/ElementList.vue:106
+#: js/views/FileList.vue:105
+#: js/views/PageList.vue:155
 msgid "Only trashed"
 msgstr "Chỉ bị xóa"
 
-#: js/views/ElementList.vue:112
-#: js/views/FileList.vue:111
-#: js/views/PageList.vue:179
+#: js/views/ElementList.vue:114
+#: js/views/FileList.vue:113
+#: js/views/PageList.vue:181
 msgid "Edited by me"
 msgstr "Được biên tập bởi tôi"
 
-#: js/views/ElementList.vue:117
-#: js/views/FileList.vue:116
-#: js/views/PageList.vue:184
+#: js/views/ElementList.vue:119
+#: js/views/FileList.vue:118
+#: js/views/PageList.vue:186
 msgid "languages"
 msgstr "ngôn ngữ"
 
-#: js/views/ElementList.vue:137
-#: js/views/FileList.vue:136
-#: js/views/PageList.vue:313
+#: js/views/ElementList.vue:139
+#: js/views/FileList.vue:138
+#: js/views/PageList.vue:316
 msgid "Close navigation"
 msgstr "Đóng thanh điều hướng"
 
-#: js/views/ElementList.vue:137
-#: js/views/FileList.vue:136
-#: js/views/PageList.vue:313
+#: js/views/ElementList.vue:139
+#: js/views/FileList.vue:138
+#: js/views/PageList.vue:316
 msgid "Open navigation"
 msgstr "Mở thanh điều hướng"
 
-#: js/views/FileDetail.vue:170
+#: js/views/FileDetail.vue:187
 msgid "Error fetching file"
 msgstr "Lỗi khi tải tệp"
 
-#: js/views/FileDetail.vue:211
+#: js/views/FileDetail.vue:244
 msgid "File published successfully"
 msgstr "Tệp đã được đăng tải thành công."
 
-#: js/views/FileDetail.vue:212
+#: js/views/FileDetail.vue:245
 msgid "File scheduled for publishing at %{date}"
 msgstr "Tệp đã được lên lịch để đăng vào lúc %{date}"
 
-#: js/views/FileDetail.vue:285
+#: js/views/FileDetail.vue:318
 msgid "File saved successfully"
 msgstr "Tệp đã được lưu thành công."
 
-#: js/views/FileDetail.vue:290
+#: js/views/FileDetail.vue:328
 msgid "Error saving file"
 msgstr "Lỗi lưu file"
 
-#: js/views/FileDetail.vue:336
+#: js/views/FileDetail.vue:375
 msgid "Error fetching file versions"
 msgstr "Lỗi khi lấy phiên bản tệp"
 
@@ -2245,82 +2245,82 @@ msgstr "Hiển thị mật khẩu"
 msgid "Error"
 msgstr "Lỗi"
 
-#: js/views/PageDetail.vue:442
+#: js/views/PageDetail.vue:456
 msgid "Page published successfully"
 msgstr "Trang đã được đăng thành công."
 
-#: js/views/PageDetail.vue:443
+#: js/views/PageDetail.vue:457
 msgid "Page scheduled for publishing at %{date}"
 msgstr "Trang được lên lịch để đăng vào lúc %{date}"
 
-#: js/views/PageDetail.vue:546
+#: js/views/PageDetail.vue:560
 msgid "Page saved successfully"
 msgstr "Trang đã được lưu thành công."
 
-#: js/views/PageDetail.vue:576
+#: js/views/PageDetail.vue:597
 msgid "No page schema for \"content\" found"
 msgstr "Không tìm thấy sơ đồ trang cho \"nội dung\"."
 
-#: js/views/PageDetail.vue:712
+#: js/views/PageDetail.vue:733
 msgid "Error fetching page versions"
 msgstr "Lỗi khi lấy phiên bản trang"
 
-#: js/views/PageDetail.vue:773
+#: js/views/PageDetail.vue:794
 msgid "Translate page"
 msgstr "Dịch trang"
 
-#: js/views/PageDetail.vue:798
+#: js/views/PageDetail.vue:820
 msgid "Editor"
 msgstr "Biên tập viên"
 
-#: js/views/PageDetail.vue:815
+#: js/views/PageDetail.vue:837
 msgid "Metrics"
 msgstr "Chỉ số"
 
-#: js/views/PageList.vue:131
+#: js/views/PageList.vue:133
 msgid "view"
 msgstr "Xem"
 
-#: js/views/PageList.vue:133
+#: js/views/PageList.vue:135
 msgid "Tree"
 msgstr "Cây"
 
-#: js/views/PageList.vue:134
+#: js/views/PageList.vue:136
 msgid "List"
 msgstr "Danh sách"
 
-#: js/views/PageList.vue:158
+#: js/views/PageList.vue:160
 msgid "status"
 msgstr "trạng thái"
 
-#: js/views/PageList.vue:162
+#: js/views/PageList.vue:164
 msgid "Hidden"
 msgstr "Ẩn"
 
-#: js/views/PageList.vue:168
+#: js/views/PageList.vue:170
 msgid "cache"
 msgstr "bộ nhớ đệm"
 
-#: js/views/PageList.vue:290
+#: js/views/PageList.vue:293
 msgid "Error synthesizing content"
 msgstr "Lỗi trong quá trình tổng hợp nội dung"
 
-#: js/views/PageList.vue:343
+#: js/views/PageList.vue:346
 msgid "Describe the page and content you want to create"
 msgstr "Mô tả trang và nội dung bạn muốn tạo."
 
-#: js/views/PageList.vue:378
+#: js/views/PageList.vue:381
 msgid "Generating ..."
 msgstr "Đang tạo ..."
 
-#: js/views/PageList.vue:379
+#: js/views/PageList.vue:382
 msgid "Generate page based on prompt"
 msgstr "Tạo trang dựa trên lời nhắc"
 
-#: js/views/PageList.vue:399
+#: js/views/PageList.vue:402
 msgid "AI can create a page and content based on your input and add it to the page tree"
 msgstr "Trí tuệ nhân tạo (AI) có thể tạo ra một trang web và nội dung dựa trên thông tin đầu vào của bạn và thêm nó vào cây trang."
 
-#: js/views/PageList.vue:406
+#: js/views/PageList.vue:409
 msgid "Double click on the response in the input field to display full response"
 msgstr "Nhấp đúp vào phản hồi trong ô nhập liệu để hiển thị toàn bộ phản hồi."
