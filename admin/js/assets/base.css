@@ -501,6 +501,7 @@ input[readonly],
   --ck-color-button-on-background: rgb(var(--v-theme-surface-light));
   --ck-color-button-on-color: rgb(var(--v-theme-on-surface));
   --ck-color-text: rgb(var(--v-theme-on-surface));
+  --ck-content-font-color: rgb(var(--v-theme-on-surface));
   --ck-border-radius: 4px;
 }
 
@@ -515,6 +516,10 @@ input[readonly],
 
 .ck-editor__editable_inline {
   min-height: 200px;
+}
+
+.ck-editor .ck-content pre {
+  color: rgb(var(--v-theme-on-surface));
 }
 
 .ck-editor * {
