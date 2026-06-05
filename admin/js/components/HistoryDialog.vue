@@ -59,6 +59,10 @@ export default {
       return this.latest && this.isModified(this.latest, this.current)
     },
 
+    hasPublishedLatest() {
+      return !!this.latest && (this.latest.published || this.latest.publish_at)
+    },
+
     versions() {
       return this.list.filter((v) => {
         return this.isModified(v, this.current) || v.published || v.publish_at
@@ -490,7 +494,7 @@ export default {
           </v-timeline-item>
 
           <v-timeline-item
-            v-if="!loading && !(hasCurrentChanges || versions.length)"
+            v-if="!loading && !(hasCurrentChanges || versions.length || hasPublishedLatest)"
             dot-color="grey-lighten-1"
             width="100%"
             size="small"
@@ -635,6 +639,23 @@ export default {
                   />
                 </div>
               </v-card-text>
+            </v-card>
+          </v-timeline-item>
+
+          <v-timeline-item
+            v-if="!loading && hasPublishedLatest"
+            :dot-color="latest.published ? 'success' : 'grey-lighten-1'"
+            :class="{ publish: latest.publish_at }"
+            width="100%"
+            size="small"
+          >
+            <v-card :elevation="2">
+              <v-card-title>
+                {{ formatDate(latest.publish_at || latest.created_at) }}
+              </v-card-title>
+              <v-card-subtitle>
+                {{ latest.editor }}
+              </v-card-subtitle>
             </v-card>
           </v-timeline-item>
 
