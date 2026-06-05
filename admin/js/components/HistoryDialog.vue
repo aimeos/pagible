@@ -126,9 +126,11 @@ export default {
     },
 
     addedBlock(item) {
+      const fields = this.buildFieldDiffs(this.getChangedFields({}, item?.data || {}))
+
       return {
         title: this.blockLabel(item),
-        fields: [{
+        fields: fields.length ? fields : [{
           label: '', removed: [EMPTY_SPACE],
           added: [{ value: this.$gettext('Added'), highlight: true }]
         }]
@@ -326,7 +328,14 @@ export default {
     },
 
     removedBlock(item) {
-      return { title: this.blockLabel(item), fields: [{ label: '', removed: [{ value: this.$gettext('Removed'), highlight: true }], added: [EMPTY_SPACE] }] }
+      const fields = this.buildFieldDiffs(this.getChangedFields(item?.data || {}, {}))
+
+      return {
+        title: this.blockLabel(item),
+        fields: fields.length ? fields : [{
+          label: '', removed: [{ value: this.$gettext('Removed'), highlight: true }], added: [EMPTY_SPACE]
+        }]
+      }
     },
 
     reset() {
