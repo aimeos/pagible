@@ -12,7 +12,6 @@ use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Refiner;
 use Aimeos\Prisma\Prisma;
 use Aimeos\Prisma\Tools;
-use Aimeos\Prisma\Exceptions\PrismaException;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Attributes\Name;
@@ -63,33 +62,26 @@ class RefineContent extends Tool
 
         $system = view( 'cms::prompts.refine' )->render();
 
-        try
-        {
-            $response = Prisma::text()->using( $provider, $config )
-                ->model( $model )
-                ->withMaxTokens( config( 'cms.ai.maxtoken' ) )
-                ->withSystemPrompt( $system . "\n" . ( $validated['context'] ?? '' ) . ( !empty( $validated['lang'] ) ? "\nWrite the content in language: " . $validated['lang'] : '' ) )
-                ->withClientOptions( [
-                    'timeout' => 180,
-                    'connect_timeout' => 10,
-                ] )
-                ->ensure( 'structure' )
-                ->structure( $validated['prompt'] . "\n\nContent as JSON:\n" . json_encode( $content ), \Aimeos\Prisma\Schema\Schema::fromArray( 'response', \Aimeos\Cms\JsonSchema::build( 'content', $page->type ) ) ); // @phpstan-ignore-line method.notFound
+        $response = Prisma::text()->using( $provider, $config )
+            ->model( $model )
+            ->withMaxTokens( config( 'cms.ai.maxtoken' ) )
+            ->withSystemPrompt( $system . "\n" . ( $validated['context'] ?? '' ) . ( !empty( $validated['lang'] ) ? "\nWrite the content in language: " . $validated['lang'] : '' ) )
+            ->withClientOptions( [
+                'timeout' => 180,
+                'connect_timeout' => 10,
+            ] )
+            ->ensure( 'structure' )
+            ->structure( $validated['prompt'] . "\n\nContent as JSON:\n" . json_encode( $content ), \Aimeos\Prisma\Schema\Schema::fromArray( 'response', \Aimeos\Cms\JsonSchema::build( 'content', $page->type ) ) ); // @phpstan-ignore-line method.notFound
 
-            $structured = $response->structured();
+        $structured = $response->structured();
 
-            if( !$structured ) {
-                return Response::structured( ['error' => 'Invalid content in refine response.'] );
-            }
-
-            $result = Refiner::merge( $content, $structured['contents'] ?? [], $page->type );
-
-            return Response::structured( ['content' => $result] );
+        if( !$structured ) {
+            return Response::structured( ['error' => 'Invalid content in refine response.'] );
         }
-        catch( PrismaException $e )
-        {
-            throw new \Aimeos\Cms\Exception( $e->getMessage() );
-        }
+
+        $result = Refiner::merge( $content, $structured['contents'] ?? [], $page->type );
+
+        return Response::structured( ['content' => $result] );
     }
 
 
