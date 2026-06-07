@@ -35,6 +35,23 @@ class Utils
 
 
     /**
+     * Formats a number of seconds as a "HH:MM:SS.mmm" timestamp.
+     *
+     * @param float $seconds Time in seconds
+     * @return string Formatted timestamp, e.g. "00:01:23.500"
+     */
+    public static function formatSeconds( float $seconds ) : string
+    {
+        $hours = floor( $seconds / 3600 );
+        $minutes = floor( ( $seconds % 3600 ) / 60 );
+        $secs = floor( $seconds % 60 );
+        $millis = ( $seconds - floor( $seconds ) ) * 1000;
+
+        return sprintf( "%02d:%02d:%02d.%03d", $hours, $minutes, $secs, $millis );
+    }
+
+
+    /**
      * Executes a callback within a database transaction using the CMS connection.
      *
      * @template T
