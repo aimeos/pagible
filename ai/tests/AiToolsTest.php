@@ -8,11 +8,14 @@
 namespace Tests;
 
 use Aimeos\Cms\Mcp\CmsServer;
+use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Prisma\Prisma;
+use Aimeos\Prisma\Responses\FileResponse;
 use Aimeos\Prisma\Responses\TextResponse;
 use Database\Seeders\TestSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Storage;
 
 
 class AiToolsTest extends AiTestAbstract
@@ -133,5 +136,156 @@ class AiToolsTest extends AiTestAbstract
         ] );
 
         $response->assertHasErrors();
+    }
+
+
+    // ── GenerateImage ─────────────────────────────────────────────────
+
+    public function testGenerateImage()
+    {
+        Storage::fake( 'public' );
+        $image = $this->pngBinary();
+        Prisma::fake( [FileResponse::fromBinary( $image, 'image/png' )] );
+
+        $response = CmsServer::actingAs( $this->user )->tool( \Aimeos\Cms\Tools\GenerateImage::class, [
+            'prompt' => 'A blue abstract hero banner',
+            'name' => 'hero',
+        ] );
+
+        $response->assertOk()->assertSee( ['id'] );
+        $this->assertTrue( File::where( 'name', 'hero.png' )->exists() );
+    }
+
+
+    public function testGenerateImagePermission()
+    {
+        $user = new \App\Models\User([
+            'name' => 'No perms',
+            'email' => 'noperms@testbench',
+            'password' => 'secret',
+            'cmsperms' => []
+        ]);
+
+        $response = CmsServer::actingAs( $user )->tool( \Aimeos\Cms\Tools\GenerateImage::class, [
+            'prompt' => 'A blue abstract hero banner',
+        ] );
+
+        $response->assertHasErrors();
+    }
+
+
+    // ── RepaintImage (edits create a new version) ─────────────────────
+
+    public function testRepaintImageCreatesVersion()
+    {
+        Storage::fake( 'public' );
+        $image = $this->pngBinary();
+        $file = File::where( 'name', 'Test image' )->firstOrFail();
+        $before = $file->versions()->count();
+
+        Prisma::fake( [FileResponse::fromBinary( $image, 'image/png' )] );
+
+        $response = CmsServer::actingAs( $this->user )->tool( \Aimeos\Cms\Tools\RepaintImage::class, [
+            'file' => $file->id,
+            'prompt' => 'Make the sky a sunset',
+        ] );
+
+        $response->assertOk()->assertSee( ['id'] );
+        $this->assertGreaterThan( $before, $file->versions()->count() );
+    }
+
+
+    public function testRepaintImageNotFound()
+    {
+        Prisma::fake( [] );
+
+        $response = CmsServer::actingAs( $this->user )->tool( \Aimeos\Cms\Tools\RepaintImage::class, [
+            'file' => '00000000-0000-0000-0000-000000000000',
+            'prompt' => 'Make the sky a sunset',
+        ] );
+
+        $response->assertOk()->assertStructuredContent( ['error' => 'Image file not found or not an image.'] );
+    }
+
+
+    // ── DescribeFile ──────────────────────────────────────────────────
+
+    public function testDescribeFile()
+    {
+        $file = File::where( 'name', 'Test image' )->firstOrFail();
+        Prisma::fake( [TextResponse::fromText( 'A scenic mountain view at sunset.' )] );
+
+        $response = CmsServer::actingAs( $this->user )->tool( \Aimeos\Cms\Tools\DescribeFile::class, [
+            'file' => $file->id,
+            'lang' => 'en',
+        ] );
+
+        $response->assertOk()->assertSee( ['description'] );
+    }
+
+
+    public function testDescribeFileNotFound()
+    {
+        Prisma::fake( [] );
+
+        $response = CmsServer::actingAs( $this->user )->tool( \Aimeos\Cms\Tools\DescribeFile::class, [
+            'file' => '00000000-0000-0000-0000-000000000000',
+        ] );
+
+        $response->assertOk()->assertStructuredContent( ['error' => 'File not found.'] );
+    }
+
+
+    // ── TranscribeAudio ───────────────────────────────────────────────
+
+    public function testTranscribeAudio()
+    {
+        $file = File::forceCreate( [
+            'mime' => 'audio/mpeg',
+            'lang' => 'en',
+            'name' => 'Test audio',
+            'path' => 'https://example.com/audio.mp3',
+            'editor' => 'test',
+        ] );
+
+        Prisma::fake( [
+            TextResponse::fromText( 'test transcription' )->withStructured( [
+                ['start' => 0, 'end' => 1, 'text' => 'test transcription'],
+            ] )
+        ] );
+
+        $response = CmsServer::actingAs( $this->user )->tool( \Aimeos\Cms\Tools\TranscribeAudio::class, [
+            'file' => $file->id,
+        ] );
+
+        $response->assertOk()->assertSee( ['segments'] );
+    }
+
+
+    public function testTranscribeAudioWrongType()
+    {
+        $file = File::where( 'name', 'Test image' )->firstOrFail();
+        Prisma::fake( [] );
+
+        $response = CmsServer::actingAs( $this->user )->tool( \Aimeos\Cms\Tools\TranscribeAudio::class, [
+            'file' => $file->id,
+        ] );
+
+        $response->assertOk()->assertSee( ['error'] );
+    }
+
+
+    /**
+     * Returns the binary data of a small valid PNG image.
+     */
+    protected function pngBinary() : string
+    {
+        $im = imagecreatetruecolor( 8, 8 );
+        ob_start();
+        imagepng( $im );
+        $data = (string) ob_get_clean();
+        imagedestroy( $im );
+
+        return $data;
     }
 }
