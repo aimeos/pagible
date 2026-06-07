@@ -36,6 +36,15 @@ class AiServiceProvider extends Provider
             \Aimeos\Cms\Mcp\CmsServer::register( [
                 \Aimeos\Cms\Tools\RefineContent::class,
                 \Aimeos\Cms\Tools\TranslateContent::class,
+                \Aimeos\Cms\Tools\DescribeFile::class,
+                \Aimeos\Cms\Tools\TranscribeAudio::class,
+                \Aimeos\Cms\Tools\GenerateImage::class,
+                \Aimeos\Cms\Tools\RepaintImage::class,
+                \Aimeos\Cms\Tools\IsolateImage::class,
+                \Aimeos\Cms\Tools\UpscaleImage::class,
+                \Aimeos\Cms\Tools\UncropImage::class,
+                \Aimeos\Cms\Tools\EraseImage::class,
+                \Aimeos\Cms\Tools\InpaintImage::class,
             ] );
         }
 
