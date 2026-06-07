@@ -529,7 +529,7 @@ class File extends Base
      */
     protected function fetchUrl( string $url, DriverInterface $driver )
     {
-        $response = Http::withOptions( ['stream' => true] )->get( $url );
+        $response = Http::withOptions( \Aimeos\Cms\Utils::safeHttp( $url ) + ['stream' => true] )->get( $url );
 
         if( !$response->successful() ) {
             throw new \Aimeos\Cms\Exception( sprintf( 'Failed to download "%s"', $url ) );

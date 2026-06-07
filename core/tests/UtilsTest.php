@@ -135,6 +135,24 @@ class UtilsTest extends CoreTestAbstract
     }
 
 
+    public function testSafeHttpRejectsNonHttp()
+    {
+        $this->expectException( \Aimeos\Cms\Exception::class );
+        Utils::safeHttp( 'ftp://example.com/file' );
+    }
+
+
+    #[Group('network')]
+    public function testSafeHttpPinsResolvedIp()
+    {
+        $opts = Utils::safeHttp( 'https://example.com/image.png' );
+
+        $this->assertTrue( $opts['verify'] );
+        $this->assertArrayHasKey( 'on_redirect', $opts['allow_redirects'] );
+        $this->assertStringStartsWith( 'example.com:443:', $opts['curl'][CURLOPT_RESOLVE][0] );
+    }
+
+
     public function testHtmlStripsScript()
     {
         $result = Utils::html( '<p>Hello</p><script>alert(1)</script>' );
