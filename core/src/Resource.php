@@ -404,7 +404,34 @@ class Resource
     {
         $editor = Utils::editor( $user );
 
-        return Utils::transaction( function() use ( $id, $input, $editor, $latestId, $upload, $preview ) {
+        // Store the uploaded file and generate its previews outside the
+        // transaction (they don't depend on the existing record) to keep slow
+        // disk and image work off the database connection.
+        $stored = null;
+        $storedPreviews = null;
+
+        if( $upload instanceof UploadedFile && $upload->isValid() )
+        {
+            $tmp = new File();
+            $tmp->addFile( $upload );
+            $stored = $tmp->path;
+
+            $useUpload = str_starts_with( $upload->getClientMimeType(), 'image/' )
+                && !( $preview instanceof UploadedFile && $preview->isValid() && str_starts_with( $preview->getClientMimeType(), 'image/' ) );
+
+            if( $useUpload )
+            {
+                try {
+                    $tmp->addPreviews( $upload );
+                    $storedPreviews = $tmp->previews;
+                } catch( \Throwable $t ) {
+                    $tmp->removePreviews();
+                    throw $t;
+                }
+            }
+        }
+
+        return Utils::transaction( function() use ( $id, $input, $editor, $latestId, $preview, $stored, $storedPreviews ) {
 
             /** @var File $orig */
             $orig = File::withTrashed()->with( ['latest' => fn( $q ) => $q->select( 'id', 'versionable_id', 'data', 'lang', 'editor' )] )->findOrFail( $id );
@@ -420,12 +447,8 @@ class Resource
             $file->fill( $data );
 
             $file->previews = $input['previews'] ?? $previews;
-            $file->path = $input['path'] ?? $path;
+            $file->path = $stored ?? $input['path'] ?? $path;
             $file->editor = $editor;
-
-            if( $upload instanceof UploadedFile && $upload->isValid() ) {
-                $file->addFile( $upload );
-            }
 
             if( $file->path !== $path && !str_starts_with( $file->path, 'http' ) ) {
                 $file->mime = Utils::mimetype( $file->path );
@@ -435,8 +458,8 @@ class Resource
             {
                 if( $preview instanceof UploadedFile && $preview->isValid() && str_starts_with( $preview->getClientMimeType(), 'image/' ) ) {
                     $file->addPreviews( $preview );
-                } elseif( $upload instanceof UploadedFile && $upload->isValid() && str_starts_with( $upload->getClientMimeType(), 'image/' ) ) {
-                    $file->addPreviews( $upload );
+                } elseif( $storedPreviews !== null ) {
+                    $file->previews = $storedPreviews;
                 } elseif( $file->path !== $path && str_starts_with( $file->path, 'http' ) && Utils::isValidUrl( $file->path ) ) {
                     $file->addPreviews( $file->path );
                 } elseif( $preview === false ) {
