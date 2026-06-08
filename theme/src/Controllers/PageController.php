@@ -112,10 +112,6 @@ class PageController extends Controller
     protected function latest( string $path, string $domain )
     {
         $with = [
-            'files' => fn( $q ) => $q->select( File::SELECT_COLS ),
-            'files.latest',
-            'elements' => fn( $q ) => $q->select( [...Element::SELECT_COLS, 'name'] ),
-            'elements.latest',
             'latest',
             'latest.files' => fn( $q ) => $q->select( File::SELECT_COLS ),
             'latest.files.latest',
@@ -131,6 +127,14 @@ class PageController extends Controller
             ?? Page::with( $with )->where( 'domain', $domain )->where( 'path', $path )->firstOrFail();
 
         $version = $page->latest;
+
+        if( $version ) {
+            // The editor preview renders the draft version's content, so resolve files and
+            // elements from the version's pivots instead of the page-level pivots (which only
+            // reflect the published state and are synced on publish).
+            $page->setRelation( 'files', $version->getRelation( 'files' ) );
+            $page->setRelation( 'elements', $version->getRelation( 'elements' ) );
+        }
 
         if( $to = $version?->data->to ?? $page->to ) {
             return str_starts_with( $to, 'http' ) ? redirect()->away( $to ) : redirect()->to( $to );
