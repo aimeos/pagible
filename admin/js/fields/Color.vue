@@ -1,13 +1,7 @@
 /** @license LGPL, https://opensource.org/license/lgpl-3-0 */
 
 <script>
-import { VColorInput } from 'vuetify/labs/VColorInput'
-
 export default {
-  components: {
-    VColorInput
-  },
-
   props: {
     modelValue: { type: String },
     config: { type: Object, default: () => {} },
