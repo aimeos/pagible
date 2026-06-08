@@ -107,6 +107,11 @@ class ElementToolsTest extends McpTestAbstract
         ] );
 
         $response->assertOk()->assertSee( ['Test heading', 'heading'] );
+
+        // the created element's id must be part of the response (Element::$visible omits it)
+        $element = Element::where( 'name', 'Test heading' )->first();
+        $this->assertNotNull( $element );
+        $response->assertSee( [$element->id] );
     }
 
 

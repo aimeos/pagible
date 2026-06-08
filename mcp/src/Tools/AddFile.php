@@ -84,7 +84,7 @@ class AddFile extends Tool
 
             $file->save();
 
-            $file->versions()->forceCreate( [
+            $version = $file->versions()->forceCreate( [
                 'id' => $versionId,
                 'lang' => $v['lang'] ?? null,
                 'editor' => $editor,
@@ -99,7 +99,11 @@ class AddFile extends Tool
                 ],
             ] );
 
-            return Response::structured( $file->toArray() );
+            // Re-index with the latest version loaded so the draft (latest=true)
+            // row is written; on $file->save() above the version did not exist yet.
+            $file->setRelation( 'latest', $version )->searchable();
+
+            return Response::structured( ['id' => $file->id] + $file->toArray() );
         } );
     }
 

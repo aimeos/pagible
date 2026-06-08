@@ -53,7 +53,9 @@ class RestoreFile extends Tool
 
         $items = Resource::restore( File::class, [$v['id']], Utils::editor( $request->user() ) );
 
-        return Response::structured( $items->firstOrFail()->toArray() );
+        $item = $items->firstOrFail();
+
+        return Response::structured( ['id' => $item->id] + $item->toArray() );
     }
 
 

@@ -48,7 +48,7 @@ class AddElement extends Tool
         $input = array_diff_key( $v, array_flip( ['files'] ) );
         $element = Resource::addElement( $input, $request->user(), $v['files'] ?? [] );
 
-        return Response::structured( $element->toArray() );
+        return Response::structured( ['id' => $element->id] + $element->toArray() );
     }
 
 

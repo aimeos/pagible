@@ -89,6 +89,18 @@ class Element extends Base
     ];
 
     /**
+     * The attributes that are returned by toArray()
+     *
+     * @var list<string>
+     */
+    protected $visible = [
+        'type',
+        'lang',
+        'name',
+        'data',
+    ];
+
+    /**
      * The table associated with the model.
      *
      * @var string

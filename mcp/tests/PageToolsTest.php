@@ -200,6 +200,11 @@ class PageToolsTest extends McpTestAbstract
             'Test page',
             'A Test Page',
         ] );
+
+        // the created page's id must be part of the response (Page::$visible omits it)
+        $page = Page::where( 'name', 'Test page' )->first();
+        $this->assertNotNull( $page );
+        $response->assertSee( [$page->id] );
     }
 
 

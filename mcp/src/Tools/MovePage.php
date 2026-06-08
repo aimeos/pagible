@@ -61,7 +61,7 @@ class MovePage extends Tool
 
             Page::withoutSyncingToSearch( fn() => $page->save() );
 
-            return Response::structured( $page->toArray() + ['url' => route( 'cms.page', ['path' => $page->path] )] );
+            return Response::structured( ['id' => $page->id, 'parent_id' => $page->parent_id] + $page->toArray() + ['url' => route( 'cms.page', ['path' => $page->path] )] );
         } );
     }
 

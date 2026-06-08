@@ -46,7 +46,9 @@ class DropElement extends Tool
             return Response::structured( ['error' => 'Element not found.'] );
         }
 
-        return Response::structured( $items->first()->toArray() );
+        $item = $items->first();
+
+        return Response::structured( ['id' => $item->id] + $item->toArray() );
     }
 
 

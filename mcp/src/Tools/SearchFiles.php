@@ -10,6 +10,7 @@ namespace Aimeos\Cms\Tools;
 use Aimeos\Cms\Filter;
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\Models\File;
+use Aimeos\Cms\Tools\Concerns\Metadata;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Tools\Annotations\IsReadOnly;
 use Laravel\Mcp\Server\Tools\Annotations\IsOpenWorld;
@@ -27,6 +28,9 @@ use Laravel\Mcp\Request;
 #[Description('Lists and searches media files. Optional: term (full-text search), mime, lang, trashed, publish, editor. Without term, returns all matching files. Returns up to 25 results.')]
 class SearchFiles extends Tool
 {
+    use Metadata;
+
+
     /**
      * Handle the tool request.
      */
@@ -56,19 +60,12 @@ class SearchFiles extends Tool
         foreach( Filter::files( $search, $v )->get() as $item )
         {
             /** @var File $item */
-            $latest = $item->latest;
-            $data = $latest->data ?? new \stdClass();
-            $result[] = [
-                'id' => $item->id,
+            $data = $item->latest->data ?? new \stdClass();
+            $result[] = $this->result( $item, [
                 'name' => $data->name ?? null,
                 'mime' => $data->mime ?? null,
                 'path' => $data->path ?? null,
-                'lang' => $latest?->lang,
-                'editor' => $latest?->editor,
-                'deleted' => $item->trashed(),
-                'created_at' => $item->created_at?->format( 'Y-m-d H:i:s' ),
-                'updated_at' => $item->updated_at?->format( 'Y-m-d H:i:s' ),
-            ];
+            ] );
         }
 
         return Response::structured( ['files' => $result] );
