@@ -42,6 +42,24 @@ class SitemapControllerTest extends ThemeTestAbstract
     }
 
 
+    public function testIndexExcludesNoindex()
+    {
+        \Aimeos\Cms\Models\Page::where( 'path', 'hidden' )->firstOrFail()
+            ->forceFill( ['meta' => [['type' => 'robots', 'data' => ['index' => 'noindex']]]] )
+            ->saveQuietly();
+
+        $controller = new \Aimeos\Cms\Controllers\SitemapController();
+
+        ob_start();
+        $response = $controller->index();
+        $response->getCallback()();
+        $content = ob_get_clean();
+
+        $this->assertStringNotContainsString( 'http://localhost/hidden]]>', $content );
+        $this->assertStringContainsString( '<loc><![CDATA[http://localhost/disabled-child]]></loc>', $content );
+    }
+
+
     public function testIndexAsSitemapIndex()
     {
         $controller = new SitemapControllerLowThreshold();
