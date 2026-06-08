@@ -327,6 +327,10 @@ class CmsEngineTest extends SearchTestAbstract
 
         $file->setRelation( 'latest', $version )->searchable();
 
+        if( DB::connection( config( 'cms.db' ) )->getDriverName() === 'sqlsrv' ) {
+            sleep( 5 );
+        }
+
         $result = File::search( 'zphraseunique' )->searchFields( 'draft' )->take( 25 )->get();
         $this->assertTrue( $result->contains( 'id', $file->id ) );
     }
