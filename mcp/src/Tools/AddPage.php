@@ -116,7 +116,7 @@ class AddPage extends Tool
             $pid,
         );
 
-        return Response::structured( $page->toArray() );
+        return Response::structured( ['id' => $page->id] + $page->toArray() );
     }
 
 

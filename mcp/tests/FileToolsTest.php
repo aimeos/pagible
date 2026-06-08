@@ -113,6 +113,11 @@ class FileToolsTest extends McpTestAbstract
         ] );
 
         $response->assertOk()->assertSee( ['New test file'] );
+
+        // the created file's id must be part of the response (File::$visible omits it)
+        $file = File::where( 'name', 'New test file' )->first();
+        $this->assertNotNull( $file );
+        $response->assertSee( [$file->id] );
     }
 
 

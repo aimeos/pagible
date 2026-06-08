@@ -302,6 +302,40 @@ class CmsEngineTest extends SearchTestAbstract
     }
 
 
+    public function testFileDraftSearchableAfterAdd(): void
+    {
+        // mirrors the add-file flow: the model is saved (and indexed) before its
+        // version exists, so the draft (latest=true) index row must be written by
+        // the re-index after the version is created and the relation is set.
+        $versionId = ( new \Aimeos\Cms\Models\Version )->newUniqueId();
+
+        $file = new File();
+        $file->tenant_id = \Aimeos\Cms\Tenancy::value();
+        $file->name = 'Zphraseunique draft media';
+        $file->mime = 'image/png';
+        $file->path = 'cms/test/zphraseunique.png';
+        $file->latest_id = $versionId;
+        $file->editor = 'test';
+        $file->save();
+
+        $version = $file->versions()->forceCreate( [
+            'id' => $versionId,
+            'lang' => 'en',
+            'editor' => 'test',
+            'data' => ['name' => $file->name, 'mime' => $file->mime, 'path' => $file->path],
+        ] );
+
+        $file->setRelation( 'latest', $version )->searchable();
+
+        if( DB::connection( config( 'cms.db' ) )->getDriverName() === 'sqlsrv' ) {
+            sleep( 5 );
+        }
+
+        $result = File::search( 'zphraseunique' )->searchFields( 'draft' )->take( 25 )->get();
+        $this->assertTrue( $result->contains( 'id', $file->id ) );
+    }
+
+
     public function testEngine(): void
     {
         $engine = new CmsEngine();

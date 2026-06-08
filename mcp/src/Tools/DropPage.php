@@ -46,7 +46,9 @@ class DropPage extends Tool
             return Response::structured( ['error' => 'Page not found.'] );
         }
 
-        return Response::structured( $items->first()->toArray() );
+        $item = $items->first();
+
+        return Response::structured( ['id' => $item->id] + $item->toArray() );
     }
 
 

@@ -73,7 +73,11 @@ class Resource
 
             $version->files()->attach( $files );
 
-            return $element->setRelation( 'latest', $version );
+            // Re-index with the latest version loaded so the draft (latest=true)
+            // row is written; on $element->save() above the version did not exist yet.
+            $element->setRelation( 'latest', $version )->searchable();
+
+            return $element;
         } );
     }
 
@@ -131,7 +135,11 @@ class Resource
             $version->elements()->attach( $elements );
             $version->files()->attach( $files );
 
-            return $page->setRelation( 'latest', $version );
+            // Re-index with the latest version loaded so the draft (latest=true)
+            // row is written; on $page->save() above the version did not exist yet.
+            $page->setRelation( 'latest', $version )->searchable();
+
+            return $page;
         } );
     }
 

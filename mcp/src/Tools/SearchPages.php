@@ -10,6 +10,7 @@ namespace Aimeos\Cms\Tools;
 use Aimeos\Cms\Filter;
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Tools\Concerns\Metadata;
 use Aimeos\Nestedset\NestedSet;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Tools\Annotations\IsReadOnly;
@@ -28,6 +29,9 @@ use Laravel\Mcp\Request;
 #[Description('Lists and searches pages. Parameters: term (full-text search), lang, domain, type, tag, theme, path, status, cache, to, trashed (without/with/only), publish (PUBLISHED/DRAFT/SCHEDULED), editor. Use term parameter if possible. Returns up to 25 matches.')]
 class SearchPages extends Tool
 {
+    use Metadata;
+
+
     /**
      * Handle the tool request.
      */
@@ -65,10 +69,8 @@ class SearchPages extends Tool
         foreach( Filter::pages( $search, $v )->get() as $item )
         {
             /** @var Page $item */
-            $latest = $item->latest;
-            $data = $latest->data ?? new \stdClass();
-            $result[] = [
-                'id' => $item->id,
+            $data = $item->latest->data ?? new \stdClass();
+            $result[] = $this->result( $item, [
                 'has_children' => $item->has,
                 'parent_id' => $item->parent_id,
                 'tag' => $data->tag ?? null,
@@ -81,11 +83,7 @@ class SearchPages extends Tool
                 'theme' => $data->theme ?? null,
                 'status' => $data->status ?? null,
                 'cache' => $data->cache ?? null,
-                'lang' => $latest?->lang,
-                'editor' => $latest?->editor,
-                'deleted' => $item->trashed(),
-                'created_at' => $item->created_at?->format( 'Y-m-d H:i:s' ),
-                'updated_at' => $item->updated_at?->format( 'Y-m-d H:i:s' ),
+            ] ) + [
                 'url' => route( 'cms.page', ['path' => $data->path ?? ''] ),
             ];
         }

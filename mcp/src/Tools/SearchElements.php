@@ -10,6 +10,7 @@ namespace Aimeos\Cms\Tools;
 use Aimeos\Cms\Filter;
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\Models\Element;
+use Aimeos\Cms\Tools\Concerns\Metadata;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Tools\Annotations\IsReadOnly;
 use Laravel\Mcp\Server\Tools\Annotations\IsOpenWorld;
@@ -27,6 +28,9 @@ use Laravel\Mcp\Request;
 #[Description('Lists and searches shared content elements. Optional: term (full-text search), type, lang, trashed, publish, editor. Without term, returns all matching elements. Returns up to 25 results.')]
 class SearchElements extends Tool
 {
+    use Metadata;
+
+
     /**
      * Handle the tool request.
      */
@@ -56,18 +60,11 @@ class SearchElements extends Tool
         foreach( Filter::elements( $search, $v )->get() as $item )
         {
             /** @var Element $item */
-            $latest = $item->latest;
-            $data = $latest->data ?? new \stdClass();
-            $result[] = [
-                'id' => $item->id,
+            $data = $item->latest->data ?? new \stdClass();
+            $result[] = $this->result( $item, [
                 'type' => $data->type ?? null,
                 'name' => $data->name ?? null,
-                'lang' => $latest?->lang,
-                'editor' => $latest?->editor,
-                'deleted' => $item->trashed(),
-                'created_at' => $item->created_at?->format( 'Y-m-d H:i:s' ),
-                'updated_at' => $item->updated_at?->format( 'Y-m-d H:i:s' ),
-            ];
+            ] );
         }
 
         return Response::structured( ['elements' => $result] );
