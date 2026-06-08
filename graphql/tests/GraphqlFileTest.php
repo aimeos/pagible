@@ -8,11 +8,14 @@
 namespace Tests;
 
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Nuwave\Lighthouse\Testing\MakesGraphQLRequests;
 use Nuwave\Lighthouse\Testing\RefreshesSchemaCache;
 use Database\Seeders\TestSeeder;
 use Aimeos\Cms\Models\File;
+use PHPUnit\Framework\Attributes\Group;
 
 
 class GraphqlFileTest extends GraphqlTestAbstract
@@ -637,5 +640,75 @@ class GraphqlFileTest extends GraphqlTestAbstract
         $this->assertStringNotContainsString( '<script', $stored );
 
         @unlink( $tmpFile );
+    }
+
+
+    #[Group('network')]
+    public function testAddFileFromUrlStoresSvgPreview()
+    {
+        $disk = config( 'cms.disk', 'public' );
+        Storage::fake( $disk );
+
+        $svg = '<?xml version="1.0"?><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10">'
+            . '<rect width="10" height="10"/><script>alert(1)</script></svg>';
+
+        Http::fake( ['example.com/*' => Http::response( $svg, 200, ['Content-Type' => 'image/svg+xml'] )] );
+
+        $response = $this->actingAs( $this->user )->graphQL( '
+            mutation {
+                addFile(input: { name: "logo", path: "https://example.com/logo.svg" }) {
+                    mime
+                    path
+                    previews
+                }
+            }
+        ' );
+
+        $result = $response->json( 'data.addFile' );
+        $previews = json_decode( $result['previews'], true );
+
+        $this->assertEquals( 'image/svg+xml', $result['mime'] );
+        $this->assertEquals( 'https://example.com/logo.svg', $result['path'] );
+        $this->assertNotEmpty( $previews );
+
+        $preview = (string) reset( $previews );
+        $this->assertStringEndsWith( '.svg', $preview );
+
+        $stored = Storage::disk( $disk )->get( $preview );
+        $this->assertStringContainsString( '<rect', $stored );
+        $this->assertStringNotContainsString( '<script', $stored );
+    }
+
+
+    #[Group('network')]
+    public function testAddFileFromUrlStoresCompressedSvgPreview()
+    {
+        $disk = config( 'cms.disk', 'public' );
+        Storage::fake( $disk );
+
+        $svg = '<?xml version="1.0"?><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10">'
+            . '<rect width="10" height="10"/><script>alert(1)</script></svg>';
+
+        Http::fake( ['example.com/*' => Http::response( gzencode( $svg ), 200, ['Content-Type' => 'image/svg+xml'] )] );
+
+        $response = $this->actingAs( $this->user )->graphQL( '
+            mutation {
+                addFile(input: { name: "logo", path: "https://example.com/logo.svgz" }) {
+                    mime
+                    previews
+                }
+            }
+        ' );
+
+        $result = $response->json( 'data.addFile' );
+        $previews = json_decode( $result['previews'], true );
+
+        $this->assertEquals( 'image/svg+xml', $result['mime'] );
+        $this->assertNotEmpty( $previews );
+
+        $stored = Storage::disk( $disk )->get( (string) reset( $previews ) );
+        $this->assertStringStartsWith( '<', ltrim( $stored ) );
+        $this->assertStringContainsString( '<rect', $stored );
+        $this->assertStringNotContainsString( '<script', $stored );
     }
 }

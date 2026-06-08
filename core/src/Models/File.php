@@ -215,6 +215,11 @@ class File extends Base
             if( !is_resource( $resource ) ) {
                 return $this;
             }
+
+            // SVG images can't be rasterized, so store the SVG itself as preview
+            if( in_array( $this->mime, ['image/svg+xml', 'application/gzip'] ) ) {
+                return $this->addSvgPreview( $resource );
+            }
         }
 
         if( $resource instanceof UploadedFile ) {
@@ -521,6 +526,47 @@ class File extends Base
 
 
     /**
+     * Stores a downloaded SVG image locally and uses it as the preview.
+     *
+     * SVG images can't be rasterized into webp/jpg previews, so the sanitized
+     * SVG itself is stored on the disk and referenced as the preview at the
+     * largest configured preview width. Gzip-compressed SVGZ content is
+     * decompressed so the stored preview is a plain, browser-renderable SVG.
+     * Returns without a preview if the content isn't a valid SVG.
+     *
+     * @param resource $resource Seekable file pointer to the downloaded SVG content
+     * @return self The current instance for method chaining
+     */
+    protected function addSvgPreview( $resource ) : self
+    {
+        $raw = (string) stream_get_contents( $resource );
+
+        // decompress SVGZ so the stored preview is a plain, browser-renderable SVG
+        if( str_starts_with( $raw, "\x1f\x8b" ) ) {
+            $raw = (string) gzdecode( $raw );
+        }
+
+        if( !( $content = \Aimeos\Cms\Utils::cleanSvg( $raw ) ) ) {
+            return $this;
+        }
+
+        $disk = Storage::disk( config( 'cms.disk', 'public' ) );
+        $dir = rtrim( 'cms/' . \Aimeos\Cms\Tenancy::value(), '/' );
+        $path = $dir . '/' . $this->filename( $this->name ?: 'image.svg', 'svg' );
+
+        if( !$disk->put( $path, $content ) ) {
+            throw new \Aimeos\Cms\Exception( sprintf( 'Unable to store preview "%s"', $path ) );
+        }
+
+        $widths = array_filter( array_column( config( 'cms.image.preview-sizes', [[]] ), 'width' ) );
+
+        $this->mime = 'image/svg+xml';
+        $this->previews = [( $widths ? max( $widths ) : 1920 ) => $path];
+        return $this;
+    }
+
+
+    /**
      * Fetches a URL as stream, detects MIME from first 4KB, downloads to tmpfile for images.
      *
      * @param string $url URL to fetch
@@ -540,7 +586,9 @@ class File extends Base
 
         $this->mime = ( new \finfo( FILEINFO_MIME_TYPE ) )->buffer( $bytes ) ?: 'application/octet-stream';
 
-        if( !$driver->supports( $this->mime ) ) {
+        // SVG (incl. gzip-compressed SVGZ) isn't supported by the image drivers
+        // but is stored as preview itself
+        if( !in_array( $this->mime, ['image/svg+xml', 'application/gzip'] ) && !$driver->supports( $this->mime ) ) {
             $body->close();
             return null;
         }
