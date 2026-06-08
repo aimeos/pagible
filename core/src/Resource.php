@@ -533,8 +533,18 @@ class Resource
             array_walk( $data, fn( &$v, $k ) => $v = !in_array( $k, ['related_id'] ) ? ( $v ?? '' ) : $v );
 
             $aux = array_intersect_key( $input, array_flip( ['meta', 'config', 'content'] ) );
-            $aux['meta'] = (object) ( $aux['meta'] ?? [] );
-            $aux['config'] = (object) ( $aux['config'] ?? [] );
+
+            // Only cast what was actually provided. Omitted meta/config keys must stay
+            // absent so mergePage() preserves them from the latest version, exactly like
+            // content. Force-defaulting them to empty objects would overwrite the latest.
+            if( array_key_exists( 'meta', $aux ) ) {
+                $aux['meta'] = (object) $aux['meta'];
+            }
+
+            if( array_key_exists( 'config', $aux ) ) {
+                $aux['config'] = (object) $aux['config'];
+            }
+
             $previousEditor = $page->latest->editor ?? '';
 
             [$data, $aux, $diffs] = self::mergePage( $page, $data, $aux, $latestId, $user );
