@@ -47,8 +47,8 @@ const REFINE_CONTENT = gql`
 `
 
 const ADD_ELEMENT = gql`
-  mutation ($input: ElementInput!, $files: [ID!]) {
-    addElement(input: $input, files: $files) {
+  mutation ($input: ElementInput!) {
+    addElement(input: $input) {
       id
       type
       lang
@@ -490,11 +490,7 @@ export default {
               lang: this.item.lang,
               name: this.title(entry),
               data: JSON.stringify(entry.data || {})
-            },
-            files:
-              entry.files?.filter((fileid, idx, self) => {
-                return self.indexOf(fileid) === idx
-              }) || []
+            }
           }
         })
         .then((result) => {

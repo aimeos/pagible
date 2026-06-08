@@ -95,8 +95,8 @@ const FETCH_PAGE_VERSIONS = gql`query($id: ID!) {
 }`
 
 const SAVE_PAGE = gql`
-  mutation ($id: ID!, $input: PageInput!, $elements: [ID!], $files: [ID!], $latestId: ID) {
-    savePage(id: $id, input: $input, elements: $elements, files: $files, latestId: $latestId) {
+  mutation ($id: ID!, $input: PageInput!, $latestId: ID) {
+    savePage(id: $id, input: $input, latestId: $latestId) {
       id
       latest { id published publish_at editor created_at }
       changed
@@ -527,8 +527,7 @@ export default {
       for (const key in this.item.meta || {}) {
         meta[key] = {
           type: this.item.meta[key].type || '',
-          data: this.item.meta[key].data || {},
-          files: this.item.meta[key].files || []
+          data: this.item.meta[key].data || {}
         }
       }
 
@@ -536,8 +535,7 @@ export default {
       for (const key in this.item.config || {}) {
         config[key] = {
           type: this.item.config[key].type || '',
-          data: this.item.config[key].data || {},
-          files: this.item.config[key].files || []
+          data: this.item.config[key].data || {}
         }
       }
 
@@ -565,8 +563,6 @@ export default {
               config: JSON.stringify(this.clean(config, 'config')),
               content: JSON.stringify(this.clean(this.item.content, 'content'))
             },
-            elements: Object.keys(this.elements),
-            files: this.fileIds(),
             latestId: this.latest?.id
           }
         })
