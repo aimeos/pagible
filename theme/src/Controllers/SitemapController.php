@@ -70,6 +70,33 @@ class SitemapController extends Controller
 
 
     /**
+     * Determines whether a page opts out of indexing.
+     *
+     * Inspects the raw `meta` JSON for a `robots` item whose `index` field is
+     * set to `noindex`. This filtering is applied in PHP while streaming rows
+     * (see {@see self::urlset()}) rather than in SQL, keeping the shared query
+     * portable across databases. The unfiltered row count is a safe
+     * over-estimate for chunk sizing.
+     *
+     * @param string|null $meta Raw `meta` JSON from the page row
+     * @return bool True if the page carries a `noindex` robots directive
+     */
+    protected function noindex( ?string $meta ) : bool
+    {
+        foreach( (array) json_decode( (string) $meta ) as $item )
+        {
+            if( is_object( $item ) && ( $item->type ?? '' ) === 'robots'
+                && is_object( $item->data ?? null ) && ( $item->data->index ?? '' ) === 'noindex'
+            ) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+
+    /**
      * Returns the shared base query for published, non-redirect navigation entries.
      *
      * Uses the underlying query builder (no Eloquent hydration) so callers can
@@ -107,7 +134,7 @@ class SitemapController extends Controller
         $multidomain = config( 'cms.multidomain' ) ? ['domain' => '__CMS_DOMAIN__'] : [];
         $template = route( 'cms.page', $multidomain + ['path' => '__CMS_PATH__'] );
 
-        $query = $this->query()->select( 'path', 'domain', 'updated_at' );
+        $query = $this->query()->select( 'path', 'domain', 'updated_at', 'meta' );
 
         if( $limit !== null ) {
             $query->orderBy( 'id' )->offset( (int) $offset )->limit( $limit );
@@ -120,6 +147,10 @@ class SitemapController extends Controller
             $i = 0;
             foreach( $query->cursor() as $page )
             {
+                if( $this->noindex( $page->meta ) ) {
+                    continue;
+                }
+
                 $lastmod = $page->updated_at
                     ? ( new \DateTimeImmutable( $page->updated_at, $tz ) )->format( \DateTimeInterface::ATOM )
                     : '';
