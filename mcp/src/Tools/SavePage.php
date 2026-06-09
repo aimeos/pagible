@@ -44,7 +44,8 @@ class SavePage extends Tool
             'content.*.id' => 'string|max:10',
             'content.*.type' => 'required|string|max:50',
             'content.*.group' => 'string|max:50',
-            'content.*.data' => 'required|array',
+            'content.*.data' => 'required_without:content.*.refid|array',
+            'content.*.refid' => 'required_without:content.*.data|string|max:36',
             'meta' => 'array',
             'config' => 'array',
             'to' => 'string|max:2048',
@@ -133,8 +134,9 @@ class SavePage extends Tool
                     'group' => $schema->string()
                         ->description( 'Layout section, e.g., "main", "footer". Use "main" if unsure.' ),
                     'data' => $schema->object()
-                        ->description( 'Field values for this element. Use get-schemas for available fields per type.' )
-                        ->required(),
+                        ->description( 'Field values for this element. Use get-schemas for available fields per type. Omit for "reference" elements.' ),
+                    'refid' => $schema->string()
+                        ->description( 'For "reference" elements only: UUID of the shared element to embed instead of data.' ),
                 ] ) )
                 ->description( 'Content elements. Replaces all existing content. Use get-schemas for available types and fields.' ),
             'meta' => $schema->object()
