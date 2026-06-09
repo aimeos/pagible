@@ -93,6 +93,26 @@ class ValidationTest extends CoreTestAbstract
     }
 
 
+    public function testContentDerivesFiles()
+    {
+        $result = Validation::content( [
+            (object) ['type' => 'image', 'data' => (object) ['file' => (object) ['type' => 'file', 'id' => 'file-1']]],
+        ] );
+
+        $this->assertEquals( ['file-1'], $result[0]->files );
+    }
+
+
+    public function testContentNoFilesWithoutReference()
+    {
+        $result = Validation::content( [
+            (object) ['type' => 'heading', 'data' => (object) ['title' => 'Test', 'level' => '2']],
+        ] );
+
+        $this->assertObjectNotHasProperty( 'files', $result[0] );
+    }
+
+
     public function testContentHiddenDefault()
     {
         $result = Validation::content( [
@@ -178,6 +198,16 @@ class ValidationTest extends CoreTestAbstract
         ], 'meta' );
 
         $this->assertIsObject( $result );
+    }
+
+
+    public function testStructuredDerivesFiles()
+    {
+        $result = Validation::structured( [
+            'logo' => ['file' => ['type' => 'file', 'id' => 'file-1']],
+        ], 'config' );
+
+        $this->assertEquals( ['file-1'], $result->logo->files );
     }
 
 
