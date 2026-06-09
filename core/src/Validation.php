@@ -104,8 +104,8 @@ class Validation
                 $entry['refid'] = $item['refid'];
             }
 
-            if( !empty( $item['files'] ) ) {
-                $entry['files'] = array_values( array_unique( $item['files'] ) );
+            if( $files = self::fileIds( $entry['data'] ) ) {
+                $entry['files'] = $files;
             }
 
             return (object) $entry;
@@ -167,12 +167,18 @@ class Validation
         {
             $existingId = $result->{$key}->id ?? null;
 
-            $result->{$key} = (object) [
+            $entry = [
                 'id' => $existingId ?? Utils::uid(),
                 'type' => $key,
                 'group' => $group,
                 'data' => self::defaults( $key, $data, $section, $schemas ),
             ];
+
+            if( $files = self::fileIds( $entry['data'] ) ) {
+                $entry['files'] = $files;
+            }
+
+            $result->{$key} = (object) $entry;
         }
 
         return $result;
@@ -196,6 +202,38 @@ class Validation
         } elseif( is_array( $data ) && isset( $data['text'] ) ) {
             $data['text'] = Utils::html( (string) $data['text'] );
         }
+    }
+
+
+    /**
+     * Recursively collects the IDs of {id, type: "file"} references in a data tree.
+     *
+     * Lets non-browser writers (MCP/LLM, GraphQL) persist the same per-element "files"
+     * list the admin editor stores, so readers resolving files from it (JSON:API, blog
+     * list) work regardless of how the content was created.
+     *
+     * @param mixed $data Element data or a nested value
+     * @return array<int, string> Deduped file IDs referenced in the data
+     */
+    private static function fileIds( mixed $data ) : array
+    {
+        if( !is_array( $data ) && !is_object( $data ) ) {
+            return [];
+        }
+
+        $data = (array) $data;
+
+        if( ( $data['type'] ?? null ) === 'file' && !empty( $data['id'] ) ) {
+            return [(string) $data['id']];
+        }
+
+        $ids = [];
+
+        foreach( $data as $value ) {
+            $ids = array_merge( $ids, self::fileIds( $value ) );
+        }
+
+        return array_values( array_unique( $ids ) );
     }
 
 
