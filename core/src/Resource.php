@@ -676,7 +676,9 @@ class Resource
         $ids = array_values( array_unique( array_filter( $ids ) ) );
         $existing = $ids ? $model::whereIn( 'id', $ids )->pluck( 'id' )->all() : [];
 
-        if( $missing = array_diff( $ids, $existing ) ) {
+        // Compare case-insensitively: SQL Server stores/returns UUIDs uppercased via
+        // the id accessor, so a case-sensitive diff would flag matching IDs as missing.
+        if( $missing = array_udiff( $ids, $existing, 'strcasecmp' ) ) {
             throw new Exception( sprintf( '%s not available: %s', class_basename( $model ), implode( ', ', $missing ) ) );
         }
 
