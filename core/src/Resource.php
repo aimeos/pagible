@@ -26,13 +26,14 @@ class Resource
     /**
      * Creates a new element with version and attached files.
      *
+     * Files attached to the version are derived from the element's content data.
+     *
      * @param array<string, mixed> $input Element fields (type, name, lang, data)
      * @param Authenticatable|null $user Authenticated user for editor tracking
-     * @param array<string> $files File IDs to attach
      * @return Element
      * @throws \InvalidArgumentException On validation failure
      */
-    public static function addElement( array $input, ?Authenticatable $user = null, array $files = [] ) : Element
+    public static function addElement( array $input, ?Authenticatable $user = null ) : Element
     {
         Validation::element( $input['type'] ?? '' );
 
@@ -47,7 +48,7 @@ class Resource
         $input['name'] = (string) ( $input['name'] ?? '' );
         $editor = Utils::editor( $user );
 
-        return Utils::transaction( function() use ( $input, $editor, $files ) {
+        return Utils::transaction( function() use ( $input, $editor ) {
 
             $versionId = ( new Version )->newUniqueId();
 
@@ -59,7 +60,9 @@ class Resource
             $element->editor = $editor;
             $element->save();
 
-            $element->files()->attach( $files );
+            $fileIds = self::elementFiles( $input );
+
+            $element->files()->attach( $fileIds );
 
             $data = $input;
             ksort( $data );
@@ -71,7 +74,7 @@ class Resource
                 'editor' => $editor,
             ] );
 
-            $version->files()->attach( $files );
+            $version->files()->attach( $fileIds );
 
             // Re-index with the latest version loaded so the draft (latest=true)
             // row is written; on $element->save() above the version did not exist yet.
@@ -85,23 +88,22 @@ class Resource
     /**
      * Creates a new page with version and attached relations.
      *
+     * Files and elements attached to the page are derived from the content, meta and config data.
+     *
      * @param array<string, mixed> $input Page fields (content/meta/config go into version aux)
      * @param Authenticatable|null $user Authenticated user for permission-based validation and editor tracking
-     * @param array<string> $files File IDs to attach
-     * @param array<string> $elements Element IDs to attach
      * @param string|null $ref Sibling page ID to insert before
      * @param string|null $parent Parent page ID to append to
      * @return Page
      * @throws \InvalidArgumentException On validation failure
      */
     public static function addPage( array $input, ?Authenticatable $user = null,
-        array $files = [], array $elements = [],
         ?string $ref = null, ?string $parent = null ) : Page
     {
         $input = Validation::page( $input, $user );
         $editor = Utils::editor( $user );
 
-        return Utils::lockedTransaction( function() use ( $input, $editor, $files, $elements, $ref, $parent ) {
+        return Utils::lockedTransaction( function() use ( $input, $editor, $ref, $parent ) {
 
             $versionId = ( new Version )->newUniqueId();
 
@@ -115,8 +117,17 @@ class Resource
             $page->latest_id = $versionId;
             $page->save();
 
-            $page->files()->attach( $files );
-            $page->elements()->attach( $elements );
+            $refs = self::refs( [
+                'content' => $input['content'] ?? [],
+                'meta' => $input['meta'] ?? [],
+                'config' => $input['config'] ?? [],
+            ] );
+
+            $fileIds = self::available( File::class, $refs['files'] );
+            $elementIds = self::available( Element::class, $refs['elements'] );
+
+            $page->files()->attach( $fileIds );
+            $page->elements()->attach( $elementIds );
 
             $data = array_diff_key( $input, array_flip( ['config', 'content', 'meta'] ) );
 
@@ -132,8 +143,8 @@ class Resource
                 ]
             ] );
 
-            $version->elements()->attach( $elements );
-            $version->files()->attach( $files );
+            $version->elements()->attach( $elementIds );
+            $version->files()->attach( $fileIds );
 
             // Re-index with the latest version loaded so the draft (latest=true)
             // row is written; on $page->save() above the version did not exist yet.
@@ -342,13 +353,12 @@ class Resource
      * @param string $id Element UUID
      * @param array<string, mixed> $input Changed fields (merged with latest version)
      * @param Authenticatable|null $user Authenticated user for editor tracking
-     * @param array<string>|null $files File IDs to attach to version
      * @param string|null $latestId Version ID the editor was working on (for conflict detection)
      * @return Element
      * @throws \InvalidArgumentException On validation failure
      * @throws \Illuminate\Database\Eloquent\ModelNotFoundException If element not found
      */
-    public static function saveElement( string $id, array $input, ?Authenticatable $user = null, ?array $files = null, ?string $latestId = null ) : Element
+    public static function saveElement( string $id, array $input, ?Authenticatable $user = null, ?string $latestId = null ) : Element
     {
         /** @var Element $element */
         $element = Element::withTrashed()->with( 'latest' )->findOrFail( $id );
@@ -365,7 +375,7 @@ class Resource
 
         $editor = Utils::editor( $user );
 
-        return Utils::transaction( function() use ( $element, $input, $editor, $files, $latestId ) {
+        return Utils::transaction( function() use ( $element, $input, $editor, $latestId ) {
 
             $versionId = ( new Version )->newUniqueId();
             $previousEditor = $element->latest->editor ?? '';
@@ -379,7 +389,7 @@ class Resource
                 'lang' => $input['lang'] ?? $element->latest?->lang,
             ] );
 
-            $version->files()->attach( $files ?? $element->latest?->files()->pluck( 'id' )->all() ?? [] );
+            $version->files()->attach( self::elementFiles( $data ) );
             $element->setRelation( 'latest', $version );
             $element->forceFill( ['latest_id' => $version->id] )->save();
 
@@ -510,20 +520,18 @@ class Resource
      * @param string $id Page UUID
      * @param array<string, mixed> $input Changed fields (merged with latest version)
      * @param Authenticatable|null $user Authenticated user for permission-based validation and editor tracking
-     * @param array<string>|null $files File IDs to attach to version
-     * @param array<string>|null $elements Element IDs to attach to version
      * @param string|null $latestId Version ID the editor was working on (for conflict detection)
      * @return Page
      * @throws \InvalidArgumentException On validation failure
      * @throws \Illuminate\Database\Eloquent\ModelNotFoundException If page not found
      */
     public static function savePage( string $id, array $input, ?Authenticatable $user = null,
-        ?array $files = null, ?array $elements = null, ?string $latestId = null ) : Page
+        ?string $latestId = null ) : Page
     {
         $input = Validation::page( $input, $user );
         $editor = Utils::editor( $user );
 
-        return Utils::transaction( function() use ( $id, $input, $user, $editor, $files, $elements, $latestId ) {
+        return Utils::transaction( function() use ( $id, $input, $user, $editor, $latestId ) {
 
             /** @var Page $page */
             $page = Page::withTrashed()->with( 'latest' )->findOrFail( $id );
@@ -559,8 +567,10 @@ class Resource
                 'aux' => $aux,
             ] );
 
-            $version->elements()->attach( $elements ?? $page->latest?->elements()->pluck( 'id' )->all() ?? [] );
-            $version->files()->attach( $files ?? $page->latest?->files()->pluck( 'id' )->all() ?? [] );
+            $refs = self::refs( $aux );
+
+            $version->files()->attach( self::available( File::class, $refs['files'] ) );
+            $version->elements()->attach( self::available( Element::class, $refs['elements'] ) );
 
             $page->setRelation( 'latest', $version );
             $page->forceFill( ['latest_id' => $version->id] )->save();
@@ -650,5 +660,105 @@ class Resource
         }
 
         return [array_replace( (array) $model->latest?->data, $input ), null];
+    }
+
+
+    /**
+     * Returns the given IDs confirmed to exist, throwing if any is no longer available.
+     *
+     * @param class-string<File>|class-string<Element> $model Model class to check the IDs against
+     * @param array<string> $ids Referenced IDs to verify
+     * @return array<string> Deduped IDs, all confirmed to exist
+     * @throws Exception If any referenced ID is no longer available
+     */
+    protected static function available( string $model, array $ids ) : array
+    {
+        $ids = array_values( array_unique( array_filter( $ids ) ) );
+        $existing = $ids ? $model::whereIn( 'id', $ids )->pluck( 'id' )->all() : [];
+
+        // Compare case-insensitively: SQL Server stores/returns UUIDs uppercased via
+        // the id accessor, so a case-sensitive diff would flag matching IDs as missing.
+        if( $missing = array_udiff( $ids, $existing, 'strcasecmp' ) ) {
+            throw new Exception( sprintf( '%s not available: %s', class_basename( $model ), implode( ', ', $missing ) ) );
+        }
+
+        return $ids;
+    }
+
+
+    /**
+     * Returns the available file IDs referenced by an element's field data.
+     *
+     * @param array<string, mixed> $data Element version data (fields stored under "data")
+     * @return array<string> File IDs confirmed to exist
+     * @throws Exception If any referenced file is no longer available
+     */
+    protected static function elementFiles( array $data ) : array
+    {
+        $files = [];
+        self::collectFiles( $data['data'] ?? [], $files );
+
+        return self::available( File::class, $files );
+    }
+
+
+    /**
+     * Collects the file IDs and element refids referenced by a page version's aux data.
+     *
+     * @param array<string, mixed> $aux Merged aux with "content" (list) and "meta"/"config" (keyed objects)
+     * @return array{files: array<string>, elements: array<string>}
+     */
+    protected static function refs( array $aux ) : array
+    {
+        $files = [];
+        $elements = [];
+
+        foreach( (array) ( $aux['content'] ?? [] ) as $block )
+        {
+            $block = (array) $block;
+
+            if( !empty( $block['refid'] ) ) {
+                $elements[] = $block['refid'];
+            }
+
+            self::collectFiles( $block['data'] ?? [], $files );
+        }
+
+        foreach( ['meta', 'config'] as $section )
+        {
+            foreach( (array) ( $aux[$section] ?? [] ) as $entry ) {
+                self::collectFiles( $entry, $files );
+            }
+        }
+
+        return [
+            'files' => array_values( array_unique( $files ) ),
+            'elements' => array_values( array_unique( $elements ) ),
+        ];
+    }
+
+
+    /**
+     * Recursively collects the IDs of {id, type: "file"} nodes into the given list.
+     *
+     * @param mixed $node Data node to scan (array, object or scalar)
+     * @param array<string> $files List of collected file IDs, modified in place
+     */
+    private static function collectFiles( mixed $node, array &$files ) : void
+    {
+        if( !is_array( $node ) && !is_object( $node ) ) {
+            return;
+        }
+
+        $arr = (array) $node;
+
+        if( ( $arr['type'] ?? null ) === 'file' && !empty( $arr['id'] ) ) {
+            $files[] = (string) $arr['id'];
+            return;
+        }
+
+        foreach( $arr as $value ) {
+            self::collectFiles( $value, $files );
+        }
     }
 }

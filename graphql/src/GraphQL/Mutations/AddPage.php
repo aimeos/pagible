@@ -23,8 +23,6 @@ final class AddPage
         return Resource::addPage(
             $args['input'] ?? [],
             Auth::user(),
-            $args['files'] ?? [],
-            $args['elements'] ?? [],
             $args['ref'] ?? null,
             $args['parent'] ?? null,
         );

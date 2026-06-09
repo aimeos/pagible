@@ -20,6 +20,6 @@ final class AddElement
      */
     public function __invoke( $rootValue, array $args ) : Element
     {
-        return Resource::addElement( $args['input'] ?? [], Auth::user(), $args['files'] ?? [] );
+        return Resource::addElement( $args['input'] ?? [], Auth::user() );
     }
 }

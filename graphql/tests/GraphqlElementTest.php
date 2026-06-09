@@ -12,8 +12,6 @@ use Nuwave\Lighthouse\Testing\MakesGraphQLRequests;
 use Nuwave\Lighthouse\Testing\RefreshesSchemaCache;
 use Database\Seeders\TestSeeder;
 use Aimeos\Cms\Models\Element;
-use Aimeos\Cms\Models\File;
-use Aimeos\Cms\Models\Page;
 
 
 class GraphqlElementTest extends GraphqlTestAbstract
@@ -254,10 +252,7 @@ class GraphqlElementTest extends GraphqlTestAbstract
 
     public function testAddElement()
     {
-        $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
-        $element = Element::where( 'type', 'footer' )->firstOrFail();
-
-        $this->expectsDatabaseQueryCount( 7 );
+        $this->expectsDatabaseQueryCount( 5 );
 
         $response = $this->actingAs($this->user)->graphQL('
             mutation {
@@ -265,7 +260,7 @@ class GraphqlElementTest extends GraphqlTestAbstract
                     type: "heading"
                     lang: "en"
                     data: "{\\"key\\":\\"value\\"}"
-                }, files: ["' . $file->id . '"]) {
+                }) {
                     id
                     type
                     lang
@@ -314,10 +309,9 @@ class GraphqlElementTest extends GraphqlTestAbstract
 
     public function testSaveElement()
     {
-        $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
         $element = Element::where( 'type', 'footer' )->firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 8 );
+        $this->expectsDatabaseQueryCount( 7 );
 
         $response = $this->actingAs($this->user)->graphQL('
             mutation {
@@ -325,7 +319,7 @@ class GraphqlElementTest extends GraphqlTestAbstract
                     type: "heading"
                     lang: "de"
                     data: "{\\"key\\":\\"value\\"}"
-                }, files: ["' . $file->id . '"]) {
+                }) {
                     id
                     type
                     lang

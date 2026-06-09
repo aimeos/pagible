@@ -155,8 +155,8 @@ const FETCH_CHILD_PAGES = gql`
 `
 
 const PASTE_PAGE = gql`
-  mutation ($input: PageInput!, $parent: ID, $ref: ID, $elements: [ID!], $files: [ID!]) {
-    addPage(input: $input, parent: $parent, ref: $ref, elements: $elements, files: $files) {
+  mutation ($input: PageInput!, $parent: ID, $ref: ID) {
+    addPage(input: $input, parent: $parent, ref: $ref) {
       ${PAGE_FIELDS}
     }
   }
@@ -811,9 +811,7 @@ export default {
                   path: node.path + '_' + Math.floor(Math.random() * 10000)
                 },
                 parent: parent ? parent.data.id : null,
-                ref: refid,
-                elements: latest?.elements.map((el) => el.id) || [],
-                files: latest?.files.map((file) => file.id) || []
+                ref: refid
               }
             })
             .then((result) => {

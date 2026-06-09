@@ -50,8 +50,8 @@ const FETCH_ELEMENT = gql`
 `
 
 const SAVE_ELEMENT = gql`
-  mutation ($id: ID!, $input: ElementInput!, $files: [ID!], $latestId: ID) {
-    saveElement(id: $id, input: $input, files: $files, latestId: $latestId) {
+  mutation ($id: ID!, $input: ElementInput!, $latestId: ID) {
+    saveElement(id: $id, input: $input, latestId: $latestId) {
       id
       latest { id published publish_at editor created_at }
       changed
@@ -334,7 +334,6 @@ export default {
               lang: this.item.lang,
               data: JSON.stringify(this.item.data || {})
             },
-            files: [...new Set(this.item.files)],
             latestId: this.latestId
           }
         })

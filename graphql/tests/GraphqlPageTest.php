@@ -11,8 +11,6 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Nuwave\Lighthouse\Testing\MakesGraphQLRequests;
 use Nuwave\Lighthouse\Testing\RefreshesSchemaCache;
 use Database\Seeders\TestSeeder;
-use Aimeos\Cms\Models\Element;
-use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Nestedset\NestedSet;
 
@@ -580,10 +578,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
 
     public function testAddPage()
     {
-        $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
-        $element = Element::where( 'type', 'footer' )->firstOrFail();
-
-        $this->expectsDatabaseQueryCount( 9 );
+        $this->expectsDatabaseQueryCount( 5 );
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
                 addPage(input: {
@@ -599,7 +594,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
                     content: "[{\"type\":\"heading\",\"text\":\"Welcome to Laravel CMS\"}]"
                     status: 0
                     cache: 0
-                }, elements: ["' . $element->id . '"], files: ["' . $file->id . '"]) {
+                }) {
                     id
                     related_id
                     parent_id
@@ -820,11 +815,9 @@ class GraphqlPageTest extends GraphqlTestAbstract
 
     public function testSavePage()
     {
-        $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
-        $element = Element::where( 'type', 'footer' )->firstOrFail();
         $root = Page::where('tag', 'root')->firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 10 );
+        $this->expectsDatabaseQueryCount( 8 );
 
         $response = $this->actingAs($this->user)->graphQL('
             mutation {
@@ -841,7 +834,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
                     content: "[{\"type\":\"heading\",\"data\":{\"title\":\"Welcome to Laravel CMS\"}}]"
                     status: 0
                     cache: 5
-                }, elements: ["' . $element->id . '"], files: ["' . $file->id . '"]) {
+                }) {
                     id
                     parent_id
                     lang

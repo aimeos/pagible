@@ -20,7 +20,7 @@ use Laravel\Mcp\Response;
 
 #[Name('add-element')]
 #[Title('Create a reusable content element')]
-#[Description('Creates a reusable content element. Requires type (use get-schemas), name (max 100 chars), and data (object with type-specific fields). Optional: lang (ISO code), files (array of file UUIDs). Returns the created element as JSON.')]
+#[Description('Creates a reusable content element. Requires type (use get-schemas), name (max 100 chars), and data (object with type-specific fields). Files are attached automatically from the file items in the data. Optional: lang (ISO code). Returns the created element as JSON.')]
 class AddElement extends Tool
 {
     /**
@@ -37,16 +37,13 @@ class AddElement extends Tool
             'name' => 'required|string|max:100',
             'lang' => 'nullable|string|max:5',
             'data' => 'required|array',
-            'files' => 'array',
-            'files.*' => 'string|max:36',
         ], [
             'type.required' => 'You must specify the element type, e.g., "heading", "text", "image", "contact". Use get-schemas to see available types.',
             'name.required' => 'You must specify a name for the element.',
             'data.required' => 'You must provide the element data as a JSON object with field values.',
         ] );
 
-        $input = array_diff_key( $v, array_flip( ['files'] ) );
-        $element = Resource::addElement( $input, $request->user(), $v['files'] ?? [] );
+        $element = Resource::addElement( $v, $request->user() );
 
         return Response::structured( ['id' => $element->id] + $element->toArray() );
     }
@@ -71,9 +68,6 @@ class AddElement extends Tool
             'data' => $schema->object()
                 ->description('The element data as a JSON object. Fields depend on the type. For "text": {"text": "markdown content"}. For "heading": {"text": "Title", "level": "2"}. Use get-schemas to see field definitions.')
                 ->required(),
-            'files' => $schema->array()
-                ->items( $schema->string() )
-                ->description( 'Array of file UUIDs to attach to the element.' ),
         ];
     }
 
