@@ -102,7 +102,7 @@ class ResourceTest extends CoreTestAbstract
         $this->expectException( Exception::class );
 
         Resource::savePage( $page->id, [
-            'content' => [['type' => 'image', 'data' => ['file' => ['id' => Utils::uid(), 'type' => 'file']]]],
+            'content' => [['type' => 'image', 'data' => ['file' => ['id' => \Illuminate\Support\Str::uuid7()->toString(), 'type' => 'file']]]],
         ], $this->user );
     }
 
@@ -113,7 +113,7 @@ class ResourceTest extends CoreTestAbstract
 
         Resource::addPage( [
             'lang' => 'en', 'name' => 'Bad', 'title' => 'Bad', 'path' => 'bad-test',
-            'content' => [['type' => 'reference', 'refid' => Utils::uid(), 'group' => 'main']],
+            'content' => [['type' => 'reference', 'refid' => \Illuminate\Support\Str::uuid7()->toString(), 'group' => 'main']],
         ], $this->user, parent: $this->root()->id );
     }
 
