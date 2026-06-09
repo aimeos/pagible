@@ -297,6 +297,24 @@ class PageToolsTest extends McpTestAbstract
     }
 
 
+    public function testSavePageWithReference()
+    {
+        $page = Page::where( 'name', 'Home' )->first();
+        $element = \Aimeos\Cms\Models\Element::first();
+
+        $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\SavePage::class, [
+            'id' => $page->id,
+            'content' => [
+                ['type' => 'heading', 'group' => 'main', 'data' => ['title' => 'With reference', 'level' => '2']],
+                ['type' => 'reference', 'group' => 'footer', 'refid' => $element->id],
+            ],
+        ] );
+
+        // reference element (data-less, refid only) must round-trip
+        $response->assertOk()->assertSee( [$element->id, 'reference'] );
+    }
+
+
     public function testSavePageNotFound()
     {
         $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\SavePage::class, [
