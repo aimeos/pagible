@@ -106,3 +106,7 @@
         width: 50%;
     }
 }
+
+.blog nav .pagination {
+    margin: auto;
+}
