@@ -936,6 +936,11 @@ h4.section-header:first-child {
   margin: 4px;
 }
 
+.v-timeline-item .file .v-img {
+  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAIAQMAAAD+wSzIAAAABlBMVEX////Ly8vsgL9iAAAADklEQVQI12P4AIX8EAgALgAD/aNpbtEAAAAASUVORK5CYII=);
+  background-repeat: repeat;
+}
+
 .v-timeline-item .file.added {
   border: 2px dashed rgb(var(--v-theme-success));
 }
