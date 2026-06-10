@@ -89,7 +89,12 @@ class AddPage extends Tool
         $v['lang'] = $v['lang'] ?? $parent?->lang ?: '';
 
         if( isset( $v['content'] ) ) {
-            $v['content'] = Validation::content( $v['content'], $v['type'] );
+            // Use the raw request input, not the validated copy: validate() rebuilds
+            // wildcard arrays via rule expansion, which materializes elements matched
+            // by content.*.id first and appends id-less elements at the end, scrambling
+            // the author's order. The raw input preserves it; Validation::content()
+            // still whitelists each element's keys.
+            $v['content'] = Validation::content( $request->get( 'content' ), $v['type'] );
         }
         $v['related_id'] = $v['related_id'] ?? null;
         $v['cache'] = $v['cache'] ?? 5;

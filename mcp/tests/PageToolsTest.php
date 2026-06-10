@@ -208,6 +208,34 @@ class PageToolsTest extends McpTestAbstract
     }
 
 
+    public function testAddPagePreservesContentOrderWithoutIds()
+    {
+        // Interleave elements that carry an explicit id with id-less ones. The id-less
+        // elements must keep their position and not get pushed to the end by validate()
+        // rebuilding the content.*.id wildcard array.
+        CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\AddPage::class, [
+            'lang' => 'en',
+            'name' => 'Ordered page',
+            'title' => 'An Ordered Page',
+            'content' => [
+                ['id' => 'el-a', 'type' => 'heading', 'data' => ['title' => 'First', 'level' => '1']],
+                ['type' => 'text', 'data' => ['text' => 'Second']],
+                ['id' => 'el-c', 'type' => 'heading', 'data' => ['title' => 'Third', 'level' => '2']],
+                ['type' => 'text', 'data' => ['text' => 'Fourth']],
+            ],
+            'meta' => [
+                'meta-tags' => ['description' => 'An ordered page for testing'],
+            ],
+        ] );
+
+        $page = Page::where( 'name', 'Ordered page' )->with( 'latest' )->first();
+        $content = (array) ( $page->latest->aux->content ?? [] );
+        $labels = array_map( fn( $el ) => $el->data->title ?? $el->data->text ?? null, $content );
+
+        $this->assertSame( ['First', 'Second', 'Third', 'Fourth'], $labels );
+    }
+
+
     public function testAddPageWithParent()
     {
         $parent = Page::where( 'name', 'Home' )->first();
@@ -312,6 +340,28 @@ class PageToolsTest extends McpTestAbstract
 
         // reference element (data-less, refid only) must round-trip
         $response->assertOk()->assertSee( [$element->id, 'reference'] );
+    }
+
+
+    public function testSavePagePreservesContentOrderWithoutIds()
+    {
+        $page = Page::where( 'name', 'Home' )->first();
+
+        CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\SavePage::class, [
+            'id' => $page->id,
+            'content' => [
+                ['id' => 'el-a', 'type' => 'heading', 'data' => ['title' => 'First', 'level' => '1']],
+                ['type' => 'text', 'data' => ['text' => 'Second']],
+                ['id' => 'el-c', 'type' => 'heading', 'data' => ['title' => 'Third', 'level' => '2']],
+                ['type' => 'text', 'data' => ['text' => 'Fourth']],
+            ],
+        ] );
+
+        $page = Page::where( 'name', 'Home' )->with( 'latest' )->first();
+        $content = (array) ( $page->latest->aux->content ?? [] );
+        $labels = array_map( fn( $el ) => $el->data->title ?? $el->data->text ?? null, $content );
+
+        $this->assertSame( ['First', 'Second', 'Third', 'Fourth'], $labels );
     }
 
 
