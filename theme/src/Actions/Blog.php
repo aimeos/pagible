@@ -44,7 +44,7 @@ class Blog
             $builder->where( 'status', 1 );
         }
 
-        $attr = ['id', 'lang', 'path', 'name', 'title', 'to', 'domain', 'content', 'created_at'];
+        $attr = ['id', 'lang', 'path', 'name', 'title', 'to', 'domain', 'content', 'created_at', 'latest_id'];
         $pages = $builder->paginate( $item->data->limit ?? 10, $attr, 'p' );
 
         // The list shows the first "article" element's image per page, taken from the draft content
