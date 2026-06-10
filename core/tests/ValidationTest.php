@@ -113,6 +113,26 @@ class ValidationTest extends CoreTestAbstract
     }
 
 
+    public function testPageDerivesContentFiles()
+    {
+        $result = Validation::page( ['content' => [
+            (object) ['type' => 'image', 'data' => (object) ['file' => (object) ['type' => 'file', 'id' => 'file-1']]],
+        ]] );
+
+        $this->assertEquals( ['file-1'], $result['content'][0]->files );
+    }
+
+
+    public function testPageRemovesStaleContentFiles()
+    {
+        $result = Validation::page( ['content' => [
+            (object) ['type' => 'heading', 'data' => (object) ['title' => 'Test', 'level' => '2'], 'files' => ['stale']],
+        ]] );
+
+        $this->assertObjectNotHasProperty( 'files', $result['content'][0] );
+    }
+
+
     public function testContentHiddenDefault()
     {
         $result = Validation::content( [
