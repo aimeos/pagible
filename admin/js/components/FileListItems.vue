@@ -20,7 +20,7 @@ import {
   mdiRefresh
 } from '@mdi/js'
 import { useAppStore, useUserStore, useMessageStore, useChangeStore } from '../stores'
-import { debounce, frozenParse, url, srcset } from '../utils'
+import { debounce, frozenParse, safeParse, url, srcset } from '../utils'
 
 const ADD_FILE = gql`
   mutation ($file: Upload!) {
@@ -508,8 +508,8 @@ export default {
           this.last = files.paginatorInfo?.lastPage || 1
           this.items = [...(files.data || [])].map((entry) => {
             const item = entry.latest?.data
-              ? JSON.parse(entry.latest?.data)
-              : { ...entry, previews: JSON.parse(entry.previews || '{}') }
+              ? safeParse(entry.latest?.data)
+              : { ...entry, previews: safeParse(entry.previews) }
 
             delete item.description
             delete item.transcription
