@@ -24,6 +24,12 @@ final class CmsLogout
 
         try {
             $guard->logout();
+
+            // Invalidate the session and issue a fresh CSRF token to prevent session reuse/fixation
+            if( request()->hasSession() ) {
+                request()->session()->invalidate();
+                request()->session()->regenerateToken();
+            }
         } catch( \Exception $e ) {
             // No error if logout fails
         }

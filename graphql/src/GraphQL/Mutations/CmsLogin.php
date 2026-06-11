@@ -37,6 +37,11 @@ final class CmsLogin
 
 		RateLimiter::clear( $key );
 
+		// Rotate the session ID on privilege change to prevent session fixation
+		if( request()->hasSession() ) {
+			request()->session()->regenerate();
+		}
+
 		return $guard->user() ?? throw new Error( 'Login failed' );
 	}
 }

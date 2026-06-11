@@ -52,7 +52,8 @@ class UserResolver
     public function token( User $user, array $args, mixed $context ): string
     {
         $expires = now()->addDay()->timestamp;
+        $payload = $expires . '|' . $user->getAuthIdentifier();
 
-        return base64_encode( $expires . '|' . hash_hmac( 'sha256', (string) $expires, config( 'app.key' ) ) );
+        return base64_encode( $payload . '|' . hash_hmac( 'sha256', $payload, config( 'app.key' ) ) );
     }
 }
