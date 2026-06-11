@@ -7,6 +7,7 @@
 
 namespace Aimeos\Cms\Models;
 
+use Aimeos\Cms\Utils;
 use Aimeos\Cms\Concerns\HasChanged;
 use Aimeos\Cms\Concerns\Tenancy;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -163,14 +164,14 @@ class File extends Base
         $disk = Storage::disk( config( 'cms.disk', 'public' ) );
         $dir = rtrim( 'cms/' . \Aimeos\Cms\Tenancy::value(), '/' );
 
-        $name = $this->filename( $upload->getClientOriginalName() );
+        $name = $this->filename( $upload->getClientOriginalName(), $upload->guessExtension() );
         $path = $dir . '/' . $name;
 
         if( $upload->getMimeType() === 'image/svg+xml' )
         {
             $content = file_get_contents( $upload->getRealPath() );
 
-            if( !( $content = \Aimeos\Cms\Utils::cleanSvg( $content ) ) ) {
+            if( !( $content = Utils::cleanSvg( $content ) ) ) {
                 $msg = 'Invalid file "%s"';
                 throw new \Aimeos\Cms\Exception( sprintf( $msg, $upload->getClientOriginalName() ) );
             }
@@ -209,7 +210,7 @@ class File extends Base
         $manager = ImageManager::withDriver( '\\Intervention\\Image\\Drivers\\' . ucFirst( config( 'cms.image.driver', 'gd' ) ) . '\Driver' );
         $ext = $manager->driver()->supports( 'image/webp' ) ? 'webp' : 'jpg';
 
-        if( is_string( $resource ) && \Aimeos\Cms\Utils::isValidUrl( $resource ) ) {
+        if( is_string( $resource ) && Utils::isValidUrl( $resource ) ) {
             $resource = $this->fetchUrl( $resource, $manager->driver() );
 
             if( !is_resource( $resource ) ) {
@@ -546,7 +547,7 @@ class File extends Base
             $raw = (string) gzdecode( $raw );
         }
 
-        if( !( $content = \Aimeos\Cms\Utils::cleanSvg( $raw ) ) ) {
+        if( !( $content = Utils::cleanSvg( $raw ) ) ) {
             return $this;
         }
 
@@ -575,7 +576,7 @@ class File extends Base
      */
     protected function fetchUrl( string $url, DriverInterface $driver )
     {
-        $response = Http::withOptions( \Aimeos\Cms\Utils::safeHttp( $url ) + ['stream' => true] )->get( $url );
+        $response = Http::withOptions( Utils::safeHttp( $url ) + ['stream' => true] )->get( $url );
 
         if( !$response->successful() ) {
             throw new \Aimeos\Cms\Exception( sprintf( 'Failed to download "%s"', $url ) );
@@ -586,9 +587,9 @@ class File extends Base
 
         $this->mime = ( new \finfo( FILEINFO_MIME_TYPE ) )->buffer( $bytes ) ?: 'application/octet-stream';
 
-        // SVG (incl. gzip-compressed SVGZ) isn't supported by the image drivers
-        // but is stored as preview itself
-        if( !in_array( $this->mime, ['image/svg+xml', 'application/gzip'] ) && !$driver->supports( $this->mime ) ) {
+        // SVG (incl. gzip-compressed SVGZ) isn't supported by the image drivers but is stored as preview itself
+        if( !in_array( $this->mime, ['image/svg+xml', 'application/gzip'] ) && !$driver->supports( $this->mime ) )
+        {
             $body->close();
             return null;
         }
@@ -619,7 +620,7 @@ class File extends Base
     {
         $regex = '/([[:cntrl:]]|[[:blank:]]|\/|\.)+/smu';
 
-        $ext = $ext ?: preg_replace( $regex, '-', pathinfo( $filename, PATHINFO_EXTENSION ) );
+        $ext = Utils::extension( $ext ?: pathinfo( $filename, PATHINFO_EXTENSION ) );
         $name = preg_replace( $regex, '', pathinfo( $filename, PATHINFO_FILENAME ) );
 
         $hash = substr( md5( microtime(true) . getmypid() . rand(0, 1000) ), -4 );

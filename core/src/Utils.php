@@ -111,6 +111,56 @@ class Utils
 
 
     /**
+     * Fetches the contents of an http(s) URL using SSRF-safe options.
+     *
+     * The host is pinned to its resolved public IP and redirects to private/reserved
+     * addresses are blocked, so a stored URL cannot be abused to reach internal services.
+     *
+     * @param string $url The http(s) URL to fetch
+     * @return string The response body
+     * @throws Exception If the URL is unsafe or the request fails
+     */
+    public static function fetch( string $url ) : string
+    {
+        $response = Http::withOptions( self::safeHttp( $url ) )->get( $url );
+
+        if( !$response->successful() ) {
+            throw new Exception( sprintf( 'URL "%s" not accessible', $url ) );
+        }
+
+        return $response->body();
+    }
+
+
+    /**
+     * Returns a collection of files associated with the given page.
+     *
+     * @param Page $page The page object containing content and files
+     * @return Collection<int, \Aimeos\Cms\Models\File> A collection of File models associated with the page
+     */
+    public static function files( Page $page ) : Collection
+    {
+        $seen = [];
+        $lang = $page->lang;
+        $lang2 = substr( $lang, 0, 2 );
+
+        foreach( (array) $page->content as $item )
+        {
+            foreach( (array) ( $item->files ?? [] ) as $id )
+            {
+                if( !isset( $seen[$id] ) && ( $file = $page->files[$id] ?? null ) )
+                {
+                    $file->description = $file->description->{$lang} ?? $file->description->{$lang2} ?? null;
+                    $seen[$id] = $file;
+                }
+            }
+        }
+
+        return new Collection( $seen );
+    }
+
+
+    /**
      * Sanitizes the given HTML text to ensure it is safe for output.
      *
      * @param string|null $text The HTML text to sanitize
@@ -132,29 +182,27 @@ class Utils
 
 
     /**
-     * Returns a collection of files associated with the given page.
+     * Returns a file extension that is safe to serve from the storage disk.
      *
-     * @param Page $page The page object containing content and files
-     * @return Collection<int, \Aimeos\Cms\Models\File> A collection of File models associated with the page
+     * Neutralizes dangerous uploads/restores (e.g. .php, .html, .phar) by replacing
+     * extensions the web server may execute or serve as active content with "bin",
+     * so user-supplied files cannot run as code or script.
+     *
+     * @param string|null $ext File extension (without leading dot)
+     * @return string Safe file extension
      */
-    public static function files( Page $page ) : Collection
+    public static function extension( ?string $ext ) : string
     {
-        $lang = $page->lang;
-        $lang2 = substr( $lang, 0, 2 );
-        $seen = [];
+        $ext = strtolower( (string) preg_replace( '/[^A-Za-z0-9]/', '', (string) $ext ) ) ?: 'bin';
 
-        foreach( (array) $page->content as $item )
-        {
-            foreach( (array) ( $item->files ?? [] ) as $id )
-            {
-                if( !isset( $seen[$id] ) && ( $file = $page->files[$id] ?? null ) ) {
-                    $file->description = $file->description->{$lang} ?? $file->description->{$lang2} ?? null;
-                    $seen[$id] = $file;
-                }
-            }
-        }
-
-        return new Collection( $seen );
+        return match( true ) {
+            in_array( $ext, ['htaccess', 'cgi', 'pht', 'phtml', 'phar', 'pl'], true ),
+            str_starts_with( $ext, 'php' ),
+            str_starts_with( $ext, 'asp' ),
+            str_starts_with( $ext, 'jsp' ),
+            str_contains( $ext, 'htm' ) => 'bin',
+            default => $ext,
+        };
     }
 
 

@@ -407,6 +407,50 @@ class Resource
 
 
     /**
+     * Ensures a client-supplied file path stays within the current tenant's storage or is a system URL.
+     *
+     * @param string|null $path Storage path or URL provided by the caller
+     * @return string|null The validated path or null if none was given
+     * @throws \Aimeos\Cms\Exception If the path escapes the tenant's storage directory
+     */
+    protected static function checkPath( ?string $path ) : ?string
+    {
+        if( $path === null ) {
+            return null;
+        }
+
+        $prefix = rtrim( 'cms/' . Tenancy::value(), '/' ) . '/';
+
+        if( !str_starts_with( $path, 'http' ) && !str_starts_with( $path, $prefix ) ) {
+            throw new \Aimeos\Cms\Exception( sprintf( 'Invalid file path "%s"', $path ) );
+        }
+
+        return $path;
+    }
+
+
+    /**
+     * Validates a list of client-supplied preview paths against the current tenant's storage.
+     *
+     * @param mixed $previews List of storage paths or URLs provided by the caller
+     * @return array<int|string, mixed>|null The validated list or null if none was given
+     * @throws \Aimeos\Cms\Exception If any path escapes the tenant's storage directory
+     */
+    protected static function checkPaths( mixed $previews ) : ?array
+    {
+        if( $previews === null ) {
+            return null;
+        }
+
+        foreach( (array) $previews as $preview ) {
+            self::checkPath( (string) $preview );
+        }
+
+        return (array) $previews;
+    }
+
+
+    /**
      * Updates file metadata and creates a new version with optional merge.
      *
      * @param string $id File UUID
@@ -464,8 +508,8 @@ class Resource
             [$data, $dd] = self::merge( $orig, $input, $latestId );
             $file->fill( $data );
 
-            $file->previews = $input['previews'] ?? $previews;
-            $file->path = $stored ?? $input['path'] ?? $path;
+            $file->previews = self::checkPaths( $input['previews'] ?? null ) ?? $previews;
+            $file->path = $stored ?? self::checkPath( $input['path'] ?? null ) ?? $path;
             $file->editor = $editor;
 
             if( $file->path !== $path && !str_starts_with( $file->path, 'http' ) ) {
@@ -621,7 +665,7 @@ class Resource
                 [$merged['content'], $xd] = Merge::content( (array) ( $base->aux->content ?? [] ), $latestContent, (array) ( $merged['content'] ?? [] ) );
 
                 $cd = null;
-                if( Permission::can( 'config:page', $user ) ) {
+                if( Permission::can( 'page:config', $user ) ) {
                     [$merged['config'], $cd] = Merge::structured( (array) ( $base->aux->config ?? [] ), $latestConfig, (array) ( $merged['config'] ?? [] ) );
                 } else {
                     $merged['config'] = $latestConfig;

@@ -86,7 +86,9 @@ class Schema
      */
     public static function schemas( ?string $name = null, ?string $section = null ) : array
     {
-        $key = ( $name ?? '*' ) . '/' . ( $section ?? '*' );
+        // Tenant-scope the cache key: themes/schemas are per-tenant (see discover()), so a
+        // process-global static must not serve one tenant's schema to another under Octane.
+        $key = Tenancy::value() . '/' . ( $name ?? '*' ) . '/' . ( $section ?? '*' );
 
         if( isset( self::$schemas[$key] ) ) {
             return self::$schemas[$key];
@@ -110,14 +112,14 @@ class Schema
 
                 if( $section !== null )
                 {
-                    foreach( $theme[$sec] as $key => $value ) {
-                        $result[$key] = $result[$key] ?? $value;
+                    foreach( $theme[$sec] as $entry => $value ) {
+                        $result[$entry] = $result[$entry] ?? $value;
                     }
                 }
                 else
                 {
-                    foreach( $theme[$sec] as $key => $value ) {
-                        $result[$sec][$key] = $result[$sec][$key] ?? $value;
+                    foreach( $theme[$sec] as $entry => $value ) {
+                        $result[$sec][$entry] = $result[$sec][$entry] ?? $value;
                     }
                 }
             }
