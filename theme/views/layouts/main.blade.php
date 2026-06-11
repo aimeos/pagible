@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="csrf-token" content="{{ csrf_token() }}">
+        <meta name="csrf-token" content="%%CMS_CSRF%%">
         @if(!config('app.debug'))
             <meta http-equiv="Content-Security-Policy" content="
                 base-uri 'self';
@@ -12,8 +12,8 @@
                 connect-src 'self' {{ config('cms.theme.csp.connect-src') }};
                 img-src 'self' data: blob: {{ config('cms.theme.csp.media-src') }};
                 media-src 'self' data: blob: {{ config('cms.theme.csp.media-src') }};
-                style-src 'self' 'nonce-{{ csrf_token() }}' {{ config('cms.theme.csp.style-src') }};
-                script-src 'self' 'nonce-{{ csrf_token() }}' {{ config('cms.theme.csp.script-src') }};
+                style-src 'self' 'nonce-%%CMS_NONCE%%' {{ config('cms.theme.csp.style-src') }};
+                script-src 'self' 'nonce-%%CMS_NONCE%%' {{ config('cms.theme.csp.script-src') }};
                 font-src 'self';
             ">
         @endif
@@ -45,13 +45,13 @@
 
         @foreach($page->ancestorsAndSelf as $navItem)
             @if($text = cms($navItem, 'config.styles.data.text'))
-                <style nonce="{{ csrf_token() }}">
+                <style nonce="%%CMS_NONCE%%">
                     {!! $text !!}
                 </style>
             @endif
         @endforeach
 
-        <script type="application/ld+json" nonce="{{ csrf_token() }}">
+        <script type="application/ld+json" nonce="%%CMS_NONCE%%">
             [{
                 "@@context": "https://schema.org",
                 "@@type": "WebSite",
@@ -229,7 +229,7 @@
 
         @foreach($page->ancestorsAndSelf as $navItem)
             @if($text = cms($navItem, 'config.javascript.data.text'))
-                <script nonce="{{ csrf_token() }}">
+                <script nonce="%%CMS_NONCE%%">
                     {!! $text !!}
                 </script>
             @endif
