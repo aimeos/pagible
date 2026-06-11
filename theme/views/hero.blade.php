@@ -22,10 +22,10 @@
     @if(($data->url ?? null) || ($data->{'url-alternative'} ?? null))
         <div class="actions">
             @if($data->url ?? null)
-                <a class="btn url" href="{{ $data->url }}">{{ $data->button ?? '' }}</a>
+                <a class="btn url" href="{{ cmslink($data->url) }}">{{ $data->button ?? '' }}</a>
             @endif
             @if($data->{'url-alternative'} ?? null)
-                <a class="btn url-alternative" href="{{ $data->{'url-alternative'} }}">{{ $data->{'button-alternative'} ?? '' }}</a>
+                <a class="btn url-alternative" href="{{ cmslink($data->{'url-alternative'}) }}">{{ $data->{'button-alternative'} ?? '' }}</a>
             @endif
         </div>
     @endif

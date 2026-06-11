@@ -105,7 +105,13 @@ if( !function_exists( 'cmsdata' ) )
 
         $data = ['files' => cms($page, 'files')];
 
-        if( $action = $item->data->action ?? null ) {
+        // Resolve the action handler from the trusted schema by element type only. The handler
+        // must never be taken from the stored element data, which a content author could set to
+        // an arbitrary callable that app()->call() would invoke server-side (RCE).
+        $fields = \Aimeos\Cms\Schema::schemas( section: 'content' )[$item->type ?? '']['fields'] ?? [];
+        $action = ( $fields['action']['type'] ?? null ) === 'hidden' ? ( $fields['action']['value'] ?? null ) : null;
+
+        if( $action ) {
             $data['action'] = app()->call( $action, ['page' => $page, 'item' => $item] );
         }
 
@@ -251,6 +257,37 @@ if( !function_exists( 'cmsurl' ) )
         }
 
         return \Illuminate\Support\Facades\Storage::disk( config( 'cms.disk', 'public' ) )->url( $path );
+    }
+}
+
+
+if( !function_exists( 'cmslink' ) )
+{
+    /**
+     * Sanitizes a content-provided URL for safe use in an href/src attribute.
+     *
+     * Relative paths, fragments and query links (no scheme) are returned unchanged. URLs with a
+     * scheme are only allowed for http, https, mailto and tel; dangerous schemes such as
+     * javascript:, vbscript: and data: are rejected (returning an empty string) so they cannot
+     * execute when the link is followed. Whitespace/control characters are ignored during scheme
+     * detection because browsers strip them (e.g. "java\tscript:").
+     *
+     * @param string|null $url The URL to sanitize
+     * @return string The original URL if safe, otherwise an empty string
+     */
+    function cmslink( ?string $url ) : string
+    {
+        if( !$url ) {
+            return '';
+        }
+
+        $clean = preg_replace( '/[\x00-\x20]+/', '', $url );
+
+        if( preg_match( '#^([a-z][a-z0-9+.\-]*):#i', (string) $clean, $m ) && !in_array( strtolower( $m[1] ), ['http', 'https', 'mailto', 'tel'], true ) ) {
+            return '';
+        }
+
+        return $url;
     }
 }
 
