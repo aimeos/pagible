@@ -52,7 +52,7 @@ Whether you need a simple blog or a multi-tenant, multi-domain CMS serving milli
 
 | Technology | Purpose |
 |---|---|
-| **PHP 8.1+** | Backend language |
+| **PHP 8.2+** | Backend language |
 | **Laravel 11.x / 12.x / 13.x** | Web framework |
 | **Vue.js 3** | Admin panel frontend |
 | **Vuetify** | Admin UI component library |
