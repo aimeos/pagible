@@ -19,7 +19,7 @@ import {
 } from '@mdi/js'
 import SchemaItems from './SchemaItems.vue'
 import { useUserStore, useMessageStore, useChangeStore } from '../stores'
-import { debounce, frozenParse } from '../utils'
+import { debounce, frozenParse, safeParse } from '../utils'
 
 const ADD_ELEMENT = gql`
   mutation ($input: ElementInput!) {
@@ -466,10 +466,10 @@ export default {
           this.last = elements.paginatorInfo?.lastPage || 1
           this.items = [...(elements.data || [])].map((entry) => {
             const item = entry.latest?.data
-              ? JSON.parse(entry.latest?.data)
+              ? safeParse(entry.latest?.data)
               : {
                   ...entry,
-                  data: JSON.parse(entry.data || '{}')
+                  data: safeParse(entry.data)
                 }
 
             if (item.data && typeof item.data === 'object') {

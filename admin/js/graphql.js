@@ -16,6 +16,21 @@ const retryLink = new RetryLink({
   attempts: { max: 2, retryIf: (error) => !!error }
 })
 
+// Forwards Laravel's XSRF-TOKEN cookie as the X-XSRF-TOKEN header so cookie
+// authenticated mutations are protected against CSRF when the GraphQL route is
+// guarded by the VerifyCsrfToken middleware. No-op when the cookie is absent.
+const csrfLink = new ApolloLink((operation, forward) => {
+  const match = document.cookie.match(/(?:^|;\s*)XSRF-TOKEN=([^;]+)/)
+
+  if (match) {
+    operation.setContext(({ headers = {} }) => ({
+      headers: { ...headers, 'X-XSRF-TOKEN': decodeURIComponent(match[1]) }
+    }))
+  }
+
+  return forward(operation)
+})
+
 const errorLink = onError(({ errors }) => {
   if (!errors) return
 
@@ -81,7 +96,7 @@ const apolloClient = new ApolloClient({
     },
     resultCacheMaxSize: 100
   }),
-  link: ApolloLink.from([retryLink, errorLink, httpLink]),
+  link: ApolloLink.from([retryLink, errorLink, csrfLink, httpLink]),
   queryDeduplication: true
 })
 const apollo = createApolloProvider({ defaultClient: apolloClient })

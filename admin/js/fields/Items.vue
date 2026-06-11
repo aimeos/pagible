@@ -26,6 +26,7 @@ import {
 } from '@mdi/js'
 import { VueDraggable } from 'vue-draggable-plus'
 import { useUserStore, useClipboardStore, useMessageStore } from '../stores'
+import { fieldTypes } from '../fieldtypes'
 import { itemTitle, txlocales } from '../utils'
 
 export default {
@@ -200,7 +201,8 @@ export default {
     },
 
     toName(type) {
-      return type?.charAt(0)?.toUpperCase() + type?.slice(1)
+      const name = type ? type.charAt(0).toUpperCase() + type.slice(1) : ''
+      return fieldTypes.has(name) ? name : 'Hidden'
     },
 
     translateText(idx, code, lang) {

@@ -3,7 +3,7 @@
 <script>
 import gql from 'graphql-tag'
 import { useUserStore, useMessageStore } from '../stores'
-import { url } from '../utils'
+import { safeParse, url } from '../utils'
 import { mdiTooltipImage, mdiImagePlus } from '@mdi/js'
 
 const SAVE_FILE_PREVIEW = gql`
@@ -112,7 +112,7 @@ export default {
               const latest = response.data?.saveFile?.latest
 
               if (latest) {
-                this.item.previews = JSON.parse(latest.data || '{}')?.previews || {}
+                this.item.previews = safeParse(latest.data)?.previews || {}
                 this.item.updated_at = latest.created_at
               }
             })
@@ -153,7 +153,7 @@ export default {
           const latest = response.data?.saveFile?.latest
 
           if (latest) {
-            this.item.previews = JSON.parse(latest.data || '{}')?.previews || {}
+            this.item.previews = safeParse(latest.data)?.previews || {}
             this.item.updated_at = latest.created_at
           }
         })
@@ -198,7 +198,7 @@ export default {
           const latest = response.data?.saveFile?.latest
 
           if (latest) {
-            this.item.previews = JSON.parse(latest.data || '{}')?.previews || {}
+            this.item.previews = safeParse(latest.data)?.previews || {}
             this.item.updated_at = latest.created_at
           }
         })

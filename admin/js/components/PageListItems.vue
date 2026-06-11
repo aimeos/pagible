@@ -29,7 +29,7 @@ import {
 import { Draggable } from '@he-tree/vue'
 import { dragContext } from '@he-tree/vue'
 import { useAppStore, useUserStore, useLanguageStore, useMessageStore, useChangeStore } from '../stores'
-import { debounce } from '../utils'
+import { debounce, safeParse } from '../utils'
 
 const ADD_PAGE = gql`
   mutation ($input: PageInput!) {
@@ -522,7 +522,7 @@ export default {
     },
 
     hydrate(entry) {
-      const item = entry.latest?.data ? JSON.parse(entry.latest.data) : { ...entry }
+      const item = entry.latest?.data ? safeParse(entry.latest.data) : { ...entry }
 
       return Object.assign(item, {
         id: entry.id,
@@ -787,7 +787,7 @@ export default {
           }
 
           const latest = result?.data?.page?.latest
-          const aux = JSON.parse(latest?.aux || '{}')
+          const aux = safeParse(latest?.aux)
 
           this.$apollo
             .mutate({
@@ -1561,7 +1561,7 @@ export default {
           </div>
           <div v-if="node.title" class="item-subtitle">{{ node.title }}</div>
         </a>
-        <a class="item-aux" :href="url(node)" target="_blank" draggable="false">
+        <a class="item-aux" :href="url(node)" target="_blank" rel="noopener noreferrer" draggable="false">
           <div class="item-domain">{{ node.domain }}</div>
           <span class="item-path item-subtitle">{{ '/' + node.path }}</span>
           <span v-if="node.to" class="item-to item-subtitle"> ➔ {{ node.to.substring(0, 50) + (node.to.length > 50 ? '...' : '') }}</span>

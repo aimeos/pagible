@@ -343,7 +343,7 @@ export default {
       </v-row>
       <v-row>
         <v-col cols="12" class="file-url-col">
-          <a :href="url(item.path)" target="_blank" class="file-url">{{ url(item.path) }}</a>
+          <a :href="url(item.path)" target="_blank" rel="noopener noreferrer" class="file-url">{{ url(item.path) }}</a>
           <v-btn
             @click="copyUrl()"
             :icon="mdiContentCopy"
