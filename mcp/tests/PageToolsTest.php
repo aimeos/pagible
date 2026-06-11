@@ -71,9 +71,9 @@ class PageToolsTest extends McpTestAbstract
 
     public function testGetPageMissingParams()
     {
-        $this->expectException( \Aimeos\Cms\Exception::class );
+        $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\GetPage::class, [] );
 
-        CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\GetPage::class, [] );
+        $response->assertHasErrors( ['either an ID or a path'] );
     }
 
 
@@ -295,9 +295,7 @@ class PageToolsTest extends McpTestAbstract
 
     public function testAddPageInvalidContentType()
     {
-        $this->expectException( \Aimeos\Cms\Exception::class );
-
-        CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\AddPage::class, [
+        $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\AddPage::class, [
             'lang' => 'en',
             'name' => 'Bad page',
             'title' => 'Bad Page',
@@ -308,6 +306,8 @@ class PageToolsTest extends McpTestAbstract
                 'meta-tags' => ['description' => 'A bad page test'],
             ],
         ] );
+
+        $response->assertHasErrors( ['Unknown'] );
     }
 
 
