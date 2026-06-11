@@ -46,16 +46,26 @@ function PagibleSearch() {
         },
 
 
+        escape(text) {
+            const div = document.createElement('div');
+            div.textContent = text ?? '';
+            return div.innerHTML;
+        },
+
+
         format(text, term) {
+            const escaped = this.escape(text);
+
             const words = term
                 .split(" ")
-                .filter(v => v.length > 2);
+                .filter(v => v.length > 2)
+                .map(v => v.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
 
             if (!words.length) {
-                return text;
+                return escaped;
             }
 
-            return text.replace(new RegExp(`(${words.join("|")})`, "gi"), '<b>$1</b>');
+            return escaped.replace(new RegExp(`(${words.join("|")})`, "gi"), '<b>$1</b>');
         },
 
 
