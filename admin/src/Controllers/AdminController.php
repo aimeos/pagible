@@ -59,9 +59,17 @@ class AdminController extends Controller
 
         try
         {
-            [$expires, $hmac] = explode( '|', base64_decode( (string) $request->query( 'token', '' ) ) );
+            $parts = explode( '|', base64_decode( (string) $request->query( 'token', '' ) ) );
+            $expires = $parts[0] ?? '';
+            $uid = $parts[1] ?? '';
+            $hmac = $parts[2] ?? '';
 
-            if( !hash_equals( hash_hmac( 'sha256', $expires, config( 'app.key' ) ), $hmac ) || (int) $expires < now()->timestamp ) {
+            // The token is bound to the authenticated user (see UserResolver::token), so a
+            // leaked token cannot be replayed by or for a different account.
+            if( (int) $expires < now()->timestamp
+                || (string) $uid !== (string) $request->user()?->getAuthIdentifier()
+                || !hash_equals( hash_hmac( 'sha256', $expires . '|' . $uid, config( 'app.key' ) ), (string) $hmac )
+            ) {
                 abort( 403, 'Unauthorized' );
             }
         }
@@ -77,17 +85,10 @@ class AdminController extends Controller
             abort( 400, 'Invalid or missing URL' );
         }
 
-        $parsed = parse_url( $url );
-        $host = $parsed['host'] ?? '';
-        $port = $parsed['port'] ?? ( ( $parsed['scheme'] ?? '' ) === 'https' ? 443 : 80 );
-
-        if( !( $ip = \Aimeos\Cms\Utils::resolve( $host ) ) ) {
-            abort( 400, 'Invalid IP address for host: ' . $host );
-        }
-
         try
         {
-            $response = $this->fetch( $url, $method, $range, "$host:$port:$ip" );
+            // fetch() resolves and pins the host to its public IP and rejects private targets.
+            $response = $this->fetch( $url, $method, $range );
         }
         catch( \Exception $e )
         {
@@ -137,11 +138,14 @@ class AdminController extends Controller
         }
 
         $headers = [
+            // Restrict to safe media types so attacker-controlled upstream content cannot be
+            // served as executable HTML from the application origin; prevent MIME sniffing.
+            'X-Content-Type-Options' => 'nosniff',
+            'Content-Type' => $this->contentType( $response ),
             'Access-Control-Allow-Origin' => '*',
             'Access-Control-Allow-Methods' => 'GET, HEAD, OPTIONS',
             'Access-Control-Allow-Headers' => 'Content-Type, Content-Length, Content-Range, Accept-Encoding, Range',
             'Accept-Ranges' => 'bytes',
-            'Content-Type' => $response->header('Content-Type') ?: 'application/octet-stream',
         ];
 
         if( $contentLength > 0 ) {
@@ -157,15 +161,53 @@ class AdminController extends Controller
 
 
     /**
+     * Returns a safe response content type for the proxied upstream content.
+     *
+     * Only media types are passed through; anything else (e.g. text/html) is downgraded to
+     * application/octet-stream so it cannot execute as script on the application origin.
+     *
+     * @param ClientResponse $response
+     * @return string
+     */
+    protected function contentType( ClientResponse $response ): string
+    {
+        $mime = strtolower( trim( explode( ';', (string) $response->header( 'Content-Type' ) )[0] ) );
+        $safe = ['image/', 'audio/', 'video/', 'font/', 'application/pdf'];
+
+        foreach( $safe as $prefix )
+        {
+            if( $mime !== '' && str_starts_with( $mime, $prefix ) ) {
+                return $mime;
+            }
+        }
+
+        return 'application/octet-stream';
+    }
+
+
+    /**
      * Fetch the content from the given URL using the specified method and range.
+     *
+     * Each request is pinned to the host's resolved public IP via CURLOPT_RESOLVE, and at most
+     * one redirect is followed manually so the redirect target is re-validated and re-pinned
+     * (preventing DNS-rebinding/redirect SSRF to private addresses).
      *
      * @param string $url
      * @param string $method
      * @param string|null $range
+     * @param int $hops Remaining number of redirects that may be followed
      * @return ClientResponse
      */
-    protected function fetch(string $url, string $method, ?string $range, string $resolve = ''): ClientResponse
+    protected function fetch( string $url, string $method, ?string $range, int $hops = 1 ): ClientResponse
     {
+        $parsed = parse_url( $url );
+        $host = $parsed['host'] ?? '';
+        $port = $parsed['port'] ?? ( ( $parsed['scheme'] ?? '' ) === 'https' ? 443 : 80 );
+
+        if( !$host || !( $ip = \Aimeos\Cms\Utils::resolve( $host ) ) ) {
+            throw new \Aimeos\Cms\Exception( "Host '$host' blocked" );
+        }
+
         $headers = [
             'User-Agent' => 'Pagible-Proxy/1.0',
             'Accept-Encoding' => 'identity',
@@ -175,29 +217,49 @@ class AdminController extends Controller
             $headers['Range'] = $range;
         }
 
-        $options = [
-            'stream' => true,
-            'verify' => true,
-            'allow_redirects' => [
-                'max' => 1,
-                'on_redirect' => function( $request, $response, $uri ) {
-                    $host = $uri->getHost();
+        $response = Http::withHeaders( $headers )
+            ->timeout( 10 )
+            ->withOptions( [
+                'stream' => true,
+                'verify' => true,
+                'allow_redirects' => false,
+                'curl' => [CURLOPT_RESOLVE => ["$host:$port:$ip"]],
+            ] )
+            ->send( $method, $url );
 
-                    if( !$host || !\Aimeos\Cms\Utils::resolve( $host ) ) {
-                        throw new \Aimeos\Cms\Exception( "Redirect to '$host' blocked" );
-                    }
-                },
-            ],
-        ];
+        if( $hops > 0 && $response->redirect() && ( $location = $response->header( 'Location' ) ) )
+        {
+            $target = $this->location( $url, $location );
 
-        if( $resolve ) {
-            $options['curl'] = [CURLOPT_RESOLVE => [$resolve]];
+            if( !\Aimeos\Cms\Utils::isValidUrl( $target ) ) {
+                throw new \Aimeos\Cms\Exception( "Redirect to '$location' blocked" );
+            }
+
+            return $this->fetch( $target, $method, $range, $hops - 1 );
         }
 
-        return Http::withHeaders( $headers )
-            ->timeout(10)
-            ->withOptions( $options )
-            ->send( $method, $url );
+        return $response;
+    }
+
+
+    /**
+     * Resolves a redirect Location (absolute or root-relative) against the requested URL.
+     *
+     * @param string $base Originally requested URL
+     * @param string $location Location header value from the redirect response
+     * @return string Absolute target URL
+     */
+    protected function location( string $base, string $location ): string
+    {
+        if( preg_match( '#^https?://#i', $location ) ) {
+            return $location;
+        }
+
+        $parts = parse_url( $base );
+        $origin = ( $parts['scheme'] ?? 'https' ) . '://' . ( $parts['host'] ?? '' )
+            . ( isset( $parts['port'] ) ? ':' . $parts['port'] : '' );
+
+        return $origin . '/' . ltrim( $location, '/' );
     }
 
 
