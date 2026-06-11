@@ -64,6 +64,10 @@ export default {
 
   methods: {
     change(code) {
+      if (!this.i18n.available[code]) {
+        return
+      }
+
       Promise.all([
         import(`../../i18n/${code}.json`),
         import('../vuetify').then((v) => v.switchLocale(code))
