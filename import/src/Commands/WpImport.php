@@ -1308,7 +1308,7 @@ class WpImport extends Command
         return ['elements' => [[
             'id' => Utils::uid(),
             'type' => 'html',
-            'data' => ['text' => $block],
+            'data' => ['text' => Utils::html( $block )],
         ]]];
     }
 
