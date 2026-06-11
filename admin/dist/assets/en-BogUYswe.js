@@ -1,0 +1,1 @@
+const t={id:"ID",hero:{st:"Hero section"},cards:{st:"List of tiles",fn:"List of tiles"},blog:{st:"Blog list"},article:{st:"Blog article"},questions:{st:"FAQ"},toc:{st:"Table of contents"},canonical:{st:"Canonical URL"},main:{fn:"Main image"},url:{fn:"URL"},robots:{st:"Robots"},index:{fn:"Indexing"},follow:{fn:"Link following"}},o={en:t};export{o as default,t as en};
