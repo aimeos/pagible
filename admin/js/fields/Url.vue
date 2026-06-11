@@ -27,14 +27,19 @@ export default {
   },
 
   data() {
-    const allowed = this.config.allowed || ['http', 'https']
+    // Only allow plain alphabetic schemes into the pattern so a misconfigured
+    // schema cannot inject regex metacharacters.
+    const raw = this.config.allowed || ['http', 'https']
+    const allowed = raw.every((s) => /^[a-z]+$/.test(s)) ? raw : ['http', 'https']
 
     return {
       lastError: null,
       loading: false,
       pages: [],
+      // Dot-separated labels keep this linear (no nested, ambiguous quantifiers)
+      // to avoid catastrophic backtracking (ReDoS) on crafted input.
       regex: new RegExp(
-        `^((${allowed.join('|')}://)?([^/@: ]+(:[^/@: ]+)?@)?([0-9a-z]+(-[0-9a-z]+)*\\.)*[0-9a-z]+(-[0-9a-z]+)*\\.[a-z]{2,}(:[0-9]{1,5})?)?(/.*)?$`
+        `^(?:(?:${allowed.join('|')})://)?(?:[^/@: ]+(?::[^/@: ]+)?@)?(?:(?:[0-9a-z]+(?:-[0-9a-z]+)*\\.)+[a-z]{2,}(?::[0-9]{1,5})?)?(?:/.*)?$`
       )
     }
   },
@@ -61,7 +66,7 @@ export default {
     check(v) {
       const allowed = this.config.allowed || ['http', 'https']
 
-      if (!allowed.every((s) => /^[a-z]+/.test(s))) {
+      if (!allowed.every((s) => /^[a-z]+$/.test(s))) {
         return this.$gettext('Invalid URL schema configuration')
       }
 

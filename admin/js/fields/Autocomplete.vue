@@ -2,7 +2,7 @@
 
 <script>
 import gql from 'graphql-tag'
-import { debounce } from '../utils'
+import { debounce, safeParse } from '../utils'
 
 export default {
   props: {
@@ -55,6 +55,8 @@ export default {
         return
       }
 
+      // JSON.stringify turns the term into a fully escaped GraphQL string literal,
+      // so it stays a single value token and cannot alter the trusted query structure.
       const query = this.config.query.replace(/_term_/g, value ? JSON.stringify(value) : '""')
 
       this.loading = true
@@ -67,7 +69,7 @@ export default {
         .then((result) => {
           // parse the latest data if available
           const list = this.toList(result.data).map((item) => {
-            return Object.assign({ ...item }, JSON.parse(item.latest?.data || '{}'))
+            return Object.assign({ ...item }, safeParse(item.latest?.data))
           })
 
           this.list = this.items(list)
@@ -101,7 +103,7 @@ export default {
       }
 
       this.loading = true
-      fetch(this.config.url.replace(/_term_/g, value ? value : ''), {
+      fetch(this.config.url.replace(/_term_/g, encodeURIComponent(value || '')), {
         mode: 'cors'
       })
         .then((response) => {
