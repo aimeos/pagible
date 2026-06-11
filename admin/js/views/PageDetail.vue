@@ -12,7 +12,7 @@ const PageDetailEditor = defineAsyncComponent(() => import('../components/PageDe
 import { applyResult, hasUnresolved } from '../merge'
 import { publishDate, publishItem } from '../publish'
 import { defineAsyncComponent, markRaw } from 'vue'
-import { frozenParse, hasTrue, txlocales } from '../utils'
+import { frozenParse, hasTrue, safeParse, sanitize, txlocales } from '../utils'
 import { setupEcho, cleanEcho } from '../echo'
 import {
   useAppStore,
@@ -95,8 +95,8 @@ const FETCH_PAGE_VERSIONS = gql`query($id: ID!) {
 }`
 
 const SAVE_PAGE = gql`
-  mutation ($id: ID!, $input: PageInput!, $elements: [ID!], $files: [ID!], $latestId: ID) {
-    savePage(id: $id, input: $input, elements: $elements, files: $files, latestId: $latestId) {
+  mutation ($id: ID!, $input: PageInput!, $latestId: ID) {
+    savePage(id: $id, input: $input, latestId: $latestId) {
       id
       latest { id published publish_at editor created_at }
       changed
@@ -244,12 +244,12 @@ export default {
         this.reset()
         this.latest = result.data.page.latest
 
-        Object.assign(this.item, JSON.parse(this.latest?.data || '{}'))
+        Object.assign(this.item, safeParse(this.latest?.data))
         this.item.published = this.latest?.published
         this.item.editor = this.latest?.editor
         this.item.updated_at = this.latest?.created_at
 
-        const aux = JSON.parse(this.latest?.aux || '{}')
+        const aux = safeParse(this.latest?.aux)
         this.item.content = aux.content ?? []
         this.item.config = aux.config ?? {}
         this.item.meta = aux.meta ?? {}
@@ -262,11 +262,12 @@ export default {
         setupEcho(this, 'page', this.item.id, (event) => {
           if (!this.hasChanged && this.user.can('page:view') && event.editor !== this.user.me?.email) {
             this.latest = { id: event.versionId }
-            Object.assign(this.item, event.data)
+            Object.assign(this.item, sanitize(event.data))
 
-            this.item.content = event.aux?.content ?? this.item.content
-            this.item.config = event.aux?.config ?? this.item.config
-            this.item.meta = event.aux?.meta ?? this.item.meta
+            const aux = sanitize(event.aux) || {}
+            this.item.content = aux.content ?? this.item.content
+            this.item.config = aux.config ?? this.item.config
+            this.item.meta = aux.meta ?? this.item.meta
           }
         })
 
@@ -527,8 +528,7 @@ export default {
       for (const key in this.item.meta || {}) {
         meta[key] = {
           type: this.item.meta[key].type || '',
-          data: this.item.meta[key].data || {},
-          files: this.item.meta[key].files || []
+          data: this.item.meta[key].data || {}
         }
       }
 
@@ -536,8 +536,7 @@ export default {
       for (const key in this.item.config || {}) {
         config[key] = {
           type: this.item.config[key].type || '',
-          data: this.item.config[key].data || {},
-          files: this.item.config[key].files || []
+          data: this.item.config[key].data || {}
         }
       }
 
@@ -565,8 +564,6 @@ export default {
               config: JSON.stringify(this.clean(config, 'config')),
               content: JSON.stringify(this.clean(this.item.content, 'content'))
             },
-            elements: Object.keys(this.elements),
-            files: this.fileIds(),
             latestId: this.latest?.id
           }
         })
@@ -576,7 +573,7 @@ export default {
           }
 
           const page = response.data?.savePage
-          const changed = page?.changed ? markRaw(JSON.parse(page.changed)) : null
+          const changed = page?.changed ? markRaw(safeParse(page.changed)) : null
 
           if (changed?.latest?.id || page?.latest?.id) {
             this.latest = { id: changed?.latest?.id ?? page.latest.id }
@@ -748,7 +745,7 @@ export default {
           return (result.data.page.versions || []).map((v) => {
             const item = {
               ...v,
-              data: Object.freeze(Object.assign(JSON.parse(v.data || '{}'), JSON.parse(v.aux || '{}')))
+              data: Object.freeze(Object.assign(safeParse(v.data), safeParse(v.aux)))
             }
             item.files = Object.freeze(this.files(v.files || []))
             delete item.aux

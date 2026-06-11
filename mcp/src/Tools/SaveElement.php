@@ -38,16 +38,14 @@ class SaveElement extends Tool
             'name' => 'string|max:100',
             'lang' => 'nullable|string|max:5',
             'data' => 'array',
-            'files' => 'array',
-            'files.*' => 'string|max:36',
             'latestId' => 'string|max:36',
         ], [
             'id.required' => 'You must specify the ID of the element to save.',
         ] );
 
         try {
-            $input = array_diff_key( $v, array_flip( ['id', 'files', 'latestId'] ) );
-            $element = Resource::saveElement( $v['id'], $input, $request->user(), $v['files'] ?? null, $v['latestId'] ?? null );
+            $input = array_diff_key( $v, array_flip( ['id', 'latestId'] ) );
+            $element = Resource::saveElement( $v['id'], $input, $request->user(), $v['latestId'] ?? null );
         } catch( ModelNotFoundException $e ) {
             return Response::structured( ['error' => 'Element not found.'] );
         }
@@ -84,9 +82,6 @@ class SaveElement extends Tool
                 ->description( 'ISO language code for the version.' ),
             'data' => $schema->object()
                 ->description( 'Element data as a JSON object. Fields depend on the element type. Use get-element to see the current type and get-schemas for available fields.' ),
-            'files' => $schema->array()
-                ->items( $schema->string() )
-                ->description( 'Array of file UUIDs to attach to the version.' ),
             'latestId' => $schema->string()
                 ->description( 'Version ID the caller last retrieved. Enables conflict detection and three-way merge when another editor has saved in the meantime.' ),
         ];

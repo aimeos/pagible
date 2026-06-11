@@ -70,7 +70,9 @@ export default {
     window.addEventListener('message', this.message)
 
     this.iframeLoad = () => {
-      this.$refs.iframe?.contentWindow?.postMessage('init', '*')
+      if (this.url) {
+        this.$refs.iframe?.contentWindow?.postMessage('init', this.url)
+      }
     }
     this.$refs.iframe?.addEventListener('load', this.iframeLoad)
 
@@ -157,6 +159,20 @@ export default {
     },
 
     message(msg) {
+      // only accept messages coming from our own preview iframe and only from
+      // the exact origin we navigated it to, not from arbitrary windows/frames
+      // that may hold a reference to this window
+      let expected
+      try {
+        expected = new URL(this.url, window.location.origin).origin
+      } catch {
+        return
+      }
+
+      if (msg.source !== this.$refs.iframe?.contentWindow || msg.origin !== expected) {
+        return
+      }
+
       switch (msg.data) {
         // unselect element
         case 0:
@@ -275,7 +291,7 @@ export default {
       {{ $gettext('Not CMS content') }}
     </div>
 
-    <iframe ref="iframe" :src="url" @load="loading = false"></iframe>
+    <iframe ref="iframe" :src="url" sandbox="allow-same-origin allow-scripts allow-forms" @load="loading = false"></iframe>
 
     <v-btn
       v-if="!expanded"

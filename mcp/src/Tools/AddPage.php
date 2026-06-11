@@ -23,7 +23,7 @@ use Laravel\Mcp\Request;
 
 #[Name('add-page')]
 #[Title('Create a new page within the page tree')]
-#[Description('Creates a new page in the page tree. Requires lang (ISO code like "en"), name (max 50 chars), title (max 100 chars), content (array of {type, data} objects — use get-schemas for types), and meta with meta-tags description for SEO. Optional: config, to, tag, theme, type, domain, path, cache (minutes), related_id, parent_id, ref, files, elements. Returns the created page as JSON.')]
+#[Description('Creates a new page in the page tree. Requires lang (ISO code like "en"), name (max 50 chars), title (max 100 chars), content (array of {type, data} objects — use get-schemas for types), and meta with meta-tags description for SEO. Files and shared elements are attached automatically from the file and reference items in the content, meta and config. Optional: config, to, tag, theme, type, domain, path, cache (minutes), related_id, parent_id, ref. Returns the created page as JSON.')]
 class AddPage extends Tool
 {
     /**
@@ -58,10 +58,6 @@ class AddPage extends Tool
             'related_id' => 'string|max:36',
             'parent_id' => 'string|max:36',
             'ref' => 'string|max:36',
-            'files' => 'array',
-            'files.*' => 'string|max:36',
-            'elements' => 'array',
-            'elements.*' => 'string|max:36',
         ], [
             'lang.required' => 'You must specify a language code from the list of available locales. For example, "en" or "en-US".',
             'name.required' => 'You must specify a name for the page and it must not be longer than 50 characters.',
@@ -110,13 +106,11 @@ class AddPage extends Tool
             $v['config'] = Validation::structured( $v['config'], 'config', new \stdClass(), $v['type'] );
         }
 
-        $input = array_diff_key( $v, array_flip( ['parent_id', 'ref', 'files', 'elements'] ) );
+        $input = array_diff_key( $v, array_flip( ['parent_id', 'ref'] ) );
 
         $page = Resource::addPage(
             $input,
             $request->user(),
-            $v['files'] ?? [],
-            $v['elements'] ?? [],
             $v['ref'] ?? null,
             $pid,
         );
@@ -185,12 +179,6 @@ class AddPage extends Tool
                 ->description( 'ID of the parent page where the new page will be added below.' ),
             'ref' => $schema->string()
                 ->description( 'ID of a sibling page to insert before. Takes priority over parent_id positioning.' ),
-            'files' => $schema->array()
-                ->items( $schema->string() )
-                ->description( 'Array of file UUIDs to attach to the page.' ),
-            'elements' => $schema->array()
-                ->items( $schema->string() )
-                ->description( 'Array of shared element UUIDs to attach to the page.' ),
         ];
     }
 

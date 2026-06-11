@@ -46,6 +46,15 @@ class Validation
                         $item->data['text'] = Utils::html( (string) $item->data['text'] );
                     }
                 }
+
+                // Keep the per-element "files" list in sync with the file references in the
+                // element data for every writer (admin, GraphQL, MCP/LLM), so readers like
+                // the blog list resolve images regardless of how the content was created.
+                if( $files = self::fileIds( $item->data ?? [] ) ) {
+                    $item->files = $files;
+                } else {
+                    unset( $item->files );
+                }
             }
 
             self::validateContent( $input['content'] );

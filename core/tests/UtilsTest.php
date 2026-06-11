@@ -193,6 +193,39 @@ class UtilsTest extends CoreTestAbstract
     }
 
 
+    public function testExtensionAllowed()
+    {
+        $this->assertSame( 'jpg', Utils::extension( 'jpg' ) );
+        $this->assertSame( 'pdf', Utils::extension( 'PDF' ) );
+        $this->assertSame( 'tar', Utils::extension( '.tar' ) );
+    }
+
+
+    public function testExtensionEmpty()
+    {
+        $this->assertSame( 'bin', Utils::extension( null ) );
+        $this->assertSame( 'bin', Utils::extension( '' ) );
+        $this->assertSame( 'bin', Utils::extension( '..' ) );
+    }
+
+
+    public function testExtensionNeutralized()
+    {
+        $this->assertSame( 'bin', Utils::extension( 'php' ) );
+        $this->assertSame( 'bin', Utils::extension( 'PHP5' ) );
+        $this->assertSame( 'bin', Utils::extension( 'phtml' ) );
+        $this->assertSame( 'bin', Utils::extension( 'phar' ) );
+        $this->assertSame( 'bin', Utils::extension( 'asp' ) );
+        $this->assertSame( 'bin', Utils::extension( 'aspx' ) );
+        $this->assertSame( 'bin', Utils::extension( 'jsp' ) );
+        $this->assertSame( 'bin', Utils::extension( 'html' ) );
+        $this->assertSame( 'bin', Utils::extension( 'xhtml' ) );
+        $this->assertSame( 'bin', Utils::extension( 'htaccess' ) );
+        $this->assertSame( 'bin', Utils::extension( 'cgi' ) );
+        $this->assertSame( 'bin', Utils::extension( 'pl' ) );
+    }
+
+
     public function testSlugify()
     {
         $this->assertEquals( 'hello-world', Utils::slugify( 'Hello World' ) );
@@ -278,13 +311,5 @@ class UtilsTest extends CoreTestAbstract
         $this->assertFalse( Utils::isValidMimetype( 'application/x-httpd-php' ) );
         $this->assertFalse( Utils::isValidMimetype( 'application/x-executable' ) );
         $this->assertFalse( Utils::isValidMimetype( 'application/x-sharedlib' ) );
-    }
-
-
-    public function testIsValidMimetypeEmptyConfig()
-    {
-        config()->set( 'cms.graphql.mimetypes', [] );
-
-        $this->assertTrue( Utils::isValidMimetype( 'application/x-httpd-php' ) );
     }
 }

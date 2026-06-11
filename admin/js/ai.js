@@ -7,7 +7,7 @@ import gettext from './i18n'
 import { apolloClient } from './graphql'
 import { toMp3, transcription } from './audio'
 import { useUserStore, useMessageStore } from './stores'
-import { url } from './utils'
+import { safeParse, url } from './utils'
 
 const TRANSCRIBE = gql`
   mutation ($file: Upload!) {
@@ -62,7 +62,7 @@ export function transcribe(input) {
         throw result
       }
 
-      return transcription(JSON.parse(result.data?.transcribe || '[]'))
+      return transcription(safeParse(result.data?.transcribe || '[]', []))
     })
     .catch((error) => {
       messages.add($gettext('Error transcribing file') + ':\n' + error, 'error')

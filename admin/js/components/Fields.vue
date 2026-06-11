@@ -5,6 +5,7 @@ import gql from 'graphql-tag'
 import { markRaw } from 'vue'
 import { useUserStore, useMessageStore } from '../stores'
 import { changedState } from '../merge'
+import { fieldTypes } from '../fieldtypes'
 import { hasTrue, txlocales } from '../utils'
 import {
   mdiTranslate,
@@ -147,7 +148,8 @@ export default {
     },
 
     toName(type) {
-      return type?.charAt(0)?.toUpperCase() + type?.slice(1)
+      const name = type ? type.charAt(0).toUpperCase() + type.slice(1) : ''
+      return fieldTypes.has(name) ? name : 'Hidden'
     },
 
     translateText(code, lang) {

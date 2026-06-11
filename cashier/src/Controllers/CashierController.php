@@ -102,9 +102,17 @@ class CashierController extends Controller
      */
     protected function stripe( Authenticatable $user, array $product, string $priceid, string $successUrl ): \Symfony\Component\HttpFoundation\Response
     {
+        // The previous URL is based on the attacker-controllable Referer header, so
+        // rebuild it from path and query on the own host to avoid an open redirect.
+        // Strip leading (back)slashes because url() returns "//host" URLs unchanged
+        $parts = (array) parse_url( url()->previous( '/' ) );
+        $path = '/' . ltrim( $parts['path'] ?? '', '/\\' );
+        $query = isset( $parts['query'] ) ? '?' . $parts['query'] : '';
+        $fragment = isset( $parts['fragment'] ) ? '#' . $parts['fragment'] : '';
+
         $urls = [
             'success_url' => $successUrl,
-            'cancel_url' => url()->previous( '/' ),
+            'cancel_url' => url( $path . $query . $fragment ),
         ];
 
         if( !empty( $product['once'] ) )

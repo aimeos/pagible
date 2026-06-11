@@ -8,6 +8,7 @@
 namespace Aimeos\Cms\Commands;
 
 use Aimeos\Cms\Tenancy;
+use Aimeos\Cms\Utils;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Events\RestoreCompleted;
 use Aimeos\Cms\Events\RestoreFailed;
@@ -462,6 +463,12 @@ class Restore extends Command
             throw new \RuntimeException( sprintf( 'Media path outside tenant scope: %s', $targetPath ) );
         }
 
+        // The archive is untrusted: neutralize executable/active-content extensions the same way
+        // uploads do (File::filename), so a crafted backup can't drop e.g. .php/.html into the disk.
+        if( Utils::extension( pathinfo( $targetPath, PATHINFO_EXTENSION ) ) === 'bin' ) {
+            $targetPath .= '.bin';
+        }
+
         return $targetPath;
     }
 
@@ -616,7 +623,24 @@ class Restore extends Command
                     continue;
                 }
 
-                $storage->writeStream( $targetPath, $stream );
+                // SVGs from the untrusted archive must be sanitized (they can carry scripts), the
+                // same way uploads are sanitized in File::addFile; skip entries that aren't valid SVG.
+                if( str_starts_with( strtolower( pathinfo( $targetPath, PATHINFO_EXTENSION ) ), 'svg' ) )
+                {
+                    if( $clean = Utils::cleanSvg( (string) stream_get_contents( $stream ) ) ) {
+                        $storage->put( $targetPath, $clean );
+                    } else {
+                        $targetPath = '';
+                    }
+                }
+                else
+                {
+                    $storage->writeStream( $targetPath, $stream );
+
+                    if( is_resource( $stream ) ) {
+                        fclose( $stream );
+                    }
+                }
 
                 if( is_resource( $stream ) ) {
                     fclose( $stream );

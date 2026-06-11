@@ -81,7 +81,7 @@ extend type Mutation {
   cmsUser(settings: JSON!): User @guard @throttle(name: "cms-admin")
 
   "Add a new page below the page referenced by 'parent' and before the page referenced by 'ref' (or append if NULL)"
-  addPage(input: PageInput!, parent: ID, ref: ID, elements: [ID!], files: [ID!]): Page
+  addPage(input: PageInput!, parent: ID, ref: ID): Page
     @guard @cmsPermission(action: "page:add") @throttle(name: "cms-admin")
 
   "Move the page below the page referenced by 'parent' and before the page referenced by 'ref' (or append if NULL)"
@@ -89,7 +89,7 @@ extend type Mutation {
     @guard @cmsPermission(action: "page:move") @throttle(name: "cms-admin")
 
   "Update the values of an existing page"
-  savePage(id: ID!, input: PageInput!, elements: [ID!], files: [ID!], latestId: ID): Page
+  savePage(id: ID!, input: PageInput!, latestId: ID): Page
     @guard @cmsPermission(action: "page:save") @throttle(name: "cms-admin")
 
   "Delete an existing page"
@@ -109,12 +109,12 @@ extend type Mutation {
     @guard @cmsPermission(action: "page:publish") @throttle(name: "cms-admin")
 
 
-  "Add a new shared content element with file references"
-  addElement(input: ElementInput!, files: [ID!]): Element
+  "Add a new shared content element"
+  addElement(input: ElementInput!): Element
     @guard @cmsPermission(action: "element:add") @throttle(name: "cms-admin")
 
   "Update an existing shared content element"
-  saveElement(id: ID!, input: ElementInput!, files: [ID!], latestId: ID): Element
+  saveElement(id: ID!, input: ElementInput!, latestId: ID): Element
     @guard @cmsPermission(action: "element:save") @throttle(name: "cms-admin")
 
   "Delete an existing shared content element"

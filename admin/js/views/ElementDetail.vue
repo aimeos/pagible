@@ -11,7 +11,7 @@ import { applyResult, hasUnresolved } from '../merge'
 import { publishDate, publishItem } from '../publish'
 import { setupEcho, cleanEcho } from '../echo'
 import { defineAsyncComponent, markRaw } from 'vue'
-import { frozenParse, itemTitle } from '../utils'
+import { frozenParse, itemTitle, safeParse, sanitize } from '../utils'
 
 const ChangesDialog = defineAsyncComponent(() => import('../components/ChangesDialog.vue'))
 const HistoryDialog = defineAsyncComponent(() => import('../components/HistoryDialog.vue'))
@@ -50,8 +50,8 @@ const FETCH_ELEMENT = gql`
 `
 
 const SAVE_ELEMENT = gql`
-  mutation ($id: ID!, $input: ElementInput!, $files: [ID!], $latestId: ID) {
-    saveElement(id: $id, input: $input, files: $files, latestId: $latestId) {
+  mutation ($id: ID!, $input: ElementInput!, $latestId: ID) {
+    saveElement(id: $id, input: $input, latestId: $latestId) {
       id
       latest { id published publish_at editor created_at }
       changed
@@ -175,7 +175,7 @@ export default {
         const element = result.data.element
 
         this.reset()
-        Object.assign(this.item, JSON.parse(element.latest?.data || '{}'))
+        Object.assign(this.item, safeParse(element.latest?.data))
         this.item.published = element.latest?.published
         this.item.editor = element.latest?.editor
         this.item.updated_at = element.latest?.created_at
@@ -192,7 +192,7 @@ export default {
         setupEcho(this, 'element', this.item.id, (event) => {
           if (!this.dirty && this.user.can('element:view') && event.editor !== this.user.me?.email) {
             this.latestId = event.versionId
-            Object.assign(this.item, event.data)
+            Object.assign(this.item, sanitize(event.data))
           }
         })
 
@@ -334,7 +334,6 @@ export default {
               lang: this.item.lang,
               data: JSON.stringify(this.item.data || {})
             },
-            files: [...new Set(this.item.files)],
             latestId: this.latestId
           }
         })
@@ -344,7 +343,7 @@ export default {
           }
 
           const el = result.data?.saveElement
-          const changed = el?.changed ? markRaw(JSON.parse(el.changed)) : null
+          const changed = el?.changed ? markRaw(safeParse(el.changed)) : null
 
           if (changed?.latest?.id || el?.latest?.id) {
             this.latestId = changed?.latest?.id ?? el.latest.id

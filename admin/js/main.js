@@ -4,6 +4,7 @@
 
 import { createPinia } from 'pinia'
 import { createApp, defineAsyncComponent } from 'vue'
+import { fieldComponents } from './fieldtypes'
 import visible from './directives/visible'
 import apollo from './graphql'
 import i18n from './i18n'
@@ -41,11 +42,8 @@ app.directive('safe-svg', (el, binding) => {
 app.directive('visible', visible)
 
 
-const fields = import.meta.glob('@/fields/*.vue')
-
-for (const path in fields) {
-  const name = path.split('/').at(-1).split('.')[0]
-  app.component(name, defineAsyncComponent(fields[path]))
+for (const name in fieldComponents) {
+  app.component(name, defineAsyncComponent(fieldComponents[name]))
 }
 
 app

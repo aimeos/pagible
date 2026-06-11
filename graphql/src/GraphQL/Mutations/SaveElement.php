@@ -20,7 +20,7 @@ final class SaveElement
      */
     public function __invoke( $rootValue, array $args ) : Element
     {
-        $element = Resource::saveElement( $args['id'], $args['input'] ?? [], Auth::user(), $args['files'] ?? null, $args['latestId'] ?? null );
+        $element = Resource::saveElement( $args['id'], $args['input'] ?? [], Auth::user(), $args['latestId'] ?? null );
 
         Resource::broadcast( $element, Auth::user() );
 

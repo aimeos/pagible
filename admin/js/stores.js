@@ -14,6 +14,7 @@ import {
   multidomain,
   locales as appLocales
 } from './config'
+import { safeParse, sanitize } from './utils'
 
 const FETCH_ME = gql`
   query {
@@ -44,6 +45,14 @@ const LOGOUT = gql`
     cmsLogout {
       email
       name
+    }
+  }
+`
+
+const FETCH_TOKEN = gql`
+  query {
+    me {
+      token
     }
   }
 `
@@ -83,7 +92,8 @@ export const useUserStore = defineStore('user', {
   state: () => ({
     me: null,
     urlintended: null,
-    saveTimer: null
+    saveTimer: null,
+    tokenTimer: null
   }),
 
   actions: {
@@ -104,6 +114,44 @@ export const useUserStore = defineStore('user', {
       return url ? (this.urlintended = url) : this.urlintended
     },
 
+    applyProxyToken() {
+      clearTimeout(this.tokenTimer)
+      this.tokenTimer = null
+
+      if (!this.me?.token) return
+
+      const app = useAppStore()
+      app.urlproxy = urlproxy.replace('url=', 'token=' + encodeURIComponent(this.me.token) + '&url=')
+
+      // The token's expiry is encoded as the first segment of "expires|uid|hmac";
+      // refresh a minute before it lapses so proxied media keeps loading.
+      let expires = 0
+      try {
+        expires = parseInt(atob(this.me.token).split('|')[0], 10) * 1000
+      } catch {
+        return
+      }
+
+      const delay = Math.min(Math.max(expires - Date.now() - 60000, 10000), 0x7fffffff)
+      this.tokenTimer = setTimeout(() => this.refreshToken(), delay)
+    },
+
+    refreshToken() {
+      if (!this.me) return
+
+      apolloClient
+        .query({ query: FETCH_TOKEN, fetchPolicy: 'network-only' })
+        .then((response) => {
+          if (response.data?.me?.token) {
+            this.me.token = response.data.me.token
+            this.applyProxyToken()
+          }
+        })
+        .catch((error) => {
+          console.error('Failed to refresh proxy token', error)
+        })
+    },
+
     async isAuthenticated() {
       if (this.me !== null) {
         return !!this.me
@@ -119,13 +167,10 @@ export const useUserStore = defineStore('user', {
           }
 
           this.me = response.data.me
-            ? { ...response.data.me, permission: JSON.parse(response.data.me.permission || '{}'), settings: JSON.parse(response.data.me.settings || '{}') }
+            ? { ...response.data.me, permission: safeParse(response.data.me.permission), settings: safeParse(response.data.me.settings) }
             : false
 
-          if (this.me?.token) {
-            const app = useAppStore()
-            app.urlproxy = urlproxy.replace('url=', 'token=' + encodeURIComponent(this.me.token) + '&url=')
-          }
+          this.applyProxyToken()
         })
         .catch((error) => {
           console.error('Failed to fetch user data', error)
@@ -152,17 +197,14 @@ export const useUserStore = defineStore('user', {
           this.me = response.data.cmsLogin || false
 
           if (this.me?.permission) {
-            this.me.permission = JSON.parse(this.me.permission)
+            this.me.permission = safeParse(this.me.permission)
           }
 
           if (this.me?.settings) {
-            this.me.settings = JSON.parse(this.me.settings)
+            this.me.settings = safeParse(this.me.settings)
           }
 
-          if (this.me?.token) {
-            const app = useAppStore()
-            app.urlproxy = urlproxy.replace('url=', 'token=' + encodeURIComponent(this.me.token) + '&url=')
-          }
+          this.applyProxyToken()
 
           return this.me
         })
@@ -175,6 +217,9 @@ export const useUserStore = defineStore('user', {
     logout() {
       clearTimeout(this.saveTimer)
       this.saveTimer = null
+
+      clearTimeout(this.tokenTimer)
+      this.tokenTimer = null
 
       return apolloClient
         .mutate({
@@ -360,7 +405,7 @@ export const useSchemaStore = defineStore('schema', {
         query: FETCH_SCHEMAS
       }).then((result) => {
         const content = {}, meta = {}, config = {}
-        const parse = (v) => typeof v === 'string' ? JSON.parse(v) : v || {}
+        const parse = (v) => typeof v === 'string' ? safeParse(v) : sanitize(v || {})
         const list = (result.data?.schemas || []).map(t => markRaw({
           ...t,
           types: parse(t.types),

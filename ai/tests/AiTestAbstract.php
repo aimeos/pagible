@@ -22,6 +22,7 @@ abstract class AiTestAbstract extends CmsTestAbstract
 		$app['config']->set('cms.ai.imagine', ['provider' => 'clipdrop', 'api_key' => 'test']);
 		$app['config']->set('cms.ai.inpaint', ['provider' => 'stabilityai', 'api_key' => 'test']);
 		$app['config']->set('cms.ai.isolate', ['provider' => 'clipdrop', 'api_key' => 'test']);
+		$app['config']->set('cms.ai.repaint', ['provider' => 'gemini', 'api_key' => 'test']);
 		$app['config']->set('cms.ai.uncrop', ['provider' => 'clipdrop', 'api_key' => 'test']);
 		$app['config']->set('cms.ai.upscale', ['provider' => 'clipdrop', 'api_key' => 'test']);
 		$app['config']->set('cms.ai.transcribe', ['provider' => 'openai', 'api_key' => 'test']);

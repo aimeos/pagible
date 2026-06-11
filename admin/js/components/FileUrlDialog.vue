@@ -282,7 +282,7 @@ export default {
                 controls
                 :src="item.path"
               ></audio>
-              <a v-else :href="item.path" target="_blank">{{ item.path }}</a>
+              <a v-else :href="item.path" target="_blank" rel="noopener noreferrer">{{ item.path }}</a>
             </div>
 
             <div
