@@ -76,7 +76,8 @@ export default {
 
   props: {
     item: { type: Object, required: true },
-    stacked: { type: Boolean, default: false }
+    stacked: { type: Boolean, default: false },
+    onSaved: { type: Function, default: null }
   },
 
   data: () => ({
@@ -321,6 +322,7 @@ export default {
           this.item.publish_at = latest?.publish_at ?? null
           this.item.editor = latest?.editor ?? this.item.editor
           this.changes.notify('file', this.item)
+          this.onSaved?.()
 
           return true
         })
