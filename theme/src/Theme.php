@@ -48,6 +48,14 @@ class Theme
             return $name;
         }
 
+        // Tenant theme names are concatenated into a local storage path that is
+        // synced and recursively cleaned up (see sync()/cleanup()). Reject anything
+        // outside the strict identifier charset (same whitelist as Schema::discover())
+        // so a crafted page theme can never traverse out of the cms-themes directory.
+        if( !preg_match( '/^[a-zA-Z0-9-]+$/', $name ) ) {
+            return $name;
+        }
+
         $tenant = Tenancy::value();
 
         if( !$tenant || !config( 'cms.theme.disk' ) ) {

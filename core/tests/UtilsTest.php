@@ -312,4 +312,29 @@ class UtilsTest extends CoreTestAbstract
         $this->assertFalse( Utils::isValidMimetype( 'application/x-executable' ) );
         $this->assertFalse( Utils::isValidMimetype( 'application/x-sharedlib' ) );
     }
+
+
+    public function testMimetypeRejectsPathTraversal()
+    {
+        // A crafted path must be rejected before any disk read so its mime type
+        // (and existence) can't be probed outside the intended directory.
+        foreach( ['cms/test/../other/secret.jpg', 'cms/test/..\\x.jpg', "cms/test/x.jpg\0"] as $path )
+        {
+            try {
+                Utils::mimetype( $path );
+                $this->fail( sprintf( 'Expected exception for path "%s"', $path ) );
+            } catch( \Aimeos\Cms\Exception $e ) {
+                $this->assertEquals( 'Invalid file path', $e->getMessage() );
+            }
+        }
+    }
+
+
+    public function testMimetypeReadsValidPath()
+    {
+        \Illuminate\Support\Facades\Storage::fake( 'public' );
+        \Illuminate\Support\Facades\Storage::disk( 'public' )->put( 'cms/test/hello.txt', 'hello world, plain text content' );
+
+        $this->assertEquals( 'text/plain', Utils::mimetype( 'cms/test/hello.txt' ) );
+    }
 }
