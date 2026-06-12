@@ -257,6 +257,10 @@ export default {
 
       if (this.cropper) {
         this.cropper.destroy()
+
+        // destroy() restores the <img> to cropperjs' originalUrl, so point it
+        // back at the current path before re-initialising the cropper
+        this.$refs.image.src = this.url(this.item.path, !this.svg)
       }
 
       const self = this
