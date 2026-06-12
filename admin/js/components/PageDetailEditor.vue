@@ -31,6 +31,13 @@ export default {
 
   emits: ['change'],
 
+  provide() {
+    return {
+      // let descendant file fields refresh the preview after editing a file
+      reload: this.reload
+    }
+  },
+
   setup() {
     const messages = useMessageStore()
     const user = useUserStore()
@@ -201,6 +208,12 @@ export default {
       }
     },
 
+    reload() {
+      if (this.url) {
+        this.$refs.iframe?.contentWindow?.postMessage('reload', this.url)
+      }
+    },
+
     remove() {
       if (this.index === null) return
 
@@ -208,9 +221,7 @@ export default {
       this.$emit('change', 'content')
       this.index = null
 
-      this.save.fcn(true).then(() => {
-        this.$refs.iframe.contentWindow.postMessage('reload', this.url)
-      })
+      this.save.fcn(true).then(() => this.reload())
     },
 
     update() {
@@ -223,16 +234,14 @@ export default {
       this.pos = null
 
       this.$emit('change', 'content')
-      this.save.fcn(true).then(() => {
-        this.$refs.iframe.contentWindow.postMessage('reload', this.url)
-      })
+      this.save.fcn(true).then(() => this.reload())
     }
   },
 
   watch: {
     'save.count': function () {
       if (this.save.count > 0) {
-        this.$refs.iframe.contentWindow.postMessage('reload', this.url)
+        this.reload()
       }
     }
   }

@@ -54,6 +54,10 @@ export default {
 
   emits: ['update:modelValue', 'error', 'addFile', 'removeFile'],
 
+  inject: {
+    reload: { default: null }
+  },
+
   setup() {
     const viewStack = useViewStack()
     const messages = useMessageStore()
@@ -200,7 +204,14 @@ export default {
     },
 
     open(item) {
-      this.viewStack.openView(FileDetail, { item: item, stacked: true })
+      // Editing an image in the stacked FileDetail only updates the file's own
+      // (already persisted) draft, not the page content, so just refresh the
+      // preview when FileDetail saves.
+      this.viewStack.openView(FileDetail, {
+        item: item,
+        stacked: true,
+        onSaved: () => this.reload?.()
+      })
     },
 
     remove(idx) {
