@@ -112,6 +112,21 @@ class ThemeTest extends ThemeTestAbstract
 	}
 
 
+	public function testViewsRejectsPathTraversal()
+	{
+		// A page theme is user-controlled and flows into a storage path that is
+		// recursively cleaned up. Names outside the [a-zA-Z0-9-] whitelist must be
+		// returned verbatim without ever touching the filesystem (no traversal).
+		config( ['cms.theme.disk' => 'local'] );
+
+		foreach( ['../../../..', '../etc', 'foo/bar', 'foo\\bar', "foo\0bar", '.', '..', ''] as $name ) {
+			$this->assertEquals( $name, Theme::views( $name ) );
+		}
+
+		$this->assertDirectoryDoesNotExist( storage_path( 'app/cms-themes' ) );
+	}
+
+
 	public function testMetadata()
 	{
 		$theme = Schema::get( 'cms' );

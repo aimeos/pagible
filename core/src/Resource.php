@@ -419,9 +419,17 @@ class Resource
             return null;
         }
 
+        if( str_starts_with( $path, 'http' ) ) {
+            return $path;
+        }
+
         $prefix = rtrim( 'cms/' . Tenancy::value(), '/' ) . '/';
 
-        if( !str_starts_with( $path, 'http' ) && !str_starts_with( $path, $prefix ) ) {
+        // The prefix check alone is not enough: "cms/1/../2/secret.jpg" starts with the
+        // tenant prefix but the storage engine resolves the ".." into another tenant's
+        // directory (cross-tenant read/delete). Legitimate paths never contain ".." or
+        // null bytes (see File::filename()), so reject both outright.
+        if( !str_starts_with( $path, $prefix ) || str_contains( $path, '..' ) || str_contains( $path, "\0" ) ) {
             throw new \Aimeos\Cms\Exception( sprintf( 'Invalid file path "%s"', $path ) );
         }
 

@@ -324,6 +324,14 @@ class Utils
         }
         else
         {
+            // Reject traversal sequences and null bytes before reading from the disk so a
+            // crafted path (e.g. "cms/1/../2/secret.jpg") can't probe files outside the
+            // intended directory and leak their mime type. Stored paths never contain ".."
+            // (see File::filename()).
+            if( str_contains( $path, '..' ) || str_contains( $path, "\0" ) ) {
+                throw new Exception( 'Invalid file path' );
+            }
+
             $stream = Storage::disk( config( 'cms.storage.disk', 'public' ) )->readStream( $path );
 
             if( !$stream ) {

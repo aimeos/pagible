@@ -135,6 +135,63 @@ class ResourceTest extends CoreTestAbstract
     }
 
 
+    public function testCheckPathRejectsTraversal()
+    {
+        // Tenancy::value() is "test" here, so the prefix is "cms/test/". Each of these
+        // begins with the prefix yet resolves into another tenant's directory.
+        $method = new \ReflectionMethod( Resource::class, 'checkPath' );
+
+        $paths = [
+            'cms/test/../other/secret.jpg',
+            'cms/test/..\\other\\secret.jpg',
+            'cms/test/sub/../../other/secret.jpg',
+            'cms/other/secret.jpg',
+            "cms/test/secret.jpg\0.png",
+        ];
+
+        foreach( $paths as $path )
+        {
+            try {
+                $method->invoke( null, $path );
+                $this->fail( sprintf( 'Expected exception for path "%s"', $path ) );
+            } catch( Exception $e ) {
+                $this->assertStringContainsString( 'Invalid file path', $e->getMessage() );
+            }
+        }
+    }
+
+
+    public function testCheckPathAllowsValidPaths()
+    {
+        $method = new \ReflectionMethod( Resource::class, 'checkPath' );
+
+        $this->assertNull( $method->invoke( null, null ) );
+        $this->assertEquals( 'cms/test/image_ab12.jpg', $method->invoke( null, 'cms/test/image_ab12.jpg' ) );
+        // External URLs bypass the tenant prefix and never touch the tenant disk.
+        $this->assertEquals( 'https://example.com/a/b.jpg', $method->invoke( null, 'https://example.com/a/b.jpg' ) );
+    }
+
+
+    public function testSaveFileRejectsCrossTenantPath()
+    {
+        $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
+
+        $this->expectException( Exception::class );
+
+        Resource::saveFile( $file->id, ['path' => 'cms/test/../other/secret.jpg'], $this->user );
+    }
+
+
+    public function testSaveFileRejectsCrossTenantPreview()
+    {
+        $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
+
+        $this->expectException( Exception::class );
+
+        Resource::saveFile( $file->id, ['previews' => ['cms/test/../other/secret.jpg']], $this->user );
+    }
+
+
     /**
      * Creates a draft page below the root node with the given content.
      *
