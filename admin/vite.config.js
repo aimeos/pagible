@@ -19,6 +19,30 @@ const vuetifyLabs = readdirSync('node_modules/vuetify/lib/labs', { withFileTypes
   .filter(d => d.isDirectory())
   .map(d => `vuetify/labs/${d.name}`)
 
+// Group large vendor packages into dedicated chunks.  Rolldown (Vite 8) only
+// supports the function form of manualChunks, so each node_modules package is
+// matched by path and mapped to its chunk name.
+const chunkGroups = {
+  ckeditor: ['ckeditor5', '@ckeditor/ckeditor5-vue'],
+  charts: ['chart.js', 'vue-chartjs'],
+  cropper: ['cropperjs'],
+  diff: ['diff'],
+  dompurify: ['dompurify'],
+  graphql: ['graphql', 'graphql-tag', '@apollo/client', 'apollo-link-batch-http', 'apollo-upload-client'],
+  markdown: ['mdast-util-from-markdown', 'mdast-util-to-markdown'],
+  tree: ['@he-tree/vue'],
+  // is-plain-obj is shared by the ckeditor and graphql chunks; pinning it to
+  // its own chunk avoids a circular chunk dependency between them.
+  shared: ['is-plain-obj'],
+}
+
+function manualChunks(id) {
+  if(!id.includes('node_modules')) return
+  for(const chunk in chunkGroups) {
+    if(chunkGroups[chunk].some(pkg => id.includes(`node_modules/${pkg}/`))) return chunk
+  }
+}
+
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
@@ -54,19 +78,7 @@ export default defineConfig({
     manifest: true,
     rollupOptions: {
       output: {
-        manualChunks: {
-          ckeditor: ['ckeditor5', '@ckeditor/ckeditor5-vue'],
-          charts: ['chart.js', 'vue-chartjs'],
-          cropper: ['cropperjs'],
-          diff: ['diff'],
-          dompurify: ['dompurify'],
-          graphql: ['graphql', 'graphql-tag', '@apollo/client', 'apollo-link-batch-http', '@apollo/client/link/error', '@apollo/client/link/retry', 'apollo-upload-client/createUploadLink.mjs'],
-          markdown: ['mdast-util-from-markdown', 'mdast-util-to-markdown'],
-          tree: ['@he-tree/vue'],
-          // is-plain-obj is shared by the ckeditor and graphql chunks; pinning
-          // it to its own chunk avoids a circular chunk dependency between them.
-          shared: ['is-plain-obj'],
-        }
+        manualChunks
       }
     }
   },
