@@ -32,7 +32,7 @@ class Merge
         // Process incoming blocks in incoming order
         foreach( $incoming as $block )
         {
-            $block = (array) $block;
+            $block = (array) self::normalize( $block );
             $key = self::blockKey( $block );
 
             if( !$key ) {
@@ -64,7 +64,7 @@ class Merge
             {
                 $merged = self::try( (array) $b, (array) $c, (array) $i );
                 $diff[$key] = ['previous' => $b, 'current' => $i, 'overwritten' => $c, 'merged' => $merged];
-                $result[] = $i;
+                $result[] = $merged ?? $i;
             }
             else
             {
@@ -102,6 +102,10 @@ class Merge
      */
     public static function structured( array $base, array $current, array $incoming ) : array
     {
+        $base = (array) self::normalize( $base );
+        $current = (array) self::normalize( $current );
+        $incoming = (array) self::normalize( $incoming );
+
         if( $base === $current ) {
             return [$incoming, null];
         }
@@ -154,7 +158,7 @@ class Merge
                 $merged = self::isMap( $b ) && self::isMap( $c ) && self::isMap( $i ) ? self::try( (array) $b, (array) $c, (array) $i )
                     : ( is_string( $b ) && is_string( $c ) && is_string( $i ) ? self::tryString( $b, $c, $i ) : null );
                 $diff[$k] = ['previous' => $b, 'current' => $i, 'overwritten' => $c, 'merged' => $merged];
-                $result[$k] = $i;
+                $result[$k] = $merged ?? $i;
             }
         }
 
@@ -403,6 +407,24 @@ class Merge
 
 
     /**
+     * Recursively converts stdClass objects to associative arrays so values decoded as
+     * objects (stored versions) and as arrays (incoming request payloads) compare as equal
+     * instead of an untouched block being misread as a conflicting edit.
+     *
+     * @param mixed $value
+     * @return mixed
+     */
+    protected static function normalize( mixed $value ) : mixed
+    {
+        if( $value instanceof \stdClass ) {
+            $value = (array) $value;
+        }
+
+        return is_array( $value ) ? array_map( [self::class, 'normalize'], $value ) : $value;
+    }
+
+
+    /**
      * Indexes an array of content blocks by their key (id or refid).
      *
      * @param array<int, array<string, mixed>> $blocks
@@ -414,7 +436,7 @@ class Merge
 
         foreach( $blocks as $block )
         {
-            $block = (array) $block;
+            $block = (array) self::normalize( $block );
             $key = self::blockKey( $block );
 
             if( $key ) {
