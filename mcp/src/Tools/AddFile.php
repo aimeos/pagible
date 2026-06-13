@@ -22,7 +22,7 @@ use Laravel\Mcp\Request;
 
 #[Name('add-file')]
 #[Title('Add a media file from a URL')]
-#[Description('Adds a new media file (image, video, audio, document) from a URL. Automatically generates preview images for image files. Returns the created file as a JSON object.')]
+#[Description('Adds a new media file (image, video, audio, document) from a URL. Automatically generates preview images for image files. Returns the created file as a JSON object, including the latest_id to pass to save-file when editing it.')]
 class AddFile extends Tool
 {
     /**
@@ -103,7 +103,7 @@ class AddFile extends Tool
             // row is written; on $file->save() above the version did not exist yet.
             $file->setRelation( 'latest', $version )->searchable();
 
-            return Response::structured( ['id' => $file->id] + $file->toArray() );
+            return Response::structured( ['id' => $file->id, 'latest_id' => $file->latest_id] + $file->toArray() );
         } );
     }
 

@@ -121,6 +121,7 @@ class ElementToolsTest extends McpTestAbstract
 
         $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\SaveElement::class, [
             'id' => $element->id,
+            'latest_id' => $element->latest_id,
             'name' => 'Updated footer',
         ] );
 
@@ -132,10 +133,24 @@ class ElementToolsTest extends McpTestAbstract
     {
         $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\SaveElement::class, [
             'id' => '00000000-0000-0000-0000-000000000000',
+            'latest_id' => '00000000-0000-0000-0000-000000000000',
             'name' => 'Nope',
         ] );
 
         $response->assertOk()->assertSee( ['error'] );
+    }
+
+
+    public function testSaveElementRequiresLatestId()
+    {
+        $element = Element::where( 'name', 'Shared footer' )->first();
+
+        $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\SaveElement::class, [
+            'id' => $element->id,
+            'name' => 'No token',
+        ] );
+
+        $response->assertHasErrors( ['latest_id'] );
     }
 
 

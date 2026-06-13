@@ -57,9 +57,10 @@ class SavePage extends Tool
             'status' => 'integer|in:0,1,2',
             'cache' => 'integer|min:0',
             'related_id' => 'string|max:36',
-            'latestId' => 'string|max:36',
+            'latest_id' => 'required|string|max:36',
         ], [
             'id.required' => 'You must specify the ID of the page to save.',
+            'latest_id.required' => 'You must pass the latest_id returned by get-page, add-page, or a previous save-page so concurrent edits are detected.',
         ] );
 
         if( isset( $v['content'] ) ) {
@@ -83,12 +84,12 @@ class SavePage extends Tool
             $v['config'] = Validation::structured( $v['config'], 'config', new \stdClass(), $v['type'] ?? null );
         }
 
-        $input = array_diff_key( $v, array_flip( ['id', 'latestId'] ) );
+        $input = array_diff_key( $v, array_flip( ['id', 'latest_id'] ) );
 
         try {
             $page = Resource::savePage(
                 $v['id'], $input, $request->user(),
-                $v['latestId'] ?? null,
+                $v['latest_id'] ?? null,
             );
         } catch( ModelNotFoundException $e ) {
             return Response::structured( ['error' => 'Page not found.'] );
@@ -99,6 +100,7 @@ class SavePage extends Tool
 
         return Response::structured( array_merge( $data, [
             'id' => $page->id,
+            'latest_id' => $page->latest_id,
             'meta' => $aux['meta'] ?? new \stdClass(),
             'config' => $aux['config'] ?? new \stdClass(),
             'content' => $aux['content'] ?? [],
@@ -166,8 +168,9 @@ class SavePage extends Tool
                 ->description( 'Cache lifetime in minutes.' ),
             'related_id' => $schema->string()
                 ->description( 'Translation ID linking pages with the same content in different languages.' ),
-            'latestId' => $schema->string()
-                ->description( 'Version ID the caller last retrieved. Enables conflict detection and three-way merge when another editor has saved in the meantime.' ),
+            'latest_id' => $schema->string()
+                ->description( 'Required. The latest_id value returned by get-page, add-page, or your previous save-page for this page. Ensures edits made by another editor in the meantime are merged instead of overwritten.' )
+                ->required(),
         ];
     }
 

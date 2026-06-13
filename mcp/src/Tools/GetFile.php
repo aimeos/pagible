@@ -23,7 +23,7 @@ use Laravel\Mcp\Request;
 #[IsReadOnly]
 #[Name('get-file')]
 #[Title('Get file details by ID')]
-#[Description('Retrieves full details for a media file including name, MIME type, path, preview URLs, descriptions, and transcription data. Returns the file as a JSON object.')]
+#[Description('Retrieves full details for a media file including name, MIME type, path, preview URLs, descriptions, and transcription data. Returns the file as a JSON object. The returned latest_id identifies the version you read — pass it back to save-file so concurrent edits are merged instead of overwritten.')]
 class GetFile extends Tool
 {
     /**
@@ -61,6 +61,7 @@ class GetFile extends Tool
 
         $data = [
             'id' => $file->id,
+            'latest_id' => $file->latest_id,
             'deleted' => $file->trashed(),
             'lang' => $version->lang ?? '',
             'editor' => $version->editor ?? '',
