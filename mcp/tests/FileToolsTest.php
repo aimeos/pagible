@@ -137,6 +137,7 @@ class FileToolsTest extends McpTestAbstract
 
         $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\SaveFile::class, [
             'id' => $file->id,
+            'latest_id' => $file->latest_id,
             'name' => 'Renamed image',
         ] );
 
@@ -148,10 +149,24 @@ class FileToolsTest extends McpTestAbstract
     {
         $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\SaveFile::class, [
             'id' => '00000000-0000-0000-0000-000000000000',
+            'latest_id' => '00000000-0000-0000-0000-000000000000',
             'name' => 'Nope',
         ] );
 
         $response->assertOk()->assertSee( ['error'] );
+    }
+
+
+    public function testSaveFileRequiresLatestId()
+    {
+        $file = File::where( 'name', 'Test image' )->first();
+
+        $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\SaveFile::class, [
+            'id' => $file->id,
+            'name' => 'No token',
+        ] );
+
+        $response->assertHasErrors( ['latest_id'] );
     }
 
 

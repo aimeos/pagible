@@ -23,7 +23,7 @@ use Laravel\Mcp\Request;
 #[IsReadOnly]
 #[Name('get-page')]
 #[Title('Get a page by ID or path')]
-#[Description('Retrieves a single page by its ID or URL path. Returns the full page data including content, meta, config, and the URL as a JSON object.')]
+#[Description('Retrieves a single page by its ID or URL path. Returns the full page data including content, meta, config, and the URL as a JSON object. The returned latest_id identifies the version you read — pass it back to save-page so concurrent edits are merged instead of overwritten.')]
 class GetPage extends Tool
 {
     /**
@@ -65,6 +65,7 @@ class GetPage extends Tool
 
         $data = [
             'id' => $page->id,
+            'latest_id' => $page->latest_id,
             'parent_id' => $page->parent_id,
             'deleted' => $page->trashed(),
             'lang' => $version->lang ?? '',

@@ -317,6 +317,7 @@ class PageToolsTest extends McpTestAbstract
 
         $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\SavePage::class, [
             'id' => $page->id,
+            'latest_id' => $page->latest_id,
             'name' => 'Updated Home',
             'title' => 'Updated Title',
         ] );
@@ -332,6 +333,7 @@ class PageToolsTest extends McpTestAbstract
 
         $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\SavePage::class, [
             'id' => $page->id,
+            'latest_id' => $page->latest_id,
             'content' => [
                 ['type' => 'heading', 'group' => 'main', 'data' => ['title' => 'With reference', 'level' => '2']],
                 ['type' => 'reference', 'group' => 'footer', 'refid' => $element->id],
@@ -349,6 +351,7 @@ class PageToolsTest extends McpTestAbstract
 
         CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\SavePage::class, [
             'id' => $page->id,
+            'latest_id' => $page->latest_id,
             'content' => [
                 ['id' => 'el-a', 'type' => 'heading', 'data' => ['title' => 'First', 'level' => '1']],
                 ['type' => 'text', 'data' => ['text' => 'Second']],
@@ -369,10 +372,24 @@ class PageToolsTest extends McpTestAbstract
     {
         $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\SavePage::class, [
             'id' => '00000000-0000-0000-0000-000000000000',
+            'latest_id' => '00000000-0000-0000-0000-000000000000',
             'name' => 'Nope',
         ] );
 
         $response->assertOk()->assertSee( ['error'] );
+    }
+
+
+    public function testSavePageRequiresLatestId()
+    {
+        $page = Page::where( 'name', 'Home' )->first();
+
+        $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\SavePage::class, [
+            'id' => $page->id,
+            'name' => 'No token',
+        ] );
+
+        $response->assertHasErrors( ['latest_id'] );
     }
 
 

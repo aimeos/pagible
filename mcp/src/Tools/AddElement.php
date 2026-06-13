@@ -20,7 +20,7 @@ use Laravel\Mcp\Response;
 
 #[Name('add-element')]
 #[Title('Create a reusable content element')]
-#[Description('Creates a reusable content element. Requires type (use get-schemas), name (max 100 chars), and data (object with type-specific fields). Files are attached automatically from the file items in the data. Optional: lang (ISO code). Returns the created element as JSON.')]
+#[Description('Creates a reusable content element. Requires type (use get-schemas), name (max 100 chars), and data (object with type-specific fields). Files are attached automatically from the file items in the data. Optional: lang (ISO code). Returns the created element as JSON, including the latest_id to pass to save-element when editing it.')]
 class AddElement extends Tool
 {
     /**
@@ -45,7 +45,7 @@ class AddElement extends Tool
 
         $element = Resource::addElement( $v, $request->user() );
 
-        return Response::structured( ['id' => $element->id] + $element->toArray() );
+        return Response::structured( ['id' => $element->id, 'latest_id' => $element->latest_id] + $element->toArray() );
     }
 
 
