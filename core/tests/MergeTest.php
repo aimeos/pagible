@@ -450,4 +450,65 @@ class MergeTest extends CoreTestAbstract
         $this->assertNotNull( $diff['a']['merged'] );
         $this->assertEquals( 'new test 23', $diff['a']['merged']['data']['text'] );
     }
+
+
+    public function testContentObjectVsArrayKeepsConcurrentField()
+    {
+        // stored versions decode as objects, the incoming request payload as arrays
+        $base = [json_decode( '{"id":"a","type":"image-text","data":{"text":"x","position":"end"}}' )];
+        $current = [json_decode( '{"id":"a","type":"image-text","data":{"text":"x","position":"end","ratio":"1-1"}}' )];
+        $incoming = [['id' => 'a', 'type' => 'image-text', 'data' => ['text' => 'x', 'position' => 'end']]];
+
+        [$result, $diff] = Merge::content( $base, $current, $incoming );
+
+        // incoming left the block untouched, so the concurrently added field must survive
+        // and it must not be reported as an overwrite
+        $this->assertCount( 1, $result );
+        $this->assertEquals( '1-1', $result[0]['data']['ratio'] );
+        $this->assertNotNull( $diff );
+        $this->assertArrayNotHasKey( 'overwritten', $diff['a'] );
+    }
+
+
+    public function testContentNonOverlappingFieldsMergedIntoResult()
+    {
+        $base = [['id' => 'a', 'type' => 'text', 'data' => ['title' => 'old', 'text' => 'old']]];
+        $current = [['id' => 'a', 'type' => 'text', 'data' => ['title' => 'new-title', 'text' => 'old']]];
+        $incoming = [['id' => 'a', 'type' => 'text', 'data' => ['title' => 'old', 'text' => 'new-text']]];
+
+        [$result, $diff] = Merge::content( $base, $current, $incoming );
+
+        // both non-overlapping edits survive in the stored result, not just in the diff
+        $this->assertEquals( 'new-title', $result[0]['data']['title'] );
+        $this->assertEquals( 'new-text', $result[0]['data']['text'] );
+    }
+
+
+    public function testStructuredNonOverlappingMergedIntoResult()
+    {
+        $base = ['x' => ['a' => 1, 'b' => 2]];
+        $current = ['x' => ['a' => 1, 'b' => 3]];
+        $incoming = ['x' => ['a' => 4, 'b' => 2]];
+
+        [$result, $diff] = Merge::structured( $base, $current, $incoming );
+
+        $this->assertEquals( ['a' => 4, 'b' => 3], $result['x'] );
+    }
+
+
+    public function testStructuredObjectVsArrayKeepsConcurrentField()
+    {
+        // stored meta/config decode as objects, the incoming request payload as arrays
+        $base = ['meta-tags' => json_decode( '{"title":"x"}' )];
+        $current = ['meta-tags' => json_decode( '{"title":"x","description":"d"}' )];
+        $incoming = ['meta-tags' => ['title' => 'x']];
+
+        [$result, $diff] = Merge::structured( $base, $current, $incoming );
+
+        // incoming left meta-tags untouched, so the concurrently added field must survive
+        // and it must not be reported as an overwrite
+        $this->assertEquals( 'd', $result['meta-tags']['description'] );
+        $this->assertNotNull( $diff );
+        $this->assertArrayNotHasKey( 'overwritten', $diff['meta-tags'] );
+    }
 }
