@@ -63,6 +63,9 @@ export default defineConfig({
           graphql: ['graphql', 'graphql-tag', '@apollo/client', 'apollo-link-batch-http', '@apollo/client/link/error', '@apollo/client/link/retry', 'apollo-upload-client/createUploadLink.mjs'],
           markdown: ['mdast-util-from-markdown', 'mdast-util-to-markdown'],
           tree: ['@he-tree/vue'],
+          // is-plain-obj is shared by the ckeditor and graphql chunks; pinning
+          // it to its own chunk avoids a circular chunk dependency between them.
+          shared: ['is-plain-obj'],
         }
       }
     }
