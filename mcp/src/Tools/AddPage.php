@@ -23,7 +23,7 @@ use Laravel\Mcp\Request;
 
 #[Name('add-page')]
 #[Title('Create a new page within the page tree')]
-#[Description('Creates a new page in the page tree. Requires lang (ISO code like "en"), name (max 50 chars), title (max 100 chars), content (array of {type, data} objects — use get-schemas for types), and meta with meta-tags description for SEO. Files and shared elements are attached automatically from the file and reference items in the content, meta and config. Optional: config, to, tag, theme, type, domain, path, cache (minutes), related_id, parent_id, ref. Returns the created page as JSON.')]
+#[Description('Creates a new page in the page tree. Requires lang (ISO code like "en"), name (max 50 chars), title (max 100 chars), content (array of {type, data} objects — use get-schemas for types), and meta with meta-tags description for SEO. Files and shared elements are attached automatically from the file and reference items in the content, meta and config. Optional: config, to, tag, theme, type, domain, path, cache (minutes), related_id, parent_id, ref. Returns the created page as JSON, including the latest_id to pass to save-page when editing it.')]
 class AddPage extends Tool
 {
     /**
@@ -115,7 +115,7 @@ class AddPage extends Tool
             $pid,
         );
 
-        return Response::structured( ['id' => $page->id] + $page->toArray() );
+        return Response::structured( ['id' => $page->id, 'latest_id' => $page->latest_id] + $page->toArray() );
     }
 
 

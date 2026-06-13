@@ -23,7 +23,7 @@ use Laravel\Mcp\Request;
 #[IsReadOnly]
 #[Name('get-element')]
 #[Title('Get a shared content element by ID')]
-#[Description('Retrieves a single shared content element by its ID. Returns the full element data including type, name, language, content data, and the latest draft version as a JSON object.')]
+#[Description('Retrieves a single shared content element by its ID. Returns the full element data including type, name, language, content data, and the latest draft version as a JSON object. The returned latest_id identifies the version you read — pass it back to save-element so concurrent edits are merged instead of overwritten.')]
 class GetElement extends Tool
 {
     /**
@@ -58,6 +58,7 @@ class GetElement extends Tool
 
         $data = [
             'id' => $element->id,
+            'latest_id' => $element->latest_id,
             'type' => $element->type,
             'deleted' => $element->trashed(),
             'lang' => $version->lang ?? '',
