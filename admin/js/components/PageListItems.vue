@@ -29,7 +29,8 @@ import {
 import { Draggable } from '@he-tree/vue'
 import { dragContext } from '@he-tree/vue'
 import { useAppStore, useUserStore, useLanguageStore, useMessageStore, useChangeStore } from '../stores'
-import { debounce, safeParse } from '../utils'
+import { debounce, safeParse, sanitize } from '../utils'
+import { setupEcho, cleanEcho } from '../echo'
 
 const ADD_PAGE = gql`
   mutation ($input: PageInput!) {
@@ -211,7 +212,11 @@ export default {
       checked: null,
       clip: null,
       sort: this.user.getData('page', 'sort') || { column: 'LFT', order: 'ASC' },
-      term: ''
+      term: '',
+      destroyed: false,
+      echoCleanup: null,
+      echoPromise: null,
+      outdated: false
     }
   },
 
@@ -262,6 +267,36 @@ export default {
       this.items = result.data
       this.loading = false
     })
+
+    if (!this.embed) {
+      // patch the matching node when another user changes a page; subscribe for
+      // the whole lifetime (not per activation) so the tree keeps patching in
+      // the background while the editor is in a detail or another view and is
+      // up to date when they return
+      setupEcho(this, 'page', null, (event) => {
+        if (event.editor === this.user.me?.email) {
+          return
+        }
+
+        // added/removed/moved change the tree structure; flag it so the user can
+        // reload when ready instead of disrupting their view; in-place edits patch
+        if (event.action !== 'saved') {
+          this.outdated = true
+          return
+        }
+
+        this.patch({
+          ...sanitize(event.data),
+          id: event.id,
+          published: event.published,
+          deleted_at: event.deleted_at,
+          publish_at: event.publish_at,
+          updated_at: event.updated_at,
+          editor: event.editor,
+          latest_id: event.latest_id
+        })
+      })
+    }
   },
 
   mounted() {
@@ -273,6 +308,9 @@ export default {
   },
 
   beforeUnmount() {
+    this.destroyed = true
+    cleanEcho(this)
+
     this.items = null
     this.clip = null
     this.menu = null
@@ -954,6 +992,7 @@ export default {
     },
 
     reload(cache = true) {
+      this.outdated = false
       this.items = []
       this.loading = true
 
@@ -1274,6 +1313,18 @@ export default {
         clearable
       ></v-text-field>
     </div>
+
+    <v-btn
+      v-if="outdated"
+      @click="reload()"
+      :prepend-icon="mdiRefresh"
+      :title="$gettext('Updated by another user')"
+      color="primary"
+      variant="tonal"
+      size="small"
+      rounded="lg"
+      class="btn-outdated"
+    >{{ $gettext('Refresh') }}</v-btn>
 
     <v-btn
       @click="reload()"

@@ -25,6 +25,7 @@ use Aimeos\Cms\DB;
  * @property string $id
  * @property string $editor
  * @property Version|null $latest
+ * @property \Illuminate\Support\Carbon|null $deleted_at
  * @method static \Illuminate\Database\Eloquent\Builder<static> withTrashed()
  * @method self publish(Version $version)
  * @method bool restore()

@@ -34,7 +34,7 @@ export default {
   provide() {
     return {
       // let descendant file fields refresh the preview after editing a file
-      reload: this.reload
+      update: this.reload
     }
   },
 

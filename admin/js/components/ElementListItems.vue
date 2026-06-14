@@ -19,7 +19,8 @@ import {
 } from '@mdi/js'
 import SchemaItems from './SchemaItems.vue'
 import { useUserStore, useMessageStore, useChangeStore } from '../stores'
-import { debounce, frozenParse, safeParse } from '../utils'
+import { debounce, frozenParse, safeParse, sanitize } from '../utils'
+import { setupEcho, cleanEcho } from '../echo'
 
 const ADD_ELEMENT = gql`
   mutation ($input: ElementInput!) {
@@ -137,7 +138,11 @@ export default {
       vschemas: false,
       actions: false,
       loading: true,
-      trash: false
+      trash: false,
+      destroyed: false,
+      echoCleanup: null,
+      echoPromise: null,
+      outdated: false
     }
   },
 
@@ -169,9 +174,42 @@ export default {
   created() {
     this.search()
     this.searchd = this.debounce(this.search, 500)
+
+    if (!this.embed) {
+      // patch the matching row when another user changes an element; subscribe
+      // for the whole lifetime (not per activation) so the list keeps patching
+      // in the background while the editor is in a detail or another view and is
+      // up to date when they return
+      setupEcho(this, 'element', null, (event) => {
+        if (event.editor === this.user.me?.email) {
+          return
+        }
+
+        // added/removed change which elements exist; flag it so the user can
+        // reload when ready instead of disrupting their view; in-place edits patch
+        if (event.action !== 'saved') {
+          this.outdated = true
+          return
+        }
+
+        this.patch({
+          ...sanitize(event.data),
+          id: event.id,
+          published: event.published,
+          deleted_at: event.deleted_at,
+          publish_at: event.publish_at,
+          updated_at: event.updated_at,
+          editor: event.editor,
+          latest_id: event.latest_id
+        })
+      })
+    }
   },
 
   beforeUnmount() {
+    this.destroyed = true
+    cleanEcho(this)
+
     this.items = null
     this.menu = null
     this.checked = null
@@ -269,6 +307,7 @@ export default {
     },
 
     reload() {
+      this.outdated = false
       this.items = []
       this.loading = true
       this.invalidate()
@@ -484,7 +523,7 @@ export default {
               editor: entry.latest?.editor || entry.editor,
               published: entry.latest?.published ?? true,
               publish_at: entry.latest?.publish_at || null,
-              latestId: entry.latest?.id || null
+              latest_id: entry.latest?.id || null
             })
           })
 
@@ -643,6 +682,18 @@ export default {
     </div>
 
     <div class="layout">
+      <v-btn
+        v-if="outdated"
+        @click="reload()"
+        :prepend-icon="mdiRefresh"
+        :title="$gettext('Updated by another user')"
+        color="primary"
+        variant="tonal"
+        size="small"
+        rounded="lg"
+        class="btn-outdated"
+      >{{ $gettext('Refresh') }}</v-btn>
+
       <v-btn
         @click="reload()"
         :title="$gettext('Reload elements')"

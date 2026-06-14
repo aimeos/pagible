@@ -261,7 +261,7 @@ export default {
 
         setupEcho(this, 'page', this.item.id, (event) => {
           if (!this.hasChanged && this.user.can('page:view') && event.editor !== this.user.me?.email) {
-            this.latest = { id: event.versionId }
+            this.latest = { id: event.latest_id }
             Object.assign(this.item, sanitize(event.data))
 
             const aux = sanitize(event.aux) || {}

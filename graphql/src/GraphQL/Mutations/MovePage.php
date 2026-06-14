@@ -23,12 +23,16 @@ final class MovePage
     {
         return Utils::lockedTransaction( function() use ( $args ) {
 
+                $editor = Utils::editor( Auth::user() );
+
                 /** @var Page $page */
                 $page = Page::withTrashed()->findOrFail( $args['id'] );
-                $page->editor = Utils::editor( Auth::user() );
+                $page->editor = $editor;
 
                 Resource::position( $page, $args['ref'] ?? null, $args['parent'] ?? null, true );
                 Page::withoutSyncingToSearch( fn() => $page->save() );
+
+                Resource::broadcast( $page, $editor, 'moved' );
 
                 return $page;
         } );
