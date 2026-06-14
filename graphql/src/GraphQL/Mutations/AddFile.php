@@ -9,6 +9,7 @@ namespace Aimeos\Cms\GraphQL\Mutations;
 
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Version;
+use Aimeos\Cms\Resource;
 use Aimeos\Cms\Utils;
 use GraphQL\Error\Error;
 use Illuminate\Http\UploadedFile;
@@ -66,7 +67,11 @@ final class AddFile
                 ],
             ] );
 
-            return $file->setRelation( 'latest', $version );
+            $file->setRelation( 'latest', $version );
+
+            Resource::broadcast( $file, $editor, 'added' );
+
+            return $file;
         } );
     }
 

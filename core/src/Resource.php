@@ -7,7 +7,7 @@
 
 namespace Aimeos\Cms;
 
-use Aimeos\Cms\Events\ContentSaved;
+use Aimeos\Cms\Events\ContentChanged;
 use Aimeos\Cms\Models\Base;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
@@ -80,6 +80,8 @@ class Resource
             // row is written; on $element->save() above the version did not exist yet.
             $element->setRelation( 'latest', $version )->searchable();
 
+            self::broadcast( $element, $editor, 'added' );
+
             return $element;
         } );
     }
@@ -150,6 +152,8 @@ class Resource
             // row is written; on $page->save() above the version did not exist yet.
             $page->setRelation( 'latest', $version )->searchable();
 
+            self::broadcast( $page, $editor, 'added' );
+
             return $page;
         } );
     }
@@ -159,21 +163,27 @@ class Resource
      * Dispatches a broadcast event after the current transaction commits.
      *
      * @param Base $model Model with latest relation loaded
-     * @param Authenticatable|null $user Authenticated user
+     * @param Authenticatable|string|null $editor Authenticated user or editor name
+     * @param string $action What happened: 'saved' (in-place edit), 'added', 'removed' or 'moved'
      */
-    public static function broadcast( Base $model, ?Authenticatable $user = null ) : void
+    public static function broadcast( Base $model, Authenticatable|string|null $editor = null, string $action = 'saved' ) : void
     {
         if( !config( 'cms.broadcast' ) || !( $version = $model->latest ) ) {
             return;
         }
 
-        $editor = Utils::editor( $user );
+        $name = is_string( $editor ) ? $editor : Utils::editor( $editor );
         $type = strtolower( class_basename( $model ) );
         $aux = $model instanceof Page ? (array) $version->aux : null;
 
-        DB::afterCommit( function() use ( $type, $model, $version, $editor, $aux ) {
+        $published = (bool) $version->published;
+        $publishAt = $version->publish_at;
+        $deletedAt = $model->deleted_at ? (string) $model->deleted_at : null;
+        $updatedAt = $version->created_at ? (string) $version->created_at : null;
+
+        DB::afterCommit( function() use ( $type, $model, $version, $name, $aux, $published, $deletedAt, $publishAt, $updatedAt, $action ) {
             try {
-                ContentSaved::dispatch( $type, (string) $model->id, (string) $version->id, $editor, (array) $version->data, $aux );
+                ContentChanged::dispatch( $type, (string) $model->id, (string) $version->id, $name, (array) $version->data, $aux, $published, $deletedAt, $publishAt, $updatedAt, $action );
             } catch( \Throwable $e ) {
                 report( $e );
             }
@@ -205,6 +215,8 @@ class Resource
                 if( $item instanceof Page ) {
                     Cache::forget( Page::key( $item ) );
                 }
+
+                self::broadcast( $item, $editor );
             }
 
             return $items;
@@ -267,6 +279,8 @@ class Resource
                         $item->publish( $latest );
                     }
                 }
+
+                self::broadcast( $item, $editor );
             }
 
             return $items;
@@ -282,18 +296,24 @@ class Resource
      *
      * @param class-string<Base> $model
      * @param array<string> $ids
+     * @param string $editor
      * @return Collection<int, Base>
      */
-    public static function purge( string $model, array $ids ) : Collection
+    public static function purge( string $model, array $ids, string $editor ) : Collection
     {
-        $callback = function() use ( $model, $ids ) {
+        $callback = function() use ( $model, $ids, $editor ) {
 
             $items = $model::withTrashed()->whereIn( 'id', $ids )
                 ->when( is_a( $model, Page::class, true ), fn( $q ) => $q->select( Page::SELECT_COLUMNS ) )
+                // eager-load latest only when broadcasting, so the per-item removed
+                // events don't lazy-load each version (N+1)
+                ->when( config( 'cms.broadcast' ), fn( $q ) => $q->with( 'latest' ) )
                 ->get();
 
             foreach( $items as $item )
             {
+                self::broadcast( $item, $editor, 'removed' );
+
                 if( $item instanceof File ) {
                     $item->purge();
                 } else {
@@ -336,6 +356,8 @@ class Resource
             {
                 $item->editor = $editor;
                 $item->restore();
+
+                self::broadcast( $item, $editor );
             }
 
             return $items;

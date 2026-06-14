@@ -191,7 +191,7 @@ export default {
 
         setupEcho(this, 'element', this.item.id, (event) => {
           if (!this.dirty && this.user.can('element:view') && event.editor !== this.user.me?.email) {
-            this.latestId = event.versionId
+            this.latestId = event.latest_id
             Object.assign(this.item, sanitize(event.data))
           }
         })
