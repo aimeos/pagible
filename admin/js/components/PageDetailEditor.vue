@@ -300,7 +300,14 @@ export default {
       {{ $gettext('Not CMS content') }}
     </div>
 
-    <iframe ref="iframe" :src="url" sandbox="allow-same-origin allow-scripts allow-forms" @load="loading = false"></iframe>
+    <!--
+      No sandbox attribute: the preview loads our own same-origin page which needs
+      both scripts and same-origin access (editor session, client-side requests and
+      the element-selection bridge). A sandbox with allow-scripts + allow-same-origin
+      is escapable and gives no real isolation, so it would only add a misleading
+      warning. The actual trust boundary is the strict source/origin check in message().
+    -->
+    <iframe ref="iframe" :src="url" @load="loading = false"></iframe>
 
     <v-btn
       v-if="!expanded"
