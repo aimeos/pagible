@@ -9,6 +9,7 @@ import {
   mdiButtonCursor,
   mdiLinkVariantPlus,
   mdiCreation,
+  mdiTrayArrowDown,
   mdiUpload
 } from '@mdi/js'
 import File from './File.vue'
@@ -33,6 +34,7 @@ export default {
       mdiButtonCursor,
       mdiLinkVariantPlus,
       mdiCreation,
+      mdiTrayArrowDown,
       mdiUpload
     }
   },
@@ -127,39 +129,53 @@ export default {
           </v-menu>
         </div>
 
-        <div v-else-if="!readonly" class="file">
-          <v-btn
-            v-if="user.can('file:view')"
-            @click="vfiles = true"
-            :title="$gettext('Add file')"
-            :icon="mdiButtonCursor"
-            class="btn-add"
-            variant="text"
-          />
-          <v-btn
-            @click="vurls = true"
-            :title="$gettext('Add file from URL')"
-            :icon="mdiLinkVariantPlus"
-            class="btn-add-url"
-            variant="text"
-          />
-          <v-btn
-            v-if="user.can('image:imagine')"
-            @click="vcreate = true"
-            :title="$gettext('Create file')"
-            :icon="mdiCreation"
-            class="btn-create"
-            variant="text"
-          />
-          <v-btn :title="$gettext('Upload file')" :icon="mdiUpload" class="btn-upload" variant="text">
-            <v-file-input
-              v-model="selected"
-              @update:modelValue="add($event)"
-              :accept="config.accept || 'image/*'"
-              :hide-input="true"
-              :prepend-icon="mdiUpload"
+        <div v-else-if="!readonly" class="file file-empty">
+          <div class="actions">
+            <v-btn
+              v-if="user.can('file:view')"
+              @click="vfiles = true"
+              :title="$gettext('Add file')"
+              :icon="mdiButtonCursor"
+              class="btn-add"
+              variant="text"
             />
-          </v-btn>
+            <v-btn
+              @click="vurls = true"
+              :title="$gettext('Add file from URL')"
+              :icon="mdiLinkVariantPlus"
+              class="btn-add-url"
+              variant="text"
+            />
+            <v-btn
+              v-if="user.can('image:imagine')"
+              @click="vcreate = true"
+              :title="$gettext('Create file')"
+              :icon="mdiCreation"
+              class="btn-create"
+              variant="text"
+            />
+            <v-btn :title="$gettext('Upload file')" :icon="mdiUpload" class="btn-upload" variant="text">
+              <v-file-input
+                v-model="selected"
+                @update:modelValue="add($event)"
+                :accept="config.accept || 'image/*'"
+                :hide-input="true"
+                :prepend-icon="mdiUpload"
+              />
+            </v-btn>
+          </div>
+
+          <div
+            class="dropzone"
+            :class="{ dragover: dragging }"
+            @dragenter.prevent="dragging = true"
+            @dragover.prevent="dragging = true"
+            @dragleave.prevent="dragging = false"
+            @drop.prevent="drop($event)"
+          >
+            <v-icon :icon="mdiTrayArrowDown" />
+            <span>{{ $gettext('Drop file here to upload') }}</span>
+          </div>
         </div>
       </div>
     </v-col>
