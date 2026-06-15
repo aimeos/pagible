@@ -30,6 +30,8 @@ import { fieldTypes } from '../fieldtypes'
 import { itemTitle, txlocales } from '../utils'
 
 export default {
+  inheritAttrs: false,
+
   components: {
     VueDraggable
   },
@@ -272,7 +274,7 @@ export default {
 </script>
 
 <template>
-  <v-expansion-panels class="items" v-model="panel" elevation="0" multiple>
+  <v-expansion-panels v-bind="$attrs" class="items" v-model="panel" elevation="0" multiple>
     <VueDraggable
       v-model="items"
       @update="change()"
