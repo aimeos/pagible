@@ -22,8 +22,13 @@ const vuetifyLabs = readdirSync('node_modules/vuetify/lib/labs', { withFileTypes
 // Group large vendor packages into dedicated chunks.  Rolldown (Vite 8) only
 // supports the function form of manualChunks, so each node_modules package is
 // matched by path and mapped to its chunk name.
+//
+// ckeditor5 is deliberately NOT grouped here: assigning its `export *` barrel
+// to a manual chunk forces the bundler to preserve the chunk's full export
+// surface, which pulls in every CKEditor feature and defeats tree-shaking
+// (5.9 MB instead of ~0.9 MB).  Leaving it out lets Rolldown auto-split and
+// tree-shake it down to only the editor features actually imported.
 const chunkGroups = {
-  ckeditor: ['ckeditor5', '@ckeditor/ckeditor5-vue'],
   charts: ['chart.js', 'vue-chartjs'],
   cropper: ['cropperjs'],
   diff: ['diff'],
@@ -31,8 +36,8 @@ const chunkGroups = {
   graphql: ['graphql', 'graphql-tag', '@apollo/client', 'apollo-link-batch-http', 'apollo-upload-client'],
   markdown: ['mdast-util-from-markdown', 'mdast-util-to-markdown'],
   tree: ['@he-tree/vue'],
-  // is-plain-obj is shared by the ckeditor and graphql chunks; pinning it to
-  // its own chunk avoids a circular chunk dependency between them.
+  // is-plain-obj is shared by the graphql chunk; pinning it to its own chunk
+  // avoids a circular chunk dependency.
   shared: ['is-plain-obj'],
 }
 
