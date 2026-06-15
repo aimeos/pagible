@@ -181,4 +181,71 @@ class PageControllerTest extends ThemeTestAbstract
         $response->assertStatus( 200 );
         $response->assertSee( 'DRAFT_ELEMENT_TEXT' );
     }
+
+
+    public function testAnonymousCacheablePageHasNoCookies()
+    {
+        Tenancy::$callback = fn() => 'demo';
+
+        Page::forceCreate([
+            'lang' => 'en',
+            'name' => 'Cacheable',
+            'title' => 'Cacheable Page',
+            'path' => 'cacheable',
+            'status' => 1,
+            'cache' => 5,
+            'editor' => 'test',
+            'content' => [
+                ['id' => 'h1', 'type' => 'heading', 'group' => 'main', 'data' => ['title' => 'Hello']],
+            ],
+        ]);
+
+        // A cacheable page is served (or rendered then stored) without per-visitor
+        // cookies, so a CDN can cache it.
+        $response = $this->get( '/cacheable' );
+
+        $response->assertStatus( 200 );
+        $this->assertStringContainsString( 'public', (string) $response->headers->get( 'Cache-Control' ) );
+        $response->assertCookieMissing( config( 'session.cookie' ) );
+    }
+
+
+    public function testUncachedPageUsesFullWebSession()
+    {
+        Tenancy::$callback = fn() => 'demo';
+
+        Page::forceCreate([
+            'lang' => 'en',
+            'name' => 'Dynamic',
+            'title' => 'Dynamic Page',
+            'path' => 'dynamic',
+            'status' => 1,
+            'cache' => 0,
+            'editor' => 'test',
+            'content' => [
+                ['id' => 'h1', 'type' => 'heading', 'group' => 'main', 'data' => ['title' => 'Hello']],
+            ],
+        ]);
+
+        // Uncacheable pages render through the full "web" stack, so a session is
+        // started and its cookie is kept.
+        $response = $this->get( '/dynamic' );
+
+        $response->assertStatus( 200 );
+        $response->assertCookie( config( 'session.cookie' ) );
+    }
+
+
+    public function testCsrfEndpointStartsSessionForGuest()
+    {
+        Tenancy::$callback = fn() => 'demo';
+
+        // The token endpoint must still start a session on demand so the lazy
+        // CSRF flow works for cached pages.
+        $response = $this->get( '/cmsapi/csrf' );
+
+        $response->assertStatus( 200 );
+        $response->assertJsonStructure( ['token'] );
+        $response->assertCookie( config( 'session.cookie' ) );
+    }
 }

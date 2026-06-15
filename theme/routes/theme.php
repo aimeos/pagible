@@ -25,8 +25,10 @@ Route::group(config('cms.multidomain') ? ['domain' => '{domain}'] : [], function
         Route::group($page, function() {
             Route::get('{path?}', [Controllers\PageController::class, 'index'])
                 ->where('path', '.*')
-                // ServeCachedPage short-circuits cached anonymous GETs (public, no
-                // Set-Cookie) before the session/cookie middleware in the web group runs.
+                // ServeCachedPage serves cached pages before the web group runs, so a
+                // cache hit never starts a session. On a miss the page renders through
+                // "web"; the per-visitor cookies of a cacheable (public) response are
+                // then stripped by ServeCachedPage so a CDN can store it.
                 ->middleware([\Aimeos\Cms\Http\Middleware\ServeCachedPage::class, 'web'])
                 ->name('cms.page')
                 ->fallback();
