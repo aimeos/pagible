@@ -53,11 +53,8 @@ class PageController extends Controller
         $key = Page::key( $path, $domain );
         $np = empty( $request->input() );
 
-        if( $np && $request->isMethod( 'GET' ) && ( $html = $cache->get( $key ) ) )
-        {
-            return response( $this->inject( $html ), 200 )
-                ->header( 'Content-Type', 'text/html' )
-                ->header( 'Expires', substr( $html, -29 ) );
+        if( $np && $request->isMethod( 'GET' ) && ( $html = $cache->get( $key ) ) ) {
+            return $this->cached( $html );
         }
 
         $page = Page::with( [
@@ -89,10 +86,15 @@ class PageController extends Controller
             $cache->put( $key, $html . '<!-- ' . $expires, now()->addMinutes( (int) $page->cache ) );
         }
 
-        $response = ( new Response( $this->inject( $html ), 200 ) )->header( 'Content-Type', 'text/html' );
+        $response = ( new Response( $html, 200 ) )->header( 'Content-Type', 'text/html' );
 
-        if( $request->isMethod( 'GET' ) ) {
-            $response->header( 'Expires', $expires );
+        if( $request->isMethod( 'GET' ) )
+        {
+            $maxage = (int) $page->cache * 60;
+
+            $response->header( 'Expires', $expires )->header( 'Cache-Control', $page->cache
+                ? "public, s-maxage={$maxage}, max-age=0, must-revalidate"
+                : 'no-store, private' );
         }
 
         return $response;
@@ -100,23 +102,26 @@ class PageController extends Controller
 
 
     /**
-     * Replaces the cache-safe CSRF token and CSP nonce placeholders with fresh per-request values.
+     * Builds the public, CDN-cacheable response for stored page HTML.
      *
-     * The rendered page HTML is cached verbatim and served to every visitor, so it must not embed
-     * a session-bound CSRF token or a reusable CSP nonce. The layout/forms emit placeholders and
-     * this injects a unique nonce and the current request's CSRF token into each response (on both
-     * cache miss and cache hit).
+     * The cached HTML is final and static: CSP hashes are already resolved and no
+     * session-bound CSRF token is embedded (forms fetch it on demand). It is therefore
+     * returned verbatim with a "public" cache policy and no Set-Cookie header. The
+     * shared-cache lifetime is derived from the trailing expiry marker so the edge
+     * cache and the server cache expire together.
      *
-     * @param string $html Rendered HTML containing the placeholders
-     * @return string HTML with per-request token and nonce
+     * @param string $html Cached page HTML with trailing expiry marker
+     * @return Response Public, cacheable response
      */
-    protected function inject( string $html ) : string
+    protected function cached( string $html ) : Response
     {
-        return str_replace(
-            ['%%CMS_NONCE%%', '%%CMS_CSRF%%'],
-            [base64_encode( random_bytes( 16 ) ), (string) csrf_token()],
-            $html
-        );
+        $expires = substr( $html, -29 );
+        $maxage = max( 0, strtotime( $expires ) - time() );
+
+        return ( new Response( $html, 200 ) )
+            ->header( 'Content-Type', 'text/html' )
+            ->header( 'Cache-Control', "public, s-maxage={$maxage}, max-age=0, must-revalidate" )
+            ->header( 'Expires', $expires );
     }
 
 
@@ -174,7 +179,7 @@ class PageController extends Controller
         $views = [$theme . '::layouts.' . $type, 'cms::layouts.' . $type, 'cms::layouts.page'];
         $html = view()->first( $views, ['page' => $page, 'content' => $content, 'theme' => $theme] )->render();
 
-        return ( new Response( $this->inject( $html ), 200 ) )
+        return ( new Response( $html, 200 ) )
             ->header( 'Content-Type', 'text/html' )
             ->header( 'Cache-Control', 'private, max-age=0' );
     }

@@ -136,6 +136,33 @@ if( !function_exists( 'cmsfile' ) )
 }
 
 
+if( !function_exists( 'cmshashes' ) )
+{
+    /**
+     * Build the space-separated CSP hash source list for the inline blocks stored
+     * at the given config path on the page and its ancestors.
+     *
+     * Each inline <style>/<script> the layout emits from this same config path is
+     * allowed by its SHA-256 hash, so pages need no per-request CSP nonce and stay
+     * byte-identical and cacheable. The layout MUST emit the block content raw and
+     * with no surrounding whitespace inside the tags, otherwise the browser-computed
+     * hash will not match the value returned here.
+     *
+     * @param \Aimeos\Cms\Models\Page $page The CMS page
+     * @param string $path Config path of the inline text, e.g. "config.styles.data.text"
+     * @return string Space-separated 'sha256-...' source expressions for the CSP
+     */
+    function cmshashes( \Aimeos\Cms\Models\Page $page, string $path ) : string
+    {
+        return $page->ancestorsAndSelf
+            ->map( fn( $item ) => cms( $item, $path ) )
+            ->filter()
+            ->map( fn( $text ) => "'sha256-" . base64_encode( hash( 'sha256', (string) $text, true ) ) . "'" )
+            ->implode( ' ' );
+    }
+}
+
+
 if( !function_exists( 'cmsjson' ) )
 {
     /**

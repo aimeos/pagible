@@ -57,7 +57,7 @@
 
 			@if(($item->priceid ?? null) && Route::has('cms.cashier'))
 				<form method="POST" action="{{ route('cms.cashier') }}">
-					<input type="hidden" name="_token" value="%%CMS_CSRF%%">
+					<input type="hidden" name="_token" value="">
 					<input type="hidden" name="priceid" value="{{ $item->priceid }}">
 					<input type="hidden" name="success" value="{{ ($item->success ?? null) ?: '/' }}">
 					<button type="submit" class="btn">{{ ($item->button ?? null) ?: __('Get Started') }}</button>

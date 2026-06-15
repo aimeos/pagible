@@ -10,7 +10,7 @@
 <h2 class="title">{{ $data->title ?? '' }}</h2>
 
 <form action="{{ route('cms.api.contact') }}" method="POST">
-    <input type="hidden" name="_token" value="%%CMS_CSRF%%">
+    <input type="hidden" name="_token" value="">
 
     <div class="grid">
         <div>
