@@ -7,6 +7,7 @@
 
 namespace Aimeos\Cms\Controllers;
 
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Response;
 use Illuminate\View\View;
@@ -27,6 +28,20 @@ use Aimeos\Cms\Theme;
 
 class PageController extends Controller
 {
+    /**
+     * Issues a CSRF token and starts the session on demand.
+     *
+     * Cacheable pages can omit the per-session token from their HTML and fetch it
+     * only when a visitor actually submits a form. See theme/public/csrf.js.
+     *
+     * @return JsonResponse JSON response containing the CSRF token
+     */
+    public function csrf() : JsonResponse
+    {
+        return response()->json( ['token' => csrf_token()] );
+    }
+
+
     /**
      * Show the page for a given URL.
      *

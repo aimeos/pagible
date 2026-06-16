@@ -33,7 +33,7 @@ if( !function_exists( 'cmsplain' ) )
 
         $text = preg_replace( array_keys( $replacements ), array_values( $replacements ), (string) $text );
 
-        return trim( preg_replace( '/\s+/', ' ', (string) $text ) );
+        return trim( (string) preg_replace( '/\s+/', ' ', (string) $text ) );
     }
 }
 
