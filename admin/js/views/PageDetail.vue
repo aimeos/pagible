@@ -260,7 +260,7 @@ export default {
         this.latest = { id: this.latest?.id }
 
         setupEcho(this, 'page', this.item.id, (event) => {
-          if (!this.hasChanged && this.user.can('page:view') && event.editor !== this.user.me?.email) {
+          if (!this.hasChanged && this.user.can('page:view')) {
             this.latest = { id: event.latest_id }
             Object.assign(this.item, sanitize(event.data))
 

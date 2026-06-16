@@ -4,6 +4,7 @@ import { markRaw } from 'vue'
 import { safeParse } from './utils'
 
 let echoPromise = null
+let echoInstance = null
 let idleTimer = null
 let activeChannels = 0
 
@@ -33,7 +34,7 @@ function getEcho() {
       .then(([{ default: Echo }, pusherModule]) => {
         const Pusher = pusherModule.default || pusherModule
         const config = safeParse(node.dataset.reverb)
-        return new Echo({
+        echoInstance = new Echo({
           Pusher,
           broadcaster: 'reverb',
           key: config.key,
@@ -43,10 +44,12 @@ function getEcho() {
           forceTLS: config.scheme === 'https',
           enabledTransports: ['ws', 'wss']
         })
+        return echoInstance
       })
       .catch((err) => {
         console.warn('Laravel Echo not available:', err.message)
         echoPromise = null
+        echoInstance = null
         return null
       })
   }
@@ -60,11 +63,20 @@ export async function disconnect() {
   activeChannels = 0
   const pending = echoPromise
   echoPromise = null
+  echoInstance = null
   const echo = await pending
   if (echo) {
     try { echo.connector?.pusher?.disconnect() } catch {}
     echo.disconnect()
   }
+}
+
+/**
+ * Current socket id of the open websocket connection, or '' when not connected.
+ * Sent as the X-Socket-ID header so the server can exclude this tab via toOthers().
+ */
+export function socketId() {
+  return echoInstance?.socketId?.() || ''
 }
 
 export function setupEcho(vm, type, id, onEvent) {

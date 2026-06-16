@@ -190,7 +190,7 @@ export default {
         this.item.files = files
 
         setupEcho(this, 'element', this.item.id, (event) => {
-          if (!this.dirty && this.user.can('element:view') && event.editor !== this.user.me?.email) {
+          if (!this.dirty && this.user.can('element:view')) {
             this.latestId = event.latest_id
             Object.assign(this.item, sanitize(event.data))
           }

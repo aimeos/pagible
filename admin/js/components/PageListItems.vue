@@ -269,15 +269,12 @@ export default {
     })
 
     if (!this.embed) {
-      // patch the matching node when another user changes a page; subscribe for
+      // patch the matching node when a page changes elsewhere; subscribe for
       // the whole lifetime (not per activation) so the tree keeps patching in
       // the background while the editor is in a detail or another view and is
-      // up to date when they return
+      // up to date when they return. The tab that made the change is excluded
+      // server-side via toOthers(), so no editor filter is needed here
       setupEcho(this, 'page', null, (event) => {
-        if (event.editor === this.user.me?.email) {
-          return
-        }
-
         // added/removed/moved change the tree structure; flag it so the user can
         // reload when ready instead of disrupting their view; in-place edits patch
         if (event.action !== 'saved') {

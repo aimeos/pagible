@@ -183,7 +183,11 @@ class Resource
 
         DB::afterCommit( function() use ( $type, $model, $version, $name, $aux, $published, $deletedAt, $publishAt, $updatedAt, $action ) {
             try {
-                ContentChanged::dispatch( $type, (string) $model->id, (string) $version->id, $name, (array) $version->data, $aux, $published, $deletedAt, $publishAt, $updatedAt, $action );
+                // toOthers() excludes the browser tab that triggered the change via
+                // its X-Socket-ID header, so it doesn't re-apply its own edit. Changes
+                // from other clients of the same account (MCP, API, another tab, a
+                // scheduled job) carry no socket id and still reach the open editor.
+                broadcast( new ContentChanged( $type, (string) $model->id, (string) $version->id, $name, (array) $version->data, $aux, $published, $deletedAt, $publishAt, $updatedAt, $action ) )->toOthers();
             } catch( \Throwable $e ) {
                 report( $e );
             }

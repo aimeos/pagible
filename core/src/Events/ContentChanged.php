@@ -7,6 +7,7 @@
 
 namespace Aimeos\Cms\Events;
 
+use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
@@ -14,7 +15,7 @@ use Illuminate\Foundation\Events\Dispatchable;
 
 class ContentChanged implements ShouldBroadcastNow
 {
-    use Dispatchable;
+    use Dispatchable, InteractsWithSockets;
 
     /**
      * Properties use the model/database column names so consumers can apply them
