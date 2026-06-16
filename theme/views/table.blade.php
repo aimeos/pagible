@@ -13,7 +13,7 @@
 					$colidx === 0 && in_array($data->header ?? null, ['col', 'row+col']) ||
 					$rowidx === 0 && in_array($data->header ?? null, ['row', 'row+col']) ? 'th' : 'td'
 				}}">
-					@markdown((string) $col)
+					@text((string) $col)
 				</div>
 			@endforeach
 		</div>
