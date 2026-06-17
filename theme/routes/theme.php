@@ -14,7 +14,7 @@ Route::group(config('cms.multidomain') ? ['domain' => '{domain}'] : [], function
     // Issues a CSRF token (and starts the session) on demand, so cacheable pages
     // can omit the per-session token from their HTML and fetch it only when a
     // visitor actually submits a form. See theme/public/csrf.js.
-    Route::get('cmsapi/csrf', fn() => response()->json(['token' => csrf_token()]))->middleware(['web', 'throttle:60,1'])->name('cms.api.csrf');
+    Route::get('cmsapi/csrf', [Controllers\PageController::class, 'csrf'])->middleware(['web', 'throttle:60,1'])->name('cms.api.csrf');
 
     $sitemap = config('cms.theme.sitemap', 'sitemap');
     Route::get("{$sitemap}.xml", [Controllers\SitemapController::class, 'index'])->middleware(['web', 'throttle:cms-sitemap'])->name('cms.sitemap');

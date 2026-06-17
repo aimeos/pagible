@@ -9,6 +9,7 @@ import {
   mdiButtonCursor,
   mdiLinkVariantPlus,
   mdiCreation,
+  mdiTrayArrowDown,
   mdiUpload
 } from '@mdi/js'
 import { VueDraggable } from 'vue-draggable-plus'
@@ -78,15 +79,16 @@ export default {
       mdiButtonCursor,
       mdiLinkVariantPlus,
       mdiCreation,
+      mdiTrayArrowDown,
       mdiUpload
     }
   },
 
   data() {
     return {
+      dragging: false,
       images: [],
       index: Math.floor(Math.random() * 100000),
-      selected: null,
       vcreate: false,
       vfiles: false,
       vurls: false
@@ -183,8 +185,6 @@ export default {
           this.images.map((item) => ({ id: item.id, type: 'file' }))
         )
       })
-
-      this.selected = null
     },
 
     addFromAi(event) {
@@ -201,6 +201,16 @@ export default {
 
     description(file) {
       return Object.values(file.description || {}).shift()
+    },
+
+    drop(event) {
+      this.dragging = false
+
+      const files = event.dataTransfer?.files
+
+      if (files?.length) {
+        this.add(files)
+      }
     },
 
     open(item) {
@@ -291,7 +301,7 @@ export default {
       <v-img
         v-if="item.path"
         :srcset="srcset(item.previews)"
-        :src="url(Object.values(item.previews)[0] ?? item.path)"
+        :src="url(Object.values(item.previews || {})[0] ?? item.path)"
         :alt="description(item)"
         draggable="false"
       />
@@ -322,45 +332,68 @@ export default {
     </div>
 
     <div v-if="!readonly" class="add">
-      <div class="icon-group">
-        <v-btn
-          v-if="user.can('file:view')"
-          @click="vfiles = true"
-          :title="$gettext('Add files')"
-          :icon="mdiButtonCursor"
-          class="btn-add"
-          variant="text"
-        />
-        <v-btn
-          @click="vurls = true"
-          :title="$gettext('Add files from URLs')"
-          :icon="mdiLinkVariantPlus"
-          class="btn-add-urls"
-          variant="text"
-        />
-      </div>
-      <div class="icon-group">
-        <v-btn
-          v-if="user.can('image:imagine')"
-          @click="vcreate = true"
-          :title="$gettext('Create file')"
-          :icon="mdiCreation"
-          class="btn-create"
-          variant="text"
-        />
-        <v-btn :title="$gettext('Add files')" :icon="mdiUpload" class="btn-upload" variant="text"
-          ><v-file-input
-            v-model="selected"
-            @update:modelValue="add($event)"
-            :accept="config.accept || 'image/*'"
-            :hide-input="true"
-            :prepend-icon="mdiUpload"
-            multiple
+      <div class="actions">
+        <div class="icon-group">
+          <v-btn
+            v-if="user.can('file:view')"
+            @click="vfiles = true"
+            :title="$gettext('Add files')"
+            :icon="mdiButtonCursor"
+            class="btn-add"
+            variant="text"
           />
-        </v-btn>
+          <v-btn
+            @click="vurls = true"
+            :title="$gettext('Add files from URLs')"
+            :icon="mdiLinkVariantPlus"
+            class="btn-add-urls"
+            variant="text"
+          />
+        </div>
+        <div class="icon-group">
+          <v-btn
+            v-if="user.can('image:imagine')"
+            @click="vcreate = true"
+            :title="$gettext('Create file')"
+            :icon="mdiCreation"
+            class="btn-create"
+            variant="text"
+          />
+          <v-btn
+            @click="$refs.upload.click()"
+            :title="$gettext('Add files')"
+            :icon="mdiUpload"
+            class="btn-upload"
+            variant="text"
+          />
+        </div>
+      </div>
+
+      <div
+        class="dropzone"
+        :class="{ dragover: dragging }"
+        @dragenter.prevent="dragging = true"
+        @dragover.prevent="dragging = true"
+        @dragleave.prevent="dragging = false"
+        @drop.prevent="drop($event)"
+      >
+        <v-icon :icon="mdiTrayArrowDown" />
+        <span>{{ $gettext('Drop files here') }}</span>
       </div>
     </div>
   </VueDraggable>
+
+  <!-- Kept outside <VueDraggable> on purpose: a Vuetify input nested in the
+       draggable's persistent "add" tile loses its ref owner context when
+       vue-draggable-plus re-patches the tile on model changes. -->
+  <input
+    ref="upload"
+    type="file"
+    :accept="config.accept || 'image/*'"
+    multiple
+    hidden
+    @change="add($event.target.files); $event.target.value = null"
+  />
 
   <Teleport to="body">
     <FileDialog v-model="vfiles" @add="select($event)" :filter="IMAGE_MIME_FILTER" grid />
@@ -404,7 +437,45 @@ export default {
 .images .add {
   border: 1px dashed rgba(var(--v-border-color), var(--v-medium-emphasis-opacity));
   flex-flow: column;
-  flex-wrap: wrap;
+  padding: 0;
+  overflow: hidden;
+}
+
+/* Upper half: the add/url/create/upload buttons. */
+.images .add .actions {
+  flex: 1 1 50%;
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+/* Lower half: the drop target, filling the remaining 50% of the tile. */
+.images .add .dropzone {
+  flex: 1 1 50%;
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 4px;
+  width: 100%;
+  font-size: 0.75rem;
+  color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
+  border-top: 1px dashed rgba(var(--v-border-color), var(--v-medium-emphasis-opacity));
+  cursor: copy;
+  transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+}
+
+.images .add .dropzone.dragover {
+  border-color: rgb(var(--v-theme-primary));
+  background-color: rgba(var(--v-theme-primary), 0.08);
+  color: rgb(var(--v-theme-primary));
+}
+
+.images .add .dropzone * {
+  pointer-events: none;
 }
 
 .images .add :deep(.v-icon) {

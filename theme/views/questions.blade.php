@@ -26,7 +26,7 @@
 			"name": {!! cmsjson($item->title ?? '') !!},
 			"acceptedAnswer": {
 				"@@type": "Answer",
-				"text": {!! cmsjson(strip_tags(Str::markdown($item->text ?? ''))) !!}
+				"text": {!! cmsjson(cmsplain($item->text ?? '')) !!}
 			}
 		}
 		@if(!$loop->last),@endif

@@ -8,6 +8,7 @@ import { BatchHttpLink } from 'apollo-link-batch-http'
 import { createApolloProvider } from '@vue/apollo-option'
 import { ApolloClient, ApolloLink, InMemoryCache, Observable } from '@apollo/client/core'
 import router from './routes'
+import { socketId } from './echo'
 import { useUserStore } from './stores'
 import { urlgraphql } from './config'
 
@@ -25,6 +26,22 @@ const csrfLink = new ApolloLink((operation, forward) => {
   if (match) {
     operation.setContext(({ headers = {} }) => ({
       headers: { ...headers, 'X-XSRF-TOKEN': decodeURIComponent(match[1]) }
+    }))
+  }
+
+  return forward(operation)
+})
+
+// Forwards the websocket connection id as the X-Socket-ID header so the server
+// can use broadcast()->toOthers() to skip echoing a change back to the tab that
+// made it. No-op until Echo is connected, which is fine: an unconnected tab is
+// not subscribed to any channel and so receives no events anyway.
+const socketLink = new ApolloLink((operation, forward) => {
+  const id = socketId()
+
+  if (id) {
+    operation.setContext(({ headers = {} }) => ({
+      headers: { ...headers, 'X-Socket-ID': id }
     }))
   }
 
@@ -96,7 +113,7 @@ const apolloClient = new ApolloClient({
     },
     resultCacheMaxSize: 100
   }),
-  link: ApolloLink.from([retryLink, errorLink, csrfLink, httpLink]),
+  link: ApolloLink.from([retryLink, errorLink, csrfLink, socketLink, httpLink]),
   queryDeduplication: true
 })
 const apollo = createApolloProvider({ defaultClient: apolloClient })

@@ -5,6 +5,39 @@
  */
 
 
+if( !function_exists( 'cmsplain' ) )
+{
+    /**
+     * Reduces Markdown source to readable plain text *without parsing it* - a light
+     * regex strip of the common syntax (emphasis, inline code, links, images, headings,
+     * quote and ordered/'*' list markers; '-' and '+' bullets are kept). Used for the
+     * FAQ JSON-LD answer text, where a full
+     * Markdown -> HTML -> strip_tags round-trip would be wasteful and the structured
+     * data only needs prose. Best-effort: unusual Markdown may leave minor artifacts.
+     *
+     * @param string|null $text Markdown source
+     * @return string Collapsed plain text
+     */
+    function cmsplain( ?string $text ) : string
+    {
+        $replacements = [
+            '/```[a-z0-9]*\s*|```/i'     => '',     // fenced code markers
+            '/!\[[^\]]*\]\([^)]*\)/'     => '',     // images
+            '/\[([^\]]*)\]\([^)]*\)/'    => '$1',   // links -> link text
+            '/^\s{0,3}#{1,6}\s+/m'       => '',     // ATX headings
+            '/^\s*(?:\*|\d+\.)\s+/m'     => '',     // '*' and ordered list markers ('-'/'+' bullets kept)
+            '/^\s*>\s?/m'                => '',     // block quotes
+            '/(\*{1,3}|_{1,3})(.+?)\1/s' => '$2',   // bold / italic
+            '/`([^`]+)`/'                => '$1',   // inline code
+        ];
+
+        $text = preg_replace( array_keys( $replacements ), array_values( $replacements ), (string) $text );
+
+        return trim( (string) preg_replace( '/\s+/', ' ', (string) $text ) );
+    }
+}
+
+
 if( !function_exists( 'cms' ) )
 {
     /**

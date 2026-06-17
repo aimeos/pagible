@@ -8,6 +8,7 @@ import {
   mdiTrashCan,
   mdiButtonCursor,
   mdiLinkVariantPlus,
+  mdiTrayArrowDown,
   mdiUpload
 } from '@mdi/js'
 import { useAppStore, useUserStore, useMessageStore, useViewStack } from '../stores'
@@ -57,6 +58,7 @@ export default {
 
   data() {
     return {
+      dragging: false,
       file: {},
       index: Math.floor(Math.random() * 100000),
       selected: null,
@@ -83,6 +85,7 @@ export default {
       mdiTrashCan,
       mdiButtonCursor,
       mdiLinkVariantPlus,
+      mdiTrayArrowDown,
       mdiUpload
     }
   },
@@ -158,6 +161,16 @@ export default {
     addFromUrl(event) {
       this.select(event)
       this.vurls = false
+    },
+
+    drop(event) {
+      this.dragging = false
+
+      const file = event.dataTransfer?.files?.[0]
+
+      if (file) {
+        this.add(file)
+      }
     },
 
     formatDate(dateStr) {
@@ -318,31 +331,45 @@ export default {
           </v-menu>
         </div>
 
-        <div v-else-if="!readonly" class="file">
-          <v-btn
-            v-if="user.can('file:view')"
-            @click="vfiles = true"
-            :title="$gettext('Add file')"
-            :icon="mdiButtonCursor"
-            class="btn-add"
-            variant="text"
-          />
-          <v-btn
-            @click="vurls = true"
-            :title="$gettext('Add file from URL')"
-            :icon="mdiLinkVariantPlus"
-            class="btn-add-url"
-            variant="text"
-          />
-          <v-btn :title="$gettext('Upload file')" :icon="mdiUpload" class="btn-upload" variant="text">
-            <v-file-input
-              v-model="selected"
-              @update:modelValue="add($event)"
-              :accept="config.accept || '*'"
-              :hide-input="true"
-              :prepend-icon="mdiUpload"
+        <div v-else-if="!readonly" class="file file-empty">
+          <div class="actions">
+            <v-btn
+              v-if="user.can('file:view')"
+              @click="vfiles = true"
+              :title="$gettext('Add file')"
+              :icon="mdiButtonCursor"
+              class="btn-add"
+              variant="text"
             />
-          </v-btn>
+            <v-btn
+              @click="vurls = true"
+              :title="$gettext('Add file from URL')"
+              :icon="mdiLinkVariantPlus"
+              class="btn-add-url"
+              variant="text"
+            />
+            <v-btn :title="$gettext('Upload file')" :icon="mdiUpload" class="btn-upload" variant="text">
+              <v-file-input
+                v-model="selected"
+                @update:modelValue="add($event)"
+                :accept="config.accept || '*'"
+                :hide-input="true"
+                :prepend-icon="mdiUpload"
+              />
+            </v-btn>
+          </div>
+
+          <div
+            class="dropzone"
+            :class="{ dragover: dragging }"
+            @dragenter.prevent="dragging = true"
+            @dragover.prevent="dragging = true"
+            @dragleave.prevent="dragging = false"
+            @drop.prevent="drop($event)"
+          >
+            <v-icon :icon="mdiTrayArrowDown" />
+            <span>{{ $gettext('Drop file here to upload') }}</span>
+          </div>
         </div>
       </div>
     </v-col>
@@ -395,6 +422,46 @@ export default {
   max-height: 200px;
   max-width: 100%;
   width: 100%;
+}
+
+.files .file.file-empty {
+  flex-direction: column;
+  max-height: none;
+  cursor: default;
+  gap: 8px;
+  padding: 8px;
+}
+
+.files .file-empty .actions {
+  justify-content: center;
+  align-items: center;
+  display: flex;
+}
+
+.files .file-empty .dropzone {
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  display: flex;
+  gap: 4px;
+  width: 100%;
+  padding: 16px;
+  border-radius: 8px;
+  border: 1px dashed rgba(var(--v-border-color), var(--v-medium-emphasis-opacity));
+  color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
+  cursor: copy;
+  transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+}
+
+.files .file-empty .dropzone.dragover {
+  border-color: rgb(var(--v-theme-primary));
+  background-color: rgba(var(--v-theme-primary), 0.08);
+  color: rgb(var(--v-theme-primary));
+}
+
+.files .file-empty .dropzone * {
+  pointer-events: none;
 }
 
 .files .v-input__prepend > .v-icon {

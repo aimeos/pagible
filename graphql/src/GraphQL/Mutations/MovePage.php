@@ -9,7 +9,6 @@ namespace Aimeos\Cms\GraphQL\Mutations;
 
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Resource;
-use Aimeos\Cms\Utils;
 use Illuminate\Support\Facades\Auth;
 
 
@@ -21,20 +20,6 @@ final class MovePage
      */
     public function __invoke( $rootValue, array $args ) : Page
     {
-        return Utils::lockedTransaction( function() use ( $args ) {
-
-                $editor = Utils::editor( Auth::user() );
-
-                /** @var Page $page */
-                $page = Page::withTrashed()->findOrFail( $args['id'] );
-                $page->editor = $editor;
-
-                Resource::position( $page, $args['ref'] ?? null, $args['parent'] ?? null, true );
-                Page::withoutSyncingToSearch( fn() => $page->save() );
-
-                Resource::broadcast( $page, $editor, 'moved' );
-
-                return $page;
-        } );
+        return Resource::movePage( $args['id'], $args['ref'] ?? null, $args['parent'] ?? null, Auth::user() );
     }
 }

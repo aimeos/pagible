@@ -88,6 +88,56 @@ class Resource
 
 
     /**
+     * Persists a prepared file as a new media item with its first version.
+     *
+     * The caller fills the file's path, mime, previews, name, lang and
+     * description; this method stores it, creates the initial version, indexes
+     * it and broadcasts the change.
+     *
+     * @param File $file Prepared file model (path/mime/previews/name set)
+     * @param Authenticatable|null $user Authenticated user for editor tracking
+     * @return File
+     */
+    public static function addFile( File $file, ?Authenticatable $user = null ) : File
+    {
+        $editor = Utils::editor( $user );
+
+        return Utils::transaction( function() use ( $file, $editor ) {
+
+            $versionId = ( new Version )->newUniqueId();
+
+            $file->tenant_id ??= Tenancy::value();
+            $file->latest_id = $versionId;
+            $file->editor = $editor;
+            $file->save();
+
+            $version = $file->versions()->forceCreate( [
+                'id' => $versionId,
+                'lang' => $file->lang,
+                'editor' => $editor,
+                'data' => [
+                    'lang' => $file->lang,
+                    'name' => $file->name,
+                    'mime' => $file->mime,
+                    'path' => $file->path,
+                    'previews' => $file->previews,
+                    'description' => $file->description,
+                    'transcription' => $file->transcription,
+                ],
+            ] );
+
+            // Re-index with the latest version loaded so the draft (latest=true)
+            // row is written; on $file->save() above the version did not exist yet.
+            $file->setRelation( 'latest', $version )->searchable();
+
+            self::broadcast( $file, $editor, 'added' );
+
+            return $file;
+        } );
+    }
+
+
+    /**
      * Creates a new page with version and attached relations.
      *
      * Files and elements attached to the page are derived from the content, meta and config data.
@@ -174,6 +224,9 @@ class Resource
 
         $name = is_string( $editor ) ? $editor : Utils::editor( $editor );
         $type = strtolower( class_basename( $model ) );
+        $id = (string) $model->id;
+        $versionId = (string) $version->id;
+        $data = (array) $version->data;
         $aux = $model instanceof Page ? (array) $version->aux : null;
 
         $published = (bool) $version->published;
@@ -181,9 +234,21 @@ class Resource
         $deletedAt = $model->deleted_at ? (string) $model->deleted_at : null;
         $updatedAt = $version->created_at ? (string) $version->created_at : null;
 
-        DB::afterCommit( function() use ( $type, $model, $version, $name, $aux, $published, $deletedAt, $publishAt, $updatedAt, $action ) {
+        DB::afterCommit( function() use ( $type, $id, $versionId, $name, $data, $aux, $published, $deletedAt, $publishAt, $updatedAt, $action ) {
             try {
-                ContentChanged::dispatch( $type, (string) $model->id, (string) $version->id, $name, (array) $version->data, $aux, $published, $deletedAt, $publishAt, $updatedAt, $action );
+                // toOthers() excludes the browser tab that triggered the change via
+                // its X-Socket-ID header, so it doesn't re-apply its own edit. Changes
+                // from other clients of the same account (MCP, API, another tab, a
+                // scheduled job) carry no socket id and still reach the open editor.
+
+                // The list/tree views patch node metadata only, so the per-type broadcast
+                // omits the heavy content aux. An in-place 'saved' edit additionally sends
+                // the full aux to the open detail view on the per-item channel.
+                broadcast( new ContentChanged( $type, $id, $versionId, $name, $data, null, $published, $deletedAt, $publishAt, $updatedAt, $action, false ) )->toOthers();
+
+                if( $action === 'saved' ) {
+                    broadcast( new ContentChanged( $type, $id, $versionId, $name, $data, $aux, $published, $deletedAt, $publishAt, $updatedAt, $action, true ) )->toOthers();
+                }
             } catch( \Throwable $e ) {
                 report( $e );
             }
@@ -220,6 +285,39 @@ class Resource
             }
 
             return $items;
+        } );
+    }
+
+
+    /**
+     * Moves a page to a new position in the tree and broadcasts the change.
+     *
+     * @param string $id Page UUID
+     * @param string|null $ref Sibling page ID to insert before
+     * @param string|null $parent Parent page ID to append to
+     * @param Authenticatable|null $user Authenticated user for editor tracking
+     * @param bool $root Whether to make the page a root node when no ref/parent given
+     * @return Page
+     * @throws \Illuminate\Database\Eloquent\ModelNotFoundException If page not found
+     */
+    public static function movePage( string $id, ?string $ref = null, ?string $parent = null,
+        ?Authenticatable $user = null, bool $root = true ) : Page
+    {
+        $editor = Utils::editor( $user );
+
+        return Utils::lockedTransaction( function() use ( $id, $ref, $parent, $editor, $root ) {
+
+            /** @var Page $page */
+            $page = Page::withTrashed()->findOrFail( $id );
+            $page->editor = $editor;
+
+            self::position( $page, $ref, $parent, $root );
+
+            Page::withoutSyncingToSearch( fn() => $page->save() );
+
+            self::broadcast( $page, $editor, 'moved' );
+
+            return $page;
         } );
     }
 
@@ -435,7 +533,6 @@ class Resource
                 }
 
                 self::applyElementSave( $element, ['lang' => $lang], $editor );
-                self::broadcast( $element, $editor );
 
                 $result[] = $element;
             }
@@ -584,7 +681,6 @@ class Resource
                 }
 
                 self::applyFileSave( $file, ['lang' => $lang], $editor );
-                self::broadcast( $file, $editor );
 
                 $result[] = $file;
             }
@@ -665,6 +761,8 @@ class Resource
                 'data' => $dd,
             ] );
         }
+
+        self::broadcast( $orig, $editor );
 
         return $orig;
     }
@@ -749,7 +847,6 @@ class Resource
 
                 self::applyPageSave( $page, $input, $editor, null, $user );
                 Cache::forget( Page::key( $page ) );
-                self::broadcast( $page, $editor );
 
                 $pages[] = $page;
             }
@@ -823,6 +920,8 @@ class Resource
             ] );
         }
 
+        self::broadcast( $page, $editor );
+
         return $page->removeVersions();
     }
 
@@ -863,6 +962,8 @@ class Resource
                 'data' => $dd,
             ] );
         }
+
+        self::broadcast( $element, $editor );
 
         return $element->removeVersions();
     }

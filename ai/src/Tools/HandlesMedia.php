@@ -8,10 +8,8 @@
 namespace Aimeos\Cms\Tools;
 
 use Aimeos\Cms\Resource;
-use Aimeos\Cms\Tenancy;
 use Aimeos\Cms\Utils;
 use Aimeos\Cms\Models\File;
-use Aimeos\Cms\Models\Version;
 use Aimeos\Prisma\Files\Image;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Http\UploadedFile;
@@ -74,16 +72,10 @@ trait HandlesMedia
     {
         return $this->upload( $base64, $name, function( UploadedFile $upload ) use ( $lang, $description, $user ) {
 
-            $editor = Utils::editor( $user );
-            $versionId = ( new Version )->newUniqueId();
-
             $file = new File();
-            $file->tenant_id = Tenancy::value();
             $file->lang = $lang;
             $file->mime = $upload->getClientMimeType();
             $file->name = $upload->getClientOriginalName();
-            $file->latest_id = $versionId;
-            $file->editor = $editor;
 
             if( $description ) {
                 $file->description = $description;
@@ -105,35 +97,17 @@ trait HandlesMedia
                 return ['error' => sprintf( 'File type "%s" is not allowed.', $file->mime )];
             }
 
-            return Utils::transaction( function() use ( $file, $versionId, $lang, $editor ) {
+            $file = Resource::addFile( $file, $user );
 
-                $file->save();
-
-                $file->versions()->forceCreate( [
-                    'id' => $versionId,
-                    'lang' => $lang,
-                    'editor' => $editor,
-                    'data' => [
-                        'lang' => $file->lang,
-                        'name' => $file->name,
-                        'mime' => $file->mime,
-                        'path' => $file->path,
-                        'previews' => $file->previews,
-                        'description' => $file->description,
-                        'transcription' => $file->transcription,
-                    ],
-                ] );
-
-                return [
-                    'id' => $file->id,
-                    'name' => $file->name,
-                    'mime' => $file->mime,
-                    'lang' => $file->lang,
-                    'path' => $file->path,
-                    'previews' => $file->previews,
-                    'description' => $file->description,
-                ];
-            } );
+            return [
+                'id' => $file->id,
+                'name' => $file->name,
+                'mime' => $file->mime,
+                'lang' => $file->lang,
+                'path' => $file->path,
+                'previews' => $file->previews,
+                'description' => $file->description,
+            ];
         } );
     }
 

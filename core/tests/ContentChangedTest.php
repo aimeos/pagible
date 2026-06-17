@@ -12,14 +12,48 @@ use Aimeos\Cms\Events\ContentChanged;
 
 class ContentChangedTest extends CoreTestAbstract
 {
-    public function testBroadcastsToItemAndTypeChannels() : void
+    public function testListVariantBroadcastsToTypeChannel() : void
     {
         $event = new ContentChanged( 'page', '123', 'v1', 'editor@testbench', ['name' => 'Test'], ['content' => []] );
 
         $names = array_map( fn( $channel ) => $channel->name, $event->broadcastOn() );
 
-        // per-item channel for the open detail view + per-type channel for the list/tree views
-        $this->assertEquals( ['private-cms.page.123', 'private-cms.page'], $names );
+        // default (list) variant targets the per-type channel for the list/tree views
+        $this->assertEquals( ['private-cms.page'], $names );
+    }
+
+
+    public function testDetailVariantBroadcastsToItemChannel() : void
+    {
+        $event = new ContentChanged( 'page', '123', 'v1', 'editor@testbench', ['name' => 'Test'], ['content' => []], detail: true );
+
+        $names = array_map( fn( $channel ) => $channel->name, $event->broadcastOn() );
+
+        // detail variant targets the per-item channel for the open detail view
+        $this->assertEquals( ['private-cms.page.123'], $names );
+    }
+
+
+    public function testListVariantOmitsAux() : void
+    {
+        $event = new ContentChanged( 'page', '123', 'v1', 'editor@testbench', ['name' => 'Test'], ['content' => []] );
+
+        $payload = $event->broadcastWith();
+
+        // the list/tree channel never reads aux, so it must stay out of the payload
+        $this->assertArrayNotHasKey( 'aux', $payload );
+        $this->assertEquals( ['name' => 'Test'], $payload['data'] );
+    }
+
+
+    public function testDetailVariantCarriesAux() : void
+    {
+        $event = new ContentChanged( 'page', '123', 'v1', 'editor@testbench', ['name' => 'Test'], ['content' => []], detail: true );
+
+        $payload = $event->broadcastWith();
+
+        $this->assertArrayHasKey( 'aux', $payload );
+        $this->assertEquals( ['content' => []], $payload['aux'] );
     }
 
 
@@ -39,7 +73,7 @@ class ContentChangedTest extends CoreTestAbstract
 
             $names = array_map( fn( $channel ) => $channel->name, $event->broadcastOn() );
 
-            // structural changes refresh only the list/tree, not an open detail view
+            // structural changes are only dispatched as the list variant -> type channel
             $this->assertEquals( ['private-cms.page'], $names );
         }
     }
