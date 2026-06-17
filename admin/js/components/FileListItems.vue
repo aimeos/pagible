@@ -17,8 +17,10 @@ import {
   mdiMenuDown,
   mdiSort,
   mdiClockOutline,
-  mdiRefresh
+  mdiRefresh,
+  mdiPencil
 } from '@mdi/js'
+import EditBulkDialog from './EditBulkDialog.vue'
 import { useAppStore, useUserStore, useMessageStore, useChangeStore } from '../stores'
 import { debounce, frozenParse, safeParse, sanitize, url, srcset } from '../utils'
 import { setupEcho, cleanEcho } from '../echo'
@@ -74,6 +76,14 @@ const PURGE_FILE = gql`
   }
 `
 
+const SAVE_FILES = gql`
+  mutation ($id: [ID!]!, $lang: String!) {
+    saveFiles(id: $id, lang: $lang) {
+      id
+    }
+  }
+`
+
 const FETCH_FILES = gql`
   query (
     $filter: FileFilter
@@ -122,6 +132,10 @@ const FETCH_FILES = gql`
 `
 
 export default {
+  components: {
+    EditBulkDialog
+  },
+
   props: {
     grid: { type: Boolean, default: false },
     embed: { type: Boolean, default: false },
@@ -141,6 +155,7 @@ export default {
       last: 1,
       limit: 100,
       actions: false,
+      editDialog: false,
       loading: true,
       vgrid: false,
       destroyed: false,
@@ -175,6 +190,7 @@ export default {
       mdiSort,
       mdiClockOutline,
       mdiRefresh,
+      mdiPencil,
       debounce,
       url,
       srcset
@@ -233,6 +249,10 @@ export default {
   computed: {
     canTrash() {
       return this.items.some((item) => this.checked.has(item.id) && !item.deleted_at)
+    },
+
+    checkedCount() {
+      return this.checked.size
     },
 
     isChecked() {
@@ -496,6 +516,46 @@ export default {
         })
     },
 
+    edit() {
+      this.actions = false
+      this.editDialog = true
+    },
+
+    save(lang) {
+      if (!this.user.can('file:save')) {
+        this.messages.add(this.$gettext('Permission denied'), 'error')
+        return
+      }
+
+      const list = this.items.filter((item) => this.checked.has(item.id))
+
+      if (!list.length || lang === null) {
+        return
+      }
+
+      this.$apollo
+        .mutate({
+          mutation: SAVE_FILES,
+          variables: {
+            id: list.map((item) => item.id),
+            lang: lang
+          }
+        })
+        .then((result) => {
+          if (result.errors) {
+            throw result.errors
+          }
+
+          this.checked = new Set()
+          this.invalidate()
+          this.search()
+        })
+        .catch((error) => {
+          this.messages.add(this.$gettext('Error saving file') + ':\n' + error, 'error')
+          this.$log(`FileListItems::save(): Error saving files`, list, lang, error)
+        })
+    },
+
     setSort(column, order) {
       this.sort = { column, order }
     },
@@ -674,6 +734,11 @@ export default {
               <v-list-item v-if="isChecked && user.can('file:publish')">
                 <v-btn :prepend-icon="mdiPublish" variant="text" @click="publish()">{{
                   $gettext('Publish')
+                }}</v-btn>
+              </v-list-item>
+              <v-list-item v-if="isChecked && user.can('file:save')">
+                <v-btn :prepend-icon="mdiPencil" variant="text" @click="edit()">{{
+                  $gettext('Edit properties')
                 }}</v-btn>
               </v-list-item>
               <v-list-item v-if="canTrash && user.can('file:drop')">
@@ -996,6 +1061,8 @@ export default {
       variant="tonal"
     />
   </div>
+
+  <EditBulkDialog v-model="editDialog" :count="checkedCount" @apply="save" />
 </template>
 
 <style scoped>

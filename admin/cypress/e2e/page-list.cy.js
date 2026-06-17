@@ -77,6 +77,7 @@ function pagesResponse(pages) {
  * @param {Array}             options.pages       – array of page objects for the `pages` query
  * @param {object|null}       options.addPage     – return value for `addPage` mutation
  * @param {object|null}       options.savePage    – return value for `savePage` mutation
+ * @param {Array|null}        options.savePages   – return value for `savePages` mutation
  * @param {object|null}       options.movePage    – return value for `movePage` mutation
  * @param {object|null}       options.dropPage    – return value for `dropPage` mutation
  * @param {object|null}       options.keepPage    – return value for `keepPage` mutation
@@ -89,12 +90,14 @@ function setupIntercept({
   pages = [],
   addPage = null,
   savePage = null,
+  savePages = null,
   movePage = null,
   dropPage = null,
   keepPage = null,
   purgePage = null,
   pubPage = null,
   synthesize = null,
+  schemas = [{ name: 'cms', label: 'CMS', types: '{"page":{},"blog":{}}', content: '{}', meta: '{}', config: '{}' }],
 } = {}) {
   cy.intercept('POST', '/graphql', (req) => {
     const isBatch = Array.isArray(req.body)
@@ -111,6 +114,10 @@ function setupIntercept({
       }
       if (query.includes('addPage')) {
         return { data: { addPage: addPage || { id: '99' } } }
+      }
+      if (query.includes('savePages')) {
+        const ids = op.variables?.id || ['1']
+        return { data: { savePages: savePages || ids.map((id) => ({ id })) } }
       }
       if (query.includes('savePage')) {
         return { data: { savePage: savePage || { id: op.variables?.id || '1' } } }
@@ -129,6 +136,9 @@ function setupIntercept({
       }
       if (query.includes('pubPage')) {
         return { data: { pubPage: pubPage || { id: '1' } } }
+      }
+      if (query.includes('schemas')) {
+        return { data: { schemas } }
       }
       if (query.includes('synthesize')) {
         return { data: { synthesize: synthesize || 'Generated page content' } }
@@ -484,6 +494,124 @@ describe('Page List', () => {
     cy.get('.v-card .v-list').should('contain', 'Disable')
     cy.get('.v-card .v-list').should('contain', 'Delete')
     cy.get('.v-card .v-list').should('contain', 'Purge')
+  })
+
+  // ---- Batch edit properties ----
+
+  // Uses real (focus/hit-test-respecting) pointer events: the dropdown menus only
+  // open on a real click once the dialog is opened after the bulk menu's overlay
+  // has closed. Synthetic cy.click() bypasses this, so realClick keeps it honest.
+  it('real-click on a property dropdown opens its menu and applies the value', () => {
+    const page = makePage()
+    visitPages([page])
+    cy.get('.tree-node-inner .v-checkbox-btn').first().click()
+    cy.get('.header .bulk .btn-actions .v-btn').click()
+    cy.contains('.v-card .v-list .v-btn', 'Edit properties').click()
+    cy.get('.btn-apply').should('be.visible')
+    cy.get('.prop').first().find('.v-field').realClick()
+    cy.get('.v-overlay-container [role="option"]').contains('Disabled').should('be.visible').click()
+    cy.get('.btn-apply').should('not.be.disabled').click()
+    cy.wait('@gql').its('request.body').should((body) => {
+      const ops = Array.isArray(body) ? body : [body]
+      const saveOp = ops.find((op) => (op.query || '').includes('savePages'))
+      expect(saveOp).to.exist
+      expect(saveOp.variables.input.status).to.equal(0)
+    })
+  })
+
+  // The page list view does not load theme schemas (only the detail view does),
+  // so the dialog must load them itself or the theme/type dropdowns stay empty.
+  it('theme dropdown is populated from schemas in the list view', () => {
+    const page = makePage()
+    visitPages([page])
+    cy.get('.tree-node-inner .v-checkbox-btn').first().click()
+    cy.get('.header .bulk .btn-actions .v-btn').click()
+    cy.contains('.v-card .v-list .v-btn', 'Edit properties').click()
+    cy.get('.btn-apply').should('be.visible')
+    // theme is the 4th property row (status, cache, language, theme)
+    cy.get('.prop').eq(3).find('.v-field').realClick()
+    cy.get('.v-overlay-container [role="option"]').should('have.length.gte', 1)
+  })
+
+  it('bulk actions menu shows Edit properties', () => {
+    const page = makePage()
+    visitPages([page])
+    cy.get('.tree-node-inner .v-checkbox-btn').first().click()
+    cy.get('.header .bulk .btn-actions .v-btn').click()
+    cy.get('.v-card .v-list').should('contain', 'Edit properties')
+  })
+
+  it('clicking Edit properties opens the dialog', () => {
+    const page = makePage()
+    visitPages([page])
+    cy.get('.tree-node-inner .v-checkbox-btn').first().click()
+    cy.get('.header .bulk .btn-actions .v-btn').click()
+    cy.contains('.v-card .v-list .v-btn', 'Edit properties').click()
+    cy.get('.btn-apply').should('exist')
+    cy.get('.btn-apply-recursive').should('exist')
+  })
+
+  it('Apply is disabled until a property is enabled', () => {
+    const page = makePage()
+    visitPages([page])
+    cy.get('.tree-node-inner .v-checkbox-btn').first().click()
+    cy.get('.header .bulk .btn-actions .v-btn').click()
+    cy.contains('.v-card .v-list .v-btn', 'Edit properties').click()
+    cy.get('.btn-apply').should('be.disabled')
+    cy.get('.btn-apply-recursive').should('be.disabled')
+  })
+
+  it('Apply sends savePages with the enabled property and descendants false', () => {
+    const page = makePage()
+    visitPages([page])
+    cy.get('.tree-node-inner .v-checkbox-btn').first().click()
+    cy.get('.header .bulk .btn-actions .v-btn').click()
+    cy.contains('.v-card .v-list .v-btn', 'Edit properties').click()
+    // enable the first property (status), then apply
+    cy.get('.prop').first().find('.v-checkbox-btn').click()
+    cy.get('.btn-apply').click()
+    cy.wait('@gql').its('request.body').should((body) => {
+      const ops = Array.isArray(body) ? body : [body]
+      const saveOp = ops.find((op) => (op.query || '').includes('savePages'))
+      expect(saveOp).to.exist
+      expect(saveOp.variables.input.status).to.equal(1)
+      expect(saveOp.variables.descendants).to.equal(false)
+      expect(saveOp.variables.id).to.have.length(1)
+    })
+  })
+
+  it('Apply recursively sends savePages with descendants true', () => {
+    const page = makePage()
+    visitPages([page])
+    cy.get('.tree-node-inner .v-checkbox-btn').first().click()
+    cy.get('.header .bulk .btn-actions .v-btn').click()
+    cy.contains('.v-card .v-list .v-btn', 'Edit properties').click()
+    cy.get('.prop').first().find('.v-checkbox-btn').click()
+    cy.get('.btn-apply-recursive').click()
+    cy.wait('@gql').its('request.body').should((body) => {
+      const ops = Array.isArray(body) ? body : [body]
+      const saveOp = ops.find((op) => (op.query || '').includes('savePages'))
+      expect(saveOp).to.exist
+      expect(saveOp.variables.descendants).to.equal(true)
+    })
+  })
+
+  it('opening a property dropdown and picking a value auto-includes it', () => {
+    const page = makePage()
+    visitPages([page])
+    cy.get('.tree-node-inner .v-checkbox-btn').first().click()
+    cy.get('.header .bulk .btn-actions .v-btn').click()
+    cy.contains('.v-card .v-list .v-btn', 'Edit properties').click()
+    // interact with the dropdown directly (no manual checkbox click)
+    cy.get('.prop').first().find('.v-select').click()
+    cy.get('.v-overlay-container .v-list-item').contains('Disabled').click()
+    cy.get('.btn-apply').click()
+    cy.wait('@gql').its('request.body').should((body) => {
+      const ops = Array.isArray(body) ? body : [body]
+      const saveOp = ops.find((op) => (op.query || '').includes('savePages'))
+      expect(saveOp).to.exist
+      expect(saveOp.variables.input.status).to.equal(0)
+    })
   })
 
   // ---- Status styling ----

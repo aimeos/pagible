@@ -496,34 +496,48 @@ class Resource
         $editor = Utils::editor( $user );
 
         return Utils::transaction( function() use ( $element, $input, $editor, $latestId ) {
+            return self::applyElementSave( $element, $input, $editor, $latestId );
+        } );
+    }
 
-            $versionId = ( new Version )->newUniqueId();
-            $previousEditor = $element->latest->editor ?? '';
 
-            [$data, $dd] = self::merge( $element, $input, $latestId );
+    /**
+     * Applies the same value to several shared content elements at once.
+     *
+     * Every element gets its own new draft version (no publishing) and broadcasts a
+     * "saved" event so the lists of other editors patch in place. Used for batch
+     * editing of non-unique element properties (e.g. the language) from the list.
+     *
+     * @param array<string> $ids Element IDs to update
+     * @param string $lang ISO language code applied to every element
+     * @param Authenticatable|null $user Authenticated user for editor tracking
+     * @return Collection<int, Element> Updated elements
+     */
+    public static function saveElements( array $ids, string $lang, ?Authenticatable $user = null ) : Collection
+    {
+        if( empty( $ids ) ) {
+            return new Collection();
+        }
 
-            $version = $element->versions()->forceCreate( [
-                'id' => $versionId,
-                'data' => array_map( fn( $v ) => $v ?? '', $data ),
-                'editor' => $editor,
-                'lang' => $input['lang'] ?? $element->latest?->lang,
-            ] );
+        $editor = Utils::editor( $user );
 
-            $version->files()->attach( self::elementFiles( $data ) );
-            $element->setRelation( 'latest', $version );
-            $element->forceFill( ['latest_id' => $version->id] )->save();
+        return Utils::transaction( function() use ( $ids, $lang, $editor ) {
 
-            if( $dd ) {
-                $element->setChanged( [
-                    'editor' => $previousEditor,
-                    'latest' => ['id' => $versionId, 'data' => $data],
-                    'data' => $dd,
-                ] );
+            $elements = Element::withTrashed()->with( 'latest' )->whereIn( 'id', $ids )->get();
+            $result = [];
+
+            foreach( $elements as $element )
+            {
+                if( !$element instanceof Element ) {
+                    continue;
+                }
+
+                self::applyElementSave( $element, ['lang' => $lang], $editor );
+
+                $result[] = $element;
             }
 
-            self::broadcast( $element, $editor );
-
-            return $element->removeVersions();
+            return new Collection( $result );
         } );
     }
 
@@ -615,7 +629,7 @@ class Resource
             {
                 try {
                     $tmp->addPreviews( $upload );
-                    $storedPreviews = $tmp->previews;
+                    $storedPreviews = (array) $tmp->previews;
                 } catch( \Throwable $t ) {
                     $tmp->removePreviews();
                     throw $t;
@@ -627,66 +641,130 @@ class Resource
 
             /** @var File $orig */
             $orig = File::withTrashed()->with( ['latest' => fn( $q ) => $q->select( 'id', 'versionable_id', 'data', 'lang', 'editor' )] )->findOrFail( $id );
-            $previews = $orig->latest?->data->previews ?? $orig->previews;
-            $path = $orig->latest?->data->path ?? $orig->path;
-            $previousEditor = $orig->latest->editor ?? '';
-            $versionId = ( new Version )->newUniqueId();
-            $dd = null;
 
-            $file = clone $orig;
-
-            [$data, $dd] = self::merge( $orig, $input, $latestId );
-            $file->fill( $data );
-
-            $file->previews = self::checkPaths( $input['previews'] ?? null ) ?? $previews;
-            $file->path = $stored ?? self::checkPath( $input['path'] ?? null ) ?? $path;
-            $file->editor = $editor;
-
-            if( $file->path !== $path && !str_starts_with( $file->path, 'http' ) ) {
-                $file->mime = Utils::mimetype( $file->path );
-            }
-
-            try
-            {
-                if( $preview instanceof UploadedFile && $preview->isValid() && str_starts_with( $preview->getClientMimeType(), 'image/' ) ) {
-                    $file->addPreviews( $preview );
-                } elseif( $storedPreviews !== null ) {
-                    $file->previews = $storedPreviews;
-                } elseif( $file->path !== $path && str_starts_with( $file->path, 'http' ) && Utils::isValidUrl( $file->path ) ) {
-                    $file->addPreviews( $file->path );
-                } elseif( $preview === false ) {
-                    $file->previews = [];
-                }
-            }
-            catch( \Throwable $t )
-            {
-                $file->removePreviews();
-                throw $t;
-            }
-
-            $version = $file->versions()->forceCreate( [
-                'id' => $versionId,
-                'lang' => $file->lang,
-                'editor' => $editor,
-                'data' => $file->toArray(),
-            ] );
-
-            $orig->setRelation( 'latest', $version );
-            $orig->forceFill( ['latest_id' => $version->id] )->save();
-            $file->removeVersions();
-
-            if( $dd ) {
-                $orig->setChanged( [
-                    'editor' => $previousEditor,
-                    'latest' => ['id' => $versionId, 'data' => $file->toArray()],
-                    'data' => $dd,
-                ] );
-            }
-
-            self::broadcast( $orig, $editor );
-
-            return $orig;
+            return self::applyFileSave( $orig, $input, $editor, $latestId, $stored, $storedPreviews, $preview );
         } );
+    }
+
+
+    /**
+     * Applies the same value to several files at once.
+     *
+     * Every file gets its own new draft version (no publishing) and broadcasts a
+     * "saved" event so the lists of other editors patch in place. Used for batch
+     * editing of non-unique file properties (e.g. the language) from the list.
+     *
+     * @param array<string> $ids File IDs to update
+     * @param string $lang ISO language code applied to every file
+     * @param Authenticatable|null $user Authenticated user for editor tracking
+     * @return Collection<int, File> Updated files
+     */
+    public static function saveFiles( array $ids, string $lang, ?Authenticatable $user = null ) : Collection
+    {
+        if( empty( $ids ) ) {
+            return new Collection();
+        }
+
+        $editor = Utils::editor( $user );
+
+        return Utils::transaction( function() use ( $ids, $lang, $editor ) {
+
+            $files = File::withTrashed()
+                ->with( ['latest' => fn( $q ) => $q->select( 'id', 'versionable_id', 'data', 'lang', 'editor' )] )
+                ->whereIn( 'id', $ids )->get();
+            $result = [];
+
+            foreach( $files as $file )
+            {
+                if( !$file instanceof File ) {
+                    continue;
+                }
+
+                self::applyFileSave( $file, ['lang' => $lang], $editor );
+
+                $result[] = $file;
+            }
+
+            return new Collection( $result );
+        } );
+    }
+
+
+    /**
+     * Creates a new version for an already loaded file from the given input.
+     *
+     * Shared by saveFile() (single) and saveFiles() (bulk). Must run inside a transaction.
+     *
+     * @param File $orig File model with the "latest" relation loaded
+     * @param array<string, mixed> $input File fields to update (merged with latest version)
+     * @param string $editor Name of the editing user
+     * @param string|null $latestId Version ID the editor was working on for conflict detection
+     * @param string|null $stored Path of an already stored upload, if any
+     * @param array<int|string, mixed>|null $storedPreviews Previews generated for the stored upload, if any
+     * @param UploadedFile|false|null $preview Preview upload, false to clear, null for auto-detect
+     * @return File Updated file with the new version as "latest"
+     */
+    protected static function applyFileSave( File $orig, array $input, string $editor, ?string $latestId = null,
+        ?string $stored = null, ?array $storedPreviews = null, UploadedFile|false|null $preview = null ) : File
+    {
+        $previews = $orig->latest?->data->previews ?? $orig->previews;
+        $path = $orig->latest?->data->path ?? $orig->path;
+        $previousEditor = $orig->latest->editor ?? '';
+        $versionId = ( new Version )->newUniqueId();
+
+        $file = clone $orig;
+
+        [$data, $dd] = self::merge( $orig, $input, $latestId );
+        $file->fill( $data );
+
+        $file->previews = self::checkPaths( $input['previews'] ?? null ) ?? $previews;
+        $file->path = $stored ?? self::checkPath( $input['path'] ?? null ) ?? $path;
+        $file->editor = $editor;
+
+        if( $file->path !== $path && !str_starts_with( $file->path, 'http' ) ) {
+            $file->mime = Utils::mimetype( $file->path );
+        }
+
+        try
+        {
+            if( $preview instanceof UploadedFile && $preview->isValid() && str_starts_with( $preview->getClientMimeType(), 'image/' ) ) {
+                $file->addPreviews( $preview );
+            } elseif( $storedPreviews !== null ) {
+                $file->previews = $storedPreviews;
+            } elseif( $file->path !== $path && str_starts_with( $file->path, 'http' ) && Utils::isValidUrl( $file->path ) ) {
+                $file->addPreviews( $file->path );
+            } elseif( $preview === false ) {
+                $file->previews = [];
+            }
+        }
+        catch( \Throwable $t )
+        {
+            $file->removePreviews();
+            throw $t;
+        }
+
+        $version = $file->versions()->forceCreate( [
+            'id' => $versionId,
+            'lang' => $file->lang,
+            'editor' => $editor,
+            'data' => $file->toArray(),
+        ] );
+
+        $orig->setRelation( 'latest', $version );
+        $orig->forceFill( ['latest_id' => $version->id] )->save();
+        $file->removeVersions();
+
+        if( $dd ) {
+            $orig->setChanged( [
+                'editor' => $previousEditor,
+                'latest' => ['id' => $versionId, 'data' => $file->toArray()],
+                'data' => $dd,
+            ] );
+        }
+
+        self::broadcast( $orig, $editor );
+
+        return $orig;
     }
 
 
@@ -711,58 +789,183 @@ class Resource
 
             /** @var Page $page */
             $page = Page::withTrashed()->with( 'latest' )->findOrFail( $id );
-            $versionId = ( new Version )->newUniqueId();
 
-            $data = array_diff_key( $input, array_flip( ['meta', 'config', 'content'] ) );
-            array_walk( $data, fn( &$v, $k ) => $v = !in_array( $k, ['related_id'] ) ? ( $v ?? '' ) : $v );
-
-            $aux = array_intersect_key( $input, array_flip( ['meta', 'config', 'content'] ) );
-
-            // Only cast what was actually provided. Omitted meta/config keys must stay
-            // absent so mergePage() preserves them from the latest version, exactly like
-            // content. Force-defaulting them to empty objects would overwrite the latest.
-            if( array_key_exists( 'meta', $aux ) ) {
-                $aux['meta'] = (object) $aux['meta'];
-            }
-
-            if( array_key_exists( 'config', $aux ) ) {
-                $aux['config'] = (object) $aux['config'];
-            }
-
-            $previousEditor = $page->latest->editor ?? '';
-
-            [$data, $aux, $diffs] = self::mergePage( $page, $data, $aux, $latestId, $user );
-
-            $data['domain'] ??= $page->domain ?? '';
-
-            $version = $page->versions()->forceCreate( [
-                'id' => $versionId,
-                'data' => $data,
-                'editor' => $editor,
-                'lang' => $input['lang'] ?? $page->latest?->lang,
-                'aux' => $aux,
-            ] );
-
-            $refs = self::refs( $aux );
-
-            $version->files()->attach( self::available( File::class, $refs['files'] ) );
-            $version->elements()->attach( self::available( Element::class, $refs['elements'] ) );
-
-            $page->setRelation( 'latest', $version );
-            $page->forceFill( ['latest_id' => $version->id] )->save();
-
-            if( $diffs ) {
-                $page->setChanged( [
-                    'editor' => $previousEditor,
-                    'latest' => ['id' => $versionId, 'data' => $data, 'aux' => $aux],
-                    ...$diffs,
-                ] );
-            }
-
-            self::broadcast( $page, $editor );
-
-            return $page->removeVersions();
+            return self::applyPageSave( $page, $input, $editor, $latestId, $user );
         } );
+    }
+
+
+    /**
+     * Applies the same partial input to multiple pages, optionally including all sub-pages.
+     *
+     * Every page gets its own new draft version (no publishing) and broadcasts a
+     * "saved" event so the page trees of other editors patch in place. Used for
+     * batch editing of non-unique page properties from the page list.
+     *
+     * @param array<string> $ids Page IDs to update
+     * @param array<string, mixed> $input Partial page input applied to every page
+     * @param Authenticatable|null $user Authenticated user for editor tracking
+     * @param bool $descendants TRUE to also update all sub-pages of the given pages
+     * @return Collection<int, Page> Updated pages
+     */
+    public static function savePages( array $ids, array $input, ?Authenticatable $user = null,
+        bool $descendants = false ) : Collection
+    {
+        if( empty( $ids ) ) {
+            return new Collection();
+        }
+
+        $input = Validation::page( $input, $user );
+        $editor = Utils::editor( $user );
+
+        return Utils::transaction( function() use ( $ids, $input, $user, $editor, $descendants ) {
+
+            $query = Page::withTrashed()->with( 'latest' );
+
+            if( $descendants )
+            {
+                $roots = Page::withTrashed()->whereIn( 'id', $ids )->get();
+
+                $query->where( function( $builder ) use ( $roots ) {
+                    foreach( $roots as $root ) {
+                        $builder->whereDescendantOrSelf( $root, 'or' );
+                    }
+                } );
+            }
+            else
+            {
+                $query->whereIn( 'id', $ids );
+            }
+
+            $pages = [];
+
+            foreach( $query->get() as $page )
+            {
+                if( !$page instanceof Page ) {
+                    continue;
+                }
+
+                self::applyPageSave( $page, $input, $editor, null, $user );
+                Cache::forget( Page::key( $page ) );
+
+                $pages[] = $page;
+            }
+
+            return new Collection( $pages );
+        } );
+    }
+
+
+    /**
+     * Creates a new version for an already loaded page from the given input.
+     *
+     * Shared by savePage() (single) and savePages() (bulk) so the versioning, merge
+     * and reference handling stays in one place. Must run inside a transaction.
+     *
+     * @param Page $page Page model with the "latest" relation loaded
+     * @param array<string, mixed> $input Validated page input
+     * @param string $editor Name of the editing user
+     * @param string|null $latestId Version ID the editor was working on for conflict detection
+     * @param Authenticatable|null $user Current user
+     * @return Page Updated page with the new version as "latest"
+     */
+    protected static function applyPageSave( Page $page, array $input, string $editor,
+        ?string $latestId = null, ?Authenticatable $user = null ) : Page
+    {
+        $versionId = ( new Version )->newUniqueId();
+
+        $data = array_diff_key( $input, array_flip( ['meta', 'config', 'content'] ) );
+        array_walk( $data, fn( &$v, $k ) => $v = !in_array( $k, ['related_id'] ) ? ( $v ?? '' ) : $v );
+
+        $aux = array_intersect_key( $input, array_flip( ['meta', 'config', 'content'] ) );
+
+        // Only cast what was actually provided. Omitted meta/config keys must stay
+        // absent so mergePage() preserves them from the latest version, exactly like
+        // content. Force-defaulting them to empty objects would overwrite the latest.
+        if( array_key_exists( 'meta', $aux ) ) {
+            $aux['meta'] = (object) $aux['meta'];
+        }
+
+        if( array_key_exists( 'config', $aux ) ) {
+            $aux['config'] = (object) $aux['config'];
+        }
+
+        $previousEditor = $page->latest->editor ?? '';
+
+        [$data, $aux, $diffs] = self::mergePage( $page, $data, $aux, $latestId, $user );
+
+        $data['domain'] ??= $page->domain ?? '';
+
+        $version = $page->versions()->forceCreate( [
+            'id' => $versionId,
+            'data' => $data,
+            'editor' => $editor,
+            'lang' => $input['lang'] ?? $page->latest?->lang,
+            'aux' => $aux,
+        ] );
+
+        $refs = self::refs( $aux );
+
+        $version->files()->attach( self::available( File::class, $refs['files'] ) );
+        $version->elements()->attach( self::available( Element::class, $refs['elements'] ) );
+
+        $page->setRelation( 'latest', $version );
+        $page->forceFill( ['latest_id' => $version->id] )->save();
+
+        if( $diffs ) {
+            $page->setChanged( [
+                'editor' => $previousEditor,
+                'latest' => ['id' => $versionId, 'data' => $data, 'aux' => $aux],
+                ...$diffs,
+            ] );
+        }
+
+        self::broadcast( $page, $editor );
+
+        return $page->removeVersions();
+    }
+
+
+    /**
+     * Creates a new version for an already loaded element from the given input.
+     *
+     * Shared by saveElement() (single) and saveElements() (bulk). Must run inside a transaction.
+     *
+     * @param Element $element Element model with the "latest" relation loaded
+     * @param array<string, mixed> $input Validated element input (merged with latest version)
+     * @param string $editor Name of the editing user
+     * @param string|null $latestId Version ID the editor was working on for conflict detection
+     * @return Element Updated element with the new version as "latest"
+     */
+    protected static function applyElementSave( Element $element, array $input, string $editor, ?string $latestId = null ) : Element
+    {
+        $versionId = ( new Version )->newUniqueId();
+        $previousEditor = $element->latest->editor ?? '';
+
+        [$data, $dd] = self::merge( $element, $input, $latestId );
+
+        $version = $element->versions()->forceCreate( [
+            'id' => $versionId,
+            'data' => array_map( fn( $v ) => $v ?? '', $data ),
+            'editor' => $editor,
+            'lang' => $input['lang'] ?? $element->latest?->lang,
+        ] );
+
+        $version->files()->attach( self::elementFiles( $data ) );
+        $element->setRelation( 'latest', $version );
+        $element->forceFill( ['latest_id' => $version->id] )->save();
+
+        if( $dd ) {
+            $element->setChanged( [
+                'editor' => $previousEditor,
+                'latest' => ['id' => $versionId, 'data' => $data],
+                'data' => $dd,
+            ] );
+        }
+
+        self::broadcast( $element, $editor );
+
+        return $element->removeVersions();
     }
 
 

@@ -15,9 +15,11 @@ import {
   mdiMenuDown,
   mdiSort,
   mdiClockOutline,
-  mdiRefresh
+  mdiRefresh,
+  mdiPencil
 } from '@mdi/js'
 import SchemaItems from './SchemaItems.vue'
+import EditBulkDialog from './EditBulkDialog.vue'
 import { useUserStore, useMessageStore, useChangeStore } from '../stores'
 import { debounce, frozenParse, safeParse, sanitize } from '../utils'
 import { setupEcho, cleanEcho } from '../echo'
@@ -70,6 +72,14 @@ const PURGE_ELEMENT = gql`
   }
 `
 
+const SAVE_ELEMENTS = gql`
+  mutation ($id: [ID!]!, $lang: String!) {
+    saveElements(id: $id, lang: $lang) {
+      id
+    }
+  }
+`
+
 const FETCH_ELEMENTS = gql`
   query (
     $filter: ElementFilter
@@ -115,7 +125,8 @@ const FETCH_ELEMENTS = gql`
 
 export default {
   components: {
-    SchemaItems
+    SchemaItems,
+    EditBulkDialog
   },
 
   props: {
@@ -137,6 +148,7 @@ export default {
       limit: 100,
       vschemas: false,
       actions: false,
+      editDialog: false,
       loading: true,
       trash: false,
       destroyed: false,
@@ -167,6 +179,7 @@ export default {
       mdiSort,
       mdiClockOutline,
       mdiRefresh,
+      mdiPencil,
       debounce
     }
   },
@@ -222,6 +235,10 @@ export default {
   computed: {
     canTrash() {
       return this.items.some((item) => this.checked.has(item.id) && !item.deleted_at)
+    },
+
+    checkedCount() {
+      return this.checked.size
     },
 
     isChecked() {
@@ -453,6 +470,46 @@ export default {
         })
     },
 
+    edit() {
+      this.actions = false
+      this.editDialog = true
+    },
+
+    save(lang) {
+      if (!this.user.can('element:save')) {
+        this.messages.add(this.$gettext('Permission denied'), 'error')
+        return
+      }
+
+      const list = this.items.filter((item) => this.checked.has(item.id))
+
+      if (!list.length || lang === null) {
+        return
+      }
+
+      this.$apollo
+        .mutate({
+          mutation: SAVE_ELEMENTS,
+          variables: {
+            id: list.map((item) => item.id),
+            lang: lang
+          }
+        })
+        .then((result) => {
+          if (result.errors) {
+            throw result.errors
+          }
+
+          this.checked = new Set()
+          this.invalidate()
+          this.search()
+        })
+        .catch((error) => {
+          this.messages.add(this.$gettext('Error saving shared element') + ':\n' + error, 'error')
+          this.$log(`ElementListItems::save(): Error saving shared elements`, list, lang, error)
+        })
+    },
+
     setSort(column, order) {
       this.sort = { column, order }
     },
@@ -636,6 +693,11 @@ export default {
               <v-list-item v-show="isChecked && user.can('element:publish')">
                 <v-btn :prepend-icon="mdiPublish" variant="text" @click="publish()">{{
                   $gettext('Publish')
+                }}</v-btn>
+              </v-list-item>
+              <v-list-item v-show="isChecked && user.can('element:save')">
+                <v-btn :prepend-icon="mdiPencil" variant="text" @click="edit()">{{
+                  $gettext('Edit properties')
                 }}</v-btn>
               </v-list-item>
               <v-list-item v-show="canTrash && user.can('element:drop')">
@@ -883,6 +945,8 @@ export default {
       </v-card>
     </v-dialog>
   </Teleport>
+
+  <EditBulkDialog v-model="editDialog" :count="checkedCount" @apply="save" />
 </template>
 
 <style scoped>

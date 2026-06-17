@@ -916,6 +916,78 @@ class GraphqlPageTest extends GraphqlTestAbstract
     }
 
 
+    public function testSavePages()
+    {
+        $pages = Page::whereNull( 'parent_id' )->take( 2 )->get();
+        $ids = $pages->map( fn( $page ) => '"' . $page->id . '"' )->implode( ', ' );
+
+        $response = $this->actingAs( $this->user )->graphQL( '
+            mutation {
+                savePages(id: [' . $ids . '], input: { status: 0, cache: 15 }) {
+                    id
+                }
+            }
+        ' );
+
+        $response->assertJsonCount( $pages->count(), 'data.savePages' );
+
+        foreach( $pages as $page )
+        {
+            $fresh = Page::findOrFail( $page->id );
+            $data = (array) $fresh->latest->data;
+
+            $this->assertEquals( 0, $data['status'] );
+            $this->assertEquals( 15, $data['cache'] );
+            $this->assertFalse( (bool) $fresh->latest->published );
+        }
+    }
+
+
+    public function testSavePagesDescendants()
+    {
+        $root = Page::where( 'tag', 'root' )->firstOrFail();
+        $expected = Page::withTrashed()
+            ->whereBetween( NestedSet::LFT, [$root->getLft(), $root->getRgt()] )
+            ->count();
+
+        $this->assertGreaterThan( 1, $expected );
+
+        $response = $this->actingAs( $this->user )->graphQL( '
+            mutation {
+                savePages(id: ["' . $root->id . '"], input: { cache: 30 }, descendants: true) {
+                    id
+                }
+            }
+        ' );
+
+        $response->assertJsonCount( $expected, 'data.savePages' );
+
+        foreach( $root->children as $child )
+        {
+            $data = (array) Page::findOrFail( $child->id )->latest->data;
+            $this->assertEquals( 30, $data['cache'] );
+        }
+    }
+
+
+    public function testSavePagesDenied()
+    {
+        $this->user->cmsperms = [];
+        $root = Page::where( 'tag', 'root' )->firstOrFail();
+
+        $response = $this->actingAs( $this->user )->graphQL( '
+            mutation {
+                savePages(id: ["' . $root->id . '"], input: { cache: 30 }) {
+                    id
+                }
+            }
+        ' );
+
+        $response->assertJsonPath( 'data.savePages', null );
+        $this->assertNotEmpty( $response->json( 'errors' ) );
+    }
+
+
     public function testDropPage()
     {
         $root = Page::where('tag', 'root')->firstOrFail();

@@ -13,9 +13,17 @@
  * in-place (and restoring it on the next mount).
  */
 
+import 'cypress-real-events'
 import { mount } from 'cypress/vue'
 import { h } from 'vue'
 import { createVuetify } from 'vuetify'
+
+// "ResizeObserver loop ..." is a benign browser notification, not a real error.
+Cypress.on('uncaught:exception', (err) => {
+  if (err.message.includes('ResizeObserver')) {
+    return false
+  }
+})
 import { VApp } from 'vuetify/components'
 import * as components from 'vuetify/components'
 import * as labsComponents from 'vuetify/labs/components'

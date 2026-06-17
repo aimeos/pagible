@@ -24,10 +24,12 @@ import {
   mdiArrowUp,
   mdiArrowRight,
   mdiArrowDown,
-  mdiClockOutline
+  mdiClockOutline,
+  mdiPencil
 } from '@mdi/js'
 import { Draggable } from '@he-tree/vue'
 import { dragContext } from '@he-tree/vue'
+import PageBulkDialog from './PageBulkDialog.vue'
 import { useAppStore, useUserStore, useLanguageStore, useMessageStore, useChangeStore } from '../stores'
 import { debounce, safeParse, sanitize } from '../utils'
 import { setupEcho, cleanEcho } from '../echo'
@@ -114,6 +116,14 @@ const SAVE_PAGE = gql`
   }
 `
 
+const SAVE_PAGES = gql`
+  mutation ($id: [ID!]!, $input: PageInput!, $descendants: Boolean) {
+    savePages(id: $id, input: $input, descendants: $descendants) {
+      id
+    }
+  }
+`
+
 const PAGE_FIELDS = `id
           parent_id
           created_at
@@ -193,7 +203,8 @@ const SEARCH_PAGES = gql`
 
 export default {
   components: {
-    Draggable
+    Draggable,
+    PageBulkDialog
   },
 
   props: {
@@ -208,6 +219,8 @@ export default {
       menu: {},
       items: [],
       actions: false,
+      propsDialog: false,
+      propsCount: 0,
       loading: true,
       checked: null,
       clip: null,
@@ -255,6 +268,7 @@ export default {
       mdiArrowRight,
       mdiArrowDown,
       mdiClockOutline,
+      mdiPencil,
       debounce
     }
   },
@@ -495,6 +509,12 @@ export default {
           this.messages.add(this.$gettext('Error trashing page') + ':\n' + error, 'error')
           this.$log(`PageList::drop(): Error trashing page`, list, error)
         })
+    },
+
+    editProps() {
+      this.propsCount = this.$refs.tree?.statsFlat.filter((stat) => stat._checked && stat.data?.id).length || 0
+      this.actions = false
+      this.propsDialog = true
     },
 
     expand() {
@@ -1023,6 +1043,55 @@ export default {
       })
     },
 
+    saveProps({ input, descendants }) {
+      if (!this.user.can('page:save')) {
+        this.messages.add(this.$gettext('Permission denied'), 'error')
+        return
+      }
+
+      const list = this.$refs.tree.statsFlat.filter((stat) => stat._checked && stat.data?.id)
+
+      if (!list.length || !Object.keys(input).length) {
+        return
+      }
+
+      this.$apollo
+        .mutate({
+          mutation: SAVE_PAGES,
+          variables: {
+            id: list.map((item) => item.data.id),
+            input: input,
+            descendants: descendants
+          }
+        })
+        .then((result) => {
+          if (result.errors) {
+            throw result.errors
+          }
+
+          const ids = new Set((result.data.savePages || []).map((item) => item.id))
+
+          this.$refs.tree?.statsFlat.forEach((stat) => {
+            if (ids.has(stat.data?.id)) {
+              for (const key in input) {
+                if (key in stat.data) {
+                  stat.data[key] = input[key]
+                }
+              }
+            }
+
+            stat._checked = false
+          })
+
+          this.checked = false
+          this.invalidate()
+        })
+        .catch((error) => {
+          this.messages.add(this.$gettext('Error saving page') + ':\n' + error, 'error')
+          this.$log(`PageList::saveProps(): Error saving pages`, list, input, error)
+        })
+    },
+
     search(page = 1, limit = 100) {
       if (!this.user.can('page:view')) {
         this.messages.add(this.$gettext('Permission denied'), 'error')
@@ -1263,6 +1332,11 @@ export default {
               <v-list-item v-if="isChecked && user.can('page:save')">
                 <v-btn :prepend-icon="mdiEyeOff" variant="text" @click="status(null, 0)">{{
                   $gettext('Disable')
+                }}</v-btn>
+              </v-list-item>
+              <v-list-item v-if="isChecked && user.can('page:save')">
+                <v-btn :prepend-icon="mdiPencil" variant="text" @click="editProps()">{{
+                  $gettext('Edit properties')
                 }}</v-btn>
               </v-list-item>
 
@@ -1649,6 +1723,8 @@ export default {
       variant="tonal"
     />
   </div>
+
+  <PageBulkDialog v-model="propsDialog" :count="propsCount" @apply="saveProps" />
 </template>
 
 <style>
