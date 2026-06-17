@@ -224,6 +224,9 @@ class Resource
 
         $name = is_string( $editor ) ? $editor : Utils::editor( $editor );
         $type = strtolower( class_basename( $model ) );
+        $id = (string) $model->id;
+        $versionId = (string) $version->id;
+        $data = (array) $version->data;
         $aux = $model instanceof Page ? (array) $version->aux : null;
 
         $published = (bool) $version->published;
@@ -231,13 +234,21 @@ class Resource
         $deletedAt = $model->deleted_at ? (string) $model->deleted_at : null;
         $updatedAt = $version->created_at ? (string) $version->created_at : null;
 
-        DB::afterCommit( function() use ( $type, $model, $version, $name, $aux, $published, $deletedAt, $publishAt, $updatedAt, $action ) {
+        DB::afterCommit( function() use ( $type, $id, $versionId, $name, $data, $aux, $published, $deletedAt, $publishAt, $updatedAt, $action ) {
             try {
                 // toOthers() excludes the browser tab that triggered the change via
                 // its X-Socket-ID header, so it doesn't re-apply its own edit. Changes
                 // from other clients of the same account (MCP, API, another tab, a
                 // scheduled job) carry no socket id and still reach the open editor.
-                broadcast( new ContentChanged( $type, (string) $model->id, (string) $version->id, $name, (array) $version->data, $aux, $published, $deletedAt, $publishAt, $updatedAt, $action ) )->toOthers();
+
+                // The list/tree views patch node metadata only, so the per-type broadcast
+                // omits the heavy content aux. An in-place 'saved' edit additionally sends
+                // the full aux to the open detail view on the per-item channel.
+                broadcast( new ContentChanged( $type, $id, $versionId, $name, $data, null, $published, $deletedAt, $publishAt, $updatedAt, $action, false ) )->toOthers();
+
+                if( $action === 'saved' ) {
+                    broadcast( new ContentChanged( $type, $id, $versionId, $name, $data, $aux, $published, $deletedAt, $publishAt, $updatedAt, $action, true ) )->toOthers();
+                }
             } catch( \Throwable $e ) {
                 report( $e );
             }
