@@ -20,15 +20,11 @@ final class SavePage
      */
     public function __invoke( $rootValue, array $args ) : Page
     {
-        $page = Resource::savePage(
+        return Resource::savePage(
             $args['id'],
             $args['input'] ?? [],
             Auth::user(),
             $args['latestId'] ?? null,
         );
-
-        Resource::broadcast( $page, Auth::user() );
-
-        return $page;
     }
 }

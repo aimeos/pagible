@@ -88,6 +88,56 @@ class Resource
 
 
     /**
+     * Persists a prepared file as a new media item with its first version.
+     *
+     * The caller fills the file's path, mime, previews, name, lang and
+     * description; this method stores it, creates the initial version, indexes
+     * it and broadcasts the change.
+     *
+     * @param File $file Prepared file model (path/mime/previews/name set)
+     * @param Authenticatable|null $user Authenticated user for editor tracking
+     * @return File
+     */
+    public static function addFile( File $file, ?Authenticatable $user = null ) : File
+    {
+        $editor = Utils::editor( $user );
+
+        return Utils::transaction( function() use ( $file, $editor ) {
+
+            $versionId = ( new Version )->newUniqueId();
+
+            $file->tenant_id ??= Tenancy::value();
+            $file->latest_id = $versionId;
+            $file->editor = $editor;
+            $file->save();
+
+            $version = $file->versions()->forceCreate( [
+                'id' => $versionId,
+                'lang' => $file->lang,
+                'editor' => $editor,
+                'data' => [
+                    'lang' => $file->lang,
+                    'name' => $file->name,
+                    'mime' => $file->mime,
+                    'path' => $file->path,
+                    'previews' => $file->previews,
+                    'description' => $file->description,
+                    'transcription' => $file->transcription,
+                ],
+            ] );
+
+            // Re-index with the latest version loaded so the draft (latest=true)
+            // row is written; on $file->save() above the version did not exist yet.
+            $file->setRelation( 'latest', $version )->searchable();
+
+            self::broadcast( $file, $editor, 'added' );
+
+            return $file;
+        } );
+    }
+
+
+    /**
      * Creates a new page with version and attached relations.
      *
      * Files and elements attached to the page are derived from the content, meta and config data.
@@ -224,6 +274,39 @@ class Resource
             }
 
             return $items;
+        } );
+    }
+
+
+    /**
+     * Moves a page to a new position in the tree and broadcasts the change.
+     *
+     * @param string $id Page UUID
+     * @param string|null $ref Sibling page ID to insert before
+     * @param string|null $parent Parent page ID to append to
+     * @param Authenticatable|null $user Authenticated user for editor tracking
+     * @param bool $root Whether to make the page a root node when no ref/parent given
+     * @return Page
+     * @throws \Illuminate\Database\Eloquent\ModelNotFoundException If page not found
+     */
+    public static function movePage( string $id, ?string $ref = null, ?string $parent = null,
+        ?Authenticatable $user = null, bool $root = true ) : Page
+    {
+        $editor = Utils::editor( $user );
+
+        return Utils::lockedTransaction( function() use ( $id, $ref, $parent, $editor, $root ) {
+
+            /** @var Page $page */
+            $page = Page::withTrashed()->findOrFail( $id );
+            $page->editor = $editor;
+
+            self::position( $page, $ref, $parent, $root );
+
+            Page::withoutSyncingToSearch( fn() => $page->save() );
+
+            self::broadcast( $page, $editor, 'moved' );
+
+            return $page;
         } );
     }
 
@@ -427,6 +510,8 @@ class Resource
                 ] );
             }
 
+            self::broadcast( $element, $editor );
+
             return $element->removeVersions();
         } );
     }
@@ -587,6 +672,8 @@ class Resource
                 ] );
             }
 
+            self::broadcast( $orig, $editor );
+
             return $orig;
         } );
     }
@@ -660,6 +747,8 @@ class Resource
                     ...$diffs,
                 ] );
             }
+
+            self::broadcast( $page, $editor );
 
             return $page->removeVersions();
         } );
