@@ -629,7 +629,7 @@ class Resource
             {
                 try {
                     $tmp->addPreviews( $upload );
-                    $storedPreviews = $tmp->previews;
+                    $storedPreviews = (array) $tmp->previews;
                 } catch( \Throwable $t ) {
                     $tmp->removePreviews();
                     throw $t;
