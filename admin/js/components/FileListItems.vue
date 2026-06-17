@@ -20,7 +20,7 @@ import {
   mdiRefresh,
   mdiPencil
 } from '@mdi/js'
-import LangDialog from './LangDialog.vue'
+import EditBulkDialog from './EditBulkDialog.vue'
 import { useAppStore, useUserStore, useMessageStore, useChangeStore } from '../stores'
 import { debounce, frozenParse, safeParse, sanitize, url, srcset } from '../utils'
 import { setupEcho, cleanEcho } from '../echo'
@@ -133,7 +133,7 @@ const FETCH_FILES = gql`
 
 export default {
   components: {
-    LangDialog
+    EditBulkDialog
   },
 
   props: {
@@ -155,7 +155,7 @@ export default {
       last: 1,
       limit: 100,
       actions: false,
-      langDialog: false,
+      editDialog: false,
       loading: true,
       vgrid: false,
       destroyed: false,
@@ -516,14 +516,12 @@ export default {
         })
     },
 
-    editLang() {
-      // open after the bulk menu's overlay has fully closed, otherwise the
-      // lingering menu overlay swallows the first click on the dialog's select
+    edit() {
       this.actions = false
-      setTimeout(() => { this.langDialog = true }, 250)
+      this.editDialog = true
     },
 
-    saveLang(lang) {
+    save(lang) {
       if (!this.user.can('file:save')) {
         this.messages.add(this.$gettext('Permission denied'), 'error')
         return
@@ -554,7 +552,7 @@ export default {
         })
         .catch((error) => {
           this.messages.add(this.$gettext('Error saving file') + ':\n' + error, 'error')
-          this.$log(`FileListItems::saveLang(): Error saving files`, list, lang, error)
+          this.$log(`FileListItems::save(): Error saving files`, list, lang, error)
         })
     },
 
@@ -739,7 +737,7 @@ export default {
                 }}</v-btn>
               </v-list-item>
               <v-list-item v-if="isChecked && user.can('file:save')">
-                <v-btn :prepend-icon="mdiPencil" variant="text" @click="editLang()">{{
+                <v-btn :prepend-icon="mdiPencil" variant="text" @click="edit()">{{
                   $gettext('Edit properties')
                 }}</v-btn>
               </v-list-item>
@@ -1064,7 +1062,7 @@ export default {
     />
   </div>
 
-  <LangDialog v-model="langDialog" :count="checkedCount" @apply="saveLang" />
+  <EditBulkDialog v-model="editDialog" :count="checkedCount" @apply="save" />
 </template>
 
 <style scoped>

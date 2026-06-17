@@ -431,7 +431,7 @@ describe('Element List', () => {
     cy.get('.v-card .v-list').should('contain', 'Edit properties')
   })
 
-  it('Edit properties opens the language dialog with Apply disabled', () => {
+  it('Edit properties opens the edit dialog with Apply disabled', () => {
     const el = makeElement()
     visitElements([el])
     cy.get('.items .v-list-item .item-check').first().click()

@@ -29,7 +29,7 @@ import {
 } from '@mdi/js'
 import { Draggable } from '@he-tree/vue'
 import { dragContext } from '@he-tree/vue'
-import PagePropsDialog from './PagePropsDialog.vue'
+import PageBulkDialog from './PageBulkDialog.vue'
 import { useAppStore, useUserStore, useLanguageStore, useMessageStore, useChangeStore } from '../stores'
 import { debounce, safeParse, sanitize } from '../utils'
 import { setupEcho, cleanEcho } from '../echo'
@@ -204,7 +204,7 @@ const SEARCH_PAGES = gql`
 export default {
   components: {
     Draggable,
-    PagePropsDialog
+    PageBulkDialog
   },
 
   props: {
@@ -514,9 +514,7 @@ export default {
     editProps() {
       this.propsCount = this.$refs.tree?.statsFlat.filter((stat) => stat._checked && stat.data?.id).length || 0
       this.actions = false
-      // open after the bulk menu's overlay has fully closed, otherwise the
-      // lingering menu overlay swallows the first click on the dialog's selects
-      setTimeout(() => { this.propsDialog = true }, 250)
+      this.propsDialog = true
     },
 
     expand() {
@@ -1726,7 +1724,7 @@ export default {
     />
   </div>
 
-  <PagePropsDialog v-model="propsDialog" :count="propsCount" @apply="saveProps" />
+  <PageBulkDialog v-model="propsDialog" :count="propsCount" @apply="saveProps" />
 </template>
 
 <style>

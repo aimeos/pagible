@@ -19,7 +19,7 @@ import {
   mdiPencil
 } from '@mdi/js'
 import SchemaItems from './SchemaItems.vue'
-import LangDialog from './LangDialog.vue'
+import EditBulkDialog from './EditBulkDialog.vue'
 import { useUserStore, useMessageStore, useChangeStore } from '../stores'
 import { debounce, frozenParse, safeParse, sanitize } from '../utils'
 import { setupEcho, cleanEcho } from '../echo'
@@ -126,7 +126,7 @@ const FETCH_ELEMENTS = gql`
 export default {
   components: {
     SchemaItems,
-    LangDialog
+    EditBulkDialog
   },
 
   props: {
@@ -148,7 +148,7 @@ export default {
       limit: 100,
       vschemas: false,
       actions: false,
-      langDialog: false,
+      editDialog: false,
       loading: true,
       trash: false,
       destroyed: false,
@@ -470,14 +470,12 @@ export default {
         })
     },
 
-    editLang() {
-      // open after the bulk menu's overlay has fully closed, otherwise the
-      // lingering menu overlay swallows the first click on the dialog's select
+    edit() {
       this.actions = false
-      setTimeout(() => { this.langDialog = true }, 250)
+      this.editDialog = true
     },
 
-    saveLang(lang) {
+    save(lang) {
       if (!this.user.can('element:save')) {
         this.messages.add(this.$gettext('Permission denied'), 'error')
         return
@@ -508,7 +506,7 @@ export default {
         })
         .catch((error) => {
           this.messages.add(this.$gettext('Error saving shared element') + ':\n' + error, 'error')
-          this.$log(`ElementListItems::saveLang(): Error saving shared elements`, list, lang, error)
+          this.$log(`ElementListItems::save(): Error saving shared elements`, list, lang, error)
         })
     },
 
@@ -698,7 +696,7 @@ export default {
                 }}</v-btn>
               </v-list-item>
               <v-list-item v-show="isChecked && user.can('element:save')">
-                <v-btn :prepend-icon="mdiPencil" variant="text" @click="editLang()">{{
+                <v-btn :prepend-icon="mdiPencil" variant="text" @click="edit()">{{
                   $gettext('Edit properties')
                 }}</v-btn>
               </v-list-item>
@@ -948,7 +946,7 @@ export default {
     </v-dialog>
   </Teleport>
 
-  <LangDialog v-model="langDialog" :count="checkedCount" @apply="saveLang" />
+  <EditBulkDialog v-model="editDialog" :count="checkedCount" @apply="save" />
 </template>
 
 <style scoped>
