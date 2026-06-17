@@ -359,6 +359,48 @@ class GraphqlElementTest extends GraphqlTestAbstract
     }
 
 
+    public function testSaveElements()
+    {
+        $elements = Element::get();
+        $ids = $elements->map( fn( $element ) => '"' . $element->id . '"' )->implode( ', ' );
+
+        $response = $this->actingAs( $this->user )->graphQL( '
+            mutation {
+                saveElements(id: [' . $ids . '], lang: "de") {
+                    id
+                }
+            }
+        ' );
+
+        $response->assertJsonCount( $elements->count(), 'data.saveElements' );
+
+        foreach( $elements as $element )
+        {
+            $fresh = Element::findOrFail( $element->id );
+            $this->assertEquals( 'de', $fresh->latest->lang );
+            $this->assertFalse( (bool) $fresh->latest->published );
+        }
+    }
+
+
+    public function testSaveElementsDenied()
+    {
+        $this->user->cmsperms = [];
+        $element = Element::firstOrFail();
+
+        $response = $this->actingAs( $this->user )->graphQL( '
+            mutation {
+                saveElements(id: ["' . $element->id . '"], lang: "de") {
+                    id
+                }
+            }
+        ' );
+
+        $response->assertJsonPath( 'data.saveElements', null );
+        $this->assertNotEmpty( $response->json( 'errors' ) );
+    }
+
+
     public function testAddElementBadType()
     {
         $response = $this->actingAs($this->user)->graphQL('

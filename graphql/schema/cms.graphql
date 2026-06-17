@@ -92,6 +92,10 @@ extend type Mutation {
   savePage(id: ID!, input: PageInput!, latestId: ID): Page
     @guard @cmsPermission(action: "page:save") @throttle(name: "cms-admin")
 
+  "Apply the same values to several pages at once, optionally including all sub-pages"
+  savePages(id: [ID!]!, input: PageInput!, descendants: Boolean = false): [Page!]!
+    @guard @cmsPermission(action: "page:save") @throttle(name: "cms-admin")
+
   "Delete an existing page"
   dropPage(id: [ID!]!): [Page]!
     @guard @cmsPermission(action: "page:drop") @throttle(name: "cms-admin")
@@ -117,6 +121,10 @@ extend type Mutation {
   saveElement(id: ID!, input: ElementInput!, latestId: ID): Element
     @guard @cmsPermission(action: "element:save") @throttle(name: "cms-admin")
 
+  "Apply the same language to several shared content elements at once"
+  saveElements(id: [ID!]!, lang: String!): [Element!]!
+    @guard @cmsPermission(action: "element:save") @throttle(name: "cms-admin")
+
   "Delete an existing shared content element"
   dropElement(id: [ID!]!): [Element]!
     @guard @cmsPermission(action: "element:drop") @throttle(name: "cms-admin")
@@ -140,6 +148,10 @@ extend type Mutation {
 
   "Update an existing file"
   saveFile(id: ID!, input: FileInput!, file: Upload, preview: RemoveableUpload, latestId: ID): File
+    @guard @cmsPermission(action: "file:save") @throttle(name: "cms-admin")
+
+  "Apply the same language to several files at once"
+  saveFiles(id: [ID!]!, lang: String!): [File!]!
     @guard @cmsPermission(action: "file:save") @throttle(name: "cms-admin")
 
   "Delete an existing file"
