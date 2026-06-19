@@ -409,6 +409,49 @@ class GraphqlFileTest extends GraphqlTestAbstract
     }
 
 
+    public function testSaveFiles()
+    {
+        $files = File::get();
+        $ids = $files->map( fn( $file ) => '"' . $file->id . '"' )->implode( ', ' );
+
+        $response = $this->actingAs( $this->user )->graphQL( '
+            mutation {
+                saveFiles(id: [' . $ids . '], lang: "de") {
+                    id
+                }
+            }
+        ' );
+
+        $response->assertJsonCount( $files->count(), 'data.saveFiles' );
+        $this->assertGreaterThan( 1, $files->count() );
+
+        foreach( $files as $file )
+        {
+            $fresh = File::findOrFail( $file->id );
+            $this->assertEquals( 'de', $fresh->latest->lang );
+            $this->assertFalse( (bool) $fresh->latest->published );
+        }
+    }
+
+
+    public function testSaveFilesDenied()
+    {
+        $this->user->cmsperms = [];
+        $file = File::firstOrFail();
+
+        $response = $this->actingAs( $this->user )->graphQL( '
+            mutation {
+                saveFiles(id: ["' . $file->id . '"], lang: "de") {
+                    id
+                }
+            }
+        ' );
+
+        $response->assertJsonPath( 'data.saveFiles', null );
+        $this->assertNotEmpty( $response->json( 'errors' ) );
+    }
+
+
     public function testDropFile()
     {
         $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
