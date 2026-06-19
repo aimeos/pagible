@@ -10,8 +10,9 @@ import { useDirtyStore, useSideStore, useUserStore, useMessageStore, useViewStac
 import { applyResult, hasUnresolved } from '../merge'
 import { publishDate, publishItem } from '../publish'
 import { defineAsyncComponent, markRaw } from 'vue'
-import { setupEcho, cleanEcho } from '../echo'
-import { frozenParse, safeParse, sanitize } from '../utils'
+import { setupReload, cleanEcho } from '../echo'
+import { reloadVersion } from '../version'
+import { frozenParse, safeParse } from '../utils'
 
 const ChangesDialog = defineAsyncComponent(() => import('../components/ChangesDialog.vue'))
 const HistoryDialog = defineAsyncComponent(() => import('../components/HistoryDialog.vue'))
@@ -146,48 +147,13 @@ export default {
       return
     }
 
-    this.$apollo
-      .query({
-        query: FETCH_FILE,
-        fetchPolicy: 'no-cache',
-        variables: {
-          id: this.item.id
-        }
-      })
-      .then((result) => {
-        if (this.destroyed) return
+    this.reload().then((ok) => {
+      if (!ok) return
 
-        if (result.errors || !result.data.file) {
-          throw result
-        }
-
-        if (!result.data.file.latest) {
-          throw new Error('No version data available')
-        }
-
-        const latest = result.data.file.latest
-
-        this.reset()
-        Object.assign(this.item, safeParse(latest?.data))
-        this.item.latestId = latest?.id
-        this.item.published = latest?.published
-        this.item.updated_at = latest?.created_at
-        this.item.editor = latest?.editor
-
-        setupEcho(this, 'file', this.item.id, (event) => {
-          if (!this.dirty && this.user.can('file:view')) {
-            this.item.latestId = event.latest_id
-            Object.assign(this.item, sanitize(event.data))
-          }
-        })
-
-        this.loading = false
-      })
-      .catch((error) => {
-        this.loading = false
-        this.messages.add(this.$gettext('Error fetching file') + ':\n' + error, 'error')
-        this.$log(`FileDetail::created(): Error fetching file`, error)
-      })
+      // reload the open file when its own item is saved elsewhere or after a reconnect that may
+      // have missed a save, unless the user has unsaved edits
+      setupReload(this, 'file', this.item.id, () => this.reload(), () => !this.dirty && this.user.can('file:view'))
+    })
   },
 
   beforeUnmount() {
@@ -200,6 +166,20 @@ export default {
   },
 
   methods: {
+    // loads the latest version into the open editor; resolves true on success so the caller
+    // can defer the websocket subscription until the initial load completed
+    reload() {
+      return reloadVersion(this, FETCH_FILE, 'file', this.$gettext('Error fetching file'), (file) => {
+        const latest = file.latest
+
+        Object.assign(this.item, safeParse(latest?.data))
+        this.item.latestId = latest?.id
+        this.item.published = latest?.published
+        this.item.updated_at = latest?.created_at
+        this.item.editor = latest?.editor
+      }, () => !this.dirty)
+    },
+
     apply(changes) {
       Object.assign(this.item, changes)
       this.dirty = true

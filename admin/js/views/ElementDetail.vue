@@ -9,9 +9,10 @@ import ElementDetailItem from '../components/ElementDetailItem.vue'
 import { useDirtyStore, useSideStore, useUserStore, useMessageStore, useViewStack, useChangeStore } from '../stores'
 import { applyResult, hasUnresolved } from '../merge'
 import { publishDate, publishItem } from '../publish'
-import { setupEcho, cleanEcho } from '../echo'
+import { setupReload, cleanEcho } from '../echo'
+import { reloadVersion } from '../version'
 import { defineAsyncComponent, markRaw } from 'vue'
-import { frozenParse, itemTitle, safeParse, sanitize } from '../utils'
+import { frozenParse, itemTitle, safeParse } from '../utils'
 
 const ChangesDialog = defineAsyncComponent(() => import('../components/ChangesDialog.vue'))
 const HistoryDialog = defineAsyncComponent(() => import('../components/HistoryDialog.vue'))
@@ -151,58 +152,13 @@ export default {
       return
     }
 
-    this.$apollo
-      .query({
-        query: FETCH_ELEMENT,
-        fetchPolicy: 'no-cache',
-        variables: {
-          id: this.item.id
-        }
-      })
-      .then((result) => {
-        if (this.destroyed) return
+    this.reload().then((ok) => {
+      if (!ok) return
 
-        if (result.errors || !result.data.element) {
-          throw result
-        }
-
-        if (!result.data.element.latest) {
-          throw new Error('No version data available')
-        }
-
-        const files = []
-        const assets = {}
-        const element = result.data.element
-
-        this.reset()
-        Object.assign(this.item, safeParse(element.latest?.data))
-        this.item.published = element.latest?.published
-        this.item.editor = element.latest?.editor
-        this.item.updated_at = element.latest?.created_at
-        this.latestId = element.latest?.id
-
-        for (const entry of element.latest?.files || element.files || []) {
-          assets[entry.id] = { ...entry, previews: frozenParse(entry.previews) }
-          files.push(entry.id)
-        }
-
-        this.assets = markRaw(assets)
-        this.item.files = files
-
-        setupEcho(this, 'element', this.item.id, (event) => {
-          if (!this.dirty && this.user.can('element:view')) {
-            this.latestId = event.latest_id
-            Object.assign(this.item, sanitize(event.data))
-          }
-        })
-
-        this.loading = false
-      })
-      .catch((error) => {
-        this.loading = false
-        this.messages.add(this.$gettext('Error fetching element') + ':\n' + error, 'error')
-        this.$log(`ElementDetail::watch(item): Error fetching element`, error)
-      })
+      // reload the open element when its own item is saved elsewhere or after a reconnect that
+      // may have missed a save, unless the user has unsaved edits
+      setupReload(this, 'element', this.item.id, () => this.reload(), () => !this.dirty && this.user.can('element:view'))
+    })
   },
 
   beforeUnmount() {
@@ -247,6 +203,29 @@ export default {
   },
 
   methods: {
+    // loads the latest version into the open editor; resolves true on success so the caller
+    // can defer the websocket subscription until the initial load completed
+    reload() {
+      return reloadVersion(this, FETCH_ELEMENT, 'element', this.$gettext('Error fetching element'), (element) => {
+        Object.assign(this.item, safeParse(element.latest?.data))
+        this.item.published = element.latest?.published
+        this.item.editor = element.latest?.editor
+        this.item.updated_at = element.latest?.created_at
+        this.latestId = element.latest?.id
+
+        const files = []
+        const assets = {}
+
+        for (const entry of element.latest?.files || element.files || []) {
+          assets[entry.id] = { ...entry, previews: frozenParse(entry.previews) }
+          files.push(entry.id)
+        }
+
+        this.assets = markRaw(assets)
+        this.item.files = files
+      }, () => !this.dirty)
+    },
+
     apply(changes) {
       Object.assign(this.item, changes)
       this.dirty = true

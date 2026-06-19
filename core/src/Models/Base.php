@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Str;
+use Aimeos\Cms\Concerns\Broadcasts;
 use Aimeos\Cms\DB;
 
 
@@ -32,6 +33,7 @@ use Aimeos\Cms\DB;
  */
 abstract class Base extends Model
 {
+    use Broadcasts;
     use HasUuids;
 
     private static ?bool $isSqlsrv = null;

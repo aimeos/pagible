@@ -45,6 +45,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Broadcasting authorization middleware
+    |--------------------------------------------------------------------------
+    |
+    | Middleware applied to the "/broadcasting/auth" channel-authorization route. Throttled by
+    | default; multi-tenant setups (e.g. stancl/tenancy) must also add their tenancy-init
+    | middleware here so Tenancy::value() resolves when channels are authorized.
+    |
+    */
+    'broadcast-middleware' => ['web', 'auth', 'throttle:cms-admin'],
+
+    /*
+    |--------------------------------------------------------------------------
     | Database connection
     |--------------------------------------------------------------------------
     |
