@@ -31,8 +31,8 @@ import { Draggable } from '@he-tree/vue'
 import { dragContext } from '@he-tree/vue'
 import PageBulkDialog from './PageBulkDialog.vue'
 import { useAppStore, useUserStore, useLanguageStore, useMessageStore, useChangeStore } from '../stores'
-import { debounce, safeParse, sanitize } from '../utils'
-import { setupEcho, cleanEcho } from '../echo'
+import { debounce, safeParse } from '../utils'
+import { setupEcho, cleanEcho, listEcho } from '../echo'
 
 const ADD_PAGE = gql`
   mutation ($input: PageInput!) {
@@ -288,25 +288,7 @@ export default {
       // the background while the editor is in a detail or another view and is
       // up to date when they return. The tab that made the change is excluded
       // server-side via toOthers(), so no editor filter is needed here
-      setupEcho(this, 'page', null, (event) => {
-        // added/removed/moved change the tree structure; flag it so the user can
-        // reload when ready instead of disrupting their view; in-place edits patch
-        if (event.action !== 'saved') {
-          this.outdated = true
-          return
-        }
-
-        this.patch({
-          ...sanitize(event.data),
-          id: event.id,
-          published: event.published,
-          deleted_at: event.deleted_at,
-          publish_at: event.publish_at,
-          updated_at: event.updated_at,
-          editor: event.editor,
-          latest_id: event.latest_id
-        })
-      })
+      setupEcho(this, 'page', (event, name) => listEcho(this, event, name))
     }
   },
 

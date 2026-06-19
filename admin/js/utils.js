@@ -16,16 +16,17 @@ export const MEDIA_MIME_FILTER = { mime: ['image/gif', 'image/jpeg', 'image/png'
 const UNSAFE_KEYS = ['__proto__', 'constructor', 'prototype']
 
 /**
- * Creates a debounced version of a function that returns a Promise
+ * Creates a debounced version of a function that returns a Promise. The returned function
+ * exposes a cancel() method that clears any pending invocation.
  *
  * @param {Function} func Function to debounce
  * @param {number} delay Delay in milliseconds
- * @returns {Function} Debounced function that returns a Promise
+ * @returns {Function} Debounced function (with a cancel() method) that returns a Promise
  */
 export function debounce(func, delay) {
   let timer
 
-  return function (...args) {
+  function debounced(...args) {
     return new Promise((resolve, reject) => {
       const context = this
 
@@ -39,6 +40,10 @@ export function debounce(func, delay) {
       }, delay)
     })
   }
+
+  debounced.cancel = () => clearTimeout(timer)
+
+  return debounced
 }
 
 /**

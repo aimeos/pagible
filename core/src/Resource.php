@@ -7,7 +7,6 @@
 
 namespace Aimeos\Cms;
 
-use Aimeos\Cms\Events\ContentChanged;
 use Aimeos\Cms\Models\Base;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
@@ -80,7 +79,7 @@ class Resource
             // row is written; on $element->save() above the version did not exist yet.
             $element->setRelation( 'latest', $version )->searchable();
 
-            self::broadcast( $element, $editor, 'added' );
+            $element->announce( 'added', $editor );
 
             return $element;
         } );
@@ -130,7 +129,7 @@ class Resource
             // row is written; on $file->save() above the version did not exist yet.
             $file->setRelation( 'latest', $version )->searchable();
 
-            self::broadcast( $file, $editor, 'added' );
+            $file->announce( 'added', $editor );
 
             return $file;
         } );
@@ -202,56 +201,9 @@ class Resource
             // row is written; on $page->save() above the version did not exist yet.
             $page->setRelation( 'latest', $version )->searchable();
 
-            self::broadcast( $page, $editor, 'added' );
+            $page->announce( 'added', $editor );
 
             return $page;
-        } );
-    }
-
-
-    /**
-     * Dispatches a broadcast event after the current transaction commits.
-     *
-     * @param Base $model Model with latest relation loaded
-     * @param Authenticatable|string|null $editor Authenticated user or editor name
-     * @param string $action What happened: 'saved' (in-place edit), 'added', 'removed' or 'moved'
-     */
-    public static function broadcast( Base $model, Authenticatable|string|null $editor = null, string $action = 'saved' ) : void
-    {
-        if( !config( 'cms.broadcast' ) || !( $version = $model->latest ) ) {
-            return;
-        }
-
-        $name = is_string( $editor ) ? $editor : Utils::editor( $editor );
-        $type = strtolower( class_basename( $model ) );
-        $id = (string) $model->id;
-        $versionId = (string) $version->id;
-        $data = (array) $version->data;
-        $aux = $model instanceof Page ? (array) $version->aux : null;
-
-        $published = (bool) $version->published;
-        $publishAt = $version->publish_at;
-        $deletedAt = $model->deleted_at ? (string) $model->deleted_at : null;
-        $updatedAt = $version->created_at ? (string) $version->created_at : null;
-
-        DB::afterCommit( function() use ( $type, $id, $versionId, $name, $data, $aux, $published, $deletedAt, $publishAt, $updatedAt, $action ) {
-            try {
-                // toOthers() excludes the browser tab that triggered the change via
-                // its X-Socket-ID header, so it doesn't re-apply its own edit. Changes
-                // from other clients of the same account (MCP, API, another tab, a
-                // scheduled job) carry no socket id and still reach the open editor.
-
-                // The list/tree views patch node metadata only, so the per-type broadcast
-                // omits the heavy content aux. An in-place 'saved' edit additionally sends
-                // the full aux to the open detail view on the per-item channel.
-                broadcast( new ContentChanged( $type, $id, $versionId, $name, $data, null, $published, $deletedAt, $publishAt, $updatedAt, $action, false ) )->toOthers();
-
-                if( $action === 'saved' ) {
-                    broadcast( new ContentChanged( $type, $id, $versionId, $name, $data, $aux, $published, $deletedAt, $publishAt, $updatedAt, $action, true ) )->toOthers();
-                }
-            } catch( \Throwable $e ) {
-                report( $e );
-            }
         } );
     }
 
@@ -281,7 +233,7 @@ class Resource
                     Cache::forget( Page::key( $item ) );
                 }
 
-                self::broadcast( $item, $editor );
+                $item->announce( 'dropped', $editor );
             }
 
             return $items;
@@ -315,7 +267,7 @@ class Resource
 
             Page::withoutSyncingToSearch( fn() => $page->save() );
 
-            self::broadcast( $page, $editor, 'moved' );
+            $page->announce( 'moved', $editor );
 
             return $page;
         } );
@@ -378,7 +330,7 @@ class Resource
                     }
                 }
 
-                self::broadcast( $item, $editor );
+                $item->announce( 'published', $editor );
             }
 
             return $items;
@@ -410,7 +362,7 @@ class Resource
 
             foreach( $items as $item )
             {
-                self::broadcast( $item, $editor, 'removed' );
+                $item->announce( 'purged', $editor );
 
                 if( $item instanceof File ) {
                     $item->purge();
@@ -455,7 +407,7 @@ class Resource
                 $item->editor = $editor;
                 $item->restore();
 
-                self::broadcast( $item, $editor );
+                $item->announce( 'restored', $editor );
             }
 
             return $items;
@@ -762,7 +714,7 @@ class Resource
             ] );
         }
 
-        self::broadcast( $orig, $editor );
+        $orig->announce( 'saved', $editor );
 
         return $orig;
     }
@@ -920,7 +872,7 @@ class Resource
             ] );
         }
 
-        self::broadcast( $page, $editor );
+        $page->announce( 'saved', $editor );
 
         return $page->removeVersions();
     }
@@ -963,7 +915,7 @@ class Resource
             ] );
         }
 
-        self::broadcast( $element, $editor );
+        $element->announce( 'saved', $editor );
 
         return $element->removeVersions();
     }
