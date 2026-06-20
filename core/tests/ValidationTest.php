@@ -113,23 +113,43 @@ class ValidationTest extends CoreTestAbstract
     }
 
 
-    public function testPageDerivesContentFiles()
+    public function testContentKeepsReferenceFiles()
+    {
+        $result = Validation::content( [
+            ['type' => 'reference', 'refid' => 'el-1', 'files' => ['file-1']],
+        ] );
+
+        $this->assertEquals( ['file-1'], $result[0]->files );
+    }
+
+
+    public function testPageDerivesFiles()
     {
         $result = Validation::page( ['content' => [
-            (object) ['type' => 'image', 'data' => (object) ['file' => (object) ['type' => 'file', 'id' => 'file-1']]],
+            ['type' => 'image', 'data' => ['file' => ['type' => 'file', 'id' => 'file-1']]],
         ]] );
 
         $this->assertEquals( ['file-1'], $result['content'][0]->files );
     }
 
 
-    public function testPageRemovesStaleContentFiles()
+    public function testPageClearsStaleFiles()
     {
         $result = Validation::page( ['content' => [
-            (object) ['type' => 'heading', 'data' => (object) ['title' => 'Test', 'level' => '2'], 'files' => ['stale']],
+            ['type' => 'heading', 'data' => ['title' => 'Test', 'level' => '2'], 'files' => ['stale-1']],
         ]] );
 
         $this->assertObjectNotHasProperty( 'files', $result['content'][0] );
+    }
+
+
+    public function testPageKeepsReferenceFiles()
+    {
+        $result = Validation::page( ['content' => [
+            ['type' => 'reference', 'refid' => 'el-1', 'files' => ['file-1']],
+        ]] );
+
+        $this->assertEquals( ['file-1'], $result['content'][0]->files );
     }
 
 

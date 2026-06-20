@@ -15,7 +15,8 @@ class Validation
 {
     /**
      * Sanitizes page input: validates URL, strips config without permission,
-     * sanitizes HTML content, validates content/meta/config schemas.
+     * sanitizes HTML content, populates per-element file lists, validates
+     * content/meta/config schemas.
      *
      * @param array<string, mixed> $input Page input data
      * @param Authenticatable|null $user Authenticated user
@@ -48,14 +49,19 @@ class Validation
                 }
 
                 // Keep the per-element "files" list in sync with the file references in the
-                // element data for every writer (admin, GraphQL, MCP/LLM), so readers like
-                // the blog list resolve images regardless of how the content was created.
-                if( $files = self::fileIds( $item->data ?? [] ) ) {
-                    $item->files = $files;
-                } else {
-                    unset( $item->files );
+                // element data, so readers resolving files from it (JSON:API, blog list) work
+                // regardless of how the content was saved.
+                if( ( $item->type ?? null ) !== 'reference' )
+                {
+                    if( $files = self::fileIds( $item->data ?? null ) ) {
+                        $item->files = $files;
+                    } else {
+                        unset( $item->files );
+                    }
                 }
             }
+
+            unset( $item );
 
             self::validateContent( $input['content'] );
         }
@@ -113,7 +119,11 @@ class Validation
                 $entry['refid'] = $item['refid'];
             }
 
-            if( $files = self::fileIds( $entry['data'] ) ) {
+            if( $type === 'reference' ) {
+                if( !empty( $item['files'] ) ) {
+                    $entry['files'] = array_values( (array) $item['files'] );
+                }
+            } elseif( $files = self::fileIds( $entry['data'] ) ) {
                 $entry['files'] = $files;
             }
 
