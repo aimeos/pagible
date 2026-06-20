@@ -48,6 +48,7 @@
 				"themes/glass/src/",
 				"themes/pagible/src/",
 				"themes/paper/src/",
+				"themes/bold/src/",
 				"themes/premium/src/"
 			],
 			"Tests\\": [

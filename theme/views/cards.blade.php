@@ -15,7 +15,7 @@
 			<h3 class="title">{{ $card->title ?? '' }}</h3>
 			@if($card->text ?? null)
 				<div class="text">
-					@text($card->text)
+					@markdown($card->text)
 				</div>
 			@endif
 		</div>
