@@ -355,13 +355,19 @@ class Page extends Base
 
 
     /**
-     * Tests if node has children.
+     * Returns the number of descendants below this node.
      *
-     * @return bool TRUE if node has children, FALSE if not
+     * Derived from the nested set bounds without a query: the range [lft, rgt] spans the node
+     * and all its descendants at two slots each, so the count excludes the node itself. Zero for
+     * a leaf, so it still reads as "no children" where a boolean was expected, while a recursive
+     * bulk edit can size itself ("apply to N pages") from it. An unsaved node (null bounds) has no
+     * descendants - the ?? 0 keeps that case from doing null arithmetic.
+     *
+     * @return int Number of descendant pages
      */
-    public function getHasAttribute() : bool
+    public function getHasAttribute() : int
     {
-        return $this->getRgt() > $this->getLft() + 1;
+        return max( 0, intdiv( ( $this->getRgt() ?? 0 ) - ( $this->getLft() ?? 0 ) - 1, 2 ) );
     }
 
 
