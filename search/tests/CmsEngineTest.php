@@ -39,7 +39,12 @@ class CmsEngineTest extends SearchTestAbstract
     protected function setUp(): void
     {
         parent::setUp();
+        $this->waitIndex();
+    }
 
+
+    protected function waitIndex()
+    {
         $conn = DB::connection( config( 'cms.db' ) );
 
         if( $conn->getDriverName() === 'sqlsrv' )
@@ -407,6 +412,9 @@ class CmsEngineTest extends SearchTestAbstract
         // the draft (latest=true) index row was refreshed with the new content
         $draft = DB::connection( config( 'cms.db' ) )->table( 'cms_index' )
             ->where( 'indexable_id', $page->id )->where( 'latest', true )->value( 'content' );
+
+        $this->waitIndex();
+
         $this->assertNotNull( $draft );
         $this->assertStringContainsString( 'ztqbulkterm', $draft );
 
@@ -432,6 +440,7 @@ class CmsEngineTest extends SearchTestAbstract
 
         $draft = DB::connection( config( 'cms.db' ) )->table( 'cms_index' )
             ->where( 'indexable_id', $page->id )->where( 'latest', true )->value( 'content' );
+
         $this->assertNotNull( $draft );
         $this->assertStringContainsString( 'zttrashterm', $draft );
     }
