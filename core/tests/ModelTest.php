@@ -11,6 +11,7 @@ use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Models\Version;
+use Aimeos\Nestedset\NestedSet;
 
 
 class ModelTest extends CoreTestAbstract
@@ -34,6 +35,21 @@ class ModelTest extends CoreTestAbstract
 
         $this->assertStringContainsString( 'Disabled', (string) $page );
         $this->assertStringNotContainsString( 'Welcome', (string) $page );
+    }
+
+
+    public function testPageHasDescendantCount(): void
+    {
+        $page = new Page();
+
+        // leaf: rgt = lft + 1, no descendants
+        $page->setAttribute( NestedSet::LFT, 2 );
+        $page->setAttribute( NestedSet::RGT, 3 );
+        $this->assertSame( 0, $page->has );
+
+        // subtree spanning 3 descendants: (9 - 2 - 1) / 2
+        $page->setAttribute( NestedSet::RGT, 9 );
+        $this->assertSame( 3, $page->has );
     }
 
 
