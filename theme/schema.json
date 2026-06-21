@@ -398,9 +398,23 @@
                 "title": {
                     "type": "string"
                 },
-                "action": {
-                    "type": "hidden",
-                    "value": "\\Aimeos\\Cms\\Actions\\Blog"
+                "layout": {
+                    "type": "select",
+                    "default": "default",
+                    "options": [
+                        {
+                            "value": "default",
+                            "label": "Default"
+                        },
+                        {
+                            "value": "cards",
+                            "label": "Cards"
+                        },
+                        {
+                            "value": "list",
+                            "label": "List"
+                        }
+                    ]
                 },
                 "parent-page": {
                     "type": "autocomplete",
@@ -432,6 +446,10 @@
                     "min": 1,
                     "max": 100,
                     "default": 10
+                },
+                "action": {
+                    "type": "hidden",
+                    "value": "\\Aimeos\\Cms\\Actions\\Blog"
                 }
             }
         },
