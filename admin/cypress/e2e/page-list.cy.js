@@ -35,7 +35,7 @@ function makePage(overrides = {}) {
     created_at: '2026-01-01 00:00:00',
     deleted_at: null,
     editor: 'admin@example.com',
-    has: false,
+    has: 0,
     latest: {
       id: '10',
       published: true,
@@ -77,7 +77,7 @@ function pagesResponse(pages) {
  * @param {Array}             options.pages       – array of page objects for the `pages` query
  * @param {object|null}       options.addPage     – return value for `addPage` mutation
  * @param {object|null}       options.savePage    – return value for `savePage` mutation
- * @param {Array|null}        options.savePages   – return value for `savePages` mutation
+ * @param {Array|null}        options.bulkPage   – return value for `bulkPage` mutation
  * @param {object|null}       options.movePage    – return value for `movePage` mutation
  * @param {object|null}       options.dropPage    – return value for `dropPage` mutation
  * @param {object|null}       options.keepPage    – return value for `keepPage` mutation
@@ -90,7 +90,7 @@ function setupIntercept({
   pages = [],
   addPage = null,
   savePage = null,
-  savePages = null,
+  bulkPage = null,
   movePage = null,
   dropPage = null,
   keepPage = null,
@@ -115,9 +115,10 @@ function setupIntercept({
       if (query.includes('addPage')) {
         return { data: { addPage: addPage || { id: '99' } } }
       }
-      if (query.includes('savePages')) {
+      if (query.includes('bulkPage')) {
         const ids = op.variables?.id || ['1']
-        return { data: { savePages: savePages || ids.map((id) => ({ id })) } }
+        // data and latest are JSON scalar strings
+        return { data: { bulkPage: bulkPage || { ids, latest: '{}', data: JSON.stringify(op.variables?.input || {}), failed: 0 } } }
       }
       if (query.includes('savePage')) {
         return { data: { savePage: savePage || { id: op.variables?.id || '1' } } }
@@ -271,19 +272,19 @@ describe('Page List', () => {
   // ---- Tree node expand/collapse ----
 
   it('shows expand button for nodes with children', () => {
-    const page = makePage({ has: true })
+    const page = makePage({ has: 2 })
     visitPages([page])
     cy.get('.tree-node-inner .actions .v-btn').first().should('exist').and('not.have.class', 'hidden')
   })
 
   it('hides expand button for leaf nodes', () => {
-    const page = makePage({ has: false })
+    const page = makePage({ has: 0 })
     visitPages([page])
     cy.get('.tree-node-inner .actions .v-btn').first().should('have.class', 'hidden')
   })
 
   it('clicking expand fetches child pages', () => {
-    const page = makePage({ has: true })
+    const page = makePage({ has: 2 })
     visitPages([page])
     // Click the expand/collapse toggle button
     cy.get('.tree-node-inner .actions .v-btn').first().click()
@@ -513,7 +514,7 @@ describe('Page List', () => {
     cy.get('.btn-apply').should('not.be.disabled').click()
     cy.wait('@gql').its('request.body').should((body) => {
       const ops = Array.isArray(body) ? body : [body]
-      const saveOp = ops.find((op) => (op.query || '').includes('savePages'))
+      const saveOp = ops.find((op) => (op.query || '').includes('bulkPage'))
       expect(saveOp).to.exist
       expect(saveOp.variables.input.status).to.equal(0)
     })
@@ -542,7 +543,7 @@ describe('Page List', () => {
   })
 
   it('clicking Edit properties opens the dialog', () => {
-    const page = makePage()
+    const page = makePage({ has: 2 })
     visitPages([page])
     cy.get('.tree-node-inner .v-checkbox-btn').first().click()
     cy.get('.header .bulk .btn-actions .v-btn').click()
@@ -552,7 +553,7 @@ describe('Page List', () => {
   })
 
   it('Apply is disabled until a property is enabled', () => {
-    const page = makePage()
+    const page = makePage({ has: 2 })
     visitPages([page])
     cy.get('.tree-node-inner .v-checkbox-btn').first().click()
     cy.get('.header .bulk .btn-actions .v-btn').click()
@@ -561,7 +562,7 @@ describe('Page List', () => {
     cy.get('.btn-apply-recursive').should('be.disabled')
   })
 
-  it('Apply sends savePages with the enabled property and descendants false', () => {
+  it('Apply sends bulkPage with the enabled property and descendants false', () => {
     const page = makePage()
     visitPages([page])
     cy.get('.tree-node-inner .v-checkbox-btn').first().click()
@@ -572,7 +573,7 @@ describe('Page List', () => {
     cy.get('.btn-apply').click()
     cy.wait('@gql').its('request.body').should((body) => {
       const ops = Array.isArray(body) ? body : [body]
-      const saveOp = ops.find((op) => (op.query || '').includes('savePages'))
+      const saveOp = ops.find((op) => (op.query || '').includes('bulkPage'))
       expect(saveOp).to.exist
       expect(saveOp.variables.input.status).to.equal(1)
       expect(saveOp.variables.descendants).to.equal(false)
@@ -580,8 +581,8 @@ describe('Page List', () => {
     })
   })
 
-  it('Apply recursively sends savePages with descendants true', () => {
-    const page = makePage()
+  it('Apply recursively sends bulkPage with descendants true', () => {
+    const page = makePage({ has: 2 })
     visitPages([page])
     cy.get('.tree-node-inner .v-checkbox-btn').first().click()
     cy.get('.header .bulk .btn-actions .v-btn').click()
@@ -590,10 +591,20 @@ describe('Page List', () => {
     cy.get('.btn-apply-recursive').click()
     cy.wait('@gql').its('request.body').should((body) => {
       const ops = Array.isArray(body) ? body : [body]
-      const saveOp = ops.find((op) => (op.query || '').includes('savePages'))
+      const saveOp = ops.find((op) => (op.query || '').includes('bulkPage'))
       expect(saveOp).to.exist
       expect(saveOp.variables.descendants).to.equal(true)
     })
+  })
+
+  it('Apply recursively shows the affected page count', () => {
+    const page = makePage({ has: 2 })
+    visitPages([page])
+    cy.get('.tree-node-inner .v-checkbox-btn').first().click()
+    cy.get('.header .bulk .btn-actions .v-btn').click()
+    cy.contains('.v-card .v-list .v-btn', 'Edit properties').click()
+    // the checked page (has: 2 descendants) plus itself = 3 affected pages
+    cy.get('.btn-apply-recursive').should('contain', '(3)')
   })
 
   it('opening a property dropdown and picking a value auto-includes it', () => {
@@ -608,7 +619,7 @@ describe('Page List', () => {
     cy.get('.btn-apply').click()
     cy.wait('@gql').its('request.body').should((body) => {
       const ops = Array.isArray(body) ? body : [body]
-      const saveOp = ops.find((op) => (op.query || '').includes('savePages'))
+      const saveOp = ops.find((op) => (op.query || '').includes('bulkPage'))
       expect(saveOp).to.exist
       expect(saveOp.variables.input.status).to.equal(0)
     })

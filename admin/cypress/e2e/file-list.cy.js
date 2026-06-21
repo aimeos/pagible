@@ -94,7 +94,7 @@ function setupIntercept({
   keepFile = null,
   purgeFile = null,
   pubFile = null,
-  saveFiles = null,
+  bulkFile = null,
 } = {}) {
   cy.intercept('POST', '/graphql', (req) => {
     const isBatch = Array.isArray(req.body)
@@ -121,9 +121,9 @@ function setupIntercept({
       if (query.includes('pubFile')) {
         return { data: { pubFile: pubFile || { id: '1' } } }
       }
-      if (query.includes('saveFiles')) {
+      if (query.includes('bulkFile')) {
         const ids = op.variables?.id || ['1']
-        return { data: { saveFiles: saveFiles || ids.map((id) => ({ id })) } }
+        return { data: { bulkFile: bulkFile || { ids, latest: '{}', data: JSON.stringify(op.variables?.input || {}) } } }
       }
       if (query.includes('files')) {
         return { data: filesResponse(files) }
@@ -491,7 +491,7 @@ describe('File List', () => {
     cy.get('.btn-apply').should('exist').and('be.disabled')
   })
 
-  it('selecting a language and applying sends saveFiles mutation', () => {
+  it('selecting a language and applying sends bulkFile mutation', () => {
     const file = makeFile()
     visitFiles([file])
     cy.get('.items .v-list-item .item-check').first().click()
@@ -504,9 +504,9 @@ describe('File List', () => {
     cy.get('.btn-apply').click()
     cy.wait('@gql').its('request.body').should((body) => {
       const ops = Array.isArray(body) ? body : [body]
-      const saveOp = ops.find((op) => (op.query || '').includes('saveFiles'))
+      const saveOp = ops.find((op) => (op.query || '').includes('bulkFile'))
       expect(saveOp).to.exist
-      expect(saveOp.variables.lang).to.be.a('string')
+      expect(saveOp.variables.input.lang).to.be.a('string')
       expect(saveOp.variables.id).to.have.length(1)
     })
   })

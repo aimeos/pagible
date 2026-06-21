@@ -192,6 +192,79 @@ class ResourceTest extends CoreTestAbstract
     }
 
 
+    public function testBulkPageBestEffortSkipsMissing()
+    {
+        $page = $this->page( [['type' => 'heading', 'data' => ['title' => 'Hi']]] );
+
+        // a non-existent id is silently skipped, the existing page is still saved
+        $saved = Resource::bulkPage(
+            [$page->id, \Illuminate\Support\Str::uuid7()->toString()],
+            ['title' => 'Renamed'],
+            $this->user
+        );
+
+        $this->assertCount( 1, $saved['ids'] );
+        $this->assertEquals( $page->id, $saved['ids'][0] );
+        $this->assertArrayHasKey( $page->id, $saved['latest'] );
+        $this->assertEquals( 'Renamed', $saved['data']['title'] );
+        // the missing id was attempted but not saved, so it is counted as failed
+        $this->assertSame( 1, $saved['failed'] );
+        $this->assertEquals( 'Renamed', ( (array) Page::findOrFail( $page->id )->latest->data )['title'] );
+    }
+
+
+    public function testBulkPageProcessesInDepthFirstTreeOrder()
+    {
+        $mk = fn( string $name, string $parent ) => Resource::addPage(
+            ['lang' => 'en', 'name' => $name, 'title' => $name, 'path' => 'res-' . Utils::uid(), 'content' => []],
+            $this->user, parent: $parent
+        );
+
+        // tree: p -> [a -> [a1], b]; appendToNode keeps b to the right of a
+        $p = $mk( 'P', $this->root()->id );
+        $a = $mk( 'A', $p->id );
+        $b = $mk( 'B', $p->id );
+        $a1 = $mk( 'A1', $a->id );
+
+        $saved = Resource::bulkPage( [$p->id], ['title' => 'Renamed'], $this->user, descendants: true );
+
+        // depth-first pre-order: a whole subtree before the next sibling, parents before children
+        $this->assertSame( [$p->id, $a->id, $a1->id, $b->id], $saved['ids'] );
+    }
+
+
+    public function testBulkElementBestEffortSkipsFailing()
+    {
+        $keep = File::where( 'mime', 'image/jpeg' )->firstOrFail();
+        $drop = File::where( 'mime', 'image/tiff' )->firstOrFail();
+
+        $good = Resource::addElement( [
+            'lang' => 'en', 'type' => 'image', 'name' => 'Good',
+            'data' => ['file' => ['id' => $keep->id, 'type' => 'file']],
+        ], $this->user );
+
+        $bad = Resource::addElement( [
+            'lang' => 'en', 'type' => 'image', 'name' => 'Bad',
+            'data' => ['file' => ['id' => $drop->id, 'type' => 'file']],
+        ], $this->user );
+
+        // the file $bad references vanishes, so re-saving it re-collects a now-missing reference
+        $drop->delete();
+
+        $saved = Resource::bulkElement( [$good->id, $bad->id], ['lang' => 'de'], $this->user );
+
+        // best effort: the good element is committed and returned, the failing one is rolled back
+        $this->assertCount( 1, $saved['ids'] );
+        $this->assertEquals( $good->id, $saved['ids'][0] );
+        $this->assertArrayHasKey( $good->id, $saved['latest'] );
+        $this->assertArrayNotHasKey( $bad->id, $saved['latest'] );
+        // the element whose save threw is counted as failed, not silently dropped
+        $this->assertSame( 1, $saved['failed'] );
+        $this->assertEquals( 'de', Element::findOrFail( $good->id )->latest->lang );
+        $this->assertEquals( 'en', Element::findOrFail( $bad->id )->latest->lang );
+    }
+
+
     /**
      * Creates a draft page below the root node with the given content.
      *

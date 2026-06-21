@@ -10,7 +10,8 @@ const DOMAIN_REGEX = /^([0-9a-z]+[.-])*[0-9a-z]+\.[a-z]{2,}$/
 export default {
   props: {
     modelValue: { type: Boolean, required: true },
-    count: { type: Number, default: 0 }
+    count: { type: Number, default: 0 },
+    descendants: { type: Number, default: 0 }
   },
 
   emits: ['apply', 'update:modelValue'],
@@ -240,11 +241,12 @@ export default {
           variant="outlined"
         >{{ $gettext('Apply') }}</v-btn>
         <v-btn
+          v-if="descendants > 0"
           @click="apply(true)"
           :disabled="!hasInput || !valid"
           class="btn-apply-recursive"
           variant="outlined"
-        >{{ $gettext('Apply recursively') }}</v-btn>
+        >{{ $gettext('Apply recursively') }} ({{ count + descendants }})</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>

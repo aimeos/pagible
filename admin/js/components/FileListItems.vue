@@ -77,9 +77,9 @@ const PURGE_FILE = gql`
 `
 
 const SAVE_FILES = gql`
-  mutation ($id: [ID!]!, $lang: String!) {
-    saveFiles(id: $id, lang: $lang) {
-      id
+  mutation ($id: [ID!]!, $input: FileInput!) {
+    bulkFile(id: $id, input: $input) {
+      ids
     }
   }
 `
@@ -377,6 +377,23 @@ export default {
       return true
     },
 
+    patchItems(items) {
+      // index the patches by id so the bulk update is a single pass over the loaded rows
+      const byId = new Map(items.map((item) => [item.id, item]))
+
+      this.items?.forEach((node) => {
+        const item = byId.get(node.id)
+
+        if (item) {
+          for (const key in item) {
+            if (key in node) {
+              node[key] = item[key]
+            }
+          }
+        }
+      })
+    },
+
     sync() {
       const ids = this.changes.get('file')
         .filter((item) => this.patch(item))
@@ -516,7 +533,7 @@ export default {
           mutation: SAVE_FILES,
           variables: {
             id: list.map((item) => item.id),
-            lang: lang
+            input: { lang: lang }
           }
         })
         .then((result) => {

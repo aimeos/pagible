@@ -92,8 +92,8 @@ extend type Mutation {
   savePage(id: ID!, input: PageInput!, latestId: ID): Page
     @guard @cmsPermission(action: "page:save") @throttle(name: "cms-admin")
 
-  "Apply the same values to several pages at once, optionally including all sub-pages"
-  savePages(id: [ID!]!, input: PageInput!, descendants: Boolean = false): [Page!]!
+  "Apply the same values to several existing pages at once, optionally including all sub-pages; returns the ids saved"
+  bulkPage(id: [ID!]!, input: PageInput!, descendants: Boolean = false): BulkResult!
     @guard @cmsPermission(action: "page:save") @throttle(name: "cms-admin")
 
   "Delete an existing page"
@@ -121,8 +121,8 @@ extend type Mutation {
   saveElement(id: ID!, input: ElementInput!, latestId: ID): Element
     @guard @cmsPermission(action: "element:save") @throttle(name: "cms-admin")
 
-  "Apply the same language to several shared content elements at once"
-  saveElements(id: [ID!]!, lang: String!): [Element!]!
+  "Apply the same values to several existing shared content elements at once; returns the ids saved"
+  bulkElement(id: [ID!]!, input: ElementInput!): BulkResult!
     @guard @cmsPermission(action: "element:save") @throttle(name: "cms-admin")
 
   "Delete an existing shared content element"
@@ -150,8 +150,8 @@ extend type Mutation {
   saveFile(id: ID!, input: FileInput!, file: Upload, preview: RemoveableUpload, latestId: ID): File
     @guard @cmsPermission(action: "file:save") @throttle(name: "cms-admin")
 
-  "Apply the same language to several files at once"
-  saveFiles(id: [ID!]!, lang: String!): [File!]!
+  "Apply the same values to several existing files at once; returns the ids saved"
+  bulkFile(id: [ID!]!, input: FileInput!): BulkResult!
     @guard @cmsPermission(action: "file:save") @throttle(name: "cms-admin")
 
   "Delete an existing file"
@@ -172,6 +172,20 @@ extend type Mutation {
 
   "Get page metrics for the last X days"
   metrics(url: String!, days: Int, lang: String): Stats @guard @cmsPermission(action: "page:metrics") @throttle(name: "cms-ai")
+}
+
+type BulkResult {
+  "IDs of the items that were successfully updated"
+  ids: [ID!]!
+
+  "Map of updated item id to its new latest version id"
+  latest: JSON!
+
+  "Field values applied to every updated item"
+  data: JSON!
+
+  "Number of attempted items that could not be saved"
+  failed: Int!
 }
 
 type Stats {
@@ -509,8 +523,8 @@ input ElementFilter {
 }
 
 input ElementInput {
-  "Type of the content element"
-  type: String!
+  "Type of the content element (required when creating an element)"
+  type: String
 
   "ISO language code, e.g. 'en', 'en-GB' or empty for default language"
   lang: String
@@ -518,8 +532,8 @@ input ElementInput {
   "Arbitrary string which describes the element"
   name: String
 
-  "Arbitrary content element data"
-  data: JSON!
+  "Arbitrary content element data (required when creating an element)"
+  data: JSON
 }
 
 type File {

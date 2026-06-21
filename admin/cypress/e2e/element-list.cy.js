@@ -68,7 +68,7 @@ function setupIntercept({
   keepElement = null,
   purgeElement = null,
   pubElement = null,
-  saveElements = null,
+  bulkElement = null,
 } = {}) {
   cy.intercept('POST', '/graphql', (req) => {
     const isBatch = Array.isArray(req.body)
@@ -112,9 +112,9 @@ function setupIntercept({
       if (query.includes('pubElement')) {
         return { data: { pubElement: pubElement || { id: '1' } } }
       }
-      if (query.includes('saveElements')) {
+      if (query.includes('bulkElement')) {
         const ids = op.variables?.id || ['1']
-        return { data: { saveElements: saveElements || ids.map((id) => ({ id })) } }
+        return { data: { bulkElement: bulkElement || { ids, latest: '{}', data: JSON.stringify(op.variables?.input || {}) } } }
       }
       if (query.includes('elements')) {
         return { data: elementsResponse(elements) }
@@ -440,7 +440,7 @@ describe('Element List', () => {
     cy.get('.btn-apply').should('exist').and('be.disabled')
   })
 
-  it('selecting a language and applying sends saveElements mutation', () => {
+  it('selecting a language and applying sends bulkElement mutation', () => {
     const el = makeElement()
     visitElements([el])
     cy.get('.items .v-list-item .item-check').first().click()
@@ -453,9 +453,9 @@ describe('Element List', () => {
     cy.get('.btn-apply').click()
     cy.wait('@gql').its('request.body').should((body) => {
       const ops = Array.isArray(body) ? body : [body]
-      const saveOp = ops.find((op) => (op.query || '').includes('saveElements'))
+      const saveOp = ops.find((op) => (op.query || '').includes('bulkElement'))
       expect(saveOp).to.exist
-      expect(saveOp.variables.lang).to.be.a('string')
+      expect(saveOp.variables.input.lang).to.be.a('string')
       expect(saveOp.variables.id).to.have.length(1)
     })
   })
