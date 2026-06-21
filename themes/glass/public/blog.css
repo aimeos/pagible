@@ -13,9 +13,16 @@
     width: 100%;
 }
 
-.blog .second {
+.blog .second,
+.blog .blog-list {
     display: flex;
     flex-direction: column;
+    gap: 1rem;
+}
+
+.blog .blog-cards {
+    display: grid;
+    grid-template-columns: 1fr;
     gap: 1rem;
 }
 
@@ -57,55 +64,67 @@
     font-weight: 400;
 }
 
-.blog .first .content {
+.blog .first .content,
+.blog .blog-cards .content {
     display: flex;
     align-items: baseline;
     padding: 1rem 1.25rem;
     gap: 1rem;
 }
 
-.blog .first .date-day {
+.blog .first .date-day,
+.blog .blog-cards .date-day {
     font-weight: 500;
     font-size: calc(var(--pico-font-size) * 1.1);
     font-family: var(--pico-font-family-display);
 }
 
-.blog .first .date-month {
+.blog .first .date-month,
+.blog .blog-cards .date-month {
     text-transform: uppercase;
     font-size: calc(var(--pico-font-size) * 0.65);
     letter-spacing: 0.05em;
 }
 
-.blog .first h3 {
+.blog .first h3,
+.blog .blog-cards h3 {
     flex-grow: 1;
 }
 
-.blog .second .blog-item {
+.blog .second .blog-item,
+.blog .blog-list .blog-item {
     align-items: center;
     display: flex;
 }
 
-.blog .second picture {
+.blog .second picture,
+.blog .blog-list picture {
     padding-inline-end: 1rem;
     flex: 2;
 }
 
-.blog .second .content {
+.blog .second .content,
+.blog .blog-list .content {
     flex: 3;
 }
 
-.blog .second h3 {
+.blog .second h3,
+.blog .blog-list h3 {
     font-size: calc(var(--pico-font-size) * 0.85);
 }
 
 @media (min-width: 768px) {
-    .blog .blog-items {
+    .blog .blog-default {
         flex-direction: row;
     }
 
-    .blog .first,
-    .blog .second {
+    .blog .blog-default .first,
+    .blog .blog-default .second {
         width: 50%;
+    }
+
+    .blog .blog-cards {
+        grid-template-columns: 1fr 1fr;
     }
 }
 

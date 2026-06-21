@@ -4,48 +4,28 @@
 @endPushOnce
 
 @if($first = $action?->first())
+    @php($layout = $data->layout ?? 'default')
     @if($data->title ?? null)
         <h2>{{ $data->title }}</h2>
     @endif
-    <div class="blog-items" data-blog="{{ $data->{'parent-page'}?->value ?? '' }}">
-        <div class="first">
-            <a href="{{ route('cms.page', ['path' => $first->path]) }}" class="blog-item">
-                @if($article = collect(cms($first, 'content'))->first(fn($el) => ($el->type ?? null) === 'article')?->data)
-                    @if($file = cms(cms($first, 'files'), $article->file?->id ?? null))
-                        @include('cms::pic', ['file' => $file])
-                    @endif
-                    <div class="content">
-                        <div class="date">
-                            <span class="date-day">@localDate($first->created_at, 'D')</span>
-                            <span class="date-month">@localDate($first->created_at, 'MMM')</span>
-                        </div>
-                        <h3>{{ cms($first, 'title') }}</h3>
-                    </div>
-                @else
-                    <h3>{{ cms($first, 'title') }}</h3>
-                @endif
-            </a>
+    @if($layout === 'default')
+        <div class="blog-items blog-default" data-blog="{{ $data->{'parent-page'}?->value ?? '' }}">
+            <div class="first">
+                @include('cms::blog-item', ['item' => $first, 'stacked' => true])
+            </div>
+            <div class="second">
+                @foreach($action?->skip(1) ?? [] as $item)
+                    @include('cms::blog-item', ['item' => $item, 'stacked' => false])
+                @endforeach
+            </div>
         </div>
-        <div class="second">
-            @foreach($action?->skip(1) ?? [] as $item)
-                <a href="{{ route('cms.page', ['path' => $item->path]) }}" class="blog-item">
-                    @if($article = collect(cms($item, 'content'))->first(fn($el) => ($el->type ?? null) === 'article')?->data)
-                        @if($file = cms(cms($item, 'files'), $article->file?->id ?? null))
-                            @include('cms::pic', ['file' => $file])
-                        @endif
-                        <div class="content">
-                            <div class="date">
-                                @localDate($item->created_at, 'D. MMM. YYYY')
-                            </div>
-                            <h3>{{ cms($item, 'title') }}</h3>
-                        </div>
-                    @else
-                        <h3>{{ cms($item, 'title') }}</h3>
-                    @endif
-                </a>
+    @else
+        <div class="blog-items blog-{{ $layout }}" data-blog="{{ $data->{'parent-page'}?->value ?? '' }}">
+            @foreach($action ?? [] as $item)
+                @include('cms::blog-item', ['item' => $item, 'stacked' => $layout === 'cards'])
             @endforeach
         </div>
-    </div>
+    @endif
     {{ $action?->appends(request()->query())?->links() }}
 
     <script type="application/ld+json">{

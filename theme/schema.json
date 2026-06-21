@@ -398,6 +398,24 @@
                 "title": {
                     "type": "string"
                 },
+                "layout": {
+                    "type": "select",
+                    "default": "default",
+                    "options": [
+                        {
+                            "value": "default",
+                            "label": "Default"
+                        },
+                        {
+                            "value": "cards",
+                            "label": "Cards"
+                        },
+                        {
+                            "value": "list",
+                            "label": "List"
+                        }
+                    ]
+                },
                 "action": {
                     "type": "hidden",
                     "value": "\\Aimeos\\Cms\\Actions\\Blog"
