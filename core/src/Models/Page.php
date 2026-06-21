@@ -367,7 +367,7 @@ class Page extends Base
      */
     public function getHasAttribute() : int
     {
-        return max( 0, intdiv( ( $this->getRgt() ?? 0 ) - ( $this->getLft() ?? 0 ) - 1, 2 ) );
+        return intdiv( ( $this->getRgt() ?? 0 ) - ( $this->getLft() ?? 0 ) - 1, 2 );
     }
 
 

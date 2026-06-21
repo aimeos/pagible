@@ -62,6 +62,41 @@ trait Broadcasts
 
 
     /**
+     * Broadcasts a single bulk-edit event for several updated items of one type.
+     *
+     * A no-op when broadcasting is disabled or nothing was saved.
+     *
+     * @param string $type Content type: 'page', 'element' or 'file'
+     * @param list<string> $ids Ids of the saved items
+     * @param array<string, string> $latest Saved item id => its new latest version id
+     * @param array<string, mixed> $data Shared fields applied to every saved item
+     * @param Authenticatable|string|null $editor Authenticated user or editor name
+     */
+    public static function announceBulk( string $type, array $ids, array $latest, array $data,
+        Authenticatable|string|null $editor = null ) : void
+    {
+        if( !config( 'cms.broadcast' ) || empty( $ids ) ) {
+            return;
+        }
+
+        $event = new \Aimeos\Cms\Events\Bulk(
+            contentType: $type,
+            ids: $ids,
+            latest: $latest,
+            data: $data,
+            editor: is_string( $editor ) ? $editor : Utils::editor( $editor ),
+            tenant: Tenancy::value(),
+        );
+
+        try {
+            broadcast( $event )->toOthers();
+        } catch( \Throwable $e ) {
+            report( $e );
+        }
+    }
+
+
+    /**
      * Extracts the shared event fields from the model and version, keyed by the event constructor
      * parameter names so they can be spread into any event.
      *

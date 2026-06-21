@@ -13,6 +13,7 @@ use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Models\Version;
 use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
@@ -448,48 +449,35 @@ class Resource
         $editor = Utils::editor( $user );
 
         return Utils::transaction( function() use ( $element, $input, $editor, $latestId ) {
-            return self::applyElementSave( $element, $input, $editor, $latestId );
+            return self::applyElement( $element, $input, $editor, $latestId );
         } );
     }
 
 
     /**
-     * Applies the same value to several shared content elements at once.
-     *
-     * Every element gets its own new draft version (no publishing) and broadcasts a
-     * "saved" event so the lists of other editors patch in place. Used for batch
-     * editing of non-unique element properties (e.g. the language) from the list.
+     * Applies the same input to several shared content elements at once.
      *
      * @param array<string> $ids Element IDs to update
-     * @param string $lang ISO language code applied to every element
+     * @param array<string, mixed> $input Fields applied to every element (e.g. ['lang' => 'de'])
      * @param Authenticatable|null $user Authenticated user for editor tracking
-     * @return Collection<int, Element> Updated elements
+     * @return array{ids: list<string>, latest: array<string, string>, data: array<string, mixed>, failed: int}
+     * @throws Exception If the input carries the element-specific "type" or "data"
      */
-    public static function saveElements( array $ids, string $lang, ?Authenticatable $user = null ) : Collection
+    public static function bulkElement( array $ids, array $input, ?Authenticatable $user = null ) : array
     {
-        if( empty( $ids ) ) {
-            return new Collection();
+        if( isset( $input['type'] ) || isset( $input['data'] ) ) {
+            throw new Exception( 'Bulk edits cannot change the type or data of an element' );
+        }
+
+        if( empty( $ids ) || empty( $input ) ) {
+            return ['ids' => [], 'latest' => [], 'data' => [], 'failed' => 0];
         }
 
         $editor = Utils::editor( $user );
 
-        return Utils::transaction( function() use ( $ids, $lang, $editor ) {
-
-            $elements = Element::withTrashed()->with( 'latest' )->whereIn( 'id', $ids )->get();
-            $result = [];
-
-            foreach( $elements as $element )
-            {
-                if( !$element instanceof Element ) {
-                    continue;
-                }
-
-                self::applyElementSave( $element, ['lang' => $lang], $editor );
-
-                $result[] = $element;
-            }
-
-            return new Collection( $result );
+        return self::bulk( Element::class, $ids, $input, $editor, function( string $id ) use ( $input, $editor ) : ?Element {
+            $element = Element::withTrashed()->with( 'latest' )->lockForUpdate()->find( $id );
+            return $element ? self::applyElement( $element, $input, $editor, null, false ) : null;
         } );
     }
 
@@ -594,58 +582,141 @@ class Resource
             /** @var File $orig */
             $orig = File::withTrashed()->with( ['latest' => fn( $q ) => $q->select( 'id', 'versionable_id', 'data', 'lang', 'editor' )] )->findOrFail( $id );
 
-            return self::applyFileSave( $orig, $input, $editor, $latestId, $stored, $storedPreviews, $preview );
+            return self::applyFile( $orig, $input, $editor, $latestId, $stored, $storedPreviews, $preview );
         } );
     }
 
 
     /**
-     * Applies the same value to several files at once.
-     *
-     * Every file gets its own new draft version (no publishing) and broadcasts a
-     * "saved" event so the lists of other editors patch in place. Used for batch
-     * editing of non-unique file properties (e.g. the language) from the list.
+     * Applies the same input to several files at once.
      *
      * @param array<string> $ids File IDs to update
-     * @param string $lang ISO language code applied to every file
+     * @param array<string, mixed> $input Fields applied to every file (e.g. ['lang' => 'de'])
      * @param Authenticatable|null $user Authenticated user for editor tracking
-     * @return Collection<int, File> Updated files
+     * @return array{ids: list<string>, latest: array<string, string>, data: array<string, mixed>, failed: int}
+     * @throws Exception If the input carries the file-specific "path" or "previews"
      */
-    public static function saveFiles( array $ids, string $lang, ?Authenticatable $user = null ) : Collection
+    public static function bulkFile( array $ids, array $input, ?Authenticatable $user = null ) : array
     {
-        if( empty( $ids ) ) {
-            return new Collection();
+        if( isset( $input['path'] ) || isset( $input['previews'] ) ) {
+            throw new Exception( 'Bulk edits cannot change the path or previews of a file' );
+        }
+
+        if( empty( $ids ) || empty( $input ) ) {
+            return ['ids' => [], 'latest' => [], 'data' => [], 'failed' => 0];
         }
 
         $editor = Utils::editor( $user );
 
-        return Utils::transaction( function() use ( $ids, $lang, $editor ) {
-
-            $files = File::withTrashed()
+        return self::bulk( File::class, $ids, $input, $editor, function( string $id ) use ( $input, $editor ) : ?File {
+            $file = File::withTrashed()
                 ->with( ['latest' => fn( $q ) => $q->select( 'id', 'versionable_id', 'data', 'lang', 'editor' )] )
-                ->whereIn( 'id', $ids )->get();
-            $result = [];
-
-            foreach( $files as $file )
-            {
-                if( !$file instanceof File ) {
-                    continue;
-                }
-
-                self::applyFileSave( $file, ['lang' => $lang], $editor );
-
-                $result[] = $file;
-            }
-
-            return new Collection( $result );
+                ->lockForUpdate()->find( $id );
+            return $file ? self::applyFile( $file, $input, $editor, null, null, null, null, false ) : null;
         } );
+    }
+
+
+    /**
+     * Saves the same input to several items of one type as a single best-effort batch.
+     *
+     * @param class-string<Element>|class-string<File>|class-string<Page> $model Model class being saved
+     * @param array<string> $ids Item ids to save, in processing order
+     * @param array<string, mixed> $input Shared fields applied to every item
+     * @param string $editor Name of the editing user
+     * @param \Closure(string): (Page|File|Element|null) $save Loads one locked row, applies the change and returns it (NULL to skip)
+     * @return array{ids: list<string>, latest: array<string, string>, data: array<string, mixed>, failed: int}
+     */
+    protected static function bulk( string $model, array $ids, array $input, string $editor, \Closure $save ) : array
+    {
+        $ids = array_values( array_unique( $ids ) );
+
+        // suppress Scout's per-save reindex; the whole batch is reindexed once below
+        $model::disableSearchSyncing();
+
+        try {
+            $map = self::saveEach( $ids, $save );
+        } finally {
+            $model::enableSearchSyncing();
+        }
+
+        // reindex the saved items once, chunked like cms:index; drop the soft-delete scope so
+        // trashed items (recursive saves include them) are reindexed regardless of scout.soft_delete
+        if( $saved = array_keys( $map->all() ) ) {
+            $model::makeAllSearchableQuery()
+                ->withoutGlobalScope( SoftDeletingScope::class )
+                ->whereKey( $saved )
+                ->chunk( 50, fn( $items ) => ( new $model )->syncMakeSearchable( $items ) );
+        }
+
+        $result = self::bulkResult( $map, $input, count( $ids ) );
+
+        Base::announceBulk( strtolower( class_basename( $model ) ), $result['ids'], $result['latest'], $result['data'], $editor );
+
+        return $result;
+    }
+
+
+    /**
+     * Saves each id in its own short transaction and returns the saved id => latest-version-id map.
+     *
+     * A failing item is reported and skipped; \Error still bubbles up.
+     *
+     * @param array<string> $ids Unique IDs to save (callers deduplicate before calling)
+     * @param \Closure(string): (Page|File|Element|null) $save Loads one locked row, applies the change and returns it (NULL to skip)
+     * @return Collection<string, string> Saved item id => its new latest version id
+     */
+    protected static function saveEach( array $ids, \Closure $save ) : Collection
+    {
+        /** @var Collection<string, string> $result */
+        $result = new Collection();
+
+        foreach( $ids as $id )
+        {
+            try {
+                /** @var Page|File|Element|null $item */
+                $item = Utils::transaction( fn() => $save( $id ) );
+
+                if( $item ) {
+                    $result->put( (string) $item->id, (string) $item->latest_id );
+                }
+            } catch( \Exception $e ) {
+                report( $e );
+            }
+        }
+
+        return $result;
+    }
+
+
+    /**
+     * Builds the broadcast-shaped result of a bulk operation from the saved map and applied input.
+     *
+     * The shared fields carry published=false (each save is a new draft) and the new modified time
+     * so every patched row advances its "modified" date instead of showing a stale one.
+     *
+     * @param Collection<string, string> $map Saved item id => its new latest version id
+     * @param array<string, mixed> $input Fields applied to every saved item
+     * @param int $attempted Number of unique items the operation tried to save
+     * @return array{ids: list<string>, latest: array<string, string>, data: array<string, mixed>, failed: int}
+     */
+    protected static function bulkResult( Collection $map, array $input, int $attempted ) : array
+    {
+        $latest = $map->all();
+
+        return [
+            'ids' => array_keys( $latest ),
+            'latest' => $latest,
+            'data' => $input + ['published' => false, 'updated_at' => (string) now()],
+            'failed' => max( 0, $attempted - count( $latest ) ),
+        ];
     }
 
 
     /**
      * Creates a new version for an already loaded file from the given input.
      *
-     * Shared by saveFile() (single) and saveFiles() (bulk). Must run inside a transaction.
+     * Shared by saveFile() (single) and bulkFile() (bulk). Must run inside a transaction.
      *
      * @param File $orig File model with the "latest" relation loaded
      * @param array<string, mixed> $input File fields to update (merged with latest version)
@@ -654,10 +725,11 @@ class Resource
      * @param string|null $stored Path of an already stored upload, if any
      * @param array<int|string, mixed>|null $storedPreviews Previews generated for the stored upload, if any
      * @param UploadedFile|false|null $preview Preview upload, false to clear, null for auto-detect
+     * @param bool $announce TRUE to broadcast a "saved" event, FALSE for bulk
      * @return File Updated file with the new version as "latest"
      */
-    protected static function applyFileSave( File $orig, array $input, string $editor, ?string $latestId = null,
-        ?string $stored = null, ?array $storedPreviews = null, UploadedFile|false|null $preview = null ) : File
+    protected static function applyFile( File $orig, array $input, string $editor, ?string $latestId = null,
+        ?string $stored = null, ?array $storedPreviews = null, UploadedFile|false|null $preview = null, bool $announce = true ) : File
     {
         $previews = $orig->latest?->data->previews ?? $orig->previews;
         $path = $orig->latest?->data->path ?? $orig->path;
@@ -714,7 +786,9 @@ class Resource
             ] );
         }
 
-        $orig->announce( 'saved', $editor );
+        if( $announce ) {
+            $orig->announce( 'saved', $editor );
+        }
 
         return $orig;
     }
@@ -742,7 +816,7 @@ class Resource
             /** @var Page $page */
             $page = Page::withTrashed()->with( 'latest' )->findOrFail( $id );
 
-            return self::applyPageSave( $page, $input, $editor, $latestId, $user );
+            return self::applyPage( $page, $input, $editor, $latestId, $user );
         } );
     }
 
@@ -750,60 +824,44 @@ class Resource
     /**
      * Applies the same partial input to multiple pages, optionally including all sub-pages.
      *
-     * Every page gets its own new draft version (no publishing) and broadcasts a
-     * "saved" event so the page trees of other editors patch in place. Used for
-     * batch editing of non-unique page properties from the page list.
-     *
      * @param array<string> $ids Page IDs to update
      * @param array<string, mixed> $input Partial page input applied to every page
      * @param Authenticatable|null $user Authenticated user for editor tracking
      * @param bool $descendants TRUE to also update all sub-pages of the given pages
-     * @return Collection<int, Page> Updated pages
+     * @return array{ids: list<string>, latest: array<string, string>, data: array<string, mixed>, failed: int}
      */
-    public static function savePages( array $ids, array $input, ?Authenticatable $user = null,
-        bool $descendants = false ) : Collection
+    public static function bulkPage( array $ids, array $input, ?Authenticatable $user = null,
+        bool $descendants = false ) : array
     {
-        if( empty( $ids ) ) {
-            return new Collection();
+        if( empty( $ids ) || empty( $input ) ) {
+            return ['ids' => [], 'latest' => [], 'data' => [], 'failed' => 0];
         }
 
         $input = Validation::page( $input, $user );
         $editor = Utils::editor( $user );
 
-        return Utils::transaction( function() use ( $ids, $input, $user, $editor, $descendants ) {
+        // recursive save: expand to the whole subtree in depth-first order (defaultOrder() is the
+        // nested-set pre-order traversal) so each parent is saved before its children
+        if( $descendants )
+        {
+            $roots = Page::withTrashed()->whereIn( 'id', $ids )->get( ['id', NestedSet::LFT, NestedSet::RGT] );
 
-            $query = Page::withTrashed()->with( 'latest' );
-
-            if( $descendants )
-            {
-                $roots = Page::withTrashed()->whereIn( 'id', $ids )->get();
-
-                $query->where( function( $builder ) use ( $roots ) {
-                    foreach( $roots as $root ) {
-                        $builder->whereDescendantOrSelf( $root, 'or' );
-                    }
-                } );
-            }
-            else
-            {
-                $query->whereIn( 'id', $ids );
-            }
-
-            $pages = [];
-
-            foreach( $query->get() as $page )
-            {
-                if( !$page instanceof Page ) {
-                    continue;
+            $ids = Page::withTrashed()->where( function( $builder ) use ( $roots ) {
+                foreach( $roots as $root ) {
+                    $builder->whereDescendantOrSelf( $root, 'or' );
                 }
+            } )->defaultOrder()->pluck( 'id' )->all();
+        }
 
-                self::applyPageSave( $page, $input, $editor, null, $user );
-                Cache::forget( Page::key( $page ) );
-
-                $pages[] = $page;
+        return self::bulk( Page::class, $ids, $input, $editor, function( string $id ) use ( $input, $editor, $user ) : ?Page {
+            if( !( $page = Page::withTrashed()->with( 'latest' )->lockForUpdate()->find( $id ) ) ) {
+                return null;
             }
 
-            return new Collection( $pages );
+            // bulk only creates new draft versions, so the cached published output is unchanged
+            self::applyPage( $page, $input, $editor, null, $user, false );
+
+            return $page;
         } );
     }
 
@@ -811,7 +869,7 @@ class Resource
     /**
      * Creates a new version for an already loaded page from the given input.
      *
-     * Shared by savePage() (single) and savePages() (bulk) so the versioning, merge
+     * Shared by savePage() (single) and bulkPage() (bulk) so the versioning, merge
      * and reference handling stays in one place. Must run inside a transaction.
      *
      * @param Page $page Page model with the "latest" relation loaded
@@ -819,10 +877,11 @@ class Resource
      * @param string $editor Name of the editing user
      * @param string|null $latestId Version ID the editor was working on for conflict detection
      * @param Authenticatable|null $user Current user
+     * @param bool $announce TRUE to broadcast a "saved" event, FALSE for bulk
      * @return Page Updated page with the new version as "latest"
      */
-    protected static function applyPageSave( Page $page, array $input, string $editor,
-        ?string $latestId = null, ?Authenticatable $user = null ) : Page
+    protected static function applyPage( Page $page, array $input, string $editor,
+        ?string $latestId = null, ?Authenticatable $user = null, bool $announce = true ) : Page
     {
         $versionId = ( new Version )->newUniqueId();
 
@@ -872,7 +931,9 @@ class Resource
             ] );
         }
 
-        $page->announce( 'saved', $editor );
+        if( $announce ) {
+            $page->announce( 'saved', $editor );
+        }
 
         return $page->removeVersions();
     }
@@ -881,15 +942,16 @@ class Resource
     /**
      * Creates a new version for an already loaded element from the given input.
      *
-     * Shared by saveElement() (single) and saveElements() (bulk). Must run inside a transaction.
+     * Shared by saveElement() (single) and bulkElement() (bulk). Must run inside a transaction.
      *
      * @param Element $element Element model with the "latest" relation loaded
      * @param array<string, mixed> $input Validated element input (merged with latest version)
      * @param string $editor Name of the editing user
      * @param string|null $latestId Version ID the editor was working on for conflict detection
+     * @param bool $announce TRUE to broadcast a "saved" event, FALSE for bulk
      * @return Element Updated element with the new version as "latest"
      */
-    protected static function applyElementSave( Element $element, array $input, string $editor, ?string $latestId = null ) : Element
+    protected static function applyElement( Element $element, array $input, string $editor, ?string $latestId = null, bool $announce = true ) : Element
     {
         $versionId = ( new Version )->newUniqueId();
         $previousEditor = $element->latest->editor ?? '';
@@ -915,7 +977,9 @@ class Resource
             ] );
         }
 
-        $element->announce( 'saved', $editor );
+        if( $announce ) {
+            $element->announce( 'saved', $editor );
+        }
 
         return $element->removeVersions();
     }

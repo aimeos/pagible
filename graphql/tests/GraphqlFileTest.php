@@ -409,45 +409,73 @@ class GraphqlFileTest extends GraphqlTestAbstract
     }
 
 
-    public function testSaveFiles()
+    public function testBulkFile()
     {
         $files = File::get();
         $ids = $files->map( fn( $file ) => '"' . $file->id . '"' )->implode( ', ' );
 
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
-                saveFiles(id: [' . $ids . '], lang: "de") {
-                    id
+                bulkFile(id: [' . $ids . '], input: { lang: "de" }) {
+                    ids
+                    latest
+                    data
+                    failed
                 }
             }
         ' );
 
-        $response->assertJsonCount( $files->count(), 'data.saveFiles' );
+        $response->assertJsonCount( $files->count(), 'data.bulkFile.ids' );
         $this->assertGreaterThan( 1, $files->count() );
+
+        // data and latest are JSON scalar strings
+        $data = json_decode( $response->json( 'data.bulkFile.data' ), true );
+        $latest = json_decode( $response->json( 'data.bulkFile.latest' ), true );
+
+        $this->assertEquals( 'de', $data['lang'] );
+        $this->assertSame( 0, $response->json( 'data.bulkFile.failed' ) );
 
         foreach( $files as $file )
         {
             $fresh = File::findOrFail( $file->id );
             $this->assertEquals( 'de', $fresh->latest->lang );
             $this->assertFalse( (bool) $fresh->latest->published );
+            $this->assertEquals( $fresh->latest_id, $latest[$file->id] );
         }
     }
 
 
-    public function testSaveFilesDenied()
+    public function testBulkFileRejectsPath()
+    {
+        $file = File::firstOrFail();
+
+        $response = $this->actingAs( $this->user )->graphQL( '
+            mutation {
+                bulkFile(id: ["' . $file->id . '"], input: { path: "cms/test/x.jpg" }) {
+                    ids
+                }
+            }
+        ' );
+
+        $response->assertJsonPath( 'data.bulkFile', null );
+        $this->assertNotEmpty( $response->json( 'errors' ) );
+    }
+
+
+    public function testBulkFileDenied()
     {
         $this->user->cmsperms = [];
         $file = File::firstOrFail();
 
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
-                saveFiles(id: ["' . $file->id . '"], lang: "de") {
-                    id
+                bulkFile(id: ["' . $file->id . '"], input: { lang: "de" }) {
+                    ids
                 }
             }
         ' );
 
-        $response->assertJsonPath( 'data.saveFiles', null );
+        $response->assertJsonPath( 'data.bulkFile', null );
         $this->assertNotEmpty( $response->json( 'errors' ) );
     }
 

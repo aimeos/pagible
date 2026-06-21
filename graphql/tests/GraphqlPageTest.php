@@ -916,20 +916,30 @@ class GraphqlPageTest extends GraphqlTestAbstract
     }
 
 
-    public function testSavePages()
+    public function testBulkPage()
     {
         $pages = Page::whereNull( 'parent_id' )->take( 2 )->get();
         $ids = $pages->map( fn( $page ) => '"' . $page->id . '"' )->implode( ', ' );
 
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
-                savePages(id: [' . $ids . '], input: { status: 0, cache: 15 }) {
-                    id
+                bulkPage(id: [' . $ids . '], input: { status: 0, cache: 15 }) {
+                    ids
+                    latest
+                    data
+                    failed
                 }
             }
         ' );
 
-        $response->assertJsonCount( $pages->count(), 'data.savePages' );
+        $response->assertJsonCount( $pages->count(), 'data.bulkPage.ids' );
+
+        // data and latest are JSON scalar strings
+        $applied = json_decode( $response->json( 'data.bulkPage.data' ), true );
+        $latest = json_decode( $response->json( 'data.bulkPage.latest' ), true );
+
+        $this->assertEquals( 15, $applied['cache'] );
+        $this->assertSame( 0, $response->json( 'data.bulkPage.failed' ) );
 
         foreach( $pages as $page )
         {
@@ -939,11 +949,12 @@ class GraphqlPageTest extends GraphqlTestAbstract
             $this->assertEquals( 0, $data['status'] );
             $this->assertEquals( 15, $data['cache'] );
             $this->assertFalse( (bool) $fresh->latest->published );
+            $this->assertEquals( $fresh->latest_id, $latest[$page->id] );
         }
     }
 
 
-    public function testSavePagesDescendants()
+    public function testBulkPageDescendants()
     {
         $root = Page::where( 'tag', 'root' )->firstOrFail();
         $expected = Page::withTrashed()
@@ -954,13 +965,13 @@ class GraphqlPageTest extends GraphqlTestAbstract
 
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
-                savePages(id: ["' . $root->id . '"], input: { cache: 30 }, descendants: true) {
-                    id
+                bulkPage(id: ["' . $root->id . '"], input: { cache: 30 }, descendants: true) {
+                    ids
                 }
             }
         ' );
 
-        $response->assertJsonCount( $expected, 'data.savePages' );
+        $response->assertJsonCount( $expected, 'data.bulkPage.ids' );
 
         foreach( $root->children as $child )
         {
@@ -970,20 +981,20 @@ class GraphqlPageTest extends GraphqlTestAbstract
     }
 
 
-    public function testSavePagesDenied()
+    public function testBulkPageDenied()
     {
         $this->user->cmsperms = [];
         $root = Page::where( 'tag', 'root' )->firstOrFail();
 
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
-                savePages(id: ["' . $root->id . '"], input: { cache: 30 }) {
-                    id
+                bulkPage(id: ["' . $root->id . '"], input: { cache: 30 }) {
+                    ids
                 }
             }
         ' );
 
-        $response->assertJsonPath( 'data.savePages', null );
+        $response->assertJsonPath( 'data.bulkPage', null );
         $this->assertNotEmpty( $response->json( 'errors' ) );
     }
 

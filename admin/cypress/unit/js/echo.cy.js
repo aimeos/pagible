@@ -1,4 +1,5 @@
 import {
+  bulkPatch,
   channelName,
   eventPatch,
   listEcho,
@@ -23,9 +24,9 @@ describe('action vocabularies', () => {
     expect(PATCH_ACTIONS).to.deep.equal(['saved', 'published', 'restored', 'dropped'])
   })
 
-  it('list actions extend patch actions with the structural ones', () => {
+  it('list actions extend patch actions with the bulk and structural ones', () => {
     expect(LIST_ACTIONS).to.deep.equal([
-      'saved', 'published', 'restored', 'dropped', 'added', 'moved', 'purged',
+      'saved', 'published', 'restored', 'dropped', 'bulk', 'added', 'moved', 'purged',
     ])
   })
 
@@ -61,9 +62,30 @@ describe('eventPatch()', () => {
   })
 })
 
+describe('bulkPatch()', () => {
+  it('maps one id of a bulk event to its row update fields', () => {
+    // data is pre-sanitized by the caller (sanitized once for the whole batch)
+    const data = { lang: 'de', published: false }
+    const event = { editor: 'a@b', latest: { p1: 'v1', p2: 'v2' } }
+
+    expect(bulkPatch(data, event, 'p2')).to.deep.equal({
+      lang: 'de',
+      published: false,
+      id: 'p2',
+      editor: 'a@b',
+      latest_id: 'v2',
+    })
+  })
+})
+
 describe('listEcho()', () => {
   function vm() {
-    return { outdated: false, patched: null, patch(p) { this.patched = p } }
+    return {
+      outdated: false,
+      patched: [],
+      patch(p) { this.patched.push(p) },
+      patchItems(items) { this.patched.push(...items) }
+    }
   }
 
   it('flags the list outdated on reconnect', () => {
@@ -82,7 +104,16 @@ describe('listEcho()', () => {
     const m = vm()
     listEcho(m, { id: 'p1', data: {} }, 'saved')
     expect(m.outdated).to.be.false
-    expect(m.patched.id).to.equal('p1')
+    expect(m.patched[0].id).to.equal('p1')
+  })
+
+  it('patches every listed row on a bulk action', () => {
+    const m = vm()
+    listEcho(m, { ids: ['p1', 'p2'], data: { lang: 'de' }, latest: { p1: 'v1', p2: 'v2' } }, 'bulk')
+    expect(m.outdated).to.be.false
+    expect(m.patched.map((p) => p.id)).to.deep.equal(['p1', 'p2'])
+    expect(m.patched[1].lang).to.equal('de')
+    expect(m.patched[1].latest_id).to.equal('v2')
   })
 })
 

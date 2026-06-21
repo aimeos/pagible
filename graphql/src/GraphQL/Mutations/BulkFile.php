@@ -11,20 +11,15 @@ use Aimeos\Cms\Resource;
 use Illuminate\Support\Facades\Auth;
 
 
-final class SavePages
+final class BulkFile
 {
     /**
      * @param  null  $rootValue
      * @param  array<string, mixed>  $args
-     * @return array<int, mixed>
+     * @return array{ids: list<string>, latest: array<string, string>, data: array<string, mixed>, failed: int}
      */
     public function __invoke( $rootValue, array $args ) : array
     {
-        return Resource::savePages(
-            $args['id'],
-            $args['input'] ?? [],
-            Auth::user(),
-            $args['descendants'] ?? false,
-        )->all();
+        return Resource::bulkFile( $args['id'], $args['input'] ?? [], Auth::user() );
     }
 }

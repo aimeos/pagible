@@ -13,6 +13,8 @@ use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Filter;
+use Aimeos\Cms\Permission;
+use Aimeos\Cms\Resource;
 use Aimeos\Nestedset\NestedSet;
 use Illuminate\Foundation\Testing\DatabaseTruncation;
 use Illuminate\Foundation\Testing\RefreshDatabaseState;
@@ -387,5 +389,50 @@ class CmsEngineTest extends SearchTestAbstract
         $count = DB::connection( config( 'cms.db' ) )->table( 'cms_index' )
             ->where( 'indexable_type', Page::class )->count();
         $this->assertEquals( 0, $count );
+    }
+
+
+    public function testBulkReindexesSavedPages(): void
+    {
+        $user = new \App\Models\User( [
+            'name' => 'editor', 'email' => 'editor@testbench',
+            'password' => 'secret', 'cmsperms' => Permission::all(),
+        ] );
+
+        $page = Page::where( 'tag', 'root' )->firstOrFail();
+
+        // bulk suppresses Scout's per-item sync and reindexes the saved pages once afterwards
+        Resource::bulkPage( [$page->id], ['name' => 'ztqbulkterm'], $user );
+
+        // the draft (latest=true) index row was refreshed with the new content
+        $draft = DB::connection( config( 'cms.db' ) )->table( 'cms_index' )
+            ->where( 'indexable_id', $page->id )->where( 'latest', true )->value( 'content' );
+        $this->assertNotNull( $draft );
+        $this->assertStringContainsString( 'ztqbulkterm', $draft );
+
+        // and it is findable via full-text search on the draft
+        $found = Page::search( 'ztqbulkterm' )->searchFields( 'draft' )->take( 25 )->get();
+        $this->assertCount( 1, $found );
+        $this->assertEquals( $page->id, $found->first()->id );
+    }
+
+
+    public function testBulkReindexesTrashedPages(): void
+    {
+        $user = new \App\Models\User( [
+            'name' => 'editor', 'email' => 'editor@testbench',
+            'password' => 'secret', 'cmsperms' => Permission::all(),
+        ] );
+
+        $page = Page::where( 'tag', 'root' )->firstOrFail();
+        $page->delete();
+
+        // the reindex must refresh a soft-deleted item's draft row despite the SoftDeletes scope
+        Resource::bulkPage( [$page->id], ['name' => 'zttrashterm'], $user );
+
+        $draft = DB::connection( config( 'cms.db' ) )->table( 'cms_index' )
+            ->where( 'indexable_id', $page->id )->where( 'latest', true )->value( 'content' );
+        $this->assertNotNull( $draft );
+        $this->assertStringContainsString( 'zttrashterm', $draft );
     }
 }
