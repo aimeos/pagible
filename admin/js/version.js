@@ -1,4 +1,4 @@
-/** @license LGPL, https://opensource.org/license/lgpl-3-0 */
+/** @license MIT, https://opensource.org/license/mit */
 
 /**
  * Loads the latest version of a content item into a detail view and applies it.

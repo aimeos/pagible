@@ -63,4 +63,4 @@ Featured images and inline media are imported as Pagible File records with publi
 
 ## License
 
-LGPL-3.0-only
+MIT

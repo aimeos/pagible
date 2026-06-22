@@ -280,7 +280,7 @@ Please make sure all tests pass and PHPStan reports no new errors before submitt
 
 ## License
 
-PagibleAI CMS is licensed under the [LGPL-3.0 license](LICENSE).
+PagibleAI CMS is licensed under the [MIT](LICENSE).
 
 ## Acknowledgements
 

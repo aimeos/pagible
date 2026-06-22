@@ -49,7 +49,8 @@
 				"themes/pagible/src/",
 				"themes/paper/src/",
 				"themes/bold/src/",
-				"themes/premium/src/"
+				"themes/premium/src/",
+				"themes/luxury/src/"
 			],
 			"Tests\\": [
 				"tests/",

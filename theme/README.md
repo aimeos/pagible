@@ -72,4 +72,4 @@ php artisan cms:benchmark:theme [options]
 
 ## License
 
-LGPL-3.0-only
+MIT

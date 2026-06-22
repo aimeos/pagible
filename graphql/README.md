@@ -52,4 +52,4 @@ php artisan cms:benchmark:graphql [options]
 
 ## License
 
-LGPL-3.0-only
+MIT

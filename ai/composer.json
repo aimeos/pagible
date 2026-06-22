@@ -4,7 +4,7 @@
     "keywords": ["laravel", "cms", "ai"],
     "homepage": "https://pagible.com",
     "type": "library",
-    "license": "LGPL-3.0-only",
+    "license": "MIT",
     "prefer-stable": true,
     "minimum-stability": "dev",
     "require": {
