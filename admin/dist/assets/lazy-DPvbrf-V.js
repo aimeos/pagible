@@ -1,0 +1,1 @@
+import{_t as e,et as t,ht as n}from"./charts-BcPwWJ4d.js";import{M as r}from"./dimensions-CksMkI0c.js";var i=r({eager:Boolean},`lazy`);function a(r,i){let a=n(!1),o=e(()=>a.value||r.eager||i.value);t(i,()=>a.value=!0);function s(){r.eager||(a.value=!1)}return{isBooted:a,hasContent:o,onAfterLeave:s}}export{a as n,i as t};
