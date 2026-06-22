@@ -6,6 +6,7 @@ import gql from 'graphql-tag'
 import { markRaw } from 'vue'
 import { defineStore } from 'pinia'
 import { apolloClient, clearUploadLink } from './graphql'
+import { disconnect } from './echo'
 import {
   urladmin,
   urlproxy,
@@ -232,14 +233,12 @@ export const useUserStore = defineStore('user', {
 
           return response.data.cmsLogout || false
         })
-        .finally(async () => {
+        .finally(() => {
           this.me = null
 
           useClipboardStore().$reset()
           useSideStore().$reset()
           clearUploadLink()
-
-          const { disconnect } = await import('./echo')
           disconnect()
 
           return apolloClient.clearStore()
