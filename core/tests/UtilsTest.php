@@ -153,6 +153,27 @@ class UtilsTest extends CoreTestAbstract
     }
 
 
+    public function testResolveAllowsPrivateIpByDefault()
+    {
+        // Literal IPs are validated directly without a DNS lookup
+        $this->assertEquals( '127.0.0.1', Utils::resolve( '127.0.0.1' ) );
+        $this->assertEquals( '10.0.0.1', Utils::resolve( '10.0.0.1' ) );
+        $this->assertEquals( '8.8.8.8', Utils::resolve( '8.8.8.8' ) );
+    }
+
+
+    public function testResolveBlocksPrivateIpWhenDisabled()
+    {
+        config( ['cms.allow-internal' => false] );
+
+        $this->assertNull( Utils::resolve( '127.0.0.1' ) );
+        $this->assertNull( Utils::resolve( '10.0.0.1' ) );
+
+        // Public IPs remain allowed
+        $this->assertEquals( '8.8.8.8', Utils::resolve( '8.8.8.8' ) );
+    }
+
+
     public function testHtmlStripsScript()
     {
         $result = Utils::html( '<p>Hello</p><script>alert(1)</script>' );

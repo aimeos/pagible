@@ -33,6 +33,20 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Allow fetching from internal hosts
+    |--------------------------------------------------------------------------
+    |
+    | When TRUE, the CMS may fetch remote URLs (e.g. when importing a file from
+    | a URL) whose host resolves to a private or reserved IP range (e.g.
+    | 10.0.0.0/8, 127.0.0.1 or internal services accessed by IP). Set it to
+    | FALSE to block them and mitigate SSRF when URLs can be supplied by
+    | untrusted users.
+    |
+    */
+    'allow-internal' => env( 'CMS_ALLOW_INTERNAL', false ),
+
+    /*
+    |--------------------------------------------------------------------------
     | Real-time broadcasting
     |--------------------------------------------------------------------------
     |
