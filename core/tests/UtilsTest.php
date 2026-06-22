@@ -155,17 +155,19 @@ class UtilsTest extends CoreTestAbstract
 
     public function testResolveAllowsPrivateIpByDefault()
     {
+        config( ['cms.allow-internal' => true] );
+
         // Literal IPs are validated directly without a DNS lookup
         $this->assertEquals( '127.0.0.1', Utils::resolve( '127.0.0.1' ) );
         $this->assertEquals( '10.0.0.1', Utils::resolve( '10.0.0.1' ) );
         $this->assertEquals( '8.8.8.8', Utils::resolve( '8.8.8.8' ) );
+
+        config( ['cms.allow-internal' => false] );
     }
 
 
     public function testResolveBlocksPrivateIpWhenDisabled()
     {
-        config( ['cms.allow-internal' => false] );
-
         $this->assertNull( Utils::resolve( '127.0.0.1' ) );
         $this->assertNull( Utils::resolve( '10.0.0.1' ) );
 
