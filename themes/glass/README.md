@@ -73,4 +73,4 @@ Theme colors and properties can be customized in the admin panel:
 
 ## License
 
-LGPL-3.0-only
+MIT

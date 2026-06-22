@@ -49,4 +49,4 @@ php artisan cms:benchmark:jsonapi [options]
 
 ## License
 
-LGPL-3.0-only
+MIT

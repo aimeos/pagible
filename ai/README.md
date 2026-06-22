@@ -78,4 +78,4 @@ php artisan cms:description
 
 ## License
 
-LGPL-3.0-only
+MIT

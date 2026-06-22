@@ -84,4 +84,4 @@ php artisan cms:restore pagible-tenant1-20250101.zip --merge
 
 ## License
 
-LGPL-3.0-only
+MIT
