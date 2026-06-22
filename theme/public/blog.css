@@ -109,6 +109,14 @@
     margin: 0.25rem 0 0;
 }
 
+.blog .blog-list .blog-item:nth-child(even) {
+    flex-direction: row-reverse;
+}
+
+.blog .blog-list .blog-item:nth-child(even) picture {
+    padding-inline: 1rem 0;
+}
+
 @media (min-width: 768px) {
     .blog .blog-default {
         flex-direction: row;

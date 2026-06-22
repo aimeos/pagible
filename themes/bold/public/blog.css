@@ -110,6 +110,10 @@
     margin: 0.5rem 0 0;
 }
 
+.blog .blog-list .blog-item:nth-child(even) {
+    flex-direction: row-reverse;
+}
+
 @media (min-width: 768px) {
     .blog .blog-default {
         flex-direction: row;
