@@ -343,6 +343,97 @@ class CmsEngineTest extends SearchTestAbstract
     }
 
 
+    public function testSearchMinConfigIsRegistered(): void
+    {
+        // the search package provides cms.search.min via its own config merged into "cms"
+        $this->assertSame( 2, config( 'cms.search.min' ) );
+    }
+
+
+    public function testCjkSubstringSearch(): void
+    {
+        // CJK runs tokenize as a single FTS token, so interior substrings are unmatchable
+        // by full-text search; the engine uses LIKE substring matching for CJK on all drivers.
+        $versionId = ( new \Aimeos\Cms\Models\Version )->newUniqueId();
+
+        $file = new File();
+        $file->tenant_id = \Aimeos\Cms\Tenancy::value();
+        $file->name = '产品搜索测试'; // "product search test"
+        $file->mime = 'image/png';
+        $file->path = 'cms/test/cjk.png';
+        $file->latest_id = $versionId;
+        $file->editor = 'test';
+        $file->save();
+
+        $version = $file->versions()->forceCreate( [
+            'id' => $versionId,
+            'lang' => 'zh',
+            'editor' => 'test',
+            'data' => ['name' => $file->name, 'mime' => $file->mime, 'path' => $file->path],
+        ] );
+
+        $file->setRelation( 'latest', $version )->searchable();
+
+        if( DB::connection( config( 'cms.db' ) )->getDriverName() === 'sqlsrv' ) {
+            sleep( 5 );
+        }
+
+        // interior substring matches
+        $result = File::search( '搜索测' )->searchFields( 'draft' )->take( 25 )->get();
+        $this->assertTrue( $result->contains( 'id', $file->id ) );
+
+        // leading substring matches
+        $result = File::search( '产品搜索' )->searchFields( 'draft' )->take( 25 )->get();
+        $this->assertTrue( $result->contains( 'id', $file->id ) );
+
+        // short 2-char substring matches
+        $result = File::search( '搜索' )->searchFields( 'draft' )->take( 25 )->get();
+        $this->assertTrue( $result->contains( 'id', $file->id ) );
+
+        // non-contiguous characters must not match - substring matching stays selective
+        $result = File::search( '产搜测' )->searchFields( 'draft' )->take( 25 )->get();
+        $this->assertFalse( $result->contains( 'id', $file->id ) );
+
+        // unrelated CJK term must not match
+        $result = File::search( '新闻' )->searchFields( 'draft' )->take( 25 )->get();
+        $this->assertFalse( $result->contains( 'id', $file->id ) );
+    }
+
+
+    public function testCjkDetectionCoversAllScripts(): void
+    {
+        // space-free scripts beyond the BMP CJK block (halfwidth katakana, Bopomofo) must
+        // also route to substring matching, otherwise interior matches silently fail
+        foreach( ['ｱｲｳｴｵ', 'ㄅㄆㄇㄈ'] as $i => $name )
+        {
+            $versionId = ( new \Aimeos\Cms\Models\Version )->newUniqueId();
+
+            $file = new File();
+            $file->tenant_id = \Aimeos\Cms\Tenancy::value();
+            $file->name = $name;
+            $file->mime = 'image/png';
+            $file->path = "cms/test/script{$i}.png";
+            $file->latest_id = $versionId;
+            $file->editor = 'test';
+            $file->save();
+
+            $version = $file->versions()->forceCreate( [
+                'id' => $versionId,
+                'lang' => 'ja',
+                'editor' => 'test',
+                'data' => ['name' => $name, 'mime' => $file->mime, 'path' => $file->path],
+            ] );
+
+            $file->setRelation( 'latest', $version )->searchable();
+
+            // interior substring (not a prefix) - only matchable via the LIKE path
+            $interior = mb_substr( $name, 1, 2 );
+            $result = File::search( $interior )->searchFields( 'draft' )->take( 25 )->get();
+            $this->assertTrue( $result->contains( 'id', $file->id ), "interior '{$interior}' of '{$name}' should match" );
+        }
+    }
+
+
     public function testEngine(): void
     {
         $engine = new CmsEngine();

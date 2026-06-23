@@ -62,4 +62,37 @@ class SearchControllerTest extends ThemeTestAbstract
         $this->assertEquals('en', $item->lang);
         $this->assertEquals('Home | Laravel CMS', $item->title);
     }
+
+
+    public function testIndexAllowsTwoChars()
+    {
+        $request = Request::create('/cmsapi/search', 'GET', ['q' => 'we', 'locale' => 'en', 'size' => 10]);
+
+        $controller = new \Aimeos\Cms\Controllers\SearchController();
+        $response = $controller->index($request, 'mydomain.tld');
+
+        $this->assertEquals(200, $response->getStatusCode());
+    }
+
+
+    public function testIndexRejectsSingleChar()
+    {
+        $this->expectException(\Illuminate\Validation\ValidationException::class);
+
+        $request = Request::create('/cmsapi/search', 'GET', ['q' => 'a', 'locale' => 'en', 'size' => 10]);
+
+        ( new \Aimeos\Cms\Controllers\SearchController() )->index($request, 'mydomain.tld');
+    }
+
+
+    public function testIndexHonorsConfiguredMinimum()
+    {
+        config(['cms.search.min' => 4]);
+
+        $this->expectException(\Illuminate\Validation\ValidationException::class);
+
+        $request = Request::create('/cmsapi/search', 'GET', ['q' => 'abc', 'locale' => 'en', 'size' => 10]);
+
+        ( new \Aimeos\Cms\Controllers\SearchController() )->index($request, 'mydomain.tld');
+    }
 }

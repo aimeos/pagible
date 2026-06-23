@@ -13,6 +13,13 @@ use Laravel\Scout\Contracts\PaginatesEloquentModelsUsingDatabase;
 class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
 {
     /**
+     * Character ranges for scripts without word boundaries: Thai, Hangul (Jamo + syllables),
+     * kana (incl. halfwidth), Bopomofo, and CJK ideographs (Ext A-F, compatibility).
+     */
+    protected const CJK = '\x{0E00}-\x{0E7F}\x{1100}-\x{11FF}\x{3040}-\x{30FF}\x{3100}-\x{318F}\x{3400}-\x{9FFF}\x{AC00}-\x{D7AF}\x{F900}-\x{FAFF}\x{FF65}-\x{FFDC}\x{20000}-\x{2FA1F}';
+
+
+    /**
      * Create a search index.
      *
      * @param  string  $name
@@ -311,6 +318,19 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
 
 
     /**
+     * Tests whether the string contains characters from scripts without word
+     * boundaries (CJK ideographs, kana, Hangul, Thai), which FTS tokenizes as one token.
+     *
+     * @param  string  $search
+     * @return bool
+     */
+    protected function hasCjk( string $search ): bool
+    {
+        return (bool) preg_match( '/[' . self::CJK . ']/u', $search );
+    }
+
+
+    /**
      * Build a query scoped to the cms_index rows for the given model group.
      *
      * @template T of \Illuminate\Database\Eloquent\Model
@@ -360,6 +380,13 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
             }
         }
 
+        // Scripts without word boundaries (CJK, Thai) tokenize as one FTS token, making interior
+        // matches impossible; substring matching is script-agnostic and handles them correctly.
+        if( $this->hasCjk( $terms ) ) {
+            $this->searchLike( $query->getQuery(), $terms );
+            return;
+        }
+
         match( $driver ) {
             'mysql', 'mariadb' => $this->searchMySQL( $query->getQuery(), $terms ),
             'pgsql' => $this->searchPostgreSQL( $query->getQuery(), $terms ),
@@ -371,7 +398,8 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
 
 
     /**
-     * LIKE-based search fallback for other databases.
+     * Substring (LIKE) search used for CJK/Thai queries on all drivers and as the
+     * full-text fallback for databases without a dedicated search method.
      *
      * @param  \Illuminate\Database\Query\Builder  $sub
      * @param  string  $search
@@ -383,8 +411,13 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
             return;
         }
 
+        // SQL Server also treats "[" and "]" as wildcards (character classes); escaping them
+        // on every driver is harmless ("=[" matches a literal "[") and avoids a driver branch
+        $map = ['=' => '==', '%' => '=%', '_' => '=_', '[' => '=[', ']' => '=]'];
+
         foreach( $words as $word ) {
-            $sub->where( 'cms_index.content', 'like', '%' . $word . '%' );
+            $word = strtr( $word, $map );
+            $sub->whereRaw( "cms_index.content like ? escape '='", ['%' . $word . '%'] );
         }
     }
 
