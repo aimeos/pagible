@@ -1,0 +1,24 @@
+{
+    "name": "aimeos/pagible-themes-luxury",
+    "description": "Pagible CMS - Luxury theme with minimalist high-fashion design",
+    "keywords": ["laravel", "cms", "theme", "luxury", "fashion", "editorial"],
+    "homepage": "https://pagible.com",
+    "type": "library",
+    "license": "MIT",
+    "require": {
+        "php": "^8.2",
+        "aimeos/pagible-theme": "*@dev"
+    },
+    "autoload": {
+        "psr-4": {
+            "Aimeos\\Cms\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Aimeos\\Cms\\LuxuryServiceProvider"
+            ]
+        }
+    }
+}
