@@ -27,7 +27,7 @@
         <textarea id="message" name="message" placeholder="{{ __('Your message') }}" required rows="6"></textarea>
     </div>
     <div class="errors"></div>
-    <div class="grid">
+    <div class="submit">
         @if(!app()->environment('local') && config('services.hcaptcha.sitekey'))
             <div>
                 <div class="h-captcha" data-sitekey="{{ config('services.hcaptcha.sitekey') }}"></div>

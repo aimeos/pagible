@@ -41,11 +41,18 @@
 
 .contact .errors {
     color: var(--pico-form-element-invalid-focus-color);
-    font-size: calc(var(--pico-font-size) * 0.65);
+    font-size: calc(var(--pico-font-size) * 0.75);
+    margin: 1rem 1.5rem;
 }
 
 .contact .error {
     border-color: var(--pico-form-element-invalid-border-color);
+}
+
+.contact .submit {
+    display: flex;
+    justify-content: space-around;
+    margin: 1rem 0;
 }
 
 .contact .h-captcha {
