@@ -67,7 +67,7 @@
 }
 
 * {
-    scrollbar-color: var(--pico-primary-background) var(--pico-background-color);
+    scrollbar-color: var(--pico-primary) var(--pico-background-color);
 }
 
 @media (prefers-reduced-motion: no-preference) {

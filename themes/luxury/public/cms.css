@@ -347,8 +347,8 @@ nav.breadcrumb ul li a:hover {
 
 h1, h2, h3, h4, h5, h6 {
     font-family: var(--pico-font-family-display);
-    letter-spacing: 0.005em;
     font-feature-settings: "liga", "dlig", "kern";
+    letter-spacing: 0.005em;
 }
 
 h1, h2 {
@@ -370,26 +370,26 @@ h4, h5, h6 {
 h1 {
     margin-bottom: 2rem;
     font-size: calc(var(--pico-font-size) * 2.5);
-    line-height: 1.08;
+    line-height: 1.1;
     text-align: center;
 }
 
 h2 {
     margin-bottom: 1.5rem;
-    font-size: calc(var(--pico-font-size) * 1.7);
-    line-height: 1.18;
+    font-size: calc(var(--pico-font-size) * 1.8);
+    line-height: 1.2;
     text-align: center;
 }
 
 h3 {
     margin-bottom: 1.25rem;
-    font-size: calc(var(--pico-font-size) * 0.95);
+    font-size: calc(var(--pico-font-size) * 1.4);
     line-height: 1.3;
 }
 
 h4 {
     margin-bottom: 1rem;
-    font-size: calc(var(--pico-font-size) * 0.82);
+    font-size: calc(var(--pico-font-size) * 1.2);
     line-height: 1.4;
 }
 

@@ -80,6 +80,11 @@
     background-color: var(--pico-primary-hover);
 }
 
+.cards .card-item picture.image {
+    max-width: 10rem;
+    padding: 2rem;
+}
+
 .cards .card-item h3 {
     color: var(--pico-primary);
 }

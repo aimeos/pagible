@@ -28,8 +28,9 @@
 }
 
 .questions h3 {
-    margin: 0;
+    font-size: var(--pico-font-size);
     font-weight: 500;
+    margin: 0;
 }
 
 .questions details summary svg {

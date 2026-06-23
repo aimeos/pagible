@@ -2,6 +2,11 @@
  * @license MIT, https://opensource.org/license/MIT
  */
 
+.contact form {
+    max-width: 1200px;
+    margin: auto;
+}
+
 .contact label {
     color: var(--pico-contrast);
     display: inline-block;

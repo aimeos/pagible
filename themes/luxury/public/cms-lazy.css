@@ -170,9 +170,9 @@ p code {
     background-color: var(--pico-code-background-color);
     border-radius: calc(var(--pico-border-radius) * 2);
     font-family: var(--pico-font-family-monospace);
+    font-size: calc(var(--pico-font-size) * 0.75);
     overflow-wrap: anywhere;
-    padding: 0.15rem 0.4rem;
-    font-size: 0.875em;
+    padding: 0 0.33rem;
 }
 
 
