@@ -8,5 +8,5 @@ return [
     'maxdepth' => (int) env( 'CMS_GRAPHQL_MAXDEPTH', 15 ),
 
     // Maximum query complexity score allowed for a GraphQL query.
-    'maxcomplexity' => (int) env( 'CMS_GRAPHQL_MAXCOMPLEXITY', 2000 ),
+    'maxcomplexity' => (int) env( 'CMS_GRAPHQL_MAXCOMPLEXITY', 10000 ),
 ];
