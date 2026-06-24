@@ -15,7 +15,8 @@
     },
     "autoload": {
         "psr-4": {
-            "Aimeos\\Cms\\": "src/"
+            "Aimeos\\Cms\\": "src/",
+            "Database\\Seeders\\": "database/seeders/"
         },
         "files": [
             "src/helpers.php"

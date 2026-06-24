@@ -31,9 +31,14 @@ return [
     |
     | Define additional Content Security Policy (CSP) directives.
     | The default settings already allow loading from the same origin.
+    |
+    | "media-src" also feeds "img-src" and defaults to the external hosts used
+    | by the demo content (Unsplash images, W3C video, samplelib audio) and the
+    | Iconify icon API, so it renders out of the box. Override CMS_CSP_MEDIA_SRC
+    | to tighten this for production.
     */
     'csp' => [
-        'media-src' => env( 'CMS_CSP_MEDIA_SRC' ),
+        'media-src' => env( 'CMS_CSP_MEDIA_SRC', 'https://images.unsplash.com https://media.w3.org https://download.samplelib.com https://api.iconify.design' ),
         'style-src' => env( 'CMS_CSP_STYLE_SRC', 'https://hcaptcha.com https://*.hcaptcha.com' ),
         'frame-src' => env( 'CMS_CSP_FRAME_SRC', 'https://hcaptcha.com https://*.hcaptcha.com' ),
         'script-src' => env( 'CMS_CSP_SCRIPT_SRC', 'https://hcaptcha.com https://*.hcaptcha.com' ),
