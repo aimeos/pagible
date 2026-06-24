@@ -141,7 +141,7 @@ header nav > ul:not(.menu) > li {
 
 header nav > ul > li:last-of-type a {
     background-color: var(--pico-primary);
-    color: var(--pico-primary-inverse);
+    color: var(--pico-contrast-inverse);
     padding: 0.5rem 1.25rem;
     text-transform: uppercase;
     letter-spacing: 0.05em;
@@ -420,7 +420,7 @@ img {
     text-transform: uppercase;
     letter-spacing: 0.1em;
     border: 2px solid var(--pico-primary);
-    color: var(--pico-primary-inverse);
+    color: var(--pico-contrast-inverse);
     background-color: var(--pico-primary);
     transition: background-color 0.15s ease, color 0.15s ease;
 }
@@ -428,7 +428,7 @@ img {
 .btn:hover {
     background-color: var(--pico-primary-hover);
     border-color: var(--pico-primary-hover);
-    color: var(--pico-primary-inverse);
+    color: var(--pico-contrast-inverse);
     opacity: 1;
 }
 

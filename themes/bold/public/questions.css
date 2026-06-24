@@ -26,6 +26,7 @@
     font-size: var(--pico-font-size);
     text-transform: none;
     letter-spacing: 0;
+    color: var(--pico-contrast-inverse);
     margin: 0;
 }
 

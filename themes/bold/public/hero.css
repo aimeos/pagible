@@ -64,7 +64,7 @@
     display: inline-block;
     margin-bottom: 1rem;
     padding: 0.35rem 1rem;
-    color: var(--pico-primary);
+    color: var(--pico-primary-hover);
     background-color: var(--pico-primary-background);
     border: 1px solid var(--pico-primary);
     font-family: var(--pico-font-family-display);

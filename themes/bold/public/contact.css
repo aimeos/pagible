@@ -66,7 +66,7 @@
     margin-inline-end: auto;
     margin-inline-start: auto;
     background-color: var(--pico-primary);
-    color: var(--pico-primary-inverse);
+    color: var(--pico-contrast-inverse);
     border: 2px solid var(--pico-primary);
     text-transform: uppercase;
     letter-spacing: 0.1em;
