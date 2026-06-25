@@ -15,7 +15,7 @@ const ALL_PERMISSIONS = {
   'page:keep': true,
   'page:purge': true,
   'page:publish': true,
-  'page:synthesize': true,
+  'page:chat': true,
   'audio:transcribe': true,
   'element:view': true,
   'file:view': true,
@@ -710,14 +710,14 @@ describe('Page List', () => {
     cy.get('.item-aux').first().should('have.attr', 'target', '_blank')
   })
 
-  // ---- AI synthesize prompt ----
+  // ---- AI chat prompt ----
 
-  it('shows synthesize prompt for users with page:synthesize permission', () => {
+  it('shows chat prompt for users with page:chat permission', () => {
     visitPages()
     cy.get('.prompt').should('exist')
   })
 
-  it('hides synthesize prompt when user lacks page:synthesize permission', () => {
+  it('hides chat prompt when user lacks page:chat permission', () => {
     const me = {
       permission: JSON.stringify({ 'page:view': true, 'page:add': true }),
       email: 'editor@example.com',
@@ -727,7 +727,7 @@ describe('Page List', () => {
     cy.get('.prompt').should('not.exist')
   })
 
-  it('synthesize submit button appears after typing prompt', () => {
+  it('chat submit button appears after typing prompt', () => {
     visitPages()
     cy.get('.prompt textarea').first().type('Create a landing page about cats')
     cy.get('.prompt .v-input__append .v-btn').should('exist')
