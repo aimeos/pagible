@@ -171,6 +171,9 @@ header nav details summary {
     letter-spacing: 0.05em;
     font-size: calc(var(--pico-font-size) * 0.8);
     transition: color 0.15s ease;
+    background: none;
+    border: none;
+    color: inherit;
 }
 
 header nav a:hover,
