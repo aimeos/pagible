@@ -53,4 +53,14 @@ app
   .use(router)
   .use(vuetify)
   .use(apollo)
-  .mount('#app')
+
+// In dev the SPA is served by Vite, so the page never passes through Laravel's `web` middleware
+// that starts a session and sets the XSRF-TOKEN cookie (production gets it from the /cmsadmin page
+// load). Prime it with one GET through the dev proxy before mounting, so the first CSRF-protected
+// POST (GraphQL or chat) carries a valid token. import.meta.env.DEV is statically false in builds,
+// so this branch is stripped from production bundles.
+if (import.meta.env.DEV) {
+  fetch('/cmsadmin', { credentials: 'include' }).finally(() => app.mount('#app'))
+} else {
+  app.mount('#app')
+}

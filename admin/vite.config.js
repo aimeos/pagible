@@ -79,6 +79,21 @@ export default defineConfig({
       ...vuetifyLabs,
     ]
   },
+  // Dev-only: proxy the credentialed backend calls to the Laravel app so the SPA is same-origin
+  // with them. Then the XSRF-TOKEN cookie is readable by the SPA and CSRF-protected POSTs (chat,
+  // GraphQL mutations, file uploads) carry a valid token instead of being rejected cross-origin.
+  // Use relative URLs in index.html (e.g. data-urlchat="/cmsapi/chat") so they hit this proxy.
+  server: {
+    proxy: {
+      '/graphql': { target: 'http://localhost:8000', changeOrigin: true },
+      '/cmsapi': { target: 'http://localhost:8000', changeOrigin: true },
+      '/cmsproxy': { target: 'http://localhost:8000', changeOrigin: true },
+      '/storage': { target: 'http://localhost:8000', changeOrigin: true },
+      // GET through Laravel's `web` group: starts the session and sets the XSRF-TOKEN cookie that
+      // main.js primes on boot in dev (production gets it from the real /cmsadmin page load).
+      '/cmsadmin': { target: 'http://localhost:8000', changeOrigin: true },
+    }
+  },
   build: {
     manifest: true,
     rollupOptions: {
