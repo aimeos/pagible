@@ -40,6 +40,7 @@
     "mdast-util-to-markdown": "^2.1.2",
     "pinia": "^3.0",
     "pusher-js": "^8.5.0",
+    "snarkdown": "^2.0.0",
     "vite-plugin-vuetify": "^2.1",
     "vue": "^3.5",
     "vue-chartjs": "^5.3.3",

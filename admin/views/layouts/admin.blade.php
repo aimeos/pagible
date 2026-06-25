@@ -26,6 +26,7 @@
   <body>
     <div id="app"
       data-urlgraphql="{{ route('graphql') }}"
+      data-urlchat="{{ Route::has('cms.chat') ? route('cms.chat') : '' }}"
       data-urladmin="{{ route('cms.admin', [], false) }}"
       data-urlproxy="{{ route('cms.proxy', ['url' => '_url_']) }}"
       data-urlpage="{{ Route::has('cms.page') ? route('cms.page', ['path' => '_path_'] + (config('cms.multidomain') ? ['domain' => '_domain_'] : [])) : '' }}"

@@ -11,12 +11,13 @@ class AiServiceProvider extends Provider
         $basedir = dirname( __DIR__ );
 
         $this->loadViewsFrom( $basedir . '/views', 'cms' );
+        $this->loadRoutesFrom( $basedir . '/routes/ai.php' );
 
         $this->publishes( [$basedir . '/config/cms/ai.php' => config_path( 'cms/ai.php' )], 'cms-config' );
         $this->publishes( [$basedir . '/graphql/cms-ai.graphql' => base_path( 'graphql/cms-ai.graphql' )], 'cms-graphql' );
 
         \Aimeos\Cms\Permission::register( [
-            'page:synthesize',
+            'page:chat',
             'page:refine',
             'file:describe',
             'audio:transcribe',

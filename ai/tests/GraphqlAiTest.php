@@ -552,20 +552,6 @@ class GraphqlAiTest extends AiTestAbstract
     }
 
 
-    public function testSynthesizeNoPermission()
-    {
-        $user = $this->noPermUser();
-
-        $this->actingAs( $user )->graphQL( '
-            mutation($prompt: String!) {
-                synthesize(prompt: $prompt)
-            }
-        ', [
-            'prompt' => 'test',
-        ] )->assertGraphQLErrorMessage( 'Insufficient permissions' );
-    }
-
-
     public function testRefineNoPermission()
     {
         $user = $this->noPermUser();
@@ -642,16 +628,6 @@ class GraphqlAiTest extends AiTestAbstract
         $this->actingAs( $this->user )->graphQL( '
             mutation {
                 refine(prompt: "", content: "[]")
-            }
-        ' )->assertGraphQLErrorMessage( 'Prompt must not be empty' );
-    }
-
-
-    public function testSynthesizeEmptyPrompt()
-    {
-        $this->actingAs( $this->user )->graphQL( '
-            mutation {
-                synthesize(prompt: "")
             }
         ' )->assertGraphQLErrorMessage( 'Prompt must not be empty' );
     }
