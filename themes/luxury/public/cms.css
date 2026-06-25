@@ -163,7 +163,7 @@ header nav > ul > li:last-of-type a:hover {
 }
 
 header nav a,
-header nav details > summary {
+header nav details.dropdown summary:not([role]) {
     display: flex;
     align-items: center;
     list-style: none;
@@ -177,6 +177,12 @@ header nav details > summary {
     transition: color 0.15s ease;
     text-decoration: none;
     margin: 0;
+    background: none;
+    border: none;
+}
+
+header nav details.dropdown summary:not([role]):hover {
+    color: var(--pico-primary-hover);
 }
 
 header nav li :where(a):hover {
