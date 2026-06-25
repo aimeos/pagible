@@ -159,7 +159,7 @@ nav details {
 }
 
 header nav a,
-header nav details summary {
+header nav details.dropdown summary:not([role]) {
     display: flex;
     align-items: center;
     list-style: none;
@@ -177,7 +177,7 @@ header nav details summary {
 }
 
 header nav a:hover,
-header nav details summary:hover {
+header nav details.dropdown summary:not([role]):hover {
     color: var(--pico-primary);
 }
 
