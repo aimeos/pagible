@@ -22,5 +22,11 @@
     "Successfully sent": "Sėkmingai išsiųsta",
     "Error sending e-mail": "Klaida siunčiant el. laišką",
     "Unknown product": "Nežinomas produktas",
-    "Unknown payment provider": "Nežinomas mokėjimo paslaugų teikėjas"
+    "Unknown payment provider": "Nežinomas mokėjimo paslaugų teikėjas",
+    "Send a message to the site owner through the contact form": "Siųsti pranešimą svetainės savininkui naudojant kontaktų formą",
+    "Full name of the person sending the message": "Pranešimą siunčiančio asmens vardas ir pavardė",
+    "E-mail address of the sender for the reply": "Siuntėjo el. pašto adresas atsakymui",
+    "Message text to send to the site owner": "Pranešimo tekstas, kuris bus išsiųstas svetainės savininkui",
+    "Search the website and return matching pages with their titles and links": "Ieškoti svetainėje ir grąžinti atitinkančius puslapius su jų pavadinimais ir nuorodomis",
+    "Words or phrase to search for in the website content": "Žodžiai arba frazė, kurių ieškoti svetainės turinyje"
 }

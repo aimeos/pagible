@@ -22,5 +22,11 @@
     "Successfully sent": "Successfully sent",
     "Error sending e-mail": "Error sending e-mail",
     "Unknown product": "Unknown product",
-    "Unknown payment provider": "Unknown payment provider"
+    "Unknown payment provider": "Unknown payment provider",
+    "Send a message to the site owner through the contact form": "Send a message to the site owner through the contact form",
+    "Full name of the person sending the message": "Full name of the person sending the message",
+    "E-mail address of the sender for the reply": "E-mail address of the sender for the reply",
+    "Message text to send to the site owner": "Message text to send to the site owner",
+    "Search the website and return matching pages with their titles and links": "Search the website and return matching pages with their titles and links",
+    "Words or phrase to search for in the website content": "Words or phrase to search for in the website content"
 }

@@ -22,5 +22,11 @@
     "Successfully sent": "Veiksmīgi nosūtīts",
     "Error sending e-mail": "Kļūda, sūtot e-pastu",
     "Unknown product": "Nezināms produkts",
-    "Unknown payment provider": "Nezināms maksājumu pakalpojumu sniedzējs"
+    "Unknown payment provider": "Nezināms maksājumu pakalpojumu sniedzējs",
+    "Send a message to the site owner through the contact form": "Nosūtīt ziņojumu vietnes īpašniekam, izmantojot kontaktu veidlapu",
+    "Full name of the person sending the message": "Ziņojuma sūtītāja pilns vārds",
+    "E-mail address of the sender for the reply": "Sūtītāja e-pasta adrese atbildei",
+    "Message text to send to the site owner": "Ziņojuma teksts, kas tiks nosūtīts vietnes īpašniekam",
+    "Search the website and return matching pages with their titles and links": "Meklēt vietnē un atgriezt atbilstošās lapas ar to nosaukumiem un saitēm",
+    "Words or phrase to search for in the website content": "Vārdi vai frāze, kas jāmeklē vietnes saturā"
 }

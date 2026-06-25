@@ -9,22 +9,22 @@
 
 <h2 class="title">{{ $data->title ?? '' }}</h2>
 
-<form action="{{ route('cms.api.contact') }}" method="POST">
+<form action="{{ route('cms.api.contact') }}" method="POST" toolname="contact" tooldescription="{{ __('Send a message to the site owner through the contact form') }}">
     <input type="hidden" name="_token" value="">
 
     <div class="grid">
         <div>
             <label for="name">{{ __('Name') }}</label>
-            <input id="name" type="text" name="name" placeholder="{{ __('Your name') }}" required />
+            <input id="name" type="text" name="name" placeholder="{{ __('Your name') }}" required toolparamdescription="{{ __('Full name of the person sending the message') }}" />
         </div>
         <div>
             <label for="email">{{ __('E-Mail') }}</label>
-            <input id="email" type="email" name="email" placeholder="{{ __('Your e-mail address') }}" required />
+            <input id="email" type="email" name="email" placeholder="{{ __('Your e-mail address') }}" required toolparamdescription="{{ __('E-mail address of the sender for the reply') }}" />
         </div>
     </div>
     <div>
         <label for="message">{{ __('Message') }}</label>
-        <textarea id="message" name="message" placeholder="{{ __('Your message') }}" required rows="6"></textarea>
+        <textarea id="message" name="message" placeholder="{{ __('Your message') }}" required rows="6" toolparamdescription="{{ __('Message text to send to the site owner') }}"></textarea>
     </div>
     <div class="errors"></div>
     <div class="submit">

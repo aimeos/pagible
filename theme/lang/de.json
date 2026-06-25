@@ -22,5 +22,11 @@
     "Successfully sent": "Erfolgreich gesendet",
     "Error sending e-mail": "Fehler beim Senden der E-Mail",
     "Unknown product": "Unbekanntes Produkt",
-    "Unknown payment provider": "Unbekannter Zahlungsanbieter"
+    "Unknown payment provider": "Unbekannter Zahlungsanbieter",
+    "Send a message to the site owner through the contact form": "Eine Nachricht über das Kontaktformular an den Website-Betreiber senden",
+    "Full name of the person sending the message": "Vollständiger Name der Person, die die Nachricht sendet",
+    "E-mail address of the sender for the reply": "E-Mail-Adresse des Absenders für die Antwort",
+    "Message text to send to the site owner": "Nachrichtentext, der an den Website-Betreiber gesendet wird",
+    "Search the website and return matching pages with their titles and links": "Die Website durchsuchen und passende Seiten mit Titel und Link zurückgeben",
+    "Words or phrase to search for in the website content": "Wörter oder Wortgruppe, nach denen im Website-Inhalt gesucht werden soll"
 }

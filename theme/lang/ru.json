@@ -22,5 +22,11 @@
     "Successfully sent": "Успешно отправлено",
     "Error sending e-mail": "Ошибка отправки электронной почты",
     "Unknown product": "Неизвестный продукт",
-    "Unknown payment provider": "Неизвестный поставщик платежей"
+    "Unknown payment provider": "Неизвестный поставщик платежей",
+    "Send a message to the site owner through the contact form": "Отправить сообщение владельцу сайта через контактную форму",
+    "Full name of the person sending the message": "Полное имя человека, отправляющего сообщение",
+    "E-mail address of the sender for the reply": "Адрес электронной почты отправителя для ответа",
+    "Message text to send to the site owner": "Текст сообщения для отправки владельцу сайта",
+    "Search the website and return matching pages with their titles and links": "Выполнить поиск по сайту и вернуть подходящие страницы с их заголовками и ссылками",
+    "Words or phrase to search for in the website content": "Слова или фраза для поиска в содержимом сайта"
 }

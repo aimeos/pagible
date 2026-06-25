@@ -22,5 +22,11 @@
     "Successfully sent": "成功发送",
     "Error sending e-mail": "发送电子邮件出错",
     "Unknown product": "未知产品",
-    "Unknown payment provider": "未知付款提供商"
+    "Unknown payment provider": "未知付款提供商",
+    "Send a message to the site owner through the contact form": "通过联系表单向网站所有者发送消息",
+    "Full name of the person sending the message": "发送消息者的全名",
+    "E-mail address of the sender for the reply": "用于回复的发件人电子邮件地址",
+    "Message text to send to the site owner": "要发送给网站所有者的消息正文",
+    "Search the website and return matching pages with their titles and links": "搜索网站并返回匹配的页面及其标题和链接",
+    "Words or phrase to search for in the website content": "要在网站内容中搜索的字词或短语"
 }

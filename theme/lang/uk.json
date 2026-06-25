@@ -22,5 +22,11 @@
     "Successfully sent": "Успішно відправлено",
     "Error sending e-mail": "Помилка надсилання електронного листа",
     "Unknown product": "Невідомий продукт",
-    "Unknown payment provider": "Невідомий платіжний провайдер"
+    "Unknown payment provider": "Невідомий платіжний провайдер",
+    "Send a message to the site owner through the contact form": "Надіслати повідомлення власнику сайту через контактну форму",
+    "Full name of the person sending the message": "Повне ім'я особи, яка надсилає повідомлення",
+    "E-mail address of the sender for the reply": "Адреса електронної пошти відправника для відповіді",
+    "Message text to send to the site owner": "Текст повідомлення для надсилання власнику сайту",
+    "Search the website and return matching pages with their titles and links": "Шукати на сайті та повертати відповідні сторінки з їхніми заголовками й посиланнями",
+    "Words or phrase to search for in the website content": "Слова або фраза для пошуку у вмісті сайту"
 }

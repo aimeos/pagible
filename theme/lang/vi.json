@@ -22,5 +22,11 @@
     "Successfully sent": "Đã gửi thành công",
     "Error sending e-mail": "Lỗi gửi email",
     "Unknown product": "Sản phẩm không rõ nguồn gốc",
-    "Unknown payment provider": "Nhà cung cấp dịch vụ thanh toán không xác định"
+    "Unknown payment provider": "Nhà cung cấp dịch vụ thanh toán không xác định",
+    "Send a message to the site owner through the contact form": "Gửi tin nhắn đến chủ sở hữu trang web qua biểu mẫu liên hệ",
+    "Full name of the person sending the message": "Họ và tên đầy đủ của người gửi tin nhắn",
+    "E-mail address of the sender for the reply": "Địa chỉ email của người gửi để phản hồi",
+    "Message text to send to the site owner": "Nội dung tin nhắn cần gửi đến chủ sở hữu trang web",
+    "Search the website and return matching pages with their titles and links": "Tìm kiếm trên trang web và trả về các trang phù hợp cùng tiêu đề và liên kết của chúng",
+    "Words or phrase to search for in the website content": "Từ hoặc cụm từ cần tìm trong nội dung trang web"
 }

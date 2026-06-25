@@ -22,5 +22,11 @@
     "Successfully sent": "تم الإرسال بنجاح",
     "Error sending e-mail": "خطأ في إرسال البريد الإلكتروني",
     "Unknown product": "منتج غير معروف",
-    "Unknown payment provider": "مزود دفع غير معروف"
+    "Unknown payment provider": "مزود دفع غير معروف",
+    "Send a message to the site owner through the contact form": "إرسال رسالة إلى مالك الموقع عبر نموذج الاتصال",
+    "Full name of the person sending the message": "الاسم الكامل للشخص الذي يرسل الرسالة",
+    "E-mail address of the sender for the reply": "عنوان البريد الإلكتروني للمُرسِل للرد",
+    "Message text to send to the site owner": "نص الرسالة المراد إرسالها إلى مالك الموقع",
+    "Search the website and return matching pages with their titles and links": "ابحث في الموقع وأعد الصفحات المطابقة مع عناوينها وروابطها",
+    "Words or phrase to search for in the website content": "الكلمات أو العبارة المراد البحث عنها في محتوى الموقع"
 }

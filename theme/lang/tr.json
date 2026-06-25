@@ -22,5 +22,11 @@
     "Successfully sent": "Başarıyla gönderildi",
     "Error sending e-mail": "E-posta gönderirken hata oluştu",
     "Unknown product": "Bilinmeyen ürün",
-    "Unknown payment provider": "Bilinmeyen ödeme sağlayıcısı"
+    "Unknown payment provider": "Bilinmeyen ödeme sağlayıcısı",
+    "Send a message to the site owner through the contact form": "İletişim formu aracılığıyla site sahibine bir mesaj gönderin",
+    "Full name of the person sending the message": "Mesajı gönderen kişinin tam adı",
+    "E-mail address of the sender for the reply": "Yanıt için gönderenin e-posta adresi",
+    "Message text to send to the site owner": "Site sahibine gönderilecek mesaj metni",
+    "Search the website and return matching pages with their titles and links": "Web sitesinde arama yapın ve eşleşen sayfaları başlık ve bağlantılarıyla döndürün",
+    "Words or phrase to search for in the website content": "Web sitesi içeriğinde aranacak kelimeler veya ifade"
 }

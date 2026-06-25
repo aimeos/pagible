@@ -22,5 +22,11 @@
     "Successfully sent": "Uspešno poslano",
     "Error sending e-mail": "Napaka pri pošiljanju e-pošte",
     "Unknown product": "Neznani izdelek",
-    "Unknown payment provider": "Neznani ponudnik plačil"
+    "Unknown payment provider": "Neznani ponudnik plačil",
+    "Send a message to the site owner through the contact form": "Pošljite sporočilo lastniku spletnega mesta prek kontaktnega obrazca",
+    "Full name of the person sending the message": "Polno ime osebe, ki pošilja sporočilo",
+    "E-mail address of the sender for the reply": "E-poštni naslov pošiljatelja za odgovor",
+    "Message text to send to the site owner": "Besedilo sporočila, ki bo poslano lastniku spletnega mesta",
+    "Search the website and return matching pages with their titles and links": "Preiščite spletno mesto in vrnite ustrezne strani z naslovom in povezavo",
+    "Words or phrase to search for in the website content": "Besede ali besedna zveza za iskanje po vsebini spletnega mesta"
 }

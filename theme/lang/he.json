@@ -22,5 +22,11 @@
     "Successfully sent": "נשלח בהצלחה",
     "Error sending e-mail": "שגיאה בשליחת דואר אלקטרוני",
     "Unknown product": "מוצר לא ידוע",
-    "Unknown payment provider": "ספק תשלומים לא ידוע"
+    "Unknown payment provider": "ספק תשלומים לא ידוע",
+    "Send a message to the site owner through the contact form": "שליחת הודעה לבעלי האתר באמצעות טופס יצירת הקשר",
+    "Full name of the person sending the message": "השם המלא של השולח את ההודעה",
+    "E-mail address of the sender for the reply": "כתובת הדוא\"ל של השולח עבור המענה",
+    "Message text to send to the site owner": "טקסט ההודעה שיישלח לבעלי האתר",
+    "Search the website and return matching pages with their titles and links": "חיפוש באתר והחזרת הדפים התואמים עם הכותרת והקישור שלהם",
+    "Words or phrase to search for in the website content": "מילים או ביטוי לחיפוש בתוכן האתר"
 }

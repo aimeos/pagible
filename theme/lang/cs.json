@@ -22,5 +22,11 @@
     "Successfully sent": "Úspěšně odesláno",
     "Error sending e-mail": "Chyba při odesílání e-mailu",
     "Unknown product": "Neznámý produkt",
-    "Unknown payment provider": "Neznámý poskytovatel plateb"
+    "Unknown payment provider": "Neznámý poskytovatel plateb",
+    "Send a message to the site owner through the contact form": "Odeslat zprávu vlastníkovi webu prostřednictvím kontaktního formuláře",
+    "Full name of the person sending the message": "Celé jméno osoby, která odesílá zprávu",
+    "E-mail address of the sender for the reply": "E-mailová adresa odesílatele pro odpověď",
+    "Message text to send to the site owner": "Text zprávy, která se odešle vlastníkovi webu",
+    "Search the website and return matching pages with their titles and links": "Prohledat web a vrátit odpovídající stránky s názvem a odkazem",
+    "Words or phrase to search for in the website content": "Slova nebo fráze, které se mají hledat v obsahu webu"
 }
