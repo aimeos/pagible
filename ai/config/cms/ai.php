@@ -14,6 +14,28 @@ return [
     */
     'maxtoken' => env( 'CMS_AI_MAXTOKEN' ), // maximum tokens per request
 
+    /*
+    |--------------------------------------------------------------------------
+    | Chat route middleware
+    |--------------------------------------------------------------------------
+    |
+    | Middleware applied to the "cmsapi/chat" streaming route. Throttled by
+    | default; multi-tenant setups (e.g. stancl/tenancy) must also add their
+    | tenancy-init middleware here so Tenancy::value() resolves to the right
+    | tenant for the AI tool calls (page reads/creation) during the stream.
+    |
+    */
+    'middleware' => ['web', 'throttle:cms-ai'],
+
+    /*
+     |----------------------------------------------------------------------
+    | AI tools
+    |--------------------------------------------------------------------------
+    |
+    | Define the AI tools used for content generation. Each tool has a provider,
+    | model, and API key. The base URL for the provider is optional.
+    |
+    */
     'write' => [ // Generate text content based on prompts
         'provider' => env( 'CMS_AI_WRITE', 'gemini' ),
         'model' => env( 'CMS_AI_WRITE_MODEL' ),

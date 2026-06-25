@@ -97,35 +97,6 @@ class GraphqlTest extends AiTestAbstract
     }
 
 
-    public function testSynthesize()
-    {
-        $file = File::firstOrFail();
-        $fake = TextResponse::fromText( 'This is the generated response.' )
-            ->withSteps( [
-                new \Aimeos\Prisma\Tools\Step( '1', 'summarize', ['text' => str_repeat( 'A', 80 )] ),
-                new \Aimeos\Prisma\Tools\Step( '2', 'classify', ['category' => 'example'] ),
-            ] );
-
-        Prisma::fake( [$fake] );
-
-        $response = $this->actingAs($this->user)->graphQL('
-            mutation($prompt: String!, $context: String, $files: [String!]) {
-                synthesize(prompt: $prompt, context: $context, files: $files)
-            }
-        ', [
-            'prompt' => 'Refine this content',
-            'context' => 'Testing synthesize mutation',
-            'files'   => [$file->id],
-        ]);
-
-        $json = $response->json();
-
-        $this->assertStringStartsWith("Done\n---\n", $json['data']['synthesize']);
-        $this->assertStringContainsString('summarize', $json['data']['synthesize']);
-        $this->assertStringContainsString('classify', $json['data']['synthesize']);
-    }
-
-
     public function testUncrop()
     {
         $image = file_get_contents( __DIR__ . '/assets/image.png' );

@@ -11,6 +11,7 @@ import router from './routes'
 import { socketId } from './echo'
 import { useUserStore } from './stores'
 import { urlgraphql } from './config'
+import { xsrfHeaders } from './utils'
 
 const retryLink = new RetryLink({
   delay: { initial: 300, max: 5000, jitter: true },
@@ -21,11 +22,11 @@ const retryLink = new RetryLink({
 // authenticated mutations are protected against CSRF when the GraphQL route is
 // guarded by the VerifyCsrfToken middleware. No-op when the cookie is absent.
 const csrfLink = new ApolloLink((operation, forward) => {
-  const match = document.cookie.match(/(?:^|;\s*)XSRF-TOKEN=([^;]+)/)
+  const xsrf = xsrfHeaders()
 
-  if (match) {
+  if (xsrf['X-XSRF-TOKEN']) {
     operation.setContext(({ headers = {} }) => ({
-      headers: { ...headers, 'X-XSRF-TOKEN': decodeURIComponent(match[1]) }
+      headers: { ...headers, ...xsrf }
     }))
   }
 

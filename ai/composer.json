@@ -12,7 +12,7 @@
         "aimeos/pagible-mcp": "*@dev",
         "aimeos/pagible-core": "*@dev",
         "aimeos/pagible-graphql": "*@dev",
-        "aimeos/prisma": "~0.4"
+        "aimeos/prisma": "dev-master"
     },
     "require-dev": {
         "orchestra/testbench": "^9.0||^10.0||^11.0"

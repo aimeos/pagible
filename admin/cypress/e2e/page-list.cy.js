@@ -15,7 +15,7 @@ const ALL_PERMISSIONS = {
   'page:keep': true,
   'page:purge': true,
   'page:publish': true,
-  'page:synthesize': true,
+  'page:chat': true,
   'audio:transcribe': true,
   'element:view': true,
   'file:view': true,
@@ -83,7 +83,6 @@ function pagesResponse(pages) {
  * @param {object|null}       options.keepPage    – return value for `keepPage` mutation
  * @param {object|null}       options.purgePage   – return value for `purgePage` mutation
  * @param {object|null}       options.pubPage     – return value for `pubPage` mutation
- * @param {string|null}       options.synthesize  – return value for `synthesize` mutation
  */
 function setupIntercept({
   meResponse = ME_ADMIN,
@@ -96,7 +95,6 @@ function setupIntercept({
   keepPage = null,
   purgePage = null,
   pubPage = null,
-  synthesize = null,
   schemas = [{ name: 'cms', label: 'CMS', types: '{"page":{},"blog":{}}', content: '{}', meta: '{}', config: '{}' }],
 } = {}) {
   cy.intercept('POST', '/graphql', (req) => {
@@ -140,9 +138,6 @@ function setupIntercept({
       }
       if (query.includes('schemas')) {
         return { data: { schemas } }
-      }
-      if (query.includes('synthesize')) {
-        return { data: { synthesize: synthesize || 'Generated page content' } }
       }
       if (query.includes('pages')) {
         return { data: pagesResponse(pages) }
@@ -715,14 +710,14 @@ describe('Page List', () => {
     cy.get('.item-aux').first().should('have.attr', 'target', '_blank')
   })
 
-  // ---- AI synthesize prompt ----
+  // ---- AI chat prompt ----
 
-  it('shows synthesize prompt for users with page:synthesize permission', () => {
+  it('shows chat prompt for users with page:chat permission', () => {
     visitPages()
     cy.get('.prompt').should('exist')
   })
 
-  it('hides synthesize prompt when user lacks page:synthesize permission', () => {
+  it('hides chat prompt when user lacks page:chat permission', () => {
     const me = {
       permission: JSON.stringify({ 'page:view': true, 'page:add': true }),
       email: 'editor@example.com',
@@ -732,20 +727,31 @@ describe('Page List', () => {
     cy.get('.prompt').should('not.exist')
   })
 
-  it('synthesize submit button appears after typing prompt', () => {
+  it('chat submit button appears after typing prompt', () => {
     visitPages()
     cy.get('.prompt textarea').first().type('Create a landing page about cats')
     cy.get('.prompt .v-input__append .v-btn').should('exist')
   })
 
-  it('clicking synthesize submit sends synthesize mutation', () => {
+  it('opens the chat dialog and streams the synthesized answer when submitting a prompt', () => {
     visitPages()
+
+    // The chat posts to the streaming text endpoint and renders the chunks (no GraphQL mutation)
+    cy.intercept('POST', '**/cmsapi/chat', {
+      statusCode: 200,
+      headers: { 'content-type': 'text/plain' },
+      body: 'Generated page content',
+    }).as('chat')
+
     cy.get('.prompt textarea').first().type('Create a landing page')
     cy.get('.prompt .v-input__append .v-btn').click()
-    cy.wait('@gql').its('request.body').should((body) => {
-      const ops = Array.isArray(body) ? body : [body]
-      expect(ops.some((op) => (op.query || '').includes('synthesize'))).to.be.true
+    cy.contains('AI Assistant').should('be.visible') // the launcher expands into the chat modal
+
+    cy.wait('@chat').its('request.body').should((body) => {
+      expect(body.prompt).to.eq('Create a landing page')
     })
+
+    cy.contains('Generated page content').should('be.visible')
   })
 
   // ---- Permission-based visibility ----
