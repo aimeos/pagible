@@ -340,10 +340,12 @@ export default {
           <div class="chat-bubble" :class="{ error: m.error }">
             <!-- Each completed block is rendered once into m.blocks and appended as its own element,
                  so neither DOMPurify nor the DOM re-processes earlier blocks. The open trailing block
-                 (m.pending) streams as raw text until it closes and is cached too -->
+                 (m.pending) is rendered live as markdown too - so single-newline content with no
+                 blank-line boundary still formats while streaming instead of showing raw markdown
+                 until the block closes. snarkdown auto-closes partial syntax, so the commit is seamless -->
             <template v-if="m.role === 'assistant'">
               <div v-for="(b, j) in m.blocks" :key="j" class="chat-text" v-html="b"></div>
-              <div v-if="m.streaming && m.pending" class="chat-text">{{ m.pending }}</div>
+              <div v-if="m.streaming && m.pending" class="chat-text" v-html="render(m.pending)"></div>
             </template>
             <div v-else class="chat-text">{{ m.content }}</div>
             <span v-if="m.streaming" class="chat-cursor" aria-hidden="true"></span>

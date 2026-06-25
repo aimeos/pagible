@@ -71,4 +71,26 @@ describe('ChatDialog', () => {
     mountDialog()
     cy.get('button[aria-label="Dictate"]').should('not.exist')
   })
+
+  it('renders the open streaming block as markdown, not raw text', () => {
+    // A streamed answer with single newlines (no blank-line boundary) stays in the open trailing
+    // block (m.pending) for the whole stream. It must render live as markdown rather than printing
+    // raw markdown like "*   *Is ...*" until the block closes.
+    mountDialog()
+    cy.then(() => {
+      const vm = Cypress.vueWrapper.findComponent(ChatDialog).vm
+      vm.messages = [
+        {
+          id: 1,
+          role: 'assistant',
+          content: '',
+          blocks: [],
+          pending: 'Intro line\n*   *Is PagibleAI free to use?* (self-hosted).',
+          streaming: true,
+        },
+      ]
+    })
+    cy.get('.chat-bubble ul li em').should('contain', 'Is PagibleAI free to use?')
+    cy.get('.chat-bubble').should('not.contain', '*   ')
+  })
 })
