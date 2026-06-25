@@ -277,6 +277,31 @@ document.addEventListener('click', (ev) => {
 
 
 /**
+ * WebMCP search tool (declarative API)
+ *
+ * The search form is exposed to AI agents via its toolname/tooldescription
+ * attributes. On an agent-driven submit, return the matching pages as JSON
+ * instead of letting the form navigate to the first result.
+ */
+document.querySelector('form[toolname="search"]')?.addEventListener('submit', (ev) => {
+    if (!ev.agentInvoked) {
+        return; // human submits are handled by PagibleSearch.select
+    }
+
+    ev.preventDefault();
+    ev.stopImmediatePropagation();
+
+    const url = ev.target.action.replace(/_term_/, encodeURIComponent(ev.target.q.value));
+
+    ev.respondWith(
+        fetch(url, { headers: { 'Accept': 'application/json' } })
+            .then(response => response.text())
+    );
+});
+
+
+
+/**
  * Navigation menu
  */
 document.addEventListener('DOMContentLoaded', () => {

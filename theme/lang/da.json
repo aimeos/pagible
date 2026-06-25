@@ -22,5 +22,11 @@
     "Successfully sent": "Sendt med succes",
     "Error sending e-mail": "Fejl ved afsendelse af e-mail",
     "Unknown product": "Ukendt produkt",
-    "Unknown payment provider": "Ukendt betalingsudbyder"
+    "Unknown payment provider": "Ukendt betalingsudbyder",
+    "Send a message to the site owner through the contact form": "Send en besked til webstedets ejer via kontaktformularen",
+    "Full name of the person sending the message": "Fulde navn på den person, der sender beskeden",
+    "E-mail address of the sender for the reply": "Afsenderens e-mailadresse til svaret",
+    "Message text to send to the site owner": "Beskedtekst, der skal sendes til webstedets ejer",
+    "Search the website and return matching pages with their titles and links": "Søg på webstedet, og returnér matchende sider med titel og link",
+    "Words or phrase to search for in the website content": "Ord eller sætning, der skal søges efter i webstedets indhold"
 }

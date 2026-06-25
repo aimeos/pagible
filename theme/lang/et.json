@@ -22,5 +22,11 @@
     "Successfully sent": "Edukalt saadetud",
     "Error sending e-mail": "Viga e-kirja saatmisel",
     "Unknown product": "Tundmatu toode",
-    "Unknown payment provider": "Tundmatu makseteenuse pakkuja"
+    "Unknown payment provider": "Tundmatu makseteenuse pakkuja",
+    "Send a message to the site owner through the contact form": "Saada veebisaidi omanikule sõnum kontaktivormi kaudu",
+    "Full name of the person sending the message": "Sõnumi saatja täisnimi",
+    "E-mail address of the sender for the reply": "Saatja e-posti aadress vastuse jaoks",
+    "Message text to send to the site owner": "Veebisaidi omanikule saadetava sõnumi tekst",
+    "Search the website and return matching pages with their titles and links": "Otsi veebisaidilt ja tagasta sobivad lehed koos pealkirja ja lingiga",
+    "Words or phrase to search for in the website content": "Sõnad või fraas, mida veebisaidi sisust otsida"
 }

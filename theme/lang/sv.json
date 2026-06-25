@@ -22,5 +22,11 @@
     "Successfully sent": "Framgångsrikt skickat",
     "Error sending e-mail": "Fel vid sändning av e-post",
     "Unknown product": "Okänd produkt",
-    "Unknown payment provider": "Okänd betalningsleverantör"
+    "Unknown payment provider": "Okänd betalningsleverantör",
+    "Send a message to the site owner through the contact form": "Skicka ett meddelande till webbplatsens ägare via kontaktformuläret",
+    "Full name of the person sending the message": "Fullständigt namn på personen som skickar meddelandet",
+    "E-mail address of the sender for the reply": "Avsändarens e-postadress för svaret",
+    "Message text to send to the site owner": "Meddelandetext som ska skickas till webbplatsens ägare",
+    "Search the website and return matching pages with their titles and links": "Sök på webbplatsen och returnera matchande sidor med titel och länk",
+    "Words or phrase to search for in the website content": "Ord eller fras att söka efter i webbplatsens innehåll"
 }

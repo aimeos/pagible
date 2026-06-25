@@ -22,5 +22,11 @@
     "Successfully sent": "Επιτυχής αποστολή",
     "Error sending e-mail": "Σφάλμα αποστολής e-mail",
     "Unknown product": "Άγνωστο προϊόν",
-    "Unknown payment provider": "Άγνωστος πάροχος πληρωμών"
+    "Unknown payment provider": "Άγνωστος πάροχος πληρωμών",
+    "Send a message to the site owner through the contact form": "Στείλτε ένα μήνυμα στον ιδιοκτήτη του ιστότοπου μέσω της φόρμας επικοινωνίας",
+    "Full name of the person sending the message": "Πλήρες όνομα του ατόμου που στέλνει το μήνυμα",
+    "E-mail address of the sender for the reply": "Διεύθυνση email του αποστολέα για την απάντηση",
+    "Message text to send to the site owner": "Κείμενο του μηνύματος που θα σταλεί στον ιδιοκτήτη του ιστότοπου",
+    "Search the website and return matching pages with their titles and links": "Αναζητήστε στον ιστότοπο και επιστρέψτε τις σελίδες που ταιριάζουν με τον τίτλο και τον σύνδεσμό τους",
+    "Words or phrase to search for in the website content": "Λέξεις ή φράση προς αναζήτηση στο περιεχόμενο του ιστότοπου"
 }

@@ -22,5 +22,11 @@
     "Successfully sent": "Berhasil dikirim",
     "Error sending e-mail": "Kesalahan pengiriman email",
     "Unknown product": "Produk tidak dikenal",
-    "Unknown payment provider": "Penyedia pembayaran tidak dikenal"
+    "Unknown payment provider": "Penyedia pembayaran tidak dikenal",
+    "Send a message to the site owner through the contact form": "Kirim pesan ke pemilik situs melalui formulir kontak",
+    "Full name of the person sending the message": "Nama lengkap orang yang mengirim pesan",
+    "E-mail address of the sender for the reply": "Alamat email pengirim untuk balasan",
+    "Message text to send to the site owner": "Teks pesan yang akan dikirim ke pemilik situs",
+    "Search the website and return matching pages with their titles and links": "Cari di situs web dan kembalikan halaman yang cocok beserta judul dan tautannya",
+    "Words or phrase to search for in the website content": "Kata atau frasa yang dicari dalam konten situs web"
 }

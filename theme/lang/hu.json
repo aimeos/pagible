@@ -22,5 +22,11 @@
     "Successfully sent": "Sikeresen elküldve",
     "Error sending e-mail": "Hiba az e-mail küldésében",
     "Unknown product": "Ismeretlen termék",
-    "Unknown payment provider": "Ismeretlen fizetési szolgáltató"
+    "Unknown payment provider": "Ismeretlen fizetési szolgáltató",
+    "Send a message to the site owner through the contact form": "Üzenet küldése a webhely tulajdonosának a kapcsolatfelvételi űrlapon keresztül",
+    "Full name of the person sending the message": "Az üzenetet küldő személy teljes neve",
+    "E-mail address of the sender for the reply": "A feladó e-mail-címe a válaszhoz",
+    "Message text to send to the site owner": "A webhely tulajdonosának küldendő üzenet szövege",
+    "Search the website and return matching pages with their titles and links": "Keresés a webhelyen, és a találati oldalak visszaadása címmel és hivatkozással",
+    "Words or phrase to search for in the website content": "A webhely tartalmában keresendő szavak vagy kifejezés"
 }

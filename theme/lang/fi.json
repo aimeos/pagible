@@ -22,5 +22,11 @@
     "Successfully sent": "Onnistuneesti lähetetty",
     "Error sending e-mail": "Virhe sähköpostin lähettämisessä",
     "Unknown product": "Tuntematon tuote",
-    "Unknown payment provider": "Tuntematon maksupalveluntarjoaja"
+    "Unknown payment provider": "Tuntematon maksupalveluntarjoaja",
+    "Send a message to the site owner through the contact form": "Lähetä viesti sivuston omistajalle yhteydenottolomakkeella",
+    "Full name of the person sending the message": "Viestin lähettäjän koko nimi",
+    "E-mail address of the sender for the reply": "Lähettäjän sähköpostiosoite vastausta varten",
+    "Message text to send to the site owner": "Sivuston omistajalle lähetettävän viestin teksti",
+    "Search the website and return matching pages with their titles and links": "Hae sivustolta ja palauta vastaavat sivut otsikoineen ja linkkeineen",
+    "Words or phrase to search for in the website content": "Sanat tai lause, joita haetaan sivuston sisällöstä"
 }

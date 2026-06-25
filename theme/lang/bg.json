@@ -22,5 +22,11 @@
     "Successfully sent": "Успешно изпратен",
     "Error sending e-mail": "Грешка при изпращане на имейл",
     "Unknown product": "Неизвестен продукт",
-    "Unknown payment provider": "Неизвестен доставчик на плащания"
+    "Unknown payment provider": "Неизвестен доставчик на плащания",
+    "Send a message to the site owner through the contact form": "Изпратете съобщение до собственика на сайта чрез формата за контакт",
+    "Full name of the person sending the message": "Пълно име на лицето, което изпраща съобщението",
+    "E-mail address of the sender for the reply": "Имейл адрес на подателя за отговора",
+    "Message text to send to the site owner": "Текст на съобщението, което ще бъде изпратено до собственика на сайта",
+    "Search the website and return matching pages with their titles and links": "Търсене в сайта и връщане на съответстващите страници с тяхното заглавие и връзка",
+    "Words or phrase to search for in the website content": "Думи или фраза за търсене в съдържанието на сайта"
 }
