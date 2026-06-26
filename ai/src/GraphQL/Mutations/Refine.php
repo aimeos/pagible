@@ -42,10 +42,12 @@ final class Refine
 
         try
         {
+            set_time_limit( (int) config( 'cms.ai.timeout' ) ); // long AI call; lift PHP's default 30s execution limit (matches client timeout)
+
             $schema = Schema::fromArray( 'response', JsonSchema::build( $type, $args['pagetype'] ?? null ) );
             $response = Prisma::text()->using( $provider, $config )
                 ->model( $model )
-                ->withClientOptions( ['timeout' => 300] )
+                ->withClientOptions( ['timeout' => (int) config( 'cms.ai.timeout' )] )
                 ->withMaxTokens( config( 'cms.ai.maxtoken' ) )
                 ->withSystemPrompt( $system . "\n" . ($args['context'] ?? '') . ( !empty( $args['lang'] ) ? "\nWrite the content in language: " . $args['lang'] : '' ) )
                 ->withTools( [
