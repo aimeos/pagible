@@ -2,7 +2,7 @@
 
 <script>
 import { markRaw } from 'vue'
-import snarkdown from 'snarkdown'
+import { Marked } from 'marked'
 import DOMPurify from 'dompurify'
 import {
   mdiAccount,
@@ -17,6 +17,10 @@ import {
 } from '@mdi/js'
 import { useUserStore } from '../stores'
 import { chat } from '../chat'
+
+// GFM (tables, task lists, strikethrough) with single newlines as <br> to match chat expectations.
+// A dedicated instance avoids mutating marked's global options; DOMPurify sanitizes the output.
+const md = new Marked({ gfm: true, breaks: true })
 
 export default {
   name: 'ChatDialog',
@@ -134,7 +138,7 @@ export default {
     },
 
     render(text) {
-      return DOMPurify.sanitize(snarkdown(text || ''))
+      return DOMPurify.sanitize(md.parse(text || ''))
     },
 
     scrollDown() {
@@ -198,9 +202,9 @@ export default {
           const text = delta.text || ''
           // A blank line may close one or more blocks; render & cache those once (never
           // re-sanitized or re-parsed). Track ``` fences incrementally - counting only the
-          // line-start delimiters snarkdown actually treats as code fences in the newly-arrived
-          // span (so inline/prose backticks don't false-open one) - so an open fence defers its
-          // commit without an O(n^2) re-scan.
+          // line-start delimiters marked treats as code fences in the newly-arrived span (so
+          // inline/prose backticks don't false-open one) - so a blank line inside an open fenced
+          // code block defers its commit without an O(n^2) re-scan.
           const boundary = (assistant.content.slice(-1) + text).includes('\n\n')
           assistant.content += text
           assistant.pending += text // accumulate the raw tail incrementally (O(chunk), not O(tail))
@@ -342,10 +346,10 @@ export default {
                  so neither DOMPurify nor the DOM re-processes earlier blocks. The open trailing block
                  (m.pending) is rendered live as markdown too - so single-newline content with no
                  blank-line boundary still formats while streaming instead of showing raw markdown
-                 until the block closes. snarkdown auto-closes partial syntax, so the commit is seamless -->
+                 until the block closes. marked tolerates partial syntax, so the commit is seamless -->
             <template v-if="m.role === 'assistant'">
-              <div v-for="(b, j) in m.blocks" :key="j" class="chat-text" v-html="b"></div>
-              <div v-if="m.streaming && m.pending" class="chat-text" v-html="render(m.pending)"></div>
+              <div v-for="(b, j) in m.blocks" :key="j" class="chat-md" v-html="b"></div>
+              <div v-if="m.streaming && m.pending" class="chat-md" v-html="render(m.pending)"></div>
             </template>
             <div v-else class="chat-text">{{ m.content }}</div>
             <span v-if="m.streaming" class="chat-cursor" aria-hidden="true"></span>
@@ -490,22 +494,90 @@ export default {
   color: rgb(var(--v-theme-on-error));
 }
 
+/* User bubble: raw text, so honor its own newlines/spacing. */
 .chat-text {
   white-space: pre-wrap;
   word-break: break-word;
 }
 
-.chat-text :deep(p) {
-  margin: 0 0 8px;
+/* Assistant bubble: marked-rendered block HTML, so no pre-wrap (it would turn the newlines
+   between blocks into gaps); only <pre> code keeps pre-wrap below. */
+.chat-md {
+  word-break: break-word;
 }
 
-.chat-text :deep(p:last-child) {
+.chat-md :deep(:first-child) {
+  margin-top: 0;
+}
+
+.chat-md :deep(:last-child) {
   margin-bottom: 0;
 }
 
-.chat-text :deep(pre) {
+.chat-md :deep(p) {
+  margin: 0 0 8px;
+}
+
+.chat-md :deep(h1),
+.chat-md :deep(h2),
+.chat-md :deep(h3),
+.chat-md :deep(h4) {
+  margin: 12px 0 8px;
+  font-size: 1.05em;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.chat-md :deep(ul),
+.chat-md :deep(ol) {
+  margin: 0 0 8px;
+  padding-inline-start: 20px;
+}
+
+.chat-md :deep(blockquote) {
+  margin: 0 0 8px;
+  padding-inline-start: 10px;
+  border-inline-start: 3px solid rgba(var(--v-border-color), var(--v-border-opacity));
+  opacity: 0.85;
+}
+
+.chat-md :deep(code) {
+  padding: 1px 4px;
+  border-radius: 4px;
+  background-color: rgba(var(--v-theme-on-surface), 0.08);
+  font-size: 0.875em;
+}
+
+.chat-md :deep(pre) {
+  margin: 0 0 8px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  background-color: rgba(var(--v-theme-on-surface), 0.06);
   white-space: pre-wrap;
   overflow-x: auto;
+}
+
+.chat-md :deep(pre code) {
+  padding: 0;
+  background: none;
+}
+
+.chat-md :deep(table) {
+  border-collapse: collapse;
+  margin: 0 0 8px;
+  font-size: 0.875em;
+}
+
+.chat-md :deep(th),
+.chat-md :deep(td) {
+  padding: 4px 8px;
+  border: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
+  text-align: left;
+}
+
+.chat-md :deep(th) {
+  font-weight: 600;
+  background-color: rgba(var(--v-theme-on-surface), 0.04);
 }
 
 .chat-cursor {
