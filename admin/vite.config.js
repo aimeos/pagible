@@ -61,6 +61,25 @@ export default defineConfig({
         }
       }
     },
+    {
+      // Emit the shared-runtime shims (vue, vue-router, vuetify, graphql-tag) as entry
+      // chunks with a strict signature so their `export *` re-exports survive tree-shaking
+      // and stay addressable in the manifest for the plugin import map. preserveSignature is
+      // set per-chunk here instead of globally: a global setting would force the full
+      // Vue/Vuetify/router export surface into the eager app bundle (~17 KB gzip) because the
+      // shims share chunks with the main app. Scoping it keeps the host build unchanged.
+      name: 'cms-plugin-shims',
+      buildStart() {
+        for(const name of ['vue', 'vue-router', 'vuetify', 'graphql-tag']) {
+          this.emitFile({
+            type: 'chunk',
+            id: fileURLToPath(new URL(`./js/shims/${name}.js`, import.meta.url)),
+            name: `shim-${name}`,
+            preserveSignature: 'strict'
+          })
+        }
+      }
+    },
   ],
   resolve: {
     alias: {

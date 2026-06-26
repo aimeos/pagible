@@ -3,10 +3,11 @@
  */
 
 import gql from 'graphql-tag'
-import { markRaw } from 'vue'
+import { defineAsyncComponent, h, markRaw } from 'vue'
 import { defineStore } from 'pinia'
 import { apolloClient, clearUploadLink } from './graphql'
 import { disconnect } from './echo'
+import gettext from './i18n'
 import {
   urladmin,
   urlproxy,
@@ -343,6 +344,50 @@ export const useDrawerStore = defineStore('drawer', {
     toggle(key) {
       this[key] = !this[key]
     }
+  }
+})
+
+/**
+ * Admin panel extensions registered by composer plugins.
+ *
+ * The definitions arrive as JSON in the #app element's data-plugins attribute.
+ * Each plugin's `component` is a URL to a Vite-built ES module with a default
+ * export, loaded lazily via dynamic import() and wrapped so a load failure shows
+ * a fallback instead of breaking the host. Components are markRaw so Pinia does
+ * not make them reactive.
+ */
+const PluginError = markRaw({
+  render: () => h('div', { class: 'pa-4 text-error' }, gettext.$gettext('Failed to load plugin'))
+})
+
+function pluginComponent(def) {
+  return {
+    ...def,
+    component: markRaw(defineAsyncComponent({
+      loader: () => import(/* @vite-ignore */ def.component).then((mod) => mod.default),
+      errorComponent: PluginError
+    }))
+  }
+}
+
+export const usePluginStore = defineStore('plugin', {
+  state: () => {
+    const data = safeParse(document.getElementById('app')?.dataset.plugins)
+    const panels = {}
+    const subpanels = {}
+
+    for (const [key, def] of Object.entries(data.panels || {})) {
+      panels[key] = pluginComponent(def)
+    }
+
+    for (const [host, group] of Object.entries(data.subpanels || {})) {
+      subpanels[host] = {}
+      for (const [key, def] of Object.entries(group)) {
+        subpanels[host][key] = pluginComponent(def)
+      }
+    }
+
+    return { panels, subpanels }
   }
 })
 

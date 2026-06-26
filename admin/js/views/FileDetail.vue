@@ -6,7 +6,7 @@ import AsideMeta from '../components/AsideMeta.vue'
 import DetailAppBar from '../components/DetailAppBar.vue'
 import FileDetailRefs from '../components/FileDetailRefs.vue'
 import FileDetailItem from '../components/FileDetailItem.vue'
-import { useDirtyStore, useSideStore, useUserStore, useMessageStore, useViewStack, useChangeStore } from '../stores'
+import { useDirtyStore, useSideStore, useUserStore, useMessageStore, usePluginStore, useViewStack, useChangeStore } from '../stores'
 import { applyResult, hasUnresolved } from '../merge'
 import { publishDate, publishItem } from '../publish'
 import { defineAsyncComponent, markRaw } from 'vue'
@@ -118,6 +118,10 @@ export default {
   },
 
   computed: {
+    subpanels() {
+      return usePluginStore().subpanels.file || {}
+    },
+
     hasConflict() {
       return hasUnresolved(this.changed)
     },
@@ -399,6 +403,9 @@ export default {
           $gettext('File')
         }}</v-tab>
         <v-tab value="refs">{{ $gettext('Used by') }}</v-tab>
+        <v-tab v-for="(sp, key) in subpanels" :key="key" :value="'ext-' + key">
+          {{ sp.label }}
+        </v-tab>
       </v-tabs>
 
       <v-window v-model="tab" :touch="false">
@@ -413,6 +420,10 @@ export default {
 
         <v-window-item value="refs">
           <FileDetailRefs :item="item" />
+        </v-window-item>
+
+        <v-window-item v-for="(sp, key) in subpanels" :key="key" :value="'ext-' + key">
+          <component :is="sp.component" :item="item" />
         </v-window-item>
       </v-window>
     </v-form>

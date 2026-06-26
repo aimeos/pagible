@@ -4,7 +4,7 @@
 
 import { reactive } from 'vue'
 import { createRouter, createWebHistory } from 'vue-router'
-import { useClipboardStore, useDirtyStore, useUserStore, useMessageStore, useViewStack } from './stores'
+import { useClipboardStore, useDirtyStore, useUserStore, useMessageStore, usePluginStore, useViewStack } from './stores'
 import { apolloClient } from './graphql'
 import { urladmin } from './config'
 import gettext from './i18n'
@@ -137,5 +137,30 @@ router.afterEach((to, from) => {
     apolloClient.cache.gc()
   }
 })
+
+/**
+ * Registers a route for each plugin navigation panel.
+ *
+ * Called from main.js after the Pinia plugin is installed, so usePluginStore()
+ * has an active Pinia. Each route carries a name and meta.permission so the
+ * global beforeEach guard above enforces access just like the built-in routes.
+ */
+export function addPluginRoutes() {
+  const plugin = usePluginStore()
+
+  for (const [key, panel] of Object.entries(plugin.panels)) {
+    router.addRoute({
+      path: '/' + key,
+      name: key,
+      component: panel.component,
+      props: { panel },
+      meta: {
+        auth: true,
+        permission: panel.permission,
+        title: panel.label
+      }
+    })
+  }
+}
 
 export default router
