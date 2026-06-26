@@ -34,7 +34,7 @@
     margin-inline-start: 0.5rem;
     transition: transform 0.3s;
     min-width: 1.5rem;
-    color: var(--pico-primary-inverse);
+    color: var(--pico-contrast-inverse);
 }
 
 .questions details[open] summary svg {

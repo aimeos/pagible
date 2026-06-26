@@ -45,12 +45,6 @@
         <link href="{{ cmstheme($page, 'cms.css') }}" rel="stylesheet">
         @stack('head')
 
-        @foreach($page->ancestorsAndSelf as $navItem)
-            @if($text = cms($navItem, 'config.styles.data.text'))
-                <style>{!! $text !!}</style>
-            @endif
-        @endforeach
-
         <script type="application/ld+json">
             [{
                 "@@context": "https://schema.org",
@@ -227,6 +221,12 @@
         <script defer src="{{ cmstheme($page, 'csrf.js') }}"></script>
         <script defer src="{{ cmstheme($page, 'cms.js') }}"></script>
         @stack('foot')
+
+        @foreach($page->ancestorsAndSelf as $navItem)
+            @if($text = cms($navItem, 'config.styles.data.text'))
+                <style>{!! $text !!}</style>
+            @endif
+        @endforeach
 
         @foreach($page->ancestorsAndSelf as $navItem)
             @if($text = cms($navItem, 'config.javascript.data.text'))

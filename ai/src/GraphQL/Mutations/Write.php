@@ -34,6 +34,8 @@ final class Write
 
         try
         {
+            set_time_limit( (int) config( 'cms.ai.timeout' ) ); // long AI call; lift PHP's default 30s execution limit
+
             $system = view( 'cms::prompts.write' )->render() . "\n" . ( $args['context'] ?? '' );
 
             if( !empty( $args['files'] ) )

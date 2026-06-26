@@ -59,7 +59,7 @@ class ChatController extends Controller
         $prisma = Prisma::text()
             ->using( config( 'cms.ai.write.provider' ), $config )
             ->model( config( 'cms.ai.write.model' ) )
-            ->withClientOptions( ['timeout' => 300] )
+            ->withClientOptions( ['timeout' => (int) config( 'cms.ai.timeout' )] )
             ->withMaxTokens( config( 'cms.ai.maxtoken' ) )
             ->withSystemPrompt( $system . "\n" . (string) $request->input( 'context', '' ) )
             ->withTools( [
@@ -157,7 +157,17 @@ class ChatController extends Controller
      */
     protected function emit( \Aimeos\Prisma\Contracts\Provider $prisma, string $prompt, array $config ) : void
     {
-        $send = function( string $text ) {
+        // AI generation streams for minutes; PHP's default 30s max_execution_time otherwise kills the
+        // worker mid-read (fatal in fread()). Lift it for the whole stream - a genuinely stalled upstream
+        // still trips the provider's own read timeout first (a catchable PrismaException).
+        set_time_limit( (int) config( 'cms.ai.timeout' ) );
+
+        $send = function( ?string $text ) {
+            // text() is null when the model ended on tool calls with no prose - nothing to send
+            if( $text === null ) {
+                return;
+            }
+
             echo $text;
 
             // Push the chunk downstream immediately without closing the buffer, so a wrapping
@@ -214,7 +224,8 @@ class ChatController extends Controller
                 }
 
                 // Provider that only streamed tool steps (or a non-stream-backed response, e.g. the test
-                // fake): send the assembled answer text. text() drains any unconsumed stream first.
+                // fake): send the assembled answer text. text() drains any unconsumed stream first; it's
+                // null when the model ended on tool calls with no prose, which send() skips.
                 if( !$prose ) {
                     $send( $response->text() );
                 }

@@ -182,8 +182,26 @@ header nav details.dropdown summary:not([role]) {
     border: none;
 }
 
-header nav details.dropdown summary:not([role]):hover {
+header nav a:not([role]):hover,
+header nav a:not([role]):focus,
+header nav a:not([role]):active {
+    text-decoration: none;
+}
+
+header nav ul.menu > li:not(:last-of-type) > a:hover,
+header nav ul.menu > li:not(:last-of-type) > a:focus,
+header nav details.dropdown summary:not([role]):hover,
+header nav details.dropdown summary:not([role]):focus,
+header nav details.dropdown summary:not([role]):active {
     color: var(--pico-primary-hover);
+    background: none;
+    box-shadow: none;
+}
+
+header nav ul.menu > li:last-of-type > a:hover,
+header nav ul.menu > li:last-of-type > a:focus,
+header nav ul.menu > li:last-of-type > a:active {
+    color: var(--pico-primary-inverse);
 }
 
 header nav details summary::marker,

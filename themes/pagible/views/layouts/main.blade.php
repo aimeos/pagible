@@ -42,12 +42,6 @@
         <link href="{{ cmstheme($page, 'cms.css') }}" rel="stylesheet">
         @stack('head')
 
-        @foreach($page->ancestorsAndSelf as $navItem)
-            @if($text = cms($navItem, 'config.styles.data.text'))
-                <style>{!! $text !!}</style>
-            @endif
-        @endforeach
-
         <script type="application/ld+json">
             [{
                 "@@context": "https://schema.org",
@@ -194,7 +188,7 @@
         </header>
 
         @if($page->ancestors->count() > 1)
-            <nav class="breadcrumb" aria-label="breadcrumb">
+            <nav class="breadcrumb" aria-label="{{ __('Breadcrumb navigation') }}">
                 <ul>
                     @foreach($page->ancestors->skip(1) as $item)
                         @if(cms($item, 'status') == 1)
@@ -229,13 +223,19 @@
         @stack('foot')
 
         @foreach($page->ancestorsAndSelf as $navItem)
+            @if($text = cms($navItem, 'config.styles.data.text'))
+                <style>{!! $text !!}</style>
+            @endif
+        @endforeach
+
+        @foreach($page->ancestorsAndSelf as $navItem)
             @if($text = cms($navItem, 'config.javascript.data.text'))
                 <script>{!! $text !!}</script>
             @endif
         @endforeach
 
         @if(\Aimeos\Cms\Permission::can('page:save', auth()->user()))
-            <link href="{{ cmsasset('vendor/cms/admin/editor.css') }}" rel="stylesheet">
+            <link href="{{ cmsasset('vendor/cms/admin/editor.css') }}" rel="preload" as="style">
             <script defer src="{{ cmsasset('vendor/cms/admin/editor.js') }}"></script>
         @else
             <script defer src="{{ cmstheme($page, 'stats.js') }}"></script>
