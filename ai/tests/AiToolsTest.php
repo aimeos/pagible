@@ -58,6 +58,7 @@ class AiToolsTest extends AiTestAbstract
                 'contents' => [[
                     'id' => 'content-1',
                     'type' => 'text',
+                    'group' => 'main',
                     'data' => [
                         'text' => 'Refined text',
                     ]
