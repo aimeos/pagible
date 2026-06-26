@@ -42,25 +42,46 @@ final class Refine
 
         try
         {
+            $schema = Schema::fromArray( 'response', JsonSchema::build( $type, $args['pagetype'] ?? null ) );
             $response = Prisma::text()->using( $provider, $config )
                 ->model( $model )
                 ->withClientOptions( ['timeout' => 300] )
                 ->withMaxTokens( config( 'cms.ai.maxtoken' ) )
                 ->withSystemPrompt( $system . "\n" . ($args['context'] ?? '') . ( !empty( $args['lang'] ) ? "\nWrite the content in language: " . $args['lang'] : '' ) )
                 ->withTools( [
-                    Tools::laravel( CmsTools\GetPage::class )->max( 1 ),
-                    Tools::laravel( CmsTools\GetPageTree::class )->max( 1 ),
-                    Tools::laravel( CmsTools\SearchPages::class )->max( 3 ),
+                    Tools::laravel( CmsTools\GetPage::class ),
+                    Tools::laravel( CmsTools\GetPageHistory::class ),
+                    Tools::laravel( CmsTools\GetPageMetrics::class ),
+                    Tools::laravel( CmsTools\GetPageTree::class ),
+                    Tools::laravel( CmsTools\SearchPages::class ),
+
+                    Tools::laravel( CmsTools\AddElement::class ),
+                    Tools::laravel( CmsTools\DropElement::class ),
+                    Tools::laravel( CmsTools\GetElement::class ),
+                    Tools::laravel( CmsTools\RestoreElement::class ),
+                    Tools::laravel( CmsTools\SaveElement::class ),
+
+                    Tools::laravel( CmsTools\AddFile::class ),
+                    Tools::laravel( CmsTools\DropFile::class ),
+                    Tools::laravel( CmsTools\GetFile::class ),
+                    Tools::laravel( CmsTools\RestoreFile::class ),
+                    Tools::laravel( CmsTools\SaveFile::class ),
+
                     Tools::provider( 'web_search' ),
                     Tools::provider( 'web_fetch' )
                 ] )
                 ->ensure( 'structure' )
-                ->structure( $args['prompt'] . "\n\nContent as JSON:\n" . json_encode( $content ), Schema::fromArray( 'response', JsonSchema::build( $type, $args['pagetype'] ?? null ) ) ); // @phpstan-ignore-line method.notFound
+                ->structure( $args['prompt'] . "\n\nContent as JSON:\n" . json_encode( $content ), $schema, ['mode' => 'json'] ); // @phpstan-ignore-line method.notFound
 
             $structured = $response->structured();
 
             if( !$structured ) {
                 throw new Error( 'No structured content returned in refine response' );
+            }
+
+            if( $errors = $schema->validate( $structured ) ) {
+                Log::warning( 'Invalid refine response', ['mutation' => 'Refine', 'errors' => $errors] );
+                throw new Error( config( 'app.debug' ) ? 'Invalid refine response: ' . implode( '; ', $errors ) : 'Invalid content in refine response' );
             }
 
             if( $type !== 'content' )

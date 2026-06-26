@@ -61,6 +61,7 @@ class RefineContent extends Tool
         $model = config( 'cms.ai.refine.model' );
 
         $system = view( 'cms::prompts.refine' )->render();
+        $schema = \Aimeos\Prisma\Schema\Schema::fromArray( 'response', \Aimeos\Cms\JsonSchema::build( 'content', $page->type ) );
 
         $response = Prisma::text()->using( $provider, $config )
             ->model( $model )
@@ -71,11 +72,11 @@ class RefineContent extends Tool
                 'connect_timeout' => 10,
             ] )
             ->ensure( 'structure' )
-            ->structure( $validated['prompt'] . "\n\nContent as JSON:\n" . json_encode( $content ), \Aimeos\Prisma\Schema\Schema::fromArray( 'response', \Aimeos\Cms\JsonSchema::build( 'content', $page->type ) ) ); // @phpstan-ignore-line method.notFound
+            ->structure( $validated['prompt'] . "\n\nContent as JSON:\n" . json_encode( $content ), $schema, ['mode' => 'json'] ); // @phpstan-ignore-line method.notFound
 
         $structured = $response->structured();
 
-        if( !$structured ) {
+        if( !$structured || $schema->validate( $structured ) ) {
             return Response::structured( ['error' => 'Invalid content in refine response.'] );
         }
 
