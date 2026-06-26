@@ -4,15 +4,28 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | AI providers
+    | Maximum tokens
     |--------------------------------------------------------------------------
     |
-    | Use the AI providers defined in ./config/prism.php to generate content
-    | for pages and elements. You can use any other provider that is supported
-    | by Prism/Prisma.
+    | Maximum number of tokens an AI provider may generate per request. Caps the
+    | length (and cost) of generated content; leave empty to use the
+    | provider/model default.
     |
     */
-    'maxtoken' => env( 'CMS_AI_MAXTOKEN' ), // maximum tokens per request
+    'maxtoken' => env( 'CMS_AI_MAXTOKEN' ),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Request timeout
+    |--------------------------------------------------------------------------
+    |
+    | Maximum number of seconds an AI request may run. Applied both to the HTTP
+    | client talking to the provider and to the PHP execution time of the
+    | request handling it, so long content generations and chat streams are not
+    | killed prematurely by PHP's default 30s limit.
+    |
+    */
+    'timeout' => (int) env( 'CMS_AI_TIMEOUT', 300 ),
 
     /*
     |--------------------------------------------------------------------------
@@ -33,7 +46,9 @@ return [
     |--------------------------------------------------------------------------
     |
     | Define the AI tools used for content generation. Each tool has a provider,
-    | model, and API key. The base URL for the provider is optional.
+    | model, and API key. The base URL for the provider is optional. Use the AI
+    | providers defined in ./config/prism.php or any other provider supported by
+    | Prism/Prisma.
     |
     */
     'write' => [ // Generate text content based on prompts
