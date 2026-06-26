@@ -157,7 +157,12 @@ class ChatController extends Controller
      */
     protected function emit( \Aimeos\Prisma\Contracts\Provider $prisma, string $prompt, array $config ) : void
     {
-        $send = function( string $text ) {
+        $send = function( ?string $text ) {
+            // text() is null when the model ended on tool calls with no prose - nothing to send
+            if( $text === null ) {
+                return;
+            }
+
             echo $text;
 
             // Push the chunk downstream immediately without closing the buffer, so a wrapping
@@ -210,7 +215,8 @@ class ChatController extends Controller
                 }
 
                 // Provider that only streamed tool steps (or a non-stream-backed response, e.g. the test
-                // fake): send the assembled answer text. text() drains any unconsumed stream first.
+                // fake): send the assembled answer text. text() drains any unconsumed stream first; it's
+                // null when the model ended on tool calls with no prose, which send() skips.
                 if( !$prose ) {
                     $send( $response->text() );
                 }
