@@ -146,6 +146,7 @@ class GraphqlAiTest extends AiTestAbstract
                 'contents' => [[
                     'id' => 'content-1',
                     'type' => 'heading',
+                    'group' => 'main',
                     'data' => [
                         'title' => 'Generated title',
                         'level' => '1',
@@ -219,6 +220,7 @@ class GraphqlAiTest extends AiTestAbstract
                 'contents' => [[
                     'id' => 'img-1',
                     'type' => 'image',
+                    'group' => 'main',
                     'data' => ['file' => ['id' => $uuid, 'type' => 'file']],
                 ]]
             ] )
@@ -237,6 +239,33 @@ class GraphqlAiTest extends AiTestAbstract
 
         $this->assertSame( ['id' => $uuid, 'type' => 'file'], $refine[0]['data']['file'] );
         $this->assertSame( [$uuid], $refine[0]['files'] );
+    }
+
+
+    public function testRefineInvalidResponse()
+    {
+        Prisma::fake( [
+            TextResponse::fromText( '' )->withStructured( [
+                'contents' => [[
+                    'id' => 'content-1',
+                    'type' => 'heading',
+                    'group' => 'nonexistent',
+                    'data' => ['title' => 'Generated title', 'level' => '1'],
+                ]]
+            ] )
+        ] );
+
+        $response = $this->actingAs( $this->user )->graphQL( '
+            mutation($prompt: String!, $content: JSON!) {
+                refine(prompt: $prompt, content: $content)
+            }
+        ', [
+            'prompt' => 'Refine this content',
+            'content' => json_encode( [] ),
+        ] );
+
+        $this->assertNull( $response->json( 'data.refine' ) );
+        $this->assertStringContainsString( 'refine response', (string) $response->json( 'errors.0.message' ) );
     }
 
 
