@@ -6,10 +6,10 @@ import { createPinia } from 'pinia'
 import { createApp, defineAsyncComponent } from 'vue'
 import { fieldComponents } from './fieldtypes'
 import visible from './directives/visible'
-import apollo from './graphql'
+import apollo, { apolloClient } from './graphql'
 import i18n from './i18n'
 import logger from './log'
-import router from './routes'
+import router, { addPluginRoutes } from './routes'
 import vuetify from './vuetify'
 import App from './App.vue'
 
@@ -53,6 +53,13 @@ app
   .use(router)
   .use(vuetify)
   .use(apollo)
+
+// Expose the Apollo client to plugin sub-panels via inject('apollo'); the default
+// export above is the Vue Apollo plugin, not the client itself.
+app.provide('apollo', apolloClient)
+
+// Pinia is active now, so usePluginStore() is safe; register a route per plugin panel.
+addPluginRoutes()
 
 // In dev the SPA is served by Vite, so the page never passes through Laravel's `web` middleware
 // that starts a session and sets the XSRF-TOKEN cookie (production gets it from the /cmsadmin page

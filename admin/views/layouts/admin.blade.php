@@ -7,7 +7,14 @@
 
     <title>PagibleAI CMS Admin</title>
 
-    @if($index = cmsadmin('vendor/cms/admin/.vite/manifest.json'))
+    {{-- Import map for plugin modules; must precede the module script below so it governs every import. --}}
+    @if($imports = cmsimports('vendor/cms/admin/.vite/manifest.json'))
+      <script type="importmap" nonce="{{ $nonce }}">
+        { "imports": {!! json_encode($imports, JSON_UNESCAPED_SLASHES | JSON_HEX_TAG) !!} }
+      </script>
+    @endif
+
+    @if($index = cmsadmin('vendor/cms/admin/.vite/manifest.json')['index.html'] ?? null)
       <script type="module" crossorigin src="{{ asset('vendor/cms/admin/' . ($index['file'] ?? '')) }}"></script>
       @foreach($index['css'] ?? [] as $file)
         <link rel="stylesheet" crossorigin href="{{ asset('vendor/cms/admin/' . $file) }}">
@@ -34,6 +41,7 @@
       data-theme="{{ json_encode( config( 'cms.admin.colors', [] ) ) }}"
       data-locales="{{ json_encode( config( 'cms.locales', ['en'] ) ) }}"
       data-multidomain="{{ (int) config('cms.multidomain', false) }}"
+      data-plugins="{{ json_encode(\Aimeos\Cms\Plugin::all()) }}"
       @if(config('cms.broadcast'))
         data-reverb="{{ json_encode([
             'key' => config('reverb.apps.apps.0.key', ''),

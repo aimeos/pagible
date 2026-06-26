@@ -21,6 +21,7 @@ import {
   useSideStore,
   useUserStore,
   useMessageStore,
+  usePluginStore,
   useSchemaStore,
   useViewStack,
   useChangeStore
@@ -211,6 +212,10 @@ export default {
 
     saveConfig() {
       return { fcn: this.save, count: this.savecnt }
+    },
+
+    subpanels() {
+      return usePluginStore().subpanels.page || {}
     }
   },
 
@@ -834,6 +839,9 @@ export default {
         <v-tab v-if="user.can('page:metrics')" value="metrics" @click="aside = ''">
           {{ $gettext('Metrics') }}
         </v-tab>
+        <v-tab v-for="(sp, key) in subpanels" :key="key" :value="'ext-' + key" @click="aside = ''">
+          {{ sp.label }}
+        </v-tab>
       </v-tabs>
 
       <v-window v-model="tab" :touch="false">
@@ -872,6 +880,10 @@ export default {
 
         <v-window-item v-if="user.can('page:metrics')" value="metrics">
           <PageDetailMetrics ref="metrics" :item="item" />
+        </v-window-item>
+
+        <v-window-item v-for="(sp, key) in subpanels" :key="key" :value="'ext-' + key">
+          <component :is="sp.component" :item="item" :assets="assets" />
         </v-window-item>
       </v-window>
     </v-form>

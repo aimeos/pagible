@@ -6,7 +6,7 @@ import AsideMeta from '../components/AsideMeta.vue'
 import DetailAppBar from '../components/DetailAppBar.vue'
 import ElementDetailRefs from '../components/ElementDetailRefs.vue'
 import ElementDetailItem from '../components/ElementDetailItem.vue'
-import { useDirtyStore, useSideStore, useUserStore, useMessageStore, useViewStack, useChangeStore } from '../stores'
+import { useDirtyStore, useSideStore, useUserStore, useMessageStore, usePluginStore, useViewStack, useChangeStore } from '../stores'
 import { applyResult, hasUnresolved } from '../merge'
 import { publishDate, publishItem } from '../publish'
 import { setupReload, cleanEcho } from '../echo'
@@ -175,6 +175,10 @@ export default {
   computed: {
     changeTargets() {
       return markRaw({ data: this.item })
+    },
+
+    subpanels() {
+      return usePluginStore().subpanels.element || {}
     },
 
     hasConflict() {
@@ -458,6 +462,9 @@ export default {
           $gettext('Element')
         }}</v-tab>
         <v-tab value="refs">{{ $gettext('Used by') }}</v-tab>
+        <v-tab v-for="(sp, key) in subpanels" :key="key" :value="'ext-' + key">
+          {{ sp.label }}
+        </v-tab>
       </v-tabs>
 
       <v-window v-model="tab" :touch="false">
@@ -472,6 +479,10 @@ export default {
 
         <v-window-item value="refs">
           <ElementDetailRefs :item="item" />
+        </v-window-item>
+
+        <v-window-item v-for="(sp, key) in subpanels" :key="key" :value="'ext-' + key">
+          <component :is="sp.component" :item="item" :assets="assets" />
         </v-window-item>
       </v-window>
     </v-form>
