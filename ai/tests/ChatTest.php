@@ -121,6 +121,34 @@ class ChatTest extends AiTestAbstract
     }
 
 
+    public function testStreamHandlesToolOnlyResponseWithoutProse()
+    {
+        // A model can finish on a tool call without emitting any prose: the stream yields only Steps
+        // and never adds text, so text() is null. The controller must not pass that null to the
+        // string-typed send() closure (which would throw a TypeError mid-stream).
+        $producer = function( TextResponse $response ) {
+            $step = new Step( 'call_1', 'SavePage', [] );
+            yield $step;
+            $step->complete( '{}' );
+            yield $step;
+            // no prose deltas and no $response->add(): text() stays null
+        };
+
+        Prisma::fake( [TextResponse::fromStream( $producer )] );
+
+        $response = $this->actingAs( $this->user )
+            ->withoutMiddleware( VerifyCsrfToken::class )
+            ->post( route( 'cms.chat' ), ['prompt' => 'Create a page about cats'] );
+
+        $response->assertOk();
+        $body = $response->streamedContent();
+
+        // Only the tool activity surfaces; no error banner from a caught TypeError
+        $this->assertStringContainsString( '**SavePage**', $body );
+        $this->assertStringNotContainsString( 'unexpected error', strtolower( $body ) );
+    }
+
+
     public function testStreamRejectsEmptyPrompt()
     {
         $response = $this->actingAs( $this->user )
