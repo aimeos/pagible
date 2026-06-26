@@ -91,6 +91,36 @@ class ChatTest extends AiTestAbstract
     }
 
 
+    public function testStreamShowsPagePathForToolSteps()
+    {
+        // A page tool call carries the affected path in its "path" argument; the controller surfaces it
+        // in parentheses next to the tool name. An ID-only call (no path argument) shows just the name.
+        $producer = function( TextResponse $response ) {
+            $withPath = new Step( 'call_1', 'SavePage', ['path' => 'blog/cats'] );
+            yield $withPath;
+            $withPath->complete( '{}' );
+
+            $idOnly = new Step( 'call_2', 'PublishPage', ['id' => ['123']] );
+            yield $idOnly;
+            $idOnly->complete( '{}' );
+
+            $response->add( 'Done' );
+        };
+
+        Prisma::fake( [TextResponse::fromStream( $producer )] );
+
+        $response = $this->actingAs( $this->user )
+            ->withoutMiddleware( VerifyCsrfToken::class )
+            ->post( route( 'cms.chat' ), ['prompt' => 'Update the cats page'] );
+
+        $response->assertOk();
+        $body = $response->streamedContent();
+
+        $this->assertStringContainsString( '**SavePage** (/blog/cats)', $body ); // path shown for page tools
+        $this->assertStringNotContainsString( '**PublishPage** (', $body ); // ID-only tool: no path appended
+    }
+
+
     public function testStreamRejectsEmptyPrompt()
     {
         $response = $this->actingAs( $this->user )

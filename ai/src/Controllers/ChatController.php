@@ -188,9 +188,13 @@ class ChatController extends Controller
                 // per token, then send whatever is left once the stream ends.
                 foreach( $response->stream() as $chunk )
                 {
-                    if( $chunk instanceof Step ) {
+                    if( $chunk instanceof Step )
+                    {
+                        $path = $chunk->arguments()['path'] ?? null;
+
                         if( !$chunk->done() ) {
-                            $send( "\n* **" . $chunk->name() . "**\n" ); // surface tool activity as a bold list item
+                            // surface tool activity as a bold list item, with the page path in parentheses when known
+                            $send( "\n* **" . $chunk->name() . "**" . ( $path ? ' (/' . $path . ')' : '' ) . "\n" );
                         }
                         continue;
                     }
