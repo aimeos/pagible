@@ -74,7 +74,7 @@ class RefineContent extends Tool
                 'connect_timeout' => 10,
             ] )
             ->ensure( 'structure' )
-            ->structure( $validated['prompt'] . "\n\nContent as JSON:\n" . json_encode( $content ), $schema, ['mode' => 'json'] ); // @phpstan-ignore-line method.notFound
+            ->structure( $validated['prompt'] . "\n\nContent as JSON:\n" . json_encode( $content ), $schema, [], ['mode' => 'json'] ); // @phpstan-ignore-line method.notFound
 
         $structured = $response->structured();
 
