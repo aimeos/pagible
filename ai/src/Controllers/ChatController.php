@@ -243,9 +243,9 @@ class ChatController extends Controller
             }
 
             // The response is already streaming (HTTP 200 sent), so surface the failure inline;
-            // Prisma errors may show their message in debug, anything else stays generic.
+            // Prisma errors expose their message, anything else stays generic.
             $msg = $e instanceof PrismaException
-                ? ( config( 'app.debug' ) ? $e->getMessage() : 'AI service error' )
+                ? $e->getMessage()
                 : 'An unexpected error occurred';
 
             Log::error( 'Chat stream error', ['controller' => 'Chat', 'message' => $e->getMessage()] );
