@@ -12,18 +12,20 @@
 
 .table-responsive .table-row {
     display: flex;
-    align-items: stretch;
+    align-items: center;
     border-bottom: 1px solid var(--pico-muted-border-color);
 }
 
 .table-responsive .table-col {
     padding: calc(var(--pico-spacing) / 2) var(--pico-spacing);
-    flex-direction: column;
-    display: flex;
     flex: 1;
 }
 
 .table-responsive .th {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-self: stretch;
     color: var(--pico-contrast);
     font-weight: 500;
     font-family: var(--pico-font-family-display);
@@ -31,7 +33,6 @@
     letter-spacing: 0.06em;
     text-transform: uppercase;
     text-align: center;
-    align-self: end;
 }
 
 .table-responsive .th:first-child {

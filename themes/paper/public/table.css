@@ -5,27 +5,26 @@
 
 .table-responsive .table-row {
     display: flex;
-    align-items: stretch;
+    align-items: center;
     border-bottom: 1px solid var(--pico-muted-border-color);
 }
 
 .table-responsive .table-col {
     padding: calc(var(--pico-spacing) / 2) var(--pico-spacing);
     flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
 }
 
 .table-responsive .th {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-self: stretch;
     color: var(--pico-contrast);
     font-weight: 500;
-    font-family: var(--pico-font-family-display);
     font-size: calc(var(--pico-font-size) * 0.85);
     letter-spacing: 0.04em;
     text-transform: uppercase;
     text-align: center;
-    align-self: end;
 }
 
 .table-responsive .th:first-child {

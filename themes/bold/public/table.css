@@ -4,7 +4,7 @@
 
 .table-responsive .table-row {
     display: flex;
-    align-items: stretch;
+    align-items: center;
     background-color: var(--pico-background-color);
     border-bottom: var(--pico-border-width) solid var(--pico-contrast-border);
 }
@@ -12,18 +12,18 @@
 .table-responsive .table-col {
     padding: calc(var(--pico-spacing) / 2) var(--pico-spacing);
     flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
 }
 
 .table-responsive .th {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-self: stretch;
     color: var(--pico-contrast);
     text-transform: uppercase;
     letter-spacing: 0.05em;
     font-size: var(--pico-font-size);
     text-align: center;
-    align-self: end;
 }
 
 .table-responsive .th:first-child {
