@@ -281,7 +281,7 @@ export default {
         <v-textarea
           v-if="user.can('page:chat')"
           v-model="chat"
-          :placeholder="$gettext('Describe the page and content you want to create')"
+          :placeholder="$gettext('What shall I do for you?') + ' ' + $gettext('Press Enter to open the chat')"
           @keydown.enter="onEnter"
           variant="outlined"
           class="prompt"

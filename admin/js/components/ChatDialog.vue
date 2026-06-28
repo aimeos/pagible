@@ -67,14 +67,6 @@ export default {
       set(val) {
         this.$emit('update:modelValue', val)
       }
-    },
-
-    suggestions() {
-      return [
-        this.$gettext('Create a landing page for a new product'),
-        this.$gettext('Write a blog post about our latest release'),
-        this.$gettext('Add an FAQ page answering common questions')
-      ]
     }
   },
 
@@ -317,24 +309,7 @@ export default {
       <div ref="list" class="chat-messages scroll" role="log" aria-live="polite">
         <div v-if="!messages.length" class="chat-empty">
           <v-icon :icon="mdiCreation" size="48" class="chat-empty-icon" />
-          <p>
-            {{
-              $gettext(
-                'Describe the page or content you want to create and I will build it for you.'
-              )
-            }}
-          </p>
-          <div class="chat-suggestions">
-            <v-chip
-              v-for="(s, i) in suggestions"
-              :key="i"
-              @click="send(s)"
-              variant="outlined"
-              class="chat-suggestion"
-            >
-              {{ s }}
-            </v-chip>
-          </div>
+          <p>{{ $gettext( 'What shall I do for you?' ) }}</p>
         </div>
 
         <div v-for="m in messages" :key="m.id" class="chat-row" :class="m.role">
@@ -440,7 +415,6 @@ export default {
   justify-content: center;
   height: 100%;
   text-align: center;
-  color: rgb(var(--v-theme-on-surface-variant));
   gap: 12px;
 }
 
