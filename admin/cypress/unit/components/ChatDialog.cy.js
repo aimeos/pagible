@@ -45,9 +45,9 @@ describe('ChatDialog', () => {
     cy.get('textarea').should('exist')
   })
 
-  it('shows suggestion chips in the empty state', () => {
+  it('shows the empty state prompt', () => {
     mountDialog()
-    cy.contains('.v-chip', 'Create a landing page for a new product').should('exist')
+    cy.contains('.chat-empty', 'What shall I do for you?').should('exist')
   })
 
   it('disables the send button when the input is empty', () => {
