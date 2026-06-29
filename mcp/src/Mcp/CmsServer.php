@@ -83,5 +83,8 @@ class CmsServer extends Server
     protected function boot() : void
     {
         $this->tools = array_merge( $this->tools, static::$registered );
+
+        // Tag content changes made through MCP tools as 'mcp' for the audit log.
+        \Aimeos\Cms\Resource::$source = 'mcp';
     }
 }

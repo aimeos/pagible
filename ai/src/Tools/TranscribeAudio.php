@@ -7,6 +7,7 @@
 
 namespace Aimeos\Cms\Tools;
 
+use Aimeos\Cms\Concerns\Watch;
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\Utils;
 use Aimeos\Cms\Models\File;
@@ -28,6 +29,9 @@ use Laravel\Mcp\Request;
 #[Description('Transcribes the speech in an audio file using AI. Returns an array of segments, each with a start time, end time and the spoken text.')]
 class TranscribeAudio extends Tool
 {
+    use Watch;
+
+
     /**
      * Handle the tool request.
      */
@@ -64,12 +68,25 @@ class TranscribeAudio extends Tool
             $doc = Audio::fromStoragePath( (string) $file->path, config( 'cms.disk', 'public' ), $file->mime );
         }
 
-        $data = Prisma::audio()
-            ->using( $provider, $config )
-            ->model( $model )
-            ->ensure( 'transcribe' )
-            ->transcribe( $doc, null, $config ) // @phpstan-ignore-line method.notFound
-            ->structured();
+        $editor = \Aimeos\Cms\Utils::editor( $request->user() );
+        $start = hrtime( true );
+
+        try
+        {
+            $data = Prisma::audio()
+                ->using( $provider, $config )
+                ->model( $model )
+                ->ensure( 'transcribe' )
+                ->transcribe( $doc, null, $config ) // @phpstan-ignore-line method.notFound
+                ->structured();
+
+            $this->generated( 'transcribe', $provider, $model, $start, editor: $editor );
+        }
+        catch( \Throwable $e )
+        {
+            $this->generated( 'transcribe', $provider, $model, $start, false, $e->getMessage(), editor: $editor );
+            throw $e;
+        }
 
         $segments = array_map( fn( $entry ) => [
             'start' => Utils::formatSeconds( $entry['start'] ),

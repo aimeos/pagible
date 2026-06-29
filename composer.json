@@ -45,6 +45,7 @@
 				"backup/src/",
 				"cashier/src/",
 				"import/src/",
+				"watch/src/",
 				"themes/glass/src/",
 				"themes/pagible/src/",
 				"themes/paper/src/",
@@ -64,7 +65,8 @@
 				"mcp/tests/",
 				"search/tests/",
 				"theme/tests/",
-				"backup/tests/"
+				"backup/tests/",
+				"watch/tests/"
 			]
 		},
 		"classmap": [

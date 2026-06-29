@@ -15,6 +15,7 @@ class JsonapiServiceProvider extends Provider
         $this->console();
     }
 
+
     protected function console() : void
     {
         if( $this->app->runningInConsole() )

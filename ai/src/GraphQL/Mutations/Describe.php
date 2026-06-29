@@ -7,6 +7,7 @@
 
 namespace Aimeos\Cms\GraphQL\Mutations;
 
+use Aimeos\Cms\Concerns\Watch;
 use Aimeos\Cms\Models\File;
 use Aimeos\Prisma\Prisma;
 use Aimeos\Prisma\Exceptions\PrismaException;
@@ -16,6 +17,9 @@ use GraphQL\Error\Error;
 
 final class Describe
 {
+    use Watch;
+
+
     /**
      * @param  null  $rootValue
      * @param  array<string, mixed>  $args
@@ -29,6 +33,7 @@ final class Describe
         $provider = config( 'cms.ai.describe.provider' );
         $config = config( 'cms.ai.describe', [] );
         $model = config( 'cms.ai.describe.model' );
+        $start = hrtime( true );
 
         try
         {
@@ -49,15 +54,21 @@ final class Describe
                 $doc = $class::fromUrl( $file->path, $file->mime );
             }
 
-            return Prisma::type( $type )
+            $text = Prisma::type( $type )
                 ->using( $provider, $config )
                 ->model( $model )
                 ->ensure( 'describe' )
                 ->describe( $doc, $lang, $config ) // @phpstan-ignore-line method.notFound
                 ->text();
+
+            $this->generated( 'describe', $provider, $model, $start );
+
+            return $text;
         }
         catch( PrismaException $e )
         {
+            $this->generated( 'describe', $provider, $model, $start, false, $e->getMessage() );
+
             Log::error( 'AI service error', ['mutation' => 'Describe', 'message' => $e->getMessage(), 'trace' => $e->getTraceAsString()] );
             throw new Error( config( 'app.debug' ) ? $e->getMessage() : 'AI service error', null, null, null, null, $e );
         }

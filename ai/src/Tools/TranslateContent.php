@@ -7,6 +7,7 @@
 
 namespace Aimeos\Cms\Tools;
 
+use Aimeos\Cms\Concerns\Watch;
 use Aimeos\Cms\Permission;
 use Aimeos\Prisma\Prisma;
 use Illuminate\Support\Facades\Http;
@@ -26,6 +27,9 @@ Formatting and parts that should not be translated must be removed and added aga
 Returns the translated texts as a JSON array in the same order as the input.')]
 class TranslateContent extends Tool
 {
+    use Watch;
+
+
     /**
      * Handle the tool request.
      */
@@ -55,12 +59,25 @@ class TranslateContent extends Tool
         $from = $validated['from'] ?? null;
         $context = $validated['context'] ?? null;
 
-        $translations =  Prisma::text()
-            ->using( $provider, $config )
-            ->model( $model )
-            ->ensure( 'translate' )
-            ->translate( $texts, $to, $from, $context, $config ) // @phpstan-ignore-line method.notFound
-            ->texts();
+        $editor = \Aimeos\Cms\Utils::editor( $request->user() );
+        $start = hrtime( true );
+
+        try
+        {
+            $translations = Prisma::text()
+                ->using( $provider, $config )
+                ->model( $model )
+                ->ensure( 'translate' )
+                ->translate( $texts, $to, $from, $context, $config ) // @phpstan-ignore-line method.notFound
+                ->texts();
+
+            $this->generated( 'translate', $provider, $model, $start, editor: $editor );
+        }
+        catch( \Throwable $e )
+        {
+            $this->generated( 'translate', $provider, $model, $start, false, $e->getMessage(), editor: $editor );
+            throw $e;
+        }
 
         return Response::structured( ['translations' => $translations] );
     }

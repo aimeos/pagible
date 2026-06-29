@@ -7,6 +7,7 @@
 
 namespace Aimeos\Cms\GraphQL\Mutations;
 
+use Aimeos\Cms\Concerns\Watch;
 use Aimeos\Prisma\Prisma;
 use Aimeos\Prisma\Exceptions\PrismaException;
 use Illuminate\Support\Facades\Log;
@@ -15,6 +16,9 @@ use GraphQL\Error\Error;
 
 final class Translate
 {
+    use Watch;
+
+
     /**
      * @param  null  $rootValue
      * @param  array<string, mixed>  $args
@@ -41,17 +45,25 @@ final class Translate
             'model_type' => 'prefer_quality_optimized',
         ];
 
+        $start = hrtime( true );
+
         try
         {
-            return Prisma::type( 'text' )
+            $translated = Prisma::type( 'text' )
                 ->using( $provider, $config )
                 ->model( $model )
                 ->ensure( 'translate' )
                 ->translate( $texts, $to, $args['from'] ?? null, $args['context'] ?? null, $config ) // @phpstan-ignore-line method.notFound
                 ->texts();
+
+            $this->generated( 'translate', $provider, $model, $start );
+
+            return $translated;
         }
         catch( PrismaException $e )
         {
+            $this->generated( 'translate', $provider, $model, $start, false, $e->getMessage() );
+
             Log::error( 'AI service error', ['mutation' => 'Translate', 'message' => $e->getMessage(), 'trace' => $e->getTraceAsString()] );
             throw new Error( config( 'app.debug' ) ? $e->getMessage() : 'AI service error', null, null, null, null, $e );
         }

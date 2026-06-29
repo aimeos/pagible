@@ -79,4 +79,17 @@ return [
     |
     */
     'sitemap' => env( 'CMS_SITEMAP', 'sitemap' ),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Frontend watch events
+    |--------------------------------------------------------------------------
+    |
+    | When enabled, the CMS dispatches audit/metrics events for high-volume
+    | frontend actions (search queries and contact submissions). Off by default
+    | to avoid overhead on every request; combine with "cms.watch.channel" to
+    | write them to the log.
+    |
+    */
+    'watch' => env( 'CMS_THEME_WATCH', false ),
 ];

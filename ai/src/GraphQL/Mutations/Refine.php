@@ -7,6 +7,7 @@
 
 namespace Aimeos\Cms\GraphQL\Mutations;
 
+use Aimeos\Cms\Concerns\Watch;
 use Aimeos\Cms\JsonSchema;
 use Aimeos\Cms\Refiner;
 use Aimeos\Cms\Tools as CmsTools;
@@ -21,6 +22,9 @@ use GraphQL\Error\Error;
 
 final class Refine
 {
+    use Watch;
+
+
     /**
      * @param  null  $rootValue
      * @param  array<string, mixed>  $args
@@ -39,6 +43,7 @@ final class Refine
         $system = view( 'cms::prompts.refine' )->render();
         $type = $args['type'] ?? 'content';
         $content = $args['content'] ?: [];
+        $start = hrtime( true );
 
         try
         {
@@ -77,6 +82,8 @@ final class Refine
 
             $structured = $response->structured();
 
+            $this->generated( 'refine', $provider, $model, $start );
+
             if( !$structured ) {
                 throw new Error( 'No structured content returned in refine response' );
             }
@@ -104,6 +111,8 @@ final class Refine
         }
         catch( PrismaException $e )
         {
+            $this->generated( 'refine', $provider, $model, $start, false, $e->getMessage() );
+
             Log::error( 'AI service error', ['mutation' => 'Refine', 'message' => $e->getMessage(), 'trace' => $e->getTraceAsString()] );
             throw new Error( config( 'app.debug' ) ? $e->getMessage() : 'AI service error', null, null, null, null, $e );
         }

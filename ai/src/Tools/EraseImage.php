@@ -7,6 +7,7 @@
 
 namespace Aimeos\Cms\Tools;
 
+use Aimeos\Cms\Concerns\Watch;
 use Aimeos\Cms\Permission;
 use Aimeos\Prisma\Prisma;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
@@ -24,6 +25,7 @@ use Laravel\Mcp\Request;
 class EraseImage extends Tool
 {
     use HandlesMedia;
+    use Watch;
 
 
     /**
@@ -56,12 +58,25 @@ class EraseImage extends Tool
         $config = config( 'cms.ai.erase', [] );
         $model = config( 'cms.ai.erase.model' );
 
-        $base64 = Prisma::image()
-            ->using( $provider, $config )
-            ->model( $model )
-            ->ensure( 'erase' )
-            ->erase( $image, $mask, $config ) // @phpstan-ignore-line method.notFound
-            ->base64();
+        $editor = \Aimeos\Cms\Utils::editor( $request->user() );
+        $start = hrtime( true );
+
+        try
+        {
+            $base64 = Prisma::image()
+                ->using( $provider, $config )
+                ->model( $model )
+                ->ensure( 'erase' )
+                ->erase( $image, $mask, $config ) // @phpstan-ignore-line method.notFound
+                ->base64();
+
+            $this->generated( 'erase', $provider, $model, $start, editor: $editor );
+        }
+        catch( \Throwable $e )
+        {
+            $this->generated( 'erase', $provider, $model, $start, false, $e->getMessage(), editor: $editor );
+            throw $e;
+        }
 
         return Response::structured( $this->update( $v['file'], (string) $base64, $v['latestId'] ?? null, $request->user() ) );
     }

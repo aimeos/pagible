@@ -7,6 +7,7 @@
 
 namespace Aimeos\Cms\GraphQL\Mutations;
 
+use Aimeos\Cms\Concerns\Watch;
 use Aimeos\Cms\Utils;
 use Aimeos\Prisma\Prisma;
 use Aimeos\Prisma\Files\Audio;
@@ -18,6 +19,9 @@ use GraphQL\Error\Error;
 
 final class Transcribe
 {
+    use Watch;
+
+
     /**
      * @param null $rootValue
      * @param array<string, mixed> $args
@@ -34,6 +38,7 @@ final class Transcribe
         $provider = config( 'cms.ai.transcribe.provider' );
         $config = config( 'cms.ai.transcribe', [] );
         $model = config( 'cms.ai.transcribe.model' );
+        $start = hrtime( true );
 
         try
         {
@@ -46,6 +51,8 @@ final class Transcribe
                 ->transcribe( $file, null, $config ) // @phpstan-ignore-line method.notFound
                 ->structured();
 
+            $this->generated( 'transcribe', $provider, $model, $start );
+
             return array_map( fn( $entry ) => [
                 'start' => Utils::formatSeconds( $entry['start'] ),
                 'end' => Utils::formatSeconds( $entry['end'] ),
@@ -54,6 +61,8 @@ final class Transcribe
         }
         catch( PrismaException $e )
         {
+            $this->generated( 'transcribe', $provider, $model, $start, false, $e->getMessage() );
+
             Log::error( 'AI service error', ['mutation' => 'Transcribe', 'message' => $e->getMessage(), 'trace' => $e->getTraceAsString()] );
             throw new Error( config( 'app.debug' ) ? $e->getMessage() : 'AI service error', null, null, null, null, $e );
         }

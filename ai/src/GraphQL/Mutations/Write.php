@@ -7,6 +7,7 @@
 
 namespace Aimeos\Cms\GraphQL\Mutations;
 
+use Aimeos\Cms\Concerns\Watch;
 use Aimeos\Cms\Models\File;
 use Aimeos\Prisma\Prisma;
 use Aimeos\Prisma\Tools;
@@ -17,6 +18,9 @@ use GraphQL\Error\Error;
 
 final class Write
 {
+    use Watch;
+
+
     /**
      * @param  null  $rootValue
      * @param  array<string, mixed>  $args
@@ -31,6 +35,7 @@ final class Write
         $provider = config( 'cms.ai.write.provider' );
         $config = config( 'cms.ai.write', [] );
         $model = config( 'cms.ai.write.model' );
+        $start = hrtime( true );
 
         try
         {
@@ -50,7 +55,7 @@ final class Write
                 }
             }
 
-            return Prisma::text()
+            $text = Prisma::text()
                 ->using( $provider, $config )
                 ->model( $model )
                 ->withMaxTokens( config( 'cms.ai.maxtoken' ) )
@@ -59,9 +64,15 @@ final class Write
                 ->ensure( 'write' )
                 ->write( $args['prompt'], $files, $config ) // @phpstan-ignore-line method.notFound
                 ->text();
+
+            $this->generated( 'write', $provider, $model, $start );
+
+            return $text;
         }
         catch( PrismaException $e )
         {
+            $this->generated( 'write', $provider, $model, $start, false, $e->getMessage() );
+
             Log::error( 'AI service error', ['mutation' => 'Write', 'message' => $e->getMessage(), 'trace' => $e->getTraceAsString()] );
             throw new Error( config( 'app.debug' ) ? $e->getMessage() : 'AI service error', null, null, null, null, $e );
         }

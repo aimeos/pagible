@@ -39,6 +39,9 @@
     <testsuite name="Backup">
       <directory>./backup/tests/</directory>
     </testsuite>
+    <testsuite name="Watch">
+      <directory>./watch/tests/</directory>
+    </testsuite>
     <testsuite name="Benchmark">
       <file>./tests/BenchmarkTest.php</file>
     </testsuite>
@@ -62,6 +65,7 @@
       <directory suffix=".php">./backup/src/</directory>
       <directory suffix=".php">./cashier/src/</directory>
       <directory suffix=".php">./theme/src/</directory>
+      <directory suffix=".php">./watch/src/</directory>
     </include>
   </source>
 </phpunit>

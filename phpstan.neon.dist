@@ -19,3 +19,4 @@ parameters:
 		- cashier/src
 		- theme/src
 		- theme/database/seeders
+		- watch/src

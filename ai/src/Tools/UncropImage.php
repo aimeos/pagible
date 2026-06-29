@@ -7,6 +7,7 @@
 
 namespace Aimeos\Cms\Tools;
 
+use Aimeos\Cms\Concerns\Watch;
 use Aimeos\Cms\Permission;
 use Aimeos\Prisma\Prisma;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
@@ -24,6 +25,7 @@ use Laravel\Mcp\Request;
 class UncropImage extends Tool
 {
     use HandlesMedia;
+    use Watch;
 
 
     /**
@@ -54,12 +56,25 @@ class UncropImage extends Tool
         $config = config( 'cms.ai.uncrop', [] );
         $model = config( 'cms.ai.uncrop.model' );
 
-        $base64 = Prisma::image()
-            ->using( $provider, $config )
-            ->model( $model )
-            ->ensure( 'uncrop' )
-            ->uncrop( $image, $v['top'] ?? 0, $v['right'] ?? 0, $v['bottom'] ?? 0, $v['left'] ?? 0 ) // @phpstan-ignore-line method.notFound
-            ->base64();
+        $editor = \Aimeos\Cms\Utils::editor( $request->user() );
+        $start = hrtime( true );
+
+        try
+        {
+            $base64 = Prisma::image()
+                ->using( $provider, $config )
+                ->model( $model )
+                ->ensure( 'uncrop' )
+                ->uncrop( $image, $v['top'] ?? 0, $v['right'] ?? 0, $v['bottom'] ?? 0, $v['left'] ?? 0 ) // @phpstan-ignore-line method.notFound
+                ->base64();
+
+            $this->generated( 'uncrop', $provider, $model, $start, editor: $editor );
+        }
+        catch( \Throwable $e )
+        {
+            $this->generated( 'uncrop', $provider, $model, $start, false, $e->getMessage(), editor: $editor );
+            throw $e;
+        }
 
         return Response::structured( $this->update( $v['file'], (string) $base64, $v['latestId'] ?? null, $request->user() ) );
     }

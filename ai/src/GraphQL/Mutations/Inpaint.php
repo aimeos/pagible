@@ -7,6 +7,7 @@
 
 namespace Aimeos\Cms\GraphQL\Mutations;
 
+use Aimeos\Cms\Concerns\Watch;
 use Aimeos\Prisma\Prisma;
 use Aimeos\Prisma\Files\Image;
 use Aimeos\Prisma\Exceptions\PrismaException;
@@ -17,6 +18,9 @@ use GraphQL\Error\Error;
 
 final class Inpaint
 {
+    use Watch;
+
+
     /**
      * @param  null  $rootValue
      * @param  array<string, mixed>  $args
@@ -37,21 +41,28 @@ final class Inpaint
         $provider = config( 'cms.ai.inpaint.provider' );
         $config = config( 'cms.ai.inpaint', [] );
         $model = config( 'cms.ai.inpaint.model' );
+        $start = hrtime( true );
 
         try
         {
             $file = Image::fromBinary( $upload->getContent(), $upload->getClientMimeType() );
             $mask = Image::fromBinary( $upmask->getContent(), $upmask->getClientMimeType() );
 
-            return Prisma::image()
+            $base64 = Prisma::image()
                 ->using( $provider, $config )
                 ->model( $model )
                 ->ensure( 'inpaint' )
                 ->inpaint( $file, $mask, $args['prompt'], $config ) // @phpstan-ignore-line method.notFound
                 ->base64();
+
+            $this->generated( 'inpaint', $provider, $model, $start );
+
+            return $base64;
         }
         catch( PrismaException $e )
         {
+            $this->generated( 'inpaint', $provider, $model, $start, false, $e->getMessage() );
+
             Log::error( 'AI service error', ['mutation' => 'Inpaint', 'message' => $e->getMessage(), 'trace' => $e->getTraceAsString()] );
             throw new Error( config( 'app.debug' ) ? $e->getMessage() : 'AI service error', null, null, null, null, $e );
         }

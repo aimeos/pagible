@@ -7,6 +7,8 @@
 
 namespace Aimeos\Cms\GraphQL\Mutations;
 
+use Aimeos\Cms\Events\Authed;
+use Aimeos\Cms\Tenancy;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Contracts\Auth\Authenticatable;
@@ -24,6 +26,7 @@ final class CmsLogin
 		$key = 'cms-login:' . request()->ip() . '|' . strtolower( $args['email'] );
 
 		if( RateLimiter::tooManyAttempts( $key, 3 ) ) {
+			$this->announce( 'login-fail', $args['email'] );
 			throw new Error( "Too many login attempts" );
 		}
 
@@ -32,6 +35,7 @@ final class CmsLogin
 		if( !$guard->attempt( $args ) )
 		{
 			RateLimiter::hit( $key, 60 );
+			$this->announce( 'login-fail', $args['email'] );
 			throw new Error( 'Invalid credentials' );
 		}
 
@@ -42,6 +46,27 @@ final class CmsLogin
 			request()->session()->regenerate();
 		}
 
-		return $guard->user() ?? throw new Error( 'Login failed' );
+		$user = $guard->user() ?? throw new Error( 'Login failed' );
+
+		$this->announce( 'login', $args['email'] );
+
+		return $user;
+	}
+
+
+	/**
+	 * Dispatches an authentication audit event for the given action and email.
+	 *
+	 * @param string $action Action: 'login' or 'login-fail'
+	 * @param string $email Email address the login was attempted for
+	 */
+	protected function announce( string $action, string $email ): void
+	{
+		event( new Authed(
+			$action, $email,
+			(string) request()->ip(),
+			(string) request()->userAgent(),
+			Tenancy::value()
+		) );
 	}
 }

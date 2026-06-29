@@ -22,6 +22,7 @@ class GraphqlServiceProvider extends Provider
             fn() => 'Aimeos\\Cms\\GraphQL\\Directives'
         );
 
+        $this->watch();
         $this->console();
     }
 
@@ -40,6 +41,17 @@ class GraphqlServiceProvider extends Provider
             config( ['lighthouse.security.max_query_complexity' => (int) config( 'cms.graphql.maxcomplexity', 300 )] );
         }
     }
+
+    protected function watch() : void
+    {
+        // Tag content changes made through the GraphQL API as 'graphql' for the audit log;
+        // set per execution so it stays correct in long-running (Octane) workers.
+        $this->app->make( 'events' )->listen(
+            \Nuwave\Lighthouse\Events\StartExecution::class,
+            fn() => \Aimeos\Cms\Resource::$source = 'graphql'
+        );
+    }
+
 
     protected function console() : void
     {

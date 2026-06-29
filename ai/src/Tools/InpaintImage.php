@@ -7,6 +7,7 @@
 
 namespace Aimeos\Cms\Tools;
 
+use Aimeos\Cms\Concerns\Watch;
 use Aimeos\Cms\Permission;
 use Aimeos\Prisma\Prisma;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
@@ -24,6 +25,7 @@ use Laravel\Mcp\Request;
 class InpaintImage extends Tool
 {
     use HandlesMedia;
+    use Watch;
 
 
     /**
@@ -58,12 +60,25 @@ class InpaintImage extends Tool
         $config = config( 'cms.ai.inpaint', [] );
         $model = config( 'cms.ai.inpaint.model' );
 
-        $base64 = Prisma::image()
-            ->using( $provider, $config )
-            ->model( $model )
-            ->ensure( 'inpaint' )
-            ->inpaint( $image, $mask, $v['prompt'], $config ) // @phpstan-ignore-line method.notFound
-            ->base64();
+        $editor = \Aimeos\Cms\Utils::editor( $request->user() );
+        $start = hrtime( true );
+
+        try
+        {
+            $base64 = Prisma::image()
+                ->using( $provider, $config )
+                ->model( $model )
+                ->ensure( 'inpaint' )
+                ->inpaint( $image, $mask, $v['prompt'], $config ) // @phpstan-ignore-line method.notFound
+                ->base64();
+
+            $this->generated( 'inpaint', $provider, $model, $start, editor: $editor );
+        }
+        catch( \Throwable $e )
+        {
+            $this->generated( 'inpaint', $provider, $model, $start, false, $e->getMessage(), editor: $editor );
+            throw $e;
+        }
 
         return Response::structured( $this->update( $v['file'], (string) $base64, $v['latestId'] ?? null, $request->user() ) );
     }

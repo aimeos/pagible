@@ -7,6 +7,7 @@
 
 namespace Aimeos\Cms\GraphQL\Mutations;
 
+use Aimeos\Cms\Concerns\Watch;
 use Aimeos\Cms\Models\File;
 use Aimeos\Prisma\Prisma;
 use Aimeos\Prisma\Files\Image;
@@ -17,6 +18,9 @@ use GraphQL\Error\Error;
 
 final class Imagine
 {
+    use Watch;
+
+
     /**
      * @param  null  $rootValue
      * @param  array<string, mixed>  $args
@@ -31,18 +35,25 @@ final class Imagine
         $config = config( 'cms.ai.imagine', [] );
         $model = config( 'cms.ai.imagine.model' );
         $options = ['size' => ['1536x1024', '1792x1024', '1024x1024']];
+        $start = hrtime( true );
 
         try
         {
-            return Prisma::image()
+            $base64 = Prisma::image()
                 ->using( $provider, $config )
                 ->model( $model )
                 ->ensure( 'imagine' )
                 ->imagine( $args['prompt'], $this->files( $args['files'] ?? [] ), $options ) // @phpstan-ignore-line method.notFound
                 ->base64();
+
+            $this->generated( 'imagine', $provider, $model, $start );
+
+            return $base64;
         }
         catch( PrismaException $e )
         {
+            $this->generated( 'imagine', $provider, $model, $start, false, $e->getMessage() );
+
             Log::error( 'AI service error', ['mutation' => 'Imagine', 'message' => $e->getMessage(), 'trace' => $e->getTraceAsString()] );
             throw new Error( config( 'app.debug' ) ? $e->getMessage() : 'AI service error', null, null, null, null, $e );
         }

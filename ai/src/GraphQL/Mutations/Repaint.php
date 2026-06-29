@@ -7,6 +7,7 @@
 
 namespace Aimeos\Cms\GraphQL\Mutations;
 
+use Aimeos\Cms\Concerns\Watch;
 use Aimeos\Prisma\Prisma;
 use Aimeos\Prisma\Files\Image;
 use Aimeos\Prisma\Exceptions\PrismaException;
@@ -17,6 +18,9 @@ use GraphQL\Error\Error;
 
 final class Repaint
 {
+    use Watch;
+
+
     /**
      * @param  null  $rootValue
      * @param  array<string, mixed>  $args
@@ -32,20 +36,27 @@ final class Repaint
         $provider = config( 'cms.ai.repaint.provider' );
         $config = config( 'cms.ai.repaint', [] );
         $model = config( 'cms.ai.repaint.model' );
+        $start = hrtime( true );
 
         try
         {
             $file = Image::fromBinary( $upload->getContent(), $upload->getClientMimeType() );
 
-            return Prisma::image()
+            $base64 = Prisma::image()
                 ->using( $provider, $config )
                 ->model( $model )
                 ->ensure( 'repaint' )
                 ->repaint( $file, $args['prompt'], $config ) // @phpstan-ignore-line method.notFound
                 ->base64();
+
+            $this->generated( 'repaint', $provider, $model, $start );
+
+            return $base64;
         }
         catch( PrismaException $e )
         {
+            $this->generated( 'repaint', $provider, $model, $start, false, $e->getMessage() );
+
             Log::error( 'AI service error', ['mutation' => 'Repaint', 'message' => $e->getMessage(), 'trace' => $e->getTraceAsString()] );
             throw new Error( config( 'app.debug' ) ? $e->getMessage() : 'AI service error', null, null, null, null, $e );
         }

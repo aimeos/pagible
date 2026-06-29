@@ -7,6 +7,7 @@
 
 namespace Aimeos\Cms\Tools;
 
+use Aimeos\Cms\Concerns\Watch;
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\Models\File;
 use Aimeos\Prisma\Prisma;
@@ -26,6 +27,9 @@ use Laravel\Mcp\Request;
 #[Description('Generates a textual description/summary of an image, audio or video file using AI. Useful for alt texts, captions or content summaries. Returns the description as text.')]
 class DescribeFile extends Tool
 {
+    use Watch;
+
+
     /**
      * Handle the tool request.
      */
@@ -66,12 +70,25 @@ class DescribeFile extends Tool
             $doc = $class::fromStoragePath( (string) $file->path, config( 'cms.disk', 'public' ), $file->mime );
         }
 
-        $text = Prisma::type( $type )
-            ->using( $provider, $config )
-            ->model( $model )
-            ->ensure( 'describe' )
-            ->describe( $doc, $v['lang'] ?? null, $config ) // @phpstan-ignore-line method.notFound
-            ->text();
+        $editor = \Aimeos\Cms\Utils::editor( $request->user() );
+        $start = hrtime( true );
+
+        try
+        {
+            $text = Prisma::type( $type )
+                ->using( $provider, $config )
+                ->model( $model )
+                ->ensure( 'describe' )
+                ->describe( $doc, $v['lang'] ?? null, $config ) // @phpstan-ignore-line method.notFound
+                ->text();
+
+            $this->generated( 'describe', $provider, $model, $start, editor: $editor );
+        }
+        catch( \Throwable $e )
+        {
+            $this->generated( 'describe', $provider, $model, $start, false, $e->getMessage(), editor: $editor );
+            throw $e;
+        }
 
         return Response::structured( ['description' => $text] );
     }
