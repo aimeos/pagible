@@ -7,7 +7,7 @@
 
 namespace Aimeos\Cms\Controllers;
 
-use Aimeos\Cms\Concerns\Watch;
+use Aimeos\Cms\Events\Generated;
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\Tenancy;
 use Aimeos\Cms\Tools as CmsTools;
@@ -25,9 +25,6 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ChatController extends Controller
 {
-    use Watch;
-
-
     /**
      * Streams a chat answer to the admin panel as a chunked text stream.
      *
@@ -106,7 +103,7 @@ class ChatController extends Controller
             ->withMaxSteps( 10 );
 
         if( $history ) {
-            $prisma->withMessages( $history ); // @phpstan-ignore-line method.notFound
+            $prisma->withMessages( $history );
         }
 
         // The 300s TTL is only a backstop for a hard worker kill (SIGKILL/OOM, where the finally never
@@ -246,7 +243,15 @@ class ChatController extends Controller
                 $send( $response->text() );
             }
 
-            $this->generated( 'chat', config( 'cms.ai.write.provider' ), config( 'cms.ai.write.model' ), $start, editor: $editor );
+            event( new Generated(
+                mutation: 'chat',
+                provider: is_string( $p = config( 'cms.ai.write.provider' ) ) ? $p : '',
+                model: is_string( $m = config( 'cms.ai.write.model' ) ) ? $m : '',
+                durationMs: ( hrtime( true ) - $start ) / 1e6,
+                editor: $editor,
+                tenant: Tenancy::value(),
+                success: true,
+            ) );
         }
         catch( \Throwable $e )
         {
@@ -254,7 +259,16 @@ class ChatController extends Controller
                 return; // client gone (or the disconnect we threw above) - just stop, nothing to report
             }
 
-            $this->generated( 'chat', config( 'cms.ai.write.provider' ), config( 'cms.ai.write.model' ), $start, false, $e->getMessage(), editor: $editor );
+            event( new Generated(
+                mutation: 'chat',
+                provider: is_string( $p = config( 'cms.ai.write.provider' ) ) ? $p : '',
+                model: is_string( $m = config( 'cms.ai.write.model' ) ) ? $m : '',
+                durationMs: ( hrtime( true ) - $start ) / 1e6,
+                editor: $editor,
+                tenant: Tenancy::value(),
+                success: false,
+                error: $e->getMessage(),
+            ) );
 
             // The response is already streaming (HTTP 200 sent), so surface the failure inline;
             // Prisma errors may show their message in debug, anything else stays generic.

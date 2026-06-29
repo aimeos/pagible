@@ -56,25 +56,13 @@ class UncropImage extends Tool
         $config = config( 'cms.ai.uncrop', [] );
         $model = config( 'cms.ai.uncrop.model' );
 
-        $editor = \Aimeos\Cms\Utils::editor( $request->user() );
-        $start = hrtime( true );
-
-        try
-        {
-            $base64 = Prisma::image()
-                ->using( $provider, $config )
-                ->model( $model )
-                ->ensure( 'uncrop' )
-                ->uncrop( $image, $v['top'] ?? 0, $v['right'] ?? 0, $v['bottom'] ?? 0, $v['left'] ?? 0 ) // @phpstan-ignore-line method.notFound
-                ->base64();
-
-            $this->generated( 'uncrop', $provider, $model, $start, editor: $editor );
-        }
-        catch( \Throwable $e )
-        {
-            $this->generated( 'uncrop', $provider, $model, $start, false, $e->getMessage(), editor: $editor );
-            throw $e;
-        }
+        $base64 = Prisma::image()
+            ->observe( $this->observer( \Aimeos\Cms\Utils::editor( $request->user() ) ) )
+            ->using( $provider, $config )
+            ->model( $model )
+            ->ensure( 'uncrop' )
+            ->uncrop( $image, $v['top'] ?? 0, $v['right'] ?? 0, $v['bottom'] ?? 0, $v['left'] ?? 0 ) // @phpstan-ignore-line method.notFound
+            ->base64();
 
         return Response::structured( $this->update( $v['file'], (string) $base64, $v['latestId'] ?? null, $request->user() ) );
     }

@@ -10,6 +10,7 @@ namespace Tests;
 use Aimeos\Cms\CoreServiceProvider;
 use Aimeos\Cms\Events\Saved;
 use Aimeos\Cms\Events\Searched;
+use Aimeos\Cms\ThemeServiceProvider;
 use Aimeos\Cms\WatchServiceProvider;
 use Illuminate\Support\Facades\Log;
 use Monolog\Formatter\JsonFormatter;
@@ -19,6 +20,9 @@ use Orchestra\Testbench\TestCase;
 /**
  * End-to-end test: a dispatched event must produce a real JSON log line on disk through the
  * provider-registered listeners and log channel (the unit tests only mock the Log facade).
+ *
+ * Content events are logged by the listener registered in CoreServiceProvider, searches by the
+ * one in ThemeServiceProvider; both providers are loaded so the real registrations are exercised.
  */
 class WatchLogFileTest extends TestCase
 {
@@ -27,7 +31,7 @@ class WatchLogFileTest extends TestCase
 
     protected function getPackageProviders( $app )
     {
-        return [CoreServiceProvider::class, WatchServiceProvider::class];
+        return [CoreServiceProvider::class, ThemeServiceProvider::class, WatchServiceProvider::class];
     }
 
 

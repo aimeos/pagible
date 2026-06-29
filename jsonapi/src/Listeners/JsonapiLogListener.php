@@ -45,7 +45,6 @@ class JsonapiLogListener
             'action' => $event->action,
             'duration_ms' => round( $event->durationMs, 1 ),
             'domain' => $event->domain,
-            'count' => $event->count,
             'includes' => $event->includes,
             'tenant_id' => $event->tenant,
         ], fn( $value ) => $value !== '' );

@@ -10,7 +10,6 @@ namespace Tests;
 use Aimeos\Cms\CoreServiceProvider;
 use Aimeos\Cms\Events\Contacted;
 use Aimeos\Cms\Listeners\ContactLogListener;
-use Aimeos\Cms\WatchServiceProvider;
 use Illuminate\Support\Facades\Log;
 use Orchestra\Testbench\TestCase;
 use Psr\Log\LoggerInterface;
@@ -20,7 +19,7 @@ class ContactLogListenerTest extends TestCase
 {
     protected function getPackageProviders( $app )
     {
-        return [CoreServiceProvider::class, WatchServiceProvider::class];
+        return [CoreServiceProvider::class];
     }
 
 

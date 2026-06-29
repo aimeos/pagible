@@ -365,28 +365,51 @@ class Utils
     /**
      * Returns the correlation ID that ties all watch events of a single request together.
      *
-     * An inbound "X-Request-Id" header is honoured (sanitized to a safe token to prevent log
-     * injection); otherwise a UUID is generated once and memoized on the request so every call
-     * within the same request returns the same value. The id is stored on the request instance
-     * rather than a static, so it neither leaks between requests under Octane nor needs a reset.
+     * Resolved once and stored on the request: an inbound "X-Request-Id" header is honoured
+     * (sanitized to a safe token to prevent log injection), otherwise a UUID is generated. The id
+     * lives on the request instance rather than a static, so every call within the same request
+     * returns the same value without leaking between requests under Octane or needing a reset.
      *
      * @return string The correlation ID, never empty
      */
     public static function requestId() : string
     {
         $request = request();
-        $header = $request->header( 'X-Request-Id' );
 
-        if( is_string( $header ) && ( $id = preg_replace( '/[^A-Za-z0-9._-]/', '', $header ) ) ) {
-            return substr( $id, 0, 128 );
-        }
+        if( !$request->attributes->has( 'cms-request-id' ) )
+        {
+            $header = $request->header( 'X-Request-Id' );
+            $id = is_string( $header ) ? (string) preg_replace( '/[^A-Za-z0-9._-]/', '', $header ) : '';
 
-        if( !$request->attributes->has( 'cms-request-id' ) ) {
-            $request->attributes->set( 'cms-request-id', (string) Str::uuid() );
+            $request->attributes->set( 'cms-request-id', $id !== '' ? substr( $id, 0, 128 ) : (string) Str::uuid() );
         }
 
         $id = $request->attributes->get( 'cms-request-id' );
         return is_string( $id ) ? $id : '';
+    }
+
+
+    /**
+     * Gets or sets the originating interface for content changes in the current request.
+     *
+     * Used to tag audit events with their origin: the GraphQL and MCP entry points set 'graphql'
+     * resp. 'mcp', everything else (console commands, scheduled jobs) defaults to 'cli'. Stored on
+     * the request instance rather than a static, so it neither leaks between requests under Octane
+     * nor needs a reset.
+     *
+     * @param string|null $source Origin to set for this request, or null to only read it
+     * @return string The current origin, defaulting to 'cli'
+     */
+    public static function source( ?string $source = null ) : string
+    {
+        $request = request();
+
+        if( $source !== null ) {
+            $request->attributes->set( 'cms-source', $source );
+        }
+
+        $value = $request->attributes->get( 'cms-source', 'cli' );
+        return is_string( $value ) ? $value : 'cli';
     }
 
 

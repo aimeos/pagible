@@ -10,7 +10,6 @@ namespace Tests;
 use Aimeos\Cms\CoreServiceProvider;
 use Aimeos\Cms\Events\Authed;
 use Aimeos\Cms\Listeners\AuthLogListener;
-use Aimeos\Cms\WatchServiceProvider;
 use Illuminate\Support\Facades\Log;
 use Orchestra\Testbench\TestCase;
 use Psr\Log\LoggerInterface;
@@ -20,7 +19,7 @@ class AuthLogListenerTest extends TestCase
 {
     protected function getPackageProviders( $app )
     {
-        return [CoreServiceProvider::class, WatchServiceProvider::class];
+        return [CoreServiceProvider::class];
     }
 
 

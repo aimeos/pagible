@@ -12,7 +12,20 @@ class JsonapiServiceProvider extends Provider
 
         $this->publishes( [dirname( __DIR__ ) . '/config/cms/jsonapi.php' => config_path( 'cms/jsonapi.php' )], 'cms-config' );
 
+        $this->watch();
         $this->console();
+    }
+
+
+    protected function watch() : void
+    {
+        // Log read-only JSON:API requests when watch logging is enabled.
+        if( config( 'cms.watch.channel' ) ) {
+            $this->app->make( 'events' )->listen(
+                \Aimeos\Cms\Events\Queried::class,
+                [\Aimeos\Cms\Listeners\JsonapiLogListener::class, 'handle']
+            );
+        }
     }
 
 

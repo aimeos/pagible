@@ -33,8 +33,6 @@ final class Describe
         $provider = config( 'cms.ai.describe.provider' );
         $config = config( 'cms.ai.describe', [] );
         $model = config( 'cms.ai.describe.model' );
-        $start = hrtime( true );
-
         try
         {
             /** @var File $file */
@@ -54,21 +52,16 @@ final class Describe
                 $doc = $class::fromUrl( $file->path, $file->mime );
             }
 
-            $text = Prisma::type( $type )
+            return Prisma::type( $type )
+                ->observe( $this->observer() )
                 ->using( $provider, $config )
                 ->model( $model )
                 ->ensure( 'describe' )
                 ->describe( $doc, $lang, $config ) // @phpstan-ignore-line method.notFound
                 ->text();
-
-            $this->generated( 'describe', $provider, $model, $start );
-
-            return $text;
         }
         catch( PrismaException $e )
         {
-            $this->generated( 'describe', $provider, $model, $start, false, $e->getMessage() );
-
             Log::error( 'AI service error', ['mutation' => 'Describe', 'message' => $e->getMessage(), 'trace' => $e->getTraceAsString()] );
             throw new Error( config( 'app.debug' ) ? $e->getMessage() : 'AI service error', null, null, null, null, $e );
         }

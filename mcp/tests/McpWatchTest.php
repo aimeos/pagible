@@ -10,7 +10,6 @@ namespace Tests;
 use Aimeos\Cms\Events\Saved;
 use Aimeos\Cms\Mcp\CmsServer;
 use Aimeos\Cms\Models\Page;
-use Aimeos\Cms\Resource;
 use Database\Seeders\TestSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
@@ -34,13 +33,6 @@ class McpWatchTest extends McpTestAbstract
             'password' => 'secret',
             'cmsperms' => \Aimeos\Cms\Permission::all()
         ]);
-    }
-
-
-    protected function tearDown(): void
-    {
-        Resource::$source = 'cli';
-        parent::tearDown();
     }
 
 

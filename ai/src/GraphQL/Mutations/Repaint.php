@@ -36,27 +36,21 @@ final class Repaint
         $provider = config( 'cms.ai.repaint.provider' );
         $config = config( 'cms.ai.repaint', [] );
         $model = config( 'cms.ai.repaint.model' );
-        $start = hrtime( true );
 
         try
         {
             $file = Image::fromBinary( $upload->getContent(), $upload->getClientMimeType() );
 
-            $base64 = Prisma::image()
+            return Prisma::image()
+                ->observe( $this->observer() )
                 ->using( $provider, $config )
                 ->model( $model )
                 ->ensure( 'repaint' )
                 ->repaint( $file, $args['prompt'], $config ) // @phpstan-ignore-line method.notFound
                 ->base64();
-
-            $this->generated( 'repaint', $provider, $model, $start );
-
-            return $base64;
         }
         catch( PrismaException $e )
         {
-            $this->generated( 'repaint', $provider, $model, $start, false, $e->getMessage() );
-
             Log::error( 'AI service error', ['mutation' => 'Repaint', 'message' => $e->getMessage(), 'trace' => $e->getTraceAsString()] );
             throw new Error( config( 'app.debug' ) ? $e->getMessage() : 'AI service error', null, null, null, null, $e );
         }

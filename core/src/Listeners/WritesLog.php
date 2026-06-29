@@ -32,7 +32,7 @@ trait WritesLog
 
         try {
             Log::channel( $channel )->info( $message, $context );
-        } catch( \Throwable $e ) {
+        } catch( \Exception $e ) {
             error_log( 'CMS watch listener error: ' . $e->getMessage() );
         }
     }

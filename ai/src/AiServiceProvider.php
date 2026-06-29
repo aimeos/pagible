@@ -49,12 +49,24 @@ class AiServiceProvider extends Provider
             ] );
         }
 
+        $this->watch();
         $this->console();
     }
 
     public function register()
     {
         $this->mergeConfigFrom( dirname( __DIR__ ) . '/config/cms/ai.php', 'cms.ai' );
+    }
+
+    protected function watch() : void
+    {
+        // Log AI provider calls when watch logging is enabled.
+        if( config( 'cms.watch.channel' ) ) {
+            $this->app->make( 'events' )->listen(
+                \Aimeos\Cms\Events\Generated::class,
+                [\Aimeos\Cms\Listeners\AiLogListener::class, 'handle']
+            );
+        }
     }
 
     protected function console() : void

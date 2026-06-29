@@ -10,42 +10,48 @@ namespace Aimeos\Cms\Concerns;
 use Aimeos\Cms\Events\Generated;
 use Aimeos\Cms\Tenancy;
 use Aimeos\Cms\Utils;
+use Aimeos\Prisma\Values\Observation;
 use Illuminate\Support\Facades\Auth;
 
 
 /**
- * Dispatches the AI audit event (Generated) around a provider call.
+ * Builds the Prisma observer that records AI provider calls as Generated audit events.
  *
- * Shared by the AI mutations, MCP tools and the chat controller so the operation, provider/model,
- * duration and success state are recorded consistently for every AI provider call.
+ * Shared by the AI mutations, MCP tools and the chat controller: pass observer() to Prisma's
+ * observe() on the call chain and every provider operation (success or failure) is dispatched as
+ * a Generated event with its operation, provider/model, duration and token usage.
  */
 trait Watch
 {
     /**
-     * Dispatches an AI audit event for a single provider call.
+     * Returns a Prisma observer callback that dispatches a Generated audit event per operation.
      *
-     * @param string $op Operation key, e.g. 'write' or 'generate-image'
-     * @param string|null $provider Configured AI provider
-     * @param string|null $model Configured AI model
-     * @param float $start Start time captured from hrtime( true )
-     * @param bool $success Whether the provider call succeeded
-     * @param string|null $error Error message on failure
-     * @param array<string, mixed> $extra Optional token usage (inputTokens/outputTokens)
+     * The editor and tenant are captured now (editor resolved from the authenticated user when
+     * null) so they are correct when the callback fires after the provider call completes.
+     *
      * @param string|null $editor Editor identifier; resolved from the authenticated user when null
+     * @return \Closure(Observation): void Observer for Prisma::...->observe()
      */
-    protected function generated( string $op, ?string $provider, ?string $model, float $start,
-        bool $success = true, ?string $error = null, array $extra = [], ?string $editor = null ) : void
+    protected function observer( ?string $editor = null ) : \Closure
     {
-        event( new Generated(
-            mutation: $op,
-            provider: $provider ?? '',
-            model: $model ?? '',
-            durationMs: ( hrtime( true ) - $start ) / 1e6,
-            editor: $editor ?? Utils::editor( Auth::user() ),
-            tenant: Tenancy::value(),
-            success: $success,
-            error: $error,
-            extra: $extra,
-        ) );
+        $editor ??= Utils::editor( Auth::user() );
+        $tenant = Tenancy::value();
+
+        return function( Observation $observation ) use ( $editor, $tenant ) {
+            event( new Generated(
+                mutation: $observation->operation,
+                provider: $observation->provider,
+                model: $observation->model ?? '',
+                durationMs: $observation->durationMs,
+                editor: $editor,
+                tenant: $tenant,
+                success: $observation->error === null,
+                error: $observation->error?->getMessage(),
+                extra: array_filter( [
+                    'inputTokens' => $observation->usage?->promptTokens(),
+                    'outputTokens' => $observation->usage?->completionTokens(),
+                ], fn( $tokens ) => $tokens !== null ),
+            ) );
+        };
     }
 }

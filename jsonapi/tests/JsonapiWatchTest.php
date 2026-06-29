@@ -40,7 +40,7 @@ class JsonapiWatchTest extends JsonapiTestAbstract
         $this->jsonApi()->expects( 'pages' )->get( "cms/pages/{$page->id}" );
 
         Event::assertDispatched( Queried::class, fn( Queried $e ) =>
-            $e->action === 'jsonapi:read' && $e->count === 1
+            $e->action === 'jsonapi:read'
         );
     }
 
@@ -53,7 +53,7 @@ class JsonapiWatchTest extends JsonapiTestAbstract
         $this->jsonApi()->expects( 'pages' )->get( 'cms/pages' );
 
         Event::assertDispatched( Queried::class, fn( Queried $e ) =>
-            $e->action === 'jsonapi:search' && $e->count >= 1
+            $e->action === 'jsonapi:search'
         );
     }
 

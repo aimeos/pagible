@@ -45,25 +45,18 @@ final class Translate
             'model_type' => 'prefer_quality_optimized',
         ];
 
-        $start = hrtime( true );
-
         try
         {
-            $translated = Prisma::type( 'text' )
+            return Prisma::type( 'text' )
+                ->observe( $this->observer() )
                 ->using( $provider, $config )
                 ->model( $model )
                 ->ensure( 'translate' )
                 ->translate( $texts, $to, $args['from'] ?? null, $args['context'] ?? null, $config ) // @phpstan-ignore-line method.notFound
                 ->texts();
-
-            $this->generated( 'translate', $provider, $model, $start );
-
-            return $translated;
         }
         catch( PrismaException $e )
         {
-            $this->generated( 'translate', $provider, $model, $start, false, $e->getMessage() );
-
             Log::error( 'AI service error', ['mutation' => 'Translate', 'message' => $e->getMessage(), 'trace' => $e->getTraceAsString()] );
             throw new Error( config( 'app.debug' ) ? $e->getMessage() : 'AI service error', null, null, null, null, $e );
         }

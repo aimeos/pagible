@@ -59,25 +59,13 @@ class TranslateContent extends Tool
         $from = $validated['from'] ?? null;
         $context = $validated['context'] ?? null;
 
-        $editor = \Aimeos\Cms\Utils::editor( $request->user() );
-        $start = hrtime( true );
-
-        try
-        {
-            $translations = Prisma::text()
-                ->using( $provider, $config )
-                ->model( $model )
-                ->ensure( 'translate' )
-                ->translate( $texts, $to, $from, $context, $config ) // @phpstan-ignore-line method.notFound
-                ->texts();
-
-            $this->generated( 'translate', $provider, $model, $start, editor: $editor );
-        }
-        catch( \Throwable $e )
-        {
-            $this->generated( 'translate', $provider, $model, $start, false, $e->getMessage(), editor: $editor );
-            throw $e;
-        }
+        $translations = Prisma::text()
+            ->observe( $this->observer( \Aimeos\Cms\Utils::editor( $request->user() ) ) )
+            ->using( $provider, $config )
+            ->model( $model )
+            ->ensure( 'translate' )
+            ->translate( $texts, $to, $from, $context, $config ) // @phpstan-ignore-line method.notFound
+            ->texts();
 
         return Response::structured( ['translations' => $translations] );
     }

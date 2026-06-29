@@ -5,6 +5,7 @@ namespace Aimeos\Cms;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Support\Facades\Broadcast;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider as Provider;
 
@@ -22,6 +23,7 @@ class CoreServiceProvider extends Provider
         ], 'cms-config' );
 
         $this->broadcast();
+        $this->watch();
         $this->rateLimiter();
         $this->userCasts();
         $this->schedule();
@@ -65,6 +67,36 @@ class CoreServiceProvider extends Provider
                 $tenant === Tenancy::value() && Tenancy::allows( $user, $tenant ) && Permission::can( "{$type}:view", $user )
             );
         }
+    }
+
+
+    /**
+     * Subscribes the content audit listener to the per-action events when watch logging is enabled.
+     *
+     * Gated on "cms.watch.channel" so nothing listens when logging is off, which keeps
+     * Broadcasts::announce() short-circuiting (no event built, no latest version loaded).
+     */
+    protected function watch() : void
+    {
+        if( !config( 'cms.watch.channel' ) ) {
+            return;
+        }
+
+        $listener = \Aimeos\Cms\Listeners\ContentLogListener::class;
+
+        foreach( [
+            \Aimeos\Cms\Events\Added::class,
+            \Aimeos\Cms\Events\Saved::class,
+            \Aimeos\Cms\Events\Published::class,
+            \Aimeos\Cms\Events\Dropped::class,
+            \Aimeos\Cms\Events\Restored::class,
+            \Aimeos\Cms\Events\Purged::class,
+            \Aimeos\Cms\Events\Moved::class,
+        ] as $event ) {
+            Event::listen( $event, [$listener, 'handle'] );
+        }
+
+        Event::listen( \Aimeos\Cms\Events\Bulk::class, [$listener, 'handleBulk'] );
     }
 
 

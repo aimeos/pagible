@@ -38,20 +38,18 @@ final class Transcribe
         $provider = config( 'cms.ai.transcribe.provider' );
         $config = config( 'cms.ai.transcribe', [] );
         $model = config( 'cms.ai.transcribe.model' );
-        $start = hrtime( true );
 
         try
         {
             $file = Audio::fromBinary( $upload->getContent(), $upload->getClientMimeType() );
 
             $data = Prisma::audio()
+                ->observe( $this->observer() )
                 ->using( $provider, $config )
                 ->model( $model )
                 ->ensure( 'transcribe' )
                 ->transcribe( $file, null, $config ) // @phpstan-ignore-line method.notFound
                 ->structured();
-
-            $this->generated( 'transcribe', $provider, $model, $start );
 
             return array_map( fn( $entry ) => [
                 'start' => Utils::formatSeconds( $entry['start'] ),
@@ -61,8 +59,6 @@ final class Transcribe
         }
         catch( PrismaException $e )
         {
-            $this->generated( 'transcribe', $provider, $model, $start, false, $e->getMessage() );
-
             Log::error( 'AI service error', ['mutation' => 'Transcribe', 'message' => $e->getMessage(), 'trace' => $e->getTraceAsString()] );
             throw new Error( config( 'app.debug' ) ? $e->getMessage() : 'AI service error', null, null, null, null, $e );
         }

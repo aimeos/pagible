@@ -24,15 +24,6 @@ use Illuminate\Support\Facades\DB;
 class Resource
 {
     /**
-     * Originating interface for content changes, recorded on the audit event.
-     *
-     * Set once per request by the GraphQL and MCP entry points; defaults to 'cli' for
-     * console commands and scheduled jobs.
-     */
-    public static string $source = 'cli';
-
-
-    /**
      * Creates a new element with version and attached files.
      *
      * Files attached to the version are derived from the element's content data.

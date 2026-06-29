@@ -17,7 +17,7 @@ use Illuminate\Queue\SerializesModels;
  *
  * Plain event dispatched from the watch middleware after the response is built, so log and
  * metrics listeners run without websocket broadcasting. Carries the wall-clock duration and the
- * shape of the request (single read vs. collection search, includes, result count).
+ * shape of the request (single read vs. collection search, includes).
  */
 final class Queried
 {
@@ -33,7 +33,6 @@ final class Queried
      * @param string $action Action: 'jsonapi:read' (single resource) or 'jsonapi:search' (collection)
      * @param float $durationMs Wall-clock request duration in milliseconds
      * @param string $domain Requested domain, if any
-     * @param int $count Number of resources in the response
      * @param string $includes Comma-separated list of requested includes
      * @param string $tenant Tenant ID the request belongs to
      * @param string|null $requestId Correlation ID; taken from the X-Request-Id header when null
@@ -42,7 +41,6 @@ final class Queried
         public readonly string $action,
         public readonly float $durationMs = 0.0,
         public readonly string $domain = '',
-        public readonly int $count = 0,
         public readonly string $includes = '',
         public readonly string $tenant = '',
         ?string $requestId = null,

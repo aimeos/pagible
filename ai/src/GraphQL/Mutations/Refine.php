@@ -43,14 +43,15 @@ final class Refine
         $system = view( 'cms::prompts.refine' )->render();
         $type = $args['type'] ?? 'content';
         $content = $args['content'] ?: [];
-        $start = hrtime( true );
 
         try
         {
             set_time_limit( (int) config( 'cms.ai.timeout' ) ); // long AI call; lift PHP's default 30s execution limit (matches client timeout)
 
             $schema = Schema::fromArray( 'response', JsonSchema::build( $type, $args['pagetype'] ?? null ) );
-            $response = Prisma::text()->using( $provider, $config )
+            $response = Prisma::text()
+                ->observe( $this->observer() )
+                ->using( $provider, $config )
                 ->model( $model )
                 ->withClientOptions( ['timeout' => (int) config( 'cms.ai.timeout' )] )
                 ->withMaxTokens( config( 'cms.ai.maxtoken' ) )
@@ -82,8 +83,6 @@ final class Refine
 
             $structured = $response->structured();
 
-            $this->generated( 'refine', $provider, $model, $start );
-
             if( !$structured ) {
                 throw new Error( 'No structured content returned in refine response' );
             }
@@ -111,8 +110,6 @@ final class Refine
         }
         catch( PrismaException $e )
         {
-            $this->generated( 'refine', $provider, $model, $start, false, $e->getMessage() );
-
             Log::error( 'AI service error', ['mutation' => 'Refine', 'message' => $e->getMessage(), 'trace' => $e->getTraceAsString()] );
             throw new Error( config( 'app.debug' ) ? $e->getMessage() : 'AI service error', null, null, null, null, $e );
         }

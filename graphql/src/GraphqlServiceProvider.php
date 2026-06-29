@@ -44,12 +44,22 @@ class GraphqlServiceProvider extends Provider
 
     protected function watch() : void
     {
+        $events = $this->app->make( 'events' );
+
         // Tag content changes made through the GraphQL API as 'graphql' for the audit log;
         // set per execution so it stays correct in long-running (Octane) workers.
-        $this->app->make( 'events' )->listen(
+        $events->listen(
             \Nuwave\Lighthouse\Events\StartExecution::class,
-            fn() => \Aimeos\Cms\Resource::$source = 'graphql'
+            fn() => \Aimeos\Cms\Utils::source( 'graphql' )
         );
+
+        // Log authentication events when watch logging is enabled.
+        if( config( 'cms.watch.channel' ) ) {
+            $events->listen(
+                \Aimeos\Cms\Events\Authed::class,
+                [\Aimeos\Cms\Listeners\AuthLogListener::class, 'handle']
+            );
+        }
     }
 
 

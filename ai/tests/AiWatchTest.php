@@ -12,6 +12,8 @@ use Aimeos\Cms\Events\Generated;
 use Aimeos\Prisma\Prisma;
 use Aimeos\Prisma\Responses\FileResponse;
 use Aimeos\Prisma\Responses\TextResponse;
+use Aimeos\Prisma\Values\Observation;
+use Aimeos\Prisma\Values\Usage;
 use Database\Seeders\TestSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
@@ -97,34 +99,15 @@ class AiWatchTest extends AiTestAbstract
     }
 
 
-    public function testFailureDispatchesGeneratedAndRethrows() : void
+    public function testObserverDispatchesGeneratedForFailure() : void
     {
         Event::fake( [Generated::class] );
 
-        // Mirrors the tool idiom: a failing provider call dispatches a failure audit event
-        // and re-throws the original exception so the MCP layer can surface it.
-        $obj = new class {
-            use Watch;
-
-            public function run() : mixed
-            {
-                $start = hrtime( true );
-
-                try {
-                    throw new \RuntimeException( 'provider exploded' );
-                } catch( \Throwable $e ) {
-                    $this->generated( 'write', 'gemini', 'model-x', $start, false, $e->getMessage(), editor: 'editor@testbench' );
-                    throw $e;
-                }
-            }
-        };
-
-        try {
-            $obj->run();
-            $this->fail( 'Expected exception to propagate' );
-        } catch( \RuntimeException $e ) {
-            $this->assertSame( 'provider exploded', $e->getMessage() );
-        }
+        // The Prisma observation carries a Throwable error on a failed provider call.
+        $this->observe(
+            new Observation( 'write', 'text', 'gemini', 'model-x', 12.0, new \RuntimeException( 'provider exploded' ) ),
+            'editor@testbench'
+        );
 
         Event::assertDispatched( Generated::class, fn( Generated $e ) =>
             $e->mutation === 'write'
@@ -132,5 +115,41 @@ class AiWatchTest extends AiTestAbstract
             && $e->error === 'provider exploded'
             && $e->editor === 'editor@testbench'
         );
+    }
+
+
+    public function testObserverRecordsTokenUsage() : void
+    {
+        Event::fake( [Generated::class] );
+
+        // A successful observation (no error) carries provider token usage, normalized via Usage.
+        $this->observe(
+            new Observation( 'imagine', 'image', 'openai', 'gpt-image-1', 5.0, null, new Usage( ['input_tokens' => 100, 'output_tokens' => 50] ) ),
+            'ed'
+        );
+
+        Event::assertDispatched( Generated::class, fn( Generated $e ) =>
+            $e->success === true
+            && ( $e->extra['inputTokens'] ?? null ) === 100
+            && ( $e->extra['outputTokens'] ?? null ) === 50
+        );
+    }
+
+
+    /**
+     * Invokes the Watch observer with a Prisma operation observation.
+     */
+    private function observe( Observation $observation, ?string $editor = null ) : void
+    {
+        $obj = new class {
+            use Watch;
+
+            public function fire( Observation $observation, ?string $editor ) : void
+            {
+                ( $this->observer( $editor ) )( $observation );
+            }
+        };
+
+        $obj->fire( $observation, $editor );
     }
 }

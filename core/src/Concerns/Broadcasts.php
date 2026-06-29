@@ -10,7 +10,6 @@ namespace Aimeos\Cms\Concerns;
 use Aimeos\Cms\Events\Bulk;
 use Aimeos\Cms\Events\Event;
 use Aimeos\Cms\Models\Version;
-use Aimeos\Cms\Resource;
 use Aimeos\Cms\Tenancy;
 use Aimeos\Cms\Utils;
 use Illuminate\Contracts\Auth\Authenticatable;
@@ -94,7 +93,7 @@ trait Broadcasts
             data: $data,
             editor: is_string( $editor ) ? $editor : Utils::editor( $editor ),
             tenant: Tenancy::value(),
-            source: Resource::$source,
+            source: Utils::source(),
         ), $broadcast );
     }
 
@@ -120,7 +119,7 @@ trait Broadcasts
             'publish_at' => $version->publish_at,
             'updated_at' => $version->created_at ? (string) $version->created_at : null,
             'tenant' => Tenancy::value(),
-            'source' => Resource::$source,
+            'source' => Utils::source(),
         ];
     }
 
@@ -148,7 +147,7 @@ trait Broadcasts
         DB::afterCommit( function() use ( $event ) {
             try {
                 broadcast( $event )->toOthers();
-            } catch( \Throwable $e ) {
+            } catch( \Exception $e ) {
                 report( $e );
             }
         } );

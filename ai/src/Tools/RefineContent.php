@@ -69,31 +69,20 @@ class RefineContent extends Tool
 
         set_time_limit( (int) config( 'cms.ai.timeout' ) ); // long AI call; lift PHP's default 30s execution limit
 
-        $editor = \Aimeos\Cms\Utils::editor( $request->user() );
-        $start = hrtime( true );
+        $response = Prisma::text()
+            ->observe( $this->observer( \Aimeos\Cms\Utils::editor( $request->user() ) ) )
+            ->using( $provider, $config )
+            ->model( $model )
+            ->withMaxTokens( config( 'cms.ai.maxtoken' ) )
+            ->withSystemPrompt( $system . "\n" . ( $validated['context'] ?? '' ) . ( !empty( $validated['lang'] ) ? "\nWrite the content in language: " . $validated['lang'] : '' ) )
+            ->withClientOptions( [
+                'timeout' => (int) config( 'cms.ai.timeout' ),
+                'connect_timeout' => 10,
+            ] )
+            ->ensure( 'structure' )
+            ->structure( $validated['prompt'] . "\n\nContent as JSON:\n" . json_encode( $content ), $schema, [], ['mode' => 'json'] ); // @phpstan-ignore-line method.notFound
 
-        try
-        {
-            $response = Prisma::text()->using( $provider, $config )
-                ->model( $model )
-                ->withMaxTokens( config( 'cms.ai.maxtoken' ) )
-                ->withSystemPrompt( $system . "\n" . ( $validated['context'] ?? '' ) . ( !empty( $validated['lang'] ) ? "\nWrite the content in language: " . $validated['lang'] : '' ) )
-                ->withClientOptions( [
-                    'timeout' => (int) config( 'cms.ai.timeout' ),
-                    'connect_timeout' => 10,
-                ] )
-                ->ensure( 'structure' )
-                ->structure( $validated['prompt'] . "\n\nContent as JSON:\n" . json_encode( $content ), $schema, [], ['mode' => 'json'] ); // @phpstan-ignore-line method.notFound
-
-            $structured = $response->structured();
-
-            $this->generated( 'refine', $provider, $model, $start, editor: $editor );
-        }
-        catch( \Throwable $e )
-        {
-            $this->generated( 'refine', $provider, $model, $start, false, $e->getMessage(), editor: $editor );
-            throw $e;
-        }
+        $structured = $response->structured();
 
         if( !$structured || $schema->validate( $structured ) ) {
             return Response::structured( ['error' => 'Invalid content in refine response.'] );

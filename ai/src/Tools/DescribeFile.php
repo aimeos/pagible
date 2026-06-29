@@ -70,25 +70,13 @@ class DescribeFile extends Tool
             $doc = $class::fromStoragePath( (string) $file->path, config( 'cms.disk', 'public' ), $file->mime );
         }
 
-        $editor = \Aimeos\Cms\Utils::editor( $request->user() );
-        $start = hrtime( true );
-
-        try
-        {
-            $text = Prisma::type( $type )
-                ->using( $provider, $config )
-                ->model( $model )
-                ->ensure( 'describe' )
-                ->describe( $doc, $v['lang'] ?? null, $config ) // @phpstan-ignore-line method.notFound
-                ->text();
-
-            $this->generated( 'describe', $provider, $model, $start, editor: $editor );
-        }
-        catch( \Throwable $e )
-        {
-            $this->generated( 'describe', $provider, $model, $start, false, $e->getMessage(), editor: $editor );
-            throw $e;
-        }
+        $text = Prisma::type( $type )
+            ->observe( $this->observer( \Aimeos\Cms\Utils::editor( $request->user() ) ) )
+            ->using( $provider, $config )
+            ->model( $model )
+            ->ensure( 'describe' )
+            ->describe( $doc, $v['lang'] ?? null, $config ) // @phpstan-ignore-line method.notFound
+            ->text();
 
         return Response::structured( ['description' => $text] );
     }

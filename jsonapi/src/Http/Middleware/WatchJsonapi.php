@@ -40,11 +40,10 @@ class WatchJsonapi
                     action: $this->action( $request ),
                     durationMs: ( hrtime( true ) - $start ) / 1e6,
                     domain: $this->domain( $request ),
-                    count: $this->count( $response ),
                     includes: $this->includes( $request ),
                     tenant: Tenancy::value(),
                 ) );
-            } catch( \Throwable $e ) {
+            } catch( \Exception $e ) {
                 error_log( 'CMS watch middleware error: ' . $e->getMessage() );
             }
         }
@@ -64,33 +63,6 @@ class WatchJsonapi
         $uri = $route instanceof Route ? $route->uri() : '';
 
         return str_contains( $uri, '{' ) ? 'jsonapi:read' : 'jsonapi:search';
-    }
-
-
-    /**
-     * Counts the resources in the JSON:API response body (best effort).
-     */
-    protected function count( Response $response ) : int
-    {
-        $content = $response->getContent();
-
-        if( !is_string( $content ) || $content === '' ) {
-            return 0;
-        }
-
-        $json = json_decode( $content, true );
-
-        if( !is_array( $json ) || !array_key_exists( 'data', $json ) ) {
-            return 0;
-        }
-
-        $data = $json['data'];
-
-        if( is_array( $data ) ) {
-            return array_is_list( $data ) ? count( $data ) : 1;
-        }
-
-        return 0;
     }
 
 

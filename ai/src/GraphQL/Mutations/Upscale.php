@@ -36,27 +36,21 @@ final class Upscale
         $provider = config( 'cms.ai.upscale.provider' );
         $config = config( 'cms.ai.upscale', [] );
         $model = config( 'cms.ai.upscale.model' );
-        $start = hrtime( true );
 
         try
         {
             $file = Image::fromBinary( $upload->getContent(), $upload->getClientMimeType() );
 
-            $base64 = Prisma::image()
+            return Prisma::image()
+                ->observe( $this->observer() )
                 ->using( $provider, $config )
                 ->model( $model )
                 ->ensure( 'upscale' )
                 ->upscale( $file, $args['factor'], $config ) // @phpstan-ignore-line method.notFound
                 ->base64();
-
-            $this->generated( 'upscale', $provider, $model, $start );
-
-            return $base64;
         }
         catch( PrismaException $e )
         {
-            $this->generated( 'upscale', $provider, $model, $start, false, $e->getMessage() );
-
             Log::error( 'AI service error', ['mutation' => 'Upscale', 'message' => $e->getMessage(), 'trace' => $e->getTraceAsString()] );
             throw new Error( config( 'app.debug' ) ? $e->getMessage() : 'AI service error', null, null, null, null, $e );
         }

@@ -11,7 +11,6 @@ use Aimeos\Cms\CoreServiceProvider;
 use Aimeos\Cms\Events\Bulk;
 use Aimeos\Cms\Events\Saved;
 use Aimeos\Cms\Listeners\ContentLogListener;
-use Aimeos\Cms\WatchServiceProvider;
 use Illuminate\Support\Facades\Log;
 use Orchestra\Testbench\TestCase;
 use Psr\Log\LoggerInterface;
@@ -21,7 +20,7 @@ class ContentLogListenerTest extends TestCase
 {
     protected function getPackageProviders( $app )
     {
-        return [CoreServiceProvider::class, WatchServiceProvider::class];
+        return [CoreServiceProvider::class];
     }
 
 

@@ -68,25 +68,13 @@ class TranscribeAudio extends Tool
             $doc = Audio::fromStoragePath( (string) $file->path, config( 'cms.disk', 'public' ), $file->mime );
         }
 
-        $editor = \Aimeos\Cms\Utils::editor( $request->user() );
-        $start = hrtime( true );
-
-        try
-        {
-            $data = Prisma::audio()
-                ->using( $provider, $config )
-                ->model( $model )
-                ->ensure( 'transcribe' )
-                ->transcribe( $doc, null, $config ) // @phpstan-ignore-line method.notFound
-                ->structured();
-
-            $this->generated( 'transcribe', $provider, $model, $start, editor: $editor );
-        }
-        catch( \Throwable $e )
-        {
-            $this->generated( 'transcribe', $provider, $model, $start, false, $e->getMessage(), editor: $editor );
-            throw $e;
-        }
+        $data = Prisma::audio()
+            ->observe( $this->observer( \Aimeos\Cms\Utils::editor( $request->user() ) ) )
+            ->using( $provider, $config )
+            ->model( $model )
+            ->ensure( 'transcribe' )
+            ->transcribe( $doc, null, $config ) // @phpstan-ignore-line method.notFound
+            ->structured();
 
         $segments = array_map( fn( $entry ) => [
             'start' => Utils::formatSeconds( $entry['start'] ),

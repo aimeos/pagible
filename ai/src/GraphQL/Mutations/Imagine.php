@@ -35,25 +35,19 @@ final class Imagine
         $config = config( 'cms.ai.imagine', [] );
         $model = config( 'cms.ai.imagine.model' );
         $options = ['size' => ['1536x1024', '1792x1024', '1024x1024']];
-        $start = hrtime( true );
 
         try
         {
-            $base64 = Prisma::image()
+            return Prisma::image()
+                ->observe( $this->observer() )
                 ->using( $provider, $config )
                 ->model( $model )
                 ->ensure( 'imagine' )
                 ->imagine( $args['prompt'], $this->files( $args['files'] ?? [] ), $options ) // @phpstan-ignore-line method.notFound
                 ->base64();
-
-            $this->generated( 'imagine', $provider, $model, $start );
-
-            return $base64;
         }
         catch( PrismaException $e )
         {
-            $this->generated( 'imagine', $provider, $model, $start, false, $e->getMessage() );
-
             Log::error( 'AI service error', ['mutation' => 'Imagine', 'message' => $e->getMessage(), 'trace' => $e->getTraceAsString()] );
             throw new Error( config( 'app.debug' ) ? $e->getMessage() : 'AI service error', null, null, null, null, $e );
         }

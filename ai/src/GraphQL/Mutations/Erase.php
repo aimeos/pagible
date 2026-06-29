@@ -41,28 +41,22 @@ final class Erase
         $provider = config( 'cms.ai.erase.provider' );
         $config = config( 'cms.ai.erase', [] );
         $model = config( 'cms.ai.erase.model' );
-        $start = hrtime( true );
 
         try
         {
             $file = Image::fromBinary( $upload->getContent(), $upload->getClientMimeType() );
             $mask = Image::fromBinary( $filemask->getContent(), $filemask->getClientMimeType() );
 
-            $base64 = Prisma::image()
+            return Prisma::image()
+                ->observe( $this->observer() )
                 ->using( $provider, $config )
                 ->model( $model )
                 ->ensure( 'erase' )
                 ->erase( $file, $mask, $config ) // @phpstan-ignore-line method.notFound
                 ->base64();
-
-            $this->generated( 'erase', $provider, $model, $start );
-
-            return $base64;
         }
         catch( PrismaException $e )
         {
-            $this->generated( 'erase', $provider, $model, $start, false, $e->getMessage() );
-
             Log::error( 'AI service error', ['mutation' => 'Erase', 'message' => $e->getMessage(), 'trace' => $e->getTraceAsString()] );
             throw new Error( config( 'app.debug' ) ? $e->getMessage() : 'AI service error', null, null, null, null, $e );
         }

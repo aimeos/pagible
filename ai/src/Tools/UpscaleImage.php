@@ -54,25 +54,13 @@ class UpscaleImage extends Tool
         $config = config( 'cms.ai.upscale', [] );
         $model = config( 'cms.ai.upscale.model' );
 
-        $editor = \Aimeos\Cms\Utils::editor( $request->user() );
-        $start = hrtime( true );
-
-        try
-        {
-            $base64 = Prisma::image()
-                ->using( $provider, $config )
-                ->model( $model )
-                ->ensure( 'upscale' )
-                ->upscale( $image, $v['factor'], $config ) // @phpstan-ignore-line method.notFound
-                ->base64();
-
-            $this->generated( 'upscale', $provider, $model, $start, editor: $editor );
-        }
-        catch( \Throwable $e )
-        {
-            $this->generated( 'upscale', $provider, $model, $start, false, $e->getMessage(), editor: $editor );
-            throw $e;
-        }
+        $base64 = Prisma::image()
+            ->observe( $this->observer( \Aimeos\Cms\Utils::editor( $request->user() ) ) )
+            ->using( $provider, $config )
+            ->model( $model )
+            ->ensure( 'upscale' )
+            ->upscale( $image, $v['factor'], $config ) // @phpstan-ignore-line method.notFound
+            ->base64();
 
         return Response::structured( $this->update( $v['file'], (string) $base64, $v['latestId'] ?? null, $request->user() ) );
     }
