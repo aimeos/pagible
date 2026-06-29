@@ -13,6 +13,8 @@ import { useUserStore } from './stores'
 import { urlgraphql } from './config'
 import { xsrfHeaders } from './utils'
 
+const MESSAGE_HEADERS = ['x-error-message', 'x-status-message', 'x-message']
+
 const retryLink = new RetryLink({
   delay: { initial: 300, max: 5000, jitter: true },
   attempts: { max: 2, retryIf: (error) => !!error }
@@ -71,6 +73,16 @@ export function clearUploadLink() {
   uploadLink = null
 }
 
+export function graphqlFetch(input, init) {
+  return fetch(input, init).then((response) => {
+    if (!response.ok) {
+      throw graphqlError(response)
+    }
+
+    return response
+  })
+}
+
 const lazyUploadLink = new ApolloLink((operation, forward) => {
   return new Observable((observer) => {
     let sub = null
@@ -78,7 +90,11 @@ const lazyUploadLink = new ApolloLink((operation, forward) => {
     const load = uploadLink
       ? Promise.resolve(uploadLink)
       : import('apollo-upload-client/createUploadLink.mjs').then((mod) => {
-          uploadLink = mod.default({ uri: urlgraphql, credentials: 'include' })
+          uploadLink = mod.default({
+            uri: urlgraphql,
+            credentials: 'include',
+            fetch: graphqlFetch
+          })
           return uploadLink
         })
 
@@ -97,7 +113,8 @@ const httpLink = ApolloLink.split(
     uri: urlgraphql,
     batchMax: 50,
     batchInterval: 20,
-    credentials: 'include'
+    credentials: 'include',
+    fetch: graphqlFetch
   })
 )
 
@@ -121,3 +138,28 @@ const apollo = createApolloProvider({ defaultClient: apolloClient })
 
 export default apollo
 export { apolloClient }
+
+
+function clean(value) {
+  return String(value || '').replace(/[\r\n]+/g, ' ').trim()
+}
+
+
+function graphqlError(response) {
+  const error = new Error(graphqlMessage(response))
+
+  error.name = 'ServerError'
+  error.response = response
+  error.statusCode = response.status
+
+  return error
+}
+
+
+function graphqlMessage(response) {
+  const message = MESSAGE_HEADERS
+    .map((name) => clean(response.headers?.get(name)))
+    .find(Boolean) || clean(response.statusText)
+
+  return message ? `HTTP ${response.status}: ${message}` : `HTTP ${response.status}`
+}
