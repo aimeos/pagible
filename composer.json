@@ -45,6 +45,7 @@
 				"backup/src/",
 				"cashier/src/",
 				"import/src/",
+				"pulse/src/",
 				"themes/glass/src/",
 				"themes/pagible/src/",
 				"themes/paper/src/",
@@ -68,7 +69,8 @@
 			]
 		},
 		"classmap": [
-			"tests/User.php"
+			"tests/User.php",
+			"pulse/tests/Support.php"
 		]
 	},
 	"scripts": {
