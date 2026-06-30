@@ -18,7 +18,7 @@ use Aimeos\Cms\Events\Restored;
 use Aimeos\Cms\Events\Saved;
 
 
-abstract class ContentPulseRecorder extends Recorder
+class CmsContentPulseRecorder extends Recorder
 {
     /**
      * @var list<class-string>
@@ -34,8 +34,24 @@ abstract class ContentPulseRecorder extends Recorder
         Bulk::class,
     ];
 
-    protected string $contentType;
-    protected string $pulseType;
+    private const TYPES = [
+        'page' => 'cms_page',
+        'element' => 'cms_element',
+        'file' => 'cms_file',
+    ];
+
+    /**
+     * @var array<class-string<Event>, non-empty-string>
+     */
+    private const ACTIONS = [
+        Added::class => 'add',
+        Saved::class => 'save',
+        Published::class => 'publish',
+        Dropped::class => 'delete',
+        Restored::class => 'restore',
+        Purged::class => 'purge',
+        Moved::class => 'move',
+    ];
 
 
     public function record( mixed $event ) : void
@@ -50,11 +66,11 @@ abstract class ContentPulseRecorder extends Recorder
 
     protected function single( Event $event ) : void
     {
-        if( $event->contentType !== $this->contentType ) {
+        if( !( $type = self::TYPES[$event->contentType] ?? null ) ) {
             return;
         }
 
-        $this->entry( $this->pulseType, [
+        $this->entry( $type, [
             'action' => $this->action( $event ),
             'source' => $event->source,
             'editor' => $event->editor,
@@ -68,11 +84,11 @@ abstract class ContentPulseRecorder extends Recorder
 
     protected function bulk( Bulk $event ) : void
     {
-        if( $event->contentType !== $this->contentType ) {
+        if( !( $type = self::TYPES[$event->contentType] ?? null ) ) {
             return;
         }
 
-        $this->entry( $this->pulseType, [
+        $this->entry( $type, [
             'action' => $event->source ? $event->source . ':bulk' : 'bulk',
             'source' => $event->source,
             'editor' => $event->editor,
@@ -83,16 +99,7 @@ abstract class ContentPulseRecorder extends Recorder
 
     protected function action( Event $event ) : string
     {
-        $action = match( class_basename( $event ) ) {
-            'Added' => 'add',
-            'Saved' => 'save',
-            'Published' => 'publish',
-            'Dropped' => 'delete',
-            'Restored' => 'restore',
-            'Purged' => 'purge',
-            'Moved' => 'move',
-            default => strtolower( class_basename( $event ) ),
-        };
+        $action = self::ACTIONS[$event::class] ?? strtolower( class_basename( $event ) );
 
         return $event->source ? $event->source . ':' . $action : $action;
     }

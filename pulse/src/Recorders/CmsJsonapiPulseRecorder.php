@@ -13,7 +13,10 @@ use Aimeos\Cms\Watch;
 
 class CmsJsonapiPulseRecorder extends Recorder
 {
-    public string $listen = Queried::class;
+    /**
+     * @var list<class-string>
+     */
+    public array $listen = [Queried::class];
 
 
     public function record( mixed $event ) : void
@@ -22,11 +25,11 @@ class CmsJsonapiPulseRecorder extends Recorder
             return;
         }
 
-        $this->entry( 'cms_jsonapi', [
+        $this->latency( 'cms_jsonapi', [
             'action' => $event->action,
             'domain' => $event->domain,
             'includes' => $event->includes,
             'tenant' => $event->tenant,
-        ], $this->ms( $event->durationMs ), ['count', 'avg', 'max'] );
+        ], $event->durationMs );
     }
 }

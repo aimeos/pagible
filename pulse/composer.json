@@ -7,10 +7,10 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
-        "aimeos/pagible-core": "dev-master"
+        "aimeos/pagible-core": "*@dev",
+        "laravel/pulse": "^1.7"
     },
     "suggest": {
-        "laravel/pulse": "Required to record and display Pulse metrics",
         "aimeos/pagible-graphql": "For GraphQL authentication metrics",
         "aimeos/pagible-ai": "For AI provider metrics",
         "aimeos/pagible-theme": "For frontend search and contact metrics",

@@ -12,7 +12,10 @@ use Aimeos\Cms\Events\Generated;
 
 class CmsAiPulseRecorder extends Recorder
 {
-    public string $listen = Generated::class;
+    /**
+     * @var list<class-string>
+     */
+    public array $listen = [Generated::class];
 
 
     public function record( mixed $event ) : void
@@ -30,14 +33,6 @@ class CmsAiPulseRecorder extends Recorder
             'success' => $event->success,
         ];
 
-        $this->entry( 'cms_ai', $key, $this->ms( $event->durationMs ), ['count', 'avg', 'max'] );
-
-        if( $event->inputTokens !== null ) {
-            $this->entry( 'cms_ai_input_tokens', $key, $event->inputTokens, ['sum'] );
-        }
-
-        if( $event->outputTokens !== null ) {
-            $this->entry( 'cms_ai_output_tokens', $key, $event->outputTokens, ['sum'] );
-        }
+        $this->latency( 'cms_ai', $key, $event->durationMs );
     }
 }

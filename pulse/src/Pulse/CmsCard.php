@@ -7,7 +7,6 @@
 
 namespace Aimeos\Cms\Pulse;
 
-use Aimeos\Cms\Tenancy;
 use Illuminate\Support\Collection;
 use Laravel\Pulse\Livewire\Card;
 
@@ -15,16 +14,15 @@ use Laravel\Pulse\Livewire\Card;
 abstract class CmsCard extends Card
 {
     /**
-     * Returns decoded, tenant-filtered aggregate rows from Pulse.
+     * Returns decoded aggregate rows from Pulse for the current tenant.
      *
      * @param 'count'|'min'|'max'|'sum'|'avg'|list<'count'|'min'|'max'|'sum'|'avg'> $aggregates
      * @return Collection<int, object>
      */
-    protected function decoded( string $type, string|array $aggregates, ?string $orderBy = 'count' ) : Collection
+    protected function decoded( string $type, string|array $aggregates ) : Collection
     {
-        return $this->aggregate( $type, $aggregates, $orderBy )
+        return $this->aggregate( Metric::type( $type ), $aggregates )
             ->map( fn( object $row ) => $this->row( $row ) )
-            ->filter( fn( object $row ) => $this->tenant( $row ) )
             ->values();
     }
 
@@ -33,13 +31,13 @@ abstract class CmsCard extends Card
      * Summarizes aggregate rows by one decoded key field.
      *
      * @param 'count'|'min'|'max'|'sum'|'avg'|list<'count'|'min'|'max'|'sum'|'avg'> $aggregates
-     * @param \Closure(Collection<int, object>): string|null $detail
-     * @return Collection<int, object>
+     * @param list<string> $details
+     * @return Collection<int, object{label: non-empty-string, count: int<0, max>, sum: int, avg: float|null, max: mixed, detail: string}&\stdClass>
      */
     protected function summary( string $type, string|array $aggregates, string $group,
-        ?\Closure $detail = null, ?string $orderBy = 'count' ) : Collection
+        array $details = [], bool $success = false ) : Collection
     {
-        return $this->decoded( $type, $aggregates, $orderBy )
+        return $this->decoded( $type, $aggregates )
             ->groupBy( fn( object $row ) => (string) ( $row->{$group} ?? 'unknown' ) )
             ->map( fn( Collection $rows, string $label ) => (object) [
                 'label' => $label !== '' ? $label : 'unknown',
@@ -47,13 +45,29 @@ abstract class CmsCard extends Card
                 'sum' => (int) $rows->sum( 'sum' ),
                 'avg' => $this->avg( $rows ),
                 'max' => $rows->max( 'max' ),
-                'detail' => $detail ? $detail( $rows ) : '',
+                'detail' => $this->detailText( $rows, $details, $success ),
             ] )
             ->sortByDesc( fn( object $row ) => $row->count ?: $row->sum )
             ->values();
     }
 
 
+    /**
+     * @param Collection<int, object> $rows
+     * @param list<string> $details
+     */
+    protected function detailText( Collection $rows, array $details = [], bool $success = false ) : string
+    {
+        return trim( implode( ' | ', array_filter( [
+            $details ? $this->detail( $rows, ...$details ) : '',
+            $success ? $this->successRate( $rows ) : '',
+        ] ) ) );
+    }
+
+
+    /**
+     * @param Collection<int, object> $rows
+     */
     protected function detail( Collection $rows, string ...$fields ) : string
     {
         return $rows
@@ -65,6 +79,9 @@ abstract class CmsCard extends Card
     }
 
 
+    /**
+     * @param Collection<int, object> $rows
+     */
     protected function successRate( Collection $rows ) : string
     {
         $total = (int) $rows->sum( 'count' );
@@ -103,13 +120,5 @@ abstract class CmsCard extends Card
         $count = (int) $rows->sum( 'count' );
 
         return $count > 0 ? round( $weighted / $count, 1 ) : null;
-    }
-
-
-    protected function tenant( object $row ) : bool
-    {
-        $tenant = Tenancy::value();
-
-        return $tenant === '' || !isset( $row->tenant ) || $row->tenant === '' || $row->tenant === $tenant;
     }
 }

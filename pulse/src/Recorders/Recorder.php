@@ -7,6 +7,8 @@
 
 namespace Aimeos\Cms\Recorders;
 
+use Aimeos\Cms\Pulse\Metric;
+
 
 abstract class Recorder
 {
@@ -23,7 +25,8 @@ abstract class Recorder
                 return;
             }
 
-            $entry = $pulse->record( $type, $this->key( $key ), $value );
+            $entry = $pulse->record( Metric::type( $type, (string) ( $key['tenant'] ?? '' ) ),
+                $this->key( Metric::key( $key ) ), $value );
 
             foreach( $aggregates as $aggregate )
             {
@@ -34,6 +37,17 @@ abstract class Recorder
         } catch( \Throwable $e ) {
             error_log( 'CMS pulse recorder error: ' . $e->getMessage() );
         }
+    }
+
+
+    /**
+     * Records a duration metric with Pulse's latency aggregates.
+     *
+     * @param array<string, mixed> $key Aggregation dimensions
+     */
+    protected function latency( string $type, array $key, float|int $duration ) : void
+    {
+        $this->entry( $type, $key, $this->ms( $duration ), Metric::LATENCY );
     }
 
 

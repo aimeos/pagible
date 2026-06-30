@@ -13,7 +13,10 @@ use Aimeos\Cms\Watch;
 
 class CmsAuthPulseRecorder extends Recorder
 {
-    public string $listen = Authed::class;
+    /**
+     * @var list<class-string>
+     */
+    public array $listen = [Authed::class];
 
 
     public function record( mixed $event ) : void

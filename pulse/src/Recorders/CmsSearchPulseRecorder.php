@@ -13,7 +13,10 @@ use Aimeos\Cms\Watch;
 
 class CmsSearchPulseRecorder extends Recorder
 {
-    public string $listen = Searched::class;
+    /**
+     * @var list<class-string>
+     */
+    public array $listen = [Searched::class];
 
 
     public function record( mixed $event ) : void
@@ -22,7 +25,7 @@ class CmsSearchPulseRecorder extends Recorder
             return;
         }
 
-        $this->entry( 'cms_search', [
+        $this->latency( 'cms_search', [
             'action' => 'theme:search',
             'query' => $event->query,
             'results' => $event->results,
@@ -30,6 +33,6 @@ class CmsSearchPulseRecorder extends Recorder
             'domain' => $event->domain,
             'lang' => $event->lang,
             'tenant' => $event->tenant,
-        ], $this->ms( $event->durationMs ), ['count', 'avg', 'max'] );
+        ], $event->durationMs );
     }
 }

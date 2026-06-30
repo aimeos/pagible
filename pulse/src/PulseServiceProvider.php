@@ -8,21 +8,12 @@
 namespace Aimeos\Cms;
 
 use Aimeos\Cms\Commands\InstallPulse;
-use Aimeos\Cms\Pulse\CmsAiCard;
-use Aimeos\Cms\Pulse\CmsAuthCard;
-use Aimeos\Cms\Pulse\CmsContactCard;
-use Aimeos\Cms\Pulse\CmsElementCard;
-use Aimeos\Cms\Pulse\CmsFileCard;
-use Aimeos\Cms\Pulse\CmsJsonapiCard;
-use Aimeos\Cms\Pulse\CmsPageCard;
-use Aimeos\Cms\Pulse\CmsSearchCard;
+use Aimeos\Cms\Pulse\CmsMetricCard;
 use Aimeos\Cms\Recorders\CmsAiPulseRecorder;
 use Aimeos\Cms\Recorders\CmsAuthPulseRecorder;
 use Aimeos\Cms\Recorders\CmsContactPulseRecorder;
-use Aimeos\Cms\Recorders\CmsElementPulseRecorder;
-use Aimeos\Cms\Recorders\CmsFilePulseRecorder;
+use Aimeos\Cms\Recorders\CmsContentPulseRecorder;
 use Aimeos\Cms\Recorders\CmsJsonapiPulseRecorder;
-use Aimeos\Cms\Recorders\CmsPagePulseRecorder;
 use Aimeos\Cms\Recorders\CmsSearchPulseRecorder;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider as Provider;
@@ -30,6 +21,19 @@ use Illuminate\Support\ServiceProvider as Provider;
 
 class PulseServiceProvider extends Provider
 {
+    /**
+     * @var list<class-string>
+     */
+    private const RECORDERS = [
+        CmsContentPulseRecorder::class,
+        CmsAuthPulseRecorder::class,
+        CmsAiPulseRecorder::class,
+        CmsSearchPulseRecorder::class,
+        CmsContactPulseRecorder::class,
+        CmsJsonapiPulseRecorder::class,
+    ];
+
+
     public function boot() : void
     {
         $basedir = dirname( __DIR__ );
@@ -42,9 +46,9 @@ class PulseServiceProvider extends Provider
             $basedir . '/views/pulse' => resource_path( 'views/vendor/cms-pulse' ),
         ], 'cms-pulse-views' );
 
-        $this->gate();
         $this->console();
 
+        $this->app->booted( fn() => $this->gate() );
         $this->app->booted( fn() => $this->pulse( $basedir ) );
     }
 
@@ -56,40 +60,57 @@ class PulseServiceProvider extends Provider
         }
 
         $this->loadViewsFrom( $basedir . '/views/pulse', 'cms-pulse' );
-        $this->components();
+
+        if( class_exists( \Livewire\Livewire::class ) ) {
+            \Livewire\Livewire::component( 'cms-metric-card', CmsMetricCard::class );
+        }
 
         $pulse = $this->pulseInstance();
 
         if( $pulse && method_exists( $pulse, 'register' ) )
         {
-            $pulse->register( [
-                CmsPagePulseRecorder::class => true,
-                CmsElementPulseRecorder::class => true,
-                CmsFilePulseRecorder::class => true,
-                CmsAuthPulseRecorder::class => true,
-                CmsAiPulseRecorder::class => true,
-                CmsSearchPulseRecorder::class => true,
-                CmsContactPulseRecorder::class => true,
-                CmsJsonapiPulseRecorder::class => true,
-            ] );
+            $pulse->register( $this->recorders() );
         }
     }
 
 
-    protected function components() : void
+    /**
+     * @return array<class-string, bool>
+     */
+    protected function recorders() : array
     {
-        if( !class_exists( \Livewire\Livewire::class ) ) {
-            return;
+        $recorders = [];
+
+        foreach( self::RECORDERS as $recorder )
+        {
+            if( $this->recorderAvailable( $recorder ) ) {
+                $recorders[$recorder] = true;
+            }
         }
 
-        \Livewire\Livewire::component( 'cms-page-card', CmsPageCard::class );
-        \Livewire\Livewire::component( 'cms-element-card', CmsElementCard::class );
-        \Livewire\Livewire::component( 'cms-file-card', CmsFileCard::class );
-        \Livewire\Livewire::component( 'cms-auth-card', CmsAuthCard::class );
-        \Livewire\Livewire::component( 'cms-ai-card', CmsAiCard::class );
-        \Livewire\Livewire::component( 'cms-search-card', CmsSearchCard::class );
-        \Livewire\Livewire::component( 'cms-contact-card', CmsContactCard::class );
-        \Livewire\Livewire::component( 'cms-jsonapi-card', CmsJsonapiCard::class );
+        return $recorders;
+    }
+
+
+    /**
+     * @param class-string $recorder
+     */
+    protected function recorderAvailable( string $recorder ) : bool
+    {
+        $listen = ( new \ReflectionClass( $recorder ) )->getDefaultProperties()['listen'] ?? [];
+
+        if( !is_array( $listen ) || $listen === [] ) {
+            return false;
+        }
+
+        foreach( $listen as $event )
+        {
+            if( !is_string( $event ) || !class_exists( $event ) ) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
 
@@ -103,8 +124,24 @@ class PulseServiceProvider extends Provider
 
     protected function gate() : void
     {
-        if( !Gate::has( 'viewPulse' ) ) {
+        if( !Gate::has( 'viewPulse' ) || $this->defaultPulseGate() ) {
             Gate::define( 'viewPulse', fn( $user ) => Permission::can( '*', $user ) );
+        }
+    }
+
+
+    protected function defaultPulseGate() : bool
+    {
+        try {
+            $gate = Gate::getFacadeRoot();
+            $property = new \ReflectionProperty( $gate, 'abilities' );
+            $callback = ( $property->getValue( $gate ) )['viewPulse'] ?? null;
+
+            return $callback instanceof \Closure
+                && ( new \ReflectionFunction( $callback ) )->getClosureScopeClass()?->getName()
+                    === \Laravel\Pulse\PulseServiceProvider::class;
+        } catch( \Throwable ) {
+            return false;
         }
     }
 
