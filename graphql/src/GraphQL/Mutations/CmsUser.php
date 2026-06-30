@@ -7,8 +7,7 @@
 
 namespace Aimeos\Cms\GraphQL\Mutations;
 
-use Aimeos\Cms\Events\Authed;
-use Aimeos\Cms\Tenancy;
+use Aimeos\Cms\Concerns\WatchAuth;
 use Aimeos\Cms\Utils;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Contracts\Auth\Authenticatable;
@@ -17,6 +16,9 @@ use GraphQL\Error\Error;
 
 final class CmsUser
 {
+    use WatchAuth;
+
+
     /**
      * @param  null  $rootValue
      * @param  array<string, mixed>  $args
@@ -36,13 +38,7 @@ final class CmsUser
         $user->setAttribute( 'cmsdata', $settings );
         $user->save();
 
-        event( new Authed(
-            'user-save',
-            Utils::editor( $user ),
-            (string) request()->ip(),
-            (string) request()->userAgent(),
-            Tenancy::value()
-        ) );
+        $this->authWatch( 'user-save', Utils::editor( $user ) );
 
         return $user;
     }

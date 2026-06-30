@@ -8,6 +8,7 @@
 namespace Aimeos\Cms\Listeners;
 
 use Aimeos\Cms\Events\Searched;
+use Aimeos\Cms\Watch;
 
 
 /**
@@ -18,30 +19,25 @@ use Aimeos\Cms\Events\Searched;
  */
 class SearchLogListener
 {
-    use Sampling;
-    use WritesLog;
-
-
     /**
      * Logs the search as a structured entry.
      */
     public function handle( Searched $event ) : void
     {
-        if( $this->sampled() ) {
-            $this->emit( 'cms.search', $this->context( $event ) );
+        if( Watch::sampled() ) {
+            Watch::emit( 'cms.search', $this->context( $event ) );
         }
     }
 
 
     /**
-     * Builds the structured log context, dropping empty values.
+     * Builds the structured log context.
      *
      * @return array<string, mixed>
      */
     protected function context( Searched $event ) : array
     {
-        return array_filter( [
-            'request_id' => $event->requestId,
+        return [
             'query' => $event->query,
             'results' => $event->results,
             'page' => $event->page,
@@ -49,6 +45,6 @@ class SearchLogListener
             'domain' => $event->domain,
             'lang' => $event->lang,
             'tenant_id' => $event->tenant,
-        ], fn( $value ) => $value !== '' );
+        ];
     }
 }

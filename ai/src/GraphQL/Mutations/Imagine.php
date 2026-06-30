@@ -7,9 +7,9 @@
 
 namespace Aimeos\Cms\GraphQL\Mutations;
 
-use Aimeos\Cms\Concerns\Watch;
-use Aimeos\Cms\Models\File;
+use Aimeos\Cms\Concerns\ObservesPrisma;
 use Aimeos\Prisma\Prisma;
+use Aimeos\Cms\Models\File;
 use Aimeos\Prisma\Files\Image;
 use Aimeos\Prisma\Exceptions\PrismaException;
 use Illuminate\Support\Facades\Log;
@@ -18,7 +18,7 @@ use GraphQL\Error\Error;
 
 final class Imagine
 {
-    use Watch;
+    use ObservesPrisma;
 
 
     /**
@@ -38,8 +38,7 @@ final class Imagine
 
         try
         {
-            return Prisma::image()
-                ->observe( $this->observer() )
+            return Prisma::image()->observe( $this->observer() )
                 ->using( $provider, $config )
                 ->model( $model )
                 ->ensure( 'imagine' )

@@ -7,11 +7,11 @@
 
 namespace Aimeos\Cms\Tools;
 
-use Aimeos\Cms\Concerns\Watch;
+use Aimeos\Cms\Concerns\ObservesPrisma;
+use Aimeos\Prisma\Prisma;
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Refiner;
-use Aimeos\Prisma\Prisma;
 use Aimeos\Prisma\Tools;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Attributes\Description;
@@ -27,7 +27,7 @@ use Laravel\Mcp\Request;
 #[Description('Improves or restructures existing page content using AI based on a prompt. Pass the page ID and a prompt describing the changes. Returns the refined content elements as a JSON array.')]
 class RefineContent extends Tool
 {
-    use Watch;
+    use ObservesPrisma;
 
 
     /**
@@ -69,8 +69,7 @@ class RefineContent extends Tool
 
         set_time_limit( (int) config( 'cms.ai.timeout' ) ); // long AI call; lift PHP's default 30s execution limit
 
-        $response = Prisma::text()
-            ->observe( $this->observer( \Aimeos\Cms\Utils::editor( $request->user() ) ) )
+        $response = Prisma::text()->observe( $this->observer( \Aimeos\Cms\Utils::editor( $request->user() ) ) )
             ->using( $provider, $config )
             ->model( $model )
             ->withMaxTokens( config( 'cms.ai.maxtoken' ) )

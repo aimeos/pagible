@@ -9,6 +9,7 @@ namespace Aimeos\Cms\Controllers;
 
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Scopes\Status;
+use Aimeos\Cms\Watch;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 
@@ -24,7 +25,7 @@ class SearchController extends Controller
      */
     public function index( Request $request, string $domain = '' )
     {
-        $start = hrtime( true );
+        $start = Watch::start( 'cms.theme.watch' );
 
         $vals = $request->validate( [
             'q' => 'required|string|min:' . (int) config( 'cms.search.min', 2 ) . '|max:200',
@@ -51,17 +52,15 @@ class SearchController extends Controller
                 'relevance' => $item->relevance ?? 0,
             ] );
 
-        if( config( 'cms.theme.watch', false ) ) {
-            event( new \Aimeos\Cms\Events\Searched(
-                query: (string) $vals['q'],
-                results: $paginator->total(),
-                page: $paginator->currentPage(),
-                durationMs: ( hrtime( true ) - $start ) / 1e6,
-                domain: $domain,
-                lang: $lang,
-                tenant: \Aimeos\Cms\Tenancy::value(),
-            ) );
-        }
+        Watch::dispatchWhen( 'cms.theme.watch', fn() => new \Aimeos\Cms\Events\Searched(
+            query: (string) $vals['q'],
+            results: $paginator->total(),
+            page: $paginator->currentPage(),
+            durationMs: Watch::duration( $start ),
+            domain: $domain,
+            lang: $lang,
+            tenant: \Aimeos\Cms\Tenancy::value(),
+        ) );
 
         return response()->json( $content );
     }

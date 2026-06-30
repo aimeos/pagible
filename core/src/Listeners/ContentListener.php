@@ -7,23 +7,19 @@
 
 namespace Aimeos\Cms\Listeners;
 
-use Aimeos\Cms\Events\Bulk;
 use Aimeos\Cms\Events\Event;
-use Aimeos\Cms\Utils;
+use Aimeos\Cms\Watch;
 
 
 /**
- * Writes a structured JSON line to the CMS log channel for every content change.
+ * Writes a structured JSON line to the CMS log channel for single-item content changes.
  *
  * Subscribes to the per-action content events (Added, Saved, Published, Dropped, Restored,
- * Purged, Moved) and the coalesced Bulk event. Active only when "cms.watch.channel" is set;
- * a listener failure never breaks the originating operation.
+ * Purged, Moved). Active only when "cms.watch.channel" is set; a listener failure never breaks
+ * the originating operation.
  */
-class ContentLogListener
+class ContentListener
 {
-    use WritesLog;
-
-
     /**
      * Logs a single-item content change (add/save/publish/drop/restore/purge/move).
      */
@@ -36,20 +32,6 @@ class ContentLogListener
             'published' => $event->published,
             'tenant_id' => $event->tenant,
         ] + $this->extra( $event ) );
-    }
-
-
-    /**
-     * Logs a bulk content change applied to several items at once.
-     */
-    public function handleBulk( Bulk $event ) : void
-    {
-        $this->write( $event->contentType, $event->source, [
-            'action' => 'bulk',
-            'ids' => array_values( $event->ids ),
-            'editor' => $event->editor,
-            'tenant_id' => $event->tenant,
-        ] );
     }
 
 
@@ -72,7 +54,7 @@ class ContentLogListener
 
 
     /**
-     * Writes the structured entry to the CMS log channel, dropping null/empty values.
+     * Writes the structured entry to the CMS log channel.
      *
      * @param string $type Content type ('page', 'element' or 'file')
      * @param string $source Originating interface captured on the event
@@ -80,12 +62,9 @@ class ContentLogListener
      */
     protected function write( string $type, string $source, array $context ) : void
     {
-        $context = [
-            'request_id' => Utils::requestId(),
+        Watch::emit( 'cms.' . $type, [
             'type' => $type,
             'source' => $source,
-        ] + $context;
-
-        $this->emit( 'cms.' . $type, array_filter( $context, fn( $value ) => $value !== null && $value !== '' ) );
+        ] + $context );
     }
 }

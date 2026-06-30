@@ -8,6 +8,7 @@
 namespace Aimeos\Cms\Listeners;
 
 use Aimeos\Cms\Events\Generated;
+use Aimeos\Cms\Watch;
 
 
 /**
@@ -18,27 +19,23 @@ use Aimeos\Cms\Events\Generated;
  */
 class AiLogListener
 {
-    use WritesLog;
-
-
     /**
      * Logs the AI provider call as a structured entry.
      */
     public function handle( Generated $event ) : void
     {
-        $this->emit( 'cms.ai', $this->context( $event ) );
+        Watch::emit( 'cms.ai', $this->context( $event ) );
     }
 
 
     /**
-     * Builds the structured log context, dropping null/empty values.
+     * Builds the structured log context.
      *
      * @return array<string, mixed>
      */
     protected function context( Generated $event ) : array
     {
-        return array_filter( [
-            'request_id' => $event->requestId,
+        return [
             'mutation' => $event->mutation,
             'provider' => $event->provider,
             'model' => $event->model,
@@ -49,7 +46,7 @@ class AiLogListener
             'error' => $this->sanitize( $event->error ),
             'input_tokens' => $event->extra['inputTokens'] ?? null,
             'output_tokens' => $event->extra['outputTokens'] ?? null,
-        ], fn( $value ) => $value !== null && $value !== '' );
+        ];
     }
 
 

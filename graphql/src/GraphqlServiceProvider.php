@@ -53,13 +53,9 @@ class GraphqlServiceProvider extends Provider
             fn() => \Aimeos\Cms\Utils::source( 'graphql' )
         );
 
-        // Log authentication events when watch logging is enabled.
-        if( config( 'cms.watch.channel' ) ) {
-            $events->listen(
-                \Aimeos\Cms\Events\Authed::class,
-                [\Aimeos\Cms\Listeners\AuthLogListener::class, 'handle']
-            );
-        }
+        Watch::listen( [
+            \Aimeos\Cms\Events\Authed::class => \Aimeos\Cms\Listeners\AuthLogListener::class,
+        ] );
     }
 
 

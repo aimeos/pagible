@@ -9,6 +9,7 @@ namespace Aimeos\Cms\Http\Middleware;
 
 use Aimeos\Cms\Events\Queried;
 use Aimeos\Cms\Tenancy;
+use Aimeos\Cms\Watch;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Route;
@@ -20,7 +21,7 @@ use Symfony\Component\HttpFoundation\Response;
  *
  * Instrumentation lives here rather than in the controller because the controller methods only
  * decorate an already-built response and have no request-lifecycle timing. Active only when
- * "cms.jsonapi.watch" is enabled; a failure never breaks the response.
+ * "cms.watch.channel" and "cms.jsonapi.watch" are enabled; a failure never breaks the response.
  */
 class WatchJsonapi
 {
@@ -29,24 +30,17 @@ class WatchJsonapi
      */
     public function handle( Request $request, Closure $next ) : Response
     {
-        $start = hrtime( true );
+        $start = Watch::start( 'cms.jsonapi.watch' );
 
         $response = $next( $request );
 
-        if( config( 'cms.jsonapi.watch', false ) )
-        {
-            try {
-                event( new Queried(
-                    action: $this->action( $request ),
-                    durationMs: ( hrtime( true ) - $start ) / 1e6,
-                    domain: $this->domain( $request ),
-                    includes: $this->includes( $request ),
-                    tenant: Tenancy::value(),
-                ) );
-            } catch( \Exception $e ) {
-                error_log( 'CMS watch middleware error: ' . $e->getMessage() );
-            }
-        }
+        Watch::dispatchWhen( 'cms.jsonapi.watch', fn() => new Queried(
+            action: $this->action( $request ),
+            durationMs: Watch::duration( $start ),
+            domain: $this->domain( $request ),
+            includes: $this->includes( $request ),
+            tenant: Tenancy::value(),
+        ) );
 
         return $response;
     }

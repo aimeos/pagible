@@ -39,12 +39,10 @@ class ThemeServiceProvider extends Provider
 
     protected function watch() : void
     {
-        // Log frontend searches and contact submissions when watch logging is enabled.
-        if( config( 'cms.watch.channel' ) ) {
-            $events = $this->app->make( 'events' );
-            $events->listen( \Aimeos\Cms\Events\Searched::class, [\Aimeos\Cms\Listeners\SearchLogListener::class, 'handle'] );
-            $events->listen( \Aimeos\Cms\Events\Contacted::class, [\Aimeos\Cms\Listeners\ContactLogListener::class, 'handle'] );
-        }
+        Watch::listen( [
+            \Aimeos\Cms\Events\Searched::class => \Aimeos\Cms\Listeners\SearchLogListener::class,
+            \Aimeos\Cms\Events\Contacted::class => \Aimeos\Cms\Listeners\ContactLogListener::class,
+        ] );
     }
 
     protected function console() : void

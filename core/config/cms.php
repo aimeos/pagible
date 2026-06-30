@@ -174,7 +174,7 @@ return [
     | Structured audit/observability logging. Set "channel" (e.g. CMS_LOG_CHANNEL=cms)
     | to the Laravel log channel that receives the entries; leave it unset to disable
     | all logging at zero per-request cost. When the named channel is not defined in
-    | config/logging.php, the watch package registers a daily JSON channel for it.
+    | config/logging.php, the core package registers a daily JSON channel for it.
     |
     | "sample" (0.0-1.0) keeps that fraction of high-volume read entries (frontend
     | search, JSON:API); audit streams (content, auth, contact) are always complete.

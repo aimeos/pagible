@@ -19,13 +19,9 @@ class JsonapiServiceProvider extends Provider
 
     protected function watch() : void
     {
-        // Log read-only JSON:API requests when watch logging is enabled.
-        if( config( 'cms.watch.channel' ) ) {
-            $this->app->make( 'events' )->listen(
-                \Aimeos\Cms\Events\Queried::class,
-                [\Aimeos\Cms\Listeners\JsonapiLogListener::class, 'handle']
-            );
-        }
+        Watch::listen( [
+            \Aimeos\Cms\Events\Queried::class => \Aimeos\Cms\Listeners\JsonapiLogListener::class,
+        ] );
     }
 
 

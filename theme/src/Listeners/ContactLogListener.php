@@ -8,6 +8,7 @@
 namespace Aimeos\Cms\Listeners;
 
 use Aimeos\Cms\Events\Contacted;
+use Aimeos\Cms\Watch;
 
 
 /**
@@ -18,49 +19,27 @@ use Aimeos\Cms\Events\Contacted;
  */
 class ContactLogListener
 {
-    use WritesLog;
-
-
     /**
      * Logs the contact submission as a structured entry.
      */
     public function handle( Contacted $event ) : void
     {
-        $this->emit( 'cms.contact', $this->context( $event ) );
+        Watch::emit( 'cms.contact', $this->context( $event ) );
     }
 
 
     /**
-     * Builds the structured log context, anonymizing PII and dropping empty values.
+     * Builds the structured log context, anonymizing PII.
      *
      * @return array<string, mixed>
      */
     protected function context( Contacted $event ) : array
     {
-        $anon = (bool) config( 'cms.watch.anonymize', true );
-
-        return array_filter( [
-            'request_id' => $event->requestId,
-            'email' => $this->mask( $event->email, $anon ),
-            'ip' => $this->mask( $event->ip, $anon ),
+        return [
+            'email' => Watch::mask( $event->email ),
+            'ip' => Watch::mask( $event->ip ),
             'duration_ms' => round( $event->durationMs, 1 ),
             'tenant_id' => $event->tenant,
-        ], fn( $value ) => $value !== '' );
-    }
-
-
-    /**
-     * Pseudonymizes the value with a keyed SHA-256 (HMAC) when anonymization is enabled.
-     *
-     * Keying with the app secret prevents the low-entropy email/IP hashes from being reversed
-     * via rainbow tables while keeping them stable for correlation within a deployment.
-     */
-    protected function mask( string $value, bool $anon ) : string
-    {
-        if( $value === '' ) {
-            return '';
-        }
-
-        return $anon ? hash_hmac( 'sha256', $value, (string) config( 'app.key' ) ) : $value;
+        ];
     }
 }

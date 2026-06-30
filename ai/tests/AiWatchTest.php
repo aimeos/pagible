@@ -7,7 +7,7 @@
 
 namespace Tests;
 
-use Aimeos\Cms\Concerns\Watch;
+use Aimeos\Cms\Concerns\ObservesPrisma;
 use Aimeos\Cms\Events\Generated;
 use Aimeos\Prisma\Prisma;
 use Aimeos\Prisma\Responses\FileResponse;
@@ -39,6 +39,7 @@ class AiWatchTest extends AiTestAbstract
         $app['config']->set( 'lighthouse.namespaces.models', ['App\Models', 'Aimeos\\Cms\\Models'] );
         $app['config']->set( 'lighthouse.namespaces.mutations', ['Aimeos\\Cms\\GraphQL\\Mutations'] );
         $app['config']->set( 'lighthouse.namespaces.directives', ['Aimeos\\Cms\\GraphQL\\Directives'] );
+        $app['config']->set( 'cms.watch.channel', 'cms' );
     }
 
 
@@ -137,12 +138,12 @@ class AiWatchTest extends AiTestAbstract
 
 
     /**
-     * Invokes the Watch observer with a Prisma operation observation.
+     * Invokes the Prisma observer with a Prisma operation observation.
      */
     private function observe( Observation $observation, ?string $editor = null ) : void
     {
         $obj = new class {
-            use Watch;
+            use ObservesPrisma;
 
             public function fire( Observation $observation, ?string $editor ) : void
             {

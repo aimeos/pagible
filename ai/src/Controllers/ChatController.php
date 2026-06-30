@@ -7,12 +7,12 @@
 
 namespace Aimeos\Cms\Controllers;
 
-use Aimeos\Cms\Events\Generated;
+use Aimeos\Cms\Concerns\ObservesPrisma;
+use Aimeos\Prisma\Prisma;
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\Tenancy;
 use Aimeos\Cms\Tools as CmsTools;
 use Aimeos\Cms\Utils;
-use Aimeos\Prisma\Prisma;
 use Aimeos\Prisma\Tools;
 use Aimeos\Prisma\Tools\Step;
 use Aimeos\Prisma\Exceptions\PrismaException;
@@ -25,6 +25,9 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ChatController extends Controller
 {
+    use ObservesPrisma;
+
+
     /**
      * Streams a chat answer to the admin panel as a chunked text stream.
      *
@@ -55,10 +58,11 @@ class ChatController extends Controller
         }
 
         $config = config( 'cms.ai.write', [] );
+        $editor = Utils::editor( $user );
         $history = $this->history( $request->input( 'messages' ) );
         $system = view( 'cms::prompts.chat' )->render() . "\n" . view( 'cms::prompts.write' )->render() . "\n";
 
-        $prisma = Prisma::text()
+        $prisma = Prisma::text()->observe( $this->observer( $editor, 'chat' ) )
             ->using( config( 'cms.ai.write.provider' ), $config )
             ->model( config( 'cms.ai.write.model' ) )
             ->withClientOptions( ['timeout' => (int) config( 'cms.ai.timeout' )] )
@@ -124,15 +128,13 @@ class ChatController extends Controller
             abort( 409, 'A response is already being generated' );
         }
 
-        $editor = Utils::editor( $user );
-
-        $response = new StreamedResponse( function() use ( $prisma, $prompt, $config, $lock, $editor ) {
+        $response = new StreamedResponse( function() use ( $prisma, $prompt, $config, $lock ) {
             // Don't let PHP kill the script mid-flush on disconnect; emit() detects it and stops
             // cleanly so the lock is always released here (and token pulling/billing stops promptly).
             $abort = (bool) ignore_user_abort( true );
 
             try {
-                $this->emit( $prisma, $prompt, $config, $editor );
+                $this->emit( $prisma, $prompt, $config );
             } finally {
                 ignore_user_abort( $abort );
                 $lock?->release();
@@ -158,16 +160,13 @@ class ChatController extends Controller
      * @param \Aimeos\Prisma\Contracts\Provider $prisma Configured Prisma text request
      * @param string $prompt Current user message
      * @param array<string, mixed> $config AI provider configuration
-     * @param string $editor Editor identifier that triggered the chat
      */
-    protected function emit( \Aimeos\Prisma\Contracts\Provider $prisma, string $prompt, array $config, string $editor = '' ) : void
+    protected function emit( \Aimeos\Prisma\Contracts\Provider $prisma, string $prompt, array $config ) : void
     {
         // AI generation streams for minutes; PHP's default 30s max_execution_time otherwise kills the
         // worker mid-read (fatal in fread()). Lift it for the whole stream - a genuinely stalled upstream
         // still trips the provider's own read timeout first (a catchable PrismaException).
         set_time_limit( (int) config( 'cms.ai.timeout' ) );
-
-        $start = hrtime( true );
 
         $send = function( ?string $text ) {
             // text() is null when the model ended on tool calls with no prose - nothing to send
@@ -243,32 +242,12 @@ class ChatController extends Controller
                 $send( $response->text() );
             }
 
-            event( new Generated(
-                mutation: 'chat',
-                provider: is_string( $p = config( 'cms.ai.write.provider' ) ) ? $p : '',
-                model: is_string( $m = config( 'cms.ai.write.model' ) ) ? $m : '',
-                durationMs: ( hrtime( true ) - $start ) / 1e6,
-                editor: $editor,
-                tenant: Tenancy::value(),
-                success: true,
-            ) );
         }
         catch( \Throwable $e )
         {
             if( connection_aborted() ) {
                 return; // client gone (or the disconnect we threw above) - just stop, nothing to report
             }
-
-            event( new Generated(
-                mutation: 'chat',
-                provider: is_string( $p = config( 'cms.ai.write.provider' ) ) ? $p : '',
-                model: is_string( $m = config( 'cms.ai.write.model' ) ) ? $m : '',
-                durationMs: ( hrtime( true ) - $start ) / 1e6,
-                editor: $editor,
-                tenant: Tenancy::value(),
-                success: false,
-                error: $e->getMessage(),
-            ) );
 
             // The response is already streaming (HTTP 200 sent), so surface the failure inline;
             // Prisma errors may show their message in debug, anything else stays generic.

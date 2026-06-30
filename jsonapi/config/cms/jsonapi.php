@@ -19,9 +19,10 @@ return [
     | Request logging
     |--------------------------------------------------------------------------
     |
-    | When enabled, each read-only JSON:API request dispatches a watch event so
-    | the request duration, result count and includes can be logged and shown in
-    | the metrics dashboard. Off by default as these requests can be high volume.
+    | When enabled together with "cms.watch.channel", each read-only JSON:API
+    | request dispatches a watch event so the request duration, result count and
+    | includes can be logged and shown in the metrics dashboard. Off by default
+    | as these requests can be high volume.
     |
     */
     'watch' => env( 'CMS_JSONAPI_WATCH', false ),

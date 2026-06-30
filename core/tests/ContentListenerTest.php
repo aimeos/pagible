@@ -8,15 +8,14 @@
 namespace Tests;
 
 use Aimeos\Cms\CoreServiceProvider;
-use Aimeos\Cms\Events\Bulk;
 use Aimeos\Cms\Events\Saved;
-use Aimeos\Cms\Listeners\ContentLogListener;
+use Aimeos\Cms\Listeners\ContentListener;
 use Illuminate\Support\Facades\Log;
 use Orchestra\Testbench\TestCase;
 use Psr\Log\LoggerInterface;
 
 
-class ContentLogListenerTest extends TestCase
+class ContentListenerTest extends TestCase
 {
     protected function getPackageProviders( $app )
     {
@@ -43,22 +42,8 @@ class ContentLogListenerTest extends TestCase
         ) );
         Log::shouldReceive( 'channel' )->with( 'cms' )->andReturn( $logger );
 
-        ( new ContentLogListener )->handle(
+        ( new ContentListener )->handle(
             new Saved( 'page', 'id1', 'v1', 'ed', ['path' => 'about', 'domain' => ''], tenant: 'test', source: 'graphql' )
-        );
-    }
-
-
-    public function testWritesBulkEntry() : void
-    {
-        $logger = \Mockery::mock( LoggerInterface::class );
-        $logger->shouldReceive( 'info' )->once()->with( 'cms.element', \Mockery::on( fn( $ctx ) =>
-            $ctx['action'] === 'bulk' && $ctx['ids'] === ['a', 'b'] && $ctx['editor'] === 'ed'
-        ) );
-        Log::shouldReceive( 'channel' )->with( 'cms' )->andReturn( $logger );
-
-        ( new ContentLogListener )->handleBulk(
-            new Bulk( 'element', ['a', 'b'], ['a' => 'v1', 'b' => 'v2'], ['lang' => 'de'], 'ed', 'test' )
         );
     }
 
@@ -68,7 +53,7 @@ class ContentLogListenerTest extends TestCase
         config( ['cms.watch.channel' => null] );
         Log::shouldReceive( 'channel' )->never();
 
-        ( new ContentLogListener )->handle( new Saved( 'page', 'id1', 'v1', 'ed', [] ) );
+        ( new ContentListener )->handle( new Saved( 'page', 'id1', 'v1', 'ed', [] ) );
 
         $this->assertTrue( true );
     }
@@ -78,7 +63,7 @@ class ContentLogListenerTest extends TestCase
     {
         Log::shouldReceive( 'channel' )->andThrow( new \RuntimeException( 'boom' ) );
 
-        ( new ContentLogListener )->handle( new Saved( 'page', 'id1', 'v1', 'ed', [] ) );
+        ( new ContentListener )->handle( new Saved( 'page', 'id1', 'v1', 'ed', [] ) );
 
         $this->assertTrue( true );
     }

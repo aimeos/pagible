@@ -8,6 +8,7 @@
 namespace Aimeos\Cms\Listeners;
 
 use Aimeos\Cms\Events\Authed;
+use Aimeos\Cms\Watch;
 
 
 /**
@@ -18,50 +19,28 @@ use Aimeos\Cms\Events\Authed;
  */
 class AuthLogListener
 {
-    use WritesLog;
-
-
     /**
      * Logs the authentication action as a structured entry.
      */
     public function handle( Authed $event ) : void
     {
-        $this->emit( 'cms.auth', $this->context( $event ) );
+        Watch::emit( 'cms.auth', $this->context( $event ) );
     }
 
 
     /**
-     * Builds the structured log context, anonymizing PII and dropping empty values.
+     * Builds the structured log context, anonymizing PII.
      *
      * @return array<string, mixed>
      */
     protected function context( Authed $event ) : array
     {
-        $anon = (bool) config( 'cms.watch.anonymize', true );
-
-        return array_filter( [
-            'request_id' => $event->requestId,
+        return [
             'action' => $event->action,
-            'email' => $this->mask( $event->email, $anon ),
-            'ip' => $this->mask( $event->ip, $anon ),
-            'user_agent' => $this->mask( $event->userAgent, $anon ),
+            'email' => Watch::mask( $event->email ),
+            'ip' => Watch::mask( $event->ip ),
+            'user_agent' => Watch::mask( $event->userAgent ),
             'tenant_id' => $event->tenant,
-        ], fn( $value ) => $value !== '' );
-    }
-
-
-    /**
-     * Pseudonymizes the value with a keyed SHA-256 (HMAC) when anonymization is enabled.
-     *
-     * Keying with the app secret prevents the low-entropy email/IP hashes from being reversed
-     * via rainbow tables while keeping them stable for correlation within a deployment.
-     */
-    protected function mask( string $value, bool $anon ) : string
-    {
-        if( $value === '' ) {
-            return '';
-        }
-
-        return $anon ? hash_hmac( 'sha256', $value, (string) config( 'app.key' ) ) : $value;
+        ];
     }
 }

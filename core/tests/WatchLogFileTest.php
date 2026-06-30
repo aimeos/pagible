@@ -11,7 +11,6 @@ use Aimeos\Cms\CoreServiceProvider;
 use Aimeos\Cms\Events\Saved;
 use Aimeos\Cms\Events\Searched;
 use Aimeos\Cms\ThemeServiceProvider;
-use Aimeos\Cms\WatchServiceProvider;
 use Illuminate\Support\Facades\Log;
 use Monolog\Formatter\JsonFormatter;
 use Orchestra\Testbench\TestCase;
@@ -31,7 +30,7 @@ class WatchLogFileTest extends TestCase
 
     protected function getPackageProviders( $app )
     {
-        return [CoreServiceProvider::class, ThemeServiceProvider::class, WatchServiceProvider::class];
+        return [CoreServiceProvider::class, ThemeServiceProvider::class];
     }
 
 

@@ -7,7 +7,6 @@
 
 namespace Aimeos\Cms\Events;
 
-use Aimeos\Cms\Utils;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
@@ -24,12 +23,6 @@ final class Generated
     use Dispatchable, SerializesModels;
 
     /**
-     * Correlation ID shared by all events of the same request (empty when not available).
-     */
-    public readonly string $requestId;
-
-
-    /**
      * @param string $mutation Operation key, e.g. 'write', 'imagine' or 'generate-image'
      * @param string $provider AI provider used for the call
      * @param string $model AI model used for the call
@@ -39,7 +32,6 @@ final class Generated
      * @param bool $success Whether the provider call succeeded
      * @param string|null $error Error message on failure
      * @param array<string, mixed> $extra Optional token usage (inputTokens/outputTokens)
-     * @param string|null $requestId Correlation ID; taken from the X-Request-Id header when null
      */
     public function __construct(
         public readonly string $mutation,
@@ -51,8 +43,5 @@ final class Generated
         public readonly bool $success = true,
         public readonly ?string $error = null,
         public readonly array $extra = [],
-        ?string $requestId = null,
-    ) {
-        $this->requestId = $requestId ?? Utils::requestId();
-    }
+    ) {}
 }

@@ -7,9 +7,9 @@
 
 namespace Aimeos\Cms\Tools;
 
-use Aimeos\Cms\Concerns\Watch;
-use Aimeos\Cms\Permission;
+use Aimeos\Cms\Concerns\ObservesPrisma;
 use Aimeos\Prisma\Prisma;
+use Aimeos\Cms\Permission;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Attributes\Name;
@@ -25,7 +25,7 @@ use Laravel\Mcp\Request;
 class RepaintImage extends Tool
 {
     use HandlesMedia;
-    use Watch;
+    use ObservesPrisma;
 
 
     /**
@@ -54,8 +54,7 @@ class RepaintImage extends Tool
         $config = config( 'cms.ai.repaint', [] );
         $model = config( 'cms.ai.repaint.model' );
 
-        $base64 = Prisma::image()
-            ->observe( $this->observer( \Aimeos\Cms\Utils::editor( $request->user() ) ) )
+        $base64 = Prisma::image()->observe( $this->observer( \Aimeos\Cms\Utils::editor( $request->user() ) ) )
             ->using( $provider, $config )
             ->model( $model )
             ->ensure( 'repaint' )

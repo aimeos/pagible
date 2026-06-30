@@ -7,9 +7,9 @@
 
 namespace Aimeos\Cms\GraphQL\Mutations;
 
-use Aimeos\Cms\Concerns\Watch;
-use Aimeos\Cms\Models\File;
+use Aimeos\Cms\Concerns\ObservesPrisma;
 use Aimeos\Prisma\Prisma;
+use Aimeos\Cms\Models\File;
 use Aimeos\Prisma\Tools;
 use Aimeos\Prisma\Exceptions\PrismaException;
 use Illuminate\Support\Facades\Log;
@@ -18,7 +18,7 @@ use GraphQL\Error\Error;
 
 final class Write
 {
-    use Watch;
+    use ObservesPrisma;
 
 
     /**
@@ -54,8 +54,7 @@ final class Write
                 }
             }
 
-            return Prisma::text()
-                ->observe( $this->observer() )
+            return Prisma::text()->observe( $this->observer() )
                 ->using( $provider, $config )
                 ->model( $model )
                 ->withMaxTokens( config( 'cms.ai.maxtoken' ) )

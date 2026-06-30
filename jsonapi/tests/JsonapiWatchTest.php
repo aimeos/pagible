@@ -23,6 +23,14 @@ class JsonapiWatchTest extends JsonapiTestAbstract
     protected $seeder = TestSeeder::class;
 
 
+    protected function defineEnvironment( $app )
+    {
+        parent::defineEnvironment( $app );
+
+        $app['config']->set( 'cms.watch.channel', 'cms' );
+    }
+
+
     protected function getPackageProviders( $app )
     {
         return array_merge( parent::getPackageProviders( $app ), [

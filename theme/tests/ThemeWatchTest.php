@@ -33,6 +33,7 @@ class ThemeWatchTest extends ThemeTestAbstract
 
         $app['config']->set( 'scout.driver', 'collection' );
         $app['config']->set( 'mail.from.address', 'test@example.com' );
+        $app['config']->set( 'cms.watch.channel', 'cms' );
     }
 
 

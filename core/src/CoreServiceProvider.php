@@ -5,7 +5,6 @@ namespace Aimeos\Cms;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Support\Facades\Broadcast;
-use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider as Provider;
 
@@ -22,6 +21,7 @@ class CoreServiceProvider extends Provider
             $basedir . '/config/cms.php' => config_path( 'cms.php' ),
         ], 'cms-config' );
 
+        Watch::registerChannel();
         $this->broadcast();
         $this->watch();
         $this->rateLimiter();
@@ -78,25 +78,18 @@ class CoreServiceProvider extends Provider
      */
     protected function watch() : void
     {
-        if( !config( 'cms.watch.channel' ) ) {
-            return;
-        }
+        $listener = \Aimeos\Cms\Listeners\ContentListener::class;
 
-        $listener = \Aimeos\Cms\Listeners\ContentLogListener::class;
-
-        foreach( [
-            \Aimeos\Cms\Events\Added::class,
-            \Aimeos\Cms\Events\Saved::class,
-            \Aimeos\Cms\Events\Published::class,
-            \Aimeos\Cms\Events\Dropped::class,
-            \Aimeos\Cms\Events\Restored::class,
-            \Aimeos\Cms\Events\Purged::class,
-            \Aimeos\Cms\Events\Moved::class,
-        ] as $event ) {
-            Event::listen( $event, [$listener, 'handle'] );
-        }
-
-        Event::listen( \Aimeos\Cms\Events\Bulk::class, [$listener, 'handleBulk'] );
+        Watch::listen( [
+            \Aimeos\Cms\Events\Added::class => $listener,
+            \Aimeos\Cms\Events\Saved::class => $listener,
+            \Aimeos\Cms\Events\Published::class => $listener,
+            \Aimeos\Cms\Events\Dropped::class => $listener,
+            \Aimeos\Cms\Events\Restored::class => $listener,
+            \Aimeos\Cms\Events\Purged::class => $listener,
+            \Aimeos\Cms\Events\Moved::class => $listener,
+            \Aimeos\Cms\Events\Bulk::class => \Aimeos\Cms\Listeners\BulkListener::class,
+        ] );
     }
 
 

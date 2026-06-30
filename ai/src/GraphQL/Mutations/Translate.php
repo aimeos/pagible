@@ -7,7 +7,7 @@
 
 namespace Aimeos\Cms\GraphQL\Mutations;
 
-use Aimeos\Cms\Concerns\Watch;
+use Aimeos\Cms\Concerns\ObservesPrisma;
 use Aimeos\Prisma\Prisma;
 use Aimeos\Prisma\Exceptions\PrismaException;
 use Illuminate\Support\Facades\Log;
@@ -16,7 +16,7 @@ use GraphQL\Error\Error;
 
 final class Translate
 {
-    use Watch;
+    use ObservesPrisma;
 
 
     /**
@@ -47,8 +47,7 @@ final class Translate
 
         try
         {
-            return Prisma::type( 'text' )
-                ->observe( $this->observer() )
+            return Prisma::type( 'text' )->observe( $this->observer() )
                 ->using( $provider, $config )
                 ->model( $model )
                 ->ensure( 'translate' )
