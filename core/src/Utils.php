@@ -14,7 +14,6 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 
 
 class Utils
@@ -359,33 +358,6 @@ class Utils
         }
 
         return $mime;
-    }
-
-
-    /**
-     * Returns the correlation ID that ties all watch events of a single request together.
-     *
-     * Resolved once and stored on the request: an inbound "X-Request-Id" header is honoured
-     * (sanitized to a safe token to prevent log injection), otherwise a UUID is generated. The id
-     * lives on the request instance rather than a static, so every call within the same request
-     * returns the same value without leaking between requests under Octane or needing a reset.
-     *
-     * @return string The correlation ID, never empty
-     */
-    public static function requestId() : string
-    {
-        $request = request();
-
-        if( !$request->attributes->has( 'cms-request-id' ) )
-        {
-            $header = $request->header( 'X-Request-Id' );
-            $id = is_string( $header ) ? (string) preg_replace( '/[^A-Za-z0-9._-]/', '', $header ) : '';
-
-            $request->attributes->set( 'cms-request-id', $id !== '' ? substr( $id, 0, 128 ) : (string) Str::uuid() );
-        }
-
-        $id = $request->attributes->get( 'cms-request-id' );
-        return is_string( $id ) ? $id : '';
     }
 
 

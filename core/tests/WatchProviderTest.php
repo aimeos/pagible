@@ -58,4 +58,39 @@ class WatchProviderTest extends TestCase
 
         $this->assertSame( 'single', config( 'logging.channels.custom.driver' ) );
     }
+
+
+    public function testFieldsAddsRequestId() : void
+    {
+        $id = Watch::fields( [] )['request_id'];
+
+        $this->assertMatchesRegularExpression(
+            '/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/', $id
+        );
+    }
+
+
+    public function testFieldsKeepsRequestIdStable() : void
+    {
+        $this->assertSame( Watch::fields( [] )['request_id'], Watch::fields( [] )['request_id'] );
+    }
+
+
+    public function testFieldsUsesInboundRequestId() : void
+    {
+        request()->headers->set( 'X-Request-Id', 'req-abc.123' );
+
+        $this->assertSame( 'req-abc.123', Watch::fields( [] )['request_id'] );
+    }
+
+
+    public function testFieldsSanitizesInboundRequestId() : void
+    {
+        request()->headers->set( 'X-Request-Id', "valid-id\r\ninjected line" );
+
+        $id = Watch::fields( [] )['request_id'];
+
+        $this->assertSame( 'valid-idinjectedline', $id );
+        $this->assertStringNotContainsString( "\n", $id );
+    }
 }

@@ -9,6 +9,7 @@ namespace Aimeos\Cms;
 
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 use Monolog\Formatter\JsonFormatter;
 
 
@@ -17,9 +18,6 @@ use Monolog\Formatter\JsonFormatter;
  */
 class Watch
 {
-    /**
-     * Returns the configured watch log channel, or null when watch logging is disabled.
-     */
     public static function channel() : ?string
     {
         $channel = config( 'cms.watch.channel' );
@@ -29,11 +27,33 @@ class Watch
 
 
     /**
-     * Builds and dispatches a watch event only when watch logging and the optional flag are enabled.
+     * Builds and dispatches a watch event when watch logging is enabled.
      *
      * @param \Closure(): object $factory Deferred event factory
      */
-    public static function dispatchWhen( ?string $flag, \Closure $factory ) : void
+    public static function dispatch( \Closure $factory ) : void
+    {
+        self::dispatchIf( null, $factory );
+    }
+
+
+    /**
+     * Builds and dispatches a watch event only when watch logging and the feature flag are enabled.
+     *
+     * @param \Closure(): object $factory Deferred event factory
+     */
+    public static function dispatchWhen( string $flag, \Closure $factory ) : void
+    {
+        self::dispatchIf( $flag, $factory );
+    }
+
+
+    /**
+     * Builds and dispatches a watch event when watch logging and the optional flag are enabled.
+     *
+     * @param \Closure(): object $factory Deferred event factory
+     */
+    private static function dispatchIf( ?string $flag, \Closure $factory ) : void
     {
         if( !self::enabled( $flag ) ) {
             return;
@@ -47,19 +67,13 @@ class Watch
     }
 
 
-    /**
-     * Returns the elapsed milliseconds since a start timestamp.
-     */
     public static function duration( int|float|null $start ) : float
     {
         return $start !== null ? ( hrtime( true ) - $start ) / 1e6 : 0.0;
     }
 
 
-    /**
-     * Tells whether watch logging and the optional feature flag are enabled.
-     */
-    public static function enabled( ?string $flag = null ) : bool
+    private static function enabled( ?string $flag = null ) : bool
     {
         return self::channel() !== null && ( $flag === null || (bool) config( $flag, false ) );
     }
@@ -68,7 +82,7 @@ class Watch
     /**
      * Subscribes several log listeners when watch logging is enabled.
      *
-     * @param array<string, string|array{0: string, 1?: string}> $listeners Event class => listener class or [listener class, method]
+     * @param array<class-string, class-string> $listeners Event class => listener class
      */
     public static function listen( array $listeners ) : void
     {
@@ -78,11 +92,6 @@ class Watch
 
         foreach( $listeners as $event => $listener )
         {
-            if( is_array( $listener ) ) {
-                Event::listen( $event, [$listener[0], $listener[1] ?? 'handle'] );
-                continue;
-            }
-
             Event::listen( $event, [$listener, 'handle'] );
         }
     }
@@ -92,16 +101,16 @@ class Watch
      * Writes the entry to the CMS log channel, swallowing any error so it never breaks the request.
      *
      * @param string $message Log message, e.g. "cms.page"
-     * @param array<string, mixed> $context Structured entry fields
+     * @param array<string, mixed> $fields Structured entry fields
      */
-    public static function emit( string $message, array $context ) : void
+    public static function emit( string $message, array $fields ) : void
     {
         if( !( $channel = self::channel() ) ) {
             return;
         }
 
         try {
-            Log::channel( $channel )->info( $message, self::context( $context ) );
+            Log::channel( $channel )->info( $message, self::fields( $fields ) );
         } catch( \Throwable $e ) {
             error_log( 'CMS watch listener error: ' . $e->getMessage() );
         }
@@ -109,16 +118,36 @@ class Watch
 
 
     /**
-     * Adds standard watch context fields and removes null/empty-string values.
+     * Adds standard watch fields and removes null/empty-string values.
      *
-     * @param array<string, mixed> $context Log context fields
+     * @param array<string, mixed> $fields Log fields
      * @return array<string, mixed>
      */
-    public static function context( array $context ) : array
+    public static function fields( array $fields ) : array
     {
-        return array_filter( ['request_id' => Utils::requestId()] + $context, fn( $value ) =>
+        return array_filter( ['request_id' => self::requestId()] + $fields, fn( $value ) =>
             $value !== null && $value !== ''
         );
+    }
+
+
+    /**
+     * Returns the request correlation ID, reusing a sanitized inbound X-Request-Id when present.
+     */
+    private static function requestId() : string
+    {
+        $request = request();
+
+        if( !$request->attributes->has( 'cms-request-id' ) )
+        {
+            $header = $request->header( 'X-Request-Id' );
+            $id = is_string( $header ) ? (string) preg_replace( '/[^A-Za-z0-9._-]/', '', $header ) : '';
+
+            $request->attributes->set( 'cms-request-id', $id !== '' ? substr( $id, 0, 128 ) : (string) Str::uuid() );
+        }
+
+        $id = $request->attributes->get( 'cms-request-id' );
+        return is_string( $id ) ? $id : '';
     }
 
 
@@ -137,9 +166,6 @@ class Watch
     }
 
 
-    /**
-     * Tells whether the current high-volume entry should be kept.
-     */
     public static function sampled() : bool
     {
         $rate = (float) config( 'cms.watch.sample', 1.0 );
@@ -148,10 +174,7 @@ class Watch
     }
 
 
-    /**
-     * Returns a start timestamp only when watch logging and the optional flag are enabled.
-     */
-    public static function start( ?string $flag = null ) : int|float|null
+    public static function start( string $flag ) : int|float|null
     {
         return self::enabled( $flag ) ? hrtime( true ) : null;
     }

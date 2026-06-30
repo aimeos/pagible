@@ -2,6 +2,16 @@
 
 namespace Aimeos\Cms;
 
+use Aimeos\Cms\Events\Added;
+use Aimeos\Cms\Events\Bulk;
+use Aimeos\Cms\Events\Dropped;
+use Aimeos\Cms\Events\Moved;
+use Aimeos\Cms\Events\Published;
+use Aimeos\Cms\Events\Purged;
+use Aimeos\Cms\Events\Restored;
+use Aimeos\Cms\Events\Saved;
+use Aimeos\Cms\Listeners\BulkListener;
+use Aimeos\Cms\Listeners\ContentListener;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Support\Facades\Broadcast;
@@ -78,17 +88,17 @@ class CoreServiceProvider extends Provider
      */
     protected function watch() : void
     {
-        $listener = \Aimeos\Cms\Listeners\ContentListener::class;
+        $listener = ContentListener::class;
 
         Watch::listen( [
-            \Aimeos\Cms\Events\Added::class => $listener,
-            \Aimeos\Cms\Events\Saved::class => $listener,
-            \Aimeos\Cms\Events\Published::class => $listener,
-            \Aimeos\Cms\Events\Dropped::class => $listener,
-            \Aimeos\Cms\Events\Restored::class => $listener,
-            \Aimeos\Cms\Events\Purged::class => $listener,
-            \Aimeos\Cms\Events\Moved::class => $listener,
-            \Aimeos\Cms\Events\Bulk::class => \Aimeos\Cms\Listeners\BulkListener::class,
+            Added::class => $listener,
+            Saved::class => $listener,
+            Published::class => $listener,
+            Dropped::class => $listener,
+            Restored::class => $listener,
+            Purged::class => $listener,
+            Moved::class => $listener,
+            Bulk::class => BulkListener::class,
         ] );
     }
 

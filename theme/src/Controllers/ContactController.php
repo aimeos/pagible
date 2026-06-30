@@ -7,8 +7,10 @@
 
 namespace Aimeos\Cms\Controllers;
 
+use Aimeos\Cms\Events\Contacted;
 use Aimeos\Cms\Mails\ContactMail;
 use Aimeos\Cms\Requests\ContactRequest;
+use Aimeos\Cms\Tenancy;
 use Aimeos\Cms\Watch;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Routing\Controller;
@@ -24,11 +26,11 @@ class ContactController extends Controller
             new ContactMail( $request->validated() )
         );
 
-        Watch::dispatchWhen( 'cms.theme.watch', fn() => new \Aimeos\Cms\Events\Contacted(
+        Watch::dispatchWhen( 'cms.theme.watch', fn() => new Contacted(
             email: (string) ( $request->validated()['email'] ?? '' ),
             ip: (string) $request->ip(),
             durationMs: Watch::duration( $start ),
-            tenant: \Aimeos\Cms\Tenancy::value(),
+            tenant: Tenancy::value(),
         ) );
 
         return response()->json( ['message' => 'Message sent successfully', 'status' => true] );

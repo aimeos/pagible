@@ -68,7 +68,7 @@ class TranscribeAudio extends Tool
             $doc = Audio::fromStoragePath( (string) $file->path, config( 'cms.disk', 'public' ), $file->mime );
         }
 
-        $data = Prisma::audio()->observe( $this->observer( \Aimeos\Cms\Utils::editor( $request->user() ) ) )
+        $data = Prisma::audio()->observe( $this->observer( Utils::editor( $request->user() ) ) )
             ->using( $provider, $config )
             ->model( $model )
             ->ensure( 'transcribe' )

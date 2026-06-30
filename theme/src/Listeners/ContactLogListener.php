@@ -19,21 +19,16 @@ use Aimeos\Cms\Watch;
  */
 class ContactLogListener
 {
-    /**
-     * Logs the contact submission as a structured entry.
-     */
     public function handle( Contacted $event ) : void
     {
-        Watch::emit( 'cms.contact', $this->context( $event ) );
+        Watch::emit( 'cms.contact', $this->fields( $event ) );
     }
 
 
     /**
-     * Builds the structured log context, anonymizing PII.
-     *
      * @return array<string, mixed>
      */
-    protected function context( Contacted $event ) : array
+    protected function fields( Contacted $event ) : array
     {
         return [
             'email' => Watch::mask( $event->email ),

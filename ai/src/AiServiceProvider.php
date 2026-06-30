@@ -2,6 +2,8 @@
 
 namespace Aimeos\Cms;
 
+use Aimeos\Cms\Events\Generated;
+use Aimeos\Cms\Listeners\AiLogListener;
 use Illuminate\Support\ServiceProvider as Provider;
 
 class AiServiceProvider extends Provider
@@ -61,7 +63,7 @@ class AiServiceProvider extends Provider
     protected function watch() : void
     {
         Watch::listen( [
-            \Aimeos\Cms\Events\Generated::class => \Aimeos\Cms\Listeners\AiLogListener::class,
+            Generated::class => AiLogListener::class,
         ] );
     }
 

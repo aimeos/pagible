@@ -7,8 +7,10 @@
 
 namespace Aimeos\Cms\Controllers;
 
+use Aimeos\Cms\Events\Searched;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Scopes\Status;
+use Aimeos\Cms\Tenancy;
 use Aimeos\Cms\Watch;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -52,14 +54,14 @@ class SearchController extends Controller
                 'relevance' => $item->relevance ?? 0,
             ] );
 
-        Watch::dispatchWhen( 'cms.theme.watch', fn() => new \Aimeos\Cms\Events\Searched(
+        Watch::dispatchWhen( 'cms.theme.watch', fn() => new Searched(
             query: (string) $vals['q'],
             results: $paginator->total(),
             page: $paginator->currentPage(),
             durationMs: Watch::duration( $start ),
             domain: $domain,
             lang: $lang,
-            tenant: \Aimeos\Cms\Tenancy::value(),
+            tenant: Tenancy::value(),
         ) );
 
         return response()->json( $content );

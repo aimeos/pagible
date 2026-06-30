@@ -19,23 +19,18 @@ use Aimeos\Cms\Watch;
  */
 class JsonapiLogListener
 {
-    /**
-     * Logs the JSON:API request as a structured entry.
-     */
     public function handle( Queried $event ) : void
     {
         if( Watch::sampled() ) {
-            Watch::emit( 'cms.jsonapi', $this->context( $event ) );
+            Watch::emit( 'cms.jsonapi', $this->fields( $event ) );
         }
     }
 
 
     /**
-     * Builds the structured log context.
-     *
      * @return array<string, mixed>
      */
-    protected function context( Queried $event ) : array
+    protected function fields( Queried $event ) : array
     {
         return [
             'action' => $event->action,

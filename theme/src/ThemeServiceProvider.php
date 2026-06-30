@@ -2,6 +2,10 @@
 
 namespace Aimeos\Cms;
 
+use Aimeos\Cms\Events\Contacted;
+use Aimeos\Cms\Events\Searched;
+use Aimeos\Cms\Listeners\ContactLogListener;
+use Aimeos\Cms\Listeners\SearchLogListener;
 use Aimeos\Cms\Schema;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Support\Facades\Blade;
@@ -40,8 +44,8 @@ class ThemeServiceProvider extends Provider
     protected function watch() : void
     {
         Watch::listen( [
-            \Aimeos\Cms\Events\Searched::class => \Aimeos\Cms\Listeners\SearchLogListener::class,
-            \Aimeos\Cms\Events\Contacted::class => \Aimeos\Cms\Listeners\ContactLogListener::class,
+            Searched::class => SearchLogListener::class,
+            Contacted::class => ContactLogListener::class,
         ] );
     }
 

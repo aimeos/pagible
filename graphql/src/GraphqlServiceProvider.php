@@ -2,6 +2,8 @@
 
 namespace Aimeos\Cms;
 
+use Aimeos\Cms\Events\Authed;
+use Aimeos\Cms\Listeners\AuthLogListener;
 use Illuminate\Support\ServiceProvider as Provider;
 
 class GraphqlServiceProvider extends Provider
@@ -50,11 +52,11 @@ class GraphqlServiceProvider extends Provider
         // set per execution so it stays correct in long-running (Octane) workers.
         $events->listen(
             \Nuwave\Lighthouse\Events\StartExecution::class,
-            fn() => \Aimeos\Cms\Utils::source( 'graphql' )
+            fn() => Utils::source( 'graphql' )
         );
 
         Watch::listen( [
-            \Aimeos\Cms\Events\Authed::class => \Aimeos\Cms\Listeners\AuthLogListener::class,
+            Authed::class => AuthLogListener::class,
         ] );
     }
 

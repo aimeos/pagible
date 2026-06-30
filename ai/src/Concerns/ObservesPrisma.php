@@ -16,17 +16,11 @@ use Illuminate\Support\Facades\Auth;
 
 
 /**
- * Builds Prisma observers that record AI provider calls as Generated audit events.
- *
- * Shared by the AI mutations, MCP tools and the chat controller: pass observer() to Prisma's
- * observe() method and every provider operation (success or failure) is dispatched as a Generated
- * event with its operation, provider/model, duration and token usage.
+ * Builds Prisma observers that record AI provider calls as Generated events.
  */
 trait ObservesPrisma
 {
     /**
-     * Returns a Prisma observer callback that dispatches a Generated audit event per operation.
-     *
      * The editor and tenant are captured now (editor resolved from the authenticated user when
      * null) so they are correct when the callback fires after the provider call completes.
      *
@@ -40,7 +34,7 @@ trait ObservesPrisma
         $tenant = Tenancy::value();
 
         return function( Observation $observation ) use ( $editor, $tenant, $mutation ) {
-            CmsWatch::dispatchWhen( null, fn() => new Generated(
+            CmsWatch::dispatch( fn() => new Generated(
                 mutation: $mutation ?? $observation->operation,
                 provider: $observation->provider,
                 model: $observation->model ?? '',
@@ -49,10 +43,8 @@ trait ObservesPrisma
                 tenant: $tenant,
                 success: $observation->error === null,
                 error: $observation->error?->getMessage(),
-                extra: array_filter( [
-                    'inputTokens' => $observation->usage?->promptTokens(),
-                    'outputTokens' => $observation->usage?->completionTokens(),
-                ], fn( $tokens ) => $tokens !== null ),
+                inputTokens: $observation->usage?->promptTokens(),
+                outputTokens: $observation->usage?->completionTokens(),
             ) );
         };
     }

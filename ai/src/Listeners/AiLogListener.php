@@ -19,21 +19,16 @@ use Aimeos\Cms\Watch;
  */
 class AiLogListener
 {
-    /**
-     * Logs the AI provider call as a structured entry.
-     */
     public function handle( Generated $event ) : void
     {
-        Watch::emit( 'cms.ai', $this->context( $event ) );
+        Watch::emit( 'cms.ai', $this->fields( $event ) );
     }
 
 
     /**
-     * Builds the structured log context.
-     *
      * @return array<string, mixed>
      */
-    protected function context( Generated $event ) : array
+    protected function fields( Generated $event ) : array
     {
         return [
             'mutation' => $event->mutation,
@@ -44,8 +39,8 @@ class AiLogListener
             'tenant_id' => $event->tenant,
             'success' => $event->success,
             'error' => $this->sanitize( $event->error ),
-            'input_tokens' => $event->extra['inputTokens'] ?? null,
-            'output_tokens' => $event->extra['outputTokens'] ?? null,
+            'input_tokens' => $event->inputTokens,
+            'output_tokens' => $event->outputTokens,
         ];
     }
 

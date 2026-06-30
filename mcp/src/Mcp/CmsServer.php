@@ -2,6 +2,7 @@
 
 namespace Aimeos\Cms\Mcp;
 
+use Aimeos\Cms\Utils;
 use Laravel\Mcp\Server\Attributes\Instructions;
 use Laravel\Mcp\Server\Attributes\Version;
 use Laravel\Mcp\Server\Attributes\Name;
@@ -85,6 +86,6 @@ class CmsServer extends Server
         $this->tools = array_merge( $this->tools, static::$registered );
 
         // Tag content changes made through MCP tools as 'mcp' for the audit log.
-        \Aimeos\Cms\Utils::source( 'mcp' );
+        Utils::source( 'mcp' );
     }
 }

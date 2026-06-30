@@ -131,9 +131,20 @@ class AiWatchTest extends AiTestAbstract
 
         Event::assertDispatched( Generated::class, fn( Generated $e ) =>
             $e->success === true
-            && ( $e->extra['inputTokens'] ?? null ) === 100
-            && ( $e->extra['outputTokens'] ?? null ) === 50
+            && $e->inputTokens === 100
+            && $e->outputTokens === 50
         );
+    }
+
+
+    public function testObserverDoesNotDispatchWhenWatchDisabled() : void
+    {
+        config( ['cms.watch.channel' => null] );
+        Event::fake( [Generated::class] );
+
+        $this->observe( new Observation( 'write', 'text', 'gemini', 'model-x', 1.0 ) );
+
+        Event::assertNotDispatched( Generated::class );
     }
 
 

@@ -7,7 +7,9 @@
 
 namespace Aimeos\Cms\GraphQL\Mutations;
 
-use Aimeos\Cms\Concerns\WatchAuth;
+use Aimeos\Cms\Events\Authed;
+use Aimeos\Cms\Tenancy;
+use Aimeos\Cms\Watch;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Contracts\Auth\Authenticatable;
@@ -16,19 +18,24 @@ use GraphQL\Error\Error;
 
 final class CmsLogin
 {
-	use WatchAuth;
-
-
 	/**
 	 * @param  null  $rootValue
 	 * @param  array<string, mixed>  $args
 	 */
 	public function __invoke( $rootValue, array $args ): Authenticatable
 	{
-		$key = 'cms-login:' . request()->ip() . '|' . strtolower( $args['email'] );
+		$email = (string) $args['email'];
+		$key = 'cms-login:' . request()->ip() . '|' . strtolower( $email );
+		$watchAuth = fn( string $action ) => Watch::dispatch( fn() => new Authed(
+			$action,
+			$email,
+			(string) request()->ip(),
+			(string) request()->userAgent(),
+			Tenancy::value()
+		) );
 
 		if( RateLimiter::tooManyAttempts( $key, 3 ) ) {
-			$this->authWatch( 'login-fail', $args['email'] );
+			$watchAuth( 'login-fail' );
 			throw new Error( "Too many login attempts" );
 		}
 
@@ -37,7 +44,7 @@ final class CmsLogin
 		if( !$guard->attempt( $args ) )
 		{
 			RateLimiter::hit( $key, 60 );
-			$this->authWatch( 'login-fail', $args['email'] );
+			$watchAuth( 'login-fail' );
 			throw new Error( 'Invalid credentials' );
 		}
 
@@ -50,7 +57,7 @@ final class CmsLogin
 
 		$user = $guard->user() ?? throw new Error( 'Login failed' );
 
-		$this->authWatch( 'login', $args['email'] );
+		$watchAuth( 'login' );
 
 		return $user;
 	}

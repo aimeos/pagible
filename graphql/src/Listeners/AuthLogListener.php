@@ -19,21 +19,16 @@ use Aimeos\Cms\Watch;
  */
 class AuthLogListener
 {
-    /**
-     * Logs the authentication action as a structured entry.
-     */
     public function handle( Authed $event ) : void
     {
-        Watch::emit( 'cms.auth', $this->context( $event ) );
+        Watch::emit( 'cms.auth', $this->fields( $event ) );
     }
 
 
     /**
-     * Builds the structured log context, anonymizing PII.
-     *
      * @return array<string, mixed>
      */
-    protected function context( Authed $event ) : array
+    protected function fields( Authed $event ) : array
     {
         return [
             'action' => $event->action,

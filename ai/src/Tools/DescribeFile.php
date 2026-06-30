@@ -11,6 +11,7 @@ use Aimeos\Cms\Concerns\ObservesPrisma;
 use Aimeos\Prisma\Prisma;
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\Models\File;
+use Aimeos\Cms\Utils;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Tools\Annotations\IsReadOnly;
 use Laravel\Mcp\Server\Attributes\Description;
@@ -70,7 +71,7 @@ class DescribeFile extends Tool
             $doc = $class::fromStoragePath( (string) $file->path, config( 'cms.disk', 'public' ), $file->mime );
         }
 
-        $text = Prisma::type( $type )->observe( $this->observer( \Aimeos\Cms\Utils::editor( $request->user() ) ) )
+        $text = Prisma::type( $type )->observe( $this->observer( Utils::editor( $request->user() ) ) )
             ->using( $provider, $config )
             ->model( $model )
             ->ensure( 'describe' )

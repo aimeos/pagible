@@ -10,6 +10,7 @@ namespace Aimeos\Cms\Tools;
 use Aimeos\Cms\Concerns\ObservesPrisma;
 use Aimeos\Prisma\Prisma;
 use Aimeos\Cms\Permission;
+use Aimeos\Cms\Utils;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Attributes\Description;
@@ -59,7 +60,7 @@ class TranslateContent extends Tool
         $from = $validated['from'] ?? null;
         $context = $validated['context'] ?? null;
 
-        $translations = Prisma::text()->observe( $this->observer( \Aimeos\Cms\Utils::editor( $request->user() ) ) )
+        $translations = Prisma::text()->observe( $this->observer( Utils::editor( $request->user() ) ) )
             ->using( $provider, $config )
             ->model( $model )
             ->ensure( 'translate' )

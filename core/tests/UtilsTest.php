@@ -294,41 +294,6 @@ class UtilsTest extends CoreTestAbstract
     }
 
 
-    public function testRequestIdGeneratesUuid()
-    {
-        $id = Utils::requestId();
-
-        $this->assertMatchesRegularExpression(
-            '/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/', $id
-        );
-    }
-
-
-    public function testRequestIdStableWithinRequest()
-    {
-        $this->assertSame( Utils::requestId(), Utils::requestId() );
-    }
-
-
-    public function testRequestIdUsesInboundHeader()
-    {
-        request()->headers->set( 'X-Request-Id', 'req-abc.123' );
-
-        $this->assertSame( 'req-abc.123', Utils::requestId() );
-    }
-
-
-    public function testRequestIdSanitizesInboundHeader()
-    {
-        request()->headers->set( 'X-Request-Id', "valid-id\r\ninjected line" );
-
-        $id = Utils::requestId();
-
-        $this->assertSame( 'valid-idinjectedline', $id );
-        $this->assertStringNotContainsString( "\n", $id );
-    }
-
-
     public function testIsValidUploadAllowed()
     {
         $upload = UploadedFile::fake()->image( 'test.jpg', 100, 100 );

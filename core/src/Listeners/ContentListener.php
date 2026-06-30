@@ -20,12 +20,11 @@ use Aimeos\Cms\Watch;
  */
 class ContentListener
 {
-    /**
-     * Logs a single-item content change (add/save/publish/drop/restore/purge/move).
-     */
     public function handle( Event $event ) : void
     {
-        $this->write( $event->contentType, $event->source, [
+        Watch::emit( 'cms.' . $event->contentType, [
+            'type' => $event->contentType,
+            'source' => $event->source,
             'action' => strtolower( class_basename( $event ) ),
             'ids' => [$event->id],
             'editor' => $event->editor,
@@ -36,7 +35,7 @@ class ContentListener
 
 
     /**
-     * Adds the page path and domain to the context for page events.
+     * Adds the page path and domain fields for page events.
      *
      * @return array<string, mixed>
      */
@@ -52,19 +51,4 @@ class ContentListener
         ];
     }
 
-
-    /**
-     * Writes the structured entry to the CMS log channel.
-     *
-     * @param string $type Content type ('page', 'element' or 'file')
-     * @param string $source Originating interface captured on the event
-     * @param array<string, mixed> $context Entry fields
-     */
-    protected function write( string $type, string $source, array $context ) : void
-    {
-        Watch::emit( 'cms.' . $type, [
-            'type' => $type,
-            'source' => $source,
-        ] + $context );
-    }
 }

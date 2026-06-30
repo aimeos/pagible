@@ -16,9 +16,6 @@ use Aimeos\Cms\Watch;
  */
 class BulkListener
 {
-    /**
-     * Logs a bulk content change applied to several items at once.
-     */
     public function handle( Bulk $event ) : void
     {
         Watch::emit( 'cms.' . $event->contentType, [

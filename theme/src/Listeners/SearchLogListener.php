@@ -19,23 +19,18 @@ use Aimeos\Cms\Watch;
  */
 class SearchLogListener
 {
-    /**
-     * Logs the search as a structured entry.
-     */
     public function handle( Searched $event ) : void
     {
         if( Watch::sampled() ) {
-            Watch::emit( 'cms.search', $this->context( $event ) );
+            Watch::emit( 'cms.search', $this->fields( $event ) );
         }
     }
 
 
     /**
-     * Builds the structured log context.
-     *
      * @return array<string, mixed>
      */
-    protected function context( Searched $event ) : array
+    protected function fields( Searched $event ) : array
     {
         return [
             'query' => $event->query,
