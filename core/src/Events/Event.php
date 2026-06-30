@@ -32,6 +32,16 @@ abstract class Event implements ShouldBroadcastNow
     use Dispatchable, InteractsWithSockets;
 
     /**
+     * Whether this instance should be sent to the websocket broadcaster.
+     *
+     * Lets the model dispatch the event to in-process listeners (audit logging, metrics)
+     * via event() without broadcasting it, while the explicit broadcast()->toOthers()
+     * path sets it to true. Kept out of the broadcast payload.
+     */
+    public bool $broadcasting = false;
+
+
+    /**
      * @param string $contentType Content type: 'page', 'element' or 'file'
      * @param string $id Content UUID
      * @param string $latest_id New version UUID (model's latest_id column)
@@ -42,6 +52,7 @@ abstract class Event implements ShouldBroadcastNow
      * @param string|null $publish_at Scheduled publish timestamp or null (list scheduled state)
      * @param string|null $updated_at Latest version timestamp (list modified date)
      * @param string $tenant Tenant ID the change belongs to; scopes the channel, not in the payload
+     * @param string $source Originating interface: 'graphql', 'mcp' or 'cli'; not in the payload
      */
     public function __construct(
         public readonly string $contentType,
@@ -54,6 +65,7 @@ abstract class Event implements ShouldBroadcastNow
         public readonly ?string $publish_at = null,
         public readonly ?string $updated_at = null,
         public readonly string $tenant = '',
+        public readonly string $source = '',
     ) {}
 
 
@@ -73,6 +85,16 @@ abstract class Event implements ShouldBroadcastNow
     public function broadcastOn() : array
     {
         return [new PrivateChannel( Channel::type( $this->tenant, $this->contentType ) )];
+    }
+
+
+    /**
+     * Only broadcast when dispatched through the broadcast path, not when dispatched to
+     * in-process listeners via event().
+     */
+    public function broadcastWhen() : bool
+    {
+        return $this->broadcasting;
     }
 
 

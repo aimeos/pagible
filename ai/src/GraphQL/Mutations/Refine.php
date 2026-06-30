@@ -7,11 +7,12 @@
 
 namespace Aimeos\Cms\GraphQL\Mutations;
 
+use Aimeos\Cms\Concerns\ObservesPrisma;
+use Aimeos\Prisma\Prisma;
 use Aimeos\Cms\JsonSchema;
 use Aimeos\Cms\Refiner;
 use Aimeos\Cms\Tools as CmsTools;
 use Aimeos\Cms\Validation;
-use Aimeos\Prisma\Prisma;
 use Aimeos\Prisma\Schema\Schema;
 use Aimeos\Prisma\Tools;
 use Aimeos\Prisma\Exceptions\PrismaException;
@@ -21,6 +22,9 @@ use GraphQL\Error\Error;
 
 final class Refine
 {
+    use ObservesPrisma;
+
+
     /**
      * @param  null  $rootValue
      * @param  array<string, mixed>  $args
@@ -45,7 +49,8 @@ final class Refine
             set_time_limit( (int) config( 'cms.ai.timeout' ) ); // long AI call; lift PHP's default 30s execution limit (matches client timeout)
 
             $schema = Schema::fromArray( 'response', JsonSchema::build( $type, $args['pagetype'] ?? null ) );
-            $response = Prisma::text()->using( $provider, $config )
+            $response = Prisma::text()->observe( $this->observer() )
+                ->using( $provider, $config )
                 ->model( $model )
                 ->withClientOptions( ['timeout' => (int) config( 'cms.ai.timeout' )] )
                 ->withMaxTokens( config( 'cms.ai.maxtoken' ) )

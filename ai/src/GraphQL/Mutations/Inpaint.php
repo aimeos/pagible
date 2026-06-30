@@ -7,6 +7,7 @@
 
 namespace Aimeos\Cms\GraphQL\Mutations;
 
+use Aimeos\Cms\Concerns\ObservesPrisma;
 use Aimeos\Prisma\Prisma;
 use Aimeos\Prisma\Files\Image;
 use Aimeos\Prisma\Exceptions\PrismaException;
@@ -17,6 +18,9 @@ use GraphQL\Error\Error;
 
 final class Inpaint
 {
+    use ObservesPrisma;
+
+
     /**
      * @param  null  $rootValue
      * @param  array<string, mixed>  $args
@@ -43,7 +47,7 @@ final class Inpaint
             $file = Image::fromBinary( $upload->getContent(), $upload->getClientMimeType() );
             $mask = Image::fromBinary( $upmask->getContent(), $upmask->getClientMimeType() );
 
-            return Prisma::image()
+            return Prisma::image()->observe( $this->observer() )
                 ->using( $provider, $config )
                 ->model( $model )
                 ->ensure( 'inpaint' )

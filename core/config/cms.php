@@ -166,4 +166,26 @@ return [
     */
     'versions' => env( 'CMS_VERSIONS', 10 ),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Observability (watch)
+    |--------------------------------------------------------------------------
+    |
+    | Structured audit/observability logging. Set "channel" (e.g. CMS_LOG_CHANNEL=cms)
+    | to the Laravel log channel that receives the entries; leave it unset to disable
+    | all logging at zero per-request cost. When the named channel is not defined in
+    | config/logging.php, the core package registers a daily JSON channel for it.
+    |
+    | "sample" (0.0-1.0) keeps that fraction of high-volume read entries (frontend
+    | search, JSON:API); audit streams (content, auth, contact) are always complete.
+    | "anonymize" SHA-256 hashes personal data (email, IP, user agent) in auth and
+    | contact entries before logging; set FALSE to store raw values.
+    |
+    */
+    'watch' => [
+        'channel' => env( 'CMS_LOG_CHANNEL' ),
+        'sample' => env( 'CMS_WATCH_SAMPLE', 1.0 ),
+        'anonymize' => env( 'CMS_WATCH_ANONYMIZE', true ),
+    ],
+
 ];

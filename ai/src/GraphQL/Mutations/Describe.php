@@ -7,8 +7,9 @@
 
 namespace Aimeos\Cms\GraphQL\Mutations;
 
-use Aimeos\Cms\Models\File;
+use Aimeos\Cms\Concerns\ObservesPrisma;
 use Aimeos\Prisma\Prisma;
+use Aimeos\Cms\Models\File;
 use Aimeos\Prisma\Exceptions\PrismaException;
 use Illuminate\Support\Facades\Log;
 use GraphQL\Error\Error;
@@ -16,6 +17,9 @@ use GraphQL\Error\Error;
 
 final class Describe
 {
+    use ObservesPrisma;
+
+
     /**
      * @param  null  $rootValue
      * @param  array<string, mixed>  $args
@@ -29,7 +33,6 @@ final class Describe
         $provider = config( 'cms.ai.describe.provider' );
         $config = config( 'cms.ai.describe', [] );
         $model = config( 'cms.ai.describe.model' );
-
         try
         {
             /** @var File $file */
@@ -49,7 +52,7 @@ final class Describe
                 $doc = $class::fromUrl( $file->path, $file->mime );
             }
 
-            return Prisma::type( $type )
+            return Prisma::type( $type )->observe( $this->observer() )
                 ->using( $provider, $config )
                 ->model( $model )
                 ->ensure( 'describe' )
