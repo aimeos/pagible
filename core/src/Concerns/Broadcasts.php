@@ -47,7 +47,7 @@ trait Broadcasts
 
         $broadcast = (bool) config( 'cms.broadcast' );
 
-        // In-process listeners (audit logging, metrics in the watch package) subscribe to the
+        // In-process listeners (audit logging, Pulse metrics) subscribe to the
         // per-action events; only do work when broadcasting is on or something listens. This
         // also avoids the per-item latest lazy load (e.g. on purge) when nothing is enabled.
         if( !$broadcast && !Events::hasListeners( $class ) ) {

@@ -1,0 +1,36 @@
+{
+    "name": "aimeos/pagible-pulse",
+    "description": "Pagible CMS - Laravel Pulse metrics",
+    "keywords": ["laravel", "cms", "pulse", "metrics"],
+    "homepage": "https://pagible.com",
+    "type": "library",
+    "license": "MIT",
+    "require": {
+        "php": "^8.2",
+        "aimeos/pagible-core": "dev-master"
+    },
+    "suggest": {
+        "laravel/pulse": "Required to record and display Pulse metrics",
+        "aimeos/pagible-graphql": "For GraphQL authentication metrics",
+        "aimeos/pagible-ai": "For AI provider metrics",
+        "aimeos/pagible-theme": "For frontend search and contact metrics",
+        "aimeos/pagible-jsonapi": "For JSON:API request metrics"
+    },
+    "autoload": {
+        "psr-4": {
+            "Aimeos\\Cms\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Aimeos\\Cms\\PulseServiceProvider"
+            ]
+        }
+    }
+}

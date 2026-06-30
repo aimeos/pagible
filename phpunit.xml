@@ -27,6 +27,9 @@
     <testsuite name="MCP">
       <directory>./mcp/tests/</directory>
     </testsuite>
+    <testsuite name="Pulse">
+      <directory>./pulse/tests/</directory>
+    </testsuite>
     <testsuite name="Theme">
       <directory>./theme/tests/</directory>
     </testsuite>
@@ -58,6 +61,7 @@
       <directory suffix=".php">./import/src/</directory>
       <directory suffix=".php">./jsonapi/src/</directory>
       <directory suffix=".php">./mcp/src/</directory>
+      <directory suffix=".php">./pulse/src/</directory>
       <directory suffix=".php">./search/src/</directory>
       <directory suffix=".php">./backup/src/</directory>
       <directory suffix=".php">./cashier/src/</directory>
