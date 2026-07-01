@@ -7,10 +7,11 @@
 
 namespace Aimeos\Cms\Tools;
 
+use Aimeos\Cms\Concerns\ObservesPrisma;
+use Aimeos\Prisma\Prisma;
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\Utils;
 use Aimeos\Cms\Models\File;
-use Aimeos\Prisma\Prisma;
 use Aimeos\Prisma\Files\Audio;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Tools\Annotations\IsReadOnly;
@@ -28,6 +29,9 @@ use Laravel\Mcp\Request;
 #[Description('Transcribes the speech in an audio file using AI. Returns an array of segments, each with a start time, end time and the spoken text.')]
 class TranscribeAudio extends Tool
 {
+    use ObservesPrisma;
+
+
     /**
      * Handle the tool request.
      */
@@ -64,7 +68,7 @@ class TranscribeAudio extends Tool
             $doc = Audio::fromStoragePath( (string) $file->path, config( 'cms.disk', 'public' ), $file->mime );
         }
 
-        $data = Prisma::audio()
+        $data = Prisma::audio()->observe( $this->observer( Utils::editor( $request->user() ) ) )
             ->using( $provider, $config )
             ->model( $model )
             ->ensure( 'transcribe' )

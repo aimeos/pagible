@@ -7,12 +7,14 @@
 
 namespace Aimeos\Cms\Concerns;
 
+use Aimeos\Cms\Events\Bulk;
 use Aimeos\Cms\Events\Event;
 use Aimeos\Cms\Models\Version;
 use Aimeos\Cms\Tenancy;
 use Aimeos\Cms\Utils;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Event as Events;
 
 
 /**
@@ -43,21 +45,20 @@ trait Broadcasts
             throw new \InvalidArgumentException( "Unknown broadcast action: {$action}" );
         }
 
-        if( !config( 'cms.broadcast' ) || !( $version = $this->latest ) ) {
+        $broadcast = (bool) config( 'cms.broadcast' );
+
+        // In-process listeners (audit logging, metrics in the watch package) subscribe to the
+        // per-action events; only do work when broadcasting is on or something listens. This
+        // also avoids the per-item latest lazy load (e.g. on purge) when nothing is enabled.
+        if( !$broadcast && !Events::hasListeners( $class ) ) {
             return;
         }
 
-        $fields = $this->eventFields( $version, $editor );
+        if( !( $version = $this->latest ) ) {
+            return;
+        }
 
-        $event = new $class( ...$fields );
-
-        DB::afterCommit( function() use ( $event ) {
-            try {
-                broadcast( $event )->toOthers();
-            } catch( \Throwable $e ) {
-                report( $e );
-            }
-        } );
+        static::send( new $class( ...$this->eventFields( $version, $editor ) ), $broadcast );
     }
 
 
@@ -75,24 +76,25 @@ trait Broadcasts
     public static function announceBulk( string $type, array $ids, array $latest, array $data,
         Authenticatable|string|null $editor = null ) : void
     {
-        if( !config( 'cms.broadcast' ) || empty( $ids ) ) {
+        if( empty( $ids ) ) {
             return;
         }
 
-        $event = new \Aimeos\Cms\Events\Bulk(
+        $broadcast = (bool) config( 'cms.broadcast' );
+
+        if( !$broadcast && !Events::hasListeners( Bulk::class ) ) {
+            return;
+        }
+
+        static::send( new Bulk(
             contentType: $type,
             ids: $ids,
             latest: $latest,
             data: $data,
             editor: is_string( $editor ) ? $editor : Utils::editor( $editor ),
             tenant: Tenancy::value(),
-        );
-
-        try {
-            broadcast( $event )->toOthers();
-        } catch( \Throwable $e ) {
-            report( $e );
-        }
+            source: Utils::source(),
+        ), $broadcast );
     }
 
 
@@ -102,7 +104,7 @@ trait Broadcasts
      *
      * @param Version $version Latest version of the model
      * @param Authenticatable|string|null $editor Authenticated user or editor name
-     * @return array{contentType: string, id: string, latest_id: string, editor: string, data: array<string, mixed>, published: bool, deleted_at: string|null, publish_at: string|null, updated_at: string|null, tenant: string}
+     * @return array{contentType: string, id: string, latest_id: string, editor: string, data: array<string, mixed>, published: bool, deleted_at: string|null, publish_at: string|null, updated_at: string|null, tenant: string, source: string}
      */
     protected function eventFields( Version $version, Authenticatable|string|null $editor ) : array
     {
@@ -117,6 +119,37 @@ trait Broadcasts
             'publish_at' => $version->publish_at,
             'updated_at' => $version->created_at ? (string) $version->created_at : null,
             'tenant' => Tenancy::value(),
+            'source' => Utils::source(),
         ];
+    }
+
+
+    /**
+     * Dispatches the event after the current transaction commits (immediately when there is none),
+     * so a rolled-back change is never broadcast or logged.
+     *
+     * When broadcasting, broadcast() routes through the event dispatcher (so in-process listeners
+     * run too) and toOthers() excludes the originating browser tab; otherwise the event is only
+     * dispatched to in-process listeners, with broadcastWhen() false so it is never broadcast.
+     *
+     * @param Event|Bulk $event Event to dispatch, already built by the caller
+     * @param bool $broadcast Whether websocket broadcasting is enabled
+     */
+    protected static function send( Event|Bulk $event, bool $broadcast ) : void
+    {
+        if( !$broadcast ) {
+            DB::afterCommit( fn() => event( $event ) );
+            return;
+        }
+
+        $event->broadcasting = true;
+
+        DB::afterCommit( function() use ( $event ) {
+            try {
+                broadcast( $event )->toOthers();
+            } catch( \Exception $e ) {
+                report( $e );
+            }
+        } );
     }
 }

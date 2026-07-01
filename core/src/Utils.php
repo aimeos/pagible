@@ -362,6 +362,30 @@ class Utils
 
 
     /**
+     * Gets or sets the originating interface for content changes in the current request.
+     *
+     * Used to tag audit events with their origin: the GraphQL and MCP entry points set 'graphql'
+     * resp. 'mcp', everything else (console commands, scheduled jobs) defaults to 'cli'. Stored on
+     * the request instance rather than a static, so it neither leaks between requests under Octane
+     * nor needs a reset.
+     *
+     * @param string|null $source Origin to set for this request, or null to only read it
+     * @return string The current origin, defaulting to 'cli'
+     */
+    public static function source( ?string $source = null ) : string
+    {
+        $request = request();
+
+        if( $source !== null ) {
+            $request->attributes->set( 'cms-source', $source );
+        }
+
+        $value = $request->attributes->get( 'cms-source', 'cli' );
+        return is_string( $value ) ? $value : 'cli';
+    }
+
+
+    /**
      * Resolves a hostname to an allowed IP address.
      *
      * Private and reserved ranges are accepted unless "cms.allow-internal" is

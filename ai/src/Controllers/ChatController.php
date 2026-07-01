@@ -7,10 +7,12 @@
 
 namespace Aimeos\Cms\Controllers;
 
+use Aimeos\Cms\Concerns\ObservesPrisma;
+use Aimeos\Prisma\Prisma;
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\Tenancy;
 use Aimeos\Cms\Tools as CmsTools;
-use Aimeos\Prisma\Prisma;
+use Aimeos\Cms\Utils;
 use Aimeos\Prisma\Tools;
 use Aimeos\Prisma\Tools\Step;
 use Aimeos\Prisma\Exceptions\PrismaException;
@@ -23,6 +25,9 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ChatController extends Controller
 {
+    use ObservesPrisma;
+
+
     /**
      * Streams a chat answer to the admin panel as a chunked text stream.
      *
@@ -53,10 +58,11 @@ class ChatController extends Controller
         }
 
         $config = config( 'cms.ai.write', [] );
+        $editor = Utils::editor( $user );
         $history = $this->history( $request->input( 'messages' ) );
         $system = view( 'cms::prompts.chat' )->render() . "\n" . view( 'cms::prompts.write' )->render() . "\n";
 
-        $prisma = Prisma::text()
+        $prisma = Prisma::text()->observe( $this->observer( $editor, 'chat' ) )
             ->using( config( 'cms.ai.write.provider' ), $config )
             ->model( config( 'cms.ai.write.model' ) )
             ->withClientOptions( ['timeout' => (int) config( 'cms.ai.timeout' )] )
@@ -101,7 +107,7 @@ class ChatController extends Controller
             ->withMaxSteps( 10 );
 
         if( $history ) {
-            $prisma->withMessages( $history ); // @phpstan-ignore-line method.notFound
+            $prisma->withMessages( $history );
         }
 
         // The 300s TTL is only a backstop for a hard worker kill (SIGKILL/OOM, where the finally never
@@ -235,6 +241,7 @@ class ChatController extends Controller
                 $response = $prisma->ensure( 'write' )->write( $prompt, [], $config ); // @phpstan-ignore-line method.notFound
                 $send( $response->text() );
             }
+
         }
         catch( \Throwable $e )
         {

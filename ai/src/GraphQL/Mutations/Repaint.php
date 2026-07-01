@@ -7,6 +7,7 @@
 
 namespace Aimeos\Cms\GraphQL\Mutations;
 
+use Aimeos\Cms\Concerns\ObservesPrisma;
 use Aimeos\Prisma\Prisma;
 use Aimeos\Prisma\Files\Image;
 use Aimeos\Prisma\Exceptions\PrismaException;
@@ -17,6 +18,9 @@ use GraphQL\Error\Error;
 
 final class Repaint
 {
+    use ObservesPrisma;
+
+
     /**
      * @param  null  $rootValue
      * @param  array<string, mixed>  $args
@@ -37,7 +41,7 @@ final class Repaint
         {
             $file = Image::fromBinary( $upload->getContent(), $upload->getClientMimeType() );
 
-            return Prisma::image()
+            return Prisma::image()->observe( $this->observer() )
                 ->using( $provider, $config )
                 ->model( $model )
                 ->ensure( 'repaint' )
