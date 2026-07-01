@@ -596,6 +596,14 @@ class DefaultDemo extends AbstractDemo
                     ['title' => 'Infinite Scalability', 'text' => 'PagibleAI CMS scales from a simple landing page to millions of pages without breaking a sweat — no infrastructure changes needed.', 'file' => ['id' => $this->img( 'scale' ), 'type' => 'file']],
                 ],
             ]],
+            ['id' => Utils::uid(), 'type' => 'testimonial', 'group' => 'main', 'data' => [
+                'title' => 'Trusted by Fast-Moving Teams',
+                'items' => [
+                    ['name' => 'Mara Stein', 'role' => 'Head of Content, Northstar Labs', 'text' => 'PagibleAI CMS cut our publishing workflow from days to minutes. Editors can draft, translate, and publish without waiting on a developer queue.'],
+                    ['name' => 'Jonas Keller', 'role' => 'Engineering Lead, Signal Works', 'text' => 'The cached pages are incredibly fast, and the Laravel foundation means our team can extend the site without learning a proprietary stack.'],
+                    ['name' => 'Ari Patel', 'role' => 'Digital Director, Studio Vale', 'text' => 'We replaced three tools with one CMS and kept the interface simple enough for non-technical editors to use every day.'],
+                ],
+            ]],
             ['id' => Utils::uid(), 'type' => 'pricing', 'group' => 'main', 'data' => [
                 'title' => 'Simple, Transparent Pricing',
                 'text' => 'PagibleAI CMS offers plans for every team size — from solo creators to enterprise organizations.',

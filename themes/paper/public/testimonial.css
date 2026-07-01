@@ -1,0 +1,88 @@
+/**
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+.testimonial .title {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.testimonial .testimonial-list {
+    display: grid;
+    grid-template-columns: 1fr;
+    justify-content: center;
+    gap: 1.5rem;
+}
+
+.testimonial .testimonial-item {
+    margin: 0;
+    padding: 2rem;
+    background-color: var(--pico-contrast-inverse);
+    border: 1px solid var(--pico-muted-border-color);
+    border-radius: calc(var(--pico-border-radius) * 4);
+    box-shadow: 0 1px 3px #0000000A;
+}
+
+.testimonial blockquote {
+    margin: 0 0 1.5rem;
+    padding: 0;
+    border: 0;
+    color: var(--pico-color);
+    font-size: calc(var(--pico-font-size) * 0.95);
+    line-height: 1.7;
+}
+
+.testimonial blockquote::before {
+    content: '"';
+    display: block;
+    color: var(--pico-secondary);
+    font-size: 3rem;
+    font-weight: 700;
+    line-height: 0.8;
+    margin-bottom: 0.5rem;
+}
+
+.testimonial blockquote p:last-child {
+    margin-bottom: 0;
+}
+
+.testimonial figcaption {
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+}
+
+.testimonial .avatar {
+    width: 3rem;
+    height: 3rem;
+    flex: 0 0 3rem;
+    border-radius: calc(var(--pico-border-radius) * 3);
+    overflow: hidden;
+}
+
+.testimonial .avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.testimonial .person {
+    display: grid;
+    gap: 0.125rem;
+}
+
+.testimonial .name {
+    color: var(--pico-contrast);
+    font-weight: 600;
+}
+
+.testimonial .role {
+    color: var(--pico-muted-color);
+    font-size: calc(var(--pico-font-size) * 0.75);
+}
+
+@media screen and (min-width: 768px) {
+    .testimonial .testimonial-list {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}

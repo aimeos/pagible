@@ -1,0 +1,105 @@
+/**
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+.testimonial .title {
+    color: var(--pico-primary);
+    font-family: var(--pico-font-family-display);
+    font-size: calc(var(--pico-font-size) * 1.5);
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    margin-bottom: 2rem;
+}
+
+.testimonial .testimonial-list {
+    display: grid;
+    grid-template-columns: 1fr;
+    border-top: 1px solid var(--pico-contrast-border);
+    border-inline-start: 1px solid var(--pico-contrast-border);
+}
+
+.testimonial .testimonial-item {
+    margin: 0;
+    padding: 2rem;
+    background-color: var(--pico-contrast-background);
+    border-inline-end: 1px solid var(--pico-contrast-border);
+    border-bottom: 1px solid var(--pico-contrast-border);
+}
+
+.testimonial .testimonial-item:nth-child(even) {
+    background-color: var(--pico-primary);
+}
+
+.testimonial blockquote {
+    margin: 0 0 2rem;
+    padding: 0;
+    border: 0;
+    color: var(--pico-color);
+    font-size: calc(var(--pico-font-size) * 1.05);
+    font-weight: 700;
+    line-height: 1.45;
+}
+
+.testimonial blockquote::before {
+    content: '"';
+    display: block;
+    color: var(--pico-primary);
+    font-family: var(--pico-font-family-display);
+    font-size: 4rem;
+    line-height: 0.8;
+    margin-bottom: 0.5rem;
+}
+
+.testimonial .testimonial-item:nth-child(even) blockquote,
+.testimonial .testimonial-item:nth-child(even) blockquote::before,
+.testimonial .testimonial-item:nth-child(even) .name,
+.testimonial .testimonial-item:nth-child(even) .role {
+    color: var(--pico-contrast-inverse);
+}
+
+.testimonial blockquote p:last-child {
+    margin-bottom: 0;
+}
+
+.testimonial figcaption {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    text-transform: uppercase;
+}
+
+.testimonial .avatar {
+    width: 3.25rem;
+    height: 3.25rem;
+    flex: 0 0 3.25rem;
+    overflow: hidden;
+    border: 2px solid currentColor;
+}
+
+.testimonial .avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.testimonial .person {
+    display: grid;
+    gap: 0.125rem;
+}
+
+.testimonial .name {
+    color: var(--pico-primary);
+    font-weight: 900;
+}
+
+.testimonial .role {
+    color: var(--pico-muted-color);
+    font-size: calc(var(--pico-font-size) * 0.7);
+    letter-spacing: 0.05em;
+}
+
+@media screen and (min-width: 768px) {
+    .testimonial .testimonial-list {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}

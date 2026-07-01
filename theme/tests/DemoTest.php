@@ -41,6 +41,7 @@ class DemoTest extends ThemeTestAbstract
         $this->assertSame( '', $home->theme );
         $this->assertSame( 'demo', $home->tenant_id );
         $this->assertNotNull( $home->latest_id );
+        $this->assertTrue( collect( (array) $home->content )->contains( fn( $item ) => ( $item->type ?? null ) === 'testimonial' ) );
         $this->assertGreaterThan( 0, Page::where( 'path', 'blog' )->count() );
         $this->assertGreaterThan( 0, Page::where( 'type', 'docs' )->count() );
     }
