@@ -54,6 +54,9 @@ class SearchController extends Controller
                 'relevance' => $item->relevance ?? 0,
             ] );
 
+        // Dispatch whenever watch is enabled or a consumer listens; each consumer
+        // (CmsSearchPulseRecorder, SearchLogListener) applies its own Watch::sampled(),
+        // so both are thinned independently — search is a high-volume read stream.
         Watch::dispatchWhen( 'cms.theme.watch', Searched::class, fn() => new Searched(
             query: (string) $vals['q'],
             results: $paginator->total(),

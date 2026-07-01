@@ -14,6 +14,7 @@ use Aimeos\Cms\Recorders\CmsAuthPulseRecorder;
 use Aimeos\Cms\Recorders\CmsContactPulseRecorder;
 use Aimeos\Cms\Recorders\CmsContentPulseRecorder;
 use Aimeos\Cms\Recorders\CmsJsonapiPulseRecorder;
+use Aimeos\Cms\Recorders\CmsRequestPulseRecorder;
 use Aimeos\Cms\Recorders\CmsSearchPulseRecorder;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Facades\Gate;
@@ -34,6 +35,7 @@ class PulseServiceProvider extends Provider
         CmsSearchPulseRecorder::class,
         CmsContactPulseRecorder::class,
         CmsJsonapiPulseRecorder::class,
+        CmsRequestPulseRecorder::class,
     ];
 
 

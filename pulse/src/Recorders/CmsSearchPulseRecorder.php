@@ -21,6 +21,8 @@ class CmsSearchPulseRecorder extends Recorder
 
     public function record( mixed $event ) : void
     {
+        // Sampled here, not at dispatch, so the audit log still records every
+        // search; only the Pulse metric is thinned.
         if( !$event instanceof Searched || !Watch::sampled() ) {
             return;
         }
