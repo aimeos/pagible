@@ -12,6 +12,7 @@ use Aimeos\Cms\Events\Contacted;
 use Aimeos\Cms\Events\Generated;
 use Aimeos\Cms\Events\Queried;
 use Aimeos\Cms\Events\Searched;
+use Aimeos\Cms\Events\Viewed;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\View as ViewFactory;
 
@@ -82,6 +83,14 @@ class CmsMetricCard extends CmsCard
             'aggregates' => Metric::LATENCY,
             'details' => ['domain'],
             'events' => [Queried::class],
+        ],
+        'request' => [
+            'title' => 'Page requests',
+            'type' => 'cms_request',
+            'group' => 'path',
+            'aggregates' => Metric::LATENCY,
+            'details' => ['domain', 'status'],
+            'events' => [Viewed::class],
         ],
     ];
 

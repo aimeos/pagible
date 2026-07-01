@@ -11,6 +11,7 @@ use Aimeos\Cms\Recorders\CmsAuthPulseRecorder;
 use Aimeos\Cms\Recorders\CmsContactPulseRecorder;
 use Aimeos\Cms\Recorders\CmsContentPulseRecorder;
 use Aimeos\Cms\Recorders\CmsJsonapiPulseRecorder;
+use Aimeos\Cms\Recorders\CmsRequestPulseRecorder;
 use Aimeos\Cms\Recorders\CmsSearchPulseRecorder;
 
 
@@ -28,6 +29,7 @@ class PulseProviderTest extends PulseTestCase
             CmsSearchPulseRecorder::class => true,
             CmsContactPulseRecorder::class => true,
             CmsJsonapiPulseRecorder::class => true,
+            CmsRequestPulseRecorder::class => true,
         ], $this->pulse->recorders );
     }
 

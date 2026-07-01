@@ -52,6 +52,24 @@ class Watch
 
 
     /**
+     * Dispatches a pre-built watch event, swallowing errors so it never breaks the request.
+     *
+     * Use when the caller already decided the event should fire; dispatch()/dispatchWhen()
+     * decide themselves.
+     *
+     * @param \Closure(): object $factory Deferred event factory
+     */
+    public static function fire( \Closure $factory ) : void
+    {
+        try {
+            event( $factory() );
+        } catch( \Throwable $e ) {
+            error_log( 'CMS watch event error: ' . $e->getMessage() );
+        }
+    }
+
+
+    /**
      * Builds and dispatches a watch event when watch logging is enabled or something listens for it.
      *
      * Any in-process listener (e.g. an optional observability integration subscribing to the event)
@@ -67,11 +85,7 @@ class Watch
             return;
         }
 
-        try {
-            event( $factory() );
-        } catch( \Throwable $e ) {
-            error_log( 'CMS watch event error: ' . $e->getMessage() );
-        }
+        self::fire( $factory );
     }
 
 

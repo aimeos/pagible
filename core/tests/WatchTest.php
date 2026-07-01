@@ -160,6 +160,34 @@ class WatchTest extends CoreTestAbstract
     }
 
 
+    public function testFireDispatchesEventRegardlessOfWatchState() : void
+    {
+        // fire() has no gate of its own: the caller decides whether to dispatch.
+        config( ['cms.watch.channel' => null, 'cms.theme.watch' => false] );
+
+        $captured = null;
+        Event::listen( ContentChanged::class, function( ContentChanged $e ) use ( &$captured ) {
+            $captured = $e;
+        } );
+
+        Watch::fire( fn() => new ContentChanged( contentType: 'page', action: 'viewed', source: 'web', tenant: 'test' ) );
+
+        $this->assertInstanceOf( ContentChanged::class, $captured );
+        $this->assertSame( 'viewed', $captured->action );
+    }
+
+
+    public function testFireSwallowsFactoryErrors() : void
+    {
+        // Watch must never break the request, so a throwing factory is caught.
+        Watch::fire( function() {
+            throw new \RuntimeException( 'boom' );
+        } );
+
+        $this->expectNotToPerformAssertions();
+    }
+
+
     public function testBulkDispatchesBulkToListener() : void
     {
         $page1 = $this->page();

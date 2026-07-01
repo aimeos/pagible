@@ -109,6 +109,7 @@ class PulseCardTest extends PulseTestCase
             'search',
             'contact',
             'jsonapi',
+            'request',
         ], array_keys( CmsMetricCard::available() ) );
     }
 

@@ -11,7 +11,11 @@ use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Event;
+use Aimeos\Cms\Events\Viewed;
 use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Tenancy;
+use Aimeos\Cms\Watch;
 
 
 /**
@@ -34,13 +38,26 @@ class ServeCachedPage
      */
     public function handle( Request $request, Closure $next )
     {
+        // Gate on the CMS_THEME_WATCH flag first so the cold path short-circuits before
+        // the listener lookup and sampling. $start doubles as the "record this request"
+        // flag and the timer.
+        $start = config( 'cms.theme.watch' ) && Event::hasListeners( Viewed::class ) && Watch::sampled()
+            ? hrtime( true ) : null;
+
+        // Computed lazily so a watch-off non-cacheable request (query string, cookie,
+        // POST) builds neither.
+        $path = $domain = null;
+
         if( $request->isMethod( 'GET' ) && empty( $request->query() )
             && !$request->hasCookie( config( 'session.cookie' ) )
         ) {
+            $path = trim( $request->getPathInfo(), '/' );
             $domain = config( 'cms.multidomain' ) ? $request->getHost() : '';
-            $key = Page::key( trim( $request->getPathInfo(), '/' ), $domain );
 
-            if( ( $html = Cache::store( config( 'cms.theme.cache', 'file' ) )->get( $key ) ) !== null ) {
+            if( ( $html = Cache::store( config( 'cms.theme.cache', 'file' ) )->get( Page::key( $path, $domain ) ) ) !== null ) {
+                if( $start !== null ) {
+                    $this->watch( $path, $domain, 200, $start );
+                }
                 return $this->response( $html );
             }
         }
@@ -59,7 +76,42 @@ class ServeCachedPage
             }
         }
 
+        // Skip status extraction and dispatch entirely when watch is off or unsampled.
+        if( $start !== null )
+        {
+            $status = $response instanceof \Symfony\Component\HttpFoundation\Response
+                ? $response->getStatusCode() : 200;
+
+            $this->watch(
+                $path ?? trim( $request->getPathInfo(), '/' ),
+                $domain ?? ( config( 'cms.multidomain' ) ? $request->getHost() : '' ),
+                $status,
+                $start
+            );
+        }
+
         return $response;
+    }
+
+
+    /**
+     * Builds and dispatches the page-request watch event; the caller has already
+     * confirmed watch is enabled and sampled.
+     *
+     * @param string $path Requested path without surrounding slashes
+     * @param string $domain Requested domain, empty unless multi-domain routing is on
+     * @param int $status HTTP status code of the response
+     * @param int|float $start High-resolution start time from hrtime()
+     */
+    protected function watch( string $path, string $domain, int $status, int|float $start ) : void
+    {
+        Watch::fire( fn() => new Viewed(
+            path: $path,
+            domain: $domain,
+            status: $status,
+            durationMs: Watch::duration( $start ),
+            tenant: Tenancy::value(),
+        ) );
     }
 
 

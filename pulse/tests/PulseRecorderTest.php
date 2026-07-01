@@ -11,11 +11,13 @@ use Aimeos\Cms\Events\Contacted;
 use Aimeos\Cms\Events\Generated;
 use Aimeos\Cms\Events\Queried;
 use Aimeos\Cms\Events\Searched;
+use Aimeos\Cms\Events\Viewed;
 use Aimeos\Cms\Recorders\CmsAiPulseRecorder;
 use Aimeos\Cms\Recorders\CmsAuthPulseRecorder;
 use Aimeos\Cms\Recorders\CmsContactPulseRecorder;
 use Aimeos\Cms\Recorders\CmsContentPulseRecorder;
 use Aimeos\Cms\Recorders\CmsJsonapiPulseRecorder;
+use Aimeos\Cms\Recorders\CmsRequestPulseRecorder;
 use Aimeos\Cms\Recorders\CmsSearchPulseRecorder;
 use Illuminate\Contracts\Debug\ExceptionHandler;
 
@@ -154,11 +156,21 @@ class PulseRecorderTest extends PulseTestCase
     }
 
 
-    public function testSampledRecordersRespectDisabledSampling() : void
+    public function testSearchRecorderRespectsDisabledSampling() : void
+    {
+        // Sampled in the recorder so the event can still fire for the audit log.
+        config( ['cms.watch.sample' => 0.0] );
+
+        ( new CmsSearchPulseRecorder )->record( new Searched( 'term', 12, 3, 5.2, 'example.org', 'en', 'test' ) );
+
+        $this->assertSame( [], $this->pulse->entries );
+    }
+
+
+    public function testJsonapiRecorderRespectsDisabledSampling() : void
     {
         config( ['cms.watch.sample' => 0.0] );
 
-        ( new CmsSearchPulseRecorder )->record( new Searched( 'term', 0, 1, 5.2, 'example.org', 'en', 'test' ) );
         ( new CmsJsonapiPulseRecorder )->record( new Queried( 'jsonapi:search', 4.8, 'example.org', 'children', 'test' ) );
 
         $this->assertSame( [], $this->pulse->entries );
@@ -178,6 +190,70 @@ class PulseRecorderTest extends PulseTestCase
         $this->assertSame( 'theme:contact', $key['action'] );
         $this->assertArrayNotHasKey( 'email', $key );
         $this->assertArrayNotHasKey( 'ip', $key );
+    }
+
+
+    public function testPageRequestRecorderKeysSuccessByPath() : void
+    {
+        ( new CmsRequestPulseRecorder )->record(
+            new Viewed( path: 'about', domain: 'example.org', status: 200, durationMs: 4.2, tenant: 'test' )
+        );
+
+        $key = $this->key( 0 );
+
+        $this->assertCount( 1, $this->pulse->entries );
+        $this->assertSame( 'cms_request:test', $this->pulse->entries[0]->type );
+        $this->assertSame( ['count', 'avg', 'max'], $this->pulse->entries[0]->aggregates );
+        $this->assertSame( 4, $this->pulse->entries[0]->value );
+        $this->assertSame( 'theme:view', $key['action'] );
+        $this->assertSame( '/about', $key['path'] );
+        $this->assertSame( 'example.org', $key['domain'] );
+        $this->assertSame( 200, $key['status'] );
+        $this->assertArrayNotHasKey( 'cached', $key );
+        $this->assertArrayNotHasKey( 'tenant', $key );
+    }
+
+
+    public function testPageRequestRecorderMapsHomePathToSlash() : void
+    {
+        // Home's empty path would be stripped by Recorder::key()'s empty filter,
+        // so it is mapped to "/".
+        ( new CmsRequestPulseRecorder )->record(
+            new Viewed( path: '', status: 200, tenant: 'test' )
+        );
+
+        $this->assertSame( '/', $this->key( 0 )['path'] );
+    }
+
+
+    public function testPageRequestRecorderBucketsNonSuccessPaths() : void
+    {
+        // A spoofed Host on a 404 must not become a key dimension, else it defeats
+        // the "*" bucket and allows unbounded cardinality.
+        ( new CmsRequestPulseRecorder )->record(
+            new Viewed( path: 'random-bot-scan-url', domain: 'spoofed.example', status: 404, tenant: 'test' )
+        );
+
+        $key = $this->key( 0 );
+
+        $this->assertCount( 1, $this->pulse->entries );
+        $this->assertSame( '*', $key['path'] );
+        $this->assertSame( 404, $key['status'] );
+        $this->assertArrayNotHasKey( 'domain', $key );
+    }
+
+
+    public function testPageRequestRecorderIgnoresSampling() : void
+    {
+        // Sampled at the dispatch site (ServeCachedPage), so the recorder records
+        // unconditionally.
+        config( ['cms.watch.sample' => 0.0] );
+
+        ( new CmsRequestPulseRecorder )->record(
+            new Viewed( path: 'about', status: 200, tenant: 'test' )
+        );
+
+        $this->assertCount( 1, $this->pulse->entries );
     }
 
 
