@@ -50,7 +50,8 @@
 				"themes/paper/src/",
 				"themes/bold/src/",
 				"themes/premium/src/",
-				"themes/luxury/src/"
+				"themes/luxury/src/",
+				"themes/style/src/"
 			],
 			"Tests\\": [
 				"tests/",
