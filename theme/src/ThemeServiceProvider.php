@@ -46,7 +46,7 @@ class ThemeServiceProvider extends Provider
         Watch::listen( [
             Searched::class => SearchLogListener::class,
             Contacted::class => ContactLogListener::class,
-        ] );
+        ], 'cms.theme.watch' );
     }
 
     protected function console() : void

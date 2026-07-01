@@ -28,7 +28,6 @@ class CmsAiPulseRecorder extends Recorder
             'mutation' => $this->prefixed( 'ai', $event->mutation ),
             'provider' => $event->provider,
             'model' => $event->model,
-            'editor' => $event->editor,
             'tenant' => $event->tenant,
             'success' => $event->success,
         ];

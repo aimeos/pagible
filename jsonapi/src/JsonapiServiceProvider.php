@@ -23,7 +23,7 @@ class JsonapiServiceProvider extends Provider
     {
         Watch::listen( [
             Queried::class => JsonapiLogListener::class,
-        ] );
+        ], 'cms.jsonapi.watch' );
     }
 
 

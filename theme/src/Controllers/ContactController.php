@@ -20,13 +20,13 @@ class ContactController extends Controller
 {
     public function send( ContactRequest $request ): \Illuminate\Http\JsonResponse
     {
-        $start = Watch::start( 'cms.theme.watch' );
+        $start = Watch::start( 'cms.theme.watch', Contacted::class );
 
         Mail::to(config('mail.from.address'))->send(
             new ContactMail( $request->validated() )
         );
 
-        Watch::dispatchWhen( 'cms.theme.watch', fn() => new Contacted(
+        Watch::dispatchWhen( 'cms.theme.watch', Contacted::class, fn() => new Contacted(
             email: (string) ( $request->validated()['email'] ?? '' ),
             ip: (string) $request->ip(),
             durationMs: Watch::duration( $start ),

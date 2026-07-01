@@ -30,5 +30,16 @@ class PulseProviderTest extends PulseTestCase
             CmsJsonapiPulseRecorder::class => true,
         ], $this->pulse->recorders );
     }
+
+
+    public function testSkipsCmsPulseRecordersWhenPulseIsDisabled() : void
+    {
+        config( ['pulse.enabled' => false] );
+
+        $method = new \ReflectionMethod( PulseServiceProvider::class, 'pulse' );
+        $method->invoke( new PulseServiceProvider( $this->application() ), dirname( __DIR__ ) );
+
+        $this->assertSame( [], $this->pulse->recorders );
+    }
 }
 }

@@ -8,10 +8,15 @@
 namespace Aimeos\Cms\Recorders;
 
 use Aimeos\Cms\Pulse\Metric;
+use Illuminate\Support\Facades\RateLimiter;
 
 
 abstract class Recorder
 {
+    private const ERROR_REPORT_DECAY_SECONDS = 60;
+    private const ERROR_REPORT_MAX_ATTEMPTS = 1;
+
+
     /**
      * Records one Pulse entry without letting Pulse failures break the request.
      *
@@ -35,7 +40,7 @@ abstract class Recorder
                 }
             }
         } catch( \Throwable $e ) {
-            error_log( 'CMS pulse recorder error: ' . $e->getMessage() );
+            $this->report( $e );
         }
     }
 
@@ -87,5 +92,20 @@ abstract class Recorder
     protected function prefixed( string $prefix, string $action ) : string
     {
         return str_contains( $action, ':' ) ? $action : $prefix . ':' . $action;
+    }
+
+
+    protected function report( \Throwable $e ) : void
+    {
+        try {
+            RateLimiter::attempt(
+                'cms-pulse-recorder:' . hash( 'sha256', get_class( $e ) . '|' . $e->getMessage() ),
+                self::ERROR_REPORT_MAX_ATTEMPTS,
+                fn() => report( $e ),
+                self::ERROR_REPORT_DECAY_SECONDS,
+            );
+        } catch( \Throwable ) {
+            // Reporting must never make an optional recorder fail the request.
+        }
     }
 }

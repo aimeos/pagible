@@ -27,7 +27,7 @@ class SearchController extends Controller
      */
     public function index( Request $request, string $domain = '' )
     {
-        $start = Watch::start( 'cms.theme.watch' );
+        $start = Watch::start( 'cms.theme.watch', Searched::class );
 
         $vals = $request->validate( [
             'q' => 'required|string|min:' . (int) config( 'cms.search.min', 2 ) . '|max:200',
@@ -54,7 +54,7 @@ class SearchController extends Controller
                 'relevance' => $item->relevance ?? 0,
             ] );
 
-        Watch::dispatchWhen( 'cms.theme.watch', fn() => new Searched(
+        Watch::dispatchWhen( 'cms.theme.watch', Searched::class, fn() => new Searched(
             query: (string) $vals['q'],
             results: $paginator->total(),
             page: $paginator->currentPage(),

@@ -139,7 +139,10 @@ class AiWatchTest extends AiTestAbstract
 
     public function testObserverDoesNotDispatchWhenWatchDisabled() : void
     {
+        // Watch disabled means no listener is registered: with the channel off at boot the
+        // AiServiceProvider skips Watch::listen(), so nothing subscribes to Generated here.
         config( ['cms.watch.channel' => null] );
+        Event::forget( Generated::class );
         Event::fake( [Generated::class] );
 
         $this->observe( new Observation( 'write', 'text', 'gemini', 'model-x', 1.0 ) );

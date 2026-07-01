@@ -5,57 +5,12 @@
  */
 
 
-namespace Laravel\Pulse {
-    if( !class_exists( Pulse::class, false ) )
-    {
-        class Pulse
-        {
-        }
-    }
-
-
-    if( !class_exists( PulseServiceProvider::class, false ) )
-    {
-        class PulseServiceProvider
-        {
-            public function gate() : \Closure
-            {
-                return fn( $user ) => false;
-            }
-        }
-    }
-}
-
-
-namespace Laravel\Pulse\Livewire {
-    if( !class_exists( Card::class, false ) )
-    {
-        abstract class Card
-        {
-            protected function periodAsInterval() : \Carbon\CarbonInterval
-            {
-                return \Carbon\CarbonInterval::hour();
-            }
-
-
-            /**
-             * @param 'count'|'min'|'max'|'sum'|'avg'|list<'count'|'min'|'max'|'sum'|'avg'> $aggregates
-             * @return \Illuminate\Support\Collection<int, object>
-             */
-            protected function aggregate( string $type, string|array $aggregates,
-                ?string $orderBy = 'count' ) : \Illuminate\Support\Collection
-            {
-                return collect();
-            }
-        }
-    }
-}
-
 namespace Tests {
 
 use Aimeos\Cms\CoreServiceProvider;
 use Aimeos\Cms\Pulse\CmsCard;
 use Aimeos\Cms\PulseServiceProvider;
+use Aimeos\Cms\Tenancy;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\Collection;
 use Orchestra\Testbench\TestCase;
@@ -81,10 +36,22 @@ abstract class PulseTestCase extends TestCase
 
     protected function setUp() : void
     {
+        Tenancy::$access = null;
+        Tenancy::$callback = null;
+
         parent::setUp();
 
         $this->pulse = new FakePulse;
         $this->application()->instance( \Laravel\Pulse\Pulse::class, $this->pulse );
+    }
+
+
+    protected function tearDown() : void
+    {
+        Tenancy::$access = null;
+        Tenancy::$callback = null;
+
+        parent::tearDown();
     }
 
 
@@ -175,7 +142,7 @@ class FakePulseEntry
 class TestingCmsCard extends CmsCard
 {
     /**
-     * @var list<array{type: string, aggregates: 'count'|'min'|'max'|'sum'|'avg'|list<'count'|'min'|'max'|'sum'|'avg'>}>
+     * @var list<array{type: string, aggregates: 'count'|'min'|'max'|'sum'|'avg'|list<'count'|'min'|'max'|'sum'|'avg'>, orderBy: string|null, direction: string, limit: int}>
      */
     public array $aggregateCalls = [];
 
@@ -206,11 +173,22 @@ class TestingCmsCard extends CmsCard
 
     /**
      * @param 'count'|'min'|'max'|'sum'|'avg'|list<'count'|'min'|'max'|'sum'|'avg'> $aggregates
+     * @return Collection<int, object{label: non-empty-string, count: int<0, max>, sum: int, avg: float|null, max: mixed, detail: string}&\stdClass>
+     */
+    public function summaries( string $type, string|array $aggregates, string $group ) : Collection
+    {
+        return $this->summary( $type, $aggregates, $group );
+    }
+
+
+    /**
+     * @param 'count'|'min'|'max'|'sum'|'avg'|list<'count'|'min'|'max'|'sum'|'avg'> $aggregates
      * @return Collection<int, object>
      */
-    protected function aggregate( string $type, string|array $aggregates, ?string $orderBy = 'count' ) : Collection
+    protected function aggregate( string $type, string|array $aggregates, ?string $orderBy = 'count',
+        string $direction = 'desc', int $limit = 101 ) : Collection
     {
-        $this->aggregateCalls[] = compact( 'type', 'aggregates' );
+        $this->aggregateCalls[] = compact( 'type', 'aggregates', 'orderBy', 'direction', 'limit' );
 
         return $this->aggregateRows;
     }

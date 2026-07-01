@@ -27,9 +27,6 @@ class CmsSearchPulseRecorder extends Recorder
 
         $this->latency( 'cms_search', [
             'action' => 'theme:search',
-            'query' => $event->query,
-            'results' => $event->results,
-            'page' => $event->page,
             'domain' => $event->domain,
             'lang' => $event->lang,
             'tenant' => $event->tenant,

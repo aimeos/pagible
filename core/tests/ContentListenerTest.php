@@ -12,7 +12,7 @@ use Aimeos\Cms\Events\Saved;
 use Aimeos\Cms\Listeners\ContentListener;
 use Illuminate\Support\Facades\Log;
 use Orchestra\Testbench\TestCase;
-use Psr\Log\LoggerInterface;
+use Psr\Log\AbstractLogger;
 
 
 class ContentListenerTest extends TestCase
@@ -31,20 +31,37 @@ class ContentListenerTest extends TestCase
 
     public function testWritesStructuredEntryForSaved() : void
     {
-        $logger = \Mockery::mock( LoggerInterface::class );
-        $logger->shouldReceive( 'info' )->once()->with( 'cms.page', \Mockery::on( fn( $ctx ) =>
-            $ctx['action'] === 'saved'
-            && $ctx['type'] === 'page'
-            && $ctx['ids'] === ['id1']
-            && $ctx['editor'] === 'ed'
-            && $ctx['source'] === 'graphql'
-            && $ctx['path'] === 'about'
-        ) );
+        $logger = new class extends AbstractLogger {
+            /**
+             * @var array<string, mixed>
+             */
+            public array $context = [];
+
+            public string $message = '';
+
+
+            public function log( $level, string|\Stringable $message, array $context = [] ) : void
+            {
+                if( $level === 'info' ) {
+                    $this->message = (string) $message;
+                    $this->context = $context;
+                }
+            }
+        };
+
         Log::shouldReceive( 'channel' )->with( 'cms' )->andReturn( $logger );
 
         ( new ContentListener )->handle(
             new Saved( 'page', 'id1', 'v1', 'ed', ['path' => 'about', 'domain' => ''], tenant: 'test', source: 'graphql' )
         );
+
+        $this->assertSame( 'cms.page', $logger->message );
+        $this->assertSame( 'saved', $logger->context['action'] );
+        $this->assertSame( 'page', $logger->context['type'] );
+        $this->assertSame( ['id1'], $logger->context['ids'] );
+        $this->assertSame( 'ed', $logger->context['editor'] );
+        $this->assertSame( 'graphql', $logger->context['source'] );
+        $this->assertSame( 'about', $logger->context['path'] );
     }
 
 
@@ -55,16 +72,31 @@ class ContentListenerTest extends TestCase
 
         ( new ContentListener )->handle( new Saved( 'page', 'id1', 'v1', 'ed', [] ) );
 
-        $this->assertTrue( true );
+        $this->addToAssertionCount( 1 );
     }
 
 
     public function testSwallowsChannelErrors() : void
     {
+        $logfile = tempnam( sys_get_temp_dir(), 'cms-watch-' );
+        $previous = ini_get( 'error_log' );
+
+        if( $logfile === false ) {
+            $this->fail( 'Unable to create temporary error log.' );
+        }
+
         Log::shouldReceive( 'channel' )->andThrow( new \RuntimeException( 'boom' ) );
 
-        ( new ContentListener )->handle( new Saved( 'page', 'id1', 'v1', 'ed', [] ) );
+        ini_set( 'error_log', $logfile );
 
-        $this->assertTrue( true );
+        try {
+            ( new ContentListener )->handle( new Saved( 'page', 'id1', 'v1', 'ed', [] ) );
+
+            $this->assertStringContainsString( 'CMS watch listener error: boom',
+                (string) file_get_contents( $logfile ) );
+        } finally {
+            ini_set( 'error_log', $previous === false ? '' : $previous );
+            @unlink( $logfile );
+        }
     }
 }

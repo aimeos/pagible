@@ -15,12 +15,15 @@ use Aimeos\Cms\Recorders\CmsContactPulseRecorder;
 use Aimeos\Cms\Recorders\CmsContentPulseRecorder;
 use Aimeos\Cms\Recorders\CmsJsonapiPulseRecorder;
 use Aimeos\Cms\Recorders\CmsSearchPulseRecorder;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider as Provider;
 
 
 class PulseServiceProvider extends Provider
 {
+    private const VIEW_PERMISSION = 'pulse:view';
+
     /**
      * @var list<class-string>
      */
@@ -37,6 +40,8 @@ class PulseServiceProvider extends Provider
     public function boot() : void
     {
         $basedir = dirname( __DIR__ );
+
+        Permission::register( self::VIEW_PERMISSION );
 
         $this->publishes( [
             $basedir . '/views/dashboard.blade.php' => resource_path( 'views/vendor/pulse/dashboard.blade.php' ),
@@ -61,8 +66,12 @@ class PulseServiceProvider extends Provider
 
         $this->loadViewsFrom( $basedir . '/views/pulse', 'cms-pulse' );
 
-        if( class_exists( \Livewire\Livewire::class ) ) {
+        if( class_exists( \Livewire\Livewire::class ) && $this->app->bound( 'livewire.finder' ) ) {
             \Livewire\Livewire::component( 'cms-metric-card', CmsMetricCard::class );
+        }
+
+        if( config( 'pulse.enabled' ) === false ) {
+            return;
         }
 
         $pulse = $this->pulseInstance();
@@ -125,8 +134,22 @@ class PulseServiceProvider extends Provider
     protected function gate() : void
     {
         if( !Gate::has( 'viewPulse' ) || $this->defaultPulseGate() ) {
-            Gate::define( 'viewPulse', fn( $user ) => Permission::can( '*', $user ) );
+            Gate::define( 'viewPulse', fn( $user ) => $this->canViewPulse( $user ) );
         }
+    }
+
+
+    protected function canViewPulse( ?Authenticatable $user ) : bool
+    {
+        if( !Permission::can( self::VIEW_PERMISSION, $user ) ) {
+            return false;
+        }
+
+        $tenant = Tenancy::value();
+
+        return $tenant === ''
+            ? Tenancy::$callback === null
+            : Tenancy::allows( $user, $tenant );
     }
 
 

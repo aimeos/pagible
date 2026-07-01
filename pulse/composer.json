@@ -10,12 +10,6 @@
         "aimeos/pagible-core": "*@dev",
         "laravel/pulse": "^1.7"
     },
-    "suggest": {
-        "aimeos/pagible-graphql": "For GraphQL authentication metrics",
-        "aimeos/pagible-ai": "For AI provider metrics",
-        "aimeos/pagible-theme": "For frontend search and contact metrics",
-        "aimeos/pagible-jsonapi": "For JSON:API request metrics"
-    },
     "autoload": {
         "psr-4": {
             "Aimeos\\Cms\\": "src/"
@@ -24,7 +18,10 @@
     "autoload-dev": {
         "psr-4": {
             "Tests\\": "tests/"
-        }
+        },
+        "classmap": [
+            "tests/Support.php"
+        ]
     },
     "extra": {
         "laravel": {

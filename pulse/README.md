@@ -12,6 +12,8 @@ composer require aimeos/pagible-pulse
 
 This package requires [Laravel Pulse](https://laravel.com/docs/pulse). When Pulse is installed, the CMS Pulse provider registers CMS recorders and Livewire cards for the published Pulse dashboard.
 
+The default Pulse dashboard gate requires the authenticated user to have the `pulse:view` CMS permission and access to the current tenant. Applications can still define their own `viewPulse` gate before this provider boots to replace the default.
+
 The installer publishes:
 
 | Publish Tag | Target | Description |

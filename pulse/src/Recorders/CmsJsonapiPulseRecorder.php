@@ -28,7 +28,6 @@ class CmsJsonapiPulseRecorder extends Recorder
         $this->latency( 'cms_jsonapi', [
             'action' => $event->action,
             'domain' => $event->domain,
-            'includes' => $event->includes,
             'tenant' => $event->tenant,
         ], $event->durationMs );
     }

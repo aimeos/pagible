@@ -7,15 +7,7 @@
 
 namespace Aimeos\Cms\Recorders;
 
-use Aimeos\Cms\Events\Added;
-use Aimeos\Cms\Events\Bulk;
-use Aimeos\Cms\Events\Dropped;
-use Aimeos\Cms\Events\Event;
-use Aimeos\Cms\Events\Moved;
-use Aimeos\Cms\Events\Published;
-use Aimeos\Cms\Events\Purged;
-use Aimeos\Cms\Events\Restored;
-use Aimeos\Cms\Events\Saved;
+use Aimeos\Cms\Events\ContentChanged;
 
 
 class CmsContentPulseRecorder extends Recorder
@@ -23,16 +15,7 @@ class CmsContentPulseRecorder extends Recorder
     /**
      * @var list<class-string>
      */
-    public array $listen = [
-        Added::class,
-        Saved::class,
-        Published::class,
-        Dropped::class,
-        Restored::class,
-        Purged::class,
-        Moved::class,
-        Bulk::class,
-    ];
+    public array $listen = [ContentChanged::class];
 
     private const TYPES = [
         'page' => 'cms_page',
@@ -41,65 +24,49 @@ class CmsContentPulseRecorder extends Recorder
     ];
 
     /**
-     * @var array<class-string<Event>, non-empty-string>
+     * @var array<non-empty-string, non-empty-string>
      */
     private const ACTIONS = [
-        Added::class => 'add',
-        Saved::class => 'save',
-        Published::class => 'publish',
-        Dropped::class => 'delete',
-        Restored::class => 'restore',
-        Purged::class => 'purge',
-        Moved::class => 'move',
+        'added' => 'add',
+        'saved' => 'save',
+        'published' => 'publish',
+        'dropped' => 'delete',
+        'restored' => 'restore',
+        'purged' => 'purge',
+        'moved' => 'move',
     ];
 
 
     public function record( mixed $event ) : void
     {
-        if( $event instanceof Bulk ) {
-            $this->bulk( $event );
-        } elseif( $event instanceof Event ) {
-            $this->single( $event );
+        if( !$event instanceof ContentChanged ) {
+            return;
         }
-    }
 
-
-    protected function single( Event $event ) : void
-    {
         if( !( $type = self::TYPES[$event->contentType] ?? null ) ) {
             return;
         }
 
-        $this->entry( $type, [
+        $key = [
             'action' => $this->action( $event ),
             'source' => $event->source,
-            'editor' => $event->editor,
             'tenant' => $event->tenant,
-            'path' => $event->contentType === 'page' ? $event->data['path'] ?? null : null,
-            'domain' => $event->contentType === 'page' ? $event->data['domain'] ?? null : null,
-            'mime' => $event->contentType === 'file' ? $event->data['mime'] ?? null : null,
-        ] );
-    }
+            'domain' => $event->domain,
+            'mime' => $event->mime,
+        ];
 
-
-    protected function bulk( Bulk $event ) : void
-    {
-        if( !( $type = self::TYPES[$event->contentType] ?? null ) ) {
+        if( $event->value !== null ) {
+            $this->entry( $type, $key, $event->value, ['count', 'sum'] );
             return;
         }
 
-        $this->entry( $type, [
-            'action' => $event->source ? $event->source . ':bulk' : 'bulk',
-            'source' => $event->source,
-            'editor' => $event->editor,
-            'tenant' => $event->tenant,
-        ], count( $event->ids ), ['count', 'sum'] );
+        $this->entry( $type, $key );
     }
 
 
-    protected function action( Event $event ) : string
+    protected function action( ContentChanged $event ) : string
     {
-        $action = self::ACTIONS[$event::class] ?? strtolower( class_basename( $event ) );
+        $action = self::ACTIONS[$event->action] ?? $event->action;
 
         return $event->source ? $event->source . ':' . $action : $action;
     }

@@ -13,15 +13,20 @@ use Laravel\Pulse\Livewire\Card;
 
 abstract class CmsCard extends Card
 {
+    private const AGGREGATE_ROW_LIMIT = 250;
+    private const SUMMARY_LIMIT = 10;
+
+
     /**
      * Returns decoded aggregate rows from Pulse for the current tenant.
      *
      * @param 'count'|'min'|'max'|'sum'|'avg'|list<'count'|'min'|'max'|'sum'|'avg'> $aggregates
      * @return Collection<int, object>
      */
-    protected function decoded( string $type, string|array $aggregates ) : Collection
+    protected function decoded( string $type, string|array $aggregates, string $orderBy = 'count' ) : Collection
     {
-        return $this->aggregate( Metric::type( $type ), $aggregates )
+        return $this->aggregate( Metric::type( $type ), $aggregates, $orderBy, 'desc', self::AGGREGATE_ROW_LIMIT )
+            ->take( self::AGGREGATE_ROW_LIMIT )
             ->map( fn( object $row ) => $this->row( $row ) )
             ->values();
     }
@@ -47,7 +52,8 @@ abstract class CmsCard extends Card
                 'max' => $rows->max( 'max' ),
                 'detail' => $this->detailText( $rows, $details, $success ),
             ] )
-            ->sortByDesc( fn( object $row ) => $row->count ?: $row->sum )
+            ->sortByDesc( fn( object $row ) => $row->sum ?: $row->count )
+            ->take( self::SUMMARY_LIMIT )
             ->values();
     }
 
@@ -113,6 +119,12 @@ abstract class CmsCard extends Card
      */
     protected function avg( Collection $rows ) : ?float
     {
+        $rows = $rows->filter( fn( object $row ) => array_key_exists( 'avg', get_object_vars( $row ) ) );
+
+        if( $rows->isEmpty() ) {
+            return null;
+        }
+
         $weighted = $rows->reduce( fn( float $sum, object $row ) =>
             $sum + ( (float) ( $row->avg ?? 0 ) * (int) ( $row->count ?? 0 ) ), 0.0
         );

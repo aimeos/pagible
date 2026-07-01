@@ -6,11 +6,10 @@
 namespace Tests {
 
 use Aimeos\Cms\Events\Authed;
-use Aimeos\Cms\Events\Bulk;
+use Aimeos\Cms\Events\ContentChanged;
 use Aimeos\Cms\Events\Contacted;
 use Aimeos\Cms\Events\Generated;
 use Aimeos\Cms\Events\Queried;
-use Aimeos\Cms\Events\Saved;
 use Aimeos\Cms\Events\Searched;
 use Aimeos\Cms\Recorders\CmsAiPulseRecorder;
 use Aimeos\Cms\Recorders\CmsAuthPulseRecorder;
@@ -18,6 +17,7 @@ use Aimeos\Cms\Recorders\CmsContactPulseRecorder;
 use Aimeos\Cms\Recorders\CmsContentPulseRecorder;
 use Aimeos\Cms\Recorders\CmsJsonapiPulseRecorder;
 use Aimeos\Cms\Recorders\CmsSearchPulseRecorder;
+use Illuminate\Contracts\Debug\ExceptionHandler;
 
 
 class PulseRecorderTest extends PulseTestCase
@@ -25,8 +25,7 @@ class PulseRecorderTest extends PulseTestCase
     public function testRecordsPageAction() : void
     {
         ( new CmsContentPulseRecorder )->record(
-            new Saved( 'page', 'p1', 'v1', 'editor@test', ['path' => 'about', 'domain' => 'example.org'],
-                tenant: 'test', source: 'graphql' )
+            new ContentChanged( 'page', 'saved', source: 'graphql', tenant: 'test', domain: 'example.org' )
         );
 
         $this->assertCount( 1, $this->pulse->entries );
@@ -36,8 +35,10 @@ class PulseRecorderTest extends PulseTestCase
         $key = $this->key( 0 );
 
         $this->assertSame( 'graphql:save', $key['action'] );
-        $this->assertSame( 'editor@test', $key['editor'] );
-        $this->assertSame( 'about', $key['path'] );
+        $this->assertSame( 'graphql', $key['source'] );
+        $this->assertSame( 'example.org', $key['domain'] );
+        $this->assertArrayNotHasKey( 'editor', $key );
+        $this->assertArrayNotHasKey( 'path', $key );
         $this->assertArrayNotHasKey( 'tenant', $key );
     }
 
@@ -45,7 +46,7 @@ class PulseRecorderTest extends PulseTestCase
     public function testTenantlessEntriesKeepBaseType() : void
     {
         ( new CmsContentPulseRecorder )->record(
-            new Saved( 'page', 'p1', 'v1', 'editor@test', ['path' => 'about'], tenant: '', source: 'graphql' )
+            new ContentChanged( 'page', 'saved', source: 'graphql' )
         );
 
         $this->assertSame( 'cms_page', $this->pulse->entries[0]->type );
@@ -55,7 +56,7 @@ class PulseRecorderTest extends PulseTestCase
     public function testIgnoresUnsupportedContentTypes() : void
     {
         ( new CmsContentPulseRecorder )->record(
-            new Saved( 'snippet', 'p1', 'v1', 'editor@test', [], tenant: 'test', source: 'graphql' )
+            new ContentChanged( 'snippet', 'saved', source: 'graphql', tenant: 'test' )
         );
 
         $this->assertSame( [], $this->pulse->entries );
@@ -65,7 +66,7 @@ class PulseRecorderTest extends PulseTestCase
     public function testRecordsBulkItemCount() : void
     {
         ( new CmsContentPulseRecorder )->record(
-            new Bulk( 'element', ['e1', 'e2'], ['e1' => 'v1', 'e2' => 'v2'], [], 'editor@test', 'test', 'mcp' )
+            new ContentChanged( 'element', 'bulk', source: 'mcp', tenant: 'test', value: 2 )
         );
 
         $this->assertCount( 1, $this->pulse->entries );
@@ -76,7 +77,7 @@ class PulseRecorderTest extends PulseTestCase
     }
 
 
-    public function testAuthRecorderAnonymizesPersonalData() : void
+    public function testAuthRecorderUsesLowCardinalityKey() : void
     {
         ( new CmsAuthPulseRecorder )->record(
             new Authed( 'login-fail', 'user@example.org', '127.0.0.1', 'Browser/1.0', 'test' )
@@ -84,11 +85,12 @@ class PulseRecorderTest extends PulseTestCase
 
         $key = $this->key( 0 );
 
+        $this->assertCount( 1, $this->pulse->entries );
         $this->assertSame( 'cms_auth:test', $this->pulse->entries[0]->type );
         $this->assertSame( 'graphql:login-fail', $key['action'] );
-        $this->assertNotSame( 'user@example.org', $key['email'] );
-        $this->assertNotSame( '127.0.0.1', $key['ip'] );
-        $this->assertSame( 64, strlen( $key['email'] ) );
+        $this->assertArrayNotHasKey( 'email', $key );
+        $this->assertArrayNotHasKey( 'ip', $key );
+        $this->assertArrayNotHasKey( 'user_agent', $key );
         $this->assertArrayNotHasKey( 'tenant', $key );
     }
 
@@ -118,7 +120,37 @@ class PulseRecorderTest extends PulseTestCase
 
         $this->assertSame( 'ai:write', $key['mutation'] );
         $this->assertTrue( $key['success'] );
+        $this->assertArrayNotHasKey( 'editor', $key );
         $this->assertArrayNotHasKey( 'tenant', $key );
+    }
+
+
+    public function testSearchRecorderUsesLowCardinalityKey() : void
+    {
+        ( new CmsSearchPulseRecorder )->record( new Searched( 'term', 12, 3, 5.2, 'example.org', 'en', 'test' ) );
+
+        $key = $this->key( 0 );
+
+        $this->assertSame( 'cms_search:test', $this->pulse->entries[0]->type );
+        $this->assertSame( 'theme:search', $key['action'] );
+        $this->assertSame( 'example.org', $key['domain'] );
+        $this->assertSame( 'en', $key['lang'] );
+        $this->assertArrayNotHasKey( 'query', $key );
+        $this->assertArrayNotHasKey( 'results', $key );
+        $this->assertArrayNotHasKey( 'page', $key );
+    }
+
+
+    public function testJsonapiRecorderUsesLowCardinalityKey() : void
+    {
+        ( new CmsJsonapiPulseRecorder )->record( new Queried( 'jsonapi:search', 4.8, 'example.org', 'children', 'test' ) );
+
+        $key = $this->key( 0 );
+
+        $this->assertSame( 'cms_jsonapi:test', $this->pulse->entries[0]->type );
+        $this->assertSame( 'jsonapi:search', $key['action'] );
+        $this->assertSame( 'example.org', $key['domain'] );
+        $this->assertArrayNotHasKey( 'includes', $key );
     }
 
 
@@ -139,8 +171,61 @@ class PulseRecorderTest extends PulseTestCase
 
         ( new CmsContactPulseRecorder )->record( new Contacted( 'user@example.org', '127.0.0.1', 3.1, 'test' ) );
 
+        $key = $this->key( 0 );
+
         $this->assertCount( 1, $this->pulse->entries );
         $this->assertSame( 'cms_contact:test', $this->pulse->entries[0]->type );
+        $this->assertSame( 'theme:contact', $key['action'] );
+        $this->assertArrayNotHasKey( 'email', $key );
+        $this->assertArrayNotHasKey( 'ip', $key );
+    }
+
+
+    public function testRecorderFailuresAreReportedThroughLaravelOncePerThrottleWindow() : void
+    {
+        $handler = new class implements ExceptionHandler {
+            /**
+             * @var list<\Throwable>
+             */
+            public array $reported = [];
+
+
+            public function report( \Throwable $e ) : void
+            {
+                $this->reported[] = $e;
+            }
+
+
+            public function shouldReport( \Throwable $e ) : bool
+            {
+                return true;
+            }
+
+
+            public function render( $request, \Throwable $e ) : \Symfony\Component\HttpFoundation\Response
+            {
+                return new \Symfony\Component\HttpFoundation\Response( '', 500 );
+            }
+
+
+            public function renderForConsole( $output, \Throwable $e ) : void
+            {
+            }
+        };
+
+        $this->application()->instance( ExceptionHandler::class, $handler );
+        $this->application()->instance( \Laravel\Pulse\Pulse::class, new class {
+            public function record( string $type, string $key, ?int $value = null ) : never
+            {
+                throw new \RuntimeException( 'cms-pulse-recorder-test-failure' );
+            }
+        } );
+
+        ( new CmsContentPulseRecorder )->record( new ContentChanged( 'page', 'saved', source: 'graphql' ) );
+        ( new CmsContentPulseRecorder )->record( new ContentChanged( 'page', 'saved', source: 'graphql' ) );
+
+        $this->assertCount( 1, $handler->reported );
+        $this->assertSame( 'cms-pulse-recorder-test-failure', $handler->reported[0]->getMessage() );
     }
 
 

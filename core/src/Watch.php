@@ -27,35 +27,43 @@ class Watch
 
 
     /**
-     * Builds and dispatches a watch event when watch logging is enabled.
+     * Builds and dispatches a watch event when an in-process listener is registered for it.
      *
+     * @param class-string $event Event class used to check for registered listeners
      * @param \Closure(): object $factory Deferred event factory
      */
-    public static function dispatch( \Closure $factory ) : void
+    public static function dispatch( string $event, \Closure $factory ) : void
     {
-        self::dispatchIf( null, $factory );
+        self::dispatchIf( null, $event, $factory );
     }
 
 
     /**
-     * Builds and dispatches a watch event only when watch logging and the feature flag are enabled.
+     * Builds and dispatches a watch event when the feature flag is enabled or a listener is registered.
      *
+     * @param string $flag Feature flag config key gating watch logging for this event
+     * @param class-string $event Event class used to check for registered listeners
      * @param \Closure(): object $factory Deferred event factory
      */
-    public static function dispatchWhen( string $flag, \Closure $factory ) : void
+    public static function dispatchWhen( string $flag, string $event, \Closure $factory ) : void
     {
-        self::dispatchIf( $flag, $factory );
+        self::dispatchIf( $flag, $event, $factory );
     }
 
 
     /**
-     * Builds and dispatches a watch event when watch logging and the optional flag are enabled.
+     * Builds and dispatches a watch event when watch logging is enabled or something listens for it.
      *
+     * Any in-process listener (e.g. an optional observability integration subscribing to the event)
+     * makes the event fire even when watch logging is off, so the factory is only invoked when
+     * something will consume the event.
+     *
+     * @param class-string $event Event class used to check for registered listeners
      * @param \Closure(): object $factory Deferred event factory
      */
-    private static function dispatchIf( ?string $flag, \Closure $factory ) : void
+    private static function dispatchIf( ?string $flag, string $event, \Closure $factory ) : void
     {
-        if( !self::enabled( $flag ) ) {
+        if( !self::enabled( $flag ) && !Event::hasListeners( $event ) ) {
             return;
         }
 
@@ -80,13 +88,14 @@ class Watch
 
 
     /**
-     * Subscribes several log listeners when watch logging is enabled.
+     * Subscribes several log listeners when watch logging (and the optional feature flag) is enabled.
      *
      * @param array<class-string, class-string> $listeners Event class => listener class
+     * @param string|null $flag Feature flag config key gating the listeners, in addition to the channel
      */
-    public static function listen( array $listeners ) : void
+    public static function listen( array $listeners, ?string $flag = null ) : void
     {
-        if( !self::enabled() ) {
+        if( !self::enabled( $flag ) ) {
             return;
         }
 
@@ -174,9 +183,11 @@ class Watch
     }
 
 
-    public static function start( string $flag ) : int|float|null
+    public static function start( string $flag, ?string $event = null ) : int|float|null
     {
-        return self::enabled( $flag ) ? hrtime( true ) : null;
+        return self::enabled( $flag ) || ( $event !== null && Event::hasListeners( $event ) )
+            ? hrtime( true )
+            : null;
     }
 
 

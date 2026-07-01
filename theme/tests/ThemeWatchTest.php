@@ -23,8 +23,12 @@ class ThemeWatchTest extends ThemeTestAbstract
     use CmsWithMigrations;
     use DatabaseTruncation;
 
-    protected $seeder = TestSeeder::class;
-    protected $connectionsToTransact = [];
+    protected string $seeder = TestSeeder::class;
+
+    /**
+     * @var list<string>
+     */
+    protected array $connectionsToTransact = [];
 
 
     protected function defineEnvironment( $app )
@@ -74,6 +78,19 @@ class ThemeWatchTest extends ThemeTestAbstract
     }
 
 
+    public function testSearchDispatchesWithDurationForPulseRecorderWhenWatchOff() : void
+    {
+        config( ['cms.watch.channel' => null, 'cms.theme.watch' => false] );
+        app( \Laravel\Pulse\Pulse::class )->register( [ThemeSearchedPulseRecorder::class => true] );
+        Event::fake( [Searched::class] );
+
+        $request = Request::create( '/cmsapi/search', 'GET', ['q' => 'welcome', 'locale' => 'en', 'size' => 10] );
+        ( new \Aimeos\Cms\Controllers\SearchController() )->index( $request, 'mydomain.tld' );
+
+        Event::assertDispatched( Searched::class, fn( Searched $e ) => $e->durationMs > 0.0 );
+    }
+
+
     public function testContactDispatchesContactedWhenWatchOn() : void
     {
         config( ['cms.theme.watch' => true] );
@@ -105,5 +122,19 @@ class ThemeWatchTest extends ThemeTestAbstract
         ] )->assertStatus( 200 );
 
         Event::assertNotDispatched( Contacted::class );
+    }
+}
+
+
+class ThemeSearchedPulseRecorder
+{
+    /**
+     * @var list<class-string>
+     */
+    public array $listen = [Searched::class];
+
+
+    public function record( mixed $event ) : void
+    {
     }
 }

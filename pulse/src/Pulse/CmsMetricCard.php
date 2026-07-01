@@ -33,22 +33,24 @@ class CmsMetricCard extends CmsCard
         'page' => [
             'title' => 'Pages',
             'type' => 'cms_page',
-            'details' => ['editor', 'path', 'domain'],
+            'aggregates' => ['count', 'sum'],
+            'details' => ['domain'],
         ],
         'element' => [
             'title' => 'Elements',
             'type' => 'cms_element',
-            'details' => ['editor', 'source'],
+            'aggregates' => ['count', 'sum'],
+            'details' => ['source'],
         ],
         'file' => [
             'title' => 'Files',
             'type' => 'cms_file',
-            'details' => ['editor', 'mime', 'source'],
+            'aggregates' => ['count', 'sum'],
+            'details' => ['mime', 'source'],
         ],
         'auth' => [
             'title' => 'Authentication',
             'type' => 'cms_auth',
-            'details' => ['email', 'ip'],
             'events' => [Authed::class],
         ],
         'ai' => [
@@ -63,7 +65,7 @@ class CmsMetricCard extends CmsCard
         'search' => [
             'title' => 'Search',
             'type' => 'cms_search',
-            'group' => 'query',
+            'group' => 'action',
             'aggregates' => Metric::LATENCY,
             'details' => ['domain', 'lang'],
             'events' => [Searched::class],
@@ -71,16 +73,14 @@ class CmsMetricCard extends CmsCard
         'contact' => [
             'title' => 'Contact',
             'type' => 'cms_contact',
-            'group' => 'ip',
             'aggregates' => Metric::LATENCY,
-            'details' => ['email'],
             'events' => [Contacted::class],
         ],
         'jsonapi' => [
             'title' => 'JSON:API',
             'type' => 'cms_jsonapi',
             'aggregates' => Metric::LATENCY,
-            'details' => ['domain', 'includes'],
+            'details' => ['domain'],
             'events' => [Queried::class],
         ],
     ];
