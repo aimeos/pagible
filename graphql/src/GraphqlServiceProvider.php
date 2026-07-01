@@ -2,6 +2,8 @@
 
 namespace Aimeos\Cms;
 
+use Aimeos\Cms\Events\Authed;
+use Aimeos\Cms\Listeners\AuthLogListener;
 use Illuminate\Support\ServiceProvider as Provider;
 
 class GraphqlServiceProvider extends Provider
@@ -22,6 +24,7 @@ class GraphqlServiceProvider extends Provider
             fn() => 'Aimeos\\Cms\\GraphQL\\Directives'
         );
 
+        $this->watch();
         $this->console();
     }
 
@@ -40,6 +43,23 @@ class GraphqlServiceProvider extends Provider
             config( ['lighthouse.security.max_query_complexity' => (int) config( 'cms.graphql.maxcomplexity', 300 )] );
         }
     }
+
+    protected function watch() : void
+    {
+        $events = $this->app->make( 'events' );
+
+        // Tag content changes made through the GraphQL API as 'graphql' for the audit log;
+        // set per execution so it stays correct in long-running (Octane) workers.
+        $events->listen(
+            \Nuwave\Lighthouse\Events\StartExecution::class,
+            fn() => Utils::source( 'graphql' )
+        );
+
+        Watch::listen( [
+            Authed::class => AuthLogListener::class,
+        ] );
+    }
+
 
     protected function console() : void
     {

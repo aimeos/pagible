@@ -7,8 +7,9 @@
 
 namespace Aimeos\Cms\GraphQL\Mutations;
 
-use Aimeos\Cms\Utils;
+use Aimeos\Cms\Concerns\ObservesPrisma;
 use Aimeos\Prisma\Prisma;
+use Aimeos\Cms\Utils;
 use Aimeos\Prisma\Files\Audio;
 use Aimeos\Prisma\Exceptions\PrismaException;
 use Illuminate\Support\Facades\Log;
@@ -18,6 +19,9 @@ use GraphQL\Error\Error;
 
 final class Transcribe
 {
+    use ObservesPrisma;
+
+
     /**
      * @param null $rootValue
      * @param array<string, mixed> $args
@@ -39,7 +43,7 @@ final class Transcribe
         {
             $file = Audio::fromBinary( $upload->getContent(), $upload->getClientMimeType() );
 
-            $data = Prisma::audio()
+            $data = Prisma::audio()->observe( $this->observer() )
                 ->using( $provider, $config )
                 ->model( $model )
                 ->ensure( 'transcribe' )

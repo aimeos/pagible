@@ -2,6 +2,10 @@
 
 namespace Aimeos\Cms;
 
+use Aimeos\Cms\Events\Contacted;
+use Aimeos\Cms\Events\Searched;
+use Aimeos\Cms\Listeners\ContactLogListener;
+use Aimeos\Cms\Listeners\SearchLogListener;
 use Aimeos\Cms\Schema;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Support\Facades\Blade;
@@ -33,7 +37,16 @@ class ThemeServiceProvider extends Provider
             $this->loadRoutesFrom( $basedir . '/routes/theme.php' );
         });
 
+        $this->watch();
         $this->console();
+    }
+
+    protected function watch() : void
+    {
+        Watch::listen( [
+            Searched::class => SearchLogListener::class,
+            Contacted::class => ContactLogListener::class,
+        ] );
     }
 
     protected function console() : void

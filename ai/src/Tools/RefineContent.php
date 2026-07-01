@@ -7,10 +7,12 @@
 
 namespace Aimeos\Cms\Tools;
 
+use Aimeos\Cms\Concerns\ObservesPrisma;
+use Aimeos\Prisma\Prisma;
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Refiner;
-use Aimeos\Prisma\Prisma;
+use Aimeos\Cms\Utils;
 use Aimeos\Prisma\Tools;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Attributes\Description;
@@ -26,6 +28,9 @@ use Laravel\Mcp\Request;
 #[Description('Improves or restructures existing page content using AI based on a prompt. Pass the page ID and a prompt describing the changes. Returns the refined content elements as a JSON array.')]
 class RefineContent extends Tool
 {
+    use ObservesPrisma;
+
+
     /**
      * Handle the tool request.
      */
@@ -65,7 +70,8 @@ class RefineContent extends Tool
 
         set_time_limit( (int) config( 'cms.ai.timeout' ) ); // long AI call; lift PHP's default 30s execution limit
 
-        $response = Prisma::text()->using( $provider, $config )
+        $response = Prisma::text()->observe( $this->observer( Utils::editor( $request->user() ) ) )
+            ->using( $provider, $config )
             ->model( $model )
             ->withMaxTokens( config( 'cms.ai.maxtoken' ) )
             ->withSystemPrompt( $system . "\n" . ( $validated['context'] ?? '' ) . ( !empty( $validated['lang'] ) ? "\nWrite the content in language: " . $validated['lang'] : '' ) )

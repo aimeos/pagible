@@ -7,8 +7,10 @@
 
 namespace Aimeos\Cms\Tools;
 
-use Aimeos\Cms\Permission;
+use Aimeos\Cms\Concerns\ObservesPrisma;
 use Aimeos\Prisma\Prisma;
+use Aimeos\Cms\Permission;
+use Aimeos\Cms\Utils;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Attributes\Name;
@@ -25,6 +27,7 @@ Optionally pass IDs of existing image files as visual references. Returns the cr
 class GenerateImage extends Tool
 {
     use HandlesMedia;
+    use ObservesPrisma;
 
 
     /**
@@ -55,7 +58,7 @@ class GenerateImage extends Tool
         $config = config( 'cms.ai.imagine', [] );
         $model = config( 'cms.ai.imagine.model' );
 
-        $base64 = Prisma::image()
+        $base64 = Prisma::image()->observe( $this->observer( Utils::editor( $request->user() ) ) )
             ->using( $provider, $config )
             ->model( $model )
             ->ensure( 'imagine' )

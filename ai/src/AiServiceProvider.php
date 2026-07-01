@@ -2,6 +2,8 @@
 
 namespace Aimeos\Cms;
 
+use Aimeos\Cms\Events\Generated;
+use Aimeos\Cms\Listeners\AiLogListener;
 use Illuminate\Support\ServiceProvider as Provider;
 
 class AiServiceProvider extends Provider
@@ -49,12 +51,20 @@ class AiServiceProvider extends Provider
             ] );
         }
 
+        $this->watch();
         $this->console();
     }
 
     public function register()
     {
         $this->mergeConfigFrom( dirname( __DIR__ ) . '/config/cms/ai.php', 'cms.ai' );
+    }
+
+    protected function watch() : void
+    {
+        Watch::listen( [
+            Generated::class => AiLogListener::class,
+        ] );
     }
 
     protected function console() : void
