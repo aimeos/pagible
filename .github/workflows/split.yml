@@ -25,6 +25,7 @@ jobs:
           - { package: import, repo: pagible-import }
           - { package: jsonapi, repo: pagible-jsonapi }
           - { package: mcp, repo: pagible-mcp }
+          - { package: pulse, repo: pagible-pulse }
           - { package: search, repo: pagible-search }
           - { package: theme, repo: pagible-theme }
           - { package: themes/bold, repo: pagible-themes-bold }

@@ -20,8 +20,8 @@ use Symfony\Component\HttpFoundation\Response;
  * Measures the wall-clock duration of read-only JSON:API requests and dispatches a Queried event.
  *
  * Instrumentation lives here rather than in the controller because the controller methods only
- * decorate an already-built response and have no request-lifecycle timing. Active only when
- * "cms.watch.channel" and "cms.jsonapi.watch" are enabled; a failure never breaks the response.
+ * decorate an already-built response and have no request-lifecycle timing. Active when the watch
+ * log is enabled or Pulse is recording JSON:API metrics; failures never break the response.
  */
 class WatchJsonapi
 {
@@ -30,11 +30,11 @@ class WatchJsonapi
      */
     public function handle( Request $request, Closure $next ) : Response
     {
-        $start = Watch::start( 'cms.jsonapi.watch' );
+        $start = Watch::start( 'cms.jsonapi.watch', Queried::class );
 
         $response = $next( $request );
 
-        Watch::dispatchWhen( 'cms.jsonapi.watch', fn() => new Queried(
+        Watch::dispatchWhen( 'cms.jsonapi.watch', Queried::class, fn() => new Queried(
             action: $this->action( $request ),
             durationMs: Watch::duration( $start ),
             domain: $this->domain( $request ),

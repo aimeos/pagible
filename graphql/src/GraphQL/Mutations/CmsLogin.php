@@ -26,7 +26,7 @@ final class CmsLogin
 	{
 		$email = (string) $args['email'];
 		$key = 'cms-login:' . request()->ip() . '|' . strtolower( $email );
-		$watchAuth = fn( string $action ) => Watch::dispatch( fn() => new Authed(
+		$watchAuth = fn( string $action ) => Watch::dispatch( Authed::class, fn() => new Authed(
 			$action,
 			$email,
 			(string) request()->ip(),

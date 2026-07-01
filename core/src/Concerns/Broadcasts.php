@@ -8,6 +8,7 @@
 namespace Aimeos\Cms\Concerns;
 
 use Aimeos\Cms\Events\Bulk;
+use Aimeos\Cms\Events\ContentChanged;
 use Aimeos\Cms\Events\Event;
 use Aimeos\Cms\Models\Version;
 use Aimeos\Cms\Tenancy;
@@ -47,8 +48,10 @@ trait Broadcasts
 
         $broadcast = (bool) config( 'cms.broadcast' );
 
-        // In-process listeners (audit logging, metrics in the watch package) subscribe to the
-        // per-action events; only do work when broadcasting is on or something listens. This
+        $this->metric( $action );
+
+        // In-process listeners (audit logging) subscribe to the per-action events;
+        // only do work when broadcasting is on or something listens. This
         // also avoids the per-item latest lazy load (e.g. on purge) when nothing is enabled.
         if( !$broadcast && !Events::hasListeners( $class ) ) {
             return;
@@ -81,6 +84,8 @@ trait Broadcasts
         }
 
         $broadcast = (bool) config( 'cms.broadcast' );
+
+        static::bulkMetric( $type, count( $ids ), $data );
 
         if( !$broadcast && !Events::hasListeners( Bulk::class ) ) {
             return;
@@ -124,6 +129,47 @@ trait Broadcasts
     }
 
 
+    protected function metric( string $action ) : void
+    {
+        if( !Events::hasListeners( ContentChanged::class ) ) {
+            return;
+        }
+
+        $contentType = strtolower( class_basename( $this ) );
+        $attributes = $this->getAttributes();
+
+        static::local( new ContentChanged(
+            contentType: $contentType,
+            action: $action,
+            source: Utils::source(),
+            tenant: Tenancy::value(),
+            domain: $contentType === 'page' ? (string) ( $attributes['domain'] ?? '' ) : null,
+            mime: $contentType === 'file' ? (string) ( $attributes['mime'] ?? '' ) : null,
+        ) );
+    }
+
+
+    /**
+     * @param array<string, mixed> $data Shared bulk update fields
+     */
+    protected static function bulkMetric( string $type, int $count, array $data ) : void
+    {
+        if( !Events::hasListeners( ContentChanged::class ) ) {
+            return;
+        }
+
+        static::local( new ContentChanged(
+            contentType: $type,
+            action: 'bulk',
+            source: Utils::source(),
+            tenant: Tenancy::value(),
+            domain: $type === 'page' ? (string) ( $data['domain'] ?? '' ) : null,
+            mime: $type === 'file' ? (string) ( $data['mime'] ?? '' ) : null,
+            value: $count,
+        ) );
+    }
+
+
     /**
      * Dispatches the event after the current transaction commits (immediately when there is none),
      * so a rolled-back change is never broadcast or logged.
@@ -151,5 +197,11 @@ trait Broadcasts
                 report( $e );
             }
         } );
+    }
+
+
+    protected static function local( object $event ) : void
+    {
+        DB::afterCommit( fn() => event( $event ) );
     }
 }

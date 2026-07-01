@@ -38,7 +38,7 @@ final class CmsLogout
             // No error if logout fails
         }
 
-        Watch::dispatch( fn() => new Authed(
+        Watch::dispatch( Authed::class, fn() => new Authed(
             'logout',
             $user ? Utils::editor( $user ) : '',
             (string) request()->ip(),

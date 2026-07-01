@@ -37,7 +37,7 @@ final class CmsUser
         $user->setAttribute( 'cmsdata', $settings );
         $user->save();
 
-        Watch::dispatch( fn() => new Authed(
+        Watch::dispatch( Authed::class, fn() => new Authed(
             'user-save',
             Utils::editor( $user ),
             (string) request()->ip(),

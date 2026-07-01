@@ -8,12 +8,14 @@
 namespace Tests;
 
 use Aimeos\Cms\Events\Bulk;
+use Aimeos\Cms\Events\ContentChanged;
 use Aimeos\Cms\Events\Moved;
 use Aimeos\Cms\Events\Purged;
 use Aimeos\Cms\Events\Saved;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Resource;
 use Aimeos\Cms\Utils;
+use Aimeos\Cms\Watch;
 use Database\Seeders\TestSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
@@ -28,7 +30,7 @@ class WatchTest extends CoreTestAbstract
     use CmsWithMigrations;
     use RefreshDatabase;
 
-    protected $seeder = TestSeeder::class;
+    protected string $seeder = TestSeeder::class;
 
 
     protected function setUp(): void
@@ -54,11 +56,13 @@ class WatchTest extends CoreTestAbstract
             $captured[] = $e;
         } );
 
-        Resource::savePage( $page->id, ['title' => 'Renamed'], $this->user );
+        $id = $this->id( $page );
+
+        Resource::savePage( $id, ['title' => 'Renamed'], $this->user );
 
         $this->assertCount( 1, $captured );
         $this->assertSame( 'page', $captured[0]->contentType );
-        $this->assertSame( $page->id, $captured[0]->id );
+        $this->assertSame( $id, $captured[0]->id );
         $this->assertSame( 'editor@testbench', $captured[0]->editor );
         $this->assertSame( 'Renamed', $captured[0]->data['title'] ?? null );
     }
@@ -74,11 +78,85 @@ class WatchTest extends CoreTestAbstract
             $captured = $e;
         } );
 
-        Resource::savePage( $page->id, ['title' => 'X'], $this->user );
+        Resource::savePage( $this->id( $page ), ['title' => 'X'], $this->user );
 
         $this->assertNotNull( $captured );
         $this->assertFalse( $captured->broadcasting );
         $this->assertFalse( $captured->broadcastWhen() );
+    }
+
+
+    public function testContentMetricListenerDoesNotRequireSavedListener() : void
+    {
+        $page = $this->page();
+        config( ['cms.broadcast' => false] );
+
+        $captured = [];
+        Event::listen( ContentChanged::class, function( ContentChanged $e ) use ( &$captured ) {
+            $captured[] = $e;
+        } );
+
+        $this->assertFalse( Event::hasListeners( Saved::class ) );
+
+        Resource::savePage( $this->id( $page ), ['title' => 'Renamed'], $this->user );
+
+        $this->assertCount( 1, $captured );
+        $this->assertSame( 'page', $captured[0]->contentType );
+        $this->assertSame( 'saved', $captured[0]->action );
+        $this->assertSame( 'cli', $captured[0]->source );
+        $this->assertSame( 'test', $captured[0]->tenant );
+    }
+
+
+    public function testWatchDispatchEmitsForRegisteredListenerWithoutWatchChannel() : void
+    {
+        config( ['cms.watch.channel' => null, 'cms.theme.watch' => false] );
+
+        $captured = null;
+        Event::listen( ContentChanged::class, function( ContentChanged $e ) use ( &$captured ) {
+            $captured = $e;
+        } );
+
+        Watch::dispatchWhen( 'cms.theme.watch', ContentChanged::class, fn() => new ContentChanged(
+            contentType: 'page',
+            action: 'searched',
+            source: 'web',
+            tenant: 'test',
+            value: 3,
+        ) );
+
+        $this->assertInstanceOf( ContentChanged::class, $captured );
+        $this->assertSame( 'page', $captured->contentType );
+        $this->assertSame( 'searched', $captured->action );
+    }
+
+
+    public function testWatchDispatchSkippedWhenNothingListensAndWatchOff() : void
+    {
+        config( ['cms.watch.channel' => null, 'cms.theme.watch' => false] );
+
+        $built = false;
+
+        Watch::dispatchWhen( 'cms.theme.watch', ContentChanged::class, function() use ( &$built ) {
+            $built = true;
+            return new ContentChanged( contentType: 'page', action: 'searched', source: 'web', tenant: 'test' );
+        } );
+
+        $this->assertFalse( $built );
+    }
+
+
+    public function testWatchStartRunsForRegisteredListenerWithoutWatchChannel() : void
+    {
+        config( ['cms.watch.channel' => null, 'cms.theme.watch' => false] );
+
+        Event::listen( ContentChanged::class, fn() => null );
+
+        $start = Watch::start( 'cms.theme.watch', ContentChanged::class );
+
+        $this->assertNotNull( $start );
+        $this->assertGreaterThan( 0, $start );
+        $this->assertNull( Watch::start( 'cms.theme.watch', Saved::class ) );
     }
 
 
@@ -93,12 +171,15 @@ class WatchTest extends CoreTestAbstract
             $captured[] = $e;
         } );
 
-        Resource::bulkPage( [$page1->id, $page2->id], ['title' => 'Renamed'], $this->user );
+        $id1 = $this->id( $page1 );
+        $id2 = $this->id( $page2 );
+
+        Resource::bulkPage( [$id1, $id2], ['title' => 'Renamed'], $this->user );
 
         $this->assertCount( 1, $captured );
         $this->assertSame( 'page', $captured[0]->contentType );
         $this->assertCount( 2, $captured[0]->ids );
-        $this->assertContains( $page1->id, $captured[0]->ids );
+        $this->assertContains( $id1, $captured[0]->ids );
         $this->assertFalse( $captured[0]->broadcasting );
     }
 
@@ -113,10 +194,12 @@ class WatchTest extends CoreTestAbstract
             $captured[] = $e;
         } );
 
-        Resource::purge( Page::class, [$page->id], 'editor@testbench' );
+        $id = $this->id( $page );
+
+        Resource::purge( Page::class, [$id], 'editor@testbench' );
 
         $this->assertCount( 1, $captured );
-        $this->assertSame( $page->id, $captured[0]->id );
+        $this->assertSame( $id, $captured[0]->id );
     }
 
 
@@ -126,7 +209,7 @@ class WatchTest extends CoreTestAbstract
         config( ['cms.broadcast' => false] );
         Event::fake( [Moved::class] );
 
-        Resource::movePage( $page->id, parent: $this->root()->id, user: $this->user );
+        Resource::movePage( $this->id( $page ), parent: $this->id( $this->root() ), user: $this->user );
 
         Event::assertNotDispatched( Moved::class );
     }
@@ -137,12 +220,22 @@ class WatchTest extends CoreTestAbstract
         return Resource::addPage( [
             'lang' => 'en', 'name' => 'Test', 'title' => 'Test', 'path' => 'watch-' . Utils::uid(),
             'content' => [],
-        ], $this->user, parent: $this->root()->id );
+        ], $this->user, parent: $this->id( $this->root() ) );
     }
 
 
     protected function root() : Page
     {
         return Page::where( 'tag', 'root' )->firstOrFail();
+    }
+
+
+    private function id( Page $page ) : string
+    {
+        if( !is_string( $page->id ) ) {
+            throw new \RuntimeException( 'Page ID is missing.' );
+        }
+
+        return $page->id;
     }
 }

@@ -34,7 +34,7 @@ trait ObservesPrisma
         $tenant = Tenancy::value();
 
         return function( Observation $observation ) use ( $editor, $tenant, $mutation ) {
-            CmsWatch::dispatch( fn() => new Generated(
+            CmsWatch::dispatch( Generated::class, fn() => new Generated(
                 mutation: $mutation ?? $observation->operation,
                 provider: $observation->provider,
                 model: $observation->model ?? '',

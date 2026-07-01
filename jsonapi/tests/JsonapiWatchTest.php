@@ -20,7 +20,7 @@ class JsonapiWatchTest extends JsonapiTestAbstract
     use RefreshDatabase;
     use MakesJsonApiRequests;
 
-    protected $seeder = TestSeeder::class;
+    protected string $seeder = TestSeeder::class;
 
 
     protected function defineEnvironment( $app )
@@ -109,5 +109,31 @@ class JsonapiWatchTest extends JsonapiTestAbstract
         $this->jsonApi()->expects( 'pages' )->get( 'cms/pages' );
 
         Event::assertNotDispatched( Queried::class );
+    }
+
+
+    public function testPulseRecorderReceivesQueriedWithDurationWhenWatchOff() : void
+    {
+        config( ['cms.watch.channel' => null, 'cms.jsonapi.watch' => false] );
+        app( \Laravel\Pulse\Pulse::class )->register( [JsonapiQueriedPulseRecorder::class => true] );
+        Event::fake( [Queried::class] );
+
+        $this->jsonApi()->expects( 'pages' )->get( 'cms/pages' );
+
+        Event::assertDispatched( Queried::class, fn( Queried $e ) => $e->durationMs > 0.0 );
+    }
+}
+
+
+class JsonapiQueriedPulseRecorder
+{
+    /**
+     * @var list<class-string>
+     */
+    public array $listen = [Queried::class];
+
+
+    public function record( mixed $event ) : void
+    {
     }
 }
