@@ -375,6 +375,35 @@
                 }
             }
         },
+        "testimonial": {
+            "group": "content",
+            "icon": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M9,7H5V11H8V17H2V7H9M22,7H18V11H21V17H15V7H22Z\" /></svg>",
+            "fields": {
+                "title": {
+                    "type": "string"
+                },
+                "items": {
+                    "type": "items",
+                    "item": {
+                        "text": {
+                            "type": "markdown",
+                            "min": 1
+                        },
+                        "name": {
+                            "type": "string",
+                            "min": 1
+                        },
+                        "role": {
+                            "type": "string"
+                        },
+                        "file": {
+                            "type": "image",
+                            "label": "image"
+                        }
+                    }
+                }
+            }
+        },
         "article": {
             "group": "content",
             "icon": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M19 5V19H5V5H19M21 3H3V21H21V3M17 17H7V16H17V17M17 15H7V14H17V15M17 12H7V7H17V12Z\" /></svg>",

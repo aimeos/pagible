@@ -1,0 +1,102 @@
+/**
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+.testimonial .title {
+    font-family: var(--pico-font-family-display);
+    font-weight: 400;
+    text-align: center;
+    margin-bottom: 4rem;
+}
+
+.testimonial .title::after {
+    content: "";
+    display: block;
+    width: 3rem;
+    height: 1px;
+    margin: 1.5rem auto 0;
+    background-color: var(--pico-secondary);
+}
+
+.testimonial .testimonial-list {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+}
+
+.testimonial .testimonial-item {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background-color: var(--pico-contrast-background);
+    border: 1px solid var(--pico-muted-border-color);
+    padding: 2.5rem;
+    margin: 0;
+}
+
+.testimonial blockquote {
+    margin: 0 0 2rem;
+    padding: 0;
+    border: 0;
+    color: var(--pico-color);
+    font-family: var(--pico-font-family-display);
+    font-weight: 400;
+    line-height: 1.45;
+}
+
+.testimonial blockquote::before {
+    content: '“';
+}
+
+.testimonial blockquote::after {
+    content: '”';
+}
+
+.testimonial blockquote p:last-child {
+    margin-bottom: 0;
+}
+
+.testimonial figcaption {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--pico-muted-border-color);
+}
+
+.testimonial .avatar {
+    width: 3rem;
+    height: 3rem;
+    flex: 0 0 3rem;
+    overflow: hidden;
+}
+
+.testimonial .avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: grayscale(1);
+}
+
+.testimonial .person {
+    display: grid;
+    gap: 0.25rem;
+}
+
+.testimonial .name {
+    color: var(--pico-contrast);
+    font-size: calc(var(--pico-font-size) * 0.85);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.testimonial .role {
+    color: var(--pico-muted-color);
+    font-size: calc(var(--pico-font-size) * 0.7);
+}
+
+@media screen and (min-width: 768px) {
+    .testimonial .testimonial-list {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
