@@ -145,6 +145,8 @@ class ThemeTest extends ThemeTestAbstract
 		$this->assertArrayHasKey( 'meta', $schemas );
 		$this->assertArrayHasKey( 'heading', $schemas['content'] );
 		$this->assertArrayHasKey( 'meta-tags', $schemas['meta'] );
+		$this->assertArrayHasKey( 'description', $schemas['meta']['meta-tags']['fields'] );
+		$this->assertArrayHasKey( 'description', $schemas['meta']['social-media']['fields'] );
 	}
 
 
