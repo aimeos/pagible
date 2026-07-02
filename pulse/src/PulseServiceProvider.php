@@ -9,11 +9,10 @@ namespace Aimeos\Cms;
 
 use Aimeos\Cms\Commands\InstallPulse;
 use Aimeos\Cms\Pulse\CmsMetricCard;
-use Aimeos\Cms\Recorders\CmsAiPulseRecorder;
-use Aimeos\Cms\Recorders\CmsAuthPulseRecorder;
 use Aimeos\Cms\Recorders\CmsContactPulseRecorder;
-use Aimeos\Cms\Recorders\CmsContentPulseRecorder;
+use Aimeos\Cms\Recorders\CmsGraphqlPulseRecorder;
 use Aimeos\Cms\Recorders\CmsJsonapiPulseRecorder;
+use Aimeos\Cms\Recorders\CmsMcpPulseRecorder;
 use Aimeos\Cms\Recorders\CmsRequestPulseRecorder;
 use Aimeos\Cms\Recorders\CmsSearchPulseRecorder;
 use Illuminate\Contracts\Auth\Authenticatable;
@@ -29,9 +28,8 @@ class PulseServiceProvider extends Provider
      * @var list<class-string>
      */
     private const RECORDERS = [
-        CmsContentPulseRecorder::class,
-        CmsAuthPulseRecorder::class,
-        CmsAiPulseRecorder::class,
+        CmsGraphqlPulseRecorder::class,
+        CmsMcpPulseRecorder::class,
         CmsSearchPulseRecorder::class,
         CmsContactPulseRecorder::class,
         CmsJsonapiPulseRecorder::class,

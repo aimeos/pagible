@@ -7,6 +7,7 @@
 
 namespace Tests;
 
+use Aimeos\Cms\Events\CmsMcp;
 use Aimeos\Cms\Events\Saved;
 use Aimeos\Cms\Mcp\CmsServer;
 use Aimeos\Cms\Models\Page;
@@ -20,12 +21,14 @@ class McpWatchTest extends McpTestAbstract
     use CmsWithMigrations;
     use RefreshDatabase;
 
-    protected $seeder = TestSeeder::class;
+    protected string $seeder = TestSeeder::class;
 
 
     protected function setUp(): void
     {
         parent::setUp();
+
+        config( ['cms.watch.channel' => 'cms'] );
 
         $this->user = new \App\Models\User([
             'name' => 'Test editor',
@@ -36,10 +39,56 @@ class McpWatchTest extends McpTestAbstract
     }
 
 
+    public function testReadToolDispatchesCmsMcp() : void
+    {
+        Event::fake( [CmsMcp::class] );
+        $page = $this->home();
+
+        CmsServer::actingAs( $this->editor() )->tool( \Aimeos\Cms\Tools\GetPage::class, [
+            'id' => $page->id,
+        ] );
+
+        Event::assertDispatched( CmsMcp::class, fn( CmsMcp $e ) =>
+            $e->action === 'get-page'
+            && $e->success === true
+            && $e->durationMs >= 0.0
+        );
+    }
+
+
+    public function testWriteToolDispatchesCmsMcp() : void
+    {
+        Event::fake( [CmsMcp::class] );
+        $page = $this->home();
+
+        CmsServer::actingAs( $this->editor() )->tool( \Aimeos\Cms\Tools\SavePage::class, [
+            'id' => $page->id,
+            'latest_id' => $page->latest_id,
+            'title' => 'Updated Title',
+        ] );
+
+        Event::assertDispatched( CmsMcp::class, fn( CmsMcp $e ) =>
+            $e->action === 'save-page' && $e->success === true
+        );
+    }
+
+
+    public function testFailedToolDispatchesUnsuccessfulCmsMcp() : void
+    {
+        Event::fake( [CmsMcp::class] );
+
+        CmsServer::actingAs( $this->editor() )->tool( \Aimeos\Cms\Tools\GetPage::class, [] );
+
+        Event::assertDispatched( CmsMcp::class, fn( CmsMcp $e ) =>
+            $e->action === 'get-page' && $e->success === false
+        );
+    }
+
+
     public function testSavePageTaggedWithMcpSource() : void
     {
         config( ['cms.broadcast' => false] );
-        $page = Page::where( 'name', 'Home' )->first();
+        $page = $this->home();
 
         // The originating interface is captured onto the event; assert it carries 'mcp'.
         $captured = [];
@@ -47,7 +96,7 @@ class McpWatchTest extends McpTestAbstract
             $captured[] = ['id' => $e->id, 'source' => $e->source];
         } );
 
-        CmsServer::actingAs( $this->user )->tool( \Aimeos\Cms\Tools\SavePage::class, [
+        CmsServer::actingAs( $this->editor() )->tool( \Aimeos\Cms\Tools\SavePage::class, [
             'id' => $page->id,
             'latest_id' => $page->latest_id,
             'title' => 'Updated Title',
@@ -56,5 +105,21 @@ class McpWatchTest extends McpTestAbstract
         $this->assertCount( 1, $captured );
         $this->assertSame( $page->id, $captured[0]['id'] );
         $this->assertSame( 'mcp', $captured[0]['source'] );
+    }
+
+
+    protected function editor() : \App\Models\User
+    {
+        if( !$this->user instanceof \App\Models\User ) {
+            throw new \RuntimeException( 'Test user is not initialized.' );
+        }
+
+        return $this->user;
+    }
+
+
+    protected function home() : Page
+    {
+        return Page::where( 'name', 'Home' )->firstOrFail();
     }
 }

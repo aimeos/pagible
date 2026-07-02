@@ -7,7 +7,7 @@
 
 namespace Aimeos\Cms\Recorders;
 
-use Aimeos\Cms\Events\Contacted;
+use Aimeos\Cms\Events\CmsContact;
 
 
 class CmsContactPulseRecorder extends Recorder
@@ -15,12 +15,12 @@ class CmsContactPulseRecorder extends Recorder
     /**
      * @var list<class-string>
      */
-    public array $listen = [Contacted::class];
+    public array $listen = [CmsContact::class];
 
 
     public function record( mixed $event ) : void
     {
-        if( !$event instanceof Contacted ) {
+        if( !$event instanceof CmsContact ) {
             return;
         }
 

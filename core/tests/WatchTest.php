@@ -8,7 +8,7 @@
 namespace Tests;
 
 use Aimeos\Cms\Events\Bulk;
-use Aimeos\Cms\Events\ContentChanged;
+use Aimeos\Cms\Events\CmsGraphql;
 use Aimeos\Cms\Events\Moved;
 use Aimeos\Cms\Events\Purged;
 use Aimeos\Cms\Events\Saved;
@@ -86,48 +86,22 @@ class WatchTest extends CoreTestAbstract
     }
 
 
-    public function testContentMetricListenerDoesNotRequireSavedListener() : void
-    {
-        $page = $this->page();
-        config( ['cms.broadcast' => false] );
-
-        $captured = [];
-        Event::listen( ContentChanged::class, function( ContentChanged $e ) use ( &$captured ) {
-            $captured[] = $e;
-        } );
-
-        $this->assertFalse( Event::hasListeners( Saved::class ) );
-
-        Resource::savePage( $this->id( $page ), ['title' => 'Renamed'], $this->user );
-
-        $this->assertCount( 1, $captured );
-        $this->assertSame( 'page', $captured[0]->contentType );
-        $this->assertSame( 'saved', $captured[0]->action );
-        $this->assertSame( 'cli', $captured[0]->source );
-        $this->assertSame( 'test', $captured[0]->tenant );
-    }
-
-
     public function testWatchDispatchEmitsForRegisteredListenerWithoutWatchChannel() : void
     {
         config( ['cms.watch.channel' => null, 'cms.theme.watch' => false] );
 
         $captured = null;
-        Event::listen( ContentChanged::class, function( ContentChanged $e ) use ( &$captured ) {
+        Event::listen( CmsGraphql::class, function( CmsGraphql $e ) use ( &$captured ) {
             $captured = $e;
         } );
 
-        Watch::dispatchWhen( 'cms.theme.watch', ContentChanged::class, fn() => new ContentChanged(
-            contentType: 'page',
-            action: 'searched',
-            source: 'web',
+        Watch::dispatchWhen( 'cms.theme.watch', CmsGraphql::class, fn() => new CmsGraphql(
+            action: 'pages',
             tenant: 'test',
-            value: 3,
         ) );
 
-        $this->assertInstanceOf( ContentChanged::class, $captured );
-        $this->assertSame( 'page', $captured->contentType );
-        $this->assertSame( 'searched', $captured->action );
+        $this->assertInstanceOf( CmsGraphql::class, $captured );
+        $this->assertSame( 'pages', $captured->action );
     }
 
 
@@ -137,9 +111,9 @@ class WatchTest extends CoreTestAbstract
 
         $built = false;
 
-        Watch::dispatchWhen( 'cms.theme.watch', ContentChanged::class, function() use ( &$built ) {
+        Watch::dispatchWhen( 'cms.theme.watch', CmsGraphql::class, function() use ( &$built ) {
             $built = true;
-            return new ContentChanged( contentType: 'page', action: 'searched', source: 'web', tenant: 'test' );
+            return new CmsGraphql( action: 'pages', tenant: 'test' );
         } );
 
         $this->assertFalse( $built );
@@ -150,9 +124,9 @@ class WatchTest extends CoreTestAbstract
     {
         config( ['cms.watch.channel' => null, 'cms.theme.watch' => false] );
 
-        Event::listen( ContentChanged::class, fn() => null );
+        Event::listen( CmsGraphql::class, fn() => null );
 
-        $start = Watch::start( 'cms.theme.watch', ContentChanged::class );
+        $start = Watch::start( 'cms.theme.watch', CmsGraphql::class );
 
         $this->assertNotNull( $start );
         $this->assertGreaterThan( 0, $start );
@@ -166,14 +140,14 @@ class WatchTest extends CoreTestAbstract
         config( ['cms.watch.channel' => null, 'cms.theme.watch' => false] );
 
         $captured = null;
-        Event::listen( ContentChanged::class, function( ContentChanged $e ) use ( &$captured ) {
+        Event::listen( CmsGraphql::class, function( CmsGraphql $e ) use ( &$captured ) {
             $captured = $e;
         } );
 
-        Watch::fire( fn() => new ContentChanged( contentType: 'page', action: 'viewed', source: 'web', tenant: 'test' ) );
+        Watch::fire( fn() => new CmsGraphql( action: 'page', tenant: 'test' ) );
 
-        $this->assertInstanceOf( ContentChanged::class, $captured );
-        $this->assertSame( 'viewed', $captured->action );
+        $this->assertInstanceOf( CmsGraphql::class, $captured );
+        $this->assertSame( 'page', $captured->action );
     }
 
 

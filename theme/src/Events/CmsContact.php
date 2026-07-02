@@ -11,17 +11,16 @@ use Illuminate\Foundation\Events\Dispatchable;
 
 
 /**
- * Audit event for read-only JSON:API requests.
+ * Audit/metrics event for contact-form submissions.
  */
-final class Queried
+final class CmsContact
 {
     use Dispatchable;
 
     public function __construct(
-        public readonly string $action,
+        public readonly string $email = '',
+        public readonly string $ip = '',
         public readonly float $durationMs = 0.0,
-        public readonly string $domain = '',
-        public readonly string $includes = '',
         public readonly string $tenant = '',
     ) {}
 }

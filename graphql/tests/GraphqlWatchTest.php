@@ -8,6 +8,7 @@
 namespace Tests;
 
 use Aimeos\Cms\Events\Authed;
+use Aimeos\Cms\Events\CmsGraphql;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\RateLimiter;
@@ -60,6 +61,50 @@ class GraphqlWatchTest extends GraphqlTestAbstract
     }
 
 
+    public function testQueryDispatchesCmsGraphql() : void
+    {
+        Event::fake( [CmsGraphql::class] );
+
+        $this->graphQL( '
+            query { users { data { id } } }
+        ' );
+
+        Event::assertDispatched( CmsGraphql::class, fn( CmsGraphql $e ) =>
+            $e->action === 'users'
+            && $e->success === true
+            && $e->durationMs >= 0.0
+        );
+    }
+
+
+    public function testAuthMutationDispatchesCmsGraphql() : void
+    {
+        Event::fake( [CmsGraphql::class] );
+
+        $this->graphQL( '
+            mutation { cmsLogin(email: "editor@testbench", password: "secret") { id } }
+        ' );
+
+        Event::assertDispatched( CmsGraphql::class, fn( CmsGraphql $e ) =>
+            $e->action === 'cmsLogin' && $e->success === true
+        );
+    }
+
+
+    public function testFailedGraphqlDispatchesUnsuccessfulCmsGraphql() : void
+    {
+        Event::fake( [Authed::class, CmsGraphql::class] );
+
+        $this->graphQL( '
+            mutation { cmsLogin(email: "editor@testbench", password: "wrong") { id } }
+        ' );
+
+        Event::assertDispatched( CmsGraphql::class, fn( CmsGraphql $e ) =>
+            $e->action === 'cmsLogin' && $e->success === false
+        );
+    }
+
+
     public function testLoginDispatchesAuthed() : void
     {
         Event::fake( [Authed::class] );
@@ -90,7 +135,7 @@ class GraphqlWatchTest extends GraphqlTestAbstract
     {
         Event::fake( [Authed::class] );
 
-        $this->actingAs( $this->user )->graphQL( '
+        $this->actingAs( $this->editor() )->graphQL( '
             mutation { cmsLogout { id } }
         ' );
 
@@ -104,10 +149,20 @@ class GraphqlWatchTest extends GraphqlTestAbstract
     {
         Event::fake( [Authed::class] );
 
-        $this->actingAs( $this->user )->graphQL( '
+        $this->actingAs( $this->editor() )->graphQL( '
             mutation ($settings: JSON!) { cmsUser(settings: $settings) { settings } }
         ', ['settings' => json_encode( ['page' => []] )] );
 
         Event::assertDispatched( Authed::class, fn( Authed $e ) => $e->action === 'user-save' );
+    }
+
+
+    protected function editor() : \App\Models\User
+    {
+        if( !$this->user instanceof \App\Models\User ) {
+            throw new \RuntimeException( 'Test user is not initialized.' );
+        }
+
+        return $this->user;
     }
 }

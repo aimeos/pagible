@@ -2,8 +2,8 @@
 
 namespace Aimeos\Cms;
 
-use Aimeos\Cms\Events\Contacted;
-use Aimeos\Cms\Events\Searched;
+use Aimeos\Cms\Events\CmsContact;
+use Aimeos\Cms\Events\CmsSearch;
 use Aimeos\Cms\Listeners\ContactLogListener;
 use Aimeos\Cms\Listeners\SearchLogListener;
 use Aimeos\Cms\Schema;
@@ -44,8 +44,8 @@ class ThemeServiceProvider extends Provider
     protected function watch() : void
     {
         Watch::listen( [
-            Searched::class => SearchLogListener::class,
-            Contacted::class => ContactLogListener::class,
+            CmsSearch::class => SearchLogListener::class,
+            CmsContact::class => ContactLogListener::class,
         ], 'cms.theme.watch' );
     }
 

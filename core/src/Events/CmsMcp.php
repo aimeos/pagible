@@ -11,19 +11,17 @@ use Illuminate\Foundation\Events\Dispatchable;
 
 
 /**
- * Audit/metrics event for frontend searches.
+ * Metrics event for MCP admin operations.
  */
-final class Searched
+final class CmsMcp
 {
     use Dispatchable;
 
     public function __construct(
-        public readonly string $query,
-        public readonly int $results,
-        public readonly int $page,
+        public readonly string $action,
         public readonly float $durationMs = 0.0,
-        public readonly string $domain = '',
-        public readonly string $lang = '',
         public readonly string $tenant = '',
+        public readonly string $domain = '',
+        public readonly bool $success = true,
     ) {}
 }

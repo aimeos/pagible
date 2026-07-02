@@ -7,7 +7,7 @@
 
 namespace Tests;
 
-use Aimeos\Cms\Events\Queried;
+use Aimeos\Cms\Events\CmsJsonapi;
 use Database\Seeders\TestSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
@@ -43,11 +43,11 @@ class JsonapiWatchTest extends JsonapiTestAbstract
     {
         config( ['cms.jsonapi.watch' => true] );
         $page = \Aimeos\Cms\Models\Page::where( 'tag', 'root' )->firstOrFail();
-        Event::fake( [Queried::class] );
+        Event::fake( [CmsJsonapi::class] );
 
         $this->jsonApi()->expects( 'pages' )->get( "cms/pages/{$page->id}" );
 
-        Event::assertDispatched( Queried::class, fn( Queried $e ) =>
+        Event::assertDispatched( CmsJsonapi::class, fn( CmsJsonapi $e ) =>
             $e->action === 'jsonapi:read'
         );
     }
@@ -56,11 +56,11 @@ class JsonapiWatchTest extends JsonapiTestAbstract
     public function testCollectionDispatchesSearch() : void
     {
         config( ['cms.jsonapi.watch' => true] );
-        Event::fake( [Queried::class] );
+        Event::fake( [CmsJsonapi::class] );
 
         $this->jsonApi()->expects( 'pages' )->get( 'cms/pages' );
 
-        Event::assertDispatched( Queried::class, fn( Queried $e ) =>
+        Event::assertDispatched( CmsJsonapi::class, fn( CmsJsonapi $e ) =>
             $e->action === 'jsonapi:search'
         );
     }
@@ -70,45 +70,45 @@ class JsonapiWatchTest extends JsonapiTestAbstract
     {
         config( ['cms.jsonapi.watch' => true] );
         $page = \Aimeos\Cms\Models\Page::where( 'tag', 'article' )->firstOrFail();
-        Event::fake( [Queried::class] );
+        Event::fake( [CmsJsonapi::class] );
 
         $this->jsonApi()->expects( 'pages' )->includePaths( 'ancestors' )->get( "cms/pages/{$page->id}" );
 
-        Event::assertDispatched( Queried::class, fn( Queried $e ) => $e->includes === 'ancestors' );
+        Event::assertDispatched( CmsJsonapi::class, fn( CmsJsonapi $e ) => $e->includes === 'ancestors' );
     }
 
 
     public function testDomainCapturedFromHostWhenMultidomain() : void
     {
         config( ['cms.jsonapi.watch' => true, 'cms.multidomain' => true] );
-        Event::fake( [Queried::class] );
+        Event::fake( [CmsJsonapi::class] );
 
         $this->jsonApi()->expects( 'pages' )->get( 'cms/pages' );
 
         // Without multi-domain the domain is empty; with it the request host is recorded.
-        Event::assertDispatched( Queried::class, fn( Queried $e ) => $e->domain !== '' );
+        Event::assertDispatched( CmsJsonapi::class, fn( CmsJsonapi $e ) => $e->domain !== '' );
     }
 
 
     public function testDomainEmptyWithoutMultidomain() : void
     {
         config( ['cms.jsonapi.watch' => true, 'cms.multidomain' => false] );
-        Event::fake( [Queried::class] );
+        Event::fake( [CmsJsonapi::class] );
 
         $this->jsonApi()->expects( 'pages' )->get( 'cms/pages' );
 
-        Event::assertDispatched( Queried::class, fn( Queried $e ) => $e->domain === '' );
+        Event::assertDispatched( CmsJsonapi::class, fn( CmsJsonapi $e ) => $e->domain === '' );
     }
 
 
     public function testNothingDispatchedWhenWatchOff() : void
     {
         config( ['cms.jsonapi.watch' => false] );
-        Event::fake( [Queried::class] );
+        Event::fake( [CmsJsonapi::class] );
 
         $this->jsonApi()->expects( 'pages' )->get( 'cms/pages' );
 
-        Event::assertNotDispatched( Queried::class );
+        Event::assertNotDispatched( CmsJsonapi::class );
     }
 
 
@@ -116,11 +116,11 @@ class JsonapiWatchTest extends JsonapiTestAbstract
     {
         config( ['cms.watch.channel' => null, 'cms.jsonapi.watch' => false] );
         app( \Laravel\Pulse\Pulse::class )->register( [JsonapiQueriedPulseRecorder::class => true] );
-        Event::fake( [Queried::class] );
+        Event::fake( [CmsJsonapi::class] );
 
         $this->jsonApi()->expects( 'pages' )->get( 'cms/pages' );
 
-        Event::assertDispatched( Queried::class, fn( Queried $e ) => $e->durationMs > 0.0 );
+        Event::assertDispatched( CmsJsonapi::class, fn( CmsJsonapi $e ) => $e->durationMs > 0.0 );
     }
 }
 
@@ -130,7 +130,7 @@ class JsonapiQueriedPulseRecorder
     /**
      * @var list<class-string>
      */
-    public array $listen = [Queried::class];
+    public array $listen = [CmsJsonapi::class];
 
 
     public function record( mixed $event ) : void

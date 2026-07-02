@@ -11,16 +11,17 @@ use Illuminate\Foundation\Events\Dispatchable;
 
 
 /**
- * Audit/metrics event for contact-form submissions.
+ * Metrics event for GraphQL admin operations.
  */
-final class Contacted
+final class CmsGraphql
 {
     use Dispatchable;
 
     public function __construct(
-        public readonly string $email = '',
-        public readonly string $ip = '',
+        public readonly string $action,
         public readonly float $durationMs = 0.0,
         public readonly string $tenant = '',
+        public readonly string $domain = '',
+        public readonly bool $success = true,
     ) {}
 }

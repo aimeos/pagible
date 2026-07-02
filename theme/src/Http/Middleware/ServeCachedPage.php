@@ -12,7 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Event;
-use Aimeos\Cms\Events\Viewed;
+use Aimeos\Cms\Events\CmsRequest;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Tenancy;
 use Aimeos\Cms\Watch;
@@ -41,7 +41,7 @@ class ServeCachedPage
         // Gate on the CMS_THEME_WATCH flag first so the cold path short-circuits before
         // the listener lookup and sampling. $start doubles as the "record this request"
         // flag and the timer.
-        $start = config( 'cms.theme.watch' ) && Event::hasListeners( Viewed::class ) && Watch::sampled()
+        $start = config( 'cms.theme.watch' ) && Event::hasListeners( CmsRequest::class ) && Watch::sampled()
             ? hrtime( true ) : null;
 
         // Computed lazily so a watch-off non-cacheable request (query string, cookie,
@@ -105,7 +105,7 @@ class ServeCachedPage
      */
     protected function watch( string $path, string $domain, int $status, int|float $start ) : void
     {
-        Watch::fire( fn() => new Viewed(
+        Watch::fire( fn() => new CmsRequest(
             path: $path,
             domain: $domain,
             status: $status,

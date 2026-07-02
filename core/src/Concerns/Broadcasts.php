@@ -8,7 +8,6 @@
 namespace Aimeos\Cms\Concerns;
 
 use Aimeos\Cms\Events\Bulk;
-use Aimeos\Cms\Events\ContentChanged;
 use Aimeos\Cms\Events\Event;
 use Aimeos\Cms\Models\Version;
 use Aimeos\Cms\Tenancy;
@@ -48,8 +47,6 @@ trait Broadcasts
 
         $broadcast = (bool) config( 'cms.broadcast' );
 
-        $this->metric( $action );
-
         // In-process listeners (audit logging) subscribe to the per-action events;
         // only do work when broadcasting is on or something listens. This
         // also avoids the per-item latest lazy load (e.g. on purge) when nothing is enabled.
@@ -84,8 +81,6 @@ trait Broadcasts
         }
 
         $broadcast = (bool) config( 'cms.broadcast' );
-
-        static::bulkMetric( $type, count( $ids ), $data );
 
         if( !$broadcast && !Events::hasListeners( Bulk::class ) ) {
             return;
@@ -126,47 +121,6 @@ trait Broadcasts
             'tenant' => Tenancy::value(),
             'source' => Utils::source(),
         ];
-    }
-
-
-    protected function metric( string $action ) : void
-    {
-        if( !Events::hasListeners( ContentChanged::class ) ) {
-            return;
-        }
-
-        $contentType = strtolower( class_basename( $this ) );
-        $attributes = $this->getAttributes();
-
-        static::local( new ContentChanged(
-            contentType: $contentType,
-            action: $action,
-            source: Utils::source(),
-            tenant: Tenancy::value(),
-            domain: $contentType === 'page' ? (string) ( $attributes['domain'] ?? '' ) : null,
-            mime: $contentType === 'file' ? (string) ( $attributes['mime'] ?? '' ) : null,
-        ) );
-    }
-
-
-    /**
-     * @param array<string, mixed> $data Shared bulk update fields
-     */
-    protected static function bulkMetric( string $type, int $count, array $data ) : void
-    {
-        if( !Events::hasListeners( ContentChanged::class ) ) {
-            return;
-        }
-
-        static::local( new ContentChanged(
-            contentType: $type,
-            action: 'bulk',
-            source: Utils::source(),
-            tenant: Tenancy::value(),
-            domain: $type === 'page' ? (string) ( $data['domain'] ?? '' ) : null,
-            mime: $type === 'file' ? (string) ( $data['mime'] ?? '' ) : null,
-            value: $count,
-        ) );
     }
 
 

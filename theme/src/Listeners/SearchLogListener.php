@@ -7,7 +7,7 @@
 
 namespace Aimeos\Cms\Listeners;
 
-use Aimeos\Cms\Events\Searched;
+use Aimeos\Cms\Events\CmsSearch;
 use Aimeos\Cms\Watch;
 
 
@@ -19,7 +19,7 @@ use Aimeos\Cms\Watch;
  */
 class SearchLogListener
 {
-    public function handle( Searched $event ) : void
+    public function handle( CmsSearch $event ) : void
     {
         if( Watch::sampled() ) {
             Watch::emit( 'cms.search', $this->fields( $event ) );
@@ -30,7 +30,7 @@ class SearchLogListener
     /**
      * @return array<string, mixed>
      */
-    protected function fields( Searched $event ) : array
+    protected function fields( CmsSearch $event ) : array
     {
         return [
             'query' => $event->query,

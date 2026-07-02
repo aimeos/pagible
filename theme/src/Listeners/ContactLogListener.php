@@ -7,7 +7,7 @@
 
 namespace Aimeos\Cms\Listeners;
 
-use Aimeos\Cms\Events\Contacted;
+use Aimeos\Cms\Events\CmsContact;
 use Aimeos\Cms\Watch;
 
 
@@ -19,7 +19,7 @@ use Aimeos\Cms\Watch;
  */
 class ContactLogListener
 {
-    public function handle( Contacted $event ) : void
+    public function handle( CmsContact $event ) : void
     {
         Watch::emit( 'cms.contact', $this->fields( $event ) );
     }
@@ -28,7 +28,7 @@ class ContactLogListener
     /**
      * @return array<string, mixed>
      */
-    protected function fields( Contacted $event ) : array
+    protected function fields( CmsContact $event ) : array
     {
         return [
             'email' => Watch::mask( $event->email ),
