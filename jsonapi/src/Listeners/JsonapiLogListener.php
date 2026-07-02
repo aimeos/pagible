@@ -7,7 +7,7 @@
 
 namespace Aimeos\Cms\Listeners;
 
-use Aimeos\Cms\Events\Queried;
+use Aimeos\Cms\Events\CmsJsonapi;
 use Aimeos\Cms\Watch;
 
 
@@ -19,7 +19,7 @@ use Aimeos\Cms\Watch;
  */
 class JsonapiLogListener
 {
-    public function handle( Queried $event ) : void
+    public function handle( CmsJsonapi $event ) : void
     {
         if( Watch::sampled() ) {
             Watch::emit( 'cms.jsonapi', $this->fields( $event ) );
@@ -30,7 +30,7 @@ class JsonapiLogListener
     /**
      * @return array<string, mixed>
      */
-    protected function fields( Queried $event ) : array
+    protected function fields( CmsJsonapi $event ) : array
     {
         return [
             'action' => $event->action,

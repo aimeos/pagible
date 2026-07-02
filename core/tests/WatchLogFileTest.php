@@ -9,10 +9,10 @@ namespace Tests;
 
 use Aimeos\Cms\CoreServiceProvider;
 use Aimeos\Cms\Events\Saved;
-use Aimeos\Cms\Events\Searched;
-use Aimeos\Cms\ThemeServiceProvider;
+use Illuminate\Log\Logger;
 use Illuminate\Support\Facades\Log;
 use Monolog\Formatter\JsonFormatter;
+use Monolog\Logger as MonologLogger;
 use Orchestra\Testbench\TestCase;
 
 
@@ -20,8 +20,8 @@ use Orchestra\Testbench\TestCase;
  * End-to-end test: a dispatched event must produce a real JSON log line on disk through the
  * provider-registered listeners and log channel (the unit tests only mock the Log facade).
  *
- * Content events are logged by the listener registered in CoreServiceProvider, searches by the
- * one in ThemeServiceProvider; both providers are loaded so the real registrations are exercised.
+ * Content events are logged by the listener registered in CoreServiceProvider, so this test stays
+ * inside the core package boundary.
  */
 class WatchLogFileTest extends TestCase
 {
@@ -30,7 +30,7 @@ class WatchLogFileTest extends TestCase
 
     protected function getPackageProviders( $app )
     {
-        return [CoreServiceProvider::class, ThemeServiceProvider::class];
+        return [CoreServiceProvider::class];
     }
 
 
@@ -74,16 +74,11 @@ class WatchLogFileTest extends TestCase
     }
 
 
-    public function testSampleZeroDropsReadStreamButKeepsAudit() : void
+    public function testSampleZeroKeepsContentAudit() : void
     {
         config( ['cms.watch.sample' => 0.0] );
 
-        // High-volume read stream is sampled out completely ...
-        event( new Searched( 'term', 3, 1, 12.0, '', 'en', 'test' ) );
-        $this->flush();
-        $this->assertSame( '', trim( (string) file_get_contents( $this->path ) ) );
-
-        // ... while the content audit stream stays complete regardless of the sampling rate.
+        // Content audit logging stays complete regardless of the sampling rate.
         event( new Saved( 'page', 'p1', 'v1', 'editor@test', [], tenant: 'test', source: 'cli' ) );
         $this->assertSame( 'cms.page', $this->lastEntry()['message'] );
     }
@@ -94,7 +89,19 @@ class WatchLogFileTest extends TestCase
      */
     private function flush() : void
     {
-        foreach( Log::channel( 'cmsfile' )->getLogger()->getHandlers() as $handler ) {
+        $logger = Log::channel( 'cmsfile' );
+
+        if( !$logger instanceof Logger ) {
+            return;
+        }
+
+        $monolog = $logger->getLogger();
+
+        if( !$monolog instanceof MonologLogger ) {
+            return;
+        }
+
+        foreach( $monolog->getHandlers() as $handler ) {
             $handler->close();
         }
     }

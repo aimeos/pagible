@@ -7,7 +7,7 @@
 
 namespace Aimeos\Cms\Recorders;
 
-use Aimeos\Cms\Events\Viewed;
+use Aimeos\Cms\Events\CmsRequest;
 
 
 class CmsRequestPulseRecorder extends Recorder
@@ -15,12 +15,12 @@ class CmsRequestPulseRecorder extends Recorder
     /**
      * @var list<class-string>
      */
-    public array $listen = [Viewed::class];
+    public array $listen = [CmsRequest::class];
 
 
     public function record( mixed $event ) : void
     {
-        if( !$event instanceof Viewed ) {
+        if( !$event instanceof CmsRequest ) {
             return;
         }
 

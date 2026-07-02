@@ -13,11 +13,10 @@ return [
     | its "events" all exist, so cards for packages that are not installed stay
     | hidden even when left in the list.
     |
-    | Content activity is bucketed per transport in a "cms_<source>" Pulse type
-    | (cms_graphql, cms_mcp, cms_cli, …), so the graphql/mcp/cli cards each show
-    | only that transport's page/element/file operations, with authentication
-    | folded into the graphql card. A card for any other source can be added by
-    | pointing "type" at its bucket.
+    | Admin activity is bucketed per transport in a "cms_<source>" Pulse type
+    | (cms_graphql, cms_mcp, …), so the graphql/mcp cards each show only that
+    | transport's operations. A card for any other source can be added by pointing
+    | "type" at its bucket.
     |
     | Options per card:
     |   title      - Heading shown on the card
@@ -37,7 +36,7 @@ return [
             'group' => 'path',
             'aggregates' => ['count', 'avg', 'max'],
             'details' => ['domain', 'status'],
-            'events' => ['Aimeos\\Cms\\Events\\Viewed'],
+            'events' => ['Aimeos\\Cms\\Events\\CmsRequest'],
         ],
 
         'search' => [
@@ -46,7 +45,7 @@ return [
             'group' => 'action',
             'aggregates' => ['count', 'avg', 'max'],
             'details' => ['domain', 'lang'],
-            'events' => ['Aimeos\\Cms\\Events\\Searched'],
+            'events' => ['Aimeos\\Cms\\Events\\CmsSearch'],
         ],
 
         'contact' => [
@@ -54,7 +53,7 @@ return [
             'type' => 'cms_contact',
             'aggregates' => ['count', 'avg', 'max'],
             'details' => ['ip'],
-            'events' => ['Aimeos\\Cms\\Events\\Contacted'],
+            'events' => ['Aimeos\\Cms\\Events\\CmsContact'],
         ],
 
         'jsonapi' => [
@@ -62,40 +61,25 @@ return [
             'type' => 'cms_jsonapi',
             'aggregates' => ['count', 'avg', 'max'],
             'details' => ['domain'],
-            'events' => ['Aimeos\\Cms\\Events\\Queried'],
-        ],
-
-        'ai' => [
-            'title' => 'AI',
-            'type' => 'cms_ai',
-            'group' => 'mutation',
-            'aggregates' => ['count', 'avg', 'max'],
-            'details' => ['provider', 'model'],
-            'success' => true,
-            'events' => ['Aimeos\\Cms\\Events\\Generated'],
+            'events' => ['Aimeos\\Cms\\Events\\CmsJsonapi'],
         ],
 
         'graphql' => [
             'title' => 'GraphQL',
             'type' => 'cms_graphql',
-            'aggregates' => ['count', 'sum'],
-            'details' => ['domain', 'mime'],
-            'events' => ['Aimeos\\Cms\\Events\\Authed'],
+            'aggregates' => ['count', 'avg', 'max'],
+            'details' => ['domain'],
+            'success' => true,
+            'events' => ['Aimeos\\Cms\\Events\\CmsGraphql'],
         ],
 
         'mcp' => [
             'title' => 'MCP',
             'type' => 'cms_mcp',
-            'aggregates' => ['count', 'sum'],
-            'details' => ['domain', 'mime'],
-            'events' => ['Aimeos\\Cms\\Mcp\\CmsServer'],
-        ],
-
-        'cli' => [
-            'title' => 'CLI',
-            'type' => 'cms_cli',
-            'aggregates' => ['count', 'sum'],
-            'details' => ['domain', 'mime'],
+            'aggregates' => ['count', 'avg', 'max'],
+            'details' => ['domain'],
+            'success' => true,
+            'events' => ['Aimeos\\Cms\\Events\\CmsMcp', 'Aimeos\\Cms\\Mcp\\CmsServer'],
         ],
 
     ],

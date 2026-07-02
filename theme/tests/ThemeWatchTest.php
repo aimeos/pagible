@@ -7,9 +7,9 @@
 
 namespace Tests;
 
-use Aimeos\Cms\Events\Contacted;
-use Aimeos\Cms\Events\Searched;
-use Aimeos\Cms\Events\Viewed;
+use Aimeos\Cms\Events\CmsContact;
+use Aimeos\Cms\Events\CmsSearch;
+use Aimeos\Cms\Events\CmsRequest;
 use Aimeos\Cms\Http\Middleware\ServeCachedPage;
 use Aimeos\Cms\Models\Page;
 use Database\Seeders\TestSeeder;
@@ -42,7 +42,7 @@ class ThemeWatchTest extends ThemeTestAbstract
 
         // Stands in for the Pulse recorder so the flag-gated page-request watch,
         // which requires a consumer, fires.
-        Event::listen( Viewed::class, fn() => null );
+        Event::listen( CmsRequest::class, fn() => null );
     }
 
 
@@ -81,12 +81,12 @@ class ThemeWatchTest extends ThemeTestAbstract
     public function testSearchDispatchesSearchedWhenWatchOn() : void
     {
         config( ['cms.theme.watch' => true] );
-        Event::fake( [Searched::class] );
+        Event::fake( [CmsSearch::class] );
 
         $request = Request::create( '/cmsapi/search', 'GET', ['q' => 'welcome', 'locale' => 'en', 'size' => 10] );
         ( new \Aimeos\Cms\Controllers\SearchController() )->index( $request, 'mydomain.tld' );
 
-        Event::assertDispatched( Searched::class, fn( Searched $e ) =>
+        Event::assertDispatched( CmsSearch::class, fn( CmsSearch $e ) =>
             $e->query === 'welcome'
             && $e->results >= 1
             && $e->page === 1
@@ -99,12 +99,12 @@ class ThemeWatchTest extends ThemeTestAbstract
     public function testSearchDoesNotDispatchWhenWatchOff() : void
     {
         config( ['cms.theme.watch' => false] );
-        Event::fake( [Searched::class] );
+        Event::fake( [CmsSearch::class] );
 
         $request = Request::create( '/cmsapi/search', 'GET', ['q' => 'welcome', 'locale' => 'en', 'size' => 10] );
         ( new \Aimeos\Cms\Controllers\SearchController() )->index( $request, 'mydomain.tld' );
 
-        Event::assertNotDispatched( Searched::class );
+        Event::assertNotDispatched( CmsSearch::class );
     }
 
 
@@ -112,12 +112,12 @@ class ThemeWatchTest extends ThemeTestAbstract
     {
         config( ['cms.watch.channel' => null, 'cms.theme.watch' => false] );
         app( \Laravel\Pulse\Pulse::class )->register( [ThemeSearchedPulseRecorder::class => true] );
-        Event::fake( [Searched::class] );
+        Event::fake( [CmsSearch::class] );
 
         $request = Request::create( '/cmsapi/search', 'GET', ['q' => 'welcome', 'locale' => 'en', 'size' => 10] );
         ( new \Aimeos\Cms\Controllers\SearchController() )->index( $request, 'mydomain.tld' );
 
-        Event::assertDispatched( Searched::class, fn( Searched $e ) => $e->durationMs > 0.0 );
+        Event::assertDispatched( CmsSearch::class, fn( CmsSearch $e ) => $e->durationMs > 0.0 );
     }
 
 
@@ -125,7 +125,7 @@ class ThemeWatchTest extends ThemeTestAbstract
     {
         config( ['cms.theme.watch' => true] );
         Mail::fake();
-        Event::fake( [Contacted::class] );
+        Event::fake( [CmsContact::class] );
         RateLimiter::clear( 'cms-contact' );
 
         $this->post( route( 'cms.api.contact' ), [
@@ -134,7 +134,7 @@ class ThemeWatchTest extends ThemeTestAbstract
             'message' => 'Hello, this is a test message.',
         ] )->assertStatus( 200 );
 
-        Event::assertDispatched( Contacted::class, fn( Contacted $e ) => $e->email === 'sender@google.com' );
+        Event::assertDispatched( CmsContact::class, fn( CmsContact $e ) => $e->email === 'sender@google.com' );
     }
 
 
@@ -142,7 +142,7 @@ class ThemeWatchTest extends ThemeTestAbstract
     {
         config( ['cms.theme.watch' => false] );
         Mail::fake();
-        Event::fake( [Contacted::class] );
+        Event::fake( [CmsContact::class] );
         RateLimiter::clear( 'cms-contact' );
 
         $this->post( route( 'cms.api.contact' ), [
@@ -151,19 +151,19 @@ class ThemeWatchTest extends ThemeTestAbstract
             'message' => 'Hello, this is a test message.',
         ] )->assertStatus( 200 );
 
-        Event::assertNotDispatched( Contacted::class );
+        Event::assertNotDispatched( CmsContact::class );
     }
 
 
     public function testPageRequestDispatchesViewedOnCacheMiss() : void
     {
         config( ['cms.theme.watch' => true] );
-        Event::fake( [Viewed::class] );
+        Event::fake( [CmsRequest::class] );
 
         $request = Request::create( '/about', 'GET' );
         ( new ServeCachedPage() )->handle( $request, fn() => new Response( 'body', 200 ) );
 
-        Event::assertDispatched( Viewed::class, fn( Viewed $e ) =>
+        Event::assertDispatched( CmsRequest::class, fn( CmsRequest $e ) =>
             $e->path === 'about' && $e->status === 200
         );
     }
@@ -172,14 +172,14 @@ class ThemeWatchTest extends ThemeTestAbstract
     public function testPageRequestDispatchesViewedOnCacheHit() : void
     {
         config( ['cms.theme.watch' => true, 'cms.theme.cache' => 'array'] );
-        Event::fake( [Viewed::class] );
+        Event::fake( [CmsRequest::class] );
 
         Cache::store( 'array' )->put( Page::key( 'about', '' ), 'cached-html' );
 
         $request = Request::create( '/about', 'GET' );
         ( new ServeCachedPage() )->handle( $request, fn() => new Response( 'body', 200 ) );
 
-        Event::assertDispatched( Viewed::class, fn( Viewed $e ) =>
+        Event::assertDispatched( CmsRequest::class, fn( CmsRequest $e ) =>
             $e->path === 'about' && $e->status === 200
         );
     }
@@ -188,12 +188,12 @@ class ThemeWatchTest extends ThemeTestAbstract
     public function testPageRequestDispatchesViewedForNonSuccessStatus() : void
     {
         config( ['cms.theme.watch' => true] );
-        Event::fake( [Viewed::class] );
+        Event::fake( [CmsRequest::class] );
 
         $request = Request::create( '/missing', 'GET' );
         ( new ServeCachedPage() )->handle( $request, fn() => new Response( 'not found', 404 ) );
 
-        Event::assertDispatched( Viewed::class, fn( Viewed $e ) =>
+        Event::assertDispatched( CmsRequest::class, fn( CmsRequest $e ) =>
             $e->path === 'missing' && $e->status === 404
         );
     }
@@ -202,12 +202,12 @@ class ThemeWatchTest extends ThemeTestAbstract
     public function testPageRequestDoesNotDispatchWhenWatchOff() : void
     {
         config( ['cms.theme.watch' => false] );
-        Event::fake( [Viewed::class] );
+        Event::fake( [CmsRequest::class] );
 
         $request = Request::create( '/about', 'GET' );
         ( new ServeCachedPage() )->handle( $request, fn() => new Response( 'body', 200 ) );
 
-        Event::assertNotDispatched( Viewed::class );
+        Event::assertNotDispatched( CmsRequest::class );
     }
 
 
@@ -216,24 +216,24 @@ class ThemeWatchTest extends ThemeTestAbstract
         // Search dispatches unconditionally (unlike page requests): consumers apply
         // sampling, so the event fires regardless of the sample rate.
         config( ['cms.theme.watch' => true, 'cms.watch.sample' => 0.0] );
-        Event::fake( [Searched::class] );
+        Event::fake( [CmsSearch::class] );
 
         $request = Request::create( '/cmsapi/search', 'GET', ['q' => 'welcome', 'locale' => 'en', 'size' => 10] );
         ( new \Aimeos\Cms\Controllers\SearchController() )->index( $request, 'mydomain.tld' );
 
-        Event::assertDispatched( Searched::class );
+        Event::assertDispatched( CmsSearch::class );
     }
 
 
     public function testPageRequestDoesNotDispatchWhenSampledOut() : void
     {
         config( ['cms.theme.watch' => true, 'cms.watch.sample' => 0.0] );
-        Event::fake( [Viewed::class] );
+        Event::fake( [CmsRequest::class] );
 
         $request = Request::create( '/about', 'GET' );
         ( new ServeCachedPage() )->handle( $request, fn() => new Response( 'body', 200 ) );
 
-        Event::assertNotDispatched( Viewed::class );
+        Event::assertNotDispatched( CmsRequest::class );
     }
 
 
@@ -242,12 +242,12 @@ class ThemeWatchTest extends ThemeTestAbstract
         // Page-request metrics are gated on the flag alone, so they work without a
         // watch log channel (Pulse needs none).
         config( ['cms.theme.watch' => true, 'cms.watch.channel' => null] );
-        Event::fake( [Viewed::class] );
+        Event::fake( [CmsRequest::class] );
 
         $request = Request::create( '/about', 'GET' );
         ( new ServeCachedPage() )->handle( $request, fn() => new Response( 'body', 200 ) );
 
-        Event::assertDispatched( Viewed::class );
+        Event::assertDispatched( CmsRequest::class );
     }
 }
 
@@ -257,7 +257,7 @@ class ThemeSearchedPulseRecorder
     /**
      * @var list<class-string>
      */
-    public array $listen = [Searched::class];
+    public array $listen = [CmsSearch::class];
 
 
     public function record( mixed $event ) : void

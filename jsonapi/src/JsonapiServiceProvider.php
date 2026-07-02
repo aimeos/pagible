@@ -2,7 +2,7 @@
 
 namespace Aimeos\Cms;
 
-use Aimeos\Cms\Events\Queried;
+use Aimeos\Cms\Events\CmsJsonapi;
 use Aimeos\Cms\Listeners\JsonapiLogListener;
 use Illuminate\Support\ServiceProvider as Provider;
 
@@ -22,7 +22,7 @@ class JsonapiServiceProvider extends Provider
     protected function watch() : void
     {
         Watch::listen( [
-            Queried::class => JsonapiLogListener::class,
+            CmsJsonapi::class => JsonapiLogListener::class,
         ], 'cms.jsonapi.watch' );
     }
 

@@ -7,7 +7,7 @@
 
 namespace Aimeos\Cms\Controllers;
 
-use Aimeos\Cms\Events\Searched;
+use Aimeos\Cms\Events\CmsSearch;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Scopes\Status;
 use Aimeos\Cms\Tenancy;
@@ -27,7 +27,7 @@ class SearchController extends Controller
      */
     public function index( Request $request, string $domain = '' )
     {
-        $start = Watch::start( 'cms.theme.watch', Searched::class );
+        $start = Watch::start( 'cms.theme.watch', CmsSearch::class );
 
         $vals = $request->validate( [
             'q' => 'required|string|min:' . (int) config( 'cms.search.min', 2 ) . '|max:200',
@@ -57,7 +57,7 @@ class SearchController extends Controller
         // Dispatch whenever watch is enabled or a consumer listens; each consumer
         // (CmsSearchPulseRecorder, SearchLogListener) applies its own Watch::sampled(),
         // so both are thinned independently — search is a high-volume read stream.
-        Watch::dispatchWhen( 'cms.theme.watch', Searched::class, fn() => new Searched(
+        Watch::dispatchWhen( 'cms.theme.watch', CmsSearch::class, fn() => new CmsSearch(
             query: (string) $vals['q'],
             results: $paginator->total(),
             page: $paginator->currentPage(),

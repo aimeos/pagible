@@ -7,28 +7,28 @@
 
 namespace Aimeos\Cms\Recorders;
 
-use Aimeos\Cms\Events\CmsJsonapi;
-use Aimeos\Cms\Watch;
+use Aimeos\Cms\Events\CmsGraphql;
 
 
-class CmsJsonapiPulseRecorder extends Recorder
+class CmsGraphqlPulseRecorder extends Recorder
 {
     /**
      * @var list<class-string>
      */
-    public array $listen = [CmsJsonapi::class];
+    public array $listen = [CmsGraphql::class];
 
 
     public function record( mixed $event ) : void
     {
-        if( !$event instanceof CmsJsonapi || !Watch::sampled() ) {
+        if( !$event instanceof CmsGraphql ) {
             return;
         }
 
-        $this->latency( 'cms_jsonapi', [
+        $this->latency( 'cms_graphql', [
             'action' => $event->action,
             'domain' => $event->domain,
             'tenant' => $event->tenant,
+            'success' => $event->success,
         ], $event->durationMs );
     }
 }

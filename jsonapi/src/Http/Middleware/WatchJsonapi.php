@@ -7,7 +7,7 @@
 
 namespace Aimeos\Cms\Http\Middleware;
 
-use Aimeos\Cms\Events\Queried;
+use Aimeos\Cms\Events\CmsJsonapi;
 use Aimeos\Cms\Tenancy;
 use Aimeos\Cms\Watch;
 use Closure;
@@ -17,7 +17,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 
 /**
- * Measures the wall-clock duration of read-only JSON:API requests and dispatches a Queried event.
+ * Measures the wall-clock duration of read-only JSON:API requests and dispatches a CmsJsonapi event.
  *
  * Instrumentation lives here rather than in the controller because the controller methods only
  * decorate an already-built response and have no request-lifecycle timing. Active when the watch
@@ -26,15 +26,15 @@ use Symfony\Component\HttpFoundation\Response;
 class WatchJsonapi
 {
     /**
-     * Handles the request, dispatching a Queried event with the request duration and shape.
+     * Handles the request, dispatching a CmsJsonapi event with the request duration and shape.
      */
     public function handle( Request $request, Closure $next ) : Response
     {
-        $start = Watch::start( 'cms.jsonapi.watch', Queried::class );
+        $start = Watch::start( 'cms.jsonapi.watch', CmsJsonapi::class );
 
         $response = $next( $request );
 
-        Watch::dispatchWhen( 'cms.jsonapi.watch', Queried::class, fn() => new Queried(
+        Watch::dispatchWhen( 'cms.jsonapi.watch', CmsJsonapi::class, fn() => new CmsJsonapi(
             action: $this->action( $request ),
             durationMs: Watch::duration( $start ),
             domain: $this->domain( $request ),

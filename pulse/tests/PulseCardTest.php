@@ -105,10 +105,8 @@ class PulseCardTest extends PulseTestCase
             'search',
             'contact',
             'jsonapi',
-            'ai',
             'graphql',
             'mcp',
-            'cli',
         ], array_keys( CmsMetricCard::available() ) );
     }
 
@@ -119,13 +117,13 @@ class PulseCardTest extends PulseTestCase
 
         try {
             config( ['cms.pulse.cards' => [
-                'cli' => ['title' => 'CLI', 'type' => 'cms_cli'],
+                'mcp' => ['title' => 'MCP', 'type' => 'cms_mcp'],
                 'ghost' => ['title' => 'Ghost', 'type' => 'cms_ghost', 'events' => ['Aimeos\\Cms\\Missing']],
-                'ai' => ['title' => 'AI', 'type' => 'cms_ai'],
+                'graphql' => ['title' => 'GraphQL', 'type' => 'cms_graphql'],
             ]] );
 
             // Order follows the config; the card whose event class is missing is hidden.
-            $this->assertSame( ['cli', 'ai'], array_keys( CmsMetricCard::available() ) );
+            $this->assertSame( ['mcp', 'graphql'], array_keys( CmsMetricCard::available() ) );
         } finally {
             config( ['cms.pulse.cards' => $original] );
         }
@@ -137,7 +135,7 @@ class PulseCardTest extends PulseTestCase
         $method = new \ReflectionMethod( CmsMetricCard::class, 'eventsAvailable' );
 
         $this->assertFalse( $method->invoke( null, ['events' => ['Aimeos\\Cms\\Missing']] ) );
-        $this->assertTrue( $method->invoke( null, ['events' => ['Aimeos\\Cms\\Events\\Authed']] ) );
+        $this->assertTrue( $method->invoke( null, ['events' => ['Aimeos\\Cms\\Events\\CmsGraphql']] ) );
         $this->assertTrue( $method->invoke( null, [] ) );
     }
 
@@ -151,7 +149,7 @@ class PulseCardTest extends PulseTestCase
                 'graphql' => [
                     'title' => 'GraphQL',
                     'type' => 'cms_graphql',
-                    'events' => ['Aimeos\\Cms\\Events\\Authed'],
+                    'events' => ['Aimeos\\Cms\\Events\\CmsGraphql'],
                 ],
                 'custom' => [
                     'title' => 'Custom',
@@ -172,27 +170,20 @@ class PulseCardTest extends PulseTestCase
     }
 
 
-    public function testCliCardReadsSourceBucket() : void
-    {
-        $cli = $this->metricDefinition( 'cli' );
-
-        $this->assertSame( 'cms_cli', $cli['type'] );
-        $this->assertSame( ['count', 'sum'], $cli['aggregates'] );
-    }
-
-
-    public function testTransportBucketsShareContentAndAuthMetrics() : void
+    public function testAdminTransportBucketsUseLatencyAndSuccessMetrics() : void
     {
         $graphql = $this->metricDefinition( 'graphql' );
         $mcp = $this->metricDefinition( 'mcp' );
 
         $this->assertSame( 'cms_graphql', $graphql['type'] );
-        $this->assertSame( ['count', 'sum'], $graphql['aggregates'] );
-        $this->assertSame( ['domain', 'mime'], $graphql['details'] );
+        $this->assertSame( ['count', 'avg', 'max'], $graphql['aggregates'] );
+        $this->assertSame( ['domain'], $graphql['details'] );
+        $this->assertTrue( $graphql['success'] );
 
         $this->assertSame( 'cms_mcp', $mcp['type'] );
-        $this->assertSame( ['count', 'sum'], $mcp['aggregates'] );
-        $this->assertSame( ['domain', 'mime'], $mcp['details'] );
+        $this->assertSame( ['count', 'avg', 'max'], $mcp['aggregates'] );
+        $this->assertSame( ['domain'], $mcp['details'] );
+        $this->assertTrue( $mcp['success'] );
     }
 
 
