@@ -24,24 +24,56 @@ use Illuminate\Contracts\Debug\ExceptionHandler;
 
 class PulseRecorderTest extends PulseTestCase
 {
-    public function testRecordsPageAction() : void
+    public function testRecordsGraphqlContentInGraphqlBucket() : void
     {
         ( new CmsContentPulseRecorder )->record(
             new ContentChanged( 'page', 'saved', source: 'graphql', tenant: 'test', domain: 'example.org' )
         );
 
         $this->assertCount( 1, $this->pulse->entries );
-        $this->assertSame( 'cms_page:test', $this->pulse->entries[0]->type );
+        $this->assertSame( 'cms_graphql:test', $this->pulse->entries[0]->type );
         $this->assertSame( ['count'], $this->pulse->entries[0]->aggregates );
 
         $key = $this->key( 0 );
 
-        $this->assertSame( 'graphql:save', $key['action'] );
-        $this->assertSame( 'graphql', $key['source'] );
+        $this->assertSame( 'page:save', $key['action'] );
         $this->assertSame( 'example.org', $key['domain'] );
+        $this->assertArrayNotHasKey( 'source', $key );
         $this->assertArrayNotHasKey( 'editor', $key );
         $this->assertArrayNotHasKey( 'path', $key );
         $this->assertArrayNotHasKey( 'tenant', $key );
+    }
+
+
+    public function testRecordsMcpContentInMcpBucket() : void
+    {
+        ( new CmsContentPulseRecorder )->record(
+            new ContentChanged( 'file', 'published', source: 'mcp', tenant: 'test', mime: 'image/png' )
+        );
+
+        $this->assertSame( 'cms_mcp:test', $this->pulse->entries[0]->type );
+
+        $key = $this->key( 0 );
+
+        $this->assertSame( 'file:publish', $key['action'] );
+        $this->assertSame( 'image/png', $key['mime'] );
+        $this->assertArrayNotHasKey( 'source', $key );
+    }
+
+
+    public function testRecordsOtherSourcesInOwnBucket() : void
+    {
+        ( new CmsContentPulseRecorder )->record(
+            new ContentChanged( 'file', 'saved', source: 'cli', tenant: 'test', mime: 'image/png' )
+        );
+
+        $this->assertSame( 'cms_cli:test', $this->pulse->entries[0]->type );
+
+        $key = $this->key( 0 );
+
+        $this->assertSame( 'file:save', $key['action'] );
+        $this->assertSame( 'image/png', $key['mime'] );
+        $this->assertArrayNotHasKey( 'source', $key );
     }
 
 
@@ -51,7 +83,7 @@ class PulseRecorderTest extends PulseTestCase
             new ContentChanged( 'page', 'saved', source: 'graphql' )
         );
 
-        $this->assertSame( 'cms_page', $this->pulse->entries[0]->type );
+        $this->assertSame( 'cms_graphql', $this->pulse->entries[0]->type );
     }
 
 
@@ -72,10 +104,10 @@ class PulseRecorderTest extends PulseTestCase
         );
 
         $this->assertCount( 1, $this->pulse->entries );
-        $this->assertSame( 'cms_element:test', $this->pulse->entries[0]->type );
+        $this->assertSame( 'cms_mcp:test', $this->pulse->entries[0]->type );
         $this->assertSame( 2, $this->pulse->entries[0]->value );
         $this->assertSame( ['count', 'sum'], $this->pulse->entries[0]->aggregates );
-        $this->assertSame( 'mcp:bulk', $this->key( 0 )['action'] );
+        $this->assertSame( 'element:bulk', $this->key( 0 )['action'] );
     }
 
 
@@ -88,8 +120,8 @@ class PulseRecorderTest extends PulseTestCase
         $key = $this->key( 0 );
 
         $this->assertCount( 1, $this->pulse->entries );
-        $this->assertSame( 'cms_auth:test', $this->pulse->entries[0]->type );
-        $this->assertSame( 'graphql:login-fail', $key['action'] );
+        $this->assertSame( 'cms_graphql:test', $this->pulse->entries[0]->type );
+        $this->assertSame( 'auth:login-fail', $key['action'] );
         $this->assertArrayNotHasKey( 'email', $key );
         $this->assertArrayNotHasKey( 'ip', $key );
         $this->assertArrayNotHasKey( 'user_agent', $key );
@@ -188,8 +220,8 @@ class PulseRecorderTest extends PulseTestCase
         $this->assertCount( 1, $this->pulse->entries );
         $this->assertSame( 'cms_contact:test', $this->pulse->entries[0]->type );
         $this->assertSame( 'theme:contact', $key['action'] );
+        $this->assertSame( '127.0.0.1', $key['ip'] );
         $this->assertArrayNotHasKey( 'email', $key );
-        $this->assertArrayNotHasKey( 'ip', $key );
     }
 
 

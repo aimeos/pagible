@@ -26,6 +26,7 @@ class CmsContactPulseRecorder extends Recorder
 
         $this->latency( 'cms_contact', [
             'action' => 'theme:contact',
+            'ip' => $event->ip,
             'tenant' => $event->tenant,
         ], $event->durationMs );
     }
