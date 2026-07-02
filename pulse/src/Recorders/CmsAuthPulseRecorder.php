@@ -24,10 +24,10 @@ class CmsAuthPulseRecorder extends Recorder
             return;
         }
 
-        $action = $this->prefixed( 'graphql', $event->action );
-
-        $this->entry( 'cms_auth', [
-            'action' => $action,
+        // Authentication happens through the GraphQL API, so it shares the GraphQL
+        // bucket and is distinguished from content operations by the "auth:" prefix.
+        $this->entry( 'cms_graphql', [
+            'action' => $this->prefixed( 'auth', $event->action ),
             'tenant' => $event->tenant,
         ] );
     }

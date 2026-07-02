@@ -7,119 +7,59 @@
 
 namespace Aimeos\Cms\Pulse;
 
-use Aimeos\Cms\Events\Authed;
-use Aimeos\Cms\Events\Contacted;
-use Aimeos\Cms\Events\Generated;
-use Aimeos\Cms\Events\Queried;
-use Aimeos\Cms\Events\Searched;
-use Aimeos\Cms\Events\Viewed;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\View as ViewFactory;
 
 
 class CmsMetricCard extends CmsCard
 {
-    /**
-     * @var array<string, array{
-     *     title: non-empty-string,
-     *     type: non-empty-string,
-     *     group?: non-empty-string,
-     *     aggregates?: 'count'|'min'|'max'|'sum'|'avg'|list<'count'|'min'|'max'|'sum'|'avg'>,
-     *     details?: list<string>,
-     *     success?: bool,
-     *     events?: list<non-empty-string>
-     * }>
-     */
-    private const METRICS = [
-        'page' => [
-            'title' => 'Pages',
-            'type' => 'cms_page',
-            'aggregates' => ['count', 'sum'],
-            'details' => ['domain'],
-        ],
-        'element' => [
-            'title' => 'Elements',
-            'type' => 'cms_element',
-            'aggregates' => ['count', 'sum'],
-            'details' => ['source'],
-        ],
-        'file' => [
-            'title' => 'Files',
-            'type' => 'cms_file',
-            'aggregates' => ['count', 'sum'],
-            'details' => ['mime', 'source'],
-        ],
-        'auth' => [
-            'title' => 'Authentication',
-            'type' => 'cms_auth',
-            'events' => [Authed::class],
-        ],
-        'ai' => [
-            'title' => 'AI',
-            'type' => 'cms_ai',
-            'group' => 'mutation',
-            'aggregates' => Metric::LATENCY,
-            'details' => ['provider', 'model'],
-            'success' => true,
-            'events' => [Generated::class],
-        ],
-        'search' => [
-            'title' => 'Search',
-            'type' => 'cms_search',
-            'group' => 'action',
-            'aggregates' => Metric::LATENCY,
-            'details' => ['domain', 'lang'],
-            'events' => [Searched::class],
-        ],
-        'contact' => [
-            'title' => 'Contact',
-            'type' => 'cms_contact',
-            'aggregates' => Metric::LATENCY,
-            'events' => [Contacted::class],
-        ],
-        'jsonapi' => [
-            'title' => 'JSON:API',
-            'type' => 'cms_jsonapi',
-            'aggregates' => Metric::LATENCY,
-            'details' => ['domain'],
-            'events' => [Queried::class],
-        ],
-        'request' => [
-            'title' => 'Page requests',
-            'type' => 'cms_request',
-            'group' => 'path',
-            'aggregates' => Metric::LATENCY,
-            'details' => ['domain', 'status'],
-            'events' => [Viewed::class],
-        ],
-    ];
-
-    public string $metric = 'page';
+    public string $metric = 'graphql';
 
 
     public function render() : View
     {
-        $definition = $this->definition( $this->metric );
+        $card = $this->definition( $this->metric );
+
+        /** @var 'count'|'min'|'max'|'sum'|'avg'|list<'count'|'min'|'max'|'sum'|'avg'> $aggregates */
+        $aggregates = ( is_string( $card['aggregates'] ?? null ) || is_array( $card['aggregates'] ?? null ) )
+            ? $card['aggregates'] : 'count';
+
+        $details = array_values( array_filter( (array) ( $card['details'] ?? [] ), 'is_string' ) );
 
         return ViewFactory::make( 'cms-pulse::cms-metric-card', [
-            'title' => $definition['title'],
+            'title' => (string) ( $card['title'] ?? '' ),
             'entries' => $this->summary(
-                $definition['type'],
-                $definition['aggregates'] ?? 'count',
-                $definition['group'] ?? 'action',
-                $definition['details'] ?? [],
-                $definition['success'] ?? false,
+                (string) ( $card['type'] ?? '' ),
+                $aggregates,
+                (string) ( $card['group'] ?? 'action' ),
+                $details,
+                (bool) ( $card['success'] ?? false ),
             ),
         ] );
     }
 
 
     /**
+     * Returns the configured cards that can be shown, in dashboard order.
+     *
      * @return array<string, array<string, mixed>>
      */
     public static function available() : array
     {
-        return array_filter( self::METRICS, fn( array $definition ) => self::eventsAvailable( $definition ) );
+        return array_filter( self::cards(), fn( array $definition ) => self::eventsAvailable( $definition ) );
+    }
+
+
+    /**
+     * Returns all card definitions from "cms.pulse.cards", keyed by metric, in display order.
+     *
+     * @return array<string, array<string, mixed>>
+     */
+    public static function cards() : array
+    {
+        $cards = config( 'cms.pulse.cards', [] );
+
+        return array_filter( is_array( $cards ) ? $cards : [], 'is_array' );
     }
 
 
@@ -128,7 +68,9 @@ class CmsMetricCard extends CmsCard
      */
     protected function definition( string $metric ) : array
     {
-        return self::METRICS[$metric] ?? self::METRICS['page'];
+        $cards = self::cards();
+
+        return $cards[$metric] ?? ( reset( $cards ) ?: [] );
     }
 
 

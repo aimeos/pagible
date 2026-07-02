@@ -98,42 +98,111 @@ class PulseCardTest extends PulseTestCase
     }
 
 
-    public function testMetricCardAvailabilityIncludesInstalledPackages() : void
+    public function testMetricCardAvailabilityUsesConfiguredOrder() : void
     {
         $this->assertSame( [
-            'page',
-            'element',
-            'file',
-            'auth',
-            'ai',
+            'request',
             'search',
             'contact',
             'jsonapi',
-            'request',
+            'ai',
+            'graphql',
+            'mcp',
+            'cli',
         ], array_keys( CmsMetricCard::available() ) );
     }
 
 
-    public function testContentCardsFetchBulkItemSums() : void
+    public function testConfiguredCardsControlOrderAndVisibility() : void
     {
-        foreach( ['page', 'element', 'file'] as $metric )
-        {
-            $this->assertSame( ['count', 'sum'], $this->metricDefinition( $metric )['aggregates'] ?? null );
+        $original = config( 'cms.pulse.cards' );
+
+        try {
+            config( ['cms.pulse.cards' => [
+                'cli' => ['title' => 'CLI', 'type' => 'cms_cli'],
+                'ghost' => ['title' => 'Ghost', 'type' => 'cms_ghost', 'events' => ['Aimeos\\Cms\\Missing']],
+                'ai' => ['title' => 'AI', 'type' => 'cms_ai'],
+            ]] );
+
+            // Order follows the config; the card whose event class is missing is hidden.
+            $this->assertSame( ['cli', 'ai'], array_keys( CmsMetricCard::available() ) );
+        } finally {
+            config( ['cms.pulse.cards' => $original] );
         }
     }
 
 
-    public function testAuthAndContactCardsUseLowCardinalityDashboardMetrics() : void
+    public function testCardsForMissingPackagesAreHidden() : void
     {
-        $auth = $this->metricDefinition( 'auth' );
-        $contact = $this->metricDefinition( 'contact' );
+        $method = new \ReflectionMethod( CmsMetricCard::class, 'eventsAvailable' );
 
-        $this->assertSame( 'cms_auth', $auth['type'] );
-        $this->assertArrayNotHasKey( 'details', $auth );
+        $this->assertFalse( $method->invoke( null, ['events' => ['Aimeos\\Cms\\Missing']] ) );
+        $this->assertTrue( $method->invoke( null, ['events' => ['Aimeos\\Cms\\Events\\Authed']] ) );
+        $this->assertTrue( $method->invoke( null, [] ) );
+    }
+
+
+    public function testConfigCanDeclareArbitraryCards() : void
+    {
+        $original = config( 'cms.pulse.cards' );
+
+        try {
+            config( ['cms.pulse.cards' => [
+                'graphql' => [
+                    'title' => 'GraphQL',
+                    'type' => 'cms_graphql',
+                    'events' => ['Aimeos\\Cms\\Events\\Authed'],
+                ],
+                'custom' => [
+                    'title' => 'Custom',
+                    'type' => 'cms_custom',
+                    'aggregates' => ['count', 'sum'],
+                    'details' => ['domain'],
+                ],
+            ]] );
+
+            $available = CmsMetricCard::available();
+
+            $this->assertSame( ['graphql', 'custom'], array_keys( $available ) );
+            $this->assertSame( 'cms_custom', $available['custom']['type'] );
+            $this->assertSame( 'Custom', $available['custom']['title'] );
+        } finally {
+            config( ['cms.pulse.cards' => $original] );
+        }
+    }
+
+
+    public function testCliCardReadsSourceBucket() : void
+    {
+        $cli = $this->metricDefinition( 'cli' );
+
+        $this->assertSame( 'cms_cli', $cli['type'] );
+        $this->assertSame( ['count', 'sum'], $cli['aggregates'] );
+    }
+
+
+    public function testTransportBucketsShareContentAndAuthMetrics() : void
+    {
+        $graphql = $this->metricDefinition( 'graphql' );
+        $mcp = $this->metricDefinition( 'mcp' );
+
+        $this->assertSame( 'cms_graphql', $graphql['type'] );
+        $this->assertSame( ['count', 'sum'], $graphql['aggregates'] );
+        $this->assertSame( ['domain', 'mime'], $graphql['details'] );
+
+        $this->assertSame( 'cms_mcp', $mcp['type'] );
+        $this->assertSame( ['count', 'sum'], $mcp['aggregates'] );
+        $this->assertSame( ['domain', 'mime'], $mcp['details'] );
+    }
+
+
+    public function testContactCardUsesLowCardinalityDashboardMetrics() : void
+    {
+        $contact = $this->metricDefinition( 'contact' );
 
         $this->assertSame( 'cms_contact', $contact['type'] );
         $this->assertArrayNotHasKey( 'group', $contact );
-        $this->assertArrayNotHasKey( 'details', $contact );
+        $this->assertSame( ['ip'], $contact['details'] );
     }
 
 

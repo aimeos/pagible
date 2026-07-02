@@ -17,11 +17,12 @@ class CmsContentPulseRecorder extends Recorder
      */
     public array $listen = [ContentChanged::class];
 
-    private const TYPES = [
-        'page' => 'cms_page',
-        'element' => 'cms_element',
-        'file' => 'cms_file',
-    ];
+    /**
+     * Content types tracked as metrics; other types are ignored.
+     *
+     * @var list<non-empty-string>
+     */
+    private const TYPES = ['page', 'element', 'file'];
 
     /**
      * @var array<non-empty-string, non-empty-string>
@@ -43,31 +44,37 @@ class CmsContentPulseRecorder extends Recorder
             return;
         }
 
-        if( !( $type = self::TYPES[$event->contentType] ?? null ) ) {
+        if( !in_array( $event->contentType, self::TYPES, true ) ) {
             return;
         }
 
+        // Content is aggregated into a per-transport bucket ("cms_" + source, e.g.
+        // "cms_graphql", "cms_mcp") keyed by "<content type>:<action>" (e.g. "page:save"),
+        // so each dashboard card reflects only one transport's traffic.
         $key = [
-            'action' => $this->action( $event ),
-            'source' => $event->source,
+            'action' => $event->contentType . ':' . $this->action( $event ),
             'tenant' => $event->tenant,
             'domain' => $event->domain,
             'mime' => $event->mime,
         ];
 
         if( $event->value !== null ) {
-            $this->entry( $type, $key, $event->value, ['count', 'sum'] );
+            $this->entry( $this->type( $event ), $key, $event->value, ['count', 'sum'] );
             return;
         }
 
-        $this->entry( $type, $key );
+        $this->entry( $this->type( $event ), $key );
     }
 
 
     protected function action( ContentChanged $event ) : string
     {
-        $action = self::ACTIONS[$event->action] ?? $event->action;
+        return self::ACTIONS[$event->action] ?? $event->action;
+    }
 
-        return $event->source ? $event->source . ':' . $action : $action;
+
+    protected function type( ContentChanged $event ) : string
+    {
+        return 'cms_' . ( $event->source ?: 'cli' );
     }
 }

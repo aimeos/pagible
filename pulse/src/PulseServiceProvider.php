@@ -45,6 +45,12 @@ class PulseServiceProvider extends Provider
 
         Permission::register( self::VIEW_PERMISSION );
 
+        $this->mergeConfigFrom( $basedir . '/config/cms/pulse.php', 'cms.pulse' );
+
+        $this->publishes( [
+            $basedir . '/config/cms/pulse.php' => config_path( 'cms/pulse.php' ),
+        ], 'cms-config' );
+
         $this->publishes( [
             $basedir . '/views/dashboard.blade.php' => resource_path( 'views/vendor/pulse/dashboard.blade.php' ),
         ], 'cms-pulse-dashboard' );
