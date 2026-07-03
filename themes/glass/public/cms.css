@@ -376,9 +376,14 @@ nav.breadcrumb ul li a:hover {
     max-width: 1152px !important;
 }
 
+.cms-text {
+    white-space: pre-line;
+}
+
 h1, h2, h3, h4, h5, h6 {
     font-family: var(--pico-font-family-display);
     letter-spacing: -0.04em;
+    white-space: pre-line;
 }
 
 h1, h2 {

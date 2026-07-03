@@ -14,9 +14,7 @@
 			@endif
 			<h3 class="title">{{ $card->title ?? '' }}</h3>
 			@if($card->text ?? null)
-				<div class="text">
-					@markdown($card->text)
-				</div>
+				<div class="cms-text">@markdown($card->text)</div>
 			@endif
 		</div>
 	@endforeach

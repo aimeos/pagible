@@ -82,9 +82,12 @@ class ThemeServiceProvider extends Provider
                 static \$__cmsMarkdown = new \League\CommonMark\GithubFlavoredMarkdownConverter([
                     'html_input' => 'strip',
                     'allow_unsafe_links' => false,
-                    'max_nesting_level' => 25
+                    'max_nesting_level' => 25,
+                    'renderer' => [
+                        'block_separator' => ''
+                    ]
                 ]);
-                echo \$__cmsMarkdown->convert($expression ?? '');
+                echo trim((string) \$__cmsMarkdown->convert($expression ?? ''));
             ?>";
         } );
 
@@ -92,18 +95,22 @@ class ThemeServiceProvider extends Provider
             return "<?php
                 \$__cmsTextVal = $expression ?? '';
                 if( \$__cmsTextVal === '' || strpbrk( \$__cmsTextVal, '*_\`[]()!<>&\\\\~\"' ) === false ) {
-                    echo \$__cmsTextVal;
+                    echo trim((string) \$__cmsTextVal);
                 } else {
                     static \$__cmsText = null;
                     if( \$__cmsText === null ) {
                         \$__cmsTextEnv = new \\League\\CommonMark\\Environment\\Environment([
                             'html_input' => 'strip',
-                            'allow_unsafe_links' => false
+                            'allow_unsafe_links' => false,
+                            'max_nesting_level' => 3,
+                            'renderer' => [
+                                'block_separator' => ''
+                            ]
                         ]);
                         \$__cmsTextEnv->addExtension( new \\League\\CommonMark\\Extension\\InlinesOnly\\InlinesOnlyExtension() );
                         \$__cmsText = new \\League\\CommonMark\\MarkdownConverter( \$__cmsTextEnv );
                     }
-                    echo \$__cmsText->convert( \$__cmsTextVal );
+                    echo trim((string) \$__cmsText->convert( \$__cmsTextVal ));
                 }
             ?>";
         } );
