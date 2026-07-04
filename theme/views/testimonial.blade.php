@@ -9,7 +9,7 @@
 <div class="testimonial-list">
 	@foreach(cms($data, 'items', []) as $item)
 		<figure class="testimonial-item">
-			<blockquote>@text($item->text ?? '')</blockquote>
+			<blockquote class="cms-text">@text($item->text ?? '')</blockquote>
 			<figcaption>
 				@if($file = cms($files, $item->file?->id ?? null))
 					@include('cms::pic', ['file' => $file, 'class' => 'avatar', 'sizes' => '4rem'])

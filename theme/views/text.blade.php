@@ -1,1 +1,1 @@
-@markdown($data->text ?? '')
+<div class="cms-text">@markdown($data->text ?? '')</div>

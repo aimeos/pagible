@@ -9,6 +9,7 @@ namespace Tests;
 
 use Aimeos\Cms\Schema;
 use Aimeos\Cms\Theme;
+use Illuminate\Support\Facades\Blade;
 
 
 class ThemeTest extends ThemeTestAbstract
@@ -86,6 +87,42 @@ class ThemeTest extends ThemeTestAbstract
 
 		$this->assertArrayHasKey( 'cms', $all );
 		$this->assertIsArray( $all['cms'] );
+	}
+
+
+	public function testBladeTextDirectiveDoesNotInsertBreakTags()
+	{
+		$template = '@text($text){{-- no-break-tags --}}';
+
+		$this->assertEquals( "one\ntwo", Blade::render( $template, ['text' => "one\ntwo"], true ) );
+		$this->assertEquals( "one &amp; two\n<strong>three</strong>", Blade::render( $template, ['text' => "one & two\n**three**"], true ) );
+	}
+
+
+	public function testMarkdownDirectiveTrimsOuterBreaks()
+	{
+		$template = '<div class="text">@markdown($text)</div>';
+
+		$this->assertEquals( '<div class="text"><p>one</p></div>', Blade::render( $template, ['text' => 'one'], true ) );
+	}
+
+
+	public function testTextClassNodesAreInline()
+	{
+		foreach( glob( dirname( __DIR__ ) . '/views/*.blade.php' ) ?: [] as $path ) {
+			$view = file_get_contents( $path );
+
+			preg_match_all( '/<(?<tag>[a-z][a-z0-9-]*)\b[^>]*class="[^"]*\btext\b[^"]*"[^>]*>.*?<\/\k<tag>>/s', $view, $matches );
+
+			foreach( $matches[0] ?? [] as $node ) {
+				if( !str_contains( $node, '@markdown(' ) ) {
+					continue;
+				}
+
+				$this->assertStringNotContainsString( "\n", $node, $path );
+				$this->assertStringNotContainsString( "\r", $node, $path );
+			}
+		}
 	}
 
 
