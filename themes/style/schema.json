@@ -1,0 +1,103 @@
+{
+    "label": "Style",
+    "description": "Fashion-commerce editorial design with oversized condensed headlines, cream and ink surfaces, deep red accents, image-led sections and sharp layouts",
+    "maintainer": "Aimeos",
+    "email": "info@aimeos.org",
+    "website": "https://pagible.com",
+    "types": {
+        "page": {
+            "sections": [
+                "main",
+                "footer"
+            ]
+        },
+        "docs": {
+            "sections": [
+                "main",
+                "footer"
+            ]
+        },
+        "blog": {
+            "sections": [
+                "main",
+                "footer"
+            ]
+        }
+    },
+    "config": {
+        "theme": {
+            "group": "theme",
+            "icon": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M12 2A3 3 0 0 1 15 5C15 6.26 14.23 7.34 13.14 7.79L19 11.18V20C19 21.1 18.1 22 17 22H7C5.9 22 5 21.1 5 20V11.18L10.86 7.79C9.77 7.34 9 6.26 9 5A3 3 0 0 1 12 2M12 4A1 1 0 0 0 11 5A1 1 0 0 0 12 6A1 1 0 0 0 13 5A1 1 0 0 0 12 4M12 9.15L7 12.04V20H17V12.04L12 9.15Z\" /></svg>",
+            "fields": {
+                "--pico-font-family-sans-serif": {
+                    "type": "string",
+                    "default": "'Avenir Next', 'Helvetica Neue', Helvetica, Arial, sans-serif"
+                },
+                "--pico-color": {
+                    "type": "color",
+                    "default": "#17120F"
+                },
+                "--pico-background-color": {
+                    "type": "color",
+                    "default": "#F4EEE6"
+                },
+                "--pico-text-selection-color": {
+                    "type": "color",
+                    "default": "#B4162240"
+                },
+                "--pico-contrast": {
+                    "type": "color",
+                    "default": "#17120F"
+                },
+                "--pico-contrast-hover": {
+                    "type": "color",
+                    "default": "#000000"
+                },
+                "--pico-contrast-inverse": {
+                    "type": "color",
+                    "default": "#FFFFFF"
+                },
+                "--pico-primary": {
+                    "type": "color",
+                    "default": "#17120F"
+                },
+                "--pico-primary-background": {
+                    "type": "color",
+                    "default": "#17120F0A"
+                },
+                "--pico-primary-hover": {
+                    "type": "color",
+                    "default": "#B41622"
+                },
+                "--pico-primary-hover-background": {
+                    "type": "color",
+                    "default": "#B4162214"
+                },
+                "--pico-secondary": {
+                    "type": "color",
+                    "default": "#B41622"
+                },
+                "--pico-secondary-background": {
+                    "type": "color",
+                    "default": "#B4162214"
+                },
+                "--pico-secondary-hover": {
+                    "type": "color",
+                    "default": "#7C1018"
+                },
+                "--pico-secondary-hover-background": {
+                    "type": "color",
+                    "default": "#7C101814"
+                },
+                "--pico-border-radius": {
+                    "type": "string",
+                    "default": "0"
+                },
+                "--pico-nav-breadcrumb-divider": {
+                    "type": "string",
+                    "default": "—"
+                }
+            }
+        }
+    }
+}
