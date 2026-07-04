@@ -2,133 +2,134 @@
  * @license MIT, https://opensource.org/license/MIT
  */
 
-.blog .blog-items {
+.cms-content .list .list-items {
     display: flex;
     flex-direction: column;
     gap: 2rem;
 }
 
-.blog .first,
-.blog .second {
+.cms-content .list .first,
+.cms-content .list .second {
     width: 100%;
 }
 
-.blog .second,
-.blog .blog-list {
+.cms-content .list .second,
+.cms-content .list .list-list {
     display: flex;
     flex-direction: column;
     gap: 2rem;
 }
 
-.blog .blog-cards {
+.cms-content .list .list-cards {
     display: grid;
     grid-template-columns: 1fr;
     gap: 2rem;
 }
 
-.blog .blog-item {
+.cms-content .list .list-item {
     text-decoration: none;
     border: 1px solid var(--pico-contrast-border);
     transition: background-color 0.15s ease;
 }
 
-.blog .blog-item:hover {
+.cms-content .list .list-item:hover {
     background-color: var(--pico-contrast-hover-background);
 }
 
-.blog img {
+.cms-content .list img {
     aspect-ratio: 5 / 3;
     object-fit: cover;
 }
 
-.blog .date {
+.cms-content .list .date {
     color: var(--pico-primary);
     font-size: calc(var(--pico-font-size) * 0.75);
     text-transform: uppercase;
     letter-spacing: 0.1em;
 }
 
-.blog h3 {
+.cms-content .list h3 {
     margin: 0;
 }
 
-.blog .first .content,
-.blog .blog-cards .content {
+.cms-content .list .first .content,
+.cms-content .list .list-cards .content {
     display: flex;
     margin: 1rem 0.5rem;
     gap: 2rem;
 }
 
-.blog .first .date-day,
-.blog .blog-cards .date-day {
+.cms-content .list .first .date-day,
+.cms-content .list .list-cards .date-day {
     font-family: var(--pico-font-family-display);
     font-weight: bold;
     font-size: calc(var(--pico-font-size) * 2);
     line-height: 1;
 }
 
-.blog .first .date-month,
-.blog .blog-cards .date-month {
+.cms-content .list .first .date-month,
+.cms-content .list .list-cards .date-month {
     text-transform: uppercase;
     font-size: calc(var(--pico-font-size) * 0.9);
     line-height: 0.75;
 }
 
-.blog .first h3,
-.blog .blog-cards h3 {
+.cms-content .list .first h3,
+.cms-content .list .list-cards h3 {
     font-size: calc(var(--pico-font-size) * 1.1);
     flex-grow: 1;
 }
 
-.blog .second .blog-item,
-.blog .blog-list .blog-item {
+.cms-content .list .second .list-item,
+.cms-content .list .list-list .list-item {
     display: flex;
     gap: 0;
 }
 
-.blog .second picture,
-.blog .blog-list picture {
+.cms-content .list .second picture,
+.cms-content .list .list-list picture {
     flex: 2;
 }
 
-.blog .second .content,
-.blog .blog-list .content {
+.cms-content .list .second .content,
+.cms-content .list .list-list .content {
     flex: 3;
     padding: 1rem;
+    align-content: center;
 }
 
-.blog .second h3,
-.blog .blog-list h3 {
+.cms-content .list .second h3,
+.cms-content .list .list-list h3 {
     font-size: calc(var(--pico-font-size) * 0.9);
     line-height: 1.25;
 }
 
-.blog .blog-list .intro {
+.cms-content .list .list-list .intro {
     color: var(--pico-muted-color);
     font-size: calc(var(--pico-font-size) * 0.8);
     line-height: 1.25;
     margin: 0.5rem 0 0;
 }
 
-.blog .blog-list .blog-item:nth-child(even) {
+.cms-content .list .list-list .list-item:nth-child(even) {
     flex-direction: row-reverse;
 }
 
 @media (min-width: 768px) {
-    .blog .blog-default {
+    .cms-content .list .list-default {
         flex-direction: row;
     }
 
-    .blog .blog-default .first,
-    .blog .blog-default .second {
+    .cms-content .list .list-default .first,
+    .cms-content .list .list-default .second {
         width: 50%;
     }
 
-    .blog .blog-cards {
+    .cms-content .list .list-cards {
         grid-template-columns: 1fr 1fr;
     }
 }
 
-.blog nav .pagination {
+.cms-content .list nav .pagination {
     margin: auto;
 }

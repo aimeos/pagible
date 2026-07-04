@@ -14,6 +14,10 @@ use Illuminate\Http\Request;
 
 class Blog
 {
+    protected string $type = 'blog';
+    protected string $element = 'article';
+
+
     /**
      * Returns the blog articles
      *
@@ -32,7 +36,7 @@ class Blog
 
         $with = $editor ? ['latest' => fn( $q ) => $q->select( 'id', 'versionable_id', 'aux' )] : [];
 
-        $builder = Page::where( 'type', 'blog' )->with( $with )->orderBy( $order, $dir );
+        $builder = Page::where( 'type', $this->type )->with( $with )->orderBy( $order, $dir );
 
         if( $pid = $item->data->{'parent-page'}->value ?? null ) {
             $builder->where( 'parent_id', $pid );
@@ -47,13 +51,13 @@ class Blog
         $attr = ['id', 'lang', 'path', 'name', 'title', 'to', 'domain', 'content', 'created_at', 'latest_id'];
         $pages = $builder->paginate( $item->data->limit ?? 10, $attr, 'p' );
 
-        // The list shows the first "article" element's image per page, taken from the draft content
+        // The list shows the first element's image per page, taken from the draft content
         // for editors and the published content otherwise. The file IDs come from that element's
         // "files" list (populated for every writer in Validation), and only those files are loaded
         // in one query, so a blog page with many images doesn't pull its whole file set.
         $fileIds = function( $page ) use ( $editor ) {
             $content = $editor ? ( $page->latest?->aux->content ?? $page->content ) : $page->content;
-            $article = collect( (array) $content )->first( fn( $el ) => ( $el->type ?? null ) === 'article' );
+            $article = collect( (array) $content )->first( fn( $el ) => ( $el->type ?? null ) === $this->element );
             return $article ? (array) ( $article->files ?? [] ) : [];
         };
 
