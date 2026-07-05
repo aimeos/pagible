@@ -19,8 +19,7 @@
     justify-content: space-between;
     background-color: var(--pico-contrast-inverse);
     border: 1px solid var(--pico-muted-border-color);
-    border-radius: calc(var(--pico-border-radius) * 3);
-    box-shadow: var(--pico-box-shadow);
+    border-radius: calc(var(--pico-border-radius) * 2);
     padding: 2rem;
     margin: 0;
 }
@@ -31,7 +30,7 @@
     padding: 0;
     border: 0;
     color: var(--pico-color);
-    font-size: calc(var(--pico-font-size) * 0.95);
+    font-size: calc(var(--pico-font-size) * 0.85);
     line-height: 1.65;
 }
 

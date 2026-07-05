@@ -22,12 +22,18 @@
 }
 
 .cards .card-item {
+    background-color: var(--pico-contrast-inverse);
+    border: 1px solid var(--pico-muted-border-color);
+    border-radius: calc(var(--pico-border-radius) * 2);
     text-align: start;
     padding: 1.5rem;
 }
 
 .cards .card-item img {
     border-radius: var(--pico-border-radius);
+    background-color: var(--pico-primary);
+    padding: 0.25rem;
+    height: 2rem;
 }
 
 .cards .title {

@@ -367,11 +367,16 @@ nav.breadcrumb ul li a:hover {
     max-width: 1240px !important;
 }
 
+.cms-text {
+    white-space: pre-line;
+}
+
 h1, h2, h3, h4, h5, h6 {
     font-family: var(--pico-font-family-display);
     font-feature-settings: "liga", "dlig", "kern";
-    letter-spacing: 0;
     text-transform: uppercase;
+    white-space: pre-line;
+    letter-spacing: 0;
 }
 
 h1, h2 {

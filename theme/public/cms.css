@@ -169,6 +169,18 @@ header nav details > summary:hover {
     color: var(--pico-contrast);
 }
 
+header nav ul.menu > li:not(:last-of-type) > a:hover,
+header nav ul.menu > li:not(:last-of-type) > a:focus,
+header nav details.dropdown summary:not([role]),
+header nav details.dropdown summary:not([role]):hover,
+header nav details.dropdown summary:not([role]):focus,
+header nav details.dropdown summary:not([role]):active {
+    color: var(--pico-contrast);
+    background: none;
+    box-shadow: none;
+    border:none;
+}
+
 header nav details summary::marker,
 header nav details summary::-webkit-details-marker {
     display: none;

@@ -2,41 +2,41 @@
  * @license MIT, https://opensource.org/license/MIT
  */
 
-.blog .blog-items {
+.cms-content .list .list-items {
     flex-direction: column;
     display: flex;
 }
 
-.blog .blog-default {
+.cms-content .list .list-default {
     border: 1px solid var(--pico-muted-border-color);
     border-radius: calc(var(--pico-border-radius) * 4);
     overflow: clip;
 }
 
-.blog .first,
-.blog .second {
+.cms-content .list .first,
+.cms-content .list .second {
     padding: 2rem;
     width: 100%;
 }
 
-.blog .second,
-.blog .blog-list {
+.cms-content .list .second,
+.cms-content .list .list-list {
     flex-direction: column;
     display: flex;
     gap: 1rem;
 }
 
-.blog .second {
+.cms-content .list .second {
     background-color: var(--pico-contrast-inverse);
 }
 
-.blog .blog-cards {
+.cms-content .list .list-cards {
     display: grid;
     grid-template-columns: 1fr;
     gap: 2rem;
 }
 
-.blog .blog-item {
+.cms-content .list .list-item {
     text-decoration: none;
     transition: box-shadow 0.25s ease, transform 0.25s ease;
     padding: 0.5rem;
@@ -44,103 +44,104 @@
     height: 100%;
 }
 
-.blog .blog-item:hover {
+.cms-content .list .list-item:hover {
     box-shadow: 0 0.75rem 2rem #17120F0F;
     transform: translateY(-3px);
 }
 
-.blog img {
+.cms-content .list img {
     display: block;
     aspect-ratio: 5 / 3;
     object-fit: cover;
     width: 100%;
 }
 
-.blog .date {
+.cms-content .list .date {
     color: var(--pico-muted-color);
     font-size: calc(var(--pico-font-size) * 0.6);
     font-weight: 400;
 }
 
-.blog h3 {
+.cms-content .list h3 {
     margin: 0;
     margin-top: 0.75rem;
     font-weight: 500;
 }
 
-.blog .first .content,
-.blog .blog-cards .content {
+.cms-content .list .first .content,
+.cms-content .list .list-cards .content {
     display: flex;
     align-items: baseline;
     padding: 1rem 1.25rem;
     gap: 1rem;
 }
 
-.blog .first .date-day,
-.blog .blog-cards .date-day {
+.cms-content .list .first .date-day,
+.cms-content .list .list-cards .date-day {
     font-weight: 600;
     font-size: calc(var(--pico-font-size) * 1.1);
     font-family: var(--pico-font-family-display);
 }
 
-.blog .first .date-month,
-.blog .blog-cards .date-month {
+.cms-content .list .first .date-month,
+.cms-content .list .list-cards .date-month {
     text-transform: uppercase;
     font-size: calc(var(--pico-font-size) * 0.6);
     letter-spacing: 0;
 }
 
-.blog .first h3,
-.blog .blog-cards h3 {
+.cms-content .list .first h3,
+.cms-content .list .list-cards h3 {
     flex-grow: 1;
 }
 
-.blog .second .blog-item,
-.blog .blog-list .blog-item {
+.cms-content .list .second .list-item,
+.cms-content .list .list-list .list-item {
     align-items: center;
     display: flex;
 }
 
-.blog .second picture,
-.blog .blog-list picture {
+.cms-content .list .second picture,
+.cms-content .list .list-list picture {
     padding-inline-end: 1rem;
     flex: 2;
 }
 
-.blog .second .content,
-.blog .blog-list .content {
+.cms-content .list .second .content,
+.cms-content .list .list-list .content {
+    align-items: center;
     flex: 3;
 }
 
-.blog .blog-list .intro {
+.cms-content .list .list-list .intro {
     color: var(--pico-muted-color);
     font-size: calc(var(--pico-font-size) * 0.8);
     margin: 0.25rem 0 0;
 }
 
-.blog .blog-list .blog-item:nth-child(even) {
+.cms-content .list .list-list .list-item:nth-child(even) {
     flex-direction: row-reverse;
 }
 
-.blog .blog-list .blog-item:nth-child(even) picture {
+.cms-content .list .list-list .list-item:nth-child(even) picture {
     padding-inline: 1rem 0;
 }
 
 @media (min-width: 768px) {
-    .blog .blog-default {
+    .cms-content .list .list-default {
         flex-direction: row;
     }
 
-    .blog .blog-default .first,
-    .blog .blog-default .second {
+    .cms-content .list .list-default .first,
+    .cms-content .list .list-default .second {
         width: 50%;
     }
 
-    .blog .blog-cards {
+    .cms-content .list .list-cards {
         grid-template-columns: 1fr 1fr;
     }
 }
 
-.blog nav .pagination {
+.cms-content .list nav .pagination {
     margin: auto;
 }

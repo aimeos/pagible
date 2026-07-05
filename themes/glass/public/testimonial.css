@@ -47,7 +47,7 @@
     padding: 0;
     border: 0;
     color: var(--pico-contrast);
-    font-size: calc(var(--pico-font-size) * 0.95);
+    font-size: calc(var(--pico-font-size) * 0.85);
     line-height: 1.7;
 }
 
