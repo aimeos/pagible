@@ -368,8 +368,14 @@ if( !function_exists( 'cmsviews' ) )
             return ['cms::invalid'];
         }
 
-        $type = str_contains( $item->type, '::' ) ? $item->type : 'cms::' . $item->type;
+        $type = (string) $item->type;
 
-        return [$type, 'cms::invalid'];
+        [$theme, $type] = str_contains( $type, '::' )
+            ? explode( '::', $type, 2 )
+            : [cms( $page, 'theme' ) ?: 'cms', $type];
+
+        return $theme === 'cms'
+            ? ['cms::' . $type, 'cms::invalid']
+            : [$theme . '::' . $type, 'cms::' . $type, 'cms::invalid'];
     }
 }

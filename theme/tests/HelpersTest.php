@@ -97,8 +97,43 @@ class HelpersTest extends CoreTestAbstract
 
         $views = cmsviews( $page, $item );
 
-        $this->assertEquals( 'mytheme::card', $views[0] );
-        $this->assertEquals( 'cms::invalid', $views[1] );
+        $this->assertEquals( ['mytheme::card', 'cms::card', 'cms::invalid'], $views );
+    }
+
+
+    public function testCmsviewsIgnoresPageThemeForNamespacedType()
+    {
+        $page = new \Aimeos\Cms\Models\Page();
+        $page->theme = 'cms';
+        $item = (object) ['type' => 'style::hero'];
+
+        $views = cmsviews( $page, $item );
+
+        $this->assertEquals( ['style::hero', 'cms::hero', 'cms::invalid'], $views );
+    }
+
+
+    public function testCmsviewsWithPageThemeOverride()
+    {
+        $page = new \Aimeos\Cms\Models\Page();
+        $page->theme = 'mytheme';
+        $item = (object) ['type' => 'hero'];
+
+        $views = cmsviews( $page, $item );
+
+        $this->assertEquals( ['mytheme::hero', 'cms::hero', 'cms::invalid'], $views );
+    }
+
+
+    public function testCmsviewsIncludesMissingPageThemeFallback()
+    {
+        $page = new \Aimeos\Cms\Models\Page();
+        $page->theme = 'missingtheme';
+        $item = (object) ['type' => 'hero'];
+
+        $views = cmsviews( $page, $item );
+
+        $this->assertEquals( ['missingtheme::hero', 'cms::hero', 'cms::invalid'], $views );
     }
 
 

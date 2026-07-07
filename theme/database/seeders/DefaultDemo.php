@@ -558,7 +558,7 @@ class DefaultDemo extends AbstractDemo
                     ['Property', 'hero', 'cards', 'pricing'],
                     ['title', 'Required', 'Required', 'Required'],
                     ['text', 'Optional', 'Optional', 'Optional'],
-                    ['file', 'Optional', 'Per card', 'No'],
+                    ['files', 'Optional', 'Per card', 'No'],
                 ],
             ]],
         ], $docs, [$fileId] );
@@ -586,7 +586,7 @@ class DefaultDemo extends AbstractDemo
                 'button' => 'See Plans',
                 'url-alternative' => '/contact',
                 'button-alternative' => 'Request a Demo',
-                'file' => ['id' => $this->img( 'hero' ), 'type' => 'file'],
+                'files' => [['id' => $this->img( 'hero' ), 'type' => 'file']],
             ]],
             ['id' => Utils::uid(), 'type' => 'cards', 'group' => 'main', 'data' => [
                 'title' => 'Why Teams Love PagibleAI CMS',

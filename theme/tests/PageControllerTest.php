@@ -8,6 +8,7 @@
 namespace Tests;
 
 use Aimeos\Cms\Models\Element;
+use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Models\Version;
 use Aimeos\Cms\Resource;
@@ -180,6 +181,80 @@ class PageControllerTest extends ThemeTestAbstract
         $response = $this->actingAs( $this->user )->get( '/draft-preview' );
         $response->assertStatus( 200 );
         $response->assertSee( 'DRAFT_ELEMENT_TEXT' );
+    }
+
+
+    public function testHeroRendersImageList()
+    {
+        Tenancy::$callback = fn() => 'demo';
+
+        $jpeg = File::where( 'mime', 'image/jpeg' )->firstOrFail();
+        $tiff = File::where( 'mime', 'image/tiff' )->firstOrFail();
+        $root = Page::where( 'tag', 'root' )->firstOrFail();
+
+        Resource::addPage( [
+            'lang' => 'en',
+            'name' => 'Hero images',
+            'title' => 'Hero images',
+            'path' => 'hero-images',
+            'status' => 1,
+            'content' => [[
+                'id' => 'hero-images',
+                'type' => 'hero',
+                'group' => 'main',
+                'data' => [
+                    'title' => 'Hero images',
+                    'files' => [
+                        ['id' => $jpeg->id, 'type' => 'file'],
+                        ['id' => $tiff->id, 'type' => 'file'],
+                    ],
+                ],
+            ]],
+        ], $this->user, parent: $root->id );
+
+        $response = $this->actingAs( $this->user )->get( '/hero-images' );
+
+        $response->assertStatus( 200 );
+        $response->assertSee( 'second multiple swiffy-slider', false );
+        $response->assertSee( 'slider-container', false );
+        $response->assertSee( 'slideshow.css', false );
+        $response->assertSee( 'slideshow.js', false );
+        $response->assertSee( 'Test file description', false );
+        $response->assertSee( 'Test TIFF file description', false );
+        $this->assertSame( 2, substr_count( (string) $response->getContent(), '<picture' ) );
+    }
+
+
+    public function testHeroRendersSingleImageArray()
+    {
+        Tenancy::$callback = fn() => 'demo';
+
+        $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
+        $root = Page::where( 'tag', 'root' )->firstOrFail();
+
+        Resource::addPage( [
+            'lang' => 'en',
+            'name' => 'Hero files',
+            'title' => 'Hero files',
+            'path' => 'hero-files',
+            'status' => 1,
+            'content' => [[
+                'id' => 'hero-files',
+                'type' => 'hero',
+                'group' => 'main',
+                'data' => [
+                    'title' => 'Hero files',
+                    'files' => [['id' => $file->id, 'type' => 'file']],
+                ],
+            ]],
+        ], $this->user, parent: $root->id );
+
+        $response = $this->actingAs( $this->user )->get( '/hero-files' );
+
+        $response->assertStatus( 200 );
+        $response->assertSee( 'class="second"', false );
+        $response->assertDontSee( 'class="second multiple"', false );
+        $this->assertSame( 1, substr_count( (string) $response->getContent(), '<picture' ) );
     }
 
 
