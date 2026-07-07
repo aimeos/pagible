@@ -1656,22 +1656,22 @@ msgstr ""
 #: js/strings.js:43
 msgctxt "st"
 msgid "hero"
-msgstr "Hero section"
+msgstr "Hero"
 
 #: js/strings.js:44
 msgctxt "st"
 msgid "cards"
-msgstr "List of tiles"
+msgstr "Tiles"
 
 #: js/strings.js:45
 msgctxt "st"
 msgid "blog"
-msgstr "Blog list"
+msgstr "Blog"
 
 #: js/strings.js:46
 msgctxt "st"
 msgid "article"
-msgstr "Blog article"
+msgstr "Article"
 
 #: js/strings.js:47
 msgctxt "st"
@@ -1701,7 +1701,7 @@ msgstr ""
 #: js/strings.js:52
 msgctxt "st"
 msgid "canonical"
-msgstr "Canonical URL"
+msgstr "Canonical"
 
 #: js/strings.js:53
 msgctxt "st"
@@ -1728,10 +1728,10 @@ msgctxt "fn"
 msgid "button"
 msgstr ""
 
-#: js/strings.js:59
+#: js/strings.js:60
 msgctxt "fn"
 msgid "cards"
-msgstr "List of tiles"
+msgstr "Tiles"
 
 #: js/strings.js:60
 msgctxt "fn"
@@ -1773,7 +1773,7 @@ msgctxt "fn"
 msgid "limit"
 msgstr ""
 
-#: js/strings.js:68
+#: js/strings.js:71
 msgctxt "fn"
 msgid "main"
 msgstr "Main image"
@@ -1813,15 +1813,15 @@ msgctxt "fn"
 msgid "url"
 msgstr "URL"
 
-#: js/strings.js:61
-msgctxt "fn"
-msgid "follow"
-msgstr "Link following"
-
 #: js/strings.js:64
 msgctxt "fn"
+msgid "follow"
+msgstr "Follow"
+
+#: js/strings.js:66
+msgctxt "fn"
 msgid "index"
-msgstr "Indexing"
+msgstr "Index"
 
 #: js/strings.js:77
 msgctxt "fn"

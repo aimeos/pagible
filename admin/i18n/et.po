@@ -1881,27 +1881,27 @@ msgstr "fail"
 #: js/strings.js:43
 msgctxt "st"
 msgid "hero"
-msgstr "kangelane"
+msgstr "Hero"
 
 #: js/strings.js:44
 msgctxt "st"
 msgid "cards"
-msgstr "kaardid"
+msgstr "Paanid"
 
 #: js/strings.js:45
 msgctxt "st"
 msgid "blog"
-msgstr "blogi"
+msgstr "Blogi"
 
 #: js/strings.js:46
 msgctxt "st"
 msgid "article"
-msgstr "artikkel"
+msgstr "Artikkel"
 
 #: js/strings.js:47
 msgctxt "st"
 msgid "questions"
-msgstr "küsimused"
+msgstr "KKK"
 
 #: js/strings.js:48
 msgctxt "st"
@@ -1926,7 +1926,12 @@ msgstr "sotsiaalmeedia"
 #: js/strings.js:52
 msgctxt "st"
 msgid "canonical"
-msgstr "kanooniline"
+msgstr "Kanooniline"
+
+#: js/strings.js:53
+msgctxt "st"
+msgid "robots"
+msgstr "Robotid"
 
 #: js/strings.js:53
 msgctxt "st"
@@ -1948,10 +1953,10 @@ msgctxt "fn"
 msgid "button"
 msgstr "nupp"
 
-#: js/strings.js:59
+#: js/strings.js:60
 msgctxt "fn"
 msgid "cards"
-msgstr "kaardid"
+msgstr "Paanid"
 
 #: js/strings.js:60
 msgctxt "fn"
@@ -1968,10 +1973,20 @@ msgctxt "fn"
 msgid "files"
 msgstr "failid"
 
+#: js/strings.js:64
+msgctxt "fn"
+msgid "follow"
+msgstr "Follow"
+
 #: js/strings.js:63
 msgctxt "fn"
 msgid "header"
 msgstr "pealkiri"
+
+#: js/strings.js:66
+msgctxt "fn"
+msgid "index"
+msgstr "Index"
 
 #: js/strings.js:64
 msgctxt "fn"
@@ -1993,10 +2008,10 @@ msgctxt "fn"
 msgid "limit"
 msgstr "piirata"
 
-#: js/strings.js:68
+#: js/strings.js:71
 msgctxt "fn"
 msgid "main"
-msgstr "peamine"
+msgstr "Põhipilt"
 
 #: js/strings.js:69
 msgctxt "fn"

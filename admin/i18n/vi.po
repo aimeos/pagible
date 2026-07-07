@@ -1879,27 +1879,27 @@ msgstr "tệp"
 #: js/strings.js:43
 msgctxt "st"
 msgid "hero"
-msgstr "anh hùng"
+msgstr "Hero"
 
 #: js/strings.js:44
 msgctxt "st"
 msgid "cards"
-msgstr "thẻ"
+msgstr "Ô"
 
 #: js/strings.js:45
 msgctxt "st"
 msgid "blog"
-msgstr "blog"
+msgstr "Blog"
 
 #: js/strings.js:46
 msgctxt "st"
 msgid "article"
-msgstr "bài viết"
+msgstr "Bài viết"
 
 #: js/strings.js:47
 msgctxt "st"
 msgid "questions"
-msgstr "các câu hỏi"
+msgstr "FAQ"
 
 #: js/strings.js:48
 msgctxt "st"
@@ -1924,7 +1924,12 @@ msgstr "mạng xã hội"
 #: js/strings.js:52
 msgctxt "st"
 msgid "canonical"
-msgstr "chuẩn"
+msgstr "Chính tắc"
+
+#: js/strings.js:53
+msgctxt "st"
+msgid "robots"
+msgstr "Robots"
 
 #: js/strings.js:53
 msgctxt "st"
@@ -1946,10 +1951,10 @@ msgctxt "fn"
 msgid "button"
 msgstr "nút"
 
-#: js/strings.js:59
+#: js/strings.js:60
 msgctxt "fn"
 msgid "cards"
-msgstr "thẻ"
+msgstr "Ô"
 
 #: js/strings.js:60
 msgctxt "fn"
@@ -1966,10 +1971,20 @@ msgctxt "fn"
 msgid "files"
 msgstr "tệp tin"
 
+#: js/strings.js:64
+msgctxt "fn"
+msgid "follow"
+msgstr "Follow"
+
 #: js/strings.js:63
 msgctxt "fn"
 msgid "header"
 msgstr "Đầu trang"
+
+#: js/strings.js:66
+msgctxt "fn"
+msgid "index"
+msgstr "Index"
 
 #: js/strings.js:64
 msgctxt "fn"
@@ -1991,10 +2006,10 @@ msgctxt "fn"
 msgid "limit"
 msgstr "giới hạn"
 
-#: js/strings.js:68
+#: js/strings.js:71
 msgctxt "fn"
 msgid "main"
-msgstr "chính"
+msgstr "Ảnh chính"
 
 #: js/strings.js:69
 msgctxt "fn"

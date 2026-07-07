@@ -6,6 +6,7 @@ msgstr ""
 "Language-Team: none\n"
 "Last-Translator: Automatically generated\n"
 "MIME-Version: 1.0\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 "Project-Id-Version: PACKAGE VERSION\n"
 
 #: js/ai.js:44
@@ -1169,7 +1170,6 @@ msgstr "ไม่มีแคช"
 msgid "%{num} minute"
 msgid_plural "%{num} minutes"
 msgstr[0] "%{num} นาที"
-msgstr[1] ""
 
 #: js/components/PageDetailItemProps.vue:61
 #: js/components/PageDetailItemProps.vue:62
@@ -1179,7 +1179,6 @@ msgstr[1] ""
 msgid "%{num} hour"
 msgid_plural "%{num} hours"
 msgstr[0] "%{num} ชั่วโมง"
-msgstr[1] ""
 
 #: js/components/PageDetailItemProps.vue:68
 #: js/views/PageList.vue:165
@@ -1885,7 +1884,7 @@ msgstr "ฮีโร่"
 #: js/strings.js:44
 msgctxt "st"
 msgid "cards"
-msgstr "การ์ด"
+msgstr "ไทล์"
 
 #: js/strings.js:45
 msgctxt "st"
@@ -1900,7 +1899,7 @@ msgstr "บทความ"
 #: js/strings.js:47
 msgctxt "st"
 msgid "questions"
-msgstr "คำถาม"
+msgstr "FAQ"
 
 #: js/strings.js:48
 msgctxt "st"
@@ -1925,7 +1924,12 @@ msgstr "โซเชียลมีเดีย"
 #: js/strings.js:52
 msgctxt "st"
 msgid "canonical"
-msgstr "คานอนิก"
+msgstr "Canonical"
+
+#: js/strings.js:53
+msgctxt "st"
+msgid "robots"
+msgstr "Robots"
 
 #: js/strings.js:53
 msgctxt "st"
@@ -1947,10 +1951,10 @@ msgctxt "fn"
 msgid "button"
 msgstr "ปุ่ม"
 
-#: js/strings.js:59
+#: js/strings.js:60
 msgctxt "fn"
 msgid "cards"
-msgstr "การ์ด"
+msgstr "ไทล์"
 
 #: js/strings.js:60
 msgctxt "fn"
@@ -1967,10 +1971,20 @@ msgctxt "fn"
 msgid "files"
 msgstr "ไฟล์"
 
+#: js/strings.js:64
+msgctxt "fn"
+msgid "follow"
+msgstr "Follow"
+
 #: js/strings.js:63
 msgctxt "fn"
 msgid "header"
 msgstr "หัวข้อ"
+
+#: js/strings.js:66
+msgctxt "fn"
+msgid "index"
+msgstr "Index"
 
 #: js/strings.js:64
 msgctxt "fn"
@@ -1992,10 +2006,10 @@ msgctxt "fn"
 msgid "limit"
 msgstr "ขีดจำกัด"
 
-#: js/strings.js:68
+#: js/strings.js:71
 msgctxt "fn"
 msgid "main"
-msgstr "หลัก"
+msgstr "รูปหลัก"
 
 #: js/strings.js:69
 msgctxt "fn"

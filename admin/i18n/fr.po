@@ -1881,27 +1881,27 @@ msgstr "fichier"
 #: js/strings.js:43
 msgctxt "st"
 msgid "hero"
-msgstr "héros"
+msgstr "Hero"
 
 #: js/strings.js:44
 msgctxt "st"
 msgid "cards"
-msgstr "cartes"
+msgstr "Tuiles"
 
 #: js/strings.js:45
 msgctxt "st"
 msgid "blog"
-msgstr "blog"
+msgstr "Blog"
 
 #: js/strings.js:46
 msgctxt "st"
 msgid "article"
-msgstr "article"
+msgstr "Article"
 
 #: js/strings.js:47
 msgctxt "st"
 msgid "questions"
-msgstr "questions"
+msgstr "FAQ"
 
 #: js/strings.js:48
 msgctxt "st"
@@ -1926,7 +1926,12 @@ msgstr "médias sociaux"
 #: js/strings.js:52
 msgctxt "st"
 msgid "canonical"
-msgstr "canonique"
+msgstr "Canonique"
+
+#: js/strings.js:53
+msgctxt "st"
+msgid "robots"
+msgstr "Robots"
 
 #: js/strings.js:53
 msgctxt "st"
@@ -1948,10 +1953,10 @@ msgctxt "fn"
 msgid "button"
 msgstr "bouton"
 
-#: js/strings.js:59
+#: js/strings.js:60
 msgctxt "fn"
 msgid "cards"
-msgstr "cartes"
+msgstr "Tuiles"
 
 #: js/strings.js:60
 msgctxt "fn"
@@ -1968,10 +1973,20 @@ msgctxt "fn"
 msgid "files"
 msgstr "dossiers"
 
+#: js/strings.js:64
+msgctxt "fn"
+msgid "follow"
+msgstr "Follow"
+
 #: js/strings.js:63
 msgctxt "fn"
 msgid "header"
 msgstr "en-tête"
+
+#: js/strings.js:66
+msgctxt "fn"
+msgid "index"
+msgstr "Index"
 
 #: js/strings.js:64
 msgctxt "fn"
@@ -1993,10 +2008,10 @@ msgctxt "fn"
 msgid "limit"
 msgstr "limite"
 
-#: js/strings.js:68
+#: js/strings.js:71
 msgctxt "fn"
 msgid "main"
-msgstr "principal"
+msgstr "Image principale"
 
 #: js/strings.js:69
 msgctxt "fn"
