@@ -1889,27 +1889,27 @@ msgstr "الملف"
 #: js/strings.js:43
 msgctxt "st"
 msgid "hero"
-msgstr "بطل"
+msgstr "واجهة"
 
 #: js/strings.js:44
 msgctxt "st"
 msgid "cards"
-msgstr "البطاقات"
+msgstr "بطاقات"
 
 #: js/strings.js:45
 msgctxt "st"
 msgid "blog"
-msgstr "المدونة"
+msgstr "مدونة"
 
 #: js/strings.js:46
 msgctxt "st"
 msgid "article"
-msgstr "المقال"
+msgstr "مقال"
 
 #: js/strings.js:47
 msgctxt "st"
 msgid "questions"
-msgstr "أسئلة"
+msgstr "FAQ"
 
 #: js/strings.js:48
 msgctxt "st"
@@ -1934,7 +1934,12 @@ msgstr "وسائل التواصل الاجتماعي"
 #: js/strings.js:52
 msgctxt "st"
 msgid "canonical"
-msgstr "متعارف عليه"
+msgstr "أساسي"
+
+#: js/strings.js:53
+msgctxt "st"
+msgid "robots"
+msgstr "Robots"
 
 #: js/strings.js:53
 msgctxt "st"
@@ -1956,10 +1961,10 @@ msgctxt "fn"
 msgid "button"
 msgstr "الزر"
 
-#: js/strings.js:59
+#: js/strings.js:60
 msgctxt "fn"
 msgid "cards"
-msgstr "البطاقات"
+msgstr "بطاقات"
 
 #: js/strings.js:60
 msgctxt "fn"
@@ -1976,10 +1981,20 @@ msgctxt "fn"
 msgid "files"
 msgstr "الملفات"
 
+#: js/strings.js:64
+msgctxt "fn"
+msgid "follow"
+msgstr "Follow"
+
 #: js/strings.js:63
 msgctxt "fn"
 msgid "header"
 msgstr "الرأس"
+
+#: js/strings.js:66
+msgctxt "fn"
+msgid "index"
+msgstr "Index"
 
 #: js/strings.js:64
 msgctxt "fn"
@@ -2001,10 +2016,10 @@ msgctxt "fn"
 msgid "limit"
 msgstr "الحد"
 
-#: js/strings.js:68
+#: js/strings.js:71
 msgctxt "fn"
 msgid "main"
-msgstr "الرئيسية"
+msgstr "صورة رئيسية"
 
 #: js/strings.js:69
 msgctxt "fn"

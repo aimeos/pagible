@@ -1923,6 +1923,11 @@ msgstr ""
 
 #: js/strings.js:53
 msgctxt "st"
+msgid "robots"
+msgstr ""
+
+#: js/strings.js:53
+msgctxt "st"
 msgid "theme"
 msgstr ""
 
@@ -1961,9 +1966,19 @@ msgctxt "fn"
 msgid "files"
 msgstr ""
 
+#: js/strings.js:64
+msgctxt "fn"
+msgid "follow"
+msgstr ""
+
 #: js/strings.js:63
 msgctxt "fn"
 msgid "header"
+msgstr ""
+
+#: js/strings.js:66
+msgctxt "fn"
+msgid "index"
 msgstr ""
 
 #: js/strings.js:64

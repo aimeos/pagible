@@ -1879,12 +1879,12 @@ msgstr "파일"
 #: js/strings.js:43
 msgctxt "st"
 msgid "hero"
-msgstr "영웅"
+msgstr "히어로"
 
 #: js/strings.js:44
 msgctxt "st"
 msgid "cards"
-msgstr "카드"
+msgstr "타일"
 
 #: js/strings.js:45
 msgctxt "st"
@@ -1894,12 +1894,12 @@ msgstr "블로그"
 #: js/strings.js:46
 msgctxt "st"
 msgid "article"
-msgstr "기사"
+msgstr "글"
 
 #: js/strings.js:47
 msgctxt "st"
 msgid "questions"
-msgstr "질문"
+msgstr "FAQ"
 
 #: js/strings.js:48
 msgctxt "st"
@@ -1924,7 +1924,12 @@ msgstr "소셜 미디어"
 #: js/strings.js:52
 msgctxt "st"
 msgid "canonical"
-msgstr "정식"
+msgstr "표준 URL"
+
+#: js/strings.js:53
+msgctxt "st"
+msgid "robots"
+msgstr "Robots"
 
 #: js/strings.js:53
 msgctxt "st"
@@ -1946,10 +1951,10 @@ msgctxt "fn"
 msgid "button"
 msgstr "버튼"
 
-#: js/strings.js:59
+#: js/strings.js:60
 msgctxt "fn"
 msgid "cards"
-msgstr "카드"
+msgstr "타일"
 
 #: js/strings.js:60
 msgctxt "fn"
@@ -1966,10 +1971,20 @@ msgctxt "fn"
 msgid "files"
 msgstr "파일"
 
+#: js/strings.js:64
+msgctxt "fn"
+msgid "follow"
+msgstr "Follow"
+
 #: js/strings.js:63
 msgctxt "fn"
 msgid "header"
 msgstr "헤더"
+
+#: js/strings.js:66
+msgctxt "fn"
+msgid "index"
+msgstr "Index"
 
 #: js/strings.js:64
 msgctxt "fn"
@@ -1991,10 +2006,10 @@ msgctxt "fn"
 msgid "limit"
 msgstr "limit"
 
-#: js/strings.js:68
+#: js/strings.js:71
 msgctxt "fn"
 msgid "main"
-msgstr "메인"
+msgstr "대표 이미지"
 
 #: js/strings.js:69
 msgctxt "fn"

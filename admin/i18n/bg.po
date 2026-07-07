@@ -1881,27 +1881,27 @@ msgstr "файл"
 #: js/strings.js:43
 msgctxt "st"
 msgid "hero"
-msgstr "герой"
+msgstr "Hero"
 
 #: js/strings.js:44
 msgctxt "st"
 msgid "cards"
-msgstr "карти"
+msgstr "Плочки"
 
 #: js/strings.js:45
 msgctxt "st"
 msgid "blog"
-msgstr "блог"
+msgstr "Блог"
 
 #: js/strings.js:46
 msgctxt "st"
 msgid "article"
-msgstr "статия"
+msgstr "Статия"
 
 #: js/strings.js:47
 msgctxt "st"
 msgid "questions"
-msgstr "въпроси"
+msgstr "FAQ"
 
 #: js/strings.js:48
 msgctxt "st"
@@ -1926,7 +1926,12 @@ msgstr "социални медии"
 #: js/strings.js:52
 msgctxt "st"
 msgid "canonical"
-msgstr "каноничен"
+msgstr "Каноничен"
+
+#: js/strings.js:53
+msgctxt "st"
+msgid "robots"
+msgstr "Robots"
 
 #: js/strings.js:53
 msgctxt "st"
@@ -1948,10 +1953,10 @@ msgctxt "fn"
 msgid "button"
 msgstr "бутон"
 
-#: js/strings.js:59
+#: js/strings.js:60
 msgctxt "fn"
 msgid "cards"
-msgstr "карти"
+msgstr "Плочки"
 
 #: js/strings.js:60
 msgctxt "fn"
@@ -1968,10 +1973,20 @@ msgctxt "fn"
 msgid "files"
 msgstr "файлове"
 
+#: js/strings.js:64
+msgctxt "fn"
+msgid "follow"
+msgstr "Follow"
+
 #: js/strings.js:63
 msgctxt "fn"
 msgid "header"
 msgstr "заглавие"
+
+#: js/strings.js:66
+msgctxt "fn"
+msgid "index"
+msgstr "Index"
 
 #: js/strings.js:64
 msgctxt "fn"
@@ -1993,10 +2008,10 @@ msgctxt "fn"
 msgid "limit"
 msgstr "ограничение"
 
-#: js/strings.js:68
+#: js/strings.js:71
 msgctxt "fn"
 msgid "main"
-msgstr "основен"
+msgstr "Основна снимка"
 
 #: js/strings.js:69
 msgctxt "fn"
