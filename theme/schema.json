@@ -344,9 +344,9 @@
                         }
                     ]
                 },
-                "file": {
-                    "type": "media",
-                    "label": "media file"
+                "files": {
+                    "type": "images",
+                    "label": "images"
                 }
             }
         },
