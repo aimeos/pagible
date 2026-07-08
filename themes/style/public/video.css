@@ -4,11 +4,11 @@
  */
 
 .video video {
-    background-color: var(--pico-contrast-background);
-    border: 1px solid var(--pico-muted-border-color);
-    border-radius: calc(var(--pico-border-radius) * 4);
-    filter: drop-shadow(0 1.5rem 3rem #17120F14);
+    background-color: var(--pico-muted-background-color);
+    border: 1px solid var(--pico-muted-background-color);
+    border-radius: var(--pico-border-radius);
+    box-shadow: 0 1.5625rem 3.125rem -0.75rem var(--pico-box-shadow);
     max-width: 100%;
     display: block;
-    padding: 2rem;
+    overflow: hidden;
 }

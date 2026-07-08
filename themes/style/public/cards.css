@@ -4,35 +4,42 @@
 
 .cards .card-list {
     display: grid;
+    width: 100%;
     grid-template-columns: 1fr;
     justify-self: center;
-    gap: 1.5rem;
+    gap: 2rem;
 }
 
 @media screen and (min-width: 768px) {
     .cards .container {
-        max-width: 1320px !important;
+        max-width: min(82.5rem, 100%) !important;
     }
 
+    .cards .card-list {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media screen and (min-width: 1024px) {
     .cards .card-list {
         grid-template-columns: repeat(3, 1fr);
     }
 }
 
 .cards .card-item {
-    background-color: var(--pico-contrast-background);
-    border: 1px solid var(--pico-muted-border-color);
+    background-color: var(--pico-background-color);
+    border: 1px solid var(--pico-muted-background-color);
     border-radius: var(--pico-border-radius);
-    transition: box-shadow 0.3s ease, transform 0.3s ease, border-color 0.3s ease;
     overflow: hidden;
     text-align: start;
     padding: 0;
+    transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
 }
 
 .cards .card-item:hover {
-    box-shadow: 0 1rem 2.5rem #17120F12;
-    border-color: var(--pico-contrast-border);
-    transform: translateY(-2px);
+    box-shadow: 0 1.5625rem 3.125rem -0.75rem var(--pico-box-shadow);
+    border-color: var(--pico-muted-background-color);
+    transform: translateY(-0.25rem);
 }
 
 .cards .card-item picture {
@@ -46,7 +53,7 @@
 }
 
 .cards .card-item img {
-    border-radius: var(--pico-border-radius);
+    border-radius: 0;
     background-color: var(--pico-muted-background-color);
     padding: 0;
     height: 100%;
@@ -56,19 +63,16 @@
 }
 
 .cards .title {
-    font-family: var(--pico-font-family-display);
-    font-size: calc(var(--pico-font-size) * 1.65);
-    letter-spacing: 0;
+    font-size: clamp(1.5rem, 4vw, 2.5rem);
     margin: 1.5rem 1.5rem 0.75rem;
     font-weight: 700;
     line-height: 0.98;
-    text-transform: uppercase;
 }
 
 .cards .text p {
-    font-size: calc(var(--pico-font-size) * 0.75);
+    font-size: calc(var(--pico-font-size) * 0.85);
     line-height: 1.7;
-    color: var(--pico-muted-color);
+    color: var(--pico-muted-background-color);
     margin-inline: 1.5rem;
 }
 

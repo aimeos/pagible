@@ -5,124 +5,123 @@
 .hero {
     overflow: hidden;
     position: relative;
-    border-bottom: 1px solid var(--pico-muted-border-color);
-}
-
-.hero .background {
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-}
-
-.hero .background img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-@keyframes hero-zoom {
-    from { transform: scale(1); }
-    to { transform: scale(1.1); }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-    .hero .background.zoom img {
-        animation: hero-zoom 10s ease-in-out infinite alternate;
-    }
+    background: var(--pico-background-color);
+    border-bottom: 1px solid var(--pico-muted-background-color);
 }
 
 .hero .container {
+    width: min(80rem, 100%);
+    margin-inline: auto;
+    padding: 7.5rem 2rem 0;
     display: flex;
     flex-direction: column;
-    align-items: stretch;
-    padding: 4rem min(5%, 2rem) 3.5rem;
+    align-items: center;
+    text-align: center;
+    position: relative;
 }
 
 .hero .first {
-    text-align: start;
-    margin: auto 0;
-}
-
-.hero .second {
-    display: block;
+    margin: 0 auto;
     width: 100%;
-    margin: auto;
 }
 
-.hero .first:has(+ .second),
-.hero .first:has(+ .second) h1 {
-    text-align: start;
-    margin-left: 0;
-    margin-right: 0;
-}
-
-.hero h1 {
-    margin-top: 0;
-    margin-bottom: 1.25rem;
-    font-size: calc(var(--pico-font-size) * 4);
-    font-weight: 700;
-    line-height: 0.86;
-    letter-spacing: 0;
-    text-align: inherit;
-    text-transform: uppercase;
+.hero .first h1,
+.hero .first .h1 {
+    font-size: clamp(3.6rem, 12vw, 8.75rem);
+    margin-bottom: 4rem;
 }
 
 .hero .subtitle {
-    display: inline-block;
-    margin-bottom: 1.25rem;
-    padding: 0;
-    color: var(--pico-secondary);
-    font-size: calc(var(--pico-font-size) * 0.62);
-    font-weight: 500;
-    letter-spacing: 0;
+    margin-bottom: 2rem;
+    padding-inline: 1.5rem;
+    padding-block: 0.5rem;
+    border: 1px solid var(--pico-muted-background-color);
+    border-radius: calc(var(--pico-border-radius) * 999);
+    display: inline-flex;
+    align-items: center;
+    font-size: calc(var(--pico-font-size, 1rem) * 0.75);
     text-transform: uppercase;
-}
-
-.hero .subtitle::after {
-    content: none;
+    letter-spacing: 0.12em;
 }
 
 .hero p {
     line-height: 1.7;
-    color: var(--pico-muted-color);
-    font-size: calc(var(--pico-font-size) * 0.9);
-    font-weight: 400;
-    letter-spacing: 0;
-    max-width: 34rem;
-    margin-left: 0;
-    margin-right: 0;
+    max-width: 64rem;
+    margin-inline: auto;
+    color: var(--pico-muted-background-color);
+    font-size: calc(var(--pico-font-size) * 1.25);
 }
 
 .hero .actions {
-    padding: 1.5rem 0;
+    padding: 1.5rem 0 0;
 }
 
-.hero .btn {
-    margin: 0.5rem 0.25rem;
+.hero .btn,
+.hero button {
+    margin: .5rem;
+    font-size: 1.375rem;
 }
 
-.hero picture {
-    margin-top: 2rem;
+.hero .second {
+    width: min(62.5rem, 100%);
+    min-height: min(43.75rem, 70vw);
+    margin-top: 5rem;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.hero .second picture {
-    aspect-ratio: 4 / 5;
-    background-color: var(--pico-contrast-background);
-    border: 1px solid var(--pico-contrast);
+.hero .second::before,
+.hero .second::after {
+    content: "";
+    position: absolute;
+    display: block;
     border-radius: var(--pico-border-radius);
-    filter: none;
-    width: 100%;
-    margin: 2rem auto 0;
-    padding: 0;
-    display: block;
-    overflow: hidden;
+    background: var(--pico-muted-background-color);
+    box-shadow: 0 0 0 0.25rem var(--pico-background-color), 0 1.5625rem 3.125rem -0.75rem var(--pico-box-shadow);
+    z-index: 0;
 }
 
-.hero .second img {
+.hero .second::before {
+    left: 0;
+    bottom: 3rem;
+    width: 35%;
+    height: 60%;
+}
+
+.hero .second::after {
+    right: 0;
+    top: 3rem;
+    width: 30%;
+    height: 50%;
+}
+
+.hero .second picture,
+.hero .second video {
+    width: 80%;
+    height: 100%;
+    min-height: min(43.75rem, 70vw);
+    margin: 0 auto;
     display: block;
+    background: var(--pico-muted-background-color);
+    border-radius: var(--pico-border-radius);
+    box-shadow: 0 0 0 0.25rem var(--pico-background-color);
+    padding: 0;
+    overflow: hidden;
+    position: relative;
+    z-index: 1;
+}
+
+.hero .second picture img {
     width: 100%;
     height: 100%;
+}
+
+.hero .second picture img,
+.hero .second video {
     object-fit: cover;
+    display: block;
 }
 
 .hero .second.multiple {
@@ -154,30 +153,42 @@
     object-fit: cover;
 }
 
-@media screen and (min-width: 768px) {
+@media (max-width: 767px) {
     .hero .container {
-        padding: 5.5rem min(5%, 2rem);
+        padding-top: 5rem;
     }
 
-    .hero h1 {
-        font-size: calc(var(--pico-font-size) * 6.4);
+    .hero .first h1,
+    .hero .first .h1 {
+        margin-bottom: 3rem;
     }
 
-    .hero p {
-        font-size: calc(var(--pico-font-size) * 1);
+    .hero .second {
+        min-height: auto;
+        margin-top: 3rem;
+    }
+
+    .hero .second::before,
+    .hero .second::after {
+        display: none;
+    }
+
+    .hero .second picture,
+    .hero .second video {
+        width: 100%;
+        min-height: auto;
+        aspect-ratio: 5 / 3.5;
     }
 }
 
-@media screen and (min-width: 992px) {
-    .hero .container:has(.second) {
-        display: grid;
-        grid-template-columns: minmax(0, 1.05fr) minmax(22rem, 0.95fr);
-        align-items: center;
-        gap: 4rem;
-        min-height: 42rem;
+@media (min-width: 1024px) {
+    .hero .container {
+        padding-top: 7.5rem;
     }
 
-    .hero .second picture {
+    .hero .first h1,
+    .hero .h1 {
         margin-top: 0;
+        margin-bottom: 4rem;
     }
 }

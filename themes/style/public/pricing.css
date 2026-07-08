@@ -5,6 +5,7 @@
 .pricing .title {
     text-align: center;
     margin-bottom: 3rem;
+    color: var(--pico-color);
 }
 
 .pricing .title ~ .subtitle {
@@ -13,7 +14,7 @@
 
 .pricing .subtitle {
     text-align: center;
-    color: var(--pico-muted-color);
+    color: var(--pico-muted-background-color);
     margin-bottom: 3rem;
 }
 
@@ -23,8 +24,9 @@
     width: fit-content;
     margin: 0 auto 3rem;
     padding: 0.25rem;
-    background: var(--pico-muted-border-color);
-    border-radius: var(--pico-border-radius);
+    background: var(--pico-muted-background-color);
+    border: 1px solid var(--pico-muted-background-color);
+    border-radius: calc(var(--pico-border-radius) * 999);
 }
 
 .pricing .pricing-toggle > span {
@@ -33,7 +35,7 @@
     padding: 0.5rem 1.25rem;
     font-size: 0.875rem;
     font-weight: 500;
-    color: var(--pico-muted-color);
+    color: var(--pico-muted-background-color);
     cursor: pointer;
 }
 
@@ -42,7 +44,7 @@
 }
 
 .pricing .pricing-toggle.alt > span:first-child {
-    color: var(--pico-muted-color);
+    color: var(--pico-muted-background-color);
 }
 
 .pricing .pricing-toggle.alt > span:last-child {
@@ -55,8 +57,7 @@
     inset: 0.25rem;
     width: calc(50% - 0.25rem);
     background-color: var(--pico-background-color);
-    border-radius: calc(var(--pico-border-radius) * 1.5);
-    box-shadow: var(--pico-box-shadow);
+    border-radius: calc(var(--pico-border-radius) * 999);
     transition: transform 0.2s;
 }
 
@@ -89,19 +90,18 @@
     display: flex;
     flex-direction: column;
     padding: 2rem;
-    background-color: var(--pico-contrast-background);
-    border: 1px solid var(--pico-muted-border-color);
+    background-color: var(--pico-muted-background-color);
+    border: 1px solid var(--pico-muted-background-color);
     border-radius: var(--pico-border-radius);
-    box-shadow: var(--pico-box-shadow);
 }
 
 .pricing .pricing-item.highlight {
-    background-color: var(--pico-contrast);
-    color: var(--pico-contrast-inverse);
-    border-color: var(--pico-contrast);
+    background-color: var(--pico-color);
+    color: var(--pico-background-color);
+    border-color: var(--pico-color);
     padding-top: 3rem;
     padding-bottom: 3rem;
-    box-shadow: 0 1.5rem 4rem -1rem var(--pico-muted-border-color);
+    box-shadow: 0 1.5625rem 3.125rem -0.75rem var(--pico-box-shadow);
 }
 
 .pricing .badge {
@@ -109,9 +109,9 @@
     top: -0.75rem;
     left: 50%;
     transform: translateX(-50%);
-    background: var(--pico-secondary);
-    color: var(--pico-secondary-inverse);
-    border-radius: var(--pico-border-radius);
+    background: var(--pico-background-color);
+    color: var(--pico-color);
+    border-radius: calc(var(--pico-border-radius) * 999);
     font-weight: 500;
     font-size: 0.75rem;
     padding: 0.25rem 1rem;
@@ -131,11 +131,11 @@
     gap: 0.25rem;
     order: 3;
     padding-bottom: 1.5rem;
-    border-bottom: 1px solid var(--pico-muted-border-color);
+    border-bottom: 1px solid var(--pico-muted-background-color);
 }
 
 .pricing .highlight .price {
-    border-bottom-color: var(--pico-contrast-border);
+    border-bottom-color: var(--pico-muted-border-color);
 }
 
 .pricing .amount {
@@ -147,11 +147,11 @@
 
 .pricing .unit {
     font-size: 0.875rem;
-    color: var(--pico-muted-color);
+    color: var(--pico-muted-background-color);
 }
 
 .pricing .highlight .unit {
-    color: var(--pico-contrast-hover-background);
+    color: var(--pico-background-color);
 }
 
 .pricing .name {
@@ -163,14 +163,14 @@
 
 .pricing .pricing-header .text {
     font-size: 0.875rem;
-    color: var(--pico-muted-color);
+    color: var(--pico-muted-background-color);
     font-weight: 400;
     order: 2;
     margin: 0 0 0.75rem;
 }
 
 .pricing .highlight .pricing-header .text {
-    color: var(--pico-contrast-hover-background);
+    color: var(--pico-muted-color);
 }
 
 .pricing .features {
@@ -199,51 +199,41 @@
     flex-shrink: 0;
     width: 1rem;
     height: 1rem;
-    background-color: var(--pico-primary);
-    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='currentColor'%3E%3Cpath d='M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0'/%3E%3C/svg%3E");
+    background-color: var(--pico-color);
     mask-size: contain;
     mask-repeat: no-repeat;
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='currentColor'%3E%3Cpath d='M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0'/%3E%3C/svg%3E");
 }
 
 .pricing .highlight .name {
-    color: var(--pico-contrast-inverse);
+    color: var(--pico-background-color);
 }
 
 .pricing .highlight .features li {
-    color: var(--pico-contrast-inverse);
+    color: var(--pico-background-color);
 }
 
 .pricing .highlight .features li::before {
-    background-color: var(--pico-contrast-inverse);
+    background-color: var(--pico-background-color);
 }
 
-.pricing .btn {
+.pricing .btn,
+.pricing .btn:hover {
     display: block;
     width: 100%;
     text-align: center;
     padding: 0.75rem 1.5rem;
-    background-color: transparent;
-    color: var(--pico-contrast);
-    border: 1px solid var(--pico-muted-border-color);
-    border-radius: var(--pico-border-radius);
+    background-color: var(--pico-color);
+    color: var(--pico-background-color);
+    border: 1px solid var(--pico-background-color);
     text-decoration: none;
     font-weight: 500;
+    border-radius: calc(var(--pico-border-radius) * 999);
     transition: background-color 0.2s ease;
 }
 
-.pricing .btn:hover {
-    background-color: var(--pico-muted-background-color);
-    color: var(--pico-contrast);
-    opacity: 1;
-}
-
 .pricing .highlight .btn {
-    background-color: var(--pico-primary);
-    color: var(--pico-primary-inverse);
-    border-color: var(--pico-primary);
-}
-
-.pricing .highlight .btn:hover {
-    background-color: var(--pico-primary-hover);
-    color: var(--pico-primary-inverse);
+    background-color: var(--pico-background-color);
+    color: var(--pico-color);
+    border-color: var(--pico-background-color);
 }

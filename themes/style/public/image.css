@@ -12,12 +12,18 @@
 
 .image picture,
 picture.image {
-    border: 1px solid var(--pico-muted-border-color);
-    border-radius: calc(var(--pico-border-radius) * 4);
     display: block;
-    padding: 2rem;
+    margin: 0 auto;
+    padding: 0;
+    background: var(--pico-muted-background-color);
+    border: 1px solid var(--pico-muted-background-color);
+    border-radius: var(--pico-border-radius);
+    box-shadow: 0 1.5625rem 3.125rem -0.75rem var(--pico-box-shadow);
+    overflow: hidden;
 }
 
 .image picture img {
-    border-radius: calc(var(--pico-border-radius) * 2);
+    border-radius: var(--pico-border-radius);
+    width: 100%;
+    height: auto;
 }
