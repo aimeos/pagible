@@ -159,7 +159,7 @@
                             <li>
                                 @if($item->children->count())
                                     <details class="dropdown is-menu">
-                                        <summary role="menuitem">{{ cms($item, 'name') }}</summary>
+                                        <summary>{{ cms($item, 'name') }}</summary>
                                         <ul class="align">
                                             @foreach($item->children as $subItem)
                                                 @if(cms($subItem, 'status') == 1)
