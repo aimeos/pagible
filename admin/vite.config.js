@@ -23,7 +23,9 @@ const vuetifyLabs = readdirSync('node_modules/vuetify/lib/labs', { withFileTypes
 // supports the function form of manualChunks, so each node_modules package is
 // matched by path and mapped to its chunk name.
 const chunkGroups = {
-  ckeditor: ['ckeditor5', '@ckeditor/ckeditor5-vue'],
+  // CKEditor deliberately left ungrouped. Forcing it into a manual chunk makes
+  // Rolldown preserve the full export surface and pulls many editor features into
+  // one bundle, bloating the chunk significantly.
   charts: ['chart.js', 'vue-chartjs'],
   cropper: ['cropperjs'],
   diff: ['diff'],
