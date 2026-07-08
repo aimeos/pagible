@@ -71,12 +71,21 @@ class DemoTest extends ThemeTestAbstract
 
     public function testCommandAll(): void
     {
-        Schema::register( dirname( __DIR__, 2 ) . '/themes/luxury', 'luxury' );
+        $themeName = 'unit-' . getmypid();
+        $themePath = sys_get_temp_dir() . '/cms-test-theme-' . $themeName;
+
+        if( !is_dir( $themePath ) ) {
+            mkdir( $themePath, 0755, true );
+        }
+
+        file_put_contents( $themePath . '/schema.json', json_encode( ['label' => 'Unit Theme'] ) );
+
+        Schema::register( $themePath, $themeName );
 
         $this->artisan( 'cms:demo', ['--all' => true] )->assertExitCode( 0 );
 
-        Tenancy::$callback = fn() => 'luxury';
+        Tenancy::$callback = fn() => $themeName;
 
-        $this->assertSame( 'luxury', Page::where( 'tag', 'root' )->firstOrFail()->theme );
+        $this->assertSame( $themeName, Page::where( 'tag', 'root' )->firstOrFail()->theme );
     }
 }
