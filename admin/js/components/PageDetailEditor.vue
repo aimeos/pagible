@@ -77,8 +77,8 @@ export default {
     window.addEventListener('message', this.message)
 
     this.iframeLoad = () => {
-      if (this.url) {
-        this.$refs.iframe?.contentWindow?.postMessage('init', this.url)
+      if (this.origin) {
+        this.$refs.iframe?.contentWindow?.postMessage('init', this.origin)
       }
     }
     this.$refs.iframe?.addEventListener('load', this.iframeLoad)
@@ -106,15 +106,30 @@ export default {
       }
 
       const domain = this.item.domain || ''
+      let url = this.app.urlpage
 
-      if (this.app.urlpage.includes('_domain_') && !domain) {
+      if (!domain) {
+        url = url
+          .replace(/^[a-z][a-z\d+.-]*:\/\/_domain_/i, '')
+          .replace(/\/_domain_(?=\/|$)/, '')
+      }
+
+      return url
+        .replace(/_domain_/, domain)
+        .replace(/_path_/, this.item.path || '')
+        .replace(/([^:/])\/+$/, '$1')
+    },
+
+    origin() {
+      if (!this.url) {
         return null
       }
 
-      return this.app.urlpage
-        .replace(/_domain_/, domain)
-        .replace(/_path_/, this.item.path || '')
-        .replace(/\/+$/, '')
+      try {
+        return new URL(this.url, window.location.origin).origin
+      } catch {
+        return null
+      }
     }
   },
 
@@ -177,10 +192,9 @@ export default {
       // only accept messages coming from our own preview iframe and only from
       // the exact origin we navigated it to, not from arbitrary windows/frames
       // that may hold a reference to this window
-      let expected
-      try {
-        expected = new URL(this.url, window.location.origin).origin
-      } catch {
+      const expected = this.origin
+
+      if (!expected) {
         return
       }
 
@@ -217,8 +231,8 @@ export default {
     },
 
     reload() {
-      if (this.url) {
-        this.$refs.iframe?.contentWindow?.postMessage('reload', this.url)
+      if (this.origin) {
+        this.$refs.iframe?.contentWindow?.postMessage('reload', this.origin)
       }
     },
 
