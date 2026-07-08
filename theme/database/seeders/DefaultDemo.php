@@ -7,381 +7,69 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
-use Aimeos\Cms\Models\Version;
-use Aimeos\Cms\Models\Element;
-use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Utils;
 
 
-class DemoSeeder extends Seeder
+/**
+ * Default demo content showcasing all content element types.
+ *
+ * Used for the default theme and as fallback for themes that do not ship their
+ * own "\Database\Seeders\<Studly>Demo" provider (see AbstractDemo::create()).
+ */
+class DefaultDemo extends AbstractDemo
 {
-    private string $audioFile;
-    private string $element;
-    private string $file;
-    private string $theme;
-    private string $videoFile;
+    /**
+     * Builds the default demo page tree.
+     */
+    /**
+     * Curated Unsplash photos used across the default demo, keyed by purpose.
+     *
+     * @var array<string, array{0: string, 1: string, 2: string}>
+     */
+    private const PHOTOS = [
+        'hero'    => ['photo-1550751827-4bd374c3f58b', 'AI neural network', 'Glowing neural network visualization'],
+        'editing' => ['photo-1498050108023-c5249f4df085', 'AI-assisted editing', 'Developer editing code with AI assistance'],
+        'speed'   => ['photo-1526374965328-7f61d4dc18c5', 'Sub-millisecond speed', 'High-speed data streams'],
+        'scale'   => ['photo-1451187580459-43490279c0fa', 'Infinite scalability', 'Global network of connected nodes'],
+        'compare' => ['photo-1504384308090-c894fdcc538d', 'Performance benchmarks', 'Analytics dashboard with charts'],
+        'media'   => ['photo-1488590528505-98d2b5aba04b', 'Rich media', 'Modern data center hardware'],
+        'files'   => ['photo-1518770660439-4636190af475', 'File management', 'Close-up of a circuit board'],
+        'code'    => ['photo-1461749280684-dccba630e2f6', 'Developer experience', 'Source code on a screen'],
+    ];
 
 
-    public function __construct()
+    /**
+     * Builds the default demo page tree.
+     */
+    protected function pages() : void
     {
-        $this->theme = env( 'CMS_THEME', '' );
+        $home = $this->home();
+
+        $this->addBlog( $home )
+            ->addDocs( $home );
     }
 
 
     /**
-     * Seed demo content with all content element types.
-     * Pass theme name via CMS_THEME environment variable.
+     * Returns the file ID for a curated demo photo.
+     *
+     * @param string $key Photo key from self::PHOTOS
+     * @return string File ID
      */
-    public function run()
+    protected function img( string $key ) : string
     {
-        $tenant = env( 'CMS_TENANT', '' );
-
-        \Aimeos\Cms\Tenancy::$callback = fn() => $tenant;
-
-        File::where( 'tenant_id', $tenant )->forceDelete();
-        Version::where( 'tenant_id', $tenant )->forceDelete();
-        Element::where( 'tenant_id', $tenant )->forceDelete();
-        Page::where( 'tenant_id', $tenant )->forceDelete();
-
-        Page::withoutSyncingToSearch( function() {
-            Element::withoutSyncingToSearch( function() {
-                File::withoutSyncingToSearch( function() {
-                    $home = $this->home();
-
-                    $this->addBlog( $home )
-                        ->addDocs( $home );
-                } );
-            } );
-        } );
-
-        Page::query()->searchable();
-        Element::query()->searchable();
-        File::query()->searchable();
+        [$photo, $name, $desc] = self::PHOTOS[$key];
+        return $this->image( $photo, $name, $desc );
     }
 
 
-    protected function file() : string
-    {
-        if( !isset( $this->file ) )
-        {
-            $file = File::forceCreate( [
-                'mime' => 'image/jpeg',
-                'lang' => 'en',
-                'name' => 'PagibleAI CMS Dashboard',
-                'path' => 'https://picsum.photos/id/10/1500/1000',
-                'previews' => [
-                    '500' => 'https://picsum.photos/id/10/500/333',
-                    '1000' => 'https://picsum.photos/id/10/1000/666',
-                ],
-                'description' => ['en' => 'PagibleAI CMS delivers blazing-fast content management'],
-                'editor' => 'demo',
-            ] );
-
-            $version = $file->versions()->forceCreate( [
-                'lang' => 'en',
-                'data' => [
-                    'mime' => 'image/jpeg',
-                    'lang' => 'en',
-                    'name' => 'PagibleAI CMS Dashboard',
-                    'path' => 'https://picsum.photos/id/10/1500/1000',
-                    'previews' => [
-                        '500' => 'https://picsum.photos/id/10/500/333',
-                        '1000' => 'https://picsum.photos/id/10/1000/666',
-                    ],
-                    'description' => ['en' => 'PagibleAI CMS delivers blazing-fast content management'],
-                ],
-                'published' => true,
-                'editor' => 'demo',
-            ] );
-
-            $file->forceFill( ['latest_id' => $version->id] )->saveQuietly();
-            $file->publish( $version );
-            $this->file = $file->refresh()->id;
-        }
-
-        return $this->file;
-    }
-
-
-    protected function videoFile() : string
-    {
-        if( !isset( $this->videoFile ) )
-        {
-            $file = File::forceCreate( [
-                'mime' => 'video/mp4',
-                'lang' => 'en',
-                'name' => 'PagibleAI CMS Quick Tour',
-                'path' => 'https://www.w3schools.com/html/mov_bbb.mp4',
-                'previews' => ['500' => 'https://picsum.photos/id/20/500/333'],
-                'description' => ['en' => 'See how PagibleAI CMS simplifies content creation with AI assistance'],
-                'editor' => 'demo',
-            ] );
-
-            $version = $file->versions()->forceCreate( [
-                'lang' => 'en',
-                'data' => [
-                    'mime' => 'video/mp4',
-                    'lang' => 'en',
-                    'name' => 'PagibleAI CMS Quick Tour',
-                    'path' => 'https://www.w3schools.com/html/mov_bbb.mp4',
-                    'previews' => ['500' => 'https://picsum.photos/id/20/500/333'],
-                    'description' => ['en' => 'See how PagibleAI CMS simplifies content creation with AI assistance'],
-                ],
-                'published' => true,
-                'editor' => 'demo',
-            ] );
-
-            $file->forceFill( ['latest_id' => $version->id] )->saveQuietly();
-            $file->publish( $version );
-            $this->videoFile = $file->refresh()->id;
-        }
-
-        return $this->videoFile;
-    }
-
-
-    protected function audioFile() : string
-    {
-        if( !isset( $this->audioFile ) )
-        {
-            $file = File::forceCreate( [
-                'mime' => 'audio/mpeg',
-                'lang' => 'en',
-                'name' => 'PagibleAI CMS Podcast Episode',
-                'path' => 'https://www.w3schools.com/html/horse.mp3',
-                'previews' => [],
-                'description' => ['en' => 'Learn about PagibleAI CMS features in this audio overview'],
-                'editor' => 'demo',
-            ] );
-
-            $version = $file->versions()->forceCreate( [
-                'lang' => 'en',
-                'data' => [
-                    'mime' => 'audio/mpeg',
-                    'lang' => 'en',
-                    'name' => 'PagibleAI CMS Podcast Episode',
-                    'path' => 'https://www.w3schools.com/html/horse.mp3',
-                    'previews' => [],
-                    'description' => ['en' => 'Learn about PagibleAI CMS features in this audio overview'],
-                ],
-                'published' => true,
-                'editor' => 'demo',
-            ] );
-
-            $file->forceFill( ['latest_id' => $version->id] )->saveQuietly();
-            $file->publish( $version );
-            $this->audioFile = $file->refresh()->id;
-        }
-
-        return $this->audioFile;
-    }
-
-
-    protected function element() : string
-    {
-        if( !isset( $this->element ) )
-        {
-            $cards = [
-                ['title' => 'Product', 'text' => "Explore our tools\n\n- [Features](/)\n- [Pricing](/)"],
-                ['title' => 'Resources', 'text' => "Learn and grow\n\n- [Docs](/)\n- [Blog](/)"],
-                ['title' => 'Company', 'text' => "Get in touch\n\n- [About](/)\n- [Contact](/)"],
-            ];
-
-            $element = Element::forceCreate( [
-                'lang' => 'en',
-                'type' => 'cards',
-                'name' => 'Shared footer',
-                'data' => ['type' => 'cards', 'data' => ['cards' => $cards]],
-                'editor' => 'demo',
-            ] );
-
-            $version = $element->versions()->forceCreate( [
-                'lang' => 'en',
-                'data' => [
-                    'lang' => 'en',
-                    'type' => 'cards',
-                    'name' => 'Shared footer',
-                    'data' => ['cards' => $cards],
-                ],
-                'published' => true,
-                'editor' => 'demo',
-            ] );
-
-            $element->forceFill( ['latest_id' => $version->id] )->saveQuietly();
-            $element->publish( $version );
-            $this->element = $element->refresh()->id;
-        }
-
-        return $this->element;
-    }
-
-
-    protected function page( array $data, array $content, Page $parent, array $fileIds = [], array $meta = [] ) : Page
-    {
-        $elementId = $this->element();
-        $fileId = $this->file();
-
-        $meta = $data['meta'] ?? $meta ?: [
-            ['type' => 'meta-tags', 'data' => [
-                'description' => $data['title'] ?? '',
-                'keywords' => 'PagibleAI CMS, Laravel CMS, AI content management',
-            ]],
-            ['type' => 'social-media', 'data' => [
-                'title' => $data['title'] ?? '',
-                'description' => $data['title'] ?? '',
-                'file' => ['id' => $fileId, 'type' => 'file'],
-            ]],
-        ];
-
-        $content[] = ['id' => Utils::uid(), 'type' => 'heading', 'group' => 'footer', 'data' => ['level' => 2, 'title' => 'PagibleAI CMS']];
-        $content[] = ['type' => 'reference', 'refid' => $elementId, 'group' => 'footer'];
-
-        $page = Page::forceCreate( $data + [
-            'theme' => $this->theme,
-            'editor' => 'demo',
-            'meta' => $meta,
-            'content' => $content,
-        ] );
-        $page->appendToNode( $parent )->save();
-
-        $version = $page->versions()->forceCreate( [
-            'lang' => $data['lang'] ?? 'en',
-            'data' => array_diff_key( $data, ['content' => 1, 'meta' => 1] ) + [
-                'domain' => '',
-                'theme' => $this->theme,
-            ],
-            'aux' => ['meta' => $meta, 'content' => $content],
-            'published' => true,
-            'editor' => 'demo',
-        ] );
-
-        $version->elements()->attach( $elementId );
-        $version->files()->attach( array_unique( array_merge( [$fileId], $fileIds ) ) );
-
-        $page->forceFill( ['latest_id' => $version->id] )->saveQuietly();
-        $page->publish( $version );
-
-        return $page;
-    }
-
-
-    protected function home() : Page
-    {
-        $elementId = $this->element();
-        $fileId = $this->file();
-
-        $content = [
-            ['id' => Utils::uid(), 'type' => 'hero', 'group' => 'main', 'data' => [
-                'title' => 'PagibleAI CMS',
-                'subtitle' => 'AI-Powered Content Management for Laravel',
-                'text' => 'Create stunning websites effortlessly. PagibleAI CMS combines artificial intelligence with the elegance of Laravel to deliver the fastest, smartest CMS ever built.',
-                'url' => '/pricing',
-                'button' => 'See Plans',
-                'url-alternative' => '/contact',
-                'button-alternative' => 'Request a Demo',
-                'file' => ['id' => $fileId, 'type' => 'file'],
-            ]],
-            ['id' => Utils::uid(), 'type' => 'cards', 'group' => 'main', 'data' => [
-                'title' => 'Why Teams Love PagibleAI CMS',
-                'cards' => [
-                    ['title' => 'AI-Powered Editing', 'text' => 'PagibleAI CMS generates, translates, and refines content using built-in AI — saving hours of manual work every week.', 'file' => ['id' => $fileId, 'type' => 'file']],
-                    ['title' => 'Sub-Millisecond Speed', 'text' => 'Intelligent page caching in PagibleAI CMS delivers responses in under a millisecond, outperforming every traditional CMS.', 'file' => ['id' => $fileId, 'type' => 'file']],
-                    ['title' => 'Infinite Scalability', 'text' => 'PagibleAI CMS scales from a simple landing page to millions of pages without breaking a sweat — no infrastructure changes needed.', 'file' => ['id' => $fileId, 'type' => 'file']],
-                ],
-            ]],
-            ['id' => Utils::uid(), 'type' => 'pricing', 'group' => 'main', 'data' => [
-                'title' => 'Simple, Transparent Pricing',
-                'text' => 'PagibleAI CMS offers plans for every team size — from solo creators to enterprise organizations.',
-                'label' => 'Monthly',
-                'label-alternative' => 'Yearly',
-                'items' => [
-                    ['name' => 'Starter', 'price' => 'Free', 'unit' => '', 'text' => 'Perfect for personal projects', 'features' => "- 5 pages\n- Community support\n- All core themes\n- AI content suggestions", 'url' => '#', 'button' => 'Start Free'],
-                    ['name' => 'Pro', 'price' => '$29', 'unit' => '/mo', 'price-alternative' => '$290', 'unit-alternative' => '/yr', 'text' => 'For growing teams', 'features' => "- Unlimited pages\n- Priority support\n- Custom themes\n- Full AI suite\n- Multi-language", 'url' => '#', 'button' => 'Start Trial', 'highlight' => true, 'badge' => 'Most Popular'],
-                    ['name' => 'Enterprise', 'price' => '$99', 'unit' => '/mo', 'price-alternative' => '$990', 'unit-alternative' => '/yr', 'text' => 'For large organizations', 'features' => "- Everything in Pro\n- SLA guarantee\n- Dedicated support\n- Custom AI models\n- On-premise option", 'url' => '#', 'button' => 'Contact Sales'],
-                ],
-            ]],
-            ['id' => Utils::uid(), 'type' => 'questions', 'group' => 'main', 'data' => [
-                'title' => 'Frequently Asked Questions',
-                'items' => [
-                    ['title' => 'What makes PagibleAI CMS different from other platforms?', 'text' => 'PagibleAI CMS is the only Laravel CMS with native AI integration. It generates content, translates pages, and optimizes SEO automatically — all while delivering sub-millisecond page loads.'],
-                    ['title' => 'How quickly can I get started with PagibleAI CMS?', 'text' => 'In under two minutes. Run `composer require aimeos/pagible` and `php artisan cms:install` — your site is ready to publish immediately.'],
-                    ['title' => 'Is PagibleAI CMS suitable for large-scale projects?', 'text' => 'Absolutely. PagibleAI CMS handles millions of pages with ease thanks to its nested-set page tree, intelligent caching, and multi-tenant architecture.'],
-                    ['title' => 'Can I customize themes in PagibleAI CMS?', 'text' => 'Yes! PagibleAI CMS themes are standard Composer packages with Blade templates. Override only what you need — everything else inherits from the base theme automatically.'],
-                ],
-            ]],
-            ['id' => Utils::uid(), 'type' => 'contact', 'group' => 'main', 'data' => [
-                'title' => 'Ready to Experience PagibleAI CMS?',
-                'to' => 'hello@example.com',
-            ]],
-            ['id' => Utils::uid(), 'type' => 'heading', 'group' => 'footer', 'data' => ['level' => 2, 'title' => 'PagibleAI CMS']],
-            ['type' => 'reference', 'refid' => $elementId, 'group' => 'footer'],
-        ];
-
-        $page = Page::forceCreate( [
-            'lang' => 'en',
-            'name' => 'Home',
-            'title' => 'PagibleAI CMS — The Smartest Content Management for Laravel',
-            'path' => '',
-            'tag' => 'root',
-            'theme' => $this->theme,
-            'status' => 1,
-            'cache' => 5,
-            'editor' => 'demo',
-            'meta' => [
-                ['type' => 'meta-tags', 'data' => [
-                    'description' => 'PagibleAI CMS combines artificial intelligence with Laravel to deliver the fastest, smartest content management system ever built.',
-                    'keywords' => 'PagibleAI CMS, Laravel CMS, AI CMS, headless CMS, content management, PHP CMS',
-                ]],
-                ['type' => 'social-media', 'data' => [
-                    'title' => 'PagibleAI CMS — AI-Powered Content Management for Laravel',
-                    'description' => 'PagibleAI CMS combines artificial intelligence with Laravel to deliver the fastest, smartest CMS ever built.',
-                    'file' => ['id' => $fileId, 'type' => 'file'],
-                ]],
-            ],
-            'content' => $content,
-        ] );
-
-        $version = $page->versions()->forceCreate( [
-            'lang' => 'en',
-            'data' => [
-                'name' => 'Home',
-                'title' => 'PagibleAI CMS — The Smartest Content Management for Laravel',
-                'path' => '',
-                'tag' => 'root',
-                'domain' => '',
-                'theme' => $this->theme,
-                'status' => 1,
-                'cache' => 5,
-            ],
-            'aux' => [
-                'meta' => [
-                    ['type' => 'meta-tags', 'data' => [
-                        'description' => 'PagibleAI CMS combines artificial intelligence with Laravel to deliver the fastest, smartest content management system ever built.',
-                        'keywords' => 'PagibleAI CMS, Laravel CMS, AI CMS, headless CMS, content management, PHP CMS',
-                    ]],
-                    ['type' => 'social-media', 'data' => [
-                        'title' => 'PagibleAI CMS — AI-Powered Content Management for Laravel',
-                        'description' => 'PagibleAI CMS combines artificial intelligence with Laravel to deliver the fastest, smartest CMS ever built.',
-                        'file' => ['id' => $fileId, 'type' => 'file'],
-                    ]],
-                ],
-                'content' => $content,
-            ],
-            'published' => true,
-            'editor' => 'demo',
-        ] );
-
-        $version->files()->attach( $fileId );
-        $version->elements()->attach( $elementId );
-        $page->forceFill( ['latest_id' => $version->id] )->saveQuietly();
-        $page->publish( $version );
-
-        return $page;
-    }
-
-
+    /**
+     * Creates the blog section below the home page.
+     *
+     * @param Page $home Home page
+     * @return static Same object for fluent calls
+     */
     protected function addBlog( Page $home ) : static
     {
         $fileId = $this->file();
@@ -434,7 +122,7 @@ class DemoSeeder extends Seeder
         ], [
             ['id' => Utils::uid(), 'type' => 'article', 'group' => 'main', 'data' => [
                 'title' => 'Why PagibleAI CMS Outperforms Traditional Platforms',
-                'file' => ['id' => $fileId, 'type' => 'file'],
+                'file' => ['id' => $this->img( 'code' ), 'type' => 'file'],
                 'text' => "PagibleAI CMS redefines what a content management system can be — faster, smarter, and built for the modern web.\n\nTraditional CMS platforms carry decades of technical debt. **PagibleAI CMS** starts fresh with a clean architecture built on Laravel, delivering performance that legacy systems simply cannot match.\n\nWith native AI integration, PagibleAI CMS writes, translates, and optimizes content while you focus on strategy.",
             ]],
             ['id' => Utils::uid(), 'type' => 'image-text', 'group' => 'main', 'data' => [
@@ -495,23 +183,23 @@ class DemoSeeder extends Seeder
         ], [
             ['id' => Utils::uid(), 'type' => 'article', 'group' => 'main', 'data' => [
                 'title' => 'PagibleAI CMS Performance That Speaks for Itself',
-                'file' => ['id' => $fileId, 'type' => 'file'],
+                'file' => ['id' => $this->img( 'compare' ), 'type' => 'file'],
                 'text' => "Independent benchmarks confirm PagibleAI CMS delivers the fastest page rendering of any PHP-based CMS.\n\nSpeed matters for SEO, conversions, and user experience. PagibleAI CMS was engineered from the ground up for maximum performance — cached pages render in microseconds, not milliseconds.",
             ]],
             ['id' => Utils::uid(), 'type' => 'slideshow', 'group' => 'main', 'data' => [
                 'title' => 'PagibleAI CMS Benchmark Visualizations',
                 'files' => [
-                    ['id' => $fileId, 'type' => 'file'],
-                    ['id' => $fileId, 'type' => 'file'],
-                    ['id' => $fileId, 'type' => 'file'],
+                    ['id' => $this->img( 'compare' ), 'type' => 'file'],
+                    ['id' => $this->img( 'speed' ), 'type' => 'file'],
+                    ['id' => $this->img( 'scale' ), 'type' => 'file'],
                 ],
                 'main' => true,
             ]],
             ['id' => Utils::uid(), 'type' => 'slideshow', 'group' => 'main', 'data' => [
                 'title' => 'Infrastructure Comparison',
                 'files' => [
-                    ['id' => $fileId, 'type' => 'file'],
-                    ['id' => $fileId, 'type' => 'file'],
+                    ['id' => $this->img( 'files' ), 'type' => 'file'],
+                    ['id' => $this->img( 'code' ), 'type' => 'file'],
                 ],
             ]],
             ['id' => Utils::uid(), 'type' => 'table', 'group' => 'main', 'data' => [
@@ -553,7 +241,7 @@ class DemoSeeder extends Seeder
         ], [
             ['id' => Utils::uid(), 'type' => 'article', 'group' => 'main', 'data' => [
                 'title' => 'Rich Media Made Easy with PagibleAI CMS',
-                'file' => ['id' => $fileId, 'type' => 'file'],
+                'file' => ['id' => $this->img( 'media' ), 'type' => 'file'],
                 'text' => "PagibleAI CMS handles video, audio, and code with elegant simplicity — responsive, accessible, and fast.\n\nModern websites need more than text and images. PagibleAI CMS makes embedding rich media effortless with built-in players, syntax highlighting, and automatic accessibility features.",
             ]],
             ['id' => Utils::uid(), 'type' => 'video', 'group' => 'main', 'data' => [
@@ -598,11 +286,11 @@ class DemoSeeder extends Seeder
         ], [
             ['id' => Utils::uid(), 'type' => 'article', 'group' => 'main', 'data' => [
                 'title' => 'Effortless File Management in PagibleAI CMS',
-                'file' => ['id' => $fileId, 'type' => 'file'],
+                'file' => ['id' => $this->img( 'files' ), 'type' => 'file'],
                 'text' => "PagibleAI CMS automatically optimizes images, generates responsive srcsets, and serves files with perfect performance.\n\nUpload once, serve everywhere. PagibleAI CMS generates multiple image sizes on upload, creates responsive srcset attributes, enables lazy loading, and serves optimized formats like WebP — all without any configuration.",
             ]],
             ['id' => Utils::uid(), 'type' => 'image', 'group' => 'main', 'data' => [
-                'file' => ['id' => $fileId, 'type' => 'file'],
+                'file' => ['id' => $this->img( 'files' ), 'type' => 'file'],
                 'main' => true,
             ]],
             ['id' => Utils::uid(), 'type' => 'file', 'group' => 'main', 'data' => [
@@ -617,6 +305,12 @@ class DemoSeeder extends Seeder
     }
 
 
+    /**
+     * Creates the documentation section below the home page.
+     *
+     * @param Page $home Home page
+     * @return static Same object for fluent calls
+     */
     protected function addDocs( Page $home ) : static
     {
         $fileId = $this->file();
@@ -870,5 +564,125 @@ class DemoSeeder extends Seeder
         ], $docs, [$fileId] );
 
         return $this;
+    }
+
+
+    /**
+     * Creates the home page and returns it.
+     *
+     * @return Page Home page
+     */
+    protected function home() : Page
+    {
+        $elementId = $this->element();
+        $fileId = $this->file();
+
+        $content = [
+            ['id' => Utils::uid(), 'type' => 'hero', 'group' => 'main', 'data' => [
+                'title' => 'PagibleAI CMS',
+                'subtitle' => 'AI-Powered Content Management for Laravel',
+                'text' => 'Create stunning websites effortlessly. PagibleAI CMS combines artificial intelligence with the elegance of Laravel to deliver the fastest, smartest CMS ever built.',
+                'url' => '/pricing',
+                'button' => 'See Plans',
+                'url-alternative' => '/contact',
+                'button-alternative' => 'Request a Demo',
+                'file' => ['id' => $this->img( 'hero' ), 'type' => 'file'],
+            ]],
+            ['id' => Utils::uid(), 'type' => 'cards', 'group' => 'main', 'data' => [
+                'title' => 'Why Teams Love PagibleAI CMS',
+                'cards' => [
+                    ['title' => 'AI-Powered Editing', 'text' => 'PagibleAI CMS generates, translates, and refines content using built-in AI — saving hours of manual work every week.', 'file' => ['id' => $this->img( 'editing' ), 'type' => 'file']],
+                    ['title' => 'Sub-Millisecond Speed', 'text' => 'Intelligent page caching in PagibleAI CMS delivers responses in under a millisecond, outperforming every traditional CMS.', 'file' => ['id' => $this->img( 'speed' ), 'type' => 'file']],
+                    ['title' => 'Infinite Scalability', 'text' => 'PagibleAI CMS scales from a simple landing page to millions of pages without breaking a sweat — no infrastructure changes needed.', 'file' => ['id' => $this->img( 'scale' ), 'type' => 'file']],
+                ],
+            ]],
+            ['id' => Utils::uid(), 'type' => 'pricing', 'group' => 'main', 'data' => [
+                'title' => 'Simple, Transparent Pricing',
+                'text' => 'PagibleAI CMS offers plans for every team size — from solo creators to enterprise organizations.',
+                'label' => 'Monthly',
+                'label-alternative' => 'Yearly',
+                'items' => [
+                    ['name' => 'Starter', 'price' => 'Free', 'unit' => '', 'text' => 'Perfect for personal projects', 'features' => "- 5 pages\n- Community support\n- All core themes\n- AI content suggestions", 'url' => '#', 'button' => 'Start Free'],
+                    ['name' => 'Pro', 'price' => '$29', 'unit' => '/mo', 'price-alternative' => '$290', 'unit-alternative' => '/yr', 'text' => 'For growing teams', 'features' => "- Unlimited pages\n- Priority support\n- Custom themes\n- Full AI suite\n- Multi-language", 'url' => '#', 'button' => 'Start Trial', 'highlight' => true, 'badge' => 'Most Popular'],
+                    ['name' => 'Enterprise', 'price' => '$99', 'unit' => '/mo', 'price-alternative' => '$990', 'unit-alternative' => '/yr', 'text' => 'For large organizations', 'features' => "- Everything in Pro\n- SLA guarantee\n- Dedicated support\n- Custom AI models\n- On-premise option", 'url' => '#', 'button' => 'Contact Sales'],
+                ],
+            ]],
+            ['id' => Utils::uid(), 'type' => 'questions', 'group' => 'main', 'data' => [
+                'title' => 'Frequently Asked Questions',
+                'items' => [
+                    ['title' => 'What makes PagibleAI CMS different from other platforms?', 'text' => 'PagibleAI CMS is the only Laravel CMS with native AI integration. It generates content, translates pages, and optimizes SEO automatically — all while delivering sub-millisecond page loads.'],
+                    ['title' => 'How quickly can I get started with PagibleAI CMS?', 'text' => 'In under two minutes. Run `composer require aimeos/pagible` and `php artisan cms:install` — your site is ready to publish immediately.'],
+                    ['title' => 'Is PagibleAI CMS suitable for large-scale projects?', 'text' => 'Absolutely. PagibleAI CMS handles millions of pages with ease thanks to its nested-set page tree, intelligent caching, and multi-tenant architecture.'],
+                    ['title' => 'Can I customize themes in PagibleAI CMS?', 'text' => 'Yes! PagibleAI CMS themes are standard Composer packages with Blade templates. Override only what you need — everything else inherits from the base theme automatically.'],
+                ],
+            ]],
+            ['id' => Utils::uid(), 'type' => 'contact', 'group' => 'main', 'data' => [
+                'title' => 'Ready to Experience PagibleAI CMS?',
+                'to' => 'hello@example.com',
+            ]],
+            ['id' => Utils::uid(), 'type' => 'heading', 'group' => 'footer', 'data' => ['level' => 2, 'title' => 'PagibleAI CMS']],
+            ['type' => 'reference', 'refid' => $elementId, 'group' => 'footer'],
+        ];
+
+        $page = Page::forceCreate( [
+            'lang' => 'en',
+            'name' => 'Home',
+            'title' => 'PagibleAI CMS — The Smartest Content Management for Laravel',
+            'path' => '',
+            'tag' => 'root',
+            'theme' => $this->theme,
+            'status' => 1,
+            'cache' => 5,
+            'editor' => 'demo',
+            'meta' => [
+                ['type' => 'meta-tags', 'data' => [
+                    'description' => 'PagibleAI CMS combines artificial intelligence with Laravel to deliver the fastest, smartest content management system ever built.',
+                    'keywords' => 'PagibleAI CMS, Laravel CMS, AI CMS, headless CMS, content management, PHP CMS',
+                ]],
+                ['type' => 'social-media', 'data' => [
+                    'title' => 'PagibleAI CMS — AI-Powered Content Management for Laravel',
+                    'description' => 'PagibleAI CMS combines artificial intelligence with Laravel to deliver the fastest, smartest CMS ever built.',
+                    'file' => ['id' => $fileId, 'type' => 'file'],
+                ]],
+            ],
+            'content' => $content,
+        ] );
+
+        $version = $page->versions()->forceCreate( [
+            'lang' => 'en',
+            'data' => [
+                'name' => 'Home',
+                'title' => 'PagibleAI CMS — The Smartest Content Management for Laravel',
+                'path' => '',
+                'tag' => 'root',
+                'domain' => '',
+                'theme' => $this->theme,
+                'status' => 1,
+                'cache' => 5,
+            ],
+            'aux' => [
+                'meta' => [
+                    ['type' => 'meta-tags', 'data' => [
+                        'description' => 'PagibleAI CMS combines artificial intelligence with Laravel to deliver the fastest, smartest content management system ever built.',
+                        'keywords' => 'PagibleAI CMS, Laravel CMS, AI CMS, headless CMS, content management, PHP CMS',
+                    ]],
+                    ['type' => 'social-media', 'data' => [
+                        'title' => 'PagibleAI CMS — AI-Powered Content Management for Laravel',
+                        'description' => 'PagibleAI CMS combines artificial intelligence with Laravel to deliver the fastest, smartest CMS ever built.',
+                        'file' => ['id' => $fileId, 'type' => 'file'],
+                    ]],
+                ],
+                'content' => $content,
+            ],
+            'published' => true,
+            'editor' => 'demo',
+        ] );
+
+        $version->files()->attach( $fileId );
+        $version->elements()->attach( $elementId );
+        $page->forceFill( ['latest_id' => $version->id] )->saveQuietly();
+        $page->publish( $version );
+
+        return $page;
     }
 }

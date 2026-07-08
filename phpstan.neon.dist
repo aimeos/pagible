@@ -18,3 +18,4 @@ parameters:
 		- backup/src
 		- cashier/src
 		- theme/src
+		- theme/database/seeders
