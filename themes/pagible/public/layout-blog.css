@@ -7,6 +7,6 @@ main .cms-content {
     margin: auto;
 }
 
-main .cms-content .container {
+main .container {
     padding: 0 min(5%, 2rem);
 }
