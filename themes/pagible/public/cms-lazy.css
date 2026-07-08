@@ -157,3 +157,54 @@ pre:has(code[class*="language-"]) {
 footer.bottom {
     text-align: center;
 }
+
+/* Content tables (markdown/HTML) — mirrors table.css .table-responsive */
+.cms-content table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    background-color: var(--pico-background-color);
+}
+
+.cms-content th,
+.cms-content td {
+    padding: calc(var(--pico-spacing) / 2) var(--pico-spacing);
+    border-bottom: var(--pico-border-width) solid var(--pico-table-border-color);
+    vertical-align: middle;
+}
+
+.cms-content th {
+    background-color: var(--pico-muted-background-color);
+    font-weight: 500;
+    text-align: center;
+}
+
+.cms-content th * {
+    color: var(--pico-contrast-hover);
+}
+
+.cms-content th:first-child {
+    text-align: start;
+}
+
+.cms-content td {
+    text-align: center;
+}
+
+.cms-content th > *:first-child,
+.cms-content td > *:first-child {
+    margin-top: 0;
+}
+
+.cms-content th > *:last-child,
+.cms-content td > *:last-child {
+    margin-bottom: 0;
+}
+
+.cms-content th img {
+    display: block;
+    margin-top: 0.75rem;
+    margin-bottom: 0.75rem;
+    height: 100%;
+    width: 100%;
+}
