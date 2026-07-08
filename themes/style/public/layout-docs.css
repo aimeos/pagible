@@ -3,7 +3,7 @@
  */
 
 main {
-    max-width: 1280px;
+    max-width: 80rem;
     margin: auto;
     width: 100%;
 }
@@ -20,8 +20,8 @@ main .container {
 
 main nav.sidebar {
     background: var(--pico-background-color);
-    border-inline-end: 1px solid var(--pico-muted-border-color);
-    transition: left 0.3s ease;
+    border-inline-end: 1px solid var(--pico-muted-background-color);
+    transition: left 0.3s ease, right 0.3s ease;
     position: absolute;
     z-index: 95;
     height: 100%;
@@ -30,7 +30,6 @@ main nav.sidebar {
 }
 
 [dir="rtl"] main nav.sidebar {
-    transition: right 0.3s ease;
     right: -20rem;
     left: 0;
 }
@@ -46,7 +45,7 @@ main nav.sidebar.show {
 @media screen and (max-width: 991px) {
     header nav .sidebar-open.show,
     header nav .sidebar-close.show {
-        display: block;
+        display: flex;
     }
 }
 
@@ -61,6 +60,7 @@ main nav.sidebar.show {
         height: unset;
         width: 20rem;
         left: 0;
+        border-inline-end: 1px solid var(--pico-muted-background-color);
     }
 
     [dir="rtl"] main nav.sidebar {
@@ -104,7 +104,7 @@ main nav.sidebar a {
 }
 
 main nav.sidebar a:hover {
-    color: var(--pico-primary);
+    color: var(--pico-color);
     opacity: 1;
 }
 
@@ -115,24 +115,14 @@ main nav.sidebar summary a {
 }
 
 main nav.sidebar details.is-menu[open] > summary a {
-    color: var(--pico-primary);
-}
-
-main nav.sidebar details.is-menu[open] > summary svg {
-    transform: rotate(90deg);
-}
-
-[dir="rtl"] main nav.sidebar svg {
-    transform:scaleX(-1);
-}
-
-main nav.sidebar .menu-item {
-    justify-content: space-between;
-    align-items: center;
-    display: flex;
+    color: var(--pico-color);
 }
 
 main nav.sidebar details summary::marker,
 main nav.sidebar details summary ::-webkit-details-marker {
     content: "";
+}
+
+main nav.sidebar details[open] .menu {
+    margin-block-start: 0.5rem;
 }

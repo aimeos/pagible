@@ -4,20 +4,20 @@
  */
 
 .table-responsive {
-    background-color: var(--pico-contrast-background);
-    border: 1px solid var(--pico-muted-border-color);
-    border-radius: calc(var(--pico-border-radius) * 4);
+    background: var(--pico-muted-background-color);
+    border: 1px solid var(--pico-muted-background-color);
+    border-radius: calc(var(--pico-border-radius) * 2);
     padding: 2rem;
 }
 
 .table-responsive .table-row {
     display: flex;
     align-items: center;
-    border-bottom: 1px solid var(--pico-muted-border-color);
+    border-bottom: 1px solid var(--pico-muted-background-color);
 }
 
 .table-responsive .table-col {
-    padding: calc(var(--pico-spacing) / 2) var(--pico-spacing);
+    padding: calc(var(--spacing) / 2) var(--spacing);
     flex: 1;
 }
 
@@ -26,25 +26,30 @@
     flex-direction: column;
     justify-content: center;
     align-self: stretch;
-    color: var(--pico-contrast);
+    color: var(--pico-color);
     font-weight: 500;
     font-family: var(--pico-font-family-display);
     font-size: calc(var(--pico-font-size) * 0.85);
-    letter-spacing: 0;
     text-transform: uppercase;
     text-align: center;
+    letter-spacing: 0;
 }
 
 .table-responsive .th:first-child {
     text-align: start;
 }
 
-.table-responsive .table-row:first-child .th:first-child:not(.col) {
+.table-responsive .table-row:first-child .table-col:first-child {
+    text-align: center;
+}
+
+.table-responsive .table-row:first-child .table-col:first-child:not(.col) {
     text-align: center;
 }
 
 .table-responsive .td {
-    font-size: calc(var(--pico-font-size) * 0.75);
+    font-size: var(--pico-font-size);
+    color: var(--pico-muted-color);
     text-align: center;
     align-self: center;
 }
@@ -59,12 +64,11 @@
     margin-bottom: 0;
 }
 
-.table-responsive .th img {
+.table-responsive .th img,
+.table-responsive .td img {
     display: block;
     margin-top: 0.75rem;
     margin-bottom: 0.75rem;
-    align-content: end;
-    text-align: center;
     height: 100%;
     width: 100%;
 }
@@ -75,7 +79,7 @@
     }
 
     .table-responsive .table-row:first-child .table-col:first-child {
-        display: none
+        display: none;
     }
 
     .table-responsive .table-col:first-child {

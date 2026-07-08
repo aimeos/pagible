@@ -4,17 +4,17 @@
  */
 
 dialog > article {
-    background-color: var(--pico-contrast-inverse);
+    background-color: var(--pico-background-color);
+    color: var(--pico-color);
     height: calc(100vh - 2rem);
     overflow: unset;
-    border: 1px solid var(--pico-muted-border-color);
-    border-radius: calc(var(--pico-border-radius) * 4);
+    border: 1px solid var(--pico-muted-background-color);
+    border-radius: calc(var(--pico-border-radius) * 3);
 }
 
 dialog header {
     background-color: var(--pico-muted-background-color);
-    border-bottom: 1px solid var(--pico-muted-border-color);
-    border-radius: calc(var(--pico-border-radius) * 2) calc(var(--pico-border-radius) * 2) 0 0;
+    border-bottom: 1px solid var(--pico-muted-background-color);
 }
 
 dialog form {
@@ -24,8 +24,8 @@ dialog form {
 
 dialog input,
 dialog button {
-    background-color: var(--pico-contrast-inverse);
-    color: var(--pico-contrast);
+    background-color: var(--pico-muted-background-color);
+    color: var(--pico-color);
     appearance: none;
     box-shadow: none;
     border: none;
@@ -33,9 +33,10 @@ dialog button {
 }
 
 dialog button[type=reset] {
-    border-radius: var(--pico-border-radius);
-    margin-inline-start: 4px;
+    border-radius: calc(var(--pico-border-radius) * 2);
+    margin-inline-start: 0.25rem;
     cursor: pointer;
+    border: 1px solid var(--pico-muted-background-color);
 }
 
 dialog button[type=reset]:hover {
@@ -43,20 +44,20 @@ dialog button[type=reset]:hover {
 }
 
 dialog input {
-    border: 1px solid var(--pico-contrast-border);
-    background-color: var(--pico-contrast-inverse);
+    border: 1px solid var(--pico-muted-background-color);
+    background-color: var(--pico-muted-background-color);
     font-size: var(--pico-font-size);
     display: block;
     width: 100%;
-    margin: 0 1px;
+    margin: 0 0.0625rem;
     outline: none;
-    border-radius: var(--pico-border-radius);
+    border-radius: calc(var(--pico-border-radius) * 2);
     padding: 0.5rem 1rem;
 }
 
 dialog input:focus-visible {
-    border: 1px solid var(--pico-secondary);
-    box-shadow: 0 0 0 3px #B416221F;
+    border: 1px solid var(--pico-color);
+    box-shadow: 0 0 0 0.1875rem var(--pico-muted-background-color);
 }
 
 dialog input::-webkit-input-placeholder {
@@ -70,7 +71,7 @@ dialog.search .results {
 }
 
 dialog.search a.result-item {
-    border-inline-start: 2px solid var(--pico-muted-border-color);
+    border-inline-start: 0.125rem solid var(--pico-muted-background-color);
     color: var(--pico-color);
     text-decoration: none;
     cursor: pointer;
@@ -78,19 +79,19 @@ dialog.search a.result-item {
     padding: 0.5rem;
     padding-inline-start: 1rem;
     margin-bottom: 0.5rem;
-    border-radius: 0 var(--pico-border-radius) var(--pico-border-radius) 0;
+    border-radius: calc(var(--pico-border-radius) * 2);
     transition: background-color 0.15s ease;
 }
 
 dialog.search a.result-item:hover {
     background-color: var(--pico-muted-background-color);
-    border-inline-start-color: var(--pico-primary);
-    color: var(--pico-contrast);
+    border-inline-start-color: var(--pico-color);
+    color: var(--pico-color);
     opacity: 1;
 }
 
 dialog.search .result-title {
-    border-bottom: 1px solid var(--pico-muted-border-color);
+    border-bottom: 1px solid var(--pico-muted-background-color);
     display: block;
     font-weight: 500;
     padding-bottom: 0.25rem;
@@ -104,22 +105,21 @@ dialog.search .result-content {
 }
 
 dialog.search .result-content b {
-    background-color: var(--pico-text-selection-color);
-    color: var(--pico-contrast);
+    background-color: var(--pico-muted-background-color);
+    color: var(--pico-color);
     padding: 0.1rem 0.25rem;
-    border-radius: calc(var(--pico-border-radius) * 0.75);
 }
 
 dialog.search .load-more {
-    background-color: var(--pico-contrast-inverse);
-    color: var(--pico-contrast);
-    border: 1px solid var(--pico-contrast-border);
+    background-color: var(--pico-muted-background-color);
+    color: var(--pico-color);
+    border: 1px solid var(--pico-muted-background-color);
     cursor: pointer;
     display: block;
     font-size: calc(var(--pico-font-size) * 0.7);
     margin: 1rem auto;
     padding: 0.5rem 1.5rem;
-    border-radius: var(--pico-border-radius);
+    border-radius: 9999px;
     transition: background-color 0.15s ease;
 }
 
@@ -133,32 +133,28 @@ dialog.search .load-more:disabled {
 }
 
 @media (min-width: 1024px) {
-    dialog>article {
-        max-width: 950px;
+    dialog > article {
+        max-width: 59.375rem;
     }
 }
-
 
 .caption:not(:empty) {
     max-width: 60rem;
     margin: 0.75rem auto;
     font-size: calc(var(--pico-font-size) * 0.65);
     color: var(--pico-muted-color);
-    font-weight: 400;
 }
 
-
 pre:has(code[class*="language-"]) {
-    background-color: var(--pico-code-background-color);
+    background-color: var(--pico-muted-background-color);
     border-radius: calc(var(--pico-border-radius) * 2);
-    border: 1px solid var(--pico-muted-border-color);
+    border: 1px solid var(--pico-muted-background-color);
     padding: 2rem;
 }
 
 pre code[class*=language-] {
-    color: var(--pico-code-color);
+    color: var(--pico-color);
     font-family: var(--pico-font-family-monospace);
-    background-color: var(--pico-code-background-color);
     border-radius: calc(var(--pico-border-radius) * 2);
     overflow-x: auto;
     display: block;
@@ -166,26 +162,26 @@ pre code[class*=language-] {
 }
 
 p code {
-    color: var(--pico-code-color);
-    background-color: var(--pico-code-background-color);
-    border-radius: calc(var(--pico-border-radius) * 2);
+    color: var(--pico-color);
+    background-color: var(--pico-muted-background-color);
+    border-radius: var(--pico-border-radius);
     font-family: var(--pico-font-family-monospace);
     font-size: calc(var(--pico-font-size) * 0.75);
     overflow-wrap: anywhere;
     padding: 0 0.33rem;
 }
 
-
 footer.bottom {
-    color: var(--pico-contrast-hover-background);
-    background-color: var(--pico-contrast);
+    color: var(--pico-muted-color);
+    background-color: var(--pico-background-color);
     font-size: calc(var(--pico-font-size) * 0.65);
     font-weight: 400;
     margin: 0;
+    border-top: 1px solid var(--pico-muted-border-color);
 }
 
 footer.bottom .container {
-    max-width: 1320px;
+    max-width: 80rem;
     margin: auto;
     display: flex;
     justify-content: space-between;
@@ -193,12 +189,12 @@ footer.bottom .container {
 }
 
 footer.cms-content + footer.bottom .container {
-    border-top: 1px solid var(--pico-muted-border-color);
+    border-top: 1px solid var(--pico-muted-background-color);
 }
 
 footer.cms-content,
 footer.cms-content > :nth-child(odd) {
-    background-color: var(--pico-contrast);
+    background-color: var(--pico-background-color);
 }
 
 footer.cms-content .cards .card-list {
@@ -214,7 +210,7 @@ footer.cms-content .cards .card-list {
 }
 
 footer.cms-content .cards .card-item {
-    background-color: var(--pico-contrast);
+    background-color: var(--pico-background-color);
     border: none;
     box-shadow: none;
     border-radius: 0;
@@ -228,35 +224,38 @@ footer.cms-content .cards .card-item:hover {
 }
 
 footer.cms-content .cards .title {
-    color: var(--pico-contrast-hover-background);
+    color: var(--pico-color);
     font-size: calc(var(--pico-font-size) * 0.9);
     margin: 0 0 1.25rem;
 }
 
-footer.cms-content .cards .text {
-    color: var(--pico-contrast-inverse);
+footer.cms-content .cards :is(.text, .cms-text) {
+    color: var(--pico-muted-color);
     font-size: calc(var(--pico-font-size) * 0.8);
     font-weight: 400;
 }
 
-footer.cms-content .cards .text p {
+footer.cms-content .cards :is(.text, .cms-text) p {
     line-height: 1.75;
     margin: 0;
 }
 
-footer.cms-content .cards .text a,
-footer.cms-content .cards .text a:visited {
-    color: var(--pico-contrast-inverse);
+footer.cms-content .cards :is(.text, .cms-text) a,
+footer.cms-content .cards :is(.text, .cms-text) a:visited,
+footer.cms-content .cards :is(.text, .cms-text) a:hover,
+footer.cms-content .cards :is(.text, .cms-text) a:focus,
+footer.cms-content .cards :is(.text, .cms-text) a:active {
+    color: var(--pico-muted-color);
     text-decoration: none;
     display: inline-block;
     padding: 0.31rem 0;
 }
 
-footer.cms-content .cards .text a:hover {
-    color: var(--pico-contrast-hover-background);
+footer.cms-content .cards :is(.text, .cms-text) a:hover {
+    color: var(--pico-color);
 }
 
-footer.cms-content .cards .text ul {
+footer.cms-content .cards :is(.text, .cms-text) ul {
     padding-left: 0;
     list-style: none;
 }
@@ -264,51 +263,49 @@ footer.cms-content .cards .text ul {
 footer.cms-content .heading h1,
 footer.cms-content .heading h2,
 footer.cms-content .heading h3 {
-    color: var(--pico-contrast-inverse);
+    color: var(--pico-color);
 }
 
 footer.cms-content .text {
-    color: var(--pico-contrast-hover-background);
+    color: var(--pico-muted-color);
 }
 
 footer.cms-content a,
 footer.cms-content a:visited {
-    color: var(--pico-contrast-inverse);
+    color: var(--pico-muted-color);
 }
 
 footer.cms-content a:hover {
-    color: var(--pico-contrast-hover-background);
+    color: var(--pico-color);
 }
 
 footer.cms-content :focus-visible {
-    outline-color: var(--pico-contrast-inverse);
+    outline-color: var(--pico-color);
 }
 
-/* Content tables (markdown/HTML) — mirrors table.css .table-responsive */
 .cms-content table {
     width: 100%;
     border-collapse: separate;
     border-spacing: 0;
     overflow: hidden;
-    background-color: var(--pico-contrast-background);
-    border: 1px solid var(--pico-muted-border-color);
-    border-radius: calc(var(--pico-border-radius) * 4);
+    background-color: var(--pico-muted-background-color);
+    border: 1px solid var(--pico-muted-background-color);
+    border-radius: calc(var(--pico-border-radius) * 2);
     padding: 2rem;
 }
 
 .cms-content th,
 .cms-content td {
-    padding: calc(var(--pico-spacing) / 2) var(--pico-spacing);
-    border-bottom: 1px solid var(--pico-muted-border-color);
+    padding: calc(var(--spacing) / 2) var(--spacing);
+    border-bottom: 1px solid var(--pico-muted-background-color);
     vertical-align: middle;
 }
 
 .cms-content th {
-    color: var(--pico-contrast);
+    color: var(--pico-color);
     font-weight: 500;
     font-family: var(--pico-font-family-display);
     font-size: calc(var(--pico-font-size) * 0.85);
-    letter-spacing: 0;
     text-transform: uppercase;
     text-align: center;
 }
@@ -320,6 +317,7 @@ footer.cms-content :focus-visible {
 .cms-content td {
     font-size: calc(var(--pico-font-size) * 0.75);
     text-align: center;
+    color: var(--pico-muted-color);
 }
 
 .cms-content th > *:first-child,

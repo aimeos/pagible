@@ -8,8 +8,8 @@
 }
 
 .cms-content .list .list-default {
-    border: 1px solid var(--pico-muted-border-color);
-    border-radius: calc(var(--pico-border-radius) * 4);
+    border: 1px solid var(--pico-muted-background-color);
+    border-radius: calc(var(--pico-border-radius) * 3);
     overflow: clip;
 }
 
@@ -27,7 +27,7 @@
 }
 
 .cms-content .list .second {
-    background-color: var(--pico-contrast-inverse);
+    background-color: var(--pico-muted-background-color);
 }
 
 .cms-content .list .list-cards {
@@ -42,11 +42,12 @@
     padding: 0.5rem;
     display: block;
     height: 100%;
+    color: var(--pico-color);
 }
 
 .cms-content .list .list-item:hover {
-    box-shadow: 0 0.75rem 2rem #17120F0F;
-    transform: translateY(-3px);
+    box-shadow: 0 0.75rem 2rem var(--pico-box-shadow);
+    transform: translateY(-0.1875rem);
 }
 
 .cms-content .list img {
@@ -54,6 +55,7 @@
     aspect-ratio: 5 / 3;
     object-fit: cover;
     width: 100%;
+    border-radius: calc(var(--pico-border-radius) * 2);
 }
 
 .cms-content .list .date {

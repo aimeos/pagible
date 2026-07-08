@@ -3,16 +3,16 @@
  */
 
 .questions details {
-    border: 1px solid var(--pico-muted-border-color);
-    border-radius: calc(var(--pico-border-radius) * 3);
-    background-color: var(--pico-contrast-background);
+    border: 1px solid var(--pico-muted-background-color);
+    background-color: var(--pico-muted-background-color);
+    border-radius: calc(var(--pico-border-radius) * 2);
     transition: box-shadow 0.2s ease;
     margin-bottom: 0.75rem;
     padding: 2rem;
 }
 
 .questions details[open] {
-    box-shadow: var(--pico-box-shadow);
+    box-shadow: 0 1.5625rem 3.125rem -0.75rem var(--pico-box-shadow);
 }
 
 .questions summary {
@@ -31,6 +31,7 @@
     font-size: var(--pico-font-size);
     font-weight: 500;
     margin: 0;
+    color: var(--pico-color);
 }
 
 .questions details summary svg {
@@ -42,7 +43,7 @@
 
 .questions details[open] summary svg {
     transform: rotate(180deg);
-    color: var(--pico-primary);
+    color: var(--pico-color);
 }
 
 .questions details > *:not(summary) {

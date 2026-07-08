@@ -3,34 +3,35 @@
  */
 
 .contact label {
-    color: var(--pico-contrast);
+    color: var(--pico-color);
     display: inline-block;
     margin: 0.5rem 0;
     font-weight: 500;
     font-size: calc(var(--pico-font-size) * 0.7);
 }
 
-.contact input, .contact textarea {
-    border: 1px solid var(--pico-contrast-border);
-    background-color: var(--pico-contrast-background);
+.contact input,
+.contact textarea {
+    border: 1px solid var(--pico-muted-background-color);
+    background-color: var(--pico-muted-background-color);
     color: var(--pico-color);
     resize: vertical;
     font-size: var(--pico-font-size);
     display: block;
     padding: 0.75rem 1.25rem;
     width: 100%;
-    border-radius: var(--pico-border-radius);
     transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    border-radius: calc(var(--pico-border-radius) * 2);
 }
 
 .contact textarea {
-    border-radius: var(--pico-border-radius);
+    border-radius: calc(var(--pico-border-radius) * 2);
 }
 
 .contact input:focus,
 .contact textarea:focus {
-    border-color: var(--pico-secondary);
-    box-shadow: 0 0 0 3px #B416221F;
+    border-color: var(--pico-color);
+    box-shadow: 0 0 0 0.1875rem var(--pico-muted-background-color);
     outline: none;
 }
 
@@ -40,19 +41,21 @@
 }
 
 .contact .errors {
-    color: var(--pico-form-element-invalid-focus-color);
+    color: var(--pico-primary);
     font-size: calc(var(--pico-font-size) * 0.75);
     margin: 1rem 1.5rem;
 }
 
 .contact .error {
-    border-color: var(--pico-form-element-invalid-border-color);
+    border-color: var(--pico-primary);
 }
 
-.contact .submit {
-    display: flex;
-    justify-content: space-around;
-    margin: 1rem 0;
+.contact button {
+    display: block;
+    margin-inline-end: auto;
+    margin-inline-start: auto;
+    font-size: calc(var(--pico-font-size) * 0.66);
+    padding: 0.9rem 1.7rem;
 }
 
 .contact .h-captcha {
@@ -62,33 +65,4 @@
 .contact .h-captcha iframe {
     margin-bottom: 0.5rem;
     max-width: 100%;
-}
-
-.contact button {
-    display: block;
-    margin-inline-end: auto;
-    margin-inline-start: auto;
-    border-radius: var(--pico-border-radius);
-    text-transform: uppercase;
-    letter-spacing: 0;
-    font-size: calc(var(--pico-font-size) * 0.66);
-    padding: 0.9rem 1.7rem;
-}
-
-.contact button:disabled {
-    border: 1px solid var(--pico-contrast-border);
-    background-color: var(--pico-contrast-background);
-    color: var(--pico-muted-color);
-}
-
-.contact button:has(.success:not(.hidden)) {
-    background-color: #166534;
-    border-color: #166534;
-    color: var(--pico-contrast-inverse);
-}
-
-.contact button:has(.failure:not(.hidden)) {
-    background-color: #991B1B;
-    border-color: #991B1B;
-    color: var(--pico-contrast-inverse);
 }

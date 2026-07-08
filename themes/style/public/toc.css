@@ -3,9 +3,9 @@
  */
 
 nav.toc {
-    border: 1px solid var(--pico-muted-border-color);
-    border-radius: calc(var(--pico-border-radius) * 4);
-    background-color: var(--pico-contrast-background);
+    border: 1px solid var(--pico-muted-background-color);
+    border-radius: calc(var(--pico-border-radius) * 2);
+    background: var(--pico-muted-background-color);
     display: block;
     padding: 2rem;
 }
@@ -38,5 +38,5 @@ nav.toc li a {
 }
 
 nav.toc li a:hover {
-    color: var(--pico-primary);
+    color: var(--pico-color);
 }
