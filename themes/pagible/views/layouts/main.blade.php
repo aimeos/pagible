@@ -3,7 +3,9 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="csrf-token" content="{{ csrf_token() }}">
+        @auth
+            <meta name="csrf-token" content="{{ csrf_token() }}">
+        @endauth
         @if(!config('app.debug'))
             <meta http-equiv="Content-Security-Policy" content="
                 base-uri 'self';
@@ -12,8 +14,8 @@
                 connect-src 'self' {{ config('cms.theme.csp.connect-src') }};
                 img-src 'self' data: blob: {{ config('cms.theme.csp.media-src') }};
                 media-src 'self' data: blob: {{ config('cms.theme.csp.media-src') }};
-                style-src 'self' 'nonce-{{ csrf_token() }}' {{ config('cms.theme.csp.style-src') }};
-                script-src 'self' 'nonce-{{ csrf_token() }}' {{ config('cms.theme.csp.script-src') }};
+                style-src 'self' {{ config('cms.theme.csp.style-src') }} {!! cmshashes($page, 'config.styles.data.text') !!};
+                script-src 'self' {{ config('cms.theme.csp.script-src') }} {!! cmshashes($page, 'config.javascript.data.text') !!};
             ">
         @endif
 
@@ -40,15 +42,7 @@
         <link href="{{ cmstheme($page, 'cms.css') }}" rel="stylesheet">
         @stack('head')
 
-        @foreach($page->ancestorsAndSelf as $navItem)
-            @if($text = cms($navItem, 'config.styles.data.text'))
-                <style nonce="{{ csrf_token() }}">
-                    {!! $text !!}
-                </style>
-            @endif
-        @endforeach
-
-        <script type="application/ld+json" nonce="{{ csrf_token() }}">
+        <script type="application/ld+json">
             [{
                 "@@context": "https://schema.org",
                 "@@type": "WebSite",
@@ -92,8 +86,8 @@
         <dialog id="modal-search" class="search">
             <article>
                 <header>
-                    <form action="{{ route('cms.search', ['q' => '_term_']) }}">
-                        <input id="modal-search-input" placeholder="{{ __('Search website') }}" aria-label="{{ __('Search website') }}" name="q" required>
+                    <form action="{{ route('cms.search', ['q' => '_term_']) }}" toolname="search" tooldescription="{{ __('Search the website and return matching pages with their titles and links') }}" toolautosubmit>
+                        <input id="modal-search-input" placeholder="{{ __('Search website') }}" aria-label="{{ __('Search website') }}" name="q" minlength="{{ config('cms.search.min', 2) }}" required toolparamdescription="{{ __('Words or phrase to search for in the website content') }}">
                         <button type="reset" aria-label="{{ __('Close') }}">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
                                 <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
@@ -194,7 +188,7 @@
         </header>
 
         @if($page->ancestors->count() > 1)
-            <nav class="breadcrumb" aria-label="breadcrumb">
+            <nav class="breadcrumb" aria-label="{{ __('Breadcrumb navigation') }}">
                 <ul>
                     @foreach($page->ancestors->skip(1) as $item)
                         @if(cms($item, 'status') == 1)
@@ -224,19 +218,24 @@
 
         <link href="{{ cmstheme($page, 'pico.modal.min.css') }}" rel="preload" as="style">
         <link href="{{ cmstheme($page, 'cms-lazy.css') }}" rel="preload" as="style">
+        <script defer src="{{ cmstheme($page, 'csrf.js') }}"></script>
         <script defer src="{{ cmstheme($page, 'cms.js') }}"></script>
         @stack('foot')
 
         @foreach($page->ancestorsAndSelf as $navItem)
+            @if($text = cms($navItem, 'config.styles.data.text'))
+                <style>{!! $text !!}</style>
+            @endif
+        @endforeach
+
+        @foreach($page->ancestorsAndSelf as $navItem)
             @if($text = cms($navItem, 'config.javascript.data.text'))
-                <script nonce="{{ csrf_token() }}">
-                    {!! $text !!}
-                </script>
+                <script>{!! $text !!}</script>
             @endif
         @endforeach
 
         @if(\Aimeos\Cms\Permission::can('page:save', auth()->user()))
-            <link href="{{ cmsasset('vendor/cms/admin/editor.css') }}" rel="stylesheet">
+            <link href="{{ cmsasset('vendor/cms/admin/editor.css') }}" rel="preload" as="style">
             <script defer src="{{ cmsasset('vendor/cms/admin/editor.js') }}"></script>
         @else
             <script defer src="{{ cmstheme($page, 'stats.js') }}"></script>
