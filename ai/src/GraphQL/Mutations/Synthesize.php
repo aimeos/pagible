@@ -65,7 +65,7 @@ final class Synthesize
                     Tools::provider( 'web_search' ),
                     Tools::provider( 'web_fetch' ),
                 ] )
-                ->withToolChoice( \Aimeos\Prisma\Providers\Base::REQ )
+                ->withToolChoice( \Aimeos\Prisma\Providers\Base::REQUIRED )
                 ->withMaxSteps( 10 )
                 ->ensure( 'write' )
                 ->write( $args['prompt'], $files, $config ); // @phpstan-ignore-line method.notFound
