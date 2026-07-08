@@ -14,7 +14,7 @@
 
 .pricing .subtitle {
     text-align: center;
-    color: var(--pico-muted-background-color);
+    color: var(--pico-muted-color);
     margin-bottom: 3rem;
 }
 
@@ -26,7 +26,7 @@
     padding: 0.25rem;
     background: var(--pico-muted-background-color);
     border: 1px solid var(--pico-muted-background-color);
-    border-radius: calc(var(--pico-border-radius) * 999);
+    border-radius: 9999px;
 }
 
 .pricing .pricing-toggle > span {
@@ -35,7 +35,7 @@
     padding: 0.5rem 1.25rem;
     font-size: 0.875rem;
     font-weight: 500;
-    color: var(--pico-muted-background-color);
+    color: var(--pico-muted-color);
     cursor: pointer;
 }
 
@@ -44,7 +44,7 @@
 }
 
 .pricing .pricing-toggle.alt > span:first-child {
-    color: var(--pico-muted-background-color);
+    color: var(--pico-muted-color);
 }
 
 .pricing .pricing-toggle.alt > span:last-child {
@@ -57,7 +57,7 @@
     inset: 0.25rem;
     width: calc(50% - 0.25rem);
     background-color: var(--pico-background-color);
-    border-radius: calc(var(--pico-border-radius) * 999);
+    border-radius: 9999px;
     transition: transform 0.2s;
 }
 
@@ -92,7 +92,7 @@
     padding: 2rem;
     background-color: var(--pico-muted-background-color);
     border: 1px solid var(--pico-muted-background-color);
-    border-radius: var(--pico-border-radius);
+    border-radius: calc(var(--pico-border-radius) * 3);
 }
 
 .pricing .pricing-item.highlight {
@@ -109,9 +109,10 @@
     top: -0.75rem;
     left: 50%;
     transform: translateX(-50%);
-    background: var(--pico-background-color);
-    color: var(--pico-color);
-    border-radius: calc(var(--pico-border-radius) * 999);
+    background: var(--pico-contrast);
+    color: var(--pico-contrast-inverse);
+    border: 1px solid var(--pico-background-color);
+    border-radius: 9999px;
     font-weight: 500;
     font-size: 0.75rem;
     padding: 0.25rem 1rem;
@@ -147,7 +148,7 @@
 
 .pricing .unit {
     font-size: 0.875rem;
-    color: var(--pico-muted-background-color);
+    color: var(--pico-muted-color);
 }
 
 .pricing .highlight .unit {
@@ -161,16 +162,18 @@
     margin: 0 0 0.25rem;
 }
 
-.pricing .pricing-header .text {
+.pricing .pricing-header .text,
+.pricing .pricing-header .cms-text {
     font-size: 0.875rem;
-    color: var(--pico-muted-background-color);
+    color: var(--pico-muted-color);
     font-weight: 400;
     order: 2;
     margin: 0 0 0.75rem;
 }
 
-.pricing .highlight .pricing-header .text {
-    color: var(--pico-muted-color);
+.pricing .highlight .pricing-header .text,
+.pricing .highlight .pricing-header .cms-text {
+    color: var(--pico-background-color);
 }
 
 .pricing .features {
@@ -222,13 +225,13 @@
     display: block;
     width: 100%;
     text-align: center;
-    padding: 0.75rem 1.5rem;
+    padding: 1.5rem;
     background-color: var(--pico-color);
     color: var(--pico-background-color);
     border: 1px solid var(--pico-background-color);
     text-decoration: none;
     font-weight: 500;
-    border-radius: calc(var(--pico-border-radius) * 999);
+    border-radius: 9999px;
     transition: background-color 0.2s ease;
 }
 

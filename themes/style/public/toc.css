@@ -4,7 +4,7 @@
 
 nav.toc {
     border: 1px solid var(--pico-muted-background-color);
-    border-radius: 1rem;
+    border-radius: calc(var(--pico-border-radius) * 2);
     background: var(--pico-muted-background-color);
     display: block;
     padding: 2rem;
@@ -30,7 +30,7 @@ nav.toc li {
 
 nav.toc li a {
     display: inline-block;
-    color: var(--pico-muted-background-color);
+    color: var(--pico-muted-color);
     font-size: calc(var(--pico-font-size) * 0.85);
     font-weight: 400;
     padding: 0.25rem 0;

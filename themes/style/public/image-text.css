@@ -20,7 +20,7 @@
 .image-text .end .image {
     max-width: var(--ratio);
     margin-bottom: 1.5rem;
-    border-radius: var(--pico-border-radius);
+    border-radius: calc(var(--pico-border-radius) * 3);
     overflow: hidden;
     box-shadow: 0 1.5625rem 3.125rem -0.75rem var(--pico-box-shadow);
 }
@@ -68,14 +68,14 @@
     background: transparent;
     display: flex;
     align-items: center;
-    border-radius: var(--pico-border-radius);
+    border-radius: calc(var(--pico-border-radius) * 3);
     box-shadow: 0 1.5625rem 3.125rem -0.75rem var(--pico-box-shadow);
     overflow: hidden;
 }
 
 .image-text .grid-start picture,
 .image-text .grid-end picture {
-    border-radius: var(--pico-border-radius);
+    border-radius: calc(var(--pico-border-radius) * 3);
     width: 100%;
     height: 100%;
 }
@@ -103,7 +103,7 @@
 
     .image-text .grid-start img,
     .image-text .grid-end img {
-        border-radius: var(--pico-border-radius);
+        border-radius: calc(var(--pico-border-radius) * 3);
         width: 100%;
         height: auto;
     }

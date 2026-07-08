@@ -9,7 +9,7 @@
 
 .cms-content .list .list-default {
     border: 1px solid var(--pico-muted-background-color);
-    border-radius: var(--pico-border-radius);
+    border-radius: calc(var(--pico-border-radius) * 3);
     overflow: clip;
 }
 
@@ -55,11 +55,11 @@
     aspect-ratio: 5 / 3;
     object-fit: cover;
     width: 100%;
-    border-radius: 1rem;
+    border-radius: calc(var(--pico-border-radius) * 2);
 }
 
 .cms-content .list .date {
-    color: var(--pico-muted-background-color);
+    color: var(--pico-muted-color);
     font-size: calc(var(--pico-font-size) * 0.6);
     font-weight: 400;
 }
@@ -116,7 +116,7 @@
 }
 
 .cms-content .list .list-list .intro {
-    color: var(--pico-muted-background-color);
+    color: var(--pico-muted-color);
     font-size: calc(var(--pico-font-size) * 0.8);
     margin: 0.25rem 0 0;
 }

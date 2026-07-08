@@ -6,7 +6,7 @@
 .table-responsive {
     background: var(--pico-muted-background-color);
     border: 1px solid var(--pico-muted-background-color);
-    border-radius: 1rem;
+    border-radius: calc(var(--pico-border-radius) * 2);
     padding: 2rem;
 }
 
@@ -48,10 +48,10 @@
 }
 
 .table-responsive .td {
-    font-size: calc(var(--pico-font-size) * 0.75);
+    font-size: var(--pico-font-size);
+    color: var(--pico-muted-color);
     text-align: center;
     align-self: center;
-    color: var(--pico-muted-background-color);
 }
 
 .table-responsive .th > *:first-child,

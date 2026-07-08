@@ -36,7 +36,7 @@
     padding-inline: 1.5rem;
     padding-block: 0.5rem;
     border: 1px solid var(--pico-muted-background-color);
-    border-radius: calc(var(--pico-border-radius) * 999);
+    border-radius: 9999px;
     display: inline-flex;
     align-items: center;
     font-size: calc(var(--pico-font-size, 1rem) * 0.75);
@@ -48,7 +48,7 @@
     line-height: 1.7;
     max-width: 64rem;
     margin-inline: auto;
-    color: var(--pico-muted-background-color);
+    color: var(--pico-muted-color);
     font-size: calc(var(--pico-font-size) * 1.25);
 }
 
@@ -72,25 +72,25 @@
     justify-content: center;
 }
 
-.hero .second::before,
-.hero .second::after {
+.hero .second.has-second-image::before,
+.hero .second.has-third-image::after {
     content: "";
     position: absolute;
     display: block;
-    border-radius: var(--pico-border-radius);
+    border-radius: calc(var(--pico-border-radius) * 3);
     background: var(--pico-muted-background-color);
     box-shadow: 0 0 0 0.25rem var(--pico-background-color), 0 1.5625rem 3.125rem -0.75rem var(--pico-box-shadow);
     z-index: 0;
 }
 
-.hero .second::before {
+.hero .second.has-second-image::before {
     left: 0;
     bottom: 3rem;
     width: 35%;
     height: 60%;
 }
 
-.hero .second::after {
+.hero .second.has-third-image::after {
     right: 0;
     top: 3rem;
     width: 30%;
@@ -105,7 +105,7 @@
     margin: 0 auto;
     display: block;
     background: var(--pico-muted-background-color);
-    border-radius: var(--pico-border-radius);
+    border-radius: calc(var(--pico-border-radius) * 3);
     box-shadow: 0 0 0 0.25rem var(--pico-background-color);
     padding: 0;
     overflow: hidden;
@@ -168,8 +168,8 @@
         margin-top: 3rem;
     }
 
-    .hero .second::before,
-    .hero .second::after {
+    .hero .second.has-second-image::before,
+    .hero .second.has-third-image::after {
         display: none;
     }
 

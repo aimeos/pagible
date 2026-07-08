@@ -31,10 +31,10 @@
     @endif
 </div>
 
-@if($heroFiles = (array) ($data->files ?? []))
-    <div class="{{ count($heroFiles) > 1 ? 'second multiple' : 'second' }}">
-        @foreach($heroFiles as $idx => $item)
-            @if($file = cms($files, data_get($item, 'id')))
+@if($heroFileIds = array_values(array_filter(array_map(fn($item) => data_get($item, 'id'), (array) ($data->files ?? [])))))
+    <div class="second{{ count($heroFileIds) > 1 ? ' multiple has-second-image' : '' }}{{ count($heroFileIds) > 2 ? ' has-third-image' : '' }}">
+        @foreach($heroFileIds as $idx => $id)
+            @if($file = cms($files, $id))
                 @if(str_starts_with(cms($file, 'mime') ?? '', 'video/'))
                     <video autoplay muted loop playsinline preload="metadata"
                         title="{{ cms($file, 'description')?->{cms($page, 'lang')} ?? '' }}"
@@ -48,7 +48,7 @@
                     @include('cms::pic', [
                         'file' => $file,
                         'main' => $idx === 0,
-                        'sizes' => count($heroFiles) > 1 ? '(min-width: 768px) 25vw, 50vw' : '50vw',
+                        'sizes' => count($heroFileIds) > 1 ? '(min-width: 768px) 25vw, 50vw' : '50vw',
                     ])
                 @endif
             @endif

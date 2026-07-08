@@ -21,11 +21,11 @@
     padding: 0.75rem 1.25rem;
     width: 100%;
     transition: border-color 0.15s ease, box-shadow 0.15s ease;
-    border-radius: 1rem;
+    border-radius: calc(var(--pico-border-radius) * 2);
 }
 
 .contact textarea {
-    border-radius: 1rem;
+    border-radius: calc(var(--pico-border-radius) * 2);
 }
 
 .contact input:focus,
@@ -37,7 +37,7 @@
 
 .contact input::-webkit-input-placeholder,
 .contact textarea::-webkit-input-placeholder {
-    color: var(--pico-muted-background-color);
+    color: var(--pico-muted-color);
 }
 
 .contact .errors {

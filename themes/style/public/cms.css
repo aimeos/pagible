@@ -72,7 +72,7 @@
     --pico-code-background-color: var(--pico-muted-background-color);
     --pico-code-color: var(--pico-color);
 
-    --pico-border-radius: 1.5rem;
+    --pico-border-radius: 0.5rem;
 }
 
 @media (min-width: 1024px) {
@@ -183,7 +183,7 @@ a.btn {
     color: var(--pico-background-color);
     background: var(--pico-color);
     border-color: var(--pico-color);
-    border-radius: calc(var(--pico-border-radius) * 999);
+    border-radius: 9999px;
     padding: 1.5rem 4rem;
     line-height: 1;
     font-size: calc(var(--pico-font-size, 1rem) * 1.375);
@@ -244,11 +244,50 @@ body > header .brand a {
     text-transform: uppercase;
 }
 
-header nav .menu-open.show,
-header nav .menu-close.show,
-header nav .sidebar-open.show,
-header nav .sidebar-close.show {
+nav details {
+    margin: 0;
+}
+
+header nav details.dropdown > summary:not([role]) {
     display: flex;
+    align-items: center;
+    list-style: none;
+    cursor: pointer;
+    height: auto;
+    margin: 0;
+    padding: 0.75rem 0.625rem;
+    color: var(--pico-color);
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+    font-family: var(--pico-font-family-display);
+    font-weight: 500;
+    letter-spacing: 0.025em;
+    text-decoration: none;
+    text-transform: uppercase;
+}
+
+header nav details.dropdown > summary:not([role]):hover,
+header nav details.dropdown > summary:not([role]):focus,
+header nav details.dropdown > summary:not([role]):focus-visible,
+header nav details.dropdown > summary:not([role]):active,
+header nav details.dropdown[open] > summary:not([role]) {
+    color: var(--pico-primary-hover);
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+}
+
+header nav details summary::marker,
+header nav details summary::-webkit-details-marker {
+    display: none;
+}
+
+header nav .menu-open,
+header nav .menu-close,
+header nav .sidebar-open,
+header nav .sidebar-close {
+    display: none;
 }
 
 header nav .menu-open button,
@@ -256,7 +295,84 @@ header nav .menu-close button,
 header nav .sidebar-open button,
 header nav .sidebar-close button {
     color: var(--pico-color);
-    padding: .75rem;
+    background: transparent;
+    border: none;
+    padding: 0.75rem;
+}
+
+header nav .menu-open button:hover,
+header nav .menu-open button:focus,
+header nav .menu-close button:hover,
+header nav .menu-close button:focus,
+header nav .sidebar-open button:hover,
+header nav .sidebar-open button:focus,
+header nav .sidebar-close button:hover,
+header nav .sidebar-close button:focus {
+    color: var(--pico-color);
+    background: transparent;
+    border-color: transparent;
+}
+
+@media (max-width: 991px) {
+    header nav .menu-open.show,
+    header nav .menu-close.show {
+        display: flex;
+    }
+
+    header nav.small {
+        display: block;
+        overflow-y: auto;
+        position: fixed;
+        padding: 0.5rem 1.5rem;
+        background-color: var(--pico-background-color);
+        min-height: 100vh;
+        z-index: 100;
+        width: 100%;
+        height: 100%;
+        left: 0;
+        top: 0;
+    }
+
+    header nav .menu {
+        display: none;
+    }
+
+    header nav.small .menu {
+        flex-direction: column;
+        display: flex;
+    }
+
+    header nav .menu ul {
+        display: block;
+    }
+
+    header nav .menu li {
+        padding: 0 2rem;
+        width: 100%;
+    }
+
+    header nav.small .menu details > summary + ul.align {
+        position: relative;
+        backdrop-filter: none;
+        background: none;
+        box-shadow: none;
+        border: none;
+        padding: 0;
+    }
+
+    header nav.small .menu details > summary::after {
+        content: "";
+        display: block;
+        float: inline-end;
+        margin-inline-start: 0.25rem;
+        height: calc(1rem * var(--pico-line-height, 1.5));
+        transform: rotate(0) translateX(0.2rem);
+        background-image: var(--pico-icon-chevron);
+        background-position: right center;
+        background-size: 1rem auto;
+        background-repeat: no-repeat;
+        width: 1rem;
+    }
 }
 
 .container {

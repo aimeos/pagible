@@ -5,14 +5,14 @@
 .swiffy-slider {
 	background-color: var(--pico-contrast-background);
 	border: 1px solid var(--pico-muted-border-color);
-	border-radius: var(--pico-border-radius);
+	border-radius: calc(var(--pico-border-radius) * 3);
 	box-shadow: 0 1.5625rem 3.125rem -0.75rem var(--pico-box-shadow);
 	overflow: hidden;
 	padding: 2rem;
 }
 
 .slider-container {
-	border-radius: 1rem;
+	border-radius: calc(var(--pico-border-radius) * 2);
 }
 
 /* Swiffy slider 1.2.0 (modified) https://github.com/dynamicweb/swiffy-slider/ (MIT license) */

@@ -9,7 +9,7 @@ dialog > article {
     height: calc(100vh - 2rem);
     overflow: unset;
     border: 1px solid var(--pico-muted-background-color);
-    border-radius: var(--pico-border-radius);
+    border-radius: calc(var(--pico-border-radius) * 3);
 }
 
 dialog header {
@@ -33,7 +33,7 @@ dialog button {
 }
 
 dialog button[type=reset] {
-    border-radius: 1rem;
+    border-radius: calc(var(--pico-border-radius) * 2);
     margin-inline-start: 0.25rem;
     cursor: pointer;
     border: 1px solid var(--pico-muted-background-color);
@@ -51,7 +51,7 @@ dialog input {
     width: 100%;
     margin: 0 0.0625rem;
     outline: none;
-    border-radius: 1rem;
+    border-radius: calc(var(--pico-border-radius) * 2);
     padding: 0.5rem 1rem;
 }
 
@@ -61,7 +61,7 @@ dialog input:focus-visible {
 }
 
 dialog input::-webkit-input-placeholder {
-    color: var(--pico-muted-background-color);
+    color: var(--pico-muted-color);
 }
 
 dialog.search .results {
@@ -79,7 +79,7 @@ dialog.search a.result-item {
     padding: 0.5rem;
     padding-inline-start: 1rem;
     margin-bottom: 0.5rem;
-    border-radius: 1rem;
+    border-radius: calc(var(--pico-border-radius) * 2);
     transition: background-color 0.15s ease;
 }
 
@@ -100,7 +100,7 @@ dialog.search .result-title {
 
 dialog.search .result-content {
     display: block;
-    color: var(--pico-muted-background-color);
+    color: var(--pico-muted-color);
     font-size: calc(var(--pico-font-size) * 0.7);
 }
 
@@ -119,7 +119,7 @@ dialog.search .load-more {
     font-size: calc(var(--pico-font-size) * 0.7);
     margin: 1rem auto;
     padding: 0.5rem 1.5rem;
-    border-radius: calc(var(--pico-border-radius) * 999);
+    border-radius: 9999px;
     transition: background-color 0.15s ease;
 }
 
@@ -142,12 +142,12 @@ dialog.search .load-more:disabled {
     max-width: 60rem;
     margin: 0.75rem auto;
     font-size: calc(var(--pico-font-size) * 0.65);
-    color: var(--pico-muted-background-color);
+    color: var(--pico-muted-color);
 }
 
 pre:has(code[class*="language-"]) {
     background-color: var(--pico-muted-background-color);
-    border-radius: 1rem;
+    border-radius: calc(var(--pico-border-radius) * 2);
     border: 1px solid var(--pico-muted-background-color);
     padding: 2rem;
 }
@@ -155,8 +155,7 @@ pre:has(code[class*="language-"]) {
 pre code[class*=language-] {
     color: var(--pico-color);
     font-family: var(--pico-font-family-monospace);
-    background-color: var(--pico-muted-background-color);
-    border-radius: 1rem;
+    border-radius: calc(var(--pico-border-radius) * 2);
     overflow-x: auto;
     display: block;
     width: 100%;
@@ -165,7 +164,7 @@ pre code[class*=language-] {
 p code {
     color: var(--pico-color);
     background-color: var(--pico-muted-background-color);
-    border-radius: 0.5rem;
+    border-radius: var(--pico-border-radius);
     font-family: var(--pico-font-family-monospace);
     font-size: calc(var(--pico-font-size) * 0.75);
     overflow-wrap: anywhere;
@@ -230,30 +229,33 @@ footer.cms-content .cards .title {
     margin: 0 0 1.25rem;
 }
 
-footer.cms-content .cards .text {
+footer.cms-content .cards :is(.text, .cms-text) {
     color: var(--pico-muted-color);
     font-size: calc(var(--pico-font-size) * 0.8);
     font-weight: 400;
 }
 
-footer.cms-content .cards .text p {
+footer.cms-content .cards :is(.text, .cms-text) p {
     line-height: 1.75;
     margin: 0;
 }
 
-footer.cms-content .cards .text a,
-footer.cms-content .cards .text a:visited {
+footer.cms-content .cards :is(.text, .cms-text) a,
+footer.cms-content .cards :is(.text, .cms-text) a:visited,
+footer.cms-content .cards :is(.text, .cms-text) a:hover,
+footer.cms-content .cards :is(.text, .cms-text) a:focus,
+footer.cms-content .cards :is(.text, .cms-text) a:active {
     color: var(--pico-muted-color);
     text-decoration: none;
     display: inline-block;
     padding: 0.31rem 0;
 }
 
-footer.cms-content .cards .text a:hover {
+footer.cms-content .cards :is(.text, .cms-text) a:hover {
     color: var(--pico-color);
 }
 
-footer.cms-content .cards .text ul {
+footer.cms-content .cards :is(.text, .cms-text) ul {
     padding-left: 0;
     list-style: none;
 }
@@ -288,7 +290,7 @@ footer.cms-content :focus-visible {
     overflow: hidden;
     background-color: var(--pico-muted-background-color);
     border: 1px solid var(--pico-muted-background-color);
-    border-radius: 1rem;
+    border-radius: calc(var(--pico-border-radius) * 2);
     padding: 2rem;
 }
 
@@ -315,7 +317,7 @@ footer.cms-content :focus-visible {
 .cms-content td {
     font-size: calc(var(--pico-font-size) * 0.75);
     text-align: center;
-    color: var(--pico-muted-background-color);
+    color: var(--pico-muted-color);
 }
 
 .cms-content th > *:first-child,

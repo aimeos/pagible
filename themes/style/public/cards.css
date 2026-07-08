@@ -29,7 +29,7 @@
 .cards .card-item {
     background-color: var(--pico-background-color);
     border: 1px solid var(--pico-muted-background-color);
-    border-radius: var(--pico-border-radius);
+    border-radius: calc(var(--pico-border-radius) * 3);
     overflow: hidden;
     text-align: start;
     padding: 0;
@@ -69,13 +69,9 @@
     line-height: 0.98;
 }
 
-.cards .text p {
+.cards .cms-text p {
     font-size: calc(var(--pico-font-size) * 0.85);
     line-height: 1.7;
-    color: var(--pico-muted-background-color);
-    margin-inline: 1.5rem;
-}
-
-.cards .text p:last-child {
-    margin-bottom: 1.5rem;
+    color: var(--pico-muted-color);
+    margin: 1.5rem;
 }
