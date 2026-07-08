@@ -25,7 +25,7 @@ function mountEditor(props = {}, perms = {}) {
     global: {
       stubs,
       directives: {
-        'observe-visibility': {
+        visible: {
           mounted(el, binding) {
             const handler = typeof binding.value === 'function' ? binding.value : binding.value?.handler
             if (handler) handler(true)
@@ -37,7 +37,7 @@ function mountEditor(props = {}, perms = {}) {
           const user = useUserStore()
           user.me = { permission: perms }
           const app = useAppStore()
-          app.urlpage = 'http://localhost/_domain_/_path_'
+          app.urlpage = 'https://_domain_/_path_'
         }
       }],
     },
@@ -57,6 +57,22 @@ describe('PageDetailEditor', () => {
   it('renders an iframe for page preview', () => {
     mountEditor()
     cy.get('iframe').should('exist')
+  })
+
+  it('does not build a multidomain preview URL without a domain', () => {
+    mountEditor({ item: { ...item, path: '', domain: '' } }).then(({ wrapper }) => {
+      const editor = wrapper.findComponent(PageDetailEditor)
+      expect(editor.vm.url).to.equal(null)
+    })
+
+    cy.get('iframe').should('not.have.attr', 'src', 'https:')
+  })
+
+  it('builds the multidomain preview URL with the page domain', () => {
+    mountEditor({ item: { ...item, domain: 'paper.themes.pagible.com' } }).then(({ wrapper }) => {
+      const editor = wrapper.findComponent(PageDetailEditor)
+      expect(editor.vm.url).to.equal('https://paper.themes.pagible.com/test-page')
+    })
   })
 
   it('renders fullscreen button', () => {

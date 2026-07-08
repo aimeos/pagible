@@ -101,12 +101,20 @@ export default {
 
   computed: {
     url() {
-      return this.visible
-        ? this.app.urlpage
-            .replace(/_domain_/, this.item.domain || '')
-            .replace(/_path_/, this.item.path || '')
-            .replace(/\/+$/, '')
-        : null
+      if (!this.visible) {
+        return null
+      }
+
+      const domain = this.item.domain || ''
+
+      if (this.app.urlpage.includes('_domain_') && !domain) {
+        return null
+      }
+
+      return this.app.urlpage
+        .replace(/_domain_/, domain)
+        .replace(/_path_/, this.item.path || '')
+        .replace(/\/+$/, '')
     }
   },
 
