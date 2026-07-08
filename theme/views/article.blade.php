@@ -8,9 +8,7 @@
 	@include('cms::pic', ['file' => $file, 'main' => true, 'class' => 'cover', 'sizes' => '(max-width: 960px) 100vw, 960px'])
 @endif
 
-<div class="text">
-	@markdown($data->text ?? '')
-</div>
+<div class="cms-text">@markdown($data->text ?? '')</div>
 
 <script type="application/ld+json">{
 	"@@context": "https://schema.org",
