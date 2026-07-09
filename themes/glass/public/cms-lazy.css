@@ -228,7 +228,6 @@ footer.cms-content .cards .title {
     font-size: calc(var(--pico-font-size) * 0.75);
     font-weight: 700;
     letter-spacing: 0.05em;
-    margin-bottom: 1.5rem;
     text-transform: uppercase;
 }
 
