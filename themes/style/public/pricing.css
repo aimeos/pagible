@@ -99,8 +99,6 @@
     background-color: var(--pico-color);
     color: var(--pico-background-color);
     border-color: var(--pico-color);
-    padding-top: 3rem;
-    padding-bottom: 3rem;
     box-shadow: 0 1.5625rem 3.125rem -0.75rem var(--pico-box-shadow);
 }
 

@@ -111,8 +111,8 @@
     top: -0.75rem;
     left: 50%;
     transform: translateX(-50%);
-    background: var(--pico-primary);
-    color: var(--pico-primary-inverse);
+    background: var(--pico-contrast-inverse);
+    color: var(--pico-contrast);
     border-radius: var(--pico-border-radius);
     font-weight: 500;
     font-size: 0.75rem;

@@ -57,7 +57,7 @@
 .contact button:disabled {
     border: 1px solid var(--pico-muted-border-color);
     background-color: var(--pico-background-color);
-    color: var(--pico-muted-background-color);
+    color: var(--pico-muted-color);
 }
 
 .contact button:has(.success:not(.hidden)) {

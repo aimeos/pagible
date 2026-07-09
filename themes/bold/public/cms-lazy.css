@@ -151,6 +151,14 @@ pre:has(code[class*="language-"]) {
 }
 
 
+footer.cms-content .cards :is(.text, .cms-text) a,
+footer.cms-content .cards :is(.text, .cms-text) a:visited,
+footer.cms-content .cards :is(.text, .cms-text) a:hover,
+footer.cms-content .cards :is(.text, .cms-text) a:focus,
+footer.cms-content .cards :is(.text, .cms-text) a:active {
+    text-decoration: none;
+}
+
 footer.bottom {
     border-top: 1px solid var(--pico-contrast-border);
     padding: 2rem;

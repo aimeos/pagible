@@ -89,14 +89,15 @@
     position: relative;
     display: flex;
     flex-direction: column;
-    padding: 2rem;
-    margin: 0 auto;
     backdrop-filter: blur(20px);
     background: var(--pico-contrast-background);
     border: 1px solid var(--pico-contrast-border);
     border-top: 2px solid var(--pico-contrast-hover-border);
     border-radius: var(--pico-border-radius);
     box-shadow: var(--pico-box-shadow);
+    margin: 0 auto;
+    padding: 2rem;
+    width: 100%;
 }
 
 .pricing .pricing-item.highlight {
@@ -111,8 +112,8 @@
     top: -0.75rem;
     left: 50%;
     transform: translateX(-50%);
-    background: var(--pico-primary);
-    color: var(--pico-primary-inverse);
+    background: var(--pico-contrast);
+    color: var(--pico-contrast-inverse);
     border-radius: 9999px;
     font-weight: 500;
     font-size: 0.75rem;

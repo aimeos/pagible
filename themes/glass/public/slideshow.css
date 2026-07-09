@@ -2,22 +2,6 @@
  * @license MIT, https://opensource.org/license/MIT
  */
 
-.swiffy-slider {
-	background: var(--pico-contrast-background);
-	backdrop-filter: blur(20px);
-	-webkit-backdrop-filter: blur(20px);
-	border: 1px solid var(--pico-contrast-border);
-	border-top: 2px solid var(--pico-contrast-hover-border);
-	border-radius: calc(var(--pico-border-radius) * 1.5);
-	box-shadow: var(--pico-box-shadow);
-	overflow: hidden;
-	padding: 0.75rem;
-}
-
-.slider-container {
-	border-radius: calc(var(--pico-border-radius));
-}
-
 /* Swiffy slider 1.2.0 (modified) https://github.com/dynamicweb/swiffy-slider/ (MIT license) */
 
 .swiffy-slider {
