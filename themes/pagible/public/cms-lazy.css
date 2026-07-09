@@ -154,6 +154,14 @@ pre:has(code[class*="language-"]) {
 }
 
 
+footer.cms-content .cards :is(.text, .cms-text) a,
+footer.cms-content .cards :is(.text, .cms-text) a:visited,
+footer.cms-content .cards :is(.text, .cms-text) a:hover,
+footer.cms-content .cards :is(.text, .cms-text) a:focus,
+footer.cms-content .cards :is(.text, .cms-text) a:active {
+    text-decoration: none;
+}
+
 footer.bottom {
     text-align: center;
 }

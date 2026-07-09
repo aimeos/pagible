@@ -159,7 +159,7 @@ nav details {
 }
 
 header nav a,
-header nav details.dropdown summary:not([role]) {
+header nav details.dropdown > summary {
     display: flex;
     align-items: center;
     list-style: none;
@@ -171,8 +171,10 @@ header nav details.dropdown summary:not([role]) {
     letter-spacing: 0.05em;
     font-size: calc(var(--pico-font-size) * 0.8);
     transition: color 0.15s ease;
-    background: none;
-    border: none;
+    height: auto;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
     color: inherit;
 }
 
@@ -184,12 +186,15 @@ header nav a:not([role]):active {
 
 header nav ul.menu > li:not(:last-of-type) > a:hover,
 header nav ul.menu > li:not(:last-of-type) > a:focus,
-header nav details.dropdown summary:not([role]):hover,
-header nav details.dropdown summary:not([role]):focus,
-header nav details.dropdown summary:not([role]):active {
+header nav details.dropdown > summary:hover,
+header nav details.dropdown > summary:focus,
+header nav details.dropdown > summary:focus-visible,
+header nav details.dropdown > summary:active,
+header nav details.dropdown[open] > summary {
     color: var(--pico-primary);
-    background: none;
+    background: transparent;
     box-shadow: none;
+    border: 0;
 }
 
 header nav ul.menu > li:last-of-type > a:hover,

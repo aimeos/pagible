@@ -163,7 +163,7 @@ header nav > ul > li:last-of-type a:hover {
 }
 
 header nav a,
-header nav details.dropdown summary:not([role]) {
+header nav details.dropdown > summary {
     display: flex;
     align-items: center;
     list-style: none;
@@ -177,8 +177,10 @@ header nav details.dropdown summary:not([role]) {
     transition: color 0.15s ease;
     text-decoration: none;
     margin: 0;
-    background: none;
-    border: none;
+    height: auto;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
 }
 
 header nav a:not([role]):hover,
@@ -189,12 +191,15 @@ header nav a:not([role]):active {
 
 header nav ul.menu > li:not(:last-of-type) > a:hover,
 header nav ul.menu > li:not(:last-of-type) > a:focus,
-header nav details.dropdown summary:not([role]):hover,
-header nav details.dropdown summary:not([role]):focus,
-header nav details.dropdown summary:not([role]):active {
+header nav details.dropdown > summary:hover,
+header nav details.dropdown > summary:focus,
+header nav details.dropdown > summary:focus-visible,
+header nav details.dropdown > summary:active,
+header nav details.dropdown[open] > summary {
     color: var(--pico-primary-hover);
-    background: none;
+    background: transparent;
     box-shadow: none;
+    border: 0;
 }
 
 header nav ul.menu > li:last-of-type > a:hover,

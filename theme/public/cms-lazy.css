@@ -199,17 +199,25 @@ footer.cms-content .cards .title {
     text-transform: uppercase;
 }
 
-footer.cms-content .cards .text {
+footer.cms-content .cards :is(.text, .cms-text) {
     color: var(--pico-contrast-inverse);
     font-size: calc(var(--pico-font-size) * 0.7);
 }
 
-footer.cms-content .cards .text p {
+footer.cms-content .cards :is(.text, .cms-text) p {
     line-height: 1.75;
     margin: 0;
 }
 
-footer.cms-content .cards .text a:hover {
+footer.cms-content .cards :is(.text, .cms-text) a,
+footer.cms-content .cards :is(.text, .cms-text) a:visited,
+footer.cms-content .cards :is(.text, .cms-text) a:hover,
+footer.cms-content .cards :is(.text, .cms-text) a:focus,
+footer.cms-content .cards :is(.text, .cms-text) a:active {
+    text-decoration: none;
+}
+
+footer.cms-content .cards :is(.text, .cms-text) a:hover {
     color: var(--pico-muted-color);
 }
 

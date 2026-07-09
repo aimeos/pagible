@@ -162,6 +162,10 @@ header nav details > summary {
     transition: color 0.15s ease;
     text-decoration: none;
     margin: 0;
+    height: auto;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
 }
 
 header nav a:hover,
@@ -171,14 +175,16 @@ header nav details > summary:hover {
 
 header nav ul.menu > li:not(:last-of-type) > a:hover,
 header nav ul.menu > li:not(:last-of-type) > a:focus,
-header nav details.dropdown summary:not([role]),
-header nav details.dropdown summary:not([role]):hover,
-header nav details.dropdown summary:not([role]):focus,
-header nav details.dropdown summary:not([role]):active {
+header nav details.dropdown > summary,
+header nav details.dropdown > summary:hover,
+header nav details.dropdown > summary:focus,
+header nav details.dropdown > summary:focus-visible,
+header nav details.dropdown > summary:active,
+header nav details.dropdown[open] > summary {
     color: var(--pico-contrast);
-    background: none;
+    background: transparent;
     box-shadow: none;
-    border:none;
+    border: 0;
 }
 
 header nav details summary::marker,
