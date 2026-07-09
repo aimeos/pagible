@@ -48,7 +48,7 @@ class Demo extends Command
         }
 
         $theme = (string) ( $this->option( 'theme' ) ?? '' );
-        $tenant = (string) ( $this->option( 'tenant' ) ?? '' ) ?: $theme;
+        $tenant = (string) ( $this->option( 'tenant' ) ?? $theme );
 
         $this->seed( $theme, $tenant );
 
@@ -64,7 +64,7 @@ class Demo extends Command
      */
     protected function seed( string $theme, string $tenant ) : void
     {
-        $this->comment( sprintf( '  Seeding "%s" demo into tenant "%s" ...', $theme ?: 'default', $tenant ?: '-' ) );
+        $this->comment( sprintf( '  Seeding "%s" demo into tenant "%s" ...', $theme ?: 'default', $tenant ?: '' ) );
 
         AbstractDemo::create( $theme, $tenant )->seed();
     }
