@@ -12,24 +12,20 @@ use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Tenancy;
-use Aimeos\Cms\Utils;
-use Illuminate\Support\Str;
 
 
 /**
  * Base class for theme-specific demo content providers.
  *
- * Subclasses implement pages() to build the page tree using the file(),
- * element() and page() helpers. The theme and tenant the content is created
- * for are passed to the constructor.
+ * Subclasses implement pages() and own all theme-specific content. The theme
+ * and tenant the content is created for are passed to the constructor.
  */
 abstract class AbstractDemo
 {
     private string $audioFile;
-    private string $element;
-    private string $videoFile;
     /** @var array<string, string> File IDs keyed by Unsplash photo path */
     private array $images = [];
+    private string $videoFile;
     protected string $tenant;
     protected string $theme;
 
@@ -44,29 +40,6 @@ abstract class AbstractDemo
     {
         $this->theme = $theme;
         $this->tenant = $tenant;
-    }
-
-
-    /**
-     * Creates the demo content provider for the given theme by naming convention.
-     *
-     * Resolves to "\Database\Seeders\<Studly>Demo" (e.g. "luxury" => LuxuryDemo)
-     * when such a class exists, so themes ship a demo provider without a registry.
-     * Falls back to the default demo content for the default and unknown themes.
-     *
-     * @param string $theme Theme name
-     * @param string $tenant Tenant ID the content is created for
-     * @return self Demo content provider for the theme
-     */
-    public static function create( string $theme, string $tenant = '' ) : self
-    {
-        $class = __NAMESPACE__ . '\\' . Str::studly( $theme ) . 'Demo';
-
-        if( $theme !== '' && is_subclass_of( $class, self::class ) ) {
-            return new $class( $theme, $tenant );
-        }
-
-        return new DefaultDemo( $theme, $tenant );
     }
 
 
@@ -146,65 +119,6 @@ abstract class AbstractDemo
 
 
     /**
-     * Creates the shared demo footer element and returns its ID.
-     *
-     * @return string Element ID
-     */
-    protected function element() : string
-    {
-        if( !isset( $this->element ) )
-        {
-            $cards = [
-                ['title' => 'Product', 'text' => "Explore our tools\n\n- [Features](/)\n- [Pricing](/)"],
-                ['title' => 'Resources', 'text' => "Learn and grow\n\n- [Docs](/)\n- [Blog](/)"],
-                ['title' => 'Company', 'text' => "Get in touch\n\n- [About](/)\n- [Contact](/)"],
-            ];
-
-            $element = Element::forceCreate( [
-                'lang' => 'en',
-                'type' => 'cards',
-                'name' => 'Shared footer',
-                'data' => ['type' => 'cards', 'data' => ['cards' => $cards]],
-                'editor' => 'demo',
-            ] );
-
-            $version = $element->versions()->forceCreate( [
-                'lang' => 'en',
-                'data' => [
-                    'lang' => 'en',
-                    'type' => 'cards',
-                    'name' => 'Shared footer',
-                    'data' => ['cards' => $cards],
-                ],
-                'published' => true,
-                'editor' => 'demo',
-            ] );
-
-            $element->forceFill( ['latest_id' => $version->id] )->saveQuietly();
-            $element->publish( $version );
-            $this->element = (string) $element->refresh()->id;
-        }
-
-        return $this->element;
-    }
-
-
-    /**
-     * Returns the ID of the primary shared demo image.
-     *
-     * @return string File ID
-     */
-    protected function file() : string
-    {
-        return $this->image(
-            'photo-1517336714731-489689fd1ca8',
-            'PagibleAI CMS Dashboard',
-            'PagibleAI CMS delivers blazing-fast content management'
-        );
-    }
-
-
-    /**
      * Creates (once) a demo image from an Unsplash photo and returns its file ID.
      *
      * @param string $photo Unsplash photo path, e.g. "photo-1517336714731-489689fd1ca8"
@@ -243,65 +157,6 @@ abstract class AbstractDemo
         }
 
         return $this->images[$photo];
-    }
-
-
-    /**
-     * Creates a demo page below the given parent and returns it.
-     *
-     * @param array<string, mixed> $data Page attributes
-     * @param array<int, array<string, mixed>> $content Content elements
-     * @param Page $parent Parent page to append to
-     * @param array<int, string> $fileIds Additional file IDs to attach
-     * @param array<int, array<string, mixed>> $meta Meta data blocks
-     * @return Page Created page
-     */
-    protected function page( array $data, array $content, Page $parent, array $fileIds = [], array $meta = [] ) : Page
-    {
-        $elementId = $this->element();
-        $fileId = $this->file();
-
-        $meta = $data['meta'] ?? $meta ?: [
-            ['type' => 'meta-tags', 'data' => [
-                'description' => $data['title'] ?? '',
-                'keywords' => 'PagibleAI CMS, Laravel CMS, AI content management',
-            ]],
-            ['type' => 'social-media', 'data' => [
-                'title' => $data['title'] ?? '',
-                'description' => $data['title'] ?? '',
-                'file' => ['id' => $fileId, 'type' => 'file'],
-            ]],
-        ];
-
-        $content[] = ['id' => Utils::uid(), 'type' => 'heading', 'group' => 'footer', 'data' => ['level' => 2, 'title' => 'PagibleAI CMS']];
-        $content[] = ['type' => 'reference', 'refid' => $elementId, 'group' => 'footer'];
-
-        $page = Page::forceCreate( $data + [
-            'theme' => $this->theme,
-            'editor' => 'demo',
-            'meta' => $meta,
-            'content' => $content,
-        ] );
-        $page->appendToNode( $parent )->save();
-
-        $version = $page->versions()->forceCreate( [
-            'lang' => $data['lang'] ?? 'en',
-            'data' => array_diff_key( $data, ['content' => 1, 'meta' => 1] ) + [
-                'domain' => '',
-                'theme' => $this->theme,
-            ],
-            'aux' => ['meta' => $meta, 'content' => $content],
-            'published' => true,
-            'editor' => 'demo',
-        ] );
-
-        $version->elements()->attach( $elementId );
-        $version->files()->attach( array_unique( array_merge( [$fileId], $fileIds ) ) );
-
-        $page->forceFill( ['latest_id' => $version->id] )->saveQuietly();
-        $page->publish( $version );
-
-        return $page;
     }
 
 

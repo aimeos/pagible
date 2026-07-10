@@ -20,6 +20,14 @@ use Illuminate\Support\Str;
  */
 class GlassDemo extends AbstractDemo
 {
+    /** @var array<string, string> Meta descriptions keyed by page path */
+    private const DESCRIPTIONS = [
+        'why-weekly-dashboards-lose-trust' => 'Learn why dashboards lose trust when freshness, ownership, and metric context are missing, and how to restore confidence in weekly reviews.',
+        'metric-ownership-is-a-product-decision' => 'Treat metric ownership as product work by recording definitions, sources, approval rules, and change history in one governed contract.',
+        'freshness-is-more-than-a-timestamp' => 'Design freshness rules around business decisions, with source-aware thresholds, warnings, and publication holds for stale data.',
+        'one-revenue-number-for-finance-and-product' => 'Connect finance-approved revenue with product signals so teams can explain changes without creating competing versions of the number.',
+    ];
+
     /**
      * Curated Unsplash photos used across the Glass demo.
      *
@@ -83,11 +91,11 @@ class GlassDemo extends AbstractDemo
                 'parent-page' => ['value' => $blogId, 'label' => 'Field Notes'],
             ]],
         ], $home, [], [
-            ['type' => 'meta-tags', 'data' => [
+            'meta-tags' => ['id' => Utils::uid(), 'type' => 'meta-tags', 'group' => 'basic', 'data' => [
                 'description' => 'Articles from SignalLake on metric governance, data freshness, analytics operations, and shared revenue reporting.',
                 'keywords' => 'analytics cloud blog, metric governance, data freshness, revenue analytics',
             ]],
-            ['type' => 'social-media', 'data' => [
+            'social-media' => ['id' => Utils::uid(), 'type' => 'social-media', 'group' => 'basic', 'data' => [
                 'title' => 'Field Notes',
                 'description' => 'Practical writing for teams that depend on shared business metrics.',
                 'file' => ['id' => $cover, 'type' => 'file'],
@@ -371,11 +379,11 @@ class GlassDemo extends AbstractDemo
                 'file' => ['id' => $this->briefFile(), 'type' => 'file'],
             ]],
         ], $home, [$diagram], [
-            ['type' => 'meta-tags', 'data' => [
+            'meta-tags' => ['id' => Utils::uid(), 'type' => 'meta-tags', 'group' => 'basic', 'data' => [
                 'description' => 'SignalLake documentation for workspaces, sources, metrics, dashboards, access rules, and publishing workflows.',
                 'keywords' => 'SignalLake documentation, analytics API, metric definitions, cloud analytics docs',
             ]],
-            ['type' => 'social-media', 'data' => [
+            'social-media' => ['id' => Utils::uid(), 'type' => 'social-media', 'group' => 'basic', 'data' => [
                 'title' => 'SignalLake Documentation',
                 'description' => 'Set up a workspace, connect sources, define governed metrics, and publish dashboards.',
                 'file' => ['id' => $diagram, 'type' => 'file'],
@@ -424,11 +432,11 @@ class GlassDemo extends AbstractDemo
                 'text' => "### Review before publishing\n\nBefore a contract becomes active, SignalLake checks that the owner, source, grain, and freshness policy are present. The approval state then follows the metric into every dashboard that uses it.\n\nIf the contract changes later, readers see the active version beside the metric. That makes definition updates visible without turning every dashboard into a change log.",
             ]],
         ], $docs, [], [
-            ['type' => 'meta-tags', 'data' => [
+            'meta-tags' => ['id' => Utils::uid(), 'type' => 'meta-tags', 'group' => 'basic', 'data' => [
                 'description' => 'A concrete SignalLake metric contract example covering owner, source, grain, freshness, and approval state.',
                 'keywords' => 'metric contract example, analytics governance, SignalLake docs',
             ]],
-            ['type' => 'social-media', 'data' => [
+            'social-media' => ['id' => Utils::uid(), 'type' => 'social-media', 'group' => 'basic', 'data' => [
                 'title' => 'Metric Contract Example | SignalLake',
                 'description' => 'Use one record to keep a metric definition, owner, source, grain, freshness, and approval state together.',
                 'file' => ['id' => $this->img( 'contract' ), 'type' => 'file'],
@@ -477,11 +485,11 @@ class GlassDemo extends AbstractDemo
                 'text' => "### Publish the view, not a copy\n\nA published dashboard still reads from the approved metric set. If a source becomes stale or a definition changes, SignalLake marks the issue on the review page instead of hiding it in an exported deck.\n\nThat distinction matters during weekly reviews. The audience gets a stable page, while editors keep the ability to prepare the next review cycle without overwriting the current one.",
             ]],
         ], $docs, [], [
-            ['type' => 'meta-tags', 'data' => [
+            'meta-tags' => ['id' => Utils::uid(), 'type' => 'meta-tags', 'group' => 'basic', 'data' => [
                 'description' => 'A SignalLake dashboard publishing example for sharing governed metrics with an executive review audience.',
                 'keywords' => 'dashboard publishing example, governed dashboard, SignalLake docs',
             ]],
-            ['type' => 'social-media', 'data' => [
+            'social-media' => ['id' => Utils::uid(), 'type' => 'social-media', 'group' => 'basic', 'data' => [
                 'title' => 'Dashboard Publish Example | SignalLake',
                 'description' => 'Publish a stable review dashboard while keeping metrics connected to governed live data.',
                 'file' => ['id' => $this->img( 'control' ), 'type' => 'file'],
@@ -734,11 +742,11 @@ class GlassDemo extends AbstractDemo
         ];
 
         $meta = [
-            ['type' => 'meta-tags', 'data' => [
+            'meta-tags' => ['id' => Utils::uid(), 'type' => 'meta-tags', 'group' => 'basic', 'data' => [
                 'description' => 'SignalLake Analytics Cloud gives revenue, product, and finance teams governed dashboards, metric ownership, and live operating reports.',
                 'keywords' => 'analytics cloud, governed metrics, revenue dashboards, product analytics, business intelligence',
             ]],
-            ['type' => 'social-media', 'data' => [
+            'social-media' => ['id' => Utils::uid(), 'type' => 'social-media', 'group' => 'basic', 'data' => [
                 'title' => 'SignalLake Analytics Cloud',
                 'description' => 'Live, governed metrics for teams that run weekly operating reviews.',
                 'file' => ['id' => $fileId, 'type' => 'file'],
@@ -915,22 +923,23 @@ SVG;
      * @param array<int, array<string, mixed>> $content Content elements
      * @param Page $parent Parent page to append to
      * @param array<int, string> $fileIds Additional file IDs to attach
-     * @param array<int, array<string, mixed>> $meta Meta data blocks
+     * @param array<string, array<string, mixed>> $meta Meta data blocks keyed by type
      * @return Page Created page
      */
     protected function page( array $data, array $content, Page $parent, array $fileIds = [], array $meta = [] ) : Page
     {
         $elementId = $this->element();
         $fileId = $this->file();
+        $description = self::DESCRIPTIONS[$data['path'] ?? ''] ?? $data['title'] ?? '';
 
         $meta = $data['meta'] ?? $meta ?: [
-            ['type' => 'meta-tags', 'data' => [
-                'description' => $data['title'] ?? '',
+            'meta-tags' => ['id' => Utils::uid(), 'type' => 'meta-tags', 'group' => 'basic', 'data' => [
+                'description' => $description,
                 'keywords' => 'SignalLake, analytics cloud, governed metrics, business intelligence',
             ]],
-            ['type' => 'social-media', 'data' => [
+            'social-media' => ['id' => Utils::uid(), 'type' => 'social-media', 'group' => 'basic', 'data' => [
                 'title' => $data['title'] ?? '',
-                'description' => $data['title'] ?? '',
+                'description' => $description,
                 'file' => ['id' => $fileId, 'type' => 'file'],
             ]],
         ];
