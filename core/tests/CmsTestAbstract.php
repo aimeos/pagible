@@ -33,6 +33,8 @@ abstract class CmsTestAbstract extends \Orchestra\Testbench\TestCase
 
         $app['config']->set('auth.providers.users.model', 'App\\Models\\User');
         $app['config']->set('scout.driver', 'collection');
+        // Pulse rescues missing-storage errors, which leaves PostgreSQL test transactions aborted.
+        $app['config']->set('pulse.enabled', false);
         $app['config']->set('cms.db', 'testing');
 
         \Aimeos\Cms\Tenancy::$callback = function() {
