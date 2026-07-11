@@ -1,4 +1,4 @@
-/** @license LGPL, https://opensource.org/license/lgpl-3-0 */
+/** @license MIT, https://opensource.org/license/mit */
 
 <script>
 import UnsavedDialog from './components/UnsavedDialog.vue'
@@ -38,7 +38,11 @@ export default {
     <main>
       <transition-group name="slide-stack">
         <v-layout ref="baseview" key="list" class="view" style="z-index: 10">
-          <router-view />
+          <router-view v-slot="{ Component, route }">
+            <keep-alive :include="['PageList', 'ElementList', 'FileList']">
+              <component :is="Component" :key="route.path" />
+            </keep-alive>
+          </router-view>
         </v-layout>
 
         <v-layout
@@ -77,6 +81,13 @@ body {
   position: absolute !important;
   min-height: 100%;
   width: 100%;
+}
+
+@media (min-width: 960px) {
+  .v-navigation-drawer,
+  .v-main {
+    transition: none !important;
+  }
 }
 
 /* Slide animation */

@@ -1,16 +1,16 @@
 <?php
 
 /**
- * @license LGPL, https://opensource.org/license/lgpl-3-0
+ * @license MIT, https://opensource.org/license/mit
  */
 
 
 namespace Aimeos\Cms\Tools;
 
 use Aimeos\Cms\Utils;
+use Aimeos\Cms\Resource;
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\Models\File;
-use Aimeos\Cms\Models\Version;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Attributes\Title;
@@ -22,7 +22,7 @@ use Laravel\Mcp\Request;
 
 #[Name('add-file')]
 #[Title('Add a media file from a URL')]
-#[Description('Adds a new media file (image, video, audio, document) from a URL. Automatically generates preview images for image files. Returns the created file as a JSON object.')]
+#[Description('Adds a new media file (image, video, audio, document) from a URL. Automatically generates preview images for image files. Returns the created file as a JSON object, including the latest_id to pass to save-file when editing it.')]
 class AddFile extends Tool
 {
     /**
@@ -31,7 +31,7 @@ class AddFile extends Tool
     public function handle( Request $request ): \Laravel\Mcp\ResponseFactory
     {
         if( !Permission::can( 'file:add', $request->user() ) ) {
-            throw new \Exception( 'Insufficient permissions' );
+            throw new \Aimeos\Cms\Exception( 'Insufficient permissions' );
         }
 
         $v = $request->validate([
@@ -49,59 +49,34 @@ class AddFile extends Tool
             return Response::structured( ['error' => sprintf( 'The URL "%s" must be a valid "http" or "https" URL.', $url )] );
         }
 
-        $mime = Utils::mimetype( $url );
+        $file = new File();
+        $file->fill( array_intersect_key( $v, array_flip( ['name', 'lang'] ) ) );
 
-        if( !Utils::isValidMimetype( $mime ) ) {
-            return Response::structured( ['error' => sprintf( 'File type "%s" is not allowed.', $mime )] );
+        if( isset( $v['description'] ) ) {
+            $file->description = $v['description'];
         }
 
-        return Utils::transaction( function() use ( $url, $mime, $v, $request ) {
+        $file->path = $url;
+        $file->name = $file->name ?: substr( $url, 0, 255 );
 
-            $editor = Utils::editor( $request->user() );
-            $versionId = ( new Version )->newUniqueId();
+        // Fetch the file and generate previews outside the transaction to keep
+        // slow network and image work off the database connection.
+        try {
+            $file->addPreviews( $url );
+        } catch( \Throwable $t ) {
+            $file->removePreviews();
+            throw $t;
+        }
 
-            $file = new File();
-            $file->fill( array_intersect_key( $v, array_flip( ['name', 'lang'] ) ) );
+        if( !Utils::isValidMimetype( $file->mime ) )
+        {
+            $file->removePreviews();
+            return Response::structured( ['error' => sprintf( 'File type "%s" is not allowed.', $file->mime )] );
+        }
 
-            if( isset( $v['description'] ) ) {
-                $file->description = $v['description'];
-            }
+        $file = Resource::addFile( $file, $request->user() );
 
-            $file->tenant_id = \Aimeos\Cms\Tenancy::value();
-            $file->path = $url;
-            $file->mime = $mime;
-            $file->name = $file->name ?: substr( $url, 0, 255 );
-            $file->latest_id = $versionId;
-            $file->editor = $editor;
-
-            try {
-                if( str_starts_with( $file->mime, 'image/' ) ) {
-                    $file->addPreviews( $url );
-                }
-            } catch( \Throwable $t ) {
-                $file->removePreviews();
-                throw $t;
-            }
-
-            $file->save();
-
-            $file->versions()->forceCreate( [
-                'id' => $versionId,
-                'lang' => $v['lang'] ?? null,
-                'editor' => $editor,
-                'data' => [
-                    'lang' => $file->lang,
-                    'name' => $file->name,
-                    'mime' => $file->mime,
-                    'path' => $file->path,
-                    'previews' => $file->previews,
-                    'description' => $file->description,
-                    'transcription' => $file->transcription,
-                ],
-            ] );
-
-            return Response::structured( $file->toArray() );
-        } );
+        return Response::structured( ['id' => $file->id, 'latest_id' => $file->latest_id] + $file->toArray() );
     }
 
 

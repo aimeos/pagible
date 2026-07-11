@@ -1,7 +1,7 @@
-/** @license LGPL, https://opensource.org/license/lgpl-3-0 */
+/** @license MIT, https://opensource.org/license/mit */
 
 <script>
-import { useDrawerStore, useUserStore, useViewStack } from '../stores'
+import { useDirtyStore, useDrawerStore, useUserStore, useViewStack } from '../stores'
 import {
   mdiChevronLeft,
   mdiChevronRight,
@@ -27,17 +27,20 @@ export default {
     publishAt: { type: [Date, null], default: null },
     publishTime: { type: [String, null], default: null },
     saving: { type: Boolean, default: false },
+    stacked: { type: Boolean, default: false },
     type: { type: String, required: true }
   },
 
   emits: ['update:publishAt', 'update:publishTime', 'changes', 'history', 'publish', 'save', 'schedule'],
 
   setup() {
+    const dirtyStore = useDirtyStore()
     const drawer = useDrawerStore()
     const user = useUserStore()
     const viewStack = useViewStack()
 
     return {
+      dirtyStore,
       drawer,
       user,
       viewStack,
@@ -48,6 +51,20 @@ export default {
       mdiKeyboardBackspace,
       mdiSwapHorizontal,
       allowedMinutes
+    }
+  },
+
+  methods: {
+    async goBack() {
+      if (this.stacked) {
+        this.viewStack.closeView()
+      } else if (this.dirtyStore.dirty) {
+        await this.dirtyStore.confirm(() => {
+          this.$router.push({ name: `${this.type}:view` })
+        })
+      } else {
+        this.$router.push({ name: `${this.type}:view` })
+      }
     }
   },
 
@@ -75,7 +92,7 @@ export default {
   <v-app-bar :elevation="0" density="compact" role="sectionheader" :aria-label="$gettext('Menu')">
     <template v-slot:prepend>
       <v-btn
-        @click="viewStack.closeView()"
+        @click="goBack()"
         :title="$gettext('Back to list view')"
         :icon="mdiKeyboardBackspace"
         class="btn-back"

@@ -1,4 +1,4 @@
-/** @license LGPL, https://opensource.org/license/lgpl-3-0 */
+/** @license MIT, https://opensource.org/license/mit */
 
 <script>
 /**
@@ -26,9 +26,12 @@ import {
 } from '@mdi/js'
 import { VueDraggable } from 'vue-draggable-plus'
 import { useUserStore, useClipboardStore, useMessageStore } from '../stores'
+import { fieldTypes } from '../fieldtypes'
 import { itemTitle, txlocales } from '../utils'
 
 export default {
+  inheritAttrs: false,
+
   components: {
     VueDraggable
   },
@@ -120,10 +123,19 @@ export default {
       this.items.push({})
       this.panel.push(this.items.length - 1)
       this.$emit('update:modelValue', this.items)
+      this.check()
     },
 
     change() {
       this.$emit('update:modelValue', this.items)
+    },
+
+    check() {
+      const hasError = !this.rules.every((rule) => rule(this.items) === true)
+      if (hasError !== this.lastError) {
+        this.lastError = hasError
+        this.$emit('error', hasError)
+      }
     },
 
     copy(idx) {
@@ -134,12 +146,14 @@ export default {
       this.clipboard.set('items-content', structuredClone(this.items[idx]))
       this.items.splice(idx, 1)
       this.$emit('update:modelValue', this.items)
+      this.check()
     },
 
     insert(idx) {
       this.items.splice(idx, 0, {})
       this.panel.push(idx)
       this.$emit('update:modelValue', this.items)
+      this.check()
     },
 
     paste(idx = null) {
@@ -149,6 +163,7 @@ export default {
 
       this.items.splice(idx, 0, this.clipboard.get('items-content'))
       this.$emit('update:modelValue', this.items)
+      this.check()
     },
 
     record(idx, code) {
@@ -180,6 +195,7 @@ export default {
     remove(idx) {
       this.items.splice(idx, 1)
       this.$emit('update:modelValue', this.items)
+      this.check()
     },
 
     title(el) {
@@ -187,7 +203,8 @@ export default {
     },
 
     toName(type) {
-      return type?.charAt(0)?.toUpperCase() + type?.slice(1)
+      const name = type ? type.charAt(0).toUpperCase() + type.slice(1) : ''
+      return fieldTypes.has(name) ? name : 'Hidden'
     },
 
     translateText(idx, code, lang) {
@@ -249,12 +266,7 @@ export default {
       immediate: true,
       handler(val) {
         this.items = Array.isArray(val) ? val : (this.config.default ?? [])
-
-        const hasError = !this.rules.every((rule) => rule(this.items) === true)
-        if (hasError !== this.lastError) {
-          this.lastError = hasError
-          this.$emit('error', hasError)
-        }
+        this.check()
       }
     }
   }
@@ -262,19 +274,26 @@ export default {
 </script>
 
 <template>
-  <v-expansion-panels class="items" v-model="panel" elevation="0" multiple>
+  <v-expansion-panels v-bind="$attrs" class="items" v-model="panel" elevation="0" multiple>
     <VueDraggable
       v-model="items"
       @update="change()"
       :disabled="readonly || $vuetify.display.smAndDown"
       :forceFallback="true"
       fallbackTolerance="10"
+      handle=".item-handle"
       draggable=".item"
       group="items"
       animation="500"
     >
       <v-expansion-panel v-for="(item, idx) in items" :key="idx" class="item">
         <v-expansion-panel-title>
+          <v-btn v-if="!readonly" variant="text" class="item-handle" :aria-label="$gettext('Move element')" icon>
+            <svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M9,3H11V5H9V3M13,3H15V5H13V3M9,7H11V9H9V7M13,7H15V9H13V7M9,11H11V13H9V11M13,11H15V13H13V11M9,15H11V17H9V15M13,15H15V17H13V15M9,19H11V21H9V19M13,19H15V21H13V19Z" />
+            </svg>
+          </v-btn>
+
           <span class="btn-actions" v-if="!readonly">
             <component
               :is="$vuetify.display.xs ? 'v-dialog' : 'v-menu'"
@@ -463,6 +482,10 @@ export default {
 
 .items.v-expansion-panels {
   display: block;
+}
+
+.item-handle {
+  cursor: move;
 }
 
 .v-expansion-panel-title {

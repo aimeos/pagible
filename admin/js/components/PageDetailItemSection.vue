@@ -1,4 +1,4 @@
-/** @license LGPL, https://opensource.org/license/lgpl-3-0 */
+/** @license MIT, https://opensource.org/license/mit */
 
 <script>
 import Fields from './Fields.vue'
@@ -152,7 +152,7 @@ export default {
     validate() {
       const list = []
 
-      this.$refs.field?.forEach((field) => {
+      this.$refs.field?.filter(field => field).forEach((field) => {
         list.push(field.validate())
       })
 

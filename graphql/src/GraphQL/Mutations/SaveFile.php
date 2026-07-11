@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @license LGPL, https://opensource.org/license/lgpl-3-0
+ * @license MIT, https://opensource.org/license/mit
  */
 
 
@@ -48,7 +48,7 @@ final class SaveFile
             }
         }
 
-        $file = Resource::saveFile(
+        return Resource::saveFile(
             $args['id'],
             $args['input'] ?? [],
             Auth::user(),
@@ -56,9 +56,5 @@ final class SaveFile
             $upload instanceof UploadedFile && $upload->isValid() ? $upload : null,
             $args['preview'] ?? null,
         );
-
-        Resource::broadcast( $file, Auth::user() );
-
-        return $file;
     }
 }

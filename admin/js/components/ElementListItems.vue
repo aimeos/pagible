@@ -1,4 +1,4 @@
-/** @license LGPL, https://opensource.org/license/lgpl-3-0 */
+/** @license MIT, https://opensource.org/license/mit */
 
 <script>
 import { markRaw } from 'vue'
@@ -15,11 +15,14 @@ import {
   mdiMenuDown,
   mdiSort,
   mdiClockOutline,
-  mdiRefresh
+  mdiRefresh,
+  mdiPencil
 } from '@mdi/js'
 import SchemaItems from './SchemaItems.vue'
-import { useUserStore, useMessageStore } from '../stores'
-import { debounce, frozenParse } from '../utils'
+import EditBulkDialog from './EditBulkDialog.vue'
+import { useUserStore, useMessageStore, useChangeStore } from '../stores'
+import { debounce, frozenParse, safeParse } from '../utils'
+import { setupEcho, cleanEcho, listEcho } from '../echo'
 
 const ADD_ELEMENT = gql`
   mutation ($input: ElementInput!) {
@@ -69,6 +72,14 @@ const PURGE_ELEMENT = gql`
   }
 `
 
+const SAVE_ELEMENTS = gql`
+  mutation ($id: [ID!]!, $input: ElementInput!) {
+    bulkElement(id: $id, input: $input) {
+      ids
+    }
+  }
+`
+
 const FETCH_ELEMENTS = gql`
   query (
     $filter: ElementFilter
@@ -114,7 +125,8 @@ const FETCH_ELEMENTS = gql`
 
 export default {
   components: {
-    SchemaItems
+    SchemaItems,
+    EditBulkDialog
   },
 
   props: {
@@ -136,17 +148,24 @@ export default {
       limit: 100,
       vschemas: false,
       actions: false,
+      editDialog: false,
       loading: true,
-      trash: false
+      trash: false,
+      destroyed: false,
+      echoCleanup: null,
+      echoPromise: null,
+      outdated: false
     }
   },
 
   setup() {
     const messages = useMessageStore()
     const user = useUserStore()
+    const changes = useChangeStore()
 
     return {
       user,
+      changes,
       messages,
       mdiDotsVertical,
       mdiClose,
@@ -160,6 +179,7 @@ export default {
       mdiSort,
       mdiClockOutline,
       mdiRefresh,
+      mdiPencil,
       debounce
     }
   },
@@ -167,17 +187,36 @@ export default {
   created() {
     this.search()
     this.searchd = this.debounce(this.search, 500)
+
+    if (!this.embed) {
+      // patch the matching row when another user changes an element; subscribe
+      // for the whole lifetime (not per activation) so the list keeps patching
+      // in the background while the editor is in a detail or another view and is
+      // up to date when they return
+      setupEcho(this, 'element', (event, name) => listEcho(this, event, name))
+    }
   },
 
   beforeUnmount() {
+    this.destroyed = true
+    cleanEcho(this)
+
     this.items = null
     this.menu = null
     this.checked = null
   },
 
+  activated() {
+    this.sync()
+  },
+
   computed: {
     canTrash() {
       return this.items.some((item) => this.checked.has(item.id) && !item.deleted_at)
+    },
+
+    checkedCount() {
+      return this.checked.size
     },
 
     isChecked() {
@@ -263,10 +302,52 @@ export default {
     },
 
     reload() {
+      this.outdated = false
       this.items = []
       this.loading = true
       this.invalidate()
       this.search()
+    },
+
+    patch(item) {
+      const node = this.items?.find((node) => node.id === item.id)
+
+      if (!node) {
+        return false
+      }
+
+      for (const key in item) {
+        if (key in node) {
+          node[key] = item[key]
+        }
+      }
+
+      return true
+    },
+
+    patchItems(items) {
+      // index the patches by id so the bulk update is a single pass over the loaded rows
+      const byId = new Map(items.map((item) => [item.id, item]))
+
+      this.items?.forEach((node) => {
+        const item = byId.get(node.id)
+
+        if (item) {
+          for (const key in item) {
+            if (key in node) {
+              node[key] = item[key]
+            }
+          }
+        }
+      })
+    },
+
+    sync() {
+      const ids = this.changes.get('element')
+        .filter((item) => this.patch(item))
+        .map((item) => item.id)
+
+      this.changes.patched('element', ids)
     },
 
     invalidate() {
@@ -384,6 +465,46 @@ export default {
         })
     },
 
+    edit() {
+      this.actions = false
+      this.editDialog = true
+    },
+
+    save(lang) {
+      if (!this.user.can('element:save')) {
+        this.messages.add(this.$gettext('Permission denied'), 'error')
+        return
+      }
+
+      const list = this.items.filter((item) => this.checked.has(item.id))
+
+      if (!list.length || lang === null) {
+        return
+      }
+
+      this.$apollo
+        .mutate({
+          mutation: SAVE_ELEMENTS,
+          variables: {
+            id: list.map((item) => item.id),
+            input: { lang: lang }
+          }
+        })
+        .then((result) => {
+          if (result.errors) {
+            throw result.errors
+          }
+
+          this.checked = new Set()
+          this.invalidate()
+          this.search()
+        })
+        .catch((error) => {
+          this.messages.add(this.$gettext('Error saving shared element') + ':\n' + error, 'error')
+          this.$log(`ElementListItems::save(): Error saving shared elements`, list, lang, error)
+        })
+    },
+
     setSort(column, order) {
       this.sort = { column, order }
     },
@@ -436,10 +557,10 @@ export default {
           this.last = elements.paginatorInfo?.lastPage || 1
           this.items = [...(elements.data || [])].map((entry) => {
             const item = entry.latest?.data
-              ? JSON.parse(entry.latest?.data)
+              ? safeParse(entry.latest?.data)
               : {
                   ...entry,
-                  data: JSON.parse(entry.data || '{}')
+                  data: safeParse(entry.data)
                 }
 
             if (item.data && typeof item.data === 'object') {
@@ -454,7 +575,7 @@ export default {
               editor: entry.latest?.editor || entry.editor,
               published: entry.latest?.published ?? true,
               publish_at: entry.latest?.publish_at || null,
-              latestId: entry.latest?.id || null
+              latest_id: entry.latest?.id || null
             })
           })
 
@@ -504,6 +625,10 @@ export default {
   },
 
   watch: {
+    'changes.changed.element'() {
+      this.sync()
+    },
+
     filter: {
       deep: true,
       handler() {
@@ -565,6 +690,11 @@ export default {
                   $gettext('Publish')
                 }}</v-btn>
               </v-list-item>
+              <v-list-item v-show="isChecked && user.can('element:save')">
+                <v-btn :prepend-icon="mdiPencil" variant="text" @click="edit()">{{
+                  $gettext('Edit properties')
+                }}</v-btn>
+              </v-list-item>
               <v-list-item v-show="canTrash && user.can('element:drop')">
                 <v-btn :prepend-icon="mdiDelete" variant="text" @click="drop()">{{
                   $gettext('Delete')
@@ -609,6 +739,18 @@ export default {
     </div>
 
     <div class="layout">
+      <v-btn
+        v-if="outdated"
+        @click="reload()"
+        :prepend-icon="mdiRefresh"
+        :title="$gettext('Updated by another user')"
+        color="primary"
+        variant="tonal"
+        size="small"
+        rounded="lg"
+        class="btn-outdated"
+      >{{ $gettext('Refresh') }}</v-btn>
+
       <v-btn
         @click="reload()"
         :title="$gettext('Reload elements')"
@@ -798,6 +940,8 @@ export default {
       </v-card>
     </v-dialog>
   </Teleport>
+
+  <EditBulkDialog v-model="editDialog" :count="checkedCount" @apply="save" />
 </template>
 
 <style scoped>

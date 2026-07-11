@@ -1,0 +1,450 @@
+/**
+ * Style Theme - Luxe editorial dark design
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+:root,
+:root[data-theme="light"] {
+    --pico-font-family-sans-serif: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Helvetica, Arial, sans-serif;
+    --pico-font-family-monospace: ui-monospace, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    --pico-font-family-display: var(--pico-font-family-monospace);
+
+    --pico-nav-breadcrumb-divider: "—";
+    --pico-block-spacing-vertical: 0;
+    --pico-nav-element-spacing-horizontal: 1rem;
+    --pico-nav-element-spacing-vertical: 0.75rem;
+    --pico-nav-link-spacing-vertical: 0.625rem;
+    --pico-nav-link-spacing-horizontal: 0.625rem;
+
+    --pico-color: #ffffff;
+    --pico-background-color: #262642;
+    --pico-text-selection-color: color-mix(in srgb, var(--pico-color) 31%, transparent);
+    --pico-muted-color: color-mix(in srgb, var(--pico-color) 80%, transparent);
+    --pico-muted-border-color: color-mix(in srgb, var(--pico-color) 12%, transparent);
+    --pico-muted-background-color: color-mix(in srgb, var(--pico-color) 10%, transparent);
+    --pico-contrast: var(--pico-color);
+    --pico-contrast-border: color-mix(in srgb, var(--pico-color) 18%, transparent);
+    --pico-contrast-background: var(--pico-background-color);
+    --pico-contrast-underline: var(--pico-contrast);
+    --pico-contrast-hover: var(--pico-secondary-hover);
+    --pico-contrast-hover-border: var(--pico-muted-background-color);
+    --pico-contrast-hover-background: var(--pico-muted-background-color);
+    --pico-contrast-hover-underline: var(--pico-contrast-hover);
+    --pico-contrast-focus: var(--pico-text-selection-color);
+    --pico-contrast-inverse: var(--pico-background-color);
+
+    --pico-primary: var(--pico-color);
+    --pico-primary-background: var(--pico-muted-border-color);
+    --pico-primary-border: var(--pico-primary);
+    --pico-primary-underline: var(--pico-secondary);
+    --pico-primary-hover: color-mix(in srgb, var(--pico-primary) 92%, transparent);
+    --pico-primary-hover-background: var(--pico-muted-background-color);
+    --pico-primary-hover-border: var(--pico-primary-hover);
+    --pico-primary-hover-underline: var(--pico-primary-hover);
+    --pico-primary-focus: var(--pico-text-selection-color);
+    --pico-primary-inverse: var(--pico-background-color);
+
+    --pico-secondary: var(--pico-color);
+    --pico-secondary-background: var(--pico-muted-border-color);
+    --pico-secondary-border: var(--pico-secondary);
+    --pico-secondary-underline: var(--pico-secondary);
+    --pico-secondary-hover: color-mix(in srgb, var(--pico-secondary) 92%, transparent);
+    --pico-secondary-hover-background: var(--pico-muted-background-color);
+    --pico-secondary-hover-border: var(--pico-secondary-hover);
+    --pico-secondary-hover-underline: var(--pico-secondary-hover);
+    --pico-secondary-focus: var(--pico-text-selection-color);
+    --pico-secondary-inverse: var(--pico-background-color);
+
+    --pico-h1-color: var(--pico-color);
+    --pico-h2-color: var(--pico-color);
+    --pico-h3-color: var(--pico-color);
+    --pico-h4-color: var(--pico-color);
+    --pico-h5-color: var(--pico-color);
+    --pico-h6-color: var(--pico-color);
+
+    --pico-box-shadow: color-mix(in srgb, var(--pico-contrast) 16%, transparent);
+    --pico-dropdown-color: var(--pico-contrast);
+    --pico-dropdown-border-color: var(--pico-contrast-border);
+    --pico-dropdown-background-color: var(--pico-muted-background-color);
+    --pico-dropdown-hover-background-color: var(--pico-muted-background-color);
+    --pico-dropdown-box-shadow: 0 0.5rem 1.5rem -0.25rem var(--pico-box-shadow), 0 0.25rem 0.5rem -0.25rem var(--pico-box-shadow);
+    --pico-modal-overlay-background-color: color-mix(in srgb, var(--pico-background-color) 40%, transparent);
+    --pico-code-background-color: var(--pico-muted-background-color);
+    --pico-code-color: var(--pico-color);
+
+    --pico-border-radius: 0.5rem;
+}
+
+@media (min-width: 1024px) {
+    :root, :host {
+        --pico-font-size: 1.125rem !important;
+    }
+}
+
+*,
+*::before,
+*::after,
+*::backdrop {
+    box-sizing: border-box;
+    border: 0 solid;
+    margin: 0;
+    padding: 0;
+}
+
+html,
+:host {
+    -webkit-text-size-adjust: 100%;
+    tab-size: 4;
+    line-height: 1.5;
+    font-family: var(--pico-font-family-sans-serif);
+    font-feature-settings: normal;
+    font-variation-settings: normal;
+    -webkit-tap-highlight-color: transparent;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    html {
+        scroll-behavior: smooth;
+    }
+}
+
+body {
+    min-height: 100vh;
+    background: var(--pico-background-color);
+    color: var(--pico-color);
+    font-family: var(--pico-font-family-monospace);
+    line-height: 1.5;
+}
+
+::selection {
+    background: var(--pico-text-selection-color);
+    color: var(--pico-color);
+}
+
+:focus-visible {
+    outline: 0.125rem solid var(--pico-muted-color);
+    outline-offset: 0.125rem;
+}
+
+.skip-link {
+    position: absolute;
+    top: -100%;
+}
+
+:where(a:not([role="button"]):not([role="menuitem"])),
+:where(a:not([role="button"]):not([role="menuitem"]):visited) {
+    color: var(--pico-primary);
+    text-decoration-color: var(--pico-primary);
+}
+
+:where(a:not([role="button"]):not([role="menuitem"]):hover),
+:where(a:not([role="button"]):not([role="menuitem"]):focus-visible) {
+    color: var(--pico-primary-hover);
+    text-decoration-color: var(--pico-primary-hover);
+}
+
+img,
+picture,
+video,
+canvas,
+audio,
+iframe,
+embed,
+object {
+    display: block;
+    max-width: 100%;
+    height: auto;
+}
+
+button,
+input,
+select,
+textarea {
+    font: inherit;
+    color: inherit;
+    border-radius: 0;
+    border: 0;
+    background: transparent;
+    outline: none;
+}
+
+button,
+[role="button"],
+.btn,
+a.button,
+a.btn {
+    cursor: pointer;
+    appearance: none;
+    border: 1px solid transparent;
+    text-decoration: none;
+    display: inline-block;
+    font-family: var(--pico-font-family-display);
+    font-weight: 500;
+    color: var(--pico-background-color);
+    background: var(--pico-color);
+    border-color: var(--pico-color);
+    border-radius: 9999px;
+    padding: 1.5rem 4rem;
+    line-height: 1;
+    font-size: calc(var(--pico-font-size, 1rem) * 1.375);
+    letter-spacing: 0.025em;
+    text-transform: uppercase;
+    transition: background-color 0.15s cubic-bezier(0.4, 0, 0.2, 1), color 0.15s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+button:hover,
+[role="button"]:hover,
+.btn:hover,
+a.button:hover,
+a.btn:hover {
+    background-color: color-mix(in srgb, var(--pico-color) 95%, transparent);
+    border-color: color-mix(in srgb, var(--pico-color) 95%, transparent);
+    color: var(--pico-background-color);
+}
+
+.btn.url-alternative,
+a.btn.url-alternative {
+    background: transparent;
+    border-color: var(--pico-color);
+    color: var(--pico-color);
+}
+
+.btn.url-alternative:hover,
+a.btn.url-alternative:hover {
+    background: var(--pico-color);
+    color: var(--pico-background-color);
+}
+
+main {
+    width: 100%;
+    margin: auto;
+}
+
+body > header,
+footer.bottom,
+nav.breadcrumb {
+    width: 100%;
+    border-bottom: 1px solid var(--pico-muted-border-color);
+}
+
+body > header > nav {
+    max-width: 80rem;
+    margin: 0 auto;
+}
+
+nav.breadcrumb > ul {
+    max-width: 80rem;
+    margin: auto;
+}
+
+body > header .brand a {
+    font-family: var(--pico-font-family-display);
+    font-size: calc(var(--pico-font-size) * 1.2);
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+nav details {
+    margin: 0;
+}
+
+header nav details.dropdown > summary:not([role]) {
+    display: flex;
+    align-items: center;
+    list-style: none;
+    cursor: pointer;
+    height: auto;
+    margin: 0;
+    padding: 0.75rem 0.625rem;
+    color: var(--pico-color);
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+    font-family: var(--pico-font-family-display);
+    font-weight: 500;
+    letter-spacing: 0.025em;
+    text-decoration: none;
+    text-transform: uppercase;
+}
+
+header nav details.dropdown > summary:not([role]):hover,
+header nav details.dropdown > summary:not([role]):focus,
+header nav details.dropdown > summary:not([role]):focus-visible,
+header nav details.dropdown > summary:not([role]):active,
+header nav details.dropdown[open] > summary:not([role]) {
+    color: var(--pico-primary-hover);
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+}
+
+header nav details summary::marker,
+header nav details summary::-webkit-details-marker {
+    display: none;
+}
+
+header nav .menu-open,
+header nav .menu-close,
+header nav .sidebar-open,
+header nav .sidebar-close {
+    display: none;
+}
+
+header nav .menu-open button,
+header nav .menu-close button,
+header nav .sidebar-open button,
+header nav .sidebar-close button {
+    color: var(--pico-color);
+    background: transparent;
+    border: none;
+    padding: 0.75rem;
+}
+
+header nav .menu-open button:hover,
+header nav .menu-open button:focus,
+header nav .menu-close button:hover,
+header nav .menu-close button:focus,
+header nav .sidebar-open button:hover,
+header nav .sidebar-open button:focus,
+header nav .sidebar-close button:hover,
+header nav .sidebar-close button:focus {
+    color: var(--pico-color);
+    background: transparent;
+    border-color: transparent;
+}
+
+@media (max-width: 991px) {
+    header nav .menu-open.show,
+    header nav .menu-close.show {
+        display: flex;
+    }
+
+    header nav.small {
+        display: block;
+        overflow-y: auto;
+        position: fixed;
+        padding: 0.5rem 1.5rem;
+        background-color: var(--pico-background-color);
+        min-height: 100vh;
+        z-index: 100;
+        width: 100%;
+        height: 100%;
+        left: 0;
+        top: 0;
+    }
+
+    header nav .menu {
+        display: none;
+    }
+
+    header nav.small .menu {
+        flex-direction: column;
+        display: flex;
+    }
+
+    header nav .menu ul {
+        display: block;
+    }
+
+    header nav .menu li {
+        padding: 0 2rem;
+        width: 100%;
+    }
+
+    header nav.small .menu details > summary + ul.align {
+        position: relative;
+        backdrop-filter: none;
+        background: none;
+        box-shadow: none;
+        border: none;
+        padding: 0;
+    }
+
+    header nav.small .menu details > summary::after {
+        content: "";
+        display: block;
+        float: inline-end;
+        margin-inline-start: 0.25rem;
+        height: calc(1rem * var(--pico-line-height, 1.5));
+        transform: rotate(0) translateX(0.2rem);
+        background-image: var(--pico-icon-chevron);
+        background-position: right center;
+        background-size: 1rem auto;
+        background-repeat: no-repeat;
+        width: 1rem;
+    }
+}
+
+.container {
+    max-width: 80rem;
+    margin-inline: auto;
+}
+
+.cms-content {
+    width: 100%;
+}
+
+.cms-content > section,
+.cms-content > article,
+.cms-content > footer {
+    background: var(--pico-background-color);
+    color: var(--pico-color);
+}
+
+.cms-content > section {
+    padding-block: 7.5rem;
+}
+
+.cms-text {
+    white-space: pre-line;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--pico-font-family-display);
+    text-transform: uppercase;
+    white-space: pre-line;
+    letter-spacing: -0.09375rem;
+    margin-bottom: 1.5rem;
+    line-height: 0.9;
+    font-weight: 700;
+}
+
+h1 {
+    font-size: clamp(3.4rem, 13vw, 8.75rem);
+}
+
+h2 {
+    font-size: clamp(3rem, 10vw, 8.75rem);
+}
+
+h3 {
+    font-size: clamp(1.8rem, 4vw, 3.5rem);
+    font-weight: 500;
+}
+
+h4 {
+    font-size: 2.5rem;
+    font-weight: 500;
+    letter-spacing: 0;
+}
+
+p {
+    font-size: 1rem;
+    color: var(--pico-muted-color);
+}
+
+.file,
+.audio,
+.image,
+.video {
+    max-width: 100%;
+    margin: auto;
+    display: block;
+    text-align: center;
+}
+
+.btn:focus-visible,
+button:focus-visible,
+[role="button"]:focus-visible {
+    outline-color: var(--pico-color);
+}

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @license LGPL, https://opensource.org/license/lgpl-3-0
+ * @license MIT, https://opensource.org/license/mit
  */
 
 
@@ -1308,7 +1308,7 @@ class WpImport extends Command
         return ['elements' => [[
             'id' => Utils::uid(),
             'type' => 'html',
-            'data' => ['text' => $block],
+            'data' => ['text' => Utils::html( $block )],
         ]]];
     }
 

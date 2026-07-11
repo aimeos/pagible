@@ -4,14 +4,15 @@
     "keywords": ["laravel", "cms", "theme", "pagible"],
     "homepage": "https://pagible.com",
     "type": "library",
-    "license": "LGPL-3.0-only",
+    "license": "MIT",
     "require": {
         "php": "^8.2",
         "aimeos/pagible-theme": "*@dev"
     },
     "autoload": {
         "psr-4": {
-            "Aimeos\\Cms\\": "src/"
+            "Aimeos\\Cms\\": "src/",
+            "Database\\Seeders\\": "database/seeders/"
         }
     },
     "extra": {

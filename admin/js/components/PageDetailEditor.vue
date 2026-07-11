@@ -1,4 +1,4 @@
-/** @license LGPL, https://opensource.org/license/lgpl-3-0 */
+/** @license MIT, https://opensource.org/license/mit */
 
 <script>
 import { defineAsyncComponent } from 'vue'
@@ -30,6 +30,13 @@ export default {
   },
 
   emits: ['change'],
+
+  provide() {
+    return {
+      // let descendant file fields refresh the preview after editing a file
+      update: this.reload
+    }
+  },
 
   setup() {
     const messages = useMessageStore()
@@ -70,7 +77,9 @@ export default {
     window.addEventListener('message', this.message)
 
     this.iframeLoad = () => {
-      this.$refs.iframe?.contentWindow?.postMessage('init', '*')
+      if (this.origin) {
+        this.$refs.iframe?.contentWindow?.postMessage('init', this.origin)
+      }
     }
     this.$refs.iframe?.addEventListener('load', this.iframeLoad)
 
@@ -92,12 +101,35 @@ export default {
 
   computed: {
     url() {
-      return this.visible
-        ? this.app.urlpage
-            .replace(/_domain_/, this.item.domain || '')
-            .replace(/_path_/, this.item.path || '')
-            .replace(/\/+$/, '')
-        : null
+      if (!this.visible) {
+        return null
+      }
+
+      const domain = this.item.domain || ''
+      let url = this.app.urlpage
+
+      if (!domain) {
+        url = url
+          .replace(/^[a-z][a-z\d+.-]*:\/\/_domain_/i, '')
+          .replace(/\/_domain_(?=\/|$)/, '')
+      }
+
+      return url
+        .replace(/_domain_/, domain)
+        .replace(/_path_/, this.item.path || '')
+        .replace(/([^:/])\/+$/, '$1')
+    },
+
+    origin() {
+      if (!this.url) {
+        return null
+      }
+
+      try {
+        return new URL(this.url, window.location.origin).origin
+      } catch {
+        return null
+      }
     }
   },
 
@@ -157,6 +189,19 @@ export default {
     },
 
     message(msg) {
+      // only accept messages coming from our own preview iframe and only from
+      // the exact origin we navigated it to, not from arbitrary windows/frames
+      // that may hold a reference to this window
+      const expected = this.origin
+
+      if (!expected) {
+        return
+      }
+
+      if (msg.source !== this.$refs.iframe?.contentWindow || msg.origin !== expected) {
+        return
+      }
+
       switch (msg.data) {
         // unselect element
         case 0:
@@ -185,6 +230,12 @@ export default {
       }
     },
 
+    reload() {
+      if (this.origin) {
+        this.$refs.iframe?.contentWindow?.postMessage('reload', this.origin)
+      }
+    },
+
     remove() {
       if (this.index === null) return
 
@@ -192,9 +243,7 @@ export default {
       this.$emit('change', 'content')
       this.index = null
 
-      this.save.fcn(true).then(() => {
-        this.$refs.iframe.contentWindow.postMessage('reload', this.url)
-      })
+      this.save.fcn(true).then(() => this.reload())
     },
 
     update() {
@@ -207,16 +256,14 @@ export default {
       this.pos = null
 
       this.$emit('change', 'content')
-      this.save.fcn(true).then(() => {
-        this.$refs.iframe.contentWindow.postMessage('reload', this.url)
-      })
+      this.save.fcn(true).then(() => this.reload())
     }
   },
 
   watch: {
     'save.count': function () {
       if (this.save.count > 0) {
-        this.$refs.iframe.contentWindow.postMessage('reload', this.url)
+        this.reload()
       }
     }
   }
@@ -275,6 +322,13 @@ export default {
       {{ $gettext('Not CMS content') }}
     </div>
 
+    <!--
+      No sandbox attribute: the preview loads our own same-origin page which needs
+      both scripts and same-origin access (editor session, client-side requests and
+      the element-selection bridge). A sandbox with allow-scripts + allow-same-origin
+      is escapable and gives no real isolation, so it would only add a misleading
+      warning. The actual trust boundary is the strict source/origin check in message().
+    -->
     <iframe ref="iframe" :src="url" @load="loading = false"></iframe>
 
     <v-btn

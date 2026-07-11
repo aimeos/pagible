@@ -1,0 +1,65 @@
+/**
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+.cards .card-list {
+    display: grid;
+    grid-template-columns: 1fr;
+    justify-self: center;
+    gap: 2.5rem;
+}
+
+@media screen and (min-width: 768px) {
+    .cards .container {
+        max-width: 1400px !important;
+    }
+
+    .cards .card-list {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+.cards .card-item {
+    background-color: var(--pico-contrast-background);
+    border: 1px solid var(--pico-muted-border-color);
+    border-radius: var(--pico-border-radius);
+    transition: box-shadow 0.3s ease, transform 0.3s ease, border-color 0.3s ease;
+    overflow: hidden;
+    text-align: start;
+    padding: 2.5rem;
+}
+
+.cards .card-item:hover {
+    box-shadow: 0 1rem 2.5rem #1C1A160F;
+    border-color: var(--pico-contrast-border);
+    transform: translateY(-3px);
+}
+
+.cards .card-item picture {
+    text-align: start;
+    border: none;
+    padding: 0;
+}
+
+.cards .card-item img {
+    border-radius: var(--pico-border-radius);
+    background-color: var(--pico-secondary);
+    padding: 0.25rem;
+    height: 2rem;
+    width: 2rem;
+    margin: 0;
+}
+
+.cards .title {
+    font-family: var(--pico-font-family-display);
+    font-size: calc(var(--pico-font-size) * 1.15);
+    letter-spacing: 0.01em;
+    margin: 1.5rem 0 0.75rem;
+    font-weight: 400;
+}
+
+.cards .text p {
+    font-size: calc(var(--pico-font-size) * 0.75);
+    line-height: 1.7;
+    color: var(--pico-muted-color);
+}

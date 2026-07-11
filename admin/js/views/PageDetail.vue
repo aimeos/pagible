@@ -1,4 +1,4 @@
-/** @license LGPL, https://opensource.org/license/lgpl-3-0 */
+/** @license MIT, https://opensource.org/license/mit */
 
 <script>
 import gql from 'graphql-tag'
@@ -12,16 +12,19 @@ const PageDetailEditor = defineAsyncComponent(() => import('../components/PageDe
 import { applyResult, hasUnresolved } from '../merge'
 import { publishDate, publishItem } from '../publish'
 import { defineAsyncComponent, markRaw } from 'vue'
-import { frozenParse, hasTrue, txlocales } from '../utils'
-import { setupEcho, cleanEcho } from '../echo'
+import { frozenParse, hasTrue, safeParse, txlocales } from '../utils'
+import { setupReload, cleanEcho } from '../echo'
+import { reloadVersion } from '../version'
 import {
   useAppStore,
   useDirtyStore,
   useSideStore,
   useUserStore,
   useMessageStore,
+  usePluginStore,
   useSchemaStore,
-  useViewStack
+  useViewStack,
+  useChangeStore
 } from '../stores'
 import {
   mdiTranslate,
@@ -94,10 +97,10 @@ const FETCH_PAGE_VERSIONS = gql`query($id: ID!) {
 }`
 
 const SAVE_PAGE = gql`
-  mutation ($id: ID!, $input: PageInput!, $elements: [ID!], $files: [ID!], $latestId: ID) {
-    savePage(id: $id, input: $input, elements: $elements, files: $files, latestId: $latestId) {
+  mutation ($id: ID!, $input: PageInput!, $latestId: ID) {
+    savePage(id: $id, input: $input, latestId: $latestId) {
       id
-      latest { id }
+      latest { id published publish_at editor created_at }
       changed
     }
   }
@@ -117,7 +120,8 @@ export default {
   },
 
   props: {
-    item: { type: Object, required: true }
+    item: { type: Object, required: true },
+    stacked: { type: Boolean, default: false }
   },
 
   provide() {
@@ -130,21 +134,23 @@ export default {
 
   setup() {
     const dirtyStore = useDirtyStore()
-    const viewStack = useViewStack()
     const messages = useMessageStore()
     const schemas = useSchemaStore()
     const side = useSideStore()
     const user = useUserStore()
     const app = useAppStore()
+    const viewStack = useViewStack()
+    const changes = useChangeStore()
 
     return {
       app,
       dirtyStore,
       side,
       user,
-      viewStack,
       messages,
       schemas,
+      viewStack,
+      changes,
       mdiTranslate,
       mdiArrowRightThin,
       txlocales
@@ -171,6 +177,7 @@ export default {
       destroyed: false,
       echoCleanup: null,
       echoPromise: null,
+      loading: true,
       saving: false,
       savecnt: 0,
       historyData: null
@@ -205,6 +212,10 @@ export default {
 
     saveConfig() {
       return { fcn: this.save, count: this.savecnt }
+    },
+
+    subpanels() {
+      return usePluginStore().subpanels.page || {}
     }
   },
 
@@ -213,52 +224,17 @@ export default {
     this.schemas.load()
 
     if (!this.item?.id || !this.user.can('page:view')) {
+      this.loading = false
       return
     }
 
-    this.$apollo
-      .query({
-        query: FETCH_PAGE,
-        fetchPolicy: 'no-cache',
-        variables: {
-          id: this.item.id
-        }
-      })
-      .then((result) => {
-        if (result.errors || !result.data.page) {
-          throw result
-        }
+    this.reload().then((ok) => {
+      if (!ok) return
 
-        this.reset()
-        this.latest = result?.data?.page?.latest
-
-        Object.assign(this.item, JSON.parse(this.latest?.data || '{}'))
-
-        const aux = JSON.parse(this.latest?.aux || '{}')
-        this.item.content = aux.content ?? []
-        this.item.config = aux.config ?? {}
-        this.item.meta = aux.meta ?? {}
-
-        this.assets = markRaw(this.files(this.latest?.files || []))
-        this.elements = markRaw(this.elems(this.latest?.elements || []))
-        this.item.content = this.obsolete(this.item.content)
-        this.latest = { id: this.latest?.id }
-
-        setupEcho(this, 'page', this.item.id, (event) => {
-          if (!this.hasChanged && this.user.can('page:view') && event.editor !== this.user.me?.email) {
-            this.latest = { id: event.versionId }
-            Object.assign(this.item, event.data)
-
-            this.item.content = event.aux?.content ?? this.item.content
-            this.item.config = event.aux?.config ?? this.item.config
-            this.item.meta = event.aux?.meta ?? this.item.meta
-          }
-        })
-      })
-      .catch((error) => {
-        this.messages.add(this.$gettext('Error fetching page') + ':\n' + error, 'error')
-        this.$log(`PageDetail::watch(item): Error fetching page`, error)
-      })
+      // reload the open page when its own item is saved elsewhere or after a reconnect that may
+      // have missed a save, unless the user has unsaved edits
+      setupReload(this, 'page', this.item.id, () => this.reload(), () => !this.hasChanged && this.user.can('page:view'))
+    })
   },
 
   beforeUnmount() {
@@ -277,10 +253,59 @@ export default {
   },
 
   methods: {
+    // loads the latest version into the open editor; resolves true on success so the caller
+    // can defer the websocket subscription until the initial load completed
+    reload() {
+      return reloadVersion(this, FETCH_PAGE, 'page', this.$gettext('Error fetching page'), (page) => {
+        this.latest = page.latest
+
+        Object.assign(this.item, safeParse(this.latest?.data))
+        this.item.published = this.latest?.published
+        this.item.editor = this.latest?.editor
+        this.item.updated_at = this.latest?.created_at
+
+        const aux = safeParse(this.latest?.aux)
+        this.item.content = aux.content ?? []
+        this.item.config = aux.config ?? {}
+        this.item.meta = aux.meta ?? {}
+
+        this.assets = markRaw(this.files(this.latest?.files || []))
+        this.elements = markRaw(this.elems(this.latest?.elements || []))
+        this.item.content = this.obsolete(this.item.content)
+        this.latest = { id: this.latest?.id }
+      }, () => !this.hasChanged)
+    },
+
     apply(changes) {
+      if (changes.content) {
+        const strip = (el) => {
+          const out = {}
+          for (const k in el) {
+            if (!k.startsWith('_')) out[k] = el[k]
+          }
+          return out
+        }
+
+        const prev = {}
+        for (const el of this.item.content || []) {
+          prev[el.id || el.refid] = JSON.stringify(strip(el))
+        }
+
+        changes.content = changes.content.map((el) => {
+          const copy = { ...el }
+          const old = prev[el.id || el.refid]
+
+          if (old === undefined || old !== JSON.stringify(strip(el))) {
+            copy._changed = true
+          }
+
+          return copy
+        })
+      }
+
       Object.assign(this.item, changes)
       this.dirty.page = true
-      if(changes.content) this.dirty.content = true
+      if (changes.content) this.dirty.content = true
       this.vhistory = false
     },
 
@@ -362,12 +387,12 @@ export default {
       const map = {}
 
       for (const entry of entries) {
-        map[entry.id] = Object.freeze({
+        map[entry.id] = {
           ...entry,
           previews: frozenParse(entry.previews),
           description: frozenParse(entry.description),
           transcription: frozenParse(entry.transcription)
-        })
+        }
       }
 
       return map
@@ -483,8 +508,7 @@ export default {
       for (const key in this.item.meta || {}) {
         meta[key] = {
           type: this.item.meta[key].type || '',
-          data: this.item.meta[key].data || {},
-          files: this.item.meta[key].files || []
+          data: this.item.meta[key].data || {}
         }
       }
 
@@ -492,8 +516,7 @@ export default {
       for (const key in this.item.config || {}) {
         config[key] = {
           type: this.item.config[key].type || '',
-          data: this.item.config[key].data || {},
-          files: this.item.config[key].files || []
+          data: this.item.config[key].data || {}
         }
       }
 
@@ -521,8 +544,6 @@ export default {
               config: JSON.stringify(this.clean(config, 'config')),
               content: JSON.stringify(this.clean(this.item.content, 'content'))
             },
-            elements: Object.keys(this.elements),
-            files: this.fileIds(),
             latestId: this.latest?.id
           }
         })
@@ -532,7 +553,7 @@ export default {
           }
 
           const page = response.data?.savePage
-          const changed = page?.changed ? markRaw(JSON.parse(page.changed)) : null
+          const changed = page?.changed ? markRaw(safeParse(page.changed)) : null
 
           if (changed?.latest?.id || page?.latest?.id) {
             this.latest = { id: changed?.latest?.id ?? page.latest.id }
@@ -550,6 +571,13 @@ export default {
 
           this.invalidate()
           this.savecnt++
+
+          const version = page?.latest
+          this.item.published = version?.published ?? false
+          this.item.publish_at = version?.publish_at ?? null
+          this.item.editor = version?.editor ?? this.item.editor
+          this.item.updated_at = version?.created_at ?? this.item.updated_at
+          this.changes.notify('page', this.item)
 
           return true
         })
@@ -697,7 +725,7 @@ export default {
           return (result.data.page.versions || []).map((v) => {
             const item = {
               ...v,
-              data: Object.freeze(Object.assign(JSON.parse(v.data || '{}'), JSON.parse(v.aux || '{}')))
+              data: Object.freeze(Object.assign(safeParse(v.data), safeParse(v.aux)))
             }
             item.files = Object.freeze(this.files(v.files || []))
             delete item.aux
@@ -743,6 +771,7 @@ export default {
     type="page"
     :label="$gettext('Page')"
     :name="item.name"
+    :stacked="stacked"
     :dirty="hasChanged"
     :error="hasError"
     :conflict="hasConflict"
@@ -787,7 +816,8 @@ export default {
   </DetailAppBar>
 
   <v-main class="page-details" :aria-label="$gettext('Page')">
-    <v-form @submit.prevent>
+    <v-progress-linear v-if="loading" indeterminate color="primary" />
+    <v-form v-else @submit.prevent>
       <v-tabs fixed-tabs v-model="tab">
         <v-tab v-if="app.urlpage" value="editor" @click="aside = ''">
           {{ $gettext('Editor') }}
@@ -808,6 +838,9 @@ export default {
         </v-tab>
         <v-tab v-if="user.can('page:metrics')" value="metrics" @click="aside = ''">
           {{ $gettext('Metrics') }}
+        </v-tab>
+        <v-tab v-for="(sp, key) in subpanels" :key="key" :value="'ext-' + key" @click="aside = ''">
+          {{ sp.label }}
         </v-tab>
       </v-tabs>
 
@@ -847,6 +880,10 @@ export default {
 
         <v-window-item v-if="user.can('page:metrics')" value="metrics">
           <PageDetailMetrics ref="metrics" :item="item" />
+        </v-window-item>
+
+        <v-window-item v-for="(sp, key) in subpanels" :key="key" :value="'ext-' + key">
+          <component :is="sp.component" :item="item" :assets="assets" />
         </v-window-item>
       </v-window>
     </v-form>

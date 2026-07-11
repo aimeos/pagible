@@ -1,0 +1,100 @@
+/**
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+.testimonial .title {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.testimonial .testimonial-list {
+    display: grid;
+    grid-template-columns: 1fr;
+    border: 1px solid var(--pico-muted-border-color);
+    background-image: var(--cms-accent-gradient-tight);
+}
+
+.testimonial .testimonial-item {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background-color: var(--pico-muted-background-color);
+    border-bottom: 1px solid var(--pico-muted-border-color);
+    padding: 2rem;
+    margin: 0;
+}
+
+.testimonial .testimonial-item:last-child {
+    border-bottom: 0;
+}
+
+.testimonial blockquote {
+    margin: 0 0 1.75rem;
+    padding: 0;
+    border: 0;
+    color: var(--pico-contrast-hover);
+    font-size: calc(var(--pico-font-size) * 0.85);
+    line-height: 1.7;
+}
+
+.testimonial blockquote::before {
+    content: '“';
+}
+
+.testimonial blockquote::after {
+    content: '”';
+}
+
+.testimonial blockquote p:last-child {
+    margin-bottom: 0;
+}
+
+.testimonial figcaption {
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+}
+
+.testimonial .avatar {
+    width: 3rem;
+    height: 3rem;
+    flex: 0 0 3rem;
+    overflow: hidden;
+    border: 1px solid var(--pico-contrast-border);
+}
+
+.testimonial .avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.testimonial .person {
+    display: grid;
+    gap: 0.125rem;
+}
+
+.testimonial .name {
+    color: var(--pico-contrast-hover);
+    font-weight: 700;
+}
+
+.testimonial .role {
+    color: var(--pico-muted-color);
+    font-size: calc(var(--pico-font-size) * 0.75);
+}
+
+@media screen and (min-width: 768px) {
+    .testimonial .testimonial-list {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .testimonial .testimonial-item {
+        border-bottom: 0;
+        border-inline-end: 1px solid var(--pico-muted-border-color);
+    }
+
+    .testimonial .testimonial-item:last-child {
+        border-inline-end: 0;
+    }
+}

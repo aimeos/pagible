@@ -1,12 +1,16 @@
 <?php
 
 /**
- * @license LGPL, https://opensource.org/license/lgpl-3-0
+ * @license MIT, https://opensource.org/license/mit
  */
 
 
 namespace Aimeos\Cms\GraphQL\Mutations;
 
+use Aimeos\Cms\Events\Authed;
+use Aimeos\Cms\Tenancy;
+use Aimeos\Cms\Utils;
+use Aimeos\Cms\Watch;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Contracts\Auth\Authenticatable;
 
@@ -24,9 +28,23 @@ final class CmsLogout
 
         try {
             $guard->logout();
+
+            // Invalidate the session and issue a fresh CSRF token to prevent session reuse/fixation
+            if( request()->hasSession() ) {
+                request()->session()->invalidate();
+                request()->session()->regenerateToken();
+            }
         } catch( \Exception $e ) {
             // No error if logout fails
         }
+
+        Watch::dispatch( Authed::class, fn() => new Authed(
+            'logout',
+            $user ? Utils::editor( $user ) : '',
+            (string) request()->ip(),
+            (string) request()->userAgent(),
+            Tenancy::value()
+        ) );
 
         return $user;
     }

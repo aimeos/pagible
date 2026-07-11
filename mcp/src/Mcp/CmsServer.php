@@ -2,10 +2,17 @@
 
 namespace Aimeos\Cms\Mcp;
 
+use Aimeos\Cms\Events\CmsMcp;
+use Aimeos\Cms\Tenancy;
+use Aimeos\Cms\Utils;
+use Aimeos\Cms\Watch;
 use Laravel\Mcp\Server\Attributes\Instructions;
 use Laravel\Mcp\Server\Attributes\Version;
 use Laravel\Mcp\Server\Attributes\Name;
+use Laravel\Mcp\Server\ServerContext;
 use Laravel\Mcp\Server;
+use Laravel\Mcp\Transport\JsonRpcRequest;
+use Laravel\Mcp\Transport\JsonRpcResponse;
 
 
 #[Name('CMS Server')]
@@ -83,5 +90,57 @@ class CmsServer extends Server
     protected function boot() : void
     {
         $this->tools = array_merge( $this->tools, static::$registered );
+
+        // Tag content changes made through MCP tools as 'mcp' for the audit log.
+        Utils::source( 'mcp' );
+    }
+
+
+    protected function runMethodHandle( JsonRpcRequest $request, ServerContext $context ): iterable|JsonRpcResponse
+    {
+        if( $request->method !== 'tools/call' || !is_string( $request->get( 'name' ) ) ) {
+            return parent::runMethodHandle( $request, $context );
+        }
+
+        $start = hrtime( true );
+        $action = $request->get( 'name' );
+
+        try {
+            $response = parent::runMethodHandle( $request, $context );
+        } catch( \Throwable $e ) {
+            $this->record( (string) $action, $start, false );
+            throw $e;
+        }
+
+        $this->record( (string) $action, $start, $this->success( $response ) );
+
+        return $response;
+    }
+
+
+    protected function record( string $action, int|float $start, bool $success ) : void
+    {
+        Watch::dispatch( CmsMcp::class, fn() => new CmsMcp(
+            action: $action,
+            durationMs: Watch::duration( $start ),
+            tenant: Tenancy::value(),
+            domain: config( 'cms.multidomain' ) ? request()->getHost() : '',
+            success: $success,
+        ) );
+    }
+
+
+    /**
+     * @param iterable<JsonRpcResponse>|JsonRpcResponse $response
+     */
+    protected function success( iterable|JsonRpcResponse $response ) : bool
+    {
+        if( !$response instanceof JsonRpcResponse ) {
+            return true;
+        }
+
+        $payload = $response->toArray();
+
+        return !isset( $payload['error'] ) && !data_get( $payload, 'result.isError', false );
     }
 }

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @license LGPL, https://opensource.org/license/lgpl-3-0
+ * @license MIT, https://opensource.org/license/mit
  */
 
 
@@ -46,7 +46,7 @@ class Element extends Base
 
 
     /** @var list<string> Columns for eager-loading element relations */
-    public const SELECT_COLS = ['cms_elements.id', 'type', 'data'];
+    public const SELECT_COLS = ['cms_elements.id', 'cms_elements.latest_id', 'type', 'data'];
 
 
     /**
@@ -86,6 +86,18 @@ class Element extends Base
         'type',
         'lang',
         'name',
+    ];
+
+    /**
+     * The attributes that are returned by toArray()
+     *
+     * @var list<string>
+     */
+    protected $visible = [
+        'type',
+        'lang',
+        'name',
+        'data',
     ];
 
     /**
@@ -205,10 +217,14 @@ class Element extends Base
      */
     public function publish( Version $version ) : self
     {
-        $fileIds = $version->relationLoaded( 'files' )
-            ? $version->getRelation( 'files' )->modelKeys()
-            : $version->files()->pluck( 'id' )->all();
+        $fileIds = $version->files()->pluck( 'cms_files.id' )->all();
+
         $this->files()->sync( $fileIds );
+
+        if( $fileIds ) {
+            File::whereIn( 'id', $fileIds )->with( 'latest' )->get()
+                ->each( fn( $f ) => $f->latest && !$f->latest->published ? $f->publish( $f->latest ) : null );
+        }
 
         $this->forceFill( array_intersect_key( (array) $version->data, array_flip( $this->getFillable() ) ) );
         $this->editor = $version->editor;

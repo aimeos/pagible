@@ -1,4 +1,4 @@
-/** @license LGPL, https://opensource.org/license/lgpl-3-0 */
+/** @license MIT, https://opensource.org/license/mit */
 
 <script>
 import gql from 'graphql-tag'
@@ -12,6 +12,7 @@ import {
   mdiEraser,
   mdiImageEdit,
   mdiImageFilterBlackWhite,
+  mdiInvertColors,
   mdiArrowExpandAll,
   mdiMagnifyExpand,
   mdiRotateLeft,
@@ -102,6 +103,7 @@ export default {
       mdiEraser,
       mdiImageEdit,
       mdiImageFilterBlackWhite,
+      mdiInvertColors,
       mdiArrowExpandAll,
       mdiMagnifyExpand,
       mdiRotateLeft,
@@ -114,7 +116,7 @@ export default {
   },
 
   mounted() {
-    if (!this.readonly) {
+    if (!this.readonly && !this.svg) {
       Promise.all([
         import('cropperjs'),
         import('cropperjs/dist/cropper.css')
@@ -157,28 +159,19 @@ export default {
 
       const imageData = this.cropper.getImageData()
       return imageData.naturalWidth / imageData.naturalHeight
+    },
+
+    svg() {
+      return this.item.mime?.startsWith('image/svg')
     }
   },
 
   methods: {
     aspect(ratio) {
       if (!this.cropper) return
+
       this.cropper.setAspectRatio(ratio)
       this.cropper.setDragMode('crop')
-
-      this.$nextTick(() => {
-        if (this.destroyed) return
-
-        const cropBox = this.cropper.cropper.querySelector('.cropper-crop-box')
-
-        if (cropBox && !this.cropLabel) {
-          const label = document.createElement('div')
-
-          label.className = 'crop-label'
-          cropBox.appendChild(label)
-          this.cropLabel = label
-        }
-      })
     },
 
     clear() {
@@ -187,6 +180,7 @@ export default {
       this.cropper.setDragMode('none')
       this.cropper.clear()
       this.selected = false
+      this.cropLabel?.remove()
       this.cropLabel = null
     },
 
@@ -247,7 +241,7 @@ export default {
         return Promise.resolve(this.images[0]?.blob)
       }
 
-      return fetch(this.url(this.item.path, true), {credentials: 'include'}).then((response) => {
+      return fetch(this.url(this.item.path, true), {credentials: 'same-origin'}).then((response) => {
         if (!response.ok) {
           throw new Error('Network error: ' + response.statusText)
         }
@@ -263,6 +257,10 @@ export default {
 
       if (this.cropper) {
         this.cropper.destroy()
+
+        // destroy() restores the <img> to cropperjs' originalUrl, so point it
+        // back at the current path before re-initialising the cropper
+        this.$refs.image.src = this.url(this.item.path, !this.svg)
       }
 
       const self = this
@@ -282,7 +280,17 @@ export default {
         checkOrientation: false,
         viewMode: 1,
         crop(event) {
-          if (!self.cropLabel) return
+          const cropBox = self.cropper?.cropBox
+
+          if (!cropBox) return
+
+          if (!self.cropLabel || self.cropLabel.parentNode !== cropBox) {
+            const label = document.createElement('div')
+
+            label.className = 'crop-label'
+            cropBox.appendChild(label)
+            self.cropLabel = markRaw(label)
+          }
 
           const { width, height } = event.detail
 
@@ -325,6 +333,9 @@ export default {
 
     isolate() {
       if (!this.cropper) return
+
+      this.clear()
+
       this.cropper.getCroppedCanvas().toBlob((blob) => {
         this.mutate(
           'image:isolate',
@@ -337,6 +348,33 @@ export default {
           this.messages.add(this.$gettext('Error removing background') + ':\n' + error, 'error')
           this.$log('FileDetailItemImage::isolate(): Error removing background', error)
         })
+      })
+    },
+
+    monochrome() {
+      if (!this.cropper) return
+
+      this.clear()
+
+      const canvas = this.cropper.getCroppedCanvas()
+      const context = canvas.getContext('2d')
+      const imageData = context.getImageData(0, 0, canvas.width, canvas.height)
+      const data = imageData.data
+
+      for (let i = 0; i < data.length; i += 4) {
+        const gray = data[i] * 0.299 + data[i + 1] * 0.587 + data[i + 2] * 0.114
+        data[i] = gray
+        data[i + 1] = gray
+        data[i + 2] = gray
+        data[i + 3] = Math.round(gray)
+      }
+
+      context.putImageData(imageData, 0, 0)
+
+      canvas.toBlob((blob) => {
+        if (blob) {
+          this.replace(blob)
+        }
       })
     },
 
@@ -485,6 +523,8 @@ export default {
         return
       }
 
+      this.clear()
+
       this.cropper.getCroppedCanvas().toBlob((blob) => {
         this.mutate(
           'image:uncrop',
@@ -531,6 +571,8 @@ export default {
     upscale(factor) {
       if (!this.cropper) return
 
+      this.clear()
+
       this.cropper.getCroppedCanvas().toBlob((blob) => {
         this.mutate(
           'image:upscale',
@@ -560,12 +602,18 @@ export default {
   },
 
   watch: {
-    item: function (item, old) {
-      if (item.path !== old.path) {
-        this.$nextTick(() => {
-          this.init()
-        })
+    'item.path': function (path, old) {
+      if (path === old || this.svg || this.readonly) {
+        return
       }
+
+      this.images.forEach((img) => URL.revokeObjectURL(img.url))
+      this.images = []
+
+      this.$nextTick(() => {
+        if (this.destroyed || !this.Cropper) return
+        this.cropper = markRaw(this.init())
+      })
     }
   }
 }
@@ -575,13 +623,13 @@ export default {
   <div ref="editorContainer" class="editor-container">
     <img
       ref="image"
-      :src="url(item.path, true)"
+      :src="url(item.path, !svg)"
       :alt="item.name"
       class="element"
-      crossorigin="anonymous"
+      :crossorigin="svg ? undefined : 'anonymous'"
     />
 
-    <div v-if="!readonly" class="toolbar">
+    <div v-if="!readonly && !svg" class="toolbar">
       <v-btn
         v-if="selected"
         @click="clear()"
@@ -935,6 +983,13 @@ export default {
         :title="$gettext('Flip vertically')"
       />
 
+      <v-btn
+        :icon="mdiInvertColors"
+        class="btn-monochrome no-rtl"
+        @click="monochrome()"
+        :title="$gettext('Convert to monochrome')"
+      />
+
       <v-btn :icon="mdiDownload" class="btn-download no-rtl" @click="download()" :title="$gettext('Download')" />
 
       <component
@@ -962,11 +1017,11 @@ export default {
           </v-toolbar>
 
           <v-list @click="menu['undo'] = false">
-            <v-list-item v-for="(img, idx) in images.slice(1)" :key="img.url">
+            <v-list-item v-for="(img, idx) in images" :key="img.url">
               <v-img
                 :src="img.url"
                 :alt="$gettext('Previous edit')"
-                @click="replace(img.blob, idx + 1)"
+                @click="replace(img.blob, idx)"
               />
             </v-list-item>
             <v-list-item>
@@ -987,6 +1042,8 @@ export default {
 .element {
   max-width: 100%;
   max-height: 100%;
+  display: block;
+  margin: auto;
 }
 
 :deep(.cropper-bg) {
@@ -998,7 +1055,8 @@ export default {
   top: calc(50% + 16px);
   left: 50%;
   color: #fff;
-  font-size: 100%;
+  font-size: 14px;
+  line-height: 1.2;
   padding: 12px 6px;
   border-radius: 4px;
   white-space: nowrap;

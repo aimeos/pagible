@@ -1,19 +1,23 @@
 <?php
 
 /**
- * @license LGPL, https://opensource.org/license/lgpl-3-0
+ * @license MIT, https://opensource.org/license/mit
  */
 
 
 namespace Aimeos\Cms\Actions;
 
-use Aimeos\Cms\Utils;
+use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
 use Illuminate\Http\Request;
 
 
 class Blog
 {
+    protected string $type = 'blog';
+    protected string $element = 'article';
+
+
     /**
      * Returns the blog articles
      *
@@ -30,16 +34,9 @@ class Blog
 
         $editor = \Aimeos\Cms\Permission::can( 'page:view', $request->user() );
 
-        $with = [
-            'files' => fn( $q ) => $q->select( 'cms_files.id', 'name', 'mime', 'path', 'previews' ),
-        ];
+        $with = $editor ? ['latest' => fn( $q ) => $q->select( 'id', 'versionable_id', 'aux' )] : [];
 
-        if( $editor ) {
-            $with['latest'] = fn( $q ) => $q->select( 'id', 'versionable_id', 'aux' );
-            $with['latest.files'] = fn( $q ) => $q->select( 'cms_files.id', 'name', 'mime', 'path', 'previews' );
-        }
-
-        $builder = Page::where( 'type', 'blog' )->with( $with )->orderBy( $order, $dir );
+        $builder = Page::where( 'type', $this->type )->with( $with )->orderBy( $order, $dir );
 
         if( $pid = $item->data->{'parent-page'}->value ?? null ) {
             $builder->where( 'parent_id', $pid );
@@ -51,18 +48,32 @@ class Blog
             $builder->where( 'status', 1 );
         }
 
-        $attr = ['id', 'lang', 'path', 'name', 'title', 'to', 'domain', 'content', 'created_at'];
+        $attr = ['id', 'lang', 'path', 'name', 'title', 'to', 'domain', 'content', 'created_at', 'latest_id'];
+        $pages = $builder->paginate( $item->data->limit ?? 10, $attr, 'p' );
 
-        return $builder->paginate( $item->data->limit ?? 10, $attr, 'p' )
-            ->through( function( $item ) {
-                if( $item->relationLoaded( 'latest' ) && $version = $item->latest ) {
-                    $item->content = $version->aux->content ?? $item->content;
-                    $item->setRelation( 'files', $version->files ?? $item->files );
-                }
+        // The list shows the first element's image per page, taken from the draft content
+        // for editors and the published content otherwise. The file IDs come from that element's
+        // "files" list (populated for every writer in Validation), and only those files are loaded
+        // in one query, so a blog page with many images doesn't pull its whole file set.
+        $fileIds = function( $page ) use ( $editor ) {
+            $content = $editor ? ( $page->latest?->aux->content ?? $page->content ) : $page->content;
+            $article = collect( (array) $content )->first( fn( $el ) => ( $el->type ?? null ) === $this->element );
+            return $article ? (array) ( $article->files ?? [] ) : [];
+        };
 
-                $item->content = (object) collect( (array) $item->content )->filter( fn( $item ) => $item->type === 'article' )->all();
-                $item->setRelation( 'files', Utils::files( $item ) );
-                return $item;
-            } );
+        $ids = $pages->getCollection()->flatMap( $fileIds )->filter()->unique()->values()->all();
+
+        $files = $ids
+            ? File::whereIn( 'cms_files.id', $ids )->get( ['cms_files.id', 'name', 'mime', 'path', 'previews', 'description'] )->keyBy( 'id' )
+            : collect();
+
+        $pages->getCollection()->each( function( $page ) use ( $files, $fileIds, $editor ) {
+            $used = collect( $fileIds( $page ) )->mapWithKeys( fn( $id ) => [$id => $files->get( $id )] )->filter();
+
+            $page->setRelation( 'files', $used );
+            $editor && $page->latest ? $page->latest->setRelation( 'files', $used ) : null;
+        } );
+
+        return $pages;
     }
 }

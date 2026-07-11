@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @license LGPL, https://opensource.org/license/lgpl-3-0
+ * @license MIT, https://opensource.org/license/mit
  */
 
 
@@ -21,6 +21,8 @@ class TenancyTest extends CoreTestAbstract
     use CmsWithMigrations;
     use RefreshDatabase;
 
+    protected $seeder = TestSeeder::class;
+
     protected function tearDown(): void
     {
         Tenancy::$callback = fn() => 'test';
@@ -34,7 +36,7 @@ class TenancyTest extends CoreTestAbstract
 
     public function testTenancyScopeApply()
     {
-        $this->seed( TestSeeder::class );
+        app()->forgetInstance( Tenancy::class );
 
         $pages = Page::all();
 
@@ -48,7 +50,6 @@ class TenancyTest extends CoreTestAbstract
 
     public function testCrossTenantIsolation()
     {
-        $this->seed( TestSeeder::class );
 
         $countBefore = Page::withoutTenancy()->count();
         $this->assertGreaterThan( 0, $countBefore );
@@ -63,7 +64,6 @@ class TenancyTest extends CoreTestAbstract
 
     public function testWithoutTenancyMacro()
     {
-        $this->seed( TestSeeder::class );
 
         Tenancy::$callback = fn() => 'other';
         app()->forgetScopedInstances();

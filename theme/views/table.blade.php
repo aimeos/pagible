@@ -9,12 +9,12 @@
 	@foreach($data->table ?? [] as $rowidx => $row)
 		<div class="table-row">
 			@foreach((array) $row as $colidx => $col)
-				<div class="table-col {{
+				<div class="table-col cms-text {{
 					$colidx === 0 && in_array($data->header ?? null, ['col', 'row+col']) ||
 					$rowidx === 0 && in_array($data->header ?? null, ['row', 'row+col']) ? 'th' : 'td'
-				}}">
-					@markdown((string) $col)
-				</div>
+				}} {{
+					$rowidx === 0 && $colidx === 0 && in_array($data->header ?? null, ['col', 'row+col']) ? 'col' : ''
+				}}">@text((string) $col)</div>
 			@endforeach
 		</div>
 	@endforeach

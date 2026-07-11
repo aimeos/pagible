@@ -3,7 +3,31 @@
  */
 
 .hero {
-    overflow-x: hidden;
+    overflow: hidden;
+    position: relative;
+}
+
+.hero .background {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+}
+
+.hero .background img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+@keyframes hero-zoom {
+    from { transform: scale(1); }
+    to { transform: scale(1.1); }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .hero .background.zoom img {
+        animation: hero-zoom 10s ease-in-out infinite alternate;
+    }
 }
 
 .hero .container {
@@ -87,6 +111,40 @@
 .hero .second img {
     border-radius: var(--pico-border-radius);
     display: block;
+}
+
+.hero .second.multiple {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(12rem, 100%), 1fr));
+    gap: 1rem;
+    max-width: 54rem;
+    margin-top: 3rem;
+}
+
+.hero .second.multiple.swiffy-slider {
+    --swiffy-slider-item-ratio: 4 / 3;
+    display: block;
+}
+
+.hero .second.multiple picture,
+.hero .second.multiple video {
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+}
+
+.hero .second.multiple picture {
+    aspect-ratio: 4 / 3;
+}
+
+.hero .second.multiple img,
+.hero .second.multiple video {
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    max-height: none;
+    object-fit: cover;
 }
 
 @media screen and (min-width: 768px) {

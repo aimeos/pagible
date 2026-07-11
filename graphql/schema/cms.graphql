@@ -81,7 +81,7 @@ extend type Mutation {
   cmsUser(settings: JSON!): User @guard @throttle(name: "cms-admin")
 
   "Add a new page below the page referenced by 'parent' and before the page referenced by 'ref' (or append if NULL)"
-  addPage(input: PageInput!, parent: ID, ref: ID, elements: [ID!], files: [ID!]): Page
+  addPage(input: PageInput!, parent: ID, ref: ID): Page
     @guard @cmsPermission(action: "page:add") @throttle(name: "cms-admin")
 
   "Move the page below the page referenced by 'parent' and before the page referenced by 'ref' (or append if NULL)"
@@ -89,7 +89,11 @@ extend type Mutation {
     @guard @cmsPermission(action: "page:move") @throttle(name: "cms-admin")
 
   "Update the values of an existing page"
-  savePage(id: ID!, input: PageInput!, elements: [ID!], files: [ID!], latestId: ID): Page
+  savePage(id: ID!, input: PageInput!, latestId: ID): Page
+    @guard @cmsPermission(action: "page:save") @throttle(name: "cms-admin")
+
+  "Apply the same values to several existing pages at once, optionally including all sub-pages; returns the ids saved"
+  bulkPage(id: [ID!]!, input: PageInput!, descendants: Boolean = false): BulkResult!
     @guard @cmsPermission(action: "page:save") @throttle(name: "cms-admin")
 
   "Delete an existing page"
@@ -109,12 +113,16 @@ extend type Mutation {
     @guard @cmsPermission(action: "page:publish") @throttle(name: "cms-admin")
 
 
-  "Add a new shared content element with file references"
-  addElement(input: ElementInput!, files: [ID!]): Element
+  "Add a new shared content element"
+  addElement(input: ElementInput!): Element
     @guard @cmsPermission(action: "element:add") @throttle(name: "cms-admin")
 
   "Update an existing shared content element"
-  saveElement(id: ID!, input: ElementInput!, files: [ID!], latestId: ID): Element
+  saveElement(id: ID!, input: ElementInput!, latestId: ID): Element
+    @guard @cmsPermission(action: "element:save") @throttle(name: "cms-admin")
+
+  "Apply the same values to several existing shared content elements at once; returns the ids saved"
+  bulkElement(id: [ID!]!, input: ElementInput!): BulkResult!
     @guard @cmsPermission(action: "element:save") @throttle(name: "cms-admin")
 
   "Delete an existing shared content element"
@@ -142,6 +150,10 @@ extend type Mutation {
   saveFile(id: ID!, input: FileInput!, file: Upload, preview: RemoveableUpload, latestId: ID): File
     @guard @cmsPermission(action: "file:save") @throttle(name: "cms-admin")
 
+  "Apply the same values to several existing files at once; returns the ids saved"
+  bulkFile(id: [ID!]!, input: FileInput!): BulkResult!
+    @guard @cmsPermission(action: "file:save") @throttle(name: "cms-admin")
+
   "Delete an existing file"
   dropFile(id: [ID!]!): [File]!
     @guard @cmsPermission(action: "file:drop") @throttle(name: "cms-admin")
@@ -160,6 +172,20 @@ extend type Mutation {
 
   "Get page metrics for the last X days"
   metrics(url: String!, days: Int, lang: String): Stats @guard @cmsPermission(action: "page:metrics") @throttle(name: "cms-ai")
+}
+
+type BulkResult {
+  "IDs of the items that were successfully updated"
+  ids: [ID!]!
+
+  "Map of updated item id to its new latest version id"
+  latest: JSON!
+
+  "Field values applied to every updated item"
+  data: JSON!
+
+  "Number of attempted items that could not be saved"
+  failed: Int!
 }
 
 type Stats {
@@ -292,8 +318,8 @@ type Page {
   "Date/time value when the page was deleted or NULL if it's available"
   deleted_at: String
 
-  "If node has children"
-  has: Boolean!
+  "Number of descendant pages below this node (0 if it has no children)"
+  has: Int!
 
   "Relation to the parent page or NULL if it's a root page"
   parent: Page
@@ -497,8 +523,8 @@ input ElementFilter {
 }
 
 input ElementInput {
-  "Type of the content element"
-  type: String!
+  "Type of the content element (required when creating an element)"
+  type: String
 
   "ISO language code, e.g. 'en', 'en-GB' or empty for default language"
   lang: String
@@ -506,8 +532,8 @@ input ElementInput {
   "Arbitrary string which describes the element"
   name: String
 
-  "Arbitrary content element data"
-  data: JSON!
+  "Arbitrary content element data (required when creating an element)"
+  data: JSON
 }
 
 type File {

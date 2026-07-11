@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @license LGPL, https://opensource.org/license/lgpl-3-0
+ * @license MIT, https://opensource.org/license/mit
  */
 
 
@@ -31,7 +31,7 @@ class RestorePage extends Tool
     public function handle( Request $request ): \Laravel\Mcp\ResponseFactory
     {
         if( !Permission::can( 'page:keep', $request->user() ) ) {
-            throw new \Exception( 'Insufficient permissions' );
+            throw new \Aimeos\Cms\Exception( 'Insufficient permissions' );
         }
 
         $v = $request->validate([
@@ -56,7 +56,7 @@ class RestorePage extends Tool
         /** @var Page $restored */
         $restored = $items->firstOrFail();
 
-        return Response::structured( $restored->toArray() + ['url' => route( 'cms.page', ['path' => $restored->path] )] );
+        return Response::structured( ['id' => $restored->id] + $restored->toArray() + ['url' => route( 'cms.page', ['path' => $restored->path] )] );
     }
 
 

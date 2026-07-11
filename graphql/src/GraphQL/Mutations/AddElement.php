@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @license LGPL, https://opensource.org/license/lgpl-3-0
+ * @license MIT, https://opensource.org/license/mit
  */
 
 
@@ -20,10 +20,6 @@ final class AddElement
      */
     public function __invoke( $rootValue, array $args ) : Element
     {
-        try {
-            return Resource::addElement( $args['input'] ?? [], Auth::user(), $args['files'] ?? [] );
-        } catch( \InvalidArgumentException $e ) {
-            throw new \GraphQL\Error\Error( $e->getMessage() );
-        }
+        return Resource::addElement( $args['input'] ?? [], Auth::user() );
     }
 }

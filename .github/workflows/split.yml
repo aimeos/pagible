@@ -1,7 +1,7 @@
 name: Split Packages
 on:
   push:
-    branches: [master, '*.x']
+    branches: [master, '[0-9]*.[0-9]*']
     tags: ['[0-9]*.[0-9]*.[0-9]*']
 
 env:
@@ -25,12 +25,16 @@ jobs:
           - { package: import, repo: pagible-import }
           - { package: jsonapi, repo: pagible-jsonapi }
           - { package: mcp, repo: pagible-mcp }
+          - { package: pulse, repo: pagible-pulse }
           - { package: search, repo: pagible-search }
           - { package: theme, repo: pagible-theme }
+          - { package: themes/bold, repo: pagible-themes-bold }
           - { package: themes/glass, repo: pagible-themes-glass }
+          - { package: themes/luxury, repo: pagible-themes-luxury }
           - { package: themes/pagible, repo: pagible-themes-pagible }
           - { package: themes/paper, repo: pagible-themes-paper }
           - { package: themes/premium, repo: pagible-themes-premium }
+          - { package: themes/style, repo: pagible-themes-style }
     steps:
       - uses: actions/checkout@v5
 

@@ -60,10 +60,15 @@ return [
     | downloaded via the proxy in MB and the timeout for streaming the file
     | in seconds. The default values are 10 MB and 30 seconds, respectively.
     |
+    | ttl is the lifetime in seconds of the signed, user-bound capability
+    | token that authenticates proxy requests. It travels in the proxy URL, so
+    | it is kept short; the admin client refreshes it before it expires.
+    |
     */
     'proxy' => [
         'maxsize' => env( 'CMS_PROXY_MAXSIZE', 10 ), // in MB
         'timeout' => env( 'CMS_PROXY_TIMEOUT', 30 ), // in seconds
-        'middleware' => ['throttle:cms-proxy'],
+        'ttl' => env( 'CMS_PROXY_TTL', 3600 ), // in seconds
+        'middleware' => ['web', 'auth', 'throttle:cms-proxy'],
     ],
 ];

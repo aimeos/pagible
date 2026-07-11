@@ -33,6 +33,20 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Allow fetching from internal hosts
+    |--------------------------------------------------------------------------
+    |
+    | When TRUE, the CMS may fetch remote URLs (e.g. when importing a file from
+    | a URL) whose host resolves to a private or reserved IP range (e.g.
+    | 10.0.0.0/8, 127.0.0.1 or internal services accessed by IP). Set it to
+    | FALSE to block them and mitigate SSRF when URLs can be supplied by
+    | untrusted users.
+    |
+    */
+    'allow-internal' => env( 'CMS_ALLOW_INTERNAL', false ),
+
+    /*
+    |--------------------------------------------------------------------------
     | Real-time broadcasting
     |--------------------------------------------------------------------------
     |
@@ -42,6 +56,18 @@ return [
     |
     */
     'broadcast' => env( 'CMS_BROADCAST', false ),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Broadcasting authorization middleware
+    |--------------------------------------------------------------------------
+    |
+    | Middleware applied to the "/broadcasting/auth" channel-authorization route. Throttled by
+    | default; multi-tenant setups (e.g. stancl/tenancy) must also add their tenancy-init
+    | middleware here so Tenancy::value() resolves when channels are authorized.
+    |
+    */
+    'broadcast-middleware' => ['web', 'auth', 'throttle:cms-admin'],
 
     /*
     |--------------------------------------------------------------------------
@@ -139,5 +165,27 @@ return [
     |
     */
     'versions' => env( 'CMS_VERSIONS', 10 ),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Observability (watch)
+    |--------------------------------------------------------------------------
+    |
+    | Structured audit/observability logging. Set "channel" (e.g. CMS_LOG_CHANNEL=cms)
+    | to the Laravel log channel that receives the entries; leave it unset to disable
+    | all logging at zero per-request cost. When the named channel is not defined in
+    | config/logging.php, the core package registers a daily JSON channel for it.
+    |
+    | "sample" (0.0-1.0) keeps that fraction of high-volume read entries (frontend
+    | search, JSON:API); audit streams (content, auth, contact) are always complete.
+    | "anonymize" SHA-256 hashes personal data (email, IP, user agent) in auth and
+    | contact entries before logging; set FALSE to store raw values.
+    |
+    */
+    'watch' => [
+        'channel' => env( 'CMS_LOG_CHANNEL' ),
+        'sample' => env( 'CMS_WATCH_SAMPLE', 1.0 ),
+        'anonymize' => env( 'CMS_WATCH_ANONYMIZE', true ),
+    ],
 
 ];

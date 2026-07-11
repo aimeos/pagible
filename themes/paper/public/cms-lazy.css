@@ -149,7 +149,7 @@ dialog.search .load-more:disabled {
 
 
 pre:has(code[class*="language-"]) {
-    background-color: var(--pico-contrast-inverse);
+    background-color: var(--pico-code-background-color);
     border-radius: calc(var(--pico-border-radius) * 2);
     border: 1px solid var(--pico-muted-border-color);
     padding: 1rem;
@@ -157,11 +157,9 @@ pre:has(code[class*="language-"]) {
 
 pre code[class*=language-] {
     color: var(--pico-code-color);
-    background-color: var(--pico-code-background-color);
     font-family: var(--pico-font-family-monospace);
     border-radius: var(--pico-border-radius);
     overflow-x: auto;
-    padding: 1rem;
 }
 
 p code {
@@ -217,18 +215,21 @@ footer.cms-content .cards .title {
     letter-spacing: 0.05em;
 }
 
-footer.cms-content .cards .text {
+footer.cms-content .cards :is(.text, .cms-text) {
     color: #FFFFFFCC;
     font-weight: 300;
 }
 
-footer.cms-content .cards .text p {
+footer.cms-content .cards :is(.text, .cms-text) p {
     line-height: 1.75;
     margin: 0;
 }
 
-footer.cms-content .cards .text a,
-footer.cms-content .cards .text a:visited {
+footer.cms-content .cards :is(.text, .cms-text) a,
+footer.cms-content .cards :is(.text, .cms-text) a:visited,
+footer.cms-content .cards :is(.text, .cms-text) a:hover,
+footer.cms-content .cards :is(.text, .cms-text) a:focus,
+footer.cms-content .cards :is(.text, .cms-text) a:active {
     color: #FFFFFFCC;
     text-decoration: none;
     display: inline-block;
@@ -236,7 +237,7 @@ footer.cms-content .cards .text a:visited {
     font-size: calc(var(--pico-font-size) * 0.8);
 }
 
-footer.cms-content .cards .text a:hover {
+footer.cms-content .cards :is(.text, .cms-text) a:hover {
     color: #FFFFFFA6;
     transition: color 0.15s ease;
 }
@@ -309,4 +310,53 @@ footer.bottom .brand img {
     filter: brightness(0) invert(1);
     vertical-align: middle;
     opacity: 0.5;
+}
+
+/* Content tables (markdown/HTML) — mirrors table.css .table-responsive */
+.cms-content table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.cms-content th,
+.cms-content td {
+    padding: calc(var(--pico-spacing) / 2) var(--pico-spacing);
+    border-bottom: 1px solid var(--pico-muted-border-color);
+    vertical-align: middle;
+}
+
+.cms-content th {
+    font-weight: 500;
+    font-size: calc(var(--pico-font-size) * 0.85);
+    letter-spacing: 0.04em;
+    color: var(--pico-contrast);
+    text-transform: uppercase;
+    text-align: center;
+}
+
+.cms-content th:first-child {
+    text-align: start;
+}
+
+.cms-content td {
+    text-align: center;
+}
+
+.cms-content th > *:first-child,
+.cms-content td > *:first-child {
+    margin-top: 0;
+}
+
+.cms-content th > *:last-child,
+.cms-content td > *:last-child {
+    margin-bottom: 0;
+}
+
+.cms-content th img {
+    display: block;
+    margin-top: 0.75rem;
+    margin-bottom: 0.75rem;
+    height: 100%;
+    width: 100%;
 }

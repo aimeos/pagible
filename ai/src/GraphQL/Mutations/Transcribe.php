@@ -1,13 +1,15 @@
 <?php
 
 /**
- * @license LGPL, https://opensource.org/license/lgpl-3-0
+ * @license MIT, https://opensource.org/license/mit
  */
 
 
 namespace Aimeos\Cms\GraphQL\Mutations;
 
+use Aimeos\Cms\Concerns\ObservesPrisma;
 use Aimeos\Prisma\Prisma;
+use Aimeos\Cms\Utils;
 use Aimeos\Prisma\Files\Audio;
 use Aimeos\Prisma\Exceptions\PrismaException;
 use Illuminate\Support\Facades\Log;
@@ -17,6 +19,9 @@ use GraphQL\Error\Error;
 
 final class Transcribe
 {
+    use ObservesPrisma;
+
+
     /**
      * @param null $rootValue
      * @param array<string, mixed> $args
@@ -38,7 +43,7 @@ final class Transcribe
         {
             $file = Audio::fromBinary( $upload->getContent(), $upload->getClientMimeType() );
 
-            $data = Prisma::audio()
+            $data = Prisma::audio()->observe( $this->observer() )
                 ->using( $provider, $config )
                 ->model( $model )
                 ->ensure( 'transcribe' )
@@ -46,32 +51,15 @@ final class Transcribe
                 ->structured();
 
             return array_map( fn( $entry ) => [
-                'start' => $this->time( $entry['start'] ),
-                'end' => $this->time( $entry['end'] ),
+                'start' => Utils::formatSeconds( $entry['start'] ),
+                'end' => Utils::formatSeconds( $entry['end'] ),
                 'text' => $entry['text'],
             ], $data );
         }
         catch( PrismaException $e )
         {
             Log::error( 'AI service error', ['mutation' => 'Transcribe', 'message' => $e->getMessage(), 'trace' => $e->getTraceAsString()] );
-            throw new Error( config( 'app.debug' ) ? $e->getMessage() : 'AI service error', null, null, null, null, $e );
+            throw new Error( $e->getMessage(), null, null, null, null, $e );
         }
-    }
-
-
-    /**
-     * Formats the given time in seconds to a string in the format "HH:MM:SS.mmm"
-     *
-     * @param float $seconds Time in seconds
-     * @return string Formatted time string
-     */
-    protected function time( float $seconds ) : string
-    {
-        $hours = floor( $seconds / 3600 );
-        $minutes = floor( ( $seconds % 3600 ) / 60 );
-        $secs = floor( $seconds % 60 );
-        $millis = ( $seconds - floor( $seconds ) ) * 1000;
-
-        return sprintf( "%02d:%02d:%02d.%03d", $hours, $minutes, $secs, $millis );
     }
 }

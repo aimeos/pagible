@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @license LGPL, https://opensource.org/license/lgpl-3-0
+ * @license MIT, https://opensource.org/license/mit
  */
 
 
@@ -32,7 +32,7 @@ class SavePage extends Tool
     public function handle( Request $request ): \Laravel\Mcp\ResponseFactory
     {
         if( !Permission::can( 'page:save', $request->user() ) ) {
-            throw new \Exception( 'Insufficient permissions' );
+            throw new \Aimeos\Cms\Exception( 'Insufficient permissions' );
         }
 
         $v = $request->validate([
@@ -44,7 +44,8 @@ class SavePage extends Tool
             'content.*.id' => 'string|max:10',
             'content.*.type' => 'required|string|max:50',
             'content.*.group' => 'string|max:50',
-            'content.*.data' => 'required|array',
+            'content.*.data' => 'required_without:content.*.refid|array',
+            'content.*.refid' => 'required_without:content.*.data|string|max:36',
             'meta' => 'array',
             'config' => 'array',
             'to' => 'string|max:2048',
@@ -56,17 +57,19 @@ class SavePage extends Tool
             'status' => 'integer|in:0,1,2',
             'cache' => 'integer|min:0',
             'related_id' => 'string|max:36',
-            'files' => 'array',
-            'files.*' => 'string|max:36',
-            'elements' => 'array',
-            'elements.*' => 'string|max:36',
-            'latestId' => 'string|max:36',
+            'latest_id' => 'required|string|max:36',
         ], [
             'id.required' => 'You must specify the ID of the page to save.',
+            'latest_id.required' => 'You must pass the latest_id returned by get-page, add-page, or a previous save-page so concurrent edits are detected.',
         ] );
 
         if( isset( $v['content'] ) ) {
-            $v['content'] = Validation::content( $v['content'] );
+            // Use the raw request input, not the validated copy: validate() rebuilds
+            // wildcard arrays via rule expansion, which materializes elements matched
+            // by content.*.id first and appends id-less elements at the end, scrambling
+            // the author's order. The raw input preserves it; Validation::content()
+            // still whitelists each element's keys.
+            $v['content'] = Validation::content( $request->get( 'content' ), $v['type'] ?? null );
         }
 
         if( isset( $v['title'] ) && !isset( $v['path'] ) ) {
@@ -74,20 +77,19 @@ class SavePage extends Tool
         }
 
         if( isset( $v['meta'] ) ) {
-            $v['meta'] = Validation::structured( $v['meta'], 'meta', new \stdClass() );
+            $v['meta'] = Validation::structured( $v['meta'], 'meta', new \stdClass(), $v['type'] ?? null );
         }
 
         if( isset( $v['config'] ) ) {
-            $v['config'] = Validation::structured( $v['config'], 'config', new \stdClass() );
+            $v['config'] = Validation::structured( $v['config'], 'config', new \stdClass(), $v['type'] ?? null );
         }
 
-        $input = array_diff_key( $v, array_flip( ['id', 'files', 'elements', 'latestId'] ) );
+        $input = array_diff_key( $v, array_flip( ['id', 'latest_id'] ) );
 
         try {
             $page = Resource::savePage(
                 $v['id'], $input, $request->user(),
-                $v['files'] ?? null, $v['elements'] ?? null,
-                $v['latestId'] ?? null,
+                $v['latest_id'] ?? null,
             );
         } catch( ModelNotFoundException $e ) {
             return Response::structured( ['error' => 'Page not found.'] );
@@ -98,6 +100,7 @@ class SavePage extends Tool
 
         return Response::structured( array_merge( $data, [
             'id' => $page->id,
+            'latest_id' => $page->latest_id,
             'meta' => $aux['meta'] ?? new \stdClass(),
             'config' => $aux['config'] ?? new \stdClass(),
             'content' => $aux['content'] ?? [],
@@ -138,8 +141,9 @@ class SavePage extends Tool
                     'group' => $schema->string()
                         ->description( 'Layout section, e.g., "main", "footer". Use "main" if unsure.' ),
                     'data' => $schema->object()
-                        ->description( 'Field values for this element. Use get-schemas for available fields per type.' )
-                        ->required(),
+                        ->description( 'Field values for this element. Use get-schemas for available fields per type. Omit for "reference" elements.' ),
+                    'refid' => $schema->string()
+                        ->description( 'For "reference" elements only: UUID of the shared element to embed instead of data.' ),
                 ] ) )
                 ->description( 'Content elements. Replaces all existing content. Use get-schemas for available types and fields.' ),
             'meta' => $schema->object()
@@ -164,14 +168,9 @@ class SavePage extends Tool
                 ->description( 'Cache lifetime in minutes.' ),
             'related_id' => $schema->string()
                 ->description( 'Translation ID linking pages with the same content in different languages.' ),
-            'files' => $schema->array()
-                ->items( $schema->string() )
-                ->description( 'Array of file UUIDs to attach to the version.' ),
-            'elements' => $schema->array()
-                ->items( $schema->string() )
-                ->description( 'Array of shared element UUIDs to attach to the version.' ),
-            'latestId' => $schema->string()
-                ->description( 'Version ID the caller last retrieved. Enables conflict detection and three-way merge when another editor has saved in the meantime.' ),
+            'latest_id' => $schema->string()
+                ->description( 'Required. The latest_id value returned by get-page, add-page, or your previous save-page for this page. Ensures edits made by another editor in the meantime are merged instead of overwritten.' )
+                ->required(),
         ];
     }
 

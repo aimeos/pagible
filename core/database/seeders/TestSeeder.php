@@ -1,14 +1,13 @@
 <?php
 
 /**
- * @license LGPL, https://opensource.org/license/lgpl-3-0
+ * @license MIT, https://opensource.org/license/mit
  */
 
 
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Aimeos\Cms\Models\Version;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
@@ -27,14 +26,8 @@ class TestSeeder extends Seeder
      */
     public function run()
     {
-        \Aimeos\Cms\Tenancy::$callback = function() {
-            return 'demo';
-        };
-
-        File::where('tenant_id', 'demo')->forceDelete();
-        Version::where('tenant_id', 'demo')->forceDelete();
-        Element::where('tenant_id', 'demo')->forceDelete();
-        Page::where('tenant_id', 'demo')->forceDelete();
+        // Resolve the tenant configured by the caller, not a stale scoped instance.
+        app()->forgetInstance( \Aimeos\Cms\Tenancy::class );
 
         Page::withoutSyncingToSearch( function() {
             Element::withoutSyncingToSearch( function() {
@@ -49,9 +42,11 @@ class TestSeeder extends Seeder
             } );
         } );
 
-        Page::query()->searchable();
-        Element::query()->searchable();
-        File::query()->searchable();
+        if( config('scout.driver') !== 'collection' ) {
+            Page::query()->searchable();
+            Element::query()->searchable();
+            File::query()->searchable();
+        }
     }
 
 

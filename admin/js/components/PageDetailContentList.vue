@@ -1,4 +1,4 @@
-/** @license LGPL, https://opensource.org/license/lgpl-3-0 */
+/** @license MIT, https://opensource.org/license/mit */
 
 <script>
 import gql from 'graphql-tag'
@@ -13,7 +13,7 @@ import {
   useSideStore
 } from '../stores'
 import { changedState } from '../merge'
-import { debounce, frozenParse, itemTitle, uid } from '../utils'
+import { debounce, frozenParse, itemTitle, safeParse, uid } from '../utils'
 import {
   mdiMenuDown,
   mdiContentCopy,
@@ -41,14 +41,14 @@ import {
 const SchemaDialog = defineAsyncComponent(() => import('./SchemaDialog.vue'))
 
 const REFINE_CONTENT = gql`
-  mutation ($prompt: String!, $content: JSON!, $type: String, $context: String) {
-    refine(prompt: $prompt, content: $content, type: $type, context: $context)
+  mutation ($prompt: String!, $content: JSON!, $type: String, $context: String, $lang: String, $pagetype: String) {
+    refine(prompt: $prompt, content: $content, type: $type, context: $context, lang: $lang, pagetype: $pagetype)
   }
 `
 
 const ADD_ELEMENT = gql`
-  mutation ($input: ElementInput!, $files: [ID!]) {
-    addElement(input: $input, files: $files) {
+  mutation ($input: ElementInput!) {
+    addElement(input: $input) {
       id
       type
       lang
@@ -98,7 +98,7 @@ export default {
     lastError: false,
     refining: false,
     panel: [],
-    menu: [],
+    menu: null,
     index: null,
     checked: false,
     vchange: false,
@@ -385,7 +385,9 @@ export default {
             prompt: prompt,
             content: JSON.stringify(this.content),
             type: 'content',
-            context: null
+            context: null,
+            lang: this.item.lang,
+            pagetype: this.item.type
           }
         })
         .then((result) => {
@@ -393,7 +395,7 @@ export default {
             throw result
           }
 
-          const content = JSON.parse(result.data?.refine || '[]')
+          const content = safeParse(result.data?.refine || '[]', [])
 
           if (content.length) {
             const map = {}
@@ -488,11 +490,7 @@ export default {
               lang: this.item.lang,
               name: this.title(entry),
               data: JSON.stringify(entry.data || {})
-            },
-            files:
-              entry.files?.filter((fileid, idx, self) => {
-                return self.indexOf(fileid) === idx
-              }) || []
+            }
           }
         })
         .then((result) => {
@@ -504,7 +502,7 @@ export default {
 
           for (const file of element.files || []) {
             file.previews = frozenParse(file.previews)
-            this.assets[file.id] = Object.freeze(file)
+            this.assets[file.id] = file
           }
 
           element.data = frozenParse(element.data)
@@ -836,6 +834,7 @@ export default {
         :modelValue="content"
         :forceFallback="true"
         fallbackTolerance="10"
+        handle=".item-handle"
         draggable=".content"
         group="content"
       >
@@ -851,6 +850,12 @@ export default {
           }"
         >
           <v-expansion-panel-title>
+            <v-btn variant="text" class="item-handle" :aria-label="$gettext('Move element')" icon>
+              <svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M9,3H11V5H9V3M13,3H15V5H13V3M9,7H11V9H9V7M13,7H15V9H13V7M9,11H11V13H9V11M13,11H15V13H13V11M9,15H11V17H9V15M13,15H15V17H13V15M9,19H11V21H9V19M13,19H15V21H13V19Z" />
+              </svg>
+            </v-btn>
+
             <v-checkbox-btn
               v-if="user.can('page:save')"
               :model-value="el._checked"
@@ -861,7 +866,8 @@ export default {
               <component
                 :is="$vuetify.display.xs ? 'v-dialog' : 'v-menu'"
                 :aria-label="$gettext('Actions')"
-                v-model="menu[idx]"
+                :model-value="menu === el.id"
+                @update:model-value="(val) => (menu = val ? el.id : null)"
                 transition="scale-transition"
                 location="end center"
                 max-width="300"
@@ -881,11 +887,11 @@ export default {
                     <v-btn
                       :icon="mdiClose"
                       :aria-label="$gettext('Close')"
-                      @click="menu[idx] = false"
+                      @click="menu = null"
                     />
                   </v-toolbar>
 
-                  <v-list @click="menu[idx] = false">
+                  <v-list @click="menu = null">
                     <v-list-item v-if="!el._error">
                       <v-btn :prepend-icon="mdiContentCopy" variant="text" @click="copy(idx)">{{
                         $gettext('Copy')
@@ -904,12 +910,12 @@ export default {
 
                     <v-divider></v-divider>
 
-                    <v-list-item v-if="menu[idx] && clipboard.get('page-content')">
+                    <v-list-item v-if="clipboard.get('page-content')">
                       <v-btn :prepend-icon="mdiArrowUp" variant="text" @click="paste(idx)">{{
                         $gettext('Paste before')
                       }}</v-btn>
                     </v-list-item>
-                    <v-list-item v-if="menu[idx] && clipboard.get('page-content')">
+                    <v-list-item v-if="clipboard.get('page-content')">
                       <v-btn :prepend-icon="mdiArrowDown" variant="text" @click="paste(idx + 1)">{{
                         $gettext('Paste after')
                       }}</v-btn>
@@ -1071,10 +1077,8 @@ export default {
   flex: none;
 }
 
-.element-type {
-  max-height: 48px;
-  max-width: 5rem;
-  text-align: end;
+.item-handle {
+  cursor: move;
 }
 
 .icon-shared {

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @license LGPL, https://opensource.org/license/lgpl-3-0
+ * @license MIT, https://opensource.org/license/mit
  */
 
 
@@ -23,7 +23,7 @@ use Laravel\Mcp\Request;
 #[IsReadOnly]
 #[Name('get-page')]
 #[Title('Get a page by ID or path')]
-#[Description('Retrieves a single page by its ID or URL path. Returns the full page data including content, meta, config, and the URL as a JSON object.')]
+#[Description('Retrieves a single page by its ID or URL path. Returns the full page data including content, meta, config, and the URL as a JSON object. The returned latest_id identifies the version you read — pass it back to save-page so concurrent edits are merged instead of overwritten.')]
 class GetPage extends Tool
 {
     /**
@@ -32,7 +32,7 @@ class GetPage extends Tool
     public function handle( Request $request ): \Laravel\Mcp\ResponseFactory
     {
         if( !Permission::can( 'page:view', $request->user() ) ) {
-            throw new \Exception( 'Insufficient permissions' );
+            throw new \Aimeos\Cms\Exception( 'Insufficient permissions' );
         }
 
         $v = $request->validate([
@@ -41,7 +41,7 @@ class GetPage extends Tool
         ] );
 
         if( ( $v['id'] ?? null ) === null && ( $v['path'] ?? null ) === null ) {
-            throw new \Exception( 'You must specify either an ID or a path.' );
+            throw new \Aimeos\Cms\Exception( 'You must specify either an ID or a path.' );
         }
 
         $query = Page::withTrashed()
@@ -65,6 +65,7 @@ class GetPage extends Tool
 
         $data = [
             'id' => $page->id,
+            'latest_id' => $page->latest_id,
             'parent_id' => $page->parent_id,
             'deleted' => $page->trashed(),
             'lang' => $version->lang ?? '',

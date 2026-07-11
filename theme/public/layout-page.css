@@ -29,9 +29,10 @@
     --pico-h3-color: #FFFFFF;
     --pico-h4-color: #FFFFFF;
     --pico-muted-color: #9CA3AF;
-    --pico-muted-border-color: #374151;
+    --pico-muted-border-color: #CCD3DF;
     --pico-muted-background-color: #1F2937;
     --pico-contrast: #FFFFFF;
+    --pico-contrast-background: #111827;
     --pico-contrast-inverse: #111827;
     --pico-contrast-border: #374151;
     --pico-contrast-hover-border: #4B5563;

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @license LGPL, https://opensource.org/license/lgpl-3-0
+ * @license MIT, https://opensource.org/license/mit
  */
 
 
@@ -21,6 +21,36 @@ class CashierControllerTest extends CashierTestAbstract
             'email' => 'test@example.com',
             'password' => 'password',
         ] );
+    }
+
+
+    public function testCheckoutCancelExternal()
+    {
+        $response = $this->actingAs( $this->billable() )->post( route( 'cms.cashier' ), [
+            'priceid' => 'price_test123',
+        ], ['referer' => 'https://evil.com/phishing?id=123'] );
+
+        $response->assertRedirect( url( '/phishing?id=123' ) );
+    }
+
+
+    public function testCheckoutCancelPrevious()
+    {
+        $response = $this->actingAs( $this->billable() )->post( route( 'cms.cashier' ), [
+            'priceid' => 'price_test123',
+        ], ['referer' => url( '/pricing?plan=pro#compare' )] );
+
+        $response->assertRedirect( url( '/pricing?plan=pro#compare' ) );
+    }
+
+
+    public function testCheckoutCancelSlashes()
+    {
+        $response = $this->actingAs( $this->billable() )->post( route( 'cms.cashier' ), [
+            'priceid' => 'price_test123',
+        ], ['referer' => url( '/' ) . '//evil.com'] );
+
+        $response->assertRedirect( url( '/evil.com' ) );
     }
 
 
@@ -113,5 +143,21 @@ class CashierControllerTest extends CashierTestAbstract
         ] );
 
         $response->assertStatus( 500 );
+    }
+
+
+    private function billable() : \App\Models\User
+    {
+        return new class() extends \App\Models\User
+        {
+            /**
+             * @param array<string, int>|string $prices
+             * @param array<string, mixed> $options
+             */
+            public function checkout( $prices, array $options = [] ) : \Illuminate\Http\RedirectResponse
+            {
+                return redirect( $options['cancel_url'] );
+            }
+        };
     }
 }

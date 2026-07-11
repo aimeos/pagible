@@ -205,4 +205,4 @@ The app integrates AI capabilities (permission-gated):
 
 ## License
 
-LGPL-3.0-only
+MIT

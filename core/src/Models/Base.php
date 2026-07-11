@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @license LGPL, https://opensource.org/license/lgpl-3-0
+ * @license MIT, https://opensource.org/license/mit
  */
 
 
@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Str;
+use Aimeos\Cms\Concerns\Broadcasts;
 use Aimeos\Cms\DB;
 
 
@@ -25,12 +26,14 @@ use Aimeos\Cms\DB;
  * @property string $id
  * @property string $editor
  * @property Version|null $latest
+ * @property \Illuminate\Support\Carbon|null $deleted_at
  * @method static \Illuminate\Database\Eloquent\Builder<static> withTrashed()
  * @method self publish(Version $version)
  * @method bool restore()
  */
 abstract class Base extends Model
 {
+    use Broadcasts;
     use HasUuids;
 
     private static ?bool $isSqlsrv = null;

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @license LGPL, https://opensource.org/license/lgpl-3-0
+ * @license MIT, https://opensource.org/license/mit
  */
 
 
@@ -13,6 +13,8 @@ use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Filter;
+use Aimeos\Cms\Permission;
+use Aimeos\Cms\Resource;
 use Aimeos\Nestedset\NestedSet;
 use Illuminate\Foundation\Testing\DatabaseTruncation;
 use Illuminate\Foundation\Testing\RefreshDatabaseState;
@@ -24,6 +26,7 @@ class CmsEngineTest extends SearchTestAbstract
     use CmsWithMigrations;
     use DatabaseTruncation;
 
+    protected $seeder = TestSeeder::class;
     protected $connectionsToTruncate = ['testing'];
 
 
@@ -36,8 +39,12 @@ class CmsEngineTest extends SearchTestAbstract
     protected function setUp(): void
     {
         parent::setUp();
+        $this->waitIndex();
+    }
 
-        $this->seed( TestSeeder::class );
+
+    protected function waitIndex()
+    {
         $conn = DB::connection( config( 'cms.db' ) );
 
         if( $conn->getDriverName() === 'sqlsrv' )
@@ -302,6 +309,131 @@ class CmsEngineTest extends SearchTestAbstract
     }
 
 
+    public function testFileDraftSearchableAfterAdd(): void
+    {
+        // mirrors the add-file flow: the model is saved (and indexed) before its
+        // version exists, so the draft (latest=true) index row must be written by
+        // the re-index after the version is created and the relation is set.
+        $versionId = ( new \Aimeos\Cms\Models\Version )->newUniqueId();
+
+        $file = new File();
+        $file->tenant_id = \Aimeos\Cms\Tenancy::value();
+        $file->name = 'Zphraseunique draft media';
+        $file->mime = 'image/png';
+        $file->path = 'cms/test/zphraseunique.png';
+        $file->latest_id = $versionId;
+        $file->editor = 'test';
+        $file->save();
+
+        $version = $file->versions()->forceCreate( [
+            'id' => $versionId,
+            'lang' => 'en',
+            'editor' => 'test',
+            'data' => ['name' => $file->name, 'mime' => $file->mime, 'path' => $file->path],
+        ] );
+
+        $file->setRelation( 'latest', $version )->searchable();
+
+        if( DB::connection( config( 'cms.db' ) )->getDriverName() === 'sqlsrv' ) {
+            sleep( 5 );
+        }
+
+        $result = File::search( 'zphraseunique' )->searchFields( 'draft' )->take( 25 )->get();
+        $this->assertTrue( $result->contains( 'id', $file->id ) );
+    }
+
+
+    public function testSearchMinConfigIsRegistered(): void
+    {
+        // the search package provides cms.search.min via its own config merged into "cms"
+        $this->assertSame( 2, config( 'cms.search.min' ) );
+    }
+
+
+    public function testCjkSubstringSearch(): void
+    {
+        // CJK runs tokenize as a single FTS token, so interior substrings are unmatchable
+        // by full-text search; the engine uses LIKE substring matching for CJK on all drivers.
+        $versionId = ( new \Aimeos\Cms\Models\Version )->newUniqueId();
+
+        $file = new File();
+        $file->tenant_id = \Aimeos\Cms\Tenancy::value();
+        $file->name = '产品搜索测试'; // "product search test"
+        $file->mime = 'image/png';
+        $file->path = 'cms/test/cjk.png';
+        $file->latest_id = $versionId;
+        $file->editor = 'test';
+        $file->save();
+
+        $version = $file->versions()->forceCreate( [
+            'id' => $versionId,
+            'lang' => 'zh',
+            'editor' => 'test',
+            'data' => ['name' => $file->name, 'mime' => $file->mime, 'path' => $file->path],
+        ] );
+
+        $file->setRelation( 'latest', $version )->searchable();
+
+        if( DB::connection( config( 'cms.db' ) )->getDriverName() === 'sqlsrv' ) {
+            sleep( 5 );
+        }
+
+        // interior substring matches
+        $result = File::search( '搜索测' )->searchFields( 'draft' )->take( 25 )->get();
+        $this->assertTrue( $result->contains( 'id', $file->id ) );
+
+        // leading substring matches
+        $result = File::search( '产品搜索' )->searchFields( 'draft' )->take( 25 )->get();
+        $this->assertTrue( $result->contains( 'id', $file->id ) );
+
+        // short 2-char substring matches
+        $result = File::search( '搜索' )->searchFields( 'draft' )->take( 25 )->get();
+        $this->assertTrue( $result->contains( 'id', $file->id ) );
+
+        // non-contiguous characters must not match - substring matching stays selective
+        $result = File::search( '产搜测' )->searchFields( 'draft' )->take( 25 )->get();
+        $this->assertFalse( $result->contains( 'id', $file->id ) );
+
+        // unrelated CJK term must not match
+        $result = File::search( '新闻' )->searchFields( 'draft' )->take( 25 )->get();
+        $this->assertFalse( $result->contains( 'id', $file->id ) );
+    }
+
+
+    public function testCjkDetectionCoversAllScripts(): void
+    {
+        // space-free scripts beyond the BMP CJK block (halfwidth katakana, Bopomofo) must
+        // also route to substring matching, otherwise interior matches silently fail
+        foreach( ['ｱｲｳｴｵ', 'ㄅㄆㄇㄈ'] as $i => $name )
+        {
+            $versionId = ( new \Aimeos\Cms\Models\Version )->newUniqueId();
+
+            $file = new File();
+            $file->tenant_id = \Aimeos\Cms\Tenancy::value();
+            $file->name = $name;
+            $file->mime = 'image/png';
+            $file->path = "cms/test/script{$i}.png";
+            $file->latest_id = $versionId;
+            $file->editor = 'test';
+            $file->save();
+
+            $version = $file->versions()->forceCreate( [
+                'id' => $versionId,
+                'lang' => 'ja',
+                'editor' => 'test',
+                'data' => ['name' => $name, 'mime' => $file->mime, 'path' => $file->path],
+            ] );
+
+            $file->setRelation( 'latest', $version )->searchable();
+
+            // interior substring (not a prefix) - only matchable via the LIKE path
+            $interior = mb_substr( $name, 1, 2 );
+            $result = File::search( $interior )->searchFields( 'draft' )->take( 25 )->get();
+            $this->assertTrue( $result->contains( 'id', $file->id ), "interior '{$interior}' of '{$name}' should match" );
+        }
+    }
+
+
     public function testEngine(): void
     {
         $engine = new CmsEngine();
@@ -353,5 +485,54 @@ class CmsEngineTest extends SearchTestAbstract
         $count = DB::connection( config( 'cms.db' ) )->table( 'cms_index' )
             ->where( 'indexable_type', Page::class )->count();
         $this->assertEquals( 0, $count );
+    }
+
+
+    public function testBulkReindexesSavedPages(): void
+    {
+        $user = new \App\Models\User( [
+            'name' => 'editor', 'email' => 'editor@testbench',
+            'password' => 'secret', 'cmsperms' => Permission::all(),
+        ] );
+
+        $page = Page::where( 'tag', 'root' )->firstOrFail();
+
+        // bulk suppresses Scout's per-item sync and reindexes the saved pages once afterwards
+        Resource::bulkPage( [$page->id], ['name' => 'ztqbulkterm'], $user );
+
+        // the draft (latest=true) index row was refreshed with the new content
+        $draft = DB::connection( config( 'cms.db' ) )->table( 'cms_index' )
+            ->where( 'indexable_id', $page->id )->where( 'latest', true )->value( 'content' );
+
+        $this->waitIndex();
+
+        $this->assertNotNull( $draft );
+        $this->assertStringContainsString( 'ztqbulkterm', $draft );
+
+        // and it is findable via full-text search on the draft
+        $found = Page::search( 'ztqbulkterm' )->searchFields( 'draft' )->take( 25 )->get();
+        $this->assertCount( 1, $found );
+        $this->assertEquals( $page->id, $found->first()->id );
+    }
+
+
+    public function testBulkReindexesTrashedPages(): void
+    {
+        $user = new \App\Models\User( [
+            'name' => 'editor', 'email' => 'editor@testbench',
+            'password' => 'secret', 'cmsperms' => Permission::all(),
+        ] );
+
+        $page = Page::where( 'tag', 'root' )->firstOrFail();
+        $page->delete();
+
+        // the reindex must refresh a soft-deleted item's draft row despite the SoftDeletes scope
+        Resource::bulkPage( [$page->id], ['name' => 'zttrashterm'], $user );
+
+        $draft = DB::connection( config( 'cms.db' ) )->table( 'cms_index' )
+            ->where( 'indexable_id', $page->id )->where( 'latest', true )->value( 'content' );
+
+        $this->assertNotNull( $draft );
+        $this->assertStringContainsString( 'zttrashterm', $draft );
     }
 }

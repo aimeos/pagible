@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @license LGPL, https://opensource.org/license/lgpl-3-0
+ * @license MIT, https://opensource.org/license/mit
  */
 
 
@@ -135,6 +135,47 @@ class UtilsTest extends CoreTestAbstract
     }
 
 
+    public function testSafeHttpRejectsNonHttp()
+    {
+        $this->expectException( \Aimeos\Cms\Exception::class );
+        Utils::safeHttp( 'ftp://example.com/file' );
+    }
+
+
+    #[Group('network')]
+    public function testSafeHttpPinsResolvedIp()
+    {
+        $opts = Utils::safeHttp( 'https://example.com/image.png' );
+
+        $this->assertTrue( $opts['verify'] );
+        $this->assertArrayHasKey( 'on_redirect', $opts['allow_redirects'] );
+        $this->assertStringStartsWith( 'example.com:443:', $opts['curl'][CURLOPT_RESOLVE][0] );
+    }
+
+
+    public function testResolveAllowsPrivateIpByDefault()
+    {
+        config( ['cms.allow-internal' => true] );
+
+        // Literal IPs are validated directly without a DNS lookup
+        $this->assertEquals( '127.0.0.1', Utils::resolve( '127.0.0.1' ) );
+        $this->assertEquals( '10.0.0.1', Utils::resolve( '10.0.0.1' ) );
+        $this->assertEquals( '8.8.8.8', Utils::resolve( '8.8.8.8' ) );
+
+        config( ['cms.allow-internal' => false] );
+    }
+
+
+    public function testResolveBlocksPrivateIpWhenDisabled()
+    {
+        $this->assertNull( Utils::resolve( '127.0.0.1' ) );
+        $this->assertNull( Utils::resolve( '10.0.0.1' ) );
+
+        // Public IPs remain allowed
+        $this->assertEquals( '8.8.8.8', Utils::resolve( '8.8.8.8' ) );
+    }
+
+
     public function testHtmlStripsScript()
     {
         $result = Utils::html( '<p>Hello</p><script>alert(1)</script>' );
@@ -172,6 +213,39 @@ class UtilsTest extends CoreTestAbstract
     public function testHtmlNull()
     {
         $this->assertSame( '', Utils::html( null ) );
+    }
+
+
+    public function testExtensionAllowed()
+    {
+        $this->assertSame( 'jpg', Utils::extension( 'jpg' ) );
+        $this->assertSame( 'pdf', Utils::extension( 'PDF' ) );
+        $this->assertSame( 'tar', Utils::extension( '.tar' ) );
+    }
+
+
+    public function testExtensionEmpty()
+    {
+        $this->assertSame( 'bin', Utils::extension( null ) );
+        $this->assertSame( 'bin', Utils::extension( '' ) );
+        $this->assertSame( 'bin', Utils::extension( '..' ) );
+    }
+
+
+    public function testExtensionNeutralized()
+    {
+        $this->assertSame( 'bin', Utils::extension( 'php' ) );
+        $this->assertSame( 'bin', Utils::extension( 'PHP5' ) );
+        $this->assertSame( 'bin', Utils::extension( 'phtml' ) );
+        $this->assertSame( 'bin', Utils::extension( 'phar' ) );
+        $this->assertSame( 'bin', Utils::extension( 'asp' ) );
+        $this->assertSame( 'bin', Utils::extension( 'aspx' ) );
+        $this->assertSame( 'bin', Utils::extension( 'jsp' ) );
+        $this->assertSame( 'bin', Utils::extension( 'html' ) );
+        $this->assertSame( 'bin', Utils::extension( 'xhtml' ) );
+        $this->assertSame( 'bin', Utils::extension( 'htaccess' ) );
+        $this->assertSame( 'bin', Utils::extension( 'cgi' ) );
+        $this->assertSame( 'bin', Utils::extension( 'pl' ) );
     }
 
 
@@ -263,10 +337,27 @@ class UtilsTest extends CoreTestAbstract
     }
 
 
-    public function testIsValidMimetypeEmptyConfig()
+    public function testMimetypeRejectsPathTraversal()
     {
-        config()->set( 'cms.graphql.mimetypes', [] );
+        // A crafted path must be rejected before any disk read so its mime type
+        // (and existence) can't be probed outside the intended directory.
+        foreach( ['cms/test/../other/secret.jpg', 'cms/test/..\\x.jpg', "cms/test/x.jpg\0"] as $path )
+        {
+            try {
+                Utils::mimetype( $path );
+                $this->fail( sprintf( 'Expected exception for path "%s"', $path ) );
+            } catch( \Aimeos\Cms\Exception $e ) {
+                $this->assertEquals( 'Invalid file path', $e->getMessage() );
+            }
+        }
+    }
 
-        $this->assertTrue( Utils::isValidMimetype( 'application/x-httpd-php' ) );
+
+    public function testMimetypeReadsValidPath()
+    {
+        \Illuminate\Support\Facades\Storage::fake( 'public' );
+        \Illuminate\Support\Facades\Storage::disk( 'public' )->put( 'cms/test/hello.txt', 'hello world, plain text content' );
+
+        $this->assertEquals( 'text/plain', Utils::mimetype( 'cms/test/hello.txt' ) );
     }
 }

@@ -13,9 +13,17 @@
  * in-place (and restoring it on the next mount).
  */
 
+import 'cypress-real-events'
 import { mount } from 'cypress/vue'
 import { h } from 'vue'
 import { createVuetify } from 'vuetify'
+
+// "ResizeObserver loop ..." is a benign browser notification, not a real error.
+Cypress.on('uncaught:exception', (err) => {
+  if (err.message.includes('ResizeObserver')) {
+    return false
+  }
+})
 import { VApp } from 'vuetify/components'
 import * as components from 'vuetify/components'
 import * as labsComponents from 'vuetify/labs/components'
@@ -29,6 +37,8 @@ import 'vuetify/styles'
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
+
+const STORAGE_IMAGE = '<svg xmlns="http://www.w3.org/2000/svg" width="1" height="1"></svg>'
 
 /**
  * Convert a template-based stub to a render-function stub.
@@ -58,8 +68,68 @@ function compileStub(stub) {
   return stub // fallback – may fail if compiler is absent
 }
 
+function storageBody(contentType) {
+  return contentType.startsWith('image/') ? STORAGE_IMAGE : ''
+}
+
+function storageType(path) {
+  if (/\.(mp3|wav|ogg|m4a)$/i.test(path)) return 'audio/mpeg'
+  if (/\.(mp4|webm|mov)$/i.test(path)) return 'video/mp4'
+  if (/\.svgz?$/i.test(path)) return 'image/svg+xml'
+
+  return 'image/svg+xml'
+}
+
+function graphqlBody(body) {
+  return Array.isArray(body) ? body.map(graphqlResult) : graphqlResult()
+}
+
+function graphqlResult() {
+  return {
+    data: {
+      me: null,
+      schemas: [],
+      page: null,
+      pages: [],
+      element: null,
+      elements: [],
+      file: null,
+      files: [],
+      cmsLogin: null,
+      cmsLogout: false,
+    },
+  }
+}
+
 // Stores restore functions from the previous mount to undo in-place patches.
 let _restorePrevious = null
+
+beforeEach(() => {
+  cy.intercept({ method: 'POST', url: '**/graphql' }, (req) => {
+    req.reply({
+      statusCode: 200,
+      headers: {
+        'cache-control': 'no-store',
+        'content-type': 'application/json',
+      },
+      body: graphqlBody(req.body),
+    })
+  })
+
+  cy.intercept({ method: 'GET', url: '**/storage/**' }, (req) => {
+    const path = new URL(req.url, 'http://localhost').pathname
+    const contentType = storageType(path)
+
+    req.reply({
+      statusCode: 200,
+      headers: {
+        'cache-control': 'no-store',
+        'content-type': contentType,
+      },
+      body: storageBody(contentType),
+    })
+  })
+})
 
 // ---------------------------------------------------------------------------
 // cy.mount

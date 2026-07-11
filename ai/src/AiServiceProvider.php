@@ -2,6 +2,8 @@
 
 namespace Aimeos\Cms;
 
+use Aimeos\Cms\Events\Generated;
+use Aimeos\Cms\Listeners\AiLogListener;
 use Illuminate\Support\ServiceProvider as Provider;
 
 class AiServiceProvider extends Provider
@@ -11,12 +13,13 @@ class AiServiceProvider extends Provider
         $basedir = dirname( __DIR__ );
 
         $this->loadViewsFrom( $basedir . '/views', 'cms' );
+        $this->loadRoutesFrom( $basedir . '/routes/ai.php' );
 
         $this->publishes( [$basedir . '/config/cms/ai.php' => config_path( 'cms/ai.php' )], 'cms-config' );
         $this->publishes( [$basedir . '/graphql/cms-ai.graphql' => base_path( 'graphql/cms-ai.graphql' )], 'cms-graphql' );
 
         \Aimeos\Cms\Permission::register( [
-            'page:synthesize',
+            'page:chat',
             'page:refine',
             'file:describe',
             'audio:transcribe',
@@ -36,15 +39,32 @@ class AiServiceProvider extends Provider
             \Aimeos\Cms\Mcp\CmsServer::register( [
                 \Aimeos\Cms\Tools\RefineContent::class,
                 \Aimeos\Cms\Tools\TranslateContent::class,
+                \Aimeos\Cms\Tools\DescribeFile::class,
+                \Aimeos\Cms\Tools\TranscribeAudio::class,
+                \Aimeos\Cms\Tools\GenerateImage::class,
+                \Aimeos\Cms\Tools\RepaintImage::class,
+                \Aimeos\Cms\Tools\IsolateImage::class,
+                \Aimeos\Cms\Tools\UpscaleImage::class,
+                \Aimeos\Cms\Tools\UncropImage::class,
+                \Aimeos\Cms\Tools\EraseImage::class,
+                \Aimeos\Cms\Tools\InpaintImage::class,
             ] );
         }
 
+        $this->watch();
         $this->console();
     }
 
     public function register()
     {
         $this->mergeConfigFrom( dirname( __DIR__ ) . '/config/cms/ai.php', 'cms.ai' );
+    }
+
+    protected function watch() : void
+    {
+        Watch::listen( [
+            Generated::class => AiLogListener::class,
+        ] );
     }
 
     protected function console() : void

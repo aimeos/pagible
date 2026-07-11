@@ -36,6 +36,16 @@ export default {
   },
 
   computed: {
+    changedGroups() {
+      const groups = {}
+
+      for (const el of this.item.content || []) {
+        if (el._changed) groups[el.group || 'main'] = true
+      }
+
+      return groups
+    },
+
     names() {
       const type = this.item.type || 'page'
       const theme = this.item.theme || 'cms'
@@ -124,7 +134,7 @@ export default {
             v-for="(list, section) in sections"
             :key="section"
             :class="{
-              changed: dirty[section],
+              changed: dirty[section] || changedGroups[section],
               error: errors[section]
             }"
             :value="section"

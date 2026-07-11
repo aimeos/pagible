@@ -1,5 +1,5 @@
 /**
- * @license LGPL, https://opensource.org/license/lgpl-3-0
+ * @license MIT, https://opensource.org/license/mit
  */
 
 import gettext from './i18n'
@@ -8,17 +8,25 @@ import { useAppStore, useLanguageStore } from './stores'
 
 export const IMAGE_MIME_FILTER = { mime: ['image/gif', 'image/jpeg', 'image/png', 'image/svg+xml', 'image/webp'] }
 
+export const MEDIA_MIME_FILTER = { mime: ['image/gif', 'image/jpeg', 'image/png', 'image/svg+xml', 'image/webp', 'video/mp4', 'video/webm', 'video/ogg'] }
+
 /**
- * Creates a debounced version of a function that returns a Promise
+ * Keys that can pollute object prototypes when merged into existing objects
+ */
+const UNSAFE_KEYS = ['__proto__', 'constructor', 'prototype']
+
+/**
+ * Creates a debounced version of a function that returns a Promise. The returned function
+ * exposes a cancel() method that clears any pending invocation.
  *
  * @param {Function} func Function to debounce
  * @param {number} delay Delay in milliseconds
- * @returns {Function} Debounced function that returns a Promise
+ * @returns {Function} Debounced function (with a cancel() method) that returns a Promise
  */
 export function debounce(func, delay) {
   let timer
 
-  return function (...args) {
+  function debounced(...args) {
     return new Promise((resolve, reject) => {
       const context = this
 
@@ -32,6 +40,10 @@ export function debounce(func, delay) {
       }, delay)
     })
   }
+
+  debounced.cancel = () => clearTimeout(timer)
+
+  return debounced
 }
 
 /**
@@ -45,17 +57,74 @@ export function empty(val) {
 }
 
 /**
- * Parses a JSON string and freezes the result
+ * Parses a JSON string, strips prototype-polluting keys and freezes the result
  *
  * @param {string} str JSON string to parse
- * @returns {Object} Frozen parsed object
+ * @returns {Object} Frozen parsed object with unsafe keys removed
  */
 export function frozenParse(str) {
   try {
-    return Object.freeze(JSON.parse(str || '{}') || {})
+    return Object.freeze(
+      JSON.parse(str || '{}', (key, value) =>
+        UNSAFE_KEYS.includes(key) ? undefined : value
+      ) || {}
+    )
   } catch {
     return Object.freeze({})
   }
+}
+
+/**
+ * Parses a JSON string, stripping keys that can pollute object prototypes
+ *
+ * Removes `__proto__`, `constructor` and `prototype` keys at every nesting
+ * level so the result can be safely merged onto existing objects (e.g. via
+ * Object.assign) without altering their prototype chain.
+ *
+ * @param {string} str JSON string to parse
+ * @param {*} fallback Value returned when the string is empty or parsing fails (default: {})
+ * @returns {*} Parsed value with unsafe keys removed
+ */
+export function safeParse(str, fallback = {}) {
+  try {
+    // Empty input parses to null so it yields the caller's fallback (e.g. ['en']) rather
+    // than {}; for the default {} fallback this is identical (null ?? {} === {}).
+    return (
+      JSON.parse(str || 'null', (key, value) =>
+        UNSAFE_KEYS.includes(key) ? undefined : value
+      ) ?? fallback
+    )
+  } catch {
+    return fallback
+  }
+}
+
+/**
+ * Recursively removes prototype-polluting keys from an already-parsed value
+ *
+ * Mirror of safeParse() for data that arrives as an object (e.g. realtime
+ * broadcast payloads) rather than a JSON string, so it can be safely merged
+ * onto existing objects via Object.assign without altering their prototype.
+ *
+ * @param {*} value Parsed value (object, array or primitive)
+ * @returns {*} Clean copy with __proto__, constructor and prototype keys removed
+ */
+export function sanitize(value) {
+  if (Array.isArray(value)) {
+    return value.map(sanitize)
+  }
+
+  if (value && typeof value === 'object') {
+    const out = {}
+    for (const key in value) {
+      if (!UNSAFE_KEYS.includes(key) && Object.prototype.hasOwnProperty.call(value, key)) {
+        out[key] = sanitize(value[key])
+      }
+    }
+    return out
+  }
+
+  return value
 }
 
 /**
@@ -88,17 +157,27 @@ export function hasProp(obj, prop) {
 /**
  * Returns a title string from a data object by checking title, text, or joining primitive values
  *
+ * Array values (e.g. table rows/cells) are flattened so their content also
+ * contributes to the title when no title or text field is set.
+ *
  * @param {Object} data Data object to extract title from
  * @returns {string} Title string (max 100 chars)
  */
 export function itemTitle(data) {
+  const flatten = (v) =>
+    Array.isArray(v)
+      ? v.flatMap(flatten)
+      : v && typeof v !== 'object' && typeof v !== 'boolean'
+        ? [v]
+        : []
+
   return (
     (
       data?.title ||
       data?.text ||
       Object.values(data || {})
-        .map((v) => (v && typeof v !== 'object' && typeof v !== 'boolean' ? v : null))
-        .filter((v) => !!v)
+        .flatMap(flatten)
+        .filter((v) => !!String(v).trim())
         .join(' - ')
     ).substring(0, 100) || ''
   )
@@ -320,6 +399,31 @@ const uid = (function () {
 })()
 
 export { uid }
+
+/**
+ * Returns the CSRF header derived from Laravel's XSRF-TOKEN cookie for cookie-authenticated
+ * requests, or an empty object when the cookie is absent. Used directly by Apollo's csrfLink and
+ * (via postHeaders) by raw fetch POSTs, so the cookie/header contract lives in one place.
+ *
+ * @returns {Object} { 'X-XSRF-TOKEN': token } or {}
+ */
+export function xsrfHeaders() {
+  const match = document.cookie.match(/(?:^|;\s*)XSRF-TOKEN=([^;]+)/)
+
+  return match ? { 'X-XSRF-TOKEN': decodeURIComponent(match[1]) } : {}
+}
+
+/**
+ * Returns the request headers for a cookie-authenticated JSON POST: content negotiation plus the
+ * CSRF token header. Keeps the header contract for raw fetch() calls in one place (builds on
+ * xsrfHeaders so a future CSRF-contract change is made once).
+ *
+ * @param {string} accept Value for the Accept header (e.g. 'text/plain' for a streamed response)
+ * @returns {Object} request headers
+ */
+export function postHeaders(accept = 'application/json') {
+  return { 'Content-Type': 'application/json', Accept: accept, ...xsrfHeaders() }
+}
 
 /**
  * Resolves a file path to a full URL using the app's file or proxy URL

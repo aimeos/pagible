@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @license LGPL, https://opensource.org/license/lgpl-3-0
+ * @license MIT, https://opensource.org/license/mit
  */
 
 
@@ -20,14 +20,6 @@ final class SaveElement
      */
     public function __invoke( $rootValue, array $args ) : Element
     {
-        try {
-            $element = Resource::saveElement( $args['id'], $args['input'] ?? [], Auth::user(), $args['files'] ?? null, $args['latestId'] ?? null );
-        } catch( \InvalidArgumentException $e ) {
-            throw new \GraphQL\Error\Error( $e->getMessage() );
-        }
-
-        Resource::broadcast( $element, Auth::user() );
-
-        return $element;
+        return Resource::saveElement( $args['id'], $args['input'] ?? [], Auth::user(), $args['latestId'] ?? null );
     }
 }

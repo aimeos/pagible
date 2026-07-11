@@ -1,0 +1,97 @@
+/**
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+.contact form {
+    max-width: 1200px;
+    margin: auto;
+}
+
+.contact label {
+    color: var(--pico-contrast);
+    display: inline-block;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: calc(var(--pico-font-size) * 0.85);
+    margin: 0.5rem 0;
+}
+
+.contact input, .contact textarea {
+    border: 1px solid var(--pico-contrast-border);
+    background-color: var(--pico-muted-background-color);
+    color: var(--pico-contrast);
+    resize: vertical;
+    font-size: var(--pico-font-size);
+    display: block;
+    padding: 1rem;
+    width: 100%;
+}
+
+.contact input:focus,
+.contact textarea:focus {
+    border-color: var(--pico-primary);
+}
+
+.contact input::-webkit-input-placeholder,
+.contact textarea::-webkit-input-placeholder {
+    color: var(--pico-muted-color);
+}
+
+.contact .errors {
+    color: var(--pico-form-element-invalid-focus-color);
+    margin: 1rem 1.5rem;
+}
+
+.contact .error {
+    border-color: var(--pico-form-element-invalid-border-color);
+}
+
+.contact .submit {
+    display: flex;
+    justify-content: space-around;
+    margin: 1rem 0;
+}
+
+.contact .h-captcha {
+    text-align: center;
+}
+
+.contact .h-captcha iframe {
+    margin-bottom: 0.5rem;
+    max-width: 100%;
+}
+
+.contact button {
+    display: block;
+    margin-inline-end: auto;
+    margin-inline-start: auto;
+    background-color: var(--pico-primary);
+    color: var(--pico-contrast-inverse);
+    border: 2px solid var(--pico-primary);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 700;
+}
+
+.contact button:hover {
+    background-color: var(--pico-primary-hover);
+    border-color: var(--pico-primary-hover);
+}
+
+.contact button:disabled {
+    border: 1px solid var(--pico-muted-border-color);
+    background-color: var(--pico-background-color);
+    color: var(--pico-muted-color);
+}
+
+.contact button:has(.success:not(.hidden)) {
+    background-color: var(--pico-form-element-valid-focus-color);
+    border: 1px solid var(--pico-form-element-valid-focus-color);
+    color: var(--pico-primary-inverse);
+}
+
+.contact button:has(.failure:not(.hidden)) {
+    background-color: var(--pico-form-element-invalid-focus-color);
+    border: 1px solid var(--pico-form-element-invalid-focus-color);
+    color: var(--pico-primary-inverse);
+}

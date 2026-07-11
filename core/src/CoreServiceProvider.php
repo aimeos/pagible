@@ -2,6 +2,16 @@
 
 namespace Aimeos\Cms;
 
+use Aimeos\Cms\Events\Added;
+use Aimeos\Cms\Events\Bulk;
+use Aimeos\Cms\Events\Dropped;
+use Aimeos\Cms\Events\Moved;
+use Aimeos\Cms\Events\Published;
+use Aimeos\Cms\Events\Purged;
+use Aimeos\Cms\Events\Restored;
+use Aimeos\Cms\Events\Saved;
+use Aimeos\Cms\Listeners\BulkListener;
+use Aimeos\Cms\Listeners\ContentListener;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Support\Facades\Broadcast;
@@ -21,7 +31,9 @@ class CoreServiceProvider extends Provider
             $basedir . '/config/cms.php' => config_path( 'cms.php' ),
         ], 'cms-config' );
 
+        Watch::registerChannel();
         $this->broadcast();
+        $this->watch();
         $this->rateLimiter();
         $this->userCasts();
         $this->schedule();
@@ -46,14 +58,48 @@ class CoreServiceProvider extends Provider
             return;
         }
 
-        Broadcast::routes( ['middleware' => ['web', 'auth']] );
+        Broadcast::routes( ['middleware' => config( 'cms.broadcast-middleware', ['web', 'auth'] )] );
 
         foreach( ['page', 'element', 'file'] as $type )
         {
-            Broadcast::channel( "cms.{$type}.{id}", fn( $user ) =>
-                Permission::can( "{$type}:view", $user )
+            // Single-tenant only: the tenant-less channel is authorized solely when no tenancy is
+            // configured at all. Requiring Tenancy::$callback === null fails closed - in a
+            // multi-tenant deployment whose /broadcasting/auth route lacks the tenancy-init
+            // middleware, Tenancy::value() would be '' and would otherwise open this channel to
+            // every tenant.
+            Broadcast::channel( Channel::type( '', $type ), fn( $user ) =>
+                Tenancy::value() === '' && Tenancy::$callback === null && Permission::can( "{$type}:view", $user )
+            );
+
+            // Multi-tenant: the channel's tenant segment must match the request's tenant; the
+            // optional Tenancy::$access hook can additionally bind the user to that tenant.
+            Broadcast::channel( Channel::type( '{tenant}', $type ), fn( $user, string $tenant ) =>
+                $tenant === Tenancy::value() && Tenancy::allows( $user, $tenant ) && Permission::can( "{$type}:view", $user )
             );
         }
+    }
+
+
+    /**
+     * Subscribes the content audit listener to the per-action events when watch logging is enabled.
+     *
+     * Gated on "cms.watch.channel" so nothing listens when logging is off, which keeps
+     * Broadcasts::announce() short-circuiting (no event built, no latest version loaded).
+     */
+    protected function watch() : void
+    {
+        $listener = ContentListener::class;
+
+        Watch::listen( [
+            Added::class => $listener,
+            Saved::class => $listener,
+            Published::class => $listener,
+            Dropped::class => $listener,
+            Restored::class => $listener,
+            Purged::class => $listener,
+            Moved::class => $listener,
+            Bulk::class => BulkListener::class,
+        ] );
     }
 
 

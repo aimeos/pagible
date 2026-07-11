@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @license LGPL, https://opensource.org/license/lgpl-3-0
+ * @license MIT, https://opensource.org/license/mit
  */
 
 
@@ -31,7 +31,7 @@ class RestoreFile extends Tool
     public function handle( Request $request ): \Laravel\Mcp\ResponseFactory
     {
         if( !Permission::can( 'file:keep', $request->user() ) ) {
-            throw new \Exception( 'Insufficient permissions' );
+            throw new \Aimeos\Cms\Exception( 'Insufficient permissions' );
         }
 
         $v = $request->validate([
@@ -53,7 +53,9 @@ class RestoreFile extends Tool
 
         $items = Resource::restore( File::class, [$v['id']], Utils::editor( $request->user() ) );
 
-        return Response::structured( $items->firstOrFail()->toArray() );
+        $item = $items->firstOrFail();
+
+        return Response::structured( ['id' => $item->id] + $item->toArray() );
     }
 
 

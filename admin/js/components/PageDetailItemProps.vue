@@ -1,4 +1,4 @@
-/** @license LGPL, https://opensource.org/license/lgpl-3-0 */
+/** @license MIT, https://opensource.org/license/mit */
 
 <script>
 import gql from 'graphql-tag'
@@ -145,7 +145,12 @@ export default {
 
     themeUpdated(event) {
       this.update('theme', event)
-      this.item.type = ''
+
+      const types = this.schemas.themes[event || 'cms']?.types || { page: '' }
+
+      if (!types[this.item.type]) {
+        this.item.type = ''
+      }
     },
 
     update(what, value) {
@@ -162,7 +167,7 @@ export default {
       await this.$nextTick()
       const list = [lazy ? this.checkPathd() : this.checkPath()]
 
-      Object.values(this.$refs).forEach((field) => {
+      Object.values(this.$refs).filter(field => field).forEach((field) => {
         list.push(field.validate())
       })
 
@@ -292,6 +297,7 @@ export default {
             variant="underlined"
             maxlength="255"
             counter="255"
+            prefix="/"
           ></v-text-field>
           <v-text-field
             v-if="app.multidomain"
@@ -373,4 +379,18 @@ export default {
   </v-container>
 </template>
 
-<style scoped></style>
+<style scoped>
+:deep(.v-field__prefix) {
+  background: rgba(var(--v-theme-on-surface), 0.05);
+  border-inline-end: thin solid rgba(var(--v-theme-on-surface), 0.15);
+  padding-inline: 8px;
+  margin-inline-end: 4px;
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+}
+
+:deep(.v-text-field--prefixed.v-text-field .v-field:not(.v-field--reverse) .v-field__input) {
+  --v-field-padding-start: 0;
+}
+</style>

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @license LGPL, https://opensource.org/license/lgpl-3-0
+ * @license MIT, https://opensource.org/license/mit
  */
 
 
@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Storage;
 class Utils
 {
     private static int $counter = 0;
+    private static ?\HTMLPurifier $purifier = null;
 
 
     /**
@@ -30,6 +31,23 @@ class Utils
     public static function editor( ?object $user = null ) : string
     {
         return (string) ( $user && isset( $user->email ) ? $user->email : request()->ip() );
+    }
+
+
+    /**
+     * Formats a number of seconds as a "HH:MM:SS.mmm" timestamp.
+     *
+     * @param float $seconds Time in seconds
+     * @return string Formatted timestamp, e.g. "00:01:23.500"
+     */
+    public static function formatSeconds( float $seconds ) : string
+    {
+        $hours = floor( $seconds / 3600 );
+        $minutes = floor( ( $seconds % 3600 ) / 60 );
+        $secs = floor( $seconds % 60 );
+        $millis = ( $seconds - floor( $seconds ) ) * 1000;
+
+        return sprintf( "%02d:%02d:%02d.%03d", $hours, $minutes, $secs, $millis );
     }
 
 
@@ -93,24 +111,24 @@ class Utils
 
 
     /**
-     * Sanitizes the given HTML text to ensure it is safe for output.
+     * Fetches the contents of an http(s) URL using SSRF-safe options.
      *
-     * @param string|null $text The HTML text to sanitize
-     * @return string The sanitized HTML text
+     * The host is pinned to its resolved public IP and redirects to private/reserved
+     * addresses are blocked, so a stored URL cannot be abused to reach internal services.
+     *
+     * @param string $url The http(s) URL to fetch
+     * @return string The response body
+     * @throws Exception If the URL is unsafe or the request fails
      */
-    private static ?\HTMLPurifier $purifier = null;
-
-    public static function html( ?string $text ) : string
+    public static function fetch( string $url ) : string
     {
-        if( !self::$purifier )
-        {
-            $config = \HTMLPurifier_Config::createDefault();
-            $config->set( 'Attr.AllowedFrameTargets', ['_blank', '_self'] );
-            $config->set( 'Cache.SerializerPath', sys_get_temp_dir() );
-            self::$purifier = new \HTMLPurifier( $config );
+        $response = Http::withOptions( self::safeHttp( $url ) )->get( $url );
+
+        if( !$response->successful() ) {
+            throw new Exception( sprintf( 'URL "%s" not accessible', $url ) );
         }
 
-        return self::$purifier->purify( (string) $text );
+        return $response->body();
     }
 
 
@@ -122,15 +140,16 @@ class Utils
      */
     public static function files( Page $page ) : Collection
     {
+        $seen = [];
         $lang = $page->lang;
         $lang2 = substr( $lang, 0, 2 );
-        $seen = [];
 
         foreach( (array) $page->content as $item )
         {
             foreach( (array) ( $item->files ?? [] ) as $id )
             {
-                if( !isset( $seen[$id] ) && ( $file = $page->files[$id] ?? null ) ) {
+                if( !isset( $seen[$id] ) && ( $file = $page->files[$id] ?? null ) )
+                {
                     $file->description = $file->description->{$lang} ?? $file->description->{$lang2} ?? null;
                     $seen[$id] = $file;
                 }
@@ -138,6 +157,52 @@ class Utils
         }
 
         return new Collection( $seen );
+    }
+
+
+    /**
+     * Sanitizes the given HTML text to ensure it is safe for output.
+     *
+     * @param string|null $text The HTML text to sanitize
+     * @return string The sanitized HTML text
+     */
+    public static function html( ?string $text ) : string
+    {
+        if( !self::$purifier )
+        {
+            $config = \HTMLPurifier_Config::createDefault();
+            $config->set( 'Attr.AllowedFrameTargets', ['_blank', '_self'] );
+            $config->set( 'Cache.SerializerPath', sys_get_temp_dir() );
+
+            self::$purifier = new \HTMLPurifier( $config );
+        }
+
+        return self::$purifier->purify( (string) $text );
+    }
+
+
+    /**
+     * Returns a file extension that is safe to serve from the storage disk.
+     *
+     * Neutralizes dangerous uploads/restores (e.g. .php, .html, .phar) by replacing
+     * extensions the web server may execute or serve as active content with "bin",
+     * so user-supplied files cannot run as code or script.
+     *
+     * @param string|null $ext File extension (without leading dot)
+     * @return string Safe file extension
+     */
+    public static function extension( ?string $ext ) : string
+    {
+        $ext = strtolower( (string) preg_replace( '/[^A-Za-z0-9]/', '', (string) $ext ) ) ?: 'bin';
+
+        return match( true ) {
+            in_array( $ext, ['htaccess', 'cgi', 'pht', 'phtml', 'phar', 'pl'], true ),
+            str_starts_with( $ext, 'php' ),
+            str_starts_with( $ext, 'asp' ),
+            str_starts_with( $ext, 'jsp' ),
+            str_contains( $ext, 'htm' ) => 'bin',
+            default => $ext,
+        };
     }
 
 
@@ -219,16 +284,12 @@ class Utils
             return false;
         }
 
-        // Strict: DNS lookup and reject private/reserved IPs
-        foreach( @dns_get_record( $parsed['host'], DNS_A + DNS_AAAA ) ?: [] as $r )
-        {
-            $ip = $r['ip'] ?? $r['ipv6'] ?? null;
-
-            if( $ip && filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE ) ) {
-                return true;
-            }
+        // In strict mode, require the host to resolve to an allowed IP address
+        if( $strict ) {
+            return self::resolve( $parsed['host'] ) !== null;
         }
-        return false;
+
+        return true;
     }
 
 
@@ -249,35 +310,41 @@ class Utils
      *
      * @param string $path The file path or URL
      * @return string The MIME type of the file
-     * @throws \RuntimeException If the file cannot be accessed or read
+     * @throws Exception If the file cannot be accessed or read
      */
     public static function mimetype( string $path ) : string
     {
         if( str_starts_with( $path, 'http') )
         {
-            if( !self::isValidUrl( $path ) ) {
-                throw new \RuntimeException( 'Invalid URL' );
-            }
-
-            $response = Http::withHeaders( ['Range' => 'bytes=0-299'] )->get( $path );
+            $response = Http::withHeaders( ['Range' => 'bytes=0-299'] )
+                ->withOptions( self::safeHttp( $path ) )
+                ->get( $path );
 
             if( !$response->successful() ) {
-                throw new \RuntimeException( 'URL not accessible' );
+                throw new Exception( 'URL not accessible' );
             }
 
             $buffer = $response->body();
         }
         else
         {
+            // Reject traversal sequences and null bytes before reading from the disk so a
+            // crafted path (e.g. "cms/1/../2/secret.jpg") can't probe files outside the
+            // intended directory and leak their mime type. Stored paths never contain ".."
+            // (see File::filename()).
+            if( str_contains( $path, '..' ) || str_contains( $path, "\0" ) ) {
+                throw new Exception( 'Invalid file path' );
+            }
+
             $stream = Storage::disk( config( 'cms.storage.disk', 'public' ) )->readStream( $path );
 
             if( !$stream ) {
-                throw new \RuntimeException( 'File not accessible' );
+                throw new Exception( 'File not accessible' );
             }
 
             if( ( $buffer = fread( $stream, 300 ) ) === false ) {
                 fclose($stream);
-                throw new \RuntimeException( 'File not readable' );
+                throw new Exception( 'File not readable' );
 
             }
 
@@ -287,10 +354,120 @@ class Utils
         $finfo = new \finfo( FILEINFO_MIME_TYPE );
 
         if( ( $mime = $finfo->buffer( $buffer ) ) === false ) {
-            throw new \RuntimeException( 'Failed to get mime type' );
+            throw new Exception( 'Failed to get mime type' );
         }
 
         return $mime;
+    }
+
+
+    /**
+     * Gets or sets the originating interface for content changes in the current request.
+     *
+     * Used to tag audit events with their origin: the GraphQL and MCP entry points set 'graphql'
+     * resp. 'mcp', everything else (console commands, scheduled jobs) defaults to 'cli'. Stored on
+     * the request instance rather than a static, so it neither leaks between requests under Octane
+     * nor needs a reset.
+     *
+     * @param string|null $source Origin to set for this request, or null to only read it
+     * @return string The current origin, defaulting to 'cli'
+     */
+    public static function source( ?string $source = null ) : string
+    {
+        $request = request();
+
+        if( $source !== null ) {
+            $request->attributes->set( 'cms-source', $source );
+        }
+
+        $value = $request->attributes->get( 'cms-source', 'cli' );
+        return is_string( $value ) ? $value : 'cli';
+    }
+
+
+    /**
+     * Resolves a hostname to an allowed IP address.
+     *
+     * Private and reserved ranges are accepted unless "cms.allow-internal" is
+     * disabled. Literal IP hosts are validated directly without a DNS lookup.
+     *
+     * @param string $host The hostname or IP address to resolve
+     * @return string|null The first allowed IP address, or null if none found
+     */
+    public static function resolve( string $host ) : ?string
+    {
+        $flags = config( 'cms.allow-internal', true )
+            ? 0 : FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE;
+
+        // Literal IP host: validate directly, a DNS lookup would never resolve it
+        if( filter_var( $host, FILTER_VALIDATE_IP ) ) {
+            return filter_var( $host, FILTER_VALIDATE_IP, $flags ) ? $host : null;
+        }
+
+        foreach( @dns_get_record( $host, DNS_A + DNS_AAAA ) ?: [] as $r )
+        {
+            $ip = $r['ip'] ?? $r['ipv6'] ?? null;
+
+            if( $ip && filter_var( $ip, FILTER_VALIDATE_IP, $flags ) ) {
+                return $ip;
+            }
+        }
+
+        // dns_get_record( DNS_A | DNS_AAAA ) misses CNAME-only hosts on some
+        // resolvers; fall back to the system resolver to avoid rejecting them.
+        foreach( @gethostbynamel( $host ) ?: [] as $ip )
+        {
+            if( filter_var( $ip, FILTER_VALIDATE_IP, $flags ) ) {
+                return $ip;
+            }
+        }
+
+        return null;
+    }
+
+
+    /**
+     * Returns Guzzle HTTP options that mitigate SSRF for the given URL.
+     *
+     * Validates the URL syntactically, resolves the host once and pins the
+     * connection to that IP (preventing DNS rebinding), and re-validates the
+     * host on every redirect. Private/reserved targets are allowed unless
+     * "cms.allow-internal" is disabled.
+     *
+     * @param string $url The http(s) URL that will be fetched
+     * @return array<string, mixed> Options to pass to Http::withOptions()
+     * @throws Exception If the URL is invalid or the host does not resolve
+     */
+    public static function safeHttp( string $url ) : array
+    {
+        // Syntactic validation only; the host is resolved once below and the
+        // result reused for both the allow-check and the connection pin.
+        if( !self::isValidUrl( $url, false ) ) {
+            throw new Exception( sprintf( 'Invalid or unsafe URL "%s"', $url ) );
+        }
+
+        $parsed = (array) parse_url( $url );
+        $host = (string) ( $parsed['host'] ?? '' );
+        $port = $parsed['port'] ?? ( ( $parsed['scheme'] ?? '' ) === 'https' ? 443 : 80 );
+
+        if( !( $ip = self::resolve( $host ) ) ) {
+            throw new Exception( sprintf( 'Host "%s" does not resolve to an allowed address', $host ) );
+        }
+
+        return [
+            'verify' => true,
+            'connect_timeout' => 10,
+            'allow_redirects' => [
+                'max' => 2,
+                'strict' => true,
+                'on_redirect' => function( $request, $response, \Psr\Http\Message\UriInterface $uri ) {
+                    if( !( $host = $uri->getHost() ) || !self::resolve( $host ) ) {
+                        throw new Exception( sprintf( 'Redirect to "%s" blocked', $host ) );
+                    }
+                },
+            ],
+            'curl' => [CURLOPT_RESOLVE => [$host . ':' . $port . ':' . $ip]],
+        ];
     }
 
 

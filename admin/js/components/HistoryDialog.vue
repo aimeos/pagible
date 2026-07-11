@@ -1,4 +1,4 @@
-/** @license LGPL, https://opensource.org/license/lgpl-3-0 */
+/** @license MIT, https://opensource.org/license/mit */
 
 <script>
 let diffWordsFn = null
@@ -7,13 +7,14 @@ import { mdiClose } from '@mdi/js'
 import { empty, stringify, url, srcset } from '../utils'
 
 const SECTION_NAMES = ['meta', 'config', 'content']
+const SKIP_FIELDS = ['previews']
 const EMPTY_SPACE = { value: '\u00a0', highlight: false }
 
 export default {
   props: {
     modelValue: { type: Boolean, required: true },
     readonly: { type: Boolean, required: false },
-    current: { type: Object, required: true },
+    current: { type: Object, default: null },
     load: { type: Function, required: true }
   },
 
@@ -34,7 +35,7 @@ export default {
   created() {
     this.labels = {
       data: this.$gettext('Fields'),
-      meta: this.$gettext('Meta tags'),
+      meta: this.$gettext('Meta data'),
       config: this.$gettext('Configuration'),
       content: this.$gettext('Content')
     }
@@ -58,6 +59,10 @@ export default {
       return this.latest && this.isModified(this.latest, this.current)
     },
 
+    hasPublishedLatest() {
+      return !!this.latest && (this.latest.published || this.latest.publish_at)
+    },
+
     versions() {
       return this.list.filter((v) => {
         return this.isModified(v, this.current) || v.published || v.publish_at
@@ -74,16 +79,21 @@ export default {
       const seen = {}
 
       for (const key in version.data) {
-        if (!SECTION_NAMES.includes(key)) seen[key] = true
+        if (!SECTION_NAMES.includes(key) && !SKIP_FIELDS.includes(key)) seen[key] = true
       }
       for (const key in later?.data) {
-        if (!SECTION_NAMES.includes(key)) seen[key] = true
+        if (!SECTION_NAMES.includes(key) && !SKIP_FIELDS.includes(key)) seen[key] = true
       }
       for (const key in seen) {
         if (JSON.stringify(version.data?.[key]) !== JSON.stringify(later?.data?.[key])
             && this.isChecked(idx, `data:${key}`)) {
           changes[key] = version.data[key]
         }
+      }
+
+      if ('path' in changes
+          && JSON.stringify(version.data?.previews) !== JSON.stringify(later?.data?.previews)) {
+        changes.previews = version.data?.previews
       }
 
       for (const section of ['meta', 'config']) {
@@ -120,9 +130,11 @@ export default {
     },
 
     addedBlock(item) {
+      const fields = this.buildFieldDiffs(this.getChangedFields({}, item?.data || {}))
+
       return {
         title: this.blockLabel(item),
-        fields: [{
+        fields: fields.length ? fields : [{
           label: '', removed: [EMPTY_SPACE],
           added: [{ value: this.$gettext('Added'), highlight: true }]
         }]
@@ -303,10 +315,12 @@ export default {
       const b = v2.data || {}
 
       for (const k in a) {
+        if (SKIP_FIELDS.includes(k)) continue
         if (JSON.stringify(a[k]) !== JSON.stringify(b[k]) && !(empty(a[k]) && empty(b[k]))) return true
       }
 
       for (const k in b) {
+        if (SKIP_FIELDS.includes(k)) continue
         if (!(k in a) && !empty(b[k])) return true
       }
 
@@ -318,7 +332,14 @@ export default {
     },
 
     removedBlock(item) {
-      return { title: this.blockLabel(item), fields: [{ label: '', removed: [{ value: this.$gettext('Removed'), highlight: true }], added: [EMPTY_SPACE] }] }
+      const fields = this.buildFieldDiffs(this.getChangedFields(item?.data || {}, {}))
+
+      return {
+        title: this.blockLabel(item),
+        fields: fields.length ? fields : [{
+          label: '', removed: [{ value: this.$gettext('Removed'), highlight: true }], added: [EMPTY_SPACE]
+        }]
+      }
     },
 
     reset() {
@@ -334,11 +355,11 @@ export default {
       const dataB = {}
 
       for (const k in a) {
-        if (!SECTION_NAMES.includes(k)) dataA[k] = a[k]
+        if (!SECTION_NAMES.includes(k) && !SKIP_FIELDS.includes(k)) dataA[k] = a[k]
       }
 
       for (const k in b) {
-        if (!SECTION_NAMES.includes(k)) dataB[k] = b[k]
+        if (!SECTION_NAMES.includes(k) && !SKIP_FIELDS.includes(k)) dataB[k] = b[k]
       }
 
       const dataFields = this.getChangedFields(dataA, dataB)
@@ -473,7 +494,7 @@ export default {
           </v-timeline-item>
 
           <v-timeline-item
-            v-if="!loading && !(hasCurrentChanges || versions.length)"
+            v-if="!loading && !(hasCurrentChanges || versions.length || hasPublishedLatest)"
             dot-color="grey-lighten-1"
             width="100%"
             size="small"
@@ -569,7 +590,7 @@ export default {
                       <v-img
                         v-if="file.mime?.startsWith('image/')"
                         :srcset="srcset(file.previews)"
-                        :src="url(file.path)"
+                        :src="url(Object.values(file.previews)[0] ?? file.path)"
                         :alt="file.name"
                         draggable="false"
                         loading="lazy"
@@ -618,6 +639,23 @@ export default {
                   />
                 </div>
               </v-card-text>
+            </v-card>
+          </v-timeline-item>
+
+          <v-timeline-item
+            v-if="!loading && hasPublishedLatest"
+            :dot-color="latest.published ? 'success' : 'grey-lighten-1'"
+            :class="{ publish: latest.publish_at }"
+            width="100%"
+            size="small"
+          >
+            <v-card :elevation="2">
+              <v-card-title>
+                {{ formatDate(latest.publish_at || latest.created_at) }}
+              </v-card-title>
+              <v-card-subtitle>
+                {{ latest.editor }}
+              </v-card-subtitle>
             </v-card>
           </v-timeline-item>
 
@@ -716,7 +754,7 @@ export default {
                       <v-img
                         v-if="file.mime?.startsWith('image/')"
                         :srcset="srcset(file.previews)"
-                        :src="url(file.path)"
+                        :src="url(Object.values(file.previews)[0] ?? file.path)"
                         :alt="file.name"
                         draggable="false"
                         loading="lazy"
@@ -896,6 +934,11 @@ h4.section-header:first-child {
   max-height: 150px;
   display: flex;
   margin: 4px;
+}
+
+.v-timeline-item .file .v-img {
+  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAIAQMAAAD+wSzIAAAABlBMVEX////Ly8vsgL9iAAAADklEQVQI12P4AIX8EAgALgAD/aNpbtEAAAAASUVORK5CYII=);
+  background-repeat: repeat;
 }
 
 .v-timeline-item .file.added {

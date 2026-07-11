@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @license LGPL, https://opensource.org/license/lgpl-3-0
+ * @license MIT, https://opensource.org/license/mit
  */
 
 
@@ -100,12 +100,18 @@ if( !function_exists( 'cmsdata' ) )
     function cmsdata( \Aimeos\Cms\Models\Page $page, object $item ) : array
     {
         if( $item instanceof \Aimeos\Cms\Models\Element ) {
-            $item = (object) ['id' => $item->id, 'type' => $item->type, 'name' => $item->name, 'data' => $item->data];
+            $item = (object) ['id' => cms($item, 'id'), 'type' => cms($item, 'type'), 'name' => cms($item, 'name'), 'data' => cms($item, 'data')];
         }
 
         $data = ['files' => cms($page, 'files')];
 
-        if( $action = $item->data->action ?? null ) {
+        // Resolve the action handler from the trusted schema by element type only. The handler
+        // must never be taken from the stored element data, which a content author could set to
+        // an arbitrary callable that app()->call() would invoke server-side (RCE).
+        $fields = \Aimeos\Cms\Schema::schemas( section: 'content' )[$item->type ?? '']['fields'] ?? [];
+        $action = ( $fields['action']['type'] ?? null ) === 'hidden' ? ( $fields['action']['value'] ?? null ) : null;
+
+        if( $action ) {
             $data['action'] = app()->call( $action, ['page' => $page, 'item' => $item] );
         }
 
@@ -126,6 +132,84 @@ if( !function_exists( 'cmsfile' ) )
     function cmsfile( \Aimeos\Cms\Models\Page $page, string $fileId ) : ?object
     {
         return cms( cms( $page, 'files' ), $fileId );
+    }
+}
+
+
+if( !function_exists( 'cmshashes' ) )
+{
+    /**
+     * Build the space-separated CSP hash source list for the inline blocks stored
+     * at the given config path on the page and its ancestors.
+     *
+     * Each inline <style>/<script> the layout emits from this same config path is
+     * allowed by its SHA-256 hash, so pages need no per-request CSP nonce and stay
+     * byte-identical and cacheable. The layout MUST emit the block content raw and
+     * with no surrounding whitespace inside the tags, otherwise the browser-computed
+     * hash will not match the value returned here.
+     *
+     * @param \Aimeos\Cms\Models\Page $page The CMS page
+     * @param string $path Config path of the inline text, e.g. "config.styles.data.text"
+     * @return string Space-separated 'sha256-...' source expressions for the CSP
+     */
+    function cmshashes( \Aimeos\Cms\Models\Page $page, string $path ) : string
+    {
+        return $page->ancestorsAndSelf
+            ->map( fn( $item ) => cms( $item, $path ) )
+            ->filter()
+            ->map( fn( $text ) => "'sha256-" . base64_encode( hash( 'sha256', (string) $text, true ) ) . "'" )
+            ->implode( ' ' );
+    }
+}
+
+
+if( !function_exists( 'cmsjson' ) )
+{
+    /**
+     * Encode a value as JSON for safe output within a <script> block (e.g. JSON-LD).
+     *
+     * Unlike Js::from() the result is valid JSON (double quoted), and JSON_HEX_TAG
+     * prevents a value containing "</script>" from breaking out of the script element.
+     *
+     * @param mixed $value The value to encode
+     * @return string The JSON encoded value, safe for embedding in a <script> block
+     */
+    function cmsjson( mixed $value ) : string
+    {
+        return (string) json_encode( $value, JSON_HEX_TAG | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE );
+    }
+}
+
+
+if( !function_exists( 'cmsplain' ) )
+{
+    /**
+     * Reduces Markdown source to readable plain text *without parsing it* - a light
+     * regex strip of the common syntax (emphasis, inline code, links, images, headings,
+     * quote and ordered/'*' list markers; '-' and '+' bullets are kept). Used for the
+     * FAQ JSON-LD answer text, where a full
+     * Markdown -> HTML -> strip_tags round-trip would be wasteful and the structured
+     * data only needs prose. Best-effort: unusual Markdown may leave minor artifacts.
+     *
+     * @param string|null $text Markdown source
+     * @return string Collapsed plain text
+     */
+    function cmsplain( ?string $text ) : string
+    {
+        $replacements = [
+            '/```[a-z0-9]*\s*|```/i'     => '',     // fenced code markers
+            '/!\[[^\]]*\]\([^)]*\)/'     => '',     // images
+            '/\[([^\]]*)\]\([^)]*\)/'    => '$1',   // links -> link text
+            '/^\s{0,3}#{1,6}\s+/m'       => '',     // ATX headings
+            '/^\s*(?:\*|\d+\.)\s+/m'     => '',     // '*' and ordered list markers ('-'/'+' bullets kept)
+            '/^\s*>\s?/m'                => '',     // block quotes
+            '/(\*{1,3}|_{1,3})(.+?)\1/s' => '$2',   // bold / italic
+            '/`([^`]+)`/'                => '$1',   // inline code
+        ];
+
+        $text = preg_replace( array_keys( $replacements ), array_values( $replacements ), (string) $text );
+
+        return trim( (string) preg_replace( '/\s+/', ' ', (string) $text ) );
     }
 }
 
@@ -162,10 +246,11 @@ if( !function_exists( 'cmsroute' ) )
     function cmsroute( \Aimeos\Cms\Models\Page $page ) : string
     {
         if( \Aimeos\Cms\Permission::can( 'page:view', \Illuminate\Support\Facades\Auth::user() ) ) {
-            return $page->latest?->data->to ?? null ?: route( 'cms.page', ['path' => $page->latest?->data->path ?? $page->path] );
+            $to = $page->latest?->data->to ?? null;
+            return $to ? url( $to ) : route( 'cms.page', ['path' => $page->latest?->data->path ?? $page->path] );
         }
 
-        return $page->to ?: route( 'cms.page', ['path' => $page->path] );
+        return $page->to ? url( $page->to ) : route( 'cms.page', ['path' => $page->path] );
     }
 }
 
@@ -237,6 +322,37 @@ if( !function_exists( 'cmsurl' ) )
 }
 
 
+if( !function_exists( 'cmslink' ) )
+{
+    /**
+     * Sanitizes a content-provided URL for safe use in an href/src attribute.
+     *
+     * Relative paths, fragments and query links (no scheme) are returned unchanged. URLs with a
+     * scheme are only allowed for http, https, mailto and tel; dangerous schemes such as
+     * javascript:, vbscript: and data: are rejected (returning an empty string) so they cannot
+     * execute when the link is followed. Whitespace/control characters are ignored during scheme
+     * detection because browsers strip them (e.g. "java\tscript:").
+     *
+     * @param string|null $url The URL to sanitize
+     * @return string The original URL if safe, otherwise an empty string
+     */
+    function cmslink( ?string $url ) : string
+    {
+        if( !$url ) {
+            return '';
+        }
+
+        $clean = preg_replace( '/[\x00-\x20]+/', '', $url );
+
+        if( preg_match( '#^([a-z][a-z0-9+.\-]*):#i', (string) $clean, $m ) && !in_array( strtolower( $m[1] ), ['http', 'https', 'mailto', 'tel'], true ) ) {
+            return '';
+        }
+
+        return $url;
+    }
+}
+
+
 if( !function_exists( 'cmsviews' ) )
 {
     /**
@@ -252,8 +368,14 @@ if( !function_exists( 'cmsviews' ) )
             return ['cms::invalid'];
         }
 
-        $type = str_contains( $item->type, '::' ) ? $item->type : 'cms::' . $item->type;
+        $type = (string) $item->type;
 
-        return [$type, 'cms::invalid'];
+        [$theme, $type] = str_contains( $type, '::' )
+            ? explode( '::', $type, 2 )
+            : [cms( $page, 'theme' ) ?: 'cms', $type];
+
+        return $theme === 'cms'
+            ? ['cms::' . $type, 'cms::invalid']
+            : [$theme . '::' . $type, 'cms::' . $type, 'cms::invalid'];
     }
 }

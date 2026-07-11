@@ -174,7 +174,7 @@ pre:has(code[class*="language-"]) {
     transition: box-shadow 0.3s ease, border-color 0.3s ease;
     position: relative;
     overflow: hidden;
-    padding: 1rem;
+    padding: 2rem;
 }
 
 pre:has(code[class*="language-"]):hover {
@@ -184,10 +184,8 @@ pre:has(code[class*="language-"]):hover {
 
 pre code[class*=language-] {
     color: var(--pico-code-color);
-    background-color: var(--pico-code-background-color);
     font-family: var(--pico-font-family-monospace);
     overflow-x: auto;
-    padding: 1rem;
 }
 
 
@@ -230,22 +228,29 @@ footer.cms-content .cards .title {
     font-size: calc(var(--pico-font-size) * 0.75);
     font-weight: 700;
     letter-spacing: 0.05em;
-    margin-bottom: 1.5rem;
     text-transform: uppercase;
 }
 
-footer.cms-content .cards .text {
+footer.cms-content .cards :is(.text, .cms-text) {
     color: #FFFFFFCC;
     font-size: calc(var(--pico-font-size) * 0.75);
     font-weight: 300;
 }
 
-footer.cms-content .cards .text p {
+footer.cms-content .cards :is(.text, .cms-text) p {
     line-height: 1.75;
     margin: 0;
 }
 
-footer.cms-content .cards .text a:hover {
+footer.cms-content .cards :is(.text, .cms-text) a,
+footer.cms-content .cards :is(.text, .cms-text) a:visited,
+footer.cms-content .cards :is(.text, .cms-text) a:hover,
+footer.cms-content .cards :is(.text, .cms-text) a:focus,
+footer.cms-content .cards :is(.text, .cms-text) a:active {
+    text-decoration: none;
+}
+
+footer.cms-content .cards :is(.text, .cms-text) a:hover {
     color: var(--pico-contrast);
 }
 
@@ -317,4 +322,53 @@ footer.bottom .brand img {
     footer.cms-content .cards .card-list {
         grid-template-columns: repeat(4, 1fr);
     }
+}
+
+/* Content tables (markdown/HTML) — mirrors table.css .table-responsive */
+.cms-content table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.cms-content th,
+.cms-content td {
+    padding: calc(var(--pico-spacing) / 2) var(--pico-spacing);
+    border-bottom: 1px solid var(--pico-contrast-border);
+    vertical-align: middle;
+}
+
+.cms-content th {
+    font-weight: 500;
+    font-size: calc(var(--pico-font-size) * 0.85);
+    letter-spacing: 0.04em;
+    color: var(--pico-contrast);
+    text-transform: uppercase;
+    text-align: center;
+}
+
+.cms-content th:first-child {
+    text-align: start;
+}
+
+.cms-content td {
+    text-align: center;
+}
+
+.cms-content th > *:first-child,
+.cms-content td > *:first-child {
+    margin-top: 0;
+}
+
+.cms-content th > *:last-child,
+.cms-content td > *:last-child {
+    margin-bottom: 0;
+}
+
+.cms-content th img {
+    display: block;
+    margin-top: 0.75rem;
+    margin-bottom: 0.75rem;
+    height: 100%;
+    width: 100%;
 }

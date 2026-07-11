@@ -1,12 +1,13 @@
 <?php
 
 /**
- * @license LGPL, https://opensource.org/license/lgpl-3-0
+ * @license MIT, https://opensource.org/license/mit
  */
 
 
 namespace Aimeos\Cms\Models;
 
+use Aimeos\Cms\Utils;
 use Aimeos\Cms\Concerns\HasChanged;
 use Aimeos\Cms\Concerns\Tenancy;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -18,6 +19,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Http\UploadedFile;
+use Intervention\Image\Interfaces\DriverInterface;
 use Intervention\Image\ImageManager;
 use Laravel\Scout\Searchable;
 
@@ -54,7 +56,7 @@ class File extends Base
 
 
     /** @var list<string> Columns for eager-loading file relations */
-    public const SELECT_COLS = ['cms_files.id', 'name', 'mime', 'path', 'previews', 'description', 'transcription'];
+    public const SELECT_COLS = ['cms_files.id', 'cms_files.latest_id', 'name', 'mime', 'path', 'previews', 'description', 'transcription'];
 
 
     /**
@@ -156,34 +158,34 @@ class File extends Base
         $this->path = null;
 
         if( !$upload->isValid() ) {
-            throw new \RuntimeException( 'Invalid file upload' );
+            throw new \Aimeos\Cms\Exception( 'Invalid file upload' );
         }
 
         $disk = Storage::disk( config( 'cms.disk', 'public' ) );
         $dir = rtrim( 'cms/' . \Aimeos\Cms\Tenancy::value(), '/' );
 
-        $name = $this->filename( $upload->getClientOriginalName() );
+        $name = $this->filename( $upload->getClientOriginalName(), $upload->guessExtension() );
         $path = $dir . '/' . $name;
 
         if( $upload->getMimeType() === 'image/svg+xml' )
         {
             $content = file_get_contents( $upload->getRealPath() );
 
-            if( !( $content = \Aimeos\Cms\Utils::cleanSvg( $content ) ) ) {
+            if( !( $content = Utils::cleanSvg( $content ) ) ) {
                 $msg = 'Invalid file "%s"';
-                throw new \RuntimeException( sprintf( $msg, $upload->getClientOriginalName() ) );
+                throw new \Aimeos\Cms\Exception( sprintf( $msg, $upload->getClientOriginalName() ) );
             }
 
             if( !$disk->put( $path, $content ) ) {
                 $msg = 'Unable to store file "%s" to "%s"';
-                throw new \RuntimeException( sprintf( $msg, $upload->getClientOriginalName(), $path ) );
+                throw new \Aimeos\Cms\Exception( sprintf( $msg, $upload->getClientOriginalName(), $path ) );
             }
         }
         else
         {
             if( !$disk->putFileAs( $dir, $upload, $name ) ) {
                 $msg = 'Unable to store file "%s" to "%s"';
-                throw new \RuntimeException( sprintf( $msg, $upload->getClientOriginalName(), $path ) );
+                throw new \Aimeos\Cms\Exception( sprintf( $msg, $upload->getClientOriginalName(), $path ) );
             }
         }
 
@@ -208,8 +210,17 @@ class File extends Base
         $manager = ImageManager::withDriver( '\\Intervention\\Image\\Drivers\\' . ucFirst( config( 'cms.image.driver', 'gd' ) ) . '\Driver' );
         $ext = $manager->driver()->supports( 'image/webp' ) ? 'webp' : 'jpg';
 
-        if( is_string( $resource ) && \Aimeos\Cms\Utils::isValidUrl( $resource ) ) {
-            $resource = Http::withOptions( ['stream' => true] )->get( $resource )->toPsrResponse()->getBody()->detach();
+        if( is_string( $resource ) && Utils::isValidUrl( $resource ) ) {
+            $resource = $this->fetchUrl( $resource, $manager->driver() );
+
+            if( !is_resource( $resource ) ) {
+                return $this;
+            }
+
+            // SVG images can't be rasterized, so store the SVG itself as preview
+            if( in_array( $this->mime, ['image/svg+xml', 'application/gzip'] ) ) {
+                return $this->addSvgPreview( $resource );
+            }
         }
 
         if( $resource instanceof UploadedFile ) {
@@ -229,17 +240,26 @@ class File extends Base
         $this->previews = [];
         $map = [];
 
-        foreach( $sizes as $size )
+        try
         {
-            $image = ( clone $file )->scaleDown( $size['width'] ?? null, $size['height'] ?? null );
-            $ptr = $image->encodeByExtension( $ext, quality: 90 )->toFilePointer();
-            $path = $dir . '/' . $this->filename( $filename, $ext, $size );
+            foreach( $sizes as $size )
+            {
+                $image = ( clone $file )->scaleDown( $size['width'] ?? null, $size['height'] ?? null );
+                $ptr = $image->encodeByExtension( $ext, quality: 90 )->toFilePointer();
+                $path = $dir . '/' . $this->filename( $filename, $ext, $size );
 
-            if( $disk->put( $path, $ptr, 'public' ) ) {
+                if( !$disk->put( $path, $ptr ) ) {
+                    throw new \Aimeos\Cms\Exception( sprintf( 'Unable to store preview "%s"', $path ) );
+                }
+
                 $map[$image->width()] = $path;
+                unset( $image, $ptr );
             }
-
-            unset( $image, $ptr );
+        }
+        catch( \Throwable $t )
+        {
+            $disk->delete( array_values( $map ) );
+            throw $t;
         }
 
         $this->previews = $map;
@@ -359,7 +379,7 @@ class File extends Base
      */
     public function removeFile() : self
     {
-        if( $this->path && str_starts_with( $this->path, 'http' ) ) {
+        if( $this->path && !str_starts_with( $this->path, 'http' ) ) {
             Storage::disk( config( 'cms.disk', 'public' ) )->delete( $this->path );
         }
 
@@ -507,6 +527,88 @@ class File extends Base
 
 
     /**
+     * Stores a downloaded SVG image locally and uses it as the preview.
+     *
+     * SVG images can't be rasterized into webp/jpg previews, so the sanitized
+     * SVG itself is stored on the disk and referenced as the preview at the
+     * largest configured preview width. Gzip-compressed SVGZ content is
+     * decompressed so the stored preview is a plain, browser-renderable SVG.
+     * Returns without a preview if the content isn't a valid SVG.
+     *
+     * @param resource $resource Seekable file pointer to the downloaded SVG content
+     * @return self The current instance for method chaining
+     */
+    protected function addSvgPreview( $resource ) : self
+    {
+        $raw = (string) stream_get_contents( $resource );
+
+        // decompress SVGZ so the stored preview is a plain, browser-renderable SVG
+        if( str_starts_with( $raw, "\x1f\x8b" ) ) {
+            $raw = (string) gzdecode( $raw );
+        }
+
+        if( !( $content = Utils::cleanSvg( $raw ) ) ) {
+            return $this;
+        }
+
+        $disk = Storage::disk( config( 'cms.disk', 'public' ) );
+        $dir = rtrim( 'cms/' . \Aimeos\Cms\Tenancy::value(), '/' );
+        $path = $dir . '/' . $this->filename( $this->name ?: 'image.svg', 'svg' );
+
+        if( !$disk->put( $path, $content ) ) {
+            throw new \Aimeos\Cms\Exception( sprintf( 'Unable to store preview "%s"', $path ) );
+        }
+
+        $widths = array_filter( array_column( config( 'cms.image.preview-sizes', [[]] ), 'width' ) );
+
+        $this->mime = 'image/svg+xml';
+        $this->previews = [( $widths ? max( $widths ) : 1920 ) => $path];
+        return $this;
+    }
+
+
+    /**
+     * Fetches a URL as stream, detects MIME from first 4KB, downloads to tmpfile for images.
+     *
+     * @param string $url URL to fetch
+     * @param DriverInterface $driver Image driver for format support check
+     * @return resource|null Seekable tmpfile resource or null if not an image
+     */
+    protected function fetchUrl( string $url, DriverInterface $driver )
+    {
+        $response = Http::withOptions( Utils::safeHttp( $url ) + ['stream' => true] )->get( $url );
+
+        if( !$response->successful() ) {
+            throw new \Aimeos\Cms\Exception( sprintf( 'Failed to download "%s"', $url ) );
+        }
+
+        $body = $response->toPsrResponse()->getBody();
+        $bytes = $body->read( 4096 );
+
+        $this->mime = ( new \finfo( FILEINFO_MIME_TYPE ) )->buffer( $bytes ) ?: 'application/octet-stream';
+
+        // SVG (incl. gzip-compressed SVGZ) isn't supported by the image drivers but is stored as preview itself
+        if( !in_array( $this->mime, ['image/svg+xml', 'application/gzip'] ) && !$driver->supports( $this->mime ) )
+        {
+            $body->close();
+            return null;
+        }
+
+        $tmp = tmpfile();
+        fwrite( $tmp, $bytes );
+
+        while( !$body->eof() ) {
+            fwrite( $tmp, $body->read( 1048576 ) );
+        }
+
+        $body->close();
+        fseek( $tmp, 0 );
+
+        return $tmp;
+    }
+
+
+    /**
      * Returns the new name for the uploaded file
      *
      * @param string $filename Name of the file
@@ -518,7 +620,7 @@ class File extends Base
     {
         $regex = '/([[:cntrl:]]|[[:blank:]]|\/|\.)+/smu';
 
-        $ext = $ext ?: preg_replace( $regex, '-', pathinfo( $filename, PATHINFO_EXTENSION ) );
+        $ext = Utils::extension( $ext ?: pathinfo( $filename, PATHINFO_EXTENSION ) );
         $name = preg_replace( $regex, '', pathinfo( $filename, PATHINFO_FILENAME ) );
 
         $hash = substr( md5( microtime(true) . getmypid() . rand(0, 1000) ), -4 );

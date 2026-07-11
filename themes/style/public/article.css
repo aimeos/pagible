@@ -1,0 +1,29 @@
+/**
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+.article .cover {
+    display: block;
+    margin: 2rem 0;
+    border-radius: calc(var(--pico-border-radius) * 3);
+    overflow: hidden;
+    background: var(--pico-muted-background-color);
+    box-shadow: 0 1.5625rem 3.125rem -0.75rem var(--pico-box-shadow);
+}
+
+.article .cover source,
+.article .cover img {
+    width: 100%;
+}
+
+.article .text {
+    line-height: 1.75;
+    font-weight: 400;
+    color: var(--pico-muted-color);
+    font-size: 1.125rem;
+    letter-spacing: 0;
+}
+
+.article .text:last-child {
+    margin-bottom: 0;
+}

@@ -54,37 +54,14 @@ describe('PageList', () => {
     cy.get('.page-list-items-stub').should('exist')
   })
 
-  it('shows AI prompt textarea when page:synthesize permission is granted', () => {
-    mountPageList({ 'page:synthesize': true })
+  it('shows AI prompt textarea when page:chat permission is granted', () => {
+    mountPageList({ 'page:chat': true })
     cy.get('.prompt').should('exist')
   })
 
-  it('hides AI prompt textarea without page:synthesize permission', () => {
+  it('hides AI prompt textarea without page:chat permission', () => {
     mountPageList({})
     cy.get('.prompt').should('not.exist')
-  })
-
-  it('same() returns false for null inputs', () => {
-    mountPageList().then(() => {
-      const vm = Cypress.vueWrapper.findComponent(PageList).vm
-      expect(vm.same(null, {})).to.be.false
-      expect(vm.same({}, null)).to.be.false
-    })
-  })
-
-  it('same() returns true for equal objects', () => {
-    mountPageList().then(() => {
-      const vm = Cypress.vueWrapper.findComponent(PageList).vm
-      expect(vm.same({ a: 1, b: 2 }, { a: 1, b: 2 })).to.be.true
-    })
-  })
-
-  it('same() returns false for different objects', () => {
-    mountPageList().then(() => {
-      const vm = Cypress.vueWrapper.findComponent(PageList).vm
-      expect(vm.same({ a: 1 }, { a: 2 })).to.be.false
-      expect(vm.same({ a: 1 }, { a: 1, b: 2 })).to.be.false
-    })
   })
 
   it('initializes filter from settings', () => {

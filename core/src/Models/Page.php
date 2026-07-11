@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @license LGPL, https://opensource.org/license/lgpl-3-0
+ * @license MIT, https://opensource.org/license/mit
  */
 
 
@@ -138,6 +138,25 @@ class Page extends Base
      */
     protected $fillable = [
         'related_id',
+        'tag',
+        'lang',
+        'path',
+        'domain',
+        'to',
+        'name',
+        'title',
+        'type',
+        'theme',
+        'status',
+        'cache',
+    ];
+
+    /**
+     * The attributes that are returned by toArray()
+     *
+     * @var list<string>
+     */
+    protected $visible = [
         'tag',
         'lang',
         'path',
@@ -336,13 +355,19 @@ class Page extends Base
 
 
     /**
-     * Tests if node has children.
+     * Returns the number of descendants below this node.
      *
-     * @return bool TRUE if node has children, FALSE if not
+     * Derived from the nested set bounds without a query: the range [lft, rgt] spans the node
+     * and all its descendants at two slots each, so the count excludes the node itself. Zero for
+     * a leaf, so it still reads as "no children" where a boolean was expected, while a recursive
+     * bulk edit can size itself ("apply to N pages") from it. An unsaved node (null bounds) has no
+     * descendants - the ?? 0 keeps that case from doing null arithmetic.
+     *
+     * @return int Number of descendant pages
      */
-    public function getHasAttribute() : bool
+    public function getHasAttribute() : int
     {
-        return $this->getRgt() > $this->getLft() + 1;
+        return intdiv( ( $this->getRgt() ?? 0 ) - ( $this->getLft() ?? 0 ) - 1, 2 );
     }
 
 
@@ -440,11 +465,20 @@ class Page extends Base
      */
     public function publish( Version $version ) : self
     {
-        $version->relationLoaded( 'files' ) ?: $version->load( ['files' => fn( $q ) => $q->select( 'cms_files.id' )] );
-        $version->relationLoaded( 'elements' ) ?: $version->load( ['elements' => fn( $q ) => $q->select( 'cms_elements.id' )] );
+        $fileIds = $version->files()->pluck( 'cms_files.id' )->all();
+        $elementIds = $version->elements()->pluck( 'cms_elements.id' )->all();
 
-        $this->files()->sync( $version->getRelation( 'files' )->modelKeys() );
-        $this->elements()->sync( $version->getRelation( 'elements' )->modelKeys() );
+        $this->files()->sync( $fileIds );
+        $this->elements()->sync( $elementIds );
+
+        if( $fileIds ) {
+            File::whereIn( 'id', $fileIds )->with( 'latest' )->get()
+                ->each( fn( $f ) => $f->latest && !$f->latest->published ? $f->publish( $f->latest ) : null );
+        }
+        if( $elementIds ) {
+            Element::whereIn( 'id', $elementIds )->with( 'latest' )->get()
+                ->each( fn( $e ) => $e->latest && !$e->latest->published ? $e->publish( $e->latest ) : null );
+        }
 
         $this->forceFill( array_intersect_key( (array) $version->data, array_flip( $this->getFillable() ) ) );
         $this->content = $version->aux->content ?? [];

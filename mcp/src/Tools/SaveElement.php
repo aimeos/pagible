@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @license LGPL, https://opensource.org/license/lgpl-3-0
+ * @license MIT, https://opensource.org/license/mit
  */
 
 
@@ -30,7 +30,7 @@ class SaveElement extends Tool
     public function handle( Request $request ): \Laravel\Mcp\ResponseFactory
     {
         if( !Permission::can( 'element:save', $request->user() ) ) {
-            throw new \Exception( 'Insufficient permissions' );
+            throw new \Aimeos\Cms\Exception( 'Insufficient permissions' );
         }
 
         $v = $request->validate([
@@ -38,16 +38,15 @@ class SaveElement extends Tool
             'name' => 'string|max:100',
             'lang' => 'nullable|string|max:5',
             'data' => 'array',
-            'files' => 'array',
-            'files.*' => 'string|max:36',
-            'latestId' => 'string|max:36',
+            'latest_id' => 'required|string|max:36',
         ], [
             'id.required' => 'You must specify the ID of the element to save.',
+            'latest_id.required' => 'You must pass the latest_id returned by get-element, add-element, or a previous save-element so concurrent edits are detected.',
         ] );
 
         try {
-            $input = array_diff_key( $v, array_flip( ['id', 'files', 'latestId'] ) );
-            $element = Resource::saveElement( $v['id'], $input, $request->user(), $v['files'] ?? null, $v['latestId'] ?? null );
+            $input = array_diff_key( $v, array_flip( ['id', 'latest_id'] ) );
+            $element = Resource::saveElement( $v['id'], $input, $request->user(), $v['latest_id'] ?? null );
         } catch( ModelNotFoundException $e ) {
             return Response::structured( ['error' => 'Element not found.'] );
         }
@@ -56,6 +55,7 @@ class SaveElement extends Tool
 
         return Response::structured( [
             'id' => $element->id,
+            'latest_id' => $element->latest_id,
             'type' => $data['type'] ?? '',
             'name' => $data['name'] ?? '',
             'lang' => $element->latest?->lang,
@@ -84,11 +84,9 @@ class SaveElement extends Tool
                 ->description( 'ISO language code for the version.' ),
             'data' => $schema->object()
                 ->description( 'Element data as a JSON object. Fields depend on the element type. Use get-element to see the current type and get-schemas for available fields.' ),
-            'files' => $schema->array()
-                ->items( $schema->string() )
-                ->description( 'Array of file UUIDs to attach to the version.' ),
-            'latestId' => $schema->string()
-                ->description( 'Version ID the caller last retrieved. Enables conflict detection and three-way merge when another editor has saved in the meantime.' ),
+            'latest_id' => $schema->string()
+                ->description( 'Required. The latest_id value returned by get-element, add-element, or your previous save-element for this element. Ensures edits made by another editor in the meantime are merged instead of overwritten.' )
+                ->required(),
         ];
     }
 

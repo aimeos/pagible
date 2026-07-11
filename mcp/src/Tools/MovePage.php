@@ -1,18 +1,16 @@
 <?php
 
 /**
- * @license LGPL, https://opensource.org/license/lgpl-3-0
+ * @license MIT, https://opensource.org/license/mit
  */
 
 
 namespace Aimeos\Cms\Tools;
 
-use Aimeos\Cms\Utils;
 use Aimeos\Cms\Resource;
 use Aimeos\Cms\Permission;
-use Aimeos\Cms\Models\Page;
-use Aimeos\Nestedset\NestedSet;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Attributes\Name;
 use Laravel\Mcp\Server\Attributes\Title;
@@ -32,7 +30,7 @@ class MovePage extends Tool
     public function handle( Request $request ): \Laravel\Mcp\ResponseFactory
     {
         if( !Permission::can( 'page:move', $request->user() ) ) {
-            throw new \Exception( 'Insufficient permissions' );
+            throw new \Aimeos\Cms\Exception( 'Insufficient permissions' );
         }
 
         $v = $request->validate([
@@ -43,26 +41,13 @@ class MovePage extends Tool
             'id.required' => 'You must specify the ID of the page to move.',
         ] );
 
-        /** @var Page|null $page */
-        $page = Page::withTrashed()->select(
-            'id', 'tenant_id', 'parent_id', 'path', 'domain', 'name', 'editor',
-            'latest_id', 'deleted_at', NestedSet::LFT, NestedSet::RGT, NestedSet::DEPTH
-        )->find( $v['id'] );
-
-        if( !$page ) {
+        try {
+            $page = Resource::movePage( $v['id'], $v['before_id'] ?? null, $v['parent_id'] ?? null, $request->user() );
+        } catch( ModelNotFoundException $e ) {
             return Response::structured( ['error' => 'Page not found.'] );
         }
 
-        return Utils::lockedTransaction( function() use ( $page, $v, $request ) {
-
-            $page->editor = Utils::editor( $request->user() );
-
-            Resource::position( $page, $v['before_id'] ?? null, $v['parent_id'] ?? null, true );
-
-            Page::withoutSyncingToSearch( fn() => $page->save() );
-
-            return Response::structured( $page->toArray() + ['url' => route( 'cms.page', ['path' => $page->path] )] );
-        } );
+        return Response::structured( ['id' => $page->id, 'parent_id' => $page->parent_id] + $page->toArray() + ['url' => route( 'cms.page', ['path' => $page->path] )] );
     }
 
 

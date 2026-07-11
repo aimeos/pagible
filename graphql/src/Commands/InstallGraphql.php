@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @license LGPL, https://opensource.org/license/lgpl-3-0
+ * @license MIT, https://opensource.org/license/mit
  */
 
 
@@ -110,12 +110,24 @@ class InstallGraphql extends Command
             \Illuminate\Cookie\Middleware\EncryptCookies::class,
             \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
             \Illuminate\Session\Middleware\StartSession::class,
+            \Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class,
         ";
 
         if( strpos( $content, '\Illuminate\Session\Middleware\StartSession::class' ) === false )
         {
             $content = str_replace( "'middleware' => [", "'middleware' => [" . $string, $content );
-            $this->line( sprintf( '  Added EncryptCookies/AddQueuedCookiesToResponse/StartSession middlewares to [%1$s]' . PHP_EOL, $filename ) );
+            $this->line( sprintf( '  Added EncryptCookies/AddQueuedCookiesToResponse/StartSession/ValidateCsrfToken middlewares to [%1$s]' . PHP_EOL, $filename ) );
+            $done++;
+        }
+        elseif( strpos( $content, 'ValidateCsrfToken::class' ) === false && strpos( $content, 'VerifyCsrfToken::class' ) === false )
+        {
+            // Session middleware was added by an earlier version without CSRF protection
+            $content = str_replace(
+                "\Illuminate\Session\Middleware\StartSession::class,",
+                "\Illuminate\Session\Middleware\StartSession::class,\n            \Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class,",
+                $content
+            );
+            $this->line( sprintf( '  Added ValidateCsrfToken middleware to [%1$s]' . PHP_EOL, $filename ) );
             $done++;
         }
 

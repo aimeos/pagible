@@ -1,14 +1,14 @@
 <?php
 
 /**
- * @license LGPL, https://opensource.org/license/lgpl-3-0
+ * @license MIT, https://opensource.org/license/mit
  */
 
 
 namespace Tests;
 
 use Aimeos\Cms\Validation;
-use InvalidArgumentException;
+use Aimeos\Cms\Exception;
 
 
 class ValidationTest extends CoreTestAbstract
@@ -25,7 +25,7 @@ class ValidationTest extends CoreTestAbstract
 
     public function testContentBadType()
     {
-        $this->expectException( InvalidArgumentException::class );
+        $this->expectException( Exception::class );
         $this->expectExceptionMessage( 'Unknown content type "nonexistent"' );
 
         Validation::content( [
@@ -36,7 +36,7 @@ class ValidationTest extends CoreTestAbstract
 
     public function testContentNoType()
     {
-        $this->expectException( InvalidArgumentException::class );
+        $this->expectException( Exception::class );
         $this->expectExceptionMessage( 'Unknown content type ""' );
 
         Validation::content( [
@@ -93,6 +93,106 @@ class ValidationTest extends CoreTestAbstract
     }
 
 
+    public function testContentDerivesFiles()
+    {
+        $result = Validation::content( [
+            (object) ['type' => 'image', 'data' => (object) ['file' => (object) ['type' => 'file', 'id' => 'file-1']]],
+        ] );
+
+        $this->assertEquals( ['file-1'], $result[0]->files );
+    }
+
+
+    public function testContentNoFilesWithoutReference()
+    {
+        $result = Validation::content( [
+            (object) ['type' => 'heading', 'data' => (object) ['title' => 'Test', 'level' => '2']],
+        ] );
+
+        $this->assertObjectNotHasProperty( 'files', $result[0] );
+    }
+
+
+    public function testContentKeepsReferenceFiles()
+    {
+        $result = Validation::content( [
+            ['type' => 'reference', 'refid' => 'el-1', 'files' => ['file-1']],
+        ] );
+
+        $this->assertEquals( ['file-1'], $result[0]->files );
+    }
+
+
+    public function testPageDerivesFiles()
+    {
+        $result = Validation::page( ['content' => [
+            ['type' => 'image', 'data' => ['file' => ['type' => 'file', 'id' => 'file-1']]],
+        ]] );
+
+        $this->assertEquals( ['file-1'], $result['content'][0]->files );
+    }
+
+
+    public function testPageClearsStaleFiles()
+    {
+        $result = Validation::page( ['content' => [
+            ['type' => 'heading', 'data' => ['title' => 'Test', 'level' => '2'], 'files' => ['stale-1']],
+        ]] );
+
+        $this->assertObjectNotHasProperty( 'files', $result['content'][0] );
+    }
+
+
+    public function testPageKeepsReferenceFiles()
+    {
+        $result = Validation::page( ['content' => [
+            ['type' => 'reference', 'refid' => 'el-1', 'files' => ['file-1']],
+        ]] );
+
+        $this->assertEquals( ['file-1'], $result['content'][0]->files );
+    }
+
+
+    public function testContentHiddenDefault()
+    {
+        $result = Validation::content( [
+            ['type' => 'toc', 'data' => ['title' => 'On this page']],
+        ] );
+
+        $this->assertCount( 1, $result );
+        $this->assertEquals( 'toc', $result[0]->type );
+        $this->assertEquals( '\\Aimeos\\Cms\\Actions\\Toc', $result[0]->data->action );
+        $this->assertEquals( 'On this page', $result[0]->data->title );
+    }
+
+
+    public function testContentHiddenDefaultNotOverwritten()
+    {
+        $result = Validation::content( [
+            ['type' => 'toc', 'data' => ['action' => 'custom']],
+        ] );
+
+        $this->assertEquals( 'custom', $result[0]->data->action );
+    }
+
+
+    public function testDefaultsAppliesHiddenValue()
+    {
+        $data = Validation::defaults( 'toc', ['title' => 'Test'] );
+
+        $this->assertEquals( '\\Aimeos\\Cms\\Actions\\Toc', $data->action );
+        $this->assertEquals( 'Test', $data->title );
+    }
+
+
+    public function testDefaultsUnknownType()
+    {
+        $data = Validation::defaults( 'nonexistent', ['foo' => 'bar'] );
+
+        $this->assertEquals( 'bar', $data->foo );
+    }
+
+
     public function testElementValid()
     {
         Validation::element( 'heading' );
@@ -103,7 +203,7 @@ class ValidationTest extends CoreTestAbstract
 
     public function testElementBadType()
     {
-        $this->expectException( InvalidArgumentException::class );
+        $this->expectException( Exception::class );
         $this->expectExceptionMessage( 'Unknown element type "nonexistent"' );
 
         Validation::element( 'nonexistent' );
@@ -112,7 +212,7 @@ class ValidationTest extends CoreTestAbstract
 
     public function testElementEmptyType()
     {
-        $this->expectException( InvalidArgumentException::class );
+        $this->expectException( Exception::class );
         $this->expectExceptionMessage( 'Unknown element type ""' );
 
         Validation::element( '' );
@@ -138,6 +238,16 @@ class ValidationTest extends CoreTestAbstract
         ], 'meta' );
 
         $this->assertIsObject( $result );
+    }
+
+
+    public function testStructuredDerivesFiles()
+    {
+        $result = Validation::structured( [
+            'logo' => ['file' => ['type' => 'file', 'id' => 'file-1']],
+        ], 'config' );
+
+        $this->assertEquals( ['file-1'], $result->logo->files );
     }
 
 
@@ -183,7 +293,7 @@ class ValidationTest extends CoreTestAbstract
 
     public function testPublishAtPast()
     {
-        $this->expectException( InvalidArgumentException::class );
+        $this->expectException( Exception::class );
         $this->expectExceptionMessage( 'Publish date must be in the future' );
 
         Validation::publishAt( '2020-01-01 00:00:00' );
@@ -192,7 +302,7 @@ class ValidationTest extends CoreTestAbstract
 
     public function testPublishAtInvalid()
     {
-        $this->expectException( InvalidArgumentException::class );
+        $this->expectException( Exception::class );
         $this->expectExceptionMessage( 'Invalid publish date' );
 
         Validation::publishAt( 'not-a-date' );

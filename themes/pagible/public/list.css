@@ -1,0 +1,127 @@
+/**
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+.cms-content .list .list-items {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.cms-content .list .first,
+.cms-content .list .second {
+    width: 100%;
+}
+
+.cms-content .list .second,
+.cms-content .list .list-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.cms-content .list .list-cards {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+}
+
+.cms-content .list .list-item {
+    text-decoration: none;
+}
+
+.cms-content .list img {
+    display: block;
+    aspect-ratio: 5 / 3;
+    object-fit: cover;
+    width: 100%;
+}
+
+.cms-content .list .date {
+    color: var(--pico-contrast);
+    font-size: calc(var(--pico-font-size) * 0.8);
+}
+
+.cms-content .list h3 {
+    margin: 0;
+}
+
+.cms-content .list .first .content,
+.cms-content .list .list-cards .content {
+    display: flex;
+    margin: 1rem 0.5rem;
+    gap: 2rem;
+}
+
+.cms-content .list .first .date-day,
+.cms-content .list .list-cards .date-day {
+    font-weight: bold;
+    font-size: calc(var(--pico-font-size) * 2);
+    line-height: 1;
+}
+
+.cms-content .list .first .date-month,
+.cms-content .list .list-cards .date-month {
+    text-transform: uppercase;
+    font-size: calc(var(--pico-font-size) * 0.9);
+    line-height: 0.75;
+}
+
+.cms-content .list .first h3,
+.cms-content .list .list-cards h3 {
+    font-size: calc(var(--pico-font-size) * 1.1);
+    flex-grow: 1;
+}
+
+.cms-content .list .second .list-item,
+.cms-content .list .list-list .list-item {
+    display: flex;
+    gap: 2rem;
+}
+
+.cms-content .list .second picture,
+.cms-content .list .list-list picture {
+    flex: 2;
+}
+
+.cms-content .list .second .content,
+.cms-content .list .list-list .content {
+    align-content: center;
+    flex: 3;
+}
+
+.cms-content .list .second h3,
+.cms-content .list .list-list h3 {
+    font-size: calc(var(--pico-font-size) * 0.9);
+    line-height: 1.25;
+}
+
+.cms-content .list .list-list .intro {
+    color: var(--pico-contrast);
+    font-size: calc(var(--pico-font-size) * 0.8);
+    line-height: 1.25;
+    margin: 0.5rem 0 0;
+}
+
+.cms-content .list .list-list .list-item:nth-child(even) {
+    flex-direction: row-reverse;
+}
+
+@media (min-width: 768px) {
+    .cms-content .list .list-default {
+        flex-direction: row;
+    }
+
+    .cms-content .list .list-default .first,
+    .cms-content .list .list-default .second {
+        width: 50%;
+    }
+
+    .cms-content .list .list-cards {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+.cms-content .list nav .pagination {
+    margin: auto;
+}

@@ -1,5 +1,5 @@
 /**
- * @license LGPL, https://opensource.org/license/lgpl-3-0
+ * @license MIT, https://opensource.org/license/mit
  */
 
 import { onError } from '@apollo/client/link/error'
@@ -8,12 +8,47 @@ import { BatchHttpLink } from 'apollo-link-batch-http'
 import { createApolloProvider } from '@vue/apollo-option'
 import { ApolloClient, ApolloLink, InMemoryCache, Observable } from '@apollo/client/core'
 import router from './routes'
+import { socketId } from './echo'
 import { useUserStore } from './stores'
 import { urlgraphql } from './config'
+import { xsrfHeaders } from './utils'
+
+const MESSAGE_HEADERS = ['x-error-message', 'x-status-message', 'x-message']
 
 const retryLink = new RetryLink({
   delay: { initial: 300, max: 5000, jitter: true },
   attempts: { max: 2, retryIf: (error) => !!error }
+})
+
+// Forwards Laravel's XSRF-TOKEN cookie as the X-XSRF-TOKEN header so cookie
+// authenticated mutations are protected against CSRF when the GraphQL route is
+// guarded by the VerifyCsrfToken middleware. No-op when the cookie is absent.
+const csrfLink = new ApolloLink((operation, forward) => {
+  const xsrf = xsrfHeaders()
+
+  if (xsrf['X-XSRF-TOKEN']) {
+    operation.setContext(({ headers = {} }) => ({
+      headers: { ...headers, ...xsrf }
+    }))
+  }
+
+  return forward(operation)
+})
+
+// Forwards the websocket connection id as the X-Socket-ID header so the server
+// can use broadcast()->toOthers() to skip echoing a change back to the tab that
+// made it. No-op until Echo is connected, which is fine: an unconnected tab is
+// not subscribed to any channel and so receives no events anyway.
+const socketLink = new ApolloLink((operation, forward) => {
+  const id = socketId()
+
+  if (id) {
+    operation.setContext(({ headers = {} }) => ({
+      headers: { ...headers, 'X-Socket-ID': id }
+    }))
+  }
+
+  return forward(operation)
 })
 
 const errorLink = onError(({ errors }) => {
@@ -38,6 +73,16 @@ export function clearUploadLink() {
   uploadLink = null
 }
 
+export function graphqlFetch(input, init) {
+  return fetch(input, init).then((response) => {
+    if (!response.ok) {
+      throw graphqlError(response)
+    }
+
+    return response
+  })
+}
+
 const lazyUploadLink = new ApolloLink((operation, forward) => {
   return new Observable((observer) => {
     let sub = null
@@ -45,7 +90,11 @@ const lazyUploadLink = new ApolloLink((operation, forward) => {
     const load = uploadLink
       ? Promise.resolve(uploadLink)
       : import('apollo-upload-client/createUploadLink.mjs').then((mod) => {
-          uploadLink = mod.default({ uri: urlgraphql, credentials: 'include' })
+          uploadLink = mod.default({
+            uri: urlgraphql,
+            credentials: 'include',
+            fetch: graphqlFetch
+          })
           return uploadLink
         })
 
@@ -64,7 +113,8 @@ const httpLink = ApolloLink.split(
     uri: urlgraphql,
     batchMax: 50,
     batchInterval: 20,
-    credentials: 'include'
+    credentials: 'include',
+    fetch: graphqlFetch
   })
 )
 
@@ -81,10 +131,35 @@ const apolloClient = new ApolloClient({
     },
     resultCacheMaxSize: 100
   }),
-  link: ApolloLink.from([retryLink, errorLink, httpLink]),
+  link: ApolloLink.from([retryLink, errorLink, csrfLink, socketLink, httpLink]),
   queryDeduplication: true
 })
 const apollo = createApolloProvider({ defaultClient: apolloClient })
 
 export default apollo
 export { apolloClient }
+
+
+function clean(value) {
+  return String(value || '').replace(/[\r\n]+/g, ' ').trim()
+}
+
+
+function graphqlError(response) {
+  const error = new Error(graphqlMessage(response))
+
+  error.name = 'ServerError'
+  error.response = response
+  error.statusCode = response.status
+
+  return error
+}
+
+
+function graphqlMessage(response) {
+  const message = MESSAGE_HEADERS
+    .map((name) => clean(response.headers?.get(name)))
+    .find(Boolean) || clean(response.statusText)
+
+  return message ? `HTTP ${response.status}: ${message}` : `HTTP ${response.status}`
+}

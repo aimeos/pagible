@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @license LGPL, https://opensource.org/license/lgpl-3-0
+ * @license MIT, https://opensource.org/license/mit
  */
 
 
@@ -33,7 +33,8 @@ class AdminControllerTest extends AdminTestAbstract
         ] );
 
         $expires = now()->addDay()->timestamp;
-        $this->proxyToken = base64_encode( $expires . '|' . hash_hmac( 'sha256', (string) $expires, config( 'app.key' ) ) );
+        $payload = $expires . '|' . $this->user->getAuthIdentifier();
+        $this->proxyToken = base64_encode( $payload . '|' . hash_hmac( 'sha256', $payload, config( 'app.key' ) ) );
     }
 
 
@@ -71,7 +72,7 @@ class AdminControllerTest extends AdminTestAbstract
 
     public function testProxyOptions()
     {
-        $response = $this->options( route( 'cms.proxy' ) );
+        $response = $this->actingAs( $this->user )->options( route( 'cms.proxy' ) );
 
         $response->assertStatus( 204 );
         $this->assertEquals( '*', $response->headers->get( 'Access-Control-Allow-Origin' ) );
@@ -82,7 +83,7 @@ class AdminControllerTest extends AdminTestAbstract
 
     public function testProxyUnsupportedMethod()
     {
-        $response = $this->post( route( 'cms.proxy', ['token' => $this->proxyToken] ) );
+        $response = $this->actingAs( $this->user )->post( route( 'cms.proxy', ['token' => $this->proxyToken] ) );
 
         $response->assertStatus( 405 );
     }
@@ -90,7 +91,7 @@ class AdminControllerTest extends AdminTestAbstract
 
     public function testProxyInvalidUrl()
     {
-        $response = $this->get( route( 'cms.proxy', ['token' => $this->proxyToken, 'url' => 'not-a-url'] ) );
+        $response = $this->actingAs( $this->user )->get( route( 'cms.proxy', ['token' => $this->proxyToken, 'url' => 'not-a-url'] ) );
 
         $response->assertStatus( 400 );
     }
@@ -98,12 +99,9 @@ class AdminControllerTest extends AdminTestAbstract
 
     public function testProxyMissingUrl()
     {
-        Http::fake( fn() => throw new \Illuminate\Http\Client\ConnectionException( 'Connection failed' ) );
+        $response = $this->actingAs( $this->user )->get( route( 'cms.proxy', ['token' => $this->proxyToken] ) );
 
-        $response = $this->get( route( 'cms.proxy', ['token' => $this->proxyToken] ) );
-
-        // Empty URL passes isValidUrl check (returns true for empty), then fetch fails
-        $response->assertStatus( 504 );
+        $response->assertStatus( 400 );
     }
 
 
@@ -111,7 +109,7 @@ class AdminControllerTest extends AdminTestAbstract
     {
         Http::fake( fn() => throw new \Illuminate\Http\Client\ConnectionException( 'Connection timed out' ) );
 
-        $response = $this->get( route( 'cms.proxy', ['token' => $this->proxyToken, 'url' => 'https://example.com/video.mp4'] ) );
+        $response = $this->actingAs( $this->user )->get( route( 'cms.proxy', ['token' => $this->proxyToken, 'url' => 'https://example.com/video.mp4'] ) );
 
         $response->assertStatus( 504 );
     }
@@ -128,7 +126,7 @@ class AdminControllerTest extends AdminTestAbstract
             ] ),
         ] );
 
-        $response = $this->get( route( 'cms.proxy', ['token' => $this->proxyToken, 'url' => 'https://example.com/video.mp4'] ) );
+        $response = $this->actingAs( $this->user )->get( route( 'cms.proxy', ['token' => $this->proxyToken, 'url' => 'https://example.com/video.mp4'] ) );
 
         $response->assertStatus( 200 );
         $this->assertEquals( 'video/mp4', $response->headers->get( 'Content-Type' ) );
@@ -139,7 +137,7 @@ class AdminControllerTest extends AdminTestAbstract
 
     public function testProxyInvalidToken()
     {
-        $response = $this->get( route( 'cms.proxy', ['token' => 'invalid', 'url' => 'https://example.com/video.mp4'] ) );
+        $response = $this->actingAs( $this->user )->get( route( 'cms.proxy', ['token' => 'invalid', 'url' => 'https://example.com/video.mp4'] ) );
 
         $response->assertStatus( 403 );
     }
@@ -147,7 +145,7 @@ class AdminControllerTest extends AdminTestAbstract
 
     public function testProxyMissingToken()
     {
-        $response = $this->get( route( 'cms.proxy', ['url' => 'https://example.com/video.mp4'] ) );
+        $response = $this->actingAs( $this->user )->get( route( 'cms.proxy', ['url' => 'https://example.com/video.mp4'] ) );
 
         $response->assertStatus( 403 );
     }
@@ -156,9 +154,10 @@ class AdminControllerTest extends AdminTestAbstract
     public function testProxyExpiredToken()
     {
         $expires = now()->subHour()->timestamp;
-        $token = base64_encode( $expires . '|' . hash_hmac( 'sha256', (string) $expires, config( 'app.key' ) ) );
+        $payload = $expires . '|' . $this->user->getAuthIdentifier();
+        $token = base64_encode( $payload . '|' . hash_hmac( 'sha256', $payload, config( 'app.key' ) ) );
 
-        $response = $this->get( route( 'cms.proxy', ['token' => $token, 'url' => 'https://example.com/video.mp4'] ) );
+        $response = $this->actingAs( $this->user )->get( route( 'cms.proxy', ['token' => $token, 'url' => 'https://example.com/video.mp4'] ) );
 
         $response->assertStatus( 403 );
     }

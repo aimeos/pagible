@@ -1,4 +1,4 @@
-/** @license LGPL, https://opensource.org/license/lgpl-3-0 */
+/** @license MIT, https://opensource.org/license/mit */
 
 <script>
 import gql from 'graphql-tag'
@@ -17,17 +17,17 @@ import {
   mdiAccount
 } from '@mdi/js'
 import User from '../components/User.vue'
-import FileDetail from '../views//FileDetail.vue'
 import AsideList from '../components/AsideList.vue'
 import Navigation from '../components/Navigation.vue'
 import FileListItems from '../components/FileListItems.vue'
-import { useUserStore, useDrawerStore, useViewStack } from '../stores'
+import { useUserStore, useDrawerStore } from '../stores'
 import { languageFilter } from '../utils'
 
 export default {
+  name: 'FileList',
+
   components: {
     FileListItems,
-    FileDetail, // eslint-disable-line vue/no-unused-components -- used programmatically via openView()
     Navigation,
     AsideList,
     User
@@ -57,14 +57,12 @@ export default {
   },
 
   setup() {
-    const viewStack = useViewStack()
     const drawer = useDrawerStore()
     const user = useUserStore()
 
     return {
       user,
       drawer,
-      viewStack,
       mdiPlaylistCheck,
       mdiTranslate,
       mdiClose,
@@ -126,7 +124,7 @@ export default {
 
   methods: {
     open(item) {
-      this.viewStack.openView(FileDetail, { item: item })
+      this.$router.push({ name: 'file:detail', params: { id: item.id } })
     }
   }
 }

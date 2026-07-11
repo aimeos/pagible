@@ -1,5 +1,5 @@
 /**
- * @license LGPL, https://opensource.org/license/lgpl-3-0
+ * @license MIT, https://opensource.org/license/mit
  */
 
 import gql from 'graphql-tag'
@@ -7,7 +7,7 @@ import gettext from './i18n'
 import { apolloClient } from './graphql'
 import { toMp3, transcription } from './audio'
 import { useUserStore, useMessageStore } from './stores'
-import { url } from './utils'
+import { safeParse, url } from './utils'
 
 const TRANSCRIBE = gql`
   mutation ($file: Upload!) {
@@ -33,7 +33,7 @@ const WRITE_TEXT = gql`
  * Requires `audio:transcribe` permission. Converts the media to MP3 before uploading.
  *
  * @param {string} input Media file path or URL
- * @returns {Promise<string>|undefined} Transcribed text or undefined if permission denied
+ * @returns {Promise<object>} Transcription object (empty on permission denial or error)
  */
 export function transcribe(input) {
   const user = useUserStore()
@@ -42,7 +42,7 @@ export function transcribe(input) {
 
   if (!user.can('audio:transcribe')) {
     messages.add($gettext('Permission denied'), 'error')
-    return
+    return Promise.resolve(transcription())
   }
 
   return toMp3(url(input, true))
@@ -62,11 +62,12 @@ export function transcribe(input) {
         throw result
       }
 
-      return transcription(JSON.parse(result.data?.transcribe || '[]'))
+      return transcription(safeParse(result.data?.transcribe || '[]', []))
     })
     .catch((error) => {
       messages.add($gettext('Error transcribing file') + ':\n' + error, 'error')
       console.error(`useAi::transcribe(): Error transcribing from media URL`, error)
+      return transcription()
     })
 }
 

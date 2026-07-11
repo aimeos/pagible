@@ -19,9 +19,11 @@
 	},
 	"require-dev": {
 		"orchestra/testbench": "^9.0||^10.0||^11.0",
+		"laravel/pulse": "^1.7",
 		"laravel-json-api/testing": "^3.1",
 		"larastan/larastan": "^3.9",
-		"om/potrans": "^1.0.1"
+		"om/potrans": "^1.0.1",
+		"kkomelin/laravel-translatable-string-exporter": "^1.26"
 	},
 	"repositories": [
 		{"type": "path", "url": "core"},
@@ -44,10 +46,14 @@
 				"backup/src/",
 				"cashier/src/",
 				"import/src/",
+				"pulse/src/",
 				"themes/glass/src/",
 				"themes/pagible/src/",
 				"themes/paper/src/",
-				"themes/premium/src/"
+				"themes/bold/src/",
+				"themes/premium/src/",
+				"themes/luxury/src/",
+				"themes/style/src/"
 			],
 			"Tests\\": [
 				"tests/",
@@ -65,7 +71,8 @@
 			]
 		},
 		"classmap": [
-			"tests/User.php"
+			"tests/User.php",
+			"pulse/tests/Support.php"
 		]
 	},
 	"scripts": {
@@ -73,6 +80,7 @@
 			"@php vendor/bin/testbench package:discover --ansi"
 		],
 		"translate": [
+			"@php bin/translate ar bg cs da de el en es et fi fr he hu id it ja lt lv nb nl pl pt-br pt ro ru sk sl sv tr uk vi zh",
 			"npm run gettext:extract --prefix admin",
 			"mv admin/i18n/no.po admin/i18n/nb.po",
 			"for POFILE in `ls admin/i18n/*.po`; do msgattrib --no-obsolete -o $POFILE $POFILE; done",

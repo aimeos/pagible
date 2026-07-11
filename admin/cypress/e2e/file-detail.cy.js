@@ -1,13 +1,9 @@
 /**
- * E2E tests for the file detail stacked view.
+ * E2E tests for the file detail view.
  *
- * The FileDetail component opens as an overlay on top of the file list
- * when a file item is clicked. Both views coexist in the DOM (stacked
- * via z-index), so selectors must be scoped to the detail's .view container.
- *
- * Unlike pages/elements, FileDetail does NOT fetch additional data on open —
- * the item object from the list is passed directly. So no extra GQL wait
- * is needed after clicking an item.
+ * The FileDetail component opens via Vue Router navigation when a file
+ * item is clicked in the list (/files → /files/:id). The list view is
+ * replaced by the detail view inside the same router-view container.
  *
  * GraphQL is intercepted at POST /graphql. Apollo's BatchHttpLink sends
  * requests as JSON arrays, so the handler checks whether req.body is an
@@ -119,6 +115,21 @@ function setupIntercept({
       if (query.includes('pubFile')) {
         return { data: { pubFile: pubFile || { id: '1' } } }
       }
+      // Single file query for detail view — check BEFORE 'files('
+      if (query.includes('file(') && !query.includes('files(')) {
+        const f = files[0] || makeFile()
+        return {
+          data: {
+            file: {
+              id: op.variables?.id || f.id,
+              latest: f.latest,
+              bypages: [],
+              byelements: [],
+              byversions: [],
+            },
+          },
+        }
+      }
       // Files list query — check BEFORE versions because the files query
       // contains `byversions_count` which matches `query.includes('versions')`
       if (query.includes('files(')) {
@@ -134,6 +145,8 @@ function setupIntercept({
           data: {
             me: {
               permission: meResponse.permission,
+              settings: meResponse.settings || '{}',
+              token: meResponse.token || null,
               email: meResponse.email,
               name: meResponse.name,
             },
@@ -148,21 +161,21 @@ function setupIntercept({
 }
 
 /**
- * Navigate to /files, wait for initial queries, click a file to open
- * the detail overlay. FileDetail does NOT issue an additional query.
+ * Navigate to /files, wait for initial queries, click a file to navigate
+ * to /files/:id, and wait for the detail data query.
  */
 function visitFileDetail(fileOverrides = {}, meResponse = ME_ADMIN) {
   const file = makeFile(fileOverrides)
+  const data = JSON.parse(file.latest.data)
   setupIntercept({ meResponse, files: [file] })
   cy.visit('/files')
-  cy.wait('@gql') // me query
-  cy.wait('@gql') // files query
-  cy.get('.items .v-list-item').should('have.length.at.least', 1)
   cy.get('.item-text').first().click()
+  cy.url().should('include', '/files/')
   cy.get('.file-details').should('be.visible')
+  cy.get('.v-app-bar-title').last().should('contain', 'File: ' + data.name)
 }
 
-/** Shorthand to scope selectors to the detail view (topmost stacked view). */
+/** Shorthand to scope selectors to the detail view. */
 function detailView() {
   return cy.get('.view').last()
 }

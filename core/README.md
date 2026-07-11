@@ -99,4 +99,4 @@ php artisan cms:benchmark:core [options]
 
 ## License
 
-LGPL-3.0-only
+MIT

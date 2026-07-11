@@ -1,12 +1,23 @@
 /**
- * @license LGPL, https://opensource.org/license/lgpl-3-0
+ * @license MIT, https://opensource.org/license/mit
  */
 
+import { reactive } from 'vue'
 import { createRouter, createWebHistory } from 'vue-router'
-import { useClipboardStore, useDirtyStore, useUserStore, useMessageStore, useViewStack } from './stores'
+import { useClipboardStore, useDirtyStore, useUserStore, useMessageStore, usePluginStore, useViewStack } from './stores'
 import { apolloClient } from './graphql'
 import { urladmin } from './config'
 import gettext from './i18n'
+
+function itemProps() {
+  let item
+  return route => {
+    if (!item || item.id !== route.params.id) {
+      item = reactive({ id: route.params.id })
+    }
+    return { item }
+  }
+}
 
 const router = createRouter({
   history: createWebHistory(urladmin),
@@ -29,6 +40,17 @@ const router = createRouter({
       }
     },
     {
+      path: '/pages/:id',
+      name: 'page:detail',
+      component: () => import('./views/PageDetail.vue'),
+      props: itemProps(),
+      meta: {
+        auth: true,
+        permission: 'page:view',
+        title: gettext.$gettext('Page')
+      }
+    },
+    {
       path: '/elements',
       name: 'element:view',
       component: () => import('./views/ElementList.vue'),
@@ -38,12 +60,34 @@ const router = createRouter({
       }
     },
     {
+      path: '/elements/:id',
+      name: 'element:detail',
+      component: () => import('./views/ElementDetail.vue'),
+      props: itemProps(),
+      meta: {
+        auth: true,
+        permission: 'element:view',
+        title: gettext.$gettext('Element')
+      }
+    },
+    {
       path: '/files',
       name: 'file:view',
       component: () => import('./views/FileList.vue'),
       meta: {
         auth: true,
         title: gettext.$gettext('Files')
+      }
+    },
+    {
+      path: '/files/:id',
+      name: 'file:detail',
+      component: () => import('./views/FileDetail.vue'),
+      props: itemProps(),
+      meta: {
+        auth: true,
+        permission: 'file:view',
+        title: gettext.$gettext('File')
       }
     }
   ]
@@ -65,7 +109,10 @@ router.beforeEach(async (to) => {
   if (to.matched.some((record) => record.meta.auth) && !authenticated) {
     user.intended(to.fullPath)
     return { name: 'login' }
-  } else if (to.name !== 'login' && !user.can(to.name)) {
+  }
+
+  const permission = to.meta.permission || to.name
+  if (to.name !== 'login' && !user.can(permission)) {
     message.add(
       gettext.$gettext('You do not have permission to access %{path}', { path: to.fullPath }),
       'error'
@@ -77,14 +124,43 @@ router.beforeEach(async (to) => {
 router.afterEach((to, from) => {
   document.title = (to.meta.title || to.path) + ' — PagibleAI CMS'
 
-  if (to.name !== from.name) {
+  useViewStack().stack = []
+
+  const toSection = to.name?.split(':')[0]
+  const fromSection = from.name?.split(':')[0]
+
+  if (toSection !== fromSection) {
     useClipboardStore().clear()
-    useViewStack().stack = []
     apolloClient.cache.evict({ fieldName: 'pages' })
     apolloClient.cache.evict({ fieldName: 'elements' })
     apolloClient.cache.evict({ fieldName: 'files' })
     apolloClient.cache.gc()
   }
 })
+
+/**
+ * Registers a route for each plugin navigation panel.
+ *
+ * Called from main.js after the Pinia plugin is installed, so usePluginStore()
+ * has an active Pinia. Each route carries a name and meta.permission so the
+ * global beforeEach guard above enforces access just like the built-in routes.
+ */
+export function addPluginRoutes() {
+  const plugin = usePluginStore()
+
+  for (const [key, panel] of Object.entries(plugin.panels)) {
+    router.addRoute({
+      path: '/' + key,
+      name: key,
+      component: panel.component,
+      props: { panel },
+      meta: {
+        auth: true,
+        permission: panel.permission,
+        title: panel.label
+      }
+    })
+  }
+}
 
 export default router

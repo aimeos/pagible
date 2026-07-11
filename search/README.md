@@ -55,4 +55,4 @@ php artisan cms:benchmark:search [options]
 
 ## License
 
-LGPL-3.0-only
+MIT

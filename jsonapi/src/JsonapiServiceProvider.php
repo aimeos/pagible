@@ -2,6 +2,8 @@
 
 namespace Aimeos\Cms;
 
+use Aimeos\Cms\Events\CmsJsonapi;
+use Aimeos\Cms\Listeners\JsonapiLogListener;
 use Illuminate\Support\ServiceProvider as Provider;
 
 class JsonapiServiceProvider extends Provider
@@ -12,8 +14,18 @@ class JsonapiServiceProvider extends Provider
 
         $this->publishes( [dirname( __DIR__ ) . '/config/cms/jsonapi.php' => config_path( 'cms/jsonapi.php' )], 'cms-config' );
 
+        $this->watch();
         $this->console();
     }
+
+
+    protected function watch() : void
+    {
+        Watch::listen( [
+            CmsJsonapi::class => JsonapiLogListener::class,
+        ], 'cms.jsonapi.watch' );
+    }
+
 
     protected function console() : void
     {

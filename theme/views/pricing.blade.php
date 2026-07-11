@@ -45,27 +45,24 @@
 				</div>
 				<h3 class="name">{{ $item->name ?? '' }}</h3>
 				@if($item->text ?? null)
-					<p class="text">{{ $item->text }}</p>
+					<p class="cms-text">{{ $item->text }}</p>
 				@endif
 			</div>
 
 			@if($item->features ?? null)
-				<div class="features">
-					@markdown($item->features)
-				</div>
+				<div class="features cms-text">@markdown($item->features)</div>
 			@endif
 
 			@if(($item->priceid ?? null) && Route::has('cms.cashier'))
 				<form method="POST" action="{{ route('cms.cashier') }}">
-					@csrf
+					<input type="hidden" name="_token" value="">
 					<input type="hidden" name="priceid" value="{{ $item->priceid }}">
 					<input type="hidden" name="success" value="{{ ($item->success ?? null) ?: '/' }}">
 					<button type="submit" class="btn">{{ ($item->button ?? null) ?: __('Get Started') }}</button>
 				</form>
 			@elseif($item->url ?? null)
-				<a class="btn" href="{{ $item->url }}">{{ ($item->button ?? null) ?: __('Get Started') }}</a>
+				<a class="btn" href="{{ cmslink($item->url) }}">{{ ($item->button ?? null) ?: __('Get Started') }}</a>
 			@endif
 		</div>
 	@endforeach
 </div>
-

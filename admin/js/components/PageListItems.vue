@@ -1,4 +1,4 @@
-/** @license LGPL, https://opensource.org/license/lgpl-3-0 */
+/** @license MIT, https://opensource.org/license/mit */
 
 <script>
 import gql from 'graphql-tag'
@@ -24,12 +24,15 @@ import {
   mdiArrowUp,
   mdiArrowRight,
   mdiArrowDown,
-  mdiClockOutline
+  mdiClockOutline,
+  mdiPencil
 } from '@mdi/js'
 import { Draggable } from '@he-tree/vue'
 import { dragContext } from '@he-tree/vue'
-import { useAppStore, useUserStore, useLanguageStore, useMessageStore } from '../stores'
-import { debounce } from '../utils'
+import PageBulkDialog from './PageBulkDialog.vue'
+import { useAppStore, useUserStore, useLanguageStore, useMessageStore, useChangeStore } from '../stores'
+import { debounce, safeParse, sanitize } from '../utils'
+import { setupEcho, cleanEcho, listEcho } from '../echo'
 
 const ADD_PAGE = gql`
   mutation ($input: PageInput!) {
@@ -113,6 +116,17 @@ const SAVE_PAGE = gql`
   }
 `
 
+const SAVE_PAGES = gql`
+  mutation ($id: [ID!]!, $input: PageInput!, $descendants: Boolean) {
+    bulkPage(id: $id, input: $input, descendants: $descendants) {
+      ids
+      latest
+      data
+      failed
+    }
+  }
+`
+
 const PAGE_FIELDS = `id
           parent_id
           created_at
@@ -155,8 +169,8 @@ const FETCH_CHILD_PAGES = gql`
 `
 
 const PASTE_PAGE = gql`
-  mutation ($input: PageInput!, $parent: ID, $ref: ID, $elements: [ID!], $files: [ID!]) {
-    addPage(input: $input, parent: $parent, ref: $ref, elements: $elements, files: $files) {
+  mutation ($input: PageInput!, $parent: ID, $ref: ID) {
+    addPage(input: $input, parent: $parent, ref: $ref) {
       ${PAGE_FIELDS}
     }
   }
@@ -192,7 +206,8 @@ const SEARCH_PAGES = gql`
 
 export default {
   components: {
-    Draggable
+    Draggable,
+    PageBulkDialog
   },
 
   props: {
@@ -207,11 +222,18 @@ export default {
       menu: {},
       items: [],
       actions: false,
+      propsDialog: false,
+      propsCount: 0,
+      propsDescendants: 0,
       loading: true,
       checked: null,
       clip: null,
       sort: this.user.getData('page', 'sort') || { column: 'LFT', order: 'ASC' },
-      term: ''
+      term: '',
+      destroyed: false,
+      echoCleanup: null,
+      echoPromise: null,
+      outdated: false
     }
   },
 
@@ -220,10 +242,12 @@ export default {
     const messages = useMessageStore()
     const user = useUserStore()
     const app = useAppStore()
+    const changes = useChangeStore()
 
     return {
       app,
       user,
+      changes,
       languages,
       messages,
       mdiDotsVertical,
@@ -248,6 +272,7 @@ export default {
       mdiArrowRight,
       mdiArrowDown,
       mdiClockOutline,
+      mdiPencil,
       debounce
     }
   },
@@ -260,13 +285,29 @@ export default {
       this.items = result.data
       this.loading = false
     })
+
+    if (!this.embed) {
+      // patch the matching node when a page changes elsewhere; subscribe for
+      // the whole lifetime (not per activation) so the tree keeps patching in
+      // the background while the editor is in a detail or another view and is
+      // up to date when they return. The tab that made the change is excluded
+      // server-side via toOthers(), so no editor filter is needed here
+      setupEcho(this, 'page', (event, name) => listEcho(this, event, name))
+    }
   },
 
   mounted() {
     this.checked = false // required for isChecked() to work correctly
   },
 
+  activated() {
+    this.sync()
+  },
+
   beforeUnmount() {
+    this.destroyed = true
+    cleanEcho(this)
+
     this.items = null
     this.clip = null
     this.menu = null
@@ -328,6 +369,14 @@ export default {
         })
     },
 
+    updateHas(stat, delta) {
+      // optimistically adjust the immediate parent's descendant count (`has`); only feeds the
+      // "apply recursively (N)" hint, so grandparents stay approximate until the next reload
+      if (stat?.data) {
+        stat.data.has = Math.max(0, (stat.data.has || 0) + delta)
+      }
+    },
+
     change() {
       if (!dragContext?.targetInfo) return
 
@@ -341,14 +390,10 @@ export default {
         ref ? ref.data.id : null
       ).then(() => {
         const srcparent = dragContext.startInfo.parent
+        const moved = (dragContext.startInfo.dragNode.data.has || 0) + 1
 
-        if (srcparent?.data && !srcparent?.children.length) {
-          srcparent.data.has = false
-        }
-
-        if (parent) {
-          parent.data.has = true
-        }
+        this.updateHas(srcparent, -moved)
+        this.updateHas(parent, moved)
       })
     },
 
@@ -456,6 +501,30 @@ export default {
         })
     },
 
+    checkedAncestor(stat, checked) {
+      for (let parent = stat.parent; parent; parent = parent.parent) {
+        if (checked.has(parent)) {
+          return true
+        }
+      }
+      return false
+    },
+
+    editProps() {
+      const checked = this.$refs.tree?.statsFlat.filter((stat) => stat._checked && stat.data?.id) || []
+      const set = new Set(checked)
+
+      this.propsCount = checked.length
+      // pages a recursive apply reaches beyond the selection (0 for leaf-only selections); skip
+      // checked-ancestor-covered pages so overlapping selections aren't counted twice
+      const affected = checked
+        .filter((stat) => !this.checkedAncestor(stat, set))
+        .reduce((sum, stat) => sum + (stat.data.has || 0) + 1, 0)
+      this.propsDescendants = affected - checked.length
+      this.actions = false
+      this.propsDialog = true
+    },
+
     expand() {
       const stat = this.$refs.tree.activeDescendant
 
@@ -516,10 +585,11 @@ export default {
     },
 
     hydrate(entry) {
-      const item = entry.latest?.data ? JSON.parse(entry.latest.data) : { ...entry }
+      const item = entry.latest?.data ? safeParse(entry.latest.data) : { ...entry }
 
       return Object.assign(item, {
         id: entry.id,
+        latest_id: entry.latest?.id || null,
         has: entry.has,
         parent_id: entry.parent_id,
         deleted_at: entry.deleted_at,
@@ -579,9 +649,7 @@ export default {
             this.$refs.tree.add(node, parent, idx !== null ? pos + idx : 0)
           }
 
-          if (parent) {
-            parent.data.has = true
-          }
+          this.updateHas(parent, 1)
 
           this.invalidate()
         })
@@ -707,14 +775,13 @@ export default {
               : pos + idx
             : 0
 
+        const oldparent = this.clip.stat.parent
+        const moved = (this.clip.stat.data.has || 0) + 1
+
         this.$refs.tree.move(this.clip.stat, parent, index)
 
-        if (parent) {
-          if (!this.clip.stat.children?.length) {
-            stat.parent.data.has = false
-          }
-          parent.data.has = true
-        }
+        this.updateHas(oldparent, -moved)
+        this.updateHas(parent, moved)
 
         this.invalidate()
       })
@@ -781,7 +848,7 @@ export default {
           }
 
           const latest = result?.data?.page?.latest
-          const aux = JSON.parse(latest?.aux || '{}')
+          const aux = safeParse(latest?.aux)
 
           this.$apollo
             .mutate({
@@ -805,9 +872,7 @@ export default {
                   path: node.path + '_' + Math.floor(Math.random() * 10000)
                 },
                 parent: parent ? parent.data.id : null,
-                ref: refid,
-                elements: latest?.elements.map((el) => el.id) || [],
-                files: latest?.files.map((file) => file.id) || []
+                ref: refid
               }
             })
             .then((result) => {
@@ -848,6 +913,39 @@ export default {
       } else if (this.clip.type === 'cut' && !this.embed && this.user.can('page:move')) {
         this.move(stat, 1)
       }
+    },
+
+    patch(item) {
+      const stat = this.$refs.tree?.statsFlat.find((stat) => stat.data?.id === item.id)
+
+      if (!stat) {
+        return false
+      }
+
+      for (const key in item) {
+        if (key in stat.data) {
+          stat.data[key] = item[key]
+        }
+      }
+
+      return true
+    },
+
+    patchItems(items) {
+      // index the patches by id so the bulk update is a single pass over the loaded rows
+      const byId = new Map(items.map((item) => [item.id, item]))
+
+      this.$refs.tree?.statsFlat.forEach((stat) => {
+        const item = byId.get(stat.data?.id)
+
+        if (item) {
+          for (const key in item) {
+            if (key in stat.data) {
+              stat.data[key] = item[key]
+            }
+          }
+        }
+      })
     },
 
     publish(stat) {
@@ -920,11 +1018,11 @@ export default {
           }
 
           for (const item of list) {
-            this.$refs.tree.remove(item)
+            const parent = item.parent
+            const removed = (item.data.has || 0) + 1
 
-            if (item.parent && !item.parent.children?.length) {
-              item.parent.data.has = false
-            }
+            this.$refs.tree.remove(item)
+            this.updateHas(parent, -removed)
           }
         })
         .catch((error) => {
@@ -934,6 +1032,7 @@ export default {
     },
 
     reload(cache = true) {
+      this.outdated = false
       this.items = []
       this.loading = true
 
@@ -965,6 +1064,78 @@ export default {
           ref ? ref.data.id : null
         )
       })
+    },
+
+    saveProps({ input, descendants }) {
+      if (!this.user.can('page:save')) {
+        this.messages.add(this.$gettext('Permission denied'), 'error')
+        return
+      }
+
+      const list = this.$refs.tree.statsFlat.filter((stat) => stat._checked && stat.data?.id)
+
+      if (!list.length || !Object.keys(input).length) {
+        return
+      }
+
+      this.$apollo
+        .mutate({
+          mutation: SAVE_PAGES,
+          variables: {
+            id: list.map((item) => item.data.id),
+            input: input,
+            descendants: descendants
+          }
+        })
+        .then((result) => {
+          if (result.errors) {
+            throw result.errors
+          }
+
+          const res = result.data.bulkPage || {}
+          const ids = new Set(res.ids || [])
+          // data/latest are JSON scalar strings; sanitize drops prototype-pollution keys
+          const data = sanitize(safeParse(res.data))
+          const latest = safeParse(res.latest)
+
+          this.$refs.tree?.statsFlat.forEach((stat) => {
+            const id = stat.data?.id
+
+            if (ids.has(id)) {
+              for (const key in data) {
+                if (key in stat.data) {
+                  stat.data[key] = data[key]
+                }
+              }
+
+              if (latest[id]) {
+                stat.data.latest_id = latest[id]
+              }
+            }
+
+            stat._checked = false
+          })
+
+          this.checked = false
+          this.invalidate()
+
+          // best effort: the server reports how many attempted pages could not be saved
+          if (res.failed > 0) {
+            this.messages.add(
+              this.$ngettext(
+                '%{num} page could not be updated',
+                '%{num} pages could not be updated',
+                res.failed,
+                { num: res.failed }
+              ),
+              'info'
+            )
+          }
+        })
+        .catch((error) => {
+          this.messages.add(this.$gettext('Error saving page') + ':\n' + error, 'error')
+          this.$log(`PageList::saveProps(): Error saving pages`, list, input, error)
+        })
     },
 
     search(page = 1, limit = 100) {
@@ -1058,6 +1229,14 @@ export default {
       })
     },
 
+    sync() {
+      const ids = this.changes.get('page')
+        .filter((item) => this.patch(item))
+        .map((item) => item.id)
+
+      this.changes.patched('page', ids)
+    },
+
     title(item) {
       const list = []
 
@@ -1123,6 +1302,10 @@ export default {
   },
 
   watch: {
+    'changes.changed.page'() {
+      this.sync()
+    },
+
     filter: {
       deep: true,
       handler(filter) {
@@ -1197,6 +1380,11 @@ export default {
                   $gettext('Disable')
                 }}</v-btn>
               </v-list-item>
+              <v-list-item v-if="isChecked && user.can('page:save')">
+                <v-btn :prepend-icon="mdiPencil" variant="text" @click="editProps()">{{
+                  $gettext('Edit properties')
+                }}</v-btn>
+              </v-list-item>
 
               <v-divider></v-divider>
 
@@ -1242,6 +1430,18 @@ export default {
         clearable
       ></v-text-field>
     </div>
+
+    <v-btn
+      v-if="outdated"
+      @click="reload()"
+      :prepend-icon="mdiRefresh"
+      :title="$gettext('Updated by another user')"
+      color="primary"
+      variant="tonal"
+      size="small"
+      rounded="lg"
+      class="btn-outdated"
+    >{{ $gettext('Refresh') }}</v-btn>
 
     <v-btn
       @click="reload()"
@@ -1529,7 +1729,7 @@ export default {
           </div>
           <div v-if="node.title" class="item-subtitle">{{ node.title }}</div>
         </a>
-        <a class="item-aux" :href="url(node)" target="_blank" draggable="false">
+        <a class="item-aux" :href="url(node)" target="_blank" rel="noopener noreferrer" draggable="false">
           <div class="item-domain">{{ node.domain }}</div>
           <span class="item-path item-subtitle">{{ '/' + node.path }}</span>
           <span v-if="node.to" class="item-to item-subtitle"> ➔ {{ node.to.substring(0, 50) + (node.to.length > 50 ? '...' : '') }}</span>
@@ -1569,6 +1769,8 @@ export default {
       variant="tonal"
     />
   </div>
+
+  <PageBulkDialog v-model="propsDialog" :count="propsCount" :descendants="propsDescendants" @apply="saveProps" />
 </template>
 
 <style>

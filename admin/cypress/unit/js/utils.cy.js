@@ -1,4 +1,4 @@
-import { uid } from '../../../js/utils'
+import { debounce, uid } from '../../../js/utils'
 
 describe('uid()', () => {
   it('returns a string of length 6', () => {
@@ -29,5 +29,29 @@ describe('uid()', () => {
     const a = uid()
     const b = uid()
     expect(a).to.not.equal(b)
+  })
+})
+
+describe('debounce()', () => {
+  it('invokes the function once after the delay, coalescing rapid calls', () => {
+    cy.clock().then((clock) => {
+      let calls = 0
+      const fn = debounce(() => { calls++ }, 300)
+      fn()
+      fn()
+      clock.tick(300)
+      expect(calls).to.equal(1)
+    })
+  })
+
+  it('cancel() prevents a pending invocation', () => {
+    cy.clock().then((clock) => {
+      let calls = 0
+      const fn = debounce(() => { calls++ }, 300)
+      fn()
+      fn.cancel()
+      clock.tick(300)
+      expect(calls).to.equal(0)
+    })
   })
 })

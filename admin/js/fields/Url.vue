@@ -1,4 +1,4 @@
-/** @license LGPL, https://opensource.org/license/lgpl-3-0 */
+/** @license MIT, https://opensource.org/license/mit */
 
 <script>
 /**
@@ -7,6 +7,9 @@
  * - `placeholder`: string, placeholder text for the input field
  * - `required`: boolean, if true, the field is required
  */
+
+import gql from 'graphql-tag'
+import { debounce } from '../utils'
 
 export default {
   props: {
@@ -19,15 +22,30 @@ export default {
 
   emits: ['update:modelValue', 'error'],
 
+  setup() {
+    return { debounce }
+  },
+
   data() {
-    const allowed = this.config.allowed || ['http', 'https']
+    // Only allow plain alphabetic schemes into the pattern so a misconfigured
+    // schema cannot inject regex metacharacters.
+    const raw = this.config.allowed || ['http', 'https']
+    const allowed = raw.every((s) => /^[a-z]+$/.test(s)) ? raw : ['http', 'https']
 
     return {
       lastError: null,
+      loading: false,
+      pages: [],
+      // Dot-separated labels keep this linear (no nested, ambiguous quantifiers)
+      // to avoid catastrophic backtracking (ReDoS) on crafted input.
       regex: new RegExp(
-        `^((${allowed.join('|')}://)?([^/@: ]+(:[^/@: ]+)?@)?([0-9a-z]+(-[0-9a-z]+)*\\.)*[0-9a-z]+(-[0-9a-z]+)*\\.[a-z]{2,}(:[0-9]{1,5})?)?(/.*)?$`
+        `^(?:(?:${allowed.join('|')})://)?(?:[^/@: ]+(?::[^/@: ]+)?@)?(?:(?:[0-9a-z]+(?:-[0-9a-z]+)*\\.)+[a-z]{2,}(?::[0-9]{1,5})?)?(?:/.*)?$`
       )
     }
+  },
+
+  created() {
+    this.searchd = this.debounce(this.search, 300)
   },
 
   computed: {
@@ -48,11 +66,44 @@ export default {
     check(v) {
       const allowed = this.config.allowed || ['http', 'https']
 
-      if (!allowed.every((s) => /^[a-z]+/.test(s))) {
+      if (!allowed.every((s) => /^[a-z]+$/.test(s))) {
         return this.$gettext('Invalid URL schema configuration')
       }
 
       return v ? this.regex.test(v) : true
+    },
+
+    search(value) {
+      if (!value) {
+        this.pages = []
+        return
+      }
+
+      this.loading = true
+      this.$apollo
+        .query({
+          query: gql`
+            query pages($filter: PageFilter) {
+              pages(first: 10, filter: $filter) {
+                data {
+                  path
+                }
+              }
+            }
+          `,
+          variables: {
+            filter: { any: value.replace(/^\/+/, '') }
+          }
+        })
+        .then((result) => {
+          this.pages = (result.data?.pages?.data || []).map((page) => '/' + (page.path || ''))
+        })
+        .catch((error) => {
+          this.$log('Url::search(): Error fetching pages', error)
+        })
+        .finally(() => {
+          this.loading = false
+        })
     }
   },
 
@@ -72,17 +123,21 @@ export default {
 </script>
 
 <template>
-  <v-text-field
+  <v-combobox
     :error="hasError"
     :rules="rules"
+    :items="pages"
+    :loading="loading"
     :readonly="readonly"
     :placeholder="config.placeholder || ''"
+    :no-data-text="!loading ? $gettext('No pages found') : $gettext('Loading') + ' ...'"
     :modelValue="modelValue ?? config.default ?? ''"
     @update:modelValue="$emit('update:modelValue', $event)"
+    @update:search="searchd($event)"
     density="comfortable"
     hide-details="auto"
     variant="outlined"
     class="ltr"
     clearable
-  ></v-text-field>
+  ></v-combobox>
 </template>

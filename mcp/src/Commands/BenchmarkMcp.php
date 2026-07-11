@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @license LGPL, https://opensource.org/license/lgpl-3-0
+ * @license MIT, https://opensource.org/license/mit
  */
 
 
@@ -124,7 +124,7 @@ class BenchmarkMcp extends Command
             $file->forceFill( ['latest_id' => $unpubFileVersion->id] )->saveQuietly();
             $file->setRelation( 'latest', $unpubFileVersion );
 
-            Http::fake( ['*' => Http::response( 'benchmark', 200 )] );
+            Http::fake( fn() => Http::response( 'benchmark', 200 ) );
 
             $this->header();
 

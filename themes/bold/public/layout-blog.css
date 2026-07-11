@@ -1,0 +1,8 @@
+/**
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+main .cms-content {
+    max-width: 1200px;
+    margin: auto;
+}

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @license LGPL, https://opensource.org/license/lgpl-3-0
+ * @license MIT, https://opensource.org/license/mit
  */
 
 
@@ -31,7 +31,7 @@ class DropElement extends Tool
     public function handle( Request $request ): \Laravel\Mcp\ResponseFactory
     {
         if( !Permission::can( 'element:drop', $request->user() ) ) {
-            throw new \Exception( 'Insufficient permissions' );
+            throw new \Aimeos\Cms\Exception( 'Insufficient permissions' );
         }
 
         $v = $request->validate([
@@ -46,7 +46,9 @@ class DropElement extends Tool
             return Response::structured( ['error' => 'Element not found.'] );
         }
 
-        return Response::structured( $items->first()->toArray() );
+        $item = $items->first();
+
+        return Response::structured( ['id' => $item->id] + $item->toArray() );
     }
 
 

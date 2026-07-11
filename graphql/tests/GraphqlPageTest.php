@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @license LGPL, https://opensource.org/license/lgpl-3-0
+ * @license MIT, https://opensource.org/license/mit
  */
 
 
@@ -11,8 +11,6 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Nuwave\Lighthouse\Testing\MakesGraphQLRequests;
 use Nuwave\Lighthouse\Testing\RefreshesSchemaCache;
 use Database\Seeders\TestSeeder;
-use Aimeos\Cms\Models\Element;
-use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Nestedset\NestedSet;
 
@@ -24,24 +22,26 @@ class GraphqlPageTest extends GraphqlTestAbstract
     use MakesGraphQLRequests;
     use RefreshesSchemaCache;
 
+    protected $seeder = TestSeeder::class;
 
-	protected function defineEnvironment( $app )
-	{
+
+    protected function defineEnvironment( $app )
+    {
         parent::defineEnvironment( $app );
 
-		$app['config']->set( 'lighthouse.schema_path', __DIR__ . '/default-schema.graphql' );
-		$app['config']->set( 'lighthouse.namespaces.models', ['App\Models', 'Aimeos\\Cms\\Models'] );
-		$app['config']->set( 'lighthouse.namespaces.mutations', ['Aimeos\\Cms\\GraphQL\\Mutations'] );
-		$app['config']->set( 'lighthouse.namespaces.directives', ['Aimeos\\Cms\\GraphQL\\Directives'] );
+        $app['config']->set( 'lighthouse.schema_path', __DIR__ . '/default-schema.graphql' );
+        $app['config']->set( 'lighthouse.namespaces.models', ['App\Models', 'Aimeos\\Cms\\Models'] );
+        $app['config']->set( 'lighthouse.namespaces.mutations', ['Aimeos\\Cms\\GraphQL\\Mutations'] );
+        $app['config']->set( 'lighthouse.namespaces.directives', ['Aimeos\\Cms\\GraphQL\\Directives'] );
     }
 
 
-	protected function getPackageProviders( $app )
-	{
-		return array_merge( parent::getPackageProviders( $app ), [
-			'Nuwave\Lighthouse\LighthouseServiceProvider'
-		] );
-	}
+    protected function getPackageProviders( $app )
+    {
+        return array_merge( parent::getPackageProviders( $app ), [
+            'Nuwave\Lighthouse\LighthouseServiceProvider'
+        ] );
+    }
 
 
     protected function setUp(): void
@@ -61,8 +61,6 @@ class GraphqlPageTest extends GraphqlTestAbstract
 
     public function testPage()
     {
-        $this->seed(TestSeeder::class);
-
         $page = Page::where('tag', 'root')->firstOrFail();
 
         // Prepare expected attributes
@@ -120,8 +118,6 @@ class GraphqlPageTest extends GraphqlTestAbstract
 
     public function testPages()
     {
-        $this->seed(TestSeeder::class);
-
         $expected = [];
         $page = Page::where('tag', 'root')->firstOrFail();
 
@@ -202,8 +198,6 @@ class GraphqlPageTest extends GraphqlTestAbstract
 
     public function testPagesDraft()
     {
-        $this->seed( TestSeeder::class );
-
         $page = Page::where('tag', 'hidden')->firstOrFail();
 
         $this->expectsDatabaseQueryCount( 2 );
@@ -235,8 +229,6 @@ class GraphqlPageTest extends GraphqlTestAbstract
 
     public function testPagesScheduled()
     {
-        $this->seed( TestSeeder::class );
-
         $page = Page::where('tag', 'hidden')->firstOrFail();
 
         $this->expectsDatabaseQueryCount( 2 );
@@ -268,8 +260,6 @@ class GraphqlPageTest extends GraphqlTestAbstract
 
     public function testPagesSort()
     {
-        $this->seed(TestSeeder::class);
-
         $pages = Page::orderBy('id', 'desc')->take(2)->get();
 
         $response = $this->actingAs($this->user)->graphQL('{
@@ -289,8 +279,6 @@ class GraphqlPageTest extends GraphqlTestAbstract
 
     public function testPagesWithParentid()
     {
-        $this->seed(TestSeeder::class);
-
         $root = Page::where('tag', 'root')->firstOrFail();
         $pages = Page::where('parent_id', $root->id)->defaultOrder()->get();
         $expected = [];
@@ -366,8 +354,6 @@ class GraphqlPageTest extends GraphqlTestAbstract
 
     public function testPageParent()
     {
-        $this->seed( TestSeeder::class );
-
         $page = Page::where('tag', 'article')->firstOrFail();
 
         $this->expectsDatabaseQueryCount( 3 );
@@ -395,8 +381,6 @@ class GraphqlPageTest extends GraphqlTestAbstract
 
     public function testPageChildren()
     {
-        $this->seed( TestSeeder::class );
-
         $page = Page::where('tag', 'blog')->firstOrFail();
 
         $this->expectsDatabaseQueryCount( 3 );
@@ -435,8 +419,6 @@ class GraphqlPageTest extends GraphqlTestAbstract
 
     public function testPageAncestors()
     {
-        $this->seed( TestSeeder::class );
-
         $page = Page::where('tag', 'article')->firstOrFail();
 
         $this->expectsDatabaseQueryCount( 2 );
@@ -463,8 +445,6 @@ class GraphqlPageTest extends GraphqlTestAbstract
 
     public function testPageVersions()
     {
-        $this->seed(TestSeeder::class);
-
         $page = Page::where('tag', 'root')->firstOrFail();
         $element = $page->elements()->firstOrFail();
 
@@ -523,8 +503,6 @@ class GraphqlPageTest extends GraphqlTestAbstract
 
     public function testPageSimple()
     {
-        $this->seed( TestSeeder::class );
-
         $page = Page::where('tag', 'disabled')->firstOrFail();
 
         $this->expectsDatabaseQueryCount( 6 );
@@ -562,8 +540,6 @@ class GraphqlPageTest extends GraphqlTestAbstract
 
     public function testPageElements()
     {
-        $this->seed(TestSeeder::class);
-
         $page = Page::where('tag', 'root')->firstOrFail();
 
         $this->expectsDatabaseQueryCount(2);
@@ -602,12 +578,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
 
     public function testAddPage()
     {
-        $this->seed( TestSeeder::class );
-
-        $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
-        $element = Element::where( 'type', 'footer' )->firstOrFail();
-
-        $this->expectsDatabaseQueryCount( 9 );
+        $this->expectsDatabaseQueryCount( 5 );
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
                 addPage(input: {
@@ -623,7 +594,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
                     content: "[{\"type\":\"heading\",\"text\":\"Welcome to Laravel CMS\"}]"
                     status: 0
                     cache: 0
-                }, elements: ["' . $element->id . '"], files: ["' . $file->id . '"]) {
+                }) {
                     id
                     related_id
                     parent_id
@@ -679,8 +650,6 @@ class GraphqlPageTest extends GraphqlTestAbstract
 
     public function testAddPageChild()
     {
-        $this->seed( TestSeeder::class );
-
         $root = Page::where('tag', 'root')->firstOrFail();
 
         $this->expectsDatabaseQueryCount( 7 );
@@ -718,8 +687,6 @@ class GraphqlPageTest extends GraphqlTestAbstract
 
     public function testAddPageChildRef()
     {
-        $this->seed( TestSeeder::class );
-
         $root = Page::where('tag', 'root')->firstOrFail();
         $ref = Page::where('tag', 'blog')->firstOrFail();
 
@@ -760,8 +727,6 @@ class GraphqlPageTest extends GraphqlTestAbstract
 
     public function testMovePage()
     {
-        $this->seed( TestSeeder::class );
-
         $blog = Page::where('tag', 'blog')->firstOrFail();
 
         $this->expectsDatabaseQueryCount( 6 );
@@ -791,8 +756,6 @@ class GraphqlPageTest extends GraphqlTestAbstract
 
     public function testMovePageParent()
     {
-        $this->seed( TestSeeder::class );
-
         $root = Page::where('tag', 'root')->firstOrFail();
         $article = Page::where('tag', 'article')->firstOrFail();
 
@@ -821,8 +784,6 @@ class GraphqlPageTest extends GraphqlTestAbstract
 
     public function testMovePageParentRef()
     {
-        $this->seed( TestSeeder::class );
-
         $root = Page::where('tag', 'root')->firstOrFail();
         $blog = Page::where('tag', 'blog')->firstOrFail();
         $article = Page::where('tag', 'article')->firstOrFail();
@@ -854,13 +815,9 @@ class GraphqlPageTest extends GraphqlTestAbstract
 
     public function testSavePage()
     {
-        $this->seed(TestSeeder::class);
-
-        $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
-        $element = Element::where( 'type', 'footer' )->firstOrFail();
         $root = Page::where('tag', 'root')->firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 10 );
+        $this->expectsDatabaseQueryCount( 8 );
 
         $response = $this->actingAs($this->user)->graphQL('
             mutation {
@@ -877,7 +834,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
                     content: "[{\"type\":\"heading\",\"data\":{\"title\":\"Welcome to Laravel CMS\"}}]"
                     status: 0
                     cache: 5
-                }, elements: ["' . $element->id . '"], files: ["' . $file->id . '"]) {
+                }) {
                     id
                     parent_id
                     lang
@@ -959,10 +916,91 @@ class GraphqlPageTest extends GraphqlTestAbstract
     }
 
 
+    public function testBulkPage()
+    {
+        $pages = Page::whereNull( 'parent_id' )->take( 2 )->get();
+        $ids = $pages->map( fn( $page ) => '"' . $page->id . '"' )->implode( ', ' );
+
+        $response = $this->actingAs( $this->user )->graphQL( '
+            mutation {
+                bulkPage(id: [' . $ids . '], input: { status: 0, cache: 15 }) {
+                    ids
+                    latest
+                    data
+                    failed
+                }
+            }
+        ' );
+
+        $response->assertJsonCount( $pages->count(), 'data.bulkPage.ids' );
+
+        // data and latest are JSON scalar strings
+        $applied = json_decode( $response->json( 'data.bulkPage.data' ), true );
+        $latest = json_decode( $response->json( 'data.bulkPage.latest' ), true );
+
+        $this->assertEquals( 15, $applied['cache'] );
+        $this->assertSame( 0, $response->json( 'data.bulkPage.failed' ) );
+
+        foreach( $pages as $page )
+        {
+            $fresh = Page::findOrFail( $page->id );
+            $data = (array) $fresh->latest->data;
+
+            $this->assertEquals( 0, $data['status'] );
+            $this->assertEquals( 15, $data['cache'] );
+            $this->assertFalse( (bool) $fresh->latest->published );
+            $this->assertEquals( $fresh->latest_id, $latest[$page->id] );
+        }
+    }
+
+
+    public function testBulkPageDescendants()
+    {
+        $root = Page::where( 'tag', 'root' )->firstOrFail();
+        $expected = Page::withTrashed()
+            ->whereBetween( NestedSet::LFT, [$root->getLft(), $root->getRgt()] )
+            ->count();
+
+        $this->assertGreaterThan( 1, $expected );
+
+        $response = $this->actingAs( $this->user )->graphQL( '
+            mutation {
+                bulkPage(id: ["' . $root->id . '"], input: { cache: 30 }, descendants: true) {
+                    ids
+                }
+            }
+        ' );
+
+        $response->assertJsonCount( $expected, 'data.bulkPage.ids' );
+
+        foreach( $root->children as $child )
+        {
+            $data = (array) Page::findOrFail( $child->id )->latest->data;
+            $this->assertEquals( 30, $data['cache'] );
+        }
+    }
+
+
+    public function testBulkPageDenied()
+    {
+        $this->user->cmsperms = [];
+        $root = Page::where( 'tag', 'root' )->firstOrFail();
+
+        $response = $this->actingAs( $this->user )->graphQL( '
+            mutation {
+                bulkPage(id: ["' . $root->id . '"], input: { cache: 30 }) {
+                    ids
+                }
+            }
+        ' );
+
+        $response->assertJsonPath( 'data.bulkPage', null );
+        $this->assertNotEmpty( $response->json( 'errors' ) );
+    }
+
+
     public function testDropPage()
     {
-        $this->seed( TestSeeder::class );
-
         $root = Page::where('tag', 'root')->firstOrFail();
 
         $this->expectsDatabaseQueryCount( 5 );
@@ -996,8 +1034,6 @@ class GraphqlPageTest extends GraphqlTestAbstract
 
     public function testKeepPage()
     {
-        $this->seed( TestSeeder::class );
-
         $root = Page::where('tag', 'root')->firstOrFail();
         $root->delete();
 
@@ -1032,11 +1068,9 @@ class GraphqlPageTest extends GraphqlTestAbstract
 
     public function testPubPage()
     {
-        $this->seed( TestSeeder::class );
-
         $page = Page::where('tag', 'root')->firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 8 );
+        $this->expectsDatabaseQueryCount( 14 );
 
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
@@ -1060,8 +1094,6 @@ class GraphqlPageTest extends GraphqlTestAbstract
 
     public function testPubPageAt()
     {
-        $this->seed( TestSeeder::class );
-
         $page = Page::where('tag', 'root')->firstOrFail();
 
         $this->expectsDatabaseQueryCount( 4 );
@@ -1087,8 +1119,6 @@ class GraphqlPageTest extends GraphqlTestAbstract
 
     public function testPubPageAtWithTime()
     {
-        $this->seed( TestSeeder::class );
-
         $page = Page::where('tag', 'root')->firstOrFail();
 
         $response = $this->actingAs( $this->user )->graphQL( '
@@ -1114,8 +1144,6 @@ class GraphqlPageTest extends GraphqlTestAbstract
 
     public function testPurgePage()
     {
-        $this->seed( TestSeeder::class );
-
         $root = Page::where('tag', 'root')->firstOrFail();
 
         $this->expectsDatabaseQueryCount( 6 );

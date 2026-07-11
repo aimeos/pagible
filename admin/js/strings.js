@@ -1,5 +1,5 @@
 /**
- * @license LGPL, https://opensource.org/license/lgpl-3-0
+ * @license MIT, https://opensource.org/license/mit
  */
 
 // only for translation extraction
@@ -50,6 +50,7 @@ if ($pgettext) {
   $pgettext('st', 'meta-tags')
   $pgettext('st', 'social-media')
   $pgettext('st', 'canonical')
+  $pgettext('st', 'robots')
   $pgettext('st', 'theme')
   $pgettext('st', 'styles')
   $pgettext('st', 'javascript')
@@ -60,7 +61,9 @@ if ($pgettext) {
   $pgettext('fn', 'description')
   $pgettext('fn', 'file')
   $pgettext('fn', 'files')
+  $pgettext('fn', 'follow')
   $pgettext('fn', 'header')
+  $pgettext('fn', 'index')
   $pgettext('fn', 'keywords')
   $pgettext('fn', 'language')
   $pgettext('fn', 'level')

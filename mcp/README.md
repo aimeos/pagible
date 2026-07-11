@@ -41,4 +41,4 @@ php artisan cms:benchmark:mcp [options]
 
 ## License
 
-LGPL-3.0-only
+MIT

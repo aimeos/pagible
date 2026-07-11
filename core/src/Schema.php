@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @license LGPL, https://opensource.org/license/lgpl-3-0
+ * @license MIT, https://opensource.org/license/mit
  */
 
 
@@ -86,7 +86,9 @@ class Schema
      */
     public static function schemas( ?string $name = null, ?string $section = null ) : array
     {
-        $key = ( $name ?? '*' ) . '/' . ( $section ?? '*' );
+        // Tenant-scope the cache key: themes/schemas are per-tenant (see discover()), so a
+        // process-global static must not serve one tenant's schema to another under Octane.
+        $key = Tenancy::value() . '/' . ( $name ?? '*' ) . '/' . ( $section ?? '*' );
 
         if( isset( self::$schemas[$key] ) ) {
             return self::$schemas[$key];
@@ -110,20 +112,63 @@ class Schema
 
                 if( $section !== null )
                 {
-                    foreach( $theme[$sec] as $key => $value ) {
-                        $result[$key] = $result[$key] ?? $value;
+                    foreach( $theme[$sec] as $entry => $value ) {
+                        $result[$entry] = $result[$entry] ?? $value;
                     }
                 }
                 else
                 {
-                    foreach( $theme[$sec] as $key => $value ) {
-                        $result[$sec][$key] = $result[$sec][$key] ?? $value;
+                    foreach( $theme[$sec] as $entry => $value ) {
+                        $result[$sec][$entry] = $result[$sec][$entry] ?? $value;
                     }
                 }
             }
         }
 
         return self::$schemas[$key] = $result;
+    }
+
+
+    /**
+     * Returns the default (first) section defined for a page type, or "main".
+     *
+     * @param string|null $type Page type
+     * @return string Default section name
+     */
+    public static function section( ?string $type = null ) : string
+    {
+        return self::sections( $type )[0] ?? 'main';
+    }
+
+
+    /**
+     * Returns the content section names defined for a page type in schema.json.
+     *
+     * Sections are the layout regions a page type exposes (e.g. "main", "footer")
+     * and are used as the valid "group" values of its content elements. Results are
+     * merged across all registered themes.
+     *
+     * @param string|null $type Page type or null for all page types
+     * @return array<int, string> Section names
+     */
+    public static function sections( ?string $type = null ) : array
+    {
+        $result = [];
+
+        foreach( self::all() as $theme )
+        {
+            $types = $theme['types'] ?? [];
+            $defs = $type !== null ? [$types[$type] ?? []] : array_values( $types );
+
+            foreach( $defs as $def )
+            {
+                foreach( (array) ( $def['sections'] ?? [] ) as $section ) {
+                    $result[$section] = true;
+                }
+            }
+        }
+
+        return array_keys( $result );
     }
 
 
@@ -203,26 +248,26 @@ class Schema
      *
      * @param string $path Base path of the theme
      * @return array<string, mixed> Parsed theme metadata
-     * @throws \RuntimeException If schema.json is missing or invalid
+     * @throws Exception If schema.json is missing or invalid
      */
     private static function meta( string $path ) : array
     {
         $file = $path . '/schema.json';
 
         if( !file_exists( $file ) ) {
-            throw new \RuntimeException( sprintf( 'Missing schema.json in "%s"', $path ) );
+            throw new Exception( sprintf( 'Missing schema.json in "%s"', $path ) );
         }
 
         $json = file_get_contents( $file );
 
         if( $json === false || strlen( $json ) > 1048576 ) {
-            throw new \RuntimeException( sprintf( 'Invalid schema.json in "%s"', $path ) );
+            throw new Exception( sprintf( 'Invalid schema.json in "%s"', $path ) );
         }
 
         $data = json_decode( $json, true );
 
         if( !is_array( $data ) ) {
-            throw new \RuntimeException( sprintf( 'Invalid JSON in schema.json at "%s"', $path ) );
+            throw new Exception( sprintf( 'Invalid JSON in schema.json at "%s"', $path ) );
         }
 
         if( isset( $data['website'] ) && !Utils::isValidUrl( $data['website'] ) ) {

@@ -1,0 +1,66 @@
+/**
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+.questions details {
+    background-color: var(--pico-primary);
+    color: var(--pico-contrast-inverse);
+    border: 1px solid var(--pico-primary);
+    margin: 0 1rem 1rem;
+    padding: 1.25rem 1.5rem;
+}
+
+.questions summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    list-style: none;
+}
+
+.questions summary::-webkit-details-marker {
+    display: none;
+}
+
+.questions h3 {
+    font-size: var(--pico-font-size);
+    text-transform: none;
+    letter-spacing: 0;
+    color: var(--pico-contrast-inverse);
+    margin: 0;
+}
+
+.questions details summary svg {
+    margin-inline-start: 0.5rem;
+    transition: transform 0.3s;
+    min-width: 1.5rem;
+    color: var(--pico-contrast-inverse);
+}
+
+.questions details[open] summary svg {
+    transform: rotate(180deg);
+}
+
+.questions details > *:not(summary) {
+    transition: opacity 0.3s ease;
+    opacity: 0;
+}
+
+.questions details[open] > *:not(summary) {
+    opacity: 1;
+}
+
+.questions details[open] {
+    background-color: var(--pico-primary-hover);
+}
+
+@media screen and (min-width: 768px) {
+    .questions .faqs {
+        column-count: 2;
+        column-gap: 0;
+    }
+
+    .questions details {
+        break-inside: avoid;
+    }
+}

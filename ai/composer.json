@@ -4,21 +4,18 @@
     "keywords": ["laravel", "cms", "ai"],
     "homepage": "https://pagible.com",
     "type": "library",
-    "license": "LGPL-3.0-only",
+    "license": "MIT",
     "prefer-stable": true,
     "minimum-stability": "dev",
     "require": {
         "php": "^8.2",
+        "aimeos/pagible-mcp": "*@dev",
         "aimeos/pagible-core": "*@dev",
         "aimeos/pagible-graphql": "*@dev",
-        "aimeos/prisma": "dev-master",
-        "prism-php/prism": "~0.100.0"
+        "aimeos/prisma": "dev-master"
     },
     "require-dev": {
         "orchestra/testbench": "^9.0||^10.0||^11.0"
-    },
-    "suggest": {
-        "aimeos/pagible-mcp": "For AI MCP tools"
     },
     "autoload": {
         "psr-4": {

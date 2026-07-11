@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @license LGPL, https://opensource.org/license/lgpl-3-0
+ * @license MIT, https://opensource.org/license/mit
  */
 
 
@@ -9,23 +9,17 @@ namespace Tests;
 
 use Aimeos\Cms\Mcp\CmsServer;
 use Aimeos\Cms\Models\Element;
-use Illuminate\Foundation\Testing\DatabaseTruncation;
-use Illuminate\Foundation\Testing\RefreshDatabaseState;
+use Database\Seeders\TestSeeder;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
 
 class ElementToolsTest extends McpTestAbstract
 {
     use CmsWithMigrations;
-    use DatabaseTruncation;
+    use RefreshDatabase;
 
-    protected $connectionsToTransact = [];
-
-
-    protected function beforeTruncatingDatabase(): void
-    {
-        // In-memory SQLite databases don't persist across test classes
-        RefreshDatabaseState::$migrated = false;
-    }
+    protected $seeder = TestSeeder::class;
 
 
     protected function setUp(): void
@@ -45,7 +39,6 @@ class ElementToolsTest extends McpTestAbstract
 
     public function testGetElement()
     {
-        $this->seed( \Database\Seeders\TestSeeder::class );
         $element = Element::where( 'name', 'Shared footer' )->first();
 
         $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\GetElement::class, [
@@ -68,8 +61,6 @@ class ElementToolsTest extends McpTestAbstract
 
     public function testSearchElementsNoTerm()
     {
-        $this->seed( \Database\Seeders\TestSeeder::class );
-
         $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\SearchElements::class );
 
         $response->assertOk()->assertSee( ['Shared footer', 'footer'] );
@@ -78,8 +69,6 @@ class ElementToolsTest extends McpTestAbstract
 
     public function testSearchElementsFilterType()
     {
-        $this->seed( \Database\Seeders\TestSeeder::class );
-
         $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\SearchElements::class, [
             'type' => 'footer',
         ] );
@@ -90,8 +79,9 @@ class ElementToolsTest extends McpTestAbstract
 
     public function testSearchElements()
     {
-        $this->seed( \Database\Seeders\TestSeeder::class );
-        sleep( 5 ); // Wait for SQL Server to update fulltext index
+        if( DB::connection( config( 'cms.db' ) )->getDriverName() === 'sqlsrv' ) {
+            sleep( 5 );
+        }
 
         $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\SearchElements::class, [
             'term' => 'footer',
@@ -117,16 +107,21 @@ class ElementToolsTest extends McpTestAbstract
         ] );
 
         $response->assertOk()->assertSee( ['Test heading', 'heading'] );
+
+        // the created element's id must be part of the response (Element::$visible omits it)
+        $element = Element::where( 'name', 'Test heading' )->first();
+        $this->assertNotNull( $element );
+        $response->assertSee( [$element->id] );
     }
 
 
     public function testSaveElement()
     {
-        $this->seed( \Database\Seeders\TestSeeder::class );
         $element = Element::where( 'name', 'Shared footer' )->first();
 
         $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\SaveElement::class, [
             'id' => $element->id,
+            'latest_id' => $element->latest_id,
             'name' => 'Updated footer',
         ] );
 
@@ -138,6 +133,7 @@ class ElementToolsTest extends McpTestAbstract
     {
         $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\SaveElement::class, [
             'id' => '00000000-0000-0000-0000-000000000000',
+            'latest_id' => '00000000-0000-0000-0000-000000000000',
             'name' => 'Nope',
         ] );
 
@@ -145,9 +141,21 @@ class ElementToolsTest extends McpTestAbstract
     }
 
 
+    public function testSaveElementRequiresLatestId()
+    {
+        $element = Element::where( 'name', 'Shared footer' )->first();
+
+        $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\SaveElement::class, [
+            'id' => $element->id,
+            'name' => 'No token',
+        ] );
+
+        $response->assertHasErrors( ['latest_id'] );
+    }
+
+
     public function testPublishElement()
     {
-        $this->seed( \Database\Seeders\TestSeeder::class );
         $element = Element::where( 'name', 'Shared footer' )->first();
 
         $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\PublishElement::class, [
@@ -160,7 +168,6 @@ class ElementToolsTest extends McpTestAbstract
 
     public function testPublishElementScheduled()
     {
-        $this->seed( \Database\Seeders\TestSeeder::class );
         $element = Element::where( 'name', 'Shared footer' )->first();
 
         $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\PublishElement::class, [
@@ -174,7 +181,6 @@ class ElementToolsTest extends McpTestAbstract
 
     public function testDropElement()
     {
-        $this->seed( \Database\Seeders\TestSeeder::class );
         $element = Element::where( 'name', 'Shared footer' )->first();
 
         $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\DropElement::class, [
@@ -198,7 +204,6 @@ class ElementToolsTest extends McpTestAbstract
 
     public function testRestoreElement()
     {
-        $this->seed( \Database\Seeders\TestSeeder::class );
         $element = Element::where( 'name', 'Shared footer' )->first();
         $element->delete();
 
@@ -213,7 +218,6 @@ class ElementToolsTest extends McpTestAbstract
 
     public function testRestoreElementNotDeleted()
     {
-        $this->seed( \Database\Seeders\TestSeeder::class );
         $element = Element::where( 'name', 'Shared footer' )->first();
 
         $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\RestoreElement::class, [

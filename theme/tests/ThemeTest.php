@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @license LGPL, https://opensource.org/license/lgpl-3-0
+ * @license MIT, https://opensource.org/license/mit
  */
 
 
@@ -9,6 +9,7 @@ namespace Tests;
 
 use Aimeos\Cms\Schema;
 use Aimeos\Cms\Theme;
+use Illuminate\Support\Facades\Blade;
 
 
 class ThemeTest extends ThemeTestAbstract
@@ -89,6 +90,42 @@ class ThemeTest extends ThemeTestAbstract
 	}
 
 
+	public function testBladeTextDirectiveDoesNotInsertBreakTags()
+	{
+		$template = '@text($text){{-- no-break-tags --}}';
+
+		$this->assertEquals( "one\ntwo", Blade::render( $template, ['text' => "one\ntwo"], true ) );
+		$this->assertEquals( "one &amp; two\n<strong>three</strong>", Blade::render( $template, ['text' => "one & two\n**three**"], true ) );
+	}
+
+
+	public function testMarkdownDirectiveTrimsOuterBreaks()
+	{
+		$template = '<div class="text">@markdown($text)</div>';
+
+		$this->assertEquals( '<div class="text"><p>one</p></div>', Blade::render( $template, ['text' => 'one'], true ) );
+	}
+
+
+	public function testTextClassNodesAreInline()
+	{
+		foreach( glob( dirname( __DIR__ ) . '/views/*.blade.php' ) ?: [] as $path ) {
+			$view = file_get_contents( $path );
+
+			preg_match_all( '/<(?<tag>[a-z][a-z0-9-]*)\b[^>]*class="[^"]*\btext\b[^"]*"[^>]*>.*?<\/\k<tag>>/s', $view, $matches );
+
+			foreach( $matches[0] ?? [] as $node ) {
+				if( !str_contains( $node, '@markdown(' ) ) {
+					continue;
+				}
+
+				$this->assertStringNotContainsString( "\n", $node, $path );
+				$this->assertStringNotContainsString( "\r", $node, $path );
+			}
+		}
+	}
+
+
 	public function testGet()
 	{
 		$this->assertIsArray( Schema::get( 'cms' ) );
@@ -112,6 +149,21 @@ class ThemeTest extends ThemeTestAbstract
 	}
 
 
+	public function testViewsRejectsPathTraversal()
+	{
+		// A page theme is user-controlled and flows into a storage path that is
+		// recursively cleaned up. Names outside the [a-zA-Z0-9-] whitelist must be
+		// returned verbatim without ever touching the filesystem (no traversal).
+		config( ['cms.theme.disk' => 'local'] );
+
+		foreach( ['../../../..', '../etc', 'foo/bar', 'foo\\bar', "foo\0bar", '.', '..', ''] as $name ) {
+			$this->assertEquals( $name, Theme::views( $name ) );
+		}
+
+		$this->assertDirectoryDoesNotExist( storage_path( 'app/cms-themes' ) );
+	}
+
+
 	public function testMetadata()
 	{
 		$theme = Schema::get( 'cms' );
@@ -130,6 +182,8 @@ class ThemeTest extends ThemeTestAbstract
 		$this->assertArrayHasKey( 'meta', $schemas );
 		$this->assertArrayHasKey( 'heading', $schemas['content'] );
 		$this->assertArrayHasKey( 'meta-tags', $schemas['meta'] );
+		$this->assertArrayHasKey( 'description', $schemas['meta']['meta-tags']['fields'] );
+		$this->assertArrayHasKey( 'description', $schemas['meta']['social-media']['fields'] );
 	}
 
 

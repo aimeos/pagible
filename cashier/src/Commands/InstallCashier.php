@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @license LGPL, https://opensource.org/license/lgpl-3-0
+ * @license MIT, https://opensource.org/license/mit
  */
 
 
@@ -160,6 +160,7 @@ class InstallCashier extends Command
 
         [$package, $namespace] = CashierServiceProvider::PROVIDERS[$provider];
 
+        /** @phpstan-ignore function.impossibleType */
         if( class_exists( $namespace . '\CashierServiceProvider' ) ) {
             return;
         }

@@ -15,7 +15,7 @@ const ALL_PERMISSIONS = {
   'page:keep': true,
   'page:purge': true,
   'page:publish': true,
-  'page:synthesize': true,
+  'page:chat': true,
   'audio:transcribe': true,
   'element:view': true,
   'file:view': true,
@@ -35,7 +35,7 @@ function makePage(overrides = {}) {
     created_at: '2026-01-01 00:00:00',
     deleted_at: null,
     editor: 'admin@example.com',
-    has: false,
+    has: 0,
     latest: {
       id: '10',
       published: true,
@@ -77,24 +77,25 @@ function pagesResponse(pages) {
  * @param {Array}             options.pages       – array of page objects for the `pages` query
  * @param {object|null}       options.addPage     – return value for `addPage` mutation
  * @param {object|null}       options.savePage    – return value for `savePage` mutation
+ * @param {Array|null}        options.bulkPage   – return value for `bulkPage` mutation
  * @param {object|null}       options.movePage    – return value for `movePage` mutation
  * @param {object|null}       options.dropPage    – return value for `dropPage` mutation
  * @param {object|null}       options.keepPage    – return value for `keepPage` mutation
  * @param {object|null}       options.purgePage   – return value for `purgePage` mutation
  * @param {object|null}       options.pubPage     – return value for `pubPage` mutation
- * @param {string|null}       options.synthesize  – return value for `synthesize` mutation
  */
 function setupIntercept({
   meResponse = ME_ADMIN,
   pages = [],
   addPage = null,
   savePage = null,
+  bulkPage = null,
   movePage = null,
   dropPage = null,
   keepPage = null,
   purgePage = null,
   pubPage = null,
-  synthesize = null,
+  schemas = [{ name: 'cms', label: 'CMS', types: '{"page":{},"blog":{}}', content: '{}', meta: '{}', config: '{}' }],
 } = {}) {
   cy.intercept('POST', '/graphql', (req) => {
     const isBatch = Array.isArray(req.body)
@@ -111,6 +112,11 @@ function setupIntercept({
       }
       if (query.includes('addPage')) {
         return { data: { addPage: addPage || { id: '99' } } }
+      }
+      if (query.includes('bulkPage')) {
+        const ids = op.variables?.id || ['1']
+        // data and latest are JSON scalar strings
+        return { data: { bulkPage: bulkPage || { ids, latest: '{}', data: JSON.stringify(op.variables?.input || {}), failed: 0 } } }
       }
       if (query.includes('savePage')) {
         return { data: { savePage: savePage || { id: op.variables?.id || '1' } } }
@@ -130,8 +136,8 @@ function setupIntercept({
       if (query.includes('pubPage')) {
         return { data: { pubPage: pubPage || { id: '1' } } }
       }
-      if (query.includes('synthesize')) {
-        return { data: { synthesize: synthesize || 'Generated page content' } }
+      if (query.includes('schemas')) {
+        return { data: { schemas } }
       }
       if (query.includes('pages')) {
         return { data: pagesResponse(pages) }
@@ -261,19 +267,19 @@ describe('Page List', () => {
   // ---- Tree node expand/collapse ----
 
   it('shows expand button for nodes with children', () => {
-    const page = makePage({ has: true })
+    const page = makePage({ has: 2 })
     visitPages([page])
     cy.get('.tree-node-inner .actions .v-btn').first().should('exist').and('not.have.class', 'hidden')
   })
 
   it('hides expand button for leaf nodes', () => {
-    const page = makePage({ has: false })
+    const page = makePage({ has: 0 })
     visitPages([page])
     cy.get('.tree-node-inner .actions .v-btn').first().should('have.class', 'hidden')
   })
 
   it('clicking expand fetches child pages', () => {
-    const page = makePage({ has: true })
+    const page = makePage({ has: 2 })
     visitPages([page])
     // Click the expand/collapse toggle button
     cy.get('.tree-node-inner .actions .v-btn').first().click()
@@ -282,13 +288,11 @@ describe('Page List', () => {
 
   // ---- Page click opens detail ----
 
-  it('clicking a page item emits select / opens detail', () => {
+  it('clicking a page item navigates to detail view', () => {
     const page = makePage()
     visitPages([page])
     cy.get('.item-text').first().click()
-    // The openView method is called - check that PageDetail overlay appears or URL changes
-    // Since openView pushes a view overlay, we can check the DOM for the detail component
-    cy.wait(300) // give time for view transition
+    cy.url().should('include', '/pages/')
   })
 
   // ---- Node context menu (three-dot menu) ----
@@ -488,6 +492,134 @@ describe('Page List', () => {
     cy.get('.v-card .v-list').should('contain', 'Purge')
   })
 
+  // ---- Batch edit properties ----
+
+  // Uses real (focus/hit-test-respecting) pointer events: the dropdown menus only
+  // open on a real click once the dialog is opened after the bulk menu's overlay
+  // has closed. Synthetic cy.click() bypasses this, so realClick keeps it honest.
+  it('real-click on a property dropdown opens its menu and applies the value', () => {
+    const page = makePage()
+    visitPages([page])
+    cy.get('.tree-node-inner .v-checkbox-btn').first().click()
+    cy.get('.header .bulk .btn-actions .v-btn').click()
+    cy.contains('.v-card .v-list .v-btn', 'Edit properties').click()
+    cy.get('.btn-apply').should('be.visible')
+    cy.get('.prop').first().find('.v-field').realClick()
+    cy.get('.v-overlay-container [role="option"]').contains('Disabled').should('be.visible').click()
+    cy.get('.btn-apply').should('not.be.disabled').click()
+    cy.wait('@gql').its('request.body').should((body) => {
+      const ops = Array.isArray(body) ? body : [body]
+      const saveOp = ops.find((op) => (op.query || '').includes('bulkPage'))
+      expect(saveOp).to.exist
+      expect(saveOp.variables.input.status).to.equal(0)
+    })
+  })
+
+  // The page list view does not load theme schemas (only the detail view does),
+  // so the dialog must load them itself or the theme/type dropdowns stay empty.
+  it('theme dropdown is populated from schemas in the list view', () => {
+    const page = makePage()
+    visitPages([page])
+    cy.get('.tree-node-inner .v-checkbox-btn').first().click()
+    cy.get('.header .bulk .btn-actions .v-btn').click()
+    cy.contains('.v-card .v-list .v-btn', 'Edit properties').click()
+    cy.get('.btn-apply').should('be.visible')
+    // theme is the 4th property row (status, cache, language, theme)
+    cy.get('.prop').eq(3).find('.v-field').realClick()
+    cy.get('.v-overlay-container [role="option"]').should('have.length.gte', 1)
+  })
+
+  it('bulk actions menu shows Edit properties', () => {
+    const page = makePage()
+    visitPages([page])
+    cy.get('.tree-node-inner .v-checkbox-btn').first().click()
+    cy.get('.header .bulk .btn-actions .v-btn').click()
+    cy.get('.v-card .v-list').should('contain', 'Edit properties')
+  })
+
+  it('clicking Edit properties opens the dialog', () => {
+    const page = makePage({ has: 2 })
+    visitPages([page])
+    cy.get('.tree-node-inner .v-checkbox-btn').first().click()
+    cy.get('.header .bulk .btn-actions .v-btn').click()
+    cy.contains('.v-card .v-list .v-btn', 'Edit properties').click()
+    cy.get('.btn-apply').should('exist')
+    cy.get('.btn-apply-recursive').should('exist')
+  })
+
+  it('Apply is disabled until a property is enabled', () => {
+    const page = makePage({ has: 2 })
+    visitPages([page])
+    cy.get('.tree-node-inner .v-checkbox-btn').first().click()
+    cy.get('.header .bulk .btn-actions .v-btn').click()
+    cy.contains('.v-card .v-list .v-btn', 'Edit properties').click()
+    cy.get('.btn-apply').should('be.disabled')
+    cy.get('.btn-apply-recursive').should('be.disabled')
+  })
+
+  it('Apply sends bulkPage with the enabled property and descendants false', () => {
+    const page = makePage()
+    visitPages([page])
+    cy.get('.tree-node-inner .v-checkbox-btn').first().click()
+    cy.get('.header .bulk .btn-actions .v-btn').click()
+    cy.contains('.v-card .v-list .v-btn', 'Edit properties').click()
+    // enable the first property (status), then apply
+    cy.get('.prop').first().find('.v-checkbox-btn').click()
+    cy.get('.btn-apply').click()
+    cy.wait('@gql').its('request.body').should((body) => {
+      const ops = Array.isArray(body) ? body : [body]
+      const saveOp = ops.find((op) => (op.query || '').includes('bulkPage'))
+      expect(saveOp).to.exist
+      expect(saveOp.variables.input.status).to.equal(1)
+      expect(saveOp.variables.descendants).to.equal(false)
+      expect(saveOp.variables.id).to.have.length(1)
+    })
+  })
+
+  it('Apply recursively sends bulkPage with descendants true', () => {
+    const page = makePage({ has: 2 })
+    visitPages([page])
+    cy.get('.tree-node-inner .v-checkbox-btn').first().click()
+    cy.get('.header .bulk .btn-actions .v-btn').click()
+    cy.contains('.v-card .v-list .v-btn', 'Edit properties').click()
+    cy.get('.prop').first().find('.v-checkbox-btn').click()
+    cy.get('.btn-apply-recursive').click()
+    cy.wait('@gql').its('request.body').should((body) => {
+      const ops = Array.isArray(body) ? body : [body]
+      const saveOp = ops.find((op) => (op.query || '').includes('bulkPage'))
+      expect(saveOp).to.exist
+      expect(saveOp.variables.descendants).to.equal(true)
+    })
+  })
+
+  it('Apply recursively shows the affected page count', () => {
+    const page = makePage({ has: 2 })
+    visitPages([page])
+    cy.get('.tree-node-inner .v-checkbox-btn').first().click()
+    cy.get('.header .bulk .btn-actions .v-btn').click()
+    cy.contains('.v-card .v-list .v-btn', 'Edit properties').click()
+    // the checked page (has: 2 descendants) plus itself = 3 affected pages
+    cy.get('.btn-apply-recursive').should('contain', '(3)')
+  })
+
+  it('opening a property dropdown and picking a value auto-includes it', () => {
+    const page = makePage()
+    visitPages([page])
+    cy.get('.tree-node-inner .v-checkbox-btn').first().click()
+    cy.get('.header .bulk .btn-actions .v-btn').click()
+    cy.contains('.v-card .v-list .v-btn', 'Edit properties').click()
+    // interact with the dropdown directly (no manual checkbox click)
+    cy.get('.prop').first().find('.v-select').click()
+    cy.get('.v-overlay-container .v-list-item').contains('Disabled').click()
+    cy.get('.btn-apply').click()
+    cy.wait('@gql').its('request.body').should((body) => {
+      const ops = Array.isArray(body) ? body : [body]
+      const saveOp = ops.find((op) => (op.query || '').includes('bulkPage'))
+      expect(saveOp).to.exist
+      expect(saveOp.variables.input.status).to.equal(0)
+    })
+  })
+
   // ---- Status styling ----
 
   it('disabled page has line-through style on title', () => {
@@ -578,14 +710,14 @@ describe('Page List', () => {
     cy.get('.item-aux').first().should('have.attr', 'target', '_blank')
   })
 
-  // ---- AI synthesize prompt ----
+  // ---- AI chat prompt ----
 
-  it('shows synthesize prompt for users with page:synthesize permission', () => {
+  it('shows chat prompt for users with page:chat permission', () => {
     visitPages()
     cy.get('.prompt').should('exist')
   })
 
-  it('hides synthesize prompt when user lacks page:synthesize permission', () => {
+  it('hides chat prompt when user lacks page:chat permission', () => {
     const me = {
       permission: JSON.stringify({ 'page:view': true, 'page:add': true }),
       email: 'editor@example.com',
@@ -595,20 +727,31 @@ describe('Page List', () => {
     cy.get('.prompt').should('not.exist')
   })
 
-  it('synthesize submit button appears after typing prompt', () => {
+  it('chat submit button appears after typing prompt', () => {
     visitPages()
     cy.get('.prompt textarea').first().type('Create a landing page about cats')
     cy.get('.prompt .v-input__append .v-btn').should('exist')
   })
 
-  it('clicking synthesize submit sends synthesize mutation', () => {
+  it('opens the chat dialog and streams the synthesized answer when submitting a prompt', () => {
     visitPages()
+
+    // The chat posts to the streaming text endpoint and renders the chunks (no GraphQL mutation)
+    cy.intercept('POST', '**/cmsapi/chat', {
+      statusCode: 200,
+      headers: { 'content-type': 'text/plain' },
+      body: 'Generated page content',
+    }).as('chat')
+
     cy.get('.prompt textarea').first().type('Create a landing page')
     cy.get('.prompt .v-input__append .v-btn').click()
-    cy.wait('@gql').its('request.body').should((body) => {
-      const ops = Array.isArray(body) ? body : [body]
-      expect(ops.some((op) => (op.query || '').includes('synthesize'))).to.be.true
+    cy.contains('AI Assistant').should('be.visible') // the launcher expands into the chat modal
+
+    cy.wait('@chat').its('request.body').should((body) => {
+      expect(body.prompt).to.eq('Create a landing page')
     })
+
+    cy.contains('Generated page content').should('be.visible')
   })
 
   // ---- Permission-based visibility ----

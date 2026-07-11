@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @license LGPL, https://opensource.org/license/lgpl-3-0
+ * @license MIT, https://opensource.org/license/mit
  */
 
 
@@ -23,23 +23,16 @@ use Laravel\Mcp\Request;
 
 #[Name('add-page')]
 #[Title('Create a new page within the page tree')]
-#[Description('Creates a new page in the page tree. Requires lang (ISO code like "en"), name (max 50 chars), title (max 100 chars), content (array of {type, data} objects — use get-schemas for types), and meta with meta-tags description for SEO. Optional: config, to, tag, theme, type, domain, path, status (0/1/2), cache (minutes), related_id, parent_id, ref, files, elements. Returns the created page as JSON.')]
+#[Description('Creates a new page in the page tree. Requires lang (ISO code like "en"), name (max 50 chars), title (max 100 chars), content (array of {type, data} objects — use get-schemas for types), and meta with meta-tags description for SEO. Files and shared elements are attached automatically from the file and reference items in the content, meta and config. Optional: config, to, tag, theme, type, domain, path, cache (minutes), related_id, parent_id, ref. Returns the created page as JSON, including the latest_id to pass to save-page when editing it.')]
 class AddPage extends Tool
 {
-    private int $numcalls = 0;
-
-
     /**
      * Handle the tool request.
      */
     public function handle( Request $request ): \Laravel\Mcp\ResponseFactory
     {
         if( !Permission::can( 'page:add', $request->user() ) ) {
-            throw new \Exception( 'Insufficient permissions' );
-        }
-
-        if( $this->numcalls > 0 ) {
-            return Response::structured( ['error' => 'Only one page can be created at a time.'] );
+            throw new \Aimeos\Cms\Exception( 'Insufficient permissions' );
         }
 
         $v = $request->validate([
@@ -61,15 +54,10 @@ class AddPage extends Tool
             'type' => 'string|max:50',
             'domain' => 'string|max:255',
             'path' => 'string|max:255',
-            'status' => 'integer|in:0,1,2',
             'cache' => 'integer|min:0',
             'related_id' => 'string|max:36',
             'parent_id' => 'string|max:36',
             'ref' => 'string|max:36',
-            'files' => 'array',
-            'files.*' => 'string|max:36',
-            'elements' => 'array',
-            'elements.*' => 'string|max:36',
         ], [
             'lang.required' => 'You must specify a language code from the list of available locales. For example, "en" or "en-US".',
             'name.required' => 'You must specify a name for the page and it must not be longer than 50 characters.',
@@ -79,10 +67,6 @@ class AddPage extends Tool
             'meta.meta-tags.required' => 'You must provide meta-tags with a description for SEO.',
             'meta.meta-tags.description.required' => 'You must provide a meta description in meta.meta-tags.description for SEO. It should be 150-160 characters.',
         ] );
-
-        if( isset( $v['content'] ) ) {
-            $v['content'] = Validation::content( $v['content'] );
-        }
 
         $pid = $v['parent_id'] ?? null;
 
@@ -99,33 +83,39 @@ class AddPage extends Tool
         $v['theme'] = $v['theme'] ?? $parent?->latest?->data->theme ?? '';
         $v['type'] = $v['type'] ?? $parent?->latest?->data->type ?? '';
         $v['lang'] = $v['lang'] ?? $parent?->lang ?: '';
+
+        if( isset( $v['content'] ) ) {
+            // Use the raw request input, not the validated copy: validate() rebuilds
+            // wildcard arrays via rule expansion, which materializes elements matched
+            // by content.*.id first and appends id-less elements at the end, scrambling
+            // the author's order. The raw input preserves it; Validation::content()
+            // still whitelists each element's keys.
+            $v['content'] = Validation::content( $request->get( 'content' ), $v['type'] );
+        }
         $v['related_id'] = $v['related_id'] ?? null;
-        $v['status'] = $v['status'] ?? 0;
         $v['cache'] = $v['cache'] ?? 5;
         $v['tag'] = $v['tag'] ?? '';
         $v['to'] = $v['to'] ?? '';
+        $v['status'] = 0;
 
         if( isset( $v['meta'] ) ) {
-            $v['meta'] = Validation::structured( $v['meta'], 'meta', new \stdClass() );
+            $v['meta'] = Validation::structured( $v['meta'], 'meta', new \stdClass(), $v['type'] );
         }
 
         if( isset( $v['config'] ) ) {
-            $v['config'] = Validation::structured( $v['config'], 'config', new \stdClass() );
+            $v['config'] = Validation::structured( $v['config'], 'config', new \stdClass(), $v['type'] );
         }
 
-        $input = array_diff_key( $v, array_flip( ['parent_id', 'ref', 'files', 'elements'] ) );
+        $input = array_diff_key( $v, array_flip( ['parent_id', 'ref'] ) );
 
         $page = Resource::addPage(
             $input,
             $request->user(),
-            $v['files'] ?? [],
-            $v['elements'] ?? [],
             $v['ref'] ?? null,
             $pid,
         );
 
-        $this->numcalls++;
-        return Response::structured( $page->toArray() );
+        return Response::structured( ['id' => $page->id, 'latest_id' => $page->latest_id] + $page->toArray() );
     }
 
 
@@ -154,7 +144,8 @@ class AddPage extends Tool
                         ->description( 'Content element type. Use get-schemas for available types.' )
                         ->required(),
                     'group' => $schema->string()
-                        ->description( 'Layout section, e.g., "main", "footer". Use "main" if unsure.' ),
+                        ->description( 'Layout section, e.g., "main", "footer". Use "main" if unsure.' )
+                        ->required(),
                     'data' => $schema->object()
                         ->description( 'Field values for this element. Use get-schemas for available fields per type.' )
                         ->required(),
@@ -188,12 +179,6 @@ class AddPage extends Tool
                 ->description( 'ID of the parent page where the new page will be added below.' ),
             'ref' => $schema->string()
                 ->description( 'ID of a sibling page to insert before. Takes priority over parent_id positioning.' ),
-            'files' => $schema->array()
-                ->items( $schema->string() )
-                ->description( 'Array of file UUIDs to attach to the page.' ),
-            'elements' => $schema->array()
-                ->items( $schema->string() )
-                ->description( 'Array of shared element UUIDs to attach to the page.' ),
         ];
     }
 

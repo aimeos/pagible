@@ -1,14 +1,16 @@
 <?php
 
 /**
- * @license LGPL, https://opensource.org/license/lgpl-3-0
+ * @license MIT, https://opensource.org/license/mit
  */
 
 
 namespace Aimeos\Cms\Tools;
 
-use Aimeos\Cms\Permission;
+use Aimeos\Cms\Concerns\ObservesPrisma;
 use Aimeos\Prisma\Prisma;
+use Aimeos\Cms\Permission;
+use Aimeos\Cms\Utils;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Attributes\Description;
@@ -26,13 +28,16 @@ Formatting and parts that should not be translated must be removed and added aga
 Returns the translated texts as a JSON array in the same order as the input.')]
 class TranslateContent extends Tool
 {
+    use ObservesPrisma;
+
+
     /**
      * Handle the tool request.
      */
     public function handle( Request $request ): \Laravel\Mcp\ResponseFactory
     {
         if( !Permission::can( 'text:translate', $request->user() ) ) {
-            throw new \Exception( 'Insufficient permissions' );
+            throw new \Aimeos\Cms\Exception( 'Insufficient permissions' );
         }
 
         $validated = $request->validate([
@@ -55,7 +60,7 @@ class TranslateContent extends Tool
         $from = $validated['from'] ?? null;
         $context = $validated['context'] ?? null;
 
-        $translations =  Prisma::text()
+        $translations = Prisma::text()->observe( $this->observer( Utils::editor( $request->user() ) ) )
             ->using( $provider, $config )
             ->model( $model )
             ->ensure( 'translate' )

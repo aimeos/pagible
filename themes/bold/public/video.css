@@ -1,0 +1,14 @@
+/**
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+.video video {
+    max-width: 100%;
+}
+
+@media screen and (min-width: 576px) {
+    .video video {
+        display: block;
+        border: 1px solid var(--pico-contrast-border);
+    }
+}

@@ -1,14 +1,15 @@
 /**
- * @license LGPL, https://opensource.org/license/lgpl-3-0
+ * @license MIT, https://opensource.org/license/mit
  */
 
 import { createPinia } from 'pinia'
 import { createApp, defineAsyncComponent } from 'vue'
+import { fieldComponents } from './fieldtypes'
 import visible from './directives/visible'
-import apollo from './graphql'
+import apollo, { apolloClient } from './graphql'
 import i18n from './i18n'
 import logger from './log'
-import router from './routes'
+import router, { addPluginRoutes } from './routes'
 import vuetify from './vuetify'
 import App from './App.vue'
 
@@ -41,11 +42,8 @@ app.directive('safe-svg', (el, binding) => {
 app.directive('visible', visible)
 
 
-const fields = import.meta.glob('@/fields/*.vue')
-
-for (const path in fields) {
-  const name = path.split('/').at(-1).split('.')[0]
-  app.component(name, defineAsyncComponent(fields[path]))
+for (const name in fieldComponents) {
+  app.component(name, defineAsyncComponent(fieldComponents[name]))
 }
 
 app
@@ -55,4 +53,21 @@ app
   .use(router)
   .use(vuetify)
   .use(apollo)
-  .mount('#app')
+
+// Expose the Apollo client to plugin sub-panels via inject('apollo'); the default
+// export above is the Vue Apollo plugin, not the client itself.
+app.provide('apollo', apolloClient)
+
+// Pinia is active now, so usePluginStore() is safe; register a route per plugin panel.
+addPluginRoutes()
+
+// In dev the SPA is served by Vite, so the page never passes through Laravel's `web` middleware
+// that starts a session and sets the XSRF-TOKEN cookie (production gets it from the /cmsadmin page
+// load). Prime it with one GET through the dev proxy before mounting, so the first CSRF-protected
+// POST (GraphQL or chat) carries a valid token. import.meta.env.DEV is statically false in builds,
+// so this branch is stripped from production bundles.
+if (import.meta.env.DEV) {
+  fetch('/cmsadmin', { credentials: 'include' }).finally(() => app.mount('#app'))
+} else {
+  app.mount('#app')
+}

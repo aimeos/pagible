@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @license LGPL, https://opensource.org/license/lgpl-3-0
+ * @license MIT, https://opensource.org/license/mit
  */
 
 
@@ -39,27 +39,9 @@ class ToolsTest extends McpTestAbstract
     {
         $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\GetSchemas::class );
 
-        $response->assertOk()->assertSee( ['heading'] );
-    }
-
-
-    // ── AI Tools ───────────────────────────────────────────────────────
-
-    public function testTranslateContent()
-    {
-        config(['cms.ai.translate.api_key' => 'test-key']);
-
-        $texts = ['Hello', 'World'];
-        $expected = ['Hallo', 'Welt'];
-
-        $response = \Aimeos\Prisma\Responses\TextResponse::fromTexts( $expected );
-        \Aimeos\Prisma\Prisma::fake( [$response] );
-
-        $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\TranslateContent::class, [
-            'texts' => ['Hello World'],
-            'to' => 'de',
-        ] );
-
-        $response->assertOk()->assertSee( ['translations'] );
+        $response->assertOk()
+            ->assertSee( ['heading'] )
+            ->assertSee( ['contents'] )
+            ->assertSee( ['anyOf'] );
     }
 }

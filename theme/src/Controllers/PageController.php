@@ -1,12 +1,13 @@
 <?php
 
 /**
- * @license LGPL, https://opensource.org/license/lgpl-3-0
+ * @license MIT, https://opensource.org/license/mit
  */
 
 
 namespace Aimeos\Cms\Controllers;
 
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Response;
 use Illuminate\View\View;
@@ -27,6 +28,20 @@ use Aimeos\Cms\Theme;
 
 class PageController extends Controller
 {
+    /**
+     * Issues a CSRF token and starts the session on demand.
+     *
+     * Cacheable pages can omit the per-session token from their HTML and fetch it
+     * only when a visitor actually submits a form. See theme/public/csrf.js.
+     *
+     * @return JsonResponse JSON response containing the CSRF token
+     */
+    public function csrf() : JsonResponse
+    {
+        return response()->json( ['token' => csrf_token()] );
+    }
+
+
     /**
      * Show the page for a given URL.
      *
@@ -53,11 +68,8 @@ class PageController extends Controller
         $key = Page::key( $path, $domain );
         $np = empty( $request->input() );
 
-        if( $np && $request->isMethod( 'GET' ) && ( $html = $cache->get( $key ) ) )
-        {
-            return response( $html, 200 )
-                ->header( 'Content-Type', 'text/html' )
-                ->header( 'Expires', substr( $html, -29 ) );
+        if( $np && $request->isMethod( 'GET' ) && ( $html = $cache->get( $key ) ) ) {
+            return $this->cached( $html );
         }
 
         $page = Page::with( [
@@ -91,11 +103,40 @@ class PageController extends Controller
 
         $response = ( new Response( $html, 200 ) )->header( 'Content-Type', 'text/html' );
 
-        if( $request->isMethod( 'GET' ) ) {
-            $response->header( 'Expires', $expires );
+        if( $request->isMethod( 'GET' ) )
+        {
+            $maxage = (int) $page->cache * 60;
+
+            $response->header( 'Expires', $expires )->header( 'Cache-Control', $page->cache
+                ? "public, s-maxage={$maxage}, max-age=0, must-revalidate"
+                : 'no-store, private' );
         }
 
         return $response;
+    }
+
+
+    /**
+     * Builds the public, CDN-cacheable response for stored page HTML.
+     *
+     * The cached HTML is final and static: CSP hashes are already resolved and no
+     * session-bound CSRF token is embedded (forms fetch it on demand). It is therefore
+     * returned verbatim with a "public" cache policy and no Set-Cookie header. The
+     * shared-cache lifetime is derived from the trailing expiry marker so the edge
+     * cache and the server cache expire together.
+     *
+     * @param string $html Cached page HTML with trailing expiry marker
+     * @return Response Public, cacheable response
+     */
+    protected function cached( string $html ) : Response
+    {
+        $expires = substr( $html, -29 );
+        $maxage = max( 0, strtotime( $expires ) - time() );
+
+        return ( new Response( $html, 200 ) )
+            ->header( 'Content-Type', 'text/html' )
+            ->header( 'Cache-Control', "public, s-maxage={$maxage}, max-age=0, must-revalidate" )
+            ->header( 'Expires', $expires );
     }
 
 
@@ -112,12 +153,13 @@ class PageController extends Controller
     protected function latest( string $path, string $domain )
     {
         $with = [
-            'files' => fn( $q ) => $q->select( File::SELECT_COLS ),
-            'elements' => fn( $q ) => $q->select( [...Element::SELECT_COLS, 'name'] ),
             'latest',
             'latest.files' => fn( $q ) => $q->select( File::SELECT_COLS ),
+            'latest.files.latest',
             'latest.elements' => fn( $q ) => $q->select( [...Element::SELECT_COLS, 'name'] ),
+            'latest.elements.latest',
             'latest.elements.files' => fn( $q ) => $q->select( File::SELECT_COLS ),
+            'latest.elements.files.latest',
         ];
 
         $page = Page::with( $with )
@@ -126,6 +168,14 @@ class PageController extends Controller
             ?? Page::with( $with )->where( 'domain', $domain )->where( 'path', $path )->firstOrFail();
 
         $version = $page->latest;
+
+        if( $version ) {
+            // The editor preview renders the draft version's content, so resolve files and
+            // elements from the version's pivots instead of the page-level pivots (which only
+            // reflect the published state and are synced on publish).
+            $page->setRelation( 'files', $version->getRelation( 'files' ) );
+            $page->setRelation( 'elements', $version->getRelation( 'elements' ) );
+        }
 
         if( $to = $version?->data->to ?? $page->to ) {
             return str_starts_with( $to, 'http' ) ? redirect()->away( $to ) : redirect()->to( $to );

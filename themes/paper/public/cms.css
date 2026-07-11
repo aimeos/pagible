@@ -167,7 +167,7 @@ header nav > ul > li:last-of-type a {
 }
 
 header nav a,
-header nav details > summary {
+header nav details.dropdown > summary {
     display: flex;
     align-items: center;
     list-style: none;
@@ -178,6 +178,35 @@ header nav details > summary {
     transition: color 0.15s ease;
     text-decoration: none;
     margin: 0;
+    height: auto;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+}
+
+header nav a:not([role]):hover,
+header nav a:not([role]):focus,
+header nav a:not([role]):active {
+    text-decoration: none;
+}
+
+header nav ul.menu > li:not(:last-of-type) > a:hover,
+header nav ul.menu > li:not(:last-of-type) > a:focus,
+header nav details.dropdown > summary:hover,
+header nav details.dropdown > summary:focus,
+header nav details.dropdown > summary:focus-visible,
+header nav details.dropdown > summary:active,
+header nav details.dropdown[open] > summary {
+    color: var(--pico-primary-hover);
+    background: transparent;
+    box-shadow: none;
+    border: 0;
+}
+
+header nav ul.menu > li:last-of-type > a:hover,
+header nav ul.menu > li:last-of-type > a:focus,
+header nav ul.menu > li:last-of-type > a:active {
+    color: var(--pico-primary-inverse);
 }
 
 header nav details summary::marker,
@@ -339,9 +368,14 @@ nav.breadcrumb ul li a:hover {
     max-width: 1200px !important;
 }
 
+.cms-text {
+    white-space: pre-line;
+}
+
 h1, h2, h3, h4, h5, h6 {
     font-family: var(--pico-font-family-display);
     letter-spacing: -0.03em;
+    white-space: pre-line;
 }
 
 h1, h2 {

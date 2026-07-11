@@ -1,11 +1,13 @@
 /**
- * @license LGPL, https://opensource.org/license/lgpl-3-0
+ * @license MIT, https://opensource.org/license/mit
  */
 
 import gql from 'graphql-tag'
-import { markRaw } from 'vue'
+import { defineAsyncComponent, h, markRaw } from 'vue'
 import { defineStore } from 'pinia'
 import { apolloClient, clearUploadLink } from './graphql'
+import { disconnect } from './echo'
+import gettext from './i18n'
 import {
   urladmin,
   urlproxy,
@@ -14,6 +16,7 @@ import {
   multidomain,
   locales as appLocales
 } from './config'
+import { safeParse, sanitize } from './utils'
 
 const FETCH_ME = gql`
   query {
@@ -44,6 +47,14 @@ const LOGOUT = gql`
     cmsLogout {
       email
       name
+    }
+  }
+`
+
+const FETCH_TOKEN = gql`
+  query {
+    me {
+      token
     }
   }
 `
@@ -83,7 +94,8 @@ export const useUserStore = defineStore('user', {
   state: () => ({
     me: null,
     urlintended: null,
-    saveTimer: null
+    saveTimer: null,
+    tokenTimer: null
   }),
 
   actions: {
@@ -104,6 +116,44 @@ export const useUserStore = defineStore('user', {
       return url ? (this.urlintended = url) : this.urlintended
     },
 
+    applyProxyToken() {
+      clearTimeout(this.tokenTimer)
+      this.tokenTimer = null
+
+      if (!this.me?.token) return
+
+      const app = useAppStore()
+      app.urlproxy = urlproxy.replace('url=', 'token=' + encodeURIComponent(this.me.token) + '&url=')
+
+      // The token's expiry is encoded as the first segment of "expires|uid|hmac";
+      // refresh a minute before it lapses so proxied media keeps loading.
+      let expires = 0
+      try {
+        expires = parseInt(atob(this.me.token).split('|')[0], 10) * 1000
+      } catch {
+        return
+      }
+
+      const delay = Math.min(Math.max(expires - Date.now() - 60000, 10000), 0x7fffffff)
+      this.tokenTimer = setTimeout(() => this.refreshToken(), delay)
+    },
+
+    refreshToken() {
+      if (!this.me) return
+
+      apolloClient
+        .query({ query: FETCH_TOKEN, fetchPolicy: 'network-only' })
+        .then((response) => {
+          if (response.data?.me?.token) {
+            this.me.token = response.data.me.token
+            this.applyProxyToken()
+          }
+        })
+        .catch((error) => {
+          console.error('Failed to refresh proxy token', error)
+        })
+    },
+
     async isAuthenticated() {
       if (this.me !== null) {
         return !!this.me
@@ -119,13 +169,10 @@ export const useUserStore = defineStore('user', {
           }
 
           this.me = response.data.me
-            ? { ...response.data.me, permission: JSON.parse(response.data.me.permission || '{}'), settings: JSON.parse(response.data.me.settings || '{}') }
+            ? { ...response.data.me, permission: safeParse(response.data.me.permission), settings: safeParse(response.data.me.settings) }
             : false
 
-          if (this.me?.token) {
-            const app = useAppStore()
-            app.urlproxy = urlproxy.replace('url=', 'token=' + encodeURIComponent(this.me.token) + '&url=')
-          }
+          this.applyProxyToken()
         })
         .catch((error) => {
           console.error('Failed to fetch user data', error)
@@ -152,17 +199,14 @@ export const useUserStore = defineStore('user', {
           this.me = response.data.cmsLogin || false
 
           if (this.me?.permission) {
-            this.me.permission = JSON.parse(this.me.permission)
+            this.me.permission = safeParse(this.me.permission)
           }
 
           if (this.me?.settings) {
-            this.me.settings = JSON.parse(this.me.settings)
+            this.me.settings = safeParse(this.me.settings)
           }
 
-          if (this.me?.token) {
-            const app = useAppStore()
-            app.urlproxy = urlproxy.replace('url=', 'token=' + encodeURIComponent(this.me.token) + '&url=')
-          }
+          this.applyProxyToken()
 
           return this.me
         })
@@ -176,6 +220,9 @@ export const useUserStore = defineStore('user', {
       clearTimeout(this.saveTimer)
       this.saveTimer = null
 
+      clearTimeout(this.tokenTimer)
+      this.tokenTimer = null
+
       return apolloClient
         .mutate({
           mutation: LOGOUT
@@ -187,14 +234,12 @@ export const useUserStore = defineStore('user', {
 
           return response.data.cmsLogout || false
         })
-        .finally(async () => {
+        .finally(() => {
           this.me = null
 
           useClipboardStore().$reset()
           useSideStore().$reset()
           clearUploadLink()
-
-          const { disconnect } = await import('./echo')
           disconnect()
 
           return apolloClient.clearStore()
@@ -302,6 +347,50 @@ export const useDrawerStore = defineStore('drawer', {
   }
 })
 
+/**
+ * Admin panel extensions registered by composer plugins.
+ *
+ * The definitions arrive as JSON in the #app element's data-plugins attribute.
+ * Each plugin's `component` is a URL to a Vite-built ES module with a default
+ * export, loaded lazily via dynamic import() and wrapped so a load failure shows
+ * a fallback instead of breaking the host. Components are markRaw so Pinia does
+ * not make them reactive.
+ */
+const PluginError = markRaw({
+  render: () => h('div', { class: 'pa-4 text-error' }, gettext.$gettext('Failed to load plugin'))
+})
+
+function pluginComponent(def) {
+  return {
+    ...def,
+    component: markRaw(defineAsyncComponent({
+      loader: () => import(/* @vite-ignore */ def.component).then((mod) => mod.default),
+      errorComponent: PluginError
+    }))
+  }
+}
+
+export const usePluginStore = defineStore('plugin', {
+  state: () => {
+    const data = safeParse(document.getElementById('app')?.dataset.plugins)
+    const panels = {}
+    const subpanels = {}
+
+    for (const [key, def] of Object.entries(data.panels || {})) {
+      panels[key] = pluginComponent(def)
+    }
+
+    for (const [host, group] of Object.entries(data.subpanels || {})) {
+      subpanels[host] = {}
+      for (const [key, def] of Object.entries(group)) {
+        subpanels[host][key] = pluginComponent(def)
+      }
+    }
+
+    return { panels, subpanels }
+  }
+})
+
 import languages from './languages'
 
 export const useLanguageStore = defineStore('language', {
@@ -360,7 +449,7 @@ export const useSchemaStore = defineStore('schema', {
         query: FETCH_SCHEMAS
       }).then((result) => {
         const content = {}, meta = {}, config = {}
-        const parse = (v) => typeof v === 'string' ? JSON.parse(v) : v || {}
+        const parse = (v) => typeof v === 'string' ? safeParse(v) : sanitize(v || {})
         const list = (result.data?.schemas || []).map(t => markRaw({
           ...t,
           types: parse(t.types),
@@ -476,6 +565,7 @@ export const useDirtyStore = defineStore('dirty', {
 
     register(saveFn) {
       this.saveFn = saveFn
+      this.dirty = false
     },
 
     resolve(value) {
@@ -505,6 +595,45 @@ export const useDirtyStore = defineStore('dirty', {
       this.dirty = false
       this.saveFn = null
       this.resolve(false)
+    }
+  }
+})
+
+/**
+ * Notifies the kept-alive list/tree views about items saved or published in
+ * detail views, so they patch the matching node in place from the passed item
+ * without reloading and without re-fetching from the server.
+ *
+ * Changes are kept as a stack per type because stacked detail views (e.g.
+ * page -> file -> page -> element) can save several items of different types
+ * before any underlying list re-renders. Each list reads pending items via
+ * get() and removes the ones it has patched via patched().
+ */
+export const useChangeStore = defineStore('change', {
+  state: () => ({
+    changed: {}
+  }),
+
+  actions: {
+    get(type) {
+      return this.changed[type] || []
+    },
+
+    notify(type, item) {
+      if (!type || !item?.id) return
+
+      const list = this.get(type).filter((entry) => entry.id !== item.id)
+
+      list.push(markRaw(item))
+      this.changed = { ...this.changed, [type]: list }
+    },
+
+    patched(type, ids) {
+      const list = this.changed[type]
+
+      if (!list?.length || !ids?.length) return
+
+      this.changed = { ...this.changed, [type]: list.filter((entry) => !ids.includes(entry.id)) }
     }
   }
 })

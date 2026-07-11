@@ -1,0 +1,68 @@
+/**
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+.contact label {
+    color: var(--pico-color);
+    display: inline-block;
+    margin: 0.5rem 0;
+    font-weight: 500;
+    font-size: calc(var(--pico-font-size) * 0.7);
+}
+
+.contact input,
+.contact textarea {
+    border: 1px solid var(--pico-muted-background-color);
+    background-color: var(--pico-muted-background-color);
+    color: var(--pico-color);
+    resize: vertical;
+    font-size: var(--pico-font-size);
+    display: block;
+    padding: 0.75rem 1.25rem;
+    width: 100%;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    border-radius: calc(var(--pico-border-radius) * 2);
+}
+
+.contact textarea {
+    border-radius: calc(var(--pico-border-radius) * 2);
+}
+
+.contact input:focus,
+.contact textarea:focus {
+    border-color: var(--pico-color);
+    box-shadow: 0 0 0 0.1875rem var(--pico-muted-background-color);
+    outline: none;
+}
+
+.contact input::-webkit-input-placeholder,
+.contact textarea::-webkit-input-placeholder {
+    color: var(--pico-muted-color);
+}
+
+.contact .errors {
+    color: var(--pico-primary);
+    font-size: calc(var(--pico-font-size) * 0.75);
+    margin: 1rem 1.5rem;
+}
+
+.contact .error {
+    border-color: var(--pico-primary);
+}
+
+.contact button {
+    display: block;
+    margin-inline-end: auto;
+    margin-inline-start: auto;
+    font-size: calc(var(--pico-font-size) * 0.66);
+    padding: 0.9rem 1.7rem;
+}
+
+.contact .h-captcha {
+    text-align: center;
+}
+
+.contact .h-captcha iframe {
+    margin-bottom: 0.5rem;
+    max-width: 100%;
+}

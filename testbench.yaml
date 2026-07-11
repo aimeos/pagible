@@ -1,5 +1,7 @@
 providers:
+  - Aimeos\Cms\BoldServiceProvider
   - Aimeos\Cms\GlassServiceProvider
+  - Aimeos\Cms\LuxuryServiceProvider
   - Aimeos\Cms\PagibleServiceProvider
   - Aimeos\Cms\PaperServiceProvider
   - Aimeos\Cms\PremiumServiceProvider

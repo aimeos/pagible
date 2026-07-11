@@ -162,7 +162,6 @@ pre code[class*=language-] {
     border-radius: calc(var(--pico-border-radius) * 2);
     overflow-x: auto;
     display: block;
-    padding: 2rem;
     width: 100%;
 }
 
@@ -234,30 +233,33 @@ footer.cms-content .cards .title {
     margin-bottom: 1.5rem;
 }
 
-footer.cms-content .cards .text {
+footer.cms-content .cards :is(.text, .cms-text) {
     color: var(--pico-contrast-inverse);
     font-size: calc(var(--pico-font-size) * 0.8);
     font-weight: 400;
 }
 
-footer.cms-content .cards .text p {
+footer.cms-content .cards :is(.text, .cms-text) p {
     line-height: 1.75;
     margin: 0;
 }
 
-footer.cms-content .cards .text a,
-footer.cms-content .cards .text a:visited {
+footer.cms-content .cards :is(.text, .cms-text) a,
+footer.cms-content .cards :is(.text, .cms-text) a:visited,
+footer.cms-content .cards :is(.text, .cms-text) a:hover,
+footer.cms-content .cards :is(.text, .cms-text) a:focus,
+footer.cms-content .cards :is(.text, .cms-text) a:active {
     color: var(--pico-contrast-inverse);
     text-decoration: none;
     display: inline-block;
     padding: 0.31rem 0;
 }
 
-footer.cms-content .cards .text a:hover {
+footer.cms-content .cards :is(.text, .cms-text) a:hover {
     color: var(--pico-contrast-hover-background);
 }
 
-footer.cms-content .cards .text ul {
+footer.cms-content .cards :is(.text, .cms-text) ul {
     padding-left: 0;
     list-style: none;
 }
@@ -283,4 +285,58 @@ footer.cms-content a:hover {
 
 footer.cms-content :focus-visible {
     outline-color: var(--pico-contrast-inverse);
+}
+
+/* Content tables (markdown/HTML) — mirrors table.css .table-responsive */
+.cms-content table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    overflow: hidden;
+    background-color: var(--pico-contrast-background);
+    border: 1px solid var(--pico-muted-border-color);
+    border-radius: calc(var(--pico-border-radius) * 4);
+    padding: 2rem;
+}
+
+.cms-content th,
+.cms-content td {
+    padding: calc(var(--pico-spacing) / 2) var(--pico-spacing);
+    border-bottom: 1px solid var(--pico-muted-border-color);
+    vertical-align: middle;
+}
+
+.cms-content th {
+    color: var(--pico-contrast);
+    font-weight: 500;
+    font-size: calc(var(--pico-font-size) * 0.85);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    text-align: center;
+}
+
+.cms-content th:first-child {
+    text-align: start;
+}
+
+.cms-content td {
+    text-align: center;
+}
+
+.cms-content th > *:first-child,
+.cms-content td > *:first-child {
+    margin-top: 0;
+}
+
+.cms-content th > *:last-child,
+.cms-content td > *:last-child {
+    margin-bottom: 0;
+}
+
+.cms-content th img {
+    display: block;
+    margin-top: 0.75rem;
+    margin-bottom: 0.75rem;
+    height: 100%;
+    width: 100%;
 }

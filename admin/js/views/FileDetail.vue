@@ -1,4 +1,4 @@
-/** @license LGPL, https://opensource.org/license/lgpl-3-0 */
+/** @license MIT, https://opensource.org/license/mit */
 
 <script>
 import gql from 'graphql-tag'
@@ -6,15 +6,31 @@ import AsideMeta from '../components/AsideMeta.vue'
 import DetailAppBar from '../components/DetailAppBar.vue'
 import FileDetailRefs from '../components/FileDetailRefs.vue'
 import FileDetailItem from '../components/FileDetailItem.vue'
-import { useDirtyStore, useSideStore, useUserStore, useMessageStore, useViewStack } from '../stores'
+import { useDirtyStore, useSideStore, useUserStore, useMessageStore, usePluginStore, useViewStack, useChangeStore } from '../stores'
 import { applyResult, hasUnresolved } from '../merge'
 import { publishDate, publishItem } from '../publish'
 import { defineAsyncComponent, markRaw } from 'vue'
-import { setupEcho, cleanEcho } from '../echo'
-import { frozenParse } from '../utils'
+import { setupReload, cleanEcho } from '../echo'
+import { reloadVersion } from '../version'
+import { frozenParse, safeParse } from '../utils'
 
 const ChangesDialog = defineAsyncComponent(() => import('../components/ChangesDialog.vue'))
 const HistoryDialog = defineAsyncComponent(() => import('../components/HistoryDialog.vue'))
+
+const FETCH_FILE = gql`
+  query ($id: ID!) {
+    file(id: $id) {
+      id
+      latest {
+        id
+        published
+        data
+        editor
+        created_at
+      }
+    }
+  }
+`
 
 const SAVE_FILE = gql`
   mutation ($id: ID!, $input: FileInput!, $file: Upload, $latestId: ID) {
@@ -23,6 +39,9 @@ const SAVE_FILE = gql`
       latest {
         id
         data
+        published
+        publish_at
+        editor
         created_at
       }
       changed
@@ -57,7 +76,9 @@ export default {
   },
 
   props: {
-    item: { type: Object, required: true }
+    item: { type: Object, required: true },
+    stacked: { type: Boolean, default: false },
+    onSaved: { type: Function, default: null }
   },
 
   data: () => ({
@@ -67,6 +88,7 @@ export default {
     file: null,
     error: false,
     changed: null,
+    loading: true,
     dirty: false,
     publishAt: null,
     publishTime: null,
@@ -79,21 +101,27 @@ export default {
 
   setup() {
     const dirtyStore = useDirtyStore()
-    const viewStack = useViewStack()
     const messages = useMessageStore()
     const side = useSideStore()
     const user = useUserStore()
+    const viewStack = useViewStack()
+    const changes = useChangeStore()
 
     return {
       dirtyStore,
       side,
       user,
       messages,
-      viewStack
+      viewStack,
+      changes
     }
   },
 
   computed: {
+    subpanels() {
+      return usePluginStore().subpanels.file || {}
+    },
+
     hasConflict() {
       return hasUnresolved(this.changed)
     },
@@ -109,7 +137,8 @@ export default {
           previews: item.previews,
           description: item.description,
           transcription: item.transcription
-        })
+        }),
+        files: this.media(item)
       })
     }
   },
@@ -118,14 +147,16 @@ export default {
     this.dirtyStore.register(() => this.save(true))
 
     if (!this.item?.id || !this.user.can('file:view')) {
+      this.loading = false
       return
     }
 
-    setupEcho(this, 'file', this.item.id, (event) => {
-      if (!this.dirty && this.user.can('file:view') && event.editor !== this.user.me?.email) {
-        this.item.latestId = event.versionId
-        Object.assign(this.item, event.data)
-      }
+    this.reload().then((ok) => {
+      if (!ok) return
+
+      // reload the open file when its own item is saved elsewhere or after a reconnect that may
+      // have missed a save, unless the user has unsaved edits
+      setupReload(this, 'file', this.item.id, () => this.reload(), () => !this.dirty && this.user.can('file:view'))
     })
   },
 
@@ -139,6 +170,20 @@ export default {
   },
 
   methods: {
+    // loads the latest version into the open editor; resolves true on success so the caller
+    // can defer the websocket subscription until the initial load completed
+    reload() {
+      return reloadVersion(this, FETCH_FILE, 'file', this.$gettext('Error fetching file'), (file) => {
+        const latest = file.latest
+
+        Object.assign(this.item, safeParse(latest?.data))
+        this.item.latestId = latest?.id
+        this.item.published = latest?.published
+        this.item.updated_at = latest?.created_at
+        this.item.editor = latest?.editor
+      }, () => !this.dirty)
+    },
+
     apply(changes) {
       Object.assign(this.item, changes)
       this.dirty = true
@@ -161,6 +206,22 @@ export default {
 
     loadVersions() {
       return this.versions(this.item.id)
+    },
+
+    media(data) {
+      if (!data?.path) {
+        return {}
+      }
+
+      return Object.freeze({
+        [data.path]: Object.freeze({
+          id: data.path,
+          name: data.name,
+          mime: data.mime,
+          path: data.path,
+          previews: data.previews || {}
+        })
+      })
     },
 
     publish(at = null) {
@@ -233,13 +294,19 @@ export default {
 
           const file = result.data?.saveFile
           const latest = file?.latest
-          const changed = file?.changed ? markRaw(JSON.parse(file.changed)) : null
+          const changed = file?.changed ? markRaw(safeParse(file.changed)) : null
 
-          Object.assign(this.item, JSON.parse(latest?.data || '{}'))
+          Object.assign(this.item, safeParse(latest?.data))
           this.item.updated_at = latest?.created_at
           this.item.latestId = latest?.id
 
           applyResult(this, changed, this.$gettext('File saved successfully'), quiet)
+
+          this.item.published = latest?.published ?? false
+          this.item.publish_at = latest?.publish_at ?? null
+          this.item.editor = latest?.editor ?? this.item.editor
+          this.changes.notify('file', this.item)
+          this.onSaved?.()
 
           return true
         })
@@ -286,6 +353,7 @@ export default {
           return (result.data.file.versions || []).map((v) => {
             const item = { ...v, data: frozenParse(v.data) }
             keys.forEach((key) => (item[key] = Object.freeze(item[key] ?? {})))
+            item.files = this.media(item.data)
             return Object.freeze(item)
           })
         })
@@ -309,6 +377,7 @@ export default {
     type="file"
     :label="$gettext('File')"
     :name="item.name"
+    :stacked="stacked"
     :dirty="dirty"
     :error="error"
     :conflict="hasConflict"
@@ -327,12 +396,16 @@ export default {
   />
 
   <v-main class="file-details" :aria-label="$gettext('File')">
-    <v-form @submit.prevent>
+    <v-progress-linear v-if="loading" indeterminate color="primary" />
+    <v-form v-else @submit.prevent>
       <v-tabs fixed-tabs v-model="tab">
         <v-tab value="file" :class="{ changed: dirty, error: error }">{{
           $gettext('File')
         }}</v-tab>
         <v-tab value="refs">{{ $gettext('Used by') }}</v-tab>
+        <v-tab v-for="(sp, key) in subpanels" :key="key" :value="'ext-' + key">
+          {{ sp.label }}
+        </v-tab>
       </v-tabs>
 
       <v-window v-model="tab" :touch="false">
@@ -347,6 +420,10 @@ export default {
 
         <v-window-item value="refs">
           <FileDetailRefs :item="item" />
+        </v-window-item>
+
+        <v-window-item v-for="(sp, key) in subpanels" :key="key" :value="'ext-' + key">
+          <component :is="sp.component" :item="item" />
         </v-window-item>
       </v-window>
     </v-form>

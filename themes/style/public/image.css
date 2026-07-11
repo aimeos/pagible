@@ -1,0 +1,29 @@
+/**
+ * Style Theme
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+.image > img,
+.image > source {
+    max-width: 100%;
+    display: block;
+    margin: auto;
+}
+
+.image picture,
+picture.image {
+    display: block;
+    margin: 0 auto;
+    padding: 0;
+    background: var(--pico-muted-background-color);
+    border: 1px solid var(--pico-muted-background-color);
+    border-radius: calc(var(--pico-border-radius) * 3);
+    box-shadow: 0 1.5625rem 3.125rem -0.75rem var(--pico-box-shadow);
+    overflow: hidden;
+}
+
+.image picture img {
+    border-radius: calc(var(--pico-border-radius) * 3);
+    width: 100%;
+    height: auto;
+}

@@ -1,8 +1,8 @@
-/** @license LGPL, https://opensource.org/license/lgpl-3-0 */
+/** @license MIT, https://opensource.org/license/mit */
 
 <script>
 import { useDisplay } from 'vuetify'
-import { useUserStore, useDrawerStore } from '../stores'
+import { useUserStore, useDrawerStore, usePluginStore } from '../stores'
 import { mdiFileTree, mdiShareVariant, mdiFolderMultipleImage } from '@mdi/js'
 
 export default {
@@ -10,8 +10,9 @@ export default {
     const { mobile } = useDisplay()
     const drawer = useDrawerStore()
     const user = useUserStore()
+    const plugin = usePluginStore()
 
-    return { user, drawer, mobile, mdiFileTree, mdiShareVariant, mdiFolderMultipleImage }
+    return { user, drawer, plugin, mobile, mdiFileTree, mdiShareVariant, mdiFolderMultipleImage }
   },
 
   methods: {
@@ -45,6 +46,14 @@ export default {
           {{ $gettext('Files') }}
         </router-link>
       </v-list-item>
+      <template v-for="(panel, key) in plugin.panels" :key="key">
+        <v-list-item v-if="user.can(panel.permission)" rounded="lg">
+          <router-link :to="'/' + key" class="router-link" @click="toggle()">
+            <span v-if="panel.icon" class="icon" v-safe-svg="panel.icon"></span>
+            {{ panel.label }}
+          </router-link>
+        </v-list-item>
+      </template>
     </v-list>
   </v-navigation-drawer>
 </template>

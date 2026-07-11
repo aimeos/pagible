@@ -6,7 +6,11 @@ import { useAppStore, useUserStore, useMessageStore, useLanguageStore, useViewSt
 
 describe('App', () => {
   it('renders v-application', () => {
-    cy.mount(App)
+    cy.mount(App, {
+      global: {
+        mocks: { $route: { path: '/' } },
+      },
+    })
     cy.get('.v-application').should('exist')
   })
 })

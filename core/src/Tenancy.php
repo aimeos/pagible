@@ -1,11 +1,13 @@
 <?php
 
 /**
- * @license LGPL, https://opensource.org/license/lgpl-3-0
+ * @license MIT, https://opensource.org/license/mit
  */
 
 
 namespace Aimeos\Cms;
+
+use Illuminate\Contracts\Auth\Authenticatable;
 
 
 /**
@@ -17,6 +19,14 @@ class Tenancy
      * Anonymous callback which provides the value of the current tenant.
      */
     public static ?\Closure $callback = null;
+
+    /**
+     * Optional override for the user-to-tenant access check. When null, allows() compares the
+     * user's tenant_id with the channel's tenant. Receives the authenticated user and tenant ID.
+     *
+     * @var (\Closure(?Authenticatable, string): bool)|null
+     */
+    public static ?\Closure $access = null;
 
     /**
      * Current tenant value.
@@ -43,6 +53,27 @@ class Tenancy
     public function id() : string
     {
         return $this->id;
+    }
+
+
+    /**
+     * Returns whether the user may access the given tenant.
+     *
+     * Pagible runs on a single shared database (no multi-database tenancy), so the user must
+     * belong to the tenant: by default the user's tenant_id must equal the channel's tenant.
+     * Override Tenancy::$access for custom binding logic.
+     *
+     * @param ?Authenticatable $user Authenticated user (must expose a tenant_id)
+     * @param string $tenant Tenant ID
+     */
+    public static function allows( ?Authenticatable $user, string $tenant ) : bool
+    {
+        if( ( $access = self::$access ) !== null ) {
+            return $access( $user, $tenant );
+        }
+
+        $id = data_get( $user, 'tenant_id' );
+        return ( is_scalar( $id ) ? (string) $id : '' ) === $tenant;
     }
 
 

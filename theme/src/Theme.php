@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @license LGPL, https://opensource.org/license/lgpl-3-0
+ * @license MIT, https://opensource.org/license/mit
  */
 
 
@@ -45,6 +45,14 @@ class Theme
         if( $theme && isset( $theme['path'] ) )
         {
             View::addNamespace( $name, $theme['path'] . '/views' );
+            return $name;
+        }
+
+        // Tenant theme names are concatenated into a local storage path that is
+        // synced and recursively cleaned up (see sync()/cleanup()). Reject anything
+        // outside the strict identifier charset (same whitelist as Schema::discover())
+        // so a crafted page theme can never traverse out of the cms-themes directory.
+        if( !preg_match( '/^[a-zA-Z0-9-]+$/', $name ) ) {
             return $name;
         }
 

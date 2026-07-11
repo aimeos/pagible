@@ -1,18 +1,21 @@
 <?php
 
 /**
- * @license LGPL, https://opensource.org/license/lgpl-3-0
+ * @license MIT, https://opensource.org/license/mit
  */
 
 
 namespace Tests;
 
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Nuwave\Lighthouse\Testing\MakesGraphQLRequests;
 use Nuwave\Lighthouse\Testing\RefreshesSchemaCache;
 use Database\Seeders\TestSeeder;
 use Aimeos\Cms\Models\File;
+use PHPUnit\Framework\Attributes\Group;
 
 
 class GraphqlFileTest extends GraphqlTestAbstract
@@ -22,24 +25,26 @@ class GraphqlFileTest extends GraphqlTestAbstract
     use MakesGraphQLRequests;
     use RefreshesSchemaCache;
 
+    protected $seeder = TestSeeder::class;
 
-	protected function defineEnvironment( $app )
-	{
+
+    protected function defineEnvironment( $app )
+    {
         parent::defineEnvironment( $app );
 
-		$app['config']->set( 'lighthouse.schema_path', __DIR__ . '/default-schema.graphql' );
-		$app['config']->set( 'lighthouse.namespaces.models', ['App\Models', 'Aimeos\\Cms\\Models'] );
-		$app['config']->set( 'lighthouse.namespaces.mutations', ['Aimeos\\Cms\\GraphQL\\Mutations'] );
-		$app['config']->set( 'lighthouse.namespaces.directives', ['Aimeos\\Cms\\GraphQL\\Directives'] );
+        $app['config']->set( 'lighthouse.schema_path', __DIR__ . '/default-schema.graphql' );
+        $app['config']->set( 'lighthouse.namespaces.models', ['App\Models', 'Aimeos\\Cms\\Models'] );
+        $app['config']->set( 'lighthouse.namespaces.mutations', ['Aimeos\\Cms\\GraphQL\\Mutations'] );
+        $app['config']->set( 'lighthouse.namespaces.directives', ['Aimeos\\Cms\\GraphQL\\Directives'] );
     }
 
 
-	protected function getPackageProviders( $app )
-	{
-		return array_merge( parent::getPackageProviders( $app ), [
-			'Nuwave\Lighthouse\LighthouseServiceProvider'
-		] );
-	}
+    protected function getPackageProviders( $app )
+    {
+        return array_merge( parent::getPackageProviders( $app ), [
+            'Nuwave\Lighthouse\LighthouseServiceProvider'
+        ] );
+    }
 
 
     protected function setUp(): void
@@ -58,8 +63,6 @@ class GraphqlFileTest extends GraphqlTestAbstract
 
     public function testFile()
     {
-        $this->seed(TestSeeder::class);
-
         $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
 
         $expected = [
@@ -117,8 +120,6 @@ class GraphqlFileTest extends GraphqlTestAbstract
 
     public function testFiles()
     {
-        $this->seed(TestSeeder::class);
-
         $expected = File::orderBy( 'mime' )->get()->map( function( $file ) {
             return [
                 'id' => $file->id,
@@ -179,8 +180,6 @@ class GraphqlFileTest extends GraphqlTestAbstract
 
     public function testFilesMime()
     {
-        $this->seed( TestSeeder::class );
-
         $this->expectsDatabaseQueryCount( 3 );
         $response = $this->actingAs( $this->user )->graphQL( '{
             files(filter: {
@@ -201,8 +200,6 @@ class GraphqlFileTest extends GraphqlTestAbstract
 
     public function testFilesPublished()
     {
-        $this->seed( TestSeeder::class );
-
         $file = File::where( 'mime', 'image/tiff' )->first();
 
         $this->expectsDatabaseQueryCount( 3 );
@@ -234,8 +231,6 @@ class GraphqlFileTest extends GraphqlTestAbstract
 
     public function testFilesScheduled()
     {
-        $this->seed( TestSeeder::class );
-
         $file = File::whereHas( 'latest', function( $builder ) {
             $builder->where( 'cms_versions.publish_at', '!=', null )->where( 'cms_versions.published', false );
         } )->firstOrFail();
@@ -340,8 +335,6 @@ class GraphqlFileTest extends GraphqlTestAbstract
 
     public function testSaveFile()
     {
-        $this->seed(TestSeeder::class);
-
         $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
 
         $this->expectsDatabaseQueryCount( 8 );
@@ -416,10 +409,79 @@ class GraphqlFileTest extends GraphqlTestAbstract
     }
 
 
+    public function testBulkFile()
+    {
+        $files = File::get();
+        $ids = $files->map( fn( $file ) => '"' . $file->id . '"' )->implode( ', ' );
+
+        $response = $this->actingAs( $this->user )->graphQL( '
+            mutation {
+                bulkFile(id: [' . $ids . '], input: { lang: "de" }) {
+                    ids
+                    latest
+                    data
+                    failed
+                }
+            }
+        ' );
+
+        $response->assertJsonCount( $files->count(), 'data.bulkFile.ids' );
+        $this->assertGreaterThan( 1, $files->count() );
+
+        // data and latest are JSON scalar strings
+        $data = json_decode( $response->json( 'data.bulkFile.data' ), true );
+        $latest = json_decode( $response->json( 'data.bulkFile.latest' ), true );
+
+        $this->assertEquals( 'de', $data['lang'] );
+        $this->assertSame( 0, $response->json( 'data.bulkFile.failed' ) );
+
+        foreach( $files as $file )
+        {
+            $fresh = File::findOrFail( $file->id );
+            $this->assertEquals( 'de', $fresh->latest->lang );
+            $this->assertFalse( (bool) $fresh->latest->published );
+            $this->assertEquals( $fresh->latest_id, $latest[$file->id] );
+        }
+    }
+
+
+    public function testBulkFileRejectsPath()
+    {
+        $file = File::firstOrFail();
+
+        $response = $this->actingAs( $this->user )->graphQL( '
+            mutation {
+                bulkFile(id: ["' . $file->id . '"], input: { path: "cms/test/x.jpg" }) {
+                    ids
+                }
+            }
+        ' );
+
+        $response->assertJsonPath( 'data.bulkFile', null );
+        $this->assertNotEmpty( $response->json( 'errors' ) );
+    }
+
+
+    public function testBulkFileDenied()
+    {
+        $this->user->cmsperms = [];
+        $file = File::firstOrFail();
+
+        $response = $this->actingAs( $this->user )->graphQL( '
+            mutation {
+                bulkFile(id: ["' . $file->id . '"], input: { lang: "de" }) {
+                    ids
+                }
+            }
+        ' );
+
+        $response->assertJsonPath( 'data.bulkFile', null );
+        $this->assertNotEmpty( $response->json( 'errors' ) );
+    }
+
+
     public function testDropFile()
     {
-        $this->seed( TestSeeder::class );
-
         $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
 
         $this->expectsDatabaseQueryCount( 3 );
@@ -448,8 +510,6 @@ class GraphqlFileTest extends GraphqlTestAbstract
 
     public function testKeepFile()
     {
-        $this->seed( TestSeeder::class );
-
         $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
         $file->delete();
 
@@ -478,8 +538,6 @@ class GraphqlFileTest extends GraphqlTestAbstract
 
     public function testPubFile()
     {
-        $this->seed( TestSeeder::class );
-
         $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
 
         $this->expectsDatabaseQueryCount( 5 );
@@ -505,8 +563,6 @@ class GraphqlFileTest extends GraphqlTestAbstract
 
     public function testPubFileAt()
     {
-        $this->seed( TestSeeder::class );
-
         $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
 
         $this->expectsDatabaseQueryCount( 4 );
@@ -532,8 +588,6 @@ class GraphqlFileTest extends GraphqlTestAbstract
 
     public function testPubFileAtWithTime()
     {
-        $this->seed( TestSeeder::class );
-
         $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
 
         $response = $this->actingAs( $this->user )->graphQL( '
@@ -559,8 +613,6 @@ class GraphqlFileTest extends GraphqlTestAbstract
 
     public function testPurgeFile()
     {
-        $this->seed( TestSeeder::class );
-
         $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
 
         $this->expectsDatabaseQueryCount( 5 );
@@ -659,5 +711,75 @@ class GraphqlFileTest extends GraphqlTestAbstract
         $this->assertStringNotContainsString( '<script', $stored );
 
         @unlink( $tmpFile );
+    }
+
+
+    #[Group('network')]
+    public function testAddFileFromUrlStoresSvgPreview()
+    {
+        $disk = config( 'cms.disk', 'public' );
+        Storage::fake( $disk );
+
+        $svg = '<?xml version="1.0"?><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10">'
+            . '<rect width="10" height="10"/><script>alert(1)</script></svg>';
+
+        Http::fake( ['example.com/*' => Http::response( $svg, 200, ['Content-Type' => 'image/svg+xml'] )] );
+
+        $response = $this->actingAs( $this->user )->graphQL( '
+            mutation {
+                addFile(input: { name: "logo", path: "https://example.com/logo.svg" }) {
+                    mime
+                    path
+                    previews
+                }
+            }
+        ' );
+
+        $result = $response->json( 'data.addFile' );
+        $previews = json_decode( $result['previews'], true );
+
+        $this->assertEquals( 'image/svg+xml', $result['mime'] );
+        $this->assertEquals( 'https://example.com/logo.svg', $result['path'] );
+        $this->assertNotEmpty( $previews );
+
+        $preview = (string) reset( $previews );
+        $this->assertStringEndsWith( '.svg', $preview );
+
+        $stored = Storage::disk( $disk )->get( $preview );
+        $this->assertStringContainsString( '<rect', $stored );
+        $this->assertStringNotContainsString( '<script', $stored );
+    }
+
+
+    #[Group('network')]
+    public function testAddFileFromUrlStoresCompressedSvgPreview()
+    {
+        $disk = config( 'cms.disk', 'public' );
+        Storage::fake( $disk );
+
+        $svg = '<?xml version="1.0"?><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10">'
+            . '<rect width="10" height="10"/><script>alert(1)</script></svg>';
+
+        Http::fake( ['example.com/*' => Http::response( gzencode( $svg ), 200, ['Content-Type' => 'image/svg+xml'] )] );
+
+        $response = $this->actingAs( $this->user )->graphQL( '
+            mutation {
+                addFile(input: { name: "logo", path: "https://example.com/logo.svgz" }) {
+                    mime
+                    previews
+                }
+            }
+        ' );
+
+        $result = $response->json( 'data.addFile' );
+        $previews = json_decode( $result['previews'], true );
+
+        $this->assertEquals( 'image/svg+xml', $result['mime'] );
+        $this->assertNotEmpty( $previews );
+
+        $stored = Storage::disk( $disk )->get( (string) reset( $previews ) );
+        $this->assertStringStartsWith( '<', ltrim( $stored ) );
+        $this->assertStringContainsString( '<rect', $stored );
+        $this->assertStringNotContainsString( '<script', $stored );
     }
 }

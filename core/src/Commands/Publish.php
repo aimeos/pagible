@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @license LGPL, https://opensource.org/license/lgpl-3-0
+ * @license MIT, https://opensource.org/license/mit
  */
 
 
@@ -38,10 +38,6 @@ class Publish extends Command
 
         Version::where( 'publish_at', '<=', now() )
             ->where( 'published', false )
-            ->with( [
-                'files' => fn( $q ) => $q->select( 'cms_files.id' ),
-                'elements' => fn( $q ) => $q->select( 'cms_elements.id' ),
-            ] )
             ->chunk( 50, function( $versions ) use ( $conn ) {
 
                 $models = $this->models( $versions );

@@ -1,14 +1,14 @@
 <?php
 
 /**
- * @license LGPL, https://opensource.org/license/lgpl-3-0
+ * @license MIT, https://opensource.org/license/mit
  */
 
 
 namespace Aimeos\Cms\GraphQL\Mutations;
 
 use Aimeos\Cms\Models\File;
-use Aimeos\Cms\Models\Version;
+use Aimeos\Cms\Resource;
 use Aimeos\Cms\Utils;
 use GraphQL\Error\Error;
 use Illuminate\Http\UploadedFile;
@@ -33,41 +33,18 @@ final class AddFile
             $this->validateUrl( $args );
         }
 
-        return Utils::transaction( function() use ( $args ) {
+        $file = new File();
+        $file->fill( $args['input'] ?? [] );
 
-            $editor = Utils::editor( Auth::user() );
-            $versionId = ( new Version )->newUniqueId();
+        // Fetch the file and generate previews outside the transaction to keep
+        // slow network and image work off the database connection.
+        if( isset( $args['file'] ) ) {
+            $this->addUpload( $file, $args );
+        } else {
+            $this->addUrl( $file, $args );
+        }
 
-            $file = new File();
-            $file->fill( $args['input'] ?? [] );
-            $file->editor = $editor;
-
-            if( isset( $args['file'] ) ) {
-                $this->addUpload( $file, $args );
-            } else {
-                $this->addUrl( $file, $args );
-            }
-
-            $file->latest_id = $versionId;
-            $file->save();
-
-            $version = $file->versions()->forceCreate( [
-                'id' => $versionId,
-                'lang' => $args['input']['lang'] ?? null,
-                'editor' => $editor,
-                'data' => [
-                    'lang' => $file->lang,
-                    'name' => $file->name,
-                    'mime' => $file->mime,
-                    'path' => $file->path,
-                    'previews' => $file->previews,
-                    'description' => $file->description,
-                    'transcription' => $file->transcription,
-                ],
-            ] );
-
-            return $file->setRelation( 'latest', $version );
-        } );
+        return Resource::addFile( $file, Auth::user() );
     }
 
 
@@ -114,19 +91,24 @@ final class AddFile
         $url = $args['input']['path'];
 
         $file->path = $url;
-        $file->mime = Utils::mimetype( $url );
         $file->name = $file->name ?: substr( $url, 0, 255 );
 
         try
         {
-            if( isset( $args['preview'] ) || str_starts_with( $file->mime, 'image/' ) ) {
-                $file->addPreviews( $args['preview'] ?? $url );
-            }
+            $file->addPreviews( $args['preview'] ?? $url );
         }
         catch( \Throwable $t )
         {
             $file->removePreviews();
             throw $t;
+        }
+
+        if( !Utils::isValidMimetype( $file->mime ) )
+        {
+            $file->removePreviews();
+
+            $msg = 'File type "%s" not allowed, permitted types: %s';
+            throw new Error( sprintf( $msg, $file->mime, implode( ', ', config( 'cms.graphql.mimetypes', [] ) ) ) );
         }
 
         return $file;
@@ -169,11 +151,6 @@ final class AddFile
 
         if( !str_starts_with( $url, 'http' ) || !Utils::isValidUrl( $url ) ) {
             throw new Error( sprintf( 'Invalid URL "%s"', $url ) );
-        }
-
-        if( !Utils::isValidMimetype( Utils::mimetype( $url ) ) ) {
-            $msg = 'File type "%s" not allowed, permitted types: %s';
-            throw new Error( sprintf( $msg, Utils::mimetype( $url ), implode( ', ', config( 'cms.graphql.mimetypes', [] ) ) ) );
         }
     }
 }

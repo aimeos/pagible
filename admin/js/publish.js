@@ -1,8 +1,9 @@
 /**
- * @license LGPL, https://opensource.org/license/lgpl-3-0
+ * @license MIT, https://opensource.org/license/mit
  */
 
 import gql from 'graphql-tag'
+import { useChangeStore } from './stores'
 
 const mutations = {
   element: gql`mutation ($id: [ID!]!, $at: DateTime) { pubElement(id: $id, at: $at) { id } }`,
@@ -67,7 +68,13 @@ export function publishItem(vm, type, msgs, at = null) {
             vm.messages.add(msgs.scheduled(at), 'info')
           }
 
-          vm.viewStack.closeView()
+          useChangeStore().notify(type, vm.item)
+
+          if (vm.stacked) {
+            vm.viewStack.closeView()
+          } else {
+            vm.$router.push({ name: `${type}:view` })
+          }
         })
         .catch((error) => {
           vm.messages.add(msgs.error + ':\n' + error, 'error')

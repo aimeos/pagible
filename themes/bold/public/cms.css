@@ -1,0 +1,487 @@
+/**
+ * Bold Theme - Brutalist dark design with heavyweight typography and high-contrast accents
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+:root[data-theme=dark] {
+    --pico-font-family-sans-serif: Roboto, ui-sans-serif, sans-serif;
+    --pico-font-family-display: "Archivo Black", ui-sans-serif, sans-serif;
+    --pico-block-spacing-vertical: 0;
+    --pico-nav-element-spacing-horizontal: 1rem;
+    --pico-nav-element-spacing-vertical: 0.75rem;
+    --pico-nav-link-spacing-vertical: 0.625rem;
+    --pico-nav-link-spacing-horizontal: 0.625rem;
+    --pico-color: #F4F4F4;
+    --pico-background-color: #111111;
+    --pico-text-selection-color: #FF450040;
+    --pico-muted-color: #A1A1AA;
+    --pico-muted-border-color: #FFFFFF15;
+    --pico-muted-background-color: #FFFFFF0A;
+    --pico-contrast: #F4F4F4;
+    --pico-contrast-border: #FFFFFF15;
+    --pico-contrast-background: #1A1A1A;
+    --pico-contrast-underline: var(--pico-contrast);
+    --pico-contrast-hover: #FFFFFF;
+    --pico-contrast-hover-border: #FFFFFF30;
+    --pico-contrast-hover-background: #1A1A1A;
+    --pico-contrast-hover-underline: var(--pico-contrast-hover);
+    --pico-contrast-focus: var(--pico-text-selection-color);
+    --pico-contrast-inverse: #111111;
+    --pico-primary: #FF4500;
+    --pico-primary-background: #FF450030;
+    --pico-primary-border: var(--pico-primary);
+    --pico-primary-underline: var(--pico-primary);
+    --pico-primary-hover: #FF6A33;
+    --pico-primary-hover-background: #FF6A3340;
+    --pico-primary-hover-border: var(--pico-primary-hover);
+    --pico-primary-hover-underline: var(--pico-primary-hover);
+    --pico-primary-focus: var(--pico-text-selection-color);
+    --pico-primary-inverse: #FFFFFF;
+    --pico-secondary: #F4F4F4;
+    --pico-secondary-background: #F4F4F420;
+    --pico-secondary-border: var(--pico-secondary);
+    --pico-secondary-underline: var(--pico-secondary);
+    --pico-secondary-hover: #FFFFFF;
+    --pico-secondary-hover-background: #FFFFFF30;
+    --pico-secondary-hover-border: var(--pico-secondary-hover);
+    --pico-secondary-hover-underline: var(--pico-secondary-hover);
+    --pico-secondary-focus: var(--pico-text-selection-color);
+    --pico-secondary-inverse: #111111;
+    --pico-h1-color: #F4F4F4;
+    --pico-h2-color: #F4F4F4;
+    --pico-h3-color: #F4F4F4;
+    --pico-h4-color: #F4F4F4;
+    --pico-h5-color: #A1A1AA;
+    --pico-h6-color: #A1A1AA;
+    --pico-box-shadow: none;
+    --pico-dropdown-color: var(--pico-contrast);
+    --pico-dropdown-border-color: var(--pico-contrast-border);
+    --pico-dropdown-background-color: #1A1A1A;
+    --pico-dropdown-hover-background-color: #FFFFFF0A;
+    --pico-dropdown-box-shadow: none;
+    --pico-modal-overlay-background-color: #000000CC;
+    --pico-code-background-color: var(--pico-contrast-background);
+    --pico-code-color: var(--pico-primary);
+    --pico-border-radius: 0;
+    --pico-nav-breadcrumb-divider: '/';
+}
+
+* {
+    scrollbar-color: var(--pico-primary) var(--pico-background-color);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    html { scroll-behavior: smooth; }
+}
+
+body {
+    line-height: 1.6;
+    font-family: var(--pico-font-family-sans-serif);
+    background-color: var(--pico-background-color);
+    color: var(--pico-color);
+}
+
+::selection {
+    background-color: var(--pico-primary);
+    color: var(--pico-primary-inverse);
+}
+
+:focus-visible {
+    outline: 2px solid var(--pico-primary);
+}
+
+:where(a:not([role=button]):not([role=menuitem])),
+:where(a:not([role=button]):not([role=menuitem]):visited) {
+    color: var(--pico-primary);
+    text-decoration-color: var(--pico-primary);
+}
+
+:where(a:not([role=button]):not([role=menuitem]):hover) {
+    color: var(--pico-primary-hover);
+    text-decoration-color: var(--pico-primary-hover);
+}
+
+.skip-link {
+    position: absolute;
+    top: -100%;
+}
+
+nav ol:first-of-type, nav ul:first-of-type,
+nav ol:last-of-type, nav ul:last-of-type {
+    margin: 0;
+}
+
+nav li :where(a,[role=link]) {
+    color: var(--pico-color);
+    text-decoration: none;
+}
+
+body > header {
+    border-bottom: 1px solid var(--pico-contrast-border);
+}
+
+header nav {
+    padding: 0.75rem 2rem;
+}
+
+header nav ol,
+header nav ul,
+header nav li {
+    margin: 0;
+}
+
+header nav > ul > li {
+    list-style: none;
+    padding: 0 0.5rem;
+}
+
+header nav > ul:not(.menu) > li {
+    padding: 0;
+}
+
+header nav > ul > li:last-of-type a {
+    background-color: var(--pico-primary);
+    color: var(--pico-contrast-inverse);
+    padding: 0.5rem 1.25rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 700;
+    font-size: calc(var(--pico-font-size) * 0.8);
+    text-wrap: nowrap;
+}
+
+header nav > ul > li:last-of-type a:hover {
+    background-color: var(--pico-primary-hover);
+}
+
+nav details {
+    margin: 0;
+}
+
+header nav a,
+header nav details.dropdown > summary {
+    display: flex;
+    align-items: center;
+    list-style: none;
+    cursor: pointer;
+    margin: 0 0.5rem;
+    padding: 0.5rem;
+    color: var(--pico-color);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: calc(var(--pico-font-size) * 0.8);
+    transition: color 0.15s ease;
+    height: auto;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+    color: inherit;
+}
+
+header nav a:not([role]):hover,
+header nav a:not([role]):focus,
+header nav a:not([role]):active {
+    text-decoration: none;
+}
+
+header nav ul.menu > li:not(:last-of-type) > a:hover,
+header nav ul.menu > li:not(:last-of-type) > a:focus,
+header nav details.dropdown > summary:hover,
+header nav details.dropdown > summary:focus,
+header nav details.dropdown > summary:focus-visible,
+header nav details.dropdown > summary:active,
+header nav details.dropdown[open] > summary {
+    color: var(--pico-primary);
+    background: transparent;
+    box-shadow: none;
+    border: 0;
+}
+
+header nav ul.menu > li:last-of-type > a:hover,
+header nav ul.menu > li:last-of-type > a:focus,
+header nav ul.menu > li:last-of-type > a:active {
+    color: var(--pico-contrast-inverse);
+}
+
+header nav a.active {
+    color: var(--pico-primary);
+}
+
+header nav details summary::marker,
+header nav details summary::-webkit-details-marker {
+    display: none;
+}
+
+header nav details summary::after {
+    display: block;
+    width: 1.5rem;
+    height: 1.875rem;
+    float: inline-end;
+    transform: rotate(0) translateX(.2rem);
+    background-image: var(--pico-icon-chevron);
+    background-position: right center;
+    background-repeat: no-repeat;
+    background-size: 1.5rem auto;
+    margin-inline-start: .25rem;
+    content: "";
+}
+
+header nav details[open] summary::after {
+    transform: rotate(0.5turn) translateX(-0.2rem);
+}
+
+header nav details > summary + ul.align {
+    width: auto;
+    left: auto;
+    right: auto;
+    border: 1px solid var(--pico-contrast-border);
+}
+
+header nav .brand {
+    flex-grow: 1;
+}
+
+header nav .brand a,
+header nav .brand img {
+    display: flex;
+    align-items: center;
+    height: 44px;
+    padding: 0;
+    margin: 0;
+}
+
+header nav .brand a {
+    font-family: var(--pico-font-family-display);
+    font-size: calc(var(--pico-font-size) * 1.1);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--pico-contrast);
+}
+
+header nav .brand a:hover {
+    color: var(--pico-primary);
+}
+
+header nav .menu-open,
+header nav .menu-close,
+header nav .sidebar-open,
+header nav .sidebar-close {
+    display: none;
+}
+
+header nav .menu-open button,
+header nav .menu-close button,
+header nav .sidebar-open button,
+header nav .sidebar-close button {
+    color: var(--pico-contrast);
+    padding: 0.75rem;
+    background: none;
+    border: none;
+}
+
+@media (max-width: 991px) {
+    header nav .menu-open.show,
+    header nav .menu-close.show {
+        display: flex;
+    }
+
+    header nav.small {
+        display: block;
+        overflow-y: auto;
+        position: fixed;
+        padding: 0.5rem 1.5rem;
+        background-color: var(--pico-background-color);
+        min-height: 100vh;
+        z-index: 100;
+        width: 100%;
+        height: 100%;
+        left: 0;
+        top: 0;
+    }
+
+    header nav .menu {
+        display: none;
+    }
+
+    header nav.small .menu {
+        flex-direction: column;
+        display: flex;
+    }
+
+    header nav .menu ul {
+        display: block;
+    }
+
+    header nav .menu li {
+        padding: 0 2rem;
+        width: 100%;
+    }
+
+    header nav.small .menu details > summary + ul.align {
+        position: relative;
+        backdrop-filter: none;
+        background: none;
+        box-shadow: none;
+        border: none;
+        padding: 0;
+    }
+
+    header nav.small .menu details > summary::after {
+        content: "";
+        display: block;
+        float: inline-end;
+        margin-inline-start: .25rem;
+        height: calc(1rem * var(--pico-line-height, 1.5));
+        transform: rotate(0) translateX(.2rem);
+        background-image: var(--pico-icon-chevron);
+        background-position: right center;
+        background-size: 1rem auto;
+        background-repeat: no-repeat;
+        width: 1rem;
+    }
+}
+
+nav.breadcrumb {
+    border-bottom: 1px solid var(--pico-contrast-border);
+}
+
+nav.breadcrumb > ul {
+    text-align: center;
+    padding-inline: min(5%, 2rem);
+    width: 100%;
+}
+
+nav.breadcrumb ul li {
+    justify-content: flex-end;
+    align-items: center;
+    display: flex;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: calc(var(--pico-font-size) * 0.75);
+    color: var(--pico-muted-color);
+}
+
+nav.breadcrumb ul li:not(:first-child) {
+    margin-inline-start: 0;
+}
+
+nav.breadcrumb ul li:not(:last-child)::after {
+    color: var(--pico-muted-color);
+    width: auto;
+}
+
+nav.breadcrumb ul li a {
+    color: var(--pico-muted-color);
+}
+
+nav.breadcrumb ul li a:hover {
+    color: var(--pico-primary);
+}
+
+
+.container {
+    max-width: none !important;
+}
+
+details summary {
+    line-height: inherit;
+}
+
+.cms-text {
+    white-space: pre-line;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--pico-font-family-display);
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: -0.02em;
+    white-space: pre-line;
+}
+
+h1, h2 {
+    text-align: center;
+    margin-bottom: 2.5rem;
+}
+
+h1 {
+    font-size: calc(var(--pico-font-size) * 2.5);
+    line-height: 1.1;
+}
+
+h2 {
+    font-size: calc(var(--pico-font-size) * 1.8);
+    line-height: 1.2;
+}
+
+h3 {
+    font-size: calc(var(--pico-font-size) * 1.2);
+    line-height: 1.3;
+}
+
+@media screen and (min-width: 768px) {
+    h1 {
+        font-size: calc(var(--pico-font-size) * 3.5);
+    }
+
+    h2 {
+        font-size: calc(var(--pico-font-size) * 2.2);
+    }
+}
+
+img {
+    border-radius: 0;
+}
+
+.code pre {
+    border: 4px solid var(--pico-primary);
+}
+
+.btn {
+    display: inline-block;
+    text-decoration: none;
+    vertical-align: sub;
+    padding: 0.75rem 1.5rem;
+    margin: 0.5rem;
+    font-family: var(--pico-font-family-display);
+    font-size: calc(var(--pico-font-size) * 0.85);
+    line-height: inherit;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    border: 2px solid var(--pico-primary);
+    color: var(--pico-contrast-inverse);
+    background-color: var(--pico-primary);
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.btn:hover {
+    background-color: var(--pico-primary-hover);
+    border-color: var(--pico-primary-hover);
+    color: var(--pico-contrast-inverse);
+    opacity: 1;
+}
+
+.btn::after {
+    mask: url('data:image/svg+xml;utf8,<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="square"/></svg>') no-repeat center / contain;
+    background-color: currentColor;
+    margin-inline-start: 0.5rem;
+    display: inline-block;
+    height: 1rem;
+    width: 1rem;
+    content: '';
+}
+
+.hidden {
+    display: none;
+}
+
+.file,
+.audio,
+.image,
+.video {
+    max-width: 100%;
+    text-align: center;
+    display: block;
+    margin: auto;
+}

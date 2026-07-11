@@ -1,0 +1,172 @@
+/**
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+.hero {
+    overflow: hidden;
+    position: relative;
+}
+
+.hero .background {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+}
+
+.hero .background img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+@keyframes hero-zoom {
+    from { transform: scale(1); }
+    to { transform: scale(1.1); }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .hero .background.zoom img {
+        animation: hero-zoom 10s ease-in-out infinite alternate;
+    }
+}
+
+.hero .container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 5rem 0 4rem;
+}
+
+.hero .first {
+    text-align: center;
+    margin: auto;
+}
+
+.hero .second {
+    display: block;
+    width: 100%;
+    margin: auto;
+}
+
+.hero .first:has(+ .second),
+.hero .first:has(+ .second) h1 {
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.hero h1 {
+    margin-top: 0;
+    margin-bottom: 1.75rem;
+    font-size: calc(var(--pico-font-size) * 2.85);
+    font-weight: 400;
+    line-height: 1.04;
+    letter-spacing: 0.01em;
+}
+
+.hero .subtitle {
+    display: inline-block;
+    margin-bottom: 1.75rem;
+    padding: 0;
+    color: var(--pico-secondary);
+    font-size: calc(var(--pico-font-size) * 0.62);
+    font-weight: 500;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+}
+
+.hero .subtitle::after {
+    content: "";
+    display: block;
+    width: 2.5rem;
+    height: 1px;
+    margin: 0.9rem auto 0;
+    background-color: var(--pico-secondary);
+}
+
+.hero p {
+    line-height: 1.7;
+    color: var(--pico-muted-color);
+    font-size: calc(var(--pico-font-size) * 0.85);
+    font-weight: 400;
+    letter-spacing: 0.01em;
+    max-width: 38rem;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.hero .actions {
+    padding: 1.5rem 0;
+}
+
+.hero .btn {
+    margin: 0.5rem 0.25rem;
+}
+
+.hero picture {
+    margin-top: 3rem;
+}
+
+.hero .second picture {
+    background-color: var(--pico-muted-background-color);
+    border: 1px solid var(--pico-muted-border-color);
+    border-radius: calc(var(--pico-border-radius) * 4);
+    filter: drop-shadow(0 1.5rem 3rem #1C1A1614);
+    width: fit-content;
+    margin: 3rem auto 0;
+    padding: 2rem;
+    display: block;
+}
+
+.hero .second img {
+    border-radius: calc(var(--pico-border-radius) * 2);
+    display: block;
+}
+
+.hero .second.multiple {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(12rem, 100%), 1fr));
+    gap: 1rem;
+    max-width: 54rem;
+    margin-top: 3rem;
+}
+
+.hero .second.multiple.swiffy-slider {
+    --swiffy-slider-item-ratio: 4 / 3;
+    display: block;
+}
+
+.hero .second.multiple picture,
+.hero .second.multiple video {
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+}
+
+.hero .second.multiple picture {
+    aspect-ratio: 4 / 3;
+}
+
+.hero .second.multiple img,
+.hero .second.multiple video {
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    max-height: none;
+    object-fit: cover;
+}
+
+@media screen and (min-width: 768px) {
+    .hero .container {
+        padding: 9rem 0 7rem;
+    }
+
+    .hero h1 {
+        font-size: calc(var(--pico-font-size) * 4.25);
+    }
+
+    .hero p {
+        font-size: calc(var(--pico-font-size) * 1);
+    }
+}

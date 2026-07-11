@@ -52,7 +52,7 @@ Whether you need a simple blog or a multi-tenant, multi-domain CMS serving milli
 
 | Technology | Purpose |
 |---|---|
-| **PHP 8.1+** | Backend language |
+| **PHP 8.2+** | Backend language |
 | **Laravel 11.x / 12.x / 13.x** | Web framework |
 | **Vue.js 3** | Admin panel frontend |
 | **Vuetify** | Admin UI component library |
@@ -178,8 +178,8 @@ CMS_AI_TRANSLATE_API_KEY="${DEEPL_API_KEY}"
 # CMS_AI_TRANSLATE_URL="https://api.deepl.com/"
 
 # Analyze content and generate text/images
+CMS_AI_REFINE_API_KEY="${OPENAI_API_KEY}"
 CMS_AI_WRITE_API_KEY="${GEMINI_API_KEY}"
-CMS_AI_REFINE_API_KEY="${GEMINI_API_KEY}"
 CMS_AI_DESCRIBE_API_KEY="${GEMINI_API_KEY}"
 CMS_AI_IMAGINE_API_KEY="${GEMINI_API_KEY}"
 CMS_AI_INPAINT_API_KEY="${GEMINI_API_KEY}"
@@ -280,7 +280,7 @@ Please make sure all tests pass and PHPStan reports no new errors before submitt
 
 ## License
 
-PagibleAI CMS is licensed under the [LGPL-3.0 license](LICENSE).
+PagibleAI CMS is licensed under the [MIT](LICENSE).
 
 ## Acknowledgements
 
