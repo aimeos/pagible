@@ -12,7 +12,6 @@ use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Models\Version;
 use Aimeos\Cms\Resource;
-use Aimeos\Cms\Tenancy;
 use Database\Seeders\TestSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
@@ -38,8 +37,6 @@ class PageControllerTest extends ThemeTestAbstract
 
     public function testLatestFindsChangedPath()
     {
-        Tenancy::$callback = fn() => 'demo';
-
         $page = Page::where( 'tag', 'blog' )->firstOrFail();
 
         // Save with a new path (mimics admin panel which always sends domain)
@@ -57,8 +54,6 @@ class PageControllerTest extends ThemeTestAbstract
 
     public function testLatestFindsChangedPathNoDomain()
     {
-        Tenancy::$callback = fn() => 'demo';
-
         $page = Page::where( 'tag', 'article' )->firstOrFail();
 
         // Save with a new path (no domain in input — e.g. MCP tool)
@@ -76,8 +71,6 @@ class PageControllerTest extends ThemeTestAbstract
 
     public function testLatestFindsChangedPathWithDomainPage()
     {
-        Tenancy::$callback = fn() => 'demo';
-
         // Home page has domain='mydomain.tld' in the seeder
         $page = Page::where( 'tag', 'root' )->firstOrFail();
         $this->assertEquals( 'mydomain.tld', $page->domain );
@@ -98,8 +91,6 @@ class PageControllerTest extends ThemeTestAbstract
 
     public function testLatestFindsExistingVersionWithoutDomain()
     {
-        Tenancy::$callback = fn() => 'demo';
-
         // Create a page with a version that has no domain in data (legacy/importer case)
         $page = Page::forceCreate([
             'lang' => 'en',
@@ -138,8 +129,6 @@ class PageControllerTest extends ThemeTestAbstract
 
     public function testLatestShowsUnpublishedReferencedElement()
     {
-        Tenancy::$callback = fn() => 'demo';
-
         // Shared element that was never published: its own "data" column is still
         // empty, the draft content lives only in the latest (unpublished) version.
         $element = Element::forceCreate([
@@ -186,8 +175,6 @@ class PageControllerTest extends ThemeTestAbstract
 
     public function testHeroRendersImageList()
     {
-        Tenancy::$callback = fn() => 'demo';
-
         $jpeg = File::where( 'mime', 'image/jpeg' )->firstOrFail();
         $tiff = File::where( 'mime', 'image/tiff' )->firstOrFail();
         $root = Page::where( 'tag', 'root' )->firstOrFail();
@@ -227,8 +214,6 @@ class PageControllerTest extends ThemeTestAbstract
 
     public function testHeroRendersSingleImageArray()
     {
-        Tenancy::$callback = fn() => 'demo';
-
         $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
         $root = Page::where( 'tag', 'root' )->firstOrFail();
 
@@ -260,8 +245,6 @@ class PageControllerTest extends ThemeTestAbstract
 
     public function testAnonymousCacheablePageHasNoCookies()
     {
-        Tenancy::$callback = fn() => 'demo';
-
         Page::forceCreate([
             'lang' => 'en',
             'name' => 'Cacheable',
@@ -287,8 +270,6 @@ class PageControllerTest extends ThemeTestAbstract
 
     public function testUncachedPageUsesFullWebSession()
     {
-        Tenancy::$callback = fn() => 'demo';
-
         Page::forceCreate([
             'lang' => 'en',
             'name' => 'Dynamic',
@@ -313,8 +294,6 @@ class PageControllerTest extends ThemeTestAbstract
 
     public function testCsrfEndpointStartsSessionForGuest()
     {
-        Tenancy::$callback = fn() => 'demo';
-
         // The token endpoint must still start a session on demand so the lazy
         // CSRF flow works for cached pages.
         $response = $this->get( '/cmsapi/csrf' );
