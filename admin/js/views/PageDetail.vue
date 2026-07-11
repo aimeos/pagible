@@ -504,21 +504,8 @@ export default {
         return Promise.resolve(true)
       }
 
-      const meta = {}
-      for (const key in this.item.meta || {}) {
-        meta[key] = {
-          type: this.item.meta[key].type || '',
-          data: this.item.meta[key].data || {}
-        }
-      }
-
-      const config = {}
-      for (const key in this.item.config || {}) {
-        config[key] = {
-          type: this.item.config[key].type || '',
-          data: this.item.config[key].data || {}
-        }
-      }
+      const meta = this.clean(this.item.meta || {}, 'meta')
+      const config = this.clean(this.item.config || {}, 'config')
 
       this.saving = true
 

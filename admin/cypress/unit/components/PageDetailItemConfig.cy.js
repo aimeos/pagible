@@ -20,7 +20,7 @@ const schemas = {
 const item = {
   id: '1',
   config: {
-    tracking: { id: 'cfg1', type: 'tracking', data: { code: 'UA-123' } },
+    tracking: { type: 'tracking', data: { code: 'UA-123' }, files: [] },
   },
 }
 
@@ -92,5 +92,19 @@ describe('PageDetailItemSection (config)', () => {
     mountConfig()
     cy.get('.v-expansion-panel').first().click()
     cy.get('.fields-stub').should('exist')
+  })
+
+  it('adds canonical config items without a group', () => {
+    const page = { id: '1', config: {} }
+
+    mountConfig({ item: page }, { 'page:save': true, 'page:config': true }).then(({ wrapper }) => {
+      wrapper.findComponent(PageDetailItemSection).vm.add({ type: 'tracking' })
+
+      expect(page.config.tracking).to.deep.equal({
+        type: 'tracking',
+        data: {},
+        files: [],
+      })
+    })
   })
 })

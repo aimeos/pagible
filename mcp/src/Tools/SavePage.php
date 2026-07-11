@@ -23,7 +23,7 @@ use Laravel\Mcp\Request;
 
 #[Name('save-page')]
 #[Title('Save an existing page')]
-#[Description('Updates an existing page by ID. Only send fields you want to change — unsent fields are preserved from the latest version. Content, meta, and config are fully replaced when provided. Use get-schemas for content types and meta/config field definitions. Returns the updated page as JSON.')]
+#[Description('Updates an existing page by ID. Only send fields you want to change — unsent fields are preserved from the latest version. Content, meta, and config are fully replaced when provided. Meta and config must be canonical entries containing type, data, and files. Use get-schemas for field definitions. Returns the updated page as JSON.')]
 class SavePage extends Tool
 {
     /**
@@ -47,7 +47,17 @@ class SavePage extends Tool
             'content.*.data' => 'required_without:content.*.refid|array',
             'content.*.refid' => 'required_without:content.*.data|string|max:36',
             'meta' => 'array',
+            'meta.*' => 'array:type,data,files',
+            'meta.*.type' => 'required|string|max:50',
+            'meta.*.data' => 'present|array',
+            'meta.*.files' => 'present|array',
+            'meta.*.files.*' => 'string|max:36',
             'config' => 'array',
+            'config.*' => 'array:type,data,files',
+            'config.*.type' => 'required|string|max:50',
+            'config.*.data' => 'present|array',
+            'config.*.files' => 'present|array',
+            'config.*.files.*' => 'string|max:36',
             'to' => 'string|max:2048',
             'tag' => 'string|max:50',
             'theme' => 'string|max:50',
@@ -74,14 +84,6 @@ class SavePage extends Tool
 
         if( isset( $v['title'] ) && !isset( $v['path'] ) ) {
             $v['path'] = Utils::slugify( $v['title'] );
-        }
-
-        if( isset( $v['meta'] ) ) {
-            $v['meta'] = Validation::structured( $v['meta'], 'meta', new \stdClass(), $v['type'] ?? null );
-        }
-
-        if( isset( $v['config'] ) ) {
-            $v['config'] = Validation::structured( $v['config'], 'config', new \stdClass(), $v['type'] ?? null );
         }
 
         $input = array_diff_key( $v, array_flip( ['id', 'latest_id'] ) );
@@ -147,9 +149,9 @@ class SavePage extends Tool
                 ] ) )
                 ->description( 'Content elements. Replaces all existing content. Use get-schemas for available types and fields.' ),
             'meta' => $schema->object()
-                ->description( 'Meta data object keyed by type. Each value is an object with the data fields. Use get-schemas for available types and fields.' ),
+                ->description( 'Canonical meta entries keyed by type. Every entry must contain matching type, data, and files.' ),
             'config' => $schema->object()
-                ->description( 'Page configuration keyed by type. Each value is an object with the data fields. Use get-schemas for available types and fields.' ),
+                ->description( 'Canonical configuration entries keyed by type. Every entry must contain matching type, data, and files.' ),
             'to' => $schema->string()
                 ->description( 'Redirect URL. If set, the page redirects to this URL instead of rendering content.' ),
             'tag' => $schema->string()

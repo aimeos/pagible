@@ -23,7 +23,7 @@ use Laravel\Mcp\Request;
 
 #[Name('add-page')]
 #[Title('Create a new page within the page tree')]
-#[Description('Creates a new page in the page tree. Requires lang (ISO code like "en"), name (max 50 chars), title (max 100 chars), content (array of {type, data} objects — use get-schemas for types), and meta with meta-tags description for SEO. Files and shared elements are attached automatically from the file and reference items in the content, meta and config. Optional: config, to, tag, theme, type, domain, path, cache (minutes), related_id, parent_id, ref. Returns the created page as JSON, including the latest_id to pass to save-page when editing it.')]
+#[Description('Creates a new page in the page tree. Requires lang (ISO code like "en"), name (max 50 chars), title (max 100 chars), content (array of {type, data} objects — use get-schemas for types), and canonical meta entries with meta-tags.data.description for SEO. Meta and config entries must contain type, data, and files. Files and shared elements are attached automatically. Optional: config, to, tag, theme, type, domain, path, cache (minutes), related_id, parent_id, ref. Returns the created page as JSON, including the latest_id to pass to save-page when editing it.')]
 class AddPage extends Tool
 {
     /**
@@ -45,9 +45,19 @@ class AddPage extends Tool
             'content.*.group' => 'string|max:50',
             'content.*.data' => 'required|array',
             'meta' => 'required|array',
-            'meta.meta-tags' => 'required|array',
-            'meta.meta-tags.description' => 'required|string|max:300',
+            'meta.meta-tags' => 'required|array:type,data,files',
+            'meta.*' => 'array:type,data,files',
+            'meta.*.type' => 'required|string|max:50',
+            'meta.*.data' => 'present|array',
+            'meta.*.files' => 'present|array',
+            'meta.*.files.*' => 'string|max:36',
+            'meta.meta-tags.data.description' => 'required|string|max:300',
             'config' => 'array',
+            'config.*' => 'array:type,data,files',
+            'config.*.type' => 'required|string|max:50',
+            'config.*.data' => 'present|array',
+            'config.*.files' => 'present|array',
+            'config.*.files.*' => 'string|max:36',
             'to' => 'string|max:2048',
             'tag' => 'string|max:50',
             'theme' => 'string|max:50',
@@ -65,7 +75,7 @@ class AddPage extends Tool
             'content.required' => 'You must provide content elements for the page. Use get-schemas for available types.',
             'meta.required' => 'You must provide meta data with at least a meta-tags description for SEO.',
             'meta.meta-tags.required' => 'You must provide meta-tags with a description for SEO.',
-            'meta.meta-tags.description.required' => 'You must provide a meta description in meta.meta-tags.description for SEO. It should be 150-160 characters.',
+            'meta.meta-tags.data.description.required' => 'You must provide a meta description in meta.meta-tags.data.description for SEO. It should be 150-160 characters.',
         ] );
 
         $pid = $v['parent_id'] ?? null;
@@ -97,14 +107,6 @@ class AddPage extends Tool
         $v['tag'] = $v['tag'] ?? '';
         $v['to'] = $v['to'] ?? '';
         $v['status'] = 0;
-
-        if( isset( $v['meta'] ) ) {
-            $v['meta'] = Validation::structured( $v['meta'], 'meta', new \stdClass(), $v['type'] );
-        }
-
-        if( isset( $v['config'] ) ) {
-            $v['config'] = Validation::structured( $v['config'], 'config', new \stdClass(), $v['type'] );
-        }
 
         $input = array_diff_key( $v, array_flip( ['parent_id', 'ref'] ) );
 
@@ -153,10 +155,10 @@ class AddPage extends Tool
                 ->description( 'Content elements. Use get-schemas for available types and fields.' )
                 ->required(),
             'meta' => $schema->object()
-                ->description( 'Meta data object keyed by type. Must include "meta-tags" with a "description" field (150-160 chars) for SEO. Use get-schemas for available types and fields.' )
+                ->description( 'Canonical meta entries keyed by type. Every entry must contain matching type, data, and files. Must include meta-tags.data.description (150-160 chars).' )
                 ->required(),
             'config' => $schema->object()
-                ->description( 'Page configuration keyed by type. Each value is an object with the data fields. Use get-schemas for available types and fields.' ),
+                ->description( 'Canonical configuration entries keyed by type. Every entry must contain matching type, data, and files.' ),
             'to' => $schema->string()
                 ->description( 'Redirect URL. If set, the page redirects to this URL instead of rendering content.' ),
             'tag' => $schema->string()

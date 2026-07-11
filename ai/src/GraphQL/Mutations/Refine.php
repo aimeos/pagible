@@ -93,16 +93,20 @@ final class Refine
 
             if( $type !== 'content' )
             {
-                $items = [];
+                $items = (array) $content;
 
                 foreach( $structured as $key => $data )
                 {
                     if( is_array( $data ) ) {
-                        $items[$key] = array_filter( $data, fn( $v ) => $v !== null );
+                        $items[$key] = Validation::entry(
+                            $key,
+                            array_filter( $data, fn( $v ) => $v !== null ),
+                            $type,
+                        );
                     }
                 }
 
-                return (array) Validation::structured( $items, $type, $content, $args['pagetype'] ?? null );
+                return (array) Validation::structured( $items, $type );
             }
 
             return Refiner::merge( $content, $structured['contents'] ?? [], $args['pagetype'] ?? null );

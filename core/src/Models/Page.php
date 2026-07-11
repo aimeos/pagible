@@ -9,6 +9,7 @@ namespace Aimeos\Cms\Models;
 
 use Aimeos\Cms\Concerns\HasChanged;
 use Aimeos\Cms\Concerns\Tenancy;
+use Aimeos\Cms\Validation;
 use Aimeos\Nestedset\NodeTrait;
 use Aimeos\Nestedset\NestedSet;
 use Aimeos\Nestedset\AncestorsRelation;
@@ -657,7 +658,7 @@ class Page extends Base
     protected function config(): Attribute
     {
         return Attribute::make(
-            set: fn( $value ) => json_encode( $value ?? new \stdClass() ),
+            set: fn( $value ) => json_encode( Validation::structured( $value, 'config' ) ),
         );
     }
 
@@ -709,7 +710,7 @@ class Page extends Base
     protected function meta(): Attribute
     {
         return Attribute::make(
-            set: fn( $value ) => json_encode( $value ?? new \stdClass() ),
+            set: fn( $value ) => json_encode( Validation::structured( $value, 'meta' ) ),
         );
     }
 

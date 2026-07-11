@@ -13,6 +13,7 @@ use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Tenancy;
 use Aimeos\Cms\Utils;
+use Aimeos\Cms\Validation;
 use Illuminate\Support\Str;
 
 
@@ -253,25 +254,28 @@ abstract class AbstractDemo
      * @param array<int, array<string, mixed>> $content Content elements
      * @param Page $parent Parent page to append to
      * @param array<int, string> $fileIds Additional file IDs to attach
-     * @param array<int, array<string, mixed>> $meta Meta data blocks
+     * @param array<string, array<string, mixed>>|object $meta Meta entries keyed by type
      * @return Page Created page
      */
-    protected function page( array $data, array $content, Page $parent, array $fileIds = [], array $meta = [] ) : Page
+    protected function page( array $data, array $content, Page $parent, array $fileIds = [], array|object $meta = [] ) : Page
     {
         $elementId = $this->element();
         $fileId = $this->file();
 
-        $meta = $data['meta'] ?? $meta ?: [
-            ['type' => 'meta-tags', 'data' => [
+        $meta = $data['meta'] ?? $meta;
+        $meta = $meta ?: [
+            'meta-tags' => Validation::entry( 'meta-tags', [
                 'description' => $data['title'] ?? '',
                 'keywords' => 'PagibleAI CMS, Laravel CMS, AI content management',
-            ]],
-            ['type' => 'social-media', 'data' => [
+            ], 'meta' ),
+            'social-media' => Validation::entry( 'social-media', [
                 'title' => $data['title'] ?? '',
                 'description' => $data['title'] ?? '',
                 'file' => ['id' => $fileId, 'type' => 'file'],
-            ]],
+            ], 'meta' ),
         ];
+        $meta = Validation::structured( $meta, 'meta' );
+        $data['meta'] = $meta;
 
         $content[] = ['id' => Utils::uid(), 'type' => 'heading', 'group' => 'footer', 'data' => ['level' => 2, 'title' => 'PagibleAI CMS']];
         $content[] = ['type' => 'reference', 'refid' => $elementId, 'group' => 'footer'];

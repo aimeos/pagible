@@ -4,7 +4,7 @@
 import Fields from './Fields.vue'
 import SchemaItems from './SchemaItems.vue'
 import { useUserStore, useMessageStore, useSchemaStore, useSideStore } from '../stores'
-import { hasProp, itemTitle, uid } from '../utils'
+import { hasProp, itemTitle } from '../utils'
 import { mdiPencil, mdiDelete, mdiViewGridPlus } from '@mdi/js'
 
 export default {
@@ -61,7 +61,11 @@ export default {
         return
       }
 
-      this.item[this.section][item.type] = { id: uid(), type: item.type, data: {} }
+      this.item[this.section][item.type] = {
+        type: item.type,
+        data: {},
+        files: []
+      }
       this.panel.push(Object.keys(this.item[this.section]).length - 1)
       this.vschemas = false
     },

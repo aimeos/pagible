@@ -11,6 +11,7 @@ use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Utils;
+use Aimeos\Cms\Validation;
 use Illuminate\Support\Str;
 
 
@@ -80,17 +81,14 @@ class GlassDemo extends AbstractDemo
                 'order' => '_lft',
                 'parent-page' => ['value' => $blogId, 'label' => 'Field Notes'],
             ]],
-        ], $home, [], [
-            ['type' => 'meta-tags', 'data' => [
+        ], $home, [], $this->meta( [
                 'description' => 'Articles from SignalLake on metric governance, data freshness, analytics operations, and shared revenue reporting.',
                 'keywords' => 'analytics cloud blog, metric governance, data freshness, revenue analytics',
-            ]],
-            ['type' => 'social-media', 'data' => [
+            ], [
                 'title' => 'Field Notes | SignalLake',
                 'description' => 'Practical writing for teams that depend on shared business metrics.',
                 'file' => ['id' => $cover, 'type' => 'file'],
-            ]],
-        ] );
+            ] ) );
 
         $this->page( [
             'lang' => 'en',
@@ -296,17 +294,14 @@ class GlassDemo extends AbstractDemo
             ['id' => Utils::uid(), 'type' => 'file', 'group' => 'main', 'data' => [
                 'file' => ['id' => $this->briefFile(), 'type' => 'file'],
             ]],
-        ], $home, [$diagram], [
-            ['type' => 'meta-tags', 'data' => [
+        ], $home, [$diagram], $this->meta( [
                 'description' => 'SignalLake documentation for workspaces, sources, metrics, dashboards, access rules, and publishing workflows.',
                 'keywords' => 'SignalLake documentation, analytics API, metric definitions, cloud analytics docs',
-            ]],
-            ['type' => 'social-media', 'data' => [
+            ], [
                 'title' => 'SignalLake Documentation',
                 'description' => 'Set up a workspace, connect sources, define governed metrics, and publish dashboards.',
                 'file' => ['id' => $diagram, 'type' => 'file'],
-            ]],
-        ] );
+            ] ) );
 
         return $this;
     }
@@ -552,17 +547,14 @@ class GlassDemo extends AbstractDemo
             ['type' => 'reference', 'refid' => $elementId, 'group' => 'footer'],
         ];
 
-        $meta = [
-            ['type' => 'meta-tags', 'data' => [
+        $meta = $this->meta( [
                 'description' => 'SignalLake Analytics Cloud gives revenue, product, and finance teams governed dashboards, metric ownership, and live operating reports.',
                 'keywords' => 'analytics cloud, governed metrics, revenue dashboards, product analytics, business intelligence',
-            ]],
-            ['type' => 'social-media', 'data' => [
+            ], [
                 'title' => 'SignalLake Analytics Cloud',
                 'description' => 'Live, governed metrics for teams that run weekly operating reviews.',
                 'file' => ['id' => $fileId, 'type' => 'file'],
-            ]],
-        ];
+            ] );
 
         $page = Page::forceCreate( [
             'lang' => 'en',
@@ -617,8 +609,10 @@ class GlassDemo extends AbstractDemo
     {
         $ids = [];
 
-        if( is_array( $value ) )
+        if( is_array( $value ) || is_object( $value ) )
         {
+            $value = (array) $value;
+
             if( ( $value['type'] ?? null ) === 'file' && is_string( $value['id'] ?? null )
                 && !isset( $value['data'] ) && !isset( $value['group'] )
             ) {
@@ -648,31 +642,49 @@ class GlassDemo extends AbstractDemo
 
 
     /**
+     * Builds canonical metadata entries for Glass demo pages.
+     *
+     * @param array<string, mixed> $tags Meta tag data
+     * @param array<string, mixed> $social Social media data
+     */
+    protected function meta( array $tags, array $social ) : object
+    {
+        return Validation::structured( [
+            'meta-tags' => Validation::entry( 'meta-tags', $tags, 'meta' ),
+            'social-media' => Validation::entry( 'social-media', $social, 'meta' ),
+        ], 'meta' );
+    }
+
+
+    /**
      * Creates a demo page below the given parent and returns it.
      *
      * @param array<string, mixed> $data Page attributes
      * @param array<int, array<string, mixed>> $content Content elements
      * @param Page $parent Parent page to append to
      * @param array<int, string> $fileIds Additional file IDs to attach
-     * @param array<int, array<string, mixed>> $meta Meta data blocks
+     * @param array<string, array<string, mixed>>|object $meta Meta entries keyed by type
      * @return Page Created page
      */
-    protected function page( array $data, array $content, Page $parent, array $fileIds = [], array $meta = [] ) : Page
+    protected function page( array $data, array $content, Page $parent, array $fileIds = [], array|object $meta = [] ) : Page
     {
         $elementId = $this->element();
         $fileId = $this->file();
 
-        $meta = $data['meta'] ?? $meta ?: [
-            ['type' => 'meta-tags', 'data' => [
+        $meta = $data['meta'] ?? $meta;
+        $meta = $meta ?: [
+            'meta-tags' => Validation::entry( 'meta-tags', [
                 'description' => $data['title'] ?? '',
                 'keywords' => 'SignalLake, analytics cloud, governed metrics, business intelligence',
-            ]],
-            ['type' => 'social-media', 'data' => [
+            ], 'meta' ),
+            'social-media' => Validation::entry( 'social-media', [
                 'title' => $data['title'] ?? '',
                 'description' => $data['title'] ?? '',
                 'file' => ['id' => $fileId, 'type' => 'file'],
-            ]],
+            ], 'meta' ),
         ];
+        $meta = Validation::structured( $meta, 'meta' );
+        $data['meta'] = $meta;
 
         $content[] = ['id' => Utils::uid(), 'type' => 'heading', 'group' => 'footer', 'data' => ['level' => 2, 'title' => 'SignalLake']];
         $content[] = ['type' => 'reference', 'refid' => $elementId, 'group' => 'footer'];

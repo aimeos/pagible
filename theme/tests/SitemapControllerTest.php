@@ -45,7 +45,11 @@ class SitemapControllerTest extends ThemeTestAbstract
     public function testIndexExcludesNoindex()
     {
         \Aimeos\Cms\Models\Page::where( 'path', 'hidden' )->firstOrFail()
-            ->forceFill( ['meta' => [['type' => 'robots', 'data' => ['index' => 'noindex']]]] )
+            ->forceFill( ['meta' => ['robots' => [
+                'type' => 'robots',
+                'data' => ['index' => 'noindex'],
+                'files' => [],
+            ]]] )
             ->saveQuietly();
 
         $controller = new \Aimeos\Cms\Controllers\SitemapController();

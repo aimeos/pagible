@@ -190,9 +190,7 @@ class PageToolsTest extends McpTestAbstract
                 ['type' => 'heading', 'data' => ['title' => 'Hello World', 'level' => '1']],
                 ['type' => 'text', 'data' => ['text' => 'This is a test page.']],
             ],
-            'meta' => [
-                'meta-tags' => ['description' => 'A test page for unit testing'],
-            ],
+            'meta' => $this->meta( 'A test page for unit testing' ),
         ] );
 
         $response->assertOk()->assertSee( [
@@ -205,6 +203,11 @@ class PageToolsTest extends McpTestAbstract
         $page = Page::where( 'name', 'Test page' )->first();
         $this->assertNotNull( $page );
         $response->assertSee( [$page->id] );
+
+        $entry = $page->latest->aux->meta->{'meta-tags'};
+        $this->assertEquals( 'meta-tags', $entry->type );
+        $this->assertEquals( [], $entry->files );
+        $this->assertObjectNotHasProperty( 'id', $entry );
     }
 
 
@@ -223,9 +226,7 @@ class PageToolsTest extends McpTestAbstract
                 ['id' => 'el-c', 'type' => 'heading', 'data' => ['title' => 'Third', 'level' => '2']],
                 ['type' => 'text', 'data' => ['text' => 'Fourth']],
             ],
-            'meta' => [
-                'meta-tags' => ['description' => 'An ordered page for testing'],
-            ],
+            'meta' => $this->meta( 'An ordered page for testing' ),
         ] );
 
         $page = Page::where( 'name', 'Ordered page' )->with( 'latest' )->first();
@@ -247,9 +248,7 @@ class PageToolsTest extends McpTestAbstract
             'content' => [
                 ['type' => 'text', 'data' => ['text' => 'Child content.']],
             ],
-            'meta' => [
-                'meta-tags' => ['description' => 'A child page for testing'],
-            ],
+            'meta' => $this->meta( 'A child page for testing' ),
             'parent_id' => $parent->id,
         ] );
 
@@ -269,9 +268,7 @@ class PageToolsTest extends McpTestAbstract
             'content' => [
                 ['type' => 'text', 'group' => 'main', 'data' => ['text' => 'Content']],
             ],
-            'meta' => [
-                'meta-tags' => ['description' => 'SEO description'],
-            ],
+            'meta' => $this->meta( 'SEO description' ),
         ] );
 
         $response->assertOk()->assertSee( ['Full page', 'nav-start'] );
@@ -302,9 +299,7 @@ class PageToolsTest extends McpTestAbstract
             'content' => [
                 ['type' => 'nonexistent', 'data' => ['text' => 'fail']],
             ],
-            'meta' => [
-                'meta-tags' => ['description' => 'A bad page test'],
-            ],
+            'meta' => $this->meta( 'A bad page test' ),
         ] );
 
         $response->assertHasErrors( ['Unknown'] );
@@ -500,5 +495,22 @@ class PageToolsTest extends McpTestAbstract
         ] );
 
         $response->assertOk()->assertSee( ['error'] );
+    }
+
+
+    /**
+     * Returns canonical metadata for MCP page writes.
+     *
+     * @return array<string, array<string, mixed>>
+     */
+    protected function meta( string $description ) : array
+    {
+        return [
+            'meta-tags' => [
+                'type' => 'meta-tags',
+                'data' => ['description' => $description],
+                'files' => [],
+            ],
+        ];
     }
 }

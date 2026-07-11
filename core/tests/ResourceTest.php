@@ -73,13 +73,33 @@ class ResourceTest extends CoreTestAbstract
         $page = Resource::addPage( [
             'lang' => 'en', 'name' => 'Nested', 'title' => 'Nested', 'path' => 'nested-test',
             'content' => [['type' => 'hero', 'data' => ['background' => ['id' => $jpeg->id, 'type' => 'file']]]],
-            'meta' => ['social-media' => ['file' => ['id' => $tiff->id, 'type' => 'file']]],
+            'meta' => ['social-media' => [
+                'type' => 'social-media',
+                'data' => ['file' => ['id' => $tiff->id, 'type' => 'file']],
+                'files' => [$tiff->id],
+            ]],
         ], $this->user, parent: $this->root()->id );
 
         $ids = $page->latest->files()->pluck( 'cms_files.id' )->all();
 
         $this->assertContains( $jpeg->id, $ids );  // nested hero.background
         $this->assertContains( $tiff->id, $ids );  // meta social-media.file
+        $this->assertEquals( 'social-media', $page->latest->aux->meta->{'social-media'}->type );
+        $this->assertEquals( [$tiff->id], $page->latest->aux->meta->{'social-media'}->files );
+        $this->assertObjectNotHasProperty( 'id', $page->latest->aux->meta->{'social-media'} );
+        $this->assertObjectNotHasProperty( 'group', $page->latest->aux->meta->{'social-media'} );
+    }
+
+
+    public function testAddPageRejectsCompactMeta()
+    {
+        $this->expectException( Exception::class );
+        $this->expectExceptionMessage( 'expected type, data and files' );
+
+        Resource::addPage( [
+            'lang' => 'en', 'name' => 'Invalid', 'title' => 'Invalid', 'path' => 'invalid-meta',
+            'meta' => ['meta-tags' => ['description' => 'Invalid']],
+        ], $this->user, parent: $this->root()->id );
     }
 
 
