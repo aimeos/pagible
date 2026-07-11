@@ -110,6 +110,10 @@ class ThemeWatchTest extends ThemeTestAbstract
 
     public function testSearchDispatchesWithDurationForPulseRecorderWhenWatchOff() : void
     {
+        if( !class_exists( \Laravel\Pulse\Pulse::class ) ) {
+            $this->markTestSkipped( 'Laravel Pulse is not installed.' );
+        }
+
         config( ['cms.watch.channel' => null, 'cms.theme.watch' => false] );
         app( \Laravel\Pulse\Pulse::class )->register( [ThemeSearchedPulseRecorder::class => true] );
         Event::fake( [CmsSearch::class] );

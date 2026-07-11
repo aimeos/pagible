@@ -34,8 +34,12 @@
     border-color: var(--pico-contrast-hover-border);
 }
 
-.cards .card-item img {
-    border-radius: calc(var(--pico-border-radius) * 1.5);
+.cards .card-item picture.image {
+    background: none;
+    box-shadow: none;
+    border: none;
+    border-radius: 0;
+    padding: 0;
 }
 
 .cards .title {

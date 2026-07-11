@@ -36,6 +36,7 @@ class TenancyTest extends CoreTestAbstract
 
     public function testTenancyScopeApply()
     {
+        app()->forgetInstance( Tenancy::class );
 
         $pages = Page::all();
 

@@ -9,7 +9,9 @@ namespace Aimeos\Cms\Commands;
 
 use Aimeos\Cms\Schema;
 use Database\Seeders\AbstractDemo;
+use Database\Seeders\DefaultDemo;
 use Illuminate\Console\Command;
+use Illuminate\Support\Str;
 
 
 class Demo extends Command
@@ -57,6 +59,25 @@ class Demo extends Command
 
 
     /**
+     * Creates the demo content provider for the given theme by naming convention.
+     *
+     * @param string $theme Theme name
+     * @param string $tenant Tenant ID the content is created for
+     * @return AbstractDemo Demo content provider for the theme
+     */
+    public static function make( string $theme, string $tenant = '' ) : AbstractDemo
+    {
+        $class = 'Database\\Seeders\\' . Str::studly( $theme ) . 'Demo';
+
+        if( $theme !== '' && is_subclass_of( $class, AbstractDemo::class ) ) {
+            return new $class( $theme, $tenant );
+        }
+
+        return new DefaultDemo( $theme, $tenant );
+    }
+
+
+    /**
      * Seeds the demo content for one theme into one tenant.
      *
      * @param string $theme Theme name
@@ -66,6 +87,6 @@ class Demo extends Command
     {
         $this->comment( sprintf( '  Seeding "%s" demo into tenant "%s" ...', $theme ?: 'default', $tenant ?: '' ) );
 
-        AbstractDemo::create( $theme, $tenant )->seed();
+        self::make( $theme, $tenant )->seed();
     }
 }

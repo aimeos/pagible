@@ -165,7 +165,7 @@ header nav > ul:not(.menu) > li {
     padding: 0;
 }
 
-header nav > ul > li:last-of-type a {
+header nav ul.menu > li:last-of-type > a {
     background-image: linear-gradient(90deg, var(--pico-primary), var(--pico-secondary));
     padding: 0.5rem 1rem;
     border-radius: 2rem;
@@ -177,7 +177,7 @@ nav details {
 }
 
 header nav a,
-header nav details.dropdown > summary {
+header nav details.dropdown > summary:not([role]) {
     display: flex;
     align-items: center;
     list-style: none;
@@ -199,11 +199,11 @@ header nav a:not([role]):active {
 
 header nav ul.menu > li:not(:last-of-type) > a:hover,
 header nav ul.menu > li:not(:last-of-type) > a:focus,
-header nav details.dropdown > summary:hover,
-header nav details.dropdown > summary:focus,
-header nav details.dropdown > summary:focus-visible,
-header nav details.dropdown > summary:active,
-header nav details.dropdown[open] > summary {
+header nav details.dropdown > summary:not([role]):hover,
+header nav details.dropdown > summary:not([role]):focus,
+header nav details.dropdown > summary:not([role]):focus-visible,
+header nav details.dropdown > summary:not([role]):active,
+header nav details.dropdown[open] > summary:not([role]) {
     color: var(--pico-primary-hover);
     background: transparent;
     box-shadow: none;

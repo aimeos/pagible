@@ -7,18 +7,12 @@
     --pico-block-spacing-horizontal: 0;
 }
 
-.cms-content .container {
+main .cms-content .container {
     padding: 3rem 1rem;
 }
 
-.cms-content > :nth-child(4n+2) {
+main .cms-content > :nth-child(4n+2) {
     background-color: #0F172A80;
-}
-
-.cms-content > .heading + .text,
-.cms-content > .heading + .cards,
-.cms-content > .heading + .image {
-    margin-top: -2rem;
 }
 
 .heading h1,
