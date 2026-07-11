@@ -16,12 +16,14 @@ use Symfony\Component\Console\Output\ConsoleOutput;
 #[Group( 'benchmark' )]
 class BenchmarkTest extends CmsTestAbstract
 {
-    use CmsWithMigrations;
+    use CmsWithMigrations {
+        defineDatabaseMigrations as defineCmsDatabaseMigrations;
+    }
 
 
     protected function defineDatabaseMigrations()
     {
-        parent::defineDatabaseMigrations();
+        $this->defineCmsDatabaseMigrations();
         $this->artisan('migrate', ['--database' => 'testing'])->run();
     }
 
