@@ -114,6 +114,10 @@ class JsonapiWatchTest extends JsonapiTestAbstract
 
     public function testPulseRecorderReceivesQueriedWithDurationWhenWatchOff() : void
     {
+        if( !class_exists( \Laravel\Pulse\Pulse::class ) ) {
+            $this->markTestSkipped( 'Laravel Pulse is not installed.' );
+        }
+
         config( ['cms.watch.channel' => null, 'cms.jsonapi.watch' => false] );
         app( \Laravel\Pulse\Pulse::class )->register( [JsonapiQueriedPulseRecorder::class => true] );
         Event::fake( [CmsJsonapi::class] );

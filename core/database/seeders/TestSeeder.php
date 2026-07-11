@@ -26,9 +26,8 @@ class TestSeeder extends Seeder
      */
     public function run()
     {
-        \Aimeos\Cms\Tenancy::$callback = function() {
-            return 'demo';
-        };
+        // Resolve the tenant configured by the caller, not a stale scoped instance.
+        app()->forgetInstance( \Aimeos\Cms\Tenancy::class );
 
         Page::withoutSyncingToSearch( function() {
             Element::withoutSyncingToSearch( function() {

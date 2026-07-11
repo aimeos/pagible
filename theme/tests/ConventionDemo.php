@@ -9,7 +9,7 @@ namespace Database\Seeders;
 
 
 /**
- * Test fixture verifying AbstractDemo::create() resolution by naming convention.
+ * Test fixture verifying Demo::make() resolution by naming convention.
  *
  * The "convention" theme resolves to "\Database\Seeders\ConventionDemo".
  */

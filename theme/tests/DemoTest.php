@@ -7,10 +7,10 @@
 
 namespace Tests;
 
+use Aimeos\Cms\Commands\Demo as DemoCommand;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Schema;
 use Aimeos\Cms\Tenancy;
-use Database\Seeders\AbstractDemo;
 use Database\Seeders\DefaultDemo;
 
 
@@ -24,9 +24,9 @@ class DemoTest extends ThemeTestAbstract
     {
         require_once __DIR__ . '/ConventionDemo.php';
 
-        $this->assertInstanceOf( \Database\Seeders\ConventionDemo::class, AbstractDemo::create( 'convention', 'x' ) );
-        $this->assertInstanceOf( DefaultDemo::class, AbstractDemo::create( '', 'x' ) );
-        $this->assertInstanceOf( DefaultDemo::class, AbstractDemo::create( 'missing', 'x' ) );
+        $this->assertInstanceOf( \Database\Seeders\ConventionDemo::class, DemoCommand::make( 'convention', 'x' ) );
+        $this->assertInstanceOf( DefaultDemo::class, DemoCommand::make( '', 'x' ) );
+        $this->assertInstanceOf( DefaultDemo::class, DemoCommand::make( 'missing', 'x' ) );
     }
 
 
@@ -44,6 +44,20 @@ class DemoTest extends ThemeTestAbstract
         $this->assertTrue( collect( (array) $home->content )->contains( fn( $item ) => ( $item->type ?? null ) === 'testimonial' ) );
         $this->assertGreaterThan( 0, Page::where( 'path', 'blog' )->count() );
         $this->assertGreaterThan( 0, Page::where( 'type', 'docs' )->count() );
+
+        foreach( Page::get() as $page )
+        {
+            $meta = (array) $page->meta;
+
+            $this->assertArrayHasKey( 'meta-tags', $meta );
+            $this->assertArrayHasKey( 'social-media', $meta );
+
+            $description = $meta['meta-tags']->data->description ?? '';
+
+            $this->assertNotSame( '', $description );
+            $this->assertStringContainsString( $description, (string) $page );
+            $this->assertStringContainsString( $description, (string) $page->latest );
+        }
     }
 
 
