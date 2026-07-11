@@ -64,7 +64,7 @@ class StructuredMigrationTest extends CoreTestAbstract
         $meta = json_decode( $stored->meta ?? '', true );
         $config = json_decode( $stored->config ?? '', true );
 
-        $this->assertSame( ['type', 'data', 'files'], array_keys( $meta['meta-tags'] ) );
+        $this->assertEqualsCanonicalizing( ['type', 'data', 'files'], array_keys( $meta['meta-tags'] ) );
         $this->assertArrayNotHasKey( 'id', $meta['meta-tags'] );
         $this->assertArrayNotHasKey( 'group', $meta['meta-tags'] );
         $this->assertSame( ['file-1'], $config['logo']['files'] );
@@ -79,7 +79,7 @@ class StructuredMigrationTest extends CoreTestAbstract
 
         $postReleaseStored = $db->table( 'cms_pages' )->where( 'id', $postRelease->id )->first();
 
-        $this->assertSame( $postReleaseMeta, json_decode( $postReleaseStored->meta ?? '', true ) );
+        $this->assertEquals( $postReleaseMeta, json_decode( $postReleaseStored->meta ?? '', true ) );
         $this->assertIsObject( json_decode( $postReleaseStored->config ?? '' ) );
     }
 }

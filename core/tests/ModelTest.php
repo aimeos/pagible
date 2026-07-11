@@ -56,6 +56,30 @@ class ModelTest extends CoreTestAbstract
     }
 
 
+    public function testJsonKeyOrderDoesNotMarkModelDirty(): void
+    {
+        $page = new Page();
+        $page->setRawAttributes( [
+            'meta' => '{"meta-tags":{"data":{"keywords":"cms","description":"Test"},"type":"meta-tags","files":[]}}',
+            'content' => '[{"type":"heading"},{"type":"text"}]',
+        ], true );
+
+        $page->meta = ['meta-tags' => [
+            'type' => 'meta-tags',
+            'data' => ['description' => 'Test', 'keywords' => 'cms'],
+            'files' => [],
+        ]];
+        $page->content = [['type' => 'heading'], ['type' => 'text']];
+
+        $this->assertFalse( $page->isDirty( 'meta' ) );
+        $this->assertFalse( $page->isDirty( 'content' ) );
+
+        $page->content = [['type' => 'text'], ['type' => 'heading']];
+
+        $this->assertTrue( $page->isDirty( 'content' ) );
+    }
+
+
     public function testPageRejectsLegacyStructuredAttributes(): void
     {
         $this->expectException( \Aimeos\Cms\Exception::class );
