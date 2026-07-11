@@ -156,7 +156,11 @@ class BenchmarkMcp extends Command
                     'name' => 'MCP Bench', 'title' => 'MCP Bench',
                     'path' => 'mcp-bench-' . Utils::uid(),
                     'content' => [['type' => 'text', 'data' => ['text' => 'Benchmark']]],
-                    'meta' => ['meta-tags' => ['description' => 'Benchmark page']],
+                    'meta' => ['meta-tags' => [
+                        'type' => 'meta-tags',
+                        'data' => ['description' => 'Benchmark page'],
+                        'files' => [],
+                    ]],
                 ] );
             }, tries: $tries );
 

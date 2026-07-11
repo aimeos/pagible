@@ -162,8 +162,8 @@ class TestSeeder extends Seeder
             'status' => 1,
             'cache' => 5,
             'editor' => 'seeder',
-            'meta' => ['meta' => ['type' => 'meta', 'data' => ['text' => 'Laravel CMS is outstanding']]],
-            'config' => ['test' => ['type' => 'test', 'data' => ['key' => 'value']]],
+            'meta' => ['meta' => ['type' => 'meta', 'data' => ['text' => 'Laravel CMS is outstanding'], 'files' => []]],
+            'config' => ['test' => ['type' => 'test', 'data' => ['key' => 'value'], 'files' => []]],
             'content' => [
                 ['type' => 'heading', 'data' => ['title' => 'Welcome to Laravel CMS']],
                 ['type' => 'reference', 'refid' => $elementId, 'group' => 'footer']
@@ -185,8 +185,8 @@ class TestSeeder extends Seeder
                 'editor' => 'seeder',
             ],
             'aux' => [
-                'meta' => ['type' => 'meta', 'data' => ['text' => 'Laravel CMS is outstanding']],
-                'config' => ['test' => ['type' => 'test', 'data' => ['key' => 'value']]],
+                'meta' => ['meta' => ['type' => 'meta', 'data' => ['text' => 'Laravel CMS is outstanding'], 'files' => []]],
+                'config' => ['test' => ['type' => 'test', 'data' => ['key' => 'value'], 'files' => []]],
                 'content' => [
                     ['type' => 'heading', 'data' => ['title' => 'Welcome to Laravel CMS']],
                     ['type' => 'reference', 'refid' => $elementId, 'group' => 'footer']

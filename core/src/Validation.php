@@ -66,12 +66,12 @@ class Validation
             self::validateContent( $input['content'] );
         }
 
-        if( isset( $input['meta'] ) ) {
-            self::validateStructured( is_object( $input['meta'] ) ? $input['meta'] : (object) $input['meta'], 'meta' );
+        if( array_key_exists( 'meta', $input ) ) {
+            $input['meta'] = self::structured( $input['meta'], 'meta' );
         }
 
-        if( isset( $input['config'] ) ) {
-            self::validateStructured( is_object( $input['config'] ) ? $input['config'] : (object) $input['config'], 'config' );
+        if( array_key_exists( 'config', $input ) ) {
+            $input['config'] = self::structured( $input['config'], 'config' );
         }
 
         return $input;
@@ -163,44 +163,41 @@ class Validation
 
 
     /**
-     * Validates and builds structured meta/config objects.
+     * Builds one canonical meta/config entry.
      *
-     * The entry group defaults to the first section defined for the given page type
-     * in schema.json (falling back to "main").
-     *
-     * @param array<string, array<string, mixed>> $items Keyed by type name, values are data fields
+     * @param string $type Entry type
+     * @param object|array<string, mixed> $data Entry field data
      * @param string $section Schema section ('meta' or 'config')
-     * @param array<string, mixed>|object $existing Existing meta/config data to merge with
-     * @param string|null $type Page type whose sections provide the default group
+     * @return object Canonical {type, data, files} entry
+     */
+    public static function entry( string $type, object|array $data, string $section ) : object
+    {
+        $data = self::defaults( $type, $data, $section );
+
+        return (object) [
+            'type' => $type,
+            'data' => $data,
+            'files' => self::fileIds( $data ),
+        ];
+    }
+
+
+    /**
+     * Validates canonical structured meta/config objects.
+     *
+     * Only accepts entries keyed by type in the canonical shape
+     * {type, data, files}. The type key is the stable identity; structured
+     * meta/config entries deliberately don't carry a separate ID. Legacy shapes
+     * are handled exclusively by the data migration and are rejected at runtime.
+     *
+     * @param array<mixed>|object|null $items Canonical meta/config entries
+     * @param string $section Schema section ('meta' or 'config')
      * @return object Structured meta/config object
      */
-    public static function structured( array $items, string $section, array|object|null $existing = null, ?string $type = null ) : object
+    public static function structured( array|object|null $items, string $section ) : object
     {
         $schemas = Schema::schemas( section: $section );
-
-        self::validateStructured( (object) $items, $section, $schemas );
-        $result = (object) ( (array) ( $existing ?? new \stdClass() ) );
-        $group = Schema::section( $type );
-
-        foreach( $items as $key => $data )
-        {
-            $existingId = $result->{$key}->id ?? null;
-
-            $entry = [
-                'id' => $existingId ?? Utils::uid(),
-                'type' => $key,
-                'group' => $group,
-                'data' => self::defaults( $key, $data, $section, $schemas ),
-            ];
-
-            if( $files = self::fileIds( $entry['data'] ) ) {
-                $entry['files'] = $files;
-            }
-
-            $result->{$key} = (object) $entry;
-        }
-
-        return $result;
+        return self::structuredEntries( $items, $section, $schemas );
     }
 
 
@@ -253,6 +250,78 @@ class Validation
         }
 
         return array_values( array_unique( $ids ) );
+    }
+
+
+    /**
+     * Validates canonical meta/config entries.
+     *
+     * @param array<mixed>|object|null $items Canonical entries
+     * @param string $section Schema section
+     * @param array<string, mixed> $schemas Available section schemas
+     * @return object Canonical entries keyed by type
+     * @throws Exception If the structure isn't canonical
+     */
+    private static function structuredEntries( array|object|null $items, string $section, array $schemas ) : object
+    {
+        if( is_null( $items ) ) {
+            throw new Exception( sprintf( 'Invalid %s structure: expected an object keyed by type', $section ) );
+        }
+
+        $result = new \stdClass();
+        $items = (array) $items;
+
+        if( $items && array_is_list( $items ) ) {
+            throw new Exception( sprintf( 'Invalid %s structure: entries must be keyed by type', $section ) );
+        }
+
+        foreach( $items as $key => $value )
+        {
+            if( !is_array( $value ) && !is_object( $value ) ) {
+                throw new Exception( sprintf( 'Invalid %s entry "%s": entry must be an object', $section, $key ) );
+            }
+
+            $value = (array) $value;
+            $keys = array_keys( $value );
+            sort( $keys );
+
+            if( $keys !== ['data', 'files', 'type'] ) {
+                throw new Exception( sprintf( 'Invalid %s entry "%s": expected type, data and files', $section, $key ) );
+            }
+
+            $entryType = $value['type'] ?? null;
+
+            if( !is_string( $key ) || $key === '' || !is_string( $entryType ) || $entryType !== $key ) {
+                throw new Exception( sprintf( 'Invalid %s entry "%s": key and type must match', $section, $key ) );
+            }
+
+            if( !is_array( $value['data'] ) && !is_object( $value['data'] ) ) {
+                throw new Exception( sprintf( 'Invalid %s entry "%s": data must be an object', $section, $key ) );
+            }
+
+            if( !is_array( $value['files'] ) || !array_is_list( $value['files'] )
+                || array_filter( $value['files'], fn( $id ) => !is_string( $id ) )
+            ) {
+                throw new Exception( sprintf( 'Invalid %s entry "%s": files must be a list of strings', $section, $key ) );
+            }
+
+            $data = self::defaults( $entryType, $value['data'], $section, $schemas );
+            $files = self::fileIds( $data );
+
+            if( $files !== $value['files'] ) {
+                throw new Exception( sprintf( 'Invalid %s entry "%s": files must match data references', $section, $key ) );
+            }
+
+            $result->{$entryType} = (object) [
+                'type' => $entryType,
+                'data' => $data,
+                'files' => $files,
+            ];
+        }
+
+        self::validateStructured( $result, $section, $schemas );
+
+        return $result;
     }
 
 

@@ -8,6 +8,8 @@
 namespace Aimeos\Cms\Models;
 
 use Aimeos\Cms\Concerns\Tenancy;
+use Aimeos\Cms\Validation;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
@@ -315,5 +317,36 @@ class Version extends Model
     public function versionable() : MorphTo
     {
         return $this->morphTo();
+    }
+
+
+    /**
+     * Interact with the "aux" property.
+     *
+     * Page versions keep meta/config in aux. Canonicalizing here prevents direct
+     * version writers, restores and publishing from reintroducing legacy shapes.
+     *
+     * @return Attribute<mixed, mixed> Eloquent attribute for the "aux" property
+     */
+    protected function aux(): Attribute
+    {
+        return Attribute::make(
+            set: function( $value ) {
+                if( is_string( $value ) ) {
+                    $value = json_decode( $value, true ) ?: [];
+                }
+
+                $aux = (array) ( $value ?? [] );
+                if( array_key_exists( 'meta', $aux ) ) {
+                    $aux['meta'] = Validation::structured( $aux['meta'], 'meta' );
+                }
+
+                if( array_key_exists( 'config', $aux ) ) {
+                    $aux['config'] = Validation::structured( $aux['config'], 'config' );
+                }
+
+                return json_encode( $aux );
+            },
+        );
     }
 }

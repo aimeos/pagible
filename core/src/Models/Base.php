@@ -40,6 +40,48 @@ abstract class Base extends Model
 
 
     /**
+     * Compare JSON casts independent of object key order.
+     *
+     * MySQL normalizes JSON object keys when storing values. Laravel's default
+     * strict comparison therefore treats unchanged JSON as dirty when the same
+     * value is encoded in a different key order.
+     *
+     * @param string $key Attribute name
+     * @return bool TRUE if the current and original values are equivalent
+     */
+    public function originalIsEquivalent( $key )
+    {
+        if( $this->hasCast( $key, ['object', 'collection'] ) && array_key_exists( $key, $this->original ) ) {
+            return self::canonicalJson( $this->fromJson( $this->attributes[$key] ?? null ) )
+                === self::canonicalJson( $this->fromJson( $this->original[$key] ?? null ) );
+        }
+
+        return parent::originalIsEquivalent( $key );
+    }
+
+
+    /**
+     * Recursively sort JSON object keys while retaining list order and value types.
+     */
+    private static function canonicalJson( mixed $value ) : mixed
+    {
+        if( !is_array( $value ) ) {
+            return $value;
+        }
+
+        foreach( $value as $key => $item ) {
+            $value[$key] = self::canonicalJson( $item );
+        }
+
+        if( !array_is_list( $value ) ) {
+            ksort( $value );
+        }
+
+        return $value;
+    }
+
+
+    /**
      * Create a new Eloquent Collection without automatic relationship autoloading.
      *
      * @param array<array-key, \Illuminate\Database\Eloquent\Model> $models

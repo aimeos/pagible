@@ -38,6 +38,57 @@ class ModelTest extends CoreTestAbstract
     }
 
 
+    public function testPageAcceptsCanonicalStructuredAttributes(): void
+    {
+        $page = new Page();
+        $page->meta = ['meta-tags' => [
+            'type' => 'meta-tags',
+            'data' => ['description' => 'Test'], 'files' => [],
+        ]];
+        $page->config = ['logo' => [
+            'type' => 'logo',
+            'data' => ['file' => ['type' => 'file', 'id' => 'file-1']], 'files' => ['file-1'],
+        ]];
+
+        $this->assertEquals( 'Test', $page->meta->{'meta-tags'}->data->description );
+        $this->assertObjectNotHasProperty( 'id', $page->meta->{'meta-tags'} );
+        $this->assertEquals( ['file-1'], $page->config->logo->files );
+    }
+
+
+    public function testJsonKeyOrderDoesNotMarkModelDirty(): void
+    {
+        $page = new Page();
+        $page->setRawAttributes( [
+            'meta' => '{"meta-tags":{"data":{"keywords":"cms","description":"Test"},"type":"meta-tags","files":[]}}',
+            'content' => '[{"type":"heading"},{"type":"text"}]',
+        ], true );
+
+        $page->meta = ['meta-tags' => [
+            'type' => 'meta-tags',
+            'data' => ['description' => 'Test', 'keywords' => 'cms'],
+            'files' => [],
+        ]];
+        $page->content = [['type' => 'heading'], ['type' => 'text']];
+
+        $this->assertFalse( $page->isDirty( 'meta' ) );
+        $this->assertFalse( $page->isDirty( 'content' ) );
+
+        $page->content = [['type' => 'text'], ['type' => 'heading']];
+
+        $this->assertTrue( $page->isDirty( 'content' ) );
+    }
+
+
+    public function testPageRejectsLegacyStructuredAttributes(): void
+    {
+        $this->expectException( \Aimeos\Cms\Exception::class );
+
+        $page = new Page();
+        $page->meta = [['type' => 'meta-tags', 'data' => ['description' => 'Test']]];
+    }
+
+
     public function testPageHasDescendantCount(): void
     {
         $page = new Page();
@@ -109,6 +160,28 @@ class ModelTest extends CoreTestAbstract
         $version = new Version( ['data' => (object) []] );
 
         $this->assertNotNull( $version );
+    }
+
+
+    public function testVersionAcceptsCanonicalStructuredAux(): void
+    {
+        $version = new Version( [
+            'data' => (object) ['type' => 'page'],
+            'aux' => [
+                'meta' => ['meta-tags' => [
+                    'type' => 'meta-tags',
+                    'data' => ['description' => 'Test'], 'files' => [],
+                ]],
+                'config' => ['logo' => [
+                    'type' => 'logo',
+                    'data' => ['file' => ['type' => 'file', 'id' => 'file-1']], 'files' => ['file-1'],
+                ]],
+            ],
+        ] );
+
+        $this->assertEquals( 'Test', $version->aux->meta->{'meta-tags'}->data->description );
+        $this->assertObjectNotHasProperty( 'id', $version->aux->meta->{'meta-tags'} );
+        $this->assertEquals( ['file-1'], $version->aux->config->logo->files );
     }
 
 

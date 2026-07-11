@@ -490,8 +490,16 @@ class GraphqlPageTest extends GraphqlTestAbstract
         $this->assertEquals($expectedData, json_decode($version['data'], true));
 
         $expectedAux = [
-            'meta' => ['type' => 'meta', 'data' => ['text' => 'Laravel CMS is outstanding']],
-            'config' => ['test' => ['type' => 'test', 'data' => ['key' => 'value']]],
+            'meta' => ['meta' => [
+                'type' => 'meta',
+                'data' => ['text' => 'Laravel CMS is outstanding'],
+                'files' => [],
+            ]],
+            'config' => ['test' => [
+                'type' => 'test',
+                'data' => ['key' => 'value'],
+                'files' => [],
+            ]],
             'content' => [
                 ['type' => 'heading', 'data' => ['title' => 'Welcome to Laravel CMS']],
                 ['type' => 'reference', 'refid' => $element->id, 'group' => 'footer'],
@@ -589,8 +597,8 @@ class GraphqlPageTest extends GraphqlTestAbstract
                     title: "Test page"
                     to: "/to/page"
                     tag: "test"
-                    meta: "{\"canonical\":\"to\/page\"}"
-                    config: "{\"key\":\"test\"}"
+                    meta: "{\"canonical\":{\"type\":\"canonical\",\"data\":{\"url\":\"to\/page\"},\"files\":[]}}"
+                    config: "{\"styles\":{\"type\":\"styles\",\"data\":{\"text\":\"body {}\"},\"files\":[]}}"
                     content: "[{\"type\":\"heading\",\"text\":\"Welcome to Laravel CMS\"}]"
                     status: 0
                     cache: 0
@@ -829,8 +837,8 @@ class GraphqlPageTest extends GraphqlTestAbstract
                     title: "Test page"
                     to: "/to/page"
                     tag: "test"
-                    meta: "{\"canonical\":\"to\/page\"}"
-                    config: "{\"key\":\"test\"}"
+                    meta: "{\"canonical\":{\"type\":\"canonical\",\"data\":{\"url\":\"to\/page\"},\"files\":[]}}"
+                    config: "{\"styles\":{\"type\":\"styles\",\"data\":{\"text\":\"body {}\"},\"files\":[]}}"
                     content: "[{\"type\":\"heading\",\"data\":{\"title\":\"Welcome to Laravel CMS\"}}]"
                     status: 0
                     cache: 5
@@ -908,8 +916,16 @@ class GraphqlPageTest extends GraphqlTestAbstract
         $this->assertEquals($expectedLatestData, json_decode($savePage['latest']['data'] ?? null, true));
 
         $expectedLatestAux = [
-            'meta' => ['canonical' => 'to/page'],
-            'config' => ['key' => 'test'],
+            'meta' => ['canonical' => [
+                'type' => 'canonical',
+                'data' => ['url' => 'to/page'],
+                'files' => [],
+            ]],
+            'config' => ['styles' => [
+                'type' => 'styles',
+                'data' => ['text' => 'body {}'],
+                'files' => [],
+            ]],
             'content' => [['type' => 'heading', 'data' => ['title' => 'Welcome to Laravel CMS']]],
         ];
         $this->assertEquals($expectedLatestAux, json_decode($savePage['latest']['aux'] ?? null, true));
@@ -1070,7 +1086,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
     {
         $page = Page::where('tag', 'root')->firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 14 );
+        $this->expectsDatabaseQueryCount( 13 );
 
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {

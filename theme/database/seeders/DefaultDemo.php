@@ -10,6 +10,7 @@ namespace Database\Seeders;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Utils;
+use Aimeos\Cms\Validation;
 
 
 /**
@@ -91,15 +92,15 @@ class DefaultDemo extends AbstractDemo
                 'limit' => 2,
             ]],
         ], $home, [], [
-            'meta-tags' => ['id' => Utils::uid(), 'type' => 'meta-tags', 'group' => 'basic', 'data' => [
+            'meta-tags' => Validation::entry( 'meta-tags', [
                 'description' => 'Stay up to date with the latest PagibleAI CMS features, performance insights, and best practices for building exceptional websites.',
                 'keywords' => 'PagibleAI CMS blog, Laravel CMS updates, AI content management news',
-            ]],
-            'social-media' => ['id' => Utils::uid(), 'type' => 'social-media', 'group' => 'basic', 'data' => [
+            ], 'meta' ),
+            'social-media' => Validation::entry( 'social-media', [
                 'title' => 'Blog | PagibleAI CMS',
                 'description' => 'News, tutorials, and insights from the PagibleAI CMS team.',
                 'file' => ['id' => $fileId, 'type' => 'file'],
-            ]],
+            ], 'meta' ),
         ] );
 
         // Article 1: article + image-text + text
@@ -112,15 +113,15 @@ class DefaultDemo extends AbstractDemo
             'type' => 'blog',
             'status' => 1,
             'meta' => [
-                'meta-tags' => ['id' => Utils::uid(), 'type' => 'meta-tags', 'group' => 'basic', 'data' => [
+                'meta-tags' => Validation::entry( 'meta-tags', [
                     'description' => 'Discover why PagibleAI CMS delivers superior performance, AI-powered editing, and developer experience compared to legacy CMS platforms.',
                     'keywords' => 'PagibleAI CMS vs WordPress, fastest Laravel CMS, AI content management',
-                ]],
-                'social-media' => ['id' => Utils::uid(), 'type' => 'social-media', 'group' => 'basic', 'data' => [
+                ], 'meta' ),
+                'social-media' => Validation::entry( 'social-media', [
                     'title' => 'Why PagibleAI CMS Outperforms Traditional Platforms',
                     'description' => 'PagibleAI CMS redefines content management — faster, smarter, built for the modern web.',
                     'file' => ['id' => $fileId, 'type' => 'file'],
-                ]],
+                ], 'meta' ),
             ],
         ], [
             ['id' => Utils::uid(), 'type' => 'article', 'group' => 'main', 'data' => [
@@ -173,15 +174,15 @@ class DefaultDemo extends AbstractDemo
             'type' => 'blog',
             'status' => 1,
             'meta' => [
-                'meta-tags' => ['id' => Utils::uid(), 'type' => 'meta-tags', 'group' => 'basic', 'data' => [
+                'meta-tags' => Validation::entry( 'meta-tags', [
                     'description' => 'Independent benchmarks show PagibleAI CMS renders pages in 0.3ms cached — 150x faster than WordPress and 40x faster than Statamic.',
                     'keywords' => 'PagibleAI CMS benchmarks, CMS performance comparison, fastest PHP CMS',
-                ]],
-                'social-media' => ['id' => Utils::uid(), 'type' => 'social-media', 'group' => 'basic', 'data' => [
+                ], 'meta' ),
+                'social-media' => Validation::entry( 'social-media', [
                     'title' => 'PagibleAI CMS Performance That Speaks for Itself',
                     'description' => 'Sub-millisecond page loads. See how PagibleAI CMS compares to WordPress, Statamic, and Craft.',
                     'file' => ['id' => $fileId, 'type' => 'file'],
-                ]],
+                ], 'meta' ),
             ],
         ], [
             ['id' => Utils::uid(), 'type' => 'article', 'group' => 'main', 'data' => [
@@ -231,15 +232,15 @@ class DefaultDemo extends AbstractDemo
             'type' => 'blog',
             'status' => 1,
             'meta' => [
-                'meta-tags' => ['id' => Utils::uid(), 'type' => 'meta-tags', 'group' => 'basic', 'data' => [
+                'meta-tags' => Validation::entry( 'meta-tags', [
                     'description' => 'PagibleAI CMS makes embedding video, audio, and syntax-highlighted code effortless with responsive players and automatic accessibility.',
                     'keywords' => 'PagibleAI CMS media, video CMS, audio CMS, code highlighting Laravel',
-                ]],
-                'social-media' => ['id' => Utils::uid(), 'type' => 'social-media', 'group' => 'basic', 'data' => [
+                ], 'meta' ),
+                'social-media' => Validation::entry( 'social-media', [
                     'title' => 'Rich Media Made Easy with PagibleAI CMS',
                     'description' => 'Video, audio, and code — beautifully handled by PagibleAI CMS.',
                     'file' => ['id' => $fileId, 'type' => 'file'],
-                ]],
+                ], 'meta' ),
             ],
         ], [
             ['id' => Utils::uid(), 'type' => 'article', 'group' => 'main', 'data' => [
@@ -276,15 +277,15 @@ class DefaultDemo extends AbstractDemo
             'type' => 'blog',
             'status' => 1,
             'meta' => [
-                'meta-tags' => ['id' => Utils::uid(), 'type' => 'meta-tags', 'group' => 'basic', 'data' => [
+                'meta-tags' => Validation::entry( 'meta-tags', [
                     'description' => 'PagibleAI CMS automatically optimizes images with responsive srcsets, lazy loading, and WebP conversion — zero configuration required.',
                     'keywords' => 'PagibleAI CMS files, image optimization, responsive images, Laravel file management',
-                ]],
-                'social-media' => ['id' => Utils::uid(), 'type' => 'social-media', 'group' => 'basic', 'data' => [
+                ], 'meta' ),
+                'social-media' => Validation::entry( 'social-media', [
                     'title' => 'Effortless File Management in PagibleAI CMS',
                     'description' => 'Upload once, serve everywhere — PagibleAI CMS handles optimization automatically.',
                     'file' => ['id' => $fileId, 'type' => 'file'],
-                ]],
+                ], 'meta' ),
             ],
         ], [
             ['id' => Utils::uid(), 'type' => 'article', 'group' => 'main', 'data' => [
@@ -326,15 +327,15 @@ class DefaultDemo extends AbstractDemo
             'type' => 'docs',
             'status' => 1,
             'meta' => [
-                'meta-tags' => ['id' => Utils::uid(), 'type' => 'meta-tags', 'group' => 'basic', 'data' => [
+                'meta-tags' => Validation::entry( 'meta-tags', [
                     'description' => 'Complete documentation for PagibleAI CMS — installation, configuration, themes, and content elements explained step by step.',
                     'keywords' => 'PagibleAI CMS documentation, Laravel CMS guide, CMS installation, PagibleAI setup',
-                ]],
-                'social-media' => ['id' => Utils::uid(), 'type' => 'social-media', 'group' => 'basic', 'data' => [
+                ], 'meta' ),
+                'social-media' => Validation::entry( 'social-media', [
                     'title' => 'Documentation | PagibleAI CMS',
                     'description' => 'Everything you need to build with PagibleAI CMS — from installation to advanced customization.',
                     'file' => ['id' => $fileId, 'type' => 'file'],
-                ]],
+                ], 'meta' ),
             ],
         ], [
             ['id' => Utils::uid(), 'type' => 'toc', 'group' => 'main', 'data' => [
@@ -377,15 +378,15 @@ class DefaultDemo extends AbstractDemo
             'type' => 'docs',
             'status' => 1,
             'meta' => [
-                'meta-tags' => ['id' => Utils::uid(), 'type' => 'meta-tags', 'group' => 'basic', 'data' => [
+                'meta-tags' => Validation::entry( 'meta-tags', [
                     'description' => 'Learn how to create custom themes for PagibleAI CMS — Composer packages with Blade templates, smart inheritance, and zero overhead.',
                     'keywords' => 'PagibleAI CMS themes, custom CMS theme, Laravel Blade theme, theme development',
-                ]],
-                'social-media' => ['id' => Utils::uid(), 'type' => 'social-media', 'group' => 'basic', 'data' => [
+                ], 'meta' ),
+                'social-media' => Validation::entry( 'social-media', [
                     'title' => 'Themes | PagibleAI CMS Documentation',
                     'description' => 'Build beautiful custom themes for PagibleAI CMS with full creative freedom.',
                     'file' => ['id' => $fileId, 'type' => 'file'],
-                ]],
+                ], 'meta' ),
             ],
         ], [
             ['id' => Utils::uid(), 'type' => 'toc', 'group' => 'main', 'data' => [
@@ -450,15 +451,15 @@ class DefaultDemo extends AbstractDemo
             'type' => 'docs',
             'status' => 1,
             'meta' => [
-                'meta-tags' => ['id' => Utils::uid(), 'type' => 'meta-tags', 'group' => 'basic', 'data' => [
+                'meta-tags' => Validation::entry( 'meta-tags', [
                     'description' => 'All 20 content elements in PagibleAI CMS — hero, cards, pricing, FAQ, blog, video, code, and more. Each with its own optimized CSS.',
                     'keywords' => 'PagibleAI CMS elements, content blocks, hero section, pricing table, FAQ accordion, blog CMS',
-                ]],
-                'social-media' => ['id' => Utils::uid(), 'type' => 'social-media', 'group' => 'basic', 'data' => [
+                ], 'meta' ),
+                'social-media' => Validation::entry( 'social-media', [
                     'title' => 'Content Elements | PagibleAI CMS Documentation',
                     'description' => 'PagibleAI CMS ships with 20 content elements that cover every use case — loaded on demand for peak performance.',
                     'file' => ['id' => $fileId, 'type' => 'file'],
-                ]],
+                ], 'meta' ),
             ],
         ], [
             ['id' => Utils::uid(), 'type' => 'toc', 'group' => 'main', 'data' => [
@@ -695,15 +696,15 @@ class DefaultDemo extends AbstractDemo
         ];
 
         $meta = [
-            'meta-tags' => ['id' => Utils::uid(), 'type' => 'meta-tags', 'group' => 'basic', 'data' => [
+            'meta-tags' => Validation::entry( 'meta-tags', [
                 'description' => 'PagibleAI CMS combines artificial intelligence with Laravel to deliver the fastest, smartest content management system ever built.',
                 'keywords' => 'PagibleAI CMS, Laravel CMS, AI CMS, headless CMS, content management, PHP CMS',
-            ]],
-            'social-media' => ['id' => Utils::uid(), 'type' => 'social-media', 'group' => 'basic', 'data' => [
+            ], 'meta' ),
+            'social-media' => Validation::entry( 'social-media', [
                 'title' => 'PagibleAI CMS — AI-Powered Content Management for Laravel',
                 'description' => 'PagibleAI CMS combines artificial intelligence with Laravel to deliver the fastest, smartest CMS ever built.',
                 'file' => ['id' => $fileId, 'type' => 'file'],
-            ]],
+            ], 'meta' ),
         ];
 
         $page = Page::forceCreate( [
@@ -756,7 +757,7 @@ class DefaultDemo extends AbstractDemo
      * @param array<int, array<string, mixed>> $content Content elements
      * @param Page $parent Parent page to append to
      * @param array<int, string> $fileIds Additional file IDs to attach
-     * @param array<string, array<string, mixed>> $meta Meta data blocks keyed by type
+     * @param array<string, array<string, mixed>|object> $meta Meta entries keyed by type
      * @return Page Created page
      */
     protected function page( array $data, array $content, Page $parent, array $fileIds = [], array $meta = [] ) : Page
@@ -765,15 +766,15 @@ class DefaultDemo extends AbstractDemo
         $fileId = $this->file();
 
         $meta = $data['meta'] ?? $meta ?: [
-            'meta-tags' => ['id' => Utils::uid(), 'type' => 'meta-tags', 'group' => 'basic', 'data' => [
+            'meta-tags' => Validation::entry( 'meta-tags', [
                 'description' => $data['title'] ?? '',
                 'keywords' => 'PagibleAI CMS, Laravel CMS, AI content management',
-            ]],
-            'social-media' => ['id' => Utils::uid(), 'type' => 'social-media', 'group' => 'basic', 'data' => [
+            ], 'meta' ),
+            'social-media' => Validation::entry( 'social-media', [
                 'title' => $data['title'] ?? '',
                 'description' => $data['title'] ?? '',
                 'file' => ['id' => $fileId, 'type' => 'file'],
-            ]],
+            ], 'meta' ),
         ];
 
         $content[] = ['id' => Utils::uid(), 'type' => 'heading', 'group' => 'footer', 'data' => ['level' => 2, 'title' => 'PagibleAI CMS']];

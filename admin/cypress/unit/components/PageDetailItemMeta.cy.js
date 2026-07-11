@@ -20,7 +20,7 @@ const schemas = {
 const item = {
   id: '1',
   meta: {
-    seo: { id: 'meta1', type: 'seo', data: { description: 'Test' } },
+    seo: { type: 'seo', data: { description: 'Test' }, files: [] },
   },
 }
 
@@ -96,5 +96,19 @@ describe('PageDetailItemSection (meta)', () => {
   it('renders without meta items', () => {
     mountMeta({ item: { id: '1', meta: {} } })
     cy.get('.v-expansion-panel').should('not.exist')
+  })
+
+  it('adds canonical meta items without a group', () => {
+    const page = { id: '1', meta: {} }
+
+    mountMeta({ item: page }, { 'page:save': true }).then(({ wrapper }) => {
+      wrapper.findComponent(PageDetailItemSection).vm.add({ type: 'seo' })
+
+      expect(page.meta.seo).to.deep.equal({
+        type: 'seo',
+        data: {},
+        files: [],
+      })
+    })
   })
 })

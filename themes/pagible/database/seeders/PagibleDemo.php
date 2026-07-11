@@ -11,6 +11,7 @@ use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Utils;
+use Aimeos\Cms\Validation;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -96,15 +97,15 @@ class PagibleDemo extends AbstractDemo
                 'parent-page' => ['value' => $blogId, 'label' => 'Journal'],
             ]],
         ], $home, [], [
-            'meta-tags' => ['id' => Utils::uid(), 'type' => 'meta-tags', 'group' => 'basic', 'data' => [
+            'meta-tags' => Validation::entry( 'meta-tags', [
                 'description' => 'The PagibleAI journal covers editorial workflows, structured content, Laravel delivery, and responsible AI assistance.',
                 'keywords' => 'PagibleAI CMS journal, Laravel CMS, structured content, editorial workflow',
-            ]],
-            'social-media' => ['id' => Utils::uid(), 'type' => 'social-media', 'group' => 'basic', 'data' => [
+            ], 'meta' ),
+            'social-media' => Validation::entry( 'social-media', [
                 'title' => 'PagibleAI Journal',
                 'description' => 'Working notes for editors and developers who share responsibility for a website.',
                 'file' => ['id' => $cover, 'type' => 'file'],
-            ]],
+            ], 'meta' ),
         ] );
 
         $this->page( [
@@ -336,15 +337,15 @@ class PagibleDemo extends AbstractDemo
                 'file' => ['id' => $this->guideFile(), 'type' => 'file'],
             ]],
         ], $home, [$diagram], [
-            'meta-tags' => ['id' => Utils::uid(), 'type' => 'meta-tags', 'group' => 'basic', 'data' => [
+            'meta-tags' => Validation::entry( 'meta-tags', [
                 'description' => 'Install PagibleAI CMS, choose packages, define content, configure permissions, and publish from a Laravel application.',
                 'keywords' => 'PagibleAI documentation, Laravel CMS installation, structured content, CMS API',
-            ]],
-            'social-media' => ['id' => Utils::uid(), 'type' => 'social-media', 'group' => 'basic', 'data' => [
+            ], 'meta' ),
+            'social-media' => Validation::entry( 'social-media', [
                 'title' => 'PagibleAI CMS Documentation',
                 'description' => 'Installation and working examples for editors and Laravel developers.',
                 'file' => ['id' => $diagram, 'type' => 'file'],
-            ]],
+            ], 'meta' ),
         ] );
 
         $this->page( [
@@ -616,16 +617,12 @@ HTML,
 
         $config = [
             'logo' => [
-                'id' => Utils::uid(),
                 'type' => 'logo',
-                'group' => 'basic',
                 'files' => [$logoId],
                 'data' => ['file' => ['id' => $logoId, 'type' => 'file']],
             ],
             'logo-alternative' => [
-                'id' => Utils::uid(),
                 'type' => 'logo-alternative',
-                'group' => 'basic',
                 'files' => [$logoId],
                 'data' => ['file' => ['id' => $logoId, 'type' => 'file']],
             ],
@@ -717,15 +714,15 @@ HTML,
         ];
 
         $meta = [
-            'meta-tags' => ['id' => Utils::uid(), 'type' => 'meta-tags', 'group' => 'basic', 'data' => [
+            'meta-tags' => Validation::entry( 'meta-tags', [
                 'description' => 'PagibleAI is an API-first Laravel CMS for structured content, versioned publishing, AI-assisted editorial work, themes, search, and multi-site delivery.',
                 'keywords' => 'PagibleAI CMS, Laravel CMS, API-first CMS, structured content, AI content management',
-            ]],
-            'social-media' => ['id' => Utils::uid(), 'type' => 'social-media', 'group' => 'basic', 'data' => [
+            ], 'meta' ),
+            'social-media' => Validation::entry( 'social-media', [
                 'title' => 'PagibleAI CMS for Laravel',
                 'description' => 'A clear publishing system for editors and a compact Laravel foundation for developers.',
                 'file' => ['id' => $fileId, 'type' => 'file'],
-            ]],
+            ], 'meta' ),
         ];
 
         $page = Page::forceCreate( [
@@ -864,7 +861,7 @@ HTML,
      * @param array<int, array<string, mixed>> $content Content elements
      * @param Page $parent Parent page to append to
      * @param array<int, string> $fileIds Additional file IDs to attach
-     * @param array<string, array<string, mixed>> $meta Meta data blocks keyed by type
+     * @param array<string, array<string, mixed>|object> $meta Meta entries keyed by type
      * @return Page Created page
      */
     protected function page( array $data, array $content, Page $parent, array $fileIds = [], array $meta = [] ) : Page
@@ -874,15 +871,15 @@ HTML,
         $description = self::DESCRIPTIONS[$data['path'] ?? ''] ?? $data['title'] ?? '';
 
         $meta = $data['meta'] ?? $meta ?: [
-            'meta-tags' => ['id' => Utils::uid(), 'type' => 'meta-tags', 'group' => 'basic', 'data' => [
+            'meta-tags' => Validation::entry( 'meta-tags', [
                 'description' => $description,
                 'keywords' => 'PagibleAI CMS, Laravel CMS, structured content, publishing',
-            ]],
-            'social-media' => ['id' => Utils::uid(), 'type' => 'social-media', 'group' => 'basic', 'data' => [
+            ], 'meta' ),
+            'social-media' => Validation::entry( 'social-media', [
                 'title' => $data['title'] ?? '',
                 'description' => $description,
                 'file' => ['id' => $fileId, 'type' => 'file'],
-            ]],
+            ], 'meta' ),
         ];
 
         $content[] = ['id' => Utils::uid(), 'type' => 'heading', 'group' => 'footer', 'data' => ['level' => 2, 'title' => 'PagibleAI CMS']];

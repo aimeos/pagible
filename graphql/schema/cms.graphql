@@ -291,10 +291,10 @@ type Page {
   "Type of the page for using different theme templates"
   type: String
 
-  "Arbitrary header data"
+  "Meta entries keyed by type in {type, data, files} form"
   meta: JSON!
 
-  "Arbitrary configuration settings"
+  "Configuration entries keyed by type in {type, data, files} form"
   config: JSON!
 
   "List of content"
@@ -436,10 +436,10 @@ input PageInput {
   "Type of the page for using different theme templates"
   type: String
 
-  "Arbitrary page header"
+  "Canonical meta entries keyed by type; each entry requires type, data and files"
   meta: JSON
 
-  "Arbitrary configuration settings"
+  "Canonical configuration entries keyed by type; each entry requires type, data and files"
   config: JSON
 
   "List of content"

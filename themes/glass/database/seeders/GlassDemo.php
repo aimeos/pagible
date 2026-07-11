@@ -11,6 +11,7 @@ use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Utils;
+use Aimeos\Cms\Validation;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -91,15 +92,15 @@ class GlassDemo extends AbstractDemo
                 'parent-page' => ['value' => $blogId, 'label' => 'Field Notes'],
             ]],
         ], $home, [], [
-            'meta-tags' => ['id' => Utils::uid(), 'type' => 'meta-tags', 'group' => 'basic', 'data' => [
+            'meta-tags' => Validation::entry( 'meta-tags', [
                 'description' => 'Articles from SignalLake on metric governance, data freshness, analytics operations, and shared revenue reporting.',
                 'keywords' => 'analytics cloud blog, metric governance, data freshness, revenue analytics',
-            ]],
-            'social-media' => ['id' => Utils::uid(), 'type' => 'social-media', 'group' => 'basic', 'data' => [
+            ], 'meta' ),
+            'social-media' => Validation::entry( 'social-media', [
                 'title' => 'Field Notes',
                 'description' => 'Practical writing for teams that depend on shared business metrics.',
                 'file' => ['id' => $cover, 'type' => 'file'],
-            ]],
+            ], 'meta' ),
         ] );
 
         $this->page( [
@@ -379,15 +380,15 @@ class GlassDemo extends AbstractDemo
                 'file' => ['id' => $this->briefFile(), 'type' => 'file'],
             ]],
         ], $home, [$diagram], [
-            'meta-tags' => ['id' => Utils::uid(), 'type' => 'meta-tags', 'group' => 'basic', 'data' => [
+            'meta-tags' => Validation::entry( 'meta-tags', [
                 'description' => 'SignalLake documentation for workspaces, sources, metrics, dashboards, access rules, and publishing workflows.',
                 'keywords' => 'SignalLake documentation, analytics API, metric definitions, cloud analytics docs',
-            ]],
-            'social-media' => ['id' => Utils::uid(), 'type' => 'social-media', 'group' => 'basic', 'data' => [
+            ], 'meta' ),
+            'social-media' => Validation::entry( 'social-media', [
                 'title' => 'SignalLake Documentation',
                 'description' => 'Set up a workspace, connect sources, define governed metrics, and publish dashboards.',
                 'file' => ['id' => $diagram, 'type' => 'file'],
-            ]],
+            ], 'meta' ),
         ] );
 
         $this->page( [
@@ -432,15 +433,15 @@ class GlassDemo extends AbstractDemo
                 'text' => "### Review before publishing\n\nBefore a contract becomes active, SignalLake checks that the owner, source, grain, and freshness policy are present. The approval state then follows the metric into every dashboard that uses it.\n\nIf the contract changes later, readers see the active version beside the metric. That makes definition updates visible without turning every dashboard into a change log.",
             ]],
         ], $docs, [], [
-            'meta-tags' => ['id' => Utils::uid(), 'type' => 'meta-tags', 'group' => 'basic', 'data' => [
+            'meta-tags' => Validation::entry( 'meta-tags', [
                 'description' => 'A concrete SignalLake metric contract example covering owner, source, grain, freshness, and approval state.',
                 'keywords' => 'metric contract example, analytics governance, SignalLake docs',
-            ]],
-            'social-media' => ['id' => Utils::uid(), 'type' => 'social-media', 'group' => 'basic', 'data' => [
+            ], 'meta' ),
+            'social-media' => Validation::entry( 'social-media', [
                 'title' => 'Metric Contract Example | SignalLake',
                 'description' => 'Use one record to keep a metric definition, owner, source, grain, freshness, and approval state together.',
                 'file' => ['id' => $this->img( 'contract' ), 'type' => 'file'],
-            ]],
+            ], 'meta' ),
         ] );
 
         $this->page( [
@@ -485,15 +486,15 @@ class GlassDemo extends AbstractDemo
                 'text' => "### Publish the view, not a copy\n\nA published dashboard still reads from the approved metric set. If a source becomes stale or a definition changes, SignalLake marks the issue on the review page instead of hiding it in an exported deck.\n\nThat distinction matters during weekly reviews. The audience gets a stable page, while editors keep the ability to prepare the next review cycle without overwriting the current one.",
             ]],
         ], $docs, [], [
-            'meta-tags' => ['id' => Utils::uid(), 'type' => 'meta-tags', 'group' => 'basic', 'data' => [
+            'meta-tags' => Validation::entry( 'meta-tags', [
                 'description' => 'A SignalLake dashboard publishing example for sharing governed metrics with an executive review audience.',
                 'keywords' => 'dashboard publishing example, governed dashboard, SignalLake docs',
-            ]],
-            'social-media' => ['id' => Utils::uid(), 'type' => 'social-media', 'group' => 'basic', 'data' => [
+            ], 'meta' ),
+            'social-media' => Validation::entry( 'social-media', [
                 'title' => 'Dashboard Publish Example | SignalLake',
                 'description' => 'Publish a stable review dashboard while keeping metrics connected to governed live data.',
                 'file' => ['id' => $this->img( 'control' ), 'type' => 'file'],
-            ]],
+            ], 'meta' ),
         ] );
 
         return $this;
@@ -642,16 +643,12 @@ class GlassDemo extends AbstractDemo
 
         $config = [
             'logo' => [
-                'id' => Utils::uid(),
                 'type' => 'logo',
-                'group' => 'basic',
                 'files' => [$logoId],
                 'data' => ['file' => ['id' => $logoId, 'type' => 'file']],
             ],
             'logo-alternative' => [
-                'id' => Utils::uid(),
                 'type' => 'logo-alternative',
-                'group' => 'basic',
                 'files' => [$logoId],
                 'data' => ['file' => ['id' => $logoId, 'type' => 'file']],
             ],
@@ -742,15 +739,15 @@ class GlassDemo extends AbstractDemo
         ];
 
         $meta = [
-            'meta-tags' => ['id' => Utils::uid(), 'type' => 'meta-tags', 'group' => 'basic', 'data' => [
+            'meta-tags' => Validation::entry( 'meta-tags', [
                 'description' => 'SignalLake Analytics Cloud gives revenue, product, and finance teams governed dashboards, metric ownership, and live operating reports.',
                 'keywords' => 'analytics cloud, governed metrics, revenue dashboards, product analytics, business intelligence',
-            ]],
-            'social-media' => ['id' => Utils::uid(), 'type' => 'social-media', 'group' => 'basic', 'data' => [
+            ], 'meta' ),
+            'social-media' => Validation::entry( 'social-media', [
                 'title' => 'SignalLake Analytics Cloud',
                 'description' => 'Live, governed metrics for teams that run weekly operating reviews.',
                 'file' => ['id' => $fileId, 'type' => 'file'],
-            ]],
+            ], 'meta' ),
         ];
 
         $page = Page::forceCreate( [
@@ -923,7 +920,7 @@ SVG;
      * @param array<int, array<string, mixed>> $content Content elements
      * @param Page $parent Parent page to append to
      * @param array<int, string> $fileIds Additional file IDs to attach
-     * @param array<string, array<string, mixed>> $meta Meta data blocks keyed by type
+     * @param array<string, array<string, mixed>|object> $meta Meta entries keyed by type
      * @return Page Created page
      */
     protected function page( array $data, array $content, Page $parent, array $fileIds = [], array $meta = [] ) : Page
@@ -933,15 +930,15 @@ SVG;
         $description = self::DESCRIPTIONS[$data['path'] ?? ''] ?? $data['title'] ?? '';
 
         $meta = $data['meta'] ?? $meta ?: [
-            'meta-tags' => ['id' => Utils::uid(), 'type' => 'meta-tags', 'group' => 'basic', 'data' => [
+            'meta-tags' => Validation::entry( 'meta-tags', [
                 'description' => $description,
                 'keywords' => 'SignalLake, analytics cloud, governed metrics, business intelligence',
-            ]],
-            'social-media' => ['id' => Utils::uid(), 'type' => 'social-media', 'group' => 'basic', 'data' => [
+            ], 'meta' ),
+            'social-media' => Validation::entry( 'social-media', [
                 'title' => $data['title'] ?? '',
                 'description' => $description,
                 'file' => ['id' => $fileId, 'type' => 'file'],
-            ]],
+            ], 'meta' ),
         ];
 
         $content[] = ['id' => Utils::uid(), 'type' => 'heading', 'group' => 'footer', 'data' => ['level' => 2, 'title' => 'SignalLake']];

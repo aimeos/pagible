@@ -10,7 +10,7 @@ namespace Aimeos\Cms\Commands;
 use Illuminate\Console\Command;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
-use Aimeos\Cms\Utils;
+use Aimeos\Cms\Validation;
 use Aimeos\Prisma\Prisma;
 use Aimeos\Prisma\Tools;
 use Aimeos\Prisma\Exceptions\PrismaException;
@@ -76,16 +76,11 @@ class Description extends Command
                             ->write( "Page title: {$page->title}\n\nPage content:\n{$text}", [], $config ) // @phpstan-ignore-line method.notFound
                             ->text();
 
-                        $meta = $page->meta ?? (object) [];
-                        $meta->{'meta-tags'} ??= (object) [
-                            'id' => Utils::uid(),
-                            'type' => 'meta-tags',
-                            'group' => 'basic',
-                            'data' => (object) [],
-                        ];
-                        $meta->{'meta-tags'}->data ??= (object) [];
-                        $meta->{'meta-tags'}->data->description = $text;
-                        $page->meta = $meta;
+                        $meta = (array) $page->meta;
+                        $data = (array) ( $page->meta->{'meta-tags'}->data ?? [] );
+                        $data['description'] = $text;
+                        $meta['meta-tags'] = Validation::entry( 'meta-tags', $data, 'meta' );
+                        $page->meta = Validation::structured( $meta, 'meta' );
                         $page->save();
                     }
                     catch( PrismaException $e )
