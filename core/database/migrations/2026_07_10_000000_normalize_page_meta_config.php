@@ -5,6 +5,7 @@
  */
 
 
+use Aimeos\Cms\Models\Page;
 use Illuminate\Database\Connection;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
@@ -24,6 +25,52 @@ return new class extends Migration
 
 
     /**
+     * Canonicalizes JSON values while retaining list order and scalar types.
+     *
+     * @return array<mixed>
+     */
+    private function canon( mixed $value ) : array
+    {
+        if( is_object( $value ) || ( is_array( $value ) && !array_is_list( $value ) ) ) {
+            $items = (array) $value;
+            ksort( $items );
+
+            foreach( $items as $key => $item ) {
+                $items[$key] = $this->canon( $item );
+            }
+
+            return ['object', $items];
+        }
+
+        if( is_array( $value ) ) {
+            return ['list', array_map( fn( $item ) => $this->canon( $item ), $value )];
+        }
+
+        return ['value', $value];
+    }
+
+
+    private function decode( mixed $json ) : mixed
+    {
+        if( is_string( $json ) ) {
+            return json_decode( $json, true );
+        }
+
+        if( is_object( $json ) ) {
+            return json_decode( (string) json_encode( $json ), true );
+        }
+
+        return $json;
+    }
+
+
+    private function encode( mixed $data ) : string
+    {
+        return (string) json_encode( $data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE );
+    }
+
+
+    /**
      * Recursively collects file references from structured entry data.
      *
      * @param mixed $value Entry data
@@ -31,21 +78,10 @@ return new class extends Migration
      */
     private function files( mixed $value ) : array
     {
-        if( !is_array( $value ) ) {
-            return [];
-        }
-
-        if( ( $value['type'] ?? null ) === 'file' && is_string( $value['id'] ?? null ) ) {
-            return [$value['id']];
-        }
-
         $ids = [];
+        $this->refs( $value, $ids );
 
-        foreach( $value as $item ) {
-            $ids = array_merge( $ids, $this->files( $item ) );
-        }
-
-        return array_values( array_unique( $ids ) );
+        return array_values( $ids );
     }
 
 
@@ -55,21 +91,76 @@ return new class extends Migration
             ->select( 'id', 'meta', 'config' )
             ->orderBy( 'id' )
             ->chunkById( 500, function( $rows ) use ( $db ) {
+                $updates = [];
+
                 foreach( $rows as $row )
                 {
                     $oldMeta = $this->decode( $row->meta );
                     $oldConfig = $this->decode( $row->config );
                     $meta = $this->structured( $oldMeta );
                     $config = $this->structured( $oldConfig );
+                    $values = [];
 
-                    if( $meta !== $oldMeta || $config !== $oldConfig ) {
-                        $db->table( 'cms_pages' )->where( 'id', $row->id )->update( [
-                            'meta' => $this->encode( $meta ),
-                            'config' => $this->encode( $config ),
-                        ] );
+                    if( !$this->same( $meta, $row->meta ) ) {
+                        $values['meta'] = $this->encode( $meta );
+                    }
+
+                    if( !$this->same( $config, $row->config ) ) {
+                        $values['config'] = $this->encode( $config );
+                    }
+
+                    if( $values !== [] ) {
+                        $updates[$row->id] = $values;
                     }
                 }
+
+                if( $updates !== [] ) {
+                    $db->transaction( function() use ( $db, $updates ) {
+                        foreach( $updates as $id => $values ) {
+                            $db->table( 'cms_pages' )->where( 'id', $id )->update( $values );
+                        }
+                    } );
+                }
             } );
+    }
+
+
+    /**
+     * Recursively collects file IDs without repeatedly copying intermediate lists.
+     *
+     * @param array<string, string> &$ids Referenced file IDs keyed by ID
+     */
+    private function refs( mixed $value, array &$ids ) : void
+    {
+        if( is_object( $value ) ) {
+            $value = (array) $value;
+        }
+
+        if( !is_array( $value ) ) {
+            return;
+        }
+
+        if( ( $value['type'] ?? null ) === 'file' && is_string( $value['id'] ?? null ) ) {
+            $ids[$value['id']] = $value['id'];
+            return;
+        }
+
+        foreach( $value as $item ) {
+            $this->refs( $item, $ids );
+        }
+    }
+
+
+    /**
+     * Compares generated data with stored JSON independent of object key order.
+     */
+    private function same( mixed $data, mixed $json ) : bool
+    {
+        if( is_string( $json ) ) {
+            $json = json_decode( $json );
+        }
+
+        return $this->canon( $data ) === $this->canon( $json );
     }
 
 
@@ -134,8 +225,11 @@ return new class extends Migration
     {
         $db->table( 'cms_versions' )
             ->select( 'id', 'aux' )
+            ->where( 'versionable_type', Page::class )
             ->orderBy( 'id' )
             ->chunkById( 500, function( $rows ) use ( $db ) {
+                $updates = [];
+
                 foreach( $rows as $row )
                 {
                     $aux = $this->decode( $row->aux );
@@ -143,8 +237,6 @@ return new class extends Migration
                     if( !is_array( $aux ) ) {
                         continue;
                     }
-
-                    $original = $aux;
 
                     if( array_key_exists( 'meta', $aux ) ) {
                         $aux['meta'] = $this->structured( $aux['meta'] );
@@ -154,30 +246,18 @@ return new class extends Migration
                         $aux['config'] = $this->structured( $aux['config'] );
                     }
 
-                    if( $aux !== $original ) {
-                        $db->table( 'cms_versions' )->where( 'id', $row->id )->update( ['aux' => $this->encode( $aux )] );
+                    if( !$this->same( $aux, $row->aux ) ) {
+                        $updates[$row->id] = $this->encode( $aux );
                     }
                 }
+
+                if( $updates !== [] ) {
+                    $db->transaction( function() use ( $db, $updates ) {
+                        foreach( $updates as $id => $aux ) {
+                            $db->table( 'cms_versions' )->where( 'id', $id )->update( ['aux' => $aux] );
+                        }
+                    } );
+                }
             } );
-    }
-
-
-    private function decode( mixed $json ) : mixed
-    {
-        if( is_string( $json ) ) {
-            return json_decode( $json, true );
-        }
-
-        if( is_object( $json ) ) {
-            return json_decode( (string) json_encode( $json ), true );
-        }
-
-        return $json;
-    }
-
-
-    private function encode( mixed $data ) : string
-    {
-        return (string) json_encode( $data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE );
     }
 };
