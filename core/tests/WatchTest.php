@@ -154,11 +154,26 @@ class WatchTest extends CoreTestAbstract
     public function testFireSwallowsFactoryErrors() : void
     {
         // Watch must never break the request, so a throwing factory is caught.
-        Watch::fire( function() {
-            throw new \RuntimeException( 'boom' );
-        } );
+        $logfile = tempnam( sys_get_temp_dir(), 'cms-watch-' );
+        $previous = ini_get( 'error_log' );
 
-        $this->expectNotToPerformAssertions();
+        if( $logfile === false ) {
+            $this->fail( 'Unable to create temporary error log.' );
+        }
+
+        ini_set( 'error_log', $logfile );
+
+        try {
+            Watch::fire( function() {
+                throw new \RuntimeException( 'boom' );
+            } );
+
+            $this->assertStringContainsString( 'CMS watch event error: boom',
+                (string) file_get_contents( $logfile ) );
+        } finally {
+            ini_set( 'error_log', $previous === false ? '' : $previous );
+            @unlink( $logfile );
+        }
     }
 
 
