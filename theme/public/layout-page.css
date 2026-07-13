@@ -39,12 +39,6 @@
     --pico-box-shadow: none;
 }
 
-.cms-content > .heading + .text,
-.cms-content > .heading + .cards,
-.cms-content > .heading + .image {
-    margin-top: -4rem;
-}
-
 .heading h1,
 .heading h2,
 .heading h3 {
@@ -85,11 +79,5 @@
 @media screen and (min-width: 768px) {
     .cms-content .container {
         padding: 6rem min(5%, 2rem);
-    }
-
-    .cms-content > .heading + .text,
-    .cms-content > .heading + .cards,
-    .cms-content > .heading + .image {
-        margin-top: -5rem;
     }
 }

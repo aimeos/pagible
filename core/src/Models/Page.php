@@ -494,7 +494,7 @@ class Page extends Base
             $version->save();
         }
 
-        Cache::forget( static::key( $this ) );
+        Cache::store( config( 'cms.theme.cache', 'file' ) )->forget( static::key( $this ) );
 
         return $this;
     }

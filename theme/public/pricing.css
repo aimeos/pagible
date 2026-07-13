@@ -113,6 +113,7 @@
     transform: translateX(-50%);
     background: var(--pico-contrast-inverse);
     color: var(--pico-contrast);
+    border: 1px solid var(--pico-contrast);
     border-radius: var(--pico-border-radius);
     font-weight: 500;
     font-size: 0.75rem;
@@ -205,10 +206,8 @@
     mask-repeat: no-repeat;
 }
 
-.pricing .highlight .name {
-    color: var(--pico-primary-inverse);
-}
-
+.pricing .highlight .name,
+.pricing .highlight .cms-text,
 .pricing .highlight .features li {
     color: var(--pico-primary-inverse);
 }

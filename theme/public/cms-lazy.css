@@ -187,11 +187,15 @@ footer.cms-content .cards .card-list {
 }
 
 footer.cms-content .cards .card-item {
+    background-color: transparent;
+    border: 0;
+    border-radius: 0;
+    color: var(--pico-contrast-inverse);
     padding: 0;
 }
 
 footer.cms-content .cards .title {
-    color: var(--pico-muted-color);
+    color: var(--pico-contrast-inverse);
     font-size: calc(var(--pico-font-size) * 0.65);
     font-weight: 700;
     letter-spacing: 0.05em;
@@ -205,6 +209,7 @@ footer.cms-content .cards :is(.text, .cms-text) {
 }
 
 footer.cms-content .cards :is(.text, .cms-text) p {
+    color: var(--pico-contrast-inverse);
     line-height: 1.75;
     margin: 0;
 }
@@ -245,7 +250,7 @@ footer.cms-content a:visited {
     color: var(--pico-contrast-inverse);
     text-decoration: none;
     display: inline-block;
-    padding: 0.5rem;
+    padding: 0.5rem 0;
 }
 
 footer.cms-content a:hover {

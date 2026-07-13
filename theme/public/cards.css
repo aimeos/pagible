@@ -53,13 +53,6 @@
     padding: 1.5rem;
 }
 
-.cards .card-item img {
-    border-radius: var(--pico-border-radius);
-    background-color: var(--pico-primary);
-    padding: 0.25rem;
-    height: 2rem;
-}
-
 .cards .title {
     font-size: var(--pico-font-size);
     margin: 1rem 0 0.75rem;

@@ -12,6 +12,7 @@ use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Schema;
 use Aimeos\Cms\Tenancy;
 use Database\Seeders\DefaultDemo;
+use Illuminate\Support\Facades\Cache;
 
 
 class DemoTest extends ThemeTestAbstract
@@ -32,6 +33,12 @@ class DemoTest extends ThemeTestAbstract
 
     public function testSeedDefault(): void
     {
+        config( ['cache.default' => 'array', 'cms.theme.cache' => 'file'] );
+        Tenancy::$callback = fn() => 'demo';
+        app()->forgetInstance( Tenancy::class );
+        $key = Page::key( '', '' );
+        Cache::store( 'file' )->put( $key, 'cached page without logo' );
+
         ( new DefaultDemo( '', 'demo' ) )->seed();
 
         Tenancy::$callback = fn() => 'demo';
@@ -42,6 +49,11 @@ class DemoTest extends ThemeTestAbstract
         $this->assertSame( 'demo', $home->tenant_id );
         $this->assertNotNull( $home->latest_id );
         $this->assertTrue( collect( (array) $home->content )->contains( fn( $item ) => ( $item->type ?? null ) === 'testimonial' ) );
+        $logoId = $home->config->logo->data->file->id ?? null;
+        $this->assertIsString( $logoId );
+        $this->assertTrue( $home->files->has( $logoId ) );
+        $this->assertFalse( Cache::store( 'file' )->has( $key ) );
+        $this->get( '/' )->assertSee( 'meridian-works-logo.svg', false );
         $this->assertGreaterThan( 0, Page::where( 'path', 'blog' )->count() );
         $this->assertGreaterThan( 0, Page::where( 'type', 'docs' )->count() );
 
