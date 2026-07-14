@@ -9,6 +9,7 @@ namespace Tests;
 
 use Aimeos\Cms\Controllers\AdminController;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 
@@ -67,6 +68,12 @@ class AdminControllerTest extends AdminTestAbstract
             @rmdir( $manifestDir );
             @rmdir( dirname( $manifestDir ) );
         }
+    }
+
+
+    public function testProxyRateLimiter()
+    {
+        $this->assertNotNull( RateLimiter::limiter( 'cms-proxy' ) );
     }
 
 

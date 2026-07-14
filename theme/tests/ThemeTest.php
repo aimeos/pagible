@@ -10,6 +10,7 @@ namespace Tests;
 use Aimeos\Cms\Schema;
 use Aimeos\Cms\Theme;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\RateLimiter;
 
 
 class ThemeTest extends ThemeTestAbstract
@@ -88,6 +89,14 @@ class ThemeTest extends ThemeTestAbstract
 		$this->assertArrayHasKey( 'cms', $all );
 		$this->assertIsArray( $all['cms'] );
 	}
+
+
+    public function testRateLimiters()
+    {
+        $this->assertNotNull( RateLimiter::limiter( 'cms-contact' ) );
+        $this->assertNotNull( RateLimiter::limiter( 'cms-search' ) );
+        $this->assertNotNull( RateLimiter::limiter( 'cms-sitemap' ) );
+    }
 
 
 	public function testBladeTextDirectiveDoesNotInsertBreakTags()
