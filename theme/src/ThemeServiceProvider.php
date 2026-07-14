@@ -25,8 +25,12 @@ class ThemeServiceProvider extends Provider
         );
 
         $this->loadBladeDirectives();
+
+        Schema::source( fn() => Theme::discover() );
         Schema::register( $basedir, 'cms' );
+
         View::addNamespace( 'cms', $basedir . '/views' );
+
         $this->loadJsonTranslationsFrom( $basedir . '/lang' );
 
         $this->publishes( [$basedir . '/public' => public_path( 'vendor/cms/theme' )], 'cms-theme' );

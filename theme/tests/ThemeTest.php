@@ -9,7 +9,9 @@ namespace Tests;
 
 use Aimeos\Cms\Schema;
 use Aimeos\Cms\Theme;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\Storage;
 
 
 class ThemeTest extends ThemeTestAbstract
@@ -88,6 +90,39 @@ class ThemeTest extends ThemeTestAbstract
 		$this->assertArrayHasKey( 'cms', $all );
 		$this->assertIsArray( $all['cms'] );
 	}
+
+
+    public function testDiscoverRefreshesUploadedSchemas()
+    {
+        Storage::fake( 'themes' );
+        config( ['cms.theme.disk' => 'themes', 'cms.theme.ttl' => 60] );
+
+        $disk = Storage::disk( 'themes' );
+        $disk->put( 'custom/schema.json', json_encode( [
+            'label' => 'Custom',
+            'content' => ['first' => ['fields' => []]],
+        ] ) );
+        $disk->put( 'custom/preview.webp', 'preview' );
+
+        $theme = Schema::get( 'custom' );
+
+        $this->assertSame( 'Custom', $theme['label'] ?? null );
+        $this->assertNotNull( $theme['preview'] ?? null );
+        $this->assertArrayHasKey( 'custom::first', $theme['content'] ?? [] );
+
+        $this->assertArrayHasKey( 'custom::first', Schema::schemas( 'custom', 'content' ) );
+
+        $disk->put( 'custom/schema.json', json_encode( [
+            'label' => 'Changed',
+            'content' => ['second' => ['fields' => []]],
+        ] ) );
+        Cache::forget( 'cms-themes_test' );
+
+        $schemas = Schema::schemas( 'custom', 'content' );
+
+        $this->assertArrayHasKey( 'custom::second', $schemas );
+        $this->assertArrayNotHasKey( 'custom::first', $schemas );
+    }
 
 
 	public function testBladeTextDirectiveDoesNotInsertBreakTags()
