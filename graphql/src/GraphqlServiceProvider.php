@@ -4,6 +4,7 @@ namespace Aimeos\Cms;
 
 use Aimeos\Cms\Events\Authed;
 use Aimeos\Cms\Events\CmsGraphql;
+use Aimeos\Cms\GraphQL\Directives\CmsExceptionDirective;
 use Aimeos\Cms\Listeners\AuthLogListener;
 use GraphQL\Language\AST\FieldNode;
 use GraphQL\Utils\AST;
@@ -19,6 +20,12 @@ class GraphqlServiceProvider extends Provider
     public function boot(): void
     {
         $basedir = dirname( __DIR__ );
+        $middleware = (array) config( 'lighthouse.field_middleware', [] );
+
+        config( ['lighthouse.field_middleware' => array_values( array_unique( [
+            CmsExceptionDirective::class,
+            ...$middleware,
+        ] ) )] );
 
         $this->publishes( [$basedir . '/schema/cms.graphql' => base_path( 'graphql/cms.graphql' )], 'cms-graphql' );
         $this->publishes( [$basedir . '/config/cms/graphql.php' => config_path( 'cms/graphql.php' )], 'cms-config' );
