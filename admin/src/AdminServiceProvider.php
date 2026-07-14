@@ -4,12 +4,18 @@ namespace Aimeos\Cms;
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider as Provider;
+use Nuwave\Lighthouse\Events\BuildSchemaString;
 
 class AdminServiceProvider extends Provider
 {
     public function boot(): void
     {
         $basedir = dirname( __DIR__ );
+
+        $this->app->make( 'events' )->listen(
+            BuildSchemaString::class,
+            fn() => file_get_contents( $basedir . '/schema/admin.graphql' ) ?: ''
+        );
 
         $this->loadViewsFrom( $basedir . '/views', 'cms' );
         $this->loadRoutesFrom( $basedir . '/routes/admin.php' );

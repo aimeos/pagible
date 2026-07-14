@@ -10,7 +10,7 @@ namespace Tests;
 use Aimeos\Cms\Plugin;
 
 
-class PluginTest extends CoreTestAbstract
+class PluginTest extends AdminTestAbstract
 {
     protected function setUp(): void
     {

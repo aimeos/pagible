@@ -1,0 +1,4 @@
+extend type User {
+    "Time-limited proxy authentication token"
+    token: String! @field(resolver: "\\Aimeos\\Cms\\GraphQL\\Resolvers\\ProxyTokenResolver")
+}
