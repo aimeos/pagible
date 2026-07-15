@@ -20,18 +20,30 @@ class ContactController extends Controller
 {
     public function send( ContactRequest $request ): \Illuminate\Http\JsonResponse
     {
-        $start = Watch::start( 'cms.theme.watch', CmsContact::class );
+        $start = hrtime( true );
+        $data = $request->validated();
 
         Mail::to(config('mail.from.address'))->send(
-            new ContactMail( $request->validated() )
+            new ContactMail( $data )
         );
 
+        $duration = Watch::duration( $start );
+        $ip = (string) $request->ip();
+        $tenant = Tenancy::value();
+
         Watch::dispatchWhen( 'cms.theme.watch', CmsContact::class, fn() => new CmsContact(
-            email: (string) ( $request->validated()['email'] ?? '' ),
-            ip: (string) $request->ip(),
-            durationMs: Watch::duration( $start ),
-            tenant: Tenancy::value(),
+            email: (string) ( $data['email'] ?? '' ),
+            ip: $ip,
+            durationMs: $duration,
+            tenant: $tenant,
         ) );
+
+        Watch::observe(
+            source: 'contact',
+            action: 'theme:contact',
+            durationMs: $duration,
+            tenant: $tenant,
+        );
 
         return response()->json( ['message' => 'Message sent successfully', 'status' => true] );
     }

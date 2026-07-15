@@ -190,8 +190,9 @@ return [
     | all logging at zero per-request cost. When the named channel is not defined in
     | config/logging.php, the core package registers a daily JSON channel for it.
     |
-    | "sample" (0.0-1.0) keeps that fraction of high-volume read entries (frontend
-    | search, JSON:API); audit streams (content, auth, contact) are always complete.
+    | "sample" (0.0-1.0) keeps that fraction of high-volume read entries (page
+    | requests, frontend search, JSON:API); audit streams (content, auth, contact)
+    | are always complete.
     | "anonymize" SHA-256 hashes personal data (email, IP, user agent) in auth and
     | contact entries before logging; set FALSE to store raw values.
     |

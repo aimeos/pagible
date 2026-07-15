@@ -11,30 +11,6 @@ use Aimeos\Cms\Tenancy;
 
 class PulseCardTest extends PulseTestCase
 {
-    public function testTenantScopeIsAppliedBeforePulseAggregate() : void
-    {
-        $this->application()->instance( Tenancy::class, new Tenancy( 'current' ) );
-
-        $card = new TestingCmsCard;
-
-        $card->rows( 'cms_page', 'count' );
-
-        $this->assertSame( 'cms_page:current', $card->aggregateCalls[0]['type'] );
-        $this->assertSame( 'count', $card->aggregateCalls[0]['aggregates'] );
-    }
-
-
-    public function testTenantlessCardsUseBasePulseType() : void
-    {
-        $this->application()->instance( Tenancy::class, new Tenancy( '' ) );
-
-        $card = new TestingCmsCard;
-        $card->rows( 'cms_page', 'count' );
-
-        $this->assertSame( 'cms_page', $card->aggregateCalls[0]['type'] );
-    }
-
-
     public function testAggregateRowsAreCappedBeforeCardProcessing() : void
     {
         $rows = collect( range( 1, 260 ) )
@@ -42,59 +18,49 @@ class PulseCardTest extends PulseTestCase
 
         $card = new TestingCmsCard( $rows );
 
-        $this->assertCount( 250, $card->rows( 'cms_page', 'count' ) );
+        $this->assertCount( 250, $card->rows( 'cms_page' ) );
         $this->assertSame( 250, $card->aggregateCalls[0]['limit'] );
         $this->assertSame( 'desc', $card->aggregateCalls[0]['direction'] );
     }
 
 
-    public function testSummariesAreCappedBeforeRendering() : void
+    public function testConfiguredCardsControlOrderVisibilityAndMetricContract() : void
     {
-        $rows = collect( range( 1, 20 ) )
-            ->map( fn( int $index ) => $this->aggregateRow( 'action-' . $index, $index ) );
+        $original = config( 'cms.pulse.cards' );
 
-        $entries = ( new TestingCmsCard( $rows ) )->summaries( 'cms_page', 'count', 'action' );
+        try {
+            config( ['cms.pulse.cards' => [
+                'mcp' => ['title' => 'MCP'],
+                'ghost' => ['title' => 'Ghost', 'requires' => ['Aimeos\\Cms\\Missing']],
+                'custom' => ['title' => 'Custom'],
+            ]] );
 
-        $this->assertCount( 10, $entries );
-        $this->assertSame( 'action-20', $entries->first()?->label );
-    }
+            $this->assertSame( ['mcp', 'custom'], CmsMetricCard::available() );
 
+            $card = new TestingCmsCard;
+            $card->metric = 'custom';
+            $data = $card->render()->getData();
 
-    public function testCountOnlySummariesDoNotExposeLatency() : void
-    {
-        $rows = collect( [$this->aggregateRow( 'saved', 5 )] );
-
-        $entry = ( new TestingCmsCard( $rows ) )->summaries( 'cms_page', 'count', 'action' )->first();
-
-        $this->assertNotNull( $entry );
-        $this->assertNull( $entry->avg );
+            $this->assertSame( 'Custom', $data['title'] );
+            $this->assertSame( 'cms_custom', $card->aggregateCalls[0]['type'] );
+            $this->assertSame( ['count', 'avg', 'max'], $card->aggregateCalls[0]['aggregates'] );
+        } finally {
+            config( ['cms.pulse.cards' => $original] );
+        }
     }
 
 
     public function testLatencySummariesUseFetchedAverage() : void
     {
         $rows = collect( [
-            $this->aggregateRow( 'search', 2, avg: 10.0 ),
-            $this->aggregateRow( 'search', 1, avg: 20.0 ),
+            $this->aggregateRow( 'search', 2, 10.0 ),
+            $this->aggregateRow( 'search', 1, 20.0 ),
         ] );
 
-        $entry = ( new TestingCmsCard( $rows ) )->summaries( 'cms_search', ['count', 'avg'], 'action' )->first();
+        $entry = ( new TestingCmsCard( $rows ) )->summaries( 'cms_search', 'action' )->first();
 
         $this->assertNotNull( $entry );
         $this->assertSame( 13.3, $entry->avg );
-    }
-
-
-    public function testSummariesPreferBulkItemSumsForOrdering() : void
-    {
-        $rows = collect( [
-            $this->aggregateRow( 'saved', 50, 0 ),
-            $this->aggregateRow( 'bulk:saved', 1, 100 ),
-        ] );
-
-        $entries = ( new TestingCmsCard( $rows ) )->summaries( 'cms_page', ['count', 'sum'], 'action' );
-
-        $this->assertSame( 'bulk:saved', $entries->first()?->label );
     }
 
 
@@ -107,128 +73,69 @@ class PulseCardTest extends PulseTestCase
             'jsonapi',
             'graphql',
             'mcp',
-        ], array_keys( CmsMetricCard::available() ) );
+        ], CmsMetricCard::available() );
     }
 
 
-    public function testConfiguredCardsControlOrderAndVisibility() : void
+    public function testSummariesAreCappedBeforeRendering() : void
     {
-        $original = config( 'cms.pulse.cards' );
+        $rows = collect( range( 1, 20 ) )
+            ->map( fn( int $index ) => $this->aggregateRow( 'action-' . $index, $index ) );
 
-        try {
-            config( ['cms.pulse.cards' => [
-                'mcp' => ['title' => 'MCP', 'type' => 'cms_mcp'],
-                'ghost' => ['title' => 'Ghost', 'type' => 'cms_ghost', 'events' => ['Aimeos\\Cms\\Missing']],
-                'graphql' => ['title' => 'GraphQL', 'type' => 'cms_graphql'],
-            ]] );
+        $entries = ( new TestingCmsCard( $rows ) )->summaries( 'cms_page', 'action' );
 
-            // Order follows the config; the card whose event class is missing is hidden.
-            $this->assertSame( ['mcp', 'graphql'], array_keys( CmsMetricCard::available() ) );
-        } finally {
-            config( ['cms.pulse.cards' => $original] );
-        }
+        $this->assertCount( 10, $entries );
+        $this->assertSame( 'action-20', $entries->first()?->label );
     }
 
 
-    public function testCardsForMissingPackagesAreHidden() : void
+    public function testTenantScopeIsAppliedBeforePulseAggregate() : void
     {
-        $method = new \ReflectionMethod( CmsMetricCard::class, 'eventsAvailable' );
+        $this->application()->instance( Tenancy::class, new Tenancy( 'current' ) );
 
-        $this->assertFalse( $method->invoke( null, ['events' => ['Aimeos\\Cms\\Missing']] ) );
-        $this->assertTrue( $method->invoke( null, ['events' => ['Aimeos\\Cms\\Events\\CmsGraphql']] ) );
-        $this->assertTrue( $method->invoke( null, [] ) );
+        $card = new TestingCmsCard;
+        $card->rows( 'cms_page' );
+
+        $this->assertSame( 'cms_page:current', $card->aggregateCalls[0]['type'] );
+        $this->assertSame( ['count', 'avg', 'max'], $card->aggregateCalls[0]['aggregates'] );
     }
 
 
-    public function testConfigCanDeclareArbitraryCards() : void
+    public function testTenantlessCardsUseBasePulseType() : void
     {
-        $original = config( 'cms.pulse.cards' );
+        $this->application()->instance( Tenancy::class, new Tenancy( '' ) );
 
-        try {
-            config( ['cms.pulse.cards' => [
-                'graphql' => [
-                    'title' => 'GraphQL',
-                    'type' => 'cms_graphql',
-                    'events' => ['Aimeos\\Cms\\Events\\CmsGraphql'],
-                ],
-                'custom' => [
-                    'title' => 'Custom',
-                    'type' => 'cms_custom',
-                    'aggregates' => ['count', 'sum'],
-                    'details' => ['domain'],
-                ],
-            ]] );
+        $card = new TestingCmsCard;
+        $card->rows( 'cms_page' );
 
-            $available = CmsMetricCard::available();
-
-            $this->assertSame( ['graphql', 'custom'], array_keys( $available ) );
-            $this->assertSame( 'cms_custom', $available['custom']['type'] );
-            $this->assertSame( 'Custom', $available['custom']['title'] );
-        } finally {
-            config( ['cms.pulse.cards' => $original] );
-        }
+        $this->assertSame( 'cms_page', $card->aggregateCalls[0]['type'] );
     }
 
 
-    public function testAdminTransportBucketsUseLatencyAndSuccessMetrics() : void
+    public function testUnknownMetricRendersNoEntries() : void
     {
-        $graphql = $this->metricDefinition( 'graphql' );
-        $mcp = $this->metricDefinition( 'mcp' );
+        $card = new TestingCmsCard;
+        $card->metric = 'missing';
+        $data = $card->render()->getData();
 
-        $this->assertSame( 'cms_graphql', $graphql['type'] );
-        $this->assertSame( ['count', 'avg', 'max'], $graphql['aggregates'] );
-        $this->assertSame( ['domain'], $graphql['details'] );
-        $this->assertTrue( $graphql['success'] );
-
-        $this->assertSame( 'cms_mcp', $mcp['type'] );
-        $this->assertSame( ['count', 'avg', 'max'], $mcp['aggregates'] );
-        $this->assertSame( ['domain'], $mcp['details'] );
-        $this->assertTrue( $mcp['success'] );
+        $this->assertSame( '', $data['title'] );
+        $this->assertTrue( $data['entries']->isEmpty() );
+        $this->assertSame( [], $card->aggregateCalls );
     }
 
 
-    public function testContactCardUsesLowCardinalityDashboardMetrics() : void
-    {
-        $contact = $this->metricDefinition( 'contact' );
-
-        $this->assertSame( 'cms_contact', $contact['type'] );
-        $this->assertArrayNotHasKey( 'group', $contact );
-        $this->assertSame( ['ip'], $contact['details'] );
-    }
-
-
-    private function aggregateRow( string $action, int $count, ?int $sum = null, ?float $avg = null ) : object
+    private function aggregateRow( string $action, int $count, ?float $avg = null ) : object
     {
         $row = [
             'key' => json_encode( ['action' => $action], JSON_THROW_ON_ERROR ),
             'count' => $count,
         ];
 
-        if( $sum !== null ) {
-            $row['sum'] = $sum;
-        }
-
         if( $avg !== null ) {
             $row['avg'] = $avg;
         }
 
         return (object) $row;
-    }
-
-
-    /**
-     * @return array<string, mixed>
-     */
-    private function metricDefinition( string $metric ) : array
-    {
-        $method = new \ReflectionMethod( CmsMetricCard::class, 'definition' );
-        $definition = $method->invoke( new CmsMetricCard, $metric );
-
-        if( !is_array( $definition ) ) {
-            throw new \RuntimeException( 'Metric definition is not an array.' );
-        }
-
-        return $definition;
     }
 }
 }

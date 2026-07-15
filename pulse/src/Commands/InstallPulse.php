@@ -28,18 +28,8 @@ class InstallPulse extends Command
      */
     public function handle() : int
     {
-        $result = 0;
-
-        if( !class_exists( \Laravel\Pulse\Pulse::class ) ) {
-            $this->warn( '  Laravel Pulse is not installed; CMS Pulse cards will stay inactive.' );
-        }
-
-        $this->comment( '  Publishing CMS Pulse dashboard ...' );
-        $result += $this->call( 'vendor:publish', ['--tag' => 'cms-pulse-dashboard'] );
-
-        $this->comment( '  Publishing CMS Pulse views ...' );
-        $result += $this->call( 'vendor:publish', ['--tag' => 'cms-pulse-views'] );
-
-        return $result ? 1 : 0;
+        return $this->call( 'vendor:publish', [
+            '--tag' => ['cms-pulse-dashboard', 'cms-pulse-views'],
+        ] );
     }
 }

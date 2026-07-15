@@ -30,17 +30,31 @@ class WatchJsonapi
      */
     public function handle( Request $request, Closure $next ) : Response
     {
-        $start = Watch::start( 'cms.jsonapi.watch', CmsJsonapi::class );
+        $start = hrtime( true );
 
         $response = $next( $request );
 
+        $action = $this->action( $request );
+        $domain = $this->domain( $request );
+        $duration = Watch::duration( $start );
+        $tenant = Tenancy::value();
+
         Watch::dispatchWhen( 'cms.jsonapi.watch', CmsJsonapi::class, fn() => new CmsJsonapi(
-            action: $this->action( $request ),
-            durationMs: Watch::duration( $start ),
-            domain: $this->domain( $request ),
+            action: $action,
+            durationMs: $duration,
+            domain: $domain,
             includes: $this->includes( $request ),
-            tenant: Tenancy::value(),
+            tenant: $tenant,
         ) );
+
+        Watch::observe(
+            source: 'jsonapi',
+            action: $action,
+            durationMs: $duration,
+            tenant: $tenant,
+            dimensions: ['domain' => $domain],
+            sample: true,
+        );
 
         return $response;
     }

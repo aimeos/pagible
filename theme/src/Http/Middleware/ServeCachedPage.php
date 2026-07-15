@@ -12,9 +12,8 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Event;
-use Aimeos\Cms\Events\CmsRequest;
+use Aimeos\Cms\Events\Observed;
 use Aimeos\Cms\Models\Page;
-use Aimeos\Cms\Tenancy;
 use Aimeos\Cms\Watch;
 
 
@@ -38,10 +37,9 @@ class ServeCachedPage
      */
     public function handle( Request $request, Closure $next )
     {
-        // Gate on the CMS_THEME_WATCH flag first so the cold path short-circuits before
-        // the listener lookup and sampling. $start doubles as the "record this request"
-        // flag and the timer.
-        $start = config( 'cms.theme.watch' ) && Event::hasListeners( CmsRequest::class ) && Watch::sampled()
+        // Avoid all metric work unless an optional observer is installed. $start
+        // doubles as the "record this request" flag and the timer.
+        $start = Event::hasListeners( Observed::class )
             ? hrtime( true ) : null;
 
         // Computed lazily so a watch-off non-cacheable request (query string, cookie,
@@ -56,7 +54,7 @@ class ServeCachedPage
 
             if( ( $html = Cache::store( config( 'cms.theme.cache', 'file' ) )->get( Page::key( $path, $domain ) ) ) !== null ) {
                 if( $start !== null ) {
-                    $this->watch( $path, $domain, 200, $start );
+                    $this->observe( $path, $domain, 200, $start );
                 }
                 return $this->response( $html );
             }
@@ -76,13 +74,13 @@ class ServeCachedPage
             }
         }
 
-        // Skip status extraction and dispatch entirely when watch is off or unsampled.
+        // Skip status extraction and dispatch entirely when no observer is installed.
         if( $start !== null )
         {
             $status = $response instanceof \Symfony\Component\HttpFoundation\Response
                 ? $response->getStatusCode() : 200;
 
-            $this->watch(
+            $this->observe(
                 $path ?? trim( $request->getPathInfo(), '/' ),
                 $domain ?? ( config( 'cms.multidomain' ) ? $request->getHost() : '' ),
                 $status,
@@ -95,23 +93,26 @@ class ServeCachedPage
 
 
     /**
-     * Builds and dispatches the page-request watch event; the caller has already
-     * confirmed watch is enabled and sampled.
+     * Builds and dispatches the page-request observation.
      *
      * @param string $path Requested path without surrounding slashes
      * @param string $domain Requested domain, empty unless multi-domain routing is on
      * @param int $status HTTP status code of the response
      * @param int|float $start High-resolution start time from hrtime()
      */
-    protected function watch( string $path, string $domain, int $status, int|float $start ) : void
+    protected function observe( string $path, string $domain, int $status, int|float $start ) : void
     {
-        Watch::fire( fn() => new CmsRequest(
-            path: $path,
-            domain: $domain,
-            status: $status,
+        Watch::observe(
+            source: 'request',
+            action: 'theme:view',
             durationMs: Watch::duration( $start ),
-            tenant: Tenancy::value(),
-        ) );
+            dimensions: [
+                'path' => $status === 200 ? '/' . $path : '*',
+                'domain' => $status === 200 ? $domain : '',
+                'status' => $status,
+            ],
+            sample: true,
+        );
     }
 
 

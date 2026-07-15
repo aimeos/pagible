@@ -3,7 +3,6 @@
 namespace Aimeos\Cms;
 
 use Aimeos\Cms\Events\Authed;
-use Aimeos\Cms\Events\CmsGraphql;
 use Aimeos\Cms\GraphQL\Directives\CmsExceptionDirective;
 use Aimeos\Cms\Listeners\AuthLogListener;
 use GraphQL\Language\AST\FieldNode;
@@ -111,13 +110,15 @@ class GraphqlServiceProvider extends Provider
                 $start = $current['start'] ?? null;
                 $start = is_int( $start ) || is_float( $start ) ? $start : null;
 
-                Watch::dispatch( CmsGraphql::class, fn() => new CmsGraphql(
+                Watch::observe(
+                    source: 'graphql',
                     action: $current['action'],
                     durationMs: Watch::duration( $start ),
-                    tenant: Tenancy::value(),
-                    domain: config( 'cms.multidomain' ) ? request()->getHost() : '',
-                    success: $event->result->errors === [],
-                ) );
+                    dimensions: [
+                        'domain' => config( 'cms.multidomain' ) ? request()->getHost() : '',
+                        'success' => $event->result->errors === [],
+                    ],
+                );
             }
         );
 

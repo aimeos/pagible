@@ -65,14 +65,14 @@
 				"import/tests/",
 				"jsonapi/tests/",
 				"mcp/tests/",
+				"pulse/tests/",
 				"search/tests/",
 				"theme/tests/",
 				"backup/tests/"
 			]
 		},
 		"classmap": [
-			"tests/User.php",
-			"pulse/tests/Support.php"
+			"tests/User.php"
 		]
 	},
 	"scripts": {
