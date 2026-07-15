@@ -8,10 +8,16 @@
 namespace Tests;
 
 use Aimeos\Cms\Mcp\CmsServer;
+use Illuminate\Support\Facades\RateLimiter;
 
 
 class ToolsTest extends McpTestAbstract
 {
+    public function testMcpRateLimiter()
+    {
+        $this->assertNotNull( RateLimiter::limiter( 'cms-mcp' ) );
+    }
+
     protected function setUp(): void
     {
         parent::setUp();

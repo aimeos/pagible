@@ -8,7 +8,9 @@
 namespace Tests;
 
 use Aimeos\Cms\Controllers\AdminController;
+use Aimeos\Cms\ProxyToken;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 
@@ -32,9 +34,7 @@ class AdminControllerTest extends AdminTestAbstract
             'cmsperms' => \Aimeos\Cms\Permission::all(),
         ] );
 
-        $expires = now()->addDay()->timestamp;
-        $payload = $expires . '|' . $this->user->getAuthIdentifier();
-        $this->proxyToken = base64_encode( $payload . '|' . hash_hmac( 'sha256', $payload, config( 'app.key' ) ) );
+        $this->proxyToken = app( ProxyToken::class )->make( $this->user );
     }
 
 
@@ -67,6 +67,12 @@ class AdminControllerTest extends AdminTestAbstract
             @rmdir( $manifestDir );
             @rmdir( dirname( $manifestDir ) );
         }
+    }
+
+
+    public function testProxyRateLimiter()
+    {
+        $this->assertNotNull( RateLimiter::limiter( 'cms-proxy' ) );
     }
 
 
@@ -153,9 +159,8 @@ class AdminControllerTest extends AdminTestAbstract
 
     public function testProxyExpiredToken()
     {
-        $expires = now()->subHour()->timestamp;
-        $payload = $expires . '|' . $this->user->getAuthIdentifier();
-        $token = base64_encode( $payload . '|' . hash_hmac( 'sha256', $payload, config( 'app.key' ) ) );
+        config()->set( 'cms.admin.proxy.ttl', -1 );
+        $token = app( ProxyToken::class )->make( $this->user );
 
         $response = $this->actingAs( $this->user )->get( route( 'cms.proxy', ['token' => $token, 'url' => 'https://example.com/video.mp4'] ) );
 

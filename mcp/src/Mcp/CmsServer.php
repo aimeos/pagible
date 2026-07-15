@@ -2,8 +2,6 @@
 
 namespace Aimeos\Cms\Mcp;
 
-use Aimeos\Cms\Events\CmsMcp;
-use Aimeos\Cms\Tenancy;
 use Aimeos\Cms\Utils;
 use Aimeos\Cms\Watch;
 use Laravel\Mcp\Server\Attributes\Instructions;
@@ -120,13 +118,15 @@ class CmsServer extends Server
 
     protected function record( string $action, int|float $start, bool $success ) : void
     {
-        Watch::dispatch( CmsMcp::class, fn() => new CmsMcp(
+        Watch::observe(
+            source: 'mcp',
             action: $action,
             durationMs: Watch::duration( $start ),
-            tenant: Tenancy::value(),
-            domain: config( 'cms.multidomain' ) ? request()->getHost() : '',
-            success: $success,
-        ) );
+            dimensions: [
+                'domain' => config( 'cms.multidomain' ) ? request()->getHost() : '',
+                'success' => $success,
+            ],
+        );
     }
 
 

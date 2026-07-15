@@ -8,7 +8,7 @@
 namespace Tests;
 
 use Aimeos\Cms\Events\Authed;
-use Aimeos\Cms\Events\CmsGraphql;
+use Aimeos\Cms\Events\Observed;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\RateLimiter;
@@ -61,46 +61,51 @@ class GraphqlWatchTest extends GraphqlTestAbstract
     }
 
 
-    public function testQueryDispatchesCmsGraphql() : void
+    public function testQueryDispatchesObserved() : void
     {
-        Event::fake( [CmsGraphql::class] );
+        Event::fake( [Observed::class] );
 
         $this->graphQL( '
             query { users { data { id } } }
         ' );
 
-        Event::assertDispatched( CmsGraphql::class, fn( CmsGraphql $e ) =>
-            $e->action === 'users'
-            && $e->success === true
+        Event::assertDispatched( Observed::class, fn( Observed $e ) =>
+            $e->source === 'graphql'
+            && $e->action === 'users'
+            && $e->dimensions['success'] === true
             && $e->durationMs >= 0.0
         );
     }
 
 
-    public function testAuthMutationDispatchesCmsGraphql() : void
+    public function testAuthMutationDispatchesObserved() : void
     {
-        Event::fake( [CmsGraphql::class] );
+        Event::fake( [Observed::class] );
 
         $this->graphQL( '
             mutation { cmsLogin(email: "editor@testbench", password: "secret") { id } }
         ' );
 
-        Event::assertDispatched( CmsGraphql::class, fn( CmsGraphql $e ) =>
-            $e->action === 'cmsLogin' && $e->success === true
+        Event::assertDispatched( Observed::class, fn( Observed $e ) =>
+            $e->source === 'graphql'
+            && $e->action === 'cmsLogin'
+            && $e->dimensions['success'] === true
         );
     }
 
 
-    public function testFailedGraphqlDispatchesUnsuccessfulCmsGraphql() : void
+    public function testFailedGraphqlDispatchesUnsuccessfulObserved() : void
     {
-        Event::fake( [Authed::class, CmsGraphql::class] );
+        Event::fake( [Authed::class, Observed::class] );
 
         $this->graphQL( '
             mutation { cmsLogin(email: "editor@testbench", password: "wrong") { id } }
         ' );
 
-        Event::assertDispatched( CmsGraphql::class, fn( CmsGraphql $e ) =>
-            $e->action === 'cmsLogin' && $e->success === false
+        Event::assertDispatched( Observed::class, fn( Observed $e ) =>
+            $e->source === 'graphql'
+            && $e->action === 'cmsLogin'
+            && $e->dimensions['success'] === false
         );
     }
 

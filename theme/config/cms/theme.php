@@ -97,10 +97,9 @@ return [
     | Frontend watch events
     |--------------------------------------------------------------------------
     |
-    | Enables audit/metrics events for high-volume frontend actions (page
-    | requests, search queries and contact submissions). Off by default to avoid
-    | overhead on every request. Page-request metrics are gated on this flag
-    | alone; search/contact audit logging additionally needs "cms.watch.channel".
+    | Enables structured audit events for frontend search queries and contact
+    | submissions when "cms.watch.channel" is configured. Pulse observations are
+    | listener-driven and don't require this flag.
     |
     */
     'watch' => env( 'CMS_THEME_WATCH', false ),

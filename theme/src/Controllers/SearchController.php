@@ -28,7 +28,7 @@ class SearchController extends Controller
      */
     public function index( Request $request, string $domain = '' )
     {
-        $start = Watch::start( 'cms.theme.watch', CmsSearch::class );
+        $start = hrtime( true );
 
         $vals = $request->validate( [
             'q' => 'required|string|min:' . (int) config( 'cms.search.min', 2 ) . '|max:200',
@@ -68,18 +68,29 @@ class SearchController extends Controller
                 'relevance' => $item->relevance ?? 0,
             ] );
 
-        // Dispatch whenever watch is enabled or a consumer listens; each consumer
-        // (CmsSearchPulseRecorder, SearchLogListener) applies its own Watch::sampled(),
-        // so both are thinned independently — search is a high-volume read stream.
+        $duration = Watch::duration( $start );
+        $tenant = Tenancy::value();
+
+        // Keep the rich audit payload package-local. The neutral metric event only
+        // carries aggregation-safe fields, and each consumer samples independently.
         Watch::dispatchWhen( 'cms.theme.watch', CmsSearch::class, fn() => new CmsSearch(
             query: (string) $vals['q'],
             results: $paginator->total(),
             page: $paginator->currentPage(),
-            durationMs: Watch::duration( $start ),
+            durationMs: $duration,
             domain: $domain,
             lang: $lang,
-            tenant: Tenancy::value(),
+            tenant: $tenant,
         ) );
+
+        Watch::observe(
+            source: 'search',
+            action: 'theme:search',
+            durationMs: $duration,
+            tenant: $tenant,
+            dimensions: ['domain' => $domain, 'lang' => $lang],
+            sample: true,
+        );
 
         return response()->json( $content );
     }

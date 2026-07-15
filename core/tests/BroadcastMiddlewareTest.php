@@ -8,6 +8,7 @@
 namespace Tests;
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\RateLimiter;
 
 
 class BroadcastMiddlewareTest extends CoreTestAbstract
@@ -35,5 +36,11 @@ class BroadcastMiddlewareTest extends CoreTestAbstract
 
         $this->assertContains( 'signed', $middleware ); // proves the config value is used, not the default
         $this->assertContains( 'auth', $middleware );
+    }
+
+
+    public function testBroadcastRateLimiterIsRegistered() : void
+    {
+        $this->assertNotNull( RateLimiter::limiter( 'cms-broadcast' ) );
     }
 }

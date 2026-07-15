@@ -49,6 +49,7 @@ abstract class CmsTestAbstract extends \Orchestra\Testbench\TestCase
         \Aimeos\Cms\Access::using( null );
         ( new \ReflectionProperty( \Aimeos\Cms\Tenancy::class, 'managed' ) )->setValue( null, false );
         ( new \ReflectionProperty( \Aimeos\Cms\Schema::class, 'themes' ) )->setValue( null, [] );
+        \Aimeos\Cms\Schema::source( null );
         parent::tearDown();
     }
 

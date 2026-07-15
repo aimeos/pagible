@@ -7,11 +7,6 @@
 
 namespace Aimeos\Cms;
 
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
-
-
 /**
  * Schema registry class.
  */
@@ -23,6 +18,13 @@ class Schema
      * @var array<string, array<string, mixed>>
      */
     private static array $schemas = [];
+
+    /**
+     * Optional dynamic theme source.
+     *
+     * @var (\Closure(): array<string, array<string, mixed>>)|null
+     */
+    private static ?\Closure $source = null;
 
     /**
      * Registered themes (Composer packages).
@@ -39,7 +41,7 @@ class Schema
      */
     public static function all() : array
     {
-        return array_merge( self::discover(), self::$themes );
+        return array_merge( self::loaded(), self::$themes );
     }
 
 
@@ -51,7 +53,7 @@ class Schema
      */
     public static function get( string $name ) : ?array
     {
-        return self::$themes[$name] ?? self::discover()[$name] ?? null;
+        return self::$themes[$name] ?? self::loaded()[$name] ?? null;
     }
 
 
@@ -86,11 +88,12 @@ class Schema
      */
     public static function schemas( ?string $name = null, ?string $section = null ) : array
     {
-        // Tenant-scope the cache key: themes/schemas are per-tenant (see discover()), so a
-        // process-global static must not serve one tenant's schema to another under Octane.
+        // Tenant-scope the cache key so a process-global static never serves one tenant's
+        // registered schemas to another under Octane. Dynamic sources own their caching and
+        // must be resolved on every call so uploaded theme changes can become visible.
         $key = Tenancy::value() . '/' . ( $name ?? '*' ) . '/' . ( $section ?? '*' );
 
-        if( isset( self::$schemas[$key] ) ) {
+        if( self::$source === null && isset( self::$schemas[$key] ) ) {
             return self::$schemas[$key];
         }
 
@@ -125,7 +128,11 @@ class Schema
             }
         }
 
-        return self::$schemas[$key] = $result;
+        if( self::$source === null ) {
+            self::$schemas[$key] = $result;
+        }
+
+        return $result;
     }
 
 
@@ -173,73 +180,35 @@ class Schema
 
 
     /**
-     * Discovers tenant themes from the configured storage disk.
+     * Sets the optional dynamic theme source.
      *
-     * @return array<string, array<string, mixed>> Discovered themes keyed by name
+     * @param (\Closure(): array<string, array<string, mixed>>)|null $callback
      */
-    private static function discover() : array
+    public static function source( ?\Closure $callback ) : void
     {
-        $diskName = config( 'cms.theme.disk' );
+        self::$source = $callback;
+        self::$schemas = [];
+    }
 
-        if( !$diskName ) {
+
+    /**
+     * Returns normalized themes from the dynamic source.
+     *
+     * @return array<string, array<string, mixed>> Themes keyed by name
+     */
+    private static function loaded() : array
+    {
+        if( self::$source === null ) {
             return [];
         }
 
-        $ttl = config( 'cms.theme.cache-ttl', 0 );
+        $themes = ( self::$source )();
 
-        return Cache::remember( 'cms-themes_' . Tenancy::value(), $ttl, function() use ( $diskName ) {
-            $themes = [];
-            $disk = Storage::disk( $diskName );
+        foreach( $themes as $name => $data ) {
+            $themes[$name] = self::prefix( $data, $name );
+        }
 
-            foreach( $disk->directories( '' ) as $dir )
-            {
-                $name = basename( $dir );
-
-                if( !preg_match( '/^[a-zA-Z0-9-]+$/', $name ) ) {
-                    continue;
-                }
-
-                if( isset( self::$themes[$name] ) ) {
-                    continue;
-                }
-
-                if( !$disk->exists( $dir . '/schema.json' ) ) {
-                    continue;
-                }
-
-                try
-                {
-                    $json = $disk->get( $dir . '/schema.json' );
-
-                    if( !is_string( $json ) || strlen( $json ) > 1048576 )
-                    {
-                        Log::warning( sprintf( 'Invalid schema.json for theme "%s" on disk "%s"', $name, $diskName ) );
-                        continue;
-                    }
-
-                    $data = json_decode( $json, true );
-
-                    if( !is_array( $data ) )
-                    {
-                        Log::warning( sprintf( 'Invalid JSON in schema.json for theme "%s" on disk "%s"', $name, $diskName ) );
-                        continue;
-                    }
-
-                    $data['preview'] = $disk->exists( $dir . '/preview.webp' )
-                        ? $disk->url( $dir . '/preview.webp' )
-                        : null;
-
-                    $themes[$name] = self::prefix( $data, $name );
-                }
-                catch( \Throwable $e )
-                {
-                    Log::warning( sprintf( 'Error discovering theme "%s" on disk "%s": %s', $name, $diskName, $e->getMessage() ) );
-                    continue;
-                }
-            }
-
-            return $themes;
-        } );
+        return $themes;
     }
 
 

@@ -7,7 +7,7 @@
 
 namespace Tests;
 
-use Aimeos\Cms\Events\CmsMcp;
+use Aimeos\Cms\Events\Observed;
 use Aimeos\Cms\Events\Saved;
 use Aimeos\Cms\Mcp\CmsServer;
 use Aimeos\Cms\Models\Page;
@@ -39,26 +39,27 @@ class McpWatchTest extends McpTestAbstract
     }
 
 
-    public function testReadToolDispatchesCmsMcp() : void
+    public function testReadToolDispatchesObserved() : void
     {
-        Event::fake( [CmsMcp::class] );
+        Event::fake( [Observed::class] );
         $page = $this->home();
 
         CmsServer::actingAs( $this->editor() )->tool( \Aimeos\Cms\Tools\GetPage::class, [
             'id' => $page->id,
         ] );
 
-        Event::assertDispatched( CmsMcp::class, fn( CmsMcp $e ) =>
-            $e->action === 'get-page'
-            && $e->success === true
+        Event::assertDispatched( Observed::class, fn( Observed $e ) =>
+            $e->source === 'mcp'
+            && $e->action === 'get-page'
+            && $e->dimensions['success'] === true
             && $e->durationMs >= 0.0
         );
     }
 
 
-    public function testWriteToolDispatchesCmsMcp() : void
+    public function testWriteToolDispatchesObserved() : void
     {
-        Event::fake( [CmsMcp::class] );
+        Event::fake( [Observed::class] );
         $page = $this->home();
 
         CmsServer::actingAs( $this->editor() )->tool( \Aimeos\Cms\Tools\SavePage::class, [
@@ -67,20 +68,24 @@ class McpWatchTest extends McpTestAbstract
             'title' => 'Updated Title',
         ] );
 
-        Event::assertDispatched( CmsMcp::class, fn( CmsMcp $e ) =>
-            $e->action === 'save-page' && $e->success === true
+        Event::assertDispatched( Observed::class, fn( Observed $e ) =>
+            $e->source === 'mcp'
+            && $e->action === 'save-page'
+            && $e->dimensions['success'] === true
         );
     }
 
 
-    public function testFailedToolDispatchesUnsuccessfulCmsMcp() : void
+    public function testFailedToolDispatchesUnsuccessfulObserved() : void
     {
-        Event::fake( [CmsMcp::class] );
+        Event::fake( [Observed::class] );
 
         CmsServer::actingAs( $this->editor() )->tool( \Aimeos\Cms\Tools\GetPage::class, [] );
 
-        Event::assertDispatched( CmsMcp::class, fn( CmsMcp $e ) =>
-            $e->action === 'get-page' && $e->success === false
+        Event::assertDispatched( Observed::class, fn( Observed $e ) =>
+            $e->source === 'mcp'
+            && $e->action === 'get-page'
+            && $e->dimensions['success'] === false
         );
     }
 
