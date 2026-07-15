@@ -8,7 +8,6 @@
 namespace Aimeos\Cms\Controllers;
 
 use Aimeos\Cms\Models\Nav;
-use Aimeos\Cms\Scopes\Status;
 use Illuminate\Routing\Controller;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -104,14 +103,17 @@ class SitemapController extends Controller
      * scopes are inherited from the `Nav` model and compiled into the builder
      * by `toBase()`.
      *
-     * @return \Illuminate\Database\Query\Builder Base query with status scope and `to` filter applied
+     * @return \Illuminate\Database\Query\Builder Base query with public status and `to` filters applied
      */
     protected function query() : \Illuminate\Database\Query\Builder
     {
-        return Nav::withGlobalScope( 'status', new Status )
+        // Sitemaps are publicly cacheable, so their contents must never depend on
+        // the authenticated editor exception implemented by the Status scope.
+        return Nav::whereIn( ( new Nav() )->qualifyColumn( 'status' ), [1, 2] )
             ->where( function( $q ) {
                 $q->whereNull( 'to' )->orWhere( 'to', '' );
             } )
+            ->wherePublic()
             ->toBase();
     }
 

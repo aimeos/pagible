@@ -124,6 +124,17 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Page tree write lock
+    |--------------------------------------------------------------------------
+    |
+    | Lock lifetime and maximum acquisition wait in seconds for atomic page
+    | tree writes. Cache and search side effects run outside this lock.
+    |
+    */
+    'lock' => (int) env( 'CMS_LOCK', 30 ),
+
+    /*
+    |--------------------------------------------------------------------------
     | Multi-domain support
     |--------------------------------------------------------------------------
     |
@@ -153,6 +164,17 @@ return [
     |
     */
     'prune' => env( 'CMS_PRUNE', 30 ),
+
+    /*
+    |--------------------------------------------------------------------------
+    | External search synchronization chunk size
+    |--------------------------------------------------------------------------
+    |
+    | Maximum number of page IDs queued and complete search documents hydrated
+    | per external Laravel Scout synchronization operation.
+    |
+    */
+    'chunksize' => (int) env( 'CMS_CHUNKSIZE', 100 ),
 
     /*
     |--------------------------------------------------------------------------

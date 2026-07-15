@@ -18,6 +18,12 @@
     "require-dev": {
         "orchestra/testbench": "^9.0||^10.0||^11.0"
     },
+    "suggest": {
+        "stancl/tenancy": "Optional Stancl lifecycle and tenant-aware queue integration",
+        "spatie/laravel-permission": "Minimum version for Spatie frontend page access: 6.2.0",
+        "silber/bouncer": "Minimum version for Bouncer frontend page access: 1.0.2",
+        "santigarcor/laratrust": "Minimum version for Laratrust frontend page access: 8.3.0"
+    },
     "autoload": {
         "psr-4": {
             "Aimeos\\Cms\\": "src/",

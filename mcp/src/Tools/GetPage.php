@@ -9,6 +9,7 @@ namespace Aimeos\Cms\Tools;
 
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\Version;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Tools\Annotations\IsReadOnly;
 use Laravel\Mcp\Server\Tools\Annotations\IsOpenWorld;
@@ -45,8 +46,8 @@ class GetPage extends Tool
         }
 
         $query = Page::withTrashed()
-            ->select( 'id', 'parent_id', 'latest_id', 'created_at', 'deleted_at' )
-            ->with( ['latest' => fn( $q ) => $q->select( 'id', 'versionable_id', 'data', 'aux', 'lang', 'editor', 'published', 'publish_at', 'created_at' )] );
+            ->select( 'id', 'tenant_id', 'parent_id', 'latest_id', 'created_at', 'deleted_at' )
+            ->with( ['latest' => fn( $q ) => $q->select( [...Version::SELECT_COLUMNS, 'aux', 'publish_at', 'created_at'] )] );
 
         if( !empty( $v['id'] ) ) {
             $page = $query->find( $v['id'] );

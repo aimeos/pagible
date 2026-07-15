@@ -9,6 +9,7 @@ namespace Aimeos\Cms\Tools;
 
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\Models\File;
+use Aimeos\Cms\Models\Version;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Tools\Annotations\IsReadOnly;
 use Laravel\Mcp\Server\Tools\Annotations\IsOpenWorld;
@@ -43,7 +44,7 @@ class GetFile extends Tool
 
         /** @var File|null $file */
         $file = File::withTrashed()->with( [
-            'latest' => fn( $q ) => $q->select( 'id', 'versionable_id', 'data', 'lang', 'editor', 'published', 'publish_at', 'created_at' )
+            'latest' => fn( $q ) => $q->select( [...Version::SELECT_COLUMNS, 'publish_at', 'created_at'] )
         ] )->find( $v['id'] );
 
         if( !$file ) {

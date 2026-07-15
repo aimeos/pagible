@@ -7,16 +7,17 @@
 
 namespace Aimeos\Cms;
 
+use Aimeos\Cms\Events\PagesInvalidated;
 use Aimeos\Cms\Models\Base;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
+use Aimeos\Cms\Models\Nav;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Models\Version;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Cache;
 use Aimeos\Nestedset\NestedSet;
 use Illuminate\Support\Facades\DB;
 
@@ -212,6 +213,8 @@ class Resource
     /**
      * Soft-deletes items by ID.
      *
+     * Uses a cache-locked transaction for Page models to protect tree integrity.
+     *
      * @param class-string<Base> $model
      * @param array<string> $ids
      * @param string $editor
@@ -219,26 +222,7 @@ class Resource
      */
     public static function drop( string $model, array $ids, string $editor ) : Collection
     {
-        return Utils::transaction( function() use ( $model, $ids, $editor ) {
-
-            $items = $model::withTrashed()->whereIn( 'id', $ids )
-                ->when( is_a( $model, Page::class, true ), fn( $q ) => $q->select( Page::SELECT_COLUMNS ) )
-                ->get();
-
-            foreach( $items as $item )
-            {
-                $item->editor = $editor;
-                $item->delete();
-
-                if( $item instanceof Page ) {
-                    Cache::forget( Page::key( $item ) );
-                }
-
-                $item->announce( 'dropped', $editor );
-            }
-
-            return $items;
-        } );
+        return self::remove( $model, $ids, $editor, false );
     }
 
 
@@ -352,36 +336,104 @@ class Resource
      */
     public static function purge( string $model, array $ids, string $editor ) : Collection
     {
-        $callback = function() use ( $model, $ids, $editor ) {
+        return self::remove( $model, $ids, $editor, true );
+    }
+
+
+    /**
+     * Soft-deletes or permanently removes items while coordinating page-tree side effects.
+     *
+     * @param class-string<Base> $model
+     * @param array<string> $ids
+     * @return Collection<int, Base>
+     */
+    private static function remove( string $model, array $ids, string $editor, bool $purge ) : Collection
+    {
+        $isPage = is_a( $model, Page::class, true );
+        $callback = function() use ( $model, $ids, $editor, $isPage, $purge ) {
 
             $items = $model::withTrashed()->whereIn( 'id', $ids )
-                ->when( is_a( $model, Page::class, true ), fn( $q ) => $q->select( Page::SELECT_COLUMNS ) )
+                ->when( $isPage, fn( $q ) => $q->withoutGlobalScope( 'jsonapi' )
+                    ->select( Page::SELECT_COLUMNS )->lockForUpdate() )
                 // eager-load latest only when broadcasting, so the per-item removed
                 // events don't lazy-load each version (N+1)
-                ->when( config( 'cms.broadcast' ), fn( $q ) => $q->with( 'latest' ) )
+                ->when( $purge && config( 'cms.broadcast' ), fn( $q ) => $q->with( 'latest' ) )
                 ->get();
 
-            foreach( $items as $item )
-            {
-                $item->announce( 'purged', $editor );
+            $pages = $isPage ? self::pageSubtree( $items ) : [];
 
-                if( $item instanceof File ) {
-                    $item->purge();
-                } else {
-                    $item->forceDelete();
-                }
+            $delete = function() use ( $items, $editor, $purge ) {
+                foreach( $items as $item )
+                {
+                    if( !$purge ) {
+                        $item->editor = $editor;
+                        $item->delete();
+                        $item->announce( 'dropped', $editor );
+                        continue;
+                    }
 
-                if( $item instanceof Page ) {
-                    Cache::forget( Page::key( $item ) );
+                    $item->announce( 'purged', $editor );
+
+                    if( $item instanceof File ) {
+                        $item->purge();
+                    } else {
+                        $item->forceDelete();
+                    }
                 }
+            };
+
+            if( $isPage ) {
+                Page::withoutSyncingToSearch( $delete );
+            } else {
+                $delete();
             }
 
-            return $items;
+            return [$items, $pages];
         };
 
-        return is_a( $model, Page::class, true )
+        [$items, $pages] = $isPage
             ? Utils::lockedTransaction( $callback )
             : Utils::transaction( $callback );
+
+        if( $pages ) {
+            PagesInvalidated::dispatch( $pages );
+            Scout::syncPages( array_map( fn( Nav $page ) => (string) $page->id, $pages ) );
+        }
+
+        return $items;
+    }
+
+
+    /**
+     * Loads the lean route projection for complete page subtrees before deletion.
+     *
+     * @param Collection<int, Base> $roots
+     * @return list<Nav>
+     */
+    private static function pageSubtree( Collection $roots ) : array
+    {
+        /** @var list<Page> $pages */
+        $pages = $roots->all();
+
+        if( !$pages ) {
+            return [];
+        }
+
+        $query = Nav::withTrashed()
+            ->withoutGlobalScope( 'jsonapi' )
+            ->select( 'id', 'tenant_id', 'domain', 'path', NestedSet::LFT )
+            ->where( function( $query ) use ( $pages ) {
+                foreach( $pages as $root ) {
+                    $query->whereDescendantOrSelf( $root, 'or' );
+                }
+            } )
+            ->orderBy( NestedSet::LFT )
+            ->lockForUpdate();
+
+        /** @var list<Nav> $result */
+        $result = $query->get()->all();
+
+        return $result;
     }
 
 
@@ -580,7 +632,7 @@ class Resource
         return Utils::transaction( function() use ( $id, $input, $editor, $latestId, $preview, $stored, $storedPreviews ) {
 
             /** @var File $orig */
-            $orig = File::withTrashed()->with( ['latest' => fn( $q ) => $q->select( 'id', 'versionable_id', 'data', 'lang', 'editor' )] )->findOrFail( $id );
+            $orig = File::withTrashed()->with( ['latest' => fn( $q ) => $q->select( Version::SELECT_COLUMNS )] )->findOrFail( $id );
 
             return self::applyFile( $orig, $input, $editor, $latestId, $stored, $storedPreviews, $preview );
         } );
@@ -610,7 +662,7 @@ class Resource
 
         return self::bulk( File::class, $ids, $input, $editor, function( string $id ) use ( $input, $editor ) : ?File {
             $file = File::withTrashed()
-                ->with( ['latest' => fn( $q ) => $q->select( 'id', 'versionable_id', 'data', 'lang', 'editor' )] )
+                ->with( ['latest' => fn( $q ) => $q->select( Version::SELECT_COLUMNS )] )
                 ->lockForUpdate()->find( $id );
             return $file ? self::applyFile( $file, $input, $editor, null, null, null, null, false ) : null;
         } );
@@ -844,7 +896,7 @@ class Resource
         // nested-set pre-order traversal) so each parent is saved before its children
         if( $descendants )
         {
-            $roots = Page::withTrashed()->whereIn( 'id', $ids )->get( ['id', NestedSet::LFT, NestedSet::RGT] );
+            $roots = Page::withTrashed()->whereIn( 'id', $ids )->get( ['id', 'tenant_id', NestedSet::LFT, NestedSet::RGT] );
 
             $ids = Page::withTrashed()->where( function( $builder ) use ( $roots ) {
                 foreach( $roots as $root ) {

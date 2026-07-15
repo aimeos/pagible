@@ -1019,7 +1019,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
     {
         $root = Page::where('tag', 'root')->firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 5 );
+        $this->expectsDatabaseQueryCount( 6 );
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
                 dropPage(id: ["' . $root->id . '"]) {
@@ -1162,7 +1162,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
     {
         $root = Page::where('tag', 'root')->firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 6 );
+        $this->expectsDatabaseQueryCount( 7 );
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
                 purgePage(id: ["' . $root->id . '"]) {

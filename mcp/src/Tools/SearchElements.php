@@ -10,6 +10,7 @@ namespace Aimeos\Cms\Tools;
 use Aimeos\Cms\Filter;
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\Models\Element;
+use Aimeos\Cms\Models\Version;
 use Aimeos\Cms\Tools\Concerns\Metadata;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Tools\Annotations\IsReadOnly;
@@ -50,8 +51,8 @@ class SearchElements extends Tool
         ] );
 
         $search = Element::search( mb_substr( trim( (string) ( $v['term'] ?? '' ) ), 0, 200 ) )
-            ->query( fn( $q ) => $q->select( 'cms_elements.id', 'cms_elements.created_at', 'cms_elements.updated_at', 'cms_elements.deleted_at', 'cms_elements.latest_id' )
-            ->with( ['latest' => fn( $q ) => $q->select( 'id', 'versionable_id', 'data', 'lang', 'editor' )] ) )
+            ->query( fn( $q ) => $q->select( 'cms_elements.id', 'cms_elements.tenant_id', 'cms_elements.created_at', 'cms_elements.updated_at', 'cms_elements.deleted_at', 'cms_elements.latest_id' )
+            ->with( ['latest' => fn( $q ) => $q->select( Version::SELECT_COLUMNS )] ) )
             ->searchFields( 'draft' )
             ->take( 25 );
 

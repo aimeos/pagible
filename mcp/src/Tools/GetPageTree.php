@@ -44,7 +44,7 @@ class GetPageTree extends Tool
 
         $builder = Page::tree( $v['node_id'] ?? null )
             ->select( 'id', 'parent_id', 'tenant_id', 'lang', 'latest_id', NestedSet::LFT, NestedSet::RGT, NestedSet::DEPTH )
-            ->with( ['latest' => fn( $q ) => $q->select( 'id', 'versionable_id', 'data' )] );
+            ->with( ['latest' => fn( $q ) => $q->select( 'id', 'tenant_id', 'versionable_id', 'data' )] );
 
         if( !isset( $v['node_id'] ) && isset( $v['lang'] ) ) {
             $builder->where( 'lang', $v['lang'] );

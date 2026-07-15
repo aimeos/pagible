@@ -42,6 +42,11 @@ class Version extends Model
 
     private static ?bool $isSqlsrv = null;
 
+    /** @var list<string> Most frequently used version projection */
+    public const SELECT_COLUMNS = [
+        'id', 'tenant_id', 'versionable_id', 'versionable_type', 'data', 'lang', 'editor', 'published',
+    ];
+
 
 
     /**
@@ -49,13 +54,6 @@ class Version extends Model
      */
     protected static function booted() : void
     {
-        static::addGlobalScope( new \Aimeos\Cms\Scopes\Tenancy() );
-
-        static::creating( function( \Illuminate\Database\Eloquent\Model $model ) {
-            /** @phpstan-ignore method.notFound */
-            $model->setAttribute( $model->getTenantColumn(), \Aimeos\Cms\Tenancy::value() );
-        } );
-
         static::saving( function( $version ) {
             $scheduled = $version->publish_at !== null ? 1 : 0;
             $data = $version->data ?? new \stdClass();

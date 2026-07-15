@@ -7,21 +7,22 @@
 
 namespace Aimeos\Cms\Controllers;
 
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Response;
-use Illuminate\View\View;
 use Illuminate\Http\Request;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Gate;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Routing\Controller;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
-use Aimeos\Cms\Models\Version;
+use Aimeos\Cms\Models\Nav;
 use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageAccess;
 use Aimeos\Cms\Permission;
+use Aimeos\Cms\Navigation;
 use Aimeos\Cms\Scopes\Status;
 use Aimeos\Cms\Theme;
 
@@ -48,10 +49,9 @@ class PageController extends Controller
      * For logged-in used with editor privileges, the latest version of the page is shown,
      * for all other users, the published version of the page is shown.
      *
-     * If the page has no GET/POST parameters, the HTML is cached for the duration of the
-     * page's cache time. Otherwise, the page is not cached to ensure that dynamic content
-     * is always up-to-date. Proxy servers are allowed to cache pages with GET parameters
-     * nevertheless because using the same parameters must always return the same content.
+     * Pages without query parameters can also be cached by the application. Proxy servers
+     * may cache pages with query parameters because repeated requests with the same URL
+     * must return the same content.
      *
      * @param Request $request The current HTTP request instance
      * @param string $path Page URL segment
@@ -60,83 +60,74 @@ class PageController extends Controller
      */
     public function index( Request $request, string $path, string $domain = '' )
     {
-        if( Permission::can( 'page:view', $request->user() ) ) {
-            return $this->latest( $path, $domain );
+        $user = $request->user();
+
+        if( Permission::can( 'page:view', $user ) ) {
+            return $this->latest( $path, $domain, $user );
         }
 
-        $cache = Cache::store( config( 'cms.theme.cache', 'file' ) );
-        $key = Page::key( $path, $domain );
-        $np = empty( $request->input() );
+        $route = $request->attributes->get( 'cms.page' );
 
-        if( $np && $request->isMethod( 'GET' ) && ( $html = $cache->get( $key ) ) ) {
-            return $this->cached( $html );
+        if( !$route instanceof Nav ) {
+            $route = Nav::page( $path, $domain );
         }
 
-        $page = Page::with( [
-            'files' => fn( $q ) => $q->select( File::SELECT_COLS ),
-            'elements' => fn( $q ) => $q->select( [...Element::SELECT_COLS, 'name'] ),
-        ] )
-            ->withGlobalScope('status', new Status)
-            ->where( 'domain', $domain )
-            ->where( 'path', $path )
-            ->firstOrFail();
+        if( !$route ) {
+            abort( 404 );
+        }
 
-        if( $to = $page->to ) {
+        if( $route->access_exists ) {
+            if( !$user ) {
+                throw new AuthenticationException();
+            }
+
+            if( !PageAccess::allows( $route->access, $user ) ) {
+                abort( 403 );
+            }
+        }
+
+        if( $to = $route->to ) {
             return str_starts_with( $to, 'http' ) ? redirect()->away( $to ) : redirect()->to( $to );
         }
 
-        App::setLocale( $page->lang );
-        Paginator::useBootstrap(); // Use Bootstrap CSS classes for pagination links
+        $page = Page::with( [
+            'files' => fn( $q ) => $q->select( File::SELECT_COLUMNS ),
+            'elements' => fn( $q ) => $q->select( [...Element::SELECT_COLUMNS, 'name'] ),
+        ] )
+            ->withGlobalScope( 'status', new Status )
+            ->findOrFail( $route->id );
 
-        $content = collect( (array) ($page->content ?? []) )->groupBy( 'group' );
-        $theme = Theme::views( cms( $page, 'theme' ) ?: 'cms' );
-        $type = cms( $page, 'type' ) ?: 'page';
+        $html = $this->render( $page, $page->content ?? [], $page->lang, $user );
 
-        $views = [$theme . '::layouts.' . $type, 'cms::layouts.' . $type, 'cms::layouts.page'];
-        $html = view()->first( $views, ['page' => $page, 'content' => $content, 'theme' => $theme] )->render();
+        // Database-first transition safety: re-read the rule after rendering so a
+        // concurrent insert or permission change cannot expose or cache the response.
+        $currentAccess = $route->access_exists ? $page->access()->get() : null;
 
-        $expires = gmdate( 'D, d M Y H:i:s', time() + (int) $page->cache * 60 ) . ' GMT';
-
-        if( $np && $request->isMethod( 'GET' ) && $page->cache ) {
-            $cache->put( $key, $html . '<!-- ' . $expires, now()->addMinutes( (int) $page->cache ) );
+        if( $currentAccess === null && $page->access()->exists() ) {
+            $currentAccess = $page->access()->get();
         }
 
-        $response = ( new Response( $html, 200 ) )->header( 'Content-Type', 'text/html' );
+        if( $currentAccess?->isNotEmpty() ) {
+            if( !$user ) {
+                throw new AuthenticationException();
+            }
 
-        if( $request->isMethod( 'GET' ) )
-        {
-            $maxage = (int) $page->cache * 60;
-
-            $response->header( 'Expires', $expires )->header( 'Cache-Control', $page->cache
-                ? "public, s-maxage={$maxage}, max-age=0, must-revalidate"
-                : 'no-store, private' );
+            if( !PageAccess::allows( $currentAccess, $user ) ) {
+                abort( 403 );
+            }
         }
 
-        return $response;
-    }
+        $response = new Response( $html, 200, ['Content-Type' => 'text/html'] );
 
+        if( $user || $currentAccess?->isNotEmpty() || !$page->cache ) {
+            return $response->header( 'Cache-Control', 'no-store, private' );
+        }
 
-    /**
-     * Builds the public, CDN-cacheable response for stored page HTML.
-     *
-     * The cached HTML is final and static: CSP hashes are already resolved and no
-     * session-bound CSRF token is embedded (forms fetch it on demand). It is therefore
-     * returned verbatim with a "public" cache policy and no Set-Cookie header. The
-     * shared-cache lifetime is derived from the trailing expiry marker so the edge
-     * cache and the server cache expire together.
-     *
-     * @param string $html Cached page HTML with trailing expiry marker
-     * @return Response Public, cacheable response
-     */
-    protected function cached( string $html ) : Response
-    {
-        $expires = substr( $html, -29 );
-        $maxage = max( 0, strtotime( $expires ) - time() );
+        $maxage = (int) $page->cache * 60;
 
-        return ( new Response( $html, 200 ) )
-            ->header( 'Content-Type', 'text/html' )
+        return $response
             ->header( 'Cache-Control', "public, s-maxage={$maxage}, max-age=0, must-revalidate" )
-            ->header( 'Expires', $expires );
+            ->setExpires( now()->addSeconds( $maxage ) );
     }
 
 
@@ -148,17 +139,18 @@ class PageController extends Controller
      *
      * @param string $path Page URL segment
      * @param string $domain Requested domain
+     * @param Authenticatable|null $user Authenticated editor
      * @return Response|RedirectResponse Response of the controller action
      */
-    protected function latest( string $path, string $domain )
+    protected function latest( string $path, string $domain, ?Authenticatable $user )
     {
         $with = [
             'latest',
-            'latest.files' => fn( $q ) => $q->select( File::SELECT_COLS ),
+            'latest.files' => fn( $q ) => $q->select( File::SELECT_COLUMNS ),
             'latest.files.latest',
-            'latest.elements' => fn( $q ) => $q->select( [...Element::SELECT_COLS, 'name'] ),
+            'latest.elements' => fn( $q ) => $q->select( [...Element::SELECT_COLUMNS, 'name'] ),
             'latest.elements.latest',
-            'latest.elements.files' => fn( $q ) => $q->select( File::SELECT_COLS ),
+            'latest.elements.files' => fn( $q ) => $q->select( File::SELECT_COLUMNS ),
             'latest.elements.files.latest',
         ];
 
@@ -183,19 +175,33 @@ class PageController extends Controller
 
         $page->cache = 0; // don't cache sub-parts in preview requests
 
-        App::setLocale( $version?->data->lang ?? $page->lang );
-        Paginator::useBootstrap();
-
-        $theme = Theme::views( cms( $page, 'theme' ) ?: 'cms' );
-        $type = cms( $page, 'type', 'page' );
-
-        $content = collect( (array) ($version->aux->content ?? $page->content ?? []) )->groupBy( 'group' );
-
-        $views = [$theme . '::layouts.' . $type, 'cms::layouts.' . $type, 'cms::layouts.page'];
-        $html = view()->first( $views, ['page' => $page, 'content' => $content, 'theme' => $theme] )->render();
+        $html = $this->render(
+            $page,
+            $version->aux->content ?? $page->content ?? [],
+            $version?->data->lang ?? $page->lang,
+            $user,
+        );
 
         return ( new Response( $html, 200 ) )
             ->header( 'Content-Type', 'text/html' )
             ->header( 'Cache-Control', 'private, max-age=0' );
+    }
+
+
+    /**
+     * Renders published and preview pages through the same view preparation path.
+     */
+    protected function render( Page $page, mixed $value, string $locale, ?Authenticatable $user ) : string
+    {
+        App::setLocale( $locale );
+        Paginator::useBootstrap();
+
+        $content = collect( (array) $value )->groupBy( 'group' );
+        $theme = Theme::views( cms( $page, 'theme' ) ?: 'cms' );
+        $type = cms( $page, 'type' ) ?: 'page';
+        $views = [$theme . '::layouts.' . $type, 'cms::layouts.' . $type, 'cms::layouts.page'];
+        $nav = new Navigation( $page, $user );
+
+        return view()->first( $views, compact( 'page', 'content', 'theme', 'nav' ) )->render();
     }
 }

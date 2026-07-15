@@ -11,6 +11,7 @@ use Illuminate\Console\Command;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\Version;
 
 
 class Index extends Command
@@ -32,14 +33,14 @@ class Index extends Command
     public function handle(): void
     {
         Page::withTrashed()->select( Page::SELECT_COLUMNS )->with( [
-                'elements' => fn( $q ) => $q->select( Element::SELECT_COLS ),
-                'latest' => fn( $q ) => $q->select( 'id', 'versionable_id', 'data', 'aux', 'lang', 'editor', 'published' ),
-                'latest.elements' => fn( $q ) => $q->select( Element::SELECT_COLS ),
+                'elements' => fn( $q ) => $q->select( Element::SELECT_COLUMNS ),
+                'latest' => fn( $q ) => $q->select( [...Version::SELECT_COLUMNS, 'aux'] ),
+                'latest.elements' => fn( $q ) => $q->select( Element::SELECT_COLUMNS ),
             ] )
             ->chunk( 50, fn( $items ) => $items->searchable() ); // @phpstan-ignore method.notFound
-        Element::withTrashed()->with( ['latest' => fn( $q ) => $q->select( 'id', 'versionable_id', 'data', 'lang', 'editor', 'published' )] )
+        Element::withTrashed()->with( ['latest' => fn( $q ) => $q->select( Version::SELECT_COLUMNS )] )
             ->chunk( 50, fn( $items ) => $items->searchable() ); // @phpstan-ignore method.notFound
-        File::withTrashed()->with( ['latest' => fn( $q ) => $q->select( 'id', 'versionable_id', 'data', 'lang', 'editor', 'published' )] )
+        File::withTrashed()->with( ['latest' => fn( $q ) => $q->select( Version::SELECT_COLUMNS )] )
             ->chunk( 50, fn( $items ) => $items->searchable() ); // @phpstan-ignore method.notFound
     }
 }

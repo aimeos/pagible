@@ -7,12 +7,23 @@
 
 namespace Aimeos\Cms\Models;
 
+use Aimeos\Nestedset\NestedSet;
+
 
 /**
  * Nav model
+ *
+ * @property bool $access_exists
  */
 class Nav extends Page
 {
+    /** @var list<string> Columns required by navigation and ancestor projections */
+    public const SELECT_COLUMNS = [
+        'id', 'tenant_id', 'parent_id', 'name', 'title', 'tag', 'path', 'domain', 'lang', 'to',
+        'status', 'config', 'latest_id', NestedSet::LFT, NestedSet::RGT, NestedSet::DEPTH,
+    ];
+
+
     /**
      * The model's default values for attributes.
      *
@@ -43,6 +54,23 @@ class Nav extends Page
         'title',
         'status',
     ];
+
+
+    /**
+     * Finds the lightweight published page projection for a frontend route.
+     *
+     * The returned model is partial and must be treated as read-only.
+     */
+    public static function page( string $path, string $domain = '' ) : ?self
+    {
+        return self::query()
+            ->select( 'id', 'tenant_id', 'domain', 'path', 'to', 'cache', 'status' )
+            ->withExists( 'access' )
+            ->whereIn( 'status', [1, 2] )
+            ->where( 'domain', $domain )
+            ->where( 'path', $path )
+            ->first();
+    }
 
 
     /**

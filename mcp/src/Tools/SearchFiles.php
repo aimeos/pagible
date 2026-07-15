@@ -10,6 +10,7 @@ namespace Aimeos\Cms\Tools;
 use Aimeos\Cms\Filter;
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\Models\File;
+use Aimeos\Cms\Models\Version;
 use Aimeos\Cms\Tools\Concerns\Metadata;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Tools\Annotations\IsReadOnly;
@@ -50,8 +51,8 @@ class SearchFiles extends Tool
         ] );
 
         $search = File::search( mb_substr( trim( (string) ( $v['term'] ?? '' ) ), 0, 200 ) )
-            ->query( fn( $q ) => $q->select( 'cms_files.id', 'cms_files.created_at', 'cms_files.updated_at', 'cms_files.deleted_at', 'cms_files.latest_id' )
-            ->with( ['latest' => fn( $q ) => $q->select( 'id', 'versionable_id', 'data', 'lang', 'editor' )] ) )
+            ->query( fn( $q ) => $q->select( 'cms_files.id', 'cms_files.tenant_id', 'cms_files.created_at', 'cms_files.updated_at', 'cms_files.deleted_at', 'cms_files.latest_id' )
+            ->with( ['latest' => fn( $q ) => $q->select( Version::SELECT_COLUMNS )] ) )
             ->searchFields( 'draft' )
             ->take( 25 );
 

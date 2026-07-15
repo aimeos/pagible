@@ -119,9 +119,9 @@ class NavSchema extends Schema
     {
         if( Permission::can( 'page:view', Auth::user() ) ) {
             $query = $query->with( [
-                'files' => fn( $q ) => $q->select( File::SELECT_COLS ),
-                'latest' => fn( $q ) => $q->select( 'id', 'versionable_id', 'aux' ),
-                'latest.files' => fn( $q ) => $q->select( File::SELECT_COLS ),
+                'files' => fn( $q ) => $q->select( File::SELECT_COLUMNS ),
+                'latest' => fn( $q ) => $q->select( 'id', 'tenant_id', 'versionable_id', 'aux' ),
+                'latest.files' => fn( $q ) => $q->select( File::SELECT_COLUMNS ),
             ] );
         }
 

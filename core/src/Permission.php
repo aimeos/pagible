@@ -117,7 +117,7 @@ class Permission
 
 
     /**
-     * Checks if the user has the permission for the requested action.
+     * Checks if the user belongs to the current tenant and has the requested permission.
      *
      * @param string $action Name of the requested action, e.g. "page:view"
      * @param Authenticatable|null $user Laravel user object
@@ -125,12 +125,12 @@ class Permission
      */
     public static function can( string $action, ?Authenticatable $user ) : bool
     {
-        if( $closure = self::$canCallback ) {
-            return $closure( $action, $user );
+        if( !$user || !Tenancy::allows( $user, Tenancy::value() ) ) {
+            return false;
         }
 
-        if( !$user ) {
-            return false;
+        if( $closure = self::$canCallback ) {
+            return $closure( $action, $user );
         }
 
         if( $action === '*' ) {

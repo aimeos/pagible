@@ -27,9 +27,9 @@ trait Tenancy
 
 
     /**
-     * The "booted" method of the model.
+     * Boots tenant scoping for model queries and creation.
      */
-    protected static function booted() : void
+    protected static function bootTenancy() : void
     {
         static::addGlobalScope( new \Aimeos\Cms\Scopes\Tenancy() );
 

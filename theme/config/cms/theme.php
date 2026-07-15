@@ -15,6 +15,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Complete-page render lock
+    |--------------------------------------------------------------------------
+    |
+    | Cache misses for public pages use an atomic lock to prevent duplicate
+    | cache writes. The lock TTL is expressed in seconds.
+    |
+    */
+    'lock' => (int) env( 'CMS_THEME_LOCK', 5 ),
+    'stale' => (int) env( 'CMS_THEME_STALE', 10 ),
+
+    /*
+    |--------------------------------------------------------------------------
     | Theme TTL
     |--------------------------------------------------------------------------
     |

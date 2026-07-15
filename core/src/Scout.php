@@ -7,11 +7,13 @@
 
 namespace Aimeos\Cms;
 
+use Aimeos\Cms\Jobs\SyncPages;
+use Aimeos\Cms\Models\Page;
 use Laravel\Scout\Builder;
 
 
 /**
- * Scout search builder support.
+ * Laravel Scout query translation support.
  */
 class Scout
 {
@@ -19,23 +21,6 @@ class Scout
      * Builder fields handled out-of-band; never translated to SQL columns.
      */
     public const SKIP_FIELDS = ['latest', '__soft_deleted', 'tenant_id'];
-
-
-    /**
-     * Apply draft-mode filters for the collection engine via callback.
-     *
-     * @param \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model> $query
-     * @param \Laravel\Scout\Builder<\Illuminate\Database\Eloquent\Model> $builder
-     * @param array<string> $fields The fields passed to searchFields(); only 'draft' triggers this path
-     * @return \Laravel\Scout\Builder<\Illuminate\Database\Eloquent\Model>
-     */
-    public static function collection( \Illuminate\Database\Eloquent\Builder $query, Builder $builder, array $fields ) : Builder
-    {
-        $isDraft = in_array( 'draft', $fields );
-        static::apply( $query, $builder, $isDraft );
-
-        return $builder;
-    }
 
 
     /**
@@ -118,5 +103,63 @@ class Scout
         }
     }
 
+
+    /**
+     * Apply draft-mode filters for the collection engine via callback.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model> $query
+     * @param \Laravel\Scout\Builder<\Illuminate\Database\Eloquent\Model> $builder
+     * @param array<string> $fields The fields passed to searchFields(); only 'draft' triggers this path
+     * @return \Laravel\Scout\Builder<\Illuminate\Database\Eloquent\Model>
+     */
+    public static function collection( \Illuminate\Database\Eloquent\Builder $query, Builder $builder, array $fields ) : Builder
+    {
+        $isDraft = in_array( 'draft', $fields );
+        static::apply( $query, $builder, $isDraft );
+
+        return $builder;
+    }
+
+
+    /**
+     * Whether visibility must be stored and filtered in an external search index.
+     */
+    public static function usesExternalSearch() : bool
+    {
+        return !in_array( config( 'scout.driver' ), [null, 'null', 'cms', 'collection', 'database'], true );
+    }
+
+
+    /**
+     * Queues external page-index reconciliation after the current transaction commits.
+     *
+     * @param list<string> $ids
+     */
+    public static function syncPages( array $ids ) : void
+    {
+        if( !$ids || !self::usesExternalSearch() ) {
+            return;
+        }
+
+        $model = new Page();
+        $connection = $model->getConnection();
+        $queueConnection = $model->syncWithSearchUsing();
+        $queue = $model->syncWithSearchUsingQueue();
+        $tenant = Tenancy::value();
+        $size = max( 1, (int) config( 'cms.chunksize', 100 ) );
+
+        $connection->afterCommit( function() use ( $ids, $size, $queueConnection, $queue, $tenant ) {
+            foreach( array_chunk( $ids, $size ) as $chunk )
+            {
+                try {
+                    dispatch( ( new SyncPages( $chunk, $tenant ) )
+                        ->onConnection( $queueConnection )
+                        ->onQueue( $queue ) );
+                } catch( \Throwable $e ) {
+                    report( $e );
+                }
+            }
+        } );
+    }
 
 }

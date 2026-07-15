@@ -8,6 +8,12 @@ This package is part of the [Pagible CMS monorepo](https://github.com/aimeos/pag
 composer require aimeos/pagible
 ```
 
+Page access rules are applied to collections, individual resources, and included
+relationships. Guests only see public pages. If the host application's active
+Laravel guard resolves an authenticated user, authentication-only pages and pages
+matching any frontend value supplied through the configured `Access` catalog and granted
+by Laravel Gate are visible too.
+
 ## Configuration
 
 After installation, the configuration is available in `config/cms/jsonapi.php`:

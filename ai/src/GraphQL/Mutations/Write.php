@@ -46,7 +46,7 @@ final class Write
             {
                 $disk = config( 'cms.disk', 'public' );
 
-                foreach( File::whereIn( 'id', $args['files'] )->select( 'id', 'path', 'mime' )->get() as $file )
+                foreach( File::whereIn( 'id', $args['files'] )->select( 'id', 'tenant_id', 'path', 'mime' )->get() as $file )
                 {
                     $files[] = str_starts_with( (string) $file->path, 'http' )
                         ? \Aimeos\Prisma\Files\File::fromUrl( (string) $file->path, $file->mime )

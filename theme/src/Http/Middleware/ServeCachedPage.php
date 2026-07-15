@@ -10,10 +10,11 @@ namespace Aimeos\Cms\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Event;
 use Aimeos\Cms\Events\CmsRequest;
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\Nav;
+use Aimeos\Cms\PageCache;
 use Aimeos\Cms\Tenancy;
 use Aimeos\Cms\Watch;
 
@@ -29,6 +30,18 @@ use Aimeos\Cms\Watch;
  */
 class ServeCachedPage
 {
+    private static ?Closure $bypassCallback = null;
+
+
+    /**
+     * Adds authentication indicators used to bypass complete-page caching.
+     */
+    public static function bypassUsing( ?Closure $callback ) : void
+    {
+        self::$bypassCallback = $callback;
+    }
+
+
     /**
      * Handle an incoming request.
      *
@@ -44,32 +57,45 @@ class ServeCachedPage
         $start = config( 'cms.theme.watch' ) && Event::hasListeners( CmsRequest::class ) && Watch::sampled()
             ? hrtime( true ) : null;
 
-        // Computed lazily so a watch-off non-cacheable request (query string, cookie,
-        // POST) builds neither.
-        $path = $domain = null;
+        $domain = config( 'cms.multidomain' ) ? $request->getHost() : '';
+        $canonical = Origin::matches( $request );
+        $path = null;
 
-        if( $request->isMethod( 'GET' ) && empty( $request->query() )
-            && !$request->hasCookie( config( 'session.cookie' ) )
-        ) {
+        if( $canonical && self::cachable( $request ) )
+        {
             $path = trim( $request->getPathInfo(), '/' );
-            $domain = config( 'cms.multidomain' ) ? $request->getHost() : '';
 
-            if( ( $html = Cache::store( config( 'cms.theme.cache', 'file' ) )->get( Page::key( $path, $domain ) ) ) !== null ) {
+            if( $response = PageCache::response( $path, $domain, fresh: true ) ) {
                 if( $start !== null ) {
                     $this->watch( $path, $domain, 200, $start );
                 }
-                return $this->response( $html );
+                return $response;
             }
-        }
 
-        $response = $next( $request );
+            // Resolve the lightweight route only on cache misses, before the "web"
+            // middleware starts the session.
+            $page = Nav::page( $path, $domain );
+            $request->attributes->set( 'cms.page', $page );
+
+            $response = match( true ) {
+                !$page => new Response( '', 404 ),
+                $page->access_exists => $next( $request ),
+                $page->cache > 0 => PageCache::remember( fn() => $next( $request ), $page ),
+                default => $next( $request ),
+            };
+        }
+        else {
+            $response = $next( $request );
+        }
 
         // A publicly cacheable page is byte-identical for every visitor, so the
         // rendered cache-miss response must not carry per-visitor cookies (session,
         // XSRF). Stripping them keeps the response and the stored HTML cacheable by a
         // CDN. Uncached pages (private response) and editor previews keep their cookies.
         if( $response instanceof Response
-            && str_contains( (string) $response->headers->get( 'Cache-Control' ), 'public' )
+            && $response->headers->hasCacheControlDirective( 'public' )
+            && !$response->headers->hasCacheControlDirective( 'private' )
+            && !$response->headers->hasCacheControlDirective( 'no-store' )
         ) {
             foreach( $response->headers->getCookies() as $cookie ) {
                 $response->headers->removeCookie( $cookie->getName(), $cookie->getPath(), $cookie->getDomain() );
@@ -84,7 +110,7 @@ class ServeCachedPage
 
             $this->watch(
                 $path ?? trim( $request->getPathInfo(), '/' ),
-                $domain ?? ( config( 'cms.multidomain' ) ? $request->getHost() : '' ),
+                $domain,
                 $status,
                 $start
             );
@@ -94,6 +120,23 @@ class ServeCachedPage
     }
 
 
+    /**
+     * Tests whether the request may use the anonymous complete-page cache.
+     */
+    private static function cachable( Request $request ) : bool
+    {
+        if( !$request->isMethod( 'GET' )
+            || $request->query()
+            || Auth::guard()->hasUser()
+            || $request->hasCookie( config( 'session.cookie' ) )
+            || $request->headers->has( 'Authorization' )
+        ) {
+            return false;
+        }
+
+        return !self::$bypassCallback
+            || !(bool) ( self::$bypassCallback )( $request );
+    }
     /**
      * Builds and dispatches the page-request watch event; the caller has already
      * confirmed watch is enabled and sampled.
@@ -112,27 +155,5 @@ class ServeCachedPage
             durationMs: Watch::duration( $start ),
             tenant: Tenancy::value(),
         ) );
-    }
-
-
-    /**
-     * Builds the public, CDN-cacheable response for stored page HTML.
-     *
-     * The stored value ends with the page's expiry timestamp (29 chars); the
-     * shared cache lifetime is derived from it so the edge and the server cache
-     * expire together.
-     *
-     * @param string $html Cached page HTML with trailing expiry marker
-     * @return \Illuminate\Http\Response
-     */
-    protected function response( string $html ) : Response
-    {
-        $expires = substr( $html, -29 );
-        $maxage = max( 0, strtotime( $expires ) - time() );
-
-        return ( new Response( $html, 200 ) )
-            ->header( 'Content-Type', 'text/html' )
-            ->header( 'Cache-Control', "public, s-maxage={$maxage}, max-age=0, must-revalidate" )
-            ->header( 'Expires', $expires );
     }
 }

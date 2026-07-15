@@ -20,9 +20,11 @@ After installation, the configuration is available in `config/cms.php`:
 | `disk` | `public` | Filesystem disk for uploaded files |
 | `image.preview-sizes` | `[480, 960, 1920]` | Preview image widths in pixels for uploaded images |
 | `locales` | `en,ar,zh,fr,de,es,pt,pt-BR,ru` | Comma-separated ISO language codes. First locale is the default for new content |
+| `lock` | `30` | Page-tree write-lock lifetime and maximum acquisition wait in seconds (`CMS_LOCK`) |
 | `multidomain` | `false` | Enable domain-based page routing |
 | `navdepth` | `2` | Maximum depth of the navigation tree menu |
 | `prune` | `30` | Days before soft-deleted items are permanently removed. Set to `false` to disable |
+| `chunksize` | `100` | Pages queued and hydrated per external search synchronization operation (`CMS_CHUNKSIZE`) |
 | `versions` | `10` | Maximum number of versions to retain per page, element, or file |
 
 ### Default Roles
@@ -33,6 +35,88 @@ After installation, the configuration is available in `config/cms.php`:
 | `viewer` | View-only access |
 | `publisher` | All except publish and purge |
 | `editor` | All except publish and purge |
+
+### Stancl tenancy mode
+
+Pagible remains usable without tenancy and with custom `Tenancy::$callback` integrations. Applications using `stancl/tenancy` in single-database mode can additionally connect Stancl's tenant lifecycle to Pagible from an application service provider:
+
+```php
+\Aimeos\Cms\Tenancy::stancl();
+```
+
+Stancl remains the source of tenant identification. Its initialization and termination events replace Pagible's scoped `Tenancy` and `Access` instances, so tenant-specific access catalogs and permission-package scopes cannot survive a tenant switch within the same CLI or worker lifecycle. Disable Stancl's `DatabaseTenancyBootstrapper`; Pagible applies its own `tenant_id` query scopes on the shared database.
+
+Initialize Stancl tenancy before any Pagible middleware or controller queries CMS models. This is especially important for the theme's complete-page cache middleware, which intentionally runs before Laravel's `web` middleware. Prefer applying Stancl's initialization middleware globally before the CMS routes. If only the catch-all page route needs domain initialization, add it to the outer page route group in the application's `config/cms/theme.php`:
+
+```php
+'pageroute' => [
+    'middleware' => [
+        \Stancl\Tenancy\Middleware\InitializeTenancyByDomain::class,
+    ],
+],
+```
+
+Route-group middleware wraps the built-in `ServeCachedPage` middleware, so `Tenancy::value()` is populated before a cache key or page query is evaluated. Initializing tenancy in `web`, in a controller, or in middleware that runs after `ServeCachedPage` is too late. Apply the same ordering to the search, sitemap, contact, and CSRF routes when those endpoints are tenant-aware.
+
+Enable Stancl's `QueueTenancyBootstrapper` for tenant-aware queued index synchronization. Sync jobs retain an explicit tenant ID for generic integrations. In Stancl mode, the payload initialized by Stancl must match that ID or the job fails before querying. The Scout queue connection must not be marked with Stancl's `central => true` option, and transactions using `afterCommit()` must commit before a `$tenant->run()` context ends.
+
+Tenant scopes protect newly built queries and new CMS models receive the active `tenant_id`. Already-loaded models are not rebound after a tenant switch: ordinary Eloquent saves, deletes, relationship mutations, publishing, and storage cleanup continue to use their stored keys and paths. Do not retain CMS model instances across tenant contexts.
+
+### Frontend page access
+
+Frontend restrictions are stored independently in `cms_page_access`, with one row per access value and `(page_id, value)` as its composite primary key. Each row also stores `tenant_id`. No rows for a page mean public access, one row with an empty value permits an authenticated user accepted by `Tenancy::allows()` for the current tenant, and one or more non-empty values permit such a user when Laravel Gate grants any one of them. Page models are deliberately not passed to Gate.
+
+Configure the frontend-only value catalog independently from CMS editor permissions. The normalized callback result is memoized for the current request by tenant, while its Gate-filtered result is memoized by user and tenant. The underlying provider remains responsible for longer-lived caching:
+
+```php
+use Aimeos\Cms\Access;
+
+Access::availableUsing( fn() => app(FrontendPermissions::class)->names() );
+```
+
+`Access::isAvailable()` reports whether a catalog or package adapter has been configured, and `Access::all()` returns its normalized values. Restriction writes are rejected while access is unavailable; releasing existing restrictions remains possible. Configure a callback returning an empty list to enable authentication-only restrictions without named access values.
+
+For a supported permission package, call its adapter once from an application service provider instead. Spatie must have its teams migration and `permission.teams` enabled for tenant-specific assignments; Laratrust must have its teams migration and `laratrust.teams.enabled` enabled. Bouncer's adapter selects its built-in tenant scope. Laratrust permission checks are exposed as tenant-aware Laravel Gate definitions:
+
+```php
+Access::spatie();
+Access::bouncer();
+Access::laratrust();
+```
+
+The adapters require these package versions at minimum:
+
+| Adapter | Minimum package version | API used by Pagible |
+|---------|-------------------------|---------------------|
+| Spatie | `spatie/laravel-permission` 6.2.0 | Permission model, teams, and `PermissionRegistrar::setPermissionsTeamId()` |
+| Bouncer | `silber/bouncer` 1.0.2 | Ability model and `scope()->to()` |
+| Laratrust | `santigarcor/laratrust` 8.3.0 | Permission model, teams, `isAbleTo()`, and permission gates |
+
+These are runtime contracts, not compatibility probes: calling an adapter without its package, with an older release, or without the documented team configuration is an application configuration error. Applications must install a package release compatible with their Laravel version; the APIs above remain required.
+
+Pagible does not validate the package's team configuration when an adapter is registered. If Spatie teams or Laratrust teams are disabled, permission checks are evaluated globally even though the current user is still required to belong to the active Pagible tenant. A permission assigned for one tenant can therefore satisfy a page restriction using the same value in another tenant. This risk applies only to misconfigured installations; with teams enabled, the required migrations installed, and assignments associated with the correct tenant, permission checks remain tenant-scoped.
+
+Choose exactly one adapter. Each adapter exposes the package's permission or ability names as frontend access values, so keep that package catalog frontend-specific. For a custom catalog or integration, use `availableUsing()` with an explicit allowlist. The scoped `Access` instance activates the current Spatie or Bouncer tenant once when Laravel resolves it, then passes values through Gate while preserving package hooks, `Gate::before()` rules, and explicit denials. The Spatie adapter also clears the user's loaded `roles` and `permissions` relations before its first Gate check in each tenant scope, preventing relations from the previous tenant from being reused.
+
+Use the static `PageAccess` methods as the supported write API. They apply database-first, chunked changes so public page caches and external search documents are updated consistently:
+
+```php
+\Aimeos\Cms\Models\PageAccess::restrict( [$page->id], ['frontend.member'], auth()->user() );
+\Aimeos\Cms\Models\PageAccess::release( [$page->id] );
+\Aimeos\Cms\Models\PageAccess::restrictSubtree( $page, null, auth()->user() );
+```
+
+Access-value lists are trimmed, must contain only registered non-empty strings, deduplicated, sorted, and limited to 250 entries of at most 100 characters. An empty list is stored as one empty value for authentication-only access.
+
+After access records have been committed, external Laravel Scout indexes are refreshed by queued jobs from the current page state. Run a queue worker with an asynchronous queue connection in production. Database-backed search needs no refresh.
+
+Access changes acquire the tenant page-tree write lock, refresh and row-lock their target pages, and update the complete set in one database transaction. SQL writes remain bounded, while cache invalidation and index synchronization dispatch run afterward outside the tree lock. Rolled-back changes dispatch nothing. Frontend packages can listen for the synchronous `PagesInvalidated` event without making core depend on a rendered-page cache.
+
+Subtree operations require their root model to belong to the current tenant and fail before writing when it does not.
+
+Operations are idempotent and deliberately repeat database writes, cache invalidation, and search refreshes. Retrying the same operation therefore repairs side effects that may have failed after an earlier database write. Large operations can invoke the same static methods from a queued Laravel job.
+
+Do not persist or delete `PageAccess` instances directly. Those low-level writes deliberately have no cache or search side effects; use the static methods above instead.
 
 ## Commands
 

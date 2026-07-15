@@ -44,7 +44,7 @@ class GetPageHistory extends Tool
         ] );
 
         /** @var Page|null $page */
-        $page = Page::withTrashed()->select( 'id', 'name' )->find( $v['id'] );
+        $page = Page::withTrashed()->select( 'id', 'tenant_id', 'name' )->find( $v['id'] );
 
         if( !$page ) {
             return Response::structured( ['error' => 'Page not found.'] );
@@ -53,7 +53,7 @@ class GetPageHistory extends Tool
         $result = [];
         $limit = $v['limit'] ?? 10;
         $versions = $page->versions()->select(
-            'id', 'versionable_id', 'editor', 'lang', 'published', 'publish_at', 'created_at', 'data', 'aux'
+            'id', 'tenant_id', 'versionable_id', 'editor', 'lang', 'published', 'publish_at', 'created_at', 'data', 'aux'
         )->take( $limit )->get();
 
         foreach( $versions as $version )

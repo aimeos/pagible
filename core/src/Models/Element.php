@@ -46,7 +46,7 @@ class Element extends Base
 
 
     /** @var list<string> Columns for eager-loading element relations */
-    public const SELECT_COLS = ['cms_elements.id', 'cms_elements.latest_id', 'type', 'data'];
+    public const SELECT_COLUMNS = ['cms_elements.id', 'cms_elements.tenant_id', 'cms_elements.latest_id', 'type', 'data'];
 
 
     /**
@@ -141,7 +141,7 @@ class Element extends Base
     public function bypages() : BelongsToMany
     {
         return $this->belongsToMany( Page::class, 'cms_page_element' )
-            ->select('id', 'path', 'name' );
+            ->select('cms_pages.id', 'cms_pages.tenant_id', 'path', 'name' );
     }
 
 
@@ -153,7 +153,7 @@ class Element extends Base
     public function byversions() : BelongsToMany
     {
         return $this->belongsToMany( Version::class, 'cms_version_element' )
-            ->select('id', 'versionable_id', 'versionable_type', 'published', 'publish_at' );
+            ->select('cms_versions.id', 'cms_versions.tenant_id', 'versionable_id', 'versionable_type', 'published', 'publish_at' );
     }
 
 
@@ -217,6 +217,8 @@ class Element extends Base
      */
     public function publish( Version $version ) : self
     {
+        $this->checkVersion( $version );
+
         $fileIds = $version->files()->pluck( 'cms_files.id' )->all();
 
         $this->files()->sync( $fileIds );
@@ -275,7 +277,7 @@ class Element extends Base
      */
     protected function makeAllSearchableUsing( $query )
     {
-        return $query->with( ['latest' => fn( $q ) => $q->select( 'id', 'versionable_id', 'data', 'lang', 'editor', 'published' )] );
+        return $query->with( ['latest' => fn( $q ) => $q->select( Version::SELECT_COLUMNS )] );
     }
 
 

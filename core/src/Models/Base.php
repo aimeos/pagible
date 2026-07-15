@@ -38,6 +38,23 @@ abstract class Base extends Model
 
     private static ?bool $isSqlsrv = null;
 
+    /** @var class-string<\Laravel\Scout\Builder<\Illuminate\Database\Eloquent\Model>> */
+    protected static string $scoutBuilder = \Aimeos\Cms\SearchBuilder::class;
+
+
+    /**
+     * Validates that a version belongs to this model.
+     */
+    protected function checkVersion( Version $version ) : void
+    {
+        if( !$version->exists
+            || (string) $version->versionable_id !== (string) $this->getKey()
+            || (string) $version->versionable_type !== (string) $this->getMorphClass()
+        ) {
+            throw new \LogicException( 'CMS version does not belong to the model.' );
+        }
+    }
+
 
     /**
      * Compare JSON casts independent of object key order.

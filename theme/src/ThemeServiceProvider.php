@@ -2,6 +2,7 @@
 
 namespace Aimeos\Cms;
 
+use Aimeos\Cms\Events\PagesInvalidated;
 use Aimeos\Cms\Events\CmsContact;
 use Aimeos\Cms\Events\CmsSearch;
 use Aimeos\Cms\Listeners\ContactLogListener;
@@ -9,6 +10,7 @@ use Aimeos\Cms\Listeners\SearchLogListener;
 use Aimeos\Cms\Schema;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\View;
@@ -38,6 +40,14 @@ class ThemeServiceProvider extends Provider
         });
 
         $this->watch();
+        Event::listen( PagesInvalidated::class, function( PagesInvalidated $event ) {
+            try {
+                PageCache::invalidate( $event->routes, $event->tenant );
+            } catch( \Throwable $e ) {
+                // Content changes remain committed even if cache deletion fails.
+                report( $e );
+            }
+        } );
         $this->console();
     }
 

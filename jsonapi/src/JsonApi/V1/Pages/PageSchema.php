@@ -174,16 +174,16 @@ class PageSchema extends Schema
 
         if( $needsRelations ) {
             $with = [
-                'files' => fn( $q ) => $q->select( File::SELECT_COLS ),
-                'elements' => fn( $q ) => $q->select( Element::SELECT_COLS ),
-                'elements.files' => fn( $q ) => $q->select( File::SELECT_COLS ),
+                'files' => fn( $q ) => $q->select( File::SELECT_COLUMNS ),
+                'elements' => fn( $q ) => $q->select( Element::SELECT_COLUMNS ),
+                'elements.files' => fn( $q ) => $q->select( File::SELECT_COLUMNS ),
             ];
 
             if( Permission::can( 'page:view', Auth::user() ) ) {
-                $with['latest'] = fn( $q ) => $q->select( 'id', 'versionable_id', 'aux' );
-                $with['latest.files'] = fn( $q ) => $q->select( File::SELECT_COLS );
-                $with['latest.elements'] = fn( $q ) => $q->select( Element::SELECT_COLS );
-                $with['latest.elements.files'] = fn( $q ) => $q->select( File::SELECT_COLS );
+                $with['latest'] = fn( $q ) => $q->select( 'id', 'tenant_id', 'versionable_id', 'aux' );
+                $with['latest.files'] = fn( $q ) => $q->select( File::SELECT_COLUMNS );
+                $with['latest.elements'] = fn( $q ) => $q->select( Element::SELECT_COLUMNS );
+                $with['latest.elements.files'] = fn( $q ) => $q->select( File::SELECT_COLUMNS );
             }
 
             $query = $query->with( $with );

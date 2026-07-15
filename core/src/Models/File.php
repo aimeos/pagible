@@ -56,7 +56,7 @@ class File extends Base
 
 
     /** @var list<string> Columns for eager-loading file relations */
-    public const SELECT_COLS = ['cms_files.id', 'cms_files.latest_id', 'name', 'mime', 'path', 'previews', 'description', 'transcription'];
+    public const SELECT_COLUMNS = ['cms_files.id', 'cms_files.tenant_id', 'cms_files.latest_id', 'name', 'mime', 'path', 'previews', 'description', 'transcription'];
 
 
     /**
@@ -277,7 +277,7 @@ class File extends Base
     public function byelements() : BelongsToMany
     {
         return $this->belongsToMany( Element::class, 'cms_element_file' )
-            ->select('id', 'type', 'name' );
+            ->select('cms_elements.id', 'cms_elements.tenant_id', 'type', 'name' );
     }
 
 
@@ -289,7 +289,7 @@ class File extends Base
     public function bypages() : BelongsToMany
     {
         return $this->belongsToMany( Page::class, 'cms_page_file' )
-            ->select('id', 'path', 'name' );
+            ->select('cms_pages.id', 'cms_pages.tenant_id', 'path', 'name' );
     }
 
 
@@ -301,7 +301,7 @@ class File extends Base
     public function byversions() : BelongsToMany
     {
         return $this->belongsToMany( Version::class, 'cms_version_file' )
-            ->select('id', 'versionable_id', 'versionable_type', 'published', 'publish_at' );
+            ->select('cms_versions.id', 'cms_versions.tenant_id', 'versionable_id', 'versionable_type', 'published', 'publish_at' );
     }
 
 
@@ -340,6 +340,8 @@ class File extends Base
      */
     public function publish( Version $version ) : self
     {
+        $this->checkVersion( $version );
+
         $path = $this->path;
         $previews = $this->previews;
 
@@ -423,7 +425,7 @@ class File extends Base
             ->orderByDesc( 'created_at' )
             ->offset( $num )
             ->limit( 10 )
-            ->get( ['id', 'data'] );
+            ->get( ['id', 'tenant_id', 'data'] );
 
         if( $drop->isEmpty() ) {
             return $this;
@@ -496,7 +498,7 @@ class File extends Base
      */
     protected function makeAllSearchableUsing( $query )
     {
-        return $query->with( ['latest' => fn( $q ) => $q->select( 'id', 'versionable_id', 'data', 'lang', 'editor', 'published' )] );
+        return $query->with( ['latest' => fn( $q ) => $q->select( Version::SELECT_COLUMNS )] );
     }
 
 
@@ -636,7 +638,7 @@ class File extends Base
     {
         $store = Storage::disk( config( 'cms.disk', 'public' ) );
 
-        Version::select( 'id', 'data' )->where( 'versionable_id', $this->id )
+        Version::select( 'id', 'tenant_id', 'data' )->where( 'versionable_id', $this->id )
             ->where( 'versionable_type', File::class )
             ->chunk( 50, function( $versions ) use ( $store ) {
 

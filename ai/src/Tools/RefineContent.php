@@ -51,8 +51,8 @@ class RefineContent extends Tool
         ] );
 
         /** @var Page|null $page */
-        $page = Page::withTrashed()->select( 'id', 'type', 'content', 'latest_id' )
-            ->with( ['latest' => fn( $q ) => $q->select( 'id', 'versionable_id', 'aux' )] )
+        $page = Page::withTrashed()->select( 'id', 'tenant_id', 'type', 'content', 'latest_id' )
+            ->with( ['latest' => fn( $q ) => $q->select( 'id', 'tenant_id', 'versionable_id', 'aux' )] )
             ->find( $validated['id'] );
 
         if( !$page ) {
