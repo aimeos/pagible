@@ -304,7 +304,7 @@ class UtilsTest extends CoreTestAbstract
 
     public function testIsValidUploadSizeExceeded()
     {
-        config()->set( 'cms.graphql.filesize', 0.001 ); // ~1 KB
+        config()->set( 'cms.upload.filesize', 0.001 ); // ~1 KB
 
         $upload = UploadedFile::fake()->create( 'test.pdf', 100, 'application/pdf' );
 
@@ -314,8 +314,6 @@ class UtilsTest extends CoreTestAbstract
 
     public function testIsValidMimetypeAllowed()
     {
-        config()->set( 'cms.graphql.mimetypes', ['application/pdf', 'application/vnd.', 'application/zip', 'application/gzip', 'audio/', 'image/', 'text/', 'video/'] );
-
         $this->assertTrue( Utils::isValidMimetype( 'image/png' ) );
         $this->assertTrue( Utils::isValidMimetype( 'audio/mpeg' ) );
         $this->assertTrue( Utils::isValidMimetype( 'video/mp4' ) );
@@ -329,8 +327,6 @@ class UtilsTest extends CoreTestAbstract
 
     public function testIsValidMimetypeRejected()
     {
-        config()->set( 'cms.graphql.mimetypes', ['application/pdf', 'application/vnd.', 'application/zip', 'application/gzip', 'audio/', 'image/', 'text/', 'video/'] );
-
         $this->assertFalse( Utils::isValidMimetype( 'application/x-httpd-php' ) );
         $this->assertFalse( Utils::isValidMimetype( 'application/x-executable' ) );
         $this->assertFalse( Utils::isValidMimetype( 'application/x-sharedlib' ) );
