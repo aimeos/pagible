@@ -12,6 +12,7 @@ use Aimeos\Prisma\Responses\TextResponse;
 use Aimeos\Prisma\Tools\Step;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\RateLimiter;
 
 
 class ChatTest extends AiTestAbstract
@@ -35,6 +36,12 @@ class ChatTest extends AiTestAbstract
             'password' => 'secret',
         ]);
         $this->user->cmsperms = \Aimeos\Cms\Permission::all();
+    }
+
+
+    public function testAiRateLimiter()
+    {
+        $this->assertNotNull( RateLimiter::limiter( 'cms-ai' ) );
     }
 
 

@@ -164,7 +164,7 @@ header nav > ul:not(.menu) > li {
     padding: 0;
 }
 
-header nav > ul > li:last-of-type:not(:has(details)) a {
+header nav ul.menu > li:last-of-type > a {
     color: var(--pico-primary-inverse);
     background-color: var(--pico-primary);
     border-radius: 9999px;

@@ -20,11 +20,8 @@ class ThemeServiceProvider extends Provider
     {
         $basedir = dirname( __DIR__ );
 
-        RateLimiter::for( 'cms-sitemap', fn( $request ) =>
-            Limit::perMinutes( 5, 1 )->by( $request->ip() )
-        );
-
         $this->loadBladeDirectives();
+        $this->rateLimiter();
         Schema::register( $basedir, 'cms' );
         View::addNamespace( 'cms', $basedir . '/views' );
         $this->loadJsonTranslationsFrom( $basedir . '/lang' );
@@ -64,6 +61,21 @@ class ThemeServiceProvider extends Provider
     public function register()
     {
         $this->mergeConfigFrom( dirname( __DIR__ ) . '/config/cms/theme.php', 'cms.theme' );
+    }
+
+    protected function rateLimiter(): void
+    {
+        RateLimiter::for( 'cms-contact', fn( $request ) =>
+            Limit::perMinute( 2 )->by( $request->ip() )
+        );
+
+        RateLimiter::for( 'cms-search', fn( $request ) =>
+            Limit::perMinute( 60 )->by( $request->ip() )
+        );
+
+        RateLimiter::for( 'cms-sitemap', fn( $request ) =>
+            Limit::perMinutes( 5, 1 )->by( $request->ip() )
+        );
     }
 
     protected function loadBladeDirectives(): void

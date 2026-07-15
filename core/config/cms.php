@@ -67,7 +67,7 @@ return [
     | middleware here so Tenancy::value() resolves when channels are authorized.
     |
     */
-    'broadcast-middleware' => ['web', 'auth', 'throttle:cms-admin'],
+    'broadcast-middleware' => ['web', 'auth', 'throttle:cms-broadcast'],
 
     /*
     |--------------------------------------------------------------------------

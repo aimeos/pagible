@@ -45,6 +45,9 @@ class InstallGraphql extends Command
         $this->comment( '  Publishing CMS GraphQL files ...' );
         $result += $this->call( 'vendor:publish', ['--provider' => 'Aimeos\Cms\GraphqlServiceProvider'] );
 
+        $this->comment( '  Updating CMS GraphQL rate limiter ...' );
+        $result += $this->limiter();
+
         return $result ? 1 : 0;
     }
 
@@ -133,6 +136,34 @@ class InstallGraphql extends Command
 
         if( $done ) {
             file_put_contents( base_path( $filename ), $content );
+        } else {
+            $this->line( sprintf( '  File [%1$s] already up to date' . PHP_EOL, $filename ) );
+        }
+
+        return 0;
+    }
+
+
+    /**
+     * Updates the limiter in existing CMS GraphQL schema files.
+     *
+     * @return int 0 on success, 1 on failure
+     */
+    protected function limiter() : int
+    {
+        $filename = 'graphql/cms.graphql';
+        $content = file_get_contents( base_path( $filename ) );
+
+        if( $content === false ) {
+            $this->error( "  File [$filename] not found!" );
+            return 1;
+        }
+
+        $updated = str_replace( 'cms-admin', 'cms-graphql', $content );
+
+        if( $updated !== $content ) {
+            file_put_contents( base_path( $filename ), $updated );
+            $this->line( sprintf( '  File [%1$s] updated' . PHP_EOL, $filename ) );
         } else {
             $this->line( sprintf( '  File [%1$s] already up to date' . PHP_EOL, $filename ) );
         }

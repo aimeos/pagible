@@ -8,6 +8,8 @@ use Aimeos\Cms\GraphQL\Directives\CmsExceptionDirective;
 use Aimeos\Cms\Listeners\AuthLogListener;
 use GraphQL\Language\AST\FieldNode;
 use GraphQL\Utils\AST;
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider as Provider;
 use Nuwave\Lighthouse\Events\EndExecution;
 use Nuwave\Lighthouse\Events\StartExecution;
@@ -29,6 +31,7 @@ class GraphqlServiceProvider extends Provider
 
         $this->publishes( [$basedir . '/schema/cms.graphql' => base_path( 'graphql/cms.graphql' )], 'cms-graphql' );
         $this->publishes( [$basedir . '/config/cms/graphql.php' => config_path( 'cms/graphql.php' )], 'cms-config' );
+        $this->rateLimiter();
 
         \Aimeos\Cms\Permission::register( [
             'page:metrics',
@@ -57,6 +60,17 @@ class GraphqlServiceProvider extends Provider
         if( !config( 'lighthouse.security.max_query_complexity' ) ) {
             config( ['lighthouse.security.max_query_complexity' => (int) config( 'cms.graphql.maxcomplexity', 300 )] );
         }
+    }
+
+    protected function rateLimiter() : void
+    {
+        RateLimiter::for( 'cms-graphql', fn( $request ) =>
+            Limit::perMinute( 120 )->by( $request->user()?->getAuthIdentifier() ?: $request->ip() )
+        );
+
+        RateLimiter::for( 'cms-login', fn( $request ) =>
+            Limit::perMinute( 10 )->by( $request->ip() )
+        );
     }
 
     protected function watch() : void
