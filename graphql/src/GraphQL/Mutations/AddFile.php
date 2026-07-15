@@ -108,7 +108,7 @@ final class AddFile
             $file->removePreviews();
 
             $msg = 'File type "%s" not allowed, permitted types: %s';
-            throw new Error( sprintf( $msg, $file->mime, implode( ', ', config( 'cms.graphql.mimetypes', [] ) ) ) );
+            throw new Error( sprintf( $msg, $file->mime, implode( ', ', config( 'cms.upload.mimetypes', [] ) ) ) );
         }
 
         return $file;
@@ -130,12 +130,12 @@ final class AddFile
 
         if( !Utils::isValidUpload( $upload ) ) {
             $msg = 'File size of %s MB exceeds the maximum of %s MB';
-            throw new Error( sprintf( $msg, round( $upload->getSize() / 1024 / 1024, 3 ), config( 'cms.graphql.filesize', 50 ) ) );
+            throw new Error( sprintf( $msg, round( $upload->getSize() / 1024 / 1024, 3 ), config( 'cms.upload.filesize', 50 ) ) );
         }
 
         if( !Utils::isValidMimetype( (string) $upload->getMimeType() ) ) {
             $msg = 'File type "%s" not allowed, permitted types: %s';
-            throw new Error( sprintf( $msg, $upload->getMimeType(), implode( ', ', config( 'cms.graphql.mimetypes', [] ) ) ) );
+            throw new Error( sprintf( $msg, $upload->getMimeType(), implode( ', ', config( 'cms.upload.mimetypes', [] ) ) ) );
         }
     }
 

@@ -80,6 +80,13 @@ class GraphqlAuthTest extends GraphqlTestAbstract
     }
 
 
+    public function testRateLimiters()
+    {
+        $this->assertNotNull( RateLimiter::limiter( 'cms-graphql' ) );
+        $this->assertNotNull( RateLimiter::limiter( 'cms-login' ) );
+    }
+
+
     public function testLogout()
     {
         $user = \App\Models\User::where('email', 'editor@testbench')->firstOrFail();

@@ -214,7 +214,7 @@ class Utils
      */
     public static function isValidMimetype( string $mime ) : bool
     {
-        $allowed = config( 'cms.graphql.mimetypes', [] );
+        $allowed = config( 'cms.upload.mimetypes', [] );
 
         if( empty( $allowed ) ) {
             return true;
@@ -301,7 +301,7 @@ class Utils
      */
     public static function isValidUpload( UploadedFile $upload ) : bool
     {
-        return $upload->getSize() <= config( 'cms.graphql.filesize', 50 ) * 1024 * 1024;
+        return $upload->getSize() <= config( 'cms.upload.filesize', 50 ) * 1024 * 1024;
     }
 
 

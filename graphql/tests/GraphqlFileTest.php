@@ -630,7 +630,7 @@ class GraphqlFileTest extends GraphqlTestAbstract
 
     public function testAddFileRejectsSize()
     {
-        config()->set( 'cms.graphql.filesize', 0.001 ); // ~1 KB
+        config()->set( 'cms.upload.filesize', 0.001 ); // ~1 KB
 
         $response = $this->actingAs( $this->user )->multipartGraphQL( [
             'query' => '
@@ -655,7 +655,7 @@ class GraphqlFileTest extends GraphqlTestAbstract
 
     public function testAddFileRejectsMime()
     {
-        config()->set( 'cms.graphql.mimetypes', ['image/'] );
+        config()->set( 'cms.upload.mimetypes', ['image/'] );
 
         $response = $this->actingAs( $this->user )->multipartGraphQL( [
             'query' => '

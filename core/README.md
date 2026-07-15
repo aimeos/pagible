@@ -23,7 +23,11 @@ After installation, the configuration is available in `config/cms.php`:
 | `multidomain` | `false` | Enable domain-based page routing |
 | `navdepth` | `2` | Maximum depth of the navigation tree menu |
 | `prune` | `30` | Days before soft-deleted items are permanently removed. Set to `false` to disable |
+| `upload.filesize` | `50` | Maximum file upload size in MB |
+| `upload.mimetypes` | See below | Allowed MIME types or prefixes for all CMS interfaces |
 | `versions` | `10` | Maximum number of versions to retain per page, element, or file |
+
+Set the upload policy with `CMS_UPLOAD_FILESIZE` and the comma-separated `CMS_UPLOAD_MIMETYPES`. The default MIME types are `application/gzip`, `application/pdf`, `application/vnd.*`, `application/zip`, `audio/*`, `image/*`, `text/*`, and `video/*`.
 
 ### Default Roles
 
