@@ -19,7 +19,7 @@
                         </div>
                         <div class="shrink-0 text-right tabular-nums">
                             <div class="font-semibold text-gray-900 dark:text-gray-100">
-                                {{ number_format($row->sum ?: $row->count) }}
+                                {{ number_format($row->count) }}
                             </div>
                             @if ($row->avg !== null)
                                 <div class="text-xs text-gray-500 dark:text-gray-400">

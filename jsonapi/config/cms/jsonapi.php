@@ -20,9 +20,8 @@ return [
     |--------------------------------------------------------------------------
     |
     | When enabled together with "cms.watch.channel", each read-only JSON:API
-    | request dispatches a watch event so the request duration, result count and
-    | includes can be logged and shown in the metrics dashboard. Off by default
-    | as these requests can be high volume.
+    | request dispatches a rich audit event containing its request shape. Pulse
+    | observations are listener-driven and don't require this flag.
     |
     */
     'watch' => env( 'CMS_JSONAPI_WATCH', false ),

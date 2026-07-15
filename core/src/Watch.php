@@ -7,6 +7,7 @@
 
 namespace Aimeos\Cms;
 
+use Aimeos\Cms\Events\Observed;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -52,24 +53,6 @@ class Watch
 
 
     /**
-     * Dispatches a pre-built watch event, swallowing errors so it never breaks the request.
-     *
-     * Use when the caller already decided the event should fire; dispatch()/dispatchWhen()
-     * decide themselves.
-     *
-     * @param \Closure(): object $factory Deferred event factory
-     */
-    public static function fire( \Closure $factory ) : void
-    {
-        try {
-            event( $factory() );
-        } catch( \Throwable $e ) {
-            error_log( 'CMS watch event error: ' . $e->getMessage() );
-        }
-    }
-
-
-    /**
      * Builds and dispatches a watch event when watch logging is enabled or something listens for it.
      *
      * Any in-process listener (e.g. an optional observability integration subscribing to the event)
@@ -85,7 +68,11 @@ class Watch
             return;
         }
 
-        self::fire( $factory );
+        try {
+            event( $factory() );
+        } catch( \Throwable $e ) {
+            error_log( 'CMS watch event error: ' . $e->getMessage() );
+        }
     }
 
 
@@ -189,19 +176,30 @@ class Watch
     }
 
 
+    /**
+     * Dispatches an aggregation-safe CMS observation to optional consumers.
+     *
+     * @param array<string, bool|float|int|string|null> $dimensions Metric dimensions
+     */
+    public static function observe( string $source, string $action, float $durationMs = 0.0,
+        ?string $tenant = null, array $dimensions = [], bool $sample = false ) : void
+    {
+        self::dispatch( Observed::class, fn() => new Observed(
+            source: $source,
+            action: $action,
+            durationMs: $durationMs,
+            tenant: $tenant ?? Tenancy::value(),
+            dimensions: $dimensions,
+            sample: $sample,
+        ) );
+    }
+
+
     public static function sampled() : bool
     {
         $rate = (float) config( 'cms.watch.sample', 1.0 );
 
         return $rate >= 1.0 || mt_rand() / mt_getrandmax() < $rate;
-    }
-
-
-    public static function start( string $flag, ?string $event = null ) : int|float|null
-    {
-        return self::enabled( $flag ) || ( $event !== null && Event::hasListeners( $event ) )
-            ? hrtime( true )
-            : null;
     }
 
 

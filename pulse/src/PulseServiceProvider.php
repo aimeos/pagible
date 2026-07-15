@@ -9,41 +9,22 @@ namespace Aimeos\Cms;
 
 use Aimeos\Cms\Commands\InstallPulse;
 use Aimeos\Cms\Pulse\CmsMetricCard;
-use Aimeos\Cms\Recorders\CmsContactPulseRecorder;
-use Aimeos\Cms\Recorders\CmsGraphqlPulseRecorder;
-use Aimeos\Cms\Recorders\CmsJsonapiPulseRecorder;
-use Aimeos\Cms\Recorders\CmsMcpPulseRecorder;
-use Aimeos\Cms\Recorders\CmsRequestPulseRecorder;
-use Aimeos\Cms\Recorders\CmsSearchPulseRecorder;
+use Aimeos\Cms\Pulse\Recorder;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider as Provider;
+use Livewire\Livewire;
 
 
 class PulseServiceProvider extends Provider
 {
     private const VIEW_PERMISSION = 'pulse:view';
 
-    /**
-     * @var list<class-string>
-     */
-    private const RECORDERS = [
-        CmsGraphqlPulseRecorder::class,
-        CmsMcpPulseRecorder::class,
-        CmsSearchPulseRecorder::class,
-        CmsContactPulseRecorder::class,
-        CmsJsonapiPulseRecorder::class,
-        CmsRequestPulseRecorder::class,
-    ];
-
-
     public function boot() : void
     {
         $basedir = dirname( __DIR__ );
 
         Permission::register( self::VIEW_PERMISSION );
-
-        $this->mergeConfigFrom( $basedir . '/config/cms/pulse.php', 'cms.pulse' );
 
         $this->publishes( [
             $basedir . '/config/cms/pulse.php' => config_path( 'cms/pulse.php' ),
@@ -57,91 +38,26 @@ class PulseServiceProvider extends Provider
             $basedir . '/views/pulse' => resource_path( 'views/vendor/cms-pulse' ),
         ], 'cms-pulse-views' );
 
+        $this->loadViewsFrom( $basedir . '/views/pulse', 'cms-pulse' );
+        Livewire::component( 'cms-metric-card', CmsMetricCard::class );
+
         $this->console();
 
         $this->app->booted( fn() => $this->gate() );
-        $this->app->booted( fn() => $this->pulse( $basedir ) );
     }
 
 
-    protected function pulse( string $basedir ) : void
+    public function register() : void
     {
-        if( !$this->installed() ) {
-            return;
-        }
+        $this->mergeConfigFrom( dirname( __DIR__ ) . '/config/cms/pulse.php', 'cms.pulse' );
 
-        $this->loadViewsFrom( $basedir . '/views/pulse', 'cms-pulse' );
+        $this->app->booting( function() {
+            $recorders = config( 'pulse.recorders', [] );
 
-        if( class_exists( \Livewire\Livewire::class ) && $this->app->bound( 'livewire.finder' ) ) {
-            \Livewire\Livewire::component( 'cms-metric-card', CmsMetricCard::class );
-        }
-
-        if( config( 'pulse.enabled' ) === false ) {
-            return;
-        }
-
-        $pulse = $this->pulseInstance();
-
-        if( $pulse && method_exists( $pulse, 'register' ) )
-        {
-            $pulse->register( $this->recorders() );
-        }
-    }
-
-
-    /**
-     * @return array<class-string, bool>
-     */
-    protected function recorders() : array
-    {
-        $recorders = [];
-
-        foreach( self::RECORDERS as $recorder )
-        {
-            if( $this->recorderAvailable( $recorder ) ) {
-                $recorders[$recorder] = true;
-            }
-        }
-
-        return $recorders;
-    }
-
-
-    /**
-     * @param class-string $recorder
-     */
-    protected function recorderAvailable( string $recorder ) : bool
-    {
-        $listen = ( new \ReflectionClass( $recorder ) )->getDefaultProperties()['listen'] ?? [];
-
-        if( !is_array( $listen ) || $listen === [] ) {
-            return false;
-        }
-
-        foreach( $listen as $event )
-        {
-            if( !is_string( $event ) || !class_exists( $event ) ) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-
-    protected function console() : void
-    {
-        if( $this->app->runningInConsole() ) {
-            $this->commands( [InstallPulse::class] );
-        }
-    }
-
-
-    protected function gate() : void
-    {
-        if( !Gate::has( 'viewPulse' ) || $this->defaultPulseGate() ) {
-            Gate::define( 'viewPulse', fn( $user ) => $this->canViewPulse( $user ) );
-        }
+            config( ['pulse.recorders' => ( is_array( $recorders ) ? $recorders : [] ) + [
+                Recorder::class => true,
+            ]] );
+        } );
     }
 
 
@@ -156,6 +72,14 @@ class PulseServiceProvider extends Provider
         return $tenant === ''
             ? Tenancy::$callback === null
             : Tenancy::allows( $user, $tenant );
+    }
+
+
+    protected function console() : void
+    {
+        if( $this->app->runningInConsole() ) {
+            $this->commands( [InstallPulse::class] );
+        }
     }
 
 
@@ -175,18 +99,10 @@ class PulseServiceProvider extends Provider
     }
 
 
-    protected function installed() : bool
+    protected function gate() : void
     {
-        return class_exists( \Laravel\Pulse\Pulse::class );
-    }
-
-
-    protected function pulseInstance() : ?object
-    {
-        if( $this->app->bound( \Laravel\Pulse\Pulse::class ) ) {
-            return $this->app->make( \Laravel\Pulse\Pulse::class );
+        if( !Gate::has( 'viewPulse' ) || $this->defaultPulseGate() ) {
+            Gate::define( 'viewPulse', fn( $user ) => $this->canViewPulse( $user ) );
         }
-
-        return $this->app->bound( 'pulse' ) ? $this->app->make( 'pulse' ) : null;
     }
 }

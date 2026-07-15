@@ -8,8 +8,8 @@
 namespace Tests;
 
 use Aimeos\Cms\Events\Bulk;
-use Aimeos\Cms\Events\CmsGraphql;
 use Aimeos\Cms\Events\Moved;
+use Aimeos\Cms\Events\Observed;
 use Aimeos\Cms\Events\Purged;
 use Aimeos\Cms\Events\Saved;
 use Aimeos\Cms\Models\Page;
@@ -86,22 +86,29 @@ class WatchTest extends CoreTestAbstract
     }
 
 
-    public function testWatchDispatchEmitsForRegisteredListenerWithoutWatchChannel() : void
+    public function testWatchObserveEmitsForRegisteredListenerWithoutWatchChannel() : void
     {
         config( ['cms.watch.channel' => null, 'cms.theme.watch' => false] );
 
         $captured = null;
-        Event::listen( CmsGraphql::class, function( CmsGraphql $e ) use ( &$captured ) {
+        Event::listen( Observed::class, function( Observed $e ) use ( &$captured ) {
             $captured = $e;
         } );
 
-        Watch::dispatchWhen( 'cms.theme.watch', CmsGraphql::class, fn() => new CmsGraphql(
+        Watch::observe(
+            source: 'graphql',
             action: 'pages',
+            durationMs: 1.5,
             tenant: 'test',
-        ) );
+            dimensions: ['success' => true],
+            sample: true,
+        );
 
-        $this->assertInstanceOf( CmsGraphql::class, $captured );
+        $this->assertInstanceOf( Observed::class, $captured );
         $this->assertSame( 'pages', $captured->action );
+        $this->assertSame( 'test', $captured->tenant );
+        $this->assertSame( ['success' => true], $captured->dimensions );
+        $this->assertTrue( $captured->sample );
     }
 
 
@@ -111,47 +118,16 @@ class WatchTest extends CoreTestAbstract
 
         $built = false;
 
-        Watch::dispatchWhen( 'cms.theme.watch', CmsGraphql::class, function() use ( &$built ) {
+        Watch::dispatchWhen( 'cms.theme.watch', Observed::class, function() use ( &$built ) {
             $built = true;
-            return new CmsGraphql( action: 'pages', tenant: 'test' );
+            return new Observed( source: 'graphql', action: 'pages', tenant: 'test' );
         } );
 
         $this->assertFalse( $built );
     }
 
 
-    public function testWatchStartRunsForRegisteredListenerWithoutWatchChannel() : void
-    {
-        config( ['cms.watch.channel' => null, 'cms.theme.watch' => false] );
-
-        Event::listen( CmsGraphql::class, fn() => null );
-
-        $start = Watch::start( 'cms.theme.watch', CmsGraphql::class );
-
-        $this->assertNotNull( $start );
-        $this->assertGreaterThan( 0, $start );
-        $this->assertNull( Watch::start( 'cms.theme.watch', Saved::class ) );
-    }
-
-
-    public function testFireDispatchesEventRegardlessOfWatchState() : void
-    {
-        // fire() has no gate of its own: the caller decides whether to dispatch.
-        config( ['cms.watch.channel' => null, 'cms.theme.watch' => false] );
-
-        $captured = null;
-        Event::listen( CmsGraphql::class, function( CmsGraphql $e ) use ( &$captured ) {
-            $captured = $e;
-        } );
-
-        Watch::fire( fn() => new CmsGraphql( action: 'page', tenant: 'test' ) );
-
-        $this->assertInstanceOf( CmsGraphql::class, $captured );
-        $this->assertSame( 'page', $captured->action );
-    }
-
-
-    public function testFireSwallowsFactoryErrors() : void
+    public function testDispatchSwallowsFactoryErrors() : void
     {
         // Watch must never break the request, so a throwing factory is caught.
         $logfile = tempnam( sys_get_temp_dir(), 'cms-watch-' );
@@ -162,9 +138,10 @@ class WatchTest extends CoreTestAbstract
         }
 
         ini_set( 'error_log', $logfile );
+        Event::listen( Observed::class, fn() => null );
 
         try {
-            Watch::fire( function() {
+            Watch::dispatch( Observed::class, function() {
                 throw new \RuntimeException( 'boom' );
             } );
 

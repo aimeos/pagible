@@ -8,6 +8,7 @@
 namespace Tests;
 
 use Aimeos\Cms\Events\CmsJsonapi;
+use Aimeos\Cms\Events\Observed;
 use Database\Seeders\TestSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
@@ -112,32 +113,20 @@ class JsonapiWatchTest extends JsonapiTestAbstract
     }
 
 
-    public function testPulseRecorderReceivesQueriedWithDurationWhenWatchOff() : void
+    public function testObserverReceivesQueriedWithDurationWhenWatchOff() : void
     {
-        if( !class_exists( \Laravel\Pulse\Pulse::class ) ) {
-            $this->markTestSkipped( 'Laravel Pulse is not installed.' );
-        }
-
         config( ['cms.watch.channel' => null, 'cms.jsonapi.watch' => false] );
-        app( \Laravel\Pulse\Pulse::class )->register( [JsonapiQueriedPulseRecorder::class => true] );
-        Event::fake( [CmsJsonapi::class] );
+        Event::listen( Observed::class, fn() => null );
+        Event::fake( [Observed::class] );
 
         $this->jsonApi()->expects( 'pages' )->get( 'cms/pages' );
 
-        Event::assertDispatched( CmsJsonapi::class, fn( CmsJsonapi $e ) => $e->durationMs > 0.0 );
-    }
-}
-
-
-class JsonapiQueriedPulseRecorder
-{
-    /**
-     * @var list<class-string>
-     */
-    public array $listen = [CmsJsonapi::class];
-
-
-    public function record( mixed $event ) : void
-    {
+        Event::assertDispatched( Observed::class, fn( Observed $e ) =>
+            $e->source === 'jsonapi'
+            && $e->action === 'jsonapi:search'
+            && $e->durationMs > 0.0
+            && $e->dimensions === ['domain' => '']
+            && $e->sample
+        );
     }
 }
