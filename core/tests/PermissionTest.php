@@ -60,6 +60,29 @@ class PermissionTest extends CoreTestAbstract
     }
 
 
+    public function testCanRequiresCurrentTenant()
+    {
+        $user = new \App\Models\User( ['cmsperms' => ['page:view']] );
+        $user->tenant_id = 'test';
+
+        $this->assertTrue( Permission::can( 'page:view', $user ) );
+
+        $user->tenant_id = 'other';
+
+        $this->assertFalse( Permission::can( 'page:view', $user ) );
+    }
+
+
+    public function testCanRejectsUnresolvedConfiguredTenant(): void
+    {
+        $user = new \App\Models\User( ['cmsperms' => ['page:view']] );
+        $user->tenant_id = '';
+        app()->instance( \Aimeos\Cms\Tenancy::class, new \Aimeos\Cms\Tenancy( '' ) );
+
+        $this->assertFalse( Permission::can( 'page:view', $user ) );
+    }
+
+
     public function testCanWildcard()
     {
         $user = new \App\Models\User();
@@ -202,6 +225,17 @@ class PermissionTest extends CoreTestAbstract
 
         $this->assertTrue( Permission::can( 'page:view', $user ) );
         $this->assertFalse( Permission::can( 'page:save', $user ) );
+    }
+
+
+    public function testCanUsingCannotBypassCurrentTenant()
+    {
+        Permission::canUsing( fn() => true );
+
+        $user = new \App\Models\User();
+        $user->tenant_id = 'other';
+
+        $this->assertFalse( Permission::can( 'page:view', $user ) );
     }
 
 

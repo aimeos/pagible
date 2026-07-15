@@ -10,11 +10,17 @@ namespace Tests;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Database\Seeders\TestSeeder;
 use Aimeos\Cms\Exception;
+use Aimeos\Cms\Events\PagesInvalidated;
+use Aimeos\Cms\Jobs\SyncPages;
 use Aimeos\Cms\Resource;
 use Aimeos\Cms\Utils;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
+use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Queue;
+use Laravel\Scout\EngineManager;
+use Laravel\Scout\Engines\NullEngine;
 
 
 class ResourceTest extends CoreTestAbstract
@@ -23,11 +29,15 @@ class ResourceTest extends CoreTestAbstract
     use RefreshDatabase;
 
     protected $seeder = TestSeeder::class;
+    private PageInvalidationSpy $invalidator;
 
 
     protected function setUp(): void
     {
         parent::setUp();
+
+        $this->invalidator = new PageInvalidationSpy();
+        Event::listen( PagesInvalidated::class, [$this->invalidator, 'handle'] );
 
         $this->user = new \App\Models\User([
             'name' => 'Test editor',
@@ -35,6 +45,108 @@ class ResourceTest extends CoreTestAbstract
             'password' => 'secret',
             'cmsperms' => \Aimeos\Cms\Permission::all(),
         ]);
+    }
+
+
+    public function testPublishInvalidatesPreviousAndCurrentPageRoutes(): void
+    {
+        $page = Page::where( 'path', 'hidden' )->firstOrFail();
+        $oldPath = $page->path;
+        $newPath = 'renamed-page';
+
+        Resource::savePage( $page->id, ['path' => $newPath], $this->user );
+        Resource::publish( Page::class, [$page->id], $this->user->email );
+
+        $this->assertSame(
+            [[$oldPath, $newPath]],
+            array_map( fn( $batch ) => array_column( $batch, 'path' ), $this->invalidator->batches ),
+        );
+    }
+
+
+    public function testDropInvalidatesCompletePageSubtree(): void
+    {
+        $parent = $this->page( [] );
+        $child = Resource::addPage( [
+            'lang' => 'en', 'name' => 'Child', 'title' => 'Child', 'path' => 'res-' . Utils::uid(),
+            'content' => [],
+        ], $this->user, parent: (string) $parent->id );
+        $this->invalidator->reset();
+
+        Resource::drop( Page::class, [(string) $parent->id], 'editor@testbench' );
+
+        $this->assertEqualsCanonicalizing(
+            [$parent->path, $child->path],
+            array_column( $this->invalidator->batches[0], 'path' ),
+        );
+        $this->assertTrue( Page::withTrashed()->findOrFail( (string) $parent->id )->trashed() );
+        $this->assertTrue( Page::withTrashed()->findOrFail( (string) $child->id )->trashed() );
+    }
+
+
+    public function testPurgeInvalidatesCompletePageSubtree(): void
+    {
+        $parent = $this->page( [] );
+        $child = Resource::addPage( [
+            'lang' => 'en', 'name' => 'Child', 'title' => 'Child', 'path' => 'res-' . Utils::uid(),
+            'content' => [],
+        ], $this->user, parent: (string) $parent->id );
+        Resource::drop( Page::class, [(string) $parent->id], 'editor@testbench' );
+        $this->invalidator->reset();
+
+        Resource::purge( Page::class, [(string) $parent->id], 'editor@testbench' );
+
+        $this->assertEqualsCanonicalizing(
+            [$parent->path, $child->path],
+            array_column( $this->invalidator->batches[0], 'path' ),
+        );
+        $this->assertNull( Page::withTrashed()->find( (string) $parent->id ) );
+        $this->assertNull( Page::withTrashed()->find( (string) $child->id ) );
+    }
+
+
+    public function testDropQueuesSubtreeIndexReconciliation(): void
+    {
+        $parent = $this->page( [] );
+        $child = Resource::addPage( [
+            'lang' => 'en', 'name' => 'Child', 'title' => 'Child', 'path' => 'res-' . Utils::uid(),
+            'content' => [],
+        ], $this->user, parent: (string) $parent->id );
+        $this->searchEngine();
+        Queue::fake();
+
+        Resource::drop( Page::class, [(string) $parent->id], 'editor@testbench' );
+
+        Queue::assertPushed( SyncPages::class, fn( SyncPages $job ) =>
+            $job->ids === [(string) $parent->id, (string) $child->id] && $job->tenant === 'test'
+        );
+    }
+
+
+    public function testSyncPagesReconcilesExistingAndMissingDocuments(): void
+    {
+        $page = $this->page( [] );
+        $engine = $this->searchEngine();
+        $missing = '01900000-0000-7000-8000-000000000001';
+
+        ( new SyncPages( [(string) $page->id, $missing], 'test' ) )->handle();
+
+        $this->assertSame( [[(string) $page->id]], $engine->updates );
+        $this->assertSame( [[$missing]], $engine->deletions );
+    }
+
+
+    public function testSyncPagesKeepsSoftDeletedDocumentsWhenConfigured(): void
+    {
+        $page = $this->page( [] );
+        Resource::drop( Page::class, [(string) $page->id], 'editor@testbench' );
+        $engine = $this->searchEngine();
+        config( ['scout.soft_delete' => true] );
+
+        ( new SyncPages( [(string) $page->id], 'test' ) )->handle();
+
+        $this->assertSame( [[(string) $page->id]], $engine->updates );
+        $this->assertSame( [], $engine->deletions );
     }
 
 
@@ -303,5 +415,45 @@ class ResourceTest extends CoreTestAbstract
     protected function root() : Page
     {
         return Page::where( 'tag', 'root' )->firstOrFail();
+    }
+
+
+    private function searchEngine() : ResourceSearchEngineSpy
+    {
+        $engine = new ResourceSearchEngineSpy();
+        $manager = app( EngineManager::class );
+
+        $manager->extend( 'resource-test', fn() => $engine );
+        $manager->forgetDrivers();
+        config( ['scout.driver' => 'resource-test'] );
+
+        return $engine;
+    }
+}
+
+
+class ResourceSearchEngineSpy extends NullEngine
+{
+    /** @var list<list<string>> */
+    public array $updates = [];
+    /** @var list<list<string>> */
+    public array $deletions = [];
+
+
+    /**
+     * @param \Illuminate\Database\Eloquent\Collection<int, Page> $models
+     */
+    public function update( $models ) : void
+    {
+        $this->updates[] = array_values( array_map( strval(...), $models->modelKeys() ) );
+    }
+
+
+    /**
+     * @param \Illuminate\Database\Eloquent\Collection<int, Page> $models
+     */
+    public function delete( $models ) : void
+    {
+        $this->deletions[] = array_values( array_map( strval(...), $models->modelKeys() ) );
     }
 }

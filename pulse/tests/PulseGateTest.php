@@ -27,6 +27,7 @@ class PulseGateTest extends PulseTestCase
         $this->gate();
 
         $user = new User( ['cmsperms' => ['pulse:view']] );
+        $user->forceFill( ['tenant_id' => ''] );
 
         $this->assertTrue( Gate::forUser( $user )->allows( 'viewPulse' ) );
     }

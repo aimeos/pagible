@@ -7,8 +7,11 @@
 
 namespace Tests;
 
+use Aimeos\Cms\Access;
 use Database\Seeders\TestSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageAccess;
 
 
 class SitemapControllerTest extends ThemeTestAbstract
@@ -61,6 +64,74 @@ class SitemapControllerTest extends ThemeTestAbstract
 
         $this->assertStringNotContainsString( 'http://localhost/hidden]]>', $content );
         $this->assertStringContainsString( '<loc><![CDATA[http://localhost/disabled-child]]></loc>', $content );
+    }
+
+
+    public function testNoncanonicalOriginIsNotSharedCacheable(): void
+    {
+        config( ['app.url' => 'https://shop.example', 'cms.multidomain' => false] );
+
+        $response = $this->withServerVariables( [
+            'HTTPS' => 'on',
+            'SERVER_PORT' => 443,
+            'HTTP_HOST' => 'evil.example',
+        ] )->get( '/sitemap.xml' );
+
+        $response->assertOk();
+        $this->assertTrue( $response->headers->hasCacheControlDirective( 'private' ) );
+        $this->assertTrue( $response->headers->hasCacheControlDirective( 'no-store' ) );
+        $this->assertFalse( $response->headers->hasCacheControlDirective( 'public' ) );
+        $this->assertFalse( $response->headers->has( 'Expires' ) );
+    }
+
+
+    public function testSitemapRoutesDoNotStartWebSessions(): void
+    {
+        foreach( ['cms.sitemap', 'cms.sitemap.chunk'] as $name )
+        {
+            $route = app( 'router' )->getRoutes()->getByName( $name );
+            $this->assertNotNull( $route );
+            $middleware = $route->gatherMiddleware();
+
+            $this->assertNotContains( 'web', $middleware );
+            $this->assertContains( 'throttle:cms-sitemap', $middleware );
+        }
+    }
+
+
+    public function testIndexExcludesRestrictedPages()
+    {
+        $page = Page::where( 'path', 'hidden' )->firstOrFail();
+        Access::availableUsing( fn() => [] );
+        PageAccess::restrict( [$page->id], null );
+
+        $controller = new \Aimeos\Cms\Controllers\SitemapController();
+
+        ob_start();
+        $response = $controller->index();
+        $response->getCallback()();
+        $content = ob_get_clean();
+
+        $this->assertStringNotContainsString( 'http://localhost/hidden]]>', $content );
+        $this->assertStringContainsString( '<loc><![CDATA[http://localhost/disabled-child]]></loc>', $content );
+    }
+
+
+    public function testEditorCannotExposeUnpublishedPagesInPublicSitemap()
+    {
+        $user = new \App\Models\User( ['cmsperms' => ['page:view']] );
+        $user->tenant_id = 'test';
+        $this->actingAs( $user );
+
+        $controller = new \Aimeos\Cms\Controllers\SitemapController();
+
+        ob_start();
+        $response = $controller->index();
+        $response->getCallback()();
+        $content = ob_get_clean();
+
+        $this->assertStringNotContainsString( 'http://localhost/disabled]]>', $content );
+        $this->assertStringContainsString( 'public', (string) $response->headers->get( 'Cache-Control' ) );
     }
 
 

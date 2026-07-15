@@ -7,13 +7,22 @@
 
 namespace Tests;
 
+use Aimeos\Cms\Access;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Models\Version;
+use Aimeos\Cms\PageCache;
+use Aimeos\Cms\Models\PageAccess;
 use Aimeos\Cms\Resource;
 use Database\Seeders\TestSeeder;
+use Illuminate\Auth\AuthenticationException;
+use Illuminate\Contracts\Cache\LockProvider;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\View;
 
 
 class PageControllerTest extends ThemeTestAbstract
@@ -31,7 +40,18 @@ class PageControllerTest extends ThemeTestAbstract
         $this->user = new \App\Models\User();
         $this->user->name = 'Test';
         $this->user->email = 'test@example.com';
+        $this->user->tenant_id = 'test';
         $this->user->cmsperms = ['admin'];
+        Access::availableUsing( fn() => ['frontend.member'] );
+        AuthenticationException::redirectUsing( fn() => '/login' );
+    }
+
+
+    protected function tearDown(): void
+    {
+        AuthenticationException::redirectUsing( fn() => null );
+
+        parent::tearDown();
     }
 
 
@@ -49,6 +69,47 @@ class PageControllerTest extends ThemeTestAbstract
         // Now try to access the page via the new path (as an editor would)
         $response = $this->actingAs( $this->user )->get( '/new-blog-path' );
         $response->assertStatus( 200 );
+    }
+
+
+    public function testPublishingChangedRouteInvalidatesPreviousAndCurrentCompletePage(): void
+    {
+        config( ['cms.theme.cache' => 'array'] );
+        $page = Page::where( 'path', 'hidden' )->firstOrFail();
+        $oldPath = $page->path;
+        $newPath = 'renamed-page';
+
+        $this->cache( $oldPath, 'old-route', $page->domain );
+        $this->cache( $newPath, 'new-route', $page->domain );
+
+        Resource::savePage( $page->id, ['path' => $newPath], $this->user );
+        Resource::publish( Page::class, [$page->id], $this->user->email );
+
+        $this->assertNull( PageCache::response( $oldPath, $page->domain ) );
+        $this->assertNull( PageCache::response( $newPath, $page->domain ) );
+    }
+
+
+    public function testDroppingPageInvalidatesCompleteSubtreeCache(): void
+    {
+        config( ['cms.theme.cache' => 'array'] );
+        $root = Page::where( 'tag', 'root' )->firstOrFail();
+        $parent = Resource::addPage( [
+            'lang' => 'en', 'name' => 'Parent', 'title' => 'Parent', 'path' => 'cache-parent',
+            'content' => [],
+        ], $this->user, parent: (string) $root->id );
+        $child = Resource::addPage( [
+            'lang' => 'en', 'name' => 'Child', 'title' => 'Child', 'path' => 'cache-child',
+            'content' => [],
+        ], $this->user, parent: (string) $parent->id );
+
+        $this->cache( $parent, 'cached-parent' );
+        $this->cache( $child, 'cached-child' );
+
+        Resource::drop( Page::class, [(string) $parent->id], 'test@example.com' );
+
+        $this->assertNull( PageCache::response( $parent ) );
+        $this->assertNull( PageCache::response( $child ) );
     }
 
 
@@ -265,6 +326,304 @@ class PageControllerTest extends ThemeTestAbstract
         $response->assertStatus( 200 );
         $this->assertStringContainsString( 'public', (string) $response->headers->get( 'Cache-Control' ) );
         $response->assertCookieMissing( config( 'session.cookie' ) );
+        $this->assertNotNull( PageCache::response( 'cacheable', '', true ) );
+    }
+
+
+    public function testRenderInProgressServesStaleCompletePage(): void
+    {
+        config( ['cms.theme.cache' => 'array'] );
+        $page = Page::forceCreate( [
+            'lang' => 'en',
+            'name' => 'Stale',
+            'title' => 'Stale',
+            'path' => 'stale',
+            'status' => 1,
+            'cache' => 5,
+            'editor' => 'test',
+        ] );
+        $html = 'stale-complete-page';
+        $key = $this->cacheKey( $page );
+
+        $this->putCache( $key, $html, now()->subSecond() );
+        $store = Cache::store( config( 'cms.theme.cache', 'file' ) )->getStore();
+
+        if( !$store instanceof LockProvider ) {
+            $this->fail( 'Theme cache store must support locks' );
+        }
+
+        $lock = $store->lock( $key . ':render', 10 );
+        $lock->get();
+
+        try {
+            $response = $this->get( '/stale' );
+        } finally {
+            $lock->release();
+        }
+
+        $response->assertOk();
+        $response->assertSee( 'stale-complete-page', false );
+        $response->assertCookieMissing( config( 'session.cookie' ) );
+    }
+
+
+    public function testCompletePageCacheHitDoesNotQueryDatabase(): void
+    {
+        config( ['cms.theme.cache' => 'array'] );
+        $page = Page::where( 'path', 'hidden' )->firstOrFail();
+        $this->cache( $page, 'cached-without-database' );
+        DB::flushQueryLog();
+        DB::enableQueryLog();
+
+        $response = $this->get( '/hidden' );
+
+        $response->assertOk();
+        $response->assertSee( 'cached-without-database', false );
+        $this->assertSame( [], DB::getQueryLog() );
+    }
+
+
+    public function testRouteCacheKeysEncodePartsUnambiguously(): void
+    {
+        $method = new \ReflectionMethod( PageCache::class, 'routeKey' );
+
+        $this->assertNotSame(
+            $method->invoke( null, 'a', 'b', 'c|d' ),
+            $method->invoke( null, 'a|b', 'c', 'd' ),
+        );
+    }
+
+
+    public function testCompletePageCacheRejectsNonPublicDirectives(): void
+    {
+        config( ['cms.theme.cache' => 'array'] );
+        $directives = ['not-public', 'private, public', 'public, no-store', 'public, no-cache'];
+
+        foreach( $directives as $idx => $directive )
+        {
+            $path = 'cache-directive-' . $idx;
+
+            PageCache::remember( fn() => ( new Response( 'private-html', 200 ) )
+                ->header( 'Cache-Control', $directive )
+                ->setExpires( now()->addMinutes( 5 ) ),
+                $path,
+            );
+
+            $this->assertNull( PageCache::response( $path ), $directive );
+        }
+    }
+
+
+    public function testRenderContentionWithoutStalePageWaitsAndWritesCache(): void
+    {
+        config( ['cms.theme.cache' => 'array', 'cms.theme.lock' => 1] );
+        $key = $this->cacheKey( 'contended' );
+        $store = Cache::store( config( 'cms.theme.cache', 'file' ) )->getStore();
+
+        if( !$store instanceof LockProvider ) {
+            $this->fail( 'Theme cache store must support locks' );
+        }
+
+        $lock = $store->lock( $key . ':render', 1 );
+        $this->assertTrue( $lock->get() );
+
+        try {
+            $response = PageCache::remember( fn() => ( new Response( 'uncached-render', 200 ) )
+                ->header( 'Cache-Control', 'public' )
+                ->setExpires( now()->addMinutes( 5 ) ),
+                'contended',
+            );
+        } finally {
+            $lock->release();
+        }
+
+        $this->assertInstanceOf( Response::class, $response );
+        $this->assertSame( 'uncached-render', $response->getContent() );
+        $this->assertSame( 'uncached-render', PageCache::response( 'contended' )?->getContent() );
+    }
+
+
+    public function testAccessInvalidationDoesNotWaitForActiveRenderLease(): void
+    {
+        config( ['cms.theme.cache' => 'array', 'cms.theme.lock' => 1] );
+
+        $page = Page::where( 'path', 'hidden' )->firstOrFail();
+        $key = $this->cacheKey( $page );
+        $this->cache( $page, 'public-html' );
+        $store = Cache::store( config( 'cms.theme.cache', 'file' ) )->getStore();
+
+        if( !$store instanceof LockProvider ) {
+            $this->fail( 'Theme cache store must support locks' );
+        }
+
+        $lock = $store->lock( $key . ':render', 1 );
+        $this->assertTrue( $lock->get() );
+        $start = hrtime( true );
+
+        try {
+            PageAccess::restrict( [$page->id], null );
+        } finally {
+            $lock->release();
+        }
+
+        $this->assertLessThan( 750, ( hrtime( true ) - $start ) / 1_000_000 );
+        $this->assertNull( PageCache::response( $page ) );
+    }
+
+
+    public function testAccessInvalidationDeletesWhileRenderLeaseIsHeld(): void
+    {
+        config( ['cms.theme.cache' => 'array', 'cms.theme.lock' => 1] );
+
+        $page = Page::where( 'path', 'hidden' )->firstOrFail();
+        $key = $this->cacheKey( $page );
+        $this->cache( $page, 'public-html' );
+        $store = Cache::store( config( 'cms.theme.cache', 'file' ) )->getStore();
+
+        if( !$store instanceof LockProvider ) {
+            $this->fail( 'Theme cache store must support locks' );
+        }
+
+        $lock = $store->lock( $key . ':render', 30 );
+        $this->assertTrue( $lock->get() );
+
+        try {
+            PageAccess::restrict( [$page->id], null );
+            $this->assertNull( PageCache::response( $page ) );
+            $this->get( '/hidden' )->assertRedirect( '/login' );
+        } finally {
+            $lock->release();
+        }
+    }
+
+
+    public function testRestrictedPageRedirectsGuestAndAllowsPermission(): void
+    {
+        $page = Page::where( 'path', 'hidden' )->firstOrFail();
+        PageAccess::restrict( [$page->id], ['frontend.member'] );
+
+        $guest = $this->get( '/hidden' );
+        $guest->assertRedirect( '/login' );
+        $guest->assertSessionHas( 'url.intended', 'http://localhost/hidden' );
+
+        $user = new \App\Models\User();
+        $user->id = 42;
+        $user->tenant_id = 'test';
+        $user->cmsperms = [];
+        \Illuminate\Support\Facades\Gate::define( 'frontend.member', fn() => true );
+
+        $response = $this->actingAs( $user )->get( '/hidden' );
+        $response->assertOk();
+        $this->assertStringContainsString( 'private', (string) $response->headers->get( 'Cache-Control' ) );
+    }
+
+
+    public function testRestrictedPageReturnsUnauthorizedForJsonGuest(): void
+    {
+        $page = Page::where( 'path', 'hidden' )->firstOrFail();
+        PageAccess::restrict( [$page->id], ['frontend.member'] );
+
+        $this->getJson( '/hidden' )->assertUnauthorized();
+    }
+
+
+    public function testGuestRedirectsWhenPageBecomesRestrictedDuringRender(): void
+    {
+        $page = Page::where( 'path', 'hidden' )->firstOrFail();
+        $restricted = false;
+
+        View::composer( '*', function() use ( &$restricted, $page ) {
+            if( !$restricted ) {
+                $restricted = true;
+                PageAccess::restrict( [$page->id], null );
+            }
+        } );
+
+        $this->get( '/hidden' )->assertRedirect( '/login' );
+    }
+
+
+    public function testRestrictedPageForbidsAuthenticatedUserWithoutPermission(): void
+    {
+        $page = Page::where( 'path', 'hidden' )->firstOrFail();
+        PageAccess::restrict( [$page->id], ['frontend.member'] );
+
+        $user = new \App\Models\User();
+        $user->id = 43;
+        $user->tenant_id = 'test';
+        $user->cmsperms = [];
+        \Illuminate\Support\Facades\Gate::define( 'frontend.member', fn() => false );
+
+        $this->actingAs( $user )->get( '/hidden' )->assertForbidden();
+    }
+
+
+    public function testEditorFromAnotherTenantCannotBypassPageAccess(): void
+    {
+        $page = Page::where( 'path', 'hidden' )->firstOrFail();
+        PageAccess::restrict( [$page->id], null );
+        $this->user->tenant_id = 'other';
+
+        $this->actingAs( $this->user )->get( '/hidden' )->assertForbidden();
+    }
+
+
+    public function testRestrictedPageIsHiddenFromGuestNavigation(): void
+    {
+        $blog = Page::where( 'path', 'blog' )->firstOrFail();
+        PageAccess::restrict( [$blog->id], null );
+
+        $response = $this->get( '/hidden' );
+
+        $response->assertOk();
+        $response->assertDontSee( 'href="http://localhost/blog"', false );
+    }
+
+
+    public function testRedirectUsesOneQuery(): void
+    {
+        Page::forceCreate( [
+            'lang' => 'en',
+            'name' => 'Redirect',
+            'title' => 'Redirect',
+            'path' => 'redirect',
+            'to' => '/target',
+            'status' => 1,
+            'editor' => 'test',
+        ] );
+
+        DB::flushQueryLog();
+        DB::enableQueryLog();
+
+        $this->get( '/redirect' )->assertRedirect( '/target' );
+
+        $this->assertCount( 1, DB::getQueryLog() );
+    }
+
+
+    public function testMissingPageIsResolvedWithOneQuery(): void
+    {
+        DB::flushQueryLog();
+        DB::enableQueryLog();
+
+        $response = $this->get( '/does-not-exist' );
+        $response->assertNotFound();
+        $response->assertCookieMissing( config( 'session.cookie' ) );
+
+        $this->assertCount( 1, DB::getQueryLog() );
+    }
+
+
+    public function testRestrictedGuestPreflightUsesOneQuery(): void
+    {
+        $page = Page::where( 'path', 'hidden' )->firstOrFail();
+        PageAccess::restrict( [$page->id], null );
+        DB::flushQueryLog();
+        DB::enableQueryLog();
+
+        $this->get( '/hidden' )->assertRedirect( '/login' );
+
+        $this->assertCount( 1, DB::getQueryLog() );
     }
 
 
@@ -301,5 +660,34 @@ class PageControllerTest extends ThemeTestAbstract
         $response->assertStatus( 200 );
         $response->assertJsonStructure( ['token'] );
         $response->assertCookie( config( 'session.cookie' ) );
+    }
+
+
+    private function cacheKey( Page|string $page, string $domain = '' ): string
+    {
+        $key = ( new \ReflectionMethod( PageCache::class, 'key' ) )->invoke( null, $page, $domain );
+
+        if( !is_string( $key ) ) {
+            $this->fail( 'Expected a string cache key' );
+        }
+
+        return $key;
+    }
+
+
+    private function cache( Page|string $page, string $html, string $domain = '' ): void
+    {
+        PageCache::remember( fn() => ( new Response( $html, 200 ) )
+            ->header( 'Cache-Control', 'public' )
+            ->setExpires( now()->addMinutes( 5 ) ),
+            $page,
+            $domain,
+        );
+    }
+
+
+    private function putCache( string $key, string $html, \DateTimeInterface $expires ): void
+    {
+        ( new \ReflectionMethod( PageCache::class, 'put' ) )->invoke( null, $key, $html, $expires );
     }
 }

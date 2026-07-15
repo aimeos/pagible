@@ -36,7 +36,7 @@ class PageAccess extends Model
 {
     use Tenancy;
 
-    public const CHUNK_SIZE = 500;
+    public const CHUNK_SIZE = 250;
     private const MAX_VALUES = 250;
     private const MAX_LENGTH = 100;
 
