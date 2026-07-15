@@ -11,6 +11,7 @@ use Aimeos\Cms\Schema;
 use Aimeos\Cms\Theme;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Storage;
 
 
@@ -122,6 +123,14 @@ class ThemeTest extends ThemeTestAbstract
 
         $this->assertArrayHasKey( 'custom::second', $schemas );
         $this->assertArrayNotHasKey( 'custom::first', $schemas );
+    }
+
+
+    public function testRateLimiters()
+    {
+        $this->assertNotNull( RateLimiter::limiter( 'cms-contact' ) );
+        $this->assertNotNull( RateLimiter::limiter( 'cms-search' ) );
+        $this->assertNotNull( RateLimiter::limiter( 'cms-sitemap' ) );
     }
 
 

@@ -67,7 +67,7 @@ return [
     | middleware here so Tenancy::value() resolves when channels are authorized.
     |
     */
-    'broadcast-middleware' => ['web', 'auth', 'throttle:cms-admin'],
+    'broadcast-middleware' => ['web', 'auth', 'throttle:cms-broadcast'],
 
     /*
     |--------------------------------------------------------------------------
@@ -91,6 +91,20 @@ return [
     |
     */
     'disk' => env( 'CMS_DISK', 'public' ),
+
+    /*
+    |--------------------------------------------------------------------------
+    | File upload policy
+    |--------------------------------------------------------------------------
+    |
+    | The maximum upload size is specified in MB. MIME types may be complete
+    | types or prefixes and apply to uploads through every CMS interface.
+    |
+    */
+    'upload' => [
+        'filesize' => env( 'CMS_UPLOAD_FILESIZE', 50 ),
+        'mimetypes' => explode( ',', env( 'CMS_UPLOAD_MIMETYPES', 'application/gzip,application/pdf,application/vnd.,application/zip,audio/,image/,text/,video/' ) ),
+    ],
 
     /*
     |--------------------------------------------------------------------------

@@ -7,6 +7,8 @@
 
 namespace Aimeos\Cms\Controllers;
 
+use Aimeos\Cms\ProxyToken;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Http\Client\Response as ClientResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -45,7 +47,7 @@ class AdminController extends Controller
      * @param Request $request
      * @return SymfonyResponse
      */
-    public function proxy( Request $request ): SymfonyResponse
+    public function proxy( Request $request, ProxyToken $token ): SymfonyResponse
     {
         $method = strtoupper( $request->method() );
 
@@ -57,24 +59,9 @@ class AdminController extends Controller
             abort( 405, "Unsupported HTTP method: $method" );
         }
 
-        try
-        {
-            $parts = explode( '|', base64_decode( (string) $request->query( 'token', '' ) ) );
-            $expires = $parts[0] ?? '';
-            $uid = $parts[1] ?? '';
-            $hmac = $parts[2] ?? '';
+        $user = $request->user();
 
-            // The token is bound to the authenticated user (see UserResolver::token), so a
-            // leaked token cannot be replayed by or for a different account.
-            if( (int) $expires < now()->timestamp
-                || (string) $uid !== (string) $request->user()?->getAuthIdentifier()
-                || !hash_equals( hash_hmac( 'sha256', $expires . '|' . $uid, config( 'app.key' ) ), (string) $hmac )
-            ) {
-                abort( 403, 'Unauthorized' );
-            }
-        }
-        catch( \Exception $e )
-        {
+        if( !$user instanceof Authenticatable || !$token->valid( (string) $request->query( 'token', '' ), $user ) ) {
             abort( 403, 'Unauthorized' );
         }
 
