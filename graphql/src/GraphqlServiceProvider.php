@@ -3,6 +3,7 @@
 namespace Aimeos\Cms;
 
 use Aimeos\Cms\Events\Authed;
+use Aimeos\Cms\GraphQL\Directives\CmsExceptionDirective;
 use Aimeos\Cms\Listeners\AuthLogListener;
 use GraphQL\Language\AST\FieldNode;
 use GraphQL\Utils\AST;
