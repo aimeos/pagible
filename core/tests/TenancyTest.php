@@ -128,21 +128,26 @@ class TenancyTest extends CoreTestAbstract
     }
 
 
-    public function testStanclLifecycleRecreatesTenantServices(): void
+    public function testStanclLifecycleKeepsTenantServicesContextAware(): void
     {
         $this->stanclFakes();
+        Access::using( fn() => Tenancy::value() === '' ? [] : [Tenancy::value()] );
         $access = app( Access::class );
         $event = new StanclEventFake( new StanclTenantFake( 'other' ) );
+
+        $this->assertSame( ['test'], $access->list() );
 
         Tenancy::stancl();
         Event::dispatch( 'Stancl\\Tenancy\\Events\\InitializingTenancy', [$event] );
 
         $this->assertSame( 'other', Tenancy::value() );
-        $this->assertNotSame( $access, app( Access::class ) );
+        $this->assertSame( $access, app( Access::class ) );
+        $this->assertSame( ['other'], $access->list() );
 
         Event::dispatch( 'Stancl\\Tenancy\\Events\\TenancyEnded', [$event] );
 
         $this->assertSame( '', Tenancy::value() );
+        $this->assertSame( [], $access->list() );
     }
 
 
@@ -196,9 +201,9 @@ class TenancyTest extends CoreTestAbstract
     }
 
 
-    public function testTenantSwitchPropagatesAccessActivationFailure(): void
+    public function testAccessUsePropagatesTenantActivationFailure(): void
     {
-        app( Access::class );
+        $access = app( Access::class );
         $calls = 0;
         $property = new \ReflectionProperty( Access::class, 'activateCallback' );
         $property->setValue( null, function( string $tenant ) use ( &$calls ) {
@@ -206,20 +211,18 @@ class TenancyTest extends CoreTestAbstract
             throw new \RuntimeException( "Failed to activate {$tenant}" );
         } );
 
-        try {
-            Tenancy::set( 'other' );
-            $this->fail( 'The activation exception should propagate.' );
-        } catch( \RuntimeException $e ) {
-            $this->assertSame( 'Failed to activate other', $e->getMessage() );
-        }
-
+        Tenancy::set( 'other' );
         $this->assertSame( 'other', Tenancy::value() );
+        $this->assertSame( $access, app( Access::class ) );
 
-        try {
-            app( Access::class );
-            $this->fail( 'Resolving Access should retry the failed activation.' );
-        } catch( \RuntimeException $e ) {
-            $this->assertSame( 'Failed to activate other', $e->getMessage() );
+        for( $i = 0; $i < 2; $i++ )
+        {
+            try {
+                $access->list();
+                $this->fail( 'Using Access should retry the failed activation.' );
+            } catch( \RuntimeException $e ) {
+                $this->assertSame( 'Failed to activate other', $e->getMessage() );
+            }
         }
 
         $this->assertSame( 2, $calls );

@@ -28,7 +28,7 @@ class JsonapiTest extends JsonapiTestAbstract
     protected function setUp(): void
     {
         parent::setUp();
-        Access::availableUsing( fn() => ['denied', 'member'] );
+        Access::using( fn() => ['denied', 'member'] );
     }
 
 

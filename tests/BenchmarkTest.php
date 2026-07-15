@@ -8,6 +8,7 @@
 namespace Tests;
 
 use Aimeos\Cms\Access;
+use Aimeos\Cms\Permission;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use PHPUnit\Framework\Attributes\Group;
@@ -59,7 +60,7 @@ class BenchmarkTest extends CmsTestAbstract
         $output = new ConsoleOutput();
         $chunk = DB::connection( config( 'cms.db', 'sqlite' ) )->getDriverName() === 'sqlsrv' ? 75 : 500;
 
-        $this->assertFalse( Access::isAvailable() );
+        $this->assertFalse( Permission::has( 'access:view' ) );
         $this->assertFalse( config( 'cms.multidomain' ) );
 
         $seed = Artisan::call( 'cms:benchmark', [
@@ -81,10 +82,10 @@ class BenchmarkTest extends CmsTestAbstract
         ], $output );
 
         $this->assertSame( 0, $run, 'Benchmark run failed: ' . Artisan::output() );
-        $this->assertFalse( Access::isAvailable() );
+        $this->assertFalse( Permission::has( 'access:view' ) );
         $this->assertFalse( config( 'cms.multidomain' ) );
 
-        Access::availableUsing( fn() => ['custom.frontend'] );
+        Access::using( fn() => ['custom.frontend'] );
         DB::table( 'users' )->where( 'email', 'benchmark@example.com' )->delete();
 
         $theme = Artisan::call( 'cms:benchmark:theme', [
@@ -94,10 +95,10 @@ class BenchmarkTest extends CmsTestAbstract
         ], $output );
 
         $this->assertSame( 0, $theme, 'Theme benchmark failed: ' . Artisan::output() );
-        $this->assertSame( ['custom.frontend'], app( Access::class )->all() );
+        $this->assertSame( ['custom.frontend'], app( Access::class )->list() );
         $this->assertFalse( config( 'cms.multidomain' ) );
 
-        Access::availableUsing( null );
+        Access::using( null );
 
         $unseed = Artisan::call( 'cms:benchmark', [
             '--unseed' => true,

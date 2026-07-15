@@ -152,17 +152,11 @@ class Tenancy
 
 
     /**
-     * Replaces the current tenant and recreates tenant-bound services.
-     *
-     * Access-package activation failures deliberately propagate. The requested
-     * tenant remains selected and the previous Access instance stays discarded,
-     * so callers cannot continue with authorization state from another tenant.
+     * Replaces the current tenant.
      */
     public static function set( string $id ) : void
     {
         app()->instance( self::class, new self( $id ) );
-        app()->forgetInstance( Access::class );
-        app( Access::class );
     }
 
 

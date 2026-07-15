@@ -12,12 +12,22 @@ use Illuminate\Support\Facades\Gate;
 
 
 /**
- * Resolves frontend access values independently from CMS editor permissions.
+ * Owns the access catalog independently from CMS editor permissions and consumers.
  */
 class Access
 {
+    private const MAX_DELETE_VALUES = 250;
+    private const MAX_VALUE_LENGTH = 100;
+    private const PERMISSIONS = ['access:view', 'access:add', 'access:delete'];
+
     /** @var \Closure(): iterable<mixed>|null */
-    private static ?\Closure $availableCallback = null;
+    private static ?\Closure $listCallback = null;
+
+    /** @var \Closure(string): void|null */
+    private static ?\Closure $addCallback = null;
+
+    /** @var \Closure(array<int, string>): void|null */
+    private static ?\Closure $deleteCallback = null;
 
     /** @var \Closure(string): void|null */
     private static ?\Closure $activateCallback = null;
@@ -25,73 +35,149 @@ class Access
     /** @var \Closure(Authenticatable): void|null */
     private static ?\Closure $prepareCallback = null;
 
-    /** @var array<string, array<string, true>> */
-    private array $catalogs = [];
+    /** @var array<string, true>|null */
+    private ?array $catalog = null;
 
-    /** @var \WeakMap<object, array<string, array<string, bool>>> */
+    /** @var \WeakMap<object, array<string, bool>> */
     private \WeakMap $grants;
+
+    private ?string $tenant = null;
 
 
     public function __construct()
     {
         $this->grants = new \WeakMap();
-
-        if( self::$activateCallback ) {
-            ( self::$activateCallback )( Tenancy::value() );
-        }
     }
 
 
     /**
-     * Tests whether frontend access restrictions have been configured.
+     * Configures a custom access catalog for the current context.
+     *
+     * @param \Closure(): iterable<mixed>|null $list Callback returning access values or NULL to reset
+     * @param \Closure(string): void|null $add Optional callback adding an access value
+     * @param \Closure(array<int, string>): void|null $delete Optional callback deleting access values
      */
-    public static function isAvailable() : bool
+    public static function using( ?\Closure $list, ?\Closure $add = null, ?\Closure $delete = null ) : void
     {
-        return self::$availableCallback !== null;
+        self::configure( list: $list, add: $add, delete: $delete );
     }
 
 
     /**
-     * Returns the frontend access values available in the current context.
+     * Lists the access values available in the current context.
      *
      * @return array<int, string>
      */
-    public function all() : array
+    public function list() : array
     {
-        return array_keys( $this->catalog( Tenancy::value() ) );
+        return array_keys( $this->catalog() );
     }
 
 
     /**
-     * Sets the callback returning frontend access values for the current context.
+     * Adds an access value and returns the refreshed catalog.
      *
-     * @param \Closure|null $callback Callback or NULL to reset
+     * @return array<int, string>
      */
-    public static function availableUsing( ?\Closure $callback ) : void
+    public function add( string $value ) : array
     {
-        self::configure( $callback );
+        if( !self::$addCallback ) {
+            throw new Exception( 'Adding access values is not available.' );
+        }
+
+        $value = self::value( $value );
+
+        if( isset( $this->catalog()[$value] ) ) {
+            throw new Exception( sprintf( 'Access value "%s" already exists.', $value ) );
+        }
+
+        ( self::$addCallback )( $value );
+        $this->refresh();
+
+        return $this->list();
     }
 
 
     /**
-     * Returns candidate frontend access values granted to the user by Gate.
+     * Deletes access values and returns the refreshed catalog.
+     *
+     * Missing values are ignored so concurrent catalog changes remain safe.
+     *
+     * @param iterable<mixed> $values
+     * @return array<int, string>
+     */
+    public function delete( iterable $values ) : array
+    {
+        if( !self::$deleteCallback ) {
+            throw new Exception( 'Deleting access values is not available.' );
+        }
+
+        $values = self::normalize( $values );
+
+        if( count( $values ) > self::MAX_DELETE_VALUES ) {
+            throw new Exception( sprintf(
+                'No more than %d access values may be deleted at once.',
+                self::MAX_DELETE_VALUES,
+            ) );
+        }
+
+        $catalog = $this->catalog();
+        $values = array_values( array_filter( $values, fn( $value ) => isset( $catalog[$value] ) ) );
+
+        if( $values === [] ) {
+            return array_keys( $catalog );
+        }
+
+        ( self::$deleteCallback )( $values );
+        $this->refresh();
+
+        return $this->list();
+    }
+
+
+    /**
+     * Returns canonical access values.
+     *
+     * @param iterable<mixed> $values
+     * @return array<int, string>
+     */
+    public static function normalize( iterable $values ) : array
+    {
+        $result = [];
+
+        foreach( $values as $value )
+        {
+            if( !is_string( $value ) ) {
+                throw new Exception( 'Access values must be non-empty strings.' );
+            }
+
+            $result[self::value( $value )] = true;
+        }
+
+        $result = array_keys( $result );
+        sort( $result, SORT_STRING );
+
+        return $result;
+    }
+
+
+    /**
+     * Returns candidate access values granted to the user by Gate.
      *
      * @param iterable<mixed>|null $values Candidate values or NULL for all available values
      * @return array<int, string>
      */
     public function allowed( Authenticatable $user, ?iterable $values = null ) : array
     {
-        $tenant = Tenancy::value();
-        $catalog = $this->catalog( $tenant );
+        $catalog = $this->catalog();
         $gate = Gate::forUser( $user );
+        $prepared = isset( $this->grants[$user] );
+        $granted = $this->grants[$user] ?? [];
 
-        $users = $this->grants[$user] ?? [];
-
-        if( !array_key_exists( $tenant, $users ) && self::$prepareCallback ) {
+        if( !$prepared && self::$prepareCallback ) {
             ( self::$prepareCallback )( $user );
         }
 
-        $granted = $users[$tenant] ?? [];
         $result = $seen = [];
 
         foreach( $values ?? array_keys( $catalog ) as $value )
@@ -108,15 +194,14 @@ class Access
             }
         }
 
-        $users[$tenant] = $granted;
-        $this->grants[$user] = $users;
+        $this->grants[$user] = $granted;
 
         return $result;
     }
 
 
     /**
-     * Configures frontend access through silber/bouncer.
+     * Configures the access catalog through silber/bouncer.
      *
      * Requires silber/bouncer 1.0.2 or newer.
      */
@@ -125,21 +210,34 @@ class Access
         $class = 'Silber\\Bouncer\\Bouncer';
 
         self::configure(
-            fn() => self::modelNames( self::call( $class, 'ability' ) ),
-            fn( string $tenant ) => self::call( self::call( $class, 'scope' ), 'to', $tenant ),
+            list: fn() => self::modelNames(
+                self::call( $class, 'ability' ),
+                ['entity_type' => null],
+            ),
+            activate: fn( string $tenant ) => self::call( self::call( $class, 'scope' ), 'to', $tenant ),
+            add: function( string $value ) use ( $class ) {
+                self::modelAdd( self::call( $class, 'ability' ), $value );
+                self::call( $class, 'refresh' );
+            },
+            delete: function( array $values ) use ( $class ) {
+                self::modelDelete( self::call( $class, 'ability' ), $values, ['entity_type' => null] );
+                self::call( $class, 'refresh' );
+            },
         );
     }
 
 
     /**
-     * Configures frontend access through santigarcor/laratrust.
+     * Configures the access catalog through santigarcor/laratrust.
      *
      * Requires santigarcor/laratrust 8.3.0 or newer.
      */
     public static function laratrust() : void
     {
-        self::configure( function() {
-            $values = self::modelNames( config( 'laratrust.models.permission' ) );
+        $model = config( 'laratrust.models.permission' );
+
+        self::configure( list: function() use ( $model ) {
+            $values = self::modelNames( $model );
 
             foreach( $values as $value )
             {
@@ -158,32 +256,43 @@ class Access
             }
 
             return $values;
-        } );
+        },
+            add: fn( string $value ) => self::modelAdd( $model, $value ),
+            delete: fn( array $values ) => self::modelDelete( $model, $values ),
+        );
     }
 
 
     /**
-     * Configures frontend access through spatie/laravel-permission.
+     * Configures the access catalog through spatie/laravel-permission.
      *
      * Requires spatie/laravel-permission 6.2.0 or newer.
      */
     public static function spatie() : void
     {
         $registrar = 'Spatie\\Permission\\PermissionRegistrar';
+        $model = config(
+            'permission.models.permission',
+            'Spatie\\Permission\\Models\\Permission',
+        );
+        $guard = config( 'auth.defaults.guard', 'web' );
 
         self::configure(
-            fn() => self::modelNames( config(
-                'permission.models.permission',
-                'Spatie\\Permission\\Models\\Permission',
-            ) ),
-            fn( string $tenant ) => self::call( $registrar, 'setPermissionsTeamId', $tenant ),
-            function( Authenticatable $user ) {
+            list: fn() => self::modelNames( $model, ['guard_name' => $guard] ),
+            activate: fn( string $tenant ) => self::call( $registrar, 'setPermissionsTeamId', $tenant ),
+            prepare: function( Authenticatable $user ) {
                 if( !$user instanceof Model ) {
                     throw new Exception( 'Spatie access requires an Eloquent user model.' );
                 }
 
                 $user->unsetRelation( 'roles' );
                 $user->unsetRelation( 'permissions' );
+            },
+            add: function( string $value ) use ( $model, $guard ) {
+                self::call( self::model( $model ), 'findOrCreate', $value, $guard );
+            },
+            delete: function( array $values ) use ( $model, $guard ) {
+                self::modelDelete( $model, $values, ['guard_name' => $guard] );
             },
         );
     }
@@ -192,26 +301,16 @@ class Access
     /**
      * @return array<string, true>
      */
-    private function catalog( string $tenant ) : array
+    private function catalog() : array
     {
-        if( isset( $this->catalogs[$tenant] ) ) {
-            return $this->catalogs[$tenant];
+        $this->context();
+
+        if( $this->catalog !== null ) {
+            return $this->catalog;
         }
 
-        $catalog = [];
-
-        foreach( self::$availableCallback ? ( self::$availableCallback )() : [] as $value )
-        {
-            if( !is_string( $value ) || ( $value = trim( $value ) ) === '' ) {
-                throw new Exception( 'Frontend access values must be non-empty strings.' );
-            }
-
-            $catalog[$value] = true;
-        }
-
-        ksort( $catalog, SORT_STRING );
-
-        return $this->catalogs[$tenant] = $catalog;
+        $values = self::$listCallback ? ( self::$listCallback )() : [];
+        return $this->catalog = array_fill_keys( self::normalize( $values ), true );
     }
 
 
@@ -222,20 +321,64 @@ class Access
     }
 
 
-    private static function configure( ?\Closure $available, ?\Closure $activate = null,
-        ?\Closure $prepare = null ) : void
+    private function context() : void
     {
-        self::$availableCallback = $available;
+        $tenant = Tenancy::value();
+
+        if( $this->tenant === $tenant ) {
+            return;
+        }
+
+        $this->refresh();
+
+        if( self::$activateCallback ) {
+            ( self::$activateCallback )( $tenant );
+        }
+
+        $this->tenant = $tenant;
+    }
+
+
+    private static function syncPermissions() : void
+    {
+        Permission::unregister( self::PERMISSIONS );
+
+        if( self::$listCallback )
+        {
+            Permission::register( 'access:view' );
+
+            if( self::$addCallback ) {
+                Permission::register( 'access:add' );
+            }
+
+            if( self::$deleteCallback ) {
+                Permission::register( 'access:delete' );
+            }
+        }
+    }
+
+
+    private static function configure( ?\Closure $list, ?\Closure $activate = null,
+        ?\Closure $prepare = null, ?\Closure $add = null, ?\Closure $delete = null ) : void
+    {
+        self::$listCallback = $list;
         self::$activateCallback = $activate;
         self::$prepareCallback = $prepare;
+        self::$addCallback = $add;
+        self::$deleteCallback = $delete;
+        self::syncPermissions();
         app()->forgetInstance( self::class );
     }
 
 
-    /**
-     * @return array<int, mixed>
-     */
-    private static function modelNames( mixed $model ) : array
+    private function refresh() : void
+    {
+        $this->catalog = null;
+        $this->grants = new \WeakMap();
+    }
+
+
+    private static function model( mixed $model ) : Model
     {
         if( is_string( $model ) ) {
             $model = new $model();
@@ -245,6 +388,65 @@ class Access
             throw new Exception( 'Configured permission model must be an Eloquent model.' );
         }
 
-        return $model->newQuery()->pluck( 'name' )->all();
+        return $model;
+    }
+
+
+    private static function modelAdd( mixed $model, string $value ) : void
+    {
+        self::model( $model )->newQuery()->create( ['name' => $value] );
+    }
+
+
+    /**
+     * @param array<int, string> $values
+     * @param array<string, mixed> $where
+     */
+    private static function modelDelete( mixed $model, array $values, array $where = [] ) : void
+    {
+        $model = self::model( $model );
+
+        $model->getConnection()->transaction( function() use ( $model, $values, $where ) {
+            $query = $model->newQuery();
+
+            foreach( $where as $column => $value ) {
+                $query->where( $column, $value );
+            }
+
+            $query->whereIn( 'name', $values )->get()->each->delete();
+        } );
+    }
+
+
+    /**
+     * @param array<string, mixed> $where
+     * @return array<int, mixed>
+     */
+    private static function modelNames( mixed $model, array $where = [] ) : array
+    {
+        $query = self::model( $model )->newQuery();
+
+        foreach( $where as $column => $value ) {
+            $query->where( $column, $value );
+        }
+
+        return $query->pluck( 'name' )->all();
+    }
+
+
+    private static function value( string $value ) : string
+    {
+        if( ( $value = trim( $value ) ) === '' ) {
+            throw new Exception( 'Access values must be non-empty strings.' );
+        }
+
+        if( mb_strlen( $value ) > self::MAX_VALUE_LENGTH ) {
+            throw new Exception( sprintf(
+                'Access values may not be longer than %d characters.',
+                self::MAX_VALUE_LENGTH,
+            ) );
+        }
+
+        return $value;
     }
 }

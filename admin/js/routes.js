@@ -89,6 +89,15 @@ const router = createRouter({
         permission: 'file:view',
         title: gettext.$gettext('File')
       }
+    },
+    {
+      path: '/access',
+      name: 'access:view',
+      component: () => import('./views/AccessList.vue'),
+      meta: {
+        auth: true,
+        title: gettext.$gettext('Access')
+      }
     }
   ]
 })

@@ -3,7 +3,7 @@
 <script>
 import { useDisplay } from 'vuetify'
 import { useUserStore, useDrawerStore, usePluginStore } from '../stores'
-import { mdiFileTree, mdiShareVariant, mdiFolderMultipleImage } from '@mdi/js'
+import { mdiFileTree, mdiShareVariant, mdiFolderMultipleImage, mdiKeyVariant } from '@mdi/js'
 
 export default {
   setup() {
@@ -12,7 +12,23 @@ export default {
     const user = useUserStore()
     const plugin = usePluginStore()
 
-    return { user, drawer, plugin, mobile, mdiFileTree, mdiShareVariant, mdiFolderMultipleImage }
+    return { user, drawer, plugin, mobile }
+  },
+
+  computed: {
+    builtins() {
+      return [
+        { permission: 'page:view', path: '/pages', icon: mdiFileTree, label: this.$gettext('Pages') },
+        {
+          permission: 'element:view',
+          path: '/elements',
+          icon: mdiShareVariant,
+          label: this.$gettext('Shared elements')
+        },
+        { permission: 'file:view', path: '/files', icon: mdiFolderMultipleImage, label: this.$gettext('Files') },
+        { permission: 'access:view', path: '/access', icon: mdiKeyVariant, label: this.$gettext('Access') }
+      ]
+    }
   },
 
   methods: {
@@ -28,24 +44,14 @@ export default {
 <template>
   <v-navigation-drawer v-model="drawer.nav" location="start" mobile-breakpoint="lg" :aria-label="$gettext('Panels')">
     <v-list>
-      <v-list-item v-if="user.can('page:view')" rounded="lg">
-        <router-link to="/pages" class="router-link" @click="toggle()">
-          <v-icon :icon="mdiFileTree" class="icon" />
-          {{ $gettext('Pages') }}
-        </router-link>
-      </v-list-item>
-      <v-list-item v-if="user.can('element:view')" rounded="lg">
-        <router-link to="/elements" class="router-link" @click="toggle()">
-          <v-icon :icon="mdiShareVariant" class="icon" />
-          {{ $gettext('Shared elements') }}
-        </router-link>
-      </v-list-item>
-      <v-list-item v-if="user.can('file:view')" rounded="lg">
-        <router-link to="/files" class="router-link" @click="toggle()">
-          <v-icon :icon="mdiFolderMultipleImage" class="icon" />
-          {{ $gettext('Files') }}
-        </router-link>
-      </v-list-item>
+      <template v-for="panel in builtins" :key="panel.permission">
+        <v-list-item v-if="user.can(panel.permission)" rounded="lg">
+          <router-link :to="panel.path" class="router-link" @click="toggle()">
+            <v-icon :icon="panel.icon" class="icon" />
+            {{ panel.label }}
+          </router-link>
+        </v-list-item>
+      </template>
       <template v-for="(panel, key) in plugin.panels" :key="key">
         <v-list-item v-if="user.can(panel.permission)" rounded="lg">
           <router-link :to="'/' + key" class="router-link" @click="toggle()">

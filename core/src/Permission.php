@@ -117,6 +117,15 @@ class Permission
 
 
     /**
+     * Tests whether a permission is available.
+     */
+    public static function has( string $action ) : bool
+    {
+        return in_array( $action, self::$can, true );
+    }
+
+
+    /**
      * Checks if the user belongs to the current tenant and has the requested permission.
      *
      * @param string $action Name of the requested action, e.g. "page:view"
@@ -126,6 +135,10 @@ class Permission
     public static function can( string $action, ?Authenticatable $user ) : bool
     {
         if( !$user || !Tenancy::allows( $user, Tenancy::value() ) ) {
+            return false;
+        }
+
+        if( $action !== '*' && !self::has( $action ) ) {
             return false;
         }
 
@@ -180,11 +193,34 @@ class Permission
      */
     public static function register( array|string $actions ) : void
     {
+        $changed = false;
+
         foreach( (array) $actions as $action )
         {
-            if( !in_array( $action, self::$can ) ) {
+            if( !self::has( $action ) ) {
                 self::$can[] = $action;
+                $changed = true;
             }
+        }
+
+        if( $changed ) {
+            self::$resolvedCache = null;
+        }
+    }
+
+
+    /**
+     * Unregisters permission names which are no longer available.
+     *
+     * @param array<string>|string $actions Permission name(s) to unregister
+     */
+    public static function unregister( array|string $actions ) : void
+    {
+        $permissions = array_values( array_diff( self::$can, (array) $actions ) );
+
+        if( $permissions !== self::$can ) {
+            self::$can = $permissions;
+            self::$resolvedCache = null;
         }
     }
 

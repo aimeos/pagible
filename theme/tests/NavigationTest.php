@@ -27,7 +27,7 @@ class NavigationTest extends ThemeTestAbstract
     protected function setUp(): void
     {
         parent::setUp();
-        Access::availableUsing( fn() => [] );
+        Access::using( fn() => [] );
     }
 
 

@@ -7,6 +7,7 @@
 
 namespace Aimeos\Cms\GraphQL;
 
+use Aimeos\Cms\Access;
 use Aimeos\Cms\Filter;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
@@ -20,6 +21,17 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
  */
 final class Query
 {
+    /**
+     * Resolver for the access catalog.
+     *
+     * @return array<int, string>
+     */
+    public function access() : array
+    {
+        return app( Access::class )->list();
+    }
+
+
     /**
      * Resolver for paginated element list query.
      *

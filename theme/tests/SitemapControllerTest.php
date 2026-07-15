@@ -102,7 +102,7 @@ class SitemapControllerTest extends ThemeTestAbstract
     public function testIndexExcludesRestrictedPages()
     {
         $page = Page::where( 'path', 'hidden' )->firstOrFail();
-        Access::availableUsing( fn() => [] );
+        Access::using( fn() => [] );
         PageAccess::restrict( [$page->id], null );
 
         $controller = new \Aimeos\Cms\Controllers\SitemapController();

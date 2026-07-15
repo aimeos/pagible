@@ -11,6 +11,7 @@ use Aimeos\Cms\Access;
 use Aimeos\Cms\Concerns\Tenancy;
 use Aimeos\Cms\Exception;
 use Aimeos\Cms\Events\PagesInvalidated;
+use Aimeos\Cms\Permission;
 use Aimeos\Cms\Scout;
 use Aimeos\Cms\Utils;
 use Aimeos\Nestedset\NestedSet;
@@ -38,7 +39,6 @@ class PageAccess extends Model
 
     public const CHUNK_SIZE = 250;
     private const MAX_VALUES = 250;
-    private const MAX_LENGTH = 100;
 
     protected $table = 'cms_page_access';
     protected $fillable = ['page_id', 'value', 'editor'];
@@ -230,7 +230,7 @@ class PageAccess extends Model
      */
     private static function normalize( ?array $values ) : ?array
     {
-        if( !Access::isAvailable() ) {
+        if( !Permission::has( 'access:view' ) ) {
             throw new Exception( 'Frontend access restrictions are not available.' );
         }
 
@@ -238,20 +238,7 @@ class PageAccess extends Model
             return null;
         }
 
-        $result = [];
-
-        foreach( $values as $value )
-        {
-            if( !is_string( $value ) || ( $value = trim( $value ) ) === '' ) {
-                throw new Exception( 'Access values must be non-empty strings.' );
-            }
-
-            if( mb_strlen( $value ) > self::MAX_LENGTH ) {
-                throw new Exception( sprintf( 'Access values may not exceed %d characters.', self::MAX_LENGTH ) );
-            }
-
-            $result[$value] = true;
-        }
+        $result = Access::normalize( $values );
 
         if( count( $result ) > self::MAX_VALUES ) {
             throw new Exception( sprintf( 'A page may not require more than %d access values.', self::MAX_VALUES ) );
@@ -261,10 +248,7 @@ class PageAccess extends Model
             return null;
         }
 
-        $result = array_keys( $result );
-        sort( $result, SORT_STRING );
-
-        if( $unknown = array_diff( $result, app( Access::class )->all() ) ) {
+        if( $unknown = array_diff( $result, app( Access::class )->list() ) ) {
             throw new Exception( sprintf( 'Unknown frontend access value "%s".', reset( $unknown ) ) );
         }
 
@@ -292,9 +276,7 @@ class PageAccess extends Model
         $table = $model->getConnection()->table( $model->getTable() );
         $tenant = \Aimeos\Cms\Tenancy::value();
 
-        foreach( array_chunk( $ids, self::CHUNK_SIZE ) as $chunk ) {
-            ( clone $table )->where( 'tenant_id', $tenant )->whereIn( 'page_id', $chunk )->delete();
-        }
+        self::deleteAccess( $ids );
 
         $rows = [];
 

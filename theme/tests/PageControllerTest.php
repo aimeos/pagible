@@ -42,7 +42,7 @@ class PageControllerTest extends ThemeTestAbstract
         $this->user->email = 'test@example.com';
         $this->user->tenant_id = 'test';
         $this->user->cmsperms = ['admin'];
-        Access::availableUsing( fn() => ['frontend.member'] );
+        Access::using( fn() => ['frontend.member'] );
         AuthenticationException::redirectUsing( fn() => '/login' );
     }
 

@@ -18,6 +18,7 @@ use Aimeos\Cms\Controllers\SearchController;
 use Aimeos\Cms\Controllers\SitemapController;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Models\PageAccess;
+use Aimeos\Cms\Permission;
 use Aimeos\Cms\Http\Middleware\ServeCachedPage;
 use Aimeos\Nestedset\NestedSet;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
@@ -198,10 +199,10 @@ class BenchmarkTheme extends Command
     private function benchmarkAccess( Page $page, string $domain, string $baseurl,
         ServeCachedPage $middleware, int $tries ) : void
     {
-        $temporaryAccess = !Access::isAvailable();
+        $temporaryAccess = !Permission::has( 'access:view' );
 
         if( $temporaryAccess ) {
-            Access::availableUsing( static fn() => ['benchmark.frontend'] );
+            Access::using( static fn() => ['benchmark.frontend'] );
         }
 
         try
@@ -230,7 +231,7 @@ class BenchmarkTheme extends Command
 
             // Reuse an application-owned frontend value when one exists. Empty
             // catalogs still exercise authenticated-current-tenant restrictions.
-            $available = app( Access::class )->all();
+            $available = app( Access::class )->list();
             $values = isset( $available[0] ) ? [$available[0]] : null;
             $root = Page::where( 'tag', 'root' )->where( 'domain', $domain )->firstOrFail();
             $accessTries = max( 1, (int) ceil( $tries / 10 ) );
@@ -254,7 +255,7 @@ class BenchmarkTheme extends Command
         finally
         {
             if( $temporaryAccess ) {
-                Access::availableUsing( null );
+                Access::using( null );
             }
         }
     }

@@ -39,7 +39,7 @@ class PageAccessTest extends CoreTestAbstract
     protected function setUp(): void
     {
         parent::setUp();
-        Access::availableUsing( fn() => ['alpha', 'beta', 'denied', 'gamma', 'member'] );
+        Access::using( fn() => ['alpha', 'beta', 'denied', 'gamma', 'member'] );
         $this->invalidator = new PageInvalidationSpy();
         Event::listen( PagesInvalidated::class, [$this->invalidator, 'handle'] );
     }
@@ -73,22 +73,10 @@ class PageAccessTest extends CoreTestAbstract
     }
 
 
-    public function testAccessAvailabilityTracksCatalogConfiguration(): void
-    {
-        $this->assertTrue( Access::isAvailable() );
-
-        Access::availableUsing( null );
-        $this->assertFalse( Access::isAvailable() );
-
-        Access::availableUsing( fn() => [] );
-        $this->assertTrue( Access::isAvailable() );
-    }
-
-
     public function testRestrictionRequiresAvailableAccessConfiguration(): void
     {
         $page = Page::where( 'path', 'hidden' )->firstOrFail();
-        Access::availableUsing( null );
+        Access::using( null );
 
         try {
             PageAccess::restrict( [$page->id], null );
@@ -106,30 +94,10 @@ class PageAccessTest extends CoreTestAbstract
     {
         $page = Page::where( 'path', 'hidden' )->firstOrFail();
         PageAccess::restrict( [$page->id], null );
-        Access::availableUsing( null );
+        Access::using( null );
 
         $this->assertSame( 1, PageAccess::release( [$page->id] ) );
         $this->assertFalse( PageAccess::where( 'page_id', $page->id )->exists() );
-    }
-
-
-    public function testRejectsEmptyAccessValueStrings(): void
-    {
-        $page = Page::where( 'path', 'hidden' )->firstOrFail();
-
-        $this->expectException( Exception::class );
-        $this->expectExceptionMessage( 'Access values must be non-empty strings.' );
-        PageAccess::restrict( [$page->id], [' '] );
-    }
-
-
-    public function testRejectsNonStringAccessValues(): void
-    {
-        $page = Page::where( 'path', 'hidden' )->firstOrFail();
-
-        $this->expectException( Exception::class );
-        $this->expectExceptionMessage( 'Access values must be non-empty strings.' );
-        PageAccess::restrict( [$page->id], [null] );
     }
 
 
@@ -532,198 +500,6 @@ class PageAccessTest extends CoreTestAbstract
     }
 
 
-    public function testAllowedValuesAreRequestScoped(): void
-    {
-        $user = new \App\Models\User();
-        $user->id = 42;
-        $allow = true;
-        $calls = 0;
-
-        Gate::define( 'member', function() use ( &$allow, &$calls ) {
-            $calls++;
-            return $allow;
-        } );
-
-        $this->assertSame( ['member'], app( Access::class )->allowed( $user ) );
-        $allow = false;
-        $this->assertSame( ['member'], app( Access::class )->allowed( $user ) );
-
-        app()->forgetScopedInstances();
-
-        $this->assertSame( [], app( Access::class )->allowed( $user ) );
-        $this->assertSame( 2, $calls );
-    }
-
-
-    public function testAllReturnsNormalizedValues(): void
-    {
-        Access::availableUsing( fn() => [' beta ', 'alpha', 'alpha'] );
-
-        $this->assertSame( ['alpha', 'beta'], app( Access::class )->all() );
-    }
-
-
-    public function testAllMemoizesNormalizedValuesPerRequest(): void
-    {
-        $calls = 0;
-        Access::availableUsing( function() use ( &$calls ) {
-            $calls++;
-            return ['member'];
-        } );
-
-        $this->assertSame( ['member'], app( Access::class )->all() );
-        $this->assertSame( ['member'], app( Access::class )->all() );
-        $this->assertSame( 1, $calls );
-
-        app()->forgetScopedInstances();
-
-        $this->assertSame( ['member'], app( Access::class )->all() );
-        $this->assertSame( 2, $calls );
-    }
-
-
-    public function testAvailableUsingInvalidatesAllValues(): void
-    {
-        Access::availableUsing( fn() => ['alpha'] );
-        $this->assertSame( ['alpha'], app( Access::class )->all() );
-
-        Access::availableUsing( fn() => ['beta'] );
-        $this->assertSame( ['beta'], app( Access::class )->all() );
-    }
-
-
-    public function testBackendGateAbilitiesAreNotFrontendValues(): void
-    {
-        Access::availableUsing( null );
-        Gate::define( 'page:view', fn() => true );
-        $user = new \App\Models\User();
-        $user->id = 42;
-
-        $this->assertSame( [], app( Access::class )->allowed( $user ) );
-    }
-
-
-    public function testAvailableValuesAreTenantScoped(): void
-    {
-        Access::availableUsing( fn() => \Aimeos\Cms\Tenancy::value() === 'other' ? ['foreign'] : ['member'] );
-
-        $foreignCalls = 0;
-        Gate::define( 'member', fn() => true );
-        Gate::define( 'foreign', function() use ( &$foreignCalls ) {
-            $foreignCalls++;
-            return true;
-        } );
-
-        $user = new \App\Models\User();
-        $user->id = 42;
-
-        $this->assertSame( ['member'], app( Access::class )->allowed( $user ) );
-        $this->assertSame( 0, $foreignCalls );
-
-        app()->instance( \Aimeos\Cms\Tenancy::class, new \Aimeos\Cms\Tenancy( 'other' ) );
-
-        $this->assertSame( ['foreign'], app( Access::class )->allowed( $user ) );
-        $this->assertSame( 1, $foreignCalls );
-    }
-
-
-    public function testSpatieAdapterPreparesUsersOncePerTenantScope(): void
-    {
-        class_alias( SpatieRegistrarFake::class, 'Spatie\\Permission\\PermissionRegistrar' );
-        $registrar = new SpatieRegistrarFake();
-        app()->instance( 'Spatie\\Permission\\PermissionRegistrar', $registrar );
-        config( ['permission.models.permission' => AccessPackageModel::class] );
-        $value = Page::query()->value( 'name' );
-
-        Access::spatie();
-        $access = app( Access::class );
-
-        $this->assertIsString( $value );
-        $this->assertContains( $value, $access->all() );
-        $this->assertSame( 'test', $registrar->tenant );
-
-        $user = new \App\Models\User();
-        $user->setRelation( 'roles', collect( ['stale'] ) );
-        $user->setRelation( 'permissions', collect( ['stale'] ) );
-
-        Gate::define( $value, function() use ( $user ) {
-            $this->assertFalse( $user->relationLoaded( 'roles' ) );
-            $this->assertFalse( $user->relationLoaded( 'permissions' ) );
-            return true;
-        } );
-
-        $this->assertSame( [$value], $access->allowed( $user, [$value] ) );
-        $this->assertSame( 1, $registrar->calls );
-
-        $user->setRelation( 'roles', collect() );
-        $user->setRelation( 'permissions', collect() );
-
-        $this->assertSame( [$value], $access->allowed( $user, [$value] ) );
-        $this->assertTrue( $user->relationLoaded( 'roles' ) );
-        $this->assertTrue( $user->relationLoaded( 'permissions' ) );
-
-        \Aimeos\Cms\Tenancy::set( 'other' );
-
-        $this->assertSame( [$value], app( Access::class )->allowed( $user, [$value] ) );
-        $this->assertFalse( $user->relationLoaded( 'roles' ) );
-        $this->assertFalse( $user->relationLoaded( 'permissions' ) );
-        $this->assertSame( 'other', $registrar->tenant );
-        $this->assertSame( 2, $registrar->calls );
-    }
-
-
-    public function testBouncerAdapterActivatesTenantOncePerScope(): void
-    {
-        class_alias( BouncerFake::class, 'Silber\\Bouncer\\Bouncer' );
-        $bouncer = new BouncerFake();
-        app()->instance( 'Silber\\Bouncer\\Bouncer', $bouncer );
-        $value = Page::query()->value( 'name' );
-
-        Access::bouncer();
-        $access = app( Access::class );
-
-        $this->assertIsString( $value );
-        $this->assertContains( $value, $access->all() );
-        $this->assertSame( 'test', $bouncer->scope->tenant );
-
-        Gate::define( $value, fn() => true );
-        $this->assertSame( [$value], $access->allowed( new \App\Models\User(), [$value] ) );
-        $this->assertSame( 1, $bouncer->scope->calls );
-    }
-
-
-    public function testLaratrustAdapterRegistersTenantAwareGates(): void
-    {
-        class_alias( LaratrustFake::class, 'Laratrust\\Laratrust' );
-        config( [
-            'laratrust.models.permission' => AccessPackageModel::class,
-            'laratrust.teams.enabled' => true,
-        ] );
-        $value = Page::query()->value( 'name' );
-        $user = new LaratrustUserFake();
-
-        Access::laratrust();
-
-        $this->assertIsString( $value );
-        $this->assertSame( [$value], app( Access::class )->allowed( $user, [$value] ) );
-        $this->assertContains( $value, app( Access::class )->all() );
-        $this->assertSame( [[$value, 'test']], $user->checks );
-    }
-
-
-    public function testAllowedValuesDoNotQueryPageRules(): void
-    {
-        Gate::define( 'member', fn() => true );
-        $user = new \App\Models\User();
-        $user->id = 42;
-        DB::flushQueryLog();
-        DB::enableQueryLog();
-
-        $this->assertSame( ['member'], app( Access::class )->allowed( $user ) );
-        $this->assertSame( [], DB::getQueryLog() );
-    }
-
-
     public function testRejectsUnknownAccessValues(): void
     {
         $page = Page::where( 'path', 'hidden' )->firstOrFail();
@@ -873,90 +649,5 @@ class FailingQueueFake extends QueueFake
         }
 
         return parent::push( $job, $data, $queue );
-    }
-}
-
-
-class AccessPackageModel extends \Illuminate\Database\Eloquent\Model
-{
-    protected $table = 'cms_pages';
-    public $timestamps = false;
-
-
-    public function getConnectionName(): string
-    {
-        return config( 'cms.db', 'sqlite' );
-    }
-}
-
-
-class SpatieRegistrarFake
-{
-    public ?string $tenant = null;
-    public int $calls = 0;
-
-
-    public function setPermissionsTeamId( string $tenant ): void
-    {
-        $this->tenant = $tenant;
-        $this->calls++;
-    }
-}
-
-
-class BouncerFake
-{
-    public BouncerScopeFake $scope;
-
-
-    public function __construct()
-    {
-        $this->scope = new BouncerScopeFake();
-    }
-
-
-    public function ability(): AccessPackageModel
-    {
-        return new AccessPackageModel();
-    }
-
-
-    public function scope(): BouncerScopeFake
-    {
-        return $this->scope;
-    }
-}
-
-
-class BouncerScopeFake
-{
-    public ?string $tenant = null;
-    public int $calls = 0;
-
-
-    public function to( string $tenant ): self
-    {
-        $this->tenant = $tenant;
-        $this->calls++;
-        return $this;
-    }
-}
-
-
-class LaratrustFake
-{
-}
-
-
-class LaratrustUserFake extends \App\Models\User
-{
-    /** @var array<int, array{string, ?string}> */
-    public array $checks = [];
-
-
-    public function isAbleTo( string $value, ?string $team = null ): bool
-    {
-        $this->checks[] = [$value, $team];
-        return true;
     }
 }

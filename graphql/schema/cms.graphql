@@ -36,6 +36,11 @@ extend type Query {
   "Current authenticated user"
   me: User @auth @throttle(name: "cms-admin")
 
+  "Get the available access values"
+  access: [String!]!
+    @guard @cmsPermission(action: "access:view") @throttle(name: "cms-admin")
+    @field(resolver: "\\Aimeos\\Cms\\GraphQL\\Query@access")
+
   "Get page by ID"
   page(id: ID! @eq): Page
     @guard @cmsPermission(action: "page:view") @throttle(name: "cms-admin")
@@ -79,6 +84,14 @@ extend type Mutation {
 
   "Update CMS user preferences"
   cmsUser(settings: JSON!): User @guard @throttle(name: "cms-admin")
+
+  "Add an access value"
+  addAccess(value: String!): [String!]!
+    @guard @cmsPermission(action: "access:add") @throttle(name: "cms-admin")
+
+  "Delete access values"
+  deleteAccess(values: [String!]!): [String!]!
+    @guard @cmsPermission(action: "access:delete") @throttle(name: "cms-admin")
 
   "Add a new page below the page referenced by 'parent' and before the page referenced by 'ref' (or append if NULL)"
   addPage(input: PageInput!, parent: ID, ref: ID): Page

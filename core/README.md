@@ -62,19 +62,21 @@ Enable Stancl's `QueueTenancyBootstrapper` for tenant-aware queued index synchro
 
 Tenant scopes protect newly built queries and new CMS models receive the active `tenant_id`. Already-loaded models are not rebound after a tenant switch: ordinary Eloquent saves, deletes, relationship mutations, publishing, and storage cleanup continue to use their stored keys and paths. Do not retain CMS model instances across tenant contexts.
 
-### Frontend page access
+### Access catalog
 
-Frontend restrictions are stored independently in `cms_page_access`, with one row per access value and `(page_id, value)` as its composite primary key. Each row also stores `tenant_id`. No rows for a page mean public access, one row with an empty value permits an authenticated user accepted by `Tenancy::allows()` for the current tenant, and one or more non-empty values permit such a user when Laravel Gate grants any one of them. Page models are deliberately not passed to Gate.
-
-Configure the frontend-only value catalog independently from CMS editor permissions. The normalized callback result is memoized for the current request by tenant, while its Gate-filtered result is memoized by user and tenant. The underlying provider remains responsible for longer-lived caching:
+The access catalog is independent from CMS editor permissions and from any single protected resource. It owns the available values and resolves them through Laravel Gate; page restrictions are one consumer. The normalized catalog is memoized for the current request by tenant, while its Gate-filtered result is memoized by user and tenant. The underlying provider remains responsible for longer-lived caching:
 
 ```php
 use Aimeos\Cms\Access;
 
-Access::availableUsing( fn() => app(FrontendPermissions::class)->names() );
+Access::using(
+    list: fn() => app(AccessPermissions::class)->names(),
+    add: fn( string $value ) => app(AccessPermissions::class)->add( $value ),
+    delete: fn( array $values ) => app(AccessPermissions::class)->delete( $values ),
+);
 ```
 
-`Access::isAvailable()` reports whether a catalog or package adapter has been configured, and `Access::all()` returns its normalized values. Restriction writes are rejected while access is unavailable; releasing existing restrictions remains possible. Configure a callback returning an empty list to enable authentication-only restrictions without named access values.
+`Permission::has('access:view')` reports whether a catalog or package adapter has been configured, and `Access::list()` returns its normalized values. The `add` and `delete` callbacks are optional; without them the catalog remains read-only. Pass `null` as the list callback to reset custom configuration.
 
 For a supported permission package, call its adapter once from an application service provider instead. Spatie must have its teams migration and `permission.teams` enabled for tenant-specific assignments; Laratrust must have its teams migration and `laratrust.teams.enabled` enabled. Bouncer's adapter selects its built-in tenant scope. Laratrust permission checks are exposed as tenant-aware Laravel Gate definitions:
 
@@ -88,15 +90,27 @@ The adapters require these package versions at minimum:
 
 | Adapter | Minimum package version | API used by Pagible |
 |---------|-------------------------|---------------------|
-| Spatie | `spatie/laravel-permission` 6.2.0 | Permission model, teams, and `PermissionRegistrar::setPermissionsTeamId()` |
-| Bouncer | `silber/bouncer` 1.0.2 | Ability model and `scope()->to()` |
+| Spatie | `spatie/laravel-permission` 6.2.0 | Permission model, `findOrCreate()`, model cache events, teams, and `PermissionRegistrar::setPermissionsTeamId()` |
+| Bouncer | `silber/bouncer` 1.0.2 | Global ability model, `scope()->to()`, and `refresh()` |
 | Laratrust | `santigarcor/laratrust` 8.3.0 | Permission model, teams, `isAbleTo()`, and permission gates |
 
 These are runtime contracts, not compatibility probes: calling an adapter without its package, with an older release, or without the documented team configuration is an application configuration error. Applications must install a package release compatible with their Laravel version; the APIs above remain required.
 
-Pagible does not validate the package's team configuration when an adapter is registered. If Spatie teams or Laratrust teams are disabled, permission checks are evaluated globally even though the current user is still required to belong to the active Pagible tenant. A permission assigned for one tenant can therefore satisfy a page restriction using the same value in another tenant. This risk applies only to misconfigured installations; with teams enabled, the required migrations installed, and assignments associated with the correct tenant, permission checks remain tenant-scoped.
+Pagible does not validate the package's team configuration when an adapter is registered. If Spatie teams or Laratrust teams are disabled, permission checks are evaluated globally even though the current user is still required to belong to the active Pagible tenant. A permission assigned for one tenant can therefore authorize the same catalog value in another tenant. This risk applies only to misconfigured installations; with teams enabled, the required migrations installed, and assignments associated with the correct tenant, permission checks remain tenant-scoped.
 
-Choose exactly one adapter. Each adapter exposes the package's permission or ability names as frontend access values, so keep that package catalog frontend-specific. For a custom catalog or integration, use `availableUsing()` with an explicit allowlist. The scoped `Access` instance activates the current Spatie or Bouncer tenant once when Laravel resolves it, then passes values through Gate while preserving package hooks, `Gate::before()` rules, and explicit denials. The Spatie adapter also clears the user's loaded `roles` and `permissions` relations before its first Gate check in each tenant scope, preventing relations from the previous tenant from being reused.
+Choose exactly one adapter. Each adapter exposes and manages the configured package's permission or ability model as the access catalog, so the provider catalog must be dedicated to access values. Use explicit custom callbacks when a provider model is shared with unrelated authorization permissions. Bouncer exposes only global abilities and leaves model-bound abilities untouched. Spatie reads and deletes only permissions for the configured default guard and uses the package's `findOrCreate()` and model events so its cache hooks remain active. Custom Spatie permission models must retain those package contracts and events.
+
+Spatie and Laratrust permission definitions can remain global even when their assignments are team-scoped. Their `access:add` and `access:delete` capabilities therefore authorize management of the shared definition catalog, not merely the current team's assignments. Grant those capabilities only to editors allowed to make that global change.
+
+The scoped `Access` instance activates Spatie or Bouncer lazily before its first operation in each tenant context. It clears its catalog and per-user Gate results whenever the tenant changes, while preserving package hooks, `Gate::before()` rules, and explicit denials. The Spatie adapter also clears the user's loaded `roles` and `permissions` relations before its first Gate check in each tenant context, preventing relations from the previous tenant from being reused.
+
+Configured catalogs register `access:view` as a CMS editor capability. Writable catalogs additionally register `access:add` and `access:delete`; `access:*` expands to the capabilities currently available. `Access::add()` creates an immutable value and `Access::delete()` removes up to 250 values. Deleting a value does not rewrite references held by consumers.
+
+### Frontend page access
+
+Frontend restrictions are stored independently in `cms_page_access`, with one row per access value and `(page_id, value)` as its composite primary key. Each row also stores `tenant_id`. No rows for a page mean public access, one row with an empty value permits an authenticated user accepted by `Tenancy::allows()` for the current tenant, and one or more non-empty values permit such a user when Laravel Gate grants any one of them. Page models are deliberately not passed to Gate.
+
+Restriction writes are rejected while the access catalog is unavailable; releasing existing restrictions remains possible. Configure a callback returning an empty list to enable authentication-only restrictions without named access values. Deleting a catalog value does not rewrite existing page restrictions, which continue to fail closed until they are changed explicitly.
 
 Use the static `PageAccess` methods as the supported write API. They apply database-first, chunked changes so public page caches and external search documents are updated consistently:
 
