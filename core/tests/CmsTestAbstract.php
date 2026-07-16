@@ -46,6 +46,7 @@ abstract class CmsTestAbstract extends \Orchestra\Testbench\TestCase
     protected function tearDown(): void
     {
         ( new \ReflectionProperty( \Aimeos\Cms\Schema::class, 'themes' ) )->setValue( null, [] );
+        \Aimeos\Cms\Schema::source( null );
         parent::tearDown();
     }
 

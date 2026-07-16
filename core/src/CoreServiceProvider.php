@@ -177,32 +177,8 @@ class CoreServiceProvider extends Provider
 
     protected function rateLimiter(): void
     {
-        RateLimiter::for( 'cms-admin', fn( $request ) =>
+        RateLimiter::for( 'cms-broadcast', fn( $request ) =>
             Limit::perMinute( 120 )->by( $request->user()?->getAuthIdentifier() ?: $request->ip() )
-        );
-
-        RateLimiter::for( 'cms-ai', fn( $request ) =>
-            Limit::perMinute( 10 )->by( $request->user()?->getAuthIdentifier() ?: $request->ip() )
-        );
-
-        RateLimiter::for( 'cms-contact', fn( $request ) =>
-            Limit::perMinute( 2 )->by( $request->ip() )
-        );
-
-        RateLimiter::for( 'cms-jsonapi', fn( $request ) =>
-            Limit::perMinute( 60 )->by( $request->ip() )
-        );
-
-        RateLimiter::for( 'cms-login', fn( $request ) =>
-            Limit::perMinute( 10 )->by( $request->ip() )
-        );
-
-        RateLimiter::for( 'cms-proxy', fn( $request ) =>
-            Limit::perMinute( 30 )->by( $request->ip() )
-        );
-
-        RateLimiter::for( 'cms-search', fn( $request ) =>
-            Limit::perMinute( 60 )->by( $request->ip() )
         );
     }
 }
