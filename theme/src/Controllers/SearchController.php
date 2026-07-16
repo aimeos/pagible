@@ -30,7 +30,7 @@ class SearchController extends Controller
         $start = Watch::start( 'cms.theme.watch', CmsSearch::class );
 
         $vals = $request->validate( [
-            'q' => 'required|string|min:' . (int) config( 'cms.search.min', 2 ) . '|max:200',
+            'q' => 'required|string|min:' . (int) config( 'cms.theme.min-search' ) . '|max:200',
             'size' => 'integer|between:5,100',
         ] );
 
