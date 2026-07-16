@@ -35,7 +35,7 @@ extend type Query {
 
   "Get the available access values"
   access: [String!]!
-    @guard @cmsPermission(action: "access:view") @throttle(name: "cms-admin")
+    @guard @cmsPermission(action: "access:view") @throttle(name: "cms-graphql")
     @field(resolver: "\\Aimeos\\Cms\\GraphQL\\Query@access")
 
   "Get page by ID"
@@ -84,11 +84,11 @@ extend type Mutation {
 
   "Add an access value"
   addAccess(value: String!): [String!]!
-    @guard @cmsPermission(action: "access:add") @throttle(name: "cms-admin")
+    @guard @cmsPermission(action: "access:add") @throttle(name: "cms-graphql")
 
   "Delete access values"
   deleteAccess(values: [String!]!): [String!]!
-    @guard @cmsPermission(action: "access:delete") @throttle(name: "cms-admin")
+    @guard @cmsPermission(action: "access:delete") @throttle(name: "cms-graphql")
 
   "Add a new page below the page referenced by 'parent' and before the page referenced by 'ref' (or append if NULL)"
   addPage(input: PageInput!, parent: ID, ref: ID): Page
