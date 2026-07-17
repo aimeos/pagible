@@ -504,7 +504,8 @@ export default {
       this.reset()
     },
 
-    save(quiet = false) {
+    async save(quiet = false) {
+      await this.$nextTick()
       this.$refs.content?.flush()
 
       if (!this.user.can('page:save')) {
