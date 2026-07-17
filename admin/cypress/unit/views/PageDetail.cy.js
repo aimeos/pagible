@@ -7,7 +7,10 @@ const stubs = {
   HistoryDialog: { template: '<div class="history-dialog-stub" />' },
   PageDetailItem: { template: '<div class="page-detail-item-stub" />' },
   PageDetailEditor: { template: '<div class="page-detail-editor-stub" />' },
-  PageDetailContent: { template: '<div class="page-detail-content-stub" />' },
+  PageDetailContent: {
+    template: '<div class="page-detail-content-stub" />',
+    methods: { flush() {} },
+  },
   PageDetailMetrics: { template: '<div class="page-detail-metrics-stub" />' },
 }
 
@@ -93,6 +96,20 @@ describe('PageDetail', () => {
   it('disables save button when nothing has changed', () => {
     mountDetail({ 'page:save': true })
     cy.get('.menu-save').should('be.disabled')
+  })
+
+  it('waits for pending content updates before flushing on save', () => {
+    mountDetail().then(() => {
+      const vm = Cypress.vueWrapper.findComponent(PageDetail).vm
+      const flush = cy.spy(vm.$refs.content, 'flush')
+      const saving = vm.save()
+
+      expect(flush).not.to.have.been.called
+
+      return saving.then(() => {
+        expect(flush).to.have.been.calledOnce
+      })
+    })
   })
 
   it('disables publish button without page:publish permission', () => {
