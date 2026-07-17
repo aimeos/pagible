@@ -64,11 +64,17 @@ jobs:
           user_name: 'aimeos'
           user_email: 'aimeos@aimeos.org'
 
+      - name: Determine release branch
+        if: startsWith(github.ref, 'refs/tags/')
+        id: release
+        shell: bash
+        run: echo "branch=${GITHUB_REF_NAME%.*}" >> "$GITHUB_OUTPUT"
+
       - name: Split and push tag
         if: startsWith(github.ref, 'refs/tags/')
         uses: danharrin/monorepo-split-github-action@v2.4.4
         with:
-          branch: master
+          branch: ${{ steps.release.outputs.branch }}
           tag: ${{ github.ref_name }}
           package_directory: ${{ matrix.package }}
           repository_organization: 'aimeos'
