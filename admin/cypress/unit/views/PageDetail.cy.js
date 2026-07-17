@@ -99,7 +99,11 @@ describe('PageDetail', () => {
   })
 
   it('waits for pending content updates before flushing on save', () => {
-    mountDetail().then(() => {
+    mountDetail()
+    cy.contains('.v-tab', 'Content').click()
+    cy.contains('.v-tab', 'Editor').click()
+
+    cy.then(() => {
       const vm = Cypress.vueWrapper.findComponent(PageDetail).vm
       const flush = cy.spy(vm.$refs.content, 'flush')
       const saving = vm.save()
