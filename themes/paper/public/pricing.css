@@ -89,7 +89,7 @@
     display: flex;
     flex-direction: column;
     padding: 2rem;
-    background-color: var(--pico-primary-inverse, #FFFFFF);
+    background-color: var(--pico-primary-inverse);
     border: 1px solid var(--pico-muted-border-color);
     border-radius: var(--pico-border-radius);
     box-shadow: var(--pico-box-shadow);
@@ -161,7 +161,7 @@
     margin: 0 0 0.25rem;
 }
 
-.pricing .pricing-header .text {
+.pricing .pricing-header .cms-text {
     font-size: 0.875rem;
     color: var(--pico-muted-color);
     font-weight: 300;
@@ -169,7 +169,7 @@
     margin: 0 0 0.75rem;
 }
 
-.pricing .highlight .pricing-header .text {
+.pricing .highlight .pricing-header .cms-text {
     color: color-mix(in srgb, var(--pico-contrast-inverse) 70%, transparent);
 }
 

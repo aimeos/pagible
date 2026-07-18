@@ -5,10 +5,11 @@
 
 dialog > article {
     background-color: var(--pico-contrast-inverse);
-    height: calc(100vh - 2rem);
-    overflow: unset;
     border: 1px solid var(--pico-muted-border-color);
     border-radius: calc(var(--pico-border-radius) * 4);
+    height: calc(100vh - 2rem);
+    padding-bottom: 2rem;
+    overflow: unset;
 }
 
 dialog header {
@@ -39,7 +40,7 @@ dialog button[type=reset] {
 }
 
 dialog button[type=reset]:hover {
-    background-color: var(--pico-muted-background-color);
+    background-color: var(--pico-contrast-focus);
 }
 
 dialog input {
@@ -181,11 +182,15 @@ footer.cms-content {
 
 footer.cms-content .container {
     max-width: 1280px;
+    padding: 0;
 }
 
 footer.cms-content .cards .card-list {
     grid-template-columns: 1fr 1fr;
-    gap: 3rem;
+}
+
+footer.cms-content .cards {
+    --cards-gap: 3rem;
 }
 
 @media screen and (min-width: 768px) {
@@ -195,7 +200,7 @@ footer.cms-content .cards .card-list {
 }
 
 footer.cms-content .cards .card-item {
-    background-color: transparent;
+    background: transparent;
     box-shadow: none;
     border: none;
     border-radius: 0;
@@ -210,7 +215,6 @@ footer.cms-content .cards .card-item:hover {
 footer.cms-content .cards .title {
     color: #9CA3AF;
     font-size: calc(var(--pico-font-size) * 0.65);
-    margin-bottom: 1.75rem;
     text-transform: uppercase;
     letter-spacing: 0.05em;
 }
@@ -307,7 +311,7 @@ footer.bottom .brand {
 
 footer.bottom .brand img {
     height: 7.5rem;
-    filter: brightness(0) invert(1);
+    filter: invert(1);
     vertical-align: middle;
     opacity: 0.5;
 }

@@ -105,7 +105,7 @@
     box-shadow: var(--pico-box-shadow);
     width: fit-content;
     margin: 3rem auto 0;
-    padding: 0.5rem;
+    padding: 1rem;
     display: block;
 }
 
