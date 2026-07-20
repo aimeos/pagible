@@ -35,11 +35,17 @@ class Access
     /** @var \Closure(Authenticatable): void|null */
     private static ?\Closure $prepareCallback = null;
 
+    /** @var (\Closure(Authenticatable): (iterable<mixed>|null))|null */
+    private static ?\Closure $grantsCallback = null;
+
     /** @var array<string, true>|null */
     private ?array $catalog = null;
 
     /** @var \WeakMap<object, array<string, bool>> */
     private \WeakMap $grants;
+
+    /** @var \WeakMap<object, bool> */
+    private \WeakMap $resolved;
 
     private ?string $tenant = null;
 
@@ -47,6 +53,7 @@ class Access
     public function __construct()
     {
         $this->grants = new \WeakMap();
+        $this->resolved = new \WeakMap();
     }
 
 
@@ -56,10 +63,12 @@ class Access
      * @param \Closure(): iterable<mixed>|null $list Callback returning access values or NULL to reset
      * @param \Closure(string): void|null $add Optional callback adding an access value
      * @param \Closure(array<int, string>): void|null $delete Optional callback deleting access values
+     * @param (\Closure(Authenticatable): (iterable<mixed>|null))|null $grants Optional effective-grants resolver
      */
-    public static function using( ?\Closure $list, ?\Closure $add = null, ?\Closure $delete = null ) : void
+    public static function using( ?\Closure $list, ?\Closure $add = null, ?\Closure $delete = null,
+        ?\Closure $grants = null ) : void
     {
-        self::configure( list: $list, add: $add, delete: $delete );
+        self::configure( list: $list, add: $add, delete: $delete, grants: $grants );
     }
 
 
@@ -162,15 +171,14 @@ class Access
 
 
     /**
-     * Returns candidate access values granted to the user by Gate.
+     * Returns candidate access values granted to the user.
      *
      * @param iterable<mixed>|null $values Candidate values or NULL for all available values
      * @return array<int, string>
      */
     public function allowed( Authenticatable $user, ?iterable $values = null ) : array
     {
-        $catalog = $this->catalog();
-        $gate = Gate::forUser( $user );
+        $this->context();
         $prepared = isset( $this->grants[$user] );
         $granted = $this->grants[$user] ?? [];
 
@@ -178,6 +186,23 @@ class Access
             ( self::$prepareCallback )( $user );
         }
 
+        if( !isset( $this->resolved[$user] ) && self::$grantsCallback )
+        {
+            if( ( $resolved = ( self::$grantsCallback )( $user ) ) !== null ) {
+                $granted = array_fill_keys( self::normalize( $resolved ), true );
+                $this->grants[$user] = $granted;
+                $this->resolved[$user] = true;
+            } else {
+                $this->resolved[$user] = false;
+            }
+        }
+
+        if( ( $this->resolved[$user] ?? false ) === true ) {
+            return $this->filter( $values ?? array_keys( $granted ), $granted );
+        }
+
+        $catalog = $this->catalog();
+        $gate = Gate::forUser( $user );
         $result = $seen = [];
 
         foreach( $values ?? array_keys( $catalog ) as $value )
@@ -204,8 +229,10 @@ class Access
      * Configures the access catalog through silber/bouncer.
      *
      * Requires silber/bouncer 1.0.2 or newer.
+     *
+     * @param (\Closure(Authenticatable): (iterable<mixed>|null))|null $grants Effective-grants resolver
      */
-    public static function bouncer() : void
+    public static function bouncer( ?\Closure $grants = null ) : void
     {
         $class = 'Silber\\Bouncer\\Bouncer';
 
@@ -223,6 +250,7 @@ class Access
                 self::modelDelete( self::call( $class, 'ability' ), $values, ['entity_type' => null] );
                 self::call( $class, 'refresh' );
             },
+            grants: $grants,
         );
     }
 
@@ -231,8 +259,10 @@ class Access
      * Configures the access catalog through santigarcor/laratrust.
      *
      * Requires santigarcor/laratrust 8.3.0 or newer.
+     *
+     * @param (\Closure(Authenticatable): (iterable<mixed>|null))|null $grants Effective-grants resolver
      */
-    public static function laratrust() : void
+    public static function laratrust( ?\Closure $grants = null ) : void
     {
         $model = config( 'laratrust.models.permission' );
 
@@ -259,6 +289,7 @@ class Access
         },
             add: fn( string $value ) => self::modelAdd( $model, $value ),
             delete: fn( array $values ) => self::modelDelete( $model, $values ),
+            grants: $grants,
         );
     }
 
@@ -267,8 +298,10 @@ class Access
      * Configures the access catalog through spatie/laravel-permission.
      *
      * Requires spatie/laravel-permission 6.2.0 or newer.
+     *
+     * @param (\Closure(Authenticatable): (iterable<mixed>|null))|null $grants Effective-grants resolver
      */
-    public static function spatie() : void
+    public static function spatie( ?\Closure $grants = null ) : void
     {
         $registrar = 'Spatie\\Permission\\PermissionRegistrar';
         $model = config(
@@ -294,6 +327,7 @@ class Access
             delete: function( array $values ) use ( $model, $guard ) {
                 self::modelDelete( $model, $values, ['guard_name' => $guard] );
             },
+            grants: $grants,
         );
     }
 
@@ -339,6 +373,31 @@ class Access
     }
 
 
+    /**
+     * Filters candidate values by a resolved grant map.
+     *
+     * @param iterable<mixed> $values
+     * @param array<string, bool> $granted
+     * @return array<int, string>
+     */
+    private function filter( iterable $values, array $granted ) : array
+    {
+        $result = $seen = [];
+
+        foreach( $values as $value )
+        {
+            if( !is_string( $value ) || !isset( $granted[$value] ) || isset( $seen[$value] ) ) {
+                continue;
+            }
+
+            $seen[$value] = true;
+            $result[] = $value;
+        }
+
+        return $result;
+    }
+
+
     private static function syncPermissions() : void
     {
         Permission::unregister( self::PERMISSIONS );
@@ -359,13 +418,15 @@ class Access
 
 
     private static function configure( ?\Closure $list, ?\Closure $activate = null,
-        ?\Closure $prepare = null, ?\Closure $add = null, ?\Closure $delete = null ) : void
+        ?\Closure $prepare = null, ?\Closure $add = null, ?\Closure $delete = null,
+        ?\Closure $grants = null ) : void
     {
         self::$listCallback = $list;
         self::$activateCallback = $activate;
         self::$prepareCallback = $prepare;
         self::$addCallback = $add;
         self::$deleteCallback = $delete;
+        self::$grantsCallback = $grants;
         self::syncPermissions();
         app()->forgetInstance( self::class );
     }
@@ -375,6 +436,7 @@ class Access
     {
         $this->catalog = null;
         $this->grants = new \WeakMap();
+        $this->resolved = new \WeakMap();
     }
 
 

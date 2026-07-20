@@ -299,6 +299,30 @@ class Page extends Base
 
 
     /**
+     * Returns the canonical immediate frontend access state.
+     *
+     * @return list<string>|null
+     */
+    public function accessValues() : ?array
+    {
+        return PageAccess::values( $this->access );
+    }
+
+
+    /**
+     * Returns whether the page has explicit frontend access rules.
+     */
+    public function restricted() : bool
+    {
+        $count = $this->getAttribute( 'access_count' );
+
+        return $count !== null
+            ? (int) $count > 0
+            : $this->access()->exists();
+    }
+
+
+    /**
      * Get the shared element for the page.
      *
      * @return BelongsToMany<Element, $this> Eloquent relationship to the elements attached to the page

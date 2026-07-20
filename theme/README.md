@@ -36,7 +36,7 @@ In multi-tenant applications, tenant initialization must run before `ServeCached
 );
 ```
 
-CDNs must apply the same bypass rules for the session cookie, authorization header, and any custom authentication indicator; otherwise the edge may return public HTML before Laravel receives the request. Multi-node installations should configure a shared lock-capable theme cache store such as Redis.
+CDNs must apply the same bypass rules for the session cookie, authorization header, and any custom authentication indicator; otherwise the edge may return public HTML before Laravel receives the request. Multi-node installations must configure a shared lock-capable theme cache store such as Redis so web processes and queued invalidation workers address the same entries.
 
 The built-in session-cookie and `Authorization` checks always remain active. The callback only needs to identify additional authentication mechanisms. Missing pages can still return before the session middleware starts; restricted pages continue through the `web` middleware so Laravel can authenticate the request and handle guest redirects.
 
@@ -79,7 +79,7 @@ The named `login` route must be public and registered before the CMS catch-all r
 
 During public-page revalidation, a request that finds another renderer active may receive the previous complete page for `stale` seconds. Without a stale entry, it waits for the render lease, rechecks the cache, and only renders without writing if that bounded wait expires. The cache-store TTL keeps an entry through its stale window, while its fresh expiry remains in the entry. Invalidation deletes entries without waiting for active render leases.
 
-The theme service provider registers a synchronous `PagesInvalidated` listener. After publishing, deleting, or changing access commits, it attempts to invalidate rendered HTML; failures are reported without undoing the committed content change. Anonymous cache hits are served without a database lookup. Consequently, failed invalidation or a renderer that writes after deletion can temporarily serve stale, restricted, or deleted content until the cache entry expires. Installations using only the core package remain independent of frontend caching.
+After page publication, deletion, or access changes commit, the theme queues a lightweight job that removes the affected rendered HTML before its normal expiry. Job failures use Laravel's queue retry policy; a queue dispatch failure is reported without undoing the committed content change. The origin cache TTL and CDN `s-maxage` remain the consistency boundary, so stale, restricted, deleted, or moved HTML may remain visible until expiry. Run a queue worker with an asynchronous queue connection in production. Installations using only the core package remain independent of frontend caching.
 
 ### Content Security Policy
 

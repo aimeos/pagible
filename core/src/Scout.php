@@ -7,7 +7,11 @@
 
 namespace Aimeos\Cms;
 
+use Aimeos\Cms\Jobs\SyncIndex;
 use Aimeos\Cms\Jobs\SyncPages;
+use Aimeos\Cms\Models\Base;
+use Aimeos\Cms\Models\Element;
+use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
 use Laravel\Scout\Builder;
 
@@ -122,11 +126,48 @@ class Scout
 
 
     /**
+     * Queues index reconciliation after the current transaction commits.
+     *
+     * @param class-string<Base> $model
+     * @param list<string> $ids
+     */
+    public static function reindex( string $model, array $ids, bool $trashed = false ) : void
+    {
+        $ids = array_values( array_unique( $ids ) );
+
+        if( !$ids || !self::usesSearchIndex() ) {
+            return;
+        }
+
+        $item = self::model( $model );
+        $model = get_class( $item );
+        $connection = $item->getConnection();
+        $queueConnection = $item->syncWithSearchUsing();
+        $queue = $item->syncWithSearchUsingQueue();
+        $tenant = Tenancy::value();
+        $size = max( 1, (int) config( 'cms.chunksize', 100 ) );
+
+        $connection->afterCommit( function() use ( $ids, $model, $queue, $queueConnection, $size, $tenant, $trashed ) {
+            foreach( array_chunk( $ids, $size ) as $chunk )
+            {
+                try {
+                    dispatch( ( new SyncIndex( $model, $chunk, $tenant, $trashed ) )
+                        ->onConnection( $queueConnection )
+                        ->onQueue( $queue ) );
+                } catch( \Throwable $e ) {
+                    report( $e );
+                }
+            }
+        } );
+    }
+
+
+    /**
      * Whether visibility must be stored and filtered in an external search index.
      */
     public static function usesExternalSearch() : bool
     {
-        return !in_array( config( 'scout.driver' ), [null, 'null', 'cms', 'collection', 'database'], true );
+        return self::usesSearchIndex() && config( 'scout.driver' ) !== 'cms';
     }
 
 
@@ -160,6 +201,24 @@ class Scout
                 }
             }
         } );
+    }
+
+
+    /** @param class-string<Base> $model */
+    private static function model( string $model ) : Element|File|Page
+    {
+        return match( $model ) {
+            Element::class => new Element(),
+            File::class => new File(),
+            Page::class => new Page(),
+            default => throw new \InvalidArgumentException( 'Invalid CMS search index model: ' . $model ),
+        };
+    }
+
+
+    private static function usesSearchIndex() : bool
+    {
+        return !in_array( config( 'scout.driver' ), [null, 'null', 'collection', 'database'], true );
     }
 
 }

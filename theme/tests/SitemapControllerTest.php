@@ -103,7 +103,7 @@ class SitemapControllerTest extends ThemeTestAbstract
     {
         $page = Page::where( 'path', 'hidden' )->firstOrFail();
         Access::using( fn() => [] );
-        PageAccess::restrict( [$page->id], null );
+        PageAccess::set( [$page->id], [] );
 
         $controller = new \Aimeos\Cms\Controllers\SitemapController();
 

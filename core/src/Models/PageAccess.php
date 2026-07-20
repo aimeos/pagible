@@ -6,7 +6,6 @@
 
 namespace Aimeos\Cms\Models;
 
-use Closure;
 use Aimeos\Cms\Access;
 use Aimeos\Cms\Concerns\Tenancy;
 use Aimeos\Cms\Exception;
@@ -51,27 +50,7 @@ class PageAccess extends Model
      */
     public static function allows( iterable $rules, ?Authenticatable $user ) : bool
     {
-        $values = [];
-        $restricted = false;
-        $authenticationOnly = false;
-
-        foreach( $rules as $rule )
-        {
-            if( !$rule instanceof self ) {
-                continue;
-            }
-
-            $restricted = true;
-
-            if( $rule->value === '' ) {
-                $authenticationOnly = true;
-            }
-            else {
-                $values[$rule->value] = true;
-            }
-        }
-
-        if( !$restricted ) {
+        if( ( $values = self::values( $rules ) ) === null ) {
             return true;
         }
 
@@ -79,7 +58,7 @@ class PageAccess extends Model
             return false;
         }
 
-        return $authenticationOnly || app( Access::class )->allowed( $user, array_keys( $values ) ) !== [];
+        return $values === [] || app( Access::class )->allowed( $user, $values ) !== [];
     }
 
 
@@ -99,90 +78,73 @@ class PageAccess extends Model
 
 
     /**
-     * Removes explicit access restrictions from pages.
+     * Replaces the immediate frontend access state for pages.
+     *
+     * NULL makes pages public, an empty list requires authentication and a
+     * non-empty list grants access through any listed value.
      *
      * @param iterable<string> $ids Page IDs
+     * @param array<int, mixed>|null $access Canonical access state
      */
-    public static function release( iterable $ids ) : int
+    public static function set( iterable $ids, ?array $access, ?Authenticatable $user = null,
+        bool $descendants = false ) : int
     {
-        return self::apply(
-            fn() => self::pages( $ids ),
-            fn( array $ids ) => self::deleteAccess( $ids ),
-        );
-    }
+        $ids = self::ids( $ids );
 
+        if( $descendants && count( $ids ) !== 1 ) {
+            throw new Exception( 'Descendant access changes require exactly one root page.' );
+        }
 
-    /**
-     * Removes explicit access restrictions from a complete page subtree.
-     */
-    public static function releaseSubtree( Page $root ) : int
-    {
-        return self::apply(
-            fn() => self::subtree( $root ),
-            fn( array $ids ) => self::deleteAccess( $ids ),
-        );
-    }
+        $values = $access === null ? null : self::normalize( $access );
 
+        [$pages, $changed, $reindex] = Utils::transaction( function() use ( $descendants, $ids, $user, $values ) {
+            $pages = $descendants ? self::subtree( $ids[0] ) : self::pages( $ids );
+            Page::checkBulk( count( $pages ) );
 
-    /**
-     * Restricts pages to current-tenant users or users with one of the access values.
-     *
-     * @param iterable<string> $ids Page IDs
-     * @param array<int, mixed>|null $values NULL grants authenticated current-tenant users
-     */
-    public static function restrict( iterable $ids, ?array $values, ?Authenticatable $user = null ) : int
-    {
-        $values = self::normalize( $values );
-        $editor = Utils::editor( $user );
+            $pageIds = array_map( fn( Nav $page ) => (string) $page->id, $pages );
 
-        return self::apply(
-            fn() => self::pages( $ids ),
-            fn( array $ids ) => self::replaceAccess( $ids, $values, $editor ),
-        );
-    }
-
-
-    /**
-     * Restricts a complete page subtree.
-     *
-     * @param array<int, mixed>|null $values
-     */
-    public static function restrictSubtree( Page $root, ?array $values, ?Authenticatable $user = null ) : int
-    {
-        $values = self::normalize( $values );
-        $editor = Utils::editor( $user );
-
-        return self::apply(
-            fn() => self::subtree( $root ),
-            fn( array $ids ) => self::replaceAccess( $ids, $values, $editor ),
-        );
-    }
-
-
-    /**
-     * @param Closure():list<Nav> $load
-     * @param Closure(list<string>): void $persist
-     */
-    private static function apply( Closure $load, Closure $persist ) : int
-    {
-        [$pages, $ids] = Utils::lockedTransaction( function() use ( $load, $persist ) {
-            $pages = $load();
-            $ids = [];
-
-            foreach( $pages as $page ) {
-                $ids[] = (string) $page->id;
+            if( !$pageIds ) {
+                return [$pages, [], []];
             }
 
-            if( $ids ) {
-                $persist( $ids );
+            $current = self::currentValues( $pageIds );
+            $restricted = $values !== null;
+            $changed = $changedIds = $reindex = [];
+
+            foreach( $pages as $page )
+            {
+                $id = (string) $page->id;
+
+                if( ( $current[$id] ?? null ) === $values ) {
+                    continue;
+                }
+
+                $changed[] = $page;
+                $changedIds[] = $id;
+
+                if( array_key_exists( $id, $current ) !== $restricted ) {
+                    $reindex[] = $id;
+                }
             }
 
-            return [$pages, $ids];
+            self::checkAssignments( $changedIds, $values );
+
+            if( $changedIds && $values === null ) {
+                self::deleteAccess( $changedIds );
+            }
+            elseif( $changedIds ) {
+                self::replaceAccess( $changedIds, $values, Utils::editor( $user ) );
+            }
+
+            return [$pages, $changed, $reindex];
         } );
 
-        if( $pages ) {
-            PagesInvalidated::dispatch( $pages );
-            Scout::syncPages( $ids );
+        if( $changed ) {
+            PagesInvalidated::dispatch( array_map( fn( Nav $page ) => [
+                'domain' => (string) $page->domain,
+                'path' => (string) $page->path,
+            ], $changed ) );
+            Scout::reindex( Page::class, $reindex );
         }
 
         return count( $pages );
@@ -190,66 +152,80 @@ class PageAccess extends Model
 
 
     /**
-     * @param iterable<string> $ids
-     * @return list<Nav>
+     * Returns the canonical frontend access state for explicit rules.
+     *
+     * @param iterable<int, PageAccess> $rules
+     * @return list<string>|null
      */
-    private static function pages( iterable $ids ) : array
+    public static function values( iterable $rules ) : ?array
     {
-        $keys = [];
+        $values = [];
 
-        foreach( $ids as $id ) {
-            if( is_string( $id ) ) {
-                $keys[$id] = true;
-            }
-        }
-
-        $ids = array_keys( $keys );
-        sort( $ids, SORT_STRING );
-        $pages = [];
-
-        foreach( array_chunk( $ids, self::CHUNK_SIZE ) as $chunk )
+        foreach( $rules as $rule )
         {
-            $query = Nav::select( 'id', 'domain', 'path' )
-                ->withoutGlobalScope( 'jsonapi' )
-                ->whereIn( 'id', $chunk )
-                ->orderBy( 'id' )
-                ->lockForUpdate();
+            if( !$rule instanceof self ) {
+                continue;
+            }
 
-            /** @var list<Nav> $results */
-            $results = $query->get()->all();
-            array_push( $pages, ...$results );
+            if( $rule->value === '' ) {
+                return [];
+            }
+
+            $values[] = $rule->value;
         }
 
-        return $pages;
+        if( !$values ) {
+            return null;
+        }
+
+        $values = array_values( array_unique( $values ) );
+        sort( $values, SORT_STRING );
+
+        return $values;
     }
 
 
     /**
-     * @param array<int, mixed>|null $values
-     * @return array<int, string>|null
+     * @param list<string> $ids
+     * @param array<int, string>|null $values
      */
-    private static function normalize( ?array $values ) : ?array
+    private static function checkAssignments( array $ids, ?array $values ) : void
     {
-        if( !Permission::has( 'access:view' ) ) {
-            throw new Exception( 'Frontend access restrictions are not available.' );
+        $count = count( $ids ) * max( 1, count( $values ?? [] ) );
+
+        if( $values !== null && $count > Page::MAX_BULK ) {
+            throw new Exception( sprintf(
+                'No more than %d page access assignments may be changed at once.',
+                Page::MAX_BULK,
+            ) );
         }
+    }
 
-        if( $values === null ) {
-            return null;
-        }
 
-        $result = Access::normalize( $values );
+    /**
+     * Returns the canonical explicit access state keyed by page ID.
+     *
+     * Pages without an entry are public and therefore absent from the result.
+     *
+     * @param list<string> $ids
+     * @return array<string, list<string>>
+     */
+    private static function currentValues( array $ids ) : array
+    {
+        $result = [];
 
-        if( count( $result ) > self::MAX_VALUES ) {
-            throw new Exception( sprintf( 'A page may not require more than %d access values.', self::MAX_VALUES ) );
-        }
+        foreach( array_chunk( $ids, self::CHUNK_SIZE ) as $chunk )
+        {
+            /** @var array<string, list<PageAccess>> $groups */
+            $groups = [];
 
-        if( !$result ) {
-            return null;
-        }
+            foreach( self::whereIn( 'page_id', $chunk )->get( ['page_id', 'value'] ) as $rule ) {
+                $groups[(string) $rule->page_id][] = $rule;
+            }
 
-        if( $unknown = array_diff( $result, app( Access::class )->list() ) ) {
-            throw new Exception( sprintf( 'Unknown frontend access value "%s".', reset( $unknown ) ) );
+            foreach( $groups as $id => $rules ) {
+                $result[$id] = self::values( $rules ) ?? [];
+            }
         }
 
         return $result;
@@ -266,10 +242,80 @@ class PageAccess extends Model
 
 
     /**
-     * @param list<string> $ids
-     * @param array<int, mixed>|null $values
+     * @param iterable<string> $ids
+     * @return list<string>
      */
-    private static function replaceAccess( array $ids, ?array $values, string $editor ) : void
+    private static function ids( iterable $ids ) : array
+    {
+        $keys = [];
+
+        foreach( $ids as $id ) {
+            if( is_string( $id ) ) {
+                $keys[$id] = true;
+                Page::checkBulk( count( $keys ) );
+            }
+        }
+
+        $ids = array_keys( $keys );
+        sort( $ids, SORT_STRING );
+
+        return $ids;
+    }
+
+
+    /**
+     * @param array<int, mixed> $values
+     * @return array<int, string>
+     */
+    private static function normalize( array $values ) : array
+    {
+        if( !Permission::has( 'access:view' ) ) {
+            throw new Exception( 'Frontend access restrictions are not available.' );
+        }
+
+        $result = Access::normalize( $values );
+
+        if( count( $result ) > self::MAX_VALUES ) {
+            throw new Exception( sprintf( 'A page may not require more than %d access values.', self::MAX_VALUES ) );
+        }
+
+        if( $unknown = array_diff( $result, app( Access::class )->list() ) ) {
+            throw new Exception( sprintf( 'Unknown frontend access value "%s".', reset( $unknown ) ) );
+        }
+
+        return $result;
+    }
+
+
+    /**
+     * @param list<string> $ids
+     * @return list<Nav>
+     */
+    private static function pages( array $ids ) : array
+    {
+        $pages = [];
+
+        foreach( array_chunk( $ids, self::CHUNK_SIZE ) as $chunk )
+        {
+            $query = Nav::select( 'id', 'domain', 'path' )
+                ->withoutGlobalScope( 'jsonapi' )
+                ->whereIn( 'id', $chunk )
+                ->orderBy( 'id' );
+
+            /** @var list<Nav> $results */
+            $results = $query->get()->all();
+            array_push( $pages, ...$results );
+        }
+
+        return $pages;
+    }
+
+
+    /**
+     * @param list<string> $ids
+     * @param array<int, string> $values
+     */
+    private static function replaceAccess( array $ids, array $values, string $editor ) : void
     {
         $now = now()->startOfSecond();
         $model = new self();
@@ -282,7 +328,7 @@ class PageAccess extends Model
 
         foreach( $ids as $id )
         {
-            foreach( $values ?? [''] as $value )
+            foreach( $values ?: [''] as $value )
             {
                 $rows[] = [
                     'page_id' => $id,
@@ -309,13 +355,12 @@ class PageAccess extends Model
     /**
      * @return list<Nav>
      */
-    private static function subtree( Page $node ) : array
+    private static function subtree( string $id ) : array
     {
         $root = Page::query()
             ->withoutGlobalScope( 'jsonapi' )
             ->select( 'id', 'tenant_id', NestedSet::LFT, NestedSet::RGT )
-            ->whereKey( $node->getKey() )
-            ->lockForUpdate()
+            ->whereKey( $id )
             ->firstOrFail();
 
         $query = Nav::query()
@@ -324,7 +369,7 @@ class PageAccess extends Model
             ->where( NestedSet::LFT, '>=', $root->getLft() )
             ->where( NestedSet::RGT, '<=', $root->getRgt() )
             ->orderBy( NestedSet::LFT )
-            ->lockForUpdate();
+            ->limit( Page::MAX_BULK + 1 );
 
         /** @var list<Nav> $pages */
         $pages = $query->get()->all();

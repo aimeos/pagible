@@ -7,7 +7,6 @@
 namespace Tests;
 
 use Aimeos\Cms\Events\PagesInvalidated;
-use Aimeos\Cms\Models\Page;
 use Illuminate\Foundation\Testing\DatabaseTruncation;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
@@ -19,10 +18,23 @@ class PagesInvalidatedTest extends CoreTestAbstract
     use DatabaseTruncation;
 
 
+    public function testStoresLightweightRoutes(): void
+    {
+        $event = new PagesInvalidated( [
+            ['domain' => 'example.com', 'path' => 'old'],
+            ['domain' => 'example.com', 'path' => 'new'],
+        ] );
+
+        $this->assertSame( [
+            ['domain' => 'example.com', 'path' => 'old'],
+            ['domain' => 'example.com', 'path' => 'new'],
+        ], $event->routes );
+    }
+
+
     public function testDispatchesSynchronouslyAfterCommit(): void
     {
         $connection = DB::connection( config( 'cms.db', 'sqlite' ) );
-        $page = new Page( ['domain' => '', 'path' => 'committed'] );
         $received = [];
         $tenant = null;
 
@@ -35,7 +47,10 @@ class PagesInvalidatedTest extends CoreTestAbstract
         $connection->beginTransaction();
 
         try {
-            PagesInvalidated::dispatch( [$page] );
+            PagesInvalidated::dispatch( [[
+                'domain' => '',
+                'path' => 'committed',
+            ]] );
             $this->assertSame( [], $received );
             $connection->commit();
         } finally {
@@ -63,7 +78,10 @@ class PagesInvalidatedTest extends CoreTestAbstract
 
         $this->assertSame( 0, $connection->transactionLevel() );
         $connection->beginTransaction();
-        PagesInvalidated::dispatch( [new Page( ['domain' => '', 'path' => 'rolled-back'] )] );
+        PagesInvalidated::dispatch( [[
+            'domain' => '',
+            'path' => 'rolled-back',
+        ]] );
         $connection->rollBack();
 
         $this->assertFalse( $received );

@@ -25,10 +25,13 @@ import {
   mdiArrowRight,
   mdiArrowDown,
   mdiClockOutline,
+  mdiLock,
+  mdiKeyVariant,
   mdiPencil
 } from '@mdi/js'
 import { Draggable } from '@he-tree/vue'
 import { dragContext } from '@he-tree/vue'
+import PageAccess from './PageAccess.vue'
 import PageBulkDialog from './PageBulkDialog.vue'
 import { useAppStore, useUserStore, useLanguageStore, useMessageStore, useChangeStore } from '../stores'
 import { debounce, safeParse, sanitize } from '../utils'
@@ -108,14 +111,6 @@ const PURGE_PAGE = gql`
   }
 `
 
-const SAVE_PAGE = gql`
-  mutation ($id: ID!, $input: PageInput!) {
-    savePage(id: $id, input: $input) {
-      id
-    }
-  }
-`
-
 const SAVE_PAGES = gql`
   mutation ($id: [ID!]!, $input: PageInput!, $descendants: Boolean) {
     bulkPage(id: $id, input: $input, descendants: $descendants) {
@@ -128,11 +123,13 @@ const SAVE_PAGES = gql`
 `
 
 const PAGE_FIELDS = `id
+          access @include(if: $access)
           parent_id
           created_at
           deleted_at
           editor
           has
+          restricted
           latest {
             id
             published
@@ -148,7 +145,8 @@ const FETCH_CHILD_PAGES = gql`
     $limit: Int!,
     $page: Int!,
     $trashed: Trashed,
-    $publish: Publish
+    $publish: Publish,
+    $access: Boolean!
   ) {
     pages(
       filter: $filter,
@@ -169,7 +167,7 @@ const FETCH_CHILD_PAGES = gql`
 `
 
 const PASTE_PAGE = gql`
-  mutation ($input: PageInput!, $parent: ID, $ref: ID) {
+  mutation ($input: PageInput!, $parent: ID, $ref: ID, $access: Boolean!) {
     addPage(input: $input, parent: $parent, ref: $ref) {
       ${PAGE_FIELDS}
     }
@@ -183,7 +181,8 @@ const SEARCH_PAGES = gql`
     $limit: Int!,
     $page: Int!,
     $trashed: Trashed,
-    $publish: Publish
+    $publish: Publish,
+    $access: Boolean!
   ) {
     pages(
       filter: $filter,
@@ -207,6 +206,7 @@ const SEARCH_PAGES = gql`
 export default {
   components: {
     Draggable,
+    PageAccess,
     PageBulkDialog
   },
 
@@ -222,6 +222,9 @@ export default {
       menu: {},
       items: [],
       actions: false,
+      accessDialog: false,
+      accessDescendants: 0,
+      accessIds: [],
       propsDialog: false,
       propsCount: 0,
       propsDescendants: 0,
@@ -272,6 +275,8 @@ export default {
       mdiArrowRight,
       mdiArrowDown,
       mdiClockOutline,
+      mdiLock,
+      mdiKeyVariant,
       mdiPencil,
       debounce
     }
@@ -334,6 +339,32 @@ export default {
   },
 
   methods: {
+    accessApplied(access, descendants = false) {
+      const stats = this.$refs.tree?.statsFlat || []
+      const checked = new Set(stats.filter((stat) => stat._checked))
+
+      stats.forEach((stat) => {
+        if (checked.has(stat) || (descendants && this.checkedAncestor(stat, checked))) {
+          stat.data.access = Array.isArray(access) ? [...access] : null
+          stat.data.restricted = access !== null
+        }
+
+        stat._checked = false
+      })
+
+      this.accessDialog = false
+      this.accessIds = []
+      this.checked = false
+    },
+
+    accessTitle(access) {
+      if (!Array.isArray(access)) return this.$gettext('Restricted')
+
+      return access.length
+        ? this.$gettext('Access') + ': ' + access.join(', ')
+        : this.$gettext('Authenticated users')
+    },
+
     add() {
       if (this.embed || !this.user.can('page:add')) {
         this.messages.add(this.$gettext('Permission denied'), 'error')
@@ -510,6 +541,15 @@ export default {
       return false
     },
 
+    editAccess() {
+      const checked = this.$refs.tree?.statsFlat.filter((stat) => stat._checked && stat.data?.id) || []
+
+      this.accessIds = checked.map((stat) => stat.data.id)
+      this.accessDescendants = checked.length === 1 ? checked[0].data.has || 0 : 0
+      this.actions = false
+      this.accessDialog = this.accessIds.length > 0
+    },
+
     editProps() {
       const checked = this.$refs.tree?.statsFlat.filter((stat) => stat._checked && stat.data?.id) || []
       const set = new Set(checked)
@@ -564,7 +604,8 @@ export default {
             page: page,
             limit: limit,
             trashed: trashed,
-            publish: publish
+            publish: publish,
+            access: this.user.can('access:view')
           }
         })
         .then((result) => {
@@ -588,9 +629,11 @@ export default {
       const item = entry.latest?.data ? safeParse(entry.latest.data) : { ...entry }
 
       return Object.assign(item, {
+        access: entry.access,
         id: entry.id,
         latest_id: entry.latest?.id || null,
         has: entry.has,
+        restricted: entry.restricted,
         parent_id: entry.parent_id,
         deleted_at: entry.deleted_at,
         created_at: entry.created_at,
@@ -872,7 +915,8 @@ export default {
                   path: node.path + '_' + Math.floor(Math.random() * 10000)
                 },
                 parent: parent ? parent.data.id : null,
-                ref: refid
+                ref: refid,
+                access: this.user.can('access:view')
               }
             })
             .then((result) => {
@@ -1172,7 +1216,8 @@ export default {
             page: page,
             limit: limit,
             trashed: trashed,
-            publish: publish
+            publish: publish,
+            access: this.user.can('access:view')
           }
         })
         .then((result) => {
@@ -1204,29 +1249,37 @@ export default {
             return stat._checked && stat.data.id
           })
 
-      list.forEach((stat) => {
-        this.$apollo
-          .mutate({
-            mutation: SAVE_PAGE,
-            variables: {
-              id: stat.data.id,
-              input: {
-                status: val
-              }
-            }
-          })
-          .then((result) => {
-            if (result.errors) {
-              throw result.errors
-            }
+      if (!list.length) {
+        return
+      }
 
-            stat.data.status = val
+      return this.$apollo
+        .mutate({
+          mutation: SAVE_PAGES,
+          variables: {
+            id: list.map((stat) => stat.data.id),
+            input: {
+              status: val
+            }
+          }
+        })
+        .then((result) => {
+          if (result.errors) {
+            throw result.errors
+          }
+
+          const ids = new Set(result.data.bulkPage?.ids || [])
+
+          list.forEach((stat) => {
+            if (ids.has(stat.data.id)) {
+              stat.data.status = val
+            }
           })
-          .catch((error) => {
-            this.messages.add(this.$gettext('Error saving page') + ':\n' + error, 'error')
-            this.$log(`PageList::status(): Error saving page`, stat, val, error)
-          })
-      })
+        })
+        .catch((error) => {
+          this.messages.add(this.$gettext('Error saving page') + ':\n' + error, 'error')
+          this.$log(`PageList::status(): Error saving page`, list, val, error)
+        })
     },
 
     sync() {
@@ -1352,7 +1405,7 @@ export default {
           <template v-slot:activator="{ props }">
             <v-btn
               v-bind="props"
-              :disabled="!isChecked || embed || !user.can('page:add')"
+              :disabled="!isChecked || embed"
               :title="$gettext('Actions')"
               :icon="mdiDotsVertical"
               variant="text"
@@ -1383,6 +1436,11 @@ export default {
               <v-list-item v-if="isChecked && user.can('page:save')">
                 <v-btn :prepend-icon="mdiPencil" variant="text" @click="editProps()">{{
                   $gettext('Edit properties')
+                }}</v-btn>
+              </v-list-item>
+              <v-list-item v-if="isChecked && user.can('page:publish') && user.can('access:view')">
+                <v-btn :prepend-icon="mdiKeyVariant" variant="text" @click="editAccess()">{{
+                  $gettext('Access')
                 }}</v-btn>
               </v-list-item>
 
@@ -1724,6 +1782,12 @@ export default {
           <div class="item-head">
             <span class="item-lang" v-if="node.lang">{{ node.lang }}</span>
             <v-icon v-if="node.publish_at" class="publish-at" :icon="mdiClockOutline" />
+            <v-icon
+              v-if="node.restricted"
+              class="item-access"
+              :icon="mdiLock"
+              :title="accessTitle(node.access)"
+            />
             <v-icon v-if="node.status > 1" class="item-status" :icon="mdiEyeOffOutline" />
             <span class="item-title">{{ node.name || $gettext('New') }}</span>
           </div>
@@ -1771,6 +1835,30 @@ export default {
   </div>
 
   <PageBulkDialog v-model="propsDialog" :count="propsCount" :descendants="propsDescendants" @apply="saveProps" />
+
+  <v-dialog
+    v-model="accessDialog"
+    :aria-label="$gettext('Access')"
+    max-width="600"
+  >
+    <v-card>
+      <v-toolbar density="compact">
+        <v-toolbar-title>{{ $gettext('Access') }}</v-toolbar-title>
+        <v-btn :icon="mdiClose" :aria-label="$gettext('Close')" @click="accessDialog = false" />
+      </v-toolbar>
+      <v-card-text>
+        <p class="hint">
+          {{ $ngettext('Apply access to %{num} page.', 'Apply access to %{num} pages.', accessIds.length, { num: accessIds.length }) }}
+        </p>
+        <PageAccess
+          v-if="accessDialog"
+          :ids="accessIds"
+          :descendants="accessDescendants"
+          @applied="accessApplied"
+        />
+      </v-card-text>
+    </v-card>
+  </v-dialog>
 </template>
 
 <style>

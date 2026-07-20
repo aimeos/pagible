@@ -102,6 +102,14 @@ extend type Mutation {
   savePage(id: ID!, input: PageInput!, latestId: ID): Page
     @guard @cmsPermission(action: "page:save") @throttle(name: "cms-graphql")
 
+  "Immediately replace the frontend access rules for pages; NULL makes them public and an empty list requires authentication"
+  setPageAccess(
+    id: [ID!]! @rulesForArray(apply: ["max:1000"])
+    access: [String!] @rulesForArray(apply: ["nullable", "max:250"])
+    descendants: Boolean = false
+  ): Int!
+    @guard @cmsPermission(action: "page:publish") @throttle(name: "cms-graphql")
+
   "Apply the same values to several existing pages at once, optionally including all sub-pages; returns the ids saved"
   bulkPage(id: [ID!]!, input: PageInput!, descendants: Boolean = false): BulkResult!
     @guard @cmsPermission(action: "page:save") @throttle(name: "cms-graphql")
@@ -267,6 +275,17 @@ type StatsQuery {
 type Page {
   "Unique page ID"
   id: ID!
+
+  "Immediate frontend access rules: NULL is public, an empty list requires authentication, otherwise any listed value grants access"
+  access: [String!]
+    @cmsPermission(action: "access:view")
+    @with(relation: "access")
+    @method(name: "accessValues")
+
+  "Whether the page has immediate frontend access rules"
+  restricted: Boolean!
+    @withCount(relation: "access")
+    @method(name: "restricted")
 
   "Translation ID of all pages with the same content in different languages"
   related_id: ID

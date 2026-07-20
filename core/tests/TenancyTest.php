@@ -8,7 +8,7 @@
 namespace Tests;
 
 use Aimeos\Cms\Access;
-use Aimeos\Cms\Jobs\SyncPages;
+use Aimeos\Cms\Jobs\SyncIndex;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\SearchBuilder;
@@ -160,7 +160,7 @@ class TenancyTest extends CoreTestAbstract
         $this->expectException( \LogicException::class );
         $this->expectExceptionMessage( 'Operation was not initialized in its tenant context.' );
 
-        ( new SyncPages( [], 'other' ) )->handle();
+        ( new SyncIndex( Page::class, [], 'other' ) )->handle();
     }
 
 

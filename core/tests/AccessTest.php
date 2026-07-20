@@ -9,6 +9,7 @@ namespace Tests;
 use Aimeos\Cms\Access;
 use Aimeos\Cms\Exception;
 use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageAccess;
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\Tenancy;
 use Database\Seeders\TestSeeder;
@@ -228,6 +229,117 @@ class AccessTest extends CoreTestAbstract
 
         $this->assertSame( [], app( Access::class )->allowed( $user ) );
         $this->assertSame( 2, $calls );
+    }
+
+
+    public function testEffectiveGrantResolverAvoidsCatalogAndGateEvaluation(): void
+    {
+        $catalogCalls = $gateCalls = $grantCalls = 0;
+
+        Access::using(
+            list: function() use ( &$catalogCalls ) {
+                $catalogCalls++;
+                return ['catalog-only'];
+            },
+            grants: function() use ( &$grantCalls ) {
+                $grantCalls++;
+                return [' beta ', 'alpha', 'alpha'];
+            },
+        );
+        Gate::define( 'alpha', function() use ( &$gateCalls ) {
+            $gateCalls++;
+            return false;
+        } );
+        $user = new \App\Models\User();
+        $user->id = 42;
+        $access = app( Access::class );
+
+        $this->assertSame( ['alpha', 'beta'], $access->allowed( $user ) );
+        $this->assertSame( ['beta'], $access->allowed( $user, ['beta', 'missing', 'beta'] ) );
+        $this->assertSame( 1, $grantCalls );
+        $this->assertSame( 0, $catalogCalls );
+        $this->assertSame( 0, $gateCalls );
+    }
+
+
+    public function testGrantResolverFallsBackOnceWhenPermissionsCannotBeEnumerated(): void
+    {
+        $catalogCalls = $gateCalls = $grantCalls = 0;
+
+        Access::using(
+            list: function() use ( &$catalogCalls ) {
+                $catalogCalls++;
+                return ['member'];
+            },
+            grants: function() use ( &$grantCalls ) {
+                $grantCalls++;
+                return null;
+            },
+        );
+        Gate::define( 'member', function() use ( &$gateCalls ) {
+            $gateCalls++;
+            return true;
+        } );
+        $user = new \App\Models\User();
+        $user->id = 42;
+        $access = app( Access::class );
+
+        $this->assertSame( ['member'], $access->allowed( $user ) );
+        $this->assertSame( ['member'], $access->allowed( $user ) );
+        $this->assertSame( 1, $grantCalls );
+        $this->assertSame( 1, $catalogCalls );
+        $this->assertSame( 1, $gateCalls );
+    }
+
+
+    public function testGrantResolverIsRefreshedForEachTenant(): void
+    {
+        $calls = 0;
+
+        Access::using(
+            list: fn() => [],
+            grants: function() use ( &$calls ) {
+                $calls++;
+                return [Tenancy::value() . '.member'];
+            },
+        );
+        $user = new \App\Models\User();
+        $user->id = 42;
+        $access = app( Access::class );
+
+        $this->assertSame( ['test.member'], $access->allowed( $user ) );
+        $this->assertSame( ['test.member'], $access->allowed( $user ) );
+
+        Tenancy::set( 'other' );
+
+        $this->assertSame( ['other.member'], $access->allowed( $user ) );
+        $this->assertSame( 2, $calls );
+    }
+
+
+    public function testPageAccessScopeUsesEffectiveGrantsWithoutLoadingCatalog(): void
+    {
+        $page = Page::where( 'path', 'hidden' )->firstOrFail();
+        PageAccess::forceCreate( [
+            'page_id' => $page->id,
+            'tenant_id' => 'test',
+            'value' => 'member',
+            'editor' => 'test@example.com',
+        ] );
+        $catalogCalls = 0;
+
+        Access::using(
+            list: function() use ( &$catalogCalls ) {
+                $catalogCalls++;
+                return ['member'];
+            },
+            grants: fn() => ['member'],
+        );
+        $user = new \App\Models\User();
+        $user->id = 42;
+
+        $this->assertNotNull( Page::query()->access( $user )->find( $page->id ) );
+        $this->assertSame( 0, $catalogCalls );
     }
 
 

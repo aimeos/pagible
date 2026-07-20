@@ -40,7 +40,7 @@ class NavigationTest extends ThemeTestAbstract
         $this->assertNotNull( $route );
         $this->assertFalse( $route->access_exists );
 
-        PageAccess::restrict( [$page->id], null );
+        PageAccess::set( [$page->id], [] );
         $route = Nav::page( $page->path, $page->domain );
 
         $this->assertNotNull( $route );
@@ -53,7 +53,7 @@ class NavigationTest extends ThemeTestAbstract
     {
         $page = Page::where( 'path', 'hidden' )->firstOrFail();
         $blog = Page::where( 'path', 'blog' )->firstOrFail();
-        PageAccess::restrict( [$blog->id], null );
+        PageAccess::set( [$blog->id], [] );
 
         $nav = new Navigation( $page, null );
 
@@ -65,7 +65,7 @@ class NavigationTest extends ThemeTestAbstract
     {
         $page = Page::where( 'path', 'hidden' )->firstOrFail();
         $blog = Page::where( 'path', 'blog' )->firstOrFail();
-        PageAccess::restrict( [$blog->id], null );
+        PageAccess::set( [$blog->id], [] );
         $user = new \App\Models\User();
         $user->id = 42;
         $user->tenant_id = 'test';
@@ -81,7 +81,7 @@ class NavigationTest extends ThemeTestAbstract
         $page = Page::where( 'path', 'hidden' )->firstOrFail();
         $blog = Page::where( 'path', 'blog' )->firstOrFail();
         $article = Page::where( 'path', 'welcome-to-laravelcms' )->firstOrFail();
-        PageAccess::restrict( [$blog->id], null );
+        PageAccess::set( [$blog->id], [] );
 
         $ids = ( new Navigation( $page, null ) )->items()->pluck( 'id' );
 

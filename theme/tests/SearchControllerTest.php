@@ -113,7 +113,7 @@ class SearchControllerTest extends ThemeTestAbstract
         $manager->forgetDrivers();
         config( ['scout.driver' => 'stale-access-test'] );
         Access::using( fn() => [] );
-        PageAccess::restrict( [$page->id], null );
+        PageAccess::set( [$page->id], [] );
 
         $request = Request::create( '/cmsapi/search', 'GET', [
             'q' => 'welcome',

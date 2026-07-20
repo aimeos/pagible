@@ -8,8 +8,10 @@
 namespace Tests;
 
 use Aimeos\Cms\Access;
+use Aimeos\Cms\Events\PagesInvalidated;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
+use Aimeos\Cms\Jobs\InvalidatePages;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Models\Version;
 use Aimeos\Cms\PageCache;
@@ -22,6 +24,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\View;
 
 
@@ -87,6 +90,71 @@ class PageControllerTest extends ThemeTestAbstract
 
         $this->assertNull( PageCache::response( $oldPath, $page->domain ) );
         $this->assertNull( PageCache::response( $newPath, $page->domain ) );
+    }
+
+
+    public function testPageInvalidationIsQueuedWithTtlFallback(): void
+    {
+        config( ['cms.theme.cache' => 'array'] );
+        $page = Page::where( 'path', 'hidden' )->firstOrFail();
+        $this->cache( $page, 'public-html' );
+        Queue::fake();
+
+        PageAccess::set( [$page->id], [] );
+
+        $this->assertNotNull( PageCache::response( $page ) );
+        Queue::assertPushed( InvalidatePages::class, fn( InvalidatePages $job ) =>
+            $job->routes === [['domain' => (string) $page->domain, 'path' => (string) $page->path]]
+                && $job->tenant === 'test'
+        );
+
+        Queue::pushed( InvalidatePages::class )->firstOrFail()->handle();
+
+        $this->assertNull( PageCache::response( $page ) );
+    }
+
+
+    public function testSinglePageInvalidationIsQueued(): void
+    {
+        config( ['cms.theme.cache' => 'array'] );
+        $page = Page::where( 'path', 'hidden' )->firstOrFail();
+        $this->cache( $page, 'public-html' );
+        Queue::fake();
+
+        PagesInvalidated::dispatch( [[
+            'domain' => (string) $page->domain,
+            'path' => (string) $page->path,
+        ]] );
+
+        $this->assertNotNull( PageCache::response( $page ) );
+        Queue::assertPushed( InvalidatePages::class, fn( InvalidatePages $job ) =>
+            $job->routes === [['domain' => (string) $page->domain, 'path' => (string) $page->path]]
+                && $job->tenant === 'test'
+        );
+
+        Queue::pushed( InvalidatePages::class )->firstOrFail()->handle();
+
+        $this->assertNull( PageCache::response( $page ) );
+    }
+
+
+    public function testPageInvalidationQueuePayloadsAreChunked(): void
+    {
+        config( ['cms.chunksize' => 2] );
+        Queue::fake();
+        $routes = [
+            ['domain' => '', 'path' => 'first'],
+            ['domain' => '', 'path' => 'second'],
+            ['domain' => '', 'path' => 'third'],
+        ];
+
+        PagesInvalidated::dispatch( $routes );
+
+        Queue::assertPushed( InvalidatePages::class, 2 );
+        $this->assertSame(
+            [array_slice( $routes, 0, 2 ), array_slice( $routes, 2 )],
+            Queue::pushed( InvalidatePages::class )->pluck( 'routes' )->all(),
+        );
     }
 
 
@@ -461,7 +529,7 @@ class PageControllerTest extends ThemeTestAbstract
         $start = hrtime( true );
 
         try {
-            PageAccess::restrict( [$page->id], null );
+            PageAccess::set( [$page->id], [] );
         } finally {
             $lock->release();
         }
@@ -488,7 +556,7 @@ class PageControllerTest extends ThemeTestAbstract
         $this->assertTrue( $lock->get() );
 
         try {
-            PageAccess::restrict( [$page->id], null );
+            PageAccess::set( [$page->id], [] );
             $this->assertNull( PageCache::response( $page ) );
             $this->get( '/hidden' )->assertRedirect( '/login' );
         } finally {
@@ -500,7 +568,7 @@ class PageControllerTest extends ThemeTestAbstract
     public function testRestrictedPageRedirectsGuestAndAllowsPermission(): void
     {
         $page = Page::where( 'path', 'hidden' )->firstOrFail();
-        PageAccess::restrict( [$page->id], ['frontend.member'] );
+        PageAccess::set( [$page->id], ['frontend.member'] );
 
         $guest = $this->get( '/hidden' );
         $guest->assertRedirect( '/login' );
@@ -521,7 +589,7 @@ class PageControllerTest extends ThemeTestAbstract
     public function testRestrictedPageReturnsUnauthorizedForJsonGuest(): void
     {
         $page = Page::where( 'path', 'hidden' )->firstOrFail();
-        PageAccess::restrict( [$page->id], ['frontend.member'] );
+        PageAccess::set( [$page->id], ['frontend.member'] );
 
         $this->getJson( '/hidden' )->assertUnauthorized();
     }
@@ -535,7 +603,7 @@ class PageControllerTest extends ThemeTestAbstract
         View::composer( '*', function() use ( &$restricted, $page ) {
             if( !$restricted ) {
                 $restricted = true;
-                PageAccess::restrict( [$page->id], null );
+                PageAccess::set( [$page->id], [] );
             }
         } );
 
@@ -546,7 +614,7 @@ class PageControllerTest extends ThemeTestAbstract
     public function testRestrictedPageForbidsAuthenticatedUserWithoutPermission(): void
     {
         $page = Page::where( 'path', 'hidden' )->firstOrFail();
-        PageAccess::restrict( [$page->id], ['frontend.member'] );
+        PageAccess::set( [$page->id], ['frontend.member'] );
 
         $user = new \App\Models\User();
         $user->id = 43;
@@ -561,7 +629,7 @@ class PageControllerTest extends ThemeTestAbstract
     public function testEditorFromAnotherTenantCannotBypassPageAccess(): void
     {
         $page = Page::where( 'path', 'hidden' )->firstOrFail();
-        PageAccess::restrict( [$page->id], null );
+        PageAccess::set( [$page->id], [] );
         $this->user->tenant_id = 'other';
 
         $this->actingAs( $this->user )->get( '/hidden' )->assertForbidden();
@@ -571,7 +639,7 @@ class PageControllerTest extends ThemeTestAbstract
     public function testRestrictedPageIsHiddenFromGuestNavigation(): void
     {
         $blog = Page::where( 'path', 'blog' )->firstOrFail();
-        PageAccess::restrict( [$blog->id], null );
+        PageAccess::set( [$blog->id], [] );
 
         $response = $this->get( '/hidden' );
 
@@ -617,7 +685,7 @@ class PageControllerTest extends ThemeTestAbstract
     public function testRestrictedGuestPreflightUsesOneQuery(): void
     {
         $page = Page::where( 'path', 'hidden' )->firstOrFail();
-        PageAccess::restrict( [$page->id], null );
+        PageAccess::set( [$page->id], [] );
         DB::flushQueryLog();
         DB::enableQueryLog();
 

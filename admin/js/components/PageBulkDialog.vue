@@ -3,7 +3,7 @@
 <script>
 import { mdiClose } from '@mdi/js'
 import { useAppStore, useSchemaStore } from '../stores'
-import { locales } from '../utils'
+import { locales, PAGE_BULK_LIMIT } from '../utils'
 
 const DOMAIN_REGEX = /^([0-9a-z]+[.-])*[0-9a-z]+\.[a-z]{2,}$/
 
@@ -76,6 +76,14 @@ export default {
       }
 
       return input
+    },
+
+    limited() {
+      return this.count > PAGE_BULK_LIMIT
+    },
+
+    recurseLimited() {
+      return this.count + this.descendants > PAGE_BULK_LIMIT
     },
 
     typeItems() {
@@ -236,18 +244,22 @@ export default {
         <v-spacer />
         <v-btn
           @click="apply(false)"
-          :disabled="!hasInput || !valid"
+          :disabled="!hasInput || !valid || limited"
           class="btn-apply"
           variant="outlined"
         >{{ $gettext('Apply') }}</v-btn>
         <v-btn
           v-if="descendants > 0"
           @click="apply(true)"
-          :disabled="!hasInput || !valid"
+          :disabled="!hasInput || !valid || recurseLimited"
           class="btn-apply-recursive"
           variant="outlined"
         >{{ $gettext('Apply recursively') }} ({{ count + descendants }})</v-btn>
       </v-card-actions>
+
+      <p v-if="limited || recurseLimited" class="hint limit">
+        {{ $gettext('Page bulk changes are limited to 1,000 pages') }}
+      </p>
     </v-card>
   </v-dialog>
 </template>
@@ -256,6 +268,10 @@ export default {
 .hint {
   color: rgb(var(--v-theme-on-surface));
   margin-bottom: 16px;
+}
+
+.hint.limit {
+  padding: 0 24px 16px;
 }
 
 .prop {

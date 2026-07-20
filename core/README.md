@@ -24,7 +24,7 @@ After installation, the configuration is available in `config/cms.php`:
 | `multidomain` | `false` | Enable domain-based page routing |
 | `navdepth` | `2` | Maximum depth of the navigation tree menu |
 | `prune` | `30` | Days before soft-deleted items are permanently removed. Set to `false` to disable |
-| `chunksize` | `100` | Pages queued and hydrated per external search synchronization operation (`CMS_CHUNKSIZE`) |
+| `chunksize` | `100` | Pages fetched per publication batch, or routes/items queued and hydrated per synchronization job (`CMS_CHUNKSIZE`) |
 | `upload.filesize` | `50` | Maximum file upload size in MB |
 | `upload.mimetypes` | See below | Allowed MIME types or prefixes for all CMS interfaces |
 | `versions` | `10` | Maximum number of versions to retain per page, element, or file |
@@ -68,7 +68,7 @@ Tenant scopes protect newly built queries and new CMS models receive the active 
 
 ### Access catalog
 
-The access catalog is independent from CMS editor permissions and from any single protected resource. It owns the available values and resolves them through Laravel Gate; page restrictions are one consumer. The normalized catalog is memoized for the current request by tenant, while its Gate-filtered result is memoized by user and tenant. The underlying provider remains responsible for longer-lived caching:
+The access catalog is independent from CMS editor permissions and from any single protected resource. It owns the available values and resolves them through Laravel Gate; page restrictions are one consumer. The normalized catalog is memoized for the current request by tenant, while effective grants are memoized by user and tenant. The underlying provider remains responsible for longer-lived caching:
 
 ```php
 use Aimeos\Cms\Access;
@@ -77,10 +77,11 @@ Access::using(
     list: fn() => app(AccessPermissions::class)->names(),
     add: fn( string $value ) => app(AccessPermissions::class)->add( $value ),
     delete: fn( array $values ) => app(AccessPermissions::class)->delete( $values ),
+    grants: fn( $user ) => app(AccessPermissions::class)->grants( $user ),
 );
 ```
 
-`Permission::has('access:view')` reports whether a catalog or package adapter has been configured, and `Access::list()` returns its normalized values. The `add` and `delete` callbacks are optional; without them the catalog remains read-only. Pass `null` as the list callback to reset custom configuration.
+`Permission::has('access:view')` reports whether a catalog or package adapter has been configured, and `Access::list()` returns its normalized values. The `add`, `delete`, and `grants` callbacks are optional; without write callbacks the catalog remains read-only. A grant resolver must return all effective frontend-access values for the user, including direct and role-derived values in the active tenant and guard. Its result is authoritative and avoids enumerating the catalog for authenticated page queries. Return `null` for users whose permissions cannot be enumerated, such as blanket access implemented only through `Gate::before()`; Pagible then preserves the catalog-and-Gate fallback. Pass `null` as the list callback to reset custom configuration.
 
 For a supported permission package, call its adapter once from an application service provider instead. Spatie must have its teams migration and `permission.teams` enabled for tenant-specific assignments; Laratrust must have its teams migration and `laratrust.teams.enabled` enabled. Bouncer's adapter selects its built-in tenant scope. Laratrust permission checks are exposed as tenant-aware Laravel Gate definitions:
 
@@ -89,6 +90,8 @@ Access::spatie();
 Access::bouncer();
 Access::laratrust();
 ```
+
+Each package adapter accepts the same optional effective-grants resolver, for example `Access::spatie(grants: fn( $user ) => ...)`. Pagible does not derive grants from package assignment APIs automatically because those APIs can bypass application-level `Gate::before()` rules and explicit denials. Applications that can enumerate their complete effective result should provide the callback; otherwise the adapter retains Gate evaluation.
 
 The adapters require these package versions at minimum:
 
@@ -106,7 +109,7 @@ Choose exactly one adapter. Each adapter exposes and manages the configured pack
 
 Spatie and Laratrust permission definitions can remain global even when their assignments are team-scoped. Their `access:add` and `access:delete` capabilities therefore authorize management of the shared definition catalog, not merely the current team's assignments. Grant those capabilities only to editors allowed to make that global change.
 
-The scoped `Access` instance activates Spatie or Bouncer lazily before its first operation in each tenant context. It clears its catalog and per-user Gate results whenever the tenant changes, while preserving package hooks, `Gate::before()` rules, and explicit denials. The Spatie adapter also clears the user's loaded `roles` and `permissions` relations before its first Gate check in each tenant context, preventing relations from the previous tenant from being reused.
+The scoped `Access` instance activates Spatie or Bouncer lazily before its first operation in each tenant context. It clears its catalog and per-user grant results whenever the tenant changes. The fallback path preserves package hooks, `Gate::before()` rules, and explicit denials. The Spatie adapter also clears the user's loaded `roles` and `permissions` relations before its first grant resolution or Gate check in each tenant context, preventing relations from the previous tenant from being reused.
 
 Configured catalogs register `access:view` as a CMS editor capability. Writable catalogs additionally register `access:add` and `access:delete`; `access:*` expands to the capabilities currently available. `Access::add()` creates an immutable value and `Access::delete()` removes up to 250 values. Deleting a value does not rewrite references held by consumers.
 
@@ -116,25 +119,27 @@ Frontend restrictions are stored independently in `cms_page_access`, with one ro
 
 Restriction writes are rejected while the access catalog is unavailable; releasing existing restrictions remains possible. Configure a callback returning an empty list to enable authentication-only restrictions without named access values. Deleting a catalog value does not rewrite existing page restrictions, which continue to fail closed until they are changed explicitly.
 
-Use the static `PageAccess` methods as the supported write API. They apply database-first, chunked changes so public page caches and external search documents are updated consistently:
+Use `PageAccess::set()` as the supported write API. It applies database-first, chunked changes so public page caches and external search documents are updated consistently:
 
 ```php
-\Aimeos\Cms\Models\PageAccess::restrict( [$page->id], ['frontend.member'], auth()->user() );
-\Aimeos\Cms\Models\PageAccess::release( [$page->id] );
-\Aimeos\Cms\Models\PageAccess::restrictSubtree( $page, null, auth()->user() );
+\Aimeos\Cms\Models\PageAccess::set( [$page->id], ['frontend.member'], auth()->user() );
+\Aimeos\Cms\Models\PageAccess::set( [$page->id], null );
+\Aimeos\Cms\Models\PageAccess::set( [$page->id], [], auth()->user(), descendants: true );
 ```
 
 Access-value lists are trimmed, must contain only registered non-empty strings, deduplicated, sorted, and limited to 250 entries of at most 100 characters. An empty list is stored as one empty value for authentication-only access.
 
-After access records have been committed, external Laravel Scout indexes are refreshed by queued jobs from the current page state. Run a queue worker with an asynchronous queue connection in production. Database-backed search needs no refresh.
+After access records have been committed, indexed Laravel Scout drivers are refreshed by queued jobs from the current page state. Bulk page, element, and file publication, deletion, restoration, and edits use the same queued reconciliation for the Pagible `cms` engine and external Scout engines. The `collection` and Laravel `database` drivers query model tables directly and need no index job. Jobs carry only the tenant, model class, and bounded ID list, then hydrate current state when handled. Run a queue worker with an asynchronous queue connection in production; the `sync` connection executes these jobs inline.
 
-Access changes acquire the tenant page-tree write lock, refresh and row-lock their target pages, and update the complete set in one database transaction. SQL writes remain bounded, while cache invalidation and index synchronization dispatch run afterward outside the tree lock. Rolled-back changes dispatch nothing. Frontend packages can listen for the synchronous `PagesInvalidated` event without making core depend on a rendered-page cache.
+Access changes don't modify page-tree coordinates, so they acquire neither the tenant page-tree lock nor page row locks. They load the target routes and current canonical access values once, then update only pages whose values changed in one database transaction. SQL writes remain bounded, while cache invalidation and index synchronization dispatch afterward. Rolled-back changes dispatch nothing. Core emits a lightweight `PagesInvalidated` event without depending on a rendered-page cache; the theme package turns invalidations into bounded, queued cache evictions.
 
-Subtree operations require their root model to belong to the current tenant and fail before writing when it does not.
+Page bulk operations are limited to 1,000 unique pages. Recursive calls also fail before writing if the resolved subtree exceeds 1,000 pages. Larger queued operations must split explicit page IDs into batches of at most 1,000.
 
-Operations are idempotent and deliberately repeat database writes, cache invalidation, and search refreshes. Retrying the same operation therefore repairs side effects that may have failed after an earlier database write. Large operations can invoke the same static methods from a queued Laravel job.
+Subtree operations require exactly one root ID belonging to the current tenant and fail before writing when it does not.
 
-Do not persist or delete `PageAccess` instances directly. Those low-level writes deliberately have no cache or search side effects; use the static methods above instead.
+Operations compare canonical values and skip unchanged pages. Only changed routes are invalidated, and search documents are refreshed only when access switches between public and restricted.
+
+Do not persist or delete `PageAccess` instances directly. Those low-level writes deliberately have no cache or search side effects; use `PageAccess::set()` instead.
 
 ## Commands
 

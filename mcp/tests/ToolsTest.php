@@ -7,6 +7,7 @@
 
 namespace Tests;
 
+use Aimeos\Cms\Access;
 use Aimeos\Cms\Mcp\CmsServer;
 use Illuminate\Support\Facades\RateLimiter;
 
@@ -22,6 +23,8 @@ class ToolsTest extends McpTestAbstract
     {
         parent::setUp();
 
+        Access::using( fn() => ['member', 'staff'] );
+
         $this->user = new \App\Models\User([
             'name' => 'Test editor',
             'email' => 'editor@testbench',
@@ -32,6 +35,24 @@ class ToolsTest extends McpTestAbstract
 
 
     // ── Discovery & Configuration ──────────────────────────────────────
+
+    public function testGetAccess()
+    {
+        $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\GetAccess::class );
+
+        $response->assertOk()->assertStructuredContent( ['access' => ['member', 'staff']] );
+    }
+
+
+    public function testGetAccessRequiresViewPermission()
+    {
+        $this->user->cmsperms = ['page:view'];
+
+        $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\GetAccess::class );
+
+        $response->assertHasErrors( ['Tool [get-access] not found.'] );
+    }
+
 
     public function testGetLocales()
     {

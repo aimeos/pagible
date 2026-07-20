@@ -1,12 +1,15 @@
 /** @license MIT, https://opensource.org/license/mit */
 
 <script>
+import PageAccess from './PageAccess.vue'
 import PageDetailItemProps from './PageDetailItemProps.vue'
 import PageDetailItemSection from './PageDetailItemSection.vue'
+import { useUserStore } from '../stores'
 import { hasTrue } from '../utils'
 
 export default {
   components: {
+    PageAccess,
     PageDetailItemProps,
     PageDetailItemSection
   },
@@ -24,7 +27,18 @@ export default {
     tab: 'details'
   }),
 
+  setup() {
+    const user = useUserStore()
+
+    return { user }
+  },
+
   methods: {
+    accessApplied(access) {
+      this.item.access = access
+      this.item.restricted = access !== null
+    },
+
     error(what, value) {
       this.errors[what] = value
       this.$emit('error', hasTrue(this.errors))
@@ -80,6 +94,13 @@ export default {
         >
           {{ $gettext('Config') }}
         </v-tab>
+        <v-tab
+          v-if="user.can('page:publish') && user.can('access:view')"
+          value="access"
+          @click="$emit('update:aside', 'count')"
+        >
+          {{ $gettext('Access') }}
+        </v-tab>
       </v-tabs>
 
       <v-window v-model="tab" :touch="false">
@@ -113,6 +134,18 @@ export default {
             :assets="assets"
             @change="update('config')"
             @error="error('config', $event)"
+          />
+        </v-window-item>
+
+        <v-window-item
+          v-if="user.can('page:publish') && user.can('access:view')"
+          value="access"
+        >
+          <PageAccess
+            :ids="[item.id]"
+            :access="item.access"
+            :descendants="item.has || 0"
+            @applied="accessApplied"
           />
         </v-window-item>
       </v-window>

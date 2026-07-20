@@ -181,11 +181,11 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | External search synchronization chunk size
+    | Bulk processing chunk size
     |--------------------------------------------------------------------------
     |
-    | Maximum number of page IDs queued and complete search documents hydrated
-    | per external Laravel Scout synchronization operation.
+    | Maximum number of items fetched per publication batch, cache routes or
+    | item IDs queued, and documents hydrated per synchronization job.
     |
     */
     'chunksize' => (int) env( 'CMS_CHUNKSIZE', 100 ),

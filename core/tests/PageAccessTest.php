@@ -9,7 +9,7 @@ namespace Tests;
 use Aimeos\Cms\Access;
 use Aimeos\Cms\Exception;
 use Aimeos\Cms\Events\PagesInvalidated;
-use Aimeos\Cms\Jobs\SyncPages;
+use Aimeos\Cms\Jobs\SyncIndex;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Models\PageAccess;
 use Aimeos\Cms\Scout;
@@ -49,7 +49,7 @@ class PageAccessTest extends CoreTestAbstract
     {
         $page = Page::where( 'path', 'hidden' )->firstOrFail();
 
-        $this->assertSame( 1, PageAccess::restrict( [$page->id], [] ) );
+        $this->assertSame( 1, PageAccess::set( [$page->id], [] ) );
         $this->assertSame( '', PageAccess::where( 'page_id', $page->id )->firstOrFail()->value );
         $this->assertSame( '', DB::connection( config( 'cms.db', 'sqlite' ) )
             ->table( 'cms_page_access' )->where( 'page_id', $page->id )->value( 'value' ) );
@@ -79,7 +79,7 @@ class PageAccessTest extends CoreTestAbstract
         Access::using( null );
 
         try {
-            PageAccess::restrict( [$page->id], null );
+            PageAccess::set( [$page->id], [] );
             $this->fail( 'Unconfigured access restrictions must be rejected.' );
         } catch( Exception $e ) {
             $this->assertSame( 'Frontend access restrictions are not available.', $e->getMessage() );
@@ -93,10 +93,10 @@ class PageAccessTest extends CoreTestAbstract
     public function testRestrictionsCanBeReleasedWhenAccessIsUnavailable(): void
     {
         $page = Page::where( 'path', 'hidden' )->firstOrFail();
-        PageAccess::restrict( [$page->id], null );
+        PageAccess::set( [$page->id], [] );
         Access::using( null );
 
-        $this->assertSame( 1, PageAccess::release( [$page->id] ) );
+        $this->assertSame( 1, PageAccess::set( [$page->id], null ) );
         $this->assertFalse( PageAccess::where( 'page_id', $page->id )->exists() );
     }
 
@@ -109,7 +109,7 @@ class PageAccessTest extends CoreTestAbstract
         $this->expectException( Exception::class );
         $this->expectExceptionMessage( 'A page may not require more than 250 access values.' );
 
-        PageAccess::restrict( [$page->id], $values );
+        PageAccess::set( [$page->id], $values );
     }
 
 
@@ -117,7 +117,7 @@ class PageAccessTest extends CoreTestAbstract
     {
         $page = Page::where( 'path', 'hidden' )->firstOrFail();
 
-        $this->assertSame( 1, PageAccess::restrict( [$page->id], [' beta ', 'alpha', 'alpha'] ) );
+        $this->assertSame( 1, PageAccess::set( [$page->id], [' beta ', 'alpha', 'alpha'] ) );
 
         $this->assertSame(
             ['alpha', 'beta'],
@@ -127,7 +127,7 @@ class PageAccessTest extends CoreTestAbstract
         $this->assertInvalidated( ['hidden'] );
 
         $this->invalidator->reset();
-        $this->assertSame( 1, PageAccess::release( [$page->id] ) );
+        $this->assertSame( 1, PageAccess::set( [$page->id], null ) );
         $this->assertFalse( PageAccess::where( 'page_id', $page->id )->exists() );
         $this->assertInvalidated( ['hidden'] );
     }
@@ -138,9 +138,15 @@ class PageAccessTest extends CoreTestAbstract
         $page = Page::where( 'path', 'hidden' )->firstOrFail();
         $search = $this->searchEngine();
 
-        PageAccess::restrict( [$page->id], null );
-        PageAccess::release( [$page->id] );
+        PageAccess::set( [$page->id], ['alpha'] );
+        $this->invalidator->reset();
+        PageAccess::set( [$page->id], ['beta'] );
+        $this->assertInvalidated( ['hidden'] );
 
+        $this->invalidator->reset();
+        PageAccess::set( [$page->id], null );
+
+        $this->assertInvalidated( ['hidden'] );
         $this->assertSame( [[$page->id], [$page->id]], $search->updates );
     }
 
@@ -151,15 +157,29 @@ class PageAccessTest extends CoreTestAbstract
         $this->searchEngine();
         Queue::fake();
 
-        PageAccess::restrict( [$page->id], null );
+        PageAccess::set( [$page->id], [] );
 
-        Queue::assertPushed( SyncPages::class, fn( SyncPages $job ) =>
-            $job->ids === [$page->id] && $job->tenant === 'test'
+        Queue::assertPushed( SyncIndex::class, fn( SyncIndex $job ) =>
+            $job->model === Page::class && $job->ids === [$page->id] && $job->tenant === 'test'
         );
     }
 
 
-    public function testInvalidatesAllPagesBeforeIsolatedIndexEnqueues(): void
+    public function testCmsPageIndexRefreshIsQueuedAfterCommit(): void
+    {
+        $page = Page::where( 'path', 'hidden' )->firstOrFail();
+        config( ['scout.driver' => 'cms'] );
+        Queue::fake();
+
+        PageAccess::set( [$page->id], [] );
+
+        Queue::assertPushed( SyncIndex::class, fn( SyncIndex $job ) =>
+            $job->model === Page::class && $job->ids === [$page->id] && $job->tenant === 'test'
+        );
+    }
+
+
+    public function testIndexJobsContinueWhenCacheQueueDispatchFails(): void
     {
         config( ['cms.chunksize' => 1] );
         $this->searchEngine();
@@ -175,12 +195,12 @@ class PageAccessTest extends CoreTestAbstract
         $first = Page::where( 'path', 'hidden' )->firstOrFail();
         $second = Page::where( 'path', 'blog' )->firstOrFail();
 
-        PageAccess::restrict( [$first->id, $second->id], null );
+        PageAccess::set( [$first->id, $second->id], [] );
 
         $this->assertCount( 1, $this->invalidator->batches );
-        $this->assertSame( [1, 1], $queue->invalidationsAtPush );
-        $this->assertSame( 2, $queue->attempts );
-        Queue::assertPushedTimes( SyncPages::class, 1 );
+        $this->assertSame( [0, 0, 1, 1], $queue->invalidationsAtPush );
+        $this->assertSame( 4, $queue->attempts );
+        Queue::assertPushedTimes( SyncIndex::class, 2 );
     }
 
 
@@ -191,11 +211,11 @@ class PageAccessTest extends CoreTestAbstract
 
         $this->searchEngine();
         Queue::fake();
-        Scout::syncPages( $ids );
+        Scout::reindex( Page::class, $ids );
 
-        $jobs = Queue::pushed( SyncPages::class );
+        $jobs = Queue::pushed( SyncIndex::class );
         $this->assertCount( 2, $jobs );
-        $this->assertSame( [20, 1], $jobs->map( fn( SyncPages $job ) => count( $job->ids ) )->all() );
+        $this->assertSame( [20, 1], $jobs->map( fn( SyncIndex $job ) => count( $job->ids ) )->all() );
     }
 
 
@@ -213,7 +233,7 @@ class PageAccessTest extends CoreTestAbstract
         ] );
         $search = $this->searchEngine();
 
-        ( new SyncPages( [$page->id], '' ) )->handle();
+        ( new SyncIndex( Page::class, [$page->id], '' ) )->handle();
 
         $this->assertSame( '', \Aimeos\Cms\Tenancy::value() );
         $this->assertSame( [[$page->id]], $search->updates );
@@ -230,7 +250,7 @@ class PageAccessTest extends CoreTestAbstract
         $connection->beginTransaction();
 
         try {
-            PageAccess::restrict( [$page->id, $public->id], null );
+            PageAccess::set( [$page->id, $public->id], [] );
             $this->assertSame( [], $search->updates );
         } finally {
             $connection->rollBack();
@@ -248,7 +268,7 @@ class PageAccessTest extends CoreTestAbstract
         $connection = DB::connection( config( 'cms.db', 'sqlite' ) );
 
         $connection->beginTransaction();
-        PageAccess::restrict( [$page->id], null );
+        PageAccess::set( [$page->id], [] );
 
         $this->assertSame( [], $search->updates );
 
@@ -262,59 +282,58 @@ class PageAccessTest extends CoreTestAbstract
     {
         $page = Page::where( 'path', 'hidden' )->firstOrFail();
         $public = Page::where( 'path', 'blog' )->firstOrFail();
-        PageAccess::restrict( [$page->id, $public->id], null );
+        PageAccess::set( [$page->id, $public->id], [] );
 
         $this->assertSame( 2, PageAccess::whereIn( 'page_id', [$page->id, $public->id] )->count() );
         $this->assertInvalidated( ['hidden', 'blog'] );
 
         $this->invalidator->reset();
-        PageAccess::release( [$page->id, $public->id] );
+        PageAccess::set( [$page->id, $public->id], null );
 
         $this->assertSame( 0, PageAccess::whereIn( 'page_id', [$page->id, $public->id] )->count() );
         $this->assertInvalidated( ['hidden', 'blog'] );
     }
 
 
-    public function testSideEffectsRunOutsidePageTreeLock(): void
+    public function testSubtreeDoesNotAcquirePageTreeLock(): void
     {
-        $page = Page::where( 'path', 'hidden' )->firstOrFail();
-        $locked = false;
-        $lock = \Mockery::mock( \Illuminate\Contracts\Cache\Lock::class );
+        $page = Page::where( 'tag', 'root' )->firstOrFail();
 
-        $lock->shouldReceive( 'block' )->once()->andReturnUsing(
-            function( int $seconds, \Closure $callback ) use ( &$locked ) {
-                $locked = true;
-                $result = $callback();
-                $locked = false;
-                return $result;
-            }
-        );
+        Cache::shouldReceive( 'lock' )->never();
 
-        Cache::shouldReceive( 'lock' )->once()->andReturn( $lock );
-        Event::listen( PagesInvalidated::class, function() use ( &$locked ) {
-            $this->assertFalse( $locked );
-        } );
-
-        PageAccess::restrict( [$page->id], null );
+        $this->assertGreaterThan( 1, PageAccess::set( [$page->id], [], descendants: true ) );
     }
 
 
-    public function testRetriesIdempotentRestrictionsAndPublicReleases(): void
+    public function testIdempotentAccessChangesHaveNoSideEffects(): void
     {
         $page = Page::where( 'path', 'hidden' )->firstOrFail();
         $public = Page::where( 'path', 'blog' )->firstOrFail();
         $search = $this->searchEngine();
 
-        $this->assertSame( 1, PageAccess::restrict( [$page->id], ['member'] ) );
+        $this->assertSame( 1, PageAccess::set( [$page->id], ['member'] ) );
         $search->updates = [];
         $this->invalidator->reset();
-        $this->assertSame( 1, PageAccess::restrict( [$page->id], ['member'] ) );
-        $this->assertSame( 1, PageAccess::release( [$public->id] ) );
-        $this->assertSame( [[$page->id], [$public->id]], $search->updates );
-        $this->assertSame(
-            [['hidden'], ['blog']],
-            array_map( fn( $batch ) => array_column( $batch, 'path' ), $this->invalidator->batches ),
-        );
+        $this->assertSame( 1, PageAccess::set( [$page->id], ['member'] ) );
+        $this->assertSame( 1, PageAccess::set( [$public->id], null ) );
+        $this->assertSame( [], $search->updates );
+        $this->assertSame( [], $this->invalidator->batches );
+    }
+
+
+    public function testMixedAccessChangesOnlyInvalidateAndReindexChangedPages(): void
+    {
+        $restricted = Page::where( 'path', 'hidden' )->firstOrFail();
+        $public = Page::where( 'path', 'blog' )->firstOrFail();
+        $search = $this->searchEngine();
+
+        PageAccess::set( [$restricted->id], ['member'] );
+        $search->updates = [];
+        $this->invalidator->reset();
+
+        $this->assertSame( 2, PageAccess::set( [$restricted->id, $public->id], ['member'] ) );
+        $this->assertInvalidated( ['blog'] );
+        $this->assertSame( [[$public->id]], $search->updates );
     }
 
 
@@ -322,8 +341,8 @@ class PageAccessTest extends CoreTestAbstract
     {
         $page = Page::where( 'path', 'hidden' )->firstOrFail();
 
-        PageAccess::restrict( [$page->id], ['alpha', 'beta'] );
-        PageAccess::restrict( [$page->id], ['gamma'] );
+        PageAccess::set( [$page->id], ['alpha', 'beta'] );
+        PageAccess::set( [$page->id], ['gamma'] );
 
         $this->assertSame(
             ['gamma'],
@@ -357,9 +376,38 @@ class PageAccessTest extends CoreTestAbstract
         }
 
         $this->assertCount( PageAccess::CHUNK_SIZE + 1, $ids );
-        $this->assertSame( count( $ids ), PageAccess::restrict( $ids, ['member'] ) );
-        $this->assertSame( count( $ids ), PageAccess::restrict( $ids, ['member'] ) );
+        $this->assertSame( count( $ids ), PageAccess::set( $ids, ['member'] ) );
+        $this->assertSame( count( $ids ), PageAccess::set( $ids, ['member'] ) );
         $this->assertSame( count( $ids ), PageAccess::whereIn( 'page_id', $ids )->count() );
+    }
+
+
+    public function testRejectsMoreThanOneThousandBulkPages(): void
+    {
+        $ids = array_map( strval(...), range( 1, 1001 ) );
+
+        try {
+            PageAccess::set( $ids, [] );
+            $this->fail( 'Access changes must be limited to 1,000 pages.' );
+        } catch( Exception $e ) {
+            $this->assertSame( 'No more than 1000 items may be changed at once.', $e->getMessage() );
+        }
+
+        $this->assertSame( [], $this->invalidator->batches );
+        $this->assertSame( 0, PageAccess::count() );
+    }
+
+
+    public function testRejectsMoreThanOneThousandAccessAssignments(): void
+    {
+        $ids = Page::query()->limit( 5 )->pluck( 'id' )->map( strval(...) )->all();
+        $values = array_map( fn( int $value ) => 'access-' . $value, range( 1, 250 ) );
+        Access::using( fn() => $values );
+
+        $this->expectException( Exception::class );
+        $this->expectExceptionMessage( 'No more than 1000 page access assignments may be changed at once.' );
+
+        PageAccess::set( $ids, $values );
     }
 
 
@@ -378,7 +426,7 @@ class PageAccessTest extends CoreTestAbstract
             yield $second->id;
         };
 
-        PageAccess::restrict( $ids(), null );
+        PageAccess::set( $ids(), [] );
 
         $this->assertCount( 1, $search->updates );
         $this->assertEqualsCanonicalizing( [$page->id, $second->id], $search->updates[0] );
@@ -403,17 +451,17 @@ class PageAccessTest extends CoreTestAbstract
         DB::flushQueryLog();
         DB::enableQueryLog();
 
-        PageAccess::restrictSubtree( $root, null );
+        PageAccess::set( [$root->id], [], descendants: true );
 
-        $this->assertCount( 4, DB::getQueryLog() );
+        $this->assertCount( 5, DB::getQueryLog() );
 
         $count = Page::query()
             ->where( \Aimeos\Nestedset\NestedSet::LFT, '>=', $root->getLft() )
             ->where( \Aimeos\Nestedset\NestedSet::RGT, '<=', $root->getRgt() )
             ->count();
         DB::flushQueryLog();
-        $this->assertSame( $count, PageAccess::restrictSubtree( $root, null ) );
-        $this->assertCount( 4, DB::getQueryLog() );
+        $this->assertSame( $count, PageAccess::set( [$root->id], [], descendants: true ) );
+        $this->assertCount( 3, DB::getQueryLog() );
     }
 
 
@@ -428,21 +476,21 @@ class PageAccessTest extends CoreTestAbstract
         $root->setAttribute( \Aimeos\Nestedset\NestedSet::LFT, 999999 );
         $root->setAttribute( \Aimeos\Nestedset\NestedSet::RGT, 999999 );
 
-        $this->assertSame( $count, PageAccess::restrictSubtree( $root, null ) );
+        $this->assertSame( $count, PageAccess::set( [$root->id], [], descendants: true ) );
         $this->assertSame( $count, PageAccess::count() );
     }
 
 
-    public function testRetryRepairsSideEffects(): void
+    public function testRetryDoesNotInvalidateOrReindex(): void
     {
         $page = Page::where( 'path', 'hidden' )->firstOrFail();
-        PageAccess::restrict( [$page->id], ['member'] );
+        PageAccess::set( [$page->id], ['member'] );
         $search = $this->searchEngine();
         $this->invalidator->reset();
 
-        $this->assertSame( 1, PageAccess::restrict( [$page->id], ['member'] ) );
-        $this->assertInvalidated( ['hidden'] );
-        $this->assertSame( [[$page->id]], $search->updates );
+        $this->assertSame( 1, PageAccess::set( [$page->id], ['member'] ) );
+        $this->assertSame( [], $this->invalidator->batches );
+        $this->assertSame( [], $search->updates );
     }
 
 
@@ -507,7 +555,7 @@ class PageAccessTest extends CoreTestAbstract
         $this->expectException( Exception::class );
         $this->expectExceptionMessage( 'Unknown frontend access value "unknown".' );
 
-        PageAccess::restrict( [$page->id], ['unknown'] );
+        PageAccess::set( [$page->id], ['unknown'] );
     }
 
 
@@ -518,7 +566,7 @@ class PageAccessTest extends CoreTestAbstract
 
         $this->expectException( \Illuminate\Database\Eloquent\ModelNotFoundException::class );
 
-        PageAccess::restrictSubtree( $root, null );
+        PageAccess::set( [$root->id], [], descendants: true );
     }
 
 
@@ -529,7 +577,7 @@ class PageAccessTest extends CoreTestAbstract
 
         $this->expectException( \Illuminate\Database\Eloquent\ModelNotFoundException::class );
 
-        PageAccess::releaseSubtree( $root );
+        PageAccess::set( [$root->id], null, descendants: true );
     }
 
 
@@ -574,7 +622,7 @@ class PageAccessTest extends CoreTestAbstract
     {
         $restricted = Page::where( 'path', 'hidden' )->firstOrFail();
         $public = Page::where( 'path', 'blog' )->firstOrFail();
-        PageAccess::restrict( [$restricted->id], null );
+        PageAccess::set( [$restricted->id], [] );
         $user = new \App\Models\User();
         $user->id = 42;
         $user->tenant_id = 'other';

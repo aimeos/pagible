@@ -5,6 +5,7 @@ namespace Aimeos\Cms;
 use Aimeos\Cms\Events\PagesInvalidated;
 use Aimeos\Cms\Events\CmsContact;
 use Aimeos\Cms\Events\CmsSearch;
+use Aimeos\Cms\Jobs\InvalidatePages;
 use Aimeos\Cms\Listeners\ContactLogListener;
 use Aimeos\Cms\Listeners\SearchLogListener;
 use Aimeos\Cms\Schema;
@@ -41,11 +42,16 @@ class ThemeServiceProvider extends Provider
 
         $this->watch();
         Event::listen( PagesInvalidated::class, function( PagesInvalidated $event ) {
-            try {
-                PageCache::invalidate( $event->routes, $event->tenant );
-            } catch( \Throwable $e ) {
-                // Content changes remain committed even if cache deletion fails.
-                report( $e );
+            $size = max( 1, (int) config( 'cms.chunksize', 100 ) );
+
+            foreach( array_chunk( $event->routes, $size ) as $routes )
+            {
+                try {
+                    dispatch( new InvalidatePages( $routes, $event->tenant ) );
+                } catch( \Throwable $e ) {
+                    // The cache TTL remains the fallback if dispatch fails.
+                    report( $e );
+                }
             }
         } );
         $this->console();

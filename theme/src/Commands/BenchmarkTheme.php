@@ -213,7 +213,7 @@ class BenchmarkTheme extends Command
                 throw new \RuntimeException( 'Expected a string page ID' );
             }
 
-            PageAccess::restrict( [$restrictedId], null );
+            PageAccess::set( [$restrictedId], [] );
 
             // Restricted routes deliberately fall through to the inner web stack;
             // model its unauthenticated response without requiring an application login route.
@@ -226,7 +226,7 @@ class BenchmarkTheme extends Command
                     $this->expectStatus( $response, Response::HTTP_UNAUTHORIZED );
                 }, readOnly: true, tries: $tries );
             } finally {
-                PageAccess::release( [$restrictedId] );
+                PageAccess::set( [$restrictedId], null );
             }
 
             // Reuse an application-owned frontend value when one exists. Empty
@@ -234,22 +234,27 @@ class BenchmarkTheme extends Command
             $available = app( Access::class )->list();
             $values = isset( $available[0] ) ? [$available[0]] : null;
             $root = Page::where( 'tag', 'root' )->where( 'domain', $domain )->firstOrFail();
+            $rootId = $root->getKey();
             $accessTries = max( 1, (int) ceil( $tries / 10 ) );
 
+            if( !is_string( $rootId ) ) {
+                throw new \RuntimeException( 'Expected a string root page ID' );
+            }
+
             $this->benchmark( 'Access subtree changed', fn() =>
-                PageAccess::restrictSubtree( $root, $values ),
+                PageAccess::set( [$rootId], $values ?? [], descendants: true ),
                 tries: $accessTries,
             );
 
-            PageAccess::restrictSubtree( $root, $values );
+            PageAccess::set( [$rootId], $values ?? [], descendants: true );
 
             try {
                 $this->benchmark( 'Access subtree retry', fn() =>
-                    PageAccess::restrictSubtree( $root, $values ),
+                    PageAccess::set( [$rootId], $values ?? [], descendants: true ),
                     tries: $accessTries,
                 );
             } finally {
-                PageAccess::releaseSubtree( $root );
+                PageAccess::set( [$rootId], null, descendants: true );
             }
         }
         finally

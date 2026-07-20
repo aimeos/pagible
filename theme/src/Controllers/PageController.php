@@ -101,13 +101,9 @@ class PageController extends Controller
 
         // Database-first transition safety: re-read the rule after rendering so a
         // concurrent insert or permission change cannot expose or cache the response.
-        $currentAccess = $route->access_exists ? $page->access()->get() : null;
+        $currentAccess = $page->access()->get();
 
-        if( $currentAccess === null && $page->access()->exists() ) {
-            $currentAccess = $page->access()->get();
-        }
-
-        if( $currentAccess?->isNotEmpty() ) {
+        if( $currentAccess->isNotEmpty() ) {
             if( !$user ) {
                 throw new AuthenticationException();
             }
@@ -119,7 +115,7 @@ class PageController extends Controller
 
         $response = new Response( $html, 200, ['Content-Type' => 'text/html'] );
 
-        if( $user || $currentAccess?->isNotEmpty() || !$page->cache ) {
+        if( $user || $currentAccess->isNotEmpty() || !$page->cache ) {
             return $response->header( 'Cache-Control', 'no-store, private' );
         }
 

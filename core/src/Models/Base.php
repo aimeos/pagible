@@ -36,10 +36,26 @@ abstract class Base extends Model
     use Broadcasts;
     use HasUuids;
 
+    public const MAX_BULK = 1000;
+
     private static ?bool $isSqlsrv = null;
 
     /** @var class-string<\Laravel\Scout\Builder<\Illuminate\Database\Eloquent\Model>> */
     protected static string $scoutBuilder = \Aimeos\Cms\SearchBuilder::class;
+
+
+    /**
+     * Rejects operations exceeding the synchronous bulk limit.
+     */
+    public static function checkBulk( int $count ) : void
+    {
+        if( $count > static::MAX_BULK ) {
+            throw new \Aimeos\Cms\Exception( sprintf(
+                'No more than %d items may be changed at once.',
+                static::MAX_BULK,
+            ) );
+        }
+    }
 
 
     /**

@@ -274,7 +274,7 @@ class JsonapiTest extends JsonapiTestAbstract
     public function testRestrictedPageIsHiddenFromGuests()
     {
         $page = Page::where( 'tag', 'root' )->firstOrFail();
-        PageAccess::restrict( [$page->id], null );
+        PageAccess::set( [$page->id], [] );
 
         $response = $this->jsonApi()->expects( 'pages' )->get( "cms/pages/{$page->id}" );
 
@@ -299,7 +299,7 @@ class JsonapiTest extends JsonapiTestAbstract
     public function testAuthenticationOnlyPageIsVisibleToAuthenticatedUsers()
     {
         $page = Page::where( 'tag', 'root' )->firstOrFail();
-        PageAccess::restrict( [$page->id], null );
+        PageAccess::set( [$page->id], [] );
         $user = new \App\Models\User();
         $user->id = 42;
         $user->tenant_id = 'test';
@@ -314,7 +314,7 @@ class JsonapiTest extends JsonapiTestAbstract
     public function testAnyGrantedPermissionMakesPageVisible()
     {
         $page = Page::where( 'tag', 'root' )->firstOrFail();
-        PageAccess::restrict( [$page->id], ['denied', 'member'] );
+        PageAccess::set( [$page->id], ['denied', 'member'] );
         $user = new \App\Models\User();
         $user->id = 42;
         $user->tenant_id = 'test';
@@ -330,7 +330,7 @@ class JsonapiTest extends JsonapiTestAbstract
     public function testDeniedPageIsHiddenFromAuthenticatedCollections()
     {
         $page = Page::where( 'tag', 'root' )->firstOrFail();
-        PageAccess::restrict( [$page->id], ['denied'] );
+        PageAccess::set( [$page->id], ['denied'] );
         $user = new \App\Models\User();
         $user->id = 42;
         $user->tenant_id = 'test';
@@ -349,7 +349,7 @@ class JsonapiTest extends JsonapiTestAbstract
     public function testAccessScopeIsLimitedToTheJsonapiRequest()
     {
         $page = Page::where( 'tag', 'root' )->firstOrFail();
-        PageAccess::restrict( [$page->id], ['member'] );
+        PageAccess::set( [$page->id], ['member'] );
         $allowed = new \App\Models\User();
         $allowed->id = 42;
         $allowed->tenant_id = 'test';
@@ -376,7 +376,7 @@ class JsonapiTest extends JsonapiTestAbstract
     {
         $page = Page::where( 'tag', 'root' )->firstOrFail();
         $child = $page->children()->where( 'status', '>', 0 )->firstOrFail();
-        PageAccess::restrict( [$child->id], null );
+        PageAccess::set( [$child->id], [] );
 
         $response = $this->jsonApi()->expects( 'pages' )
             ->includePaths( 'children' )

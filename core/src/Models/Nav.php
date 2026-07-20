@@ -65,8 +65,7 @@ class Nav extends Page
     {
         return self::query()
             ->select( 'id', 'tenant_id', 'domain', 'path', 'to', 'cache', 'status' )
-            ->withCount( 'access as access_exists' )
-            ->withCasts( ['access_exists' => 'bool'] )
+            ->withExists( 'access' )
             ->whereIn( 'status', [1, 2] )
             ->where( 'domain', $domain )
             ->where( 'path', $path )
