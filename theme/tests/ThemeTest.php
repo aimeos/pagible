@@ -143,6 +143,14 @@ class ThemeTest extends ThemeTestAbstract
 	}
 
 
+	public function testMarkdownDirectiveTrimsListBreaks(): void
+	{
+		$template = '<div class="text">@markdown($text)</div>';
+
+		$this->assertEquals( '<div class="text"><ul><li>one</li><li>two</li></ul></div>', Blade::render( $template, ['text' => "- one\n- two"], true ) );
+	}
+
+
 	public function testMarkdownDirectiveTrimsOuterBreaks()
 	{
 		$template = '<div class="text">@markdown($text)</div>';
