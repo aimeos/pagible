@@ -8,7 +8,9 @@
 namespace Tests;
 
 use Illuminate\Http\UploadedFile;
+use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Nuwave\Lighthouse\Testing\MakesGraphQLRequests;
@@ -198,6 +200,43 @@ class GraphqlFileTest extends GraphqlTestAbstract
     }
 
 
+    public function testFilesSelectOnlyRequestedColumns()
+    {
+        $queries = [];
+        DB::listen( function( QueryExecuted $query ) use ( &$queries ) {
+            $queries[] = strtolower( $query->sql );
+        } );
+
+        $this->actingAs( $this->user )->graphQL( '{
+            files {
+                data {
+                    id
+                    name
+                    latest {
+                        id
+                        data
+                    }
+                }
+            }
+        }' )->assertGraphQLErrorFree();
+
+        $files = collect( $queries )->first( fn( $sql ) => str_contains( $sql, 'cms_files' ) && !str_contains( $sql, 'count(' ) );
+        $versions = collect( $queries )->first( fn( $sql ) => str_contains( $sql, 'cms_versions' ) && str_contains( $sql, ' in (' ) );
+
+        $this->assertNotNull( $files );
+        $this->assertNotNull( $versions );
+
+        $fileSelect = strstr( $files, ' from ', true );
+        $versionSelect = strstr( $versions, ' from ', true );
+
+        $this->assertStringContainsString( 'name', $fileSelect );
+        $this->assertStringNotContainsString( 'description', $fileSelect );
+        $this->assertStringNotContainsString( 'transcription', $fileSelect );
+        $this->assertStringContainsString( 'data', $versionSelect );
+        $this->assertStringNotContainsString( 'aux', $versionSelect );
+    }
+
+
     public function testFilesPublished()
     {
         $file = File::where( 'mime', 'image/tiff' )->first();
@@ -358,6 +397,7 @@ class GraphqlFileTest extends GraphqlTestAbstract
                         transcription
                         editor
                         latest {
+                            aux
                             data
                             editor
                         }
@@ -385,9 +425,12 @@ class GraphqlFileTest extends GraphqlTestAbstract
             'name' => 'test file',
             'path' => $file->path,
             'previews' => (array) ( $file->latest?->data?->previews ?? [] ),
-            'description' => (array) ( $file->latest?->data?->description ?? [] ),
-            'transcription' => (array) ( $file->latest?->data?->transcription ?? [] ),
             'scheduled' => 0,
+        ];
+
+        $expectedLatestAux = [
+            'description' => (array) ( $file->latest?->aux?->description ?? [] ),
+            'transcription' => (array) ( $file->latest?->aux?->transcription ?? [] ),
         ];
 
         // Assert scalar fields
@@ -403,8 +446,9 @@ class GraphqlFileTest extends GraphqlTestAbstract
         $this->assertEquals((array) $file->description, json_decode($saveFile['description'], true));
         $this->assertEquals((array) $file->transcription, json_decode($saveFile['transcription'], true));
 
-        // Assert latest->data as array
+        // Assert latest version JSON sections as arrays
         $this->assertEquals($expectedLatestData, json_decode($saveFile['latest']['data'] ?? null, true));
+        $this->assertEquals($expectedLatestAux, json_decode($saveFile['latest']['aux'] ?? null, true));
         $this->assertEquals('editor@testbench', $saveFile['latest']['editor'] ?? null);
     }
 

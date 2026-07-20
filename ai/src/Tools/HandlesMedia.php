@@ -147,6 +147,7 @@ trait HandlesMedia
 
             $file = Resource::saveFile( $id, [], $user, $latestId, $upload );
             $data = (array) ( $file->latest->data ?? [] );
+            $aux = (array) ( $file->latest->aux ?? [] );
 
             return [
                 'id' => $file->id,
@@ -155,7 +156,7 @@ trait HandlesMedia
                 'lang' => $data['lang'] ?? $file->lang,
                 'path' => $data['path'] ?? $file->path,
                 'previews' => $data['previews'] ?? $file->previews,
-                'description' => $data['description'] ?? $file->description,
+                'description' => $aux['description'] ?? $file->description,
                 'changed' => $file->changed,
             ];
         } );

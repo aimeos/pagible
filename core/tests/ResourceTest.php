@@ -212,6 +212,65 @@ class ResourceTest extends CoreTestAbstract
     }
 
 
+    public function testFileVersionMovesTextToAuxOnCreate()
+    {
+        $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
+        $description = ['en' => 'Description'];
+        $transcription = ['en' => 'Transcription'];
+
+        $version = $file->versions()->forceCreate( [
+            'data' => compact( 'description', 'transcription' ),
+            'aux' => ['keep' => 'value'],
+            'editor' => 'tester',
+        ] );
+
+        $this->assertObjectNotHasProperty( 'description', $version->data );
+        $this->assertObjectNotHasProperty( 'transcription', $version->data );
+        $this->assertEquals( $description, (array) $version->aux->description );
+        $this->assertEquals( $transcription, (array) $version->aux->transcription );
+        $this->assertEquals( 'value', $version->aux->keep );
+    }
+
+
+    public function testSaveFileStoresTextInAuxAndPublishesIt()
+    {
+        $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
+        $description = ['en' => 'Updated description'];
+        $transcription = ['en' => 'Updated transcription'];
+
+        $file->latest->aux = (array) $file->latest->aux + ['keep' => 'value'];
+        $file->latest->saveQuietly();
+
+        $file = Resource::saveFile( $file->id, compact( 'description', 'transcription' ), $this->user );
+
+        $this->assertObjectNotHasProperty( 'description', $file->latest->data );
+        $this->assertObjectNotHasProperty( 'transcription', $file->latest->data );
+        $this->assertEquals( $description, (array) $file->latest->aux->description );
+        $this->assertEquals( $transcription, (array) $file->latest->aux->transcription );
+        $this->assertEquals( 'value', $file->latest->aux->keep );
+
+        $file->publish( $file->latest );
+
+        $this->assertEquals( $description, (array) $file->description );
+        $this->assertEquals( $transcription, (array) $file->transcription );
+    }
+
+
+    public function testSaveFileReportsAuxConflict()
+    {
+        $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
+        $baseId = $file->latest_id;
+
+        Resource::saveFile( $file->id, ['description' => ['en' => 'Other editor']], $this->user, $baseId );
+        $file = Resource::saveFile( $file->id, ['description' => ['en' => 'My edit']], $this->user, $baseId );
+
+        $this->assertEquals( ['en' => 'My edit'], (array) $file->latest->aux->description );
+        $this->assertEquals( ['en' => 'Other editor'], (array) $file->changed['aux']['description']['overwritten'] );
+        $this->assertArrayNotHasKey( 'description', $file->changed['data'] ?? [] );
+        $this->assertEquals( ['en' => 'My edit'], (array) $file->changed['latest']['aux']['description'] );
+    }
+
+
     public function testBulkPageBestEffortSkipsMissing()
     {
         $page = $this->page( [['type' => 'heading', 'data' => ['title' => 'Hi']]] );

@@ -90,9 +90,9 @@ class Resource
     /**
      * Persists a prepared file as a new media item with its first version.
      *
-     * The caller fills the file's path, mime, previews, name, lang and
-     * description; this method stores it, creates the initial version, indexes
-     * it and broadcasts the change.
+     * The caller fills the file's path, mime, previews, name, lang, description
+     * and transcription; this method stores it, creates the initial version,
+     * indexes it and broadcasts the change.
      *
      * @param File $file Prepared file model (path/mime/previews/name set)
      * @param Authenticatable|null $user Authenticated user for editor tracking
@@ -111,19 +111,14 @@ class Resource
             $file->editor = $editor;
             $file->save();
 
+            $snapshot = File::snapshot( $file->toArray() );
+
             $version = $file->versions()->forceCreate( [
                 'id' => $versionId,
                 'lang' => $file->lang,
                 'editor' => $editor,
-                'data' => [
-                    'lang' => $file->lang,
-                    'name' => $file->name,
-                    'mime' => $file->mime,
-                    'path' => $file->path,
-                    'previews' => $file->previews,
-                    'description' => $file->description,
-                    'transcription' => $file->transcription,
-                ],
+                'data' => $snapshot['data'],
+                'aux' => $snapshot['aux'],
             ] );
 
             // Re-index with the latest version loaded so the draft (latest=true)
@@ -580,7 +575,7 @@ class Resource
         return Utils::transaction( function() use ( $id, $input, $editor, $latestId, $preview, $stored, $storedPreviews ) {
 
             /** @var File $orig */
-            $orig = File::withTrashed()->with( ['latest' => fn( $q ) => $q->select( 'id', 'versionable_id', 'data', 'lang', 'editor' )] )->findOrFail( $id );
+            $orig = File::withTrashed()->with( ['latest' => fn( $q ) => $q->select( 'id', 'versionable_id', 'data', 'aux', 'lang', 'editor' )] )->findOrFail( $id );
 
             return self::applyFile( $orig, $input, $editor, $latestId, $stored, $storedPreviews, $preview );
         } );
@@ -610,7 +605,7 @@ class Resource
 
         return self::bulk( File::class, $ids, $input, $editor, function( string $id ) use ( $input, $editor ) : ?File {
             $file = File::withTrashed()
-                ->with( ['latest' => fn( $q ) => $q->select( 'id', 'versionable_id', 'data', 'lang', 'editor' )] )
+                ->with( ['latest' => fn( $q ) => $q->select( 'id', 'versionable_id', 'data', 'aux', 'lang', 'editor' )] )
                 ->lockForUpdate()->find( $id );
             return $file ? self::applyFile( $file, $input, $editor, null, null, null, null, false ) : null;
         } );
@@ -738,11 +733,15 @@ class Resource
 
         $file = clone $orig;
 
-        [$data, $dd] = self::merge( $orig, $input, $latestId );
-        $file->fill( $data );
+        $base = self::base( $orig, $latestId );
+        $input = File::snapshot( $input );
+        [$data, $dd] = self::merge( $orig, $input['data'], $base );
+        [$aux, $ad] = self::merge( $orig, $input['aux'], $base, section: 'aux' );
+        $diffs = array_filter( ['data' => $dd, 'aux' => $ad] );
+        $file->fill( $data + $aux );
 
-        $file->previews = self::checkPaths( $input['previews'] ?? null ) ?? $previews;
-        $file->path = $stored ?? self::checkPath( $input['path'] ?? null ) ?? $path;
+        $file->previews = self::checkPaths( $input['data']['previews'] ?? null ) ?? $previews;
+        $file->path = $stored ?? self::checkPath( $input['data']['path'] ?? null ) ?? $path;
         $file->editor = $editor;
 
         if( $file->path !== $path && !str_starts_with( $file->path, 'http' ) ) {
@@ -767,22 +766,30 @@ class Resource
             throw $t;
         }
 
+        $snapshot = File::snapshot( $file->toArray() );
+        $snapshot['aux'] = array_replace( $snapshot['aux'], $aux );
+
         $version = $file->versions()->forceCreate( [
             'id' => $versionId,
             'lang' => $file->lang,
             'editor' => $editor,
-            'data' => $file->toArray(),
+            'data' => $snapshot['data'],
+            'aux' => $snapshot['aux'],
         ] );
 
         $orig->setRelation( 'latest', $version );
         $orig->forceFill( ['latest_id' => $version->id] )->save();
         $file->removeVersions();
 
-        if( $dd ) {
+        if( $diffs ) {
             $orig->setChanged( [
                 'editor' => $previousEditor,
-                'latest' => ['id' => $versionId, 'data' => $file->toArray()],
-                'data' => $dd,
+                'latest' => [
+                    'id' => $versionId,
+                    'data' => (array) $version->data,
+                    'aux' => (array) $version->aux,
+                ],
+                ...$diffs,
             ] );
         }
 
@@ -956,7 +963,7 @@ class Resource
         $versionId = ( new Version )->newUniqueId();
         $previousEditor = $element->latest->editor ?? '';
 
-        [$data, $dd] = self::merge( $element, $input, $latestId );
+        [$data, $dd] = self::merge( $element, $input, self::base( $element, $latestId ) );
 
         $version = $element->versions()->forceCreate( [
             'id' => $versionId,
@@ -1038,25 +1045,43 @@ class Resource
 
 
     /**
-     * Three-way merges or replaces data based on version conflict detection.
+     * Returns the base version when the model changed since it was read.
      *
-     * @param Page|Element|File $model Model with versions relation
-     * @param array<string, mixed> $input Incoming data
+     * @param Base $model Model with versions relation
      * @param string|null $latestId Version ID the editor was working on
-     * @return array{0: array<string, mixed>, 1: array<string, array<string, mixed>>|null}
+     * @return Version|null Base version for the three-way merge
      */
-    protected static function merge( Base $model, array $input, ?string $latestId ) : array
+    protected static function base( Base $model, ?string $latestId ) : ?Version
     {
-        if( $latestId && $model->latest_id && $latestId !== $model->latest_id )
-        {
-            $base = $model->versions()->find( $latestId );
+        $current = $model->getAttribute( 'latest_id' );
 
-            if( $base ) {
-                return Merge::structured( (array) $base->data, (array) $model->latest?->data, $input );
-            }
+        if( $latestId && $current && $latestId !== $current ) {
+            return $model->versions()->find( $latestId );
         }
 
-        return [array_replace( (array) $model->latest?->data, $input ), null];
+        return null;
+    }
+
+
+    /**
+     * Three-way merges or replaces a version section based on conflict detection.
+     *
+     * @param Element|File $model Model with versions relation
+     * @param array<string, mixed> $input Incoming data
+     * @param Version|null $base Base version for the three-way merge
+     * @param string $section Version section to merge
+     * @return array{0: array<string, mixed>, 1: array<string, array<string, mixed>>|null}
+     */
+    protected static function merge( Base $model, array $input, ?Version $base, string $section = 'data' ) : array
+    {
+        $latest = (array) $model->latest?->getAttribute( $section );
+
+        if( $base ) {
+            $base = (array) $base->getAttribute( $section );
+            return Merge::structured( $base, $latest, array_replace( $base, $input ) );
+        }
+
+        return [array_replace( $latest, $input ), null];
     }
 
 

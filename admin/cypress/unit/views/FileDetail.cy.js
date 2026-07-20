@@ -275,5 +275,13 @@ describe('FileDetail', () => {
         expect(vm.hasConflict).to.be.true
       })
     })
+
+    it('hasConflict includes auxiliary file fields', () => {
+      mountDetail().then(() => {
+        const vm = Cypress.vueWrapper.findComponent(FileDetail).vm
+        vm.changed = { editor: 'x', aux: { description: { previous: {}, current: {}, overwritten: { en: 'theirs' } } } }
+        expect(vm.hasConflict).to.be.true
+      })
+    })
   })
 })
