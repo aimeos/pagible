@@ -21,8 +21,8 @@ main .container {
     }
 }
 
-.cms-content > :nth-child(odd),
-.cms-content > :nth-child(even) {
+main .cms-content > :nth-child(odd),
+main .cms-content > :nth-child(even) {
     background: var(--pico-background-color);
 }
 

@@ -10,6 +10,7 @@ dialog > article {
     overflow: unset;
     border: 1px solid var(--pico-muted-background-color);
     border-radius: calc(var(--pico-border-radius) * 3);
+    padding-bottom: 2rem;
 }
 
 dialog header {

@@ -13,6 +13,7 @@ dialog > article {
     border-top: 2px solid var(--pico-contrast-hover-border);
     border-radius: calc(var(--pico-border-radius) * 1.5);
     box-shadow: var(--pico-box-shadow);
+    padding-bottom: 2rem;
 }
 
 dialog header {
