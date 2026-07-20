@@ -39,7 +39,7 @@ class Index extends Command
             ->chunk( 50, fn( $items ) => $items->searchable() ); // @phpstan-ignore method.notFound
         Element::withTrashed()->with( ['latest' => fn( $q ) => $q->select( 'id', 'versionable_id', 'data', 'lang', 'editor', 'published' )] )
             ->chunk( 50, fn( $items ) => $items->searchable() ); // @phpstan-ignore method.notFound
-        File::withTrashed()->with( ['latest' => fn( $q ) => $q->select( 'id', 'versionable_id', 'data', 'lang', 'editor', 'published' )] )
+        File::withTrashed()->with( ['latest' => fn( $q ) => $q->select( 'id', 'versionable_id', 'data', 'aux', 'lang', 'editor', 'published' )] )
             ->chunk( 50, fn( $items ) => $items->searchable() ); // @phpstan-ignore method.notFound
     }
 }

@@ -188,8 +188,8 @@ class ModelTest extends CoreTestAbstract
     public function testVersionToStringFile(): void
     {
         $version = new Version( [
-            'data' => (object) ['name' => 'Test image', 'description' => (object) ['en' => 'Test file description']],
-            'aux' => (object) [],
+            'data' => (object) ['name' => 'Test image'],
+            'aux' => (object) ['description' => (object) ['en' => 'Test file description']],
         ] );
         $version->setRelation( 'elements', collect( [] ) );
 

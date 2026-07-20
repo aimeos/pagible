@@ -32,8 +32,8 @@ const ME_ADMIN = {
 }
 
 /**
- * A minimal file entry as the GraphQL `files` query would return.
- * name/lang/mime/path/previews/description/transcription must be in latest.data.
+ * A minimal file entry as the GraphQL `files` query would return. File identity
+ * and paths live in latest.data; description/transcription live in latest.aux.
  */
 function makeFile(overrides = {}) {
   return Object.assign({
@@ -60,6 +60,8 @@ function makeFile(overrides = {}) {
         mime: 'image/png',
         path: 'cms/test/test_1234.png',
         previews: { 180: 'cms/test/test_180.webp' },
+      }),
+      aux: JSON.stringify({
         description: { en: 'A test image' },
         transcription: {},
       }),
@@ -107,7 +109,7 @@ function setupIntercept({
           data: {
             saveFile: saveFile || {
               id: op.variables?.id || '1',
-              latest: { id: '11', data: '{}', created_at: '2026-01-02 00:00:00' },
+              latest: { id: '11', data: '{}', aux: '{}', created_at: '2026-01-02 00:00:00' },
             },
           },
         }

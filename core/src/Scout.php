@@ -34,6 +34,10 @@ class Scout
         $isDraft = in_array( 'draft', $fields );
         static::apply( $query, $builder, $isDraft );
 
+        if( $builder->query === '' && $builder->queryCallback ) {
+            call_user_func( $builder->queryCallback, $query );
+        }
+
         return $builder;
     }
 

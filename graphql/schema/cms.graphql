@@ -583,7 +583,10 @@ type File {
   byversions_count: Int!
 
   "Latest version of the file"
-  latest: Version @belongsTo
+  latest: Version @belongsTo @cmsSelect(
+    key: "id"
+    columns: ["versionable_id", "versionable_type", "lang", "data", "aux", "published", "publish_at", "editor", "created_at"]
+  )
 
   "List of versioned data for the file"
   versions: [Version!]! @morphMany
@@ -648,7 +651,7 @@ type Version {
   "Arbitrary versioned data"
   data: JSON!
 
-  "Arbitrary versioned page config, content and meta data"
+  "Auxiliary page config/content/meta or file description/transcription data"
   aux: JSON
 
   "List of shared content elements assigned to the version"
