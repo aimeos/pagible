@@ -11,11 +11,11 @@
     padding: 4rem min(5%, 2rem);
 }
 
-.cms-content > :nth-child(odd) {
+main .cms-content > :nth-child(odd) {
     background-color: var(--pico-background-color);
 }
 
-.cms-content > :nth-child(even) {
+main .cms-content > :nth-child(even) {
     background-color: var(--pico-muted-background-color);
 }
 

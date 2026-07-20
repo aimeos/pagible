@@ -80,6 +80,7 @@
 
 .slider-container picture {
 	display: block;
+	padding: 0;
 }
 
 .slider-container img {

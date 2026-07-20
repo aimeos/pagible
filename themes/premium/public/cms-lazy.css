@@ -9,6 +9,7 @@ dialog > article {
     overflow: unset;
     border: 1px solid var(--pico-muted-border-color);
     border-radius: calc(var(--pico-border-radius) * 4);
+    padding-bottom: 2rem;
 }
 
 dialog header {
@@ -264,6 +265,7 @@ footer.cms-content .cards :is(.text, .cms-text) ul {
     list-style: none;
 }
 
+footer.cms-content .cards h2,
 footer.cms-content .heading h1,
 footer.cms-content .heading h2,
 footer.cms-content .heading h3 {
