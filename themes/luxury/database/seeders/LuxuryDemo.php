@@ -64,6 +64,8 @@ class LuxuryDemo extends AbstractDemo
 
     private string $element;
     private string $logoFile;
+    /** @var array<string, string> File IDs for fixed-ratio pricing images */
+    private array $pricingImages = [];
     /** @var array<string, string> File IDs for fixed-ratio slideshow images */
     private array $slideImages = [];
 
@@ -207,6 +209,7 @@ class LuxuryDemo extends AbstractDemo
                     ['title' => 'Should I eat first?', 'text' => 'A light snack is fine. Leave at least ninety minutes after a full meal before using the heated spaces.'],
                     ['title' => 'Is cold water required?', 'text' => 'No. A cool shower or simply resting outside provides enough contrast for many guests.'],
                     ['title' => 'Who should ask for guidance?', 'text' => 'Tell the wellness team about pregnancy, heart or blood-pressure conditions, recent surgery, or heat sensitivity before bathing.'],
+                    ['title' => 'How much time should I allow?', 'text' => 'Set aside forty-five to sixty minutes for one bathing round, a cool shower, and an unhurried rest afterwards.'],
                 ],
             ]],
             $this->articleHero( 'Take time in the bath house', 'Bathing is included with every stay; private evening access can be reserved for two.' ),
@@ -522,6 +525,7 @@ class LuxuryDemo extends AbstractDemo
                     ['title' => 'Can dates be changed?', 'text' => 'Flexible rates may be changed or cancelled up to seven days before arrival. Seasonal and retreat rates carry their own clearly stated terms.'],
                     ['title' => 'Are children welcome?', 'text' => 'Guests aged sixteen and over are welcome year-round. The full estate may be reserved for private family stays with younger children.'],
                     ['title' => 'Can you arrange an accessible stay?', 'text' => 'Two garden rooms, the restaurant, pool terrace, and wellness house have step-free access. Contact us so routes and treatments can be planned carefully.'],
+                    ['title' => 'Can you hold dates while I decide?', 'text' => 'Available rooms can usually be held for forty-eight hours while you confirm travel and programme details. Peak-season dates may require an immediate deposit.'],
                 ],
             ]],
         ], $home );
@@ -557,9 +561,9 @@ class LuxuryDemo extends AbstractDemo
                 'title' => 'Choose your part of the estate',
                 'text' => 'Rates are per night for two guests and include breakfast, daily movement, the bath house, pool, and return transfer for stays of four nights or longer.',
                 'items' => [
-                    ['name' => 'Garden Room', 'price' => '€420', 'unit' => 'night', 'text' => 'A calm ground-floor room with a planted terrace and step-free route.', 'features' => "- 34 m² interior\n- King or twin bed\n- Walk-in rain shower\n- Private garden terrace", 'file' => ['id' => $this->img( 'terrace' ), 'type' => 'file'], 'url' => '/reserve', 'button' => 'Request a Garden Room'],
-                    ['name' => 'Terrace Suite', 'price' => '€610', 'unit' => 'night', 'text' => 'A generous suite above the grove with a separate sitting room and sunset terrace.', 'features' => "- 52 m² interior\n- King bed\n- Bath and rain shower\n- West-facing terrace", 'file' => ['id' => $this->img( 'suite' ), 'type' => 'file'], 'url' => '/reserve', 'button' => 'Request a Terrace Suite', 'highlight' => true, 'badge' => 'Signature stay'],
-                    ['name' => 'The Limestone House', 'price' => '€1,480', 'unit' => 'night', 'text' => 'A private two-bedroom house with a plunge pool, kitchen, and dedicated host.', 'features' => "- 128 m² interior\n- Two king bedrooms\n- Private heated pool\n- Breakfast in the house", 'file' => ['id' => $this->img( 'pool' ), 'type' => 'file'], 'url' => '/reserve', 'button' => 'Request the House'],
+                    ['name' => 'Garden Room', 'price' => '420€', 'unit' => '/night', 'text' => 'A calm ground-floor room with a planted terrace and step-free route to the pool.', 'features' => "- 34 m² interior\n- King or twin bed\n- Walk-in rain shower\n- Private garden terrace", 'file' => ['id' => $this->priceImg( 'terrace' ), 'type' => 'file'], 'url' => '/reserve', 'button' => 'Request a Garden Room'],
+                    ['name' => 'Terrace Suite', 'price' => '610€', 'unit' => '/night', 'text' => 'A generous suite above the grove with a separate sitting room and sunset terrace.', 'features' => "- 52 m² interior\n- King bed\n- Bath and rain shower\n- West-facing terrace", 'file' => ['id' => $this->priceImg( 'suite' ), 'type' => 'file'], 'url' => '/reserve', 'button' => 'Request a Terrace Suite', 'highlight' => true, 'badge' => 'Signature stay'],
+                    ['name' => 'The Limestone House', 'price' => '1.480€', 'unit' => '/night', 'text' => 'A private two-bedroom house with a plunge pool, kitchen, and dedicated host.', 'features' => "- 128 m² interior\n- Two king bedrooms\n- Private heated pool\n- Breakfast in the house", 'file' => ['id' => $this->priceImg( 'pool' ), 'type' => 'file'], 'url' => '/reserve', 'button' => 'Request the complete House'],
                 ],
             ]],
             ['id' => Utils::uid(), 'type' => 'image-text', 'group' => 'main', 'data' => [
@@ -633,21 +637,20 @@ class LuxuryDemo extends AbstractDemo
                 'text' => "## Begin with a conversation\n\nEvery programme starts with time to understand how you sleep, move, work, eat, and recover. The aim is not to fill each hour. It is to choose a few practices that make a visible difference, then leave enough space for them to settle.\n\nOur team includes massage therapists, movement teachers, a sleep practitioner, nutritionist, and visiting physiotherapists. When clinical care is more appropriate, we say so plainly.",
             ]],
             ['id' => Utils::uid(), 'type' => 'cards', 'group' => 'main', 'data' => [
-                'title' => 'Four foundations',
+                'title' => 'Three foundations',
                 'cards' => [
                     ['title' => 'Rest', 'text' => 'Sleep consultations, evening routines, quiet rooms, and schedules that respect recovery.'],
                     ['title' => 'Touch', 'text' => 'Slow bodywork, focused therapeutic massage, facials, and treatments using island botanicals.'],
                     ['title' => 'Movement', 'text' => 'Morning mobility, yoga, strength, swimming, and guided walks adapted to the body in front of us.'],
-                    ['title' => 'Bathing', 'text' => 'Mineral water, herbal steam, cool courtyard showers, and time to rest between temperatures.'],
                 ],
             ]],
             ['id' => 'rituals', 'type' => 'pricing', 'group' => 'main', 'data' => [
                 'title' => 'Wellness programmes',
                 'text' => 'Programmes are added to your room stay. Each is private and can be adapted for pregnancy, injury, lower mobility, or a preference for gentler work.',
                 'items' => [
-                    ['name' => 'Avelune Ritual', 'price' => '€220', 'unit' => '2 hours', 'text' => 'A private bathing sequence followed by intuitive bodywork and a garden infusion.', 'features' => "- Wellness consultation\n- Private bath house\n- 75-minute treatment\n- Rest room tea", 'file' => ['id' => $this->img( 'bath' ), 'type' => 'file'], 'url' => '/reserve', 'button' => 'Request the ritual'],
-                    ['name' => 'Three Nights of Rest', 'price' => '€780', 'unit' => 'programme', 'text' => 'A light structure for guests who arrive tired and want sleep to feel natural again.', 'features' => "- Sleep consultation\n- Two body treatments\n- Private movement session\n- Evening bath ritual", 'file' => ['id' => $this->img( 'suite' ), 'type' => 'file'], 'url' => '/reserve', 'button' => 'Plan three nights', 'highlight' => true, 'badge' => 'Most requested'],
-                    ['name' => 'Five Nights in Motion', 'price' => '€1,260', 'unit' => 'programme', 'text' => 'Restore strength and ease through individual movement, walking, treatment, and useful rest.', 'features' => "- Movement assessment\n- Three private sessions\n- Two treatments\n- Guided mountain walk", 'file' => ['id' => $this->img( 'yoga' ), 'type' => 'file'], 'url' => '/reserve', 'button' => 'Plan five nights'],
+                    ['name' => 'Avelune Ritual', 'price' => '220€', 'unit' => '/2 hours', 'text' => 'A private bathing sequence followed by intuitive bodywork and a garden infusion.', 'features' => "- Wellness consultation\n- Private bath house\n- 75-minute treatment\n- Rest room tea", 'file' => ['id' => $this->priceImg( 'bath' ), 'type' => 'file'], 'url' => '/reserve', 'button' => 'Request ritual'],
+                    ['name' => 'Three Nights of Rest', 'price' => '780€', 'unit' => '/stay', 'text' => 'A light structure for guests who arrive tired and want sleep to feel natural again.', 'features' => "- Sleep consultation\n- Two body treatments\n- Private movement session\n- Evening bath ritual", 'file' => ['id' => $this->priceImg( 'suite' ), 'type' => 'file'], 'url' => '/reserve', 'button' => 'Plan three nights', 'highlight' => true, 'badge' => 'Most requested'],
+                    ['name' => 'Five Nights in Motion', 'price' => '1.260€', 'unit' => '/stay', 'text' => 'Restore strength and ease through individual movement, walking, treatment, and useful rest.', 'features' => "- Movement assessment\n- Three private sessions\n- Two treatments\n- Guided mountain walk", 'file' => ['id' => $this->priceImg( 'yoga' ), 'type' => 'file'], 'url' => '/reserve', 'button' => 'Plan five nights'],
                 ],
             ]],
             ['id' => Utils::uid(), 'type' => 'table', 'group' => 'main', 'data' => [
@@ -1063,6 +1066,43 @@ SVG;
             ->addBlog( $home, $journalId )
             ->addGuide( $home )
             ->addReserve( $home );
+    }
+
+
+    /**
+     * Creates a fixed 3:2 pricing image and returns its file ID.
+     */
+    protected function priceImg( string $key ) : string
+    {
+        if( !isset( $this->pricingImages[$key] ) )
+        {
+            [$photo, $name, $desc] = self::PHOTOS[$key];
+            $base = 'https://images.unsplash.com/' . $photo;
+            $url = fn( int $w, int $h ) => $base . '?w=' . $w . '&h=' . $h . '&q=80&fm=jpg&fit=crop';
+
+            $data = [
+                'mime' => 'image/jpeg',
+                'lang' => 'en',
+                'name' => $name,
+                'path' => $url( 1500, 1000 ),
+                'previews' => ['500' => $url( 500, 333 ), '1000' => $url( 1000, 667 )],
+                'description' => ['en' => $desc],
+            ];
+
+            $file = File::forceCreate( $data + ['editor' => 'demo'] );
+            $version = $file->versions()->forceCreate( [
+                'lang' => 'en',
+                'data' => $data,
+                'published' => true,
+                'editor' => 'demo',
+            ] );
+
+            $file->forceFill( ['latest_id' => $version->id] )->saveQuietly();
+            $file->publish( $version );
+            $this->pricingImages[$key] = (string) $file->refresh()->id;
+        }
+
+        return $this->pricingImages[$key];
     }
 
 

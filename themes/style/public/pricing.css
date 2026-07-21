@@ -160,7 +160,6 @@
     margin: 0 0 0.25rem;
 }
 
-.pricing .pricing-header .text,
 .pricing .pricing-header .cms-text {
     font-size: 0.875rem;
     color: var(--pico-muted-color);
@@ -169,7 +168,6 @@
     margin: 0 0 0.75rem;
 }
 
-.pricing .highlight .pricing-header .text,
 .pricing .highlight .pricing-header .cms-text {
     color: var(--pico-background-color);
 }
