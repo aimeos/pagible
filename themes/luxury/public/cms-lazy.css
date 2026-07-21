@@ -9,6 +9,7 @@ dialog > article {
     overflow: unset;
     border: 1px solid var(--pico-muted-border-color);
     border-radius: calc(var(--pico-border-radius) * 4);
+    padding-bottom: 1rem;
 }
 
 dialog header {
@@ -39,11 +40,10 @@ dialog button[type=reset] {
 }
 
 dialog button[type=reset]:hover {
-    background-color: var(--pico-muted-background-color);
+    background-color: var(--pico-muted-color);
 }
 
 dialog input {
-    border: 1px solid var(--pico-contrast-border);
     background-color: var(--pico-contrast-inverse);
     font-size: var(--pico-font-size);
     display: block;
@@ -64,9 +64,10 @@ dialog input::-webkit-input-placeholder {
 }
 
 dialog.search .results {
-    height: calc(100% - 4.25rem);
+    height: calc(100% - 6.5rem);
     overflow-y: auto;
-    padding: 1rem;
+    padding: 0 1rem;
+    margin: 1rem 0;
 }
 
 dialog.search a.result-item {
@@ -227,6 +228,10 @@ footer.cms-content .cards .card-item:hover {
     transform: none;
 }
 
+footer.cms-content .cards h2 {
+    color: var(--pico-contrast-inverse);
+}
+
 footer.cms-content .cards .title {
     color: var(--pico-contrast-hover-background);
     font-size: calc(var(--pico-font-size) * 0.8);
@@ -262,6 +267,7 @@ footer.cms-content .cards :is(.text, .cms-text) a:hover {
 footer.cms-content .cards :is(.text, .cms-text) ul {
     padding-left: 0;
     list-style: none;
+    white-space: normal;
 }
 
 footer.cms-content .heading h1,
