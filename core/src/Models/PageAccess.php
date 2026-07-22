@@ -37,6 +37,8 @@ class PageAccess extends Model
     use Tenancy;
 
     public const CHUNK_SIZE = 250;
+    public $incrementing = false;
+
     private const MAX_VALUES = 250;
 
     protected $table = 'cms_page_access';

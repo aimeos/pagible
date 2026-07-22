@@ -8,6 +8,8 @@
 namespace Aimeos\Cms\Models;
 
 use Aimeos\Nestedset\NestedSet;
+use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Query\Expression;
 
 
 /**
@@ -65,7 +67,7 @@ class Nav extends Page
     {
         return self::query()
             ->select( 'id', 'tenant_id', 'domain', 'path', 'to', 'cache', 'status' )
-            ->withExists( 'access' )
+            ->withAggregate( 'access as access_exists', new Expression( '1' ) )
             ->whereIn( 'status', [1, 2] )
             ->where( 'domain', $domain )
             ->where( 'path', $path )
@@ -92,5 +94,16 @@ class Nav extends Page
     public function getMorphClass()
     {
         return Page::class;
+    }
+
+
+    /**
+     * Whether the page has explicit frontend access rules.
+     *
+     * @return Attribute<bool, never>
+     */
+    protected function accessExists() : Attribute
+    {
+        return Attribute::get( fn( $value ) => (bool) $value );
     }
 }

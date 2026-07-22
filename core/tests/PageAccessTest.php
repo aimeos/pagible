@@ -45,6 +45,12 @@ class PageAccessTest extends CoreTestAbstract
     }
 
 
+    public function testAccessRowsDoNotExpectAutoIncrementingIdentifiers(): void
+    {
+        $this->assertFalse( ( new PageAccess() )->getIncrementing() );
+    }
+
+
     public function testEmptyAccessValueListsRequireAuthentication(): void
     {
         $page = Page::where( 'path', 'hidden' )->firstOrFail();
