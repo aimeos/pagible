@@ -341,11 +341,8 @@ class File extends Base
     public function publish( Version $version ) : self
     {
         $this->checkVersion( $version );
-
-        $path = $this->path;
-        $previews = $this->previews;
-
         $this->forceFill( array_intersect_key( (array) $version->data, array_flip( $this->getFillable() ) ) );
+        $this->forceFill( array_intersect_key( (array) $version->aux, array_flip( $this->getFillable() ) ) );
         $this->previews = (array) $version->data?->previews;
         $this->path = $version->data?->path;
         $this->mime = $version->data?->mime;
@@ -463,6 +460,23 @@ class File extends Base
 
 
     /**
+     * Splits file version fields into indexed data and auxiliary text.
+     *
+     * @param array<string, mixed> $data File version fields
+     * @return array{data: array<string, mixed>, aux: array<string, mixed>}
+     */
+    public static function snapshot( array $data ) : array
+    {
+        $keys = array_flip( ['description', 'transcription'] );
+
+        return [
+            'data' => array_diff_key( $data, $keys ),
+            'aux' => array_intersect_key( $data, $keys ),
+        ];
+    }
+
+
+    /**
      * Returns the searchable data for the file.
      *
      * @return array<string, mixed>
@@ -498,7 +512,7 @@ class File extends Base
      */
     protected function makeAllSearchableUsing( $query )
     {
-        return $query->with( ['latest' => fn( $q ) => $q->select( Version::SELECT_COLUMNS )] );
+        return $query->with( ['latest' => fn( $q ) => $q->select( [...Version::SELECT_COLUMNS, 'aux'] )] );
     }
 
 

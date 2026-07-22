@@ -6,12 +6,6 @@ use Illuminate\Support\ServiceProvider as Provider;
 
 class SearchServiceProvider extends Provider
 {
-    public function register(): void
-    {
-        $this->mergeConfigFrom( dirname( __DIR__ ) . '/config/cms.php', 'cms' );
-    }
-
-
     public function boot(): void
     {
         $this->loadMigrationsFrom( dirname( __DIR__ ) . '/database/migrations' );

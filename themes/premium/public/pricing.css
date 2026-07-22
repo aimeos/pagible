@@ -105,6 +105,18 @@
     box-shadow: 0 1.5rem 4rem -1rem var(--pico-muted-border-color);
 }
 
+.pricing .pricing-item picture.pricing-image {
+    aspect-ratio: 5 / 3;
+    display: block;
+    overflow: hidden;
+}
+
+.pricing .pricing-item picture.pricing-image img {
+    height: 100%;
+    object-fit: cover;
+    width: 100%;
+}
+
 .pricing .badge {
     position: absolute;
     top: -0.75rem;
@@ -162,7 +174,7 @@
     margin: 0 0 0.25rem;
 }
 
-.pricing .pricing-header .text {
+.pricing .pricing-header .cms-text {
     font-size: 0.875rem;
     color: var(--pico-muted-color);
     font-weight: 400;
@@ -170,7 +182,7 @@
     margin: 0 0 0.75rem;
 }
 
-.pricing .highlight .pricing-header .text {
+.pricing .highlight .pricing-header .cms-text {
     color: var(--pico-contrast-hover-background);
 }
 

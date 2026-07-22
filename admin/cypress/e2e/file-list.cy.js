@@ -36,9 +36,8 @@ const ME_ADMIN = {
 /**
  * A minimal file entry as the GraphQL `files` query would return.
  *
- * The list transform (FileListItems) parses `latest.data` JSON as the base item,
- * then overrides id, deleted_at, timestamps, editor, published, publish_at, usage.
- * So name/lang/mime/path/previews/description/transcription must be in latest.data.
+ * The list transform parses `latest.data` as the base item, then overrides list
+ * metadata. Description/transcription live in latest.aux and aren't needed here.
  */
 function makeFile(overrides = {}) {
   return Object.assign({
@@ -65,8 +64,6 @@ function makeFile(overrides = {}) {
         mime: 'image/png',
         path: 'cms/test/test_1234.png',
         previews: { 180: 'cms/test/test_180.webp' },
-        description: { en: 'A test image' },
-        transcription: {},
       }),
       editor: 'admin@example.com',
       created_at: '2026-01-01 00:00:00',
@@ -292,7 +289,7 @@ describe('File List', () => {
       name: 'photo.jpg',
       latest: { ...makeFile().latest, data: JSON.stringify({
         name: 'photo.jpg', lang: 'en', mime: 'image/jpeg', path: 'cms/photo.jpg',
-        previews: {}, description: {}, transcription: {},
+        previews: {},
       })},
     })
     visitFiles([file])
@@ -438,7 +435,7 @@ describe('File List', () => {
         id: '2', name: 'photo.jpg',
         latest: { ...makeFile().latest, id: '20', data: JSON.stringify({
           name: 'photo.jpg', lang: 'en', mime: 'image/jpeg', path: 'cms/photo.jpg',
-          previews: {}, description: {}, transcription: {},
+          previews: {},
         })},
       }),
     ]
@@ -520,14 +517,14 @@ describe('File List', () => {
         id: '2', name: 'video.mp4',
         latest: { ...makeFile().latest, id: '20', data: JSON.stringify({
           name: 'video.mp4', lang: 'en', mime: 'video/mp4', path: 'cms/video.mp4',
-          previews: {}, description: {}, transcription: {},
+          previews: {},
         })},
       }),
       makeFile({
         id: '3', name: 'song.mp3',
         latest: { ...makeFile().latest, id: '30', data: JSON.stringify({
           name: 'song.mp3', lang: 'en', mime: 'audio/mpeg', path: 'cms/song.mp3',
-          previews: {}, description: {}, transcription: {},
+          previews: {},
         })},
       }),
     ]

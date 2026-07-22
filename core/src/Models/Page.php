@@ -490,7 +490,10 @@ class Page extends Base
             $version->save();
         }
 
-        PagesInvalidated::dispatch( [$previous, $this] );
+        PagesInvalidated::dispatch( [
+            ['domain' => (string) $previous->domain, 'path' => (string) $previous->path],
+            ['domain' => (string) $this->domain, 'path' => (string) $this->path],
+        ] );
 
         return $this;
     }

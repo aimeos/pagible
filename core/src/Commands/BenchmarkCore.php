@@ -236,7 +236,8 @@ class BenchmarkCore extends Command
 
         $this->benchmark( 'File update', function() use ( $file ) {
             $version = $file->versions()->forceCreate( [
-                'lang' => 'en', 'data' => (array) $file->latest?->data, 'published' => false, 'editor' => 'benchmark',
+                'lang' => 'en', 'data' => (array) $file->latest?->data, 'aux' => (array) $file->latest?->aux,
+                'published' => false, 'editor' => 'benchmark',
             ] );
             $file->forceFill( ['latest_id' => $version->id] )->saveQuietly();
         }, tries: $tries );
@@ -279,15 +280,18 @@ class BenchmarkCore extends Command
     {
         // Clear cache for benchmark pages
         Page::where( 'editor', 'benchmark' )->chunkById( 500, function( $items ) {
-            $pages = [];
+            $routes = [];
 
             foreach( $items as $item ) {
                 if( $item instanceof Page ) {
-                    $pages[] = $item;
+                    $routes[] = [
+                        'domain' => (string) $item->domain,
+                        'path' => (string) $item->path,
+                    ];
                 }
             }
 
-            PagesInvalidated::dispatch( $pages );
+            PagesInvalidated::dispatch( $routes );
         } );
 
         // Break circular page↔version FK by clearing latest_id first

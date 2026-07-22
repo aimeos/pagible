@@ -343,13 +343,6 @@ class CmsEngineTest extends SearchTestAbstract
     }
 
 
-    public function testSearchMinConfigIsRegistered(): void
-    {
-        // the search package provides cms.search.min via its own config merged into "cms"
-        $this->assertSame( 2, config( 'cms.search.min' ) );
-    }
-
-
     public function testCjkSubstringSearch(): void
     {
         // CJK runs tokenize as a single FTS token, so interior substrings are unmatchable

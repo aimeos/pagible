@@ -26,7 +26,6 @@ class Scout
      */
     public const SKIP_FIELDS = ['latest', '__soft_deleted', 'tenant_id'];
 
-
     /**
      * Apply Scout builder where/whereIn/whereNotIn filters and order qualification
      * to an Eloquent query, joining cms_versions when any referenced column lives
@@ -120,6 +119,10 @@ class Scout
     {
         $isDraft = in_array( 'draft', $fields );
         static::apply( $query, $builder, $isDraft );
+
+        if( $builder->query === '' && $builder->queryCallback ) {
+            call_user_func( $builder->queryCallback, $query );
+        }
 
         return $builder;
     }

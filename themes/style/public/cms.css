@@ -65,7 +65,7 @@
     --pico-box-shadow: color-mix(in srgb, var(--pico-contrast) 16%, transparent);
     --pico-dropdown-color: var(--pico-contrast);
     --pico-dropdown-border-color: var(--pico-contrast-border);
-    --pico-dropdown-background-color: var(--pico-muted-background-color);
+    --pico-dropdown-background-color: var(--pico-background-color);
     --pico-dropdown-hover-background-color: var(--pico-muted-background-color);
     --pico-dropdown-box-shadow: 0 0.5rem 1.5rem -0.25rem var(--pico-box-shadow), 0 0.25rem 0.5rem -0.25rem var(--pico-box-shadow);
     --pico-modal-overlay-background-color: color-mix(in srgb, var(--pico-background-color) 40%, transparent);
@@ -237,6 +237,36 @@ nav.breadcrumb > ul {
     margin: auto;
 }
 
+nav.breadcrumb ul li {
+    color: var(--pico-muted-color);
+    font-size: calc(var(--pico-font-size) * 0.65);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+nav.breadcrumb ul li a[role="button"] {
+    margin: calc(var(--pico-nav-link-spacing-vertical) * -1) 0;
+    margin-inline-start: calc(var(--pico-nav-link-spacing-horizontal) * -1);
+    padding: var(--pico-nav-link-spacing-vertical) var(--pico-nav-link-spacing-horizontal);
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: var(--pico-muted-color);
+    font-size: inherit;
+    line-height: inherit;
+    letter-spacing: inherit;
+    text-transform: inherit;
+}
+
+nav.breadcrumb ul li a[role="button"]:hover,
+nav.breadcrumb ul li a[role="button"]:focus-visible {
+    border: 0;
+    background: transparent;
+    color: var(--pico-color);
+    text-decoration: underline;
+    text-underline-offset: 0.25rem;
+}
+
 body > header .brand a {
     font-family: var(--pico-font-family-display);
     font-size: calc(var(--pico-font-size) * 1.2);
@@ -281,6 +311,12 @@ header nav details.dropdown[open] > summary:not([role]) {
 header nav details summary::marker,
 header nav details summary::-webkit-details-marker {
     display: none;
+}
+
+header nav details > summary + ul.align {
+    width: auto;
+    left: auto;
+    right: auto;
 }
 
 header nav .menu-open,
@@ -431,6 +467,10 @@ h4 {
 p {
     font-size: 1rem;
     color: var(--pico-muted-color);
+}
+
+.hidden {
+    display: none;
 }
 
 .file,

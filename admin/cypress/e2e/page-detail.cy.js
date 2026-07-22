@@ -481,6 +481,7 @@ describe('Page Detail', () => {
     }
     visitPageDetail({}, { published: false }, me)
     detailView().find('.menu-save').should('be.disabled')
+    detailView().find('.v-tab').contains('Page').click()
     detailView().find('.subtabs .v-tab').contains('Access').should('not.exist')
   })
 

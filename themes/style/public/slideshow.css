@@ -8,7 +8,6 @@
 	border-radius: calc(var(--pico-border-radius) * 3);
 	box-shadow: 0 1.5625rem 3.125rem -0.75rem var(--pico-box-shadow);
 	overflow: hidden;
-	padding: 2rem;
 }
 
 .slider-container {
@@ -28,7 +27,7 @@
 	--swiffy-slider-item-ratio: 2/1;
 	--swiffy-slider-item-count: 1;
 	--swiffy-slider-nav-light: var(--pico-color);
-	--swiffy-slider-nav-dark: var(--pico-primary);
+	--swiffy-slider-nav-dark: var(--pico-background-color);
 	--swiffy-slider-nav-zoom: 1;
 	--swiffy-slider-track-opacity: 0.1;
 	--swiffy-slider-track-height: 0;
@@ -125,7 +124,7 @@
 	left: 0;
 	bottom: 0;
 	border: 0;
-	background-color: var(--pico-box-shadow);
+	background-color: transparent;
 	cursor: pointer;
 	padding: 0;
 	visibility: hidden;
@@ -135,8 +134,8 @@
 	display: flex;
 	align-items: center;
 	padding: 0 .5rem;
-	-webkit-filter: drop-shadow(0 0 .5rem var(--pico-box-shadow));
-	filter: drop-shadow(0 0 .5rem var(--pico-box-shadow));
+	-webkit-filter: drop-shadow(0 0 .5rem #00000080);
+	filter: drop-shadow(0 0 .5rem #00000080);
 	transform: scale(var(--swiffy-slider-nav-zoom))
 }
 
@@ -197,7 +196,7 @@
 }
 
 .slider-nav-round .slider-nav::before {
-	border-radius: 0;
+	border-radius: 50%;
 }
 
 .slider-nav-round .slider-nav::after {

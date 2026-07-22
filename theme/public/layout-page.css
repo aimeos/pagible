@@ -11,16 +11,16 @@
     padding: 4rem min(5%, 2rem);
 }
 
-.cms-content > :nth-child(even of :not(.heading)) {
+main .cms-content > :nth-child(even of :not(.heading)) {
     background-color: var(--pico-muted-background-color);
 }
 
-.cms-content > .heading:has(+ :nth-child(even of :not(.heading))) {
+main .cms-content > .heading:has(+ :nth-child(even of :not(.heading))) {
     background-color: var(--pico-muted-background-color);
 }
 
-.cms-content > :nth-child(4n of :not(.heading)),
-.cms-content > .heading:has(+ :nth-child(4n of :not(.heading))) {
+main .cms-content > :nth-child(4n of :not(.heading)),
+main .cms-content > .heading:has(+ :nth-child(4n of :not(.heading))) {
     background-color: #111827;
     --pico-color: #FFFFFF;
     --pico-background-color: #111827;
@@ -71,8 +71,8 @@
     margin: auto;
 }
 
-.cms-content > :nth-child(even of :not(.heading)) .image-text .grid-start .image,
-.cms-content > :nth-child(even of :not(.heading)) .image-text .grid-end .image {
+main .cms-content > :nth-child(even of :not(.heading)) .image-text .grid-start .image,
+main .cms-content > :nth-child(even of :not(.heading)) .image-text .grid-end .image {
     background-color: var(--pico-contrast-inverse);
 }
 

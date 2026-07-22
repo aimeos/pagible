@@ -115,7 +115,8 @@ class ThemeServiceProvider extends Provider
                     'allow_unsafe_links' => false,
                     'max_nesting_level' => 25,
                     'renderer' => [
-                        'block_separator' => ''
+                        'block_separator' => '',
+                        'inner_separator' => ''
                     ]
                 ]);
                 echo trim((string) \$__cmsMarkdown->convert($expression ?? ''));

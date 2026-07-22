@@ -32,7 +32,7 @@
     border: 1px solid var(--pico-muted-border-color);
     border-radius: calc(var(--pico-border-radius) * 2);
     transition: box-shadow 0.2s ease;
-    padding: 0.5rem;
+    padding: 1rem;
     display: block;
     height: 100%;
 }

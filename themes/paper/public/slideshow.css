@@ -9,6 +9,7 @@
 	box-shadow: var(--pico-box-shadow);
 	overflow: hidden;
 	padding: 1rem;
+	margin-block: 2rem;
 }
 
 .slider-container {

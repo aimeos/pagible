@@ -26,8 +26,8 @@ const ME_ADMIN = {
 }
 
 /**
- * A minimal file entry as the GraphQL `files` query would return.
- * name/lang/mime/path/previews/description/transcription must be in latest.data.
+ * A minimal file entry as the GraphQL `files` query would return. Descriptions
+ * and transcriptions are stored separately in latest.aux.
  */
 function makeFile(overrides = {}) {
   return Object.assign({
@@ -54,8 +54,6 @@ function makeFile(overrides = {}) {
         mime: 'image/png',
         path: 'cms/test/test_1234.png',
         previews: { 180: 'cms/test/test_180.webp' },
-        description: { en: 'A test image' },
-        transcription: {},
       }),
       editor: 'admin@example.com',
       created_at: '2026-01-01 00:00:00',

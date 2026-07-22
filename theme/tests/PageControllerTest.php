@@ -58,6 +58,20 @@ class PageControllerTest extends ThemeTestAbstract
     }
 
 
+    public function testEditorAssetsAreOptional()
+    {
+        // The monorepo discovers the admin package during tests. Restrict the shared
+        // namespace to theme views to exercise a standalone theme installation.
+        view()->replaceNamespace( 'cms', dirname( __DIR__ ) . '/views' );
+
+        $response = $this->actingAs( $this->user )->get( '/blog' );
+
+        $response->assertStatus( 200 );
+        $response->assertDontSee( 'vendor/cms/admin/editor', false );
+        $response->assertDontSee( 'stats.js', false );
+    }
+
+
     public function testLatestFindsChangedPath()
     {
         $page = Page::where( 'tag', 'blog' )->firstOrFail();

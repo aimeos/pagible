@@ -51,6 +51,7 @@ export default {
 
     labels() {
       return {
+        aux: this.$gettext('Fields'),
         data: this.$gettext('Fields'),
         meta: this.$gettext('Meta tags'),
         config: this.$gettext('Configuration'),

@@ -144,15 +144,18 @@ class Benchmark extends Command
         Page::where( 'editor', 'benchmark' )
             ->where( 'domain', $domain )
             ->chunkById( 500, function( $items ) {
-                $pages = [];
+                $routes = [];
 
                 foreach( $items as $item ) {
                     if( $item instanceof Page ) {
-                        $pages[] = $item;
+                        $routes[] = [
+                            'domain' => (string) $item->domain,
+                            'path' => (string) $item->path,
+                        ];
                     }
                 }
 
-                PagesInvalidated::dispatch( $pages );
+                PagesInvalidated::dispatch( $routes );
             } );
 
         $bar->finish();

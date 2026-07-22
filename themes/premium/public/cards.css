@@ -44,8 +44,8 @@
     border: 1px solid var(--pico-muted-border-color);
     border-radius: calc(var(--pico-border-radius) * 4);
     transition: box-shadow 0.25s ease, transform 0.25s ease;
-    overflow: hidden;
     text-align: start;
+    overflow: hidden;
     padding: 2rem;
 }
 
@@ -54,8 +54,17 @@
     transform: translateY(-2px);
 }
 
-.cards .card-item img {
+.cards .card-item picture.image {
     border-radius: calc(var(--pico-border-radius) * 2);
+    aspect-ratio: 5 / 3;
+    overflow: hidden;
+}
+
+.cards .card-item picture.image img {
+    border-radius: 0;
+    object-fit: cover;
+    height: 100%;
+    width: 100%;
 }
 
 .cards .title {

@@ -40,7 +40,7 @@ class Index extends Command
             ->chunk( 50, fn( $items ) => $items->searchable() ); // @phpstan-ignore method.notFound
         Element::withTrashed()->with( ['latest' => fn( $q ) => $q->select( Version::SELECT_COLUMNS )] )
             ->chunk( 50, fn( $items ) => $items->searchable() ); // @phpstan-ignore method.notFound
-        File::withTrashed()->with( ['latest' => fn( $q ) => $q->select( Version::SELECT_COLUMNS )] )
+        File::withTrashed()->with( ['latest' => fn( $q ) => $q->select( [...Version::SELECT_COLUMNS, 'aux'] )] )
             ->chunk( 50, fn( $items ) => $items->searchable() ); // @phpstan-ignore method.notFound
     }
 }

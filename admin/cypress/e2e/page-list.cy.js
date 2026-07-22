@@ -428,7 +428,7 @@ describe('Page List', () => {
     })
   })
 
-  it('clicking Enable sends savePage mutation with status 1', () => {
+  it('clicking Enable sends bulkPage mutation with status 1', () => {
     const page = makePage()
     page.latest.data = JSON.stringify({
       name: 'Test', title: '', path: '/test', lang: 'en',
@@ -439,22 +439,22 @@ describe('Page List', () => {
     cy.contains('.v-card .v-list .v-btn', 'Enable').click()
     cy.wait('@gql').its('request.body').should((body) => {
       const ops = Array.isArray(body) ? body : [body]
-      const saveOp = ops.find((op) => (op.query || '').includes('savePage'))
-      expect(saveOp).to.exist
-      expect(saveOp.variables.input.status).to.equal(1)
+      const bulkOp = ops.find((op) => (op.query || '').includes('bulkPage'))
+      expect(bulkOp).to.exist
+      expect(bulkOp.variables.input.status).to.equal(1)
     })
   })
 
-  it('clicking Disable sends savePage mutation with status 0', () => {
+  it('clicking Disable sends bulkPage mutation with status 0', () => {
     const page = makePage()
     visitPages([page])
     cy.get('.tree-node-inner .btn-actions .v-btn').first().click()
     cy.contains('.v-card .v-list .v-btn', 'Disable').click()
     cy.wait('@gql').its('request.body').should((body) => {
       const ops = Array.isArray(body) ? body : [body]
-      const saveOp = ops.find((op) => (op.query || '').includes('savePage'))
-      expect(saveOp).to.exist
-      expect(saveOp.variables.input.status).to.equal(0)
+      const bulkOp = ops.find((op) => (op.query || '').includes('bulkPage'))
+      expect(bulkOp).to.exist
+      expect(bulkOp.variables.input.status).to.equal(0)
     })
   })
 
