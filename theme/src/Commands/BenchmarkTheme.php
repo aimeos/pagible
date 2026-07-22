@@ -233,28 +233,31 @@ class BenchmarkTheme extends Command
             // catalogs still exercise authenticated-current-tenant restrictions.
             $available = app( Access::class )->list();
             $values = isset( $available[0] ) ? [$available[0]] : null;
-            $root = Page::where( 'tag', 'root' )->where( 'domain', $domain )->firstOrFail();
-            $rootId = $root->getKey();
+            // The complete benchmark tree exceeds the synchronous bulk limit.
+            // Use one generated top-level branch (991 pages for the default data).
+            $branch = Page::where( NestedSet::DEPTH, 1 )
+                ->where( 'domain', $domain )->orderBy( NestedSet::LFT )->firstOrFail();
+            $branchId = $branch->getKey();
             $accessTries = max( 1, (int) ceil( $tries / 10 ) );
 
-            if( !is_string( $rootId ) ) {
-                throw new \RuntimeException( 'Expected a string root page ID' );
+            if( !is_string( $branchId ) ) {
+                throw new \RuntimeException( 'Expected a string branch page ID' );
             }
 
             $this->benchmark( 'Access subtree changed', fn() =>
-                PageAccess::set( [$rootId], $values ?? [], descendants: true ),
+                PageAccess::set( [$branchId], $values ?? [], descendants: true ),
                 tries: $accessTries,
             );
 
-            PageAccess::set( [$rootId], $values ?? [], descendants: true );
+            PageAccess::set( [$branchId], $values ?? [], descendants: true );
 
             try {
                 $this->benchmark( 'Access subtree retry', fn() =>
-                    PageAccess::set( [$rootId], $values ?? [], descendants: true ),
+                    PageAccess::set( [$branchId], $values ?? [], descendants: true ),
                     tries: $accessTries,
                 );
             } finally {
-                PageAccess::set( [$rootId], null, descendants: true );
+                PageAccess::set( [$branchId], null, descendants: true );
             }
         }
         finally
