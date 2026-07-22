@@ -12,10 +12,12 @@
 			@if($file = cms($files, $card->file?->id ?? null))
 				@include('cms::pic', ['file' => $file, 'class' => 'image', 'sizes' => '(max-width: 576px) 100vw, (max-width: 768px) 66vw, 33vw'])
 			@endif
-			<h3 class="title">{{ $card->title ?? '' }}</h3>
-			@if($card->text ?? null)
-				<div class="cms-text">@markdown($card->text)</div>
-			@endif
+			<div class="card-text">
+				<h3 class="title">{{ $card->title ?? '' }}</h3>
+				@if($card->text ?? null)
+					<div class="cms-text">@markdown($card->text)</div>
+				@endif
+			</div>
 		</div>
 	@endforeach
 </div>
