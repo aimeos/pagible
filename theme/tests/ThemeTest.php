@@ -164,7 +164,7 @@ class ThemeTest extends ThemeTestAbstract
 		foreach( glob( dirname( __DIR__ ) . '/views/*.blade.php' ) ?: [] as $path ) {
 			$view = file_get_contents( $path );
 
-			preg_match_all( '/<(?<tag>[a-z][a-z0-9-]*)\b[^>]*class="[^"]*\btext\b[^"]*"[^>]*>.*?<\/\k<tag>>/s', $view, $matches );
+			preg_match_all( '/<(?<tag>[a-z][a-z0-9-]*)\b[^>]*class="(?:[^"]*\s)?cms-text(?:\s[^"]*)?"[^>]*>.*?<\/\k<tag>>/s', $view, $matches );
 
 			foreach( $matches[0] ?? [] as $node ) {
 				if( !str_contains( $node, '@markdown(' ) ) {

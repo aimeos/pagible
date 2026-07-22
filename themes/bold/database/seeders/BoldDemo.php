@@ -60,7 +60,11 @@ class BoldDemo extends AbstractDemo
         'woman' => ['photo-1549476464-37392f717541', 'RALLY athlete', 'Athlete training confidently with free weights in a bright gym'],
     ];
 
+    /** @var array<string, string> File IDs for fixed-ratio card images */
+    private array $cardImages = [];
     private string $element;
+    /** @var array<string, string> File IDs for portrait hero images */
+    private array $heroImages = [];
     private string $logoFile;
     /** @var array<string, string> File IDs for fixed-ratio slideshow images */
     private array $slideImages = [];
@@ -89,7 +93,7 @@ class BoldDemo extends AbstractDemo
                 'title' => 'Train smarter. Keep showing up.',
                 'subtitle' => 'RALLY Field Notes',
                 'text' => 'Useful thinking from our coaches on strength, conditioning, recovery, and building a practice that survives busy weeks.',
-                'files' => [['id' => $this->img( 'detail' ), 'type' => 'file']],
+                'files' => [['id' => $this->heroImg( 'detail' ), 'type' => 'file']],
             ]],
             ['id' => Utils::uid(), 'type' => 'blog', 'group' => 'main', 'data' => [
                 'title' => 'Latest field notes',
@@ -159,11 +163,12 @@ class BoldDemo extends AbstractDemo
                 $this->img( 'run' )
             ),
             ['id' => Utils::uid(), 'type' => 'cards', 'group' => 'main', 'data' => [
-                'title' => 'Three signs the pace is right',
+                'title' => 'Four signs the pace is right',
                 'cards' => [
                     ['title' => 'You can speak', 'text' => 'Short sentences are comfortable and your breathing remains rhythmic rather than urgent.'],
                     ['title' => 'You stay smooth', 'text' => 'Your stride, stroke, or pedal rhythm looks much the same near the end as it did at the start.'],
                     ['title' => 'You recover quickly', 'text' => 'Breathing settles soon after the work and the session does not take over the rest of your day.'],
+                    ['title' => 'You could repeat it', 'text' => 'The final effort feels sustainable enough that another controlled block would still be available.'],
                 ],
             ]],
             ['id' => Utils::uid(), 'type' => 'image-text', 'group' => 'main', 'data' => [
@@ -303,16 +308,16 @@ class BoldDemo extends AbstractDemo
                 'button' => 'Meet us on the floor',
                 'url-alternative' => '/training',
                 'button-alternative' => 'Explore the sessions',
-                'files' => [['id' => $this->img( 'team' ), 'type' => 'file']],
+                'files' => [['id' => $this->heroImg( 'team' ), 'type' => 'file']],
             ]],
             ['id' => Utils::uid(), 'type' => 'cards', 'group' => 'main', 'data' => [
                 'title' => 'Your coaching team',
                 'columns' => 4,
                 'cards' => [
-                    ['title' => 'Maya Okafor', 'text' => "**Head coach · Strength**\n\nMaya turns complex lifts into cues you can feel. Her sessions are direct, generous, and built around repeatable quality.", 'file' => ['id' => $this->img( 'coach' ), 'type' => 'file']],
-                    ['title' => 'Jonas Weber', 'text' => "**Conditioning · Run coach**\n\nJonas programs pace with purpose, from first aerobic blocks to race-specific intervals that do not waste a metre.", 'file' => ['id' => $this->img( 'run' ), 'type' => 'file']],
-                    ['title' => 'Ari Kim', 'text' => "**Hybrid · Athletic development**\n\nAri blends strength, speed, and coordination into sessions that feel athletic without becoming chaotic.", 'file' => ['id' => $this->img( 'sprint' ), 'type' => 'file']],
-                    ['title' => 'Elena Rossi', 'text' => "**Mobility · Return to training**\n\nElena helps members restore useful range, understand their options, and return to full sessions with confidence.", 'file' => ['id' => $this->img( 'mobility' ), 'type' => 'file']],
+                    ['title' => 'Maya Okafor', 'text' => "**Head coach · Strength**\n\nMaya turns complex lifts into cues you can feel. Her sessions are direct, generous, and built around repeatable quality.", 'file' => ['id' => $this->cardImg( 'coach' ), 'type' => 'file']],
+                    ['title' => 'Jonas Weber', 'text' => "**Conditioning · Run coach**\n\nJonas programs pace with purpose, from first aerobic blocks to race-specific intervals that do not waste a metre.", 'file' => ['id' => $this->cardImg( 'run' ), 'type' => 'file']],
+                    ['title' => 'Ari Kim', 'text' => "**Hybrid · Athletic development**\n\nAri blends strength, speed, and coordination into sessions that feel athletic without becoming chaotic.", 'file' => ['id' => $this->cardImg( 'sprint' ), 'type' => 'file']],
+                    ['title' => 'Elena Rossi', 'text' => "**Mobility · Return to training**\n\nElena helps members restore useful range, understand their options, and return to full sessions with confidence.", 'file' => ['id' => $this->cardImg( 'mobility' ), 'type' => 'file']],
                 ],
             ]],
             ['id' => Utils::uid(), 'type' => 'image-text', 'group' => 'main', 'data' => [
@@ -378,8 +383,10 @@ class BoldDemo extends AbstractDemo
             ['id' => Utils::uid(), 'type' => 'cards', 'group' => 'main', 'data' => [
                 'title' => 'Start here',
                 'cards' => [
-                    ['title' => 'Your first session', 'text' => "Arrival, coach check-in, class structure, and choosing the right movement option.\n\n[Prepare for your first session](/studio-guide/first-session)", 'file' => ['id' => $this->img( 'warmup' ), 'type' => 'file']],
-                    ['title' => 'Booking and recovery', 'text' => "Reservations, waitlists, cancellations, training frequency, and making room for recovery.\n\n[Plan your training week](/studio-guide/booking-and-recovery)", 'file' => ['id' => $this->img( 'recovery' ), 'type' => 'file']],
+                    ['title' => 'Your first session', 'text' => "Arrival, coach check-in, class structure, and choosing the right movement option.\n\n[Prepare for your first session](/studio-guide/first-session)", 'file' => ['id' => $this->cardImg( 'warmup' ), 'type' => 'file']],
+                    ['title' => 'Booking and recovery', 'text' => "Reservations, waitlists, cancellations, training frequency, and making room for recovery.\n\n[Plan your training week](/studio-guide/booking-and-recovery)", 'file' => ['id' => $this->cardImg( 'recovery' ), 'type' => 'file']],
+                    ['title' => 'Training formats', 'text' => "Strength, Engine, Hybrid, and Mobility sessions, with a weekly timetable and level guidance.\n\n[Explore the sessions](/training)", 'file' => ['id' => $this->cardImg( 'floor' ), 'type' => 'file']],
+                    ['title' => 'Membership options', 'text' => "Drop in once, train twice a week, or choose more flexibility without a long contract.\n\n[Compare memberships](/membership)", 'file' => ['id' => $this->cardImg( 'community' ), 'type' => 'file']],
                 ],
             ]],
             ['id' => Utils::uid(), 'type' => 'heading', 'group' => 'main', 'data' => [
@@ -436,6 +443,7 @@ class BoldDemo extends AbstractDemo
                     ['title' => 'Training clothes', 'text' => 'Wear something you can squat, reach, and breathe freely in. There is no studio uniform.'],
                     ['title' => 'Clean trainers', 'text' => 'Stable cross-training shoes suit most sessions. Running shoes are fine for Engine days.'],
                     ['title' => 'Water bottle', 'text' => 'Filtered water is available. Towels, lockers, shower products, and equipment are provided.'],
+                    ['title' => 'Useful context', 'text' => 'Tell the coach about recent training, pain, injuries, or a goal that should shape your starting option.'],
                 ],
             ]],
             ['id' => Utils::uid(), 'type' => 'questions', 'group' => 'main', 'data' => [
@@ -514,29 +522,29 @@ class BoldDemo extends AbstractDemo
             'status' => 1,
         ], [
             ['id' => Utils::uid(), 'type' => 'hero', 'group' => 'main', 'data' => [
-                'title' => 'Choose a rhythm. Build momentum.',
+                'title' => 'Choose a rhythm. Build momentum',
                 'subtitle' => 'RALLY membership',
                 'text' => 'Straightforward plans for one good session, a reliable twice-weekly practice, or training that moves with your week. No joining fee. No twelve-month lock-in.',
                 'url' => '#plans',
                 'button' => 'Compare plans',
                 'url-alternative' => '/start',
                 'button-alternative' => 'Try your first class',
-                'files' => [['id' => $this->img( 'community' ), 'type' => 'file']],
+                'files' => [['id' => $this->heroImg( 'community' ), 'type' => 'file']],
             ]],
             ['id' => 'plans', 'type' => 'pricing', 'group' => 'main', 'data' => [
                 'title' => 'Memberships that match real weeks',
                 'text' => 'Every plan includes coached sessions, full studio access during your booking, towels, lockers, and a quarterly training check-in.',
                 'items' => [
-                    ['name' => 'Drop-in', 'price' => '€24', 'unit' => '/class', 'text' => 'Train when you are in town or add one more session.', 'features' => "- Any regular group session\n- 14-day booking window\n- Credit valid for 30 days\n- Studio amenities included", 'url' => '/start', 'button' => 'Book one class'],
-                    ['name' => 'RALLY 8', 'price' => '€129', 'unit' => '/month', 'text' => 'A steady twice-weekly rhythm with room to flex.', 'features' => "- Eight sessions each month\n- One unused credit rolls over\n- Quarterly coach check-in\n- Guest pass every three months", 'url' => '/start', 'button' => 'Start with eight', 'highlight' => true, 'badge' => 'Most popular'],
-                    ['name' => 'All Access', 'price' => '€179', 'unit' => '/month', 'text' => 'For varied training weeks and members who recover well.', 'features' => "- Unlimited regular sessions\n- Priority waitlist access\n- Monthly coach check-in\n- Two guest passes each month", 'url' => '/start', 'button' => 'Go all access'],
+                    ['name' => 'Drop-in', 'price' => '24€', 'unit' => '/class', 'text' => 'Train when you are in town or add one more session.', 'features' => "- Any regular group session\n- 14-day booking window\n- Credit valid for 30 days\n- Studio amenities included", 'url' => '/start', 'button' => 'Book one class'],
+                    ['name' => 'RALLY 8', 'price' => '129€', 'unit' => '/month', 'text' => 'A steady twice-weekly rhythm with room to flex.', 'features' => "- Eight sessions each month\n- One unused credit rolls over\n- Quarterly coach check-in\n- Guest pass every three months", 'url' => '/start', 'button' => 'Start with eight', 'highlight' => true, 'badge' => 'Most popular'],
+                    ['name' => 'All Access', 'price' => '179€', 'unit' => '/month', 'text' => 'For varied training weeks and members who recover well.', 'features' => "- Unlimited regular sessions\n- Priority waitlist access\n- Monthly coach check-in\n- Two guest passes each month", 'url' => '/start', 'button' => 'Go all access'],
                 ],
             ]],
             ['id' => Utils::uid(), 'type' => 'image-text', 'group' => 'main', 'data' => [
                 'file' => ['id' => $this->img( 'coach' ), 'type' => 'file'],
                 'position' => 'start',
                 'ratio' => '1-2',
-                'text' => "## Start with a session, not a sales call\n\nYour first class is €15. Arrive ten minutes early, meet the coach, and train with the group. Afterwards we will tell you which sessions fit your goals and answer membership questions.\n\nThere is no pressure to join before you have felt how the room works.",
+                'text' => "## Start with a session, not a sales call\n\nYour first class is 15€. Arrive ten minutes early, meet the coach, and train with the group. Afterwards we will tell you which sessions fit your goals and answer membership questions.\n\nThere is no pressure to join before you have felt how the room works.",
             ]],
             ['id' => Utils::uid(), 'type' => 'table', 'group' => 'main', 'data' => [
                 'title' => 'Compare the details',
@@ -589,16 +597,17 @@ class BoldDemo extends AbstractDemo
         ], [
             ['id' => Utils::uid(), 'type' => 'hero', 'group' => 'main', 'data' => [
                 'title' => 'Your first session starts here.',
-                'subtitle' => 'First class · €15',
+                'subtitle' => 'First class · 15€',
                 'text' => 'Tell us what you want from training and when you like to move. We will recommend a session, answer practical questions, and reserve your place.',
-                'files' => [['id' => $this->img( 'athlete' ), 'type' => 'file']],
+                'files' => [['id' => $this->heroImg( 'athlete' ), 'type' => 'file']],
             ]],
             ['id' => Utils::uid(), 'type' => 'cards', 'group' => 'main', 'data' => [
                 'title' => 'Pick your way in',
                 'cards' => [
-                    ['title' => 'Book a first class', 'text' => "Join a regular RALLY session for €15 and experience the coaching, room, and class format.\n\n[hello@rally.example](mailto:hello@rally.example)"],
+                    ['title' => 'Book a first class', 'text' => "Join a regular RALLY session for 15€ and experience the coaching, room, and class format.\n\n[hello@rally.example](mailto:hello@rally.example)"],
                     ['title' => 'Take a studio tour', 'text' => "See the training floor, meet a coach, and talk through the timetable before booking.\n\n[Arrange a tour](mailto:hello@rally.example?subject=Studio%20tour)"],
                     ['title' => 'Ask a coach', 'text' => "Share a goal, previous injury, or concern and we will point you towards the most useful start.\n\n[coaches@rally.example](mailto:coaches@rally.example)"],
+                    ['title' => 'Bring a training partner', 'text' => "Start together and we will reserve two suitable places in the same coached session.\n\n[Book for two](mailto:hello@rally.example?subject=First%20class%20for%20two)"],
                 ],
             ]],
             ['id' => 'start-form', 'type' => 'contact', 'group' => 'main', 'data' => [
@@ -649,19 +658,19 @@ class BoldDemo extends AbstractDemo
                 'url-alternative' => '/start',
                 'button-alternative' => 'Book a first class',
                 'files' => [
-                    ['id' => $this->img( 'athlete' ), 'type' => 'file'],
-                    ['id' => $this->img( 'interval' ), 'type' => 'file'],
-                    ['id' => $this->img( 'mobility' ), 'type' => 'file'],
+                    ['id' => $this->heroImg( 'athlete' ), 'type' => 'file'],
+                    ['id' => $this->heroImg( 'interval' ), 'type' => 'file'],
+                    ['id' => $this->heroImg( 'mobility' ), 'type' => 'file'],
                 ],
             ]],
             ['id' => 'sessions', 'type' => 'cards', 'group' => 'main', 'data' => [
                 'title' => 'Choose the work',
                 'columns' => 4,
                 'cards' => [
-                    ['title' => 'RALLY Strength', 'text' => "Squat, hinge, press, pull, carry. Build durable strength through coached progressions and controlled volume.\n\n**50 min · All levels**", 'file' => ['id' => $this->img( 'detail' ), 'type' => 'file']],
-                    ['title' => 'RALLY Engine', 'text' => "Run, row, ride, and move with a pace you understand. Aerobic work and intervals without random suffering.\n\n**50 min · All levels**", 'file' => ['id' => $this->img( 'run' ), 'type' => 'file']],
-                    ['title' => 'RALLY Hybrid', 'text' => "Strength under a clock, conditioning with standards. Learn to move well when the room gets loud.\n\n**50 min · Some experience helps**", 'file' => ['id' => $this->img( 'battle-rope' ), 'type' => 'file']],
-                    ['title' => 'RALLY Mobility', 'text' => "Build usable range and control through deliberate floor work, carries, and low-intensity movement.\n\n**50 min · All levels**", 'file' => ['id' => $this->img( 'mobility' ), 'type' => 'file']],
+                    ['title' => 'RALLY Strength', 'text' => "Squat, hinge, press, pull, carry. Build durable strength through coached progressions and controlled volume.\n\n**50 min · All levels**", 'file' => ['id' => $this->cardImg( 'detail' ), 'type' => 'file']],
+                    ['title' => 'RALLY Engine', 'text' => "Run, row, ride, and move with a pace you understand. Aerobic work and intervals without random suffering.\n\n**50 min · All levels**", 'file' => ['id' => $this->cardImg( 'run' ), 'type' => 'file']],
+                    ['title' => 'RALLY Hybrid', 'text' => "Strength under a clock, conditioning with standards. Learn to move well when the room gets loud.\n\n**50 min · Some experience helps**", 'file' => ['id' => $this->cardImg( 'battle-rope' ), 'type' => 'file']],
+                    ['title' => 'RALLY Mobility', 'text' => "Build usable range and control through deliberate floor work, carries, and low-intensity movement.\n\n**50 min · All levels**", 'file' => ['id' => $this->cardImg( 'mobility' ), 'type' => 'file']],
                 ],
             ]],
             ['id' => Utils::uid(), 'type' => 'image-text', 'group' => 'main', 'data' => [
@@ -703,8 +712,8 @@ class BoldDemo extends AbstractDemo
                 ],
             ]],
             ['id' => Utils::uid(), 'type' => 'hero', 'group' => 'main', 'data' => [
-                'title' => 'Do the work. Keep the momentum.',
-                'subtitle' => 'First class · €15',
+                'title' => 'Do the work. Keep the momentum',
+                'subtitle' => 'First class · 15€',
                 'text' => 'Choose a session with a coach and leave knowing what should come next.',
                 'url' => '/start',
                 'button' => 'Book your first class',
@@ -753,6 +762,46 @@ class BoldDemo extends AbstractDemo
             'url-alternative' => '/journal',
             'button-alternative' => 'Back to field notes',
         ]];
+    }
+
+
+    /**
+     * Creates a fixed 4:3 card image and returns its file ID.
+     *
+     * @param string $key Photo key from self::PHOTOS
+     * @return string File ID
+     */
+    protected function cardImg( string $key ) : string
+    {
+        if( !isset( $this->cardImages[$key] ) )
+        {
+            [$photo, $name, $desc] = self::PHOTOS[$key];
+            $base = 'https://images.unsplash.com/' . $photo;
+            $url = fn( int $w, int $h ) => $base . '?w=' . $w . '&h=' . $h . '&q=80&fm=jpg&fit=crop';
+
+            $data = [
+                'mime' => 'image/jpeg',
+                'lang' => 'en',
+                'name' => $name,
+                'path' => $url( 1200, 900 ),
+                'previews' => ['400' => $url( 400, 300 ), '800' => $url( 800, 600 )],
+                'description' => ['en' => $desc],
+            ];
+
+            $file = File::forceCreate( $data + ['editor' => 'demo'] );
+            $version = $file->versions()->forceCreate( [
+                'lang' => 'en',
+                'data' => $data,
+                'published' => true,
+                'editor' => 'demo',
+            ] );
+
+            $file->forceFill( ['latest_id' => $version->id] )->saveQuietly();
+            $file->publish( $version );
+            $this->cardImages[$key] = (string) $file->refresh()->id;
+        }
+
+        return $this->cardImages[$key];
     }
 
 
@@ -813,6 +862,46 @@ class BoldDemo extends AbstractDemo
 
 
     /**
+     * Creates a fixed 3:4 portrait hero image and returns its file ID.
+     *
+     * @param string $key Photo key from self::PHOTOS
+     * @return string File ID
+     */
+    protected function heroImg( string $key ) : string
+    {
+        if( !isset( $this->heroImages[$key] ) )
+        {
+            [$photo, $name, $desc] = self::PHOTOS[$key];
+            $base = 'https://images.unsplash.com/' . $photo;
+            $url = fn( int $w, int $h ) => $base . '?w=' . $w . '&h=' . $h . '&q=80&fm=jpg&fit=crop';
+
+            $data = [
+                'mime' => 'image/jpeg',
+                'lang' => 'en',
+                'name' => $name,
+                'path' => $url( 1200, 1600 ),
+                'previews' => ['450' => $url( 450, 600 ), '900' => $url( 900, 1200 )],
+                'description' => ['en' => $desc],
+            ];
+
+            $file = File::forceCreate( $data + ['editor' => 'demo'] );
+            $version = $file->versions()->forceCreate( [
+                'lang' => 'en',
+                'data' => $data,
+                'published' => true,
+                'editor' => 'demo',
+            ] );
+
+            $file->forceFill( ['latest_id' => $version->id] )->saveQuietly();
+            $file->publish( $version );
+            $this->heroImages[$key] = (string) $file->refresh()->id;
+        }
+
+        return $this->heroImages[$key];
+    }
+
+
+    /**
      * Creates the RALLY home page and returns it.
      *
      * @param string $journalId Journal page ID referenced by listing elements
@@ -839,7 +928,7 @@ class BoldDemo extends AbstractDemo
 
         $content = [
             ['id' => Utils::uid(), 'type' => 'hero', 'group' => 'main', 'data' => [
-                'title' => 'Train with intent. Leave with momentum.',
+                'title' => 'Train with intent. Leave with momentum',
                 'subtitle' => 'RALLY Training Club · Berlin',
                 'text' => 'Coached strength and conditioning for people who want serious progress, clear direction, and enough energy left for the rest of life.',
                 'url' => '/start',
@@ -847,19 +936,19 @@ class BoldDemo extends AbstractDemo
                 'url-alternative' => '/training',
                 'button-alternative' => 'See how we train',
                 'files' => [
-                    ['id' => $this->img( 'athlete' ), 'type' => 'file'],
-                    ['id' => $this->img( 'community' ), 'type' => 'file'],
-                    ['id' => $this->img( 'interval' ), 'type' => 'file'],
+                    ['id' => $this->heroImg( 'athlete' ), 'type' => 'file'],
+                    ['id' => $this->heroImg( 'community' ), 'type' => 'file'],
+                    ['id' => $this->heroImg( 'interval' ), 'type' => 'file'],
                 ],
             ]],
             ['id' => Utils::uid(), 'type' => 'cards', 'group' => 'main', 'data' => [
                 'title' => 'One week. Four ways to move.',
                 'columns' => 4,
                 'cards' => [
-                    ['title' => 'Strength', 'text' => "Build the positions, control, and load that make everything else more capable.\n\n[Explore RALLY Strength](/training#sessions)", 'file' => ['id' => $this->img( 'detail' ), 'type' => 'file']],
-                    ['title' => 'Engine', 'text' => "Develop pace you can repeat, from steady aerobic work to purposeful intervals.\n\n[Explore RALLY Engine](/training#sessions)", 'file' => ['id' => $this->img( 'run' ), 'type' => 'file']],
-                    ['title' => 'Hybrid', 'text' => "Connect strength and conditioning without turning the session into chaos.\n\n[Explore RALLY Hybrid](/training#sessions)", 'file' => ['id' => $this->img( 'battle-rope' ), 'type' => 'file']],
-                    ['title' => 'Mobility', 'text' => "Create useful range, better options, and a lower gear for demanding weeks.\n\n[Explore RALLY Mobility](/training#sessions)", 'file' => ['id' => $this->img( 'mobility' ), 'type' => 'file']],
+                    ['title' => 'Strength', 'text' => "Build the positions, control, and load that make everything else more capable.\n\n[Explore RALLY Strength](/training#sessions)", 'file' => ['id' => $this->cardImg( 'detail' ), 'type' => 'file']],
+                    ['title' => 'Engine', 'text' => "Develop pace you can repeat, from steady aerobic work to purposeful intervals.\n\n[Explore RALLY Engine](/training#sessions)", 'file' => ['id' => $this->cardImg( 'run' ), 'type' => 'file']],
+                    ['title' => 'Hybrid', 'text' => "Connect strength and conditioning without turning the session into chaos.\n\n[Explore RALLY Hybrid](/training#sessions)", 'file' => ['id' => $this->cardImg( 'battle-rope' ), 'type' => 'file']],
+                    ['title' => 'Mobility', 'text' => "Create useful range, better options, and a lower gear for demanding weeks.\n\n[Explore RALLY Mobility](/training#sessions)", 'file' => ['id' => $this->cardImg( 'mobility' ), 'type' => 'file']],
                 ],
             ]],
             ['id' => Utils::uid(), 'type' => 'image-text', 'group' => 'main', 'data' => [
@@ -894,13 +983,13 @@ class BoldDemo extends AbstractDemo
                 'items' => [
                     ['title' => 'Do I need group-training experience?', 'text' => 'No. First-time members receive a coach check-in before class, and every session includes clear movement options.'],
                     ['title' => 'How fit do I need to be?', 'text' => 'Fit enough to begin is enough. Load, pace, range, and complexity meet you where you are.'],
-                    ['title' => 'What does the first class cost?', 'text' => 'Your first regular group session is €15. There is no joining fee or obligation to choose a membership afterwards.'],
+                    ['title' => 'What does the first class cost?', 'text' => 'Your first regular group session is 15€. There is no joining fee or obligation to choose a membership afterwards.'],
                     ['title' => 'Can I train around an injury?', 'text' => 'Often, yes, but the right answer depends on your situation. Tell us before class and follow the advice of your qualified healthcare professional.'],
                 ],
             ]],
             ['id' => Utils::uid(), 'type' => 'hero', 'group' => 'main', 'data' => [
                 'title' => 'Your next training week can start today.',
-                'subtitle' => 'First class · €15',
+                'subtitle' => 'First class · 15€',
                 'text' => 'Tell us what you want to build. We will help you choose the session and take care of the first step.',
                 'url' => '/start',
                 'button' => 'Start training',
@@ -1017,13 +1106,12 @@ class BoldDemo extends AbstractDemo
         if( !isset( $this->logoFile ) )
         {
             $svg = <<<'SVG'
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 350 72" role="img" aria-labelledby="title desc">
-  <title id="title">RALLY Training Club logo</title>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 225 72" role="img" aria-labelledby="title desc">
+  <title id="title">RALLY logo</title>
   <desc id="desc">RALLY wordmark with three forward-moving orange bars</desc>
   <g fill="none" fill-rule="evenodd">
     <path d="M8 12h42L38 30H8zM8 33h31L27 51H8zM8 54h20l-8 12H8z" fill="#FF4500"/>
     <text x="66" y="49" fill="#F4F4F4" font-family="Arial Black, Archivo Black, ui-sans-serif, sans-serif" font-size="43" font-weight="900" letter-spacing="-1.5">RALLY</text>
-    <text x="226" y="48" fill="#FF4500" font-family="Arial, ui-sans-serif, sans-serif" font-size="12" font-weight="700" letter-spacing="2">TRAINING CLUB</text>
   </g>
 </svg>
 SVG;
@@ -1038,7 +1126,7 @@ SVG;
             $data = [
                 'mime' => 'image/svg+xml',
                 'lang' => 'en',
-                'name' => 'RALLY Training Club logo',
+                'name' => 'RALLY logo',
                 'path' => $path,
                 'previews' => ['500' => $path],
                 'description' => ['en' => 'RALLY wordmark with three forward-moving orange bars'],

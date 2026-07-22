@@ -8,6 +8,10 @@
     row-gap: 1rem;
 }
 
+.cards .card-list.cols-auto {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+}
+
 @media screen and (max-width: 767px) {
     .cards .card-list {
         width: 100vw;
@@ -17,19 +21,7 @@
 
 @media screen and (min-width: 768px) {
     .cards .card-list {
-        grid-template-columns: 1fr 1fr;
-    }
-}
-
-@media screen and (min-width: 992px) {
-    .cards .card-list {
-        grid-template-columns: 1fr 1fr 1fr;
-    }
-}
-
-@media screen and (min-width: 1200px) {
-    .cards .card-list {
-        grid-template-columns: 1fr 1fr 1fr 1fr;
+        grid-auto-rows: 1fr;
     }
 }
 
@@ -58,9 +50,16 @@
 }
 
 .cards .card-item {
-    padding: 2rem;
-    border: 1px solid var(--pico-contrast-border);
     transition: background-color 0.15s ease;
+}
+
+.cards .card-item:has(> picture.image) {
+    display: flex;
+    flex-direction: column;
+}
+
+.cards .card-item:nth-child(even) > picture.image {
+    order: 1;
 }
 
 .cards .card-item:nth-child(odd) {
@@ -69,7 +68,6 @@
 
 .cards .card-item:nth-child(even) {
     background-color: var(--pico-primary);
-    border-color: var(--pico-primary);
 }
 
 .cards .card-item:nth-child(odd):hover {
@@ -81,12 +79,45 @@
 }
 
 .cards .card-item picture.image {
-    max-width: 10rem;
-    padding: 2rem;
+    width: 100%;
+    margin: unset;
+    overflow: hidden;
 }
 
-.cards .card-item h3 {
-    color: var(--pico-primary);
+.cards .card-item picture.image img {
+    width: 100%;
+    height: auto;
+}
+
+@media screen and (min-width: 768px) {
+    .cards .card-item:has(> picture.image) {
+        display: grid;
+        grid-template-rows: repeat(2, minmax(0, 1fr));
+        height: 100%;
+    }
+
+    .cards .card-item:nth-child(even) > picture.image {
+        grid-row: 2;
+        order: 0;
+    }
+
+    .cards .card-item:nth-child(even) > .card-text {
+        grid-row: 1;
+    }
+
+    .cards .card-item picture.image {
+        height: 100%;
+        min-height: 12rem;
+    }
+
+    .cards .card-item picture.image img {
+        height: 100%;
+        object-fit: cover;
+    }
+}
+
+.cards .card-item .card-text {
+    margin: 2rem;
 }
 
 .cards .title {

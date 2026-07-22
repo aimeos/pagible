@@ -243,11 +243,11 @@
 .pricing .highlight .btn {
     color: var(--pico-primary-inverse);
     background: var(--pico-background-color);
-    border-color: var(--pico-background-color);
+    border-color: var(--pico-primary-inverse);
 }
 
 .pricing .highlight .btn:hover {
-    background: #00000000;
+    background: transparent;
     color: var(--pico-primary-inverse);
     border-color: var(--pico-primary-inverse);
 }
