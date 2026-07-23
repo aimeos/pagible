@@ -564,6 +564,7 @@ class CmsEngineTest extends SearchTestAbstract
         $this->assertLessThan( $rows, $query->count() );
 
         Resource::restore( Page::class, [(string) $parent->id], 'editor@testbench' );
+        $this->waitIndex();
 
         $found = Page::search( 'ztretainrows' )->searchFields( 'content' )->take( 25 )->get();
 
