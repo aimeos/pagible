@@ -2,12 +2,17 @@
  * @license MIT, https://opensource.org/license/MIT
  */
 
+.cards {
+    --cards-gap: 2rem;
+}
+
 .cards .card-list {
     display: grid;
     grid-template-columns: 1fr;
     justify-self: center;
     max-width: 50rem;
-    gap: 2rem;
+    gap: var(--cards-gap);
+    margin-block: 2rem;
 }
 
 @media screen and (min-width: 768px) {
@@ -48,7 +53,8 @@
     transition: box-shadow 0.2s ease;
     text-align: start;
     max-width: 24rem;
-    padding: 2rem;
+    overflow: hidden;
+    padding: 1rem;
 }
 
 .cards .card-item:hover {
@@ -56,7 +62,16 @@
 }
 
 .cards .card-item img {
+    aspect-ratio: 5 / 3;
     border-radius: calc(var(--pico-border-radius) * 2);
+    object-fit: cover;
+    width: 100%;
+}
+
+.cards .card-item > picture {
+    display: block;
+    padding: 0;
+    margin: 0;
 }
 
 .cards .title {

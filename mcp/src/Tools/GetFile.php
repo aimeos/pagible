@@ -43,7 +43,7 @@ class GetFile extends Tool
 
         /** @var File|null $file */
         $file = File::withTrashed()->with( [
-            'latest' => fn( $q ) => $q->select( 'id', 'versionable_id', 'data', 'lang', 'editor', 'published', 'publish_at', 'created_at' )
+            'latest' => fn( $q ) => $q->select( 'id', 'versionable_id', 'data', 'aux', 'lang', 'editor', 'published', 'publish_at', 'created_at' )
         ] )->find( $v['id'] );
 
         if( !$file ) {
@@ -52,6 +52,7 @@ class GetFile extends Tool
 
         $version = $file->latest;
         $vdata = $version?->data;
+        $vaux = $version?->aux;
         $usedByElements = $file->byelements()->toBase()
             ->select( 'cms_elements.id', 'cms_elements.type', 'cms_elements.name' )
             ->cursor()->map( fn( $e ) => (array) $e )->all();
@@ -69,8 +70,8 @@ class GetFile extends Tool
             'mime' => $vdata->mime ?? '',
             'path' => $vdata->path ?? '',
             'previews' => $vdata->previews ?? [],
-            'description' => $vdata->description ?? new \stdClass(),
-            'transcription' => $vdata->transcription ?? new \stdClass(),
+            'description' => $vaux->description ?? new \stdClass(),
+            'transcription' => $vaux->transcription ?? new \stdClass(),
             'published' => $version->published ?? false,
             'publish_at' => $version->publish_at ?? null,
             'created_at' => $file->created_at?->format( 'Y-m-d H:i:s' ),

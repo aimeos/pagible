@@ -15,6 +15,9 @@ picture.image {
     border: 1px solid var(--pico-muted-border-color);
     border-radius: calc(var(--pico-border-radius) * 4);
     display: block;
+}
+
+.cms-content > .image picture {
     padding: 2rem;
 }
 

@@ -108,8 +108,6 @@ const FETCH_FILES = gql`
         mime
         path
         previews
-        description
-        transcription
         editor
         created_at
         updated_at
@@ -605,8 +603,6 @@ export default {
               ? safeParse(entry.latest?.data)
               : { ...entry, previews: safeParse(entry.previews) }
 
-            delete item.description
-            delete item.transcription
             item.previews = markRaw(item.previews ?? {})
 
             return Object.assign(item, {

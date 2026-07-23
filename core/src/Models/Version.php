@@ -50,9 +50,21 @@ class Version extends Model
      */
     protected static function booted() : void
     {
+        static::creating( function( Version $version ) {
+            if( $version->versionable_type === File::class )
+            {
+                $snapshot = File::snapshot( (array) $version->data );
+
+                if( $snapshot['aux'] ) {
+                    $version->data = (object) $snapshot['data'];
+                    $version->aux = (object) array_replace( $snapshot['aux'], (array) $version->aux );
+                }
+            }
+        } );
+
         static::saving( function( $version ) {
             $scheduled = $version->publish_at !== null ? 1 : 0;
-            $data = $version->data;
+            $data = $version->data ?? new \stdClass();
 
             if( ( $data->scheduled ?? null ) !== $scheduled ) {
                 $data->scheduled = $scheduled;
@@ -120,24 +132,25 @@ class Version extends Model
      */
     public function __toString() : string
     {
-        $data = $this->data;
+        $data = $this->data ?? new \stdClass();
+        $aux = $this->aux ?? new \stdClass();
         $parts = [
             $data->tag ?? '',
             $data->name ?? '',
             $data->title ?? '',
-            $this->aux->meta->{'meta-tags'}->data->description ?? '',
+            $aux->meta->{'meta-tags'}->data->description ?? '',
         ];
 
-        foreach( (array) ( $data->description ?? [] ) as $lang => $value ) {
+        foreach( (array) ( $aux->description ?? [] ) as $lang => $value ) {
             $parts[] = $lang . ":\n" . $value;
         }
 
-        foreach( (array) ( $data->transcription ?? [] ) as $lang => $value ) {
+        foreach( (array) ( $aux->transcription ?? [] ) as $lang => $value ) {
             $parts[] = $lang . ":\n" . $value;
         }
 
         $config = \Aimeos\Cms\Schema::schemas( section: 'content' );
-        $items = (array) ( $this->aux->content ?? [] );
+        $items = (array) ( $aux->content ?? [] );
 
         if( !empty( $items ) && $this->relationLoaded( 'elements' ) ) {
             foreach( $this->getRelation( 'elements' ) as $el ) {
@@ -323,7 +336,8 @@ class Version extends Model
     /**
      * Interact with the "aux" property.
      *
-     * Page versions keep meta/config in aux. Canonicalizing here prevents direct
+     * Page versions keep meta/config in aux and file versions keep description/
+     * transcription there. Canonicalizing page structures here prevents direct
      * version writers, restores and publishing from reintroducing legacy shapes.
      *
      * @return Attribute<mixed, mixed> Eloquent attribute for the "aux" property

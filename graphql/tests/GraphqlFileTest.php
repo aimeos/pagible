@@ -234,6 +234,32 @@ class GraphqlFileTest extends GraphqlTestAbstract
     }
 
 
+    public function testFilesSelectOnlyRequestedColumns()
+    {
+        $this->expectsDatabaseQueryCount( 4 );
+
+        $response = $this->actingAs( $this->user )->graphQL( '{
+            files {
+                data {
+                    id
+                    name
+                    latest {
+                        id
+                        data
+                    }
+                }
+            }
+        }' )->assertGraphQLErrorFree();
+
+        $files = $response->json( 'data.files.data' );
+
+        $this->assertNotEmpty( $files );
+        $this->assertArrayHasKey( 'id', $files[0] );
+        $this->assertArrayHasKey( 'name', $files[0] );
+        $this->assertArrayHasKey( 'data', $files[0]['latest'] );
+    }
+
+
     public function testFilesPublished()
     {
         $file = File::where( 'mime', 'image/tiff' )->first();
@@ -394,6 +420,7 @@ class GraphqlFileTest extends GraphqlTestAbstract
                         transcription
                         editor
                         latest {
+                            aux
                             data
                             editor
                         }
@@ -421,9 +448,12 @@ class GraphqlFileTest extends GraphqlTestAbstract
             'name' => 'test file',
             'path' => $file->path,
             'previews' => (array) ( $file->latest?->data?->previews ?? [] ),
-            'description' => (array) ( $file->latest?->data?->description ?? [] ),
-            'transcription' => (array) ( $file->latest?->data?->transcription ?? [] ),
             'scheduled' => 0,
+        ];
+
+        $expectedLatestAux = [
+            'description' => (array) ( $file->latest?->aux?->description ?? [] ),
+            'transcription' => (array) ( $file->latest?->aux?->transcription ?? [] ),
         ];
 
         // Assert scalar fields
@@ -439,8 +469,9 @@ class GraphqlFileTest extends GraphqlTestAbstract
         $this->assertEquals((array) $file->description, json_decode($saveFile['description'], true));
         $this->assertEquals((array) $file->transcription, json_decode($saveFile['transcription'], true));
 
-        // Assert latest->data as array
+        // Assert latest version JSON sections as arrays
         $this->assertEquals($expectedLatestData, json_decode($saveFile['latest']['data'] ?? null, true));
+        $this->assertEquals($expectedLatestAux, json_decode($saveFile['latest']['aux'] ?? null, true));
         $this->assertEquals('editor@testbench', $saveFile['latest']['editor'] ?? null);
     }
 

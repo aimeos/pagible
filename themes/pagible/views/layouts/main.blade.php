@@ -87,7 +87,7 @@
             <article>
                 <header>
                     <form action="{{ route('cms.search', ['q' => '_term_']) }}" toolname="search" tooldescription="{{ __('Search the website and return matching pages with their titles and links') }}" toolautosubmit>
-                        <input id="modal-search-input" placeholder="{{ __('Search website') }}" aria-label="{{ __('Search website') }}" name="q" minlength="{{ config('cms.search.min', 2) }}" required toolparamdescription="{{ __('Words or phrase to search for in the website content') }}">
+                        <input id="modal-search-input" placeholder="{{ __('Search website') }}" aria-label="{{ __('Search website') }}" name="q" minlength="{{ config('cms.theme.min-search') }}" required toolparamdescription="{{ __('Words or phrase to search for in the website content') }}">
                         <button type="reset" aria-label="{{ __('Close') }}">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
                                 <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
@@ -216,29 +216,6 @@
             </span>
         </footer>
 
-        <link href="{{ cmstheme($page, 'pico.modal.min.css') }}" rel="preload" as="style">
-        <link href="{{ cmstheme($page, 'cms-lazy.css') }}" rel="preload" as="style">
-        <script defer src="{{ cmstheme($page, 'csrf.js') }}"></script>
-        <script defer src="{{ cmstheme($page, 'cms.js') }}"></script>
-        @stack('foot')
-
-        @foreach($page->ancestorsAndSelf as $navItem)
-            @if($text = cms($navItem, 'config.styles.data.text'))
-                <style>{!! $text !!}</style>
-            @endif
-        @endforeach
-
-        @foreach($page->ancestorsAndSelf as $navItem)
-            @if($text = cms($navItem, 'config.javascript.data.text'))
-                <script>{!! $text !!}</script>
-            @endif
-        @endforeach
-
-        @if(\Aimeos\Cms\Permission::can('page:save', auth()->user()))
-            <link href="{{ cmsasset('vendor/cms/admin/editor.css') }}" rel="preload" as="style">
-            <script defer src="{{ cmsasset('vendor/cms/admin/editor.js') }}"></script>
-        @else
-            <script defer src="{{ cmstheme($page, 'stats.js') }}"></script>
-        @endif
+        @include('cms::layouts.foot')
     </body>
 </html>

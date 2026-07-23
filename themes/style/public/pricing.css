@@ -120,21 +120,20 @@
 .pricing .pricing-header {
     display: flex;
     flex-direction: column;
-    padding-bottom: 1.5rem;
-    margin-bottom: 1.5rem;
+    margin: 1.5rem 0;
 }
 
 .pricing .price {
     display: flex;
     align-items: baseline;
-    gap: 0.25rem;
+    gap: 0;
     order: 3;
     padding-bottom: 1.5rem;
-    border-bottom: 1px solid var(--pico-muted-background-color);
+    border-bottom: 1px solid var(--pico-muted-border-color);
 }
 
 .pricing .highlight .price {
-    border-bottom-color: var(--pico-muted-border-color);
+    border-bottom-color: var(--pico-contrast-inverse);
 }
 
 .pricing .amount {
@@ -160,7 +159,6 @@
     margin: 0 0 0.25rem;
 }
 
-.pricing .pricing-header .text,
 .pricing .pricing-header .cms-text {
     font-size: 0.875rem;
     color: var(--pico-muted-color);
@@ -169,7 +167,6 @@
     margin: 0 0 0.75rem;
 }
 
-.pricing .highlight .pricing-header .text,
 .pricing .highlight .pricing-header .cms-text {
     color: var(--pico-background-color);
 }

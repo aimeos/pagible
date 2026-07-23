@@ -236,7 +236,8 @@ class BenchmarkCore extends Command
 
         $this->benchmark( 'File update', function() use ( $file ) {
             $version = $file->versions()->forceCreate( [
-                'lang' => 'en', 'data' => (array) $file->latest?->data, 'published' => false, 'editor' => 'benchmark',
+                'lang' => 'en', 'data' => (array) $file->latest?->data, 'aux' => (array) $file->latest?->aux,
+                'published' => false, 'editor' => 'benchmark',
             ] );
             $file->forceFill( ['latest_id' => $version->id] )->saveQuietly();
         }, tries: $tries );

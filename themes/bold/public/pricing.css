@@ -162,14 +162,14 @@
     margin: 0 0 0.25rem;
 }
 
-.pricing .pricing-header .text {
+.pricing .pricing-header .cms-text {
     font-size: 0.875rem;
     color: var(--pico-muted-color);
     order: 2;
     margin: 0 0 0.75rem;
 }
 
-.pricing .highlight .pricing-header .text {
+.pricing .highlight .pricing-header .cms-text {
     color: #FFFFFF99;
 }
 
@@ -243,11 +243,11 @@
 .pricing .highlight .btn {
     color: var(--pico-primary-inverse);
     background: var(--pico-background-color);
-    border-color: var(--pico-background-color);
+    border-color: var(--pico-primary-inverse);
 }
 
 .pricing .highlight .btn:hover {
-    background: #00000000;
+    background: transparent;
     color: var(--pico-primary-inverse);
     border-color: var(--pico-primary-inverse);
 }

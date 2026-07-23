@@ -87,7 +87,7 @@ class SearchControllerTest extends ThemeTestAbstract
 
     public function testIndexHonorsConfiguredMinimum()
     {
-        config(['cms.search.min' => 4]);
+        config(['cms.theme.min-search' => 4]);
 
         $this->expectException(\Illuminate\Validation\ValidationException::class);
 

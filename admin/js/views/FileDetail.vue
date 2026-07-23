@@ -12,7 +12,7 @@ import { publishDate, publishItem } from '../publish'
 import { defineAsyncComponent, markRaw } from 'vue'
 import { setupReload, cleanEcho } from '../echo'
 import { reloadVersion } from '../version'
-import { frozenParse, safeParse } from '../utils'
+import { safeParse } from '../utils'
 
 const ChangesDialog = defineAsyncComponent(() => import('../components/ChangesDialog.vue'))
 const HistoryDialog = defineAsyncComponent(() => import('../components/HistoryDialog.vue'))
@@ -24,6 +24,7 @@ const FETCH_FILE = gql`
       latest {
         id
         published
+        aux
         data
         editor
         created_at
@@ -38,6 +39,7 @@ const SAVE_FILE = gql`
       id
       latest {
         id
+        aux
         data
         published
         publish_at
@@ -57,6 +59,7 @@ const FETCH_FILE_VERSIONS = gql`
         id
         published
         publish_at
+        aux
         data
         editor
         created_at
@@ -123,7 +126,7 @@ export default {
     },
 
     hasConflict() {
-      return hasUnresolved(this.changed)
+      return hasUnresolved(this.changed, ['data', 'aux'])
     },
 
     historyCurrent() {
@@ -176,7 +179,7 @@ export default {
       return reloadVersion(this, FETCH_FILE, 'file', this.$gettext('Error fetching file'), (file) => {
         const latest = file.latest
 
-        Object.assign(this.item, safeParse(latest?.data))
+        Object.assign(this.item, safeParse(latest?.data), safeParse(latest?.aux))
         this.item.latestId = latest?.id
         this.item.published = latest?.published
         this.item.updated_at = latest?.created_at
@@ -296,7 +299,7 @@ export default {
           const latest = file?.latest
           const changed = file?.changed ? markRaw(safeParse(file.changed)) : null
 
-          Object.assign(this.item, safeParse(latest?.data))
+          Object.assign(this.item, safeParse(latest?.data), safeParse(latest?.aux))
           this.item.updated_at = latest?.created_at
           this.item.latestId = latest?.id
 
@@ -348,11 +351,10 @@ export default {
             throw result
           }
 
-          const keys = ['previews', 'description', 'transcription']
-
           return (result.data.file.versions || []).map((v) => {
-            const item = { ...v, data: frozenParse(v.data) }
-            keys.forEach((key) => (item[key] = Object.freeze(item[key] ?? {})))
+            const data = Object.assign(safeParse(v.data), safeParse(v.aux))
+            const item = { ...v, data: Object.freeze(data) }
+            delete item.aux
             item.files = this.media(item.data)
             return Object.freeze(item)
           })
@@ -442,7 +444,7 @@ export default {
       @use="use($event)"
     />
     <ChangesDialog v-model="vchanged" :changed="changed"
-      :targets="{ data: item }"
+      :targets="{ data: item, aux: item }"
       @resolve="dirty = true"
     />
   </Teleport>

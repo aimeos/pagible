@@ -34,7 +34,6 @@
 .hero .container {
     display: flex;
     align-items: center;
-    padding: 3rem 2rem;
 }
 
 .hero .first {
@@ -47,10 +46,13 @@
     display: none;
 }
 
+.hero .first:has(+ .second) {
+    margin: 0 2rem;
+}
+
 .hero .first:has(+ .second),
 .hero .first:has(+ .second) h1 {
     text-align: start;
-    margin: initial;
 }
 
 .hero h1 {
@@ -86,13 +88,11 @@
 @media screen and (min-width: 576px) {
     .hero .first:has(+ .second) {
         width: 60%;
-        margin-inline-end: 2rem;
     }
 
     .hero .second {
         width: 40%;
         display: block;
-        margin-inline-start: 2rem;
     }
 
     .hero .second img {
@@ -107,7 +107,7 @@
     }
 
     .hero .second.multiple.swiffy-slider {
-        --swiffy-slider-item-ratio: 4 / 3;
+        --swiffy-slider-item-ratio: 3 / 4;
         display: block;
     }
 
@@ -120,7 +120,7 @@
     }
 
     .hero .second.multiple picture {
-        aspect-ratio: 4 / 3;
+        aspect-ratio: 3 / 4;
     }
 
     .hero .second.multiple img,
@@ -133,9 +133,9 @@
     }
 }
 
-@media screen and (min-width: 768px) {
+@media screen and (min-width: 992px) {
     .hero h1 {
-        font-size: calc(var(--pico-font-size) * 4.5);
+        font-size: calc(var(--pico-font-size) * 4);
     }
 
     .hero .first:has(+ .second),
@@ -146,5 +146,12 @@
     .hero .container {
         padding-top: 4rem;
         padding-bottom: 4rem;
+    }
+}
+
+
+@media screen and (min-width: 1400px) {
+    .hero h1 {
+        font-size: calc(var(--pico-font-size) * 5);
     }
 }

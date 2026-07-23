@@ -559,6 +559,23 @@ class File extends Base
 
 
     /**
+     * Splits file version fields into indexed data and auxiliary text.
+     *
+     * @param array<string, mixed> $data File version fields
+     * @return array{data: array<string, mixed>, aux: array<string, mixed>}
+     */
+    public static function snapshot( array $data ) : array
+    {
+        $keys = array_flip( ['description', 'transcription'] );
+
+        return [
+            'data' => array_diff_key( $data, $keys ),
+            'aux' => array_intersect_key( $data, $keys ),
+        ];
+    }
+
+
+    /**
      * Returns the searchable data for the file.
      *
      * @return array<string, mixed>
@@ -583,6 +600,18 @@ class File extends Base
             'published' => (bool) ( $version->published ?? false ),
             'scheduled' => (int) ( $version?->data->scheduled ?? 0 ),
         ];
+    }
+
+
+    /**
+     * Modify the query used to retrieve models when making all of the models searchable.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder<static> $query
+     * @return \Illuminate\Database\Eloquent\Builder<static>
+     */
+    protected function makeAllSearchableUsing( $query )
+    {
+        return $query->with( ['latest' => fn( $q ) => $q->select( 'id', 'versionable_id', 'data', 'aux', 'lang', 'editor', 'published' )] );
     }
 
 
@@ -878,6 +907,7 @@ class File extends Base
     protected function values( Version $version ) : array
     {
         return [
+            ...array_intersect_key( (array) $version->aux, array_flip( $this->getFillable() ) ),
             'previews' => (array) $version->data->previews,
             'path' => $version->data->path,
             'mime' => $version->data->mime,

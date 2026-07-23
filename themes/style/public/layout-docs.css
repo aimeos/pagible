@@ -13,6 +13,10 @@ main .content {
     margin-bottom: 2rem;
 }
 
+main h2 {
+    font-size: 5rem;
+}
+
 main h1,
 main .container {
     padding: 0 min(5%, 2rem);
