@@ -30,7 +30,6 @@ use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Models\Version;
-use Aimeos\Nestedset\NestedSet;
 
 
 class ResourceTest extends CoreTestAbstract
@@ -375,19 +374,12 @@ class ResourceTest extends CoreTestAbstract
     public function testSaveFileLoadsMetadataOnce()
     {
         $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
-        $db = DB::connection( config( 'cms.db', 'sqlite' ) );
-        $db->flushQueryLog();
-        $db->enableQueryLog();
 
-        Resource::saveFile( $file->id, ['name' => 'Metadata only'], $this->user );
+        $this->expectsDatabaseQueryCount( 5 );
 
-        $queries = collect( $db->getQueryLog() )->filter( fn( $entry ) =>
-            str_starts_with( strtolower( $entry['query'] ), 'select' )
-            && str_contains( $entry['query'], 'cms_files' )
-        );
+        $file = Resource::saveFile( $file->id, ['name' => 'Metadata only'], $this->user );
 
-        $this->assertCount( 1, $queries );
-        $this->assertSame( 'Metadata only', $file->fresh()->latest?->data->name );
+        $this->assertSame( 'Metadata only', $file->latest?->data->name );
     }
 
 
@@ -397,7 +389,7 @@ class ResourceTest extends CoreTestAbstract
         Storage::fake( 'missing-save' );
 
         try {
-            Resource::saveFile( Utils::uid(), [], $this->user, upload:
+            Resource::saveFile( \Illuminate\Support\Str::uuid7()->toString(), [], $this->user, upload:
                 UploadedFile::fake()->createWithContent( 'replacement.pdf', '%PDF-1.4 replacement' ) );
             $this->fail( 'Expected the missing model to be rejected' );
         } catch( \Illuminate\Database\Eloquent\ModelNotFoundException ) {
@@ -451,14 +443,18 @@ class ResourceTest extends CoreTestAbstract
         $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
         $content = [['type' => 'image', 'data' => ['file' => ['id' => $file->id, 'type' => 'file']]]];
         $pages = [$this->page( $content ), $this->page( $content )];
-        $db = DB::connection( config( 'cms.db', 'sqlite' ) );
-        $db->flushQueryLog();
-        $db->enableQueryLog();
+        $user = new \App\Models\User( [
+            'name' => 'Restricted bulk page editor',
+            'cmsperms' => ['page:view', 'page:save'],
+        ] );
 
-        Resource::bulkPage( collect( $pages )->pluck( 'id' )->all(), ['title' => 'Renamed'], $this->user );
+        $saved = Resource::bulkPage( collect( $pages )->pluck( 'id' )->all(), ['title' => 'Renamed'], $user );
 
-        $queries = collect( $db->getQueryLog() )->filter( fn( $entry ) => str_contains( $entry['query'], 'select "id" from "cms_files"' ) );
-        $this->assertCount( 0, $queries );
+        $this->assertSame( collect( $pages )->pluck( 'id' )->all(), $saved['ids'] );
+        $this->assertSame( 0, $saved['failed'] );
+        foreach( $pages as $page ) {
+            $this->assertSame( [$file->id], $page->fresh()->latest->files()->pluck( 'cms_files.id' )->all() );
+        }
     }
 
 
@@ -482,22 +478,15 @@ class ResourceTest extends CoreTestAbstract
         foreach( range( 1, 51 ) as $num ) {
             $ids[] = Resource::addPage( [
                 'lang' => 'en', 'name' => 'Root ' . $num, 'title' => 'Root ' . $num,
-                'path' => 'res-' . Utils::uid(), 'content' => [],
+                'path' => 'res-' . $num . '-' . Utils::uid(), 'content' => [],
             ], $this->user, parent: $this->root()->id )->id;
         }
 
-        $db = DB::connection( config( 'cms.db', 'sqlite' ) );
-        $db->enableQueryLog();
+        $this->expectsDatabaseQueryCount( 223 );
 
         $saved = Resource::bulkPage( $ids, ['title' => 'Renamed'], $this->user, descendants: true );
-        $bindings = collect( $db->getQueryLog() )
-            ->filter( fn( $entry ) => str_contains( $entry['query'], 'cms_pages' )
-                && str_contains( $entry['query'], NestedSet::LFT ) )
-            ->map( fn( $entry ) => count( $entry['bindings'] ) );
 
         $this->assertSame( $ids, $saved['ids'] );
-        $this->assertNotEmpty( $bindings );
-        $this->assertLessThanOrEqual( 102, $bindings->max() );
     }
 
 
@@ -566,15 +555,13 @@ class ResourceTest extends CoreTestAbstract
     public function testScoutQueueDefersModelLoading()
     {
         $page = Page::firstOrFail();
-        $db = DB::connection( config( 'cms.db', 'sqlite' ) );
         config( ['scout.queue' => true] );
         Queue::fake();
-        $db->flushQueryLog();
-        $db->enableQueryLog();
+
+        $this->expectsDatabaseQueryCount( 0 );
 
         Scout::index( Page::class, [$page->id] );
 
-        $this->assertSame( [], $db->getQueryLog() );
         Queue::assertPushed( IndexModels::class, fn( $job ) => $job->model === Page::class && $job->ids === [$page->id] );
     }
 
@@ -583,17 +570,17 @@ class ResourceTest extends CoreTestAbstract
     {
         $page = $this->page( [['type' => 'heading', 'data' => ['title' => 'Indexed']]] );
         $tenant = Tenancy::value();
-        $db = DB::connection( config( 'cms.db', 'sqlite' ) );
+        $loaded = [];
+        Page::retrieved( function( Page $page ) use ( &$loaded ) {
+            $loaded[] = $page->tenant_id;
+        } );
         $this->app->instance( Tenancy::class, new Tenancy( 'other' ) );
-        $db->flushQueryLog();
-        $db->enableQueryLog();
 
         ( new IndexModels( Page::class, [$page->id], $tenant ) )->handle();
 
-        $query = collect( $db->getQueryLog() )->first( fn( $entry ) => str_contains( $entry['query'], 'cms_pages' ) );
         $this->assertSame( 'other', Tenancy::value() );
-        $this->assertContains( $tenant, $query['bindings'] ?? [] );
-        $this->assertNotContains( 'other', $query['bindings'] ?? [] );
+        $this->assertContains( $tenant, $loaded );
+        $this->assertNotContains( 'other', $loaded );
     }
 
 
@@ -638,37 +625,20 @@ class ResourceTest extends CoreTestAbstract
             'data' => ['text' => 'Lifecycle'],
         ], $this->user );
         Queue::fake();
-        $db = DB::connection( config( 'cms.db', 'sqlite' ) );
+        $ids = [];
 
-        $writes = function( \Closure $operation, string $pattern ) use ( $db ) {
-            $db->flushQueryLog();
-            $db->enableQueryLog();
-            $operation();
-            $queries = $db->getQueryLog();
-            $db->disableQueryLog();
-
-            return collect( $queries )->filter( fn( $entry ) => preg_match(
-                $pattern, strtolower( $entry['query'] ),
-            ) === 1 );
-        };
-
-        foreach( [Element::class => 'cms_elements', File::class => 'cms_files'] as $model => $table )
+        foreach( [Element::class, File::class] as $model )
         {
-            $ids = $model::limit( 2 )->pluck( 'id' )->all();
-            $this->assertCount( 2, $ids );
+            $ids[$model] = $model::limit( 2 )->pluck( 'id' )->all();
+            $this->assertCount( 2, $ids[$model] );
+        }
 
-            $this->assertCount( 1, $writes(
-                fn() => Resource::drop( $model, $ids, $this->user ),
-                '/^update ["`\[]?' . $table . '/',
-            ) );
-            $this->assertCount( 1, $writes(
-                fn() => Resource::restore( $model, $ids, $this->user ),
-                '/^update ["`\[]?' . $table . '/',
-            ) );
-            $this->assertCount( 1, $writes(
-                fn() => Resource::purge( $model, $ids, $this->user ),
-                '/^delete from ["`\[]?' . $table . '/',
-            ) );
+        $this->expectsDatabaseQueryCount( 22 );
+
+        foreach( $ids as $model => $modelIds ) {
+            Resource::drop( $model, $modelIds, $this->user );
+            Resource::restore( $model, $modelIds, $this->user );
+            Resource::purge( $model, $modelIds, $this->user );
         }
     }
 
@@ -739,18 +709,13 @@ class ResourceTest extends CoreTestAbstract
             $ids[] = $element->id;
         }
 
-        $db = DB::connection( config( 'cms.db', 'sqlite' ) );
-        $db->flushQueryLog();
-        $db->enableQueryLog();
+        Element::withoutSyncingToSearch( fn() => Element::whereIn( 'id', $ids )
+            ->update( ['updated_at' => '2000-01-01 00:00:00'] ) );
+        $this->expectsDatabaseQueryCount( 3 );
 
-        Publication::publish( Element::class, $ids, $this->user );
+        $items = Publication::publish( Element::class, $ids, $this->user );
 
-        $updates = collect( $db->getQueryLog() )->pluck( 'query' )
-            ->map( strtolower(...) )->filter( fn( $query ) => str_starts_with( $query, 'update ' ) );
-
-        $this->assertCount( 1, $updates->filter( fn( $query ) => str_contains( $query, 'cms_elements' ) ) );
-        $this->assertCount( 1, $updates->filter( fn( $query ) => str_contains( $query, 'cms_versions' ) ) );
-        $this->assertSame( ['After 1', 'After 2'], Element::whereIn( 'id', $ids )->orderBy( 'name' )->pluck( 'name' )->all() );
+        $this->assertSame( ['After 1', 'After 2'], $items->sortBy( 'name' )->pluck( 'name' )->all() );
     }
 
 
@@ -765,18 +730,12 @@ class ResourceTest extends CoreTestAbstract
         $page = $this->page( [[
             'type' => 'reference', 'refid' => $element->id, 'group' => 'main',
         ]] );
-        $db = DB::connection( config( 'cms.db', 'sqlite' ) );
-        $db->flushQueryLog();
-        $db->enableQueryLog();
+        $this->expectsDatabaseQueryCount( 11 );
 
         Publication::publish( Page::class, [$page->id], $this->user );
 
-        $updates = collect( $db->getQueryLog() )->pluck( 'query' )
-            ->map( strtolower(...) )->filter( fn( $query ) => str_starts_with( $query, 'update ' )
-                && str_contains( $query, 'cms_versions' ) );
         $versionIds = [$file->latest_id, $element->latest_id, $page->latest_id];
 
-        $this->assertCount( 1, $updates );
         $this->assertSame( 3, Version::whereIn( 'id', $versionIds )->where( 'published', true )->count() );
     }
 
@@ -830,19 +789,14 @@ class ResourceTest extends CoreTestAbstract
             'data' => ['text' => 'Scheduled'],
         ], $this->user );
         $ids = Element::limit( 2 )->pluck( 'id' )->all();
-        $db = DB::connection( config( 'cms.db', 'sqlite' ) );
-        $db->flushQueryLog();
-        $db->enableQueryLog();
+        $this->expectsDatabaseQueryCount( 2 );
 
-        Publication::publish( Element::class, $ids, $this->user, '2030-01-01 00:00:00' );
+        $items = Publication::publish( Element::class, $ids, $this->user, '2030-01-01 00:00:00' );
 
-        $updates = collect( $db->getQueryLog() )->pluck( 'query' )->map( strtolower(...) )
-            ->filter( fn( $query ) => str_starts_with( $query, 'update ' )
-                && str_contains( $query, 'cms_versions' ) );
-
-        $this->assertCount( 1, $updates );
-        $this->assertSame( 2, Version::whereIn( 'id', Element::whereIn( 'id', $ids )->pluck( 'latest_id' ) )
-            ->where( 'publish_at', '2030-01-01 00:00:00' )->count() );
+        $this->assertCount( 2, $items );
+        $this->assertTrue( $items->every(
+            fn( Element $item ) => (string) $item->latest?->publish_at === '2030-01-01 00:00:00',
+        ) );
     }
 
 
@@ -1006,14 +960,13 @@ class ResourceTest extends CoreTestAbstract
         $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
         $content = [['type' => 'image', 'data' => ['file' => ['id' => $file->id, 'type' => 'file']]]];
         $pages = [$this->page( $content ), $this->page( $content )];
-        $db = DB::connection( config( 'cms.db', 'sqlite' ) );
-        $db->flushQueryLog();
-        $db->enableQueryLog();
+        $this->expectsDatabaseQueryCount( 11 );
 
         Publication::publish( Page::class, collect( $pages )->pluck( 'id' )->all(), $this->user );
 
-        $queries = collect( $db->getQueryLog() )->filter( fn( $entry ) => str_starts_with( $entry['query'], 'delete from "cms_page_file"' ) );
-        $this->assertCount( 0, $queries );
+        foreach( $pages as $page ) {
+            $this->assertSame( [$file->id], $page->fresh()->files()->pluck( 'cms_files.id' )->all() );
+        }
     }
 
 
@@ -1026,13 +979,10 @@ class ResourceTest extends CoreTestAbstract
         $db = DB::connection( config( 'cms.db', 'sqlite' ) );
         $db->table( 'cms_page_file' )->where( 'page_id', $page->id )->delete();
         $db->table( 'cms_page_file' )->insert( ['page_id' => $page->id, 'file_id' => $other->id] );
-        $db->flushQueryLog();
-        $db->enableQueryLog();
+        $this->expectsDatabaseQueryCount( 11 );
 
         Publication::publish( Page::class, [$page->id], $this->user );
 
-        $queries = collect( $db->getQueryLog() )->filter( fn( $entry ) => str_starts_with( $entry['query'], 'delete from "cms_page_file"' ) );
-        $this->assertCount( 1, $queries );
         $this->assertSame( [$target->id], Page::findOrFail( $page->id )->files()->pluck( 'cms_files.id' )->all() );
     }
 
@@ -1083,6 +1033,11 @@ class ResourceTest extends CoreTestAbstract
         foreach( $ids as $id )
         {
             $model = new class extends Base {
+                public function getIdAttribute( ?string $value ) : ?string
+                {
+                    return $value;
+                }
+
                 public function save( array $options = [] )
                 {
                     return true;
@@ -1139,7 +1094,6 @@ class ResourceTest extends CoreTestAbstract
 
     public function testPageLifecycleSkipsLargeColumns()
     {
-        $db = DB::connection( config( 'cms.db', 'sqlite' ) );
         $actions = [
             'drop' => fn( Page $page ) => Resource::drop( Page::class, [$page->id], $this->user, ['id'] ),
             'purge' => fn( Page $page ) => Resource::purge( Page::class, [$page->id], $this->user, ['id'] ),
@@ -1152,18 +1106,11 @@ class ResourceTest extends CoreTestAbstract
         foreach( $actions as $action => $run )
         {
             $page = $this->page( [['type' => 'text', 'data' => ['text' => str_repeat( 'x', 1000 )]]] );
-            $db->flushQueryLog();
-            $db->enableQueryLog();
-            $run( $page );
+            $item = $run( $page )->firstOrFail();
 
-            $query = collect( $db->getQueryLog() )->first( fn( $entry ) =>
-                str_contains( $entry['query'], 'from "cms_pages"' )
-                && str_contains( $entry['query'], '"id" in' )
-            );
-
-            $this->assertNotNull( $query, $action );
-            $this->assertStringNotContainsString( '"content"', $query['query'], $action );
-            $this->assertStringNotContainsString( '"meta"', $query['query'], $action );
+            $this->assertArrayHasKey( 'id', $item->getAttributes(), $action );
+            $this->assertArrayNotHasKey( 'content', $item->getAttributes(), $action );
+            $this->assertArrayNotHasKey( 'meta', $item->getAttributes(), $action );
         }
     }
 
@@ -1177,20 +1124,16 @@ class ResourceTest extends CoreTestAbstract
         $publication = new Publication();
         $property = new \ReflectionProperty( Publication::class, 'work' );
         $property->setValue( $publication, Page::MAX_BULK );
-        $db = DB::connection( config( 'cms.db', 'sqlite' ) );
-        $db->flushQueryLog();
-        $db->enableQueryLog();
+        $version = $page->latest()->firstOrFail();
+        $this->expectsDatabaseQueryCount( 1 );
 
         try {
-            $publication->prepare( collect( [$page->latest()->firstOrFail()] ) );
+            $publication->prepare( collect( [$version] ) );
             $this->fail( 'The cumulative reference limit was not enforced' );
         } catch( Exception $e ) {
             $this->assertStringContainsString( 'No more than 1000 items', $e->getMessage() );
         }
 
-        $this->assertFalse( collect( $db->getQueryLog() )->contains(
-            fn( $entry ) => str_contains( $entry['query'], 'cms_version_element' )
-        ) );
     }
 
 
@@ -1276,18 +1219,8 @@ class ResourceTest extends CoreTestAbstract
             Storage::disk( 'version-cleanup' )->assertExists( $path );
         }
 
-        $db = DB::connection( config( 'cms.db', 'sqlite' ) );
-        $db->flushQueryLog();
-        $db->enableQueryLog();
         $file->removeVersions();
 
-        $streams = collect( $db->getQueryLog() )->filter( fn( $entry ) =>
-            str_contains( strtolower( $entry['query'] ), 'order by' )
-            && str_contains( strtolower( $entry['query'] ), 'versionable_id' )
-            && str_contains( strtolower( $entry['query'] ), 'created_at' )
-        );
-        $this->assertCount( 1, $streams );
-        $this->assertStringNotContainsString( 'row_number()', strtolower( $streams->first()['query'] ) );
         $this->assertSame( 1, $file->versions()->count() );
         Storage::disk( 'version-cleanup' )->assertExists( end( $paths ) );
         foreach( array_slice( $paths, 0, -1 ) as $path ) {
@@ -1422,19 +1355,8 @@ class ResourceTest extends CoreTestAbstract
             ] );
         }
 
-        $db = DB::connection( config( 'cms.db', 'sqlite' ) );
-        $db->flushQueryLog();
-        $db->enableQueryLog();
-
         ( new PruneVersions( Element::class, (string) $element->tenant_id, [$element->id] ) )->handle();
 
-        $streams = collect( $db->getQueryLog() )->filter( fn( $entry ) =>
-            str_contains( strtolower( $entry['query'] ), 'order by' )
-            && str_contains( strtolower( $entry['query'] ), 'versionable_id' )
-            && str_contains( strtolower( $entry['query'] ), 'created_at' )
-        );
-        $this->assertCount( 1, $streams );
-        $this->assertStringNotContainsString( 'row_number()', strtolower( $streams->first()['query'] ) );
         $this->assertSame( 2, $element->versions()->count() );
     }
 

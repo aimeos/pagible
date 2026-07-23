@@ -1114,6 +1114,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
     {
         $page = Page::where('tag', 'root')->firstOrFail();
         $page->latest()->update( ['published' => false] );
+        $page->forceFill( ['updated_at' => '2000-01-01 00:00:00'] )->saveQuietly();
 
         $this->expectsDatabaseQueryCount( 7 );
 
@@ -1134,6 +1135,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
                 ]],
             ]
         ] );
+        $this->assertSame( '2000-01-01 00:00:00', (string) $page->updated_at );
     }
 
 

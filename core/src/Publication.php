@@ -268,7 +268,10 @@ final class Publication
             ] : null;
 
             $model->stage( $version );
-            $model->setUpdatedAt( $model->freshTimestamp() );
+
+            if( $model->isDirty() ) {
+                $model->setUpdatedAt( $model->freshTimestamp() );
+            }
 
             $columns = array_keys( $model->getDirty() );
             sort( $columns, SORT_STRING );

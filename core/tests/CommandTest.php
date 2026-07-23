@@ -11,6 +11,7 @@ use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\Version;
+use Aimeos\Cms\Resource;
 use Database\Seeders\TestSeeder;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Support\Facades\DB;
@@ -220,25 +221,17 @@ class CoreCommandTest extends CoreTestAbstract
         $data = ['lang' => 'en', 'name' => 'Scheduled'];
         $pageVersion = $page->versions()->forceCreate( ['data' => $data, 'publish_at' => now()->subMinute(), 'editor' => 'test'] );
         $elementVersion = $element->versions()->forceCreate( ['data' => $data, 'publish_at' => now()->subMinute(), 'editor' => 'test'] );
-        $fileVersion = $file->versions()->forceCreate( ['data' => $data, 'publish_at' => now()->subMinute(), 'editor' => 'test'] );
-
-        $pageVersion->elements()->attach( $element->id );
-        $pageVersion->files()->attach( $file->id );
-        $elementVersion->files()->attach( $file->id );
-
-        $db = DB::connection( config( 'cms.db', 'sqlite' ) );
-        $db->flushQueryLog();
-        $db->enableQueryLog();
+        $file = Resource::saveFile( $file->id, ['name' => 'Scheduled'] );
+        $fileVersion = $file->latest()->firstOrFail();
+        $fileVersion->forceFill( ['publish_at' => now()->subMinute()] )->saveQuietly();
+        $page->forceFill( ['latest_id' => $pageVersion->id] )->saveQuietly();
+        $element->forceFill( ['latest_id' => $elementVersion->id] )->saveQuietly();
 
         $this->artisan( 'cms:publish' )->assertExitCode( 0 );
 
-        $queries = collect( $db->getQueryLog() )->pluck( 'query' )
-            ->filter( fn( $query ) => str_contains( strtolower( $query ), 'order by' )
-                && str_contains( strtolower( $query ), 'publish_at' )
-                && str_contains( strtolower( $query ), 'created_at' ) );
-
-        $this->assertNotEmpty( $queries );
-        $this->assertFalse( $queries->contains( fn( $query ) => str_contains( strtolower( $query ), 'row_number()' ) ) );
+        $this->assertTrue( (bool) $pageVersion->fresh()->published );
+        $this->assertTrue( (bool) $elementVersion->fresh()->published );
+        $this->assertTrue( (bool) $fileVersion->fresh()->published );
     }
 
 

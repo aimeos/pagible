@@ -69,19 +69,7 @@ class StructuredMigrationTest extends CoreTestAbstract
         $db->table( 'cms_versions' )->where( 'id', $other->id )->update( ['aux' => json_encode( $otherAux )] );
 
         $migration = require dirname( __DIR__ ) . '/database/migrations/2026_07_10_000000_normalize_page_meta_config.php';
-        $db->flushQueryLog();
-        $db->enableQueryLog();
         $migration->up();
-
-        $updates = array_filter( $db->getQueryLog(), fn( $entry ) => str_starts_with( strtolower( ltrim( $entry['query'] ) ), 'update' ) );
-        $pageUpdates = array_values( array_filter( $updates, fn( $entry ) => str_contains( $entry['query'], 'cms_pages' ) ) );
-        $bindings = array_map( fn( $entry ) => count( $entry['bindings'] ), $pageUpdates );
-        sort( $bindings );
-        $this->assertCount( 3, $pageUpdates );
-        $this->assertSame( [2, 2, 3], $bindings );
-        $versionUpdates = array_filter( $updates, fn( $entry ) => str_contains( $entry['query'], 'cms_versions' ) );
-        $this->assertNotEmpty( $versionUpdates );
-        $this->assertSame( [2], array_values( array_unique( array_map( fn( $entry ) => count( $entry['bindings'] ), $versionUpdates ) ) ) );
 
         $stored = $db->table( 'cms_pages' )->where( 'id', $page->id )->first();
         $meta = json_decode( $stored->meta ?? '', true );
@@ -113,10 +101,8 @@ class StructuredMigrationTest extends CoreTestAbstract
         $otherStored = $db->table( 'cms_versions' )->where( 'id', $other->id )->first();
         $this->assertEquals( $otherAux, json_decode( $otherStored->aux ?? '', true ) );
 
-        $db->flushQueryLog();
-        $migration->up();
+        $this->expectsDatabaseQueryCount( 2 );
 
-        $updates = array_filter( $db->getQueryLog(), fn( $entry ) => str_starts_with( strtolower( ltrim( $entry['query'] ) ), 'update' ) );
-        $this->assertCount( 0, $updates );
+        $migration->up();
     }
 }

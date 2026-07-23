@@ -436,7 +436,8 @@ class Resource
                     ...array_intersect( Page::RESPONSE_COLUMNS, $fields ),
                 ] : Page::SELECT_COLUMNS );
             } elseif( $fields ) {
-                $required = ['id', 'tenant_id', 'latest_id', 'deleted_at'];
+                $instance = new $model();
+                $required = $instance->qualifyColumns( ['id', 'tenant_id', 'latest_id', 'deleted_at'] );
 
                 if( $model === File::class && $action === 'purged' ) {
                     array_push( $required, 'path', 'previews' );
@@ -446,7 +447,7 @@ class Resource
                     array_push( $required, ...( $model === File::class ? File::SELECT_COLS : Element::SELECT_COLS ) );
                 }
 
-                $response = [...( new $model() )->getVisible(), 'editor', 'created_at', 'updated_at'];
+                $response = [...$instance->getVisible(), 'editor', 'created_at', 'updated_at'];
                 $query->select( array_values( array_unique( [
                     ...$required,
                     ...array_intersect( $response, $fields ),
