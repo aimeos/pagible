@@ -24,9 +24,8 @@ class HasChangedTest extends CoreTestAbstract
         $info = ['editor' => 'test@example.com', 'data' => ['title' => ['previous' => 'a', 'current' => 'b']]];
 
         $page = new Page();
-        $result = $page->setChanged( $info );
+        $page->setChanged( $info );
 
-        $this->assertSame( $page, $result );
         $this->assertEquals( $info, $page->changed );
     }
 

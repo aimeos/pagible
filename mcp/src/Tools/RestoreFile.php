@@ -7,7 +7,6 @@
 
 namespace Aimeos\Cms\Tools;
 
-use Aimeos\Cms\Utils;
 use Aimeos\Cms\Resource;
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\Models\File;
@@ -30,7 +29,8 @@ class RestoreFile extends Tool
      */
     public function handle( Request $request ): \Laravel\Mcp\ResponseFactory
     {
-        if( !Permission::can( 'file:keep', $request->user() ) ) {
+        if( !Permission::can( 'file:keep', $request->user() )
+            || !Permission::can( 'file:view', $request->user() ) ) {
             throw new \Aimeos\Cms\Exception( 'Insufficient permissions' );
         }
 
@@ -51,7 +51,7 @@ class RestoreFile extends Tool
             return Response::structured( ['error' => 'File is not deleted.'] );
         }
 
-        $items = Resource::restore( File::class, [$v['id']], Utils::editor( $request->user() ) );
+        $items = Resource::restore( File::class, [$v['id']], $request->user() );
 
         $item = $items->firstOrFail();
 
@@ -82,6 +82,7 @@ class RestoreFile extends Tool
      */
     public function shouldRegister( Request $request ) : bool
     {
-        return Permission::can( 'file:keep', $request->user() );
+        return Permission::can( 'file:keep', $request->user() )
+            && Permission::can( 'file:view', $request->user() );
     }
 }

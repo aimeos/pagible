@@ -33,6 +33,10 @@ final class AddFile
             $this->validateUrl( $args );
         }
 
+        if( isset( $args['preview'] ) ) {
+            $this->validatePreview( $args['preview'] );
+        }
+
         $file = new File();
         $file->fill( $args['input'] ?? [] );
 
@@ -65,7 +69,7 @@ final class AddFile
 
         try
         {
-            if( isset( $args['preview'] ) || str_starts_with( $upload->getClientMimeType(), 'image/' ) ) {
+            if( isset( $args['preview'] ) || str_starts_with( (string) $upload->getMimeType(), 'image/' ) ) {
                 $file->addPreviews( $args['preview'] ?? $upload );
             }
         }
@@ -112,6 +116,29 @@ final class AddFile
         }
 
         return $file;
+    }
+
+
+    /**
+     * Validates an optional uploaded preview before storage or image decoding.
+     */
+    protected function validatePreview( mixed $preview ) : void
+    {
+        if( !$preview instanceof UploadedFile || !$preview->isValid() ) {
+            throw new Error( 'Invalid preview upload' );
+        }
+
+        if( !Utils::isValidUpload( $preview ) ) {
+            $msg = 'Preview size of %s MB exceeds the maximum of %s MB';
+            throw new Error( sprintf( $msg, round( $preview->getSize() / 1024 / 1024, 3 ), config( 'cms.upload.filesize', 50 ) ) );
+        }
+
+        $mime = (string) $preview->getMimeType();
+
+        if( !str_starts_with( $mime, 'image/' ) || !Utils::isValidMimetype( $mime ) ) {
+            $msg = 'Preview type "%s" not allowed, permitted types: %s';
+            throw new Error( sprintf( $msg, $mime, implode( ', ', config( 'cms.upload.mimetypes', [] ) ) ) );
+        }
     }
 
 

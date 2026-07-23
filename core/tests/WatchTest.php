@@ -190,7 +190,7 @@ class WatchTest extends CoreTestAbstract
 
         $id = $this->id( $page );
 
-        Resource::purge( Page::class, [$id], 'editor@testbench' );
+        Resource::purge( Page::class, [$id], $this->user );
 
         $this->assertCount( 1, $captured );
         $this->assertSame( $id, $captured[0]->id );

@@ -106,6 +106,24 @@ class AiToolsTest extends AiTestAbstract
     }
 
 
+    public function testRefineContentRequiresPageView()
+    {
+        $user = new \App\Models\User([
+            'name' => 'Refiner without view',
+            'email' => 'refiner@testbench',
+            'password' => 'secret',
+            'cmsperms' => ['page:refine'],
+        ]);
+
+        $response = CmsServer::actingAs( $user )->tool( \Aimeos\Cms\Tools\RefineContent::class, [
+            'id' => '00000000-0000-0000-0000-000000000000',
+            'prompt' => 'Refine this',
+        ] );
+
+        $response->assertHasErrors();
+    }
+
+
     // ── TranslateContent ──────────────────────────────────────────────
 
     public function testTranslateContent()
@@ -158,6 +176,22 @@ class AiToolsTest extends AiTestAbstract
     }
 
 
+    public function testGenerateImageRemovesOriginalAfterPreviewFailure()
+    {
+        Storage::fake( 'public' );
+        config( ['cms.image.preview-sizes' => [['width' => []]]] );
+        Prisma::fake( [FileResponse::fromBinary( $this->pngBinary(), 'image/png' )] );
+
+        $response = CmsServer::actingAs( $this->user )->tool( \Aimeos\Cms\Tools\GenerateImage::class, [
+            'prompt' => 'An invalid image response',
+            'name' => 'invalid',
+        ] );
+
+        $response->assertHasErrors();
+        $this->assertEmpty( Storage::disk( 'public' )->allFiles() );
+    }
+
+
     public function testGenerateImagePermission()
     {
         $user = new \App\Models\User([
@@ -172,6 +206,113 @@ class AiToolsTest extends AiTestAbstract
         ] );
 
         $response->assertHasErrors();
+    }
+
+
+    public function testGenerateImageReferencesRequireFileViewPermission()
+    {
+        $user = new \App\Models\User([
+            'name' => 'No file view',
+            'email' => 'nofileview@testbench',
+            'password' => 'secret',
+            'cmsperms' => array_values( array_diff( \Aimeos\Cms\Permission::all(), ['file:view'] ) ),
+        ]);
+
+        $this->actingAs( $user );
+        $this->assertTrue( $this->app->make( \Aimeos\Cms\Tools\GenerateImage::class )->eligibleForRegistration() );
+
+        CmsServer::actingAs( $user )->tool( \Aimeos\Cms\Tools\GenerateImage::class, [
+            'prompt' => 'Use the stored image as a reference',
+            'files' => ['00000000-0000-0000-0000-000000000000'],
+        ] )->assertHasErrors();
+    }
+
+
+    public function testImageToolsRequireFileMutationPermission()
+    {
+        $user = new \App\Models\User([
+            'name' => 'Image only',
+            'email' => 'imageonly@testbench',
+            'password' => 'secret',
+            'cmsperms' => [
+                'image:erase',
+                'image:imagine',
+                'image:inpaint',
+                'image:isolate',
+                'image:repaint',
+                'image:uncrop',
+                'image:upscale',
+            ],
+        ]);
+
+        $tools = [
+            \Aimeos\Cms\Tools\EraseImage::class,
+            \Aimeos\Cms\Tools\GenerateImage::class,
+            \Aimeos\Cms\Tools\InpaintImage::class,
+            \Aimeos\Cms\Tools\IsolateImage::class,
+            \Aimeos\Cms\Tools\RepaintImage::class,
+            \Aimeos\Cms\Tools\UncropImage::class,
+            \Aimeos\Cms\Tools\UpscaleImage::class,
+        ];
+
+        $this->actingAs( $user );
+
+        foreach( $tools as $class )
+        {
+            $tool = $this->app->make( $class );
+
+            try {
+                $tool->handle( new \Laravel\Mcp\Request() );
+                $this->fail( sprintf( '%s accepted an image-only permission', $class ) );
+            } catch( \Aimeos\Cms\Exception $e ) {
+                $this->assertSame( 'Insufficient permissions', $e->getMessage() );
+            }
+
+            $this->assertFalse( $tool->eligibleForRegistration() );
+        }
+
+        $this->actingAs( $this->user );
+
+        foreach( $tools as $class ) {
+            $this->assertTrue( $this->app->make( $class )->eligibleForRegistration() );
+        }
+    }
+
+
+    public function testStoredFileToolsRequireViewPermission()
+    {
+        $user = new \App\Models\User([
+            'name' => 'No file view',
+            'email' => 'stored-nofileview@testbench',
+            'password' => 'secret',
+            'cmsperms' => array_values( array_diff( \Aimeos\Cms\Permission::all(), ['file:view'] ) ),
+        ]);
+        $tools = [
+            \Aimeos\Cms\Tools\DescribeFile::class,
+            \Aimeos\Cms\Tools\EraseImage::class,
+            \Aimeos\Cms\Tools\InpaintImage::class,
+            \Aimeos\Cms\Tools\IsolateImage::class,
+            \Aimeos\Cms\Tools\RepaintImage::class,
+            \Aimeos\Cms\Tools\TranscribeAudio::class,
+            \Aimeos\Cms\Tools\UncropImage::class,
+            \Aimeos\Cms\Tools\UpscaleImage::class,
+        ];
+
+        $this->actingAs( $user );
+
+        foreach( $tools as $class )
+        {
+            $tool = $this->app->make( $class );
+
+            try {
+                $tool->handle( new \Laravel\Mcp\Request() );
+                $this->fail( sprintf( '%s accepted stored input without file:view', $class ) );
+            } catch( \Aimeos\Cms\Exception $e ) {
+                $this->assertSame( 'Insufficient permissions', $e->getMessage() );
+            }
+
+            $this->assertFalse( $tool->eligibleForRegistration() );
+        }
     }
 
 
@@ -273,20 +414,5 @@ class AiToolsTest extends AiTestAbstract
         ] );
 
         $response->assertOk()->assertSee( ['error'] );
-    }
-
-
-    /**
-     * Returns the binary data of a small valid PNG image.
-     */
-    protected function pngBinary() : string
-    {
-        $im = imagecreatetruecolor( 8, 8 );
-        ob_start();
-        imagepng( $im );
-        $data = (string) ob_get_clean();
-        imagedestroy( $im );
-
-        return $data;
     }
 }

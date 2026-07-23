@@ -73,7 +73,7 @@ class Tenancy
         }
 
         $id = data_get( $user, 'tenant_id' );
-        return ( is_scalar( $id ) ? (string) $id : '' ) === $tenant;
+        return is_string( $id ) && $id === $tenant;
     }
 
 

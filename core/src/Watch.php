@@ -142,7 +142,7 @@ class Watch
 
 
     /**
-     * Returns the request correlation ID, reusing a sanitized inbound X-Request-Id when present.
+     * Returns the request correlation ID, reusing a valid inbound X-Request-Id as is.
      */
     private static function requestId() : string
     {
@@ -151,9 +151,9 @@ class Watch
         if( !$request->attributes->has( 'cms-request-id' ) )
         {
             $header = $request->header( 'X-Request-Id' );
-            $id = is_string( $header ) ? (string) preg_replace( '/[^A-Za-z0-9._-]/', '', $header ) : '';
+            $id = is_string( $header ) && preg_match( '/\A[A-Za-z0-9._-]{1,128}\z/D', $header ) ? $header : (string) Str::uuid();
 
-            $request->attributes->set( 'cms-request-id', $id !== '' ? substr( $id, 0, 128 ) : (string) Str::uuid() );
+            $request->attributes->set( 'cms-request-id', $id );
         }
 
         $id = $request->attributes->get( 'cms-request-id' );

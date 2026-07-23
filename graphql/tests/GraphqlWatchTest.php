@@ -155,7 +155,7 @@ class GraphqlWatchTest extends GraphqlTestAbstract
         Event::fake( [Authed::class] );
 
         $this->actingAs( $this->editor() )->graphQL( '
-            mutation ($settings: JSON!) { cmsUser(settings: $settings) { settings } }
+            mutation ($settings: JSON!) { cmsUser(settings: $settings) { id } }
         ', ['settings' => json_encode( ['page' => []] )] );
 
         Event::assertDispatched( Authed::class, fn( Authed $e ) => $e->action === 'user-save' );

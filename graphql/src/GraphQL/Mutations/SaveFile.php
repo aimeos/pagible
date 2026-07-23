@@ -25,27 +25,12 @@ final class SaveFile
     {
         $upload = $args['file'] ?? null;
 
-        if( $upload instanceof UploadedFile && $upload->isValid() )
-        {
-            if( !Utils::isValidUpload( $upload ) ) {
-                $msg = 'File size of %s MB exceeds the maximum of %s MB';
-                throw new Error( sprintf( $msg, round( $upload->getSize() / 1024 / 1024, 3 ), config( 'cms.upload.filesize', 50 ) ) );
-            }
-
-            if( !Utils::isValidMimetype( (string) $upload->getMimeType() ) ) {
-                $msg = 'File type "%s" not allowed, permitted types: %s';
-                throw new Error( sprintf( $msg, $upload->getMimeType(), implode( ', ', config( 'cms.upload.mimetypes', [] ) ) ) );
-            }
+        if( $upload !== null ) {
+            $this->validateUpload( $upload );
         }
 
-        if( isset( $args['input']['path'] ) )
-        {
-            $mime = Utils::mimetype( $args['input']['path'] );
-
-            if( !Utils::isValidMimetype( $mime ) ) {
-                $msg = 'File type "%s" not allowed, permitted types: %s';
-                throw new Error( sprintf( $msg, $mime, implode( ', ', config( 'cms.upload.mimetypes', [] ) ) ) );
-            }
+        if( isset( $args['preview'] ) && $args['preview'] !== false ) {
+            $this->validateUpload( $args['preview'], true );
         }
 
         return Resource::saveFile(
@@ -56,5 +41,30 @@ final class SaveFile
             $upload instanceof UploadedFile && $upload->isValid() ? $upload : null,
             $args['preview'] ?? null,
         );
+    }
+
+
+    /**
+     * Validates a primary or preview upload before storage or image decoding.
+     */
+    protected function validateUpload( mixed $value, bool $preview = false ) : void
+    {
+        $label = $preview ? 'Preview' : 'File';
+
+        if( !$value instanceof UploadedFile || !$value->isValid() ) {
+            throw new Error( sprintf( 'Invalid %s upload', strtolower( $label ) ) );
+        }
+
+        if( !Utils::isValidUpload( $value ) ) {
+            throw new Error( sprintf( '%s size of %s MB exceeds the maximum of %s MB',
+                $label, round( $value->getSize() / 1024 / 1024, 3 ), config( 'cms.upload.filesize', 50 ) ) );
+        }
+
+        $mime = (string) $value->getMimeType();
+
+        if( ( $preview && !str_starts_with( $mime, 'image/' ) ) || !Utils::isValidMimetype( $mime ) ) {
+            throw new Error( sprintf( '%s type "%s" not allowed, permitted types: %s',
+                $label, $mime, implode( ', ', config( 'cms.upload.mimetypes', [] ) ) ) );
+        }
     }
 }

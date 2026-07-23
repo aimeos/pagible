@@ -4,6 +4,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Maximum AI input
+    |--------------------------------------------------------------------------
+    |
+    | Maximum serialized size in bytes accepted from AI API callers before it
+    | is sent to a provider, and the nesting depth of structured content.
+    |
+    */
+    'maxinput' => (int) env( 'CMS_AI_MAXINPUT', 1024 * 1024 ),
+    'maxdepth' => (int) env( 'CMS_AI_MAXDEPTH', 20 ),
+
+    /*
+    |--------------------------------------------------------------------------
     | Maximum tokens
     |--------------------------------------------------------------------------
     |

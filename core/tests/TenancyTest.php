@@ -8,6 +8,7 @@
 namespace Tests;
 
 use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\Version;
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\Scopes\Status;
 use Aimeos\Cms\Tenancy;
@@ -94,6 +95,19 @@ class TenancyTest extends CoreTestAbstract
         ] );
 
         $this->assertEquals( 'test', $page->tenant_id );
+    }
+
+
+    public function testVersionTenancyAutoSetsOnCreate()
+    {
+        $page = Page::firstOrFail();
+        $version = $page->versions()->forceCreate( [
+            'editor' => 'test',
+            'data' => (object) [],
+        ] );
+
+        $this->assertInstanceOf( Version::class, $version );
+        $this->assertSame( 'test', $version->tenant_id );
     }
 
 

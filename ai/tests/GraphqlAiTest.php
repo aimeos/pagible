@@ -56,7 +56,7 @@ class GraphqlAiTest extends AiTestAbstract
 
     public function testErase()
     {
-        $image = file_get_contents( __DIR__ . '/assets/image.png' );
+        $image = $this->pngBinary();
         Prisma::fake( [FileResponse::fromBinary( $image, 'image/png' )] );
 
         $response = $this->actingAs( $this->user )->multipartGraphQL( [
@@ -85,7 +85,7 @@ class GraphqlAiTest extends AiTestAbstract
 
     public function testInpaint()
     {
-        $image = file_get_contents( __DIR__ . '/assets/image.png' );
+        $image = $this->pngBinary();
         Prisma::fake( [FileResponse::fromBinary( $image, 'image/png' )] );
 
         $response = $this->actingAs( $this->user )->multipartGraphQL( [
@@ -115,7 +115,7 @@ class GraphqlAiTest extends AiTestAbstract
 
     public function testIsolate()
     {
-        $image = file_get_contents( __DIR__ . '/assets/image.png' );
+        $image = $this->pngBinary();
         Prisma::fake( [FileResponse::fromBinary( $image, 'image/png' )] );
 
         $response = $this->actingAs( $this->user )->multipartGraphQL( [
@@ -398,7 +398,10 @@ class GraphqlAiTest extends AiTestAbstract
         ', [
             'texts' => [],
             'to' => 'de',
-        ] )->assertGraphQLErrorMessage( 'Input texts must not be empty' );
+        ] )->assertGraphQLValidationError(
+            'texts',
+            'The texts field must have at least 1 items.',
+        );
     }
 
 
@@ -422,7 +425,7 @@ class GraphqlAiTest extends AiTestAbstract
         ], [
             '0' => ['variables.file'],
         ], [
-            '0' => UploadedFile::fake()->create('test.mp3', 500, 'audio/mpeg'),
+            '0' => UploadedFile::fake()->createWithContent( 'test.mp3', "\xFF\xFB\x90\x64" . str_repeat( "\0", 1024 ) ),
         ] )->assertJson( [
             'data' => [
                 'transcribe' => '[{"start":"00:00:00.000","end":"00:00:01.000","text":"test transcription"}]'
@@ -448,7 +451,7 @@ class GraphqlAiTest extends AiTestAbstract
     public function testInpaintNoPermission()
     {
         $user = $this->noPermUser();
-        $image = file_get_contents( __DIR__ . '/assets/image.png' );
+        $image = $this->pngBinary();
 
         $this->actingAs( $user )->multipartGraphQL( [
             'query' => '
@@ -470,7 +473,7 @@ class GraphqlAiTest extends AiTestAbstract
     public function testIsolateNoPermission()
     {
         $user = $this->noPermUser();
-        $image = file_get_contents( __DIR__ . '/assets/image.png' );
+        $image = $this->pngBinary();
 
         $this->actingAs( $user )->multipartGraphQL( [
             'query' => '
@@ -490,7 +493,7 @@ class GraphqlAiTest extends AiTestAbstract
     public function testRepaintNoPermission()
     {
         $user = $this->noPermUser();
-        $image = file_get_contents( __DIR__ . '/assets/image.png' );
+        $image = $this->pngBinary();
 
         $this->actingAs( $user )->multipartGraphQL( [
             'query' => '
@@ -510,7 +513,7 @@ class GraphqlAiTest extends AiTestAbstract
     public function testEraseNoPermission()
     {
         $user = $this->noPermUser();
-        $image = file_get_contents( __DIR__ . '/assets/image.png' );
+        $image = $this->pngBinary();
 
         $this->actingAs( $user )->multipartGraphQL( [
             'query' => '
@@ -532,7 +535,7 @@ class GraphqlAiTest extends AiTestAbstract
     public function testUncropNoPermission()
     {
         $user = $this->noPermUser();
-        $image = file_get_contents( __DIR__ . '/assets/image.png' );
+        $image = $this->pngBinary();
 
         $this->actingAs( $user )->multipartGraphQL( [
             'query' => '
@@ -552,7 +555,7 @@ class GraphqlAiTest extends AiTestAbstract
     public function testUpscaleNoPermission()
     {
         $user = $this->noPermUser();
-        $image = file_get_contents( __DIR__ . '/assets/image.png' );
+        $image = $this->pngBinary();
 
         $this->actingAs( $user )->multipartGraphQL( [
             'query' => '
@@ -625,12 +628,90 @@ class GraphqlAiTest extends AiTestAbstract
         ], [
             '0' => ['variables.file'],
         ], [
-            '0' => UploadedFile::fake()->create( 'test.mp3', 500, 'audio/mpeg' ),
+            '0' => UploadedFile::fake()->createWithContent( 'test.mp3', "\xFF\xFB\x90\x64" . str_repeat( "\0", 1024 ) ),
         ] )->assertGraphQLErrorMessage( 'Insufficient permissions' );
     }
 
 
+    public function testStoredFileInputsRequireViewPermission()
+    {
+        $user = new \App\Models\User([
+            'name' => 'No file view',
+            'email' => 'nofileview@testbench',
+            'password' => 'secret',
+            'cmsperms' => array_values( array_diff( \Aimeos\Cms\Permission::all(), ['file:view'] ) ),
+        ]);
+        $id = '00000000-0000-0000-0000-000000000000';
+
+        $this->actingAs( $user )->graphQL( '
+            mutation($file: String!) {
+                describe(file: $file)
+            }
+        ', ['file' => $id] )->assertGraphQLErrorMessage( 'Insufficient permissions' );
+
+        $this->actingAs( $user )->graphQL( '
+            mutation($files: [String!]) {
+                imagine(prompt: "test", files: $files)
+            }
+        ', ['files' => [$id]] )->assertGraphQLErrorMessage( 'Insufficient permissions' );
+
+        $this->actingAs( $user )->graphQL( '
+            mutation($files: [String!]) {
+                write(prompt: "test", files: $files)
+            }
+        ', ['files' => [$id]] )->assertGraphQLErrorMessage( 'Insufficient permissions' );
+    }
+
+
     // --- Input validation tests ---
+
+    public function testImageUploadMimePolicy()
+    {
+        config( ['cms.upload.mimetypes' => ['image/jpeg']] );
+
+        $this->isolateUpload( UploadedFile::fake()->createWithContent(
+            'test.png',
+            $this->pngBinary(),
+        ) )->assertGraphQLErrorMessage( 'File type "image/png" is not allowed' );
+    }
+
+
+    public function testImageUploadPixelLimit()
+    {
+        config( ['cms.upload.maxpixels' => 10] );
+
+        $this->isolateUpload( UploadedFile::fake()->createWithContent(
+            'test.png',
+            $this->pngBinary(),
+        ) )->assertGraphQLErrorMessage( 'File image exceeds the maximum size of 10 pixels' );
+    }
+
+
+    public function testImageUploadSizeLimit()
+    {
+        config( ['cms.upload.filesize' => 0] );
+
+        $this->isolateUpload( UploadedFile::fake()->createWithContent(
+            'test.png',
+            $this->pngBinary(),
+        ) )->assertGraphQLErrorMessage( 'File size exceeds the maximum of 0 MB' );
+    }
+
+
+    public function testImagineFilesLimit()
+    {
+        $this->actingAs( $this->user )->graphQL( '
+            mutation($files: [String!]) {
+                imagine(prompt: "test", files: $files)
+            }
+        ', [
+            'files' => array_fill( 0, 11, '00000000-0000-0000-0000-000000000000' ),
+        ] )->assertGraphQLValidationError(
+            'files',
+            'The files field must not have more than 10 items.',
+        );
+    }
+
 
     public function testImagineEmptyPrompt()
     {
@@ -639,6 +720,79 @@ class GraphqlAiTest extends AiTestAbstract
                 imagine(prompt: "")
             }
         ' )->assertGraphQLErrorMessage( 'Prompt must not be empty' );
+    }
+
+
+    public function testImaginePromptLimit()
+    {
+        $this->actingAs( $this->user )->graphQL( '
+            mutation($prompt: String!) {
+                imagine(prompt: $prompt)
+            }
+        ', [
+            'prompt' => str_repeat( 'x', 2001 ),
+        ] )->assertGraphQLValidationError(
+            'prompt',
+            'The prompt field must not be greater than 2000 characters.',
+        );
+    }
+
+
+    public function testRefineContentDepthLimit()
+    {
+        config( ['cms.ai.maxdepth' => 2] );
+
+        $this->actingAs( $this->user )->graphQL( '
+            mutation($content: JSON!) {
+                refine(prompt: "test", content: $content)
+            }
+        ', [
+            'content' => json_encode( ['a' => ['b' => ['c' => 'test']]] ),
+        ] )->assertGraphQLErrorMessage( 'Content exceeds the maximum nesting depth of 2' );
+    }
+
+
+    public function testRefineContentSizeLimit()
+    {
+        config( ['cms.ai.maxinput' => 10] );
+
+        $this->actingAs( $this->user )->graphQL( '
+            mutation($content: JSON!) {
+                refine(prompt: "test", content: $content)
+            }
+        ', [
+            'content' => json_encode( ['text' => str_repeat( 'x', 20 )] ),
+        ] )->assertGraphQLErrorMessage( 'Content exceeds the maximum input size of 10 bytes' );
+    }
+
+
+    public function testTranslateTextsLimit()
+    {
+        $this->actingAs( $this->user )->graphQL( '
+            mutation($texts: [String!]!) {
+                translate(texts: $texts, to: "de")
+            }
+        ', [
+            'texts' => array_fill( 0, 51, 'test' ),
+        ] )->assertGraphQLValidationError(
+            'texts',
+            'The texts field must not have more than 50 items.',
+        );
+    }
+
+
+    public function testWriteFilesLimit()
+    {
+        $this->actingAs( $this->user )->graphQL( '
+            mutation($files: [String!]) {
+                write(prompt: "test", files: $files)
+            }
+        ', [
+            'files' => array_fill( 0, 11, '00000000-0000-0000-0000-000000000000' ),
+        ] )->assertGraphQLValidationError(
+            'files',
+            'The files field must not have more than 10 items.',
+        );
     }
 
 
@@ -669,6 +823,23 @@ class GraphqlAiTest extends AiTestAbstract
                 describe(file: "", lang: "en")
             }
         ' )->assertGraphQLErrorMessage( 'File ID is required' );
+    }
+
+
+    protected function isolateUpload( UploadedFile $upload ) : \Illuminate\Testing\TestResponse
+    {
+        return $this->actingAs( $this->user )->multipartGraphQL( [
+            'query' => '
+                mutation($file: Upload!) {
+                    isolate(file: $file)
+                }
+            ',
+            'variables' => ['file' => null],
+        ], [
+            '0' => ['variables.file'],
+        ], [
+            '0' => $upload,
+        ] );
     }
 
 

@@ -178,6 +178,50 @@ class GraphqlFileTest extends GraphqlTestAbstract
     }
 
 
+    public function testFileRelationsRequireAllOwnerViewPermissions()
+    {
+        $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
+        $user = new \App\Models\User( ['cmsperms' => ['file:view', 'page:view']] );
+
+        $response = $this->actingAs( $user )->graphQL( '{
+            elements: file(id: "' . $file->id . '") {
+                byelements { id }
+            }
+            pages: file(id: "' . $file->id . '") {
+                bypages { id }
+            }
+            versions: file(id: "' . $file->id . '") {
+                byversions { id }
+            }
+        }' );
+
+        $this->assertCount( 2, $response->json( 'errors' ) );
+        $this->assertNotNull( $response->json( 'data.pages' ) );
+        $response->assertGraphQLErrorMessage( 'Insufficient permissions' );
+    }
+
+
+    public function testFileMutationsRequireViewPermission()
+    {
+        $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
+        $user = new \App\Models\User( ['cmsperms' => [
+            'file:save', 'file:drop', 'file:keep', 'file:purge', 'file:publish',
+        ]] );
+
+        foreach( [
+            'saveFile(id: "' . $file->id . '", input: {}) { id }',
+            'bulkFile(id: ["' . $file->id . '"], input: {}) { ids }',
+            'dropFile(id: ["' . $file->id . '"]) { id }',
+            'keepFile(id: ["' . $file->id . '"]) { id }',
+            'purgeFile(id: ["' . $file->id . '"]) { id }',
+            'pubFile(id: ["' . $file->id . '"]) { id }',
+        ] as $mutation ) {
+            $this->actingAs( $user )->graphQL( 'mutation {' . $mutation . '}' )
+                ->assertGraphQLErrorMessage( 'Insufficient permissions' );
+        }
+    }
+
+
     public function testFilesMime()
     {
         $this->expectsDatabaseQueryCount( 3 );
@@ -195,6 +239,21 @@ class GraphqlFileTest extends GraphqlTestAbstract
         $filesData = $response->json( 'data.files.data' );
         $this->assertCount( 1, $filesData );
         $this->assertEquals( 'image/jpeg', $filesData[0]['mime'] );
+    }
+
+
+    public function testFilesRejectTooManyMimeFilters()
+    {
+        $response = $this->actingAs( $this->user )->graphQL( '
+            query Files($mimes: [String!]) {
+                files(filter: {mime: $mimes}) {
+                    data { id }
+                }
+            }
+        ', ['mimes' => array_fill( 0, 1001, 'image/jpeg' )] );
+
+        $response->assertJsonPath( 'data.files', null );
+        $this->assertNotEmpty( $response->json( 'errors' ) );
     }
 
 
@@ -337,7 +396,7 @@ class GraphqlFileTest extends GraphqlTestAbstract
     {
         $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 8 );
+        $this->expectsDatabaseQueryCount( 10 );
 
         $response = $this->actingAs($this->user)->multipartGraphQL([
             'query' => '
@@ -445,6 +504,23 @@ class GraphqlFileTest extends GraphqlTestAbstract
     }
 
 
+    public function testBulkFileRejectsTooManyIds()
+    {
+        $file = File::firstOrFail();
+
+        $response = $this->actingAs( $this->user )->graphQL( '
+            mutation BulkFile($ids: [ID!]!) {
+                bulkFile(id: $ids, input: { lang: "de" }) {
+                    ids
+                }
+            }
+        ', ['ids' => array_fill( 0, 1001, $file->id )] );
+
+        $response->assertJsonPath( 'data.bulkFile', null );
+        $this->assertNotEmpty( $response->json( 'errors' ) );
+    }
+
+
     public function testBulkFileRejectsPath()
     {
         $file = File::firstOrFail();
@@ -513,7 +589,7 @@ class GraphqlFileTest extends GraphqlTestAbstract
         $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
         $file->delete();
 
-        $this->expectsDatabaseQueryCount( 3 );
+        $this->expectsDatabaseQueryCount( 5 );
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
                 keepFile(id: ["' . $file->id . '"]) {
@@ -540,7 +616,7 @@ class GraphqlFileTest extends GraphqlTestAbstract
     {
         $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 5 );
+        $this->expectsDatabaseQueryCount( 7 );
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
                 pubFile(id: ["' . $file->id . '"]) {
@@ -650,6 +726,68 @@ class GraphqlFileTest extends GraphqlTestAbstract
         ] );
 
         $response->assertGraphQLErrorMessage( 'File size of 0.098 MB exceeds the maximum of 0.001 MB' );
+    }
+
+
+    public function testAddFileRejectsPreviewSize()
+    {
+        config()->set( 'cms.upload.filesize', 0.01 );
+
+        $response = $this->actingAs( $this->user )->multipartGraphQL( [
+            'query' => '
+                mutation($file: Upload!, $preview: Upload!) {
+                    addFile(file: $file, preview: $preview, input: { name: "test" }) { id }
+                }
+            ',
+            'variables' => ['file' => null, 'preview' => null],
+        ], [
+            '0' => ['variables.file'],
+            '1' => ['variables.preview'],
+        ], [
+            '0' => UploadedFile::fake()->create( 'test.pdf', 1, 'application/pdf' ),
+            '1' => UploadedFile::fake()->image( 'preview.jpg' )->size( 100 ),
+        ] );
+
+        $response->assertGraphQLErrorMessage( 'Preview size of 0.098 MB exceeds the maximum of 0.01 MB' );
+    }
+
+
+    public function testSaveFileRejectsPreviewSize()
+    {
+        config()->set( 'cms.upload.filesize', 0.01 );
+        $file = File::firstOrFail();
+
+        $response = $this->actingAs( $this->user )->multipartGraphQL( [
+            'query' => '
+                mutation($preview: Upload!) {
+                    saveFile(id: "' . $file->id . '", input: {}, preview: $preview) { id }
+                }
+            ',
+            'variables' => ['preview' => null],
+        ], [
+            '0' => ['variables.preview'],
+        ], [
+            '0' => UploadedFile::fake()->image( 'preview.jpg' )->size( 100 ),
+        ] );
+
+        $response->assertGraphQLErrorMessage( 'Preview size of 0.098 MB exceeds the maximum of 0.01 MB' );
+    }
+
+
+    public function testSaveFileValidatesMimeFromBoundedRemoteFetch()
+    {
+        config( ['cms.upload.mimetypes' => ['image/']] );
+        Http::fake( ['example.com/*' => Http::response( '%PDF-1.4 remote', 200 )] );
+        $file = File::firstOrFail();
+
+        $response = $this->actingAs( $this->user )->graphQL( '
+            mutation {
+                saveFile(id: "' . $file->id . '", input: {path: "https://example.com/file.pdf"}) { id }
+            }
+        ' );
+
+        $response->assertGraphQLErrorMessage( 'File type "application/pdf" not allowed, permitted types: image/' );
+        Http::assertSentCount( 1 );
     }
 
 

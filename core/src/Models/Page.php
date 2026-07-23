@@ -7,26 +7,19 @@
 
 namespace Aimeos\Cms\Models;
 
-use Aimeos\Cms\Concerns\HasChanged;
-use Aimeos\Cms\Concerns\Tenancy;
 use Aimeos\Cms\Validation;
 use Aimeos\Nestedset\NodeTrait;
 use Aimeos\Nestedset\NestedSet;
 use Aimeos\Nestedset\AncestorsRelation;
 use Aimeos\Nestedset\DescendantsRelation;
 use Illuminate\Database\Eloquent\Casts\Attribute;
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Prunable;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Collection;
-use Laravel\Scout\Searchable;
 
 
 /**
@@ -61,16 +54,20 @@ use Laravel\Scout\Searchable;
  */
 class Page extends Base
 {
-    use HasChanged;
-    use HasUuids;
     use NodeTrait;
-    use SoftDeletes;
-    use Prunable;
-    use Tenancy;
-    use Searchable {
-        NodeTrait::usesSoftDelete insteadof Searchable;
-    }
 
+
+    /** @var list<string> Columns required for Page lifecycle operations */
+    public const REQUIRED_COLUMNS = [
+        'id', 'tenant_id', 'parent_id', 'path', 'domain', 'editor', 'latest_id', 'deleted_at',
+        NestedSet::LFT, NestedSet::RGT, NestedSet::DEPTH,
+    ];
+
+    /** @var list<string> Optional columns available for selective Page responses */
+    public const RESPONSE_COLUMNS = [
+        'related_id', 'name', 'title', 'tag', 'lang', 'to', 'type', 'theme', 'meta', 'config',
+        'content', 'status', 'cache', 'created_at', 'updated_at',
+    ];
 
     /** @var list<string> Columns needed for memory-efficient Page queries */
     public const SELECT_COLUMNS = [
@@ -79,8 +76,6 @@ class Page extends Base
         'editor', 'latest_id', 'created_at', 'updated_at', 'deleted_at',
         NestedSet::LFT, NestedSet::RGT, NestedSet::DEPTH
     ];
-
-
 
     /**
      * The model's default values for attributes.
@@ -127,9 +122,6 @@ class Page extends Base
         'meta' => 'object',
         'config' => 'object',
         'content' => 'object', // for object access in templates
-        'created_at' => 'datetime:Y-m-d H:i:s',
-        'updated_at' => 'datetime:Y-m-d H:i:s',
-        'deleted_at' => 'datetime:Y-m-d H:i:s',
     ];
 
     /**
@@ -308,19 +300,6 @@ class Page extends Base
 
 
     /**
-     * Enforce JSON columns to return object.
-     *
-     * @param string $key Attribute name
-     * @return mixed Attribute value
-     */
-    public function getAttribute( $key )
-    {
-        $value = parent::getAttribute( $key );
-        return is_null( $value ) && in_array( $key, ['meta', 'config', 'content'] ) ? new \stdClass() : $value;
-    }
-
-
-    /**
      * Maps the elements by ID automatically.
      *
      * @return Collection<string, Element> List elements with ID as keys and element models as values
@@ -377,15 +356,18 @@ class Page extends Base
      *
      * @param Page|string $page Page object or URL path
      * @param string $domain Domain name
+     * @param string|null $tenant Tenant ID, defaults to the current tenant
      * @return string Cache key
      */
-    public static function key( $page, string $domain = '' ) : string
+    public static function key( $page, string $domain = '', ?string $tenant = null ) : string
     {
+        $tenant ??= \Aimeos\Cms\Tenancy::value();
+
         if( $page instanceof Page ) {
-            return md5( \Aimeos\Cms\Tenancy::value() . '/' . $page->domain . '/' . $page->path );
+            return md5( $tenant . '/' . $page->domain . '/' . $page->path );
         }
 
-        return md5( \Aimeos\Cms\Tenancy::value() . '/' . $domain . '/' . $page );
+        return md5( $tenant . '/' . $domain . '/' . $page );
     }
 
 
@@ -446,6 +428,23 @@ class Page extends Base
 
 
     /**
+     * Positions the page relative to a sibling or parent.
+     */
+    public function position( ?string $beforeId = null, ?string $parentId = null ) : void
+    {
+        $columns = ['id', 'tenant_id', 'parent_id', NestedSet::LFT, NestedSet::RGT, NestedSet::DEPTH];
+
+        if( $beforeId !== null ) {
+            $this->beforeNode( static::withTrashed()->select( $columns )->findOrFail( $beforeId ) );
+        } elseif( $parentId !== null ) {
+            $this->appendToNode( static::withTrashed()->select( $columns )->findOrFail( $parentId ) );
+        } elseif( $this->exists ) {
+            $this->makeRoot();
+        }
+    }
+
+
+    /**
      * Get the prunable model query.
      *
      * @return Builder<static> Eloquent query builder for pruning models
@@ -455,60 +454,6 @@ class Page extends Base
         return static::withoutTenancy()
             ->select( 'id', 'tenant_id', 'parent_id', 'deleted_at', NestedSet::LFT, NestedSet::RGT, NestedSet::DEPTH )
             ->where( 'deleted_at', '<=', now()->subDays( config( 'cms.prune', 30 ) ) );
-    }
-
-
-    /**
-     * Publish the given version of the page.
-     *
-     * @param Version $version Version to publish
-     * @return self Returns the page object for method chaining
-     */
-    public function publish( Version $version ) : self
-    {
-        $fileIds = $version->files()->pluck( 'cms_files.id' )->all();
-        $elementIds = $version->elements()->pluck( 'cms_elements.id' )->all();
-
-        $this->files()->sync( $fileIds );
-        $this->elements()->sync( $elementIds );
-
-        if( $fileIds ) {
-            File::whereIn( 'id', $fileIds )->with( 'latest' )->get()
-                ->each( fn( $f ) => $f->latest && !$f->latest->published ? $f->publish( $f->latest ) : null );
-        }
-        if( $elementIds ) {
-            Element::whereIn( 'id', $elementIds )->with( 'latest' )->get()
-                ->each( fn( $e ) => $e->latest && !$e->latest->published ? $e->publish( $e->latest ) : null );
-        }
-
-        $this->forceFill( array_intersect_key( (array) $version->data, array_flip( $this->getFillable() ) ) );
-        $this->content = $version->aux->content ?? [];
-        $this->config = $version->aux->config ?? new \stdClass();
-        $this->meta = $version->aux->meta ?? new \stdClass();
-        $this->editor = $version->editor;
-        $this->setRelation( 'latest', $version );
-        $this->save();
-
-        if( !$version->published ) {
-            $version->published = true;
-            $version->save();
-        }
-
-        Cache::store( config( 'cms.theme.cache', 'file' ) )->forget( static::key( $this ) );
-
-        return $this;
-    }
-
-
-    /**
-    /**
-     * Don't fire model events for each descendant for performance reasons.
-      *
-      * @return bool FALSE to disable firing events for descendants
-     */
-    protected function shouldFireDescendantEvents(): bool
-    {
-        return false;
     }
 
 
@@ -567,7 +512,7 @@ class Page extends Base
 
         if( $version = $this->latest )
         {
-            $data = $version->data ?? new \stdClass();
+            $data = $version->data;
             $draft = mb_strtolower( trim(
                 ( $data->path ?? '' ) . "\n"
                 . ( $data->to ?? '' ) . "\n"
@@ -611,6 +556,17 @@ class Page extends Base
 
 
     /**
+     * Don't fire model events for each descendant for performance reasons.
+     *
+     * @return bool FALSE to disable firing events for descendants
+     */
+    protected function shouldFireDescendantEvents(): bool
+    {
+        return false;
+    }
+
+
+    /**
      * Modify the query used to retrieve models when making all of the models searchable.
      *
      * @param \Illuminate\Database\Eloquent\Builder<static> $query
@@ -623,17 +579,6 @@ class Page extends Base
             'latest' => fn( $q ) => $q->select( 'id', 'versionable_id', 'data', 'aux', 'lang', 'editor', 'published' ),
             'latest.elements' => fn( $q ) => $q->select( Element::SELECT_COLS ),
         ] );
-    }
-
-
-    /**
-     * Prepare the model for pruning.
-     */
-    protected function pruning() : void
-    {
-        Version::where( 'versionable_id', $this->id )
-            ->where( 'versionable_type', static::class )
-            ->delete();
     }
 
 
@@ -729,19 +674,6 @@ class Page extends Base
 
 
     /**
-     * Interact with the "related_id" property.
-     *
-     * @return Attribute<mixed, mixed> Eloquent attribute for the "related_id" property
-     */
-    protected function relatedId(): Attribute
-    {
-        return Attribute::make(
-            set: fn( $value ) => !empty( $value) ? (string) $value : null,
-        );
-    }
-
-
-    /**
      * Interact with the "status" property.
      *
      * @return Attribute<mixed, mixed> Eloquent attribute for the "status" property
@@ -803,5 +735,20 @@ class Page extends Base
         return Attribute::make(
             set: fn( $value ) => (string) $value,
         );
+    }
+
+
+    /**
+     * Returns page-specific publication values.
+     *
+     * @return array<string, mixed>
+     */
+    protected function values( Version $version ) : array
+    {
+        return [
+            'content' => $version->aux->content ?? [],
+            'config' => $version->aux->config ?? new \stdClass(),
+            'meta' => $version->aux->meta ?? new \stdClass(),
+        ];
     }
 }

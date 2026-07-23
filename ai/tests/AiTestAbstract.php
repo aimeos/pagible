@@ -40,4 +40,19 @@ abstract class AiTestAbstract extends CmsTestAbstract
 			'Nuwave\Lighthouse\LighthouseServiceProvider',
 		] );
 	}
+
+
+    /**
+     * Returns the binary data of a small valid PNG image.
+     */
+    protected function pngBinary() : string
+    {
+        $image = imagecreatetruecolor( 8, 8 );
+        ob_start();
+        imagepng( $image );
+        $data = (string) ob_get_clean();
+        imagedestroy( $image );
+
+        return $data;
+    }
 }

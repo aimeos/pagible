@@ -23,6 +23,7 @@ use GraphQL\Error\Error;
 final class Refine
 {
     use ObservesPrisma;
+    use ValidatesInputs;
 
 
     /**
@@ -42,7 +43,7 @@ final class Refine
 
         $system = view( 'cms::prompts.refine' )->render();
         $type = $args['type'] ?? 'content';
-        $content = $args['content'] ?: [];
+        $content = $this->content( $args['content'] ?: [] );
 
         try
         {

@@ -196,6 +196,53 @@ class GraphqlPageTest extends GraphqlTestAbstract
     }
 
 
+    public function testPageRelationsRequireTheirViewPermissions()
+    {
+        $page = Page::where( 'tag', 'root' )->firstOrFail();
+        $user = new \App\Models\User( ['cmsperms' => ['page:view']] );
+
+        $response = $this->actingAs( $user )->graphQL( '{
+            files: page(id: "' . $page->id . '") {
+                files { id }
+            }
+            elements: page(id: "' . $page->id . '") {
+                elements { id }
+            }
+            versionFiles: page(id: "' . $page->id . '") {
+                latest { files { id } }
+            }
+            versionElements: page(id: "' . $page->id . '") {
+                latest { elements { id } }
+            }
+        }' );
+
+        $this->assertCount( 4, $response->json( 'errors' ) );
+        $response->assertGraphQLErrorMessage( 'Insufficient permissions' );
+    }
+
+
+    public function testPageMutationsRequireViewPermission()
+    {
+        $page = Page::where( 'tag', 'root' )->firstOrFail();
+        $user = new \App\Models\User( ['cmsperms' => [
+            'page:move', 'page:save', 'page:drop', 'page:keep', 'page:purge', 'page:publish',
+        ]] );
+
+        foreach( [
+            'movePage(id: "' . $page->id . '") { id }',
+            'savePage(id: "' . $page->id . '", input: {}) { id }',
+            'bulkPage(id: ["' . $page->id . '"], input: {}) { ids }',
+            'dropPage(id: ["' . $page->id . '"]) { id }',
+            'keepPage(id: ["' . $page->id . '"]) { id }',
+            'purgePage(id: ["' . $page->id . '"]) { id }',
+            'pubPage(id: ["' . $page->id . '"]) { id }',
+        ] as $mutation ) {
+            $this->actingAs( $user )->graphQL( 'mutation {' . $mutation . '}' )
+                ->assertGraphQLErrorMessage( 'Insufficient permissions' );
+        }
+    }
+
+
     public function testPagesDraft()
     {
         $page = Page::where('tag', 'hidden')->firstOrFail();
@@ -1024,7 +1071,9 @@ class GraphqlPageTest extends GraphqlTestAbstract
             mutation {
                 dropPage(id: ["' . $root->id . '"]) {
                     id
+                    content
                     editor
+                    meta
                     deleted_at
                 }
             }
@@ -1036,7 +1085,9 @@ class GraphqlPageTest extends GraphqlTestAbstract
             'data' => [
                 'dropPage' => [[
                     'id' => (string) $root->id,
+                    'content' => json_encode( $root->content ),
                     'editor' => 'editor@testbench',
+                    'meta' => json_encode( $root->meta ),
                     'deleted_at' => (string) $page->deleted_at,
                 ]],
             ]
@@ -1053,7 +1104,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
         $root = Page::where('tag', 'root')->firstOrFail();
         $root->delete();
 
-        $this->expectsDatabaseQueryCount( 5 );
+        $this->expectsDatabaseQueryCount( 9 );
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
                 keepPage(id: ["' . $root->id . '"]) {
@@ -1085,8 +1136,9 @@ class GraphqlPageTest extends GraphqlTestAbstract
     public function testPubPage()
     {
         $page = Page::where('tag', 'root')->firstOrFail();
+        $page->latest()->update( ['published' => false] );
 
-        $this->expectsDatabaseQueryCount( 13 );
+        $this->expectsDatabaseQueryCount( 20 );
 
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
@@ -1111,6 +1163,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
     public function testPubPageAt()
     {
         $page = Page::where('tag', 'root')->firstOrFail();
+        $page->latest()->update( ['published' => false] );
 
         $this->expectsDatabaseQueryCount( 4 );
         $response = $this->actingAs( $this->user )->graphQL( '
@@ -1136,6 +1189,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
     public function testPubPageAtWithTime()
     {
         $page = Page::where('tag', 'root')->firstOrFail();
+        $page->latest()->update( ['published' => false] );
 
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {

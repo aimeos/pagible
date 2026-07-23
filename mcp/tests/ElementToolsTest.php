@@ -35,6 +35,23 @@ class ElementToolsTest extends McpTestAbstract
     }
 
 
+    public function testElementMutationToolsRequireViewPermission()
+    {
+        $user = new \App\Models\User([
+            'cmsperms' => ['element:save', 'element:drop', 'element:keep', 'element:publish'],
+        ]);
+
+        foreach( [
+            \Aimeos\Cms\Tools\SaveElement::class,
+            \Aimeos\Cms\Tools\DropElement::class,
+            \Aimeos\Cms\Tools\RestoreElement::class,
+            \Aimeos\Cms\Tools\PublishElement::class,
+        ] as $tool ) {
+            CmsServer::actingAs( $user )->tool( $tool )->assertHasErrors();
+        }
+    }
+
+
     // ── Read Elements ──────────────────────────────────────────────────
 
     public function testGetElement()
@@ -176,6 +193,24 @@ class ElementToolsTest extends McpTestAbstract
         ] );
 
         $response->assertOk()->assertSee( ['scheduled_at', '2099-06-01'] );
+    }
+
+
+    public function testPublishElementSkipsPublishedSchedule()
+    {
+        $element = Element::where( 'name', 'Shared footer' )->firstOrFail();
+        $element->latest()->update( ['published' => true] );
+        $publishAt = $element->latest()->value( 'publish_at' );
+
+        $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\PublishElement::class, [
+            'id' => [$element->id],
+            'at' => '2099-06-01 00:00:00',
+        ] );
+
+        $response->assertOk()
+            ->assertSee( ['skipped', 'Already published'] )
+            ->assertDontSee( ['scheduled_at'] );
+        $this->assertSame( $publishAt, $element->latest()->value( 'publish_at' ) );
     }
 
 

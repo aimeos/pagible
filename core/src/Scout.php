@@ -7,6 +7,9 @@
 
 namespace Aimeos\Cms;
 
+use Aimeos\Cms\Jobs\IndexModels;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Laravel\Scout\ModelObserver;
 use Laravel\Scout\Builder;
 
 
@@ -119,4 +122,101 @@ class Scout
     }
 
 
+    /**
+     * Reindexes models by ID in bounded native Scout batches.
+     *
+     * @param class-string<Models\Base> $model Model class
+     * @param array<string> $ids Model IDs
+     */
+    public static function index( string $model, array $ids ) : void
+    {
+        $instance = new $model();
+
+        foreach( array_chunk( array_values( array_unique( $ids ) ), 50 ) as $chunk )
+        {
+            if( config( 'scout.queue' ) ) {
+                dispatch( ( new IndexModels( $model, $chunk, Tenancy::value() ) )
+                    ->onQueue( $instance->syncWithSearchUsingQueue() )
+                    ->onConnection( $instance->syncWithSearchUsing() ) );
+            } else {
+                self::sync( $model, $chunk );
+            }
+        }
+    }
+
+
+    /**
+     * Executes the callback without automatic Scout model synchronization.
+     *
+     * Already muted model classes remain muted when nested calls return.
+     *
+     * @template T
+     * @param array<class-string<Models\Base>> $models Model classes to mute
+     * @param \Closure(): T $callback Callback to execute
+     * @return T Callback return value
+     */
+    public static function mute( array $models, \Closure $callback ) : mixed
+    {
+        $instances = [];
+
+        foreach( array_unique( $models ) as $model ) {
+            $instance = new $model();
+
+            if( !ModelObserver::syncingDisabledFor( $instance ) ) {
+                $instance::disableSearchSyncing();
+                $instances[] = $instance;
+            }
+        }
+
+        try {
+            return $callback();
+        } finally {
+            foreach( $instances as $instance ) {
+                $instance::enableSearchSyncing();
+            }
+        }
+    }
+
+
+    /**
+     * Reindexes models immediately after loading their searchable relations.
+     *
+     * @param class-string<Models\Base> $model Model class
+     * @param array<string> $ids Model IDs
+     */
+    public static function sync( string $model, array $ids ) : void
+    {
+        $instance = new $model();
+
+        foreach( array_chunk( array_values( array_unique( $ids ) ), 50 ) as $chunk ) {
+            $items = $instance::makeAllSearchableQuery()
+                ->withoutGlobalScope( SoftDeletingScope::class )
+                ->whereKey( $chunk )
+                ->get();
+
+            $instance->syncMakeSearchable( $items );
+        }
+    }
+
+
+    /**
+     * Removes models from Scout by ID in bounded native batches.
+     *
+     * @param class-string<Models\Base> $model Model class
+     * @param array<string> $ids Model IDs
+     */
+    public static function unindex( string $model, array $ids ) : void
+    {
+        $instance = new $model();
+        $key = $instance->getScoutKeyName();
+
+        foreach( array_chunk( array_values( array_unique( $ids ) ), 50 ) as $chunk )
+        {
+            $items = $instance->newCollection( array_map(
+                fn( $id ) => $instance->newInstance()->forceFill( [$key => $id] ),
+                $chunk,
+            ) );
+            $instance->queueRemoveFromSearch( $items );
+        }
+    }
 }

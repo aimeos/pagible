@@ -46,7 +46,7 @@ return new class extends Migration
             $table->timestamp('created_at', 3);
 
             $table->index(['versionable_id', 'versionable_type', 'created_at', 'tenant_id'], 'idx_versions_id_type_created_tenantid');
-            $table->index(['publish_at', 'published']);
+            $table->index(['tenant_id', 'published', 'publish_at', 'created_at', 'id'], 'cms_versions_scheduled_index');
             $table->index(['editor', 'tenant_id', 'id']);
             $table->index(['lang', 'tenant_id', 'id']);
         });

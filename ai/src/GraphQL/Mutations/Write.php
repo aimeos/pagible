@@ -8,10 +8,12 @@
 namespace Aimeos\Cms\GraphQL\Mutations;
 
 use Aimeos\Cms\Concerns\ObservesPrisma;
+use Aimeos\Cms\Permission;
 use Aimeos\Prisma\Prisma;
 use Aimeos\Cms\Models\File;
 use Aimeos\Prisma\Tools;
 use Aimeos\Prisma\Exceptions\PrismaException;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use GraphQL\Error\Error;
 
@@ -44,6 +46,10 @@ final class Write
 
             if( !empty( $args['files'] ) )
             {
+                if( !Permission::can( 'file:view', Auth::user() ) ) {
+                    throw new Error( 'Insufficient permissions' );
+                }
+
                 $disk = config( 'cms.disk', 'public' );
 
                 foreach( File::whereIn( 'id', $args['files'] )->select( 'id', 'path', 'mime' )->get() as $file )

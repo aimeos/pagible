@@ -37,7 +37,8 @@ class TranscribeAudio extends Tool
      */
     public function handle( Request $request ): \Laravel\Mcp\ResponseFactory
     {
-        if( !Permission::can( 'audio:transcribe', $request->user() ) ) {
+        if( !Permission::can( 'audio:transcribe', $request->user() )
+            || !Permission::can( 'file:view', $request->user() ) ) {
             throw new \Aimeos\Cms\Exception( 'Insufficient permissions' );
         }
 
@@ -108,6 +109,7 @@ class TranscribeAudio extends Tool
      */
     public function shouldRegister( Request $request ) : bool
     {
-        return Permission::can( 'audio:transcribe', $request->user() );
+        return Permission::can( 'audio:transcribe', $request->user() )
+            && Permission::can( 'file:view', $request->user() );
     }
 }

@@ -87,13 +87,13 @@ trait HandlesMedia
                 $file->addFile( $upload );
                 $file->addPreviews( $upload );
             } catch( \Throwable $t ) {
-                $file->removePreviews();
+                $file->removePreviews()->removeFile();
                 throw $t;
             }
 
             if( !Utils::isValidMimetype( (string) $file->mime ) )
             {
-                $file->removePreviews();
+                $file->removePreviews()->removeFile();
                 return ['error' => sprintf( 'File type "%s" is not allowed.', $file->mime )];
             }
 
