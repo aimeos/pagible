@@ -8,8 +8,6 @@
 namespace Tests;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Nuwave\Lighthouse\Testing\MakesGraphQLRequests;
-use Nuwave\Lighthouse\Testing\RefreshesSchemaCache;
 use Database\Seeders\TestSeeder;
 use Aimeos\Cms\Models\Element;
 
@@ -18,29 +16,8 @@ class GraphqlElementTest extends GraphqlTestAbstract
 {
     use CmsWithMigrations;
     use RefreshDatabase;
-    use MakesGraphQLRequests;
-    use RefreshesSchemaCache;
 
     protected $seeder = TestSeeder::class;
-
-
-    protected function defineEnvironment( $app )
-    {
-        parent::defineEnvironment( $app );
-
-        $app['config']->set( 'lighthouse.schema_path', __DIR__ . '/default-schema.graphql' );
-        $app['config']->set( 'lighthouse.namespaces.models', ['App\Models', 'Aimeos\\Cms\\Models'] );
-        $app['config']->set( 'lighthouse.namespaces.mutations', ['Aimeos\\Cms\\GraphQL\\Mutations'] );
-        $app['config']->set( 'lighthouse.namespaces.directives', ['Aimeos\\Cms\\GraphQL\\Directives'] );
-    }
-
-
-    protected function getPackageProviders( $app )
-    {
-        return array_merge( parent::getPackageProviders( $app ), [
-            'Nuwave\Lighthouse\LighthouseServiceProvider'
-        ] );
-    }
 
 
     protected function setUp(): void
@@ -559,7 +536,7 @@ class GraphqlElementTest extends GraphqlTestAbstract
         $element = Element::where( 'type', 'footer' )->firstOrFail();
         $element->delete();
 
-        $this->expectsDatabaseQueryCount( 5 );
+        $this->expectsDatabaseQueryCount( 4 );
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
                 keepElement(id: ["' . $element->id . '"]) {
@@ -586,7 +563,7 @@ class GraphqlElementTest extends GraphqlTestAbstract
     {
         $element = Element::where( 'type', 'footer' )->firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 9 );
+        $this->expectsDatabaseQueryCount( 4 );
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
                 pubElement(id: ["' . $element->id . '"]) {
@@ -611,7 +588,7 @@ class GraphqlElementTest extends GraphqlTestAbstract
     {
         $element = Element::where( 'type', 'footer' )->firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 4 );
+        $this->expectsDatabaseQueryCount( 3 );
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
                 pubElement(id: ["' . $element->id . '"], at: "2099-01-01 00:00:00") {

@@ -23,14 +23,27 @@ use Illuminate\Support\Facades\DB;
  */
 final class Publication
 {
-    /** @var array<class-string<Base>, array<string, string>> */
-    private array $changed = [];
+    /** @var array<string, Element> */
+    private array $elements = [];
 
-    /** @var array<string, array{files: array<string>, elements: array<string>}> */
+    /** @var array<class-string<Base>, array<string, Base>> */
+    private array $models = [];
+
+    /**
+     * @var array<string, array{
+     *     files: array<string>,
+     *     elements: array<string>,
+     *     active_files: bool|null,
+     *     active_elements: bool|null
+     * }>
+     */
     private array $refs = [];
 
     /** @var array<int, array{domain: string, path: string}> */
     private array $routes = [];
+
+    /** @var array<string, Version> */
+    private array $versions = [];
 
     private int $work = 0;
 
@@ -49,13 +62,15 @@ final class Publication
             'path' => $model->path,
         ] : null;
 
-        $model->apply( $version );
+        $model->stage( $version );
+        $model->save();
 
-        if( ( $id = $model->id ) === null ) {
-            throw new \LogicException( 'Published CMS model has no ID.' );
+        if( !$version->published ) {
+            $version->published = true;
+            $version->save();
         }
 
-        $this->changed[$model::class][$id] = $id;
+        $this->track( $model, $version );
 
         if( $route ) {
             $this->routes[] = $route;
@@ -76,11 +91,12 @@ final class Publication
             PagesInvalidated::dispatch( $this->routes );
         }
 
-        foreach( $this->changed as $model => $ids ) {
-            Scout::index( $model, array_values( $ids ) );
+        foreach( $this->models as $model => $items ) {
+            Scout::index( $model, array_keys( $items ), collect( array_values( $items ) ) );
         }
 
-        $this->changed = [];
+        $this->elements = [];
+        $this->models = [];
         $this->routes = [];
     }
 
@@ -90,8 +106,8 @@ final class Publication
      */
     public function merge( self $publication ) : void
     {
-        foreach( $publication->changed as $model => $ids ) {
-            $this->changed[$model] = ( $this->changed[$model] ?? [] ) + $ids;
+        foreach( $publication->models as $model => $items ) {
+            $this->models[$model] = ( $this->models[$model] ?? [] ) + $items;
         }
 
         array_push( $this->routes, ...$publication->routes );
@@ -123,6 +139,7 @@ final class Publication
      */
     public function prepare( Collection $versions, ?Authenticatable $user = null ) : void
     {
+        $this->elements = [];
         $this->refs = [];
 
         $owners = $this->references( $versions );
@@ -172,8 +189,7 @@ final class Publication
 
                 foreach( array_chunk( $ids, 50 ) as $chunk )
                 {
-                    $loaded = $model::when( $at, fn( $q ) => $q->select( ['id', 'latest_id'] ) )
-                        ->with( 'latest' )->whereIn( 'id', $chunk )->get();
+                    $loaded = self::items( $model, $chunk, (bool) $at );
                     $unpublished = $loaded->filter(
                         fn( Base $item ) => $item->latest && !$item->latest->published,
                     )->values();
@@ -189,6 +205,7 @@ final class Publication
 
                                 return [$item, $version];
                             } )->all() );
+                            $publication->publishVersions();
                         } else {
                             if( $user ) {
                                 $publication->authorize( $unpublished->pluck( 'latest' )->values(), $user );
@@ -235,7 +252,6 @@ final class Publication
     private function applyAll( array $items ) : void
     {
         $groups = [];
-        $versions = [];
 
         foreach( $items as [$model, $version] )
         {
@@ -274,10 +290,10 @@ final class Publication
 
             if( !$version->published ) {
                 $version->published = true;
-                $versions[$versionId] = $version;
+                $this->versions[$versionId] = $version;
             }
 
-            $this->changed[$model::class][$id] = $id;
+            $this->track( $model, $version );
 
             if( $route ) {
                 $this->routes[] = $route;
@@ -292,13 +308,8 @@ final class Publication
             self::updateRows( $group['table'], $group['rows'], $group['columns'] );
         }
 
-        foreach( array_chunk( array_keys( $versions ), 500 ) as $ids ) {
-            Version::whereIn( 'id', $ids )->update( ['published' => true] );
-        }
-
-        foreach( $items as [$model, $version] ) {
+        foreach( $items as [$model, $_] ) {
             $model->syncChanges()->syncOriginal();
-            $version->syncChanges()->syncOriginal();
         }
     }
 
@@ -334,7 +345,7 @@ final class Publication
      *
      * @param array<string, array{type: string, id: string}> $owners
      * @param 'files'|'elements' $type
-     * @param array<string, bool> $existing Existing-ID map
+     * @param array<string, bool|Element> $existing Existing-ID map
      */
     private function filter( array $owners, string $type, array $existing ) : void
     {
@@ -345,6 +356,139 @@ final class Publication
                 fn( $id ) => isset( $existing[$id] ),
             ) );
         }
+    }
+
+
+    /**
+     * Returns whether a portable pivot-presence projection is known to contain rows.
+     */
+    private function flag( Version $version, string $name ) : ?bool
+    {
+        if( !array_key_exists( $name, $version->getAttributes() ) ) {
+            return null;
+        }
+
+        return $version->getAttribute( $name ) !== null;
+    }
+
+
+    /**
+     * Loads models and their latest versions in one portable joined query.
+     *
+     * @param class-string<Base> $model
+     * @param array<string> $ids
+     * @return Collection<int, Base>
+     */
+    private static function items( string $model, array $ids, bool $compact = false ) : Collection
+    {
+        $instance = new $model();
+        $table = $instance->getTable();
+        $db = DB::connection( config( 'cms.db', 'sqlite' ) );
+        $columns = [
+            'id',
+            'tenant_id',
+            'versionable_id',
+            'versionable_type',
+            'published',
+            'publish_at',
+            'lang',
+            'data',
+            'aux',
+            'editor',
+            'created_at',
+        ];
+
+        $query = $instance->newQuery()
+            ->select( $compact ? ["{$table}.id", "{$table}.latest_id"] : ["{$table}.*"] )
+            ->leftJoin( 'cms_versions AS cms_latest', function( $join ) use ( $table ) {
+                $join->on( "{$table}.latest_id", '=', 'cms_latest.id' )
+                    ->where( 'cms_latest.tenant_id', Tenancy::value() );
+            } )
+            ->whereIn( "{$table}.id", $ids );
+
+        foreach( $columns as $column ) {
+            $query->addSelect( "cms_latest.{$column} AS pub_{$column}" );
+        }
+
+        if( !$compact && $model === Page::class )
+        {
+            $query->addSelect( [
+                'pub_active_files' => $db->table( 'cms_page_file' )
+                    ->select( 'page_id' )
+                    ->whereColumn( 'page_id', "{$table}.id" )
+                    ->limit( 1 ),
+                'pub_active_elements' => $db->table( 'cms_page_element' )
+                    ->select( 'page_id' )
+                    ->whereColumn( 'page_id', "{$table}.id" )
+                    ->limit( 1 ),
+            ] );
+        }
+        elseif( !$compact && $model === Element::class )
+        {
+            $query->addSelect( [
+                'pub_active_files' => $db->table( 'cms_element_file' )
+                    ->select( 'element_id' )
+                    ->whereColumn( 'element_id', "{$table}.id" )
+                    ->limit( 1 ),
+            ] );
+        }
+
+        if( $model !== File::class )
+        {
+            $query->addSelect( [
+                'pub_target_files' => $db->table( 'cms_version_file' )
+                    ->select( 'version_id' )
+                    ->whereColumn( 'version_id', 'cms_latest.id' )
+                    ->limit( 1 ),
+            ] );
+        }
+
+        if( $model === Page::class )
+        {
+            $query->addSelect( [
+                'pub_target_elements' => $db->table( 'cms_version_element' )
+                    ->select( 'version_id' )
+                    ->whereColumn( 'version_id', 'cms_latest.id' )
+                    ->limit( 1 ),
+            ] );
+        }
+
+        $items = $query->get();
+
+        foreach( $items as $item )
+        {
+            $attributes = [];
+
+            foreach( $columns as $column )
+            {
+                $attributes[$column] = $item->getAttribute( "pub_{$column}" );
+                $item->offsetUnset( "pub_{$column}" );
+            }
+
+            if( $attributes['id'] === null )
+            {
+                $item->setRelation( 'latest', null );
+                continue;
+            }
+
+            /** @var Version $version */
+            $version = ( new Version() )->newFromBuilder( $attributes, $item->getConnectionName() );
+
+            foreach( ['active_files', 'active_elements', 'target_files', 'target_elements'] as $name )
+            {
+                $attribute = "pub_{$name}";
+
+                if( array_key_exists( $attribute, $item->getAttributes() ) )
+                {
+                    $version->setAttribute( $name, $item->getAttribute( $attribute ) );
+                    $item->offsetUnset( $attribute );
+                }
+            }
+
+            $item->setRelation( 'latest', $version );
+        }
+
+        return $items;
     }
 
 
@@ -378,7 +522,7 @@ final class Publication
      * Publishes referenced elements and their file dependencies in bounded chunks.
      *
      * @param array<string> $ids
-     * @return array<string, bool> Existing-ID map
+     * @return array<string, Element> Existing elements by ID
      */
     private function publishElements( array $ids, ?Authenticatable $user = null ) : array
     {
@@ -386,16 +530,21 @@ final class Publication
 
         foreach( array_chunk( array_values( array_unique( $ids ) ), 50 ) as $chunk )
         {
-            $loaded = Element::whereIn( 'id', $chunk )->with( 'latest' )->get();
+            $loaded = self::items( Element::class, $chunk );
             $items = [];
 
             foreach( $loaded as $element )
             {
+                if( !$element instanceof Element ) {
+                    throw new \LogicException( 'Invalid CMS element result.' );
+                }
+
                 if( ( $id = $element->id ) === null ) {
                     throw new \LogicException( 'Stored CMS element has no ID.' );
                 }
 
-                $existing[$id] = true;
+                $existing[$id] = $element;
+                $this->elements[$id] = $element;
 
                 if( ( $version = $element->latest ) && !$version->published ) {
                     $items[] = [$element, $version];
@@ -434,7 +583,7 @@ final class Publication
         foreach( array_chunk( array_values( array_unique( $ids ) ), 50 ) as $chunk )
         {
             $items = [];
-            $loaded = File::whereIn( 'id', $chunk )->with( 'latest' )->get();
+            $loaded = self::items( File::class, $chunk );
 
             foreach( $loaded as $file )
             {
@@ -461,6 +610,23 @@ final class Publication
 
 
     /**
+     * Marks all versions prepared in the current root chunk as published.
+     */
+    private function publishVersions() : void
+    {
+        foreach( array_chunk( array_keys( $this->versions ), 500 ) as $ids ) {
+            Version::whereIn( 'id', $ids )->update( ['published' => true] );
+        }
+
+        foreach( $this->versions as $version ) {
+            $version->syncChanges()->syncOriginal();
+        }
+
+        $this->versions = [];
+    }
+
+
+    /**
      * Loads scalar references for a bounded collection of versions.
      *
      * @param Collection<int, Version> $versions
@@ -468,8 +634,9 @@ final class Publication
      */
     private function references( Collection $versions ) : array
     {
+        $elementOwners = [];
+        $fileOwners = [];
         $owners = [];
-        $pages = false;
 
         foreach( $versions as $version )
         {
@@ -490,15 +657,25 @@ final class Publication
 
             $owners[$versionId] = ['type' => $type, 'id' => $id];
 
-            $this->refs[$versionId] = ['files' => [], 'elements' => []];
-            $pages = $pages || $type === Page::class;
+            $this->refs[$versionId] = [
+                'files' => [],
+                'elements' => [],
+                'active_files' => $this->flag( $version, 'active_files' ),
+                'active_elements' => $this->flag( $version, 'active_elements' ),
+            ];
+
+            if( $this->flag( $version, 'target_files' ) !== false ) {
+                $fileOwners[$versionId] = $owners[$versionId];
+            }
+
+            if( $type === Page::class && $this->flag( $version, 'target_elements' ) !== false ) {
+                $elementOwners[$versionId] = $owners[$versionId];
+            }
         }
 
-        $this->load( 'cms_version_file', 'file_id', $owners, 'files' );
+        $this->load( 'cms_version_file', 'file_id', $fileOwners, 'files' );
 
-        if( $pages ) {
-            $this->load( 'cms_version_element', 'element_id', $owners, 'elements' );
-        }
+        $this->load( 'cms_version_element', 'element_id', $elementOwners, 'elements' );
 
         return $owners;
     }
@@ -581,7 +758,7 @@ final class Publication
             if( $owner['type'] === Page::class ) {
                 $pages[$owner['id']] = $this->refs[$versionId];
             } else {
-                $elements[$owner['id']] = ['files' => $this->refs[$versionId]['files']];
+                $elements[$owner['id']] = $this->refs[$versionId];
             }
         }
 
@@ -594,11 +771,22 @@ final class Publication
     /**
      * Replaces pivots only for owners whose target references changed.
      *
-     * @param array<string, array<string, array<string>>> $groups
+     * @param array<string, array{
+     *     files: array<string>,
+     *     elements: array<string>,
+     *     active_files: bool|null,
+     *     active_elements: bool|null
+     * }> $groups
+     * @param 'files'|'elements' $key
      */
     private function syncPivot( string $table, string $owner, string $related, array $groups, string $key ) : void
     {
         $db = DB::connection( config( 'cms.db', 'sqlite' ) );
+        $active = "active_{$key}";
+        $groups = array_filter(
+            $groups,
+            fn( $sets ) => $sets[$key] || ( $sets[$active] ?? null ) !== false,
+        );
 
         foreach( array_chunk( $groups, 50, true ) as $chunk )
         {
@@ -652,6 +840,40 @@ final class Publication
                 $db->table( $table )->insert( $rows );
             }
         }
+    }
+
+
+    /**
+     * Retains a changed model and fills relations already resolved during publication.
+     */
+    private function track( Base $model, Version $version ) : void
+    {
+        $id = $model->id;
+
+        if( $id === null ) {
+            throw new \LogicException( 'Published CMS model has no ID.' );
+        }
+
+        if( $model instanceof Page )
+        {
+            if( ( $versionId = $version->id ) === null ) {
+                throw new \LogicException( 'Published CMS page version has no ID.' );
+            }
+
+            $elements = [];
+
+            foreach( $this->refs[$versionId]['elements'] ?? [] as $elementId ) {
+                if( isset( $this->elements[$elementId] ) ) {
+                    $elements[] = $this->elements[$elementId];
+                }
+            }
+
+            $items = ( new Element() )->newCollection( $elements );
+            $model->setRelation( 'elements', $items );
+            $version->setRelation( 'elements', $items );
+        }
+
+        $this->models[$model::class][$id] = $model;
     }
 
 

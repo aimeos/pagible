@@ -372,6 +372,25 @@ class ResourceTest extends CoreTestAbstract
     }
 
 
+    public function testSaveFileLoadsMetadataOnce()
+    {
+        $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
+        $db = DB::connection( config( 'cms.db', 'sqlite' ) );
+        $db->flushQueryLog();
+        $db->enableQueryLog();
+
+        Resource::saveFile( $file->id, ['name' => 'Metadata only'], $this->user );
+
+        $queries = collect( $db->getQueryLog() )->filter( fn( $entry ) =>
+            str_starts_with( strtolower( $entry['query'] ), 'select' )
+            && str_contains( $entry['query'], 'cms_files' )
+        );
+
+        $this->assertCount( 1, $queries );
+        $this->assertSame( 'Metadata only', $file->fresh()->latest?->data->name );
+    }
+
+
     public function testSaveFileDoesNotStoreUploadForMissingModel()
     {
         config( ['cms.disk' => 'missing-save'] );
@@ -735,6 +754,33 @@ class ResourceTest extends CoreTestAbstract
     }
 
 
+    public function testPublishBatchesRootAndDependencyVersions()
+    {
+        $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
+        $file->latest()->update( ['published' => false] );
+        $element = Resource::addElement( [
+            'lang' => 'en', 'type' => 'image', 'name' => 'Dependency',
+            'data' => ['file' => ['id' => $file->id, 'type' => 'file']],
+        ], $this->user );
+        $page = $this->page( [[
+            'type' => 'reference', 'refid' => $element->id, 'group' => 'main',
+        ]] );
+        $db = DB::connection( config( 'cms.db', 'sqlite' ) );
+        $db->flushQueryLog();
+        $db->enableQueryLog();
+
+        Publication::publish( Page::class, [$page->id], $this->user );
+
+        $updates = collect( $db->getQueryLog() )->pluck( 'query' )
+            ->map( strtolower(...) )->filter( fn( $query ) => str_starts_with( $query, 'update ' )
+                && str_contains( $query, 'cms_versions' ) );
+        $versionIds = [$file->latest_id, $element->latest_id, $page->latest_id];
+
+        $this->assertCount( 1, $updates );
+        $this->assertSame( 3, Version::whereIn( 'id', $versionIds )->where( 'published', true )->count() );
+    }
+
+
     public function testPublishSkipsPublishedLatestVersions()
     {
         $published = Resource::addElement( [
@@ -1032,22 +1078,30 @@ class ResourceTest extends CoreTestAbstract
     public function testPublicationKeepsIdsAsIs()
     {
         $publication = new Publication();
-        $model = new class extends Base {
-            public function apply( Version $version ) : void
-            {
-            }
-        };
         $ids = [' Mixed,ID ', ' mixed,id '];
 
-        foreach( $ids as $id ) {
+        foreach( $ids as $id )
+        {
+            $model = new class extends Base {
+                public function save( array $options = [] )
+                {
+                    return true;
+                }
+            };
+            $version = new class extends Version {
+                public function save( array $options = [] )
+                {
+                    return true;
+                }
+            };
             $model->id = $id;
-            $publication->apply( $model, new Version() );
+            $publication->apply( $model, $version );
         }
 
-        $property = new \ReflectionProperty( Publication::class, 'changed' );
-        $changed = $property->getValue( $publication );
+        $property = new \ReflectionProperty( Publication::class, 'models' );
+        $models = $property->getValue( $publication );
 
-        $this->assertSame( array_combine( $ids, $ids ), $changed[$model::class] );
+        $this->assertSame( $ids, array_keys( $models[$model::class] ) );
     }
 
 

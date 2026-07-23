@@ -209,56 +209,7 @@ class Resource
      */
     public static function drop( string $model, array $ids, ?Authenticatable $user = null, array $fields = [] ) : Collection
     {
-        $ids = array_values( array_unique( $ids ) );
-        $model::checkBulk( count( $ids ) );
-        $editor = Utils::editor( $user );
-        $isPage = $model === Page::class;
-        $columns = $fields ? [
-            ...Page::REQUIRED_COLUMNS,
-            ...array_intersect( Page::RESPONSE_COLUMNS, $fields ),
-        ] : Page::SELECT_COLUMNS;
-
-        $items = $isPage
-            ? Scout::mute( [$model], fn() => Utils::transaction( function() use ( $ids, $editor, $columns ) {
-
-                $items = self::models( Page::withTrashed()->whereIn( 'id', $ids )->select( $columns )->get() );
-
-                foreach( $items as $item )
-                {
-                    $item->editor = $editor;
-                    $item->delete();
-                }
-
-                return $items;
-            } ) )
-            : Scout::mute( [$model], fn() => self::lifecycle(
-                $model, $ids, $editor, 'dropped', fields: $fields,
-            ) );
-
-        if( $isPage )
-        {
-            $routes = [];
-
-            foreach( $items as $item ) {
-                if( $item instanceof Page ) {
-                    $routes[] = ['domain' => $item->domain, 'path' => $item->path];
-                }
-            }
-
-            PagesInvalidated::dispatch( $routes );
-        }
-
-        Base::announceMany( $items, 'dropped', $editor, [
-            'deleted_at' => (string) ( $items->first()->deleted_at ?? now() ),
-        ] );
-
-        /** @var array<string> $ids */
-        $ids = $items->pluck( 'id' )->all();
-        config( 'scout.soft_delete' )
-            ? Scout::index( $model, $ids )
-            : Scout::unindex( $model, $ids );
-
-        return $items;
+        return self::lifecycle( $model, $ids, 'dropped', $user, $fields );
     }
 
 
@@ -307,63 +258,7 @@ class Resource
      */
     public static function purge( string $model, array $ids, ?Authenticatable $user = null, array $fields = [] ) : Collection
     {
-        $ids = array_values( array_unique( $ids ) );
-        $model::checkBulk( count( $ids ) );
-        $editor = Utils::editor( $user );
-        $isPage = $model === Page::class;
-
-        $columns = $fields ? [
-            ...Page::REQUIRED_COLUMNS,
-            ...array_intersect( Page::RESPONSE_COLUMNS, $fields ),
-        ] : Page::SELECT_COLUMNS;
-
-        if( !$isPage )
-        {
-            $bulk = $model === File::class && count( $ids ) !== 1;
-            $items = Scout::mute( [$model], fn() => self::lifecycle(
-                $model, $ids, $editor, 'purged', !$bulk, $fields,
-            ) );
-
-            if( $bulk ) {
-                Base::announceMany( $items, 'purged', $editor, bulk: true );
-            }
-
-            /** @var array<string> $purged */
-            $purged = $items->pluck( 'id' )->all();
-            Scout::unindex( $model, $purged );
-
-            return $items;
-        }
-
-        $callback = function() use ( $ids, $editor, $columns ) {
-
-            $items = self::models( Page::withTrashed()->whereIn( 'id', $ids )->select( $columns )->get() );
-
-            Base::announceMany( $items, 'purged', $editor );
-
-            foreach( $items as $item ) {
-                $item->forceDelete();
-            }
-
-            return $items;
-        };
-
-        $items = Scout::mute( [$model], fn() => Utils::lockedTransaction( $callback ) );
-        $routes = [];
-
-        foreach( $items as $item ) {
-            if( $item instanceof Page ) {
-                $routes[] = ['domain' => $item->domain, 'path' => $item->path];
-            }
-        }
-
-        PagesInvalidated::dispatch( $routes );
-
-        /** @var array<string> $purged */
-        $purged = $items->pluck( 'id' )->all();
-        Scout::unindex( $model, $purged );
-
-        return $items;
+        return self::lifecycle( $model, $ids, 'purged', $user, $fields );
     }
 
 
@@ -380,44 +275,7 @@ class Resource
      */
     public static function restore( string $model, array $ids, ?Authenticatable $user = null, array $fields = [] ) : Collection
     {
-        $ids = array_values( array_unique( $ids ) );
-        $model::checkBulk( count( $ids ) );
-        $editor = Utils::editor( $user );
-        $isPage = $model === Page::class;
-
-        $columns = $fields ? [
-            ...Page::REQUIRED_COLUMNS,
-            ...array_intersect( Page::RESPONSE_COLUMNS, $fields ),
-        ] : Page::SELECT_COLUMNS;
-
-        if( !$isPage ) {
-            $items = Scout::mute( [$model], fn() => self::lifecycle(
-                $model, $ids, $editor, 'restored', fields: $fields,
-            ) );
-        } else {
-            $callback = function() use ( $ids, $editor, $columns ) {
-
-                $items = self::models( Page::withTrashed()->whereIn( 'id', $ids )->select( $columns )->get() );
-
-                foreach( $items as $item )
-                {
-                    $item->editor = $editor;
-                    $item->restore();
-                }
-
-                return $items;
-            };
-
-            $items = Scout::mute( [$model], fn() => Utils::lockedTransaction( $callback ) );
-        }
-
-        Base::announceMany( $items, 'restored', $editor, ['deleted_at' => null] );
-
-        /** @var array<string> $restored */
-        $restored = $items->pluck( 'id' )->all();
-        Scout::index( $model, $restored );
-
-        return $items;
+        return self::lifecycle( $model, $ids, 'restored', $user, $fields );
     }
 
 
@@ -547,51 +405,45 @@ class Resource
 
 
     /**
-     * Validates a primary or preview upload at the core resource boundary.
-     */
-    protected static function checkUpload( UploadedFile $upload, bool $preview = false ) : void
-    {
-        $label = $preview ? 'Preview' : 'File';
-
-        if( !$upload->isValid() ) {
-            throw new Exception( sprintf( 'Invalid %s upload', strtolower( $label ) ) );
-        }
-
-        if( !Utils::isValidUpload( $upload ) ) {
-            throw new Exception( sprintf( '%s size of %s MB exceeds the maximum of %s MB',
-                $label, round( $upload->getSize() / 1024 / 1024, 3 ), config( 'cms.upload.filesize', 50 ) ) );
-        }
-
-        $mime = (string) $upload->getMimeType();
-
-        if( ( $preview && !str_starts_with( $mime, 'image/' ) ) || !Utils::isValidMimetype( $mime ) ) {
-            throw new Exception( sprintf( '%s type "%s" not allowed, permitted types: %s',
-                $label, $mime, implode( ', ', config( 'cms.upload.mimetypes', [] ) ) ) );
-        }
-    }
-
-
-    /**
-     * Applies a lifecycle action to flat Element/File models in set-based chunks.
+     * Applies and announces a lifecycle action while preserving Page tree semantics.
      *
      * @param class-string<Base> $model
      * @param array<string> $ids
      * @param 'dropped'|'purged'|'restored' $action
+     * @param Authenticatable|null $user Authenticated user for editor tracking
      * @param array<string> $fields Requested response fields
      * @return Collection<int, Base>
      */
-    protected static function lifecycle( string $model, array $ids, string $editor, string $action,
-        bool $announce = true, array $fields = [] ) : Collection
+    protected static function lifecycle( string $model, array $ids, string $action,
+        ?Authenticatable $user = null, array $fields = [] ) : Collection
     {
-        $apply = function( array $ids ) use ( $action, $announce, $editor, $fields, $model ) {
+        $ids = array_values( array_unique( $ids ) );
+        $model::checkBulk( count( $ids ) );
+        $editor = Utils::editor( $user );
+        $isPage = $model === Page::class;
+        $announce = $model !== File::class || $action !== 'purged' || count( $ids ) === 1;
+
+        if( !$isPage ) {
+            sort( $ids, SORT_STRING );
+        }
+
+        $apply = function( array $ids ) use ( $action, $announce, $editor, $fields, $isPage, $model ) {
             $query = $model::withTrashed()->whereIn( 'id', $ids );
 
-            if( $fields )
-            {
+            if( $isPage ) {
+                $query->select( $fields ? [
+                    ...Page::REQUIRED_COLUMNS,
+                    ...array_intersect( Page::RESPONSE_COLUMNS, $fields ),
+                ] : Page::SELECT_COLUMNS );
+            } elseif( $fields ) {
                 $required = ['id', 'tenant_id', 'latest_id', 'deleted_at'];
 
                 if( $model === File::class && $action === 'purged' ) {
                     array_push( $required, 'path', 'previews' );
+                }
+
+                if( $action === 'restored' ) {
+                    array_push( $required, ...( $model === File::class ? File::SELECT_COLS : Element::SELECT_COLS ) );
                 }
 
                 $response = [...( new $model() )->getVisible(), 'editor', 'created_at', 'updated_at'];
@@ -601,14 +453,16 @@ class Resource
                 ] ) ) );
             }
 
-            $items = $query->orderBy( 'id' )->lockForUpdate()->get();
+            if( !$isPage ) {
+                $query->orderBy( 'id' )->lockForUpdate();
+            }
+
+            /** @var \Illuminate\Database\Eloquent\Collection<int, Base> $items */
+            $items = $query->get();
 
             if( $items->isEmpty() ) {
                 return $items;
             }
-
-            /** @var array<string> $affected */
-            $affected = $items->pluck( 'id' )->all();
 
             if( $action === 'purged' )
             {
@@ -620,16 +474,37 @@ class Resource
                     File::purgeMany( Tenancy::value(), $items );
                 }
 
-                $model::withTrashed()->whereIn( 'id', $affected )->forceDelete();
+                if( $isPage ) {
+                    foreach( $items as $item ) {
+                        $item->forceDelete();
+                    }
+                } else {
+                    /** @var array<string> $affected */
+                    $affected = $items->pluck( 'id' )->all();
+                    $model::withTrashed()->whereIn( 'id', $affected )->forceDelete();
 
-                foreach( $items as $item ) {
-                    $item->exists = false;
-                    $item->wasRecentlyCreated = false;
+                    foreach( $items as $item ) {
+                        $item->exists = false;
+                        $item->wasRecentlyCreated = false;
+                    }
                 }
 
                 return $items;
             }
 
+            if( $isPage )
+            {
+                foreach( $items as $item )
+                {
+                    $item->editor = $editor;
+                    $action === 'dropped' ? $item->delete() : $item->restore();
+                }
+
+                return $items;
+            }
+
+            /** @var array<string> $affected */
+            $affected = $items->pluck( 'id' )->all();
             $time = ( new $model() )->freshTimestamp();
             $attributes = [
                 'deleted_at' => $action === 'dropped' ? $time : null,
@@ -646,52 +521,71 @@ class Resource
             return $items;
         };
 
-        $ids = array_values( array_unique( $ids ) );
-        sort( $ids, SORT_STRING );
+        $batch = $isPage
+            ? fn() => $apply( $ids )
+            : fn() => collect( $ids )->chunk( 100 )->reduce(
+                fn( Collection $items, Collection $chunk ) => $items->concat( $apply( $chunk->all() ) ),
+                collect(),
+            );
 
-        $batch = fn() => collect( $ids )->chunk( 100 )->reduce(
-            fn( Collection $items, Collection $chunk ) => $items->concat( $apply( $chunk->all() ) ),
-            collect(),
-        );
+        $run = $isPage && $action !== 'dropped'
+            ? fn() => Utils::lockedTransaction( $batch )
+            : fn() => Utils::transaction( $batch );
 
-        try {
-            return Utils::transaction( $batch );
-        } catch( \Exception $e ) {
-            if( $model !== File::class || $action !== 'purged' ) {
-                throw $e;
-            }
-        }
-
-        $items = collect();
-
-        foreach( $ids as $id ) {
+        $items = Scout::mute( [$model], function() use ( $action, $apply, $ids, $model, $run ) {
             try {
-                $items->push( ...Utils::transaction( fn() => $apply( [$id] ) ) );
+                return $run();
             } catch( \Exception $e ) {
-                report( $e );
+                if( $model !== File::class || $action !== 'purged' ) {
+                    throw $e;
+                }
             }
+
+            $items = collect();
+
+            foreach( $ids as $id ) {
+                try {
+                    $items->push( ...Utils::transaction( fn() => $apply( [$id] ) ) );
+                } catch( \Exception $e ) {
+                    report( $e );
+                }
+            }
+
+            return $items;
+        } );
+
+        if( $isPage && $action !== 'restored' )
+        {
+            $routes = [];
+
+            foreach( $items as $item ) {
+                if( $item instanceof Page ) {
+                    $routes[] = ['domain' => $item->domain, 'path' => $item->path];
+                }
+            }
+
+            PagesInvalidated::dispatch( $routes );
         }
 
-        return $items;
-    }
+        if( $action === 'dropped' ) {
+            Base::announceMany( $items, $action, $editor, [
+                'deleted_at' => (string) ( $items->first()->deleted_at ?? now() ),
+            ] );
+        } elseif( $action === 'restored' ) {
+            Base::announceMany( $items, $action, $editor, ['deleted_at' => null] );
+        } elseif( !$announce ) {
+            Base::announceMany( $items, $action, $editor, bulk: true );
+        }
 
+        /** @var array<string> $changed */
+        $changed = $items->pluck( 'id' )->all();
 
-    /**
-     * Normalizes model collections returned by nested-set and Eloquent builders.
-     *
-     * @param iterable<mixed> $models
-     * @return Collection<int, Base>
-     */
-    protected static function models( iterable $models ) : Collection
-    {
-        $items = collect();
-
-        foreach( $models as $model ) {
-            if( !$model instanceof Base ) {
-                throw new \LogicException( 'Invalid CMS model result.' );
-            }
-
-            $items->push( $model );
+        if( $action === 'restored' ) {
+            Scout::index( $model, $changed, $isPage && $fields ? null : $items );
+        } elseif( $action === 'dropped' && config( 'scout.soft_delete' ) ) {
+            Scout::index( $model, $changed );
+        } else {
+            Scout::unindex( $model, $changed );
         }
 
         return $items;
@@ -715,59 +609,38 @@ class Resource
         $editor = Utils::editor( $user );
         $tenant = Tenancy::value();
 
-        /** @var File $current */
-        $current = File::withTrashed()->with( ['latest' => fn( $q ) => $q
-            ->select( 'id', 'versionable_id', 'data', 'lang', 'editor' )] )->findOrFail( $id );
-        $currentPath = (string) ( $current->latest?->data->path ?? $current->path );
-
         // Prepare storage and remote image work before opening the transaction.
         $tmp = new File();
-        $tmp->name = (string) ( $input['name'] ?? $current->latest?->data->name ?? $current->name );
+        $currentPath = null;
         $stored = null;
         $storedMime = null;
         $storedPreviews = null;
 
         try
         {
-            if( $upload )
+            if( $upload || $preview instanceof UploadedFile || array_key_exists( 'path', $input ) )
             {
-                self::checkUpload( $upload );
-                $tmp->addFile( $upload );
-                $stored = $tmp->path;
-                $storedMime = Utils::mimetype( (string) $stored );
-
-                if( $preview instanceof UploadedFile ) {
-                    self::checkUpload( $preview, true );
-                    $tmp->addPreviews( $preview );
-                    $storedPreviews = (array) $tmp->previews;
-                } elseif( str_starts_with( (string) $upload->getMimeType(), 'image/' ) ) {
-                    $tmp->addPreviews( $upload );
-                    $storedPreviews = (array) $tmp->previews;
-                }
-            }
-            elseif( $preview instanceof UploadedFile )
-            {
-                self::checkUpload( $preview, true );
-                $tmp->addPreviews( $preview );
-                $storedPreviews = (array) $tmp->previews;
+                /** @var File $current */
+                $current = File::withTrashed()->with( ['latest' => fn( $q ) => $q
+                    ->select( 'id', 'versionable_id', 'data', 'lang', 'editor' )] )->findOrFail( $id );
+                $currentPath = (string) ( $current->latest?->data->path ?? $current->path );
+                $tmp->name = (string) ( $input['name'] ?? $current->latest?->data->name ?? $current->name );
             }
 
-            $newPath = $stored ?? self::checkPath( $input['path'] ?? null );
+            $newPath = self::checkPath( $input['path'] ?? null );
+            $source = $upload ?? ( $newPath !== null && $newPath !== $currentPath ? $newPath : null );
 
-            if( !$stored && $newPath !== null && $newPath !== $currentPath )
+            if( $source !== null || $preview instanceof UploadedFile )
             {
-                if( str_starts_with( $newPath, 'http' ) )
-                {
-                    if( $preview instanceof UploadedFile ) {
-                        $storedMime = Utils::mimetype( $newPath );
-                    } else {
-                        $tmp->addPreviews( $newPath );
-                        $storedMime = (string) $tmp->mime;
-                        $storedPreviews = (array) $tmp->previews;
-                    }
-                }
-                else {
-                    $storedMime = Utils::mimetype( $newPath );
+                $tmp->prepare( $source, $preview );
+                $stored = $upload ? $tmp->path : null;
+                $storedMime = $source !== null ? (string) $tmp->mime : null;
+
+                if( $preview instanceof UploadedFile
+                    || $source instanceof UploadedFile && str_starts_with( (string) $source->getMimeType(), 'image/' )
+                    || is_string( $source ) && str_starts_with( $source, 'http' )
+                ) {
+                    $storedPreviews = (array) $tmp->previews;
                 }
             }
 

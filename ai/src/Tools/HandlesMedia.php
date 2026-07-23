@@ -8,7 +8,6 @@
 namespace Aimeos\Cms\Tools;
 
 use Aimeos\Cms\Resource;
-use Aimeos\Cms\Utils;
 use Aimeos\Cms\Models\File;
 use Aimeos\Prisma\Files\Image;
 use Illuminate\Contracts\Auth\Authenticatable;
@@ -84,17 +83,13 @@ trait HandlesMedia
             // Store the file and generate previews outside the transaction to
             // keep slow disk and image work off the database connection.
             try {
-                $file->addFile( $upload );
-                $file->addPreviews( $upload );
-            } catch( \Throwable $t ) {
-                $file->removePreviews()->removeFile();
-                throw $t;
-            }
+                $file->prepare( $upload );
+            } catch( \Aimeos\Cms\Exception $e ) {
+                if( str_starts_with( $e->getMessage(), 'File type ' ) ) {
+                    return ['error' => sprintf( 'File type "%s" is not allowed.', $file->mime )];
+                }
 
-            if( !Utils::isValidMimetype( (string) $file->mime ) )
-            {
-                $file->removePreviews()->removeFile();
-                return ['error' => sprintf( 'File type "%s" is not allowed.', $file->mime )];
+                throw $e;
             }
 
             $file = Resource::addFile( $file, $user );

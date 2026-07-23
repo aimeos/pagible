@@ -8,8 +8,6 @@
 namespace Tests;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Nuwave\Lighthouse\Testing\MakesGraphQLRequests;
-use Nuwave\Lighthouse\Testing\RefreshesSchemaCache;
 use Database\Seeders\TestSeeder;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Nestedset\NestedSet;
@@ -19,29 +17,8 @@ class GraphqlPageTest extends GraphqlTestAbstract
 {
     use CmsWithMigrations;
     use RefreshDatabase;
-    use MakesGraphQLRequests;
-    use RefreshesSchemaCache;
 
     protected $seeder = TestSeeder::class;
-
-
-    protected function defineEnvironment( $app )
-    {
-        parent::defineEnvironment( $app );
-
-        $app['config']->set( 'lighthouse.schema_path', __DIR__ . '/default-schema.graphql' );
-        $app['config']->set( 'lighthouse.namespaces.models', ['App\Models', 'Aimeos\\Cms\\Models'] );
-        $app['config']->set( 'lighthouse.namespaces.mutations', ['Aimeos\\Cms\\GraphQL\\Mutations'] );
-        $app['config']->set( 'lighthouse.namespaces.directives', ['Aimeos\\Cms\\GraphQL\\Directives'] );
-    }
-
-
-    protected function getPackageProviders( $app )
-    {
-        return array_merge( parent::getPackageProviders( $app ), [
-            'Nuwave\Lighthouse\LighthouseServiceProvider'
-        ] );
-    }
 
 
     protected function setUp(): void
@@ -1138,7 +1115,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
         $page = Page::where('tag', 'root')->firstOrFail();
         $page->latest()->update( ['published' => false] );
 
-        $this->expectsDatabaseQueryCount( 20 );
+        $this->expectsDatabaseQueryCount( 7 );
 
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
@@ -1165,7 +1142,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
         $page = Page::where('tag', 'root')->firstOrFail();
         $page->latest()->update( ['published' => false] );
 
-        $this->expectsDatabaseQueryCount( 4 );
+        $this->expectsDatabaseQueryCount( 3 );
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
                 pubPage(id: ["' . $page->id . '"], at: "2099-01-01 00:00:00") {

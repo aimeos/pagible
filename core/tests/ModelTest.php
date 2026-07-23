@@ -20,6 +20,26 @@ use Illuminate\Support\Facades\Storage;
 
 class ModelTest extends CoreTestAbstract
 {
+    public function testPageChangedDefaultsToNull(): void
+    {
+        $this->assertNull( ( new Page() )->changed );
+    }
+
+
+    public function testPageStoresChangedInformation(): void
+    {
+        $info = [
+            'editor' => 'test@example.com',
+            'data' => ['title' => ['previous' => 'a', 'current' => 'b']],
+        ];
+        $page = new Page();
+
+        $page->setChanged( $info );
+
+        $this->assertEquals( $info, $page->changed );
+    }
+
+
     public function testPageToString(): void
     {
         $page = new Page( ['name' => 'Home', 'title' => 'Home | Laravel CMS'] );

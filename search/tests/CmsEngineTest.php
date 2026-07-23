@@ -14,7 +14,9 @@ use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Filter;
 use Aimeos\Cms\Permission;
+use Aimeos\Cms\Publication;
 use Aimeos\Cms\Resource;
+use Aimeos\Cms\Utils;
 use Aimeos\Nestedset\NestedSet;
 use Illuminate\Foundation\Testing\DatabaseTruncation;
 use Illuminate\Foundation\Testing\RefreshDatabaseState;
@@ -340,6 +342,39 @@ class CmsEngineTest extends SearchTestAbstract
 
         $result = File::search( 'zphraseunique' )->searchFields( 'draft' )->take( 25 )->get();
         $this->assertTrue( $result->contains( 'id', $file->id ) );
+    }
+
+
+    public function testPublishIndexesLoadedModels(): void
+    {
+        $element = Resource::addElement( [
+            'lang' => 'en',
+            'type' => 'text',
+            'name' => 'publicationelementtoken',
+            'data' => ['text' => 'publicationelementtoken'],
+        ] );
+        Publication::publish( Element::class, [$element->id] );
+
+        $page = Page::where( 'tag', 'root' )->firstOrFail();
+        Resource::savePage( $page->id, ['content' => [[
+            'id' => Utils::uid(),
+            'type' => 'reference',
+            'refid' => $element->id,
+            'group' => 'main',
+        ]]] );
+        Publication::publish( Page::class, [$page->id] );
+
+        $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
+        Resource::saveFile( $file->id, ['name' => 'publicationfiletoken'] );
+        Publication::publish( File::class, [$file->id] );
+        $this->waitIndex();
+
+        $this->assertTrue( Element::search( 'publicationelementtoken' )
+            ->searchFields( 'content' )->get()->contains( 'id', $element->id ) );
+        $this->assertTrue( Page::search( 'publicationelementtoken' )
+            ->searchFields( 'content' )->get()->contains( 'id', $page->id ) );
+        $this->assertTrue( File::search( 'publicationfiletoken' )
+            ->searchFields( 'content' )->get()->contains( 'id', $file->id ) );
     }
 
 

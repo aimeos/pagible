@@ -9,6 +9,7 @@ namespace Aimeos\Cms;
 
 use Aimeos\Cms\Jobs\IndexModels;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Collection;
 use Laravel\Scout\ModelObserver;
 use Laravel\Scout\Builder;
 
@@ -127,10 +128,18 @@ class Scout
      *
      * @param class-string<Models\Base> $model Model class
      * @param array<string> $ids Model IDs
+     * @param Collection<int, Models\Base>|null $loaded Already loaded current models
      */
-    public static function index( string $model, array $ids ) : void
+    public static function index( string $model, array $ids, ?Collection $loaded = null ) : void
     {
         $instance = new $model();
+        $models = [];
+
+        foreach( $loaded ?? [] as $item ) {
+            if( $item instanceof $model && $item->id !== null ) {
+                $models[$item->id] = $item;
+            }
+        }
 
         foreach( array_chunk( array_values( array_unique( $ids ) ), 50 ) as $chunk )
         {
@@ -138,6 +147,10 @@ class Scout
                 dispatch( ( new IndexModels( $model, $chunk, Tenancy::value() ) )
                     ->onQueue( $instance->syncWithSearchUsingQueue() )
                     ->onConnection( $instance->syncWithSearchUsing() ) );
+            } elseif( count( $items = array_intersect_key( $models, array_flip( $chunk ) ) ) === count( $chunk ) ) {
+                $loaded = $instance->newCollection( array_values( $items ) );
+                $loaded->loadMissing( $model::makeAllSearchableQuery()->getEagerLoads() );
+                $instance->syncMakeSearchable( $loaded );
             } else {
                 self::sync( $model, $chunk );
             }

@@ -27,157 +27,25 @@ final class AddFile
             throw new Error( 'Either input "path" or "file" argument must be provided' );
         }
 
-        if( isset( $args['file'] ) ) {
-            $this->validateUpload( $args );
-        } else {
-            $this->validateUrl( $args );
+        $source = $args['file'] ?? $args['input']['path'] ?? null;
+        $preview = $args['preview'] ?? null;
+
+        if( !$source instanceof UploadedFile && !is_string( $source ) ) {
+            throw new Error( 'Invalid file upload' );
         }
 
-        if( isset( $args['preview'] ) ) {
-            $this->validatePreview( $args['preview'] );
+        if( is_string( $source ) && ( !str_starts_with( $source, 'http' ) || !Utils::isValidUrl( $source ) ) ) {
+            throw new Error( sprintf( 'Invalid URL "%s"', $source ) );
+        }
+
+        if( $preview !== null && !$preview instanceof UploadedFile ) {
+            throw new Error( 'Invalid preview upload' );
         }
 
         $file = new File();
         $file->fill( $args['input'] ?? [] );
-
-        // Fetch the file and generate previews outside the transaction to keep
-        // slow network and image work off the database connection.
-        if( isset( $args['file'] ) ) {
-            $this->addUpload( $file, $args );
-        } else {
-            $this->addUrl( $file, $args );
-        }
+        $file->prepare( $source, $preview );
 
         return Resource::addFile( $file, Auth::user() );
-    }
-
-
-    /**
-     * Adds the uploaded file to the file model.
-     *
-     * @param  File $file File model instance
-     * @param  array<string, mixed> $args Arguments containing the file upload
-     * @return File The updated file model instance
-     */
-    protected function addUpload( File $file, array $args ) : File
-    {
-        $upload = $args['file'];
-
-        $file->addFile( $upload );
-        $file->mime = Utils::mimetype( (string) $file->path );
-        $file->name = $file->name ?: pathinfo( $upload->getClientOriginalName(), PATHINFO_BASENAME );
-
-        try
-        {
-            if( isset( $args['preview'] ) || str_starts_with( (string) $upload->getMimeType(), 'image/' ) ) {
-                $file->addPreviews( $args['preview'] ?? $upload );
-            }
-        }
-        catch( \Throwable $t )
-        {
-            $file->removePreviews()->removeFile();
-            throw $t;
-        }
-
-        return $file;
-    }
-
-
-    /**
-     * Adds a file from a URL to the file model.
-     *
-     * @param  File $file File model instance
-     * @param  array<string, mixed> $args Arguments containing the URL
-     * @return File The updated file model instance
-     */
-    protected function addUrl( File $file, array $args ) : File
-    {
-        $url = $args['input']['path'];
-
-        $file->path = $url;
-        $file->name = $file->name ?: substr( $url, 0, 255 );
-
-        try
-        {
-            $file->addPreviews( $args['preview'] ?? $url );
-        }
-        catch( \Throwable $t )
-        {
-            $file->removePreviews();
-            throw $t;
-        }
-
-        if( !Utils::isValidMimetype( $file->mime ) )
-        {
-            $file->removePreviews();
-
-            $msg = 'File type "%s" not allowed, permitted types: %s';
-            throw new Error( sprintf( $msg, $file->mime, implode( ', ', config( 'cms.upload.mimetypes', [] ) ) ) );
-        }
-
-        return $file;
-    }
-
-
-    /**
-     * Validates an optional uploaded preview before storage or image decoding.
-     */
-    protected function validatePreview( mixed $preview ) : void
-    {
-        if( !$preview instanceof UploadedFile || !$preview->isValid() ) {
-            throw new Error( 'Invalid preview upload' );
-        }
-
-        if( !Utils::isValidUpload( $preview ) ) {
-            $msg = 'Preview size of %s MB exceeds the maximum of %s MB';
-            throw new Error( sprintf( $msg, round( $preview->getSize() / 1024 / 1024, 3 ), config( 'cms.upload.filesize', 50 ) ) );
-        }
-
-        $mime = (string) $preview->getMimeType();
-
-        if( !str_starts_with( $mime, 'image/' ) || !Utils::isValidMimetype( $mime ) ) {
-            $msg = 'Preview type "%s" not allowed, permitted types: %s';
-            throw new Error( sprintf( $msg, $mime, implode( ', ', config( 'cms.upload.mimetypes', [] ) ) ) );
-        }
-    }
-
-
-    /**
-     * Validates the uploaded file before the transaction.
-     *
-     * @param  array<string, mixed> $args Arguments containing the file upload
-     */
-    protected function validateUpload( array $args ) : void
-    {
-        $upload = $args['file'] ?? null;
-
-        if( !$upload instanceof UploadedFile || !$upload->isValid() ) {
-            throw new Error( 'Invalid file upload' );
-        }
-
-        if( !Utils::isValidUpload( $upload ) ) {
-            $msg = 'File size of %s MB exceeds the maximum of %s MB';
-            throw new Error( sprintf( $msg, round( $upload->getSize() / 1024 / 1024, 3 ), config( 'cms.upload.filesize', 50 ) ) );
-        }
-
-        if( !Utils::isValidMimetype( (string) $upload->getMimeType() ) ) {
-            $msg = 'File type "%s" not allowed, permitted types: %s';
-            throw new Error( sprintf( $msg, $upload->getMimeType(), implode( ', ', config( 'cms.upload.mimetypes', [] ) ) ) );
-        }
-    }
-
-
-    /**
-     * Validates the URL before the transaction.
-     *
-     * @param  array<string, mixed> $args Arguments containing the URL
-     */
-    protected function validateUrl( array $args ) : void
-    {
-        $url = $args['input']['path'] ?? '';
-
-        if( !str_starts_with( $url, 'http' ) || !Utils::isValidUrl( $url ) ) {
-            throw new Error( sprintf( 'Invalid URL "%s"', $url ) );
-        }
     }
 }

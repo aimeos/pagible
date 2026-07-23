@@ -296,6 +296,82 @@ class File extends Base
 
 
     /**
+     * Prepares a new primary file or preview outside the database transaction.
+     *
+     * @param UploadedFile|string|null $source Uploaded primary file or local/remote path
+     * @param UploadedFile|false|null $preview Uploaded preview, false to clear, or null for automatic previews
+     * @return self The prepared file
+     */
+    public function prepare( UploadedFile|string|null $source = null, UploadedFile|false|null $preview = null ) : self
+    {
+        if( $source instanceof UploadedFile ) {
+            self::checkUpload( $source );
+        } elseif( is_string( $source ) && str_starts_with( $source, 'http' ) && !Utils::isValidUrl( $source ) ) {
+            throw new \Aimeos\Cms\Exception( sprintf( 'Invalid URL "%s"', $source ) );
+        }
+
+        if( $preview instanceof UploadedFile ) {
+            self::checkUpload( $preview, true );
+        }
+
+        try
+        {
+            if( $source instanceof UploadedFile )
+            {
+                $this->addFile( $source );
+                $this->mime = Utils::mimetype( (string) $this->path );
+                $this->name = $this->name ?: pathinfo( $source->getClientOriginalName(), PATHINFO_BASENAME );
+
+                if( $preview instanceof UploadedFile
+                    || str_starts_with( (string) $source->getMimeType(), 'image/' )
+                ) {
+                    $this->addPreviews( $preview instanceof UploadedFile ? $preview : $source );
+                }
+            }
+            elseif( is_string( $source ) )
+            {
+                $this->path = $source;
+                $this->name = $this->name ?: ( str_starts_with( $source, 'http' )
+                    ? substr( $source, 0, 255 )
+                    : pathinfo( $source, PATHINFO_BASENAME ) );
+
+                if( $preview instanceof UploadedFile ) {
+                    $this->addPreviews( $preview );
+                } elseif( str_starts_with( $source, 'http' ) ) {
+                    $this->addPreviews( $source );
+                }
+
+                $this->mime = $this->mime ?: Utils::mimetype( $source );
+            }
+            elseif( $preview instanceof UploadedFile ) {
+                $this->addPreviews( $preview );
+            }
+
+            if( $source !== null && !Utils::isValidMimetype( (string) $this->mime ) ) {
+                throw new \Aimeos\Cms\Exception( sprintf( 'File type "%s" not allowed, permitted types: %s',
+                    $this->mime, implode( ', ', config( 'cms.upload.mimetypes', [] ) ) ) );
+            }
+
+            return $this;
+        }
+        catch( \Throwable $t )
+        {
+            try {
+                $this->removePreviews();
+
+                if( $source instanceof UploadedFile ) {
+                    $this->removeFile();
+                }
+            } catch( \Throwable $cleanup ) {
+                report( $cleanup );
+            }
+
+            throw $t;
+        }
+    }
+
+
+    /**
      * Get the prunable model query.
      *
      * @return Builder<static> Eloquent query builder instance for pruning
@@ -411,7 +487,7 @@ class File extends Base
     /**
      * Deletes all versions and queues storage cleanup for a locked file batch.
      *
-     * @param Collection<int, Base> $files
+     * @param Collection<int, covariant Base> $files
      */
     public static function purgeMany( string $tenant, Collection $files ) : void
     {
@@ -613,6 +689,31 @@ class File extends Base
 
 
     /**
+     * Validates a primary or preview upload before storage or image decoding.
+     */
+    protected static function checkUpload( UploadedFile $upload, bool $preview = false ) : void
+    {
+        $label = $preview ? 'Preview' : 'File';
+
+        if( !$upload->isValid() ) {
+            throw new \Aimeos\Cms\Exception( sprintf( 'Invalid %s upload', strtolower( $label ) ) );
+        }
+
+        if( !Utils::isValidUpload( $upload ) ) {
+            throw new \Aimeos\Cms\Exception( sprintf( '%s size of %s MB exceeds the maximum of %s MB',
+                $label, round( $upload->getSize() / 1024 / 1024, 3 ), config( 'cms.upload.filesize', 50 ) ) );
+        }
+
+        $mime = (string) $upload->getMimeType();
+
+        if( ( $preview && !str_starts_with( $mime, 'image/' ) ) || !Utils::isValidMimetype( $mime ) ) {
+            throw new \Aimeos\Cms\Exception( sprintf( '%s type "%s" not allowed, permitted types: %s',
+                $label, $mime, implode( ', ', config( 'cms.upload.mimetypes', [] ) ) ) );
+        }
+    }
+
+
+    /**
      * Fetches a URL as stream, detects MIME from first 4KB, downloads to tmpfile for images.
      *
      * @param string $url URL to fetch
@@ -752,23 +853,7 @@ class File extends Base
      */
     protected function pruning() : void
     {
-        do
-        {
-            $versions = Version::withoutTenancy()->select( 'id', 'data' )
-                ->where( 'tenant_id', $this->tenant_id )
-                ->where( 'versionable_id', $this->id )
-                ->where( 'versionable_type', File::class )
-                ->orderBy( 'id' )->limit( 100 )->get();
-
-            if( !$versions->isEmpty() ) {
-                Version::withoutTenancy()->where( 'tenant_id', $this->tenant_id )
-                    ->whereIn( 'id', $versions->modelKeys() )->delete();
-                self::deletePaths( self::paths( $versions ), (string) $this->tenant_id );
-            }
-        }
-        while( $versions->count() === 100 );
-
-        self::deletePaths( collect( [$this->path, ...(array) $this->previews] ), (string) $this->tenant_id );
+        self::purgeMany( (string) $this->tenant_id, $this->newCollection( [$this] ) );
     }
 
 

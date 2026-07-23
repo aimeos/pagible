@@ -51,15 +51,6 @@ abstract class Base extends Model
     protected ?array $changedInfo = null;
 
     /**
-     * Applies and persists a version without publication orchestration.
-     */
-    public function apply( Version $version ) : void
-    {
-        $this->commit( $version );
-    }
-
-
-    /**
      * Rejects operations exceeding the synchronous bulk limit.
      */
     public static function checkBulk( int $count ) : void
@@ -316,22 +307,6 @@ abstract class Base extends Model
             'updated_at' => 'datetime:Y-m-d H:i:s',
             'deleted_at' => 'datetime:Y-m-d H:i:s',
         ];
-    }
-
-
-    /**
-     * Persists version data and marks the version as published.
-     *
-     */
-    protected function commit( Version $version ) : void
-    {
-        $this->stage( $version );
-        $this->save();
-
-        if( !$version->published ) {
-            $version->published = true;
-            $version->save();
-        }
     }
 
 

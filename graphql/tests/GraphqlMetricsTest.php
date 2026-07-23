@@ -8,27 +8,10 @@
 namespace Tests;
 
 use Aimeos\AnalyticsBridge\Facades\Analytics;
-use Nuwave\Lighthouse\Testing\MakesGraphQLRequests;
-use Nuwave\Lighthouse\Testing\RefreshesSchemaCache;
 
 
 class GraphqlMetricsTest extends GraphqlTestAbstract
 {
-    use MakesGraphQLRequests;
-    use RefreshesSchemaCache;
-
-
-	protected function defineEnvironment( $app )
-	{
-        parent::defineEnvironment( $app );
-
-		$app['config']->set( 'lighthouse.schema_path', __DIR__ . '/default-schema.graphql' );
-		$app['config']->set( 'lighthouse.namespaces.models', ['App\Models', 'Aimeos\\Cms\\Models'] );
-		$app['config']->set( 'lighthouse.namespaces.mutations', ['Aimeos\\Cms\\GraphQL\\Mutations'] );
-		$app['config']->set( 'lighthouse.namespaces.directives', ['Aimeos\\Cms\\GraphQL\\Directives'] );
-    }
-
-
     protected function setUp(): void
     {
         parent::setUp();
