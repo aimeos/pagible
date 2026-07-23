@@ -228,16 +228,7 @@ class Element extends Base
                 ->each( fn( $f ) => $f->latest && !$f->latest->published ? $f->publish( $f->latest ) : null );
         }
 
-        $this->forceFill( array_intersect_key( (array) $version->data, array_flip( $this->getFillable() ) ) );
-        $this->editor = $version->editor;
-        $this->lang = $version->lang;
-        $this->setRelation( 'latest', $version );
-        $this->save();
-
-        if( !$version->published ) {
-            $version->published = true;
-            $version->save();
-        }
+        $this->publishVersion( $version, ['lang' => $version->lang] );
 
         return $this;
     }

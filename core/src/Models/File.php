@@ -333,7 +333,7 @@ class File extends Base
 
 
     /**
-     * Publish the given version of the element.
+     * Publish the given version of the file.
      *
      * @param Version $version The version to publish
      * @return self The current instance for method chaining
@@ -341,19 +341,13 @@ class File extends Base
     public function publish( Version $version ) : self
     {
         $this->checkVersion( $version );
-        $this->forceFill( array_intersect_key( (array) $version->data, array_flip( $this->getFillable() ) ) );
-        $this->forceFill( array_intersect_key( (array) $version->aux, array_flip( $this->getFillable() ) ) );
-        $this->previews = (array) $version->data?->previews;
-        $this->path = $version->data?->path;
-        $this->mime = $version->data?->mime;
-        $this->editor = $version->editor;
-        $this->setRelation( 'latest', $version );
-        $this->save();
+        $aux = array_intersect_key( (array) $version->aux, array_flip( $this->getFillable() ) );
 
-        if( !$version->published ) {
-            $version->published = true;
-            $version->save();
-        }
+        $this->publishVersion( $version, array_replace( $aux, [
+            'previews' => (array) $version->data?->previews,
+            'path' => $version->data?->path,
+            'mime' => $version->data?->mime,
+        ] ) );
 
         return $this;
     }

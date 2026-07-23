@@ -171,7 +171,7 @@ class PageAccessTest extends CoreTestAbstract
     }
 
 
-    public function testCmsPageIndexRefreshIsQueuedAfterCommit(): void
+    public function testCmsPageIndexRefreshIsNotQueued(): void
     {
         $page = Page::where( 'path', 'hidden' )->firstOrFail();
         config( ['scout.driver' => 'cms'] );
@@ -179,9 +179,7 @@ class PageAccessTest extends CoreTestAbstract
 
         PageAccess::set( [$page->id], [] );
 
-        Queue::assertPushed( SyncIndex::class, fn( SyncIndex $job ) =>
-            $job->model === Page::class && $job->ids === [$page->id] && $job->tenant === 'test'
-        );
+        Queue::assertNotPushed( SyncIndex::class );
     }
 
 

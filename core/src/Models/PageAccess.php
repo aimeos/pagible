@@ -146,7 +146,9 @@ class PageAccess extends Model
                 'domain' => (string) $page->domain,
                 'path' => (string) $page->path,
             ], $changed ) );
-            Scout::reindex( Page::class, $reindex );
+            if( Scout::usesExternalSearch() ) {
+                Scout::reindex( Page::class, $reindex );
+            }
         }
 
         return count( $pages );

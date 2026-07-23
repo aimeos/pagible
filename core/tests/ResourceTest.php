@@ -11,7 +11,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Database\Seeders\TestSeeder;
 use Aimeos\Cms\Exception;
 use Aimeos\Cms\Events\PagesInvalidated;
-use Aimeos\Cms\Jobs\SyncPages;
+use Aimeos\Cms\Jobs\SyncIndex;
 use Aimeos\Cms\Resource;
 use Aimeos\Cms\Utils;
 use Aimeos\Cms\Models\Element;
@@ -117,33 +117,71 @@ class ResourceTest extends CoreTestAbstract
 
         Resource::drop( Page::class, [(string) $parent->id], 'editor@testbench' );
 
-        Queue::assertPushed( SyncPages::class, fn( SyncPages $job ) =>
-            $job->ids === [(string) $parent->id, (string) $child->id] && $job->tenant === 'test'
+        Queue::assertPushed( SyncIndex::class, fn( SyncIndex $job ) =>
+            $job->model === Page::class
+                && $job->ids === [(string) $parent->id, (string) $child->id]
+                && $job->tenant === 'test'
         );
     }
 
 
-    public function testSyncPagesReconcilesExistingAndMissingDocuments(): void
+    public function testRestoreQueuesSubtreeIndexReconciliation(): void
+    {
+        $parent = $this->page( [] );
+        $child = Resource::addPage( [
+            'lang' => 'en', 'name' => 'Child', 'title' => 'Child', 'path' => 'res-' . Utils::uid(),
+            'content' => [],
+        ], $this->user, parent: (string) $parent->id );
+        Resource::drop( Page::class, [(string) $parent->id], 'editor@testbench' );
+        $this->searchEngine();
+        Queue::fake();
+
+        Resource::restore( Page::class, [(string) $parent->id], 'editor@testbench' );
+
+        Queue::assertPushed( SyncIndex::class, fn( SyncIndex $job ) =>
+            $job->model === Page::class
+                && $job->ids === [(string) $parent->id, (string) $child->id]
+                && $job->tenant === 'test'
+        );
+    }
+
+
+    public function testRestoreReindexesExternalPageLanguage(): void
+    {
+        $page = Resource::addPage( [
+            'lang' => 'de', 'name' => 'German', 'title' => 'German', 'path' => 'res-' . Utils::uid(),
+            'content' => [],
+        ], $this->user, parent: (string) $this->root()->id );
+        Resource::drop( Page::class, [(string) $page->id], 'editor@testbench' );
+        $engine = $this->searchEngine();
+
+        Resource::restore( Page::class, [(string) $page->id], 'editor@testbench' );
+
+        $this->assertSame( 'de', $engine->documents[(string) $page->id]['lang'] ?? null );
+    }
+
+
+    public function testSyncIndexReconcilesExistingAndMissingPages(): void
     {
         $page = $this->page( [] );
         $engine = $this->searchEngine();
         $missing = '01900000-0000-7000-8000-000000000001';
 
-        ( new SyncPages( [(string) $page->id, $missing], 'test' ) )->handle();
+        ( new SyncIndex( Page::class, [(string) $page->id, $missing], 'test' ) )->handle();
 
         $this->assertSame( [[(string) $page->id]], $engine->updates );
         $this->assertSame( [[$missing]], $engine->deletions );
     }
 
 
-    public function testSyncPagesKeepsSoftDeletedDocumentsWhenConfigured(): void
+    public function testSyncIndexKeepsSoftDeletedPagesWhenConfigured(): void
     {
         $page = $this->page( [] );
         Resource::drop( Page::class, [(string) $page->id], 'editor@testbench' );
         $engine = $this->searchEngine();
         config( ['scout.soft_delete' => true] );
 
-        ( new SyncPages( [(string) $page->id], 'test' ) )->handle();
+        ( new SyncIndex( Page::class, [(string) $page->id], 'test' ) )->handle();
 
         $this->assertSame( [[(string) $page->id]], $engine->updates );
         $this->assertSame( [], $engine->deletions );
@@ -497,6 +535,8 @@ class ResourceSearchEngineSpy extends NullEngine
     public array $updates = [];
     /** @var list<list<string>> */
     public array $deletions = [];
+    /** @var array<string, array<string, mixed>> */
+    public array $documents = [];
 
 
     /**
@@ -505,6 +545,10 @@ class ResourceSearchEngineSpy extends NullEngine
     public function update( $models ) : void
     {
         $this->updates[] = array_values( array_map( strval(...), $models->modelKeys() ) );
+
+        foreach( $models as $model ) {
+            $this->documents[(string) $model->id] = $model->toSearchableArray();
+        }
     }
 
 

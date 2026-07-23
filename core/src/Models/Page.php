@@ -78,7 +78,7 @@ class Page extends Base
     /** @var list<string> Columns needed for memory-efficient Page queries */
     public const SELECT_COLUMNS = [
         'id', 'tenant_id', 'parent_id', 'related_id', 'path', 'domain', 'name', 'title',
-        'tag', 'to', 'type', 'theme', 'meta', 'content', 'status', 'cache',
+        'tag', 'lang', 'to', 'type', 'theme', 'meta', 'content', 'status', 'cache',
         'editor', 'latest_id', 'created_at', 'updated_at', 'deleted_at',
         NestedSet::LFT, NestedSet::RGT, NestedSet::DEPTH
     ];
@@ -477,18 +477,11 @@ class Page extends Base
                 ->each( fn( $e ) => $e->latest && !$e->latest->published ? $e->publish( $e->latest ) : null );
         }
 
-        $this->forceFill( array_intersect_key( (array) $version->data, array_flip( $this->getFillable() ) ) );
-        $this->content = $version->aux->content ?? [];
-        $this->config = $version->aux->config ?? new \stdClass();
-        $this->meta = $version->aux->meta ?? new \stdClass();
-        $this->editor = $version->editor;
-        $this->setRelation( 'latest', $version );
-        $this->save();
-
-        if( !$version->published ) {
-            $version->published = true;
-            $version->save();
-        }
+        $this->publishVersion( $version, [
+            'content' => $version->aux->content ?? [],
+            'config' => $version->aux->config ?? new \stdClass(),
+            'meta' => $version->aux->meta ?? new \stdClass(),
+        ] );
 
         PagesInvalidated::dispatch( [
             ['domain' => (string) $previous->domain, 'path' => (string) $previous->path],

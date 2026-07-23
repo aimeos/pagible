@@ -345,29 +345,33 @@ class Resource
     private static function remove( string $model, array $ids, string $editor, bool $purge ) : Collection
     {
         $isPage = is_a( $model, Page::class, true );
-        $callback = function() use ( $model, $ids, $editor, $isPage, $purge ) {
+        $action = $purge ? 'purged' : 'dropped';
+        $announce = $model::announces( $action );
+        $version = self::versionColumns( $model );
+
+        $callback = function() use ( $model, $ids, $editor, $isPage, $purge, $action, $announce, $version ) {
 
             $items = $model::withTrashed()->whereIn( 'id', $ids )
                 ->when( $isPage, fn( $q ) => $q->withoutGlobalScope( 'jsonapi' )
                     ->select( Page::SELECT_COLUMNS )->lockForUpdate() )
-                // eager-load latest only when broadcasting, so the per-item removed
-                // events don't lazy-load each version (N+1)
-                ->when( $purge && config( 'cms.broadcast' ), fn( $q ) => $q->with( 'latest' ) )
+                ->when( $announce, fn( $q ) => $q->with( ['latest' => fn( $q ) =>
+                    $q->select( $version )
+                ] ) )
                 ->get();
 
             $pages = $isPage ? self::pageSubtree( $items ) : [];
 
-            $delete = function() use ( $items, $editor, $purge ) {
+            $delete = function() use ( $items, $editor, $purge, $action ) {
                 foreach( $items as $item )
                 {
                     if( !$purge ) {
                         $item->editor = $editor;
                         $item->delete();
-                        $item->announce( 'dropped', $editor );
+                        $item->announce( $action, $editor );
                         continue;
                     }
 
-                    $item->announce( 'purged', $editor );
+                    $item->announce( $action, $editor );
 
                     if( $item instanceof File ) {
                         $item->purge();
@@ -395,7 +399,9 @@ class Resource
                 'domain' => (string) $page->domain,
                 'path' => (string) $page->path,
             ], $pages ) );
-            Scout::syncPages( array_map( fn( Nav $page ) => (string) $page->id, $pages ) );
+            if( $purge || Scout::usesExternalSearch() ) {
+                Scout::reindex( Page::class, array_map( fn( Nav $page ) => (string) $page->id, $pages ) );
+            }
         }
 
         return $items;
@@ -447,26 +453,66 @@ class Resource
      */
     public static function restore( string $model, array $ids, string $editor ) : Collection
     {
-        $callback = function() use ( $model, $ids, $editor ) {
+        $isPage = is_a( $model, Page::class, true );
+        $indexed = $isPage && Scout::usesSearchIndex();
+        $announce = $model::announces( 'restored' );
+        $version = self::versionColumns( $model );
+
+        $callback = function() use ( $model, $ids, $editor, $announce, $isPage, $indexed, $version ) {
 
             $items = $model::withTrashed()->whereIn( 'id', $ids )
-                ->when( is_a( $model, Page::class, true ), fn( $q ) => $q->select( Page::SELECT_COLUMNS ) )
+                ->when( $isPage, fn( $q ) => $q->select( Page::SELECT_COLUMNS ) )
+                ->when( $announce, fn( $q ) => $q->with( ['latest' => fn( $q ) =>
+                    $q->select( $version )
+                ] ) )
                 ->get();
 
-            foreach( $items as $item )
-            {
-                $item->editor = $editor;
-                $item->restore();
+            $pages = $indexed ? self::pageSubtree( $items ) : [];
+            $restore = function() use ( $items, $editor ) {
+                foreach( $items as $item )
+                {
+                    $item->editor = $editor;
+                    $item->restore();
 
-                $item->announce( 'restored', $editor );
+                    $item->announce( 'restored', $editor );
+                }
+            };
+
+            if( $isPage ) {
+                Page::withoutSyncingToSearch( $restore );
+            } else {
+                $restore();
             }
 
-            return $items;
+            return [$items, $pages];
         };
 
-        return is_a( $model, Page::class, true )
+        [$items, $pages] = $isPage
             ? Utils::lockedTransaction( $callback )
             : Utils::transaction( $callback );
+
+        if( $pages ) {
+            Scout::reindex( Page::class, array_map( fn( Nav $page ) => (string) $page->id, $pages ) );
+        }
+
+        return $items;
+    }
+
+
+    /**
+     * Returns the version projection needed for lifecycle announcements and search synchronization.
+     *
+     * @param class-string<Base> $model
+     * @return list<string>
+     */
+    private static function versionColumns( string $model ) : array
+    {
+        return [
+            ...Version::SELECT_COLUMNS,
+            'publish_at',
+            'created_at',
+            ...( is_a( $model, File::class, true ) ? ['aux'] : [] ),
+        ];
     }
 
 

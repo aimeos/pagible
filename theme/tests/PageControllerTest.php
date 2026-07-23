@@ -18,7 +18,6 @@ use Aimeos\Cms\PageCache;
 use Aimeos\Cms\Models\PageAccess;
 use Aimeos\Cms\Resource;
 use Database\Seeders\TestSeeder;
-use Illuminate\Auth\AuthenticationException;
 use Illuminate\Contracts\Cache\LockProvider;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Response;
@@ -46,15 +45,6 @@ class PageControllerTest extends ThemeTestAbstract
         $this->user->tenant_id = 'test';
         $this->user->cmsperms = ['admin'];
         Access::using( fn() => ['frontend.member'] );
-        AuthenticationException::redirectUsing( fn() => '/login' );
-    }
-
-
-    protected function tearDown(): void
-    {
-        AuthenticationException::redirectUsing( fn() => null );
-
-        parent::tearDown();
     }
 
 

@@ -8,7 +8,6 @@
 namespace Aimeos\Cms;
 
 use Aimeos\Cms\Jobs\SyncIndex;
-use Aimeos\Cms\Jobs\SyncPages;
 use Aimeos\Cms\Models\Base;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
@@ -175,35 +174,11 @@ class Scout
 
 
     /**
-     * Queues external page-index reconciliation after the current transaction commits.
-     *
-     * @param list<string> $ids
+     * Whether the configured Scout driver maintains a search index.
      */
-    public static function syncPages( array $ids ) : void
+    public static function usesSearchIndex() : bool
     {
-        if( !$ids || !self::usesExternalSearch() ) {
-            return;
-        }
-
-        $model = new Page();
-        $connection = $model->getConnection();
-        $queueConnection = $model->syncWithSearchUsing();
-        $queue = $model->syncWithSearchUsingQueue();
-        $tenant = Tenancy::value();
-        $size = max( 1, (int) config( 'cms.chunksize', 100 ) );
-
-        $connection->afterCommit( function() use ( $ids, $size, $queueConnection, $queue, $tenant ) {
-            foreach( array_chunk( $ids, $size ) as $chunk )
-            {
-                try {
-                    dispatch( ( new SyncPages( $chunk, $tenant ) )
-                        ->onConnection( $queueConnection )
-                        ->onQueue( $queue ) );
-                } catch( \Throwable $e ) {
-                    report( $e );
-                }
-            }
-        } );
+        return !in_array( config( 'scout.driver' ), [null, 'null', 'collection', 'database'], true );
     }
 
 
@@ -216,12 +191,6 @@ class Scout
             Page::class => new Page(),
             default => throw new \InvalidArgumentException( 'Invalid CMS search index model: ' . $model ),
         };
-    }
-
-
-    private static function usesSearchIndex() : bool
-    {
-        return !in_array( config( 'scout.driver' ), [null, 'null', 'collection', 'database'], true );
     }
 
 }

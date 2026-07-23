@@ -528,4 +528,50 @@ class CmsEngineTest extends SearchTestAbstract
         $this->assertNotNull( $draft );
         $this->assertStringContainsString( 'zttrashterm', $draft );
     }
+
+
+    public function testPageSubtreeIndexRowsRecoverAfterTrashedEdit(): void
+    {
+        $user = new \App\Models\User( [
+            'name' => 'editor', 'email' => 'editor@testbench',
+            'password' => 'secret', 'cmsperms' => Permission::all(),
+        ] );
+        $root = Page::where( 'tag', 'root' )->firstOrFail();
+        $parent = Resource::addPage( [
+            'lang' => 'en', 'name' => 'ztretainrows', 'title' => 'Parent',
+            'path' => 'zt-retain-parent', 'content' => [],
+        ], $user, parent: (string) $root->id );
+        $child = Resource::addPage( [
+            'lang' => 'en', 'name' => 'ztretainrows', 'title' => 'Child',
+            'path' => 'zt-retain-child', 'content' => [],
+        ], $user, parent: (string) $parent->id );
+        $ids = [(string) $parent->id, (string) $child->id];
+        Resource::publish( Page::class, $ids, 'editor@testbench' );
+        $query = DB::connection( config( 'cms.db' ) )->table( 'cms_index' )
+            ->where( 'indexable_type', Page::class )
+            ->whereIn( 'indexable_id', $ids );
+        $rows = $query->count();
+
+        $this->assertGreaterThan( 0, $rows );
+
+        Resource::drop( Page::class, [(string) $parent->id], 'editor@testbench' );
+
+        $this->assertSame( $rows, $query->count() );
+        $this->assertCount( 0, Page::search( 'ztretainrows' )->searchFields( 'draft' )->take( 25 )->get() );
+
+        Resource::bulkPage( [(string) $parent->id], ['title' => 'Trashed edit'], $user );
+
+        $this->assertLessThan( $rows, $query->count() );
+
+        Resource::restore( Page::class, [(string) $parent->id], 'editor@testbench' );
+
+        $found = Page::search( 'ztretainrows' )->searchFields( 'content' )->take( 25 )->get();
+
+        $this->assertSame( $rows, $query->count() );
+        $this->assertEqualsCanonicalizing( $ids, array_map( strval(...), $found->modelKeys() ) );
+
+        Resource::purge( Page::class, [(string) $parent->id], 'editor@testbench' );
+
+        $this->assertSame( 0, $query->count() );
+    }
 }

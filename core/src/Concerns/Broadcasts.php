@@ -9,6 +9,7 @@ namespace Aimeos\Cms\Concerns;
 
 use Aimeos\Cms\Events\Bulk;
 use Aimeos\Cms\Events\Event;
+use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Models\Version;
 use Aimeos\Cms\Tenancy;
 use Aimeos\Cms\Utils;
@@ -39,17 +40,13 @@ trait Broadcasts
      */
     public function announce( string $action, Authenticatable|string|null $editor = null ) : void
     {
-        $class = 'Aimeos\\Cms\\Events\\' . ucfirst( $action );
-
-        if( !is_subclass_of( $class, Event::class ) ) {
-            throw new \InvalidArgumentException( "Unknown broadcast action: {$action}" );
-        }
-
-        $broadcast = (bool) config( 'cms.broadcast' );
+        $class = self::event( $action );
 
         // In-process listeners (audit logging) subscribe to the per-action events;
         // only do work when broadcasting is on or something listens. This
         // also avoids the per-item latest lazy load (e.g. on purge) when nothing is enabled.
+        $broadcast = (bool) config( 'cms.broadcast' );
+
         if( !$broadcast && !Events::hasListeners( $class ) ) {
             return;
         }
@@ -58,7 +55,10 @@ trait Broadcasts
             return;
         }
 
-        static::send( new $class( ...$this->eventFields( $version, $editor ) ), $broadcast );
+        static::send(
+            new $class( ...$this->eventFields( $version, $editor, $action ) ),
+            $broadcast,
+        );
     }
 
 
@@ -99,21 +99,59 @@ trait Broadcasts
 
 
     /**
+     * Whether an action has a websocket or in-process event consumer.
+     */
+    public static function announces( string $action ) : bool
+    {
+        $class = self::event( $action );
+
+        return (bool) config( 'cms.broadcast' ) || Events::hasListeners( $class );
+    }
+
+
+    /**
+     * Returns the event data needed to patch lists or enrich audit entries.
+     *
+     * Lifecycle changes only alter list metadata. Page routes remain in the
+     * payload because the audit listener records them.
+     *
+     * @return array<string, mixed>
+     */
+    protected function eventData( Version $version, string $action ) : array
+    {
+        if( !in_array( $action, ['dropped', 'purged', 'restored'], true ) ) {
+            return (array) $version->data;
+        }
+
+        if( !$this instanceof Page ) {
+            return [];
+        }
+
+        return [
+            'path' => (string) ( $version->data->path ?? $this->path ),
+            'domain' => (string) ( $version->data->domain ?? $this->domain ),
+        ];
+    }
+
+
+    /**
      * Extracts the shared event fields from the model and version, keyed by the event constructor
      * parameter names so they can be spread into any event.
      *
      * @param Version $version Latest version of the model
      * @param Authenticatable|string|null $editor Authenticated user or editor name
+     * @param string $action Past-tense action
      * @return array{contentType: string, id: string, latest_id: string, editor: string, data: array<string, mixed>, published: bool, deleted_at: string|null, publish_at: string|null, updated_at: string|null, tenant: string, source: string}
      */
-    protected function eventFields( Version $version, Authenticatable|string|null $editor ) : array
+    protected function eventFields( Version $version, Authenticatable|string|null $editor,
+        string $action ) : array
     {
         return [
             'contentType' => strtolower( class_basename( $this ) ),
             'id' => (string) $this->id,
             'latest_id' => (string) $version->id,
             'editor' => is_string( $editor ) ? $editor : Utils::editor( $editor ),
-            'data' => (array) $version->data,
+            'data' => $this->eventData( $version, $action ),
             'published' => (bool) $version->published,
             'deleted_at' => $this->deleted_at ? (string) $this->deleted_at : null,
             'publish_at' => $version->publish_at,
@@ -157,5 +195,22 @@ trait Broadcasts
     protected static function local( object $event ) : void
     {
         DB::afterCommit( fn() => event( $event ) );
+    }
+
+
+    /**
+     * Returns the validated event class for an action.
+     *
+     * @return class-string<Event>
+     */
+    private static function event( string $action ) : string
+    {
+        $class = 'Aimeos\\Cms\\Events\\' . ucfirst( $action );
+
+        if( !is_subclass_of( $class, Event::class ) ) {
+            throw new \InvalidArgumentException( "Unknown broadcast action: {$action}" );
+        }
+
+        return $class;
     }
 }

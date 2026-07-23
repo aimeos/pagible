@@ -73,6 +73,28 @@ abstract class Base extends Model
 
 
     /**
+     * Applies and publishes a validated version.
+     *
+     * @param Version $version Version to publish
+     * @param array<string, mixed> $attributes Model-specific published attributes
+     */
+    protected function publishVersion( Version $version, array $attributes = [] ) : void
+    {
+        $data = array_intersect_key( (array) $version->data, array_flip( $this->getFillable() ) );
+
+        $this->forceFill( array_replace( $data, $attributes, ['editor' => $version->editor] ) );
+        $this->setRelation( 'latest', $version );
+
+        if( !$version->published ) {
+            $version->published = true;
+            $version->save();
+        }
+
+        $this->save();
+    }
+
+
+    /**
      * Compare JSON casts independent of object key order.
      *
      * MySQL normalizes JSON object keys when storing values. Laravel's default
