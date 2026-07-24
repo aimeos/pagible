@@ -268,12 +268,16 @@ final class Publication
             ] : null;
 
             $model->stage( $version );
+            $columns = array_keys( $model->getDirty() );
+            $updated = $model->getUpdatedAtColumn();
 
-            if( $model->isDirty() ) {
+            if( $columns && $model->usesTimestamps() && $updated !== null )
+            {
                 $model->setUpdatedAt( $model->freshTimestamp() );
+                $columns[] = $updated;
             }
 
-            $columns = array_keys( $model->getDirty() );
+            $columns = array_values( array_unique( $columns ) );
             sort( $columns, SORT_STRING );
 
             if( $columns )

@@ -1019,6 +1019,8 @@ class ResourceTest extends CoreTestAbstract
         $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
         $content = [['type' => 'image', 'data' => ['file' => ['id' => $file->id, 'type' => 'file']]]];
         $pages = [$this->page( $content ), $this->page( $content )];
+        Page::withoutSyncingToSearch( fn() => Page::whereKey( $pages[0]->id )
+            ->update( ['updated_at' => '2000-01-01 00:00:00'] ) );
         $this->expectsDatabaseQueryCount( 11 );
 
         Publication::publish( Page::class, collect( $pages )->pluck( 'id' )->all(), $this->user );
