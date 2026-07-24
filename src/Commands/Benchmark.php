@@ -7,7 +7,7 @@
 
 namespace Aimeos\Cms\Commands;
 
-use Aimeos\Cms\Events\PagesInvalidated;
+use Aimeos\Cms\Events\PageInvalidated;
 use Aimeos\Cms\Models\Page;
 use Database\Seeders\BenchmarkSeeder;
 use Illuminate\Console\Command;
@@ -141,22 +141,16 @@ class Benchmark extends Command
             $bar->advance( $count );
         } );
 
-        Page::where( 'editor', 'benchmark' )
+        $paths = array_values( Page::withTrashed()
             ->where( 'domain', $domain )
-            ->chunkById( 500, function( $items ) {
-                $routes = [];
+            ->where( 'editor', 'benchmark' )
+            ->pluck( 'path' )
+            ->map( fn( $path ) => (string) $path )
+            ->all() );
 
-                foreach( $items as $item ) {
-                    if( $item instanceof Page ) {
-                        $routes[] = [
-                            'domain' => (string) $item->domain,
-                            'path' => (string) $item->path,
-                        ];
-                    }
-                }
-
-                PagesInvalidated::dispatch( $routes );
-            } );
+        if( $paths ) {
+            PageInvalidated::dispatch( $domain, $paths );
+        }
 
         $bar->finish();
         $this->newLine();

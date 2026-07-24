@@ -33,6 +33,7 @@ class GraphqlServiceProvider extends Provider
         $this->rateLimiter();
 
         \Aimeos\Cms\Permission::register( [
+            'cache:clear',
             'page:metrics',
         ] );
 

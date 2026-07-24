@@ -99,6 +99,10 @@ extend type Mutation {
   deleteAccess(values: [String!]!): [String!]!
     @guard @cmsPermission(action: "access:delete") @throttle(name: "cms-graphql")
 
+  "Clear cached frontend pages in the selected page subtree"
+  clearCache(id: ID!): Int!
+    @guard @cmsPermission(action: "cache:clear") @throttle(name: "cms-graphql")
+
   "Add a new page below the page referenced by 'parent' and before the page referenced by 'ref' (or append if NULL)"
   addPage(input: PageInput!, parent: ID, ref: ID): Page
     @guard @cmsPermission(action: "page:add") @throttle(name: "cms-graphql")

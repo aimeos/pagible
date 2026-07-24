@@ -131,13 +131,13 @@ Access-value lists are trimmed, must contain only registered non-empty strings, 
 
 After access records have been committed, indexed Laravel Scout drivers are refreshed by queued jobs from the current page state. Bulk page, element, and file publication, deletion, restoration, and edits use the same queued reconciliation for the Pagible `cms` engine and external Scout engines. The `collection` and Laravel `database` drivers query model tables directly and need no index job. Jobs carry only the tenant, model class, and bounded ID list, then hydrate current state when handled. Run a queue worker with an asynchronous queue connection in production; the `sync` connection executes these jobs inline.
 
-Access changes don't modify page-tree coordinates, so they acquire neither the tenant page-tree lock nor page row locks. They load the target routes and current canonical access values once, then update only pages whose values changed in one database transaction. SQL writes remain bounded, while cache invalidation and index synchronization dispatch afterward. Rolled-back changes dispatch nothing. Core emits a lightweight `PagesInvalidated` event without depending on a rendered-page cache; the theme package turns invalidations into bounded, queued cache evictions.
+Access changes don't modify page-tree coordinates, so they acquire neither the tenant page-tree lock nor page row locks. They load the target pages and current canonical access values once, then update only pages whose values changed in one database transaction. SQL writes remain bounded, while cache invalidation and index synchronization dispatch afterward. Rolled-back changes dispatch nothing. Core emits a lightweight `PageInvalidated` event with affected paths grouped by domain without depending on a rendered-page cache; the theme package removes those rendered routes.
 
 Page bulk operations are limited to 1,000 unique pages. Recursive calls also fail before writing if the resolved subtree exceeds 1,000 pages. Larger queued operations must split explicit page IDs into batches of at most 1,000.
 
 Subtree operations require exactly one root ID belonging to the current tenant and fail before writing when it does not.
 
-Operations compare canonical values and skip unchanged pages. Only changed routes are invalidated, and search documents are refreshed only when access switches between public and restricted.
+Operations compare canonical values and skip unchanged pages. Only changed page routes are invalidated, and search documents are refreshed only when access switches between public and restricted.
 
 Do not persist or delete `PageAccess` instances directly. Those low-level writes deliberately have no cache or search side effects; use `PageAccess::set()` instead.
 

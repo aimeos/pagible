@@ -7,7 +7,7 @@
 
 namespace Aimeos\Cms;
 
-use Aimeos\Cms\Events\PagesInvalidated;
+use Aimeos\Cms\Events\PageInvalidated;
 use Aimeos\Cms\Models\Base;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
@@ -39,9 +39,6 @@ final class Publication
      */
     private array $refs = [];
 
-    /** @var array<int, array{domain: string, path: string}> */
-    private array $routes = [];
-
     /** @var array<string, Version> */
     private array $versions = [];
 
@@ -57,10 +54,9 @@ final class Publication
             return;
         }
 
-        $route = $model instanceof Page ? [
-            'domain' => $model->domain,
-            'path' => $model->path,
-        ] : null;
+        $previous = $model instanceof Page
+            ? [(string) $model->domain, (string) $model->path]
+            : null;
 
         $model->stage( $version );
         $model->save();
@@ -72,32 +68,23 @@ final class Publication
 
         $this->track( $model, $version );
 
-        if( $route ) {
-            $this->routes[] = $route;
-            $this->routes[] = [
-                'domain' => $model->domain,
-                'path' => $model->path,
-            ];
+        if( $previous && $model instanceof Page ) {
+            self::invalidate( $model, ...$previous );
         }
     }
 
 
     /**
-     * Dispatches accumulated route invalidations and search updates.
+     * Dispatches accumulated search updates.
      */
     public function flush() : void
     {
-        if( $this->routes ) {
-            PagesInvalidated::dispatch( array_values( $this->routes ) );
-        }
-
         foreach( $this->models as $model => $items ) {
             Scout::index( $model, array_keys( $items ), collect( array_values( $items ) ) );
         }
 
         $this->elements = [];
         $this->models = [];
-        $this->routes = [];
     }
 
 
@@ -109,8 +96,6 @@ final class Publication
         foreach( $publication->models as $model => $items ) {
             $this->models[$model] = ( $this->models[$model] ?? [] ) + $items;
         }
-
-        array_push( $this->routes, ...$publication->routes );
     }
 
 
@@ -269,10 +254,9 @@ final class Publication
                 throw new \LogicException( 'Prepared publication contains an unsaved model.' );
             }
 
-            $route = $model instanceof Page ? [
-                'domain' => $model->domain,
-                'path' => $model->path,
-            ] : null;
+            $previous = $model instanceof Page
+                ? [(string) $model->domain, (string) $model->path]
+                : null;
 
             $model->stage( $version );
             $columns = array_keys( $model->getDirty() );
@@ -309,12 +293,8 @@ final class Publication
 
             $this->track( $model, $version );
 
-            if( $route ) {
-                $this->routes[] = $route;
-                $this->routes[] = [
-                    'domain' => $model->domain,
-                    'path' => $model->path,
-                ];
+            if( $previous && $model instanceof Page ) {
+                self::invalidate( $model, ...$previous );
             }
         }
 
@@ -383,6 +363,23 @@ final class Publication
         }
 
         return $version->getAttribute( $name ) !== null;
+    }
+
+
+    /**
+     * Invalidates the previous and current route of one changed page.
+     */
+    private static function invalidate( Page $page, string $domain, string $path ) : void
+    {
+        $currentDomain = (string) $page->domain;
+        $currentPath = (string) $page->path;
+
+        if( $domain === $currentDomain ) {
+            PageInvalidated::dispatch( $domain, $path === $currentPath ? [$path] : [$path, $currentPath] );
+        } else {
+            PageInvalidated::dispatch( $domain, [$path] );
+            PageInvalidated::dispatch( $currentDomain, [$currentPath] );
+        }
     }
 
 

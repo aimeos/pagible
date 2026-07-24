@@ -136,6 +136,30 @@ describe('PageListItems', () => {
     })
   })
 
+  it('clears the selected page subtree with cache:clear permission', () => {
+    const mutate = cy.stub().resolves({ data: { clearCache: 3 } })
+
+    mountList({}, { 'cache:clear': true, 'page:view': true }, { mutate }).then(({ wrapper }) => {
+      const vm = wrapper.findComponent(PageListItems).vm
+
+      return vm.clear({ data: { id: 'page-1' } }).then(() => {
+        expect(mutate).to.have.been.calledOnce
+        expect(mutate.firstCall.args[0].variables).to.deep.equal({ id: 'page-1' })
+      })
+    })
+  })
+
+  it('does not clear page caches without cache:clear permission', () => {
+    const mutate = cy.stub().resolves({ data: { clearCache: 1 } })
+
+    mountList({}, { 'page:view': true }, { mutate }).then(({ wrapper }) => {
+      const vm = wrapper.findComponent(PageListItems).vm
+
+      vm.clear({ data: { id: 'page-1' } })
+      expect(mutate).not.to.have.been.called
+    })
+  })
+
   it('saves selected page status through one bulk mutation', () => {
     const mutate = cy.stub().resolves({ data: { bulkPage: { ids: ['page-1', 'page-2'] } } })
 

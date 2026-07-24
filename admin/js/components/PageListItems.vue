@@ -25,6 +25,7 @@ import {
   mdiArrowRight,
   mdiArrowDown,
   mdiClockOutline,
+  mdiCached,
   mdiLock,
   mdiKeyVariant,
   mdiPencil
@@ -42,6 +43,12 @@ const ADD_PAGE = gql`
     addPage(input: $input) {
       id
     }
+  }
+`
+
+const CLEAR_CACHE = gql`
+  mutation ($id: ID!) {
+    clearCache(id: $id)
   }
 `
 
@@ -275,6 +282,7 @@ export default {
       mdiArrowRight,
       mdiArrowDown,
       mdiClockOutline,
+      mdiCached,
       mdiLock,
       mdiKeyVariant,
       mdiPencil,
@@ -434,6 +442,32 @@ export default {
       if (stat) {
         stat._checked = !stat._checked
       }
+    },
+
+    clear(stat) {
+      if (!this.user.can('cache:clear')) {
+        this.messages.add(this.$gettext('Permission denied'), 'error')
+        return
+      }
+
+      return this.$apollo
+        .mutate({
+          mutation: CLEAR_CACHE,
+          variables: {
+            id: stat.data.id
+          }
+        })
+        .then((result) => {
+          if (result.errors) {
+            throw result.errors
+          }
+
+          this.messages.add(this.$gettext('Cache cleared'), 'success')
+        })
+        .catch((error) => {
+          this.messages.add(this.$gettext('Error clearing cache') + ':\n' + error, 'error')
+          this.$log(`PageList::clear(): Error clearing cache`, stat, error)
+        })
     },
 
     copy(stat, node) {
@@ -1654,6 +1688,11 @@ export default {
                 <v-list-item v-if="node.status !== 2 && user.can('page:save')">
                   <v-btn :prepend-icon="mdiEyeOffOutline" variant="text" @click="status(stat, 2)">{{
                     $gettext('Hide')
+                  }}</v-btn>
+                </v-list-item>
+                <v-list-item v-if="user.can('cache:clear')">
+                  <v-btn :prepend-icon="mdiCached" variant="text" @click="clear(stat)">{{
+                    $gettext('Clear cache')
                   }}</v-btn>
                 </v-list-item>
 

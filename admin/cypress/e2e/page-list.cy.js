@@ -8,6 +8,7 @@
 
 const ALL_PERMISSIONS = {
   'access:view': true,
+  'cache:clear': true,
   'page:view': true,
   'page:add': true,
   'page:save': true,
@@ -113,6 +114,9 @@ function setupIntercept({
       }
       if (query.includes('cmsLogout')) {
         return { data: { cmsLogout: { email: 'admin@example.com', name: 'Admin' } } }
+      }
+      if (query.includes('clearCache')) {
+        return { data: { clearCache: 1 } }
       }
       if (query.includes('addPage')) {
         return { data: { addPage: addPage || { id: '99' } } }
@@ -396,6 +400,20 @@ describe('Page List', () => {
     cy.get('.v-card .v-list').should('contain', 'Copy')
   })
 
+  it('context menu hides Clear cache without cache:clear permission', () => {
+    const page = makePage()
+    const permissions = { ...ALL_PERMISSIONS }
+    delete permissions['cache:clear']
+
+    visitPages([page], {
+      permission: JSON.stringify(permissions),
+      email: 'editor@example.com',
+      name: 'Editor',
+    })
+    cy.get('.tree-node-inner .btn-actions .v-btn').first().click()
+    cy.get('.v-card .v-list').should('not.contain', 'Clear cache')
+  })
+
   it('context menu shows Insert submenu', () => {
     const page = makePage()
     visitPages([page])
@@ -414,6 +432,19 @@ describe('Page List', () => {
     cy.wait('@gql').its('request.body').should((body) => {
       const ops = Array.isArray(body) ? body : [body]
       expect(ops.some((op) => (op.query || '').includes('pubPage'))).to.be.true
+    })
+  })
+
+  it('clicking Clear cache sends clearCache mutation for the page', () => {
+    const page = makePage()
+    visitPages([page])
+    cy.get('.tree-node-inner .btn-actions .v-btn').first().click()
+    cy.contains('.v-card .v-list .v-btn', 'Clear cache').click()
+    cy.wait('@gql').its('request.body').should((body) => {
+      const ops = Array.isArray(body) ? body : [body]
+      const clearOp = ops.find((op) => (op.query || '').includes('clearCache'))
+      expect(clearOp).to.exist
+      expect(clearOp.variables.id).to.equal('1')
     })
   })
 
