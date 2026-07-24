@@ -141,7 +141,16 @@ class Benchmark extends Command
             $bar->advance( $count );
         } );
 
-        PageInvalidated::dispatch( $domain );
+        $paths = array_values( Page::withTrashed()
+            ->where( 'domain', $domain )
+            ->where( 'editor', 'benchmark' )
+            ->pluck( 'path' )
+            ->map( fn( $path ) => (string) $path )
+            ->all() );
+
+        if( $paths ) {
+            PageInvalidated::dispatch( $domain, $paths );
+        }
 
         $bar->finish();
         $this->newLine();

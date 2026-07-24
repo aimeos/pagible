@@ -143,8 +143,14 @@ class PageAccess extends Model
 
         if( $changed )
         {
+            $paths = [];
+
             foreach( $changed as $page ) {
-                PageInvalidated::dispatch( (string) $page->domain, (string) $page->path );
+                $paths[(string) $page->domain][] = (string) $page->path;
+            }
+
+            foreach( $paths as $domain => $items ) {
+                PageInvalidated::dispatch( (string) $domain, $items );
             }
 
             if( Scout::usesExternalSearch() ) {

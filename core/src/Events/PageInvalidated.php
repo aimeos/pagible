@@ -13,7 +13,7 @@ use Illuminate\Foundation\Events\Dispatchable;
 
 
 /**
- * Requests invalidation of one rendered page route or a complete domain.
+ * Requests invalidation of rendered page routes after commit.
  */
 final class PageInvalidated implements ShouldDispatchAfterCommit
 {
@@ -22,10 +22,12 @@ final class PageInvalidated implements ShouldDispatchAfterCommit
     public readonly string $tenant;
 
 
+    /** @param list<string> $paths */
     public function __construct(
         public readonly string $domain,
-        public readonly ?string $path = null,
-    ) {
+        public readonly array $paths,
+    )
+    {
         $this->tenant = Tenancy::value();
     }
 }

@@ -19,16 +19,13 @@ class PageInvalidatedTest extends CoreTestAbstract
     use DatabaseTruncation;
 
 
-    public function testCapturesPageOrDomainScope(): void
+    public function testCapturesPaths(): void
     {
-        $domain = new PageInvalidated( 'example.com' );
-        $page = new PageInvalidated( 'example.com', 'about' );
+        $pages = new PageInvalidated( 'example.com', ['about', 'contact'] );
 
-        $this->assertSame( 'example.com', $domain->domain );
-        $this->assertNull( $domain->path );
-        $this->assertSame( 'example.com', $page->domain );
-        $this->assertSame( 'about', $page->path );
-        $this->assertSame( 'test', $page->tenant );
+        $this->assertSame( 'example.com', $pages->domain );
+        $this->assertSame( ['about', 'contact'], $pages->paths );
+        $this->assertSame( 'test', $pages->tenant );
     }
 
 
@@ -38,14 +35,14 @@ class PageInvalidatedTest extends CoreTestAbstract
         $received = null;
 
         Event::listen( PageInvalidated::class, function( PageInvalidated $event ) use ( &$received ) {
-            $received = [$event->tenant, $event->domain, $event->path];
+            $received = [$event->tenant, $event->domain, $event->paths];
         } );
 
         $this->assertSame( 0, $connection->transactionLevel() );
         $connection->beginTransaction();
 
         try {
-            PageInvalidated::dispatch( '', 'committed' );
+            PageInvalidated::dispatch( '', ['committed'] );
             $this->assertNull( $received );
             $connection->commit();
         } finally {
@@ -54,7 +51,7 @@ class PageInvalidatedTest extends CoreTestAbstract
             }
         }
 
-        $this->assertSame( ['test', '', 'committed'], $received );
+        $this->assertSame( ['test', '', ['committed']], $received );
     }
 
 
@@ -69,7 +66,7 @@ class PageInvalidatedTest extends CoreTestAbstract
 
         $this->assertSame( 0, $connection->transactionLevel() );
         $connection->beginTransaction();
-        PageInvalidated::dispatch( '', 'rolled-back' );
+        PageInvalidated::dispatch( '', ['rolled-back'] );
         $connection->rollBack();
 
         $this->assertFalse( $received );

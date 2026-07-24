@@ -16,26 +16,13 @@ use Illuminate\Contracts\Cache\LockTimeoutException;
 
 class PageCache
 {
-    /**
-     * Invalidates one route or all routes of a tenant domain.
-     */
-    public static function invalidate( string $domain, ?string $path, string $tenant ) : void
+    /** @param list<string> $paths */
+    public static function invalidate( string $domain, array $paths, string $tenant ) : void
     {
-        if( $path !== null ) {
-            self::store()->forget( self::routeKey( $tenant, $domain, $path ) );
-            return;
-        }
-
-        Models\Page::withoutTenancy()
-            ->withoutGlobalScope( 'jsonapi' )
-            ->withTrashed()
-            ->select( 'id', 'path' )
-            ->where( 'tenant_id', $tenant )
-            ->where( 'domain', $domain )
-            ->eachById(
-                fn( Models\Page $page ) => self::invalidate( $domain, (string) $page->path, $tenant ),
-                500,
-            );
+        self::store()->deleteMultiple( array_map(
+            fn( string $path ) => self::routeKey( $tenant, $domain, $path ),
+            $paths,
+        ) );
     }
 
 

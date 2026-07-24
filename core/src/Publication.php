@@ -371,10 +371,14 @@ final class Publication
      */
     private static function invalidate( Page $page, string $domain, string $path ) : void
     {
-        PageInvalidated::dispatch( $domain, $path );
+        $currentDomain = (string) $page->domain;
+        $currentPath = (string) $page->path;
 
-        if( $domain !== (string) $page->domain || $path !== (string) $page->path ) {
-            PageInvalidated::dispatch( (string) $page->domain, (string) $page->path );
+        if( $domain === $currentDomain ) {
+            PageInvalidated::dispatch( $domain, $path === $currentPath ? [$path] : [$path, $currentPath] );
+        } else {
+            PageInvalidated::dispatch( $domain, [$path] );
+            PageInvalidated::dispatch( $currentDomain, [$currentPath] );
         }
     }
 

@@ -40,12 +40,13 @@ class BenchmarkCore extends Command
 
     public function handle(): int
     {
+        $domain = (string) ( $this->option( 'domain' ) ?: '' );
         $tenant = (string) $this->option( 'tenant' );
 
         if( $this->option( 'unseed' ) )
         {
             $this->tenant( $tenant);
-            $this->unseed( config( 'cms.db', 'sqlite' ), $tenant );
+            $this->unseed( config( 'cms.db', 'sqlite' ), $tenant, $domain );
             return self::SUCCESS;
         }
 
@@ -63,8 +64,6 @@ class BenchmarkCore extends Command
             $this->error( 'No benchmark data found. Run `php artisan cms:benchmark --seed` first.' );
             return self::FAILURE;
         }
-
-        $domain = (string) ( $this->option( 'domain' ) ?: '' );
 
         // Load one item per type (each benchmark iteration is rolled back)
         $root = Page::where( 'tag', 'root' )->where( 'domain', $domain )->firstOrFail();
@@ -276,11 +275,19 @@ class BenchmarkCore extends Command
     /**
      * Remove all benchmark data for the tenant, respecting FK constraints.
      */
-    protected function unseed( string $conn, string $tenant ): void
+    protected function unseed( string $conn, string $tenant, string $domain ): void
     {
         // Clear cache for benchmark pages
-        foreach( Page::where( 'editor', 'benchmark' )->distinct()->pluck( 'domain' ) as $domain ) {
-            PageInvalidated::dispatch( (string) $domain );
+        $paths = array_values( Page::query()
+            ->withTrashed()
+            ->where( 'editor', 'benchmark' )
+            ->where( 'domain', $domain )
+            ->pluck( 'path' )
+            ->map( fn( $path ) => (string) $path )
+            ->all() );
+
+        if( $paths ) {
+            PageInvalidated::dispatch( $domain, $paths );
         }
 
         // Break circular page↔version FK by clearing latest_id first

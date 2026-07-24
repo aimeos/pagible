@@ -11,13 +11,15 @@ use Aimeos\Cms\Events\PageInvalidated;
 
 class PageInvalidationSpy
 {
-    /** @var list<array{domain: string, path: string|null}> */
+    /** @var list<array{domain: string, path: string}> */
     public array $events = [];
 
 
     public function handle( PageInvalidated $event ) : void
     {
-        $this->events[] = ['domain' => $event->domain, 'path' => $event->path];
+        foreach( $event->paths as $path ) {
+            $this->events[] = ['domain' => $event->domain, 'path' => $path];
+        }
     }
 
 

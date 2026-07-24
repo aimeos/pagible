@@ -1029,7 +1029,8 @@ class ResourceTest extends CoreTestAbstract
         foreach( $pages as $page ) {
             $this->assertSame( [$file->id], $page->fresh()->files()->pluck( 'cms_files.id' )->all() );
             Event::assertDispatched( PageInvalidated::class, fn( PageInvalidated $event ) =>
-                $event->domain === (string) $page->domain && $event->path === (string) $page->path
+                $event->domain === (string) $page->domain
+                && $event->paths === [(string) $page->path]
             );
         }
 
@@ -1064,12 +1065,10 @@ class ResourceTest extends CoreTestAbstract
         Publication::publish( Page::class, [$page->id], $this->user );
 
         Event::assertDispatched( PageInvalidated::class, fn( PageInvalidated $event ) =>
-            $event->domain === $previous['domain'] && $event->path === $previous['path']
+            $event->domain === $previous['domain']
+            && $event->paths === [$previous['path'], 'changed-route']
         );
-        Event::assertDispatched( PageInvalidated::class, fn( PageInvalidated $event ) =>
-            $event->domain === (string) $page->domain && $event->path === 'changed-route'
-        );
-        Event::assertDispatchedTimes( PageInvalidated::class, 2 );
+        Event::assertDispatchedTimes( PageInvalidated::class, 1 );
     }
 
 
@@ -1087,7 +1086,8 @@ class ResourceTest extends CoreTestAbstract
         $this->assertTrue( (bool) $version->refresh()->published );
         $this->assertSame( [$file->id], $page->files()->pluck( 'cms_files.id' )->all() );
         Event::assertDispatched( PageInvalidated::class, fn( PageInvalidated $event ) =>
-            $event->domain === (string) $page->domain && $event->path === (string) $page->path
+            $event->domain === (string) $page->domain
+            && $event->paths === [(string) $page->path]
         );
         Event::assertDispatchedTimes( PageInvalidated::class, 1 );
     }
@@ -1139,13 +1139,18 @@ class ResourceTest extends CoreTestAbstract
 
         Resource::drop( Page::class, collect( $pages )->take( 2 )->pluck( 'id' )->all(), $this->user );
 
-        foreach( $pages as $page ) {
+        foreach( collect( $pages )->groupBy( 'domain' ) as $domain => $items ) {
             Event::assertDispatched( PageInvalidated::class, fn( PageInvalidated $event ) =>
-                $event->domain === (string) $page->domain && $event->path === (string) $page->path
+                $event->domain === (string) $domain
+                && collect( $event->paths )->sort()->values()->all()
+                    === $items->pluck( 'path' )->sort()->values()->all()
             );
         }
 
-        Event::assertDispatchedTimes( PageInvalidated::class, count( $pages ) );
+        Event::assertDispatchedTimes(
+            PageInvalidated::class,
+            collect( $pages )->pluck( 'domain' )->unique()->count(),
+        );
     }
 
 
@@ -1162,13 +1167,15 @@ class ResourceTest extends CoreTestAbstract
 
         $pages = collect( [$page, $child] );
 
-        foreach( $pages as $item ) {
+        foreach( $pages->groupBy( 'domain' ) as $domain => $items ) {
             Event::assertDispatched( PageInvalidated::class, fn( PageInvalidated $event ) =>
-                $event->domain === (string) $item->domain && $event->path === (string) $item->path
+                $event->domain === (string) $domain
+                && collect( $event->paths )->sort()->values()->all()
+                    === $items->pluck( 'path' )->sort()->values()->all()
             );
         }
 
-        Event::assertDispatchedTimes( PageInvalidated::class, $pages->count() );
+        Event::assertDispatchedTimes( PageInvalidated::class, $pages->pluck( 'domain' )->unique()->count() );
     }
 
 

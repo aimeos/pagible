@@ -567,10 +567,16 @@ class Resource
 
         if( $isPage && $action !== 'restored' )
         {
+            $paths = [];
+
             foreach( $pages as $page ) {
                 if( $page instanceof Page ) {
-                    PageInvalidated::dispatch( (string) $page->domain, (string) $page->path );
+                    $paths[(string) $page->domain][] = (string) $page->path;
                 }
+            }
+
+            foreach( $paths as $domain => $domainPaths ) {
+                PageInvalidated::dispatch( (string) $domain, $domainPaths );
             }
         }
 

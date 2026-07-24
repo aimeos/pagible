@@ -41,7 +41,7 @@ class ThemeServiceProvider extends Provider
 
         Event::listen( PageInvalidated::class, function( PageInvalidated $event ) {
             try {
-                PageCache::invalidate( $event->domain, $event->path, $event->tenant );
+                PageCache::invalidate( $event->domain, $event->paths, $event->tenant );
             } catch( \Throwable $e ) {
                 report( $e );
             }
