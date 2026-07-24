@@ -21,7 +21,7 @@ class BulkListener
         Watch::emit( 'cms.' . $event->contentType, [
             'type' => $event->contentType,
             'source' => $event->source,
-            'action' => 'bulk',
+            'action' => $event->action,
             'ids' => array_values( $event->ids ),
             'editor' => $event->editor,
             'tenant_id' => $event->tenant,

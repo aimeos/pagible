@@ -9,6 +9,8 @@ namespace Tests;
 
 use Aimeos\Cms\Utils;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Storage;
 use PHPUnit\Framework\Attributes\Group;
 
 
@@ -148,8 +150,26 @@ class UtilsTest extends CoreTestAbstract
         $opts = Utils::safeHttp( 'https://example.com/image.png' );
 
         $this->assertTrue( $opts['verify'] );
-        $this->assertArrayHasKey( 'on_redirect', $opts['allow_redirects'] );
+        $this->assertFalse( $opts['allow_redirects'] );
         $this->assertStringStartsWith( 'example.com:443:', $opts['curl'][CURLOPT_RESOLVE][0] );
+    }
+
+
+    public function testHttpBlocksRedirectToPrivateAddress()
+    {
+        Http::fake( [
+            '8.8.8.8/*' => Http::response( '', 302, ['Location' => 'http://127.0.0.1/private'] ),
+            '*' => Http::response( 'secret', 200 ),
+        ] );
+
+        try {
+            Utils::fetch( 'http://8.8.8.8/start' );
+            $this->fail( 'Expected the private redirect to be blocked' );
+        } catch( \Aimeos\Cms\Exception $e ) {
+            $this->assertStringContainsString( 'does not resolve to an allowed address', $e->getMessage() );
+        }
+
+        Http::assertSentCount( 1 );
     }
 
 
@@ -351,9 +371,30 @@ class UtilsTest extends CoreTestAbstract
 
     public function testMimetypeReadsValidPath()
     {
-        \Illuminate\Support\Facades\Storage::fake( 'public' );
-        \Illuminate\Support\Facades\Storage::disk( 'public' )->put( 'cms/test/hello.txt', 'hello world, plain text content' );
+        Storage::fake( 'public' );
+        Storage::disk( 'public' )->put( 'cms/test/hello.txt', 'hello world, plain text content' );
 
         $this->assertEquals( 'text/plain', Utils::mimetype( 'cms/test/hello.txt' ) );
+    }
+
+
+    public function testMimetypeRejectsAnotherTenantBeforeReading()
+    {
+        Storage::fake( 'public' );
+        Storage::disk( 'public' )->put( 'cms/other/secret.txt', 'secret' );
+
+        $this->expectException( \Aimeos\Cms\Exception::class );
+        $this->expectExceptionMessage( 'Invalid file path' );
+
+        Utils::mimetype( 'cms/other/secret.txt' );
+    }
+
+
+    public function testNormalizePathCanonicalizesStorageAliases()
+    {
+        $this->assertSame( 'cms/test/image.jpg', Utils::normalizePath( 'cms//test/./image.jpg', 'test' ) );
+        $this->assertNull( Utils::normalizePath( 'cms/test/../other/image.jpg', 'test' ) );
+        $this->assertNull( Utils::normalizePath( 'cms/other/image.jpg', 'test' ) );
+        $this->assertNull( Utils::normalizePath( 'cms/default/nested.jpg', '' ) );
     }
 }

@@ -34,7 +34,9 @@ class IsolateImage extends Tool
      */
     public function handle( Request $request ): \Laravel\Mcp\ResponseFactory
     {
-        if( !Permission::can( 'image:isolate', $request->user() ) ) {
+        if( !Permission::can( 'image:isolate', $request->user() )
+            || !Permission::can( 'file:save', $request->user() )
+            || !Permission::can( 'file:view', $request->user() ) ) {
             throw new \Aimeos\Cms\Exception( 'Insufficient permissions' );
         }
 
@@ -89,6 +91,8 @@ class IsolateImage extends Tool
      */
     public function shouldRegister( Request $request ) : bool
     {
-        return Permission::can( 'image:isolate', $request->user() );
+        return Permission::can( 'image:isolate', $request->user() )
+            && Permission::can( 'file:save', $request->user() )
+            && Permission::can( 'file:view', $request->user() );
     }
 }

@@ -7,14 +7,18 @@
 
 namespace Aimeos\Cms\Models;
 
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Prunable;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Date;
-use Illuminate\Support\Str;
 use Aimeos\Cms\Concerns\Broadcasts;
+use Aimeos\Cms\Concerns\HasUuids;
+use Aimeos\Cms\Concerns\Tenancy;
 use Aimeos\Cms\DB;
+use Aimeos\Cms\Publication;
+use Laravel\Scout\Searchable;
 
 
 /**
@@ -24,19 +28,40 @@ use Aimeos\Cms\DB;
  * versioning relations, version cleanup, and pruning.
  *
  * @property string $id
+ * @property string $tenant_id
  * @property string $editor
  * @property Version|null $latest
+ * @property string|null $latest_id
  * @property \Illuminate\Support\Carbon|null $deleted_at
  * @method static \Illuminate\Database\Eloquent\Builder<static> withTrashed()
- * @method self publish(Version $version)
  * @method bool restore()
  */
 abstract class Base extends Model
 {
     use Broadcasts;
     use HasUuids;
+    use Prunable;
+    use Searchable;
+    use SoftDeletes;
+    use Tenancy;
 
-    private static ?bool $isSqlsrv = null;
+    public const MAX_BULK = 1000;
+
+    /** @var array<string, mixed>|null */
+    protected ?array $changedInfo = null;
+
+    /**
+     * Rejects operations exceeding the synchronous bulk limit.
+     */
+    public static function checkBulk( int $count ) : void
+    {
+        if( $count > static::MAX_BULK ) {
+            throw new \Aimeos\Cms\Exception( sprintf(
+                'No more than %d items may be changed at once.',
+                static::MAX_BULK,
+            ) );
+        }
+    }
 
 
     /**
@@ -106,6 +131,17 @@ abstract class Base extends Model
 
 
     /**
+     * Returns information about the changes that were made, if available.
+     *
+     * @return array<string, mixed>|null
+     */
+    public function getChangedAttribute() : ?array
+    {
+        return $this->changedInfo;
+    }
+
+
+    /**
      * Get the connection name for the model.
      *
      * @return string Name of the database connection to use
@@ -156,53 +192,95 @@ abstract class Base extends Model
 
 
     /**
-     * Normalize UUID case on SQL Server to prevent mixed-case mismatches.
+     * Removes old versions for several models using one ranked version stream.
      *
-     * @param string|null $value Raw ID value
-     * @return string|null Uppercased on SQL Server, unchanged otherwise
+     * @param string $tenant Tenant ID
+     * @param array<string> $ids Model IDs
      */
-    public function getIdAttribute( $value )
+    public static function pruneVersions( string $tenant, array $ids ) : void
     {
-        self::$isSqlsrv ??= $this->getConnection()->getDriverName() === 'sqlsrv';
-        return self::$isSqlsrv && $value ? strtoupper( $value ) : $value;
+        $ids = array_values( array_unique( $ids ) );
+
+        if( !$ids ) {
+            return;
+        }
+
+        $num = max( 0, (int) config( 'cms.versions', 10 ) );
+        $stale = new \SplTempFileObject( 1024 * 1024 );
+        $stale->setFlags( \SplFileObject::READ_CSV | \SplFileObject::SKIP_EMPTY );
+        $stale->setCsvControl( ',', '"', '' );
+
+        foreach( static::versionRanks( $tenant, $ids ) as [$id, $rank] ) {
+            if( $rank > $num ) {
+                $stale->fputcsv( [$id], ',', '"', '' );
+            }
+        }
+
+        $stale->rewind();
+        $chunk = [];
+
+        foreach( $stale as $row )
+        {
+            if( $row ) {
+                $chunk[] = $row[0];
+            }
+
+            if( count( $chunk ) === 500 ) {
+                Version::withoutTenancy()->where( 'tenant_id', $tenant )
+                    ->whereIn( 'id', $chunk )->forceDelete();
+                $chunk = [];
+            }
+        }
+
+        if( $chunk ) {
+            Version::withoutTenancy()->where( 'tenant_id', $tenant )
+                ->whereIn( 'id', $chunk )->forceDelete();
+        }
     }
 
 
     /**
-     * Generate a new unique key for the model.
-     *
-     * @return string
+     * Publishes a version and its dependencies.
      */
-    public function newUniqueId()
+    public function publish( Version $version ) : void
     {
-        // workaround for SQL Server and Lighthouse when UUIDs are mixed case
-        self::$isSqlsrv ??= $this->getConnection()->getDriverName() === 'sqlsrv';
-        return (string) ( self::$isSqlsrv ? strtoupper( Str::uuid7() ) : Str::uuid7() );
+        ( new Publication() )->one( $this, $version );
     }
 
 
     /**
      * Removes old versions of the model, keeping the configured number.
-     *
-     * @return static The current instance for method chaining
      */
-    public function removeVersions() : static
+    public function removeVersions() : void
     {
-        $num = config( 'cms.versions', 10 );
-
-        // MySQL doesn't support offsets for DELETE
-        $ids = Version::where( 'versionable_id', $this->id )
-            ->where( 'versionable_type', static::class )
-            ->orderByDesc( 'created_at' )
-            ->offset( $num )
-            ->limit( 10 )
-            ->pluck( 'id' );
-
-        if( !$ids->isEmpty() ) {
-            Version::whereIn( 'id', $ids )->forceDelete();
+        if( ( $id = $this->id ) !== null ) {
+            static::pruneVersions( $this->tenant_id, [$id] );
         }
+    }
 
-        return $this;
+
+    /**
+     * Sets information about the changes that were made.
+     *
+     * @param array<string, mixed> $info
+     */
+    public function setChanged( array $info ) : void
+    {
+        $this->changedInfo = $info;
+    }
+
+
+    /**
+     * Applies version values to this model without writing them.
+     */
+    public function stage( Version $version ) : void
+    {
+        $this->forceFill( [
+            ...array_intersect_key( (array) $version->data, array_flip( $this->getFillable() ) ),
+            ...$this->values( $version ),
+            'editor' => $version->editor,
+        ] );
+        $this->setRelation( 'latest', $version );
     }
 
 
@@ -214,5 +292,89 @@ abstract class Base extends Model
     public function versions() : MorphMany
     {
         return $this->morphMany( Version::class, 'versionable' )->orderByDesc( 'created_at' )->orderByDesc( 'id' );
+    }
+
+
+    /**
+     * Returns the common CMS model casts.
+     *
+     * @return array<string, string>
+     */
+    protected function casts() : array
+    {
+        return [
+            'created_at' => 'datetime:Y-m-d H:i:s',
+            'updated_at' => 'datetime:Y-m-d H:i:s',
+            'deleted_at' => 'datetime:Y-m-d H:i:s',
+        ];
+    }
+
+
+    /**
+     * Loads the latest version needed by searchable CMS models.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder<static> $query
+     * @return \Illuminate\Database\Eloquent\Builder<static>
+     */
+    protected function makeAllSearchableUsing( $query )
+    {
+        return $query->with( ['latest' => fn( $q ) => $q->select( 'id', 'versionable_id', 'data', 'lang', 'editor', 'published' )] );
+    }
+
+
+    /**
+     * Deletes versions before pruning a CMS model.
+     */
+    protected function pruning() : void
+    {
+        Version::where( 'versionable_id', $this->id )
+            ->where( 'versionable_type', static::class )
+            ->delete();
+    }
+
+
+    /**
+     * Returns model-specific values stored outside the version data payload.
+     *
+     * @return array<string, mixed>
+     */
+    protected function values( Version $version ) : array
+    {
+        return [];
+    }
+
+
+    /**
+     * Returns version IDs ranked newest first for each model.
+     *
+     * @param string $tenant Tenant ID
+     * @param array<string> $ids Model IDs
+     * @return \Generator<int, array{string, int}>
+     */
+    protected static function versionRanks( string $tenant, array $ids ) : \Generator
+    {
+        $owner = null;
+        $rank = 0;
+
+        foreach( Version::withoutTenancy()->select( 'id', 'versionable_id' )
+            ->where( 'tenant_id', $tenant )
+            ->where( 'versionable_type', static::class )
+            ->whereIn( 'versionable_id', $ids )
+            ->orderBy( 'versionable_id' )->orderByDesc( 'created_at' )->orderByDesc( 'id' )
+            ->cursor() as $version
+        ) {
+            $key = $version->versionable_id;
+
+            if( $key !== $owner ) {
+                $owner = $key;
+                $rank = 0;
+            }
+
+            if( ( $id = $version->id ) === null ) {
+                throw new \LogicException( 'Stored CMS version has no ID.' );
+            }
+
+            yield [$id, ++$rank];
+        }
     }
 }

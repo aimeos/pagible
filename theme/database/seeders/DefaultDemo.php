@@ -460,7 +460,6 @@ class DefaultDemo extends AbstractDemo
                     'name' => 'Meridian Works footer',
                     'data' => ['cards' => $cards],
                 ],
-                'published' => true,
                 'editor' => 'demo',
             ] );
 
@@ -506,7 +505,6 @@ class DefaultDemo extends AbstractDemo
             $version = $file->versions()->forceCreate( [
                 'lang' => 'en',
                 'data' => $data,
-                'published' => true,
                 'editor' => 'demo',
             ] );
 
@@ -664,7 +662,6 @@ class DefaultDemo extends AbstractDemo
                 'meta' => $meta,
                 'content' => $content,
             ],
-            'published' => true,
             'editor' => 'demo',
         ] );
 
@@ -763,7 +760,6 @@ SVG;
             $version = $file->versions()->forceCreate( [
                 'lang' => 'en',
                 'data' => $data,
-                'published' => true,
                 'editor' => 'demo',
             ] );
 
@@ -822,7 +818,6 @@ SVG;
                 'theme' => $this->theme,
             ],
             'aux' => ['meta' => $meta, 'content' => $content],
-            'published' => true,
             'editor' => 'demo',
         ] );
 
@@ -876,7 +871,6 @@ SVG;
             $version = $file->versions()->forceCreate( [
                 'lang' => 'en',
                 'data' => $data,
-                'published' => true,
                 'editor' => 'demo',
             ] );
 

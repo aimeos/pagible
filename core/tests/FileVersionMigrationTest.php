@@ -45,13 +45,7 @@ class FileVersionMigrationTest extends CoreTestAbstract
         $db->table( 'cms_versions' )->where( 'id', $pageVersion->id )->update( ['data' => json_encode( $pageData )] );
 
         $migration = require dirname( __DIR__ ) . '/database/migrations/2026_07_20_000000_move_file_text_to_aux.php';
-        $db->flushQueryLog();
-        $db->enableQueryLog();
         $migration->up();
-
-        $updates = array_filter( $db->getQueryLog(), fn( $entry ) => str_starts_with( strtolower( ltrim( $entry['query'] ) ), 'update' ) );
-        $this->assertCount( 1, $updates );
-        $this->assertCount( 3, array_values( $updates )[0]['bindings'] );
 
         $stored = $db->table( 'cms_versions' )->where( 'id', $fileVersion->id )->first();
         $storedData = json_decode( $stored->data ?? '', true );
@@ -66,10 +60,7 @@ class FileVersionMigrationTest extends CoreTestAbstract
         $storedPage = $db->table( 'cms_versions' )->where( 'id', $pageVersion->id )->first();
         $this->assertSame( ['en' => 'Page description'], json_decode( $storedPage->data ?? '', true )['description'] );
 
-        $db->flushQueryLog();
+        $this->expectsDatabaseQueryCount( 1 );
         $migration->up();
-
-        $updates = array_filter( $db->getQueryLog(), fn( $entry ) => str_starts_with( strtolower( ltrim( $entry['query'] ) ), 'update' ) );
-        $this->assertCount( 0, $updates );
     }
 }

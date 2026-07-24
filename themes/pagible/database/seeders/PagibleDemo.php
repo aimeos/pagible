@@ -500,7 +500,6 @@ HTML,
             $version = $file->versions()->forceCreate( [
                 'lang' => 'en',
                 'data' => $data,
-                'published' => true,
                 'editor' => 'demo',
             ] );
 
@@ -544,7 +543,6 @@ HTML,
                     'name' => 'PagibleAI footer',
                     'data' => ['cards' => $cards],
                 ],
-                'published' => true,
                 'editor' => 'demo',
             ] );
 
@@ -590,7 +588,6 @@ HTML,
             $version = $file->versions()->forceCreate( [
                 'lang' => 'en',
                 'data' => $data,
-                'published' => true,
                 'editor' => 'demo',
             ] );
 
@@ -757,7 +754,6 @@ HTML,
                 'meta' => $meta,
                 'content' => $content,
             ],
-            'published' => true,
             'editor' => 'demo',
         ] );
 
@@ -841,7 +837,6 @@ HTML,
             $version = $file->versions()->forceCreate( [
                 'lang' => 'en',
                 'data' => $data,
-                'published' => true,
                 'editor' => 'demo',
             ] );
 
@@ -900,7 +895,6 @@ HTML,
                 'theme' => $this->theme,
             ],
             'aux' => ['meta' => $meta, 'content' => $content],
-            'published' => true,
             'editor' => 'demo',
         ] );
 

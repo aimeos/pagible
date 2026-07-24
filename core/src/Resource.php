@@ -7,18 +7,19 @@
 
 namespace Aimeos\Cms;
 
+use Aimeos\Cms\Events\PagesInvalidated;
+use Aimeos\Cms\Jobs\PruneVersions;
 use Aimeos\Cms\Models\Base;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Models\Version;
 use Illuminate\Contracts\Auth\Authenticatable;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Cache;
-use Aimeos\Nestedset\NestedSet;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use Aimeos\Nestedset\NestedSet;
 
 
 class Resource
@@ -35,41 +36,34 @@ class Resource
      */
     public static function addElement( array $input, ?Authenticatable $user = null ) : Element
     {
-        Validation::element( $input['type'] ?? '' );
+        $type = $input['type'] ?? '';
+        Validation::element( $type );
 
         if( isset( $input['data'] ) ) {
-            Validation::html( $input['type'] ?? '', $input['data'] );
+            Validation::html( $type, $input['data'] );
         }
 
-        if( $input['type'] ?? null ) {
-            $input['data'] = (array) Validation::defaults( $input['type'], $input['data'] ?? [] );
-        }
+        $input['data'] = (array) Validation::defaults( $type, $input['data'] ?? [] );
 
-        $input['name'] = (string) ( $input['name'] ?? '' );
         $editor = Utils::editor( $user );
 
-        return Utils::transaction( function() use ( $input, $editor ) {
+        return Utils::transaction( function() use ( $input, $editor, $user ) {
 
             $versionId = ( new Version )->newUniqueId();
 
             $element = new Element();
             $element->fill( $input );
-            $element->data = $input['data'] ?? [];
-            $element->tenant_id = Tenancy::value();
             $element->latest_id = $versionId;
             $element->editor = $editor;
             $element->save();
 
-            $fileIds = self::elementFiles( $input );
+            $fileIds = self::elementFiles( $input, $user );
 
             $element->files()->attach( $fileIds );
 
-            $data = $input;
-            ksort( $data );
-
             $version = $element->versions()->forceCreate( [
                 'id' => $versionId,
-                'data' => array_map( fn( $v ) => is_null( $v ) ? (string) $v : $v, $data ),
+                'data' => $element->toArray(),
                 'lang' => $input['lang'] ?? null,
                 'editor' => $editor,
             ] );
@@ -101,34 +95,45 @@ class Resource
     public static function addFile( File $file, ?Authenticatable $user = null ) : File
     {
         $editor = Utils::editor( $user );
+        $tenant = Tenancy::value();
 
-        return Utils::transaction( function() use ( $file, $editor ) {
+        try
+        {
+            return Utils::fileLock( $tenant, function() use ( $file, $editor ) {
+                self::checkStored( [$file->path, ...(array) $file->previews] );
 
-            $versionId = ( new Version )->newUniqueId();
+                return Utils::transaction( function() use ( $file, $editor ) {
+                    $versionId = ( new Version )->newUniqueId();
 
-            $file->tenant_id ??= Tenancy::value();
-            $file->latest_id = $versionId;
-            $file->editor = $editor;
-            $file->save();
+                    $file->latest_id = $versionId;
+                    $file->editor = $editor;
+                    $file->save();
 
-            $snapshot = File::snapshot( $file->toArray() );
+                    $snapshot = File::snapshot( $file->toArray() );
 
-            $version = $file->versions()->forceCreate( [
-                'id' => $versionId,
-                'lang' => $file->lang,
-                'editor' => $editor,
-                'data' => $snapshot['data'],
-                'aux' => $snapshot['aux'],
-            ] );
+                    $version = $file->versions()->forceCreate( [
+                        'id' => $versionId,
+                        'lang' => $file->lang,
+                        'editor' => $editor,
+                        'data' => $snapshot['data'],
+                        'aux' => $snapshot['aux'],
+                    ] );
 
-            // Re-index with the latest version loaded so the draft (latest=true)
-            // row is written; on $file->save() above the version did not exist yet.
-            $file->setRelation( 'latest', $version )->searchable();
+                    // Re-index with the latest version loaded so the draft (latest=true)
+                    // row is written; on $file->save() above the version did not exist yet.
+                    $file->setRelation( 'latest', $version )->searchable();
 
-            $file->announce( 'added', $editor );
+                    $file->announce( 'added', $editor );
 
-            return $file;
-        } );
+                    return $file;
+                } );
+            } );
+        }
+        catch( \Throwable $t )
+        {
+            $file->removePreviews()->removeFile();
+            throw $t;
+        }
     }
 
 
@@ -144,54 +149,46 @@ class Resource
      * @return Page
      * @throws \InvalidArgumentException On validation failure
      */
-    public static function addPage( array $input, ?Authenticatable $user = null,
-        ?string $ref = null, ?string $parent = null ) : Page
+    public static function addPage( array $input, ?Authenticatable $user = null, ?string $ref = null, ?string $parent = null ) : Page
     {
         $input = Validation::page( $input, $user );
         $editor = Utils::editor( $user );
 
-        return Utils::lockedTransaction( function() use ( $input, $editor, $ref, $parent ) {
+        return Utils::lockedTransaction( function() use ( $input, $editor, $ref, $parent, $user ) {
 
             $versionId = ( new Version )->newUniqueId();
 
             $page = new Page();
             $page->fill( $input );
-            $page->tenant_id = Tenancy::value();
             $page->editor = $editor;
 
-            self::position( $page, $ref, $parent );
+            $page->position( $ref, $parent );
 
             $page->latest_id = $versionId;
             $page->save();
 
-            $refs = self::refs( [
+            $aux = [
                 'content' => $input['content'] ?? [],
                 'meta' => $input['meta'] ?? [],
                 'config' => $input['config'] ?? [],
-            ] );
+            ];
+            $refs = self::refs( $aux, $user );
 
-            $fileIds = self::available( File::class, $refs['files'] );
-            $elementIds = self::available( Element::class, $refs['elements'] );
+            $page->files()->attach( $refs['files'] );
+            $page->elements()->attach( $refs['elements'] );
 
-            $page->files()->attach( $fileIds );
-            $page->elements()->attach( $elementIds );
-
-            $data = array_diff_key( $input, array_flip( ['config', 'content', 'meta'] ) );
+            $data = array_diff_key( $input, $aux );
 
             $version = $page->versions()->forceCreate( [
                 'id' => $versionId,
-                'data' => array_map( fn( $v ) => is_null( $v ) ? (string) $v : $v, $data ),
+                'data' => $data,
                 'lang' => $input['lang'] ?? null,
                 'editor' => $editor,
-                'aux' => [
-                    'meta' => (object) ( $input['meta'] ?? [] ),
-                    'config' => (object) ( $input['config'] ?? [] ),
-                    'content' => $input['content'] ?? [],
-                ]
+                'aux' => $aux,
             ] );
 
-            $version->elements()->attach( $elementIds );
-            $version->files()->attach( $fileIds );
+            $version->elements()->attach( $refs['elements'] );
+            $version->files()->attach( $refs['files'] );
 
             // Re-index with the latest version loaded so the draft (latest=true)
             // row is written; on $page->save() above the version did not exist yet.
@@ -209,31 +206,13 @@ class Resource
      *
      * @param class-string<Base> $model
      * @param array<string> $ids
-     * @param string $editor
+     * @param Authenticatable|null $user Authenticated user for editor tracking
+     * @param array<string> $fields Requested response fields
      * @return Collection<int, Base>
      */
-    public static function drop( string $model, array $ids, string $editor ) : Collection
+    public static function drop( string $model, array $ids, ?Authenticatable $user = null, array $fields = [] ) : Collection
     {
-        return Utils::transaction( function() use ( $model, $ids, $editor ) {
-
-            $items = $model::withTrashed()->whereIn( 'id', $ids )
-                ->when( is_a( $model, Page::class, true ), fn( $q ) => $q->select( Page::SELECT_COLUMNS ) )
-                ->get();
-
-            foreach( $items as $item )
-            {
-                $item->editor = $editor;
-                $item->delete();
-
-                if( $item instanceof Page ) {
-                    Cache::forget( Page::key( $item ) );
-                }
-
-                $item->announce( 'dropped', $editor );
-            }
-
-            return $items;
-        } );
+        return self::lifecycle( $model, $ids, 'dropped', $user, $fields );
     }
 
 
@@ -244,92 +223,26 @@ class Resource
      * @param string|null $ref Sibling page ID to insert before
      * @param string|null $parent Parent page ID to append to
      * @param Authenticatable|null $user Authenticated user for editor tracking
-     * @param bool $root Whether to make the page a root node when no ref/parent given
      * @return Page
      * @throws \Illuminate\Database\Eloquent\ModelNotFoundException If page not found
      */
-    public static function movePage( string $id, ?string $ref = null, ?string $parent = null,
-        ?Authenticatable $user = null, bool $root = true ) : Page
+    public static function movePage( string $id, ?string $ref = null, ?string $parent = null, ?Authenticatable $user = null ) : Page
     {
         $editor = Utils::editor( $user );
 
-        return Utils::lockedTransaction( function() use ( $id, $ref, $parent, $editor, $root ) {
+        return Utils::lockedTransaction( function() use ( $id, $ref, $parent, $editor ) {
 
             /** @var Page $page */
             $page = Page::withTrashed()->findOrFail( $id );
             $page->editor = $editor;
 
-            self::position( $page, $ref, $parent, $root );
+            $page->position( $ref, $parent );
 
             Page::withoutSyncingToSearch( fn() => $page->save() );
 
             $page->announce( 'moved', $editor );
 
             return $page;
-        } );
-    }
-
-
-    /**
-     * Positions a page in the tree relative to a sibling or parent.
-     *
-     * @param Page $page The page to position
-     * @param string|null $beforeId ID of sibling to insert before
-     * @param string|null $parentId ID of parent to append to
-     * @param bool $root Whether to make the page a root node when no ref/parent given
-     */
-    public static function position( Page $page, ?string $beforeId = null, ?string $parentId = null, bool $root = false ) : void
-    {
-        if( $beforeId ) {
-            $ref = Page::withTrashed()->select( 'id', 'tenant_id', 'parent_id', NestedSet::LFT, NestedSet::RGT, NestedSet::DEPTH )->findOrFail( $beforeId );
-            $page->beforeNode( $ref );
-        } elseif( $parentId ) {
-            $parent = Page::withTrashed()->select( 'id', 'tenant_id', 'parent_id', NestedSet::LFT, NestedSet::RGT, NestedSet::DEPTH )->findOrFail( $parentId );
-            $page->appendToNode( $parent );
-        } elseif( $root ) {
-            $page->makeRoot();
-        }
-    }
-
-
-    /**
-     * Publishes or schedules items by ID.
-     *
-     * @param class-string<Base> $model
-     * @param array<string> $ids
-     * @param string $editor
-     * @param string|null $at ISO 8601 datetime to schedule publication
-     * @param array<string|int, string|\Closure> $with Eager-load relations
-     * @return Collection<int, Base>
-     */
-    public static function publish( string $model, array $ids, string $editor, ?string $at = null, array $with = ['latest'] ) : Collection
-    {
-        return Utils::transaction( function() use ( $model, $ids, $editor, $at, $with ) {
-
-            $items = $at
-                ? $model::select( 'id', 'latest_id' )->whereIn( 'id', $ids )->get()
-                : $model::with( $with )->whereIn( 'id', $ids )->get();
-
-            foreach( $items as $item )
-            {
-                if( $latest = $item->latest )
-                {
-                    if( $at )
-                    {
-                        $latest->publish_at = $at;
-                        $latest->editor = $editor;
-                        $latest->save();
-                    }
-                    else
-                    {
-                        $item->publish( $latest );
-                    }
-                }
-
-                $item->announce( 'published', $editor );
-            }
-
-            return $items;
         } );
     }
 
@@ -342,41 +255,13 @@ class Resource
      *
      * @param class-string<Base> $model
      * @param array<string> $ids
-     * @param string $editor
+     * @param Authenticatable|null $user Authenticated user for editor tracking
+     * @param array<string> $fields Requested response fields
      * @return Collection<int, Base>
      */
-    public static function purge( string $model, array $ids, string $editor ) : Collection
+    public static function purge( string $model, array $ids, ?Authenticatable $user = null, array $fields = [] ) : Collection
     {
-        $callback = function() use ( $model, $ids, $editor ) {
-
-            $items = $model::withTrashed()->whereIn( 'id', $ids )
-                ->when( is_a( $model, Page::class, true ), fn( $q ) => $q->select( Page::SELECT_COLUMNS ) )
-                // eager-load latest only when broadcasting, so the per-item removed
-                // events don't lazy-load each version (N+1)
-                ->when( config( 'cms.broadcast' ), fn( $q ) => $q->with( 'latest' ) )
-                ->get();
-
-            foreach( $items as $item )
-            {
-                $item->announce( 'purged', $editor );
-
-                if( $item instanceof File ) {
-                    $item->purge();
-                } else {
-                    $item->forceDelete();
-                }
-
-                if( $item instanceof Page ) {
-                    Cache::forget( Page::key( $item ) );
-                }
-            }
-
-            return $items;
-        };
-
-        return is_a( $model, Page::class, true )
-            ? Utils::lockedTransaction( $callback )
-            : Utils::transaction( $callback );
+        return self::lifecycle( $model, $ids, 'purged', $user, $fields );
     }
 
 
@@ -387,31 +272,13 @@ class Resource
      *
      * @param class-string<Base> $model
      * @param array<string> $ids
-     * @param string $editor
+     * @param Authenticatable|null $user Authenticated user for editor tracking
+     * @param array<string> $fields Requested response fields
      * @return Collection<int, Base>
      */
-    public static function restore( string $model, array $ids, string $editor ) : Collection
+    public static function restore( string $model, array $ids, ?Authenticatable $user = null, array $fields = [] ) : Collection
     {
-        $callback = function() use ( $model, $ids, $editor ) {
-
-            $items = $model::withTrashed()->whereIn( 'id', $ids )
-                ->when( is_a( $model, Page::class, true ), fn( $q ) => $q->select( Page::SELECT_COLUMNS ) )
-                ->get();
-
-            foreach( $items as $item )
-            {
-                $item->editor = $editor;
-                $item->restore();
-
-                $item->announce( 'restored', $editor );
-            }
-
-            return $items;
-        };
-
-        return is_a( $model, Page::class, true )
-            ? Utils::lockedTransaction( $callback )
-            : Utils::transaction( $callback );
+        return self::lifecycle( $model, $ids, 'restored', $user, $fields );
     }
 
 
@@ -430,21 +297,27 @@ class Resource
     {
         /** @var Element $element */
         $element = Element::withTrashed()->with( 'latest' )->findOrFail( $id );
-        $type = $input['type'] ?? $element->type ?? ( (array) ( $element->latest->data ?? [] ) )['type'] ?? '';
+        $type = $input['type'] ?? $element->type;
 
         if( isset( $input['type'] ) ) {
             Validation::element( $type );
         }
 
-        if( isset( $input['data'] ) ) {
+        if( isset( $input['data'] ) )
+        {
             Validation::html( $type, $input['data'] );
             $input['data'] = (array) Validation::defaults( $type, $input['data'] );
         }
 
         $editor = Utils::editor( $user );
 
-        return Utils::transaction( function() use ( $element, $input, $editor, $latestId ) {
-            return self::applyElement( $element, $input, $editor, $latestId );
+        return Utils::transaction( function() use ( $element, $input, $editor, $latestId, $user ) {
+
+            self::applyElement( $element, $input, $editor, $latestId, $user );
+            $element->announce( 'saved', $editor );
+            self::pruneVersions( Element::class, [$element->id] );
+
+            return $element;
         } );
     }
 
@@ -470,9 +343,9 @@ class Resource
 
         $editor = Utils::editor( $user );
 
-        return self::bulk( Element::class, $ids, $input, $editor, function( string $id ) use ( $input, $editor ) : ?Element {
+        return self::bulk( Element::class, $ids, $input, $editor, function( string $id ) use ( $input, $editor, $user ) : ?Element {
             $element = Element::withTrashed()->with( 'latest' )->lockForUpdate()->find( $id );
-            return $element ? self::applyElement( $element, $input, $editor, null, false ) : null;
+            return $element ? self::applyElement( $element, $input, $editor, user: $user ) : null;
         } );
     }
 
@@ -491,41 +364,235 @@ class Resource
         }
 
         if( str_starts_with( $path, 'http' ) ) {
-            return $path;
-        }
+            if( Utils::isValidUrl( $path, false ) ) {
+                return $path;
+            }
 
-        $prefix = rtrim( 'cms/' . Tenancy::value(), '/' ) . '/';
-
-        // The prefix check alone is not enough: "cms/1/../2/secret.jpg" starts with the
-        // tenant prefix but the storage engine resolves the ".." into another tenant's
-        // directory (cross-tenant read/delete). Legitimate paths never contain ".." or
-        // null bytes (see File::filename()), so reject both outright.
-        if( !str_starts_with( $path, $prefix ) || str_contains( $path, '..' ) || str_contains( $path, "\0" ) ) {
             throw new \Aimeos\Cms\Exception( sprintf( 'Invalid file path "%s"', $path ) );
         }
 
-        return $path;
+        if( ( $value = Utils::normalizePath( $path ) ) === null ) {
+            throw new \Aimeos\Cms\Exception( sprintf( 'Invalid file path "%s"', $path ) );
+        }
+
+        return $value;
     }
 
 
     /**
-     * Validates a list of client-supplied preview paths against the current tenant's storage.
+     * Ensures prepared local files still exist while the ownership lock is held.
      *
-     * @param mixed $previews List of storage paths or URLs provided by the caller
-     * @return array<int|string, mixed>|null The validated list or null if none was given
-     * @throws \Aimeos\Cms\Exception If any path escapes the tenant's storage directory
+     * @param array<array-key, mixed> $paths Prepared storage paths
      */
-    protected static function checkPaths( mixed $previews ) : ?array
+    protected static function checkStored( array $paths ) : void
     {
-        if( $previews === null ) {
-            return null;
+        $disk = Storage::disk( config( 'cms.disk', 'public' ) );
+
+        foreach( $paths as $path )
+        {
+            if( $path === null ) {
+                continue;
+            }
+
+            $value = self::checkPath( (string) $path );
+
+            if( $value !== null && str_starts_with( $value, 'http' ) ) {
+                continue;
+            }
+
+            if( $value === null || !$disk->exists( $value ) ) {
+                throw new Exception( sprintf( 'Prepared file "%s" is not available', (string) $path ) );
+            }
+        }
+    }
+
+
+    /**
+     * Applies and announces a lifecycle action while preserving Page tree semantics.
+     *
+     * @param class-string<Base> $model
+     * @param array<string> $ids
+     * @param 'dropped'|'purged'|'restored' $action
+     * @param Authenticatable|null $user Authenticated user for editor tracking
+     * @param array<string> $fields Requested response fields
+     * @return Collection<int, Base>
+     */
+    protected static function lifecycle( string $model, array $ids, string $action,
+        ?Authenticatable $user = null, array $fields = [] ) : Collection
+    {
+        $ids = array_values( array_unique( $ids ) );
+        $model::checkBulk( count( $ids ) );
+        $editor = Utils::editor( $user );
+        $isPage = $model === Page::class;
+        $announce = $model !== File::class || $action !== 'purged' || count( $ids ) === 1;
+
+        if( !$isPage ) {
+            sort( $ids, SORT_STRING );
         }
 
-        foreach( (array) $previews as $preview ) {
-            self::checkPath( (string) $preview );
+        $apply = function( array $ids ) use ( $action, $announce, $editor, $fields, $isPage, $model ) {
+            $query = $model::withTrashed()->whereIn( 'id', $ids );
+
+            if( $isPage ) {
+                $query->select( $fields ? [
+                    ...Page::REQUIRED_COLUMNS,
+                    ...array_intersect( Page::RESPONSE_COLUMNS, $fields ),
+                ] : Page::SELECT_COLUMNS );
+            } elseif( $fields ) {
+                $instance = new $model();
+                $required = $instance->qualifyColumns( ['id', 'tenant_id', 'latest_id', 'deleted_at'] );
+
+                if( $model === File::class && $action === 'purged' ) {
+                    array_push( $required, 'path', 'previews' );
+                }
+
+                if( $action === 'restored' ) {
+                    array_push( $required, ...( $model === File::class ? File::SELECT_COLS : Element::SELECT_COLS ) );
+                }
+
+                $response = [...$instance->getVisible(), 'editor', 'created_at', 'updated_at'];
+                $query->select( array_values( array_unique( [
+                    ...$required,
+                    ...array_intersect( $response, $fields ),
+                ] ) ) );
+            }
+
+            if( !$isPage ) {
+                $query->orderBy( 'id' )->lockForUpdate();
+            }
+
+            /** @var \Illuminate\Database\Eloquent\Collection<int, Base> $items */
+            $items = $query->get();
+
+            if( $items->isEmpty() ) {
+                return $items;
+            }
+
+            if( $action === 'purged' )
+            {
+                if( $announce ) {
+                    Base::announceMany( $items, $action, $editor );
+                }
+
+                if( $model === File::class ) {
+                    File::purgeMany( Tenancy::value(), $items );
+                }
+
+                if( $isPage ) {
+                    foreach( $items as $item ) {
+                        $item->forceDelete();
+                    }
+                } else {
+                    /** @var array<string> $affected */
+                    $affected = $items->pluck( 'id' )->all();
+                    $model::withTrashed()->whereIn( 'id', $affected )->forceDelete();
+
+                    foreach( $items as $item ) {
+                        $item->exists = false;
+                        $item->wasRecentlyCreated = false;
+                    }
+                }
+
+                return $items;
+            }
+
+            if( $isPage )
+            {
+                foreach( $items as $item )
+                {
+                    $item->editor = $editor;
+                    $action === 'dropped' ? $item->delete() : $item->restore();
+                }
+
+                return $items;
+            }
+
+            /** @var array<string> $affected */
+            $affected = $items->pluck( 'id' )->all();
+            $time = ( new $model() )->freshTimestamp();
+            $attributes = [
+                'deleted_at' => $action === 'dropped' ? $time : null,
+                'editor' => $editor,
+                'updated_at' => $time,
+            ];
+
+            $model::withTrashed()->whereIn( 'id', $affected )->update( $attributes );
+
+            foreach( $items as $item ) {
+                $item->forceFill( $attributes )->syncOriginalAttributes( array_keys( $attributes ) );
+            }
+
+            return $items;
+        };
+
+        $batch = $isPage
+            ? fn() => $apply( $ids )
+            : fn() => collect( $ids )->chunk( 100 )->reduce(
+                fn( Collection $items, Collection $chunk ) => $items->concat( $apply( $chunk->all() ) ),
+                collect(),
+            );
+
+        $run = $isPage && $action !== 'dropped'
+            ? fn() => Utils::lockedTransaction( $batch )
+            : fn() => Utils::transaction( $batch );
+
+        $items = Scout::mute( [$model], function() use ( $action, $apply, $ids, $model, $run ) {
+            try {
+                return $run();
+            } catch( \Exception $e ) {
+                if( $model !== File::class || $action !== 'purged' ) {
+                    throw $e;
+                }
+            }
+
+            $items = collect();
+
+            foreach( $ids as $id ) {
+                try {
+                    $items->push( ...Utils::transaction( fn() => $apply( [$id] ) ) );
+                } catch( \Exception $e ) {
+                    report( $e );
+                }
+            }
+
+            return $items;
+        } );
+
+        if( $isPage && $action !== 'restored' )
+        {
+            $routes = [];
+
+            foreach( $items as $item ) {
+                if( $item instanceof Page ) {
+                    $routes[] = ['domain' => $item->domain, 'path' => $item->path];
+                }
+            }
+
+            PagesInvalidated::dispatch( $routes );
         }
 
-        return (array) $previews;
+        if( $action === 'dropped' ) {
+            Base::announceMany( $items, $action, $editor, [
+                'deleted_at' => (string) ( $items->first()->deleted_at ?? now() ),
+            ] );
+        } elseif( $action === 'restored' ) {
+            Base::announceMany( $items, $action, $editor, ['deleted_at' => null] );
+        } elseif( !$announce ) {
+            Base::announceMany( $items, $action, $editor, bulk: true );
+        }
+
+        /** @var array<string> $changed */
+        $changed = $items->pluck( 'id' )->all();
+
+        if( $action === 'restored' ) {
+            Scout::index( $model, $changed, $isPage && $fields ? null : $items );
+        } elseif( $action === 'dropped' && config( 'scout.soft_delete' ) ) {
+            Scout::index( $model, $changed );
+        } else {
+            Scout::unindex( $model, $changed );
+        }
+
+        return $items;
     }
 
 
@@ -544,41 +611,75 @@ class Resource
         ?string $latestId = null, ?UploadedFile $upload = null, UploadedFile|false|null $preview = null ) : File
     {
         $editor = Utils::editor( $user );
+        $tenant = Tenancy::value();
 
-        // Store the uploaded file and generate its previews outside the
-        // transaction (they don't depend on the existing record) to keep slow
-        // disk and image work off the database connection.
+        // Prepare storage and remote image work before opening the transaction.
+        $tmp = new File();
+        $currentPath = null;
         $stored = null;
+        $storedMime = null;
         $storedPreviews = null;
 
-        if( $upload instanceof UploadedFile && $upload->isValid() )
+        try
         {
-            $tmp = new File();
-            $tmp->addFile( $upload );
-            $stored = $tmp->path;
-
-            $useUpload = str_starts_with( $upload->getClientMimeType(), 'image/' )
-                && !( $preview instanceof UploadedFile && $preview->isValid() && str_starts_with( $preview->getClientMimeType(), 'image/' ) );
-
-            if( $useUpload )
+            if( $upload || $preview instanceof UploadedFile || array_key_exists( 'path', $input ) )
             {
-                try {
-                    $tmp->addPreviews( $upload );
+                /** @var File $current */
+                $current = File::withTrashed()->with( ['latest' => fn( $q ) => $q
+                    ->select( 'id', 'versionable_id', 'data', 'aux', 'lang', 'editor' )] )->findOrFail( $id );
+                $currentPath = (string) ( $current->latest?->data->path ?? $current->path );
+                $tmp->name = (string) ( $input['name'] ?? $current->latest?->data->name ?? $current->name );
+            }
+
+            $newPath = self::checkPath( $input['path'] ?? null );
+            $source = $upload ?? ( $newPath !== null && $newPath !== $currentPath ? $newPath : null );
+
+            if( $source !== null || $preview instanceof UploadedFile )
+            {
+                $tmp->prepare( $source, $preview );
+                $stored = $upload ? $tmp->path : null;
+                $storedMime = $source !== null ? (string) $tmp->mime : null;
+
+                if( $preview instanceof UploadedFile
+                    || $source instanceof UploadedFile && str_starts_with( (string) $source->getMimeType(), 'image/' )
+                    || is_string( $source ) && str_starts_with( $source, 'http' )
+                ) {
                     $storedPreviews = (array) $tmp->previews;
-                } catch( \Throwable $t ) {
-                    $tmp->removePreviews();
-                    throw $t;
                 }
             }
+
+            return Utils::fileLock( $tenant, function() use ( $id, $input, $editor, $latestId,
+                $preview, $stored, $storedMime, $storedPreviews ) {
+                    self::checkStored( [$stored, ...( $storedPreviews ?? [] )] );
+
+                    return Utils::transaction( function() use ( $id, $input, $editor, $latestId,
+                        $preview, $stored, $storedMime, $storedPreviews ) {
+
+                        /** @var File $file */
+                        $file = File::withTrashed()->with( ['latest' => fn( $q ) => $q
+                            ->select( 'id', 'versionable_id', 'data', 'aux', 'lang', 'editor' )] )
+                            ->lockForUpdate()->findOrFail( $id );
+
+                        self::applyFile( $file, $input, $editor, $latestId, $stored,
+                            $storedPreviews, $preview, $storedMime );
+                        self::pruneVersions( File::class, [$file->id] );
+
+                        $file->announce( 'saved', $editor );
+
+                        return $file;
+                    } );
+                } );
         }
+        catch( \Throwable $t )
+        {
+            try {
+                $tmp->removePreviews()->removeFile();
+            } catch( \Throwable $cleanup ) {
+                report( $cleanup );
+            }
 
-        return Utils::transaction( function() use ( $id, $input, $editor, $latestId, $preview, $stored, $storedPreviews ) {
-
-            /** @var File $orig */
-            $orig = File::withTrashed()->with( ['latest' => fn( $q ) => $q->select( 'id', 'versionable_id', 'data', 'aux', 'lang', 'editor' )] )->findOrFail( $id );
-
-            return self::applyFile( $orig, $input, $editor, $latestId, $stored, $storedPreviews, $preview );
-        } );
+            throw $t;
+        }
     }
 
 
@@ -607,7 +708,8 @@ class Resource
             $file = File::withTrashed()
                 ->with( ['latest' => fn( $q ) => $q->select( 'id', 'versionable_id', 'data', 'aux', 'lang', 'editor' )] )
                 ->lockForUpdate()->find( $id );
-            return $file ? self::applyFile( $file, $input, $editor, null, null, null, null, false ) : null;
+
+            return $file ? self::applyFile( $file, $input, $editor ) : null;
         } );
     }
 
@@ -619,92 +721,69 @@ class Resource
      * @param array<string> $ids Item ids to save, in processing order
      * @param array<string, mixed> $input Shared fields applied to every item
      * @param string $editor Name of the editing user
-     * @param \Closure(string): (Page|File|Element|null) $save Loads one locked row, applies the change and returns it (NULL to skip)
+     * @param \Closure(string, mixed): (Page|File|Element|null) $save Loads one locked row and applies the change
+     * @param (\Closure(array<string>): mixed)|null $prepare Prepares shared state for each 50-item window
      * @return array{ids: list<string>, latest: array<string, string>, data: array<string, mixed>, failed: int}
      */
-    protected static function bulk( string $model, array $ids, array $input, string $editor, \Closure $save ) : array
+    protected static function bulk( string $model, array $ids, array $input, string $editor, \Closure $save, ?\Closure $prepare = null ) : array
     {
         $ids = array_values( array_unique( $ids ) );
+        $model::checkBulk( count( $ids ) );
 
         // suppress Scout's per-save reindex; the whole batch is reindexed once below
-        $model::disableSearchSyncing();
+        $latest = Scout::mute( [$model], function() use ( $ids, $prepare, $save ) {
+            $result = [];
 
-        try {
-            $map = self::saveEach( $ids, $save );
-        } finally {
-            $model::enableSearchSyncing();
-        }
+            foreach( array_chunk( $ids, 50 ) as $chunk )
+            {
+                $context = $prepare ? $prepare( $chunk ) : null;
+
+                foreach( $chunk as $id )
+                {
+                    try
+                    {
+                        /** @var Page|File|Element|null $item */
+                        $item = Utils::transaction( fn() => $save( $id, $context ) );
+
+                        if( $item )
+                        {
+                            /** @var string $itemId */
+                            $itemId = $item->id;
+                            /** @var string $versionId */
+                            $versionId = $item->latest_id;
+
+                            $result[$itemId] = $versionId;
+                        }
+                    }
+                    catch( \Exception $e )
+                    {
+                        report( $e );
+                    }
+                }
+            }
+
+            return $result;
+        } );
+
+        $saved = array_keys( $latest );
 
         // reindex the saved items once, chunked like cms:index; drop the soft-delete scope so
         // trashed items (recursive saves include them) are reindexed regardless of scout.soft_delete
-        if( $saved = array_keys( $map->all() ) ) {
-            $model::makeAllSearchableQuery()
-                ->withoutGlobalScope( SoftDeletingScope::class )
-                ->whereKey( $saved )
-                ->chunk( 50, fn( $items ) => ( new $model )->syncMakeSearchable( $items ) );
+        if( $saved ) {
+            Scout::index( $model, $saved );
         }
 
-        $result = self::bulkResult( $map, $input, count( $ids ) );
-
-        Base::announceBulk( strtolower( class_basename( $model ) ), $result['ids'], $result['latest'], $result['data'], $editor );
-
-        return $result;
-    }
-
-
-    /**
-     * Saves each id in its own short transaction and returns the saved id => latest-version-id map.
-     *
-     * A failing item is reported and skipped; \Error still bubbles up.
-     *
-     * @param array<string> $ids Unique IDs to save (callers deduplicate before calling)
-     * @param \Closure(string): (Page|File|Element|null) $save Loads one locked row, applies the change and returns it (NULL to skip)
-     * @return Collection<string, string> Saved item id => its new latest version id
-     */
-    protected static function saveEach( array $ids, \Closure $save ) : Collection
-    {
-        /** @var Collection<string, string> $result */
-        $result = new Collection();
-
-        foreach( $ids as $id )
-        {
-            try {
-                /** @var Page|File|Element|null $item */
-                $item = Utils::transaction( fn() => $save( $id ) );
-
-                if( $item ) {
-                    $result->put( (string) $item->id, (string) $item->latest_id );
-                }
-            } catch( \Exception $e ) {
-                report( $e );
-            }
-        }
-
-        return $result;
-    }
-
-
-    /**
-     * Builds the broadcast-shaped result of a bulk operation from the saved map and applied input.
-     *
-     * The shared fields carry published=false (each save is a new draft) and the new modified time
-     * so every patched row advances its "modified" date instead of showing a stale one.
-     *
-     * @param Collection<string, string> $map Saved item id => its new latest version id
-     * @param array<string, mixed> $input Fields applied to every saved item
-     * @param int $attempted Number of unique items the operation tried to save
-     * @return array{ids: list<string>, latest: array<string, string>, data: array<string, mixed>, failed: int}
-     */
-    protected static function bulkResult( Collection $map, array $input, int $attempted ) : array
-    {
-        $latest = $map->all();
-
-        return [
-            'ids' => array_keys( $latest ),
+        $result = [
+            'ids' => $saved,
             'latest' => $latest,
             'data' => $input + ['published' => false, 'updated_at' => (string) now()],
-            'failed' => max( 0, $attempted - count( $latest ) ),
+            'failed' => count( $ids ) - count( $saved ),
         ];
+
+        Base::announceBulk( strtolower( class_basename( $model ) ), $result['ids'], $result['latest'], $result['data'], $editor );
+        self::pruneVersions( $model, $saved );
+
+        return $result;
     }
 
 
@@ -719,58 +798,58 @@ class Resource
      * @param string|null $latestId Version ID the editor was working on for conflict detection
      * @param string|null $stored Path of an already stored upload, if any
      * @param array<int|string, mixed>|null $storedPreviews Previews generated for the stored upload, if any
-     * @param UploadedFile|false|null $preview Preview upload, false to clear, null for auto-detect
-     * @param bool $announce TRUE to broadcast a "saved" event, FALSE for bulk
+     * @param UploadedFile|false|null $preview False to clear previews, otherwise null after preparation
+     * @param string|null $storedMime MIME type detected while preparing the new path
      * @return File Updated file with the new version as "latest"
      */
     protected static function applyFile( File $orig, array $input, string $editor, ?string $latestId = null,
-        ?string $stored = null, ?array $storedPreviews = null, UploadedFile|false|null $preview = null, bool $announce = true ) : File
+        ?string $stored = null, ?array $storedPreviews = null, UploadedFile|false|null $preview = null,
+        ?string $storedMime = null ) : File
     {
         $previews = $orig->latest?->data->previews ?? $orig->previews;
         $path = $orig->latest?->data->path ?? $orig->path;
         $previousEditor = $orig->latest->editor ?? '';
-        $versionId = ( new Version )->newUniqueId();
 
         $file = clone $orig;
 
         $base = self::base( $orig, $latestId );
         $input = File::snapshot( $input );
         [$data, $dd] = self::merge( $orig, $input['data'], $base );
-        [$aux, $ad] = self::merge( $orig, $input['aux'], $base, section: 'aux' );
+        [$aux, $ad] = self::merge( $orig, $input['aux'], $base, 'aux' );
         $diffs = array_filter( ['data' => $dd, 'aux' => $ad] );
         $file->fill( $data + $aux );
 
-        $file->previews = self::checkPaths( $input['data']['previews'] ?? null ) ?? $previews;
+        if( isset( $input['data']['previews'] ) )
+        {
+            foreach( $input['data']['previews'] as $previewPath ) {
+                self::checkPath( $previewPath );
+            }
+        }
+
+        $file->previews = $input['data']['previews'] ?? $previews;
         $file->path = $stored ?? self::checkPath( $input['data']['path'] ?? null ) ?? $path;
         $file->editor = $editor;
 
-        if( $file->path !== $path && !str_starts_with( $file->path, 'http' ) ) {
-            $file->mime = Utils::mimetype( $file->path );
-        }
-
-        try
+        if( $file->path !== $path )
         {
-            if( $preview instanceof UploadedFile && $preview->isValid() && str_starts_with( $preview->getClientMimeType(), 'image/' ) ) {
-                $file->addPreviews( $preview );
-            } elseif( $storedPreviews !== null ) {
-                $file->previews = $storedPreviews;
-            } elseif( $file->path !== $path && str_starts_with( $file->path, 'http' ) && Utils::isValidUrl( $file->path ) ) {
-                $file->addPreviews( $file->path );
-            } elseif( $preview === false ) {
-                $file->previews = [];
+            $file->mime = $storedMime ?? Utils::mimetype( $file->path );
+
+            if( !Utils::isValidMimetype( $file->mime ) ) {
+                throw new Exception( sprintf( 'File type "%s" not allowed, permitted types: %s',
+                    $file->mime, implode( ', ', config( 'cms.upload.mimetypes', [] ) ) ) );
             }
         }
-        catch( \Throwable $t )
-        {
-            $file->removePreviews();
-            throw $t;
+
+        if( $storedPreviews !== null ) {
+            $file->previews = $storedPreviews;
+        } elseif( $preview === false ) {
+            $file->previews = [];
         }
 
         $snapshot = File::snapshot( $file->toArray() );
         $snapshot['aux'] = array_replace( $snapshot['aux'], $aux );
 
         $version = $file->versions()->forceCreate( [
-            'id' => $versionId,
             'lang' => $file->lang,
             'editor' => $editor,
             'data' => $snapshot['data'],
@@ -779,22 +858,18 @@ class Resource
 
         $orig->setRelation( 'latest', $version );
         $orig->forceFill( ['latest_id' => $version->id] )->save();
-        $file->removeVersions();
 
-        if( $diffs ) {
+        if( $diffs )
+        {
             $orig->setChanged( [
                 'editor' => $previousEditor,
                 'latest' => [
-                    'id' => $versionId,
+                    'id' => $version->id,
                     'data' => (array) $version->data,
                     'aux' => (array) $version->aux,
                 ],
                 ...$diffs,
             ] );
-        }
-
-        if( $announce ) {
-            $orig->announce( 'saved', $editor );
         }
 
         return $orig;
@@ -812,8 +887,7 @@ class Resource
      * @throws \InvalidArgumentException On validation failure
      * @throws \Illuminate\Database\Eloquent\ModelNotFoundException If page not found
      */
-    public static function savePage( string $id, array $input, ?Authenticatable $user = null,
-        ?string $latestId = null ) : Page
+    public static function savePage( string $id, array $input, ?Authenticatable $user = null, ?string $latestId = null ) : Page
     {
         $input = Validation::page( $input, $user );
         $editor = Utils::editor( $user );
@@ -823,7 +897,11 @@ class Resource
             /** @var Page $page */
             $page = Page::withTrashed()->with( 'latest' )->findOrFail( $id );
 
-            return self::applyPage( $page, $input, $editor, $latestId, $user );
+            self::applyPage( $page, $input, $editor, $latestId, $user );
+            $page->announce( 'saved', $editor );
+            self::pruneVersions( Page::class, [$page->id] );
+
+            return $page;
         } );
     }
 
@@ -837,12 +915,14 @@ class Resource
      * @param bool $descendants TRUE to also update all sub-pages of the given pages
      * @return array{ids: list<string>, latest: array<string, string>, data: array<string, mixed>, failed: int}
      */
-    public static function bulkPage( array $ids, array $input, ?Authenticatable $user = null,
-        bool $descendants = false ) : array
+    public static function bulkPage( array $ids, array $input, ?Authenticatable $user = null, bool $descendants = false ) : array
     {
         if( empty( $ids ) || empty( $input ) ) {
             return ['ids' => [], 'latest' => [], 'data' => [], 'failed' => 0];
         }
+
+        $ids = array_values( array_unique( $ids ) );
+        Page::checkBulk( count( $ids ) );
 
         $input = Validation::page( $input, $user );
         $editor = Utils::editor( $user );
@@ -851,25 +931,66 @@ class Resource
         // nested-set pre-order traversal) so each parent is saved before its children
         if( $descendants )
         {
-            $roots = Page::withTrashed()->whereIn( 'id', $ids )->get( ['id', NestedSet::LFT, NestedSet::RGT] );
+            $roots = Page::withTrashed()->whereIn( 'id', $ids )
+                ->orderBy( NestedSet::LFT )->orderByDesc( NestedSet::RGT )
+                ->get( ['id', NestedSet::LFT, NestedSet::RGT] );
 
-            $ids = Page::withTrashed()->where( function( $builder ) use ( $roots ) {
-                foreach( $roots as $root ) {
-                    $builder->whereDescendantOrSelf( $root, 'or' );
+            $right = null;
+            $ranges = [];
+            $ids = [];
+
+            foreach( $roots as $root )
+            {
+                $left = (int) $root->getAttribute( NestedSet::LFT );
+                $rgt = (int) $root->getAttribute( NestedSet::RGT );
+
+                if( $right === null || $left > $right )
+                {
+                    $ranges[] = [$left, $rgt];
+                    $right = $rgt;
                 }
-            } )->defaultOrder()->pluck( 'id' )->all();
+            }
+
+            foreach( array_chunk( $ranges, 50 ) as $chunk )
+            {
+                $found = Page::withTrashed()->where( function( $builder ) use ( $chunk ) {
+                    foreach( $chunk as [$left, $right] )
+                    {
+                        $builder->orWhere( fn( $query ) => $query
+                            ->where( NestedSet::LFT, '>=', $left )
+                            ->where( NestedSet::RGT, '<=', $right ) );
+                    }
+                } )->defaultOrder()->limit( Page::MAX_BULK + 1 - count( $ids ) )->pluck( 'id' )->all();
+
+                $ids = array_merge( $ids, $found );
+
+                if( count( $ids ) > Page::MAX_BULK ) {
+                    break;
+                }
+            }
+
         }
 
-        return self::bulk( Page::class, $ids, $input, $editor, function( string $id ) use ( $input, $editor, $user ) : ?Page {
+        $prepare = array_intersect_key( $input, array_flip( ['content', 'meta', 'config'] ) ) ? null : self::pageRefs(...);
+
+        return self::bulk( Page::class, $ids, $input, $editor,
+            function( string $id, mixed $context = null ) use ( $input, $editor, $user ) : ?Page {
+
             if( !( $page = Page::withTrashed()->with( 'latest' )->lockForUpdate()->find( $id ) ) ) {
                 return null;
             }
 
+            $refs = $context[$id] ?? null;
+
+            if( $refs && $refs['latest'] !== $page->latest_id ) {
+                $refs = null;
+            }
+
             // bulk only creates new draft versions, so the cached published output is unchanged
-            self::applyPage( $page, $input, $editor, null, $user, false );
+            self::applyPage( $page, $input, $editor, null, $user, $refs );
 
             return $page;
-        } );
+        }, $prepare );
     }
 
 
@@ -884,65 +1005,44 @@ class Resource
      * @param string $editor Name of the editing user
      * @param string|null $latestId Version ID the editor was working on for conflict detection
      * @param Authenticatable|null $user Current user
-     * @param bool $announce TRUE to broadcast a "saved" event, FALSE for bulk
-     * @return Page Updated page with the new version as "latest"
+     * @param array{files: array<string>, elements: array<string>}|null $references Stored unchanged references
      */
     protected static function applyPage( Page $page, array $input, string $editor,
-        ?string $latestId = null, ?Authenticatable $user = null, bool $announce = true ) : Page
+        ?string $latestId = null, ?Authenticatable $user = null, ?array $references = null ) : void
     {
-        $versionId = ( new Version )->newUniqueId();
-
-        $data = array_diff_key( $input, array_flip( ['meta', 'config', 'content'] ) );
-        array_walk( $data, fn( &$v, $k ) => $v = !in_array( $k, ['related_id'] ) ? ( $v ?? '' ) : $v );
-
         $aux = array_intersect_key( $input, array_flip( ['meta', 'config', 'content'] ) );
-
-        // Only cast what was actually provided. Omitted meta/config keys must stay
-        // absent so mergePage() preserves them from the latest version, exactly like
-        // content. Force-defaulting them to empty objects would overwrite the latest.
-        if( array_key_exists( 'meta', $aux ) ) {
-            $aux['meta'] = (object) $aux['meta'];
-        }
-
-        if( array_key_exists( 'config', $aux ) ) {
-            $aux['config'] = (object) $aux['config'];
-        }
+        $data = array_diff_key( $input, $aux );
+        $accepts = (bool) $aux;
 
         $previousEditor = $page->latest->editor ?? '';
 
-        [$data, $aux, $diffs] = self::mergePage( $page, $data, $aux, $latestId, $user );
+        [$data, $aux, $diffs] = Merge::page( $page, $data, $aux, $latestId, $user );
 
-        $data['domain'] ??= $page->domain ?? '';
+        $data['domain'] ??= $page->domain;
 
         $version = $page->versions()->forceCreate( [
-            'id' => $versionId,
             'data' => $data,
             'editor' => $editor,
             'lang' => $input['lang'] ?? $page->latest?->lang,
             'aux' => $aux,
         ] );
 
-        $refs = self::refs( $aux );
+        $references = $accepts ? self::refs( $aux, $user ) : ( $references ?? self::refs( $aux ) );
 
-        $version->files()->attach( self::available( File::class, $refs['files'] ) );
-        $version->elements()->attach( self::available( Element::class, $refs['elements'] ) );
+        $version->files()->attach( $references['files'] );
+        $version->elements()->attach( $references['elements'] );
 
         $page->setRelation( 'latest', $version );
         $page->forceFill( ['latest_id' => $version->id] )->save();
 
-        if( $diffs ) {
+        if( $diffs )
+        {
             $page->setChanged( [
                 'editor' => $previousEditor,
-                'latest' => ['id' => $versionId, 'data' => $data, 'aux' => $aux],
+                'latest' => ['id' => $version->id, 'data' => $data, 'aux' => $aux],
                 ...$diffs,
             ] );
         }
-
-        if( $announce ) {
-            $page->announce( 'saved', $editor );
-        }
-
-        return $page->removeVersions();
     }
 
 
@@ -955,92 +1055,117 @@ class Resource
      * @param array<string, mixed> $input Validated element input (merged with latest version)
      * @param string $editor Name of the editing user
      * @param string|null $latestId Version ID the editor was working on for conflict detection
-     * @param bool $announce TRUE to broadcast a "saved" event, FALSE for bulk
+     * @param Authenticatable|null $user Current user accepting new file references
      * @return Element Updated element with the new version as "latest"
      */
-    protected static function applyElement( Element $element, array $input, string $editor, ?string $latestId = null, bool $announce = true ) : Element
+    protected static function applyElement( Element $element, array $input, string $editor,
+        ?string $latestId = null, ?Authenticatable $user = null ) : Element
     {
-        $versionId = ( new Version )->newUniqueId();
         $previousEditor = $element->latest->editor ?? '';
+        $accepts = array_key_exists( 'data', $input );
 
-        [$data, $dd] = self::merge( $element, $input, self::base( $element, $latestId ) );
+        [$data, $dd] = Merge::model( $element, $input, $latestId );
 
         $version = $element->versions()->forceCreate( [
-            'id' => $versionId,
-            'data' => array_map( fn( $v ) => $v ?? '', $data ),
+            'data' => $data,
             'editor' => $editor,
             'lang' => $input['lang'] ?? $element->latest?->lang,
         ] );
 
-        $version->files()->attach( self::elementFiles( $data ) );
+        $version->files()->attach( self::elementFiles( $data, $accepts ? $user : null ) );
         $element->setRelation( 'latest', $version );
         $element->forceFill( ['latest_id' => $version->id] )->save();
 
-        if( $dd ) {
+        if( $dd )
+        {
             $element->setChanged( [
                 'editor' => $previousEditor,
-                'latest' => ['id' => $versionId, 'data' => $data],
+                'latest' => ['id' => $version->id, 'data' => $data],
                 'data' => $dd,
             ] );
         }
 
-        if( $announce ) {
-            $element->announce( 'saved', $editor );
-        }
-
-        return $element->removeVersions();
+        return $element;
     }
 
 
     /**
-     * Three-way merges or replaces page data and aux based on version conflict detection.
+     * Returns stored latest-version references for a bounded page window.
      *
-     * @param Page $page Page model with versions relation
-     * @param array<string, mixed> $data Incoming page data
-     * @param array<string, mixed> $aux Incoming aux (meta/config/content)
-     * @param string|null $latestId Version ID the editor was working on
-     * @param \Illuminate\Contracts\Auth\Authenticatable|null $user Current user
-     * @return array{0: array<string, mixed>, 1: array<string, mixed>, 2: array<string, mixed>|null}
+     * @param array<string> $ids Page IDs
+     * @return array<string, array{latest: string, files: array<string>, elements: array<string>}>
      */
-    protected static function mergePage( Page $page, array $data, array $aux, ?string $latestId, ?Authenticatable $user = null ) : array
+    protected static function pageRefs( array $ids ) : array
     {
-        $latestData = (array) ( $page->latest?->data );
-        $latestAux = (array) ( $page->latest?->aux );
+        $pages = Page::withTrashed()->whereIn( 'id', $ids )->pluck( 'latest_id', 'id' );
+        $elements = [];
+        $versions = [];
+        $files = [];
 
-        if( $latestId && $page->latest_id && $latestId !== $page->latest_id )
+        foreach( $pages as $id => $versionId )
         {
-            /** @var Version|null $base */
-            $base = $page->versions()->find( $latestId );
+            /** @var string $id */
+            /** @var string $versionId */
+            $elements[$id] = [];
+            $files[$id] = [];
 
-            if( $base )
+            $versions[$versionId] = $id;
+        }
+
+        $db = DB::connection( config( 'cms.db', 'sqlite' ) );
+
+        if( $versions )
+        {
+            foreach( $db->table( 'cms_version_file' )->whereIn( 'version_id', array_keys( $versions ) )->get() as $row )
             {
-                $latestMeta = (array) ( $page->latest?->aux->meta ?? [] );
-                $latestContent = (array) ( $page->latest?->aux->content ?? [] );
-                $latestConfig = (array) ( $page->latest?->aux->config ?? [] );
+                /** @var string $versionId */
+                $versionId = $row->version_id;
+                /** @var string $fileId */
+                $fileId = $row->file_id;
 
-                [$data, $dd] = Merge::structured( (array) $base->data, $latestData, $data );
+                $files[$versions[$versionId]][] = $fileId;
+            }
+            foreach( $db->table( 'cms_version_element' )->whereIn( 'version_id', array_keys( $versions ) )->get() as $row )
+            {
+                /** @var string $versionId */
+                $versionId = $row->version_id;
+                /** @var string $elementId */
+                $elementId = $row->element_id;
 
-                $merged = array_replace( $latestAux, $aux );
-                [$merged['meta'], $md] = Merge::structured( (array) ( $base->aux->meta ?? [] ), $latestMeta, (array) ( $merged['meta'] ?? [] ) );
-                [$merged['content'], $xd] = Merge::content( (array) ( $base->aux->content ?? [] ), $latestContent, (array) ( $merged['content'] ?? [] ) );
-
-                $cd = null;
-                if( Permission::can( 'page:config', $user ) ) {
-                    [$merged['config'], $cd] = Merge::structured( (array) ( $base->aux->config ?? [] ), $latestConfig, (array) ( $merged['config'] ?? [] ) );
-                } else {
-                    $merged['config'] = $latestConfig;
-                }
-
-                $diffs = array_filter( ['data' => $dd, 'meta' => $md, 'config' => $cd, 'content' => $xd] );
-                return [$data, $merged, $diffs ?: null];
+                $elements[$versions[$versionId]][] = $elementId;
             }
         }
 
-        return [
-            array_replace( $latestData, $data ),
-            array_replace( $latestAux, $aux ),
-            null
-        ];
+        $result = [];
+
+        foreach( $pages as $id => $versionId )
+        {
+            /** @var string $id */
+            /** @var string $versionId */
+            $result[$id] = [
+                'latest' => $versionId,
+                'files' => $files[$id],
+                'elements' => $elements[$id],
+            ];
+        }
+
+        return $result;
+    }
+
+
+    /**
+     * Queues version pruning in bounded batches.
+     *
+     * @param class-string<Element>|class-string<File>|class-string<Page> $model Model class
+     * @param array<string|null> $ids Model IDs
+     */
+    protected static function pruneVersions( string $model, array $ids ) : void
+    {
+        $ids = array_values( array_filter( $ids, is_string(...) ) );
+
+        foreach( array_chunk( array_values( array_unique( $ids ) ), 50 ) as $chunk ) {
+            PruneVersions::dispatch( $model, Tenancy::value(), $chunk )->afterCommit();
+        }
     }
 
 
@@ -1095,12 +1220,18 @@ class Resource
      */
     protected static function available( string $model, array $ids ) : array
     {
-        $ids = array_values( array_unique( array_filter( $ids ) ) );
-        $existing = $ids ? $model::whereIn( 'id', $ids )->pluck( 'id' )->all() : [];
+        $ids = array_values( array_unique( $ids ) );
+        $existing = [];
 
-        // Compare case-insensitively: SQL Server stores/returns UUIDs uppercased via
-        // the id accessor, so a case-sensitive diff would flag matching IDs as missing.
-        if( $missing = array_udiff( $ids, $existing, 'strcasecmp' ) ) {
+        foreach( array_chunk( $ids, 500 ) as $chunk )
+        {
+            foreach( $model::whereIn( 'id', $chunk )->pluck( 'id' ) as $id ) {
+                /** @var string $id */
+                $existing[$id] = true;
+            }
+        }
+
+        if( $missing = array_filter( $ids, fn( $id ) => !isset( $existing[$id] ) ) ) {
             throw new Exception( sprintf( '%s not available: %s', class_basename( $model ), implode( ', ', $missing ) ) );
         }
 
@@ -1112,13 +1243,18 @@ class Resource
      * Returns the available file IDs referenced by an element's field data.
      *
      * @param array<string, mixed> $data Element version data (fields stored under "data")
+     * @param Authenticatable|null $user Authenticated user accepting the references
      * @return array<string> File IDs confirmed to exist
      * @throws Exception If any referenced file is no longer available
      */
-    protected static function elementFiles( array $data ) : array
+    protected static function elementFiles( array $data, ?Authenticatable $user = null ) : array
     {
-        $files = [];
-        self::collectFiles( $data['data'] ?? [], $files );
+        $files = Validation::files( $data['data'] ?? [] );
+        File::checkBulk( count( $files ) );
+
+        if( $files && $user && !Permission::can( 'file:view', $user ) ) {
+            throw new Exception( 'Insufficient permissions' );
+        }
 
         return self::available( File::class, $files );
     }
@@ -1128,9 +1264,10 @@ class Resource
      * Collects the file IDs and element refids referenced by a page version's aux data.
      *
      * @param array<string, mixed> $aux Merged aux with "content" (list) and "meta"/"config" (keyed objects)
+     * @param Authenticatable|null $user Authenticated user accepting the references
      * @return array{files: array<string>, elements: array<string>}
      */
-    protected static function refs( array $aux ) : array
+    protected static function refs( array $aux, ?Authenticatable $user = null ) : array
     {
         $files = [];
         $elements = [];
@@ -1139,48 +1276,36 @@ class Resource
         {
             $block = (array) $block;
 
-            if( !empty( $block['refid'] ) ) {
+            if( $block['type'] === 'reference' ) {
                 $elements[] = $block['refid'];
+            } else {
+                array_push( $files, ...( $block['files'] ?? [] ) );
             }
-
-            self::collectFiles( $block['data'] ?? [], $files );
         }
 
         foreach( ['meta', 'config'] as $section )
         {
             foreach( (array) ( $aux[$section] ?? [] ) as $entry ) {
-                self::collectFiles( $entry, $files );
+                array_push( $files, ...( (array) $entry )['files'] );
             }
         }
 
+        $files = array_values( array_unique( $files ) );
+        $elements = array_values( array_unique( $elements ) );
+
+        Page::checkBulk( count( $files ) + count( $elements ) );
+
+        if( $files && $user && !Permission::can( 'file:view', $user ) ) {
+            throw new Exception( 'Insufficient permissions' );
+        }
+
+        if( $elements && $user && !Permission::can( 'element:view', $user ) ) {
+            throw new Exception( 'Insufficient permissions' );
+        }
+
         return [
-            'files' => array_values( array_unique( $files ) ),
-            'elements' => array_values( array_unique( $elements ) ),
+            'files' => self::available( File::class, $files ),
+            'elements' => self::available( Element::class, $elements ),
         ];
-    }
-
-
-    /**
-     * Recursively collects the IDs of {id, type: "file"} nodes into the given list.
-     *
-     * @param mixed $node Data node to scan (array, object or scalar)
-     * @param array<string> $files List of collected file IDs, modified in place
-     */
-    private static function collectFiles( mixed $node, array &$files ) : void
-    {
-        if( !is_array( $node ) && !is_object( $node ) ) {
-            return;
-        }
-
-        $arr = (array) $node;
-
-        if( ( $arr['type'] ?? null ) === 'file' && !empty( $arr['id'] ) ) {
-            $files[] = (string) $arr['id'];
-            return;
-        }
-
-        foreach( $arr as $value ) {
-            self::collectFiles( $value, $files );
-        }
     }
 }

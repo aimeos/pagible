@@ -7,10 +7,10 @@
 
 namespace Aimeos\Cms\Models;
 
+use Aimeos\Cms\Concerns\HasUuids;
 use Aimeos\Cms\Concerns\Tenancy;
 use Aimeos\Cms\Validation;
 use Illuminate\Database\Eloquent\Casts\Attribute;
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\Builder;
@@ -25,14 +25,16 @@ use Illuminate\Support\Collection;
  * @property string $id
  * @property string $tenant_id
  * @property string|null $lang
- * @property \stdClass|null $data
- * @property \stdClass|null $aux
+ * @property \stdClass $data
+ * @property \stdClass $aux
  * @property string|null $publish_at
  * @property bool $published
  * @property string $editor
- * @property string|null $versionable_id
- * @property string|null $versionable_type
+ * @property string $versionable_id
+ * @property string $versionable_type
  * @property \Illuminate\Support\Carbon|null $created_at
+ * @method static \Illuminate\Database\Eloquent\Builder<static> due(\DateTimeInterface $at)
+ * @method static \Illuminate\Database\Eloquent\Builder<static> older(Version $version)
  * @method static \Illuminate\Database\Eloquent\Builder<static> withoutTenancy()
  */
 class Version extends Model
@@ -40,29 +42,22 @@ class Version extends Model
     use HasUuids;
     use Tenancy;
 
-    private static ?bool $isSqlsrv = null;
-
-
+    /** @var list<class-string<Base>> Supported versionable models */
+    public const TYPES = [Page::class, Element::class, File::class];
 
     /**
      * Boot the model.
      */
     protected static function booted() : void
     {
-        static::addGlobalScope( new \Aimeos\Cms\Scopes\Tenancy() );
-
-        static::creating( function( \Illuminate\Database\Eloquent\Model $model ) {
-            /** @phpstan-ignore method.notFound */
-            $model->setAttribute( $model->getTenantColumn(), \Aimeos\Cms\Tenancy::value() );
-
-            if( $model->getAttribute( 'versionable_type' ) === File::class )
+        static::creating( function( Version $version ) {
+            if( $version->versionable_type === File::class )
             {
-                $snapshot = File::snapshot( (array) $model->getAttribute( 'data' ) );
+                $snapshot = File::snapshot( (array) $version->data );
 
                 if( $snapshot['aux'] ) {
-                    $snapshot['aux'] = array_replace( $snapshot['aux'], (array) $model->getAttribute( 'aux' ) );
-                    $model->setAttribute( 'data', $snapshot['data'] );
-                    $model->setAttribute( 'aux', $snapshot['aux'] );
+                    $version->data = (object) $snapshot['data'];
+                    $version->aux = (object) array_replace( $snapshot['aux'], (array) $version->aux );
                 }
             }
         } );
@@ -286,28 +281,34 @@ class Version extends Model
 
 
     /**
-     * Normalize UUID case on SQL Server to prevent mixed-case mismatches.
+     * Limits the query to unpublished versions whose publication time is due.
      *
-     * @param string|null $value Raw ID value
-     * @return string|null Uppercased on SQL Server, unchanged otherwise
+     * @param Builder<static> $query
+     * @return Builder<static>
      */
-    public function getIdAttribute( $value )
+    public function scopeDue( Builder $query, \DateTimeInterface $at ) : Builder
     {
-        self::$isSqlsrv ??= $this->getConnection()->getDriverName() === 'sqlsrv';
-        return self::$isSqlsrv && $value ? strtoupper( $value ) : $value;
+        return $query->where( 'publish_at', '<=', $at )->where( 'published', false );
     }
 
 
     /**
-     * Generate a new unique key for the model.
+     * Limits the query to scheduled versions older than the given version.
      *
-     * @return string
+     * created_at provides portable creation order while ID breaks timestamp ties.
+     *
+     * @param Builder<static> $query
+     * @return Builder<static>
      */
-    public function newUniqueId()
+    public function scopeOlder( Builder $query, Version $version ) : Builder
     {
-        // workaround for SQL Server and Lighthouse when UUIDs are mixed case
-        self::$isSqlsrv ??= $this->getConnection()->getDriverName() === 'sqlsrv';
-        return (string) ( self::$isSqlsrv ? strtoupper( \Illuminate\Support\Str::uuid7() ) : \Illuminate\Support\Str::uuid7() );
+        return $query->where( fn( $query ) => $query
+            ->where( 'publish_at', '<', $version->getRawOriginal( 'publish_at' ) )
+            ->orWhere( fn( $query ) => $query->where( 'publish_at', $version->getRawOriginal( 'publish_at' ) )
+                ->where( fn( $query ) => $query
+                    ->where( 'created_at', '<', $version->getRawOriginal( 'created_at' ) )
+                    ->orWhere( fn( $query ) => $query->where( 'created_at', $version->getRawOriginal( 'created_at' ) )
+                        ->where( 'id', '<', $version->id ) ) ) ) );
     }
 
 

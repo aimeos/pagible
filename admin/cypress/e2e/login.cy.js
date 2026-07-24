@@ -11,11 +11,13 @@ describe('Login', () => {
    * Register a single intercept that handles all GraphQL operations for one test.
    *
    * @param {object} options
-   * @param {object|null} options.meResponse   – value returned as `data.me`
+   * @param {object|null} options.meResponse   – value returned as `data.me` after login
    * @param {object|null} options.loginResponse – value returned as `data.cmsLogin`
    * @param {string|null} options.loginError    – error message for the cmsLogin mutation
    */
   function setupIntercept({ meResponse = null, loginResponse = null, loginError = null } = {}) {
+    let authenticated = false
+
     cy.intercept('POST', '/graphql', (req) => {
       const isBatch = Array.isArray(req.body)
       const ops = isBatch ? req.body : [req.body]
@@ -27,6 +29,7 @@ describe('Login', () => {
           if (loginError) {
             return { errors: [{ message: loginError }] }
           }
+          authenticated = !!loginResponse
           return { data: { cmsLogin: loginResponse } }
         }
 
@@ -35,7 +38,7 @@ describe('Login', () => {
         }
 
         // Default: auth-check (me) query
-        return { data: { me: meResponse } }
+        return { data: { me: authenticated ? meResponse : null } }
       })
 
       req.reply(isBatch ? responses : responses[0])
@@ -86,12 +89,12 @@ describe('Login', () => {
 
   it('redirects to /pages after successful login with page:view permission', () => {
     setupIntercept({
-      meResponse: null,
-      loginResponse: {
+      meResponse: {
         permission: '{"page:view":true}',
         email: 'admin@example.com',
         name: 'Admin',
       },
+      loginResponse: { id: '1' },
     })
     visitAndShowForm()
 
@@ -105,12 +108,12 @@ describe('Login', () => {
 
   it('shows "Not a CMS editor" when the logged-in user has no permissions', () => {
     setupIntercept({
-      meResponse: null,
-      loginResponse: {
+      meResponse: {
         permission: '{}',
         email: 'editor@example.com',
         name: 'Editor',
       },
+      loginResponse: { id: '1' },
     })
     visitAndShowForm()
 

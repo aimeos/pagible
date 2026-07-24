@@ -8,8 +8,6 @@
 namespace Tests;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Nuwave\Lighthouse\Testing\MakesGraphQLRequests;
-use Nuwave\Lighthouse\Testing\RefreshesSchemaCache;
 use Database\Seeders\TestSeeder;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Nestedset\NestedSet;
@@ -19,29 +17,8 @@ class GraphqlPageTest extends GraphqlTestAbstract
 {
     use CmsWithMigrations;
     use RefreshDatabase;
-    use MakesGraphQLRequests;
-    use RefreshesSchemaCache;
 
     protected $seeder = TestSeeder::class;
-
-
-    protected function defineEnvironment( $app )
-    {
-        parent::defineEnvironment( $app );
-
-        $app['config']->set( 'lighthouse.schema_path', __DIR__ . '/default-schema.graphql' );
-        $app['config']->set( 'lighthouse.namespaces.models', ['App\Models', 'Aimeos\\Cms\\Models'] );
-        $app['config']->set( 'lighthouse.namespaces.mutations', ['Aimeos\\Cms\\GraphQL\\Mutations'] );
-        $app['config']->set( 'lighthouse.namespaces.directives', ['Aimeos\\Cms\\GraphQL\\Directives'] );
-    }
-
-
-    protected function getPackageProviders( $app )
-    {
-        return array_merge( parent::getPackageProviders( $app ), [
-            'Nuwave\Lighthouse\LighthouseServiceProvider'
-        ] );
-    }
 
 
     protected function setUp(): void
@@ -193,6 +170,53 @@ class GraphqlPageTest extends GraphqlTestAbstract
         $paginator = $response->json('data.pages.paginatorInfo');
         $this->assertEquals(1, $paginator['currentPage']);
         $this->assertEquals(1, $paginator['lastPage']);
+    }
+
+
+    public function testPageRelationsRequireTheirViewPermissions()
+    {
+        $page = Page::where( 'tag', 'root' )->firstOrFail();
+        $user = new \App\Models\User( ['cmsperms' => ['page:view']] );
+
+        $response = $this->actingAs( $user )->graphQL( '{
+            files: page(id: "' . $page->id . '") {
+                files { id }
+            }
+            elements: page(id: "' . $page->id . '") {
+                elements { id }
+            }
+            versionFiles: page(id: "' . $page->id . '") {
+                latest { files { id } }
+            }
+            versionElements: page(id: "' . $page->id . '") {
+                latest { elements { id } }
+            }
+        }' );
+
+        $this->assertCount( 4, $response->json( 'errors' ) );
+        $response->assertGraphQLErrorMessage( 'Insufficient permissions' );
+    }
+
+
+    public function testPageMutationsRequireViewPermission()
+    {
+        $page = Page::where( 'tag', 'root' )->firstOrFail();
+        $user = new \App\Models\User( ['cmsperms' => [
+            'page:move', 'page:save', 'page:drop', 'page:keep', 'page:purge', 'page:publish',
+        ]] );
+
+        foreach( [
+            'movePage(id: "' . $page->id . '") { id }',
+            'savePage(id: "' . $page->id . '", input: {}) { id }',
+            'bulkPage(id: ["' . $page->id . '"], input: {}) { ids }',
+            'dropPage(id: ["' . $page->id . '"]) { id }',
+            'keepPage(id: ["' . $page->id . '"]) { id }',
+            'purgePage(id: ["' . $page->id . '"]) { id }',
+            'pubPage(id: ["' . $page->id . '"]) { id }',
+        ] as $mutation ) {
+            $this->actingAs( $user )->graphQL( 'mutation {' . $mutation . '}' )
+                ->assertGraphQLErrorMessage( 'Insufficient permissions' );
+        }
     }
 
 
@@ -1024,7 +1048,9 @@ class GraphqlPageTest extends GraphqlTestAbstract
             mutation {
                 dropPage(id: ["' . $root->id . '"]) {
                     id
+                    content
                     editor
+                    meta
                     deleted_at
                 }
             }
@@ -1036,7 +1062,9 @@ class GraphqlPageTest extends GraphqlTestAbstract
             'data' => [
                 'dropPage' => [[
                     'id' => (string) $root->id,
+                    'content' => json_encode( $root->content ),
                     'editor' => 'editor@testbench',
+                    'meta' => json_encode( $root->meta ),
                     'deleted_at' => (string) $page->deleted_at,
                 ]],
             ]
@@ -1053,7 +1081,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
         $root = Page::where('tag', 'root')->firstOrFail();
         $root->delete();
 
-        $this->expectsDatabaseQueryCount( 5 );
+        $this->expectsDatabaseQueryCount( 9 );
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
                 keepPage(id: ["' . $root->id . '"]) {
@@ -1085,8 +1113,10 @@ class GraphqlPageTest extends GraphqlTestAbstract
     public function testPubPage()
     {
         $page = Page::where('tag', 'root')->firstOrFail();
+        $page->latest()->update( ['published' => false] );
+        $page->forceFill( ['updated_at' => '2000-01-01 00:00:00'] )->saveQuietly();
 
-        $this->expectsDatabaseQueryCount( 13 );
+        $this->expectsDatabaseQueryCount( 7 );
 
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
@@ -1105,14 +1135,16 @@ class GraphqlPageTest extends GraphqlTestAbstract
                 ]],
             ]
         ] );
+        $this->assertSame( '2000-01-01 00:00:00', (string) $page->updated_at );
     }
 
 
     public function testPubPageAt()
     {
         $page = Page::where('tag', 'root')->firstOrFail();
+        $page->latest()->update( ['published' => false] );
 
-        $this->expectsDatabaseQueryCount( 4 );
+        $this->expectsDatabaseQueryCount( 3 );
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
                 pubPage(id: ["' . $page->id . '"], at: "2099-01-01 00:00:00") {
@@ -1136,6 +1168,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
     public function testPubPageAtWithTime()
     {
         $page = Page::where('tag', 'root')->firstOrFail();
+        $page->latest()->update( ['published' => false] );
 
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {

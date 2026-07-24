@@ -12,13 +12,13 @@ use Aimeos\Prisma\Prisma;
 use Aimeos\Prisma\Files\Image;
 use Aimeos\Prisma\Exceptions\PrismaException;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Http\UploadedFile;
 use GraphQL\Error\Error;
 
 
 final class Erase
 {
     use ObservesPrisma;
+    use ValidatesInputs;
 
 
     /**
@@ -27,16 +27,8 @@ final class Erase
      */
     public function __invoke( $rootValue, array $args ): string
     {
-        $upload = $args['file'];
-        $filemask = $args['mask'];
-
-        if( !$upload instanceof UploadedFile || !$upload->isValid() ) {
-            throw new Error( 'Invalid file upload' );
-        }
-
-        if( !$filemask instanceof UploadedFile || !$filemask->isValid() ) {
-            throw new Error( 'Invalid mask upload' );
-        }
+        $upload = $this->upload( $args['file'], 'image' );
+        $filemask = $this->upload( $args['mask'], 'image', 'mask' );
 
         $provider = config( 'cms.ai.erase.provider' );
         $config = config( 'cms.ai.erase', [] );
@@ -44,8 +36,8 @@ final class Erase
 
         try
         {
-            $file = Image::fromBinary( $upload->getContent(), $upload->getClientMimeType() );
-            $mask = Image::fromBinary( $filemask->getContent(), $filemask->getClientMimeType() );
+            $file = Image::fromBinary( $upload->getContent(), (string) $upload->getMimeType() );
+            $mask = Image::fromBinary( $filemask->getContent(), (string) $filemask->getMimeType() );
 
             return Prisma::image()->observe( $this->observer() )
                 ->using( $provider, $config )

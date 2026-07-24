@@ -105,7 +105,6 @@ abstract class AbstractDemo
                     'previews' => [],
                     'description' => ['en' => 'Learn about PagibleAI CMS features in this audio overview'],
                 ],
-                'published' => true,
                 'editor' => 'demo',
             ] );
 
@@ -147,7 +146,6 @@ abstract class AbstractDemo
             $version = $file->versions()->forceCreate( [
                 'lang' => 'en',
                 'data' => $data,
-                'published' => true,
                 'editor' => 'demo',
             ] );
 
@@ -191,7 +189,6 @@ abstract class AbstractDemo
                     'previews' => ['500' => $poster],
                     'description' => ['en' => 'See how PagibleAI CMS simplifies content creation with AI assistance'],
                 ],
-                'published' => true,
                 'editor' => 'demo',
             ] );
 

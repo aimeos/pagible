@@ -8,6 +8,9 @@
 namespace Aimeos\Cms;
 
 use Aimeos\Cms\Models\Page;
+use GuzzleHttp\Psr7\Uri;
+use GuzzleHttp\Psr7\UriResolver;
+use Illuminate\Http\Client\Response;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
@@ -93,8 +96,16 @@ class Utils
 
         $isZip = str_starts_with( $content, "\x1f\x8b" );
         $sanitizer = new \enshrined\svgSanitize\Sanitizer();
+        $max = max( 0, (int) ( (float) config( 'cms.upload.filesize', 50 ) * 1024 * 1024 ) );
 
-        $content = $isZip ? gzdecode( $content ) : $content;
+        if( $isZip )
+        {
+            $content = @gzdecode( $content, $max + 1 );
+
+            if( $content === false || strlen( $content ) > $max ) {
+                throw new Exception( 'Decompressed SVG exceeds the maximum upload size' );
+            }
+        }
 
         if( !$content || !( $clean = $sanitizer->sanitize( $content ) ) ) {
             return null;
@@ -122,13 +133,29 @@ class Utils
      */
     public static function fetch( string $url ) : string
     {
-        $response = Http::withOptions( self::safeHttp( $url ) )->get( $url );
+        $response = self::http( $url );
 
         if( !$response->successful() ) {
             throw new Exception( sprintf( 'URL "%s" not accessible', $url ) );
         }
 
         return $response->body();
+    }
+
+
+    /**
+     * Runs a callback while file ownership changes are serialized per tenant.
+     *
+     * @template T
+     * @param string $tenant Tenant ID owning the file namespace
+     * @param \Closure(): T $callback Work that reads or changes file ownership
+     * @return T Callback result
+     */
+    public static function fileLock( string $tenant, \Closure $callback ) : mixed
+    {
+        $key = 'cms_files_' . hash( 'sha256', $tenant );
+
+        return Cache::lock( $key, 600 )->block( 30, $callback );
     }
 
 
@@ -182,6 +209,37 @@ class Utils
 
 
     /**
+     * Sends a GET request while resolving and pinning every redirect target.
+     *
+     * @param string $url Initial http(s) URL
+     * @param array<string, mixed> $options Additional safe HTTP client options
+     * @param array<string, string> $headers Request headers
+     * @return Response Final response, including unsuccessful non-redirect responses
+     */
+    public static function http( string $url, array $options = [], array $headers = [] ) : Response
+    {
+        for( $redirects = 0; ; $redirects++ )
+        {
+            $response = Http::withHeaders( $headers )
+                ->withOptions( self::safeHttp( $url ) + $options )->get( $url );
+
+            if( !in_array( $response->status(), [301, 302, 303, 307, 308], true ) ) {
+                return $response;
+            }
+
+            $location = trim( $response->header( 'Location' ) );
+            $response->toPsrResponse()->getBody()->close();
+
+            if( $location === '' || $redirects >= 2 ) {
+                throw new Exception( sprintf( 'Too many or invalid redirects for "%s"', $url ) );
+            }
+
+            $url = (string) UriResolver::resolve( new Uri( $url ), new Uri( $location ) );
+        }
+    }
+
+
+    /**
      * Returns a file extension that is safe to serve from the storage disk.
      *
      * Neutralizes dangerous uploads/restores (e.g. .php, .html, .phar) by replacing
@@ -228,6 +286,18 @@ class Utils
         }
 
         return false;
+    }
+
+
+    /**
+     * Checks that a local storage path belongs to a tenant namespace.
+     *
+     * The default tenant may only own direct children of "cms/" so it cannot
+     * overlap with named tenant directories.
+     */
+    public static function isValidPath( mixed $path, ?string $tenant = null ) : bool
+    {
+        return self::normalizePath( $path, $tenant ) !== null;
     }
 
 
@@ -316,39 +386,34 @@ class Utils
     {
         if( str_starts_with( $path, 'http') )
         {
-            $response = Http::withHeaders( ['Range' => 'bytes=0-299'] )
-                ->withOptions( self::safeHttp( $path ) )
-                ->get( $path );
+            $response = self::http( $path, ['stream' => true], ['Range' => 'bytes=0-299'] );
 
             if( !$response->successful() ) {
                 throw new Exception( 'URL not accessible' );
             }
 
-            $buffer = $response->body();
+            $body = $response->toPsrResponse()->getBody();
+            $buffer = $body->read( 300 );
+            $body->close();
         }
         else
         {
-            // Reject traversal sequences and null bytes before reading from the disk so a
-            // crafted path (e.g. "cms/1/../2/secret.jpg") can't probe files outside the
-            // intended directory and leak their mime type. Stored paths never contain ".."
-            // (see File::filename()).
-            if( str_contains( $path, '..' ) || str_contains( $path, "\0" ) ) {
+            if( ( $path = self::normalizePath( $path ) ) === null ) {
                 throw new Exception( 'Invalid file path' );
             }
 
-            $stream = Storage::disk( config( 'cms.storage.disk', 'public' ) )->readStream( $path );
+            $stream = Storage::disk( config( 'cms.disk', 'public' ) )->readStream( $path );
 
             if( !$stream ) {
                 throw new Exception( 'File not accessible' );
             }
 
             if( ( $buffer = fread( $stream, 300 ) ) === false ) {
-                fclose($stream);
+                fclose( $stream );
                 throw new Exception( 'File not readable' );
-
             }
 
-            fclose($stream);
+            fclose( $stream );
         }
 
         $finfo = new \finfo( FILEINFO_MIME_TYPE );
@@ -358,6 +423,46 @@ class Utils
         }
 
         return $mime;
+    }
+
+
+    /**
+     * Canonicalizes a local storage path and verifies its tenant namespace.
+     *
+     * The default tenant may only own direct children of "cms/" so it cannot
+     * overlap with named tenant directories.
+     *
+     * @param mixed $path Local storage path
+     * @param string|null $tenant Tenant ID or null for the current tenant
+     * @return string|null Canonical path or null if it is invalid
+     */
+    public static function normalizePath( mixed $path, ?string $tenant = null ) : ?string
+    {
+        $tenant ??= Tenancy::value();
+
+        if( !is_string( $path ) || $path === '' || str_contains( $path, '..' )
+            || str_contains( $path, '\\' ) || preg_match( '/\p{C}/u', $path ) !== 0
+            || $tenant === '.' || str_contains( $tenant, '..' )
+            || str_contains( $tenant, '/' ) || str_contains( $tenant, '\\' )
+            || preg_match( '/\p{C}/u', $tenant ) !== 0 ) {
+            return null;
+        }
+
+        $path = implode( '/', array_filter(
+            explode( '/', $path ),
+            static fn( string $part ) : bool => $part !== '' && $part !== '.',
+        ) );
+        $prefix = $tenant === '' ? 'cms/' : 'cms/' . $tenant . '/';
+
+        if( !str_starts_with( $path, $prefix ) ) {
+            return null;
+        }
+
+        $relative = substr( $path, strlen( $prefix ) );
+
+        return $relative !== '' && ( $tenant !== '' || !str_contains( $relative, '/' ) )
+            ? $path
+            : null;
     }
 
 
@@ -430,8 +535,9 @@ class Utils
      * Returns Guzzle HTTP options that mitigate SSRF for the given URL.
      *
      * Validates the URL syntactically, resolves the host once and pins the
-     * connection to that IP (preventing DNS rebinding), and re-validates the
-     * host on every redirect. Private/reserved targets are allowed unless
+     * connection to that IP (preventing DNS rebinding). Redirects are disabled
+     * here and followed by http(), which repeats validation and pinning for
+     * every target. Private/reserved targets are allowed unless
      * "cms.allow-internal" is disabled.
      *
      * @param string $url The http(s) URL that will be fetched
@@ -457,15 +563,7 @@ class Utils
         return [
             'verify' => true,
             'connect_timeout' => 10,
-            'allow_redirects' => [
-                'max' => 2,
-                'strict' => true,
-                'on_redirect' => function( $request, $response, \Psr\Http\Message\UriInterface $uri ) {
-                    if( !( $host = $uri->getHost() ) || !self::resolve( $host ) ) {
-                        throw new Exception( sprintf( 'Redirect to "%s" blocked', $host ) );
-                    }
-                },
-            ],
+            'allow_redirects' => false,
             'curl' => [CURLOPT_RESOLVE => [$host . ':' . $port . ':' . $ip]],
         ];
     }

@@ -97,12 +97,14 @@ return [
     | File upload policy
     |--------------------------------------------------------------------------
     |
-    | The maximum upload size is specified in MB. MIME types may be complete
-    | types or prefixes and apply to uploads through every CMS interface.
+    | The maximum upload size is specified in MB and the decoded raster size
+    | in pixels. MIME types may be complete types or prefixes and apply to
+    | uploads through every CMS interface.
     |
     */
     'upload' => [
         'filesize' => env( 'CMS_UPLOAD_FILESIZE', 50 ),
+        'maxpixels' => env( 'CMS_UPLOAD_MAXPIXELS', 4096 * 4096 ),
         'mimetypes' => explode( ',', env( 'CMS_UPLOAD_MIMETYPES', 'application/gzip,application/pdf,application/vnd.,application/zip,audio/,image/,text/,video/' ) ),
     ],
 

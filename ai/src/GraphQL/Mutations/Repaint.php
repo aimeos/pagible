@@ -12,13 +12,13 @@ use Aimeos\Prisma\Prisma;
 use Aimeos\Prisma\Files\Image;
 use Aimeos\Prisma\Exceptions\PrismaException;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Http\UploadedFile;
 use GraphQL\Error\Error;
 
 
 final class Repaint
 {
     use ObservesPrisma;
+    use ValidatesInputs;
 
 
     /**
@@ -27,11 +27,7 @@ final class Repaint
      */
     public function __invoke( $rootValue, array $args ): string
     {
-        $upload = $args['file'];
-
-        if( !$upload instanceof UploadedFile || !$upload->isValid() ) {
-            throw new Error( 'Invalid file upload' );
-        }
+        $upload = $this->upload( $args['file'], 'image' );
 
         $provider = config( 'cms.ai.repaint.provider' );
         $config = config( 'cms.ai.repaint', [] );
@@ -39,7 +35,7 @@ final class Repaint
 
         try
         {
-            $file = Image::fromBinary( $upload->getContent(), $upload->getClientMimeType() );
+            $file = Image::fromBinary( $upload->getContent(), (string) $upload->getMimeType() );
 
             return Prisma::image()->observe( $this->observer() )
                 ->using( $provider, $config )

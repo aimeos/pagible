@@ -13,13 +13,13 @@ use Aimeos\Cms\Utils;
 use Aimeos\Prisma\Files\Audio;
 use Aimeos\Prisma\Exceptions\PrismaException;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Http\UploadedFile;
 use GraphQL\Error\Error;
 
 
 final class Transcribe
 {
     use ObservesPrisma;
+    use ValidatesInputs;
 
 
     /**
@@ -29,11 +29,7 @@ final class Transcribe
      */
     public function __invoke( $rootValue, array $args ): array
     {
-        $upload = $args['file'];
-
-        if( !$upload instanceof UploadedFile || !$upload->isValid() ) {
-            throw new Error( 'Invalid file upload' );
-        }
+        $upload = $this->upload( $args['file'], 'audio' );
 
         $provider = config( 'cms.ai.transcribe.provider' );
         $config = config( 'cms.ai.transcribe', [] );
@@ -41,7 +37,7 @@ final class Transcribe
 
         try
         {
-            $file = Audio::fromBinary( $upload->getContent(), $upload->getClientMimeType() );
+            $file = Audio::fromBinary( $upload->getContent(), (string) $upload->getMimeType() );
 
             $data = Prisma::audio()->observe( $this->observer() )
                 ->using( $provider, $config )

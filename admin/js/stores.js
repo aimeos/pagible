@@ -33,11 +33,7 @@ const FETCH_ME = gql`
 const LOGIN = gql`
   mutation ($email: String!, $password: String!) {
     cmsLogin(email: $email, password: $password) {
-      permission
-      settings
-      email
-      name
-      token
+      id
     }
   }
 `
@@ -62,7 +58,7 @@ const FETCH_TOKEN = gql`
 const SAVE_SETTINGS = gql`
   mutation ($settings: JSON!) {
     cmsUser(settings: $settings) {
-      settings
+      id
     }
   }
 `
@@ -154,14 +150,15 @@ export const useUserStore = defineStore('user', {
         })
     },
 
-    async isAuthenticated() {
+    async isAuthenticated(force = false) {
       if (this.me !== null) {
         return !!this.me
       }
 
       await apolloClient
         .query({
-          query: FETCH_ME
+          query: FETCH_ME,
+          fetchPolicy: force ? 'network-only' : 'cache-first'
         })
         .then((response) => {
           if (response.errors) {
@@ -196,19 +193,13 @@ export const useUserStore = defineStore('user', {
             throw response.errors
           }
 
-          this.me = response.data.cmsLogin || false
-
-          if (this.me?.permission) {
-            this.me.permission = safeParse(this.me.permission)
+          if (!response.data.cmsLogin) {
+            this.me = false
+            return this.me
           }
 
-          if (this.me?.settings) {
-            this.me.settings = safeParse(this.me.settings)
-          }
-
-          this.applyProxyToken()
-
-          return this.me
+          this.me = null
+          return this.isAuthenticated(true).then(() => this.me)
         })
         .catch((error) => {
           this.me = false

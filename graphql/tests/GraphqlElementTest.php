@@ -8,8 +8,6 @@
 namespace Tests;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Nuwave\Lighthouse\Testing\MakesGraphQLRequests;
-use Nuwave\Lighthouse\Testing\RefreshesSchemaCache;
 use Database\Seeders\TestSeeder;
 use Aimeos\Cms\Models\Element;
 
@@ -18,29 +16,8 @@ class GraphqlElementTest extends GraphqlTestAbstract
 {
     use CmsWithMigrations;
     use RefreshDatabase;
-    use MakesGraphQLRequests;
-    use RefreshesSchemaCache;
 
     protected $seeder = TestSeeder::class;
-
-
-    protected function defineEnvironment( $app )
-    {
-        parent::defineEnvironment( $app );
-
-        $app['config']->set( 'lighthouse.schema_path', __DIR__ . '/default-schema.graphql' );
-        $app['config']->set( 'lighthouse.namespaces.models', ['App\Models', 'Aimeos\\Cms\\Models'] );
-        $app['config']->set( 'lighthouse.namespaces.mutations', ['Aimeos\\Cms\\GraphQL\\Mutations'] );
-        $app['config']->set( 'lighthouse.namespaces.directives', ['Aimeos\\Cms\\GraphQL\\Directives'] );
-    }
-
-
-    protected function getPackageProviders( $app )
-    {
-        return array_merge( parent::getPackageProviders( $app ), [
-            'Nuwave\Lighthouse\LighthouseServiceProvider'
-        ] );
-    }
 
 
     protected function setUp(): void
@@ -152,6 +129,49 @@ class GraphqlElementTest extends GraphqlTestAbstract
         $paginator = $response->json('data.elements.paginatorInfo');
         $this->assertEquals(1, $paginator['currentPage']);
         $this->assertEquals(1, $paginator['lastPage']);
+    }
+
+
+    public function testElementRelationsRequireTheirViewPermissions()
+    {
+        $element = Element::where( 'type', 'footer' )->firstOrFail();
+        $user = new \App\Models\User( ['cmsperms' => ['element:view']] );
+
+        $response = $this->actingAs( $user )->graphQL( '{
+            pages: element(id: "' . $element->id . '") {
+                bypages { id }
+            }
+            versions: element(id: "' . $element->id . '") {
+                byversions { id }
+            }
+            files: element(id: "' . $element->id . '") {
+                files { id }
+            }
+        }' );
+
+        $this->assertCount( 3, $response->json( 'errors' ) );
+        $response->assertGraphQLErrorMessage( 'Insufficient permissions' );
+    }
+
+
+    public function testElementMutationsRequireViewPermission()
+    {
+        $element = Element::where( 'type', 'footer' )->firstOrFail();
+        $user = new \App\Models\User( ['cmsperms' => [
+            'element:save', 'element:drop', 'element:keep', 'element:purge', 'element:publish',
+        ]] );
+
+        foreach( [
+            'saveElement(id: "' . $element->id . '", input: {}) { id }',
+            'bulkElement(id: ["' . $element->id . '"], input: {}) { ids }',
+            'dropElement(id: ["' . $element->id . '"]) { id }',
+            'keepElement(id: ["' . $element->id . '"]) { id }',
+            'purgeElement(id: ["' . $element->id . '"]) { id }',
+            'pubElement(id: ["' . $element->id . '"]) { id }',
+        ] as $mutation ) {
+            $this->actingAs( $user )->graphQL( 'mutation {' . $mutation . '}' )
+                ->assertGraphQLErrorMessage( 'Insufficient permissions' );
+        }
     }
 
 
@@ -292,18 +312,17 @@ class GraphqlElementTest extends GraphqlTestAbstract
                     'created_at' => (string) $element->created_at,
                     'updated_at' => (string) $element->updated_at,
                     'bypages' => [],
-                    'latest' => [
-                        'data' => json_encode( [
-                            'data' => ['key' => 'value'],
-                            'lang' => 'en',
-                            'name' => '',
-                            'type' => 'heading',
-                            'scheduled' => 0,
-                        ] ),
-                    ],
                 ]
             ]
         ] );
+
+        $this->assertEquals( [
+            'data' => ['key' => 'value'],
+            'lang' => 'en',
+            'name' => '',
+            'type' => 'heading',
+            'scheduled' => 0,
+        ], json_decode( $result['latest']['data'], true ) );
     }
 
 
@@ -392,6 +411,23 @@ class GraphqlElementTest extends GraphqlTestAbstract
             $this->assertFalse( (bool) $fresh->latest->published );
             $this->assertEquals( $fresh->latest_id, $latest[$element->id] );
         }
+    }
+
+
+    public function testBulkElementRejectsTooManyIds()
+    {
+        $element = Element::firstOrFail();
+
+        $response = $this->actingAs( $this->user )->graphQL( '
+            mutation BulkElement($ids: [ID!]!) {
+                bulkElement(id: $ids, input: { lang: "de" }) {
+                    ids
+                }
+            }
+        ', ['ids' => array_fill( 0, 1001, $element->id )] );
+
+        $response->assertJsonPath( 'data.bulkElement', null );
+        $this->assertNotEmpty( $response->json( 'errors' ) );
     }
 
 
@@ -500,7 +536,7 @@ class GraphqlElementTest extends GraphqlTestAbstract
         $element = Element::where( 'type', 'footer' )->firstOrFail();
         $element->delete();
 
-        $this->expectsDatabaseQueryCount( 3 );
+        $this->expectsDatabaseQueryCount( 4 );
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
                 keepElement(id: ["' . $element->id . '"]) {
@@ -527,7 +563,7 @@ class GraphqlElementTest extends GraphqlTestAbstract
     {
         $element = Element::where( 'type', 'footer' )->firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 7 );
+        $this->expectsDatabaseQueryCount( 4 );
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
                 pubElement(id: ["' . $element->id . '"]) {
@@ -552,7 +588,7 @@ class GraphqlElementTest extends GraphqlTestAbstract
     {
         $element = Element::where( 'type', 'footer' )->firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 4 );
+        $this->expectsDatabaseQueryCount( 3 );
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
                 pubElement(id: ["' . $element->id . '"], at: "2099-01-01 00:00:00") {

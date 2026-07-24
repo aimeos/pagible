@@ -62,7 +62,7 @@ class Refiner
                 $data = array_merge( (array) ( $entry['data'] ?? [] ), $itemData );
                 $entry['data'] = (array) Validation::defaults( $entry['type'], $data );
 
-                $ids = array_values( array_unique( self::fileIds( $entry['data'] ) ) );
+                $ids = Validation::files( $entry['data'] );
 
                 if( $ids ) {
                     $entry['files'] = $ids;
@@ -75,31 +75,5 @@ class Refiner
         }
 
         return $result;
-    }
-
-
-    /**
-     * Recursively collects file IDs from file reference objects in element data.
-     *
-     * @param mixed $data Element data or a nested value
-     * @return array<int, string> File IDs referenced in the data
-     */
-    private static function fileIds( mixed $data ) : array
-    {
-        if( !is_array( $data ) ) {
-            return [];
-        }
-
-        if( ( $data['type'] ?? null ) === 'file' && !empty( $data['id'] ) ) {
-            return [(string) $data['id']];
-        }
-
-        $ids = [];
-
-        foreach( $data as $value ) {
-            $ids = array_merge( $ids, self::fileIds( $value ) );
-        }
-
-        return $ids;
     }
 }

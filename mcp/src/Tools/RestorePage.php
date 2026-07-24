@@ -7,7 +7,6 @@
 
 namespace Aimeos\Cms\Tools;
 
-use Aimeos\Cms\Utils;
 use Aimeos\Cms\Resource;
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\Models\Page;
@@ -30,7 +29,8 @@ class RestorePage extends Tool
      */
     public function handle( Request $request ): \Laravel\Mcp\ResponseFactory
     {
-        if( !Permission::can( 'page:keep', $request->user() ) ) {
+        if( !Permission::can( 'page:keep', $request->user() )
+            || !Permission::can( 'page:view', $request->user() ) ) {
             throw new \Aimeos\Cms\Exception( 'Insufficient permissions' );
         }
 
@@ -51,7 +51,7 @@ class RestorePage extends Tool
             return Response::structured( ['error' => 'Page is not deleted.'] );
         }
 
-        $items = Resource::restore( Page::class, [$v['id']], Utils::editor( $request->user() ) );
+        $items = Resource::restore( Page::class, [$v['id']], $request->user() );
 
         /** @var Page $restored */
         $restored = $items->firstOrFail();
@@ -83,6 +83,7 @@ class RestorePage extends Tool
      */
     public function shouldRegister( Request $request ) : bool
     {
-        return Permission::can( 'page:keep', $request->user() );
+        return Permission::can( 'page:keep', $request->user() )
+            && Permission::can( 'page:view', $request->user() );
     }
 }

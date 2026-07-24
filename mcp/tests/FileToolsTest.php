@@ -36,6 +36,23 @@ class FileToolsTest extends McpTestAbstract
     }
 
 
+    public function testFileMutationToolsRequireViewPermission()
+    {
+        $user = new \App\Models\User([
+            'cmsperms' => ['file:save', 'file:drop', 'file:keep', 'file:publish'],
+        ]);
+
+        foreach( [
+            \Aimeos\Cms\Tools\SaveFile::class,
+            \Aimeos\Cms\Tools\DropFile::class,
+            \Aimeos\Cms\Tools\RestoreFile::class,
+            \Aimeos\Cms\Tools\PublishFile::class,
+        ] as $tool ) {
+            CmsServer::actingAs( $user )->tool( $tool )->assertHasErrors();
+        }
+    }
+
+
     // ── Read Files ─────────────────────────────────────────────────────
 
     public function testGetFile()
@@ -192,6 +209,24 @@ class FileToolsTest extends McpTestAbstract
         ] );
 
         $response->assertOk()->assertSee( ['scheduled_at', '2099-12-31'] );
+    }
+
+
+    public function testPublishFileSkipsPublishedSchedule()
+    {
+        $file = File::where( 'name', 'Test image' )->firstOrFail();
+        $file->latest()->update( ['published' => true] );
+        $publishAt = $file->latest()->value( 'publish_at' );
+
+        $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\PublishFile::class, [
+            'id' => [$file->id],
+            'at' => '2099-12-31 23:59:59',
+        ] );
+
+        $response->assertOk()
+            ->assertSee( ['skipped', 'Already published'] )
+            ->assertDontSee( ['scheduled_at'] );
+        $this->assertSame( $publishAt, $file->latest()->value( 'publish_at' ) );
     }
 
 

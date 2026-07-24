@@ -13,6 +13,7 @@ use Aimeos\Cms\Models\Version;
 use Aimeos\Cms\Tenancy;
 use Aimeos\Cms\Utils;
 use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event as Events;
 
@@ -72,9 +73,10 @@ trait Broadcasts
      * @param array<string, string> $latest Saved item id => its new latest version id
      * @param array<string, mixed> $data Shared fields applied to every saved item
      * @param Authenticatable|string|null $editor Authenticated user or editor name
+     * @param string $action Audit action name
      */
     public static function announceBulk( string $type, array $ids, array $latest, array $data,
-        Authenticatable|string|null $editor = null ) : void
+        Authenticatable|string|null $editor = null, string $action = 'bulk' ) : void
     {
         if( empty( $ids ) ) {
             return;
@@ -94,7 +96,47 @@ trait Broadcasts
             editor: is_string( $editor ) ? $editor : Utils::editor( $editor ),
             tenant: Tenancy::value(),
             source: Utils::source(),
+            action: $action,
         ), $broadcast );
+    }
+
+
+    /**
+     * Coalesces notifications while preserving single-item event names.
+     *
+     * @param Collection<int, \Aimeos\Cms\Models\Base> $items Changed items
+     * @param string $action Past-tense lifecycle action
+     * @param string $editor Editor name
+     * @param array<string, mixed> $data Shared changed fields
+     * @param bool $bulk TRUE to use the bulk event for a single item too
+     */
+    public static function announceMany( Collection $items, string $action, string $editor,
+        array $data = [], bool $bulk = false ) : void
+    {
+        if( !( $first = $items->first() ) ) {
+            return;
+        }
+
+        if( $items->count() === 1 && !$bulk ) {
+            $first->announce( $action, $editor );
+            return;
+        }
+
+        foreach( $items->chunk( 50 ) as $chunk ) {
+            /** @var list<string> $ids */
+            $ids = array_values( $chunk->pluck( 'id' )->all() );
+            /** @var array<string, string> $latest */
+            $latest = $chunk->pluck( 'latest_id', 'id' )->all();
+
+            static::announceBulk(
+                strtolower( class_basename( $first ) ),
+                $ids,
+                $latest,
+                $data,
+                $editor,
+                $action,
+            );
+        }
     }
 
 
@@ -108,10 +150,17 @@ trait Broadcasts
      */
     protected function eventFields( Version $version, Authenticatable|string|null $editor ) : array
     {
+        $id = $this->id;
+        $latestId = $version->id;
+
+        if( $id === null || $latestId === null ) {
+            throw new \LogicException( 'Cannot announce unsaved CMS models.' );
+        }
+
         return [
             'contentType' => strtolower( class_basename( $this ) ),
-            'id' => (string) $this->id,
-            'latest_id' => (string) $version->id,
+            'id' => $id,
+            'latest_id' => $latestId,
             'editor' => is_string( $editor ) ? $editor : Utils::editor( $editor ),
             'data' => (array) $version->data,
             'published' => (bool) $version->published,
@@ -151,11 +200,5 @@ trait Broadcasts
                 report( $e );
             }
         } );
-    }
-
-
-    protected static function local( object $event ) : void
-    {
-        DB::afterCommit( fn() => event( $event ) );
     }
 }

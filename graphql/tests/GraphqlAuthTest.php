@@ -9,35 +9,12 @@ namespace Tests;
 
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Nuwave\Lighthouse\Testing\MakesGraphQLRequests;
-use Nuwave\Lighthouse\Testing\RefreshesSchemaCache;
 
 
 class GraphqlAuthTest extends GraphqlTestAbstract
 {
     use CmsWithMigrations;
     use RefreshDatabase;
-    use MakesGraphQLRequests;
-    use RefreshesSchemaCache;
-
-
-	protected function defineEnvironment( $app )
-	{
-        parent::defineEnvironment( $app );
-
-		$app['config']->set( 'lighthouse.schema_path', __DIR__ . '/default-schema.graphql' );
-		$app['config']->set( 'lighthouse.namespaces.models', ['App\Models', 'Aimeos\\Cms\\Models'] );
-		$app['config']->set( 'lighthouse.namespaces.mutations', ['Aimeos\\Cms\\GraphQL\\Mutations'] );
-		$app['config']->set( 'lighthouse.namespaces.directives', ['Aimeos\\Cms\\GraphQL\\Directives'] );
-    }
-
-
-	protected function getPackageProviders( $app )
-	{
-		return array_merge( parent::getPackageProviders( $app ), [
-			'Nuwave\Lighthouse\LighthouseServiceProvider'
-		] );
-	}
 
 
     protected function setUp(): void
@@ -165,6 +142,16 @@ class GraphqlAuthTest extends GraphqlTestAbstract
     }
 
 
+    public function testCmsUserFieldsAreOnlyAvailableOnMe()
+    {
+        $this->actingAs( $this->user )->graphQL( '{
+            user(id: "' . $this->user->id . '") {
+                permission
+            }
+        }' )->assertGraphQLErrorMessage( 'Cannot query field "permission" on type "User".' );
+    }
+
+
     public function testUser()
     {
         $settings = ['page' => ['filter' => ['view' => 'list'], 'sort' => ['column' => 'ID', 'order' => 'DESC']]];
@@ -172,13 +159,12 @@ class GraphqlAuthTest extends GraphqlTestAbstract
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation ($settings: JSON!) {
                 cmsUser(settings: $settings) {
-                    settings
+                    id
                 }
             }
         ', ['settings' => json_encode( $settings )] );
 
-        $this->assertEquals( $settings, json_decode( $response->json( 'data.cmsUser.settings' ), true ) );
-
+        $response->assertJsonPath( 'data.cmsUser.id', (string) $this->user->id );
         $this->assertEquals( $settings, json_decode( $this->user->fresh()->cmsdata, true ) );
     }
 
@@ -191,20 +177,20 @@ class GraphqlAuthTest extends GraphqlTestAbstract
         $this->actingAs( $this->user )->graphQL( '
             mutation ($settings: JSON!) {
                 cmsUser(settings: $settings) {
-                    settings
+                    id
                 }
             }
         ', ['settings' => json_encode( $first )] )
-            ->assertJsonPath( 'data.cmsUser.settings', json_encode( $first ) );
+            ->assertJsonPath( 'data.cmsUser.id', (string) $this->user->id );
 
         $this->actingAs( $this->user )->graphQL( '
             mutation ($settings: JSON!) {
                 cmsUser(settings: $settings) {
-                    settings
+                    id
                 }
             }
         ', ['settings' => json_encode( $second )] )
-            ->assertJsonPath( 'data.cmsUser.settings', json_encode( $second ) );
+            ->assertJsonPath( 'data.cmsUser.id', (string) $this->user->id );
 
         $this->assertEquals( $second, json_decode( $this->user->fresh()->cmsdata, true ) );
     }
@@ -215,7 +201,7 @@ class GraphqlAuthTest extends GraphqlTestAbstract
         $this->graphQL( '
             mutation ($settings: JSON!) {
                 cmsUser(settings: $settings) {
-                    settings
+                    id
                 }
             }
         ', ['settings' => json_encode( ['page' => []] )] )->assertGraphQLErrorMessage( 'Unauthenticated.' );
@@ -229,7 +215,7 @@ class GraphqlAuthTest extends GraphqlTestAbstract
         $this->actingAs( $this->user )->graphQL( '
             mutation ($settings: JSON!) {
                 cmsUser(settings: $settings) {
-                    settings
+                    id
                 }
             }
         ', ['settings' => json_encode( $settings )] )->assertGraphQLErrorMessage( 'User data too large (64 KB), maximum is 64 KB' );
