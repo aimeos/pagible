@@ -23,7 +23,7 @@ use Aimeos\Cms\Tenancy;
 abstract class AbstractDemo
 {
     private string $audioFile;
-    /** @var array<string, string> File IDs keyed by Unsplash photo path */
+    /** @var array<string, string> File IDs keyed by Unsplash photo path and language */
     private array $images = [];
     private string $videoFile;
     protected string $tenant;
@@ -122,39 +122,42 @@ abstract class AbstractDemo
      *
      * @param string $photo Unsplash photo path, e.g. "photo-1517336714731-489689fd1ca8"
      * @param string $name File name
-     * @param string $desc English image description
+     * @param string $desc Localized image description
+     * @param string $lang File and description language
      * @return string File ID
      */
-    protected function image( string $photo, string $name, string $desc ) : string
+    protected function image( string $photo, string $name, string $desc, string $lang = 'en' ) : string
     {
-        if( !isset( $this->images[$photo] ) )
+        $key = $photo . ':' . $lang;
+
+        if( !isset( $this->images[$key] ) )
         {
             $base = 'https://images.unsplash.com/' . $photo;
             $url = fn( int $w ) => $base . '?w=' . $w . '&q=80&fm=jpg&fit=crop';
 
             $data = [
                 'mime' => 'image/jpeg',
-                'lang' => 'en',
+                'lang' => $lang,
                 'name' => $name,
                 'path' => $url( 1500 ),
                 'previews' => ['500' => $url( 500 ), '1000' => $url( 1000 )],
-                'description' => ['en' => $desc],
+                'description' => [$lang => $desc],
             ];
 
             $file = File::forceCreate( $data + ['editor' => 'demo'] );
 
             $version = $file->versions()->forceCreate( [
-                'lang' => 'en',
+                'lang' => $lang,
                 'data' => $data,
                 'editor' => 'demo',
             ] );
 
             $file->forceFill( ['latest_id' => $version->id] )->saveQuietly();
             $file->publish( $version );
-            $this->images[$photo] = (string) $file->refresh()->id;
+            $this->images[$key] = (string) $file->refresh()->id;
         }
 
-        return $this->images[$photo];
+        return $this->images[$key];
     }
 
 

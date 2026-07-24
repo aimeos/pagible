@@ -7,6 +7,10 @@
     --pico-block-spacing-horizontal: 0;
 }
 
+.type-page main .cms-content > * {
+    margin-block: 0.75rem;
+}
+
 .cms-content .container {
     padding: 4rem min(5%, 2rem);
 }
@@ -17,13 +21,6 @@ main .cms-content > :nth-child(odd) {
 
 main .cms-content > :nth-child(even) {
     background-color: var(--pico-muted-background-color);
-}
-
-.cms-content > .heading + .text,
-.cms-content > .heading + .cards,
-.cms-content > .heading + .image,
-.cms-content > .heading + .image-text {
-    margin-top: -3rem;
 }
 
 .heading h1,

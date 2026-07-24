@@ -7,6 +7,10 @@
     --pico-block-spacing-horizontal: 0;
 }
 
+.type-page main .cms-content > * {
+    margin-block: 0.75rem;
+}
+
 .cms-content .container {
     padding: 2rem min(5%, 2rem);
 }

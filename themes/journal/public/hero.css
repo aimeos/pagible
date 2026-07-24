@@ -1,0 +1,153 @@
+/**
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+.hero {
+    background: var(--pico-contrast-inverse);
+    overflow: hidden;
+    position: relative;
+}
+
+.hero .background {
+    inset: 0;
+    position: absolute;
+    z-index: 0;
+}
+
+.hero .background::after {
+    background: #00000066;
+    content: "";
+    inset: 0;
+    position: absolute;
+}
+
+.hero .background img {
+    height: 100%;
+    object-fit: cover;
+    width: 100%;
+}
+
+.hero .container {
+    align-items: center;
+    display: grid;
+    gap: 2rem;
+    grid-template-columns: 1fr;
+    padding-block: 4rem;
+    position: relative;
+    z-index: 1;
+}
+
+.hero .container:has(.second) {
+    gap: 0;
+    min-height: clamp(24rem, 55vw, 42rem);
+}
+
+.hero .container:has(.second)::after {
+    background: linear-gradient(90deg, #000000d9 0%, #000000a6 45%, #00000040 100%);
+    content: "";
+    inset: 0;
+    pointer-events: none;
+    position: absolute;
+    z-index: 1;
+}
+
+.hero .first {
+    margin: 0;
+    max-width: 50rem;
+    text-align: start;
+}
+
+.hero .first:has(+ .second) {
+    align-self: center;
+    margin-block: 2rem;
+    margin-inline: 0;
+    max-width: 40rem;
+    position: relative;
+    text-align: start;
+    z-index: 2;
+}
+
+.hero .first:has(+ .second) h1 {
+    margin-inline: 0;
+    text-align: start;
+}
+
+.hero .subtitle {
+    color: var(--pico-primary);
+    display: inline-block;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+}
+
+.hero h1 {
+    font-size: clamp(2.75rem, 6vw, 5.75rem);
+    margin: 0 0 1.5rem;
+    max-width: 15ch;
+}
+
+.hero .cms-text {
+    color: var(--pico-muted-color);
+    font-size: 1rem;
+    line-height: 1.6;
+    max-width: 38rem;
+}
+
+.hero .background ~ .first h1,
+.hero .background ~ .first .cms-text,
+.hero .first:has(+ .second) h1,
+.hero .first:has(+ .second) .cms-text,
+.hero .first:has(+ .second) .subtitle {
+    color: var(--pico-contrast-inverse);
+}
+
+.hero .second {
+    border: 0;
+    box-shadow: none;
+    display: block;
+    inset: 0;
+    margin: 0;
+    overflow: hidden;
+    padding: 0;
+    position: absolute;
+    width: 100%;
+    z-index: 0;
+}
+
+.hero .second,
+.hero .second picture,
+.hero .second .slider-container,
+.hero .second .hero-slide {
+    height: 100%;
+}
+
+.hero .second picture {
+    display: block;
+    width: 100%;
+}
+
+.hero .second img,
+.hero .second video {
+    aspect-ratio: auto;
+    display: block;
+    height: 100%;
+    object-fit: cover;
+    width: 100%;
+}
+
+.hero .second.multiple .slider-container > .hero-slide::after {
+    display: none;
+}
+
+.hero .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+}
+
+.hero .actions .btn {
+    margin: 0;
+}

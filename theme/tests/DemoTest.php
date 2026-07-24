@@ -57,7 +57,10 @@ class DemoTest extends ThemeTestAbstract
         $this->assertIsString( $logoId );
         $this->assertTrue( $home->files->has( $logoId ) );
         $this->assertNull( PageCache::response( '' ) );
-        $this->get( '/' )->assertSee( 'meridian-works-logo.svg', false );
+        $response = $this->get( '/' );
+        $response->assertSee( 'meridian-works-logo.svg', false );
+        $response->assertSee( 'class="login"', false );
+        $response->assertSee( 'href="' . route( 'login' ) . '"', false );
         $this->assertGreaterThan( 0, Page::where( 'path', 'blog' )->count() );
         $this->assertGreaterThan( 0, Page::where( 'type', 'docs' )->count() );
 

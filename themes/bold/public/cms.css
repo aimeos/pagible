@@ -139,7 +139,7 @@ header nav > ul:not(.menu) > li {
     padding: 0;
 }
 
-header nav ul.menu > li:last-of-type > a {
+header nav ul.menu > li:has(+ li.login) > a {
     background-color: var(--pico-primary);
     color: var(--pico-contrast-inverse);
     padding: 0.5rem 1.25rem;
@@ -150,7 +150,7 @@ header nav ul.menu > li:last-of-type > a {
     text-wrap: nowrap;
 }
 
-header nav ul.menu > li:last-of-type > a:hover {
+header nav ul.menu > li:has(+ li.login) > a:hover {
     background-color: var(--pico-primary-hover);
 }
 
@@ -184,8 +184,8 @@ header nav a:not([role]):active {
     text-decoration: none;
 }
 
-header nav ul.menu > li:not(:last-of-type) > a:hover,
-header nav ul.menu > li:not(:last-of-type) > a:focus,
+header nav ul.menu > li:not(:has(+ li.login)):not(.login) > a:hover,
+header nav ul.menu > li:not(:has(+ li.login)):not(.login) > a:focus,
 header nav details.dropdown > summary:not([role]):hover,
 header nav details.dropdown > summary:not([role]):focus,
 header nav details.dropdown > summary:not([role]):focus-visible,
@@ -197,9 +197,9 @@ header nav details.dropdown[open] > summary:not([role]) {
     border: 0;
 }
 
-header nav ul.menu > li:last-of-type > a:hover,
-header nav ul.menu > li:last-of-type > a:focus,
-header nav ul.menu > li:last-of-type > a:active {
+header nav ul.menu > li:has(+ li.login) > a:hover,
+header nav ul.menu > li:has(+ li.login) > a:focus,
+header nav ul.menu > li:has(+ li.login) > a:active {
     color: var(--pico-contrast-inverse);
 }
 

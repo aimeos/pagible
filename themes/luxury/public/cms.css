@@ -146,7 +146,7 @@ header nav > ul:not(.menu) > li {
     padding: 0;
 }
 
-header nav ul.menu > li:last-of-type > a {
+header nav ul.menu > li:has(+ li.login) > a {
     color: var(--pico-primary-inverse);
     background-color: var(--pico-primary);
     border: 1px solid var(--pico-primary);
@@ -156,7 +156,7 @@ header nav ul.menu > li:last-of-type > a {
     transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease;
 }
 
-header nav ul.menu > li:last-of-type > a:hover {
+header nav ul.menu > li:has(+ li.login) > a:hover {
     color: var(--pico-primary-inverse);
     background-color: var(--pico-primary-hover);
     border-color: var(--pico-primary-hover);
@@ -189,8 +189,8 @@ header nav a:not([role]):active {
     text-decoration: none;
 }
 
-header nav ul.menu > li:not(:last-of-type) > a:hover,
-header nav ul.menu > li:not(:last-of-type) > a:focus,
+header nav ul.menu > li:not(:has(+ li.login)):not(.login) > a:hover,
+header nav ul.menu > li:not(:has(+ li.login)):not(.login) > a:focus,
 header nav details.dropdown > summary:not([role]):hover,
 header nav details.dropdown > summary:not([role]):focus,
 header nav details.dropdown > summary:not([role]):focus-visible,
@@ -202,9 +202,9 @@ header nav details.dropdown[open] > summary:not([role]) {
     border: 0;
 }
 
-header nav ul.menu > li:last-of-type > a:hover,
-header nav ul.menu > li:last-of-type > a:focus,
-header nav ul.menu > li:last-of-type > a:active {
+header nav ul.menu > li:has(+ li.login) > a:hover,
+header nav ul.menu > li:has(+ li.login) > a:focus,
+header nav ul.menu > li:has(+ li.login) > a:active {
     color: var(--pico-primary-inverse);
 }
 

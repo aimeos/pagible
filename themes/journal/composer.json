@@ -1,0 +1,25 @@
+{
+    "name": "aimeos/pagible-themes-journal",
+    "description": "Pagible CMS - Journal theme for editorial and business publications",
+    "keywords": ["laravel", "cms", "theme", "journal", "editorial", "magazine"],
+    "homepage": "https://pagible.com",
+    "type": "library",
+    "license": "MIT",
+    "require": {
+        "php": "^8.2",
+        "aimeos/pagible-theme": "*@dev"
+    },
+    "autoload": {
+        "psr-4": {
+            "Aimeos\\Cms\\": "src/",
+            "Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Aimeos\\Cms\\JournalServiceProvider"
+            ]
+        }
+    }
+}

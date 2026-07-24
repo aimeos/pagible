@@ -1,0 +1,24 @@
+/**
+ * Journal Theme
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+.image > img,
+.image > source {
+    display: block;
+    margin: auto;
+    max-width: 100%;
+}
+
+.image picture,
+picture.image {
+    background-color: var(--pico-contrast-inverse);
+    display: block;
+    margin-block: 2rem;
+    padding-block: 1rem;
+}
+
+.image picture img,
+picture.image img {
+    border-block: 1px solid var(--pico-muted-border-color);
+}

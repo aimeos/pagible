@@ -199,8 +199,7 @@ footer.cms-content {
 
 footer.cms-content .container {
     max-width: 1152px;
-    padding: 0 1.5rem;
-    padding-top: 2rem;
+    padding: 0;
 }
 
 footer.cms-content .cards .card-list {

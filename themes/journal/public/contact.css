@@ -1,0 +1,80 @@
+/**
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+.contact label {
+    color: var(--pico-contrast);
+    display: inline-block;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    margin: 0.5rem 0;
+    text-transform: uppercase;
+}
+
+.contact input,
+.contact textarea {
+    background-color: var(--pico-contrast-inverse);
+    border: 1px solid var(--pico-contrast-border);
+    color: var(--pico-color);
+    display: block;
+    font-size: var(--pico-font-size);
+    padding: 0.75rem;
+    resize: vertical;
+    width: 100%;
+}
+
+.contact input:focus,
+.contact textarea:focus {
+    border-color: var(--pico-primary);
+    box-shadow: 0 0 0 0.1875rem var(--pico-primary-focus);
+    outline: none;
+}
+
+.contact input::-webkit-input-placeholder,
+.contact textarea::-webkit-input-placeholder {
+    color: var(--pico-muted-color);
+}
+
+.contact .errors {
+    color: var(--pico-form-element-invalid-focus-color);
+    font-size: 0.75rem;
+    margin: 1rem 0;
+}
+
+.contact .error {
+    border-color: var(--pico-form-element-invalid-border-color);
+}
+
+.contact .submit {
+    display: flex;
+    justify-content: flex-start;
+    margin: 1rem 0;
+}
+
+.contact .h-captcha iframe {
+    margin-bottom: 0.5rem;
+    max-width: 100%;
+}
+
+.contact button {
+    margin-inline: 0 auto;
+}
+
+.contact button:disabled {
+    background-color: var(--pico-muted-background-color);
+    border: 1px solid var(--pico-muted-border-color);
+    color: var(--pico-muted-color);
+}
+
+.contact button:has(.success:not(.hidden)) {
+    background-color: #167A3E;
+    border-color: #167A3E;
+    color: var(--pico-contrast-inverse);
+}
+
+.contact button:has(.failure:not(.hidden)) {
+    background-color: #B42318;
+    border-color: #B42318;
+    color: var(--pico-contrast-inverse);
+}

@@ -30,6 +30,7 @@ jobs:
           - { package: theme, repo: pagible-theme }
           - { package: themes/bold, repo: pagible-themes-bold }
           - { package: themes/glass, repo: pagible-themes-glass }
+          - { package: themes/journal, repo: pagible-themes-journal }
           - { package: themes/luxury, repo: pagible-themes-luxury }
           - { package: themes/pagible, repo: pagible-themes-pagible }
           - { package: themes/paper, repo: pagible-themes-paper }
