@@ -4,6 +4,7 @@
  * @license MIT, https://opensource.org/license/mit
  */
 
+
 namespace Aimeos\Cms\Events;
 
 use Aimeos\Cms\Tenancy;
@@ -12,7 +13,7 @@ use Illuminate\Foundation\Events\Dispatchable;
 
 
 /**
- * Requests invalidation of rendered representations after commit.
+ * Requests invalidation of rendered page routes after commit.
  */
 final class PagesInvalidated implements ShouldDispatchAfterCommit
 {

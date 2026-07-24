@@ -35,7 +35,8 @@ class GenerateImage extends Tool
      */
     public function handle( Request $request ): \Laravel\Mcp\ResponseFactory
     {
-        if( !Permission::can( 'image:imagine', $request->user() ) ) {
+        if( !Permission::can( 'image:imagine', $request->user() )
+            || !Permission::can( 'file:add', $request->user() ) ) {
             throw new \Aimeos\Cms\Exception( 'Insufficient permissions' );
         }
 
@@ -50,6 +51,10 @@ class GenerateImage extends Tool
         ], [
             'prompt.required' => 'You must provide a prompt describing the image to generate.',
         ] );
+
+        if( !empty( $v['files'] ) && !Permission::can( 'file:view', $request->user() ) ) {
+            throw new \Aimeos\Cms\Exception( 'Insufficient permissions' );
+        }
 
         $prompt = $v['prompt'] . ( !empty( $v['context'] ) ? "\n\n" . $v['context'] : '' );
         $options = ['size' => ['1536x1024', '1792x1024', '1024x1024']];
@@ -104,6 +109,7 @@ class GenerateImage extends Tool
      */
     public function shouldRegister( Request $request ) : bool
     {
-        return Permission::can( 'image:imagine', $request->user() );
+        return Permission::can( 'image:imagine', $request->user() )
+            && Permission::can( 'file:add', $request->user() );
     }
 }

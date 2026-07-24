@@ -27,7 +27,7 @@ trait Tenancy
 
 
     /**
-     * Boots tenant scoping for model queries and creation.
+     * Boots tenant scoping for the model.
      */
     protected static function bootTenancy() : void
     {

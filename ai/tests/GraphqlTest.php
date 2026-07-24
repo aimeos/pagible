@@ -82,7 +82,7 @@ class GraphqlTest extends AiTestAbstract
     public function testImagine()
     {
         $file = File::firstOrFail();
-        $image = base64_encode( file_get_contents( __DIR__ . '/assets/image.png' ) );
+        $image = base64_encode( $this->pngBinary() );
         Prisma::fake( [FileResponse::fromBase64( $image, 'image/png' )] );
 
         $response = $this->actingAs( $this->user )->graphQL( "
@@ -99,7 +99,7 @@ class GraphqlTest extends AiTestAbstract
 
     public function testUncrop()
     {
-        $image = file_get_contents( __DIR__ . '/assets/image.png' );
+        $image = $this->pngBinary();
         Prisma::fake( [FileResponse::fromBinary( $image, 'image/png' )] );
 
         $response = $this->actingAs( $this->user )->multipartGraphQL( [
@@ -125,7 +125,7 @@ class GraphqlTest extends AiTestAbstract
 
     public function testUpscale()
     {
-        $image = file_get_contents( __DIR__ . '/assets/image.png' );
+        $image = $this->pngBinary();
         Prisma::fake( [FileResponse::fromBinary( $image, 'image/png' )] );
 
         $response = $this->actingAs( $this->user )->multipartGraphQL( [

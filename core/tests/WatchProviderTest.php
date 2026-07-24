@@ -84,13 +84,15 @@ class WatchProviderTest extends TestCase
     }
 
 
-    public function testFieldsSanitizesInboundRequestId() : void
+    public function testFieldsRejectsInvalidInboundRequestId() : void
     {
         request()->headers->set( 'X-Request-Id', "valid-id\r\ninjected line" );
 
         $id = Watch::fields( [] )['request_id'];
 
-        $this->assertSame( 'valid-idinjectedline', $id );
-        $this->assertStringNotContainsString( "\n", $id );
+        $this->assertNotSame( 'valid-idinjectedline', $id );
+        $this->assertMatchesRegularExpression(
+            '/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/', $id
+        );
     }
 }

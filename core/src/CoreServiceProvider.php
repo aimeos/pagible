@@ -12,6 +12,7 @@ use Aimeos\Cms\Events\Restored;
 use Aimeos\Cms\Events\Saved;
 use Aimeos\Cms\Listeners\BulkListener;
 use Aimeos\Cms\Listeners\ContentListener;
+use Aimeos\Cms\Models\Version;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Support\Facades\Broadcast;
@@ -165,12 +166,9 @@ class CoreServiceProvider extends Provider
     protected function schedule() : void
     {
         $this->app->afterResolving( Schedule::class, function( Schedule $schedule ) {
-            $schedule->command( 'cms:publish' )->everyThirtyMinutes();
-            $schedule->command( 'model:prune', ['--model' => [
-                \Aimeos\Cms\Models\Element::class,
-                \Aimeos\Cms\Models\File::class,
-                \Aimeos\Cms\Models\Page::class,
-            ]] )->daily();
+            $schedule->command( 'cms:publish' )->everyThirtyMinutes()
+                ->withoutOverlapping()->onOneServer();
+            $schedule->command( 'model:prune', ['--model' => Version::TYPES] )->daily();
         } );
     }
 

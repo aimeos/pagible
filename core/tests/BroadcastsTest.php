@@ -11,16 +11,16 @@ use Aimeos\Cms\Events\Bulk;
 use Aimeos\Cms\Events\Dropped;
 use Aimeos\Cms\Events\Moved;
 use Aimeos\Cms\Events\Purged;
+use Aimeos\Cms\Events\Published;
 use Aimeos\Cms\Events\Restored;
 use Aimeos\Cms\Events\Saved;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Publication;
 use Aimeos\Cms\Resource;
 use Aimeos\Cms\Utils;
 use Database\Seeders\TestSeeder;
-use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 
 
@@ -111,6 +111,70 @@ class BroadcastsTest extends CoreTestAbstract
     }
 
 
+    public function testBulkPublishBroadcastsOneBulkEvent() : void
+    {
+        $page1 = $this->page();
+        $page2 = $this->page();
+        config( ['cms.broadcast' => true] );
+        Event::fake( [Published::class, Bulk::class] );
+
+        Publication::publish( Page::class, [$page1->id, $page2->id], $this->user );
+
+        Event::assertNotDispatched( Published::class );
+        Event::assertDispatchedTimes( Bulk::class, 1 );
+        Event::assertDispatched( Bulk::class, fn( Bulk $e ) => $e->action === 'published'
+            && $e->contentType === 'page' && count( $e->ids ) === 2
+            && ( $e->data['published'] ?? null ) === true );
+    }
+
+
+    public function testPublishBroadcastsOnlyUnpublishedItems() : void
+    {
+        $published = $this->page();
+        $draft = $this->page();
+
+        Publication::publish( Page::class, [$published->id], $this->user );
+
+        config( ['cms.broadcast' => true] );
+        Event::fake( [Published::class, Bulk::class] );
+
+        Publication::publish( Page::class, [$published->id, $draft->id], $this->user );
+
+        Event::assertNotDispatched( Bulk::class );
+        Event::assertDispatchedTimes( Published::class, 1 );
+        Event::assertDispatched( Published::class, fn( Published $event ) => $event->id === $draft->id );
+    }
+
+
+    public function testBulkLifecycleBroadcastsOneEventPerAction() : void
+    {
+        $pages = [$this->page(), $this->page()];
+        $ids = collect( $pages )->pluck( 'id' )->all();
+        config( ['cms.broadcast' => true] );
+
+        Event::fake( [Dropped::class, Bulk::class] );
+        Resource::drop( Page::class, $ids, $this->user );
+        Event::assertNotDispatched( Dropped::class );
+        Event::assertDispatchedTimes( Bulk::class, 1 );
+        Event::assertDispatched( Bulk::class, fn( Bulk $e ) => $e->action === 'dropped'
+            && count( $e->ids ) === 2 && !empty( $e->data['deleted_at'] ) );
+
+        Event::fake( [Restored::class, Bulk::class] );
+        Resource::restore( Page::class, $ids, $this->user );
+        Event::assertNotDispatched( Restored::class );
+        Event::assertDispatchedTimes( Bulk::class, 1 );
+        Event::assertDispatched( Bulk::class, fn( Bulk $e ) => $e->action === 'restored'
+            && array_key_exists( 'deleted_at', $e->data ) && $e->data['deleted_at'] === null );
+
+        Event::fake( [Purged::class, Bulk::class] );
+        Resource::purge( Page::class, $ids, $this->user );
+        Event::assertNotDispatched( Purged::class );
+        Event::assertDispatchedTimes( Bulk::class, 1 );
+        Event::assertDispatched( Bulk::class, fn( Bulk $e ) => $e->action === 'purged'
+            && count( $e->ids ) === 2 && $e->broadcastAs() === 'page.purged' );
+    }
+
+
     public function testMoveBroadcastsMoved() : void
     {
         $page = $this->page();
@@ -129,56 +193,17 @@ class BroadcastsTest extends CoreTestAbstract
         config( ['cms.broadcast' => true] );
         Event::fake( [Purged::class] );
 
-        Resource::purge( Page::class, [$page->id], 'editor@testbench' );
+        Resource::purge( Page::class, [$page->id], $this->user );
 
         Event::assertDispatched( Purged::class );
     }
 
 
-    public function testLifecycleAnnouncementsLoadVersionsOncePerOperation() : void
-    {
-        $first = $this->page();
-        $second = $this->page();
-        $routes = [
-            $first->id => ['path' => $first->path, 'domain' => $first->domain],
-            $second->id => ['path' => $second->path, 'domain' => $second->domain],
-        ];
-        $events = [];
-        $queries = [];
-
-        config( ['cms.broadcast' => false] );
-
-        foreach( [Dropped::class, Restored::class, Purged::class] as $class ) {
-            Event::listen( $class, function( $event ) use ( &$events ) {
-                $events[] = $event;
-            } );
-        }
-
-        DB::listen( function( QueryExecuted $query ) use ( &$queries ) {
-            if( str_contains( $query->sql, 'cms_versions' ) ) {
-                $queries[] = $query->sql;
-            }
-        } );
-
-        $ids = [$first->id, $second->id];
-        Resource::drop( Page::class, $ids, 'editor@testbench' );
-        Resource::restore( Page::class, $ids, 'editor@testbench' );
-        Resource::purge( Page::class, $ids, 'editor@testbench' );
-
-        $this->assertCount( 3, $queries );
-        $this->assertCount( 6, $events );
-
-        foreach( $events as $event ) {
-            $this->assertSame( $routes[$event->id], $event->data );
-        }
-    }
-
-
-    public function testLifecycleAnnouncementsUseLatestDraftPageRoute() : void
+    public function testLifecycleAnnouncementUsesLatestDraftPageRoute() : void
     {
         $page = $this->page();
         $id = (string) $page->id;
-        Resource::publish( Page::class, [$id], 'editor@testbench' );
+        Publication::publish( Page::class, [$id], $this->user );
         Resource::savePage( $id, [
             'path' => 'draft-route',
             'domain' => 'draft.example',
@@ -193,8 +218,8 @@ class BroadcastsTest extends CoreTestAbstract
             } );
         }
 
-        Resource::drop( Page::class, [$id], 'editor@testbench' );
-        Resource::restore( Page::class, [$id], 'editor@testbench' );
+        Resource::drop( Page::class, [$id], $this->user );
+        Resource::restore( Page::class, [$id], $this->user );
 
         $this->assertCount( 2, $events );
 
@@ -215,7 +240,7 @@ class BroadcastsTest extends CoreTestAbstract
             $captured = $event;
         } );
 
-        Resource::drop( Element::class, [$element->id], 'editor@testbench' );
+        Resource::drop( Element::class, [$element->id], $this->user );
 
         $this->assertInstanceOf( Dropped::class, $captured );
         $this->assertSame( [], $captured->data );

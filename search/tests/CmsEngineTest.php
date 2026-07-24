@@ -14,7 +14,9 @@ use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Filter;
 use Aimeos\Cms\Permission;
+use Aimeos\Cms\Publication;
 use Aimeos\Cms\Resource;
+use Aimeos\Cms\Utils;
 use Aimeos\Nestedset\NestedSet;
 use Illuminate\Foundation\Testing\DatabaseTruncation;
 use Illuminate\Foundation\Testing\RefreshDatabaseState;
@@ -343,6 +345,39 @@ class CmsEngineTest extends SearchTestAbstract
     }
 
 
+    public function testPublishIndexesLoadedModels(): void
+    {
+        $element = Resource::addElement( [
+            'lang' => 'en',
+            'type' => 'text',
+            'name' => 'publicationelementtoken',
+            'data' => ['text' => 'publicationelementtoken'],
+        ] );
+        Publication::publish( Element::class, [$element->id] );
+
+        $page = Page::where( 'tag', 'root' )->firstOrFail();
+        Resource::savePage( $page->id, ['content' => [[
+            'id' => Utils::uid(),
+            'type' => 'reference',
+            'refid' => $element->id,
+            'group' => 'main',
+        ]]] );
+        Publication::publish( Page::class, [$page->id] );
+
+        $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
+        Resource::saveFile( $file->id, ['name' => 'publicationfiletoken'] );
+        Publication::publish( File::class, [$file->id] );
+        $this->waitIndex();
+
+        $this->assertTrue( Element::search( 'publicationelementtoken' )
+            ->searchFields( 'content' )->get()->contains( 'id', $element->id ) );
+        $this->assertTrue( Page::search( 'publicationelementtoken' )
+            ->searchFields( 'content' )->get()->contains( 'id', $page->id ) );
+        $this->assertTrue( File::search( 'publicationfiletoken' )
+            ->searchFields( 'content' )->get()->contains( 'id', $file->id ) );
+    }
+
+
     public function testCjkSubstringSearch(): void
     {
         // CJK runs tokenize as a single FTS token, so interior substrings are unmatchable
@@ -546,7 +581,7 @@ class CmsEngineTest extends SearchTestAbstract
             'path' => 'zt-retain-child', 'content' => [],
         ], $user, parent: (string) $parent->id );
         $ids = [(string) $parent->id, (string) $child->id];
-        Resource::publish( Page::class, $ids, 'editor@testbench' );
+        Publication::publish( Page::class, $ids, $user );
         $query = DB::connection( config( 'cms.db' ) )->table( 'cms_index' )
             ->where( 'indexable_type', Page::class )
             ->whereIn( 'indexable_id', $ids );
@@ -554,7 +589,7 @@ class CmsEngineTest extends SearchTestAbstract
 
         $this->assertGreaterThan( 0, $rows );
 
-        Resource::drop( Page::class, [(string) $parent->id], 'editor@testbench' );
+        Resource::drop( Page::class, [(string) $parent->id], $user );
 
         $this->assertSame( $rows, $query->count() );
         $this->assertCount( 0, Page::search( 'ztretainrows' )->searchFields( 'draft' )->take( 25 )->get() );
@@ -563,7 +598,7 @@ class CmsEngineTest extends SearchTestAbstract
 
         $this->assertLessThan( $rows, $query->count() );
 
-        Resource::restore( Page::class, [(string) $parent->id], 'editor@testbench' );
+        Resource::restore( Page::class, [(string) $parent->id], $user );
         $this->waitIndex();
 
         $found = Page::search( 'ztretainrows' )->searchFields( 'content' )->take( 25 )->get();
@@ -571,7 +606,7 @@ class CmsEngineTest extends SearchTestAbstract
         $this->assertSame( $rows, $query->count() );
         $this->assertEqualsCanonicalizing( $ids, array_map( strval(...), $found->modelKeys() ) );
 
-        Resource::purge( Page::class, [(string) $parent->id], 'editor@testbench' );
+        Resource::purge( Page::class, [(string) $parent->id], $user );
 
         $this->assertSame( 0, $query->count() );
     }

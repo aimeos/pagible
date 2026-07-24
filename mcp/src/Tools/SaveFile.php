@@ -29,7 +29,8 @@ class SaveFile extends Tool
      */
     public function handle( Request $request ): \Laravel\Mcp\ResponseFactory
     {
-        if( !Permission::can( 'file:save', $request->user() ) ) {
+        if( !Permission::can( 'file:save', $request->user() )
+            || !Permission::can( 'file:view', $request->user() ) ) {
             throw new \Aimeos\Cms\Exception( 'Insufficient permissions' );
         }
 
@@ -103,6 +104,7 @@ class SaveFile extends Tool
      */
     public function shouldRegister( Request $request ) : bool
     {
-        return Permission::can( 'file:save', $request->user() );
+        return Permission::can( 'file:save', $request->user() )
+            && Permission::can( 'file:view', $request->user() );
     }
 }

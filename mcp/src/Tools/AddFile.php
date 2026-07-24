@@ -56,22 +56,16 @@ class AddFile extends Tool
             $file->description = $v['description'];
         }
 
-        $file->path = $url;
-        $file->name = $file->name ?: substr( $url, 0, 255 );
-
         // Fetch the file and generate previews outside the transaction to keep
         // slow network and image work off the database connection.
         try {
-            $file->addPreviews( $url );
-        } catch( \Throwable $t ) {
-            $file->removePreviews();
-            throw $t;
-        }
+            $file->prepare( $url );
+        } catch( \Aimeos\Cms\Exception $e ) {
+            if( str_starts_with( $e->getMessage(), 'File type ' ) ) {
+                return Response::structured( ['error' => sprintf( 'File type "%s" is not allowed.', $file->mime )] );
+            }
 
-        if( !Utils::isValidMimetype( $file->mime ) )
-        {
-            $file->removePreviews();
-            return Response::structured( ['error' => sprintf( 'File type "%s" is not allowed.', $file->mime )] );
+            throw $e;
         }
 
         $file = Resource::addFile( $file, $request->user() );

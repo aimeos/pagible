@@ -7,7 +7,6 @@
 
 namespace Aimeos\Cms\Tools;
 
-use Aimeos\Cms\Utils;
 use Aimeos\Cms\Resource;
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\Models\Element;
@@ -30,7 +29,8 @@ class RestoreElement extends Tool
      */
     public function handle( Request $request ): \Laravel\Mcp\ResponseFactory
     {
-        if( !Permission::can( 'element:keep', $request->user() ) ) {
+        if( !Permission::can( 'element:keep', $request->user() )
+            || !Permission::can( 'element:view', $request->user() ) ) {
             throw new \Aimeos\Cms\Exception( 'Insufficient permissions' );
         }
 
@@ -51,7 +51,7 @@ class RestoreElement extends Tool
             return Response::structured( ['error' => 'Element is not deleted.'] );
         }
 
-        $items = Resource::restore( Element::class, [$v['id']], Utils::editor( $request->user() ) );
+        $items = Resource::restore( Element::class, [$v['id']], $request->user() );
 
         $item = $items->firstOrFail();
 
@@ -82,6 +82,7 @@ class RestoreElement extends Tool
      */
     public function shouldRegister( Request $request ) : bool
     {
-        return Permission::can( 'element:keep', $request->user() );
+        return Permission::can( 'element:keep', $request->user() )
+            && Permission::can( 'element:view', $request->user() );
     }
 }

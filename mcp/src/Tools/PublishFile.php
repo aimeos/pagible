@@ -7,10 +7,8 @@
 
 namespace Aimeos\Cms\Tools;
 
-use Aimeos\Cms\Utils;
-use Aimeos\Cms\Resource;
+use Aimeos\Cms\Publication;
 use Aimeos\Cms\Permission;
-use Aimeos\Cms\Validation;
 use Aimeos\Cms\Models\File;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Attributes\Description;
@@ -31,7 +29,8 @@ class PublishFile extends Tool
      */
     public function handle( Request $request ): \Laravel\Mcp\ResponseFactory
     {
-        if( !Permission::can( 'file:publish', $request->user() ) ) {
+        if( !Permission::can( 'file:publish', $request->user() )
+            || !Permission::can( 'file:view', $request->user() ) ) {
             throw new \Aimeos\Cms\Exception( 'Insufficient permissions' );
         }
 
@@ -43,11 +42,9 @@ class PublishFile extends Tool
             'id.required' => 'You must specify the ID (string) or IDs (array of up to 50) of the files to publish.',
         ] );
 
-        Validation::publishAt( $v['at'] ?? null );
-
         $ids = (array) $v['id'];
-        $editor = Utils::editor( $request->user() );
-        $items = Resource::publish( File::class, $ids, $editor, $v['at'] ?? null );
+        $at = $v['at'] ?? null;
+        $items = Publication::publish( File::class, $ids, $request->user(), $at );
 
         $published = [];
         $skipped = [];
@@ -57,8 +54,10 @@ class PublishFile extends Tool
             /** @var File $item */
             if( !$item->latest ) {
                 $skipped[] = ['id' => $item->id, 'reason' => 'No draft version'];
-            } elseif( !empty( $v['at'] ) ) {
-                $published[] = ['id' => $item->id, 'name' => $item->name, 'scheduled_at' => $v['at']];
+            } elseif( $at && $item->latest->published ) {
+                $skipped[] = ['id' => $item->id, 'reason' => 'Already published'];
+            } elseif( $at ) {
+                $published[] = ['id' => $item->id, 'name' => $item->name, 'scheduled_at' => $at];
             } else {
                 $published[] = ['id' => $item->id, 'name' => $item->name];
             }
@@ -103,6 +102,7 @@ class PublishFile extends Tool
      */
     public function shouldRegister( Request $request ) : bool
     {
-        return Permission::can( 'file:publish', $request->user() );
+        return Permission::can( 'file:publish', $request->user() )
+            && Permission::can( 'file:view', $request->user() );
     }
 }

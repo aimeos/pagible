@@ -7,16 +7,10 @@
 
 namespace Aimeos\Cms\Models;
 
-use Aimeos\Cms\Concerns\HasChanged;
-use Aimeos\Cms\Concerns\Tenancy;
 use Illuminate\Database\Eloquent\Casts\Attribute;
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Prunable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
-use Laravel\Scout\Searchable;
 
 /**
  * Element model
@@ -37,16 +31,10 @@ use Laravel\Scout\Searchable;
  */
 class Element extends Base
 {
-    use HasChanged;
-    use HasUuids;
-    use SoftDeletes;
-    use Searchable;
-    use Prunable;
-    use Tenancy;
-
-
     /** @var list<string> Columns for eager-loading element relations */
-    public const SELECT_COLUMNS = ['cms_elements.id', 'cms_elements.tenant_id', 'cms_elements.latest_id', 'type', 'data'];
+    public const SELECT_COLUMNS = [
+        'cms_elements.id', 'cms_elements.tenant_id', 'cms_elements.latest_id', 'type', 'name', 'data',
+    ];
 
 
     /**
@@ -71,9 +59,6 @@ class Element extends Base
     protected $casts = [
         'data' => 'object',
         'name' => 'string',
-        'created_at' => 'datetime:Y-m-d H:i:s',
-        'updated_at' => 'datetime:Y-m-d H:i:s',
-        'deleted_at' => 'datetime:Y-m-d H:i:s',
     ];
 
     /**
@@ -141,7 +126,7 @@ class Element extends Base
     public function bypages() : BelongsToMany
     {
         return $this->belongsToMany( Page::class, 'cms_page_element' )
-            ->select('cms_pages.id', 'cms_pages.tenant_id', 'path', 'name' );
+            ->select('id', 'path', 'name' );
     }
 
 
@@ -153,7 +138,7 @@ class Element extends Base
     public function byversions() : BelongsToMany
     {
         return $this->belongsToMany( Version::class, 'cms_version_element' )
-            ->select('cms_versions.id', 'cms_versions.tenant_id', 'versionable_id', 'versionable_type', 'published', 'publish_at' );
+            ->select('id', 'versionable_id', 'versionable_type', 'published', 'publish_at' );
     }
 
 
@@ -165,19 +150,6 @@ class Element extends Base
     public function files() : BelongsToMany
     {
         return $this->belongsToMany( File::class, 'cms_element_file' );
-    }
-
-
-    /**
-     * Enforce JSON columns to return object.
-     *
-     * @param string $key Attribute name
-     * @return mixed Attribute value
-     */
-    public function getAttribute( $key )
-    {
-        $value = parent::getAttribute( $key );
-        return is_null( $value ) && $key === 'data' ? new \stdClass() : $value;
     }
 
 
@@ -210,31 +182,6 @@ class Element extends Base
 
 
     /**
-     * Publish the given version of the element.
-     *
-     * @param Version $version Version to publish
-     * @return self Returns the element instance
-     */
-    public function publish( Version $version ) : self
-    {
-        $this->checkVersion( $version );
-
-        $fileIds = $version->files()->pluck( 'cms_files.id' )->all();
-
-        $this->files()->sync( $fileIds );
-
-        if( $fileIds ) {
-            File::whereIn( 'id', $fileIds )->with( 'latest' )->get()
-                ->each( fn( $f ) => $f->latest && !$f->latest->published ? $f->publish( $f->latest ) : null );
-        }
-
-        $this->publishVersion( $version, ['lang' => $version->lang] );
-
-        return $this;
-    }
-
-
-    /**
      * Returns the searchable data for the element.
      *
      * @return array<string, mixed>
@@ -261,29 +208,6 @@ class Element extends Base
 
 
     /**
-     * Modify the query used to retrieve models when making all of the models searchable.
-     *
-     * @param \Illuminate\Database\Eloquent\Builder<static> $query
-     * @return \Illuminate\Database\Eloquent\Builder<static>
-     */
-    protected function makeAllSearchableUsing( $query )
-    {
-        return $query->with( ['latest' => fn( $q ) => $q->select( Version::SELECT_COLUMNS )] );
-    }
-
-
-    /**
-     * Prepare the model for pruning.
-     */
-    protected function pruning() : void
-    {
-        Version::where( 'versionable_id', $this->id )
-            ->where( 'versionable_type', static::class )
-            ->delete();
-    }
-
-
-    /**
      * Interact with the "data" property.
      *
      * @return Attribute<mixed, mixed> Eloquent attribute for the "data" property
@@ -293,6 +217,17 @@ class Element extends Base
         return Attribute::make(
             set: fn( $value ) => json_encode( $value ?? new \stdClass() )
         );
+    }
+
+
+    /**
+     * Returns element-specific publication values.
+     *
+     * @return array<string, mixed>
+     */
+    protected function values( Version $version ) : array
+    {
+        return ['lang' => $version->lang];
     }
 
 

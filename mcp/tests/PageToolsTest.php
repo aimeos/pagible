@@ -39,6 +39,24 @@ class PageToolsTest extends McpTestAbstract
     }
 
 
+    public function testPageMutationToolsRequireViewPermission()
+    {
+        $user = new \App\Models\User([
+            'cmsperms' => ['page:move', 'page:save', 'page:drop', 'page:keep', 'page:publish'],
+        ]);
+
+        foreach( [
+            \Aimeos\Cms\Tools\MovePage::class,
+            \Aimeos\Cms\Tools\SavePage::class,
+            \Aimeos\Cms\Tools\DropPage::class,
+            \Aimeos\Cms\Tools\RestorePage::class,
+            \Aimeos\Cms\Tools\PublishPage::class,
+        ] as $tool ) {
+            CmsServer::actingAs( $user )->tool( $tool )->assertHasErrors();
+        }
+    }
+
+
     // ── Read Pages ─────────────────────────────────────────────────────
 
     public function testGetPage()
@@ -507,6 +525,24 @@ class PageToolsTest extends McpTestAbstract
         ] );
 
         $response->assertOk()->assertSee( ['scheduled_at', '2099-01-01'] );
+    }
+
+
+    public function testPublishPageSkipsPublishedSchedule()
+    {
+        $page = Page::where( 'name', 'Hidden' )->firstOrFail();
+        $page->latest()->update( ['published' => true] );
+        $publishAt = $page->latest()->value( 'publish_at' );
+
+        $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\PublishPage::class, [
+            'id' => [$page->id],
+            'at' => '2099-01-01 00:00:00',
+        ] );
+
+        $response->assertOk()
+            ->assertSee( ['skipped', 'Already published'] )
+            ->assertDontSee( ['scheduled_at'] );
+        $this->assertSame( $publishAt, $page->latest()->value( 'publish_at' ) );
     }
 
 

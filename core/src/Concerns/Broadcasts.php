@@ -14,6 +14,7 @@ use Aimeos\Cms\Models\Version;
 use Aimeos\Cms\Tenancy;
 use Aimeos\Cms\Utils;
 use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event as Events;
 
@@ -40,13 +41,17 @@ trait Broadcasts
      */
     public function announce( string $action, Authenticatable|string|null $editor = null ) : void
     {
-        $class = self::event( $action );
+        $class = 'Aimeos\\Cms\\Events\\' . ucfirst( $action );
+
+        if( !is_subclass_of( $class, Event::class ) ) {
+            throw new \InvalidArgumentException( "Unknown broadcast action: {$action}" );
+        }
+
+        $broadcast = (bool) config( 'cms.broadcast' );
 
         // In-process listeners (audit logging) subscribe to the per-action events;
         // only do work when broadcasting is on or something listens. This
         // also avoids the per-item latest lazy load (e.g. on purge) when nothing is enabled.
-        $broadcast = (bool) config( 'cms.broadcast' );
-
         if( !$broadcast && !Events::hasListeners( $class ) ) {
             return;
         }
@@ -55,10 +60,7 @@ trait Broadcasts
             return;
         }
 
-        static::send(
-            new $class( ...$this->eventFields( $version, $editor, $action ) ),
-            $broadcast,
-        );
+        static::send( new $class( ...$this->eventFields( $version, $editor, $action ) ), $broadcast );
     }
 
 
@@ -72,9 +74,10 @@ trait Broadcasts
      * @param array<string, string> $latest Saved item id => its new latest version id
      * @param array<string, mixed> $data Shared fields applied to every saved item
      * @param Authenticatable|string|null $editor Authenticated user or editor name
+     * @param string $action Audit action name
      */
     public static function announceBulk( string $type, array $ids, array $latest, array $data,
-        Authenticatable|string|null $editor = null ) : void
+        Authenticatable|string|null $editor = null, string $action = 'bulk' ) : void
     {
         if( empty( $ids ) ) {
             return;
@@ -94,18 +97,47 @@ trait Broadcasts
             editor: is_string( $editor ) ? $editor : Utils::editor( $editor ),
             tenant: Tenancy::value(),
             source: Utils::source(),
+            action: $action,
         ), $broadcast );
     }
 
 
     /**
-     * Whether an action has a websocket or in-process event consumer.
+     * Coalesces notifications while preserving single-item event names.
+     *
+     * @param Collection<int, \Aimeos\Cms\Models\Base> $items Changed items
+     * @param string $action Past-tense lifecycle action
+     * @param string $editor Editor name
+     * @param array<string, mixed> $data Shared changed fields
+     * @param bool $bulk TRUE to use the bulk event for a single item too
      */
-    public static function announces( string $action ) : bool
+    public static function announceMany( Collection $items, string $action, string $editor,
+        array $data = [], bool $bulk = false ) : void
     {
-        $class = self::event( $action );
+        if( !( $first = $items->first() ) ) {
+            return;
+        }
 
-        return (bool) config( 'cms.broadcast' ) || Events::hasListeners( $class );
+        if( $items->count() === 1 && !$bulk ) {
+            $first->announce( $action, $editor );
+            return;
+        }
+
+        foreach( $items->chunk( 50 ) as $chunk ) {
+            /** @var list<string> $ids */
+            $ids = array_values( $chunk->pluck( 'id' )->all() );
+            /** @var array<string, string> $latest */
+            $latest = $chunk->pluck( 'latest_id', 'id' )->all();
+
+            static::announceBulk(
+                strtolower( class_basename( $first ) ),
+                $ids,
+                $latest,
+                $data,
+                $editor,
+                $action,
+            );
+        }
     }
 
 
@@ -146,10 +178,17 @@ trait Broadcasts
     protected function eventFields( Version $version, Authenticatable|string|null $editor,
         string $action ) : array
     {
+        $id = $this->id;
+        $latestId = $version->id;
+
+        if( $id === null || $latestId === null ) {
+            throw new \LogicException( 'Cannot announce unsaved CMS models.' );
+        }
+
         return [
             'contentType' => strtolower( class_basename( $this ) ),
-            'id' => (string) $this->id,
-            'latest_id' => (string) $version->id,
+            'id' => $id,
+            'latest_id' => $latestId,
             'editor' => is_string( $editor ) ? $editor : Utils::editor( $editor ),
             'data' => $this->eventData( $version, $action ),
             'published' => (bool) $version->published,
@@ -189,28 +228,5 @@ trait Broadcasts
                 report( $e );
             }
         } );
-    }
-
-
-    protected static function local( object $event ) : void
-    {
-        DB::afterCommit( fn() => event( $event ) );
-    }
-
-
-    /**
-     * Returns the validated event class for an action.
-     *
-     * @return class-string<Event>
-     */
-    private static function event( string $action ) : string
-    {
-        $class = 'Aimeos\\Cms\\Events\\' . ucfirst( $action );
-
-        if( !is_subclass_of( $class, Event::class ) ) {
-            throw new \InvalidArgumentException( "Unknown broadcast action: {$action}" );
-        }
-
-        return $class;
     }
 }

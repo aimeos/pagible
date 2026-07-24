@@ -7,6 +7,11 @@
 
 namespace Aimeos\Cms;
 
+use Aimeos\Cms\Models\Base;
+use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\Version;
+use Illuminate\Contracts\Auth\Authenticatable;
+
 
 class Merge
 {
@@ -44,11 +49,7 @@ class Merge
             $c = $currentMap[$key] ?? null;
             $i = $block;
 
-            if( $c == $i )
-            {
-                $result[] = $i;
-            }
-            elseif( $b == $c )
+            if( $c == $i || $b == $c )
             {
                 $result[] = $i;
             }
@@ -91,6 +92,82 @@ class Merge
 
 
     /**
+     * Three-way merges model data when the editor started from an older version.
+     *
+     * @param array<string, mixed> $input Incoming data
+     * @return array{0: array<string, mixed>, 1: array<string, array<string, mixed>>|null}
+     */
+    public static function model( Base $model, array $input, ?string $latestId ) : array
+    {
+        $latest = $model->latest;
+        $base = $latestId && $latestId !== $model->latest_id
+            ? $model->versions()->find( $latestId )
+            : null;
+
+        if( $base ) {
+            return self::structured( (array) $base->data, (array) $latest?->data, $input );
+        }
+
+        return [array_replace( (array) $latest?->data, $input ), null];
+    }
+
+
+    /**
+     * Three-way merges page data and auxiliary content when the editor started from an older version.
+     *
+     * @param array<string, mixed> $data Incoming page data
+     * @param array<string, mixed> $aux Incoming meta, config and content
+     * @return array{0: array<string, mixed>, 1: array<string, mixed>, 2: array<string, mixed>|null}
+     */
+    public static function page( Page $page, array $data, array $aux, ?string $latestId, ?Authenticatable $user = null ) : array
+    {
+        $latest = $page->latest;
+        $latestData = (array) $latest?->data;
+        $latestAux = (array) $latest?->aux;
+
+        if( $latestId && $latestId !== $page->latest_id )
+        {
+            /** @var Version|null $base */
+            $base = $page->versions()->find( $latestId );
+
+            if( !$base ) {
+                return [
+                    array_replace( $latestData, $data ),
+                    array_replace( $latestAux, $aux ),
+                    null,
+                ];
+            }
+
+            $latestMeta = (array) ( $latest?->aux->meta ?? [] );
+            $latestContent = (array) ( $latest?->aux->content ?? [] );
+            $latestConfig = (array) ( $latest?->aux->config ?? [] );
+
+            [$data, $dd] = self::structured( (array) $base->data, $latestData, $data );
+
+            $merged = array_replace( $latestAux, $aux );
+            [$merged['meta'], $md] = self::structured( (array) ( $base->aux->meta ?? [] ), $latestMeta, (array) ( $merged['meta'] ?? [] ) );
+            [$merged['content'], $xd] = self::content( (array) ( $base->aux->content ?? [] ), $latestContent, (array) ( $merged['content'] ?? [] ) );
+
+            $cd = null;
+            if( Permission::can( 'page:config', $user ) ) {
+                [$merged['config'], $cd] = self::structured( (array) ( $base->aux->config ?? [] ), $latestConfig, (array) ( $merged['config'] ?? [] ) );
+            } else {
+                $merged['config'] = $latestConfig;
+            }
+
+            $diffs = array_filter( ['data' => $dd, 'meta' => $md, 'config' => $cd, 'content' => $xd] );
+            return [$data, $merged, $diffs ?: null];
+        }
+
+        return [
+            array_replace( $latestData, $data ),
+            array_replace( $latestAux, $aux ),
+            null,
+        ];
+    }
+
+
+    /**
      * Three-way merge + diff for key-value structures (scalar page data, meta, config, element data, file data).
      *
      * Returns [$result, $diff] where $diff is a flat map or null if no differences.
@@ -106,11 +183,7 @@ class Merge
         $current = (array) self::normalize( $current );
         $incoming = (array) self::normalize( $incoming );
 
-        if( $base === $current ) {
-            return [$incoming, null];
-        }
-
-        if( $current === $incoming ) {
+        if( $base === $current || $current === $incoming ) {
             return [$incoming, null];
         }
 

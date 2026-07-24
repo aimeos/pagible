@@ -26,8 +26,8 @@ class CmsPermissionDirective extends BaseDirective implements FieldMiddleware
 Check CMS permissions for the authenticated user.
 """
 directive @cmsPermission(
-  "The permission action to check, e.g. 'page:add' or 'image:imagine'"
-  action: String!
+  "Permission actions to check, e.g. 'page:add' or ['page:view', 'element:view']"
+  action: [String!]!
 ) on FIELD_DEFINITION
 GRAPHQL;
     }
@@ -37,10 +37,11 @@ GRAPHQL;
     {
         $fieldValue->wrapResolver( fn( callable $resolver ): \Closure =>
             function( mixed $root, array $args, GraphQLContext $context, ResolveInfo $resolveInfo ) use ( $resolver ) {
-                $action = $this->directiveArgValue( 'action' );
-
-                if( !Permission::can( $action, Auth::user() ) ) {
-                    throw new Error( 'Insufficient permissions' );
+                foreach( (array) $this->directiveArgValue( 'action' ) as $action )
+                {
+                    if( !Permission::can( $action, Auth::user() ) ) {
+                        throw new Error( 'Insufficient permissions' );
+                    }
                 }
 
                 return $resolver( $root, $args, $context, $resolveInfo );

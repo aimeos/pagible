@@ -65,6 +65,15 @@ class ValidationTest extends CoreTestAbstract
     }
 
 
+    public function testContentRefRequiresId()
+    {
+        $this->expectException( Exception::class );
+        $this->expectExceptionMessage( 'Invalid content reference ID' );
+
+        Validation::content( [['type' => 'reference']] );
+    }
+
+
     public function testContentExtraFields()
     {
         Validation::content( [

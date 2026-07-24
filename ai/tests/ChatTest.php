@@ -166,6 +166,26 @@ class ChatTest extends AiTestAbstract
     }
 
 
+    public function testStreamRejectsOversizedTotalInput()
+    {
+        $input = [
+            'prompt' => str_repeat( 'p', 30 ),
+            'context' => str_repeat( 'c', 30 ),
+            'messages' => [
+                ['role' => 'user', 'content' => str_repeat( 'u', 30 )],
+                ['role' => 'assistant', 'content' => str_repeat( 'a', 30 )],
+            ],
+        ];
+        config( ['cms.ai.maxinput' => strlen( (string) json_encode( $input ) ) - 1] );
+
+        $response = $this->actingAs( $this->user )
+            ->withoutMiddleware( VerifyCsrfToken::class )
+            ->post( route( 'cms.chat' ), $input );
+
+        $response->assertStatus( 422 );
+    }
+
+
     public function testStreamDeniesWithoutPermission()
     {
         $user = new \App\Models\User([

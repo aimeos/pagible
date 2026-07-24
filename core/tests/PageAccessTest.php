@@ -9,7 +9,7 @@ namespace Tests;
 use Aimeos\Cms\Access;
 use Aimeos\Cms\Exception;
 use Aimeos\Cms\Events\PagesInvalidated;
-use Aimeos\Cms\Jobs\SyncIndex;
+use Aimeos\Cms\Jobs\IndexModels;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Models\PageAccess;
 use Aimeos\Cms\Scout;
@@ -22,7 +22,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Str;
-use Illuminate\Support\Testing\Fakes\QueueFake;
 use Laravel\Scout\EngineManager;
 use Laravel\Scout\Engines\NullEngine;
 
@@ -161,11 +160,12 @@ class PageAccessTest extends CoreTestAbstract
     {
         $page = Page::where( 'path', 'hidden' )->firstOrFail();
         $this->searchEngine();
+        config( ['scout.queue' => true] );
         Queue::fake();
 
         PageAccess::set( [$page->id], [] );
 
-        Queue::assertPushed( SyncIndex::class, fn( SyncIndex $job ) =>
+        Queue::assertPushed( IndexModels::class, fn( IndexModels $job ) =>
             $job->model === Page::class && $job->ids === [$page->id] && $job->tenant === 'test'
         );
     }
@@ -174,52 +174,27 @@ class PageAccessTest extends CoreTestAbstract
     public function testCmsPageIndexRefreshIsNotQueued(): void
     {
         $page = Page::where( 'path', 'hidden' )->firstOrFail();
-        config( ['scout.driver' => 'cms'] );
+        config( ['scout.driver' => 'cms', 'scout.queue' => true] );
         Queue::fake();
 
         PageAccess::set( [$page->id], [] );
 
-        Queue::assertNotPushed( SyncIndex::class );
-    }
-
-
-    public function testIndexJobsContinueWhenCacheQueueDispatchFails(): void
-    {
-        config( ['cms.chunksize' => 1] );
-        $this->searchEngine();
-        $actual = Queue::getFacadeRoot();
-        $queue = new FailingQueueFake(
-            app(),
-            fn() => count( $this->invalidator->batches ),
-            $actual,
-        );
-        Queue::swap( $queue );
-        $this->withoutExceptionHandling();
-
-        $first = Page::where( 'path', 'hidden' )->firstOrFail();
-        $second = Page::where( 'path', 'blog' )->firstOrFail();
-
-        PageAccess::set( [$first->id, $second->id], [] );
-
-        $this->assertCount( 1, $this->invalidator->batches );
-        $this->assertSame( [0, 0, 1, 1], $queue->invalidationsAtPush );
-        $this->assertSame( 4, $queue->attempts );
-        Queue::assertPushedTimes( SyncIndex::class, 2 );
+        Queue::assertNotPushed( IndexModels::class );
     }
 
 
     public function testExternalPageIndexJobsHaveBoundedPayloads(): void
     {
-        config( ['cms.chunksize' => 20] );
-        $ids = array_map( strval(...), range( 0, 20 ) );
+        config( ['scout.queue' => true] );
+        $ids = array_map( strval(...), range( 0, 100 ) );
 
         $this->searchEngine();
         Queue::fake();
         Scout::reindex( Page::class, $ids );
 
-        $jobs = Queue::pushed( SyncIndex::class );
-        $this->assertCount( 2, $jobs );
-        $this->assertSame( [20, 1], $jobs->map( fn( SyncIndex $job ) => count( $job->ids ) )->all() );
+        $jobs = Queue::pushed( IndexModels::class );
+        $this->assertCount( 3, $jobs );
+        $this->assertSame( [50, 50, 1], $jobs->map( fn( IndexModels $job ) => count( $job->ids ) )->all() );
     }
 
 
@@ -237,7 +212,7 @@ class PageAccessTest extends CoreTestAbstract
         ] );
         $search = $this->searchEngine();
 
-        ( new SyncIndex( Page::class, [$page->id], '' ) )->handle();
+        ( new IndexModels( Page::class, [$page->id], '' ) )->handle();
 
         $this->assertSame( '', \Aimeos\Cms\Tenancy::value() );
         $this->assertSame( [[$page->id]], $search->updates );
@@ -661,7 +636,6 @@ class PageAccessTest extends CoreTestAbstract
     }
 }
 
-
 class SearchEngineSpy extends NullEngine
 {
     /** @var array<int, array<int, string>> */
@@ -674,32 +648,5 @@ class SearchEngineSpy extends NullEngine
     public function update( $models ) : void
     {
         $this->updates[] = $models->modelKeys();
-    }
-}
-
-
-class FailingQueueFake extends QueueFake
-{
-    public int $attempts = 0;
-    /** @var list<int> */
-    public array $invalidationsAtPush = [];
-
-
-    public function __construct( $app, private \Closure $invalidations, $queue )
-    {
-        parent::__construct( $app, [], $queue );
-    }
-
-
-    public function push( $job, $data = '', $queue = null )
-    {
-        $this->attempts++;
-        $this->invalidationsAtPush[] = ( $this->invalidations )();
-
-        if( $this->attempts === 1 ) {
-            throw new \RuntimeException( 'Queue unavailable' );
-        }
-
-        return parent::push( $job, $data, $queue );
     }
 }

@@ -7,7 +7,6 @@
 
 namespace Aimeos\Cms\Tools;
 
-use Aimeos\Cms\Utils;
 use Aimeos\Cms\Resource;
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\Models\File;
@@ -30,7 +29,8 @@ class DropFile extends Tool
      */
     public function handle( Request $request ): \Laravel\Mcp\ResponseFactory
     {
-        if( !Permission::can( 'file:drop', $request->user() ) ) {
+        if( !Permission::can( 'file:drop', $request->user() )
+            || !Permission::can( 'file:view', $request->user() ) ) {
             throw new \Aimeos\Cms\Exception( 'Insufficient permissions' );
         }
 
@@ -40,7 +40,7 @@ class DropFile extends Tool
             'id.required' => 'You must specify the ID of the file to delete.',
         ] );
 
-        $items = Resource::drop( File::class, [$v['id']], Utils::editor( $request->user() ) );
+        $items = Resource::drop( File::class, [$v['id']], $request->user() );
 
         if( $items->isEmpty() ) {
             return Response::structured( ['error' => 'File not found.'] );
@@ -75,6 +75,7 @@ class DropFile extends Tool
      */
     public function shouldRegister( Request $request ) : bool
     {
-        return Permission::can( 'file:drop', $request->user() );
+        return Permission::can( 'file:drop', $request->user() )
+            && Permission::can( 'file:view', $request->user() );
     }
 }

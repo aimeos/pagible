@@ -36,7 +36,8 @@ class RefineContent extends Tool
      */
     public function handle( Request $request ): \Laravel\Mcp\ResponseFactory
     {
-        if( !Permission::can( 'page:refine', $request->user() ) ) {
+        if( !Permission::can( 'page:refine', $request->user() )
+            || !Permission::can( 'page:view', $request->user() ) ) {
             throw new \Aimeos\Cms\Exception( 'Insufficient permissions' );
         }
 
@@ -124,6 +125,7 @@ class RefineContent extends Tool
      */
     public function shouldRegister( Request $request ) : bool
     {
-        return Permission::can( 'page:refine', $request->user() );
+        return Permission::can( 'page:refine', $request->user() )
+            && Permission::can( 'page:view', $request->user() );
     }
 }

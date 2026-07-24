@@ -7,16 +7,15 @@
 
 namespace Aimeos\Cms;
 
-use Aimeos\Cms\Jobs\SyncIndex;
-use Aimeos\Cms\Models\Base;
-use Aimeos\Cms\Models\Element;
-use Aimeos\Cms\Models\File;
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Jobs\IndexModels;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Collection;
+use Laravel\Scout\ModelObserver;
 use Laravel\Scout\Builder;
 
 
 /**
- * Laravel Scout query translation support.
+ * Scout search builder support.
  */
 class Scout
 {
@@ -24,6 +23,28 @@ class Scout
      * Builder fields handled out-of-band; never translated to SQL columns.
      */
     public const SKIP_FIELDS = ['latest', '__soft_deleted', 'tenant_id'];
+
+
+    /**
+     * Apply draft-mode filters for the collection engine via callback.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model> $query
+     * @param \Laravel\Scout\Builder<\Illuminate\Database\Eloquent\Model> $builder
+     * @param array<string> $fields The fields passed to searchFields(); only 'draft' triggers this path
+     * @return \Laravel\Scout\Builder<\Illuminate\Database\Eloquent\Model>
+     */
+    public static function collection( \Illuminate\Database\Eloquent\Builder $query, Builder $builder, array $fields ) : Builder
+    {
+        $isDraft = in_array( 'draft', $fields );
+        static::apply( $query, $builder, $isDraft );
+
+        if( $builder->query === '' && $builder->queryCallback ) {
+            call_user_func( $builder->queryCallback, $query );
+        }
+
+        return $builder;
+    }
+
 
     /**
      * Apply Scout builder where/whereIn/whereNotIn filters and order qualification
@@ -107,33 +128,80 @@ class Scout
 
 
     /**
-     * Apply draft-mode filters for the collection engine via callback.
+     * Reindexes models by ID in bounded native Scout batches.
      *
-     * @param \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model> $query
-     * @param \Laravel\Scout\Builder<\Illuminate\Database\Eloquent\Model> $builder
-     * @param array<string> $fields The fields passed to searchFields(); only 'draft' triggers this path
-     * @return \Laravel\Scout\Builder<\Illuminate\Database\Eloquent\Model>
+     * @param class-string<Models\Base> $model Model class
+     * @param array<string> $ids Model IDs
+     * @param Collection<int, Models\Base>|null $loaded Already loaded current models
      */
-    public static function collection( \Illuminate\Database\Eloquent\Builder $query, Builder $builder, array $fields ) : Builder
+    public static function index( string $model, array $ids, ?Collection $loaded = null ) : void
     {
-        $isDraft = in_array( 'draft', $fields );
-        static::apply( $query, $builder, $isDraft );
+        $instance = new $model();
+        $models = [];
 
-        if( $builder->query === '' && $builder->queryCallback ) {
-            call_user_func( $builder->queryCallback, $query );
+        foreach( $loaded ?? [] as $item ) {
+            if( $item instanceof $model && $item->id !== null ) {
+                $models[$item->id] = $item;
+            }
         }
 
-        return $builder;
+        foreach( array_chunk( array_values( array_unique( $ids ) ), 50 ) as $chunk )
+        {
+            if( config( 'scout.queue' ) ) {
+                dispatch( ( new IndexModels( $model, $chunk, Tenancy::value() ) )
+                    ->onQueue( $instance->syncWithSearchUsingQueue() )
+                    ->onConnection( $instance->syncWithSearchUsing() ) );
+            } elseif( count( $items = array_intersect_key( $models, array_flip( $chunk ) ) ) === count( $chunk ) ) {
+                $loaded = $instance->newCollection( array_values( $items ) );
+                $loaded->loadMissing( $model::makeAllSearchableQuery()->getEagerLoads() );
+                $instance->syncMakeSearchable( $loaded );
+            } else {
+                self::sync( $model, $chunk );
+            }
+        }
     }
 
 
     /**
-     * Queues index reconciliation after the current transaction commits.
+     * Executes the callback without automatic Scout model synchronization.
      *
-     * @param class-string<Base> $model
-     * @param list<string> $ids
+     * Already muted model classes remain muted when nested calls return.
+     *
+     * @template T
+     * @param array<class-string<Models\Base>> $models Model classes to mute
+     * @param \Closure(): T $callback Callback to execute
+     * @return T Callback return value
      */
-    public static function reindex( string $model, array $ids, bool $trashed = false ) : void
+    public static function mute( array $models, \Closure $callback ) : mixed
+    {
+        $instances = [];
+
+        foreach( array_unique( $models ) as $model ) {
+            $instance = new $model();
+
+            if( !ModelObserver::syncingDisabledFor( $instance ) ) {
+                $instance::disableSearchSyncing();
+                $instances[] = $instance;
+            }
+        }
+
+        try {
+            return $callback();
+        } finally {
+            foreach( $instances as $instance ) {
+                $instance::enableSearchSyncing();
+            }
+        }
+    }
+
+
+    /**
+     * Reindexes models after the surrounding transaction commits.
+     *
+     * @param class-string<Models\Base> $model Model class
+     * @param array<string> $ids Model IDs
+     */
+    public static function reindex( string $model, array $ids ) : void
     {
         $ids = array_values( array_unique( $ids ) );
 
@@ -141,26 +209,55 @@ class Scout
             return;
         }
 
-        $item = self::model( $model );
-        $model = get_class( $item );
-        $connection = $item->getConnection();
-        $queueConnection = $item->syncWithSearchUsing();
-        $queue = $item->syncWithSearchUsingQueue();
+        $instance = new $model();
         $tenant = Tenancy::value();
-        $size = max( 1, (int) config( 'cms.chunksize', 100 ) );
 
-        $connection->afterCommit( function() use ( $ids, $model, $queue, $queueConnection, $size, $tenant, $trashed ) {
-            foreach( array_chunk( $ids, $size ) as $chunk )
-            {
-                try {
-                    dispatch( ( new SyncIndex( $model, $chunk, $tenant, $trashed ) )
-                        ->onConnection( $queueConnection )
-                        ->onQueue( $queue ) );
-                } catch( \Throwable $e ) {
-                    report( $e );
-                }
-            }
-        } );
+        $instance->getConnection()->afterCommit(
+            fn() => Tenancy::run( $tenant, fn() => self::index( $model, $ids ) ),
+        );
+    }
+
+
+    /**
+     * Reindexes models immediately after loading their searchable relations.
+     *
+     * @param class-string<Models\Base> $model Model class
+     * @param array<string> $ids Model IDs
+     */
+    public static function sync( string $model, array $ids ) : void
+    {
+        $instance = new $model();
+
+        foreach( array_chunk( array_values( array_unique( $ids ) ), 50 ) as $chunk ) {
+            $items = $instance::makeAllSearchableQuery()
+                ->withoutGlobalScope( SoftDeletingScope::class )
+                ->whereKey( $chunk )
+                ->get();
+
+            $instance->syncMakeSearchable( $items );
+        }
+    }
+
+
+    /**
+     * Removes models from Scout by ID in bounded native batches.
+     *
+     * @param class-string<Models\Base> $model Model class
+     * @param array<string> $ids Model IDs
+     */
+    public static function unindex( string $model, array $ids ) : void
+    {
+        $instance = new $model();
+        $key = $instance->getScoutKeyName();
+
+        foreach( array_chunk( array_values( array_unique( $ids ) ), 50 ) as $chunk )
+        {
+            $items = $instance->newCollection( array_map(
+                fn( $id ) => $instance->newInstance()->forceFill( [$key => $id] ),
+                $chunk,
+            ) );
+            $instance->queueRemoveFromSearch( $items );
+        }
     }
 
 
@@ -180,17 +277,4 @@ class Scout
     {
         return !in_array( config( 'scout.driver' ), [null, 'null', 'collection', 'database'], true );
     }
-
-
-    /** @param class-string<Base> $model */
-    private static function model( string $model ) : Element|File|Page
-    {
-        return match( $model ) {
-            Element::class => new Element(),
-            File::class => new File(),
-            Page::class => new Page(),
-            default => throw new \InvalidArgumentException( 'Invalid CMS search index model: ' . $model ),
-        };
-    }
-
 }

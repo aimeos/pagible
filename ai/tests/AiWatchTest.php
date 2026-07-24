@@ -86,7 +86,7 @@ class AiWatchTest extends AiTestAbstract
 
     public function testImagineDispatchesGenerated() : void
     {
-        $image = base64_encode( (string) file_get_contents( __DIR__ . '/assets/image.png' ) );
+        $image = base64_encode( $this->pngBinary() );
         Prisma::fake( [FileResponse::fromBase64( $image, 'image/png' )] );
         Event::fake( [Generated::class] );
 

@@ -12,6 +12,7 @@ use Aimeos\Cms\Events\Restored;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Publication;
 use Aimeos\Cms\Resource;
 use Database\Seeders\TestSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -49,6 +50,13 @@ class LifecycleSearchTest extends CoreTestAbstract
         $manager->forgetDrivers();
         config( ['scout.driver' => 'lifecycle-test'] );
 
+        $this->user = new \App\Models\User( [
+            'name' => 'editor',
+            'email' => 'editor@testbench',
+            'password' => 'secret',
+            'cmsperms' => \Aimeos\Cms\Permission::all(),
+        ] );
+
         Event::listen( Dropped::class, fn() => null );
         Event::listen( Restored::class, fn() => null );
     }
@@ -62,7 +70,7 @@ class LifecycleSearchTest extends CoreTestAbstract
         $this->assertNotNull( $latest );
         $expected = mb_strtolower( (string) $latest );
 
-        Resource::drop( Element::class, [(string) $element->id], 'editor@testbench' );
+        Resource::drop( Element::class, [(string) $element->id], $this->user );
 
         $document = $this->engine->document( Element::class );
 
@@ -81,9 +89,9 @@ class LifecycleSearchTest extends CoreTestAbstract
         $this->assertNotNull( $latest );
         $expected = mb_strtolower( (string) $latest );
 
-        Resource::drop( File::class, [(string) $file->id], 'editor@testbench' );
+        Resource::drop( File::class, [(string) $file->id], $this->user );
         $this->engine->documents = [];
-        Resource::restore( File::class, [(string) $file->id], 'editor@testbench' );
+        Resource::restore( File::class, [(string) $file->id], $this->user );
 
         $document = $this->engine->document( File::class );
 
@@ -97,24 +105,18 @@ class LifecycleSearchTest extends CoreTestAbstract
     public function testPublishIndexesPublishedVersionsSynchronously(): void
     {
         $file = File::query()->where( 'mime', 'image/jpeg' )->firstOrFail();
-        Resource::publish( File::class, [(string) $file->id], 'editor@testbench' );
+        Publication::publish( File::class, [(string) $file->id], $this->user );
 
         $this->assertTrue( $this->engine->document( File::class )['published'] ?? false );
 
         $element = Element::query()->firstOrFail();
-        Resource::publish( Element::class, [(string) $element->id], 'editor@testbench' );
+        Publication::publish( Element::class, [(string) $element->id], $this->user );
 
         $this->assertTrue( $this->engine->document( Element::class )['published'] ?? false );
 
-        $user = new \App\Models\User( [
-            'name' => 'editor',
-            'email' => 'editor@testbench',
-            'password' => 'secret',
-            'cmsperms' => \Aimeos\Cms\Permission::all(),
-        ] );
         $page = Page::query()->where( 'path', 'hidden' )->firstOrFail();
-        Resource::savePage( (string) $page->id, ['title' => 'Publish search test'], $user );
-        Resource::publish( Page::class, [(string) $page->id], 'editor@testbench' );
+        Resource::savePage( (string) $page->id, ['title' => 'Publish search test'], $this->user );
+        Publication::publish( Page::class, [(string) $page->id], $this->user );
 
         $this->assertTrue( $this->engine->document( Page::class )['published'] ?? false );
     }

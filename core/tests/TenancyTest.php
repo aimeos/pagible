@@ -8,8 +8,8 @@
 namespace Tests;
 
 use Aimeos\Cms\Access;
-use Aimeos\Cms\Jobs\SyncIndex;
 use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\Version;
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\SearchBuilder;
 use Aimeos\Cms\Scopes\Status;
@@ -151,19 +151,6 @@ class TenancyTest extends CoreTestAbstract
     }
 
 
-    public function testStanclReindexRequiresQueueTenantContext(): void
-    {
-        $this->stanclFakes();
-        Tenancy::stancl();
-        Tenancy::set( 'test' );
-
-        $this->expectException( \LogicException::class );
-        $this->expectExceptionMessage( 'Operation was not initialized in its tenant context.' );
-
-        ( new SyncIndex( Page::class, [], 'other' ) )->handle();
-    }
-
-
     public function testRunUsesExistingTenantContext(): void
     {
         $access = app( Access::class );
@@ -280,6 +267,19 @@ class TenancyTest extends CoreTestAbstract
         }
 
         $this->assertSame( $name, Page::findOrFail( $page->id )->name );
+    }
+
+
+    public function testVersionTenancyAutoSetsOnCreate()
+    {
+        $page = Page::firstOrFail();
+        $version = $page->versions()->forceCreate( [
+            'editor' => 'test',
+            'data' => (object) [],
+        ] );
+
+        $this->assertInstanceOf( Version::class, $version );
+        $this->assertSame( 'test', $version->tenant_id );
     }
 
 

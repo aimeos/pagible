@@ -4,6 +4,7 @@
  * @license MIT, https://opensource.org/license/mit
  */
 
+
 namespace Tests;
 
 use Aimeos\Cms\Events\PagesInvalidated;
@@ -18,11 +19,12 @@ class PagesInvalidatedTest extends CoreTestAbstract
     use DatabaseTruncation;
 
 
-    public function testStoresLightweightRoutes(): void
+    public function testStoresUniqueRoutes(): void
     {
         $event = new PagesInvalidated( [
             ['domain' => 'example.com', 'path' => 'old'],
             ['domain' => 'example.com', 'path' => 'new'],
+            ['domain' => 'example.com', 'path' => 'old'],
         ] );
 
         $this->assertSame( [
@@ -47,10 +49,7 @@ class PagesInvalidatedTest extends CoreTestAbstract
         $connection->beginTransaction();
 
         try {
-            PagesInvalidated::dispatch( [[
-                'domain' => '',
-                'path' => 'committed',
-            ]] );
+            PagesInvalidated::dispatch( [['domain' => '', 'path' => 'committed']] );
             $this->assertSame( [], $received );
             $connection->commit();
         } finally {
@@ -59,15 +58,12 @@ class PagesInvalidatedTest extends CoreTestAbstract
             }
         }
 
-        $this->assertSame( [[
-            'domain' => '',
-            'path' => 'committed',
-        ]], $received );
+        $this->assertSame( [['domain' => '', 'path' => 'committed']], $received );
         $this->assertSame( 'test', $tenant );
     }
 
 
-    public function testDoesNotDispatchAfterRollback(): void
+    public function testSkipsRolledBackTransactions(): void
     {
         $connection = DB::connection( config( 'cms.db', 'sqlite' ) );
         $received = false;
@@ -78,10 +74,7 @@ class PagesInvalidatedTest extends CoreTestAbstract
 
         $this->assertSame( 0, $connection->transactionLevel() );
         $connection->beginTransaction();
-        PagesInvalidated::dispatch( [[
-            'domain' => '',
-            'path' => 'rolled-back',
-        ]] );
+        PagesInvalidated::dispatch( [['domain' => '', 'path' => 'rolled-back']] );
         $connection->rollBack();
 
         $this->assertFalse( $received );

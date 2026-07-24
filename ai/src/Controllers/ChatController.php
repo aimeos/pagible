@@ -51,6 +51,7 @@ class ChatController extends Controller
             abort( 403 );
         }
 
+        $this->limit( $request->all() );
         $prompt = trim( (string) $request->input( 'prompt', '' ) );
 
         if( $prompt === '' ) {
@@ -271,11 +272,11 @@ class ChatController extends Controller
     /**
      * Sanitizes the client-supplied conversation history for a multi-turn chat.
      *
-     * Keeps only the last few well-formed user/assistant turns and truncates each one to bound the
-     * token usage (and cost) an editor can trigger; everything else is dropped silently.
+     * Keeps only well-formed user/assistant turns; everything else is dropped silently. The complete
+     * request is size-limited before this method is called.
      *
      * @param mixed $messages Raw messages value from the request
-     * @return list<array{role: string, content: string}> Validated, capped conversation history
+     * @return list<array{role: string, content: string}> Validated conversation history
      */
     protected function history( mixed $messages ) : array
     {
@@ -323,5 +324,21 @@ class ChatController extends Controller
         }
 
         return $result;
+    }
+
+
+    /**
+     * Rejects chat requests whose complete serialized input exceeds the server-side budget.
+     *
+     * @param array<string, mixed> $input
+     */
+    protected function limit( array $input ) : void
+    {
+        $max = max( 1, (int) config( 'cms.ai.maxinput', 1024 * 1024 ) );
+        $json = json_encode( $input );
+
+        if( $json === false || strlen( $json ) > $max ) {
+            abort( 422, sprintf( 'Chat input exceeds the maximum input size of %d bytes', $max ) );
+        }
     }
 }

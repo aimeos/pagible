@@ -8,14 +8,13 @@
 namespace Tests;
 
 use Aimeos\Cms\Access;
-use Aimeos\Cms\Events\PagesInvalidated;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
-use Aimeos\Cms\Jobs\InvalidatePages;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Models\Version;
 use Aimeos\Cms\PageCache;
 use Aimeos\Cms\Models\PageAccess;
+use Aimeos\Cms\Publication;
 use Aimeos\Cms\Resource;
 use Database\Seeders\TestSeeder;
 use Illuminate\Contracts\Cache\LockProvider;
@@ -23,7 +22,6 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\View;
 
 
@@ -90,75 +88,10 @@ class PageControllerTest extends ThemeTestAbstract
         $this->cache( $newPath, 'new-route', $page->domain );
 
         Resource::savePage( $page->id, ['path' => $newPath], $this->user );
-        Resource::publish( Page::class, [$page->id], $this->user->email );
+        Publication::publish( Page::class, [$page->id], $this->user );
 
         $this->assertNull( PageCache::response( $oldPath, $page->domain ) );
         $this->assertNull( PageCache::response( $newPath, $page->domain ) );
-    }
-
-
-    public function testPageInvalidationIsQueuedWithTtlFallback(): void
-    {
-        config( ['cms.theme.cache' => 'array'] );
-        $page = Page::where( 'path', 'hidden' )->firstOrFail();
-        $this->cache( $page, 'public-html' );
-        Queue::fake();
-
-        PageAccess::set( [$page->id], [] );
-
-        $this->assertNotNull( PageCache::response( $page ) );
-        Queue::assertPushed( InvalidatePages::class, fn( InvalidatePages $job ) =>
-            $job->routes === [['domain' => (string) $page->domain, 'path' => (string) $page->path]]
-                && $job->tenant === 'test'
-        );
-
-        Queue::pushed( InvalidatePages::class )->firstOrFail()->handle();
-
-        $this->assertNull( PageCache::response( $page ) );
-    }
-
-
-    public function testSinglePageInvalidationIsQueued(): void
-    {
-        config( ['cms.theme.cache' => 'array'] );
-        $page = Page::where( 'path', 'hidden' )->firstOrFail();
-        $this->cache( $page, 'public-html' );
-        Queue::fake();
-
-        PagesInvalidated::dispatch( [[
-            'domain' => (string) $page->domain,
-            'path' => (string) $page->path,
-        ]] );
-
-        $this->assertNotNull( PageCache::response( $page ) );
-        Queue::assertPushed( InvalidatePages::class, fn( InvalidatePages $job ) =>
-            $job->routes === [['domain' => (string) $page->domain, 'path' => (string) $page->path]]
-                && $job->tenant === 'test'
-        );
-
-        Queue::pushed( InvalidatePages::class )->firstOrFail()->handle();
-
-        $this->assertNull( PageCache::response( $page ) );
-    }
-
-
-    public function testPageInvalidationQueuePayloadsAreChunked(): void
-    {
-        config( ['cms.chunksize' => 2] );
-        Queue::fake();
-        $routes = [
-            ['domain' => '', 'path' => 'first'],
-            ['domain' => '', 'path' => 'second'],
-            ['domain' => '', 'path' => 'third'],
-        ];
-
-        PagesInvalidated::dispatch( $routes );
-
-        Queue::assertPushed( InvalidatePages::class, 2 );
-        $this->assertSame(
-            [array_slice( $routes, 0, 2 ), array_slice( $routes, 2 )],
-            Queue::pushed( InvalidatePages::class )->pluck( 'routes' )->all(),
-        );
     }
 
 
@@ -178,7 +111,7 @@ class PageControllerTest extends ThemeTestAbstract
         $this->cache( $parent, 'cached-parent' );
         $this->cache( $child, 'cached-child' );
 
-        Resource::drop( Page::class, [(string) $parent->id], 'test@example.com' );
+        Resource::drop( Page::class, [(string) $parent->id], $this->user );
 
         $this->assertNull( PageCache::response( $parent ) );
         $this->assertNull( PageCache::response( $child ) );
