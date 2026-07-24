@@ -83,8 +83,8 @@ class AddPage extends Tool
         /** @var Page|null $parent */
         $parent = $pid
             ? Page::withTrashed()
-                ->select( 'id', 'latest_id', 'lang' )
-                ->with( ['latest' => fn( $q ) => $q->select( 'id', 'versionable_id', 'data' )] )
+                ->select( 'id', 'tenant_id', 'latest_id', 'lang' )
+                ->with( ['latest' => fn( $q ) => $q->select( 'id', 'tenant_id', 'versionable_id', 'data' )] )
                 ->find( $pid )
             : null;
 

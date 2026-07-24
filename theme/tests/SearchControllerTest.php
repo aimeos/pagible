@@ -7,10 +7,17 @@
 
 namespace Tests;
 
+use Aimeos\Cms\Access;
+use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageAccess;
 use Illuminate\Foundation\Testing\DatabaseTruncation;
 use Database\Seeders\TestSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabaseState;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
+use Laravel\Scout\Builder;
+use Laravel\Scout\EngineManager;
+use Laravel\Scout\Engines\NullEngine;
 
 
 class SearchControllerTest extends ThemeTestAbstract
@@ -94,5 +101,105 @@ class SearchControllerTest extends ThemeTestAbstract
         $request = Request::create('/cmsapi/search', 'GET', ['q' => 'abc', 'locale' => 'en', 'size' => 10]);
 
         ( new \Aimeos\Cms\Controllers\SearchController() )->index($request, 'mydomain.tld');
+    }
+
+
+    public function testExternalSearchResultsAreRecheckedAgainstDatabaseAccess(): void
+    {
+        $page = Page::where( 'tag', 'root' )->firstOrFail();
+        $engine = new StaleAccessSearchEngine( [$page->id] );
+        $manager = app( EngineManager::class );
+        $manager->extend( 'stale-access-test', fn() => $engine );
+        $manager->forgetDrivers();
+        config( ['scout.driver' => 'stale-access-test'] );
+        Access::using( fn() => [] );
+        PageAccess::set( [$page->id], [] );
+
+        $request = Request::create( '/cmsapi/search', 'GET', [
+            'q' => 'welcome',
+            'locale' => $page->lang,
+            'size' => 10,
+        ] );
+
+        $response = ( new \Aimeos\Cms\Controllers\SearchController() )->index( $request, $page->domain );
+
+        $this->assertSame( [], $response->getData()->data );
+    }
+
+
+    public function testExternalSearchResultsAreRecheckedAgainstDatabaseDomain(): void
+    {
+        $page = Page::where( 'tag', 'root' )->firstOrFail();
+        $domain = $page->domain;
+        $engine = new StaleAccessSearchEngine( [$page->id] );
+        $manager = app( EngineManager::class );
+        $manager->extend( 'stale-domain-test', fn() => $engine );
+        $manager->forgetDrivers();
+        config( ['scout.driver' => 'stale-domain-test'] );
+        $page->update( ['domain' => 'other.example'] );
+
+        $request = Request::create( '/cmsapi/search', 'GET', [
+            'q' => 'welcome',
+            'locale' => $page->lang,
+            'size' => 10,
+        ] );
+
+        $response = ( new \Aimeos\Cms\Controllers\SearchController() )->index( $request, $domain );
+
+        $this->assertSame( [], $response->getData()->data );
+    }
+
+
+    public function testExternalSearchResultsAreRecheckedAgainstDatabaseLanguage(): void
+    {
+        $page = Page::where( 'tag', 'root' )->firstOrFail();
+        $lang = $page->lang;
+        $engine = new StaleAccessSearchEngine( [$page->id] );
+        $manager = app( EngineManager::class );
+        $manager->extend( 'stale-language-test', fn() => $engine );
+        $manager->forgetDrivers();
+        config( ['scout.driver' => 'stale-language-test'] );
+        $page->update( ['lang' => 'de'] );
+
+        $request = Request::create( '/cmsapi/search', 'GET', [
+            'q' => 'welcome',
+            'locale' => $lang,
+            'size' => 10,
+        ] );
+
+        $response = ( new \Aimeos\Cms\Controllers\SearchController() )->index( $request, $page->domain );
+
+        $this->assertSame( [], $response->getData()->data );
+    }
+}
+
+
+class StaleAccessSearchEngine extends NullEngine
+{
+    /** @param list<string> $ids */
+    public function __construct( private array $ids ) {}
+
+
+    public function paginate( Builder $builder, $perPage, $page ) : array
+    {
+        return $this->ids;
+    }
+
+
+    public function map( Builder $builder, $results, $model )
+    {
+        return $model->getScoutModelsByIds( $builder, $results );
+    }
+
+
+    public function mapIds( $results ) : Collection
+    {
+        return collect( $results );
+    }
+
+
+    public function getTotalCount( $results ) : int
+    {
+        return count( $results );
     }
 }

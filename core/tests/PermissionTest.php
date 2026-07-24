@@ -60,6 +60,29 @@ class PermissionTest extends CoreTestAbstract
     }
 
 
+    public function testCanRequiresCurrentTenant()
+    {
+        $user = new \App\Models\User( ['cmsperms' => ['page:view']] );
+        $user->tenant_id = 'test';
+
+        $this->assertTrue( Permission::can( 'page:view', $user ) );
+
+        $user->tenant_id = 'other';
+
+        $this->assertFalse( Permission::can( 'page:view', $user ) );
+    }
+
+
+    public function testCanRejectsUnresolvedConfiguredTenant(): void
+    {
+        $user = new \App\Models\User( ['cmsperms' => ['page:view']] );
+        $user->tenant_id = '';
+        app()->instance( \Aimeos\Cms\Tenancy::class, new \Aimeos\Cms\Tenancy( '' ) );
+
+        $this->assertFalse( Permission::can( 'page:view', $user ) );
+    }
+
+
     public function testCanWildcard()
     {
         $user = new \App\Models\User();
@@ -72,7 +95,7 @@ class PermissionTest extends CoreTestAbstract
 
     public function testCanUnknownAction()
     {
-        $user = new \App\Models\User( ['cmsperms' => ['page:view', 'page:save']] );
+        $user = new \App\Models\User( ['cmsperms' => ['page:view', 'page:save', 'unknown:action']] );
 
         $this->assertFalse( Permission::can( 'unknown:action', $user ) );
     }
@@ -166,12 +189,30 @@ class PermissionTest extends CoreTestAbstract
     {
         Permission::register( 'custom:action' );
 
-        $this->assertContains( 'custom:action', Permission::all() );
+        $this->assertTrue( Permission::has( 'custom:action' ) );
 
         $user = new \App\Models\User();
         Permission::add( 'custom:action', $user );
 
         $this->assertTrue( Permission::can( 'custom:action', $user ) );
+    }
+
+
+    public function testHas(): void
+    {
+        $this->assertTrue( Permission::has( 'page:view' ) );
+        $this->assertFalse( Permission::has( 'unknown:action' ) );
+    }
+
+
+    public function testUnregister(): void
+    {
+        Permission::register( 'custom:remove' );
+        $this->assertTrue( Permission::has( 'custom:remove' ) );
+
+        Permission::unregister( 'custom:remove' );
+
+        $this->assertFalse( Permission::has( 'custom:remove' ) );
     }
 
 
@@ -196,12 +237,34 @@ class PermissionTest extends CoreTestAbstract
 
     public function testCanUsing()
     {
-        Permission::canUsing( fn( $action, $user ) => $action === 'page:view' );
+        Permission::register( 'custom:action' );
+        Permission::canUsing( fn( $action, $user ) => $action === 'custom:action' );
 
         $user = new \App\Models\User();
 
-        $this->assertTrue( Permission::can( 'page:view', $user ) );
+        $this->assertTrue( Permission::can( 'custom:action', $user ) );
         $this->assertFalse( Permission::can( 'page:save', $user ) );
+    }
+
+
+    public function testCanUsingCannotBypassCurrentTenant()
+    {
+        Permission::canUsing( fn() => true );
+
+        $user = new \App\Models\User();
+        $user->tenant_id = 'other';
+
+        $this->assertFalse( Permission::can( 'page:view', $user ) );
+    }
+
+
+    public function testCanUsingCannotAuthorizeUnknownAction()
+    {
+        Permission::canUsing( fn() => true );
+
+        $user = new \App\Models\User();
+
+        $this->assertFalse( Permission::can( 'unknown:action', $user ) );
     }
 
 

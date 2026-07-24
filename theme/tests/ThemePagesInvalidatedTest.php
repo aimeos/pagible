@@ -8,7 +8,7 @@
 namespace Tests;
 
 use Aimeos\Cms\Events\PagesInvalidated;
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\PageCache;
 use Illuminate\Support\Facades\Cache;
 
 
@@ -18,9 +18,10 @@ class ThemePagesInvalidatedTest extends ThemeTestAbstract
     {
         config( ['cms.theme.cache' => 'array'] );
         $cache = Cache::store( 'array' );
-        $old = Page::key( 'old', 'example.com' );
-        $new = Page::key( 'new', 'example.com' );
-        $keep = Page::key( 'keep', 'example.com' );
+        $method = new \ReflectionMethod( PageCache::class, 'key' );
+        $old = $method->invoke( null, 'old', 'example.com' );
+        $new = $method->invoke( null, 'new', 'example.com' );
+        $keep = $method->invoke( null, 'keep', 'example.com' );
 
         $cache->put( $old, 'old' );
         $cache->put( $new, 'new' );

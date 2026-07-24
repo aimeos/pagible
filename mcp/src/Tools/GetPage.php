@@ -9,6 +9,7 @@ namespace Aimeos\Cms\Tools;
 
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\Version;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Tools\Annotations\IsReadOnly;
 use Laravel\Mcp\Server\Tools\Annotations\IsOpenWorld;
@@ -23,7 +24,7 @@ use Laravel\Mcp\Request;
 #[IsReadOnly]
 #[Name('get-page')]
 #[Title('Get a page by ID or path')]
-#[Description('Retrieves a single page by its ID or URL path. Returns the full page data including content, meta, config, and the URL as a JSON object. The returned latest_id identifies the version you read — pass it back to save-page so concurrent edits are merged instead of overwritten.')]
+#[Description('Retrieves a single page by its ID or URL path. Returns the full page data including its frontend restriction state, content, meta, config, and URL. Callers with access:view also receive the immediate access values. The returned latest_id identifies the version you read — pass it back to save-page so concurrent edits are merged instead of overwritten.')]
 class GetPage extends Tool
 {
     /**
@@ -44,9 +45,19 @@ class GetPage extends Tool
             throw new \Aimeos\Cms\Exception( 'You must specify either an ID or a path.' );
         }
 
+        $canAccess = Permission::can( 'access:view', $request->user() );
+        $with = [
+            'latest' => fn( $q ) => $q->select( [...Version::SELECT_COLUMNS, 'aux', 'publish_at', 'created_at'] ),
+        ];
+
+        if( $canAccess ) {
+            $with['access'] = fn( $q ) => $q->select( 'page_id', 'tenant_id', 'value' );
+        }
+
         $query = Page::withTrashed()
-            ->select( 'id', 'parent_id', 'latest_id', 'created_at', 'deleted_at' )
-            ->with( ['latest' => fn( $q ) => $q->select( 'id', 'versionable_id', 'data', 'aux', 'lang', 'editor', 'published', 'publish_at', 'created_at' )] );
+            ->select( 'id', 'tenant_id', 'parent_id', 'latest_id', 'created_at', 'deleted_at' )
+            ->withCount( 'access' )
+            ->with( $with );
 
         if( !empty( $v['id'] ) ) {
             $page = $query->find( $v['id'] );
@@ -65,6 +76,7 @@ class GetPage extends Tool
 
         $data = [
             'id' => $page->id,
+            'restricted' => $page->restricted(),
             'latest_id' => $page->latest_id,
             'parent_id' => $page->parent_id,
             'deleted' => $page->trashed(),
@@ -89,6 +101,10 @@ class GetPage extends Tool
             'updated_at' => $version?->created_at?->format( 'Y-m-d H:i:s' ),
             'url' => route( 'cms.page', ['path' => $vdata->path ?? ''] ),
         ];
+
+        if( $canAccess ) {
+            $data['access'] = $page->accessValues();
+        }
 
         return Response::structured( $data );
     }

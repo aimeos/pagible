@@ -62,6 +62,23 @@ class ModelTest extends CoreTestAbstract
     }
 
 
+    public function testPageSearchableArrayIncludesPublishedRouteChanges(): void
+    {
+        foreach( ['domain' => 'other.example', 'lang' => 'de'] as $attribute => $value )
+        {
+            $page = new Page();
+            $page->setRawAttributes( ['domain' => 'example.com', 'lang' => 'en'], true );
+            $page->setRelation( 'latest', null );
+            $page->setRelation( 'elements', collect() );
+            $page->setRelation( 'access', collect() );
+            $page->{$attribute} = $value;
+            $page->syncChanges();
+
+            $this->assertSame( $value, $page->toSearchableArray()[$attribute] ?? null );
+        }
+    }
+
+
     public function testPageAcceptsCanonicalStructuredAttributes(): void
     {
         $page = new Page();

@@ -88,7 +88,7 @@ final class Publication
     public function flush() : void
     {
         if( $this->routes ) {
-            PagesInvalidated::dispatch( $this->routes );
+            PagesInvalidated::dispatch( array_values( $this->routes ) );
         }
 
         foreach( $this->models as $model => $items ) {
@@ -119,6 +119,13 @@ final class Publication
      */
     public function one( Base $model, Version $version ) : void
     {
+        if( !$version->exists
+            || (string) $version->versionable_id !== (string) $model->getKey()
+            || (string) $version->versionable_type !== (string) $model->getMorphClass()
+        ) {
+            throw new \LogicException( 'CMS version does not belong to the model.' );
+        }
+
         if( $version->published ) {
             return;
         }
@@ -420,6 +427,10 @@ final class Publication
         if( !$compact && $model === Page::class )
         {
             $query->addSelect( [
+                'access_count' => $db->table( 'cms_page_access' )
+                    ->selectRaw( 'count(*)' )
+                    ->whereColumn( 'page_id', "{$table}.id" )
+                    ->where( 'tenant_id', Tenancy::value() ),
                 'pub_active_files' => $db->table( 'cms_page_file' )
                     ->select( 'page_id' )
                     ->whereColumn( 'page_id', "{$table}.id" )

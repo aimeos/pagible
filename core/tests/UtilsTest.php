@@ -9,6 +9,7 @@ namespace Tests;
 
 use Aimeos\Cms\Utils;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use PHPUnit\Framework\Attributes\Group;
@@ -16,6 +17,25 @@ use PHPUnit\Framework\Attributes\Group;
 
 class UtilsTest extends CoreTestAbstract
 {
+    public function testLockedTransactionBlocksUsingConfiguredLifetime(): void
+    {
+        config( ['cms.lock' => 7] );
+
+        $lock = \Mockery::mock( \Illuminate\Contracts\Cache\Lock::class );
+        $lock->shouldReceive( 'block' )
+            ->once()
+            ->with( 7, \Mockery::type( \Closure::class ) )
+            ->andReturnUsing( fn( int $seconds, \Closure $callback ) => $callback() );
+
+        Cache::shouldReceive( 'lock' )
+            ->once()
+            ->with( 'cms_pages_test', 7 )
+            ->andReturn( $lock );
+
+        $this->assertSame( 'result', Utils::lockedTransaction( fn() => 'result' ) );
+    }
+
+
     public function testIsValidUrlNull()
     {
         $this->assertTrue( Utils::isValidUrl( null ) );

@@ -200,6 +200,8 @@ In `.vscode/mcp.json` in your project root:
 
 **Draft/Publish workflow:** Creating or updating pages, elements, and files produces a draft version. Use the `publish-*` tools to make changes live. Scheduled publishing is supported via the `at` parameter (ISO 8601 datetime).
 
+**Frontend access:** Page access is immediate and independent from page versions. `get-page` always returns the `restricted` state; callers with `access:view` additionally receive `null` for public access, an empty access list for authenticated users, or named access values. Use `get-access` for discovery and `set-page-access` to replace the state, optionally for one complete page subtree. Changing access requires both `page:publish` and `access:view`.
+
 **Permissions:** Each tool requires a specific permission (e.g. `page:view`, `page:add`, `file:publish`). The user's `cmsperms` JSON array column controls access. See `Permission.php` for the full list.
 
 **Multi-tenancy:** All operations are scoped to the authenticated user's tenant. Content from other tenants is never visible or modifiable.

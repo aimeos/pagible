@@ -30,4 +30,10 @@ class User extends \Illuminate\Foundation\Auth\User
         'cmsperms' => 'array',
     ];
 
+
+    public function getTenantIdAttribute( mixed $value ) : string
+    {
+        return (string) ( $value ?? 'test' );
+    }
+
 }

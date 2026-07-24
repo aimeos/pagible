@@ -55,12 +55,12 @@
                 "name": {!! cmsjson(cms($page, 'title')) !!},
                 "url": {!! cmsjson(cmsroute($page)) !!}
             }
-            @if($page->ancestors->count() > 1)
+            @if($nav->ancestors()->count() > 1)
             ,{
                 "@@context": "https://schema.org",
                 "@@type": "BreadcrumbList",
                 "itemListElement": [
-                    @foreach($page->ancestors->skip(1)->filter(fn($item) => cms($item, 'status') == 1)->values() as $item)
+                    @foreach($nav->ancestors()->skip(1)->values() as $item)
                     {
                         "@@type": "ListItem",
                         "position": {{ $loop->iteration }},
@@ -70,7 +70,7 @@
                     @endforeach
                     {
                         "@@type": "ListItem",
-                        "position": {{ $page->ancestors->skip(1)->filter(fn($item) => cms($item, 'status') == 1)->count() + 1 }},
+                        "position": {{ $nav->ancestors()->skip(1)->count() + 1 }},
                         "name": {!! cmsjson(cms($page, 'name')) !!}
                     }
                 ]
@@ -118,7 +118,7 @@
                         </button>
                     </li>
                     <li class="brand">
-                        <a href="{{ cmsroute($page->ancestors?->first() ?? $page) }}" class="contrast" title="{{ config('app.name') }}" aria-label="{{ config('app.name') }}">
+                        <a href="{{ cmsroute($nav->ancestors()->first() ?? $page) }}" class="contrast" title="{{ config('app.name') }}" aria-label="{{ config('app.name') }}">
                             @php($logoFound = false)
                             @foreach($page->ancestorsAndSelf->reverse() as $navItem)
                                 @if($fileId = cms($navItem, 'config.logo-alternative.data.file.id') ?: cms($navItem, 'config.logo.data.file.id'))
@@ -148,31 +148,27 @@
                             </svg>
                         </a>
                     </li>
-                    @foreach($page->nav() as $item)
-                        @if(cms($item, 'status') == 1)
-                            <li>
-                                @if($item->children->count())
-                                    <details class="dropdown is-menu">
-                                        <summary>{{ cms($item, 'name') }}</summary>
-                                        <ul class="align">
-                                            @foreach($item->children as $subItem)
-                                                @if(cms($subItem, 'status') == 1)
-                                                    <li>
-                                                        <a href="{{ cmsroute($subItem) }}" class="{{ $page->isSelfOrDescendantOf($subItem) ? 'active' : '' }} contrast">
-                                                            {{ cms($subItem, 'name') }}
-                                                        </a>
-                                                    </li>
-                                                @endif
-                                            @endforeach
-                                        </ul>
-                                    </details>
-                                @else
-                                    <a href="{{ cmsroute($item) }}" class="{{ $page->isSelfOrDescendantOf($item) ? 'active' : '' }} contrast">
-                                        {{ cms($item, 'name') }}
-                                    </a>
-                                @endif
-                            </li>
-                        @endif
+                    @foreach($nav->items() as $item)
+                        <li>
+                            @if($item->children->count())
+                                <details class="dropdown is-menu">
+                                    <summary>{{ cms($item, 'name') }}</summary>
+                                    <ul class="align">
+                                        @foreach($item->children as $subItem)
+                                            <li>
+                                                <a href="{{ cmsroute($subItem) }}" class="{{ $page->isSelfOrDescendantOf($subItem) ? 'active' : '' }} contrast">
+                                                    {{ cms($subItem, 'name') }}
+                                                </a>
+                                            </li>
+                                        @endforeach
+                                    </ul>
+                                </details>
+                            @else
+                                <a href="{{ cmsroute($item) }}" class="{{ $page->isSelfOrDescendantOf($item) ? 'active' : '' }} contrast">
+                                    {{ cms($item, 'name') }}
+                                </a>
+                            @endif
+                        </li>
                     @endforeach
                 </ul>
                 <ul class="menu-open show">
@@ -187,17 +183,13 @@
             </nav>
         </header>
 
-        @if($page->ancestors->count() > 1)
+        @if($nav->ancestors()->count() > 1)
             <nav class="breadcrumb" aria-label="{{ __('Breadcrumb navigation') }}">
                 <ul>
-                    @foreach($page->ancestors->skip(1) as $item)
-                        @if(cms($item, 'status') == 1)
-                            <li>
-                                <a role="button" href="{{ cmsroute($item) }}">{{ cms($item, 'name') }}</a>
-                            </li>
-                        @else
-                            @break
-                        @endif
+                    @foreach($nav->ancestors()->skip(1) as $item)
+                        <li>
+                            <a role="button" href="{{ cmsroute($item) }}">{{ cms($item, 'name') }}</a>
+                        </li>
                     @endforeach
                     <li>{{ cms($page, 'name') }}</li>
                 </ul>

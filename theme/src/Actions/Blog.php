@@ -34,7 +34,7 @@ class Blog
 
         $editor = \Aimeos\Cms\Permission::can( 'page:view', $request->user() );
 
-        $with = $editor ? ['latest' => fn( $q ) => $q->select( 'id', 'versionable_id', 'aux' )] : [];
+        $with = $editor ? ['latest' => fn( $q ) => $q->select( 'id', 'tenant_id', 'versionable_id', 'aux' )] : [];
 
         $builder = Page::where( 'type', $this->type )->with( $with )->orderBy( $order, $dir );
 
@@ -64,7 +64,7 @@ class Blog
         $ids = $pages->getCollection()->flatMap( $fileIds )->filter()->unique()->values()->all();
 
         $files = $ids
-            ? File::whereIn( 'cms_files.id', $ids )->get( ['cms_files.id', 'name', 'mime', 'path', 'previews', 'description'] )->keyBy( 'id' )
+            ? File::whereIn( 'cms_files.id', $ids )->get( ['cms_files.id', 'cms_files.tenant_id', 'name', 'mime', 'path', 'previews', 'description'] )->keyBy( 'id' )
             : collect();
 
         $pages->getCollection()->each( function( $page ) use ( $files, $fileIds, $editor ) {

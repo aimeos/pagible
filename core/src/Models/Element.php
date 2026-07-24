@@ -32,7 +32,9 @@ use Illuminate\Support\Collection;
 class Element extends Base
 {
     /** @var list<string> Columns for eager-loading element relations */
-    public const SELECT_COLS = ['cms_elements.id', 'cms_elements.latest_id', 'type', 'name', 'data'];
+    public const SELECT_COLUMNS = [
+        'cms_elements.id', 'cms_elements.tenant_id', 'cms_elements.latest_id', 'type', 'name', 'data',
+    ];
 
 
     /**

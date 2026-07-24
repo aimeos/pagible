@@ -9,10 +9,11 @@ namespace Tests;
 
 use Aimeos\Cms\Commands\Demo as DemoCommand;
 use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\PageCache;
 use Aimeos\Cms\Schema;
 use Aimeos\Cms\Tenancy;
 use Database\Seeders\DefaultDemo;
-use Illuminate\Support\Facades\Cache;
+use Illuminate\Http\Response;
 
 
 class DemoTest extends ThemeTestAbstract
@@ -36,8 +37,11 @@ class DemoTest extends ThemeTestAbstract
         config( ['cache.default' => 'array', 'cms.theme.cache' => 'file'] );
         Tenancy::$callback = fn() => 'demo';
         app()->forgetInstance( Tenancy::class );
-        $key = Page::key( '', '' );
-        Cache::store( 'file' )->put( $key, 'cached page without logo' );
+        PageCache::remember( fn() => ( new Response( 'cached page without logo' ) )
+            ->header( 'Cache-Control', 'public' )
+            ->setExpires( now()->addMinutes( 5 ) ),
+            '',
+        );
 
         ( new DefaultDemo( '', 'demo' ) )->seed();
 
@@ -52,7 +56,7 @@ class DemoTest extends ThemeTestAbstract
         $logoId = $home->config->logo->data->file->id ?? null;
         $this->assertIsString( $logoId );
         $this->assertTrue( $home->files->has( $logoId ) );
-        $this->assertFalse( Cache::store( 'file' )->has( $key ) );
+        $this->assertNull( PageCache::response( '' ) );
         $this->get( '/' )->assertSee( 'meridian-works-logo.svg', false );
         $this->assertGreaterThan( 0, Page::where( 'path', 'blog' )->count() );
         $this->assertGreaterThan( 0, Page::where( 'type', 'docs' )->count() );

@@ -7,11 +7,9 @@ use Aimeos\Cms\Events\CmsSearch;
 use Aimeos\Cms\Events\PagesInvalidated;
 use Aimeos\Cms\Listeners\ContactLogListener;
 use Aimeos\Cms\Listeners\SearchLogListener;
-use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Schema;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Support\Facades\Blade;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Route;
@@ -42,18 +40,10 @@ class ThemeServiceProvider extends Provider
         });
 
         Event::listen( PagesInvalidated::class, function( PagesInvalidated $event ) {
-            $keys = array_map(
-                fn( $route ) => Page::key( $route['path'], $route['domain'], $event->tenant ),
-                $event->routes,
-            );
-
-            if( $keys )
-            {
-                try {
-                    Cache::store( config( 'cms.theme.cache', 'file' ) )->deleteMultiple( $keys );
-                } catch( \Throwable $e ) {
-                    report( $e );
-                }
+            try {
+                PageCache::invalidate( $event->routes, $event->tenant );
+            } catch( \Throwable $e ) {
+                report( $e );
             }
         } );
 

@@ -7,8 +7,12 @@
 
 namespace Tests;
 
+use Aimeos\Cms\Access;
+use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageAccess;
 use Database\Seeders\TestSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
 use LaravelJsonApi\Testing\MakesJsonApiRequests;
 
@@ -20,6 +24,13 @@ class JsonapiTest extends JsonapiTestAbstract
     use MakesJsonApiRequests;
 
     protected $seeder = TestSeeder::class;
+
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        Access::using( fn() => ['denied', 'member'] );
+    }
 
 
     protected function defineEnvironment( $app )
@@ -257,5 +268,121 @@ class JsonapiTest extends JsonapiTestAbstract
         $response = $this->jsonApi()->expects( 'pages' )->get( "cms/pages/{$page->id}" );
 
         $response->assertFetchedOne( $page );
+    }
+
+
+    public function testRestrictedPageIsHiddenFromGuests()
+    {
+        $page = Page::where( 'tag', 'root' )->firstOrFail();
+        PageAccess::set( [$page->id], [] );
+
+        $response = $this->jsonApi()->expects( 'pages' )->get( "cms/pages/{$page->id}" );
+
+        $response->assertNotFound();
+    }
+
+
+    public function testEditorFromAnotherTenantCannotReadUnpublishedPage()
+    {
+        $page = Page::where( 'status', 0 )->firstOrFail();
+        $user = new \App\Models\User( ['cmsperms' => ['page:view']] );
+        $user->id = 42;
+        $user->tenant_id = 'other';
+        $this->actingAs( $user );
+
+        $this->jsonApi()->expects( 'pages' )
+            ->get( "cms/pages/{$page->id}" )
+            ->assertNotFound();
+    }
+
+
+    public function testAuthenticationOnlyPageIsVisibleToAuthenticatedUsers()
+    {
+        $page = Page::where( 'tag', 'root' )->firstOrFail();
+        PageAccess::set( [$page->id], [] );
+        $user = new \App\Models\User();
+        $user->id = 42;
+        $user->tenant_id = 'test';
+        $this->actingAs( $user );
+
+        $response = $this->jsonApi()->expects( 'pages' )->get( "cms/pages/{$page->id}" );
+
+        $response->assertFetchedOne( $page );
+    }
+
+
+    public function testAnyGrantedPermissionMakesPageVisible()
+    {
+        $page = Page::where( 'tag', 'root' )->firstOrFail();
+        PageAccess::set( [$page->id], ['denied', 'member'] );
+        $user = new \App\Models\User();
+        $user->id = 42;
+        $user->tenant_id = 'test';
+        $this->actingAs( $user );
+        Gate::define( 'denied', fn() => false );
+        Gate::define( 'member', fn( $actualUser ) => $actualUser === $user );
+
+        $response = $this->jsonApi()->expects( 'pages' )->get( "cms/pages/{$page->id}" );
+        $response->assertFetchedOne( $page );
+    }
+
+
+    public function testDeniedPageIsHiddenFromAuthenticatedCollections()
+    {
+        $page = Page::where( 'tag', 'root' )->firstOrFail();
+        PageAccess::set( [$page->id], ['denied'] );
+        $user = new \App\Models\User();
+        $user->id = 42;
+        $user->tenant_id = 'test';
+        $this->actingAs( $user );
+        Gate::define( 'denied', fn() => false );
+
+        $response = $this->jsonApi()->expects( 'pages' )
+            ->filter( ['tag' => 'root'] )
+            ->get( 'cms/pages' );
+
+        $response->assertSuccessful();
+        $this->assertNotContains( $page->id, collect( $response->json( 'data', [] ) )->pluck( 'id' ) );
+    }
+
+
+    public function testAccessScopeIsLimitedToTheJsonapiRequest()
+    {
+        $page = Page::where( 'tag', 'root' )->firstOrFail();
+        PageAccess::set( [$page->id], ['member'] );
+        $allowed = new \App\Models\User();
+        $allowed->id = 42;
+        $allowed->tenant_id = 'test';
+        $denied = new \App\Models\User();
+        $denied->id = 43;
+        $denied->tenant_id = 'test';
+        $this->actingAs( $allowed );
+        Gate::define( 'member', fn( $user ) => $user === $allowed );
+
+        $this->jsonApi()->expects( 'pages' )
+            ->get( "cms/pages/{$page->id}" )
+            ->assertFetchedOne( $page );
+
+        $this->actingAs( $denied );
+        $this->assertNotNull( Page::find( $page->id ) );
+
+        $this->jsonApi()->expects( 'pages' )
+            ->get( "cms/pages/{$page->id}" )
+            ->assertNotFound();
+    }
+
+
+    public function testRestrictedRelationshipsAreHiddenFromGuests()
+    {
+        $page = Page::where( 'tag', 'root' )->firstOrFail();
+        $child = $page->children()->where( 'status', '>', 0 )->firstOrFail();
+        PageAccess::set( [$child->id], [] );
+
+        $response = $this->jsonApi()->expects( 'pages' )
+            ->includePaths( 'children' )
+            ->get( "cms/pages/{$page->id}" );
+
+        $response->assertFetchedOne( $page );
+        $this->assertNotContains( $child->id, collect( $response->json( 'included', [] ) )->pluck( 'id' ) );
     }
 }

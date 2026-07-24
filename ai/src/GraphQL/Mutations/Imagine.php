@@ -71,7 +71,7 @@ final class Imagine
 
         $disk = config( 'cms.disk', 'public' );
 
-        return File::whereIn( 'id', $ids )->select( 'id', 'path', 'mime' )->get()->map( function( $file ) use ( $disk ) {
+        return File::whereIn( 'id', $ids )->select( 'id', 'tenant_id', 'path', 'mime' )->get()->map( function( $file ) use ( $disk ) {
 
             if( !str_starts_with( $file->mime, 'image/' ) ) {
                 return null;

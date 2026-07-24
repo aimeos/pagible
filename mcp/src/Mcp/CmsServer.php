@@ -28,6 +28,7 @@ class CmsServer extends Server
      */
     protected array $tools = [
         // Read tools - Discovery & configuration
+        \Aimeos\Cms\Tools\GetAccess::class,
         \Aimeos\Cms\Tools\GetLocales::class,
         \Aimeos\Cms\Tools\GetSchemas::class,
 
@@ -49,6 +50,7 @@ class CmsServer extends Server
         // Write tools - Pages
         \Aimeos\Cms\Tools\AddPage::class,
         \Aimeos\Cms\Tools\SavePage::class,
+        \Aimeos\Cms\Tools\SetPageAccess::class,
         \Aimeos\Cms\Tools\PublishPage::class,
         \Aimeos\Cms\Tools\DropPage::class,
         \Aimeos\Cms\Tools\RestorePage::class,

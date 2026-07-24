@@ -8,10 +8,10 @@
 namespace Aimeos\Cms\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 use Aimeos\Cms\Concerns\Benchmarks;
+use Aimeos\Cms\Events\PagesInvalidated;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
@@ -279,8 +279,19 @@ class BenchmarkCore extends Command
     protected function unseed( string $conn, string $tenant ): void
     {
         // Clear cache for benchmark pages
-        Page::where( 'editor', 'benchmark' )->each( function( $page ) {
-            Cache::forget( Page::key( $page ) );
+        Page::where( 'editor', 'benchmark' )->chunkById( 500, function( $items ) {
+            $routes = [];
+
+            foreach( $items as $item ) {
+                if( $item instanceof Page ) {
+                    $routes[] = [
+                        'domain' => (string) $item->domain,
+                        'path' => (string) $item->path,
+                    ];
+                }
+            }
+
+            PagesInvalidated::dispatch( $routes );
         } );
 
         // Break circular page↔version FK by clearing latest_id first

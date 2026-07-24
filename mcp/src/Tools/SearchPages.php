@@ -10,6 +10,7 @@ namespace Aimeos\Cms\Tools;
 use Aimeos\Cms\Filter;
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\Version;
 use Aimeos\Cms\Tools\Concerns\Metadata;
 use Aimeos\Nestedset\NestedSet;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
@@ -59,8 +60,8 @@ class SearchPages extends Tool
         ] );
 
         $search = Page::search( mb_substr( trim( (string) ( $v['term'] ?? '' ) ), 0, 200 ) )
-            ->query( fn( $q ) => $q->select( 'cms_pages.id', 'cms_pages.parent_id', 'cms_pages.path', 'cms_pages.created_at', 'cms_pages.updated_at', 'cms_pages.deleted_at', 'cms_pages.latest_id', NestedSet::LFT, NestedSet::RGT )
-            ->with( ['latest' => fn( $q ) => $q->select( 'id', 'versionable_id', 'data', 'lang', 'editor' )] ) )
+            ->query( fn( $q ) => $q->select( 'cms_pages.id', 'cms_pages.tenant_id', 'cms_pages.parent_id', 'cms_pages.path', 'cms_pages.created_at', 'cms_pages.updated_at', 'cms_pages.deleted_at', 'cms_pages.latest_id', NestedSet::LFT, NestedSet::RGT )
+            ->with( ['latest' => fn( $q ) => $q->select( Version::SELECT_COLUMNS )] ) )
             ->searchFields( 'draft' )
             ->take( 25 );
 

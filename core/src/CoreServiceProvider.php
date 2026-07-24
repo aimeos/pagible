@@ -51,6 +51,8 @@ class CoreServiceProvider extends Provider
             $callback = \Aimeos\Cms\Tenancy::$callback;
             return new \Aimeos\Cms\Tenancy( $callback ? $callback() : '' );
         } );
+
+        $this->app->scoped( \Aimeos\Cms\Access::class );
     }
 
     protected function broadcast() : void
@@ -73,9 +75,9 @@ class CoreServiceProvider extends Provider
             );
 
             // Multi-tenant: the channel's tenant segment must match the request's tenant; the
-            // optional Tenancy::$access hook can additionally bind the user to that tenant.
+            // permission check also binds the user to the current tenant.
             Broadcast::channel( Channel::type( '{tenant}', $type ), fn( $user, string $tenant ) =>
-                $tenant === Tenancy::value() && Tenancy::allows( $user, $tenant ) && Permission::can( "{$type}:view", $user )
+                $tenant === Tenancy::value() && Permission::can( "{$type}:view", $user )
             );
         }
     }
@@ -122,8 +124,6 @@ class CoreServiceProvider extends Provider
         if( !\Laravel\Scout\Builder::hasMacro( 'searchFields' ) )
         {
             \Laravel\Scout\Builder::macro( 'searchFields', function( string ...$fields ) {
-                $this->where( 'tenant_id', Tenancy::value() );
-
                 match( config( 'scout.driver' ) ) {
                     'collection' => $this->callback = fn( $query, $builder ) => Scout::collection( $query, $builder, $fields ),
                     'algolia' => $this->options( ['restrictSearchableAttributes' => $fields] ),

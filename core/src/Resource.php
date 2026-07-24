@@ -425,12 +425,13 @@ class Resource
         $editor = Utils::editor( $user );
         $isPage = $model === Page::class;
         $announce = $model !== File::class || $action !== 'purged' || count( $ids ) === 1;
+        $pages = collect();
 
         if( !$isPage ) {
             sort( $ids, SORT_STRING );
         }
 
-        $apply = function( array $ids ) use ( $action, $announce, $editor, $fields, $isPage, $model ) {
+        $apply = function( array $ids ) use ( $action, $announce, $editor, $fields, $isPage, $model, &$pages ) {
             $query = $model::withTrashed()->whereIn( 'id', $ids );
 
             if( $isPage ) {
@@ -447,7 +448,7 @@ class Resource
                 }
 
                 if( $action === 'restored' ) {
-                    array_push( $required, ...( $model === File::class ? File::SELECT_COLS : Element::SELECT_COLS ) );
+                    array_push( $required, ...( $model === File::class ? File::SELECT_COLUMNS : Element::SELECT_COLUMNS ) );
                 }
 
                 $response = [...$instance->getVisible(), 'editor', 'created_at', 'updated_at'];
@@ -466,6 +467,12 @@ class Resource
 
             if( $items->isEmpty() ) {
                 return $items;
+            }
+
+            if( $isPage && ( $action !== 'restored' || Scout::usesExternalSearch() ) ) {
+                $pages = self::pageSubtree( $items );
+            } elseif( $isPage ) {
+                $pages = $items;
             }
 
             if( $action === 'purged' )
@@ -562,7 +569,7 @@ class Resource
         {
             $routes = [];
 
-            foreach( $items as $item ) {
+            foreach( $pages as $item ) {
                 if( $item instanceof Page ) {
                     $routes[] = ['domain' => $item->domain, 'path' => $item->path];
                 }
@@ -582,9 +589,11 @@ class Resource
         }
 
         /** @var array<string> $changed */
-        $changed = $items->pluck( 'id' )->all();
+        $changed = ( $isPage ? $pages : $items )->pluck( 'id' )->all();
 
-        if( $action === 'restored' ) {
+        if( $isPage && $action === 'dropped' && !Scout::usesExternalSearch() ) {
+            return $items;
+        } elseif( $action === 'restored' ) {
             Scout::index( $model, $changed, $isPage && $fields ? null : $items );
         } elseif( $action === 'dropped' && config( 'scout.soft_delete' ) ) {
             Scout::index( $model, $changed );
@@ -593,6 +602,31 @@ class Resource
         }
 
         return $items;
+    }
+
+
+    /**
+     * Loads the route and search projection for complete page subtrees.
+     *
+     * @param Collection<int, Base> $roots
+     * @return \Aimeos\Nestedset\Collection
+     */
+    protected static function pageSubtree( Collection $roots ) : \Aimeos\Nestedset\Collection
+    {
+        if( $roots->isEmpty() ) {
+            return new \Aimeos\Nestedset\Collection();
+        }
+
+        return Page::withTrashed()
+            ->select( 'id', 'tenant_id', 'domain', 'path', NestedSet::LFT )
+            ->where( function( $query ) use ( $roots ) {
+                foreach( $roots as $root ) {
+                    $query->whereDescendantOrSelf( $root, 'or' );
+                }
+            } )
+            ->orderBy( NestedSet::LFT )
+            ->lockForUpdate()
+            ->get();
     }
 
 

@@ -43,7 +43,10 @@ use Intervention\Image\ImageManager;
 class File extends Base
 {
     /** @var list<string> Columns for eager-loading file relations */
-    public const SELECT_COLS = ['cms_files.id', 'cms_files.latest_id', 'name', 'mime', 'path', 'previews', 'description', 'transcription'];
+    public const SELECT_COLUMNS = [
+        'cms_files.id', 'cms_files.tenant_id', 'cms_files.latest_id', 'name', 'mime', 'path',
+        'previews', 'description', 'transcription',
+    ];
 
 
     /**

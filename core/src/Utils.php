@@ -76,9 +76,10 @@ class Utils
      */
     public static function lockedTransaction( \Closure $callback ) : mixed
     {
-        return Cache::lock( 'cms_pages_' . Tenancy::value(), 30 )->get( function() use ( $callback ) {
-            return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( $callback, 3 );
-        } );
+        $lifetime = max( 1, (int) config( 'cms.lock', 30 ) );
+
+        return Cache::lock( 'cms_pages_' . Tenancy::value(), $lifetime )
+            ->block( $lifetime, fn() => self::transaction( $callback ) );
     }
 
 

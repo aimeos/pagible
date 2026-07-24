@@ -29,6 +29,7 @@ abstract class CmsTestAbstract extends \Orchestra\Testbench\TestCase
             'database' => env('DB_DRIVER', 'sqlite') === 'sqlite' ? ':memory:' : env('DB_DATABASE', ''),
             'username' => env('DB_USERNAME', ''),
             'password' => env('DB_PASSWORD', ''),
+            'foreign_key_constraints' => true,
         ]);
 
         $app['config']->set('auth.providers.users.model', 'App\\Models\\User');
@@ -45,6 +46,8 @@ abstract class CmsTestAbstract extends \Orchestra\Testbench\TestCase
 
     protected function tearDown(): void
     {
+        \Aimeos\Cms\Access::using( null );
+        ( new \ReflectionProperty( \Aimeos\Cms\Tenancy::class, 'managed' ) )->setValue( null, false );
         ( new \ReflectionProperty( \Aimeos\Cms\Schema::class, 'themes' ) )->setValue( null, [] );
         \Aimeos\Cms\Schema::source( null );
         parent::tearDown();

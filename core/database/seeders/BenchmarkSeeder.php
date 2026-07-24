@@ -7,7 +7,6 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
@@ -129,8 +128,6 @@ class BenchmarkSeeder
         $pivotVersionFile[] = ['version_id' => $rootVersionId, 'file_id' => $fileIds[$fileIndex % $fileCount]];
         $pivotVersionElement[] = ['version_id' => $rootVersionId, 'element_id' => $elementIds[$pageIndex % $elementCount]];
 
-        Cache::forget( Page::key( '', $this->domain ) );
-
         $lft++;
         $fileIndex++;
         $pageIndex++;
@@ -166,8 +163,6 @@ class BenchmarkSeeder
             $pivotVersionFile[] = ['version_id' => $l1VersionId, 'file_id' => $l1Fid];
             $pivotVersionElement[] = ['version_id' => $l1VersionId, 'element_id' => $elementIds[$pageIndex % $elementCount]];
 
-            Cache::forget( Page::key( "category-{$i}", $this->domain ) );
-
             $lft++;
             $fileIndex++;
             $pageIndex++;
@@ -201,8 +196,6 @@ class BenchmarkSeeder
                 $pivotVersionFile[] = ['version_id' => $l2VersionId, 'file_id' => $l2Fid];
                 $pivotVersionElement[] = ['version_id' => $l2VersionId, 'element_id' => $elementIds[$pageIndex % $elementCount]];
 
-                Cache::forget( Page::key( "subcategory-{$i}-{$j}", $this->domain ) );
-
                 $lft++;
                 $fileIndex++;
                 $pageIndex++;
@@ -232,8 +225,6 @@ class BenchmarkSeeder
                     $pivotPageElement[] = ['page_id' => $l3Id, 'element_id' => $elementIds[$pageIndex % $elementCount]];
                     $pivotVersionFile[] = ['version_id' => $l3VersionId, 'file_id' => $l3Fid];
                     $pivotVersionElement[] = ['version_id' => $l3VersionId, 'element_id' => $elementIds[$pageIndex % $elementCount]];
-
-                    Cache::forget( Page::key( "page-{$i}-{$j}-{$k}", $this->domain ) );
 
                     $lft += 2;
                     $fileIndex++;

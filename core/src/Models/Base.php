@@ -50,6 +50,9 @@ abstract class Base extends Model
     /** @var array<string, mixed>|null */
     protected ?array $changedInfo = null;
 
+    /** @var class-string<\Laravel\Scout\Builder<\Illuminate\Database\Eloquent\Model>> */
+    protected static string $scoutBuilder = \Aimeos\Cms\SearchBuilder::class;
+
     /**
      * Rejects operations exceeding the synchronous bulk limit.
      */

@@ -140,6 +140,17 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Page tree write lock
+    |--------------------------------------------------------------------------
+    |
+    | Lock lifetime and maximum acquisition wait in seconds for atomic page
+    | tree writes. Cache and search side effects run outside this lock.
+    |
+    */
+    'lock' => (int) env( 'CMS_LOCK', 30 ),
+
+    /*
+    |--------------------------------------------------------------------------
     | Multi-domain support
     |--------------------------------------------------------------------------
     |
@@ -169,6 +180,17 @@ return [
     |
     */
     'prune' => env( 'CMS_PRUNE', 30 ),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Bulk processing chunk size
+    |--------------------------------------------------------------------------
+    |
+    | Maximum number of items fetched per publication batch, cache routes or
+    | item IDs queued, and documents hydrated per synchronization job.
+    |
+    */
+    'chunksize' => (int) env( 'CMS_CHUNKSIZE', 100 ),
 
     /*
     |--------------------------------------------------------------------------

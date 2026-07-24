@@ -45,6 +45,11 @@ class Version extends Model
     /** @var list<class-string<Base>> Supported versionable models */
     public const TYPES = [Page::class, Element::class, File::class];
 
+    /** @var list<string> Most frequently used version projection */
+    public const SELECT_COLUMNS = [
+        'id', 'tenant_id', 'versionable_id', 'versionable_type', 'data', 'lang', 'editor', 'published',
+    ];
+
     /**
      * Boot the model.
      */

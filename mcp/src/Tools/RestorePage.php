@@ -41,7 +41,7 @@ class RestorePage extends Tool
         ] );
 
         /** @var Page|null $page */
-        $page = Page::withTrashed()->select( 'id', 'deleted_at' )->find( $v['id'] );
+        $page = Page::withTrashed()->select( 'id', 'tenant_id', 'deleted_at' )->find( $v['id'] );
 
         if( !$page ) {
             return Response::structured( ['error' => 'Page not found.'] );

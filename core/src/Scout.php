@@ -196,6 +196,29 @@ class Scout
 
 
     /**
+     * Reindexes models after the surrounding transaction commits.
+     *
+     * @param class-string<Models\Base> $model Model class
+     * @param array<string> $ids Model IDs
+     */
+    public static function reindex( string $model, array $ids ) : void
+    {
+        $ids = array_values( array_unique( $ids ) );
+
+        if( !$ids || !self::usesSearchIndex() ) {
+            return;
+        }
+
+        $instance = new $model();
+        $tenant = Tenancy::value();
+
+        $instance->getConnection()->afterCommit(
+            fn() => Tenancy::run( $tenant, fn() => self::index( $model, $ids ) ),
+        );
+    }
+
+
+    /**
      * Reindexes models immediately after loading their searchable relations.
      *
      * @param class-string<Models\Base> $model Model class
@@ -235,5 +258,23 @@ class Scout
             ) );
             $instance->queueRemoveFromSearch( $items );
         }
+    }
+
+
+    /**
+     * Whether visibility must be stored and filtered in an external search index.
+     */
+    public static function usesExternalSearch() : bool
+    {
+        return self::usesSearchIndex() && config( 'scout.driver' ) !== 'cms';
+    }
+
+
+    /**
+     * Whether the configured Scout driver maintains a search index.
+     */
+    public static function usesSearchIndex() : bool
+    {
+        return !in_array( config( 'scout.driver' ), [null, 'null', 'collection', 'database'], true );
     }
 }

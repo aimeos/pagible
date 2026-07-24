@@ -56,6 +56,7 @@ return new class extends Migration
             $table->nestedSetDepth();
 
             $table->unique(['path', 'domain', 'tenant_id']);
+            $table->unique(['id', 'tenant_id'], 'cms_pages_id_tenant_id_unique');
             $table->index(['tag', 'lang', 'tenant_id', 'status']);
             $table->index(['parent_id', 'deleted_at', 'tenant_id', '_lft']);
             $table->index(['lang', 'tenant_id', 'status']);

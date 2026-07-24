@@ -14,6 +14,7 @@ use Aimeos\Cms\Events\Purged;
 use Aimeos\Cms\Events\Published;
 use Aimeos\Cms\Events\Restored;
 use Aimeos\Cms\Events\Saved;
+use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Publication;
 use Aimeos\Cms\Resource;
@@ -195,6 +196,54 @@ class BroadcastsTest extends CoreTestAbstract
         Resource::purge( Page::class, [$page->id], $this->user );
 
         Event::assertDispatched( Purged::class );
+    }
+
+
+    public function testLifecycleAnnouncementUsesLatestDraftPageRoute() : void
+    {
+        $page = $this->page();
+        $id = (string) $page->id;
+        Publication::publish( Page::class, [$id], $this->user );
+        Resource::savePage( $id, [
+            'path' => 'draft-route',
+            'domain' => 'draft.example',
+        ], $this->user );
+        $events = [];
+
+        config( ['cms.broadcast' => false] );
+
+        foreach( [Dropped::class, Restored::class] as $class ) {
+            Event::listen( $class, function( $event ) use ( &$events ) {
+                $events[] = $event;
+            } );
+        }
+
+        Resource::drop( Page::class, [$id], $this->user );
+        Resource::restore( Page::class, [$id], $this->user );
+
+        $this->assertCount( 2, $events );
+
+        foreach( $events as $event ) {
+            $this->assertSame( ['path' => 'draft-route', 'domain' => 'draft.example'], $event->data );
+        }
+    }
+
+
+    public function testElementLifecycleAnnouncementOmitsVersionData() : void
+    {
+        $element = Element::query()->with( 'latest' )->firstOrFail();
+        $captured = null;
+
+        $this->assertNotEmpty( (array) $element->latest?->data );
+        config( ['cms.broadcast' => false] );
+        Event::listen( Dropped::class, function( Dropped $event ) use ( &$captured ) {
+            $captured = $event;
+        } );
+
+        Resource::drop( Element::class, [$element->id], $this->user );
+
+        $this->assertInstanceOf( Dropped::class, $captured );
+        $this->assertSame( [], $captured->data );
     }
 
 

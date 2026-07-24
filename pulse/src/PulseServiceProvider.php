@@ -63,15 +63,8 @@ class PulseServiceProvider extends Provider
 
     protected function canViewPulse( ?Authenticatable $user ) : bool
     {
-        if( !Permission::can( self::VIEW_PERMISSION, $user ) ) {
-            return false;
-        }
-
-        $tenant = Tenancy::value();
-
-        return $tenant === ''
-            ? Tenancy::$callback === null
-            : Tenancy::allows( $user, $tenant );
+        return Permission::can( self::VIEW_PERMISSION, $user )
+            && ( Tenancy::value() !== '' || Tenancy::$callback === null );
     }
 
 

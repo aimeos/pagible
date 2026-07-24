@@ -1124,9 +1124,13 @@ class ResourceTest extends CoreTestAbstract
     public function testDropInvalidatesPageRoutes()
     {
         $pages = [$this->page( [] ), $this->page( [] )];
+        $pages[] = Resource::addPage( [
+            'lang' => 'en', 'name' => 'Child', 'title' => 'Child', 'path' => 'res-' . Utils::uid(),
+            'content' => [],
+        ], $this->user, parent: (string) $pages[0]->id );
         Event::fake( [PagesInvalidated::class] );
 
-        Resource::drop( Page::class, collect( $pages )->pluck( 'id' )->all(), $this->user );
+        Resource::drop( Page::class, collect( $pages )->take( 2 )->pluck( 'id' )->all(), $this->user );
 
         $routes = collect( $pages )->map( fn( $page ) => [
             'domain' => (string) $page->domain,
@@ -1142,14 +1146,21 @@ class ResourceTest extends CoreTestAbstract
     public function testPurgeInvalidatesPageRoutes()
     {
         $page = $this->page( [] );
+        $child = Resource::addPage( [
+            'lang' => 'en', 'name' => 'Child', 'title' => 'Child', 'path' => 'res-' . Utils::uid(),
+            'content' => [],
+        ], $this->user, parent: (string) $page->id );
         Event::fake( [PagesInvalidated::class] );
 
         Resource::purge( Page::class, [$page->id], $this->user );
 
-        Event::assertDispatched( PagesInvalidated::class, fn( PagesInvalidated $event ) => $event->routes === [[
-            'domain' => (string) $page->domain,
-            'path' => (string) $page->path,
-        ]] );
+        Event::assertDispatched( PagesInvalidated::class, fn( PagesInvalidated $event ) =>
+            collect( $event->routes )->sortBy( 'path' )->values()->all() === collect( [$page, $child] )
+                ->map( fn( Page $item ) => [
+                    'domain' => (string) $item->domain,
+                    'path' => (string) $item->path,
+                ] )->sortBy( 'path' )->values()->all()
+        );
     }
 
 

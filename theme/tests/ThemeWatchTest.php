@@ -10,14 +10,15 @@ namespace Tests;
 use Aimeos\Cms\Events\CmsContact;
 use Aimeos\Cms\Events\CmsSearch;
 use Aimeos\Cms\Events\Observed;
+use Aimeos\Cms\Http\Middleware\Origin;
 use Aimeos\Cms\Http\Middleware\ServeCachedPage;
 use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\PageCache;
 use Database\Seeders\TestSeeder;
 use Illuminate\Foundation\Testing\DatabaseTruncation;
 use Illuminate\Foundation\Testing\RefreshDatabaseState;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\RateLimiter;
@@ -47,9 +48,13 @@ class ThemeWatchTest extends ThemeTestAbstract
 
     protected function tearDown() : void
     {
+        ServeCachedPage::bypassUsing( null );
+
         // Restore the watch config these tests mutate so a thrown assertion can't leak
         // state into later tests (the in-memory SQLite app persists across methods).
         config( [
+            'app.url' => 'http://localhost',
+            'cms.multidomain' => false,
             'cms.theme.watch' => false,
             'cms.watch.sample' => 1.0,
             'cms.watch.channel' => 'cms',
@@ -185,13 +190,13 @@ class ThemeWatchTest extends ThemeTestAbstract
         config( ['cms.theme.watch' => false, 'cms.watch.channel' => null, 'cms.watch.sample' => 0.0] );
         Event::fake( [Observed::class] );
 
-        $request = Request::create( '/about', 'GET' );
+        $request = Request::create( '/blog', 'GET' );
         ( new ServeCachedPage() )->handle( $request, fn() => new Response( 'body', 200 ) );
 
         Event::assertDispatched( Observed::class, fn( Observed $e ) =>
             $e->source === 'request'
             && $e->action === 'theme:view'
-            && $e->dimensions['path'] === '/about'
+            && $e->dimensions['path'] === '/blog'
             && $e->dimensions['status'] === 200
             && $e->sample
         );
@@ -203,16 +208,227 @@ class ThemeWatchTest extends ThemeTestAbstract
         config( ['cms.theme.watch' => true, 'cms.theme.cache' => 'array'] );
         Event::fake( [Observed::class] );
 
-        Cache::store( 'array' )->put( Page::key( '', '' ), 'cached-html' );
+        $page = Page::where( 'path', 'blog' )->firstOrFail();
 
-        $request = Request::create( '/', 'GET' );
+        PageCache::remember( fn() => ( new Response( 'cached-html', 200 ) )
+            ->header( 'Cache-Control', 'public' )
+            ->setExpires( now()->addMinutes( 5 ) ),
+            $page,
+        );
+
+        $request = Request::create( '/blog', 'GET' );
         ( new ServeCachedPage() )->handle( $request, fn() => new Response( 'body', 200 ) );
 
         Event::assertDispatched( Observed::class, fn( Observed $e ) =>
             $e->source === 'request'
-            && $e->dimensions['path'] === '/'
+            && $e->action === 'theme:view'
+            && $e->dimensions['path'] === '/blog'
             && $e->dimensions['status'] === 200
         );
+    }
+
+
+    public function testAuthorizationHeaderBypassesPublicPageCache() : void
+    {
+        config( ['cms.theme.watch' => false, 'cms.theme.cache' => 'array'] );
+        PageCache::remember( fn() => ( new Response( 'cached-html', 200 ) )
+            ->header( 'Cache-Control', 'public' )
+            ->setExpires( now()->addMinutes( 5 ) ),
+            'about',
+        );
+
+        $request = Request::create( '/about', 'GET' );
+        $request->headers->set( 'Authorization', 'Bearer test' );
+
+        $response = ( new ServeCachedPage() )->handle( $request, fn() => new Response( 'private-body', 200 ) );
+
+        $this->assertSame( 'private-body', $response->getContent() );
+    }
+
+
+    public function testCanonicalSingleDomainOriginUsesPublicPageCache() : void
+    {
+        config( [
+            'app.url' => 'https://shop.example',
+            'cms.multidomain' => false,
+            'cms.theme.cache' => 'array',
+            'cms.theme.watch' => false,
+        ] );
+        PageCache::remember( fn() => ( new Response( 'cached-html', 200 ) )
+            ->header( 'Cache-Control', 'public' )
+            ->setExpires( now()->addMinutes( 5 ) ),
+            'about',
+        );
+
+        $request = Request::create( 'https://shop.example/about', 'GET' );
+        $response = ( new Origin() )->handle( $request, fn( Request $request ) =>
+            ( new ServeCachedPage() )->handle( $request, fn() => new Response( 'rendered-html', 200 ) )
+        );
+
+        $this->assertSame( 'cached-html', $response->getContent() );
+    }
+
+
+    public function testOtherSingleDomainSchemeBypassesPublicPageCache() : void
+    {
+        config( [
+            'app.url' => 'https://shop.example',
+            'cms.multidomain' => false,
+            'cms.theme.cache' => 'array',
+            'cms.theme.watch' => false,
+        ] );
+        PageCache::remember( fn() => ( new Response( 'cached-html', 200 ) )
+            ->header( 'Cache-Control', 'public' )
+            ->setExpires( now()->addMinutes( 5 ) ),
+            'about',
+        );
+
+        $request = Request::create( 'http://shop.example/about', 'GET' );
+        $response = ( new Origin() )->handle( $request, fn( Request $request ) =>
+            ( new ServeCachedPage() )->handle( $request, fn() => new Response( 'rendered-html', 200 ) )
+        );
+
+        $this->assertSame( 'rendered-html', $response->getContent() );
+        $this->assertTrue( $response->headers->hasCacheControlDirective( 'private' ) );
+        $this->assertTrue( $response->headers->hasCacheControlDirective( 'no-store' ) );
+    }
+
+
+    public function testOtherSingleDomainPortBypassesPublicPageCache() : void
+    {
+        config( [
+            'app.url' => 'https://shop.example',
+            'cms.multidomain' => false,
+            'cms.theme.cache' => 'array',
+            'cms.theme.watch' => false,
+        ] );
+        PageCache::remember( fn() => ( new Response( 'cached-html', 200 ) )
+            ->header( 'Cache-Control', 'public' )
+            ->setExpires( now()->addMinutes( 5 ) ),
+            'about',
+        );
+
+        $request = Request::create( 'https://shop.example:444/about', 'GET' );
+        $response = ( new Origin() )->handle( $request, fn( Request $request ) =>
+            ( new ServeCachedPage() )->handle( $request, fn() => new Response( 'rendered-html', 200 ) )
+        );
+
+        $this->assertSame( 'rendered-html', $response->getContent() );
+        $this->assertTrue( $response->headers->hasCacheControlDirective( 'private' ) );
+        $this->assertTrue( $response->headers->hasCacheControlDirective( 'no-store' ) );
+    }
+
+
+    public function testOtherSingleDomainHostBypassesPublicPageCache() : void
+    {
+        config( [
+            'app.url' => 'https://shop.example',
+            'cms.multidomain' => false,
+            'cms.theme.cache' => 'array',
+            'cms.theme.watch' => false,
+        ] );
+        PageCache::remember( fn() => ( new Response( 'cached-html', 200 ) )
+            ->header( 'Cache-Control', 'public' )
+            ->setExpires( now()->addMinutes( 5 ) ),
+            'about',
+        );
+
+        $request = Request::create( 'https://evil.example/about', 'GET' );
+        $response = ( new Origin() )->handle( $request, fn( Request $request ) =>
+            ( new ServeCachedPage() )->handle( $request, fn() => ( new Response( 'rendered-html', 200 ) )
+                ->header( 'Cache-Control', 'public, s-maxage=300' )
+                ->setExpires( now()->addMinutes( 5 ) ) )
+        );
+
+        $this->assertSame( 'rendered-html', $response->getContent() );
+        $this->assertTrue( $response->headers->hasCacheControlDirective( 'private' ) );
+        $this->assertTrue( $response->headers->hasCacheControlDirective( 'no-store' ) );
+        $this->assertFalse( $response->headers->hasCacheControlDirective( 'public' ) );
+        $this->assertFalse( $response->headers->hasCacheControlDirective( 's-maxage' ) );
+        $this->assertFalse( $response->headers->has( 'Expires' ) );
+    }
+
+
+    public function testMultiDomainCacheRequiresCanonicalSchemeAndPort() : void
+    {
+        config( [
+            'app.url' => 'https://app.example:8443',
+            'cms.multidomain' => true,
+            'cms.theme.cache' => 'array',
+            'cms.theme.watch' => false,
+        ] );
+        PageCache::remember( fn() => ( new Response( 'cached-html', 200 ) )
+            ->header( 'Cache-Control', 'public' )
+            ->setExpires( now()->addMinutes( 5 ) ),
+            'about',
+            'shop.example',
+        );
+
+        $canonical = Request::create( 'https://shop.example:8443/about', 'GET' );
+        $mismatched = Request::create( 'http://shop.example:8443/about', 'GET' );
+        $this->assertSame( 'cached-html', ( new Origin() )->handle( $canonical,
+            fn( Request $request ) => ( new ServeCachedPage() )
+                ->handle( $request, fn() => new Response( 'rendered-html', 200 ) )
+        )->getContent() );
+        $response = ( new Origin() )->handle( $mismatched,
+            fn( Request $request ) => ( new ServeCachedPage() )
+                ->handle( $request, fn() => new Response( 'rendered-html', 200 ) )
+        );
+
+        $this->assertSame( 'rendered-html', $response->getContent() );
+        $this->assertTrue( $response->headers->hasCacheControlDirective( 'private' ) );
+        $this->assertTrue( $response->headers->hasCacheControlDirective( 'no-store' ) );
+    }
+
+
+    public function testMissingAppHostBypassesPublicPageCache() : void
+    {
+        config( [
+            'app.url' => '',
+            'cms.multidomain' => false,
+            'cms.theme.cache' => 'array',
+            'cms.theme.watch' => false,
+        ] );
+        PageCache::remember( fn() => ( new Response( 'cached-html', 200 ) )
+            ->header( 'Cache-Control', 'public' )
+            ->setExpires( now()->addMinutes( 5 ) ),
+            'about',
+        );
+
+        $request = Request::create( 'http://shop.example/about', 'GET' );
+        $response = ( new Origin() )->handle( $request, fn( Request $request ) =>
+            ( new ServeCachedPage() )->handle( $request, fn() => new Response( 'rendered-html', 200 ) )
+        );
+
+        $this->assertSame( 'rendered-html', $response->getContent() );
+        $this->assertTrue( $response->headers->hasCacheControlDirective( 'private' ) );
+        $this->assertTrue( $response->headers->hasCacheControlDirective( 'no-store' ) );
+    }
+
+
+    public function testCustomIndicatorBypassesPublicPageCache() : void
+    {
+        config( ['cms.theme.watch' => false, 'cms.theme.cache' => 'array'] );
+        PageCache::remember( fn() => ( new Response( 'cached-html', 200 ) )
+            ->header( 'Cache-Control', 'public' )
+            ->setExpires( now()->addMinutes( 5 ) ),
+            'about',
+        );
+        ServeCachedPage::bypassUsing( fn( Request $request ) => $request->headers->has( 'X-Preview' ) );
+
+        $request = Request::create( '/about', 'GET' );
+        $request->headers->set( 'X-Preview', '1' );
+
+        $response = ( new ServeCachedPage() )->handle( $request, fn() => new Response( 'private-body', 200 ) );
+
+        $this->assertSame( 'private-body', $response->getContent() );
+
+        $request = Request::create( '/about', 'GET' );
+        $request->headers->set( 'Authorization', 'Bearer test' );
+
+        $response = ( new ServeCachedPage() )->handle( $request, fn() => new Response( 'built-in-private-body', 200 ) );
+
+        $this->assertSame( 'built-in-private-body', $response->getContent() );
     }
 
 

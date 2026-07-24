@@ -16,11 +16,12 @@
  * @param {(() => boolean)|null} keep Optional guard re-checked after the fetch; if it returns
  *   false (e.g. the user started editing while the request was in flight) the result is discarded
  *   so unsaved edits are not overwritten
+ * @param {object} variables Additional GraphQL variables
  * @returns {Promise<boolean>}
  */
-export function reloadVersion(vm, query, key, message, apply, keep = null) {
+export function reloadVersion(vm, query, key, message, apply, keep = null, variables = {}) {
   return vm.$apollo
-    .query({ query, fetchPolicy: 'no-cache', variables: { id: vm.item.id } })
+    .query({ query, fetchPolicy: 'no-cache', variables: { ...variables, id: vm.item.id } })
     .then((result) => {
       if (vm.destroyed) return false
 

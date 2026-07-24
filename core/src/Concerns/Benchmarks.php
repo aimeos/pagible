@@ -295,6 +295,8 @@ trait Benchmarks
             'cmsperms' => ['*'],
         ] )->save();
 
+        $user->setAttribute( 'tenant_id', \Aimeos\Cms\Tenancy::value() );
+
         return $user;
     }
 

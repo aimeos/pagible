@@ -21,12 +21,12 @@ final class PagesInvalidated implements ShouldDispatchAfterCommit
 
     public readonly string $tenant;
 
-    /** @var array<int, array{domain: string, path: string}> */
+    /** @var list<array{domain: string, path: string}> */
     public readonly array $routes;
 
 
     /**
-     * @param array<int, array{domain: string, path: string}> $routes
+     * @param list<array{domain: string, path: string}> $routes
      */
     public function __construct( array $routes )
     {
@@ -35,7 +35,12 @@ final class PagesInvalidated implements ShouldDispatchAfterCommit
 
         foreach( $routes as $route )
         {
-            $dedup[$route['domain'] . "\0" . $route['path']] = $route;
+            $domain = (string) $route['domain'];
+            $path = (string) $route['path'];
+            $dedup[$domain . "\0" . $path] = [
+                'domain' => $domain,
+                'path' => $path,
+            ];
         }
 
         $this->routes = array_values( $dedup );

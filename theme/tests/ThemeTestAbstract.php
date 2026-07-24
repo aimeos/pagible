@@ -18,6 +18,12 @@ abstract class ThemeTestAbstract extends CmsTestAbstract
 	}
 
 
+	protected function defineRoutes( $router ) : void
+	{
+		$router->get( '/login', fn() => '' )->name( 'login' );
+	}
+
+
 	protected function getPackageProviders( $app )
 	{
 		return array_merge( parent::getPackageProviders( $app ), [

@@ -7,8 +7,10 @@
 
 namespace Tests;
 
+use Aimeos\Cms\Access;
 use Aimeos\Cms\Mcp\CmsServer;
 use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageAccess;
 use Database\Seeders\TestSeeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -25,6 +27,8 @@ class PageToolsTest extends McpTestAbstract
     protected function setUp(): void
     {
         parent::setUp();
+
+        Access::using( fn() => ['member', 'staff'] );
 
         $this->user = new \App\Models\User([
             'name' => 'Test editor',
@@ -64,6 +68,41 @@ class PageToolsTest extends McpTestAbstract
         ] );
 
         $response->assertOk()->assertSee( ['Home', 'Home | Laravel CMS'] );
+    }
+
+
+    public function testGetPageIncludesImmediateAccess()
+    {
+        $page = Page::where( 'name', 'Home' )->firstOrFail();
+        PageAccess::set( [$page->id], [] );
+
+        $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\GetPage::class, [
+            'id' => $page->id,
+        ] );
+
+        $response->assertOk()->assertStructuredContent( fn( $json ) => $json
+            ->where( 'access', [] )
+            ->where( 'restricted', true )
+            ->etc()
+        );
+    }
+
+
+    public function testGetPageProtectsImmediateAccessValues()
+    {
+        $page = Page::where( 'name', 'Home' )->firstOrFail();
+        PageAccess::set( [$page->id], ['member'] );
+        $this->user->cmsperms = ['page:view'];
+
+        $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\GetPage::class, [
+            'id' => $page->id,
+        ] );
+
+        $response->assertOk()->assertStructuredContent( fn( $json ) => $json
+            ->where( 'restricted', true )
+            ->missing( 'access' )
+            ->etc()
+        );
     }
 
 
@@ -403,6 +442,52 @@ class PageToolsTest extends McpTestAbstract
         ] );
 
         $response->assertHasErrors( ['latest_id'] );
+    }
+
+
+    public function testSetPageAccess()
+    {
+        $page = Page::where( 'name', 'Hidden' )->firstOrFail();
+        $tool = fn( ?array $access ) => CmsServer::actingAs($this->user)->tool(
+            \Aimeos\Cms\Tools\SetPageAccess::class,
+            ['id' => [$page->id], 'access' => $access],
+        );
+
+        $tool( [] )->assertOk()->assertStructuredContent( ['updated' => 1] );
+        $this->assertSame( [''], PageAccess::where( 'page_id', $page->id )->pluck( 'value' )->all() );
+
+        $tool( ['member'] )->assertOk()->assertStructuredContent( ['updated' => 1] );
+        $this->assertSame( ['member'], PageAccess::where( 'page_id', $page->id )->pluck( 'value' )->all() );
+
+        $tool( null )->assertOk()->assertStructuredContent( ['updated' => 1] );
+        $this->assertFalse( PageAccess::where( 'page_id', $page->id )->exists() );
+    }
+
+
+    public function testSetPageAccessRequiresAccessViewPermission()
+    {
+        $page = Page::where( 'name', 'Hidden' )->firstOrFail();
+        $this->user->cmsperms = ['page:publish'];
+
+        $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\SetPageAccess::class, [
+            'id' => [$page->id],
+            'access' => null,
+        ] );
+
+        $response->assertHasErrors( ['Tool [set-page-access] not found.'] );
+        $this->assertFalse( PageAccess::where( 'page_id', $page->id )->exists() );
+    }
+
+
+    public function testSetPageAccessRequiresExplicitAccess()
+    {
+        $page = Page::where( 'name', 'Hidden' )->firstOrFail();
+
+        $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\SetPageAccess::class, [
+            'id' => [$page->id],
+        ] );
+
+        $response->assertHasErrors( ['access'] );
     }
 
 

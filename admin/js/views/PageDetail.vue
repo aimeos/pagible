@@ -78,9 +78,12 @@ const PAGE_DETAIL_FIELDS = `
   }
 `
 
-const FETCH_PAGE = gql`query($id: ID!) {
+const FETCH_PAGE = gql`query($id: ID!, $access: Boolean!) {
   page(id: $id) {
     id
+    access @include(if: $access)
+    has
+    restricted
     latest {
       ${PAGE_DETAIL_FIELDS}
     }
@@ -260,6 +263,9 @@ export default {
         this.latest = page.latest
 
         Object.assign(this.item, safeParse(this.latest?.data))
+        this.item.access = page.access
+        this.item.has = page.has
+        this.item.restricted = page.restricted
         this.item.published = this.latest?.published
         this.item.editor = this.latest?.editor
         this.item.updated_at = this.latest?.created_at
@@ -273,7 +279,7 @@ export default {
         this.elements = markRaw(this.elems(this.latest?.elements || []))
         this.item.content = this.obsolete(this.item.content)
         this.latest = { id: this.latest?.id }
-      }, () => !this.hasChanged)
+      }, () => !this.hasChanged, { access: this.user.can('access:view') })
     },
 
     apply(changes) {

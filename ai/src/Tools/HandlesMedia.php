@@ -51,7 +51,7 @@ trait HandlesMedia
             return [];
         }
 
-        return File::whereIn( 'id', $ids )->select( 'id', 'path', 'mime' )->get()
+        return File::whereIn( 'id', $ids )->select( 'id', 'tenant_id', 'path', 'mime' )->get()
             ->map( fn( File $file ) => $this->toImage( $file ) )
             ->filter()->values()->all();
     }

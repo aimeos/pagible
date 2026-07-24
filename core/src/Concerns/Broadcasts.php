@@ -9,6 +9,7 @@ namespace Aimeos\Cms\Concerns;
 
 use Aimeos\Cms\Events\Bulk;
 use Aimeos\Cms\Events\Event;
+use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Models\Version;
 use Aimeos\Cms\Tenancy;
 use Aimeos\Cms\Utils;
@@ -59,7 +60,7 @@ trait Broadcasts
             return;
         }
 
-        static::send( new $class( ...$this->eventFields( $version, $editor ) ), $broadcast );
+        static::send( new $class( ...$this->eventFields( $version, $editor, $action ) ), $broadcast );
     }
 
 
@@ -141,14 +142,41 @@ trait Broadcasts
 
 
     /**
+     * Returns the event data needed to patch lists or enrich audit entries.
+     *
+     * Lifecycle changes only alter list metadata. Page routes remain in the
+     * payload because the audit listener records them.
+     *
+     * @return array<string, mixed>
+     */
+    protected function eventData( Version $version, string $action ) : array
+    {
+        if( !in_array( $action, ['dropped', 'purged', 'restored'], true ) ) {
+            return (array) $version->data;
+        }
+
+        if( !$this instanceof Page ) {
+            return [];
+        }
+
+        return [
+            'path' => (string) ( $version->data->path ?? $this->path ),
+            'domain' => (string) ( $version->data->domain ?? $this->domain ),
+        ];
+    }
+
+
+    /**
      * Extracts the shared event fields from the model and version, keyed by the event constructor
      * parameter names so they can be spread into any event.
      *
      * @param Version $version Latest version of the model
      * @param Authenticatable|string|null $editor Authenticated user or editor name
+     * @param string $action Past-tense action
      * @return array{contentType: string, id: string, latest_id: string, editor: string, data: array<string, mixed>, published: bool, deleted_at: string|null, publish_at: string|null, updated_at: string|null, tenant: string, source: string}
      */
-    protected function eventFields( Version $version, Authenticatable|string|null $editor ) : array
+    protected function eventFields( Version $version, Authenticatable|string|null $editor,
+        string $action ) : array
     {
         $id = $this->id;
         $latestId = $version->id;
@@ -162,7 +190,7 @@ trait Broadcasts
             'id' => $id,
             'latest_id' => $latestId,
             'editor' => is_string( $editor ) ? $editor : Utils::editor( $editor ),
-            'data' => (array) $version->data,
+            'data' => $this->eventData( $version, $action ),
             'published' => (bool) $version->published,
             'deleted_at' => $this->deleted_at ? (string) $this->deleted_at : null,
             'publish_at' => $version->publish_at,

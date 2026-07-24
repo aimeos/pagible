@@ -15,6 +15,7 @@ Cypress.on('uncaught:exception', (err) => {
 })
 
 const ALL_PERMISSIONS = {
+  'access:view': true,
   'page:view': true,
   'page:add': true,
   'page:save': true,
@@ -130,6 +131,7 @@ function setupIntercept({
   keepPage = null,
   purgePage = null,
   pubPage = null,
+  access = [],
 } = {}) {
   cy.intercept('POST', '/graphql', (req) => {
     const isBatch = Array.isArray(req.body)
@@ -165,6 +167,12 @@ function setupIntercept({
       if (query.includes('pubPage')) {
         return { data: { pubPage: pubPage || { id: '1' } } }
       }
+      if (query.includes('setPageAccess')) {
+        return { data: { setPageAccess: 1 } }
+      }
+      if (query.includes('PageAccessValues')) {
+        return { data: { access: ['member', 'staff'] } }
+      }
       if (query.includes('schemas')) {
         return { data: { schemas: [] } }
       }
@@ -174,11 +182,16 @@ function setupIntercept({
       }
       // Single page query for detail view — must check BEFORE 'pages'
       if (query.includes('page(') && !query.includes('pages(')) {
+        const page = pages.find((item) => item.id === op.variables?.id) || pages[0]
+        const result = pageDetail
+          ? { id: op.variables?.id || '1', has: page?.has ?? 0, restricted: access !== null, latest: pageDetail }
+          : null
+
+        if (result && op.variables?.access) result.access = access
+
         return {
           data: {
-            page: pageDetail
-              ? { id: op.variables?.id || '1', latest: pageDetail }
-              : null,
+            page: result,
           },
         }
       }
@@ -204,6 +217,16 @@ function setupIntercept({
 
     req.reply(isBatch ? responses : responses[0])
   }).as('gql')
+}
+
+function waitForSetPageAccess() {
+  return cy.wait('@gql').then((interception) => {
+    const body = interception.request.body
+    const ops = Array.isArray(body) ? body : [body]
+    const accessOp = ops.find((op) => (op.query || '').includes('setPageAccess'))
+
+    return accessOp || waitForSetPageAccess()
+  })
 }
 
 /**
@@ -328,13 +351,33 @@ describe('Page Detail', () => {
     detailView().find('.v-tab--selected').should('contain', 'Content')
   })
 
-  it('clicking Page tab shows Detail, Meta, Config sub-tabs', () => {
+  it('clicking Page tab shows Detail, Meta, Config and Access sub-tabs', () => {
     visitPageDetail()
     detailView().find('.v-tab').contains('Page').click()
-    detailView().find('.subtabs .v-tab').should('have.length', 3)
+    detailView().find('.subtabs .v-tab').should('have.length', 4)
     detailView().find('.subtabs .v-tab').eq(0).should('contain', 'Detail')
     detailView().find('.subtabs .v-tab').eq(1).should('contain', 'Meta')
     detailView().find('.subtabs .v-tab').eq(2).should('contain', 'Config')
+    detailView().find('.subtabs .v-tab').eq(3).should('contain', 'Access')
+  })
+
+  it('applies immediate page access independently from page saving', () => {
+    visitPageDetail()
+    detailView().find('.v-tab').contains('Page').click()
+    detailView().find('.subtabs .v-tab').contains('Access').click()
+    cy.contains('.page-access .v-radio', 'Authenticated users').find('input').check({ force: true })
+    cy.get('.page-access .btn-apply-access').click()
+    waitForSetPageAccess().should((accessOp) => {
+      expect(accessOp.variables.access).to.deep.equal([])
+      expect(accessOp.variables.descendants).to.equal(false)
+    })
+  })
+
+  it('offers recursive access changes for pages with descendants', () => {
+    visitPageDetail({ has: 3 })
+    detailView().find('.v-tab').contains('Page').click()
+    detailView().find('.subtabs .v-tab').contains('Access').click()
+    cy.get('.page-access .btn-apply-access-recursive').should('contain', 'Apply recursively (4)')
   })
 
   // ---- Save ----
@@ -438,6 +481,8 @@ describe('Page Detail', () => {
     }
     visitPageDetail({}, { published: false }, me)
     detailView().find('.menu-save').should('be.disabled')
+    detailView().find('.v-tab').contains('Page').click()
+    detailView().find('.subtabs .v-tab').contains('Access').should('not.exist')
   })
 
   it('publish button is disabled without page:publish permission', () => {

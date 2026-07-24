@@ -7,6 +7,8 @@
 
 namespace Aimeos\Cms\Commands;
 
+use Aimeos\Cms\Events\PagesInvalidated;
+use Aimeos\Cms\Models\Page;
 use Database\Seeders\BenchmarkSeeder;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
@@ -138,6 +140,23 @@ class Benchmark extends Command
         $seeder->run( $domain, 'benchmark', $pages, $chunk, function( int $count ) use ( $bar ) {
             $bar->advance( $count );
         } );
+
+        Page::where( 'editor', 'benchmark' )
+            ->where( 'domain', $domain )
+            ->chunkById( 500, function( $items ) {
+                $routes = [];
+
+                foreach( $items as $item ) {
+                    if( $item instanceof Page ) {
+                        $routes[] = [
+                            'domain' => (string) $item->domain,
+                            'path' => (string) $item->path,
+                        ];
+                    }
+                }
+
+                PagesInvalidated::dispatch( $routes );
+            } );
 
         $bar->finish();
         $this->newLine();

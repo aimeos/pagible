@@ -85,6 +85,7 @@ class ChannelAuthTest extends CoreTestAbstract
     {
         Tenancy::$callback = null; // genuine single-tenant deployment (tenancy not configured)
         $this->app->instance( Tenancy::class, new Tenancy( '' ) );
+        $this->user->tenant_id = '';
 
         $auth = $this->channels()['cms.page'];
 

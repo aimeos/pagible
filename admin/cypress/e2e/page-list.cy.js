@@ -7,6 +7,7 @@
  */
 
 const ALL_PERMISSIONS = {
+  'access:view': true,
   'page:view': true,
   'page:add': true,
   'page:save': true,
@@ -36,6 +37,8 @@ function makePage(overrides = {}) {
     deleted_at: null,
     editor: 'admin@example.com',
     has: 0,
+    access: null,
+    restricted: false,
     latest: {
       id: '10',
       published: true,
@@ -95,6 +98,7 @@ function setupIntercept({
   keepPage = null,
   purgePage = null,
   pubPage = null,
+  access = ['member', 'staff'],
   schemas = [{ name: 'cms', label: 'CMS', types: '{"page":{},"blog":{}}', content: '{}', meta: '{}', config: '{}' }],
 } = {}) {
   cy.intercept('POST', '/graphql', (req) => {
@@ -117,6 +121,12 @@ function setupIntercept({
         const ids = op.variables?.id || ['1']
         // data and latest are JSON scalar strings
         return { data: { bulkPage: bulkPage || { ids, latest: '{}', data: JSON.stringify(op.variables?.input || {}), failed: 0 } } }
+      }
+      if (query.includes('setPageAccess')) {
+        return { data: { setPageAccess: (op.variables?.id || []).length } }
+      }
+      if (query.includes('PageAccessValues')) {
+        return { data: { access } }
       }
       if (query.includes('savePage')) {
         return { data: { savePage: savePage || { id: op.variables?.id || '1' } } }
@@ -159,6 +169,16 @@ function setupIntercept({
 
     req.reply(isBatch ? responses : responses[0])
   }).as('gql')
+}
+
+function waitForSetPageAccess() {
+  return cy.wait('@gql').then((interception) => {
+    const body = interception.request.body
+    const ops = Array.isArray(body) ? body : [body]
+    const accessOp = ops.find((op) => (op.query || '').includes('setPageAccess'))
+
+    return accessOp || waitForSetPageAccess()
+  })
 }
 
 /** Authenticate and navigate to /pages, waiting for the initial GQL calls. */
@@ -408,7 +428,7 @@ describe('Page List', () => {
     })
   })
 
-  it('clicking Enable sends savePage mutation with status 1', () => {
+  it('clicking Enable sends bulkPage mutation with status 1', () => {
     const page = makePage()
     page.latest.data = JSON.stringify({
       name: 'Test', title: '', path: '/test', lang: 'en',
@@ -419,22 +439,22 @@ describe('Page List', () => {
     cy.contains('.v-card .v-list .v-btn', 'Enable').click()
     cy.wait('@gql').its('request.body').should((body) => {
       const ops = Array.isArray(body) ? body : [body]
-      const saveOp = ops.find((op) => (op.query || '').includes('savePage'))
-      expect(saveOp).to.exist
-      expect(saveOp.variables.input.status).to.equal(1)
+      const bulkOp = ops.find((op) => (op.query || '').includes('bulkPage'))
+      expect(bulkOp).to.exist
+      expect(bulkOp.variables.input.status).to.equal(1)
     })
   })
 
-  it('clicking Disable sends savePage mutation with status 0', () => {
+  it('clicking Disable sends bulkPage mutation with status 0', () => {
     const page = makePage()
     visitPages([page])
     cy.get('.tree-node-inner .btn-actions .v-btn').first().click()
     cy.contains('.v-card .v-list .v-btn', 'Disable').click()
     cy.wait('@gql').its('request.body').should((body) => {
       const ops = Array.isArray(body) ? body : [body]
-      const saveOp = ops.find((op) => (op.query || '').includes('savePage'))
-      expect(saveOp).to.exist
-      expect(saveOp.variables.input.status).to.equal(0)
+      const bulkOp = ops.find((op) => (op.query || '').includes('bulkPage'))
+      expect(bulkOp).to.exist
+      expect(bulkOp.variables.input.status).to.equal(0)
     })
   })
 
@@ -478,7 +498,7 @@ describe('Page List', () => {
     })
   })
 
-  it('bulk actions menu shows Publish, Enable, Disable, Delete, Purge', () => {
+  it('bulk actions menu shows Publish, Access, Enable, Disable, Delete, Purge', () => {
     const page = makePage()
     page.latest.published = false
     visitPages([page])
@@ -486,10 +506,26 @@ describe('Page List', () => {
     // Open bulk actions menu, then check items in the teleported overlay
     cy.get('.header .bulk .btn-actions .v-btn').click()
     cy.get('.v-card .v-list').should('contain', 'Publish')
+    cy.get('.v-card .v-list').should('contain', 'Access')
     cy.get('.v-card .v-list').should('contain', 'Enable')
     cy.get('.v-card .v-list').should('contain', 'Disable')
     cy.get('.v-card .v-list').should('contain', 'Delete')
     cy.get('.v-card .v-list').should('contain', 'Purge')
+  })
+
+  it('bulk Access applies an explicit public value', () => {
+    const page = makePage()
+    visitPages([page])
+    cy.get('.tree-node-inner .v-checkbox-btn').first().click()
+    cy.get('.header .bulk .btn-actions .v-btn').click()
+    cy.contains('.v-card .v-list .v-btn', 'Access').click()
+    cy.contains('.page-access .v-radio', 'Public').find('input').check({ force: true })
+    cy.get('.page-access .btn-apply-access').click()
+    waitForSetPageAccess().should((accessOp) => {
+      expect(accessOp.variables.id).to.deep.equal(['1'])
+      expect(accessOp.variables.access).to.equal(null)
+      expect(accessOp.variables.descendants).to.equal(false)
+    })
   })
 
   // ---- Batch edit properties ----
@@ -665,6 +701,34 @@ describe('Page List', () => {
     page.latest.publish_at = '2026-06-01 00:00:00'
     visitPages([page])
     cy.get('.publish-at').should('exist')
+  })
+
+  // ---- Access indicator ----
+
+  it('shows a lock icon only for non-public pages', () => {
+    const pages = [
+      makePage({ id: '1', access: null, restricted: false }),
+      makePage({ id: '2', access: [], restricted: true }),
+      makePage({ id: '3', access: ['member'], restricted: true }),
+    ]
+
+    visitPages(pages)
+    cy.get('.tree-node-inner').should('have.length', 3)
+    cy.get('.item-access').should('have.length', 2)
+    cy.get('.item-access[title="Authenticated users"]').should('exist')
+    cy.get('.item-access[title="Access: member"]').should('exist')
+  })
+
+  it('hides access values without access:view permission', () => {
+    const me = {
+      permission: JSON.stringify({ 'page:view': true }),
+      email: 'viewer@example.com',
+      name: 'Viewer',
+    }
+    const page = makePage({ restricted: true, access: undefined })
+
+    visitPages([page], me)
+    cy.get('.item-access[title="Restricted"]').should('exist')
   })
 
   // ---- Multiple pages ----

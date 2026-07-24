@@ -10,6 +10,8 @@ export const IMAGE_MIME_FILTER = { mime: ['image/gif', 'image/jpeg', 'image/png'
 
 export const MEDIA_MIME_FILTER = { mime: ['image/gif', 'image/jpeg', 'image/png', 'image/svg+xml', 'image/webp', 'video/mp4', 'video/webm', 'video/ogg'] }
 
+export const PAGE_BULK_LIMIT = 1000
+
 /**
  * Keys that can pollute object prototypes when merged into existing objects
  */
