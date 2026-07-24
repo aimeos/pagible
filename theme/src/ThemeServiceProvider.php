@@ -4,7 +4,7 @@ namespace Aimeos\Cms;
 
 use Aimeos\Cms\Events\CmsContact;
 use Aimeos\Cms\Events\CmsSearch;
-use Aimeos\Cms\Events\PagesInvalidated;
+use Aimeos\Cms\Events\PageInvalidated;
 use Aimeos\Cms\Listeners\ContactLogListener;
 use Aimeos\Cms\Listeners\SearchLogListener;
 use Aimeos\Cms\Schema;
@@ -39,9 +39,9 @@ class ThemeServiceProvider extends Provider
             $this->loadRoutesFrom( $basedir . '/routes/theme.php' );
         });
 
-        Event::listen( PagesInvalidated::class, function( PagesInvalidated $event ) {
+        Event::listen( PageInvalidated::class, function( PageInvalidated $event ) {
             try {
-                PageCache::invalidate( $event->routes, $event->tenant );
+                PageCache::invalidate( $event->domain, $event->path, $event->tenant );
             } catch( \Throwable $e ) {
                 report( $e );
             }

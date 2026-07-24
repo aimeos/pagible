@@ -17,21 +17,25 @@ use Illuminate\Contracts\Cache\LockTimeoutException;
 class PageCache
 {
     /**
-     * Invalidates complete-page cache entries without waiting for render leases.
-     *
-     * @param iterable<array{domain: string, path: string}> $routes
+     * Invalidates one route or all routes of a tenant domain.
      */
-    public static function invalidate( iterable $routes, string $tenant ) : void
+    public static function invalidate( string $domain, ?string $path, string $tenant ) : void
     {
-        $keys = [];
-
-        foreach( $routes as $route ) {
-            $keys[self::routeKey( $tenant, $route['domain'], $route['path'] )] = true;
+        if( $path !== null ) {
+            self::store()->forget( self::routeKey( $tenant, $domain, $path ) );
+            return;
         }
 
-        if( $keys ) {
-            self::store()->deleteMultiple( array_keys( $keys ) );
-        }
+        Models\Page::withoutTenancy()
+            ->withoutGlobalScope( 'jsonapi' )
+            ->withTrashed()
+            ->select( 'id', 'path' )
+            ->where( 'tenant_id', $tenant )
+            ->where( 'domain', $domain )
+            ->eachById(
+                fn( Models\Page $page ) => self::invalidate( $domain, (string) $page->path, $tenant ),
+                500,
+            );
     }
 
 

@@ -6,23 +6,23 @@
 
 namespace Tests;
 
-use Aimeos\Cms\Events\PagesInvalidated;
+use Aimeos\Cms\Events\PageInvalidated;
 
 
 class PageInvalidationSpy
 {
-    /** @var array<int, list<array{domain: string, path: string}>> */
-    public array $batches = [];
+    /** @var list<array{domain: string, path: string|null}> */
+    public array $events = [];
 
 
-    public function handle( PagesInvalidated $event ) : void
+    public function handle( PageInvalidated $event ) : void
     {
-        $this->batches[] = $event->routes;
+        $this->events[] = ['domain' => $event->domain, 'path' => $event->path];
     }
 
 
     public function reset() : void
     {
-        $this->batches = [];
+        $this->events = [];
     }
 }

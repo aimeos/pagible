@@ -7,7 +7,7 @@
 
 namespace Aimeos\Cms;
 
-use Aimeos\Cms\Events\PagesInvalidated;
+use Aimeos\Cms\Events\PageInvalidated;
 use Aimeos\Cms\Jobs\PruneVersions;
 use Aimeos\Cms\Models\Base;
 use Aimeos\Cms\Models\Element;
@@ -567,15 +567,11 @@ class Resource
 
         if( $isPage && $action !== 'restored' )
         {
-            $routes = [];
-
-            foreach( $pages as $item ) {
-                if( $item instanceof Page ) {
-                    $routes[] = ['domain' => $item->domain, 'path' => $item->path];
+            foreach( $pages as $page ) {
+                if( $page instanceof Page ) {
+                    PageInvalidated::dispatch( (string) $page->domain, (string) $page->path );
                 }
             }
-
-            PagesInvalidated::dispatch( $routes );
         }
 
         if( $action === 'dropped' ) {
