@@ -154,7 +154,6 @@ class Version extends Model
             $parts[] = $lang . ":\n" . $value;
         }
 
-        $config = \Aimeos\Cms\Schema::schemas( section: 'content' );
         $items = (array) ( $aux->content ?? [] );
 
         if( !empty( $items ) && $this->relationLoaded( 'elements' ) ) {
@@ -164,25 +163,7 @@ class Version extends Model
         }
 
         $items[] = $data;
-
-        foreach( $items as $el )
-        {
-            $fields = (array) ( $config[$el->type ?? '']['fields'] ?? [] );
-
-            if( empty( $fields ) ) {
-                continue;
-            }
-
-            foreach( (array) ( $el->data ?? [] ) as $name => $value )
-            {
-                if( is_string( $value ) && isset( $fields[$name] )
-                    && ( $fields[$name]['searchable'] ?? true )
-                    && in_array( $fields[$name]['type'], ['markdown', 'plaintext', 'string', 'text'] )
-                ) {
-                    $parts[] = $value;
-                }
-            }
-        }
+        array_push( $parts, ...\Aimeos\Cms\Scout::text( $items ) );
 
         return trim( implode( "\n", $parts ) );
     }

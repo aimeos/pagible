@@ -8,6 +8,7 @@
 namespace Tests;
 
 use Aimeos\Cms\Tenancy;
+use Aimeos\Cms\Scout;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
@@ -59,6 +60,17 @@ class ModelTest extends CoreTestAbstract
 
         $this->assertStringContainsString( 'Disabled', (string) $page );
         $this->assertStringNotContainsString( 'Welcome', (string) $page );
+    }
+
+
+    public function testScoutTextIncludesOnlySearchableTextFields(): void
+    {
+        $items = [(object) [
+            'type' => 'heading',
+            'data' => (object) ['title' => 'Heading', 'level' => '2'],
+        ]];
+
+        $this->assertSame( ['Heading'], Scout::text( $items ) );
     }
 
 

@@ -183,7 +183,7 @@ class UtilsTest extends CoreTestAbstract
         ] );
 
         try {
-            Utils::fetch( 'http://8.8.8.8/start' );
+            Utils::http( 'http://8.8.8.8/start' );
             $this->fail( 'Expected the private redirect to be blocked' );
         } catch( \Aimeos\Cms\Exception $e ) {
             $this->assertStringContainsString( 'does not resolve to an allowed address', $e->getMessage() );

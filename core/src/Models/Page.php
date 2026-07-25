@@ -219,33 +219,15 @@ class Page extends Base
      */
     public function __toString() : string
     {
-        $content = ( $this->tag ?? '' ) . "\n"
-            . ( $this->name ?? '' ) . "\n"
-            . ( $this->title ?? '' ) . "\n"
-            . ( $this->meta->{'meta-tags'}->data->description ?? '' ) . "\n";
+        $items = collect( (array) $this->content )->merge( $this->elements );
 
-        $config = \Aimeos\Cms\Schema::schemas( section: 'content' );
-
-        foreach( collect( (array) $this->content )->merge( $this->elements ) as $el )
-        {
-            $fields = (array) ( $config[$el->type ?? '']['fields'] ?? [] );
-
-            if( empty( $fields ) ) {
-                continue;
-            }
-
-            foreach( (array) ( $el->data ?? [] ) as $name => $value )
-            {
-                if( is_string( $value ) && isset( $fields[$name] )
-                    && ( $fields[$name]['searchable'] ?? true )
-                    && in_array( $fields[$name]['type'], ['markdown', 'plaintext', 'string', 'text'] )
-                ) {
-                    $content .= $value . "\n";
-                }
-            }
-        }
-
-        return trim( $content );
+        return trim( implode( "\n", [
+            $this->tag ?? '',
+            $this->name ?? '',
+            $this->title ?? '',
+            $this->meta->{'meta-tags'}->data->description ?? '',
+            ...\Aimeos\Cms\Scout::text( $items ),
+        ] ) );
     }
 
 
