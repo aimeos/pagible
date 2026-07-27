@@ -439,9 +439,10 @@
                     "min": 1,
                     "max": 1000
                 },
-                "file": {
-                    "type": "image",
-                    "label": "image"
+                "files": {
+                    "type": "images",
+                    "label": "Gallery",
+                    "min": 1
                 }
             }
         },
@@ -454,12 +455,8 @@
                 },
                 "layout": {
                     "type": "select",
-                    "default": "default",
+                    "default": "cards",
                     "options": [
-                        {
-                            "value": "default",
-                            "label": "Default"
-                        },
                         {
                             "value": "cards",
                             "label": "Cards"

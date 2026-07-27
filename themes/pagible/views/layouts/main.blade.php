@@ -79,7 +79,7 @@
             ]
         </script>
     </head>
-    <body class="theme-{{ $theme }} type-{{ cms($page, 'type', 'page') }}">
+    <body class="theme-{{ $theme }} type-{{ cms($page, 'type') ?: 'page' }}">
 
         <a href="#main" class="skip-link">{{ __('Skip to main content') }}</a>
 

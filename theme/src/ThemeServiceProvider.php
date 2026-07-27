@@ -104,15 +104,17 @@ class ThemeServiceProvider extends Provider
 
         Blade::directive( 'markdown', function( $expression ) {
             return "<?php
-                static \$__cmsMarkdown = new \League\CommonMark\GithubFlavoredMarkdownConverter([
-                    'html_input' => 'strip',
-                    'allow_unsafe_links' => false,
-                    'max_nesting_level' => 25,
-                    'renderer' => [
-                        'block_separator' => '',
-                        'inner_separator' => ''
-                    ]
-                ]);
+                if( !((\$__cmsMarkdown ?? null) instanceof \League\CommonMark\GithubFlavoredMarkdownConverter) ) {
+                    \$__cmsMarkdown = new \League\CommonMark\GithubFlavoredMarkdownConverter([
+                        'html_input' => 'strip',
+                        'allow_unsafe_links' => false,
+                        'max_nesting_level' => 25,
+                        'renderer' => [
+                            'block_separator' => '',
+                            'inner_separator' => ''
+                        ]
+                    ]);
+                }
                 echo trim((string) \$__cmsMarkdown->convert($expression ?? ''));
             ?>";
         } );
@@ -123,8 +125,7 @@ class ThemeServiceProvider extends Provider
                 if( \$__cmsTextVal === '' || strpbrk( \$__cmsTextVal, '*_\`[]()!<>&\\\\~\"' ) === false ) {
                     echo trim((string) \$__cmsTextVal);
                 } else {
-                    static \$__cmsText = null;
-                    if( \$__cmsText === null ) {
+                    if( !((\$__cmsText ?? null) instanceof \League\CommonMark\MarkdownConverter) ) {
                         \$__cmsTextEnv = new \\League\\CommonMark\\Environment\\Environment([
                             'html_input' => 'strip',
                             'allow_unsafe_links' => false,

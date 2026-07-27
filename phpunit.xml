@@ -33,6 +33,9 @@
     <testsuite name="Theme">
       <directory>./theme/tests/</directory>
     </testsuite>
+    <testsuite name="Estate">
+      <directory>./themes/estate/tests/</directory>
+    </testsuite>
     <testsuite name="Search">
       <directory>./search/tests/</directory>
     </testsuite>
@@ -66,6 +69,7 @@
       <directory suffix=".php">./backup/src/</directory>
       <directory suffix=".php">./cashier/src/</directory>
       <directory suffix=".php">./theme/src/</directory>
+      <directory suffix=".php">./themes/estate/src/</directory>
     </include>
   </source>
 </phpunit>

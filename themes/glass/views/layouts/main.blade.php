@@ -82,7 +82,7 @@
             ]
         </script>
     </head>
-    <body class="theme-glass type-{{ cms($page, 'type', 'page') }}">
+    <body class="theme-glass type-{{ cms($page, 'type') ?: 'page' }}">
         <a href="#main" class="skip-link">{{ __('Skip to main content') }}</a>
         <dialog id="modal-search" class="search">
             <article>
