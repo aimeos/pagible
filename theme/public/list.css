@@ -109,6 +109,11 @@
     margin: 0.25rem 0 0;
 }
 
+.cms-content .list .list-empty {
+    color: var(--pico-muted-color);
+    margin: 1rem 0 0;
+}
+
 .cms-content .list .list-list .list-item:nth-child(even) {
     flex-direction: row-reverse;
 }
@@ -132,6 +137,8 @@
     }
 }
 
-.cms-content .list nav .pagination {
-    margin: auto;
+@media (max-width: 767px) {
+    .cms-content .list nav .pagination {
+        margin: auto;
+    }
 }
