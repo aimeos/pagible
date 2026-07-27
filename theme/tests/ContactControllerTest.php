@@ -25,19 +25,39 @@ class ContactControllerTest extends ThemeTestAbstract
     public function testSendSuccess()
     {
         Mail::fake();
+        $source = url( '/properties/test' );
 
         $response = $this->post( route( 'cms.api.contact' ), [
             'name' => 'Test User',
             'email' => 'sender@google.com',
             'message' => 'Hello, this is a test message.',
+            'source' => $source,
         ] );
 
         $response->assertStatus( 200 );
         $response->assertJson( ['message' => 'Message sent successfully', 'status' => true] );
 
-        Mail::assertSent( ContactMail::class, function( $mail ) {
-            return $mail->hasTo( 'test@example.com' );
+        Mail::assertSent( ContactMail::class, function( $mail ) use ( $source ) {
+            return $mail->hasTo( 'test@example.com' )
+                && $mail->data['source'] === $source;
         } );
+    }
+
+
+    public function testSendExternalSource()
+    {
+        Mail::fake();
+
+        $response = $this->postJson( route( 'cms.api.contact' ), [
+            'name' => 'Test User',
+            'email' => 'sender@google.com',
+            'message' => 'Hello.',
+            'source' => 'https://external.example/properties/test',
+        ] );
+
+        $response->assertStatus( 422 );
+        $response->assertJsonValidationErrors( 'source' );
+        Mail::assertNothingSent();
     }
 
 
