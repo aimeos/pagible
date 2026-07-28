@@ -15,6 +15,7 @@ use Aimeos\Cms\SearchBuilder;
 use Aimeos\Cms\Scopes\Status;
 use Aimeos\Cms\Tenancy;
 use Database\Seeders\TestSeeder;
+use Illuminate\Auth\GenericUser;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Event;
@@ -59,8 +60,7 @@ class TenancyTest extends CoreTestAbstract
 
     public function testAllowsEmptyTenantWithoutTenancyConfiguration(): void
     {
-        $user = new \App\Models\User();
-        $user->tenant_id = '';
+        $user = new GenericUser( ['id' => 1] );
         Tenancy::$callback = null;
 
         $this->assertTrue( Tenancy::allows( $user, '' ) );
