@@ -166,6 +166,34 @@ class ThemeTest extends ThemeTestAbstract
 	}
 
 
+	public function testLoginLinkIsOptionalInAllLayouts(): void
+	{
+		$paths = glob( dirname( __DIR__, 2 ) . '/themes/*/views/layouts/main.blade.php' ) ?: [];
+		$paths[] = dirname( __DIR__ ) . '/views/layouts/main.blade.php';
+
+		foreach( $paths as $path )
+		{
+			$view = (string) file_get_contents( $path );
+			$start = strpos( $view, "@if(Route::has('login'))" );
+
+			$this->assertIsInt( $start, $path );
+
+			$end = strpos( $view, '@endif', $start );
+
+			$this->assertIsInt( $end, $path );
+
+			$block = substr( $view, $start, $end - $start );
+
+			$this->assertStringContainsString( '<li class="login">', $block, $path );
+			$this->assertStringContainsString( 'href="{{ route(\'login\') }}"', $block, $path );
+			$this->assertStringContainsString( 'aria-label="{{ __(\'Login\') }}"', $block, $path );
+			$this->assertStringContainsString( '<svg', $block, $path );
+			$this->assertSame( 1, substr_count( $view, "Route::has('login')" ), $path );
+			$this->assertSame( 1, substr_count( $view, "route('login')" ), $path );
+		}
+	}
+
+
 	public function testMarkdownDirectiveTrimsListBreaks(): void
 	{
 		$template = '<div class="text">@markdown($text)</div>';
