@@ -107,14 +107,36 @@ describe('PageListItems', () => {
     })
   })
 
-  it('updates access indicators for selected pages and descendants', () => {
+  it('opens bulk editing and access control for one page node', () => {
+    mountList({}, { 'access:view': true, 'page:publish': true, 'page:save': true, 'page:view': true }).then(({ wrapper }) => {
+      const vm = wrapper.findComponent(PageListItems).vm
+      const node = { _checked: false, data: { id: 'page-1', has: 2 } }
+      const selected = { _checked: true, data: { id: 'page-2', has: 0 } }
+      vm.$refs.tree.statsFlat = [node, selected]
+
+      vm.editProps(node)
+      expect(vm.propsCount).to.equal(1)
+      expect(vm.propsDescendants).to.equal(2)
+      expect(vm.propsIds).to.deep.equal(['page-1'])
+      expect(vm.propsDialog).to.equal(true)
+
+      vm.editAccess(node)
+      expect(vm.accessIds).to.deep.equal(['page-1'])
+      expect(vm.accessDescendants).to.equal(2)
+      expect(vm.accessDialog).to.equal(true)
+      expect(selected._checked).to.equal(true)
+    })
+  })
+
+  it('updates access indicators for one page node and its descendants', () => {
     mountList({}, { 'access:view': true, 'page:publish': true, 'page:view': true }).then(({ wrapper }) => {
       const vm = wrapper.findComponent(PageListItems).vm
-      const root = { _checked: true, data: { id: 'page-1', access: null, restricted: false } }
+      const root = { _checked: false, data: { id: 'page-1', access: null, restricted: false } }
       const child = { _checked: false, data: { id: 'page-2', access: null, restricted: false }, parent: root }
-      const other = { _checked: false, data: { id: 'page-3', access: null, restricted: false } }
+      const other = { _checked: true, data: { id: 'page-3', access: null, restricted: false } }
       vm.$refs.tree.statsFlat = [root, child, other]
 
+      vm.editAccess(root)
       vm.accessApplied([], true)
 
       expect(root.data.access).to.deep.equal([])
@@ -123,6 +145,7 @@ describe('PageListItems', () => {
       expect(child.data.restricted).to.equal(true)
       expect(other.data.access).to.equal(null)
       expect(other.data.restricted).to.equal(false)
+      expect(other._checked).to.equal(true)
     })
   })
 
@@ -157,6 +180,38 @@ describe('PageListItems', () => {
 
       vm.clear({ data: { id: 'page-1' } })
       expect(mutate).not.to.have.been.called
+    })
+  })
+
+  it('saves properties for one page node without changing the selection', () => {
+    const mutate = cy.stub().resolves({
+      data: {
+        bulkPage: {
+          ids: ['page-1'],
+          latest: '{}',
+          data: '{"status":0}',
+          failed: 0,
+        },
+      },
+    })
+
+    mountList({}, { 'page:save': true, 'page:view': true }, { mutate }).then(({ wrapper }) => {
+      const vm = wrapper.findComponent(PageListItems).vm
+      const node = { _checked: false, data: { id: 'page-1', status: 1, has: 2 } }
+      const selected = { _checked: true, data: { id: 'page-2', status: 1, has: 0 } }
+      vm.$refs.tree.statsFlat = [node, selected]
+      vm.editProps(node)
+
+      return vm.saveProps({ input: { status: 0 }, descendants: true }).then(() => {
+        expect(mutate).to.have.been.calledOnce
+        expect(mutate.firstCall.args[0].variables).to.deep.equal({
+          id: ['page-1'],
+          input: { status: 0 },
+          descendants: true,
+        })
+        expect(node.data.status).to.equal(0)
+        expect(selected._checked).to.equal(true)
+      })
     })
   })
 

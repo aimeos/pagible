@@ -340,6 +340,21 @@ describe('File List', () => {
     })
   })
 
+  it('context menu groups Edit properties between publish and destructive actions', () => {
+    const file = makeFile({ latest: { ...makeFile().latest, published: false } })
+    visitFiles([file])
+    cy.get('.items .v-list-item .btn-actions.item-menu').first().click()
+
+    cy.contains('.v-card .v-list > .v-list-item', 'Edit properties')
+      .prev()
+      .should('have.class', 'v-divider')
+    cy.contains('.v-card .v-list > .v-list-item', 'Edit properties')
+      .next()
+      .should('have.class', 'v-divider')
+    cy.contains('.v-card .v-list .v-btn', 'Edit properties').click()
+    cy.contains('.hint', 'Apply the selected properties to 1 entry.').should('be.visible')
+  })
+
   it('context menu shows Delete for non-trashed file', () => {
     const file = makeFile()
     visitFiles([file])
