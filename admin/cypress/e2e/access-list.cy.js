@@ -61,6 +61,7 @@ describe('Access list', () => {
     visitAccess()
 
     cy.get('.v-app-bar-title').should('contain', 'Access')
+    cy.get('.search').should('have.css', 'max-width', '480px')
     cy.get('.item-title').should('have.length', 2)
     cy.get('.search input').type('mem')
     cy.get('.item-title').should('have.length', 1).and('contain', 'member')

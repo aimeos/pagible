@@ -148,7 +148,7 @@ export default {
 
 <template>
   <v-container class="page-access">
-    <p class="hint">{{ $gettext('Access changes take effect immediately') }}</p>
+    <p class="hint">{{ $gettext('Access changes take effect immediately after cache expiry') }}</p>
 
     <v-radio-group v-model="mode" :disabled="saving">
       <v-radio value="public" :label="$gettext('Public')" />
@@ -198,7 +198,7 @@ export default {
 
 <style scoped>
 .hint {
-  color: rgb(var(--v-theme-on-surface-variant));
+  color: rgb(var(--v-theme-on-surface));
   margin-bottom: 8px;
 }
 
