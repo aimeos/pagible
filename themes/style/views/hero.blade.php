@@ -38,9 +38,9 @@
                 @if(str_starts_with(cms($file, 'mime') ?? '', 'video/'))
                     <video autoplay muted loop playsinline preload="metadata"
                         title="{{ cms($file, 'description')?->{cms($page, 'lang')} ?? '' }}"
-                        src="{{ cmsurl(cms($file, 'path')) }}"
+                        src="{{ cmsasset($page, $file) }}"
                         @if($preview = current(array_reverse((array) cms($file, 'previews', []))))
-                            poster="{{ cmsurl($preview) }}"
+                            poster="{{ cmsasset($page, $file, $preview) }}"
                         @endif
                     >
                     </video>

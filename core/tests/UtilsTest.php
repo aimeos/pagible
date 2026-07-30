@@ -17,6 +17,73 @@ use PHPUnit\Framework\Attributes\Group;
 
 class UtilsTest extends CoreTestAbstract
 {
+    public function testFileLockUsesOwnerScopedKey(): void
+    {
+        $file = '019F8ABC-DEF0-7ABC-8ABC-ABCDEF123456';
+        $key = 'cms_files_' . hash( 'sha256', "test\0" . $file );
+        $lock = \Mockery::mock( \Illuminate\Contracts\Cache\Lock::class );
+        $lock->shouldReceive( 'block' )
+            ->once()
+            ->with( 30, \Mockery::type( \Closure::class ) )
+            ->andReturnUsing( fn( int $seconds, \Closure $callback ) => $callback() );
+
+        Cache::shouldReceive( 'lock' )
+            ->once()
+            ->with( $key, 600 )
+            ->andReturn( $lock );
+
+        $this->assertSame( 'result', Utils::fileLock( 'test', $file, fn() => 'result' ) );
+    }
+
+
+    public function testStorageLockUsesTenantScopedKey(): void
+    {
+        $key = 'cms_storage_' . hash( 'sha256', 'test' );
+        $lock = \Mockery::mock( \Illuminate\Contracts\Cache\Lock::class );
+        $lock->shouldReceive( 'block' )
+            ->once()
+            ->with( 7, \Mockery::type( \Closure::class ) )
+            ->andReturnUsing( fn( int $seconds, \Closure $callback ) => $callback() );
+
+        Cache::shouldReceive( 'lock' )
+            ->once()
+            ->with( $key, 86400 )
+            ->andReturn( $lock );
+
+        $this->assertSame( 'result', Utils::storageLock( 'test', fn() => 'result', 7 ) );
+    }
+
+
+    public function testStorageLockRunsDeferredWorkAfterRelease(): void
+    {
+        $inside = false;
+        $released = false;
+        $lock = \Mockery::mock( \Illuminate\Contracts\Cache\Lock::class );
+        $lock->shouldReceive( 'block' )
+            ->once()
+            ->andReturnUsing( function( int $seconds, \Closure $callback ) use ( &$inside, &$released ) {
+                $result = $callback();
+                $this->assertFalse( $released );
+                $inside = false;
+                return $result;
+            } );
+
+        Cache::shouldReceive( 'lock' )->once()->andReturn( $lock );
+
+        $result = Utils::storageLock( 'test', function() use ( &$inside, &$released ) {
+            $inside = true;
+            Utils::deferStorage( 'test', function() use ( &$inside, &$released ) {
+                $this->assertFalse( $inside );
+                $released = true;
+            } );
+            return 'result';
+        } );
+
+        $this->assertSame( 'result', $result );
+        $this->assertTrue( $released );
+    }
+
+
     public function testLockedTransactionBlocksUsingConfiguredLifetime(): void
     {
         config( ['cms.lock' => 7] );
@@ -160,14 +227,14 @@ class UtilsTest extends CoreTestAbstract
     public function testSafeHttpRejectsNonHttp()
     {
         $this->expectException( \Aimeos\Cms\Exception::class );
-        Utils::safeHttp( 'ftp://example.com/file' );
+        UtilsTestProxy::safeHttp( 'ftp://example.com/file' );
     }
 
 
     #[Group('network')]
     public function testSafeHttpPinsResolvedIp()
     {
-        $opts = Utils::safeHttp( 'https://example.com/image.png' );
+        $opts = UtilsTestProxy::safeHttp( 'https://example.com/image.png' );
 
         $this->assertTrue( $opts['verify'] );
         $this->assertFalse( $opts['allow_redirects'] );
@@ -392,9 +459,11 @@ class UtilsTest extends CoreTestAbstract
     public function testMimetypeReadsValidPath()
     {
         Storage::fake( 'public' );
-        Storage::disk( 'public' )->put( 'cms/test/hello.txt', 'hello world, plain text content' );
+        $id = ( new \Aimeos\Cms\Models\File() )->newUniqueId();
+        $path = 'cms/test/' . $id . '/hello.txt';
+        Storage::disk( 'public' )->put( $path, 'hello world, plain text content' );
 
-        $this->assertEquals( 'text/plain', Utils::mimetype( 'cms/test/hello.txt' ) );
+        $this->assertEquals( 'text/plain', Utils::mimetype( $path ) );
     }
 
 
@@ -412,9 +481,37 @@ class UtilsTest extends CoreTestAbstract
 
     public function testNormalizePathCanonicalizesStorageAliases()
     {
-        $this->assertSame( 'cms/test/image.jpg', Utils::normalizePath( 'cms//test/./image.jpg', 'test' ) );
-        $this->assertNull( Utils::normalizePath( 'cms/test/../other/image.jpg', 'test' ) );
-        $this->assertNull( Utils::normalizePath( 'cms/other/image.jpg', 'test' ) );
-        $this->assertNull( Utils::normalizePath( 'cms/default/nested.jpg', '' ) );
+        $id = ( new \Aimeos\Cms\Models\File() )->newUniqueId();
+        $path = 'cms/test/' . $id . '/image.jpg';
+
+        $this->assertSame( $path, Utils::normalizePath( 'cms//test/./' . $id . '/image.jpg', 'test' ) );
+        $this->assertNull( Utils::normalizePath( 'cms/test/' . $id . '/../other/image.jpg', 'test' ) );
+        $this->assertNull( Utils::normalizePath( 'cms/other/' . $id . '/image.jpg', 'test' ) );
+        $this->assertNull( Utils::normalizePath( 'cms/test/image.jpg', 'test' ) );
+        $this->assertNull( Utils::normalizePath( 'cms/test/' . $id, 'test' ) );
+        $this->assertSame(
+            'cms/www.example.com/' . $id . '/image.jpg',
+            Utils::normalizePath( 'cms/www.example.com/' . $id . '/image.jpg', 'www.example.com' ),
+        );
+        $this->assertNull( Utils::normalizePath( 'cms/www..example.com/' . $id . '/image.jpg', 'www..example.com' ) );
+        $this->assertSame(
+            'cms/' . $id . '/image.jpg',
+            Utils::normalizePath( 'cms/' . $id . '/image.jpg', '' ),
+        );
+    }
+}
+
+
+class UtilsTestProxy extends Utils
+{
+    /**
+     * Exposes the protected SSRF options helper for focused tests.
+     *
+     * @param string $url HTTP URL to validate and pin
+     * @return array<string, mixed> Guzzle request options
+     */
+    public static function safeHttp( string $url ) : array
+    {
+        return parent::safeHttp( $url );
     }
 }

@@ -1,7 +1,7 @@
 /** @license MIT, https://opensource.org/license/mit */
 
 <script>
-import { url } from '../utils'
+import { fileurl } from '../utils'
 
 export default {
   props: {
@@ -9,13 +9,13 @@ export default {
   },
 
   setup() {
-    return { url }
+    return { fileurl }
   }
 }
 </script>
 
 <template>
-  <audio :src="url(item.path)" crossorigin="anonymous" class="element" controls></audio>
+  <audio :src="fileurl(item)" crossorigin="anonymous" class="element" controls></audio>
 </template>
 
 <style scoped>

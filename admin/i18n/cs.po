@@ -9,6 +9,10 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
 "Project-Id-Version: PACKAGE VERSION\n"
 
+#: js/fields/File.vue js/fields/Images.vue
+msgid "Protect with page access"
+msgstr "Chránit pomocí přístupu ke stránce"
+
 #: js/ai.js:44
 #: js/ai.js:90
 #: js/ai.js:145

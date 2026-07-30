@@ -17,6 +17,7 @@ use Aimeos\Cms\Resource;
 use Database\Seeders\TestSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Storage;
 use Laravel\Scout\EngineManager;
 use Laravel\Scout\Engines\NullEngine;
 
@@ -119,6 +120,36 @@ class LifecycleSearchTest extends CoreTestAbstract
         Publication::publish( Page::class, [(string) $page->id], $this->user );
 
         $this->assertTrue( $this->engine->document( Page::class )['published'] ?? false );
+    }
+
+
+    public function testRelocateFileDoesNotUpdateSearchIndex(): void
+    {
+        config( [
+            'cms.disks.public.name' => 'search-relocate-public',
+            'cms.disks.private.name' => 'search-relocate-private',
+        ] );
+        Storage::fake( 'search-relocate-public' );
+        Storage::fake( 'search-relocate-private' );
+        $file = new File();
+        $file->setUniqueIds();
+        $path = $file->dir() . '/search-relocate.txt';
+        Storage::disk( 'search-relocate-public' )->put( $path, 'search relocation' );
+
+        $file = File::forceCreate( [
+            'id' => $file->id,
+            'disk' => 'public',
+            'mime' => 'text/plain',
+            'name' => 'search-relocate.txt',
+            'path' => $path,
+            'editor' => 'test',
+        ] );
+        $this->engine->documents = [];
+
+        Resource::relocateFiles( [$file->id], 'private', $this->user );
+
+        $this->assertArrayNotHasKey( File::class, $this->engine->documents );
+        $this->assertSame( 'private', $file->refresh()->disk );
     }
 }
 

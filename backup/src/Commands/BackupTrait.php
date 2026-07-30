@@ -39,6 +39,31 @@ trait BackupTrait
 
 
     /**
+     * Returns the authenticated manifest signature.
+     *
+     * Backups are tied to the application key. Restoring them in another
+     * installation requires configuring the same APP_KEY.
+     *
+     * @param array<string, mixed> $manifest Unsigned or signed manifest data
+     */
+    protected function sign( array $manifest ): string
+    {
+        $key = (string) config( 'app.key' );
+
+        if( $key === '' ) {
+            throw new \RuntimeException( 'An application key is required for authenticated backups' );
+        }
+
+        unset( $manifest['signature'] );
+
+        return hash_hmac( 'sha256', json_encode(
+            $manifest,
+            JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE,
+        ), $key );
+    }
+
+
+    /**
      * Returns a writable directory path for temporary files.
      *
      * @return string Directory path

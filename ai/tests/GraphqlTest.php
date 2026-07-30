@@ -155,15 +155,16 @@ class GraphqlTest extends AiTestAbstract
         $expected = 'Generated content based on the prompt.';
         Prisma::fake( [TextResponse::fromText( $expected )] );
 
-        $response = $this->actingAs( $this->user )->graphQL( "
-            mutation {
-                write(prompt: \"Generate content\", context: \"This is a test context.\", files: [\"" . $file->id . "\"])
-            }
-        " )->assertJson( [
-            'data' => [
-                'write' => $expected
-            ]
-        ] );
+        $this->assertExecutionLimitRestored( fn() => $this->actingAs( $this->user )->graphQL( "
+                mutation {
+                    write(prompt: \"Generate content\", context: \"This is a test context.\", files: [\"" . $file->id . "\"])
+                }
+            " )->assertJson( [
+                'data' => [
+                    'write' => $expected
+                ]
+            ] )
+        );
     }
 
 

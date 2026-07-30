@@ -9,6 +9,7 @@ const dataset = el?.dataset || {}
 
 export const multidomain = parseInt(dataset.multidomain) || 0
 export const urladmin = dataset.urladmin || '/cmsadmin'
+export const urlasset = dataset.urlasset || '/cmsadminasset/_file_/_variant_'
 export const urlproxy = dataset.urlproxy || '/cmsproxy?url=_url_'
 export const urlpage = dataset.urlpage || '/_path_'
 export const urlfile = dataset.urlfile || '/storage'

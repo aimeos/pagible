@@ -7,6 +7,9 @@
 
 namespace Aimeos\Cms\Concerns;
 
+use Aimeos\Cms\FileResponse;
+use Aimeos\Cms\Schema;
+use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
 
 
@@ -26,6 +29,7 @@ trait ResolvesFiles
         $filesById = null;
         $lang = $model->lang;
         $lang2 = substr( $lang, 0, 2 );
+        $schemas = Schema::schemas( section: 'content' );
 
         foreach( (array) $items as $item )
         {
@@ -38,8 +42,22 @@ trait ResolvesFiles
                 {
                     if( $file = $filesById[$id] ?? null )
                     {
+                        $file = clone $file;
                         $file->description = $file->description->{$lang} ?? $file->description->{$lang2} ?? null;
                         $file->transcription = $file->transcription->{$lang} ?? $file->transcription->{$lang2} ?? null;
+
+                        if( $file->disk === 'private' )
+                        {
+                            $file->previews = collect( (array) $file->previews )
+                                ->map( fn( $path, $variant ) => FileResponse::url(
+                                    $model,
+                                    (string) $file->id,
+                                    $variant,
+                                ) )
+                                ->all();
+                            $file->path = FileResponse::url( $model, (string) $file->id );
+                        }
+
                         $resolved[$id] = $file;
                     }
                 }
@@ -50,8 +68,13 @@ trait ResolvesFiles
                 unset( $item->files );
             }
 
-            if( !empty( $item->data->action ) ) {
-                $item->data->action = app()->call( $item->data->action, ['model' => $model, 'item' => $item] );
+            $field = $schemas[$item->type ?? '']['fields']['action'] ?? [];
+            $action = ( $field['type'] ?? null ) === 'hidden' ? ( $field['value'] ?? null ) : null;
+
+            if( $action ) {
+                $item->data->action = app()->call( $action, ['page' => $model, 'item' => $item] );
+            } elseif( isset( $item->data->action ) ) {
+                unset( $item->data->action );
             }
         }
 

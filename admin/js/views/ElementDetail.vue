@@ -22,6 +22,7 @@ const FETCH_ELEMENT = gql`
     element(id: $id) {
       id
       files {
+        disk
         id
         mime
         name
@@ -37,6 +38,7 @@ const FETCH_ELEMENT = gql`
         editor
         created_at
         files {
+          disk
           id
           mime
           name
@@ -72,6 +74,7 @@ const FETCH_ELEMENT_VERSIONS = gql`
         editor
         created_at
         files {
+          disk
           id
           mime
           name

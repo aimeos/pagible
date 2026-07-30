@@ -4,7 +4,7 @@
 let diffWordsFn = null
 
 import { mdiClose } from '@mdi/js'
-import { empty, stringify, url, srcset } from '../utils'
+import { empty, fileurl, filesrcset, stringify } from '../utils'
 
 const SECTION_NAMES = ['meta', 'config', 'content']
 const SKIP_FIELDS = ['previews']
@@ -21,7 +21,7 @@ export default {
   emits: ['update:modelValue', 'apply', 'use', 'revert'],
 
   setup() {
-    return { mdiClose, url, srcset }
+    return { fileurl, filesrcset, mdiClose }
   },
 
   data: () => ({
@@ -589,16 +589,16 @@ export default {
                     >
                       <v-img
                         v-if="file.mime?.startsWith('image/')"
-                        :srcset="srcset(file.previews)"
-                        :src="url(Object.values(file.previews)[0] ?? file.path)"
+                        :srcset="filesrcset(file)"
+                        :src="fileurl(file, Object.values(file.previews)[0] ?? file.path)"
                         :alt="file.name"
                         draggable="false"
                         loading="lazy"
                       />
                       <video
                         v-else-if="file.mime?.startsWith('video/')"
-                        :poster="url(Object.values(file.previews).shift())"
-                        :src="url(file.path)"
+                        :poster="fileurl(file, Object.values(file.previews).shift())"
+                        :src="fileurl(file)"
                         crossorigin="anonymous"
                         draggable="false"
                         loading="lazy"
@@ -606,7 +606,7 @@ export default {
                       />
                       <div v-else-if="file.mime?.startsWith('audio/')">
                         <audio
-                          :src="url(file.path)"
+                          :src="fileurl(file)"
                           crossorigin="anonymous"
                           draggable="false"
                           loading="lazy"
@@ -753,16 +753,16 @@ export default {
                     >
                       <v-img
                         v-if="file.mime?.startsWith('image/')"
-                        :srcset="srcset(file.previews)"
-                        :src="url(Object.values(file.previews)[0] ?? file.path)"
+                        :srcset="filesrcset(file)"
+                        :src="fileurl(file, Object.values(file.previews)[0] ?? file.path)"
                         :alt="file.name"
                         draggable="false"
                         loading="lazy"
                       />
                       <video
                         v-else-if="file.mime?.startsWith('video/')"
-                        :poster="url(Object.values(file.previews).shift())"
-                        :src="url(file.path)"
+                        :poster="fileurl(file, Object.values(file.previews).shift())"
+                        :src="fileurl(file)"
                         crossorigin="anonymous"
                         draggable="false"
                         loading="lazy"
@@ -770,7 +770,7 @@ export default {
                       />
                       <div v-else-if="file.mime?.startsWith('audio/')">
                         <audio
-                          :src="url(file.path)"
+                          :src="fileurl(file)"
                           crossorigin="anonymous"
                           draggable="false"
                           loading="lazy"

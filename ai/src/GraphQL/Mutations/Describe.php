@@ -36,7 +36,7 @@ final class Describe
         try
         {
             /** @var File $file */
-            $file = File::select( 'id', 'path', 'mime' )->findOrFail( $id );
+            $file = File::select( 'id', 'disk', 'path', 'mime' )->findOrFail( $id );
             $lang = $args['lang'] ?? null;
             $type = explode( '/', $file->mime, 2 )[0];
             $class = '\\Aimeos\\Prisma\\Files\\' . ucfirst( $type );
@@ -47,7 +47,11 @@ final class Describe
             }
 
             if( !str_starts_with( (string) $file->path, 'http' ) ) {
-                $doc = $class::fromStoragePath( $file->path, config( 'cms.disk', 'public' ), $file->mime );
+                $doc = $class::fromStoragePath(
+                    $file->path,
+                    File::diskName( (string) $file->disk ),
+                    $file->mime,
+                );
             } else {
                 $doc = $class::fromUrl( $file->path, $file->mime );
             }

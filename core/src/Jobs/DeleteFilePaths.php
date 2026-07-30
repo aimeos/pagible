@@ -25,32 +25,55 @@ class DeleteFilePaths implements ShouldQueue
 
 
     /**
-     * @param string $disk Storage disk name
      * @param string $tenant Tenant ID owning the storage namespace
      * @param array<string> $paths Local paths to delete
      */
-    public function __construct( public string $disk, public string $tenant, public array $paths )
+    public function __construct( public string $tenant, public array $paths )
     {
     }
 
 
     public function handle(): void
     {
-        Utils::fileLock( $this->tenant, $this->delete(...) );
+        Utils::storageLock( $this->tenant, function() {
+            $owners = [];
+
+            foreach( $this->paths as $path )
+            {
+                if( ( $path = Utils::normalizePath( $path, $this->tenant ) ) !== null
+                    && ( $owner = File::owner( $this->tenant, $path ) ) !== null ) {
+                    $owners[$owner][$path] = true;
+                }
+            }
+
+            foreach( $owners as $owner => $paths ) {
+                Utils::fileLock(
+                    $this->tenant,
+                    (string) $owner,
+                    fn() => $this->delete( (string) $owner, $paths ),
+                );
+            }
+        } );
     }
 
 
     /**
-     * Deletes valid paths that are still unreferenced while holding the tenant lock.
+     * Deletes valid paths that are still unreferenced while holding their owner lock.
+     *
+     * @param array<string, bool> $paths Candidate deletion paths
      */
-    private function delete(): void
+    private function delete( string $owner, array $paths ): void
     {
-        $paths = [];
+        $files = File::withoutTenancy()->withTrashed()->select( 'id', 'path', 'previews' )
+            ->where( 'tenant_id', $this->tenant )
+            ->where( 'id', $owner )->get();
 
-        foreach( $this->paths as $path )
+        foreach( $files as $file )
         {
-            if( ( $path = Utils::normalizePath( $path, $this->tenant ) ) !== null ) {
-                $paths[$path] = true;
+            $this->forget( $paths, $file->path );
+
+            foreach( (array) $file->previews as $path ) {
+                $this->forget( $paths, $path );
             }
         }
 
@@ -58,23 +81,11 @@ class DeleteFilePaths implements ShouldQueue
             return;
         }
 
-        foreach( File::withoutTenancy()->withTrashed()->select( 'id', 'path', 'previews' )
-            ->where( 'tenant_id', $this->tenant )->lazyById() as $file )
-        {
-            $this->forget( $paths, $file->path );
-
-            foreach( (array) $file->previews as $path ) {
-                $this->forget( $paths, $path );
-            }
-
-            if( !$paths ) {
-                return;
-            }
-        }
-
         foreach( Version::withoutTenancy()->select( 'id', 'data' )
             ->where( 'tenant_id', $this->tenant )
-            ->where( 'versionable_type', File::class )->lazyById() as $version )
+            ->where( 'versionable_type', File::class )
+            ->whereIn( 'versionable_id', $files->modelKeys() )
+            ->lazyById() as $version )
         {
             $this->forget( $paths, $version->data->path ?? null );
 
@@ -87,7 +98,9 @@ class DeleteFilePaths implements ShouldQueue
             }
         }
 
-        Storage::disk( $this->disk )->delete( array_keys( $paths ) );
+        foreach( ['public', 'private'] as $disk ) {
+            Storage::disk( File::diskName( $disk ) )->delete( array_keys( $paths ) );
+        }
     }
 
 

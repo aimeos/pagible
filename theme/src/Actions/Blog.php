@@ -64,7 +64,7 @@ class Blog
         $ids = $pages->getCollection()->flatMap( $fileIds )->filter()->unique()->values()->all();
 
         $files = $ids
-            ? File::whereIn( 'cms_files.id', $ids )->get( ['cms_files.id', 'cms_files.tenant_id', 'name', 'mime', 'path', 'previews', 'description'] )->keyBy( 'id' )
+            ? File::whereIn( 'cms_files.id', $ids )->get( ['cms_files.id', 'cms_files.tenant_id', 'disk', 'name', 'mime', 'path', 'previews', 'description'] )->keyBy( 'id' )
             : collect();
 
         $pages->getCollection()->each( function( $page ) use ( $files, $fileIds, $editor ) {

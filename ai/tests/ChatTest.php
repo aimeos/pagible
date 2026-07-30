@@ -65,7 +65,9 @@ class ChatTest extends AiTestAbstract
         $this->assertSame( 'nosniff', $response->baseResponse->headers->get( 'X-Content-Type-Options' ) );
 
         // The body is the raw markdown answer, streamed in chunks with no framing or terminator
-        $this->assertSame( 'Created the page', $response->streamedContent() );
+        $content = $this->assertExecutionLimitRestored( fn() => $response->streamedContent() );
+
+        $this->assertSame( 'Created the page', $content );
     }
 
 

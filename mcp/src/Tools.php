@@ -40,6 +40,7 @@ class Tools
             PrismaTools::laravel( Tools\PublishElement::class ),
             PrismaTools::laravel( Tools\PublishFile::class ),
             PrismaTools::laravel( Tools\PublishPage::class ),
+            PrismaTools::laravel( Tools\RelocateFile::class ),
             PrismaTools::laravel( Tools\RestoreElement::class ),
             PrismaTools::laravel( Tools\RestoreFile::class ),
             PrismaTools::laravel( Tools\RestorePage::class ),

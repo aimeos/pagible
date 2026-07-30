@@ -15,12 +15,15 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 
 class Utils
 {
     private static int $counter = 0;
     private static ?\HTMLPurifier $purifier = null;
+    /** @var array<string, array{owner: object, callbacks: list<\Closure>}> */
+    private static array $storageCallbacks = [];
 
 
     /**
@@ -32,6 +35,21 @@ class Utils
     public static function editor( ?object $user = null ) : string
     {
         return (string) ( $user && isset( $user->email ) ? $user->email : request()->ip() );
+    }
+
+
+    /**
+     * Runs work after the active tenant storage gate is released.
+     */
+    public static function deferStorage( string $tenant, \Closure $callback ): void
+    {
+        $key = hash( 'sha256', $tenant );
+
+        if( isset( self::$storageCallbacks[$key] ) ) {
+            self::$storageCallbacks[$key]['callbacks'][] = $callback;
+        } else {
+            $callback();
+        }
     }
 
 
@@ -121,18 +139,59 @@ class Utils
 
 
     /**
-     * Runs a callback while file ownership changes are serialized per tenant.
+     * Runs a callback while changes to one File's storage paths are serialized.
      *
      * @template T
      * @param string $tenant Tenant ID owning the file namespace
+     * @param string $file File UUID owning the storage paths
      * @param \Closure(): T $callback Work that reads or changes file ownership
      * @return T Callback result
      */
-    public static function fileLock( string $tenant, \Closure $callback ) : mixed
+    public static function fileLock( string $tenant, string $file, \Closure $callback ) : mixed
     {
-        $key = 'cms_files_' . hash( 'sha256', $tenant );
+        $key = 'cms_files_' . hash( 'sha256', $tenant . "\0" . $file );
 
         return Cache::lock( $key, 600 )->block( 30, $callback );
+    }
+
+
+    /**
+     * Runs a callback while backup/restore and tenant media mutations are serialized.
+     *
+     * @template T
+     * @param string $tenant Tenant ID owning the storage namespace
+     * @param \Closure(): T $callback Work that reads or changes the media catalog
+     * @param int $wait Maximum seconds to wait for the tenant gate
+     * @return T Callback result
+     */
+    public static function storageLock( string $tenant, \Closure $callback, int $wait = 30 ) : mixed
+    {
+        $id = hash( 'sha256', $tenant );
+        $owner = new \stdClass();
+
+        try {
+            return Cache::lock( 'cms_storage_' . $id, 86400 )->block( $wait, function() use (
+                $callback, $id, $owner
+            ) {
+                self::$storageCallbacks[$id] = ['owner' => $owner, 'callbacks' => []];
+                return $callback();
+            } );
+        } finally {
+            $state = self::$storageCallbacks[$id] ?? null;
+
+            if( $state && $state['owner'] === $owner )
+            {
+                unset( self::$storageCallbacks[$id] );
+
+                foreach( $state['callbacks'] as $deferred ) {
+                    try {
+                        $deferred();
+                    } catch( \Throwable $e ) {
+                        report( $e );
+                    }
+                }
+            }
+        }
     }
 
 
@@ -319,7 +378,7 @@ class Utils
      * @return string The MIME type of the file
      * @throws Exception If the file cannot be accessed or read
      */
-    public static function mimetype( string $path ) : string
+    public static function mimetype( string $path, ?string $disk = null ) : string
     {
         if( str_starts_with( $path, 'http') )
         {
@@ -339,7 +398,7 @@ class Utils
                 throw new Exception( 'Invalid file path' );
             }
 
-            $stream = Storage::disk( config( 'cms.disk', 'public' ) )->readStream( $path );
+            $stream = Storage::disk( $disk ?: config( 'cms.disks.public.name', 'public' ) )->readStream( $path );
 
             if( !$stream ) {
                 throw new Exception( 'File not accessible' );
@@ -364,10 +423,10 @@ class Utils
 
 
     /**
-     * Canonicalizes a local storage path and verifies its tenant namespace.
+     * Canonicalizes a UUID-owned local storage path and verifies its tenant namespace.
      *
-     * The default tenant may only own direct children of "cms/" so it cannot
-     * overlap with named tenant directories.
+     * The first path segment below the tenant prefix must be a File UUID and must be followed by a non-empty relative
+     * path. Invalid tenant IDs, traversal, control characters, remote URLs, and foreign namespaces return null.
      *
      * @param mixed $path Local storage path
      * @param string|null $tenant Tenant ID or null for the current tenant
@@ -375,13 +434,14 @@ class Utils
      */
     public static function normalizePath( mixed $path, ?string $tenant = null ) : ?string
     {
-        $tenant ??= Tenancy::value();
+        try {
+            $tenant = Tenancy::check( $tenant ?? Tenancy::value() );
+        } catch( \InvalidArgumentException ) {
+            return null;
+        }
 
         if( !is_string( $path ) || $path === '' || str_contains( $path, '..' )
-            || str_contains( $path, '\\' ) || preg_match( '/\p{C}/u', $path ) !== 0
-            || $tenant === '.' || str_contains( $tenant, '..' )
-            || str_contains( $tenant, '/' ) || str_contains( $tenant, '\\' )
-            || preg_match( '/\p{C}/u', $tenant ) !== 0 ) {
+            || str_contains( $path, '\\' ) || preg_match( '/\p{C}/u', $path ) !== 0 ) {
             return null;
         }
 
@@ -396,10 +456,13 @@ class Utils
         }
 
         $relative = substr( $path, strlen( $prefix ) );
+        $parts = explode( '/', $relative, 2 );
 
-        return $relative !== '' && ( $tenant !== '' || !str_contains( $relative, '/' ) )
-            ? $path
-            : null;
+        if( count( $parts ) !== 2 || !Str::isUuid( $parts[0] ) || $parts[1] === '' ) {
+            return null;
+        }
+
+        return $path;
     }
 
 
@@ -469,7 +532,7 @@ class Utils
 
 
     /**
-     * Returns Guzzle HTTP options that mitigate SSRF for the given URL.
+     * Returns internal Guzzle HTTP options that mitigate SSRF for the given URL.
      *
      * Validates the URL syntactically, resolves the host once and pins the
      * connection to that IP (preventing DNS rebinding). Redirects are disabled
@@ -481,7 +544,7 @@ class Utils
      * @return array<string, mixed> Options to pass to Http::withOptions()
      * @throws Exception If the URL is invalid or the host does not resolve
      */
-    public static function safeHttp( string $url ) : array
+    protected static function safeHttp( string $url ) : array
     {
         // Syntactic validation only; the host is resolved once below and the
         // result reused for both the allow-check and the connection pin.

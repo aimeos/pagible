@@ -4,23 +4,10 @@
 import gql from 'graphql-tag'
 import { markRaw } from 'vue'
 import FileListItems from './FileListItems.vue'
+import { ADD_FILE, normalizeFile } from '../files'
 import { useAppStore, useUserStore, useMessageStore } from '../stores'
-import { frozenParse, IMAGE_MIME_FILTER, toBlob, url } from '../utils'
+import { fileurl, IMAGE_MIME_FILTER, toBlob, url } from '../utils'
 import { mdiMicrophoneOutline, mdiMicrophone, mdiClose, mdiDelete } from '@mdi/js'
-
-const ADD_AI_FILE = gql`
-  mutation ($input: FileInput, $file: Upload) {
-    addFile(input: $input, file: $file) {
-      id
-      mime
-      name
-      path
-      previews
-      updated_at
-      editor
-    }
-  }
-`
 
 const IMAGINE = gql`
   mutation ($prompt: String!, $context: String, $files: [String!]) {
@@ -36,6 +23,7 @@ export default {
   props: {
     modelValue: { type: Boolean, required: true },
     context: { type: [Object, null], default: null },
+    disk: { type: String, default: 'public' },
     files: { type: Array, default: () => [] }
   },
 
@@ -50,6 +38,7 @@ export default {
       app,
       user,
       messages,
+      fileurl,
       toBlob,
       url,
       IMAGE_MIME_FILTER,
@@ -126,8 +115,9 @@ export default {
 
       this.$apollo
         .mutate({
-          mutation: ADD_AI_FILE,
+          mutation: ADD_FILE,
           variables: {
+            disk: this.disk,
             input: {
               name: item.name
             },
@@ -142,9 +132,7 @@ export default {
             throw response.errors
           }
 
-          Object.assign(item, response.data.addFile, {
-            previews: frozenParse(response.data.addFile.previews)
-          })
+          Object.assign(item, normalizeFile(response.data.addFile))
 
           this.$refs.filelist.invalidate()
           this.$emit('add', [item])
@@ -314,7 +302,7 @@ export default {
                 role="button"
                 tabindex="0"
               >
-                <img :src="url(item.path)" :alt="item.name" />
+                <img :src="fileurl(item)" :alt="item.name" />
               </div>
             </v-list-item>
           </v-list>
@@ -334,7 +322,7 @@ export default {
               ></v-btn>
 
               <div class="item-preview">
-                <img :src="url(item.path)" :alt="item.name" />
+                <img :src="fileurl(item)" :alt="item.name" />
               </div>
             </v-list-item>
           </v-list>

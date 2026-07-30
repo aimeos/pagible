@@ -17,23 +17,75 @@ class HelpersTest extends CoreTestAbstract
     }
 
 
-    public function testCmsAsset()
+    public function testCmsAssetKeepsPublicAndRemoteFileUrls()
     {
-        $this->assertEquals( 'http://localhost/not/exists.js', cmsasset( 'not/exists.js' ) );
+        $page = ( new \Aimeos\Cms\Models\Page() )->forceFill( ['id' => 'page-id'] );
+        $public = ( new \Aimeos\Cms\Models\File() )->forceFill( [
+            'id' => 'file-id', 'disk' => 'public', 'path' => 'cms/test/public.pdf',
+            'previews' => [500 => 'cms/test/public.webp'],
+        ] );
+        $remote = ( new \Aimeos\Cms\Models\File() )->forceFill( [
+            'id' => 'remote-id', 'disk' => 'public', 'path' => 'https://example.com/file.pdf',
+        ] );
+
+        $this->assertEquals( '/storage/cms/test/public.pdf', cmsasset( $page, $public ) );
+        $this->assertEquals( '/storage/cms/test/public.webp', cmsasset( $page, $public, 500 ) );
+        $this->assertEquals( '/storage/cms/test/public.webp', cmsasset( $page, $public, 'cms/test/public.webp' ) );
+        $this->assertEquals( 'https://example.com/file.pdf', cmsasset( $page, $remote ) );
+    }
+
+
+    public function testCmsAssetSignsPrivateFileForRestrictedRender()
+    {
+        config( ['cms.disks.private.ttl' => 120] );
+        $page = ( new \Aimeos\Cms\Models\Page() )->forceFill( ['id' => 'page-id'] );
+        $file = ( new \Aimeos\Cms\Models\File() )->forceFill( [
+            'id' => 'file-id', 'disk' => 'private', 'path' => 'cms/test/private.pdf',
+        ] );
+        request()->attributes->set( 'cms.asset-token-page', (string) $page->id );
+
+        $url = cmsasset( $page, $file );
+        $query = [];
+        parse_str( (string) parse_url( $url, PHP_URL_QUERY ), $query );
+
+        $this->assertArrayHasKey( 'expires', $query );
+        $this->assertArrayHasKey( 'signature', $query );
+        $this->assertSame( \Aimeos\Cms\Tenancy::value(), $query['tenant'] ?? null );
+        $this->assertGreaterThan( now()->timestamp, (int) $query['expires'] );
+        $this->assertLessThanOrEqual( now()->addSeconds( 120 )->timestamp, (int) $query['expires'] );
+    }
+
+
+    public function testCmsAssetDoesNotSignPrivateFileOutsideRestrictedRender()
+    {
+        $page = ( new \Aimeos\Cms\Models\Page() )->forceFill( ['id' => 'page-id'] );
+        $file = ( new \Aimeos\Cms\Models\File() )->forceFill( [
+            'id' => 'file-id', 'disk' => 'private', 'path' => 'cms/test/private.pdf',
+        ] );
+
+        $this->assertStringNotContainsString( 'signature=', cmsasset( $page, $file ) );
+
+        request()->attributes->set( 'cms.asset-token-page', 'other-page' );
+
+        $this->assertStringNotContainsString( 'signature=', cmsasset( $page, $file ) );
     }
 
 
     public function testCmsSrcset()
     {
-        $this->assertEquals( '/storage/not/exists.jpg 1w', cmssrcset( [1 => 'not/exists.jpg'] ) );
+        $page = ( new \Aimeos\Cms\Models\Page() )->forceFill( ['id' => 'page-id'] );
+        $file = ( new \Aimeos\Cms\Models\File() )->forceFill( [
+            'id' => 'file-id', 'disk' => 'public',
+            'path' => 'not/exists.jpg', 'previews' => [1 => 'not/exists.jpg'],
+        ] );
+
+        $this->assertEquals( '/storage/not/exists.jpg 1w', cmssrcset( $page, $file ) );
     }
 
 
     public function testCmsUrl()
     {
-        $this->assertEquals( 'data:ABCD', cmsurl( 'data:ABCD' ) );
         $this->assertEquals( '/storage/not/exists.jpg', cmsurl( 'not/exists.jpg' ) );
-        $this->assertEquals( 'http://example.com/not/exists.jpg', cmsurl( 'http://example.com/not/exists.jpg' ) );
         $this->assertEquals( 'https://example.com/not/exists.jpg', cmsurl( 'https://example.com/not/exists.jpg' ) );
     }
 

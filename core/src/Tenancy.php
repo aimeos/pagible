@@ -9,6 +9,7 @@ namespace Aimeos\Cms;
 
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Str;
 
 
 /**
@@ -44,7 +45,29 @@ class Tenancy
      */
     public function __construct( string $id )
     {
-        $this->id = $id;
+        $this->id = self::check( $id );
+    }
+
+
+    /**
+     * Validates a tenant ID for database and storage namespace use.
+     *
+     * The empty ID denotes the default tenant. Named tenants must not overlap
+     * the default tenant's UUID-owned storage directories. Named IDs are
+     * bounded URL-safe names because they are also used in storage paths.
+     * Dots may separate non-empty name parts, allowing domain names.
+     *
+     * @param string $id Candidate tenant ID
+     * @return string Validated tenant ID
+     * @throws \InvalidArgumentException If the ID is unsafe, too long, or overlaps a default-tenant UUID directory
+     */
+    public static function check( string $id ) : string
+    {
+        if( $id && ( preg_match( '/\A(?=.{1,100}\z)[A-Za-z0-9_-]+(?:\.[A-Za-z0-9_-]+)*\z/', $id ) !== 1 || Str::isUuid( $id ) ) ) {
+            throw new \InvalidArgumentException( 'Invalid tenant ID' );
+        }
+
+        return $id;
     }
 
 
@@ -84,6 +107,7 @@ class Tenancy
         }
 
         $id = data_get( $user, 'tenant_id' );
+
         return is_string( $id ) && $id === $tenant;
     }
 

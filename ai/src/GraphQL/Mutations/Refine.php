@@ -44,11 +44,12 @@ final class Refine
         $system = view( 'cms::prompts.refine' )->render();
         $type = $args['type'] ?? 'content';
         $content = $this->content( $args['content'] ?: [] );
+        $limit = (int) ini_get( 'max_execution_time' );
+
+        set_time_limit( (int) config( 'cms.ai.timeout' ) ); // long AI call; lift PHP's default 30s execution limit (matches client timeout)
 
         try
         {
-            set_time_limit( (int) config( 'cms.ai.timeout' ) ); // long AI call; lift PHP's default 30s execution limit (matches client timeout)
-
             $schema = Schema::fromArray( 'response', JsonSchema::build( $type, $args['pagetype'] ?? null ) );
             $response = Prisma::text()->observe( $this->observer() )
                 ->using( $provider, $config )
@@ -116,6 +117,10 @@ final class Refine
         {
             Log::error( 'AI service error', ['mutation' => 'Refine', 'message' => $e->getMessage(), 'trace' => $e->getTraceAsString()] );
             throw new Error( $e->getMessage(), null, null, null, null, $e );
+        }
+        finally
+        {
+            set_time_limit( $limit );
         }
     }
 }

@@ -174,8 +174,12 @@ extend type Mutation {
 
 
   "Adds a new file upload, optionally with preview and the description of the file"
-  addFile(input: FileInput, file: Upload, preview: Upload): File
+  addFile(input: FileInput, file: Upload, preview: Upload, disk: FileDisk = public): File
     @guard @cmsPermission(action: "file:add") @throttle(name: "cms-graphql")
+
+  "Relocate existing files between public and private storage"
+  relocateFile(id: [ID!]! @rulesForArray(apply: ["max:100"]), disk: FileDisk!): [File!]!
+    @guard @cmsPermission(action: "file:view") @throttle(name: "cms-graphql")
 
   "Update an existing file"
   saveFile(id: ID!, input: FileInput!, file: Upload, preview: RemoveableUpload, latestId: ID): File
@@ -578,9 +582,17 @@ input ElementInput {
   data: JSON
 }
 
+enum FileDisk {
+  public
+  private
+}
+
 type File {
   "Unique ID of the stored file"
   id: ID!
+
+  "Logical storage disk of the managed file"
+  disk: FileDisk!
 
   "Mime type of the stored file"
   mime: String

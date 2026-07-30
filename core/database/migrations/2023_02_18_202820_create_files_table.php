@@ -22,7 +22,7 @@ return new class extends Migration
     }
 
     /**
-     * Run the migrations.
+     * Creates the Files table with logical-disk and UUID-owner lookup columns.
      *
      * @return void
      */
@@ -31,6 +31,7 @@ return new class extends Migration
         Schema::connection(config('cms.db', 'sqlite'))->create('cms_files', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->string('tenant_id');
+            $table->string('disk', 15)->default('public');
             $table->string('mime', 100);
             $table->string('lang', 5)->nullable();
             $table->string('name');
@@ -46,6 +47,7 @@ return new class extends Migration
             $table->index(['mime', 'tenant_id']);
             $table->index(['deleted_at', 'tenant_id']);
             $table->index(['latest_id']);
+            $table->index(['tenant_id', 'id'], 'cms_files_tenant_id_id_index');
         });
     }
 };

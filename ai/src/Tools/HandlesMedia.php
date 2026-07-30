@@ -31,7 +31,7 @@ trait HandlesMedia
     protected function image( string $id ) : ?Image
     {
         /** @var File|null $file */
-        $file = File::select( 'id', 'path', 'mime' )->find( $id );
+        $file = File::select( 'id', 'disk', 'path', 'mime' )->find( $id );
 
         return $file ? $this->toImage( $file ) : null;
     }
@@ -51,14 +51,14 @@ trait HandlesMedia
             return [];
         }
 
-        return File::whereIn( 'id', $ids )->select( 'id', 'tenant_id', 'path', 'mime' )->get()
+        return File::whereIn( 'id', $ids )->select( 'id', 'tenant_id', 'disk', 'path', 'mime' )->get()
             ->map( fn( File $file ) => $this->toImage( $file ) )
             ->filter()->values()->all();
     }
 
 
     /**
-     * Stores a base64 encoded image as a new draft media file.
+     * Ingests and stores a base64 encoded image as a new draft media file.
      *
      * @param string $base64 Base64 encoded image data
      * @param string $name Display name for the new file (without extension)
@@ -83,7 +83,7 @@ trait HandlesMedia
             // Store the file and generate previews outside the transaction to
             // keep slow disk and image work off the database connection.
             try {
-                $file->prepare( $upload );
+                $file->ingest( $upload );
             } catch( \Aimeos\Cms\Exception $e ) {
                 if( str_starts_with( $e->getMessage(), 'File type ' ) ) {
                     return ['error' => sprintf( 'File type "%s" is not allowed.', $file->mime )];
@@ -123,7 +123,11 @@ trait HandlesMedia
             return Image::fromUrl( (string) $file->path, $file->mime );
         }
 
-        return Image::fromStoragePath( (string) $file->path, config( 'cms.disk', 'public' ), $file->mime );
+        return Image::fromStoragePath(
+            (string) $file->path,
+            File::diskName( (string) $file->disk ),
+            $file->mime,
+        );
     }
 
 

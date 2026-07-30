@@ -1,7 +1,6 @@
 /** @license MIT, https://opensource.org/license/mit */
 
 <script>
-import gql from 'graphql-tag'
 import {
   mdiDotsVertical,
   mdiPencil,
@@ -13,26 +12,15 @@ import {
   mdiUpload
 } from '@mdi/js'
 import { VueDraggable } from 'vue-draggable-plus'
-import { useAppStore, useUserStore, useMessageStore, useViewStack } from '../stores'
-import { frozenParse, IMAGE_MIME_FILTER, url, srcset } from '../utils'
+import { ADD_FILE, RELOCATE_FILE, normalizeFile } from '../files'
+import { useUserStore, useMessageStore, useViewStack } from '../stores'
+import { fileurl, filesrcset, IMAGE_MIME_FILTER } from '../utils'
 import { defineAsyncComponent } from 'vue'
 import FileDetail from '../views/FileDetail.vue'
 
 const FileAiDialog = defineAsyncComponent(() => import('../components/FileAiDialog.vue'))
 const FileUrlDialog = defineAsyncComponent(() => import('../components/FileUrlDialog.vue'))
 const FileDialog = defineAsyncComponent(() => import('../components/FileDialog.vue'))
-
-const ADD_FILE = gql`
-  mutation ($file: Upload!) {
-    addFile(file: $file) {
-      id
-      mime
-      name
-      path
-      previews
-    }
-  }
-`
 
 export default {
   inheritAttrs: false,
@@ -63,15 +51,13 @@ export default {
     const viewStack = useViewStack()
     const messages = useMessageStore()
     const user = useUserStore()
-    const app = useAppStore()
 
     return {
-      app,
       messages,
       user,
       viewStack,
-      url,
-      srcset,
+      fileurl,
+      filesrcset,
       IMAGE_MIME_FILTER,
       mdiDotsVertical,
       mdiPencil,
@@ -89,6 +75,8 @@ export default {
       dragging: false,
       images: [],
       index: Math.floor(Math.random() * 100000),
+      protect: false,
+      protecting: false,
       vcreate: false,
       vfiles: false,
       vurls: false
@@ -136,12 +124,14 @@ export default {
         const path = URL.createObjectURL(file)
         const idx = this.images.length
 
-        this.images[idx] = { path: path, uploading: true }
+        const disk = this.protect ? 'private' : 'public'
+        this.images[idx] = { disk, path: path, uploading: true }
 
         const promise = this.$apollo
           .mutate({
             mutation: ADD_FILE,
             variables: {
+              disk,
               file: file
             },
             context: {
@@ -153,15 +143,13 @@ export default {
               throw response.errors
             }
 
-            const data = response.data?.addFile || {}
-            data.previews = frozenParse(data.previews)
-            delete data.__typename
+            const data = normalizeFile(response.data?.addFile)
 
             return new Promise((resolve, reject) => {
               const image = new Image()
               image.onload = resolve
               image.onerror = reject
-              image.src = this.url(Object.values(data.previews)[0])
+              image.src = this.fileurl(data, Object.values(data.previews)[0])
             }).then(() => {
               this.images[idx] = data
               this.$emit('addFile', data)
@@ -252,6 +240,58 @@ export default {
       )
       this.vfiles = false
       this.vurls = false
+
+      if (this.protect) {
+        this.setProtect(true)
+      } else {
+        this.protect = this.images.length > 0 && this.images.every((item) => item.disk === 'private')
+      }
+    },
+
+    setProtect(value) {
+      const protect = Boolean(value)
+      const files = this.images.filter(
+        (item) => item.id && (item.disk === 'private') !== protect
+      )
+
+      this.protect = protect
+
+      if (!files.length) {
+        return
+      }
+
+      this.protecting = true
+
+      return this.$apollo
+        .mutate({
+          mutation: RELOCATE_FILE,
+          variables: {
+            id: files.map((item) => item.id),
+            disk: protect ? 'private' : 'public'
+          }
+        })
+        .then((response) => {
+          if (response.errors) {
+            throw response.errors
+          }
+
+          for (const data of response.data?.relocateFile || []) {
+            const item = files.find((file) => file.id === data.id)
+
+            if (item) {
+              Object.assign(item, data)
+              this.$emit('addFile', item)
+            }
+          }
+        })
+        .catch((error) => {
+          this.protect = this.images.length > 0 && this.images.every((item) => item.disk === 'private')
+          this.messages.add(this.$gettext(`Error saving file`) + ':\n' + error, 'error')
+          this.$log(`Images::setProtect(): Error relocating files`, error)
+        })
+        .finally(() => {
+          this.protecting = false
+        })
     }
   },
 
@@ -265,6 +305,8 @@ export default {
               this.images.push(this.assets[entry.id])
             }
           }
+
+          this.protect = this.images.length > 0 && this.images.every((item) => item.disk === 'private')
         }
 
         this.$emit(
@@ -300,8 +342,8 @@ export default {
       <v-progress-linear v-if="item.uploading" color="primary" height="5" indeterminate rounded />
       <v-img
         v-if="item.path"
-        :srcset="srcset(item.previews)"
-        :src="url(Object.values(item.previews || {})[0] ?? item.path)"
+        :srcset="filesrcset(item)"
+        :src="fileurl(item, Object.values(item.previews || {})[0] ?? item.path)"
         :alt="description(item)"
         draggable="false"
       />
@@ -383,6 +425,18 @@ export default {
     </div>
   </VueDraggable>
 
+  <v-switch
+    v-if="!readonly"
+    :disabled="protecting"
+    :loading="protecting"
+    :model-value="protect"
+    @update:model-value="setProtect($event)"
+    :label="$gettext('Protect with page access')"
+    color="primary"
+    density="compact"
+    hide-details
+  />
+
   <!-- Kept outside <VueDraggable> on purpose: a Vuetify input nested in the
        draggable's persistent "add" tile loses its ref owner context when
        vue-draggable-plus re-patches the tile on model changes. -->
@@ -400,11 +454,22 @@ export default {
   </Teleport>
 
   <Teleport to="body">
-    <FileAiDialog v-model="vcreate" @add="addFromAi" :context="context" />
+    <FileAiDialog
+      v-model="vcreate"
+      :context="context"
+      :disk="protect ? 'private' : 'public'"
+      @add="addFromAi"
+    />
   </Teleport>
 
   <Teleport to="body">
-    <FileUrlDialog v-model="vurls" @add="select($event)" mime="image/" multiple />
+    <FileUrlDialog
+      v-model="vurls"
+      :disk="protect ? 'private' : 'public'"
+      @add="select($event)"
+      mime="image/"
+      multiple
+    />
   </Teleport>
 </template>
 

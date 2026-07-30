@@ -8,11 +8,9 @@
 namespace Database\Seeders;
 
 use Aimeos\Cms\Models\Element;
-use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Utils;
 use Aimeos\Cms\Validation;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 
@@ -556,17 +554,7 @@ class GlassDemo extends AbstractDemo
                 'description' => ['en' => 'Downloadable template for defining metric ownership, source, grain, and freshness'],
             ];
 
-            $file = File::forceCreate( $data + ['editor' => 'demo'] );
-
-            $version = $file->versions()->forceCreate( [
-                'lang' => 'en',
-                'data' => $data,
-                'editor' => 'demo',
-            ] );
-
-            $file->forceFill( ['latest_id' => $version->id] )->saveQuietly();
-            $file->publish( $version );
-            $this->briefFile = (string) $file->refresh()->id;
+            $this->briefFile = $this->saveFile( $data );
         }
 
         return $this->briefFile;
@@ -876,33 +864,12 @@ class GlassDemo extends AbstractDemo
 </svg>
 SVG;
 
-            $disk = Storage::disk( config( 'cms.disk', 'public' ) );
-            $path = rtrim( 'cms/' . $this->tenant, '/' ) . '/signallake-logo.svg';
-
-            if( !$disk->put( $path, $svg ) ) {
-                throw new \Aimeos\Cms\Exception( sprintf( 'Unable to store logo "%s"', $path ) );
-            }
-
-            $data = [
-                'mime' => 'image/svg+xml',
-                'lang' => 'en',
-                'name' => 'SignalLake logo',
-                'path' => $path,
-                'previews' => ['500' => $path],
-                'description' => ['en' => 'SignalLake wordmark with a glassy lake signal symbol'],
-            ];
-
-            $file = File::forceCreate( $data + ['editor' => 'demo'] );
-
-            $version = $file->versions()->forceCreate( [
-                'lang' => 'en',
-                'data' => $data,
-                'editor' => 'demo',
-            ] );
-
-            $file->forceFill( ['latest_id' => $version->id] )->saveQuietly();
-            $file->publish( $version );
-            $this->logoFile = (string) $file->refresh()->id;
+            $this->logoFile = $this->svgFile(
+                $svg,
+                'signallake-logo.svg',
+                'SignalLake logo',
+                'SignalLake wordmark with a glassy lake signal symbol',
+            );
         }
 
         return $this->logoFile;
@@ -1002,17 +969,7 @@ SVG;
                 'description' => ['en' => 'Short walkthrough video for a live analytics dashboard'],
             ];
 
-            $file = File::forceCreate( $data + ['editor' => 'demo'] );
-
-            $version = $file->versions()->forceCreate( [
-                'lang' => 'en',
-                'data' => $data,
-                'editor' => 'demo',
-            ] );
-
-            $file->forceFill( ['latest_id' => $version->id] )->saveQuietly();
-            $file->publish( $version );
-            $this->videoFile = (string) $file->refresh()->id;
+            $this->videoFile = $this->saveFile( $data );
         }
 
         return $this->videoFile;

@@ -22,9 +22,9 @@
             ->map( fn( $fileId ) => cms($files, is_scalar($fileId) ? (string) $fileId : data_get($fileId, 'id')) )
             ->filter()
             ->first()) && ($socialImage = current(array_reverse((array) cms($socialFile, 'previews', []))) ?: cms($socialFile, 'path')))
-            <meta property="og:image" content="{{ cmsurl($socialImage) }}">
-            <meta property="og:image:url" content="{{ cmsurl($socialImage) }}">
-            <meta name="twitter:image" content="{{ cmsurl($socialImage) }}">
+            <meta property="og:image" content="{{ cmsasset($page, $socialFile, $socialImage) }}">
+            <meta property="og:image:url" content="{{ cmsasset($page, $socialFile, $socialImage) }}">
+            <meta name="twitter:image" content="{{ cmsasset($page, $socialFile, $socialImage) }}">
             @if($socialImageAlt = cms($socialFile, 'description')?->{cms($page, 'lang')} ?: cms($socialFile, 'name'))
                 <meta property="og:image:alt" content="{{ $socialImageAlt }}">
                 <meta name="twitter:image:alt" content="{{ $socialImageAlt }}">
@@ -281,7 +281,7 @@
             <ul>
                 @foreach($documents as $document)
                     <li>
-                        <a href="{{ cmsurl($document['file']->path) }}" download>
+                        <a href="{{ cmsasset($page, $document['file']) }}" download>
                             <span class="property-document-meta">
                                 <span>{{ $document['title'] !== '' ? $document['title'] : $document['file']->name }}</span>
                                 @if($documentType = strtoupper(pathinfo((string) ($document['file']->name ?: $document['file']->path), PATHINFO_EXTENSION)))
@@ -323,7 +323,7 @@
         'image' => ($propertyImages = collect($slideshowFiles)
             ->map( fn( $file ) => cms($files, $file->id) )
             ->filter()
-            ->map( fn( $file ) => cmsurl($file->path) )
+            ->map( fn( $file ) => cmsasset($page, $file) )
             ->values()
             ->all()) ? $propertyImages : null,
         'availabilityStarts' => $data->available_from ?? null,

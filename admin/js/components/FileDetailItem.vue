@@ -13,7 +13,7 @@ import {
   useSideStore
 } from '../stores'
 import { mdiContentCopy, mdiTranslate, mdiCreation, mdiMicrophoneOutline, mdiMicrophone } from '@mdi/js'
-import { toBlob, locales, txlocales, url } from '../utils'
+import { fileurl, toBlob, locales, txlocales } from '../utils'
 
 const FileDetailItemImage = defineAsyncComponent(() => import('./FileDetailItemImage.vue'))
 const FileDetailItemVideo = defineAsyncComponent(() => import('./FileDetailItemVideo.vue'))
@@ -66,8 +66,8 @@ export default {
       mdiTranslate,
       mdiCreation,
       mdiMicrophoneOutline,
+      fileurl,
       toBlob,
-      url,
       locales,
       txlocales,
       mdiContentCopy,
@@ -96,7 +96,7 @@ export default {
 
   methods: {
     copyUrl() {
-      navigator.clipboard.writeText(this.url(this.item.path)).then(() => {
+      navigator.clipboard.writeText(this.fileurl(this.item)).then(() => {
         this.messages.add(this.$gettext('Copied to clipboard'), 'success')
       })
     },
@@ -343,7 +343,7 @@ export default {
       </v-row>
       <v-row>
         <v-col cols="12" class="file-url-col">
-          <a :href="url(item.path)" target="_blank" rel="noopener noreferrer" class="file-url">{{ url(item.path) }}</a>
+          <a :href="fileurl(item)" target="_blank" rel="noopener noreferrer" class="file-url">{{ fileurl(item) }}</a>
           <v-btn
             @click="copyUrl()"
             :icon="mdiContentCopy"
