@@ -66,10 +66,12 @@ class AiToolsTest extends AiTestAbstract
             ] )
         ] );
 
-        $response = CmsServer::actingAs( $this->user )->tool( \Aimeos\Cms\Tools\RefineContent::class, [
-            'id' => $page->id,
-            'prompt' => 'Make the content more engaging',
-        ] );
+        $response = $this->assertExecutionLimitRestored( fn() => CmsServer::actingAs( $this->user )
+            ->tool( \Aimeos\Cms\Tools\RefineContent::class, [
+                'id' => $page->id,
+                'prompt' => 'Make the content more engaging',
+            ] )
+        );
 
         $response->assertOk()->assertSee( ['content'] );
     }

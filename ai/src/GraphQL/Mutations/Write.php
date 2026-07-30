@@ -37,11 +37,12 @@ final class Write
         $provider = config( 'cms.ai.write.provider' );
         $config = config( 'cms.ai.write', [] );
         $model = config( 'cms.ai.write.model' );
+        $limit = (int) ini_get( 'max_execution_time' );
+
+        set_time_limit( (int) config( 'cms.ai.timeout' ) ); // long AI call; lift PHP's default 30s execution limit
 
         try
         {
-            set_time_limit( (int) config( 'cms.ai.timeout' ) ); // long AI call; lift PHP's default 30s execution limit
-
             $system = view( 'cms::prompts.write' )->render() . "\n" . ( $args['context'] ?? '' );
 
             if( !empty( $args['files'] ) )
@@ -76,6 +77,10 @@ final class Write
         {
             Log::error( 'AI service error', ['mutation' => 'Write', 'message' => $e->getMessage(), 'trace' => $e->getTraceAsString()] );
             throw new Error( $e->getMessage(), null, null, null, null, $e );
+        }
+        finally
+        {
+            set_time_limit( $limit );
         }
     }
 }
