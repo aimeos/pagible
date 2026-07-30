@@ -604,13 +604,13 @@ class ResourceTest extends CoreTestAbstract
         $pages = Page::orderBy( 'id' )->limit( 2 )->get();
         $element = Element::firstOrFail();
         $db = DB::connection( config( 'cms.db', 'sqlite' ) );
-        $db->table( 'cms_page_file' )->insertOrIgnore( [
+        $db->table( 'cms_page_file' )->updateOrInsert( [
             'page_id' => $pages[0]->id, 'file_id' => $file->id,
         ] );
-        $db->table( 'cms_element_file' )->insertOrIgnore( [
+        $db->table( 'cms_element_file' )->updateOrInsert( [
             'element_id' => $element->id, 'file_id' => $file->id,
         ] );
-        $db->table( 'cms_page_element' )->insertOrIgnore( [
+        $db->table( 'cms_page_element' )->updateOrInsert( [
             'page_id' => $pages[1]->id, 'element_id' => $element->id,
         ] );
 
@@ -913,7 +913,7 @@ class ResourceTest extends CoreTestAbstract
 
         Storage::disk( 'partial-public' )->put( $files[0]->path, 'stored' );
         $page = Page::firstOrFail();
-        DB::connection( config( 'cms.db', 'sqlite' ) )->table( 'cms_page_file' )->insertOrIgnore( [
+        DB::connection( config( 'cms.db', 'sqlite' ) )->table( 'cms_page_file' )->updateOrInsert( [
             'page_id' => $page->id, 'file_id' => $files[0]->id,
         ] );
         Event::fake( [Bulk::class, PageInvalidated::class, Saved::class] );

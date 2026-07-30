@@ -13,6 +13,7 @@ use Aimeos\Cms\Permission;
 use Aimeos\Cms\Scopes\Status;
 use Aimeos\Cms\Tenancy;
 use Illuminate\Auth\AuthenticationException;
+use Illuminate\Database\Query\Expression;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
@@ -42,7 +43,8 @@ class AssetController extends Controller
             $query = Page::select( 'id', 'tenant_id', 'latest_id' );
 
             if( !$editor ) {
-                $query->withExists( 'access' )->withGlobalScope( 'status', new Status() );
+                $query->withAggregate( 'access as access_exists', new Expression( '1' ) )
+                    ->withGlobalScope( 'status', new Status() );
             }
 
             /** @var Page $owner */

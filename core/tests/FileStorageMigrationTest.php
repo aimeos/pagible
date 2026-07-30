@@ -135,8 +135,15 @@ class FileStorageMigrationTest extends CoreTestAbstract
             ] )->id;
         }
 
+        $db = DB::connection( config( 'cms.db', 'sqlite' ) );
+        $grammar = $db->getQueryGrammar();
+        $table = $grammar->wrapTable( 'cms_versions' );
+        $columns = implode( ', ', array_map(
+            $grammar->wrap(...),
+            ['id', 'versionable_id', 'data'],
+        ) );
         $queries = [];
-        DB::connection( config( 'cms.db', 'sqlite' ) )->listen(
+        $db->listen(
             function( QueryExecuted $query ) use ( &$queries ) {
                 $queries[] = $query;
             },
@@ -147,11 +154,12 @@ class FileStorageMigrationTest extends CoreTestAbstract
         $migration->up();
 
         $this->assertTrue( collect( $queries )->contains( fn( QueryExecuted $query ) =>
-            str_contains( $query->sql, 'select "id", "versionable_id", "data" from "cms_versions"' )
+            str_contains( $query->sql, "select {$columns} from {$table}" )
         ) );
 
-        $upserts = collect( $queries )->filter( function( QueryExecuted $query ) use ( $ids ) {
-            return str_contains( $query->sql, 'insert into "cms_versions"' )
+        $upserts = collect( $queries )->filter( function( QueryExecuted $query ) use ( $ids, $table ) {
+            return ( str_contains( $query->sql, "insert into {$table}" )
+                    || str_contains( $query->sql, "merge {$table}" ) )
                 && array_intersect( $ids, array_map( strval(...), $query->bindings ) );
         } );
 
@@ -217,7 +225,7 @@ class FileStorageMigrationTest extends CoreTestAbstract
         ] );
 
         $page = Page::where( 'path', 'blog' )->firstOrFail();
-        DB::connection( config( 'cms.db', 'sqlite' ) )->table( 'cms_page_file' )->insertOrIgnore( [
+        DB::connection( config( 'cms.db', 'sqlite' ) )->table( 'cms_page_file' )->updateOrInsert( [
             'page_id' => $page->id, 'file_id' => $first->id,
         ] );
         Event::fake( [PageInvalidated::class] );

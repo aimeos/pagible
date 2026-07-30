@@ -375,11 +375,11 @@ class AssetControllerTest extends CoreTestAbstract
             ] );
         } else {
             $element = Element::firstOrFail();
-            $db->table( 'cms_page_element' )->insertOrIgnore( [
+            $db->table( 'cms_page_element' )->updateOrInsert( [
                 'page_id' => $page->id,
                 'element_id' => $element->id,
             ] );
-            $db->table( 'cms_element_file' )->insertOrIgnore( [
+            $db->table( 'cms_element_file' )->updateOrInsert( [
                 'element_id' => $element->id,
                 'file_id' => $file->id,
             ] );
