@@ -44,7 +44,7 @@
 		->filter()
 		->map( fn( $file ) => [
 			'@type' => 'ImageObject',
-			'contentUrl' => cmsurl(cms($file, 'path')),
+			'contentUrl' => cmsasset($page, $file),
 			'name' => cms($file, 'name') ?? '',
 			'description' => cms($file, 'description')?->{cms($page, 'lang')} ?? '',
 		] )

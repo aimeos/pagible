@@ -2,6 +2,11 @@ msgid ""
 msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
+#: js/fields/Audio.vue js/fields/File.vue js/fields/Image.vue
+#: js/fields/Images.vue js/fields/Media.vue js/fields/Video.vue
+msgid "Protect with page access"
+msgstr ""
+
 #: js/ai.js:44
 #: js/ai.js:90
 #: js/ai.js:145

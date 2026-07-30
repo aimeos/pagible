@@ -12,6 +12,7 @@ use Aimeos\Cms\Models\File;
 use Database\Seeders\TestSeeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 
@@ -44,6 +45,7 @@ class FileToolsTest extends McpTestAbstract
 
         foreach( [
             \Aimeos\Cms\Tools\SaveFile::class,
+            \Aimeos\Cms\Tools\RelocateFile::class,
             \Aimeos\Cms\Tools\DropFile::class,
             \Aimeos\Cms\Tools\RestoreFile::class,
             \Aimeos\Cms\Tools\PublishFile::class,
@@ -145,6 +147,30 @@ class FileToolsTest extends McpTestAbstract
         ] );
 
         $response->assertOk()->assertSee( ['error'] );
+    }
+
+
+    public function testAddFilePrivate()
+    {
+        config( ['cms.disks.private.name' => 'mcp-private-upload'] );
+        Storage::fake( 'mcp-private-upload' );
+        Http::fake( [
+            'https://example.com/*' => Http::response( 'plain text content', 200, [
+                'Content-Type' => 'text/plain',
+            ] ),
+        ] );
+
+        $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\AddFile::class, [
+            'url' => 'https://example.com/private.txt',
+            'disk' => 'private',
+            'name' => 'Private file',
+        ] );
+
+        $file = File::where( 'name', 'Private file' )->firstOrFail();
+
+        $response->assertOk()->assertSee( ['private', $file->id] );
+        $this->assertSame( 'private', $file->disk );
+        Storage::disk( 'mcp-private-upload' )->assertExists( $file->path );
     }
 
 
@@ -276,5 +302,38 @@ class FileToolsTest extends McpTestAbstract
         ] );
 
         $response->assertOk()->assertSee( ['error', 'not deleted'] );
+    }
+
+
+    public function testRelocateFile()
+    {
+        config( [
+            'cms.disks.public.name' => 'mcp-relocate-public',
+            'cms.disks.private.name' => 'mcp-relocate-private',
+        ] );
+        Storage::fake( 'mcp-relocate-public' );
+        Storage::fake( 'mcp-relocate-private' );
+
+        $file = new File();
+        $file->setUniqueIds();
+        $file = File::forceCreate( [
+            'id' => $file->id,
+            'disk' => 'public',
+            'mime' => 'text/plain',
+            'name' => 'Relocate file',
+            'path' => $file->dir() . '/relocate.txt',
+            'editor' => 'test',
+        ] );
+        Storage::disk( 'mcp-relocate-public' )->put( $file->path, 'relocate' );
+
+        $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\RelocateFile::class, [
+            'id' => $file->id,
+            'disk' => 'private',
+        ] );
+
+        $response->assertOk()->assertSee( [$file->id, 'private'] );
+        $this->assertSame( 'private', $file->refresh()->disk );
+        Storage::disk( 'mcp-relocate-public' )->assertMissing( $file->path );
+        Storage::disk( 'mcp-relocate-private' )->assertExists( $file->path );
     }
 }

@@ -2,16 +2,27 @@ import FileAiDialog from '../../../js/components/FileAiDialog.vue'
 import { useUserStore } from '../../../js/stores'
 
 const stubs = {
-  FileListItems: { template: '<div class="file-list-stub" />' },
+  FileListItems: {
+    template: '<div class="file-list-stub" />',
+    methods: { invalidate() {} },
+  },
 }
 
-function mountDialog(props = {}, perms = {}) {
+function mountDialog(props = {}, perms = {}, apollo = {}) {
   return cy.mount(FileAiDialog, {
     props: {
       modelValue: true,
       ...props,
     },
-    global: { stubs },
+    global: {
+      stubs,
+      mocks: {
+        $apollo: {
+          mutate: () => Promise.resolve({ data: {} }),
+          ...apollo,
+        },
+      },
+    },
   }).then(() => {
     const user = useUserStore()
     user.me = { permission: perms }
@@ -81,5 +92,34 @@ describe('FileAiDialog', () => {
   it('shows "Select images" tab', () => {
     mountDialog()
     cy.contains('Select images').should('exist')
+  })
+
+  it('stores generated images directly on the selected disk', () => {
+    const mutate = cy.stub().resolves({
+      data: {
+        addFile: {
+          id: '1',
+          disk: 'private',
+          name: 'Generated image',
+          path: 'cms/test/file/generated.png',
+          previews: '{}',
+        },
+      },
+    })
+
+    mountDialog({ disk: 'private' }, {}, { mutate }).then(({ wrapper }) => {
+      wrapper.findComponent(FileAiDialog).vm.add({
+        blob: new Blob(['image'], { type: 'image/png' }),
+        mime: 'image/png',
+        name: 'Generated image',
+        path: 'blob:generated',
+      })
+    })
+
+    cy.wrap(mutate).should('have.been.calledOnce')
+    cy.wrap(mutate).should((stub) => {
+      expect(stub.firstCall.args[0].variables.disk).to.equal('private')
+      expect(stub.firstCall.args[0].variables.file).to.be.instanceOf(File)
+    })
   })
 })

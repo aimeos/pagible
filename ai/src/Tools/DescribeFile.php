@@ -49,7 +49,7 @@ class DescribeFile extends Tool
         ] );
 
         /** @var File|null $file */
-        $file = File::select( 'id', 'path', 'mime' )->find( $v['file'] );
+        $file = File::select( 'id', 'disk', 'path', 'mime' )->find( $v['file'] );
 
         if( !$file ) {
             return Response::structured( ['error' => 'File not found.'] );
@@ -69,7 +69,11 @@ class DescribeFile extends Tool
         if( str_starts_with( (string) $file->path, 'http' ) ) {
             $doc = $class::fromUrl( (string) $file->path, $file->mime );
         } else {
-            $doc = $class::fromStoragePath( (string) $file->path, config( 'cms.disk', 'public' ), $file->mime );
+            $doc = $class::fromStoragePath(
+                (string) $file->path,
+                File::diskName( (string) $file->disk ),
+                $file->mime,
+            );
         }
 
         $text = Prisma::type( $type )->observe( $this->observer( Utils::editor( $request->user() ) ) )

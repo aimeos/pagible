@@ -97,6 +97,11 @@ class PageController extends Controller
             ->withGlobalScope( 'status', new Status )
             ->findOrFail( $route->id );
 
+        $request->attributes->set(
+            'cms.asset-token-page',
+            $route->access_exists ? (string) $page->id : null,
+        );
+
         $html = $this->render( $page, $page->content ?? [], $page->lang, $user );
 
         // Database-first transition safety: re-read the rule after rendering so a

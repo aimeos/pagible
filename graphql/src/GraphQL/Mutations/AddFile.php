@@ -43,6 +43,7 @@ final class AddFile
         }
 
         $file = new File();
+        $file->disk = $args['disk'] ?? 'public';
         $file->fill( $args['input'] ?? [] );
         $file->prepare( $source, $preview );
 

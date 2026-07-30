@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Database\Seeders\TestSeeder;
 use Aimeos\Cms\Models\File;
+use Aimeos\Cms\Resource;
 use PHPUnit\Framework\Attributes\Group;
 
 
@@ -59,6 +60,7 @@ class GraphqlFileTest extends GraphqlTestAbstract
 
         $response = $this->actingAs($this->user)->graphQL("{
             file(id: \"{$file->id}\") {
+                disk
                 id
                 lang
                 mime
@@ -115,6 +117,7 @@ class GraphqlFileTest extends GraphqlTestAbstract
             files(filter: {
             }, sort: [{column: MIME, order: ASC}], first: 10, trashed: WITH) {
                 data {
+                    disk
                     id
                     lang
                     mime
@@ -187,6 +190,7 @@ class GraphqlFileTest extends GraphqlTestAbstract
 
         foreach( [
             'saveFile(id: "' . $file->id . '", input: {}) { id }',
+            'relocateFile(id: ["' . $file->id . '"], disk: private) { id }',
             'bulkFile(id: ["' . $file->id . '"], input: {}) { ids }',
             'dropFile(id: ["' . $file->id . '"]) { id }',
             'keepFile(id: ["' . $file->id . '"]) { id }',
@@ -196,6 +200,26 @@ class GraphqlFileTest extends GraphqlTestAbstract
             $this->actingAs( $user )->graphQL( 'mutation {' . $mutation . '}' )
                 ->assertGraphQLErrorMessage( 'Insufficient permissions' );
         }
+    }
+
+
+    public function testRelocateFileRejectsOversizedLists()
+    {
+        $ids = array_map( strval(...), range( 1, Resource::MAX_RELOCATE + 1 ) );
+
+        $response = $this->actingAs( $this->user )->graphQL( '
+            mutation($id: [ID!]!) {
+                relocateFile(id: $id, disk: private) {
+                    id
+                }
+            }
+        ', ['id' => $ids] );
+
+        $response->assertGraphQLErrorMessage( 'Validation failed for the field [relocateFile].' );
+        $this->assertSame(
+            'The id field must not have more than 100 items.',
+            $response->json( 'errors.0.extensions.validation.id.0' ),
+        );
     }
 
 
@@ -392,6 +416,55 @@ class GraphqlFileTest extends GraphqlTestAbstract
                 ],
             ]
         ] );
+    }
+
+
+    public function testAddPrivateFileAndRelocateIt()
+    {
+        config( [
+            'cms.disks.public.name' => 'graphql-public',
+            'cms.disks.private.name' => 'graphql-private',
+        ] );
+        Storage::fake( 'graphql-public' );
+        Storage::fake( 'graphql-private' );
+
+        $upload = UploadedFile::fake()->createWithContent( 'private.pdf', '%PDF-1.4 private' );
+        $response = $this->actingAs( $this->user )->multipartGraphQL( [
+            'query' => '
+                mutation($file: Upload!) {
+                    addFile(file: $file, disk: private, input: {name: "Private upload"}) {
+                        id
+                        disk
+                        path
+                    }
+                }
+            ',
+            'variables' => ['file' => null],
+        ], [
+            '0' => ['variables.file'],
+        ], [
+            '0' => $upload,
+        ] );
+
+        $id = $response->json( 'data.addFile.id' );
+        $path = $response->json( 'data.addFile.path' );
+
+        $response->assertJsonPath( 'data.addFile.disk', 'private' );
+        Storage::disk( 'graphql-private' )->assertExists( $path );
+
+        $response = $this->actingAs( $this->user )->graphQL( '
+            mutation {
+                relocateFile(id: ["' . $id . '"], disk: public) {
+                    id
+                    disk
+                    path
+                }
+            }
+        ' );
+
+        $response->assertJsonPath( 'data.relocateFile.0.disk', 'public' );
+        Storage::disk( 'graphql-private' )->assertMissing( $path );
+        Storage::disk( 'graphql-public' )->assertExists( $path );
     }
 
 
@@ -851,7 +924,7 @@ class GraphqlFileTest extends GraphqlTestAbstract
         ] );
 
         $result = $response->json( 'data.addFile' );
-        $stored = \Illuminate\Support\Facades\Storage::disk( config( 'cms.disk', 'public' ) )->get( $result['path'] );
+        $stored = \Illuminate\Support\Facades\Storage::disk( config( 'cms.disks.public.name', 'public' ) )->get( $result['path'] );
 
         $this->assertStringContainsString( '<rect', $stored );
         $this->assertStringNotContainsString( '<script', $stored );
@@ -863,7 +936,7 @@ class GraphqlFileTest extends GraphqlTestAbstract
     #[Group('network')]
     public function testAddFileFromUrlStoresSvgPreview()
     {
-        $disk = config( 'cms.disk', 'public' );
+        $disk = config( 'cms.disks.public.name', 'public' );
         Storage::fake( $disk );
 
         $svg = '<?xml version="1.0"?><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10">'
@@ -900,7 +973,7 @@ class GraphqlFileTest extends GraphqlTestAbstract
     #[Group('network')]
     public function testAddFileFromUrlStoresCompressedSvgPreview()
     {
-        $disk = config( 'cms.disk', 'public' );
+        $disk = config( 'cms.disks.public.name', 'public' );
         Storage::fake( $disk );
 
         $svg = '<?xml version="1.0"?><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10">'

@@ -7,6 +7,8 @@
 
 namespace Aimeos\Cms\Controllers;
 
+use Aimeos\Cms\FileResponse;
+use Aimeos\Cms\Permission;
 use Aimeos\Cms\ProxyToken;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Http\Client\Response as ClientResponse;
@@ -20,6 +22,20 @@ use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
 class AdminController extends Controller
 {
+    /**
+     * Delivers a private File to an authenticated CMS editor.
+     */
+    public function asset( Request $request, string $file,
+        int|string|null $variant = null ) : SymfonyResponse
+    {
+        if( !Permission::can( 'file:view', $request->user() ) ) {
+            abort( 403 );
+        }
+
+        return FileResponse::make( $file, $variant, true );
+    }
+
+
     public function index(): Response
     {
         $media = config( 'cms.admin.csp.media-src' );

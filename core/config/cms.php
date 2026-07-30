@@ -82,15 +82,24 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Filesystem disk
+    | Filesystem disks
     |--------------------------------------------------------------------------
     |
-    | Use the filesystem disk defined in ./config/filesystems.php to store the
-    | uploaded files. By default, they are stored in the ./public/storage/cms/
-    | folder but this can be any supported cloud storage too.
+    | Use the filesystem disks defined in ./config/filesystems.php to store
+    | uploaded files. Public files keep their direct URLs while private files
+    | are delivered after the access rules of their page have been checked.
+    | Public and private must name different filesystem disks.
     |
     */
-    'disk' => env( 'CMS_DISK', 'public' ),
+    'disks' => [
+        'public' => [
+            'name' => env( 'CMS_DISK', 'public' ),
+        ],
+        'private' => [
+            'name' => env( 'CMS_PRIVATE_DISK', 'local' ),
+            'ttl' => (int) env( 'CMS_PRIVATE_TTL', 300 ),
+        ],
+    ],
 
     /*
     |--------------------------------------------------------------------------

@@ -8,9 +8,11 @@
 namespace Tests;
 
 use Aimeos\Cms\Controllers\AdminController;
+use Aimeos\Cms\Models\File;
 use Aimeos\Cms\ProxyToken;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 
@@ -70,8 +72,46 @@ class AdminControllerTest extends AdminTestAbstract
     }
 
 
+    public function testPrivateAsset()
+    {
+        config( ['cms.disks.private.name' => 'admin-private'] );
+        Storage::fake( 'admin-private' );
+        $file = new File();
+        $file->setUniqueIds();
+        $path = $file->dir() . '/private.txt';
+        Storage::disk( 'admin-private' )->put( $path, 'private document' );
+
+        $file = File::forceCreate( [
+            'id' => $file->id,
+            'disk' => 'private',
+            'mime' => 'text/plain',
+            'name' => 'private.txt',
+            'path' => $path,
+            'editor' => 'test',
+        ] );
+
+        $response = $this->actingAs( $this->user )
+            ->get( route( 'cms.admin.asset', ['file' => $file->id], false ) )
+            ->assertOk();
+
+        $this->assertStringContainsString( 'no-store', (string) $response->headers->get( 'Cache-Control' ) );
+        $this->assertSame( 'private document', $response->baseResponse->getFile()->getContent() );
+    }
+
+
+    public function testPrivateAssetRequiresFileView()
+    {
+        $user = new \App\Models\User( ['cmsperms' => []] );
+
+        $this->actingAs( $user )
+            ->get( route( 'cms.admin.asset', ['file' => \Illuminate\Support\Str::uuid7()], false ) )
+            ->assertForbidden();
+    }
+
+
     public function testProxyRateLimiter()
     {
+        $this->assertNotNull( RateLimiter::limiter( 'cms-admin-asset' ) );
         $this->assertNotNull( RateLimiter::limiter( 'cms-proxy' ) );
     }
 

@@ -10,6 +10,7 @@ import { disconnect } from './echo'
 import gettext from './i18n'
 import {
   urladmin,
+  urlasset,
   urlproxy,
   urlpage,
   urlfile,
@@ -79,6 +80,7 @@ const FETCH_SCHEMAS = gql`
 export const useAppStore = defineStore('app', {
   state: () => ({
     urladmin,
+    urlasset,
     urlproxy,
     urlpage,
     urlfile,

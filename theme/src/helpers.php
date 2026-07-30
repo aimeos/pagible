@@ -56,16 +56,53 @@ if( !function_exists( 'cms' ) )
 if( !function_exists( 'cmsasset' ) )
 {
     /**
-     * Generate an asset URL with a version query parameter based on the file's last modification time for cache busting.
+     * Generate a URL for a theme asset or a page-aware CMS File.
      *
-     * @param string|null $path The path to the asset file
-     * @param bool $version Whether to append a version query parameter based on the file's last modification time for cache busting
-     * @return string The asset URL with a version query parameter, or an empty string if the path is null
+     * Public Files keep their direct storage or remote URL. Private Files use
+     * the access-controlled page asset route.
+     *
+     * @param \Aimeos\Cms\Models\Page|string|null $asset Theme path or page
+     * @param object|bool|null $file File for a page or static asset version flag
+     * @param int|string|null $variant Preview width or preview path
      */
-    function cmsasset( ?string $path, bool $version = true ) : string
+    function cmsasset( \Aimeos\Cms\Models\Page|string|null $asset,
+        object|bool|null $file = true, int|string|null $variant = null ) : string
     {
-        if( $path ) {
-            return asset( $path ) . ( $version && file_exists( public_path( $path ) ) ? '?v=' . filemtime( public_path( $path ) ) : '' );
+        if( $asset instanceof \Aimeos\Cms\Models\Page )
+        {
+            if( !is_object( $file ) ) {
+                return '';
+            }
+
+            $previews = (array) cms( $file, 'previews', [] );
+            $width = null;
+            $path = cms( $file, 'path' );
+
+            if( $variant !== null )
+            {
+                if( is_numeric( $variant ) && isset( $previews[(int) $variant] ) ) {
+                    $width = (int) $variant;
+                    $path = $previews[$width];
+                } elseif( is_string( $variant ) && ( $key = array_search( $variant, $previews, true ) ) !== false ) {
+                    $width = (int) $key;
+                    $path = $variant;
+                }
+            }
+
+            if( cms( $file, 'disk', 'public' ) !== 'private' ) {
+                return cmsurl( is_string( $path ) ? $path : null );
+            }
+
+            return \Aimeos\Cms\FileResponse::url(
+                $asset,
+                (string) cms( $file, 'id' ),
+                $width,
+            );
+        }
+
+        if( $asset ) {
+            $version = is_bool( $file ) ? $file : true;
+            return asset( $asset ) . ( $version && file_exists( public_path( $asset ) ) ? '?v=' . filemtime( public_path( $asset ) ) : '' );
         }
 
         return '';
@@ -258,17 +295,19 @@ if( !function_exists( 'cmsroute' ) )
 if( !function_exists( 'cmssrcset' ) )
 {
     /**
-     * Generate a srcset attribute value for responsive images from an associative array of widths and paths.
+     * Generate a srcset for paths or for a page-aware CMS File.
      *
-     * @param array<int, string> $data An associative array where the key is the width (e.g. "300") and the value is the image path
-     * @return string A srcset string that can be used in an HTML img tag, e.g. "image-300.jpg 300w, image-600.jpg 600w"
+     * @param mixed $data Preview paths or page
+     * @param object|null $file File when the first argument is a page
      */
-    function cmssrcset( mixed $data ) : string
+    function cmssrcset( mixed $data, ?object $file = null ) : string
     {
         $list = [];
+        $previews = $data instanceof \Aimeos\Cms\Models\Page ? cms( $file, 'previews', [] ) : $data;
 
-        foreach( (array) $data as $width => $path ) {
-            $list[] = cmsurl( $path ) . ' ' . $width . 'w';
+        foreach( (array) $previews as $width => $path ) {
+            $url = $data instanceof \Aimeos\Cms\Models\Page ? cmsasset( $data, $file, (int) $width ) : cmsurl( $path );
+            $list[] = $url . ' ' . $width . 'w';
         }
 
         return implode( ',', $list );
@@ -317,7 +356,7 @@ if( !function_exists( 'cmsurl' ) )
             return $path;
         }
 
-        return \Illuminate\Support\Facades\Storage::disk( config( 'cms.disk', 'public' ) )->url( $path );
+        return \Illuminate\Support\Facades\Storage::disk( config( 'cms.disks.public.name', 'public' ) )->url( $path );
     }
 }
 

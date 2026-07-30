@@ -17,6 +17,73 @@ use PHPUnit\Framework\Attributes\Group;
 
 class UtilsTest extends CoreTestAbstract
 {
+    public function testFileLockUsesOwnerScopedKey(): void
+    {
+        $file = strtoupper( ( new \Aimeos\Cms\Models\File() )->newUniqueId() );
+        $key = 'cms_files_' . hash( 'sha256', "test\0" . strtolower( $file ) );
+        $lock = \Mockery::mock( \Illuminate\Contracts\Cache\Lock::class );
+        $lock->shouldReceive( 'block' )
+            ->once()
+            ->with( 30, \Mockery::type( \Closure::class ) )
+            ->andReturnUsing( fn( int $seconds, \Closure $callback ) => $callback() );
+
+        Cache::shouldReceive( 'lock' )
+            ->once()
+            ->with( $key, 600 )
+            ->andReturn( $lock );
+
+        $this->assertSame( 'result', Utils::fileLock( 'test', $file, fn() => 'result' ) );
+    }
+
+
+    public function testStorageLockUsesTenantScopedKey(): void
+    {
+        $key = 'cms_storage_' . hash( 'sha256', 'test' );
+        $lock = \Mockery::mock( \Illuminate\Contracts\Cache\Lock::class );
+        $lock->shouldReceive( 'block' )
+            ->once()
+            ->with( 7, \Mockery::type( \Closure::class ) )
+            ->andReturnUsing( fn( int $seconds, \Closure $callback ) => $callback() );
+
+        Cache::shouldReceive( 'lock' )
+            ->once()
+            ->with( $key, 86400 )
+            ->andReturn( $lock );
+
+        $this->assertSame( 'result', Utils::storageLock( 'test', fn() => 'result', 7 ) );
+    }
+
+
+    public function testStorageLockRunsDeferredWorkAfterRelease(): void
+    {
+        $inside = false;
+        $released = false;
+        $lock = \Mockery::mock( \Illuminate\Contracts\Cache\Lock::class );
+        $lock->shouldReceive( 'block' )
+            ->once()
+            ->andReturnUsing( function( int $seconds, \Closure $callback ) use ( &$inside, &$released ) {
+                $result = $callback();
+                $this->assertFalse( $released );
+                $inside = false;
+                return $result;
+            } );
+
+        Cache::shouldReceive( 'lock' )->once()->andReturn( $lock );
+
+        $result = Utils::storageLock( 'test', function() use ( &$inside, &$released ) {
+            $inside = true;
+            Utils::deferStorage( 'test', function() use ( &$inside, &$released ) {
+                $this->assertFalse( $inside );
+                $released = true;
+            } );
+            return 'result';
+        } );
+
+        $this->assertSame( 'result', $result );
+        $this->assertTrue( $released );
+    }
+
+
     public function testLockedTransactionBlocksUsingConfiguredLifetime(): void
     {
         config( ['cms.lock' => 7] );
@@ -416,5 +483,10 @@ class UtilsTest extends CoreTestAbstract
         $this->assertNull( Utils::normalizePath( 'cms/test/../other/image.jpg', 'test' ) );
         $this->assertNull( Utils::normalizePath( 'cms/other/image.jpg', 'test' ) );
         $this->assertNull( Utils::normalizePath( 'cms/default/nested.jpg', '' ) );
+        $id = ( new \Aimeos\Cms\Models\File() )->newUniqueId();
+        $this->assertSame(
+            'cms/' . $id . '/image.jpg',
+            Utils::normalizePath( 'cms/' . $id . '/image.jpg', '' ),
+        );
     }
 }

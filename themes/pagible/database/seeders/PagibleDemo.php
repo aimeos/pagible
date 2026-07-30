@@ -8,11 +8,9 @@
 namespace Database\Seeders;
 
 use Aimeos\Cms\Models\Element;
-use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Utils;
 use Aimeos\Cms\Validation;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 
@@ -496,16 +494,7 @@ HTML,
                 'description' => ['en' => $desc],
             ];
 
-            $file = File::forceCreate( $data + ['editor' => 'demo'] );
-            $version = $file->versions()->forceCreate( [
-                'lang' => 'en',
-                'data' => $data,
-                'editor' => 'demo',
-            ] );
-
-            $file->forceFill( ['latest_id' => $version->id] )->saveQuietly();
-            $file->publish( $version );
-            $this->cardImages[$key] = (string) $file->refresh()->id;
+            $this->cardImages[$key] = $this->saveFile( $data );
         }
 
         return $this->cardImages[$key];
@@ -584,16 +573,7 @@ HTML,
                 'description' => ['en' => 'Downloadable checklist for planning a PagibleAI CMS installation'],
             ];
 
-            $file = File::forceCreate( $data + ['editor' => 'demo'] );
-            $version = $file->versions()->forceCreate( [
-                'lang' => 'en',
-                'data' => $data,
-                'editor' => 'demo',
-            ] );
-
-            $file->forceFill( ['latest_id' => $version->id] )->saveQuietly();
-            $file->publish( $version );
-            $this->guideFile = (string) $file->refresh()->id;
+            $this->guideFile = $this->saveFile( $data );
         }
 
         return $this->guideFile;
@@ -817,32 +797,12 @@ HTML,
         {
             $svg = '<svg xmlns="http://www.w3.org/2000/svg" width="420" height="120" viewBox="0 0 11112.5 3175" style="clip-rule:evenodd;fill-rule:evenodd;image-rendering:optimizeQuality;shape-rendering:geometricPrecision;text-rendering:geometricPrecision"><defs><linearGradient id="a" gradientUnits="userSpaceOnUse" x1="7624.4102" y1="8678.8799" x2="7523.8501" y2="8990.6797"><stop offset="0" stop-color="#BC67EA"/><stop offset="1" stop-color="#01ACFF"/></linearGradient><linearGradient id="b" gradientUnits="userSpaceOnUse" x1="12402.1" y1="8678.8799" x2="12502.7" y2="8990.6797"><stop offset="0" stop-color="#BC67EA"/><stop offset="1" stop-color="#01ACFF"/></linearGradient><linearGradient id="c" gradientUnits="userSpaceOnUse" x1="5034.1401" y1="7855.6602" x2="4157.3999" y2="9077.6504" gradientTransform="translate(-2909.4269,-6840.6666)"><stop offset="0" stop-color="#01ACFF"/><stop offset="1" stop-color="#BC67EA"/></linearGradient><linearGradient id="d" gradientUnits="userSpaceOnUse" x1="13170.5" y1="7665.9702" x2="12901.8" y2="8223.3398" gradientTransform="translate(-2909.4269,-6840.6666)"><stop offset="0" stop-color="#01ACFF"/><stop offset="1" stop-color="#007DBC"/></linearGradient></defs><polygon points="11250,8813 11250,8857 13655,8857 13655,8813" fill="url(#b)" transform="translate(-2909.4269,-6840.6666)"/><path d="m 1109.5731,2120.3334 h 1037 l 871,-872 -871,-871 H 354.57306 l 300,300 37,37 h 527.00004 c 38,-96 182,-69 182,34 0,104 -144,130 -182,34 h -153 -306.00004 l 129,129 H 1925.5731 l 338,337 -338,338 h -283 l 338,-338 -138,-137 h -181 l 137,137 c -158,159 -317,318 -476,477 h 13 633 l 458,-459 c -15,-34 -12,-71 20,-104 33,-32 96,-36 133,0 37,37 32,101 0,133 -32,33 -70,35 -104,20 l -153,153 -257,257 h 1 l -68,68 h -671 c -14,35 -42,60 -88,60 -46,0 -94,-42 -94,-94 1,-70 74,-112 133,-87 l 424,-423 -138,-138 h -198 -97 -181 l 137,137 -871.00004,872 v 181 l 196,-196 203,-202 c -41,-95 80,-178 153,-105 73,73 -10,194 -105,153 l -447,447 v 476 z m 286,-845 c 0,19 15,34 34,34 19,0 34,-15 34,-34 0,-19 -15,-34 -34,-34 -19,0 -34,15 -34,34 z m 41,-94 v 0 c 21,1 41,10 59,28 73,73 -9,193 -104,152 l -259,259 v 0 l -78,79 v 117 177 l -376.00004,375 -64,65 c 41,94 -79,177 -153,104 -72,-73 10,-194 105,-153 l 419,-419 v -295 l 358.00004,-357 c -18,-42 -5,-82 22,-106 v 0 l 2,-2 v 0 0 c 20,-17 43,-26 69,-24 z m -197,544 c 19,0 34,15 34,34 0,18 -15,34 -34,34 -19,0 -34,-16 -34,-34 0,-19 15,-34 34,-34 z m 199,208 c 19,0 34,15 34,34 0,19 -15,34 -34,34 -19,0 -34,-15 -34,-34 0,-19 15,-34 34,-34 z m -910.00004,503 c 19,0 34,16 34,34 0,19 -15,34 -34,34 -19,0 -34,-15 -34,-34 0,-18 15,-34 34,-34 z m 311,-605 c 19,0 34,15 34,34 0,19 -15,34 -34,34 -19,0 -34,-15 -34,-34 0,-19 15,-34 34,-34 z m 1674.00004,-636 c 18,0 34,15 34,34 0,19 -16,34 -34,34 -19,0 -35,-15 -35,-34 0,-19 16,-34 35,-34 z m -93,-348 c 19,0 34,15 34,34 0,19 -15,34 -34,34 -19,0 -34,-15 -34,-34 0,-19 15,-34 34,-34 z m -1114,-125 c 18,0 34,15 34,34 0,19 -16,34 -34,34 -19,0 -34,-15 -34,-34 0,-19 15,-34 34,-34 z m 302,-216 c 19,0 35,15 35,34 0,19 -16,34 -35,34 -18,0 -34,-15 -34,-34 0,-19 16,-34 34,-34 z m -840.00004,0 c 19,0 34,15 34,34 0,19 -15,34 -34,34 -19,0 -34,-15 -34,-34 0,-19 15,-34 34,-34 z m 798.00004,276 -208,-208 H 854.57306 c -39,100 -182,66 -182,-34 1,-101 141,-133 182,-34 h 167.00004 365 l 130,130 78,78 h 413 l 295,295 h 295 l 239,239 -419,419 -165,165 -116,116 -53,53 h -14 -83 -13 -447 c -14,35 -42,60 -88,60 -46,0 -94,-42 -94,-94 0,-52 48,-94 94,-94 46,0 74,25 88,60 h 447 82 l 265,-266 419,-419 -171,-172 h -108 -186 l -296,-294 z m 498,-208 h -185 -180 c -14,35 -42,60 -87,60 -128,-1 -132,-187 0,-188 45,0 73,25 87,60 h 394 l 100,100 189,189 c 101,-44 177,79 104,152 -75,76 -197,-3 -152,-104 z" fill="url(#c)"/><path d="m 4116.5731,914.3334 c 0,-79 -24,-141 -72,-185 -48,-45 -110,-67 -186,-67 h -397 v 72 h 84 223 59 c 138,0 205,67 205,180 0,59 -18,104 -54,135 -35,31 -81,46 -138,46 h -72 -223 -84 v 450 h 84 v -378 h 313 c 76,0 138,-23 186,-67 48,-45 72,-106 72,-186 z m 4496,-252 v 72 h 84 492 32 v -72 z m 0,392 v 491 h 614 v -71 h -530 v -348 h 492 v -72 h -492 z m -839,-392 v 883 h 579 v -71 h -495 v -812 z m -320,632 c -4,-116 -68,-199 -187,-215 v -3 c 97,-23 154,-106 154,-199 0,-159 -130,-215 -277,-215 h -380 v 36 36 315 496 h 84 296 c 198,0 310,-86 310,-251 z m -606,-560 h 147 141 c 133,0 201,53 201,166 -4,108 -103,149 -195,149 h -147 -147 z m 522,558 c 0,123 -78,182 -226,182 h -296 v -353 h 289 c 149,0 233,57 233,171 z m -1069,-630 v 883 h 84 v -883 z m -736,-18 c -263,0 -420,207 -420,460 0,256 151,460 417,460 140,0 250,-61 306,-180 h 2 l 11,161 h 61 v -449 h -375 v 72 h 301 c 0,193 -120,324 -306,324 -227,0 -333,-190 -333,-388 0,-216 118,-389 336,-389 141,0 247,81 277,188 h 85 c -43,-165 -186,-259 -362,-259 z m -594,901 -347,-883 h -94 l -355,883 h 90 c 179,-460 111,-288 308,-799 v 0 c 201,530 126,338 307,799 z" fill="#fff"/><path d="m 9931.5731,843.3334 c -72,231 -146,461 -215,693 l -3,9 h -220 l 297,-883 h 284.9999 l 292,883 h -223 l -3,-9 c -69,-232 -140,-462 -209.9999,-693 z m 612.9999,-181 h 215 v 883 h -215 z" fill="url(#d)"/><path d="m 6363.5731,1742.3334 c -151,0 -235,118 -235,253 0,143 91,251 234,251 125,0 193,-79 206,-180 h -82 c -11,63 -53,108 -124,108 -105,0 -151,-89 -151,-179 0,-96 50,-182 151,-182 66,0 106,36 119,81 h 82 c -16,-95 -93,-152 -200,-152 z m 1020,492 v -481 h -122 l -129,375 h -1 l -133,-375 h -123 v 481 h 80 v -385 h 1 l 137,385 h 73 l 136,-387 h 2 v 387 z m 696,-137 c 0,-70 -45,-111 -128,-133 l -114,-30 c -33,-9 -56,-22 -56,-57 0,-47 46,-68 97,-68 59,0 97,29 101,71 h 82 c -2,-95 -87,-138 -180,-138 -99,0 -181,49 -181,141 0,66 34,104 106,123 l 104,27 c 60,16 87,37 87,71 0,51 -50,74 -112,74 -65,0 -118,-27 -118,-85 v -3 h -83 v 5 c 0,97 86,151 196,151 104,0 199,-44 199,-149 z" fill="#fff"/><polygon points="8777,8813 8777,8857 6371,8857 6371,8813" fill="url(#a)" transform="translate(-2909.4269,-6840.6666)"/></svg>';
 
-            $disk = Storage::disk( config( 'cms.disk', 'public' ) );
-            $path = rtrim( 'cms/' . $this->tenant, '/' ) . '/pagible-logo.svg';
-
-            if( !$disk->put( $path, $svg ) ) {
-                throw new \Aimeos\Cms\Exception( sprintf( 'Unable to store logo "%s"', $path ) );
-            }
-
-            $data = [
-                'mime' => 'image/svg+xml',
-                'lang' => 'en',
-                'name' => 'PagibleAI CMS logo',
-                'path' => $path,
-                'previews' => ['500' => $path],
-                'description' => ['en' => 'PagibleAI CMS wordmark with a blue and purple circuit symbol'],
-            ];
-
-            $file = File::forceCreate( $data + ['editor' => 'demo'] );
-            $version = $file->versions()->forceCreate( [
-                'lang' => 'en',
-                'data' => $data,
-                'editor' => 'demo',
-            ] );
-
-            $file->forceFill( ['latest_id' => $version->id] )->saveQuietly();
-            $file->publish( $version );
-            $this->logoFile = (string) $file->refresh()->id;
+            $this->logoFile = $this->svgFile(
+                $svg,
+                'pagible-logo.svg',
+                'PagibleAI CMS logo',
+                'PagibleAI CMS wordmark with a blue and purple circuit symbol',
+            );
         }
 
         return $this->logoFile;

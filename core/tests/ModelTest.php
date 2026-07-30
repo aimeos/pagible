@@ -210,16 +210,28 @@ class ModelTest extends CoreTestAbstract
     public function testDefaultTenantUsesNormalizedStoragePath(): void
     {
         app()->instance( Tenancy::class, new Tenancy( '' ) );
-        config( ['cms.disk' => 'default-path'] );
+        config( ['cms.disks.public.name' => 'default-path'] );
         Storage::fake( 'default-path' );
 
         $file = ( new File() )->addFile(
             UploadedFile::fake()->create( 'document.txt', 1, 'text/plain' ),
         );
 
-        $this->assertStringStartsWith( 'cms/', $file->path );
+        $this->assertStringStartsWith( 'cms/' . strtolower( $file->id ) . '/', $file->path );
         $this->assertStringNotContainsString( 'cms//', $file->path );
         Storage::disk( 'default-path' )->assertExists( $file->path );
+    }
+
+
+    public function testFileOwnerRecognizesOnlyItsUuidDirectory(): void
+    {
+        $id = ( new File() )->newUniqueId();
+
+        $this->assertSame( strtolower( $id ), File::owner( 'test', 'cms/test/' . $id . '/file.pdf' ) );
+        $this->assertSame( strtolower( $id ), File::owner( '', 'cms/' . $id . '/file.pdf' ) );
+        $this->assertNull( File::owner( 'test', 'cms/test/file.pdf' ) );
+        $this->assertNull( File::owner( 'test', 'https://example.com/file.pdf' ) );
+        $this->assertNull( File::owner( '', 'cms/other/' . $id . '/file.pdf' ) );
     }
 
 
@@ -232,6 +244,36 @@ class ModelTest extends CoreTestAbstract
         $this->expectExceptionMessage( 'Remote file exceeds the maximum size of 0.001 MB' );
 
         ( new File( ['name' => 'remote.png'] ) )->addPreviews( 'http://127.0.0.1/remote.png' );
+    }
+
+
+    public function testPrivateRemoteFileHonorsContentLengthLimit(): void
+    {
+        config( ['cms.allow-internal' => true, 'cms.upload.filesize' => 0.001] );
+        Http::fake( ['*' => Http::response( 'x', 200, ['Content-Length' => '4097'] )] );
+
+        $file = new File( ['name' => 'remote.txt'] );
+        $file->disk = 'private';
+
+        $this->expectException( \Aimeos\Cms\Exception::class );
+        $this->expectExceptionMessage( 'Remote file exceeds the maximum upload size' );
+
+        $file->prepare( 'http://127.0.0.1/remote.txt' );
+    }
+
+
+    public function testPrivateRemoteFileHonorsStreamedUploadLimit(): void
+    {
+        config( ['cms.allow-internal' => true, 'cms.upload.filesize' => 0.001] );
+        Http::fake( ['*' => Http::response( str_repeat( 'x', 4097 ), 200 )] );
+
+        $file = new File( ['name' => 'remote.txt'] );
+        $file->disk = 'private';
+
+        $this->expectException( \Aimeos\Cms\Exception::class );
+        $this->expectExceptionMessage( 'Remote file exceeds the maximum upload size' );
+
+        $file->prepare( 'http://127.0.0.1/remote.txt' );
     }
 
 

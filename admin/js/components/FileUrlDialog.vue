@@ -1,28 +1,14 @@
 /** @license MIT, https://opensource.org/license/mit */
 
 <script>
-import gql from 'graphql-tag'
+import { ADD_FILE, normalizeFile } from '../files'
 import { useAppStore, useMessageStore } from '../stores'
-import { frozenParse } from '../utils'
 import { mdiClose, mdiCheck, mdiDelete } from '@mdi/js'
-
-const ADD_URL_FILE = gql`
-  mutation ($input: FileInput) {
-    addFile(input: $input) {
-      id
-      mime
-      name
-      path
-      previews
-      updated_at
-      editor
-    }
-  }
-`
 
 export default {
   props: {
     modelValue: { type: Boolean, required: true },
+    disk: { type: String, default: 'public' },
     multiple: { type: Boolean, required: false },
     mime: { type: String, default: '' }
   },
@@ -61,8 +47,9 @@ export default {
         promises.push(
           this.$apollo
             .mutate({
-              mutation: ADD_URL_FILE,
+              mutation: ADD_FILE,
               variables: {
+                disk: this.disk,
                 input: {
                   path: item.path,
                   name: item.name
@@ -74,9 +61,7 @@ export default {
                 throw response.errors
               }
 
-              Object.assign(item, response.data.addFile, {
-                previews: frozenParse(response.data.addFile.previews)
-              })
+              Object.assign(item, normalizeFile(response.data.addFile))
             })
             .catch((error) => {
               this.messages.add(

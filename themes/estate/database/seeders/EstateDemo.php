@@ -7,11 +7,9 @@
 namespace Database\Seeders;
 
 use Aimeos\Cms\Models\Element;
-use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Utils;
 use Aimeos\Cms\Validation;
-use Illuminate\Support\Facades\Storage;
 
 
 /**
@@ -705,32 +703,12 @@ class EstateDemo extends AbstractDemo
 </svg>
 SVG;
 
-            $disk = Storage::disk( config( 'cms.disk', 'public' ) );
-            $path = rtrim( 'cms/' . $this->tenant, '/' ) . '/estate-logo.svg';
-
-            if( !$disk->put( $path, $svg ) ) {
-                throw new \Aimeos\Cms\Exception( sprintf( 'Unable to store logo "%s"', $path ) );
-            }
-
-            $data = [
-                'mime' => 'image/svg+xml',
-                'lang' => 'en',
-                'name' => 'Estate logo',
-                'path' => $path,
-                'previews' => ['500' => $path],
-                'description' => ['en' => 'Estate portfolio logo'],
-            ];
-
-            $file = File::forceCreate( $data + ['editor' => 'demo'] );
-            $version = $file->versions()->forceCreate( [
-                'lang' => 'en',
-                'data' => $data,
-                'editor' => 'demo',
-            ] );
-
-            $file->forceFill( ['latest_id' => $version->id] )->saveQuietly();
-            $file->publish( $version );
-            $this->logoFile = (string) $file->refresh()->id;
+            $this->logoFile = $this->svgFile(
+                $svg,
+                'estate-logo.svg',
+                'Estate logo',
+                'Estate portfolio logo',
+            );
         }
 
         return $this->logoFile;

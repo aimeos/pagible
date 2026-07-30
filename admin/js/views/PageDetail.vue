@@ -45,6 +45,7 @@ const PAGE_DETAIL_FIELDS = `
   created_at
   editor
   files {
+    disk
     id
     lang
     mime
@@ -64,6 +65,7 @@ const PAGE_DETAIL_FIELDS = `
     editor
     updated_at
     files {
+      disk
       id
       lang
       mime

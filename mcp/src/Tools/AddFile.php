@@ -36,6 +36,7 @@ class AddFile extends Tool
 
         $v = $request->validate([
             'url' => 'required|string|max:500',
+            'disk' => 'sometimes|string|in:public,private',
             'name' => 'string|max:255',
             'lang' => 'nullable|string|max:5',
             'description' => 'array',
@@ -50,6 +51,7 @@ class AddFile extends Tool
         }
 
         $file = new File();
+        $file->disk = $v['disk'] ?? 'public';
         $file->fill( array_intersect_key( $v, array_flip( ['name', 'lang'] ) ) );
 
         if( isset( $v['description'] ) ) {
@@ -85,6 +87,9 @@ class AddFile extends Tool
             'url' => $schema->string()
                 ->description('The URL of the file to add, e.g., "https://example.com/photo.jpg".')
                 ->required(),
+            'disk' => $schema->string()
+                ->enum( ['public', 'private'] )
+                ->description('Storage visibility. Defaults to "public"; use "private" to protect it with page access.'),
             'name' => $schema->string()
                 ->description('Display name for the file. If omitted, the URL is used as the name.'),
             'lang' => $schema->string()

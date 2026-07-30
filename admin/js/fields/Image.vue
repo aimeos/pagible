@@ -61,7 +61,7 @@ export default {
         }
         image.onload = () => { cleanup(); resolve() }
         image.onerror = (err) => { cleanup(); reject(err) }
-        image.src = this.url(Object.values(data.previews).shift() || data.path)
+        image.src = this.fileurl(data, Object.values(data.previews).shift() || data.path)
       })
         .then(() => {
           return File.methods.handle.call(this, data, path)
@@ -98,8 +98,8 @@ export default {
           />
           <v-img
             v-if="file.path"
-            :srcset="srcset(file.previews)"
-            :src="url(Object.values(file.previews)[0] ?? file.path)"
+            :srcset="filesrcset(file)"
+            :src="fileurl(file, Object.values(file.previews)[0] ?? file.path)"
             :alt="file.name"
             :draggable="false"
           />
@@ -202,6 +202,18 @@ export default {
       </v-row>
     </v-col>
   </v-row>
+
+  <v-switch
+    v-if="!readonly"
+    :disabled="protecting"
+    :loading="protecting"
+    :model-value="protect"
+    @update:model-value="setProtect($event)"
+    :label="$gettext('Protect with page access')"
+    color="primary"
+    density="compact"
+    hide-details
+  />
 
   <Teleport to="body">
     <FileDialog v-model="vfiles" @add="addFromDialog" :filter="IMAGE_MIME_FILTER" grid />

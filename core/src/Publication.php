@@ -115,10 +115,12 @@ final class Publication
             return;
         }
 
-        Scout::mute( Version::TYPES, function() use ( $model, $version ) {
-            $this->prepare( collect( [$version] ) );
-            $this->apply( $model, $version );
-        } );
+        Utils::storageLock( Tenancy::value(), fn() =>
+            Scout::mute( Version::TYPES, function() use ( $model, $version ) {
+                $this->prepare( collect( [$version] ) );
+                $this->apply( $model, $version );
+            } ),
+        );
 
         $this->flush();
     }
@@ -221,7 +223,9 @@ final class Publication
             },
         );
 
-        [$items, $pending] = $at ? $publish() : Scout::mute( Version::TYPES, $publish );
+        [$items, $pending] = Utils::storageLock( Tenancy::value(),
+            fn() => $at ? $publish() : Scout::mute( Version::TYPES, $publish ),
+        );
 
         if( !$at ) {
             $publication->flush();

@@ -66,6 +66,93 @@ describe('FileListItems', () => {
     cy.get('button.btn-add').should('exist')
   })
 
+  it('offers public-by-default page access protection for uploads', () => {
+    mountList({ embed: false }, { 'file:view': true, 'file:add': true }).then(({ wrapper }) => {
+      expect(wrapper.findComponent(FileListItems).vm.protect).to.equal(false)
+      cy.contains('.v-switch', 'Protect with page access').should('exist')
+    })
+  })
+
+  it('uploads files directly to the selected disk', () => {
+    const mutate = cy.stub().resolves({
+      data: {
+        addFile: {
+          disk: 'private',
+          id: 'file-1',
+          mime: 'application/pdf',
+          name: 'private.pdf',
+          path: 'cms/file-1/private.pdf',
+          previews: '{}',
+        },
+      },
+    })
+
+    mountList(
+      { embed: false },
+      { 'file:view': true, 'file:add': true },
+      { mutate },
+    ).then(({ wrapper }) => {
+      const vm = wrapper.findComponent(FileListItems).vm
+      const file = new File(['private'], 'private.pdf', { type: 'application/pdf' })
+      vm.protect = true
+
+      return vm.add({ target: { files: [file] } }).then(() => {
+        expect(mutate).to.have.been.calledOnce
+        expect(mutate.firstCall.args[0].variables).to.deep.equal({
+          disk: 'private',
+          file,
+        })
+      })
+    })
+  })
+
+  it('keeps the disk when loading versioned files', () => {
+    const query = cy.stub().resolves({
+      data: {
+        files: {
+          data: [{
+            disk: 'private',
+            id: 'file-1',
+            latest: {
+              data: '{"name":"private.pdf","path":"cms/file-1/private.pdf","previews":{}}',
+            },
+          }],
+          paginatorInfo: { lastPage: 1 },
+        },
+      },
+    })
+
+    mountList({}, { 'file:view': true }, { query }).then(({ wrapper }) => {
+      return wrapper.findComponent(FileListItems).vm.search().then((items) => {
+        expect(items[0].disk).to.equal('private')
+      })
+    })
+  })
+
+  it('shows the page access lock only for private files', () => {
+    mountList({}, { 'file:view': true }).then(({ wrapper }) => {
+      const vm = wrapper.findComponent(FileListItems).vm
+      const file = {
+        id: 'file-1',
+        mime: 'application/pdf',
+        name: 'file.pdf',
+        path: 'cms/file-1/file.pdf',
+        previews: {},
+        updated_at: '2026-01-01T00:00:00Z',
+      }
+
+      vm.items = [
+        { ...file, disk: 'public' },
+        { ...file, id: 'file-2', disk: 'private' },
+      ]
+      vm.loading = false
+
+      cy.get('.item-access')
+        .should('have.length', 1)
+        .and('have.attr', 'title', 'Protect with page access')
+    })
+  })
+
   it('hides add button when embed is true', () => {
     mountList({ embed: true }, { 'file:view': true, 'file:add': true })
     cy.get('button.btn-add').should('not.exist')

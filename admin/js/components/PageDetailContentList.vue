@@ -57,6 +57,7 @@ const ADD_ELEMENT = gql`
       editor
       updated_at
       files {
+        disk
         id
         lang
         mime

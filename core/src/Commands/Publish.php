@@ -13,6 +13,8 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 use Aimeos\Cms\Publication;
 use Aimeos\Cms\Scout;
+use Aimeos\Cms\Tenancy;
+use Aimeos\Cms\Utils;
 use Aimeos\Cms\Models\Base;
 use Aimeos\Cms\Models\Version;
 
@@ -81,14 +83,18 @@ class Publish extends Command
         $changed = new Publication();
         $conn = DB::connection( config( 'cms.db', 'sqlite' ) );
 
-        Scout::mute( Version::TYPES, function() use ( $at, $changed, $conn, &$failed, $versions ) {
+        Utils::storageLock( Tenancy::value(), function() use (
+            $at, $changed, $conn, &$failed, $versions
+        ) {
+            Scout::mute( Version::TYPES, function() use ( $at, $changed, $conn, &$failed, $versions ) {
 
-            foreach( $versions as $version )
-            {
-                if( $publication = $this->publishVersion( $conn, $version, $at, $failed ) ) {
-                    $changed->merge( $publication );
+                foreach( $versions as $version )
+                {
+                    if( $publication = $this->publishVersion( $conn, $version, $at, $failed ) ) {
+                        $changed->merge( $publication );
+                    }
                 }
-            }
+            } );
         } );
 
         $changed->flush();

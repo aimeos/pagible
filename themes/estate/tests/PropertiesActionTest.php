@@ -8,6 +8,7 @@
 namespace Tests;
 
 use Aimeos\Cms\Actions\Properties;
+use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Navigation;
 use Aimeos\Cms\Tenancy;
@@ -197,6 +198,32 @@ class PropertiesActionTest extends ThemeTestAbstract
 
         $this->assertSame( 1, $result->items->total() );
         $this->assertSame( 'Nested Property', $result->items->first()->title );
+    }
+
+
+    public function testKeepsPrivateDiskForAttachedFiles()
+    {
+        $root = Page::where( 'tag', 'root' )->firstOrFail();
+        $list = $this->addListPage( $root );
+        $file = File::firstOrFail();
+        $file->forceFill( ['disk' => 'private'] )->saveQuietly();
+        $this->addProperty( $list, [
+            'path' => 'private-file-property',
+            'title' => 'Private File Property',
+            'files' => [$file->id],
+        ] );
+        $request = Request::create( '/properties', 'GET' );
+        $request->setUserResolver( fn() => null );
+
+        $result = ( new Properties() )( $request, $list, (object) [
+            'data' => (object) [
+                'limit' => 10,
+                'order' => '-created_at',
+                'parent-page' => (object) ['value' => $list->id],
+            ],
+        ] );
+
+        $this->assertSame( 'private', $result->items->first()->files->first()->disk );
     }
 
 

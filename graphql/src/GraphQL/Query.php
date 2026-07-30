@@ -74,7 +74,7 @@ final class Query
         $filter = $args['filter'] ?? [];
         $limit = min( max( (int) ( $args['first'] ?? 100 ), 1 ), 100 );
         $page = max( (int) ( $args['page'] ?? 1 ), 1 );
-        $available = ['lang', 'name', 'mime', 'path', 'previews', 'description', 'transcription', 'editor',
+        $available = ['disk', 'lang', 'name', 'mime', 'path', 'previews', 'description', 'transcription', 'editor',
             'created_at', 'updated_at', 'deleted_at'];
         $fields = $resolveInfo
             ? (array) ( $resolveInfo->getFieldSelection( 1 )['data'] ?? [] )

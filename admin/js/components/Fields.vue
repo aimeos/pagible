@@ -168,6 +168,16 @@ export default {
       return this.dirty.has(code)
     },
 
+    isPrivate(code) {
+      const value = this.data[code]
+      const files = Array.isArray(value) ? value : [value]
+
+      return files.some((file) => {
+        const id = typeof file === 'string' ? file : file?.id
+        return id && this.assets?.[id]?.disk === 'private'
+      })
+    },
+
     resetDirty() {
       this.dirty.clear()
       for (const k in this.original) delete this.original[k]
@@ -231,6 +241,7 @@ export default {
     class="item"
     :class="{
       error: errors[code],
+      protected: isPrivate(code),
       ...changedState(changed, code)
     }"
   >
@@ -335,6 +346,10 @@ export default {
   margin: 24px 0;
   padding-inline-start: 8px;
   border-inline-start: 3px solid #d0d8e0;
+}
+
+.item.protected {
+  border-inline-start: 3px solid rgb(var(--v-theme-warning));
 }
 
 .item.error {
