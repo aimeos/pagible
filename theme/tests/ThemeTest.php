@@ -66,11 +66,11 @@ class ThemeTest extends ThemeTestAbstract
 		$this->assertSame( 'number', $price['amount']['type'] );
 		$this->assertSame( 2, $price['amount']['precision'] );
 		$this->assertSame( 0.01, $price['amount']['step'] );
-		$this->assertSame( '^[A-Z]{3}$', $price['currency']['regex'] );
+		$this->assertSame( '^[A-Z]{3}$', $price['currency']['pattern'] );
+		$this->assertTrue( $price['currency']['uppercase'] );
 		$this->assertSame( 'Price unit', $price['unit']['label'] );
 		$this->assertSame( 'Target page or link', $items['item']['url']['label'] );
 		$this->assertArrayNotHasKey( 'success', $items['item'] );
-		$this->assertArrayNotHasKey( 'uppercase', $price['currency'] );
 		$this->assertArrayNotHasKey( 'id', $items['item'] );
 		$this->assertArrayNotHasKey( 'id', $prices['item'] );
 	}
