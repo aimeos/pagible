@@ -1,0 +1,433 @@
+{
+    "label": "Estate",
+    "description": "Clean premium real-estate showcase with editorial spacing, strong image-led storytelling, and clear conversion pathways for residential, rental, and commercial property journeys.",
+    "maintainer": "Aimeos",
+    "email": "info@aimeos.org",
+    "website": "https://pagible.com",
+    "types": {
+        "page": {
+            "sections": [
+                "main",
+                "footer"
+            ]
+        },
+        "docs": {
+            "sections": [
+                "main",
+                "footer"
+            ]
+        },
+        "blog": {
+            "sections": [
+                "main",
+                "footer"
+            ]
+        },
+        "property": {
+            "sections": [
+                "main",
+                "footer"
+            ]
+        }
+    },
+    "content": {
+        "property": {
+            "group": "content",
+            "icon": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M4 8V6h2v2h12V6h2v2h1.75c.69 0 1.25.56 1.25 1.25V19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9.25C2 8.56 2.56 8 3.25 8H4m2 3.75V18h12V11.75M6 7.5v3.5h12V7.5H6Zm11.25 3.75v-1h-1v1h1Zm-2 0v-1h-1v1h1Zm-2 0v-1h-1v1h1Zm-2 0v-1h-1v1h1Z\" /></svg>",
+            "fields": {
+                "text": {
+                    "type": "markdown",
+                    "label": "description",
+                    "min": 1,
+                    "max": 500
+                },
+                "location": {
+                    "type": "markdown",
+                    "label": "Location",
+                    "min": 1
+                },
+                "reference": {
+                    "type": "string",
+                    "label": "Reference"
+                },
+                "property_type": {
+                    "type": "select",
+                    "label": "Type",
+                    "required": true,
+                    "options": [
+                        {
+                            "value": "apartment",
+                            "label": "Apartment"
+                        },
+                        {
+                            "value": "penthouse",
+                            "label": "Penthouse"
+                        },
+                        {
+                            "value": "loft",
+                            "label": "Loft"
+                        },
+                        {
+                            "value": "house",
+                            "label": "House"
+                        },
+                        {
+                            "value": "villa",
+                            "label": "Villa"
+                        },
+                        {
+                            "value": "land",
+                            "label": "Land"
+                        },
+                        {
+                            "value": "office",
+                            "label": "Office"
+                        },
+                        {
+                            "value": "retail",
+                            "label": "Retail"
+                        },
+                        {
+                            "value": "warehouse",
+                            "label": "Warehouse"
+                        },
+                        {
+                            "value": "industrial",
+                            "label": "Industrial"
+                        },
+                        {
+                            "value": "other",
+                            "label": "Other"
+                        }
+                    ]
+                },
+                "offer_type": {
+                    "type": "select",
+                    "label": "Offer type",
+                    "default": "sale",
+                    "required": true,
+                    "options": [
+                        {
+                            "value": "sale",
+                            "label": "Sale"
+                        },
+                        {
+                            "value": "rent",
+                            "label": "Rent"
+                        }
+                    ]
+                },
+                "address": {
+                    "type": "string",
+                    "label": "Address"
+                },
+                "zip_code": {
+                    "type": "string",
+                    "label": "Post code"
+                },
+                "price": {
+                    "type": "number",
+                    "min": 0,
+                    "required": true,
+                    "label": "Price"
+                },
+                "currency": {
+                    "type": "string",
+                    "default": "EUR",
+                    "min": 3,
+                    "max": 3,
+                    "pattern": "^[A-Z]{3}$",
+                    "placeholder": "EUR",
+                    "uppercase": true,
+                    "required": true,
+                    "label": "Currency"
+                },
+                "price_period": {
+                    "type": "select",
+                    "label": "Price period (rent only)",
+                    "options": [
+                        {
+                            "value": "month",
+                            "label": "Month"
+                        },
+                        {
+                            "value": "week",
+                            "label": "Week"
+                        },
+                        {
+                            "value": "year",
+                            "label": "Year"
+                        }
+                    ]
+                },
+                "status": {
+                    "type": "select",
+                    "label": "Status",
+                    "default": "available",
+                    "required": true,
+                    "options": [
+                        {
+                            "value": "available",
+                            "label": "Available"
+                        },
+                        {
+                            "value": "under_offer",
+                            "label": "Under offer"
+                        },
+                        {
+                            "value": "sold",
+                            "label": "Sold"
+                        },
+                        {
+                            "value": "rented",
+                            "label": "Rented"
+                        }
+                    ]
+                },
+                "available_from": {
+                    "type": "date",
+                    "label": "Available from"
+                },
+                "district": {
+                    "type": "string",
+                    "label": "District"
+                },
+                "city": {
+                    "type": "string"
+                },
+                "country": {
+                    "type": "string",
+                    "label": "Country"
+                },
+                "area": {
+                    "type": "number",
+                    "min": 1,
+                    "step": 0.01,
+                    "required": true,
+                    "label": "Area"
+                },
+                "area_unit": {
+                    "type": "string",
+                    "default": "m²",
+                    "min": 1,
+                    "max": 16,
+                    "required": true,
+                    "label": "Area unit"
+                },
+                "living_area": {
+                    "type": "number",
+                    "min": 0,
+                    "step": 0.01,
+                    "label": "Living area"
+                },
+                "plot_area": {
+                    "type": "number",
+                    "min": 0,
+                    "step": 0.01,
+                    "label": "Plot area"
+                },
+                "rooms": {
+                    "type": "number",
+                    "min": 0,
+                    "step": 0.5,
+                    "label": "Rooms"
+                },
+                "bedrooms": {
+                    "type": "number",
+                    "min": 0,
+                    "step": 1
+                },
+                "bathrooms": {
+                    "type": "number",
+                    "min": 0,
+                    "step": 1
+                },
+                "year_built": {
+                    "type": "number",
+                    "min": 1000,
+                    "max": 9999,
+                    "label": "Year built"
+                },
+                "values": {
+                    "type": "table",
+                    "label": "Optional values",
+                    "default": [
+                        [
+                            "",
+                            ""
+                        ]
+                    ]
+                },
+                "features": {
+                    "type": "markdown",
+                    "label": "Features",
+                    "min": 1
+                },
+                "documents": {
+                    "type": "items",
+                    "label": "Documents",
+                    "item": {
+                        "title": {
+                            "type": "string",
+                            "label": "Document title"
+                        },
+                        "file": {
+                            "type": "file",
+                            "label": "Document",
+                            "required": true
+                        }
+                    }
+                },
+                "files": {
+                    "type": "images",
+                    "label": "Gallery",
+                    "required": true,
+                    "min": 1
+                }
+            }
+        },
+        "properties": {
+            "group": "content",
+            "icon": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M3 4h18v2H3V4M3 10h18v2H3v-2M3 16h18v2H3v-2M5 20h14v2H5v-2M5 2h14v2H5V2M9 6h6v2H9V6M9 12h6v2H9v-2M9 18h6v2H9v-2M5 4v16h14V4H5z\" /></svg>",
+            "fields": {
+                "title": {
+                    "type": "string"
+                },
+                "layout": {
+                    "type": "select",
+                    "default": "cards",
+                    "options": [
+                        {
+                            "value": "cards",
+                            "label": "Cards"
+                        },
+                        {
+                            "value": "list",
+                            "label": "List"
+                        }
+                    ]
+                },
+                "filters": {
+                    "type": "boolean",
+                    "label": "Show filters",
+                    "default": true
+                },
+                "parent-page": {
+                    "type": "autocomplete",
+                    "api-type": "GQL",
+                    "query": "query{pages(filter:{title: _term_}){\n  data {\n    id\n    title\n    latest {\n      data\n    }\n  }\n}}",
+                    "list-key": "pages/data",
+                    "item-title": "title",
+                    "item-value": "id"
+                },
+                "order": {
+                    "type": "select",
+                    "options": [
+                        {
+                            "value": "_lft",
+                            "label": "Position"
+                        },
+                        {
+                            "value": "-created_at",
+                            "label": "Latest"
+                        },
+                        {
+                            "value": "created_at",
+                            "label": "Oldest"
+                        }
+                    ]
+                },
+                "limit": {
+                    "type": "number",
+                    "min": 1,
+                    "max": 100,
+                    "default": 6
+                },
+                "action": {
+                    "type": "hidden",
+                    "value": "\\Aimeos\\Cms\\Actions\\Properties"
+                }
+            }
+        }
+    },
+    "config": {
+        "theme": {
+            "group": "theme",
+            "icon": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M3 21h18V9l-9-6-9 6v12Zm2-8h14v6H5v-6Zm1.5-5V9.8L12 6.4l5.5 3.6V16h-11Zm8 5V12h-2v4h2Zm1-2h2v-2h-2v2Z\"/></svg>",
+            "fields": {
+                "--pico-font-family-sans-serif": {
+                    "type": "string",
+                    "default": "'Helvetica Neue', Helvetica, Arial, sans-serif"
+                },
+                "--pico-font-family-display": {
+                    "type": "string",
+                    "default": "'Helvetica Neue', Helvetica, Arial, sans-serif"
+                },
+                "--pico-color": {
+                    "type": "color",
+                    "default": "#242424"
+                },
+                "--pico-background-color": {
+                    "type": "color",
+                    "default": "#FFFFFF"
+                },
+                "--pico-text-selection-color": {
+                    "type": "color",
+                    "default": "#B5122B22"
+                },
+                "--pico-contrast": {
+                    "type": "color",
+                    "default": "#242424"
+                },
+                "--pico-contrast-hover": {
+                    "type": "color",
+                    "default": "#000000"
+                },
+                "--pico-contrast-inverse": {
+                    "type": "color",
+                    "default": "#FFFFFF"
+                },
+                "--pico-primary": {
+                    "type": "color",
+                    "default": "#B5122B"
+                },
+                "--pico-primary-background": {
+                    "type": "color",
+                    "default": "#B5122B0F"
+                },
+                "--pico-primary-hover": {
+                    "type": "color",
+                    "default": "#8F0D22"
+                },
+                "--pico-primary-hover-background": {
+                    "type": "color",
+                    "default": "#8F0D220F"
+                },
+                "--pico-secondary": {
+                    "type": "color",
+                    "default": "#242424"
+                },
+                "--pico-secondary-background": {
+                    "type": "color",
+                    "default": "#2424240F"
+                },
+                "--pico-secondary-hover": {
+                    "type": "color",
+                    "default": "#000000"
+                },
+                "--pico-secondary-hover-background": {
+                    "type": "color",
+                    "default": "#0000000F"
+                },
+                "--pico-border-radius": {
+                    "type": "string",
+                    "default": "0"
+                },
+                "--pico-nav-breadcrumb-divider": {
+                    "type": "string",
+                    "default": "—"
+                }
+            }
+        }
+    }
+}

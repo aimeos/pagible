@@ -1,4 +1,6 @@
 {
+    "Go to next": "Sonrakine git",
+    "Go to previous": "Öncekine git",
     "Download file": "Dosyayı indirin",
     "Get Started": "Başlayın",
     "Skip to main content": "Ana içeriğe geç",
@@ -9,6 +11,7 @@
     "Close sidebar": "Kenar çubuğunu kapat",
     "Close navigation": "Navigasyonu kapat",
     "Search": "Arama",
+    "Login": "Giriş yap",
     "Open navigation": "Navigasyonu aç",
     "Breadcrumb navigation": "Breadcrumb navigasyon",
     "Name": "İsim",

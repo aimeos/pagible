@@ -1,4 +1,6 @@
 {
+    "Go to next": "Go to next",
+    "Go to previous": "Go to previous",
     "Download file": "Download file",
     "Get Started": "Get Started",
     "Skip to main content": "Skip to main content",
@@ -9,6 +11,7 @@
     "Close sidebar": "Close sidebar",
     "Close navigation": "Close navigation",
     "Search": "Search",
+    "Login": "Login",
     "Open navigation": "Open navigation",
     "Breadcrumb navigation": "Breadcrumb navigation",
     "Name": "Name",

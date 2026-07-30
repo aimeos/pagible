@@ -5,7 +5,7 @@
 @if($file = cms($files, $data->file?->id ?? null))
 	<audio preload="metadata" controls
 		title="{{ cms($file, 'description')?->{cms($page, 'lang')} ?? '' }}"
-		src="{{ cmsurl(cms($file, 'path')) }}">
+		src="{{ cmsasset($page, $file) }}">
 		<div class="transcription" lang="{{ cms($page, 'lang') }}">{{ cms($file, 'transcription')?->{cms($page, 'lang')} ?? '' }}</div>
 	</audio>
 	<div class="caption"></div>
@@ -14,7 +14,7 @@
 		"@@context": "https://schema.org",
 		"@@type": "AudioObject",
 		"name": {!! cmsjson(cms($file, 'description')?->{cms($page, 'lang')} ?? cms($page, 'title')) !!},
-		"contentUrl": {!! cmsjson(cmsurl(cms($file, 'path'))) !!},
+		"contentUrl": {!! cmsjson(cmsasset($page, $file)) !!},
 		"uploadDate": "{{ $page->created_at->toIso8601String() }}"
 		@if(cms($file, 'transcription')?->{cms($page, 'lang')} ?? null)
 			, "transcript": {!! cmsjson(cms($file, 'transcription')->{cms($page, 'lang')}) !!}

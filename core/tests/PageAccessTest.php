@@ -8,7 +8,7 @@ namespace Tests;
 
 use Aimeos\Cms\Access;
 use Aimeos\Cms\Exception;
-use Aimeos\Cms\Events\PagesInvalidated;
+use Aimeos\Cms\Events\PageInvalidated;
 use Aimeos\Cms\Jobs\IndexModels;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Models\PageAccess;
@@ -40,7 +40,7 @@ class PageAccessTest extends CoreTestAbstract
         parent::setUp();
         Access::using( fn() => ['alpha', 'beta', 'denied', 'gamma', 'member'] );
         $this->invalidator = new PageInvalidationSpy();
-        Event::listen( PagesInvalidated::class, [$this->invalidator, 'handle'] );
+        Event::listen( PageInvalidated::class, [$this->invalidator, 'handle'] );
     }
 
 
@@ -91,7 +91,7 @@ class PageAccessTest extends CoreTestAbstract
         }
 
         $this->assertFalse( PageAccess::where( 'page_id', $page->id )->exists() );
-        $this->assertSame( [], $this->invalidator->batches );
+        $this->assertSame( [], $this->invalidator->events );
     }
 
 
@@ -257,7 +257,7 @@ class PageAccessTest extends CoreTestAbstract
     }
 
 
-    public function testInvalidatesBatchesAfterDatabaseChanges(): void
+    public function testInvalidatesRoutesAfterDatabaseChanges(): void
     {
         $page = Page::where( 'path', 'hidden' )->firstOrFail();
         $public = Page::where( 'path', 'blog' )->firstOrFail();
@@ -296,7 +296,7 @@ class PageAccessTest extends CoreTestAbstract
         $this->assertSame( 1, PageAccess::set( [$page->id], ['member'] ) );
         $this->assertSame( 1, PageAccess::set( [$public->id], null ) );
         $this->assertSame( [], $search->updates );
-        $this->assertSame( [], $this->invalidator->batches );
+        $this->assertSame( [], $this->invalidator->events );
     }
 
 
@@ -372,7 +372,7 @@ class PageAccessTest extends CoreTestAbstract
             $this->assertSame( 'No more than 1000 items may be changed at once.', $e->getMessage() );
         }
 
-        $this->assertSame( [], $this->invalidator->batches );
+        $this->assertSame( [], $this->invalidator->events );
         $this->assertSame( 0, PageAccess::count() );
     }
 
@@ -468,7 +468,7 @@ class PageAccessTest extends CoreTestAbstract
         $this->invalidator->reset();
 
         $this->assertSame( 1, PageAccess::set( [$page->id], ['member'] ) );
-        $this->assertSame( [], $this->invalidator->batches );
+        $this->assertSame( [], $this->invalidator->events );
         $this->assertSame( [], $search->updates );
     }
 
@@ -618,8 +618,8 @@ class PageAccessTest extends CoreTestAbstract
      */
     private function assertInvalidated( array $paths ) : void
     {
-        $this->assertCount( 1, $this->invalidator->batches );
-        $this->assertEqualsCanonicalizing( $paths, array_column( $this->invalidator->batches[0], 'path' ) );
+        $this->assertCount( count( $paths ), $this->invalidator->events );
+        $this->assertEqualsCanonicalizing( $paths, array_column( $this->invalidator->events, 'path' ) );
     }
 
 

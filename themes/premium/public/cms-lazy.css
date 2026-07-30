@@ -202,6 +202,10 @@ footer.cms-content > :nth-child(odd) {
     background-color: var(--pico-contrast);
 }
 
+footer.cms-content .container {
+    padding: 0;
+}
+
 footer.cms-content .cards .card-list {
     grid-template-columns: 1fr 1fr;
     justify-self: auto;

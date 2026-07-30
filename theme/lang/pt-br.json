@@ -1,4 +1,6 @@
 {
+    "Go to next": "Ir para o próximo",
+    "Go to previous": "Ir para o anterior",
     "Download file": "Baixar arquivo",
     "Get Started": "Começar a usar",
     "Skip to main content": "Pular para o conteúdo principal",
@@ -9,6 +11,7 @@
     "Close sidebar": "Fechar a barra lateral",
     "Close navigation": "Fechar a navegação",
     "Search": "Pesquisa",
+    "Login": "Entrar",
     "Open navigation": "Navegação aberta",
     "Breadcrumb navigation": "Navegação em Breadcrumb",
     "Name": "Nome",

@@ -11,9 +11,12 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Storage;
-use Aimeos\Cms\Events\PagesInvalidated;
+use Aimeos\Cms\Events\Bulk;
+use Aimeos\Cms\Events\PageInvalidated;
+use Aimeos\Cms\Events\Saved;
 use Aimeos\Cms\Jobs\IndexModels;
 use Laravel\Scout\Jobs\RemoveFromSearch;
 use Database\Seeders\TestSeeder;
@@ -320,10 +323,12 @@ class ResourceTest extends CoreTestAbstract
     public function testCheckPathAllowsValidPaths()
     {
         $method = new \ReflectionMethod( Resource::class, 'checkPath' );
+        $id = ( new File() )->newUniqueId();
+        $path = 'cms/test/' . $id . '/image_ab12.jpg';
 
         $this->assertNull( $method->invoke( null, null ) );
-        $this->assertEquals( 'cms/test/image_ab12.jpg', $method->invoke( null, 'cms/test/image_ab12.jpg' ) );
-        $this->assertEquals( 'cms/test/image_ab12.jpg', $method->invoke( null, 'cms//test/./image_ab12.jpg' ) );
+        $this->assertEquals( $path, $method->invoke( null, $path ) );
+        $this->assertEquals( $path, $method->invoke( null, 'cms//test/./' . $id . '/image_ab12.jpg' ) );
         // External URLs bypass the tenant prefix and never touch the tenant disk.
         $this->assertEquals( 'https://example.com/a/b.jpg', $method->invoke( null, 'https://example.com/a/b.jpg' ) );
     }
@@ -351,7 +356,7 @@ class ResourceTest extends CoreTestAbstract
 
     public function testSaveFileCleansPreparedUploadAfterTransactionFailure()
     {
-        config( ['cms.disk' => 'failed-save'] );
+        config( ['cms.disks.public.name' => 'failed-save'] );
         Storage::fake( 'failed-save' );
         $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
 
@@ -371,6 +376,29 @@ class ResourceTest extends CoreTestAbstract
     }
 
 
+    public function testSaveFileKeepsBorrowedPathAfterTransactionFailure()
+    {
+        config( ['cms.disks.public.name' => 'failed-borrowed-save'] );
+        Storage::fake( 'failed-borrowed-save' );
+        $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
+        $path = $file->dir() . '/borrowed.pdf';
+        Storage::disk( 'failed-borrowed-save' )->put( $path, '%PDF-1.4 borrowed' );
+
+        Event::listen( 'eloquent.creating: ' . Version::class, function() {
+            throw new \RuntimeException( 'Forced version failure' );
+        } );
+
+        try {
+            Resource::saveFile( $file->id, ['path' => $path], $this->user );
+            $this->fail( 'Expected the version write to fail' );
+        } catch( \RuntimeException $e ) {
+            $this->assertSame( 'Forced version failure', $e->getMessage() );
+        }
+
+        $this->assertSame( '%PDF-1.4 borrowed', Storage::disk( 'failed-borrowed-save' )->get( $path ) );
+    }
+
+
     public function testSaveFileLoadsMetadataOnce()
     {
         $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
@@ -383,9 +411,46 @@ class ResourceTest extends CoreTestAbstract
     }
 
 
+    public function testSaveFileRejectsDiskChangeAfterPathPreparation()
+    {
+        config( [
+            'cms.disks.public.name' => 'race-public',
+            'cms.disks.private.name' => 'race-private',
+        ] );
+
+        $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
+        $path = $file->dir() . '/prepared.pdf';
+        $file->versions()->forceCreate( [
+            'editor' => 'test',
+            'data' => ['path' => $path, 'previews' => []],
+        ] );
+
+        $stream = fopen( 'php://temp', 'w+' );
+        fwrite( $stream, '%PDF-1.4 prepared' );
+        rewind( $stream );
+
+        $storage = \Mockery::mock( \Illuminate\Filesystem\FilesystemAdapter::class );
+        $storage->shouldReceive( 'readStream' )->once()->with( $path )
+            ->andReturnUsing( function() use ( $file, $stream ) {
+                File::withoutTenancy()->whereKey( $file->id )->update( ['disk' => 'private'] );
+                return $stream;
+            } );
+        Storage::shouldReceive( 'disk' )->once()->with( 'race-public' )->andReturn( $storage );
+
+        try {
+            Resource::saveFile( $file->id, ['path' => $path], $this->user );
+            $this->fail( 'Expected a concurrent disk change to be rejected' );
+        } catch( Exception $e ) {
+            $this->assertSame( 'File disk changed while saving; retry the request', $e->getMessage() );
+        }
+
+        $this->assertSame( 'private', $file->refresh()->disk );
+    }
+
+
     public function testSaveFileDoesNotStoreUploadForMissingModel()
     {
-        config( ['cms.disk' => 'missing-save'] );
+        config( ['cms.disks.public.name' => 'missing-save'] );
         Storage::fake( 'missing-save' );
 
         try {
@@ -395,6 +460,548 @@ class ResourceTest extends CoreTestAbstract
         } catch( \Illuminate\Database\Eloquent\ModelNotFoundException ) {
             $this->assertSame( [], Storage::disk( 'missing-save' )->allFiles() );
         }
+    }
+
+
+    public function testAddFileCanStoreUploadOnPrivateDisk()
+    {
+        config( ['cms.disks.private.name' => 'private-upload'] );
+        Storage::fake( 'private-upload' );
+
+        $file = new File( ['name' => 'document.pdf'] );
+        $file->disk = 'private';
+        $file->ingest( UploadedFile::fake()->createWithContent( 'document.pdf', '%PDF-1.4 private' ) );
+        $file = Resource::addFile( $file, $this->user );
+
+        $this->assertSame( 'private', $file->disk );
+        $this->assertTrue( File::owns( 'test', $file->id, $file->path ) );
+        Storage::disk( 'private-upload' )->assertExists( $file->path );
+    }
+
+
+    public function testSavePrivateFileLocalizesRemotePath()
+    {
+        config( ['cms.disks.private.name' => 'private-remote-save'] );
+        Storage::fake( 'private-remote-save' );
+        Http::fake( ['example.com/*' => Http::response( '%PDF-1.4 private', 200 )] );
+
+        $file = new File();
+        $file->setUniqueIds();
+        $path = $file->dir() . '/current.pdf';
+        Storage::disk( 'private-remote-save' )->put( $path, '%PDF-1.4 current' );
+        $file = File::forceCreate( [
+            'id' => $file->id,
+            'disk' => 'private',
+            'mime' => 'application/pdf',
+            'name' => 'current.pdf',
+            'path' => $path,
+            'editor' => 'test',
+        ] );
+
+        $saved = Resource::saveFile( $file->id, [
+            'path' => 'https://example.com/private.pdf?token=secret',
+        ], $this->user );
+        $stored = (string) $saved->latest?->data->path;
+
+        $this->assertFalse( str_starts_with( $stored, 'http' ) );
+        $this->assertStringNotContainsString( 'token=secret', $stored );
+        $this->assertTrue( File::owns( 'test', $file->id, $stored ) );
+        Storage::disk( 'private-remote-save' )->assertExists( $stored );
+    }
+
+
+    public function testSavePrivateFileRejectsRemotePreviewPath()
+    {
+        $file = File::firstOrFail();
+        $file->forceFill( ['disk' => 'private'] )->saveQuietly();
+
+        $this->expectException( Exception::class );
+        $this->expectExceptionMessage( 'Private files cannot use remote paths' );
+
+        Resource::saveFile( $file->id, [
+            'previews' => [500 => 'https://example.com/preview.jpg?token=secret'],
+        ], $this->user );
+    }
+
+
+    public function testSaveFileRejectsManagedPathOutsideUuidDirectory()
+    {
+        $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
+        $other = ( new File() )->newUniqueId();
+
+        $this->expectException( Exception::class );
+        $this->expectExceptionMessage( 'is outside its UUID directory' );
+
+        Resource::saveFile( $file->id, ['path' => 'cms/test/' . $other . '/other.jpg'], $this->user );
+    }
+
+
+    public function testSaveFileStoresUploadInUuidDirectory()
+    {
+        config( ['cms.disks.public.name' => 'uuid-save'] );
+        Storage::fake( 'uuid-save' );
+        $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
+
+        $saved = Resource::saveFile( $file->id, [], $this->user, upload:
+            UploadedFile::fake()->createWithContent( 'replacement.pdf', '%PDF-1.4 replacement' ) );
+
+        $this->assertTrue( File::owns( 'test', $file->id, $saved->latest?->data->path ) );
+        Storage::disk( 'uuid-save' )->assertExists( $saved->latest?->data->path );
+    }
+
+
+    public function testAddFileRejectsPrivateDiskConfiguredAsPublic()
+    {
+        config( [
+            'cms.disks.public.name' => 'same-upload',
+            'cms.disks.private.name' => 'same-upload',
+        ] );
+        Storage::fake( 'same-upload' );
+
+        $file = new File( ['name' => 'document.pdf'] );
+        $file->disk = 'private';
+
+        $this->expectException( Exception::class );
+        $this->expectExceptionMessage( 'Public and private file disks must be different' );
+
+        $file->ingest( UploadedFile::fake()->createWithContent( 'document.pdf', '%PDF-1.4 private' ) );
+    }
+
+
+    public function testRelocateFileMovesAllPathsBothWaysAndInvalidatesPages()
+    {
+        config( [
+            'cms.disks.public.name' => 'relocate-public',
+            'cms.disks.private.name' => 'relocate-private',
+        ] );
+        Storage::fake( 'relocate-public' );
+        Storage::fake( 'relocate-private' );
+
+        $file = new File();
+        $file->setUniqueIds();
+        $dir = $file->dir();
+        $paths = [
+            $dir . '/current.bin',
+            $dir . '/current-500.webp',
+            $dir . '/version.bin',
+            $dir . '/version-500.webp',
+        ];
+
+        foreach( $paths as $path ) {
+            Storage::disk( 'relocate-public' )->put( $path, $path );
+        }
+
+        $file = File::forceCreate( [
+            'id' => $file->id, 'disk' => 'public', 'lang' => 'en', 'mime' => 'application/octet-stream',
+            'name' => 'relocate.bin', 'path' => $paths[0], 'previews' => [500 => $paths[1]],
+            'editor' => 'test',
+        ] );
+        $file->versions()->forceCreate( [
+            'lang' => 'en', 'editor' => 'test',
+            'data' => ['path' => $paths[2], 'previews' => [500 => $paths[3]]],
+        ] );
+
+        $pages = Page::orderBy( 'id' )->limit( 2 )->get();
+        $element = Element::firstOrFail();
+        $db = DB::connection( config( 'cms.db', 'sqlite' ) );
+        $db->table( 'cms_page_file' )->updateOrInsert( [
+            'page_id' => $pages[0]->id, 'file_id' => $file->id,
+        ] );
+        $db->table( 'cms_element_file' )->updateOrInsert( [
+            'element_id' => $element->id, 'file_id' => $file->id,
+        ] );
+        $db->table( 'cms_page_element' )->updateOrInsert( [
+            'page_id' => $pages[1]->id, 'element_id' => $element->id,
+        ] );
+
+        Event::fake( [PageInvalidated::class] );
+
+        $moved = Resource::relocateFiles( [$file->id], 'private', $this->user )->firstOrFail();
+
+        $this->assertSame( 'private', $moved->disk );
+        foreach( $paths as $path ) {
+            Storage::disk( 'relocate-public' )->assertMissing( $path );
+            Storage::disk( 'relocate-private' )->assertExists( $path );
+        }
+        foreach( $pages as $page ) {
+            Event::assertDispatched( PageInvalidated::class, fn( PageInvalidated $event ) =>
+                $event->domain === $page->domain && in_array( $page->path, $event->paths, true )
+            );
+        }
+
+        Event::fake( [PageInvalidated::class] );
+        $moved = Resource::relocateFiles( [$file->id], 'public', $this->user )->firstOrFail();
+
+        $this->assertSame( 'public', $moved->disk );
+        foreach( $paths as $path ) {
+            Storage::disk( 'relocate-private' )->assertMissing( $path );
+            Storage::disk( 'relocate-public' )->assertExists( $path );
+        }
+        Event::assertDispatched( PageInvalidated::class );
+
+        Event::fake( [PageInvalidated::class] );
+        Resource::relocateFiles( [$file->id], 'public', $this->user );
+        Event::assertNotDispatched( PageInvalidated::class );
+    }
+
+
+    public function testRelocateFilesUsesDirectionSpecificPermission()
+    {
+        config( [
+            'cms.disks.public.name' => 'permission-public',
+            'cms.disks.private.name' => 'permission-private',
+        ] );
+        Storage::fake( 'permission-public' );
+        Storage::fake( 'permission-private' );
+        $file = new File();
+        $file->setUniqueIds();
+        $path = $file->dir() . '/permission.txt';
+        Storage::disk( 'permission-public' )->put( $path, 'permission' );
+        $file = File::forceCreate( [
+            'id' => $file->id,
+            'disk' => 'public',
+            'mime' => 'text/plain',
+            'name' => 'permission.txt',
+            'path' => $path,
+            'editor' => 'test',
+        ] );
+        $editor = new \App\Models\User( ['cmsperms' => ['file:view', 'file:save']] );
+        $publisher = new \App\Models\User( ['cmsperms' => ['file:view', 'file:publish']] );
+
+        $this->assertSame(
+            'private',
+            Resource::relocateFiles( [$file->id], 'private', $editor )->firstOrFail()->disk,
+        );
+
+        try {
+            Resource::relocateFiles( [$file->id], 'public', $editor );
+            $this->fail( 'Expected public relocation to require file:publish' );
+        } catch( Exception $e ) {
+            $this->assertSame( 'Insufficient permissions', $e->getMessage() );
+        }
+
+        $this->assertSame(
+            'public',
+            Resource::relocateFiles( [$file->id], 'public', $publisher )->firstOrFail()->disk,
+        );
+
+        try {
+            Resource::relocateFiles( [$file->id], 'private', $publisher );
+            $this->fail( 'Expected private relocation to require file:save' );
+        } catch( Exception $e ) {
+            $this->assertSame( 'Insufficient permissions', $e->getMessage() );
+        }
+
+        $this->assertSame( 'public', $file->refresh()->disk );
+    }
+
+
+    public function testRelocateFileOverwritesStaleTargetWithSameSize()
+    {
+        config( [
+            'cms.disks.public.name' => 'overwrite-public',
+            'cms.disks.private.name' => 'overwrite-private',
+        ] );
+        Storage::fake( 'overwrite-public' );
+        Storage::fake( 'overwrite-private' );
+        $file = new File();
+        $file->setUniqueIds();
+        $path = $file->dir() . '/overwrite.txt';
+        Storage::disk( 'overwrite-public' )->put( $path, 'fresh' );
+        Storage::disk( 'overwrite-private' )->put( $path, 'stale' );
+
+        $file = File::forceCreate( [
+            'id' => $file->id,
+            'disk' => 'public',
+            'mime' => 'text/plain',
+            'name' => 'overwrite.txt',
+            'path' => $path,
+            'editor' => 'test',
+        ] );
+
+        Resource::relocateFiles( [$file->id], 'private', $this->user );
+
+        Storage::disk( 'overwrite-public' )->assertMissing( $path );
+        $this->assertSame( 'fresh', Storage::disk( 'overwrite-private' )->get( $path ) );
+    }
+
+
+    public function testRelocateFileRejectsRemoteHotlink()
+    {
+        config( [
+            'cms.disks.public.name' => 'remote-public',
+            'cms.disks.private.name' => 'remote-private',
+        ] );
+        Storage::fake( 'remote-public' );
+        Storage::fake( 'remote-private' );
+
+        $file = File::forceCreate( [
+            'disk' => 'public', 'lang' => 'en', 'mime' => 'image/jpeg',
+            'name' => 'remote.jpg', 'path' => 'https://example.com/remote.jpg', 'editor' => 'test',
+        ] );
+
+        $this->expectException( Exception::class );
+        $this->expectExceptionMessage( 'Remote files cannot be relocated' );
+
+        Resource::relocateFiles( [$file->id], 'private', $this->user );
+    }
+
+
+    public function testRelocateFileRejectsHistoricalRemoteHotlink()
+    {
+        config( [
+            'cms.disks.public.name' => 'history-remote-public',
+            'cms.disks.private.name' => 'history-remote-private',
+        ] );
+        Storage::fake( 'history-remote-public' );
+        Storage::fake( 'history-remote-private' );
+        $file = new File();
+        $file->setUniqueIds();
+        $path = $file->dir() . '/current.txt';
+        Storage::disk( 'history-remote-public' )->put( $path, 'current' );
+        $file = File::forceCreate( [
+            'id' => $file->id,
+            'disk' => 'public',
+            'mime' => 'text/plain',
+            'name' => 'current.txt',
+            'path' => $path,
+            'editor' => 'test',
+        ] );
+        $file->versions()->forceCreate( [
+            'editor' => 'test',
+            'data' => ['path' => 'https://example.com/history.txt', 'previews' => []],
+        ] );
+
+        $this->expectException( Exception::class );
+        $this->expectExceptionMessage( 'Remote files cannot be relocated' );
+
+        Resource::relocateFiles( [$file->id], 'private', $this->user );
+    }
+
+
+    public function testRelocateFileRejectsPathOwnedByAnotherFile()
+    {
+        config( [
+            'cms.disks.public.name' => 'shared-public',
+            'cms.disks.private.name' => 'shared-private',
+        ] );
+        Storage::fake( 'shared-public' );
+        Storage::fake( 'shared-private' );
+        $owner = new File();
+        $owner->setUniqueIds();
+        $path = $owner->dir() . '/shared.txt';
+        Storage::disk( 'shared-public' )->put( $path, 'shared' );
+
+        File::forceCreate( [
+            'id' => $owner->id,
+            'disk' => 'public', 'mime' => 'text/plain', 'name' => 'first.txt',
+            'path' => $path, 'editor' => 'test',
+        ] );
+        $file = File::forceCreate( [
+            'disk' => 'public', 'mime' => 'text/plain', 'name' => 'second.txt',
+            'path' => $path, 'editor' => 'test',
+        ] );
+
+        Event::fake( [PageInvalidated::class] );
+
+        try {
+            Resource::relocateFiles( [$file->id], 'private', $this->user );
+            $this->fail( 'Expected a path owned by another File to be rejected' );
+        } catch( Exception $e ) {
+            $this->assertStringContainsString( 'is outside its UUID directory', $e->getMessage() );
+        }
+
+        $this->assertSame( 'public', $file->refresh()->disk );
+        Storage::disk( 'shared-public' )->assertExists( $path );
+        Storage::disk( 'shared-private' )->assertMissing( $path );
+        Event::assertNotDispatched( PageInvalidated::class );
+    }
+
+
+    public function testRelocateFileRetryCompletesAfterSourceWasDeleted()
+    {
+        config( [
+            'cms.disks.public.name' => 'retry-public',
+            'cms.disks.private.name' => 'retry-private',
+        ] );
+        Storage::fake( 'retry-public' );
+        Storage::fake( 'retry-private' );
+        $file = new File();
+        $file->setUniqueIds();
+        $path = $file->dir() . '/retry.txt';
+        Storage::disk( 'retry-private' )->put( $path, 'already copied' );
+
+        $file = File::forceCreate( [
+            'id' => $file->id, 'disk' => 'public', 'mime' => 'text/plain', 'name' => 'retry.txt',
+            'path' => $path, 'editor' => 'test',
+        ] );
+
+        $moved = Resource::relocateFiles( [$file->id], 'private', $this->user )->firstOrFail();
+
+        $this->assertSame( 'private', $moved->disk );
+        Storage::disk( 'retry-public' )->assertMissing( $path );
+        Storage::disk( 'retry-private' )->assertExists( $path );
+    }
+
+
+    public function testRelocateFilesMovesBatch()
+    {
+        config( [
+            'cms.broadcast' => true,
+            'cms.disks.public.name' => 'batch-public',
+            'cms.disks.private.name' => 'batch-private',
+        ] );
+        Storage::fake( 'batch-public' );
+        Storage::fake( 'batch-private' );
+        Event::fake( [Bulk::class, Saved::class] );
+        $files = collect();
+
+        foreach( range( 1, 2 ) as $num )
+        {
+            $file = new File();
+            $file->setUniqueIds();
+            $path = $file->dir() . '/batch-' . $num . '.txt';
+            Storage::disk( 'batch-public' )->put( $path, 'batch-' . $num );
+            $files->push( File::forceCreate( [
+                'id' => $file->id, 'disk' => 'public', 'mime' => 'text/plain',
+                'name' => 'batch-' . $num . '.txt',
+                'path' => $path, 'editor' => 'test',
+            ] ) );
+        }
+
+        $moved = Resource::relocateFiles( $files->pluck( 'id' )->all(), 'private', $this->user );
+
+        $this->assertSame( $files->pluck( 'id' )->all(), $moved->pluck( 'id' )->all() );
+        $this->assertSame( ['private', 'private'], $moved->pluck( 'disk' )->all() );
+        Event::assertNotDispatched( Saved::class );
+        Event::assertDispatchedTimes( Bulk::class, 1 );
+        Event::assertDispatched( Bulk::class, fn( Bulk $event ) =>
+            $event->contentType === 'file'
+            && $event->ids === $files->pluck( 'id' )->all()
+            && $event->action === 'saved'
+            && ( $event->data['disk'] ?? null ) === 'private'
+        );
+
+        foreach( $files as $file ) {
+            Storage::disk( 'batch-public' )->assertMissing( $file->path );
+            Storage::disk( 'batch-private' )->assertExists( $file->path );
+        }
+    }
+
+
+    public function testRelocateFilesInvalidatesCompletedFilesWhenLaterFileFails()
+    {
+        config( [
+            'cms.broadcast' => true,
+            'cms.disks.public.name' => 'partial-public',
+            'cms.disks.private.name' => 'partial-private',
+        ] );
+        Storage::fake( 'partial-public' );
+        Storage::fake( 'partial-private' );
+        $files = collect();
+
+        foreach( ['stored', 'missing'] as $name )
+        {
+            $file = new File();
+            $file->setUniqueIds();
+            $path = $file->dir() . '/' . $name . '.txt';
+            $files->push( File::forceCreate( [
+                'id' => $file->id, 'disk' => 'public', 'mime' => 'text/plain',
+                'name' => $name . '.txt', 'path' => $path, 'editor' => 'test',
+            ] ) );
+        }
+
+        Storage::disk( 'partial-public' )->put( $files[0]->path, 'stored' );
+        $page = Page::firstOrFail();
+        DB::connection( config( 'cms.db', 'sqlite' ) )->table( 'cms_page_file' )->updateOrInsert( [
+            'page_id' => $page->id, 'file_id' => $files[0]->id,
+        ] );
+        Event::fake( [Bulk::class, PageInvalidated::class, Saved::class] );
+
+        try {
+            Resource::relocateFiles( $files->pluck( 'id' )->all(), 'private', $this->user );
+            $this->fail( 'Expected the missing second file to stop relocation' );
+        } catch( Exception $e ) {
+            $this->assertStringContainsString( 'is missing from both storage disks', $e->getMessage() );
+        }
+
+        $this->assertSame( 'private', $files[0]->refresh()->disk );
+        $this->assertSame( 'public', $files[1]->refresh()->disk );
+        Storage::disk( 'partial-public' )->assertMissing( $files[0]->path );
+        Storage::disk( 'partial-private' )->assertExists( $files[0]->path );
+        Event::assertNotDispatched( Saved::class );
+        Event::assertDispatchedTimes( Bulk::class, 1 );
+        Event::assertDispatched( Bulk::class, fn( Bulk $event ) =>
+            $event->contentType === 'file'
+            && $event->ids === [$files[0]->id]
+            && $event->action === 'saved'
+            && ( $event->data['disk'] ?? null ) === 'private'
+        );
+        Event::assertDispatched( PageInvalidated::class, fn( PageInvalidated $event ) =>
+            $event->domain === $page->domain && in_array( $page->path, $event->paths, true )
+        );
+    }
+
+
+    public function testRelocateFilesRejectsMissingIdsBeforeMoving()
+    {
+        config( [
+            'cms.disks.public.name' => 'preflight-public',
+            'cms.disks.private.name' => 'preflight-private',
+        ] );
+        Storage::fake( 'preflight-public' );
+        Storage::fake( 'preflight-private' );
+        $file = new File();
+        $file->setUniqueIds();
+        $path = $file->dir() . '/preflight.txt';
+        Storage::disk( 'preflight-public' )->put( $path, 'preflight' );
+
+        $file = File::forceCreate( [
+            'id' => $file->id,
+            'disk' => 'public',
+            'mime' => 'text/plain',
+            'name' => 'preflight.txt',
+            'path' => $path,
+            'editor' => 'test',
+        ] );
+
+        try {
+            Resource::relocateFiles(
+                [$file->id, \Illuminate\Support\Str::uuid7()->toString()],
+                'private',
+                $this->user,
+            );
+            $this->fail( 'Expected a missing File to fail before relocation' );
+        } catch( \Illuminate\Database\Eloquent\ModelNotFoundException ) {
+        }
+
+        $this->assertSame( 'public', $file->refresh()->disk );
+        Storage::disk( 'preflight-public' )->assertExists( $path );
+        Storage::disk( 'preflight-private' )->assertMissing( $path );
+    }
+
+
+    public function testRelocateFilesRejectsMoreThanOperationLimit()
+    {
+        $this->expectException( Exception::class );
+        $this->expectExceptionMessage( 'No more than 100 files may be relocated at once.' );
+
+        Resource::relocateFiles(
+            array_map( strval(...), range( 1, Resource::MAX_RELOCATE + 1 ) ),
+            'private',
+            $this->user,
+        );
+    }
+
+
+    public function testRelocateFilesCountsUniqueIdsAgainstOperationLimit()
+    {
+        $file = File::firstOrFail();
+        $ids = array_fill( 0, Resource::MAX_RELOCATE + 1, $file->id );
+
+        $moved = Resource::relocateFiles( $ids, (string) $file->disk, $this->user );
+
+        $this->assertSame( [$file->id], $moved->modelKeys() );
     }
 
 
@@ -1021,13 +1628,20 @@ class ResourceTest extends CoreTestAbstract
         $pages = [$this->page( $content ), $this->page( $content )];
         Page::withoutSyncingToSearch( fn() => Page::whereKey( $pages[0]->id )
             ->update( ['updated_at' => '2000-01-01 00:00:00'] ) );
+        Event::fake( [PageInvalidated::class] );
         $this->expectsDatabaseQueryCount( 11 );
 
         Publication::publish( Page::class, collect( $pages )->pluck( 'id' )->all(), $this->user );
 
         foreach( $pages as $page ) {
             $this->assertSame( [$file->id], $page->fresh()->files()->pluck( 'cms_files.id' )->all() );
+            Event::assertDispatched( PageInvalidated::class, fn( PageInvalidated $event ) =>
+                $event->domain === (string) $page->domain
+                && $event->paths === [(string) $page->path]
+            );
         }
+
+        Event::assertDispatchedTimes( PageInvalidated::class, count( $pages ) );
     }
 
 
@@ -1053,16 +1667,15 @@ class ResourceTest extends CoreTestAbstract
         $page = $this->page( [] );
         $previous = ['domain' => (string) $page->domain, 'path' => (string) $page->path];
         $page = Resource::savePage( $page->id, ['path' => 'changed-route'], $this->user );
-        Event::fake( [PagesInvalidated::class] );
+        Event::fake( [PageInvalidated::class] );
 
         Publication::publish( Page::class, [$page->id], $this->user );
 
-        Event::assertDispatched( PagesInvalidated::class, function( PagesInvalidated $event ) use ( $page, $previous ) {
-            return $event->routes === [
-                $previous,
-                ['domain' => (string) $page->domain, 'path' => 'changed-route'],
-            ];
-        } );
+        Event::assertDispatched( PageInvalidated::class, fn( PageInvalidated $event ) =>
+            $event->domain === $previous['domain']
+            && $event->paths === [$previous['path'], 'changed-route']
+        );
+        Event::assertDispatchedTimes( PageInvalidated::class, 1 );
     }
 
 
@@ -1073,16 +1686,17 @@ class ResourceTest extends CoreTestAbstract
             'file' => ['id' => $file->id, 'type' => 'file'],
         ]]] );
         $version = $page->latest()->firstOrFail();
-        Event::fake( [PagesInvalidated::class] );
+        Event::fake( [PageInvalidated::class] );
 
         $page->publish( $version );
 
         $this->assertTrue( (bool) $version->refresh()->published );
         $this->assertSame( [$file->id], $page->files()->pluck( 'cms_files.id' )->all() );
-        Event::assertDispatched( PagesInvalidated::class, fn( PagesInvalidated $event ) => $event->routes === [[
-            'domain' => (string) $page->domain,
-            'path' => (string) $page->path,
-        ]] );
+        Event::assertDispatched( PageInvalidated::class, fn( PageInvalidated $event ) =>
+            $event->domain === (string) $page->domain
+            && $event->paths === [(string) $page->path]
+        );
+        Event::assertDispatchedTimes( PageInvalidated::class, 1 );
     }
 
 
@@ -1128,17 +1742,21 @@ class ResourceTest extends CoreTestAbstract
             'lang' => 'en', 'name' => 'Child', 'title' => 'Child', 'path' => 'res-' . Utils::uid(),
             'content' => [],
         ], $this->user, parent: (string) $pages[0]->id );
-        Event::fake( [PagesInvalidated::class] );
+        Event::fake( [PageInvalidated::class] );
 
         Resource::drop( Page::class, collect( $pages )->take( 2 )->pluck( 'id' )->all(), $this->user );
 
-        $routes = collect( $pages )->map( fn( $page ) => [
-            'domain' => (string) $page->domain,
-            'path' => (string) $page->path,
-        ] )->sortBy( 'path' )->values()->all();
+        foreach( collect( $pages )->groupBy( 'domain' ) as $domain => $items ) {
+            Event::assertDispatched( PageInvalidated::class, fn( PageInvalidated $event ) =>
+                $event->domain === (string) $domain
+                && collect( $event->paths )->sort()->values()->all()
+                    === $items->pluck( 'path' )->sort()->values()->all()
+            );
+        }
 
-        Event::assertDispatched( PagesInvalidated::class, fn( PagesInvalidated $event ) =>
-            collect( $event->routes )->sortBy( 'path' )->values()->all() === $routes
+        Event::assertDispatchedTimes(
+            PageInvalidated::class,
+            collect( $pages )->pluck( 'domain' )->unique()->count(),
         );
     }
 
@@ -1150,17 +1768,21 @@ class ResourceTest extends CoreTestAbstract
             'lang' => 'en', 'name' => 'Child', 'title' => 'Child', 'path' => 'res-' . Utils::uid(),
             'content' => [],
         ], $this->user, parent: (string) $page->id );
-        Event::fake( [PagesInvalidated::class] );
+        Event::fake( [PageInvalidated::class] );
 
         Resource::purge( Page::class, [$page->id], $this->user );
 
-        Event::assertDispatched( PagesInvalidated::class, fn( PagesInvalidated $event ) =>
-            collect( $event->routes )->sortBy( 'path' )->values()->all() === collect( [$page, $child] )
-                ->map( fn( Page $item ) => [
-                    'domain' => (string) $item->domain,
-                    'path' => (string) $item->path,
-                ] )->sortBy( 'path' )->values()->all()
-        );
+        $pages = collect( [$page, $child] );
+
+        foreach( $pages->groupBy( 'domain' ) as $domain => $items ) {
+            Event::assertDispatched( PageInvalidated::class, fn( PageInvalidated $event ) =>
+                $event->domain === (string) $domain
+                && collect( $event->paths )->sort()->values()->all()
+                    === $items->pluck( 'path' )->sort()->values()->all()
+            );
+        }
+
+        Event::assertDispatchedTimes( PageInvalidated::class, $pages->pluck( 'domain' )->unique()->count() );
     }
 
 
@@ -1256,18 +1878,22 @@ class ResourceTest extends CoreTestAbstract
 
     public function testFileVersionCleanupWaitsForCommit()
     {
-        config( ['cms.disk' => 'version-cleanup', 'cms.versions' => 1] );
+        config( ['cms.disks.public.name' => 'version-cleanup', 'cms.versions' => 1] );
         Storage::fake( 'version-cleanup' );
 
+        $file = new File();
+        $file->setUniqueIds();
+        $dir = $file->dir();
         $file = File::forceCreate( [
+            'id' => $file->id,
             'lang' => 'en', 'mime' => 'application/octet-stream', 'name' => 'cleanup.bin',
-            'path' => 'cms/test/current.bin', 'editor' => 'test',
+            'path' => $dir . '/current.bin', 'editor' => 'test',
         ] );
         $paths = [];
 
         foreach( range( 1, 205 ) as $num )
         {
-            $path = 'cms/test/version-' . $num . '.bin';
+            $path = $dir . '/version-' . $num . '.bin';
             Storage::disk( 'version-cleanup' )->put( $path, 'content' );
             $paths[] = $path;
 
@@ -1305,7 +1931,11 @@ class ResourceTest extends CoreTestAbstract
     {
         Queue::fake( [DeleteFilePaths::class] );
         $method = new \ReflectionMethod( File::class, 'deletePaths' );
-        $paths = collect( array_map( fn( $num ) => 'cms/test/' . $num . '.bin', range( 1, 205 ) ) );
+        $id = ( new File() )->newUniqueId();
+        $paths = collect( array_map(
+            fn( $num ) => 'cms/test/' . $id . '/' . $num . '.bin',
+            range( 1, 205 ),
+        ) );
 
         $method->invoke( null, $paths, 'test' );
 
@@ -1315,21 +1945,69 @@ class ResourceTest extends CoreTestAbstract
     }
 
 
+    public function testFileCleanupJobsAreCombinedAcrossDisks()
+    {
+        config( ['cms.versions' => 1] );
+        Queue::fake( [DeleteFilePaths::class] );
+        $files = collect();
+
+        foreach( ['public', 'public', 'private', 'private'] as $num => $disk )
+        {
+            $file = new File();
+            $file->setUniqueIds();
+            $dir = $file->dir();
+            $file = File::forceCreate( [
+                'id' => $file->id,
+                'disk' => $disk, 'mime' => 'text/plain', 'name' => 'cleanup-' . $num . '.txt',
+                'path' => $dir . '/current-' . $num . '.txt', 'editor' => 'test',
+            ] );
+            foreach( range( 1, 2 ) as $version ) {
+                $file->versions()->forceCreate( [
+                    'editor' => 'test',
+                    'data' => [
+                        'path' => $dir . '/cleanup-' . $num . '-' . $version . '.txt',
+                        'previews' => [],
+                    ],
+                ] );
+            }
+            $files->push( $file );
+        }
+
+        File::pruneVersions( 'test', $files->pluck( 'id' )->all() );
+
+        Queue::assertPushed( DeleteFilePaths::class, 1 );
+        Queue::assertPushed( DeleteFilePaths::class, fn( DeleteFilePaths $job ) =>
+            $job->tenant === 'test' && count( $job->paths ) === 4
+        );
+
+        Queue::fake( [DeleteFilePaths::class] );
+
+        File::purgeMany( 'test', $files );
+
+        Queue::assertPushed( DeleteFilePaths::class, 2 );
+    }
+
+
     public function testFileCleanupOnlyDeletesUnownedTenantPaths()
     {
-        config( ['cms.disk' => 'guarded-cleanup'] );
+        config( ['cms.disks.public.name' => 'guarded-cleanup'] );
         Storage::fake( 'guarded-cleanup' );
 
-        $owned = 'cms/test/owned.bin';
-        $versioned = 'cms/test/versioned.bin';
-        $orphan = 'cms/test/orphan.bin';
+        $file = new File();
+        $file->setUniqueIds();
+        $dir = $file->dir();
+        $owned = $dir . '/owned.bin';
+        $versioned = $dir . '/versioned.bin';
+        $orphan = $dir . '/orphan.bin';
+        $legacy = 'cms/test/legacy.bin';
         $foreign = 'cms/other/foreign.bin';
 
-        foreach( [$owned, $versioned, $orphan, $foreign] as $path ) {
+        foreach( [$owned, $versioned, $orphan, $legacy, $foreign] as $path ) {
             Storage::disk( 'guarded-cleanup' )->put( $path, 'content' );
         }
 
         $file = File::forceCreate( [
+            'id' => $file->id,
             'lang' => 'en', 'mime' => 'application/octet-stream', 'name' => 'owned.bin',
             'path' => $owned, 'editor' => 'test',
         ] );
@@ -1338,39 +2016,101 @@ class ResourceTest extends CoreTestAbstract
             'data' => ['path' => $versioned, 'previews' => []],
         ] );
 
-        ( new DeleteFilePaths( 'guarded-cleanup', 'test', [$owned, $versioned, $orphan, $foreign] ) )->handle();
+        ( new DeleteFilePaths( 'test', [$owned, $versioned, $orphan, $legacy, $foreign] ) )->handle();
 
         Storage::disk( 'guarded-cleanup' )->assertExists( $owned );
         Storage::disk( 'guarded-cleanup' )->assertExists( $versioned );
         Storage::disk( 'guarded-cleanup' )->assertMissing( $orphan );
+        Storage::disk( 'guarded-cleanup' )->assertExists( $legacy );
         Storage::disk( 'guarded-cleanup' )->assertExists( $foreign );
+    }
+
+
+    public function testFileCleanupChecksOnlyUuidPathOwner()
+    {
+        config( ['cms.disks.public.name' => 'owned-cleanup'] );
+        Storage::fake( 'owned-cleanup' );
+        $file = new File();
+        $file->setUniqueIds();
+        $current = $file->dir() . '/current.bin';
+        $orphan = $file->dir() . '/orphan.bin';
+        Storage::disk( 'owned-cleanup' )->put( $current, 'current' );
+        Storage::disk( 'owned-cleanup' )->put( $orphan, 'orphan' );
+
+        $file = File::forceCreate( [
+            'id' => $file->id, 'disk' => 'public', 'mime' => 'application/octet-stream',
+            'name' => 'current.bin', 'path' => $current, 'editor' => 'test',
+        ] );
+
+        $this->expectsDatabaseQueryCount( 2 );
+
+        ( new DeleteFilePaths( 'test', [$current, $orphan] ) )->handle();
+
+        Storage::disk( 'owned-cleanup' )->assertExists( $current );
+        Storage::disk( 'owned-cleanup' )->assertMissing( $orphan );
+    }
+
+
+    public function testFileCleanupDeletesOrphansFromBothLogicalDisks()
+    {
+        config( [
+            'cms.disks.public.name' => 'race-cleanup-public',
+            'cms.disks.private.name' => 'race-cleanup-private',
+        ] );
+        Storage::fake( 'race-cleanup-public' );
+        Storage::fake( 'race-cleanup-private' );
+        $file = new File();
+        $file->setUniqueIds();
+        $current = $file->dir() . '/current.bin';
+        $orphan = $file->dir() . '/orphan.bin';
+
+        Storage::disk( 'race-cleanup-private' )->put( $current, 'current' );
+        Storage::disk( 'race-cleanup-public' )->put( $orphan, 'orphan' );
+        Storage::disk( 'race-cleanup-private' )->put( $orphan, 'orphan' );
+
+        File::forceCreate( [
+            'id' => $file->id, 'disk' => 'private', 'mime' => 'application/octet-stream',
+            'name' => 'current.bin', 'path' => $current, 'editor' => 'test',
+        ] );
+
+        ( new DeleteFilePaths( 'test', [$orphan] ) )->handle();
+
+        Storage::disk( 'race-cleanup-public' )->assertMissing( $orphan );
+        Storage::disk( 'race-cleanup-private' )->assertMissing( $orphan );
+        Storage::disk( 'race-cleanup-private' )->assertExists( $current );
     }
 
 
     public function testFileCleanupCanonicalizesPathsBeforeOwnershipChecks()
     {
+        config( ['cms.disks.public.name' => 'canonical-cleanup'] );
         Storage::fake( 'canonical-cleanup' );
-        Storage::disk( 'canonical-cleanup' )->put( 'cms/test/owned.bin', 'content' );
+        $file = new File();
+        $file->setUniqueIds();
+        $path = $file->dir() . '/owned.bin';
+        Storage::disk( 'canonical-cleanup' )->put( $path, 'content' );
 
         File::forceCreate( [
+            'id' => $file->id,
             'lang' => 'en', 'mime' => 'application/octet-stream', 'name' => 'owned.bin',
-            'path' => 'cms/test/owned.bin', 'editor' => 'test',
+            'path' => $path, 'editor' => 'test',
         ] );
 
         ( new DeleteFilePaths(
-            'canonical-cleanup', 'test', ['cms//test/./owned.bin'],
+            'test', [str_replace( 'cms/test/', 'cms//test/./', $path )],
         ) )->handle();
 
-        Storage::disk( 'canonical-cleanup' )->assertExists( 'cms/test/owned.bin' );
+        Storage::disk( 'canonical-cleanup' )->assertExists( $path );
     }
 
 
     public function testDefaultTenantCleanupRejectsNestedTenantPaths()
     {
+        config( ['cms.disks.public.name' => 'default-cleanup'] );
         Storage::fake( 'default-cleanup' );
         Storage::disk( 'default-cleanup' )->put( 'cms/other/foreign.bin', 'content' );
 
-        ( new DeleteFilePaths( 'default-cleanup', '', ['cms/other/foreign.bin'] ) )->handle();
+        ( new DeleteFilePaths( '', ['cms/other/foreign.bin'] ) )->handle();
 
         Storage::disk( 'default-cleanup' )->assertExists( 'cms/other/foreign.bin' );
     }

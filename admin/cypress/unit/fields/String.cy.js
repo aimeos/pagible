@@ -52,6 +52,14 @@ describe('String (textarea)', () => {
     cy.get('@error').should('have.been.calledWith', true)
   })
 
+  it('emits error:true when value does not match config.pattern', () => {
+    const onError = cy.spy().as('error')
+    cy.mount(StringField, {
+      props: { modelValue: 'EU1', config: { pattern: '^[A-Z]{3}$' }, onError },
+    })
+    cy.get('@error').should('have.been.calledWith', true)
+  })
+
   it('emits update:modelValue as the user types', () => {
     const onUpdate = cy.spy().as('update')
     cy.mount(StringField, {
@@ -59,6 +67,15 @@ describe('String (textarea)', () => {
     })
     cy.get('textarea').first().type('new text')
     cy.get('@update').should('have.been.called')
+  })
+
+  it('normalizes emitted values to uppercase', () => {
+    const onUpdate = cy.spy().as('update')
+    cy.mount(StringField, {
+      props: { config: { uppercase: true }, 'onUpdate:modelValue': onUpdate },
+    })
+    cy.get('textarea').first().type('eur')
+    cy.get('@update').should('have.been.calledWith', 'EUR')
   })
 
   it('is readonly when readonly prop is true', () => {

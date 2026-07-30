@@ -65,6 +65,7 @@ class CmsServer extends Server
 
         // Write tools - Files
         \Aimeos\Cms\Tools\AddFile::class,
+        \Aimeos\Cms\Tools\RelocateFile::class,
         \Aimeos\Cms\Tools\SaveFile::class,
         \Aimeos\Cms\Tools\PublishFile::class,
         \Aimeos\Cms\Tools\DropFile::class,

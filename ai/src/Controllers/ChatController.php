@@ -167,6 +167,7 @@ class ChatController extends Controller
         // AI generation streams for minutes; PHP's default 30s max_execution_time otherwise kills the
         // worker mid-read (fatal in fread()). Lift it for the whole stream - a genuinely stalled upstream
         // still trips the provider's own read timeout first (a catchable PrismaException).
+        $limit = (int) ini_get( 'max_execution_time' );
         set_time_limit( (int) config( 'cms.ai.timeout' ) );
 
         $send = function( ?string $text ) {
@@ -265,6 +266,10 @@ class ChatController extends Controller
             }
 
             flush();
+        }
+        finally
+        {
+            set_time_limit( $limit );
         }
     }
 

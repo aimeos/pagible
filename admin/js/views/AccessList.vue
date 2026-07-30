@@ -349,7 +349,6 @@ export default {
 
 .search {
   margin-inline-start: auto;
-  max-width: 420px;
 }
 
 .items {

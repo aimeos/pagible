@@ -12,6 +12,7 @@ use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Tenancy;
+use Illuminate\Support\Facades\Storage;
 
 
 /**
@@ -23,7 +24,7 @@ use Aimeos\Cms\Tenancy;
 abstract class AbstractDemo
 {
     private string $audioFile;
-    /** @var array<string, string> File IDs keyed by Unsplash photo path */
+    /** @var array<string, string> File IDs keyed by Unsplash photo path and language */
     private array $images = [];
     private string $videoFile;
     protected string $tenant;
@@ -85,32 +86,14 @@ abstract class AbstractDemo
     {
         if( !isset( $this->audioFile ) )
         {
-            $file = File::forceCreate( [
+            $this->audioFile = $this->saveFile( [
                 'mime' => 'audio/mpeg',
                 'lang' => 'en',
                 'name' => 'PagibleAI CMS Podcast Episode',
                 'path' => 'https://download.samplelib.com/mp3/sample-12s.mp3',
                 'previews' => [],
                 'description' => ['en' => 'Learn about PagibleAI CMS features in this audio overview'],
-                'editor' => 'demo',
             ] );
-
-            $version = $file->versions()->forceCreate( [
-                'lang' => 'en',
-                'data' => [
-                    'mime' => 'audio/mpeg',
-                    'lang' => 'en',
-                    'name' => 'PagibleAI CMS Podcast Episode',
-                    'path' => 'https://download.samplelib.com/mp3/sample-12s.mp3',
-                    'previews' => [],
-                    'description' => ['en' => 'Learn about PagibleAI CMS features in this audio overview'],
-                ],
-                'editor' => 'demo',
-            ] );
-
-            $file->forceFill( ['latest_id' => $version->id] )->saveQuietly();
-            $file->publish( $version );
-            $this->audioFile = (string) $file->refresh()->id;
         }
 
         return $this->audioFile;
@@ -122,39 +105,84 @@ abstract class AbstractDemo
      *
      * @param string $photo Unsplash photo path, e.g. "photo-1517336714731-489689fd1ca8"
      * @param string $name File name
-     * @param string $desc English image description
+     * @param string $desc Localized image description
+     * @param string $lang File and description language
      * @return string File ID
      */
-    protected function image( string $photo, string $name, string $desc ) : string
+    protected function image( string $photo, string $name, string $desc, string $lang = 'en' ) : string
     {
-        if( !isset( $this->images[$photo] ) )
+        $key = $photo . ':' . $lang;
+
+        if( !isset( $this->images[$key] ) )
         {
             $base = 'https://images.unsplash.com/' . $photo;
             $url = fn( int $w ) => $base . '?w=' . $w . '&q=80&fm=jpg&fit=crop';
 
             $data = [
                 'mime' => 'image/jpeg',
-                'lang' => 'en',
+                'lang' => $lang,
                 'name' => $name,
                 'path' => $url( 1500 ),
                 'previews' => ['500' => $url( 500 ), '1000' => $url( 1000 )],
-                'description' => ['en' => $desc],
+                'description' => [$lang => $desc],
             ];
 
-            $file = File::forceCreate( $data + ['editor' => 'demo'] );
-
-            $version = $file->versions()->forceCreate( [
-                'lang' => 'en',
-                'data' => $data,
-                'editor' => 'demo',
-            ] );
-
-            $file->forceFill( ['latest_id' => $version->id] )->saveQuietly();
-            $file->publish( $version );
-            $this->images[$photo] = (string) $file->refresh()->id;
+            $this->images[$key] = $this->saveFile( $data );
         }
 
-        return $this->images[$photo];
+        return $this->images[$key];
+    }
+
+
+    /**
+     * Persists and publishes a demo File with its initial version.
+     *
+     * @param array<string, mixed> $data File data
+     * @param File|null $file Prepared File with a preallocated UUID
+     * @param bool $published Whether the version is already marked as published
+     * @return string File ID
+     */
+    protected function saveFile( array $data, ?File $file = null, bool $published = false ) : string
+    {
+        $file ??= new File();
+        $file->forceFill( $data + ['editor' => 'demo'] )->save();
+
+        $version = $file->versions()->forceCreate( [
+            'lang' => $data['lang'] ?? null,
+            'data' => $data,
+            'published' => $published,
+            'editor' => 'demo',
+        ] );
+
+        $file->forceFill( ['latest_id' => $version->id] )->saveQuietly();
+        $file->publish( $version );
+
+        return (string) $file->refresh()->id;
+    }
+
+
+    /**
+     * Stores and publishes an SVG demo File.
+     */
+    protected function svgFile( string $svg, string $filename, string $name, string $desc,
+        bool $published = false ) : string
+    {
+        $file = new File();
+        $file->setUniqueIds();
+        $path = $file->dir() . '/' . $filename;
+
+        if( !Storage::disk( config( 'cms.disks.public.name', 'public' ) )->put( $path, $svg ) ) {
+            throw new \Aimeos\Cms\Exception( sprintf( 'Unable to store logo "%s"', $path ) );
+        }
+
+        return $this->saveFile( [
+            'mime' => 'image/svg+xml',
+            'lang' => 'en',
+            'name' => $name,
+            'path' => $path,
+            'previews' => ['500' => $path],
+            'description' => ['en' => $desc],
+        ], $file, $published );
     }
 
 
@@ -169,32 +197,14 @@ abstract class AbstractDemo
         {
             $poster = 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=500&q=80&fm=jpg&fit=crop';
 
-            $file = File::forceCreate( [
+            $this->videoFile = $this->saveFile( [
                 'mime' => 'video/mp4',
                 'lang' => 'en',
                 'name' => 'PagibleAI CMS Quick Tour',
                 'path' => 'https://media.w3.org/2010/05/sintel/trailer.mp4',
                 'previews' => ['500' => $poster],
                 'description' => ['en' => 'See how PagibleAI CMS simplifies content creation with AI assistance'],
-                'editor' => 'demo',
             ] );
-
-            $version = $file->versions()->forceCreate( [
-                'lang' => 'en',
-                'data' => [
-                    'mime' => 'video/mp4',
-                    'lang' => 'en',
-                    'name' => 'PagibleAI CMS Quick Tour',
-                    'path' => 'https://media.w3.org/2010/05/sintel/trailer.mp4',
-                    'previews' => ['500' => $poster],
-                    'description' => ['en' => 'See how PagibleAI CMS simplifies content creation with AI assistance'],
-                ],
-                'editor' => 'demo',
-            ] );
-
-            $file->forceFill( ['latest_id' => $version->id] )->saveQuietly();
-            $file->publish( $version );
-            $this->videoFile = (string) $file->refresh()->id;
         }
 
         return $this->videoFile;

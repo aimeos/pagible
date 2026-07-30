@@ -523,6 +523,31 @@ class PageControllerTest extends ThemeTestAbstract
     }
 
 
+    public function testRestrictedPageRenderSignsPrivateAssets(): void
+    {
+        $page = Page::where( 'path', 'hidden' )->firstOrFail();
+        $file = ( new File() )->forceFill( [
+            'id' => 'private-file', 'disk' => 'private', 'path' => 'cms/test/private.pdf',
+        ] );
+        $url = null;
+        PageAccess::set( [$page->id], ['frontend.member'] );
+        View::composer( '*', function() use ( &$url, $file, $page ) {
+            $url ??= cmsasset( $page, $file );
+        } );
+
+        $user = new \App\Models\User();
+        $user->id = 44;
+        $user->tenant_id = 'test';
+        $user->cmsperms = [];
+        \Illuminate\Support\Facades\Gate::define( 'frontend.member', fn() => true );
+
+        $this->actingAs( $user )->get( '/hidden' )->assertOk();
+
+        $this->assertIsString( $url );
+        $this->assertStringContainsString( 'signature=', $url );
+    }
+
+
     public function testRestrictedPageReturnsUnauthorizedForJsonGuest(): void
     {
         $page = Page::where( 'path', 'hidden' )->firstOrFail();

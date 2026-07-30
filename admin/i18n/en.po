@@ -9,6 +9,10 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
+#: js/fields/File.vue js/fields/Images.vue
+msgid "Protect with page access"
+msgstr "Protect with page access"
+
 #: js/ai.js:44 js/ai.js:90 js/ai.js:145 js/components/ElementListItems.vue:201
 #: js/components/ElementListItems.vue:240
 #: js/components/ElementListItems.vue:310

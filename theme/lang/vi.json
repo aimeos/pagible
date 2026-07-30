@@ -1,4 +1,6 @@
 {
+    "Go to next": "Đi đến mục tiếp theo",
+    "Go to previous": "Đi đến mục trước",
     "Download file": "Tải xuống tệp",
     "Get Started": "Bắt đầu",
     "Skip to main content": "Chuyển đến nội dung chính",
@@ -9,6 +11,7 @@
     "Close sidebar": "Đóng thanh bên",
     "Close navigation": "Đóng thanh điều hướng",
     "Search": "Tìm kiếm",
+    "Login": "Đăng nhập",
     "Open navigation": "Mở menu điều hướng",
     "Breadcrumb navigation": "Điều hướng theo đường dẫn",
     "Name": "Tên",

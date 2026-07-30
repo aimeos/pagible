@@ -53,7 +53,7 @@ export default {
             indeterminate
             rounded
           />
-          <audio v-if="file.path" :src="url(file.path)" :draggable="false" controls />
+          <audio v-if="file.path" :src="fileurl(file)" :draggable="false" controls />
 
           <v-menu v-if="file.id && !readonly" location="start">
             <template v-slot:activator="{ props }">
@@ -145,6 +145,18 @@ export default {
       </v-row>
     </v-col>
   </v-row>
+
+  <v-switch
+    v-if="!readonly"
+    :disabled="protecting"
+    :loading="protecting"
+    :model-value="protect"
+    @update:model-value="setProtect($event)"
+    :label="$gettext('Protect with page access')"
+    color="primary"
+    density="compact"
+    hide-details
+  />
 
   <Teleport to="body">
     <FileDialog v-model="vfiles" @add="addFromDialog" :filter="{ mime: 'audio/' }" />

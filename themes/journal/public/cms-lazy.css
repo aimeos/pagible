@@ -1,0 +1,269 @@
+/**
+ * Journal Theme - Lazy loaded shared styles
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+dialog > article {
+    background-color: var(--pico-contrast-inverse);
+    border: 1px solid var(--pico-muted-border-color);
+    height: calc(100vh - 2rem);
+    overflow: unset;
+}
+
+dialog header {
+    background-color: var(--pico-contrast-inverse);
+    border-bottom: 0.1875rem solid var(--pico-contrast);
+}
+
+dialog form {
+    display: flex;
+    padding: 1rem;
+}
+
+dialog input,
+dialog button {
+    appearance: none;
+    background-color: var(--pico-contrast-inverse);
+    border: 0;
+    box-shadow: none;
+    color: var(--pico-contrast);
+    padding: 0.5rem;
+}
+
+dialog button[type=reset] {
+    cursor: pointer;
+    margin-inline-start: 0.25rem;
+}
+
+dialog button[type=reset]:hover {
+    background-color: var(--pico-contrast-focus);
+}
+
+dialog input {
+    border: 1px solid var(--pico-contrast-border);
+    display: block;
+    font-size: var(--pico-font-size);
+    margin: 0 1px;
+    outline: none;
+    padding: 0.625rem 0.75rem;
+    width: 100%;
+}
+
+dialog input:focus-visible {
+    border-color: var(--pico-primary);
+    box-shadow: 0 0 0 0.1875rem var(--pico-primary-focus);
+}
+
+dialog input::-webkit-input-placeholder {
+    color: var(--pico-muted-color);
+}
+
+dialog.search .results {
+    height: calc(100% - 6.5rem);
+    margin: 1rem 0;
+    overflow-y: auto;
+    padding: 0 1rem;
+}
+
+dialog.search a.result-item {
+    border-bottom: 1px solid var(--pico-muted-border-color);
+    border-inline-start: 0.1875rem solid var(--pico-muted-border-color);
+    color: var(--pico-color);
+    cursor: pointer;
+    display: block;
+    margin-bottom: 0.5rem;
+    padding: 0.75rem 1rem;
+    text-decoration: none;
+}
+
+dialog.search a.result-item:hover {
+    background-color: var(--pico-muted-background-color);
+    border-inline-start-color: var(--pico-primary);
+    color: var(--pico-contrast);
+    opacity: 1;
+}
+
+dialog.search .result-title {
+    display: block;
+    font-family: var(--pico-font-family-display);
+    font-size: 1.125rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+}
+
+dialog.search .result-content {
+    color: var(--pico-muted-color);
+    display: block;
+    font-size: 0.75rem;
+}
+
+dialog.search .result-content b {
+    background-color: var(--pico-text-selection-color);
+    color: var(--pico-contrast);
+    padding: 0.1rem 0.25rem;
+}
+
+dialog.search .load-more {
+    background-color: var(--pico-primary);
+    border: 1px solid var(--pico-primary);
+    color: var(--pico-primary-inverse);
+    cursor: pointer;
+    display: block;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    margin: 1rem auto;
+    padding: 0.75rem 1.25rem;
+    text-transform: uppercase;
+}
+
+dialog.search .load-more:hover {
+    background-color: var(--pico-primary-hover);
+}
+
+dialog.search .load-more:disabled {
+    cursor: wait;
+    opacity: 0.5;
+}
+
+@media (min-width: 1024px) {
+    dialog > article {
+        max-width: 950px;
+    }
+}
+
+.caption:not(:empty) {
+    color: var(--pico-muted-color);
+    font-size: 0.6875rem;
+    margin: 0.75rem auto;
+    max-width: 60rem;
+}
+
+pre:has(code[class*="language-"]) {
+    background-color: var(--pico-code-background-color);
+    border: 1px solid var(--pico-muted-border-color);
+    padding: 1rem;
+}
+
+pre code[class*=language-] {
+    color: var(--pico-code-color);
+    font-family: var(--pico-font-family-monospace);
+    overflow-x: auto;
+}
+
+p code {
+    background-color: var(--pico-code-background-color);
+    color: var(--pico-code-color);
+    font-family: var(--pico-font-family-monospace);
+    font-size: 0.875em;
+    overflow-wrap: anywhere;
+    padding: 0.15rem 0.4rem;
+}
+
+footer.cms-content {
+    background-color: var(--pico-contrast-inverse);
+    border-bottom: 0.375rem solid var(--pico-contrast);
+    padding: 3rem 0;
+}
+
+footer.cms-content .container {
+    max-width: var(--journal-content-width);
+    padding: 0;
+}
+
+footer.cms-content .heading h1,
+footer.cms-content .heading h2,
+footer.cms-content .heading h3 {
+    border: 0;
+    font-size: 2rem;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+}
+
+footer.cms-content .cards .card-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+footer.cms-content .cards .card-item {
+    background: transparent;
+    border-bottom: 1px solid var(--pico-muted-border-color);
+    padding-bottom: 1rem;
+}
+
+footer.cms-content .cards .title {
+    color: var(--pico-contrast);
+    font-family: var(--pico-font-family-sans-serif);
+    font-size: 0.6875rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+footer.cms-content .cards :is(.text, .cms-text),
+footer.cms-content .cards :is(.text, .cms-text) p {
+    color: var(--pico-muted-color);
+    line-height: 1.6;
+    margin: 0;
+}
+
+footer.cms-content .cards :is(.text, .cms-text) a,
+footer.cms-content .cards :is(.text, .cms-text) a:visited {
+    color: var(--pico-muted-color);
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 400;
+    padding: 0.35rem 0;
+    text-decoration: none;
+    text-transform: none;
+}
+
+footer.cms-content .cards :is(.text, .cms-text) a:hover {
+    color: var(--pico-primary);
+}
+
+footer.cms-content ul {
+    padding: 0;
+}
+
+footer.cms-content ul li {
+    list-style-type: none;
+}
+
+footer.cms-content + footer.bottom {
+    margin-top: 0;
+}
+
+@media screen and (min-width: 768px) {
+    footer.cms-content .cards .card-list {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+}
+
+.cms-content table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.cms-content th,
+.cms-content td {
+    border-bottom: 1px solid var(--pico-muted-border-color);
+    padding: calc(var(--pico-spacing) / 2) var(--pico-spacing);
+    vertical-align: middle;
+}
+
+.cms-content th {
+    color: var(--pico-contrast);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+.cms-content th:first-child {
+    text-align: start;
+}
+
+.cms-content td {
+    text-align: center;
+}

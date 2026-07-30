@@ -1,4 +1,6 @@
 {
+    "Go to next": "מעבר לבא",
+    "Go to previous": "מעבר לקודם",
     "Download file": "הורד קובץ",
     "Get Started": "התחילו",
     "Skip to main content": "עבור לתוכן הראשי",
@@ -9,6 +11,7 @@
     "Close sidebar": "סגור את הסרגל הצדדי",
     "Close navigation": "סגור תפריט הניווט",
     "Search": "חיפוש",
+    "Login": "התחברות",
     "Open navigation": "פתח את תפריט הניווט",
     "Breadcrumb navigation": "ניווט באמצעות פירורי לחם",
     "Name": "שם",

@@ -2,6 +2,11 @@ msgid ""
 msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
+#: js/fields/Audio.vue js/fields/File.vue js/fields/Image.vue
+#: js/fields/Images.vue js/fields/Media.vue js/fields/Video.vue
+msgid "Protect with page access"
+msgstr ""
+
 #: js/ai.js:44
 #: js/ai.js:90
 #: js/ai.js:145
@@ -1395,6 +1400,14 @@ msgstr ""
 msgid "Error adding root page"
 msgstr ""
 
+#: js/components/PageListItems.vue:465
+msgid "Cache cleared"
+msgstr ""
+
+#: js/components/PageListItems.vue:468
+msgid "Error clearing cache"
+msgstr ""
+
 #: js/components/PageListItems.vue:460
 msgid "Error trashing page"
 msgstr ""
@@ -1458,6 +1471,10 @@ msgstr ""
 #: js/components/PageListItems.vue:1231
 #: js/components/PageListItems.vue:1422
 msgid "Disable"
+msgstr ""
+
+#: js/components/PageListItems.vue:1695
+msgid "Clear cache"
 msgstr ""
 
 #: js/components/PageListItems.vue:1261

@@ -38,6 +38,8 @@ config()->set('laravel-translatable-string-exporter.directories', array_filter([
     'theme/views',
     'themes/glass/src',
     'themes/glass/views',
+    'themes/journal/src',
+    'themes/journal/views',
     'themes/pagible/src',
     'themes/pagible/views',
     'themes/paper/src',

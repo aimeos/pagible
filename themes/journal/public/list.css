@@ -1,0 +1,112 @@
+/**
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+.cms-content .list .list-items,
+.cms-content .list .second,
+.cms-content .list .list-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.cms-content .list .first,
+.cms-content .list .second {
+    min-width: 0;
+    width: 100%;
+}
+
+.cms-content .list .list-default {
+    display: grid;
+    gap: 2rem 1.25rem;
+    grid-template-columns: 1fr;
+}
+
+.cms-content .list .list-default > .first,
+.cms-content .list .list-default > .second {
+    display: contents;
+}
+
+.cms-content .list .list-cards {
+    display: grid;
+    gap: 2rem 1.25rem;
+    grid-template-columns: 1fr;
+}
+
+.cms-content .list .list-item {
+    background-color: var(--pico-contrast-inverse);
+    border-bottom: 0.1875rem solid var(--pico-contrast);
+    color: var(--pico-color);
+    display: block;
+    height: 100%;
+    overflow: hidden;
+    text-decoration: none;
+}
+
+.cms-content .list .list-item:hover {
+    border-bottom-color: var(--pico-primary);
+    color: var(--pico-color);
+}
+
+.cms-content .list picture {
+    display: block;
+    overflow: hidden;
+}
+
+.cms-content .list img {
+    aspect-ratio: 16 / 9;
+    border-block: 1px solid var(--pico-muted-border-color);
+    display: block;
+    object-fit: cover;
+    width: 100%;
+}
+
+.cms-content .list .content {
+    padding: 1rem 0 0;
+}
+
+.cms-content .list .date {
+    color: var(--pico-primary);
+    font-size: 0.625rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.cms-content .list h3 {
+    font-size: clamp(1.1rem, 1.8vw, 1.4rem);
+    margin: 0.5rem 0 1rem;
+}
+
+.cms-content .list .list-list .list-item {
+    align-items: flex-start;
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: minmax(6rem, 2fr) minmax(0, 3fr);
+}
+
+.cms-content .list .list-list .content {
+    padding: 0;
+}
+
+.cms-content .list .list-list h3 {
+    font-size: 1.1rem;
+}
+
+.cms-content .list .list-list .intro {
+    color: var(--pico-muted-color);
+    font-size: 0.8125rem;
+    line-height: 1.5;
+    margin: 0.5rem 0 0;
+}
+
+.cms-content .list nav .pagination {
+    margin: 2rem auto 0;
+}
+
+@media (min-width: 768px) {
+    .cms-content .list .list-default,
+    .cms-content .list .list-cards {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}

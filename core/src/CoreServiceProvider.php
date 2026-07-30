@@ -28,6 +28,7 @@ class CoreServiceProvider extends Provider
         $basedir = dirname( __DIR__ );
 
         $this->loadMigrationsFrom( $basedir . '/database/migrations' );
+        $this->loadRoutesFrom( $basedir . '/routes/core.php' );
         $this->publishes( [
             $basedir . '/config/cms.php' => config_path( 'cms.php' ),
         ], 'cms-config' );
@@ -175,6 +176,10 @@ class CoreServiceProvider extends Provider
 
     protected function rateLimiter(): void
     {
+        RateLimiter::for( 'cms-asset', fn( $request ) =>
+            Limit::perMinute( 300 )->by( $request->user()?->getAuthIdentifier() ?: $request->ip() )
+        );
+
         RateLimiter::for( 'cms-broadcast', fn( $request ) =>
             Limit::perMinute( 120 )->by( $request->user()?->getAuthIdentifier() ?: $request->ip() )
         );

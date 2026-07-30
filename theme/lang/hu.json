@@ -1,4 +1,6 @@
 {
+    "Go to next": "Ugrás a következőre",
+    "Go to previous": "Ugrás az előzőre",
     "Download file": "Letöltés",
     "Get Started": "Kezdje el",
     "Skip to main content": "Ugrás a fő tartalomra",
@@ -9,6 +11,7 @@
     "Close sidebar": "Oldalsáv bezárása",
     "Close navigation": "Bezár navigáció",
     "Search": "Keresés",
+    "Login": "Bejelentkezés",
     "Open navigation": "Navigáció megnyitása",
     "Breadcrumb navigation": "Morzsa navigáció",
     "Name": "Név",

@@ -306,6 +306,21 @@ describe('Element List', () => {
     })
   })
 
+  it('context menu groups Edit properties between publish and destructive actions', () => {
+    const el = makeElement({ latest: { ...makeElement().latest, published: false } })
+    visitElements([el])
+    cy.get('.items .v-list-item .actions .btn-actions .v-btn').first().click()
+
+    cy.contains('.v-card .v-list > .v-list-item', 'Edit properties')
+      .prev()
+      .should('have.class', 'v-divider')
+    cy.contains('.v-card .v-list > .v-list-item', 'Edit properties')
+      .next()
+      .should('have.class', 'v-divider')
+    cy.contains('.v-card .v-list .v-btn', 'Edit properties').click()
+    cy.contains('.hint', 'Apply the selected properties to 1 entry.').should('be.visible')
+  })
+
   it('context menu shows Delete for non-trashed element', () => {
     const el = makeElement()
     visitElements([el])

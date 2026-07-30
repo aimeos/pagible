@@ -5,7 +5,7 @@ const stubs = {
   SchemaItems: { template: '<div class="schema-items-stub" />' },
 }
 
-function mountList(props = {}, perms = {}) {
+function mountList(props = {}, perms = {}, apollo = {}) {
   return cy.mount(ElementListItems, {
     props: {
       ...props,
@@ -15,10 +15,22 @@ function mountList(props = {}, perms = {}) {
       provide: {
         debounce: (fn) => fn,
       },
+      mocks: {
+        $apollo: {
+          query: () => Promise.resolve({
+            data: { elements: { data: [], paginatorInfo: { lastPage: 1 } } },
+          }),
+          mutate: () => Promise.resolve({ data: {} }),
+          provider: { defaultClient: { cache: { evict() {}, gc() {} } } },
+          ...apollo,
+        },
+      },
     },
-  }).then(() => {
+  }).then(({ wrapper }) => {
     const user = useUserStore()
     user.me = { permission: perms }
+
+    return { wrapper }
   })
 }
 
@@ -66,5 +78,29 @@ describe('ElementListItems', () => {
   it('shows loading state initially', () => {
     mountList({}, { 'element:view': true })
     cy.contains('Loading').should('exist')
+  })
+
+  it('edits one item without changing the bulk selection', () => {
+    const mutate = cy.stub().resolves({ data: { bulkElement: { ids: ['element-1'] } } })
+
+    mountList({}, { 'element:save': true, 'element:view': true }, { mutate }).then(({ wrapper }) => {
+      const vm = wrapper.findComponent(ElementListItems).vm
+      const item = { id: 'element-1' }
+      vm.items = [item, { id: 'element-2' }]
+      vm.checked = new Set(['element-2'])
+
+      vm.edit(item)
+      expect(vm.editIds).to.deep.equal(['element-1'])
+      expect(vm.editDialog).to.equal(true)
+
+      return vm.save('de').then(() => {
+        expect(mutate).to.have.been.calledOnce
+        expect(mutate.firstCall.args[0].variables).to.deep.equal({
+          id: ['element-1'],
+          input: { lang: 'de' },
+        })
+        expect([...vm.checked]).to.deep.equal(['element-2'])
+      })
+    })
   })
 })

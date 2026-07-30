@@ -9,7 +9,7 @@ namespace Aimeos\Cms\Models;
 use Aimeos\Cms\Access;
 use Aimeos\Cms\Concerns\Tenancy;
 use Aimeos\Cms\Exception;
-use Aimeos\Cms\Events\PagesInvalidated;
+use Aimeos\Cms\Events\PageInvalidated;
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\Scout;
 use Aimeos\Cms\Utils;
@@ -141,11 +141,18 @@ class PageAccess extends Model
             return [$pages, $changed, $reindex];
         } );
 
-        if( $changed ) {
-            PagesInvalidated::dispatch( array_map( fn( Nav $page ) => [
-                'domain' => (string) $page->domain,
-                'path' => (string) $page->path,
-            ], $changed ) );
+        if( $changed )
+        {
+            $paths = [];
+
+            foreach( $changed as $page ) {
+                $paths[(string) $page->domain][] = (string) $page->path;
+            }
+
+            foreach( $paths as $domain => $items ) {
+                PageInvalidated::dispatch( (string) $domain, $items );
+            }
+
             if( Scout::usesExternalSearch() ) {
                 Scout::reindex( Page::class, $reindex );
             }

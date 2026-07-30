@@ -1,4 +1,6 @@
 {
+    "Go to next": "Prejsť na nasledujúci",
+    "Go to previous": "Prejsť na predchádzajúci",
     "Download file": "Stiahnuť súbor",
     "Get Started": "Začnite",
     "Skip to main content": "Prejsť na hlavný obsah",
@@ -9,6 +11,7 @@
     "Close sidebar": "Zatvoriť bočný panel",
     "Close navigation": "Zavrieť navigáciu",
     "Search": "Vyhľadávanie",
+    "Login": "Prihlásiť sa",
     "Open navigation": "Otvorená navigácia",
     "Breadcrumb navigation": "Drobčeková navigácia",
     "Name": "Názov",

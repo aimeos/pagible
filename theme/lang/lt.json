@@ -1,4 +1,6 @@
 {
+    "Go to next": "Eiti į kitą",
+    "Go to previous": "Eiti į ankstesnį",
     "Download file": "Atsisiųsti failą",
     "Get Started": "Pradėkite",
     "Skip to main content": "Pereiti prie pagrindinio turinio",
@@ -9,6 +11,7 @@
     "Close sidebar": "Uždaryti šoninę juostą",
     "Close navigation": "Uždaryti navigaciją",
     "Search": "Paieška",
+    "Login": "Prisijungti",
     "Open navigation": "Atvira navigacija",
     "Breadcrumb navigation": "Naršymo trupinė",
     "Name": "Pavadinimas",

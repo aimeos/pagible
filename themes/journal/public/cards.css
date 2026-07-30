@@ -1,0 +1,89 @@
+/**
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+.cards .card-list {
+    display: grid;
+    gap: 2rem 1.25rem;
+    grid-template-columns: 1fr;
+    margin-block: 2rem 0;
+}
+
+.cards .card-list.cols-1 {
+    grid-template-columns: 1fr;
+    max-width: 48rem;
+}
+
+.cards .card-item {
+    background-color: var(--pico-contrast-inverse);
+    border-bottom: 0.1875rem solid var(--pico-contrast);
+    min-width: 0;
+    overflow: hidden;
+    text-align: start;
+}
+
+.cards .card-item:hover {
+    border-bottom-color: var(--pico-primary);
+}
+
+.cards .card-item > picture {
+    display: block;
+    margin: 0 0 1rem;
+    overflow: hidden;
+}
+
+.cards .card-item img {
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+    transition: transform 0.35s ease;
+    width: 100%;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .cards .card-item:hover img {
+        transform: scale(1.02);
+    }
+}
+
+.cards .title {
+    font-size: clamp(1.25rem, 2.2vw, 1.75rem);
+    margin: 0 0 0.75rem;
+}
+
+.cards .cms-text,
+.cards .text {
+    color: var(--pico-muted-color);
+    font-size: 0.875rem;
+    line-height: 1.55;
+}
+
+.cards .cms-text p {
+    margin-bottom: 0.75rem;
+}
+
+.cards .cms-text a {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+@media screen and (min-width: 576px) {
+    .cards .card-list.cols-auto,
+    .cards .card-list.cols-2,
+    .cards .card-list.cols-3,
+    .cards .card-list.cols-4 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media screen and (min-width: 992px) {
+    .cards .card-list.cols-auto,
+    .cards .card-list.cols-3 {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .cards .card-list.cols-4 {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+}

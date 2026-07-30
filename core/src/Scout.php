@@ -240,6 +240,37 @@ class Scout
 
 
     /**
+     * Returns the searchable text values from content elements.
+     *
+     * @param iterable<array<string, mixed>|object> $items Content elements
+     * @return array<int, string> Searchable text values
+     */
+    public static function text( iterable $items ) : array
+    {
+        $schemas = Schema::schemas( section: 'content' );
+        $result = [];
+
+        foreach( $items as $item )
+        {
+            $item = (object) $item;
+            $fields = (array) ( $schemas[$item->type ?? '']['fields'] ?? [] );
+
+            foreach( (array) ( $item->data ?? [] ) as $name => $value )
+            {
+                if( is_string( $value ) && isset( $fields[$name] )
+                    && ( $fields[$name]['searchable'] ?? true )
+                    && in_array( $fields[$name]['type'], ['markdown', 'plaintext', 'string', 'text'], true )
+                ) {
+                    $result[] = $value;
+                }
+            }
+        }
+
+        return $result;
+    }
+
+
+    /**
      * Removes models from Scout by ID in bounded native batches.
      *
      * @param class-string<Models\Base> $model Model class

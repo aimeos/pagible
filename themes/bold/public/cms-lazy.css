@@ -152,6 +152,10 @@ pre:has(code[class*="language-"]) {
 }
 
 
+footer.cms-content .container {
+    padding: 0;
+}
+
 footer.cms-content .cards :is(.text, .cms-text) a,
 footer.cms-content .cards :is(.text, .cms-text) a:visited,
 footer.cms-content .cards :is(.text, .cms-text) a:hover,

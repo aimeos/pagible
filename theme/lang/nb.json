@@ -1,4 +1,6 @@
 {
+    "Go to next": "Gå til neste",
+    "Go to previous": "Gå til forrige",
     "Download file": "Last ned fil",
     "Get Started": "Kom i gang",
     "Skip to main content": "Gå til hovedinnhold",
@@ -9,6 +11,7 @@
     "Close sidebar": "Lukk sidepanelet",
     "Close navigation": "Lukk navigasjonen",
     "Search": "Søk",
+    "Login": "Logg inn",
     "Open navigation": "Åpne navigasjon",
     "Breadcrumb navigation": "Breadcrumb-navigasjon",
     "Name": "Navn",

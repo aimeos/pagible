@@ -243,6 +243,10 @@ class JsonSchema
                 }
         }
 
+        if( $schema['type'] === 'string' && isset( $field['pattern'] ) ) {
+            $schema['pattern'] = (string) $field['pattern'];
+        }
+
         return self::bounds( $schema, $field );
     }
 

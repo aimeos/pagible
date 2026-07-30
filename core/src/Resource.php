@@ -7,7 +7,7 @@
 
 namespace Aimeos\Cms;
 
-use Aimeos\Cms\Events\PagesInvalidated;
+use Aimeos\Cms\Events\PageInvalidated;
 use Aimeos\Cms\Jobs\PruneVersions;
 use Aimeos\Cms\Models\Base;
 use Aimeos\Cms\Models\Element;
@@ -24,6 +24,9 @@ use Aimeos\Nestedset\NestedSet;
 
 class Resource
 {
+    public const MAX_RELOCATE = 100;
+
+
     /**
      * Creates a new element with version and attached files.
      *
@@ -96,44 +99,52 @@ class Resource
     {
         $editor = Utils::editor( $user );
         $tenant = Tenancy::value();
+        $file->setUniqueIds();
+        self::checkFilePathsOwned( $file, [$file->path, ...(array) $file->previews] );
 
         try
         {
-            return Utils::fileLock( $tenant, function() use ( $file, $editor ) {
-                self::checkStored( [$file->path, ...(array) $file->previews] );
+            $result = Utils::storageLock( $tenant,
+                fn() => Utils::fileLock( $tenant, (string) $file->id, function() use ( $file, $editor ) {
+                    self::checkStored(
+                        [$file->path, ...(array) $file->previews],
+                        (string) $file->getAttribute( 'disk' ),
+                    );
 
-                return Utils::transaction( function() use ( $file, $editor ) {
-                    $versionId = ( new Version )->newUniqueId();
+                    return Utils::transaction( function() use ( $file, $editor ) {
+                        $versionId = ( new Version )->newUniqueId();
 
-                    $file->latest_id = $versionId;
-                    $file->editor = $editor;
-                    $file->save();
+                        $file->latest_id = $versionId;
+                        $file->editor = $editor;
+                        $file->save();
 
-                    $snapshot = File::snapshot( $file->toArray() );
+                        $snapshot = File::snapshot( $file->toArray() );
 
-                    $version = $file->versions()->forceCreate( [
-                        'id' => $versionId,
-                        'lang' => $file->lang,
-                        'editor' => $editor,
-                        'data' => $snapshot['data'],
-                        'aux' => $snapshot['aux'],
-                    ] );
+                        $version = $file->versions()->forceCreate( [
+                            'id' => $versionId,
+                            'lang' => $file->lang,
+                            'editor' => $editor,
+                            'data' => $snapshot['data'],
+                            'aux' => $snapshot['aux'],
+                        ] );
 
-                    // Re-index with the latest version loaded so the draft (latest=true)
-                    // row is written; on $file->save() above the version did not exist yet.
-                    $file->setRelation( 'latest', $version )->searchable();
+                        // Re-index with the latest version loaded so the draft (latest=true)
+                        // row is written; on $file->save() above the version did not exist yet.
+                        $file->setRelation( 'latest', $version )->searchable();
 
-                    $file->announce( 'added', $editor );
-
-                    return $file;
-                } );
-            } );
+                        return $file;
+                    } );
+                } ),
+            );
         }
         catch( \Throwable $t )
         {
             $file->removePreviews()->removeFile();
             throw $t;
         }
+
+        $result->announce( 'added', $editor );
+        return $result;
     }
 
 
@@ -283,6 +294,88 @@ class Resource
 
 
     /**
+     * Moves the managed paths of several Files to another logical disk under tenant and File locks.
+     *
+     * @param array<string> $ids File UUIDs
+     * @param string $disk Target logical disk, either "public" or "private"
+     * @param Authenticatable|null $user Authenticated user authorizing and recording the relocation
+     * @return Collection<int, File>
+     * @throws Exception If permissions, path ownership, remote paths, or storage verification prevent relocation
+     */
+    public static function relocateFiles( array $ids, string $disk,
+        ?Authenticatable $user = null ) : Collection
+    {
+        File::diskName( $disk );
+        $ids = array_values( array_unique( $ids ) );
+
+        if( count( $ids ) > self::MAX_RELOCATE ) {
+            throw new Exception( sprintf(
+                'No more than %d files may be relocated at once.',
+                self::MAX_RELOCATE,
+            ) );
+        }
+
+        if( !$ids ) {
+            return ( new File() )->newCollection();
+        }
+
+        $tenant = Tenancy::value();
+        $editor = Utils::editor( $user );
+        $changed = [];
+
+        $found = File::whereIn( 'id', $ids )->pluck( 'id' )->map( strval(...) )->flip();
+
+        foreach( $ids as $id ) {
+            if( !$found->has( $id ) ) {
+                File::findOrFail( $id );
+            }
+        }
+
+        if( $user && ( !Permission::can( 'file:view', $user )
+            || !Permission::can( $disk === 'public' ? 'file:publish' : 'file:save', $user ) ) ) {
+            throw new Exception( 'Insufficient permissions' );
+        }
+
+        try
+        {
+            return Utils::storageLock( $tenant, function() use ( &$changed, $disk, $editor, $ids, $tenant ) {
+                $result = [];
+
+                foreach( $ids as $id )
+                {
+                    $result[] = Utils::fileLock( $tenant, $id, function() use (
+                        &$changed, $disk, $editor, $id
+                    ) {
+                        $file = File::findOrFail( $id );
+
+                        if( $file->getAttribute( 'disk' ) === $disk ) {
+                            return $file;
+                        }
+
+                        self::relocate( $file, self::relocationPaths( $file, $disk ), $disk, $editor );
+                        $changed[$id] = $file;
+
+                        return $file;
+                    } );
+                }
+
+                return ( new File() )->newCollection( $result );
+            } );
+        }
+        finally
+        {
+            if( $changed )
+            {
+                $files = ( new File() )->newCollection( array_values( $changed ) );
+
+                self::invalidateFiles( $files->modelKeys() );
+                File::announceMany( $files, 'saved', $editor, ['disk' => $disk], true );
+            }
+        }
+    }
+
+
+    /**
      * Updates an existing element with a new version.
      *
      * @param string $id Element UUID
@@ -380,13 +473,81 @@ class Resource
 
 
     /**
+     * Ensures newly assigned managed paths belong to their File UUID directory.
+     *
+     * @param array<array-key, mixed> $paths
+     */
+    protected static function checkFilePathsOwned( File $file, array $paths ) : void
+    {
+        $tenant = Tenancy::value();
+
+        foreach( $paths as $path )
+        {
+            if( $path === null || $path === '' ) {
+                continue;
+            }
+
+            if( is_string( $path ) && str_starts_with( $path, 'http' ) )
+            {
+                if( $file->getAttribute( 'disk' ) === 'private' ) {
+                    throw new Exception( 'Private files cannot use remote paths' );
+                }
+
+                continue;
+            }
+
+            if( !File::owns( $tenant, (string) $file->id, $path ) ) {
+                throw new Exception( sprintf( 'File path "%s" is outside its UUID directory', (string) $path ) );
+            }
+        }
+    }
+
+
+    /**
+     * Returns unique current and historical paths that can be relocated for one File.
+     *
+     * @param File $file File owning every returned path
+     * @param string $disk Target logical disk
+     * @return Collection<int, non-empty-string>
+     * @throws Exception If a path is remote where unsupported or does not belong to the File UUID
+     */
+    protected static function relocationPaths( File $file, string $disk ) : Collection
+    {
+        if( $disk === 'private' && str_starts_with( (string) $file->path, 'http' ) ) {
+            throw new Exception( 'Remote files cannot be relocated' );
+        }
+
+        $paths = collect( [$file->path, ...(array) $file->previews] );
+
+        foreach( Version::where( 'versionable_id', $file->id )
+            ->where( 'versionable_type', File::class )
+            ->select( 'data' )->cursor() as $version ) {
+            $paths->push(
+                $version->data->path ?? null,
+                ...(array) ( $version->data->previews ?? [] ),
+            );
+        }
+
+        if( $disk === 'private' && $paths->contains( fn( $path ) => is_string( $path ) && str_starts_with( $path, 'http' ) ) ) {
+            throw new Exception( 'Remote files cannot be relocated' );
+        }
+
+        $paths = $paths->filter( fn( $path ) => is_string( $path ) && $path !== '' && !str_starts_with( $path, 'http' ) )
+            ->unique()->values();
+        self::checkFilePathsOwned( $file, $paths->all() );
+
+        return $paths;
+    }
+
+
+    /**
      * Ensures prepared local files still exist while the ownership lock is held.
      *
      * @param array<array-key, mixed> $paths Prepared storage paths
      */
-    protected static function checkStored( array $paths ) : void
+    protected static function checkStored( array $paths, string $disk ) : void
     {
-        $disk = Storage::disk( config( 'cms.disk', 'public' ) );
+        $storage = Storage::disk( File::diskName( $disk ) );
 
         foreach( $paths as $path )
         {
@@ -400,7 +561,7 @@ class Resource
                 continue;
             }
 
-            if( $value === null || !$disk->exists( $value ) ) {
+            if( $value === null || !$storage->exists( $value ) ) {
                 throw new Exception( sprintf( 'Prepared file "%s" is not available', (string) $path ) );
             }
         }
@@ -408,7 +569,118 @@ class Resource
 
 
     /**
-     * Applies and announces a lifecycle action while preserving Page tree semantics.
+     * Invalidates published pages using a File directly or through an Element in bounded chunks.
+     *
+     * @param array<string> $ids File UUIDs
+     */
+    protected static function invalidateFiles( array $ids ) : void
+    {
+        $db = DB::connection( config( 'cms.db', 'sqlite' ) );
+        $direct = $db->table( 'cms_page_file' )->select( 'page_id' )->whereIn( 'file_id', $ids );
+        $shared = $db->table( 'cms_element_file as ef' )
+            ->join( 'cms_page_element as pe', 'pe.element_id', '=', 'ef.element_id' )
+            ->select( 'pe.page_id' )->whereIn( 'ef.file_id', $ids );
+        $pages = $direct->unionAll( $shared );
+
+        foreach( Page::whereIn( 'id', $pages )
+            ->select( 'id', 'domain', 'path' )->lazyById( 250 )->chunk( 250 ) as $items )
+        {
+            self::invalidatePages( $items );
+        }
+    }
+
+
+    /**
+     * Invalidates the routes of the given Page models, grouped by domain.
+     *
+     * Non-Page values are ignored so lifecycle collections can be passed without additional filtering.
+     *
+     * @param iterable<array-key, mixed> $pages Candidate Page models
+     */
+    protected static function invalidatePages( iterable $pages ) : void
+    {
+        $paths = [];
+
+        foreach( $pages as $page ) {
+            if( $page instanceof Page ) {
+                $paths[(string) $page->domain][] = (string) $page->path;
+            }
+        }
+
+        foreach( $paths as $domain => $domainPaths ) {
+            PageInvalidated::dispatch( (string) $domain, $domainPaths );
+        }
+    }
+
+
+    /**
+     * Moves one File after ownership checks have completed.
+     *
+     * @param Collection<int, non-empty-string> $paths Managed paths being moved
+     */
+    protected static function relocate( File $file, Collection $paths, string $disk, string $editor ) : void
+    {
+        $source = Storage::disk( File::diskName( (string) $file->getAttribute( 'disk' ) ) );
+        $target = Storage::disk( File::diskName( $disk ) );
+
+        foreach( $paths as $path )
+        {
+            $sourceExists = $source->exists( $path );
+
+            if( !$sourceExists && !$target->exists( $path ) ) {
+                throw new Exception( sprintf( 'File "%s" is missing from both storage disks', $path ) );
+            }
+
+            if( $sourceExists )
+            {
+                $size = $source->size( $path );
+                $stream = $source->readStream( $path );
+
+                if( !$stream ) {
+                    throw new Exception( sprintf( 'Unable to read file "%s"', $path ) );
+                }
+
+                try {
+                    if( !$target->writeStream( $path, $stream ) ) {
+                        throw new Exception( sprintf( 'Unable to store file "%s"', $path ) );
+                    }
+                } finally {
+                    if( is_resource( $stream ) ) {
+                        fclose( $stream );
+                    }
+                }
+
+                if( !$target->exists( $path ) || $size !== $target->size( $path ) ) {
+                    throw new Exception( sprintf( 'Unable to verify file "%s"', $path ) );
+                }
+            }
+        }
+
+        if( !$paths->isEmpty() ) {
+            $source->delete( $paths->all() );
+        }
+
+        foreach( $paths as $path ) {
+            if( $source->exists( $path ) ) {
+                throw new Exception( sprintf( 'Unable to remove file "%s" from its previous disk', $path ) );
+            }
+        }
+
+        Utils::transaction( function() use ( $disk, $editor, $file ) {
+            /** @var File $locked */
+            $locked = File::lockForUpdate()->findOrFail( $file->id );
+            $locked->disk = $disk;
+            $locked->editor = $editor;
+            File::withoutSyncingToSearch( fn() => $locked->save() );
+        } );
+
+        $file->disk = $disk;
+        $file->editor = $editor;
+    }
+
+
+    /**
+     * Applies and announces a lifecycle action while preserving Page tree semantics and route invalidation.
      *
      * @param class-string<Base> $model
      * @param array<string> $ids
@@ -431,7 +703,7 @@ class Resource
             sort( $ids, SORT_STRING );
         }
 
-        $apply = function( array $ids ) use ( $action, $announce, $editor, $fields, $isPage, $model, &$pages ) {
+        $apply = function( array $ids ) use ( $action, $editor, $fields, $isPage, $model, &$pages ) {
             $query = $model::withTrashed()->whereIn( 'id', $ids );
 
             if( $isPage ) {
@@ -477,10 +749,6 @@ class Resource
 
             if( $action === 'purged' )
             {
-                if( $announce ) {
-                    Base::announceMany( $items, $action, $editor );
-                }
-
                 if( $model === File::class ) {
                     File::purgeMany( Tenancy::value(), $items );
                 }
@@ -543,7 +811,7 @@ class Resource
             ? fn() => Utils::lockedTransaction( $batch )
             : fn() => Utils::transaction( $batch );
 
-        $items = Scout::mute( [$model], function() use ( $action, $apply, $ids, $model, $run ) {
+        $change = fn() => Scout::mute( [$model], function() use ( $action, $apply, $ids, $model, $run ) {
             try {
                 return $run();
             } catch( \Exception $e ) {
@@ -564,18 +832,13 @@ class Resource
 
             return $items;
         } );
+        $items = $model === File::class
+            ? Utils::storageLock( Tenancy::value(), $change )
+            : $change();
 
         if( $isPage && $action !== 'restored' )
         {
-            $routes = [];
-
-            foreach( $pages as $item ) {
-                if( $item instanceof Page ) {
-                    $routes[] = ['domain' => $item->domain, 'path' => $item->path];
-                }
-            }
-
-            PagesInvalidated::dispatch( $routes );
+            self::invalidatePages( $pages );
         }
 
         if( $action === 'dropped' ) {
@@ -584,8 +847,8 @@ class Resource
             ] );
         } elseif( $action === 'restored' ) {
             Base::announceMany( $items, $action, $editor, ['deleted_at' => null] );
-        } elseif( !$announce ) {
-            Base::announceMany( $items, $action, $editor, bulk: true );
+        } elseif( $action === 'purged' ) {
+            Base::announceMany( $items, $action, $editor, bulk: !$announce );
         }
 
         /** @var array<string> $changed */
@@ -631,7 +894,9 @@ class Resource
 
 
     /**
-     * Updates file metadata and creates a new version with optional merge.
+     * Ingests optional file data, updates metadata, and creates a conflict-aware version.
+     *
+     * Storage work completes before the transaction; the File lock then verifies the prepared paths and logical disk.
      *
      * @param string $id File UUID
      * @param array<string, mixed> $input File fields to update
@@ -648,30 +913,43 @@ class Resource
         $tenant = Tenancy::value();
 
         // Prepare storage and remote image work before opening the transaction.
-        $tmp = new File();
+        $tmp = ( new File() )->forceFill( ['id' => $id] );
         $currentPath = null;
         $stored = null;
         $storedMime = null;
         $storedPreviews = null;
+        $disk = 'public';
+        $prepared = false;
 
         try
         {
-            if( $upload || $preview instanceof UploadedFile || array_key_exists( 'path', $input ) )
+            $newPath = self::checkPath( $input['path'] ?? null );
+
+            if( $upload || $preview instanceof UploadedFile || $newPath !== null )
             {
                 /** @var File $current */
                 $current = File::withTrashed()->with( ['latest' => fn( $q ) => $q
                     ->select( 'id', 'versionable_id', 'data', 'aux', 'lang', 'editor' )] )->findOrFail( $id );
                 $currentPath = (string) ( $current->latest?->data->path ?? $current->path );
+                $disk = (string) $current->getAttribute( 'disk' );
+                $tmp->disk = $disk;
                 $tmp->name = (string) ( $input['name'] ?? $current->latest?->data->name ?? $current->name );
+                $privateRemote = $disk === 'private' && str_starts_with( (string) $newPath, 'http' );
+
+                if( $newPath !== null && !$privateRemote ) {
+                    self::checkFilePathsOwned( $current, [$newPath] );
+                }
             }
 
-            $newPath = self::checkPath( $input['path'] ?? null );
             $source = $upload ?? ( $newPath !== null && $newPath !== $currentPath ? $newPath : null );
 
             if( $source !== null || $preview instanceof UploadedFile )
             {
-                $tmp->prepare( $source, $preview );
-                $stored = $upload ? $tmp->path : null;
+                $prepared = true;
+                $tmp->ingest( $source, $preview instanceof UploadedFile ? $preview : null );
+                $local = $upload !== null || $disk === 'private' && is_string( $source )
+                    && str_starts_with( $source, 'http' );
+                $stored = $local ? $tmp->path : null;
                 $storedMime = $source !== null ? (string) $tmp->mime : null;
 
                 if( $preview instanceof UploadedFile
@@ -682,38 +960,49 @@ class Resource
                 }
             }
 
-            return Utils::fileLock( $tenant, function() use ( $id, $input, $editor, $latestId,
-                $preview, $stored, $storedMime, $storedPreviews ) {
-                    self::checkStored( [$stored, ...( $storedPreviews ?? [] )] );
-
-                    return Utils::transaction( function() use ( $id, $input, $editor, $latestId,
-                        $preview, $stored, $storedMime, $storedPreviews ) {
-
+            $file = Utils::storageLock( $tenant,
+                fn() => Utils::fileLock( $tenant, $id, function() use ( $id, $input, $editor, $latestId,
+                    $preview, $stored, $storedMime, $storedPreviews, $disk, $prepared ) {
                         /** @var File $file */
                         $file = File::withTrashed()->with( ['latest' => fn( $q ) => $q
                             ->select( 'id', 'versionable_id', 'data', 'aux', 'lang', 'editor' )] )
-                            ->lockForUpdate()->findOrFail( $id );
+                            ->findOrFail( $id );
 
-                        self::applyFile( $file, $input, $editor, $latestId, $stored,
-                            $storedPreviews, $preview, $storedMime );
-                        self::pruneVersions( File::class, [$file->id] );
+                        if( $prepared && $file->getAttribute( 'disk' ) !== $disk ) {
+                            throw new Exception( 'File disk changed while saving; retry the request' );
+                        }
 
-                        $file->announce( 'saved', $editor );
+                        self::checkStored( [$stored, ...( $storedPreviews ?? [] )], $disk );
 
-                        return $file;
-                    } );
-                } );
+                        return Utils::transaction( function() use ( $file, $input, $editor, $latestId,
+                            $preview, $stored, $storedMime, $storedPreviews ) {
+                            self::applyFile( $file, $input, $editor, $latestId, $stored,
+                                $storedPreviews, $preview, $storedMime );
+                            self::pruneVersions( File::class, [$file->id] );
+
+                            return $file;
+                        } );
+                    } ),
+            );
         }
         catch( \Throwable $t )
         {
             try {
-                $tmp->removePreviews()->removeFile();
+                ( new File() )->forceFill( [
+                    'id' => $id,
+                    'disk' => $disk,
+                    'path' => $stored,
+                    'previews' => $storedPreviews ?? [],
+                ] )->removePreviews()->removeFile();
             } catch( \Throwable $cleanup ) {
                 report( $cleanup );
             }
 
             throw $t;
         }
+
+        $file->announce( 'saved', $editor );
+        return $file;
     }
 
 
@@ -738,13 +1027,15 @@ class Resource
 
         $editor = Utils::editor( $user );
 
-        return self::bulk( File::class, $ids, $input, $editor, function( string $id ) use ( $input, $editor ) : ?File {
-            $file = File::withTrashed()
-                ->with( ['latest' => fn( $q ) => $q->select( 'id', 'versionable_id', 'data', 'aux', 'lang', 'editor' )] )
-                ->lockForUpdate()->find( $id );
+        return self::bulk( File::class, $ids, $input, $editor,
+            function( string $id ) use ( $input, $editor ) : ?File {
+                $file = File::withTrashed()
+                    ->with( ['latest' => fn( $q ) => $q->select( 'id', 'versionable_id', 'data', 'aux', 'lang', 'editor' )] )
+                    ->lockForUpdate()->find( $id );
 
-            return $file ? self::applyFile( $file, $input, $editor ) : null;
-        } );
+                return $file ? self::applyFile( $file, $input, $editor ) : null;
+            },
+        );
     }
 
 
@@ -765,7 +1056,7 @@ class Resource
         $model::checkBulk( count( $ids ) );
 
         // suppress Scout's per-save reindex; the whole batch is reindexed once below
-        $latest = Scout::mute( [$model], function() use ( $ids, $prepare, $save ) {
+        $latest = Scout::mute( [$model], function() use ( $ids, $model, $prepare, $save ) {
             $result = [];
 
             foreach( array_chunk( $ids, 50 ) as $chunk )
@@ -777,7 +1068,10 @@ class Resource
                     try
                     {
                         /** @var Page|File|Element|null $item */
-                        $item = Utils::transaction( fn() => $save( $id, $context ) );
+                        $change = fn() => Utils::transaction( fn() => $save( $id, $context ) );
+                        $item = $model === File::class
+                            ? Utils::storageLock( Tenancy::value(), $change )
+                            : $change();
 
                         if( $item )
                         {
@@ -815,14 +1109,16 @@ class Resource
         ];
 
         Base::announceBulk( strtolower( class_basename( $model ) ), $result['ids'], $result['latest'], $result['data'], $editor );
-        self::pruneVersions( $model, $saved );
+
+        $prune = fn() => self::pruneVersions( $model, $saved );
+        $model === File::class ? Utils::storageLock( Tenancy::value(), $prune ) : $prune();
 
         return $result;
     }
 
 
     /**
-     * Creates a new version for an already loaded file from the given input.
+     * Three-way merges input into an already loaded File and creates its new latest version.
      *
      * Shared by saveFile() (single) and bulkFile() (bulk). Must run inside a transaction.
      *
@@ -846,22 +1142,30 @@ class Resource
 
         $file = clone $orig;
 
-        $base = self::base( $orig, $latestId );
         $input = File::snapshot( $input );
-        [$data, $dd] = self::merge( $orig, $input['data'], $base );
-        [$aux, $ad] = self::merge( $orig, $input['aux'], $base, 'aux' );
-        $diffs = array_filter( ['data' => $dd, 'aux' => $ad] );
+        [$data, $aux, $diffs] = Merge::file( $orig, $input['data'], $input['aux'], $latestId );
         $file->fill( $data + $aux );
 
         if( isset( $input['data']['previews'] ) )
         {
             foreach( $input['data']['previews'] as $previewPath ) {
-                self::checkPath( $previewPath );
+                self::checkFilePathsOwned( $orig, [self::checkPath( $previewPath )] );
             }
         }
 
         $file->previews = $input['data']['previews'] ?? $previews;
         $file->path = $stored ?? self::checkPath( $input['data']['path'] ?? null ) ?? $path;
+
+        if( $stored !== null ) {
+            self::checkFilePathsOwned( $orig, [$stored] );
+        }
+        if( $storedPreviews !== null ) {
+            self::checkFilePathsOwned( $orig, $storedPreviews );
+        }
+        if( isset( $input['data']['path'] ) ) {
+            self::checkFilePathsOwned( $orig, [$file->path] );
+        }
+
         $file->editor = $editor;
 
         if( $file->path !== $path )
@@ -1200,47 +1504,6 @@ class Resource
         foreach( array_chunk( array_values( array_unique( $ids ) ), 50 ) as $chunk ) {
             PruneVersions::dispatch( $model, Tenancy::value(), $chunk )->afterCommit();
         }
-    }
-
-
-    /**
-     * Returns the base version when the model changed since it was read.
-     *
-     * @param Base $model Model with versions relation
-     * @param string|null $latestId Version ID the editor was working on
-     * @return Version|null Base version for the three-way merge
-     */
-    protected static function base( Base $model, ?string $latestId ) : ?Version
-    {
-        $current = $model->getAttribute( 'latest_id' );
-
-        if( $latestId && $current && $latestId !== $current ) {
-            return $model->versions()->find( $latestId );
-        }
-
-        return null;
-    }
-
-
-    /**
-     * Three-way merges or replaces a version section based on conflict detection.
-     *
-     * @param Element|File $model Model with versions relation
-     * @param array<string, mixed> $input Incoming data
-     * @param Version|null $base Base version for the three-way merge
-     * @param string $section Version section to merge
-     * @return array{0: array<string, mixed>, 1: array<string, array<string, mixed>>|null}
-     */
-    protected static function merge( Base $model, array $input, ?Version $base, string $section = 'data' ) : array
-    {
-        $latest = (array) $model->latest?->getAttribute( $section );
-
-        if( $base ) {
-            $base = (array) $base->getAttribute( $section );
-            return Merge::structured( $base, $latest, array_replace( $base, $input ) );
-        }
-
-        return [array_replace( $latest, $input ), null];
     }
 
 

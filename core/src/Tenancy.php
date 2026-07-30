@@ -9,6 +9,7 @@ namespace Aimeos\Cms;
 
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Str;
 
 
 /**
@@ -44,7 +45,29 @@ class Tenancy
      */
     public function __construct( string $id )
     {
-        $this->id = $id;
+        $this->id = self::check( $id );
+    }
+
+
+    /**
+     * Validates a tenant ID for database and storage namespace use.
+     *
+     * The empty ID denotes the default tenant. Named tenants must not overlap
+     * the default tenant's UUID-owned storage directories. Named IDs are
+     * bounded URL-safe names because they are also used in storage paths.
+     * Dots may separate non-empty name parts, allowing domain names.
+     *
+     * @param string $id Candidate tenant ID
+     * @return string Validated tenant ID
+     * @throws \InvalidArgumentException If the ID is unsafe, too long, or overlaps a default-tenant UUID directory
+     */
+    public static function check( string $id ) : string
+    {
+        if( $id && ( preg_match( '/\A(?=.{1,100}\z)[A-Za-z0-9_-]+(?:\.[A-Za-z0-9_-]+)*\z/', $id ) !== 1 || Str::isUuid( $id ) ) ) {
+            throw new \InvalidArgumentException( 'Invalid tenant ID' );
+        }
+
+        return $id;
     }
 
 
@@ -62,11 +85,11 @@ class Tenancy
     /**
      * Returns whether the user may access the given tenant.
      *
-     * Pagible runs on a single shared database (no multi-database tenancy), so the user must
-     * belong to the tenant: by default the user's tenant_id must equal the channel's tenant.
-     * Override Tenancy::$access for custom binding logic.
+     * Without tenancy configuration, any authenticated user belongs to the single CMS tenant.
+     * Otherwise, the user's tenant_id must equal the current tenant by default. Override
+     * Tenancy::$access for custom binding logic.
      *
-     * @param ?Authenticatable $user Authenticated user (must expose a tenant_id)
+     * @param ?Authenticatable $user Authenticated user (must expose a tenant_id when tenancy is configured)
      * @param string $tenant Tenant ID
      */
     public static function allows( ?Authenticatable $user, string $tenant ) : bool
@@ -79,7 +102,12 @@ class Tenancy
             return $access( $user, $tenant );
         }
 
+        if( $tenant === '' ) {
+            return true;
+        }
+
         $id = data_get( $user, 'tenant_id' );
+
         return is_string( $id ) && $id === $tenant;
     }
 

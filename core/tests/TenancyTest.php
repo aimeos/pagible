@@ -15,6 +15,7 @@ use Aimeos\Cms\SearchBuilder;
 use Aimeos\Cms\Scopes\Status;
 use Aimeos\Cms\Tenancy;
 use Database\Seeders\TestSeeder;
+use Illuminate\Auth\GenericUser;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Event;
@@ -59,8 +60,7 @@ class TenancyTest extends CoreTestAbstract
 
     public function testAllowsEmptyTenantWithoutTenancyConfiguration(): void
     {
-        $user = new \App\Models\User();
-        $user->tenant_id = '';
+        $user = new GenericUser( ['id' => 1] );
         Tenancy::$callback = null;
 
         $this->assertTrue( Tenancy::allows( $user, '' ) );
@@ -159,6 +159,42 @@ class TenancyTest extends CoreTestAbstract
 
         $this->assertSame( $access, $result );
         $this->assertSame( 'test', Tenancy::value() );
+    }
+
+
+    public function testRejectsUnsafeTenantIdentifiers(): void
+    {
+        $ids = [
+            '.',
+            '..',
+            'other/tenant',
+            'other\\tenant',
+            "other\0tenant",
+            'other tenant',
+            '.other',
+            'other.',
+            'other..tenant',
+            'other%2Ftenant',
+            'other?tenant',
+            'other#tenant',
+            str_repeat( 'a', 101 ),
+            '019faa86-6307-71d3-bc70-75fa4f6f0720',
+        ];
+
+        foreach( $ids as $id )
+        {
+            try {
+                new Tenancy( $id );
+                $this->fail( 'Expected an unsafe tenant ID to be rejected' );
+            } catch( \InvalidArgumentException $e ) {
+                $this->assertSame( 'Invalid tenant ID', $e->getMessage() );
+            }
+        }
+
+        $this->assertSame( '', ( new Tenancy( '' ) )->id() );
+        $this->assertSame( 'tenant-1', ( new Tenancy( 'tenant-1' ) )->id() );
+        $this->assertSame( 'www.example.com', ( new Tenancy( 'www.example.com' ) )->id() );
+        $this->assertSame( str_repeat( 'a', 100 ), ( new Tenancy( str_repeat( 'a', 100 ) ) )->id() );
     }
 
 

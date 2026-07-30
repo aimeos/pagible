@@ -1,0 +1,195 @@
+/**
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+.cms-content .list .list-items {
+    flex-direction: column;
+    display: flex;
+}
+
+.cms-content .list .list-default {
+    border: 1px solid var(--pico-muted-border-color);
+    border-radius: calc(var(--pico-border-radius) * 2);
+    overflow: clip;
+}
+
+.cms-content .list .first,
+.cms-content .list .second {
+    padding: 2rem;
+    width: 100%;
+}
+
+.cms-content .list .second,
+.cms-content .list .list-list {
+    flex-direction: column;
+    display: flex;
+    gap: 1rem;
+}
+
+.cms-content .list .second {
+    background-color: var(--pico-contrast-inverse);
+}
+
+.cms-content .list .list-cards {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+}
+
+.cms-content .list .list-item {
+    text-decoration: none;
+    transition: box-shadow 0.25s ease, transform 0.25s ease;
+    padding: 0.5rem;
+    display: block;
+    height: 100%;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .cms-content .list .list-item:hover {
+        box-shadow: none;
+        transform: none;
+    }
+}
+
+.cms-content .list img {
+    display: block;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    width: 100%;
+}
+
+.cms-content .list .date {
+    color: var(--pico-muted-color);
+    font-size: max(0.875rem, calc(var(--pico-font-size) * 0.6));
+    font-weight: 400;
+}
+
+.cms-content .list h3 {
+    margin-top: 0.75rem;
+    font-weight: 500;
+}
+
+.cms-content .list .first .content,
+.cms-content .list:not(.property-list) .list-cards .content {
+    display: flex;
+    align-items: baseline;
+    padding: 1rem 1.25rem;
+    gap: 1rem;
+}
+
+.cms-content .list .first .date-day,
+.cms-content .list .list-cards .date-day {
+    font-weight: 600;
+    font-size: calc(var(--pico-font-size) * 1.1);
+    font-family: var(--pico-font-family-display);
+}
+
+.cms-content .list .first .date-month,
+.cms-content .list .list-cards .date-month {
+    text-transform: uppercase;
+    font-size: max(0.875rem, calc(var(--pico-font-size) * 0.6));
+    letter-spacing: 0.05em;
+}
+
+.cms-content .list .first h3,
+.cms-content .list .list-cards h3 {
+    flex-grow: 1;
+}
+
+.cms-content .list .second .list-item,
+.cms-content .list .list-list .list-item {
+    align-items: center;
+    display: flex;
+}
+
+.cms-content .list .second picture,
+.cms-content .list .list-list picture {
+    padding-inline-end: 1rem;
+    flex: 2;
+}
+
+.cms-content .list .second .content,
+.cms-content .list .list-list .content {
+    align-content: center;
+    flex: 3;
+}
+
+.cms-content .list .list-list .intro {
+    color: var(--pico-muted-color);
+    font-size: max(0.875rem, calc(var(--pico-font-size) * 0.8));
+    margin: 0.25rem 0 0;
+}
+
+.cms-content .list .list-list .list-item:nth-child(even) {
+    flex-direction: row-reverse;
+}
+
+.cms-content .list .list-list .list-item:nth-child(even) picture {
+    padding-inline: 1rem 0;
+}
+
+@media (min-width: 768px) {
+    .cms-content .list .list-default {
+        flex-direction: row;
+    }
+
+    .cms-content .list .list-default .first,
+    .cms-content .list .list-default .second {
+        width: 50%;
+    }
+
+    .cms-content .list .list-cards {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+.cms-content .list nav .pagination {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    justify-content: center;
+    margin: 2rem auto 0;
+    padding: 0;
+}
+
+.cms-content .list nav .pagination li {
+    list-style: none;
+    margin: 0;
+}
+
+.cms-content .list nav .pagination a,
+.cms-content .list nav .pagination span {
+    align-items: center;
+    border: 1px solid var(--pico-muted-border-color);
+    border-radius: var(--pico-border-radius);
+    display: inline-flex;
+    justify-content: center;
+    min-height: 2.75rem;
+    min-width: 2.75rem;
+    padding: 0.5rem 0.75rem;
+    text-decoration: none;
+}
+
+.cms-content .list nav .pagination a:hover {
+    background-color: var(--pico-muted-background-color);
+    color: var(--pico-color);
+}
+
+.cms-content .list nav .pagination .active span,
+.cms-content .list nav .pagination [aria-current='page'] {
+    background-color: var(--pico-primary);
+    border-color: var(--pico-primary);
+    color: var(--pico-primary-inverse);
+}
+
+.cms-content .list nav .pagination .disabled span,
+.cms-content .list nav .pagination [aria-disabled='true'] {
+    color: var(--pico-muted-color);
+    opacity: 0.55;
+}
+
+.cms-content .list nav .pagination a:focus-visible {
+    border-color: var(--pico-primary);
+    box-shadow: 0 0 0 3px var(--pico-primary-focus);
+    outline: 2px solid transparent;
+}

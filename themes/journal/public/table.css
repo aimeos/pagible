@@ -1,0 +1,79 @@
+/**
+ * Journal Theme
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+.table-responsive .table-row {
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid var(--pico-muted-border-color);
+}
+
+.table-responsive .table-col {
+    padding: calc(var(--pico-spacing) / 2) var(--pico-spacing);
+    flex: 1;
+}
+
+.table-responsive .th {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-self: stretch;
+    color: var(--pico-contrast);
+    font-weight: 700;
+    font-size: calc(var(--pico-font-size) * 0.75);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    text-align: center;
+}
+
+.table-responsive .th:first-child {
+    text-align: start;
+}
+
+.table-responsive .table-row:first-child .th:first-child:not(.col) {
+    text-align: center;
+}
+
+.table-responsive .td {
+    text-align: center;
+    align-self: center;
+}
+
+.table-responsive .th > *:first-child,
+.table-responsive .td > *:first-child {
+    margin-top: 0;
+}
+
+.table-responsive .th > *:last-child,
+.table-responsive .td > *:last-child {
+    margin-bottom: 0;
+}
+
+.table-responsive .th img {
+    display: block;
+    margin-top: 0.75rem;
+    margin-bottom: 0.75rem;
+    align-content: end;
+    text-align: center;
+    height: 100%;
+    width: 100%;
+}
+
+@media (max-width: 576px) {
+    .table-responsive .table-row {
+        flex-wrap: wrap;
+    }
+
+    .table-responsive .table-row:first-child .table-col:first-child {
+        display: none;
+    }
+
+    .table-responsive .table-col:first-child {
+        flex: 0 0 100%;
+    }
+
+    .table-responsive .table-col:not(:first-child) {
+        flex: 1;
+    }
+}

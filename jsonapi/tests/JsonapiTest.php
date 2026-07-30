@@ -8,8 +8,11 @@
 namespace Tests;
 
 use Aimeos\Cms\Access;
+use Aimeos\Cms\Concerns\ResolvesFiles;
+use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Models\PageAccess;
+use Aimeos\Cms\Schema;
 use Database\Seeders\TestSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Gate;
@@ -92,6 +95,79 @@ class JsonapiTest extends JsonapiTestAbstract
 
         $response->assertFetchedOne( $page );
         $response->assertJsonPath( 'meta.baseurl', '/storage/' );
+    }
+
+
+    public function testPrivateFileUsesCoreAssetRoute()
+    {
+        $page = Page::where( 'tag', 'root' )->firstOrFail();
+        $file = File::forceCreate( [
+            'disk' => 'private',
+            'mime' => 'image/svg+xml',
+            'name' => 'private.svg',
+            'path' => 'cms/test/private.svg',
+            'previews' => [500 => 'cms/test/private-500.svg'],
+            'editor' => 'test',
+        ] );
+        $items = [(object) ['files' => [$file->id]]];
+        $result = $this->resolveFiles( $page, $items, collect( [$file->id => $file] ) );
+        $asset = $result[0]->files[$file->id];
+
+        $this->assertStringEndsWith( "/cmsasset/{$page->id}/{$file->id}", $asset->path );
+        $this->assertStringEndsWith(
+            "/cmsasset/{$page->id}/{$file->id}/500",
+            ( (array) $asset->previews )[500],
+        );
+    }
+
+
+    public function testSchemaActionOverridesStoredCallable()
+    {
+        $page = Page::where( 'tag', 'root' )->firstOrFail();
+        $stored = false;
+        $trusted = null;
+        $action = function( Page $page ) use ( &$trusted ) {
+            $trusted = $page->id;
+            return 'trusted';
+        };
+
+        Schema::source( fn() => ['test' => ['content' => ['action' => ['fields' => [
+            'action' => [
+                'type' => 'hidden',
+                'value' => $action,
+            ],
+        ]]]]] );
+
+        $items = [(object) [
+            'type' => 'test::action',
+            'data' => (object) ['action' => function() use ( &$stored ) {
+                $stored = true;
+                return 'stored';
+            }],
+        ]];
+        $result = $this->resolveFiles( $page, $items );
+
+        $this->assertFalse( $stored );
+        $this->assertSame( $page->id, $trusted );
+        $this->assertSame( 'trusted', $result[0]->data->action );
+    }
+
+
+    public function testStoredCallableWithoutSchemaActionIsIgnored()
+    {
+        $page = Page::where( 'tag', 'root' )->firstOrFail();
+        $stored = false;
+        $items = [(object) [
+            'type' => 'unknown',
+            'data' => (object) ['action' => function() use ( &$stored ) {
+                $stored = true;
+                return 'stored';
+            }],
+        ]];
+        $result = $this->resolveFiles( $page, $items );
+
+        $this->assertFalse( $stored );
+        $this->assertObjectNotHasProperty( 'action', $result[0]->data );
     }
 
 
@@ -384,5 +460,24 @@ class JsonapiTest extends JsonapiTestAbstract
 
         $response->assertFetchedOne( $page );
         $this->assertNotContains( $child->id, collect( $response->json( 'included', [] ) )->pluck( 'id' ) );
+    }
+
+
+    /**
+     * @param array<int|string, object> $items
+     * @return array<int|string, object>
+     */
+    private function resolveFiles( Page $page, array $items, ?\Illuminate\Support\Collection $files = null ): array
+    {
+        $resolver = new class {
+            use ResolvesFiles;
+
+            public function resolve( Page $page, array $items, ?\Illuminate\Support\Collection $files ): array
+            {
+                return (array) $this->resolveFiles( $page, $items, $files );
+            }
+        };
+
+        return $resolver->resolve( $page, $items, $files );
     }
 }

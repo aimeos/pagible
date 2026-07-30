@@ -1,4 +1,6 @@
 {
+    "Go to next": "انتقل إلى التالي",
+    "Go to previous": "انتقل إلى السابق",
     "Download file": "تنزيل الملف",
     "Get Started": "ابدأ الآن",
     "Skip to main content": "تخطي إلى المحتوى الرئيسي",
@@ -9,6 +11,7 @@
     "Close sidebar": "إغلاق الشريط الجانبي",
     "Close navigation": "إغلاق التنقل",
     "Search": "بحث",
+    "Login": "تسجيل الدخول",
     "Open navigation": "فتح التنقل",
     "Breadcrumb navigation": "تصفح التنقل بين الصفحات",
     "Name": "الاسم",

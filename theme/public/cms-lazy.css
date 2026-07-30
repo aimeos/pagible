@@ -179,7 +179,7 @@ footer.cms-content {
 }
 
 footer.cms-content .container {
-    padding: 1rem min(5%, 2rem);
+    padding: 0;
 }
 
 footer.cms-content .cards .card-list {

@@ -1,0 +1,72 @@
+/**
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+.questions details {
+    border: 1px solid var(--pico-muted-border-color);
+    border-radius: calc(var(--pico-border-radius) * 2);
+    background-color: var(--pico-contrast-background);
+    transition: box-shadow 0.2s ease;
+    margin: 0;
+    padding: clamp(1.25rem, 4vw, 2rem);
+}
+
+.questions details[open] {
+    box-shadow: var(--pico-box-shadow);
+}
+
+.questions .faqs {
+    display: grid;
+    gap: 0.75rem;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 24rem), 1fr));
+}
+
+.questions summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  list-style: none;
+}
+
+.questions summary::-webkit-details-marker {
+    display: none;
+}
+
+.questions h3 {
+    font-size: var(--pico-font-size);
+    font-weight: 500;
+    margin: 0;
+}
+
+.questions details summary svg {
+    margin-inline-start: 0.5rem;
+    transition: transform 0.3s;
+    min-width: 1.5rem;
+    color: var(--pico-muted-color);
+}
+
+.questions details[open] summary svg {
+    transform: rotate(180deg);
+    color: var(--pico-primary);
+}
+
+.questions details > *:not(summary) {
+    transition: opacity 0.2s ease;
+    opacity: 0;
+    color: var(--pico-muted-color);
+    font-weight: 400;
+    line-height: 1.7;
+}
+
+.questions details[open] > *:not(summary) {
+    opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .questions details,
+    .questions details > *:not(summary),
+    .questions details summary svg {
+        transition: none;
+    }
+}

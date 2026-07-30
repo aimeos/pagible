@@ -33,7 +33,7 @@ class JsonapiController extends Controller
     public function read( ?Page $page, PageQuery $query ) : DataResponse
     {
         return DataResponse::make( $page )
-            ->withMeta( ['baseurl' => Storage::disk( config( 'cms.disk', 'public' ) )->url( '' )] )
+            ->withMeta( ['baseurl' => Storage::disk( config( 'cms.disks.public.name', 'public' ) )->url( '' )] )
             ->withQueryParameters( $query );
     }
 
@@ -48,7 +48,7 @@ class JsonapiController extends Controller
     public function searched( $data, PageCollectionQuery $query ) : DataResponse
     {
         return DataResponse::make( $data )
-            ->withMeta( ['baseurl' => Storage::disk( config( 'cms.disk', 'public' ) )->url( '' )] )
+            ->withMeta( ['baseurl' => Storage::disk( config( 'cms.disks.public.name', 'public' ) )->url( '' )] )
             ->withQueryParameters( $query );
     }
 }

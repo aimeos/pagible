@@ -34,7 +34,7 @@
 
         @foreach($page->ancestorsAndSelf->reverse() as $navItem)
             @if($fileId = cms($navItem, 'config.icon.data.file.id'))
-                <link rel="icon" type="{{ cmsfile($navItem, $fileId)?->mime }}" href="{{ cmsurl(cmsfile($navItem, $fileId)?->path) }}">
+                <link rel="icon" type="{{ cmsfile($navItem, $fileId)?->mime }}" href="{{ cmsasset($navItem, cmsfile($navItem, $fileId)) }}">
                 @break
             @endif
         @endforeach
@@ -82,7 +82,7 @@
             ]
         </script>
     </head>
-    <body class="theme-luxury type-{{ cms($page, 'type', 'page') }}">
+    <body class="theme-luxury type-{{ cms($page, 'type') ?: 'page' }}">
         <a href="#main" class="skip-link">{{ __('Skip to main content') }}</a>
         <dialog id="modal-search" class="search">
             <article>
@@ -121,7 +121,7 @@
                         <a href="{{ cmsroute($nav->ancestors()->first() ?? $page) }}" title="{{ config('app.name') }}" aria-label="{{ config('app.name') }}">
                             @forelse($page->ancestorsAndSelf->reverse() as $navItem)
                                 @if($fileId = cms($navItem, 'config.logo.data.file.id'))
-                                    <img src="{{ cmsurl(cmsfile($navItem, $fileId)?->path) }}" alt="{{ config('app.name') }}">
+                                    <img src="{{ cmsasset($navItem, cmsfile($navItem, $fileId)) }}" alt="{{ config('app.name') }}">
                                     @break
                                 @endif
                             @empty
@@ -167,6 +167,15 @@
                             @endif
                         </li>
                     @endforeach
+                    @if(Route::has('login'))
+                        <li class="login">
+                            <a href="{{ route('login') }}" title="{{ __('Login') }}" aria-label="{{ __('Login') }}">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                                    <path d="M3 14s-1 0-1-1 1-4 4-4 4 3 4 4-1 1-1 1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6"/>
+                                </svg>
+                            </a>
+                        </li>
+                    @endif
                 </ul>
                 <ul class="menu-open show">
                     <li>

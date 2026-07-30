@@ -1,4 +1,6 @@
 {
+    "Go to next": "Перейти до наступного",
+    "Go to previous": "Перейти до попереднього",
     "Download file": "Завантажити файл",
     "Get Started": "Початок роботи",
     "Skip to main content": "Перейти до основного змісту",
@@ -9,6 +11,7 @@
     "Close sidebar": "Закрити бічну панель",
     "Close navigation": "Закрити навігацію",
     "Search": "Пошук",
+    "Login": "Увійти",
     "Open navigation": "Відкрита навігація",
     "Breadcrumb navigation": "Навігація по хлібним крихтам",
     "Name": "Ім'я",

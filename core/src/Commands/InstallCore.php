@@ -33,8 +33,8 @@ class InstallCore extends Command
         $this->comment( '  Publishing core files ...' );
         $result += $this->call( 'vendor:publish', ['--provider' => 'Aimeos\Cms\CoreServiceProvider'] );
 
-        $this->comment( '  Updating broadcast rate limiter ...' );
-        $result += $this->broadcast();
+        $this->comment( '  Updating CMS configuration ...' );
+        $result += $this->config();
 
         $this->comment( '  Creating database ...' );
         $result += $this->db();
@@ -56,14 +56,15 @@ class InstallCore extends Command
 
 
     /**
-     * Updates the broadcast limiter in existing CMS configuration files.
+     * Updates existing CMS configuration entries.
      *
      * @return int 0 on success, 1 on failure
      */
-    protected function broadcast() : int
+    protected function config() : int
     {
         $filename = 'config/cms.php';
-        $content = file_get_contents( base_path( $filename ) );
+        $path = base_path( $filename );
+        $content = file_get_contents( $path );
 
         if( $content === false ) {
             $this->error( "  File [$filename] not found!" );
@@ -72,13 +73,54 @@ class InstallCore extends Command
 
         $updated = str_replace( 'throttle:cms-admin', 'throttle:cms-broadcast', $content );
 
-        if( $updated !== $content ) {
-            file_put_contents( base_path( $filename ), $updated );
-            $this->line( sprintf( '  File [%1$s] updated' . PHP_EOL, $filename ) );
-        } else {
-            $this->line( sprintf( '  File [%1$s] already up to date' . PHP_EOL, $filename ) );
+        if( !preg_match( "/^[ \t]*'disks'[ \t]*=>/m", $updated ) )
+        {
+            $pattern = "/^(?<indent>[ \t]*)'disk'[ \t]*=>[ \t]*(?<value>.+?)[ \t]*,[ \t]*$/m";
+
+            if( !preg_match( $pattern, $updated, $match ) ) {
+                $this->error( "  File [$filename] contains no safely replaceable top-level [disk] entry." );
+                $this->line( "  Replace it manually with [disks.public.name] and [disks.private.name/ttl]." );
+                return 1;
+            }
+
+            $indent = $match['indent'];
+            $value = trim( $match['value'] );
+            $replacement = implode( PHP_EOL, [
+                "{$indent}'disks' => [",
+                "{$indent}    'public' => [",
+                "{$indent}        'name' => {$value},",
+                "{$indent}    ],",
+                "{$indent}    'private' => [",
+                "{$indent}        'name' => env( 'CMS_PRIVATE_DISK', 'local' ),",
+                "{$indent}        'ttl' => (int) env( 'CMS_PRIVATE_TTL', 300 ),",
+                "{$indent}    ],",
+                "{$indent}],",
+            ] );
+            $updated = preg_replace( $pattern, $replacement, $updated, 1 );
         }
 
+        if( !is_string( $updated ) ) {
+            $this->error( "  Updating file [$filename] failed!" );
+            return 1;
+        }
+
+        if( $updated === $content ) {
+            $this->line( sprintf( '  File [%1$s] already up to date' . PHP_EOL, $filename ) );
+        } elseif( file_put_contents( $path, $updated ) === false ) {
+            $this->error( "  Updating file [$filename] failed!" );
+            return 1;
+        } else {
+            $this->line( sprintf( '  File [%1$s] updated' . PHP_EOL, $filename ) );
+        }
+
+        $values = require $path;
+
+        if( !is_array( $values ) ) {
+            $this->error( "  File [$filename] doesn't return a configuration array!" );
+            return 1;
+        }
+
+        config( ['cms' => array_merge( (array) config( 'cms', [] ), $values )] );
         return 0;
     }
 

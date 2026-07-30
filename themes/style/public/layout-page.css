@@ -7,6 +7,10 @@
     --pico-block-spacing-horizontal: 0;
 }
 
+.type-page main .cms-content > * {
+    margin-block: 0.75rem;
+}
+
 .cms-content .container,
 main .container {
     max-width: 80rem !important;
@@ -35,13 +39,6 @@ main .cms-content > :nth-child(even) {
 .heading h1,
 .heading h2 {
     text-align: center;
-}
-
-.cms-content > .heading + .text,
-.cms-content > .heading + .cards,
-.cms-content > .heading + .image,
-.cms-content > .heading + .image-text {
-    margin-top: -3rem;
 }
 
 .text p:last-of-type {

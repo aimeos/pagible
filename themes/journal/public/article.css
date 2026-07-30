@@ -1,0 +1,27 @@
+/**
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+.article .title {
+    max-width: 60rem;
+}
+
+.article .cover {
+    display: block;
+    margin: 2rem 0 2.5rem;
+    overflow: hidden;
+}
+
+.article .cover source,
+.article .cover img {
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    width: 100%;
+}
+
+.article .cms-text {
+    font-family: var(--pico-font-family-display);
+    font-size: clamp(1.125rem, 2vw, 1.35rem);
+    line-height: 1.7;
+    max-width: 48rem;
+}

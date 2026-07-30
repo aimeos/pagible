@@ -17,32 +17,15 @@ import {
   mdiMenuDown,
   mdiSort,
   mdiClockOutline,
+  mdiLock,
   mdiRefresh,
   mdiPencil
 } from '@mdi/js'
 import EditBulkDialog from './EditBulkDialog.vue'
+import { ADD_FILE, normalizeFile } from '../files'
 import { useAppStore, useUserStore, useMessageStore, useChangeStore } from '../stores'
-import { debounce, frozenParse, safeParse, url, srcset } from '../utils'
+import { debounce, fileurl, filesrcset, safeParse } from '../utils'
 import { setupEcho, cleanEcho, listEcho } from '../echo'
-
-const ADD_FILE = gql`
-  mutation ($file: Upload!) {
-    addFile(file: $file) {
-      id
-      lang
-      mime
-      name
-      path
-      previews
-      description
-      transcription
-      editor
-      created_at
-      updated_at
-      deleted_at
-    }
-  }
-`
 
 const DROP_FILE = gql`
   mutation ($id: [ID!]!) {
@@ -102,6 +85,7 @@ const FETCH_FILES = gql`
       publish: $publish
     ) {
       data {
+        disk
         id
         lang
         name
@@ -154,12 +138,15 @@ export default {
       limit: 100,
       actions: false,
       editDialog: false,
+      editIds: [],
+      editSelected: false,
       loading: true,
       vgrid: false,
       destroyed: false,
       echoCleanup: null,
       echoPromise: null,
-      outdated: false
+      outdated: false,
+      protect: false
     }
   },
 
@@ -187,11 +174,12 @@ export default {
       mdiMenuDown,
       mdiSort,
       mdiClockOutline,
+      mdiLock,
       mdiRefresh,
       mdiPencil,
       debounce,
-      url,
-      srcset
+      fileurl,
+      filesrcset
     }
   },
 
@@ -225,10 +213,6 @@ export default {
   computed: {
     canTrash() {
       return this.items.some((item) => this.checked.has(item.id) && !item.deleted_at)
-    },
-
-    checkedCount() {
-      return this.checked.size
     },
 
     isChecked() {
@@ -265,6 +249,7 @@ export default {
 
       const promises = []
       const files = ev.target.files || ev.dataTransfer.files || []
+      const disk = this.protect ? 'private' : 'public'
 
       if (!files.length) {
         return
@@ -276,6 +261,7 @@ export default {
             .mutate({
               mutation: ADD_FILE,
               variables: {
+                disk,
                 file: file
               },
               context: {
@@ -288,10 +274,7 @@ export default {
               }
 
               const data = {
-                ...(response.data?.addFile || {}),
-                previews: frozenParse(response.data?.addFile?.previews),
-                description: frozenParse(response.data?.addFile?.description),
-                transcription: frozenParse(response.data?.addFile?.transcription),
+                ...normalizeFile(response.data?.addFile),
                 published: true
               }
 
@@ -509,9 +492,11 @@ export default {
         })
     },
 
-    edit() {
+    edit(item = null) {
+      this.editIds = item ? [item.id] : [...this.checked]
+      this.editSelected = !item
       this.actions = false
-      this.editDialog = true
+      this.editDialog = this.editIds.length > 0
     },
 
     save(lang) {
@@ -520,17 +505,18 @@ export default {
         return
       }
 
-      const list = this.items.filter((item) => this.checked.has(item.id))
+      const ids = this.editIds
+      const selected = this.editSelected ? null : new Set(this.checked)
 
-      if (!list.length || lang === null) {
+      if (!ids.length || lang === null) {
         return
       }
 
-      this.$apollo
+      return this.$apollo
         .mutate({
           mutation: SAVE_FILES,
           variables: {
-            id: list.map((item) => item.id),
+            id: ids,
             input: { lang: lang }
           }
         })
@@ -539,13 +525,22 @@ export default {
             throw result.errors
           }
 
-          this.checked = new Set()
+          this.editIds = []
+          if (this.editSelected) {
+            this.checked = new Set()
+          }
+          this.editSelected = false
           this.invalidate()
-          this.search()
+
+          return this.search().then(() => {
+            if (selected) {
+              this.checked = selected
+            }
+          })
         })
         .catch((error) => {
           this.messages.add(this.$gettext('Error saving file') + ':\n' + error, 'error')
-          this.$log(`FileListItems::save(): Error saving files`, list, lang, error)
+          this.$log(`FileListItems::save(): Error saving files`, ids, lang, error)
         })
     },
 
@@ -606,6 +601,7 @@ export default {
             item.previews = markRaw(item.previews ?? {})
 
             return Object.assign(item, {
+              disk: entry.disk,
               id: entry.id,
               deleted_at: entry.deleted_at,
               created_at: entry.created_at,
@@ -764,6 +760,16 @@ export default {
           variant="tonal"
         />
       </div>
+
+      <v-switch
+        v-if="!embed && user.can('file:add')"
+        v-model="protect"
+        :label="$gettext('Protect with page access')"
+        class="protect"
+        color="primary"
+        density="compact"
+        hide-details
+      />
     </div>
 
     <div class="search">
@@ -907,6 +913,24 @@ export default {
                 $gettext('Publish')
               }}</v-btn>
             </v-list-item>
+
+            <v-divider
+              v-if="
+                !item.deleted_at &&
+                !item.published &&
+                user.can('file:publish') &&
+                user.can('file:save')
+              "
+            ></v-divider>
+
+            <v-list-item v-if="user.can('file:save')">
+              <v-btn :prepend-icon="mdiPencil" variant="text" @click="edit(item)">{{
+                $gettext('Edit properties')
+              }}</v-btn>
+            </v-list-item>
+
+            <v-divider v-if="user.can('file:save')"></v-divider>
+
             <v-list-item v-if="!item.deleted_at && user.can('file:drop')">
               <v-btn :prepend-icon="mdiDelete" variant="text" @click="drop(item)">{{
                 $gettext('Delete')
@@ -939,16 +963,16 @@ export default {
       <div class="item-preview" @click="$emit('select', item)" :title="title(item)">
         <v-img
           v-if="item.mime?.startsWith('image/')"
-          :src="url(Object.values(item.previews)[0] ?? item.path)"
-          :srcset="srcset(item.previews)"
+          :src="fileurl(item, Object.values(item.previews)[0] ?? item.path)"
+          :srcset="filesrcset(item)"
           :title="item.name"
           :alt="item.name"
         ></v-img>
 
         <v-img
           v-else-if="item.mime?.startsWith('video/') && Object.values(item.previews).length"
-          :src="url(Object.values(item.previews)[0] ?? '')"
-          :srcset="srcset(item.previews)"
+          :src="fileurl(item, Object.values(item.previews)[0] ?? '')"
+          :srcset="filesrcset(item)"
           :title="item.name"
           :alt="item.name"
         ></v-img>
@@ -1003,6 +1027,12 @@ export default {
           <div class="item-head">
             <span class="item-lang" v-if="item.lang">{{ item.lang }}</span>
             <v-icon v-if="item.publish_at" class="publish-at" :icon="mdiClockOutline" />
+            <v-icon
+              v-if="item.disk === 'private'"
+              class="item-access"
+              :icon="mdiLock"
+              :title="$gettext('Protect with page access')"
+            />
             <span class="item-title">{{ item.name }}</span>
           </div>
           <div class="item-mime item-subtitle">{{ item.mime }}</div>
@@ -1053,7 +1083,7 @@ export default {
     />
   </div>
 
-  <EditBulkDialog v-model="editDialog" :count="checkedCount" @apply="save" />
+  <EditBulkDialog v-model="editDialog" :count="editIds.length" @apply="save" />
 </template>
 
 <style scoped>

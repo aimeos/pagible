@@ -1,7 +1,6 @@
 /** @license MIT, https://opensource.org/license/mit */
 
 <script>
-import gql from 'graphql-tag'
 import {
   mdiDotsVertical,
   mdiPencil,
@@ -11,27 +10,14 @@ import {
   mdiTrayArrowDown,
   mdiUpload
 } from '@mdi/js'
-import { useAppStore, useUserStore, useMessageStore, useViewStack } from '../stores'
-import { frozenParse, url, srcset } from '../utils'
+import { ADD_FILE, RELOCATE_FILE, normalizeFile } from '../files'
+import { useUserStore, useMessageStore, useViewStack } from '../stores'
+import { fileurl, filesrcset } from '../utils'
 import { defineAsyncComponent } from 'vue'
 import FileDetail from '../views/FileDetail.vue'
 
 const FileUrlDialog = defineAsyncComponent(() => import('../components/FileUrlDialog.vue'))
 const FileDialog = defineAsyncComponent(() => import('../components/FileDialog.vue'))
-
-const ADD_FILE = gql`
-  mutation ($file: Upload!) {
-    addFile(file: $file) {
-      id
-      mime
-      name
-      path
-      previews
-      updated_at
-      editor
-    }
-  }
-`
 
 export default {
   inheritAttrs: false,
@@ -61,6 +47,9 @@ export default {
       dragging: false,
       file: {},
       index: Math.floor(Math.random() * 100000),
+      protect: false,
+      protectSet: false,
+      protecting: false,
       selected: null,
       vfiles: false,
       vurls: false
@@ -71,15 +60,13 @@ export default {
     const viewStack = useViewStack()
     const messages = useMessageStore()
     const user = useUserStore()
-    const app = useAppStore()
 
     return {
-      app,
       user,
       messages,
       viewStack,
-      url,
-      srcset,
+      fileurl,
+      filesrcset,
       mdiDotsVertical,
       mdiPencil,
       mdiTrashCan,
@@ -118,12 +105,14 @@ export default {
       }
 
       const path = URL.createObjectURL(file)
-      this.file = { path: path, uploading: true }
+      const disk = this.protect ? 'private' : 'public'
+      this.file = { disk, path: path, uploading: true }
 
       return this.$apollo
         .mutate({
           mutation: ADD_FILE,
           variables: {
+            disk,
             file: file
           },
           context: {
@@ -135,11 +124,7 @@ export default {
             throw response.errors
           }
 
-          const data = response.data?.addFile || {}
-          data.previews = frozenParse(data.previews)
-          delete data.__typename
-
-          return this.handle(data, path)
+          return this.handle(normalizeFile(response.data?.addFile), path)
         })
         .catch((error) => {
           this.messages.add(
@@ -154,7 +139,7 @@ export default {
     },
 
     addFromDialog(event) {
-      this.handle(event)
+      this.select([event])
       this.vfiles = false
     },
 
@@ -184,6 +169,8 @@ export default {
       }
 
       this.file = { ...item }
+      this.protect = item.disk === 'private'
+      this.protectSet = false
       this.$emit('addFile', item)
       this.$emit('update:modelValue', { id: item.id, type: 'file' })
 
@@ -216,6 +203,8 @@ export default {
 
       this.$emit('update:modelValue', null)
       this.file = {}
+      this.protect = false
+      this.protectSet = false
     },
 
     select(items) {
@@ -224,11 +213,56 @@ export default {
         return
       }
 
+      const protect = this.protectSet ? this.protect : null
       const item = items.shift()
 
-      this.file = { ...item }
-      this.$emit('addFile', item)
-      this.$emit('update:modelValue', { id: item.id, type: 'file' })
+      if (this.handle(item) && protect !== null && protect !== this.protect) {
+        this.setProtect(protect)
+      }
+    },
+
+    setProtect(value) {
+      this.protect = Boolean(value)
+
+      if (!this.file.id) {
+        this.protectSet = true
+        return
+      }
+
+      const previous = this.file.disk === 'private'
+
+      if (previous === this.protect || this.protecting) {
+        return
+      }
+
+      this.protecting = true
+
+      return this.$apollo
+        .mutate({
+          mutation: RELOCATE_FILE,
+          variables: {
+            id: [this.file.id],
+            disk: this.protect ? 'private' : 'public'
+          }
+        })
+        .then((response) => {
+          if (response.errors) {
+            throw response.errors
+          }
+
+          const data = response.data?.relocateFile?.[0] || {}
+          this.file = { ...this.file, ...data }
+          this.$emit('addFile', this.file)
+        })
+        .catch((error) => {
+          this.protect = previous
+          this.messages.add(this.$gettext(`Error saving file`) + ':\n' + error, 'error')
+          this.$log(`File::setProtect(): Error relocating file`, this.file, error)
+        })
+        .finally(() => {
+          this.protecting = false
+          this.protectSet = false
+        })
     }
   },
 
@@ -237,6 +271,7 @@ export default {
       handler(assets) {
         if (!this.file.path && this.modelValue && assets[this.modelValue.id]) {
           this.file = assets[this.modelValue.id]
+          this.protect = this.file.disk === 'private'
         }
 
         this.$emit(
@@ -253,6 +288,7 @@ export default {
       handler(data) {
         if (!this.file.path && data && this.assets[data.id]) {
           this.file = this.assets[data.id]
+          this.protect = this.file.disk === 'private'
         }
 
         this.$emit(
@@ -397,12 +433,28 @@ export default {
     </v-col>
   </v-row>
 
+  <v-switch
+    v-if="!readonly"
+    :disabled="protecting"
+    :loading="protecting"
+    :model-value="protect"
+    @update:model-value="setProtect($event)"
+    :label="$gettext('Protect with page access')"
+    color="primary"
+    density="compact"
+    hide-details
+  />
+
   <Teleport to="body">
     <FileDialog v-model="vfiles" @add="addFromDialog" />
   </Teleport>
 
   <Teleport to="body">
-    <FileUrlDialog v-model="vurls" @add="addFromUrl" />
+    <FileUrlDialog
+      v-model="vurls"
+      :disk="protect ? 'private' : 'public'"
+      @add="addFromUrl"
+    />
   </Teleport>
 </template>
 

@@ -1,4 +1,6 @@
 {
+    "Go to next": "Přejít na další",
+    "Go to previous": "Přejít na předchozí",
     "Download file": "Stáhnout soubor",
     "Get Started": "Začněte",
     "Skip to main content": "Přeskočit na hlavní obsah",
@@ -9,6 +11,7 @@
     "Close sidebar": "Zavřít postranní panel",
     "Close navigation": "Zavřít navigaci",
     "Search": "Vyhledávání",
+    "Login": "Přihlásit se",
     "Open navigation": "Otevřená navigace",
     "Breadcrumb navigation": "Drobečková navigace",
     "Name": "Název",

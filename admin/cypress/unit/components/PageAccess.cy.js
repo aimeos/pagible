@@ -22,6 +22,15 @@ function mountAccess(access, props = {}) {
 }
 
 describe('PageAccess', () => {
+  it('explains cache expiry using high-contrast text', () => {
+    mountAccess(null)
+
+    cy.get('.page-access > .hint')
+      .first()
+      .should('have.text', 'Access changes take effect immediately after cache expiry')
+      .and('have.css', 'color', 'rgb(0, 0, 0)')
+  })
+
   it('maps the three access states to one form', () => {
     mountAccess(null).then(({ wrapper }) => {
       expect(wrapper.findComponent(PageAccess).vm.mode).to.equal('public')

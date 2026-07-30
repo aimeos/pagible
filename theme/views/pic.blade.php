@@ -4,8 +4,8 @@
         <img itemprop="contentUrl"
             loading="{{ ($main ?? false) ? 'eager' : 'lazy' }}"
             fetchpriority="{{ ($main ?? false) ? 'high' : 'low' }}"
-            srcset="{{ cmssrcset(cms($file, 'previews')) }}"
-            src="{{ cmsurl($preview) }}"
+            srcset="{{ cmssrcset($page, $file) }}"
+            src="{{ cmsasset($page, $file, $preview) }}"
             sizes="{{ $sizes ?? '100vw' }}"
             alt="{{ cms($file, 'description')?->{cms($page, 'lang')} ?? cms($file, 'name') }}">
     @endif

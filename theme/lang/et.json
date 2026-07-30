@@ -1,4 +1,6 @@
 {
+    "Go to next": "Mine järgmisele",
+    "Go to previous": "Mine eelmisele",
     "Download file": "Faili allalaadimine",
     "Get Started": "Alusta",
     "Skip to main content": "Skip to main content",
@@ -9,6 +11,7 @@
     "Close sidebar": "Sulge külgriba",
     "Close navigation": "Sulge navigatsioon",
     "Search": "Otsi",
+    "Login": "Logi sisse",
     "Open navigation": "Avatud navigatsioon",
     "Breadcrumb navigation": "Leivakriipsu navigatsioon",
     "Name": "Nimi",

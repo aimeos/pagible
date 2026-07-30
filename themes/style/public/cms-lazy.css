@@ -193,6 +193,10 @@ footer.cms-content {
     padding: 7.5rem 0;
 }
 
+footer.cms-content .container {
+    padding: 0;
+}
+
 footer.cms-content + footer.bottom .container {
     border-top: 1px solid var(--pico-muted-background-color);
 }
