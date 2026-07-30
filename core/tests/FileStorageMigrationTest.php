@@ -91,7 +91,7 @@ class FileStorageMigrationTest extends CoreTestAbstract
         Storage::fake( 'uuid-migration-tenant' );
         $file = File::firstOrFail();
         $source = 'cms/unsafe%2Ftenant/legacy.pdf';
-        $target = 'cms/unsafe%2Ftenant/' . strtolower( $file->id ) . '/'
+        $target = 'cms/unsafe%2Ftenant/' . $file->id . '/'
             . substr( hash( 'sha256', $source ), 0, 24 ) . '.pdf';
         Storage::disk( 'uuid-migration-tenant' )->put( $source, 'legacy' );
         DB::connection( config( 'cms.db', 'sqlite' ) )->table( 'cms_files' )
@@ -165,7 +165,7 @@ class FileStorageMigrationTest extends CoreTestAbstract
 
         $this->assertCount( 2, $upserts );
         $this->assertTrue( $file->versions()->get()->every(
-            fn( $version ) => File::owner( 'test', $version->data->path ) === strtolower( $file->id ),
+            fn( $version ) => File::owns( 'test', $file->id, $version->data->path ),
         ) );
     }
 
@@ -242,14 +242,14 @@ class FileStorageMigrationTest extends CoreTestAbstract
         $missing->refresh();
         $firstVersion->refresh();
 
-        $this->assertSame( strtolower( $first->id ), File::owner( 'test', $first->path ) );
-        $this->assertSame( strtolower( $first->id ), File::owner( 'test', $first->previews->{500} ) );
-        $this->assertSame( strtolower( $first->id ), File::owner( 'test', $firstVersion->data->path ) );
-        $this->assertSame( strtolower( $second->id ), File::owner( 'test', $second->path ) );
-        $this->assertSame( strtolower( $owned->id ), File::owner( 'test', $owned->path ) );
-        $this->assertSame( strtolower( $borrower->id ), File::owner( 'test', $borrower->path ) );
-        $this->assertSame( strtolower( $privateFile->id ), File::owner( 'test', $privateFile->path ) );
-        $this->assertSame( strtolower( $missing->id ), File::owner( 'test', $missing->path ) );
+        $this->assertTrue( File::owns( 'test', $first->id, $first->path ) );
+        $this->assertTrue( File::owns( 'test', $first->id, $first->previews->{500} ) );
+        $this->assertTrue( File::owns( 'test', $first->id, $firstVersion->data->path ) );
+        $this->assertTrue( File::owns( 'test', $second->id, $second->path ) );
+        $this->assertTrue( File::owns( 'test', $owned->id, $owned->path ) );
+        $this->assertTrue( File::owns( 'test', $borrower->id, $borrower->path ) );
+        $this->assertTrue( File::owns( 'test', $privateFile->id, $privateFile->path ) );
+        $this->assertTrue( File::owns( 'test', $missing->id, $missing->path ) );
         $this->assertNotSame( $first->path, $second->path );
         $this->assertNotSame( $owned->path, $borrower->path );
         $this->assertSame( 'https://example.com/remote.jpg', $remote->path );

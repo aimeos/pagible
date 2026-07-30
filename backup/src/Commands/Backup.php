@@ -459,7 +459,7 @@ class Backup extends Command
                 {
                     $path = Utils::normalizePath( $path, $tenant );
 
-                    if( $path === null || File::owner( $tenant, $path ) !== strtolower( (string) $file->id )
+                    if( $path === null || !File::owns( $tenant, (string) $file->id, $path )
                         || isset( $seen[$path] ) ) {
                         continue;
                     }

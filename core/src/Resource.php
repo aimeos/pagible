@@ -479,7 +479,6 @@ class Resource
      */
     protected static function checkFilePathsOwned( File $file, array $paths ) : void
     {
-        $id = strtolower( (string) $file->id );
         $tenant = Tenancy::value();
 
         foreach( $paths as $path )
@@ -497,7 +496,7 @@ class Resource
                 continue;
             }
 
-            if( File::owner( $tenant, $path ) !== $id ) {
+            if( !File::owns( $tenant, (string) $file->id, $path ) ) {
                 throw new Exception( sprintf( 'File path "%s" is outside its UUID directory', (string) $path ) );
             }
         }

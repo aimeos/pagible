@@ -265,10 +265,18 @@ class Restore extends Command
         $db = DB::connection( config( 'cms.db', 'sqlite' ) );
         $current = [];
 
-        foreach( array_chunk( array_keys( $files ), 500 ) as $ids ) {
-            $current += $db->table( 'cms_files' )->where( 'tenant_id', $tenant )
-                ->whereIn( 'id', $ids )->pluck( 'disk', 'id' )->all();
+        foreach( array_chunk( array_keys( $files ), 500 ) as $ids )
+        {
+            $rows = $db->table( 'cms_files' )->where( 'tenant_id', $tenant )
+                ->whereIn( 'id', $ids )->select( 'id', 'disk' )->get();
+
+            foreach( $rows as $row ) {
+                $current[(string) $row->id] = (string) $row->disk;
+            }
         }
+
+        $currentIds = array_keys( $current );
+        usort( $currentIds, fn( string $a, string $b ) => strcasecmp( $a, $b ) );
 
         foreach( $files as $id => $file )
         {
@@ -276,7 +284,9 @@ class Restore extends Command
                 continue;
             }
 
-            if( !isset( $current[$id] ) )
+            $disk = $current[$id] ?? $this->findDisk( $current, $currentIds, $id );
+
+            if( $disk === null )
             {
                 if( $required ) {
                     throw new \RuntimeException( sprintf( 'File "%s" does not exist for media-only restore', $id ) );
@@ -285,11 +295,11 @@ class Restore extends Command
                 continue;
             }
 
-            if( $current[$id] !== $file['disk'] ) {
+            if( $disk !== $file['disk'] ) {
                 throw new \RuntimeException( sprintf(
                     'File "%s" uses disk "%s", backup expects "%s"',
                     $id,
-                    $current[$id],
+                    $disk,
                     $file['disk'],
                 ) );
             }
@@ -371,6 +381,37 @@ class Restore extends Command
 
         $this->info( 'Restore completed successfully.' );
         $this->table( ['Table', 'Expected'], collect( $counts )->map( fn( $c, $t ) => [$t, $c] )->values()->toArray() );
+    }
+
+
+    /**
+     * Finds a File disk by case-insensitive UUID comparison without rewriting the UUID.
+     *
+     * @param array<string, string> $current File disks keyed by database-returned UUID
+     * @param list<string> $ids Case-insensitively sorted database-returned UUIDs
+     */
+    protected function findDisk( array $current, array $ids, string $id ): ?string
+    {
+        $low = 0;
+        $high = count( $ids ) - 1;
+
+        while( $low <= $high )
+        {
+            $mid = intdiv( $low + $high, 2 );
+            $cmp = strcasecmp( $ids[$mid], $id );
+
+            if( $cmp === 0 ) {
+                return $current[$ids[$mid]];
+            }
+
+            if( $cmp < 0 ) {
+                $low = $mid + 1;
+            } else {
+                $high = $mid - 1;
+            }
+        }
+
+        return null;
     }
 
 
@@ -664,7 +705,7 @@ class Restore extends Command
                         continue;
                     }
 
-                    $id = strtolower( (string) ( $row['id'] ?? '' ) );
+                    $id = (string) ( $row['id'] ?? '' );
                     $disk = (string) ( $row['disk'] ?? 'public' );
 
                     if( !in_array( $disk, ['public', 'private'], true ) ) {
@@ -697,7 +738,7 @@ class Restore extends Command
                         continue;
                     }
 
-                    $id = strtolower( (string) ( $row['versionable_id'] ?? '' ) );
+                    $id = (string) ( $row['versionable_id'] ?? '' );
 
                     if( !isset( $files[$id] ) ) {
                         continue;
@@ -1460,7 +1501,7 @@ class Restore extends Command
             return;
         }
 
-        if( File::owner( $tenant, $path ) !== strtolower( $id ) ) {
+        if( !File::owns( $tenant, $id, $path ) ) {
             throw new \RuntimeException( sprintf( 'File path is outside UUID directory "%s"', $id ) );
         }
     }
@@ -1474,7 +1515,7 @@ class Restore extends Command
      */
     protected function validateVersionPaths( array $row, string $tenant, array $files ): void
     {
-        $id = strtolower( (string) ( $row['versionable_id'] ?? '' ) );
+        $id = (string) ( $row['versionable_id'] ?? '' );
         $disk = $files[$id]['disk'] ?? null;
 
         if( !$disk ) {

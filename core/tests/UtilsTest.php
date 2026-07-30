@@ -19,8 +19,8 @@ class UtilsTest extends CoreTestAbstract
 {
     public function testFileLockUsesOwnerScopedKey(): void
     {
-        $file = strtoupper( ( new \Aimeos\Cms\Models\File() )->newUniqueId() );
-        $key = 'cms_files_' . hash( 'sha256', "test\0" . strtolower( $file ) );
+        $file = '019F8ABC-DEF0-7ABC-8ABC-ABCDEF123456';
+        $key = 'cms_files_' . hash( 'sha256', "test\0" . $file );
         $lock = \Mockery::mock( \Illuminate\Contracts\Cache\Lock::class );
         $lock->shouldReceive( 'block' )
             ->once()

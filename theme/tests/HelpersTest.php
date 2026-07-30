@@ -42,7 +42,7 @@ class HelpersTest extends CoreTestAbstract
         $file = ( new \Aimeos\Cms\Models\File() )->forceFill( [
             'id' => 'file-id', 'disk' => 'private', 'path' => 'cms/test/private.pdf',
         ] );
-        request()->attributes->set( 'cms.asset-token-page', 'page-id' );
+        request()->attributes->set( 'cms.asset-token-page', (string) $page->id );
 
         $url = cmsasset( $page, $file );
         $query = [];

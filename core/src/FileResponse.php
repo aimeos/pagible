@@ -50,7 +50,7 @@ final class FileResponse
             : (string) ( $previews[$variant] ?? '' );
 
         if( !$path || str_starts_with( $path, 'http' )
-            || File::owner( (string) $file->tenant_id, $path ) !== strtolower( (string) $file->id ) ) {
+            || !File::owns( (string) $file->tenant_id, (string) $file->id, $path ) ) {
             abort( 404 );
         }
 

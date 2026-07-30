@@ -149,7 +149,7 @@ class Utils
      */
     public static function fileLock( string $tenant, string $file, \Closure $callback ) : mixed
     {
-        $key = 'cms_files_' . hash( 'sha256', $tenant . "\0" . strtolower( $file ) );
+        $key = 'cms_files_' . hash( 'sha256', $tenant . "\0" . $file );
 
         return Cache::lock( $key, 600 )->block( 30, $callback );
     }

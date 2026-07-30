@@ -474,7 +474,7 @@ class ResourceTest extends CoreTestAbstract
         $file = Resource::addFile( $file, $this->user );
 
         $this->assertSame( 'private', $file->disk );
-        $this->assertSame( strtolower( $file->id ), File::owner( 'test', $file->path ) );
+        $this->assertTrue( File::owns( 'test', $file->id, $file->path ) );
         Storage::disk( 'private-upload' )->assertExists( $file->path );
     }
 
@@ -505,7 +505,7 @@ class ResourceTest extends CoreTestAbstract
 
         $this->assertFalse( str_starts_with( $stored, 'http' ) );
         $this->assertStringNotContainsString( 'token=secret', $stored );
-        $this->assertSame( strtolower( $file->id ), File::owner( 'test', $stored ) );
+        $this->assertTrue( File::owns( 'test', $file->id, $stored ) );
         Storage::disk( 'private-remote-save' )->assertExists( $stored );
     }
 
@@ -545,7 +545,7 @@ class ResourceTest extends CoreTestAbstract
         $saved = Resource::saveFile( $file->id, [], $this->user, upload:
             UploadedFile::fake()->createWithContent( 'replacement.pdf', '%PDF-1.4 replacement' ) );
 
-        $this->assertSame( strtolower( $file->id ), File::owner( 'test', $saved->latest?->data->path ) );
+        $this->assertTrue( File::owns( 'test', $file->id, $saved->latest?->data->path ) );
         Storage::disk( 'uuid-save' )->assertExists( $saved->latest?->data->path );
     }
 
@@ -1933,7 +1933,7 @@ class ResourceTest extends CoreTestAbstract
         $method = new \ReflectionMethod( File::class, 'deletePaths' );
         $id = ( new File() )->newUniqueId();
         $paths = collect( array_map(
-            fn( $num ) => 'cms/test/' . strtolower( $id ) . '/' . $num . '.bin',
+            fn( $num ) => 'cms/test/' . $id . '/' . $num . '.bin',
             range( 1, 205 ),
         ) );
 

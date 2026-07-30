@@ -312,7 +312,7 @@ class File extends Base
         $tenant = \Aimeos\Cms\Tenancy::value();
         $base = $tenant === '' ? 'cms' : 'cms/' . $tenant;
 
-        return $base . '/' . strtolower( (string) $this->getAttribute( 'id' ) );
+        return $base . '/' . (string) $this->getAttribute( 'id' );
     }
 
 
@@ -340,7 +340,7 @@ class File extends Base
      *
      * @param string $tenant Tenant namespace
      * @param mixed $path Candidate storage path
-     * @return string|null Lowercase owner UUID, or null for invalid, remote, legacy, or foreign paths
+     * @return string|null Owner UUID as stored in the path, or null for invalid, remote, legacy, or foreign paths
      */
     public static function owner( string $tenant, mixed $path ) : ?string
     {
@@ -349,7 +349,18 @@ class File extends Base
         }
 
         $base = $tenant === '' ? 'cms/' : 'cms/' . $tenant . '/';
-        return strtolower( explode( '/', substr( $path, strlen( $base ) ), 2 )[0] );
+        return explode( '/', substr( $path, strlen( $base ) ), 2 )[0];
+    }
+
+
+    /**
+     * Tests whether a managed path belongs to a File UUID without changing either representation.
+     */
+    public static function owns( string $tenant, string $id, mixed $path ) : bool
+    {
+        $owner = self::owner( $tenant, $path );
+
+        return $owner !== null && strcasecmp( $owner, $id ) === 0;
     }
 
 

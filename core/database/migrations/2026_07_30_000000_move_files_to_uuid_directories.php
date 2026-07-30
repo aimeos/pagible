@@ -230,7 +230,7 @@ return new class extends Migration
      */
     private function target( string $tenant, string $id, string $path ): string
     {
-        if( File::owner( $tenant, $path ) === strtolower( $id ) ) {
+        if( File::owns( $tenant, $id, $path ) ) {
             return $path;
         }
 
@@ -239,7 +239,7 @@ return new class extends Migration
         $ext = substr( (string) preg_replace( '/[^a-z0-9]+/', '', $ext ), 0, 10 );
         $name = substr( hash( 'sha256', $path ), 0, 24 ) . ( $ext !== '' ? '.' . $ext : '' );
 
-        return $base . '/' . strtolower( $id ) . '/' . $name;
+        return $base . '/' . $id . '/' . $name;
     }
 
 

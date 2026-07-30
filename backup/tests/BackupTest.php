@@ -298,14 +298,14 @@ class BackupTest extends BackupTestAbstract
         $public = File::where( 'tenant_id', $this->tenant )->firstOrFail();
         $public->forceFill( [
             'disk' => 'public',
-            'path' => 'cms/test/' . strtolower( (string) $public->id ) . '/public.txt',
+            'path' => 'cms/test/' . $public->id . '/public.txt',
             'previews' => (object) [],
         ] )->saveQuietly();
 
         $private = File::where( 'tenant_id', $this->tenant )->whereKeyNot( $public->id )->firstOrFail();
         $private->forceFill( [
             'disk' => 'private',
-            'path' => 'cms/test/' . strtolower( (string) $private->id ) . '/private.txt',
+            'path' => 'cms/test/' . $private->id . '/private.txt',
             'previews' => (object) [],
         ] )->saveQuietly();
         $publicHistory = dirname( $public->path ) . '/public-history.txt';
@@ -355,7 +355,7 @@ class BackupTest extends BackupTestAbstract
     public function testBackupRestoreRejectsMediaOnWrongLogicalDisk(): void
     {
         $file = File::where( 'tenant_id', $this->tenant )->firstOrFail();
-        $path = 'cms/test/' . strtolower( (string) $file->id ) . '/private.txt';
+        $path = 'cms/test/' . $file->id . '/private.txt';
         $file->forceFill( [
             'disk' => 'private',
             'path' => $path,
@@ -724,6 +724,24 @@ class BackupTest extends BackupTestAbstract
     }
 
 
+    public function testRestoreFindsDiskWithoutTransformingUuid(): void
+    {
+        $command = new class extends RestoreCommand {
+            public function disk( array $current, string $id ): ?string
+            {
+                $ids = array_keys( $current );
+                usort( $ids, fn( string $a, string $b ) => strcasecmp( $a, $b ) );
+
+                return $this->findDisk( $current, $ids, $id );
+            }
+        };
+        $upper = '019F8ABC-DEF0-7ABC-8ABC-ABCDEF123456';
+        $lower = '019f8abc-def0-7abc-8abc-abcdef123456';
+
+        $this->assertSame( 'private', $command->disk( [$upper => 'private'], $lower ) );
+    }
+
+
     public function testRestoreManagedTenantMismatchFailsBeforeWriting(): void
     {
         $conn = config( 'cms.db', 'sqlite' );
@@ -777,7 +795,7 @@ class BackupTest extends BackupTestAbstract
         $command = new class extends RestoreCommand {
             public function row( array $row, string $tenant, string $disk ): array
             {
-                $id = strtolower( (string) $row['versionable_id'] );
+                $id = (string) $row['versionable_id'];
 
                 return $this->rewrite( $row, 'cms_versions', $tenant, $tenant, true, [
                     $id => ['disk' => $disk, 'paths' => []],
@@ -955,7 +973,7 @@ class BackupTest extends BackupTestAbstract
         $command = new class extends RestoreCommand {
             public function row( array $row, string $tenant, string $disk ): array
             {
-                $id = strtolower( (string) $row['versionable_id'] );
+                $id = (string) $row['versionable_id'];
 
                 return $this->rewrite( $row, 'cms_versions', $tenant, $tenant, true, [
                     $id => ['disk' => $disk, 'paths' => []],
@@ -980,7 +998,7 @@ class BackupTest extends BackupTestAbstract
         $command = new class extends RestoreCommand {
             public function row( array $row, string $table, string $tenant, string $disk ): array
             {
-                $id = strtolower( (string) $row['versionable_id'] );
+                $id = (string) $row['versionable_id'];
 
                 return $this->rewrite( $row, $table, $tenant, $tenant, true, [
                     $id => ['disk' => $disk, 'paths' => []],
@@ -1034,7 +1052,7 @@ class BackupTest extends BackupTestAbstract
     private function privateBackup(): array
     {
         $file = File::where( 'tenant_id', $this->tenant )->firstOrFail();
-        $path = 'cms/test/' . strtolower( (string) $file->id ) . '/private.txt';
+        $path = 'cms/test/' . $file->id . '/private.txt';
         $file->forceFill( [
             'disk' => 'private',
             'path' => $path,
