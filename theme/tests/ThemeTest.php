@@ -179,10 +179,61 @@ class ThemeTest extends ThemeTestAbstract
 
 	public function testBladeTextDirectiveDoesNotInsertBreakTags()
 	{
-		$template = '@text($text){{-- no-break-tags --}}';
+		$template = '@text($text){{-- no-break-tags --}}@text($suffix)';
 
-		$this->assertEquals( "one\ntwo", Blade::render( $template, ['text' => "one\ntwo"], true ) );
-		$this->assertEquals( "one &amp; two\n<strong>three</strong>", Blade::render( $template, ['text' => "one & two\n**three**"], true ) );
+		$this->assertEquals( "one\ntwo!", Blade::render( $template, ['text' => "one\ntwo", 'suffix' => '!'], true ) );
+		$this->assertEquals( "one &amp; two\n<strong>three</strong>!", Blade::render( $template, ['text' => "one & two\n**three**", 'suffix' => '!'], true ) );
+	}
+
+
+	public function testLayoutTypeDefaultsToPage(): void
+	{
+		$paths = glob( dirname( __DIR__, 2 ) . '/themes/*/views/layouts/main.blade.php' ) ?: [];
+		$paths[] = dirname( __DIR__ ) . '/views/layouts/main.blade.php';
+
+		foreach( $paths as $path ) {
+			$this->assertStringContainsString(
+				"type-{{ cms(\$page, 'type') ?: 'page' }}",
+				(string) file_get_contents( $path ),
+				$path
+			);
+		}
+
+		$html = Blade::render(
+			"<body class=\"type-{{ cms(\$page, 'type') ?: 'page' }}\"></body>",
+			['page' => (object) ['type' => '']],
+			true
+		);
+
+		$this->assertSame( '<body class="type-page"></body>', $html );
+	}
+
+
+	public function testLoginLinkIsOptionalInAllLayouts(): void
+	{
+		$paths = glob( dirname( __DIR__, 2 ) . '/themes/*/views/layouts/main.blade.php' ) ?: [];
+		$paths[] = dirname( __DIR__ ) . '/views/layouts/main.blade.php';
+
+		foreach( $paths as $path )
+		{
+			$view = (string) file_get_contents( $path );
+			$start = strpos( $view, "@if(Route::has('login'))" );
+
+			$this->assertIsInt( $start, $path );
+
+			$end = strpos( $view, '@endif', $start );
+
+			$this->assertIsInt( $end, $path );
+
+			$block = substr( $view, $start, $end - $start );
+
+			$this->assertStringContainsString( '<li class="login">', $block, $path );
+			$this->assertStringContainsString( 'href="{{ route(\'login\') }}"', $block, $path );
+			$this->assertStringContainsString( 'aria-label="{{ __(\'Login\') }}"', $block, $path );
+			$this->assertStringContainsString( '<svg', $block, $path );
+			$this->assertSame( 1, substr_count( $view, "Route::has('login')" ), $path );
+			$this->assertSame( 1, substr_count( $view, "route('login')" ), $path );
+		}
 	}
 
 
@@ -196,9 +247,9 @@ class ThemeTest extends ThemeTestAbstract
 
 	public function testMarkdownDirectiveTrimsOuterBreaks()
 	{
-		$template = '<div class="text">@markdown($text)</div>';
+		$template = '<div class="text">@markdown($text)</div><div class="text">@markdown($text)</div>';
 
-		$this->assertEquals( '<div class="text"><p>one</p></div>', Blade::render( $template, ['text' => 'one'], true ) );
+		$this->assertEquals( '<div class="text"><p>one</p></div><div class="text"><p>one</p></div>', Blade::render( $template, ['text' => 'one'], true ) );
 	}
 
 

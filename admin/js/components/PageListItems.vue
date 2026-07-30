@@ -25,6 +25,7 @@ import {
   mdiArrowRight,
   mdiArrowDown,
   mdiClockOutline,
+  mdiCached,
   mdiLock,
   mdiKeyVariant,
   mdiPencil
@@ -42,6 +43,12 @@ const ADD_PAGE = gql`
     addPage(input: $input) {
       id
     }
+  }
+`
+
+const CLEAR_CACHE = gql`
+  mutation ($id: ID!) {
+    clearCache(id: $id)
   }
 `
 
@@ -225,9 +232,12 @@ export default {
       accessDialog: false,
       accessDescendants: 0,
       accessIds: [],
+      accessSelected: false,
       propsDialog: false,
       propsCount: 0,
       propsDescendants: 0,
+      propsIds: [],
+      propsSelected: false,
       loading: true,
       checked: null,
       clip: null,
@@ -275,6 +285,7 @@ export default {
       mdiArrowRight,
       mdiArrowDown,
       mdiClockOutline,
+      mdiCached,
       mdiLock,
       mdiKeyVariant,
       mdiPencil,
@@ -341,20 +352,26 @@ export default {
   methods: {
     accessApplied(access, descendants = false) {
       const stats = this.$refs.tree?.statsFlat || []
-      const checked = new Set(stats.filter((stat) => stat._checked))
+      const ids = new Set(this.accessIds)
+      const selected = new Set(stats.filter((stat) => ids.has(stat.data?.id)))
 
       stats.forEach((stat) => {
-        if (checked.has(stat) || (descendants && this.checkedAncestor(stat, checked))) {
+        if (selected.has(stat) || (descendants && this.checkedAncestor(stat, selected))) {
           stat.data.access = Array.isArray(access) ? [...access] : null
           stat.data.restricted = access !== null
         }
 
-        stat._checked = false
+        if (this.accessSelected) {
+          stat._checked = false
+        }
       })
 
       this.accessDialog = false
       this.accessIds = []
-      this.checked = false
+      if (this.accessSelected) {
+        this.checked = false
+      }
+      this.accessSelected = false
     },
 
     accessTitle(access) {
@@ -434,6 +451,32 @@ export default {
       if (stat) {
         stat._checked = !stat._checked
       }
+    },
+
+    clear(stat) {
+      if (!this.user.can('cache:clear')) {
+        this.messages.add(this.$gettext('Permission denied'), 'error')
+        return
+      }
+
+      return this.$apollo
+        .mutate({
+          mutation: CLEAR_CACHE,
+          variables: {
+            id: stat.data.id
+          }
+        })
+        .then((result) => {
+          if (result.errors) {
+            throw result.errors
+          }
+
+          this.messages.add(this.$gettext('Cache cleared'), 'success')
+        })
+        .catch((error) => {
+          this.messages.add(this.$gettext('Error clearing cache') + ':\n' + error, 'error')
+          this.$log(`PageList::clear(): Error clearing cache`, stat, error)
+        })
     },
 
     copy(stat, node) {
@@ -541,28 +584,35 @@ export default {
       return false
     },
 
-    editAccess() {
-      const checked = this.$refs.tree?.statsFlat.filter((stat) => stat._checked && stat.data?.id) || []
+    editAccess(stat = null) {
+      const list = stat
+        ? [stat]
+        : this.$refs.tree?.statsFlat.filter((stat) => stat._checked && stat.data?.id) || []
 
-      this.accessIds = checked.map((stat) => stat.data.id)
-      this.accessDescendants = checked.length === 1 ? checked[0].data.has || 0 : 0
+      this.accessIds = list.map((stat) => stat.data.id)
+      this.accessDescendants = list.length === 1 ? list[0].data.has || 0 : 0
+      this.accessSelected = !stat
       this.actions = false
       this.accessDialog = this.accessIds.length > 0
     },
 
-    editProps() {
-      const checked = this.$refs.tree?.statsFlat.filter((stat) => stat._checked && stat.data?.id) || []
-      const set = new Set(checked)
+    editProps(stat = null) {
+      const list = stat
+        ? [stat]
+        : this.$refs.tree?.statsFlat.filter((stat) => stat._checked && stat.data?.id) || []
+      const set = new Set(list)
 
-      this.propsCount = checked.length
+      this.propsCount = list.length
       // pages a recursive apply reaches beyond the selection (0 for leaf-only selections); skip
       // checked-ancestor-covered pages so overlapping selections aren't counted twice
-      const affected = checked
-        .filter((stat) => !this.checkedAncestor(stat, set))
-        .reduce((sum, stat) => sum + (stat.data.has || 0) + 1, 0)
-      this.propsDescendants = affected - checked.length
+      const affected = list
+        .filter((item) => !this.checkedAncestor(item, set))
+        .reduce((sum, item) => sum + (item.data.has || 0) + 1, 0)
+      this.propsDescendants = affected - list.length
+      this.propsIds = list.map((item) => item.data.id)
+      this.propsSelected = !stat
       this.actions = false
-      this.propsDialog = true
+      this.propsDialog = this.propsCount > 0
     },
 
     expand() {
@@ -1116,17 +1166,17 @@ export default {
         return
       }
 
-      const list = this.$refs.tree.statsFlat.filter((stat) => stat._checked && stat.data?.id)
+      const ids = this.propsIds
 
-      if (!list.length || !Object.keys(input).length) {
+      if (!ids.length || !Object.keys(input).length) {
         return
       }
 
-      this.$apollo
+      return this.$apollo
         .mutate({
           mutation: SAVE_PAGES,
           variables: {
-            id: list.map((item) => item.data.id),
+            id: ids,
             input: input,
             descendants: descendants
           }
@@ -1157,10 +1207,16 @@ export default {
               }
             }
 
-            stat._checked = false
+            if (this.propsSelected) {
+              stat._checked = false
+            }
           })
 
-          this.checked = false
+          this.propsIds = []
+          if (this.propsSelected) {
+            this.checked = false
+          }
+          this.propsSelected = false
           this.invalidate()
 
           // best effort: the server reports how many attempted pages could not be saved
@@ -1178,7 +1234,7 @@ export default {
         })
         .catch((error) => {
           this.messages.add(this.$gettext('Error saving page') + ':\n' + error, 'error')
-          this.$log(`PageList::saveProps(): Error saving pages`, list, input, error)
+          this.$log(`PageList::saveProps(): Error saving pages`, ids, input, error)
         })
     },
 
@@ -1641,19 +1697,31 @@ export default {
                     $gettext('Publish')
                   }}</v-btn>
                 </v-list-item>
-                <v-list-item v-if="node.status !== 0 && user.can('page:save')">
-                  <v-btn :prepend-icon="mdiEyeOff" variant="text" @click="status(stat, 0)">{{
-                    $gettext('Disable')
+
+                <v-divider
+                  v-if="
+                    !node.deleted_at &&
+                    !node.published &&
+                    user.can('page:publish') &&
+                    (user.can('page:save') ||
+                      user.can('cache:clear') ||
+                      user.can('access:view'))
+                  "
+                ></v-divider>
+
+                <v-list-item v-if="user.can('page:save')">
+                  <v-btn :prepend-icon="mdiPencil" variant="text" @click="editProps(stat)">{{
+                    $gettext('Edit properties')
                   }}</v-btn>
                 </v-list-item>
-                <v-list-item v-if="node.status !== 1 && user.can('page:save')">
-                  <v-btn :prepend-icon="mdiEye" variant="text" @click="status(stat, 1)">{{
-                    $gettext('Enable')
+                <v-list-item v-if="user.can('page:publish') && user.can('access:view')">
+                  <v-btn :prepend-icon="mdiKeyVariant" variant="text" @click="editAccess(stat)">{{
+                    $gettext('Access')
                   }}</v-btn>
                 </v-list-item>
-                <v-list-item v-if="node.status !== 2 && user.can('page:save')">
-                  <v-btn :prepend-icon="mdiEyeOffOutline" variant="text" @click="status(stat, 2)">{{
-                    $gettext('Hide')
+                <v-list-item v-if="user.can('cache:clear')">
+                  <v-btn :prepend-icon="mdiCached" variant="text" @click="clear(stat)">{{
+                    $gettext('Clear cache')
                   }}</v-btn>
                 </v-list-item>
 

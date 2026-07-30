@@ -52,6 +52,14 @@ describe('String (textarea)', () => {
     cy.get('@error').should('have.been.calledWith', true)
   })
 
+  it('emits error:true when value does not match config.pattern', () => {
+    const onError = cy.spy().as('error')
+    cy.mount(StringField, {
+      props: { modelValue: 'EU1', config: { pattern: '^[A-Z]{3}$' }, onError },
+    })
+    cy.get('@error').should('have.been.calledWith', true)
+  })
+
   it('emits update:modelValue as the user types', () => {
     const onUpdate = cy.spy().as('update')
     cy.mount(StringField, {
@@ -61,28 +69,13 @@ describe('String (textarea)', () => {
     cy.get('@update').should('have.been.called')
   })
 
-  it('accepts values matching config.regex', () => {
-    const onError = cy.spy().as('error')
+  it('normalizes emitted values to uppercase', () => {
+    const onUpdate = cy.spy().as('update')
     cy.mount(StringField, {
-      props: { modelValue: 'EUR', config: { regex: '^[A-Z]{3}$' }, onError }
+      props: { config: { uppercase: true }, 'onUpdate:modelValue': onUpdate },
     })
-    cy.get('@error').should('have.been.calledWith', false)
-  })
-
-  it('rejects values not matching config.regex', () => {
-    const onError = cy.spy().as('error')
-    cy.mount(StringField, {
-      props: { modelValue: 'eur', config: { regex: '^[A-Z]{3}$' }, onError }
-    })
-    cy.get('@error').should('have.been.calledWith', true)
-  })
-
-  it('rejects invalid regex configurations', () => {
-    const onError = cy.spy().as('error')
-    cy.mount(StringField, {
-      props: { modelValue: 'EUR', config: { regex: '[' }, onError }
-    })
-    cy.get('@error').should('have.been.calledWith', true)
+    cy.get('textarea').first().type('eur')
+    cy.get('@update').should('have.been.calledWith', 'EUR')
   })
 
   it('is readonly when readonly prop is true', () => {

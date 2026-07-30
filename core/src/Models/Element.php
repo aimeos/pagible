@@ -100,21 +100,10 @@ class Element extends Base
      */
     public function __toString() : string
     {
-        $parts = [$this->name ?? ''];
-        $config = \Aimeos\Cms\Schema::schemas( section: 'content' );
-        $fields = (array) ( $config[$this->data->type ?? '']['fields'] ?? [] );
-
-        foreach( (array) ( $this->data->data ?? [] ) as $name => $value )
-        {
-            if( is_string( $value ) && isset( $fields[$name] )
-                && ( $fields[$name]['searchable'] ?? true )
-                && in_array( $fields[$name]['type'], ['markdown', 'plaintext', 'string', 'text'] )
-            ) {
-                $parts[] = $value;
-            }
-        }
-
-        return trim( implode( "\n", $parts ) );
+        return trim( implode( "\n", [
+            $this->name ?? '',
+            ...\Aimeos\Cms\Scout::text( [$this->data] ),
+        ] ) );
     }
 
 

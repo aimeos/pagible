@@ -112,6 +112,9 @@ class CashierAccessTest extends CashierTestAbstract
             $this->stored, $this->tenant(), 'frontend.pro', 'stripe', 'sub_1', $end, $at,
         );
         $access->remove( $this->stored, $this->tenant(), 'stripe', 'missing', $at );
+        $stored = $this->storedAccess( $this->stored );
+        $this->assertIsArray( $stored );
+        $this->stored->forceFill( ['access' => array_reverse( $stored, true )] )->saveQuietly();
         DB::flushQueryLog();
         DB::enableQueryLog();
 

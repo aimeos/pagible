@@ -7,7 +7,7 @@
 
 namespace Tests;
 
-use Aimeos\Cms\Events\PagesInvalidated;
+use Aimeos\Cms\Events\PageInvalidated;
 use Aimeos\Cms\PageCache;
 use Illuminate\Cache\ArrayStore;
 use Illuminate\Cache\DatabaseStore;
@@ -21,8 +21,31 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 
-class ThemePagesInvalidatedTest extends ThemeTestAbstract
+class PageCacheTest extends ThemeTestAbstract
 {
+    public function testClearsOnlyRequestedTenantRoutes(): void
+    {
+        config( ['cms.theme.cache' => 'array'] );
+        $cache = Cache::store( 'array' );
+        $routeKey = new \ReflectionMethod( PageCache::class, 'routeKey' );
+        $targetKey = $routeKey->invoke( null, 'test', 'example.com', 'target' );
+        $secondKey = $routeKey->invoke( null, 'test', 'example.com', 'second' );
+        $otherDomainKey = $routeKey->invoke( null, 'test', 'other.example', 'target' );
+        $otherTenantKey = $routeKey->invoke( null, 'other', 'example.com', 'target' );
+
+        foreach( [$targetKey, $secondKey, $otherDomainKey, $otherTenantKey] as $key ) {
+            $cache->put( $key, $key );
+        }
+
+        PageInvalidated::dispatch( 'example.com', ['target', 'second'] );
+
+        $this->assertNull( $cache->get( $targetKey ) );
+        $this->assertNull( $cache->get( $secondKey ) );
+        $this->assertSame( $otherDomainKey, $cache->get( $otherDomainKey ) );
+        $this->assertSame( $otherTenantKey, $cache->get( $otherTenantKey ) );
+    }
+
+
     public function testDeletesDatabaseRoutesInOneBatch(): void
     {
         Schema::create( 'cms_page_cache_test', function( Blueprint $table ) {
@@ -56,10 +79,7 @@ class ThemePagesInvalidatedTest extends ThemeTestAbstract
         DB::flushQueryLog();
         DB::enableQueryLog();
 
-        PageCache::invalidate( [
-            ['domain' => 'example.com', 'path' => 'old'],
-            ['domain' => 'example.com', 'path' => 'new'],
-        ], 'test' );
+        PageCache::invalidate( 'example.com', ['old', 'new'], 'test' );
 
         $queries = DB::getQueryLog();
         DB::disableQueryLog();
@@ -98,10 +118,7 @@ class ThemePagesInvalidatedTest extends ThemeTestAbstract
             'cms.theme.cache' => 'cms-redis-test',
         ] );
 
-        PageCache::invalidate( [
-            ['domain' => 'example.com', 'path' => 'old'],
-            ['domain' => 'example.com', 'path' => 'new'],
-        ], 'test' );
+        PageCache::invalidate( 'example.com', ['old', 'new'], 'test' );
 
         $this->assertCount( 2, $deleted );
         $this->assertStringStartsWith( 'prefix:{', $deleted[0] );
@@ -130,37 +147,10 @@ class ThemePagesInvalidatedTest extends ThemeTestAbstract
             'cache.stores.cms-array-chunks' => ['driver' => 'cms-array-chunks'],
             'cms.theme.cache' => 'cms-array-chunks',
         ] );
-        $routes = array_map( fn( int $idx ) => [
-            'domain' => 'example.com',
-            'path' => 'page-' . $idx,
-        ], range( 1, 501 ) );
+        $paths = array_map( fn( int $idx ) => 'page-' . $idx, range( 1, 501 ) );
 
-        PageCache::invalidate( $routes, 'test' );
+        PageCache::invalidate( 'example.com', $paths, 'test' );
 
         $this->assertSame( [500, 1], array_map( 'count', $repository->chunks ) );
-    }
-
-
-    public function testDeletesOnlyAffectedRouteEntries(): void
-    {
-        config( ['cms.theme.cache' => 'array'] );
-        $cache = Cache::store( 'array' );
-        $method = new \ReflectionMethod( PageCache::class, 'key' );
-        $old = $method->invoke( null, 'old', 'example.com' );
-        $new = $method->invoke( null, 'new', 'example.com' );
-        $keep = $method->invoke( null, 'keep', 'example.com' );
-
-        $cache->put( $old, 'old' );
-        $cache->put( $new, 'new' );
-        $cache->put( $keep, 'keep' );
-
-        PagesInvalidated::dispatch( [
-            ['domain' => 'example.com', 'path' => 'old'],
-            ['domain' => 'example.com', 'path' => 'new'],
-        ] );
-
-        $this->assertNull( $cache->get( $old ) );
-        $this->assertNull( $cache->get( $new ) );
-        $this->assertSame( 'keep', $cache->get( $keep ) );
     }
 }

@@ -8,6 +8,7 @@
 
 const ALL_PERMISSIONS = {
   'access:view': true,
+  'cache:clear': true,
   'page:view': true,
   'page:add': true,
   'page:save': true,
@@ -113,6 +114,9 @@ function setupIntercept({
       }
       if (query.includes('cmsLogout')) {
         return { data: { cmsLogout: { email: 'admin@example.com', name: 'Admin' } } }
+      }
+      if (query.includes('clearCache')) {
+        return { data: { clearCache: 1 } }
       }
       if (query.includes('addPage')) {
         return { data: { addPage: addPage || { id: '99' } } }
@@ -343,22 +347,13 @@ describe('Page List', () => {
     })
   })
 
-  it('context menu shows Enable for disabled page', () => {
-    const page = makePage()
-    page.latest.data = JSON.stringify({
-      name: 'Test', title: '', path: '/test', lang: 'en',
-      status: 0, domain: '', to: '', tag: '', type: '', theme: '', cache: 5,
-    })
-    visitPages([page])
-    cy.get('.tree-node-inner .btn-actions .v-btn').first().click()
-    cy.get('.v-card .v-list').should('contain', 'Enable')
-  })
-
-  it('context menu shows Disable for enabled page', () => {
+  it('context menu hides status change actions', () => {
     const page = makePage()
     visitPages([page])
     cy.get('.tree-node-inner .btn-actions .v-btn').first().click()
-    cy.get('.v-card .v-list').should('contain', 'Disable')
+    cy.get('.v-card .v-list').should('not.contain', 'Enable')
+    cy.get('.v-card .v-list').should('not.contain', 'Disable')
+    cy.get('.v-card .v-list').should('not.contain', 'Hide')
   })
 
   it('context menu shows Delete for non-trashed page', () => {
@@ -396,6 +391,66 @@ describe('Page List', () => {
     cy.get('.v-card .v-list').should('contain', 'Copy')
   })
 
+  it('context menu groups node bulk actions with Clear cache', () => {
+    const page = makePage()
+    page.latest.published = false
+    visitPages([page])
+    cy.get('.tree-node-inner .btn-actions .v-btn').first().click()
+
+    cy.contains('.v-card .v-list > .v-list-item', 'Edit properties')
+      .prev()
+      .should('have.class', 'v-divider')
+    cy.contains('.v-card .v-list > .v-list-item', 'Edit properties')
+      .next()
+      .should('contain', 'Access')
+    cy.contains('.v-card .v-list > .v-list-item', 'Access')
+      .next()
+      .should('contain', 'Clear cache')
+    cy.contains('.v-card .v-list > .v-list-item', 'Clear cache')
+      .next()
+      .should('have.class', 'v-divider')
+  })
+
+  it('node bulk edit offers recursive changes for the page subtree', () => {
+    const page = makePage({ has: 3 })
+    visitPages([page])
+    cy.get('.tree-node-inner .btn-actions .v-btn').first().click()
+    cy.contains('.v-card .v-list .v-btn', 'Edit properties').click()
+
+    cy.get('.btn-apply-recursive').should('contain', 'Apply recursively (4)')
+  })
+
+  it('node access control applies recursively to the page subtree', () => {
+    const page = makePage({ has: 3 })
+    visitPages([page])
+    cy.get('.tree-node-inner .btn-actions .v-btn').first().click()
+    cy.contains('.v-card .v-list .v-btn', 'Access').click()
+    cy.contains('.page-access .v-radio', 'Public').find('input').check({ force: true })
+    cy.get('.page-access .btn-apply-access-recursive')
+      .should('contain', 'Apply recursively (4)')
+      .click()
+
+    waitForSetPageAccess().should((accessOp) => {
+      expect(accessOp.variables.id).to.deep.equal(['1'])
+      expect(accessOp.variables.access).to.equal(null)
+      expect(accessOp.variables.descendants).to.equal(true)
+    })
+  })
+
+  it('context menu hides Clear cache without cache:clear permission', () => {
+    const page = makePage()
+    const permissions = { ...ALL_PERMISSIONS }
+    delete permissions['cache:clear']
+
+    visitPages([page], {
+      permission: JSON.stringify(permissions),
+      email: 'editor@example.com',
+      name: 'Editor',
+    })
+    cy.get('.tree-node-inner .btn-actions .v-btn').first().click()
+    cy.get('.v-card .v-list').should('not.contain', 'Clear cache')
+  })
+
   it('context menu shows Insert submenu', () => {
     const page = makePage()
     visitPages([page])
@@ -417,6 +472,19 @@ describe('Page List', () => {
     })
   })
 
+  it('clicking Clear cache sends clearCache mutation for the page', () => {
+    const page = makePage()
+    visitPages([page])
+    cy.get('.tree-node-inner .btn-actions .v-btn').first().click()
+    cy.contains('.v-card .v-list .v-btn', 'Clear cache').click()
+    cy.wait('@gql').its('request.body').should((body) => {
+      const ops = Array.isArray(body) ? body : [body]
+      const clearOp = ops.find((op) => (op.query || '').includes('clearCache'))
+      expect(clearOp).to.exist
+      expect(clearOp.variables.id).to.equal('1')
+    })
+  })
+
   it('clicking Delete sends dropPage mutation', () => {
     const page = makePage()
     visitPages([page])
@@ -425,36 +493,6 @@ describe('Page List', () => {
     cy.wait('@gql').its('request.body').should((body) => {
       const ops = Array.isArray(body) ? body : [body]
       expect(ops.some((op) => (op.query || '').includes('dropPage'))).to.be.true
-    })
-  })
-
-  it('clicking Enable sends bulkPage mutation with status 1', () => {
-    const page = makePage()
-    page.latest.data = JSON.stringify({
-      name: 'Test', title: '', path: '/test', lang: 'en',
-      status: 0, domain: '', to: '', tag: '', type: '', theme: '', cache: 5,
-    })
-    visitPages([page])
-    cy.get('.tree-node-inner .btn-actions .v-btn').first().click()
-    cy.contains('.v-card .v-list .v-btn', 'Enable').click()
-    cy.wait('@gql').its('request.body').should((body) => {
-      const ops = Array.isArray(body) ? body : [body]
-      const bulkOp = ops.find((op) => (op.query || '').includes('bulkPage'))
-      expect(bulkOp).to.exist
-      expect(bulkOp.variables.input.status).to.equal(1)
-    })
-  })
-
-  it('clicking Disable sends bulkPage mutation with status 0', () => {
-    const page = makePage()
-    visitPages([page])
-    cy.get('.tree-node-inner .btn-actions .v-btn').first().click()
-    cy.contains('.v-card .v-list .v-btn', 'Disable').click()
-    cy.wait('@gql').its('request.body').should((body) => {
-      const ops = Array.isArray(body) ? body : [body]
-      const bulkOp = ops.find((op) => (op.query || '').includes('bulkPage'))
-      expect(bulkOp).to.exist
-      expect(bulkOp.variables.input.status).to.equal(0)
     })
   })
 

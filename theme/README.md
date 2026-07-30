@@ -37,7 +37,7 @@ In multi-tenant applications, tenant initialization must run before `ServeCached
 );
 ```
 
-CDNs must apply the same bypass rules for the session cookie, authorization header, and any custom authentication indicator; otherwise the edge may return public HTML before Laravel receives the request. Multi-node installations must configure a shared lock-capable theme cache store such as Redis so web processes and queued invalidation workers address the same entries.
+CDNs must apply the same bypass rules for the session cookie, authorization header, and any custom authentication indicator; otherwise the edge may return public HTML before Laravel receives the request. Multi-node installations must configure a shared lock-capable theme cache store such as Redis so all application instances address the same entries.
 
 The built-in session-cookie and `Authorization` checks always remain active. The callback only needs to identify additional authentication mechanisms. Missing pages can still return before the session middleware starts; restricted pages continue through the `web` middleware so Laravel can authenticate the request and handle guest redirects.
 
@@ -80,17 +80,18 @@ The named `login` route must be public and registered before the CMS catch-all r
 
 During public-page revalidation, a request that finds another renderer active may receive the previous complete page for `stale` seconds. Without a stale entry, it waits for the render lease, rechecks the cache, and only renders without writing if that bounded wait expires. The cache-store TTL keeps an entry through its stale window, while its fresh expiry remains in the entry. Invalidation deletes entries without waiting for active render leases.
 
-After page publication, deletion, or access changes commit, the theme removes
-the affected rendered HTML synchronously without adding queue traffic. Redis
-keys are distributed across a configurable number of per-tenant cluster hash
-slots and deleted in slot-safe groups with asynchronous `UNLINK`; database and
-Memcached stores use their native batch operations. Redis connections pipeline
-the slot-safe commands when supported, while generic cache stores receive
-bounded groups of at most 500 keys. Invalidation failures are
-reported without undoing committed content. The origin cache TTL and CDN
-`s-maxage` remain the consistency boundary, so stale, restricted, deleted, or
-moved HTML may remain visible until expiry. Installations using only the core
-package remain independent of frontend caching.
+After page publication, deletion, or access changes commit, core dispatches a
+lightweight event and the theme removes the affected rendered HTML synchronously
+without adding queue traffic. Redis keys are distributed across a configurable
+number of per-tenant cluster hash slots and deleted in slot-safe groups with
+asynchronous `UNLINK`; database and Memcached stores use their native batch
+operations. Redis connections pipeline the slot-safe commands when supported,
+while generic cache stores receive bounded groups of at most 500 keys.
+Invalidation failures are reported without undoing committed content. The origin
+cache TTL and CDN `s-maxage` remain the consistency boundary, so stale HTML
+already stored by an external cache may remain visible until expiry.
+Installations using only the core package remain independent of frontend
+caching.
 
 ### Content Security Policy
 

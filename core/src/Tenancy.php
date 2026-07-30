@@ -62,11 +62,11 @@ class Tenancy
     /**
      * Returns whether the user may access the given tenant.
      *
-     * Pagible runs on a single shared database (no multi-database tenancy), so the user must
-     * belong to the tenant: by default the user's tenant_id must equal the channel's tenant.
-     * Override Tenancy::$access for custom binding logic.
+     * Without tenancy configuration, any authenticated user belongs to the single CMS tenant.
+     * Otherwise, the user's tenant_id must equal the current tenant by default. Override
+     * Tenancy::$access for custom binding logic.
      *
-     * @param ?Authenticatable $user Authenticated user (must expose a tenant_id)
+     * @param ?Authenticatable $user Authenticated user (must expose a tenant_id when tenancy is configured)
      * @param string $tenant Tenant ID
      */
     public static function allows( ?Authenticatable $user, string $tenant ) : bool
@@ -77,6 +77,10 @@ class Tenancy
 
         if( ( $access = self::$access ) !== null ) {
             return $access( $user, $tenant );
+        }
+
+        if( $tenant === '' ) {
+            return true;
         }
 
         $id = data_get( $user, 'tenant_id' );

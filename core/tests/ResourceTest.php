@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Storage;
-use Aimeos\Cms\Events\PagesInvalidated;
+use Aimeos\Cms\Events\PageInvalidated;
 use Aimeos\Cms\Jobs\IndexModels;
 use Laravel\Scout\Jobs\RemoveFromSearch;
 use Database\Seeders\TestSeeder;
@@ -1021,13 +1021,20 @@ class ResourceTest extends CoreTestAbstract
         $pages = [$this->page( $content ), $this->page( $content )];
         Page::withoutSyncingToSearch( fn() => Page::whereKey( $pages[0]->id )
             ->update( ['updated_at' => '2000-01-01 00:00:00'] ) );
+        Event::fake( [PageInvalidated::class] );
         $this->expectsDatabaseQueryCount( 11 );
 
         Publication::publish( Page::class, collect( $pages )->pluck( 'id' )->all(), $this->user );
 
         foreach( $pages as $page ) {
             $this->assertSame( [$file->id], $page->fresh()->files()->pluck( 'cms_files.id' )->all() );
+            Event::assertDispatched( PageInvalidated::class, fn( PageInvalidated $event ) =>
+                $event->domain === (string) $page->domain
+                && $event->paths === [(string) $page->path]
+            );
         }
+
+        Event::assertDispatchedTimes( PageInvalidated::class, count( $pages ) );
     }
 
 
@@ -1053,16 +1060,15 @@ class ResourceTest extends CoreTestAbstract
         $page = $this->page( [] );
         $previous = ['domain' => (string) $page->domain, 'path' => (string) $page->path];
         $page = Resource::savePage( $page->id, ['path' => 'changed-route'], $this->user );
-        Event::fake( [PagesInvalidated::class] );
+        Event::fake( [PageInvalidated::class] );
 
         Publication::publish( Page::class, [$page->id], $this->user );
 
-        Event::assertDispatched( PagesInvalidated::class, function( PagesInvalidated $event ) use ( $page, $previous ) {
-            return $event->routes === [
-                $previous,
-                ['domain' => (string) $page->domain, 'path' => 'changed-route'],
-            ];
-        } );
+        Event::assertDispatched( PageInvalidated::class, fn( PageInvalidated $event ) =>
+            $event->domain === $previous['domain']
+            && $event->paths === [$previous['path'], 'changed-route']
+        );
+        Event::assertDispatchedTimes( PageInvalidated::class, 1 );
     }
 
 
@@ -1073,16 +1079,17 @@ class ResourceTest extends CoreTestAbstract
             'file' => ['id' => $file->id, 'type' => 'file'],
         ]]] );
         $version = $page->latest()->firstOrFail();
-        Event::fake( [PagesInvalidated::class] );
+        Event::fake( [PageInvalidated::class] );
 
         $page->publish( $version );
 
         $this->assertTrue( (bool) $version->refresh()->published );
         $this->assertSame( [$file->id], $page->files()->pluck( 'cms_files.id' )->all() );
-        Event::assertDispatched( PagesInvalidated::class, fn( PagesInvalidated $event ) => $event->routes === [[
-            'domain' => (string) $page->domain,
-            'path' => (string) $page->path,
-        ]] );
+        Event::assertDispatched( PageInvalidated::class, fn( PageInvalidated $event ) =>
+            $event->domain === (string) $page->domain
+            && $event->paths === [(string) $page->path]
+        );
+        Event::assertDispatchedTimes( PageInvalidated::class, 1 );
     }
 
 
@@ -1128,17 +1135,21 @@ class ResourceTest extends CoreTestAbstract
             'lang' => 'en', 'name' => 'Child', 'title' => 'Child', 'path' => 'res-' . Utils::uid(),
             'content' => [],
         ], $this->user, parent: (string) $pages[0]->id );
-        Event::fake( [PagesInvalidated::class] );
+        Event::fake( [PageInvalidated::class] );
 
         Resource::drop( Page::class, collect( $pages )->take( 2 )->pluck( 'id' )->all(), $this->user );
 
-        $routes = collect( $pages )->map( fn( $page ) => [
-            'domain' => (string) $page->domain,
-            'path' => (string) $page->path,
-        ] )->sortBy( 'path' )->values()->all();
+        foreach( collect( $pages )->groupBy( 'domain' ) as $domain => $items ) {
+            Event::assertDispatched( PageInvalidated::class, fn( PageInvalidated $event ) =>
+                $event->domain === (string) $domain
+                && collect( $event->paths )->sort()->values()->all()
+                    === $items->pluck( 'path' )->sort()->values()->all()
+            );
+        }
 
-        Event::assertDispatched( PagesInvalidated::class, fn( PagesInvalidated $event ) =>
-            collect( $event->routes )->sortBy( 'path' )->values()->all() === $routes
+        Event::assertDispatchedTimes(
+            PageInvalidated::class,
+            collect( $pages )->pluck( 'domain' )->unique()->count(),
         );
     }
 
@@ -1150,17 +1161,21 @@ class ResourceTest extends CoreTestAbstract
             'lang' => 'en', 'name' => 'Child', 'title' => 'Child', 'path' => 'res-' . Utils::uid(),
             'content' => [],
         ], $this->user, parent: (string) $page->id );
-        Event::fake( [PagesInvalidated::class] );
+        Event::fake( [PageInvalidated::class] );
 
         Resource::purge( Page::class, [$page->id], $this->user );
 
-        Event::assertDispatched( PagesInvalidated::class, fn( PagesInvalidated $event ) =>
-            collect( $event->routes )->sortBy( 'path' )->values()->all() === collect( [$page, $child] )
-                ->map( fn( Page $item ) => [
-                    'domain' => (string) $item->domain,
-                    'path' => (string) $item->path,
-                ] )->sortBy( 'path' )->values()->all()
-        );
+        $pages = collect( [$page, $child] );
+
+        foreach( $pages->groupBy( 'domain' ) as $domain => $items ) {
+            Event::assertDispatched( PageInvalidated::class, fn( PageInvalidated $event ) =>
+                $event->domain === (string) $domain
+                && collect( $event->paths )->sort()->values()->all()
+                    === $items->pluck( 'path' )->sort()->values()->all()
+            );
+        }
+
+        Event::assertDispatchedTimes( PageInvalidated::class, $pages->pluck( 'domain' )->unique()->count() );
     }
 
 

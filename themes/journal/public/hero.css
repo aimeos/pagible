@@ -96,9 +96,9 @@
 }
 
 .hero .background ~ .first h1,
-.hero .background ~ .first .cms-text,
+.hero .background ~ .first .cms-text p,
 .hero .first:has(+ .second) h1,
-.hero .first:has(+ .second) .cms-text,
+.hero .first:has(+ .second) .cms-text p,
 .hero .first:has(+ .second) .subtitle {
     color: var(--pico-contrast-inverse);
 }

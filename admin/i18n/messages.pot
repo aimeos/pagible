@@ -1615,7 +1615,15 @@ msgstr ""
 msgid "Error adding root page"
 msgstr ""
 
-#: js/components/PageListItems.vue:530
+#: js/components/PageListItems.vue:474
+msgid "Cache cleared"
+msgstr ""
+
+#: js/components/PageListItems.vue:477
+msgid "Error clearing cache"
+msgstr ""
+
+#: js/components/PageListItems.vue:573
 msgid "Error trashing page"
 msgstr ""
 
@@ -1687,8 +1695,12 @@ msgstr ""
 msgid "Disable"
 msgstr ""
 
-#: js/components/PageListItems.vue:1473
-#: js/components/PageListItems.vue:1829
+#: js/components/PageListItems.vue:1724
+msgid "Clear cache"
+msgstr ""
+
+#: js/components/PageListItems.vue:1529
+#: js/components/PageListItems.vue:1897
 msgid "Add page"
 msgstr ""
 

@@ -7,12 +7,10 @@
 
 namespace Aimeos\Cms;
 
-use Aimeos\Cms\Models\Page;
 use GuzzleHttp\Psr7\Uri;
 use GuzzleHttp\Psr7\UriResolver;
 use Illuminate\Http\Client\Response;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
@@ -123,28 +121,6 @@ class Utils
 
 
     /**
-     * Fetches the contents of an http(s) URL using SSRF-safe options.
-     *
-     * The host is pinned to its resolved public IP and redirects to private/reserved
-     * addresses are blocked, so a stored URL cannot be abused to reach internal services.
-     *
-     * @param string $url The http(s) URL to fetch
-     * @return string The response body
-     * @throws Exception If the URL is unsafe or the request fails
-     */
-    public static function fetch( string $url ) : string
-    {
-        $response = self::http( $url );
-
-        if( !$response->successful() ) {
-            throw new Exception( sprintf( 'URL "%s" not accessible', $url ) );
-        }
-
-        return $response->body();
-    }
-
-
-    /**
      * Runs a callback while file ownership changes are serialized per tenant.
      *
      * @template T
@@ -157,34 +133,6 @@ class Utils
         $key = 'cms_files_' . hash( 'sha256', $tenant );
 
         return Cache::lock( $key, 600 )->block( 30, $callback );
-    }
-
-
-    /**
-     * Returns a collection of files associated with the given page.
-     *
-     * @param Page $page The page object containing content and files
-     * @return Collection<int, \Aimeos\Cms\Models\File> A collection of File models associated with the page
-     */
-    public static function files( Page $page ) : Collection
-    {
-        $seen = [];
-        $lang = $page->lang;
-        $lang2 = substr( $lang, 0, 2 );
-
-        foreach( (array) $page->content as $item )
-        {
-            foreach( (array) ( $item->files ?? [] ) as $id )
-            {
-                if( !isset( $seen[$id] ) && ( $file = $page->files[$id] ?? null ) )
-                {
-                    $file->description = $file->description->{$lang} ?? $file->description->{$lang2} ?? null;
-                    $seen[$id] = $file;
-                }
-            }
-        }
-
-        return new Collection( $seen );
     }
 
 
@@ -287,18 +235,6 @@ class Utils
         }
 
         return false;
-    }
-
-
-    /**
-     * Checks that a local storage path belongs to a tenant namespace.
-     *
-     * The default tenant may only own direct children of "cms/" so it cannot
-     * overlap with named tenant directories.
-     */
-    public static function isValidPath( mixed $path, ?string $tenant = null ) : bool
-    {
-        return self::normalizePath( $path, $tenant ) !== null;
     }
 
 

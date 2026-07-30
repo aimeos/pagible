@@ -21,21 +21,16 @@ use Illuminate\Contracts\Cache\LockTimeoutException;
 
 class PageCache
 {
-    /**
-     * Invalidates complete-page cache entries without waiting for render leases.
-     *
-     * @param iterable<array{domain: string, path: string}> $routes
-     */
-    public static function invalidate( iterable $routes, string $tenant ) : void
+    /** @param list<string> $paths */
+    public static function invalidate( string $domain, array $paths, string $tenant ) : void
     {
-        $keys = [];
-
-        foreach( $routes as $route ) {
-            $keys[self::routeKey( $tenant, $route['domain'], $route['path'] )] = true;
-        }
+        $keys = array_map(
+            fn( string $path ) => self::routeKey( $tenant, $domain, $path ),
+            $paths,
+        );
 
         if( $keys ) {
-            self::forget( array_keys( $keys ) );
+            self::forget( array_values( array_unique( $keys ) ) );
         }
     }
 

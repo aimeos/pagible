@@ -6,30 +6,45 @@
 /**
  * Contact form
  */
+let hcaptchaLoading;
+
 document.querySelectorAll('.contact form').forEach(form => {
 
     /*
      * Load hCaptcha script only when the form is visible
      */
-    let once = true;
-    (new IntersectionObserver((entries, observer) => {
-        entries.forEach(entry => {
-            if(entry.isIntersecting) {
-                observer.disconnect(); // only trigger once
+    if(form.querySelector('.h-captcha')) {
+        (new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if(entry.isIntersecting) {
+                    observer.disconnect(); // only trigger once
 
-                if(once) {
-                    once = false;
-                    new Promise(resolve => {
-                        const script = document.createElement("script");
-                        script.src = "https://js.hcaptcha.com/1/api.js";
-                        script.onload = () => resolve();
-                        script.async = true;
-                        document.body.appendChild(script);
-                    });
+                    if(!hcaptchaLoading) {
+                        hcaptchaLoading = new Promise(resolve => {
+                            const existing = document.querySelector('script[src="https://js.hcaptcha.com/1/api.js"]');
+
+                            if(existing) {
+                                if(window.hcaptcha) {
+                                    resolve(true);
+                                } else {
+                                    existing.addEventListener('load', () => resolve(true), { once: true });
+                                    existing.addEventListener('error', () => resolve(false), { once: true });
+                                }
+                                return;
+                            }
+
+                            const script = document.createElement("script");
+                            script.src = "https://js.hcaptcha.com/1/api.js";
+                            script.onload = () => resolve(true);
+                            script.onerror = () => resolve(false);
+                            script.async = true;
+                            document.body.appendChild(script);
+                        });
+                    }
                 }
-            }
-        });
-    })).observe(form);
+            });
+        })).observe(form);
+    }
 
 
     /*
@@ -73,7 +88,7 @@ document.querySelectorAll('.contact form').forEach(form => {
             const container = form.querySelector('.errors');
 
             Object.keys(errors || {}).forEach(key => {
-                const field = form.querySelector('[name="' + key + '"');
+                const field = form.querySelector('[name="' + key + '"]');
 
                 field?.classList?.add('error');
                 field?.addEventListener('change', () => {
@@ -82,6 +97,10 @@ document.querySelectorAll('.contact form').forEach(form => {
 
                 container.innerHTML = [container.innerHTML, ...errors[key]].filter(v => !!v).join('<br/>')
             })
+
+            if(container?.textContent?.trim()) {
+                container.focus();
+            }
 
             setTimeout(() => {
                 form.querySelectorAll('.btn span').forEach(el => {

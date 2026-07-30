@@ -204,14 +204,14 @@ class CashierAccess
                 throw new \RuntimeException( 'Cashier user no longer exists.' );
             }
 
-            $access = $callback( $this->values( $stored->getAttribute( 'access' ) ) );
+            $current = $this->values( $stored->getAttribute( 'access' ) );
+            ksort( $current, SORT_STRING );
+            $access = $callback( $current );
             ksort( $access, SORT_STRING );
             $value = $access ?: null;
 
-            $stored->setAttribute( 'access', $value );
-
-            if( $stored->isDirty( 'access' ) ) {
-                $stored->saveQuietly();
+            if( $current !== $access ) {
+                $stored->setAttribute( 'access', $value )->saveQuietly();
             }
 
             $user->setAttribute( 'access', $value );

@@ -1,0 +1,35 @@
+/**
+ * Estate Theme
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+.image > img,
+.image > source {
+    max-width: 100%;
+    display: block;
+    margin: auto;
+}
+
+.image > img {
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    width: 100%;
+}
+
+.image picture,
+picture.image {
+    aspect-ratio: 4 / 3;
+    border: 1px solid var(--pico-muted-border-color);
+    border-radius: calc(var(--pico-border-radius) * 2);
+    box-shadow: var(--pico-box-shadow);
+    display: block;
+    overflow: hidden;
+    padding: 0;
+}
+
+.image picture img,
+picture.image img {
+    height: 100%;
+    object-fit: cover;
+    width: 100%;
+}

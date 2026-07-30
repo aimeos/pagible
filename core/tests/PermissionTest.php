@@ -8,6 +8,8 @@
 namespace Tests;
 
 use Aimeos\Cms\Permission;
+use Aimeos\Cms\Tenancy;
+use Illuminate\Auth\GenericUser;
 
 
 class PermissionTest extends CoreTestAbstract
@@ -80,6 +82,16 @@ class PermissionTest extends CoreTestAbstract
         app()->instance( \Aimeos\Cms\Tenancy::class, new \Aimeos\Cms\Tenancy( '' ) );
 
         $this->assertFalse( Permission::can( 'page:view', $user ) );
+    }
+
+
+    public function testCanWithoutTenantConfiguration(): void
+    {
+        $user = new GenericUser( ['id' => 1, 'cmsperms' => ['page:view']] );
+        Tenancy::$callback = null;
+        Tenancy::set( '' );
+
+        $this->assertTrue( Permission::can( 'page:view', $user ) );
     }
 
 

@@ -154,6 +154,8 @@ export default {
       limit: 100,
       actions: false,
       editDialog: false,
+      editIds: [],
+      editSelected: false,
       loading: true,
       vgrid: false,
       destroyed: false,
@@ -225,10 +227,6 @@ export default {
   computed: {
     canTrash() {
       return this.items.some((item) => this.checked.has(item.id) && !item.deleted_at)
-    },
-
-    checkedCount() {
-      return this.checked.size
     },
 
     isChecked() {
@@ -509,9 +507,11 @@ export default {
         })
     },
 
-    edit() {
+    edit(item = null) {
+      this.editIds = item ? [item.id] : [...this.checked]
+      this.editSelected = !item
       this.actions = false
-      this.editDialog = true
+      this.editDialog = this.editIds.length > 0
     },
 
     save(lang) {
@@ -520,17 +520,18 @@ export default {
         return
       }
 
-      const list = this.items.filter((item) => this.checked.has(item.id))
+      const ids = this.editIds
+      const selected = this.editSelected ? null : new Set(this.checked)
 
-      if (!list.length || lang === null) {
+      if (!ids.length || lang === null) {
         return
       }
 
-      this.$apollo
+      return this.$apollo
         .mutate({
           mutation: SAVE_FILES,
           variables: {
-            id: list.map((item) => item.id),
+            id: ids,
             input: { lang: lang }
           }
         })
@@ -539,13 +540,22 @@ export default {
             throw result.errors
           }
 
-          this.checked = new Set()
+          this.editIds = []
+          if (this.editSelected) {
+            this.checked = new Set()
+          }
+          this.editSelected = false
           this.invalidate()
-          this.search()
+
+          return this.search().then(() => {
+            if (selected) {
+              this.checked = selected
+            }
+          })
         })
         .catch((error) => {
           this.messages.add(this.$gettext('Error saving file') + ':\n' + error, 'error')
-          this.$log(`FileListItems::save(): Error saving files`, list, lang, error)
+          this.$log(`FileListItems::save(): Error saving files`, ids, lang, error)
         })
     },
 
@@ -907,6 +917,24 @@ export default {
                 $gettext('Publish')
               }}</v-btn>
             </v-list-item>
+
+            <v-divider
+              v-if="
+                !item.deleted_at &&
+                !item.published &&
+                user.can('file:publish') &&
+                user.can('file:save')
+              "
+            ></v-divider>
+
+            <v-list-item v-if="user.can('file:save')">
+              <v-btn :prepend-icon="mdiPencil" variant="text" @click="edit(item)">{{
+                $gettext('Edit properties')
+              }}</v-btn>
+            </v-list-item>
+
+            <v-divider v-if="user.can('file:save')"></v-divider>
+
             <v-list-item v-if="!item.deleted_at && user.can('file:drop')">
               <v-btn :prepend-icon="mdiDelete" variant="text" @click="drop(item)">{{
                 $gettext('Delete')
@@ -1053,7 +1081,7 @@ export default {
     />
   </div>
 
-  <EditBulkDialog v-model="editDialog" :count="checkedCount" @apply="save" />
+  <EditBulkDialog v-model="editDialog" :count="editIds.length" @apply="save" />
 </template>
 
 <style scoped>

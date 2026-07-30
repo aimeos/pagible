@@ -1,0 +1,676 @@
+/**
+ * Estate Theme - Minimalist high-fashion design with editorial serif headlines
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+:root[data-theme=light] {
+    --estate-content-width: 80rem;
+    --pico-font-family-sans-serif: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    --pico-font-family-display: Georgia, 'Times New Roman', serif;
+    --pico-font-family-monospace: ui-monospace, monospace;
+    --pico-nav-breadcrumb-divider: '—';
+    --pico-block-spacing-vertical: 0;
+    --pico-nav-element-spacing-horizontal: 1rem;
+    --pico-nav-element-spacing-vertical: 0.75rem;
+    --pico-nav-link-spacing-vertical: 0.625rem;
+    --pico-nav-link-spacing-horizontal: 0.625rem;
+    --pico-color: #242424;
+    --pico-background-color: #FFFFFF;
+    --pico-text-selection-color: color-mix(in srgb, var(--pico-primary) 25%, transparent);
+    --pico-muted-color: #606060;
+    --pico-muted-border-color: #24242424;
+    --pico-muted-background-color: #F5F5F3;
+    --pico-contrast: #242424;
+    --pico-contrast-border: #2424242B;
+    --pico-contrast-background: #FFFFFF;
+    --pico-contrast-underline: var(--pico-contrast);
+    --pico-contrast-hover: #000000;
+    --pico-contrast-hover-border: #24242440;
+    --pico-contrast-hover-background: #EEEEEC;
+    --pico-contrast-hover-underline: var(--pico-contrast-hover);
+    --pico-contrast-focus: var(--pico-text-selection-color);
+    --pico-contrast-inverse: #FFFFFF;
+    --pico-primary: #D00000;
+    --pico-primary-background: color-mix(in srgb, var(--pico-primary) 10%, transparent);
+    --pico-primary-border: var(--pico-primary);
+    --pico-primary-underline: var(--pico-primary);
+    --pico-primary-hover: color-mix(in srgb, var(--pico-primary) 86%, var(--pico-contrast));
+    --pico-primary-hover-background: color-mix(in srgb, var(--pico-primary) 86%, var(--pico-contrast));
+    --pico-primary-hover-border: color-mix(in srgb, var(--pico-primary) 86%, var(--pico-contrast));
+    --pico-primary-hover-underline: var(--pico-primary-hover);
+    --pico-primary-focus: color-mix(in srgb, var(--pico-primary) 25%, transparent);
+    --pico-primary-inverse: #FFFFFF;
+    --pico-secondary: #242424;
+    --pico-secondary-background: color-mix(in srgb, var(--pico-secondary) 12%, transparent);
+    --pico-secondary-border: var(--pico-secondary);
+    --pico-secondary-underline: var(--pico-secondary);
+    --pico-secondary-hover: color-mix(in srgb, var(--pico-secondary) 86%, var(--pico-contrast));
+    --pico-secondary-hover-background: color-mix(in srgb, var(--pico-secondary) 86%, var(--pico-contrast));
+    --pico-secondary-hover-border: color-mix(in srgb, var(--pico-secondary) 86%, var(--pico-contrast));
+    --pico-secondary-hover-underline: var(--pico-secondary-hover);
+    --pico-secondary-focus: color-mix(in srgb, var(--pico-secondary) 25%, transparent);
+    --pico-secondary-inverse: #FFFFFF;
+    --pico-h1-color: #242424;
+    --pico-h2-color: #242424;
+    --pico-h3-color: #242424;
+    --pico-h4-color: #242424;
+    --pico-h5-color: #3D3D3D;
+    --pico-h6-color: #606060;
+    --pico-box-shadow: 0 1px 2px #0000000A;
+    --pico-dropdown-color: var(--pico-contrast);
+    --pico-dropdown-border-color: var(--pico-contrast-border);
+    --pico-dropdown-background-color: #FFFFFF;
+    --pico-dropdown-hover-background-color: var(--pico-muted-background-color);
+    --pico-dropdown-box-shadow: 0 0.5rem 1.5rem -0.25rem #0000001A;
+    --pico-modal-overlay-background-color: #00000080;
+    --pico-code-background-color: var(--pico-contrast);
+    --pico-code-color: var(--pico-contrast-inverse);
+    --pico-border-radius: 0;
+    --pico-form-element-active-border-color: var(--pico-primary);
+    --pico-form-element-focus-color: color-mix(in srgb, var(--pico-primary) 25%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    body.theme-estate,
+    body.theme-estate *,
+    body.theme-estate *::before,
+    body.theme-estate *::after {
+        animation: none !important;
+        scroll-behavior: auto !important;
+        transition: none !important;
+    }
+}
+
+:host, :root {
+    --pico-font-size: clamp(1rem, calc(0.925rem + 0.3vw), 1.125rem) !important;
+}
+
+* {
+  scrollbar-color: var(--pico-contrast-border) var(--pico-background-color);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    html { scroll-behavior: smooth; }
+}
+
+body {
+    font-family: var(--pico-font-family-sans-serif);
+    background-color: var(--pico-background-color);
+}
+
+:focus-visible {
+    outline: 2px solid var(--pico-primary);
+}
+
+:where(a:not([role=button]):not([role=menuitem])),
+:where(a:not([role=button]):not([role=menuitem]):visited) {
+    color: var(--pico-primary);
+    text-decoration-color: var(--pico-primary);
+}
+
+:where(a:not([role=button]):not([role=menuitem]):hover) {
+    color: var(--pico-primary-hover);
+    text-decoration-color: var(--pico-primary-hover);
+}
+
+.skip-link {
+    position: absolute;
+    top: -100%;
+}
+
+nav ol:first-of-type, nav ul:first-of-type,
+nav ol:last-of-type, nav ul:last-of-type {
+    margin: 0;
+}
+
+nav li :where(a,[role=link]) {
+    color: var(--pico-contrast);
+    text-decoration: none;
+    margin: 0;
+}
+
+body > header {
+    background-color: #FFFFFFF2;
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--pico-muted-border-color);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+body > header > nav {
+    margin-inline: auto;
+    max-width: var(--estate-content-width);
+    padding-inline: min(5%, 2rem);
+}
+
+header nav > ul {
+    margin-block: 0;
+    margin-inline: var(--pico-nav-element-spacing-horizontal);
+}
+
+header nav > ul > li {
+    list-style: none;
+    margin: 0 var(--pico-nav-element-spacing-horizontal);
+    padding: 0 0.25rem;
+}
+
+header nav > ul:not(.menu) > li {
+    padding: 0;
+}
+
+header nav ul.menu > li:has(+ li.login) > a {
+    color: var(--pico-primary-inverse);
+    background-color: var(--pico-primary);
+    border: 1px solid var(--pico-primary);
+    border-radius: var(--pico-border-radius);
+    padding: 0.6rem 1.5rem;
+    text-wrap: nowrap;
+    transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease;
+}
+
+header nav ul.menu > li:has(+ li.login) > a:hover {
+    color: var(--pico-primary-inverse);
+    background-color: var(--pico-primary-hover);
+    border-color: var(--pico-primary-hover);
+}
+
+header nav a,
+header nav details.dropdown > summary:not([role]) {
+    display: flex;
+    align-items: center;
+    list-style: none;
+    cursor: pointer;
+    padding: 0.7rem 0.5rem;
+    color: var(--pico-color);
+    font-size: max(0.875rem, calc(var(--pico-font-size) * 0.68));
+    font-weight: 600;
+    text-transform: none;
+    letter-spacing: 0.01em;
+    transition: color 0.15s ease;
+    text-decoration: none;
+    margin: 0;
+    height: auto;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+}
+
+header nav > .menu > li > a,
+header nav > .menu > li > details.dropdown > summary:not([role]) {
+    text-transform: uppercase;
+}
+
+header nav a:not([role]):hover,
+header nav a:not([role]):focus,
+header nav a:not([role]):active {
+    text-decoration: none;
+}
+
+header nav ul.menu > li:not(:has(+ li.login)):not(.login) > a:hover,
+header nav ul.menu > li:not(:has(+ li.login)):not(.login) > a:focus,
+header nav details.dropdown > summary:not([role]):hover,
+header nav details.dropdown > summary:not([role]):focus,
+header nav details.dropdown > summary:not([role]):focus-visible,
+header nav details.dropdown > summary:not([role]):active,
+header nav details.dropdown[open] > summary:not([role]) {
+    color: var(--pico-primary-hover);
+    background: transparent;
+    box-shadow: none;
+    border: 0;
+}
+
+header nav ul.menu > li:has(+ li.login) > a:hover,
+header nav ul.menu > li:has(+ li.login) > a:focus,
+header nav ul.menu > li:has(+ li.login) > a:active {
+    color: var(--pico-primary-inverse);
+}
+
+header nav > .menu > li > a.active {
+    position: relative;
+}
+
+header nav > .menu > li > a.active::after {
+    background-color: var(--pico-primary);
+    block-size: 2px;
+    content: "";
+    inset-block-end: 0.25rem;
+    inset-inline: var(--pico-nav-link-spacing-horizontal);
+    position: absolute;
+}
+
+header nav details summary::marker,
+header nav details summary::-webkit-details-marker {
+    display: none;
+}
+
+header nav details[open] summary::after {
+    transform: rotate(0.5turn) translateX(-0.2rem);
+}
+
+header nav details.dropdown[open] > summary::before {
+    height: auto;
+    width: auto;
+}
+
+header nav .menu details.dropdown > ul.align {
+    left: auto;
+    max-width: min(22rem, calc(100vw - 2rem));
+    min-width: 14rem;
+    padding-block: 0.5rem;
+    right: auto;
+    width: auto;
+}
+
+header nav .menu details.dropdown > ul.align > li {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+}
+
+header nav .menu details.dropdown > ul.align > li > a {
+    margin: 0;
+    min-height: 0;
+    padding: 0.7rem 1rem;
+    white-space: normal;
+    width: 100%;
+}
+
+header nav .menu details.dropdown > ul.align > li > a:is(:hover, :focus, .active) {
+    background-color: var(--pico-dropdown-hover-background-color);
+    color: var(--pico-primary-hover);
+}
+
+header nav .brand {
+    flex-grow: 1;
+}
+
+header nav .brand a,
+header nav .brand img {
+    display: flex;
+    align-items: center;
+    height: 44px;
+    padding: 0;
+    margin: 0;
+}
+
+header nav .brand a {
+    font-family: var(--pico-font-family-display);
+    font-weight: 400;
+    font-size: calc(var(--pico-font-size) * 1.1);
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--pico-contrast);
+    text-decoration: none;
+}
+
+header nav .menu-open,
+header nav .menu-close,
+header nav .sidebar-open,
+header nav .sidebar-close {
+    display: none;
+}
+
+header nav .menu-open button,
+header nav .menu-close button,
+header nav .sidebar-open button,
+header nav .sidebar-close button {
+    color: var(--pico-contrast);
+    padding: 0.75rem;
+    background: none;
+    border: none;
+}
+
+@media (min-width: 992px) {
+    body > header > nav {
+        align-items: center;
+        display: flex;
+        padding-inline: min(4vw, 3rem);
+    }
+
+    body > header > nav > ul:first-child {
+        flex: 1 1 auto;
+        min-height: 4.5rem;
+        min-width: 0;
+    }
+
+    body > header > nav > .menu {
+        align-items: center;
+        flex: 0 0 auto;
+        justify-content: flex-end;
+        min-height: 4.5rem;
+    }
+
+    body > header > nav > .menu > li {
+        margin-inline: 0 1.25rem;
+        padding: 0;
+    }
+
+    body > header > nav > .menu > li:first-child {
+        margin-inline: 0;
+        order: 99;
+    }
+
+    body > header > nav > .menu > li > a,
+    body > header > nav > .menu > li > details > summary {
+        hyphens: none;
+        min-height: 4.5rem;
+        overflow-wrap: normal;
+        padding-inline: 0;
+        white-space: nowrap;
+    }
+
+    body > header > nav > .menu > li > details.dropdown {
+        margin: 0;
+    }
+
+    body > header > nav > .menu > li > a.active::after {
+        inset-inline: 0;
+    }
+
+    header nav .brand a,
+    header nav .brand img {
+        height: 2.5rem;
+    }
+
+    header nav .brand img {
+        max-width: min(11rem, 30vw);
+        object-fit: contain;
+        width: auto;
+    }
+}
+
+@media (max-width: 991px) {
+    header nav .menu-open.show,
+    header nav .menu-close.show {
+        display: flex;
+    }
+
+    header nav.small {
+        background-color: var(--pico-background-color);
+        display: block;
+        height: 100%;
+        inset: 0;
+        min-height: 100vh;
+        overflow-y: auto;
+        padding: 0.5rem min(5%, 2rem);
+        position: fixed;
+        width: 100%;
+        z-index: 100;
+    }
+
+    header nav .menu {
+        display: none;
+    }
+
+    header nav.small .menu {
+        background-color: var(--pico-background-color);
+        border-top: 1px solid var(--pico-muted-border-color);
+        box-shadow: var(--pico-box-shadow);
+        display: flex;
+        flex-direction: column;
+        max-height: calc(100dvh - 3rem);
+        overscroll-behavior: contain;
+        overflow-y: auto;
+        padding: 0.75rem 0 1.25rem;
+    }
+
+    header nav .menu ul {
+        display: block;
+    }
+
+    header nav.small .menu > li {
+        border-bottom: 1px solid var(--pico-muted-border-color);
+        margin: 0;
+        padding: 0;
+        width: 100%;
+    }
+
+    header nav.small .menu > li:first-child {
+        border-bottom-color: var(--pico-secondary);
+    }
+
+    header nav.small .menu > li > a,
+    header nav.small .menu > li > details > summary {
+        align-items: center;
+        display: flex;
+        min-height: 3rem;
+        padding: 0.75rem 0;
+        width: 100%;
+    }
+
+    header nav.small .menu details > ul.align {
+        backdrop-filter: none;
+        background: none;
+        border: none;
+        box-shadow: none;
+        margin: 0;
+        max-width: none;
+        min-width: 0;
+        padding-block: 0 0.5rem;
+        padding-inline: 1rem 0;
+        position: relative;
+        width: 100%;
+    }
+
+    header nav.small .menu details > ul.align > li {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+    }
+
+    header nav.small .menu details > ul.align > li > a {
+        margin: 0;
+        min-height: 2.75rem;
+        padding: 0.625rem 0.75rem;
+        width: 100%;
+    }
+
+    header nav.small .menu details > summary::after {
+        content: "";
+        display: block;
+        float: inline-end;
+        margin-inline-start: .25rem;
+        height: calc(1rem * var(--pico-line-height, 1.5));
+        transform: rotate(0) translateX(.2rem);
+        background-image: var(--pico-icon-chevron);
+        background-position: right center;
+        background-size: 1rem auto;
+        background-repeat: no-repeat;
+        width: 1rem;
+    }
+
+    header nav.small .menu details[open] > summary::after {
+        transform: rotate(0.5turn) translateX(-0.2rem);
+    }
+}
+
+nav.breadcrumb {
+    border-bottom: 1px solid var(--pico-muted-border-color);
+    background-color: var(--pico-muted-background-color);
+}
+
+nav.breadcrumb > ul {
+    text-align: center;
+    max-width: var(--estate-content-width);
+    margin: auto;
+    width: 100%;
+}
+
+nav.breadcrumb ul li {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    font-size: max(0.875rem, calc(var(--pico-font-size) * 0.6));
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--pico-muted-color);
+}
+
+nav.breadcrumb ul li:not(:first-child) {
+    margin-inline-start: 0;
+}
+
+nav.breadcrumb ul li a {
+    color: var(--pico-muted-color);
+}
+
+nav.breadcrumb ul li a:hover {
+    color: var(--pico-primary);
+    opacity: 1;
+}
+
+
+.container {
+    max-width: var(--estate-content-width) !important;
+}
+
+.cms-text {
+    white-space: pre-line;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--pico-font-family-display);
+    font-feature-settings: "liga", "dlig", "kern";
+    font-weight: 500;
+    hyphens: auto;
+    letter-spacing: 0.005em;
+    overflow-wrap: anywhere;
+    white-space: pre-line;
+}
+
+h1 {
+    margin-bottom: 2rem;
+    font-size: calc(var(--pico-font-size) * 2.5);
+    line-height: 1.1;
+    text-align: center;
+}
+
+h2 {
+    margin-bottom: 1.5rem;
+    font-size: calc(var(--pico-font-size) * 1.8);
+    line-height: 1.2;
+    text-align: center;
+}
+
+h3 {
+    margin-bottom: 1.25rem;
+    font-size: calc(var(--pico-font-size) * 1.4);
+    line-height: 1.3;
+}
+
+h4 {
+    margin-bottom: 1rem;
+    font-size: calc(var(--pico-font-size) * 1.2);
+    line-height: 1.4;
+}
+
+@media screen and (min-width: 768px) {
+    h1 {
+        font-size: calc(var(--pico-font-size) * 3);
+    }
+
+    h2 {
+        font-size: calc(var(--pico-font-size) * 2);
+    }
+}
+
+body.theme-estate :is(.heading, .text, .cms-text, .questions, .pricing, .testimonial, .image-text) h1 {
+    font-size: clamp(2.25rem, 5vw, 4.25rem);
+    line-height: 1.08;
+    text-wrap: balance;
+}
+
+body.theme-estate :is(.heading, .text, .cms-text, .questions, .pricing, .testimonial, .image-text) h2 {
+    font-size: clamp(1.75rem, 3.5vw, 3rem);
+    line-height: 1.15;
+    text-wrap: balance;
+}
+
+body.theme-estate :is(.heading, .text, .cms-text, .questions, .pricing, .testimonial, .image-text) h3 {
+    font-size: clamp(1.2rem, 2vw, 1.55rem);
+    line-height: 1.25;
+    text-wrap: balance;
+}
+
+img {
+    border-radius: var(--pico-border-radius);
+}
+
+body.theme-estate :is(.btn, .button, .contact button, .property-contact-link, .property-filter-actions button) {
+    align-items: center;
+    border-radius: var(--pico-border-radius);
+    display: inline-flex;
+    font-family: var(--pico-font-family-sans-serif);
+    font-size: max(0.875rem, calc(var(--pico-font-size) * 0.72));
+    font-weight: 700;
+    hyphens: auto;
+    justify-content: center;
+    letter-spacing: 0.02em;
+    line-height: inherit;
+    max-width: 100%;
+    min-height: 3rem;
+    overflow-wrap: anywhere;
+    padding: 0.75rem 1.25rem;
+    text-decoration: none;
+    transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+    white-space: normal;
+}
+
+body.theme-estate :is(.btn, .contact button, .property-contact-link, .property-filter-actions button) {
+    background-color: var(--pico-primary);
+    border: 1px solid var(--pico-primary);
+    color: var(--pico-primary-inverse);
+}
+
+body.theme-estate :is(.btn, .contact button, .property-contact-link, .property-filter-actions button):hover {
+    background-color: var(--pico-primary-hover);
+    border-color: var(--pico-primary-hover);
+    color: var(--pico-primary-inverse);
+}
+
+body.theme-estate :is(.button, .btn).outline {
+    background-color: transparent;
+    border: 1px solid var(--pico-muted-border-color);
+    color: var(--pico-color);
+}
+
+body.theme-estate :is(.button, .btn).outline:hover {
+    background-color: var(--pico-muted-background-color);
+    border-color: var(--pico-muted-border-color);
+    color: var(--pico-color);
+}
+
+body.theme-estate :is(.btn, .button, .contact button, .property-contact-link, .property-filter-actions button, input, select, textarea):focus-visible {
+    border-color: var(--pico-primary);
+    box-shadow: 0 0 0 3px var(--pico-primary-focus);
+    outline: 2px solid transparent;
+}
+
+body.theme-estate :is(input, select) {
+    border-radius: var(--pico-border-radius);
+    min-height: 3rem;
+}
+
+body.theme-estate textarea {
+    border-radius: var(--pico-border-radius);
+}
+
+.btn {
+    margin: 0.5rem 0;
+    vertical-align: sub;
+}
+
+.hidden {
+    display: none;
+}
+
+.file,
+.audio,
+.image,
+.video {
+    max-width: 100%;
+    text-align: center;
+    display: block;
+    margin: auto;
+}

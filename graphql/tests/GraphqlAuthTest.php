@@ -7,6 +7,7 @@
 
 namespace Tests;
 
+use Aimeos\Cms\Tenancy;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
@@ -139,6 +140,23 @@ class GraphqlAuthTest extends GraphqlTestAbstract
                 ],
             ]
         ] );
+    }
+
+
+    public function testMePermissionsWithoutTenancyConfiguration(): void
+    {
+        Tenancy::$callback = null;
+        Tenancy::set( '' );
+
+        $response = $this->actingAs( $this->user )->graphQL( "{
+            me {
+                permission
+            }
+        }" );
+
+        $permissions = json_decode( $response->json( 'data.me.permission' ), true );
+
+        $this->assertTrue( $permissions['page:view'] );
     }
 
 

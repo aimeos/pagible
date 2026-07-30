@@ -3,6 +3,9 @@
 
 **Name:** {{ $data['name'] }}
 **Email:** {{ $data['email'] }}
+@if($data['source'] ?? null)
+**{{ __('Source page') }}:** {{ $data['source'] }}
+@endif
 
 ---
 

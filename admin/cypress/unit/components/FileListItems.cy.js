@@ -4,7 +4,7 @@ import { useUserStore } from '../../../js/stores'
 const stubs = {
 }
 
-function mountList(props = {}, perms = {}) {
+function mountList(props = {}, perms = {}, apollo = {}) {
   return cy.mount(FileListItems, {
     props: {
       ...props,
@@ -16,10 +16,22 @@ function mountList(props = {}, perms = {}) {
         url: (path) => path,
         srcset: () => '',
       },
+      mocks: {
+        $apollo: {
+          query: () => Promise.resolve({
+            data: { files: { data: [], paginatorInfo: { lastPage: 1 } } },
+          }),
+          mutate: () => Promise.resolve({ data: {} }),
+          provider: { defaultClient: { cache: { evict() {}, gc() {} } } },
+          ...apollo,
+        },
+      },
     },
-  }).then(() => {
+  }).then(({ wrapper }) => {
     const user = useUserStore()
     user.me = { permission: perms }
+
+    return { wrapper }
   })
 }
 
@@ -82,5 +94,29 @@ describe('FileListItems', () => {
   it('starts in grid view when grid prop is true', () => {
     mountList({ grid: true }, { 'file:view': true })
     cy.get('button.btn-list').should('exist')
+  })
+
+  it('edits one item without changing the bulk selection', () => {
+    const mutate = cy.stub().resolves({ data: { bulkFile: { ids: ['file-1'] } } })
+
+    mountList({}, { 'file:save': true, 'file:view': true }, { mutate }).then(({ wrapper }) => {
+      const vm = wrapper.findComponent(FileListItems).vm
+      const item = { id: 'file-1' }
+      vm.items = [item, { id: 'file-2' }]
+      vm.checked = new Set(['file-2'])
+
+      vm.edit(item)
+      expect(vm.editIds).to.deep.equal(['file-1'])
+      expect(vm.editDialog).to.equal(true)
+
+      return vm.save('de').then(() => {
+        expect(mutate).to.have.been.calledOnce
+        expect(mutate.firstCall.args[0].variables).to.deep.equal({
+          id: ['file-1'],
+          input: { lang: 'de' },
+        })
+        expect([...vm.checked]).to.deep.equal(['file-2'])
+      })
+    })
   })
 })

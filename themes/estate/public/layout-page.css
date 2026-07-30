@@ -1,0 +1,88 @@
+/**
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+:root {
+    --pico-block-spacing-vertical: 0;
+    --pico-block-spacing-horizontal: 0;
+}
+
+.type-page main .cms-content > * {
+    margin-block: 0;
+}
+
+.type-page main .cms-content > .hero:first-child .container {
+    justify-content: center;
+    min-height: clamp(32rem, 72svh, 48rem);
+    padding: clamp(5rem, 10vw, 8rem) min(5%, 2rem) clamp(8rem, 14vw, 11rem);
+}
+
+.type-page main .cms-content > :nth-child(3n) {
+    background-color: var(--pico-muted-background-color);
+}
+
+.cms-content .container {
+    padding: clamp(3.5rem, 8vw, 6rem) min(5%, 2rem);
+}
+
+#home-properties .list-item picture {
+    aspect-ratio: 3 / 2;
+}
+
+#home-insights .list-cards {
+    gap: clamp(1.5rem, 3vw, 3rem);
+}
+
+#home-insights .list-cards .list-item {
+    background-color: var(--pico-background-color);
+    border-bottom: 1px solid var(--pico-muted-border-color);
+    padding: 0 0 1.5rem;
+}
+
+#home-insights .list-cards .list-item picture {
+    aspect-ratio: 16 / 9;
+}
+
+.heading h1,
+.heading h2,
+.heading h3 {
+    margin: 0;
+}
+
+.heading h1,
+.heading h2 {
+    text-align: center;
+}
+
+.heading h1::after,
+.heading h2::after {
+    content: "";
+    display: block;
+    width: 3rem;
+    height: 1px;
+    margin: 1.5rem auto 0;
+    background-color: var(--pico-secondary);
+}
+
+.container h1:first-child,
+.container h2:first-child,
+.container h3:first-child {
+    margin-top: 0;
+}
+
+.text p:last-of-type {
+    margin-bottom: 0;
+}
+
+.text {
+    font-weight: 400;
+    color: var(--pico-muted-color);
+    font-size: var(--pico-font-size);
+    line-height: 1.7;
+    letter-spacing: 0.01em;
+}
+
+.cms-content .text .container {
+    max-width: 50rem;
+    margin: auto;
+}

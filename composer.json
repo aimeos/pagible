@@ -48,6 +48,7 @@
 				"import/src/",
 				"pulse/src/",
 				"themes/glass/src/",
+				"themes/estate/src/",
 				"themes/journal/src/",
 				"themes/pagible/src/",
 				"themes/paper/src/",
@@ -69,6 +70,7 @@
 				"pulse/tests/",
 				"search/tests/",
 				"theme/tests/",
+				"themes/estate/tests/",
 				"backup/tests/"
 			]
 		},

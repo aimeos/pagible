@@ -11,7 +11,9 @@ use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\Version;
+use Aimeos\Cms\Permission;
 use Aimeos\Cms\Resource;
+use Aimeos\Cms\Tenancy;
 use Database\Seeders\TestSeeder;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Support\Facades\DB;
@@ -348,5 +350,20 @@ class CoreCommandTest extends CoreTestAbstract
         $this->assertEmpty( $perms() );
 
         $this->artisan('cms:user', ['-l' => true, 'email' => 'test@example.com'])->assertExitCode( 0 );
+    }
+
+
+    public function testUserWithoutTenancyConfiguration(): void
+    {
+        Tenancy::$callback = null;
+        Tenancy::set( '' );
+
+        $this->artisan('cms:user', [
+            '-e' => true,
+            '-p' => 'test',
+            'email' => 'single@example.com',
+        ] )->assertExitCode( 0 );
+
+        $this->assertTrue( Permission::can( 'page:view', User::where( 'email', 'single@example.com' )->first() ) );
     }
 }
