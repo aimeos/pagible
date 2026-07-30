@@ -64,9 +64,9 @@ if( !function_exists( 'cmsasset' ) )
      * @param \Aimeos\Cms\Models\Page $page Page containing the File
      * @param object|null $file File associated with the page
      * @param int|string|null $variant Preview width or preview path
+     * @return string Public storage URL, remote URL, or page-aware private access URL
      */
-    function cmsasset( \Aimeos\Cms\Models\Page $page, ?object $file,
-        int|string|null $variant = null ) : string
+    function cmsasset( \Aimeos\Cms\Models\Page $page, ?object $file, int|string|null $variant = null ) : string
     {
         if( !$file ) {
             return '';
@@ -82,11 +82,7 @@ if( !function_exists( 'cmsasset' ) )
             return cmsurl( is_string( $path ) ? $path : null );
         }
 
-        return \Aimeos\Cms\FileResponse::url(
-            $page,
-            (string) cms( $file, 'id' ),
-            $found ? (int) $key : null,
-        );
+        return \Aimeos\Cms\FileResponse::url( $page, (string) cms( $file, 'id' ), $found ? (int) $key : null );
     }
 }
 
@@ -280,6 +276,7 @@ if( !function_exists( 'cmssrcset' ) )
      *
      * @param \Aimeos\Cms\Models\Page $page Page containing the File
      * @param object|null $file File associated with the page
+     * @return string Comma-separated preview URLs and width descriptors
      */
     function cmssrcset( \Aimeos\Cms\Models\Page $page, ?object $file ) : string
     {
@@ -297,7 +294,7 @@ if( !function_exists( 'cmssrcset' ) )
 if( !function_exists( 'cmstheme' ) )
 {
     /**
-     * Generate an asset URL for a theme file, falling back to the base theme if the file doesn't exist.
+     * Generate a versioned theme asset URL, falling back to the base theme when the selected theme has no file.
      *
      * @param \Aimeos\Cms\Models\Page $page The CMS page to resolve the theme from
      * @param string $file The filename (e.g. "hero.css", "slideshow.js")
@@ -323,6 +320,9 @@ if( !function_exists( 'cmsurl' ) )
 {
     /**
      * Generate a public-disk URL while preserving remote hot-links.
+     *
+     * @param string|null $path Public storage path or remote URL
+     * @return string Resolved public URL, preserved remote URL, or an empty string
      */
     function cmsurl( ?string $path ) : string
     {
@@ -330,9 +330,7 @@ if( !function_exists( 'cmsurl' ) )
             return $path ?? '';
         }
 
-        return \Illuminate\Support\Facades\Storage::disk(
-            config( 'cms.disks.public.name', 'public' ),
-        )->url( $path );
+        return \Illuminate\Support\Facades\Storage::disk( config( 'cms.disks.public.name', 'public' ) )->url( $path );
     }
 }
 

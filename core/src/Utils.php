@@ -425,6 +425,9 @@ class Utils
     /**
      * Canonicalizes a UUID-owned local storage path and verifies its tenant namespace.
      *
+     * The first path segment below the tenant prefix must be a File UUID and must be followed by a non-empty relative
+     * path. Invalid tenant IDs, traversal, control characters, remote URLs, and foreign namespaces return null.
+     *
      * @param mixed $path Local storage path
      * @param string|null $tenant Tenant ID or null for the current tenant
      * @return string|null Canonical path or null if it is invalid
@@ -529,7 +532,7 @@ class Utils
 
 
     /**
-     * Returns Guzzle HTTP options that mitigate SSRF for the given URL.
+     * Returns internal Guzzle HTTP options that mitigate SSRF for the given URL.
      *
      * Validates the URL syntactically, resolves the host once and pins the
      * connection to that IP (preventing DNS rebinding). Redirects are disabled

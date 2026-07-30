@@ -56,6 +56,10 @@ class Tenancy
      * the default tenant's UUID-owned storage directories. Named IDs are
      * bounded URL-safe names because they are also used in storage paths.
      * Dots may separate non-empty name parts, allowing domain names.
+     *
+     * @param string $id Candidate tenant ID
+     * @return string Validated tenant ID
+     * @throws \InvalidArgumentException If the ID is unsafe, too long, or overlaps a default-tenant UUID directory
      */
     public static function check( string $id ) : string
     {

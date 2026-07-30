@@ -93,10 +93,12 @@ class Merge
 
 
     /**
-     * Three-way merges file data and auxiliary text from one base version.
+     * Three-way merges File data and auxiliary text against the version edited by the caller.
      *
+     * @param File $file File with its current latest version loaded
      * @param array<string, mixed> $data Incoming file data
      * @param array<string, mixed> $aux Incoming file auxiliary data
+     * @param string|null $latestId Version ID the caller originally edited
      * @return array{
      *     0: array<string, mixed>,
      *     1: array<string, mixed>,

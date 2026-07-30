@@ -26,7 +26,10 @@ use Laravel\Mcp\Request;
 class AddFile extends Tool
 {
     /**
-     * Handle the tool request.
+     * Validates, ingests, and stores the remote File requested by the MCP client.
+     *
+     * @param Request $request Authorized MCP tool request
+     * @return \Laravel\Mcp\ResponseFactory Structured File data or validation error
      */
     public function handle( Request $request ): \Laravel\Mcp\ResponseFactory
     {

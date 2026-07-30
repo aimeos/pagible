@@ -20,7 +20,16 @@ use Symfony\Component\HttpFoundation\Response;
 final class FileResponse
 {
     /**
-     * Delivers a private original or preview from local or remote storage.
+     * Delivers a private original or preview after validating its File UUID ownership.
+     *
+     * Local files are returned directly. Remote disks use a temporary URL when available and cap its expiry at the
+     * enclosing page-access token.
+     *
+     * @param string $id File UUID
+     * @param int|string|null $variant Preview width, or null for the original
+     * @param bool $latest Whether editors should receive the latest draft version
+     * @param int|null $expires Unix timestamp limiting a remote temporary URL
+     * @return Response File response or redirect to a remote temporary URL
      */
     public static function make( string $id, int|string|null $variant = null,
         bool $latest = false, ?int $expires = null ) : Response
@@ -100,7 +109,14 @@ final class FileResponse
 
 
     /**
-     * Generates the access-controlled URL for a private File.
+     * Generates the page-aware access URL for a private File.
+     *
+     * Restricted renders receive a short-lived signed URL so embedded media can reuse the page authorization.
+     *
+     * @param Page $page Page authorizing access to the File
+     * @param string $file File UUID
+     * @param int|string|null $variant Preview width, or null for the original
+     * @return string Page-aware access URL
      */
     public static function url( Page $page, string $file, int|string|null $variant = null ) : string
     {
@@ -130,6 +146,9 @@ final class FileResponse
 
     /**
      * Returns the configured private URL expiry capped by the access token.
+     *
+     * @param int|null $expires Unix timestamp inherited from the access token
+     * @return Carbon Expiration time for the generated temporary URL
      */
     private static function expiry( ?int $expires = null ) : Carbon
     {
@@ -142,7 +161,10 @@ final class FileResponse
 
 
     /**
-     * Returns a safe download name.
+     * Returns a safe basename for a Content-Disposition header.
+     *
+     * @param string $name Stored original name or preview path
+     * @return string Sanitized filename, or "download" when no usable name remains
      */
     private static function filename( string $name ) : string
     {
@@ -165,7 +187,10 @@ final class FileResponse
 
 
     /**
-     * Returns the MIME type for a preview.
+     * Returns a safe MIME type inferred from a preview path extension.
+     *
+     * @param string $path Preview storage path
+     * @return string Supported image MIME type or application/octet-stream
      */
     private static function mime( string $path ) : string
     {

@@ -58,7 +58,7 @@ trait HandlesMedia
 
 
     /**
-     * Stores a base64 encoded image as a new draft media file.
+     * Ingests and stores a base64 encoded image as a new draft media file.
      *
      * @param string $base64 Base64 encoded image data
      * @param string $name Display name for the new file (without extension)

@@ -165,7 +165,11 @@ return new class extends Migration
 
 
     /**
-     * Canonicalizes a local path from the legacy or UUID-owned storage layout.
+     * Canonicalizes a tenant-owned path from either the legacy or UUID-owned storage layout.
+     *
+     * @param string $tenant Tenant namespace, or an empty string for the default tenant
+     * @param mixed $path Candidate local storage path
+     * @return string|null Canonical local path, or null when it is unsafe or belongs to another tenant
      */
     private function legacyPath( string $tenant, mixed $path ): ?string
     {
@@ -196,8 +200,11 @@ return new class extends Migration
 
 
     /**
-     * Returns unique managed paths for a File and all of its versions.
+     * Returns unique, canonical managed paths for a File and all of its versions.
      *
+     * @param object $file Current File row
+     * @param iterable<object> $versions Historical File versions
+     * @param string $tenant Tenant namespace
      * @return array<int, string>
      */
     private function paths( object $file, iterable $versions, string $tenant ): array
@@ -237,7 +244,14 @@ return new class extends Migration
 
 
     /**
-     * Rewrites a current or version path only after its target exists.
+     * Returns the UUID-owned target for a valid current or historical path.
+     *
+     * Invalid or foreign paths are returned unchanged so the migration never claims them.
+     *
+     * @param string $tenant Tenant namespace
+     * @param string $id File UUID
+     * @param mixed $path Candidate current or historical path
+     * @return mixed UUID-owned path for managed input, otherwise the original value
      */
     private function transform( string $tenant, string $id, mixed $path ): mixed
     {

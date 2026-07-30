@@ -11,11 +11,17 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    /**
+     * Keeps the compatibility migration irreversible because new installs own the columns in the base migration.
+     */
     public function down(): void
     {
     }
 
 
+    /**
+     * Adds logical-disk storage and UUID-owner lookup columns to existing installations.
+     */
     public function up(): void
     {
         $schema = Schema::connection( config( 'cms.db', 'sqlite' ) );

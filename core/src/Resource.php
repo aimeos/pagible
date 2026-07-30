@@ -294,10 +294,13 @@ class Resource
 
 
     /**
-     * Moves managed paths owned by several Files to another logical disk.
+     * Moves the managed paths of several Files to another logical disk under tenant and File locks.
      *
      * @param array<string> $ids File UUIDs
+     * @param string $disk Target logical disk, either "public" or "private"
+     * @param Authenticatable|null $user Authenticated user authorizing and recording the relocation
      * @return Collection<int, File>
+     * @throws Exception If permissions, path ownership, remote paths, or storage verification prevent relocation
      */
     public static function relocateFiles( array $ids, string $disk,
         ?Authenticatable $user = null ) : Collection
@@ -349,12 +352,7 @@ class Resource
                             return $file;
                         }
 
-                        self::relocate(
-                            $file,
-                            self::relocationPaths( $file, $disk ),
-                            $disk,
-                            $editor,
-                        );
+                        self::relocate( $file, self::relocationPaths( $file, $disk ), $disk, $editor );
                         $changed[$id] = $file;
 
                         return $file;
@@ -507,9 +505,12 @@ class Resource
 
 
     /**
-     * Returns validated relocation paths for a File.
+     * Returns unique current and historical paths that can be relocated for one File.
      *
+     * @param File $file File owning every returned path
+     * @param string $disk Target logical disk
      * @return Collection<int, non-empty-string>
+     * @throws Exception If a path is remote where unsupported or does not belong to the File UUID
      */
     protected static function relocationPaths( File $file, string $disk ) : Collection
     {
@@ -528,14 +529,11 @@ class Resource
             );
         }
 
-        if( $disk === 'private' && $paths->contains(
-            fn( $path ) => is_string( $path ) && str_starts_with( $path, 'http' ),
-        ) ) {
+        if( $disk === 'private' && $paths->contains( fn( $path ) => is_string( $path ) && str_starts_with( $path, 'http' ) ) ) {
             throw new Exception( 'Remote files cannot be relocated' );
         }
 
-        $paths = $paths->filter( fn( $path ) => is_string( $path ) && $path !== ''
-                && !str_starts_with( $path, 'http' ) )
+        $paths = $paths->filter( fn( $path ) => is_string( $path ) && $path !== '' && !str_starts_with( $path, 'http' ) )
             ->unique()->values();
         self::checkFilePathsOwned( $file, $paths->all() );
 
@@ -572,7 +570,7 @@ class Resource
 
 
     /**
-     * Invalidates every published page using a File directly or through an Element.
+     * Invalidates published pages using a File directly or through an Element in bounded chunks.
      *
      * @param array<string> $ids File UUIDs
      */
@@ -594,9 +592,11 @@ class Resource
 
 
     /**
-     * Invalidates the routes of the given Pages grouped by domain.
+     * Invalidates the routes of the given Page models, grouped by domain.
      *
-     * @param iterable<array-key, mixed> $pages
+     * Non-Page values are ignored so lifecycle collections can be passed without additional filtering.
+     *
+     * @param iterable<array-key, mixed> $pages Candidate Page models
      */
     protected static function invalidatePages( iterable $pages ) : void
     {
@@ -681,7 +681,7 @@ class Resource
 
 
     /**
-     * Applies and announces a lifecycle action while preserving Page tree semantics.
+     * Applies and announces a lifecycle action while preserving Page tree semantics and route invalidation.
      *
      * @param class-string<Base> $model
      * @param array<string> $ids
@@ -895,7 +895,9 @@ class Resource
 
 
     /**
-     * Updates file metadata and creates a new version with optional merge.
+     * Ingests optional file data, updates metadata, and creates a conflict-aware version.
+     *
+     * Storage work completes before the transaction; the File lock then verifies the prepared paths and logical disk.
      *
      * @param string $id File UUID
      * @param array<string, mixed> $input File fields to update
@@ -1117,7 +1119,7 @@ class Resource
 
 
     /**
-     * Creates a new version for an already loaded file from the given input.
+     * Three-way merges input into an already loaded File and creates its new latest version.
      *
      * Shared by saveFile() (single) and bulkFile() (bulk). Must run inside a transaction.
      *
@@ -1142,12 +1144,7 @@ class Resource
         $file = clone $orig;
 
         $input = File::snapshot( $input );
-        [$data, $aux, $diffs] = Merge::file(
-            $orig,
-            $input['data'],
-            $input['aux'],
-            $latestId,
-        );
+        [$data, $aux, $diffs] = Merge::file( $orig, $input['data'], $input['aux'], $latestId );
         $file->fill( $data + $aux );
 
         if( isset( $input['data']['previews'] ) )

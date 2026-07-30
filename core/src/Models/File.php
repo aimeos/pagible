@@ -336,7 +336,11 @@ class File extends Base
 
 
     /**
-     * Returns the File UUID owning a managed path.
+     * Returns the File UUID owning a canonical managed path.
+     *
+     * @param string $tenant Tenant namespace
+     * @param mixed $path Candidate storage path
+     * @return string|null Lowercase owner UUID, or null for invalid, remote, legacy, or foreign paths
      */
     public static function owner( string $tenant, mixed $path ) : ?string
     {
@@ -350,11 +354,15 @@ class File extends Base
 
 
     /**
-     * Ingests a new primary file or preview outside the database transaction.
+     * Validates and ingests a new primary file or preview outside the database transaction.
+     *
+     * Private remote URLs are downloaded into UUID-owned storage. Failed ingestion removes generated previews and any
+     * uploaded primary path before rethrowing the original error.
      *
      * @param UploadedFile|string|null $source Uploaded primary file or local/remote path
      * @param UploadedFile|null $preview Uploaded preview or null for automatic previews
      * @return self The ingested file
+     * @throws \Aimeos\Cms\Exception If the source, type, size, storage disk, or generated preview is invalid
      */
     public function ingest( UploadedFile|string|null $source = null, ?UploadedFile $preview = null ) : self
     {
@@ -373,8 +381,7 @@ class File extends Base
 
         try
         {
-            if( is_string( $source ) && str_starts_with( $source, 'http' )
-                && $this->getAttribute( 'disk' ) === 'private' )
+            if( is_string( $source ) && str_starts_with( $source, 'http' ) && $this->getAttribute( 'disk' ) === 'private' )
             {
                 $resource = $this->fetchUrl( $source );
 
@@ -907,7 +914,10 @@ class File extends Base
 
 
     /**
-     * Ingests a public URL or existing managed storage path.
+     * Assigns a public URL or existing managed path and creates requested previews.
+     *
+     * @param string $source Public URL or managed storage path
+     * @param UploadedFile|null $preview Explicit preview upload, or null for remote automatic previews
      */
     protected function ingestPath( string $source, ?UploadedFile $preview ) : void
     {
@@ -922,23 +932,20 @@ class File extends Base
             $this->addPreviews( $source );
         }
 
-        $this->mime = $this->mime ?: Utils::mimetype(
-            $source,
-            self::diskName( (string) $this->getAttribute( 'disk' ) ),
-        );
+        $this->mime = $this->mime ?: Utils::mimetype( $source, self::diskName( (string) $this->getAttribute( 'disk' ) ) );
     }
 
 
     /**
      * Stores an uploaded file and creates its previews.
+     *
+     * @param UploadedFile $source Validated primary upload
+     * @param UploadedFile|null $preview Explicit preview upload, or null to derive previews from images
      */
     protected function ingestUpload( UploadedFile $source, ?UploadedFile $preview ) : void
     {
         $this->addFile( $source );
-        $this->mime = Utils::mimetype(
-            (string) $this->path,
-            self::diskName( (string) $this->getAttribute( 'disk' ) ),
-        );
+        $this->mime = Utils::mimetype( (string) $this->path, self::diskName( (string) $this->getAttribute( 'disk' ) ) );
         $this->name = $this->name ?: pathinfo( $source->getClientOriginalName(), PATHINFO_BASENAME );
 
         if( $preview || str_starts_with( (string) $source->getMimeType(), 'image/' ) ) {

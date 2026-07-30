@@ -22,7 +22,7 @@ return new class extends Migration
     }
 
     /**
-     * Run the migrations.
+     * Creates the Files table with logical-disk and UUID-owner lookup columns.
      *
      * @return void
      */

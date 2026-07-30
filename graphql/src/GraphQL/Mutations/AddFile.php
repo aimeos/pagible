@@ -18,8 +18,11 @@ use Illuminate\Support\Facades\Auth;
 final class AddFile
 {
     /**
-     * @param  null  $rootValue
-     * @param  array<string, mixed>  $args
+     * Validates, ingests, and stores a File supplied through the GraphQL mutation.
+     *
+     * @param null $rootValue Unused GraphQL root value
+     * @param array<string, mixed> $args Mutation input, upload, and optional preview
+     * @return File Stored draft File
      */
     public function __invoke( $rootValue, array $args ) : File
     {

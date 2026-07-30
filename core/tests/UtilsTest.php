@@ -493,9 +493,7 @@ class UtilsTest extends CoreTestAbstract
             'cms/www.example.com/' . $id . '/image.jpg',
             Utils::normalizePath( 'cms/www.example.com/' . $id . '/image.jpg', 'www.example.com' ),
         );
-        $this->assertNull(
-            Utils::normalizePath( 'cms/www..example.com/' . $id . '/image.jpg', 'www..example.com' ),
-        );
+        $this->assertNull( Utils::normalizePath( 'cms/www..example.com/' . $id . '/image.jpg', 'www..example.com' ) );
         $this->assertSame(
             'cms/' . $id . '/image.jpg',
             Utils::normalizePath( 'cms/' . $id . '/image.jpg', '' ),
@@ -506,6 +504,12 @@ class UtilsTest extends CoreTestAbstract
 
 class UtilsTestProxy extends Utils
 {
+    /**
+     * Exposes the protected SSRF options helper for focused tests.
+     *
+     * @param string $url HTTP URL to validate and pin
+     * @return array<string, mixed> Guzzle request options
+     */
     public static function safeHttp( string $url ) : array
     {
         return parent::safeHttp( $url );
