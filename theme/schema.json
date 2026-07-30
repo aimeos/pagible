@@ -580,43 +580,71 @@
                     "type": "string",
                     "label": "Subtitle"
                 },
-                "label": {
-                    "type": "string",
-                    "label": "Switch label"
-                },
-                "label-alternative": {
-                    "type": "string",
-                    "label": "Alternative switch label"
-                },
                 "items": {
                     "type": "items",
+                    "identity": "id",
                     "item": {
                         "name": {
                             "type": "string",
                             "min": 1
                         },
-                        "price": {
-                            "type": "string",
-                            "min": 1
+                        "access": {
+                            "type": "autocomplete",
+                            "label": "Frontend access role",
+                            "api-type": "GQL",
+                            "query": "query{access(term:_term_,first:50)}",
+                            "list-key": "access",
+                            "item-value": "value"
                         },
-                        "unit": {
-                            "type": "string"
-                        },
-                        "priceid": {
-                            "type": "string",
-                            "label": "Price/Product Identifier"
-                        },
-                        "price-alternative": {
-                            "type": "string",
-                            "label": "Alternative Price"
-                        },
-                        "unit-alternative": {
-                            "type": "string",
-                            "label": "Alternative Unit"
-                        },
-                        "priceid-alternative": {
-                            "type": "string",
-                            "label": "Alternative price/product Identifier"
+                        "prices": {
+                            "type": "items",
+                            "label": "Payment prices",
+                            "min": 1,
+                            "max": 5,
+                            "identity": "id",
+                            "item": {
+                                "kind": {
+                                    "type": "select",
+                                    "label": "Payment type",
+                                    "options": [
+                                        {
+                                            "value": "subscription",
+                                            "label": "Subscription"
+                                        },
+                                        {
+                                            "value": "once",
+                                            "label": "One-time payment"
+                                        }
+                                    ]
+                                },
+                                "interval": {
+                                    "type": "number",
+                                    "label": "Billing interval",
+                                    "min": 0,
+                                    "max": 365
+                                },
+                                "currency": {
+                                    "type": "string",
+                                    "label": "Currency",
+                                    "placeholder": "EUR",
+                                    "regex": "^[A-Z]{3}$"
+                                },
+                                "reference": {
+                                    "type": "string",
+                                    "label": "Payment reference",
+                                    "max": 255
+                                },
+                                "amount": {
+                                    "type": "number",
+                                    "min": 0,
+                                    "precision": 2,
+                                    "step": 0.01
+                                },
+                                "unit": {
+                                    "type": "string",
+                                    "label": "Price unit"
+                                }
+                            }
                         },
                         "text": {
                             "type": "string",
@@ -625,13 +653,9 @@
                         "features": {
                             "type": "markdown"
                         },
-                        "success": {
-                            "type": "url",
-                            "label": "Target page after checkout"
-                        },
                         "url": {
                             "type": "url",
-                            "label": "Target link instead of checkout"
+                            "label": "Target page or link"
                         },
                         "button": {
                             "type": "string"

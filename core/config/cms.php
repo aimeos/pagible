@@ -47,6 +47,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Frontend access catalog
+    |--------------------------------------------------------------------------
+    |
+    | Access values are embedded in frontend page queries. The configured value
+    | is a strict maximum for each tenant's complete access catalog.
+    |
+    */
+    'access' => [
+        'sql_limit' => (int) env( 'CMS_ACCESS_SQL_LIMIT', 128 ),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Real-time broadcasting
     |--------------------------------------------------------------------------
     |

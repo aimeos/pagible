@@ -69,6 +69,10 @@ export default {
         .then((result) => {
           // parse the latest data if available
           const list = this.toList(result.data).map((item) => {
+            if (typeof item !== 'object' || item === null) {
+              return item
+            }
+
             return Object.assign({ ...item }, safeParse(item.latest?.data))
           })
 
@@ -80,20 +84,23 @@ export default {
         })
     },
 
+    /**
+     * Maps result objects to the configured autocomplete label and value.
+     */
     items(data) {
-      const flabel = this.config['item-title'].split('/')
-      const fvalue = this.config['item-value'].split('/')
+      const flabel = this.config['item-title']?.split('/')
+      const fvalue = this.config['item-value']?.split('/')
 
       return (data || []).map((item) => {
         if (typeof item === 'object' && item !== null) {
           if (flabel) {
-            return { label: this.get(item, flabel), value: this.get(item, fvalue) }
-          } else {
+            return { label: this.get(item, flabel), value: fvalue ? this.get(item, fvalue) : item }
+          } else if (fvalue) {
             return this.get(item, fvalue)
           }
-        } else {
-          return item
         }
+
+        return item
       })
     },
 
@@ -147,7 +154,9 @@ export default {
     modelValue: {
       immediate: true,
       handler(val) {
-        const hasError = !this.rules.every((rule) => rule(val ?? this.config.default ?? null) === true)
+        const hasError = !this.rules.every(
+          (rule) => rule(val ?? this.config.default ?? null) === true
+        )
         if (hasError !== this.lastError) {
           this.lastError = hasError
           this.$emit('error', hasError)

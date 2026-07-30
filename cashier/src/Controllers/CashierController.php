@@ -4,125 +4,76 @@
  * @license MIT, https://opensource.org/license/mit
  */
 
-
 namespace Aimeos\Cms\Controllers;
 
-use Aimeos\Cms\CashierServiceProvider;
+use Aimeos\Cms\CashierProduct;
+use Aimeos\Cms\CashierProvider;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use Illuminate\Validation\Rule;
 
 
 class CashierController extends Controller
 {
-    public function checkout( Request $request ): mixed
+    /**
+     * Schedules cancellation at the paid-through period end.
+     */
+    public function cancel( Request $request, CashierProvider $provider, string $subscription ): \Illuminate\Http\Response
     {
-        $products = (array) config( 'cms.cashier.products', [] );
+        /** @var Authenticatable $user */
+        $user = $request->user();
+
+        $provider->cancel( $user, $subscription );
+
+        return response()->noContent();
+    }
+
+
+    /**
+     * Starts checkout for a published pricing-content price.
+     */
+    public function checkout( Request $request, CashierProduct $products, CashierProvider $provider ): mixed
+    {
+        $checkout = [];
 
         if( $request->isMethod( 'post' ) )
         {
-            $request->validate( [
-                'priceid' => ['required', 'string', 'max:255', Rule::in( array_keys( $products ) )],
-                'success' => ['sometimes', 'string', 'max:255', 'regex:/^\/[^\/]/'],
-            ] );
-
-            $request->session()->put( 'cms.cashier', [
-                'priceid' => $request->input( 'priceid' ),
-                'success' => $request->input( 'success' ),
+            $checkout = $request->validate( [
+                'page' => ['required', 'string', 'max:36'],
+                'element' => ['required', 'string', 'max:255'],
+                'package' => ['required', 'string', 'max:100'],
+                'price' => ['required', 'string', 'max:100'],
             ] );
         }
 
         /** @var Authenticatable|null $user */
         $user = $request->user();
 
-        if( !$user ) {
+        if( !$user )
+        {
+            if( $checkout !== [] ) {
+                $request->session()->put( 'cms.cashier', $checkout );
+            }
+
             return redirect()->guest( route( 'login' ) );
         }
 
-        $checkout = (array) $request->session()->pull( 'cms.cashier', [] );
-        $priceid = (string) ( $checkout['priceid'] ?? '' );
-        $product = $products[$priceid] ?? null;
+        if( $checkout === [] ) {
+            $checkout = (array) $request->session()->pull( 'cms.cashier', [] );
+        }
 
-        if( $product === null ) {
+        if( $checkout === [] ) {
             abort( 404, __( 'Unknown product' ) );
         }
 
-        $successUrl = url( (string) ( $checkout['success'] ?? '/' ) );
-        $provider = (string) config( 'cms.cashier.provider' );
+        $product = $products->find(
+            $user,
+            (string) ( $checkout['page'] ?? '' ),
+            (string) ( $checkout['element'] ?? '' ),
+            (string) ( $checkout['package'] ?? '' ),
+            (string) ( $checkout['price'] ?? '' ),
+        );
 
-        if( !isset( CashierServiceProvider::PROVIDERS[$provider] ) ) {
-            abort( 500, __( 'Unknown payment provider' ) );
-        }
-
-        return $this->$provider( $user, $product, $priceid, $successUrl );
-    }
-
-
-    /**
-     * @param array<string, mixed> $product
-     */
-    protected function mollie( Authenticatable $user, array $product, string $priceid, string $successUrl ): \Illuminate\Http\RedirectResponse
-    {
-        if( !empty( $product['once'] ) )
-        {
-            /** @phpstan-ignore method.notFound */
-            $checkout = $user->checkout( $priceid, [
-                'redirectUrl' => $successUrl,
-                'metadata' => $product,
-            ] );
-        }
-        else
-        {
-            /** @phpstan-ignore method.notFound */
-            $checkout = $user->newSubscriptionViaMollieCheckout( 'default', $priceid )
-                ->create();
-        }
-
-        return $checkout->redirect();
-    }
-
-
-    /**
-     * @param array<string, mixed> $product
-     */
-    protected function paddle( Authenticatable $user, array $product, string $priceid, string $successUrl ): \Illuminate\Http\RedirectResponse
-    {
-        /** @phpstan-ignore method.notFound */
-        $checkout = $user->checkout( $priceid )
-            ->customData( $product )
-            ->returnTo( $successUrl );
-
-        return new \Illuminate\Http\RedirectResponse( $checkout->url() );
-    }
-
-
-    /**
-     * @param array<string, mixed> $product
-     */
-    protected function stripe( Authenticatable $user, array $product, string $priceid, string $successUrl ): \Symfony\Component\HttpFoundation\Response
-    {
-        // The previous URL is based on the attacker-controllable Referer header, so
-        // rebuild it from path and query on the own host to avoid an open redirect.
-        // Strip leading (back)slashes because url() returns "//host" URLs unchanged
-        $parts = (array) parse_url( url()->previous( '/' ) );
-        $path = '/' . ltrim( $parts['path'] ?? '', '/\\' );
-        $query = isset( $parts['query'] ) ? '?' . $parts['query'] : '';
-        $fragment = isset( $parts['fragment'] ) ? '#' . $parts['fragment'] : '';
-
-        $urls = [
-            'success_url' => $successUrl,
-            'cancel_url' => url( $path . $query . $fragment ),
-        ];
-
-        if( !empty( $product['once'] ) )
-        {
-            /** @phpstan-ignore method.notFound */
-            return $user->checkout( [$priceid => 1], $urls + ['metadata' => $product] );
-        }
-
-        /** @phpstan-ignore method.notFound */
-        return $user->newSubscription( 'default', $priceid )
-            ->checkout( $urls + ['metadata' => $product] );
+        return $provider->checkout( $user, $product );
     }
 }

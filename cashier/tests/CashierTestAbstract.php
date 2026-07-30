@@ -14,11 +14,6 @@ abstract class CashierTestAbstract extends CmsTestAbstract
 	{
 		parent::defineEnvironment( $app );
 
-		$app['config']->set( 'cms.cashier.provider', 'stripe' );
-		$app['config']->set( 'cms.cashier.products', [
-			'price_test123' => ['once' => true, 'action' => 'premium'],
-		] );
-
 		\Illuminate\Support\Facades\Route::get( 'login', fn() => '' )->name( 'login' );
 	}
 

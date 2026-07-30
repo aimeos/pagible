@@ -77,10 +77,9 @@ test('CSS coverage across pages and viewports', async ({}, testInfo) => {
                     el.focus(); el.blur();
                 });
 
-                // Toggle pricing to trigger .alt state
+                // Select the last pricing unit
                 document.querySelectorAll('.pricing-toggle').forEach(el => {
-                    el.click();
-                    el.classList.add('alt');
+                    el.lastElementChild?.click();
                 });
 
                 // Simulate caption.js filling video captions

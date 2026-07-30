@@ -83,6 +83,16 @@ if ($pgettext) {
   $pgettext('fn', 'introduction')
   $pgettext('fn', 'load immediately')
   $pgettext('fn', 'source code')
+  $pgettext('fn', 'Frontend access role')
+  $pgettext('fn', 'Payment prices')
+  $pgettext('fn', 'Payment reference')
+  $pgettext('fn', 'Payment kind')
+  $pgettext('fn', 'Currency')
+  $pgettext('fn', 'Billing interval')
+  $pgettext('fn', 'Price unit')
+  $pgettext('fn', 'Target page or link')
+  $pgettext('op', 'Subscription')
+  $pgettext('op', 'One-time payment')
 
   // AI response
   $pgettext('ai', 'Done')

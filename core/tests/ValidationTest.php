@@ -218,6 +218,36 @@ class ValidationTest extends CoreTestAbstract
     }
 
 
+    public function testDefaultsGeneratesItemIdentities()
+    {
+        $data = Validation::defaults( 'pricing', [
+            'items' => [[
+                'id' => '',
+                'name' => 'Professional',
+                'prices' => [['id' => null, 'amount' => '10.00']],
+            ]],
+        ], schemas: $this->schemas() );
+
+        $this->assertMatchesRegularExpression( '/^[A-Za-z][A-Za-z0-9_-]{5}$/', $data->items[0]->id );
+        $this->assertMatchesRegularExpression( '/^[A-Za-z][A-Za-z0-9_-]{5}$/', $data->items[0]->prices[0]->id );
+    }
+
+
+    public function testDefaultsPreservesItemIdentities()
+    {
+        $data = Validation::defaults( 'pricing', [
+            'items' => [[
+                'id' => 'package-1',
+                'name' => 'Professional',
+                'prices' => [['id' => 'price-1', 'amount' => '10.00']],
+            ]],
+        ], schemas: $this->schemas() );
+
+        $this->assertSame( 'package-1', $data->items[0]->id );
+        $this->assertSame( 'price-1', $data->items[0]->prices[0]->id );
+    }
+
+
     public function testDefaultsUnknownType()
     {
         $data = Validation::defaults( 'nonexistent', ['foo' => 'bar'] );
@@ -448,5 +478,30 @@ class ValidationTest extends CoreTestAbstract
         $this->expectExceptionMessage( 'Invalid publish date' );
 
         Validation::publishAt( 'not-a-date' );
+    }
+
+
+    private function schemas() : array
+    {
+        return [
+            'pricing' => [
+                'fields' => [
+                    'items' => [
+                        'type' => 'items',
+                        'identity' => 'id',
+                        'item' => [
+                            'name' => ['type' => 'string'],
+                            'prices' => [
+                                'type' => 'items',
+                                'identity' => 'id',
+                                'item' => [
+                                    'amount' => ['type' => 'string'],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ];
     }
 }

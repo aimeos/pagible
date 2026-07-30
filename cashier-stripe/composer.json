@@ -1,0 +1,41 @@
+{
+    "name": "aimeos/pagible-cashier-stripe",
+    "description": "Pagible CMS - Stripe Cashier provider",
+    "keywords": ["laravel", "cms", "cashier", "payments", "stripe"],
+    "homepage": "https://pagible.com",
+    "type": "library",
+    "license": "MIT",
+    "require": {
+        "php": "^8.2",
+        "aimeos/pagible-cashier": "*@dev",
+        "laravel/cashier": "^16.0"
+    },
+    "require-dev": {
+        "larastan/larastan": "^3.9",
+        "orchestra/testbench": "^9.0||^10.0||^11.0"
+    },
+    "conflict": {
+        "aimeos/pagible-cashier-paddle": "*",
+        "aimeos/pagible-cashier-mollie": "*",
+        "laravel/cashier-paddle": "*",
+        "mollie/laravel-cashier-mollie": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Aimeos\\Cms\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        },
+        "classmap": ["tests/User.php"]
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Aimeos\\Cms\\CashierStripeServiceProvider"
+            ]
+        }
+    }
+}

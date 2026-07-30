@@ -15,8 +15,10 @@ use Aimeos\Cms\Scout;
 use Aimeos\Cms\Utils;
 use Aimeos\Nestedset\NestedSet;
 use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Query\Expression;
 
 
 /**
@@ -46,24 +48,50 @@ class PageAccess extends Model
 
 
     /**
-     * Tests whether the user satisfies any of the page's access rules.
+     * Adds frontend access decisions to a page query without loading rule rows.
      *
-     * @param iterable<int, PageAccess> $rules
+     * @param Builder<covariant Page> $query
      */
-    public static function allows( iterable $rules, ?Authenticatable $user ) : bool
+    public static function flags( Builder $query, ?Authenticatable $user ) : void
     {
-        if( ( $values = self::values( $rules ) ) === null ) {
-            return true;
-        }
+        $rules = self::rules( $user );
 
-        if( !$user || !\Aimeos\Cms\Tenancy::allows( $user, \Aimeos\Cms\Tenancy::value() ) ) {
-            return false;
-        }
+        $query->withAggregate( 'access as access_exists', new Expression( '1' ) )
+            ->withAggregate( [
+                'access as access_allowed' => function( Builder $query ) use ( $rules ) {
+                    if( !$rules ) {
+                        $query->whereRaw( '1 = 0' );
+                        return;
+                    }
 
-        return $values === [] || app( Access::class )->allowed( $user, $values ) !== [];
+                    $rules( $query );
+                },
+            ], new Expression( '1' ) );
     }
 
 
+    /**
+     * Limits a query to pages visible to the frontend user.
+     *
+     * @param Builder<covariant Page> $query
+     */
+    public static function apply( Builder $query, ?Authenticatable $user ) : void
+    {
+        if( !( $rules = self::rules( $user ) ) ) {
+            $query->wherePublic();
+            return;
+        }
+
+        $query->where( function( Builder $query ) use ( $rules ) {
+            $query->whereDoesntHave( 'access' )
+                ->orWhereHas( 'access', $rules );
+        } );
+    }
+
+
+    /**
+     * Returns the configured CMS database connection.
+     */
     public function getConnectionName() : string
     {
         return config( 'cms.db', 'sqlite' );
@@ -190,6 +218,8 @@ class PageAccess extends Model
 
 
     /**
+     * Rejects access mutations that exceed the bounded assignment count.
+     *
      * @param list<string> $ids
      * @param array<int, string>|null $values
      */
@@ -236,7 +266,11 @@ class PageAccess extends Model
     }
 
 
-    /** @param list<string> $ids */
+    /**
+     * Deletes access rows for the supplied page IDs in bounded chunks.
+     *
+     * @param list<string> $ids
+     */
     private static function deleteAccess( array $ids ) : void
     {
         foreach( array_chunk( $ids, self::CHUNK_SIZE ) as $chunk ) {
@@ -246,6 +280,8 @@ class PageAccess extends Model
 
 
     /**
+     * Returns unique, sorted page IDs within the bulk-operation limit.
+     *
      * @param iterable<string> $ids
      * @return list<string>
      */
@@ -268,6 +304,8 @@ class PageAccess extends Model
 
 
     /**
+     * Validates and canonicalizes submitted frontend access values.
+     *
      * @param array<int, mixed> $values
      * @return array<int, string>
      */
@@ -283,7 +321,7 @@ class PageAccess extends Model
             throw new Exception( sprintf( 'A page may not require more than %d access values.', self::MAX_VALUES ) );
         }
 
-        if( $unknown = array_diff( $result, app( Access::class )->list() ) ) {
+        if( $unknown = array_diff( $result, app( Access::class )->known( $result ) ) ) {
             throw new Exception( sprintf( 'Unknown frontend access value "%s".', reset( $unknown ) ) );
         }
 
@@ -292,6 +330,8 @@ class PageAccess extends Model
 
 
     /**
+     * Loads the affected lightweight page projections in bounded chunks.
+     *
      * @param list<string> $ids
      * @return list<Nav>
      */
@@ -316,6 +356,8 @@ class PageAccess extends Model
 
 
     /**
+     * Replaces access rows for the supplied pages in bounded inserts.
+     *
      * @param list<string> $ids
      * @param array<int, string> $values
      */
@@ -357,6 +399,31 @@ class PageAccess extends Model
 
 
     /**
+     * Returns the access-rule predicate for a tenant-valid frontend user.
+     *
+     * @return (\Closure(Builder<PageAccess>): void)|null
+     */
+    private static function rules( ?Authenticatable $user ) : ?\Closure
+    {
+        if( !$user || !\Aimeos\Cms\Tenancy::allows( $user, \Aimeos\Cms\Tenancy::value() ) ) {
+            return null;
+        }
+
+        $values = app( Access::class )->allowed( $user );
+
+        return function( Builder $query ) use ( $values ) : void {
+            $query->where( 'value', '' );
+
+            if( $values ) {
+                $query->orWhereIn( 'value', $values );
+            }
+        };
+    }
+
+
+    /**
+     * Loads a bounded subtree for a recursive access mutation.
+     *
      * @return list<Nav>
      */
     private static function subtree( string $id ) : array

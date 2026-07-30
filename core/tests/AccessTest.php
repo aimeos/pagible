@@ -232,18 +232,18 @@ class AccessTest extends CoreTestAbstract
     }
 
 
-    public function testEffectiveGrantResolverAvoidsCatalogAndGateEvaluation(): void
+    public function testEffectiveGrantResolverAvoidsGateEvaluation(): void
     {
         $catalogCalls = $gateCalls = $grantCalls = 0;
 
         Access::using(
             list: function() use ( &$catalogCalls ) {
                 $catalogCalls++;
-                return ['catalog-only'];
+                return ['alpha', 'beta', 'catalog-only'];
             },
             grants: function() use ( &$grantCalls ) {
                 $grantCalls++;
-                return [' beta ', 'alpha', 'alpha'];
+                return [' beta ', 'alpha', 'alpha', 'unknown'];
             },
         );
         Gate::define( 'alpha', function() use ( &$gateCalls ) {
@@ -257,8 +257,115 @@ class AccessTest extends CoreTestAbstract
         $this->assertSame( ['alpha', 'beta'], $access->allowed( $user ) );
         $this->assertSame( ['beta'], $access->allowed( $user, ['beta', 'missing', 'beta'] ) );
         $this->assertSame( 1, $grantCalls );
-        $this->assertSame( 0, $catalogCalls );
+        $this->assertSame( 1, $catalogCalls );
         $this->assertSame( 0, $gateCalls );
+    }
+
+
+    public function testMembershipAndSearchUseBoundedCatalog(): void
+    {
+        $catalogCalls = 0;
+
+        Access::using(
+            list: function() use ( &$catalogCalls ) {
+                $catalogCalls++;
+                return ['alpha', 'member'];
+            },
+        );
+        Gate::define( 'member', fn() => true );
+        $user = new \App\Models\User();
+        $user->id = 42;
+        $access = app( Access::class );
+
+        $this->assertTrue( $access->has( 'member' ) );
+        $this->assertFalse( $access->has( 'missing' ) );
+        $this->assertSame( ['member'], $access->search( 'm', 1 ) );
+        $this->assertSame( ['member'], $access->allowed( $user, ['member', 'missing'] ) );
+        $this->assertSame( 1, $catalogCalls );
+    }
+
+
+    public function testCatalogStrictlyEnforcesSqlLimit(): void
+    {
+        config( ['cms.access.sql_limit' => 2] );
+        $yielded = 0;
+
+        Access::using( function() use ( &$yielded ) {
+            foreach( range( 1, 1000 ) as $idx )
+            {
+                $yielded++;
+                yield 'access-' . $idx;
+            }
+        } );
+
+        try {
+            app( Access::class )->list();
+            $this->fail( 'The configured SQL limit must cap the complete catalog.' );
+        } catch( Exception $e ) {
+            $this->assertSame(
+                'Frontend access catalog exceeds cms.access.sql_limit (2).',
+                $e->getMessage(),
+            );
+        }
+
+        $this->assertSame( 3, $yielded );
+    }
+
+
+    public function testAdditionCannotExceedSqlLimit(): void
+    {
+        config( ['cms.access.sql_limit' => 2] );
+        $added = false;
+
+        Access::using(
+            list: fn() => ['alpha', 'beta'],
+            add: function( string $value ) use ( &$added ) {
+                $added = true;
+            },
+        );
+
+        try {
+            app( Access::class )->add( 'gamma' );
+            $this->fail( 'Additions must not exceed the configured SQL limit.' );
+        } catch( Exception $e ) {
+            $this->assertSame(
+                'Frontend access catalog exceeds cms.access.sql_limit (2).',
+                $e->getMessage(),
+            );
+        }
+
+        $this->assertFalse( $added );
+    }
+
+
+    public function testExtendedAccessIsAddedToEffectiveGrants(): void
+    {
+        Access::using(
+            list: fn() => ['frontend.once', 'frontend.pro', 'member'],
+            grants: fn() => ['member'],
+        );
+        Access::extend( fn() => ['frontend.once', 'frontend.pro', 'frontend.unknown'] );
+        $user = new \App\Models\User();
+
+        $this->assertSame(
+            ['frontend.once', 'frontend.pro', 'member'],
+            app( Access::class )->allowed( $user ),
+        );
+        $this->assertSame(
+            ['frontend.pro'],
+            app( Access::class )->allowed( $user, ['frontend.pro', 'frontend.expired'] ),
+        );
+    }
+
+
+    public function testExtendedAccessIsAddedToGateGrants(): void
+    {
+        Access::using( fn() => ['frontend.member', 'member'] );
+        Access::extend( fn() => ['frontend.member'] );
+        Gate::define( 'member', fn() => false );
+        $user = new \App\Models\User();
+
+        $this->assertSame( ['frontend.member'], app( Access::class )->allowed( $user ) );
     }
 
 
@@ -297,7 +404,7 @@ class AccessTest extends CoreTestAbstract
         $calls = 0;
 
         Access::using(
-            list: fn() => [],
+            list: fn() => [Tenancy::value() . '.member'],
             grants: function() use ( &$calls ) {
                 $calls++;
                 return [Tenancy::value() . '.member'];
@@ -317,7 +424,7 @@ class AccessTest extends CoreTestAbstract
     }
 
 
-    public function testPageAccessScopeUsesEffectiveGrantsWithoutLoadingCatalog(): void
+    public function testPageAccessScopeUsesBoundedEffectiveGrants(): void
     {
         $page = Page::where( 'path', 'hidden' )->firstOrFail();
         PageAccess::forceCreate( [
@@ -339,7 +446,7 @@ class AccessTest extends CoreTestAbstract
         $user->id = 42;
 
         $this->assertNotNull( Page::query()->access( $user )->find( $page->id ) );
-        $this->assertSame( 0, $catalogCalls );
+        $this->assertSame( 1, $catalogCalls );
     }
 
 

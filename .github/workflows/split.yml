@@ -20,6 +20,9 @@ jobs:
           - { package: admin, repo: pagible-admin }
           - { package: backup, repo: pagible-backup }
           - { package: cashier, repo: pagible-cashier }
+          - { package: cashier-mollie, repo: pagible-cashier-mollie }
+          - { package: cashier-paddle, repo: pagible-cashier-paddle }
+          - { package: cashier-stripe, repo: pagible-cashier-stripe }
           - { package: core, repo: pagible-core }
           - { package: graphql, repo: pagible-graphql }
           - { package: import, repo: pagible-import }

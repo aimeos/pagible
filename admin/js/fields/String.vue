@@ -7,6 +7,7 @@
  * - `min`: int, minimum number of characters required in the input field
  * - `placeholder`: string, placeholder text for the input field
  * - `class`: string, CSS class to apply to the input field
+ * - `regex`: string, regular expression the value must match
  */
 export default {
   props: {
@@ -27,6 +28,17 @@ export default {
       return !this.rules.every((rule) => rule(val) === true)
     },
 
+    /**
+     * Compiles the configured Unicode regular expression for validation.
+     */
+    pattern() {
+      try {
+        return this.config.regex ? new RegExp(this.config.regex, 'u') : null
+      } catch {
+        return false
+      }
+    },
+
     rules() {
       return [
         (v) =>
@@ -36,7 +48,12 @@ export default {
         (v) =>
           !this.config.max ||
           +v?.length <= +this.config.max ||
-          this.$gettext(`Maximum length is %{num} characters`, { num: this.config.max })
+          this.$gettext(`Maximum length is %{num} characters`, { num: this.config.max }),
+        (v) =>
+          !this.config.regex ||
+          !v ||
+          (this.pattern && this.pattern.test(v)) ||
+          this.$gettext(`Invalid format`)
       ]
     }
   },
@@ -45,7 +62,9 @@ export default {
     modelValue: {
       immediate: true,
       handler(val) {
-        const hasError = !this.rules.every((rule) => rule(val ?? this.config.default ?? '') === true)
+        const hasError = !this.rules.every(
+          (rule) => rule(val ?? this.config.default ?? '') === true
+        )
         if (hasError !== this.lastError) {
           this.lastError = hasError
           this.$emit('error', hasError)

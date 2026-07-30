@@ -3,7 +3,7 @@
 <script>
 export default {
   props: {
-    modelValue: { type: String },
+    modelValue: { type: [String, Array] },
     config: { type: Object, default: () => {} },
     assets: { type: Object, default: () => {} },
     readonly: { type: Boolean, default: false },
@@ -20,8 +20,23 @@ export default {
       return !this.rules.every((rule) => rule(val) === true)
     },
 
+    /**
+     * Returns provider-neutral option labels translated in option context.
+     */
+    items() {
+      return (this.config.options || []).map((item) => ({
+        ...item,
+        label: this.$pgettext('op', item.label)
+      }))
+    },
+
     rules() {
-      return [(v) => !this.config.required || !!v || this.$gettext(`Value is required`)]
+      return [
+        (v) =>
+          !this.config.required ||
+          (Array.isArray(v) ? v.length > 0 : !!v) ||
+          this.$gettext(`Value is required`)
+      ]
     }
   },
 
@@ -29,7 +44,9 @@ export default {
     modelValue: {
       immediate: true,
       handler(val) {
-        const hasError = !this.rules.every((rule) => rule(val ?? this.config.default ?? '') === true)
+        const hasError = !this.rules.every(
+          (rule) => rule(val ?? this.config.default ?? '') === true
+        )
         if (hasError !== this.lastError) {
           this.lastError = hasError
           this.$emit('error', hasError)
@@ -45,7 +62,7 @@ export default {
     :error="hasError"
     :rules="rules"
     :readonly="readonly"
-    :items="config.options || []"
+    :items="items"
     :placeholder="config.placeholder || ''"
     :multiple="config.multiple"
     :chips="config.multiple"

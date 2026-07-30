@@ -17,6 +17,7 @@ After installation, the configuration is available in `config/cms/theme.php`:
 | `cache` | | `file` (or `array` in debug) | Cache store for rendered pages (from `config/cache.php`) |
 | `lock` | `CMS_THEME_LOCK` | `5` | Complete-page render lock lifetime in seconds |
 | `stale` | `CMS_THEME_STALE` | `10` | Seconds an expired complete page remains available during revalidation |
+| `buckets` | `CMS_THEME_CACHE_BUCKETS` | `16` | Redis cluster hash slots used per tenant for rendered page keys |
 | `ttl` | `CMS_THEME_TTL` | `86400` (or `0` in debug) | Time-to-live for cached pages in seconds; `0` disables caching |
 | `disk` | `CMS_THEME_DISK` | | Filesystem disk for tenant-uploaded themes; disabled if unconfigured |
 | `sitemap` | `CMS_SITEMAP` | `sitemap` | URL path prefix for XML sitemap (`/{sitemap}.xml`) |
@@ -79,7 +80,17 @@ The named `login` route must be public and registered before the CMS catch-all r
 
 During public-page revalidation, a request that finds another renderer active may receive the previous complete page for `stale` seconds. Without a stale entry, it waits for the render lease, rechecks the cache, and only renders without writing if that bounded wait expires. The cache-store TTL keeps an entry through its stale window, while its fresh expiry remains in the entry. Invalidation deletes entries without waiting for active render leases.
 
-After page publication, deletion, or access changes commit, the theme queues a lightweight job that removes the affected rendered HTML before its normal expiry. Job failures use Laravel's queue retry policy; a queue dispatch failure is reported without undoing the committed content change. The origin cache TTL and CDN `s-maxage` remain the consistency boundary, so stale, restricted, deleted, or moved HTML may remain visible until expiry. Run a queue worker with an asynchronous queue connection in production. Installations using only the core package remain independent of frontend caching.
+After page publication, deletion, or access changes commit, the theme removes
+the affected rendered HTML synchronously without adding queue traffic. Redis
+keys are distributed across a configurable number of per-tenant cluster hash
+slots and deleted in slot-safe groups with asynchronous `UNLINK`; database and
+Memcached stores use their native batch operations. Redis connections pipeline
+the slot-safe commands when supported, while generic cache stores receive
+bounded groups of at most 500 keys. Invalidation failures are
+reported without undoing committed content. The origin cache TTL and CDN
+`s-maxage` remain the consistency boundary, so stale, restricted, deleted, or
+moved HTML may remain visible until expiry. Installations using only the core
+package remain independent of frontend caching.
 
 ### Content Security Policy
 

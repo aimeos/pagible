@@ -63,6 +63,30 @@ class GraphqlAccessTest extends GraphqlTestAbstract
     }
 
 
+    public function testSearchesAccessValuesInBoundedCatalog(): void
+    {
+        $this->actingAs( $this->user )->graphQL( '
+            query($term: String!, $first: Int!) {
+                access(term: $term, first: $first)
+            }
+        ', ['term' => 'be', 'first' => 1] )
+            ->assertExactJson( ['data' => ['access' => ['beta']]] );
+    }
+
+
+    public function testReturnsAccessValuesForContentEditors(): void
+    {
+        foreach( ['page:save', 'element:save'] as $permission )
+        {
+            $user = clone $this->user;
+            $user->cmsperms = [$permission];
+
+            $this->actingAs( $user )->graphQL( '{ access }' )
+                ->assertExactJson( ['data' => ['access' => ['alpha', 'beta']]] );
+        }
+    }
+
+
     public function testAddsAccessValue(): void
     {
         $this->actingAs( $this->user )->graphQL( '

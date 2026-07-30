@@ -15,9 +15,9 @@ use Aimeos\Cms\Models\PageAccess;
 use Aimeos\Cms\Scout;
 use Database\Seeders\TestSeeder;
 use Illuminate\Database\QueryException;
+use Illuminate\Database\Query\Grammars\SqlServerGrammar;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
@@ -47,6 +47,23 @@ class PageAccessTest extends CoreTestAbstract
     public function testAccessRowsDoNotExpectAutoIncrementingIdentifiers(): void
     {
         $this->assertFalse( ( new PageAccess() )->getIncrementing() );
+    }
+
+
+    public function testAccessProjectionCompilesForSqlServer(): void
+    {
+        $connection = DB::connection( config( 'cms.db', 'sqlite' ) );
+        $grammar = $connection->getQueryGrammar();
+
+        try {
+            $connection->setQueryGrammar( new SqlServerGrammar( $connection ) );
+            $sql = strtolower( Page::query()->select( 'id' )->withAccess( null )->toSql() );
+        } finally {
+            $connection->setQueryGrammar( $grammar );
+        }
+
+        $this->assertStringContainsString( 'select top 1 1', $sql );
+        $this->assertStringNotContainsString( 'select exists', $sql );
     }
 
 
@@ -381,6 +398,7 @@ class PageAccessTest extends CoreTestAbstract
     {
         $ids = Page::query()->limit( 5 )->pluck( 'id' )->map( strval(...) )->all();
         $values = array_map( fn( int $value ) => 'access-' . $value, range( 1, 250 ) );
+        config( ['cms.access.sql_limit' => 250] );
         Access::using( fn() => $values );
 
         $this->expectException( Exception::class );
@@ -473,60 +491,6 @@ class PageAccessTest extends CoreTestAbstract
     }
 
 
-    public function testAllowsUsesGlobalGateValues(): void
-    {
-        $calls = 0;
-        Gate::define( 'member', function() use ( &$calls ) {
-            $calls++;
-            return true;
-        } );
-
-        $user = new \App\Models\User();
-        $user->id = 42;
-        $user->tenant_id = 'test';
-        $access = new PageAccess( ['value' => 'member'] );
-
-        $this->assertTrue( PageAccess::allows( [$access], $user ) );
-        $this->assertSame( 1, $calls );
-    }
-
-
-    public function testAllowsChecksOnlyPageValuesOncePerRequest(): void
-    {
-        $calls = 0;
-        Gate::before( function() use ( &$calls ) {
-            $calls++;
-            return null;
-        } );
-        Gate::define( 'member', fn() => true );
-        $user = new \App\Models\User();
-        $user->id = 42;
-        $user->tenant_id = 'test';
-        $access = [new PageAccess( ['value' => 'member'] )];
-
-        $this->assertTrue( PageAccess::allows( $access, $user ) );
-        $this->assertTrue( PageAccess::allows( $access, $user ) );
-        $this->assertSame( 1, $calls );
-    }
-
-
-    public function testAllowsAnyAccessValue(): void
-    {
-        Gate::define( 'denied', fn() => false );
-        Gate::define( 'member', fn() => true );
-
-        $user = new \App\Models\User();
-        $user->id = 42;
-        $user->tenant_id = 'test';
-        $access = [
-            new PageAccess( ['value' => 'denied'] ),
-            new PageAccess( ['value' => 'member'] ),
-        ];
-
-        $this->assertTrue( PageAccess::allows( $access, $user ) );
-    }
-
-
     public function testRejectsUnknownAccessValues(): void
     {
         $page = Page::where( 'path', 'hidden' )->firstOrFail();
@@ -557,43 +521,6 @@ class PageAccessTest extends CoreTestAbstract
         $this->expectException( \Illuminate\Database\Eloquent\ModelNotFoundException::class );
 
         PageAccess::set( [$root->id], null, descendants: true );
-    }
-
-
-    public function testAuthenticationOnlyRulesRequireAuthentication(): void
-    {
-        $access = new PageAccess( ['value' => ''] );
-
-        $this->assertFalse( PageAccess::allows( [$access], null ) );
-        $this->assertTrue( PageAccess::allows( [], null ) );
-
-        $user = new \App\Models\User();
-        $user->id = 42;
-        $user->tenant_id = 'test';
-        $this->assertTrue( PageAccess::allows( [$access], $user ) );
-    }
-
-
-    public function testRestrictedRulesRejectUsersFromAnotherTenant(): void
-    {
-        Gate::define( 'member', fn() => true );
-        $user = new \App\Models\User();
-        $user->id = 42;
-        $user->tenant_id = 'other';
-
-        $this->assertFalse( PageAccess::allows( [new PageAccess( ['value' => ''] )], $user ) );
-        $this->assertFalse( PageAccess::allows( [new PageAccess( ['value' => 'member'] )], $user ) );
-    }
-
-
-    public function testRestrictedRulesRejectUnresolvedConfiguredTenant(): void
-    {
-        $user = new \App\Models\User();
-        $user->id = 42;
-        $user->tenant_id = '';
-        app()->instance( \Aimeos\Cms\Tenancy::class, new \Aimeos\Cms\Tenancy( '' ) );
-
-        $this->assertFalse( PageAccess::allows( [new PageAccess( ['value' => ''] )], $user ) );
     }
 
 

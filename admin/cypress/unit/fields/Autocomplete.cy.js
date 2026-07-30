@@ -3,7 +3,7 @@ import Autocomplete from '../../../js/fields/Autocomplete.vue'
 const staticOptions = [
   { label: 'Paris', value: 'paris' },
   { label: 'London', value: 'london' },
-  { label: 'Berlin', value: 'berlin' },
+  { label: 'Berlin', value: 'berlin' }
 ]
 
 describe('Autocomplete', () => {
@@ -16,8 +16,8 @@ describe('Autocomplete', () => {
     cy.mount(Autocomplete, {
       props: {
         modelValue: { label: 'Paris', value: 'paris' },
-        config: { options: staticOptions, 'item-title': 'label', 'item-value': 'value' },
-      },
+        config: { options: staticOptions, 'item-title': 'label', 'item-value': 'value' }
+      }
     })
     cy.get('.v-autocomplete').should('contain', 'Paris')
   })
@@ -30,7 +30,7 @@ describe('Autocomplete', () => {
 
   it('shows a custom empty text from config', () => {
     cy.mount(Autocomplete, {
-      props: { config: { options: [], 'empty-text': 'Nothing here' } },
+      props: { config: { options: [], 'empty-text': 'Nothing here' } }
     })
     cy.get('.v-autocomplete').click()
     cy.contains('Nothing here').should('be.visible')
@@ -43,10 +43,33 @@ describe('Autocomplete', () => {
     cy.contains('.v-list-item', 'London').should('be.visible')
   })
 
+  it('accepts scalar GraphQL result lists', () => {
+    cy.mount(Autocomplete, {
+      props: {
+        config: {
+          'api-type': 'GQL',
+          query: 'query{access}',
+          'list-key': 'access',
+          'item-value': 'value'
+        }
+      },
+      global: {
+        mocks: {
+          $apollo: {
+            query: () => Promise.resolve({ data: { access: ['member', 'premium'] } })
+          }
+        }
+      }
+    })
+    cy.get('.v-autocomplete').click()
+    cy.contains('.v-list-item', 'member').should('be.visible')
+    cy.contains('.v-list-item', 'premium').should('be.visible')
+  })
+
   it('emits error:true when required and value is null', () => {
     const onError = cy.spy().as('error')
     cy.mount(Autocomplete, {
-      props: { config: { required: true }, modelValue: null, onError },
+      props: { config: { required: true }, modelValue: null, onError }
     })
     cy.get('@error').should('have.been.calledWith', true)
   })
@@ -57,8 +80,8 @@ describe('Autocomplete', () => {
       props: {
         config: { required: true },
         modelValue: 'paris',
-        onError,
-      },
+        onError
+      }
     })
     cy.get('@error').should('have.been.calledWith', false)
   })
@@ -67,15 +90,15 @@ describe('Autocomplete', () => {
     cy.mount(Autocomplete, {
       props: {
         modelValue: ['paris', 'london'],
-        config: { options: staticOptions, multiple: true },
-      },
+        config: { options: staticOptions, multiple: true }
+      }
     })
     cy.get('.v-chip').should('have.length', 2)
   })
 
   it('renders with a placeholder config without errors', () => {
     cy.mount(Autocomplete, {
-      props: { config: { options: staticOptions, placeholder: 'Search cities' } },
+      props: { config: { options: staticOptions, placeholder: 'Search cities' } }
     })
     cy.get('.v-autocomplete').should('exist')
   })

@@ -7,7 +7,12 @@
 namespace Aimeos\Cms;
 
 use Closure;
+use Illuminate\Cache\DatabaseStore;
+use Illuminate\Cache\MemcachedStore;
+use Illuminate\Cache\RedisStore;
 use Illuminate\Http\Response;
+use Illuminate\Redis\Connections\PhpRedisClusterConnection;
+use Illuminate\Redis\Connections\PhpRedisConnection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Contracts\Cache\Lock;
 use Illuminate\Contracts\Cache\LockProvider;
@@ -30,7 +35,7 @@ class PageCache
         }
 
         if( $keys ) {
-            self::store()->deleteMultiple( array_keys( $keys ) );
+            self::forget( array_keys( $keys ) );
         }
     }
 
@@ -40,6 +45,8 @@ class PageCache
      *
      * A contending request receives a stale entry when available. On a cold miss,
      * it waits for the renderer and rechecks the cache before rendering itself.
+     *
+     * @param Closure(): mixed $renderFn
      */
     public static function remember( Closure $renderFn, Models\Page|string $page, string $domain = '' ) : mixed
     {
@@ -69,6 +76,8 @@ class PageCache
 
     /**
      * Returns a cached complete-page response.
+     *
+     * @param Models\Page|string $page Page model or route path
      */
     public static function response( Models\Page|string $page, string $domain = '', bool $fresh = false ) : ?Response
     {
@@ -96,6 +105,65 @@ class PageCache
 
 
     /**
+     * Deletes cache keys in store-specific batches.
+     *
+     * @param list<string> $keys
+     */
+    private static function forget( array $keys ) : void
+    {
+        $repository = self::store();
+        $store = $repository->getStore();
+        $name = (string) config( 'cms.theme.cache', 'file' );
+        $table = config( 'cache.stores.' . $name . '.table' );
+
+        if( $store instanceof RedisStore )
+        {
+            $connection = $store->connection();
+            $groups = [];
+
+            foreach( $keys as $key ) {
+                $groups[strstr( $key, '}', true ) ?: $key][] = $store->getPrefix() . $key;
+            }
+
+            if( $connection instanceof PhpRedisConnection
+                && !$connection instanceof PhpRedisClusterConnection
+            )
+            {
+                self::pipeline( $connection, $groups );
+                return;
+            }
+
+            foreach( $groups as $group ) {
+                foreach( array_chunk( $group, 500 ) as $chunk ) {
+                    $connection->command( 'unlink', $chunk );
+                }
+            }
+
+            return;
+        }
+
+        foreach( array_chunk( $keys, 500 ) as $chunk )
+        {
+            if( $store instanceof DatabaseStore && is_string( $table ) && $table !== '' )
+            {
+                $prefixed = array_map( fn( string $key ) => $store->getPrefix() . $key, $chunk );
+                $store->getConnection()->table( $table )->whereIn( 'key', $prefixed )->delete();
+            }
+            elseif( $store instanceof MemcachedStore )
+            {
+                $prefixed = array_map( fn( string $key ) => $store->getPrefix() . $key, $chunk );
+                $store->getMemcached()->deleteMulti( $prefixed );
+            }
+            else
+            {
+                $repository->deleteMultiple( $chunk );
+            }
+        }
+    }
+
+    /**
+     * Returns a validated cached-page envelope.
+     *
      * @return array{html: string, freshUntil: int}|null
      */
     private static function get( string $key, bool $fresh = false ) : ?array
@@ -129,18 +197,49 @@ class PageCache
     }
 
 
+    /**
+     * Returns the configured render-lock lifetime in seconds.
+     */
     private static function lockLifetime() : int
     {
         return max( 1, (int) config( 'cms.theme.lock', 5 ) );
     }
 
 
-    private static function routeKey( string $tenant, string $domain, string $path ) : string
+    /**
+     * Deletes grouped Redis keys in one pipeline.
+     *
+     * @param array<string, list<string>> $groups
+     */
+    private static function pipeline( PhpRedisConnection $connection, array $groups ) : void
     {
-        return hash( 'sha256', json_encode( [$tenant, $domain, $path], JSON_THROW_ON_ERROR ) );
+        $connection->pipeline( function( \Redis $pipeline ) use ( $groups ) {
+            foreach( $groups as $group ) {
+                foreach( array_chunk( $group, 500 ) as $chunk ) {
+                    $pipeline->unlink( ...$chunk );
+                }
+            }
+        } );
     }
 
 
+    /**
+     * Returns a tenant- and route-bound cache key with a bounded Redis hash slot.
+     */
+    private static function routeKey( string $tenant, string $domain, string $path ) : string
+    {
+        $slot = hash( 'sha256', $tenant );
+        $route = hash( 'sha256', json_encode( [$domain, $path], JSON_THROW_ON_ERROR ) );
+        $buckets = max( 1, min( 256, (int) config( 'cms.theme.buckets', 16 ) ) );
+        $bucket = str_pad( dechex( hexdec( substr( $route, 0, 4 ) ) % $buckets ), 2, '0', STR_PAD_LEFT );
+
+        return '{' . $slot . ':' . $bucket . '}:2:' . $route;
+    }
+
+
+    /**
+     * Stores a page envelope through its fresh and stale lifetime.
+     */
     private static function put( string $key, string $html, \DateTimeInterface $expires ) : void
     {
         $grace = max( 0, (int) config( 'cms.theme.stale', 10 ) );
@@ -155,6 +254,11 @@ class PageCache
     }
 
 
+    /**
+     * Rechecks a fresh entry before rendering and conditionally caching a response.
+     *
+     * @param Closure(): mixed $renderFn
+     */
     private static function refresh( string $key, Closure $renderFn ) : mixed
     {
         if( $response = self::cachedResponse( $key, true ) ) {
@@ -186,6 +290,9 @@ class PageCache
     }
 
 
+    /**
+     * Returns the configured complete-page cache repository.
+     */
     private static function store() : \Illuminate\Contracts\Cache\Repository
     {
         return Cache::store( config( 'cms.theme.cache', 'file' ) );

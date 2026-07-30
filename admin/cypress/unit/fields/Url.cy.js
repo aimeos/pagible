@@ -24,7 +24,7 @@ describe('Url', () => {
   it('emits error:false for a valid URL', () => {
     const onError = cy.spy().as('error')
     cy.mount(Url, {
-      props: { modelValue: 'https://example.com', config: {}, onError },
+      props: { modelValue: 'https://example.com', config: {}, onError }
     })
     cy.get('@error').should('have.been.calledWith', false)
   })
@@ -32,7 +32,7 @@ describe('Url', () => {
   it('emits error:true for an invalid URL', () => {
     const onError = cy.spy().as('error')
     cy.mount(Url, {
-      props: { modelValue: 'not a url!!', config: {}, onError },
+      props: { modelValue: 'not a url!!', config: {}, onError }
     })
     cy.get('@error').should('have.been.calledWith', true)
   })
@@ -40,7 +40,7 @@ describe('Url', () => {
   it('emits error:false for an empty value when not required', () => {
     const onError = cy.spy().as('error')
     cy.mount(Url, {
-      props: { modelValue: '', config: { required: false }, onError },
+      props: { modelValue: '', config: { required: false }, onError }
     })
     cy.get('@error').should('have.been.calledWith', false)
   })
@@ -48,7 +48,7 @@ describe('Url', () => {
   it('emits error:true when required and value is empty', () => {
     const onError = cy.spy().as('error')
     cy.mount(Url, {
-      props: { modelValue: '', config: { required: true }, onError },
+      props: { modelValue: '', config: { required: true }, onError }
     })
     cy.get('@error').should('have.been.calledWith', true)
   })
@@ -56,9 +56,19 @@ describe('Url', () => {
   it('accepts relative paths as valid', () => {
     const onError = cy.spy().as('error')
     cy.mount(Url, {
-      props: { modelValue: '/some/path', config: {}, onError },
+      props: { modelValue: '/some/path', config: {}, onError }
     })
     cy.get('@error').should('have.been.calledWith', false)
+  })
+
+  it('accepts fragment and query links as valid', () => {
+    for (const value of ['#contact', '?dialog=contact']) {
+      const onError = cy.spy()
+      cy.mount(Url, {
+        props: { modelValue: value, config: {}, onError }
+      })
+      cy.wrap(onError).should('have.been.calledWith', false)
+    }
   })
 
   it('rejects a URL with a disallowed schema', () => {
@@ -67,8 +77,8 @@ describe('Url', () => {
       props: {
         modelValue: 'ftp://example.com',
         config: { allowed: ['http', 'https'] },
-        onError,
-      },
+        onError
+      }
     })
     cy.get('@error').should('have.been.calledWith', true)
   })
@@ -76,7 +86,7 @@ describe('Url', () => {
   it('emits update:modelValue as the user types', () => {
     const onUpdate = cy.spy().as('update')
     cy.mount(Url, {
-      props: { config: {}, 'onUpdate:modelValue': onUpdate },
+      props: { config: {}, 'onUpdate:modelValue': onUpdate }
     })
     cy.get('input').type('https://new.com')
     cy.get('@update').should('have.been.called')

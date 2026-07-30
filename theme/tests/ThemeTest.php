@@ -9,6 +9,7 @@ namespace Tests;
 
 use Aimeos\Cms\Schema;
 use Aimeos\Cms\Theme;
+use Aimeos\Cms\Validation;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\RateLimiter;
@@ -45,6 +46,48 @@ class ThemeTest extends ThemeTestAbstract
 		$this->assertArrayHasKey( 'heading', $schemas );
 		$this->assertArrayHasKey( 'text', $schemas );
 		$this->assertArrayHasKey( 'fields', $schemas['heading'] );
+	}
+
+
+	public function testRegisterPricingIdentities()
+	{
+		$fields = Schema::get( 'cms' )['content']['pricing']['fields'];
+		$items = $fields['items'];
+		$prices = $items['item']['prices'];
+		$price = $prices['item'];
+
+		$this->assertSame( 'id', $items['identity'] );
+		$this->assertSame( 'id', $prices['identity'] );
+		$this->assertSame( 5, $prices['max'] );
+		$this->assertSame( 'autocomplete', $items['item']['access']['type'] );
+		$this->assertSame( 'query{access(term:_term_,first:50)}', $items['item']['access']['query'] );
+		$this->assertArrayNotHasKey( 'required', $items['item']['access'] );
+		$this->assertArrayNotHasKey( 'min', $price['reference'] );
+		$this->assertSame( 'number', $price['amount']['type'] );
+		$this->assertSame( 2, $price['amount']['precision'] );
+		$this->assertSame( 0.01, $price['amount']['step'] );
+		$this->assertSame( '^[A-Z]{3}$', $price['currency']['regex'] );
+		$this->assertSame( 'Price unit', $price['unit']['label'] );
+		$this->assertSame( 'Target page or link', $items['item']['url']['label'] );
+		$this->assertArrayNotHasKey( 'success', $items['item'] );
+		$this->assertArrayNotHasKey( 'uppercase', $price['currency'] );
+		$this->assertArrayNotHasKey( 'id', $items['item'] );
+		$this->assertArrayNotHasKey( 'id', $prices['item'] );
+	}
+
+
+	public function testRegisterPricingIdentitiesAreGenerated()
+	{
+		$content = Validation::page( ['content' => [[
+			'type' => 'pricing',
+			'data' => ['items' => [[
+				'name' => 'Professional',
+				'prices' => [['reference' => 'price-1']],
+			]]],
+		]]] )['content'];
+
+		$this->assertMatchesRegularExpression( '/^[A-Za-z][A-Za-z0-9_-]{5}$/', $content[0]->data->items[0]->id );
+		$this->assertMatchesRegularExpression( '/^[A-Za-z][A-Za-z0-9_-]{5}$/', $content[0]->data->items[0]->prices[0]->id );
 	}
 
 

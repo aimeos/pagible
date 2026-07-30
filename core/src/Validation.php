@@ -48,6 +48,12 @@ class Validation
                     }
                 }
 
+                if( is_string( $item->type ?? null )
+                    && ( is_object( $item->data ?? null ) || is_array( $item->data ?? null ) )
+                ) {
+                    $item->data = self::defaults( $item->type, $item->data );
+                }
+
                 // Keep the per-element "files" list in sync with the file references in the
                 // element data, so readers resolving files from it (JSON:API, blog list) work
                 // regardless of how the content was saved.
@@ -133,7 +139,7 @@ class Validation
 
 
     /**
-     * Applies default values of hidden schema fields to the given element data.
+     * Applies schema defaults and generated collection identities to element data.
      *
      * Hidden fields carry a fixed "value" in the schema (e.g. the action handler
      * class for "toc" and "blog" elements). The admin editor injects these values
@@ -144,21 +150,15 @@ class Validation
      * @param object|array<string, mixed> $data Element data fields
      * @param string $section Schema section ('content', 'meta', 'config')
      * @param array<string, mixed>|null $schemas Pre-loaded schemas or null to load
-     * @return object Data with hidden field defaults applied
+     * @return object Data with schema defaults applied
      */
-    public static function defaults( string $type, object|array $data, string $section = 'content', ?array $schemas = null ) : object
-    {
+    public static function defaults( string $type, object|array $data, string $section = 'content',
+        ?array $schemas = null
+    ) : object {
         $data = (object) $data;
         $schemas ??= Schema::schemas( section: $section );
 
-        foreach( $schemas[$type]['fields'] ?? [] as $name => $field )
-        {
-            if( ( $field['type'] ?? null ) === 'hidden' && isset( $field['value'] ) && !isset( $data->{$name} ) ) {
-                $data->{$name} = $field['value'];
-            }
-        }
-
-        return $data;
+        return self::fields( $data, $schemas[$type]['fields'] ?? [] );
     }
 
 
@@ -306,6 +306,51 @@ class Validation
         }
 
         return array_values( array_unique( $ids ) );
+    }
+
+
+    /**
+     * Applies field defaults and generated collection identities recursively.
+     *
+     * @param object $data Field data
+     * @param array<string, mixed> $fields Field schemas
+     * @return object Normalized field data
+     */
+    private static function fields( object $data, array $fields ) : object
+    {
+        foreach( $fields as $name => $field )
+        {
+            if( !is_array( $field ) ) {
+                continue;
+            }
+
+            if( ( $field['type'] ?? null ) === 'hidden' && isset( $field['value'] ) && !isset( $data->{$name} ) ) {
+                $data->{$name} = $field['value'];
+            }
+
+            if( ( $field['type'] ?? null ) !== 'items' || !is_array( $data->{$name} ?? null ) ) {
+                continue;
+            }
+
+            $identity = $field['identity'] ?? null;
+            $data->{$name} = array_values( array_map( function( mixed $item ) use ( $field, $identity ) {
+                if( !is_array( $item ) && !is_object( $item ) ) {
+                    return $item;
+                }
+
+                $item = (object) $item;
+
+                if( is_string( $identity ) && $identity !== ''
+                    && ( !is_string( $item->{$identity} ?? null ) || $item->{$identity} === '' )
+                ) {
+                    $item->{$identity} = Utils::uid();
+                }
+
+                return self::fields( $item, (array) ( $field['item'] ?? [] ) );
+            }, $data->{$name} ) );
+        }
+
+        return $data;
     }
 
 

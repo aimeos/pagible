@@ -192,6 +192,10 @@ class JsonSchema
 
             case 'number':
                 $schema = ['type' => 'number'];
+
+                if( isset( $field['step'] ) && is_numeric( $field['step'] ) && (float) $field['step'] > 0 ) {
+                    $schema['multipleOf'] = (float) $field['step'];
+                }
                 break;
 
             case 'images':
@@ -241,6 +245,10 @@ class JsonSchema
                 } ) {
                     $schema['description'] = $desc;
                 }
+        }
+
+        if( $schema['type'] === 'string' && is_string( $field['regex'] ?? null ) && $field['regex'] !== '' ) {
+            $schema['pattern'] = $field['regex'];
         }
 
         return self::bounds( $schema, $field );

@@ -23,15 +23,18 @@ final class Navigation
     /** @var array<int, Collection<int, Page>> */
     private array $items = [];
 
-
+    /**
+     * Creates a request-local navigation view for a page and frontend user.
+     */
     public function __construct(
         private Page $page,
         private ?Authenticatable $user,
-    ) {
-    }
+    ) {}
 
 
     /**
+     * Returns visible ancestors of the current page.
+     *
      * @return Collection<int, Page>
      */
     public function ancestors() : Collection
@@ -40,9 +43,10 @@ final class Navigation
             return $this->ancestors;
         }
 
-        $query = Nav::select( Nav::SELECT_COLUMNS );
-        ( new Nav() )->scopeAccess( $query, $this->user );
-        $query->whereAncestorOf( $this->page )->defaultOrder();
+        $query = Nav::select( Nav::SELECT_COLUMNS )
+            ->access( $this->user )
+            ->whereAncestorOf( $this->page )
+            ->defaultOrder();
 
         if( Permission::can( 'page:view', $this->user ) ) {
             $query->with( ['latest' => fn( $q ) => $q->select( 'id', 'tenant_id', 'data' )] );
@@ -55,6 +59,8 @@ final class Navigation
 
 
     /**
+     * Returns and memoizes the visible navigation tree for a root level.
+     *
      * @return Collection<int, Page>
      */
     public function items( int $level = 0 ) : Collection
@@ -69,6 +75,7 @@ final class Navigation
     /**
      * Returns the lightweight navigation tree rooted at the requested level.
      *
+     * @param int $level Zero-based ancestor level
      * @return \Aimeos\Nestedset\Collection
      */
     private function loadItems( int $level ) : \Aimeos\Nestedset\Collection
@@ -84,6 +91,7 @@ final class Navigation
         $depth = $this->page->getDepthName();
 
         $query = Nav::select( Nav::SELECT_COLUMNS )
+            ->access( $this->user )
             ->where( $lft, '>', $start->getLft() )
             ->where( $rgt, '<', $start->getRgt() )
             ->whereIn( $depth, range(
@@ -91,8 +99,6 @@ final class Navigation
                 ( $start->getDepth() ?? 0 ) + config( 'cms.navdepth', 2 ),
             ) )
             ->orderBy( $lft );
-
-        $query->access( $this->user );
 
         if( Permission::can( 'page:view', $this->user ) ) {
             $query->with( ['latest' => fn( $q ) => $q->select( 'id', 'tenant_id', 'data' )] );
@@ -103,6 +109,8 @@ final class Navigation
 
 
     /**
+     * Filters unpublished nodes and recursively prunes nested children.
+     *
      * @param iterable<int, mixed> $items
      * @return Collection<int, Page>
      */

@@ -236,8 +236,7 @@ class JournalDemo extends AbstractDemo
                 'items' => [
                     [
                         'name' => 'Digital',
-                        'price' => '7€',
-                        'unit' => '/month',
+                        'prices' => [['id' => 'monthly', 'amount' => '7€', 'unit' => 'month']],
                         'text' => 'For readers who visit every day',
                         'features' => "- Every article and dossier\n- Reading list and audio editions\n- Kontur Morning",
                         'url' => 'mailto:subscriptions@kontur.example?subject=Digital%20subscription',
@@ -245,8 +244,7 @@ class JournalDemo extends AbstractDemo
                     ],
                     [
                         'name' => 'Magazine',
-                        'price' => '12€',
-                        'unit' => '/month',
+                        'prices' => [['id' => 'monthly', 'amount' => '12€', 'unit' => 'month']],
                         'text' => 'The monthly print edition',
                         'features' => "- Magazine delivered to your door\n- Full digital access\n- Annual index",
                         'url' => 'mailto:subscriptions@kontur.example?subject=Magazine%20subscription',
@@ -256,8 +254,7 @@ class JournalDemo extends AbstractDemo
                     ],
                     [
                         'name' => 'Briefing',
-                        'price' => '18€',
-                        'unit' => '/month',
+                        'prices' => [['id' => 'monthly', 'amount' => '18€', 'unit' => 'month']],
                         'text' => 'For decision-makers with limited time',
                         'features' => "- Magazine and digital access\n- Friday briefing\n- Four editorial conversations each year",
                         'url' => 'mailto:subscriptions@kontur.example?subject=Briefing%20subscription',

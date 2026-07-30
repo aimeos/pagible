@@ -20,7 +20,6 @@ use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Nav;
 use Aimeos\Cms\Models\Page;
-use Aimeos\Cms\Models\PageAccess;
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\Navigation;
 use Aimeos\Cms\Scopes\Status;
@@ -68,54 +67,36 @@ class PageController extends Controller
 
         $route = $request->attributes->get( 'cms.page' );
 
-        if( !$route instanceof Nav ) {
+        if( !$route instanceof Nav && !$user ) {
             $route = Nav::page( $path, $domain );
         }
 
-        if( !$route ) {
+        if( !$route && !$user ) {
             abort( 404 );
         }
 
-        if( $route->access_exists ) {
-            if( !$user ) {
-                throw new AuthenticationException();
-            }
-
-            if( !PageAccess::allows( $route->access, $user ) ) {
-                abort( 403 );
-            }
+        if( $route?->access_exists && !$user ) {
+            throw new AuthenticationException();
         }
 
-        if( $to = $route->to ) {
+        if( $route && !$route->access_exists && ( $to = $route->to ) ) {
             return str_starts_with( $to, 'http' ) ? redirect()->away( $to ) : redirect()->to( $to );
         }
 
-        $page = Page::with( [
-            'files' => fn( $q ) => $q->select( File::SELECT_COLUMNS ),
-            'elements' => fn( $q ) => $q->select( [...Element::SELECT_COLUMNS, 'name'] ),
-        ] )
-            ->withGlobalScope( 'status', new Status )
-            ->findOrFail( $route->id );
+        $page = $this->published( $path, $domain, $user, $route );
 
-        $html = $this->render( $page, $page->content ?? [], $page->lang, $user );
-
-        // Database-first transition safety: re-read the rule after rendering so a
-        // concurrent insert or permission change cannot expose or cache the response.
-        $currentAccess = $page->access()->get();
-
-        if( $currentAccess->isNotEmpty() ) {
-            if( !$user ) {
-                throw new AuthenticationException();
-            }
-
-            if( !PageAccess::allows( $currentAccess, $user ) ) {
-                abort( 403 );
-            }
+        if( $page->access_exists && !$page->access_allowed ) {
+            abort( 403 );
         }
 
+        if( $to = $page->to ) {
+            return str_starts_with( $to, 'http' ) ? redirect()->away( $to ) : redirect()->to( $to );
+        }
+
+        $html = $this->render( $page, $page->content ?? [], $page->lang, $user );
         $response = new Response( $html, 200, ['Content-Type' => 'text/html'] );
 
-        if( $user || $currentAccess->isNotEmpty() || !$page->cache ) {
+        if( $user || $page->access_exists || !$page->cache ) {
             return $response->header( 'Cache-Control', 'no-store, private' );
         }
 
@@ -185,7 +166,37 @@ class PageController extends Controller
 
 
     /**
+     * Loads the published page and its access decision in the same query.
+     *
+     * @param string $path Page URL segment
+     * @param string $domain Requested domain
+     * @param Authenticatable|null $user Frontend user
+     * @param Nav|null $route Preloaded anonymous route projection
+     * @return Page Published page with access decision attributes
+     */
+    protected function published( string $path, string $domain, ?Authenticatable $user, ?Nav $route ) : Page
+    {
+        $query = Page::with( [
+            'files' => fn( $q ) => $q->select( File::SELECT_COLUMNS ),
+            'elements' => fn( $q ) => $q->select( [...Element::SELECT_COLUMNS, 'name'] ),
+        ] )
+            ->withGlobalScope( 'status', new Status() )
+            ->withAccess( $user );
+
+        if( $route ) {
+            return $query->findOrFail( $route->id );
+        }
+
+        return $query->where( 'domain', $domain )->where( 'path', $path )->firstOrFail();
+    }
+
+
+    /**
      * Renders published and preview pages through the same view preparation path.
+     *
+     * @param mixed $value Structured page content
+     * @param Authenticatable|null $user Frontend user
+     * @return string Rendered HTML
      */
     protected function render( Page $page, mixed $value, string $locale, ?Authenticatable $user ) : string
     {

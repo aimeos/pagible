@@ -211,6 +211,33 @@ class GraphqlAiTest extends AiTestAbstract
     }
 
 
+    public function testAiSchemaUsesPricingConstraints()
+    {
+        $ai = \Aimeos\Cms\JsonSchema::build( 'content', 'page' );
+        $pricing = null;
+
+        foreach( $ai['properties']['contents']['items']['anyOf'] as $variant )
+        {
+            if( ( $variant['properties']['type']['enum'][0] ?? null ) === 'pricing' ) {
+                $pricing = $variant;
+                break;
+            }
+        }
+
+        $this->assertIsArray( $pricing );
+
+        $package = $pricing['properties']['data']['properties']['items']['items']['properties'];
+        $prices = $package['prices'];
+        $price = $prices['items']['properties'];
+
+        $this->assertSame( 5, $prices['maxItems'] );
+        $this->assertArrayNotHasKey( 'pattern', $package['access'] );
+        $this->assertSame( ['number', 'null'], $price['amount']['type'] );
+        $this->assertSame( 0.01, $price['amount']['multipleOf'] );
+        $this->assertSame( '^[A-Z]{3}$', $price['currency']['pattern'] );
+    }
+
+
     public function testRefineDerivesFiles()
     {
         $uuid = '11111111-1111-4111-8111-111111111111';

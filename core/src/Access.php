@@ -38,8 +38,14 @@ class Access
     /** @var (\Closure(Authenticatable): (iterable<mixed>|null))|null */
     private static ?\Closure $grantsCallback = null;
 
+    /** @var (\Closure(Authenticatable): (iterable<mixed>|null))|null */
+    private static ?\Closure $extendCallback = null;
+
     /** @var array<string, true>|null */
     private ?array $catalog = null;
+
+    /** @var \WeakMap<object, array<int, string>> */
+    private \WeakMap $allowed;
 
     /** @var \WeakMap<object, array<string, bool>> */
     private \WeakMap $grants;
@@ -50,8 +56,12 @@ class Access
     private ?string $tenant = null;
 
 
+    /**
+     * Initializes request-local access and grant caches.
+     */
     public function __construct()
     {
+        $this->allowed = new \WeakMap();
         $this->grants = new \WeakMap();
         $this->resolved = new \WeakMap();
     }
@@ -68,7 +78,24 @@ class Access
     public static function using( ?\Closure $list, ?\Closure $add = null, ?\Closure $delete = null,
         ?\Closure $grants = null ) : void
     {
-        self::configure( list: $list, add: $add, delete: $delete, grants: $grants );
+        self::configure(
+            list: $list,
+            add: $add,
+            delete: $delete,
+            grants: $grants,
+        );
+    }
+
+
+    /**
+     * Adds grants from an optional package without replacing the configured access resolver.
+     *
+     * @param (\Closure(Authenticatable): (iterable<mixed>|null))|null $grants
+     */
+    public static function extend( ?\Closure $grants ) : void
+    {
+        self::$extendCallback = $grants;
+        app()->forgetInstance( self::class );
     }
 
 
@@ -80,6 +107,51 @@ class Access
     public function list() : array
     {
         return array_keys( $this->catalog() );
+    }
+
+
+    /**
+     * Tests catalog membership.
+     */
+    public function has( string $value ) : bool
+    {
+        return $this->known( [$value] ) !== [];
+    }
+
+
+    /**
+     * Returns supplied values that exist in the configured access catalog.
+     *
+     * @param iterable<mixed> $values
+     * @return array<int, string>
+     */
+    public function known( iterable $values ) : array
+    {
+        $values = self::normalize( $values );
+        $catalog = $this->catalog();
+
+        return array_values( array_filter(
+            $values,
+            fn( string $value ) => isset( $catalog[$value] ),
+        ) );
+    }
+
+
+    /**
+     * Searches access values by case-insensitive prefix.
+     *
+     * @return array<int, string>
+     */
+    public function search( string $term = '', int $limit = 50 ) : array
+    {
+        $term = mb_substr( trim( $term ), 0, self::MAX_VALUE_LENGTH );
+        $limit = max( 1, min( 100, $limit ) );
+        $term = mb_strtolower( $term );
+
+        return array_slice( array_values( array_filter(
+            array_keys( $this->catalog() ),
+            fn( string $value ) => $term === '' || str_starts_with( mb_strtolower( $value ), $term ),
+        ) ), 0, $limit );
     }
 
 
@@ -96,8 +168,16 @@ class Access
 
         $value = self::value( $value );
 
-        if( isset( $this->catalog()[$value] ) ) {
+        $catalog = $this->catalog();
+
+        if( isset( $catalog[$value] ) ) {
             throw new Exception( sprintf( 'Access value "%s" already exists.', $value ) );
+        }
+
+        $limit = self::limit();
+
+        if( count( $catalog ) >= $limit ) {
+            throw self::overflow( $limit );
         }
 
         ( self::$addCallback )( $value );
@@ -179,8 +259,24 @@ class Access
     public function allowed( Authenticatable $user, ?iterable $values = null ) : array
     {
         $this->context();
+        $catalog = $this->catalog();
+        $values = $values === null || is_array( $values )
+            ? $values
+            : iterator_to_array( $values, false );
+
+        if( $values === null && isset( $this->allowed[$user] ) ) {
+            return $this->allowed[$user];
+        }
+
         $prepared = isset( $this->grants[$user] );
-        $granted = $this->grants[$user] ?? [];
+
+        if( $prepared ) {
+            $granted = $this->grants[$user];
+        } else {
+            $extra = self::$extendCallback ? ( self::$extendCallback )( $user ) : [];
+            $granted = array_fill_keys( self::normalize( $extra ?? [] ), true );
+            $this->grants[$user] = $granted = array_intersect_key( $granted, $catalog );
+        }
 
         if( !$prepared && self::$prepareCallback ) {
             ( self::$prepareCallback )( $user );
@@ -189,19 +285,25 @@ class Access
         if( !isset( $this->resolved[$user] ) && self::$grantsCallback )
         {
             if( ( $resolved = ( self::$grantsCallback )( $user ) ) !== null ) {
-                $granted = array_fill_keys( self::normalize( $resolved ), true );
-                $this->grants[$user] = $granted;
+                $granted += array_fill_keys( self::normalize( $resolved ), true );
+                $this->grants[$user] = $granted = array_intersect_key( $granted, $catalog );
                 $this->resolved[$user] = true;
             } else {
                 $this->resolved[$user] = false;
             }
         }
 
-        if( ( $this->resolved[$user] ?? false ) === true ) {
-            return $this->filter( $values ?? array_keys( $granted ), $granted );
+        if( ( $this->resolved[$user] ?? false ) === true )
+        {
+            $result = $this->filter( $values ?? array_keys( $catalog ), $granted );
+
+            if( $values === null ) {
+                $this->allowed[$user] = $result;
+            }
+
+            return $result;
         }
 
-        $catalog = $this->catalog();
         $gate = Gate::forUser( $user );
         $result = $seen = [];
 
@@ -220,6 +322,10 @@ class Access
         }
 
         $this->grants[$user] = $granted;
+
+        if( $values === null ) {
+            $this->allowed[$user] = $result;
+        }
 
         return $result;
     }
@@ -266,27 +372,8 @@ class Access
     {
         $model = config( 'laratrust.models.permission' );
 
-        self::configure( list: function() use ( $model ) {
-            $values = self::modelNames( $model );
-
-            foreach( $values as $value )
-            {
-                if( !is_string( $value ) || trim( $value ) === '' ) {
-                    continue;
-                }
-
-                if( Gate::has( $value ) && !config( 'laratrust.permissions_as_gates', false ) ) {
-                    continue;
-                }
-
-                Gate::define( $value, function( Authenticatable $user ) use ( $value ) {
-                    $team = config( 'laratrust.teams.enabled', false ) ? Tenancy::value() : null;
-                    return (bool) self::call( $user, 'isAbleTo', $value, $team );
-                } );
-            }
-
-            return $values;
-        },
+        self::configure(
+            list: fn() => self::laratrustGates( self::modelNames( $model ) ),
             add: fn( string $value ) => self::modelAdd( $model, $value ),
             delete: fn( array $values ) => self::modelDelete( $model, $values ),
             grants: $grants,
@@ -333,21 +420,45 @@ class Access
 
 
     /**
+     * Loads and validates the access catalog for the active tenant.
+     *
      * @return array<string, true>
      */
     private function catalog() : array
     {
         $this->context();
 
-        if( $this->catalog !== null ) {
-            return $this->catalog;
+        if( ( $catalog = $this->catalog ) !== null ) {
+            return $catalog;
         }
 
         $values = self::$listCallback ? ( self::$listCallback )() : [];
-        return $this->catalog = array_fill_keys( self::normalize( $values ), true );
+        $catalog = [];
+        $limit = self::limit();
+
+        foreach( $values as $value )
+        {
+            if( !is_string( $value ) ) {
+                throw new Exception( 'Access values must be non-empty strings.' );
+            }
+
+            $catalog[self::value( $value )] = true;
+
+            if( count( $catalog ) > $limit ) {
+                throw self::overflow( $limit );
+            }
+        }
+
+        ksort( $catalog, SORT_STRING );
+        $this->catalog = $catalog;
+
+        return $catalog;
     }
 
 
+    /**
+     * Invokes a method on a service instance or object.
+     */
     private static function call( object|string $target, string $method, mixed ...$args ) : mixed
     {
         $target = is_string( $target ) ? app( $target ) : $target;
@@ -355,6 +466,9 @@ class Access
     }
 
 
+    /**
+     * Activates the current tenant and clears request-local state when it changes.
+     */
     private function context() : void
     {
         $tenant = Tenancy::value();
@@ -398,6 +512,35 @@ class Access
     }
 
 
+    /**
+     * Registers tenant-aware Laratrust gates for catalog values loaded on demand.
+     *
+     * @param array<int, mixed> $values
+     * @return array<int, mixed>
+     */
+    private static function laratrustGates( array $values ) : array
+    {
+        foreach( $values as $value )
+        {
+            if( !is_string( $value ) || trim( $value ) === ''
+                || ( Gate::has( $value ) && !config( 'laratrust.permissions_as_gates', false ) )
+            ) {
+                continue;
+            }
+
+            Gate::define( $value, function( Authenticatable $user ) use ( $value ) {
+                $team = config( 'laratrust.teams.enabled', false ) ? Tenancy::value() : null;
+                return (bool) self::call( $user, 'isAbleTo', $value, $team );
+            } );
+        }
+
+        return $values;
+    }
+
+
+    /**
+     * Synchronizes CMS permissions with the configured catalog capabilities.
+     */
     private static function syncPermissions() : void
     {
         Permission::unregister( self::PERMISSIONS );
@@ -417,6 +560,9 @@ class Access
     }
 
 
+    /**
+     * Stores access-adapter callbacks and resets the resolved service.
+     */
     private static function configure( ?\Closure $list, ?\Closure $activate = null,
         ?\Closure $prepare = null, ?\Closure $add = null, ?\Closure $delete = null,
         ?\Closure $grants = null ) : void
@@ -432,14 +578,21 @@ class Access
     }
 
 
+    /**
+     * Clears all request-local catalog and grant caches.
+     */
     private function refresh() : void
     {
         $this->catalog = null;
+        $this->allowed = new \WeakMap();
         $this->grants = new \WeakMap();
         $this->resolved = new \WeakMap();
     }
 
 
+    /**
+     * Resolves and validates a configured permission model.
+     */
     private static function model( mixed $model ) : Model
     {
         if( is_string( $model ) ) {
@@ -454,6 +607,9 @@ class Access
     }
 
 
+    /**
+     * Adds a value through the configured permission model.
+     */
     private static function modelAdd( mixed $model, string $value ) : void
     {
         self::model( $model )->newQuery()->create( ['name' => $value] );
@@ -461,6 +617,8 @@ class Access
 
 
     /**
+     * Deletes named values through the configured permission model.
+     *
      * @param array<int, string> $values
      * @param array<string, mixed> $where
      */
@@ -481,6 +639,8 @@ class Access
 
 
     /**
+     * Returns a bounded, ordered list of configured permission names.
+     *
      * @param array<string, mixed> $where
      * @return array<int, mixed>
      */
@@ -492,10 +652,44 @@ class Access
             $query->where( $column, $value );
         }
 
-        return $query->pluck( 'name' )->all();
+        $limit = self::limit();
+        $values = $query->distinct()->orderBy( 'name' )
+            ->limit( $limit + 1 )
+            ->pluck( 'name' )
+            ->all();
+
+        if( count( $values ) > $limit ) {
+            throw self::overflow( $limit );
+        }
+
+        return $values;
     }
 
 
+    /**
+     * Returns the strict maximum number of frontend access values.
+     */
+    private static function limit() : int
+    {
+        return max( 1, (int) config( 'cms.access.sql_limit', 128 ) );
+    }
+
+
+    /**
+     * Creates the canonical access-catalog overflow exception.
+     */
+    private static function overflow( int $limit ) : Exception
+    {
+        return new Exception( sprintf(
+            'Frontend access catalog exceeds cms.access.sql_limit (%d).',
+            $limit,
+        ) );
+    }
+
+
+    /**
+     * Validates and normalizes one access value.
+     */
     private static function value( string $value ) : string
     {
         if( ( $value = trim( $value ) ) === '' ) {

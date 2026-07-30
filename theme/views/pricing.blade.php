@@ -11,22 +11,9 @@
 	<p class="subtitle">{{ $data->text }}</p>
 @endif
 
-@if(($data->label ?? null) && ($data->{'label-alternative'} ?? null))
-	<div class="pricing-toggle">
-		<span>{{ $data->label }}</span>
-		<span>{{ $data->{'label-alternative'} }}</span>
-	</div>
-@endif
-
 <div class="pricing-list">
 	@foreach(cms($data, 'items', []) as $item)
-		<div class="pricing-item{{ ($item->highlight ?? false) ? ' highlight' : '' }}"
-			data-price="{{ $item->price ?? '' }}"
-			data-unit="{{ $item->unit ?? '' }}"
-			data-priceid="{{ $item->priceid ?? '' }}"
-			data-price-alternative="{{ $item->{'price-alternative'} ?? '' }}"
-			data-unit-alternative="{{ $item->{'unit-alternative'} ?? '' }}"
-			data-priceid-alternative="{{ $item->{'priceid-alternative'} ?? '' }}">
+		<div class="pricing-item{{ ($item->highlight ?? false) ? ' highlight' : '' }}">
 
 			@if($item->badge ?? null)
 				<div class="badge">{{ $item->badge }}</div>
@@ -38,10 +25,21 @@
 
 			<div class="pricing-header">
 				<div class="price">
-					<span class="amount">{{ $item->price ?? '' }}</span>
-					@if($item->unit ?? null)
-						<span class="unit">{{ $item->unit }}</span>
-					@endif
+					@foreach($item->prices ?? [] as $price)
+						<span class="pricing-price"
+							data-priceid="{{ $price?->id ?? '' }}"
+							data-unit="{{ $price?->unit ?? '' }}"
+							@if(!$loop->first) hidden @endif
+						>
+							<span class="amount">{{ $price?->amount ?? '' }}</span>
+							@if($price?->currency ?? null)
+								<span class="currency">{{ $price?->currency }}</span>
+							@endif
+							@if($price?->unit ?? null)
+								<span class="unit">{{ $price?->unit ?? '' }}</span>
+							@endif
+						</span>
+					@endforeach
 				</div>
 				<h3 class="name">{{ $item->name ?? '' }}</h3>
 				@if($item->text ?? null)
@@ -53,14 +51,16 @@
 				<div class="features cms-text">@markdown($item->features)</div>
 			@endif
 
-			@if(($item->priceid ?? null) && Route::has('cms.cashier'))
+			@if(($item->id ?? null) && ($item->access ?? null) && (($item->prices[0] ?? null)?->id ?? null) && Route::has('cms.cashier'))
 				<form method="POST" action="{{ route('cms.cashier') }}">
 					<input type="hidden" name="_token" value="">
-					<input type="hidden" name="priceid" value="{{ $item->priceid }}">
-					<input type="hidden" name="success" value="{{ ($item->success ?? null) ?: '/' }}">
+					<input type="hidden" name="page" value="{{ $page->id }}">
+					<input type="hidden" name="element" value="{{ $id }}">
+					<input type="hidden" name="package" value="{{ $item->id }}">
+					<input type="hidden" name="price" value="{{ ($item->prices[0] ?? null)?->id ?? '' }}">
 					<button type="submit" class="btn">{{ ($item->button ?? null) ?: __('Get Started') }}</button>
 				</form>
-			@elseif($item->url ?? null)
+			@elseif(!($item->access ?? null) && ($item->url ?? null))
 				<a class="btn" href="{{ cmslink($item->url) }}">{{ ($item->button ?? null) ?: __('Get Started') }}</a>
 			@endif
 		</div>

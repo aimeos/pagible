@@ -1,0 +1,41 @@
+{
+    "name": "aimeos/pagible-cashier-mollie",
+    "description": "Pagible CMS - Mollie Cashier provider",
+    "keywords": ["laravel", "cms", "cashier", "payments", "mollie"],
+    "homepage": "https://pagible.com",
+    "type": "library",
+    "license": "MIT",
+    "require": {
+        "php": "^8.2",
+        "aimeos/pagible-cashier": "*@dev",
+        "mollie/laravel-cashier-mollie": "^2.0"
+    },
+    "require-dev": {
+        "larastan/larastan": "^3.9",
+        "orchestra/testbench": "^9.0||^10.0||^11.0"
+    },
+    "conflict": {
+        "aimeos/pagible-cashier-stripe": "*",
+        "aimeos/pagible-cashier-paddle": "*",
+        "laravel/cashier": "*",
+        "laravel/cashier-paddle": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Aimeos\\Cms\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        },
+        "classmap": ["tests/User.php"]
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Aimeos\\Cms\\CashierMollieServiceProvider"
+            ]
+        }
+    }
+}
