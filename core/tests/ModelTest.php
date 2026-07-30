@@ -230,6 +230,7 @@ class ModelTest extends CoreTestAbstract
         $this->assertSame( strtolower( $id ), File::owner( 'test', 'cms/test/' . $id . '/file.pdf' ) );
         $this->assertSame( strtolower( $id ), File::owner( '', 'cms/' . $id . '/file.pdf' ) );
         $this->assertNull( File::owner( 'test', 'cms/test/file.pdf' ) );
+        $this->assertNull( File::owner( 'test', 'cms/test/' . $id ) );
         $this->assertNull( File::owner( 'test', 'https://example.com/file.pdf' ) );
         $this->assertNull( File::owner( '', 'cms/other/' . $id . '/file.pdf' ) );
     }
@@ -258,7 +259,7 @@ class ModelTest extends CoreTestAbstract
         $this->expectException( \Aimeos\Cms\Exception::class );
         $this->expectExceptionMessage( 'Remote file exceeds the maximum upload size' );
 
-        $file->prepare( 'http://127.0.0.1/remote.txt' );
+        $file->ingest( 'http://127.0.0.1/remote.txt' );
     }
 
 
@@ -273,7 +274,7 @@ class ModelTest extends CoreTestAbstract
         $this->expectException( \Aimeos\Cms\Exception::class );
         $this->expectExceptionMessage( 'Remote file exceeds the maximum upload size' );
 
-        $file->prepare( 'http://127.0.0.1/remote.txt' );
+        $file->ingest( 'http://127.0.0.1/remote.txt' );
     }
 
 

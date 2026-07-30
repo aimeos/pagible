@@ -56,56 +56,37 @@ if( !function_exists( 'cms' ) )
 if( !function_exists( 'cmsasset' ) )
 {
     /**
-     * Generate a URL for a theme asset or a page-aware CMS File.
+     * Generate a page-aware URL for a CMS File.
      *
      * Public Files keep their direct storage or remote URL. Private Files use
      * the access-controlled page asset route.
      *
-     * @param \Aimeos\Cms\Models\Page|string|null $asset Theme path or page
-     * @param object|bool|null $file File for a page or static asset version flag
+     * @param \Aimeos\Cms\Models\Page $page Page containing the File
+     * @param object|null $file File associated with the page
      * @param int|string|null $variant Preview width or preview path
      */
-    function cmsasset( \Aimeos\Cms\Models\Page|string|null $asset,
-        object|bool|null $file = true, int|string|null $variant = null ) : string
+    function cmsasset( \Aimeos\Cms\Models\Page $page, ?object $file,
+        int|string|null $variant = null ) : string
     {
-        if( $asset instanceof \Aimeos\Cms\Models\Page )
-        {
-            if( !is_object( $file ) ) {
-                return '';
-            }
-
-            $previews = (array) cms( $file, 'previews', [] );
-            $width = null;
-            $path = cms( $file, 'path' );
-
-            if( $variant !== null )
-            {
-                if( is_numeric( $variant ) && isset( $previews[(int) $variant] ) ) {
-                    $width = (int) $variant;
-                    $path = $previews[$width];
-                } elseif( is_string( $variant ) && ( $key = array_search( $variant, $previews, true ) ) !== false ) {
-                    $width = (int) $key;
-                    $path = $variant;
-                }
-            }
-
-            if( cms( $file, 'disk', 'public' ) !== 'private' ) {
-                return cmsurl( is_string( $path ) ? $path : null );
-            }
-
-            return \Aimeos\Cms\FileResponse::url(
-                $asset,
-                (string) cms( $file, 'id' ),
-                $width,
-            );
+        if( !$file ) {
+            return '';
         }
 
-        if( $asset ) {
-            $version = is_bool( $file ) ? $file : true;
-            return asset( $asset ) . ( $version && file_exists( public_path( $asset ) ) ? '?v=' . filemtime( public_path( $asset ) ) : '' );
+        $previews = (array) cms( $file, 'previews', [] );
+        $key = $variant === null ? false
+            : ( is_numeric( $variant ) ? (int) $variant : array_search( $variant, $previews, true ) );
+        $found = $key !== false && isset( $previews[$key] );
+        $path = $found ? $previews[$key] : cms( $file, 'path' );
+
+        if( cms( $file, 'disk', 'public' ) !== 'private' ) {
+            return cmsurl( is_string( $path ) ? $path : null );
         }
 
-        return '';
+        return \Aimeos\Cms\FileResponse::url(
+            $page,
+            (string) cms( $file, 'id' ),
+            $found ? (int) $key : null,
+        );
     }
 }
 
@@ -295,19 +276,17 @@ if( !function_exists( 'cmsroute' ) )
 if( !function_exists( 'cmssrcset' ) )
 {
     /**
-     * Generate a srcset for paths or for a page-aware CMS File.
+     * Generate a srcset for a page-aware CMS File.
      *
-     * @param mixed $data Preview paths or page
-     * @param object|null $file File when the first argument is a page
+     * @param \Aimeos\Cms\Models\Page $page Page containing the File
+     * @param object|null $file File associated with the page
      */
-    function cmssrcset( mixed $data, ?object $file = null ) : string
+    function cmssrcset( \Aimeos\Cms\Models\Page $page, ?object $file ) : string
     {
         $list = [];
-        $previews = $data instanceof \Aimeos\Cms\Models\Page ? cms( $file, 'previews', [] ) : $data;
 
-        foreach( (array) $previews as $width => $path ) {
-            $url = $data instanceof \Aimeos\Cms\Models\Page ? cmsasset( $data, $file, (int) $width ) : cmsurl( $path );
-            $list[] = $url . ' ' . $width . 'w';
+        foreach( (array) cms( $file, 'previews', [] ) as $width => $path ) {
+            $list[] = cmsasset( $page, $file, (int) $width ) . ' ' . $width . 'w';
         }
 
         return implode( ',', $list );
@@ -328,12 +307,14 @@ if( !function_exists( 'cmstheme' ) )
     function cmstheme( \Aimeos\Cms\Models\Page $page, string $file, bool $version = true ) : string
     {
         $themedir = 'vendor/cms/' . ( cms( $page, 'theme' ) ?: 'theme' );
+        $path = $themedir . '/' . $file;
 
-        if( file_exists( public_path( $themedir . '/' . $file ) ) ) {
-            return cmsasset( $themedir . '/' . $file, $version );
+        if( !file_exists( public_path( $path ) ) ) {
+            $path = 'vendor/cms/theme/' . $file;
         }
 
-        return cmsasset( 'vendor/cms/theme/' . $file, $version );
+        $public = public_path( $path );
+        return asset( $path ) . ( $version && file_exists( $public ) ? '?v=' . filemtime( $public ) : '' );
     }
 }
 
@@ -341,22 +322,17 @@ if( !function_exists( 'cmstheme' ) )
 if( !function_exists( 'cmsurl' ) )
 {
     /**
-     * Generate a URL for a CMS file, handling both external URLs and local storage paths.
-     *
-     * @param string|null $path The path to the file, which can be an external URL or a local storage path
-     * @return string The generated URL for the file, or an empty string if the path contains no value
+     * Generate a public-disk URL while preserving remote hot-links.
      */
     function cmsurl( ?string $path ) : string
     {
-        if( !$path ) {
-            return '';
+        if( !$path || str_starts_with( $path, 'http' ) ) {
+            return $path ?? '';
         }
 
-        if( str_starts_with( $path, 'data:' ) || str_starts_with( $path, 'http' ) ) {
-            return $path;
-        }
-
-        return \Illuminate\Support\Facades\Storage::disk( config( 'cms.disks.public.name', 'public' ) )->url( $path );
+        return \Illuminate\Support\Facades\Storage::disk(
+            config( 'cms.disks.public.name', 'public' ),
+        )->url( $path );
     }
 }
 

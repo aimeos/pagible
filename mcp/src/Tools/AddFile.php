@@ -61,7 +61,7 @@ class AddFile extends Tool
         // Fetch the file and generate previews outside the transaction to keep
         // slow network and image work off the database connection.
         try {
-            $file->prepare( $url );
+            $file->ingest( $url );
         } catch( \Aimeos\Cms\Exception $e ) {
             if( str_starts_with( $e->getMessage(), 'File type ' ) ) {
                 return Response::structured( ['error' => sprintf( 'File type "%s" is not allowed.', $file->mime )] );

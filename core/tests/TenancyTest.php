@@ -171,7 +171,9 @@ class TenancyTest extends CoreTestAbstract
             'other\\tenant',
             "other\0tenant",
             'other tenant',
-            'other.tenant',
+            '.other',
+            'other.',
+            'other..tenant',
             'other%2Ftenant',
             'other?tenant',
             'other#tenant',
@@ -191,6 +193,7 @@ class TenancyTest extends CoreTestAbstract
 
         $this->assertSame( '', ( new Tenancy( '' ) )->id() );
         $this->assertSame( 'tenant-1', ( new Tenancy( 'tenant-1' ) )->id() );
+        $this->assertSame( 'www.example.com', ( new Tenancy( 'www.example.com' ) )->id() );
         $this->assertSame( str_repeat( 'a', 100 ), ( new Tenancy( str_repeat( 'a', 100 ) ) )->id() );
     }
 

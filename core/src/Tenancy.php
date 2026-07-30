@@ -54,11 +54,12 @@ class Tenancy
      *
      * The empty ID denotes the default tenant. Named tenants must not overlap
      * the default tenant's UUID-owned storage directories. Named IDs are
-     * bounded URL-safe slugs because they are also used in storage paths.
+     * bounded URL-safe names because they are also used in storage paths.
+     * Dots may separate non-empty name parts, allowing domain names.
      */
     public static function check( string $id ) : string
     {
-        if( $id !== '' && ( preg_match( '/\A[A-Za-z0-9_-]{1,100}\z/', $id ) !== 1
+        if( $id !== '' && ( preg_match( '/\A(?=.{1,100}\z)[A-Za-z0-9_-]+(?:\.[A-Za-z0-9_-]+)*\z/', $id ) !== 1
             || Str::isUuid( $id ) ) ) {
             throw new \InvalidArgumentException( 'Invalid tenant ID' );
         }

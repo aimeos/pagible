@@ -227,14 +227,14 @@ class UtilsTest extends CoreTestAbstract
     public function testSafeHttpRejectsNonHttp()
     {
         $this->expectException( \Aimeos\Cms\Exception::class );
-        Utils::safeHttp( 'ftp://example.com/file' );
+        UtilsTestProxy::safeHttp( 'ftp://example.com/file' );
     }
 
 
     #[Group('network')]
     public function testSafeHttpPinsResolvedIp()
     {
-        $opts = Utils::safeHttp( 'https://example.com/image.png' );
+        $opts = UtilsTestProxy::safeHttp( 'https://example.com/image.png' );
 
         $this->assertTrue( $opts['verify'] );
         $this->assertFalse( $opts['allow_redirects'] );
@@ -459,9 +459,11 @@ class UtilsTest extends CoreTestAbstract
     public function testMimetypeReadsValidPath()
     {
         Storage::fake( 'public' );
-        Storage::disk( 'public' )->put( 'cms/test/hello.txt', 'hello world, plain text content' );
+        $id = ( new \Aimeos\Cms\Models\File() )->newUniqueId();
+        $path = 'cms/test/' . $id . '/hello.txt';
+        Storage::disk( 'public' )->put( $path, 'hello world, plain text content' );
 
-        $this->assertEquals( 'text/plain', Utils::mimetype( 'cms/test/hello.txt' ) );
+        $this->assertEquals( 'text/plain', Utils::mimetype( $path ) );
     }
 
 
@@ -479,14 +481,33 @@ class UtilsTest extends CoreTestAbstract
 
     public function testNormalizePathCanonicalizesStorageAliases()
     {
-        $this->assertSame( 'cms/test/image.jpg', Utils::normalizePath( 'cms//test/./image.jpg', 'test' ) );
-        $this->assertNull( Utils::normalizePath( 'cms/test/../other/image.jpg', 'test' ) );
-        $this->assertNull( Utils::normalizePath( 'cms/other/image.jpg', 'test' ) );
-        $this->assertNull( Utils::normalizePath( 'cms/default/nested.jpg', '' ) );
         $id = ( new \Aimeos\Cms\Models\File() )->newUniqueId();
+        $path = 'cms/test/' . $id . '/image.jpg';
+
+        $this->assertSame( $path, Utils::normalizePath( 'cms//test/./' . $id . '/image.jpg', 'test' ) );
+        $this->assertNull( Utils::normalizePath( 'cms/test/' . $id . '/../other/image.jpg', 'test' ) );
+        $this->assertNull( Utils::normalizePath( 'cms/other/' . $id . '/image.jpg', 'test' ) );
+        $this->assertNull( Utils::normalizePath( 'cms/test/image.jpg', 'test' ) );
+        $this->assertNull( Utils::normalizePath( 'cms/test/' . $id, 'test' ) );
+        $this->assertSame(
+            'cms/www.example.com/' . $id . '/image.jpg',
+            Utils::normalizePath( 'cms/www.example.com/' . $id . '/image.jpg', 'www.example.com' ),
+        );
+        $this->assertNull(
+            Utils::normalizePath( 'cms/www..example.com/' . $id . '/image.jpg', 'www..example.com' ),
+        );
         $this->assertSame(
             'cms/' . $id . '/image.jpg',
             Utils::normalizePath( 'cms/' . $id . '/image.jpg', '' ),
         );
+    }
+}
+
+
+class UtilsTestProxy extends Utils
+{
+    public static function safeHttp( string $url ) : array
+    {
+        return parent::safeHttp( $url );
     }
 }

@@ -423,10 +423,7 @@ class Utils
 
 
     /**
-     * Canonicalizes a local storage path and verifies its tenant namespace.
-     *
-     * The default tenant may own direct legacy children of "cms/" and paths
-     * below "cms/{uuid}/". Tenant IDs must not be UUIDs.
+     * Canonicalizes a UUID-owned local storage path and verifies its tenant namespace.
      *
      * @param mixed $path Local storage path
      * @param string|null $tenant Tenant ID or null for the current tenant
@@ -434,13 +431,14 @@ class Utils
      */
     public static function normalizePath( mixed $path, ?string $tenant = null ) : ?string
     {
-        $tenant ??= Tenancy::value();
+        try {
+            $tenant = Tenancy::check( $tenant ?? Tenancy::value() );
+        } catch( \InvalidArgumentException ) {
+            return null;
+        }
 
         if( !is_string( $path ) || $path === '' || str_contains( $path, '..' )
-            || str_contains( $path, '\\' ) || preg_match( '/\p{C}/u', $path ) !== 0
-            || $tenant === '.' || str_contains( $tenant, '..' )
-            || str_contains( $tenant, '/' ) || str_contains( $tenant, '\\' )
-            || preg_match( '/\p{C}/u', $tenant ) !== 0 ) {
+            || str_contains( $path, '\\' ) || preg_match( '/\p{C}/u', $path ) !== 0 ) {
             return null;
         }
 
@@ -455,16 +453,13 @@ class Utils
         }
 
         $relative = substr( $path, strlen( $prefix ) );
+        $parts = explode( '/', $relative, 2 );
 
-        if( $relative === '' ) {
+        if( count( $parts ) !== 2 || !Str::isUuid( $parts[0] ) || $parts[1] === '' ) {
             return null;
         }
 
-        if( $tenant !== '' || !str_contains( $relative, '/' ) ) {
-            return $path;
-        }
-
-        return Str::isUuid( explode( '/', $relative, 2 )[0] ) ? $path : null;
+        return $path;
     }
 
 
@@ -546,7 +541,7 @@ class Utils
      * @return array<string, mixed> Options to pass to Http::withOptions()
      * @throws Exception If the URL is invalid or the host does not resolve
      */
-    public static function safeHttp( string $url ) : array
+    protected static function safeHttp( string $url ) : array
     {
         // Syntactic validation only; the host is resolved once below and the
         // result reused for both the allow-check and the connection pin.

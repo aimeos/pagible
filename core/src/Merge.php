@@ -8,6 +8,7 @@
 namespace Aimeos\Cms;
 
 use Aimeos\Cms\Models\Base;
+use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Models\Version;
 use Illuminate\Contracts\Auth\Authenticatable;
@@ -88,6 +89,42 @@ class Merge
         }
 
         return [$result, $diff ?: null];
+    }
+
+
+    /**
+     * Three-way merges file data and auxiliary text from one base version.
+     *
+     * @param array<string, mixed> $data Incoming file data
+     * @param array<string, mixed> $aux Incoming file auxiliary data
+     * @return array{
+     *     0: array<string, mixed>,
+     *     1: array<string, mixed>,
+     *     2: array{
+     *         data?: array<string, array<string, mixed>>,
+     *         aux?: array<string, array<string, mixed>>
+     *     }
+     * }
+     */
+    public static function file( File $file, array $data, array $aux, ?string $latestId ) : array
+    {
+        $latestData = (array) $file->latest?->data;
+        $latestAux = (array) $file->latest?->aux;
+        $current = $file->getAttribute( 'latest_id' );
+        $base = $latestId && $current && $latestId !== $current
+            ? $file->versions()->find( $latestId )
+            : null;
+
+        if( !$base ) {
+            return [array_replace( $latestData, $data ), array_replace( $latestAux, $aux ), []];
+        }
+
+        $baseData = (array) $base->data;
+        $baseAux = (array) $base->aux;
+        [$data, $dd] = self::structured( $baseData, $latestData, array_replace( $baseData, $data ) );
+        [$aux, $ad] = self::structured( $baseAux, $latestAux, array_replace( $baseAux, $aux ) );
+
+        return [$data, $aux, array_filter( ['data' => $dd, 'aux' => $ad] )];
     }
 
 

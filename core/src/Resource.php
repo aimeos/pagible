@@ -349,9 +349,12 @@ class Resource
                             return $file;
                         }
 
-                        $paths = self::relocationPaths( $file->newCollection( [$file] ), $disk );
-
-                        self::relocate( $file, $paths[$id], $disk, $editor );
+                        self::relocate(
+                            $file,
+                            self::relocationPaths( $file, $disk ),
+                            $disk,
+                            $editor,
+                        );
                         $changed[$id] = $file;
 
                         return $file;
@@ -504,49 +507,37 @@ class Resource
 
 
     /**
-     * Returns validated relocation paths keyed by File ID.
+     * Returns validated relocation paths for a File.
      *
-     * @param Collection<int, File> $files
-     * @return array<string, Collection<int, non-empty-string>>
+     * @return Collection<int, non-empty-string>
      */
-    protected static function relocationPaths( Collection $files, string $disk ) : array
+    protected static function relocationPaths( File $file, string $disk ) : Collection
     {
-        $paths = [];
-
-        foreach( $files as $file )
-        {
-            if( $disk === 'private' && str_starts_with( (string) $file->path, 'http' ) ) {
-                throw new Exception( 'Remote files cannot be relocated' );
-            }
-
-            $id = (string) $file->id;
-            $paths[$id] = collect( [$file->path, ...(array) $file->previews] );
+        if( $disk === 'private' && str_starts_with( (string) $file->path, 'http' ) ) {
+            throw new Exception( 'Remote files cannot be relocated' );
         }
 
-        foreach( Version::whereIn( 'versionable_id', $files->pluck( 'id' ) )
+        $paths = collect( [$file->path, ...(array) $file->previews] );
+
+        foreach( Version::where( 'versionable_id', $file->id )
             ->where( 'versionable_type', File::class )
-            ->select( 'id', 'versionable_id', 'data' )->cursor() as $version ) {
-            $paths[(string) $version->versionable_id]->push(
+            ->select( 'data' )->cursor() as $version ) {
+            $paths->push(
                 $version->data->path ?? null,
                 ...(array) ( $version->data->previews ?? [] ),
             );
         }
 
-        foreach( $files as $file )
-        {
-            $id = (string) $file->id;
-
-            if( $disk === 'private' && $paths[$id]->contains(
-                fn( $path ) => is_string( $path ) && str_starts_with( $path, 'http' ),
-            ) ) {
-                throw new Exception( 'Remote files cannot be relocated' );
-            }
-
-            $paths[$id] = $paths[$id]->filter( fn( $path ) => is_string( $path ) && $path !== ''
-                    && !str_starts_with( $path, 'http' ) )
-                ->unique()->values();
-            self::checkFilePathsOwned( $file, $paths[$id]->all() );
+        if( $disk === 'private' && $paths->contains(
+            fn( $path ) => is_string( $path ) && str_starts_with( $path, 'http' ),
+        ) ) {
+            throw new Exception( 'Remote files cannot be relocated' );
         }
+
+        $paths = $paths->filter( fn( $path ) => is_string( $path ) && $path !== ''
+                && !str_starts_with( $path, 'http' ) )
+            ->unique()->values();
+        self::checkFilePathsOwned( $file, $paths->all() );
 
         return $paths;
     }
@@ -597,15 +588,28 @@ class Resource
         foreach( Page::whereIn( 'id', $pages )
             ->select( 'id', 'domain', 'path' )->lazyById( 250 )->chunk( 250 ) as $items )
         {
-            $paths = [];
+            self::invalidatePages( $items );
+        }
+    }
 
-            foreach( $items as $page ) {
+
+    /**
+     * Invalidates the routes of the given Pages grouped by domain.
+     *
+     * @param iterable<array-key, mixed> $pages
+     */
+    protected static function invalidatePages( iterable $pages ) : void
+    {
+        $paths = [];
+
+        foreach( $pages as $page ) {
+            if( $page instanceof Page ) {
                 $paths[(string) $page->domain][] = (string) $page->path;
             }
+        }
 
-            foreach( $paths as $domain => $domainPaths ) {
-                PageInvalidated::dispatch( (string) $domain, $domainPaths );
-            }
+        foreach( $paths as $domain => $domainPaths ) {
+            PageInvalidated::dispatch( (string) $domain, $domainPaths );
         }
     }
 
@@ -835,17 +839,7 @@ class Resource
 
         if( $isPage && $action !== 'restored' )
         {
-            $paths = [];
-
-            foreach( $pages as $page ) {
-                if( $page instanceof Page ) {
-                    $paths[(string) $page->domain][] = (string) $page->path;
-                }
-            }
-
-            foreach( $paths as $domain => $domainPaths ) {
-                PageInvalidated::dispatch( (string) $domain, $domainPaths );
-            }
+            self::invalidatePages( $pages );
         }
 
         if( $action === 'dropped' ) {
@@ -951,7 +945,7 @@ class Resource
             if( $source !== null || $preview instanceof UploadedFile )
             {
                 $prepared = true;
-                $tmp->prepare( $source, $preview );
+                $tmp->ingest( $source, $preview instanceof UploadedFile ? $preview : null );
                 $local = $upload !== null || $disk === 'private' && is_string( $source )
                     && str_starts_with( $source, 'http' );
                 $stored = $local ? $tmp->path : null;
@@ -1147,11 +1141,13 @@ class Resource
 
         $file = clone $orig;
 
-        $base = self::base( $orig, $latestId );
         $input = File::snapshot( $input );
-        [$data, $dd] = self::merge( $orig, $input['data'], $base );
-        [$aux, $ad] = self::merge( $orig, $input['aux'], $base, 'aux' );
-        $diffs = array_filter( ['data' => $dd, 'aux' => $ad] );
+        [$data, $aux, $diffs] = Merge::file(
+            $orig,
+            $input['data'],
+            $input['aux'],
+            $latestId,
+        );
         $file->fill( $data + $aux );
 
         if( isset( $input['data']['previews'] ) )
@@ -1512,47 +1508,6 @@ class Resource
         foreach( array_chunk( array_values( array_unique( $ids ) ), 50 ) as $chunk ) {
             PruneVersions::dispatch( $model, Tenancy::value(), $chunk )->afterCommit();
         }
-    }
-
-
-    /**
-     * Returns the base version when the model changed since it was read.
-     *
-     * @param Base $model Model with versions relation
-     * @param string|null $latestId Version ID the editor was working on
-     * @return Version|null Base version for the three-way merge
-     */
-    protected static function base( Base $model, ?string $latestId ) : ?Version
-    {
-        $current = $model->getAttribute( 'latest_id' );
-
-        if( $latestId && $current && $latestId !== $current ) {
-            return $model->versions()->find( $latestId );
-        }
-
-        return null;
-    }
-
-
-    /**
-     * Three-way merges or replaces a version section based on conflict detection.
-     *
-     * @param Element|File $model Model with versions relation
-     * @param array<string, mixed> $input Incoming data
-     * @param Version|null $base Base version for the three-way merge
-     * @param string $section Version section to merge
-     * @return array{0: array<string, mixed>, 1: array<string, array<string, mixed>>|null}
-     */
-    protected static function merge( Base $model, array $input, ?Version $base, string $section = 'data' ) : array
-    {
-        $latest = (array) $model->latest?->getAttribute( $section );
-
-        if( $base ) {
-            $base = (array) $base->getAttribute( $section );
-            return Merge::structured( $base, $latest, array_replace( $base, $input ) );
-        }
-
-        return [array_replace( $latest, $input ), null];
     }
 
 

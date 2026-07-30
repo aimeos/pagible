@@ -17,23 +17,20 @@ class HelpersTest extends CoreTestAbstract
     }
 
 
-    public function testCmsAsset()
-    {
-        $this->assertEquals( 'http://localhost/not/exists.js', cmsasset( 'not/exists.js' ) );
-    }
-
-
     public function testCmsAssetKeepsPublicAndRemoteFileUrls()
     {
         $page = ( new \Aimeos\Cms\Models\Page() )->forceFill( ['id' => 'page-id'] );
         $public = ( new \Aimeos\Cms\Models\File() )->forceFill( [
             'id' => 'file-id', 'disk' => 'public', 'path' => 'cms/test/public.pdf',
+            'previews' => [500 => 'cms/test/public.webp'],
         ] );
         $remote = ( new \Aimeos\Cms\Models\File() )->forceFill( [
             'id' => 'remote-id', 'disk' => 'public', 'path' => 'https://example.com/file.pdf',
         ] );
 
         $this->assertEquals( '/storage/cms/test/public.pdf', cmsasset( $page, $public ) );
+        $this->assertEquals( '/storage/cms/test/public.webp', cmsasset( $page, $public, 500 ) );
+        $this->assertEquals( '/storage/cms/test/public.webp', cmsasset( $page, $public, 'cms/test/public.webp' ) );
         $this->assertEquals( 'https://example.com/file.pdf', cmsasset( $page, $remote ) );
     }
 
@@ -76,15 +73,19 @@ class HelpersTest extends CoreTestAbstract
 
     public function testCmsSrcset()
     {
-        $this->assertEquals( '/storage/not/exists.jpg 1w', cmssrcset( [1 => 'not/exists.jpg'] ) );
+        $page = ( new \Aimeos\Cms\Models\Page() )->forceFill( ['id' => 'page-id'] );
+        $file = ( new \Aimeos\Cms\Models\File() )->forceFill( [
+            'id' => 'file-id', 'disk' => 'public',
+            'path' => 'not/exists.jpg', 'previews' => [1 => 'not/exists.jpg'],
+        ] );
+
+        $this->assertEquals( '/storage/not/exists.jpg 1w', cmssrcset( $page, $file ) );
     }
 
 
     public function testCmsUrl()
     {
-        $this->assertEquals( 'data:ABCD', cmsurl( 'data:ABCD' ) );
         $this->assertEquals( '/storage/not/exists.jpg', cmsurl( 'not/exists.jpg' ) );
-        $this->assertEquals( 'http://example.com/not/exists.jpg', cmsurl( 'http://example.com/not/exists.jpg' ) );
         $this->assertEquals( 'https://example.com/not/exists.jpg', cmsurl( 'https://example.com/not/exists.jpg' ) );
     }
 

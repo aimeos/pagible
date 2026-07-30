@@ -16,7 +16,6 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 use Intervention\Image\Interfaces\DriverInterface;
 use Intervention\Image\ImageManager;
 
@@ -337,7 +336,7 @@ class File extends Base
 
 
     /**
-     * Returns the File UUID owning a managed path, or null for legacy and remote paths.
+     * Returns the File UUID owning a managed path.
      */
     public static function owner( string $tenant, mixed $path ) : ?string
     {
@@ -346,25 +345,18 @@ class File extends Base
         }
 
         $base = $tenant === '' ? 'cms/' : 'cms/' . $tenant . '/';
-
-        if( !str_starts_with( $path, $base ) ) {
-            return null;
-        }
-
-        $id = explode( '/', substr( $path, strlen( $base ) ), 2 )[0] ?? '';
-
-        return Str::isUuid( $id ) ? strtolower( $id ) : null;
+        return strtolower( explode( '/', substr( $path, strlen( $base ) ), 2 )[0] );
     }
 
 
     /**
-     * Prepares a new primary file or preview outside the database transaction.
+     * Ingests a new primary file or preview outside the database transaction.
      *
      * @param UploadedFile|string|null $source Uploaded primary file or local/remote path
-     * @param UploadedFile|false|null $preview Uploaded preview, false to clear, or null for automatic previews
-     * @return self The prepared file
+     * @param UploadedFile|null $preview Uploaded preview or null for automatic previews
+     * @return self The ingested file
      */
-    public function prepare( UploadedFile|string|null $source = null, UploadedFile|false|null $preview = null ) : self
+    public function ingest( UploadedFile|string|null $source = null, ?UploadedFile $preview = null ) : self
     {
         if( $source instanceof UploadedFile ) {
             self::checkUpload( $source );
@@ -372,21 +364,24 @@ class File extends Base
             throw new \Aimeos\Cms\Exception( sprintf( 'Invalid URL "%s"', $source ) );
         }
 
-        if( $preview instanceof UploadedFile ) {
+        if( $preview ) {
             self::checkUpload( $preview, true );
         }
 
-        if( is_string( $source ) && str_starts_with( $source, 'http' )
-            && $this->getAttribute( 'disk' ) === 'private' )
+        $resource = null;
+        $started = false;
+
+        try
         {
-            $resource = $this->fetchUrl( $source );
-
-            if( !is_resource( $resource ) ) {
-                throw new \Aimeos\Cms\Exception( 'Unable to create temporary file' );
-            }
-
-            try
+            if( is_string( $source ) && str_starts_with( $source, 'http' )
+                && $this->getAttribute( 'disk' ) === 'private' )
             {
+                $resource = $this->fetchUrl( $source );
+
+                if( !is_resource( $resource ) ) {
+                    throw new \Aimeos\Cms\Exception( 'Unable to create temporary file' );
+                }
+
                 $path = stream_get_meta_data( $resource )['uri'] ?? null;
                 $name = basename( (string) parse_url( $source, PHP_URL_PATH ) ) ?: 'file';
 
@@ -394,51 +389,17 @@ class File extends Base
                     throw new \Aimeos\Cms\Exception( 'Unable to create temporary file' );
                 }
 
-                $upload = new UploadedFile( $path, $name, null, null, true );
-                return $this->prepare( $upload, $preview );
+                $source = new UploadedFile( $path, $name, null, null, true );
+                self::checkUpload( $source );
             }
-            finally
-            {
-                fclose( $resource );
-            }
-        }
 
-        try
-        {
-            if( $source instanceof UploadedFile )
-            {
-                $this->addFile( $source );
-                $this->mime = Utils::mimetype(
-                    (string) $this->path,
-                    self::diskName( (string) $this->getAttribute( 'disk' ) ),
-                );
-                $this->name = $this->name ?: pathinfo( $source->getClientOriginalName(), PATHINFO_BASENAME );
+            $started = true;
 
-                if( $preview instanceof UploadedFile
-                    || str_starts_with( (string) $source->getMimeType(), 'image/' )
-                ) {
-                    $this->addPreviews( $preview instanceof UploadedFile ? $preview : $source );
-                }
-            }
-            elseif( is_string( $source ) )
-            {
-                $this->path = $source;
-                $this->name = $this->name ?: ( str_starts_with( $source, 'http' )
-                    ? substr( $source, 0, 255 )
-                    : pathinfo( $source, PATHINFO_BASENAME ) );
-
-                if( $preview instanceof UploadedFile ) {
-                    $this->addPreviews( $preview );
-                } elseif( str_starts_with( $source, 'http' ) ) {
-                    $this->addPreviews( $source );
-                }
-
-                $this->mime = $this->mime ?: Utils::mimetype(
-                    $source,
-                    self::diskName( (string) $this->getAttribute( 'disk' ) ),
-                );
-            }
-            elseif( $preview instanceof UploadedFile ) {
+            if( $source instanceof UploadedFile ) {
+                $this->ingestUpload( $source, $preview );
+            } elseif( is_string( $source ) ) {
+                $this->ingestPath( $source, $preview );
+            } elseif( $preview ) {
                 $this->addPreviews( $preview );
             }
 
@@ -451,17 +412,26 @@ class File extends Base
         }
         catch( \Throwable $t )
         {
-            try {
-                $this->removePreviews();
+            if( $started )
+            {
+                try {
+                    $this->removePreviews();
 
-                if( $source instanceof UploadedFile ) {
-                    $this->removeFile();
+                    if( $source instanceof UploadedFile ) {
+                        $this->removeFile();
+                    }
+                } catch( \Throwable $cleanup ) {
+                    report( $cleanup );
                 }
-            } catch( \Throwable $cleanup ) {
-                report( $cleanup );
             }
 
             throw $t;
+        }
+        finally
+        {
+            if( is_resource( $resource ) ) {
+                fclose( $resource );
+            }
         }
     }
 
@@ -933,6 +903,47 @@ class File extends Base
         $hash = strtr( base64_encode( random_bytes( 3 ) ), '+/', '-_' );
 
         return $name . '_' . ( $size['width'] ?? $size['height'] ?? '' ) . '_' . $hash . '.' . $ext;
+    }
+
+
+    /**
+     * Ingests a public URL or existing managed storage path.
+     */
+    protected function ingestPath( string $source, ?UploadedFile $preview ) : void
+    {
+        $this->path = $source;
+        $this->name = $this->name ?: ( str_starts_with( $source, 'http' )
+            ? substr( $source, 0, 255 )
+            : pathinfo( $source, PATHINFO_BASENAME ) );
+
+        if( $preview ) {
+            $this->addPreviews( $preview );
+        } elseif( str_starts_with( $source, 'http' ) ) {
+            $this->addPreviews( $source );
+        }
+
+        $this->mime = $this->mime ?: Utils::mimetype(
+            $source,
+            self::diskName( (string) $this->getAttribute( 'disk' ) ),
+        );
+    }
+
+
+    /**
+     * Stores an uploaded file and creates its previews.
+     */
+    protected function ingestUpload( UploadedFile $source, ?UploadedFile $preview ) : void
+    {
+        $this->addFile( $source );
+        $this->mime = Utils::mimetype(
+            (string) $this->path,
+            self::diskName( (string) $this->getAttribute( 'disk' ) ),
+        );
+        $this->name = $this->name ?: pathinfo( $source->getClientOriginalName(), PATHINFO_BASENAME );
+
+        if( $preview || str_starts_with( (string) $source->getMimeType(), 'image/' ) ) {
+            $this->addPreviews( $preview ?? $source );
+        }
     }
 
 

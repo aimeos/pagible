@@ -83,7 +83,7 @@ trait HandlesMedia
             // Store the file and generate previews outside the transaction to
             // keep slow disk and image work off the database connection.
             try {
-                $file->prepare( $upload );
+                $file->ingest( $upload );
             } catch( \Aimeos\Cms\Exception $e ) {
                 if( str_starts_with( $e->getMessage(), 'File type ' ) ) {
                     return ['error' => sprintf( 'File type "%s" is not allowed.', $file->mime )];

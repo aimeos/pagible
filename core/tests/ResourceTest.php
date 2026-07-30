@@ -323,10 +323,12 @@ class ResourceTest extends CoreTestAbstract
     public function testCheckPathAllowsValidPaths()
     {
         $method = new \ReflectionMethod( Resource::class, 'checkPath' );
+        $id = ( new File() )->newUniqueId();
+        $path = 'cms/test/' . $id . '/image_ab12.jpg';
 
         $this->assertNull( $method->invoke( null, null ) );
-        $this->assertEquals( 'cms/test/image_ab12.jpg', $method->invoke( null, 'cms/test/image_ab12.jpg' ) );
-        $this->assertEquals( 'cms/test/image_ab12.jpg', $method->invoke( null, 'cms//test/./image_ab12.jpg' ) );
+        $this->assertEquals( $path, $method->invoke( null, $path ) );
+        $this->assertEquals( $path, $method->invoke( null, 'cms//test/./' . $id . '/image_ab12.jpg' ) );
         // External URLs bypass the tenant prefix and never touch the tenant disk.
         $this->assertEquals( 'https://example.com/a/b.jpg', $method->invoke( null, 'https://example.com/a/b.jpg' ) );
     }
@@ -468,7 +470,7 @@ class ResourceTest extends CoreTestAbstract
 
         $file = new File( ['name' => 'document.pdf'] );
         $file->disk = 'private';
-        $file->prepare( UploadedFile::fake()->createWithContent( 'document.pdf', '%PDF-1.4 private' ) );
+        $file->ingest( UploadedFile::fake()->createWithContent( 'document.pdf', '%PDF-1.4 private' ) );
         $file = Resource::addFile( $file, $this->user );
 
         $this->assertSame( 'private', $file->disk );
@@ -525,11 +527,12 @@ class ResourceTest extends CoreTestAbstract
     public function testSaveFileRejectsManagedPathOutsideUuidDirectory()
     {
         $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
+        $other = ( new File() )->newUniqueId();
 
         $this->expectException( Exception::class );
         $this->expectExceptionMessage( 'is outside its UUID directory' );
 
-        Resource::saveFile( $file->id, ['path' => 'cms/test/other.jpg'], $this->user );
+        Resource::saveFile( $file->id, ['path' => 'cms/test/' . $other . '/other.jpg'], $this->user );
     }
 
 
@@ -561,7 +564,7 @@ class ResourceTest extends CoreTestAbstract
         $this->expectException( Exception::class );
         $this->expectExceptionMessage( 'Public and private file disks must be different' );
 
-        $file->prepare( UploadedFile::fake()->createWithContent( 'document.pdf', '%PDF-1.4 private' ) );
+        $file->ingest( UploadedFile::fake()->createWithContent( 'document.pdf', '%PDF-1.4 private' ) );
     }
 
 

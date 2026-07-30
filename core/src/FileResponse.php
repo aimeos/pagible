@@ -9,6 +9,7 @@ namespace Aimeos\Cms;
 
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
 use League\Flysystem\Local\LocalFilesystemAdapter;
@@ -21,20 +22,23 @@ final class FileResponse
     /**
      * Delivers a private original or preview from local or remote storage.
      */
-    public static function make( File|string $file, int|string|null $variant = null,
+    public static function make( string $id, int|string|null $variant = null,
         bool $latest = false, ?int $expires = null ) : Response
     {
-        if( is_string( $file ) ) {
-            $file = File::select( 'id', 'tenant_id', 'disk', 'name', 'mime', 'path', 'previews', 'latest_id' )
-                ->with( $latest ? ['latest' => fn( $query ) => $query->select( 'id', 'data' )] : [] )
-                ->findOrFail( $file );
-        }
+        $file = File::select( 'id', 'tenant_id', 'disk', 'name', 'mime', 'path', 'previews', 'latest_id' )
+            ->with( $latest ? ['latest' => fn( $query ) => $query->select( 'id', 'data' )] : [] )
+            ->findOrFail( $id );
 
         if( $file->disk !== 'private' ) {
             abort( 404 );
         }
 
-        $path = self::path( $file, $variant, $latest );
+        $data = $latest ? $file->latest?->data : null;
+        $variant = $variant === null ? null : (int) $variant;
+        $previews = (array) ( $data->previews ?? $file->previews );
+        $path = $variant === null
+            ? (string) ( $data->path ?? $file->path )
+            : (string) ( $previews[$variant] ?? '' );
 
         if( !$path || str_starts_with( $path, 'http' )
             || File::owner( (string) $file->tenant_id, $path ) !== strtolower( (string) $file->id ) ) {
@@ -44,9 +48,14 @@ final class FileResponse
         $storage = Storage::disk( File::diskName( (string) $file->disk ) );
 
         $adapter = $storage->getAdapter();
-        $mime = self::mime( $file, $path, $variant, $latest );
+        $name = $variant === null
+            ? ( (string) ( $data->name ?? '' ) ?: (string) $file->name )
+            : $path;
+        $mime = $variant === null
+            ? ( (string) ( $data->mime ?? '' ) ?: (string) $file->mime ?: 'application/octet-stream' )
+            : self::mime( $path );
         $inline = self::inline( $mime );
-        $filename = self::filename( $file, $path, $variant, $latest );
+        $filename = self::filename( $name );
         $fallback = preg_match( '/^[\x20-\x7E]+$/', $filename ) && !str_contains( $filename, '%' )
             ? $filename : 'download';
         $headers = [
@@ -63,15 +72,9 @@ final class FileResponse
 
         if( !( $adapter instanceof LocalFilesystemAdapter ) && $storage->providesTemporaryUrls() )
         {
-            $expiration = now()->addSeconds( max( 1, (int) config( 'cms.disks.private.ttl', 300 ) ) );
-
-            if( $expires !== null ) {
-                $expiration->setTimestamp( min( $expiration->getTimestamp(), $expires ) );
-            }
-
             return redirect()->away( $storage->temporaryUrl(
                 $path,
-                $expiration,
+                self::expiry( $expires ),
                 [
                     'ResponseCacheControl' => $headers['Cache-Control'],
                     'ResponseContentDisposition' => $headers['Content-Disposition'],
@@ -116,7 +119,7 @@ final class FileResponse
 
             return URL::temporarySignedRoute(
                 'cms.asset',
-                now()->addSeconds( max( 1, (int) config( 'cms.disks.private.ttl', 300 ) ) ),
+                self::expiry(),
                 $params,
             );
         }
@@ -126,14 +129,23 @@ final class FileResponse
 
 
     /**
-     * Returns a safe download name for the selected original or preview.
+     * Returns the configured private URL expiry capped by the access token.
      */
-    private static function filename( File $file, string $path, int|string|null $variant,
-        bool $latest ) : string
+    private static function expiry( ?int $expires = null ) : Carbon
     {
-        $name = $variant === null
-            ? (string) ( $latest ? $file->latest?->data->name : null ) ?: (string) $file->name
-            : basename( str_replace( '\\', '/', $path ) );
+        $expiration = now()->addSeconds( max( 1, (int) config( 'cms.disks.private.ttl', 300 ) ) );
+
+        return $expires === null
+            ? $expiration
+            : $expiration->setTimestamp( min( $expiration->getTimestamp(), $expires ) );
+    }
+
+
+    /**
+     * Returns a safe download name.
+     */
+    private static function filename( string $name ) : string
+    {
         $name = basename( str_replace( '\\', '/', $name ) );
         $name = trim( (string) preg_replace( '/[\x00-\x1F\x7F]/', '', $name ) );
 
@@ -153,17 +165,10 @@ final class FileResponse
 
 
     /**
-     * Returns the MIME type for the selected original or preview.
+     * Returns the MIME type for a preview.
      */
-    private static function mime( File $file, string $path, int|string|null $variant,
-        bool $latest ) : string
+    private static function mime( string $path ) : string
     {
-        if( $variant === null ) {
-            return (string) ( $latest ? $file->latest?->data->mime : null )
-                ?: (string) $file->mime
-                ?: 'application/octet-stream';
-        }
-
         return match( strtolower( pathinfo( $path, PATHINFO_EXTENSION ) ) ) {
             'gif' => 'image/gif',
             'jpg', 'jpeg' => 'image/jpeg',
@@ -172,21 +177,5 @@ final class FileResponse
             'webp' => 'image/webp',
             default => 'application/octet-stream',
         };
-    }
-
-
-    /**
-     * Returns the selected path from the published or latest File data.
-     */
-    private static function path( File $file, int|string|null $variant, bool $latest ) : ?string
-    {
-        $data = $latest ? $file->latest?->data : null;
-        $previews = (array) ( $data->previews ?? $file->previews );
-
-        if( $variant !== null ) {
-            return $previews[(int) $variant] ?? null;
-        }
-
-        return $data->path ?? $file->path;
     }
 }

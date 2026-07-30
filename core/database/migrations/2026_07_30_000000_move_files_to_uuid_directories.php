@@ -8,11 +8,11 @@
 use Aimeos\Cms\Events\PageInvalidated;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Tenancy;
-use Aimeos\Cms\Utils;
 use Illuminate\Database\Connection;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 return new class extends Migration
 {
@@ -165,6 +165,37 @@ return new class extends Migration
 
 
     /**
+     * Canonicalizes a local path from the legacy or UUID-owned storage layout.
+     */
+    private function legacyPath( string $tenant, mixed $path ): ?string
+    {
+        if( !is_string( $path ) || $path === '' || str_contains( $path, '..' )
+            || str_contains( $path, '\\' ) || preg_match( '/\p{C}/u', $path ) !== 0 ) {
+            return null;
+        }
+
+        $path = implode( '/', array_filter(
+            explode( '/', $path ),
+            static fn( string $part ) : bool => $part !== '' && $part !== '.',
+        ) );
+        $prefix = $tenant === '' ? 'cms/' : 'cms/' . $tenant . '/';
+
+        if( !str_starts_with( $path, $prefix ) ) {
+            return null;
+        }
+
+        $relative = substr( $path, strlen( $prefix ) );
+
+        if( $relative === '' || ( $tenant === '' && str_contains( $relative, '/' )
+            && !Str::isUuid( explode( '/', $relative, 2 )[0] ) ) ) {
+            return null;
+        }
+
+        return $path;
+    }
+
+
+    /**
      * Returns unique managed paths for a File and all of its versions.
      *
      * @return array<int, string>
@@ -180,9 +211,10 @@ return new class extends Migration
             array_push( $paths, ...array_values( (array) ( $data['previews'] ?? [] ) ) );
         }
 
-        return array_values( array_unique( array_filter( $paths,
-            fn( mixed $path ) => Utils::normalizePath( $path, $tenant ) !== null,
-        ) ) );
+        return array_values( array_unique( array_filter( array_map(
+            fn( mixed $path ) => $this->legacyPath( $tenant, $path ),
+            $paths,
+        ) ) ) );
     }
 
 
@@ -209,11 +241,11 @@ return new class extends Migration
      */
     private function transform( string $tenant, string $id, mixed $path ): mixed
     {
-        if( Utils::normalizePath( $path, $tenant ) === null ) {
+        if( !( $normalized = $this->legacyPath( $tenant, $path ) ) ) {
             return $path;
         }
 
-        return $this->target( $tenant, $id, (string) $path );
+        return $this->target( $tenant, $id, $normalized );
     }
 
 

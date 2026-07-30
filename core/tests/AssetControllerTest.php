@@ -251,14 +251,8 @@ class AssetControllerTest extends CoreTestAbstract
     public function testPrivateRemoteDiskUsesFilesystemResponse()
     {
         config( ['cms.disks.private.name' => 'asset-remote'] );
-        $file = new File();
-        $file->setUniqueIds();
-        $file->tenant_id = 'test';
-        $file->disk = 'private';
-        $file->mime = 'text/plain';
-        $file->name = 'private.txt';
-        $path = $file->dir() . '/private.txt';
-        $file->path = $path;
+        [, $file] = $this->asset();
+        $path = $file->path;
         $headers = [
             'Cache-Control' => 'private, no-store',
             'Content-Disposition' => 'attachment; filename=private.txt',
@@ -276,7 +270,7 @@ class AssetControllerTest extends CoreTestAbstract
         $storage->shouldReceive( 'response' )->with( $path, null, $headers )->andReturn( $response );
         Storage::shouldReceive( 'disk' )->with( 'asset-remote' )->andReturn( $storage );
 
-        $this->assertSame( $response, FileResponse::make( $file ) );
+        $this->assertSame( $response, FileResponse::make( $file->id ) );
         $this->assertStringContainsString( 'private', (string) $response->headers->get( 'Cache-Control' ) );
     }
 
@@ -287,14 +281,8 @@ class AssetControllerTest extends CoreTestAbstract
             'cms.disks.private.name' => 'asset-signed',
             'cms.disks.private.ttl' => 120,
         ] );
-        $file = new File();
-        $file->setUniqueIds();
-        $file->tenant_id = 'test';
-        $file->disk = 'private';
-        $file->mime = 'text/plain';
-        $file->name = 'private.txt';
-        $path = $file->dir() . '/private.txt';
-        $file->path = $path;
+        [, $file] = $this->asset();
+        $path = $file->path;
         $url = 'https://storage.example/private.txt?signature=test';
         $options = [
             'ResponseCacheControl' => 'private, no-store',
@@ -312,7 +300,7 @@ class AssetControllerTest extends CoreTestAbstract
         $storage->shouldNotReceive( 'response' );
         Storage::shouldReceive( 'disk' )->with( 'asset-signed' )->andReturn( $storage );
 
-        $response = FileResponse::make( $file );
+        $response = FileResponse::make( $file->id );
 
         $this->assertSame( $url, $response->headers->get( 'Location' ) );
         $this->assertSame( 'attachment; filename=private.txt', $response->headers->get( 'Content-Disposition' ) );

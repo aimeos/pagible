@@ -45,7 +45,7 @@ final class AddFile
         $file = new File();
         $file->disk = $args['disk'] ?? 'public';
         $file->fill( $args['input'] ?? [] );
-        $file->prepare( $source, $preview );
+        $file->ingest( $source, $preview );
 
         return Resource::addFile( $file, Auth::user() );
     }
