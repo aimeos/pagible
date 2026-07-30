@@ -63,8 +63,7 @@ class Tenancy
      */
     public static function check( string $id ) : string
     {
-        if( $id !== '' && ( preg_match( '/\A(?=.{1,100}\z)[A-Za-z0-9_-]+(?:\.[A-Za-z0-9_-]+)*\z/', $id ) !== 1
-            || Str::isUuid( $id ) ) ) {
+        if( $id && ( preg_match( '/\A(?=.{1,100}\z)[A-Za-z0-9_-]+(?:\.[A-Za-z0-9_-]+)*\z/', $id ) !== 1 || Str::isUuid( $id ) ) ) {
             throw new \InvalidArgumentException( 'Invalid tenant ID' );
         }
 
@@ -108,6 +107,7 @@ class Tenancy
         }
 
         $id = data_get( $user, 'tenant_id' );
+
         return is_string( $id ) && $id === $tenant;
     }
 
