@@ -106,9 +106,7 @@ class CashierMollieTest extends CashierTestAbstract
         $payment = $this->remote( $connector, 'tr_remotechargeback' );
         $payment->amountChargedBack = (object) ['value' => '10.00', 'currency' => 'EUR'];
         $payment->_embedded = (object) ['chargebacks' => [$chargeback]];
-        $payment->_links = (object) [
-            'chargebacks' => (object) ['href' => 'https://api.mollie.test/chargebacks'],
-        ];
+        $payment->_links = (object) ['chargebacks' => (object) ['href' => 'https://api.mollie.test/chargebacks']];
         $this->webhook( $payment );
 
         $this->post( route( 'webhooks.mollie.aftercare' ), ['id' => $payment->id] )->assertOk();
@@ -190,10 +188,7 @@ class CashierMollieTest extends CashierTestAbstract
         ] );
         $payment = new MolliePaymentStub( 'tr_once', $token );
 
-        app( CashierMollie::class )->webhook(
-            $payment,
-            firstPayment: true,
-        );
+        app( CashierMollie::class )->webhook( $payment, firstPayment: true );
 
         $stored = $this->storedAccess();
         $this->assertIsArray( $stored );

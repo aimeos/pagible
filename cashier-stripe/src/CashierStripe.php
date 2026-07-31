@@ -7,7 +7,6 @@
 namespace Aimeos\Cms;
 
 use Illuminate\Contracts\Auth\Authenticatable;
-use Illuminate\Database\Eloquent\Model;
 use Laravel\Cashier\Cashier;
 use Laravel\Cashier\Checkout;
 
@@ -59,13 +58,7 @@ class CashierStripe extends CashierProvider
             && ( $data['mode'] ?? null ) === 'payment'
             && ( $data['payment_status'] ?? null ) === 'paid'
         ) {
-            $this->grant(
-                $data,
-                (string) ( $data['payment_intent'] ?? $data['id'] ?? '' ),
-                'once',
-                null,
-                $at,
-            );
+            $this->grant( $data, (string) ( $data['payment_intent'] ?? $data['id'] ?? '' ), 'once', null, $at );
         }
         elseif( $type === 'customer.subscription.created' && ( $data['status'] ?? null ) === 'trialing' )
         {
@@ -81,13 +74,7 @@ class CashierStripe extends CashierProvider
                 $end = data_get( $subscription, 'current_period_end' )
                     ?? data_get( $subscription, 'items.data.0.current_period_end' );
 
-                $this->grant(
-                    $subscription,
-                    (string) data_get( $subscription, 'id', '' ),
-                    'subscription',
-                    $end,
-                    $at,
-                );
+                $this->grant( $subscription, (string) data_get( $subscription, 'id', '' ), 'subscription', $end, $at );
             }
         }
         elseif( $type === 'customer.subscription.deleted' )
@@ -113,15 +100,11 @@ class CashierStripe extends CashierProvider
      */
     protected function charge( mixed $charge ) : array|object
     {
-        if( is_array( $charge ) || is_object( $charge ) ) {
-            return $charge;
+        if( is_string( $charge ) && $charge !== '' ) {
+            return Cashier::stripe()->charges->retrieve( $charge, ['expand' => ['invoice']] );
         }
 
-        if( !is_string( $charge ) || $charge === '' ) {
-            return [];
-        }
-
-        return Cashier::stripe()->charges->retrieve( $charge, ['expand' => ['invoice']] );
+        return is_array( $charge ) || is_object( $charge ) ? $charge : [];
     }
 
 
@@ -132,14 +115,8 @@ class CashierStripe extends CashierProvider
      */
     protected function owner( array|object $data, string $id ) : ?Authenticatable
     {
-        $model = Cashier::$customerModel;
         $customer = data_get( $data, 'customer' );
-
-        if( !is_subclass_of( $model, Model::class ) || !is_string( $customer ) || $customer === '' ) {
-            return null;
-        }
-
-        $user = $model::query()->where( 'stripe_id', $customer )->first();
+        $user = is_string( $customer ) ? Cashier::findBillable( $customer ) : null;
 
         return $user instanceof Authenticatable ? $user : null;
     }
@@ -156,15 +133,11 @@ class CashierStripe extends CashierProvider
         $subscription = data_get( $invoice, 'subscription' )
             ?? data_get( $invoice, 'parent.subscription_details.subscription' );
 
-        if( is_array( $subscription ) || is_object( $subscription ) ) {
-            return $subscription;
+        if( is_string( $subscription ) && $subscription !== '' ) {
+            return Cashier::stripe()->subscriptions->retrieve( $subscription, [] );
         }
 
-        if( !is_string( $subscription ) || $subscription === '' ) {
-            return [];
-        }
-
-        return Cashier::stripe()->subscriptions->retrieve( $subscription, [] );
+        return is_array( $subscription ) || is_object( $subscription ) ? $subscription : [];
     }
 
 
@@ -200,10 +173,7 @@ class CashierStripe extends CashierProvider
             abort( 503 );
         }
 
-        $urls = [
-            'success_url' => $product['url'],
-            'cancel_url' => $this->previous(),
-        ];
+        $urls = ['success_url' => $product['url'], 'cancel_url' => $this->previous()];
 
         if( $product['kind'] === 'once' )
         {
@@ -272,16 +242,21 @@ class CashierStripe extends CashierProvider
     private function source( array|object $data ) : string
     {
         $meta = $this->meta( $data );
+        $invoice = data_get( $data, 'invoice' );
 
-        if( ( $meta['kind'] ?? null ) === 'subscription' || data_get( $data, 'invoice' ) !== null )
+        if( is_string( $invoice ) && $invoice !== '' ) {
+            $invoice = Cashier::stripe()->invoices->retrieve( $invoice, [] );
+        }
+
+        if( ( $meta['kind'] ?? null ) === 'subscription' || $invoice !== null )
         {
             return (string) (
                 data_get( $data, 'subscription' )
-                ?? data_get( $data, 'invoice.subscription' )
-                ?? data_get( $data, 'invoice.parent.subscription_details.subscription' )
+                ?? data_get( $invoice, 'subscription' )
+                ?? data_get( $invoice, 'parent.subscription_details.subscription' )
                 ?? ( str_starts_with( (string) data_get( $data, 'id' ), 'sub_' )
                     ? data_get( $data, 'id' ) : null )
-                ?? $this->subscriptionId( $data )
+                ?? ''
             );
         }
 
@@ -289,29 +264,6 @@ class CashierStripe extends CashierProvider
             data_get( $data, 'payment_intent' )
             ?? ( str_starts_with( (string) data_get( $data, 'id' ), 'pi_' )
                 ? data_get( $data, 'id' ) : '' )
-        );
-    }
-
-
-    /**
-     * Resolves the subscription behind an invoice-backed Stripe charge.
-     *
-     * @param array<string, mixed>|object $data
-     */
-    private function subscriptionId( array|object $data ) : string
-    {
-        $id = data_get( $data, 'invoice' );
-
-        if( !is_string( $id ) || $id === '' ) {
-            return '';
-        }
-
-        $invoice = Cashier::stripe()->invoices->retrieve( $id, [] );
-
-        return (string) (
-            data_get( $invoice, 'subscription' )
-            ?? data_get( $invoice, 'parent.subscription_details.subscription' )
-            ?? ''
         );
     }
 }

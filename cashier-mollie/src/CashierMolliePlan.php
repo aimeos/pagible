@@ -148,9 +148,7 @@ class CashierMolliePlan implements PlanRepository
 
         $plan = new Plan( $name );
         $plan->setAmount( $money );
-        $plan->setInterval(
-            $price['interval'] . ( $price['interval'] === 1 ? ' day' : ' days' )
-        );
+        $plan->setInterval( $price['interval'] . ( $price['interval'] === 1 ? ' day' : ' days' ) );
         $plan->setDescription( $price['description'] );
         $plan->setFirstPaymentAmount( $money );
         $plan->setFirstPaymentDescription( $price['description'] );

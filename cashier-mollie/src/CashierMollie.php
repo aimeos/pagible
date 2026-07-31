@@ -73,13 +73,7 @@ class CashierMollie extends CashierProvider
         if( $cancelled )
         {
             if( !$end || $end <= new \DateTimeImmutable() ) {
-                $this->access->remove(
-                    $source['user'],
-                    $source['tenant'],
-                    $this->provider,
-                    $source['id'],
-                    $at,
-                );
+                $this->access->remove( $source['user'], $source['tenant'], $this->provider, $source['id'], $at );
             }
 
             return;
@@ -90,13 +84,7 @@ class CashierMollie extends CashierProvider
         if( $end && $this->plans->matches( $plan, (string) ( $subscription->name ?? '' ) ) )
         {
             $this->access->grant(
-                $source['user'],
-                $source['tenant'],
-                $source['role'],
-                $this->provider,
-                $source['id'],
-                $end,
-                $at,
+                $source['user'], $source['tenant'], $source['role'], $this->provider, $source['id'], $end, $at,
             );
         }
     }
@@ -133,13 +121,7 @@ class CashierMollie extends CashierProvider
         }
         elseif( $firstPayment )
         {
-            $this->grant(
-                $payment,
-                (string) ( $payment->id ?? '' ),
-                'once',
-                null,
-                $at,
-            );
+            $this->grant( $payment, (string) ( $payment->id ?? '' ), 'once', null, $at );
         }
     }
 
@@ -186,9 +168,7 @@ class CashierMollie extends CashierProvider
     /**
      * Returns the newest authoritative adverse-event time or null for active payments.
      */
-    private function adverse( object $payment,
-        ?\DateTimeInterface $occurred = null
-    ) : ?\DateTimeInterface
+    private function adverse( object $payment, ?\DateTimeInterface $occurred = null ) : ?\DateTimeInterface
     {
         $latest = null;
         $charged = $this->money( $payment->amountChargedBack ?? null );
@@ -429,13 +409,7 @@ class CashierMollie extends CashierProvider
 
             if( $source )
             {
-                $this->access->remove(
-                    $source['user'],
-                    $source['tenant'],
-                    $this->provider,
-                    $source['id'],
-                    $at,
-                );
+                $this->access->remove( $source['user'], $source['tenant'], $this->provider, $source['id'], $at );
                 $subscription = true;
             }
         }

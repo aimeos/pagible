@@ -16,7 +16,7 @@ use Laravel\Paddle\Cashier;
  *
  * @phpstan-import-type ProductData from CashierProduct
  * @phpstan-import-type TokenData from CashierToken
- * @phpstan-type PaddleData TokenData&array{source?: string}
+ * @phpstan-type PaddleData TokenData&array{source?: non-empty-string}
  */
 class CashierPaddle extends CashierProvider
 {
@@ -45,20 +45,13 @@ class CashierPaddle extends CashierProvider
 
         if( $type === 'transaction.completed' )
         {
-            $meta = $this->meta( $data );
             $subscription = (string) ( $data['subscription_id'] ?? '' );
 
             if( $subscription !== '' )
             {
-                $this->grant(
-                    $data,
-                    $subscription,
-                    'subscription',
-                    data_get( $data, 'billing_period.ends_at' ),
-                    $at,
-                );
+                $this->grant( $data, $subscription, 'subscription', data_get( $data, 'billing_period.ends_at' ), $at );
             }
-            elseif( ( $meta['kind'] ?? null ) === 'once' )
+            else
             {
                 $this->grant( $data, (string) ( $data['id'] ?? '' ), 'once', null, $at );
             }
@@ -75,11 +68,7 @@ class CashierPaddle extends CashierProvider
         }
         elseif( $type === 'subscription.canceled' )
         {
-            $this->remove(
-                $data,
-                (string) ( $data['id'] ?? '' ),
-                $at,
-            );
+            $this->remove( $data, (string) ( $data['id'] ?? '' ), $at );
         }
         elseif( in_array( $type, ['adjustment.created', 'adjustment.updated'], true )
             && in_array( $data['status'] ?? null, ['approved', 'completed'], true )
@@ -168,11 +157,9 @@ class CashierPaddle extends CashierProvider
         }
 
         $meta = $this->meta( $result );
-        $source = $meta['source'] ?? null;
+        $source = $meta['source'] ?? '';
 
-        if( is_string( $source ) && $source !== ''
-            && !hash_equals( $source, (string) ( $origin['id'] ?? '' ) )
-        ) {
+        if( $source !== '' && !hash_equals( $source, (string) ( $origin['id'] ?? '' ) ) ) {
             $origin = (array) $this->transaction( $source );
         }
 
@@ -285,7 +272,7 @@ class CashierPaddle extends CashierProvider
     {
         $source = $meta['source'] ?? null;
 
-        if( !is_string( $source ) || $source === '' ) {
+        if( $source === null ) {
             return false;
         }
 
@@ -339,7 +326,7 @@ class CashierPaddle extends CashierProvider
     ) : bool {
         $data = (array) $data;
         $origin = (array) ( $data['_cms_origin'] ?? [] );
-        $source = (string) ( $meta['source'] ?? '' );
+        $source = $meta['source'] ?? '';
         $transaction = (string) (
             ( $data['transaction_id'] ?? null )
             ?? ( $origin['id'] ?? null )
