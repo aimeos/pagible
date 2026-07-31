@@ -6,10 +6,9 @@
 
 namespace Aimeos\Cms;
 
-use Illuminate\Cache\RateLimiting\Limit;
+use Aimeos\Cms\Http\Middleware\MollieWebhook;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Support\Facades\Event;
-use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider as Provider;
 use Laravel\Cashier\CashierServiceProvider as MollieCashierServiceProvider;
@@ -23,21 +22,10 @@ use Laravel\Cashier\Plan\Contracts\PlanRepository;
 class CashierMollieServiceProvider extends Provider
 {
     /**
-     * Registers webhook throttling, lifecycle listeners, migrations, and scheduled billing.
+     * Registers webhook validation, lifecycle listeners, migrations, and scheduled billing.
      */
     public function boot(): void
     {
-        RateLimiter::for( 'cms-cashier-mollie', function( $request ) {
-            $id = CashierMolliePayment::id( $request->input( 'id' ) );
-            $limit = max( 1, min( 10000, (int) config( 'cashier-mollie.webhook_limit', 300 ) ) );
-
-            return [
-                Limit::perMinute( $limit )->by( 'cms-cashier-mollie:account' ),
-                Limit::perMinute( 10 )->by( 'cms-cashier-mollie:id:' . hash( 'sha256', $id ) ),
-                Limit::perMinute( 60 )->by( 'cms-cashier-mollie:ip:' . $request->ip() ),
-            ];
-        } );
-
         Event::listen( SubscriptionCancelled::class, fn( SubscriptionCancelled $event ) =>
             app( CashierMollie::class )->subscription( $event->subscription, true )
         );
@@ -48,19 +36,13 @@ class CashierMollieServiceProvider extends Provider
             app( CashierMollie::class )->subscription( $event->subscription )
         );
         $this->app->booted( function() {
-            foreach( ['webhooks.mollie.default', 'webhooks.mollie.aftercare', 'webhooks.mollie.first_payment'] as $name )
-            {
-                Route::getRoutes()->getByName( $name )?->middleware( [
-                    'throttle:cms-cashier-mollie',
-                ] );
+            foreach( ['webhooks.mollie.default', 'webhooks.mollie.aftercare', 'webhooks.mollie.first_payment'] as $name ) {
+                Route::getRoutes()->getByName( $name )?->middleware( MollieWebhook::class );
             }
         } );
 
         if( $this->app->runningInConsole() )
         {
-            $this->publishes( [
-                dirname( __DIR__ ) . '/config/cashier-mollie.php' => config_path( 'cashier-mollie.php' ),
-            ], 'cashier-configs' );
             $this->migrations();
             $this->callAfterResolving( Schedule::class, fn( Schedule $schedule ) => $this->schedule( $schedule ) );
         }
@@ -72,10 +54,6 @@ class CashierMollieServiceProvider extends Provider
      */
     public function register(): void
     {
-        $this->mergeConfigFrom(
-            dirname( __DIR__ ) . '/config/cashier-mollie.php',
-            'cashier-mollie',
-        );
         $this->app->register( MollieCashierServiceProvider::class );
         $this->webhooks();
         $this->app->singleton( CashierMollie::class );

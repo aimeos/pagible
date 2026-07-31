@@ -20,7 +20,6 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
@@ -473,19 +472,22 @@ class CashierMollieTest extends CashierTestAbstract
     }
 
 
-    public function testWebhookRoutesUseScopedRateLimits(): void
+    public function testWebhookRoutesAreNotRateLimited(): void
     {
-        $route = Route::getRoutes()->getByName( 'webhooks.mollie.default' );
-        $middleware = $route?->middleware() ?? [];
-        $throttle = array_search( 'throttle:cms-cashier-mollie', $middleware, true );
-        $limiter = RateLimiter::limiter( 'cms-cashier-mollie' );
-        request()->merge( ['id' => 'tr_limit'] );
-        $limits = $limiter ? $limiter( request() ) : [];
+        foreach( [
+            'webhooks.mollie.default',
+            'webhooks.mollie.aftercare',
+            'webhooks.mollie.first_payment',
+        ] as $name ) {
+            $middleware = Route::getRoutes()->getByName( $name )?->middleware() ?? [];
 
-        $this->assertIsInt( $throttle );
-        $this->assertCount( 3, $limits );
-        $this->assertSame( 300, $limits[0]->maxAttempts );
-        $this->assertSame( 'cms-cashier-mollie:account', $limits[0]->key );
+            $this->assertSame(
+                [],
+                array_values( array_filter( $middleware, fn( $item ) =>
+                    is_string( $item ) && str_starts_with( $item, 'throttle:' )
+                ) ),
+            );
+        }
     }
 
 

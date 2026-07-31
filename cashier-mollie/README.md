@@ -13,9 +13,7 @@ Add `Aimeos\Cms\Concerns\CashierAccess` and `Laravel\Cashier\Billable` to the
 application user model and configure `MOLLIE_KEY`. The package derives an opaque
 segment for all three Mollie webhook paths from `APP_KEY` before Cashier
 registers them. Rotating `APP_KEY` therefore changes those paths.
-`MOLLIE_WEBHOOK_LIMIT` sets their shared account-wide request budget and defaults
-to 300 per minute; per-payment and per-IP limits apply as well. Keep the
-resulting Cashier Mollie webhook routes public.
+Keep the resulting Cashier Mollie webhook routes public.
 
 Run Laravel's scheduler continuously. The adapter runs Mollie's `cashier:run`
 command every five minutes to create subscription renewal payments. Every

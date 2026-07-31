@@ -8,12 +8,10 @@ namespace Aimeos\Cms\Controllers;
 
 use Aimeos\Cms\FileResponse;
 use Aimeos\Cms\Models\Page;
-use Aimeos\Cms\Models\PageAccess;
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\Scopes\Status;
 use Aimeos\Cms\Tenancy;
 use Illuminate\Auth\AuthenticationException;
-use Illuminate\Database\Query\Expression;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
@@ -43,20 +41,16 @@ class AssetController extends Controller
             $query = Page::select( 'id', 'tenant_id', 'latest_id' );
 
             if( !$editor ) {
-                $query->withAggregate( 'access as access_exists', new Expression( '1' ) )
+                $query->withAccess( $user )
                     ->withGlobalScope( 'status', new Status() );
             }
 
             /** @var Page $owner */
             $owner = $query->findOrFail( $page );
 
-            if( !$editor && $owner->getAttribute( 'access_exists' ) )
+            if( !$editor && $owner->access_exists && !$owner->access_allowed )
             {
-                $owner->load( 'access' );
-
-                if( !PageAccess::allows( $owner->access, $user ) ) {
-                    $user ? abort( 403 ) : throw new AuthenticationException();
-                }
+                $user ? abort( 403 ) : throw new AuthenticationException();
             }
 
             if( !$this->attached( $owner, $file, $editor ) ) {
