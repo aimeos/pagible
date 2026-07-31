@@ -31,7 +31,8 @@ class CashierSetupTest extends CashierTestAbstract
         $access = $users && Schema::hasColumn( 'users', 'access' );
         $migrations = Schema::hasTable( 'migrations' );
         $records = $migrations
-            ? DB::table( 'migrations' )->where( 'migration', $migration )->get()->map( fn( object $row ) => (array) $row )->all()
+            ? DB::table( 'migrations' )->where( 'migration', $migration )->get( ['migration', 'batch'] )
+                ->map( fn( object $row ) => (array) $row )->all()
             : [];
 
         try
