@@ -5,22 +5,69 @@ one provider package per application:
 
 ## Installation
 
+Pagible CMS, Laravel authentication, and a named `login` route must already be
+available. Checkout requires a stored, authenticated Eloquent user. Guests who
+click a pricing button are sent to `login`, and their checkout resumes after
+authentication.
+
 ```bash
 composer require aimeos/pagible-cashier-stripe
 # or: aimeos/pagible-cashier-paddle
 # or: aimeos/pagible-cashier-mollie
 
 php artisan cms:install:cashier
-php artisan migrate
 ```
 
-`cms:install:cashier` runs
-`vendor:publish --tag=cashier-migrations` for the installed upstream Cashier and
-adapter migrations. Add `Aimeos\Cms\Concerns\CashierAccess` beside that
-provider's `Billable` trait on the application user model. The trait reserves,
-guards, casts, and hides the `users.access` attribute. Do not add `access` to the
-user model's `$fillable` list or accept it in profile/account input; only Pagible
-Cashier may write it.
+`cms:install:cashier` detects the single installed provider, checks for an
+application-owned `users.access` conflict, publishes its upstream Cashier and
+adapter migrations, and runs all outstanding migrations. Use `--no-migrate`
+only when the deployment pipeline runs migrations separately. Add `--force`
+when migrations must run non-interactively in production. When Stripe and its
+prerequisites are configured, an interactive installation offers to create the
+webhook and defaults to **yes**. A non-interactive installation never creates it
+unless `--webhook` is supplied explicitly; that option performs no second
+prompt.
+
+The installer finishes with a local readiness report. Run the same idempotent,
+read-only check again after changing the model or configuration:
+
+```bash
+php artisan cms:cashier:check
+```
+
+It returns a non-zero status until the provider registration, `APP_KEY`,
+`APP_URL`, named `login` route, checkout and webhook routes, authentication
+model traits, Cashier schema, access catalog, API credentials, and webhook
+verification are ready. Its **Developer next steps** section combines failed
+local checks with the dashboard and end-to-end tasks that cannot be performed
+locally.
+
+Add `Aimeos\Cms\Concerns\CashierAccess` beside the provider's `Billable` trait
+on the application user model. The trait reserves, guards, casts, and hides the
+`users.access` attribute. Do not add `access` to the user model's `$fillable`
+list or accept it in profile/account input; only Pagible Cashier may write it.
+
+For Stripe and Mollie, the model setup is:
+
+```php
+use Aimeos\Cms\Concerns\CashierAccess;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Laravel\Cashier\Billable;
+
+class User extends Authenticatable
+{
+    use CashierAccess;
+    use Billable;
+}
+```
+
+Paddle uses `Laravel\Paddle\Billable` instead. Keep any provider-specific model
+customization required by the upstream Cashier package.
+
+Pagible's normal tenancy rule still applies. Without tenancy configuration, any
+authenticated user belongs to the default tenant. In a tenant-aware application,
+the user's `tenant_id` must match the active tenant unless the application
+deliberately overrides `Tenancy::$access`.
 
 Each provider package installs the shared Pagible integration and exactly one
 upstream Cashier package. Composer conflicts prevent another Pagible adapter or
@@ -33,7 +80,69 @@ and assets. Laravel discovers that service provider, which binds the
 application's single `CashierProvider`. The shared installation command publishes
 the upstream Cashier migrations. Provider-specific model, credential, webhook,
 and scheduler steps remain explicit because a package must not rewrite the host
-model or environment file.
+model or environment file, create provider products, or change external webhook
+destinations without an explicit request. For Stripe only,
+`php artisan cms:install:cashier --webhook` validates `APP_URL` and the Stripe
+API credentials, resolves the registered webhook route, and runs Cashier's
+webhook command explicitly. Without that option, only an interactive command
+offers to create the endpoint.
+
+Complete the setup for the installed provider before creating pricing content:
+
+* [Stripe setup](https://github.com/aimeos/pagible-cashier-stripe)
+* [Paddle setup](https://github.com/aimeos/pagible-cashier-paddle)
+* [Mollie setup](https://github.com/aimeos/pagible-cashier-mollie)
+
+## Frontend access catalog
+
+Cashier adds payment-derived grants to Pagible's existing frontend access
+system; it does not define the available role names. Configure an access catalog
+in an application service provider before assigning roles to pricing packages or
+pages. A fixed catalog is sufficient for a simple installation:
+
+```php
+use Aimeos\Cms\Access;
+
+public function boot(): void
+{
+    Access::using(fn() => [
+        'course-buyers',
+        'premium-members',
+    ]);
+}
+```
+
+The callback may return different values for the active tenant. This example is
+read-only: editors can select its values but cannot create or delete them in the
+admin. Use the `add` and `delete` callbacks, or configure the Bouncer, Laratrust,
+or Spatie adapter described in the
+[core access-catalog documentation](https://github.com/aimeos/pagible-core),
+when editors should manage the catalog.
+
+The pricing package and every page sold by that package must use the same exact
+catalog value. Payment roles are tenant-specific and are ignored if they are not
+part of the current tenant's catalog.
+
+## Selling restricted pages
+
+1. Finish the selected provider's credential and webhook setup. Webhooks are
+   authoritative for granting, renewing, refunding, and revoking access.
+2. In the CMS admin, add a `pricing` element to a public sales page. Add a
+   package, choose its frontend access role, add one or more prices, and publish
+   the page or shared element.
+3. Open each page being sold, choose **Access**, select **Restricted**, select
+   the same role, and apply the change. Applying recursively protects the page's
+   descendants too. This action requires `page:publish` and `access:view`.
+4. Keep the sales page public. Use a public account or payment-status page as the
+   target URL because the browser can return before the verified webhook has
+   granted access.
+5. Test the complete flow in the provider's sandbox: guest login, checkout,
+   webhook delivery, authorized page access, cancellation, and a full refund or
+   chargeback.
+
+Restricting a page does not make files on a public storage URL private. Configure
+`CMS_PRIVATE_DISK` to a non-public Laravel disk and enable **Protect with page
+access** for files that must only be delivered with the restricted page.
 
 ## Pricing products
 
@@ -46,7 +155,7 @@ installed adapter supplies the provider for every price:
 {
   "id": "professional",
   "name": "Professional",
-  "access": "frontend.pro",
+  "access": "premium-members",
   "url": "/account",
   "prices": [
     {
@@ -93,12 +202,31 @@ price identifiers. The server resolves the payment reference, access role,
 payment kind, and target URL from published content, obtains the provider
 from the installed adapter, then signs the metadata sent to Cashier.
 
+The CMS pricing fields have these meanings:
+
+* **Payment type:** Use `subscription` or `once`. For Stripe and Paddle, it must
+  match whether the provider price is recurring or one-time.
+* **Payment reference:** Use the provider price ID for Stripe and Paddle, such as
+  `price_123` or `pri_123`. For Mollie, use the decimal charge amount with two
+  digits, such as `19.00`.
+* **Currency:** Use a three-letter uppercase currency code for every provider.
+* **Billing interval:** Stripe and Paddle do not use it, so it may be omitted or
+  `0`. Mollie subscriptions require a length from 1 to 365 days; Mollie one-time
+  payments may omit it or use `0`.
+* **Amount, displayed price, and price unit:** These fields control only the
+  rendered pricing display. The Stripe or Paddle price and the Mollie payment
+  reference remain authoritative for the charge.
+
+The target URL must be a local URL beginning with `/`. It is used after checkout;
+invalid or external values fall back to `/`. For Mollie, keep package names to 80
+characters or fewer because they become the invoice description.
+
 For Stripe and Paddle, `reference` is the provider-managed price ID. For Mollie,
 it is the decimal amount (for example `"19.00"`), accompanied by `currency` and,
 for subscriptions, `interval` as an integer number of days from 1 to 365.
-One-time prices may leave the field empty, use `0`, or omit it. The package name
-becomes the invoice description. Pagible converts the day count to Mollie's interval format and
-signs these values into the plan name stored in Cashier's own subscription row.
+One-time prices may leave the interval empty, use `0`, or omit it. The package
+name becomes the invoice description. Pagible converts the day count to Mollie's
+interval format and signs these values into the plan name stored in Cashier's own subscription row.
 It supplies a plan repository at runtime. This avoids
 `cashier_plans.php` and a Pagible product table. Pagible also schedules Mollie's
 `cashier:run` command every five minutes; the application scheduler still needs
@@ -127,12 +255,12 @@ projection:
 ```json
 {
   "acme|stripe|sub_123": {
-    "role": "frontend.pro",
+    "role": "premium-members",
     "end": 1787745600000,
     "at": 1787745600000
   },
   "acme|stripe|pi_456": {
-    "role": "frontend.course",
+    "role": "course-buyers",
     "end": null,
     "at": 1785157200000
   },

@@ -37,7 +37,10 @@ class CashierServiceProvider extends Provider
         $this->loadRoutesFrom( $basedir . '/routes/cashier.php' );
 
         if( $this->app->runningInConsole() ) {
-            $this->commands( [\Aimeos\Cms\Commands\InstallCashier::class] );
+            $this->commands( [
+                \Aimeos\Cms\Commands\CheckCashier::class,
+                \Aimeos\Cms\Commands\InstallCashier::class,
+            ] );
         }
 
         Access::extend( fn( Authenticatable $user ) => app( CashierAccess::class )->roles( $user ) );

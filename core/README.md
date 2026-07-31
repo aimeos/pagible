@@ -141,7 +141,7 @@ Restriction writes are rejected while the access catalog is unavailable; releasi
 Use `PageAccess::set()` as the supported write API. It applies database-first, chunked changes so public page caches and external search documents are updated consistently:
 
 ```php
-\Aimeos\Cms\Models\PageAccess::set( [$page->id], ['frontend.member'], auth()->user() );
+\Aimeos\Cms\Models\PageAccess::set( [$page->id], ['members'], auth()->user() );
 \Aimeos\Cms\Models\PageAccess::set( [$page->id], null );
 \Aimeos\Cms\Models\PageAccess::set( [$page->id], [], auth()->user(), descendants: true );
 ```
