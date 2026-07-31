@@ -55,9 +55,8 @@ abstract class CashierProvider
     /**
      * Cancels a CMS-created local Cashier subscription owned by the user.
      */
-    protected function cancelSubscription( Authenticatable $user, string $subscription, string $column,
-        string $marker = 'type'
-    ) : void {
+    protected function cancelSubscription( Authenticatable $user, string $subscription, string $column, string $marker = 'type' ) : void
+    {
         if( !method_exists( $user, 'subscriptions' ) ) {
             abort( 404 );
         }
@@ -117,9 +116,7 @@ abstract class CashierProvider
         $date = $this->end( $end );
         $occurred = $this->end( $at );
 
-        if( ( $kind === 'subscription' && !$date ) || ( $kind === 'once' && $end !== null )
-            || ( $at !== null && !$occurred )
-        ) {
+        if( ( $kind === 'subscription' && !$date ) || ( $kind === 'once' && $end !== null )  || ( $at !== null && !$occurred ) ) {
             return;
         }
 
@@ -221,13 +218,7 @@ abstract class CashierProvider
         }
 
         if( $owner ) {
-            $this->access->remove(
-                $owner,
-                $tenant,
-                $provider,
-                $id,
-                $occurred ?? new \DateTimeImmutable(),
-            );
+            $this->access->remove( $owner, $tenant, $provider, $id, $occurred ?? new \DateTimeImmutable() );
         }
     }
 
@@ -283,9 +274,8 @@ abstract class CashierProvider
      * @param array<string, mixed>|object $data
      * @param TokenData $meta
      */
-    protected function verifyRemove( array|object $data, array $meta,
-        Authenticatable $user, string $id
-    ) : bool {
+    protected function verifyRemove( array|object $data, array $meta, Authenticatable $user, string $id ) : bool
+    {
         return true;
     }
 }

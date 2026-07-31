@@ -50,8 +50,7 @@ class CashierToken
      */
     public function make( array $data ) : string
     {
-        $payload = $this->encode( json_encode(
-            $data,
+        $payload = $this->encode( json_encode( $data,
             JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE,
         ) );
 

@@ -39,32 +39,24 @@ class CashierPaddle extends CashierProvider
      */
     public function webhook( array $payload ) : void
     {
+        $at = $payload['occurred_at'] ?? null;
         $type = $payload['event_type'] ?? null;
         $data = is_array( $payload['data'] ?? null ) ? $payload['data'] : [];
-        $at = $payload['occurred_at'] ?? null;
 
         if( $type === 'transaction.completed' )
         {
             $subscription = (string) ( $data['subscription_id'] ?? '' );
 
-            if( $subscription !== '' )
-            {
+            if( $subscription !== '' ) {
                 $this->grant( $data, $subscription, 'subscription', data_get( $data, 'billing_period.ends_at' ), $at );
-            }
-            else
-            {
+            } else {
                 $this->grant( $data, (string) ( $data['id'] ?? '' ), 'once', null, $at );
             }
         }
         elseif( $type === 'subscription.created' && ( $data['status'] ?? null ) === 'trialing' )
         {
-            $this->grant(
-                $data,
-                (string) ( $data['id'] ?? '' ),
-                'subscription',
-                data_get( $data, 'current_billing_period.ends_at' ) ?? data_get( $data, 'next_billed_at' ),
-                $at,
-            );
+            $next = data_get( $data, 'current_billing_period.ends_at' ) ?? data_get( $data, 'next_billed_at' );
+            $this->grant( $data, (string) ( $data['id'] ?? '' ), 'subscription', $next, $at );
         }
         elseif( $type === 'subscription.canceled' )
         {
@@ -159,7 +151,7 @@ class CashierPaddle extends CashierProvider
         $meta = $this->meta( $result );
         $source = $meta['source'] ?? '';
 
-        if( $source !== '' && !hash_equals( $source, (string) ( $origin['id'] ?? '' ) ) ) {
+        if( $source && !hash_equals( $source, (string) ( $origin['id'] ?? '' ) ) ) {
             $origin = (array) $this->transaction( $source );
         }
 
@@ -179,16 +171,12 @@ class CashierPaddle extends CashierProvider
      */
     protected function start( Authenticatable $user, array $product, array $metadata ) : View
     {
-        if( trim( (string) config( 'cashier.webhook_secret' ) ) === '' ) {
+        if( !trim( (string) config( 'cashier.webhook_secret' ) ) ) {
             abort( 503 );
         }
 
-        if( $product['kind'] === 'subscription' )
-        {
-            $metadata['subscription_type'] = CashierAccess::subscription(
-                Tenancy::value(),
-                $product['access'],
-            );
+        if( $product['kind'] === 'subscription' ) {
+            $metadata['subscription_type'] = CashierAccess::subscription( Tenancy::value(), $product['access'] );
         }
 
         /** @phpstan-ignore method.notFound */
@@ -282,9 +270,7 @@ class CashierPaddle extends CashierProvider
 
         $customer = $user->getRelationValue( 'customer' );
 
-        if( !is_object( $customer )
-            || (string) data_get( $customer, 'paddle_id' ) !== (string) data_get( $data, 'customer_id' )
-        ) {
+        if( !is_object( $customer ) || (string) data_get( $customer, 'paddle_id' ) !== (string) data_get( $data, 'customer_id' ) ) {
             return false;
         }
 
@@ -321,12 +307,12 @@ class CashierPaddle extends CashierProvider
      * @param array<string, mixed>|object $data
      * @param PaddleData $meta
      */
-    protected function verifyRemove( array|object $data, array $meta,
-        Authenticatable $user, string $id
-    ) : bool {
+    protected function verifyRemove( array|object $data, array $meta, Authenticatable $user, string $id ) : bool
+    {
         $data = (array) $data;
         $origin = (array) ( $data['_cms_origin'] ?? [] );
         $source = $meta['source'] ?? '';
+
         $transaction = (string) (
             ( $data['transaction_id'] ?? null )
             ?? ( $origin['id'] ?? null )
@@ -344,12 +330,9 @@ class CashierPaddle extends CashierProvider
         $subscription = (string) (
             ( $data['subscription_id'] ?? null )
             ?? ( $origin['subscription_id'] ?? null )
-            ?? ( str_starts_with( (string) ( $data['id'] ?? '' ), 'sub_' )
-                ? $data['id'] : '' )
+            ?? ( str_starts_with( (string) ( $data['id'] ?? '' ), 'sub_' ) ? $data['id'] : '' )
         );
 
         return $subscription !== '' && hash_equals( $subscription, $id );
     }
-
-
 }

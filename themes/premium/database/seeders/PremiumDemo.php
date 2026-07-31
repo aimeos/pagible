@@ -512,7 +512,7 @@ class PremiumDemo extends AbstractDemo
                 'items' => [
                     [
                         'name' => 'Dial One',
-                        'prices' => [['id' => 'standard', 'amount' => '€169']],
+                        'prices' => [['id' => 'standard', 'amount' => 169, 'label' => '€169']],
                         'text' => 'A tactile controller for repeated digital actions.',
                         'features' => "- Machined recycled aluminium\n- Bluetooth and USB-C\n- Four local profiles\n- Replaceable battery",
                         'file' => ['id' => $this->img( 'dial' ), 'type' => 'file'],
@@ -521,7 +521,7 @@ class PremiumDemo extends AbstractDemo
                     ],
                     [
                         'name' => 'Beam One',
-                        'prices' => [['id' => 'standard', 'amount' => '€289']],
+                        'prices' => [['id' => 'standard', 'amount' => 289, 'label' => '€289']],
                         'text' => 'Adaptive task light with direct physical controls.',
                         'features' => "- 2700–4000 K light\n- CRI 95+ colour rendering\n- Local ambient sensing\n- Replaceable power module",
                         'file' => ['id' => $this->img( 'beam' ), 'type' => 'file'],
@@ -532,7 +532,7 @@ class PremiumDemo extends AbstractDemo
                     ],
                     [
                         'name' => 'Dock One',
-                        'prices' => [['id' => 'standard', 'amount' => '€219']],
+                        'prices' => [['id' => 'standard', 'amount' => 219, 'label' => '€219']],
                         'text' => 'A stable 140 W charging hub for the working surface.',
                         'features' => "- Three USB-C ports\n- One service USB-A port\n- Braided two-metre cable\n- Replaceable power supply",
                         'file' => ['id' => $this->img( 'dock' ), 'type' => 'file'],

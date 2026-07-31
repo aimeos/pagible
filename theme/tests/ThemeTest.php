@@ -63,6 +63,7 @@ class ThemeTest extends ThemeTestAbstract
 		$this->assertSame( 'query{access(term:_term_,first:50)}', $items['item']['access']['query'] );
 		$this->assertArrayNotHasKey( 'required', $items['item']['access'] );
 		$this->assertArrayNotHasKey( 'min', $price['reference'] );
+		$this->assertSame( 'string', $price['label']['type'] );
 		$this->assertSame( 'number', $price['amount']['type'] );
 		$this->assertSame( 2, $price['amount']['precision'] );
 		$this->assertSame( 0.01, $price['amount']['step'] );

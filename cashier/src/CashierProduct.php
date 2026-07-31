@@ -35,9 +35,7 @@ class CashierProduct
     {
         $tenant = Tenancy::value();
 
-        if( !$user instanceof Model || $user->getAttribute( 'tenant_id' ) !== $tenant
-            || !Tenancy::allows( $user, $tenant )
-        ) {
+        if( !$user instanceof Model || !Tenancy::allows( $user, $tenant ) ) {
             abort( 403 );
         }
 

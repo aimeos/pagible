@@ -12,12 +12,14 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     /**
-     * Adds the reserved payment-derived access projection to users.
+     * Adds the reserved payment-derived access projection without claiming an existing column.
+     *
+     * @throws \RuntimeException If the reserved users.access column already exists
      */
     public function up(): void
     {
         if( Schema::hasColumn( 'users', 'access' ) ) {
-            return;
+            throw new \RuntimeException( 'The users.access column is reserved by Pagible Cashier and already exists.' );
         }
 
         Schema::table( 'users', function( Blueprint $table ) {
@@ -27,7 +29,7 @@ return new class extends Migration
 
 
     /**
-     * Removes the payment-derived access projection from users.
+     * Removes the payment-derived access projection created by this migration.
      */
     public function down(): void
     {

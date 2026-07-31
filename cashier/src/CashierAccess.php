@@ -35,21 +35,23 @@ class CashierAccess
             && strlen( json_encode( $access, JSON_THROW_ON_ERROR ) ) < self::BYTES;
     }
 
+
     /**
      * Adds or renews a permanent or expiring payment source.
      */
     public function grant( Authenticatable $user, string $tenant, string $role, string $provider,
-        string $id, ?\DateTimeInterface $end, ?\DateTimeInterface $at = null
-    ) : void
+        string $id, ?\DateTimeInterface $end, ?\DateTimeInterface $at = null ) : void
     {
-        $tenant = $this->tenantId( $tenant );
         $role = self::text( $role, 100, 'access role' );
         $source = $this->source( $provider, $id );
+        $tenant = $this->tenantId( $tenant );
         $key = $tenant . '|' . $source;
+
         $occurred = $at ? \DateTimeImmutable::createFromInterface( $at ) : new \DateTimeImmutable();
         $stamp = $this->stamp( $occurred );
 
-        if( $end && $end->getTimestamp() <= time() ) {
+        if( $end && $end->getTimestamp() <= time() )
+        {
             $this->remove( $user, $tenant, $provider, $id, $occurred );
             return;
         }
@@ -63,9 +65,7 @@ class CashierAccess
         $this->mutate( $user, function( array $access ) use ( $key, $stamp, $value ) {
             $current = $access[$key] ?? null;
 
-            if( is_array( $current )
-                && ( $current['at'] > $stamp || ( $current['at'] === $stamp && $current['role'] === null ) )
-            ) {
+            if( is_array( $current ) && ( $current['at'] > $stamp || ( $current['at'] === $stamp && $current['role'] === null ) ) ) {
                 return $access;
             }
 
@@ -100,9 +100,7 @@ class CashierAccess
     /**
      * Removes a revoked, refunded, charged-back, or ended payment source.
      */
-    public function remove( Authenticatable $user, ?string $tenant, string $provider, string $id,
-        ?\DateTimeInterface $at = null
-    ) : void
+    public function remove( Authenticatable $user, ?string $tenant, string $provider, string $id, ?\DateTimeInterface $at = null ) : void
     {
         $tenant = $tenant === null ? null : $this->tenantId( $tenant );
         $source = $this->source( $provider, $id );
@@ -173,9 +171,7 @@ class CashierAccess
      */
     public static function subscriptionAccess( string $name, string $tenant ) : ?string
     {
-        if( mb_strlen( $tenant ) > 250
-            || !str_starts_with( $name, $prefix = self::subscription( $tenant ) )
-        ) {
+        if( mb_strlen( $tenant ) > 250 || !str_starts_with( $name, $prefix = self::subscription( $tenant ) ) ) {
             return null;
         }
 
@@ -239,9 +235,7 @@ class CashierAccess
         $provider = trim( (string) array_pop( $parts ) );
         $tenant = implode( '|', $parts );
 
-        if( mb_strlen( $tenant ) > 250 || $provider === '' || mb_strlen( $provider ) > 32
-            || $id === '' || mb_strlen( $id ) > 255
-        ) {
+        if( mb_strlen( $tenant ) > 250 || !$provider || mb_strlen( $provider ) > 32 || !$id || mb_strlen( $id ) > 255 ) {
             return null;
         }
 
@@ -262,8 +256,8 @@ class CashierAccess
 
         foreach( $access as $key => $source )
         {
-            if( !is_string( $key ) || !is_array( $source ) || !array_key_exists( 'role', $source )
-                || !array_key_exists( 'end', $source )
+            if( !is_string( $key ) || !is_array( $source )
+                || !array_key_exists( 'role', $source ) || !array_key_exists( 'end', $source )
             ) {
                 continue;
             }

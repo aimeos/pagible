@@ -15,6 +15,7 @@ use Aimeos\Cms\Tenancy;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 
 class CashierAccessTest extends CashierTestAbstract
@@ -52,6 +53,26 @@ class CashierAccessTest extends CashierTestAbstract
 
         $this->assertIsArray( $this->storedAccess( $user ) );
         $this->assertArrayNotHasKey( 'access', $user->toArray() );
+    }
+
+
+    public function testAccessMigrationRejectsExistingColumn(): void
+    {
+        $this->stored->forceFill( ['access' => ['application' => ['owner' => true]]] )->saveQuietly();
+        $migration = require dirname( __DIR__ ) . '/database/migrations/2026_07_26_000000_add_users_access.php';
+
+        try {
+            $migration->up();
+            $this->fail( 'An application-owned users.access column must be rejected.' );
+        } catch( \RuntimeException $e ) {
+            $this->assertSame(
+                'The users.access column is reserved by Pagible Cashier and already exists.',
+                $e->getMessage(),
+            );
+        }
+
+        $this->assertTrue( Schema::hasColumn( 'users', 'access' ) );
+        $this->assertSame( ['application' => ['owner' => true]], $this->stored->refresh()->getAttribute( 'access' ) );
     }
 
 

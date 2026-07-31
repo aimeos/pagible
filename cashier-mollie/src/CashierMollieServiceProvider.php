@@ -22,7 +22,7 @@ use Laravel\Cashier\Plan\Contracts\PlanRepository;
 class CashierMollieServiceProvider extends Provider
 {
     /**
-     * Registers webhook validation, lifecycle listeners, migrations, and scheduled billing.
+     * Registers lifecycle listeners, current and previous key-bound webhook routes, migrations, and scheduled billing.
      */
     public function boot(): void
     {
@@ -35,9 +35,42 @@ class CashierMollieServiceProvider extends Provider
         Event::listen( SubscriptionStarted::class, fn( SubscriptionStarted $event ) =>
             app( CashierMollie::class )->subscription( $event->subscription )
         );
+
         $this->app->booted( function() {
+            $key = (string) config( 'app.key' );
+            $previous = array_unique( array_filter(
+                (array) config( 'app.previous_keys', [] ),
+                fn( mixed $old ) => is_string( $old ) && $old !== '' && $old !== $key,
+            ) );
+            $token = hash_hmac( 'sha256', 'cms-cashier-mollie-webhook', $key );
+
             foreach( ['webhooks.mollie.default', 'webhooks.mollie.aftercare', 'webhooks.mollie.first_payment'] as $name ) {
-                Route::getRoutes()->getByName( $name )?->middleware( MollieWebhook::class );
+                $route = Route::getRoutes()->getByName( $name );
+
+                if( !$route ) {
+                    continue;
+                }
+
+                $route->middleware( MollieWebhook::class );
+                $action = $route->getAction( 'uses' );
+
+                if( !is_string( $action ) && !is_array( $action ) && !$action instanceof \Closure ) {
+                    continue;
+                }
+
+                $uri = (string) $route->uri();
+
+                if( !str_ends_with( $uri, '/' . $token ) ) {
+                    continue;
+                }
+
+                $uri = substr( $uri, 0, -strlen( $token ) );
+
+                foreach( $previous as $old )
+                {
+                    $alias = $uri . hash_hmac( 'sha256', 'cms-cashier-mollie-webhook', $old );
+                    Route::post( $alias, $action )->middleware( $route->middleware() );
+                }
             }
         } );
 
@@ -55,11 +88,11 @@ class CashierMollieServiceProvider extends Provider
     public function register(): void
     {
         $this->app->register( MollieCashierServiceProvider::class );
-        $this->webhooks();
         $this->app->singleton( CashierMollie::class );
         $this->app->alias( CashierMollie::class, CashierProvider::class );
         $this->app->bind( GetMolliePayment::class, CashierMolliePayment::class );
         $this->app->bind( PlanRepository::class, CashierMolliePlan::class );
+        $this->webhooks();
     }
 
 
@@ -68,8 +101,8 @@ class CashierMollieServiceProvider extends Provider
      */
     private function migrations() : void
     {
-        $path = dirname( __DIR__ ) . '/database/migrations/';
         $time = time();
+        $path = dirname( __DIR__ ) . '/database/migrations/';
 
         $this->publishesMigrations( [
             $path . '2026_07_26_000001_add_users_mollie.php' => database_path(
@@ -109,13 +142,14 @@ class CashierMollieServiceProvider extends Provider
 
         $pos = strcspn( $url, '?#' );
 
-        return rtrim( substr( $url, 0, $pos ), '/' )
-            . '/' . $token . substr( $url, $pos );
+        return rtrim( substr( $url, 0, $pos ), '/' ) . '/' . $token . substr( $url, $pos );
     }
 
 
     /**
      * Configures application-bound Mollie webhook paths.
+     *
+     * @throws \RuntimeException If no application key is configured
      */
     private function webhooks() : void
     {
@@ -132,8 +166,8 @@ class CashierMollieServiceProvider extends Provider
             'cashier.webhook_url' => 'webhooks/mollie',
         ];
 
-        foreach( $urls as $key => $default ) {
-            config()->set( $key, $this->webhook( (string) config( $key, $default ), $token ) );
+        foreach( $urls as $config => $default ) {
+            config()->set( $config, $this->webhook( (string) config( $config, $default ), $token ) );
         }
     }
 }

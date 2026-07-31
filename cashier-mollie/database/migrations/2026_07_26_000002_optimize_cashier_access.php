@@ -20,6 +20,8 @@ return new class extends Migration
 
     /**
      * Adds indexes used to resolve Mollie access sources from webhook payments.
+     *
+     * @throws \RuntimeException If the Cashier Mollie tables have not been published first
      */
     public function up(): void
     {

@@ -375,7 +375,8 @@ class StyleDemo extends AbstractDemo
                         'name' => 'Orbit Coat',
                         'prices' => [[
                             'id' => 'standard',
-                            'amount' => '1.680€',
+                            'amount' => 1680,
+                            'label' => '1.680€',
                             'unit' => 'double-faced wool',
                         ]],
                         'text' => 'A long wrap coat with an off-centre close, curved back seam, and hand-finished internal edges.',
@@ -388,7 +389,7 @@ class StyleDemo extends AbstractDemo
                     ],
                     [
                         'name' => 'Fold Jacket',
-                        'prices' => [['id' => 'standard', 'amount' => '940€', 'unit' => 'undyed wool']],
+                        'prices' => [['id' => 'standard', 'amount' => 940, 'label' => '940€', 'unit' => 'undyed wool']],
                         'text' => 'Compact tailoring with a folded front, soft internal construction, and a clean sculpted shoulder.',
                         'features' => "- Natural charcoal or silver\n- Sizes 32–46\n- Edition of 48\n- Three-week delivery",
                         'file' => ['id' => $this->priceImg( 'jacket' ), 'type' => 'file'],
@@ -397,7 +398,7 @@ class StyleDemo extends AbstractDemo
                     ],
                     [
                         'name' => 'Column Dress',
-                        'prices' => [['id' => 'standard', 'amount' => '1.120€', 'unit' => 'silk crepe']],
+                        'prices' => [['id' => 'standard', 'amount' => 1120, 'label' => '1.120€', 'unit' => 'silk crepe']],
                         'text' => 'A full-length bias-cut dress with a high back, narrow straps, and a hem levelled after the cloth has settled.',
                         'features' => "- Ink, oxblood, or pearl\n- Sizes 32–46\n- Edition of 42\n- Three-week delivery",
                         'file' => ['id' => $this->priceImg( 'dress' ), 'type' => 'file'],

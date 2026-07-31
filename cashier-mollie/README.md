@@ -31,7 +31,9 @@ table of its own.
 
 Mollie subscription plan names contain a signed pricing snapshot. When rotating
 `APP_KEY`, keep the previous value in Laravel's `APP_PREVIOUS_KEYS` setting
-until all existing subscriptions have ended.
+until all existing subscriptions have ended and Mollie no longer retries
+webhooks issued with the previous opaque URL. Previous keys keep both signed
+plans and their webhook route aliases valid during that window.
 
 The package owns the Mollie driver, signed plan repository, migrations,
 synchronous lifecycle listeners, and billing schedule. It requires Cashier

@@ -152,6 +152,30 @@ class CashierControllerTest extends CashierTestAbstract
     }
 
 
+    public function testCheckoutAllowsDefaultSingleTenant(): void
+    {
+        DB::table( 'cms_pages' )->where( 'id', $this->page->id )->update( ['tenant_id' => ''] );
+        $previous = Tenancy::$callback;
+        Tenancy::$callback = null;
+        app()->forgetInstance( Tenancy::class );
+
+        try {
+            $product = app( CashierProduct::class )->find(
+                $this->storedUser(),
+                (string) $this->page->id,
+                'pricing',
+                'professional',
+                'once',
+            );
+
+            $this->assertSame( 'price_test123', $product['reference'] );
+        } finally {
+            Tenancy::$callback = $previous;
+            app()->forgetInstance( Tenancy::class );
+        }
+    }
+
+
     public function testCheckoutCancelExternal(): void
     {
         $response = $this->actingAs( $this->storedUser() )->post(
@@ -409,17 +433,17 @@ class CashierControllerTest extends CashierTestAbstract
     }
 
 
-    public function testCheckoutRejectsUserFromAnotherTenant(): void
+    public function testCheckoutUsesCustomTenantMembership(): void
     {
         $user = $this->storedUser();
         $user->setAttribute( 'tenant_id', 'other' );
         Tenancy::$access = fn() => true;
 
         try {
-            $this->actingAs( $user )->postJson(
+            $this->actingAs( $user )->post(
                 route( 'cms.cashier' ),
                 $this->checkout(),
-            )->assertForbidden();
+            )->assertRedirect();
         } finally {
             Tenancy::$access = null;
         }
@@ -586,6 +610,23 @@ class CashierControllerTest extends CashierTestAbstract
 
         $this->assertStringContainsString( '<a class="btn" href="#contact">', $html );
         $this->assertStringNotContainsString( '<form method="POST"', $html );
+    }
+
+
+    public function testPricingPrefersDisplayLabel(): void
+    {
+        $element = collect( (array) $this->page->content )->first();
+        $element->data->items[0]->prices[0]->label = 'From 99€';
+
+        $html = view( 'cms::pricing', [
+            'data' => $element->data,
+            'files' => collect(),
+            'id' => $element->id,
+            'page' => $this->page,
+        ] )->render();
+
+        $this->assertStringContainsString( '<span class="amount">From 99€</span>', $html );
+        $this->assertStringNotContainsString( '<span class="amount">99</span>', $html );
     }
 
 

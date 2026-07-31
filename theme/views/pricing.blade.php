@@ -31,7 +31,7 @@
 							data-unit="{{ $price?->unit ?? '' }}"
 							@if(!$loop->first) hidden @endif
 						>
-							<span class="amount">{{ $price?->amount ?? '' }}</span>
+							<span class="amount">{{ $price?->label ?? $price?->amount ?? '' }}</span>
 							@if($price?->currency ?? null)
 								<span class="currency">{{ $price?->currency }}</span>
 							@endif

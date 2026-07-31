@@ -21,6 +21,9 @@ abstract class CashierTestAbstract extends \Orchestra\Testbench\TestCase
             'foreign_key_constraints' => true,
         ] );
         $app['config']->set( 'auth.providers.users.model', 'App\\Models\\User' );
+        $app['config']->set( 'app.previous_keys', [
+            'base64:' . base64_encode( 'previous-mollie-webhook-key' ),
+        ] );
         $app['config']->set( 'cms.db', 'testing' );
 
         \Aimeos\Cms\Tenancy::$callback = fn() => 'test';

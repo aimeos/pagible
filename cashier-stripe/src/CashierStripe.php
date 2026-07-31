@@ -226,9 +226,8 @@ class CashierStripe extends CashierProvider
      * @param array<string, mixed>|object $data
      * @param TokenData $meta
      */
-    protected function verifyRemove( array|object $data, array $meta,
-        Authenticatable $user, string $id
-    ) : bool {
+    protected function verifyRemove( array|object $data, array $meta, Authenticatable $user, string $id ) : bool
+    {
         $source = $this->source( $data );
         return $source !== '' && hash_equals( $id, $source );
     }

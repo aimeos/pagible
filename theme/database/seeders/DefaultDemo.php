@@ -581,7 +581,7 @@ class DefaultDemo extends AbstractDemo
                 'items' => [
                     [
                         'name' => 'Diagnostic',
-                        'prices' => [['id' => 'diagnostic', 'amount' => '2–3 weeks']],
+                        'prices' => [['id' => 'diagnostic', 'label' => '2–3 weeks']],
                         'text' => 'An independent assessment before a major commitment, recovery, or strategic reset.',
                         'features' => "- Evidence and stakeholder review\n- Decision and dependency map\n- Findings playback\n- Prioritised next steps",
                         'url' => '#contact',
@@ -589,7 +589,7 @@ class DefaultDemo extends AbstractDemo
                     ],
                     [
                         'name' => 'Design+Launch',
-                        'prices' => [['id' => 'launch', 'amount' => '6–10 weeks']],
+                        'prices' => [['id' => 'launch', 'label' => '6–10 weeks']],
                         'text' => 'A new operating model, service, or delivery approach built with your team.',
                         'features' => "- Current-state analysis\n- Design with operational owners\n- Tested routines and measures\n- Mobilisation plan",
                         'url' => '#contact',
@@ -599,7 +599,7 @@ class DefaultDemo extends AbstractDemo
                     ],
                     [
                         'name' => 'Delivery counsel',
-                        'prices' => [['id' => 'counsel', 'amount' => 'Retained']],
+                        'prices' => [['id' => 'counsel', 'label' => 'Retained']],
                         'text' => 'Experienced challenge and support around a live change portfolio.',
                         'features' => "- Sponsor counsel\n- Independent delivery reviews\n- Decision preparation\n- Facilitation at critical points",
                         'url' => '#contact',

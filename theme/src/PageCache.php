@@ -21,7 +21,11 @@ use Illuminate\Contracts\Cache\LockTimeoutException;
 
 class PageCache
 {
-    /** @param list<string> $paths */
+    /**
+     * Invalidates the cached responses for tenant- and domain-bound page paths.
+     *
+     * @param list<string> $paths
+     */
     public static function invalidate( string $domain, array $paths, string $tenant ) : void
     {
         $keys = array_map(

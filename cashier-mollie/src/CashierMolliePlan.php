@@ -60,6 +60,8 @@ class CashierMolliePlan implements PlanRepository
 
     /**
      * Resolves a signed dynamic plan or throws the Cashier plan exception.
+     *
+     * @throws PlanNotFoundException If the signed plan name is invalid
      */
     public static function findOrFail( string $name ) : PlanContract
     {
@@ -72,8 +74,7 @@ class CashierMolliePlan implements PlanRepository
      */
     public function matches( string $name, string $type ) : bool
     {
-        return ( $data = $this->read( $name ) )
-            && hash_equals( $data['b'], $this->binding( $type ) );
+        return ( $data = $this->read( $name ) ) && hash_equals( $data['b'], $this->binding( $type ) );
     }
 
 
@@ -107,6 +108,7 @@ class CashierMolliePlan implements PlanRepository
      * Keeps the signed plan name within Mollie's 255-byte limit.
      *
      * @param array{v: string, c: string, i: int, d: string, b: string} $data
+     * @throws \InvalidArgumentException If the plan remains too long without its description
      */
     private function name( array $data ) : string
     {
@@ -148,8 +150,8 @@ class CashierMolliePlan implements PlanRepository
 
         $plan = new Plan( $name );
         $plan->setAmount( $money );
-        $plan->setInterval( $price['interval'] . ( $price['interval'] === 1 ? ' day' : ' days' ) );
         $plan->setDescription( $price['description'] );
+        $plan->setInterval( $price['interval'] . ( $price['interval'] === 1 ? ' day' : ' days' ) );
         $plan->setFirstPaymentAmount( $money );
         $plan->setFirstPaymentDescription( $price['description'] );
         $plan->setFirstPaymentMethod( (array) config( 'cashier.first_payment.method', [] ) );
@@ -168,6 +170,8 @@ class CashierMolliePlan implements PlanRepository
 
 
     /**
+     * Reads and validates a signed dynamic-plan payload.
+     *
      * @return array{v: string, c: string, i: int, d: string, b: string}|null
      */
     private function read( string $name ) : ?array
@@ -198,6 +202,8 @@ class CashierMolliePlan implements PlanRepository
 
 
     /**
+     * Validates a Mollie price snapshot for a charge or subscription.
+     *
      * @param array<string, mixed> $product
      * @return array{
      *     currency: non-empty-string,
@@ -205,6 +211,7 @@ class CashierMolliePlan implements PlanRepository
      *     interval: int,
      *     reference: non-empty-string
      * }
+     * @throws \InvalidArgumentException If the price snapshot is invalid
      */
     private function valid( array $product, bool $subscription ) : array
     {

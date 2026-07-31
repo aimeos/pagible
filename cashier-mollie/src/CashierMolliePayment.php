@@ -37,7 +37,8 @@ class CashierMolliePayment implements GetMolliePayment
         $route = is_string( $route ) ? $route : '';
         $webhook = str_starts_with( $route, 'webhooks.mollie.' );
 
-        if( $webhook ) {
+        if( $webhook )
+        {
             $id = self::id( $id );
             $parameters['embed'] = 'refunds,chargebacks';
         }

@@ -632,6 +632,10 @@
                                     "label": "Payment reference",
                                     "max": 255
                                 },
+                                "label": {
+                                    "type": "string",
+                                    "label": "Displayed price"
+                                },
                                 "amount": {
                                     "type": "number",
                                     "min": 0,

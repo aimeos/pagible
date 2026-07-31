@@ -13,6 +13,7 @@ use Aimeos\Cms\CashierMolliePlan;
 use Aimeos\Cms\CashierMollieServiceProvider;
 use Aimeos\Cms\CashierProvider;
 use Aimeos\Cms\CashierToken;
+use Aimeos\Cms\Tenancy;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Database\Eloquent\Model;
@@ -387,6 +388,45 @@ class CashierMollieTest extends CashierTestAbstract
     }
 
 
+    public function testSubscriptionProjectsForDefaultTenantWithoutTenantColumn(): void
+    {
+        $previous = Tenancy::$callback;
+        Tenancy::$callback = null;
+        app()->forgetInstance( Tenancy::class );
+
+        try
+        {
+            $user = CashierMollieDefaultUser::forceCreate( [
+                'name' => 'Default tenant',
+                'email' => 'default@example.com',
+                'password' => 'password',
+            ] );
+            $name = CashierAccess::subscription( '', 'frontend.pro' );
+            $plan = app( CashierMolliePlan::class )->create( [
+                'reference' => '19.00',
+                'currency' => 'EUR',
+                'interval' => 30,
+                'description' => 'Professional',
+            ], $name );
+
+            app( CashierMollie::class )->subscription( (object) [
+                'id' => 321,
+                'name' => $name,
+                'plan' => $plan,
+                'owner' => $user,
+                'cycle_ends_at' => now()->addMonth(),
+            ] );
+
+            $access = $user->refresh()->getAttribute( 'access' );
+            $this->assertIsArray( $access );
+            $this->assertSame( 'frontend.pro', $access['|mollie|321']['role'] ?? null );
+        } finally {
+            Tenancy::$callback = $previous;
+            app()->forgetInstance( Tenancy::class );
+        }
+    }
+
+
     public function testServiceProviderBindsDriver(): void
     {
         $this->assertInstanceOf( CashierMollie::class, app( CashierProvider::class ) );
@@ -513,6 +553,22 @@ class CashierMollieTest extends CashierTestAbstract
         $this->post( '/webhooks/mollie', ['id' => 'tr_public'] )->assertNotFound();
         $this->post( '/webhooks/mollie/aftercare', ['id' => 'tr_public'] )->assertNotFound();
         $this->post( '/webhooks/mollie/first-payment', ['id' => 'tr_public'] )->assertNotFound();
+    }
+
+
+    public function testWebhookRoutesUsePreviousApplicationKeys(): void
+    {
+        $key = config( 'app.previous_keys.0' );
+        $this->assertIsString( $key );
+        $token = hash_hmac( 'sha256', 'cms-cashier-mollie-webhook', $key );
+
+        foreach( [
+            '/webhooks/mollie/' . $token,
+            '/webhooks/mollie/aftercare/' . $token,
+            '/webhooks/mollie/first-payment/' . $token,
+        ] as $uri ) {
+            $this->post( $uri, ['id' => 'invalid'] )->assertBadRequest();
+        }
     }
 
 
@@ -800,6 +856,15 @@ class CashierMollieTest extends CashierTestAbstract
 
         $this->app->instance( MolliePayment::class, $payments );
     }
+}
+
+
+class CashierMollieDefaultUser extends \Illuminate\Foundation\Auth\User
+{
+    use \Aimeos\Cms\Concerns\CashierAccess;
+
+    protected $guarded = [];
+    protected $table = 'users';
 }
 
 

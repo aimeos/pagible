@@ -561,7 +561,7 @@ class LuxuryDemo extends AbstractDemo
                 'items' => [
                     [
                         'name' => 'Garden Room',
-                        'prices' => [['id' => 'nightly', 'amount' => '420€', 'unit' => 'night']],
+                        'prices' => [['id' => 'nightly', 'amount' => 420, 'label' => '420€', 'unit' => 'night']],
                         'text' => 'A calm ground-floor room with a planted terrace and step-free route to the pool.',
                         'features' => "- 34 m² interior\n- King or twin bed\n- Walk-in rain shower\n- Private garden terrace",
                         'file' => ['id' => $this->priceImg( 'terrace' ), 'type' => 'file'],
@@ -570,7 +570,7 @@ class LuxuryDemo extends AbstractDemo
                     ],
                     [
                         'name' => 'Terrace Suite',
-                        'prices' => [['id' => 'nightly', 'amount' => '610€', 'unit' => 'night']],
+                        'prices' => [['id' => 'nightly', 'amount' => 610, 'label' => '610€', 'unit' => 'night']],
                         'text' => 'A generous suite above the grove with a separate sitting room and sunset terrace.',
                         'features' => "- 52 m² interior\n- King bed\n- Bath and rain shower\n- West-facing terrace",
                         'file' => ['id' => $this->priceImg( 'suite' ), 'type' => 'file'],
@@ -581,7 +581,7 @@ class LuxuryDemo extends AbstractDemo
                     ],
                     [
                         'name' => 'The Limestone House',
-                        'prices' => [['id' => 'nightly', 'amount' => '1.480€', 'unit' => 'night']],
+                        'prices' => [['id' => 'nightly', 'amount' => 1480, 'label' => '1.480€', 'unit' => 'night']],
                         'text' => 'A private two-bedroom house with a plunge pool, kitchen, and dedicated host.',
                         'features' => "- 128 m² interior\n- Two king bedrooms\n- Private heated pool\n- Breakfast in the house",
                         'file' => ['id' => $this->priceImg( 'pool' ), 'type' => 'file'],
@@ -674,7 +674,7 @@ class LuxuryDemo extends AbstractDemo
                 'items' => [
                     [
                         'name' => 'Avelune Ritual',
-                        'prices' => [['id' => 'ritual', 'amount' => '220€', 'unit' => '2 hours']],
+                        'prices' => [['id' => 'ritual', 'amount' => 220, 'label' => '220€', 'unit' => '2 hours']],
                         'text' => 'A private bathing sequence followed by intuitive bodywork and a garden infusion.',
                         'features' => "- Wellness consultation\n- Private bath house\n- 75-minute treatment\n- Rest room tea",
                         'file' => ['id' => $this->priceImg( 'bath' ), 'type' => 'file'],
@@ -683,7 +683,7 @@ class LuxuryDemo extends AbstractDemo
                     ],
                     [
                         'name' => 'Three Nights of Rest',
-                        'prices' => [['id' => 'stay', 'amount' => '780€', 'unit' => 'stay']],
+                        'prices' => [['id' => 'stay', 'amount' => 780, 'label' => '780€', 'unit' => 'stay']],
                         'text' => 'A light structure for guests who arrive tired and want sleep to feel natural again.',
                         'features' => "- Sleep consultation\n- Two body treatments\n- Private movement session\n- Evening bath ritual",
                         'file' => ['id' => $this->priceImg( 'suite' ), 'type' => 'file'],
@@ -694,7 +694,7 @@ class LuxuryDemo extends AbstractDemo
                     ],
                     [
                         'name' => 'Five Nights in Motion',
-                        'prices' => [['id' => 'stay', 'amount' => '1.260€', 'unit' => 'stay']],
+                        'prices' => [['id' => 'stay', 'amount' => 1260, 'label' => '1.260€', 'unit' => 'stay']],
                         'text' => 'Restore strength and ease through individual movement, walking, treatment, and useful rest.',
                         'features' => "- Movement assessment\n- Three private sessions\n- Two treatments\n- Guided mountain walk",
                         'file' => ['id' => $this->priceImg( 'yoga' ), 'type' => 'file'],

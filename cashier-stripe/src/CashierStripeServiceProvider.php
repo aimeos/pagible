@@ -23,10 +23,7 @@ class CashierStripeServiceProvider extends Provider
     {
         $events = (array) ( config( 'cashier.webhook.events' ) ?: WebhookCommand::DEFAULT_EVENTS );
 
-        config( ['cashier.webhook.events' => array_values( array_unique( [
-            ...$events,
-            ...CashierStripe::EVENTS,
-        ] ) )] );
+        config( ['cashier.webhook.events' => array_values( array_unique( [...$events, ...CashierStripe::EVENTS] ) )] );
 
         Event::listen( WebhookReceived::class, function( WebhookReceived $event ) {
             if( trim( (string) config( 'cashier.webhook.secret' ) ) !== '' ) {
@@ -34,8 +31,7 @@ class CashierStripeServiceProvider extends Provider
             }
         } );
 
-        $this->app->booted( fn() => Route::getRoutes()
-            ->getByName( 'cashier.webhook' )
+        $this->app->booted( fn() => Route::getRoutes()->getByName( 'cashier.webhook' )
             ?->middleware( CashierWebhook::class . ':cashier.webhook.secret' )
         );
 

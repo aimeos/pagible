@@ -535,7 +535,7 @@ class BoldDemo extends AbstractDemo
                 'items' => [
                     [
                         'name' => 'Drop-in',
-                        'prices' => [['id' => 'class', 'amount' => '24€', 'unit' => 'class']],
+                        'prices' => [['id' => 'class', 'amount' => 24, 'label' => '24€', 'unit' => 'class']],
                         'text' => 'Train when you are in town or add one more session.',
                         'features' => "- Any regular group session\n- 14-day booking window\n- Credit valid for 30 days\n- Studio amenities included",
                         'url' => '/start',
@@ -543,7 +543,7 @@ class BoldDemo extends AbstractDemo
                     ],
                     [
                         'name' => 'RALLY 8',
-                        'prices' => [['id' => 'monthly', 'amount' => '129€', 'unit' => 'month']],
+                        'prices' => [['id' => 'monthly', 'amount' => 129, 'label' => '129€', 'unit' => 'month']],
                         'text' => 'A steady twice-weekly rhythm with room to flex.',
                         'features' => "- Eight sessions each month\n- One unused credit rolls over\n- Quarterly coach check-in\n- Guest pass every three months",
                         'url' => '/start',
@@ -553,7 +553,7 @@ class BoldDemo extends AbstractDemo
                     ],
                     [
                         'name' => 'All Access',
-                        'prices' => [['id' => 'monthly', 'amount' => '179€', 'unit' => 'month']],
+                        'prices' => [['id' => 'monthly', 'amount' => 179, 'label' => '179€', 'unit' => 'month']],
                         'text' => 'For varied training weeks and members who recover well.',
                         'features' => "- Unlimited regular sessions\n- Priority waitlist access\n- Monthly coach check-in\n- Two guest passes each month",
                         'url' => '/start',

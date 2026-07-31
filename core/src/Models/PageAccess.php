@@ -99,6 +99,8 @@ class PageAccess extends Model
 
 
     /**
+     * Returns the page owning this explicit frontend access rule.
+     *
      * @return BelongsTo<Page, $this>
      */
     public function page() : BelongsTo

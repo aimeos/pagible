@@ -63,6 +63,19 @@ class DemoTest extends ThemeTestAbstract
         $response->assertSee( 'href="' . route( 'login' ) . '"', false );
         $this->assertGreaterThan( 0, Page::where( 'path', 'blog' )->count() );
         $this->assertGreaterThan( 0, Page::where( 'type', 'docs' )->count() );
+        $pricing = collect( (array) $home->content )->first( fn( $item ) => ( $item->type ?? null ) === 'pricing' );
+        $this->assertIsObject( $pricing );
+        $this->assertSame(
+            ['2–3 weeks', '6–10 weeks', 'Retained'],
+            array_map( fn( $item ) => $item->prices[0]->label ?? null, (array) $pricing->data->items ),
+        );
+
+        foreach( (array) $pricing->data->items as $item )
+        {
+            foreach( (array) ( $item->prices ?? [] ) as $price ) {
+                $this->assertFalse( isset( $price->amount ) && !is_int( $price->amount ) && !is_float( $price->amount ) );
+            }
+        }
 
         foreach( Page::get() as $page )
         {

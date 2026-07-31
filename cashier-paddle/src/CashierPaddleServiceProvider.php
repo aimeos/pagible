@@ -28,8 +28,7 @@ class CashierPaddleServiceProvider extends Provider
             }
         } );
 
-        $this->app->booted( fn() => Route::getRoutes()
-            ->getByName( 'cashier.webhook' )
+        $this->app->booted( fn() => Route::getRoutes()->getByName( 'cashier.webhook' )
             ?->middleware( CashierWebhook::class . ':cashier.webhook_secret' )
         );
 

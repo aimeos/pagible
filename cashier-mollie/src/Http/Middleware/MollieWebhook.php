@@ -7,7 +7,6 @@
 namespace Aimeos\Cms\Http\Middleware;
 
 use Aimeos\Cms\CashierMolliePayment;
-use Closure;
 use Illuminate\Http\Request;
 
 
@@ -19,7 +18,7 @@ class MollieWebhook
     /**
      * Continues only for a valid Mollie payment identifier.
      */
-    public function handle( Request $request, Closure $next ) : mixed
+    public function handle( Request $request, \Closure $next ) : mixed
     {
         CashierMolliePayment::id( $request->input( 'id' ) );
 

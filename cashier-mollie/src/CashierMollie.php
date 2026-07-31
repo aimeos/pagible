@@ -32,9 +32,8 @@ class CashierMollie extends CashierProvider
     /**
      * Creates the Mollie driver with its signed dynamic-plan repository.
      */
-    public function __construct( CashierAccess $access, CashierToken $tokens,
-        private CashierMolliePlan $plans
-    ) {
+    public function __construct( CashierAccess $access, CashierToken $tokens, private CashierMolliePlan $plans )
+    {
         parent::__construct( $access, $tokens );
     }
 
@@ -51,24 +50,14 @@ class CashierMollie extends CashierProvider
     /**
      * Handles Cashier Mollie's model-rich subscription events.
      */
-    public function subscription( object $subscription, bool $cancelled = false,
-        ?\DateTimeInterface $at = null
-    ) : void
+    public function subscription( object $subscription, bool $cancelled = false, ?\DateTimeInterface $at = null ) : void
     {
         if( !( $source = $this->source( $subscription ) ) ) {
             return;
         }
 
-        $end = $this->end(
-            $subscription->ends_at
-                ?? $subscription->cycle_ends_at
-                ?? $subscription->trial_ends_at
-                ?? null
-        );
-
-        $at = $at
-            ? \DateTimeImmutable::createFromInterface( $at )
-            : $this->occurred( $subscription );
+        $end = $this->end( $subscription->ends_at ?? $subscription->cycle_ends_at ?? $subscription->trial_ends_at ?? null );
+        $at = $at ? \DateTimeImmutable::createFromInterface( $at ) : $this->occurred( $subscription );
 
         if( $cancelled )
         {
@@ -81,11 +70,8 @@ class CashierMollie extends CashierProvider
 
         $plan = (string) ( $subscription->plan ?? '' );
 
-        if( $end && $this->plans->matches( $plan, (string) ( $subscription->name ?? '' ) ) )
-        {
-            $this->access->grant(
-                $source['user'], $source['tenant'], $source['role'], $this->provider, $source['id'], $end, $at,
-            );
+        if( $end && $this->plans->matches( $plan, (string) ( $subscription->name ?? '' ) ) ) {
+            $this->access->grant( $source['user'], $source['tenant'], $source['role'], $this->provider, $source['id'], $end, $at );
         }
     }
 
@@ -93,9 +79,7 @@ class CashierMollie extends CashierProvider
     /**
      * Projects authoritative provider state before acknowledging its webhook.
      */
-    public function webhook( object $payment, bool $firstPayment = false,
-        ?\DateTimeInterface $at = null
-    ) : void
+    public function webhook( object $payment, bool $firstPayment = false, ?\DateTimeInterface $at = null ) : void
     {
         if( $adverse = $this->adverse( $payment, $at ) )
         {
@@ -137,6 +121,8 @@ class CashierMollie extends CashierProvider
 
 
     /**
+     * Starts a one-time charge or subscription checkout through Mollie.
+     *
      * @param ProductData $product
      * @param array<string, string> $metadata
      */
@@ -151,12 +137,13 @@ class CashierMollie extends CashierProvider
 
 
     /**
+     * Verifies that a Mollie revocation belongs to the signed payment source.
+     *
      * @param array<string, mixed>|object $data
      * @param array<string, mixed> $meta
      */
-    protected function verifyRemove( array|object $data, array $meta,
-        Authenticatable $user, string $id
-    ) : bool {
+    protected function verifyRemove( array|object $data, array $meta, Authenticatable $user, string $id ) : bool
+    {
         $source = is_object( $data )
             ? (string) ( $data->id ?? $data->mollie_payment_id ?? '' )
             : (string) ( $data['id'] ?? $data['mollie_payment_id'] ?? '' );
@@ -167,16 +154,19 @@ class CashierMollie extends CashierProvider
 
     /**
      * Returns the newest authoritative adverse-event time or null for active payments.
+     *
+     * @throws \RuntimeException If an adverse payment has no authoritative event timestamp
      */
     private function adverse( object $payment, ?\DateTimeInterface $occurred = null ) : ?\DateTimeInterface
     {
         $latest = null;
+        $amount = $this->money( $payment->amount ?? null );
+
         $charged = $this->money( $payment->amountChargedBack ?? null );
         $chargeback = $charged && (int) $charged->getAmount() > 0;
-        $amount = $this->money( $payment->amount ?? null );
+
         $refunded = $this->money( $payment->amountRefunded ?? null );
-        $refund = $amount && $refunded
-            && (int) $refunded->getAmount() >= max( 1, (int) $amount->getAmount() );
+        $refund = $amount && $refunded && (int) $refunded->getAmount() >= max( 1, (int) $amount->getAmount() );
 
         if( !$chargeback && !$refund ) {
             return null;
@@ -242,6 +232,7 @@ class CashierMollie extends CashierProvider
         }
 
         $events = method_exists( $payment, $name ) ? $payment->{$name}() : [];
+
         return is_iterable( $events ) ? $events : [];
     }
 
@@ -250,6 +241,7 @@ class CashierMollie extends CashierProvider
      * Limits a paid order to Pagible subscription items and preloads their owners.
      *
      * @param Builder<Model> $query
+     * @throws \RuntimeException If the configured subscription model is invalid
      */
     private function items( Builder $query ) : void
     {
@@ -259,17 +251,13 @@ class CashierMollie extends CashierProvider
             throw new \RuntimeException( 'Invalid Cashier Mollie subscription model.' );
         }
 
-        $query
-            ->whereHasMorph(
-                'orderable',
-                [$class],
-                fn( Builder $query ) => $query->where(
-                    'name',
-                    'like',
-                    CashierAccess::SUBSCRIPTION_PREFIX . '%',
-                ),
-            )
-            ->with( 'orderable.owner' );
+        $query->whereHasMorph( 'orderable', [$class],
+            fn( Builder $query ) => $query->where(
+                'name',
+                'like',
+                CashierAccess::SUBSCRIPTION_PREFIX . '%',
+            ),
+        )->with( 'orderable.owner' );
     }
 
 
@@ -299,8 +287,11 @@ class CashierMollie extends CashierProvider
 
 
     /**
+     * Starts a one-time Mollie checkout with signed CMS metadata.
+     *
      * @param ProductData $product
      * @param array<string, string> $metadata
+     * @throws \RuntimeException If Cashier Mollie is unavailable or returns no redirect
      */
     private function once( Authenticatable $user, array $product, array $metadata ) : RedirectResponse
     {
@@ -421,14 +412,14 @@ class CashierMollie extends CashierProvider
         $user = $order->owner ?? null;
         $id = (string) ( $order->mollie_payment_id ?? '' );
 
-        if( $user instanceof Authenticatable && $id !== '' ) {
+        if( $user instanceof Authenticatable && $id ) {
             $this->remove( $order, $id, $at );
         }
     }
 
 
     /**
-     * Resolves a Pagible subscription's access source.
+     * Resolves and tenant-validates a Pagible subscription's access source.
      *
      * @return array{user: Authenticatable, tenant: string, role: string, id: string}|null
      */
@@ -436,12 +427,22 @@ class CashierMollie extends CashierProvider
     {
         $user = $subscription->owner ?? null;
         $id = (string) ( $subscription->mollie_id ?? $subscription->id ?? '' );
-        $tenant = $user instanceof Model ? $user->getAttribute( 'tenant_id' ) : null;
+
+        if( !$user instanceof Authenticatable || !$user instanceof Model ) {
+            return null;
+        }
+
+        $tenant = $user->getAttribute( 'tenant_id' );
+
+        if( !is_string( $tenant ) ) {
+            $tenant = Tenancy::allows( $user, '' ) ? '' : null;
+        }
+
         $role = is_string( $tenant )
             ? CashierAccess::subscriptionAccess( (string) ( $subscription->name ?? '' ), $tenant )
             : null;
 
-        if( !$user instanceof Authenticatable || !is_string( $tenant ) || $role === null || $id === '' ) {
+        if( !is_string( $tenant ) || $role === null || $id === '' ) {
             return null;
         }
 
@@ -453,6 +454,7 @@ class CashierMollie extends CashierProvider
      * Starts a subscription with the signed pricing-content plan snapshot.
      *
      * @param ProductData $product
+     * @throws \RuntimeException If Cashier Mollie is unavailable or returns no redirect
      */
     private function subscribe( Authenticatable $user, array $product ) : RedirectResponse
     {

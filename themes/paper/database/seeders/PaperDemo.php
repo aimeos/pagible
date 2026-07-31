@@ -469,7 +469,7 @@ class PaperDemo extends AbstractDemo
                 'items' => [
                     [
                         'name' => 'Reader',
-                        'prices' => [['id' => 'annual', 'amount' => '24€', 'unit' => 'per year']],
+                        'prices' => [['id' => 'annual', 'amount' => 24, 'label' => '24€', 'unit' => 'per year']],
                         'text' => 'The complete digital journal and our monthly letter from the editors.',
                         'features' => "- Every story online\n- Full issue archive\n- Monthly editors’ letter\n- Cancel at any time",
                         'url' => '#contact',
@@ -477,7 +477,7 @@ class PaperDemo extends AbstractDemo
                     ],
                     [
                         'name' => 'Print',
-                        'prices' => [['id' => 'annual', 'amount' => '58€', 'unit' => 'per year']],
+                        'prices' => [['id' => 'annual', 'amount' => 58, 'label' => '58€', 'unit' => 'per year']],
                         'text' => 'Four print issues, with full digital access included throughout the year.',
                         'features' => "- Four quarterly issues\n- Complete digital access\n- Monthly editors’ letter\n- Subscriber cover",
                         'url' => '#contact',
@@ -487,7 +487,7 @@ class PaperDemo extends AbstractDemo
                     ],
                     [
                         'name' => 'Sustainer',
-                        'prices' => [['id' => 'annual', 'amount' => '96€', 'unit' => 'per year']],
+                        'prices' => [['id' => 'annual', 'amount' => 96, 'label' => '96€', 'unit' => 'per year']],
                         'text' => 'Print and digital access with additional support for independent commissions.',
                         'features' => "- Everything in Print\n- Annual studio note\n- Your name in the year-end issue\n- Extra support for reporting",
                         'url' => '#contact',
