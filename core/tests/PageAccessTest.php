@@ -396,9 +396,10 @@ class PageAccessTest extends CoreTestAbstract
 
     public function testRejectsMoreThanOneThousandAccessAssignments(): void
     {
+        $this->assertSame( 250, config( 'cms.access.limit' ) );
+
         $ids = Page::query()->limit( 5 )->pluck( 'id' )->map( strval(...) )->all();
         $values = array_map( fn( int $value ) => 'access-' . $value, range( 1, 250 ) );
-        config( ['cms.access.sql_limit' => 250] );
         Access::using( fn() => $values );
 
         $this->expectException( Exception::class );

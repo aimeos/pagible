@@ -19,13 +19,11 @@ return [
     |--------------------------------------------------------------------------
     |
     | Cache misses for public pages use an atomic lock to prevent duplicate
-    | cache writes. The lock TTL is expressed in seconds. Redis cache keys are
-    | distributed over a bounded number of per-tenant cluster hash slots.
+    | cache writes. The lock TTL is expressed in seconds.
     |
     */
     'lock' => (int) env( 'CMS_THEME_LOCK', 5 ),
     'stale' => (int) env( 'CMS_THEME_STALE', 10 ),
-    'buckets' => (int) env( 'CMS_THEME_CACHE_BUCKETS', 16 ),
 
     /*
     |--------------------------------------------------------------------------

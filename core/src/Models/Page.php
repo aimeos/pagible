@@ -789,6 +789,4 @@ class Page extends Base
             'meta' => $version->aux->meta ?? new \stdClass(),
         ];
     }
-
-
 }

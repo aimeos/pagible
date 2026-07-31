@@ -15,7 +15,7 @@ After installation, the configuration is available in `config/cms.php`:
 | Option | Default | Description |
 |--------|---------|-------------|
 | `roles` | `['admin' => ['*'], ...]` | Named role definitions mapping to permission sets. Supports wildcards (`page:*`, `*:view`, `*`) and denials (`!page:purge`) |
-| `access.sql_limit` | `128` | Strict maximum number of distinct frontend access values per tenant |
+| `access.limit` | `250` | Strict maximum number of distinct frontend access values per tenant (`CMS_ACCESS_LIMIT`) |
 | `broadcast` | `false` | Enable real-time broadcasting via Laravel Reverb so other editors see changes immediately |
 | `db` | `sqlite` | Database connection name (references `config/database.php`) |
 | `disks.public.name` | `public` | Filesystem disk for public uploads (`CMS_DISK`) |
@@ -98,7 +98,7 @@ Access::using(
 );
 ```
 
-`Permission::has('access:view')` reports whether a catalog or package adapter has been configured, and `Access::list()` returns its normalized values. The `add`, `delete`, and `grants` callbacks are optional; without write callbacks the catalog remains read-only. The complete catalog must contain no more than `cms.access.sql_limit` distinct values. Pagible stops reading at the next distinct value and rejects an oversized catalog; additions are rejected before invoking the write callback when the limit has already been reached. Catalog membership and autocomplete search use the memoized bounded list.
+`Permission::has('access:view')` reports whether a catalog or package adapter has been configured, and `Access::list()` returns its normalized values. The `add`, `delete`, and `grants` callbacks are optional; without write callbacks the catalog remains read-only. The complete catalog must contain no more than `cms.access.limit` distinct values. Pagible stops reading at the next distinct value and rejects an oversized catalog; additions are rejected before invoking the write callback when the limit has already been reached. Catalog membership and autocomplete search use the memoized bounded list.
 
 A grant resolver must return all effective frontend-access values for the user, including direct and role-derived values in the active tenant and guard. Its result avoids Gate calls for each candidate but is filtered through the configured catalog. Return `null` for users whose permissions cannot be enumerated, such as blanket access implemented only through `Gate::before()`; Pagible then preserves the catalog-and-Gate fallback. Pass `null` as the list callback to reset custom configuration.
 

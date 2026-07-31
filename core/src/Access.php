@@ -671,7 +671,7 @@ class Access
      */
     private static function limit() : int
     {
-        return max( 1, (int) config( 'cms.access.sql_limit', 128 ) );
+        return max( 1, (int) config( 'cms.access.limit', 250 ) );
     }
 
 
@@ -681,7 +681,7 @@ class Access
     private static function overflow( int $limit ) : Exception
     {
         return new Exception( sprintf(
-            'Frontend access catalog exceeds cms.access.sql_limit (%d).',
+            'Frontend access catalog exceeds cms.access.limit (%d).',
             $limit,
         ) );
     }

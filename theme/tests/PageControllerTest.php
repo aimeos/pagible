@@ -398,8 +398,8 @@ class PageControllerTest extends ThemeTestAbstract
             $first,
             $method->invoke( null, 'a|b', 'c', 'd' ),
         );
-        $this->assertMatchesRegularExpression( '/^\\{[a-f0-9]{64}:[a-f0-9]{2}\\}:2:[a-f0-9]{64}$/', $first );
-        $this->assertMatchesRegularExpression( '/^\\{[a-f0-9]{64}:[a-f0-9]{2}\\}:2:[a-f0-9]{64}$/', $second );
+        $this->assertMatchesRegularExpression( '/^[a-f0-9]{64}$/', $first );
+        $this->assertMatchesRegularExpression( '/^[a-f0-9]{64}$/', $second );
     }
 
 

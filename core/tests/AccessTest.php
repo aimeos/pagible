@@ -285,9 +285,9 @@ class AccessTest extends CoreTestAbstract
     }
 
 
-    public function testCatalogStrictlyEnforcesSqlLimit(): void
+    public function testCatalogStrictlyEnforcesLimit(): void
     {
-        config( ['cms.access.sql_limit' => 2] );
+        config( ['cms.access.limit' => 2] );
         $yielded = 0;
 
         Access::using( function() use ( &$yielded ) {
@@ -300,10 +300,10 @@ class AccessTest extends CoreTestAbstract
 
         try {
             app( Access::class )->list();
-            $this->fail( 'The configured SQL limit must cap the complete catalog.' );
+            $this->fail( 'The configured limit must cap the complete catalog.' );
         } catch( Exception $e ) {
             $this->assertSame(
-                'Frontend access catalog exceeds cms.access.sql_limit (2).',
+                'Frontend access catalog exceeds cms.access.limit (2).',
                 $e->getMessage(),
             );
         }
@@ -312,9 +312,9 @@ class AccessTest extends CoreTestAbstract
     }
 
 
-    public function testAdditionCannotExceedSqlLimit(): void
+    public function testAdditionCannotExceedLimit(): void
     {
-        config( ['cms.access.sql_limit' => 2] );
+        config( ['cms.access.limit' => 2] );
         $added = false;
 
         Access::using(
@@ -326,10 +326,10 @@ class AccessTest extends CoreTestAbstract
 
         try {
             app( Access::class )->add( 'gamma' );
-            $this->fail( 'Additions must not exceed the configured SQL limit.' );
+            $this->fail( 'Additions must not exceed the configured limit.' );
         } catch( Exception $e ) {
             $this->assertSame(
-                'Frontend access catalog exceeds cms.access.sql_limit (2).',
+                'Frontend access catalog exceeds cms.access.limit (2).',
                 $e->getMessage(),
             );
         }

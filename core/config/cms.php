@@ -55,7 +55,7 @@ return [
     |
     */
     'access' => [
-        'sql_limit' => (int) env( 'CMS_ACCESS_SQL_LIMIT', 128 ),
+        'limit' => (int) env( 'CMS_ACCESS_LIMIT', 250 ),
     ],
 
     /*
