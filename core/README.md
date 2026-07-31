@@ -18,7 +18,9 @@ After installation, the configuration is available in `config/cms.php`:
 | `access.sql_limit` | `128` | Strict maximum number of distinct frontend access values per tenant |
 | `broadcast` | `false` | Enable real-time broadcasting via Laravel Reverb so other editors see changes immediately |
 | `db` | `sqlite` | Database connection name (references `config/database.php`) |
-| `disk` | `public` | Filesystem disk for uploaded files |
+| `disks.public.name` | `public` | Filesystem disk for public uploads (`CMS_DISK`) |
+| `disks.private.name` | `local` | Filesystem disk for page-access-protected uploads (`CMS_PRIVATE_DISK`) |
+| `disks.private.ttl` | `300` | Lifetime in seconds of temporary private storage URLs (`CMS_PRIVATE_TTL`) |
 | `image.preview-sizes` | `[480, 960, 1920]` | Preview image widths in pixels for uploaded images |
 | `locales` | `en,ar,zh,fr,de,es,pt,pt-BR,ru` | Comma-separated ISO language codes. First locale is the default for new content |
 | `lock` | `30` | Page-tree write-lock lifetime and maximum acquisition wait in seconds (`CMS_LOCK`) |
@@ -31,6 +33,20 @@ After installation, the configuration is available in `config/cms.php`:
 | `versions` | `10` | Maximum number of versions to retain per page, element, or file |
 
 Set the upload policy with `CMS_UPLOAD_FILESIZE` and the comma-separated `CMS_UPLOAD_MIMETYPES`. The default MIME types are `application/gzip`, `application/pdf`, `application/vnd.*`, `application/zip`, `audio/*`, `image/*`, `text/*`, and `video/*`.
+
+Uploads are public by default. File fields can opt into page access protection, which stores the file on the private disk and authorizes delivery against the page using it. The public and private disk names must be different.
+
+Managed originals, previews, and historical version objects are stored below
+`cms/{tenant}/{file-uuid}/` (or `cms/{file-uuid}/` for the default tenant).
+Named tenant IDs must contain 1-100 ASCII letters, digits, underscores, or hyphens and must not
+be UUIDs; invalid IDs are rejected when the tenant context is resolved.
+The storage migration copies and verifies legacy objects before changing their database paths
+and leaves remote hot-link URLs unchanged. Run upgrades from the CLI during a maintenance window
+with CMS file writes stopped; remote object stores may require several requests per managed path.
+
+Relocation is synchronous and accepts at most 100 unique File IDs per request. Use smaller batches
+for large originals or deep File histories. Remote private disks that provide temporary URLs let
+clients download large protected media directly; local private files are streamed by the application.
 
 ### Default Roles
 
@@ -132,7 +148,7 @@ Use `PageAccess::set()` as the supported write API. It applies database-first, c
 
 Access-value lists are trimmed, must contain only registered non-empty strings, deduplicated, sorted, and limited to 250 entries of at most 100 characters. An empty list is stored as one empty value for authentication-only access.
 
-After access records have been committed, indexed Laravel Scout drivers are refreshed by queued jobs from the current page state. Bulk page, element, and file publication, deletion, restoration, and edits use the same queued reconciliation for the Pagible `cms` engine and external Scout engines. The `collection` and Laravel `database` drivers query model tables directly and need no index job. Jobs carry only the tenant, model class, and bounded ID list, then hydrate current state when handled. Run a queue worker with an asynchronous queue connection in production; the `sync` connection executes these jobs inline.
+After access records have been committed, indexed Laravel Scout drivers are refreshed by queued jobs from the current page state. Bulk page, element, and file publication, deletion, restoration, and edits use the same queued reconciliation for the Pagible `cms` engine and external Scout engines. The `collection` and Laravel `database` drivers query model tables directly and need no index job. Jobs carry only the tenant, model class, and bounded ID list, then hydrate current state when handled. File-version pruning and purging also queue physical storage cleanup after commit. Run a queue worker with an asynchronous queue connection in production; the `sync` connection executes these jobs inline.
 
 Access changes don't modify page-tree coordinates, so they acquire neither the tenant page-tree lock nor page row locks. They load the target pages and current canonical access values once, then update only pages whose values changed in one database transaction. SQL writes remain bounded, while cache invalidation and index synchronization dispatch afterward. Rolled-back changes dispatch nothing. Core emits a lightweight `PageInvalidated` event with affected paths grouped by domain without depending on a rendered-page cache; the theme package invalidates those rendered routes synchronously after commit. Redis, database, and Memcached stores use bounded native batch deletion, while other stores use Laravel's per-key fallback. Redis page keys use bounded tenant-specific cluster hash slots and asynchronous `UNLINK` calls, avoiding one hot tenant slot without issuing cross-slot commands. Keep `scout.queue` enabled with an asynchronous queue connection in production so external search indexing doesn't extend the write request.
 

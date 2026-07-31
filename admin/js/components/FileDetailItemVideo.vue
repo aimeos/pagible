@@ -3,7 +3,7 @@
 <script>
 import gql from 'graphql-tag'
 import { useUserStore, useMessageStore } from '../stores'
-import { safeParse, url } from '../utils'
+import { fileurl, safeParse } from '../utils'
 import { mdiTooltipImage, mdiImagePlus } from '@mdi/js'
 
 const SAVE_FILE_PREVIEW = gql`
@@ -48,7 +48,7 @@ export default {
     const messages = useMessageStore()
     const user = useUserStore()
 
-    return { user, messages, url, mdiTooltipImage, mdiImagePlus }
+    return { user, messages, fileurl, mdiTooltipImage, mdiImagePlus }
   },
 
   beforeUnmount() {
@@ -218,7 +218,7 @@ export default {
   <div class="editor-container">
     <video
       ref="video"
-      :src="url(item.path)"
+      :src="fileurl(item)"
       crossorigin="anonymous"
       class="element"
       controls
@@ -228,7 +228,7 @@ export default {
       <img
         v-if="Object.values(item.previews).length"
         class="video-preview"
-        :src="url(Object.values(item.previews).shift())"
+        :src="fileurl(item, Object.values(item.previews).shift())"
         :alt="item.name"
         @click="removeCover()"
       />

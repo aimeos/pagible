@@ -282,14 +282,15 @@ class GraphqlAiTest extends AiTestAbstract
             ] )
         ] );
 
-        $response = $this->actingAs( $this->user )->graphQL( '
-            mutation($prompt: String!, $content: JSON!) {
-                refine(prompt: $prompt, content: $content)
-            }
-        ', [
-            'prompt' => 'Refine this content',
-            'content' => json_encode( [] ),
-        ] );
+        $response = $this->assertExecutionLimitRestored( fn() => $this->actingAs( $this->user )->graphQL( '
+                mutation($prompt: String!, $content: JSON!) {
+                    refine(prompt: $prompt, content: $content)
+                }
+            ', [
+                'prompt' => 'Refine this content',
+                'content' => json_encode( [] ),
+            ] )
+        );
 
         $this->assertNull( $response->json( 'data.refine' ) );
         $this->assertStringContainsString( 'refine response', (string) $response->json( 'errors.0.message' ) );

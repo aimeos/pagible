@@ -10,6 +10,28 @@ namespace Tests;
 
 abstract class AiTestAbstract extends CmsTestAbstract
 {
+    /**
+     * @template T
+     * @param callable(): T $callback
+     * @return T
+     */
+    protected function assertExecutionLimitRestored( callable $callback ): mixed
+    {
+        $limit = (int) ini_get( 'max_execution_time' );
+
+        set_time_limit( 0 );
+
+        try {
+            $result = $callback();
+            $this->assertSame( 0, (int) ini_get( 'max_execution_time' ) );
+
+            return $result;
+        } finally {
+            set_time_limit( $limit );
+        }
+    }
+
+
 	protected function defineEnvironment( $app )
 	{
 		parent::defineEnvironment( $app );

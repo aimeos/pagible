@@ -17,7 +17,13 @@ The backup package uses these settings from the core configuration (`config/cms.
 | Config Key | Default | Description |
 |------------|---------|-------------|
 | `cms.db` | `sqlite` | Database connection name |
-| `cms.disk` | `public` | Storage disk for media files |
+| `cms.disks.public.name` | `public` | Storage disk for public media files |
+| `cms.disks.private.name` | `local` | Storage disk for protected media files |
+
+The public and private disk names must be different.
+
+Named tenant IDs must contain 1-100 ASCII letters, digits, underscores, or hyphens and must not
+be UUIDs. The empty ID remains valid for the default tenant.
 
 ## Commands
 
@@ -36,7 +42,13 @@ php artisan cms:backup [options]
 | `--keep` | | Number of backups to keep (deletes oldest) |
 | `--no-media` | | Skip media files |
 
-Creates a ZIP archive named `pagible-{tenant}-{timestamp}.zip` containing NDJSON exports of all `cms_*` tables and media files. Includes a manifest with SHA-256 checksums for integrity verification.
+Creates a ZIP archive named `pagible-{tenant}-{timestamp}.zip` containing NDJSON exports of all `cms_*` tables and the public and protected media owned by the exported File records and their historical versions. Soft-deleted Files remain recoverable. Remote hot-links, orphaned storage objects, and objects belonging to other tenants are not copied.
+
+The signed manifest contains SHA-256 checksums for every database and media entry. Its HMAC signature uses the application's `APP_KEY`, so restoring the archive in another installation requires the same key. Backup ZIPs are not encrypted and can contain protected media; keep the backup disk private or encrypt the archives at rest.
+
+Backup, restore, File catalog commits, relocation, and cleanup share one per-tenant media gate.
+Slow upload preparation remains outside the gate because prepared objects use new immutable paths.
+Only one of these operations can commit or move media for a tenant at a time.
 
 ### cms:restore
 
@@ -52,11 +64,17 @@ php artisan cms:restore [file] [options]
 | `--tenant` | from manifest | Target tenant ID (enables cross-tenant restore) |
 | `--disk` | `local` | Storage disk containing the backup |
 | `--merge` | | Merge (upsert) instead of replacing existing data |
-| `--no-media` | | Skip media files |
-| `--media-only` | | Only restore media files |
+| `--no-media` | | Skip media files; reject file disk changes and opposite-disk leftovers |
+| `--media-only` | | Only restore media files; require live files to use the archived disks |
 | `--list` | | List available backups |
 | `--verify` | | Verify backup integrity without restoring |
 | `--force` | | Skip confirmation prompts |
+
+Every restore verifies the signed manifest and all database and media checksums before writing anything. `--verify` performs the same verification without restoring. Media from the backup overwrites existing objects on its archived logical disk. Before each overwrite or opposite-disk deletion, restore journals the previous object in a private local temporary directory. Database import and disk reconciliation then commit together; on failure, the previous media is restored and newly created objects are removed. Ensure the application storage directory has enough free space for the media that may be overwritten. A normal restore leaves each local File path on at most its catalog disk.
+
+CMS UUIDs are global primary keys. A cross-tenant restore therefore fails before writing media when
+an archived entity ID still belongs to another tenant. Remove the source records first or remap their
+IDs externally when both copies must coexist.
 
 Examples:
 

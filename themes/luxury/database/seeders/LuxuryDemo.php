@@ -8,11 +8,9 @@
 namespace Database\Seeders;
 
 use Aimeos\Cms\Models\Element;
-use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Utils;
 use Aimeos\Cms\Validation;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 
@@ -961,33 +959,13 @@ class LuxuryDemo extends AbstractDemo
 </svg>
 SVG;
 
-            $disk = Storage::disk( config( 'cms.disk', 'public' ) );
-            $path = rtrim( 'cms/' . $this->tenant, '/' ) . '/avelune-logo.svg';
-
-            if( !$disk->put( $path, $svg ) ) {
-                throw new \Aimeos\Cms\Exception( sprintf( 'Unable to store logo "%s"', $path ) );
-            }
-
-            $data = [
-                'mime' => 'image/svg+xml',
-                'lang' => 'en',
-                'name' => 'Avelune Retreat logo',
-                'path' => $path,
-                'previews' => ['500' => $path],
-                'description' => ['en' => 'Avelune wordmark with a gold crescent above a fine horizon line'],
-            ];
-
-            $file = File::forceCreate( $data + ['editor' => 'demo'] );
-            $version = $file->versions()->forceCreate( [
-                'lang' => 'en',
-                'data' => $data,
-                'published' => true,
-                'editor' => 'demo',
-            ] );
-
-            $file->forceFill( ['latest_id' => $version->id] )->saveQuietly();
-            $file->publish( $version );
-            $this->logoFile = (string) $file->refresh()->id;
+            $this->logoFile = $this->svgFile(
+                $svg,
+                'avelune-logo.svg',
+                'Avelune Retreat logo',
+                'Avelune wordmark with a gold crescent above a fine horizon line',
+                true,
+            );
         }
 
         return $this->logoFile;
@@ -1089,17 +1067,7 @@ SVG;
                 'description' => ['en' => $desc],
             ];
 
-            $file = File::forceCreate( $data + ['editor' => 'demo'] );
-            $version = $file->versions()->forceCreate( [
-                'lang' => 'en',
-                'data' => $data,
-                'published' => true,
-                'editor' => 'demo',
-            ] );
-
-            $file->forceFill( ['latest_id' => $version->id] )->saveQuietly();
-            $file->publish( $version );
-            $this->pricingImages[$key] = (string) $file->refresh()->id;
+            $this->pricingImages[$key] = $this->saveFile( $data, published: true );
         }
 
         return $this->pricingImages[$key];
@@ -1126,17 +1094,7 @@ SVG;
                 'description' => ['en' => $desc],
             ];
 
-            $file = File::forceCreate( $data + ['editor' => 'demo'] );
-            $version = $file->versions()->forceCreate( [
-                'lang' => 'en',
-                'data' => $data,
-                'published' => true,
-                'editor' => 'demo',
-            ] );
-
-            $file->forceFill( ['latest_id' => $version->id] )->saveQuietly();
-            $file->publish( $version );
-            $this->slideImages[$key] = (string) $file->refresh()->id;
+            $this->slideImages[$key] = $this->saveFile( $data, published: true );
         }
 
         return $this->slideImages[$key];

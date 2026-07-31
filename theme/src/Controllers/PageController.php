@@ -86,6 +86,10 @@ class PageController extends Controller
         $page = $this->published( $path, $domain, $user, $route );
 
         if( $page->access_exists && !$page->access_allowed ) {
+            if( !$user ) {
+                throw new AuthenticationException();
+            }
+
             abort( 403 );
         }
 
@@ -93,10 +97,31 @@ class PageController extends Controller
             return str_starts_with( $to, 'http' ) ? redirect()->away( $to ) : redirect()->to( $to );
         }
 
+        $request->attributes->set(
+            'cms.asset-token-page',
+            $page->access_exists ? (string) $page->id : null,
+        );
+
         $html = $this->render( $page, $page->content ?? [], $page->lang, $user );
+
+        // Database-first transition safety: re-read the rule after rendering so a
+        // concurrent insert or permission change cannot expose or cache the response.
+        $access = Page::query()
+            ->select( 'id' )
+            ->withAccess( $user )
+            ->findOrFail( $page->id );
+
+        if( $access->access_exists && !$access->access_allowed ) {
+            if( !$user ) {
+                throw new AuthenticationException();
+            }
+
+            abort( 403 );
+        }
+
         $response = new Response( $html, 200, ['Content-Type' => 'text/html'] );
 
-        if( $user || $page->access_exists || !$page->cache ) {
+        if( $user || $access->access_exists || !$page->cache ) {
             return $response->header( 'Cache-Control', 'no-store, private' );
         }
 

@@ -69,9 +69,7 @@ final class Imagine
             throw new Error( 'Insufficient permissions' );
         }
 
-        $disk = config( 'cms.disk', 'public' );
-
-        return File::whereIn( 'id', $ids )->select( 'id', 'tenant_id', 'path', 'mime' )->get()->map( function( $file ) use ( $disk ) {
+        return File::whereIn( 'id', $ids )->select( 'id', 'tenant_id', 'disk', 'path', 'mime' )->get()->map( function( $file ) {
 
             if( !str_starts_with( $file->mime, 'image/' ) ) {
                 return null;
@@ -81,7 +79,7 @@ final class Imagine
                 return Image::fromUrl( (string) $file->path, $file->mime );
             }
 
-            return Image::fromStoragePath( (string) $file->path, $disk );
+            return Image::fromStoragePath( (string) $file->path, File::diskName( (string) $file->disk ) );
 
         } )->filter()->values()->toArray();
     }

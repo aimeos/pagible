@@ -3,13 +3,21 @@ import FileUrlDialog from '../../../js/components/FileUrlDialog.vue'
 const stubs = {
 }
 
-function mountDialog(props = {}) {
+function mountDialog(props = {}, apollo = {}) {
   return cy.mount(FileUrlDialog, {
     props: {
       modelValue: true,
       ...props,
     },
-    global: { stubs },
+    global: {
+      stubs,
+      mocks: {
+        $apollo: {
+          mutate: () => Promise.resolve({ data: {} }),
+          ...apollo,
+        },
+      },
+    },
   })
 }
 
@@ -67,5 +75,41 @@ describe('FileUrlDialog', () => {
   it('does not show add button when no items are validated', () => {
     mountDialog()
     cy.contains('.v-btn', 'Add file').should('not.exist')
+  })
+
+  it('creates URL files directly on the selected disk', () => {
+    const mutate = cy.stub().resolves({
+      data: {
+        addFile: {
+          id: '1',
+          disk: 'private',
+          name: 'document.pdf',
+          path: 'cms/test/file/document.pdf',
+          previews: '{}',
+        },
+      },
+    })
+
+    mountDialog({ disk: 'private' }, { mutate }).then(({ wrapper }) => {
+      const vm = wrapper.findComponent(FileUrlDialog).vm
+      vm.items = {
+        file: {
+          name: 'document.pdf',
+          path: 'https://example.com/document.pdf',
+        },
+      }
+      vm.add()
+    })
+
+    cy.wrap(mutate).should('have.been.calledOnce')
+    cy.wrap(mutate).should((stub) => {
+      expect(stub.firstCall.args[0].variables).to.deep.equal({
+        disk: 'private',
+        input: {
+          name: 'document.pdf',
+          path: 'https://example.com/document.pdf',
+        },
+      })
+    })
   })
 })

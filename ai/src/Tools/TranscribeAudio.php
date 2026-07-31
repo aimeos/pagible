@@ -49,7 +49,7 @@ class TranscribeAudio extends Tool
         ] );
 
         /** @var File|null $file */
-        $file = File::select( 'id', 'path', 'mime' )->find( $v['file'] );
+        $file = File::select( 'id', 'disk', 'path', 'mime' )->find( $v['file'] );
 
         if( !$file ) {
             return Response::structured( ['error' => 'File not found.'] );
@@ -66,7 +66,11 @@ class TranscribeAudio extends Tool
         if( str_starts_with( (string) $file->path, 'http' ) ) {
             $doc = Audio::fromUrl( (string) $file->path, $file->mime );
         } else {
-            $doc = Audio::fromStoragePath( (string) $file->path, config( 'cms.disk', 'public' ), $file->mime );
+            $doc = Audio::fromStoragePath(
+                (string) $file->path,
+                File::diskName( (string) $file->disk ),
+                $file->mime,
+            );
         }
 
         $data = Prisma::audio()->observe( $this->observer( Utils::editor( $request->user() ) ) )

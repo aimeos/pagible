@@ -1,2 +1,2 @@
-<link href="{{ cmsasset('vendor/cms/admin/editor.css') }}" rel="stylesheet">
-<script defer src="{{ cmsasset('vendor/cms/admin/editor.js') }}"></script>
+<link href="{{ asset('vendor/cms/admin/editor.css') }}" rel="stylesheet">
+<script defer src="{{ asset('vendor/cms/admin/editor.js') }}"></script>

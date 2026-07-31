@@ -20,6 +20,7 @@ const HistoryDialog = defineAsyncComponent(() => import('../components/HistoryDi
 const FETCH_FILE = gql`
   query ($id: ID!) {
     file(id: $id) {
+      disk
       id
       latest {
         id
@@ -36,6 +37,7 @@ const FETCH_FILE = gql`
 const SAVE_FILE = gql`
   mutation ($id: ID!, $input: FileInput!, $file: Upload, $latestId: ID) {
     saveFile(id: $id, input: $input, file: $file, latestId: $latestId) {
+      disk
       id
       latest {
         id
@@ -54,6 +56,7 @@ const SAVE_FILE = gql`
 const FETCH_FILE_VERSIONS = gql`
   query ($id: ID!) {
     file(id: $id) {
+      disk
       id
       versions {
         id
@@ -180,6 +183,7 @@ export default {
         const latest = file.latest
 
         Object.assign(this.item, safeParse(latest?.data), safeParse(latest?.aux))
+        this.item.disk = file.disk
         this.item.latestId = latest?.id
         this.item.published = latest?.published
         this.item.updated_at = latest?.created_at
@@ -218,6 +222,7 @@ export default {
 
       return Object.freeze({
         [data.path]: Object.freeze({
+          disk: this.item.disk,
           id: data.path,
           name: data.name,
           mime: data.mime,

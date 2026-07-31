@@ -17,6 +17,6 @@
 	"datePublished": "{{ $page->created_at->toIso8601String() }}",
 	"dateModified": "{{ $page->updated_at->toIso8601String() }}"
 	@if($file = cms($files, $data->file?->id ?? null))
-		, "image": {!! cmsjson(cmsurl(cms($file, 'path'))) !!}
+		, "image": {!! cmsjson(cmsasset($page, $file)) !!}
 	@endif
 }</script>

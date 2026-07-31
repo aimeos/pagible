@@ -9,12 +9,12 @@
 @if($file = cms($files, $data->file?->id ?? null))
 	<video preload="metadata" controls playsinline
 		title="{{ cms($file, 'description')?->{cms($page, 'lang')} ?? '' }}"
-		src="{{ cmsurl(cms($file, 'path')) }}"
+		src="{{ cmsasset($page, $file) }}"
 		@if($preview = current(array_reverse((array) cms($file, 'previews', []))))
-			poster="{{ cmsurl($preview) }}"
+			poster="{{ cmsasset($page, $file, $preview) }}"
 		@endif
 	>
-		{{ __('Download file') }}: <a href="{{ cmsurl(cms($file, 'path')) }}">{{ cmsurl(cms($file, 'path')) }}</a>
+		{{ __('Download file') }}: <a href="{{ cmsasset($page, $file) }}">{{ cmsasset($page, $file) }}</a>
 		<div class="transcription" lang="{{ cms($page, 'lang') }}">{{ cms($file, 'transcription')?->{cms($page, 'lang')} ?? '' }}</div>
 	</video>
 	<div class="caption"></div>
@@ -23,10 +23,10 @@
 		"@@context": "https://schema.org",
 		"@@type": "VideoObject",
 		"name": {!! cmsjson(cms($file, 'description')?->{cms($page, 'lang')} ?? cms($page, 'title')) !!},
-		"contentUrl": {!! cmsjson(cmsurl(cms($file, 'path'))) !!},
+		"contentUrl": {!! cmsjson(cmsasset($page, $file)) !!},
 		"uploadDate": "{{ $page->created_at->toIso8601String() }}"
 		@if($preview = current(array_reverse((array) cms($file, 'previews', []))))
-			, "thumbnailUrl": {!! cmsjson(cmsurl($preview)) !!}
+			, "thumbnailUrl": {!! cmsjson(cmsasset($page, $file, $preview)) !!}
 		@endif
 		@if(cms($file, 'transcription')?->{cms($page, 'lang')} ?? null)
 			, "transcript": {!! cmsjson(cms($file, 'transcription')->{cms($page, 'lang')}) !!}

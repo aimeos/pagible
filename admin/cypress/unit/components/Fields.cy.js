@@ -5,6 +5,8 @@ import { useUserStore } from '../../../js/stores'
 const stubs = {
   String: { render() { return h('div', { class: 'field-string' }) } },
   Text: { render() { return h('div', { class: 'field-text' }) } },
+  File: { render() { return h('div', { class: 'field-file' }) } },
+  Images: { render() { return h('div', { class: 'field-images' }) } },
   Hidden: { render() { return h('div', { class: 'field-hidden' }) } },
   Number: { render() { return h('div', { class: 'field-number' }) } },
 }
@@ -59,6 +61,32 @@ describe('Fields', () => {
     mountFields()
     cy.get('.field-string').should('exist')
     cy.get('.field-text').should('exist')
+  })
+
+  it('marks fields containing private files with a warning border', () => {
+    mountFields({
+      fields: {
+        public: { type: 'file', label: 'Public' },
+        private: { type: 'file', label: 'Private' },
+        gallery: { type: 'images', label: 'Gallery' },
+      },
+      data: {
+        public: { id: 'public-file', type: 'file' },
+        private: { id: 'private-file', type: 'file' },
+        gallery: [
+          { id: 'public-file', type: 'file' },
+          { id: 'private-image', type: 'file' },
+        ],
+      },
+      assets: {
+        'public-file': { id: 'public-file', disk: 'public' },
+        'private-file': { id: 'private-file', disk: 'private' },
+        'private-image': { id: 'private-image', disk: 'private' },
+      },
+    })
+
+    cy.get('.item.protected').should('have.length', 2)
+    cy.contains('.item:not(.protected)', 'Public').should('exist')
   })
 
   it('hides the label for hidden field type', () => {

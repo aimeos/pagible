@@ -2,8 +2,8 @@ import ImagesField from '../../../js/fields/Images.vue'
 import { useUserStore } from '../../../js/stores'
 
 const imageAssets = {
-  '1': { id: '1', name: 'a.jpg', path: '/files/a.jpg', mime: 'image/jpeg', previews: { '500': '/files/a-500.jpg' } },
-  '2': { id: '2', name: 'b.jpg', path: '/files/b.jpg', mime: 'image/jpeg', previews: { '500': '/files/b-500.jpg' } },
+  '1': { disk: 'public', id: '1', name: 'a.jpg', path: '/files/a.jpg', mime: 'image/jpeg', previews: { '500': '/files/a-500.jpg' } },
+  '2': { disk: 'public', id: '2', name: 'b.jpg', path: '/files/b.jpg', mime: 'image/jpeg', previews: { '500': '/files/b-500.jpg' } },
 }
 
 const stubs = {
@@ -14,10 +14,19 @@ const stubs = {
   FileDetail: { template: '<div />' },
 }
 
-function mountImages(props = {}, perms = {}) {
+function mountImages(props = {}, perms = {}, apollo = {}) {
   return cy.mount(ImagesField, {
     props: { config: {}, assets: {}, ...props },
-    global: { stubs },
+    global: {
+      stubs,
+      mocks: {
+        $apollo: {
+          query: () => Promise.resolve({ data: {} }),
+          mutate: () => Promise.resolve({ data: {} }),
+          ...apollo,
+        },
+      },
+    },
   }).then(() => {
     const user = useUserStore()
     user.me = { permission: perms }
@@ -38,6 +47,50 @@ describe('Images', () => {
   it('shows upload button', () => {
     mountImages()
     cy.get('.add button.btn-upload').should('exist')
+  })
+
+  it('offers public-by-default page access protection', () => {
+    mountImages().then(({ wrapper }) => {
+      expect(wrapper.findComponent(ImagesField).vm.protect).to.equal(false)
+    })
+    cy.contains('Protect with page access').should('exist')
+  })
+
+  it('relocates every selected image when protection is enabled', () => {
+    const mutate = cy.stub().callsFake(({ variables }) =>
+      Promise.resolve({
+        data: {
+          relocateFile: variables.id.map((id) => ({
+            id,
+            disk: variables.disk,
+            editor: 'admin',
+            updated_at: '2024-01-02T00:00:00Z',
+          })),
+        },
+      }),
+    )
+
+    mountImages(
+      {
+        modelValue: [{ id: '1', type: 'file' }, { id: '2', type: 'file' }],
+        assets: imageAssets,
+      },
+      {},
+      { mutate },
+    ).then(({ wrapper }) => {
+      const vm = wrapper.findComponent(ImagesField).vm
+
+      return vm.setProtect(true).then(() => {
+        expect(mutate).to.have.been.calledOnce
+        expect(mutate.firstCall.args[0].variables).to.deep.equal({
+          id: ['1', '2'],
+          disk: 'private',
+        })
+        expect(vm.images.every((item) => item.disk === 'private')).to.equal(true)
+        expect(vm.images.map((item) => item.path)).to.deep.equal(['/files/a.jpg', '/files/b.jpg'])
+        expect(vm.images[0].previews).to.deep.equal(imageAssets['1'].previews)
+      })
+    })
   })
 
   it('shows "Add files from URLs" button', () => {

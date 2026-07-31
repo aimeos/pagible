@@ -8,6 +8,7 @@
 namespace Tests;
 
 use Aimeos\Cms\Actions\Blog;
+use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Resource;
 use Database\Seeders\TestSeeder;
@@ -40,6 +41,7 @@ class BlogActionTest extends ThemeTestAbstract
         $article = Page::where( 'tag', 'article' )->firstOrFail();
 
         $fileId = $article->files()->pluck( 'cms_files.id' )->first();
+        File::whereKey( $fileId )->update( ['disk' => 'private'] );
 
         // The article is an already-published blog page (page columns reflect the published
         // state; a draft save only writes a new version, not the page row).
@@ -73,5 +75,6 @@ class BlogActionTest extends ThemeTestAbstract
         $this->assertNotNull( $page );
         $this->assertNotNull( $page->latest );
         $this->assertTrue( $page->files->isNotEmpty() );
+        $this->assertSame( 'private', $page->files->first()->disk );
     }
 }

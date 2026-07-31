@@ -105,7 +105,8 @@ trait Broadcasts
     /**
      * Coalesces notifications while preserving single-item event names.
      *
-     * @param Collection<int, \Aimeos\Cms\Models\Base> $items Changed items
+     * @template T of \Aimeos\Cms\Models\Base
+     * @param Collection<int, T> $items Changed items
      * @param string $action Past-tense lifecycle action
      * @param string $editor Editor name
      * @param array<string, mixed> $data Shared changed fields

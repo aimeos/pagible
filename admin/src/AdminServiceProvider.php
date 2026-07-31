@@ -35,6 +35,10 @@ class AdminServiceProvider extends Provider
 
     protected function rateLimiter(): void
     {
+        RateLimiter::for( 'cms-admin-asset', fn( $request ) =>
+            Limit::perMinute( 300 )->by( $request->user()?->getAuthIdentifier() ?: $request->ip() )
+        );
+
         RateLimiter::for( 'cms-proxy', fn( $request ) =>
             Limit::perMinute( 30 )->by( $request->ip() )
         );

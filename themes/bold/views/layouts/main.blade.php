@@ -34,7 +34,7 @@
 
         @foreach($page->ancestorsAndSelf->reverse() as $navItem)
             @if($fileId = cms($navItem, 'config.icon.data.file.id'))
-                <link rel="icon" type="{{ cmsfile($navItem, $fileId)?->mime }}" href="{{ cmsurl(cmsfile($navItem, $fileId)?->path) }}">
+                <link rel="icon" type="{{ cmsfile($navItem, $fileId)?->mime }}" href="{{ cmsasset($navItem, cmsfile($navItem, $fileId)) }}">
                 @break
             @endif
         @endforeach
@@ -125,7 +125,7 @@
                             @php($logoFound = false)
                             @foreach($page->ancestorsAndSelf->reverse() as $navItem)
                                 @if($fileId = cms($navItem, 'config.logo-alternative.data.file.id') ?: cms($navItem, 'config.logo.data.file.id'))
-                                    <img src="{{ cmsurl(cmsfile($navItem, $fileId)?->path) }}" alt="{{ config('app.name') }}">
+                                    <img src="{{ cmsasset($navItem, cmsfile($navItem, $fileId)) }}" alt="{{ config('app.name') }}">
                                     @php($logoFound = true)
                                     @break
                                 @endif

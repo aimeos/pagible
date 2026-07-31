@@ -68,20 +68,28 @@ class RefineContent extends Tool
 
         $system = view( 'cms::prompts.refine' )->render();
         $schema = \Aimeos\Prisma\Schema\Schema::fromArray( 'response', \Aimeos\Cms\JsonSchema::build( 'content', $page->type ) );
+        $limit = (int) ini_get( 'max_execution_time' );
 
         set_time_limit( (int) config( 'cms.ai.timeout' ) ); // long AI call; lift PHP's default 30s execution limit
 
-        $response = Prisma::text()->observe( $this->observer( Utils::editor( $request->user() ) ) )
-            ->using( $provider, $config )
-            ->model( $model )
-            ->withMaxTokens( config( 'cms.ai.maxtoken' ) )
-            ->withSystemPrompt( $system . "\n" . ( $validated['context'] ?? '' ) . ( !empty( $validated['lang'] ) ? "\nWrite the content in language: " . $validated['lang'] : '' ) )
-            ->withClientOptions( [
-                'timeout' => (int) config( 'cms.ai.timeout' ),
-                'connect_timeout' => 10,
-            ] )
-            ->ensure( 'structure' )
-            ->structure( $validated['prompt'] . "\n\nContent as JSON:\n" . json_encode( $content ), $schema, [], ['mode' => 'json'] ); // @phpstan-ignore-line method.notFound
+        try
+        {
+            $response = Prisma::text()->observe( $this->observer( Utils::editor( $request->user() ) ) )
+                ->using( $provider, $config )
+                ->model( $model )
+                ->withMaxTokens( config( 'cms.ai.maxtoken' ) )
+                ->withSystemPrompt( $system . "\n" . ( $validated['context'] ?? '' ) . ( !empty( $validated['lang'] ) ? "\nWrite the content in language: " . $validated['lang'] : '' ) )
+                ->withClientOptions( [
+                    'timeout' => (int) config( 'cms.ai.timeout' ),
+                    'connect_timeout' => 10,
+                ] )
+                ->ensure( 'structure' )
+                ->structure( $validated['prompt'] . "\n\nContent as JSON:\n" . json_encode( $content ), $schema, [], ['mode' => 'json'] ); // @phpstan-ignore-line method.notFound
+        }
+        finally
+        {
+            set_time_limit( $limit );
+        }
 
         $structured = $response->structured();
 

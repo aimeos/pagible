@@ -63,6 +63,7 @@ class GetFile extends Tool
 
         $data = [
             'id' => $file->id,
+            'disk' => $file->disk,
             'latest_id' => $file->latest_id,
             'deleted' => $file->trashed(),
             'lang' => $version->lang ?? '',
