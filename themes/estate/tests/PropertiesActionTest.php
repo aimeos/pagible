@@ -19,7 +19,6 @@ use Database\Seeders\EstateDemo;
 use Database\Seeders\TestSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Gate;
 
 
 class PropertiesActionTest extends ThemeTestAbstract
@@ -122,10 +121,9 @@ class PropertiesActionTest extends ThemeTestAbstract
     }
 
 
-    public function testFrontendAccessFiltersProperties()
+    public function testFrontendAccessShowsRestrictedPropertiesInLists()
     {
         Access::using( fn() => ['frontend.member'] );
-        Gate::define( 'frontend.member', fn() => true );
 
         $root = Page::where( 'tag', 'root' )->firstOrFail();
         $listPage = $this->addListPage( $root );
@@ -152,10 +150,10 @@ class PropertiesActionTest extends ThemeTestAbstract
         };
 
         $user = new \App\Models\User( ['cmsperms' => []] );
-        $user->id = 42;
+        $user->id = 43;
         $user->tenant_id = 'test';
 
-        $this->assertSame( [$public->id], $list( null )->all() );
+        $this->assertEqualsCanonicalizing( [$public->id, $restricted->id], $list( null )->all() );
         $this->assertEqualsCanonicalizing( [$public->id, $restricted->id], $list( $user )->all() );
     }
 

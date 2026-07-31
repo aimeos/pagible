@@ -16,7 +16,6 @@ use Aimeos\Cms\Resource;
 use Database\Seeders\TestSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Gate;
 
 
 class BlogActionTest extends ThemeTestAbstract
@@ -82,10 +81,9 @@ class BlogActionTest extends ThemeTestAbstract
     }
 
 
-    public function testFrontendAccessFiltersArticles()
+    public function testFrontendAccessShowsRestrictedArticlesInLists()
     {
         Access::using( fn() => ['frontend.member'] );
-        Gate::define( 'frontend.member', fn() => true );
 
         $blog = Page::where( 'tag', 'blog' )->firstOrFail();
         $article = Page::where( 'tag', 'article' )->firstOrFail();
@@ -105,10 +103,10 @@ class BlogActionTest extends ThemeTestAbstract
         };
 
         $user = new \App\Models\User( ['cmsperms' => []] );
-        $user->id = 42;
+        $user->id = 43;
         $user->tenant_id = 'test';
 
-        $this->assertNotContains( $article->id, $list( null ) );
+        $this->assertContains( $article->id, $list( null ) );
         $this->assertContains( $article->id, $list( $user ) );
     }
 }
