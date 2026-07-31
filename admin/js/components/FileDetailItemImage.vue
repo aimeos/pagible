@@ -626,6 +626,7 @@ export default {
       :src="fileurl(item, item.path, !svg)"
       :alt="item.name"
       class="element"
+      :class="{ checkered: svg }"
       :crossorigin="svg ? undefined : 'anonymous'"
     />
 
@@ -1044,6 +1045,12 @@ export default {
   max-height: 100%;
   display: block;
   margin: auto;
+}
+
+.element.checkered {
+  background-color: #fff;
+  background-image: conic-gradient(#ccc 25%, #fff 0 50%, #ccc 0 75%, #fff 0);
+  background-size: 16px 16px;
 }
 
 :deep(.cropper-bg) {

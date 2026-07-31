@@ -93,6 +93,19 @@ describe('FileDetailItem', () => {
     cy.get('input').first().should('not.have.attr', 'readonly')
   })
 
+  it('emits description updates for frozen file metadata', () => {
+    const description = Object.freeze({ en: 'Original description' })
+
+    mountDetail({ item: { description } }, { 'file:save': true }).then(() => {
+      const wrapper = Cypress.vueWrapper.findComponent(FileDetailItem)
+
+      wrapper.vm.descriptionUpdated('en', 'Updated description')
+
+      expect(wrapper.props('item').description).to.deep.equal({ en: 'Updated description' })
+      expect(wrapper.emitted('update:item')).to.have.length(1)
+    })
+  })
+
   it('shows transcription section for audio files', () => {
     mountDetail({ item: { mime: 'audio/mpeg' } })
     cy.contains('Transcriptions').should('exist')

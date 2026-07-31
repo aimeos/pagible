@@ -38,6 +38,7 @@ describe('FileDetailItemImage', () => {
     mountImage()
     cy.get('img.element').should('exist')
     cy.get('img.element').should('have.attr', 'src', '/storage/files/photo.jpg')
+    cy.get('img.element').should('not.have.class', 'checkered')
   })
 
   it('shows toolbar when not readonly', () => {
@@ -129,6 +130,10 @@ describe('FileDetailItemImage', () => {
 
   it('renders image element for SVG', () => {
     mountImage({ item: { ...item, name: 'logo.svg', path: 'files/logo.svg', mime: 'image/svg+xml' } })
-    cy.get('img.element').should('exist')
+    cy.get('img.element')
+      .should('exist')
+      .and('have.class', 'checkered')
+      .and('have.css', 'background-image')
+      .and('contain', 'conic-gradient')
   })
 })

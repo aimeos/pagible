@@ -137,8 +137,7 @@ export default {
     },
 
     descriptionUpdated(lang, event) {
-      this.item.description[lang] = event
-      this.$emit('update:item', this.item)
+      this.update('description', { ...(this.item.description || {}), [lang]: event })
     },
 
     record() {
