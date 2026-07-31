@@ -10,6 +10,7 @@ use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\Schema;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -79,7 +80,7 @@ class Properties
         $filtersActive = collect( $filters )->except( 'sort' )
             ->contains( fn( $value ) => $value !== null && $value !== '' );
         $columns = ['id', 'tenant_id', 'type', 'path', 'name', 'title', 'content', 'created_at', 'updated_at', 'latest_id', '_lft', 'status'];
-        $builder = $this->query( $item, $editor, $sortBy, $sortDir );
+        $builder = $this->query( $item, $editor, $request->user(), $sortBy, $sortDir );
 
         if( !$filtersActive )
         {
@@ -204,7 +205,7 @@ class Properties
     }
 
 
-    protected function query( object $item, bool $editor, string $sort, string $direction ) : Builder
+    protected function query( object $item, bool $editor, ?Authenticatable $user, string $sort, string $direction ) : Builder
     {
         $with = $editor
             ? ['latest' => fn( $query ) => $query->select( 'id', 'tenant_id', 'versionable_id', 'aux' )]
@@ -217,7 +218,7 @@ class Properties
         if( $editor ) {
             $builder->whereLatest( ['status' => 1] );
         } else {
-            $builder->where( 'status', 1 );
+            $builder->where( 'status', 1 )->access( $user );
         }
 
         return $builder;

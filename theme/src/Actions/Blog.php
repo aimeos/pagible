@@ -45,7 +45,7 @@ class Blog
         if( $editor ) {
             $builder->whereLatest( ['status' => 1] );
         } else {
-            $builder->where( 'status', 1 );
+            $builder->where( 'status', 1 )->access( $request->user() );
         }
 
         $attr = ['id', 'lang', 'path', 'name', 'title', 'to', 'domain', 'content', 'created_at', 'latest_id'];

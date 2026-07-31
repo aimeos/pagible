@@ -7,9 +7,11 @@
 
 namespace Tests;
 
+use Aimeos\Cms\Access;
 use Aimeos\Cms\Actions\Properties;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageAccess;
 use Aimeos\Cms\Navigation;
 use Aimeos\Cms\Tenancy;
 use Carbon\CarbonImmutable;
@@ -17,6 +19,7 @@ use Database\Seeders\EstateDemo;
 use Database\Seeders\TestSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 
 class PropertiesActionTest extends ThemeTestAbstract
@@ -116,6 +119,44 @@ class PropertiesActionTest extends ThemeTestAbstract
         $this->assertEquals( 'Seaside Loft', $result->items->first()->title );
         $this->assertSame( 'apartment', $result->filters->type );
         $this->assertContains( 'apartment', array_column( $result->options->property_types, 'value' ) );
+    }
+
+
+    public function testFrontendAccessFiltersProperties()
+    {
+        Access::using( fn() => ['frontend.member'] );
+        Gate::define( 'frontend.member', fn() => true );
+
+        $root = Page::where( 'tag', 'root' )->firstOrFail();
+        $listPage = $this->addListPage( $root );
+        $public = $this->addProperty( $listPage, [
+            'path' => 'public-property',
+            'title' => 'Public Property',
+        ] );
+        $restricted = $this->addProperty( $listPage, [
+            'path' => 'restricted-property',
+            'title' => 'Restricted Property',
+        ] );
+        PageAccess::set( [$restricted->id], ['frontend.member'] );
+
+        $item = (object) ['data' => (object) [
+            'limit' => 10,
+            'order' => '-created_at',
+            'parent-page' => (object) ['value' => $listPage->id],
+        ]];
+        $list = function( ?\App\Models\User $user ) use ( $item, $listPage ) {
+            $request = Request::create( '/properties', 'GET' );
+            $request->setUserResolver( fn() => $user );
+
+            return ( new Properties() )( $request, $listPage, $item )->items->getCollection()->pluck( 'id' );
+        };
+
+        $user = new \App\Models\User( ['cmsperms' => []] );
+        $user->id = 42;
+        $user->tenant_id = 'test';
+
+        $this->assertSame( [$public->id], $list( null )->all() );
+        $this->assertEqualsCanonicalizing( [$public->id, $restricted->id], $list( $user )->all() );
     }
 
 

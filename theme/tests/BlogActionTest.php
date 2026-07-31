@@ -7,13 +7,16 @@
 
 namespace Tests;
 
+use Aimeos\Cms\Access;
 use Aimeos\Cms\Actions\Blog;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageAccess;
 use Aimeos\Cms\Resource;
 use Database\Seeders\TestSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 
 class BlogActionTest extends ThemeTestAbstract
@@ -76,5 +79,36 @@ class BlogActionTest extends ThemeTestAbstract
         $this->assertNotNull( $page->latest );
         $this->assertTrue( $page->files->isNotEmpty() );
         $this->assertSame( 'private', $page->files->first()->disk );
+    }
+
+
+    public function testFrontendAccessFiltersArticles()
+    {
+        Access::using( fn() => ['frontend.member'] );
+        Gate::define( 'frontend.member', fn() => true );
+
+        $blog = Page::where( 'tag', 'blog' )->firstOrFail();
+        $article = Page::where( 'tag', 'article' )->firstOrFail();
+        $article->forceFill( ['type' => 'blog'] )->saveQuietly();
+        PageAccess::set( [$article->id], ['frontend.member'] );
+
+        $item = (object) ['data' => (object) [
+            'order' => '-id',
+            'limit' => 10,
+            'parent-page' => (object) ['value' => $blog->id],
+        ]];
+        $list = function( ?\App\Models\User $user ) use ( $blog, $item ) {
+            $request = Request::create( '/blog' );
+            $request->setUserResolver( fn() => $user );
+
+            return ( new Blog() )( $request, $blog, $item )->getCollection()->pluck( 'id' );
+        };
+
+        $user = new \App\Models\User( ['cmsperms' => []] );
+        $user->id = 42;
+        $user->tenant_id = 'test';
+
+        $this->assertNotContains( $article->id, $list( null ) );
+        $this->assertContains( $article->id, $list( $user ) );
     }
 }
