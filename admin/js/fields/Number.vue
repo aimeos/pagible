@@ -3,11 +3,12 @@
 <script>
 /**
  * Configuration:
- * - `max`: int, maximum number of characters allowed in the input field
- * - `min`: int, minimum number of characters required in the input field
+ * - `max`: number, maximum value allowed in the input field
+ * - `min`: number, minimum value allowed in the input field
  * - `placeholder`: string, placeholder text for the input field
+ * - `precision`: int, maximum number of fractional digits
  * - `required`: boolean, if true, the field is required
- * - `step`: int, step size for the number input
+ * - `step`: number, step size for the number input
  */
 export default {
   props: {
@@ -24,7 +25,7 @@ export default {
 
   computed: {
     hasError() {
-      const val = this.modelValue ?? this.config.default ?? 0
+      const val = this.modelValue ?? this.config.default
       return !this.rules.every((rule) => rule(val) === true)
     },
 
@@ -37,7 +38,7 @@ export default {
     modelValue: {
       immediate: true,
       handler(val) {
-        const hasError = !this.rules.every((rule) => rule(val ?? this.config.default ?? 0) === true)
+        const hasError = !this.rules.every((rule) => rule(val ?? this.config.default) === true)
         if (hasError !== this.lastError) {
           this.lastError = hasError
           this.$emit('error', hasError)
@@ -56,9 +57,10 @@ export default {
     :clearable="!readonly && !config.required"
     :max="config.max"
     :min="config.min"
-    :step="config.step || 1"
+    :precision="config.precision"
+    :step="config.step ?? 1"
     :placeholder="config.placeholder || ''"
-    :modelValue="modelValue ?? config.default ?? 0"
+    :modelValue="modelValue ?? config.default"
     @update:modelValue="$emit('update:modelValue', $event)"
     density="comfortable"
     hide-details="auto"

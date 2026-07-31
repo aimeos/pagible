@@ -192,6 +192,10 @@ class JsonSchema
 
             case 'number':
                 $schema = ['type' => 'number'];
+
+                if( isset( $field['step'] ) && is_numeric( $field['step'] ) && (float) $field['step'] > 0 ) {
+                    $schema['multipleOf'] = (float) $field['step'];
+                }
                 break;
 
             case 'images':

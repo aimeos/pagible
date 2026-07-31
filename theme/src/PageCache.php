@@ -16,13 +16,21 @@ use Illuminate\Contracts\Cache\LockTimeoutException;
 
 class PageCache
 {
-    /** @param list<string> $paths */
+    /**
+     * Invalidates the cached responses for tenant- and domain-bound page paths.
+     *
+     * @param list<string> $paths
+     */
     public static function invalidate( string $domain, array $paths, string $tenant ) : void
     {
-        self::store()->deleteMultiple( array_map(
+        $keys = array_map(
             fn( string $path ) => self::routeKey( $tenant, $domain, $path ),
             $paths,
-        ) );
+        );
+
+        if( $keys ) {
+            self::store()->deleteMultiple( array_values( array_unique( $keys ) ) );
+        }
     }
 
 
@@ -31,6 +39,8 @@ class PageCache
      *
      * A contending request receives a stale entry when available. On a cold miss,
      * it waits for the renderer and rechecks the cache before rendering itself.
+     *
+     * @param Closure(): mixed $renderFn
      */
     public static function remember( Closure $renderFn, Models\Page|string $page, string $domain = '' ) : mixed
     {
@@ -60,6 +70,8 @@ class PageCache
 
     /**
      * Returns a cached complete-page response.
+     *
+     * @param Models\Page|string $page Page model or route path
      */
     public static function response( Models\Page|string $page, string $domain = '', bool $fresh = false ) : ?Response
     {
@@ -87,6 +99,8 @@ class PageCache
 
 
     /**
+     * Returns a validated cached-page envelope.
+     *
      * @return array{html: string, freshUntil: int}|null
      */
     private static function get( string $key, bool $fresh = false ) : ?array
@@ -120,18 +134,27 @@ class PageCache
     }
 
 
+    /**
+     * Returns the configured render-lock lifetime in seconds.
+     */
     private static function lockLifetime() : int
     {
         return max( 1, (int) config( 'cms.theme.lock', 5 ) );
     }
 
 
+    /**
+     * Returns a tenant- and route-bound cache key.
+     */
     private static function routeKey( string $tenant, string $domain, string $path ) : string
     {
         return hash( 'sha256', json_encode( [$tenant, $domain, $path], JSON_THROW_ON_ERROR ) );
     }
 
 
+    /**
+     * Stores a page envelope through its fresh and stale lifetime.
+     */
     private static function put( string $key, string $html, \DateTimeInterface $expires ) : void
     {
         $grace = max( 0, (int) config( 'cms.theme.stale', 10 ) );
@@ -146,6 +169,11 @@ class PageCache
     }
 
 
+    /**
+     * Rechecks a fresh entry before rendering and conditionally caching a response.
+     *
+     * @param Closure(): mixed $renderFn
+     */
     private static function refresh( string $key, Closure $renderFn ) : mixed
     {
         if( $response = self::cachedResponse( $key, true ) ) {
@@ -177,6 +205,9 @@ class PageCache
     }
 
 
+    /**
+     * Returns the configured complete-page cache repository.
+     */
     private static function store() : \Illuminate\Contracts\Cache\Repository
     {
         return Cache::store( config( 'cms.theme.cache', 'file' ) );

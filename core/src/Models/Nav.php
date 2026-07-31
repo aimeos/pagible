@@ -8,7 +8,6 @@
 namespace Aimeos\Cms\Models;
 
 use Aimeos\Nestedset\NestedSet;
-use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Query\Expression;
 
 
@@ -94,16 +93,5 @@ class Nav extends Page
     public function getMorphClass()
     {
         return Page::class;
-    }
-
-
-    /**
-     * Whether the page has explicit frontend access rules.
-     *
-     * @return Attribute<bool, never>
-     */
-    protected function accessExists() : Attribute
-    {
-        return Attribute::get( fn( $value ) => (bool) $value );
     }
 }

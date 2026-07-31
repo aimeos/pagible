@@ -57,7 +57,9 @@ export default {
     modelValue: {
       immediate: true,
       handler(val) {
-        const hasError = !this.rules.every((rule) => rule(val ?? this.config.default ?? '') === true)
+        const hasError = !this.rules.every(
+          (rule) => rule(val ?? this.config.default ?? '') === true
+        )
         if (hasError !== this.lastError) {
           this.lastError = hasError
           this.$emit('error', hasError)

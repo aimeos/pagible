@@ -26,11 +26,15 @@ final class Query
     /**
      * Resolver for the access catalog.
      *
+     * @param array<string, mixed> $args
      * @return array<int, string>
      */
-    public function access() : array
+    public function access( mixed $root = null, array $args = [] ) : array
     {
-        return app( Access::class )->list();
+        return app( Access::class )->search(
+            is_string( $args['term'] ?? null ) ? $args['term'] : '',
+            (int) ( $args['first'] ?? 50 ),
+        );
     }
 
 

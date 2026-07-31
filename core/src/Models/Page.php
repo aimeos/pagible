@@ -7,7 +7,6 @@
 
 namespace Aimeos\Cms\Models;
 
-use Aimeos\Cms\Access;
 use Aimeos\Cms\Validation;
 use Aimeos\Nestedset\NodeTrait;
 use Aimeos\Nestedset\NestedSet;
@@ -51,6 +50,8 @@ use Illuminate\Support\Collection;
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property \Illuminate\Support\Carbon|null $deleted_at
  * @property \Aimeos\Nestedset\Collection<int, Nav>|null $subtree
+ * @property bool $access_allowed
+ * @property bool $access_exists
  * @property-read Collection<int, Page> $ancestors
  * @property-read \Illuminate\Database\Eloquent\Collection<int, PageAccess> $access
  * @method static \Illuminate\Database\Eloquent\Builder<static> withoutTenancy()
@@ -407,24 +408,18 @@ class Page extends Base
      */
     public function scopeAccess( Builder $query, ?Authenticatable $user ) : void
     {
-        if( !$user || !\Aimeos\Cms\Tenancy::allows( $user, \Aimeos\Cms\Tenancy::value() ) ) {
-            $query->wherePublic();
-            return;
-        }
+        PageAccess::apply( $query, $user );
+    }
 
-        $values = app( Access::class )->allowed( $user );
 
-        $query->where( function( Builder $query ) use ( $values ) {
-            $query->whereDoesntHave( 'access' )->orWhereHas( 'access', function( Builder $query ) use ( $values ) {
-                $query->where( function( Builder $query ) use ( $values ) {
-                    $query->where( 'value', '' );
-
-                    if( $values ) {
-                        $query->orWhereIn( 'value', $values );
-                    }
-                } );
-            } );
-        } );
+    /**
+     * Adds frontend access decisions to the page query without loading rule rows.
+     *
+     * @param Builder<static> $query
+     */
+    public function scopeWithAccess( Builder $query, ?Authenticatable $user ) : void
+    {
+        PageAccess::flags( $query, $user );
     }
 
 
@@ -600,6 +595,28 @@ class Page extends Base
             'latest' => fn( $q ) => $q->select( [...Version::SELECT_COLUMNS, 'aux'] ),
             'latest.elements' => fn( $q ) => $q->select( Element::SELECT_COLUMNS ),
         ] );
+    }
+
+
+    /**
+     * Whether one explicit frontend access rule allows the current user.
+     *
+     * @return Attribute<bool, never>
+     */
+    protected function accessAllowed() : Attribute
+    {
+        return Attribute::get( fn( $value ) => (bool) $value );
+    }
+
+
+    /**
+     * Whether the page has explicit frontend access rules.
+     *
+     * @return Attribute<bool, never>
+     */
+    protected function accessExists() : Attribute
+    {
+        return Attribute::get( fn( $value ) => (bool) $value );
     }
 
 

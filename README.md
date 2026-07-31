@@ -10,6 +10,7 @@ The easy, flexible and scalable API-first PagibleAI CMS package for Laravel.
 * [Architecture](#architecture)
 * [Project Structure](#project-structure)
 * [Getting Started](#getting-started)
+* [Selling access to restricted pages](#selling-access-to-restricted-pages)
 * [Configuration](#configuration)
 * [Maintenance](#maintenance)
 * [Multi-domain](#multi-domain)
@@ -45,6 +46,7 @@ Whether you need a simple blog or a multi-tenant, multi-domain CMS serving milli
 * **Importers** - Importer for WordPress, etc.
 * **MCP API** - 30+ tools for LLM-driven content management
 * **Full-text Search** - Across SQLite, MySQL, PostgreSQL and SQL Server
+* **Paid Page Access** - Sell subscriptions and one-time access through Stripe, Paddle, or Mollie
 * **Scalable** - From single page with SQLite to millions of pages with DB clusters
 * **Open Source** - Fully open source
 
@@ -62,7 +64,8 @@ Whether you need a simple blog or a multi-tenant, multi-domain CMS serving milli
 
 ## Architecture
 
-PagibleAI CMS is a modular monorepo split into 10 sub-packages. Each package handles a specific concern and can be used independently:
+PagibleAI CMS is a modular monorepo split into focused sub-packages. Each package
+handles a specific concern and can be used independently:
 
 * **Core** provides the data models (Page, Element, File, Version), multi-tenancy, permissions, and migrations
 * **Admin** delivers the Vue.js-based admin panel with drag & drop page management
@@ -73,6 +76,7 @@ PagibleAI CMS is a modular monorepo split into 10 sub-packages. Each package han
 * **MCP** offers 30+ tools for LLM-driven content management
 * **Backup** provides per-tenant backup and restore with media files, integrity verification, and cross-tenant support
 * **Import** provides importers from external CMS platforms (WordPress, etc.)
+* **Cashier** sells frontend page access through subscriptions or one-time payments using Stripe, Paddle, or Mollie
 * **Theme** handles frontend rendering with Blade templates
 * **Themes** contains high-quality frontend themes
 
@@ -88,6 +92,8 @@ pagible/
 ├── ai/           AI features (Prism / Prisma PHP)
 ├── graphql/      GraphQL API (Lighthouse)
 ├── backup/       Backup and restore
+├── cashier/      Shared payment-backed frontend access
+├── cashier-*/    Stripe, Paddle, and Mollie Cashier adapters
 ├── import/       CMS importers (WordPress, etc.)
 ├── search/       Full-text search (Laravel Scout)
 ├── jsonapi/      Read-only JSON:API
@@ -153,6 +159,47 @@ The CMS admin backend is available at (replace "mydomain.tld" with your own one)
 ```
 http://mydomain.tld/cmsadmin
 ```
+
+## Selling access to restricted pages
+
+Install exactly one Pagible Cashier provider in the Laravel application that
+already contains Pagible CMS:
+
+```bash
+composer require aimeos/pagible-cashier-stripe
+# or: aimeos/pagible-cashier-paddle
+# or: aimeos/pagible-cashier-mollie
+
+php artisan cms:install:cashier
+```
+
+For Stripe, an interactive installer offers to create the webhook when
+`APP_URL`, `STRIPE_KEY`, and `STRIPE_SECRET` are ready. Automated installations
+must opt in with `--webhook`.
+
+Add Pagible's `CashierAccess` trait and the selected provider's `Billable` trait
+to the application user model. Then configure the provider credentials and
+verified webhooks, define a frontend access value such as `premium-members`, and
+run the local readiness check:
+
+```bash
+php artisan cms:cashier:check
+```
+
+Use that same access value in both places in the CMS admin:
+
+1. Add a `pricing` element to a public sales page and select `premium-members` as
+   the package's frontend access role. Add a subscription price, a one-time
+   price, or both, then publish the pricing content.
+2. Open the page being sold, choose **Access**, select **Restricted**, add
+   `premium-members`, and apply the change.
+
+Verified payment webhooks grant and revoke the role automatically. A successful
+one-time payment grants permanent access unless it is fully refunded or charged
+back. A subscription grants access through its provider-confirmed paid period.
+See the [Pagible Cashier guide](cashier/README.md) for the user-model example,
+access-catalog setup, provider-specific price fields, webhook configuration,
+private files, cancellations, and an end-to-end checklist.
 
 ## Configuration
 
@@ -280,7 +327,6 @@ Please make sure all tests pass and PHPStan reports no new errors before submitt
 * Extend admin panels and sub-panels by extensions
 * Additional CMS importers (Drupal, Joomla, Statamic, TYPO3)
 * Observability & Audit Trail
-* User and group restrictions
 * Webhook & Event System
 * More themes
 

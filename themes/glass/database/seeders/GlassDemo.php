@@ -693,12 +693,39 @@ class GlassDemo extends AbstractDemo
             ['id' => 'pricing', 'type' => 'pricing', 'group' => 'main', 'data' => [
                 'title' => 'Plans for real operating teams',
                 'text' => 'Start with governed dashboards. Add private workspaces, longer retention, and dedicated controls as the rollout grows.',
-                'label' => 'Monthly',
-                'label-alternative' => 'Annual',
                 'items' => [
-                    ['name' => 'Launch', 'price' => '$490', 'unit' => '/mo', 'price-alternative' => '$4,900', 'unit-alternative' => '/yr', 'text' => 'For one team moving from spreadsheets to governed dashboards.', 'features' => "- 3 workspaces\n- 20 governed metrics\n- Warehouse and billing connectors\n- 90-day history", 'url' => '/docs', 'button' => 'Start setup'],
-                    ['name' => 'Operate', 'price' => '$1,200', 'unit' => '/mo', 'price-alternative' => '$12,000', 'unit-alternative' => '/yr', 'text' => 'For companies running weekly reviews from live data.', 'features' => "- 12 workspaces\n- Unlimited dashboards\n- Approval workflows\n- 24-month history\n- Priority support", 'url' => '/docs', 'button' => 'Plan rollout', 'highlight' => true, 'badge' => 'Most teams'],
-                    ['name' => 'Control', 'price' => 'Custom', 'unit' => '', 'text' => 'For regulated teams with strict data residency and audit needs.', 'features' => "- Private region options\n- SSO and SCIM\n- Custom retention\n- Dedicated success review\n- Security questionnaire support", 'url' => '#contact', 'button' => 'Talk to sales'],
+                    [
+                        'name' => 'Launch',
+                        'prices' => [
+                            ['id' => 'monthly', 'amount' => 490, 'label' => '$490', 'unit' => 'mo'],
+                            ['id' => 'annual', 'amount' => 4900, 'label' => '$4,900', 'unit' => 'yr'],
+                        ],
+                        'text' => 'For one team moving from spreadsheets to governed dashboards.',
+                        'features' => "- 3 workspaces\n- 20 governed metrics\n- Warehouse and billing connectors\n- 90-day history",
+                        'url' => '/docs',
+                        'button' => 'Start setup',
+                    ],
+                    [
+                        'name' => 'Operate',
+                        'prices' => [
+                            ['id' => 'monthly', 'amount' => 1200, 'label' => '$1,200', 'unit' => 'mo'],
+                            ['id' => 'annual', 'amount' => 12000, 'label' => '$12,000', 'unit' => 'yr'],
+                        ],
+                        'text' => 'For companies running weekly reviews from live data.',
+                        'features' => "- 12 workspaces\n- Unlimited dashboards\n- Approval workflows\n- 24-month history\n- Priority support",
+                        'url' => '/docs',
+                        'button' => 'Plan rollout',
+                        'highlight' => true,
+                        'badge' => 'Most teams',
+                    ],
+                    [
+                        'name' => 'Control',
+                        'prices' => [['id' => 'custom', 'label' => 'Custom']],
+                        'text' => 'For regulated teams with strict data residency and audit needs.',
+                        'features' => "- Private region options\n- SSO and SCIM\n- Custom retention\n- Dedicated success review\n- Security questionnaire support",
+                        'url' => '#contact',
+                        'button' => 'Talk to sales',
+                    ],
                 ],
             ]],
             ['id' => Utils::uid(), 'type' => 'blog', 'group' => 'main', 'data' => [

@@ -10,9 +10,9 @@
         "aimeos/pagible-core": "*@dev"
     },
     "suggest": {
-        "laravel/cashier": "Required for Stripe payments (^15.0)",
-        "laravel/cashier-paddle": "Required for Paddle payments (^2.0)",
-        "mollie/laravel-cashier-mollie": "Required for Mollie payments (^2.0)"
+        "aimeos/pagible-cashier-stripe": "Stripe payment provider",
+        "aimeos/pagible-cashier-paddle": "Paddle payment provider",
+        "aimeos/pagible-cashier-mollie": "Mollie payment provider"
     },
     "autoload": {
         "psr-4": {

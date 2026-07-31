@@ -4,211 +4,285 @@
  * @license MIT, https://opensource.org/license/mit
  */
 
-
 namespace Tests;
+
+use Aimeos\Cms\CashierSetup;
+use Aimeos\Cms\Commands\CheckCashier;
+use Aimeos\Cms\Commands\InstallCashier;
+use Illuminate\Contracts\Console\Kernel;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Route;
+use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\Console\Output\BufferedOutput;
 
 
 class InstallCashierTest extends CashierTestAbstract
 {
-    public function testWriteEnvNew()
+    public function testCheckCommandReturnsFailureForMissingReadinessItem(): void
     {
-        $path = base_path( '.env' );
-        $backup = file_exists( $path ) ? file_get_contents( $path ) : null;
+        app()->instance( CashierSetup::class, new CashierCheckSetupStub() );
 
-        try {
-            file_put_contents( $path, "APP_NAME=Pagible\n" );
-
-            $command = new \Aimeos\Cms\Commands\InstallCashier();
-            $method = new \ReflectionMethod( $command, 'writeEnv' );
-
-            $method->invoke( $command, ['CMS_CASHIER_PROVIDER' => 'stripe', 'STRIPE_KEY' => 'pk_test_123'] );
-
-            $content = file_get_contents( $path );
-
-            $this->assertStringContainsString( 'CMS_CASHIER_PROVIDER=stripe', $content );
-            $this->assertStringContainsString( 'STRIPE_KEY=pk_test_123', $content );
-            $this->assertStringContainsString( 'APP_NAME=Pagible', $content );
-        } finally {
-            if( $backup !== null ) {
-                file_put_contents( $path, $backup );
-            } else {
-                @unlink( $path );
-            }
-        }
+        $this->assertSame( 1, Artisan::call( 'cms:cashier:check' ) );
+        $output = Artisan::output();
+        $this->assertStringContainsString( 'Developer next steps', $output );
+        $this->assertStringContainsString( 'Configure STRIPE_SECRET.', $output );
     }
 
 
-    public function testWriteEnvUpdate()
+    public function testCommandCreatesStripeWebhookWhenExplicit(): void
     {
-        $path = base_path( '.env' );
-        $backup = file_exists( $path ) ? file_get_contents( $path ) : null;
+        app()->instance( CashierSetup::class, new CashierSetupStub( 'stripe' ) );
+        $this->stripeRoute();
 
-        try {
-            file_put_contents( $path, "CMS_CASHIER_PROVIDER=paddle\nSTRIPE_KEY=old\n" );
+        $command = new InstallCashierCommand();
 
-            $command = new \Aimeos\Cms\Commands\InstallCashier();
-            $method = new \ReflectionMethod( $command, 'writeEnv' );
-
-            $method->invoke( $command, ['CMS_CASHIER_PROVIDER' => 'stripe', 'STRIPE_KEY' => 'pk_test_new'] );
-
-            $content = file_get_contents( $path );
-
-            $this->assertStringContainsString( 'CMS_CASHIER_PROVIDER=stripe', $content );
-            $this->assertStringContainsString( 'STRIPE_KEY=pk_test_new', $content );
-            $this->assertStringNotContainsString( 'paddle', $content );
-            $this->assertStringNotContainsString( 'old', $content );
-        } finally {
-            if( $backup !== null ) {
-                file_put_contents( $path, $backup );
-            } else {
-                @unlink( $path );
-            }
-        }
+        $this->assertSame( 0, $this->runCommand( $command, ['--webhook' => true, '--no-interaction' => true] ) );
+        $this->assertNull( $command->question );
+        $this->assertSame( [
+            ['vendor:publish', ['--tag' => 'cashier-migrations']],
+            ['migrate', []],
+            ['cashier:webhook', []],
+            ['cms:cashier:check', []],
+        ], $command->calls );
     }
 
 
-    public function testWriteEnvSkipsEmpty()
+    public function testCommandIsRegistered(): void
     {
-        $path = base_path( '.env' );
-        $backup = file_exists( $path ) ? file_get_contents( $path ) : null;
+        $commands = app( Kernel::class )->all();
+        $install = $commands['cms:install:cashier'];
 
-        try {
-            file_put_contents( $path, '' );
-
-            $command = new \Aimeos\Cms\Commands\InstallCashier();
-            $method = new \ReflectionMethod( $command, 'writeEnv' );
-
-            $method->invoke( $command, ['CMS_CASHIER_PROVIDER' => 'stripe', 'EMPTY_VAR' => '', 'NULL_VAR' => null] );
-
-            $content = file_get_contents( $path );
-
-            $this->assertStringContainsString( 'CMS_CASHIER_PROVIDER=stripe', $content );
-            $this->assertStringNotContainsString( 'EMPTY_VAR', $content );
-            $this->assertStringNotContainsString( 'NULL_VAR', $content );
-        } finally {
-            if( $backup !== null ) {
-                file_put_contents( $path, $backup );
-            } else {
-                @unlink( $path );
-            }
-        }
+        $this->assertInstanceOf( InstallCashier::class, $install );
+        $this->assertInstanceOf( CheckCashier::class, $commands['cms:cashier:check'] );
+        $this->assertFalse( $install->getDefinition()->hasOption( 'migrate' ) );
+        $this->assertTrue( $install->getDefinition()->hasOption( 'no-migrate' ) );
     }
 
 
-    public function testWriteEnvEscapesSpaces()
+    public function testCommandOffersStripeWebhookByDefault(): void
     {
-        $path = base_path( '.env' );
-        $backup = file_exists( $path ) ? file_get_contents( $path ) : null;
+        app()->instance( CashierSetup::class, new CashierSetupStub( 'stripe' ) );
+        $this->stripeRoute();
 
-        try {
-            file_put_contents( $path, '' );
+        $command = new InstallCashierCommand();
+        $command->confirmed = true;
 
-            $command = new \Aimeos\Cms\Commands\InstallCashier();
-            $method = new \ReflectionMethod( $command, 'writeEnv' );
-
-            $method->invoke( $command, ['APP_NAME' => 'My App'] );
-
-            $content = file_get_contents( $path );
-
-            $this->assertStringContainsString( 'APP_NAME="My App"', $content );
-        } finally {
-            if( $backup !== null ) {
-                file_put_contents( $path, $backup );
-            } else {
-                @unlink( $path );
-            }
-        }
+        $this->assertSame( 0, $this->runCommand( $command ) );
+        $this->assertSame( 'Create a Stripe webhook for https://example.com/stripe/webhook?', $command->question );
+        $this->assertTrue( $command->confirmDefault );
+        $this->assertSame( [
+            ['vendor:publish', ['--tag' => 'cashier-migrations']],
+            ['migrate', []],
+            ['cashier:webhook', []],
+            ['cms:cashier:check', []],
+        ], $command->calls );
     }
 
 
-    public function testBillableFileNotFound()
+    public function testCommandPublishesMigrationsWithoutRunningThem(): void
     {
-        $command = new \Aimeos\Cms\Commands\InstallCashier();
-        $method = new \ReflectionMethod( $command, 'billable' );
+        app()->instance( CashierSetup::class, new CashierSetupStub( 'paddle' ) );
 
-        // Should not throw when file doesn't exist
-        $method->invoke( $command, 'stripe' );
+        $command = new InstallCashierCommand();
 
-        $this->assertTrue( true );
+        $this->assertSame( 0, $this->runCommand( $command, ['--no-migrate' => true] ) );
+        $this->assertSame( [
+            ['vendor:publish', ['--tag' => 'cashier-migrations']],
+            ['cms:cashier:check', []],
+        ], $command->calls );
     }
 
 
-    public function testBillableAddsTraitStripe()
+    public function testCommandRejectsForceWithoutMigrations(): void
     {
-        $path = base_path( 'app/Models/User.php' );
-        $dir = dirname( $path );
+        app()->instance( CashierSetup::class, new CashierSetupStub( 'paddle' ) );
 
-        if( !is_dir( $dir ) ) {
-            mkdir( $dir, 0755, true );
-        }
+        $command = new InstallCashierCommand();
 
-        $original = <<<'PHP'
-<?php
+        $this->assertSame( 1, $this->runCommand( $command, ['--no-migrate' => true, '--force' => true] ) );
+        $this->assertSame( [['cms:cashier:check', []]], $command->calls );
+    }
 
-namespace App\Models;
 
-use Illuminate\Foundation\Auth\User as Authenticatable;
+    public function testCommandRejectsMissingProvider(): void
+    {
+        app()->instance( CashierSetup::class, new CashierSetupStub( null ) );
 
-class User extends Authenticatable
-{
-    use HasFactory;
+        $command = new InstallCashierCommand();
+
+        $this->assertSame( 1, $this->runCommand( $command ) );
+        $this->assertSame( [['cms:cashier:check', []]], $command->calls );
+    }
+
+
+    public function testCommandRunsMigrationsByDefault(): void
+    {
+        app()->instance( CashierSetup::class, new CashierSetupStub( 'paddle' ) );
+
+        $command = new InstallCashierCommand();
+
+        $this->assertSame( 0, $this->runCommand( $command ) );
+        $this->assertSame( [
+            ['vendor:publish', ['--tag' => 'cashier-migrations']],
+            ['migrate', []],
+            ['cms:cashier:check', []],
+        ], $command->calls );
+    }
+
+
+    public function testCommandRunsMigrationsWithForce(): void
+    {
+        app()->instance( CashierSetup::class, new CashierSetupStub( 'paddle' ) );
+
+        $command = new InstallCashierCommand();
+
+        $this->assertSame( 0, $this->runCommand( $command, ['--force' => true] ) );
+        $this->assertSame( [
+            ['vendor:publish', ['--tag' => 'cashier-migrations']],
+            ['migrate', ['--force' => true]],
+            ['cms:cashier:check', []],
+        ], $command->calls );
+    }
+
+
+    public function testCommandSkipsDefaultStripeWebhookNonInteractively(): void
+    {
+        app()->instance( CashierSetup::class, new CashierSetupStub( 'stripe' ) );
+
+        $command = new InstallCashierCommand();
+
+        $this->assertSame( 0, $this->runCommand( $command, ['--no-interaction' => true] ) );
+        $this->assertNull( $command->question );
+        $this->assertSame( [
+            ['vendor:publish', ['--tag' => 'cashier-migrations']],
+            ['migrate', []],
+            ['cms:cashier:check', []],
+        ], $command->calls );
+    }
+
+
+    public function testCommandStopsForExistingAccessColumn(): void
+    {
+        $setup = new CashierSetupStub( 'mollie' );
+        $setup->conflict = 'Existing users.access conflict.';
+        app()->instance( CashierSetup::class, $setup );
+
+        $command = new InstallCashierCommand();
+
+        $this->assertSame( 1, $this->runCommand( $command ) );
+        $this->assertSame( [['cms:cashier:check', []]], $command->calls );
+    }
+
+
+    /**
+     * Runs a test command through Symfony so options and output are initialized.
+     *
+     * @param array<string, mixed> $options
+     */
+    private function runCommand( InstallCashier $command, array $options = [] ) : int
+    {
+        $command->setLaravel( app() );
+        $interactive = !( $options['--no-interaction'] ?? false );
+        unset( $options['--no-interaction'] );
+        $input = new ArrayInput( $options );
+        $input->setInteractive( $interactive );
+
+        return $command->run( $input, new BufferedOutput() );
+    }
+
+
+    /**
+     * Registers the exact URL shown by the Stripe webhook prompt.
+     */
+    private function stripeRoute() : void
+    {
+        config()->set( 'app.url', 'https://example.com' );
+        Route::post( 'stripe/webhook', fn() => '' )->name( 'cashier.webhook' );
+        url()->forceRootUrl( 'https://example.com' );
+        url()->forceScheme( 'https' );
+    }
 }
-PHP;
 
-        try {
-            file_put_contents( $path, $original );
 
-            $command = new \Aimeos\Cms\Commands\InstallCashier();
-            $method = new \ReflectionMethod( $command, 'billable' );
-            $method->invoke( $command, 'stripe' );
-
-            $content = file_get_contents( $path );
-
-            $this->assertStringContainsString( 'use Laravel\Cashier\Billable;', $content );
-            $this->assertStringContainsString( 'use Billable;', $content );
-        } finally {
-            @unlink( $path );
-        }
+class CashierCheckSetupStub extends CashierSetup
+{
+    public function checks() : array
+    {
+        return [[
+            'name' => 'Provider credentials',
+            'ok' => false,
+            'message' => 'Configure STRIPE_SECRET.',
+        ]];
     }
 
 
-    public function testBillableAlreadyAdded()
+    public function manual() : array
     {
-        $path = base_path( 'app/Models/User.php' );
-        $dir = dirname( $path );
-
-        if( !is_dir( $dir ) ) {
-            mkdir( $dir, 0755, true );
-        }
-
-        $original = <<<'PHP'
-<?php
-
-namespace App\Models;
-
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Laravel\Cashier\Billable;
-
-class User extends Authenticatable
-{
-    use Billable;
+        return [];
+    }
 }
-PHP;
 
-        try {
-            file_put_contents( $path, $original );
 
-            $this->artisan( 'cms:install:cashier' )
-                ->expectsQuestion( 'Which payment provider do you want to use?', 'stripe' )
-                ->expectsQuestion( 'Stripe Publishable Key', 'pk_test_123' )
-                ->expectsQuestion( 'Stripe Secret Key', 'sk_test_123' )
-                ->expectsConfirmation( 'Install laravel/cashier via Composer?', 'no' );
+class CashierSetupStub extends CashierSetup
+{
+    public ?string $conflict = null;
 
-            $content = file_get_contents( $path );
 
-            $this->assertStringContainsString( 'use Laravel\Cashier\Billable;', $content );
-        } finally {
-            @unlink( $path );
-        }
+    public function __construct( private ?string $providerName )
+    {
+    }
+
+
+    public function conflict() : ?string
+    {
+        return $this->conflict;
+    }
+
+
+    public function provider() : ?string
+    {
+        return $this->providerName;
+    }
+
+
+    public function providers() : array
+    {
+        return $this->providerName ? [$this->providerName] : [];
+    }
+
+
+    public function stripe() : ?string
+    {
+        return null;
+    }
+}
+
+
+class InstallCashierCommand extends InstallCashier
+{
+    /** @var array<int, array{0: mixed, 1: array<string, mixed>}> */
+    public array $calls = [];
+    public bool $confirmed = false;
+    public bool $confirmDefault = false;
+    public ?string $question = null;
+
+
+    /**
+     * @param array<string, mixed> $arguments
+     */
+    public function call( mixed $command, array $arguments = [] ) : int
+    {
+        $this->calls[] = [$command, $arguments];
+
+        return 0;
+    }
+
+
+    public function confirm( mixed $question, mixed $default = false ) : bool
+    {
+        $this->confirmDefault = (bool) $default;
+        $this->question = (string) $question;
+
+        return $this->confirmed;
     }
 }

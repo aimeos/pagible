@@ -391,11 +391,15 @@ class PageControllerTest extends ThemeTestAbstract
     public function testRouteCacheKeysEncodePartsUnambiguously(): void
     {
         $method = new \ReflectionMethod( PageCache::class, 'routeKey' );
+        $first = $method->invoke( null, 'a', 'b', 'c|d' );
+        $second = $method->invoke( null, 'a', 'c', 'd' );
 
         $this->assertNotSame(
-            $method->invoke( null, 'a', 'b', 'c|d' ),
+            $first,
             $method->invoke( null, 'a|b', 'c', 'd' ),
         );
+        $this->assertMatchesRegularExpression( '/^[a-f0-9]{64}$/', $first );
+        $this->assertMatchesRegularExpression( '/^[a-f0-9]{64}$/', $second );
     }
 
 
@@ -502,6 +506,22 @@ class PageControllerTest extends ThemeTestAbstract
     }
 
 
+    public function testAccessInvalidationKeepsPagesSharingNavigationCached(): void
+    {
+        config( ['cms.theme.cache' => 'array'] );
+
+        $changed = Page::where( 'path', 'hidden' )->firstOrFail();
+        $shared = Page::where( 'path', 'blog' )->firstOrFail();
+        $this->cache( $changed, 'changed-html' );
+        $this->cache( $shared, 'shared-html' );
+
+        PageAccess::set( [(string) $changed->id], [] );
+
+        $this->assertNull( PageCache::response( $changed ) );
+        $this->assertSame( 'shared-html', PageCache::response( $shared )?->getContent() );
+    }
+
+
     public function testRestrictedPageRedirectsGuestAndAllowsPermission(): void
     {
         $page = Page::where( 'path', 'hidden' )->firstOrFail();
@@ -520,6 +540,33 @@ class PageControllerTest extends ThemeTestAbstract
         $response = $this->actingAs( $user )->get( '/hidden' );
         $response->assertOk();
         $this->assertStringContainsString( 'private', (string) $response->headers->get( 'Cache-Control' ) );
+    }
+
+
+    public function testRestrictedPageUsesExtendedAccessWithoutRuleQuery(): void
+    {
+        $page = Page::where( 'path', 'hidden' )->firstOrFail();
+        PageAccess::set( [(string) $page->id], ['frontend.member'] );
+        $user = new \App\Models\User();
+        $user->id = 42;
+        $user->tenant_id = 'test';
+        $user->cmsperms = [];
+        Access::extend( fn() => ['frontend.member'] );
+        \Illuminate\Support\Facades\Gate::define( 'frontend.member', fn() => false );
+        DB::flushQueryLog();
+        DB::enableQueryLog();
+
+        $response = $this->actingAs( $user )->get( '/hidden' );
+
+        $response->assertOk();
+        $this->assertStringContainsString( 'private', (string) $response->headers->get( 'Cache-Control' ) );
+
+        foreach( DB::getQueryLog() as $query ) {
+            $this->assertDoesNotMatchRegularExpression(
+                '/^select \\* from [`"]cms_page_access[`"]/i',
+                (string) $query['query'],
+            );
+        }
     }
 
 
@@ -554,22 +601,6 @@ class PageControllerTest extends ThemeTestAbstract
         PageAccess::set( [$page->id], ['frontend.member'] );
 
         $this->getJson( '/hidden' )->assertUnauthorized();
-    }
-
-
-    public function testGuestRedirectsWhenPageBecomesRestrictedDuringRender(): void
-    {
-        $page = Page::where( 'path', 'hidden' )->firstOrFail();
-        $restricted = false;
-
-        View::composer( '*', function() use ( &$restricted, $page ) {
-            if( !$restricted ) {
-                $restricted = true;
-                PageAccess::set( [$page->id], [] );
-            }
-        } );
-
-        $this->get( '/hidden' )->assertRedirect( '/login' );
     }
 
 

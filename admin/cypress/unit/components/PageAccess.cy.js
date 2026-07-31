@@ -1,12 +1,18 @@
 import PageAccess from '../../../js/components/PageAccess.vue'
 
 function mountAccess(access, props = {}) {
-  const query = cy.stub().resolves({ data: { access: ['alpha', 'member'] } }).as('query')
-  const mutate = cy.stub().resolves({ data: { setPageAccess: 1 } }).as('mutate')
+  const query = cy
+    .stub()
+    .resolves({ data: { access: ['alpha', 'member'] } })
+    .as('query')
+  const mutate = cy
+    .stub()
+    .resolves({ data: { setPageAccess: 1 } })
+    .as('mutate')
   const input = {
     ids: ['page-1'],
     descendants: 0,
-    ...props,
+    ...props
   }
 
   if (access !== undefined) input.access = access
@@ -15,9 +21,9 @@ function mountAccess(access, props = {}) {
     props: input,
     global: {
       mocks: {
-        $apollo: { query, mutate },
-      },
-    },
+        $apollo: { query, mutate }
+      }
+    }
   })
 }
 
@@ -54,6 +60,19 @@ describe('PageAccess', () => {
     cy.get('.btn-apply-access').should('be.enabled')
   })
 
+  it('searches access values remotely with a bounded query', () => {
+    mountAccess(['member']).then(async ({ wrapper }) => {
+      await wrapper.findComponent(PageAccess).vm.load('alp')
+    })
+
+    cy.get('@query').should((query) => {
+      expect(query.lastCall.args[0].variables).to.deep.equal({
+        term: 'alp',
+        first: 50
+      })
+    })
+  })
+
   it('sends an explicit public value', () => {
     mountAccess(null).then(async ({ wrapper }) => {
       const component = wrapper.findComponent(PageAccess)
@@ -62,11 +81,13 @@ describe('PageAccess', () => {
     })
 
     cy.get('@mutate').should('have.been.calledOnce')
-    cy.get('@mutate').its('firstCall.args.0.variables').should('deep.equal', {
-      id: ['page-1'],
-      access: null,
-      descendants: false,
-    })
+    cy.get('@mutate')
+      .its('firstCall.args.0.variables')
+      .should('deep.equal', {
+        id: ['page-1'],
+        access: null,
+        descendants: false
+      })
   })
 
   it('supports descendants only for one selected root', () => {

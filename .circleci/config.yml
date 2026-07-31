@@ -254,6 +254,29 @@ jobs:
           paths: [./vendor]
       - run: ./vendor/bin/phpstan --no-progress
 
+  "cashier-provider":
+    parameters:
+      package:
+        type: string
+      php:
+        type: string
+    docker:
+      - image: aimeos/ci-php:<< parameters.php >>
+    working_directory: ~/project/<< parameters.package >>
+    steps:
+      - checkout:
+          path: ~/project
+      - run:
+          name: Install isolated provider
+          command: |
+            composer config repositories.cashier '{"type":"path","url":"../cashier","options":{"symlink":false}}'
+            composer config repositories.core '{"type":"path","url":"../core","options":{"symlink":false}}'
+            composer config minimum-stability dev
+            composer config prefer-stable true
+            composer update -n --prefer-dist
+      - run: ./vendor/bin/phpunit
+      - run: ./vendor/bin/phpstan analyze --no-progress
+
   "admin-lint":
     docker:
       - image: cimg/node:lts
@@ -452,6 +475,12 @@ workflows:
     when: << pipeline.parameters.run_php >>
     jobs:
       - "php85-phpstan"
+      - "cashier-provider":
+          matrix:
+            parameters:
+              package: ["cashier-stripe", "cashier-paddle", "cashier-mollie"]
+              php: ["8.2", "8.3", "8.4", "8.5"]
+          requires: ["php85-phpstan"]
       - "php82-sqlite3":
           requires: ["php85-phpstan"]
       - "php82-mariadb10":

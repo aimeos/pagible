@@ -79,7 +79,13 @@ The named `login` route must be public and registered before the CMS catch-all r
 
 During public-page revalidation, a request that finds another renderer active may receive the previous complete page for `stale` seconds. Without a stale entry, it waits for the render lease, rechecks the cache, and only renders without writing if that bounded wait expires. The cache-store TTL keeps an entry through its stale window, while its fresh expiry remains in the entry. Invalidation deletes entries without waiting for active render leases.
 
-After page publication, deletion, or access changes commit, core dispatches a lightweight event and the theme synchronously removes the affected rendered HTML. Cache failures are reported without undoing the committed content change. The origin cache TTL and CDN `s-maxage` remain the consistency boundary, so stale HTML already stored by an external cache may remain visible until expiry. Installations using only the core package remain independent of frontend caching.
+After page publication, deletion, or access changes commit, core dispatches a
+lightweight event and the theme removes the affected rendered HTML synchronously
+through Laravel's configured cache repository without adding queue traffic.
+Invalidation failures are reported without undoing committed content. The
+origin cache TTL and CDN `s-maxage` remain the consistency boundary, so stale
+HTML already stored by an external cache may remain visible until expiry.
+Installations using only the core package remain independent of frontend caching.
 
 ### Content Security Policy
 

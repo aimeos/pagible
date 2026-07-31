@@ -16,6 +16,20 @@ describe('Number', () => {
     cy.get('input').should('have.value', '10')
   })
 
+  it('keeps optional values empty', () => {
+    cy.mount(Number, { props: { config: {} } })
+    cy.get('input').should('have.value', '')
+  })
+
+  it('emits null when an optional value is cleared', () => {
+    const onUpdate = cy.spy().as('update')
+    cy.mount(Number, {
+      props: { config: {}, modelValue: 7, 'onUpdate:modelValue': onUpdate }
+    })
+    cy.get('input').clear().blur()
+    cy.get('@update').should('have.been.calledWith', null)
+  })
+
   it('shows placeholder from config', () => {
     cy.mount(Number, { props: { config: { placeholder: 'Enter number' } } })
     cy.get('input').should('have.attr', 'placeholder', 'Enter number')
@@ -24,7 +38,7 @@ describe('Number', () => {
   it('emits error:false when value is present and required', () => {
     const onError = cy.spy().as('error')
     cy.mount(Number, {
-      props: { config: { required: true }, modelValue: 5, onError },
+      props: { config: { required: true }, modelValue: 5, onError }
     })
     cy.get('@error').should('have.been.calledWith', false)
   })
@@ -32,11 +46,19 @@ describe('Number', () => {
   it('emits update:modelValue when the value changes', () => {
     const onUpdate = cy.spy().as('update')
     cy.mount(Number, {
-      props: { config: {}, 'onUpdate:modelValue': onUpdate },
+      props: { config: {}, 'onUpdate:modelValue': onUpdate }
     })
     cy.get('input').clear().type('7')
     cy.get('input').blur()
     cy.get('@update').should('have.been.called')
+  })
+
+  it('limits fractional digits using config.precision', () => {
+    cy.mount(Number, {
+      props: { config: { precision: 2, step: 0.01 } }
+    })
+    cy.get('input').type('19.999').blur()
+    cy.get('input').should('have.value', '19.99')
   })
 
   it('is readonly when readonly prop is true', () => {

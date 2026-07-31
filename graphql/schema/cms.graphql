@@ -43,8 +43,10 @@ extend type Query {
   me: CmsUser @auth @throttle(name: "cms-graphql")
 
   "Get the available access values"
-  access: [String!]!
-    @guard @cmsPermission(action: "access:view") @throttle(name: "cms-graphql")
+  access(term: String = "", first: Int = 50): [String!]!
+    @guard
+    @cmsPermission(action: ["access:view", "page:save", "element:save"], any: true)
+    @throttle(name: "cms-graphql")
     @field(resolver: "\\Aimeos\\Cms\\GraphQL\\Query@access")
 
   "Get page by ID"

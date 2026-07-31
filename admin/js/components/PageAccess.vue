@@ -3,11 +3,11 @@
 <script>
 import gql from 'graphql-tag'
 import { useMessageStore } from '../stores'
-import { PAGE_BULK_LIMIT } from '../utils'
+import { debounce, PAGE_BULK_LIMIT } from '../utils'
 
 const FETCH_ACCESS = gql`
-  query PageAccessValues {
-    access
+  query PageAccessValues($term: String!, $first: Int!) {
+    access(term: $term, first: $first)
   }
 `
 
@@ -67,8 +67,14 @@ export default {
   },
 
   created() {
+    this.search = debounce(this.load, 500)
     this.reset()
-    this.load()
+
+    if (this.mode === 'restricted') this.load()
+  },
+
+  beforeUnmount() {
+    this.search.cancel()
   },
 
   methods: {
@@ -100,16 +106,20 @@ export default {
       }
     },
 
-    async load() {
+    /**
+     * Loads matching catalog values while preserving currently selected roles.
+     */
+    async load(term = '') {
       this.loading = true
 
       try {
         const response = await this.$apollo.query({
           query: FETCH_ACCESS,
+          variables: { term: term || '', first: 50 },
           fetchPolicy: 'network-only'
         })
 
-        this.items = response.data.access || []
+        this.items = [...new Set([...this.values, ...(response.data.access || [])])].sort()
       } catch (error) {
         this.messages.add(this.$gettext('Error fetching access values') + ':\n' + error, 'error')
         this.$log('PageAccess::load(): Error fetching access values', error)
@@ -132,6 +142,13 @@ export default {
         this.mode = 'restricted'
         this.values = [...this.access]
       }
+    },
+
+    /**
+     * Lazily loads roles when restricted access is selected.
+     */
+    select(value) {
+      if (value === 'restricted' && !this.items.length) this.load()
     }
   },
 
@@ -150,17 +167,13 @@ export default {
   <v-container class="page-access">
     <p class="hint">{{ $gettext('Access changes take effect immediately after cache expiry') }}</p>
 
-    <v-radio-group v-model="mode" :disabled="saving">
+    <v-radio-group v-model="mode" :disabled="saving" @update:model-value="select">
       <v-radio value="public" :label="$gettext('Public')" />
       <v-radio value="authenticated" :label="$gettext('Authenticated users')" />
-      <v-radio
-        value="restricted"
-        :label="$gettext('Restricted')"
-        :disabled="!items.length && !values.length"
-      />
+      <v-radio value="restricted" :label="$gettext('Restricted')" />
     </v-radio-group>
 
-    <v-select
+    <v-autocomplete
       v-if="mode === 'restricted'"
       v-model="values"
       :items="items"
@@ -170,6 +183,7 @@ export default {
       variant="underlined"
       multiple
       chips
+      @update:search="search"
     />
 
     <p v-if="limited || recurseLimited" class="hint">
@@ -183,7 +197,8 @@ export default {
         :loading="saving"
         :disabled="!valid || limited"
         @click="apply(false)"
-      >{{ $gettext('Apply') }}</v-btn>
+        >{{ $gettext('Apply') }}</v-btn
+      >
       <v-btn
         v-if="hasDescendants"
         class="btn-apply-access-recursive"
@@ -191,7 +206,8 @@ export default {
         :loading="saving"
         :disabled="!valid || recurseLimited"
         @click="apply(true)"
-      >{{ $gettext('Apply recursively') }} ({{ ids.length + descendants }})</v-btn>
+        >{{ $gettext('Apply recursively') }} ({{ ids.length + descendants }})</v-btn
+      >
     </div>
   </v-container>
 </template>

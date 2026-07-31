@@ -15,6 +15,7 @@ After installation, the configuration is available in `config/cms.php`:
 | Option | Default | Description |
 |--------|---------|-------------|
 | `roles` | `['admin' => ['*'], ...]` | Named role definitions mapping to permission sets. Supports wildcards (`page:*`, `*:view`, `*`) and denials (`!page:purge`) |
+| `access.limit` | `250` | Strict maximum number of distinct frontend access values per tenant (`CMS_ACCESS_LIMIT`) |
 | `broadcast` | `false` | Enable real-time broadcasting via Laravel Reverb so other editors see changes immediately |
 | `db` | `sqlite` | Database connection name (references `config/database.php`) |
 | `disks.public.name` | `public` | Filesystem disk for public uploads (`CMS_DISK`) |
@@ -97,7 +98,9 @@ Access::using(
 );
 ```
 
-`Permission::has('access:view')` reports whether a catalog or package adapter has been configured, and `Access::list()` returns its normalized values. The `add`, `delete`, and `grants` callbacks are optional; without write callbacks the catalog remains read-only. A grant resolver must return all effective frontend-access values for the user, including direct and role-derived values in the active tenant and guard. Its result is authoritative and avoids enumerating the catalog for authenticated page queries. Return `null` for users whose permissions cannot be enumerated, such as blanket access implemented only through `Gate::before()`; Pagible then preserves the catalog-and-Gate fallback. Pass `null` as the list callback to reset custom configuration.
+`Permission::has('access:view')` reports whether a catalog or package adapter has been configured, and `Access::list()` returns its normalized values. The `add`, `delete`, and `grants` callbacks are optional; without write callbacks the catalog remains read-only. The complete catalog must contain no more than `cms.access.limit` distinct values. Pagible stops reading at the next distinct value and rejects an oversized catalog; additions are rejected before invoking the write callback when the limit has already been reached. Catalog membership and autocomplete search use the memoized bounded list.
+
+A grant resolver must return all effective frontend-access values for the user, including direct and role-derived values in the active tenant and guard. Its result avoids Gate calls for each candidate but is filtered through the configured catalog. Return `null` for users whose permissions cannot be enumerated, such as blanket access implemented only through `Gate::before()`; Pagible then preserves the catalog-and-Gate fallback. Pass `null` as the list callback to reset custom configuration.
 
 For a supported permission package, call its adapter once from an application service provider instead. Spatie must have its teams migration and `permission.teams` enabled for tenant-specific assignments; Laratrust must have its teams migration and `laratrust.teams.enabled` enabled. Bouncer's adapter selects its built-in tenant scope. Laratrust permission checks are exposed as tenant-aware Laravel Gate definitions:
 
@@ -107,7 +110,7 @@ Access::bouncer();
 Access::laratrust();
 ```
 
-Each package adapter accepts the same optional effective-grants resolver, for example `Access::spatie(grants: fn( $user ) => ...)`. Pagible does not derive grants from package assignment APIs automatically because those APIs can bypass application-level `Gate::before()` rules and explicit denials. Applications that can enumerate their complete effective result should provide the callback; otherwise the adapter retains Gate evaluation.
+Each package adapter accepts the same optional effective-grants resolver, for example `Access::spatie(grants: fn( $user ) => ...)`. Pagible does not derive grants from package assignment APIs automatically because those APIs can bypass application-level `Gate::before()` rules and explicit denials. Applications that can enumerate their complete effective result should provide the callback. It avoids Gate calls for each catalog value and must return the complete result—never truncate it. When no authoritative result can be enumerated, return `null`; Pagible retains Gate evaluation. Page rendering, navigation, pricing checkout, and JSON:API use the same database-side access predicate so collection totals and pagination remain exact.
 
 The adapters require these package versions at minimum:
 
@@ -138,7 +141,7 @@ Restriction writes are rejected while the access catalog is unavailable; releasi
 Use `PageAccess::set()` as the supported write API. It applies database-first, chunked changes so public page caches and external search documents are updated consistently:
 
 ```php
-\Aimeos\Cms\Models\PageAccess::set( [$page->id], ['frontend.member'], auth()->user() );
+\Aimeos\Cms\Models\PageAccess::set( [$page->id], ['members'], auth()->user() );
 \Aimeos\Cms\Models\PageAccess::set( [$page->id], null );
 \Aimeos\Cms\Models\PageAccess::set( [$page->id], [], auth()->user(), descendants: true );
 ```
@@ -147,7 +150,7 @@ Access-value lists are trimmed, must contain only registered non-empty strings, 
 
 After access records have been committed, indexed Laravel Scout drivers are refreshed by queued jobs from the current page state. Bulk page, element, and file publication, deletion, restoration, and edits use the same queued reconciliation for the Pagible `cms` engine and external Scout engines. The `collection` and Laravel `database` drivers query model tables directly and need no index job. Jobs carry only the tenant, model class, and bounded ID list, then hydrate current state when handled. File-version pruning and purging also queue physical storage cleanup after commit. Run a queue worker with an asynchronous queue connection in production; the `sync` connection executes these jobs inline.
 
-Access changes don't modify page-tree coordinates, so they acquire neither the tenant page-tree lock nor page row locks. They load the target pages and current canonical access values once, then update only pages whose values changed in one database transaction. SQL writes remain bounded, while cache invalidation and index synchronization dispatch afterward. Rolled-back changes dispatch nothing. Core emits a lightweight `PageInvalidated` event with affected paths grouped by domain without depending on a rendered-page cache; the theme package removes those rendered routes.
+Access changes don't modify page-tree coordinates, so they acquire neither the tenant page-tree lock nor page row locks. They load the target pages and current canonical access values once, then update only pages whose values changed in one database transaction. SQL writes remain bounded, while cache invalidation and index synchronization dispatch afterward. Rolled-back changes dispatch nothing. Core emits a lightweight `PageInvalidated` event with affected paths grouped by domain without depending on a rendered-page cache; the theme package invalidates those rendered routes synchronously after commit. Redis, database, and Memcached stores use bounded native batch deletion, while other stores use Laravel's per-key fallback. Redis page keys use bounded tenant-specific cluster hash slots and asynchronous `UNLINK` calls, avoiding one hot tenant slot without issuing cross-slot commands. Keep `scout.queue` enabled with an asynchronous queue connection in production so external search indexing doesn't extend the write request.
 
 Page bulk operations are limited to 1,000 unique pages. Recursive calls also fail before writing if the resolved subtree exceeds 1,000 pages. Larger queued operations must split explicit page IDs into batches of at most 1,000.
 

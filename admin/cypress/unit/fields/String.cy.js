@@ -18,7 +18,7 @@ describe('String (textarea)', () => {
 
   it('shows a character counter when config.max is set', () => {
     cy.mount(StringField, {
-      props: { modelValue: 'hi', config: { max: 100 } },
+      props: { modelValue: 'hi', config: { max: 100 } }
     })
     cy.get('.v-counter').should('exist')
   })
@@ -31,7 +31,7 @@ describe('String (textarea)', () => {
   it('emits error:true when value is shorter than config.min', () => {
     const onError = cy.spy().as('error')
     cy.mount(StringField, {
-      props: { modelValue: 'Hi', config: { min: 5 }, onError },
+      props: { modelValue: 'Hi', config: { min: 5 }, onError }
     })
     cy.get('@error').should('have.been.calledWith', true)
   })
@@ -39,7 +39,7 @@ describe('String (textarea)', () => {
   it('emits error:false when value meets config.min', () => {
     const onError = cy.spy().as('error')
     cy.mount(StringField, {
-      props: { modelValue: 'Hello', config: { min: 5 }, onError },
+      props: { modelValue: 'Hello', config: { min: 5 }, onError }
     })
     cy.get('@error').should('have.been.calledWith', false)
   })
@@ -47,7 +47,7 @@ describe('String (textarea)', () => {
   it('emits error:true when value exceeds config.max', () => {
     const onError = cy.spy().as('error')
     cy.mount(StringField, {
-      props: { modelValue: 'Too long text here', config: { max: 5 }, onError },
+      props: { modelValue: 'Too long text here', config: { max: 5 }, onError }
     })
     cy.get('@error').should('have.been.calledWith', true)
   })
@@ -63,7 +63,7 @@ describe('String (textarea)', () => {
   it('emits update:modelValue as the user types', () => {
     const onUpdate = cy.spy().as('update')
     cy.mount(StringField, {
-      props: { config: {}, 'onUpdate:modelValue': onUpdate },
+      props: { config: {}, 'onUpdate:modelValue': onUpdate }
     })
     cy.get('textarea').first().type('new text')
     cy.get('@update').should('have.been.called')
