@@ -98,31 +98,8 @@ class CashierMolliePlan implements PlanRepository
      */
     private function binding( string $type ) : string
     {
-        return $this->compact( substr( hash( 'sha256', $type ), 0, 32 ) );
-    }
-
-
-    /**
-     * Encodes a hexadecimal 128-bit value as compact URL-safe Base64.
-     */
-    private function compact( string $value ) : string
-    {
-        $binary = hex2bin( $value );
-
-        if( $binary === false ) {
-            throw new \InvalidArgumentException( 'Invalid compact value.' );
-        }
-
-        return rtrim( strtr( base64_encode( $binary ), '+/', '-_' ), '=' );
-    }
-
-
-    /**
-     * Formats a day interval for Cashier Mollie.
-     */
-    private function days( int $interval ) : string
-    {
-        return $interval . ( $interval === 1 ? ' day' : ' days' );
+        $hash = substr( hash( 'sha256', $type, true ), 0, 16 );
+        return rtrim( strtr( base64_encode( $hash ), '+/', '-_' ), '=' );
     }
 
 
@@ -171,7 +148,9 @@ class CashierMolliePlan implements PlanRepository
 
         $plan = new Plan( $name );
         $plan->setAmount( $money );
-        $plan->setInterval( $this->days( $price['interval'] ) );
+        $plan->setInterval(
+            $price['interval'] . ( $price['interval'] === 1 ? ' day' : ' days' )
+        );
         $plan->setDescription( $price['description'] );
         $plan->setFirstPaymentAmount( $money );
         $plan->setFirstPaymentDescription( $price['description'] );

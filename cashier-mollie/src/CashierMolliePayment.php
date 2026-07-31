@@ -58,16 +58,12 @@ class CashierMolliePayment implements GetMolliePayment
         if( $webhook )
         {
             try {
-                $process = $this->provider->webhook(
+                $this->provider->webhook(
                     $payment,
                     firstPayment: $route === 'webhooks.mollie.first_payment',
                 );
             } catch( ApiException $e ) {
                 throw new \RuntimeException( 'Unable to retrieve the Mollie payment state.', 0, $e );
-            }
-
-            if( !$process ) {
-                throw new HttpResponseException( response()->noContent() );
             }
         }
 

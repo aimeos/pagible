@@ -49,66 +49,13 @@ class CashierMollie extends CashierProvider
 
 
     /**
-     * Renews or revokes sources referenced by a paid Mollie order.
-     *
-     * @param iterable<mixed>|null $items Refunded order items or null for the complete order
-     */
-    public function order( object $order, bool $revoked = false,
-        ?\DateTimeInterface $at = null, ?iterable $items = null
-    ) : void
-    {
-        if( $revoked )
-        {
-            $this->revokeOrder( $order, $items, $at ?? $this->occurred( $order ) );
-            return;
-        }
-
-        foreach( $items ?? ( $order->items ?? [] ) as $item )
-        {
-            if( is_object( $item->orderable ?? null ) ) {
-                $this->subscription( $item->orderable, at: $at );
-            }
-        }
-    }
-
-
-    /**
-     * Grants a verified one-time Mollie payment.
-     */
-    public function payment( object $payment, bool $revoked = false,
-        ?\DateTimeInterface $at = null
-    ) : void
-    {
-        if( $revoked )
-        {
-            if( !$at ) {
-                throw new \InvalidArgumentException( 'Mollie revocations require a provider event time.' );
-            }
-
-            $this->remove( $payment, (string) ( $payment->id ?? '' ), $at );
-            return;
-        }
-
-        $this->grant( $payment, (string) ( $payment->id ?? '' ), 'once', null,
-            $at ?? $this->occurred( $payment ),
-        );
-    }
-
-
-    /**
      * Handles Cashier Mollie's model-rich subscription events.
      */
     public function subscription( object $subscription, bool $cancelled = false,
         ?\DateTimeInterface $at = null
     ) : void
     {
-        $type = (string) ( $subscription->name ?? '' );
-        $user = $subscription->owner ?? null;
-        $id = (string) ( $subscription->mollie_id ?? $subscription->id ?? '' );
-        $tenant = $user instanceof Model ? $user->getAttribute( 'tenant_id' ) : null;
-        $role = is_string( $tenant ) ? CashierAccess::subscriptionAccess( $type, $tenant ) : null;
-
-        if( !$user instanceof Authenticatable || !is_string( $tenant ) || $role === null || $id === '' ) {
+        if( !( $source = $this->source( $subscription ) ) ) {
             return;
         }
 
@@ -126,7 +73,13 @@ class CashierMollie extends CashierProvider
         if( $cancelled )
         {
             if( !$end || $end <= new \DateTimeImmutable() ) {
-                $this->access->remove( $user, $tenant, $this->provider, $id, $at );
+                $this->access->remove(
+                    $source['user'],
+                    $source['tenant'],
+                    $this->provider,
+                    $source['id'],
+                    $at,
+                );
             }
 
             return;
@@ -134,14 +87,14 @@ class CashierMollie extends CashierProvider
 
         $plan = (string) ( $subscription->plan ?? '' );
 
-        if( $end && $this->plans->matches( $plan, $type ) )
+        if( $end && $this->plans->matches( $plan, (string) ( $subscription->name ?? '' ) ) )
         {
             $this->access->grant(
-                $user,
-                $tenant,
-                $role,
+                $source['user'],
+                $source['tenant'],
+                $source['role'],
                 $this->provider,
-                $id,
+                $source['id'],
                 $end,
                 $at,
             );
@@ -154,28 +107,40 @@ class CashierMollie extends CashierProvider
      */
     public function webhook( object $payment, bool $firstPayment = false,
         ?\DateTimeInterface $at = null
-    ) : bool
+    ) : void
     {
-        if( $this->revoked( $payment ) )
+        if( $adverse = $this->adverse( $payment, $at ) )
         {
-            $this->revoke( $payment, $at ?? $this->adverse( $payment ) );
-            return false;
+            $this->revoke( $payment, $adverse );
+            return;
         }
 
         if( !method_exists( $payment, 'isPaid' ) || !$payment->isPaid() ) {
-            return true;
+            return;
         }
 
         $at ??= $this->occurred( $payment );
         $order = $this->paymentOrder( $payment );
 
-        if( $order ) {
-            $this->order( $order, at: $at );
-        } elseif( $firstPayment ) {
-            $this->payment( $payment, at: $at );
+        if( $order )
+        {
+            foreach( $order->items ?? [] as $item )
+            {
+                if( is_object( $item->orderable ?? null ) ) {
+                    $this->subscription( $item->orderable, at: $at );
+                }
+            }
         }
-
-        return true;
+        elseif( $firstPayment )
+        {
+            $this->grant(
+                $payment,
+                (string) ( $payment->id ?? '' ),
+                'once',
+                null,
+                $at,
+            );
+        }
     }
 
 
@@ -219,19 +184,34 @@ class CashierMollie extends CashierProvider
 
 
     /**
-     * Returns the newest authoritative adverse-event timestamp.
+     * Returns the newest authoritative adverse-event time or null for active payments.
      */
-    private function adverse( object $payment ) : \DateTimeImmutable
+    private function adverse( object $payment,
+        ?\DateTimeInterface $occurred = null
+    ) : ?\DateTimeInterface
     {
         $latest = null;
         $charged = $this->money( $payment->amountChargedBack ?? null );
+        $chargeback = $charged && (int) $charged->getAmount() > 0;
+        $amount = $this->money( $payment->amount ?? null );
+        $refunded = $this->money( $payment->amountRefunded ?? null );
+        $refund = $amount && $refunded
+            && (int) $refunded->getAmount() >= max( 1, (int) $amount->getAmount() );
 
-        if( $charged && (int) $charged->getAmount() > 0 )
+        if( !$chargeback && !$refund ) {
+            return null;
+        }
+
+        if( $occurred ) {
+            return $occurred;
+        }
+
+        if( $chargeback )
         {
             foreach( $this->events( $payment, 'chargebacks' ) as $event )
             {
                 if( is_object( $event ) && empty( $event->reversedAt )
-                    && ( $at = $this->date( $event->createdAt ?? $event->created_at ?? null ) )
+                    && ( $at = $this->end( $event->createdAt ?? $event->created_at ?? null ) )
                     && ( !$latest || $at > $latest )
                 ) {
                     $latest = $at;
@@ -239,16 +219,12 @@ class CashierMollie extends CashierProvider
             }
         }
 
-        $amount = $this->money( $payment->amount ?? null );
-        $refunded = $this->money( $payment->amountRefunded ?? null );
-
-        if( $amount && $refunded
-            && (int) $refunded->getAmount() >= max( 1, (int) $amount->getAmount() )
-        ) {
+        if( $refund )
+        {
             foreach( $this->events( $payment, 'refunds' ) as $event )
             {
                 if( is_object( $event ) && ( $event->status ?? null ) === RefundStatus::REFUNDED
-                    && ( $at = $this->date( $event->createdAt ?? $event->created_at ?? null ) )
+                    && ( $at = $this->end( $event->createdAt ?? $event->created_at ?? null ) )
                     && ( !$latest || $at > $latest )
                 ) {
                     $latest = $at;
@@ -266,24 +242,6 @@ class CashierMollie extends CashierProvider
             (int) $latest->format( 's' ),
             999999,
         );
-    }
-
-
-    /**
-     * Parses a provider date without allowing invalid webhook data to escape.
-     */
-    private function date( mixed $value ) : ?\DateTimeImmutable
-    {
-        try
-        {
-            return $value instanceof \DateTimeInterface
-                ? \DateTimeImmutable::createFromInterface( $value )
-                : ( is_string( $value ) && $value !== '' ? new \DateTimeImmutable( $value ) : null );
-        }
-        catch( \Throwable )
-        {
-            return null;
-        }
     }
 
 
@@ -447,41 +405,37 @@ class CashierMollie extends CashierProvider
     {
         if( $order = $this->paymentOrder( $payment ) )
         {
-            $this->order( $order, true, $at );
+            $this->revokeOrder( $order, $at );
             return;
         }
 
-        $this->payment( $payment, true, $at );
+        $this->remove( $payment, (string) ( $payment->id ?? '' ), $at );
     }
 
 
     /**
      * Revokes Pagible subscriptions or a one-time source from an order.
-     *
-     * @param iterable<mixed>|null $items
      */
-    private function revokeOrder( object $order, ?iterable $items = null,
-        ?\DateTimeInterface $occurred = null
-    ) : void
+    private function revokeOrder( object $order, \DateTimeInterface $at ) : void
     {
         $subscription = false;
-        $at = $occurred ?? $this->occurred( $order );
 
-        foreach( $items ?? ( $order->items ?? [] ) as $item )
+        foreach( $order->items ?? [] as $item )
         {
             $original = is_object( $item ) ? ( $item->originalOrderItem ?? null ) : null;
-            $source = is_object( $item ) ? ( $item->orderable ?? null ) : null;
-            $source = $source ?: ( is_object( $original ) ? ( $original->orderable ?? null ) : null );
-            $user = is_object( $source ) ? ( $source->owner ?? null ) : null;
-            $id = is_object( $source )
-                ? (string) ( $source->mollie_id ?? $source->id ?? '' ) : '';
-            $tenant = $user instanceof Model ? $user->getAttribute( 'tenant_id' ) : null;
-            $role = is_object( $source ) && is_string( $tenant )
-                ? CashierAccess::subscriptionAccess( (string) ( $source->name ?? '' ), $tenant ) : null;
+            $itemSource = is_object( $item ) ? ( $item->orderable ?? null ) : null;
+            $itemSource = $itemSource ?: ( is_object( $original ) ? ( $original->orderable ?? null ) : null );
+            $source = is_object( $itemSource ) ? $this->source( $itemSource ) : null;
 
-            if( $user instanceof Authenticatable && is_string( $tenant ) && $role !== null && $id !== '' )
+            if( $source )
             {
-                $this->access->remove( $user, $tenant, $this->provider, $id, $at );
+                $this->access->remove(
+                    $source['user'],
+                    $source['tenant'],
+                    $this->provider,
+                    $source['id'],
+                    $at,
+                );
                 $subscription = true;
             }
         }
@@ -500,21 +454,24 @@ class CashierMollie extends CashierProvider
 
 
     /**
-     * Tests whether a payment is fully refunded or charged back.
+     * Resolves a Pagible subscription's access source.
+     *
+     * @return array{user: Authenticatable, tenant: string, role: string, id: string}|null
      */
-    private function revoked( object $payment ) : bool
+    private function source( object $subscription ) : ?array
     {
-        $charged = $this->money( $payment->amountChargedBack ?? null );
+        $user = $subscription->owner ?? null;
+        $id = (string) ( $subscription->mollie_id ?? $subscription->id ?? '' );
+        $tenant = $user instanceof Model ? $user->getAttribute( 'tenant_id' ) : null;
+        $role = is_string( $tenant )
+            ? CashierAccess::subscriptionAccess( (string) ( $subscription->name ?? '' ), $tenant )
+            : null;
 
-        if( $charged && (int) $charged->getAmount() > 0 ) {
-            return true;
+        if( !$user instanceof Authenticatable || !is_string( $tenant ) || $role === null || $id === '' ) {
+            return null;
         }
 
-        $amount = $this->money( $payment->amount ?? null );
-        $refunded = $this->money( $payment->amountRefunded ?? null );
-
-        return $amount && $refunded
-            && (int) $refunded->getAmount() >= max( 1, (int) $amount->getAmount() );
+        return ['user' => $user, 'tenant' => $tenant, 'role' => $role, 'id' => $id];
     }
 
 

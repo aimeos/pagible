@@ -27,8 +27,12 @@ use Laravel\Cashier\Cashier;
 use Laravel\Cashier\Mollie\Contracts\GetMolliePayment;
 use Laravel\Cashier\Mollie\GetMolliePayment as MolliePayment;
 use Laravel\Cashier\Plan\Contracts\PlanRepository;
+use Mollie\Api\Contracts\Connector;
 use Mollie\Api\Exceptions\ApiException;
+use Mollie\Api\Resources\Chargeback as MollieChargeback;
 use Mollie\Api\Resources\Payment as PaymentResource;
+use Mollie\Api\Resources\Refund as MollieRefund;
+use Mollie\Api\Resources\RefundCollection;
 use Mollie\Api\Types\PaymentStatus;
 use Mollie\Api\Types\RefundStatus;
 
@@ -80,6 +84,42 @@ class CashierMollieTest extends CashierTestAbstract
     }
 
 
+    public function testChargebackContinuesWebhookAndRevokesAccess(): void
+    {
+        $order = $this->order( [
+            'mollie_payment_id' => 'tr_remotechargeback',
+            'mollie_payment_status' => PaymentStatus::PAID,
+        ] );
+        $localPayment = $this->payment( $order, ['mollie_payment_id' => 'tr_remotechargeback'] );
+        app( CashierAccess::class )->grant(
+            $this->stored,
+            'test',
+            'frontend.course',
+            'mollie',
+            'tr_remotechargeback',
+            null,
+        );
+        $connector = \Mockery::mock( Connector::class );
+        $chargeback = new MollieChargeback( $connector );
+        $chargeback->createdAt = now()->toISOString();
+        $chargeback->reversedAt = null;
+        $payment = $this->remote( $connector, 'tr_remotechargeback' );
+        $payment->amountChargedBack = (object) ['value' => '10.00', 'currency' => 'EUR'];
+        $payment->_embedded = (object) ['chargebacks' => [$chargeback]];
+        $payment->_links = (object) [
+            'chargebacks' => (object) ['href' => 'https://api.mollie.test/chargebacks'],
+        ];
+        $this->webhook( $payment );
+
+        $this->post( route( 'webhooks.mollie.aftercare' ), ['id' => $payment->id] )->assertOk();
+
+        $stored = $this->storedAccess();
+        $this->assertIsArray( $stored );
+        $this->assertNull( $stored['test|mollie|tr_remotechargeback']['role'] );
+        $this->assertSame( 1000, $localPayment->refresh()->amount_charged_back );
+    }
+
+
     public function testFirstPaymentRouteRequestsSynchronousProjection(): void
     {
         $payment = \Mockery::mock( PaymentResource::class );
@@ -91,8 +131,7 @@ class CashierMollieTest extends CashierTestAbstract
         $provider = \Mockery::mock( CashierMollie::class );
         $provider->shouldReceive( 'webhook' )
             ->once()
-            ->with( $payment, true )
-            ->andReturn( true );
+            ->with( $payment, true );
         $route = Route::getRoutes()->getByName( 'webhooks.mollie.first_payment' );
         request()->setRouteResolver( fn() => $route );
 
@@ -100,33 +139,45 @@ class CashierMollieTest extends CashierTestAbstract
     }
 
 
-    public function testFullRemoteRefundStopsWebhookAndRevokesAccess(): void
+    public function testFullRemoteRefundContinuesWebhookAndRevokesAccess(): void
     {
         $order = $this->order( [
-            'mollie_payment_id' => 'tr_remote_refund',
+            'mollie_payment_id' => 'tr_remoterefund',
             'mollie_payment_status' => PaymentStatus::PAID,
         ] );
-        $this->payment( $order, ['mollie_payment_id' => 'tr_remote_refund'] );
+        $localPayment = $this->payment( $order, ['mollie_payment_id' => 'tr_remoterefund'] );
+        $item = $this->item( $order, null );
+        $refund = $this->refund( $order, $item, 're_remote_refund' );
         app( CashierAccess::class )->grant(
             $this->stored,
             'test',
             'frontend.course',
             'mollie',
-            'tr_remote_refund',
+            'tr_remoterefund',
             null,
         );
-        $payment = new MolliePaymentStub( 'tr_remote_refund' );
+        $connector = \Mockery::mock( Connector::class );
+        $remoteRefund = new MollieRefund( $connector );
+        $remoteRefund->createdAt = now()->toISOString();
+        $remoteRefund->id = 're_remote_refund';
+        $remoteRefund->status = RefundStatus::REFUNDED;
+        $connector->shouldReceive( 'send' )
+            ->once()
+            ->andReturn( new RefundCollection( $connector, [$remoteRefund] ) );
+        $payment = $this->remote( $connector, 'tr_remoterefund' );
         $payment->amountRefunded = (object) ['value' => '10.00', 'currency' => 'EUR'];
-        $payment->refundItems = [(object) [
-            'createdAt' => now()->toISOString(),
-            'status' => RefundStatus::REFUNDED,
-        ]];
+        $payment->_embedded = (object) ['refunds' => [$remoteRefund]];
+        $payment->_links = (object) ['refunds' => (object) ['href' => 'https://api.mollie.test/refunds']];
+        $this->webhook( $payment );
 
-        $this->assertFalse( app( CashierMollie::class )->webhook( $payment ) );
+        $this->post( route( 'webhooks.mollie.aftercare' ), ['id' => $payment->id] )->assertOk();
 
         $stored = $this->storedAccess();
         $this->assertIsArray( $stored );
-        $this->assertNull( $stored['test|mollie|tr_remote_refund']['role'] );
+        $this->assertNull( $stored['test|mollie|tr_remoterefund']['role'] );
+        $this->assertSame( RefundStatus::REFUNDED, $refund->refresh()->mollie_refund_status );
+        $this->assertSame( 1000, $localPayment->refresh()->amount_refunded );
+        $this->assertSame( 1000, $order->refresh()->amount_refunded );
     }
 
 
@@ -139,10 +190,10 @@ class CashierMollieTest extends CashierTestAbstract
         ] );
         $payment = new MolliePaymentStub( 'tr_once', $token );
 
-        $this->assertTrue( app( CashierMollie::class )->webhook(
+        app( CashierMollie::class )->webhook(
             $payment,
             firstPayment: true,
-        ) );
+        );
 
         $stored = $this->storedAccess();
         $this->assertIsArray( $stored );
@@ -166,9 +217,7 @@ class CashierMollieTest extends CashierTestAbstract
         $this->payment( $order, ['mollie_payment_id' => 'tr_renewal'] );
         $this->item( $order, $subscription );
 
-        $this->assertTrue( app( CashierMollie::class )->webhook(
-            new MolliePaymentStub( 'tr_renewal' ),
-        ) );
+        app( CashierMollie::class )->webhook( new MolliePaymentStub( 'tr_renewal' ) );
 
         $stored = $this->storedAccess();
         $this->assertIsArray( $stored );
@@ -220,7 +269,7 @@ class CashierMollieTest extends CashierTestAbstract
             }
         };
 
-        $this->assertTrue( $provider->webhook( new MolliePaymentStub( 'tr_filtered' ) ) );
+        $provider->webhook( new MolliePaymentStub( 'tr_filtered' ) );
         $this->assertSame( [[(string) $included->getKey(), true]], $provider->seen );
     }
 
@@ -253,7 +302,7 @@ class CashierMollieTest extends CashierTestAbstract
         $this->app->bind( CashierAccess::class, fn() => new CashierAccess() );
         $this->app->forgetInstance( CashierMollie::class );
 
-        $this->assertTrue( app( CashierMollie::class )->webhook( $payment, true ) );
+        app( CashierMollie::class )->webhook( $payment, true );
         $this->assertSame(
             'frontend.course',
             $this->storedAccess()['test|mollie|tr_retry']['role'] ?? null,
@@ -587,6 +636,7 @@ class CashierMollieTest extends CashierTestAbstract
         $this->assertSame( 'EUR', $data['c'] ?? null );
         $this->assertSame( 30, $data['i'] ?? null );
         $this->assertSame( 'Professional', $data['d'] ?? null );
+        $this->assertSame( 'SOkqbxtxq645cZUdEhlwYA', $data['b'] ?? null );
     }
 
 
@@ -596,13 +646,14 @@ class CashierMollieTest extends CashierTestAbstract
     }
 
 
-    private function item( Model $order, Model $orderable ): void
+    private function item( Model $order, ?Model $orderable ): Model
     {
         $class = Cashier::$orderItemModel;
-        $class::forceCreate( [
+
+        return $class::forceCreate( [
             'process_at' => now(),
-            'orderable_type' => $orderable->getMorphClass(),
-            'orderable_id' => $orderable->getKey(),
+            'orderable_type' => $orderable?->getMorphClass(),
+            'orderable_id' => $orderable?->getKey(),
             'owner_type' => $this->stored->getMorphClass(),
             'owner_id' => $this->stored->getKey(),
             'description' => 'Professional',
@@ -672,6 +723,52 @@ class CashierMollieTest extends CashierTestAbstract
     }
 
 
+    private function refund( Model $order, Model $item, string $id ): Model
+    {
+        $class = Cashier::$refundModel;
+        $refund = $class::forceCreate( [
+            'owner_type' => $this->stored->getMorphClass(),
+            'owner_id' => $this->stored->getKey(),
+            'original_order_id' => $order->getKey(),
+            'mollie_refund_id' => $id,
+            'mollie_refund_status' => RefundStatus::PENDING,
+            'total' => 1000,
+            'currency' => 'EUR',
+        ] );
+
+        $refund->items()->forceCreate( [
+            'original_order_item_id' => $item->getKey(),
+            'owner_type' => $this->stored->getMorphClass(),
+            'owner_id' => $this->stored->getKey(),
+            'description' => 'Professional',
+            'currency' => 'EUR',
+            'quantity' => 1,
+            'unit_price' => 1000,
+            'tax_percentage' => 0,
+        ] );
+
+        return $refund;
+    }
+
+
+    private function remote( Connector $connector, string $id ): PaymentResource
+    {
+        $payment = new PaymentResource( $connector );
+        $payment->id = $id;
+        $payment->amount = (object) ['value' => '10.00', 'currency' => 'EUR'];
+        $payment->amountChargedBack = (object) ['value' => '0.00', 'currency' => 'EUR'];
+        $payment->amountRefunded = (object) ['value' => '0.00', 'currency' => 'EUR'];
+        $payment->createdAt = now()->toISOString();
+        $payment->paidAt = $payment->createdAt;
+        $payment->metadata = null;
+        $payment->status = PaymentStatus::PAID;
+        $payment->_embedded = (object) [];
+        $payment->_links = (object) [];
+
+        return $payment;
+    }
+
+
     private function storedAccess(): ?array
     {
         $access = $this->stored->refresh()->getAttribute( 'access' );
@@ -695,6 +792,18 @@ class CashierMollieTest extends CashierTestAbstract
             'cycle_started_at' => now(),
             'cycle_ends_at' => $end,
         ] );
+    }
+
+
+    private function webhook( PaymentResource $payment ): void
+    {
+        $payments = \Mockery::mock( MolliePayment::class );
+        $payments->shouldReceive( 'execute' )
+            ->once()
+            ->with( $payment->id, ['embed' => 'refunds,chargebacks'] )
+            ->andReturn( $payment );
+
+        $this->app->instance( MolliePayment::class, $payments );
     }
 }
 
