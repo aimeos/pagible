@@ -23,7 +23,6 @@ use Illuminate\Support\Facades\Storage;
  */
 abstract class AbstractDemo
 {
-    private string $audioFile;
     /** @var array<string, string> File IDs keyed by Unsplash photo path and language */
     private array $images = [];
     private string $videoFile;
@@ -75,29 +74,6 @@ abstract class AbstractDemo
      * Builds the theme-specific demo pages, elements and files.
      */
     abstract protected function pages() : void;
-
-
-    /**
-     * Creates the shared demo audio file and returns its ID.
-     *
-     * @return string File ID
-     */
-    protected function audioFile() : string
-    {
-        if( !isset( $this->audioFile ) )
-        {
-            $this->audioFile = $this->saveFile( [
-                'mime' => 'audio/mpeg',
-                'lang' => 'en',
-                'name' => 'PagibleAI CMS Podcast Episode',
-                'path' => 'https://download.samplelib.com/mp3/sample-12s.mp3',
-                'previews' => [],
-                'description' => ['en' => 'Learn about PagibleAI CMS features in this audio overview'],
-            ] );
-        }
-
-        return $this->audioFile;
-    }
 
 
     /**
