@@ -384,7 +384,7 @@ class CashierAccessTest extends CashierTestAbstract
         $access = app( CashierAccess::class );
         $access->grant(
             $this->stored,
-            'tenant|a',
+            'tenant-a',
             'frontend.pro',
             'stripe',
             'sub_1',
@@ -393,10 +393,10 @@ class CashierAccessTest extends CashierTestAbstract
 
         $stored = $this->storedAccess( $this->stored );
         $this->assertIsArray( $stored );
-        $this->assertArrayHasKey( 'tenant|a|stripe|sub_1', $stored );
+        $this->assertArrayHasKey( 'tenant-a|stripe|sub_1', $stored );
         $this->assertSame(
             ['frontend.pro'],
-            Tenancy::run( 'tenant|a', fn() => $access->roles( $this->stored ) ),
+            Tenancy::run( 'tenant-a', fn() => $access->roles( $this->stored ) ),
         );
         $this->assertSame(
             [],
