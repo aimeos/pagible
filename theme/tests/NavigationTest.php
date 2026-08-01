@@ -90,6 +90,20 @@ class NavigationTest extends ThemeTestAbstract
     }
 
 
+    public function testDisabledFirstChildDoesNotHideVisibleDescendants(): void
+    {
+        $blog = Page::where( 'path', 'blog' )->firstOrFail();
+        $disabled = Page::where( 'path', 'disabled' )->firstOrFail();
+        $child = Page::where( 'path', 'disabled-child' )->firstOrFail();
+        $article = Page::where( 'path', 'welcome-to-laravelcms' )->firstOrFail();
+        $disabled->beforeNode( $article )->save();
+
+        $items = ( new Navigation( $article, null ) )->items( 1 );
+
+        $this->assertSame( [$child->id, $article->id], $items->pluck( 'id' )->all() );
+    }
+
+
     public function testMemoizesLazyCollections(): void
     {
         $page = Page::where( 'path', 'hidden' )->firstOrFail();
@@ -101,7 +115,7 @@ class NavigationTest extends ThemeTestAbstract
     }
 
 
-    public function testNavigationCollectionsUseEightQueries(): void
+    public function testNavigationCollectionsUseTwoQueries(): void
     {
         $page = Page::where( 'path', 'hidden' )->firstOrFail();
         $nav = new Navigation( $page, null );
@@ -111,7 +125,7 @@ class NavigationTest extends ThemeTestAbstract
         $ancestors = $nav->ancestors();
         $nav->items();
 
-        $this->assertCount( 8, DB::getQueryLog() );
+        $this->assertCount( 2, DB::getQueryLog() );
         $this->assertNotEmpty( $ancestors );
         $this->assertFalse( $page->relationLoaded( 'ancestors' ) );
     }

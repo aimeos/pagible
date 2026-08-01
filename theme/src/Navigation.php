@@ -120,14 +120,30 @@ final class Navigation
 
         foreach( $items as $page )
         {
-            if( !$page instanceof Page
-                || (int) ( $page->latest?->data->status ?? $page->status ) !== 1
-            ) {
+            if( !$page instanceof Page ) {
                 continue;
             }
 
+            $children = collect();
+
             if( $nested && $page->relationLoaded( 'children' ) ) {
-                $page->setRelation( 'children', $this->visible( $page->getRelation( 'children' ), true ) );
+                $children = $this->visible( $page->getRelation( 'children' ), true );
+                $page->setRelation( 'children', $children );
+            }
+
+            $status = $page->status;
+
+            if( $page->relationLoaded( 'latest' ) ) {
+                $status = $page->getRelation( 'latest' )?->data->status ?? $status;
+            }
+
+            if( (int) $status !== 1 )
+            {
+                foreach( $children as $child ) {
+                    $result[] = $child;
+                }
+
+                continue;
             }
 
             $result[] = $page;
