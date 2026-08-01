@@ -8,6 +8,7 @@ import ElementDetailRefs from '../components/ElementDetailRefs.vue'
 import ElementDetailItem from '../components/ElementDetailItem.vue'
 import { useDirtyStore, useSideStore, useUserStore, useMessageStore, usePluginStore, useViewStack, useChangeStore } from '../stores'
 import { applyResult, hasUnresolved } from '../merge'
+import { FILE_FIELDS, normalizeFile } from '../files'
 import { publishDate, publishItem } from '../publish'
 import { setupReload, cleanEcho } from '../echo'
 import { reloadVersion } from '../version'
@@ -18,18 +19,12 @@ const ChangesDialog = defineAsyncComponent(() => import('../components/ChangesDi
 const HistoryDialog = defineAsyncComponent(() => import('../components/HistoryDialog.vue'))
 
 const FETCH_ELEMENT = gql`
+  ${FILE_FIELDS}
   query ($id: ID!) {
     element(id: $id) {
       id
       files {
-        disk
-        id
-        mime
-        name
-        path
-        previews
-        updated_at
-        editor
+        ...CmsFileFields
       }
       latest {
         id
@@ -38,14 +33,7 @@ const FETCH_ELEMENT = gql`
         editor
         created_at
         files {
-          disk
-          id
-          mime
-          name
-          path
-          previews
-          updated_at
-          editor
+          ...CmsFileFields
         }
       }
     }
@@ -63,6 +51,7 @@ const SAVE_ELEMENT = gql`
 `
 
 const FETCH_ELEMENT_VERSIONS = gql`
+  ${FILE_FIELDS}
   query ($id: ID!) {
     element(id: $id) {
       id
@@ -74,14 +63,7 @@ const FETCH_ELEMENT_VERSIONS = gql`
         editor
         created_at
         files {
-          disk
-          id
-          mime
-          name
-          path
-          previews
-          updated_at
-          editor
+          ...CmsFileFields
         }
       }
     }
@@ -224,7 +206,7 @@ export default {
         const assets = {}
 
         for (const entry of element.latest?.files || element.files || []) {
-          assets[entry.id] = { ...entry, previews: frozenParse(entry.previews) }
+          assets[entry.id] = normalizeFile(entry)
           files.push(entry.id)
         }
 
@@ -247,7 +229,7 @@ export default {
       const map = {}
 
       for (const entry of entries) {
-        map[entry.id] = { ...entry, previews: frozenParse(entry.previews) }
+        map[entry.id] = normalizeFile(entry)
       }
 
       return map

@@ -1,3 +1,4 @@
+import { h } from 'vue'
 import ItemsField from '../../../js/fields/Items.vue'
 import { useUserStore, useClipboardStore } from '../../../js/stores'
 
@@ -22,10 +23,11 @@ const identityConfig = {
   }
 }
 
-function mountItems(props = {}, perms = {}) {
+function mountItems(props = {}, perms = {}, stubs = {}) {
   return cy
     .mount(ItemsField, {
-      props: { config: {}, assets: {}, ...props }
+      props: { config: {}, assets: {}, ...props },
+      global: { stubs }
     })
     .then((mounted) => {
       const user = useUserStore()
@@ -254,5 +256,28 @@ describe('Items', () => {
     cy.get('.v-expansion-panel-title').first().click()
     cy.contains('.label', 'Title').should('exist')
     cy.contains('.label', 'Text').should('exist')
+  })
+
+  it('forwards batched file updates from nested fields', () => {
+    const onAddFile = cy.spy()
+    const Images = {
+      emits: ['addFile'],
+      render() {
+        return h('button', {
+          class: 'field-images',
+          onClick: () => this.$emit('addFile', [{ id: '1' }, { id: '2' }])
+        })
+      }
+    }
+
+    mountItems({
+      modelValue: [{ gallery: [] }],
+      config: { item: { gallery: { type: 'images' } } },
+      onAddFile
+    }, {}, { Images })
+
+    cy.get('.v-expansion-panel-title').click()
+    cy.get('.field-images').click()
+    cy.wrap(onAddFile).should('have.been.calledOnceWith', [{ id: '1' }, { id: '2' }])
   })
 })

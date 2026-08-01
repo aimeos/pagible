@@ -20,6 +20,7 @@ import {
 } from '@mdi/js'
 import SchemaItems from './SchemaItems.vue'
 import EditBulkDialog from './EditBulkDialog.vue'
+import { FILE_FIELDS, normalizeFile } from '../files'
 import { useUserStore, useMessageStore, useChangeStore } from '../stores'
 import { debounce, frozenParse, safeParse } from '../utils'
 import { setupEcho, cleanEcho, listEcho } from '../echo'
@@ -81,6 +82,7 @@ const SAVE_ELEMENTS = gql`
 `
 
 const FETCH_ELEMENTS = gql`
+  ${FILE_FIELDS}
   query (
     $filter: ElementFilter
     $sort: [QueryElementsSortOrderByClause!]
@@ -107,6 +109,9 @@ const FETCH_ELEMENTS = gql`
         created_at
         updated_at
         deleted_at
+        files {
+          ...CmsFileFields
+        }
         latest {
           id
           published
@@ -114,6 +119,9 @@ const FETCH_ELEMENTS = gql`
           data
           editor
           created_at
+          files {
+            ...CmsFileFields
+          }
         }
       }
       paginatorInfo {
@@ -566,8 +574,9 @@ export default {
 
           this.last = elements.paginatorInfo?.lastPage || 1
           this.items = [...(elements.data || [])].map((entry) => {
-            const item = entry.latest?.data
-              ? safeParse(entry.latest?.data)
+            const latest = entry.latest
+            const item = latest?.data
+              ? safeParse(latest.data)
               : {
                   ...entry,
                   data: safeParse(entry.data)
@@ -585,7 +594,8 @@ export default {
               editor: entry.latest?.editor || entry.editor,
               published: entry.latest?.published ?? true,
               publish_at: entry.latest?.publish_at || null,
-              latest_id: entry.latest?.id || null
+              latest_id: entry.latest?.id || null,
+              files: Object.freeze((latest?.files || entry.files || []).map(normalizeFile))
             })
           })
 

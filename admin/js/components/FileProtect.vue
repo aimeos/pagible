@@ -35,19 +35,19 @@ export default {
     </div>
     <label v-if="!readonly" :aria-busy="loading" class="protect">
       <span class="protect-label">{{ $gettext('Protect access') }}</span>
-      <v-progress-circular
-        v-if="loading"
+      <v-progress-circular v-if="loading"
         aria-hidden="true"
+        class="protect-control"
         color="primary"
         indeterminate
-        size="24"
+        size="40"
         width="2"
       />
-      <v-switch
-        v-else
+      <v-switch v-else
         :disabled="disabled"
         :model-value="modelValue"
         @update:model-value="$emit('update:modelValue', $event)"
+        class="protect-control"
         color="primary"
         density="compact"
         hide-details
@@ -95,6 +95,11 @@ export default {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 8px;
+  gap: 16px;
+}
+
+.protect-control {
+  flex: 0 0 40px;
+  width: 40px;
 }
 </style>

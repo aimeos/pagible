@@ -12,7 +12,7 @@ import {
   mdiUpload
 } from '@mdi/js'
 import { VueDraggable } from 'vue-draggable-plus'
-import { ADD_FILE, RELOCATE_FILE, normalizeFile } from '../files'
+import { ADD_FILE, FETCH_FILE_DISKS, RELOCATE_FILE, normalizeFile } from '../files'
 import { useUserStore, useMessageStore, useViewStack } from '../stores'
 import { fileurl, filesrcset, IMAGE_MIME_FILTER } from '../utils'
 import { defineAsyncComponent } from 'vue'
@@ -255,7 +255,7 @@ export default {
       }
     },
 
-    setProtect(value) {
+    async setProtect(value) {
       const protect = Boolean(value)
       const files = this.images.filter(
         (item) => item.id && (item.disk === 'private') !== protect
@@ -269,36 +269,62 @@ export default {
 
       this.protecting = true
 
-      return this.$apollo
-        .mutate({
+      try {
+        const response = await this.$apollo.mutate({
           mutation: RELOCATE_FILE,
           variables: {
             id: files.map((item) => item.id),
             disk: protect ? 'private' : 'public'
           }
         })
-        .then((response) => {
+        if (response.errors) {
+          throw response.errors
+        }
+
+        this.sync(files, response.data?.relocateFile)
+      } catch (error) {
+        try {
+          const response = await this.$apollo.query({
+            query: FETCH_FILE_DISKS,
+            variables: { id: files.map((item) => item.id) },
+            fetchPolicy: 'no-cache'
+          })
+
           if (response.errors) {
             throw response.errors
           }
 
-          for (const data of response.data?.relocateFile || []) {
-            const item = files.find((file) => file.id === data.id)
+          this.sync(files, response.data?.files?.data)
+        } catch (reloadError) {
+          this.$log(`Images::setProtect(): Error reloading files`, reloadError)
+        }
 
-            if (item) {
-              Object.assign(item, data)
-              this.$emit('addFile', item)
-            }
-          }
-        })
-        .catch((error) => {
-          this.protect = this.images.length > 0 && this.images.every((item) => item.disk === 'private')
-          this.messages.add(this.$gettext(`Error saving file`) + ':\n' + error, 'error')
-          this.$log(`Images::setProtect(): Error relocating files`, error)
-        })
-        .finally(() => {
-          this.protecting = false
-        })
+        this.protect =
+          this.images.length > 0 &&
+          this.images.every((item) => item.disk === 'private')
+        this.messages.add(this.$gettext(`Error saving file`) + ':\n' + error, 'error')
+        this.$log(`Images::setProtect(): Error relocating files`, error)
+      } finally {
+        this.protecting = false
+      }
+    },
+
+    sync(files, entries) {
+      const map = new Map(files.map((item) => [item.id, item]))
+      const updated = []
+
+      for (const data of entries || []) {
+        const item = map.get(data.id)
+
+        if (item) {
+          Object.assign(item, data)
+          updated.push(item)
+        }
+      }
+
+      if (updated.length) {
+        this.$emit('addFile', updated)
+      }
     }
   },
 

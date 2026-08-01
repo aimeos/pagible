@@ -113,8 +113,12 @@ describe('FileListItems', () => {
           data: [{
             disk: 'private',
             id: 'file-1',
+            name: 'published.pdf',
+            path: 'cms/file-1/published.pdf',
+            previews: '{}',
             latest: {
               data: '{"name":"private.pdf","path":"cms/file-1/private.pdf","previews":{}}',
+              aux: '{"description":{"en":"Private draft"}}',
             },
           }],
           paginatorInfo: { lastPage: 1 },
@@ -125,6 +129,8 @@ describe('FileListItems', () => {
     mountList({}, { 'file:view': true }, { query }).then(({ wrapper }) => {
       return wrapper.findComponent(FileListItems).vm.search().then((items) => {
         expect(items[0].disk).to.equal('private')
+        expect(items[0].path).to.equal('cms/file-1/private.pdf')
+        expect(items[0].description).to.deep.equal({ en: 'Private draft' })
       })
     })
   })

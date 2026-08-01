@@ -99,6 +99,46 @@ class AdminControllerTest extends AdminTestAbstract
     }
 
 
+    public function testPrivateAssetUsesLatestPreview()
+    {
+        config( ['cms.disks.private.name' => 'admin-private-latest'] );
+        Storage::fake( 'admin-private-latest' );
+        $file = new File();
+        $file->setUniqueIds();
+        $published = $file->dir() . '/published-500.webp';
+        $draft = $file->dir() . '/draft-500.webp';
+        Storage::disk( 'admin-private-latest' )->put( $published, 'published preview' );
+        Storage::disk( 'admin-private-latest' )->put( $draft, 'draft preview' );
+
+        $file = File::forceCreate( [
+            'id' => $file->id,
+            'disk' => 'private',
+            'mime' => 'image/jpeg',
+            'name' => 'published.jpg',
+            'path' => $file->dir() . '/published.jpg',
+            'previews' => [500 => $published],
+            'editor' => 'test',
+        ] );
+        $version = $file->versions()->forceCreate( [
+            'data' => [
+                'mime' => 'image/jpeg',
+                'name' => 'draft.jpg',
+                'path' => $file->dir() . '/draft.jpg',
+                'previews' => [500 => $draft],
+            ],
+            'editor' => 'test',
+        ] );
+        $file->forceFill( ['latest_id' => $version->id] )->saveQuietly();
+
+        $response = $this->actingAs( $this->user )->get( route( 'cms.admin.asset', [
+            'file' => $file->id,
+            'variant' => 500,
+        ], false ) )->assertOk();
+
+        $this->assertSame( 'draft preview', $response->baseResponse->getFile()->getContent() );
+    }
+
+
     public function testPrivateAssetRequiresFileView()
     {
         $user = new \App\Models\User( ['cmsperms' => []] );

@@ -70,6 +70,11 @@ describe('Images', () => {
   })
 
   it('relocates every selected image when protection is enabled', () => {
+    const assets = {
+      '1': { ...imageAssets['1'] },
+      '2': { ...imageAssets['2'] },
+    }
+    const onAddFile = cy.spy()
     const mutate = cy.stub().callsFake(({ variables }) =>
       Promise.resolve({
         data: {
@@ -86,7 +91,8 @@ describe('Images', () => {
     mountImages(
       {
         modelValue: [{ id: '1', type: 'file' }, { id: '2', type: 'file' }],
-        assets: imageAssets,
+        assets,
+        onAddFile,
       },
       {},
       { mutate },
@@ -102,8 +108,52 @@ describe('Images', () => {
         expect(vm.images.every((item) => item.disk === 'private')).to.equal(true)
         expect(vm.images.map((item) => item.path)).to.deep.equal(['/files/a.jpg', '/files/b.jpg'])
         expect(vm.images[0].previews).to.deep.equal(imageAssets['1'].previews)
+        expect(onAddFile).to.have.been.calledOnce
+        expect(onAddFile.firstCall.args[0].map((item) => item.id)).to.deep.equal(['1', '2'])
       })
     })
+  })
+
+  it('reloads every image after a partly failed protection change', () => {
+    const assets = {
+      '1': { ...imageAssets['1'] },
+      '2': { ...imageAssets['2'] },
+    }
+    const onAddFile = cy.spy()
+    const mutate = cy.stub().rejects(new Error('Unable to relocate every file'))
+    const query = cy.stub().resolves({
+      data: {
+        files: {
+          data: [
+            { id: '1', disk: 'private', editor: 'admin', updated_at: '2024-01-02T00:00:00Z' },
+            { id: '2', disk: 'public', editor: 'admin', updated_at: '2024-01-01T00:00:00Z' },
+          ],
+        },
+      },
+    })
+
+    mountImages(
+      {
+        modelValue: [{ id: '1', type: 'file' }, { id: '2', type: 'file' }],
+        assets,
+        onAddFile,
+      },
+      {},
+      { mutate, query },
+    ).then(({ wrapper }) => {
+      const vm = wrapper.findComponent(ImagesField).vm
+
+      return vm.setProtect(true).then(() => {
+        expect(query).to.have.been.calledOnce
+        expect(query.firstCall.args[0].variables).to.deep.equal({ id: ['1', '2'] })
+        expect(vm.images.map((item) => item.disk)).to.deep.equal(['private', 'public'])
+        expect(vm.images.map((item) => item.path)).to.deep.equal(['/files/a.jpg', '/files/b.jpg'])
+        expect(vm.protect).to.equal(false)
+        expect(onAddFile).to.have.been.calledOnce
+      })
+    })
+
+    cy.get('.image .v-img').should('have.length', 2)
   })
 
   it('shows "Add files from URLs" button', () => {

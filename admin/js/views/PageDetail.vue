@@ -10,6 +10,7 @@ import PageDetailContent from '../components/PageDetailContent.vue'
 const PageDetailItem = defineAsyncComponent(() => import('../components/PageDetailItem.vue'))
 const PageDetailEditor = defineAsyncComponent(() => import('../components/PageDetailEditor.vue'))
 import { applyResult, hasUnresolved } from '../merge'
+import { FILE_FIELDS, normalizeFile } from '../files'
 import { publishDate, publishItem } from '../publish'
 import { defineAsyncComponent, markRaw } from 'vue'
 import { frozenParse, hasTrue, safeParse, txlocales } from '../utils'
@@ -45,17 +46,7 @@ const PAGE_DETAIL_FIELDS = `
   created_at
   editor
   files {
-    disk
-    id
-    lang
-    mime
-    name
-    path
-    previews
-    description
-    transcription
-    updated_at
-    editor
+    ...CmsFileFields
   }
   elements {
     id
@@ -65,41 +56,37 @@ const PAGE_DETAIL_FIELDS = `
     editor
     updated_at
     files {
-      disk
-      id
-      lang
-      mime
-      name
-      path
-      previews
-      description
-      transcription
-      updated_at
-      editor
+      ...CmsFileFields
     }
   }
 `
 
-const FETCH_PAGE = gql`query($id: ID!, $access: Boolean!) {
-  page(id: $id) {
-    id
-    access @include(if: $access)
-    has
-    restricted
-    latest {
-      ${PAGE_DETAIL_FIELDS}
+const FETCH_PAGE = gql`
+  ${FILE_FIELDS}
+  query($id: ID!, $access: Boolean!) {
+    page(id: $id) {
+      id
+      access @include(if: $access)
+      has
+      restricted
+      latest {
+        ${PAGE_DETAIL_FIELDS}
+      }
     }
   }
-}`
+`
 
-const FETCH_PAGE_VERSIONS = gql`query($id: ID!) {
-  page(id: $id) {
-    id
-    versions {
-      ${PAGE_DETAIL_FIELDS}
+const FETCH_PAGE_VERSIONS = gql`
+  ${FILE_FIELDS}
+  query($id: ID!) {
+    page(id: $id) {
+      id
+      versions {
+        ${PAGE_DETAIL_FIELDS}
+      }
     }
   }
-}`
+`
 
 const SAVE_PAGE = gql`
   mutation ($id: ID!, $input: PageInput!, $latestId: ID) {
@@ -277,8 +264,9 @@ export default {
         this.item.config = aux.config ?? {}
         this.item.meta = aux.meta ?? {}
 
-        this.assets = markRaw(this.files(this.latest?.files || []))
-        this.elements = markRaw(this.elems(this.latest?.elements || []))
+        const elements = this.elems(this.latest?.elements || [])
+        this.assets = markRaw(this.files(this.latest?.files || [], elements))
+        this.elements = markRaw(elements)
         this.item.content = this.obsolete(this.item.content)
         this.latest = { id: this.latest?.id }
       }, () => !this.hasChanged, { access: this.user.can('access:view') })
@@ -378,6 +366,7 @@ export default {
 
       for (const entry of this.item.content || []) {
         for (const id of entry.files || []) files.add(id)
+        for (const file of this.elements[entry.refid]?.files || []) files.add(file.id)
       }
 
       for (const key in this.item.meta || {}) {
@@ -391,16 +380,15 @@ export default {
       return [...files]
     },
 
-    files(entries) {
+    files(entries, elements = {}) {
       const map = {}
 
       for (const entry of entries) {
-        map[entry.id] = {
-          ...entry,
-          previews: frozenParse(entry.previews),
-          description: frozenParse(entry.description),
-          transcription: frozenParse(entry.transcription)
-        }
+        map[entry.id] = normalizeFile(entry)
+      }
+
+      for (const element of Object.values(elements)) {
+        for (const file of element.files || []) map[file.id] = file
       }
 
       return map
@@ -677,8 +665,9 @@ export default {
     use(version) {
       Object.assign(this.item, version.data)
 
-      this.assets = version.files
-      this.elements = this.elems(version.elements || [])
+      const elements = this.elems(version.elements || [])
+      this.assets = this.files(Object.values(version.files || {}), elements)
+      this.elements = elements
       this.item.content = this.obsolete(this.item.content)
 
       this.dirty['content'] = true
@@ -719,11 +708,12 @@ export default {
           }
 
           return (result.data.page.versions || []).map((v) => {
+            const elements = this.elems(v.elements || [])
             const item = {
               ...v,
               data: Object.freeze(Object.assign(safeParse(v.data), safeParse(v.aux)))
             }
-            item.files = Object.freeze(this.files(v.files || []))
+            item.files = Object.freeze(this.files(v.files || [], elements))
             delete item.aux
             return Object.freeze(item)
           })

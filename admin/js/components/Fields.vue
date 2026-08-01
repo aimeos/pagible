@@ -84,17 +84,25 @@ export default {
   },
 
   methods: {
-    addFile(item) {
-      if (!item?.id) {
-        this.$log(`Fields::addFile(): Invalid item without ID`, item)
-        return
+    addFile(value) {
+      const files = new Set(this.files)
+      const items = Array.isArray(value) ? value : [value]
+      let valid = false
+
+      for (const item of items) {
+        if (!item?.id) {
+          this.$log(`Fields::addFile(): Invalid item without ID`, item)
+          continue
+        }
+
+        files.add(item.id)
+        this.assets[item.id] = item
+        valid = true
       }
 
-      const files = [...this.files]
-
-      files.push(item.id)
-      this.assets[item.id] = item
-      this.$emit('update:files', files)
+      if (valid) {
+        this.$emit('update:files', [...files])
+      }
     },
 
     error(code, value) {

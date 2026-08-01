@@ -226,13 +226,29 @@ describe('PageDetail', () => {
   })
 
   describe('files()', () => {
-    it('returns an object with parsed previews/description/transcription', () => {
+    it('uses latest file data with published fields as fallback', () => {
       mountDetail().then(() => {
         const vm = Cypress.vueWrapper.findComponent(PageDetail).vm
         const result = vm.files([
-          { id: 'f1', previews: '{"100":"thumb.jpg"}', description: '{}', transcription: '{}' },
+          {
+            disk: 'private',
+            id: 'f1',
+            name: 'published.jpg',
+            path: 'published.jpg',
+            previews: '{"100":"published-thumb.jpg"}',
+            description: '{}',
+            transcription: '{}',
+            latest: {
+              data: '{"name":"draft.jpg","path":"draft.jpg","previews":{"100":"draft-thumb.jpg"}}',
+              aux: '{"description":{"en":"Draft"}}',
+            },
+          },
         ])
-        expect(result.f1.previews).to.deep.equal({ 100: 'thumb.jpg' })
+        expect(result.f1.disk).to.equal('private')
+        expect(result.f1.name).to.equal('draft.jpg')
+        expect(result.f1.path).to.equal('draft.jpg')
+        expect(result.f1.previews).to.deep.equal({ 100: 'draft-thumb.jpg' })
+        expect(result.f1.description).to.deep.equal({ en: 'Draft' })
       })
     })
   })

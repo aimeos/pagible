@@ -13,6 +13,7 @@ import {
   useSideStore
 } from '../stores'
 import { changedState } from '../merge'
+import { FILE_FIELDS, normalizeFile } from '../files'
 import { debounce, frozenParse, itemTitle, safeParse, uid } from '../utils'
 import {
   mdiMenuDown,
@@ -47,6 +48,7 @@ const REFINE_CONTENT = gql`
 `
 
 const ADD_ELEMENT = gql`
+  ${FILE_FIELDS}
   mutation ($input: ElementInput!) {
     addElement(input: $input) {
       id
@@ -57,16 +59,7 @@ const ADD_ELEMENT = gql`
       editor
       updated_at
       files {
-        disk
-        id
-        lang
-        mime
-        name
-        path
-        previews
-        description
-        updated_at
-        editor
+        ...CmsFileFields
       }
     }
   }
@@ -159,6 +152,10 @@ export default {
         : { id: uid(), group: this.section, type: item.type, data: {} }
 
       if (item.id) {
+        for (const file of item.files || []) {
+          this.assets[file.id] = file
+        }
+
         this.elements[item.id] = item
       }
 
@@ -501,13 +498,14 @@ export default {
 
           const element = result.data.addElement
 
-          for (const file of element.files || []) {
-            file.previews = frozenParse(file.previews)
+          const files = (element.files || []).map(normalizeFile)
+
+          for (const file of files) {
             this.assets[file.id] = file
           }
 
           element.data = frozenParse(element.data)
-          element.files = Object.freeze(element.files.map((file) => file.id))
+          element.files = Object.freeze(files)
 
           this.elements[element.id] = element
           this.content[idx] = {

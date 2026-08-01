@@ -1,7 +1,6 @@
 /** @license MIT, https://opensource.org/license/mit */
 
 <script>
-import { markRaw } from 'vue'
 import gql from 'graphql-tag'
 import {
   mdiDotsVertical,
@@ -22,9 +21,9 @@ import {
   mdiPencil
 } from '@mdi/js'
 import EditBulkDialog from './EditBulkDialog.vue'
-import { ADD_FILE, normalizeFile } from '../files'
+import { ADD_FILE, FILE_FIELDS, normalizeFile } from '../files'
 import { useAppStore, useUserStore, useMessageStore, useChangeStore } from '../stores'
-import { debounce, fileurl, filesrcset, safeParse } from '../utils'
+import { debounce, fileurl, filesrcset } from '../utils'
 import { setupEcho, cleanEcho, listEcho } from '../echo'
 
 const DROP_FILE = gql`
@@ -68,6 +67,7 @@ const SAVE_FILES = gql`
 `
 
 const FETCH_FILES = gql`
+  ${FILE_FIELDS}
   query (
     $filter: FileFilter
     $sort: [QueryFilesSortOrderByClause!]
@@ -85,17 +85,7 @@ const FETCH_FILES = gql`
       publish: $publish
     ) {
       data {
-        disk
-        id
-        lang
-        name
-        mime
-        path
-        previews
-        editor
-        created_at
-        updated_at
-        deleted_at
+        ...CmsFileFields
         latest {
           id
           published
@@ -594,22 +584,19 @@ export default {
           const files = result.data.files || {}
           this.last = files.paginatorInfo?.lastPage || 1
           this.items = [...(files.data || [])].map((entry) => {
-            const item = entry.latest?.data
-              ? safeParse(entry.latest?.data)
-              : { ...entry, previews: safeParse(entry.previews) }
-
-            item.previews = markRaw(item.previews ?? {})
+            const latest = entry.latest
+            const item = normalizeFile(entry)
 
             return Object.assign(item, {
               disk: entry.disk,
               id: entry.id,
               deleted_at: entry.deleted_at,
               created_at: entry.created_at,
-              updated_at: entry.latest?.created_at || entry.updated_at,
-              editor: entry.latest?.editor || entry.editor,
-              published: entry.latest?.published ?? true,
-              publish_at: entry.latest?.publish_at || null,
-              latest_id: entry.latest?.id || null,
+              updated_at: latest?.created_at || entry.updated_at,
+              editor: latest?.editor || entry.editor,
+              published: latest?.published ?? true,
+              publish_at: latest?.publish_at || null,
+              latest_id: latest?.id || null,
               usage: entry.byversions_count
             })
           })

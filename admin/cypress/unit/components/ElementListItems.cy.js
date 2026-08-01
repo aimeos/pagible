@@ -80,6 +80,41 @@ describe('ElementListItems', () => {
     cy.contains('Loading').should('exist')
   })
 
+  it('loads latest files used by shared elements', () => {
+    const query = cy.stub().resolves({
+      data: {
+        elements: {
+          data: [{
+            id: 'element-1',
+            data: '{}',
+            latest: {
+              data: '{"name":"Shared"}',
+              files: [{
+                disk: 'private',
+                id: 'file-1',
+                path: 'published.jpg',
+                previews: '{}',
+                latest: {
+                  data: '{"path":"draft.jpg","previews":{"500":"draft-500.webp"}}',
+                  aux: '{}',
+                },
+              }],
+            },
+          }],
+          paginatorInfo: { lastPage: 1 },
+        },
+      },
+    })
+
+    mountList({}, { 'element:view': true, 'file:view': true }, { query }).then(({ wrapper }) => {
+      return wrapper.findComponent(ElementListItems).vm.search().then((items) => {
+        expect(items[0].files[0].disk).to.equal('private')
+        expect(items[0].files[0].path).to.equal('draft.jpg')
+        expect(items[0].files[0].previews).to.deep.equal({ 500: 'draft-500.webp' })
+      })
+    })
+  })
+
   it('edits one item without changing the bulk selection', () => {
     const mutate = cy.stub().resolves({ data: { bulkElement: { ids: ['element-1'] } } })
 

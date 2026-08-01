@@ -96,6 +96,33 @@ describe('Fields', () => {
     cy.contains('.item:not(.protected)', 'Public').should('exist')
   })
 
+  it('updates relocated files without duplicating their attachments', () => {
+    const assets = {
+      '1': { id: '1', disk: 'public' },
+      '2': { id: '2', disk: 'public' },
+    }
+    const onUpdate = cy.spy()
+
+    mountFields({
+      fields: { gallery: { type: 'images', label: 'Gallery' } },
+      data: {
+        gallery: [{ id: '1', type: 'file' }, { id: '2', type: 'file' }],
+      },
+      files: ['1', '2'],
+      assets,
+      'onUpdate:files': onUpdate,
+    }).then(({ wrapper }) => {
+      wrapper.findComponent(Fields).vm.addFile([
+        { id: '1', disk: 'private' },
+        { id: '2', disk: 'private' },
+      ])
+
+      expect(onUpdate).to.have.been.calledOnceWith(['1', '2'])
+      expect(assets['1'].disk).to.equal('private')
+      expect(assets['2'].disk).to.equal('private')
+    })
+  })
+
   it('hides the label for hidden field type', () => {
     mountFields({
       fields: { secret: { type: 'hidden', label: 'Secret' } },

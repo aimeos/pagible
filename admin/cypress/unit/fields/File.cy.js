@@ -81,12 +81,19 @@ describe('File', () => {
   })
 
   it('replaces the protection switch with a spinner while loading', () => {
+    let width
+
     mountFile().then(({ wrapper }) => {
-      wrapper.findComponent(FileField).vm.protecting = true
+      cy.get('.protect .v-switch').then(($switch) => {
+        width = $switch[0].getBoundingClientRect().width
+        wrapper.findComponent(FileField).vm.protecting = true
+      })
     })
 
     cy.get('.protect').should('contain', 'Protect access')
-    cy.get('.protect .v-progress-circular').should('exist')
+    cy.get('.protect .v-progress-circular').should(($spinner) => {
+      expect($spinner[0].getBoundingClientRect().width).to.equal(width)
+    })
     cy.get('.protect .v-switch').should('not.exist')
   })
 

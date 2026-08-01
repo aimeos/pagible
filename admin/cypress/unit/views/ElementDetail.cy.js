@@ -98,6 +98,27 @@ describe('ElementDetail', () => {
     cy.get('.aside-meta-stub').should('exist')
   })
 
+  it('uses latest attached file data with published fields as fallback', () => {
+    mountDetail().then(() => {
+      const vm = Cypress.vueWrapper.findComponent(ElementDetail).vm
+      const result = vm.files([{
+        disk: 'private',
+        id: 'file-1',
+        name: 'published.jpg',
+        path: 'published.jpg',
+        previews: '{"500":"published-500.webp"}',
+        latest: {
+          data: '{"name":"draft.jpg","path":"draft.jpg","previews":{"500":"draft-500.webp"}}',
+          aux: '{}',
+        },
+      }])
+
+      expect(result['file-1'].disk).to.equal('private')
+      expect(result['file-1'].path).to.equal('draft.jpg')
+      expect(result['file-1'].previews).to.deep.equal({ 500: 'draft-500.webp' })
+    })
+  })
+
   describe('publish schedule', () => {
     it('renders the schedule publish button', () => {
       mountDetail({ 'element:publish': true })
