@@ -95,6 +95,62 @@ describe('PageListItems', () => {
     cy.get('.btn-sort button').should('exist')
   })
 
+  it('loads the saved list view with its active filters', () => {
+    const query = cy.stub().resolves({
+      data: { pages: { data: [], paginatorInfo: { currentPage: 1, lastPage: 1 } } }
+    })
+
+    mountList({ filter: { view: 'list', status: 0 } }, { 'page:view': true }, { query }).then(() => {
+      expect(query).to.have.been.calledOnce
+      expect(query.firstCall.args[0].variables.filter).to.deep.equal({ status: 0 })
+      expect(query.firstCall.args[0].variables.sort).to.deep.equal([{ column: 'LFT', order: 'ASC' }])
+    })
+  })
+
+  it('keeps the latest reload result when an older request finishes afterwards', () => {
+    const response = (id, name) => ({
+      data: {
+        pages: {
+          data: [{
+            id,
+            parent_id: null,
+            created_at: '2026-01-01 00:00:00',
+            deleted_at: null,
+            editor: 'test@test.com',
+            has: 0,
+            restricted: false,
+            latest: {
+              id: `${id}-latest`,
+              published: true,
+              publish_at: null,
+              data: JSON.stringify({ name }),
+              editor: 'test@test.com',
+              created_at: '2026-01-01 00:00:00'
+            }
+          }],
+          paginatorInfo: { currentPage: 1, lastPage: 1 }
+        }
+      }
+    })
+    let finishInitial
+    const query = cy.stub()
+    query.onFirstCall().returns(new Promise((resolve) => { finishInitial = resolve }))
+    query.onSecondCall().resolves(response('new', 'New page'))
+
+    mountList({ filter: { view: 'list' } }, { 'page:view': true }, { query }).then(({ wrapper }) => {
+      const vm = wrapper.findComponent(PageListItems).vm
+
+      return vm.reload(false).then(() => {
+        finishInitial(response('old', 'Old page'))
+
+        return Cypress.Promise.resolve().then(() => {
+          expect(vm.items.map((item) => item.id)).to.deep.equal(['new'])
+          expect(vm.loading).to.equal(false)
+        })
+      })
+    })
+  })
+
   it('opens access editing for selected pages', () => {
     mountList({}, { 'access:view': true, 'page:publish': true, 'page:view': true }).then(({ wrapper }) => {
       const vm = wrapper.findComponent(PageListItems).vm

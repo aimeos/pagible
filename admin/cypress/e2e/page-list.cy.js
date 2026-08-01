@@ -281,11 +281,29 @@ describe('Page List', () => {
 
   // ---- Reload ----
 
-  it('shows reload button and clicking it refetches pages', () => {
-    const page = makePage()
-    visitPages([page])
+  it('shows newly added pages after reloading', () => {
+    const pages = [makePage()]
+
+    visitPages(pages)
+    pages.push(makePage({
+      id: '2',
+      latest: {
+        ...pages[0].latest,
+        id: '20',
+        data: JSON.stringify({
+          ...JSON.parse(pages[0].latest.data),
+          name: 'New page',
+          title: 'New page'
+        })
+      }
+    }))
+
     cy.get('.v-btn.btn-reload').should('exist').click()
-    cy.wait('@gql')
+    cy.wait('@gql').its('request.body').should((body) => {
+      const ops = Array.isArray(body) ? body : [body]
+      expect(ops.some((op) => (op.query || '').includes('pages'))).to.be.true
+    })
+    cy.get('.item-title').should('contain', 'New page')
   })
 
   // ---- Tree node expand/collapse ----

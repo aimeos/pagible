@@ -246,6 +246,7 @@ export default {
       destroyed: false,
       echoCleanup: null,
       echoPromise: null,
+      loadId: 0,
       outdated: false
     }
   },
@@ -297,10 +298,7 @@ export default {
     this.searchd = this.debounce(this.search, 500)
     this.reloadd = this.debounce(() => this.reload(false), 300)
 
-    this.fetch().then((result) => {
-      this.items = result.data
-      this.loading = false
-    })
+    this.refresh()
 
     if (!this.embed) {
       // patch the matching node when a page changes elsewhere; subscribe for
@@ -1125,21 +1123,37 @@ export default {
         })
     },
 
-    reload(cache = true) {
-      this.outdated = false
+    refresh() {
+      const id = ++this.loadId
+
       this.items = []
       this.loading = true
+
+      const promise = this.filter.view === 'list' ? this.search() : this.fetch()
+
+      return promise
+        .then((result) => {
+          if (id === this.loadId) {
+            this.items = result?.data || []
+          }
+
+          return result
+        })
+        .finally(() => {
+          if (id === this.loadId) {
+            this.loading = false
+          }
+        })
+    },
+
+    reload(cache = true) {
+      this.outdated = false
 
       if (cache) {
         this.invalidate()
       }
 
-      const promise = this.filter.view === 'list' ? this.search() : this.fetch()
-
-      promise.then((result) => {
-        this.items = result?.data || []
-        this.loading = false
-      })
+      return this.refresh()
     },
 
     reorder(event) {
@@ -1417,16 +1431,8 @@ export default {
 
     filter: {
       deep: true,
-      handler(filter) {
-        this.items = []
-        this.loading = true
-
-        const promise = filter.view === 'list' ? this.search() : this.fetch()
-
-        promise.then((result) => {
-          this.items = result?.data || []
-          this.loading = false
-        })
+      handler() {
+        this.refresh()
       }
     },
 
