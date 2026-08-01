@@ -1,1 +1,0 @@
-var e={id:`ID`,hero:{st:`Hero`},cards:{st:`Tiles`,fn:`Tiles`},blog:{st:`Blog`},article:{st:`Article`},questions:{st:`FAQ`},toc:{st:`Table of contents`},canonical:{st:`Canonical`},robots:{st:`Robots`},main:{fn:`Main image`},url:{fn:`URL`},follow:{fn:`Follow`},index:{fn:`Index`}},t={en:e};export{t as default,e as en};
