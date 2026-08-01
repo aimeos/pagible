@@ -38,6 +38,40 @@ import { useAppStore, useUserStore, useLanguageStore, useMessageStore, useChange
 import { debounce, safeParse, sanitize } from '../utils'
 import { setupEcho, cleanEcho, listEcho } from '../echo'
 
+const PAGE_TREE_FIELDS = new Set([
+  'access',
+  'cache',
+  'created_at',
+  'deleted_at',
+  'domain',
+  'editor',
+  'has',
+  'id',
+  'lang',
+  'latest_id',
+  'name',
+  'parent_id',
+  'path',
+  'publish_at',
+  'published',
+  'restricted',
+  'status',
+  'tag',
+  'theme',
+  'title',
+  'to',
+  'type',
+  'updated_at'
+])
+
+function patchData(data, item) {
+  for (const key in item) {
+    if (key in data || PAGE_TREE_FIELDS.has(key)) {
+      data[key] = item[key]
+    }
+  }
+}
+
 const ADD_PAGE = gql`
   mutation ($input: PageInput!) {
     addPage(input: $input) {
@@ -701,7 +735,7 @@ export default {
       const siblings = this.$refs.tree.getSiblings(stat)
       const parent = idx !== null ? stat.parent : stat
       const pos = siblings.indexOf(stat)
-      const node = this.create()
+      const node = this.create(parent ? { theme: parent.data.theme, type: parent.data.type } : {})
       let refid = null
 
       if (idx === null && !stat.open) {
@@ -720,7 +754,7 @@ export default {
           break
       }
 
-      this.$apollo
+      return this.$apollo
         .mutate({
           mutation: INSERT_PAGE,
           variables: {
@@ -1014,11 +1048,7 @@ export default {
         return false
       }
 
-      for (const key in item) {
-        if (key in stat.data) {
-          stat.data[key] = item[key]
-        }
-      }
+      patchData(stat.data, item)
 
       return true
     },
@@ -1031,11 +1061,7 @@ export default {
         const item = byId.get(stat.data?.id)
 
         if (item) {
-          for (const key in item) {
-            if (key in stat.data) {
-              stat.data[key] = item[key]
-            }
-          }
+          patchData(stat.data, item)
         }
       })
     },
@@ -1697,7 +1723,7 @@ export default {
                 />
               </v-toolbar>
 
-              <v-list @click="menu[node.id] = false">
+              <v-list class="page-action-menu" @click="menu[node.id] = false">
                 <v-list-item v-if="!node.deleted_at && !node.published && user.can('page:publish')">
                   <v-btn :prepend-icon="mdiPublish" variant="text" @click="publish(stat)">{{
                     $gettext('Publish')
@@ -1959,6 +1985,11 @@ export default {
 .tree-node:focus > .tree-node-inner,
 .tree-node-inner:focus-within {
   background-color: rgb(var(--v-theme-surface-light));
+}
+
+.page-action-menu .v-list-group__header {
+  color: inherit;
+  font-size: inherit;
 }
 
 .tree-node-inner .actions {

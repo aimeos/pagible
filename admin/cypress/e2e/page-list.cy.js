@@ -476,6 +476,37 @@ describe('Page List', () => {
     cy.get('.v-card .v-list').should('contain', 'Insert')
   })
 
+  it('matches Insert and Paste submenu entries to the other actions', () => {
+    const page = makePage()
+    visitPages([page])
+    cy.get('.tree-node-inner .btn-actions .v-btn').first().click()
+
+    cy.contains('.page-action-menu .v-btn', 'Copy').then(($copy) => {
+      const copy = getComputedStyle($copy[0])
+
+      cy.contains('.page-action-menu .v-btn', 'Insert').should(($insert) => {
+        const insert = getComputedStyle($insert[0])
+
+        expect(insert.color).to.equal(copy.color)
+        expect(insert.fontSize).to.equal(copy.fontSize)
+      })
+    })
+
+    cy.contains('.page-action-menu .v-btn', 'Copy').click()
+    cy.get('.tree-node-inner .btn-actions .v-btn').first().click()
+
+    cy.contains('.page-action-menu .v-btn', 'Cut').then(($cut) => {
+      const cut = getComputedStyle($cut[0])
+
+      cy.contains('.page-action-menu .v-btn', 'Paste').should(($paste) => {
+        const paste = getComputedStyle($paste[0])
+
+        expect(paste.color).to.equal(cut.color)
+        expect(paste.fontSize).to.equal(cut.fontSize)
+      })
+    })
+  })
+
   // ---- Context menu actions fire mutations ----
 
   it('clicking Publish sends pubPage mutation', () => {

@@ -215,6 +215,90 @@ describe('PageListItems', () => {
     })
   })
 
+  it('updates missing tree fields after a page is saved in the detail view', () => {
+    mountList({}, { 'page:view': true }).then(({ wrapper }) => {
+      const vm = wrapper.findComponent(PageListItems).vm
+      const stat = { data: { id: 'page-1' } }
+      const data = {
+        cache: 15,
+        domain: 'example.com',
+        lang: 'de',
+        name: 'Updated name',
+        path: 'updated-path',
+        status: 2,
+        tag: 'updated-tag',
+        theme: 'corporate',
+        title: 'Updated title',
+        to: '/target',
+        type: 'landing',
+      }
+      vm.$refs.tree.statsFlat = [stat]
+
+      vm.changes.notify('page', { id: 'page-1', ...data, content: [{ type: 'text' }] })
+
+      return vm.$nextTick().then(() => {
+        expect(stat.data).to.include(data)
+        expect(stat.data).not.to.have.property('content')
+        expect(vm.changes.get('page')).to.be.empty
+      })
+    })
+  })
+
+  it('inherits the parent theme and type when inserting a child page', () => {
+    const mutate = cy.stub().resolves({ data: { addPage: { id: 'page-new' } } })
+
+    mountList({}, { 'page:add': true, 'page:view': true }, { mutate }).then(({ wrapper }) => {
+      const vm = wrapper.findComponent(PageListItems).vm
+      const parent = {
+        children: [],
+        data: { id: 'page-parent', has: 0, theme: 'corporate', type: 'landing' },
+        open: true,
+      }
+      vm.$refs.tree.getSiblings = () => [parent]
+
+      return vm.insert(parent).then(() => {
+        expect(mutate).to.have.been.calledOnce
+        expect(mutate.firstCall.args[0].variables).to.deep.include({
+          parent: 'page-parent',
+          ref: null,
+        })
+        expect(mutate.firstCall.args[0].variables.input).to.include({
+          theme: 'corporate',
+          type: 'landing',
+        })
+      })
+    })
+  })
+
+  it('inherits the containing parent theme and type when inserting beside a page', () => {
+    const mutate = cy.stub().resolves({ data: { addPage: { id: 'page-new' } } })
+
+    mountList({}, { 'page:add': true, 'page:view': true }, { mutate }).then(({ wrapper }) => {
+      const vm = wrapper.findComponent(PageListItems).vm
+      const parent = {
+        children: [],
+        data: { id: 'page-parent', has: 1, theme: 'corporate', type: 'landing' },
+      }
+      const sibling = {
+        data: { id: 'page-sibling', theme: 'editorial', type: 'article' },
+        parent,
+      }
+      vm.$refs.tree.getSiblings = () => [sibling]
+
+      return vm.insert(sibling, 0).then(() => {
+        expect(mutate).to.have.been.calledOnce
+        expect(mutate.firstCall.args[0].variables).to.deep.include({
+          parent: 'page-parent',
+          ref: 'page-sibling',
+        })
+        expect(mutate.firstCall.args[0].variables.input).to.include({
+          theme: 'corporate',
+          type: 'landing',
+        })
+      })
+    })
+  })
+
   it('clears the selected page subtree with cache:clear permission', () => {
     const mutate = cy.stub().resolves({ data: { clearCache: 3 } })
 
