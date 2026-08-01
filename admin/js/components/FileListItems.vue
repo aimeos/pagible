@@ -764,7 +764,7 @@ export default {
       <v-switch
         v-if="!embed && user.can('file:add')"
         v-model="protect"
-        :label="$gettext('Protect with page access')"
+        :label="$gettext('Protect access')"
         class="protect"
         color="primary"
         density="compact"
@@ -1031,7 +1031,7 @@ export default {
               v-if="item.disk === 'private'"
               class="item-access"
               :icon="mdiLock"
-              :title="$gettext('Protect with page access')"
+              :title="$gettext('Protect access')"
             />
             <span class="item-title">{{ item.name }}</span>
           </div>

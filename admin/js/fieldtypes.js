@@ -25,3 +25,6 @@ export const fieldComponents = Object.fromEntries(
  * an unknown or hostile field type cannot resolve to a native HTML element.
  */
 export const fieldTypes = new Set(Object.keys(fieldComponents))
+
+/** Field components supporting private file storage controlled by page access. */
+export const protectTypes = new Set(['Audio', 'File', 'Image', 'Images', 'Media', 'Video'])

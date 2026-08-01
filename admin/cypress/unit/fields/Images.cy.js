@@ -53,7 +53,20 @@ describe('Images', () => {
     mountImages().then(({ wrapper }) => {
       expect(wrapper.findComponent(ImagesField).vm.protect).to.equal(false)
     })
-    cy.contains('Protect with page access').should('exist')
+    cy.contains('Protect access').should('exist')
+  })
+
+  it('shows a lock when the field contains a protected image', () => {
+    mountImages({
+      label: 'Gallery',
+      modelValue: [{ id: '1', type: 'file' }, { id: '2', type: 'file' }],
+      assets: {
+        ...imageAssets,
+        '2': { ...imageAssets['2'], disk: 'private' },
+      },
+    })
+
+    cy.get('.field-label > .field-lock + span').should('contain', 'Gallery')
   })
 
   it('relocates every selected image when protection is enabled', () => {

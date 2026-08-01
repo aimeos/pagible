@@ -5,8 +5,8 @@ import { useUserStore } from '../../../js/stores'
 const stubs = {
   String: { render() { return h('div', { class: 'field-string' }) } },
   Text: { render() { return h('div', { class: 'field-text' }) } },
-  File: { render() { return h('div', { class: 'field-file' }) } },
-  Images: { render() { return h('div', { class: 'field-images' }) } },
+  File: { props: ['label'], render() { return h('div', { class: 'field-file' }, this.label) } },
+  Images: { props: ['label'], render() { return h('div', { class: 'field-images' }, this.label) } },
   Hidden: { render() { return h('div', { class: 'field-hidden' }) } },
   Number: { render() { return h('div', { class: 'field-number' }) } },
 }
@@ -63,7 +63,7 @@ describe('Fields', () => {
     cy.get('.field-text').should('exist')
   })
 
-  it('marks fields containing private files with a warning border', () => {
+  it('marks fields containing private files with an info border', () => {
     mountFields({
       fields: {
         public: { type: 'file', label: 'Public' },
@@ -86,6 +86,13 @@ describe('Fields', () => {
     })
 
     cy.get('.item.protected').should('have.length', 2)
+    cy.get('.item.protected').first().should(($item) => {
+      const style = getComputedStyle($item[0])
+      const border = style.borderInlineStartColor.match(/\d+/g)?.slice(0, 3)
+      const info = style.getPropertyValue('--v-theme-info').match(/\d+/g)?.slice(0, 3)
+
+      expect(border).to.deep.equal(info)
+    })
     cy.contains('.item:not(.protected)', 'Public').should('exist')
   })
 

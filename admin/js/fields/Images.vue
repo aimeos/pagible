@@ -16,6 +16,7 @@ import { ADD_FILE, RELOCATE_FILE, normalizeFile } from '../files'
 import { useUserStore, useMessageStore, useViewStack } from '../stores'
 import { fileurl, filesrcset, IMAGE_MIME_FILTER } from '../utils'
 import { defineAsyncComponent } from 'vue'
+import FileProtect from '../components/FileProtect.vue'
 import FileDetail from '../views/FileDetail.vue'
 
 const FileAiDialog = defineAsyncComponent(() => import('../components/FileAiDialog.vue'))
@@ -27,6 +28,7 @@ export default {
 
   components: {
     FileDetail, // eslint-disable-line vue/no-unused-components -- used programmatically via openView()
+    FileProtect,
     FileDialog,
     FileAiDialog,
     FileUrlDialog,
@@ -37,6 +39,7 @@ export default {
     modelValue: { type: Array, default: () => [] },
     config: { type: Object, default: () => {} },
     assets: { type: Object, default: () => {} },
+    label: { type: String, default: '' },
     readonly: { type: Boolean, default: false },
     context: { type: Object }
   },
@@ -84,6 +87,10 @@ export default {
   },
 
   computed: {
+    isPrivate() {
+      return this.images.some((item) => item.disk === 'private')
+    },
+
     rules() {
       return [
         (v) =>
@@ -322,6 +329,19 @@ export default {
 </script>
 
 <template>
+  <FileProtect
+    :disabled="protecting"
+    :labelled="!!label || !!$slots.label"
+    :loading="protecting"
+    :model-value="protect"
+    :name="label"
+    :locked="isPrivate"
+    :readonly="readonly"
+    @update:model-value="setProtect($event)"
+  >
+    <slot name="label" />
+  </FileProtect>
+
   <VueDraggable
     v-model="images"
     :disabled="readonly"
@@ -424,18 +444,6 @@ export default {
       </div>
     </div>
   </VueDraggable>
-
-  <v-switch
-    v-if="!readonly"
-    :disabled="protecting"
-    :loading="protecting"
-    :model-value="protect"
-    @update:model-value="setProtect($event)"
-    :label="$gettext('Protect with page access')"
-    color="primary"
-    density="compact"
-    hide-details
-  />
 
   <!-- Kept outside <VueDraggable> on purpose: a Vuetify input nested in the
        draggable's persistent "add" tile loses its ref owner context when

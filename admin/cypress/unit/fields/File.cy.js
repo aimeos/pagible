@@ -55,7 +55,39 @@ describe('File', () => {
     mountFile().then(({ wrapper }) => {
       expect(wrapper.findComponent(FileField).vm.protect).to.equal(false)
     })
-    cy.contains('Protect with page access').should('exist')
+    cy.contains('Protect access').should('exist')
+  })
+
+  it('places protection after the field name in the field label', () => {
+    mountFile({ label: 'Download' })
+
+    cy.get('.field-protect.label').within(() => {
+      cy.get('.field-name').should('contain', 'Download')
+      cy.get('.protect').should('contain', 'Protect access')
+    })
+    cy.get('.field-name').should('have.css', 'flex-basis', '50%')
+    cy.get('.protect').should('have.css', 'justify-content', 'flex-end')
+    cy.get('.protect > .protect-label + .v-switch').should('exist')
+  })
+
+  it('shows a lock before the label for protected files', () => {
+    mountFile({
+      label: 'Download',
+      modelValue: { id: '1', type: 'file' },
+      assets: { '1': { ...fileAsset, disk: 'private' } },
+    })
+
+    cy.get('.field-label > .field-lock + span').should('contain', 'Download')
+  })
+
+  it('replaces the protection switch with a spinner while loading', () => {
+    mountFile().then(({ wrapper }) => {
+      wrapper.findComponent(FileField).vm.protecting = true
+    })
+
+    cy.get('.protect').should('contain', 'Protect access')
+    cy.get('.protect .v-progress-circular').should('exist')
+    cy.get('.protect .v-switch').should('not.exist')
   })
 
   it('relocates an existing file when protection is enabled', () => {

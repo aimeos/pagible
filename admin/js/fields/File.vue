@@ -14,6 +14,7 @@ import { ADD_FILE, RELOCATE_FILE, normalizeFile } from '../files'
 import { useUserStore, useMessageStore, useViewStack } from '../stores'
 import { fileurl, filesrcset } from '../utils'
 import { defineAsyncComponent } from 'vue'
+import FileProtect from '../components/FileProtect.vue'
 import FileDetail from '../views/FileDetail.vue'
 
 const FileUrlDialog = defineAsyncComponent(() => import('../components/FileUrlDialog.vue'))
@@ -23,6 +24,7 @@ export default {
   inheritAttrs: false,
 
   components: {
+    FileProtect,
     FileUrlDialog,
     FileDetail, // eslint-disable-line vue/no-unused-components -- used programmatically via openView()
     FileDialog
@@ -32,6 +34,7 @@ export default {
     modelValue: { type: [Object, null], default: () => null },
     config: { type: Object, default: () => {} },
     assets: { type: Object, default: () => {} },
+    label: { type: String, default: '' },
     readonly: { type: Boolean, default: false },
     context: { type: Object }
   },
@@ -86,6 +89,10 @@ export default {
   computed: {
     description() {
       return Object.values(this.file.description || {}).shift() || ''
+    },
+
+    isPrivate() {
+      return this.file.disk === 'private'
     },
 
     rules() {
@@ -304,6 +311,19 @@ export default {
 </script>
 
 <template>
+  <FileProtect
+    :disabled="protecting"
+    :labelled="!!label || !!$slots.label"
+    :loading="protecting"
+    :model-value="protect"
+    :name="label"
+    :locked="isPrivate"
+    :readonly="readonly"
+    @update:model-value="setProtect($event)"
+  >
+    <slot name="label" />
+  </FileProtect>
+
   <v-row>
     <v-col cols="12" md="6">
       <div class="files" :class="{ readonly: readonly }">
@@ -432,18 +452,6 @@ export default {
       </v-row>
     </v-col>
   </v-row>
-
-  <v-switch
-    v-if="!readonly"
-    :disabled="protecting"
-    :loading="protecting"
-    :model-value="protect"
-    @update:model-value="setProtect($event)"
-    :label="$gettext('Protect with page access')"
-    color="primary"
-    density="compact"
-    hide-details
-  />
 
   <Teleport to="body">
     <FileDialog v-model="vfiles" @add="addFromDialog" />

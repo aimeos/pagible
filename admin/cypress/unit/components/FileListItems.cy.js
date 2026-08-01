@@ -69,7 +69,7 @@ describe('FileListItems', () => {
   it('offers public-by-default page access protection for uploads', () => {
     mountList({ embed: false }, { 'file:view': true, 'file:add': true }).then(({ wrapper }) => {
       expect(wrapper.findComponent(FileListItems).vm.protect).to.equal(false)
-      cy.contains('.v-switch', 'Protect with page access').should('exist')
+      cy.contains('.v-switch', 'Protect access').should('exist')
     })
   })
 
@@ -149,7 +149,7 @@ describe('FileListItems', () => {
 
       cy.get('.item-access')
         .should('have.length', 1)
-        .and('have.attr', 'title', 'Protect with page access')
+        .and('have.attr', 'title', 'Protect access')
     })
   })
 

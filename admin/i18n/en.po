@@ -850,10 +850,9 @@ msgid "Add files"
 msgstr ""
 
 #: js/components/FileListItems.vue:767 js/components/FileListItems.vue:1034
-#: js/fields/Audio.vue:155 js/fields/File.vue:442 js/fields/Image.vue:212
-#: js/fields/Images.vue:434 js/fields/Media.vue:207 js/fields/Video.vue:155
-msgid "Protect with page access"
-msgstr "Protect with page access"
+#: js/components/FileProtect.vue:27
+msgid "Protect access"
+msgstr "Protect access"
 
 #: js/components/FileListItems.vue:801
 msgid "Reload files"

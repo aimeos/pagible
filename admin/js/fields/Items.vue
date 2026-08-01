@@ -27,7 +27,7 @@ import {
 } from '@mdi/js'
 import { VueDraggable } from 'vue-draggable-plus'
 import { useUserStore, useClipboardStore, useMessageStore } from '../stores'
-import { fieldTypes } from '../fieldtypes'
+import { fieldTypes, protectTypes } from '../fieldtypes'
 import { itemTitle, txlocales, uid } from '../utils'
 
 export default {
@@ -85,6 +85,7 @@ export default {
       mdiMicrophoneOutline,
       mdiMicrophone,
       mdiViewGridPlus,
+      protectTypes,
       txlocales
     }
   },
@@ -432,7 +433,7 @@ export default {
 
         <v-expansion-panel-text>
           <div v-for="(field, code) in config.item || {}" :key="code" class="field">
-            <div class="label">
+            <div v-if="!protectTypes.has(toName(field.type))" class="label">
               {{ $pgettext('fn', field.label || code).replace(/-|_/g, ' ') }}
               <div
                 v-if="!readonly && ['markdown', 'plaintext', 'string', 'text'].includes(field.type)"
@@ -508,6 +509,7 @@ export default {
               :context="items[idx]"
               :assets="assets"
               :config="field"
+              :label="protectTypes.has(toName(field.type)) ? $pgettext('fn', field.label || code).replace(/-|_/g, ' ') : null"
             ></component>
           </div>
         </v-expansion-panel-text>

@@ -5,7 +5,7 @@ import gql from 'graphql-tag'
 import { markRaw } from 'vue'
 import { useUserStore, useMessageStore } from '../stores'
 import { changedState } from '../merge'
-import { fieldTypes } from '../fieldtypes'
+import { fieldTypes, protectTypes } from '../fieldtypes'
 import { hasTrue, txlocales } from '../utils'
 import {
   mdiTranslate,
@@ -61,6 +61,7 @@ export default {
       mdiMicrophoneOutline,
       mdiMicrophone,
       mdiUndoVariant,
+      protectTypes,
       txlocales
     }
   },
@@ -245,7 +246,10 @@ export default {
       ...changedState(changed, code)
     }"
   >
-    <div v-if="field.type !== 'hidden'" class="label">
+    <div
+      v-if="field.type !== 'hidden' && !protectTypes.has(toName(field.type))"
+      class="label"
+    >
       {{ $pgettext('fn', field.label || code).replace(/-|_/g, ' ') }}
       <div
         v-if="!readonly && (['markdown', 'plaintext', 'string', 'text'].includes(field.type) || isDirty(code))"
@@ -331,13 +335,24 @@ export default {
       :context="data"
       :assets="assets"
       :config="field"
+      :label="protectTypes.has(toName(field.type)) ? $pgettext('fn', field.label || code).replace(/-|_/g, ' ') : null"
       :readonly="readonly"
       :modelValue="data[code]"
       @addFile="addFile($event)"
       @removeFile="removeFile($event)"
       @update:modelValue="update(code, $event)"
       @error="error(code, $event)"
-    ></component>
+    >
+      <template v-if="protectTypes.has(toName(field.type))" #label>
+        <v-btn
+          v-if="isDirty(code)"
+          :title="$gettext('Reset')"
+          @click="resetField(code)"
+          :icon="mdiUndoVariant"
+          variant="text"
+        />
+      </template>
+    </component>
   </div>
 </template>
 
@@ -349,7 +364,7 @@ export default {
 }
 
 .item.protected {
-  border-inline-start: 3px solid rgb(var(--v-theme-warning));
+  border-inline-start: 3px solid rgb(var(--v-theme-info));
 }
 
 .item.error {
