@@ -146,6 +146,10 @@ dialog.search .load-more:disabled {
 }
 
 
+blockquote {
+    padding-block: 0.25rem;
+}
+
 .caption:not(:empty) {
     max-width: 60rem;
     margin: 0.75rem auto;
