@@ -154,6 +154,34 @@ class PageToolsTest extends McpTestAbstract
     }
 
 
+    public function testGetPageTreeReflectsSavedDraft()
+    {
+        $page = Page::where( 'name', 'Home' )->firstOrFail();
+        $previous = $page->latest_id;
+
+        CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\SavePage::class, [
+            'id' => $page->id,
+            'latest_id' => $previous,
+            'title' => 'Updated tree title',
+        ] )->assertOk();
+
+        $page->refresh();
+
+        CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\GetPageTree::class, [
+            'node_id' => $page->id,
+        ] )->assertOk()->assertStructuredContent( fn( $json ) => $json
+            ->where( 'tree.0.id', $page->id )
+            ->where( 'tree.0.latest_id', $page->latest_id )
+            ->where( 'tree.0.title', 'Updated tree title' )
+            ->where( 'tree.0.published', false )
+            ->where( 'tree.0.publish_at', null )
+            ->etc()
+        );
+
+        $this->assertNotSame( $previous, $page->latest_id );
+    }
+
+
     public function testGetPageHistory()
     {
         $page = Page::where( 'name', 'Home' )->first();

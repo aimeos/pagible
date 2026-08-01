@@ -25,7 +25,11 @@ use Laravel\Mcp\Request;
 #[IsReadOnly]
 #[Name('get-page-tree')]
 #[Title('Get the page tree hierarchy')]
-#[Description('Returns the page tree as nested JSON. Pass node_id (UUID) for a subtree, or omit for all root pages (up to 50). Optional lang filter (ISO code, only without node_id).')]
+#[Description(
+    'Returns the page tree as nested JSON, including each page latest_id and publication state. ' .
+    'Pass node_id (UUID) for a subtree, or omit for all root pages (up to 50). ' .
+    'Optional lang filter (ISO code, only without node_id).'
+)]
 class GetPageTree extends Tool
 {
     /**
@@ -44,7 +48,9 @@ class GetPageTree extends Tool
 
         $builder = Page::tree( $v['node_id'] ?? null )
             ->select( 'id', 'parent_id', 'tenant_id', 'lang', 'latest_id', NestedSet::LFT, NestedSet::RGT, NestedSet::DEPTH )
-            ->with( ['latest' => fn( $q ) => $q->select( 'id', 'tenant_id', 'versionable_id', 'data' )] );
+            ->with( ['latest' => fn( $q ) => $q->select(
+                'id', 'tenant_id', 'versionable_id', 'data', 'published', 'publish_at'
+            )] );
 
         if( !isset( $v['node_id'] ) && isset( $v['lang'] ) ) {
             $builder->where( 'lang', $v['lang'] );
@@ -102,6 +108,7 @@ class GetPageTree extends Tool
             $data = $node->latest?->data;
             $entry = [
                 'id' => $node->id,
+                'latest_id' => $node->latest_id,
                 'name' => $data->name ?? '',
                 'title' => $data->title ?? '',
                 'domain' => $data->domain ?? '',
@@ -112,6 +119,8 @@ class GetPageTree extends Tool
                 'type' => $data->type ?? '',
                 'tag' => $data->tag ?? '',
                 'to' => $data->to ?? '',
+                'published' => (bool) $node->latest?->published,
+                'publish_at' => $node->latest?->publish_at,
                 'children' => [],
             ];
 
