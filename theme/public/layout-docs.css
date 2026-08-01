@@ -10,6 +10,7 @@ main {
 
 main .content {
     overflow: auto;
+    width: 100%;
 }
 
 main h1,
