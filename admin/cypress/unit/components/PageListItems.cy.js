@@ -299,6 +299,140 @@ describe('PageListItems', () => {
     })
   })
 
+  it('copies the latest page data when the tree node only contains its ID', () => {
+    const data = {
+      cache: 15,
+      domain: 'example.com',
+      lang: 'de',
+      name: 'Source page',
+      path: 'source-page',
+      status: 1,
+      tag: 'source',
+      theme: 'corporate',
+      title: 'Source title',
+      to: '/target',
+      type: 'landing',
+    }
+    const aux = {
+      content: [{ id: 'content-1', type: 'text', group: 'main', data: { text: 'Copied text' } }],
+      config: { styles: { type: 'styles', data: { text: 'body {}' }, files: [] } },
+      meta: { canonical: { type: 'canonical', data: { url: '/source-page' }, files: [] } },
+    }
+    const query = cy.stub()
+    query.onFirstCall().resolves({
+      data: { pages: { data: [], paginatorInfo: { currentPage: 1, lastPage: 1 } } }
+    })
+    query.onSecondCall().resolves({
+      data: { page: { id: 'page-source', latest: { id: 'version-source', data: JSON.stringify(data), aux: JSON.stringify(aux) } } }
+    })
+    const mutate = cy.stub().resolves({
+      data: {
+        addPage: {
+          id: 'page-copy',
+          parent_id: null,
+          created_at: '2026-01-01 00:00:00',
+          deleted_at: null,
+          editor: 'test@test.com',
+          has: 0,
+          restricted: false,
+          latest: {
+            id: 'version-copy',
+            published: false,
+            publish_at: null,
+            data: JSON.stringify({ ...data, status: 0, path: 'source-page_1234' }),
+            editor: 'test@test.com',
+            created_at: '2026-01-01 00:00:00',
+          },
+        },
+      },
+    })
+
+    mountList({}, { 'page:add': true, 'page:view': true }, { query, mutate }).then(({ wrapper }) => {
+      const vm = wrapper.findComponent(PageListItems).vm
+      const target = { data: { id: 'page-target' } }
+      vm.$refs.tree.getSiblings = () => [target]
+      vm.clip = { type: 'copy', node: { id: 'page-source' } }
+
+      return vm.paste(target, 1).then(() => {
+        expect(query.secondCall.args[0].fetchPolicy).to.equal('no-cache')
+        expect(query.secondCall.args[0].variables).to.deep.equal({ id: 'page-source' })
+        expect(mutate).to.have.been.calledOnce
+
+        const input = mutate.firstCall.args[0].variables.input
+        expect(input).to.include({
+          cache: 15,
+          domain: 'example.com',
+          lang: 'de',
+          name: 'Source page',
+          related_id: 'page-source',
+          status: 0,
+          tag: 'source',
+          theme: 'corporate',
+          title: 'Source title',
+          to: '/target',
+          type: 'landing',
+        })
+        expect(input.path).to.match(/^source-page_\d+$/)
+        expect(JSON.parse(input.content)).to.deep.equal(aux.content)
+        expect(JSON.parse(input.config)).to.deep.equal(aux.config)
+        expect(JSON.parse(input.meta)).to.deep.equal(aux.meta)
+      })
+    })
+  })
+
+  it('clears the cut state after the page is pasted successfully', () => {
+    const mutate = cy.stub().resolves({ data: { movePage: { id: 'page-cut' } } })
+
+    mountList({}, { 'page:move': true, 'page:view': true }, { mutate }).then(({ wrapper }) => {
+      const vm = wrapper.findComponent(PageListItems).vm
+      const source = { data: { id: 'page-cut', has: 0 }, parent: null }
+      const target = { data: { id: 'page-target' }, parent: null }
+      const move = cy.stub()
+      vm.$refs.tree.statsFlat = [source, target]
+      const [sourceStat, targetStat] = vm.$refs.tree.statsFlat
+      vm.$refs.tree.getSiblings = () => vm.$refs.tree.statsFlat
+      vm.$refs.tree.move = move
+
+      vm.cut(sourceStat, sourceStat.data)
+
+      return vm.move(targetStat, 1).then((success) => {
+        expect(success).to.equal(true)
+        expect(sourceStat).not.to.have.property('cut')
+        expect(vm.clip).to.equal(null)
+        expect(move).to.have.been.calledOnceWith(sourceStat, null, 1)
+        expect(mutate.firstCall.args[0].variables).to.deep.equal({
+          id: 'page-cut',
+          parent: null,
+          ref: null,
+        })
+      })
+    })
+  })
+
+  it('keeps the cut state when pasting the page fails', () => {
+    const mutate = cy.stub().rejects(new Error('Move failed'))
+
+    mountList({}, { 'page:move': true, 'page:view': true }, { mutate }).then(({ wrapper }) => {
+      const vm = wrapper.findComponent(PageListItems).vm
+      const source = { data: { id: 'page-cut', has: 0 }, parent: null }
+      const target = { data: { id: 'page-target' }, parent: null }
+      const move = cy.stub()
+      vm.$refs.tree.statsFlat = [source, target]
+      const [sourceStat, targetStat] = vm.$refs.tree.statsFlat
+      vm.$refs.tree.getSiblings = () => vm.$refs.tree.statsFlat
+      vm.$refs.tree.move = move
+
+      vm.cut(sourceStat, sourceStat.data)
+
+      return vm.move(targetStat, 1).then((success) => {
+        expect(success).to.equal(false)
+        expect(sourceStat.cut).to.equal(true)
+        expect(vm.clip?.stat).to.equal(sourceStat)
+        expect(move).not.to.have.been.called
+      })
+    })
+  })
+
   it('clears the selected page subtree with cache:clear permission', () => {
     const mutate = cy.stub().resolves({ data: { clearCache: 3 } })
 

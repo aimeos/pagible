@@ -100,13 +100,8 @@ const FETCH_PAGE_FOR_PASTE = gql`
       id
       latest {
         id
+        data
         aux
-        files {
-          id
-        }
-        elements {
-          id
-        }
       }
     }
   }
@@ -870,6 +865,7 @@ export default {
     },
 
     move(stat, idx = null) {
+      const clip = this.clip
       const siblings = this.$refs.tree.getSiblings(stat)
       const parent = idx !== null ? stat.parent : stat
       const pos = siblings.indexOf(stat)
@@ -887,12 +883,16 @@ export default {
           break
       }
 
-      this.movePage(
-        this.clip.node.id,
+      return this.movePage(
+        clip.node.id,
         parent ? parent.data.id : null,
         refid
-      ).then(() => {
-        const clipIdx = this.$refs.tree.getSiblings(stat).indexOf(this.clip.stat)
+      ).then((success) => {
+        if (!success) {
+          return false
+        }
+
+        const clipIdx = this.$refs.tree.getSiblings(stat).indexOf(clip.stat)
         const index =
           idx !== null
             ? clipIdx >= 0 && clipIdx <= pos
@@ -900,22 +900,29 @@ export default {
               : pos + idx
             : 0
 
-        const oldparent = this.clip.stat.parent
-        const moved = (this.clip.stat.data.has || 0) + 1
+        const oldparent = clip.stat.parent
+        const moved = (clip.stat.data.has || 0) + 1
 
-        this.$refs.tree.move(this.clip.stat, parent, index)
+        this.$refs.tree.move(clip.stat, parent, index)
+        delete clip.stat.cut
+
+        if (this.clip === clip) {
+          this.clip = null
+        }
 
         this.updateHas(oldparent, -moved)
         this.updateHas(parent, moved)
 
         this.invalidate()
+
+        return true
       })
     },
 
     movePage(id, parentId, refId) {
       if (!this.user.can('page:move')) {
         this.messages.add(this.$gettext('Permission denied'), 'error')
-        return Promise.reject()
+        return Promise.resolve(false)
       }
 
       return this.$apollo
@@ -927,12 +934,16 @@ export default {
           if (result.errors) {
             throw result.errors
           }
+
+          return true
         })
         .catch((error) => {
           if (error) {
             this.messages.add(this.$gettext('Error moving page') + ':\n' + error, 'error')
             this.$log(`PageList::movePage(): Error moving page`, error)
           }
+
+          return false
         })
     },
 
@@ -963,6 +974,7 @@ export default {
       return this.$apollo
         .query({
           query: FETCH_PAGE_FOR_PASTE,
+          fetchPolicy: 'no-cache',
           variables: {
             id: node.id
           }
@@ -973,28 +985,29 @@ export default {
           }
 
           const latest = result?.data?.page?.latest
+          const data = Object.assign({}, node, safeParse(latest?.data))
           const aux = safeParse(latest?.aux)
 
-          this.$apollo
+          return this.$apollo
             .mutate({
               mutation: PASTE_PAGE,
               variables: {
                 input: {
                   status: 0,
-                  to: node.to,
-                  tag: node.tag,
-                  type: node.type,
-                  theme: node.theme,
-                  lang: node.lang,
-                  name: node.name,
-                  title: node.title,
-                  cache: node.cache,
-                  domain: node.domain,
+                  to: data.to,
+                  tag: data.tag,
+                  type: data.type,
+                  theme: data.theme,
+                  lang: data.lang,
+                  name: data.name,
+                  title: data.title,
+                  cache: data.cache,
+                  domain: data.domain,
                   related_id: node.id,
                   meta: JSON.stringify(aux?.meta || {}),
                   config: JSON.stringify(aux?.config || {}),
                   content: JSON.stringify(aux?.content || []),
-                  path: node.path + '_' + Math.floor(Math.random() * 10000)
+                  path: data.path + '_' + Math.floor(Math.random() * 10000)
                 },
                 parent: parent ? parent.data.id : null,
                 ref: refid,
