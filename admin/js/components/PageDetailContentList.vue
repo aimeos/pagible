@@ -249,7 +249,10 @@ export default {
     },
 
     error(el, value) {
-      el._error = value
+      if (el) {
+        el._error = value
+      }
+
       const has = this.content.some((el) => el._error)
       if (has !== this.lastError) {
         this.lastError = has
@@ -333,10 +336,7 @@ export default {
         }
       }
 
-      this.$emit(
-        'error',
-        this.content.some((el) => el._error)
-      )
+      this.error()
       this.$emit('update:content', this.content)
     },
 
@@ -427,6 +427,7 @@ export default {
 
     remove(idx) {
       this.content.splice(idx, 1)
+      this.error()
       this.$emit('update:content', this.content)
     },
 

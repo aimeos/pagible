@@ -126,6 +126,20 @@ describe('PageDetailContentList', () => {
     cy.get('.v-expansion-panel-title .v-checkbox-btn').should('exist')
   })
 
+  it('clears the error state when deleting an invalid content element', () => {
+    const onError = cy.spy()
+
+    mountList({ onError }).then(({ wrapper }) => {
+      const vm = wrapper.findComponent(PageDetailContentList).vm
+
+      vm.error(vm.content[0], true)
+      vm.remove(0)
+      vm.error(vm.content[0], true)
+
+      expect(onError.args).to.deep.equal([[true], [false], [true]])
+    })
+  })
+
   it('adds files from a selected shared element to the page assets', () => {
     const assets = {}
     const elements = {}
