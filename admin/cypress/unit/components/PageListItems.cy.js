@@ -151,6 +151,55 @@ describe('PageListItems', () => {
     })
   })
 
+  it('refetches expanded branches with the active tree filters', () => {
+    const response = (data) => ({
+      data: {
+        pages: {
+          data,
+          paginatorInfo: { currentPage: 1, lastPage: 1 }
+        }
+      }
+    })
+    const page = (id, parentId, name, has = 0) => ({
+      id,
+      parent_id: parentId,
+      created_at: '2026-01-01 00:00:00',
+      deleted_at: null,
+      editor: 'test@test.com',
+      has,
+      restricted: false,
+      latest: {
+        id: `${id}-latest`,
+        published: true,
+        publish_at: null,
+        data: JSON.stringify({ name }),
+        editor: 'test@test.com',
+        created_at: '2026-01-01 00:00:00'
+      }
+    })
+    const query = cy.stub().callsFake(({ variables }) => {
+      const data = variables.filter.parent_id === 'parent'
+        ? [page('child', 'parent', 'Fresh child')]
+        : [page('parent', null, 'Parent', 1)]
+
+      return Promise.resolve(response(data))
+    })
+
+    mountList({ filter: { view: 'tree', status: 0 } }, { 'page:view': true }, { query }).then(({ wrapper }) => {
+      const vm = wrapper.findComponent(PageListItems).vm
+      const parent = { data: { id: 'parent' }, open: true }
+      vm.$refs.tree.statsFlat = [parent]
+
+      return vm.reload(false).then(() => {
+        expect(query).to.have.been.calledThrice
+        expect(query.secondCall.args[0].variables.filter).to.deep.equal({ status: 0, parent_id: null })
+        expect(query.thirdCall.args[0].variables.filter).to.deep.equal({ status: 0, parent_id: 'parent' })
+        expect(vm.items[0].children.map((item) => item.id)).to.deep.equal(['child'])
+        expect(parent.open).to.equal(true)
+      })
+    })
+  })
+
   it('opens access editing for selected pages', () => {
     mountList({}, { 'access:view': true, 'page:publish': true, 'page:view': true }).then(({ wrapper }) => {
       const vm = wrapper.findComponent(PageListItems).vm

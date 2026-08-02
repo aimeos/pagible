@@ -1164,16 +1164,31 @@ export default {
 
     refresh() {
       const id = ++this.loadId
+      const open = new Set(
+        this.filter.view === 'tree'
+          ? (this.$refs.tree?.statsFlat || [])
+              .filter((stat) => stat.open && stat.data?.id)
+              .map((stat) => stat.data.id)
+          : []
+      )
 
       this.items = []
       this.loading = true
 
-      const promise = this.filter.view === 'list' ? this.search() : this.fetch()
+      const promise = this.filter.view === 'list' ? this.search() : this.tree(open)
 
       return promise
-        .then((result) => {
+        .then(async (result) => {
           if (id === this.loadId) {
             this.items = result?.data || []
+
+            await this.$nextTick()
+
+            if (id === this.loadId) {
+              this.$refs.tree?.statsFlat.forEach((stat) => {
+                stat.open = open.has(stat.data?.id)
+              })
+            }
           }
 
           return result
@@ -1430,6 +1445,23 @@ export default {
         stat._checked = !stat._checked
       })
       this.$forceUpdate()
+    },
+
+    tree(open, parent = null) {
+      return this.fetch(parent).then(async (result) => {
+        const data = result?.data || []
+
+        await Promise.all(
+          data.map(async (item) => {
+            if (open.has(item.id)) {
+              const children = await this.tree(open, item.id)
+              item.children = children.data
+            }
+          })
+        )
+
+        return { ...result, data }
+      })
     },
 
     transform(result) {
@@ -1743,16 +1775,7 @@ export default {
                   }}</v-btn>
                 </v-list-item>
 
-                <v-divider
-                  v-if="
-                    !node.deleted_at &&
-                    !node.published &&
-                    user.can('page:publish') &&
-                    (user.can('page:save') ||
-                      user.can('cache:clear') ||
-                      user.can('access:view'))
-                  "
-                ></v-divider>
+                <v-divider v-if="!node.deleted_at && !node.published && user.can('page:publish')"></v-divider>
 
                 <v-list-item v-if="user.can('page:save')">
                   <v-btn :prepend-icon="mdiPencil" variant="text" @click="editProps(stat)">{{

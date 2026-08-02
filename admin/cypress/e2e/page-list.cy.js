@@ -78,7 +78,7 @@ function pagesResponse(pages) {
  *
  * @param {object} options
  * @param {object|false|null} options.meResponse  – `data.me` value (null = unauthenticated)
- * @param {Array}             options.pages       – array of page objects for the `pages` query
+ * @param {Array|Function}    options.pages       – page objects or a variable-aware response factory
  * @param {object|null}       options.addPage     – return value for `addPage` mutation
  * @param {object|null}       options.savePage    – return value for `savePage` mutation
  * @param {Array|null}        options.bulkPage   – return value for `bulkPage` mutation
@@ -154,7 +154,8 @@ function setupIntercept({
         return { data: { schemas } }
       }
       if (query.includes('pages')) {
-        return { data: pagesResponse(pages) }
+        const data = typeof pages === 'function' ? pages(op.variables || {}) : pages
+        return { data: pagesResponse(data) }
       }
       // Default: auth-check (me) query
       if (meResponse && typeof meResponse === 'object') {
@@ -304,6 +305,44 @@ describe('Page List', () => {
       expect(ops.some((op) => (op.query || '').includes('pages'))).to.be.true
     })
     cy.get('.item-title').should('contain', 'New page')
+  })
+
+  it('refetches and reopens expanded branches after reloading', () => {
+    const root = makePage({ has: 1 })
+    let childName = 'Old child'
+    const pages = (variables) => {
+      if (variables.filter?.parent_id !== root.id) {
+        return [root]
+      }
+
+      const child = makePage({ id: '2', parent_id: root.id })
+      child.latest = {
+        ...child.latest,
+        id: '20',
+        data: JSON.stringify({
+          ...JSON.parse(child.latest.data),
+          name: childName,
+          title: childName
+        })
+      }
+
+      return [child]
+    }
+
+    visitPages(pages)
+    cy.get('.tree-node-inner .actions .v-btn').first().click()
+    cy.wait('@gql')
+    cy.get('.item-title').should('contain', 'Old child')
+
+    cy.then(() => {
+      childName = 'Fresh child'
+    })
+    cy.get('.v-btn.btn-reload').click()
+    cy.wait('@gql')
+    cy.wait('@gql')
+
+    cy.get('.tree-node').first().should('have.attr', 'aria-expanded', 'true')
+    cy.get('.item-title').should('contain', 'Fresh child')
   })
 
   // ---- Tree node expand/collapse ----
