@@ -35,7 +35,10 @@ class PulseCardTest extends PulseTestCase
                 'custom' => ['title' => 'Custom'],
             ]] );
 
-            $this->assertSame( ['mcp', 'custom'], CmsMetricCard::available() );
+            $available = CmsMetricCard::available();
+
+            $this->assertSame( ['mcp', 'custom'], array_keys( $available ) );
+            $this->assertSame( 'Custom', $available['custom']['title'] );
 
             $card = new TestingCmsCard;
             $card->metric = 'custom';
@@ -64,6 +67,18 @@ class PulseCardTest extends PulseTestCase
     }
 
 
+    public function testLegacyPublishedMetricCardCanFallBackToCount() : void
+    {
+        $rows = collect( [$this->aggregateRow( 'saved', 5 )] );
+
+        $entry = ( new TestingCmsCard( $rows ) )->summaries( 'cms_page', 'action' )->first();
+
+        $this->assertNotNull( $entry );
+        $this->assertObjectHasProperty( 'sum', $entry );
+        $this->assertSame( 5, $entry->sum ?: $entry->count );
+    }
+
+
     public function testMetricCardAvailabilityUsesConfiguredOrder() : void
     {
         $this->assertSame( [
@@ -73,7 +88,7 @@ class PulseCardTest extends PulseTestCase
             'jsonapi',
             'graphql',
             'mcp',
-        ], CmsMetricCard::available() );
+        ], array_keys( CmsMetricCard::available() ) );
     }
 
 

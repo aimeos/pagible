@@ -43,7 +43,7 @@ class TestingCmsCard extends CmsMetricCard
 
 
     /**
-     * @return Collection<int, object{label: non-empty-string, count: int<0, max>, avg: float|null, max: mixed, detail: string}&\stdClass>
+     * @return Collection<int, object{label: non-empty-string, count: int<0, max>, sum: null, avg: float|null, max: mixed, detail: string}&\stdClass>
      */
     public function summaries( string $type, string $group ) : Collection
     {

@@ -25,13 +25,13 @@ class CmsMetricCard extends Card
     /**
      * Returns the configured cards that can be shown, in dashboard order.
      *
-     * @return list<string>
+     * @return array<string, array<string, mixed>>
      */
     public static function available() : array
     {
-        return array_keys( array_filter(
+        return array_filter(
             self::cards(), fn( array $definition ) => self::requirementsAvailable( $definition )
-        ) );
+        );
     }
 
 
@@ -177,7 +177,7 @@ class CmsMetricCard extends Card
      * Summarizes latency rows by one decoded key field.
      *
      * @param list<string> $details
-     * @return Collection<int, object{label: non-empty-string, count: int<0, max>, avg: float|null, max: mixed, detail: string}&\stdClass>
+     * @return Collection<int, object{label: non-empty-string, count: int<0, max>, sum: null, avg: float|null, max: mixed, detail: string}&\stdClass>
      */
     protected function summary( string $type, string $group, array $details = [], bool $success = false ) : Collection
     {
@@ -186,6 +186,7 @@ class CmsMetricCard extends Card
             ->map( fn( Collection $rows, string $label ) => (object) [
                 'label' => $label !== '' ? $label : 'unknown',
                 'count' => (int) $rows->sum( 'count' ),
+                'sum' => null,
                 'avg' => $this->avg( $rows ),
                 'max' => $rows->max( 'max' ),
                 'detail' => $this->detailText( $rows, $details, $success ),
