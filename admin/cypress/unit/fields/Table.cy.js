@@ -15,6 +15,19 @@ describe('Table', () => {
     cy.get('tbody .v-textarea').should('have.length', 4)
   })
 
+  it('renders columns found after a shorter first row', () => {
+    cy.mount(TableField, {
+      props: { modelValue: [['heading'], ['a', 'b']], config: {} },
+    })
+    cy.get('tbody .v-textarea').should('have.length', 4)
+    cy.get('tbody tr')
+      .eq(1)
+      .find('.v-textarea')
+      .eq(1)
+      .find('textarea:not(.v-textarea__sizer)')
+      .should('have.value', 'b')
+  })
+
   it('displays cell values in textareas', () => {
     cy.mount(TableField, {
       props: { modelValue: [['hello', 'world']], config: {} },
