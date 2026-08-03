@@ -2,6 +2,7 @@
 
 <script>
 import gql from 'graphql-tag'
+import { mdiLock } from '@mdi/js'
 import { useUserStore } from '../stores'
 
 const FETCH_ELEMENT_REFS = gql`
@@ -12,6 +13,7 @@ const FETCH_ELEMENT_REFS = gql`
         id
         path
         name
+        restricted
       }
       byversions {
         id
@@ -40,7 +42,7 @@ export default {
   setup() {
     const user = useUserStore()
 
-    return { user }
+    return { mdiLock, user }
   },
 
   beforeUnmount() {
@@ -125,7 +127,15 @@ export default {
                 <tr v-for="v in element.bypages" :key="v.id">
                   <td>{{ v.id }}</td>
                   <td>{{ v.path }}</td>
-                  <td>{{ v.name }}</td>
+                  <td>
+                    <v-icon
+                      v-if="v.restricted"
+                      class="item-access"
+                      :icon="mdiLock"
+                      :title="$gettext('Restricted')"
+                    />
+                    {{ v.name }}
+                  </td>
                 </tr>
               </tbody>
             </v-table>
