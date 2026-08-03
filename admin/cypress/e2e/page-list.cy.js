@@ -901,6 +901,19 @@ describe('Page List', () => {
     cy.get('.item-aux').first().should('have.attr', 'target', '_blank')
   })
 
+  it('shows the root page path as / when its path is null', () => {
+    const latest = makePage().latest
+    const page = makePage({
+      latest: {
+        ...latest,
+        data: JSON.stringify({ ...JSON.parse(latest.data), path: null }),
+      },
+    })
+
+    visitPages([page])
+    cy.get('.item-path').first().should('have.text', '/')
+  })
+
   // ---- AI chat prompt ----
 
   it('shows chat prompt for users with page:chat permission', () => {
