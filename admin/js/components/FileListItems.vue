@@ -748,6 +748,7 @@ export default {
           variant="tonal"
         />
         <v-btn
+          v-if="user.can('file:relocate')"
           @click="$refs.uploadPrivate.click()"
           :title="$gettext('Add files') + ': ' + $gettext('Protect access')"
           :disabled="loading"
@@ -1070,6 +1071,7 @@ export default {
       variant="tonal"
     />
     <v-btn
+      v-if="user.can('file:relocate')"
       @click="$refs.uploadPrivateBottom.click()"
       :title="$gettext('Add files') + ': ' + $gettext('Protect access')"
       :disabled="loading"

@@ -52,14 +52,22 @@ describe('File', () => {
   })
 
   it('offers public-by-default page access protection', () => {
-    mountFile().then(({ wrapper }) => {
+    mountFile({}, { 'file:relocate': true }).then(({ wrapper }) => {
       expect(wrapper.findComponent(FileField).vm.protect).to.equal(false)
     })
     cy.contains('Protect access').should('exist')
   })
 
-  it('places protection after the field name in the field label', () => {
+  it('hides page access protection without file:relocate permission', () => {
     mountFile({ label: 'Download' })
+
+    cy.get('.field-name').should('contain', 'Download')
+    cy.get('.protect').should('not.exist')
+    cy.contains('Protect access').should('not.exist')
+  })
+
+  it('places protection after the field name in the field label', () => {
+    mountFile({ label: 'Download' }, { 'file:relocate': true })
 
     cy.get('.field-protect.label').within(() => {
       cy.get('.field-name').should('contain', 'Download')
@@ -83,7 +91,7 @@ describe('File', () => {
   it('replaces the protection switch with a spinner while loading', () => {
     let width
 
-    mountFile().then(({ wrapper }) => {
+    mountFile({}, { 'file:relocate': true }).then(({ wrapper }) => {
       cy.get('.protect .v-switch').then(($switch) => {
         width = $switch[0].getBoundingClientRect().width
         wrapper.findComponent(FileField).vm.protecting = true
@@ -114,7 +122,7 @@ describe('File', () => {
         modelValue: { id: '1', type: 'file' },
         assets: { '1': fileAsset },
       },
-      {},
+      { 'file:relocate': true },
       { mutate },
     ).then(({ wrapper }) => {
       const vm = wrapper.findComponent(FileField).vm

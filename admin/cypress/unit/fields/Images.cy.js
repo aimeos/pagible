@@ -50,7 +50,7 @@ describe('Images', () => {
   })
 
   it('offers public-by-default page access protection', () => {
-    mountImages().then(({ wrapper }) => {
+    mountImages({}, { 'file:relocate': true }).then(({ wrapper }) => {
       expect(wrapper.findComponent(ImagesField).vm.protect).to.equal(false)
     })
     cy.contains('Protect access').should('exist')
@@ -94,7 +94,7 @@ describe('Images', () => {
         assets,
         onAddFile,
       },
-      {},
+      { 'file:relocate': true },
       { mutate },
     ).then(({ wrapper }) => {
       const vm = wrapper.findComponent(ImagesField).vm
@@ -138,7 +138,7 @@ describe('Images', () => {
         assets,
         onAddFile,
       },
-      {},
+      { 'file:relocate': true },
       { mutate, query },
     ).then(({ wrapper }) => {
       const vm = wrapper.findComponent(ImagesField).vm

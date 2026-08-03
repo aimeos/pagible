@@ -67,12 +67,22 @@ describe('FileListItems', () => {
   })
 
   it('offers separate public and protected upload buttons', () => {
-    mountList({ embed: false }, { 'file:view': true, 'file:add': true })
+    mountList(
+      { embed: false },
+      { 'file:view': true, 'file:add': true, 'file:relocate': true },
+    )
     cy.get('button.btn-add').should('exist')
     cy.get('button.btn-add-private')
       .should('exist')
       .and('have.attr', 'title', 'Add files: Protect access')
     cy.get('.v-switch').should('not.exist')
+  })
+
+  it('hides protected uploads without file:relocate permission', () => {
+    mountList({ embed: false }, { 'file:view': true, 'file:add': true })
+
+    cy.get('button.btn-add').should('exist')
+    cy.get('button.btn-add-private').should('not.exist')
   })
 
   it('uploads protected files directly to the private disk', () => {
@@ -91,7 +101,7 @@ describe('FileListItems', () => {
 
     mountList(
       { embed: false },
-      { 'file:view': true, 'file:add': true },
+      { 'file:view': true, 'file:add': true, 'file:relocate': true },
       { mutate },
     ).then(({ wrapper }) => {
       const vm = wrapper.findComponent(FileListItems).vm

@@ -2,6 +2,7 @@
 
 <script>
 import { mdiLock } from '@mdi/js'
+import { useUserStore } from '../stores'
 
 export default {
   props: {
@@ -17,15 +18,22 @@ export default {
   emits: ['update:modelValue'],
 
   setup() {
+    const user = useUserStore()
+
     return {
-      mdiLock
+      mdiLock,
+      user
     }
   }
 }
 </script>
 
 <template>
-  <div v-if="labelled || !readonly" class="field-protect label">
+  <div
+    v-if="labelled || (!readonly && user.can('file:relocate'))"
+    :class="{ 'can-protect': !readonly && user.can('file:relocate') }"
+    class="field-protect label"
+  >
     <div class="field-name">
       <span class="field-label">
         <v-icon v-if="locked" :icon="mdiLock" class="field-lock" aria-hidden="true" />
@@ -33,7 +41,7 @@ export default {
       </span>
       <slot />
     </div>
-    <label v-if="!readonly" :aria-busy="loading" class="protect">
+    <label v-if="!readonly && user.can('file:relocate')" :aria-busy="loading" class="protect">
       <span class="protect-label">{{ $gettext('Protect access') }}</span>
       <v-progress-circular v-if="loading"
         aria-hidden="true"
@@ -67,16 +75,17 @@ export default {
   min-height: 48px;
 }
 
-.field-name,
-.protect {
-  flex: 1 1 50%;
-}
-
 .field-name {
   display: flex;
   align-items: center;
+  flex: 1 1 100%;
   justify-content: space-between;
   min-width: 0;
+}
+
+.can-protect .field-name,
+.protect {
+  flex: 1 1 50%;
 }
 
 .field-label {
