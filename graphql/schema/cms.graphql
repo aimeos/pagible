@@ -45,7 +45,7 @@ extend type Query {
   "Get the available access values"
   access(term: String = "", first: Int = 50): [String!]!
     @guard
-    @cmsPermission(action: ["access:view", "page:save", "element:save"], any: true)
+    @cmsPermission(action: ["access:view", "page:access"], any: true)
     @throttle(name: "cms-graphql")
     @field(resolver: "\\Aimeos\\Cms\\GraphQL\\Query@access")
 
@@ -111,11 +111,11 @@ extend type Mutation {
 
   "Move the page below the page referenced by 'parent' and before the page referenced by 'ref' (or append if NULL)"
   movePage(id: ID!, parent: ID, ref: ID): Page
-    @guard @cmsPermission(action: ["page:move", "page:view"]) @throttle(name: "cms-graphql")
+    @guard @cmsPermission(action: "page:move") @throttle(name: "cms-graphql")
 
   "Update the values of an existing page"
   savePage(id: ID!, input: PageInput!, latestId: ID): Page
-    @guard @cmsPermission(action: ["page:save", "page:view"]) @throttle(name: "cms-graphql")
+    @guard @cmsPermission(action: "page:save") @throttle(name: "cms-graphql")
 
   "Immediately replace the frontend access rules for pages; NULL makes them public and an empty list requires authentication"
   setPageAccess(
@@ -123,27 +123,27 @@ extend type Mutation {
     access: [String!] @rulesForArray(apply: ["nullable", "max:250"])
     descendants: Boolean = false
   ): Int!
-    @guard @cmsPermission(action: "page:publish") @throttle(name: "cms-graphql")
+    @guard @cmsPermission(action: "page:access") @throttle(name: "cms-graphql")
 
   "Apply the same values to several existing pages at once, optionally including all sub-pages; returns the ids saved"
   bulkPage(id: [ID!]! @rulesForArray(apply: ["max:1000"]), input: PageInput!, descendants: Boolean = false): BulkResult!
-    @guard @cmsPermission(action: ["page:save", "page:view"]) @throttle(name: "cms-graphql")
+    @guard @cmsPermission(action: "page:save") @throttle(name: "cms-graphql")
 
   "Delete an existing page"
   dropPage(id: [ID!]! @rulesForArray(apply: ["max:1000"])): [Page]!
-    @guard @cmsPermission(action: ["page:drop", "page:view"]) @throttle(name: "cms-graphql")
+    @guard @cmsPermission(action: "page:drop") @throttle(name: "cms-graphql")
 
   "Restore an existing page"
   keepPage(id: [ID!]! @rulesForArray(apply: ["max:1000"])): [Page]!
-    @guard @cmsPermission(action: ["page:keep", "page:view"]) @throttle(name: "cms-graphql")
+    @guard @cmsPermission(action: "page:keep") @throttle(name: "cms-graphql")
 
   "Purge an existing page"
   purgePage(id: [ID!]! @rulesForArray(apply: ["max:1000"])): [Page]!
-    @guard @cmsPermission(action: ["page:purge", "page:view"]) @throttle(name: "cms-graphql")
+    @guard @cmsPermission(action: "page:purge") @throttle(name: "cms-graphql")
 
   "Publish page data"
   pubPage(id: [ID!]! @rulesForArray(apply: ["max:1000"]), at: DateTime): [Page]!
-    @guard @cmsPermission(action: ["page:publish", "page:view"]) @throttle(name: "cms-graphql")
+    @guard @cmsPermission(action: "page:publish") @throttle(name: "cms-graphql")
 
 
   "Add a new shared content element"
@@ -152,27 +152,27 @@ extend type Mutation {
 
   "Update an existing shared content element"
   saveElement(id: ID!, input: ElementInput!, latestId: ID): Element
-    @guard @cmsPermission(action: ["element:save", "element:view"]) @throttle(name: "cms-graphql")
+    @guard @cmsPermission(action: "element:save") @throttle(name: "cms-graphql")
 
   "Apply the same values to several existing shared content elements at once; returns the ids saved"
   bulkElement(id: [ID!]! @rulesForArray(apply: ["max:1000"]), input: ElementInput!): BulkResult!
-    @guard @cmsPermission(action: ["element:save", "element:view"]) @throttle(name: "cms-graphql")
+    @guard @cmsPermission(action: "element:save") @throttle(name: "cms-graphql")
 
   "Delete an existing shared content element"
   dropElement(id: [ID!]! @rulesForArray(apply: ["max:1000"])): [Element]!
-    @guard @cmsPermission(action: ["element:drop", "element:view"]) @throttle(name: "cms-graphql")
+    @guard @cmsPermission(action: "element:drop") @throttle(name: "cms-graphql")
 
   "Restore an existing shared content element"
   keepElement(id: [ID!]! @rulesForArray(apply: ["max:1000"])): [Element]!
-    @guard @cmsPermission(action: ["element:keep", "element:view"]) @throttle(name: "cms-graphql")
+    @guard @cmsPermission(action: "element:keep") @throttle(name: "cms-graphql")
 
   "Purge an existing shared content element"
   purgeElement(id: [ID!]! @rulesForArray(apply: ["max:1000"])): [Element]!
-    @guard @cmsPermission(action: ["element:purge", "element:view"]) @throttle(name: "cms-graphql")
+    @guard @cmsPermission(action: "element:purge") @throttle(name: "cms-graphql")
 
   "Publish an existing shared content element"
   pubElement(id: [ID!]! @rulesForArray(apply: ["max:1000"]), at: DateTime): [Element]!
-    @guard @cmsPermission(action: ["element:publish", "element:view"]) @throttle(name: "cms-graphql")
+    @guard @cmsPermission(action: "element:publish") @throttle(name: "cms-graphql")
 
 
   "Adds a new file upload, optionally with preview and the description of the file"
@@ -181,31 +181,31 @@ extend type Mutation {
 
   "Relocate existing files between public and private storage"
   relocateFile(id: [ID!]! @rulesForArray(apply: ["max:100"]), disk: FileDisk!): [File!]!
-    @guard @cmsPermission(action: "file:view") @throttle(name: "cms-graphql")
+    @guard @cmsPermission(action: "file:relocate") @throttle(name: "cms-graphql")
 
   "Update an existing file"
   saveFile(id: ID!, input: FileInput!, file: Upload, preview: RemoveableUpload, latestId: ID): File
-    @guard @cmsPermission(action: ["file:save", "file:view"]) @throttle(name: "cms-graphql")
+    @guard @cmsPermission(action: "file:save") @throttle(name: "cms-graphql")
 
   "Apply the same values to several existing files at once; returns the ids saved"
   bulkFile(id: [ID!]! @rulesForArray(apply: ["max:1000"]), input: FileInput!): BulkResult!
-    @guard @cmsPermission(action: ["file:save", "file:view"]) @throttle(name: "cms-graphql")
+    @guard @cmsPermission(action: "file:save") @throttle(name: "cms-graphql")
 
   "Delete an existing file"
   dropFile(id: [ID!]! @rulesForArray(apply: ["max:1000"])): [File]!
-    @guard @cmsPermission(action: ["file:drop", "file:view"]) @throttle(name: "cms-graphql")
+    @guard @cmsPermission(action: "file:drop") @throttle(name: "cms-graphql")
 
   "Restore an existing file"
   keepFile(id: [ID!]! @rulesForArray(apply: ["max:1000"])): [File]!
-    @guard @cmsPermission(action: ["file:keep", "file:view"]) @throttle(name: "cms-graphql")
+    @guard @cmsPermission(action: "file:keep") @throttle(name: "cms-graphql")
 
   "Purge an existing file"
   purgeFile(id: [ID!]! @rulesForArray(apply: ["max:1000"])): [File]!
-    @guard @cmsPermission(action: ["file:purge", "file:view"]) @throttle(name: "cms-graphql")
+    @guard @cmsPermission(action: "file:purge") @throttle(name: "cms-graphql")
 
   "Publish file data"
   pubFile(id: [ID!]! @rulesForArray(apply: ["max:1000"]), at: DateTime): [File]!
-    @guard @cmsPermission(action: ["file:publish", "file:view"]) @throttle(name: "cms-graphql")
+    @guard @cmsPermission(action: "file:publish") @throttle(name: "cms-graphql")
 
   "Get page metrics for the last X days"
   metrics(url: String!, days: Int, lang: String): Stats @guard @cmsPermission(action: "page:metrics") @throttle(name: "cms-graphql")
@@ -297,7 +297,7 @@ type Page {
 
   "Immediate frontend access rules: NULL is public, an empty list requires authentication, otherwise any listed value grants access"
   access: [String!]
-    @cmsPermission(action: "access:view")
+    @cmsPermission(action: "page:access")
     @with(relation: "access")
     @method(name: "accessValues")
 

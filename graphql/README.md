@@ -21,13 +21,13 @@ The upload policy is shared by every CMS interface and configured through `uploa
 
 ## Page access
 
-The `Page.restricted` field tells page viewers whether immediate frontend access rules exist without exposing their values. `Page.access` requires `access:view` and represents the rules independently from page versions:
+The `Page.restricted` field tells page viewers whether immediate frontend access rules exist without exposing their values. `Page.access` requires `page:access` and represents the rules independently from page versions:
 
 - `null` means public access
 - an empty list permits authenticated users of the current tenant
 - a non-empty list permits users granted any listed access value
 
-Publishers with `access:view` can replace this state with `setPageAccess(id:, access:, descendants:)`. The nullable `access` argument must be provided explicitly. Multiple selected page IDs are supported; recursive changes are limited to one root page. Page bulk operations are limited to 1,000 unique pages, and recursive calls fail before writing if the resolved subtree exceeds 1,000 pages. The mutation requires both `page:publish` and `access:view` because access changes affect the live site immediately. Available named values remain exposed by the separately protected `Query.access` catalog.
+Users with `page:access` can replace this state with `setPageAccess(id:, access:, descendants:)`. The nullable `access` argument must be provided explicitly. Multiple selected page IDs are supported; recursive changes are limited to one root page. Page bulk operations are limited to 1,000 unique pages, and recursive calls fail before writing if the resolved subtree exceeds 1,000 pages. `Query.access` lists catalog names for both the general catalog screen and page access controls, so it accepts either `access:view` or `page:access`. The permissions remain registered in separate namespaces.
 
 ## Commands
 

@@ -235,7 +235,7 @@ describe('PageListItems', () => {
   })
 
   it('opens access editing for selected pages', () => {
-    mountList({}, { 'access:view': true, 'page:publish': true, 'page:view': true }).then(({ wrapper }) => {
+    mountList({}, { 'page:access': true, 'page:view': true }).then(({ wrapper }) => {
       const vm = wrapper.findComponent(PageListItems).vm
       vm.$refs.tree.statsFlat = [{ _checked: true, data: { id: 'page-1', has: 2 } }]
       vm.editAccess()
@@ -247,7 +247,7 @@ describe('PageListItems', () => {
   })
 
   it('opens bulk editing and access control for one page node', () => {
-    mountList({}, { 'access:view': true, 'page:publish': true, 'page:save': true, 'page:view': true }).then(({ wrapper }) => {
+    mountList({}, { 'page:access': true, 'page:save': true, 'page:view': true }).then(({ wrapper }) => {
       const vm = wrapper.findComponent(PageListItems).vm
       const node = { _checked: false, data: { id: 'page-1', has: 2 } }
       const selected = { _checked: true, data: { id: 'page-2', has: 0 } }
@@ -268,7 +268,7 @@ describe('PageListItems', () => {
   })
 
   it('updates access indicators for one page node and its descendants', () => {
-    mountList({}, { 'access:view': true, 'page:publish': true, 'page:view': true }).then(({ wrapper }) => {
+    mountList({}, { 'page:access': true, 'page:view': true }).then(({ wrapper }) => {
       const vm = wrapper.findComponent(PageListItems).vm
       const root = { _checked: false, data: { id: 'page-1', access: null, restricted: false } }
       const child = { _checked: false, data: { id: 'page-2', access: null, restricted: false }, parent: root }

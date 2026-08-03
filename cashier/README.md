@@ -132,7 +132,7 @@ part of the current tenant's catalog.
    the page or shared element.
 3. Open each page being sold, choose **Access**, select **Restricted**, select
    the same role, and apply the change. Applying recursively protects the page's
-   descendants too. This action requires `page:publish` and `access:view`.
+   descendants too. This action requires `page:access`.
 4. Keep the sales page public. Use a public account or payment-status page as the
    target URL because the browser can return before the verified webhook has
    granted access.

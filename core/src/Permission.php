@@ -29,6 +29,7 @@ class Permission
         'page:purge',
         'page:publish',
         'page:move',
+        'page:access',
 
         'element:view',
         'element:save',
@@ -45,6 +46,7 @@ class Permission
         'file:keep',
         'file:purge',
         'file:publish',
+        'file:relocate',
 
         'page:config',
     ];

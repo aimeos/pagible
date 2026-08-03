@@ -97,7 +97,7 @@ export default {
     },
 
     protectReadonly() {
-      return !this.user.can(this.protect ? 'file:publish' : 'file:save')
+      return !this.user.can('file:relocate')
     },
 
     readonly() {
@@ -190,7 +190,7 @@ export default {
         return Promise.resolve(true)
       }
 
-      if (!this.user.can(protect ? 'file:save' : 'file:publish')) {
+      if (!this.user.can('file:relocate')) {
         this.messages.add(this.$gettext('Permission denied'), 'error')
         return Promise.resolve(false)
       }

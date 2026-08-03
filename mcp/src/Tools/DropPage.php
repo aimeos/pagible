@@ -29,8 +29,7 @@ class DropPage extends Tool
      */
     public function handle( Request $request ): \Laravel\Mcp\ResponseFactory
     {
-        if( !Permission::can( 'page:drop', $request->user() )
-            || !Permission::can( 'page:view', $request->user() ) ) {
+        if( !Permission::can( 'page:drop', $request->user() ) ) {
             throw new \Aimeos\Cms\Exception( 'Insufficient permissions' );
         }
 
@@ -75,7 +74,6 @@ class DropPage extends Tool
      */
     public function shouldRegister( Request $request ) : bool
     {
-        return Permission::can( 'page:drop', $request->user() )
-            && Permission::can( 'page:view', $request->user() );
+        return Permission::can( 'page:drop', $request->user() );
     }
 }

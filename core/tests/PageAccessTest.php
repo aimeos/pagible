@@ -112,6 +112,24 @@ class PageAccessTest extends CoreTestAbstract
     }
 
 
+    public function testRestrictionRequiresPageAccessPermissionForUsers(): void
+    {
+        $page = Page::where( 'path', 'hidden' )->firstOrFail();
+        $user = new \App\Models\User( ['cmsperms' => ['page:publish', 'access:view']] );
+
+        try {
+            PageAccess::set( [$page->id], [], $user );
+            $this->fail( 'Expected page access changes to require page:access' );
+        } catch( Exception $e ) {
+            $this->assertSame( 'Insufficient permissions', $e->getMessage() );
+        }
+
+        $user = new \App\Models\User( ['cmsperms' => ['page:access']] );
+
+        $this->assertSame( 1, PageAccess::set( [$page->id], [], $user ) );
+    }
+
+
     public function testRestrictionsCanBeReleasedWhenAccessIsUnavailable(): void
     {
         $page = Page::where( 'path', 'hidden' )->firstOrFail();

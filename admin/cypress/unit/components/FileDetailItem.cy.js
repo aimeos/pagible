@@ -64,21 +64,21 @@ describe('FileDetailItem', () => {
   })
 
   it('places the protection switch before the name field', () => {
-    mountDetail({}, { 'file:save': true })
+    mountDetail({}, { 'file:relocate': true })
     cy.get('.field-protect + .v-row input').first().should('have.value', 'photo.jpg')
     cy.get('.field-protect').should('contain', 'Protect access')
   })
 
-  it('hides the protection switch without file:save permission', () => {
+  it('hides the protection switch without file:relocate permission', () => {
     mountDetail()
     cy.get('.field-protect').should('not.exist')
   })
 
-  it('shows the unprotect switch to publishers and hides it from editors', () => {
-    mountDetail({ item: { disk: 'private' } }, { 'file:publish': true })
+  it('shows the protection switch with file:relocate permission', () => {
+    mountDetail({ item: { disk: 'private' } }, { 'file:relocate': true })
     cy.get('.field-protect input[type="checkbox"]').should('be.checked')
 
-    mountDetail({ item: { disk: 'private' } }, { 'file:save': true })
+    mountDetail({ item: { disk: 'private' } }, { 'file:publish': true, 'file:save': true })
     cy.get('.field-protect').should('not.exist')
   })
 
@@ -99,7 +99,7 @@ describe('FileDetailItem', () => {
 
     mountDetail(
       { item: { previews } },
-      { 'file:save': true, 'file:publish': true },
+      { 'file:relocate': true },
       { mutate },
     ).then(() => {
       const wrapper = Cypress.vueWrapper.findComponent(FileDetailItem)

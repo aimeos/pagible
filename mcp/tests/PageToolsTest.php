@@ -39,7 +39,7 @@ class PageToolsTest extends McpTestAbstract
     }
 
 
-    public function testPageMutationToolsRequireViewPermission()
+    public function testPageMutationToolsOnlyRequireTheirActionPermission()
     {
         $user = new \App\Models\User([
             'cmsperms' => ['page:move', 'page:save', 'page:drop', 'page:keep', 'page:publish'],
@@ -52,7 +52,8 @@ class PageToolsTest extends McpTestAbstract
             \Aimeos\Cms\Tools\RestorePage::class,
             \Aimeos\Cms\Tools\PublishPage::class,
         ] as $tool ) {
-            CmsServer::actingAs( $user )->tool( $tool )->assertHasErrors();
+            CmsServer::actingAs( $user )->tool( $tool )
+                ->assertDontSee( 'not found' );
         }
     }
 
@@ -92,7 +93,7 @@ class PageToolsTest extends McpTestAbstract
     {
         $page = Page::where( 'name', 'Home' )->firstOrFail();
         PageAccess::set( [$page->id], ['member'] );
-        $this->user->cmsperms = ['page:view'];
+        $this->user->cmsperms = ['access:view', 'page:view'];
 
         $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\GetPage::class, [
             'id' => $page->id,
@@ -476,6 +477,7 @@ class PageToolsTest extends McpTestAbstract
     public function testSetPageAccess()
     {
         $page = Page::where( 'name', 'Hidden' )->firstOrFail();
+        $this->user = new \App\Models\User( ['cmsperms' => ['page:access']] );
         $tool = fn( ?array $access ) => CmsServer::actingAs($this->user)->tool(
             \Aimeos\Cms\Tools\SetPageAccess::class,
             ['id' => [$page->id], 'access' => $access],
@@ -492,10 +494,10 @@ class PageToolsTest extends McpTestAbstract
     }
 
 
-    public function testSetPageAccessRequiresAccessViewPermission()
+    public function testSetPageAccessRequiresPageAccessPermission()
     {
         $page = Page::where( 'name', 'Hidden' )->firstOrFail();
-        $this->user->cmsperms = ['page:publish'];
+        $this->user->cmsperms = ['page:publish', 'access:view'];
 
         $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\SetPageAccess::class, [
             'id' => [$page->id],

@@ -29,8 +29,7 @@ class PublishFile extends Tool
      */
     public function handle( Request $request ): \Laravel\Mcp\ResponseFactory
     {
-        if( !Permission::can( 'file:publish', $request->user() )
-            || !Permission::can( 'file:view', $request->user() ) ) {
+        if( !Permission::can( 'file:publish', $request->user() ) ) {
             throw new \Aimeos\Cms\Exception( 'Insufficient permissions' );
         }
 
@@ -102,7 +101,6 @@ class PublishFile extends Tool
      */
     public function shouldRegister( Request $request ) : bool
     {
-        return Permission::can( 'file:publish', $request->user() )
-            && Permission::can( 'file:view', $request->user() );
+        return Permission::can( 'file:publish', $request->user() );
     }
 }

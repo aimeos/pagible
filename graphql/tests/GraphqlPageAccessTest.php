@@ -83,11 +83,11 @@ class GraphqlPageAccessTest extends GraphqlTestAbstract
     }
 
 
-    public function testAccessValuesRequireAccessViewPermission(): void
+    public function testAccessValuesRequirePageAccessPermission(): void
     {
         $page = Page::where( 'path', 'hidden' )->firstOrFail();
         PageAccess::set( [$page->id], ['member'] );
-        $this->user->cmsperms = ['page:view'];
+        $this->user->cmsperms = ['page:view', 'access:view'];
 
         $response = $this->actingAs( $this->user )->graphQL( '
             query($id: ID!) {
@@ -101,7 +101,7 @@ class GraphqlPageAccessTest extends GraphqlTestAbstract
     }
 
 
-    public function testRestrictedFieldDoesNotRequireAccessViewPermission(): void
+    public function testRestrictedFieldDoesNotRequirePageAccessPermission(): void
     {
         $page = Page::where( 'path', 'hidden' )->firstOrFail();
         PageAccess::set( [$page->id], ['member'] );
@@ -217,10 +217,10 @@ class GraphqlPageAccessTest extends GraphqlTestAbstract
     }
 
 
-    public function testMutationRequiresAccessViewPermission(): void
+    public function testMutationRequiresPageAccessPermission(): void
     {
         $page = Page::where( 'path', 'hidden' )->firstOrFail();
-        $this->user->cmsperms = ['page:view', 'page:publish'];
+        $this->user->cmsperms = ['page:view', 'page:publish', 'access:view'];
 
         $this->actingAs( $this->user )->graphQL( '
             mutation($id: [ID!]!, $access: [String!]) {
@@ -231,17 +231,19 @@ class GraphqlPageAccessTest extends GraphqlTestAbstract
     }
 
 
-    public function testMutationRequiresPublishPermission(): void
+    public function testMutationOnlyRequiresPageAccessPermission(): void
     {
         $page = Page::where( 'path', 'hidden' )->firstOrFail();
-        $this->user->cmsperms = ['page:view', 'access:view'];
+        $this->user = new \App\Models\User( ['cmsperms' => ['page:access']] );
 
         $this->actingAs( $this->user )->graphQL( '
             mutation($id: [ID!]!, $access: [String!]) {
                 setPageAccess(id: $id, access: $access)
             }
         ', ['id' => [$page->id], 'access' => []] )
-            ->assertGraphQLErrorMessage( 'Insufficient permissions' );
+            ->assertGraphQLErrorFree();
+
+        $this->assertSame( [''], PageAccess::where( 'page_id', $page->id )->pluck( 'value' )->all() );
     }
 
 

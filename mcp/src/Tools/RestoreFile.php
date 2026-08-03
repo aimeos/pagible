@@ -29,8 +29,7 @@ class RestoreFile extends Tool
      */
     public function handle( Request $request ): \Laravel\Mcp\ResponseFactory
     {
-        if( !Permission::can( 'file:keep', $request->user() )
-            || !Permission::can( 'file:view', $request->user() ) ) {
+        if( !Permission::can( 'file:keep', $request->user() ) ) {
             throw new \Aimeos\Cms\Exception( 'Insufficient permissions' );
         }
 
@@ -82,7 +81,6 @@ class RestoreFile extends Tool
      */
     public function shouldRegister( Request $request ) : bool
     {
-        return Permission::can( 'file:keep', $request->user() )
-            && Permission::can( 'file:view', $request->user() );
+        return Permission::can( 'file:keep', $request->user() );
     }
 }

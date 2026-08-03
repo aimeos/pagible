@@ -58,6 +58,8 @@ class GraphqlAccessTest extends GraphqlTestAbstract
 
     public function testReturnsSortedAccessValues(): void
     {
+        $this->user->cmsperms = ['access:view'];
+
         $this->actingAs( $this->user )->graphQL( '{ access }' )
             ->assertExactJson( ['data' => ['access' => ['alpha', 'beta']]] );
     }
@@ -74,16 +76,12 @@ class GraphqlAccessTest extends GraphqlTestAbstract
     }
 
 
-    public function testReturnsAccessValuesForContentEditors(): void
+    public function testReturnsAccessValuesForPageAccessEditors(): void
     {
-        foreach( ['page:save', 'element:save'] as $permission )
-        {
-            $user = clone $this->user;
-            $user->cmsperms = [$permission];
+        $this->user->cmsperms = ['page:access'];
 
-            $this->actingAs( $user )->graphQL( '{ access }' )
-                ->assertExactJson( ['data' => ['access' => ['alpha', 'beta']]] );
-        }
+        $this->actingAs( $this->user )->graphQL( '{ access }' )
+            ->assertExactJson( ['data' => ['access' => ['alpha', 'beta']]] );
     }
 
 
@@ -111,7 +109,7 @@ class GraphqlAccessTest extends GraphqlTestAbstract
     }
 
 
-    public function testRequiresViewPermission(): void
+    public function testRequiresCatalogOrPageAccessPermission(): void
     {
         $this->user->cmsperms = ['access:add', 'access:delete'];
 

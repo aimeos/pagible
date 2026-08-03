@@ -198,11 +198,12 @@ class GraphqlPageTest extends GraphqlTestAbstract
     }
 
 
-    public function testPageMutationsRequireViewPermission()
+    public function testPageMutationPermissionsDiscloseResultsWithoutViewPermission()
     {
         $page = Page::where( 'tag', 'root' )->firstOrFail();
         $user = new \App\Models\User( ['cmsperms' => [
             'page:move', 'page:save', 'page:drop', 'page:keep', 'page:purge', 'page:publish',
+            'element:publish', 'file:publish',
         ]] );
 
         foreach( [
@@ -211,11 +212,11 @@ class GraphqlPageTest extends GraphqlTestAbstract
             'bulkPage(id: ["' . $page->id . '"], input: {}) { ids }',
             'dropPage(id: ["' . $page->id . '"]) { id }',
             'keepPage(id: ["' . $page->id . '"]) { id }',
-            'purgePage(id: ["' . $page->id . '"]) { id }',
             'pubPage(id: ["' . $page->id . '"]) { id }',
+            'purgePage(id: ["' . $page->id . '"]) { id }',
         ] as $mutation ) {
             $this->actingAs( $user )->graphQL( 'mutation {' . $mutation . '}' )
-                ->assertGraphQLErrorMessage( 'Insufficient permissions' );
+                ->assertGraphQLErrorFree();
         }
     }
 

@@ -29,8 +29,7 @@ class SaveElement extends Tool
      */
     public function handle( Request $request ): \Laravel\Mcp\ResponseFactory
     {
-        if( !Permission::can( 'element:save', $request->user() )
-            || !Permission::can( 'element:view', $request->user() ) ) {
+        if( !Permission::can( 'element:save', $request->user() ) ) {
             throw new \Aimeos\Cms\Exception( 'Insufficient permissions' );
         }
 
@@ -100,7 +99,6 @@ class SaveElement extends Tool
      */
     public function shouldRegister( Request $request ) : bool
     {
-        return Permission::can( 'element:save', $request->user() )
-            && Permission::can( 'element:view', $request->user() );
+        return Permission::can( 'element:save', $request->user() );
     }
 }

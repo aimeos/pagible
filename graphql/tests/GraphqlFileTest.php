@@ -181,7 +181,7 @@ class GraphqlFileTest extends GraphqlTestAbstract
     }
 
 
-    public function testFileMutationsRequireViewPermission()
+    public function testFileMutationPermissionsDiscloseResultsWithoutViewPermission()
     {
         $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
         $user = new \App\Models\User( ['cmsperms' => [
@@ -190,15 +190,14 @@ class GraphqlFileTest extends GraphqlTestAbstract
 
         foreach( [
             'saveFile(id: "' . $file->id . '", input: {}) { id }',
-            'relocateFile(id: ["' . $file->id . '"], disk: private) { id }',
             'bulkFile(id: ["' . $file->id . '"], input: {}) { ids }',
             'dropFile(id: ["' . $file->id . '"]) { id }',
             'keepFile(id: ["' . $file->id . '"]) { id }',
-            'purgeFile(id: ["' . $file->id . '"]) { id }',
             'pubFile(id: ["' . $file->id . '"]) { id }',
+            'purgeFile(id: ["' . $file->id . '"]) { id }',
         ] as $mutation ) {
             $this->actingAs( $user )->graphQL( 'mutation {' . $mutation . '}' )
-                ->assertGraphQLErrorMessage( 'Insufficient permissions' );
+                ->assertGraphQLErrorFree();
         }
     }
 
@@ -207,7 +206,8 @@ class GraphqlFileTest extends GraphqlTestAbstract
     {
         $ids = array_map( strval(...), range( 1, Resource::MAX_RELOCATE + 1 ) );
 
-        $response = $this->actingAs( $this->user )->graphQL( '
+        $relocator = new \App\Models\User( ['cmsperms' => ['file:relocate']] );
+        $response = $this->actingAs( $relocator )->graphQL( '
             mutation($id: [ID!]!) {
                 relocateFile(id: $id, disk: private) {
                     id
@@ -452,7 +452,8 @@ class GraphqlFileTest extends GraphqlTestAbstract
         $response->assertJsonPath( 'data.addFile.disk', 'private' );
         Storage::disk( 'graphql-private' )->assertExists( $path );
 
-        $response = $this->actingAs( $this->user )->graphQL( '
+        $relocator = new \App\Models\User( ['cmsperms' => ['file:relocate']] );
+        $response = $this->actingAs( $relocator )->graphQL( '
             mutation {
                 relocateFile(id: ["' . $id . '"], disk: public) {
                     id

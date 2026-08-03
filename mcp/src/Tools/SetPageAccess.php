@@ -30,9 +30,7 @@ class SetPageAccess extends Tool
      */
     public function handle( Request $request ): \Laravel\Mcp\ResponseFactory
     {
-        if( !Permission::can( 'page:publish', $request->user() )
-            || !Permission::can( 'access:view', $request->user() )
-        ) {
+        if( !Permission::can( 'page:access', $request->user() ) ) {
             throw new \Aimeos\Cms\Exception( 'Insufficient permissions' );
         }
 
@@ -91,7 +89,6 @@ class SetPageAccess extends Tool
      */
     public function shouldRegister( Request $request ) : bool
     {
-        return Permission::can( 'page:publish', $request->user() )
-            && Permission::can( 'access:view', $request->user() );
+        return Permission::can( 'page:access', $request->user() );
     }
 }

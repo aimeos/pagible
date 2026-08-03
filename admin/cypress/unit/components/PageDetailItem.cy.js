@@ -92,9 +92,9 @@ describe('PageDetailItem', () => {
     cy.get('@aside').should('have.been.calledWith', 'count')
   })
 
-  it('shows immediate access management to publishers with catalog access', () => {
+  it('shows immediate access management with page:access permission', () => {
     mountDetail().then(() => {
-      useUserStore().me = { permission: { 'access:view': true, 'page:publish': true } }
+      useUserStore().me = { permission: { 'page:access': true } }
     })
 
     cy.contains('.v-tab', 'Access').click()

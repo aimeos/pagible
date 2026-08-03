@@ -35,7 +35,7 @@ class ElementToolsTest extends McpTestAbstract
     }
 
 
-    public function testElementMutationToolsRequireViewPermission()
+    public function testElementMutationToolsOnlyRequireTheirActionPermission()
     {
         $user = new \App\Models\User([
             'cmsperms' => ['element:save', 'element:drop', 'element:keep', 'element:publish'],
@@ -47,7 +47,8 @@ class ElementToolsTest extends McpTestAbstract
             \Aimeos\Cms\Tools\RestoreElement::class,
             \Aimeos\Cms\Tools\PublishElement::class,
         ] as $tool ) {
-            CmsServer::actingAs( $user )->tool( $tool )->assertHasErrors();
+            CmsServer::actingAs( $user )->tool( $tool )
+                ->assertDontSee( 'not found' );
         }
     }
 

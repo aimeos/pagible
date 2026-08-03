@@ -9,7 +9,6 @@ namespace Aimeos\Cms\GraphQL\Mutations;
 
 use Aimeos\Cms\Exception;
 use Aimeos\Cms\Models\PageAccess;
-use Aimeos\Cms\Permission;
 use Illuminate\Support\Facades\Auth;
 
 
@@ -21,10 +20,6 @@ final class SetPageAccess
      */
     public function __invoke( $rootValue, array $args ) : int
     {
-        if( !Permission::can( 'access:view', Auth::user() ) ) {
-            throw new Exception( 'Insufficient permissions' );
-        }
-
         if( !array_key_exists( 'access', $args ) ) {
             throw new Exception( 'The access value must be provided explicitly.' );
         }

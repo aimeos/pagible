@@ -27,7 +27,7 @@ class RelocateFile extends Tool
      */
     public function handle( Request $request ): \Laravel\Mcp\ResponseFactory
     {
-        if( !Permission::can( 'file:view', $request->user() ) ) {
+        if( !Permission::can( 'file:relocate', $request->user() ) ) {
             throw new \Aimeos\Cms\Exception( 'Insufficient permissions' );
         }
 
@@ -74,6 +74,6 @@ class RelocateFile extends Tool
      */
     public function shouldRegister( Request $request ) : bool
     {
-        return Permission::can( 'file:view', $request->user() );
+        return Permission::can( 'file:relocate', $request->user() );
     }
 }

@@ -154,11 +154,11 @@ class GraphqlElementTest extends GraphqlTestAbstract
     }
 
 
-    public function testElementMutationsRequireViewPermission()
+    public function testElementMutationPermissionsDiscloseResultsWithoutViewPermission()
     {
         $element = Element::where( 'type', 'footer' )->firstOrFail();
         $user = new \App\Models\User( ['cmsperms' => [
-            'element:save', 'element:drop', 'element:keep', 'element:purge', 'element:publish',
+            'element:save', 'element:drop', 'element:keep', 'element:purge', 'element:publish', 'file:publish',
         ]] );
 
         foreach( [
@@ -166,11 +166,11 @@ class GraphqlElementTest extends GraphqlTestAbstract
             'bulkElement(id: ["' . $element->id . '"], input: {}) { ids }',
             'dropElement(id: ["' . $element->id . '"]) { id }',
             'keepElement(id: ["' . $element->id . '"]) { id }',
-            'purgeElement(id: ["' . $element->id . '"]) { id }',
             'pubElement(id: ["' . $element->id . '"]) { id }',
+            'purgeElement(id: ["' . $element->id . '"]) { id }',
         ] as $mutation ) {
             $this->actingAs( $user )->graphQL( 'mutation {' . $mutation . '}' )
-                ->assertGraphQLErrorMessage( 'Insufficient permissions' );
+                ->assertGraphQLErrorFree();
         }
     }
 

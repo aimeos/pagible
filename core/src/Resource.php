@@ -331,8 +331,7 @@ class Resource
             }
         }
 
-        if( $user && ( !Permission::can( 'file:view', $user )
-            || !Permission::can( $disk === 'public' ? 'file:publish' : 'file:save', $user ) ) ) {
+        if( $user && !Permission::can( 'file:relocate', $user ) ) {
             throw new Exception( 'Insufficient permissions' );
         }
 

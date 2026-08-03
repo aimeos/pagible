@@ -269,7 +269,7 @@ export default {
         this.elements = markRaw(elements)
         this.item.content = this.obsolete(this.item.content)
         this.latest = { id: this.latest?.id }
-      }, () => !this.hasChanged, { access: this.user.can('access:view') })
+      }, () => !this.hasChanged, { access: this.user.can('page:access') })
     },
 
     apply(changes) {

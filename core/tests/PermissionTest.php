@@ -30,7 +30,9 @@ class PermissionTest extends CoreTestAbstract
 
         $this->assertIsArray( $actions );
         $this->assertContains( 'page:view', $actions );
+        $this->assertContains( 'page:access', $actions );
         $this->assertContains( 'file:add', $actions );
+        $this->assertContains( 'file:relocate', $actions );
         $this->assertContains( 'image:imagine', $actions );
         $this->assertGreaterThan( 10, count( $actions ) );
     }
@@ -334,8 +336,10 @@ class PermissionTest extends CoreTestAbstract
         $this->assertTrue( Permission::can( 'element:view', $user ) );
         $this->assertTrue( Permission::can( 'element:save', $user ) );
         $this->assertTrue( Permission::can( 'element:publish', $user ) );
+        $this->assertTrue( Permission::can( 'page:access', $user ) );
         $this->assertTrue( Permission::can( 'file:view', $user ) );
         $this->assertTrue( Permission::can( 'file:describe', $user ) );
+        $this->assertTrue( Permission::can( 'file:relocate', $user ) );
     }
 
 
@@ -506,11 +510,12 @@ class PermissionTest extends CoreTestAbstract
 
     public function testCanWithRoleReferencingRole()
     {
-        // editor = ['publisher', '!*:publish', '!*:purge'] in test config
+        // editor = ['publisher', '!*:publish', '!*:purge', '!page:access'] in test config
         $user = new \App\Models\User( ['cmsperms' => ['editor']] );
 
         $this->assertTrue( Permission::can( 'page:view', $user ) );
         $this->assertTrue( Permission::can( 'page:save', $user ) );
+        $this->assertFalse( Permission::can( 'page:access', $user ) );
         $this->assertFalse( Permission::can( 'page:publish', $user ) );
         $this->assertFalse( Permission::can( 'page:purge', $user ) );
         $this->assertFalse( Permission::can( 'element:publish', $user ) );

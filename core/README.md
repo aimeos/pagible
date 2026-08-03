@@ -44,7 +44,7 @@ The storage migration copies and verifies legacy objects before changing their d
 and leaves remote hot-link URLs unchanged. Run upgrades from the CLI during a maintenance window
 with CMS file writes stopped; remote object stores may require several requests per managed path.
 
-Relocation is synchronous and accepts at most 100 unique File IDs per request. Use smaller batches
+Relocation requires `file:relocate`, is synchronous, and accepts at most 100 unique File IDs per request. Use smaller batches
 for large originals or deep File histories. Remote private disks that provide temporary URLs let
 clients download large protected media directly; local private files are streamed by the application.
 
@@ -54,8 +54,8 @@ clients download large protected media directly; local private files are streame
 |------|-------------|
 | `admin` | All permissions (`*`) |
 | `viewer` | View-only access |
-| `publisher` | All except publish and purge |
-| `editor` | All except publish and purge |
+| `publisher` | All content permissions, including publish, purge, relocation, and page access changes |
+| `editor` | Publisher permissions except publish, purge, and immediate page access changes |
 
 ### Stancl tenancy mode
 
@@ -130,9 +130,11 @@ Spatie and Laratrust permission definitions can remain global even when their as
 
 The scoped `Access` instance activates Spatie or Bouncer lazily before its first operation in each tenant context. It clears its catalog and per-user grant results whenever the tenant changes. The fallback path preserves package hooks, `Gate::before()` rules, and explicit denials. The Spatie adapter also clears the user's loaded `roles` and `permissions` relations before its first grant resolution or Gate check in each tenant context, preventing relations from the previous tenant from being reused.
 
-Configured catalogs register `access:view` as a CMS editor capability. Writable catalogs additionally register `access:add` and `access:delete`; `access:*` expands to the capabilities currently available. `Access::add()` creates an immutable value and `Access::delete()` removes up to 250 values. Deleting a value does not rewrite references held by consumers.
+Configured catalogs register `access:view` for catalog discovery. Writable catalogs additionally register `access:add` and `access:delete`; `access:*` expands to the catalog capabilities currently available. `Access::add()` creates an immutable value and `Access::delete()` removes up to 250 values. Deleting a value does not rewrite references held by consumers.
 
 ### Frontend page access
+
+`page:access` is a standard page permission for reading and replacing immediate page restrictions and listing the catalog names needed by the page detail and bulk access dialogs. It is independent from the `Access` catalog permissions and does not expand through `access:*`. The dedicated access-catalog screen still requires only `access:view`. The boolean restricted state remains available to page viewers without disclosing the configured names.
 
 Frontend restrictions are stored independently in `cms_page_access`, with one row per access value and `(page_id, value)` as its composite primary key. Each row also stores `tenant_id`. No rows for a page mean public access, one row with an empty value permits an authenticated user accepted by `Tenancy::allows()` for the current tenant, and one or more non-empty values permit such a user when Laravel Gate grants any one of them. Page models are deliberately not passed to Gate.
 

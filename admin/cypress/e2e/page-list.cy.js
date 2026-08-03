@@ -9,6 +9,7 @@
 const ALL_PERMISSIONS = {
   'access:view': true,
   'cache:clear': true,
+  'page:access': true,
   'page:view': true,
   'page:add': true,
   'page:save': true,
@@ -845,9 +846,9 @@ describe('Page List', () => {
     cy.get('.item-access[title="Access: member"]').should('exist')
   })
 
-  it('hides access values without access:view permission', () => {
+  it('hides access values without page:access permission', () => {
     const me = {
-      permission: JSON.stringify({ 'page:view': true }),
+      permission: JSON.stringify({ 'access:view': true, 'page:view': true }),
       email: 'viewer@example.com',
       name: 'Viewer',
     }

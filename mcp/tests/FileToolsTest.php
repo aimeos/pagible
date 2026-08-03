@@ -37,10 +37,10 @@ class FileToolsTest extends McpTestAbstract
     }
 
 
-    public function testFileMutationToolsRequireViewPermission()
+    public function testFileMutationToolsOnlyRequireTheirActionPermission()
     {
         $user = new \App\Models\User([
-            'cmsperms' => ['file:save', 'file:drop', 'file:keep', 'file:publish'],
+            'cmsperms' => ['file:save', 'file:drop', 'file:keep', 'file:publish', 'file:relocate'],
         ]);
 
         foreach( [
@@ -50,7 +50,8 @@ class FileToolsTest extends McpTestAbstract
             \Aimeos\Cms\Tools\RestoreFile::class,
             \Aimeos\Cms\Tools\PublishFile::class,
         ] as $tool ) {
-            CmsServer::actingAs( $user )->tool( $tool )->assertHasErrors();
+            CmsServer::actingAs( $user )->tool( $tool )
+                ->assertDontSee( 'not found' );
         }
     }
 
@@ -326,7 +327,8 @@ class FileToolsTest extends McpTestAbstract
         ] );
         Storage::disk( 'mcp-relocate-public' )->put( $file->path, 'relocate' );
 
-        $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\RelocateFile::class, [
+        $relocator = new \App\Models\User( ['cmsperms' => ['file:relocate']] );
+        $response = CmsServer::actingAs($relocator)->tool( \Aimeos\Cms\Tools\RelocateFile::class, [
             'id' => $file->id,
             'disk' => 'private',
         ] );

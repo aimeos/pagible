@@ -645,7 +645,7 @@ class ResourceTest extends CoreTestAbstract
     }
 
 
-    public function testRelocateFilesUsesDirectionSpecificPermission()
+    public function testRelocateFilesRequiresRelocatePermission()
     {
         config( [
             'cms.disks.public.name' => 'permission-public',
@@ -665,32 +665,24 @@ class ResourceTest extends CoreTestAbstract
             'path' => $path,
             'editor' => 'test',
         ] );
-        $editor = new \App\Models\User( ['cmsperms' => ['file:view', 'file:save']] );
-        $publisher = new \App\Models\User( ['cmsperms' => ['file:view', 'file:publish']] );
+        $relocator = new \App\Models\User( ['cmsperms' => ['file:relocate']] );
+        $writer = new \App\Models\User( ['cmsperms' => ['file:view', 'file:save', 'file:publish']] );
+
+        try {
+            Resource::relocateFiles( [$file->id], 'private', $writer );
+            $this->fail( 'Expected file relocation to require file:relocate' );
+        } catch( Exception $e ) {
+            $this->assertSame( 'Insufficient permissions', $e->getMessage() );
+        }
 
         $this->assertSame(
             'private',
-            Resource::relocateFiles( [$file->id], 'private', $editor )->firstOrFail()->disk,
+            Resource::relocateFiles( [$file->id], 'private', $relocator )->firstOrFail()->disk,
         );
-
-        try {
-            Resource::relocateFiles( [$file->id], 'public', $editor );
-            $this->fail( 'Expected public relocation to require file:publish' );
-        } catch( Exception $e ) {
-            $this->assertSame( 'Insufficient permissions', $e->getMessage() );
-        }
-
         $this->assertSame(
             'public',
-            Resource::relocateFiles( [$file->id], 'public', $publisher )->firstOrFail()->disk,
+            Resource::relocateFiles( [$file->id], 'public', $relocator )->firstOrFail()->disk,
         );
-
-        try {
-            Resource::relocateFiles( [$file->id], 'private', $publisher );
-            $this->fail( 'Expected private relocation to require file:save' );
-        } catch( Exception $e ) {
-            $this->assertSame( 'Insufficient permissions', $e->getMessage() );
-        }
 
         $this->assertSame( 'public', $file->refresh()->disk );
     }

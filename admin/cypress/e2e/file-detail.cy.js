@@ -18,6 +18,7 @@ const ALL_PERMISSIONS = {
   'file:keep': true,
   'file:purge': true,
   'file:publish': true,
+  'file:relocate': true,
   'file:describe': true,
   'audio:transcribe': true,
   'text:translate': true,

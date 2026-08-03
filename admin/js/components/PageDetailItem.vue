@@ -95,7 +95,7 @@ export default {
           {{ $gettext('Config') }}
         </v-tab>
         <v-tab
-          v-if="user.can('page:publish') && user.can('access:view')"
+          v-if="user.can('page:access')"
           value="access"
           @click="$emit('update:aside', 'count')"
         >
@@ -138,7 +138,7 @@ export default {
         </v-window-item>
 
         <v-window-item
-          v-if="user.can('page:publish') && user.can('access:view')"
+          v-if="user.can('page:access')"
           value="access"
         >
           <PageAccess

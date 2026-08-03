@@ -121,6 +121,10 @@ class PageAccess extends Model
     public static function set( iterable $ids, ?array $access, ?Authenticatable $user = null,
         bool $descendants = false ) : int
     {
+        if( $user && !Permission::can( 'page:access', $user ) ) {
+            throw new Exception( 'Insufficient permissions' );
+        }
+
         $ids = self::ids( $ids );
 
         if( $descendants && count( $ids ) !== 1 ) {

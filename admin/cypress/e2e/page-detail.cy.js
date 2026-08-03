@@ -16,6 +16,7 @@ Cypress.on('uncaught:exception', (err) => {
 
 const ALL_PERMISSIONS = {
   'access:view': true,
+  'page:access': true,
   'page:view': true,
   'page:add': true,
   'page:save': true,
