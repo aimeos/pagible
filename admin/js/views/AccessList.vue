@@ -208,8 +208,9 @@ export default {
     <v-container>
       <v-sheet class="box scroll">
         <div class="header">
-          <div v-if="user.can('access:delete')" class="bulk">
+          <div v-if="user.can('access:delete') || user.can('access:add')" class="bulk">
             <v-checkbox-btn
+              v-if="user.can('access:delete')"
               :model-value="allSelected"
               :disabled="loading || !filtered.length"
               @click.stop="toggleAll()"
@@ -224,28 +225,29 @@ export default {
               variant="text"
               class="btn-delete"
             />
+
+            <v-btn
+              v-if="user.can('access:add')"
+              @click="openAdd()"
+              :title="$gettext('Add access value')"
+              :disabled="loading"
+              :icon="mdiKeyPlus"
+              color="primary"
+              variant="tonal"
+              class="btn-add"
+            />
           </div>
 
-          <v-btn
-            v-if="user.can('access:add')"
-            @click="openAdd()"
-            :title="$gettext('Add access value')"
-            :disabled="loading"
-            :icon="mdiKeyPlus"
-            color="primary"
-            variant="tonal"
-            class="btn-add"
-          />
-
-          <v-text-field
-            v-model="term"
-            :prepend-inner-icon="mdiMagnify"
-            variant="underlined"
-            :label="$gettext('Search for')"
-            hide-details
-            clearable
-            class="search"
-          />
+          <div class="search">
+            <v-text-field
+              v-model="term"
+              :prepend-inner-icon="mdiMagnify"
+              variant="underlined"
+              :label="$gettext('Search for')"
+              hide-details
+              clearable
+            />
+          </div>
         </div>
 
         <v-progress-linear v-if="loading" indeterminate color="primary" />
@@ -334,25 +336,13 @@ export default {
   overflow-y: auto;
 }
 
-.header {
-  align-items: center;
-  display: flex;
-  gap: 8px;
-  min-height: 64px;
-  padding: 0 12px;
-}
-
-.bulk {
-  align-items: center;
-  display: flex;
-}
-
-.search {
-  margin-inline-start: auto;
-}
-
 .items {
+  margin: 0;
   padding: 0;
+}
+
+.items .v-list-item {
+  padding: 4px 0;
 }
 
 .item-title {
@@ -372,18 +362,5 @@ export default {
 
 .warning p {
   margin: 0;
-}
-
-@media (max-width: 600px) {
-  .header {
-    flex-wrap: wrap;
-    padding-bottom: 8px;
-  }
-
-  .search {
-    flex-basis: 100%;
-    max-width: none;
-    order: 2;
-  }
 }
 </style>

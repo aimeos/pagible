@@ -62,6 +62,23 @@ describe('Access list', () => {
 
     cy.get('.v-app-bar-title').should('contain', 'Access')
     cy.get('.search').should('have.css', 'max-width', '480px')
+    cy.get('.search').children('.v-text-field').should('exist')
+    cy.get('.header .bulk').within(() => {
+      cy.get('.v-checkbox-btn').then(($checkbox) => {
+        cy.get('.btn-add').then(($button) => {
+          expect($button[0].getBoundingClientRect().left).to.equal(
+            $checkbox[0].getBoundingClientRect().right
+          )
+        })
+      })
+    })
+    cy.get('.header .v-checkbox-btn').then(($selectAll) => {
+      cy.get('.items .v-checkbox-btn').first().then(($entry) => {
+        expect($entry[0].getBoundingClientRect().left).to.equal(
+          $selectAll[0].getBoundingClientRect().left
+        )
+      })
+    })
     cy.get('.item-title').should('have.length', 2)
     cy.get('.search input').type('mem')
     cy.get('.item-title').should('have.length', 1).and('contain', 'member')
