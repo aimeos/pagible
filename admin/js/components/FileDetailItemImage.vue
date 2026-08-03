@@ -1048,8 +1048,12 @@ export default {
 }
 
 .element.checkered {
+  width: 100%;
+  min-height: 180px;
+  object-fit: contain;
   background-color: #fff;
   background-image: conic-gradient(#ccc 25%, #fff 0 50%, #ccc 0 75%, #fff 0);
+  background-repeat: repeat;
   background-size: 16px 16px;
 }
 
