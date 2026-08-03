@@ -56,7 +56,7 @@ final class Query
 
         Filter::elements( $search, $filter + $args );
 
-        $allowed = ['id', 'lang', 'name', 'type', 'editor'];
+        $allowed = ['id', 'latest_id', 'lang', 'name', 'type', 'editor'];
         $this->sort( $search, $args['sort'] ?? [], $allowed, 'id', 'desc' );
 
         return $search->paginate( $limit, 'page', $page );
@@ -103,7 +103,7 @@ final class Query
 
         Filter::files( $search, $filter + $args );
 
-        $allowed = ['id', 'name', 'mime', 'lang', 'editor', 'byversions_count'];
+        $allowed = ['id', 'latest_id', 'name', 'mime', 'lang', 'editor', 'byversions_count'];
         $this->sort( $search, $args['sort'] ?? [], $allowed, 'id', 'desc' );
 
         return $search->paginate( $limit, 'page', $page );

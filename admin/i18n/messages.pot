@@ -607,14 +607,12 @@ msgstr ""
 msgid "oldest"
 msgstr ""
 
-#: js/components/PageListItems.vue:385
-#: js/components/PageListItems.vue:1697
-msgid "Edited last"
+#: js/components/ListSort.vue:27
+msgid "Latest edit"
 msgstr ""
 
-#: js/components/PageListItems.vue:386
-#: js/components/PageListItems.vue:1702
-msgid "Edited first"
+#: js/components/ListSort.vue:31
+msgid "Oldest edit"
 msgstr ""
 
 #: js/components/ElementListItems.vue:804

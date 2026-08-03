@@ -67,7 +67,7 @@ extend type Query {
     @find
 
   "Get available element items"
-  elements(filter: ElementFilter, sort: _ @orderBy(columns: ["id", "lang", "name", "type", "editor"]), publish: Publish, trashed: Trashed): [Element!]
+  elements(filter: ElementFilter, sort: _ @orderBy(columns: ["id", "latest_id", "lang", "name", "type", "editor"]), publish: Publish, trashed: Trashed): [Element!]
     @paginate(resolver: "\\Aimeos\\Cms\\GraphQL\\Query@elements", defaultCount: 100)
     @guard @cmsPermission(action: "element:view") @throttle(name: "cms-graphql")
 
@@ -78,7 +78,7 @@ extend type Query {
     @find
 
   "Get available files"
-  files(filter: FileFilter, sort: _ @orderBy(columns: ["id", "name", "mime", "lang", "editor", "byversions_count"]), publish: Publish, trashed: Trashed): [File!]
+  files(filter: FileFilter, sort: _ @orderBy(columns: ["id", "latest_id", "name", "mime", "lang", "editor", "byversions_count"]), publish: Publish, trashed: Trashed): [File!]
     @paginate(resolver: "\\Aimeos\\Cms\\GraphQL\\Query@files", defaultCount: 100)
     @guard @cmsPermission(action: "file:view") @throttle(name: "cms-graphql")
 }

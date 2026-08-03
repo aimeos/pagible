@@ -12,14 +12,13 @@ import {
   mdiDeleteForever,
   mdiPlus,
   mdiMagnify,
-  mdiMenuDown,
-  mdiSort,
   mdiClockOutline,
   mdiRefresh,
   mdiPencil
 } from '@mdi/js'
 import SchemaItems from './SchemaItems.vue'
 import EditBulkDialog from './EditBulkDialog.vue'
+import ListSort from './ListSort.vue'
 import { FILE_FIELDS, normalizeFile } from '../files'
 import { useUserStore, useMessageStore, useChangeStore } from '../stores'
 import { debounce, frozenParse, safeParse } from '../utils'
@@ -131,10 +130,21 @@ const FETCH_ELEMENTS = gql`
   }
 `
 
+const SORT_OPTIONS = Object.freeze([
+  { column: 'ID', order: 'DESC', label: 'latest' },
+  { column: 'ID', order: 'ASC', label: 'oldest' },
+  { column: 'LATEST_ID', order: 'DESC', label: 'Latest edit' },
+  { column: 'LATEST_ID', order: 'ASC', label: 'Oldest edit' },
+  { column: 'NAME', order: 'ASC', label: 'name' },
+  { column: 'TYPE', order: 'ASC', label: 'type' },
+  { column: 'EDITOR', order: 'ASC', label: 'editor' }
+])
+
 export default {
   components: {
     SchemaItems,
-    EditBulkDialog
+    EditBulkDialog,
+    ListSort
   },
 
   props: {
@@ -185,11 +195,10 @@ export default {
       mdiDeleteForever,
       mdiPlus,
       mdiMagnify,
-      mdiMenuDown,
-      mdiSort,
       mdiClockOutline,
       mdiRefresh,
       mdiPencil,
+      sortOptions: SORT_OPTIONS,
       debounce
     }
   },
@@ -523,10 +532,6 @@ export default {
         })
     },
 
-    setSort(column, order) {
-      this.sort = { column, order }
-    },
-
     search() {
       if (!this.user.can('element:view')) {
         this.messages.add(this.$gettext('Permission denied'), 'error')
@@ -779,54 +784,7 @@ export default {
         variant="text"
       />
 
-      <span class="btn-sort">
-        <v-menu>
-          <template #activator="{ props }">
-            <v-btn
-              v-bind="props"
-              :title="$gettext('Sort by')"
-              :append-icon="mdiMenuDown"
-              :prepend-icon="mdiSort"
-              variant="text"
-            >
-              {{
-                sort?.column === 'ID'
-                  ? sort?.order === 'DESC'
-                    ? $gettext('latest')
-                    : $gettext('oldest')
-                  : sort?.column || ''
-              }}
-            </v-btn>
-          </template>
-          <v-list>
-            <v-list-item>
-              <v-btn variant="text" @click="setSort('ID', 'DESC')">{{
-                $gettext('latest')
-              }}</v-btn>
-            </v-list-item>
-            <v-list-item>
-              <v-btn variant="text" @click="setSort('ID', 'ASC')">{{
-                $gettext('oldest')
-              }}</v-btn>
-            </v-list-item>
-            <v-list-item>
-              <v-btn variant="text" @click="setSort('NAME', 'ASC')">{{
-                $gettext('name')
-              }}</v-btn>
-            </v-list-item>
-            <v-list-item>
-              <v-btn variant="text" @click="setSort('TYPE', 'ASC')">{{
-                $gettext('type')
-              }}</v-btn>
-            </v-list-item>
-            <v-list-item>
-              <v-btn variant="text" @click="setSort('EDITOR', 'ASC')">{{
-                $gettext('editor')
-              }}</v-btn>
-            </v-list-item>
-          </v-list>
-        </v-menu>
-      </span>
+      <ListSort v-model="sort" :options="sortOptions" />
     </div>
   </div>
 

@@ -132,6 +132,31 @@ class GraphqlElementTest extends GraphqlTestAbstract
     }
 
 
+    public function testElementsSortModified()
+    {
+        $first = Element::orderBy( 'latest_id' )->take( 2 )->pluck( 'id' )->map( strval(...) )->all();
+        $last = Element::orderByDesc( 'latest_id' )->take( 2 )->pluck( 'id' )->map( strval(...) )->all();
+
+        $this->expectsDatabaseQueryCount( 4 );
+
+        $response = $this->actingAs( $this->user )->graphQL( '{
+            first: elements(sort: [{column: LATEST_ID, order: ASC}], first: 2) {
+                data {
+                    id
+                }
+            }
+            last: elements(sort: [{column: LATEST_ID, order: DESC}], first: 2) {
+                data {
+                    id
+                }
+            }
+        }' );
+
+        $this->assertSame( $first, array_column( $response->json( 'data.first.data' ), 'id' ) );
+        $this->assertSame( $last, array_column( $response->json( 'data.last.data' ), 'id' ) );
+    }
+
+
     public function testElementRelationsRequireTheirViewPermissions()
     {
         $element = Element::where( 'type', 'footer' )->firstOrFail();

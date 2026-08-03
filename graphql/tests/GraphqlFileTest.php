@@ -158,6 +158,31 @@ class GraphqlFileTest extends GraphqlTestAbstract
     }
 
 
+    public function testFilesSortModified()
+    {
+        $first = File::orderBy( 'latest_id' )->take( 2 )->pluck( 'id' )->map( strval(...) )->all();
+        $last = File::orderByDesc( 'latest_id' )->take( 2 )->pluck( 'id' )->map( strval(...) )->all();
+
+        $this->expectsDatabaseQueryCount( 6 );
+
+        $response = $this->actingAs( $this->user )->graphQL( '{
+            first: files(sort: [{column: LATEST_ID, order: ASC}], first: 2) {
+                data {
+                    id
+                }
+            }
+            last: files(sort: [{column: LATEST_ID, order: DESC}], first: 2) {
+                data {
+                    id
+                }
+            }
+        }' );
+
+        $this->assertSame( $first, array_column( $response->json( 'data.first.data' ), 'id' ) );
+        $this->assertSame( $last, array_column( $response->json( 'data.last.data' ), 'id' ) );
+    }
+
+
     public function testFileRelationsRequireAllOwnerViewPermissions()
     {
         $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();

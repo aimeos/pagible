@@ -13,8 +13,6 @@ import {
   mdiMagnify,
   mdiViewGridOutline,
   mdiFormatListBulletedSquare,
-  mdiMenuDown,
-  mdiSort,
   mdiClockOutline,
   mdiLock,
   mdiPlusLock,
@@ -22,6 +20,7 @@ import {
   mdiPencil
 } from '@mdi/js'
 import EditBulkDialog from './EditBulkDialog.vue'
+import ListSort from './ListSort.vue'
 import { ADD_FILE, FILE_FIELDS, normalizeFile } from '../files'
 import { useAppStore, useUserStore, useMessageStore, useChangeStore } from '../stores'
 import { debounce, fileurl, filesrcset } from '../utils'
@@ -104,9 +103,22 @@ const FETCH_FILES = gql`
   }
 `
 
+const SORT_OPTIONS = Object.freeze([
+  { column: 'ID', order: 'DESC', label: 'latest' },
+  { column: 'ID', order: 'ASC', label: 'oldest' },
+  { column: 'LATEST_ID', order: 'DESC', label: 'Latest edit' },
+  { column: 'LATEST_ID', order: 'ASC', label: 'Oldest edit' },
+  { column: 'NAME', order: 'ASC', label: 'name' },
+  { column: 'MIME', order: 'ASC', label: 'mime' },
+  { column: 'LANG', order: 'ASC', label: 'language' },
+  { column: 'EDITOR', order: 'ASC', label: 'editor' },
+  { column: 'BYVERSIONS_COUNT', order: 'ASC', label: 'usage' }
+])
+
 export default {
   components: {
-    EditBulkDialog
+    EditBulkDialog,
+    ListSort
   },
 
   props: {
@@ -161,13 +173,12 @@ export default {
       mdiMagnify,
       mdiViewGridOutline,
       mdiFormatListBulletedSquare,
-      mdiMenuDown,
-      mdiSort,
       mdiClockOutline,
       mdiLock,
       mdiPlusLock,
       mdiRefresh,
       mdiPencil,
+      sortOptions: SORT_OPTIONS,
       debounce,
       fileurl,
       filesrcset
@@ -212,22 +223,6 @@ export default {
 
     isTrashed() {
       return this.items.some((item) => this.checked.has(item.id) && item.deleted_at)
-    },
-
-    order() {
-      if(this.sort?.column === 'ID') {
-        return this.sort?.order === 'DESC' ? this.$gettext('latest') : this.$gettext('oldest')
-      }
-
-      const labels = {
-        'BYVERSIONS_COUNT': this.$gettext('usage'),
-        'EDITOR': this.$gettext('editor'),
-        'LANG': this.$gettext('language'),
-        'MIME': this.$gettext('mime'),
-        'NAME': this.$gettext('name'),
-      }
-
-      return labels[this.sort?.column] || this.sort?.column || ''
     }
   },
 
@@ -534,10 +529,6 @@ export default {
         })
     },
 
-    setSort(column, order) {
-      this.sort = { column, order }
-    },
-
     search() {
       if (!this.user.can('file:view')) {
         this.messages.add(this.$gettext('Permission denied'), 'error')
@@ -809,57 +800,7 @@ export default {
         variant="text"
       />
 
-      <span class="btn-sort">
-        <v-menu>
-          <template #activator="{ props }">
-            <v-btn
-              v-bind="props"
-              :title="$gettext('Sort by')"
-              :append-icon="mdiMenuDown"
-              :prepend-icon="mdiSort"
-              variant="text"
-              >{{ order }}</v-btn
-            >
-          </template>
-          <v-list>
-            <v-list-item>
-              <v-btn variant="text" @click="setSort('ID', 'DESC')">{{
-                $gettext('latest')
-              }}</v-btn>
-            </v-list-item>
-            <v-list-item>
-              <v-btn variant="text" @click="setSort('ID', 'ASC')">{{
-                $gettext('oldest')
-              }}</v-btn>
-            </v-list-item>
-            <v-list-item>
-              <v-btn variant="text" @click="setSort('NAME', 'ASC')">{{
-                $gettext('name')
-              }}</v-btn>
-            </v-list-item>
-            <v-list-item>
-              <v-btn variant="text" @click="setSort('MIME', 'ASC')">{{
-                $gettext('mime')
-              }}</v-btn>
-            </v-list-item>
-            <v-list-item>
-              <v-btn variant="text" @click="setSort('LANG', 'ASC')">{{
-                $gettext('language')
-              }}</v-btn>
-            </v-list-item>
-            <v-list-item>
-              <v-btn variant="text" @click="setSort('EDITOR', 'ASC')">{{
-                $gettext('editor')
-              }}</v-btn>
-            </v-list-item>
-            <v-list-item>
-              <v-btn variant="text" @click="setSort('BYVERSIONS_COUNT', 'ASC')">{{
-                $gettext('usage')
-              }}</v-btn>
-            </v-list-item>
-          </v-list>
-        </v-menu>
-      </span>
+      <ListSort v-model="sort" :options="sortOptions" />
     </div>
   </div>
 

@@ -485,12 +485,12 @@ msgstr "останній"
 msgid "oldest"
 msgstr "найстаріший"
 
-#: js/components/PageListItems.vue:385 js/components/PageListItems.vue:1697
-msgid "Edited last"
+#: js/components/ListSort.vue:27
+msgid "Latest edit"
 msgstr "змінено останнім"
 
-#: js/components/PageListItems.vue:386 js/components/PageListItems.vue:1702
-msgid "Edited first"
+#: js/components/ListSort.vue:31
+msgid "Oldest edit"
 msgstr "змінено першим"
 
 #: js/components/ElementListItems.vue:804 js/components/FileListItems.vue:236

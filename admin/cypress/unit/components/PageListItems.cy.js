@@ -95,37 +95,35 @@ describe('PageListItems', () => {
     cy.get('.btn-sort button').should('exist')
   })
 
-  it('shows edited first and last sort options in list view', () => {
+  it('shows latest and oldest edit sort options in list view', () => {
     mountList({ filter: { view: 'list' } }, { 'page:view': true })
     cy.get('.btn-sort button').click()
-    cy.get('.v-overlay').should('contain', 'Edited last').and('contain', 'Edited first')
+    cy.get('.v-overlay').should('contain', 'Latest edit').and('contain', 'Oldest edit')
   })
 
-  it('sorts the list by first and last modification', () => {
+  it('sorts the list by latest and oldest edit', () => {
     const query = cy.stub().resolves({
       data: { pages: { data: [], paginatorInfo: { currentPage: 1, lastPage: 1 } } }
     })
 
-    mountList({ filter: { view: 'list' } }, { 'page:view': true }, { query }).then(({ wrapper }) => {
-      const vm = wrapper.findComponent(PageListItems).vm
+    mountList({ filter: { view: 'list' } }, { 'page:view': true }, { query })
 
-      vm.setSort('LATEST_ID', 'DESC')
+    cy.get('.btn-sort button').click()
+    cy.contains('.v-overlay .v-btn', 'Latest edit').click()
+    cy.get('.btn-sort button').should('contain', 'Latest edit')
+    cy.then(() => {
+      expect(query.lastCall.args[0].variables.sort).to.deep.equal([
+        { column: 'LATEST_ID', order: 'DESC' }
+      ])
+    })
 
-      return vm.$nextTick().then(() => {
-        expect(vm.order).to.equal('Edited last')
-        expect(query.lastCall.args[0].variables.sort).to.deep.equal([
-          { column: 'LATEST_ID', order: 'DESC' }
-        ])
-
-        vm.setSort('LATEST_ID', 'ASC')
-
-        return vm.$nextTick().then(() => {
-          expect(vm.order).to.equal('Edited first')
-          expect(query.lastCall.args[0].variables.sort).to.deep.equal([
-            { column: 'LATEST_ID', order: 'ASC' }
-          ])
-        })
-      })
+    cy.get('.btn-sort button').click()
+    cy.contains('.v-overlay .v-btn', 'Oldest edit').click()
+    cy.get('.btn-sort button').should('contain', 'Oldest edit')
+    cy.then(() => {
+      expect(query.lastCall.args[0].variables.sort).to.deep.equal([
+        { column: 'LATEST_ID', order: 'ASC' }
+      ])
     })
   })
 

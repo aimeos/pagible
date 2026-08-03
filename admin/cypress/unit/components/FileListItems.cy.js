@@ -56,6 +56,32 @@ describe('FileListItems', () => {
     cy.get('.btn-sort button').should('exist')
   })
 
+  it('sorts by latest and oldest edit', () => {
+    const query = cy.stub().resolves({
+      data: { files: { data: [], paginatorInfo: { lastPage: 1 } } }
+    })
+
+    mountList({}, { 'file:view': true }, { query })
+
+    cy.get('.btn-sort button').click()
+    cy.contains('.v-overlay .v-btn', 'Latest edit').click()
+    cy.get('.btn-sort button').should('contain', 'Latest edit')
+    cy.then(() => {
+      expect(query.lastCall.args[0].variables.sort).to.deep.equal([
+        { column: 'LATEST_ID', order: 'DESC' }
+      ])
+    })
+
+    cy.get('.btn-sort button').click()
+    cy.contains('.v-overlay .v-btn', 'Oldest edit').click()
+    cy.get('.btn-sort button').should('contain', 'Oldest edit')
+    cy.then(() => {
+      expect(query.lastCall.args[0].variables.sort).to.deep.equal([
+        { column: 'LATEST_ID', order: 'ASC' }
+      ])
+    })
+  })
+
   it('renders grid/list toggle button', () => {
     mountList({}, { 'file:view': true })
     cy.get('button.btn-grid, button.btn-list').should('exist')

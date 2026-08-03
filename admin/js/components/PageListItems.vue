@@ -15,7 +15,6 @@ import {
   mdiMagnify,
   mdiRefresh,
   mdiMenuDown,
-  mdiSort,
   mdiMenuRight,
   mdiEyeOffOutline,
   mdiContentCut,
@@ -34,6 +33,7 @@ import { Draggable } from '@he-tree/vue'
 import { dragContext } from '@he-tree/vue'
 import PageAccess from './PageAccess.vue'
 import PageBulkDialog from './PageBulkDialog.vue'
+import ListSort from './ListSort.vue'
 import { useAppStore, useUserStore, useLanguageStore, useMessageStore, useChangeStore } from '../stores'
 import { debounce, safeParse, sanitize } from '../utils'
 import { setupEcho, cleanEcho, listEcho } from '../echo'
@@ -239,9 +239,20 @@ const SEARCH_PAGES = gql`
   }
 `
 
+const SORT_OPTIONS = Object.freeze([
+  { column: 'LFT', order: 'ASC', label: 'tree' },
+  { column: 'ID', order: 'DESC', label: 'latest' },
+  { column: 'ID', order: 'ASC', label: 'oldest' },
+  { column: 'LATEST_ID', order: 'DESC', label: 'Latest edit' },
+  { column: 'LATEST_ID', order: 'ASC', label: 'Oldest edit' },
+  { column: 'NAME', order: 'ASC', label: 'name' },
+  { column: 'EDITOR', order: 'ASC', label: 'editor' }
+])
+
 export default {
   components: {
     Draggable,
+    ListSort,
     PageAccess,
     PageBulkDialog
   },
@@ -305,7 +316,6 @@ export default {
       mdiMagnify,
       mdiRefresh,
       mdiMenuDown,
-      mdiSort,
       mdiMenuRight,
       mdiEyeOffOutline,
       mdiContentCut,
@@ -319,6 +329,7 @@ export default {
       mdiLock,
       mdiKeyVariant,
       mdiPencil,
+      sortOptions: SORT_OPTIONS,
       debounce
     }
   },
@@ -373,24 +384,6 @@ export default {
         this.isChecked &&
         this.$refs.tree?.statsFlat.some((stat) => stat._checked && stat.data.deleted_at)
       )
-    },
-
-    order() {
-      if (this.sort?.column === 'ID') {
-        return this.sort?.order === 'DESC' ? this.$gettext('latest') : this.$gettext('oldest')
-      }
-
-      if (this.sort?.column === 'LATEST_ID') {
-        return this.sort?.order === 'DESC' ? this.$gettext('Edited last') : this.$gettext('Edited first')
-      }
-
-      const labels = {
-        EDITOR: this.$gettext('editor'),
-        LFT: this.$gettext('tree'),
-        NAME: this.$gettext('name')
-      }
-
-      return labels[this.sort?.column] || this.sort?.column || ''
     }
   },
 
@@ -1375,10 +1368,6 @@ export default {
         })
     },
 
-    setSort(column, order) {
-      this.sort = { column, order }
-    },
-
     status(stat, val) {
       if (!this.user.can('page:save')) {
         this.messages.add(this.$gettext('Permission denied'), 'error')
@@ -1660,59 +1649,7 @@ export default {
       class="btn-reload no-rtl"
     />
 
-    <span class="btn-sort" v-if="filter.view === 'list'">
-      <v-menu>
-        <template #activator="{ props }">
-          <v-btn
-            v-bind="props"
-            :title="$gettext('Sort by')"
-            :aria-label="$gettext('Sort by')"
-            :append-icon="mdiMenuDown"
-            :prepend-icon="mdiSort"
-            variant="text"
-          >
-            {{ order }}
-          </v-btn>
-        </template>
-        <v-list>
-          <v-list-item>
-            <v-btn variant="text" @click="setSort('LFT', 'ASC')">{{
-              $gettext('tree')
-            }}</v-btn>
-          </v-list-item>
-          <v-list-item>
-            <v-btn variant="text" @click="setSort('ID', 'DESC')">{{
-              $gettext('latest')
-            }}</v-btn>
-          </v-list-item>
-          <v-list-item>
-            <v-btn variant="text" @click="setSort('ID', 'ASC')">{{
-              $gettext('oldest')
-            }}</v-btn>
-          </v-list-item>
-          <v-list-item>
-            <v-btn variant="text" @click="setSort('LATEST_ID', 'DESC')">{{
-              $gettext('Edited last')
-            }}</v-btn>
-          </v-list-item>
-          <v-list-item>
-            <v-btn variant="text" @click="setSort('LATEST_ID', 'ASC')">{{
-              $gettext('Edited first')
-            }}</v-btn>
-          </v-list-item>
-          <v-list-item>
-            <v-btn variant="text" @click="setSort('NAME', 'ASC')">{{
-              $gettext('name')
-            }}</v-btn>
-          </v-list-item>
-          <v-list-item>
-            <v-btn variant="text" @click="setSort('EDITOR', 'ASC')">{{
-              $gettext('editor')
-            }}</v-btn>
-          </v-list-item>
-        </v-list>
-      </v-menu>
-    </span>
+    <ListSort v-if="filter.view === 'list'" v-model="sort" :options="sortOptions" />
   </div>
 
   <Draggable

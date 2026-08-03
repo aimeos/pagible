@@ -50,6 +50,39 @@ describe('ElementListItems', () => {
     cy.get('.btn-sort button').should('exist')
   })
 
+  it('shows the translated active sort option', () => {
+    mountList({}, { 'element:view': true })
+    cy.get('.btn-sort button').click()
+    cy.contains('.v-overlay .v-btn', 'name').click()
+    cy.get('.btn-sort button').should('contain', 'name').and('not.contain', 'NAME')
+  })
+
+  it('sorts by latest and oldest edit', () => {
+    const query = cy.stub().resolves({
+      data: { elements: { data: [], paginatorInfo: { lastPage: 1 } } }
+    })
+
+    mountList({}, { 'element:view': true }, { query })
+
+    cy.get('.btn-sort button').click()
+    cy.contains('.v-overlay .v-btn', 'Latest edit').click()
+    cy.get('.btn-sort button').should('contain', 'Latest edit')
+    cy.then(() => {
+      expect(query.lastCall.args[0].variables.sort).to.deep.equal([
+        { column: 'LATEST_ID', order: 'DESC' }
+      ])
+    })
+
+    cy.get('.btn-sort button').click()
+    cy.contains('.v-overlay .v-btn', 'Oldest edit').click()
+    cy.get('.btn-sort button').should('contain', 'Oldest edit')
+    cy.then(() => {
+      expect(query.lastCall.args[0].variables.sort).to.deep.equal([
+        { column: 'LATEST_ID', order: 'ASC' }
+      ])
+    })
+  })
+
   it('renders checkbox for bulk selection', () => {
     mountList({}, { 'element:view': true })
     cy.get('.v-checkbox-btn').should('exist')
