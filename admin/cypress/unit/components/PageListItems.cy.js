@@ -95,10 +95,14 @@ describe('PageListItems', () => {
     cy.get('.btn-sort button').should('exist')
   })
 
-  it('shows latest and oldest edit sort options in list view', () => {
+  it('shows title-case sort options in list view', () => {
     mountList({ filter: { view: 'list' } }, { 'page:view': true })
     cy.get('.btn-sort button').click()
-    cy.get('.v-overlay').should('contain', 'Latest edit').and('contain', 'Oldest edit')
+    cy.get('.v-overlay .v-btn').then(($buttons) => {
+      expect([...$buttons].map((button) => button.textContent.trim())).to.deep.equal([
+        'Tree', 'Latest', 'Oldest', 'Latest edit', 'Oldest edit', 'Name', 'Editor'
+      ])
+    })
   })
 
   it('sorts the list by latest and oldest edit', () => {

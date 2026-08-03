@@ -131,13 +131,13 @@ const FETCH_ELEMENTS = gql`
 `
 
 const SORT_OPTIONS = Object.freeze([
-  { column: 'ID', order: 'DESC', label: 'latest' },
-  { column: 'ID', order: 'ASC', label: 'oldest' },
+  { column: 'ID', order: 'DESC', label: 'Latest' },
+  { column: 'ID', order: 'ASC', label: 'Oldest' },
   { column: 'LATEST_ID', order: 'DESC', label: 'Latest edit' },
   { column: 'LATEST_ID', order: 'ASC', label: 'Oldest edit' },
-  { column: 'NAME', order: 'ASC', label: 'name' },
-  { column: 'TYPE', order: 'ASC', label: 'type' },
-  { column: 'EDITOR', order: 'ASC', label: 'editor' }
+  { column: 'NAME', order: 'ASC', label: 'Name' },
+  { column: 'TYPE', order: 'ASC', label: 'Type' },
+  { column: 'EDITOR', order: 'ASC', label: 'Editor' }
 ])
 
 export default {

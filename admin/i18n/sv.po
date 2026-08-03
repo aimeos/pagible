@@ -9,38 +9,39 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: js/ai.js:44 js/ai.js:91 js/ai.js:146 js/components/ElementListItems.vue:232
-#: js/components/ElementListItems.vue:271
-#: js/components/ElementListItems.vue:359
-#: js/components/ElementListItems.vue:395
-#: js/components/ElementListItems.vue:435
-#: js/components/ElementListItems.vue:475
-#: js/components/ElementListItems.vue:524 js/components/Fields.vue:110
-#: js/components/FileAiDialog.vue:154 js/components/FileDetailItem.vue:146
-#: js/components/FileDetailItem.vue:177 js/components/FileDetailItem.vue:211
-#: js/components/FileDetailItem.vue:216 js/components/FileDetailItem.vue:259
+#: js/ai.js:44 js/ai.js:91 js/ai.js:146 js/components/ElementListItems.vue:249
+#: js/components/ElementListItems.vue:288
+#: js/components/ElementListItems.vue:376
+#: js/components/ElementListItems.vue:412
+#: js/components/ElementListItems.vue:452
+#: js/components/ElementListItems.vue:492
+#: js/components/ElementListItems.vue:537 js/components/Fields.vue:119
+#: js/components/FileAiDialog.vue:154 js/components/FileDetailItem.vue:156
+#: js/components/FileDetailItem.vue:194 js/components/FileDetailItem.vue:232
+#: js/components/FileDetailItem.vue:266 js/components/FileDetailItem.vue:271
+#: js/components/FileDetailItem.vue:314
 #: js/components/FileDetailItemImage.vue:383
 #: js/components/FileDetailItemVideo.vue:67
 #: js/components/FileDetailItemVideo.vue:134
 #: js/components/FileDetailItemVideo.vue:171
-#: js/components/FileListItems.vue:246 js/components/FileListItems.vue:306
-#: js/components/FileListItems.vue:394 js/components/FileListItems.vue:427
-#: js/components/FileListItems.vue:464 js/components/FileListItems.vue:504
-#: js/components/FileListItems.vue:553
-#: js/components/PageDetailContentList.vue:370
-#: js/components/PageDetailContentList.vue:469
-#: js/components/PageListItems.vue:387 js/components/PageListItems.vue:458
-#: js/components/PageListItems.vue:533 js/components/PageListItems.vue:628
-#: js/components/PageListItems.vue:699 js/components/PageListItems.vue:764
-#: js/components/PageListItems.vue:885 js/components/PageListItems.vue:909
-#: js/components/PageListItems.vue:1047 js/components/PageListItems.vue:1088
-#: js/components/PageListItems.vue:1165 js/components/PageListItems.vue:1243
-#: js/components/PageListItems.vue:1298 js/fields/File.vue:99
-#: js/fields/Images.vue:113 js/fields/Items.vue:210 js/publish.js:38
-#: js/views/ElementDetail.vue:290 js/views/ElementDetail.vue:390
+#: js/components/FileListItems.vue:232 js/components/FileListItems.vue:291
+#: js/components/FileListItems.vue:379 js/components/FileListItems.vue:412
+#: js/components/FileListItems.vue:449 js/components/FileListItems.vue:489
+#: js/components/FileListItems.vue:534
+#: js/components/PageDetailContentList.vue:367
+#: js/components/PageDetailContentList.vue:467
+#: js/components/PageListItems.vue:425 js/components/PageListItems.vue:496
+#: js/components/PageListItems.vue:571 js/components/PageListItems.vue:666
+#: js/components/PageListItems.vue:737 js/components/PageListItems.vue:802
+#: js/components/PageListItems.vue:935 js/components/PageListItems.vue:963
+#: js/components/PageListItems.vue:1095 js/components/PageListItems.vue:1136
+#: js/components/PageListItems.vue:1244 js/components/PageListItems.vue:1322
+#: js/components/PageListItems.vue:1373 js/fields/File.vue:104
+#: js/fields/Images.vue:118 js/fields/Items.vue:211 js/publish.js:38
+#: js/views/ElementDetail.vue:272 js/views/ElementDetail.vue:372
 #: js/views/FileDetail.vue:260 js/views/FileDetail.vue:338
-#: js/views/PageDetail.vue:500 js/views/PageDetail.vue:591
-#: js/views/PageDetail.vue:700 js/views/PageList.vue:212
+#: js/views/PageDetail.vue:488 js/views/PageDetail.vue:579
+#: js/views/PageDetail.vue:689 js/views/PageList.vue:212
 msgid "Permission denied"
 msgstr "Behörighet nekad"
 
@@ -62,15 +63,15 @@ msgstr "Fel vid generering av text"
 
 #: js/chat.js:32
 msgid "The chat assistant is not available."
-msgstr ""
+msgstr "Chattassistenten är inte tillgänglig."
 
 #: js/chat.js:55
 msgid "A response is already being generated. Please wait for it to finish."
-msgstr ""
+msgstr "Ett svar genereras redan. Vänta tills det är klart."
 
 #: js/chat.js:57
 msgid "Too many requests. Please wait a moment and try again."
-msgstr ""
+msgstr "För många förfrågningar. Vänta ett ögonblick och försök igen."
 
 #: js/components/AsideCount.vue:65
 msgid "Used elements"
@@ -80,7 +81,8 @@ msgstr "Använda element"
 msgid "Filters"
 msgstr "Filter"
 
-#: js/components/AsideList.vue:76 js/components/Fields.vue:314
+#: js/components/AsideList.vue:76 js/components/Fields.vue:326
+#: js/components/Fields.vue:357
 msgid "Reset"
 msgstr "Återställning"
 
@@ -88,18 +90,15 @@ msgstr "Återställning"
 msgid "id"
 msgstr "id"
 
-#: js/components/AsideMeta.vue:25 js/components/FileListItems.vue:235
-#: js/components/FileListItems.vue:854 js/fields/Audio.vue:135
-#: js/fields/File.vue:422 js/fields/Image.vue:192 js/fields/Media.vue:187
-#: js/fields/Video.vue:135
-msgid "mime"
-msgstr "mim"
+#: js/components/AsideMeta.vue:25 js/components/ListSort.vue:28
+#: js/fields/Audio.vue:147 js/fields/File.vue:442 js/fields/Image.vue:204
+#: js/fields/Media.vue:199 js/fields/Video.vue:147
+msgid "MIME"
+msgstr "MIME"
 
-#: js/components/AsideMeta.vue:29 js/components/ElementListItems.vue:814
-#: js/components/FileListItems.vue:233 js/components/FileListItems.vue:864
-#: js/components/PageListItems.vue:1611 js/fields/Audio.vue:139
-#: js/fields/File.vue:426 js/fields/Image.vue:196 js/fields/Media.vue:191
-#: js/fields/Video.vue:139 js/views/ElementList.vue:111
+#: js/components/AsideMeta.vue:29 js/fields/Audio.vue:151
+#: js/fields/File.vue:446 js/fields/Image.vue:208 js/fields/Media.vue:203
+#: js/fields/Video.vue:151 js/views/ElementList.vue:111
 #: js/views/FileList.vue:110 js/views/PageList.vue:178
 msgid "editor"
 msgstr "Redaktör"
@@ -108,9 +107,9 @@ msgstr "Redaktör"
 msgid "created"
 msgstr "skapade"
 
-#: js/components/AsideMeta.vue:39 js/fields/Audio.vue:143
-#: js/fields/File.vue:430 js/fields/Image.vue:200 js/fields/Media.vue:195
-#: js/fields/Video.vue:143
+#: js/components/AsideMeta.vue:39 js/fields/Audio.vue:155
+#: js/fields/File.vue:450 js/fields/Image.vue:212 js/fields/Media.vue:207
+#: js/fields/Video.vue:155
 msgid "updated"
 msgstr "uppdaterad"
 
@@ -137,7 +136,7 @@ msgid "Configuration"
 msgstr "Konfiguration"
 
 #: js/components/ChangesDialog.vue:58 js/components/HistoryDialog.vue:40
-#: js/views/PageDetail.vue:826
+#: js/views/PageDetail.vue:816
 msgid "Content"
 msgstr "Innehåll"
 
@@ -155,23 +154,23 @@ msgstr "%{count} / %{total}"
 
 #: js/components/ChangesDialog.vue:322 js/components/ChatDialog.vue:300
 #: js/components/ChatDialog.vue:301 js/components/EditBulkDialog.vue:60
-#: js/components/ElementListItems.vue:694
-#: js/components/ElementListItems.vue:853 js/components/Fields.vue:277
+#: js/components/ElementListItems.vue:709
+#: js/components/ElementListItems.vue:821 js/components/Fields.vue:289
 #: js/components/FieldsDialog.vue:63 js/components/FileAiDialog.vue:263
-#: js/components/FileDetailItemImage.vue:663
-#: js/components/FileDetailItemImage.vue:771
-#: js/components/FileDetailItemImage.vue:825
-#: js/components/FileDetailItemImage.vue:910
-#: js/components/FileDetailItemImage.vue:1016 js/components/FileDialog.vue:37
-#: js/components/FileListItems.vue:717 js/components/FileListItems.vue:907
+#: js/components/FileDetailItemImage.vue:664
+#: js/components/FileDetailItemImage.vue:772
+#: js/components/FileDetailItemImage.vue:826
+#: js/components/FileDetailItemImage.vue:911
+#: js/components/FileDetailItemImage.vue:1017 js/components/FileDialog.vue:37
+#: js/components/FileListItems.vue:695 js/components/FileListItems.vue:836
 #: js/components/FileUrlDialog.vue:204 js/components/HistoryDialog.vue:473
 #: js/components/PageBulkDialog.vue:142
-#: js/components/PageDetailContentList.vue:890
-#: js/components/PageListItems.vue:1473 js/components/PageListItems.vue:1689
-#: js/components/PageListItems.vue:1915 js/components/SchemaDialog.vue:38
+#: js/components/PageDetailContentList.vue:889
+#: js/components/PageListItems.vue:1557 js/components/PageListItems.vue:1725
+#: js/components/PageListItems.vue:1942 js/components/SchemaDialog.vue:38
 #: js/components/UnsavedDialog.vue:39 js/components/User.vue:121
-#: js/fields/Items.vue:380 js/fields/Items.vue:464 js/fields/Table.vue:211
-#: js/fields/Table.vue:306 js/views/AccessList.vue:276
+#: js/fields/Items.vue:382 js/fields/Items.vue:466 js/fields/Table.vue:212
+#: js/fields/Table.vue:307 js/views/AccessList.vue:276
 #: js/views/AccessList.vue:308
 msgid "Close"
 msgstr "Nära"
@@ -210,49 +209,49 @@ msgstr "Slå ihop båda"
 
 #: js/components/ChatDialog.vue:231
 msgid "Done"
-msgstr ""
+msgstr "Klart"
 
 #: js/components/ChatDialog.vue:239
 msgid "Sorry, something went wrong."
-msgstr ""
+msgstr "Tyvärr, något gick fel."
 
 #: js/components/ChatDialog.vue:288
 msgid "AI Assistant"
-msgstr ""
+msgstr "AI-assistent"
 
 #: js/components/ChatDialog.vue:292 js/components/ChatDialog.vue:293
 msgid "New chat"
-msgstr ""
+msgstr "Ny chatt"
 
 #: js/components/ChatDialog.vue:312 js/views/PageList.vue:284
 msgid "What shall I do for you?"
-msgstr ""
+msgstr "Vad kan jag göra för dig?"
 
-#: js/components/ChatDialog.vue:334 js/components/PageDetailContentList.vue:792
-#: js/components/PageDetailContentList.vue:898
-#: js/components/PageListItems.vue:1737 js/fields/Items.vue:388
+#: js/components/ChatDialog.vue:334 js/components/PageDetailContentList.vue:791
+#: js/components/PageDetailContentList.vue:897
+#: js/components/PageListItems.vue:1764 js/fields/Items.vue:390
 msgid "Copy"
 msgstr "Kopia"
 
 #: js/components/ChatDialog.vue:349
 msgid "Send a message ..."
-msgstr ""
+msgstr "Skicka ett meddelande..."
 
 #: js/components/ChatDialog.vue:363 js/components/ChatDialog.vue:364
-#: js/components/Fields.vue:307 js/components/FileAiDialog.vue:260
-#: js/components/FileDetailItem.vue:418
-#: js/components/PageDetailContentList.vue:762 js/fields/Items.vue:494
+#: js/components/Fields.vue:319 js/components/FileAiDialog.vue:260
+#: js/components/FileDetailItem.vue:481
+#: js/components/PageDetailContentList.vue:761 js/fields/Items.vue:496
 #: js/views/PageList.vue:316
 msgid "Dictate"
 msgstr "Diktera"
 
 #: js/components/ChatDialog.vue:374 js/components/ChatDialog.vue:375
 msgid "Stop"
-msgstr ""
+msgstr "Stoppa"
 
 #: js/components/ChatDialog.vue:384 js/components/ChatDialog.vue:385
 msgid "Send"
-msgstr ""
+msgstr "Skicka"
 
 #: js/components/DetailAppBar.vue:92 js/views/AccessList.vue:189
 #: js/views/ElementList.vue:135 js/views/FileList.vue:134
@@ -281,10 +280,10 @@ msgid "Schedule publishing"
 msgstr "Schemaläggning av publicering"
 
 #: js/components/DetailAppBar.vue:166 js/components/DetailAppBar.vue:174
-#: js/components/ElementListItems.vue:700
-#: js/components/ElementListItems.vue:861 js/components/FileListItems.vue:723
-#: js/components/FileListItems.vue:913 js/components/PageListItems.vue:1479
-#: js/components/PageListItems.vue:1697
+#: js/components/ElementListItems.vue:715
+#: js/components/ElementListItems.vue:829 js/components/FileListItems.vue:701
+#: js/components/FileListItems.vue:842 js/components/PageListItems.vue:1563
+#: js/components/PageListItems.vue:1733
 msgid "Publish"
 msgstr "Publicera"
 
@@ -294,22 +293,23 @@ msgid "Toggle side menu"
 msgstr "Växla sidomeny"
 
 #: js/components/EditBulkDialog.vue:52 js/components/EditBulkDialog.vue:59
-#: js/components/ElementListItems.vue:705
-#: js/components/ElementListItems.vue:876 js/components/FileListItems.vue:728
-#: js/components/FileListItems.vue:928 js/components/PageBulkDialog.vue:134
-#: js/components/PageBulkDialog.vue:141 js/components/PageListItems.vue:1494
-#: js/components/PageListItems.vue:1714
+#: js/components/ElementListItems.vue:720
+#: js/components/ElementListItems.vue:844 js/components/FileListItems.vue:706
+#: js/components/FileListItems.vue:857 js/components/PageBulkDialog.vue:134
+#: js/components/PageBulkDialog.vue:141 js/components/PageListItems.vue:1578
+#: js/components/PageListItems.vue:1741
 msgid "Edit properties"
-msgstr ""
+msgstr "Redigera egenskaper"
 
 #: js/components/EditBulkDialog.vue:65
 msgid "Apply the selected properties to %{num} entry."
 msgid_plural "Apply the selected properties to %{num} entries."
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Tillämpa de valda egenskaperna på %{num} post."
+msgstr[1] "Tillämpa de valda egenskaperna på %{num} poster."
 
 #: js/components/EditBulkDialog.vue:72 js/components/ElementDetailItem.vue:88
-#: js/components/FileDetailItem.vue:340 js/components/PageBulkDialog.vue:185
+#: js/components/FileDetailItem.vue:402 js/components/ListSort.vue:25
+#: js/components/PageBulkDialog.vue:185
 #: js/components/PageDetailItemProps.vue:254 js/components/User.vue:108
 msgid "Language"
 msgstr "Språk"
@@ -317,223 +317,195 @@ msgstr "Språk"
 #: js/components/EditBulkDialog.vue:85 js/components/PageAccess.vue:200
 #: js/components/PageBulkDialog.vue:250
 msgid "Apply"
-msgstr ""
+msgstr "Tillämpa"
 
 #: js/components/ElementDetailItem.vue:75
-#: js/components/ElementDetailRefs.vue:121 js/components/FileDetailItem.vue:327
-#: js/components/FileDetailRefs.vue:136 js/components/FileDetailRefs.vue:158
+#: js/components/ElementDetailRefs.vue:148 js/components/FileDetailItem.vue:389
+#: js/components/FileDetailRefs.vue:152 js/components/FileDetailRefs.vue:182
+#: js/components/ListSort.vue:29
 msgid "Name"
 msgstr "Namn"
 
-#: js/components/ElementDetailRefs.vue:59 js/components/FileDetailRefs.vue:63
+#: js/components/ElementDetailRefs.vue:63 js/components/FileDetailRefs.vue:66
 msgid "yes"
 msgstr "ja"
 
-#: js/components/ElementDetailRefs.vue:62 js/components/FileDetailRefs.vue:66
+#: js/components/ElementDetailRefs.vue:66 js/components/FileDetailRefs.vue:69
 msgid "no"
 msgstr "nej"
 
-#: js/components/ElementDetailRefs.vue:114 js/components/Navigation.vue:26
+#: js/components/ElementDetailRefs.vue:141 js/components/Navigation.vue:26
 #: js/components/SchemaDialog.vue:45 js/routes.js:59
 #: js/views/ElementList.vue:145
 msgid "Shared elements"
 msgstr "Delade element"
 
-#: js/components/ElementDetailRefs.vue:119
-#: js/components/ElementDetailRefs.vue:141 js/components/FileDetailRefs.vue:134
-#: js/components/FileDetailRefs.vue:156 js/components/FileDetailRefs.vue:178
+#: js/components/ElementDetailRefs.vue:146
+#: js/components/ElementDetailRefs.vue:176 js/components/FileDetailRefs.vue:150
+#: js/components/FileDetailRefs.vue:180 js/components/FileDetailRefs.vue:202
 msgid "ID"
 msgstr "ID"
 
-#: js/components/ElementDetailRefs.vue:120 js/components/FileDetailRefs.vue:135
+#: js/components/ElementDetailRefs.vue:147 js/components/FileDetailRefs.vue:151
 msgid "URL"
 msgstr "URL"
 
-#: js/components/ElementDetailRefs.vue:142 js/components/FileDetailRefs.vue:157
-#: js/components/FileDetailRefs.vue:179
+#: js/components/ElementDetailRefs.vue:160 js/components/FileDetailRefs.vue:164
+#: js/components/PageAccess.vue:173 js/components/PageListItems.vue:416
+msgid "Restricted"
+msgstr "Begränsad"
+
+#: js/components/ElementDetailRefs.vue:171 js/components/FileDetailRefs.vue:197
+msgid "Versions"
+msgstr "Versioner"
+
+#: js/components/ElementDetailRefs.vue:177 js/components/FileDetailRefs.vue:181
+#: js/components/FileDetailRefs.vue:203 js/components/ListSort.vue:33
 msgid "Type"
 msgstr "Typ"
 
-#: js/components/ElementDetailRefs.vue:143 js/components/FileDetailRefs.vue:180
+#: js/components/ElementDetailRefs.vue:178 js/components/FileDetailRefs.vue:204
 #: js/views/ElementList.vue:95 js/views/FileList.vue:94
 #: js/views/PageList.vue:144
 msgid "Published"
 msgstr "Publicerad"
 
-#: js/components/ElementListItems.vue:297
+#: js/components/ElementListItems.vue:314
 msgid "Error trashing shared element"
-msgstr "Fel vid bortforsling av delat element"
+msgstr "Fel vid flytt av det delade elementet till papperskorgen"
 
-#: js/components/ElementListItems.vue:386
+#: js/components/ElementListItems.vue:403
 msgid "Error restoring shared element"
 msgstr "Fel vid återställning av delat element"
 
-#: js/components/ElementListItems.vue:426
+#: js/components/ElementListItems.vue:443
 msgid "Error publishing shared element"
 msgstr "Fel vid publicering av delat element"
 
-#: js/components/ElementListItems.vue:461
+#: js/components/ElementListItems.vue:478
 msgid "Error purging shared element"
-msgstr "Fel vid rensning av delat element"
+msgstr "Fel vid permanent borttagning av det delade elementet"
 
-#: js/components/ElementListItems.vue:513
+#: js/components/ElementListItems.vue:530
 msgid "Error saving shared element"
-msgstr ""
+msgstr "Det gick inte att spara delat element"
 
-#: js/components/ElementListItems.vue:599
+#: js/components/ElementListItems.vue:614
 msgid "Error fetching shared elements"
 msgstr "Fel vid hämtning av delade element"
 
-#: js/components/ElementListItems.vue:671 js/components/FileListItems.vue:694
-#: js/components/PageDetailContentList.vue:778
-#: js/components/PageListItems.vue:1451 js/views/AccessList.vue:216
+#: js/components/ElementListItems.vue:686 js/components/FileListItems.vue:672
+#: js/components/PageDetailContentList.vue:777
+#: js/components/PageListItems.vue:1535 js/views/AccessList.vue:216
 #: js/views/AccessList.vue:259
 msgid "Toggle selection"
 msgstr "Växla val"
 
-#: js/components/ElementListItems.vue:676
-#: js/components/ElementListItems.vue:686
-#: js/components/ElementListItems.vue:693
-#: js/components/ElementListItems.vue:836
-#: js/components/ElementListItems.vue:845
-#: js/components/ElementListItems.vue:852 js/components/FileListItems.vue:699
-#: js/components/FileListItems.vue:709 js/components/FileListItems.vue:716
-#: js/components/FileListItems.vue:889 js/components/FileListItems.vue:898
-#: js/components/FileListItems.vue:906
-#: js/components/PageDetailContentList.vue:786
-#: js/components/PageDetailContentList.vue:869
-#: js/components/PageDetailContentList.vue:879
-#: js/components/PageDetailContentList.vue:887
-#: js/components/PageListItems.vue:1465 js/components/PageListItems.vue:1472
-#: js/components/PageListItems.vue:1678 js/components/PageListItems.vue:1686
-#: js/fields/Items.vue:360 js/fields/Items.vue:369 js/fields/Items.vue:377
-#: js/fields/Table.vue:200 js/fields/Table.vue:208 js/fields/Table.vue:295
-#: js/fields/Table.vue:303
+#: js/components/ElementListItems.vue:691
+#: js/components/ElementListItems.vue:701
+#: js/components/ElementListItems.vue:708
+#: js/components/ElementListItems.vue:804
+#: js/components/ElementListItems.vue:813
+#: js/components/ElementListItems.vue:820 js/components/FileListItems.vue:677
+#: js/components/FileListItems.vue:687 js/components/FileListItems.vue:694
+#: js/components/FileListItems.vue:818 js/components/FileListItems.vue:827
+#: js/components/FileListItems.vue:835
+#: js/components/PageDetailContentList.vue:785
+#: js/components/PageDetailContentList.vue:868
+#: js/components/PageDetailContentList.vue:878
+#: js/components/PageDetailContentList.vue:886
+#: js/components/PageListItems.vue:1549 js/components/PageListItems.vue:1556
+#: js/components/PageListItems.vue:1714 js/components/PageListItems.vue:1722
+#: js/fields/Items.vue:362 js/fields/Items.vue:371 js/fields/Items.vue:379
+#: js/fields/Table.vue:201 js/fields/Table.vue:209 js/fields/Table.vue:296
+#: js/fields/Table.vue:304
 msgid "Actions"
 msgstr "Åtgärder"
 
-#: js/components/ElementListItems.vue:710
-#: js/components/ElementListItems.vue:884 js/components/FileListItems.vue:733
-#: js/components/FileListItems.vue:936
-#: js/components/PageDetailContentList.vue:812
-#: js/components/PageDetailContentList.vue:908
-#: js/components/PageListItems.vue:1507 js/components/PageListItems.vue:1820
-#: js/fields/Items.vue:398 js/fields/Table.vue:235 js/fields/Table.vue:330
+#: js/components/ElementListItems.vue:725
+#: js/components/ElementListItems.vue:852 js/components/FileListItems.vue:711
+#: js/components/FileListItems.vue:865
+#: js/components/PageDetailContentList.vue:811
+#: js/components/PageDetailContentList.vue:907
+#: js/components/PageListItems.vue:1591 js/components/PageListItems.vue:1847
+#: js/fields/Items.vue:400 js/fields/Table.vue:236 js/fields/Table.vue:331
 #: js/views/AccessList.vue:221 js/views/AccessList.vue:324
 msgid "Delete"
-msgstr "Skräp"
+msgstr "Ta bort"
 
-#: js/components/ElementListItems.vue:715
-#: js/components/ElementListItems.vue:889 js/components/FileListItems.vue:738
-#: js/components/FileListItems.vue:941 js/components/PageListItems.vue:1512
-#: js/components/PageListItems.vue:1825
+#: js/components/ElementListItems.vue:730
+#: js/components/ElementListItems.vue:857 js/components/FileListItems.vue:716
+#: js/components/FileListItems.vue:870 js/components/PageListItems.vue:1596
+#: js/components/PageListItems.vue:1852
 msgid "Restore"
 msgstr "Återställ"
 
-#: js/components/ElementListItems.vue:720
-#: js/components/ElementListItems.vue:894 js/components/FileListItems.vue:743
-#: js/components/FileListItems.vue:946 js/components/PageListItems.vue:1517
-#: js/components/PageListItems.vue:1830
+#: js/components/ElementListItems.vue:735
+#: js/components/ElementListItems.vue:862 js/components/FileListItems.vue:721
+#: js/components/FileListItems.vue:875 js/components/PageListItems.vue:1601
+#: js/components/PageListItems.vue:1857
 msgid "Purge"
-msgstr "Utrensning"
+msgstr "Ta bort permanent"
 
-#: js/components/ElementListItems.vue:731
-#: js/components/ElementListItems.vue:953
-#: js/components/PageDetailContentList.vue:1009
-#: js/components/PageDetailItemSection.vue:212 js/fields/Items.vue:530
+#: js/components/ElementListItems.vue:746
+#: js/components/ElementListItems.vue:921
+#: js/components/PageDetailContentList.vue:1008
+#: js/components/PageDetailItemSection.vue:212 js/fields/Items.vue:533
 msgid "Add element"
 msgstr "Lägg till element"
 
-#: js/components/ElementListItems.vue:745 js/components/FileListItems.vue:778
-#: js/components/PageDetailContentList.vue:822
-#: js/components/PageListItems.vue:1540 js/views/AccessList.vue:244
+#: js/components/ElementListItems.vue:760 js/components/FileListItems.vue:757
+#: js/components/PageDetailContentList.vue:821
+#: js/components/PageListItems.vue:1624 js/views/AccessList.vue:244
 msgid "Search for"
 msgstr "Sök efter"
 
-#: js/components/ElementListItems.vue:756 js/components/FileListItems.vue:791
-#: js/components/PageListItems.vue:1552
+#: js/components/ElementListItems.vue:771 js/components/FileListItems.vue:770
+#: js/components/PageListItems.vue:1636
 msgid "Updated by another user"
-msgstr ""
+msgstr "Uppdaterad av en annan användare"
 
-#: js/components/ElementListItems.vue:762 js/components/FileListItems.vue:797
-#: js/components/PageListItems.vue:1558
+#: js/components/ElementListItems.vue:777 js/components/FileListItems.vue:776
+#: js/components/PageListItems.vue:1642
 msgid "Refresh"
-msgstr ""
+msgstr "Uppdatera"
 
-#: js/components/ElementListItems.vue:766
+#: js/components/ElementListItems.vue:781
 msgid "Reload elements"
 msgstr "Ladda om element"
 
-#: js/components/ElementListItems.vue:777 js/components/FileListItems.vue:829
-#: js/components/PageListItems.vue:1573 js/components/PageListItems.vue:1574
-msgid "Sort by"
-msgstr "Sortera efter"
-
-#: js/components/ElementListItems.vue:785
-#: js/components/ElementListItems.vue:794 js/components/FileListItems.vue:228
-#: js/components/FileListItems.vue:839 js/components/PageListItems.vue:1582
-#: js/components/PageListItems.vue:1596
-msgid "latest"
-msgstr "senaste"
-
-#: js/components/ElementListItems.vue:786
-#: js/components/ElementListItems.vue:799 js/components/FileListItems.vue:228
-#: js/components/FileListItems.vue:844 js/components/PageListItems.vue:1583
-#: js/components/PageListItems.vue:1601
-msgid "oldest"
-msgstr "äldsta"
-
-#: js/components/ListSort.vue:27
-msgid "Latest edit"
-msgstr "senast ändrad"
-
-#: js/components/ListSort.vue:31
-msgid "Oldest edit"
-msgstr "först ändrad"
-
-#: js/components/ElementListItems.vue:804 js/components/FileListItems.vue:236
-#: js/components/FileListItems.vue:849 js/components/PageListItems.vue:1606
-#: js/fields/Audio.vue:127 js/fields/File.vue:414 js/fields/Image.vue:184
-#: js/fields/Media.vue:179 js/fields/Video.vue:127
-msgid "name"
-msgstr "namn"
-
-#: js/components/ElementListItems.vue:809
-msgid "type"
-msgstr "typ"
-
-#: js/components/ElementListItems.vue:914 js/components/PageListItems.vue:812
-#: js/components/PageListItems.vue:1860
+#: js/components/ElementListItems.vue:882 js/components/PageListItems.vue:850
+#: js/components/PageListItems.vue:1887
 msgid "New"
 msgstr "Ny"
 
-#: js/components/ElementListItems.vue:930 js/components/FileListItems.vue:1052
-#: js/components/HistoryDialog.vue:479 js/components/PageListItems.vue:1874
+#: js/components/ElementListItems.vue:898 js/components/FileListItems.vue:981
+#: js/components/HistoryDialog.vue:479 js/components/PageListItems.vue:1901
 #: js/fields/Autocomplete.vue:181 js/fields/Combobox.vue:27
 #: js/fields/Url.vue:135
 msgid "Loading"
 msgstr "Lastning"
 
-#: js/components/ElementListItems.vue:945 js/components/FileListItems.vue:1068
-#: js/components/PageListItems.vue:1890 js/views/AccessList.vue:266
+#: js/components/ElementListItems.vue:913 js/components/FileListItems.vue:997
+#: js/components/PageListItems.vue:1917 js/views/AccessList.vue:266
 msgid "No entries found"
 msgstr "Inga poster hittades"
 
-#: js/components/Fields.vue:258 js/components/Fields.vue:267
-#: js/components/Fields.vue:276 js/fields/Items.vue:443 js/fields/Items.vue:452
-#: js/fields/Items.vue:461
+#: js/components/Fields.vue:270 js/components/Fields.vue:279
+#: js/components/Fields.vue:288 js/fields/Items.vue:445 js/fields/Items.vue:454
+#: js/fields/Items.vue:463
 msgid "Translate"
 msgstr "Översätt"
 
-#: js/components/Fields.vue:295 js/fields/Items.vue:483
+#: js/components/Fields.vue:307 js/fields/Items.vue:485
 msgid "Generate text"
 msgstr "Generera text"
 
-#: js/components/Fields.vue:322
+#: js/components/Fields.vue:334
 msgid "Updated by other editor"
 msgstr "Uppdaterad av en annan redaktör"
 
-#: js/components/Fields.vue:325
+#: js/components/Fields.vue:337
 msgid "Overwritten"
 msgstr "Överskriven"
 
@@ -541,9 +513,9 @@ msgstr "Överskriven"
 msgid "Content Element"
 msgstr "Innehållselement"
 
-#: js/components/FileAiDialog.vue:142 js/components/FileListItems.vue:291
+#: js/components/FileAiDialog.vue:142 js/components/FileListItems.vue:276
 #: js/components/FileUrlDialog.vue:68 js/components/FileUrlDialog.vue:168
-#: js/fields/File.vue:131 js/fields/Images.vue:161
+#: js/fields/File.vue:136 js/fields/Images.vue:166
 msgid "Error adding file %{path}"
 msgstr "Fel vid tillägg av fil %{path}"
 
@@ -568,9 +540,9 @@ msgid "Current images"
 msgstr "Aktuella bilder"
 
 #: js/components/FileAiDialog.vue:292 js/components/FileAiDialog.vue:321
-#: js/components/FileUrlDialog.vue:244 js/fields/Audio.vue:76
-#: js/fields/File.vue:363 js/fields/Image.vue:125 js/fields/Images.vue:369
-#: js/fields/Media.vue:134 js/fields/Video.vue:76
+#: js/components/FileUrlDialog.vue:244 js/fields/Audio.vue:88
+#: js/fields/File.vue:383 js/fields/Image.vue:137 js/fields/Images.vue:415
+#: js/fields/Media.vue:146 js/fields/Video.vue:88
 msgid "Remove"
 msgstr "Ta bort"
 
@@ -582,47 +554,52 @@ msgstr "Bilder som används"
 msgid "Select images"
 msgstr "Välj bilder"
 
-#: js/components/FileDetailItem.vue:100
+#: js/components/FileDetailItem.vue:111
 msgid "Copied to clipboard"
 msgstr "Kopierat till urklipp"
 
-#: js/components/FileDetailItem.vue:131
+#: js/components/FileDetailItem.vue:142
 msgid "Error describing file"
 msgstr "Fel vid beskrivning av fil"
 
-#: js/components/FileDetailItem.vue:182
+#: js/components/FileDetailItem.vue:221 js/components/FileListItems.vue:527
+#: js/fields/File.vue:266 js/fields/Images.vue:305 js/views/FileDetail.vue:322
+msgid "Error saving file"
+msgstr "Fel vid lagring av fil"
+
+#: js/components/FileDetailItem.vue:237
 msgid "Transcription is only available for audio and video files"
 msgstr "Transkription är endast tillgänglig för ljud- och videofiler"
 
-#: js/components/FileDetailItem.vue:350
+#: js/components/FileDetailItem.vue:412
 msgid "Copy URL"
 msgstr "Kopiera webbadressen"
 
-#: js/components/FileDetailItem.vue:392
+#: js/components/FileDetailItem.vue:455
 msgid "Descriptions"
 msgstr "Beskrivningar"
 
-#: js/components/FileDetailItem.vue:400 js/components/FileDetailItem.vue:459
+#: js/components/FileDetailItem.vue:463 js/components/FileDetailItem.vue:522
 msgid "Translate text"
 msgstr "Översätt text"
 
-#: js/components/FileDetailItem.vue:408
+#: js/components/FileDetailItem.vue:471
 msgid "Generate description"
 msgstr "Generera beskrivning"
 
-#: js/components/FileDetailItem.vue:435
+#: js/components/FileDetailItem.vue:498
 msgid "Description (%{lang})"
 msgstr "Beskrivning (%{lang})"
 
-#: js/components/FileDetailItem.vue:451
+#: js/components/FileDetailItem.vue:514
 msgid "Transcriptions"
 msgstr "Transkriptioner"
 
-#: js/components/FileDetailItem.vue:467
+#: js/components/FileDetailItem.vue:530
 msgid "Transcribe file content"
 msgstr "Transkribera filinnehåll"
 
-#: js/components/FileDetailItem.vue:485
+#: js/components/FileDetailItem.vue:548
 msgid "Transcription (%{lang})"
 msgstr "Transkription (%{lang})"
 
@@ -644,130 +621,130 @@ msgstr "Fel vid redigering av bild"
 
 #: js/components/FileDetailItemImage.vue:541
 msgid "Error uncropping image"
-msgstr "Fel vid avkroppning av bild"
+msgstr "Fel vid utökning av bilden"
 
 #: js/components/FileDetailItemImage.vue:586
 msgid "Error upscaling image"
-msgstr "Fel vid uppskalning av bild"
+msgstr "Fel vid ökning av bildens upplösning"
 
-#: js/components/FileDetailItemImage.vue:636 js/components/UnsavedDialog.vue:55
+#: js/components/FileDetailItemImage.vue:637 js/components/UnsavedDialog.vue:55
 #: js/views/AccessList.vue:291 js/views/AccessList.vue:322
 msgid "Cancel"
 msgstr "Avbryt"
 
-#: js/components/FileDetailItemImage.vue:643
-#: js/components/FileDetailItemImage.vue:652
-#: js/components/FileDetailItemImage.vue:660
+#: js/components/FileDetailItemImage.vue:644
+#: js/components/FileDetailItemImage.vue:653
+#: js/components/FileDetailItemImage.vue:661
 msgid "Select area"
 msgstr "Välj område"
 
-#: js/components/FileDetailItemImage.vue:675
+#: js/components/FileDetailItemImage.vue:676
 msgid "Original ratio"
 msgstr "Ursprungligt förhållande"
 
-#: js/components/FileDetailItemImage.vue:684
+#: js/components/FileDetailItemImage.vue:685
 msgid "No ratio"
 msgstr "Inget förhållande"
 
-#: js/components/FileDetailItemImage.vue:689
+#: js/components/FileDetailItemImage.vue:690
 msgid "Square"
 msgstr "Fyrkant"
 
-#: js/components/FileDetailItemImage.vue:735
+#: js/components/FileDetailItemImage.vue:736
 msgid "Crop selected area"
-msgstr "Skörda valt område"
+msgstr "Beskär markerat område"
 
-#: js/components/FileDetailItemImage.vue:745
+#: js/components/FileDetailItemImage.vue:746
 msgid "Erase selected area"
 msgstr "Radera valt område"
 
-#: js/components/FileDetailItemImage.vue:760
-#: js/components/FileDetailItemImage.vue:768
-#: js/components/FileDetailItemImage.vue:789
+#: js/components/FileDetailItemImage.vue:761
+#: js/components/FileDetailItemImage.vue:769
+#: js/components/FileDetailItemImage.vue:790
 msgid "Edit image"
 msgstr "Redigera bild"
 
-#: js/components/FileDetailItemImage.vue:779
+#: js/components/FileDetailItemImage.vue:780
 msgid "Describe the changes"
 msgstr "Beskriv förändringarna"
 
-#: js/components/FileDetailItemImage.vue:798
+#: js/components/FileDetailItemImage.vue:799
 msgid "Remove background"
 msgstr "Ta bort bakgrund"
 
-#: js/components/FileDetailItemImage.vue:814
-#: js/components/FileDetailItemImage.vue:822
-#: js/components/FileDetailItemImage.vue:880
+#: js/components/FileDetailItemImage.vue:815
+#: js/components/FileDetailItemImage.vue:823
+#: js/components/FileDetailItemImage.vue:881
 msgid "Expand image"
 msgstr "Expandera bilden"
 
-#: js/components/FileDetailItemImage.vue:837
+#: js/components/FileDetailItemImage.vue:838
 msgid "Top"
 msgstr "Topp"
 
-#: js/components/FileDetailItemImage.vue:849
+#: js/components/FileDetailItemImage.vue:850
 msgid "Left"
 msgstr "Vänster"
 
-#: js/components/FileDetailItemImage.vue:859
+#: js/components/FileDetailItemImage.vue:860
 msgid "Right"
-msgstr "Rätt"
+msgstr "Höger"
 
-#: js/components/FileDetailItemImage.vue:871
+#: js/components/FileDetailItemImage.vue:872
 msgid "Bottom"
 msgstr "Botten"
 
-#: js/components/FileDetailItemImage.vue:888
+#: js/components/FileDetailItemImage.vue:889
 msgid "Upscale"
-msgstr "Exklusivt"
+msgstr "Öka upplösningen"
 
-#: js/components/FileDetailItemImage.vue:899
-#: js/components/FileDetailItemImage.vue:907
+#: js/components/FileDetailItemImage.vue:900
+#: js/components/FileDetailItemImage.vue:908
 msgid "Upscale image"
-msgstr "Högklassig image"
+msgstr "Öka bildens upplösning"
 
-#: js/components/FileDetailItemImage.vue:923
-#: js/components/FileDetailItemImage.vue:933
-#: js/components/FileDetailItemImage.vue:943
-#: js/components/FileDetailItemImage.vue:953
+#: js/components/FileDetailItemImage.vue:924
+#: js/components/FileDetailItemImage.vue:934
+#: js/components/FileDetailItemImage.vue:944
+#: js/components/FileDetailItemImage.vue:954
 msgid "Scale %{factor}"
 msgstr "Skala %{factor}"
 
-#: js/components/FileDetailItemImage.vue:964
+#: js/components/FileDetailItemImage.vue:965
 msgid "Rotate counter-clockwise"
 msgstr "Vrid moturs"
 
-#: js/components/FileDetailItemImage.vue:970
+#: js/components/FileDetailItemImage.vue:971
 msgid "Rotate clockwise"
 msgstr "Rotera medurs"
 
-#: js/components/FileDetailItemImage.vue:977
+#: js/components/FileDetailItemImage.vue:978
 msgid "Flip horizontally"
 msgstr "Vänd horisontellt"
 
-#: js/components/FileDetailItemImage.vue:983
+#: js/components/FileDetailItemImage.vue:984
 msgid "Flip vertically"
 msgstr "Vänd vertikalt"
 
-#: js/components/FileDetailItemImage.vue:990
+#: js/components/FileDetailItemImage.vue:991
 msgid "Convert to monochrome"
 msgstr "Konvertera till svartvitt"
 
-#: js/components/FileDetailItemImage.vue:993
+#: js/components/FileDetailItemImage.vue:994
 msgid "Download"
 msgstr "Nedladdningar"
 
-#: js/components/FileDetailItemImage.vue:997
-#: js/components/FileDetailItemImage.vue:1007
-#: js/components/FileDetailItemImage.vue:1015
+#: js/components/FileDetailItemImage.vue:998
+#: js/components/FileDetailItemImage.vue:1008
+#: js/components/FileDetailItemImage.vue:1016
 msgid "Undo"
 msgstr "Ångra"
 
-#: js/components/FileDetailItemImage.vue:1023
+#: js/components/FileDetailItemImage.vue:1024
 msgid "Previous edit"
 msgstr "Föregående redigering"
 
-#: js/components/FileDetailItemImage.vue:1028
+#: js/components/FileDetailItemImage.vue:1029
 msgid "Original"
 msgstr "Original"
 
@@ -799,18 +776,14 @@ msgstr "Använd som omslagsbild"
 msgid "Upload cover image"
 msgstr "Ladda upp omslagsbild"
 
-#: js/components/FileDetailRefs.vue:129 js/components/Navigation.vue:21
+#: js/components/FileDetailRefs.vue:145 js/components/Navigation.vue:21
 #: js/routes.js:39 js/views/PageList.vue:261 js/views/PageList.vue:278
 msgid "Pages"
 msgstr "Sidor"
 
-#: js/components/FileDetailRefs.vue:151 js/views/ElementList.vue:162
+#: js/components/FileDetailRefs.vue:175 js/views/ElementList.vue:162
 msgid "Elements"
 msgstr "Element"
-
-#: js/components/FileDetailRefs.vue:173
-msgid "Versions"
-msgstr "Versioner"
 
 #: js/components/FileDialog.vue:28 js/components/FileDialog.vue:36
 #: js/components/Navigation.vue:28 js/routes.js:79 js/views/FileList.vue:144
@@ -818,59 +791,47 @@ msgstr "Versioner"
 msgid "Files"
 msgstr "Filer"
 
-#: js/components/FileListItems.vue:232 js/components/FileListItems.vue:869
-msgid "usage"
-msgstr "användning"
-
-#: js/components/FileListItems.vue:234 js/components/FileListItems.vue:859
-msgid "language"
-msgstr "språk"
-
-#: js/components/FileListItems.vue:332
+#: js/components/FileListItems.vue:317
 msgid "Error trashing file"
-msgstr "Fel vid bortforsling av fil"
+msgstr "Fel vid flytt av filen till papperskorgen"
 
-#: js/components/FileListItems.vue:420
+#: js/components/FileListItems.vue:405
 msgid "Error restoring file"
 msgstr "Fel vid återställning av fil"
 
-#: js/components/FileListItems.vue:457 js/views/FileDetail.vue:239
+#: js/components/FileListItems.vue:442 js/views/FileDetail.vue:239
 msgid "Error publishing file"
 msgstr "Fel vid publicering av fil"
 
-#: js/components/FileListItems.vue:490
+#: js/components/FileListItems.vue:475
 msgid "Error purging file"
-msgstr "Fel vid rensning av fil"
+msgstr "Fel vid permanent borttagning av filen"
 
-#: js/components/FileListItems.vue:542 js/fields/File.vue:259
-#: js/fields/Images.vue:289 js/views/FileDetail.vue:322
-msgid "Error saving file"
-msgstr "Fel vid lagring av fil"
-
-#: js/components/FileListItems.vue:622
+#: js/components/FileListItems.vue:600
 msgid "Error fetching files"
 msgstr "Fel vid hämtning av filer"
 
-#: js/components/FileListItems.vue:755 js/components/FileListItems.vue:1077
-#: js/components/FileUrlDialog.vue:202 js/fields/Images.vue:382
-#: js/fields/Images.vue:406
+#: js/components/FileListItems.vue:734 js/components/FileListItems.vue:744
+#: js/components/FileListItems.vue:1007 js/components/FileListItems.vue:1017
+#: js/components/FileUrlDialog.vue:202 js/fields/Images.vue:428
+#: js/fields/Images.vue:452
 msgid "Add files"
 msgstr "Lägg till filer"
 
-#: js/components/FileListItems.vue:767 js/components/FileListItems.vue:1034
-#: js/components/FileProtect.vue:27
+#: js/components/FileListItems.vue:744 js/components/FileListItems.vue:963
+#: js/components/FileListItems.vue:1017 js/components/FileProtect.vue:45
 msgid "Protect access"
 msgstr "Skydda med sidåtkomst"
 
-#: js/components/FileListItems.vue:801
+#: js/components/FileListItems.vue:780
 msgid "Reload files"
 msgstr "Ladda om filer"
 
-#: js/components/FileListItems.vue:810
+#: js/components/FileListItems.vue:789
 msgid "Grid view"
 msgstr "Rutnätsvy"
 
-#: js/components/FileListItems.vue:818
+#: js/components/FileListItems.vue:797
 msgid "List view"
 msgstr "Lista vy"
 
@@ -887,13 +848,13 @@ msgid "The file is not of type \"%{mime}*\""
 msgstr "Filen är inte av typen \"%{mime}*\""
 
 #: js/components/FileUrlDialog.vue:192 js/components/FileUrlDialog.vue:200
-#: js/fields/Images.vue:389
+#: js/fields/Images.vue:435
 msgid "Add files from URLs"
 msgstr "Lägg till filer från webbadresser"
 
-#: js/components/FileUrlDialog.vue:202 js/fields/Audio.vue:88
-#: js/fields/File.vue:375 js/fields/Image.vue:137 js/fields/Media.vue:145
-#: js/fields/Video.vue:88
+#: js/components/FileUrlDialog.vue:202 js/fields/Audio.vue:100
+#: js/fields/File.vue:395 js/fields/Image.vue:149 js/fields/Media.vue:157
+#: js/fields/Video.vue:100
 msgid "Add file"
 msgstr "Lägg till fil"
 
@@ -929,13 +890,45 @@ msgstr "Visa alla"
 msgid "Revert to version"
 msgstr "Återgå till version"
 
+#: js/components/ListSort.vue:24 js/views/PageDetail.vue:809
+msgid "Editor"
+msgstr "Redaktör"
+
+#: js/components/ListSort.vue:26
+msgid "Latest"
+msgstr "Senaste"
+
+#: js/components/ListSort.vue:27
+msgid "Latest edit"
+msgstr "Senast ändrad"
+
+#: js/components/ListSort.vue:30
+msgid "Oldest"
+msgstr "Äldsta"
+
+#: js/components/ListSort.vue:31
+msgid "Oldest edit"
+msgstr "Äldsta ändring"
+
+#: js/components/ListSort.vue:32 js/views/PageList.vue:135
+msgid "Tree"
+msgstr "Träd"
+
+#: js/components/ListSort.vue:34
+msgid "Usage"
+msgstr "Användning"
+
+#: js/components/ListSort.vue:61 js/components/ListSort.vue:62
+msgid "Sort by"
+msgstr "Sortera efter"
+
 #: js/components/Navigation.vue:29 js/components/PageAccess.vue:180
-#: js/components/PageDetailItem.vue:102 js/components/PageListItems.vue:381
-#: js/components/PageListItems.vue:1499 js/components/PageListItems.vue:1719
-#: js/components/PageListItems.vue:1909 js/components/PageListItems.vue:1914
+#: js/components/PageDetailItem.vue:102 js/components/PageListItems.vue:419
+#: js/components/PageListItems.vue:1583 js/components/PageListItems.vue:1746
+#: js/components/PageListItems.vue:1936 js/components/PageListItems.vue:1941
 #: js/routes.js:99 js/views/AccessList.vue:198 js/views/AccessList.vue:207
 msgid "Access"
-msgstr ""
+msgstr "Åtkomst"
 
 #: js/components/Navigation.vue:45
 msgid "Panels"
@@ -943,35 +936,31 @@ msgstr "Paneler"
 
 #: js/components/PageAccess.vue:102
 msgid "Error changing page access"
-msgstr ""
+msgstr "Det gick inte att ändra sidåtkomst"
 
 #: js/components/PageAccess.vue:124 js/views/AccessList.vue:111
 msgid "Error fetching access values"
-msgstr ""
+msgstr "Det gick inte att hämta åtkomstvärden"
 
 #: js/components/PageAccess.vue:168
 msgid "Access changes take effect immediately after cache expiry"
-msgstr ""
+msgstr "Åtkomständringar träder i kraft omedelbart efter cacheminnets utgång"
 
 #: js/components/PageAccess.vue:171
 msgid "Public"
-msgstr ""
+msgstr "Offentligt"
 
-#: js/components/PageAccess.vue:172 js/components/PageListItems.vue:382
+#: js/components/PageAccess.vue:172 js/components/PageListItems.vue:420
 msgid "Authenticated users"
-msgstr ""
-
-#: js/components/PageAccess.vue:173 js/components/PageListItems.vue:378
-msgid "Restricted"
-msgstr ""
+msgstr "Autentiserade användare"
 
 #: js/components/PageAccess.vue:190 js/components/PageBulkDialog.vue:261
 msgid "Page bulk changes are limited to 1,000 pages"
-msgstr ""
+msgstr "Massändringar av sidor är begränsade till 1 000 sidor"
 
 #: js/components/PageAccess.vue:209 js/components/PageBulkDialog.vue:257
 msgid "Apply recursively"
-msgstr ""
+msgstr "Tillämpa rekursivt"
 
 #: js/components/PageBulkDialog.vue:42 js/components/PageDetailItemProps.vue:56
 #: js/views/PageList.vue:173
@@ -987,7 +976,7 @@ msgstr "Ingen cache"
 msgid "%{num} minute"
 msgid_plural "%{num} minutes"
 msgstr[0] "%{num} minut"
-msgstr[1] ""
+msgstr[1] "%{num} minuter"
 
 #: js/components/PageBulkDialog.vue:47 js/components/PageBulkDialog.vue:48
 #: js/components/PageBulkDialog.vue:49 js/components/PageBulkDialog.vue:50
@@ -999,7 +988,7 @@ msgstr[1] ""
 msgid "%{num} hour"
 msgid_plural "%{num} hours"
 msgstr[0] "%{num} timme"
-msgstr[1] ""
+msgstr[1] "%{num} timmar"
 
 #: js/components/PageBulkDialog.vue:54 js/components/PageDetailItemProps.vue:68
 #: js/views/PageList.vue:165
@@ -1022,12 +1011,12 @@ msgstr "Domännamnet är ogiltigt"
 #: js/components/PageBulkDialog.vue:147
 msgid "Apply the selected properties to %{num} page."
 msgid_plural "Apply the selected properties to %{num} pages."
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Använd de valda egenskaperna på sidan %{num}."
+msgstr[1] "Tillämpa de valda egenskaperna på %{num} sidor."
 
 #: js/components/PageBulkDialog.vue:152
 msgid "Change status"
-msgstr ""
+msgstr "Ändra status"
 
 #: js/components/PageBulkDialog.vue:157
 #: js/components/PageDetailItemProps.vue:241
@@ -1036,7 +1025,7 @@ msgstr "Status"
 
 #: js/components/PageBulkDialog.vue:166
 msgid "Change cache time"
-msgstr ""
+msgstr "Ändra cachetid"
 
 #: js/components/PageBulkDialog.vue:171
 #: js/components/PageDetailItemProps.vue:354
@@ -1045,11 +1034,11 @@ msgstr "Cache-tid"
 
 #: js/components/PageBulkDialog.vue:180
 msgid "Change language"
-msgstr ""
+msgstr "Byt språk"
 
 #: js/components/PageBulkDialog.vue:192
 msgid "Change theme"
-msgstr ""
+msgstr "Byt tema"
 
 #: js/components/PageBulkDialog.vue:197
 #: js/components/PageDetailItemProps.vue:323
@@ -1058,7 +1047,7 @@ msgstr "Tema"
 
 #: js/components/PageBulkDialog.vue:204
 msgid "Change page type"
-msgstr ""
+msgstr "Ändra sidtyp"
 
 #: js/components/PageBulkDialog.vue:209
 #: js/components/PageDetailItemProps.vue:332
@@ -1067,7 +1056,7 @@ msgstr "Typ av sida"
 
 #: js/components/PageBulkDialog.vue:216
 msgid "Change tag"
-msgstr ""
+msgstr "Byt tagg"
 
 #: js/components/PageBulkDialog.vue:220
 #: js/components/PageDetailItemProps.vue:343
@@ -1076,130 +1065,130 @@ msgstr "Sidans tagg"
 
 #: js/components/PageBulkDialog.vue:229
 msgid "Change domain"
-msgstr ""
+msgstr "Byt domän"
 
 #: js/components/PageBulkDialog.vue:234
 #: js/components/PageDetailItemProps.vue:308
 msgid "Domain"
 msgstr "Domän"
 
-#: js/components/PageDetailContentList.vue:179
-#: js/components/PageDetailContentList.vue:189
-#: js/components/PageDetailContentList.vue:645
+#: js/components/PageDetailContentList.vue:176
+#: js/components/PageDetailContentList.vue:186
+#: js/components/PageDetailContentList.vue:644
 msgid "Content element not found"
 msgstr "Innehållselementet hittades inte"
 
-#: js/components/PageDetailContentList.vue:421
+#: js/components/PageDetailContentList.vue:418
 msgid "Error refining content"
 msgstr "Fel vid förädling av innehåll"
 
-#: js/components/PageDetailContentList.vue:476
+#: js/components/PageDetailContentList.vue:474
 msgid "Element not found"
 msgstr "Elementet hittades inte"
 
-#: js/components/PageDetailContentList.vue:481
+#: js/components/PageDetailContentList.vue:479
 msgid "Element is already shared"
 msgstr "Elementet är redan delat"
 
-#: js/components/PageDetailContentList.vue:522
+#: js/components/PageDetailContentList.vue:521
 msgid "Unable to make element shared"
 msgstr "Kan inte göra elementet delat"
 
-#: js/components/PageDetailContentList.vue:541
+#: js/components/PageDetailContentList.vue:540
 msgid "Not available for this content element"
 msgstr "Ej tillgängligt för detta innehållselement"
 
-#: js/components/PageDetailContentList.vue:652
+#: js/components/PageDetailContentList.vue:651
 msgid "Element is not shared"
 msgstr "Elementet är inte delat"
 
-#: js/components/PageDetailContentList.vue:727
+#: js/components/PageDetailContentList.vue:726
 msgid "Describe the task you want to perform"
 msgstr "Beskriv den uppgift du vill utföra"
 
-#: js/components/PageDetailContentList.vue:741 js/views/PageList.vue:298
+#: js/components/PageDetailContentList.vue:740 js/views/PageList.vue:298
 msgid "Hide help"
 msgstr "Dölj hjälp"
 
-#: js/components/PageDetailContentList.vue:741 js/views/PageList.vue:298
+#: js/components/PageDetailContentList.vue:740 js/views/PageList.vue:298
 msgid "Show help"
 msgstr "Visa hjälp"
 
-#: js/components/PageDetailContentList.vue:753
+#: js/components/PageDetailContentList.vue:752
 msgid "Refining ..."
-msgstr "Raffinering ..."
+msgstr "Förbättrar..."
 
-#: js/components/PageDetailContentList.vue:753
+#: js/components/PageDetailContentList.vue:752
 msgid "Refine content based on prompt"
 msgstr "Förbättra innehållet baserat på uppmaningen"
 
-#: js/components/PageDetailContentList.vue:770 js/views/PageList.vue:324
+#: js/components/PageDetailContentList.vue:769 js/views/PageList.vue:324
 msgid "Help"
 msgstr "Hjälp"
 
-#: js/components/PageDetailContentList.vue:771
+#: js/components/PageDetailContentList.vue:770
 msgid "AI can add or improve content based on your input"
 msgstr "AI kan lägga till eller förbättra innehåll baserat på dina synpunkter"
 
-#: js/components/PageDetailContentList.vue:772
+#: js/components/PageDetailContentList.vue:771
 msgid "It can take a long time depending on the task and content size"
 msgstr "Det kan ta lång tid beroende på uppgiften och innehållets storlek"
 
-#: js/components/PageDetailContentList.vue:797
-#: js/components/PageDetailContentList.vue:903
-#: js/components/PageListItems.vue:1732 js/fields/Items.vue:393
+#: js/components/PageDetailContentList.vue:796
+#: js/components/PageDetailContentList.vue:902
+#: js/components/PageListItems.vue:1759 js/fields/Items.vue:395
 msgid "Cut"
 msgstr "Klipp"
 
-#: js/components/PageDetailContentList.vue:802
-#: js/components/PageListItems.vue:1745 js/components/PageListItems.vue:1770
+#: js/components/PageDetailContentList.vue:801
+#: js/components/PageListItems.vue:1772 js/components/PageListItems.vue:1797
 msgid "Paste"
 msgstr "Klistra in"
 
-#: js/components/PageDetailContentList.vue:807
-#: js/components/PageDetailContentList.vue:961
+#: js/components/PageDetailContentList.vue:806
+#: js/components/PageDetailContentList.vue:960
 msgid "Merge"
 msgstr "Sammanslagning"
 
-#: js/components/PageDetailContentList.vue:854 js/fields/Items.vue:341
+#: js/components/PageDetailContentList.vue:853 js/fields/Items.vue:342
 msgid "Move element"
 msgstr "Flytta element"
 
-#: js/components/PageDetailContentList.vue:916 js/fields/Items.vue:406
+#: js/components/PageDetailContentList.vue:915 js/fields/Items.vue:408
 msgid "Paste before"
 msgstr "Klistra in före"
 
-#: js/components/PageDetailContentList.vue:921 js/fields/Items.vue:411
+#: js/components/PageDetailContentList.vue:920 js/fields/Items.vue:413
 msgid "Paste after"
 msgstr "Klistra in efter"
 
-#: js/components/PageDetailContentList.vue:926 js/fields/Items.vue:416
-#: js/fields/Table.vue:222 js/fields/Table.vue:317
+#: js/components/PageDetailContentList.vue:925 js/fields/Items.vue:418
+#: js/fields/Table.vue:223 js/fields/Table.vue:318
 msgid "Insert before"
 msgstr "Infoga före"
 
-#: js/components/PageDetailContentList.vue:931 js/fields/Items.vue:421
-#: js/fields/Table.vue:230 js/fields/Table.vue:325
+#: js/components/PageDetailContentList.vue:930 js/fields/Items.vue:423
+#: js/fields/Table.vue:231 js/fields/Table.vue:326
 msgid "Insert after"
 msgstr "Infoga efter"
 
-#: js/components/PageDetailContentList.vue:941
+#: js/components/PageDetailContentList.vue:940
 msgid "Make shared"
 msgstr "Gör delad"
 
-#: js/components/PageDetailContentList.vue:946
+#: js/components/PageDetailContentList.vue:945
 msgid "Merge copy"
 msgstr "Sammanfoga kopia"
 
-#: js/components/PageDetailContentList.vue:951
+#: js/components/PageDetailContentList.vue:950
 msgid "Change to"
 msgstr "Ändra till"
 
-#: js/components/PageDetailContentList.vue:956
+#: js/components/PageDetailContentList.vue:955
 msgid "Split"
 msgstr "Delad"
 
-#: js/components/PageDetailContentList.vue:971
+#: js/components/PageDetailContentList.vue:970
 msgid "Shared element"
 msgstr "Gemensamt element"
 
@@ -1296,7 +1285,7 @@ msgstr "Ta bort innehållselement"
 #: js/components/PageDetailMetrics.vue:141
 #: js/components/PageDetailMetrics.vue:558
 msgid "Views"
-msgstr "Utsikt"
+msgstr "Visningar"
 
 #: js/components/PageDetailMetrics.vue:142
 msgid "Visits"
@@ -1313,7 +1302,7 @@ msgstr "Varaktighet"
 
 #: js/components/PageDetailMetrics.vue:162
 msgid "Impressions"
-msgstr "Intryck"
+msgstr "Visningar"
 
 #: js/components/PageDetailMetrics.vue:163
 #: js/components/PageDetailMetrics.vue:559
@@ -1338,7 +1327,7 @@ msgstr "Besökets varaktighet (minuter)"
 
 #: js/components/PageDetailMetrics.vue:186
 msgid "Google Impressions"
-msgstr "Google-intryck"
+msgstr "Google-visningar"
 
 #: js/components/PageDetailMetrics.vue:187
 msgid "Google Clicks"
@@ -1386,7 +1375,7 @@ msgstr "Veckovisa insikter"
 
 #: js/components/PageDetailMetrics.vue:447
 msgid "Views & Visits"
-msgstr "Utsikter och besök"
+msgstr "Visningar och besök"
 
 #: js/components/PageDetailMetrics.vue:456
 msgid "Visit Durations (minutes)"
@@ -1394,7 +1383,7 @@ msgstr "Besökens varaktighet (minuter)"
 
 #: js/components/PageDetailMetrics.vue:468
 msgid "Referrers"
-msgstr "Referenser"
+msgstr "Hänvisningskällor"
 
 #: js/components/PageDetailMetrics.vue:511
 msgid "Countries"
@@ -1418,153 +1407,149 @@ msgstr "Position"
 
 #: js/components/PageDetailMetrics.vue:588
 msgid "Google Search: Impressions & Clicks"
-msgstr "Google-sökning: Intryck och klick"
+msgstr "Google-sökning: visningar och klick"
 
 #: js/components/PageDetailMetrics.vue:597
 msgid "Google Search: Conversions"
 msgstr "Google-sökning: Konverteringar"
 
-#: js/components/PageListItems.vue:415
+#: js/components/PageListItems.vue:453
 msgid "Error adding root page"
 msgstr "Fel vid tillägg av rotsida"
 
-#: js/components/PageListItems.vue:474
+#: js/components/PageListItems.vue:512
 msgid "Cache cleared"
-msgstr ""
+msgstr "Cache rensad"
 
-#: js/components/PageListItems.vue:477
+#: js/components/PageListItems.vue:515
 msgid "Error clearing cache"
-msgstr ""
+msgstr "Det gick inte att rensa cacheminnet"
 
-#: js/components/PageListItems.vue:573
+#: js/components/PageListItems.vue:611
 msgid "Error trashing page"
-msgstr "Fel vid borttagning av sida"
+msgstr "Fel vid flytt av sidan till papperskorgen"
 
-#: js/components/PageListItems.vue:669
+#: js/components/PageListItems.vue:707
 msgid "Error fetching pages"
 msgstr "Fel vid hämtning av sidor"
 
-#: js/components/PageListItems.vue:750
+#: js/components/PageListItems.vue:788
 msgid "Error inserting page"
 msgstr "Fel vid infogning av sida"
 
-#: js/components/PageListItems.vue:806
+#: js/components/PageListItems.vue:844
 msgid "Error restoring page"
 msgstr "Fel vid återställning av sida"
 
-#: js/components/PageListItems.vue:816
+#: js/components/PageListItems.vue:854
 msgid "%{name} (%{lang}, path: %{path}, domain: %{domain})"
 msgstr "%{name} (%{lang}, sökväg: %{path}, domän: %{domain})"
 
-#: js/components/PageListItems.vue:819
+#: js/components/PageListItems.vue:857
 msgid "%{name} (%{lang}, path: %{path})"
 msgstr "%{name} (%{lang}, sökväg: %{path})"
 
-#: js/components/PageListItems.vue:901
+#: js/components/PageListItems.vue:953
 msgid "Error moving page"
 msgstr "Fel vid flyttning av sida"
 
-#: js/components/PageListItems.vue:988
+#: js/components/PageListItems.vue:1044
 msgid "Error copying page"
 msgstr "Fel vid kopiering av sida"
 
-#: js/components/PageListItems.vue:993 js/views/PageDetail.vue:264
+#: js/components/PageListItems.vue:1049 js/views/PageDetail.vue:251
 msgid "Error fetching page"
 msgstr "Fel vid hämtning av sida"
 
-#: js/components/PageListItems.vue:1081 js/views/PageDetail.vue:473
+#: js/components/PageListItems.vue:1129 js/views/PageDetail.vue:461
 msgid "Error publishing page"
 msgstr "Fel vid publicering av sida"
 
-#: js/components/PageListItems.vue:1123
+#: js/components/PageListItems.vue:1171
 msgid "Error purging page"
-msgstr "Fel vid rensning av sida"
+msgstr "Fel vid permanent borttagning av sidan"
 
-#: js/components/PageListItems.vue:1225
+#: js/components/PageListItems.vue:1304
 msgid "%{num} page could not be updated"
 msgid_plural "%{num} pages could not be updated"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Sidan %{num} kunde inte uppdateras"
+msgstr[1] "%{num} sidor kunde inte uppdateras"
 
-#: js/components/PageListItems.vue:1236 js/components/PageListItems.vue:1336
-#: js/views/PageDetail.vue:581
+#: js/components/PageListItems.vue:1315 js/components/PageListItems.vue:1411
+#: js/views/PageDetail.vue:569
 msgid "Error saving page"
 msgstr "Fel vid lagring av sida"
 
-#: js/components/PageListItems.vue:1287
+#: js/components/PageListItems.vue:1366
 msgid "Error searching pages"
 msgstr "Fel vid sökning av sidor"
 
-#: js/components/PageListItems.vue:1484
+#: js/components/PageListItems.vue:1568
 msgid "Enable"
 msgstr "Aktivera"
 
-#: js/components/PageListItems.vue:1489
+#: js/components/PageListItems.vue:1573
 msgid "Disable"
 msgstr "Avaktivera"
 
-#: js/components/PageListItems.vue:1529 js/components/PageListItems.vue:1897
+#: js/components/PageListItems.vue:1613 js/components/PageListItems.vue:1924
 msgid "Add page"
 msgstr "Lägg till sida"
 
-#: js/components/PageListItems.vue:1562
+#: js/components/PageListItems.vue:1646
 msgid "Reload page tree"
 msgstr "Ladda om sidträdet"
 
-#: js/components/PageListItems.vue:1584 js/components/PageListItems.vue:1591
-msgid "tree"
-msgstr "träd"
-
-#: js/components/PageListItems.vue:1633
+#: js/components/PageListItems.vue:1669
 msgid "Use arrow keys to navigate. Alt plus arrow keys to reorder."
 msgstr ""
 "Använd piltangenterna för att navigera. Tryck på Alt och piltangenterna för "
 "att ändra ordningen."
 
-#: js/components/PageListItems.vue:1634
+#: js/components/PageListItems.vue:1670
 msgid "Moved to position %{position} of %{total}"
-msgstr "Flyttad till %{position} från %{total}"
+msgstr "Flyttad till position %{position} av %{total}"
 
-#: js/components/PageListItems.vue:1635
+#: js/components/PageListItems.vue:1671
 msgid "Outdented to level %{level}, position %{position} of %{total}"
-msgstr "Omdirigerad till %{level}, %{position} på %{total}"
+msgstr "Indrag minskat till nivå %{level}, position %{position} av %{total}"
 
-#: js/components/PageListItems.vue:1636
+#: js/components/PageListItems.vue:1672
 msgid "Indented to level %{level}, position %{position} of %{total}"
-msgstr "Indraget till nivå %{level}, position %{position} på %{total}"
+msgstr "Indrag ökat till nivå %{level}, position %{position} av %{total}"
 
-#: js/components/PageListItems.vue:1661
+#: js/components/PageListItems.vue:1697
 msgid "Toggle child nodes"
 msgstr "Växla mellan underordnade noder"
 
-#: js/components/PageListItems.vue:1724
+#: js/components/PageListItems.vue:1751
 msgid "Clear cache"
-msgstr ""
+msgstr "Rensa cache"
 
-#: js/components/PageListItems.vue:1751 js/components/PageListItems.vue:1776
-#: js/components/PageListItems.vue:1801
+#: js/components/PageListItems.vue:1778 js/components/PageListItems.vue:1803
+#: js/components/PageListItems.vue:1828
 msgid "Before"
 msgstr "Före"
 
-#: js/components/PageListItems.vue:1756 js/components/PageListItems.vue:1781
-#: js/components/PageListItems.vue:1806
+#: js/components/PageListItems.vue:1783 js/components/PageListItems.vue:1808
+#: js/components/PageListItems.vue:1833
 msgid "Into"
 msgstr "In i"
 
-#: js/components/PageListItems.vue:1761 js/components/PageListItems.vue:1786
-#: js/components/PageListItems.vue:1811
+#: js/components/PageListItems.vue:1788 js/components/PageListItems.vue:1813
+#: js/components/PageListItems.vue:1838
 msgid "After"
 msgstr "Efter"
 
-#: js/components/PageListItems.vue:1795
+#: js/components/PageListItems.vue:1822
 msgid "Insert"
 msgstr "Infoga"
 
-#: js/components/PageListItems.vue:1919
-msgid "Apply access to %{num} page."
-msgid_plural "Apply access to %{num} pages."
-msgstr[0] ""
-msgstr[1] ""
+#: js/components/PageListItems.vue:1946
+msgid "Apply access settings to %{num} page."
+msgid_plural "Apply access settings to %{num} pages."
+msgstr[0] "Tillämpa åtkomstinställningarna på %{num} sida."
+msgstr[1] "Tillämpa åtkomstinställningarna på %{num} sidor."
 
 #: js/components/SchemaDialog.vue:29 js/components/SchemaDialog.vue:37
 msgid "Content elements"
@@ -1612,35 +1597,40 @@ msgstr "Användarmeny"
 msgid "Logout"
 msgstr "Logga ut"
 
-#: js/fields/Audio.vue:47 js/fields/Audio.vue:71 js/fields/File.vue:318
-#: js/fields/File.vue:358 js/fields/Image.vue:90 js/fields/Image.vue:120
-#: js/fields/Images.vue:364 js/fields/Media.vue:98 js/fields/Media.vue:129
-#: js/fields/Video.vue:47 js/fields/Video.vue:71
+#: js/fields/Audio.vue:59 js/fields/Audio.vue:83 js/fields/File.vue:338
+#: js/fields/File.vue:378 js/fields/Image.vue:102 js/fields/Image.vue:132
+#: js/fields/Images.vue:410 js/fields/Media.vue:110 js/fields/Media.vue:141
+#: js/fields/Video.vue:59 js/fields/Video.vue:83
 msgid "Edit"
 msgstr "Redigera"
 
-#: js/fields/Audio.vue:62 js/fields/File.vue:349 js/fields/Image.vue:111
-#: js/fields/Images.vue:355 js/fields/Media.vue:120 js/fields/Video.vue:62
+#: js/fields/Audio.vue:74 js/fields/File.vue:369 js/fields/Image.vue:123
+#: js/fields/Images.vue:401 js/fields/Media.vue:132 js/fields/Video.vue:74
 msgid "Open menu"
 msgstr "Öppna menyn"
 
-#: js/fields/Audio.vue:95 js/fields/File.vue:382 js/fields/Image.vue:144
-#: js/fields/Media.vue:152 js/fields/Video.vue:95
+#: js/fields/Audio.vue:107 js/fields/File.vue:402 js/fields/Image.vue:156
+#: js/fields/Media.vue:164 js/fields/Video.vue:107
 msgid "Add file from URL"
 msgstr "Lägg till fil från URL"
 
-#: js/fields/Audio.vue:100 js/fields/File.vue:387 js/fields/Image.vue:157
-#: js/fields/Media.vue:165 js/fields/Video.vue:100
+#: js/fields/Audio.vue:112 js/fields/File.vue:407 js/fields/Image.vue:169
+#: js/fields/Media.vue:177 js/fields/Video.vue:112
 msgid "Upload file"
 msgstr "Ladda upp fil"
 
-#: js/fields/Audio.vue:120 js/fields/File.vue:407 js/fields/Image.vue:177
-#: js/fields/Video.vue:120
+#: js/fields/Audio.vue:132 js/fields/File.vue:427 js/fields/Image.vue:189
+#: js/fields/Video.vue:132
 msgid "Drop file here to upload"
-msgstr ""
+msgstr "Släpp filen här för att ladda upp"
 
-#: js/fields/Audio.vue:131 js/fields/File.vue:418 js/fields/Image.vue:188
-#: js/fields/Media.vue:183 js/fields/Video.vue:131
+#: js/fields/Audio.vue:139 js/fields/File.vue:434 js/fields/Image.vue:196
+#: js/fields/Media.vue:191 js/fields/Video.vue:139
+msgid "name"
+msgstr "namn"
+
+#: js/fields/Audio.vue:143 js/fields/File.vue:438 js/fields/Image.vue:200
+#: js/fields/Media.vue:195 js/fields/Video.vue:143
 msgid "description"
 msgstr "beskrivning"
 
@@ -1658,25 +1648,25 @@ msgstr "Inga uppgifter tillgängliga"
 msgid "Value must be a hex color code"
 msgstr "Värdet måste vara en hexfärgkod"
 
-#: js/fields/File.vue:92
+#: js/fields/File.vue:97
 msgid "File is required"
 msgstr "Fil krävs"
 
-#: js/fields/Image.vue:152 js/fields/Images.vue:399 js/fields/Media.vue:160
+#: js/fields/Image.vue:164 js/fields/Images.vue:445 js/fields/Media.vue:172
 msgid "Create file"
 msgstr "Skapa fil"
 
-#: js/fields/Images.vue:92 js/fields/Items.vue:117
+#: js/fields/Images.vue:97 js/fields/Items.vue:118
 msgid "Minimum is %{num} entries"
 msgstr "Minimum är %{num} poster"
 
-#: js/fields/Images.vue:96 js/fields/Items.vue:114
+#: js/fields/Images.vue:101 js/fields/Items.vue:115
 msgid "Maximum is %{num} entries"
 msgstr "Max är %{num} poster"
 
-#: js/fields/Images.vue:423
+#: js/fields/Images.vue:469
 msgid "Drop files here"
-msgstr ""
+msgstr "Släpp filer här"
 
 #: js/fields/Markdown.vue:144 js/fields/Plaintext.vue:35
 #: js/fields/String.vue:37 js/fields/Text.vue:125
@@ -1694,7 +1684,7 @@ msgstr "Urval krävs"
 
 #: js/fields/String.vue:45
 msgid "Value has invalid format"
-msgstr ""
+msgstr "Värdet har ogiltigt format"
 
 #: js/fields/Table.vue:73
 msgid "Minimum are %{num} columns"
@@ -1704,19 +1694,19 @@ msgstr "Minimum är %{num} kolumner"
 msgid "Maximum are %{num} columns"
 msgstr "Högst är %{num} kolumner"
 
-#: js/fields/Table.vue:172
+#: js/fields/Table.vue:173
 msgid "Move column"
 msgstr "Flytta kolumn"
 
-#: js/fields/Table.vue:191
+#: js/fields/Table.vue:192
 msgid "Column actions"
 msgstr "Åtgärder i kolumner"
 
-#: js/fields/Table.vue:253
+#: js/fields/Table.vue:254
 msgid "Move row"
 msgstr "Flytta rad"
 
-#: js/fields/Table.vue:286
+#: js/fields/Table.vue:287
 msgid "Row actions"
 msgstr "Radåtgärder"
 
@@ -1740,13 +1730,13 @@ msgstr "Sammanfogad med ändringar från %{editor}"
 msgid "Login"
 msgstr "Logga in"
 
-#: js/routes.js:50 js/views/PageDetail.vue:768 js/views/PageDetail.vue:814
-#: js/views/PageDetail.vue:833
+#: js/routes.js:50 js/views/PageDetail.vue:758 js/views/PageDetail.vue:804
+#: js/views/PageDetail.vue:823
 msgid "Page"
 msgstr "Sidan"
 
-#: js/routes.js:70 js/views/ElementDetail.vue:440
-#: js/views/ElementDetail.vue:460 js/views/ElementDetail.vue:465
+#: js/routes.js:70 js/views/ElementDetail.vue:422
+#: js/views/ElementDetail.vue:442 js/views/ElementDetail.vue:447
 msgid "Element"
 msgstr "Element"
 
@@ -1761,7 +1751,7 @@ msgstr "Du har inte behörighet att komma åt %{path}"
 
 #: js/stores.js:353
 msgid "Failed to load plugin"
-msgstr ""
+msgstr "Det gick inte att ladda plugin"
 
 #: js/strings.js:9
 msgctxt "cs"
@@ -1806,7 +1796,7 @@ msgstr "media"
 #: js/strings.js:19
 msgctxt "sg"
 msgid "forms"
-msgstr "former"
+msgstr "formulär"
 
 #: js/strings.js:22
 msgctxt "as"
@@ -1816,7 +1806,7 @@ msgstr "typ"
 #: js/strings.js:23
 msgctxt "as"
 msgid "state"
-msgstr "tillstånd"
+msgstr "status"
 
 #: js/strings.js:26
 msgctxt "st"
@@ -1866,7 +1856,7 @@ msgstr "kod"
 #: js/strings.js:37
 msgctxt "st"
 msgid "table"
-msgstr "bord"
+msgstr "tabell"
 
 #: js/strings.js:38
 msgctxt "st"
@@ -1901,7 +1891,7 @@ msgstr "Hero"
 #: js/strings.js:44
 msgctxt "st"
 msgid "cards"
-msgstr "Plattor"
+msgstr "Kort"
 
 #: js/strings.js:45
 msgctxt "st"
@@ -1971,7 +1961,7 @@ msgstr "knapp"
 #: js/strings.js:60
 msgctxt "fn"
 msgid "cards"
-msgstr "Plattor"
+msgstr "Kort"
 
 #: js/strings.js:61
 msgctxt "fn"
@@ -2031,12 +2021,12 @@ msgstr "Huvudbild"
 #: js/strings.js:72
 msgctxt "fn"
 msgid "order"
-msgstr "beställning"
+msgstr "ordning"
 
 #: js/strings.js:73
 msgctxt "fn"
 msgid "parent-page"
-msgstr "föräldra-sida"
+msgstr "Överordnad sida"
 
 #: js/strings.js:74
 msgctxt "fn"
@@ -2051,7 +2041,7 @@ msgstr "text"
 #: js/strings.js:76
 msgctxt "fn"
 msgid "table"
-msgstr "bord"
+msgstr "tabell"
 
 #: js/strings.js:77
 msgctxt "fn"
@@ -2126,12 +2116,12 @@ msgstr "Faktureringsintervall"
 #: js/strings.js:92
 msgctxt "fn"
 msgid "Price unit"
-msgstr ""
+msgstr "Prisenhet"
 
 #: js/strings.js:93
 msgctxt "fn"
 msgid "Target page or link"
-msgstr ""
+msgstr "Målsida eller länk"
 
 #: js/strings.js:94
 msgctxt "op"
@@ -2168,11 +2158,11 @@ msgstr "Alla"
 
 #: js/views/AccessList.vue:139
 msgid "Error adding access value"
-msgstr ""
+msgstr "Det gick inte att lägga till åtkomstvärde"
 
 #: js/views/AccessList.vue:161
 msgid "Error deleting access values"
-msgstr ""
+msgstr "Det gick inte att ta bort åtkomstvärden"
 
 #: js/views/AccessList.vue:193 js/views/ElementList.vue:139
 #: js/views/FileList.vue:138 js/views/PageList.vue:255
@@ -2187,60 +2177,62 @@ msgstr "Öppna navigering"
 #: js/views/AccessList.vue:232 js/views/AccessList.vue:272
 #: js/views/AccessList.vue:275
 msgid "Add access value"
-msgstr ""
+msgstr "Lägg till åtkomstvärde"
 
 #: js/views/AccessList.vue:282
 msgid "Access value"
-msgstr ""
+msgstr "Tillgångsvärde"
 
 #: js/views/AccessList.vue:293
 msgid "Add"
-msgstr ""
+msgstr "Lägg till"
 
 #: js/views/AccessList.vue:303 js/views/AccessList.vue:307
 msgid "Delete access values"
-msgstr ""
+msgstr "Ta bort åtkomstvärden"
 
 #: js/views/AccessList.vue:314
 msgid ""
 "Existing restrictions are not changed and will continue to reference the "
 "deleted access values."
 msgstr ""
+"Befintliga begränsningar ändras inte och kommer att fortsätta att referera "
+"till de raderade åtkomstvärdena."
 
-#: js/views/ElementDetail.vue:216
+#: js/views/ElementDetail.vue:198
 msgid "Error fetching element"
 msgstr "Fel vid hämtning av element"
 
-#: js/views/ElementDetail.vue:267
+#: js/views/ElementDetail.vue:249
 msgid "Element published successfully"
 msgstr "Elementet publicerades framgångsrikt"
 
-#: js/views/ElementDetail.vue:268
+#: js/views/ElementDetail.vue:250
 msgid "Element scheduled for publishing at %{date}"
 msgstr "Element planerad för publicering vid %{date}"
 
-#: js/views/ElementDetail.vue:269
+#: js/views/ElementDetail.vue:251
 msgid "Error publishing element"
 msgstr "Fel vid publicering av element"
 
-#: js/views/ElementDetail.vue:296 js/views/FileDetail.vue:266
-#: js/views/PageDetail.vue:506
+#: js/views/ElementDetail.vue:278 js/views/FileDetail.vue:266
+#: js/views/PageDetail.vue:494
 msgid "There are invalid fields, please resolve the errors first"
 msgstr "Det finns ogiltiga fält, vänligen åtgärda felen först"
 
-#: js/views/ElementDetail.vue:338
+#: js/views/ElementDetail.vue:320
 msgid "Element saved successfully"
 msgstr "Elementet sparades framgångsrikt"
 
-#: js/views/ElementDetail.vue:351
+#: js/views/ElementDetail.vue:333
 msgid "Error saving element"
 msgstr "Fel vid lagring av element"
 
-#: js/views/ElementDetail.vue:421
+#: js/views/ElementDetail.vue:403
 msgid "Error fetching element versions"
 msgstr "Fel vid hämtning av elementversioner"
 
-#: js/views/ElementDetail.vue:467 js/views/FileDetail.vue:412
+#: js/views/ElementDetail.vue:449 js/views/FileDetail.vue:412
 msgid "Used by"
 msgstr "Används av"
 
@@ -2262,17 +2254,17 @@ msgstr "Utkast"
 #: js/views/ElementList.vue:102 js/views/FileList.vue:101
 #: js/views/PageList.vue:151
 msgid "trashed"
-msgstr "förstörd"
+msgstr "Papperskorg"
 
 #: js/views/ElementList.vue:105 js/views/FileList.vue:104
 #: js/views/PageList.vue:154
 msgid "Available only"
-msgstr "Endast tillgänglig"
+msgstr "Endast tillgängliga"
 
 #: js/views/ElementList.vue:106 js/views/FileList.vue:105
 #: js/views/PageList.vue:155
 msgid "Only trashed"
-msgstr "Bara skräpigt"
+msgstr "Endast i papperskorgen"
 
 #: js/views/ElementList.vue:114 js/views/FileList.vue:113
 #: js/views/PageList.vue:181
@@ -2336,45 +2328,37 @@ msgstr "Visa lösenord"
 msgid "Error"
 msgstr "Fel"
 
-#: js/views/PageDetail.vue:471
+#: js/views/PageDetail.vue:459
 msgid "Page published successfully"
 msgstr "Sidan publicerades framgångsrikt"
 
-#: js/views/PageDetail.vue:472
+#: js/views/PageDetail.vue:460
 msgid "Page scheduled for publishing at %{date}"
 msgstr "Sidan planeras för publicering på %{date}"
 
-#: js/views/PageDetail.vue:559
+#: js/views/PageDetail.vue:547
 msgid "Page saved successfully"
 msgstr "Sidan sparades framgångsrikt"
 
-#: js/views/PageDetail.vue:596
+#: js/views/PageDetail.vue:584
 msgid "No page schema for \"content\" found"
 msgstr "Inget sidschema för \"content\" hittades"
 
-#: js/views/PageDetail.vue:732
+#: js/views/PageDetail.vue:722
 msgid "Error fetching page versions"
 msgstr "Fel vid hämtning av sidversioner"
 
-#: js/views/PageDetail.vue:793
+#: js/views/PageDetail.vue:783
 msgid "Translate page"
 msgstr "Översätt sidan"
 
-#: js/views/PageDetail.vue:819
-msgid "Editor"
-msgstr "Redaktör"
-
-#: js/views/PageDetail.vue:836
+#: js/views/PageDetail.vue:826
 msgid "Metrics"
 msgstr "Mätvärden"
 
 #: js/views/PageList.vue:133
 msgid "view"
-msgstr "utsikt"
-
-#: js/views/PageList.vue:135
-msgid "Tree"
-msgstr "Träd"
+msgstr "Vy"
 
 #: js/views/PageList.vue:136
 msgid "List"
@@ -2394,7 +2378,7 @@ msgstr "cache"
 
 #: js/views/PageList.vue:284
 msgid "Press Enter to open the chat"
-msgstr ""
+msgstr "Tryck på Enter för att öppna chatten"
 
 #: js/views/PageList.vue:309
 msgid "Generate page based on prompt"
@@ -2411,6 +2395,37 @@ msgstr ""
 #: js/views/PageList.vue:334
 msgid "Press Enter or the arrow to open the AI assistant and refine in a chat"
 msgstr ""
+"Tryck på Enter eller pilen för att öppna AI-assistenten och finslipa "
+"innehållet i en chatt"
+
+#~ msgid "mime"
+#~ msgstr "mim"
+
+#~ msgid "latest"
+#~ msgstr "senaste"
+
+#~ msgid "oldest"
+#~ msgstr "äldsta"
+
+#~ msgid "Mime"
+#~ msgstr "Mim"
+
+#~ msgid "type"
+#~ msgstr "typ"
+
+#~ msgid "usage"
+#~ msgstr "användning"
+
+#~ msgid "language"
+#~ msgstr "språk"
+
+#~ msgid "tree"
+#~ msgstr "träd"
+
+#~ msgid "Apply access to %{num} page."
+#~ msgid_plural "Apply access to %{num} pages."
+#~ msgstr[0] "Ansök åtkomst till sidan %{num}."
+#~ msgstr[1] "Ansök åtkomst till %{num} sidor."
 
 #~ msgid "Hide"
 #~ msgstr "Dölj i menyn"

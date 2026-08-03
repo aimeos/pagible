@@ -53,8 +53,18 @@ describe('ElementListItems', () => {
   it('shows the translated active sort option', () => {
     mountList({}, { 'element:view': true })
     cy.get('.btn-sort button').click()
-    cy.contains('.v-overlay .v-btn', 'name').click()
-    cy.get('.btn-sort button').should('contain', 'name').and('not.contain', 'NAME')
+    cy.contains('.v-overlay .v-btn', 'Name').click()
+    cy.get('.btn-sort button').should('contain', 'Name').and('not.contain', 'NAME')
+  })
+
+  it('shows title-case sort options', () => {
+    mountList({}, { 'element:view': true })
+    cy.get('.btn-sort button').click()
+    cy.get('.v-overlay .v-btn').then(($buttons) => {
+      expect([...$buttons].map((button) => button.textContent.trim())).to.deep.equal([
+        'Latest', 'Oldest', 'Latest edit', 'Oldest edit', 'Name', 'Type', 'Editor'
+      ])
+    })
   })
 
   it('sorts by latest and oldest edit', () => {

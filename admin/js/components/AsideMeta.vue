@@ -22,7 +22,7 @@ export default {
       }
 
       if (this.item.mime) {
-        map[this.$gettext('mime')] = this.item.mime
+        map[this.$gettext('MIME')] = this.item.mime
       }
 
       if (this.item.editor) {

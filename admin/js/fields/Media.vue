@@ -196,7 +196,7 @@ export default {
         <v-col cols="12" md="9">{{ description }}</v-col>
       </v-row>
       <v-row>
-        <v-col cols="12" md="3" class="name">{{ $gettext('mime') }}:</v-col>
+        <v-col cols="12" md="3" class="name">{{ $gettext('MIME') }}:</v-col>
         <v-col cols="12" md="9">{{ file.mime }}</v-col>
       </v-row>
       <v-row>

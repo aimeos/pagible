@@ -214,17 +214,19 @@ describe('Element List', () => {
   it('shows sort menu with options', () => {
     visitElements()
     cy.get('.layout .btn-sort .v-btn').click()
-    cy.get('.v-list').should('contain', 'latest')
-    cy.get('.v-list').should('contain', 'oldest')
-    cy.get('.v-list').should('contain', 'name')
-    cy.get('.v-list').should('contain', 'type')
-    cy.get('.v-list').should('contain', 'editor')
+    cy.get('.v-list').should('contain', 'Latest')
+    cy.get('.v-list').should('contain', 'Oldest')
+    cy.get('.v-list').should('contain', 'Latest edit')
+    cy.get('.v-list').should('contain', 'Oldest edit')
+    cy.get('.v-list').should('contain', 'Name')
+    cy.get('.v-list').should('contain', 'Type')
+    cy.get('.v-list').should('contain', 'Editor')
   })
 
   it('clicking a sort option triggers GQL reload', () => {
     visitElements()
     cy.get('.layout .btn-sort .v-btn').click()
-    cy.contains('.v-list .v-btn', 'name').click()
+    cy.contains('.v-list .v-btn', 'Name').click()
     cy.wait('@gql')
   })
 

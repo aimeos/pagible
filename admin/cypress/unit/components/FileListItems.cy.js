@@ -56,6 +56,16 @@ describe('FileListItems', () => {
     cy.get('.btn-sort button').should('exist')
   })
 
+  it('shows title-case sort options', () => {
+    mountList({}, { 'file:view': true })
+    cy.get('.btn-sort button').click()
+    cy.get('.v-overlay .v-btn').then(($buttons) => {
+      expect([...$buttons].map((button) => button.textContent.trim())).to.deep.equal([
+        'Latest', 'Oldest', 'Latest edit', 'Oldest edit', 'Name', 'MIME', 'Language', 'Editor', 'Usage'
+      ])
+    })
+  })
+
   it('sorts by latest and oldest edit', () => {
     const query = cy.stub().resolves({
       data: { files: { data: [], paginatorInfo: { lastPage: 1 } } }

@@ -21,17 +21,17 @@ export default {
   computed: {
     labels() {
       return {
-        editor: this.$gettext('editor'),
-        language: this.$gettext('language'),
-        latest: this.$gettext('latest'),
+        Editor: this.$gettext('Editor'),
+        Language: this.$gettext('Language'),
+        Latest: this.$gettext('Latest'),
         'Latest edit': this.$gettext('Latest edit'),
-        mime: this.$gettext('mime'),
-        name: this.$gettext('name'),
-        oldest: this.$gettext('oldest'),
+        MIME: this.$gettext('MIME'),
+        Name: this.$gettext('Name'),
+        Oldest: this.$gettext('Oldest'),
         'Oldest edit': this.$gettext('Oldest edit'),
-        tree: this.$gettext('tree'),
-        type: this.$gettext('type'),
-        usage: this.$gettext('usage')
+        Tree: this.$gettext('Tree'),
+        Type: this.$gettext('Type'),
+        Usage: this.$gettext('Usage')
       }
     },
 

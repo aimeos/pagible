@@ -240,13 +240,13 @@ const SEARCH_PAGES = gql`
 `
 
 const SORT_OPTIONS = Object.freeze([
-  { column: 'LFT', order: 'ASC', label: 'tree' },
-  { column: 'ID', order: 'DESC', label: 'latest' },
-  { column: 'ID', order: 'ASC', label: 'oldest' },
+  { column: 'LFT', order: 'ASC', label: 'Tree' },
+  { column: 'ID', order: 'DESC', label: 'Latest' },
+  { column: 'ID', order: 'ASC', label: 'Oldest' },
   { column: 'LATEST_ID', order: 'DESC', label: 'Latest edit' },
   { column: 'LATEST_ID', order: 'ASC', label: 'Oldest edit' },
-  { column: 'NAME', order: 'ASC', label: 'name' },
-  { column: 'EDITOR', order: 'ASC', label: 'editor' }
+  { column: 'NAME', order: 'ASC', label: 'Name' },
+  { column: 'EDITOR', order: 'ASC', label: 'Editor' }
 ])
 
 export default {
@@ -1943,7 +1943,7 @@ export default {
       </v-toolbar>
       <v-card-text>
         <p class="hint">
-          {{ $ngettext('Apply access to %{num} page.', 'Apply access to %{num} pages.', accessIds.length, { num: accessIds.length }) }}
+          {{ $ngettext('Apply access settings to %{num} page.', 'Apply access settings to %{num} pages.', accessIds.length, { num: accessIds.length }) }}
         </p>
         <PageAccess
           v-if="accessDialog"
