@@ -301,6 +301,31 @@ class GraphqlPageTest extends GraphqlTestAbstract
     }
 
 
+    public function testPagesSortModified()
+    {
+        $first = Page::orderBy( 'latest_id' )->take( 2 )->pluck( 'id' )->map( strval(...) )->all();
+        $last = Page::orderByDesc( 'latest_id' )->take( 2 )->pluck( 'id' )->map( strval(...) )->all();
+
+        $this->expectsDatabaseQueryCount( 4 );
+
+        $response = $this->actingAs( $this->user )->graphQL( '{
+            first: pages(sort: [{column: LATEST_ID, order: ASC}], first: 2) {
+                data {
+                    id
+                }
+            }
+            last: pages(sort: [{column: LATEST_ID, order: DESC}], first: 2) {
+                data {
+                    id
+                }
+            }
+        }' );
+
+        $this->assertSame( $first, array_column( $response->json( 'data.first.data' ), 'id' ) );
+        $this->assertSame( $last, array_column( $response->json( 'data.last.data' ), 'id' ) );
+    }
+
+
     public function testPagesWithParentid()
     {
         $root = Page::where('tag', 'root')->firstOrFail();

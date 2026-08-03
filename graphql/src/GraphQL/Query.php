@@ -128,7 +128,7 @@ final class Query
 
         Filter::pages( $search, $filter + $args );
 
-        $allowed = ['id', 'name', 'title', 'editor', NestedSet::LFT];
+        $allowed = ['id', 'latest_id', 'name', 'title', 'editor', NestedSet::LFT];
         $this->sort( $search, $args['sort'] ?? [], $allowed, NestedSet::LFT, 'asc' );
 
         return $search->paginate( $limit, 'page', $page );

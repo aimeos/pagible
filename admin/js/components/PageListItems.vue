@@ -373,6 +373,24 @@ export default {
         this.isChecked &&
         this.$refs.tree?.statsFlat.some((stat) => stat._checked && stat.data.deleted_at)
       )
+    },
+
+    order() {
+      if (this.sort?.column === 'ID') {
+        return this.sort?.order === 'DESC' ? this.$gettext('latest') : this.$gettext('oldest')
+      }
+
+      if (this.sort?.column === 'LATEST_ID') {
+        return this.sort?.order === 'DESC' ? this.$gettext('Edited last') : this.$gettext('Edited first')
+      }
+
+      const labels = {
+        EDITOR: this.$gettext('editor'),
+        LFT: this.$gettext('tree'),
+        NAME: this.$gettext('name')
+      }
+
+      return labels[this.sort?.column] || this.sort?.column || ''
     }
   },
 
@@ -1653,13 +1671,7 @@ export default {
             :prepend-icon="mdiSort"
             variant="text"
           >
-            {{
-              sort?.column === 'ID'
-                ? sort?.order === 'DESC'
-                  ? $gettext('latest')
-                  : $gettext('oldest')
-                : $gettext('tree')
-            }}
+            {{ order }}
           </v-btn>
         </template>
         <v-list>
@@ -1676,6 +1688,16 @@ export default {
           <v-list-item>
             <v-btn variant="text" @click="setSort('ID', 'ASC')">{{
               $gettext('oldest')
+            }}</v-btn>
+          </v-list-item>
+          <v-list-item>
+            <v-btn variant="text" @click="setSort('LATEST_ID', 'DESC')">{{
+              $gettext('Edited last')
+            }}</v-btn>
+          </v-list-item>
+          <v-list-item>
+            <v-btn variant="text" @click="setSort('LATEST_ID', 'ASC')">{{
+              $gettext('Edited first')
             }}</v-btn>
           </v-list-item>
           <v-list-item>

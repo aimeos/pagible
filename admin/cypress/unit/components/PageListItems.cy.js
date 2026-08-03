@@ -95,6 +95,40 @@ describe('PageListItems', () => {
     cy.get('.btn-sort button').should('exist')
   })
 
+  it('shows edited first and last sort options in list view', () => {
+    mountList({ filter: { view: 'list' } }, { 'page:view': true })
+    cy.get('.btn-sort button').click()
+    cy.get('.v-overlay').should('contain', 'Edited last').and('contain', 'Edited first')
+  })
+
+  it('sorts the list by first and last modification', () => {
+    const query = cy.stub().resolves({
+      data: { pages: { data: [], paginatorInfo: { currentPage: 1, lastPage: 1 } } }
+    })
+
+    mountList({ filter: { view: 'list' } }, { 'page:view': true }, { query }).then(({ wrapper }) => {
+      const vm = wrapper.findComponent(PageListItems).vm
+
+      vm.setSort('LATEST_ID', 'DESC')
+
+      return vm.$nextTick().then(() => {
+        expect(vm.order).to.equal('Edited last')
+        expect(query.lastCall.args[0].variables.sort).to.deep.equal([
+          { column: 'LATEST_ID', order: 'DESC' }
+        ])
+
+        vm.setSort('LATEST_ID', 'ASC')
+
+        return vm.$nextTick().then(() => {
+          expect(vm.order).to.equal('Edited first')
+          expect(query.lastCall.args[0].variables.sort).to.deep.equal([
+            { column: 'LATEST_ID', order: 'ASC' }
+          ])
+        })
+      })
+    })
+  })
+
   it('loads the saved list view with its active filters', () => {
     const query = cy.stub().resolves({
       data: { pages: { data: [], paginatorInfo: { currentPage: 1, lastPage: 1 } } }

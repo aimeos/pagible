@@ -56,7 +56,7 @@ extend type Query {
     @find
 
   "Get the available pages"
-  pages(filter: PageFilter, sort: _ @orderBy(columns: ["id", "name", "title", "editor", "_lft"]), publish: Publish, trashed: Trashed): [Page!]
+  pages(filter: PageFilter, sort: _ @orderBy(columns: ["id", "latest_id", "name", "title", "editor", "_lft"]), publish: Publish, trashed: Trashed): [Page!]
     @paginate(resolver: "\\Aimeos\\Cms\\GraphQL\\Query@pages", defaultCount: 100)
     @guard @cmsPermission(action: "page:view") @throttle(name: "cms-graphql")
 

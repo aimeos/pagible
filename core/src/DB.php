@@ -21,9 +21,9 @@ class DB
      * @var array<string, list<string>>
      */
     public const MODEL_COLUMNS = [
-        'cms_pages' => ['id', 'tenant_id', 'parent_id', NestedSet::DEPTH, NestedSet::LFT, NestedSet::RGT],
-        'cms_files' => ['id', 'tenant_id', 'name', 'mime', 'path'],
-        'cms_elements' => ['id', 'tenant_id', 'type', 'name'],
+        'cms_pages' => ['id', 'tenant_id', 'parent_id', 'latest_id', NestedSet::DEPTH, NestedSet::LFT, NestedSet::RGT],
+        'cms_files' => ['id', 'tenant_id', 'latest_id', 'name', 'mime', 'path'],
+        'cms_elements' => ['id', 'tenant_id', 'latest_id', 'type', 'name'],
     ];
 
 
