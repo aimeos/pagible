@@ -17,7 +17,6 @@ import { useUserStore, useMessageStore, useViewStack } from '../stores'
 import { fileurl, filesrcset, IMAGE_MIME_FILTER } from '../utils'
 import { defineAsyncComponent } from 'vue'
 import FileProtect from '../components/FileProtect.vue'
-import FileDetail from '../views/FileDetail.vue'
 
 const FileAiDialog = defineAsyncComponent(() => import('../components/FileAiDialog.vue'))
 const FileUrlDialog = defineAsyncComponent(() => import('../components/FileUrlDialog.vue'))
@@ -27,7 +26,6 @@ export default {
   inheritAttrs: false,
 
   components: {
-    FileDetail, // eslint-disable-line vue/no-unused-components -- used programmatically via openView()
     FileProtect,
     FileDialog,
     FileAiDialog,
@@ -208,10 +206,12 @@ export default {
       }
     },
 
-    open(item) {
+    async open(item) {
       // Editing an image in the stacked FileDetail only updates the file's own
       // (already persisted) draft, not the page content, so just refresh the
       // preview when FileDetail saves.
+      const { default: FileDetail } = await import('../views/FileDetail.vue')
+
       this.viewStack.openView(FileDetail, {
         item: item,
         stacked: true,
