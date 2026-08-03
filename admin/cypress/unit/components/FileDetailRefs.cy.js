@@ -69,4 +69,35 @@ describe('FileDetailRefs', () => {
         .and('have.attr', 'title', 'Restricted')
     })
   })
+
+  it('opens the item each version belongs to', () => {
+    mountRefs().then(({ wrapper }) => {
+      const vm = wrapper.findComponent(FileDetailRefs).vm
+
+      cy.stub(vm, 'openElement').as('openElement')
+      cy.stub(vm, 'openFile').as('openFile')
+      cy.stub(vm, 'openPage').as('openPage')
+
+      vm.openVersion({ id: 'element-1', type: 'Element' })
+      vm.openVersion({ id: 'file-1', type: 'File' })
+      vm.openVersion({ id: 'page-1', type: 'Page' })
+
+      cy.get('@openElement').should('have.been.calledOnceWith', { id: 'element-1' })
+      cy.get('@openFile').should('have.been.calledOnceWith', { id: 'file-1' })
+      cy.get('@openPage').should('have.been.calledOnceWith', { id: 'page-1' })
+    })
+  })
+
+  it('opens a version owner when its row is clicked', () => {
+    mountRefs().then(({ wrapper }) => {
+      const vm = wrapper.findComponent(FileDetailRefs).vm
+      const version = { key: 'version-1', id: 'page-1', type: 'Page', published: 'yes' }
+
+      vm.versions = [version]
+      cy.stub(vm, 'openVersion').as('openVersion')
+
+      cy.get('.v-table.versions tbody tr').click()
+      cy.get('@openVersion').should('have.been.calledOnceWith', version)
+    })
+  })
 })

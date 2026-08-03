@@ -3,7 +3,7 @@
 <script>
 import gql from 'graphql-tag'
 import { mdiLock } from '@mdi/js'
-import { useUserStore } from '../stores'
+import { useUserStore, useViewStack } from '../stores'
 
 const FETCH_ELEMENT_REFS = gql`
   query ($id: ID!) {
@@ -40,9 +40,10 @@ export default {
   }),
 
   setup() {
+    const viewStack = useViewStack()
     const user = useUserStore()
 
-    return { mdiLock, user }
+    return { mdiLock, user, viewStack }
   },
 
   beforeUnmount() {
@@ -55,6 +56,7 @@ export default {
       const type = item.versionable_type.slice(item.versionable_type.lastIndexOf('\\') + 1)
 
       return {
+        key: item.id,
         id: item.versionable_id,
         type,
         published: item.published
@@ -63,6 +65,29 @@ export default {
             ? new Date(item.publish_at).toLocaleDateString()
             : this.$gettext('no')
       }
+    },
+
+    async openElement(item) {
+      const { default: ElementDetail } = await import('../views/ElementDetail.vue')
+      this.viewStack.openView(ElementDetail, { item: { ...item }, stacked: true })
+    },
+
+    async openFile(item) {
+      const { default: FileDetail } = await import('../views/FileDetail.vue')
+      this.viewStack.openView(FileDetail, { item: { ...item }, stacked: true })
+    },
+
+    async openPage(item) {
+      const { default: PageDetail } = await import('../views/PageDetail.vue')
+      this.viewStack.openView(PageDetail, { item: { ...item }, stacked: true })
+    },
+
+    openVersion(item) {
+      const owner = { id: item.id }
+
+      if (item.type === 'Element') return this.openElement(owner)
+      if (item.type === 'File') return this.openFile(owner)
+      if (item.type === 'Page') return this.openPage(owner)
     }
   },
 
@@ -115,7 +140,7 @@ export default {
         <v-expansion-panel v-if="element.bypages?.length && user.can('page:view')">
           <v-expansion-panel-title>{{ $gettext('Shared elements') }}</v-expansion-panel-title>
           <v-expansion-panel-text>
-            <v-table density="comfortable" hover>
+            <v-table class="pages" density="comfortable" hover>
               <thead>
                 <tr>
                   <th>{{ $gettext('ID') }}</th>
@@ -124,7 +149,7 @@ export default {
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="v in element.bypages" :key="v.id">
+                <tr v-for="v in element.bypages" :key="v.id" @click="openPage(v)">
                   <td>{{ v.id }}</td>
                   <td>{{ v.path }}</td>
                   <td>
@@ -143,9 +168,9 @@ export default {
         </v-expansion-panel>
 
         <v-expansion-panel v-if="versions?.length">
-          <v-expansion-panel-title>Versions</v-expansion-panel-title>
+          <v-expansion-panel-title>{{ $gettext('Versions') }}</v-expansion-panel-title>
           <v-expansion-panel-text>
-            <v-table density="comfortable" hover>
+            <v-table class="versions" density="comfortable" hover>
               <thead>
                 <tr>
                   <th>{{ $gettext('ID') }}</th>
@@ -154,7 +179,7 @@ export default {
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="v in versions" :key="v.id">
+                <tr v-for="v in versions" :key="v.key" @click="openVersion(v)">
                   <td>{{ v.id }}</td>
                   <td>{{ v.type }}</td>
                   <td>{{ v.published }}</td>
@@ -172,6 +197,11 @@ export default {
 .v-expansion-panel-title {
   font-weight: bold;
   font-size: 110%;
+}
+
+.v-table.pages tbody tr,
+.v-table.versions tbody tr {
+  cursor: pointer;
 }
 
 thead th {
