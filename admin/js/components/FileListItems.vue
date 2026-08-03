@@ -17,6 +17,7 @@ import {
   mdiSort,
   mdiClockOutline,
   mdiLock,
+  mdiPlusLock,
   mdiRefresh,
   mdiPencil
 } from '@mdi/js'
@@ -135,8 +136,7 @@ export default {
       destroyed: false,
       echoCleanup: null,
       echoPromise: null,
-      outdated: false,
-      protect: false
+      outdated: false
     }
   },
 
@@ -165,6 +165,7 @@ export default {
       mdiSort,
       mdiClockOutline,
       mdiLock,
+      mdiPlusLock,
       mdiRefresh,
       mdiPencil,
       debounce,
@@ -231,7 +232,7 @@ export default {
   },
 
   methods: {
-    add(ev) {
+    add(ev, disk = 'public') {
       if (this.embed || !this.user.can('file:add')) {
         this.messages.add(this.$gettext('Permission denied'), 'error')
         return
@@ -239,7 +240,6 @@ export default {
 
       const promises = []
       const files = ev.target.files || ev.dataTransfer.files || []
-      const disk = this.protect ? 'private' : 'public'
 
       if (!files.length) {
         return
@@ -735,8 +735,9 @@ export default {
         </component>
       </span>
 
-      <div v-if="!this.embed && user.can('file:add')">
-        <input @change="add($event)" ref="upload" type="file" multiple hidden />
+      <div v-if="!this.embed && user.can('file:add')" class="upload-actions">
+        <input @change="add($event, 'public')" ref="upload" type="file" multiple hidden />
+        <input @change="add($event, 'private')" ref="uploadPrivate" type="file" multiple hidden />
         <v-btn
           @click="$refs.upload.click()"
           :title="$gettext('Add files')"
@@ -746,17 +747,16 @@ export default {
           color="primary"
           variant="tonal"
         />
+        <v-btn
+          @click="$refs.uploadPrivate.click()"
+          :title="$gettext('Add files') + ': ' + $gettext('Protect access')"
+          :disabled="loading"
+          :icon="mdiPlusLock"
+          class="btn-add-private"
+          color="primary"
+          variant="tonal"
+        />
       </div>
-
-      <v-switch
-        v-if="!embed && user.can('file:add')"
-        v-model="protect"
-        :label="$gettext('Protect access')"
-        class="protect"
-        color="primary"
-        density="compact"
-        hide-details
-      />
     </div>
 
     <div class="search">
@@ -1057,14 +1057,24 @@ export default {
 
   <v-pagination v-if="last > 1" v-model="page" :length="last"></v-pagination>
 
-  <div v-if="!this.embed && user.can('file:add')" class="btn-group">
-    <input @change="add($event)" ref="upload" type="file" multiple hidden />
+  <div v-if="!this.embed && user.can('file:add')" class="btn-group upload-actions">
+    <input @change="add($event, 'public')" ref="uploadBottom" type="file" multiple hidden />
+    <input @change="add($event, 'private')" ref="uploadPrivateBottom" type="file" multiple hidden />
     <v-btn
-      @click="$refs.upload.click()"
+      @click="$refs.uploadBottom.click()"
       :title="$gettext('Add files')"
       :disabled="loading"
       :icon="mdiPlus"
       class="btn-add"
+      color="primary"
+      variant="tonal"
+    />
+    <v-btn
+      @click="$refs.uploadPrivateBottom.click()"
+      :title="$gettext('Add files') + ': ' + $gettext('Protect access')"
+      :disabled="loading"
+      :icon="mdiPlusLock"
+      class="btn-add-private"
       color="primary"
       variant="tonal"
     />
@@ -1074,6 +1084,11 @@ export default {
 </template>
 
 <style scoped>
+.upload-actions {
+  display: flex;
+  gap: 8px;
+}
+
 .layout .v-list-item {
   text-transform: uppercase;
 }

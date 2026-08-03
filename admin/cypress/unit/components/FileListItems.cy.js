@@ -66,14 +66,16 @@ describe('FileListItems', () => {
     cy.get('button.btn-add').should('exist')
   })
 
-  it('offers public-by-default page access protection for uploads', () => {
-    mountList({ embed: false }, { 'file:view': true, 'file:add': true }).then(({ wrapper }) => {
-      expect(wrapper.findComponent(FileListItems).vm.protect).to.equal(false)
-      cy.contains('.v-switch', 'Protect access').should('exist')
-    })
+  it('offers separate public and protected upload buttons', () => {
+    mountList({ embed: false }, { 'file:view': true, 'file:add': true })
+    cy.get('button.btn-add').should('exist')
+    cy.get('button.btn-add-private')
+      .should('exist')
+      .and('have.attr', 'title', 'Add files: Protect access')
+    cy.get('.v-switch').should('not.exist')
   })
 
-  it('uploads files directly to the selected disk', () => {
+  it('uploads protected files directly to the private disk', () => {
     const mutate = cy.stub().resolves({
       data: {
         addFile: {
@@ -94,9 +96,8 @@ describe('FileListItems', () => {
     ).then(({ wrapper }) => {
       const vm = wrapper.findComponent(FileListItems).vm
       const file = new File(['private'], 'private.pdf', { type: 'application/pdf' })
-      vm.protect = true
 
-      return vm.add({ target: { files: [file] } }).then(() => {
+      return vm.add({ target: { files: [file] } }, 'private').then(() => {
         expect(mutate).to.have.been.calledOnce
         expect(mutate.firstCall.args[0].variables).to.deep.equal({
           disk: 'private',
