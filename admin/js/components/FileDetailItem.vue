@@ -3,6 +3,7 @@
 <script>
 import gql from 'graphql-tag'
 import FileAiDialog from './FileAiDialog.vue'
+import FileProtect from './FileProtect.vue'
 import { defineAsyncComponent, markRaw } from 'vue'
 import FileDetailItemAudio from './FileDetailItemAudio.vue'
 import {
@@ -13,6 +14,7 @@ import {
   useSideStore
 } from '../stores'
 import { mdiContentCopy, mdiTranslate, mdiCreation, mdiMicrophoneOutline, mdiMicrophone } from '@mdi/js'
+import { RELOCATE_FILE } from '../files'
 import { fileurl, toBlob, locales, txlocales } from '../utils'
 
 const FileDetailItemImage = defineAsyncComponent(() => import('./FileDetailItemImage.vue'))
@@ -31,7 +33,8 @@ export default {
     FileAiDialog,
     FileDetailItemImage,
     FileDetailItemVideo,
-    FileDetailItemAudio
+    FileDetailItemAudio,
+    FileProtect
   },
 
   props: {
@@ -87,6 +90,14 @@ export default {
   computed: {
     desclangs() {
       return [...new Set([...this.languages.available, ...Object.keys(this.item.description || {})])]
+    },
+
+    protect() {
+      return this.item.disk === 'private'
+    },
+
+    protectReadonly() {
+      return !this.user.can(this.protect ? 'file:publish' : 'file:save')
     },
 
     readonly() {
@@ -169,6 +180,51 @@ export default {
             })
         })
       })
+    },
+
+    setProtect(value) {
+      const protect = Boolean(value)
+      const disk = protect ? 'private' : 'public'
+
+      if (this.item.disk === disk) {
+        return Promise.resolve(true)
+      }
+
+      if (!this.user.can(protect ? 'file:save' : 'file:publish')) {
+        this.messages.add(this.$gettext('Permission denied'), 'error')
+        return Promise.resolve(false)
+      }
+
+      if (this.loading.protect) {
+        return Promise.resolve(false)
+      }
+
+      this.loading.protect = true
+
+      return this.$apollo
+        .mutate({
+          mutation: RELOCATE_FILE,
+          variables: {
+            id: [this.item.id],
+            disk: disk
+          }
+        })
+        .then((response) => {
+          if (response.errors || !response.data?.relocateFile?.[0]) {
+            throw response.errors || response
+          }
+
+          Object.assign(this.item, response.data.relocateFile[0])
+          return true
+        })
+        .catch((error) => {
+          this.messages.add(this.$gettext('Error saving file') + ':\n' + error, 'error')
+          this.$log('FileDetailItem::setProtect(): Error relocating file', this.item, error)
+          return false
+        })
+        .finally(() => {
+          this.loading.protect = false
+        })
     },
 
     transcribeFile() {
@@ -315,6 +371,13 @@ export default {
 <template>
   <v-container>
     <v-sheet class="scroll">
+      <FileProtect
+        :disabled="loading.protect"
+        :loading="loading.protect"
+        :model-value="protect"
+        :readonly="protectReadonly"
+        @update:model-value="setProtect($event)"
+      />
       <v-row>
         <v-col cols="12" md="6">
           <v-text-field
@@ -356,6 +419,7 @@ export default {
         <v-col v-if="item" cols="12" class="preview">
           <FileDetailItemImage
             v-if="item.mime?.startsWith('image/')"
+            :key="item.disk"
             :item="item"
             :readonly="readonly"
             @update:file="$emit('update:file', $event)"
