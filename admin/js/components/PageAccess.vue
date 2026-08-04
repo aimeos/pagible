@@ -6,7 +6,7 @@ import { useMessageStore } from '../stores'
 import { debounce, PAGE_BULK_LIMIT } from '../utils'
 
 const FETCH_ACCESS = gql`
-  query PageAccessValues($term: String!, $first: Int!) {
+  query PageAccessValues($term: String, $first: Int!) {
     access(term: $term, first: $first)
   }
 `

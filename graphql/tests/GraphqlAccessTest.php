@@ -76,6 +76,17 @@ class GraphqlAccessTest extends GraphqlTestAbstract
     }
 
 
+    public function testSearchesAccessValuesWithNormalizedEmptyTerm(): void
+    {
+        $this->actingAs( $this->user )->graphQL( '
+            query($term: String) {
+                access(term: $term)
+            }
+        ', ['term' => ''] )
+            ->assertExactJson( ['data' => ['access' => ['alpha', 'beta']]] );
+    }
+
+
     public function testReturnsAccessValuesForPageAccessEditors(): void
     {
         $this->user->cmsperms = ['page:access'];

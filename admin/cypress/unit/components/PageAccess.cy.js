@@ -60,6 +60,21 @@ describe('PageAccess', () => {
     cy.get('.btn-apply-access').should('be.enabled')
   })
 
+  it('loads access values when restricted access is selected', () => {
+    mountAccess(undefined)
+    cy.contains('.v-radio', 'Restricted').find('input').check({ force: true })
+
+    cy.get('@query').should((query) => {
+      const request = query.firstCall.args[0]
+      const term = request.query.definitions[0].variableDefinitions.find(
+        (definition) => definition.variable.name.value === 'term'
+      )
+
+      expect(term.type.kind).to.equal('NamedType')
+      expect(request.variables).to.deep.equal({ term: '', first: 50 })
+    })
+  })
+
   it('searches access values remotely with a bounded query', () => {
     mountAccess(['member']).then(async ({ wrapper }) => {
       await wrapper.findComponent(PageAccess).vm.load('alp')
