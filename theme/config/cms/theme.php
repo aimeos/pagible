@@ -11,7 +11,7 @@ return [
     | for fast response times.
     |
     */
-    'cache' => env( 'APP_DEBUG' ) ? 'array' : 'file',
+    'cache' => env( 'CMS_THEME_CACHE', env( 'APP_DEBUG' ) ? 'array' : 'file' ),
 
     /*
     |--------------------------------------------------------------------------

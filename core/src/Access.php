@@ -174,12 +174,6 @@ class Access
             throw new Exception( sprintf( 'Access value "%s" already exists.', $value ) );
         }
 
-        $limit = self::limit();
-
-        if( count( $catalog ) >= $limit ) {
-            throw self::overflow( $limit );
-        }
-
         ( self::$addCallback )( $value );
         $this->refresh();
 
@@ -434,7 +428,6 @@ class Access
 
         $values = self::$listCallback ? ( self::$listCallback )() : [];
         $catalog = [];
-        $limit = self::limit();
 
         foreach( $values as $value )
         {
@@ -443,10 +436,6 @@ class Access
             }
 
             $catalog[self::value( $value )] = true;
-
-            if( count( $catalog ) > $limit ) {
-                throw self::overflow( $limit );
-            }
         }
 
         ksort( $catalog, SORT_STRING );
@@ -639,7 +628,7 @@ class Access
 
 
     /**
-     * Returns a bounded, ordered list of configured permission names.
+     * Returns an ordered list of configured permission names.
      *
      * @param array<string, mixed> $where
      * @return array<int, mixed>
@@ -652,38 +641,11 @@ class Access
             $query->where( $column, $value );
         }
 
-        $limit = self::limit();
         $values = $query->distinct()->orderBy( 'name' )
-            ->limit( $limit + 1 )
             ->pluck( 'name' )
             ->all();
 
-        if( count( $values ) > $limit ) {
-            throw self::overflow( $limit );
-        }
-
         return $values;
-    }
-
-
-    /**
-     * Returns the strict maximum number of frontend access values.
-     */
-    private static function limit() : int
-    {
-        return max( 1, (int) config( 'cms.access.limit', 250 ) );
-    }
-
-
-    /**
-     * Creates the canonical access-catalog overflow exception.
-     */
-    private static function overflow( int $limit ) : Exception
-    {
-        return new Exception( sprintf(
-            'Frontend access catalog exceeds cms.access.limit (%d).',
-            $limit,
-        ) );
     }
 
 

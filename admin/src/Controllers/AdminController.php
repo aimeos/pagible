@@ -38,7 +38,6 @@ class AdminController extends Controller
 
     public function index(): Response
     {
-        $media = config( 'cms.admin.csp.media-src' );
         $nonce = base64_encode( random_bytes( 16 ) );
 
         return response()
@@ -48,9 +47,9 @@ class AdminController extends Controller
                 "default-src 'self' data: blob:;" .
                 "style-src 'self' 'unsafe-inline';" .
                 "script-src 'self' 'nonce-{$nonce}' blob:;" .
-                "media-src 'self' data: blob: http: https: " . $media . ";" .
-                "img-src 'self' data: blob: http: https: " . $media . ";" .
-                "connect-src 'self' data: blob: ws: wss: http: https: " . $media . ";" .
+                "media-src 'self' data: blob: http: https:;" .
+                "img-src 'self' data: blob: http: https:;" .
+                "connect-src 'self' data: blob: ws: wss: http: https:;" .
                 "frame-src 'self' http: https:;" .
                 "worker-src 'self' blob:;"
             );

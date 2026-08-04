@@ -310,13 +310,11 @@ event remains authoritative for access removal.
 Payment roles are added to the existing Pagible `Access` grants. They do not
 replace a custom Bouncer, Laratrust, Spatie, or `Access::using()` resolver.
 Frontend page rendering reads no subscription table: the authenticated user
-query supplies `users.access`. `cms.access.limit` is the strict maximum
-number of distinct access values in each tenant's complete catalog. Pagible
-rejects oversized catalogs and additions beyond that limit. Page rendering,
-navigation, pricing checkout, and JSON:API all use the same database-side
-access predicate. An effective `grants` callback avoids Gate calls for each
-catalog value; its results are filtered through the bounded catalog and
-memoized per user and tenant for the request.
+query supplies `users.access`. Page rendering, navigation, pricing checkout,
+and JSON:API all use the same database-side access predicate. An effective
+`grants` callback avoids Gate calls for each catalog value; its results are
+filtered through the configured catalog and memoized per user and tenant for
+the request.
 
 Webhook handling and the corresponding `users.access` mutation are synchronous.
 An exception prevents a successful response so the payment provider can retry

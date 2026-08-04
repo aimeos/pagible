@@ -36,12 +36,6 @@ The `colors` section defines Vuetify theme colors for `light` and `dark` modes. 
 | `proxy.timeout` | `CMS_PROXY_TIMEOUT` | `30` | Stream timeout in seconds |
 | `proxy.middleware` | | `['throttle:cms-proxy']` | Middleware applied to the proxy route |
 
-### CSP Media Source
-
-| Option | Description |
-|--------|-------------|
-| `csp.media-src` | Additional CSP `media-src` directive for the admin panel (e.g., CDN domains) |
-
 ## Commands
 
 ### cms:install:admin

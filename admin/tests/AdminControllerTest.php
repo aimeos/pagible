@@ -63,6 +63,7 @@ class AdminControllerTest extends AdminTestAbstract
             $this->assertStringContainsString( "default-src 'self'", $csp );
             $this->assertStringContainsString( "script-src 'self'", $csp );
             $this->assertStringContainsString( "style-src 'self'", $csp );
+            $this->assertStringContainsString( "media-src 'self' data: blob: http: https:;", $csp );
             $this->assertStringContainsString( 'nonce-', $csp );
         } finally {
             @unlink( $manifestPath );

@@ -14,7 +14,7 @@ After installation, the configuration is available in `config/cms/theme.php`:
 
 | Option | Env Variable | Default | Description |
 |--------|-------------|---------|-------------|
-| `cache` | | `file` (or `array` in debug) | Cache store for rendered pages (from `config/cache.php`) |
+| `cache` | `CMS_THEME_CACHE` | `file` (or `array` in debug) | Cache store for rendered pages (from `config/cache.php`) |
 | `lock` | `CMS_THEME_LOCK` | `5` | Complete-page render lock lifetime in seconds |
 | `stale` | `CMS_THEME_STALE` | `10` | Seconds an expired complete page remains available during revalidation |
 | `ttl` | `CMS_THEME_TTL` | `86400` (or `0` in debug) | Time-to-live for cached pages in seconds; `0` disables caching |

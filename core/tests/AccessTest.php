@@ -262,7 +262,7 @@ class AccessTest extends CoreTestAbstract
     }
 
 
-    public function testMembershipAndSearchUseBoundedCatalog(): void
+    public function testMembershipAndSearchUseCatalog(): void
     {
         $catalogCalls = 0;
 
@@ -285,9 +285,8 @@ class AccessTest extends CoreTestAbstract
     }
 
 
-    public function testCatalogStrictlyEnforcesLimit(): void
+    public function testCatalogReturnsAllValues(): void
     {
-        config( ['cms.access.limit' => 2] );
         $yielded = 0;
 
         Access::using( function() use ( &$yielded ) {
@@ -298,43 +297,31 @@ class AccessTest extends CoreTestAbstract
             }
         } );
 
-        try {
-            app( Access::class )->list();
-            $this->fail( 'The configured limit must cap the complete catalog.' );
-        } catch( Exception $e ) {
-            $this->assertSame(
-                'Frontend access catalog exceeds cms.access.limit (2).',
-                $e->getMessage(),
-            );
-        }
+        $values = app( Access::class )->list();
 
-        $this->assertSame( 3, $yielded );
+        $this->assertCount( 1000, $values );
+        $this->assertContains( 'access-1000', $values );
+        $this->assertSame( 1000, $yielded );
     }
 
 
-    public function testAdditionCannotExceedLimit(): void
+    public function testAdditionExtendsLargeCatalog(): void
     {
-        config( ['cms.access.limit' => 2] );
-        $added = false;
+        $values = array_map( fn( int $idx ) => 'access-' . $idx, range( 1, 250 ) );
 
         Access::using(
-            list: fn() => ['alpha', 'beta'],
-            add: function( string $value ) use ( &$added ) {
-                $added = true;
+            list: function() use ( &$values ) {
+                return $values;
+            },
+            add: function( string $value ) use ( &$values ) {
+                $values[] = $value;
             },
         );
 
-        try {
-            app( Access::class )->add( 'gamma' );
-            $this->fail( 'Additions must not exceed the configured limit.' );
-        } catch( Exception $e ) {
-            $this->assertSame(
-                'Frontend access catalog exceeds cms.access.limit (2).',
-                $e->getMessage(),
-            );
-        }
+        $result = app( Access::class )->add( 'access-251' );
 
-        $this->assertFalse( $added );
+        $this->assertCount( 251, $result );
+        $this->assertContains( 'access-251', $result );
     }
 
 
@@ -571,6 +558,40 @@ class AccessTest extends CoreTestAbstract
             $this->assertFalse( $user->relationLoaded( 'permissions' ) );
             $this->assertSame( 'other', $registrar->tenant );
             $this->assertSame( 2, $registrar->calls );
+        }
+        finally {
+            $this->dropAccessTable();
+        }
+    }
+
+
+    public function testSpatieAdapterReturnsCompleteCatalog(): void
+    {
+        if( !class_exists( 'Spatie\\Permission\\PermissionRegistrar', false ) ) {
+            class_alias( SpatieRegistrarFake::class, 'Spatie\\Permission\\PermissionRegistrar' );
+        }
+
+        $this->createAccessTable();
+
+        try
+        {
+            $rows = array_map( fn( int $idx ) => [
+                'name' => 'access-' . $idx,
+                'guard_name' => 'web',
+            ], range( 1, 300 ) );
+
+            DB::connection( config( 'cms.db', 'sqlite' ) )
+                ->table( 'test_access_permissions' )
+                ->insert( $rows );
+
+            app()->instance( 'Spatie\\Permission\\PermissionRegistrar', new SpatieRegistrarFake() );
+            config( [
+                'auth.defaults.guard' => 'web',
+                'permission.models.permission' => AccessWriteModel::class,
+            ] );
+            Access::spatie();
+
+            $this->assertCount( 300, app( Access::class )->list() );
         }
         finally {
             $this->dropAccessTable();
