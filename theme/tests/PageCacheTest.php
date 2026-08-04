@@ -82,6 +82,21 @@ class PageCacheTest extends ThemeTestAbstract
     }
 
 
+    public function testReturnsIdentityCachedPageWithoutAcceptEncoding(): void
+    {
+        $html = str_repeat( '<p>cached page</p>', 100 );
+        $this->cache( 'identity', $html );
+        request()->headers->remove( 'Accept-Encoding' );
+
+        $response = PageCache::response( 'identity' );
+
+        $this->assertNotNull( $response );
+        $this->assertNull( $response->headers->get( 'Content-Encoding' ) );
+        $this->assertSame( 'Accept-Encoding', $response->headers->get( 'Vary' ) );
+        $this->assertSame( $html, $response->getContent() );
+    }
+
+
     private function cache( string $path, string $html ): void
     {
         config( ['cms.theme.cache' => 'array'] );

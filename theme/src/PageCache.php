@@ -92,7 +92,7 @@ class PageCache
         $maxage = max( 0, $entry['freshUntil'] - time() );
         $expires = gmdate( 'D, d M Y H:i:s', $entry['freshUntil'] ) . ' GMT';
 
-        $gzip = AcceptHeader::fromString( request()->headers->get( 'Accept-Encoding' ) )->get( 'gzip' )->getQuality() > 0;
+        $gzip = AcceptHeader::fromString( request()->headers->get( 'Accept-Encoding' ) )->get( 'gzip' )?->getQuality() > 0;
         $content = $gzip ? (string) $entry['gzip'] : gzdecode( (string) $entry['gzip'] );
 
         if( !is_string( $content ) ) {
@@ -112,7 +112,7 @@ class PageCache
     /**
      * Returns a validated cached-page envelope.
      *
-     * @return array{html?: string, gzip?: string, freshUntil: int}|null
+     * @return array{gzip: string, freshUntil: int}|null
      */
     private static function get( string $key, bool $fresh = false ) : ?array
     {
