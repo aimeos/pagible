@@ -1946,7 +1946,7 @@ msgstr "Μηχανές αναζήτησης"
 #: js/strings.js:54
 msgctxt "st"
 msgid "theme"
-msgstr "θέμα"
+msgstr "Θέμα"
 
 #: js/strings.js:55
 msgctxt "st"
@@ -2167,6 +2167,31 @@ msgstr "Έγινε"
 msgctxt "ai"
 msgid "Already exists"
 msgstr "Υπάρχει ήδη"
+
+#: js/strings.js:108
+msgctxt "sg"
+msgid "expert"
+msgstr "Για προχωρημένους"
+
+#: js/strings.js:109
+msgctxt "sg"
+msgid "theme"
+msgstr "Θέμα"
+
+#: js/strings.js:110
+msgctxt "st"
+msgid "logo"
+msgstr "Λογότυπο"
+
+#: js/strings.js:111
+msgctxt "st"
+msgid "logo-alternative"
+msgstr "Εναλλακτικό λογότυπο"
+
+#: js/strings.js:112
+msgctxt "st"
+msgid "icon"
+msgstr "Εικονίδιο"
 
 #: js/utils.js:201
 msgid "None"
@@ -2422,6 +2447,7 @@ msgid "Press Enter or the arrow to open the AI assistant and refine in a chat"
 msgstr ""
 "Πατήστε Enter ή το βέλος για να ανοίξετε τον βοηθό AI και να βελτιώσετε το "
 "περιεχόμενο σε μια συνομιλία"
+
 
 #~ msgid "mime"
 #~ msgstr "mime"

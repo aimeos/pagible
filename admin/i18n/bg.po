@@ -1942,7 +1942,7 @@ msgstr "Търсачки"
 #: js/strings.js:54
 msgctxt "st"
 msgid "theme"
-msgstr "тема"
+msgstr "Тема"
 
 #: js/strings.js:55
 msgctxt "st"
@@ -2163,6 +2163,31 @@ msgstr "Готово"
 msgctxt "ai"
 msgid "Already exists"
 msgstr "Вече съществува"
+
+#: js/strings.js:108
+msgctxt "sg"
+msgid "expert"
+msgstr "Разширени"
+
+#: js/strings.js:109
+msgctxt "sg"
+msgid "theme"
+msgstr "Тема"
+
+#: js/strings.js:110
+msgctxt "st"
+msgid "logo"
+msgstr "Лого"
+
+#: js/strings.js:111
+msgctxt "st"
+msgid "logo-alternative"
+msgstr "Алтернативно лого"
+
+#: js/strings.js:112
+msgctxt "st"
+msgid "icon"
+msgstr "Икона"
 
 #: js/utils.js:201
 msgid "None"
@@ -2418,6 +2443,7 @@ msgid "Press Enter or the arrow to open the AI assistant and refine in a chat"
 msgstr ""
 "Натиснете Enter или стрелката, за да отворите AI асистента и да прецизирате "
 "съдържанието в чат"
+
 
 #~ msgid "mime"
 #~ msgstr "mime"

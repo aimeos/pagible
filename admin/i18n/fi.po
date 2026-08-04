@@ -1943,7 +1943,7 @@ msgstr "Hakukoneet"
 #: js/strings.js:54
 msgctxt "st"
 msgid "theme"
-msgstr "teema"
+msgstr "Teema"
 
 #: js/strings.js:55
 msgctxt "st"
@@ -2164,6 +2164,31 @@ msgstr "Valmis"
 msgctxt "ai"
 msgid "Already exists"
 msgstr "Jo olemassa"
+
+#: js/strings.js:108
+msgctxt "sg"
+msgid "expert"
+msgstr "Edistyneet"
+
+#: js/strings.js:109
+msgctxt "sg"
+msgid "theme"
+msgstr "Teema"
+
+#: js/strings.js:110
+msgctxt "st"
+msgid "logo"
+msgstr "Logo"
+
+#: js/strings.js:111
+msgctxt "st"
+msgid "logo-alternative"
+msgstr "Vaihtoehtoinen logo"
+
+#: js/strings.js:112
+msgctxt "st"
+msgid "icon"
+msgstr "Kuvake"
 
 #: js/utils.js:201
 msgid "None"
@@ -2419,6 +2444,7 @@ msgid "Press Enter or the arrow to open the AI assistant and refine in a chat"
 msgstr ""
 "Avaa tekoälyavustaja ja tarkenna sisältöä keskustelussa painamalla Enter-"
 "näppäintä tai nuolta"
+
 
 #~ msgid "mime"
 #~ msgstr "mime"

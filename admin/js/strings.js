@@ -103,4 +103,11 @@ if ($pgettext) {
   // AI response
   $pgettext('ai', 'Done')
   $pgettext('ai', 'Already exists')
+
+  // page config groups and elements
+  $pgettext('sg', 'expert')
+  $pgettext('sg', 'theme')
+  $pgettext('st', 'logo')
+  $pgettext('st', 'logo-alternative')
+  $pgettext('st', 'icon')
 }

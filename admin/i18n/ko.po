@@ -2159,6 +2159,31 @@ msgctxt "ai"
 msgid "Already exists"
 msgstr "이미 존재"
 
+#: js/strings.js:108
+msgctxt "sg"
+msgid "expert"
+msgstr "고급"
+
+#: js/strings.js:109
+msgctxt "sg"
+msgid "theme"
+msgstr "테마"
+
+#: js/strings.js:110
+msgctxt "st"
+msgid "logo"
+msgstr "로고"
+
+#: js/strings.js:111
+msgctxt "st"
+msgid "logo-alternative"
+msgstr "대체 로고"
+
+#: js/strings.js:112
+msgctxt "st"
+msgid "icon"
+msgstr "아이콘"
+
 #: js/utils.js:201
 msgid "None"
 msgstr "없음"
@@ -2410,6 +2435,7 @@ msgstr ""
 msgid "Press Enter or the arrow to open the AI assistant and refine in a chat"
 msgstr ""
 "Enter 키 또는 화살표를 눌러 AI 어시스턴트를 열고 채팅에서 콘텐츠를 다듬으세요"
+
 
 #~ msgid "mime"
 #~ msgstr "마임"

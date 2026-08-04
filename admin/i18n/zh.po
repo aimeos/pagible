@@ -2153,6 +2153,31 @@ msgctxt "ai"
 msgid "Already exists"
 msgstr "已经存在"
 
+#: js/strings.js:108
+msgctxt "sg"
+msgid "expert"
+msgstr "高级"
+
+#: js/strings.js:109
+msgctxt "sg"
+msgid "theme"
+msgstr "主题"
+
+#: js/strings.js:110
+msgctxt "st"
+msgid "logo"
+msgstr "徽标"
+
+#: js/strings.js:111
+msgctxt "st"
+msgid "logo-alternative"
+msgstr "备用徽标"
+
+#: js/strings.js:112
+msgctxt "st"
+msgid "icon"
+msgstr "图标"
+
 #: js/utils.js:201
 msgid "None"
 msgstr "无"
@@ -2401,6 +2426,7 @@ msgstr "人工智能可以根据您的输入创建页面和内容，并将其添
 #: js/views/PageList.vue:334
 msgid "Press Enter or the arrow to open the AI assistant and refine in a chat"
 msgstr "按 Enter 键或箭头打开 AI 助手，并在聊天中完善内容"
+
 
 #~ msgid "mime"
 #~ msgstr "默剧"

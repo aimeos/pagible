@@ -2160,6 +2160,31 @@ msgctxt "ai"
 msgid "Already exists"
 msgstr "すでに存在する"
 
+#: js/strings.js:108
+msgctxt "sg"
+msgid "expert"
+msgstr "上級者向け"
+
+#: js/strings.js:109
+msgctxt "sg"
+msgid "theme"
+msgstr "テーマ"
+
+#: js/strings.js:110
+msgctxt "st"
+msgid "logo"
+msgstr "ロゴ"
+
+#: js/strings.js:111
+msgctxt "st"
+msgid "logo-alternative"
+msgstr "代替ロゴ"
+
+#: js/strings.js:112
+msgctxt "st"
+msgid "icon"
+msgstr "アイコン"
+
 #: js/utils.js:201
 msgid "None"
 msgstr "なし"
@@ -2412,6 +2437,7 @@ msgid "Press Enter or the arrow to open the AI assistant and refine in a chat"
 msgstr ""
 "Enterキーまたは矢印を押してAIアシスタントを開き、チャットでコンテンツを調整し"
 "ます"
+
 
 #~ msgid "mime"
 #~ msgstr "マイム"

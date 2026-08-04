@@ -1948,7 +1948,7 @@ msgstr "Vyhľadávače"
 #: js/strings.js:54
 msgctxt "st"
 msgid "theme"
-msgstr "téma"
+msgstr "Téma"
 
 #: js/strings.js:55
 msgctxt "st"
@@ -2169,6 +2169,31 @@ msgstr "Hotovo"
 msgctxt "ai"
 msgid "Already exists"
 msgstr "Už existuje"
+
+#: js/strings.js:108
+msgctxt "sg"
+msgid "expert"
+msgstr "Rozšírené"
+
+#: js/strings.js:109
+msgctxt "sg"
+msgid "theme"
+msgstr "Téma"
+
+#: js/strings.js:110
+msgctxt "st"
+msgid "logo"
+msgstr "Logo"
+
+#: js/strings.js:111
+msgctxt "st"
+msgid "logo-alternative"
+msgstr "Alternatívne logo"
+
+#: js/strings.js:112
+msgctxt "st"
+msgid "icon"
+msgstr "Ikona"
 
 #: js/utils.js:201
 msgid "None"
@@ -2424,6 +2449,7 @@ msgid "Press Enter or the arrow to open the AI assistant and refine in a chat"
 msgstr ""
 "Stlačením klávesu Enter alebo šípky otvoríte asistenta AI a upravíte obsah v "
 "chate"
+
 
 #~ msgid "mime"
 #~ msgstr "mime"

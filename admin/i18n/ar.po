@@ -1968,7 +1968,7 @@ msgstr "محركات البحث"
 #: js/strings.js:54
 msgctxt "st"
 msgid "theme"
-msgstr "القالب"
+msgstr "المظهر"
 
 #: js/strings.js:55
 msgctxt "st"
@@ -2189,6 +2189,31 @@ msgstr "تم"
 msgctxt "ai"
 msgid "Already exists"
 msgstr "موجود بالفعل"
+
+#: js/strings.js:108
+msgctxt "sg"
+msgid "expert"
+msgstr "متقدم"
+
+#: js/strings.js:109
+msgctxt "sg"
+msgid "theme"
+msgstr "المظهر"
+
+#: js/strings.js:110
+msgctxt "st"
+msgid "logo"
+msgstr "الشعار"
+
+#: js/strings.js:111
+msgctxt "st"
+msgid "logo-alternative"
+msgstr "الشعار البديل"
+
+#: js/strings.js:112
+msgctxt "st"
+msgid "icon"
+msgstr "الأيقونة"
 
 #: js/utils.js:201
 msgid "None"
@@ -2442,6 +2467,7 @@ msgstr ""
 msgid "Press Enter or the arrow to open the AI assistant and refine in a chat"
 msgstr ""
 "اضغط Enter أو السهم لفتح مساعد الذكاء الاصطناعي وتحسين المحتوى في محادثة"
+
 
 #~ msgid "mime"
 #~ msgstr "التمثيل الصامت"

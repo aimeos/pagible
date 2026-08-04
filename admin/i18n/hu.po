@@ -1946,7 +1946,7 @@ msgstr "Keresőmotorok"
 #: js/strings.js:54
 msgctxt "st"
 msgid "theme"
-msgstr "téma"
+msgstr "Téma"
 
 #: js/strings.js:55
 msgctxt "st"
@@ -2167,6 +2167,31 @@ msgstr "Kész"
 msgctxt "ai"
 msgid "Already exists"
 msgstr "Már létezik"
+
+#: js/strings.js:108
+msgctxt "sg"
+msgid "expert"
+msgstr "Haladó"
+
+#: js/strings.js:109
+msgctxt "sg"
+msgid "theme"
+msgstr "Téma"
+
+#: js/strings.js:110
+msgctxt "st"
+msgid "logo"
+msgstr "Logó"
+
+#: js/strings.js:111
+msgctxt "st"
+msgid "logo-alternative"
+msgstr "Alternatív logó"
+
+#: js/strings.js:112
+msgctxt "st"
+msgid "icon"
+msgstr "Ikon"
 
 #: js/utils.js:201
 msgid "None"
@@ -2422,6 +2447,7 @@ msgid "Press Enter or the arrow to open the AI assistant and refine in a chat"
 msgstr ""
 "Nyomja meg az Enter billentyűt vagy a nyilat az MI-asszisztens megnyitásához "
 "és a tartalom csevegésben történő finomításához"
+
 
 #~ msgid "mime"
 #~ msgstr "mime"

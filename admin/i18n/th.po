@@ -2153,6 +2153,31 @@ msgctxt "ai"
 msgid "Already exists"
 msgstr "มีอยู่แล้ว"
 
+#: js/strings.js:108
+msgctxt "sg"
+msgid "expert"
+msgstr "ขั้นสูง"
+
+#: js/strings.js:109
+msgctxt "sg"
+msgid "theme"
+msgstr "ธีม"
+
+#: js/strings.js:110
+msgctxt "st"
+msgid "logo"
+msgstr "โลโก้"
+
+#: js/strings.js:111
+msgctxt "st"
+msgid "logo-alternative"
+msgstr "โลโก้สำรอง"
+
+#: js/strings.js:112
+msgctxt "st"
+msgid "icon"
+msgstr "ไอคอน"
+
 #: js/utils.js:201
 msgid "None"
 msgstr "ไม่มี"
@@ -2401,6 +2426,7 @@ msgstr "AI สามารถสร้างหน้าและเนื้อ
 #: js/views/PageList.vue:334
 msgid "Press Enter or the arrow to open the AI assistant and refine in a chat"
 msgstr "กด Enter หรือลูกศรเพื่อเปิดผู้ช่วย AI และปรับแต่งเนื้อหาในแชท"
+
 
 #~ msgid "mime"
 #~ msgstr "มิม"

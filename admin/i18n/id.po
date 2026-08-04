@@ -1934,7 +1934,7 @@ msgstr "Mesin pencari"
 #: js/strings.js:54
 msgctxt "st"
 msgid "theme"
-msgstr "tema"
+msgstr "Tema"
 
 #: js/strings.js:55
 msgctxt "st"
@@ -2155,6 +2155,31 @@ msgstr "Selesai."
 msgctxt "ai"
 msgid "Already exists"
 msgstr "Sudah ada"
+
+#: js/strings.js:108
+msgctxt "sg"
+msgid "expert"
+msgstr "Lanjutan"
+
+#: js/strings.js:109
+msgctxt "sg"
+msgid "theme"
+msgstr "Tema"
+
+#: js/strings.js:110
+msgctxt "st"
+msgid "logo"
+msgstr "Logo"
+
+#: js/strings.js:111
+msgctxt "st"
+msgid "logo-alternative"
+msgstr "Logo alternatif"
+
+#: js/strings.js:112
+msgctxt "st"
+msgid "icon"
+msgstr "Ikon"
 
 #: js/utils.js:201
 msgid "None"
@@ -2410,6 +2435,7 @@ msgid "Press Enter or the arrow to open the AI assistant and refine in a chat"
 msgstr ""
 "Tekan Enter atau panah untuk membuka asisten AI dan menyempurnakan konten "
 "dalam chat"
+
 
 #~ msgid "mime"
 #~ msgstr "pantomim"

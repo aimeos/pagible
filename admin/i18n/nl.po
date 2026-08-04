@@ -1944,7 +1944,7 @@ msgstr "Zoekmachines"
 #: js/strings.js:54
 msgctxt "st"
 msgid "theme"
-msgstr "thema"
+msgstr "Thema"
 
 #: js/strings.js:55
 msgctxt "st"
@@ -2165,6 +2165,31 @@ msgstr "Gedaan"
 msgctxt "ai"
 msgid "Already exists"
 msgstr "Bestaat al"
+
+#: js/strings.js:108
+msgctxt "sg"
+msgid "expert"
+msgstr "Geavanceerd"
+
+#: js/strings.js:109
+msgctxt "sg"
+msgid "theme"
+msgstr "Thema"
+
+#: js/strings.js:110
+msgctxt "st"
+msgid "logo"
+msgstr "Logo"
+
+#: js/strings.js:111
+msgctxt "st"
+msgid "logo-alternative"
+msgstr "Alternatief logo"
+
+#: js/strings.js:112
+msgctxt "st"
+msgid "icon"
+msgstr "Pictogram"
 
 #: js/utils.js:201
 msgid "None"
@@ -2420,6 +2445,7 @@ msgid "Press Enter or the arrow to open the AI assistant and refine in a chat"
 msgstr ""
 "Druk op Enter of de pijl om de AI-assistent te openen en de inhoud in een "
 "chat te verfijnen"
+
 
 #~ msgid "mime"
 #~ msgstr "mime"

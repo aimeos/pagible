@@ -1949,7 +1949,7 @@ msgstr "Paieškos sistemos"
 #: js/strings.js:54
 msgctxt "st"
 msgid "theme"
-msgstr "tema"
+msgstr "Tema"
 
 #: js/strings.js:55
 msgctxt "st"
@@ -2170,6 +2170,31 @@ msgstr "Atlikta"
 msgctxt "ai"
 msgid "Already exists"
 msgstr "Jau yra"
+
+#: js/strings.js:108
+msgctxt "sg"
+msgid "expert"
+msgstr "Išplėstiniai"
+
+#: js/strings.js:109
+msgctxt "sg"
+msgid "theme"
+msgstr "Tema"
+
+#: js/strings.js:110
+msgctxt "st"
+msgid "logo"
+msgstr "Logotipas"
+
+#: js/strings.js:111
+msgctxt "st"
+msgid "logo-alternative"
+msgstr "Alternatyvus logotipas"
+
+#: js/strings.js:112
+msgctxt "st"
+msgid "icon"
+msgstr "Piktograma"
 
 #: js/utils.js:201
 msgid "None"
@@ -2425,6 +2450,7 @@ msgid "Press Enter or the arrow to open the AI assistant and refine in a chat"
 msgstr ""
 "Paspauskite Enter arba rodyklę, kad atidarytumėte DI asistentą ir "
 "patobulintumėte turinį pokalbyje"
+
 
 #~ msgid "mime"
 #~ msgstr "mime"

@@ -2416,6 +2416,31 @@ msgctxt "ai"
 msgid "Already exists"
 msgstr ""
 
+#: js/strings.js:108
+msgctxt "sg"
+msgid "expert"
+msgstr ""
+
+#: js/strings.js:109
+msgctxt "sg"
+msgid "theme"
+msgstr ""
+
+#: js/strings.js:110
+msgctxt "st"
+msgid "logo"
+msgstr ""
+
+#: js/strings.js:111
+msgctxt "st"
+msgid "logo-alternative"
+msgstr ""
+
+#: js/strings.js:112
+msgctxt "st"
+msgid "icon"
+msgstr ""
+
 #: js/utils.js:201
 msgid "None"
 msgstr ""

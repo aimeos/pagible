@@ -1947,7 +1947,7 @@ msgstr "Arama motorları"
 #: js/strings.js:54
 msgctxt "st"
 msgid "theme"
-msgstr "tema"
+msgstr "Tema"
 
 #: js/strings.js:55
 msgctxt "st"
@@ -2168,6 +2168,31 @@ msgstr "Bitti"
 msgctxt "ai"
 msgid "Already exists"
 msgstr "Zaten var"
+
+#: js/strings.js:108
+msgctxt "sg"
+msgid "expert"
+msgstr "Gelişmiş"
+
+#: js/strings.js:109
+msgctxt "sg"
+msgid "theme"
+msgstr "Tema"
+
+#: js/strings.js:110
+msgctxt "st"
+msgid "logo"
+msgstr "Logo"
+
+#: js/strings.js:111
+msgctxt "st"
+msgid "logo-alternative"
+msgstr "Alternatif logo"
+
+#: js/strings.js:112
+msgctxt "st"
+msgid "icon"
+msgstr "Simge"
 
 #: js/utils.js:201
 msgid "None"
@@ -2423,6 +2448,7 @@ msgid "Press Enter or the arrow to open the AI assistant and refine in a chat"
 msgstr ""
 "AI asistanını açmak ve içeriği sohbette geliştirmek için Enter tuşuna veya "
 "oka basın"
+
 
 #~ msgid "mime"
 #~ msgstr "MIME"

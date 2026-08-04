@@ -1941,7 +1941,7 @@ msgstr "Công cụ tìm kiếm"
 #: js/strings.js:54
 msgctxt "st"
 msgid "theme"
-msgstr "chủ đề"
+msgstr "Giao diện"
 
 #: js/strings.js:55
 msgctxt "st"
@@ -2162,6 +2162,31 @@ msgstr "Hoàn thành"
 msgctxt "ai"
 msgid "Already exists"
 msgstr "Đã tồn tại"
+
+#: js/strings.js:108
+msgctxt "sg"
+msgid "expert"
+msgstr "Nâng cao"
+
+#: js/strings.js:109
+msgctxt "sg"
+msgid "theme"
+msgstr "Giao diện"
+
+#: js/strings.js:110
+msgctxt "st"
+msgid "logo"
+msgstr "Biểu trưng"
+
+#: js/strings.js:111
+msgctxt "st"
+msgid "logo-alternative"
+msgstr "Biểu trưng thay thế"
+
+#: js/strings.js:112
+msgctxt "st"
+msgid "icon"
+msgstr "Biểu tượng"
 
 #: js/utils.js:201
 msgid "None"
@@ -2417,6 +2442,7 @@ msgid "Press Enter or the arrow to open the AI assistant and refine in a chat"
 msgstr ""
 "Nhấn Enter hoặc mũi tên để mở trợ lý AI và tinh chỉnh nội dung trong cuộc "
 "trò chuyện"
+
 
 #~ msgid "mime"
 #~ msgstr "mime"

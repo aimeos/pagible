@@ -1953,7 +1953,7 @@ msgstr "Iskalniki"
 #: js/strings.js:54
 msgctxt "st"
 msgid "theme"
-msgstr "tema"
+msgstr "Tema"
 
 #: js/strings.js:55
 msgctxt "st"
@@ -2174,6 +2174,31 @@ msgstr "Končano"
 msgctxt "ai"
 msgid "Already exists"
 msgstr "Že obstaja"
+
+#: js/strings.js:108
+msgctxt "sg"
+msgid "expert"
+msgstr "Napredno"
+
+#: js/strings.js:109
+msgctxt "sg"
+msgid "theme"
+msgstr "Tema"
+
+#: js/strings.js:110
+msgctxt "st"
+msgid "logo"
+msgstr "Logotip"
+
+#: js/strings.js:111
+msgctxt "st"
+msgid "logo-alternative"
+msgstr "Alternativni logotip"
+
+#: js/strings.js:112
+msgctxt "st"
+msgid "icon"
+msgstr "Ikona"
 
 #: js/utils.js:201
 msgid "None"
@@ -2429,6 +2454,7 @@ msgid "Press Enter or the arrow to open the AI assistant and refine in a chat"
 msgstr ""
 "Pritisnite Enter ali puščico, da odprete pomočnika UI in izboljšate vsebino "
 "v klepetu"
+
 
 #~ msgid "mime"
 #~ msgstr "mime"

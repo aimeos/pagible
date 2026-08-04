@@ -1952,7 +1952,7 @@ msgstr "Motoare de căutare"
 #: js/strings.js:54
 msgctxt "st"
 msgid "theme"
-msgstr "temă"
+msgstr "Temă"
 
 #: js/strings.js:55
 msgctxt "st"
@@ -2173,6 +2173,31 @@ msgstr "Efectuat"
 msgctxt "ai"
 msgid "Already exists"
 msgstr "Există deja"
+
+#: js/strings.js:108
+msgctxt "sg"
+msgid "expert"
+msgstr "Avansat"
+
+#: js/strings.js:109
+msgctxt "sg"
+msgid "theme"
+msgstr "Temă"
+
+#: js/strings.js:110
+msgctxt "st"
+msgid "logo"
+msgstr "Siglă"
+
+#: js/strings.js:111
+msgctxt "st"
+msgid "logo-alternative"
+msgstr "Siglă alternativă"
+
+#: js/strings.js:112
+msgctxt "st"
+msgid "icon"
+msgstr "Pictogramă"
 
 #: js/utils.js:201
 msgid "None"
@@ -2428,6 +2453,7 @@ msgid "Press Enter or the arrow to open the AI assistant and refine in a chat"
 msgstr ""
 "Apăsați Enter sau săgeata pentru a deschide asistentul AI și a rafina "
 "conținutul într-o conversație"
+
 
 #~ msgid "mime"
 #~ msgstr "mime"

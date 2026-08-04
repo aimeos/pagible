@@ -1945,7 +1945,7 @@ msgstr "Suchmaschinen"
 #: js/strings.js:54
 msgctxt "st"
 msgid "theme"
-msgstr "Thema"
+msgstr "Design"
 
 #: js/strings.js:55
 msgctxt "st"
@@ -2166,6 +2166,31 @@ msgstr "Erledigt"
 msgctxt "ai"
 msgid "Already exists"
 msgstr "Bereits vorhanden"
+
+#: js/strings.js:108
+msgctxt "sg"
+msgid "expert"
+msgstr "Erweitert"
+
+#: js/strings.js:109
+msgctxt "sg"
+msgid "theme"
+msgstr "Design"
+
+#: js/strings.js:110
+msgctxt "st"
+msgid "logo"
+msgstr "Logo"
+
+#: js/strings.js:111
+msgctxt "st"
+msgid "logo-alternative"
+msgstr "Alternatives Logo"
+
+#: js/strings.js:112
+msgctxt "st"
+msgid "icon"
+msgstr "Symbol"
 
 #: js/utils.js:201
 msgid "None"
@@ -2421,6 +2446,7 @@ msgid "Press Enter or the arrow to open the AI assistant and refine in a chat"
 msgstr ""
 "Drücken Sie die Eingabetaste oder den Pfeil, um den KI-Assistenten zu öffnen "
 "und den Inhalt im Chat zu verfeinern"
+
 
 #~ msgid "mime"
 #~ msgstr "Dateityp"

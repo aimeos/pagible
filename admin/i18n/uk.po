@@ -1948,7 +1948,7 @@ msgstr "Пошукові системи"
 #: js/strings.js:54
 msgctxt "st"
 msgid "theme"
-msgstr "тема"
+msgstr "Тема оформлення"
 
 #: js/strings.js:55
 msgctxt "st"
@@ -2169,6 +2169,31 @@ msgstr "Зроблено."
 msgctxt "ai"
 msgid "Already exists"
 msgstr "Вже існує"
+
+#: js/strings.js:108
+msgctxt "sg"
+msgid "expert"
+msgstr "Розширені"
+
+#: js/strings.js:109
+msgctxt "sg"
+msgid "theme"
+msgstr "Тема оформлення"
+
+#: js/strings.js:110
+msgctxt "st"
+msgid "logo"
+msgstr "Логотип"
+
+#: js/strings.js:111
+msgctxt "st"
+msgid "logo-alternative"
+msgstr "Альтернативний логотип"
+
+#: js/strings.js:112
+msgctxt "st"
+msgid "icon"
+msgstr "Значок"
 
 #: js/utils.js:201
 msgid "None"
@@ -2424,6 +2449,7 @@ msgid "Press Enter or the arrow to open the AI assistant and refine in a chat"
 msgstr ""
 "Натисніть Enter або стрілку, щоб відкрити ШІ-асистента й удосконалити вміст "
 "у чаті"
+
 
 #~ msgid "mime"
 #~ msgstr "пантоміма"

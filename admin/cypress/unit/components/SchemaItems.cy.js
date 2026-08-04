@@ -16,6 +16,15 @@ function mountWithSchemas(schemas = sampleSchemas) {
   })
 }
 
+function setupTranslations() {
+  return {
+    install(app) {
+      app.config.globalProperties.$pgettext = (context, value) =>
+        ({ 'sg:theme': 'Design', 'st:logo': 'Markenzeichen' })[`${context}:${value}`] || value
+    },
+  }
+}
+
 describe('SchemaItems', () => {
   it('renders tabs for each schema group', () => {
     mountWithSchemas()
@@ -34,6 +43,19 @@ describe('SchemaItems', () => {
     mountWithSchemas()
     cy.contains('.v-tab', 'media').click()
     cy.get('.v-btn').should('contain', 'Image')
+  })
+
+  it('translates schema groups and config element labels in their contexts', () => {
+    cy.mount(SchemaItems, {
+      props: { type: 'config' },
+      global: { plugins: [setupTranslations()] },
+    }).then(() => {
+      const store = useSchemaStore()
+      Object.assign(store, { config: { logo: { group: 'theme', icon: '' } } })
+    })
+
+    cy.contains('.v-tab', 'Design').click()
+    cy.get('.v-btn').should('contain', 'Markenzeichen')
   })
 
   it('emits "add" with the schema type when a button is clicked', () => {

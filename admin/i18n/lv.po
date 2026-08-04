@@ -1952,7 +1952,7 @@ msgstr "Meklētājprogrammas"
 #: js/strings.js:54
 msgctxt "st"
 msgid "theme"
-msgstr "tēma"
+msgstr "Tēma"
 
 #: js/strings.js:55
 msgctxt "st"
@@ -2173,6 +2173,31 @@ msgstr "Paveikts"
 msgctxt "ai"
 msgid "Already exists"
 msgstr "Jau pastāv"
+
+#: js/strings.js:108
+msgctxt "sg"
+msgid "expert"
+msgstr "Papildu"
+
+#: js/strings.js:109
+msgctxt "sg"
+msgid "theme"
+msgstr "Tēma"
+
+#: js/strings.js:110
+msgctxt "st"
+msgid "logo"
+msgstr "Logotips"
+
+#: js/strings.js:111
+msgctxt "st"
+msgid "logo-alternative"
+msgstr "Alternatīvs logotips"
+
+#: js/strings.js:112
+msgctxt "st"
+msgid "icon"
+msgstr "Ikona"
 
 #: js/utils.js:201
 msgid "None"
@@ -2428,6 +2453,7 @@ msgid "Press Enter or the arrow to open the AI assistant and refine in a chat"
 msgstr ""
 "Nospiediet Enter vai bultiņu, lai atvērtu MI asistentu un pilnveidotu saturu "
 "tērzēšanā"
+
 
 #~ msgid "mime"
 #~ msgstr "mime"

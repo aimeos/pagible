@@ -2161,6 +2161,31 @@ msgctxt "ai"
 msgid "Already exists"
 msgstr "כבר קיים"
 
+#: js/strings.js:108
+msgctxt "sg"
+msgid "expert"
+msgstr "מתקדם"
+
+#: js/strings.js:109
+msgctxt "sg"
+msgid "theme"
+msgstr "ערכת נושא"
+
+#: js/strings.js:110
+msgctxt "st"
+msgid "logo"
+msgstr "לוגו"
+
+#: js/strings.js:111
+msgctxt "st"
+msgid "logo-alternative"
+msgstr "לוגו חלופי"
+
+#: js/strings.js:112
+msgctxt "st"
+msgid "icon"
+msgstr "סמל"
+
 #: js/utils.js:201
 msgid "None"
 msgstr "אין"
@@ -2411,6 +2436,7 @@ msgid "Press Enter or the arrow to open the AI assistant and refine in a chat"
 msgstr ""
 "לחצו על Enter או על החץ כדי לפתוח את עוזר הבינה המלאכותית ולשפר את התוכן "
 "בצ׳אט"
+
 
 #~ msgid "mime"
 #~ msgstr "פנטומימה"

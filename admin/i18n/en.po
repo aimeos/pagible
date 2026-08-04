@@ -1937,7 +1937,7 @@ msgstr "Robots"
 #: js/strings.js:54
 msgctxt "st"
 msgid "theme"
-msgstr ""
+msgstr "Theme"
 
 #: js/strings.js:55
 msgctxt "st"
@@ -2158,6 +2158,31 @@ msgstr ""
 msgctxt "ai"
 msgid "Already exists"
 msgstr ""
+
+#: js/strings.js:108
+msgctxt "sg"
+msgid "expert"
+msgstr "Expert"
+
+#: js/strings.js:109
+msgctxt "sg"
+msgid "theme"
+msgstr "Theme"
+
+#: js/strings.js:110
+msgctxt "st"
+msgid "logo"
+msgstr "Logo"
+
+#: js/strings.js:111
+msgctxt "st"
+msgid "logo-alternative"
+msgstr "Alternative logo"
+
+#: js/strings.js:112
+msgctxt "st"
+msgid "icon"
+msgstr "Icon"
 
 #: js/utils.js:201
 msgid "None"

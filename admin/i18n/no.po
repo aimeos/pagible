@@ -1941,7 +1941,7 @@ msgstr "Søkemotorer"
 #: js/strings.js:54
 msgctxt "st"
 msgid "theme"
-msgstr "tema"
+msgstr "Tema"
 
 #: js/strings.js:55
 msgctxt "st"
@@ -2162,6 +2162,31 @@ msgstr "Ferdig"
 msgctxt "ai"
 msgid "Already exists"
 msgstr "Eksisterer allerede"
+
+#: js/strings.js:108
+msgctxt "sg"
+msgid "expert"
+msgstr "Avansert"
+
+#: js/strings.js:109
+msgctxt "sg"
+msgid "theme"
+msgstr "Tema"
+
+#: js/strings.js:110
+msgctxt "st"
+msgid "logo"
+msgstr "Logo"
+
+#: js/strings.js:111
+msgctxt "st"
+msgid "logo-alternative"
+msgstr "Alternativ logo"
+
+#: js/strings.js:112
+msgctxt "st"
+msgid "icon"
+msgstr "Ikon"
 
 #: js/utils.js:201
 msgid "None"
@@ -2417,6 +2442,7 @@ msgid "Press Enter or the arrow to open the AI assistant and refine in a chat"
 msgstr ""
 "Trykk Enter eller pilen for å åpne KI-assistenten og forbedre innholdet i en "
 "chat"
+
 
 #~ msgid "mime"
 #~ msgstr "mime"

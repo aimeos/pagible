@@ -1943,7 +1943,7 @@ msgstr "Motores de busca"
 #: js/strings.js:54
 msgctxt "st"
 msgid "theme"
-msgstr "tema"
+msgstr "Tema"
 
 #: js/strings.js:55
 msgctxt "st"
@@ -2164,6 +2164,31 @@ msgstr "Feito"
 msgctxt "ai"
 msgid "Already exists"
 msgstr "Já existe"
+
+#: js/strings.js:108
+msgctxt "sg"
+msgid "expert"
+msgstr "Avançado"
+
+#: js/strings.js:109
+msgctxt "sg"
+msgid "theme"
+msgstr "Tema"
+
+#: js/strings.js:110
+msgctxt "st"
+msgid "logo"
+msgstr "Logótipo"
+
+#: js/strings.js:111
+msgctxt "st"
+msgid "logo-alternative"
+msgstr "Logótipo alternativo"
+
+#: js/strings.js:112
+msgctxt "st"
+msgid "icon"
+msgstr "Ícone"
 
 #: js/utils.js:201
 msgid "None"
@@ -2419,6 +2444,7 @@ msgid "Press Enter or the arrow to open the AI assistant and refine in a chat"
 msgstr ""
 "Prima Enter ou a seta para abrir o assistente de IA e aperfeiçoar o conteúdo "
 "num chat"
+
 
 #~ msgid "mime"
 #~ msgstr "mímica"
