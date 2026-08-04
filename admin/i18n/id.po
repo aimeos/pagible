@@ -170,8 +170,8 @@ msgstr "%{count} / %{total}"
 #: js/components/PageListItems.vue:1942 js/components/SchemaDialog.vue:38
 #: js/components/UnsavedDialog.vue:39 js/components/User.vue:121
 #: js/fields/Items.vue:382 js/fields/Items.vue:466 js/fields/Table.vue:212
-#: js/fields/Table.vue:307 js/views/AccessList.vue:276
-#: js/views/AccessList.vue:308
+#: js/fields/Table.vue:307 js/views/AccessList.vue:278
+#: js/views/AccessList.vue:310
 msgid "Close"
 msgstr "Tutup"
 
@@ -395,8 +395,8 @@ msgstr "Kesalahan mengambil elemen bersama"
 
 #: js/components/ElementListItems.vue:686 js/components/FileListItems.vue:672
 #: js/components/PageDetailContentList.vue:777
-#: js/components/PageListItems.vue:1535 js/views/AccessList.vue:216
-#: js/views/AccessList.vue:259
+#: js/components/PageListItems.vue:1535 js/views/AccessList.vue:217
+#: js/views/AccessList.vue:261
 msgid "Toggle selection"
 msgstr "Aktifkan/nonaktifkan pilihan"
 
@@ -428,7 +428,7 @@ msgstr "Tindakan"
 #: js/components/PageDetailContentList.vue:907
 #: js/components/PageListItems.vue:1591 js/components/PageListItems.vue:1847
 #: js/fields/Items.vue:400 js/fields/Table.vue:236 js/fields/Table.vue:331
-#: js/views/AccessList.vue:221 js/views/AccessList.vue:324
+#: js/views/AccessList.vue:222 js/views/AccessList.vue:326
 msgid "Delete"
 msgstr "Hapus"
 
@@ -455,7 +455,7 @@ msgstr "Tambahkan elemen"
 
 #: js/components/ElementListItems.vue:760 js/components/FileListItems.vue:757
 #: js/components/PageDetailContentList.vue:821
-#: js/components/PageListItems.vue:1624 js/views/AccessList.vue:244
+#: js/components/PageListItems.vue:1624 js/views/AccessList.vue:246
 msgid "Search for"
 msgstr "Cari"
 
@@ -486,7 +486,7 @@ msgid "Loading"
 msgstr "Memuat"
 
 #: js/components/ElementListItems.vue:913 js/components/FileListItems.vue:997
-#: js/components/PageListItems.vue:1917 js/views/AccessList.vue:266
+#: js/components/PageListItems.vue:1917 js/views/AccessList.vue:268
 msgid "No entries found"
 msgstr "Tidak ada entri yang ditemukan"
 
@@ -627,7 +627,7 @@ msgid "Error upscaling image"
 msgstr "Kesalahan saat meningkatkan resolusi gambar"
 
 #: js/components/FileDetailItemImage.vue:637 js/components/UnsavedDialog.vue:55
-#: js/views/AccessList.vue:291 js/views/AccessList.vue:322
+#: js/views/AccessList.vue:293 js/views/AccessList.vue:324
 msgid "Cancel"
 msgstr "Batal"
 
@@ -1914,22 +1914,22 @@ msgstr "kontak"
 #: js/strings.js:50
 msgctxt "st"
 msgid "meta-tags"
-msgstr "meta-tag"
+msgstr "Tag meta"
 
 #: js/strings.js:51
 msgctxt "st"
 msgid "social-media"
-msgstr "media sosial"
+msgstr "Media sosial"
 
 #: js/strings.js:52
 msgctxt "st"
 msgid "canonical"
-msgstr "Kanonis"
+msgstr "URL kanonis"
 
 #: js/strings.js:53
 msgctxt "st"
 msgid "robots"
-msgstr "Robots"
+msgstr "Mesin pencari"
 
 #: js/strings.js:54
 msgctxt "st"
@@ -1974,7 +1974,7 @@ msgstr "file"
 #: js/strings.js:64
 msgctxt "fn"
 msgid "follow"
-msgstr "Follow"
+msgstr "Mengikuti tautan"
 
 #: js/strings.js:65
 msgctxt "fn"
@@ -1984,7 +1984,7 @@ msgstr "header"
 #: js/strings.js:66
 msgctxt "fn"
 msgid "index"
-msgstr "Index"
+msgstr "Pengindeksan"
 
 #: js/strings.js:67
 msgctxt "fn"
@@ -2116,22 +2116,42 @@ msgctxt "fn"
 msgid "Target page or link"
 msgstr "Halaman atau tautan target"
 
-#: js/strings.js:94
+#: js/strings.js:96
+msgctxt "op"
+msgid "Follow"
+msgstr "Ikuti tautan"
+
+#: js/strings.js:97
+msgctxt "op"
+msgid "Index"
+msgstr "Indeks"
+
+#: js/strings.js:98
+msgctxt "op"
+msgid "No follow"
+msgstr "Jangan ikuti tautan"
+
+#: js/strings.js:99
+msgctxt "op"
+msgid "No index"
+msgstr "Jangan indeks"
+
+#: js/strings.js:100
 msgctxt "op"
 msgid "Subscription"
 msgstr "Langganan"
 
-#: js/strings.js:95
+#: js/strings.js:101
 msgctxt "op"
 msgid "One-time payment"
 msgstr "Pembayaran satu kali"
 
-#: js/strings.js:98
+#: js/strings.js:104
 msgctxt "ai"
 msgid "Done"
 msgstr "Selesai."
 
-#: js/strings.js:99
+#: js/strings.js:105
 msgctxt "ai"
 msgid "Already exists"
 msgstr "Sudah ada"
@@ -2167,24 +2187,24 @@ msgstr "Tutup navigasi"
 msgid "Open navigation"
 msgstr "Buka navigasi"
 
-#: js/views/AccessList.vue:232 js/views/AccessList.vue:272
-#: js/views/AccessList.vue:275
+#: js/views/AccessList.vue:232 js/views/AccessList.vue:274
+#: js/views/AccessList.vue:277
 msgid "Add access value"
 msgstr "Tambahkan nilai akses"
 
-#: js/views/AccessList.vue:282
+#: js/views/AccessList.vue:284
 msgid "Access value"
 msgstr "Nilai akses"
 
-#: js/views/AccessList.vue:293
+#: js/views/AccessList.vue:295
 msgid "Add"
 msgstr "Tambahkan"
 
-#: js/views/AccessList.vue:303 js/views/AccessList.vue:307
+#: js/views/AccessList.vue:305 js/views/AccessList.vue:309
 msgid "Delete access values"
 msgstr "Hapus nilai akses"
 
-#: js/views/AccessList.vue:314
+#: js/views/AccessList.vue:316
 msgid ""
 "Existing restrictions are not changed and will continue to reference the "
 "deleted access values."

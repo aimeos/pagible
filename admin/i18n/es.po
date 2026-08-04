@@ -170,8 +170,8 @@ msgstr "%{count} / %{total}"
 #: js/components/PageListItems.vue:1942 js/components/SchemaDialog.vue:38
 #: js/components/UnsavedDialog.vue:39 js/components/User.vue:121
 #: js/fields/Items.vue:382 js/fields/Items.vue:466 js/fields/Table.vue:212
-#: js/fields/Table.vue:307 js/views/AccessList.vue:276
-#: js/views/AccessList.vue:308
+#: js/fields/Table.vue:307 js/views/AccessList.vue:278
+#: js/views/AccessList.vue:310
 msgid "Close"
 msgstr "Cerrar"
 
@@ -396,8 +396,8 @@ msgstr "Error al recuperar elementos compartidos"
 
 #: js/components/ElementListItems.vue:686 js/components/FileListItems.vue:672
 #: js/components/PageDetailContentList.vue:777
-#: js/components/PageListItems.vue:1535 js/views/AccessList.vue:216
-#: js/views/AccessList.vue:259
+#: js/components/PageListItems.vue:1535 js/views/AccessList.vue:217
+#: js/views/AccessList.vue:261
 msgid "Toggle selection"
 msgstr "Activar/desactivar la selección"
 
@@ -429,7 +429,7 @@ msgstr "Acciones"
 #: js/components/PageDetailContentList.vue:907
 #: js/components/PageListItems.vue:1591 js/components/PageListItems.vue:1847
 #: js/fields/Items.vue:400 js/fields/Table.vue:236 js/fields/Table.vue:331
-#: js/views/AccessList.vue:221 js/views/AccessList.vue:324
+#: js/views/AccessList.vue:222 js/views/AccessList.vue:326
 msgid "Delete"
 msgstr "Eliminar"
 
@@ -456,7 +456,7 @@ msgstr "Añadir elemento"
 
 #: js/components/ElementListItems.vue:760 js/components/FileListItems.vue:757
 #: js/components/PageDetailContentList.vue:821
-#: js/components/PageListItems.vue:1624 js/views/AccessList.vue:244
+#: js/components/PageListItems.vue:1624 js/views/AccessList.vue:246
 msgid "Search for"
 msgstr "Buscar"
 
@@ -487,7 +487,7 @@ msgid "Loading"
 msgstr "Cargando"
 
 #: js/components/ElementListItems.vue:913 js/components/FileListItems.vue:997
-#: js/components/PageListItems.vue:1917 js/views/AccessList.vue:266
+#: js/components/PageListItems.vue:1917 js/views/AccessList.vue:268
 msgid "No entries found"
 msgstr "No se han encontrado entradas"
 
@@ -628,7 +628,7 @@ msgid "Error upscaling image"
 msgstr "Error al aumentar la resolución de la imagen"
 
 #: js/components/FileDetailItemImage.vue:637 js/components/UnsavedDialog.vue:55
-#: js/views/AccessList.vue:291 js/views/AccessList.vue:322
+#: js/views/AccessList.vue:293 js/views/AccessList.vue:324
 msgid "Cancel"
 msgstr "Cancelar"
 
@@ -1922,22 +1922,22 @@ msgstr "Contacto"
 #: js/strings.js:50
 msgctxt "st"
 msgid "meta-tags"
-msgstr "meta-etiquetas"
+msgstr "Metaetiquetas"
 
 #: js/strings.js:51
 msgctxt "st"
 msgid "social-media"
-msgstr "redes sociales"
+msgstr "Redes sociales"
 
 #: js/strings.js:52
 msgctxt "st"
 msgid "canonical"
-msgstr "Canónica"
+msgstr "URL canónica"
 
 #: js/strings.js:53
 msgctxt "st"
 msgid "robots"
-msgstr "Robots"
+msgstr "Motores de búsqueda"
 
 #: js/strings.js:54
 msgctxt "st"
@@ -1982,7 +1982,7 @@ msgstr "archivos"
 #: js/strings.js:64
 msgctxt "fn"
 msgid "follow"
-msgstr "Follow"
+msgstr "Seguimiento de enlaces"
 
 #: js/strings.js:65
 msgctxt "fn"
@@ -1992,7 +1992,7 @@ msgstr "cabecera"
 #: js/strings.js:66
 msgctxt "fn"
 msgid "index"
-msgstr "Index"
+msgstr "Indexación"
 
 #: js/strings.js:67
 msgctxt "fn"
@@ -2124,22 +2124,42 @@ msgctxt "fn"
 msgid "Target page or link"
 msgstr "Página de destino o enlace"
 
-#: js/strings.js:94
+#: js/strings.js:96
+msgctxt "op"
+msgid "Follow"
+msgstr "Seguir enlaces"
+
+#: js/strings.js:97
+msgctxt "op"
+msgid "Index"
+msgstr "Indexar"
+
+#: js/strings.js:98
+msgctxt "op"
+msgid "No follow"
+msgstr "No seguir enlaces"
+
+#: js/strings.js:99
+msgctxt "op"
+msgid "No index"
+msgstr "No indexar"
+
+#: js/strings.js:100
 msgctxt "op"
 msgid "Subscription"
 msgstr "Suscripción"
 
-#: js/strings.js:95
+#: js/strings.js:101
 msgctxt "op"
 msgid "One-time payment"
 msgstr "Pago único"
 
-#: js/strings.js:98
+#: js/strings.js:104
 msgctxt "ai"
 msgid "Done"
 msgstr "Hecho"
 
-#: js/strings.js:99
+#: js/strings.js:105
 msgctxt "ai"
 msgid "Already exists"
 msgstr "Ya existe"
@@ -2175,24 +2195,24 @@ msgstr "Cerrar navegación"
 msgid "Open navigation"
 msgstr "Abrir navegación"
 
-#: js/views/AccessList.vue:232 js/views/AccessList.vue:272
-#: js/views/AccessList.vue:275
+#: js/views/AccessList.vue:232 js/views/AccessList.vue:274
+#: js/views/AccessList.vue:277
 msgid "Add access value"
 msgstr "Agregar valor de acceso"
 
-#: js/views/AccessList.vue:282
+#: js/views/AccessList.vue:284
 msgid "Access value"
 msgstr "Valor de acceso"
 
-#: js/views/AccessList.vue:293
+#: js/views/AccessList.vue:295
 msgid "Add"
 msgstr "Añadir"
 
-#: js/views/AccessList.vue:303 js/views/AccessList.vue:307
+#: js/views/AccessList.vue:305 js/views/AccessList.vue:309
 msgid "Delete access values"
 msgstr "Eliminar valores de acceso"
 
-#: js/views/AccessList.vue:314
+#: js/views/AccessList.vue:316
 msgid ""
 "Existing restrictions are not changed and will continue to reference the "
 "deleted access values."

@@ -91,6 +91,12 @@ if ($pgettext) {
   $pgettext('fn', 'Billing interval')
   $pgettext('fn', 'Price unit')
   $pgettext('fn', 'Target page or link')
+
+  // option labels
+  $pgettext('op', 'Follow')
+  $pgettext('op', 'Index')
+  $pgettext('op', 'No follow')
+  $pgettext('op', 'No index')
   $pgettext('op', 'Subscription')
   $pgettext('op', 'One-time payment')
 

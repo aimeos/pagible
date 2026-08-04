@@ -24,6 +24,15 @@ const item = {
   },
 }
 
+function setupTranslations() {
+  return {
+    install(app) {
+      app.config.globalProperties.$pgettext = (context, value) =>
+        context === 'st' && value === 'seo' ? 'Suchmaschinenoptimierung' : value
+    },
+  }
+}
+
 function setupSchemaPlugin() {
   return {
     install() {
@@ -43,7 +52,7 @@ function mountMeta(props = {}, perms = {}) {
     },
     global: {
       stubs,
-      plugins: [setupSchemaPlugin()],
+      plugins: [setupSchemaPlugin(), setupTranslations()],
     },
   }).then(() => {
     const user = useUserStore()
@@ -68,7 +77,7 @@ describe('PageDetailItemSection (meta)', () => {
 
   it('displays meta element type', () => {
     mountMeta()
-    cy.get('.element-type').should('contain', 'seo')
+    cy.get('.element-type').should('contain', 'Suchmaschinenoptimierung')
   })
 
   it('shows add button with page:save permission', () => {
