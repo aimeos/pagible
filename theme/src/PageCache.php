@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Contracts\Cache\Lock;
 use Illuminate\Contracts\Cache\LockProvider;
 use Illuminate\Contracts\Cache\LockTimeoutException;
+use Symfony\Component\HttpFoundation\AcceptHeader;
 
 
 class PageCache
@@ -91,31 +92,41 @@ class PageCache
         $maxage = max( 0, $entry['freshUntil'] - time() );
         $expires = gmdate( 'D, d M Y H:i:s', $entry['freshUntil'] ) . ' GMT';
 
-        return ( new Response( $entry['html'], 200 ) )
+        $gzip = AcceptHeader::fromString( request()->headers->get( 'Accept-Encoding' ) )->get( 'gzip' )->getQuality() > 0;
+        $content = $gzip ? (string) $entry['gzip'] : gzdecode( (string) $entry['gzip'] );
+
+        if( !is_string( $content ) ) {
+            return null;
+        }
+
+        $response = ( new Response( $content, 200 ) )
             ->header( 'Content-Type', 'text/html' )
             ->header( 'Cache-Control', "public, s-maxage={$maxage}, max-age=0, must-revalidate" )
-            ->header( 'Expires', $expires );
+            ->header( 'Expires', $expires )
+            ->header( 'Vary', 'Accept-Encoding' );
+
+        return $gzip ? $response->header( 'Content-Encoding', 'gzip' ) : $response;
     }
 
 
     /**
      * Returns a validated cached-page envelope.
      *
-     * @return array{html: string, freshUntil: int}|null
+     * @return array{html?: string, gzip?: string, freshUntil: int}|null
      */
     private static function get( string $key, bool $fresh = false ) : ?array
     {
         $value = self::store()->get( $key );
 
         if( is_array( $value )
-            && is_string( $value['html'] ?? null )
+            && is_string( $value['gzip'] ?? null )
             && is_int( $value['freshUntil'] ?? null )
         ) {
             return !$fresh || $value['freshUntil'] > time() ? $value : null;
         }
 
-        // Ignore cache values from versions before the envelope format. They will
-        // naturally be replaced on the next render.
+        // Ignore values using other envelope formats. They will naturally be
+        // replaced on the next render.
         return null;
     }
 
@@ -159,12 +170,11 @@ class PageCache
     {
         $grace = max( 0, (int) config( 'cms.theme.stale', 10 ) );
         $freshUntil = $expires->getTimestamp();
-        $staleUntil = $freshUntil + $grace;
 
         self::store()->put(
             $key,
-            ['html' => $html, 'freshUntil' => $freshUntil],
-            max( 1, $staleUntil - time() ),
+            ['gzip' => gzencode( $html, 6 ), 'freshUntil' => $freshUntil],
+            max( 1, $freshUntil + $grace - time() ),
         );
     }
 
