@@ -84,10 +84,12 @@ main nav.sidebar > .menu {
 }
 
 main nav.sidebar li {
+    margin: 0;
+    padding: 0;
     width: 100%;
 }
 
-main nav.sidebar .menu .menu li {
+main nav.sidebar .menu .menu a {
     padding-inline-start: 1.5rem;
 }
 
@@ -97,10 +99,14 @@ main nav.sidebar .active {
 }
 
 main nav.sidebar a {
+    align-items: center;
     color: var(--pico-muted-color);
+    display: flex;
     font-size: calc(var(--pico-font-size) * 0.75);
     font-weight: 300;
-    padding: 0.35rem 1rem;
+    line-height: 1.5;
+    margin: 0;
+    padding: calc(24px - 0.75em) 1rem;
     transition: color 0.15s ease;
 }
 
@@ -128,7 +134,6 @@ main nav.sidebar details.is-menu[open] > summary svg {
 }
 
 main nav.sidebar .menu-item {
-    padding: var(--pico-nav-element-spacing-vertical) 0;
     justify-content: space-between;
     align-items: center;
     display: flex;
