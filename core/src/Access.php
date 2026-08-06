@@ -82,7 +82,13 @@ class Access
     public static function using( ?\Closure $list, ?\Closure $add = null, ?\Closure $delete = null,
         ?\Closure $grants = null, ?\Closure $userAccess = null ) : void
     {
-        self::configure( $list, $add, $delete, $grants, $userAccess );
+        self::configure(
+            list: $list,
+            add: $add,
+            delete: $delete,
+            grants: $grants,
+            userAccess: $userAccess,
+        );
     }
 
 
