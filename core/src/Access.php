@@ -82,13 +82,7 @@ class Access
     public static function using( ?\Closure $list, ?\Closure $add = null, ?\Closure $delete = null,
         ?\Closure $grants = null, ?\Closure $userAccess = null ) : void
     {
-        self::configure(
-            list: $list,
-            add: $add,
-            delete: $delete,
-            grants: $grants,
-            userAccess: $userAccess,
-        );
+        self::configure( $list, $add, $delete, $grants, $userAccess );
     }
 
 
@@ -143,13 +137,10 @@ class Access
      */
     public function known( iterable $values ) : array
     {
-        $values = self::normalize( $values );
         $catalog = $this->catalog();
+        $values = self::normalize( $values );
 
-        return array_values( array_filter(
-            $values,
-            fn( string $value ) => isset( $catalog[$value] ),
-        ) );
+        return array_values( array_filter( $values, fn( string $value ) => isset( $catalog[$value] ) ) );
     }
 
 
@@ -190,7 +181,7 @@ class Access
             throw new Exception( sprintf( 'Access value "%s" already exists.', $value ) );
         }
 
-        ( self::$addCallback )( $value );
+        (self::$addCallback)( $value );
         $this->refresh();
 
         return $this->list();
@@ -214,10 +205,7 @@ class Access
         $values = self::normalize( $values );
 
         if( count( $values ) > self::MAX_CHANGE_VALUES ) {
-            throw new Exception( sprintf(
-                'No more than %d access values may be deleted at once.',
-                self::MAX_CHANGE_VALUES,
-            ) );
+            throw new Exception( sprintf( 'No more than %d access values may be deleted at once.', self::MAX_CHANGE_VALUES ) );
         }
 
         $catalog = $this->catalog();
@@ -227,7 +215,7 @@ class Access
             return array_keys( $catalog );
         }
 
-        ( self::$deleteCallback )( $values );
+        (self::$deleteCallback)( $values );
         $this->refresh();
 
         return $this->list();
@@ -288,9 +276,10 @@ class Access
     {
         $this->context();
         $catalog = $this->catalog();
-        $values = $values === null || is_array( $values )
-            ? $values
-            : iterator_to_array( $values, false );
+
+        if( $values && !is_array( $values ) ) {
+            $values = iterator_to_array( $values, false );
+        }
 
         if( $values === null && isset( $this->allowed[$user] ) ) {
             return $this->allowed[$user];
@@ -298,25 +287,31 @@ class Access
 
         $prepared = isset( $this->grants[$user] );
 
-        if( $prepared ) {
-            $granted = $this->grants[$user];
-        } else {
+        if( !$prepared )
+        {
             $extra = self::$extendCallback ? ( self::$extendCallback )( $user ) : [];
             $granted = array_fill_keys( self::normalize( $extra ?? [] ), true );
             $this->grants[$user] = $granted = array_intersect_key( $granted, $catalog );
         }
+        else
+        {
+            $granted = $this->grants[$user];
+        }
 
         if( !$prepared && self::$prepareCallback ) {
-            ( self::$prepareCallback )( $user );
+            (self::$prepareCallback)( $user );
         }
 
         if( !isset( $this->resolved[$user] ) && self::$grantsCallback )
         {
-            if( ( $resolved = ( self::$grantsCallback )( $user ) ) !== null ) {
+            if( ( $resolved = ( self::$grantsCallback )( $user ) ) !== null )
+            {
                 $granted += array_fill_keys( self::normalize( $resolved ), true );
                 $this->grants[$user] = $granted = array_intersect_key( $granted, $catalog );
                 $this->resolved[$user] = true;
-            } else {
+            }
+            else
+            {
                 $this->resolved[$user] = false;
             }
         }
@@ -548,10 +543,7 @@ class Access
         $values = self::normalize( $values );
 
         if( count( $values ) > self::MAX_CHANGE_VALUES ) {
-            throw new Exception( sprintf(
-                'No more than %d user access values may be changed at once.',
-                self::MAX_CHANGE_VALUES,
-            ) );
+            throw new Exception( sprintf( 'No more than %d user access values may be changed at once.', self::MAX_CHANGE_VALUES ) );
         }
 
         if( $unknown = array_diff( $values, $this->list() ) ) {
@@ -576,7 +568,7 @@ class Access
         $this->refresh();
 
         if( self::$activateCallback ) {
-            ( self::$activateCallback )( $tenant );
+            (self::$activateCallback)( $tenant );
         }
 
         $this->tenant = $tenant;
@@ -651,11 +643,7 @@ class Access
         self::call( $relation, 'whereNull', $related->qualifyColumn( 'entity_type' ) );
         self::call( $relation, 'wherePivot', 'forbidden', false );
 
-        return self::itemNames( self::call(
-            $relation,
-            'get',
-            [$related->qualifyColumn( 'name' )],
-        ) );
+        return self::itemNames( self::call( $relation, 'get', [$related->qualifyColumn( 'name' )] ) );
     }
 
 
@@ -703,6 +691,7 @@ class Access
             $helper = 'Laratrust\\Helper';
             $key = (string) config( 'laratrust.foreign_keys.team', 'team_id' );
             $team = $helper::getIdFor( Tenancy::value(), 'team' );
+
             self::call( $relation, 'wherePivot', $key, $team );
         }
 
@@ -765,6 +754,7 @@ class Access
         self::$grantsCallback = $grants;
         self::$userAccessCallback = $userAccess;
         self::syncPermissions();
+
         app()->forgetInstance( self::class );
     }
 
@@ -912,10 +902,7 @@ class Access
         }
 
         if( mb_strlen( $value ) > self::MAX_VALUE_LENGTH ) {
-            throw new Exception( sprintf(
-                'Access values may not be longer than %d characters.',
-                self::MAX_VALUE_LENGTH,
-            ) );
+            throw new Exception( sprintf( 'Access values may not be longer than %d characters.', self::MAX_VALUE_LENGTH ) );
         }
 
         return $value;
