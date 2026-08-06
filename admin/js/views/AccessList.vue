@@ -81,11 +81,19 @@ export default {
 
     activeTab: {
       get() {
-        return this.$route.name === 'access:users' ? 'users' : 'roles'
+        return this.$route.name === 'access:users' || this.$route.query?.tab === 'users'
+          ? 'users'
+          : 'roles'
       },
       set(value) {
-        const name = value === 'users' ? 'access:users' : 'access:view'
-        if (this.$route.name !== name) this.$router.replace({ name })
+        const query = value === 'users' ? { ...this.$route.query, tab: 'users' } : { ...this.$route.query }
+        if (value !== 'users') {
+          delete query.tab
+        }
+
+        if (this.$route.query?.tab === query.tab && this.$route.name !== 'access:users') return
+
+        this.$router.replace({ name: this.$route.name, query })
       }
     },
 
@@ -117,7 +125,7 @@ export default {
 
   mounted() {
     if (this.$route.name === 'access:view' && !this.canAccess && this.canManageUsers) {
-      return this.$router.replace({ name: 'access:users' })
+      return this.$router.replace({ name: 'access:view', query: { ...this.$route.query, tab: 'users' } })
     }
 
     this.load()
