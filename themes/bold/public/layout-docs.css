@@ -137,6 +137,10 @@ main nav.sidebar .menu-item {
     display: flex;
 }
 
+main nav.sidebar .menu-item a {
+    flex-grow: 1;
+}
+
 main nav.sidebar details summary::marker,
 main nav.sidebar details summary ::-webkit-details-marker {
     content: "";
