@@ -3,8 +3,10 @@
 namespace Aimeos\Cms;
 
 use Aimeos\Cms\Events\Authed;
+use Aimeos\Cms\Events\UserChanged;
 use Aimeos\Cms\GraphQL\Directives\CmsExceptionDirective;
 use Aimeos\Cms\Listeners\AuthLogListener;
+use Aimeos\Cms\Listeners\UserLogListener;
 use GraphQL\Language\AST\FieldNode;
 use GraphQL\Utils\AST;
 use Illuminate\Cache\RateLimiting\Limit;
@@ -35,6 +37,8 @@ class GraphqlServiceProvider extends Provider
         \Aimeos\Cms\Permission::register( [
             'cache:clear',
             'page:metrics',
+            'user:permission',
+            'user:create',
         ] );
 
         $this->app->make('events')->listen(
@@ -126,6 +130,12 @@ class GraphqlServiceProvider extends Provider
         Watch::listen( [
             Authed::class => AuthLogListener::class,
         ] );
+
+        // User creation / access changes are security-relevant and must always be
+        // audited, so this listener is registered unconditionally — NOT through the
+        // watch-channel-gated Watch::listen() above. UserLogListener falls back to the
+        // default log channel when no cms.watch.channel is configured.
+        \Illuminate\Support\Facades\Event::listen( UserChanged::class, [UserLogListener::class, 'handle'] );
     }
 
 

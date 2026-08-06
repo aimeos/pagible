@@ -7,8 +7,10 @@
 
 namespace Tests;
 
+use Aimeos\Cms\Access;
 use Aimeos\Cms\Events\Authed;
 use Aimeos\Cms\Events\Observed;
+use Aimeos\Cms\Events\UserChanged;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\RateLimiter;
@@ -134,15 +136,87 @@ class GraphqlWatchTest extends GraphqlTestAbstract
     }
 
 
-    public function testUserSaveDispatchesAuthed() : void
+    public function testSetUserDispatchesAuthed() : void
     {
         Event::fake( [Authed::class] );
 
         $this->actingAs( $this->editor() )->graphQL( '
-            mutation ($settings: JSON!) { cmsUser(settings: $settings) { id } }
+            mutation ($settings: JSON!) { setUser(settings: $settings) { id } }
         ', ['settings' => json_encode( ['page' => []] )] );
 
         Event::assertDispatched( Authed::class, fn( Authed $e ) => $e->action === 'user-save' );
+    }
+
+
+    public function testCreateUserDispatchesUserChanged() : void
+    {
+        Event::fake( [UserChanged::class] );
+        $this->editor()->forceFill( ['cmsperms' => ['user:create']] );
+
+        $this->actingAs( $this->editor() )->graphQL( '
+            mutation { createUser(email: "created@example.com") { id } }
+        ' )->assertGraphQLErrorFree();
+
+        Event::assertDispatched( UserChanged::class, fn( UserChanged $e ) =>
+            $e->action === 'create'
+            && $e->actorEmail === 'editor@testbench'
+            && $e->targetEmail === 'created@example.com'
+            && $e->targetId !== ''
+            && $e->assignments === []
+            && $e->tenant === 'test'
+        );
+    }
+
+
+    public function testSetUserAccessDispatchesUserChanged() : void
+    {
+        Event::fake( [UserChanged::class] );
+        $this->editor()->forceFill( ['cmsperms' => ['user:access']] );
+        $target = \App\Models\User::create( [
+            'name' => 'Frontend user',
+            'email' => 'member@example.com',
+            'password' => 'secret',
+            'cmsperms' => [],
+        ] );
+        Access::using(
+            list: fn() => ['member'],
+            userAccess: fn( $user, ?array $values ) => $values ?? [],
+        );
+
+        $this->actingAs( $this->editor() )->graphQL( '
+            mutation($id: ID!) { setUserAccess(id: $id, access: ["member"]) }
+        ', ['id' => (string) $target->getKey()] )->assertGraphQLErrorFree();
+
+        Event::assertDispatched( UserChanged::class, fn( UserChanged $e ) =>
+            $e->action === 'access'
+            && $e->targetEmail === 'member@example.com'
+            && $e->targetId === (string) $target->getKey()
+            && $e->assignments === ['member']
+        );
+    }
+
+
+    public function testSetUserPermissionsDispatchesUserChanged() : void
+    {
+        Event::fake( [\Aimeos\Cms\Events\PermissionChanged::class] );
+        $this->editor()->forceFill( ['cmsperms' => ['user:permission']] );
+        $target = \App\Models\User::create( [
+            'name' => 'Frontend user',
+            'email' => 'member@example.com',
+            'password' => 'secret',
+            'cmsperms' => [],
+        ] );
+
+        $this->actingAs( $this->editor() )->graphQL( '
+            mutation($id: ID!) { setUserPermissions(id: $id, permissions: ["viewer"]) }
+        ', ['id' => (string) $target->getKey()] )->assertGraphQLErrorFree();
+
+        Event::assertDispatched( \Aimeos\Cms\Events\PermissionChanged::class,
+            fn( \Aimeos\Cms\Events\PermissionChanged $e ) =>
+                $e->targetEmail === 'member@example.com'
+                && $e->targetId === (string) $target->getKey()
+                && $e->assignments === ['viewer']
+        );
     }
 
 

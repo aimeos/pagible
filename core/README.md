@@ -94,10 +94,13 @@ Access::using(
     add: fn( string $value ) => app(AccessPermissions::class)->add( $value ),
     delete: fn( array $values ) => app(AccessPermissions::class)->delete( $values ),
     grants: fn( $user ) => app(AccessPermissions::class)->grants( $user ),
+    userAccess: fn( $user, ?array $values ) => $values === null
+        ? app(AccessPermissions::class)->assigned( $user )
+        : app(AccessPermissions::class)->replace( $user, $values ),
 );
 ```
 
-`Permission::has('access:view')` reports whether a catalog or package adapter has been configured, and `Access::list()` returns its normalized values. The `add`, `delete`, and `grants` callbacks are optional; without write callbacks the catalog remains read-only. Catalog membership and autocomplete search use the request-local memoized list.
+`Permission::has('access:view')` reports whether a catalog or package adapter has been configured, and `Access::list()` returns its normalized values. The `add`, `delete`, `grants`, and `userAccess` callbacks are optional; without catalog write callbacks the catalog remains read-only, and `userAccess` enables user assignment management. The admin access route requires `access:view`; its Users tab appears when the editor can create users, manage frontend access, or manage CMS permissions. Direct frontend assignment reads and writes require `user:access`. The callback receives the user and either `null` to read direct assignments or the complete desired array to replace them atomically, then returns the refreshed direct assignments. Pagible serializes replacements for persisted Eloquent users; non-Eloquent integrations must provide their own atomic replacement. Effective grants remain the responsibility of `grants` or Laravel Gate. The complete catalog must contain no more than `cms.access.limit` distinct values. Pagible stops reading at the next distinct value and rejects an oversized catalog; additions are rejected before invoking the write callback when the limit has already been reached. Catalog membership and autocomplete search use the memoized bounded list.
 
 A grant resolver must return all effective frontend-access values for the user, including direct and role-derived values in the active tenant and guard. Its result avoids Gate calls for each candidate but is filtered through the configured catalog. Return `null` for users whose permissions cannot be enumerated, such as blanket access implemented only through `Gate::before()`; Pagible then preserves the catalog-and-Gate fallback. Pass `null` as the list callback to reset custom configuration.
 
@@ -115,9 +118,9 @@ The adapters require these package versions at minimum:
 
 | Adapter | Minimum package version | API used by Pagible |
 |---------|-------------------------|---------------------|
-| Spatie | `spatie/laravel-permission` 6.2.0 | Permission model, `findOrCreate()`, model cache events, teams, and `PermissionRegistrar::setPermissionsTeamId()` |
-| Bouncer | `silber/bouncer` 1.0.2 | Global ability model, `scope()->to()`, and `refresh()` |
-| Laratrust | `santigarcor/laratrust` 8.3.0 | Permission model, teams, `isAbleTo()`, and permission gates |
+| Spatie | `spatie/laravel-permission` 6.2.0 | Permission model, `syncPermissions()`, model cache events, teams, and `PermissionRegistrar::setPermissionsTeamId()` |
+| Bouncer | `silber/bouncer` 1.0.2 | Global ability model, direct ability methods, `scope()->to()`, and targeted cache refresh |
+| Laratrust | `santigarcor/laratrust` 8.3.0 | Permission model, direct permission methods, teams, `isAbleTo()`, and permission gates |
 
 These are runtime contracts, not compatibility probes: calling an adapter without its package, with an older release, or without the documented team configuration is an application configuration error. Applications must install a package release compatible with their Laravel version; the APIs above remain required.
 
@@ -129,7 +132,7 @@ Spatie and Laratrust permission definitions can remain global even when their as
 
 The scoped `Access` instance activates Spatie or Bouncer lazily before its first operation in each tenant context. It clears its catalog and per-user grant results whenever the tenant changes. The fallback path preserves package hooks, `Gate::before()` rules, and explicit denials. The Spatie adapter also clears the user's loaded `roles` and `permissions` relations before its first grant resolution or Gate check in each tenant context, preventing relations from the previous tenant from being reused.
 
-Configured catalogs register `access:view` for catalog discovery. Writable catalogs additionally register `access:add` and `access:delete`; `access:*` expands to the catalog capabilities currently available. `Access::add()` creates an immutable value and `Access::delete()` removes up to 250 values. Deleting a value does not rewrite references held by consumers.
+Configured catalogs register `access:view` for catalog discovery. Writable catalogs additionally register `access:add` and `access:delete`. Configurations supporting direct assignment lookup, addition, and removal register `user:access`; `access:*` expands to the catalog capabilities currently available. `Access::add()` creates an immutable value and `Access::delete()` removes up to 250 values. `Access::set()` verifies tenant ownership before and after locking a persisted user, replaces up to 250 known values, and returns the refreshed direct assignments. Deleting a value does not rewrite references held by consumers.
 
 ### Frontend page access
 

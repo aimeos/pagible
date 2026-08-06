@@ -73,6 +73,70 @@ msgstr "A válasz már folyamatban van. Kérjük, várja meg, amíg befejeződik
 msgid "Too many requests. Please wait a moment and try again."
 msgstr "Túl sok kérés. Kérjük, várjon egy pillanatot, és próbálja újra."
 
+#: js/components/AccessUsers.vue:133
+msgid "Access roles updated"
+msgstr "A hozzáférési szerepkörök frissítve"
+
+#: js/components/AccessUsers.vue:137
+msgid "Error updating access roles"
+msgstr "Hiba a hozzáférési szerepkörök frissítésekor"
+
+#: js/components/AccessUsers.vue:170
+msgid "Error updating CMS permissions"
+msgstr "Hiba a CMS-jogosultságok frissítésekor"
+
+#: js/components/AccessUsers.vue:190
+msgid "User created"
+msgstr "Felhasználó létrehozva"
+
+#: js/components/AccessUsers.vue:197
+msgid "Error creating user"
+msgstr "Hiba a felhasználó létrehozásakor"
+
+#: js/components/AccessUsers.vue:221 js/components/PageAccess.vue:124
+#: js/views/AccessList.vue:119
+msgid "Error fetching access roles"
+msgstr "Hiba a hozzáférési szerepkörök lekérésekor"
+
+#: js/components/AccessUsers.vue:250
+msgid "Error fetching user access roles"
+msgstr "Hiba a felhasználói hozzáférési szerepkörök lekérésekor"
+
+#: js/components/AccessUsers.vue:268 js/components/AccessUsers.vue:303
+msgid "Email address"
+msgstr "E-mail-cím"
+
+#: js/components/AccessUsers.vue:282
+msgid "Search"
+msgstr "Keresés"
+
+#: js/components/AccessUsers.vue:294
+msgid "Create user"
+msgstr "Felhasználó létrehozása"
+
+#: js/components/AccessUsers.vue:304 js/components/AccessUsers.vue:318
+msgid "Assigned roles"
+msgstr "Hozzárendelt szerepkörök"
+
+#: js/components/AccessUsers.vue:305 js/components/AccessUsers.vue:336
+msgid "CMS permissions"
+msgstr "CMS-jogosultságok"
+
+#: js/components/AccessUsers.vue:351 js/components/ElementListItems.vue:913
+#: js/components/FileListItems.vue:997 js/components/PageListItems.vue:1917
+#: js/views/AccessList.vue:284
+msgid "No entries found"
+msgstr "Nem találtunk bejegyzést"
+
+#: js/components/AccessUsers.vue:355
+msgid ""
+"Removing a direct role may not remove access granted through provider roles "
+"or other integrations."
+msgstr ""
+"Egy közvetlen szerepkör eltávolítása nem feltétlenül szünteti meg a "
+"szolgáltatói szerepkörökön vagy más integrációkon keresztül biztosított "
+"hozzáférést."
+
 #: js/components/AsideCount.vue:65
 msgid "Used elements"
 msgstr "Használt elemek"
@@ -170,8 +234,8 @@ msgstr "%{count} / %{total}"
 #: js/components/PageListItems.vue:1942 js/components/SchemaDialog.vue:38
 #: js/components/UnsavedDialog.vue:39 js/components/User.vue:121
 #: js/fields/Items.vue:382 js/fields/Items.vue:466 js/fields/Table.vue:212
-#: js/fields/Table.vue:307 js/views/AccessList.vue:278
-#: js/views/AccessList.vue:310
+#: js/fields/Table.vue:307 js/views/AccessList.vue:307
+#: js/views/AccessList.vue:339
 msgid "Close"
 msgstr "Zárja be a"
 
@@ -253,7 +317,7 @@ msgstr "Leállítás"
 msgid "Send"
 msgstr "Küldés"
 
-#: js/components/DetailAppBar.vue:92 js/views/AccessList.vue:189
+#: js/components/DetailAppBar.vue:92 js/views/AccessList.vue:197
 #: js/views/ElementList.vue:135 js/views/FileList.vue:134
 #: js/views/PageList.vue:251
 msgid "Menu"
@@ -396,8 +460,8 @@ msgstr "Hiba a megosztott elemek lekérdezésében"
 
 #: js/components/ElementListItems.vue:686 js/components/FileListItems.vue:672
 #: js/components/PageDetailContentList.vue:777
-#: js/components/PageListItems.vue:1535 js/views/AccessList.vue:217
-#: js/views/AccessList.vue:261
+#: js/components/PageListItems.vue:1535 js/views/AccessList.vue:233
+#: js/views/AccessList.vue:277
 msgid "Toggle selection"
 msgstr "Kiválasztás váltása"
 
@@ -429,7 +493,7 @@ msgstr "Tevékenységek"
 #: js/components/PageDetailContentList.vue:907
 #: js/components/PageListItems.vue:1591 js/components/PageListItems.vue:1847
 #: js/fields/Items.vue:400 js/fields/Table.vue:236 js/fields/Table.vue:331
-#: js/views/AccessList.vue:222 js/views/AccessList.vue:326
+#: js/views/AccessList.vue:238 js/views/AccessList.vue:355
 msgid "Delete"
 msgstr "Törlés"
 
@@ -456,7 +520,7 @@ msgstr "Elem hozzáadása"
 
 #: js/components/ElementListItems.vue:760 js/components/FileListItems.vue:757
 #: js/components/PageDetailContentList.vue:821
-#: js/components/PageListItems.vue:1624 js/views/AccessList.vue:246
+#: js/components/PageListItems.vue:1624 js/views/AccessList.vue:262
 msgid "Search for"
 msgstr "Keresés a"
 
@@ -485,11 +549,6 @@ msgstr "Új"
 #: js/fields/Url.vue:135
 msgid "Loading"
 msgstr "Betöltés"
-
-#: js/components/ElementListItems.vue:913 js/components/FileListItems.vue:997
-#: js/components/PageListItems.vue:1917 js/views/AccessList.vue:268
-msgid "No entries found"
-msgstr "Nem találtunk bejegyzést"
 
 #: js/components/Fields.vue:270 js/components/Fields.vue:279
 #: js/components/Fields.vue:288 js/fields/Items.vue:445 js/fields/Items.vue:454
@@ -628,7 +687,7 @@ msgid "Error upscaling image"
 msgstr "Hiba a kép felbontásának növelésekor"
 
 #: js/components/FileDetailItemImage.vue:637 js/components/UnsavedDialog.vue:55
-#: js/views/AccessList.vue:293 js/views/AccessList.vue:324
+#: js/views/AccessList.vue:322 js/views/AccessList.vue:353
 msgid "Cancel"
 msgstr "Törölje"
 
@@ -926,7 +985,7 @@ msgstr "Rendezés"
 #: js/components/PageDetailItem.vue:102 js/components/PageListItems.vue:419
 #: js/components/PageListItems.vue:1583 js/components/PageListItems.vue:1746
 #: js/components/PageListItems.vue:1936 js/components/PageListItems.vue:1941
-#: js/routes.js:99 js/views/AccessList.vue:198 js/views/AccessList.vue:207
+#: js/routes.js:99 js/views/AccessList.vue:206 js/views/AccessList.vue:215
 msgid "Access"
 msgstr "Hozzáférés"
 
@@ -937,10 +996,6 @@ msgstr "Panelek"
 #: js/components/PageAccess.vue:102
 msgid "Error changing page access"
 msgstr "Hiba az oldal hozzáférésének módosításakor"
-
-#: js/components/PageAccess.vue:124 js/views/AccessList.vue:111
-msgid "Error fetching access values"
-msgstr "Hiba a hozzáférési értékek lekérésekor"
 
 #: js/components/PageAccess.vue:168
 msgid "Access changes take effect immediately after cache expiry"
@@ -2206,42 +2261,50 @@ msgstr "Nincs"
 msgid "All"
 msgstr "Minden"
 
-#: js/views/AccessList.vue:139
+#: js/views/AccessList.vue:147
 msgid "Error adding access value"
 msgstr "Hiba történt a hozzáférési érték hozzáadásakor"
 
-#: js/views/AccessList.vue:161
+#: js/views/AccessList.vue:169
 msgid "Error deleting access values"
 msgstr "Hiba a hozzáférési értékek törlésekor"
 
-#: js/views/AccessList.vue:193 js/views/ElementList.vue:139
+#: js/views/AccessList.vue:201 js/views/ElementList.vue:139
 #: js/views/FileList.vue:138 js/views/PageList.vue:255
 msgid "Close navigation"
 msgstr "Bezár navigáció"
 
-#: js/views/AccessList.vue:193 js/views/ElementList.vue:139
+#: js/views/AccessList.vue:201 js/views/ElementList.vue:139
 #: js/views/FileList.vue:138 js/views/PageList.vue:255
 msgid "Open navigation"
 msgstr "Navigáció megnyitása"
 
-#: js/views/AccessList.vue:232 js/views/AccessList.vue:274
-#: js/views/AccessList.vue:277
+#: js/views/AccessList.vue:219
+msgid "Roles"
+msgstr "Szerepkörök"
+
+#: js/views/AccessList.vue:220
+msgid "Users"
+msgstr "Felhasználók"
+
+#: js/views/AccessList.vue:248 js/views/AccessList.vue:303
+#: js/views/AccessList.vue:306
 msgid "Add access value"
 msgstr "Hozzáférési érték hozzáadása"
 
-#: js/views/AccessList.vue:284
+#: js/views/AccessList.vue:313
 msgid "Access value"
 msgstr "Hozzáférési érték"
 
-#: js/views/AccessList.vue:295
+#: js/views/AccessList.vue:324
 msgid "Add"
 msgstr "Hozzáadás"
 
-#: js/views/AccessList.vue:305 js/views/AccessList.vue:309
+#: js/views/AccessList.vue:334 js/views/AccessList.vue:338
 msgid "Delete access values"
 msgstr "Hozzáférési értékek törlése"
 
-#: js/views/AccessList.vue:316
+#: js/views/AccessList.vue:345
 msgid ""
 "Existing restrictions are not changed and will continue to reference the "
 "deleted access values."
@@ -2447,7 +2510,6 @@ msgid "Press Enter or the arrow to open the AI assistant and refine in a chat"
 msgstr ""
 "Nyomja meg az Enter billentyűt vagy a nyilat az MI-asszisztens megnyitásához "
 "és a tartalom csevegésben történő finomításához"
-
 
 #~ msgid "mime"
 #~ msgstr "mime"

@@ -26,7 +26,12 @@ export default {
           label: this.$gettext('Shared elements')
         },
         { permission: 'file:view', path: '/files', icon: mdiFolderMultipleImage, label: this.$gettext('Files') },
-        { permission: 'access:view', path: '/access', icon: mdiKeyVariant, label: this.$gettext('Access') }
+        {
+          permission: ['access:view', 'user:create', 'user:access', 'user:permission'],
+          path: '/access',
+          icon: mdiKeyVariant,
+          label: this.$gettext('Access')
+        }
       ]
     }
   },
@@ -44,7 +49,7 @@ export default {
 <template>
   <v-navigation-drawer v-model="drawer.nav" location="start" mobile-breakpoint="lg" :aria-label="$gettext('Panels')">
     <v-list>
-      <template v-for="panel in builtins" :key="panel.permission">
+      <template v-for="panel in builtins" :key="panel.path">
         <v-list-item v-if="user.can(panel.permission)" rounded="lg">
           <router-link :to="panel.path" class="router-link" @click="toggle()">
             <v-icon :icon="panel.icon" class="icon" />

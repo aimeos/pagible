@@ -55,12 +55,203 @@ class AccessTest extends CoreTestAbstract
 
         $this->assertTrue( Permission::has( 'access:add' ) );
         $this->assertTrue( Permission::has( 'access:delete' ) );
+        $this->assertFalse( Permission::has( 'user:access' ) );
+
+        Access::using(
+            list: fn() => [],
+            userAccess: fn( $user, ?array $values ) => [],
+        );
+
+        $this->assertTrue( Permission::has( 'user:access' ) );
 
         Access::using( null );
 
         $this->assertFalse( Permission::has( 'access:view' ) );
         $this->assertFalse( Permission::has( 'access:add' ) );
         $this->assertFalse( Permission::has( 'access:delete' ) );
+        $this->assertFalse( Permission::has( 'user:access' ) );
+    }
+
+
+    public function testSetsDirectUserAccess(): void
+    {
+        $assigned = ['beta'];
+        $user = new \App\Models\User();
+
+        Access::using(
+            list: fn() => ['alpha', 'beta'],
+            userAccess: function( $user, ?array $values ) use ( &$assigned ) {
+                if( $values !== null ) {
+                    $assigned = $values;
+                }
+                return [...$assigned, 'unknown'];
+            },
+        );
+
+        $access = app( Access::class );
+
+        $this->assertSame( ['beta'], $access->assigned( $user ) );
+        $this->assertSame( ['alpha', 'beta'], $access->set( $user, [' beta ', 'alpha', 'alpha'] ) );
+        $this->assertSame( ['alpha'], $access->set( $user, ['alpha'] ) );
+        $this->assertSame( ['alpha'], $access->set( $user, ['alpha'] ) );
+    }
+
+
+    public function testPersistedUserAccessChangesUseLockedFreshModel(): void
+    {
+        $changed = null;
+        $user = \App\Models\User::create( [
+            'name' => 'Frontend user',
+            'email' => 'locked@example.com',
+            'password' => 'secret',
+            'cmsperms' => [],
+        ] );
+
+        Access::using(
+            list: fn() => ['member'],
+            userAccess: function( $callbackUser, ?array $values ) use ( &$changed ) {
+                if( $values !== null ) {
+                    $changed = $callbackUser;
+                }
+
+                return $values ?? [];
+            },
+        );
+
+        $this->assertSame( ['member'], app( Access::class )->set( $user, ['member'] ) );
+        $this->assertInstanceOf( \App\Models\User::class, $changed );
+        $this->assertNotSame( $user, $changed );
+        $this->assertSame( $user->getKey(), $changed->getKey() );
+    }
+
+
+    public function testRejectsForeignTenantUserAccessChanges(): void
+    {
+        $changed = false;
+        $user = new \App\Models\User();
+        Tenancy::$access = fn() => false;
+
+        Access::using(
+            list: fn() => ['member'],
+            userAccess: function() use ( &$changed ) {
+                $changed = true;
+                return [];
+            },
+        );
+
+        try {
+            app( Access::class )->set( $user, ['member'] );
+            $this->fail( 'Expected a foreign tenant user to be rejected.' );
+        } catch( Exception $e ) {
+            $this->assertSame(
+                'Frontend access can only be changed for users in the current tenant.',
+                $e->getMessage(),
+            );
+            $this->assertFalse( $changed );
+        } finally {
+            Tenancy::$access = null;
+        }
+    }
+
+
+    public function testRechecksTenantAfterLockingUserForAccessChanges(): void
+    {
+        $checks = 0;
+        $changed = false;
+        $user = \App\Models\User::create( [
+            'name' => 'Moved frontend user',
+            'email' => 'moved@example.com',
+            'password' => 'secret',
+            'cmsperms' => [],
+        ] );
+        Tenancy::$access = function() use ( &$checks ) {
+            return ++$checks === 1;
+        };
+
+        Access::using(
+            list: fn() => ['member'],
+            userAccess: function() use ( &$changed ) {
+                $changed = true;
+                return [];
+            },
+        );
+
+        try {
+            app( Access::class )->set( $user, ['member'] );
+            $this->fail( 'Expected changed tenant membership to be rejected.' );
+        } catch( Exception $e ) {
+            $this->assertSame(
+                'Frontend access can only be changed for users in the current tenant.',
+                $e->getMessage(),
+            );
+            $this->assertSame( 2, $checks );
+            $this->assertFalse( $changed );
+        } finally {
+            Tenancy::$access = null;
+        }
+    }
+
+
+    public function testUserAccessChangesInvalidateAllUserInstances(): void
+    {
+        $assigned = ['member'];
+        $grantCalls = 0;
+
+        Access::using(
+            list: fn() => ['member'],
+            grants: function() use ( &$assigned, &$grantCalls ) {
+                $grantCalls++;
+                return $assigned;
+            },
+            userAccess: function( $user, ?array $values ) use ( &$assigned ) {
+                if( $values !== null ) {
+                    $assigned = $values;
+                }
+                return $assigned;
+            },
+        );
+
+        $authenticated = new \App\Models\User();
+        $authenticated->id = 42;
+        $found = new \App\Models\User();
+        $found->id = 42;
+        $access = app( Access::class );
+
+        $this->assertSame( ['member'], $access->allowed( $authenticated ) );
+        $this->assertSame( [], $access->set( $found, [] ) );
+        $this->assertSame( [], $access->allowed( $authenticated ) );
+        $this->assertSame( 2, $grantCalls );
+    }
+
+
+    public function testRejectsUnknownUserAccessAssignments(): void
+    {
+        Access::using(
+            list: fn() => ['member'],
+            userAccess: fn( $user, ?array $values ) => [],
+        );
+
+        $this->expectException( Exception::class );
+        $this->expectExceptionMessage( 'Unknown frontend access value "missing".' );
+
+        app( Access::class )->set( new \App\Models\User(), ['missing'] );
+    }
+
+
+    public function testRejectsOversizedUserAccessChanges(): void
+    {
+        Access::using(
+            list: fn() => [],
+            userAccess: fn( $user, ?array $values ) => [],
+        );
+
+        $this->expectException( Exception::class );
+        $this->expectExceptionMessage( 'No more than 250 user access values may be changed at once.' );
+
+        app( Access::class )->set( new \App\Models\User(), array_map(
+            fn( int $idx ) => 'value-' . $idx,
+            range( 1, 251 ),
+        ) );
     }
 
 
@@ -530,7 +721,7 @@ class AccessTest extends CoreTestAbstract
             $this->assertContains( 'member', $access->list() );
             $this->assertSame( 'test', $registrar->tenant );
 
-            $user = new \App\Models\User();
+            $user = new SpatieUserFake();
             $user->setRelation( 'roles', collect( ['stale'] ) );
             $user->setRelation( 'permissions', collect( ['stale'] ) );
 
@@ -543,12 +734,16 @@ class AccessTest extends CoreTestAbstract
             $this->assertSame( ['member'], $access->allowed( $user, ['member'] ) );
             $this->assertSame( 1, $registrar->calls );
 
+            $this->assertSame( [], $access->assigned( $user ) );
+            $this->assertSame( ['member'], $access->set( $user, ['member'] ) );
+            $this->assertSame( [], $access->set( $user, [] ) );
+
             $user->setRelation( 'roles', collect() );
             $user->setRelation( 'permissions', collect() );
 
             $this->assertSame( ['member'], $access->allowed( $user, ['member'] ) );
-            $this->assertTrue( $user->relationLoaded( 'roles' ) );
-            $this->assertTrue( $user->relationLoaded( 'permissions' ) );
+            $this->assertFalse( $user->relationLoaded( 'roles' ) );
+            $this->assertFalse( $user->relationLoaded( 'permissions' ) );
 
             Tenancy::set( 'other' );
 
@@ -621,8 +816,13 @@ class AccessTest extends CoreTestAbstract
             $this->assertSame( 'test', $bouncer->scope->tenant );
 
             Gate::define( 'member', fn() => true );
-            $this->assertSame( ['member'], $access->allowed( new \App\Models\User(), ['member'] ) );
+            $user = new BouncerUserFake();
+            $this->assertSame( ['member'], $access->allowed( $user, ['member'] ) );
+            $this->assertSame( [], $access->assigned( $user ) );
+            $this->assertSame( ['member'], $access->set( $user, ['member'] ) );
+            $this->assertSame( [], $access->set( $user, [] ) );
             $this->assertSame( 1, $bouncer->scope->calls );
+            $this->assertSame( 2, $bouncer->userRefreshes );
         }
         finally
         {
@@ -634,6 +834,10 @@ class AccessTest extends CoreTestAbstract
 
     public function testLaratrustAdapterRegistersTenantAwareGates(): void
     {
+        if( !class_exists( 'Laratrust\\Helper', false ) ) {
+            class_alias( LaratrustHelperFake::class, 'Laratrust\\Helper' );
+        }
+
         config( [
             'laratrust.models.permission' => AccessPackageModel::class,
             'laratrust.teams.enabled' => true,
@@ -647,6 +851,11 @@ class AccessTest extends CoreTestAbstract
         $this->assertSame( [$value], app( Access::class )->allowed( $user, [$value] ) );
         $this->assertContains( $value, app( Access::class )->list() );
         $this->assertSame( [[$value, 'test']], $user->checks );
+        $this->assertSame( [], app( Access::class )->assigned( $user ) );
+        $this->assertSame( [$value], app( Access::class )->set( $user, [$value] ) );
+        $this->assertSame( [], app( Access::class )->set( $user, [] ) );
+        $this->assertSame( ['test', 'test'], $user->teams );
+        $this->assertSame( 2, $user->flushes );
     }
 
 
@@ -796,12 +1005,37 @@ class SpatieRegistrarFake
 }
 
 
+class ProviderUserFake extends \App\Models\User
+{
+    /** @var array<int, string> */
+    public array $direct = [];
+}
+
+
+class SpatieUserFake extends ProviderUserFake
+{
+    public function getDirectPermissions(): \Illuminate\Support\Collection
+    {
+        return collect( $this->direct )->map( fn( string $value ) => (object) ['name' => $value] );
+    }
+
+
+    public function syncPermissions( array $values ): self
+    {
+        $this->direct = $values;
+        $this->unsetRelation( 'permissions' );
+        return $this;
+    }
+}
+
+
 class BouncerFake
 {
     /** @var class-string<\Illuminate\Database\Eloquent\Model> */
     public static string $model = AccessPackageModel::class;
     public BouncerScopeFake $scope;
     public int $refreshes = 0;
+    public int $userRefreshes = 0;
 
 
     public function __construct()
@@ -816,6 +1050,18 @@ class BouncerFake
     }
 
 
+    public function allow( BouncerUserFake $user ): BouncerConductorFake
+    {
+        return new BouncerConductorFake( $user, true );
+    }
+
+
+    public function disallow( BouncerUserFake $user ): BouncerConductorFake
+    {
+        return new BouncerConductorFake( $user, false );
+    }
+
+
     public function scope(): BouncerScopeFake
     {
         return $this->scope;
@@ -825,6 +1071,38 @@ class BouncerFake
     public function refresh(): void
     {
         $this->refreshes++;
+    }
+
+
+    public function refreshFor( BouncerUserFake $user ): void
+    {
+        $this->userRefreshes++;
+    }
+}
+
+
+class BouncerConductorFake
+{
+    public function __construct( private BouncerUserFake $user, private bool $assign )
+    {
+    }
+
+
+    public function to( array|string $values ): void
+    {
+        $values = (array) $values;
+        $this->user->direct = $this->assign
+            ? array_values( array_unique( [...$this->user->direct, ...$values] ) )
+            : array_values( array_diff( $this->user->direct, $values ) );
+    }
+}
+
+
+class BouncerUserFake extends ProviderUserFake
+{
+    public function abilities(): ProviderRelationFake
+    {
+        return new ProviderRelationFake( $this );
     }
 }
 
@@ -844,15 +1122,97 @@ class BouncerScopeFake
 }
 
 
-class LaratrustUserFake extends \App\Models\User
+class LaratrustUserFake extends ProviderUserFake
 {
     /** @var array<int, array{string, ?string}> */
     public array $checks = [];
+    /** @var array<int, string|null> */
+    public array $teams = [];
+    public int $flushes = 0;
+
+
+    public function permissions(): ProviderRelationFake
+    {
+        return new ProviderRelationFake( $this );
+    }
+
+
+    public function givePermissions( array $values, ?string $team = null ): self
+    {
+        $this->teams[] = $team;
+
+        foreach( $values as $value ) {
+            $this->direct = array_values( array_unique( [...$this->direct, $value] ) );
+            $this->flushCache();
+        }
+
+        return $this;
+    }
+
+
+    public function removePermissions( array $values, ?string $team = null ): self
+    {
+        $this->teams[] = $team;
+
+        foreach( $values as $value ) {
+            $this->direct = array_values( array_diff( $this->direct, [$value] ) );
+            $this->flushCache();
+        }
+
+        return $this;
+    }
+
+
+    public function flushCache(): void
+    {
+        $this->flushes++;
+    }
 
 
     public function isAbleTo( string $value, ?string $team = null ): bool
     {
         $this->checks[] = [$value, $team];
         return true;
+    }
+}
+
+
+class ProviderRelationFake
+{
+    public function __construct( private ProviderUserFake $user )
+    {
+    }
+
+
+    public function get( array $columns = ['*'] ): \Illuminate\Support\Collection
+    {
+        return collect( $this->user->direct )->map( fn( string $value ) => (object) ['name' => $value] );
+    }
+
+
+    public function getRelated(): AccessWriteModel
+    {
+        return new AccessWriteModel();
+    }
+
+
+    public function whereNull( string $column ): self
+    {
+        return $this;
+    }
+
+
+    public function wherePivot( string $column, mixed $value ): self
+    {
+        return $this;
+    }
+}
+
+
+class LaratrustHelperFake
+{
+    public static function getIdFor( mixed $team, string $type ): mixed
+    {
+        return $team;
     }
 }

@@ -12,6 +12,7 @@ import {
 } from '@mdi/js'
 import Navigation from '../components/Navigation.vue'
 import User from '../components/User.vue'
+import AccessUsers from '../components/AccessUsers.vue'
 import { apolloClient } from '../graphql'
 import { useDrawerStore, useMessageStore, useUserStore } from '../stores'
 
@@ -37,6 +38,7 @@ export default {
   name: 'AccessList',
 
   components: {
+    AccessUsers,
     Navigation,
     User
   },
@@ -73,6 +75,20 @@ export default {
   },
 
   computed: {
+    tabNames() {
+      return this.canAccess && this.canManageUsers ? ['roles', 'users'] : []
+    },
+
+    activeTab: {
+      get() {
+        return this.$route.name === 'access:users' ? 'users' : 'roles'
+      },
+      set(value) {
+        const name = value === 'users' ? 'access:users' : 'access:view'
+        if (this.$route.name !== name) this.$router.replace({ name })
+      }
+    },
+
     filtered() {
       const term = this.term?.trim().toLocaleLowerCase()
 
@@ -88,16 +104,31 @@ export default {
 
     allSelected() {
       return this.filtered.length > 0 && this.filtered.every((value) => this.checked.has(value))
+    },
+
+    canAccess() {
+      return this.user.can('access:view')
+    },
+
+    canManageUsers() {
+      return this.user.can(['user:create', 'user:access', 'user:permission'])
     }
   },
 
   mounted() {
+    if (this.$route.name === 'access:view' && !this.canAccess && this.canManageUsers) {
+      return this.$router.replace({ name: 'access:users' })
+    }
+
     this.load()
   },
 
   methods: {
     async load() {
-      this.loading = true
+      if (!this.canAccess) {
+        this.loading = false
+        return
+      }
 
       try {
         const response = await apolloClient.query({
@@ -106,9 +137,8 @@ export default {
         })
 
         this.items = response.data.access
-        this.checked = new Set()
       } catch (error) {
-        this.messages.add(this.$gettext('Error fetching access values') + ':\n' + error, 'error')
+        this.messages.add(this.$gettext('Error fetching access roles') + ':\n' + error, 'error')
       } finally {
         this.loading = false
       }
@@ -207,65 +237,84 @@ export default {
   <v-main class="access-list" :aria-label="$gettext('Access')">
     <v-container>
       <v-sheet class="box scroll">
-        <div class="header">
-          <div v-if="user.can('access:delete') || user.can('access:add')" class="bulk">
-            <v-checkbox-btn
-              v-if="user.can('access:delete')"
-              :model-value="allSelected"
-              :disabled="loading || !filtered.length"
-              @click.stop="toggleAll()"
-              :aria-label="$gettext('Toggle selection')"
+        <v-tabs v-if="tabNames.length" fixed-tabs v-model="activeTab">
+          <v-tab value="roles">{{ $gettext('Roles') }}</v-tab>
+          <v-tab value="users">{{ $gettext('Users') }}</v-tab>
+        </v-tabs>
+
+        <v-window v-model="activeTab" :touch="false" :disabled="!tabNames.length">
+          <v-window-item v-if="canAccess" value="roles">
+            <div class="access-roles">
+              <div class="header">
+                <div class="bulk">
+                  <v-checkbox-btn
+                    :style="{ visibility: user.can('access:delete') ? undefined : 'hidden' }"
+                    :model-value="allSelected"
+                    :disabled="loading || !filtered.length"
+                    @click.stop="toggleAll()"
+                    :aria-label="$gettext('Toggle selection')"
+                  />
+                  <v-btn
+                    v-if="checked.size"
+                    @click="deleteDialog = true"
+                    :title="$gettext('Delete')"
+                    :icon="mdiDelete"
+                    color="error"
+                    variant="text"
+                    class="btn-delete"
+                  />
+
+                  <v-btn
+                    v-if="user.can('access:add')"
+                    @click="openAdd()"
+                    :title="$gettext('Add access value')"
+                    :disabled="loading"
+                    :icon="mdiKeyPlus"
+                    color="primary"
+                    variant="tonal"
+                    class="btn-add"
+                  />
+                </div>
+
+                <div class="search">
+                  <v-text-field
+                    v-model="term"
+                    :prepend-inner-icon="mdiMagnify"
+                    variant="underlined"
+                    :label="$gettext('Search for')"
+                    hide-details
+                    clearable
+                  />
+                </div>
+              </div>
+
+              <v-progress-linear v-if="loading" indeterminate color="primary" />
+
+              <v-list v-else-if="filtered.length" class="items">
+                <v-list-item v-for="item in filtered" :key="item" :value="item">
+                  <template v-if="user.can('access:delete')" #prepend>
+                    <v-checkbox-btn
+                      :model-value="checked.has(item)"
+                      @click.stop="toggle(item)"
+                      :aria-label="$gettext('Toggle selection')"
+                    />
+                  </template>
+                  <v-list-item-title class="item-title">{{ item }}</v-list-item-title>
+                </v-list-item>
+              </v-list>
+
+              <p v-else class="notfound">{{ $gettext('No entries found') }}</p>
+            </div>
+          </v-window-item>
+
+          <v-window-item v-if="canManageUsers" value="users">
+            <AccessUsers
+              :permissions="user.me?.permission || {}"
+              :roles="items"
+              :roles-loading="loading"
             />
-            <v-btn
-              v-if="checked.size"
-              @click="deleteDialog = true"
-              :title="$gettext('Delete')"
-              :icon="mdiDelete"
-              color="error"
-              variant="text"
-              class="btn-delete"
-            />
-
-            <v-btn
-              v-if="user.can('access:add')"
-              @click="openAdd()"
-              :title="$gettext('Add access value')"
-              :disabled="loading"
-              :icon="mdiKeyPlus"
-              color="primary"
-              variant="tonal"
-              class="btn-add"
-            />
-          </div>
-
-          <div class="search">
-            <v-text-field
-              v-model="term"
-              :prepend-inner-icon="mdiMagnify"
-              variant="underlined"
-              :label="$gettext('Search for')"
-              hide-details
-              clearable
-            />
-          </div>
-        </div>
-
-        <v-progress-linear v-if="loading" indeterminate color="primary" />
-
-        <v-list v-else-if="filtered.length" class="items">
-          <v-list-item v-for="item in filtered" :key="item" :value="item">
-            <template v-if="user.can('access:delete')" #prepend>
-              <v-checkbox-btn
-                :model-value="checked.has(item)"
-                @click.stop="toggle(item)"
-                :aria-label="$gettext('Toggle selection')"
-              />
-            </template>
-            <v-list-item-title class="item-title">{{ item }}</v-list-item-title>
-          </v-list-item>
-        </v-list>
-
-        <p v-else class="notfound">{{ $gettext('No entries found') }}</p>
+          </v-window-item>
+        </v-window>
       </v-sheet>
     </v-container>
   </v-main>

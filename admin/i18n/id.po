@@ -73,6 +73,69 @@ msgstr "Sebuah respons sedang dibuat. Mohon tunggu hingga selesai."
 msgid "Too many requests. Please wait a moment and try again."
 msgstr "Terlalu banyak permintaan. Harap tunggu sebentar dan coba lagi."
 
+#: js/components/AccessUsers.vue:133
+msgid "Access roles updated"
+msgstr "Peran akses diperbarui"
+
+#: js/components/AccessUsers.vue:137
+msgid "Error updating access roles"
+msgstr "Gagal memperbarui peran akses"
+
+#: js/components/AccessUsers.vue:170
+msgid "Error updating CMS permissions"
+msgstr "Kesalahan saat memperbarui izin CMS"
+
+#: js/components/AccessUsers.vue:190
+msgid "User created"
+msgstr "Pengguna dibuat"
+
+#: js/components/AccessUsers.vue:197
+msgid "Error creating user"
+msgstr "Gagal membuat pengguna"
+
+#: js/components/AccessUsers.vue:221 js/components/PageAccess.vue:124
+#: js/views/AccessList.vue:119
+msgid "Error fetching access roles"
+msgstr "Kesalahan saat mengambil peran akses"
+
+#: js/components/AccessUsers.vue:250
+msgid "Error fetching user access roles"
+msgstr "Kesalahan saat mengambil peran akses pengguna"
+
+#: js/components/AccessUsers.vue:268 js/components/AccessUsers.vue:303
+msgid "Email address"
+msgstr "Alamat email"
+
+#: js/components/AccessUsers.vue:282
+msgid "Search"
+msgstr "Cari"
+
+#: js/components/AccessUsers.vue:294
+msgid "Create user"
+msgstr "Buat pengguna"
+
+#: js/components/AccessUsers.vue:304 js/components/AccessUsers.vue:318
+msgid "Assigned roles"
+msgstr "Peran yang ditetapkan"
+
+#: js/components/AccessUsers.vue:305 js/components/AccessUsers.vue:336
+msgid "CMS permissions"
+msgstr "Izin CMS"
+
+#: js/components/AccessUsers.vue:351 js/components/ElementListItems.vue:913
+#: js/components/FileListItems.vue:997 js/components/PageListItems.vue:1917
+#: js/views/AccessList.vue:284
+msgid "No entries found"
+msgstr "Tidak ada entri yang ditemukan"
+
+#: js/components/AccessUsers.vue:355
+msgid ""
+"Removing a direct role may not remove access granted through provider roles "
+"or other integrations."
+msgstr ""
+"Menghapus peran langsung mungkin tidak menghapus akses yang diberikan "
+"melalui peran penyedia atau integrasi lainnya."
+
 #: js/components/AsideCount.vue:65
 msgid "Used elements"
 msgstr "Elemen yang digunakan"
@@ -170,8 +233,8 @@ msgstr "%{count} / %{total}"
 #: js/components/PageListItems.vue:1942 js/components/SchemaDialog.vue:38
 #: js/components/UnsavedDialog.vue:39 js/components/User.vue:121
 #: js/fields/Items.vue:382 js/fields/Items.vue:466 js/fields/Table.vue:212
-#: js/fields/Table.vue:307 js/views/AccessList.vue:278
-#: js/views/AccessList.vue:310
+#: js/fields/Table.vue:307 js/views/AccessList.vue:307
+#: js/views/AccessList.vue:339
 msgid "Close"
 msgstr "Tutup"
 
@@ -253,7 +316,7 @@ msgstr "Hentikan"
 msgid "Send"
 msgstr "Kirim"
 
-#: js/components/DetailAppBar.vue:92 js/views/AccessList.vue:189
+#: js/components/DetailAppBar.vue:92 js/views/AccessList.vue:197
 #: js/views/ElementList.vue:135 js/views/FileList.vue:134
 #: js/views/PageList.vue:251
 msgid "Menu"
@@ -395,8 +458,8 @@ msgstr "Kesalahan mengambil elemen bersama"
 
 #: js/components/ElementListItems.vue:686 js/components/FileListItems.vue:672
 #: js/components/PageDetailContentList.vue:777
-#: js/components/PageListItems.vue:1535 js/views/AccessList.vue:217
-#: js/views/AccessList.vue:261
+#: js/components/PageListItems.vue:1535 js/views/AccessList.vue:233
+#: js/views/AccessList.vue:277
 msgid "Toggle selection"
 msgstr "Aktifkan/nonaktifkan pilihan"
 
@@ -428,7 +491,7 @@ msgstr "Tindakan"
 #: js/components/PageDetailContentList.vue:907
 #: js/components/PageListItems.vue:1591 js/components/PageListItems.vue:1847
 #: js/fields/Items.vue:400 js/fields/Table.vue:236 js/fields/Table.vue:331
-#: js/views/AccessList.vue:222 js/views/AccessList.vue:326
+#: js/views/AccessList.vue:238 js/views/AccessList.vue:355
 msgid "Delete"
 msgstr "Hapus"
 
@@ -455,7 +518,7 @@ msgstr "Tambahkan elemen"
 
 #: js/components/ElementListItems.vue:760 js/components/FileListItems.vue:757
 #: js/components/PageDetailContentList.vue:821
-#: js/components/PageListItems.vue:1624 js/views/AccessList.vue:246
+#: js/components/PageListItems.vue:1624 js/views/AccessList.vue:262
 msgid "Search for"
 msgstr "Cari"
 
@@ -484,11 +547,6 @@ msgstr "Baru"
 #: js/fields/Url.vue:135
 msgid "Loading"
 msgstr "Memuat"
-
-#: js/components/ElementListItems.vue:913 js/components/FileListItems.vue:997
-#: js/components/PageListItems.vue:1917 js/views/AccessList.vue:268
-msgid "No entries found"
-msgstr "Tidak ada entri yang ditemukan"
 
 #: js/components/Fields.vue:270 js/components/Fields.vue:279
 #: js/components/Fields.vue:288 js/fields/Items.vue:445 js/fields/Items.vue:454
@@ -627,7 +685,7 @@ msgid "Error upscaling image"
 msgstr "Kesalahan saat meningkatkan resolusi gambar"
 
 #: js/components/FileDetailItemImage.vue:637 js/components/UnsavedDialog.vue:55
-#: js/views/AccessList.vue:293 js/views/AccessList.vue:324
+#: js/views/AccessList.vue:322 js/views/AccessList.vue:353
 msgid "Cancel"
 msgstr "Batal"
 
@@ -925,7 +983,7 @@ msgstr "Urutkan berdasarkan"
 #: js/components/PageDetailItem.vue:102 js/components/PageListItems.vue:419
 #: js/components/PageListItems.vue:1583 js/components/PageListItems.vue:1746
 #: js/components/PageListItems.vue:1936 js/components/PageListItems.vue:1941
-#: js/routes.js:99 js/views/AccessList.vue:198 js/views/AccessList.vue:207
+#: js/routes.js:99 js/views/AccessList.vue:206 js/views/AccessList.vue:215
 msgid "Access"
 msgstr "Akses"
 
@@ -936,10 +994,6 @@ msgstr "Panel"
 #: js/components/PageAccess.vue:102
 msgid "Error changing page access"
 msgstr "Terjadi kesalahan saat mengubah akses halaman"
-
-#: js/components/PageAccess.vue:124 js/views/AccessList.vue:111
-msgid "Error fetching access values"
-msgstr "Terjadi kesalahan saat mengambil nilai akses"
 
 #: js/components/PageAccess.vue:168
 msgid "Access changes take effect immediately after cache expiry"
@@ -2194,42 +2248,50 @@ msgstr "Tidak ada"
 msgid "All"
 msgstr "Semua"
 
-#: js/views/AccessList.vue:139
+#: js/views/AccessList.vue:147
 msgid "Error adding access value"
 msgstr "Terjadi kesalahan saat menambahkan nilai akses"
 
-#: js/views/AccessList.vue:161
+#: js/views/AccessList.vue:169
 msgid "Error deleting access values"
 msgstr "Terjadi kesalahan saat menghapus nilai akses"
 
-#: js/views/AccessList.vue:193 js/views/ElementList.vue:139
+#: js/views/AccessList.vue:201 js/views/ElementList.vue:139
 #: js/views/FileList.vue:138 js/views/PageList.vue:255
 msgid "Close navigation"
 msgstr "Tutup navigasi"
 
-#: js/views/AccessList.vue:193 js/views/ElementList.vue:139
+#: js/views/AccessList.vue:201 js/views/ElementList.vue:139
 #: js/views/FileList.vue:138 js/views/PageList.vue:255
 msgid "Open navigation"
 msgstr "Buka navigasi"
 
-#: js/views/AccessList.vue:232 js/views/AccessList.vue:274
-#: js/views/AccessList.vue:277
+#: js/views/AccessList.vue:219
+msgid "Roles"
+msgstr "Peran"
+
+#: js/views/AccessList.vue:220
+msgid "Users"
+msgstr "Pengguna"
+
+#: js/views/AccessList.vue:248 js/views/AccessList.vue:303
+#: js/views/AccessList.vue:306
 msgid "Add access value"
 msgstr "Tambahkan nilai akses"
 
-#: js/views/AccessList.vue:284
+#: js/views/AccessList.vue:313
 msgid "Access value"
 msgstr "Nilai akses"
 
-#: js/views/AccessList.vue:295
+#: js/views/AccessList.vue:324
 msgid "Add"
 msgstr "Tambahkan"
 
-#: js/views/AccessList.vue:305 js/views/AccessList.vue:309
+#: js/views/AccessList.vue:334 js/views/AccessList.vue:338
 msgid "Delete access values"
 msgstr "Hapus nilai akses"
 
-#: js/views/AccessList.vue:316
+#: js/views/AccessList.vue:345
 msgid ""
 "Existing restrictions are not changed and will continue to reference the "
 "deleted access values."
@@ -2435,7 +2497,6 @@ msgid "Press Enter or the arrow to open the AI assistant and refine in a chat"
 msgstr ""
 "Tekan Enter atau panah untuk membuka asisten AI dan menyempurnakan konten "
 "dalam chat"
-
 
 #~ msgid "mime"
 #~ msgstr "pantomim"

@@ -58,7 +58,7 @@ const FETCH_TOKEN = gql`
 
 const SAVE_SETTINGS = gql`
   mutation ($settings: JSON!) {
-    cmsUser(settings: $settings) {
+    setUser(settings: $settings) {
       id
     }
   }

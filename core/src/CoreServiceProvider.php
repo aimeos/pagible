@@ -36,6 +36,7 @@ class CoreServiceProvider extends Provider
         Watch::registerChannel();
         $this->broadcast();
         $this->watch();
+        $this->flush();
         $this->rateLimiter();
         $this->userCasts();
         $this->schedule();
@@ -54,6 +55,24 @@ class CoreServiceProvider extends Provider
         } );
 
         $this->app->scoped( \Aimeos\Cms\Access::class );
+    }
+
+
+    /**
+     * Flushes request-local Permission state after each queued job and each Octane
+     * request, so long-running workers never honor stale assignment overrides.
+     */
+    protected function flush() : void
+    {
+        \Illuminate\Support\Facades\Queue::after( fn() => \Aimeos\Cms\Permission::flush() );
+        \Illuminate\Support\Facades\Queue::failing( fn() => \Aimeos\Cms\Permission::flush() );
+
+        if( class_exists( \Laravel\Octane\Events\RequestTerminated::class ) ) {
+            \Illuminate\Support\Facades\Event::listen(
+                \Laravel\Octane\Events\RequestTerminated::class,
+                fn() => \Aimeos\Cms\Permission::flush(),
+            );
+        }
     }
 
     protected function broadcast() : void
@@ -104,6 +123,15 @@ class CoreServiceProvider extends Provider
             Moved::class => $listener,
             Bulk::class => BulkListener::class,
         ] );
+
+        // Permission grants are security-relevant and must always be audited, so this
+        // listener is registered unconditionally — NOT through the watch-channel-gated
+        // Watch::listen() above. The listener itself falls back to the default log
+        // channel when no cms.watch.channel is configured.
+        \Illuminate\Support\Facades\Event::listen(
+            \Aimeos\Cms\Events\PermissionChanged::class,
+            [\Aimeos\Cms\Listeners\PermissionLogListener::class, 'handle'],
+        );
     }
 
 
