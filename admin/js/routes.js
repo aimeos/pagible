@@ -96,17 +96,6 @@ const router = createRouter({
       component: () => import('./views/AccessList.vue'),
       meta: {
         auth: true,
-        permission: ['access:view', 'user:create', 'user:access', 'user:permission'],
-        title: gettext.$gettext('Access')
-      }
-    },
-    {
-      path: '/access/users',
-      name: 'access:users',
-      component: () => import('./views/AccessList.vue'),
-      meta: {
-        auth: true,
-        permission: ['user:create', 'user:access', 'user:permission'],
         title: gettext.$gettext('Access')
       }
     }

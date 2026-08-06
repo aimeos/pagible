@@ -74,20 +74,6 @@ class Permission
     private static ?\WeakMap $resolvedCache = null;
 
     /**
-     * In-request assignment overrides for the current request scope only.
-     *
-     * Populated by set() so that other in-memory instances of the same user
-     * row observe the new assignments within the same request.
-     *
-     * @var array<string, array<int, string>>
-     */
-    private static array $overrides = [];
-
-    /** Last-seen request scope; a change clears $overrides (Octane-safe). */
-    private static string $lastScope = '';
-
-
-    /**
      * Returns the list of all available actions.
      *
      * @return array<int, string> List of action names
@@ -99,57 +85,17 @@ class Permission
 
 
     /**
-     * Returns the raw CMS roles and permissions assigned to the user,
-     * including any request-local override from set().
+     * Returns the raw CMS roles and permissions assigned to the user.
      *
      * @return array<int, string>
      */
     public static function assigned( Authenticatable $user ) : array
     {
-        $override = self::override( $user );
-
-        if( $override !== null ) {
-            return $override;
-        }
-
         $entries = data_get( $user, 'cmsperms', [] );
 
         return is_array( $entries )
             ? array_values( array_filter( $entries, 'is_string' ) )
             : [];
-    }
-
-
-    /**
-     * Reads or writes the request-local assignment override for a user.
-     *
-     * Pass $value to write; omit to read. Returns the current value.
-     *
-     * @param array<int, string>|null $value
-     * @return array<int, string>|null
-     */
-    private static function override( Authenticatable $user, ?array $value = null ) : ?array
-    {
-        $id = $user->getAuthIdentifier();
-
-        if( $id === null ) {
-            return null;
-        }
-
-        $scope = app()->bound( 'request' ) ? (string) spl_object_id( app( 'request' ) ) : 'cli';
-
-        if( $scope !== self::$lastScope ) {
-            self::$lastScope = $scope;
-            self::$overrides = [];
-        }
-
-        $key = Tenancy::value() . '|' . get_class( $user ) . '|' . (string) $id;
-
-        if( $value !== null ) {
-            self::$overrides[$key] = $value;
-        }
-
-        return self::$overrides[$key] ?? null;
     }
 
 
@@ -192,16 +138,13 @@ class Permission
         self::$resolvedCache ??= new \WeakMap();
 
         $assignments = self::assigned( $user );
-        // ALSO keyed on the current roles config: role entries resolve against
-        // cms.roles, so a config change must re-resolve even when the raw
-        // assignments are unchanged. INVALID_UTF8_SUBSTITUTE keeps the
-        // fingerprint distinct for assignments containing invalid-UTF-8 bytes
-        // (json_encode() would otherwise return false, collapsing the key to '').
-        $key = (string) json_encode( $assignments, JSON_INVALID_UTF8_SUBSTITUTE )
-            . '|' . md5( (string) json_encode( config( 'cms.roles', [] ), JSON_INVALID_UTF8_SUBSTITUTE ) );
         $entry = self::$resolvedCache[$user] ?? null;
 
-        if( $entry === null || $entry['key'] !== $key ) {
+        $key = (string) json_encode( $assignments, JSON_INVALID_UTF8_SUBSTITUTE )
+            . '|' . md5( (string) json_encode( config( 'cms.roles', [] ), JSON_INVALID_UTF8_SUBSTITUTE ) );
+
+        if( $entry === null || $entry['key'] !== $key )
+        {
             $entry = ['key' => $key, 'resolved' => self::resolve( $assignments )];
             self::$resolvedCache[$user] = $entry;
         }
@@ -341,7 +284,6 @@ class Permission
         } );
 
         $user->forceFill( ['cmsperms' => $result] );
-        self::override( $user, $result );
         self::audit( $user, $result, $tenant );
 
         return $result;
@@ -373,15 +315,13 @@ class Permission
 
 
     /**
-     * Clears all request-local assignment overrides and cached resolutions.
+     * Clears resolved-permission caches.
      *
      * Registered automatically on queue/Octane lifecycle events; call it manually
      * before long-running loops that touch many users (imports, fixtures).
      */
     public static function flush() : void
     {
-        self::$overrides = [];
-        self::$lastScope = '';
         self::$resolvedCache = null;
     }
 
@@ -465,7 +405,8 @@ class Permission
      */
     private static function valid( string $entry ) : bool
     {
-        if( str_starts_with( $entry, '!' ) ) {
+        if( str_starts_with( $entry, '!' ) )
+        {
             $entry = substr( $entry, 1 );
 
             if( $entry === '' || str_starts_with( $entry, '!' ) ) {
@@ -483,7 +424,7 @@ class Permission
 
         [$prefix, $suffix] = explode( ':', $entry, 2 );
 
-        return $prefix !== '' && $suffix !== ''
+        return $prefix && $suffix
             && ( $prefix === '*' || $suffix === '*' )
             && self::resolve( [$entry] ) !== [];
     }

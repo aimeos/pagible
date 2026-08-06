@@ -378,15 +378,17 @@ class PermissionTest extends CoreTestAbstract
     }
 
 
-    public function testSetInvalidatesAssignmentsForAllUserInstances(): void
+    public function testSetDoesNotInvalidateAssignmentsForOtherUserInstances(): void
     {
         $user = $this->user( 'permission-cache@example.com', ['page:view'] );
         $other = \App\Models\User::findOrFail( $user->getKey() );
 
         $this->assertTrue( Permission::can( 'page:view', $other ) );
         $this->assertSame( [], Permission::set( $user, [] ) );
-        $this->assertSame( [], Permission::assigned( $other ) );
-        $this->assertFalse( Permission::can( 'page:view', $other ) );
+        $this->assertSame( ['page:view'], Permission::assigned( $other ) );
+        $this->assertTrue( Permission::can( 'page:view', $other ) );
+        $this->assertSame( [], Permission::assigned( $other->fresh() ) );
+        $this->assertFalse( Permission::can( 'page:view', $other->fresh() ) );
     }
 
 

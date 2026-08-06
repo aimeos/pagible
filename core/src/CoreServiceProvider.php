@@ -59,8 +59,8 @@ class CoreServiceProvider extends Provider
 
 
     /**
-     * Flushes request-local Permission state after each queued job and each Octane
-     * request, so long-running workers never honor stale assignment overrides.
+     * Flushes Permission state after each queued job and each Octane request,
+     * so long-running workers never honor stale in-memory permission caches.
      */
     protected function flush() : void
     {

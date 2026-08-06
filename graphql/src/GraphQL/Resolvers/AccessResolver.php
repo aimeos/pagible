@@ -40,10 +40,7 @@ final class AccessResolver
             return $access->list();
         }
 
-        return $access->search(
-            is_string( $args['term'] ?? null ) ? $args['term'] : '',
-            (int) ( $args['first'] ?? 50 ),
-        );
+        return $access->search( (string) ( $args['term'] ?? null ), (int) ( $args['first'] ?? 50 ) );
     }
 
 
@@ -57,6 +54,4 @@ final class AccessResolver
     {
         return app( Access::class )->delete( $args['values'] ?? [] );
     }
-
-
 }

@@ -309,7 +309,6 @@ export default {
 
           <v-window-item v-if="canManageUsers" value="users">
             <AccessUsers
-              :permissions="user.me?.permission || {}"
               :roles="items"
               :roles-loading="loading"
             />

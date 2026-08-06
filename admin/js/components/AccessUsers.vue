@@ -4,7 +4,7 @@
 import gql from 'graphql-tag'
 import { mdiMagnify } from '@mdi/js'
 import { apolloClient } from '../graphql'
-import { useMessageStore } from '../stores'
+import { useMessageStore, useUserStore } from '../stores'
 
 const USER_DATA = gql`
   fragment CmsUserDataFields on CmsUserData {
@@ -58,16 +58,17 @@ export default {
   name: 'AccessUsers',
 
   props: {
-    permissions: { type: Object, required: true },
     roles: { type: Array, default: () => [] },
     rolesLoading: { type: Boolean, default: false }
   },
 
   setup() {
     const messages = useMessageStore()
+    const user = useUserStore()
 
     return {
       messages,
+      user,
       mdiMagnify
     }
   },
@@ -91,11 +92,11 @@ export default {
     },
 
     canAccess() {
-      return !!this.permissions['user:access']
+      return this.user.can('user:access')
     },
 
     canCreate() {
-      return !!this.permissions['user:create']
+      return this.user.can('user:create')
     },
 
     canManage() {
@@ -103,7 +104,7 @@ export default {
     },
 
     canPermission() {
-      return !!this.permissions['user:permission']
+      return this.user.can('user:permission')
     },
 
     emailValid() {
