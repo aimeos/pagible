@@ -73,6 +73,69 @@ msgstr "応答はすでに生成されています。完了するまでお待ち
 msgid "Too many requests. Please wait a moment and try again."
 msgstr "リクエストが多すぎます。しばらく待ってから、もう一度試してください。"
 
+#: js/components/AccessUsers.vue:133
+msgid "Access roles updated"
+msgstr "アクセスロールを更新しました"
+
+#: js/components/AccessUsers.vue:137
+msgid "Error updating access roles"
+msgstr "アクセスロールの更新中にエラーが発生しました"
+
+#: js/components/AccessUsers.vue:170
+msgid "Error updating CMS permissions"
+msgstr "CMS権限の更新中にエラーが発生しました"
+
+#: js/components/AccessUsers.vue:190
+msgid "User created"
+msgstr "ユーザーを作成しました"
+
+#: js/components/AccessUsers.vue:197
+msgid "Error creating user"
+msgstr "ユーザーの作成中にエラーが発生しました"
+
+#: js/components/AccessUsers.vue:221 js/components/PageAccess.vue:124
+#: js/views/AccessList.vue:119
+msgid "Error fetching access roles"
+msgstr "アクセスロールの取得エラー"
+
+#: js/components/AccessUsers.vue:250
+msgid "Error fetching user access roles"
+msgstr "ユーザーのアクセスロールの取得中にエラーが発生しました"
+
+#: js/components/AccessUsers.vue:268 js/components/AccessUsers.vue:303
+msgid "Email address"
+msgstr "メールアドレス"
+
+#: js/components/AccessUsers.vue:282
+msgid "Search"
+msgstr "検索"
+
+#: js/components/AccessUsers.vue:294
+msgid "Create user"
+msgstr "ユーザーを作成"
+
+#: js/components/AccessUsers.vue:304 js/components/AccessUsers.vue:318
+msgid "Assigned roles"
+msgstr "割り当てられたロール"
+
+#: js/components/AccessUsers.vue:305 js/components/AccessUsers.vue:336
+msgid "CMS permissions"
+msgstr "CMS権限"
+
+#: js/components/AccessUsers.vue:351 js/components/ElementListItems.vue:913
+#: js/components/FileListItems.vue:997 js/components/PageListItems.vue:1917
+#: js/views/AccessList.vue:284
+msgid "No entries found"
+msgstr "エントリーが見つかりません"
+
+#: js/components/AccessUsers.vue:355
+msgid ""
+"Removing a direct role may not remove access granted through provider roles "
+"or other integrations."
+msgstr ""
+"直接割り当てたロールを削除しても、プロバイダーロールやその他の連携を通じて付"
+"与されたアクセス権は削除されない場合があります。"
+
 #: js/components/AsideCount.vue:65
 msgid "Used elements"
 msgstr "使用された要素"
@@ -170,8 +233,8 @@ msgstr "%{count} / %{total}"
 #: js/components/PageListItems.vue:1942 js/components/SchemaDialog.vue:38
 #: js/components/UnsavedDialog.vue:39 js/components/User.vue:121
 #: js/fields/Items.vue:382 js/fields/Items.vue:466 js/fields/Table.vue:212
-#: js/fields/Table.vue:307 js/views/AccessList.vue:278
-#: js/views/AccessList.vue:310
+#: js/fields/Table.vue:307 js/views/AccessList.vue:307
+#: js/views/AccessList.vue:339
 msgid "Close"
 msgstr "閉じる"
 
@@ -253,7 +316,7 @@ msgstr "停止"
 msgid "Send"
 msgstr "送信"
 
-#: js/components/DetailAppBar.vue:92 js/views/AccessList.vue:189
+#: js/components/DetailAppBar.vue:92 js/views/AccessList.vue:197
 #: js/views/ElementList.vue:135 js/views/FileList.vue:134
 #: js/views/PageList.vue:251
 msgid "Menu"
@@ -395,8 +458,8 @@ msgstr "共有要素の取得エラー"
 
 #: js/components/ElementListItems.vue:686 js/components/FileListItems.vue:672
 #: js/components/PageDetailContentList.vue:777
-#: js/components/PageListItems.vue:1535 js/views/AccessList.vue:217
-#: js/views/AccessList.vue:261
+#: js/components/PageListItems.vue:1535 js/views/AccessList.vue:233
+#: js/views/AccessList.vue:277
 msgid "Toggle selection"
 msgstr "選択を切り替える"
 
@@ -428,7 +491,7 @@ msgstr "行動"
 #: js/components/PageDetailContentList.vue:907
 #: js/components/PageListItems.vue:1591 js/components/PageListItems.vue:1847
 #: js/fields/Items.vue:400 js/fields/Table.vue:236 js/fields/Table.vue:331
-#: js/views/AccessList.vue:222 js/views/AccessList.vue:326
+#: js/views/AccessList.vue:238 js/views/AccessList.vue:355
 msgid "Delete"
 msgstr "削除"
 
@@ -455,7 +518,7 @@ msgstr "要素を追加する"
 
 #: js/components/ElementListItems.vue:760 js/components/FileListItems.vue:757
 #: js/components/PageDetailContentList.vue:821
-#: js/components/PageListItems.vue:1624 js/views/AccessList.vue:246
+#: js/components/PageListItems.vue:1624 js/views/AccessList.vue:262
 msgid "Search for"
 msgstr "検索"
 
@@ -484,11 +547,6 @@ msgstr "新しい"
 #: js/fields/Url.vue:135
 msgid "Loading"
 msgstr "ローディング"
-
-#: js/components/ElementListItems.vue:913 js/components/FileListItems.vue:997
-#: js/components/PageListItems.vue:1917 js/views/AccessList.vue:268
-msgid "No entries found"
-msgstr "エントリーが見つかりません"
 
 #: js/components/Fields.vue:270 js/components/Fields.vue:279
 #: js/components/Fields.vue:288 js/fields/Items.vue:445 js/fields/Items.vue:454
@@ -629,7 +687,7 @@ msgid "Error upscaling image"
 msgstr "画像の高解像度化中にエラーが発生しました"
 
 #: js/components/FileDetailItemImage.vue:637 js/components/UnsavedDialog.vue:55
-#: js/views/AccessList.vue:293 js/views/AccessList.vue:324
+#: js/views/AccessList.vue:322 js/views/AccessList.vue:353
 msgid "Cancel"
 msgstr "キャンセル"
 
@@ -927,7 +985,7 @@ msgstr "並べ替え"
 #: js/components/PageDetailItem.vue:102 js/components/PageListItems.vue:419
 #: js/components/PageListItems.vue:1583 js/components/PageListItems.vue:1746
 #: js/components/PageListItems.vue:1936 js/components/PageListItems.vue:1941
-#: js/routes.js:99 js/views/AccessList.vue:198 js/views/AccessList.vue:207
+#: js/routes.js:99 js/views/AccessList.vue:206 js/views/AccessList.vue:215
 msgid "Access"
 msgstr "アクセス"
 
@@ -938,10 +996,6 @@ msgstr "パネル"
 #: js/components/PageAccess.vue:102
 msgid "Error changing page access"
 msgstr "ページアクセス変更時のエラー"
-
-#: js/components/PageAccess.vue:124 js/views/AccessList.vue:111
-msgid "Error fetching access values"
-msgstr "アクセス値の取得エラー"
 
 #: js/components/PageAccess.vue:168
 msgid "Access changes take effect immediately after cache expiry"
@@ -2198,42 +2252,50 @@ msgstr "なし"
 msgid "All"
 msgstr "すべて"
 
-#: js/views/AccessList.vue:139
+#: js/views/AccessList.vue:147
 msgid "Error adding access value"
 msgstr "アクセス値の追加中にエラーが発生しました"
 
-#: js/views/AccessList.vue:161
+#: js/views/AccessList.vue:169
 msgid "Error deleting access values"
 msgstr "アクセス値の削除中にエラーが発生しました"
 
-#: js/views/AccessList.vue:193 js/views/ElementList.vue:139
+#: js/views/AccessList.vue:201 js/views/ElementList.vue:139
 #: js/views/FileList.vue:138 js/views/PageList.vue:255
 msgid "Close navigation"
 msgstr "ナビゲーションを閉じる"
 
-#: js/views/AccessList.vue:193 js/views/ElementList.vue:139
+#: js/views/AccessList.vue:201 js/views/ElementList.vue:139
 #: js/views/FileList.vue:138 js/views/PageList.vue:255
 msgid "Open navigation"
 msgstr "ナビゲーションを開く"
 
-#: js/views/AccessList.vue:232 js/views/AccessList.vue:274
-#: js/views/AccessList.vue:277
+#: js/views/AccessList.vue:219
+msgid "Roles"
+msgstr "ロール"
+
+#: js/views/AccessList.vue:220
+msgid "Users"
+msgstr "ユーザー"
+
+#: js/views/AccessList.vue:248 js/views/AccessList.vue:303
+#: js/views/AccessList.vue:306
 msgid "Add access value"
 msgstr "アクセス値の追加"
 
-#: js/views/AccessList.vue:284
+#: js/views/AccessList.vue:313
 msgid "Access value"
 msgstr "アクセス値"
 
-#: js/views/AccessList.vue:295
+#: js/views/AccessList.vue:324
 msgid "Add"
 msgstr "追加"
 
-#: js/views/AccessList.vue:305 js/views/AccessList.vue:309
+#: js/views/AccessList.vue:334 js/views/AccessList.vue:338
 msgid "Delete access values"
 msgstr "アクセス値の削除"
 
-#: js/views/AccessList.vue:316
+#: js/views/AccessList.vue:345
 msgid ""
 "Existing restrictions are not changed and will continue to reference the "
 "deleted access values."
@@ -2437,7 +2499,6 @@ msgid "Press Enter or the arrow to open the AI assistant and refine in a chat"
 msgstr ""
 "Enterキーまたは矢印を押してAIアシスタントを開き、チャットでコンテンツを調整し"
 "ます"
-
 
 #~ msgid "mime"
 #~ msgstr "マイム"

@@ -170,55 +170,55 @@ class GraphqlAuthTest extends GraphqlTestAbstract
     }
 
 
-    public function testUser()
+    public function testSetUser()
     {
         $settings = ['page' => ['filter' => ['view' => 'list'], 'sort' => ['column' => 'ID', 'order' => 'DESC']]];
 
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation ($settings: JSON!) {
-                cmsUser(settings: $settings) {
+                setUser(settings: $settings) {
                     id
                 }
             }
         ', ['settings' => json_encode( $settings )] );
 
-        $response->assertJsonPath( 'data.cmsUser.id', (string) $this->user->id );
+        $response->assertJsonPath( 'data.setUser.id', (string) $this->user->id );
         $this->assertEquals( $settings, json_decode( $this->user->fresh()->cmsdata, true ) );
     }
 
 
-    public function testUserOverwrite()
+    public function testSetUserOverwrite()
     {
         $first = ['page' => ['filter' => ['view' => 'list']]];
         $second = ['file' => ['sort' => ['column' => 'NAME', 'order' => 'ASC']]];
 
         $this->actingAs( $this->user )->graphQL( '
             mutation ($settings: JSON!) {
-                cmsUser(settings: $settings) {
+                setUser(settings: $settings) {
                     id
                 }
             }
         ', ['settings' => json_encode( $first )] )
-            ->assertJsonPath( 'data.cmsUser.id', (string) $this->user->id );
+            ->assertJsonPath( 'data.setUser.id', (string) $this->user->id );
 
         $this->actingAs( $this->user )->graphQL( '
             mutation ($settings: JSON!) {
-                cmsUser(settings: $settings) {
+                setUser(settings: $settings) {
                     id
                 }
             }
         ', ['settings' => json_encode( $second )] )
-            ->assertJsonPath( 'data.cmsUser.id', (string) $this->user->id );
+            ->assertJsonPath( 'data.setUser.id', (string) $this->user->id );
 
         $this->assertEquals( $second, json_decode( $this->user->fresh()->cmsdata, true ) );
     }
 
 
-    public function testUserGuest()
+    public function testSetUserGuest()
     {
         $this->graphQL( '
             mutation ($settings: JSON!) {
-                cmsUser(settings: $settings) {
+                setUser(settings: $settings) {
                     id
                 }
             }
@@ -226,13 +226,13 @@ class GraphqlAuthTest extends GraphqlTestAbstract
     }
 
 
-    public function testUserTooLarge()
+    public function testSetUserTooLarge()
     {
         $settings = ['data' => str_repeat( 'x', 65536 )];
 
         $this->actingAs( $this->user )->graphQL( '
             mutation ($settings: JSON!) {
-                cmsUser(settings: $settings) {
+                setUser(settings: $settings) {
                     id
                 }
             }

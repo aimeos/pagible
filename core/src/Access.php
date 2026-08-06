@@ -16,9 +16,9 @@ use Illuminate\Support\Facades\Gate;
  */
 class Access
 {
-    private const MAX_DELETE_VALUES = 250;
+    private const MAX_CHANGE_VALUES = 250;
     private const MAX_VALUE_LENGTH = 100;
-    private const PERMISSIONS = ['access:view', 'access:add', 'access:delete'];
+    private const PERMISSIONS = ['access:view', 'access:add', 'access:delete', 'user:access'];
 
     /** @var \Closure(): iterable<mixed>|null */
     private static ?\Closure $listCallback = null;
@@ -28,6 +28,9 @@ class Access
 
     /** @var \Closure(array<int, string>): void|null */
     private static ?\Closure $deleteCallback = null;
+
+    /** @var (\Closure(Authenticatable, ?array<int, string>): iterable<mixed>)|null */
+    private static ?\Closure $userAccessCallback = null;
 
     /** @var \Closure(string): void|null */
     private static ?\Closure $activateCallback = null;
@@ -74,15 +77,17 @@ class Access
      * @param \Closure(string): void|null $add Optional callback adding an access value
      * @param \Closure(array<int, string>): void|null $delete Optional callback deleting access values
      * @param (\Closure(Authenticatable): (iterable<mixed>|null))|null $grants Optional effective-grants resolver
+     * @param (\Closure(Authenticatable, ?array<int, string>): iterable<mixed>)|null $userAccess Optional direct-assignment handler; NULL values read, arrays atomically replace
      */
     public static function using( ?\Closure $list, ?\Closure $add = null, ?\Closure $delete = null,
-        ?\Closure $grants = null ) : void
+        ?\Closure $grants = null, ?\Closure $userAccess = null ) : void
     {
         self::configure(
             list: $list,
             add: $add,
             delete: $delete,
             grants: $grants,
+            userAccess: $userAccess,
         );
     }
 
@@ -96,6 +101,17 @@ class Access
     {
         self::$extendCallback = $grants;
         app()->forgetInstance( self::class );
+    }
+
+
+    /**
+     * Returns frontend access values assigned directly to the user.
+     *
+     * @return array<int, string>
+     */
+    public function assigned( Authenticatable $user ) : array
+    {
+        return $this->userAccess( $user );
     }
 
 
@@ -127,13 +143,10 @@ class Access
      */
     public function known( iterable $values ) : array
     {
-        $values = self::normalize( $values );
         $catalog = $this->catalog();
+        $values = self::normalize( $values );
 
-        return array_values( array_filter(
-            $values,
-            fn( string $value ) => isset( $catalog[$value] ),
-        ) );
+        return array_values( array_filter( $values, fn( string $value ) => isset( $catalog[$value] ) ) );
     }
 
 
@@ -174,7 +187,7 @@ class Access
             throw new Exception( sprintf( 'Access value "%s" already exists.', $value ) );
         }
 
-        ( self::$addCallback )( $value );
+        (self::$addCallback)( $value );
         $this->refresh();
 
         return $this->list();
@@ -197,11 +210,8 @@ class Access
 
         $values = self::normalize( $values );
 
-        if( count( $values ) > self::MAX_DELETE_VALUES ) {
-            throw new Exception( sprintf(
-                'No more than %d access values may be deleted at once.',
-                self::MAX_DELETE_VALUES,
-            ) );
+        if( count( $values ) > self::MAX_CHANGE_VALUES ) {
+            throw new Exception( sprintf( 'No more than %d access values may be deleted at once.', self::MAX_CHANGE_VALUES ) );
         }
 
         $catalog = $this->catalog();
@@ -211,10 +221,28 @@ class Access
             return array_keys( $catalog );
         }
 
-        ( self::$deleteCallback )( $values );
+        (self::$deleteCallback)( $values );
         $this->refresh();
 
         return $this->list();
+    }
+
+
+    /**
+     * Replaces frontend access values assigned directly to the user.
+     *
+     * @param iterable<mixed> $values
+     * @return array<int, string>
+     */
+    public function set( Authenticatable $user, iterable $values ) : array
+    {
+        $tenant = Tenancy::value();
+
+        if( !Tenancy::allows( $user, $tenant ) ) {
+            throw new Exception( 'Frontend access can only be changed for users in the current tenant.' );
+        }
+
+        return $this->replace( $user, $this->changes( $values ), $tenant );
     }
 
 
@@ -254,9 +282,10 @@ class Access
     {
         $this->context();
         $catalog = $this->catalog();
-        $values = $values === null || is_array( $values )
-            ? $values
-            : iterator_to_array( $values, false );
+
+        if( $values && !is_array( $values ) ) {
+            $values = iterator_to_array( $values, false );
+        }
 
         if( $values === null && isset( $this->allowed[$user] ) ) {
             return $this->allowed[$user];
@@ -264,25 +293,31 @@ class Access
 
         $prepared = isset( $this->grants[$user] );
 
-        if( $prepared ) {
-            $granted = $this->grants[$user];
-        } else {
+        if( !$prepared )
+        {
             $extra = self::$extendCallback ? ( self::$extendCallback )( $user ) : [];
             $granted = array_fill_keys( self::normalize( $extra ?? [] ), true );
             $this->grants[$user] = $granted = array_intersect_key( $granted, $catalog );
         }
+        else
+        {
+            $granted = $this->grants[$user];
+        }
 
         if( !$prepared && self::$prepareCallback ) {
-            ( self::$prepareCallback )( $user );
+            (self::$prepareCallback)( $user );
         }
 
         if( !isset( $this->resolved[$user] ) && self::$grantsCallback )
         {
-            if( ( $resolved = ( self::$grantsCallback )( $user ) ) !== null ) {
+            if( ( $resolved = ( self::$grantsCallback )( $user ) ) !== null )
+            {
                 $granted += array_fill_keys( self::normalize( $resolved ), true );
                 $this->grants[$user] = $granted = array_intersect_key( $granted, $catalog );
                 $this->resolved[$user] = true;
-            } else {
+            }
+            else
+            {
                 $this->resolved[$user] = false;
             }
         }
@@ -351,6 +386,30 @@ class Access
                 self::call( $class, 'refresh' );
             },
             grants: $grants,
+            userAccess: function( Authenticatable $user, ?array $values ) use ( $class ) {
+                $current = self::bouncerAssigned( $user );
+
+                if( $values === null ) {
+                    return $current;
+                }
+
+                $assign = array_values( array_diff( $values, $current ) );
+                $remove = array_values( array_diff( $current, $values ) );
+
+                if( $assign ) {
+                    self::call( self::call( $class, 'allow', $user ), 'to', $assign );
+                }
+
+                if( $remove ) {
+                    self::call( self::call( $class, 'disallow', $user ), 'to', $remove );
+                }
+
+                if( $assign || $remove ) {
+                    self::call( $class, 'refreshFor', $user );
+                }
+
+                return self::bouncerAssigned( $user );
+            },
         );
     }
 
@@ -371,6 +430,27 @@ class Access
             add: fn( string $value ) => self::modelAdd( $model, $value ),
             delete: fn( array $values ) => self::modelDelete( $model, $values ),
             grants: $grants,
+            userAccess: function( Authenticatable $user, ?array $values ) {
+                $current = self::laratrustAssigned( $user );
+
+                if( $values === null ) {
+                    return $current;
+                }
+
+                $assign = array_values( array_diff( $values, $current ) );
+                $remove = array_values( array_diff( $current, $values ) );
+                $team = config( 'laratrust.teams.enabled', false ) ? Tenancy::value() : null;
+
+                if( $assign ) {
+                    self::call( $user, 'givePermissions', $assign, $team );
+                }
+
+                if( $remove ) {
+                    self::call( $user, 'removePermissions', $remove, $team );
+                }
+
+                return self::laratrustAssigned( $user );
+            },
         );
     }
 
@@ -394,14 +474,7 @@ class Access
         self::configure(
             list: fn() => self::modelNames( $model, ['guard_name' => $guard] ),
             activate: fn( string $tenant ) => self::call( $registrar, 'setPermissionsTeamId', $tenant ),
-            prepare: function( Authenticatable $user ) {
-                if( !$user instanceof Model ) {
-                    throw new Exception( 'Spatie access requires an Eloquent user model.' );
-                }
-
-                $user->unsetRelation( 'roles' );
-                $user->unsetRelation( 'permissions' );
-            },
+            prepare: fn( Authenticatable $user ) => self::prepareSpatie( $user ),
             add: function( string $value ) use ( $model, $guard ) {
                 self::call( self::model( $model ), 'findOrCreate', $value, $guard );
             },
@@ -409,6 +482,16 @@ class Access
                 self::modelDelete( $model, $values, ['guard_name' => $guard] );
             },
             grants: $grants,
+            userAccess: function( Authenticatable $user, ?array $values ) {
+                self::prepareSpatie( $user );
+
+                if( $values !== null ) {
+                    self::call( $user, 'syncPermissions', $values );
+                    self::prepareSpatie( $user );
+                }
+
+                return self::itemNames( self::call( $user, 'getDirectPermissions' ) );
+            },
         );
     }
 
@@ -456,6 +539,28 @@ class Access
 
 
     /**
+     * Returns validated catalog values for an assignment change.
+     *
+     * @param iterable<mixed> $values
+     * @return array<int, string>
+     */
+    private function changes( iterable $values ) : array
+    {
+        $values = self::normalize( $values );
+
+        if( count( $values ) > self::MAX_CHANGE_VALUES ) {
+            throw new Exception( sprintf( 'No more than %d user access values may be changed at once.', self::MAX_CHANGE_VALUES ) );
+        }
+
+        if( $unknown = array_diff( $values, $this->list() ) ) {
+            throw new Exception( sprintf( 'Unknown frontend access value "%s".', reset( $unknown ) ) );
+        }
+
+        return $values;
+    }
+
+
+    /**
      * Activates the current tenant and clears request-local state when it changes.
      */
     private function context() : void
@@ -469,7 +574,7 @@ class Access
         $this->refresh();
 
         if( self::$activateCallback ) {
-            ( self::$activateCallback )( $tenant );
+            (self::$activateCallback)( $tenant );
         }
 
         $this->tenant = $tenant;
@@ -502,6 +607,53 @@ class Access
 
 
     /**
+     * Returns names from provider model collections.
+     *
+     * @return array<int, mixed>
+     */
+    private static function itemNames( mixed $items ) : array
+    {
+        if( !is_iterable( $items ) ) {
+            throw new Exception( 'Access provider returned an invalid assignment list.' );
+        }
+
+        $result = [];
+
+        foreach( $items as $item ) {
+            $result[] = data_get( $item, 'name' );
+        }
+
+        return $result;
+    }
+
+
+    /**
+     * Returns Bouncer abilities assigned directly in the active scope.
+     *
+     * @return array<int, mixed>
+     */
+    private static function bouncerAssigned( Authenticatable $user ) : array
+    {
+        $relation = self::call( $user, 'abilities' );
+
+        if( !is_object( $relation ) ) {
+            throw new Exception( 'Bouncer user abilities relation is not available.' );
+        }
+
+        $related = self::call( $relation, 'getRelated' );
+
+        if( !$related instanceof Model ) {
+            throw new Exception( 'Bouncer ability model is not available.' );
+        }
+
+        self::call( $relation, 'whereNull', $related->qualifyColumn( 'entity_type' ) );
+        self::call( $relation, 'wherePivot', 'forbidden', false );
+
+        return self::itemNames( self::call( $relation, 'get', [$related->qualifyColumn( 'name' )] ) );
+    }
+
+
+    /**
      * Registers tenant-aware Laratrust gates for catalog values loaded on demand.
      *
      * @param array<int, mixed> $values
@@ -528,6 +680,46 @@ class Access
 
 
     /**
+     * Returns Laratrust permissions assigned directly in the active team.
+     *
+     * @return array<int, mixed>
+     */
+    private static function laratrustAssigned( Authenticatable $user ) : array
+    {
+        $relation = self::call( $user, 'permissions' );
+
+        if( !is_object( $relation ) ) {
+            throw new Exception( 'Laratrust user permissions relation is not available.' );
+        }
+
+        if( config( 'laratrust.teams.enabled', false ) )
+        {
+            $helper = 'Laratrust\\Helper';
+            $key = (string) config( 'laratrust.foreign_keys.team', 'team_id' );
+            $team = $helper::getIdFor( Tenancy::value(), 'team' );
+
+            self::call( $relation, 'wherePivot', $key, $team );
+        }
+
+        return self::itemNames( self::call( $relation, 'get', ['name'] ) );
+    }
+
+
+    /**
+     * Clears Spatie relations which vary by active team.
+     */
+    private static function prepareSpatie( Authenticatable $user ) : void
+    {
+        if( !$user instanceof Model ) {
+            throw new Exception( 'Spatie access requires an Eloquent user model.' );
+        }
+
+        $user->unsetRelation( 'roles' );
+        $user->unsetRelation( 'permissions' );
+    }
+
+
+    /**
      * Synchronizes CMS permissions with the configured catalog capabilities.
      */
     private static function syncPermissions() : void
@@ -545,6 +737,10 @@ class Access
             if( self::$deleteCallback ) {
                 Permission::register( 'access:delete' );
             }
+
+            if( self::$userAccessCallback ) {
+                Permission::register( 'user:access' );
+            }
         }
     }
 
@@ -554,7 +750,7 @@ class Access
      */
     private static function configure( ?\Closure $list, ?\Closure $activate = null,
         ?\Closure $prepare = null, ?\Closure $add = null, ?\Closure $delete = null,
-        ?\Closure $grants = null ) : void
+        ?\Closure $grants = null, ?\Closure $userAccess = null ) : void
     {
         self::$listCallback = $list;
         self::$activateCallback = $activate;
@@ -562,7 +758,9 @@ class Access
         self::$addCallback = $add;
         self::$deleteCallback = $delete;
         self::$grantsCallback = $grants;
+        self::$userAccessCallback = $userAccess;
         self::syncPermissions();
+
         app()->forgetInstance( self::class );
     }
 
@@ -576,6 +774,57 @@ class Access
         $this->allowed = new \WeakMap();
         $this->grants = new \WeakMap();
         $this->resolved = new \WeakMap();
+    }
+
+
+    /**
+     * Replaces direct assignments while serializing persisted-user changes.
+     *
+     * @param array<int, string> $values
+     * @return array<int, string>
+     */
+    private function replace( Authenticatable $user, array $values, string $tenant ) : array
+    {
+        if( !$user instanceof Model || !$user->exists || $user->getKey() === null ) {
+            return $this->userAccess( $user, $values );
+        }
+
+        return $user->getConnection()->transaction( function() use ( $tenant, $user, $values ) {
+            /** @var Model&Authenticatable $locked */
+            $locked = $user->newQuery()->whereKey( $user->getKey() )->lockForUpdate()->firstOrFail();
+
+            if( !Tenancy::allows( $locked, $tenant ) ) {
+                throw new Exception( 'Frontend access can only be changed for users in the current tenant.' );
+            }
+
+            return $this->userAccess( $locked, $values );
+        } );
+    }
+
+
+    /**
+     * Reads or atomically replaces direct access assignments for one user.
+     *
+     * @param array<int, string>|null $values NULL reads; an array replaces the complete set
+     * @return array<int, string>
+     */
+    private function userAccess( Authenticatable $user, ?array $values = null ) : array
+    {
+        if( !( $callback = self::$userAccessCallback ) ) {
+            throw new Exception( 'User access assignments are not available.' );
+        }
+
+        $this->context();
+        $result = $callback( $user, $values );
+
+        if( $values !== null )
+        {
+            $this->allowed = new \WeakMap();
+            $this->grants = new \WeakMap();
+            $this->resolved = new \WeakMap();
+        }
+
+        return $this->known( $result );
     }
 
 
@@ -659,10 +908,7 @@ class Access
         }
 
         if( mb_strlen( $value ) > self::MAX_VALUE_LENGTH ) {
-            throw new Exception( sprintf(
-                'Access values may not be longer than %d characters.',
-                self::MAX_VALUE_LENGTH,
-            ) );
+            throw new Exception( sprintf( 'Access values may not be longer than %d characters.', self::MAX_VALUE_LENGTH ) );
         }
 
         return $value;

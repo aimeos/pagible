@@ -73,6 +73,69 @@ msgstr "Một phản hồi đang được tạo. Vui lòng đợi cho đến khi
 msgid "Too many requests. Please wait a moment and try again."
 msgstr "Quá nhiều yêu cầu. Vui lòng đợi một lát và thử lại."
 
+#: js/components/AccessUsers.vue:133
+msgid "Access roles updated"
+msgstr "Đã cập nhật các vai trò truy cập"
+
+#: js/components/AccessUsers.vue:137
+msgid "Error updating access roles"
+msgstr "Lỗi khi cập nhật các vai trò truy cập"
+
+#: js/components/AccessUsers.vue:170
+msgid "Error updating CMS permissions"
+msgstr "Lỗi khi cập nhật quyền CMS"
+
+#: js/components/AccessUsers.vue:190
+msgid "User created"
+msgstr "Đã tạo người dùng"
+
+#: js/components/AccessUsers.vue:197
+msgid "Error creating user"
+msgstr "Lỗi khi tạo người dùng"
+
+#: js/components/AccessUsers.vue:221 js/components/PageAccess.vue:124
+#: js/views/AccessList.vue:119
+msgid "Error fetching access roles"
+msgstr "Lỗi khi tải các vai trò truy cập"
+
+#: js/components/AccessUsers.vue:250
+msgid "Error fetching user access roles"
+msgstr "Lỗi khi tải các vai trò truy cập của người dùng"
+
+#: js/components/AccessUsers.vue:268 js/components/AccessUsers.vue:303
+msgid "Email address"
+msgstr "Địa chỉ email"
+
+#: js/components/AccessUsers.vue:282
+msgid "Search"
+msgstr "Tìm kiếm"
+
+#: js/components/AccessUsers.vue:294
+msgid "Create user"
+msgstr "Tạo người dùng"
+
+#: js/components/AccessUsers.vue:304 js/components/AccessUsers.vue:318
+msgid "Assigned roles"
+msgstr "Vai trò đã gán"
+
+#: js/components/AccessUsers.vue:305 js/components/AccessUsers.vue:336
+msgid "CMS permissions"
+msgstr "Quyền CMS"
+
+#: js/components/AccessUsers.vue:351 js/components/ElementListItems.vue:913
+#: js/components/FileListItems.vue:997 js/components/PageListItems.vue:1917
+#: js/views/AccessList.vue:284
+msgid "No entries found"
+msgstr "Không tìm thấy kết quả nào."
+
+#: js/components/AccessUsers.vue:355
+msgid ""
+"Removing a direct role may not remove access granted through provider roles "
+"or other integrations."
+msgstr ""
+"Việc xóa một vai trò trực tiếp có thể không xóa quyền truy cập được cấp "
+"thông qua vai trò của nhà cung cấp hoặc các tích hợp khác."
+
 #: js/components/AsideCount.vue:65
 msgid "Used elements"
 msgstr "Các yếu tố đã sử dụng"
@@ -170,8 +233,8 @@ msgstr "%{count} / %{total}"
 #: js/components/PageListItems.vue:1942 js/components/SchemaDialog.vue:38
 #: js/components/UnsavedDialog.vue:39 js/components/User.vue:121
 #: js/fields/Items.vue:382 js/fields/Items.vue:466 js/fields/Table.vue:212
-#: js/fields/Table.vue:307 js/views/AccessList.vue:278
-#: js/views/AccessList.vue:310
+#: js/fields/Table.vue:307 js/views/AccessList.vue:307
+#: js/views/AccessList.vue:339
 msgid "Close"
 msgstr "Đóng"
 
@@ -253,7 +316,7 @@ msgstr "Dừng lại"
 msgid "Send"
 msgstr "Gửi"
 
-#: js/components/DetailAppBar.vue:92 js/views/AccessList.vue:189
+#: js/components/DetailAppBar.vue:92 js/views/AccessList.vue:197
 #: js/views/ElementList.vue:135 js/views/FileList.vue:134
 #: js/views/PageList.vue:251
 msgid "Menu"
@@ -395,8 +458,8 @@ msgstr "Lỗi khi lấy các phần tử chung"
 
 #: js/components/ElementListItems.vue:686 js/components/FileListItems.vue:672
 #: js/components/PageDetailContentList.vue:777
-#: js/components/PageListItems.vue:1535 js/views/AccessList.vue:217
-#: js/views/AccessList.vue:261
+#: js/components/PageListItems.vue:1535 js/views/AccessList.vue:233
+#: js/views/AccessList.vue:277
 msgid "Toggle selection"
 msgstr "Chuyển đổi lựa chọn"
 
@@ -428,7 +491,7 @@ msgstr "Hành động"
 #: js/components/PageDetailContentList.vue:907
 #: js/components/PageListItems.vue:1591 js/components/PageListItems.vue:1847
 #: js/fields/Items.vue:400 js/fields/Table.vue:236 js/fields/Table.vue:331
-#: js/views/AccessList.vue:222 js/views/AccessList.vue:326
+#: js/views/AccessList.vue:238 js/views/AccessList.vue:355
 msgid "Delete"
 msgstr "Xóa"
 
@@ -455,7 +518,7 @@ msgstr "Thêm phần tử"
 
 #: js/components/ElementListItems.vue:760 js/components/FileListItems.vue:757
 #: js/components/PageDetailContentList.vue:821
-#: js/components/PageListItems.vue:1624 js/views/AccessList.vue:246
+#: js/components/PageListItems.vue:1624 js/views/AccessList.vue:262
 msgid "Search for"
 msgstr "Tìm kiếm"
 
@@ -484,11 +547,6 @@ msgstr "Mới"
 #: js/fields/Url.vue:135
 msgid "Loading"
 msgstr "Đang tải"
-
-#: js/components/ElementListItems.vue:913 js/components/FileListItems.vue:997
-#: js/components/PageListItems.vue:1917 js/views/AccessList.vue:268
-msgid "No entries found"
-msgstr "Không tìm thấy kết quả nào."
 
 #: js/components/Fields.vue:270 js/components/Fields.vue:279
 #: js/components/Fields.vue:288 js/fields/Items.vue:445 js/fields/Items.vue:454
@@ -627,7 +685,7 @@ msgid "Error upscaling image"
 msgstr "Lỗi khi tăng độ phân giải hình ảnh"
 
 #: js/components/FileDetailItemImage.vue:637 js/components/UnsavedDialog.vue:55
-#: js/views/AccessList.vue:293 js/views/AccessList.vue:324
+#: js/views/AccessList.vue:322 js/views/AccessList.vue:353
 msgid "Cancel"
 msgstr "Hủy"
 
@@ -925,7 +983,7 @@ msgstr "Sắp xếp theo"
 #: js/components/PageDetailItem.vue:102 js/components/PageListItems.vue:419
 #: js/components/PageListItems.vue:1583 js/components/PageListItems.vue:1746
 #: js/components/PageListItems.vue:1936 js/components/PageListItems.vue:1941
-#: js/routes.js:99 js/views/AccessList.vue:198 js/views/AccessList.vue:207
+#: js/routes.js:99 js/views/AccessList.vue:206 js/views/AccessList.vue:215
 msgid "Access"
 msgstr "Quyền truy cập"
 
@@ -936,10 +994,6 @@ msgstr "Tấm ốp"
 #: js/components/PageAccess.vue:102
 msgid "Error changing page access"
 msgstr "Lỗi thay đổi quyền truy cập trang"
-
-#: js/components/PageAccess.vue:124 js/views/AccessList.vue:111
-msgid "Error fetching access values"
-msgstr "Lỗi tìm nạp giá trị truy cập"
 
 #: js/components/PageAccess.vue:168
 msgid "Access changes take effect immediately after cache expiry"
@@ -2201,42 +2255,50 @@ msgstr "Không có"
 msgid "All"
 msgstr "Tất cả"
 
-#: js/views/AccessList.vue:139
+#: js/views/AccessList.vue:147
 msgid "Error adding access value"
 msgstr "Lỗi khi thêm giá trị truy cập"
 
-#: js/views/AccessList.vue:161
+#: js/views/AccessList.vue:169
 msgid "Error deleting access values"
 msgstr "Lỗi xóa giá trị truy cập"
 
-#: js/views/AccessList.vue:193 js/views/ElementList.vue:139
+#: js/views/AccessList.vue:201 js/views/ElementList.vue:139
 #: js/views/FileList.vue:138 js/views/PageList.vue:255
 msgid "Close navigation"
 msgstr "Đóng thanh điều hướng"
 
-#: js/views/AccessList.vue:193 js/views/ElementList.vue:139
+#: js/views/AccessList.vue:201 js/views/ElementList.vue:139
 #: js/views/FileList.vue:138 js/views/PageList.vue:255
 msgid "Open navigation"
 msgstr "Mở thanh điều hướng"
 
-#: js/views/AccessList.vue:232 js/views/AccessList.vue:274
-#: js/views/AccessList.vue:277
+#: js/views/AccessList.vue:219
+msgid "Roles"
+msgstr "Vai trò"
+
+#: js/views/AccessList.vue:220
+msgid "Users"
+msgstr "Người dùng"
+
+#: js/views/AccessList.vue:248 js/views/AccessList.vue:303
+#: js/views/AccessList.vue:306
 msgid "Add access value"
 msgstr "Thêm giá trị truy cập"
 
-#: js/views/AccessList.vue:284
+#: js/views/AccessList.vue:313
 msgid "Access value"
 msgstr "Giá trị truy cập"
 
-#: js/views/AccessList.vue:295
+#: js/views/AccessList.vue:324
 msgid "Add"
 msgstr "Thêm"
 
-#: js/views/AccessList.vue:305 js/views/AccessList.vue:309
+#: js/views/AccessList.vue:334 js/views/AccessList.vue:338
 msgid "Delete access values"
 msgstr "Xóa giá trị truy cập"
 
-#: js/views/AccessList.vue:316
+#: js/views/AccessList.vue:345
 msgid ""
 "Existing restrictions are not changed and will continue to reference the "
 "deleted access values."
@@ -2442,7 +2504,6 @@ msgid "Press Enter or the arrow to open the AI assistant and refine in a chat"
 msgstr ""
 "Nhấn Enter hoặc mũi tên để mở trợ lý AI và tinh chỉnh nội dung trong cuộc "
 "trò chuyện"
-
 
 #~ msgid "mime"
 #~ msgstr "mime"

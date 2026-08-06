@@ -7,7 +7,6 @@
 
 namespace Aimeos\Cms\GraphQL;
 
-use Aimeos\Cms\Access;
 use Aimeos\Cms\Filter;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
@@ -23,21 +22,6 @@ use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
  */
 final class Query
 {
-    /**
-     * Resolver for the access catalog.
-     *
-     * @param array<string, mixed> $args
-     * @return array<int, string>
-     */
-    public function access( mixed $root = null, array $args = [] ) : array
-    {
-        return app( Access::class )->search(
-            is_string( $args['term'] ?? null ) ? $args['term'] : '',
-            (int) ( $args['first'] ?? 50 ),
-        );
-    }
-
-
     /**
      * Resolver for paginated element list query.
      *

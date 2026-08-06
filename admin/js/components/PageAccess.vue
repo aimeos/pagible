@@ -121,8 +121,8 @@ export default {
 
         this.items = [...new Set([...this.values, ...(response.data.access || [])])].sort()
       } catch (error) {
-        this.messages.add(this.$gettext('Error fetching access values') + ':\n' + error, 'error')
-        this.$log('PageAccess::load(): Error fetching access values', error)
+        this.messages.add(this.$gettext('Error fetching access roles') + ':\n' + error, 'error')
+        this.$log('PageAccess::load(): Error fetching access roles', error)
       } finally {
         this.loading = false
       }

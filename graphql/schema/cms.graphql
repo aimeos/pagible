@@ -38,16 +38,58 @@ type CmsUser {
     settings: JSON @field(resolver: "\\Aimeos\\Cms\\GraphQL\\Resolvers\\UserResolver@settings")
 }
 
+"CMS authorization assignments for a tenant user"
+type CmsUserData {
+    "Opaque user identifier used for administrative writes"
+    id: ID! @field(resolver: "\\Aimeos\\Cms\\GraphQL\\Resolvers\\UserResolver@id")
+
+    "Unique user email address"
+    email: String!
+
+    "Directly assigned frontend access values"
+    access: [String!]!
+      @cmsPermission(action: "user:access")
+      @field(resolver: "\\Aimeos\\Cms\\GraphQL\\Resolvers\\UserResolver@access")
+
+    "Raw CMS roles and permissions assigned to the user"
+    permissions: [String!]!
+      @cmsPermission(action: "user:permission")
+      @field(resolver: "\\Aimeos\\Cms\\GraphQL\\Resolvers\\UserResolver@assigned")
+}
+
+"Available CMS roles and permissions"
+type Permissions {
+    "Configured CMS role names"
+    roles: [String!]!
+
+    "Registered CMS permission names"
+    permissions: [String!]!
+}
+
 extend type Query {
   "Current authenticated user"
   me: CmsUser @auth @throttle(name: "cms-graphql")
 
+  "Get authorization assignments for a user by exact email address"
+  cmsUser(email: String!): CmsUserData
+    @guard
+    @cmsPermission(action: ["user:access", "user:permission"], any: true)
+    @throttle(name: "cms-graphql")
+    @field(resolver: "\\Aimeos\\Cms\\GraphQL\\Resolvers\\UserResolver@cmsUser")
+
   "Get the available access values"
-  access(term: String = "", first: Int = 50): [String!]!
+  access(term: String, first: Int): [String!]!
     @guard
     @cmsPermission(action: ["access:view", "page:access"], any: true)
     @throttle(name: "cms-graphql")
-    @field(resolver: "\\Aimeos\\Cms\\GraphQL\\Query@access")
+    @field(resolver: "\\Aimeos\\Cms\\GraphQL\\Resolvers\\AccessResolver@catalog")
+
+  "Get the available CMS roles and permissions (super-admin capability)"
+  permissions: Permissions!
+    @guard
+    @cmsPermission(action: "user:permission")
+    @throttle(name: "cms-graphql")
+    @field(resolver: "\\Aimeos\\Cms\\GraphQL\\Resolvers\\UserResolver@catalog")
 
   "Get page by ID"
   page(id: ID! @eq): Page
@@ -91,15 +133,41 @@ extend type Mutation {
   cmsLogout: User @guard
 
   "Update CMS user preferences"
-  cmsUser(settings: JSON!): User @guard @throttle(name: "cms-graphql")
+  setUser(settings: JSON!): User @guard @throttle(name: "cms-graphql")
 
   "Add an access value"
   addAccess(value: String!): [String!]!
     @guard @cmsPermission(action: "access:add") @throttle(name: "cms-graphql")
+    @field(resolver: "\\Aimeos\\Cms\\GraphQL\\Resolvers\\AccessResolver@add")
 
   "Delete access values"
   deleteAccess(values: [String!]!): [String!]!
     @guard @cmsPermission(action: "access:delete") @throttle(name: "cms-graphql")
+    @field(resolver: "\\Aimeos\\Cms\\GraphQL\\Resolvers\\AccessResolver@delete")
+
+  "Create a tenant user with random credentials and no authorization assignments"
+  createUser(email: String!): CmsUserData!
+    @guard @cmsPermission(action: "user:create")
+    @throttle(name: "cms-graphql")
+    @field(resolver: "\\Aimeos\\Cms\\GraphQL\\Resolvers\\UserResolver@create")
+
+  "Replace directly assigned frontend access values for a user"
+  setUserAccess(
+    id: ID!
+    access: [String!]! @rulesForArray(apply: ["max:250"])
+  ): [String!]!
+    @guard @cmsPermission(action: "user:access")
+    @throttle(name: "cms-graphql")
+    @field(resolver: "\\Aimeos\\Cms\\GraphQL\\Resolvers\\UserResolver@setAccess")
+
+  "Replace raw CMS roles and permissions assigned to a user (super-admin capability)"
+  setUserPermissions(
+    id: ID!
+    permissions: [String!]! @rulesForArray(apply: ["max:250"])
+  ): [String!]!
+    @guard @cmsPermission(action: "user:permission")
+    @throttle(name: "cms-graphql")
+    @field(resolver: "\\Aimeos\\Cms\\GraphQL\\Resolvers\\UserResolver@setPermissions")
 
   "Clear cached frontend pages in the selected page subtree"
   clearCache(id: ID!): Int!

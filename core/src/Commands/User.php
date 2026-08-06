@@ -60,33 +60,52 @@ class User extends Command
 
         if( !$user ) {
             $user = $this->create( $email );
+            $user->save();
         }
 
+        // Compute the final permission set from all flags first, then apply it in ONE
+        // Permission::set() — a single locked transaction and a single audit entry for
+        // the intended end state, instead of one misleading intermediate audit line
+        // per flag.
+        $assigned = Permission::assigned( $user );
+        $changed = false;
+
         if( $this->option( 'enable' ) ) {
-            $user = Permission::add( $this->permissions( '*' ), $user );
+            $assigned = $this->permissions( '*' );
+            $changed = true;
         }
 
         if( $perms = $this->option( 'add' ) ) {
-            $user = Permission::add( $this->permissions( $perms ), $user );
+            $assigned = array_merge( $assigned, $this->permissions( $perms ) );
+            $changed = true;
         }
 
         if( is_string( $role = $this->option( 'role' ) ) ) {
-            $user = Permission::add( $role, $user );
+            $assigned = array_merge( $assigned, (array) $role );
+            $changed = true;
         }
 
         if( $perms = $this->option( 'remove' ) ) {
-            $user = Permission::remove( $this->permissions( $perms ), $user );
+            $assigned = array_diff( $assigned, $this->permissions( $perms ) );
+            $changed = true;
         }
 
         if( $this->option( 'disable' ) ) {
-            $user = Permission::remove( $this->permissions( '*' ), $user );
+            $assigned = [];
+            $changed = true;
         }
 
+        if( $changed ) {
+            Permission::set( $user, array_values( array_unique( $assigned ) ) );
+        }
+
+        // Only save when the password actually changed; an unconditional save() would
+        // re-issue an UPDATE (bumping updated_at / firing saved hooks) even for
+        // pure-permission invocations, on top of set()'s own locked write.
         if( $this->input->hasParameterOption( '--password' ) ) {
             $user->password = Hash::make( $this->option( 'password' ) ?: $this->secret( 'Password' ) );
+            $user->save();
         }
-
-        $user->save();
 
         if( !$this->option( 'quiet' ) ) {
             $this->list( $user );
