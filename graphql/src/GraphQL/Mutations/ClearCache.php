@@ -35,9 +35,12 @@ final class ClearCache
         $pages = collect();
 
         foreach( $roots as $root ) {
+            $left = (int) $root->getAttribute( NestedSet::LFT );
+            $right = (int) $root->getAttribute( NestedSet::RGT );
+
             $pages = $pages->merge( Page::query()
                 ->withTrashed()
-                ->whereBetween( NestedSet::LFT, [$root->getLft(), $root->getRgt()] )
+                ->whereBetween( NestedSet::LFT, [$left, $right] )
                 ->get( ['domain', 'path'] )
             );
         }
