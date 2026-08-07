@@ -194,6 +194,8 @@ class AdminControllerTest extends AdminTestAbstract
 
     public function testProxyConnectionException()
     {
+        config( ['cms.allow-internal' => true] );
+
         Http::fake( fn() => throw new \Illuminate\Http\Client\ConnectionException( 'Connection timed out' ) );
 
         $response = $this->actingAs( $this->user )->get( route( 'cms.proxy', ['token' => $this->proxyToken, 'url' => 'https://localhost/video.mp4'] ) );
@@ -204,6 +206,8 @@ class AdminControllerTest extends AdminTestAbstract
 
     public function testProxyGetRequest()
     {
+        config( ['cms.allow-internal' => true] );
+
         $body = 'fake-media-content';
 
         Http::fake( [
