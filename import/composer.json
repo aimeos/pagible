@@ -7,7 +7,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
-        "aimeos/pagible-core": "*@dev"
+        "aimeos/pagible-core": "0.12.*"
     },
     "require-dev": {
         "orchestra/testbench": "^9.0||^10.0||^11.0"

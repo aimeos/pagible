@@ -7,7 +7,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
-        "aimeos/pagible-cashier": "*@dev",
+        "aimeos/pagible-cashier": "0.12.*",
         "laravel/cashier": "^16.0"
     },
     "require-dev": {

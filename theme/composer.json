@@ -8,7 +8,7 @@
     "require": {
         "php": "^8.2",
         "ext-zlib": "*",
-        "aimeos/pagible-core": "*@dev",
+        "aimeos/pagible-core": "0.12.*",
         "league/commonmark": "^2.6"
     },
     "require-dev": {
