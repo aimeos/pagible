@@ -63,6 +63,7 @@ export default {
     :class="config.class"
     :readonly="readonly"
     :counter="config.max"
+    :persistent-counter="!!config.max"
     :placeholder="config.placeholder || ''"
     :modelValue="modelValue ?? config.default ?? ''"
     @update:modelValue="$emit('update:modelValue', $event)"

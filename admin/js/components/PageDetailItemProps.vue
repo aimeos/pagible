@@ -98,6 +98,10 @@ export default {
 
     titleRules() {
       return [(v) => !!v || this.$gettext('Field is required')]
+    },
+
+    langRules() {
+      return [(v) => !!v || this.$gettext('Field is required')]
     }
   },
 
@@ -249,6 +253,7 @@ export default {
           <v-select
             ref="lang"
             :items="locales()"
+            :rules="langRules"
             :readonly="readonly"
             :modelValue="item.lang"
             :label="$gettext('Language')"
@@ -297,8 +302,11 @@ export default {
             variant="underlined"
             maxlength="255"
             counter="255"
-            prefix="/"
-          ></v-text-field>
+          >
+            <template #prepend-inner>
+              <span class="path-prefix">/</span>
+            </template>
+          </v-text-field>
           <v-text-field
             v-if="app.multidomain"
             ref="domain"

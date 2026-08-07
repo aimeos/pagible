@@ -77,6 +77,7 @@ export default {
     :readonly="readonly"
     :class="config.class"
     :counter="config.max"
+    :persistent-counter="!!config.max"
     :clearable="!readonly"
     :placeholder="config.placeholder || ''"
     :modelValue="modelValue ?? config.default ?? ''"
