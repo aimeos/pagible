@@ -73,68 +73,81 @@ msgstr ""
 msgid "Too many requests. Please wait a moment and try again."
 msgstr ""
 
-#: js/components/AccessUsers.vue:133
+#: js/components/AccessUsers.vue:219
 msgid "Access roles updated"
 msgstr "Access roles updated"
 
-#: js/components/AccessUsers.vue:137
+#: js/components/AccessUsers.vue:229
 msgid "Error updating access roles"
 msgstr "Error updating access roles"
 
-#: js/components/AccessUsers.vue:170
+#: js/components/AccessUsers.vue:230
 msgid "Error updating CMS permissions"
 msgstr "Error updating CMS permissions"
 
-#: js/components/AccessUsers.vue:190
+#: js/components/AccessUsers.vue:326
 msgid "User created"
 msgstr "User created"
 
-#: js/components/AccessUsers.vue:197
+#: js/components/AccessUsers.vue:332
 msgid "Error creating user"
 msgstr "Error creating user"
 
-#: js/components/AccessUsers.vue:221 js/components/PageAccess.vue:124
-#: js/views/AccessList.vue:119
+#: js/components/AccessUsers.vue:357 js/components/PageAccess.vue:124
+#: js/views/AccessList.vue:149
 msgid "Error fetching access roles"
 msgstr ""
 
-#: js/components/AccessUsers.vue:250
+#: js/components/AccessUsers.vue:387
 msgid "Error fetching user access roles"
 msgstr "Error fetching user access roles"
 
-#: js/components/AccessUsers.vue:268 js/components/AccessUsers.vue:303
-msgid "Email address"
-msgstr "Email address"
-
-#: js/components/AccessUsers.vue:282
-msgid "Search"
-msgstr "Search"
-
-#: js/components/AccessUsers.vue:294
+#: js/components/AccessUsers.vue:416 js/components/AccessUsers.vue:417
 msgid "Create user"
 msgstr "Create user"
 
-#: js/components/AccessUsers.vue:304 js/components/AccessUsers.vue:318
-msgid "Assigned roles"
-msgstr "Assigned roles"
+#: js/components/AccessUsers.vue:424
+msgid "Email address"
+msgstr "Email address"
 
-#: js/components/AccessUsers.vue:305 js/components/AccessUsers.vue:336
-msgid "CMS permissions"
-msgstr "CMS permissions"
+#: js/components/AccessUsers.vue:433
+msgid "Search user by email"
+msgstr "Search user by email"
 
-#: js/components/AccessUsers.vue:351 js/components/ElementListItems.vue:913
+#: js/components/AccessUsers.vue:445 js/components/AccessUsers.vue:446
+msgid "Search"
+msgstr "Search"
+
+#: js/components/AccessUsers.vue:461 js/components/AccessUsers.vue:462
+#: js/components/DetailAppBar.vue:128 js/components/FieldsDialog.vue:62
+msgid "Save"
+msgstr "Save"
+
+#: js/components/AccessUsers.vue:471
+msgid "Account"
+msgstr "Account"
+
+#: js/components/AccessUsers.vue:476 js/components/AccessUsers.vue:483
+msgid "Assigned frontend roles"
+msgstr "Assigned frontend roles"
+
+#: js/components/AccessUsers.vue:496
+msgid "Assigned backend roles"
+msgstr "Assigned backend roles"
+
+#: js/components/AccessUsers.vue:500
+msgid "Custom"
+msgstr "Custom"
+
+#: js/components/AccessUsers.vue:506
+msgid "Available roles"
+msgstr "Available roles"
+
+#: js/components/AccessUsers.vue:518 js/components/ElementListItems.vue:913
 #: js/components/FileListItems.vue:997 js/components/PageListItems.vue:1917
-#: js/views/AccessList.vue:284
+#: js/views/AccessList.vue:314
 msgid "No entries found"
-msgstr ""
-
-#: js/components/AccessUsers.vue:355
-msgid ""
-"Removing a direct role may not remove access granted through provider roles "
-"or other integrations."
-msgstr ""
-"Removing a direct role may not remove access granted through provider roles "
-"or other integrations."
+msgstr "No entries found"
 
 #: js/components/AsideCount.vue:65
 msgid "Used elements"
@@ -233,8 +246,8 @@ msgstr ""
 #: js/components/PageListItems.vue:1942 js/components/SchemaDialog.vue:38
 #: js/components/UnsavedDialog.vue:39 js/components/User.vue:121
 #: js/fields/Items.vue:382 js/fields/Items.vue:466 js/fields/Table.vue:212
-#: js/fields/Table.vue:307 js/views/AccessList.vue:307
-#: js/views/AccessList.vue:339
+#: js/fields/Table.vue:307 js/views/AccessList.vue:334
+#: js/views/AccessList.vue:366
 msgid "Close"
 msgstr ""
 
@@ -316,7 +329,7 @@ msgstr ""
 msgid "Send"
 msgstr ""
 
-#: js/components/DetailAppBar.vue:92 js/views/AccessList.vue:197
+#: js/components/DetailAppBar.vue:92 js/views/AccessList.vue:227
 #: js/views/ElementList.vue:135 js/views/FileList.vue:134
 #: js/views/PageList.vue:251
 msgid "Menu"
@@ -332,10 +345,6 @@ msgstr ""
 
 #: js/components/DetailAppBar.vue:120
 msgid "View merge changes"
-msgstr ""
-
-#: js/components/DetailAppBar.vue:128 js/components/FieldsDialog.vue:62
-msgid "Save"
 msgstr ""
 
 #: js/components/DetailAppBar.vue:142
@@ -459,8 +468,8 @@ msgstr ""
 
 #: js/components/ElementListItems.vue:686 js/components/FileListItems.vue:672
 #: js/components/PageDetailContentList.vue:777
-#: js/components/PageListItems.vue:1535 js/views/AccessList.vue:233
-#: js/views/AccessList.vue:277
+#: js/components/PageListItems.vue:1535 js/views/AccessList.vue:263
+#: js/views/AccessList.vue:307
 msgid "Toggle selection"
 msgstr ""
 
@@ -492,7 +501,7 @@ msgstr ""
 #: js/components/PageDetailContentList.vue:907
 #: js/components/PageListItems.vue:1591 js/components/PageListItems.vue:1847
 #: js/fields/Items.vue:400 js/fields/Table.vue:236 js/fields/Table.vue:331
-#: js/views/AccessList.vue:238 js/views/AccessList.vue:355
+#: js/views/AccessList.vue:268 js/views/AccessList.vue:382
 msgid "Delete"
 msgstr ""
 
@@ -519,7 +528,7 @@ msgstr ""
 
 #: js/components/ElementListItems.vue:760 js/components/FileListItems.vue:757
 #: js/components/PageDetailContentList.vue:821
-#: js/components/PageListItems.vue:1624 js/views/AccessList.vue:262
+#: js/components/PageListItems.vue:1624 js/views/AccessList.vue:292
 msgid "Search for"
 msgstr ""
 
@@ -686,7 +695,7 @@ msgid "Error upscaling image"
 msgstr ""
 
 #: js/components/FileDetailItemImage.vue:637 js/components/UnsavedDialog.vue:55
-#: js/views/AccessList.vue:322 js/views/AccessList.vue:353
+#: js/views/AccessList.vue:349 js/views/AccessList.vue:380
 msgid "Cancel"
 msgstr ""
 
@@ -984,7 +993,7 @@ msgstr ""
 #: js/components/PageDetailItem.vue:102 js/components/PageListItems.vue:419
 #: js/components/PageListItems.vue:1583 js/components/PageListItems.vue:1746
 #: js/components/PageListItems.vue:1936 js/components/PageListItems.vue:1941
-#: js/routes.js:99 js/views/AccessList.vue:206 js/views/AccessList.vue:215
+#: js/routes.js:100 js/views/AccessList.vue:236 js/views/AccessList.vue:245
 msgid "Access"
 msgstr ""
 
@@ -1795,7 +1804,7 @@ msgstr ""
 msgid "File"
 msgstr ""
 
-#: js/routes.js:126
+#: js/routes.js:127
 msgid "You do not have permission to access %{path}"
 msgstr ""
 
@@ -2251,50 +2260,50 @@ msgstr ""
 msgid "All"
 msgstr ""
 
-#: js/views/AccessList.vue:147
+#: js/views/AccessList.vue:177
 msgid "Error adding access value"
 msgstr ""
 
-#: js/views/AccessList.vue:169
+#: js/views/AccessList.vue:199
 msgid "Error deleting access values"
 msgstr ""
 
-#: js/views/AccessList.vue:201 js/views/ElementList.vue:139
+#: js/views/AccessList.vue:231 js/views/ElementList.vue:139
 #: js/views/FileList.vue:138 js/views/PageList.vue:255
 msgid "Close navigation"
 msgstr ""
 
-#: js/views/AccessList.vue:201 js/views/ElementList.vue:139
+#: js/views/AccessList.vue:231 js/views/ElementList.vue:139
 #: js/views/FileList.vue:138 js/views/PageList.vue:255
 msgid "Open navigation"
 msgstr ""
 
-#: js/views/AccessList.vue:219
+#: js/views/AccessList.vue:249
 msgid "Roles"
 msgstr "Roles"
 
-#: js/views/AccessList.vue:220
+#: js/views/AccessList.vue:250
 msgid "Users"
 msgstr "Users"
 
-#: js/views/AccessList.vue:248 js/views/AccessList.vue:303
-#: js/views/AccessList.vue:306
+#: js/views/AccessList.vue:278 js/views/AccessList.vue:330
+#: js/views/AccessList.vue:333
 msgid "Add access value"
 msgstr ""
 
-#: js/views/AccessList.vue:313
+#: js/views/AccessList.vue:340
 msgid "Access value"
 msgstr ""
 
-#: js/views/AccessList.vue:324
+#: js/views/AccessList.vue:351
 msgid "Add"
 msgstr ""
 
-#: js/views/AccessList.vue:334 js/views/AccessList.vue:338
+#: js/views/AccessList.vue:361 js/views/AccessList.vue:365
 msgid "Delete access values"
 msgstr ""
 
-#: js/views/AccessList.vue:345
+#: js/views/AccessList.vue:372
 msgid ""
 "Existing restrictions are not changed and will continue to reference the "
 "deleted access values."

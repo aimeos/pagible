@@ -1,47 +1,70 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
-"Language: sk\n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: sk\n"
+"Language-Team: none\n"
+"Last-Translator: Automatically generated\n"
+"MIME-Version: 1.0\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
+"Project-Id-Version: PACKAGE VERSION\n"
 
-#: js/ai.js:44 js/ai.js:91 js/ai.js:146 js/components/ElementListItems.vue:249
+#: js/ai.js:44
+#: js/ai.js:91
+#: js/ai.js:146
+#: js/components/ElementListItems.vue:249
 #: js/components/ElementListItems.vue:288
 #: js/components/ElementListItems.vue:376
 #: js/components/ElementListItems.vue:412
 #: js/components/ElementListItems.vue:452
 #: js/components/ElementListItems.vue:492
-#: js/components/ElementListItems.vue:537 js/components/Fields.vue:119
-#: js/components/FileAiDialog.vue:154 js/components/FileDetailItem.vue:156
-#: js/components/FileDetailItem.vue:194 js/components/FileDetailItem.vue:232
-#: js/components/FileDetailItem.vue:266 js/components/FileDetailItem.vue:271
+#: js/components/ElementListItems.vue:537
+#: js/components/Fields.vue:119
+#: js/components/FileAiDialog.vue:154
+#: js/components/FileDetailItem.vue:156
+#: js/components/FileDetailItem.vue:194
+#: js/components/FileDetailItem.vue:232
+#: js/components/FileDetailItem.vue:266
+#: js/components/FileDetailItem.vue:271
 #: js/components/FileDetailItem.vue:314
 #: js/components/FileDetailItemImage.vue:383
 #: js/components/FileDetailItemVideo.vue:67
 #: js/components/FileDetailItemVideo.vue:134
 #: js/components/FileDetailItemVideo.vue:171
-#: js/components/FileListItems.vue:232 js/components/FileListItems.vue:291
-#: js/components/FileListItems.vue:379 js/components/FileListItems.vue:412
-#: js/components/FileListItems.vue:449 js/components/FileListItems.vue:489
+#: js/components/FileListItems.vue:232
+#: js/components/FileListItems.vue:291
+#: js/components/FileListItems.vue:379
+#: js/components/FileListItems.vue:412
+#: js/components/FileListItems.vue:449
+#: js/components/FileListItems.vue:489
 #: js/components/FileListItems.vue:534
 #: js/components/PageDetailContentList.vue:367
 #: js/components/PageDetailContentList.vue:467
-#: js/components/PageListItems.vue:425 js/components/PageListItems.vue:496
-#: js/components/PageListItems.vue:571 js/components/PageListItems.vue:666
-#: js/components/PageListItems.vue:737 js/components/PageListItems.vue:802
-#: js/components/PageListItems.vue:935 js/components/PageListItems.vue:963
-#: js/components/PageListItems.vue:1095 js/components/PageListItems.vue:1136
-#: js/components/PageListItems.vue:1244 js/components/PageListItems.vue:1322
-#: js/components/PageListItems.vue:1373 js/fields/File.vue:104
-#: js/fields/Images.vue:118 js/fields/Items.vue:211 js/publish.js:38
-#: js/views/ElementDetail.vue:272 js/views/ElementDetail.vue:372
-#: js/views/FileDetail.vue:260 js/views/FileDetail.vue:338
-#: js/views/PageDetail.vue:488 js/views/PageDetail.vue:579
-#: js/views/PageDetail.vue:689 js/views/PageList.vue:212
+#: js/components/PageListItems.vue:425
+#: js/components/PageListItems.vue:496
+#: js/components/PageListItems.vue:571
+#: js/components/PageListItems.vue:666
+#: js/components/PageListItems.vue:737
+#: js/components/PageListItems.vue:802
+#: js/components/PageListItems.vue:935
+#: js/components/PageListItems.vue:963
+#: js/components/PageListItems.vue:1095
+#: js/components/PageListItems.vue:1136
+#: js/components/PageListItems.vue:1244
+#: js/components/PageListItems.vue:1322
+#: js/components/PageListItems.vue:1373
+#: js/fields/File.vue:104
+#: js/fields/Images.vue:118
+#: js/fields/Items.vue:211
+#: js/publish.js:38
+#: js/views/ElementDetail.vue:272
+#: js/views/ElementDetail.vue:372
+#: js/views/FileDetail.vue:260
+#: js/views/FileDetail.vue:338
+#: js/views/PageDetail.vue:488
+#: js/views/PageDetail.vue:579
+#: js/views/PageDetail.vue:689
+#: js/views/PageList.vue:212
 msgid "Permission denied"
 msgstr "Povolenie zamietnuté"
 
@@ -73,68 +96,89 @@ msgstr "Odpoveď sa už generuje. Počkajte, kým sa dokončí."
 msgid "Too many requests. Please wait a moment and try again."
 msgstr "Príliš veľa žiadostí. Chvíľu počkajte a skúste to znova."
 
-#: js/components/AccessUsers.vue:133
+#: js/components/AccessUsers.vue:219
 msgid "Access roles updated"
 msgstr "Prístupové roly boli aktualizované"
 
-#: js/components/AccessUsers.vue:137
+#: js/components/AccessUsers.vue:229
 msgid "Error updating access roles"
 msgstr "Chyba pri aktualizácii prístupových rolí"
 
-#: js/components/AccessUsers.vue:170
+#: js/components/AccessUsers.vue:230
 msgid "Error updating CMS permissions"
 msgstr "Chyba pri aktualizácii oprávnení CMS"
 
-#: js/components/AccessUsers.vue:190
+#: js/components/AccessUsers.vue:326
 msgid "User created"
 msgstr "Používateľ bol vytvorený"
 
-#: js/components/AccessUsers.vue:197
+#: js/components/AccessUsers.vue:332
 msgid "Error creating user"
 msgstr "Chyba pri vytváraní používateľa"
 
-#: js/components/AccessUsers.vue:221 js/components/PageAccess.vue:124
-#: js/views/AccessList.vue:119
+#: js/components/AccessUsers.vue:357
+#: js/components/PageAccess.vue:124
+#: js/views/AccessList.vue:149
 msgid "Error fetching access roles"
 msgstr "Chyba pri načítaní prístupových rolí"
 
-#: js/components/AccessUsers.vue:250
+#: js/components/AccessUsers.vue:387
 msgid "Error fetching user access roles"
 msgstr "Chyba pri načítaní prístupových rolí používateľa"
 
-#: js/components/AccessUsers.vue:268 js/components/AccessUsers.vue:303
-msgid "Email address"
-msgstr "E-mailová adresa"
-
-#: js/components/AccessUsers.vue:282
-msgid "Search"
-msgstr "Hľadať"
-
-#: js/components/AccessUsers.vue:294
+#: js/components/AccessUsers.vue:416
+#: js/components/AccessUsers.vue:417
 msgid "Create user"
 msgstr "Vytvoriť používateľa"
 
-#: js/components/AccessUsers.vue:304 js/components/AccessUsers.vue:318
-msgid "Assigned roles"
-msgstr "Priradené roly"
+#: js/components/AccessUsers.vue:424
+msgid "Email address"
+msgstr "E-mailová adresa"
 
-#: js/components/AccessUsers.vue:305 js/components/AccessUsers.vue:336
-msgid "CMS permissions"
-msgstr "Oprávnenia CMS"
+#: js/components/AccessUsers.vue:433
+msgid "Search user by email"
+msgstr "Vyhľadávanie používateľa podľa e-mailovej adresy"
 
-#: js/components/AccessUsers.vue:351 js/components/ElementListItems.vue:913
-#: js/components/FileListItems.vue:997 js/components/PageListItems.vue:1917
-#: js/views/AccessList.vue:284
+#: js/components/AccessUsers.vue:445
+#: js/components/AccessUsers.vue:446
+msgid "Search"
+msgstr "Hľadať"
+
+#: js/components/AccessUsers.vue:461
+#: js/components/AccessUsers.vue:462
+#: js/components/DetailAppBar.vue:128
+#: js/components/FieldsDialog.vue:62
+msgid "Save"
+msgstr "Uložiť"
+
+#: js/components/AccessUsers.vue:471
+msgid "Account"
+msgstr "Účet"
+
+#: js/components/AccessUsers.vue:476
+#: js/components/AccessUsers.vue:483
+msgid "Assigned frontend roles"
+msgstr "Pridelené úlohy v prednej časti systému"
+
+#: js/components/AccessUsers.vue:496
+msgid "Assigned backend roles"
+msgstr "Priradené úlohy v backende"
+
+#: js/components/AccessUsers.vue:500
+msgid "Custom"
+msgstr "Na mieru"
+
+#: js/components/AccessUsers.vue:506
+msgid "Available roles"
+msgstr "Dostupné role"
+
+#: js/components/AccessUsers.vue:518
+#: js/components/ElementListItems.vue:913
+#: js/components/FileListItems.vue:997
+#: js/components/PageListItems.vue:1917
+#: js/views/AccessList.vue:314
 msgid "No entries found"
 msgstr "Nenašli sa žiadne záznamy"
-
-#: js/components/AccessUsers.vue:355
-msgid ""
-"Removing a direct role may not remove access granted through provider roles "
-"or other integrations."
-msgstr ""
-"Odstránenie priamo priradenej roly nemusí odobrať prístup udelený "
-"prostredníctvom rolí poskytovateľa alebo iných integrácií."
 
 #: js/components/AsideCount.vue:65
 msgid "Used elements"
@@ -144,7 +188,8 @@ msgstr "Použité prvky"
 msgid "Filters"
 msgstr "Filtry"
 
-#: js/components/AsideList.vue:76 js/components/Fields.vue:326
+#: js/components/AsideList.vue:76
+#: js/components/Fields.vue:326
 #: js/components/Fields.vue:357
 msgid "Reset"
 msgstr "Obnovenie"
@@ -153,16 +198,25 @@ msgstr "Obnovenie"
 msgid "id"
 msgstr "id"
 
-#: js/components/AsideMeta.vue:25 js/components/ListSort.vue:28
-#: js/fields/Audio.vue:147 js/fields/File.vue:442 js/fields/Image.vue:204
-#: js/fields/Media.vue:199 js/fields/Video.vue:147
+#: js/components/AsideMeta.vue:25
+#: js/components/ListSort.vue:28
+#: js/fields/Audio.vue:147
+#: js/fields/File.vue:442
+#: js/fields/Image.vue:204
+#: js/fields/Media.vue:199
+#: js/fields/Video.vue:147
 msgid "MIME"
 msgstr "MIME"
 
-#: js/components/AsideMeta.vue:29 js/fields/Audio.vue:151
-#: js/fields/File.vue:446 js/fields/Image.vue:208 js/fields/Media.vue:203
-#: js/fields/Video.vue:151 js/views/ElementList.vue:111
-#: js/views/FileList.vue:110 js/views/PageList.vue:178
+#: js/components/AsideMeta.vue:29
+#: js/fields/Audio.vue:151
+#: js/fields/File.vue:446
+#: js/fields/Image.vue:208
+#: js/fields/Media.vue:203
+#: js/fields/Video.vue:151
+#: js/views/ElementList.vue:111
+#: js/views/FileList.vue:110
+#: js/views/PageList.vue:178
 msgid "editor"
 msgstr "redaktor"
 
@@ -170,8 +224,11 @@ msgstr "redaktor"
 msgid "created"
 msgstr "vytvorené"
 
-#: js/components/AsideMeta.vue:39 js/fields/Audio.vue:155
-#: js/fields/File.vue:450 js/fields/Image.vue:212 js/fields/Media.vue:207
+#: js/components/AsideMeta.vue:39
+#: js/fields/Audio.vue:155
+#: js/fields/File.vue:450
+#: js/fields/Image.vue:212
+#: js/fields/Media.vue:207
 #: js/fields/Video.vue:155
 msgid "updated"
 msgstr "aktualizované"
@@ -180,12 +237,14 @@ msgstr "aktualizované"
 msgid "deleted"
 msgstr "zmazané"
 
-#: js/components/AsideMeta.vue:57 js/components/AsideMeta.vue:59
+#: js/components/AsideMeta.vue:57
+#: js/components/AsideMeta.vue:59
 #: js/components/HistoryDialog.vue:38
 msgid "Meta data"
 msgstr "Metaúdaje"
 
-#: js/components/ChangesDialog.vue:54 js/components/ChangesDialog.vue:55
+#: js/components/ChangesDialog.vue:54
+#: js/components/ChangesDialog.vue:55
 #: js/components/HistoryDialog.vue:37
 msgid "Fields"
 msgstr "Polia"
@@ -194,11 +253,13 @@ msgstr "Polia"
 msgid "Meta tags"
 msgstr "Meta tagy"
 
-#: js/components/ChangesDialog.vue:57 js/components/HistoryDialog.vue:39
+#: js/components/ChangesDialog.vue:57
+#: js/components/HistoryDialog.vue:39
 msgid "Configuration"
 msgstr "Konfigurácia"
 
-#: js/components/ChangesDialog.vue:58 js/components/HistoryDialog.vue:40
+#: js/components/ChangesDialog.vue:58
+#: js/components/HistoryDialog.vue:40
 #: js/views/PageDetail.vue:816
 msgid "Content"
 msgstr "Obsah"
@@ -215,46 +276,67 @@ msgstr "Konflikty zo stránky %{editor}"
 msgid "%{count} / %{total}"
 msgstr "%{count} / %{total}"
 
-#: js/components/ChangesDialog.vue:322 js/components/ChatDialog.vue:300
-#: js/components/ChatDialog.vue:301 js/components/EditBulkDialog.vue:60
+#: js/components/ChangesDialog.vue:322
+#: js/components/ChatDialog.vue:300
+#: js/components/ChatDialog.vue:301
+#: js/components/EditBulkDialog.vue:60
 #: js/components/ElementListItems.vue:709
-#: js/components/ElementListItems.vue:821 js/components/Fields.vue:289
-#: js/components/FieldsDialog.vue:63 js/components/FileAiDialog.vue:263
+#: js/components/ElementListItems.vue:821
+#: js/components/Fields.vue:289
+#: js/components/FieldsDialog.vue:63
+#: js/components/FileAiDialog.vue:263
 #: js/components/FileDetailItemImage.vue:664
 #: js/components/FileDetailItemImage.vue:772
 #: js/components/FileDetailItemImage.vue:826
 #: js/components/FileDetailItemImage.vue:911
-#: js/components/FileDetailItemImage.vue:1017 js/components/FileDialog.vue:37
-#: js/components/FileListItems.vue:695 js/components/FileListItems.vue:836
-#: js/components/FileUrlDialog.vue:204 js/components/HistoryDialog.vue:473
+#: js/components/FileDetailItemImage.vue:1017
+#: js/components/FileDialog.vue:37
+#: js/components/FileListItems.vue:695
+#: js/components/FileListItems.vue:836
+#: js/components/FileUrlDialog.vue:204
+#: js/components/HistoryDialog.vue:473
 #: js/components/PageBulkDialog.vue:142
 #: js/components/PageDetailContentList.vue:889
-#: js/components/PageListItems.vue:1557 js/components/PageListItems.vue:1725
-#: js/components/PageListItems.vue:1942 js/components/SchemaDialog.vue:38
-#: js/components/UnsavedDialog.vue:39 js/components/User.vue:121
-#: js/fields/Items.vue:382 js/fields/Items.vue:466 js/fields/Table.vue:212
-#: js/fields/Table.vue:307 js/views/AccessList.vue:307
-#: js/views/AccessList.vue:339
+#: js/components/PageListItems.vue:1557
+#: js/components/PageListItems.vue:1725
+#: js/components/PageListItems.vue:1942
+#: js/components/SchemaDialog.vue:38
+#: js/components/UnsavedDialog.vue:39
+#: js/components/User.vue:121
+#: js/fields/Items.vue:382
+#: js/fields/Items.vue:466
+#: js/fields/Table.vue:212
+#: js/fields/Table.vue:307
+#: js/views/AccessList.vue:334
+#: js/views/AccessList.vue:366
 msgid "Close"
 msgstr "Zatvoriť"
 
-#: js/components/ChangesDialog.vue:344 js/components/HistoryDialog.vue:624
+#: js/components/ChangesDialog.vue:344
+#: js/components/HistoryDialog.vue:624
 msgid "Revert"
 msgstr "Vrátiť"
 
-#: js/components/ChangesDialog.vue:347 js/components/ChangesDialog.vue:374
+#: js/components/ChangesDialog.vue:347
+#: js/components/ChangesDialog.vue:374
 msgid "Changes"
 msgstr "Zmeny"
 
-#: js/components/ChangesDialog.vue:396 js/components/HistoryDialog.vue:340
-#: js/components/HistoryDialog.vue:524 js/components/HistoryDialog.vue:555
-#: js/components/HistoryDialog.vue:688 js/components/HistoryDialog.vue:719
+#: js/components/ChangesDialog.vue:396
+#: js/components/HistoryDialog.vue:340
+#: js/components/HistoryDialog.vue:524
+#: js/components/HistoryDialog.vue:555
+#: js/components/HistoryDialog.vue:688
+#: js/components/HistoryDialog.vue:719
 msgid "Removed"
 msgstr "Odstránené"
 
-#: js/components/ChangesDialog.vue:403 js/components/HistoryDialog.vue:139
-#: js/components/HistoryDialog.vue:532 js/components/HistoryDialog.vue:563
-#: js/components/HistoryDialog.vue:696 js/components/HistoryDialog.vue:727
+#: js/components/ChangesDialog.vue:403
+#: js/components/HistoryDialog.vue:139
+#: js/components/HistoryDialog.vue:532
+#: js/components/HistoryDialog.vue:563
+#: js/components/HistoryDialog.vue:696
+#: js/components/HistoryDialog.vue:727
 msgid "Added"
 msgstr "Pridané"
 
@@ -282,17 +364,21 @@ msgstr "Prepáčte, niečo sa pokazilo."
 msgid "AI Assistant"
 msgstr "Asistent AI"
 
-#: js/components/ChatDialog.vue:292 js/components/ChatDialog.vue:293
+#: js/components/ChatDialog.vue:292
+#: js/components/ChatDialog.vue:293
 msgid "New chat"
 msgstr "Nový chat"
 
-#: js/components/ChatDialog.vue:312 js/views/PageList.vue:284
+#: js/components/ChatDialog.vue:312
+#: js/views/PageList.vue:284
 msgid "What shall I do for you?"
 msgstr "Čo pre vás môžem urobiť?"
 
-#: js/components/ChatDialog.vue:334 js/components/PageDetailContentList.vue:791
+#: js/components/ChatDialog.vue:334
+#: js/components/PageDetailContentList.vue:791
 #: js/components/PageDetailContentList.vue:897
-#: js/components/PageListItems.vue:1764 js/fields/Items.vue:390
+#: js/components/PageListItems.vue:1764
+#: js/fields/Items.vue:390
 msgid "Copy"
 msgstr "Kopírovať"
 
@@ -300,24 +386,31 @@ msgstr "Kopírovať"
 msgid "Send a message ..."
 msgstr "Poslať správu..."
 
-#: js/components/ChatDialog.vue:363 js/components/ChatDialog.vue:364
-#: js/components/Fields.vue:319 js/components/FileAiDialog.vue:260
+#: js/components/ChatDialog.vue:363
+#: js/components/ChatDialog.vue:364
+#: js/components/Fields.vue:319
+#: js/components/FileAiDialog.vue:260
 #: js/components/FileDetailItem.vue:481
-#: js/components/PageDetailContentList.vue:761 js/fields/Items.vue:496
+#: js/components/PageDetailContentList.vue:761
+#: js/fields/Items.vue:496
 #: js/views/PageList.vue:316
 msgid "Dictate"
 msgstr "Diktát"
 
-#: js/components/ChatDialog.vue:374 js/components/ChatDialog.vue:375
+#: js/components/ChatDialog.vue:374
+#: js/components/ChatDialog.vue:375
 msgid "Stop"
 msgstr "Stop"
 
-#: js/components/ChatDialog.vue:384 js/components/ChatDialog.vue:385
+#: js/components/ChatDialog.vue:384
+#: js/components/ChatDialog.vue:385
 msgid "Send"
 msgstr "Odoslať"
 
-#: js/components/DetailAppBar.vue:92 js/views/AccessList.vue:197
-#: js/views/ElementList.vue:135 js/views/FileList.vue:134
+#: js/components/DetailAppBar.vue:92
+#: js/views/AccessList.vue:227
+#: js/views/ElementList.vue:135
+#: js/views/FileList.vue:134
 #: js/views/PageList.vue:251
 msgid "Menu"
 msgstr "Ponuka"
@@ -334,32 +427,37 @@ msgstr "Zobraziť históriu"
 msgid "View merge changes"
 msgstr "Zobraziť zmeny po zlúčení"
 
-#: js/components/DetailAppBar.vue:128 js/components/FieldsDialog.vue:62
-msgid "Save"
-msgstr "Uložiť"
-
 #: js/components/DetailAppBar.vue:142
 msgid "Schedule publishing"
 msgstr "Harmonogram publikovania"
 
-#: js/components/DetailAppBar.vue:166 js/components/DetailAppBar.vue:174
+#: js/components/DetailAppBar.vue:166
+#: js/components/DetailAppBar.vue:174
 #: js/components/ElementListItems.vue:715
-#: js/components/ElementListItems.vue:829 js/components/FileListItems.vue:701
-#: js/components/FileListItems.vue:842 js/components/PageListItems.vue:1563
+#: js/components/ElementListItems.vue:829
+#: js/components/FileListItems.vue:701
+#: js/components/FileListItems.vue:842
+#: js/components/PageListItems.vue:1563
 #: js/components/PageListItems.vue:1733
 msgid "Publish"
 msgstr "Publikovať"
 
-#: js/components/DetailAppBar.vue:189 js/views/ElementList.vue:153
-#: js/views/FileList.vue:152 js/views/PageList.vue:269
+#: js/components/DetailAppBar.vue:189
+#: js/views/ElementList.vue:153
+#: js/views/FileList.vue:152
+#: js/views/PageList.vue:269
 msgid "Toggle side menu"
 msgstr "Prepínanie bočnej ponuky"
 
-#: js/components/EditBulkDialog.vue:52 js/components/EditBulkDialog.vue:59
+#: js/components/EditBulkDialog.vue:52
+#: js/components/EditBulkDialog.vue:59
 #: js/components/ElementListItems.vue:720
-#: js/components/ElementListItems.vue:844 js/components/FileListItems.vue:706
-#: js/components/FileListItems.vue:857 js/components/PageBulkDialog.vue:134
-#: js/components/PageBulkDialog.vue:141 js/components/PageListItems.vue:1578
+#: js/components/ElementListItems.vue:844
+#: js/components/FileListItems.vue:706
+#: js/components/FileListItems.vue:857
+#: js/components/PageBulkDialog.vue:134
+#: js/components/PageBulkDialog.vue:141
+#: js/components/PageListItems.vue:1578
 #: js/components/PageListItems.vue:1741
 msgid "Edit properties"
 msgstr "Upraviť vlastnosti"
@@ -371,65 +469,85 @@ msgstr[0] "Použiť vybraté vlastnosti na položku %{num}."
 msgstr[1] "Použiť vybraté vlastnosti na položky %{num}."
 msgstr[2] "Použiť vybraté vlastnosti na položky %{num}."
 
-#: js/components/EditBulkDialog.vue:72 js/components/ElementDetailItem.vue:88
-#: js/components/FileDetailItem.vue:402 js/components/ListSort.vue:25
+#: js/components/EditBulkDialog.vue:72
+#: js/components/ElementDetailItem.vue:88
+#: js/components/FileDetailItem.vue:402
+#: js/components/ListSort.vue:25
 #: js/components/PageBulkDialog.vue:185
-#: js/components/PageDetailItemProps.vue:254 js/components/User.vue:108
+#: js/components/PageDetailItemProps.vue:254
+#: js/components/User.vue:108
 msgid "Language"
 msgstr "Jazyk"
 
-#: js/components/EditBulkDialog.vue:85 js/components/PageAccess.vue:200
+#: js/components/EditBulkDialog.vue:85
+#: js/components/PageAccess.vue:200
 #: js/components/PageBulkDialog.vue:250
 msgid "Apply"
 msgstr "Použiť"
 
 #: js/components/ElementDetailItem.vue:75
-#: js/components/ElementDetailRefs.vue:148 js/components/FileDetailItem.vue:389
-#: js/components/FileDetailRefs.vue:152 js/components/FileDetailRefs.vue:182
+#: js/components/ElementDetailRefs.vue:148
+#: js/components/FileDetailItem.vue:389
+#: js/components/FileDetailRefs.vue:152
+#: js/components/FileDetailRefs.vue:182
 #: js/components/ListSort.vue:29
 msgid "Name"
 msgstr "Názov"
 
-#: js/components/ElementDetailRefs.vue:63 js/components/FileDetailRefs.vue:66
+#: js/components/ElementDetailRefs.vue:63
+#: js/components/FileDetailRefs.vue:66
 msgid "yes"
 msgstr "áno"
 
-#: js/components/ElementDetailRefs.vue:66 js/components/FileDetailRefs.vue:69
+#: js/components/ElementDetailRefs.vue:66
+#: js/components/FileDetailRefs.vue:69
 msgid "no"
 msgstr "nie"
 
-#: js/components/ElementDetailRefs.vue:141 js/components/Navigation.vue:26
-#: js/components/SchemaDialog.vue:45 js/routes.js:59
+#: js/components/ElementDetailRefs.vue:141
+#: js/components/Navigation.vue:26
+#: js/components/SchemaDialog.vue:45
+#: js/routes.js:59
 #: js/views/ElementList.vue:145
 msgid "Shared elements"
 msgstr "Spoločné prvky"
 
 #: js/components/ElementDetailRefs.vue:146
-#: js/components/ElementDetailRefs.vue:176 js/components/FileDetailRefs.vue:150
-#: js/components/FileDetailRefs.vue:180 js/components/FileDetailRefs.vue:202
+#: js/components/ElementDetailRefs.vue:176
+#: js/components/FileDetailRefs.vue:150
+#: js/components/FileDetailRefs.vue:180
+#: js/components/FileDetailRefs.vue:202
 msgid "ID"
 msgstr "ID"
 
-#: js/components/ElementDetailRefs.vue:147 js/components/FileDetailRefs.vue:151
+#: js/components/ElementDetailRefs.vue:147
+#: js/components/FileDetailRefs.vue:151
 msgid "URL"
 msgstr "ADRESA URL"
 
-#: js/components/ElementDetailRefs.vue:160 js/components/FileDetailRefs.vue:164
-#: js/components/PageAccess.vue:173 js/components/PageListItems.vue:416
+#: js/components/ElementDetailRefs.vue:160
+#: js/components/FileDetailRefs.vue:164
+#: js/components/PageAccess.vue:173
+#: js/components/PageListItems.vue:416
 msgid "Restricted"
 msgstr "Obmedzené"
 
-#: js/components/ElementDetailRefs.vue:171 js/components/FileDetailRefs.vue:197
+#: js/components/ElementDetailRefs.vue:171
+#: js/components/FileDetailRefs.vue:197
 msgid "Versions"
 msgstr "Verzie"
 
-#: js/components/ElementDetailRefs.vue:177 js/components/FileDetailRefs.vue:181
-#: js/components/FileDetailRefs.vue:203 js/components/ListSort.vue:33
+#: js/components/ElementDetailRefs.vue:177
+#: js/components/FileDetailRefs.vue:181
+#: js/components/FileDetailRefs.vue:203
+#: js/components/ListSort.vue:33
 msgid "Type"
 msgstr "Typ"
 
-#: js/components/ElementDetailRefs.vue:178 js/components/FileDetailRefs.vue:204
-#: js/views/ElementList.vue:95 js/views/FileList.vue:94
+#: js/components/ElementDetailRefs.vue:178
+#: js/components/FileDetailRefs.vue:204
+#: js/views/ElementList.vue:95
+#: js/views/FileList.vue:94
 #: js/views/PageList.vue:144
 msgid "Published"
 msgstr "Zverejnené"
@@ -458,10 +576,12 @@ msgstr "Chyba pri ukladaní zdieľaného prvku"
 msgid "Error fetching shared elements"
 msgstr "Chyba pri načítaní zdieľaných prvkov"
 
-#: js/components/ElementListItems.vue:686 js/components/FileListItems.vue:672
+#: js/components/ElementListItems.vue:686
+#: js/components/FileListItems.vue:672
 #: js/components/PageDetailContentList.vue:777
-#: js/components/PageListItems.vue:1535 js/views/AccessList.vue:233
-#: js/views/AccessList.vue:277
+#: js/components/PageListItems.vue:1535
+#: js/views/AccessList.vue:263
+#: js/views/AccessList.vue:307
 msgid "Toggle selection"
 msgstr "Prepnúť výber"
 
@@ -470,43 +590,61 @@ msgstr "Prepnúť výber"
 #: js/components/ElementListItems.vue:708
 #: js/components/ElementListItems.vue:804
 #: js/components/ElementListItems.vue:813
-#: js/components/ElementListItems.vue:820 js/components/FileListItems.vue:677
-#: js/components/FileListItems.vue:687 js/components/FileListItems.vue:694
-#: js/components/FileListItems.vue:818 js/components/FileListItems.vue:827
+#: js/components/ElementListItems.vue:820
+#: js/components/FileListItems.vue:677
+#: js/components/FileListItems.vue:687
+#: js/components/FileListItems.vue:694
+#: js/components/FileListItems.vue:818
+#: js/components/FileListItems.vue:827
 #: js/components/FileListItems.vue:835
 #: js/components/PageDetailContentList.vue:785
 #: js/components/PageDetailContentList.vue:868
 #: js/components/PageDetailContentList.vue:878
 #: js/components/PageDetailContentList.vue:886
-#: js/components/PageListItems.vue:1549 js/components/PageListItems.vue:1556
-#: js/components/PageListItems.vue:1714 js/components/PageListItems.vue:1722
-#: js/fields/Items.vue:362 js/fields/Items.vue:371 js/fields/Items.vue:379
-#: js/fields/Table.vue:201 js/fields/Table.vue:209 js/fields/Table.vue:296
+#: js/components/PageListItems.vue:1549
+#: js/components/PageListItems.vue:1556
+#: js/components/PageListItems.vue:1714
+#: js/components/PageListItems.vue:1722
+#: js/fields/Items.vue:362
+#: js/fields/Items.vue:371
+#: js/fields/Items.vue:379
+#: js/fields/Table.vue:201
+#: js/fields/Table.vue:209
+#: js/fields/Table.vue:296
 #: js/fields/Table.vue:304
 msgid "Actions"
 msgstr "Činnosti"
 
 #: js/components/ElementListItems.vue:725
-#: js/components/ElementListItems.vue:852 js/components/FileListItems.vue:711
+#: js/components/ElementListItems.vue:852
+#: js/components/FileListItems.vue:711
 #: js/components/FileListItems.vue:865
 #: js/components/PageDetailContentList.vue:811
 #: js/components/PageDetailContentList.vue:907
-#: js/components/PageListItems.vue:1591 js/components/PageListItems.vue:1847
-#: js/fields/Items.vue:400 js/fields/Table.vue:236 js/fields/Table.vue:331
-#: js/views/AccessList.vue:238 js/views/AccessList.vue:355
+#: js/components/PageListItems.vue:1591
+#: js/components/PageListItems.vue:1847
+#: js/fields/Items.vue:400
+#: js/fields/Table.vue:236
+#: js/fields/Table.vue:331
+#: js/views/AccessList.vue:268
+#: js/views/AccessList.vue:382
 msgid "Delete"
 msgstr "Odstrániť"
 
 #: js/components/ElementListItems.vue:730
-#: js/components/ElementListItems.vue:857 js/components/FileListItems.vue:716
-#: js/components/FileListItems.vue:870 js/components/PageListItems.vue:1596
+#: js/components/ElementListItems.vue:857
+#: js/components/FileListItems.vue:716
+#: js/components/FileListItems.vue:870
+#: js/components/PageListItems.vue:1596
 #: js/components/PageListItems.vue:1852
 msgid "Restore"
 msgstr "Obnoviť"
 
 #: js/components/ElementListItems.vue:735
-#: js/components/ElementListItems.vue:862 js/components/FileListItems.vue:721
-#: js/components/FileListItems.vue:875 js/components/PageListItems.vue:1601
+#: js/components/ElementListItems.vue:862
+#: js/components/FileListItems.vue:721
+#: js/components/FileListItems.vue:875
+#: js/components/PageListItems.vue:1601
 #: js/components/PageListItems.vue:1857
 msgid "Purge"
 msgstr "Natrvalo odstrániť"
@@ -514,22 +652,27 @@ msgstr "Natrvalo odstrániť"
 #: js/components/ElementListItems.vue:746
 #: js/components/ElementListItems.vue:921
 #: js/components/PageDetailContentList.vue:1008
-#: js/components/PageDetailItemSection.vue:212 js/fields/Items.vue:533
+#: js/components/PageDetailItemSection.vue:212
+#: js/fields/Items.vue:533
 msgid "Add element"
 msgstr "Pridať prvok"
 
-#: js/components/ElementListItems.vue:760 js/components/FileListItems.vue:757
+#: js/components/ElementListItems.vue:760
+#: js/components/FileListItems.vue:757
 #: js/components/PageDetailContentList.vue:821
-#: js/components/PageListItems.vue:1624 js/views/AccessList.vue:262
+#: js/components/PageListItems.vue:1624
+#: js/views/AccessList.vue:292
 msgid "Search for"
 msgstr "Vyhľadávanie"
 
-#: js/components/ElementListItems.vue:771 js/components/FileListItems.vue:770
+#: js/components/ElementListItems.vue:771
+#: js/components/FileListItems.vue:770
 #: js/components/PageListItems.vue:1636
 msgid "Updated by another user"
 msgstr "Aktualizované iným používateľom"
 
-#: js/components/ElementListItems.vue:777 js/components/FileListItems.vue:776
+#: js/components/ElementListItems.vue:777
+#: js/components/FileListItems.vue:776
 #: js/components/PageListItems.vue:1642
 msgid "Refresh"
 msgstr "Obnoviť"
@@ -538,25 +681,33 @@ msgstr "Obnoviť"
 msgid "Reload elements"
 msgstr "Načítať prvky"
 
-#: js/components/ElementListItems.vue:882 js/components/PageListItems.vue:850
+#: js/components/ElementListItems.vue:882
+#: js/components/PageListItems.vue:850
 #: js/components/PageListItems.vue:1887
 msgid "New"
 msgstr "Nový"
 
-#: js/components/ElementListItems.vue:898 js/components/FileListItems.vue:981
-#: js/components/HistoryDialog.vue:479 js/components/PageListItems.vue:1901
-#: js/fields/Autocomplete.vue:181 js/fields/Combobox.vue:27
+#: js/components/ElementListItems.vue:898
+#: js/components/FileListItems.vue:981
+#: js/components/HistoryDialog.vue:479
+#: js/components/PageListItems.vue:1901
+#: js/fields/Autocomplete.vue:181
+#: js/fields/Combobox.vue:27
 #: js/fields/Url.vue:135
 msgid "Loading"
 msgstr "Načítanie"
 
-#: js/components/Fields.vue:270 js/components/Fields.vue:279
-#: js/components/Fields.vue:288 js/fields/Items.vue:445 js/fields/Items.vue:454
+#: js/components/Fields.vue:270
+#: js/components/Fields.vue:279
+#: js/components/Fields.vue:288
+#: js/fields/Items.vue:445
+#: js/fields/Items.vue:454
 #: js/fields/Items.vue:463
 msgid "Translate"
 msgstr "Preložiť"
 
-#: js/components/Fields.vue:307 js/fields/Items.vue:485
+#: js/components/Fields.vue:307
+#: js/fields/Items.vue:485
 msgid "Generate text"
 msgstr "Generovanie textu"
 
@@ -568,13 +719,17 @@ msgstr "Aktualizované iným redaktorom"
 msgid "Overwritten"
 msgstr "Prepísané"
 
-#: js/components/FieldsDialog.vue:49 js/components/FieldsDialog.vue:57
+#: js/components/FieldsDialog.vue:49
+#: js/components/FieldsDialog.vue:57
 msgid "Content Element"
 msgstr "Prvok obsahu"
 
-#: js/components/FileAiDialog.vue:142 js/components/FileListItems.vue:276
-#: js/components/FileUrlDialog.vue:68 js/components/FileUrlDialog.vue:168
-#: js/fields/File.vue:136 js/fields/Images.vue:166
+#: js/components/FileAiDialog.vue:142
+#: js/components/FileListItems.vue:276
+#: js/components/FileUrlDialog.vue:68
+#: js/components/FileUrlDialog.vue:168
+#: js/fields/File.vue:136
+#: js/fields/Images.vue:166
 msgid "Error adding file %{path}"
 msgstr "Chyba pri pridávaní súboru %{path}"
 
@@ -582,7 +737,8 @@ msgstr "Chyba pri pridávaní súboru %{path}"
 msgid "Error creating file"
 msgstr "Chyba pri vytváraní súboru"
 
-#: js/components/FileAiDialog.vue:246 js/components/FileAiDialog.vue:254
+#: js/components/FileAiDialog.vue:246
+#: js/components/FileAiDialog.vue:254
 msgid "Create image"
 msgstr "Vytvoriť obrázok"
 
@@ -598,10 +754,15 @@ msgstr "Nový obrázok"
 msgid "Current images"
 msgstr "Aktuálne obrázky"
 
-#: js/components/FileAiDialog.vue:292 js/components/FileAiDialog.vue:321
-#: js/components/FileUrlDialog.vue:244 js/fields/Audio.vue:88
-#: js/fields/File.vue:383 js/fields/Image.vue:137 js/fields/Images.vue:415
-#: js/fields/Media.vue:146 js/fields/Video.vue:88
+#: js/components/FileAiDialog.vue:292
+#: js/components/FileAiDialog.vue:321
+#: js/components/FileUrlDialog.vue:244
+#: js/fields/Audio.vue:88
+#: js/fields/File.vue:383
+#: js/fields/Image.vue:137
+#: js/fields/Images.vue:415
+#: js/fields/Media.vue:146
+#: js/fields/Video.vue:88
 msgid "Remove"
 msgstr "Odstrániť"
 
@@ -621,8 +782,11 @@ msgstr "Skopírované do schránky"
 msgid "Error describing file"
 msgstr "Chyba pri popise súboru"
 
-#: js/components/FileDetailItem.vue:221 js/components/FileListItems.vue:527
-#: js/fields/File.vue:266 js/fields/Images.vue:305 js/views/FileDetail.vue:322
+#: js/components/FileDetailItem.vue:221
+#: js/components/FileListItems.vue:527
+#: js/fields/File.vue:266
+#: js/fields/Images.vue:305
+#: js/views/FileDetail.vue:322
 msgid "Error saving file"
 msgstr "Chyba pri ukladaní súboru"
 
@@ -638,7 +802,8 @@ msgstr "Kopírovať URL"
 msgid "Descriptions"
 msgstr "Popisy"
 
-#: js/components/FileDetailItem.vue:463 js/components/FileDetailItem.vue:522
+#: js/components/FileDetailItem.vue:463
+#: js/components/FileDetailItem.vue:522
 msgid "Translate text"
 msgstr "Preložiť text"
 
@@ -686,8 +851,10 @@ msgstr "Chyba pri rozširovaní obrázka"
 msgid "Error upscaling image"
 msgstr "Chyba pri zvyšovaní rozlíšenia obrázka"
 
-#: js/components/FileDetailItemImage.vue:637 js/components/UnsavedDialog.vue:55
-#: js/views/AccessList.vue:322 js/views/AccessList.vue:353
+#: js/components/FileDetailItemImage.vue:637
+#: js/components/UnsavedDialog.vue:55
+#: js/views/AccessList.vue:349
+#: js/views/AccessList.vue:380
 msgid "Cancel"
 msgstr "Zrušiť"
 
@@ -835,17 +1002,24 @@ msgstr "Použitie ako titulný obrázok"
 msgid "Upload cover image"
 msgstr "Nahratie obrázka obálky"
 
-#: js/components/FileDetailRefs.vue:145 js/components/Navigation.vue:21
-#: js/routes.js:39 js/views/PageList.vue:261 js/views/PageList.vue:278
+#: js/components/FileDetailRefs.vue:145
+#: js/components/Navigation.vue:21
+#: js/routes.js:39
+#: js/views/PageList.vue:261
+#: js/views/PageList.vue:278
 msgid "Pages"
 msgstr "Stránky"
 
-#: js/components/FileDetailRefs.vue:175 js/views/ElementList.vue:162
+#: js/components/FileDetailRefs.vue:175
+#: js/views/ElementList.vue:162
 msgid "Elements"
 msgstr "Prvky"
 
-#: js/components/FileDialog.vue:28 js/components/FileDialog.vue:36
-#: js/components/Navigation.vue:28 js/routes.js:79 js/views/FileList.vue:144
+#: js/components/FileDialog.vue:28
+#: js/components/FileDialog.vue:36
+#: js/components/Navigation.vue:28
+#: js/routes.js:79
+#: js/views/FileList.vue:144
 #: js/views/FileList.vue:161
 msgid "Files"
 msgstr "Súbory"
@@ -858,7 +1032,8 @@ msgstr "Chyba pri presúvaní súboru do koša"
 msgid "Error restoring file"
 msgstr "Chyba pri obnovení súboru"
 
-#: js/components/FileListItems.vue:442 js/views/FileDetail.vue:239
+#: js/components/FileListItems.vue:442
+#: js/views/FileDetail.vue:239
 msgid "Error publishing file"
 msgstr "Chyba pri publikovaní súboru"
 
@@ -870,15 +1045,20 @@ msgstr "Chyba pri trvalom odstraňovaní súboru"
 msgid "Error fetching files"
 msgstr "Chyba pri načítavaní súborov"
 
-#: js/components/FileListItems.vue:734 js/components/FileListItems.vue:744
-#: js/components/FileListItems.vue:1007 js/components/FileListItems.vue:1017
-#: js/components/FileUrlDialog.vue:202 js/fields/Images.vue:428
+#: js/components/FileListItems.vue:734
+#: js/components/FileListItems.vue:744
+#: js/components/FileListItems.vue:1007
+#: js/components/FileListItems.vue:1017
+#: js/components/FileUrlDialog.vue:202
+#: js/fields/Images.vue:428
 #: js/fields/Images.vue:452
 msgid "Add files"
 msgstr "Pridávanie súborov"
 
-#: js/components/FileListItems.vue:744 js/components/FileListItems.vue:963
-#: js/components/FileListItems.vue:1017 js/components/FileProtect.vue:45
+#: js/components/FileListItems.vue:744
+#: js/components/FileListItems.vue:963
+#: js/components/FileListItems.vue:1017
+#: js/components/FileProtect.vue:45
 msgid "Protect access"
 msgstr "Chrániť pomocou prístupu k stránke"
 
@@ -906,13 +1086,17 @@ msgstr "Aspoň jeden súbor nie je typu \"%{mime}*\""
 msgid "The file is not of type \"%{mime}*\""
 msgstr "Súbor nie je typu \"%{mime}*\""
 
-#: js/components/FileUrlDialog.vue:192 js/components/FileUrlDialog.vue:200
+#: js/components/FileUrlDialog.vue:192
+#: js/components/FileUrlDialog.vue:200
 #: js/fields/Images.vue:435
 msgid "Add files from URLs"
 msgstr "Pridávanie súborov z adries URL"
 
-#: js/components/FileUrlDialog.vue:202 js/fields/Audio.vue:100
-#: js/fields/File.vue:395 js/fields/Image.vue:149 js/fields/Media.vue:157
+#: js/components/FileUrlDialog.vue:202
+#: js/fields/Audio.vue:100
+#: js/fields/File.vue:395
+#: js/fields/Image.vue:149
+#: js/fields/Media.vue:157
 #: js/fields/Video.vue:100
 msgid "Add file"
 msgstr "Pridať súbor"
@@ -925,7 +1109,8 @@ msgstr "Zadajte jednu adresu URL na riadok"
 msgid "Enter URL"
 msgstr "Zadajte adresu URL"
 
-#: js/components/HistoryDialog.vue:464 js/components/HistoryDialog.vue:472
+#: js/components/HistoryDialog.vue:464
+#: js/components/HistoryDialog.vue:472
 msgid "History"
 msgstr "História"
 
@@ -937,11 +1122,13 @@ msgstr "Žiadne zmeny"
 msgid "Current"
 msgstr "Aktuálne"
 
-#: js/components/HistoryDialog.vue:628 js/components/HistoryDialog.vue:792
+#: js/components/HistoryDialog.vue:628
+#: js/components/HistoryDialog.vue:792
 msgid "Apply changes"
 msgstr "Uložiť zmeny"
 
-#: js/components/HistoryDialog.vue:636 js/components/HistoryDialog.vue:800
+#: js/components/HistoryDialog.vue:636
+#: js/components/HistoryDialog.vue:800
 msgid "Toggle all"
 msgstr "Zobraziť všetko"
 
@@ -949,7 +1136,8 @@ msgstr "Zobraziť všetko"
 msgid "Revert to version"
 msgstr "Vrátiť sa k predchádzajúcej verzii"
 
-#: js/components/ListSort.vue:24 js/views/PageDetail.vue:809
+#: js/components/ListSort.vue:24
+#: js/views/PageDetail.vue:809
 msgid "Editor"
 msgstr "Editor"
 
@@ -969,7 +1157,8 @@ msgstr "Najstarší"
 msgid "Oldest edit"
 msgstr "Prvýkrát upravené"
 
-#: js/components/ListSort.vue:32 js/views/PageList.vue:135
+#: js/components/ListSort.vue:32
+#: js/views/PageList.vue:135
 msgid "Tree"
 msgstr "Strom"
 
@@ -977,15 +1166,22 @@ msgstr "Strom"
 msgid "Usage"
 msgstr "Používanie"
 
-#: js/components/ListSort.vue:61 js/components/ListSort.vue:62
+#: js/components/ListSort.vue:61
+#: js/components/ListSort.vue:62
 msgid "Sort by"
 msgstr "Zoradiť podľa"
 
-#: js/components/Navigation.vue:29 js/components/PageAccess.vue:180
-#: js/components/PageDetailItem.vue:102 js/components/PageListItems.vue:419
-#: js/components/PageListItems.vue:1583 js/components/PageListItems.vue:1746
-#: js/components/PageListItems.vue:1936 js/components/PageListItems.vue:1941
-#: js/routes.js:99 js/views/AccessList.vue:206 js/views/AccessList.vue:215
+#: js/components/Navigation.vue:29
+#: js/components/PageAccess.vue:180
+#: js/components/PageDetailItem.vue:102
+#: js/components/PageListItems.vue:419
+#: js/components/PageListItems.vue:1583
+#: js/components/PageListItems.vue:1746
+#: js/components/PageListItems.vue:1936
+#: js/components/PageListItems.vue:1941
+#: js/routes.js:100
+#: js/views/AccessList.vue:236
+#: js/views/AccessList.vue:245
 msgid "Access"
 msgstr "Prístup"
 
@@ -999,32 +1195,37 @@ msgstr "Chyba pri zmene prístupu na stránku"
 
 #: js/components/PageAccess.vue:168
 msgid "Access changes take effect immediately after cache expiry"
-msgstr ""
-"Zmeny prístupu sa prejavia okamžite po uplynutí platnosti vyrovnávacej pamäte"
+msgstr "Zmeny prístupu sa prejavia okamžite po uplynutí platnosti vyrovnávacej pamäte"
 
 #: js/components/PageAccess.vue:171
 msgid "Public"
 msgstr "Verejné"
 
-#: js/components/PageAccess.vue:172 js/components/PageListItems.vue:420
+#: js/components/PageAccess.vue:172
+#: js/components/PageListItems.vue:420
 msgid "Authenticated users"
 msgstr "Overení používatelia"
 
-#: js/components/PageAccess.vue:190 js/components/PageBulkDialog.vue:261
+#: js/components/PageAccess.vue:190
+#: js/components/PageBulkDialog.vue:261
 msgid "Page bulk changes are limited to 1,000 pages"
 msgstr "Hromadné zmeny strán sú obmedzené na 1 000 strán"
 
-#: js/components/PageAccess.vue:209 js/components/PageBulkDialog.vue:257
+#: js/components/PageAccess.vue:209
+#: js/components/PageBulkDialog.vue:257
 msgid "Apply recursively"
 msgstr "Aplikujte rekurzívne"
 
-#: js/components/PageBulkDialog.vue:42 js/components/PageDetailItemProps.vue:56
+#: js/components/PageBulkDialog.vue:42
+#: js/components/PageDetailItemProps.vue:56
 #: js/views/PageList.vue:173
 msgid "No cache"
 msgstr "Žiadna vyrovnávacia pamäť"
 
-#: js/components/PageBulkDialog.vue:43 js/components/PageBulkDialog.vue:44
-#: js/components/PageBulkDialog.vue:45 js/components/PageBulkDialog.vue:46
+#: js/components/PageBulkDialog.vue:43
+#: js/components/PageBulkDialog.vue:44
+#: js/components/PageBulkDialog.vue:45
+#: js/components/PageBulkDialog.vue:46
 #: js/components/PageDetailItemProps.vue:57
 #: js/components/PageDetailItemProps.vue:58
 #: js/components/PageDetailItemProps.vue:59
@@ -1035,9 +1236,12 @@ msgstr[0] "%{num} minúta"
 msgstr[1] "%{num} minúty"
 msgstr[2] "%{num} minút"
 
-#: js/components/PageBulkDialog.vue:47 js/components/PageBulkDialog.vue:48
-#: js/components/PageBulkDialog.vue:49 js/components/PageBulkDialog.vue:50
-#: js/components/PageBulkDialog.vue:51 js/components/PageDetailItemProps.vue:61
+#: js/components/PageBulkDialog.vue:47
+#: js/components/PageBulkDialog.vue:48
+#: js/components/PageBulkDialog.vue:49
+#: js/components/PageBulkDialog.vue:50
+#: js/components/PageBulkDialog.vue:51
+#: js/components/PageDetailItemProps.vue:61
 #: js/components/PageDetailItemProps.vue:62
 #: js/components/PageDetailItemProps.vue:63
 #: js/components/PageDetailItemProps.vue:64
@@ -1048,21 +1252,25 @@ msgstr[0] "%{num} hodina"
 msgstr[1] "%{num} hodiny"
 msgstr[2] "%{num} hodín"
 
-#: js/components/PageBulkDialog.vue:54 js/components/PageDetailItemProps.vue:68
+#: js/components/PageBulkDialog.vue:54
+#: js/components/PageDetailItemProps.vue:68
 #: js/views/PageList.vue:165
 msgid "Disabled"
 msgstr "Zakázané"
 
-#: js/components/PageBulkDialog.vue:55 js/components/PageDetailItemProps.vue:69
+#: js/components/PageBulkDialog.vue:55
+#: js/components/PageDetailItemProps.vue:69
 #: js/views/PageList.vue:163
 msgid "Enabled"
 msgstr "Povolené"
 
-#: js/components/PageBulkDialog.vue:56 js/components/PageDetailItemProps.vue:70
+#: js/components/PageBulkDialog.vue:56
+#: js/components/PageDetailItemProps.vue:70
 msgid "Hidden in navigation"
 msgstr "Skryté v navigácii"
 
-#: js/components/PageBulkDialog.vue:62 js/components/PageDetailItemProps.vue:79
+#: js/components/PageBulkDialog.vue:62
+#: js/components/PageDetailItemProps.vue:79
 msgid "Domain name is invalid"
 msgstr "Názov domény je neplatný"
 
@@ -1165,11 +1373,13 @@ msgstr "Prvok nie je zdieľaný"
 msgid "Describe the task you want to perform"
 msgstr "Opíšte úlohu, ktorú chcete vykonať"
 
-#: js/components/PageDetailContentList.vue:740 js/views/PageList.vue:298
+#: js/components/PageDetailContentList.vue:740
+#: js/views/PageList.vue:298
 msgid "Hide help"
 msgstr "Skryť pomoc"
 
-#: js/components/PageDetailContentList.vue:740 js/views/PageList.vue:298
+#: js/components/PageDetailContentList.vue:740
+#: js/views/PageList.vue:298
 msgid "Show help"
 msgstr "Zobraziť pomoc"
 
@@ -1181,15 +1391,14 @@ msgstr "Vylepšovanie..."
 msgid "Refine content based on prompt"
 msgstr "Spresnenie obsahu na základe výzvy"
 
-#: js/components/PageDetailContentList.vue:769 js/views/PageList.vue:324
+#: js/components/PageDetailContentList.vue:769
+#: js/views/PageList.vue:324
 msgid "Help"
 msgstr "Pomoc"
 
 #: js/components/PageDetailContentList.vue:770
 msgid "AI can add or improve content based on your input"
-msgstr ""
-"Umelá inteligencia dokáže pridávať alebo vylepšovať obsah na základe vašich "
-"údajov"
+msgstr "Umelá inteligencia dokáže pridávať alebo vylepšovať obsah na základe vašich údajov"
 
 #: js/components/PageDetailContentList.vue:771
 msgid "It can take a long time depending on the task and content size"
@@ -1197,12 +1406,14 @@ msgstr "V závislosti od úlohy a veľkosti obsahu to môže trvať dlho."
 
 #: js/components/PageDetailContentList.vue:796
 #: js/components/PageDetailContentList.vue:902
-#: js/components/PageListItems.vue:1759 js/fields/Items.vue:395
+#: js/components/PageListItems.vue:1759
+#: js/fields/Items.vue:395
 msgid "Cut"
 msgstr "Rez"
 
 #: js/components/PageDetailContentList.vue:801
-#: js/components/PageListItems.vue:1772 js/components/PageListItems.vue:1797
+#: js/components/PageListItems.vue:1772
+#: js/components/PageListItems.vue:1797
 msgid "Paste"
 msgstr "Vložiť"
 
@@ -1211,25 +1422,32 @@ msgstr "Vložiť"
 msgid "Merge"
 msgstr "Zlúčenie"
 
-#: js/components/PageDetailContentList.vue:853 js/fields/Items.vue:342
+#: js/components/PageDetailContentList.vue:853
+#: js/fields/Items.vue:342
 msgid "Move element"
 msgstr "Presunúť prvok"
 
-#: js/components/PageDetailContentList.vue:915 js/fields/Items.vue:408
+#: js/components/PageDetailContentList.vue:915
+#: js/fields/Items.vue:408
 msgid "Paste before"
 msgstr "Vložiť pred"
 
-#: js/components/PageDetailContentList.vue:920 js/fields/Items.vue:413
+#: js/components/PageDetailContentList.vue:920
+#: js/fields/Items.vue:413
 msgid "Paste after"
 msgstr "Vložiť po"
 
-#: js/components/PageDetailContentList.vue:925 js/fields/Items.vue:418
-#: js/fields/Table.vue:223 js/fields/Table.vue:318
+#: js/components/PageDetailContentList.vue:925
+#: js/fields/Items.vue:418
+#: js/fields/Table.vue:223
+#: js/fields/Table.vue:318
 msgid "Insert before"
 msgstr "Vložte pred"
 
-#: js/components/PageDetailContentList.vue:930 js/fields/Items.vue:423
-#: js/fields/Table.vue:231 js/fields/Table.vue:326
+#: js/components/PageDetailContentList.vue:930
+#: js/fields/Items.vue:423
+#: js/fields/Table.vue:231
+#: js/fields/Table.vue:326
 msgid "Insert after"
 msgstr "Vložte za"
 
@@ -1302,7 +1520,8 @@ msgid "Config"
 msgstr "Konfigurácia"
 
 #: js/components/PageDetailItemProps.vue:78
-#: js/components/PageDetailItemProps.vue:100 js/views/Login.vue:44
+#: js/components/PageDetailItemProps.vue:100
+#: js/views/Login.vue:44
 #: js/views/Login.vue:47
 msgid "Field is required"
 msgstr "Pole je povinné"
@@ -1518,11 +1737,13 @@ msgstr "Chyba pri presúvaní stránky"
 msgid "Error copying page"
 msgstr "Chyba pri kopírovaní stránky"
 
-#: js/components/PageListItems.vue:1049 js/views/PageDetail.vue:251
+#: js/components/PageListItems.vue:1049
+#: js/views/PageDetail.vue:251
 msgid "Error fetching page"
 msgstr "Chyba pri načítaní stránky"
 
-#: js/components/PageListItems.vue:1129 js/views/PageDetail.vue:461
+#: js/components/PageListItems.vue:1129
+#: js/views/PageDetail.vue:461
 msgid "Error publishing page"
 msgstr "Chyba pri publikovaní stránky"
 
@@ -1537,7 +1758,8 @@ msgstr[0] "Stránku %{num} nebolo možné aktualizovať"
 msgstr[1] "%{num} stránok sa nepodarilo aktualizovať"
 msgstr[2] "%{num} stránok sa nepodarilo aktualizovať"
 
-#: js/components/PageListItems.vue:1315 js/components/PageListItems.vue:1411
+#: js/components/PageListItems.vue:1315
+#: js/components/PageListItems.vue:1411
 #: js/views/PageDetail.vue:569
 msgid "Error saving page"
 msgstr "Chyba pri ukladaní stránky"
@@ -1554,7 +1776,8 @@ msgstr "Povolenie stránky"
 msgid "Disable"
 msgstr "Zakázať"
 
-#: js/components/PageListItems.vue:1613 js/components/PageListItems.vue:1924
+#: js/components/PageListItems.vue:1613
+#: js/components/PageListItems.vue:1924
 msgid "Add page"
 msgstr "Pridať stránku"
 
@@ -1564,9 +1787,7 @@ msgstr "Znovunačítanie stromu stránky"
 
 #: js/components/PageListItems.vue:1669
 msgid "Use arrow keys to navigate. Alt plus arrow keys to reorder."
-msgstr ""
-"Na pohyb po stránke používajte šípky. Kombináciou klávesov Alt a šípok "
-"môžete zmeniť poradie."
+msgstr "Na pohyb po stránke používajte šípky. Kombináciou klávesov Alt a šípok môžete zmeniť poradie."
 
 #: js/components/PageListItems.vue:1670
 msgid "Moved to position %{position} of %{total}"
@@ -1588,17 +1809,20 @@ msgstr "Prepínanie podriadených uzlov"
 msgid "Clear cache"
 msgstr "Vymazať vyrovnávaciu pamäť"
 
-#: js/components/PageListItems.vue:1778 js/components/PageListItems.vue:1803
+#: js/components/PageListItems.vue:1778
+#: js/components/PageListItems.vue:1803
 #: js/components/PageListItems.vue:1828
 msgid "Before"
 msgstr "Pred"
 
-#: js/components/PageListItems.vue:1783 js/components/PageListItems.vue:1808
+#: js/components/PageListItems.vue:1783
+#: js/components/PageListItems.vue:1808
 #: js/components/PageListItems.vue:1833
 msgid "Into"
 msgstr "Na"
 
-#: js/components/PageListItems.vue:1788 js/components/PageListItems.vue:1813
+#: js/components/PageListItems.vue:1788
+#: js/components/PageListItems.vue:1813
 #: js/components/PageListItems.vue:1838
 msgid "After"
 msgstr "Za"
@@ -1614,7 +1838,8 @@ msgstr[0] "Použiť nastavenia prístupu na %{num} stránku."
 msgstr[1] "Použiť nastavenia prístupu na %{num} stránky."
 msgstr[2] "Použiť nastavenia prístupu na %{num} strán."
 
-#: js/components/SchemaDialog.vue:29 js/components/SchemaDialog.vue:37
+#: js/components/SchemaDialog.vue:29
+#: js/components/SchemaDialog.vue:37
 msgid "Content elements"
 msgstr "Prvky obsahu"
 
@@ -1622,7 +1847,8 @@ msgstr "Prvky obsahu"
 msgid "uncategorized"
 msgstr "nezaradené"
 
-#: js/components/UnsavedDialog.vue:31 js/components/UnsavedDialog.vue:37
+#: js/components/UnsavedDialog.vue:31
+#: js/components/UnsavedDialog.vue:37
 msgid "Unsaved changes"
 msgstr "Neuložené zmeny"
 
@@ -1646,7 +1872,8 @@ msgstr "Nepodarilo sa načítať používateľa"
 msgid "Toggle light/dark mode"
 msgstr "Prepínanie režimu svetlo/tma"
 
-#: js/components/User.vue:115 js/components/User.vue:120
+#: js/components/User.vue:115
+#: js/components/User.vue:120
 msgid "Switch language"
 msgstr "Prepnutie jazyka"
 
@@ -1658,50 +1885,80 @@ msgstr "Používateľské menu"
 msgid "Logout"
 msgstr "Odhlásenie"
 
-#: js/fields/Audio.vue:59 js/fields/Audio.vue:83 js/fields/File.vue:338
-#: js/fields/File.vue:378 js/fields/Image.vue:102 js/fields/Image.vue:132
-#: js/fields/Images.vue:410 js/fields/Media.vue:110 js/fields/Media.vue:141
-#: js/fields/Video.vue:59 js/fields/Video.vue:83
+#: js/fields/Audio.vue:59
+#: js/fields/Audio.vue:83
+#: js/fields/File.vue:338
+#: js/fields/File.vue:378
+#: js/fields/Image.vue:102
+#: js/fields/Image.vue:132
+#: js/fields/Images.vue:410
+#: js/fields/Media.vue:110
+#: js/fields/Media.vue:141
+#: js/fields/Video.vue:59
+#: js/fields/Video.vue:83
 msgid "Edit"
 msgstr "Upraviť"
 
-#: js/fields/Audio.vue:74 js/fields/File.vue:369 js/fields/Image.vue:123
-#: js/fields/Images.vue:401 js/fields/Media.vue:132 js/fields/Video.vue:74
+#: js/fields/Audio.vue:74
+#: js/fields/File.vue:369
+#: js/fields/Image.vue:123
+#: js/fields/Images.vue:401
+#: js/fields/Media.vue:132
+#: js/fields/Video.vue:74
 msgid "Open menu"
 msgstr "Otvoriť menu"
 
-#: js/fields/Audio.vue:107 js/fields/File.vue:402 js/fields/Image.vue:156
-#: js/fields/Media.vue:164 js/fields/Video.vue:107
+#: js/fields/Audio.vue:107
+#: js/fields/File.vue:402
+#: js/fields/Image.vue:156
+#: js/fields/Media.vue:164
+#: js/fields/Video.vue:107
 msgid "Add file from URL"
 msgstr "Pridanie súboru z adresy URL"
 
-#: js/fields/Audio.vue:112 js/fields/File.vue:407 js/fields/Image.vue:169
-#: js/fields/Media.vue:177 js/fields/Video.vue:112
+#: js/fields/Audio.vue:112
+#: js/fields/File.vue:407
+#: js/fields/Image.vue:169
+#: js/fields/Media.vue:177
+#: js/fields/Video.vue:112
 msgid "Upload file"
 msgstr "Nahrať súbor"
 
-#: js/fields/Audio.vue:132 js/fields/File.vue:427 js/fields/Image.vue:189
+#: js/fields/Audio.vue:132
+#: js/fields/File.vue:427
+#: js/fields/Image.vue:189
 #: js/fields/Video.vue:132
 msgid "Drop file here to upload"
 msgstr "Sem presuňte súbor na nahranie"
 
-#: js/fields/Audio.vue:139 js/fields/File.vue:434 js/fields/Image.vue:196
-#: js/fields/Media.vue:191 js/fields/Video.vue:139
+#: js/fields/Audio.vue:139
+#: js/fields/File.vue:434
+#: js/fields/Image.vue:196
+#: js/fields/Media.vue:191
+#: js/fields/Video.vue:139
 msgid "name"
 msgstr "názov"
 
-#: js/fields/Audio.vue:143 js/fields/File.vue:438 js/fields/Image.vue:200
-#: js/fields/Media.vue:195 js/fields/Video.vue:143
+#: js/fields/Audio.vue:143
+#: js/fields/File.vue:438
+#: js/fields/Image.vue:200
+#: js/fields/Media.vue:195
+#: js/fields/Video.vue:143
 msgid "description"
 msgstr "popis"
 
-#: js/fields/Autocomplete.vue:42 js/fields/Color.vue:20 js/fields/Date.vue:24
-#: js/fields/Html.vue:19 js/fields/Number.vue:33 js/fields/Select.vue:38
+#: js/fields/Autocomplete.vue:42
+#: js/fields/Color.vue:20
+#: js/fields/Date.vue:24
+#: js/fields/Html.vue:19
+#: js/fields/Number.vue:33
+#: js/fields/Select.vue:38
 #: js/fields/Url.vue:59
 msgid "Value is required"
 msgstr "Vyžaduje sa hodnota"
 
-#: js/fields/Autocomplete.vue:180 js/fields/Combobox.vue:26
+#: js/fields/Autocomplete.vue:180
+#: js/fields/Combobox.vue:26
 msgid "No data available"
 msgstr "Nie sú k dispozícii žiadne údaje"
 
@@ -1713,15 +1970,19 @@ msgstr "Hodnota musí byť hexakód farby"
 msgid "File is required"
 msgstr "Súbor je potrebný"
 
-#: js/fields/Image.vue:164 js/fields/Images.vue:445 js/fields/Media.vue:172
+#: js/fields/Image.vue:164
+#: js/fields/Images.vue:445
+#: js/fields/Media.vue:172
 msgid "Create file"
 msgstr "Vytvoriť súbor"
 
-#: js/fields/Images.vue:97 js/fields/Items.vue:118
+#: js/fields/Images.vue:97
+#: js/fields/Items.vue:118
 msgid "Minimum is %{num} entries"
 msgstr "Minimum je %{num} záznamov"
 
-#: js/fields/Images.vue:101 js/fields/Items.vue:115
+#: js/fields/Images.vue:101
+#: js/fields/Items.vue:115
 msgid "Maximum is %{num} entries"
 msgstr "Maximum je %{num} záznamov"
 
@@ -1729,13 +1990,17 @@ msgstr "Maximum je %{num} záznamov"
 msgid "Drop files here"
 msgstr "Sem presuňte súbory"
 
-#: js/fields/Markdown.vue:144 js/fields/Plaintext.vue:35
-#: js/fields/String.vue:37 js/fields/Text.vue:125
+#: js/fields/Markdown.vue:144
+#: js/fields/Plaintext.vue:35
+#: js/fields/String.vue:37
+#: js/fields/Text.vue:125
 msgid "Minimum length is %{num} characters"
 msgstr "Minimálna dĺžka je %{num} znakov"
 
-#: js/fields/Markdown.vue:148 js/fields/Plaintext.vue:39
-#: js/fields/String.vue:41 js/fields/Text.vue:129
+#: js/fields/Markdown.vue:148
+#: js/fields/Plaintext.vue:39
+#: js/fields/String.vue:41
+#: js/fields/Text.vue:129
 msgid "Maximum length is %{num} characters"
 msgstr "Maximálna dĺžka je %{num} znakov"
 
@@ -1787,26 +2052,33 @@ msgstr "Žiadne stránky neboli nájdené"
 msgid "Merged with changes from %{editor}"
 msgstr "Zlúčené so zmenami z %{editor}"
 
-#: js/routes.js:30 js/views/Login.vue:175
+#: js/routes.js:30
+#: js/views/Login.vue:175
 msgid "Login"
 msgstr "Prihlásenie"
 
-#: js/routes.js:50 js/views/PageDetail.vue:758 js/views/PageDetail.vue:804
+#: js/routes.js:50
+#: js/views/PageDetail.vue:758
+#: js/views/PageDetail.vue:804
 #: js/views/PageDetail.vue:823
 msgid "Page"
 msgstr "Strana"
 
-#: js/routes.js:70 js/views/ElementDetail.vue:422
-#: js/views/ElementDetail.vue:442 js/views/ElementDetail.vue:447
+#: js/routes.js:70
+#: js/views/ElementDetail.vue:422
+#: js/views/ElementDetail.vue:442
+#: js/views/ElementDetail.vue:447
 msgid "Element"
 msgstr "Prvok"
 
-#: js/routes.js:90 js/views/FileDetail.vue:385 js/views/FileDetail.vue:405
+#: js/routes.js:90
+#: js/views/FileDetail.vue:385
+#: js/views/FileDetail.vue:405
 #: js/views/FileDetail.vue:410
 msgid "File"
 msgstr "Súbor"
 
-#: js/routes.js:126
+#: js/routes.js:127
 msgid "You do not have permission to access %{path}"
 msgstr "Nemáte povolenie na prístup %{path}"
 
@@ -2253,65 +2525,73 @@ msgstr "Ikona"
 msgid "None"
 msgstr "Žiadne"
 
-#: js/utils.js:251 js/views/ElementList.vue:94 js/views/ElementList.vue:104
-#: js/views/ElementList.vue:113 js/views/FileList.vue:93
-#: js/views/FileList.vue:103 js/views/FileList.vue:112
-#: js/views/PageList.vue:143 js/views/PageList.vue:153
-#: js/views/PageList.vue:162 js/views/PageList.vue:172
+#: js/utils.js:251
+#: js/views/ElementList.vue:94
+#: js/views/ElementList.vue:104
+#: js/views/ElementList.vue:113
+#: js/views/FileList.vue:93
+#: js/views/FileList.vue:103
+#: js/views/FileList.vue:112
+#: js/views/PageList.vue:143
+#: js/views/PageList.vue:153
+#: js/views/PageList.vue:162
+#: js/views/PageList.vue:172
 #: js/views/PageList.vue:180
 msgid "All"
 msgstr "Všetky"
 
-#: js/views/AccessList.vue:147
+#: js/views/AccessList.vue:177
 msgid "Error adding access value"
 msgstr "Chyba pri pridávaní hodnoty prístupu"
 
-#: js/views/AccessList.vue:169
+#: js/views/AccessList.vue:199
 msgid "Error deleting access values"
 msgstr "Chyba pri odstraňovaní prístupových hodnôt"
 
-#: js/views/AccessList.vue:201 js/views/ElementList.vue:139
-#: js/views/FileList.vue:138 js/views/PageList.vue:255
+#: js/views/AccessList.vue:231
+#: js/views/ElementList.vue:139
+#: js/views/FileList.vue:138
+#: js/views/PageList.vue:255
 msgid "Close navigation"
 msgstr "Zavrieť navigáciu"
 
-#: js/views/AccessList.vue:201 js/views/ElementList.vue:139
-#: js/views/FileList.vue:138 js/views/PageList.vue:255
+#: js/views/AccessList.vue:231
+#: js/views/ElementList.vue:139
+#: js/views/FileList.vue:138
+#: js/views/PageList.vue:255
 msgid "Open navigation"
 msgstr "Otvorená navigácia"
 
-#: js/views/AccessList.vue:219
+#: js/views/AccessList.vue:249
 msgid "Roles"
 msgstr "Roly"
 
-#: js/views/AccessList.vue:220
+#: js/views/AccessList.vue:250
 msgid "Users"
 msgstr "Používatelia"
 
-#: js/views/AccessList.vue:248 js/views/AccessList.vue:303
-#: js/views/AccessList.vue:306
+#: js/views/AccessList.vue:278
+#: js/views/AccessList.vue:330
+#: js/views/AccessList.vue:333
 msgid "Add access value"
 msgstr "Pridajte hodnotu prístupu"
 
-#: js/views/AccessList.vue:313
+#: js/views/AccessList.vue:340
 msgid "Access value"
 msgstr "Prístupová hodnota"
 
-#: js/views/AccessList.vue:324
+#: js/views/AccessList.vue:351
 msgid "Add"
 msgstr "Pridať"
 
-#: js/views/AccessList.vue:334 js/views/AccessList.vue:338
+#: js/views/AccessList.vue:361
+#: js/views/AccessList.vue:365
 msgid "Delete access values"
 msgstr "Odstrániť prístupové hodnoty"
 
-#: js/views/AccessList.vue:345
-msgid ""
-"Existing restrictions are not changed and will continue to reference the "
-"deleted access values."
-msgstr ""
-"Existujúce obmedzenia sa nezmenia a budú naďalej odkazovať na vymazané "
-"prístupové hodnoty."
+#: js/views/AccessList.vue:372
+msgid "Existing restrictions are not changed and will continue to reference the deleted access values."
+msgstr "Existujúce obmedzenia sa nezmenia a budú naďalej odkazovať na vymazané prístupové hodnoty."
 
 #: js/views/ElementDetail.vue:198
 msgid "Error fetching element"
@@ -2329,7 +2609,8 @@ msgstr "Prvok naplánovaný na uverejnenie na %{date}"
 msgid "Error publishing element"
 msgstr "Chyba pri publikovaní prvku"
 
-#: js/views/ElementDetail.vue:278 js/views/FileDetail.vue:266
+#: js/views/ElementDetail.vue:278
+#: js/views/FileDetail.vue:266
 #: js/views/PageDetail.vue:494
 msgid "There are invalid fields, please resolve the errors first"
 msgstr "Sú tu neplatné polia, najprv vyriešte chyby"
@@ -2346,46 +2627,55 @@ msgstr "Chyba pri ukladaní prvku"
 msgid "Error fetching element versions"
 msgstr "Chyba pri načítavaní verzií prvkov"
 
-#: js/views/ElementDetail.vue:449 js/views/FileDetail.vue:412
+#: js/views/ElementDetail.vue:449
+#: js/views/FileDetail.vue:412
 msgid "Used by"
 msgstr "Používa"
 
-#: js/views/ElementList.vue:92 js/views/FileList.vue:91
+#: js/views/ElementList.vue:92
+#: js/views/FileList.vue:91
 #: js/views/PageList.vue:141
 msgid "publish"
 msgstr "zverejniť"
 
-#: js/views/ElementList.vue:96 js/views/FileList.vue:95
+#: js/views/ElementList.vue:96
+#: js/views/FileList.vue:95
 #: js/views/PageList.vue:145
 msgid "Scheduled"
 msgstr "Plánované"
 
-#: js/views/ElementList.vue:97 js/views/FileList.vue:96
+#: js/views/ElementList.vue:97
+#: js/views/FileList.vue:96
 #: js/views/PageList.vue:146
 msgid "Drafts"
 msgstr "Návrhy"
 
-#: js/views/ElementList.vue:102 js/views/FileList.vue:101
+#: js/views/ElementList.vue:102
+#: js/views/FileList.vue:101
 #: js/views/PageList.vue:151
 msgid "trashed"
 msgstr "Kôš"
 
-#: js/views/ElementList.vue:105 js/views/FileList.vue:104
+#: js/views/ElementList.vue:105
+#: js/views/FileList.vue:104
 #: js/views/PageList.vue:154
 msgid "Available only"
 msgstr "Iba dostupné"
 
-#: js/views/ElementList.vue:106 js/views/FileList.vue:105
+#: js/views/ElementList.vue:106
+#: js/views/FileList.vue:105
 #: js/views/PageList.vue:155
 msgid "Only trashed"
 msgstr "Iba v koši"
 
-#: js/views/ElementList.vue:114 js/views/FileList.vue:113
+#: js/views/ElementList.vue:114
+#: js/views/FileList.vue:113
 #: js/views/PageList.vue:181
 msgid "Edited by me"
 msgstr "Upravené mnou"
 
-#: js/views/ElementList.vue:119 js/views/FileList.vue:118
+#: js/views/ElementList.vue:119
+#: js/views/FileList.vue:118
 #: js/views/PageList.vue:186
 msgid "languages"
 msgstr "jazyky"
@@ -2499,61 +2789,9 @@ msgid "Generate page based on prompt"
 msgstr "Generovanie stránky na základe výzvy"
 
 #: js/views/PageList.vue:327
-msgid ""
-"AI can create a page and content based on your input and add it to the page "
-"tree"
-msgstr ""
-"Umelá inteligencia dokáže vytvoriť stránku a obsah na základe vašich "
-"vstupných údajov a pridať ich do stromu stránok."
+msgid "AI can create a page and content based on your input and add it to the page tree"
+msgstr "Umelá inteligencia dokáže vytvoriť stránku a obsah na základe vašich vstupných údajov a pridať ich do stromu stránok."
 
 #: js/views/PageList.vue:334
 msgid "Press Enter or the arrow to open the AI assistant and refine in a chat"
-msgstr ""
-"Stlačením klávesu Enter alebo šípky otvoríte asistenta AI a upravíte obsah v "
-"chate"
-
-#~ msgid "mime"
-#~ msgstr "mime"
-
-#~ msgid "latest"
-#~ msgstr "najnovšie"
-
-#~ msgid "oldest"
-#~ msgstr "najstarší"
-
-#~ msgid "Mime"
-#~ msgstr "Mime"
-
-#~ msgid "type"
-#~ msgstr "typ"
-
-#~ msgid "usage"
-#~ msgstr "používanie"
-
-#~ msgid "language"
-#~ msgstr "jazyk"
-
-#~ msgid "tree"
-#~ msgstr "strom"
-
-#~ msgid "Apply access to %{num} page."
-#~ msgid_plural "Apply access to %{num} pages."
-#~ msgstr[0] "Použiť prístup na stránku %{num}."
-#~ msgstr[1] "Použiť prístup k %{num} stránkam."
-#~ msgstr[2] "Použiť prístup k %{num} stránkam."
-
-#~ msgid "Hide"
-#~ msgstr "Skryť v ponuke"
-
-#~ msgid "Error synthesizing content"
-#~ msgstr "Chyba pri syntéze obsahu"
-
-#~ msgid "Describe the page and content you want to create"
-#~ msgstr "Opíšte stránku a obsah, ktorý chcete vytvoriť"
-
-#~ msgid "Generating ..."
-#~ msgstr "Generovanie ..."
-
-#~ msgid ""
-#~ "Double click on the response in the input field to display full response"
-#~ msgstr "Dvojklikom na odpoveď vo vstupnom poli zobrazíte celú odpoveď"
+msgstr "Stlačením klávesu Enter alebo šípky otvoríte asistenta AI a upravíte obsah v chate"
