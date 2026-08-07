@@ -5,7 +5,9 @@
  */
 
 
-$publicPath = getcwd();
+if(($publicPath = getcwd()) === false) {
+    throw new RuntimeException('Could not get current working directory');
+}
 
 $uri = urldecode(
     (string) (parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) ?? '')
@@ -21,10 +23,10 @@ $mime = match(pathinfo($uri, PATHINFO_EXTENSION)) {
 // This file allows us to emulate Apache's "mod_rewrite" functionality from the
 // built-in PHP web server. This provides a convenient way to test a Laravel
 // application without having installed a "real" web server software here.
-if (($path = realpath($publicPath.$uri)) && is_file($path)) {
-    header("Content-type: " . ($mime ?: mime_content_type($publicPath.$uri)));
+if (($path = realpath($publicPath.$uri)) && is_file($path) && str_starts_with($path, $publicPath)) {
+    header("Content-type: " . ($mime ?: mime_content_type($path)));
     header('Access-Control-Allow-Origin: *');
-    readfile($publicPath.$uri);
+    readfile($path);
     return;
 }
 
