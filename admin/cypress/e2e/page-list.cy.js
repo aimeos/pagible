@@ -204,7 +204,7 @@ describe('Page List', () => {
 
   it('shows "Pages" title in app bar', () => {
     visitPages()
-    cy.get('.v-app-bar-title').should('contain', 'Pages')
+    cy.get('.v-app-bar .v-app-bar-title').find('h1').should('contain', 'Pages')
   })
 
   it('shows navigation toggle and aside toggle buttons in app bar', () => {
